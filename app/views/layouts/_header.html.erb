@@ -1,0 +1,36 @@
+<header>
+  <div class="top-line group">
+    <form class="group log-in" action="<%= session_url %>" method="post">
+      <input type="hidden" name="authenticity_token"
+        value="<%=form_authenticity_token%>">
+
+      <label>Email or Username
+        <input type="text" name="user[username]">
+      </label>
+
+      <div class="password-box">
+        <label>Password
+          <input type="password" name="user[password]">
+        </label>
+
+        <%= link_to "Forgot your password?", "#" %>
+      </div>
+
+      <input type="submit" value="Log In">
+    </form>
+  </div>
+
+  <div class="second-line group">
+    <h1>Deev Games</h1>
+
+    <nav>
+      <ul class="group">
+        <li><a href="#">Ninja Tanks</a></li>
+        <li><a href="#">Hex Strike <small>coming soon...</small></a></li>
+        <li><a href="#">Blind Loyalty <small>coming soon...</small></a></li>
+        <li><a href="#">Blog</a></li>
+      </ul>
+    </nav>
+  </div>
+
+</header>
