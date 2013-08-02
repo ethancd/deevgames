@@ -11,3 +11,130 @@
  *= require_self
  *= require_tree .
  */
+html, body, header, footer, div, form, nav, h1, ul, li, p, a {
+  padding: 0;
+  margin: 0;
+  border: 0;
+  font-size: 100%;
+  font-family: sans-serif;
+  color: inherit;
+}
+
+body {
+  background: #fff;
+}
+
+ul {
+  list-style: none;
+}
+
+.group:after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+.total-wrap {
+  width: 1140px;
+  margin: 50px auto;
+  border: 5px solid #600;
+  background: #ccc;
+}
+
+.layout a {
+  text-decoration: none;
+}
+
+.layout a:hover {
+  text-decoration: underline;
+}
+
+header.layout {
+  border-bottom: 5px solid #600;
+}
+
+header.layout ul {
+  float: right;
+}
+
+header.layout li {
+  float: left;
+}
+
+header.layout h1 {
+  margin-top: -10px;
+  margin-left: 10px;
+  font-size: 250%;
+  font-weight: bold;
+  float: left;
+  color: #600;
+}
+
+header.layout > .top-line {
+  margin: 5px 10px 30px 10px;
+}
+
+header.layout nav a {
+  display: block;
+  padding: 10px 10px;
+  border: 2px solid #600;
+  border-bottom: 0;
+  border-top-left-radius: 7px;
+/*  border-top-right-radius: 7px;*/
+}
+
+header.layout nav a:hover {
+  background: #600;
+  color: #fff;
+  text-decoration: none;
+}
+
+header.layout form.log-in {
+  float: right;
+}
+
+header.layout .button {
+  margin: 0 10px;
+  border: 1px solid #ddd;
+  border-right-width: 2px;
+  border-bottom-width: 2px;
+  background: #eee;
+  display: block;
+  width: 50px;
+  height: 30px;
+  cursor: pointer;
+}
+
+header.layout form.log-in > label.email-username,
+header.layout form.log-in > .password-box,
+header.layout form.log-in > input[type="submit"] {
+  text-align: right;
+  float: left;
+}
+
+header.layout form.log-in > .password-box > a {
+  font-size:13px;
+  text-decoration: underline;
+}
+
+header.layout form.log-in input:focus{
+  outline-color: #600;
+}
+footer.layout {
+  border-top: 5px solid #600;
+}
+
+footer.layout small {
+  display: block;
+  margin: 5px 10px;
+}
+
+footer.layout small.copy {
+  float: left;
+}
+
+footer.layout small.feedback {
+  float: right;
+}
+
+

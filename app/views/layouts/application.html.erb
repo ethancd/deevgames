@@ -8,11 +8,15 @@
 </head>
 <body>
 
-<%= render "layouts/header" %>
+<div class="total-wrap">
+  <%= render "layouts/header" %>
 
-<%= yield %>
+  <section class="content">
+    <%= yield %>
+  </section>
 
-<%= render "layouts/footer" %>
+  <%= render "layouts/footer" %>
+</div>
 
 </body>
 </html>

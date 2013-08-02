@@ -1,10 +1,10 @@
-<header>
+<header class="layout">
   <div class="top-line group">
-    <form class="group log-in" action="<%= session_url %>" method="post">
+    <form class="log-in group" action="<%= session_url %>" method="post">
       <input type="hidden" name="authenticity_token"
         value="<%=form_authenticity_token%>">
 
-      <label>Email or Username
+      <label class="email-username">Email or Username
         <input type="text" name="user[username]">
       </label>
 
@@ -13,10 +13,12 @@
           <input type="password" name="user[password]">
         </label>
 
+        <br>
+
         <%= link_to "Forgot your password?", "#" %>
       </div>
 
-      <input type="submit" value="Log In">
+      <input class="button" type="submit" value="LOG IN">
     </form>
   </div>
 

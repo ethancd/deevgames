@@ -5,7 +5,7 @@ DeevGamesDevelopment::Application.routes.draw do
   resources :posts
   resources :comments, only: [:create, :update, :destroy]
 
-  resources :users, only: [:new, :create, :show, :edit, :update]
+  resources :users, only: [:new, :create, :show, :edit, :update, :destroy]
   resource :session, only: [:create, :destroy]
 
   namespace :njt do
