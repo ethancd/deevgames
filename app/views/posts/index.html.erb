@@ -1,0 +1,5 @@
+<% @posts.each do |post| %>
+  <h3><%= post.title %></h3>
+  <img src="<%= post.image_url %>">
+  <p><%= post.body %></p>
+<% end %>

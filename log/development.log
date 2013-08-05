@@ -13519,3 +13519,194 @@ Served asset /users.js - 304 Not Modified (0ms)
 
 Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2013-08-02 18:26:38 -0400
 Served asset /application.js - 304 Not Modified (0ms)
+Connecting to database specified by database.yml
+
+
+Started GET "/" for 127.0.0.1 at 2013-08-05 09:03:03 -0400
+Processing by RootController#index as HTML
+  Rendered root/index.html.erb within layouts/application (2.7ms)
+  Rendered layouts/_header.html.erb (0.8ms)
+  Rendered layouts/_footer.html.erb (0.3ms)
+Completed 200 OK in 119ms (Views: 118.3ms | ActiveRecord: 0.0ms)
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2013-08-05 09:03:04 -0400
+Served asset /application.css - 304 Not Modified (5ms)
+
+
+Started GET "/assets/comments.css?body=1" for 127.0.0.1 at 2013-08-05 09:03:04 -0400
+Served asset /comments.css - 304 Not Modified (1ms)
+
+
+Started GET "/assets/posts.css?body=1" for 127.0.0.1 at 2013-08-05 09:03:04 -0400
+Served asset /posts.css - 304 Not Modified (2ms)
+
+
+Started GET "/assets/root.css?body=1" for 127.0.0.1 at 2013-08-05 09:03:04 -0400
+Served asset /root.css - 304 Not Modified (15ms)
+
+
+Started GET "/assets/session.css?body=1" for 127.0.0.1 at 2013-08-05 09:03:04 -0400
+Served asset /session.css - 304 Not Modified (2ms)
+
+
+Started GET "/assets/users.css?body=1" for 127.0.0.1 at 2013-08-05 09:03:04 -0400
+Served asset /users.css - 304 Not Modified (1ms)
+
+
+Started GET "/assets/jquery.js?body=1" for 127.0.0.1 at 2013-08-05 09:03:04 -0400
+Served asset /jquery.js - 304 Not Modified (6ms)
+
+
+Started GET "/assets/root.js?body=1" for 127.0.0.1 at 2013-08-05 09:03:04 -0400
+Served asset /root.js - 304 Not Modified (1ms)
+
+
+Started GET "/assets/jquery_ujs.js?body=1" for 127.0.0.1 at 2013-08-05 09:03:04 -0400
+Served asset /jquery_ujs.js - 304 Not Modified (4ms)
+
+
+Started GET "/assets/comments.js?body=1" for 127.0.0.1 at 2013-08-05 09:03:04 -0400
+Served asset /comments.js - 304 Not Modified (1ms)
+
+
+Started GET "/assets/posts.js?body=1" for 127.0.0.1 at 2013-08-05 09:03:04 -0400
+Served asset /posts.js - 304 Not Modified (1ms)
+
+
+Started GET "/assets/session.js?body=1" for 127.0.0.1 at 2013-08-05 09:03:04 -0400
+Served asset /session.js - 304 Not Modified (1ms)
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2013-08-05 09:03:04 -0400
+Served asset /application.js - 304 Not Modified (25ms)
+
+
+Started GET "/assets/users.js?body=1" for 127.0.0.1 at 2013-08-05 09:03:04 -0400
+Served asset /users.js - 304 Not Modified (1ms)
+
+
+Started GET "/posts/new" for 127.0.0.1 at 2013-08-05 09:03:11 -0400
+Processing by PostsController#new as HTML
+  Rendered posts/_form.html.erb (18.4ms)
+  Rendered posts/new.html.erb within layouts/application (19.4ms)
+Completed 500 Internal Server Error in 72ms
+
+ActionView::Template::Error (undefined method `url' for #<Post:0x007faeaaac5840>):
+    1: <%= form_for @post do |f| %>
+    2:   Title: <%= f.text_field :title %> <br>
+    3:   Image URL: <%= f.text_field :url %> <br>
+    4:   Body: <%= f.text_area %> <br>
+    5:   <%= f.submit %>
+    6: <% end %>
+  app/views/posts/_form.html.erb:3:in `block in _app_views_posts__form_html_erb__37506563250479019_70194082705760'
+  app/views/posts/_form.html.erb:1:in `_app_views_posts__form_html_erb__37506563250479019_70194082705760'
+  app/views/posts/new.html.erb:3:in `_app_views_posts_new_html_erb__1829196871339298240_70194082701900'
+
+
+  Rendered /Users/appacademy/.rvm/gems/ruby-1.9.3-p392/gems/actionpack-3.2.13/lib/action_dispatch/middleware/templates/rescues/_trace.erb (1.6ms)
+  Rendered /Users/appacademy/.rvm/gems/ruby-1.9.3-p392/gems/actionpack-3.2.13/lib/action_dispatch/middleware/templates/rescues/_request_and_response.erb (1.0ms)
+  Rendered /Users/appacademy/.rvm/gems/ruby-1.9.3-p392/gems/actionpack-3.2.13/lib/action_dispatch/middleware/templates/rescues/template_error.erb within rescues/layout (17.7ms)
+Connecting to database specified by database.yml
+
+
+Started GET "/posts/new" for 127.0.0.1 at 2013-08-05 09:04:35 -0400
+Processing by PostsController#new as HTML
+  Rendered posts/_form.html.erb (1.5ms)
+  Rendered posts/new.html.erb within layouts/application (2.4ms)
+Completed 500 Internal Server Error in 4ms
+
+ActionView::Template::Error (undefined method `url' for #<Post:0x007faeaaa43b10>):
+    1: <%= form_for post do |f| %>
+    2:   Title: <%= f.text_field :title %> <br>
+    3:   Image URL: <%= f.text_field :url %> <br>
+    4:   Body: <%= f.text_area %> <br>
+    5:   <%= f.submit %>
+    6: <% end %>
+  app/views/posts/_form.html.erb:3:in `block in _app_views_posts__form_html_erb__37506563250479019_70194082017220'
+  app/views/posts/_form.html.erb:1:in `_app_views_posts__form_html_erb__37506563250479019_70194082017220'
+  app/views/posts/new.html.erb:3:in `_app_views_posts_new_html_erb__1829196871339298240_70194081969740'
+
+
+  Rendered /Users/appacademy/.rvm/gems/ruby-1.9.3-p392/gems/actionpack-3.2.13/lib/action_dispatch/middleware/templates/rescues/_trace.erb (1.0ms)
+  Rendered /Users/appacademy/.rvm/gems/ruby-1.9.3-p392/gems/actionpack-3.2.13/lib/action_dispatch/middleware/templates/rescues/_request_and_response.erb (0.8ms)
+  Rendered /Users/appacademy/.rvm/gems/ruby-1.9.3-p392/gems/actionpack-3.2.13/lib/action_dispatch/middleware/templates/rescues/template_error.erb within rescues/layout (5.9ms)
+
+
+Started GET "/posts/new" for 127.0.0.1 at 2013-08-05 09:05:24 -0400
+Processing by PostsController#new as HTML
+  Rendered posts/_form.html.erb (64.9ms)
+  Rendered posts/new.html.erb within layouts/application (65.7ms)
+  Rendered layouts/_header.html.erb (0.2ms)
+  Rendered layouts/_footer.html.erb (0.0ms)
+Completed 200 OK in 81ms (Views: 80.4ms | ActiveRecord: 0.0ms)
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2013-08-05 09:05:25 -0400
+Served asset /application.css - 304 Not Modified (0ms)
+
+
+Started GET "/assets/comments.css?body=1" for 127.0.0.1 at 2013-08-05 09:05:25 -0400
+Served asset /comments.css - 304 Not Modified (0ms)
+
+
+Started GET "/assets/posts.css?body=1" for 127.0.0.1 at 2013-08-05 09:05:25 -0400
+Served asset /posts.css - 304 Not Modified (0ms)
+
+
+Started GET "/assets/root.css?body=1" for 127.0.0.1 at 2013-08-05 09:05:25 -0400
+Served asset /root.css - 304 Not Modified (0ms)
+
+
+Started GET "/assets/session.css?body=1" for 127.0.0.1 at 2013-08-05 09:05:25 -0400
+Served asset /session.css - 304 Not Modified (0ms)
+
+
+Started GET "/assets/users.css?body=1" for 127.0.0.1 at 2013-08-05 09:05:25 -0400
+Served asset /users.css - 304 Not Modified (0ms)
+
+
+Started GET "/assets/jquery.js?body=1" for 127.0.0.1 at 2013-08-05 09:05:25 -0400
+Served asset /jquery.js - 304 Not Modified (0ms)
+
+
+Started GET "/assets/comments.js?body=1" for 127.0.0.1 at 2013-08-05 09:05:25 -0400
+Served asset /comments.js - 304 Not Modified (0ms)
+
+
+Started GET "/assets/jquery_ujs.js?body=1" for 127.0.0.1 at 2013-08-05 09:05:25 -0400
+Served asset /jquery_ujs.js - 304 Not Modified (0ms)
+
+
+Started GET "/assets/posts.js?body=1" for 127.0.0.1 at 2013-08-05 09:05:25 -0400
+Served asset /posts.js - 304 Not Modified (0ms)
+
+
+Started GET "/assets/root.js?body=1" for 127.0.0.1 at 2013-08-05 09:05:25 -0400
+Served asset /root.js - 304 Not Modified (0ms)
+
+
+Started GET "/assets/users.js?body=1" for 127.0.0.1 at 2013-08-05 09:05:25 -0400
+Served asset /users.js - 304 Not Modified (0ms)
+
+
+Started GET "/assets/session.js?body=1" for 127.0.0.1 at 2013-08-05 09:05:25 -0400
+Served asset /session.js - 304 Not Modified (0ms)
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2013-08-05 09:05:25 -0400
+Served asset /application.js - 304 Not Modified (0ms)
+
+
+Started POST "/posts" for 127.0.0.1 at 2013-08-05 09:06:42 -0400
+Processing by PostsController#create as HTML
+  Parameters: {"utf8"=>"✓", "authenticity_token"=>"1O8kVyWM63t6JnXVKDHo5w8FuG4Bx5UUoikf9DcXFiY=", "post"=>{"title"=>"Test Post Lol", "image_url"=>"http://www.united-fire.com/smoke_op_800x1200.jpg", "body"=>"Here's this test post: Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\r\n\r\nAnd besides that, Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."}, "commit"=>"Create Post"}
+Completed 500 Internal Server Error in 2ms
+
+NameError (undefined local variable or method `current_user' for #<PostsController:0x007faeaab04450>):
+  app/controllers/posts_controller.rb:17:in `create'
+
+
+  Rendered /Users/appacademy/.rvm/gems/ruby-1.9.3-p392/gems/actionpack-3.2.13/lib/action_dispatch/middleware/templates/rescues/_trace.erb (1.4ms)
+  Rendered /Users/appacademy/.rvm/gems/ruby-1.9.3-p392/gems/actionpack-3.2.13/lib/action_dispatch/middleware/templates/rescues/_request_and_response.erb (1.1ms)
+  Rendered /Users/appacademy/.rvm/gems/ruby-1.9.3-p392/gems/actionpack-3.2.13/lib/action_dispatch/middleware/templates/rescues/diagnostics.erb within rescues/layout (10.0ms)

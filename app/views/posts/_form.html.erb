@@ -1,0 +1,6 @@
+<%= form_for post do |f| %>
+  Title: <%= f.text_field :title %> <br>
+  Image URL: <%= f.text_field :image_url %> <br>
+  Body: <%= f.text_area :body %> <br>
+  <%= f.submit %>
+<% end %>
