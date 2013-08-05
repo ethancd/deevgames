@@ -21,6 +21,12 @@ group :assets do
 end
 
 gem 'jquery-rails'
+gem 'devise'
+
+group :development do
+  gem 'launchy'
+  gem 'letter_opener'
+end
 
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'

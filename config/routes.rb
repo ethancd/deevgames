@@ -1,17 +1,26 @@
 DeevGamesDevelopment::Application.routes.draw do
-  resource :root, only: [:index]
-  root to: "root#index"
+  devise_for :users
 
-  resources :posts
+  root to: "posts#index"
+
+  get "blog", to: "posts#index", as: :blog
+  resources :posts, except: [:index]
   resources :comments, only: [:create, :update, :destroy]
-
-  resources :users, only: [:new, :create, :show, :edit, :update, :destroy]
-  resource :session, only: [:create, :destroy]
+  resources :sessions, only: [:new]
 
   namespace :njt do
-    resource :lobby, only: [:index]
+    get "/", to: "lobby#index", as: :lobby
     resources :rules, only: [:show]
     resources :games, only: [:new, :create, :show, :update]
     resources :replays, only: [:index, :show]
   end
+
+  namespace :blnd do
+    get "/", to: "lobby#index", as: :lobby
+  end
+
+  namespace :hex do
+    get "/", to: "lobby#index", as: :lobby
+  end
+
 end

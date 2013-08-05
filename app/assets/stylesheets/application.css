@@ -11,7 +11,8 @@
  *= require_self
  *= require_tree .
  */
-html, body, header, footer, div, form, nav, h1, ul, li, p, a {
+html, body, header, footer, strong,
+  div, form, nav, em, h1, ul, li, p, a {
   padding: 0;
   margin: 0;
   border: 0;
@@ -89,8 +90,23 @@ header.layout nav a:hover {
   text-decoration: none;
 }
 
-header.layout form.log-in {
+header.layout form.log-in,
+header.layout .logged-in {
   float: right;
+}
+
+header.layout .logged-in > span {
+  display: block;
+  float: left;
+}
+
+header.layout strong {
+  color: #600;
+  font-size: 1.5em;
+}
+
+header.layout form.log-out {
+  float: left;
 }
 
 header.layout .button {
@@ -105,9 +121,13 @@ header.layout .button {
   cursor: pointer;
 }
 
-header.layout form.log-in > label.email-username,
+header.layout .button.log-out {
+  width: 70px;
+}
+
+header.layout form.log-in > .username-box,
 header.layout form.log-in > .password-box,
-header.layout form.log-in > input[type="submit"] {
+header.layout form.log-in .button {
   text-align: right;
   float: left;
 }
@@ -117,9 +137,10 @@ header.layout form.log-in > .password-box > a {
   text-decoration: underline;
 }
 
-header.layout form.log-in input:focus{
-  outline-color: #600;
+header.layout form.log-in > .username-box > .remember-me {
+  font-size:13px;
 }
+
 footer.layout {
   border-top: 5px solid #600;
 }

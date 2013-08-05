@@ -1,25 +1,47 @@
 <header class="layout">
   <div class="top-line group">
-    <form class="log-in group" action="<%= session_url %>" method="post">
-      <input type="hidden" name="authenticity_token"
-        value="<%=form_authenticity_token%>">
+    <% if user_signed_in? %>
+    <div class="logged-in group">
+      <span><small>signed in as</small> <strong><%= current_user.username %></strong></span>
 
-      <label class="email-username">Email or Username
-        <input type="text" name="user[username]">
-      </label>
+      <form class="log-out" action="<%= destroy_user_session_url %>" method="post">
+        <input type="hidden" name="_method" value="delete">
+        <input type="hidden" name="authenticity_token"
+          value="<%=form_authenticity_token%>">
 
-      <div class="password-box">
-        <label>Password
-          <input type="password" name="user[password]">
-        </label>
+        <input class="button log-out" type="submit" value="LOG OUT">
+      </form>
+    </div>
 
-        <br>
+    <% else %>
+      <form class="log-in group" action="<%= user_session_url %>" method="post">
+        <input type="hidden" name="authenticity_token"
+          value="<%=form_authenticity_token%>">
 
-        <%= link_to "Forgot your password?", "#" %>
-      </div>
+        <div class="username-box">
+          <label>Email or Username
+            <input type="text" name="user[login]">
+          </label>
 
-      <input class="button" type="submit" value="LOG IN">
-    </form>
+          <br>
+          <input name="user[remember_me]" type="hidden" value="0">
+          <label class="remember-me">
+            <input name="user[remember_me]" type="checkbox" value="1">Remember me
+          </label>
+        </div>
+        <div class="password-box">
+          <label>Password
+            <input type="password" name="user[password]">
+          </label>
+
+          <br>
+
+          <%= link_to "Forgot your password?", new_user_password_url %>
+        </div>
+
+        <input class="button log-in" type="submit" value="LOG IN">
+      </form>
+    <% end %>
   </div>
 
   <div class="second-line group">
@@ -27,10 +49,10 @@
 
     <nav>
       <ul class="group">
-        <li><a href="#">Ninja Tanks</a></li>
-        <li><a href="#">Hex Strike <small>coming soon...</small></a></li>
-        <li><a href="#">Blind Loyalty <small>coming soon...</small></a></li>
-        <li><a href="#">Blog</a></li>
+        <li><a href="<%= blog_url %>">Blog</a></li>
+        <li><a href="<%= njt_lobby_url %>">Ninja Tanks</a></li>
+        <li><a href="<%= hex_lobby_url %>">Hex Strike <small>coming soon...</small></a></li>
+        <li><a href="<%= blnd_lobby_url %>">Blind Loyalty <small>coming soon...</small></a></li>
       </ul>
     </nav>
   </div>
