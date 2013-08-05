@@ -1,5 +1,28 @@
-<h3><%= @post.title%></h3>
+<section class="content blog">
+  <header>
+    <a href="<%= blog_url %>"><h2>The Deev-elopment Blog</h2></a>
+  </header>
 
-<img src="<%= @post.image_url%>">
+  <article class="post">
 
-<p><%= @post.body %></p>
+      <h3 class="title"><%= @post.title %></h3>
+
+
+      <figure>
+        <img src="<%= @post.image_url %>">
+        </figure>
+
+
+    <p><%= @post.body %></p>
+
+    <br>
+    <aside>posted by
+      <em><%= @post.author.username %></em> at
+      <time><%= @post.created_at%></time>
+    </aside>
+  </article>
+
+  <% if current_user.admin %>
+    <%= link_to "Edit this post", edit_post_url(@post) %>
+  <% end %>
+</section>

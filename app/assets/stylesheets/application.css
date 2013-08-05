@@ -12,7 +12,7 @@
  *= require_tree .
  */
 html, body, header, footer, strong,
-  div, form, nav, em, h1, ul, li, p, a {
+  div, form, nav, em, h1, h2, h3, h4, ul, li, p, a {
   padding: 0;
   margin: 0;
   border: 0;
@@ -76,7 +76,9 @@ header.layout > .top-line {
 }
 
 header.layout nav a {
+  position: relative;
   display: block;
+  text-align: center;
   padding: 10px 10px;
   border: 2px solid #600;
   border-bottom: 0;
@@ -88,6 +90,25 @@ header.layout nav a:hover {
   background: #600;
   color: #fff;
   text-decoration: none;
+}
+
+header.layout nav a small {
+  position: absolute;
+  display: block;
+  width: 100%;
+  top: 13px;
+  left: 0;
+  font-size: 11px;
+}
+
+header.layout nav a:hover .non-hover,
+header.layout nav a .hover {
+  visibility: hidden;
+}
+
+header.layout nav a .non-hover,
+header.layout nav a:hover .hover {
+  visibility: visible;
 }
 
 header.layout form.log-in,

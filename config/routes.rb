@@ -4,8 +4,10 @@ DeevGamesDevelopment::Application.routes.draw do
   root to: "posts#index"
 
   get "blog", to: "posts#index", as: :blog
-  resources :posts, except: [:index]
-  resources :comments, only: [:create, :update, :destroy]
+  resources :posts do
+    resources :comments, only: [:index, :create, :update, :destroy]
+  end
+
   resources :sessions, only: [:new]
 
   namespace :njt do

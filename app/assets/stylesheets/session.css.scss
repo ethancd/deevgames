@@ -2,7 +2,7 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
-section.content {
+section.front-page {
   width: 400px;
   margin: 200px auto;
   text-align: center;
@@ -12,11 +12,11 @@ section.content {
   border: 5px solid #600;
 }
 
-.content > nav {
+.front-page > nav {
   margin-top: 70px;
 }
 
-.content a {
+.front-page a {
   display: block;
   background: #ccc;
   color: #000;
@@ -26,17 +26,17 @@ section.content {
   margin: 5px;
 }
 
-.content ul {
+.front-page ul {
   width: 345px;
   margin: auto;
 }
-.content a:hover {
+.front-page a:hover {
   background: #600;
   color: #fff;
   border-color: #fff;
 }
 
-.content a {
+.front-page a {
   float: left;
 }
 
