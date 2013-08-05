@@ -6,6 +6,7 @@ DeevGamesDevelopment::Application.routes.draw do
   get "blog", to: "posts#index", as: :blog
   resources :posts do
     resources :comments, only: [:index, :create, :update, :destroy]
+    post "comments/:id", to: "comments#undestroy"
   end
 
   resources :sessions, only: [:new]

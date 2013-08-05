@@ -10,10 +10,13 @@
 
       <figure>
         <img src="<%= @post.image_url %>">
-        </figure>
+      </figure>
 
+      <% ps = @post.body.split("\n") %>
 
-    <p><%= @post.body %></p>
+      <% ps.each do |p| %>
+        <p><%= p%></p>
+      <% end %>
 
     <br>
     <aside>posted by
@@ -22,7 +25,28 @@
     </aside>
   </article>
 
-  <% if current_user.admin %>
+  <% if user_signed_in? && current_user.admin %>
     <%= link_to "Edit this post", edit_post_url(@post) %>
   <% end %>
+
+  <section id="comments">
+    <h4>Comments</h4>
+
+    <form action="<%= @post %>" method="post">
+      <input type="hidden" name="authenticity_token"
+        value="<%=form_authenticity_token%>">
+        <input type="hidden" name="comment[parent_id]" value="<%= nil %>">
+      <label>New Comment
+        <input type="text" placeholder="Comment here..." name="comment[body]">
+      </label>
+      <input type="submit" value="Submit">
+    </form>
+
+
+    <ul>
+      <% @post.comments.each do |comment| %>
+        <%= render partial: "comments/show", locals: { comment: comment } %>
+      <% end %>
+    </ul>
+  </section>
 </section>

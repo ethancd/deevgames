@@ -18,7 +18,12 @@
           </a>
         </figure>
 
-        <p><%= post.body %></p>
+        <% ps = post.body.split("\n") %>
+
+        <% ps.each do |p| %>
+          <p><%= p%></p>
+        <% end %>
+
 
         <br>
         <aside>posted by
@@ -27,16 +32,16 @@
         </aside>
 
 
-        <%= link_to "Comments", post_comments_url(post) %>
+        <%= link_to "Comments", "#{post_url(post)}#comments" %>
       </article>
 
-      <% if current_user.admin %>
+      <% if user_signed_in? && current_user.admin %>
         <%= link_to "Edit this post", edit_post_url(post) %>
       <% end %>
     <% end %>
   </section>
 
-  <% if current_user.admin %>
+  <% if user_signed_in? && current_user.admin %>
     <%= link_to "Add new post", new_post_url %>
   <% end %>
 </section>

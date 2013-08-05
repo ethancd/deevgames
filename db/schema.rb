@@ -11,15 +11,17 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130805133008) do
+ActiveRecord::Schema.define(:version => 20130805213421) do
 
   create_table "comments", :force => true do |t|
     t.string   "body"
     t.integer  "topic_id"
+    t.string   "topic_type"
     t.integer  "parent_id"
     t.integer  "author_id"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
+    t.boolean  "deleted"
   end
 
   add_index "comments", ["author_id"], :name => "index_comments_on_author_id"
@@ -39,7 +41,6 @@ ActiveRecord::Schema.define(:version => 20130805133008) do
 
   create_table "users", :force => true do |t|
     t.string   "username"
-    t.string   "password_digest"
     t.boolean  "admin"
     t.string   "avatar_url"
     t.datetime "created_at",                             :null => false
@@ -58,5 +59,6 @@ ActiveRecord::Schema.define(:version => 20130805133008) do
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true
   add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true
+  add_index "users", ["username"], :name => "index_users_on_username", :unique => true
 
 end
