@@ -20,8 +20,14 @@
 
         <% ps = post.body.split("\n") %>
 
-        <% ps.each do |p| %>
-          <p><%= p%></p>
+        <% ps.each_with_index do |p, i| %>
+          <% if i == 2 %>
+            <aside><a href="<%= post_url(post)%>">More...</a></aside>
+          <% elsif i > 2 %>
+            <% next %>
+          <% else %>
+            <p><%= p %></p>
+          <% end %>
         <% end %>
 
 
