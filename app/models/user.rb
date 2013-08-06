@@ -11,16 +11,20 @@ class User < ActiveRecord::Base
 
   attr_accessor :login
 
-  has_attached_file :avatar, styles: {
-    thumb1: "50x50>",
-    medium: "300x300>",
-    large: "600x600>"
+  has_attached_file :avatar, {
+      styles: {
+        thumb1: "50x50>",
+        medium: "300x300>",
+        large: "600x600>"
+      },
+      default_url: "/app/assets/images/pengu.jpg"
   }
 
   validates :username, uniqueness: { case_sensitive: false },
             length: { within: 3..20 }, format: { with: /\A[A-Za-z0-9_]*\z/ }
 
-  validates :avatar, attachment_size: { less_than: 50.kilobytes }
+  validates :avatar, attachment_size: { less_than: 50.kilobytes },
+            attachment_content_type: { content_type: /image/ }
 
   def self.find_first_by_auth_conditions(warden_conditions)
     conditions = warden_conditions.dup

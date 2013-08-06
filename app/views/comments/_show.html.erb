@@ -4,11 +4,7 @@
     <img src="http://www.placekitten.com/50/50">
   <% else %>
     <h4><%= comment.author.username %></h4>
-    <% if comment.author.avatar.url == "/avatars/original/missing.png" %>
-      <img src="http://www.placekitten.com/50/50">
-    <% else %>
-      <%= image_tag comment.author.avatar.url(:thumb1) %>
-    <% end %>
+    <%= image_tag comment.author.avatar.url(:thumb1) %>
 
     <p class="display"><%= comment.body %></p>
 
