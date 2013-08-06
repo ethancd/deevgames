@@ -23,6 +23,11 @@ end
 gem 'jquery-rails'
 gem 'devise'
 
+gem 'paperclip'
+gem 'aws-sdk'
+
+gem 'figaro'
+
 group :development do
   gem 'launchy'
   gem 'letter_opener'

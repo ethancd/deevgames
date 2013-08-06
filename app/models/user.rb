@@ -7,12 +7,20 @@ class User < ActiveRecord::Base
 
   # Setup accessible (or protected) attributes for your model
   attr_accessible :email, :password, :password_confirmation, :remember_me
-  attr_accessible :avatar_url, :username, :login
+  attr_accessible :avatar, :username, :login
 
   attr_accessor :login
 
+  has_attached_file :avatar, styles: {
+    thumb1: "50x50>",
+    medium: "300x300>",
+    large: "600x600>"
+  }
+
   validates :username, uniqueness: { case_sensitive: false },
             length: { within: 3..20 }, format: { with: /\A[A-Za-z0-9_]*\z/ }
+
+  validates :avatar, attachment_size: { less_than: 50.kilobytes }
 
   def self.find_first_by_auth_conditions(warden_conditions)
     conditions = warden_conditions.dup

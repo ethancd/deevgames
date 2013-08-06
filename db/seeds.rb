@@ -8,7 +8,7 @@
 users = []
 users.push User.new(
   {username: "deev", email: "the.deep.grave@gmail.com", password: "12341234",
-    avatar_url: "http://placekitten.com/50/50"}
+    avatar: File.new("#{Rails.root}/app/assets/images/pengu.jpg")}
 )
 
 users.first.admin = true
@@ -16,8 +16,7 @@ users.first.admin = true
 100.times do |i|
   j = i*i-(i-1)*(i-2)+10
   users.push User.new(
-    {username: "fan#{j}", email:"the#{j}fan@gmail.com", password: "12341234",
-      avatar_url: "http://placekitten.com/#{10*j}/#{3*j}"})
+    {username: "fan#{j}", email:"the#{j}fan@gmail.com", password: "12341234"})
 end
 
 users.each do |user| user.save! end

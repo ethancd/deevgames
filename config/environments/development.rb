@@ -1,4 +1,5 @@
 DeevGamesDevelopment::Application.configure do
+
   # Settings specified here will take precedence over those in config/application.rb
 
   # In the development environment your application's code is reloaded on
@@ -31,6 +32,15 @@ DeevGamesDevelopment::Application.configure do
   config.action_mailer.default_url_options = { :host => 'localhost:3000' }
   # Do not compress assets
   config.assets.compress = false
+
+  config.paperclip_defaults = {
+    :storage => :s3,
+    :s3_credentials => {
+      :bucket => ENV["DEVELOPMENT_BUCKET"],
+      :access_key_id => ENV["ACCESS_KEY_ID"],
+      :secret_access_key => ENV["SECRET_ACCESS_KEY"]
+    }
+  }
 
   # Expands the lines which load the assets
   config.assets.debug = true

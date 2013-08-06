@@ -1,7 +1,9 @@
 DeevGamesDevelopment::Application.routes.draw do
   devise_for :users
 
-  root to: "posts#index"
+  root to: "splash#in"
+
+  get "not_logged_in", to: "splash#out", as: :out
 
   get "blog", to: "posts#index", as: :blog
   resources :posts do
@@ -9,21 +11,19 @@ DeevGamesDevelopment::Application.routes.draw do
     post "comments/:id", to: "comments#undestroy"
   end
 
-  resources :sessions, only: [:new]
-
   namespace :njt do
-    get "/", to: "lobby#index", as: :lobby
+    get "/", to: "splash#index", as: :splash
     resources :rules, only: [:show]
     resources :games, only: [:new, :create, :show, :update]
     resources :replays, only: [:index, :show]
   end
 
   namespace :blnd do
-    get "/", to: "lobby#index", as: :lobby
+    get "/", to: "splash#index", as: :splash
   end
 
   namespace :hex do
-    get "/", to: "lobby#index", as: :lobby
+    get "/", to: "splash#index", as: :splash
   end
 
 end

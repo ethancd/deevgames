@@ -4,7 +4,12 @@
     <img src="http://www.placekitten.com/50/50">
   <% else %>
     <h4><%= comment.author.username %></h4>
-    <img src="<%= comment.author.avatar_url %>">
+    <% if comment.author.avatar.url == "/avatars/original/missing.png" %>
+      <img src="http://www.placekitten.com/50/50">
+    <% else %>
+      <%= image_tag comment.author.avatar.url(:thumb1) %>
+    <% end %>
+
     <p class="display"><%= comment.body %></p>
 
     <% if user_signed_in? && (current_user.admin || current_user == comment.author) %>
@@ -28,22 +33,32 @@
 
   <!-- <button>Reply</button> turn this into a javascript revealer -->
 
-  <form action="<%= post_comments_url(comment.topic)%>" method="post">
+  <form action="<%= post_comments_url(comment.topic) %>" method="post">
     <input type="hidden" name="authenticity_token"
-      value="<%=form_authenticity_token%>">
+      value="<%= form_authenticity_token %>">
       <input type="hidden" name="comment[parent_id]" value="<%= comment.id %>">
     <input type="text" placeholder="Comment here..." name="comment[body]">
     <input type="submit" value="Submit">
   </form>
 
-  <% if user_signed_in? && (current_user.admin || current_user == comment.author) %>
+  <% if user_signed_in? && %>
+    <% (current_user.admin || current_user == comment.author) %>
 
-    <% if comment.deleted && current_user.admin %>
-      <%= button_to "Restore comment", post_comment_url(comment.topic, comment.id), method: :post %>
-    <% else %>
-      <%= button_to "Delete comment", post_comment_url(comment.topic, comment.id), method: :delete,
-        data: { confirm: "Are you sure?" } %>
-    <% end %>
+      <% if comment.deleted %>
+
+        <% if current_user.admin %>
+          <%= button_to "Restore comment",
+              post_comment_url(comment.topic, comment.id), method: :post %>
+        <% end %>
+
+      <% else %>
+
+        <%= button_to "Delete comment",
+            post_comment_url(comment.topic, comment.id), method: :delete,
+            data: { confirm: "Are you sure?" } %>
+
+      <% end %>
+
   <% end %>
 
   <ul>

@@ -1,15 +1,16 @@
 <section class="content blog">
   <header>
-    <h2>The Deev-elopment Blog</h2>
+    <h2><a href="<%= blog_url %>">The Deev-elopment Blog</a></h2>
   </header>
 
   <section class="posts">
     <% @posts.reverse.each do |post| %>
       <article class="post">
         <header class="title">
-          <a href="<%= post_url(post) %>" class="title">
-            <h3><%= post.title %></h3>
-          </a>
+          <h3 class="title">
+            <a href="<%= post_url(post) %>"><%= post.title %></a>
+          </h3>
+
         </header>
 
         <figure>
@@ -39,11 +40,12 @@
 
 
         <%= link_to "Comments", "#{post_url(post)}#comments" %>
+
+        <% if user_signed_in? && current_user.admin %>
+          <%= link_to "Edit this post", edit_post_url(post) %>
+        <% end %>
       </article>
 
-      <% if user_signed_in? && current_user.admin %>
-        <%= link_to "Edit this post", edit_post_url(post) %>
-      <% end %>
     <% end %>
   </section>
 

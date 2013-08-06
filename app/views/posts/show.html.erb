@@ -1,11 +1,13 @@
 <section class="content blog">
   <header>
-    <a href="<%= blog_url %>"><h2>The Deev-elopment Blog</h2></a>
+    <h2><a href="<%= blog_url %>">The Deev-elopment Blog</a></h2>
   </header>
 
   <article class="post">
 
-      <h3 class="title"><%= @post.title %></h3>
+      <h3 class="title">
+        <a href="<%= @post %>"><%= @post.title %></a>
+      </h3>
 
 
       <figure>
@@ -32,7 +34,7 @@
   <section id="comments">
     <h4>Comments</h4>
 
-    <form action="<%= @post %>" method="post">
+    <form action="<%= post_comments_url(@post) %>" method="post">
       <input type="hidden" name="authenticity_token"
         value="<%=form_authenticity_token%>">
         <input type="hidden" name="comment[parent_id]" value="<%= nil %>">
@@ -45,6 +47,7 @@
 
     <ul>
       <% @post.comments.each do |comment| %>
+        <% next if comment.parent_id %>
         <%= render partial: "comments/show", locals: { comment: comment } %>
       <% end %>
     </ul>

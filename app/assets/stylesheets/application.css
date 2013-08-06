@@ -71,6 +71,10 @@ header.layout h1 {
   color: #600;
 }
 
+header.layout h1 a:hover {
+  text-decoration: none;
+}
+
 header.layout > .top-line {
   margin: 5px 10px 30px 10px;
 }
