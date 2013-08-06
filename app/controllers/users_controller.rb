@@ -43,7 +43,7 @@ class UsersController < ApplicationController
 
   private
   def auth_only!
-    unless current_user.admin || current_user == User.find(params[:id])
+    unless as_admin? || current_user == User.find(params[:id])
       flash = "Access denied"
       redirect_to :root
     end

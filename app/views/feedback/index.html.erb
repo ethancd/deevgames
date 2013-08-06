@@ -1,0 +1,20 @@
+<h2>View Feedback</h2>
+
+<%= paginate @feedback %>
+
+<ul>
+<% @feedback.each do |feedback| %>
+  <li>
+    <h4><%= feedback.topic %></h4>
+    <p><%= feedback.body %></p>
+    <small>Left at <time><%= feedback.created_at.to_s(:long_ordinal) %></time></small>
+    <%= button_to "Destroy this feedback", feedback, method: "delete" %>
+  </li>
+<% end %>
+</ul>
+
+<%= paginate @feedback %>
+
+<small>Also check
+  <a href="http://sayat.me/deevgames/read">sayat.me</a>
+</small>

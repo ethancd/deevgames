@@ -53,7 +53,7 @@ class CommentsController < ApplicationController
 
   private
     def auth_only!
-      unless current_user.admin ||
+      unless as_admin? ||
              current_user == Comment.find(params[:id]).author
         redirect_to :root
       end

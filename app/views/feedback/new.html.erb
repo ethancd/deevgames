@@ -10,20 +10,20 @@
 
   <small>Your feedback is anonymous, and will never be published</small>
 
-  <form action="<%= feedback_index %>" method="post">
+  <form action="<%= feedback_index_url %>" method="post">
     <input type="hidden" name="authenticity_token"
       value="<%= form_authenticity_token %>">
 
     <label>Topic:
       <select name="feedback[topic]">
         <option value="Site Design"
-          <%= "selected" if @feedback.topic = "Site Design" %>>
+          <%= "selected" if @feedback.topic == "Site Design" %>>
           Site Design</option>
         <option value="Ninja Tanks"
-          <%= "selected" if @feedback.topic = "Ninja Tanks" %>>
+          <%= "selected" if @feedback.topic == "Ninja Tanks" %>>
           Ninja Tanks</option>
         <option value="Other"
-          <%= "selected" if @feedback.topic = "Other" %>>
+          <%= "selected" if @feedback.topic == "Other" %>>
           Other</option>
       </select>
     </label>

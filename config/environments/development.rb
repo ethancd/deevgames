@@ -33,6 +33,8 @@ DeevGamesDevelopment::Application.configure do
   # Do not compress assets
   config.assets.compress = false
 
+  config.time_zone = "Eastern Time (US & Canada)"
+
   config.paperclip_defaults = {
     :storage => :s3,
     :s3_credentials => {

@@ -3,7 +3,7 @@ class FeedbackController < ApplicationController
   before_filter :auth_only!, only: [:index, :show, :destroy]
 
   def new
-    @feedback = Feedback.new
+    @feedback = Feedback.new(topic: "Site Design")
   end
 
   def create
@@ -20,15 +20,11 @@ class FeedbackController < ApplicationController
     @feedback = Feedback.order("id desc").page(params[:page]).per(10)
   end
 
-  def show
-    @feedback = Feedback.find(params[:id])
-  end
-
   def destroy
     @feedback = Feedback.find(params[:id])
     @feedback.destroy
 
-    redirect_to :root
+    redirect_to feedback_index_url
   end
 
 end

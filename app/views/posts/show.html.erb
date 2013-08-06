@@ -23,11 +23,11 @@
     <br>
     <aside>posted by
       <em><%= @post.author.username %></em> at
-      <time><%= @post.created_at%></time>
+      <time><%= @post.created_at.to_s(:long_ordinal)%></time>
     </aside>
   </article>
 
-  <% if user_signed_in? && current_user.admin %>
+  <% if as_admin? %>
     <%= link_to "Edit this post", edit_post_url(@post) %>
   <% end %>
 

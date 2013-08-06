@@ -4,7 +4,7 @@ DeevGamesDevelopment::Application.routes.draw do
   root to: "splash#in"
   get "not_logged_in", to: "splash#out", as: :out
 
-  resources :feedback, only: [:new, :create, :index, :show, :destroy]
+  resources :feedback, only: [:new, :create, :index, :destroy]
 
   get "blog", to: "posts#index", as: :blog
   resources :posts do

@@ -1,4 +1,13 @@
 <footer class="layout group">
-  <small class="copy">Games and site &copy; 2012-<%= Time.new.year %> Ethan Dickinson</small>
-  <small class="feedback"><a href="#">Leave anonymous feedback</a></small>
+  <small class="copy">
+    Games and site &copy; 2012-<%= Time.new.year %> Ethan Dickinson
+  </small>
+
+  <small class="feedback">
+    <% if as_admin? %>
+      <a href="<%= feedback_index_url %>">View feedback</a>
+    <% else %>
+      <a href="<%= new_feedback_url %>">Leave anonymous feedback</a>
+    <% end %>
+  </small>
 </footer>

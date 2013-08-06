@@ -5012,3 +5012,523 @@ Processing by SplashController#in as HTML
   Rendered layouts/_footer.html.erb (0.1ms)
 Completed 200 OK in 4ms (Views: 2.8ms | ActiveRecord: 0.1ms)
   [1m[35m (0.6ms)[0m  rollback transaction
+Connecting to database specified by database.yml
+  [1m[36mUser Load (2.0ms)[0m  [1mSELECT "users".* FROM "users" LIMIT 1[0m
+Command :: file -b --mime '/Users/appacademy/Desktop/DeevGamesDevelopment/app/assets/images/avatars/100cat.jpg'
+Command :: identify -format '%wx%h,%[exif:orientation]' '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-r1lqkm.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-r1lqkm.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-r1lqkm.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-r1lqkm.jpg[0]'
+Command :: convert '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-r1lqkm.jpg[0]' -auto-orient -resize "50x50>" '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-r1lqkm20130806-74790-wi9ilx'
+Command :: file -b --mime '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-r1lqkm20130806-74790-wi9ilx'
+Command :: identify -format '%wx%h,%[exif:orientation]' '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-r1lqkm.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-r1lqkm.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-r1lqkm.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-r1lqkm.jpg[0]'
+Command :: convert '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-r1lqkm.jpg[0]' -auto-orient -resize "300x300>" '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-r1lqkm20130806-74790-k573mg'
+Command :: file -b --mime '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-r1lqkm20130806-74790-k573mg'
+Command :: identify -format '%wx%h,%[exif:orientation]' '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-r1lqkm.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-r1lqkm.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-r1lqkm.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-r1lqkm.jpg[0]'
+Command :: convert '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-r1lqkm.jpg[0]' -auto-orient -resize "600x600>" '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-r1lqkm20130806-74790-1m263jt'
+Command :: file -b --mime '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-r1lqkm20130806-74790-1m263jt'
+  [1m[35m (0.1ms)[0m  begin transaction
+  [1m[36mUser Exists (0.2ms)[0m  [1mSELECT 1 AS one FROM "users" WHERE "users"."email" = 'teresa_conroy@white.net' LIMIT 1[0m
+  [1m[35mUser Exists (0.1ms)[0m  SELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER('Ebba') LIMIT 1
+Binary data inserted for `string` type on column `encrypted_password`
+  [1m[36mSQL (2.2ms)[0m  [1mINSERT INTO "users" ("admin", "avatar_content_type", "avatar_file_name", "avatar_file_size", "avatar_updated_at", "created_at", "current_sign_in_at", "current_sign_in_ip", "email", "encrypted_password", "last_sign_in_at", "last_sign_in_ip", "remember_created_at", "reset_password_sent_at", "reset_password_token", "sign_in_count", "updated_at", "username") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)[0m  [["admin", nil], ["avatar_content_type", "image/jpeg"], ["avatar_file_name", "100cat.jpg"], ["avatar_file_size", 2343], ["avatar_updated_at", Tue, 06 Aug 2013 21:12:34 UTC +00:00], ["created_at", Tue, 06 Aug 2013 21:12:34 UTC +00:00], ["current_sign_in_at", nil], ["current_sign_in_ip", nil], ["email", "teresa_conroy@white.net"], ["encrypted_password", "$2a$04$dT9RkC1PpZ7I4AaWaVXhdeDUhzkGoeGenGwZxquCDhBm5K29GXcRi"], ["last_sign_in_at", nil], ["last_sign_in_ip", nil], ["remember_created_at", nil], ["reset_password_sent_at", nil], ["reset_password_token", nil], ["sign_in_count", 0], ["updated_at", Tue, 06 Aug 2013 21:12:34 UTC +00:00], ["username", "Ebba"]]
+  [1m[35m (1.0ms)[0m  commit transaction
+  [1m[36mPost Load (0.1ms)[0m  [1mSELECT "posts".* FROM "posts" LIMIT 1[0m
+  [1m[35m (0.1ms)[0m  begin transaction
+  [1m[36mUser Load (0.2ms)[0m  [1mSELECT "users".* FROM "users" WHERE "users"."id" = 1 LIMIT 1[0m
+  [1m[35mSQL (0.4ms)[0m  INSERT INTO "posts" ("author_id", "body", "created_at", "image_url", "title", "updated_at") VALUES (?, ?, ?, ?, ?, ?)  [["author_id", 1], ["body", "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."], ["created_at", Tue, 06 Aug 2013 21:12:34 UTC +00:00], ["image_url", nil], ["title", "Hello world!"], ["updated_at", Tue, 06 Aug 2013 21:12:34 UTC +00:00]]
+  [1m[36m (1.1ms)[0m  [1mcommit transaction[0m
+  [1m[35m (0.1ms)[0m  begin transaction
+  [1m[36m (0.1ms)[0m  [1mSAVEPOINT active_record_1[0m
+  [1m[35mUser Load (0.1ms)[0m  SELECT "users".* FROM "users" WHERE "users"."id" = 1 LIMIT 1
+  [1m[36mPost Load (0.1ms)[0m  [1mSELECT "posts".* FROM "posts" WHERE "posts"."id" = 1 LIMIT 1[0m
+  [1m[35mSQL (0.5ms)[0m  INSERT INTO "comments" ("author_id", "body", "created_at", "deleted", "parent_id", "topic_id", "topic_type", "updated_at") VALUES (?, ?, ?, ?, ?, ?, ?, ?)  [["author_id", 1], ["body", "Lorem ipsum dolor sit amet, consectetur adipisicing elit."], ["created_at", Tue, 06 Aug 2013 21:12:34 UTC +00:00], ["deleted", nil], ["parent_id", nil], ["topic_id", 1], ["topic_type", "Post"], ["updated_at", Tue, 06 Aug 2013 21:12:34 UTC +00:00]]
+  [1m[36m (0.0ms)[0m  [1mRELEASE SAVEPOINT active_record_1[0m
+  [1m[35m (0.5ms)[0m  rollback transaction
+  [1m[36m (0.0ms)[0m  [1mbegin transaction[0m
+  [1m[35mUser Load (0.2ms)[0m  SELECT "users".* FROM "users" WHERE "users"."id" = 1 LIMIT 1
+  [1m[36mPost Load (0.1ms)[0m  [1mSELECT "posts".* FROM "posts" WHERE "posts"."id" = 1 LIMIT 1[0m
+  [1m[35m (0.0ms)[0m  rollback transaction
+  [1m[36m (0.0ms)[0m  [1mbegin transaction[0m
+  [1m[35mUser Load (0.2ms)[0m  SELECT "users".* FROM "users" WHERE "users"."id" = 1 LIMIT 1
+  [1m[36mPost Load (0.1ms)[0m  [1mSELECT "posts".* FROM "posts" WHERE "posts"."id" = 1 LIMIT 1[0m
+  [1m[35m (0.0ms)[0m  rollback transaction
+  [1m[36m (0.0ms)[0m  [1mbegin transaction[0m
+  [1m[35mPost Load (0.1ms)[0m  SELECT "posts".* FROM "posts" WHERE "posts"."id" = 1 LIMIT 1
+  [1m[36m (0.0ms)[0m  [1mrollback transaction[0m
+  [1m[35m (0.1ms)[0m  begin transaction
+  [1m[36mUser Load (0.1ms)[0m  [1mSELECT "users".* FROM "users" WHERE "users"."id" = 1 LIMIT 1[0m
+  [1m[35mUser Load (0.1ms)[0m  SELECT "users".* FROM "users" WHERE "users"."id" = 1 LIMIT 1
+  [1m[36m (0.0ms)[0m  [1mrollback transaction[0m
+  [1m[35m (0.0ms)[0m  begin transaction
+Command :: file -b --mime '/Users/appacademy/Desktop/DeevGamesDevelopment/app/assets/images/avatars/100cat.jpg'
+Command :: identify -format '%wx%h,%[exif:orientation]' '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-o6cxyf.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-o6cxyf.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-o6cxyf.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-o6cxyf.jpg[0]'
+Command :: convert '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-o6cxyf.jpg[0]' -auto-orient -resize "50x50>" '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-o6cxyf20130806-74790-tifovq'
+Command :: file -b --mime '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-o6cxyf20130806-74790-tifovq'
+Command :: identify -format '%wx%h,%[exif:orientation]' '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-o6cxyf.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-o6cxyf.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-o6cxyf.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-o6cxyf.jpg[0]'
+Command :: convert '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-o6cxyf.jpg[0]' -auto-orient -resize "300x300>" '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-o6cxyf20130806-74790-11y6yt5'
+Command :: file -b --mime '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-o6cxyf20130806-74790-11y6yt5'
+Command :: identify -format '%wx%h,%[exif:orientation]' '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-o6cxyf.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-o6cxyf.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-o6cxyf.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-o6cxyf.jpg[0]'
+Command :: convert '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-o6cxyf.jpg[0]' -auto-orient -resize "600x600>" '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-o6cxyf20130806-74790-1els0pu'
+Command :: file -b --mime '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-o6cxyf20130806-74790-1els0pu'
+  [1m[36m (0.1ms)[0m  [1mSAVEPOINT active_record_1[0m
+  [1m[35mUser Exists (0.2ms)[0m  SELECT 1 AS one FROM "users" WHERE "users"."email" = 'alexander_runolfsdottir@friesen.info' LIMIT 1
+  [1m[36mUser Exists (0.1ms)[0m  [1mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER('Paris') LIMIT 1[0m
+Binary data inserted for `string` type on column `encrypted_password`
+  [1m[35mSQL (0.6ms)[0m  INSERT INTO "users" ("admin", "avatar_content_type", "avatar_file_name", "avatar_file_size", "avatar_updated_at", "created_at", "current_sign_in_at", "current_sign_in_ip", "email", "encrypted_password", "last_sign_in_at", "last_sign_in_ip", "remember_created_at", "reset_password_sent_at", "reset_password_token", "sign_in_count", "updated_at", "username") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)  [["admin", nil], ["avatar_content_type", "image/jpeg"], ["avatar_file_name", "100cat.jpg"], ["avatar_file_size", 2343], ["avatar_updated_at", Tue, 06 Aug 2013 21:12:34 UTC +00:00], ["created_at", Tue, 06 Aug 2013 21:12:35 UTC +00:00], ["current_sign_in_at", nil], ["current_sign_in_ip", nil], ["email", "alexander_runolfsdottir@friesen.info"], ["encrypted_password", "$2a$04$zkvP4i4fJOKpXvttyYPf4.O0ncMr1JnMTlS6nBOpox4w6xZW21Ss6"], ["last_sign_in_at", nil], ["last_sign_in_ip", nil], ["remember_created_at", nil], ["reset_password_sent_at", nil], ["reset_password_token", nil], ["sign_in_count", 0], ["updated_at", Tue, 06 Aug 2013 21:12:35 UTC +00:00], ["username", "Paris"]]
+  [1m[36m (0.1ms)[0m  [1mRELEASE SAVEPOINT active_record_1[0m
+Command :: file -b --mime '/Users/appacademy/Desktop/DeevGamesDevelopment/app/assets/images/avatars/100cat.jpg'
+Command :: identify -format '%wx%h,%[exif:orientation]' '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-72j1bf.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-72j1bf.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-72j1bf.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-72j1bf.jpg[0]'
+Command :: convert '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-72j1bf.jpg[0]' -auto-orient -resize "50x50>" '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-72j1bf20130806-74790-54siru'
+Command :: file -b --mime '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-72j1bf20130806-74790-54siru'
+Command :: identify -format '%wx%h,%[exif:orientation]' '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-72j1bf.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-72j1bf.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-72j1bf.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-72j1bf.jpg[0]'
+Command :: convert '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-72j1bf.jpg[0]' -auto-orient -resize "300x300>" '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-72j1bf20130806-74790-qwx0gl'
+Command :: file -b --mime '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-72j1bf20130806-74790-qwx0gl'
+Command :: identify -format '%wx%h,%[exif:orientation]' '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-72j1bf.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-72j1bf.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-72j1bf.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-72j1bf.jpg[0]'
+Command :: convert '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-72j1bf.jpg[0]' -auto-orient -resize "600x600>" '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-72j1bf20130806-74790-1a37mc2'
+Command :: file -b --mime '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-72j1bf20130806-74790-1a37mc2'
+  [1m[35mUser Exists (0.2ms)[0m  SELECT 1 AS one FROM "users" WHERE "users"."email" = 'maximo_hodkiewicz@white.net' LIMIT 1
+  [1m[36mUser Exists (0.1ms)[0m  [1mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER('Paris') LIMIT 1[0m
+  [1m[35m (0.7ms)[0m  rollback transaction
+  [1m[36m (0.1ms)[0m  [1mbegin transaction[0m
+Command :: file -b --mime '/Users/appacademy/Desktop/DeevGamesDevelopment/app/assets/images/avatars/100cat.jpg'
+Command :: identify -format '%wx%h,%[exif:orientation]' '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1cw01bm.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1cw01bm.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1cw01bm.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1cw01bm.jpg[0]'
+Command :: convert '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1cw01bm.jpg[0]' -auto-orient -resize "50x50>" '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1cw01bm20130806-74790-jgzyh7'
+Command :: file -b --mime '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1cw01bm20130806-74790-jgzyh7'
+Command :: identify -format '%wx%h,%[exif:orientation]' '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1cw01bm.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1cw01bm.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1cw01bm.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1cw01bm.jpg[0]'
+Command :: convert '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1cw01bm.jpg[0]' -auto-orient -resize "300x300>" '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1cw01bm20130806-74790-1l6smrh'
+Command :: file -b --mime '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1cw01bm20130806-74790-1l6smrh'
+Command :: identify -format '%wx%h,%[exif:orientation]' '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1cw01bm.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1cw01bm.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1cw01bm.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1cw01bm.jpg[0]'
+Command :: convert '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1cw01bm.jpg[0]' -auto-orient -resize "600x600>" '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1cw01bm20130806-74790-14uwov0'
+Command :: file -b --mime '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1cw01bm20130806-74790-14uwov0'
+  [1m[35mUser Exists (0.3ms)[0m  SELECT 1 AS one FROM "users" WHERE "users"."email" = 'brant.moen@mertz.biz' LIMIT 1
+  [1m[36mUser Exists (0.1ms)[0m  [1mSELECT 1 AS one FROM "users" WHERE "users"."username" IS NULL LIMIT 1[0m
+  [1m[35m (0.1ms)[0m  rollback transaction
+  [1m[36m (0.1ms)[0m  [1mbegin transaction[0m
+  [1m[35mUser Exists (0.2ms)[0m  SELECT 1 AS one FROM "users" WHERE "users"."email" = 'braulio@wilderman.com' LIMIT 1
+  [1m[36mUser Exists (0.1ms)[0m  [1mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER('Evert') LIMIT 1[0m
+  [1m[35m (0.1ms)[0m  rollback transaction
+  [1m[36m (0.1ms)[0m  [1mbegin transaction[0m
+Command :: file -b --mime '/Users/appacademy/Desktop/DeevGamesDevelopment/app/assets/images/avatars/100cat.jpg'
+Command :: identify -format '%wx%h,%[exif:orientation]' '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1t1xgbj.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1t1xgbj.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1t1xgbj.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1t1xgbj.jpg[0]'
+Command :: convert '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1t1xgbj.jpg[0]' -auto-orient -resize "50x50>" '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1t1xgbj20130806-74790-32c0vf'
+Command :: file -b --mime '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1t1xgbj20130806-74790-32c0vf'
+Command :: identify -format '%wx%h,%[exif:orientation]' '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1t1xgbj.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1t1xgbj.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1t1xgbj.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1t1xgbj.jpg[0]'
+Command :: convert '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1t1xgbj.jpg[0]' -auto-orient -resize "300x300>" '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1t1xgbj20130806-74790-lvkyys'
+Command :: file -b --mime '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1t1xgbj20130806-74790-lvkyys'
+Command :: identify -format '%wx%h,%[exif:orientation]' '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1t1xgbj.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1t1xgbj.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1t1xgbj.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1t1xgbj.jpg[0]'
+Command :: convert '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1t1xgbj.jpg[0]' -auto-orient -resize "600x600>" '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1t1xgbj20130806-74790-yr6kbm'
+Command :: file -b --mime '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1t1xgbj20130806-74790-yr6kbm'
+  [1m[35mUser Exists (0.3ms)[0m  SELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER('Elza') LIMIT 1
+  [1m[36m (0.1ms)[0m  [1mrollback transaction[0m
+  [1m[35m (0.1ms)[0m  begin transaction
+Command :: file -b --mime '/Users/appacademy/Desktop/DeevGamesDevelopment/app/assets/images/avatars/100cat.jpg'
+Command :: identify -format '%wx%h,%[exif:orientation]' '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-a9jjww.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-a9jjww.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-a9jjww.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-a9jjww.jpg[0]'
+Command :: convert '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-a9jjww.jpg[0]' -auto-orient -resize "50x50>" '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-a9jjww20130806-74790-tu89hy'
+Command :: file -b --mime '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-a9jjww20130806-74790-tu89hy'
+Command :: identify -format '%wx%h,%[exif:orientation]' '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-a9jjww.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-a9jjww.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-a9jjww.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-a9jjww.jpg[0]'
+Command :: convert '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-a9jjww.jpg[0]' -auto-orient -resize "300x300>" '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-a9jjww20130806-74790-1hz4m8l'
+Command :: file -b --mime '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-a9jjww20130806-74790-1hz4m8l'
+Command :: identify -format '%wx%h,%[exif:orientation]' '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-a9jjww.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-a9jjww.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-a9jjww.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-a9jjww.jpg[0]'
+Command :: convert '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-a9jjww.jpg[0]' -auto-orient -resize "600x600>" '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-a9jjww20130806-74790-wavnih'
+Command :: file -b --mime '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-a9jjww20130806-74790-wavnih'
+  [1m[36m (0.2ms)[0m  [1mSAVEPOINT active_record_1[0m
+  [1m[35mUser Exists (0.2ms)[0m  SELECT 1 AS one FROM "users" WHERE "users"."email" = 'thalia@kub.org' LIMIT 1
+  [1m[36mUser Exists (0.1ms)[0m  [1mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER('Jonas') LIMIT 1[0m
+Binary data inserted for `string` type on column `encrypted_password`
+  [1m[35mSQL (0.7ms)[0m  INSERT INTO "users" ("admin", "avatar_content_type", "avatar_file_name", "avatar_file_size", "avatar_updated_at", "created_at", "current_sign_in_at", "current_sign_in_ip", "email", "encrypted_password", "last_sign_in_at", "last_sign_in_ip", "remember_created_at", "reset_password_sent_at", "reset_password_token", "sign_in_count", "updated_at", "username") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)  [["admin", nil], ["avatar_content_type", "image/jpeg"], ["avatar_file_name", "100cat.jpg"], ["avatar_file_size", 2343], ["avatar_updated_at", Tue, 06 Aug 2013 21:12:36 UTC +00:00], ["created_at", Tue, 06 Aug 2013 21:12:36 UTC +00:00], ["current_sign_in_at", nil], ["current_sign_in_ip", nil], ["email", "thalia@kub.org"], ["encrypted_password", "$2a$04$YZ/UTuXUxmz4xGNFKADnj.tEz2sae4GD.fv3sTPcXZqKvFXMmQBza"], ["last_sign_in_at", nil], ["last_sign_in_ip", nil], ["remember_created_at", nil], ["reset_password_sent_at", nil], ["reset_password_token", nil], ["sign_in_count", 0], ["updated_at", Tue, 06 Aug 2013 21:12:36 UTC +00:00], ["username", "Jonas"]]
+  [1m[36m (0.1ms)[0m  [1mRELEASE SAVEPOINT active_record_1[0m
+  [1m[35mUser Exists (0.1ms)[0m  SELECT 1 AS one FROM "users" WHERE (LOWER("users"."username") = LOWER('Jonas') AND "users"."id" != 2) LIMIT 1
+  [1m[36m (0.5ms)[0m  [1mrollback transaction[0m
+  [1m[35m (0.1ms)[0m  begin transaction
+Command :: file -b --mime '/Users/appacademy/Desktop/DeevGamesDevelopment/app/assets/images/avatars/poem.pdf'
+Command :: identify -format '%wx%h,%[exif:orientation]' '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/poem20130806-74790-oybfc8.pdf[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/poem20130806-74790-oybfc8.pdf[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/poem20130806-74790-oybfc8.pdf[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/poem20130806-74790-oybfc8.pdf[0]'
+Command :: convert '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/poem20130806-74790-oybfc8.pdf[0]' -auto-orient -resize "50x50>" '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/poem20130806-74790-oybfc820130806-74790-1dlayj0'
+Command :: file -b --mime '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/poem20130806-74790-oybfc820130806-74790-1dlayj0'
+Command :: identify -format '%wx%h,%[exif:orientation]' '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/poem20130806-74790-oybfc8.pdf[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/poem20130806-74790-oybfc8.pdf[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/poem20130806-74790-oybfc8.pdf[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/poem20130806-74790-oybfc8.pdf[0]'
+Command :: convert '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/poem20130806-74790-oybfc8.pdf[0]' -auto-orient -resize "300x300>" '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/poem20130806-74790-oybfc820130806-74790-1cnktt0'
+Command :: file -b --mime '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/poem20130806-74790-oybfc820130806-74790-1cnktt0'
+Command :: identify -format '%wx%h,%[exif:orientation]' '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/poem20130806-74790-oybfc8.pdf[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/poem20130806-74790-oybfc8.pdf[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/poem20130806-74790-oybfc8.pdf[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/poem20130806-74790-oybfc8.pdf[0]'
+Command :: convert '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/poem20130806-74790-oybfc8.pdf[0]' -auto-orient -resize "600x600>" '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/poem20130806-74790-oybfc820130806-74790-jmzjag'
+Command :: file -b --mime '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/poem20130806-74790-oybfc820130806-74790-jmzjag'
+  [1m[36mUser Exists (0.3ms)[0m  [1mSELECT 1 AS one FROM "users" WHERE "users"."email" = 'kale.glover@parker.info' LIMIT 1[0m
+  [1m[35mUser Exists (0.1ms)[0m  SELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER('Dino') LIMIT 1
+  [1m[36m (0.1ms)[0m  [1mrollback transaction[0m
+  [1m[35m (0.1ms)[0m  begin transaction
+Command :: file -b --mime '/Users/appacademy/Desktop/DeevGamesDevelopment/app/assets/images/avatars/100cat.jpg'
+Command :: identify -format '%wx%h,%[exif:orientation]' '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1ky0t22.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1ky0t22.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1ky0t22.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1ky0t22.jpg[0]'
+Command :: convert '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1ky0t22.jpg[0]' -auto-orient -resize "50x50>" '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1ky0t2220130806-74790-102yro0'
+Command :: file -b --mime '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1ky0t2220130806-74790-102yro0'
+Command :: identify -format '%wx%h,%[exif:orientation]' '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1ky0t22.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1ky0t22.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1ky0t22.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1ky0t22.jpg[0]'
+Command :: convert '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1ky0t22.jpg[0]' -auto-orient -resize "300x300>" '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1ky0t2220130806-74790-17ww9df'
+Command :: file -b --mime '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1ky0t2220130806-74790-17ww9df'
+Command :: identify -format '%wx%h,%[exif:orientation]' '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1ky0t22.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1ky0t22.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1ky0t22.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1ky0t22.jpg[0]'
+Command :: convert '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1ky0t22.jpg[0]' -auto-orient -resize "600x600>" '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1ky0t2220130806-74790-182vory'
+Command :: file -b --mime '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1ky0t2220130806-74790-182vory'
+  [1m[36m (0.2ms)[0m  [1mSAVEPOINT active_record_1[0m
+  [1m[35mUser Exists (0.3ms)[0m  SELECT 1 AS one FROM "users" WHERE "users"."email" = 'jazmin.gerhold@collins.biz' LIMIT 1
+  [1m[36mUser Exists (0.1ms)[0m  [1mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER('Nora') LIMIT 1[0m
+Binary data inserted for `string` type on column `encrypted_password`
+  [1m[35mSQL (0.7ms)[0m  INSERT INTO "users" ("admin", "avatar_content_type", "avatar_file_name", "avatar_file_size", "avatar_updated_at", "created_at", "current_sign_in_at", "current_sign_in_ip", "email", "encrypted_password", "last_sign_in_at", "last_sign_in_ip", "remember_created_at", "reset_password_sent_at", "reset_password_token", "sign_in_count", "updated_at", "username") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)  [["admin", nil], ["avatar_content_type", "image/jpeg"], ["avatar_file_name", "100cat.jpg"], ["avatar_file_size", 2343], ["avatar_updated_at", Tue, 06 Aug 2013 21:12:40 UTC +00:00], ["created_at", Tue, 06 Aug 2013 21:12:40 UTC +00:00], ["current_sign_in_at", nil], ["current_sign_in_ip", nil], ["email", "jazmin.gerhold@collins.biz"], ["encrypted_password", "$2a$04$a8ba.73bWzTXazWR9mPZsOugOqz82CJqGfG6lgirVf7SL2bKFSH.6"], ["last_sign_in_at", nil], ["last_sign_in_ip", nil], ["remember_created_at", nil], ["reset_password_sent_at", nil], ["reset_password_token", nil], ["sign_in_count", 0], ["updated_at", Tue, 06 Aug 2013 21:12:40 UTC +00:00], ["username", "Nora"]]
+  [1m[36m (0.1ms)[0m  [1mRELEASE SAVEPOINT active_record_1[0m
+Command :: file -b --mime '/Users/appacademy/Desktop/DeevGamesDevelopment/app/assets/images/avatars/100cat.jpg'
+Command :: identify -format '%wx%h,%[exif:orientation]' '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1pbdmwr.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1pbdmwr.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1pbdmwr.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1pbdmwr.jpg[0]'
+Command :: convert '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1pbdmwr.jpg[0]' -auto-orient -resize "50x50>" '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1pbdmwr20130806-74790-4j4her'
+Command :: file -b --mime '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1pbdmwr20130806-74790-4j4her'
+Command :: identify -format '%wx%h,%[exif:orientation]' '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1pbdmwr.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1pbdmwr.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1pbdmwr.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1pbdmwr.jpg[0]'
+Command :: convert '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1pbdmwr.jpg[0]' -auto-orient -resize "300x300>" '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1pbdmwr20130806-74790-1l5b1lt'
+Command :: file -b --mime '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1pbdmwr20130806-74790-1l5b1lt'
+Command :: identify -format '%wx%h,%[exif:orientation]' '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1pbdmwr.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1pbdmwr.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1pbdmwr.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1pbdmwr.jpg[0]'
+Command :: convert '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1pbdmwr.jpg[0]' -auto-orient -resize "600x600>" '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1pbdmwr20130806-74790-t8r85g'
+Command :: file -b --mime '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1pbdmwr20130806-74790-t8r85g'
+  [1m[35mUser Exists (0.2ms)[0m  SELECT 1 AS one FROM "users" WHERE "users"."email" = 'jazmin.gerhold@collins.biz' LIMIT 1
+  [1m[36mUser Exists (0.1ms)[0m  [1mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER('Verlie') LIMIT 1[0m
+  [1m[35m (0.6ms)[0m  rollback transaction
+  [1m[36m (0.1ms)[0m  [1mbegin transaction[0m
+Command :: file -b --mime '/Users/appacademy/Desktop/DeevGamesDevelopment/app/assets/images/avatars/screenshot.png'
+Command :: identify -format '%wx%h,%[exif:orientation]' '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/screenshot20130806-74790-1vssit9.png[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/screenshot20130806-74790-1vssit9.png[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/screenshot20130806-74790-1vssit9.png[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/screenshot20130806-74790-1vssit9.png[0]'
+Command :: convert '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/screenshot20130806-74790-1vssit9.png[0]' -auto-orient -resize "50x50>" '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/screenshot20130806-74790-1vssit920130806-74790-9khxck'
+Command :: file -b --mime '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/screenshot20130806-74790-1vssit920130806-74790-9khxck'
+Command :: identify -format '%wx%h,%[exif:orientation]' '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/screenshot20130806-74790-1vssit9.png[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/screenshot20130806-74790-1vssit9.png[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/screenshot20130806-74790-1vssit9.png[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/screenshot20130806-74790-1vssit9.png[0]'
+Command :: convert '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/screenshot20130806-74790-1vssit9.png[0]' -auto-orient -resize "300x300>" '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/screenshot20130806-74790-1vssit920130806-74790-9p7ib4'
+Command :: file -b --mime '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/screenshot20130806-74790-1vssit920130806-74790-9p7ib4'
+Command :: identify -format '%wx%h,%[exif:orientation]' '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/screenshot20130806-74790-1vssit9.png[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/screenshot20130806-74790-1vssit9.png[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/screenshot20130806-74790-1vssit9.png[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/screenshot20130806-74790-1vssit9.png[0]'
+Command :: convert '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/screenshot20130806-74790-1vssit9.png[0]' -auto-orient -resize "600x600>" '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/screenshot20130806-74790-1vssit920130806-74790-1vex14m'
+Command :: file -b --mime '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/screenshot20130806-74790-1vssit920130806-74790-1vex14m'
+  [1m[35mUser Exists (0.2ms)[0m  SELECT 1 AS one FROM "users" WHERE "users"."email" = 'alfonzo.treutel@wunsch.net' LIMIT 1
+  [1m[36mUser Exists (0.1ms)[0m  [1mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER('Luz') LIMIT 1[0m
+  [1m[35m (0.1ms)[0m  rollback transaction
+  [1m[36m (0.0ms)[0m  [1mbegin transaction[0m
+Command :: file -b --mime '/Users/appacademy/Desktop/DeevGamesDevelopment/app/assets/images/avatars/100cat.jpg'
+Command :: identify -format '%wx%h,%[exif:orientation]' '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1gporgy.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1gporgy.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1gporgy.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1gporgy.jpg[0]'
+Command :: convert '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1gporgy.jpg[0]' -auto-orient -resize "50x50>" '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1gporgy20130806-74790-1fmr4oi'
+Command :: file -b --mime '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1gporgy20130806-74790-1fmr4oi'
+Command :: identify -format '%wx%h,%[exif:orientation]' '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1gporgy.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1gporgy.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1gporgy.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1gporgy.jpg[0]'
+Command :: convert '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1gporgy.jpg[0]' -auto-orient -resize "300x300>" '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1gporgy20130806-74790-hj1z0w'
+Command :: file -b --mime '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1gporgy20130806-74790-hj1z0w'
+Command :: identify -format '%wx%h,%[exif:orientation]' '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1gporgy.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1gporgy.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1gporgy.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1gporgy.jpg[0]'
+Command :: convert '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1gporgy.jpg[0]' -auto-orient -resize "600x600>" '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1gporgy20130806-74790-1i7zluu'
+Command :: file -b --mime '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1gporgy20130806-74790-1i7zluu'
+  [1m[35mUser Exists (0.2ms)[0m  SELECT 1 AS one FROM "users" WHERE "users"."email" = 'peter@welchstokes.net' LIMIT 1
+  [1m[36mUser Exists (0.1ms)[0m  [1mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER('Van') LIMIT 1[0m
+  [1m[35m (0.1ms)[0m  rollback transaction
+  [1m[36mUser Load (0.2ms)[0m  [1mSELECT "users".* FROM "users" LIMIT 1[0m
+  [1m[35m (0.0ms)[0m  begin transaction
+  [1m[36mUser Load (0.1ms)[0m  [1mSELECT "users".* FROM "users" WHERE "users"."id" = 1 LIMIT 1[0m
+  [1m[35m (0.1ms)[0m  rollback transaction
+  [1m[36m (0.0ms)[0m  [1mbegin transaction[0m
+  [1m[35mUser Load (0.2ms)[0m  SELECT "users".* FROM "users" WHERE "users"."id" = 1 LIMIT 1
+  [1m[36m (0.0ms)[0m  [1mrollback transaction[0m
+  [1m[35m (0.0ms)[0m  begin transaction
+  [1m[36m (0.0ms)[0m  [1mrollback transaction[0m
+  [1m[35m (0.0ms)[0m  begin transaction
+  [1m[36m (0.0ms)[0m  [1mSAVEPOINT active_record_1[0m
+  [1m[35mUser Load (0.1ms)[0m  SELECT "users".* FROM "users" WHERE "users"."id" = 1 LIMIT 1
+  [1m[36mSQL (0.5ms)[0m  [1mINSERT INTO "posts" ("author_id", "body", "created_at", "image_url", "title", "updated_at") VALUES (?, ?, ?, ?, ?, ?)[0m  [["author_id", 1], ["body", "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."], ["created_at", Tue, 06 Aug 2013 21:12:42 UTC +00:00], ["image_url", nil], ["title", "Hello world!"], ["updated_at", Tue, 06 Aug 2013 21:12:42 UTC +00:00]]
+  [1m[35m (0.0ms)[0m  RELEASE SAVEPOINT active_record_1
+  [1m[36m (0.5ms)[0m  [1mrollback transaction[0m
+  [1m[35m (0.0ms)[0m  begin transaction
+Started GET "/not_logged_in" for 127.0.0.1 at 2013-08-06 17:12:42 -0400
+Processing by SplashController#out as HTML
+  Rendered splash/out.html.erb within layouts/application (4.2ms)
+  Rendered layouts/_header.html.erb (2.3ms)
+  Rendered layouts/_footer.html.erb (0.9ms)
+Completed 200 OK in 79ms (Views: 77.8ms | ActiveRecord: 0.0ms)
+Started GET "/users/sign_up" for 127.0.0.1 at 2013-08-06 17:12:42 -0400
+Processing by Devise::RegistrationsController#new as HTML
+  Rendered devise/registrations/new.html.erb within layouts/application (3.3ms)
+  Rendered layouts/_header.html.erb (0.8ms)
+  Rendered layouts/_footer.html.erb (0.2ms)
+Completed 200 OK in 8ms (Views: 7.3ms | ActiveRecord: 0.0ms)
+  [1m[36m (0.1ms)[0m  [1mrollback transaction[0m
+  [1m[35m (0.0ms)[0m  begin transaction
+Started GET "/users/sign_up" for 127.0.0.1 at 2013-08-06 17:12:42 -0400
+Processing by Devise::RegistrationsController#new as HTML
+  Rendered devise/registrations/new.html.erb within layouts/application (2.3ms)
+  Rendered layouts/_header.html.erb (0.9ms)
+  Rendered layouts/_footer.html.erb (0.2ms)
+Completed 200 OK in 5ms (Views: 4.8ms | ActiveRecord: 0.0ms)
+  [1m[36m (0.2ms)[0m  [1mSELECT COUNT(*) FROM "users" [0m
+Started POST "/users" for 127.0.0.1 at 2013-08-06 17:12:42 -0400
+Processing by Devise::RegistrationsController#create as HTML
+  Parameters: {"utf8"=>"✓", "user"=>{"username"=>"veed", "email"=>"veedgrape@gmail.com", "password"=>"[FILTERED]", "password_confirmation"=>"[FILTERED]"}, "commit"=>"sign up"}
+  [1m[35m (0.1ms)[0m  SAVEPOINT active_record_1
+  [1m[36mUser Exists (0.1ms)[0m  [1mSELECT 1 AS one FROM "users" WHERE "users"."email" = 'veedgrape@gmail.com' LIMIT 1[0m
+  [1m[35mUser Exists (0.1ms)[0m  SELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER('veed') LIMIT 1
+Binary data inserted for `string` type on column `encrypted_password`
+  [1m[36mSQL (0.5ms)[0m  [1mINSERT INTO "users" ("admin", "avatar_content_type", "avatar_file_name", "avatar_file_size", "avatar_updated_at", "created_at", "current_sign_in_at", "current_sign_in_ip", "email", "encrypted_password", "last_sign_in_at", "last_sign_in_ip", "remember_created_at", "reset_password_sent_at", "reset_password_token", "sign_in_count", "updated_at", "username") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)[0m  [["admin", nil], ["avatar_content_type", nil], ["avatar_file_name", nil], ["avatar_file_size", nil], ["avatar_updated_at", nil], ["created_at", Tue, 06 Aug 2013 21:12:42 UTC +00:00], ["current_sign_in_at", nil], ["current_sign_in_ip", nil], ["email", "veedgrape@gmail.com"], ["encrypted_password", "$2a$04$OSAh697dnA1PR2s/pbi/EeiZfO7Are/FC35htaLJBS8YjtPrMgOga"], ["last_sign_in_at", nil], ["last_sign_in_ip", nil], ["remember_created_at", nil], ["reset_password_sent_at", nil], ["reset_password_token", nil], ["sign_in_count", 0], ["updated_at", Tue, 06 Aug 2013 21:12:42 UTC +00:00], ["username", "veed"]]
+  [1m[35m (0.0ms)[0m  RELEASE SAVEPOINT active_record_1
+  [1m[36m (0.0ms)[0m  [1mSAVEPOINT active_record_1[0m
+  [1m[35m (0.3ms)[0m  UPDATE "users" SET "last_sign_in_at" = '2013-08-06 21:12:42.872373', "current_sign_in_at" = '2013-08-06 21:12:42.872373', "last_sign_in_ip" = '127.0.0.1', "current_sign_in_ip" = '127.0.0.1', "sign_in_count" = 1, "updated_at" = '2013-08-06 21:12:42.873204' WHERE "users"."id" = 2
+  [1m[36m (0.0ms)[0m  [1mRELEASE SAVEPOINT active_record_1[0m
+Redirected to http://www.example.com/
+Completed 302 Found in 20ms (ActiveRecord: 0.0ms)
+Started GET "/" for 127.0.0.1 at 2013-08-06 17:12:42 -0400
+Processing by SplashController#in as HTML
+  [1m[35mUser Load (0.1ms)[0m  SELECT "users".* FROM "users" WHERE "users"."id" = 2 LIMIT 1
+  Rendered splash/in.html.erb within layouts/application (0.3ms)
+  Rendered layouts/_header.html.erb (1.1ms)
+  Rendered layouts/_footer.html.erb (0.2ms)
+Completed 200 OK in 7ms (Views: 3.5ms | ActiveRecord: 0.1ms)
+  [1m[36m (0.1ms)[0m  [1mSELECT COUNT(*) FROM "users" [0m
+  [1m[35m (0.6ms)[0m  rollback transaction
+  [1m[36m (0.1ms)[0m  [1mbegin transaction[0m
+Command :: file -b --mime '/Users/appacademy/Desktop/DeevGamesDevelopment/app/assets/images/avatars/100cat.jpg'
+Command :: identify -format '%wx%h,%[exif:orientation]' '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-135qomx.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-135qomx.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-135qomx.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-135qomx.jpg[0]'
+Command :: convert '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-135qomx.jpg[0]' -auto-orient -resize "50x50>" '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-135qomx20130806-74790-1gqmolx'
+Command :: file -b --mime '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-135qomx20130806-74790-1gqmolx'
+Command :: identify -format '%wx%h,%[exif:orientation]' '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-135qomx.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-135qomx.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-135qomx.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-135qomx.jpg[0]'
+Command :: convert '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-135qomx.jpg[0]' -auto-orient -resize "300x300>" '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-135qomx20130806-74790-1yc4j15'
+Command :: file -b --mime '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-135qomx20130806-74790-1yc4j15'
+Command :: identify -format '%wx%h,%[exif:orientation]' '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-135qomx.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-135qomx.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-135qomx.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-135qomx.jpg[0]'
+Command :: convert '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-135qomx.jpg[0]' -auto-orient -resize "600x600>" '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-135qomx20130806-74790-dlwzsu'
+Command :: file -b --mime '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-135qomx20130806-74790-dlwzsu'
+  [1m[35m (0.1ms)[0m  SAVEPOINT active_record_1
+  [1m[36mUser Exists (0.2ms)[0m  [1mSELECT 1 AS one FROM "users" WHERE "users"."email" = 'jayme_goldner@orn.info' LIMIT 1[0m
+  [1m[35mUser Exists (0.1ms)[0m  SELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER('Roel') LIMIT 1
+Binary data inserted for `string` type on column `encrypted_password`
+  [1m[36mSQL (0.9ms)[0m  [1mINSERT INTO "users" ("admin", "avatar_content_type", "avatar_file_name", "avatar_file_size", "avatar_updated_at", "created_at", "current_sign_in_at", "current_sign_in_ip", "email", "encrypted_password", "last_sign_in_at", "last_sign_in_ip", "remember_created_at", "reset_password_sent_at", "reset_password_token", "sign_in_count", "updated_at", "username") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)[0m  [["admin", nil], ["avatar_content_type", "image/jpeg"], ["avatar_file_name", "100cat.jpg"], ["avatar_file_size", 2343], ["avatar_updated_at", Tue, 06 Aug 2013 21:12:42 UTC +00:00], ["created_at", Tue, 06 Aug 2013 21:12:43 UTC +00:00], ["current_sign_in_at", nil], ["current_sign_in_ip", nil], ["email", "jayme_goldner@orn.info"], ["encrypted_password", "$2a$04$zAiSdh3U0lJ/OaVWRYSX7ekbmVmVgkBKj6GFtZbHV1a1wyzVGDvdK"], ["last_sign_in_at", nil], ["last_sign_in_ip", nil], ["remember_created_at", nil], ["reset_password_sent_at", nil], ["reset_password_token", nil], ["sign_in_count", 0], ["updated_at", Tue, 06 Aug 2013 21:12:43 UTC +00:00], ["username", "Roel"]]
+  [1m[35m (0.1ms)[0m  RELEASE SAVEPOINT active_record_1
+Started GET "/not_logged_in" for 127.0.0.1 at 2013-08-06 17:12:43 -0400
+Processing by SplashController#out as HTML
+  Rendered splash/out.html.erb within layouts/application (0.6ms)
+  Rendered layouts/_header.html.erb (0.9ms)
+  Rendered layouts/_footer.html.erb (0.2ms)
+Completed 200 OK in 4ms (Views: 3.8ms | ActiveRecord: 0.0ms)
+Started POST "/users/sign_in" for 127.0.0.1 at 2013-08-06 17:12:43 -0400
+Processing by Devise::SessionsController#create as HTML
+  Parameters: {"authenticity_token"=>"55497+fFcxdv4xRPV4sHrcFDhW25fTgDDUyrlfFF8wM=", "user"=>{"login"=>"Roel", "remember_me"=>"0", "password"=>"[FILTERED]"}}
+  [1m[36mUser Load (0.2ms)[0m  [1mSELECT "users".* FROM "users" WHERE (lower(username) = 'roel' OR lower(email) = 'roel') LIMIT 1[0m
+  [1m[35m (0.1ms)[0m  SAVEPOINT active_record_1
+  [1m[36m (0.5ms)[0m  [1mUPDATE "users" SET "last_sign_in_at" = '2013-08-06 21:12:43.357892', "current_sign_in_at" = '2013-08-06 21:12:43.357892', "last_sign_in_ip" = '127.0.0.1', "current_sign_in_ip" = '127.0.0.1', "sign_in_count" = 1, "updated_at" = '2013-08-06 21:12:43.359250' WHERE "users"."id" = 2[0m
+  [1m[35m (0.1ms)[0m  RELEASE SAVEPOINT active_record_1
+Redirected to http://www.example.com/
+Completed 302 Found in 12ms (ActiveRecord: 0.0ms)
+Started GET "/" for 127.0.0.1 at 2013-08-06 17:12:43 -0400
+Processing by SplashController#in as HTML
+  [1m[36mUser Load (0.1ms)[0m  [1mSELECT "users".* FROM "users" WHERE "users"."id" = 2 LIMIT 1[0m
+  Rendered splash/in.html.erb within layouts/application (0.0ms)
+  Rendered layouts/_header.html.erb (1.6ms)
+  Rendered layouts/_footer.html.erb (0.2ms)
+Completed 200 OK in 5ms (Views: 3.6ms | ActiveRecord: 0.1ms)
+  [1m[35m (0.6ms)[0m  rollback transaction
+Command :: file -b --mime '/Users/appacademy/Desktop/DeevGamesDevelopment/app/assets/images/avatars/100cat.jpg'
+Command :: identify -format '%wx%h,%[exif:orientation]' '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-185w7ws.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-185w7ws.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-185w7ws.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-185w7ws.jpg[0]'
+Command :: convert '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-185w7ws.jpg[0]' -auto-orient -resize "50x50>" '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-185w7ws20130806-74790-jzza8'
+Command :: file -b --mime '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-185w7ws20130806-74790-jzza8'
+Command :: identify -format '%wx%h,%[exif:orientation]' '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-185w7ws.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-185w7ws.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-185w7ws.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-185w7ws.jpg[0]'
+Command :: convert '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-185w7ws.jpg[0]' -auto-orient -resize "300x300>" '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-185w7ws20130806-74790-nsvkyo'
+Command :: file -b --mime '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-185w7ws20130806-74790-nsvkyo'
+Command :: identify -format '%wx%h,%[exif:orientation]' '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-185w7ws.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-185w7ws.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-185w7ws.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-185w7ws.jpg[0]'
+Command :: convert '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-185w7ws.jpg[0]' -auto-orient -resize "600x600>" '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-185w7ws20130806-74790-5w8lhg'
+Command :: file -b --mime '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-185w7ws20130806-74790-5w8lhg'
+  [1m[36m (0.1ms)[0m  [1mbegin transaction[0m
+  [1m[35mUser Exists (0.2ms)[0m  SELECT 1 AS one FROM "users" WHERE "users"."email" = 'rosalee.jakubowski@upton.info' LIMIT 1
+  [1m[36mUser Exists (0.1ms)[0m  [1mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER('Deshaun') LIMIT 1[0m
+Binary data inserted for `string` type on column `encrypted_password`
+  [1m[35mSQL (0.7ms)[0m  INSERT INTO "users" ("admin", "avatar_content_type", "avatar_file_name", "avatar_file_size", "avatar_updated_at", "created_at", "current_sign_in_at", "current_sign_in_ip", "email", "encrypted_password", "last_sign_in_at", "last_sign_in_ip", "remember_created_at", "reset_password_sent_at", "reset_password_token", "sign_in_count", "updated_at", "username") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)  [["admin", nil], ["avatar_content_type", "image/jpeg"], ["avatar_file_name", "100cat.jpg"], ["avatar_file_size", 2343], ["avatar_updated_at", Tue, 06 Aug 2013 21:12:43 UTC +00:00], ["created_at", Tue, 06 Aug 2013 21:12:43 UTC +00:00], ["current_sign_in_at", nil], ["current_sign_in_ip", nil], ["email", "rosalee.jakubowski@upton.info"], ["encrypted_password", "$2a$04$D.7sgnXxf7NuWElDqMnxROi6XbudGbA26qS8xyR087L6Z5XDJUbZa"], ["last_sign_in_at", nil], ["last_sign_in_ip", nil], ["remember_created_at", nil], ["reset_password_sent_at", nil], ["reset_password_token", nil], ["sign_in_count", 0], ["updated_at", Tue, 06 Aug 2013 21:12:43 UTC +00:00], ["username", "Deshaun"]]
+  [1m[36m (1.0ms)[0m  [1mcommit transaction[0m
+  [1m[35m (0.1ms)[0m  begin transaction
+  [1m[36mUser Load (0.2ms)[0m  [1mSELECT "users".* FROM "users" WHERE "users"."id" = 1 LIMIT 1[0m
+  [1m[35mSQL (0.4ms)[0m  INSERT INTO "posts" ("author_id", "body", "created_at", "image_url", "title", "updated_at") VALUES (?, ?, ?, ?, ?, ?)  [["author_id", 1], ["body", "lorem\nlorem\nlorem\nlorem\nlorem\nlorem\nlorem\nlorem\nlorem\nlorem\n"], ["created_at", Tue, 06 Aug 2013 21:12:43 UTC +00:00], ["image_url", nil], ["title", "Hello world!"], ["updated_at", Tue, 06 Aug 2013 21:12:43 UTC +00:00]]
+  [1m[36m (1.2ms)[0m  [1mcommit transaction[0m
+  [1m[35m (0.0ms)[0m  begin transaction
+Started GET "/blog" for 127.0.0.1 at 2013-08-06 17:12:43 -0400
+Processing by PostsController#index as HTML
+  [1m[36mPost Load (0.2ms)[0m  [1mSELECT "posts".* FROM "posts" ORDER BY id desc LIMIT 5 OFFSET 0[0m
+  [1m[35mUser Load (0.1ms)[0m  SELECT "users".* FROM "users" WHERE "users"."id" = 1 LIMIT 1
+  [1m[36mCACHE (0.0ms)[0m  [1mSELECT "users".* FROM "users" WHERE "users"."id" = 1 LIMIT 1[0m
+  [1m[35m (0.1ms)[0m  SELECT COUNT(*) FROM "posts" 
+  Rendered posts/index.html.erb within layouts/application (10.2ms)
+  Rendered layouts/_header.html.erb (0.8ms)
+  Rendered layouts/_footer.html.erb (0.2ms)
+Completed 200 OK in 15ms (Views: 13.9ms | ActiveRecord: 0.4ms)
+  [1m[36m (0.1ms)[0m  [1mrollback transaction[0m
+  [1m[35m (0.0ms)[0m  begin transaction
+Started GET "/blog" for 127.0.0.1 at 2013-08-06 17:12:44 -0400
+Processing by PostsController#index as HTML
+  [1m[36mPost Load (0.1ms)[0m  [1mSELECT "posts".* FROM "posts" ORDER BY id desc LIMIT 5 OFFSET 0[0m
+  [1m[35mUser Load (0.1ms)[0m  SELECT "users".* FROM "users" WHERE "users"."id" = 1 LIMIT 1
+  [1m[36mCACHE (0.0ms)[0m  [1mSELECT "users".* FROM "users" WHERE "users"."id" = 1 LIMIT 1[0m
+  [1m[35m (0.1ms)[0m  SELECT COUNT(*) FROM "posts" 
+  Rendered posts/index.html.erb within layouts/application (5.3ms)
+  Rendered layouts/_header.html.erb (0.7ms)
+  Rendered layouts/_footer.html.erb (0.2ms)
+Completed 200 OK in 8ms (Views: 7.3ms | ActiveRecord: 0.3ms)
+Command :: file -b --mime '/Users/appacademy/Desktop/DeevGamesDevelopment/app/assets/images/avatars/100cat.jpg'
+Command :: identify -format '%wx%h,%[exif:orientation]' '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1q7c906.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1q7c906.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1q7c906.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1q7c906.jpg[0]'
+Command :: convert '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1q7c906.jpg[0]' -auto-orient -resize "50x50>" '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1q7c90620130806-74790-191g1ko'
+Command :: file -b --mime '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1q7c90620130806-74790-191g1ko'
+Command :: identify -format '%wx%h,%[exif:orientation]' '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1q7c906.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1q7c906.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1q7c906.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1q7c906.jpg[0]'
+Command :: convert '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1q7c906.jpg[0]' -auto-orient -resize "300x300>" '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1q7c90620130806-74790-15z08id'
+Command :: file -b --mime '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1q7c90620130806-74790-15z08id'
+Command :: identify -format '%wx%h,%[exif:orientation]' '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1q7c906.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1q7c906.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1q7c906.jpg[0]'
+Command :: identify -format %m '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1q7c906.jpg[0]'
+Command :: convert '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1q7c906.jpg[0]' -auto-orient -resize "600x600>" '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1q7c90620130806-74790-fvfwlg'
+Command :: file -b --mime '/var/folders/z9/ccm9f83x2kd9_s24pz9q6x700000gn/T/100cat20130806-74790-1q7c90620130806-74790-fvfwlg'
+  [1m[36m (0.1ms)[0m  [1mSAVEPOINT active_record_1[0m
+  [1m[35mUser Exists (0.2ms)[0m  SELECT 1 AS one FROM "users" WHERE "users"."email" = 'shanna@tromp.biz' LIMIT 1
+  [1m[36mUser Exists (0.1ms)[0m  [1mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER('Estevan') LIMIT 1[0m
+Binary data inserted for `string` type on column `encrypted_password`
+  [1m[35mSQL (0.8ms)[0m  INSERT INTO "users" ("admin", "avatar_content_type", "avatar_file_name", "avatar_file_size", "avatar_updated_at", "created_at", "current_sign_in_at", "current_sign_in_ip", "email", "encrypted_password", "last_sign_in_at", "last_sign_in_ip", "remember_created_at", "reset_password_sent_at", "reset_password_token", "sign_in_count", "updated_at", "username") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)  [["admin", true], ["avatar_content_type", "image/jpeg"], ["avatar_file_name", "100cat.jpg"], ["avatar_file_size", 2343], ["avatar_updated_at", Tue, 06 Aug 2013 21:12:44 UTC +00:00], ["created_at", Tue, 06 Aug 2013 21:12:44 UTC +00:00], ["current_sign_in_at", nil], ["current_sign_in_ip", nil], ["email", "shanna@tromp.biz"], ["encrypted_password", "$2a$04$0Jxf/hYLjg.Gp3jCmKXhuOkfGiAO1jZgBIPwJx5TeRSWOLNCJzCLK"], ["last_sign_in_at", nil], ["last_sign_in_ip", nil], ["remember_created_at", nil], ["reset_password_sent_at", nil], ["reset_password_token", nil], ["sign_in_count", 0], ["updated_at", Tue, 06 Aug 2013 21:12:44 UTC +00:00], ["username", "Estevan"]]
+  [1m[36m (0.1ms)[0m  [1mRELEASE SAVEPOINT active_record_1[0m
+Started POST "/users/sign_in" for 127.0.0.1 at 2013-08-06 17:12:44 -0400
+Processing by Devise::SessionsController#create as HTML
+  Parameters: {"authenticity_token"=>"StKkbDVrojLPIfakrYdywtlsoJIJzGTgc1pgjMAXZbs=", "user"=>{"login"=>"Estevan", "remember_me"=>"0", "password"=>"[FILTERED]"}}
+  [1m[35mUser Load (0.1ms)[0m  SELECT "users".* FROM "users" WHERE (lower(username) = 'estevan' OR lower(email) = 'estevan') LIMIT 1
+  [1m[36m (0.0ms)[0m  [1mSAVEPOINT active_record_1[0m
+  [1m[35m (0.3ms)[0m  UPDATE "users" SET "last_sign_in_at" = '2013-08-06 21:12:44.440035', "current_sign_in_at" = '2013-08-06 21:12:44.440035', "last_sign_in_ip" = '127.0.0.1', "current_sign_in_ip" = '127.0.0.1', "sign_in_count" = 1, "updated_at" = '2013-08-06 21:12:44.440532' WHERE "users"."id" = 3
+  [1m[36m (0.0ms)[0m  [1mRELEASE SAVEPOINT active_record_1[0m
+Redirected to http://www.example.com/
+Completed 302 Found in 7ms (ActiveRecord: 0.0ms)
+Started GET "/" for 127.0.0.1 at 2013-08-06 17:12:44 -0400
+Processing by SplashController#in as HTML
+  [1m[35mUser Load (0.1ms)[0m  SELECT "users".* FROM "users" WHERE "users"."id" = 3 LIMIT 1
+  Rendered splash/in.html.erb within layouts/application (0.0ms)
+  Rendered layouts/_header.html.erb (1.4ms)
+  Rendered layouts/_footer.html.erb (0.3ms)
+Completed 200 OK in 4ms (Views: 3.4ms | ActiveRecord: 0.1ms)
+Started GET "/blog" for 127.0.0.1 at 2013-08-06 17:12:44 -0400
+Processing by PostsController#index as HTML
+  [1m[36mPost Load (0.1ms)[0m  [1mSELECT "posts".* FROM "posts" ORDER BY id desc LIMIT 5 OFFSET 0[0m
+  [1m[35mUser Load (0.1ms)[0m  SELECT "users".* FROM "users" WHERE "users"."id" = 1 LIMIT 1
+  [1m[36mUser Load (0.1ms)[0m  [1mSELECT "users".* FROM "users" WHERE "users"."id" = 3 LIMIT 1[0m
+  [1m[35mCACHE (0.0ms)[0m  SELECT "users".* FROM "users" WHERE "users"."id" = 1 LIMIT 1
+  [1m[36m (0.1ms)[0m  [1mSELECT COUNT(*) FROM "posts" [0m
+  Rendered posts/index.html.erb within layouts/application (6.1ms)
+  Rendered layouts/_header.html.erb (1.1ms)
+  Rendered layouts/_footer.html.erb (0.2ms)
+Completed 200 OK in 9ms (Views: 8.6ms | ActiveRecord: 0.3ms)
+Started GET "/posts/2/edit" for 127.0.0.1 at 2013-08-06 17:12:44 -0400
+Processing by PostsController#edit as HTML
+  Parameters: {"id"=>"2"}
+  [1m[35mUser Load (0.2ms)[0m  SELECT "users".* FROM "users" WHERE "users"."id" = 3 LIMIT 1
+  [1m[36mPost Load (0.1ms)[0m  [1mSELECT "posts".* FROM "posts" WHERE "posts"."id" = ? LIMIT 1[0m  [["id", "2"]]
+  Rendered posts/_form.html.erb (2.0ms)
+  Rendered posts/edit.html.erb within layouts/application (35.5ms)
+  Rendered layouts/_header.html.erb (1.2ms)
+  Rendered layouts/_footer.html.erb (0.2ms)
+Completed 200 OK in 42ms (Views: 38.8ms | ActiveRecord: 0.3ms)
+  [1m[35m (0.6ms)[0m  rollback transaction

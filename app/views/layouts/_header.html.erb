@@ -4,6 +4,8 @@
     <div class="logged-in group">
       <span><small>signed in as</small> <strong><%= current_user.username %></strong></span>
 
+      <%= image_tag current_user.avatar.url(:thumb1) %>
+
       <form class="log-out" action="<%= destroy_user_session_url %>" method="post">
         <input type="hidden" name="_method" value="delete">
         <input type="hidden" name="authenticity_token"

@@ -8,7 +8,7 @@
 
     <p class="display"><%= comment.body %></p>
 
-    <% if user_signed_in? && (current_user.admin || current_user == comment.author) %>
+    <% if as_admin? || current_user == comment.author %>
 
     <form class="edit" action="<%= post_comment_url(comment.topic, comment.id) %>"
       method="post">
@@ -37,12 +37,11 @@
     <input type="submit" value="Submit">
   </form>
 
-  <% if user_signed_in? && %>
-    <% (current_user.admin || current_user == comment.author) %>
+  <% if as_admin? || current_user == comment.author %>
 
       <% if comment.deleted %>
 
-        <% if current_user.admin %>
+        <% if as_admin? %>
           <%= button_to "Restore comment",
               post_comment_url(comment.topic, comment.id), method: :post %>
         <% end %>
