@@ -1,6 +1,6 @@
 class FeedbackController < ApplicationController
 
-  before_filter :kick_if_not_allowed!, only: [:index, :show, :destroy]
+  before_filter :auth_only!, only: [:index, :show, :destroy]
 
   def new
     @feedback = Feedback.new

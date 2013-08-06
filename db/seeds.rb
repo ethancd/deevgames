@@ -8,7 +8,7 @@
 users = []
 users.push User.new(
   {username: "deev", email: "the.deep.grave@gmail.com", password: "12341234",
-    avatar: File.new("#{Rails.root}/app/assets/images/pengu.jpg")}
+    avatar: File.new("#{Rails.root}/app/assets/images/avatars/dragon.png")}
 )
 
 users.first.admin = true

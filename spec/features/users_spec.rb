@@ -16,9 +16,11 @@ describe "Users" do
       expect{
         fill_in "Username", with: "veed"
         fill_in "Email", with: "veedgrape@gmail.com"
-        fill_in "Password", with: "12341234", match: :prefer_exact
+        fill_in "user_password", with: "12341234", match: :prefer_exact
         fill_in "Password confirmation", with: "12341234"
-        click_button "sign up"}.to change(User, :count).by(1)
+        click_button "sign up"
+      }.to change(User, :count).by(1)
+
 
       page.should have_content "Welcome! You have signed up successfully."
     end
@@ -27,15 +29,17 @@ describe "Users" do
   describe "Log in" do
 
     it "Logs in from the front page" do
+      u = FactoryGirl.create(:user)
+
       visit out_path
 
-      fill_in "Email or Username", with: "veed"
-      fill_in "Password", with: "12341234"
+      fill_in "Email or Username", with: u.username
+      fill_in "Password", with: u.password
       click_button "LOG IN"
 
       page.should have_content "Signed in successfully."
-      page.should have_content "signed in as veed"
-      page.should have_content "LOG OUT"
+      page.should have_content "signed in as #{u.username}"
+      page.should have_selector "input.log-out"
       page.should have_content "Main Portal"
     end
   end

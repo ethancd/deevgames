@@ -23,7 +23,7 @@ class User < ActiveRecord::Base
   validates :username, uniqueness: { case_sensitive: false },
             length: { within: 3..20 }, format: { with: /\A[A-Za-z0-9_]*\z/ }
 
-  validates :avatar, attachment_size: { less_than: 50.kilobytes },
+  validates :avatar, attachment_size: { less_than: 250.kilobytes },
             attachment_content_type: { content_type: /image/ }
 
   def self.find_first_by_auth_conditions(warden_conditions)

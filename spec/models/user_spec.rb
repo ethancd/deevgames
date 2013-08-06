@@ -34,12 +34,12 @@ describe User do
 
   it "is invalid with a pdf avatar" do
     FactoryGirl.build(:user, avatar:
-      File.new("#{Rails.root}/app/assets/images/poem.pdf")).should_not be_valid
+      File.new("#{Rails.root}/app/assets/images/avatars/poem.pdf")).should_not be_valid
   end
 
   it "is invalid with a large image avatar" do
     FactoryGirl.build(:user, avatar:
-      File.new("#{Rails.root}/app/assets/images/screenshot.png"))
+      File.new("#{Rails.root}/app/assets/images/avatars/screenshot.png"))
       .should_not be_valid
   end
 

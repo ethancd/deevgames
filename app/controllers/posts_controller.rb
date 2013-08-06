@@ -1,6 +1,6 @@
 class PostsController < ApplicationController
 
-  before_filter :admins_only!, only: [:new, :create, :edit, :update, :destroy]
+  before_filter :auth_only!, only: [:new, :create, :edit, :update, :destroy]
 
   def index
     @posts = Post.order("id desc").page(params[:page]).per(5)

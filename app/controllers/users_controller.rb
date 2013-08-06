@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
 
-  before_filter :kick_if_not_allowed!, only: [:edit, :update, :destroy]
+  before_filter :auth_only!, only: [:edit, :update, :destroy]
 
   def new
     @user = User.new
@@ -42,7 +42,12 @@ class UsersController < ApplicationController
   end
 
   private
-    def kick_if_not_allowed!
+  def auth_only!
+    unless current_user.admin || current_user == User.find(params[:id])
+      flash = "Access denied"
+      redirect_to :root
     end
+  end
+
 
 end
