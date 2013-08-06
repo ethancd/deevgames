@@ -2,7 +2,7 @@
   <div class="top-line group">
     <% if user_signed_in? %>
     <div class="logged-in group">
-      <span><small>signed in as</small> <strong><%= current_user.username %></strong></span>
+      <span><small>playing as</small> <strong><%= current_user.username %></strong></span>
 
       <%= image_tag current_user.avatar.url(:thumb1) %>
 

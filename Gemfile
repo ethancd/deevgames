@@ -32,19 +32,22 @@ gem 'guard'
 
 gem 'kaminari'
 
+gem 'faker'
+
 group :development, :test do
   gem 'rspec-rails'
   gem 'factory_girl_rails'
 end
 
 group :test do
-  gem 'faker'
   gem 'capybara'
   gem 'database_cleaner'
   gem 'guard-rspec'
   gem 'launchy'
   gem 'letter_opener'
 end
+
+
 
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
