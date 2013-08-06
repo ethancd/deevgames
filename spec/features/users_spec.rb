@@ -2,6 +2,7 @@ require 'spec_helper'
 
 describe "Users" do
   describe "Sign up" do
+
     it "finds the sign-up page" do
       visit out_path
       click_link "Sign Up"
@@ -24,6 +25,7 @@ describe "Users" do
   end
 
   describe "Log in" do
+
     it "Logs in from the front page" do
       visit out_path
 

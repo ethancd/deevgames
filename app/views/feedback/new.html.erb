@@ -1,0 +1,31 @@
+<section class="content anon">
+  <h2>Anonymous Feedback</h2>
+  <aside>the <em>best</em> kind of feedback!</aside>
+
+  <p>
+    Thanks for wanting to help me improve!
+    Any constructive criticism you have
+    for my site or my games would be greatly appreciated.
+  </p>
+
+  <small>Your feedback is anonymous, and will never be published</small>
+
+  <form action="<%= feedback_index %>" method="post">
+    <input type="hidden" name="authenticity_token"
+      value="<%= form_authenticity_token %>">
+
+    <select name="feedback[topic]">
+      <option name="">General</option>
+    </select>
+
+    <textarea name="feedback[body]">
+      <%= @feedback.body %>
+    </textarea>
+  </form>
+
+  <aside>
+    (You can also leave anonymous feedback for me at
+      <a href="http://sayat.me/deevgames">sayat.me/deevgames</a>
+    )
+  </aside>
+</section>

@@ -1856,3 +1856,48 @@ Connecting to database specified by database.yml
   [1m[35mSQL (4.8ms)[0m  INSERT INTO "comments" ("author_id", "body", "created_at", "deleted", "parent_id", "topic_id", "topic_type", "updated_at") VALUES (?, ?, ?, ?, ?, ?, ?, ?)  [["author_id", 1], ["body", "Lorem ipsum dolor sit amet, consectetur adipisicing elit."], ["created_at", Tue, 06 Aug 2013 15:53:16 UTC +00:00], ["deleted", nil], ["parent_id", nil], ["topic_id", 1], ["topic_type", "Post"], ["updated_at", Tue, 06 Aug 2013 15:53:16 UTC +00:00]]
   [1m[36m (0.0ms)[0m  [1mRELEASE SAVEPOINT active_record_1[0m
   [1m[35m (1.6ms)[0m  rollback transaction
+Connecting to database specified by database.yml
+Connecting to database specified by database.yml
+Connecting to database specified by database.yml
+  [1m[36m (0.3ms)[0m  [1mbegin transaction[0m
+Started GET "/not_logged_in" for 127.0.0.1 at 2013-08-06 13:47:46 -0400
+  [1m[35m (0.1ms)[0m  rollback transaction
+  [1m[36m (0.1ms)[0m  [1mbegin transaction[0m
+Started GET "/users/sign_up" for 127.0.0.1 at 2013-08-06 13:47:46 -0400
+  [1m[35m (0.1ms)[0m  rollback transaction
+  [1m[36m (0.0ms)[0m  [1mbegin transaction[0m
+Started GET "/not_logged_in" for 127.0.0.1 at 2013-08-06 13:47:46 -0400
+  [1m[35m (0.0ms)[0m  rollback transaction
+Connecting to database specified by database.yml
+Connecting to database specified by database.yml
+  [1m[36m (0.3ms)[0m  [1mbegin transaction[0m
+Started GET "/blog" for 127.0.0.1 at 2013-08-06 13:53:27 -0400
+  [1m[35m (0.1ms)[0m  rollback transaction
+  [1m[36m (0.0ms)[0m  [1mbegin transaction[0m
+  [1m[35m (0.1ms)[0m  rollback transaction
+Connecting to database specified by database.yml
+  [1m[36m (0.3ms)[0m  [1mbegin transaction[0m
+Started GET "/blog" for 127.0.0.1 at 2013-08-06 13:58:25 -0400
+  [1m[35m (0.1ms)[0m  rollback transaction
+  [1m[36m (0.0ms)[0m  [1mbegin transaction[0m
+  [1m[35m (0.0ms)[0m  rollback transaction
+Connecting to database specified by database.yml
+  [1m[36m (0.3ms)[0m  [1mbegin transaction[0m
+Started GET "/not_logged_in" for 127.0.0.1 at 2013-08-06 13:58:35 -0400
+  [1m[35m (0.1ms)[0m  rollback transaction
+  [1m[36m (0.0ms)[0m  [1mbegin transaction[0m
+Started GET "/users/sign_up" for 127.0.0.1 at 2013-08-06 13:58:35 -0400
+  [1m[35m (0.1ms)[0m  rollback transaction
+  [1m[36m (0.0ms)[0m  [1mbegin transaction[0m
+Started GET "/not_logged_in" for 127.0.0.1 at 2013-08-06 13:58:35 -0400
+  [1m[35m (0.1ms)[0m  rollback transaction
+Connecting to database specified by database.yml
+  [1m[36m (0.3ms)[0m  [1mbegin transaction[0m
+Started GET "/not_logged_in" for 127.0.0.1 at 2013-08-06 14:01:00 -0400
+  [1m[35m (0.1ms)[0m  rollback transaction
+  [1m[36m (0.0ms)[0m  [1mbegin transaction[0m
+Started GET "/users/sign_up" for 127.0.0.1 at 2013-08-06 14:01:00 -0400
+  [1m[35m (0.0ms)[0m  rollback transaction
+  [1m[36m (0.0ms)[0m  [1mbegin transaction[0m
+Started GET "/not_logged_in" for 127.0.0.1 at 2013-08-06 14:01:00 -0400
+  [1m[35m (0.0ms)[0m  rollback transaction

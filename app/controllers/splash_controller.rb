@@ -7,4 +7,5 @@ class SplashController < ApplicationController
   def in
     redirect_to out_url unless user_signed_in?
   end
+
 end
