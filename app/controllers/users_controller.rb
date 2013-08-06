@@ -1,4 +1,7 @@
 class UsersController < ApplicationController
+
+  before_filter :kick_if_not_allowed!, only: [:edit, :update, :destroy]
+
   def new
     @user = User.new
   end
@@ -38,5 +41,8 @@ class UsersController < ApplicationController
     redirect_to users_url
   end
 
+  private
+    def kick_if_not_allowed!
+    end
 
 end

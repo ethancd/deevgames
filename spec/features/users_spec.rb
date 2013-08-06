@@ -4,7 +4,7 @@ describe "Users" do
   describe "Sign up" do
 
     it "finds the sign-up page" do
-      visit out_path
+      visit out_url
       click_link "Sign Up"
       within "h2" do
         page.should have_content "Sign Up"
@@ -16,8 +16,8 @@ describe "Users" do
       expect{
         fill_in "Username", with: "veed"
         fill_in "Email", with: "veedgrape@gmail.com"
-        fill_in "Password", with: "12341234"
-        fill_in "Password Confirmation", with: "12341234"
+        fill_in "Password", with: "12341234", match: :prefer_exact
+        fill_in "Password confirmation", with: "12341234"
         click_button "sign up"}.to change(User, :count).by(1)
 
       page.should have_content "Welcome! You have signed up successfully."

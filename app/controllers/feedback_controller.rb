@@ -1,7 +1,6 @@
 class FeedbackController < ApplicationController
-  include UsersHelper
 
-  before_filter :is_admin?, only: [:index, :show, :destroy]
+  before_filter :kick_if_not_allowed!, only: [:index, :show, :destroy]
 
   def new
     @feedback = Feedback.new

@@ -1,5 +1,7 @@
 class CommentsController < ApplicationController
 
+  before_filter :admins_only!, only: [:undestroy]
+
   def index
     @post = Post.includes(comments: [:author, :children]).find(params[:post_id])
   end

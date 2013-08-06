@@ -8,8 +8,8 @@ describe "Posts" do
 
       page.should have_content "The Deev-elopment Blog"
       page.should have_content "posted by deev at"
-      page.should have content "More..."
-      page.should have content "Comments"
+      page.should have_content "More..."
+      page.should have_content "Comments"
 
       page.should_not have_content "Edit this post"
 
@@ -22,6 +22,8 @@ describe "Posts" do
     context "admin" do
 
       it "can edit a post" do
+        visit blog_path
+
         fill_in "Email or Username", with: "deev"
         fill_in "Password", with: "12341234"
         click_button "LOG IN"

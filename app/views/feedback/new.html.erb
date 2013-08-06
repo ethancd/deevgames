@@ -14,13 +14,25 @@
     <input type="hidden" name="authenticity_token"
       value="<%= form_authenticity_token %>">
 
-    <select name="feedback[topic]">
-      <option name="">General</option>
-    </select>
+    <label>Topic:
+      <select name="feedback[topic]">
+        <option value="Site Design"
+          <%= "selected" if @feedback.topic = "Site Design" %>>
+          Site Design</option>
+        <option value="Ninja Tanks"
+          <%= "selected" if @feedback.topic = "Ninja Tanks" %>>
+          Ninja Tanks</option>
+        <option value="Other"
+          <%= "selected" if @feedback.topic = "Other" %>>
+          Other</option>
+      </select>
+    </label>
 
     <textarea name="feedback[body]">
       <%= @feedback.body %>
     </textarea>
+
+    <input type="submit" value="Honor me with your feedback">
   </form>
 
   <aside>
