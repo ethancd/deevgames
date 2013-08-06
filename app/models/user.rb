@@ -17,7 +17,7 @@ class User < ActiveRecord::Base
         medium: "300x300>",
         large: "600x600>"
       },
-      default_url: "/app/assets/images/pengu.jpg"
+      default_url: "http://s3.amazonaws.com/DeevDevelopment/users/avatars/000/000/001/thumb1/pengu.jpg?1375805615"
   }
 
   validates :username, uniqueness: { case_sensitive: false },

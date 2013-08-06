@@ -4,7 +4,7 @@
   </header>
 
   <section class="posts">
-    <% @posts.reverse.each do |post| %>
+    <% @posts.each do |post| %>
       <article class="post">
         <header class="title">
           <h3 class="title">
@@ -48,6 +48,8 @@
 
     <% end %>
   </section>
+
+  <%= paginate @posts %>
 
   <% if user_signed_in? && current_user.admin %>
     <%= link_to "Add new post", new_post_url %>

@@ -44,12 +44,12 @@
       <input type="submit" value="Submit">
     </form>
 
-
     <ul>
-      <% @post.comments.each do |comment| %>
+      <% @comments.each do |comment| %>
         <% next if comment.parent_id %>
         <%= render partial: "comments/show", locals: { comment: comment } %>
       <% end %>
     </ul>
+
   </section>
 </section>
