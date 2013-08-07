@@ -11,16 +11,16 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130806235108) do
+ActiveRecord::Schema.define(:version => 20130807204858) do
 
   create_table "comments", :force => true do |t|
-    t.string   "body"
+    t.text     "body",       :limit => 255
     t.integer  "topic_id"
     t.string   "topic_type"
     t.integer  "parent_id"
     t.integer  "author_id"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",                :null => false
+    t.datetime "updated_at",                :null => false
     t.boolean  "deleted"
   end
 
@@ -30,21 +30,29 @@ ActiveRecord::Schema.define(:version => 20130806235108) do
 
   create_table "feedbacks", :force => true do |t|
     t.string   "topic"
-    t.string   "body"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.text     "body",       :limit => 255
+    t.datetime "created_at",                :null => false
+    t.datetime "updated_at",                :null => false
   end
 
   create_table "posts", :force => true do |t|
     t.string   "title"
-    t.string   "body"
+    t.text     "body",       :limit => 255
     t.string   "image_url"
     t.integer  "author_id"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",                :null => false
+    t.datetime "updated_at",                :null => false
   end
 
   add_index "posts", ["author_id"], :name => "index_posts_on_author_id"
+
+  create_table "rules", :force => true do |t|
+    t.string   "title"
+    t.text     "text",       :limit => 255
+    t.string   "game"
+    t.datetime "created_at",                :null => false
+    t.datetime "updated_at",                :null => false
+  end
 
   create_table "users", :force => true do |t|
     t.string   "username"
