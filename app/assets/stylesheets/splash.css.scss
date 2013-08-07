@@ -1,0 +1,70 @@
+// Place all the styles related to the Splash controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+@import "colors";
+
+section.front-page {
+  width: 450px;
+  margin: 100px auto;
+  text-align: center;
+  font-size: 24px;
+  color: $dark;
+
+  nav {
+    margin-top: 70px;
+  }
+
+  a, input.guest {
+    padding: 5px;
+    display: block;
+    background: $ground;
+    color: $dark;
+    border: 3px solid $accent;
+    border-radius: 5px;
+    font-size: inherit;
+    text-decoration: none;
+    margin: 5px;
+    float: left;
+    cursor: pointer;
+
+
+    &:hover {
+      background: $accent;
+      color: $light;
+      border-color: $light;
+    }
+  }
+
+  ul {
+    width: 385px;
+    margin: auto;
+  }
+}
+
+section.main-portal {
+  width: 720px;
+  margin: 100px auto;
+  text-align: center;
+
+  h2 {
+    font-size: 200%;
+    margin-bottom: 10px;
+    color: $accent;
+  }
+
+  strong {
+    display: block;
+    font-size: 24px;
+  }
+
+  img {
+    width: 300px;
+    height: auto;
+    margin: 30px;
+
+    &#hex {
+      float: left;
+      margin-top: 100px;
+    }
+  }
+}

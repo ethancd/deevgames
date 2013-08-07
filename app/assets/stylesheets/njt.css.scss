@@ -1,0 +1,186 @@
+@import "colors";
+@import url(http://fonts.googleapis.com/css?family=Stardos+Stencil:400,700);
+
+@mixin stencil {
+  font-family: 'Stardos Stencil', Impact, serif;
+  text-transform: uppercase;
+  color: $dark;
+  font-weight: bold;
+}
+section.njt {
+  width: 900px;
+  margin: 50px auto;
+  text-align: left;
+
+  &.splash {
+
+    h2 {
+      font-size: 200%;
+      color: $accent;
+    }
+
+    img {
+      display: block;
+      width: 600px;
+      height: auto;
+      margin: 0px 30px;
+      float: left;
+    }
+
+    nav.game {
+      margin: {
+        top: 60px;
+        left: 30px;
+      }
+
+      a {
+        @include stencil;
+        display: block;
+        float: left;
+        background: $ground;
+        border: 3px solid $accent;
+        border-radius: 5px;
+        padding: 5px 10px;
+        margin-right: 50px;
+        font-size: 170%;
+        text-decoration: none;
+        cursor: pointer;
+
+        &:hover {
+          background: $accent;
+          color: $light;
+          border-color: $light;
+        }
+      }
+    }
+
+    ul {
+      width: 200px;
+      float: left;
+
+      li {
+        a {
+          @include stencil;
+          display: block;
+          font-size: 250%;
+          text-decoration: none;
+          padding: 10px 10px;
+
+          &:hover {
+            color: $light;
+          }
+        }
+
+        &:first-child a {
+          padding-top: 0;
+        }
+
+        &:last-child a {
+          padding-bottom: 0;
+        }
+      }
+    }
+  }
+
+  &.rules {
+
+    header {
+    text-align: center;
+
+      h2 {
+        @include stencil;
+        font-size: 300%;
+        display: inline;
+      }
+
+      h3 {
+        font-size: 200%;
+        width: 300px;
+        margin: auto;
+      }
+    }
+
+    aside {
+      a.logo {
+        display: block;
+        float: left;
+        width: 160px;
+      }
+
+      img {
+        width: 100%;
+        height: auto;
+      }
+      nav.game {
+
+        a {
+          @include stencil;
+          display: block;
+          background: $ground;
+          border: 3px solid $accent;
+          border-radius: 5px;
+          padding: 5px 10px;
+          margin-right: 50px;
+          font-size: 170%;
+          text-decoration: none;
+          cursor: pointer;
+
+          &:hover {
+            background: $accent;
+            color: $light;
+            border-color: $light;
+          }
+        }
+      }
+    }
+
+    ul {
+      width: 550px;
+      margin: 50px auto;
+      list-style-type: disc;
+      list-style-position: inside;
+
+      li {
+        margin: 20px;
+
+        p {
+          font-size: 130%;
+          padding-left: 50px;
+          text-indent: -50px;
+
+        }
+      }
+    }
+
+    nav.page {
+      width: 300px;
+      margin: auto;
+      position: relative;
+
+        a {
+          text-decoration: none;
+          font-size: 130%;
+          font-weight: bold;
+          display: block;
+
+          &:hover {
+            text-decoration: underline;
+          }
+
+          &:first-child {
+            position: absolute;
+            left: 0;
+          }
+
+          &:last-child {
+            position: absolute;
+            right: 0;
+
+          }
+        }
+
+    }
+
+
+  }
+}

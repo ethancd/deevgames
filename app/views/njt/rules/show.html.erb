@@ -1,0 +1,34 @@
+<section class="njt rules">
+  <aside>
+    <a class="logo" href="<%= njt_splash_url%>">
+      <%= image_tag "njt/njtlogo.png", id: "njt"%>
+    </a>
+
+    <nav class="group game">
+      <%= link_to "New Game vs A.I.", "#" %>
+      <%= link_to "New Game vs Human", "#" %>
+    </nav>
+  </aside>
+
+  <header>
+    <h2>Rules</h2>
+    <h3><%= @rule.title %></h3>
+  </header>
+
+  <ul>
+    <% @rule.text.split("\\n").each do |line|%>
+      <li><p><%= line.html_safe %></p></li>
+    <% end %>
+  </ul>
+
+  <nav class="page">
+    <% unless @rule.id == 1 %>
+      <%= link_to "<– Prev Page", njt_rule_url(@rule.id-1) %>
+    <% end %>
+    <% unless @rule.id == 9 %>
+      <%= link_to "Next Page –>", njt_rule_url(@rule.id+1) %>
+    <% end %>
+  </nav>
+
+
+</section>

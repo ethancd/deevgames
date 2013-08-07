@@ -1,0 +1,70 @@
+// Place all the styles related to the Feedback controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+@import "colors";
+
+section.anon {
+  width: 450px;
+  margin: 100px auto;
+  text-align: center;
+  padding: 20px;
+  padding-bottom: 0;
+  border: 5px solid $accent;
+
+  h2 {
+    font-size: 200%;
+    font-weight: bold;
+    color: $accent;
+  }
+
+  p {
+    margin: 20px;
+  }
+
+  form {
+    margin: 20px auto;
+    width: 370px;
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      text-align: left;
+    }
+
+    textarea {
+      width: 100%;
+    }
+
+    small {
+      display: block;
+      margin: 5px;
+    }
+
+    input[type="submit"] {
+      float: right;
+    }
+  }
+
+
+   //{
+//    padding: 5px;
+//    display: block;
+//    background: $ground;
+//    color: $dark;
+//    border: 3px solid $accent;
+//    border-radius: 5px;
+//    font-size: inherit;
+//    text-decoration: none;
+//    margin: 5px;
+//    float: left;
+//    cursor: pointer;
+//
+//
+//    &:hover {
+//      background: $accent;
+//      color: $light;
+//      border-color: $light;
+//    }
+//  }
+}
+
