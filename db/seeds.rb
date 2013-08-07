@@ -40,6 +40,6 @@ Post.create([
   )
 end
 
-CSV.foreach("asdf", headers: true) do |rule|
+CSV.foreach("db/seed_data/njtrules.csv", headers: true) do |rule|
   Rule.create(rule.to_hash)
 end
