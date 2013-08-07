@@ -1,1 +1,19 @@
-<h2>Ninja Tanks! Hooah!</h2>
+<section class="njt splash">
+
+  <nav class="group">
+  <%= image_tag "njt/njtlogo.png", id: "njt"%>
+
+    <ul class="group">
+      <li><%= link_to "Rules", njt_rules_url %></li>
+      <li><%= link_to "Tutorial", "#" %></li>
+      <li><%= link_to "Replays", "#" %></li>
+      <li><%= link_to "Discussion", post_url(2) %></li>
+      <li><%= link_to "Feedback", new_njt_feedback_url %></li>
+    </ul>
+  </nav>
+
+  <nav class="group game">
+    <%= link_to "New Game vs A.I.", "#" %>
+    <%= link_to "New Game vs Human", "#" %>
+  </nav>
+</section>

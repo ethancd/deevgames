@@ -16,7 +16,7 @@ DeevGamesDevelopment::Application.routes.draw do
   namespace :njt do
     get "/", to: "splash#index", as: :splash
     resources :feedback, only: [:new]
-    resources :rules, only: [:show]
+    resources :rules, only: [:index]
     resources :games, only: [:new, :create, :show, :update]
     resources :replays, only: [:index, :show]
   end

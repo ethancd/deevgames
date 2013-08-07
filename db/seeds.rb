@@ -25,18 +25,22 @@ lorem = "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmo
 Post.create([
   {title: "First post", author_id: 1, image_url: "http://placekitten.com/500/790",
       body: lorem*4},
-  {title: "Second post", author_id: 1, image_url: "http://placekitten.com/345/1000",
-      body: lorem*3},
+  {title: "Ninja Tanks Discussion!", author_id: 1, image_url: "http://placekitten.com/345/1000",
+      body: "This is the top-level post to discuss Ninja Tanks.\nAlso, " + lorem*3},
   {title: "Third post", author_id: 1, image_url: "http://placekitten.com/200/200",
       body: lorem*2},
   {title: "Fourth post", author_id: 1, image_url: "http://placekitten.com/654/223",
       body: lorem*8},
+  {title: "Fifth post", author_id: 1, image_url: "http://placekitten.com/500/790",
+      body: lorem*4},
+  {title: "Sixth post", author_id: 1, image_url: "http://placekitten.com/345/1000",
+      body: lorem*3}
 ])
 
-128.times do |i|
-  p_id = i < 32 ? nil : i - 31
+108.times do |i|
+  p_id = i < 36 ? nil : i - 35
   Comment.create(
-    {author_id: i+1, topic_type: "Post", topic_id: "#{i%4+1}", parent_id: p_id,
+    {author_id: i+1, topic_type: "Post", topic_id: "#{i%6+1}", parent_id: p_id,
       body: "#{i * 2} this is pretty great #{i / 2}"}
   )
 end

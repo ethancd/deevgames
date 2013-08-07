@@ -1,16 +1,15 @@
 <section class="content anon">
   <h2>Anonymous Feedback</h2>
-  <aside>the <em>best</em> kind of feedback!</aside>
+  <small>(the <em>best</em> kind of feedback!)</small>
 
   <p>
-    Thanks for wanting to help me improve!
-    Any constructive criticism you have
-    for my site or my games would be greatly appreciated.
+    Thanks for wanting to help me improve!<br>
+    Any constructive criticism you have<br>
+    for the site or any of my games<br>
+    would be greatly appreciated.
   </p>
 
-  <small>Your feedback is anonymous, and will never be published</small>
-
-  <form action="<%= feedback_index_url %>" method="post">
+  <form class="group" action="<%= feedback_index_url %>" method="post">
     <input type="hidden" name="authenticity_token"
       value="<%= form_authenticity_token %>">
 
@@ -30,12 +29,16 @@
 
     <textarea name="feedback[body]"><%= @feedback.body %></textarea>
 
+    <small>
+      Your feedback is anonymous, and will never be published.
+    </small>
+
     <input type="submit" value="Honor me with your feedback">
   </form>
 
-  <aside>
-    (You can also leave anonymous feedback for me at
-      <a href="http://sayat.me/deevgames">sayat.me/deevgames</a>
-    )
-  </aside>
+
+  <small>
+    (you can also leave anonymous feedback for me at
+    <a href="http://sayat.me/deevgames">sayat.me/deevgames</a>)
+  </small>
 </section>
