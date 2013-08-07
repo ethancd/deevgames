@@ -34,15 +34,21 @@
   <section id="comments">
     <h4>Comments</h4>
 
-    <form action="<%= post_comments_url(@post) %>" method="post">
-      <input type="hidden" name="authenticity_token"
-        value="<%=form_authenticity_token%>">
-        <input type="hidden" name="comment[parent_id]" value="<%= nil %>">
-      <label>New Comment
-        <input type="text" placeholder="Comment here..." name="comment[body]">
-      </label>
-      <input type="submit" value="Submit">
-    </form>
+    <% if user_signed_in? && !current_user.guest %>
+      <form action="<%= post_comments_url(@post) %>" method="post">
+        <input type="hidden" name="authenticity_token"
+          value="<%=form_authenticity_token%>">
+          <input type="hidden" name="comment[parent_id]" value="<%= nil %>">
+        <label>New Comment
+          <input type="text" placeholder="Comment here..." name="comment[body]">
+        </label>
+        <input type="submit" value="Submit">
+      </form>
+
+    <% else %>
+
+    <strong>"You have to create an account to comment."</strong>
+    <% end %>
 
     <ul>
       <% @comments.each do |comment| %>

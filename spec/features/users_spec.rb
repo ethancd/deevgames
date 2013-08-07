@@ -28,7 +28,7 @@ describe "Users" do
 
   describe "Log in" do
 
-    it "Logs in from the front page" do
+    it "logs in from the front page" do
       u = FactoryGirl.create(:user)
 
       visit out_path
@@ -38,7 +38,38 @@ describe "Users" do
       click_button "LOG IN"
 
       page.should have_content "Signed in successfully."
-      page.should have_content "signed in as #{u.username}"
+      page.should have_content "playing as #{u.username}"
+      page.should have_selector "input.log-out"
+      page.should have_content "Main Portal"
+    end
+  end
+
+  describe "Log out" do
+
+    it "logs out" do
+      u = FactoryGirl.create(:user)
+
+      visit out_path
+
+      fill_in "Email or Username", with: u.username
+      fill_in "Password", with: u.password
+      click_button "LOG IN"
+
+      click_button "LOG OUT"
+
+      page.should_not have_content "playing as #{u.username}"
+      page.should have_content "Sign Up"
+      page.should have_content "Log In"
+      page.find('input.guest')['value'].should eq "Play as Guest"
+    end
+  end
+
+  describe "Guest" do
+
+    it "signs up as guest" do
+      visit out_path
+      click_button "Play as Guest"
+      page.should have_content "playing as guest_"
       page.should have_selector "input.log-out"
       page.should have_content "Main Portal"
     end

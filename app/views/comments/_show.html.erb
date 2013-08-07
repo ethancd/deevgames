@@ -35,13 +35,15 @@
 
   <!-- <button>Reply</button> turn this into a javascript revealer -->
 
-  <form action="<%= post_comments_url(comment.topic) %>" method="post">
-    <input type="hidden" name="authenticity_token"
-      value="<%= form_authenticity_token %>">
-      <input type="hidden" name="comment[parent_id]" value="<%= comment.id %>">
-    <input type="text" placeholder="Comment here..." name="comment[body]">
-    <input type="submit" value="Submit">
-  </form>
+  <% if user_signed_in? && !current_user.guest %>
+    <form action="<%= post_comments_url(comment.topic) %>" method="post">
+      <input type="hidden" name="authenticity_token"
+        value="<%= form_authenticity_token %>">
+        <input type="hidden" name="comment[parent_id]" value="<%= comment.id %>">
+      <input type="text" placeholder="Comment here..." name="comment[body]">
+      <input type="submit" value="Submit">
+    </form>
+  <% end %>
 
   <% if as_admin? || current_user == comment.author %>
 

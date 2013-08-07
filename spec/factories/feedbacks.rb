@@ -1,8 +1,6 @@
-# Read about factories at https://github.com/thoughtbot/factory_girl
-
 FactoryGirl.define do
-  factory :feedback do
-    topic "MyString"
-    body "MyString"
+  factory :feedback do |f|
+    f.topic "Other"
+    f.body "Here's my idea: lorem ipsum dolor sit amet, consectetur adipisicing elit."
   end
 end

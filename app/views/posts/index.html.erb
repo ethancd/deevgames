@@ -39,7 +39,8 @@
         </aside>
 
 
-        <%= link_to "Comments", "#{post_url(post)}#comments" %>
+        <%= link_to "Comments (#{post.comments.count})",
+            "#{post_url(post)}#comments" %>
 
         <% if as_admin? %>
           <%= link_to "Edit this post", edit_post_url(post) %>

@@ -39,10 +39,14 @@ group :development, :test do
   gem 'factory_girl_rails'
 end
 
+group :development do
+  gem 'guard-rspec'
+  gem 'guard'
+end
+
 group :test do
   gem 'capybara'
   gem 'database_cleaner'
-  gem 'guard-rspec'
   gem 'launchy'
   gem 'letter_opener'
 end
