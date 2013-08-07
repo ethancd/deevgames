@@ -2,9 +2,9 @@
   <div class="top-line group">
     <% if user_signed_in? %>
     <div class="logged-in group">
-      <span><small>playing as</small> <strong><%= current_user.username %></strong></span>
+      <aside><small>playing as</small> <strong><%= current_user.username %></strong></aside>
 
-      <%= image_tag current_user.avatar.url(:thumb1) %>
+      <%= image_tag current_user.avatar.url(:thumb) %>
 
       <form class="log-out" action="<%= destroy_user_session_url %>" method="post">
         <input type="hidden" name="_method" value="delete">
@@ -53,13 +53,13 @@
       <ul class="group">
         <li><a href="<%= blog_url %>">Blog</a></li>
         <li><a href="<%= njt_splash_url %>">Ninja Tanks</a></li>
-        <li><a id="hoverable-1" href="#">
-          <span class="non-hover">Hex Strike</span>
-          <small class="hover">coming soon...</small>
+        <li><a href="#">
+          <span class="game">Hex Strike</span>
+          <small class="message">coming soon...</small>
         </a></li>
         <li><a id="hoverable-2" href="#">
-          <span class="non-hover">Blind Loyalty</span>
-          <small class="hover">coming soon...</small>
+          <span class="game">Blind Loyalty</span>
+          <small class="message">coming soon...</small>
         </a></li>
       </ul>
     </nav>

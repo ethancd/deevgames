@@ -13,7 +13,7 @@ class User < ActiveRecord::Base
 
   has_attached_file :avatar, {
       styles: {
-        thumb1: "50x50>",
+        thumb: "50x50#",
         medium: "300x300>",
         large: "600x600>"
       },

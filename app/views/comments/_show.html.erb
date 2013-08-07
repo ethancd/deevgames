@@ -1,73 +1,81 @@
 <li>
-  <% if comment.deleted %>
-    <h4><em>Deleted</em></h4>
-    <img src="http://www.placekitten.com/50/50">
-  <% else %>
-    <h4><%= comment.author.username %></h4>
-    <%= image_tag comment.author.avatar.url(:thumb1) %>
-
-    <p class="display"><%= comment.body %></p>
-
-    <% if as_admin? || current_user == comment.author %>
-
-    <form class="edit" action="<%= post_comment_url(comment.topic, comment.id) %>"
-      method="post">
-
-      <input type="hidden" name="authenticity_token"
-        value="<%=form_authenticity_token%>">
-      <input type="hidden" name="_method" value="put">
-
-      <textarea name="comment[body]"><%= comment.body %></textarea>
-      <input type="submit" value="Update">
-    </form>
-    <% end %>
-
-    <small>
-      <time><%= time_ago_in_words(comment.created_at) %> ago</time>
-    </small>
-    <% unless comment.created_at == comment.updated_at %>
-      <br>
-      <small>Last edited
-        <time><%= time_ago_in_words(comment.updated_at) %> ago</time>
-      </small>
-    <% end %>
-  <% end %>
-
-  <!-- <button>Reply</button> turn this into a javascript revealer -->
-
-  <% if user_signed_in? && !current_user.guest %>
-    <form action="<%= post_comments_url(comment.topic) %>" method="post">
-      <input type="hidden" name="authenticity_token"
-        value="<%= form_authenticity_token %>">
-        <input type="hidden" name="comment[parent_id]" value="<%= comment.id %>">
-      <input type="text" placeholder="Comment here..." name="comment[body]">
-      <input type="submit" value="Submit">
-    </form>
-  <% end %>
-
-  <% if as_admin? || current_user == comment.author %>
-
+  <section class="comment">
+    <article class="group">
       <% if comment.deleted %>
-
-        <% if as_admin? %>
-          <%= button_to "Restore comment",
-              post_comment_url(comment.topic, comment.id), method: :post %>
-        <% end %>
+        <img src="http://www.placekitten.com/50/50">
+        <h5><em>Deleted</em></h5>
 
       <% else %>
+        <%= image_tag comment.author.avatar.url(:thumb) %>
 
-        <%= button_to "Delete comment",
-            post_comment_url(comment.topic, comment.id), method: :delete,
-            data: { confirm: "Are you sure?" } %>
+          <h5><%= comment.author.username %></h5>
+
+          <small>
+            <time><%= time_ago_in_words(comment.created_at) %> ago</time>
+          </small>
+
+          <p class="display"><%= comment.body %></p>
+
+    </article>
+
+      <% if as_admin? || current_user == comment.author %>
+
+      <form class="edit" action="<%= post_comment_url(comment.topic, comment.id) %>"
+        method="post">
+
+        <input type="hidden" name="authenticity_token"
+          value="<%=form_authenticity_token%>">
+        <input type="hidden" name="_method" value="put">
+
+        <textarea name="comment[body]"><%= comment.body %></textarea>
+        <input type="submit" value="Update">
+      </form>
 
       <% end %>
 
-  <% end %>
 
+      <% unless comment.created_at == comment.updated_at %>
+        <br>
+        <small>Last edited
+          <time><%= time_ago_in_words(comment.updated_at) %> ago</time>
+        </small>
+      <% end %>
+    <% end %>
+
+    <!-- <button>Reply</button> turn this into a javascript revealer -->
+
+    <% if user_signed_in? && !current_user.guest %>
+      <form action="<%= post_comments_url(comment.topic) %>" method="post">
+        <input type="hidden" name="authenticity_token"
+          value="<%= form_authenticity_token %>">
+          <input type="hidden" name="comment[parent_id]" value="<%= comment.id %>">
+        <input type="text" placeholder="Comment here..." name="comment[body]">
+        <input type="submit" value="Submit">
+      </form>
+    <% end %>
+
+    <% if as_admin? || current_user == comment.author %>
+
+        <% if comment.deleted %>
+
+          <% if as_admin? %>
+            <%= button_to "Restore comment",
+                post_comment_url(comment.topic, comment.id), method: :post %>
+          <% end %>
+
+        <% else %>
+
+          <%= button_to "Delete comment",
+              post_comment_url(comment.topic, comment.id), method: :delete,
+              data: { confirm: "Are you sure?" } %>
+
+        <% end %>
+
+    <% end %>
+  </section>
   <ul>
     <% comment.children.each do |child| %>
       <%= render partial: "comments/show", locals: { comment: child } %>
     <% end %>
   </ul>
 </li>
-

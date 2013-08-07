@@ -2,69 +2,63 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
-.blog img {
-  width: auto;
-  height: 100%;
-  display: inline-block;
-}
+@import "colors";
 
-.blog > header {
-  width: 600px;
-  margin: auto;
-  text-align: center;
-  border-bottom: 10px solid #600;
-  padding-bottom: 50px;
-}
+.blog {
 
-.blog a {
-  text-decoration: none;
-}
+  a {
+    text-decoration: none;
+  }
 
-.blog > .posts,
-.blog > .post {
-  max-width: 700px;
-  margin: 50px auto;
-}
+  img {
+    width: auto;
+    height: 100%;
+    display: inline-block;
+  }
 
-.blog .post p {
-  margin: 1em 0;
-}
-.blog header h2 {
-  font-size: 300%;
-  font-family: "comic sans MS";
-}
+  header.blog-name {
+    width: 600px;
+    margin: auto;
+    text-align: center;
 
-.blog > .posts > .post {
-  border-bottom: 10px solid #600;
-  padding: 20px 0px;
-}
+    h2 a {
+      font-size: 300%;
+      font-family: "comic sans MS";
+      color: $accent;
+    }
+  }
 
-.post h3 {
-  font-size: 200%;
-  font-weight: bold;
-  color: #600;
-}
+  .posts, >.post {
+    max-width: 700px;
+    margin: 50px auto;
+    border-top: 10px solid $accent;
+  }
 
-.post > a.title {
+  .post {
+    border-bottom: 10px solid $accent;
+    padding: 50px 0px;
 
-}
+    p {
+      margin: 1em 0;
+      font-size: 20px;
+    }
 
-.post > p {
-  font-size: 20px;
-}
+    h3 {
+      font-size: 200%;
+      font-weight: bold;
+      color: $accent;
+    }
 
-.post .title {
-  text-align: center;
-}
+    .title {
+      text-align: center;
+    }
 
-.post > header {
-
-}
-
-.post > figure {
-  display: block;
-  text-align: center;
-  height: 300px;
-  margin: 20px 0px;
-  overflow: hidden;
+    figure {
+      display: block;
+      text-align: center;
+      height: 300px;
+      margin: 20px 0px;
+      overflow: hidden;
+    }
+  }
 }
