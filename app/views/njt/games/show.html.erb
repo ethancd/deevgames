@@ -121,6 +121,6 @@ $(function(){
   var color = "<%= @player == @white ? 'white' : 'black' %>",
       damage = "<%= @player.damage %>"
 
-  $(color + " info").append("<li>" + damage + "</li>")
+  $("." + color + ".info").append("<li>" + damage + " damage</li>")
 })
 </script>
