@@ -1,0 +1,45 @@
+@import "colors";
+
+section.njt.game {
+  .game-field {
+    float: left;
+    min-width: 900px;
+
+    header {
+      text-align: center;
+      img {
+        float: left;
+      }
+      button{
+        float: right;
+      }
+    }
+
+    section.board {
+      figure.damage {
+        &.white {
+          float: left;
+        }
+        &.black {
+          float: right;
+        }
+      }
+
+      figure.board {
+        margin: auto;
+        background: #a22;
+        width: 600px;
+      }
+    }
+
+    ul.hand {
+      li {
+        float: left;
+      }
+    }
+  }
+  .chat {
+    float: right;
+    width: 200px;
+  }
+}

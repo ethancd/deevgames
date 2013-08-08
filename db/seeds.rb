@@ -8,6 +8,11 @@ users.push User.new(
 
 users.first.admin = true
 
+users.push User.new(
+  {username: "Ninja_Bot", email: "lalalafake@gmail.com", password: "12341234",
+    avatar: File.new("#{Rails.root}/app/assets/images/avatars/100cat.jpg")}
+)
+
 100.times do |i|
   j = i*i-(i-1)*(i-2)+10
   users.push User.new(
@@ -32,7 +37,7 @@ Post.create([
       body: lorem*3}
 ])
 
-108.times do |i|
+96.times do |i|
   p_id = i < 36 ? nil : i - 35
   Comment.create(
     {author_id: i+1, topic_type: "Post", topic_id: "#{i%6+1}", parent_id: p_id,

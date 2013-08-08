@@ -1,0 +1,109 @@
+<section class="njt game content group">
+  <section class="game-field">
+    <header class="group">
+      <%= image_tag "dmgsprite.png", class: "damage_token", data: {fd: true} %>
+      <h3><%= @game.phase.split("_").map(&:capitalize).join(" ") %></h3>
+      <button>Quit</button>
+    </header>
+
+    <section class="board group">
+      <figure class="white damage">
+        <ul class="white info">
+          <li><%= image_tag @white.user.avatar.url(:thumb) %>
+              <strong><%= @white.user.username %></strong></li>
+          <li><%= "#{@white.cards.count} cards" %></li>
+          <li><%= "#{@white.damage_tokens.count} tokens"%></li>
+        </ul>
+
+        <ul class="white tokens">
+          <% @white.damage_tokens.each do |token| %>
+            <li>
+              <% if @player == @white %>
+                <%= image_tag 'dmgsprite.png', class: "damage_token",
+                    data: { value: token.value, fd: token.fake } %>
+              <% else %>
+                <%= image_tag 'dmgsprite.png', class: "damage_token",
+                    data: { fd: true } %>
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+      </figure>
+
+      <figure class="board">
+        <%#= image_tag 'fullboard.png'%>
+        <ul class="spaces">
+          <li id:"white-1"></li>
+          <li id:"white-2"></li>
+          <li id:"white-3"></li>
+          <li id:"black-3"></li>
+          <li id:"black-2"></li>
+          <li id:"black-1"></li>
+        </ul>
+      </figure>
+
+      <figure class="black damage">
+        <ul class="black info">
+          <li><strong><%= @black.user.username %></strong>
+              <%= image_tag @black.user.avatar.url(:thumb) %></li>
+          <li><%= "#{@black.cards.count} cards" %></li>
+          <li><%= "#{@black.damage_tokens.count} tokens"%></li>
+        </ul>
+
+        <ul class="black tokens">
+          <% @black.damage_tokens.each do |token| %>
+            <li>
+              <% if @player == @black %>
+                <%= image_tag 'dmgsprite.png', class: "damage_token",
+                    data: { value: token.value, fd: token.fake } %>
+              <% else %>
+                <%= image_tag 'dmgsprite.png', class: "damage_token",
+                    data: { fd: true } %>
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+      </figure>
+    </section>
+
+
+    <!-- <section class="main-cards">
+      deck
+      undo
+      active-1
+      feint
+      move
+      play-1
+      active-2
+      feint
+      move
+      play-2
+      confirm
+      discard
+    </section> -->
+
+    <ul class="hand group">
+      <% @player.cards.each do |card|%>
+        <li>
+          <%= image_tag 'cardsprite.png', class="card", data:
+              {info: "#{card.value}#{card.dir}", shot: card.shot} %>
+        </li>
+      <% end %>
+    </ul>
+  </section>
+
+  <aside class="chat">
+    <% @game.comments each do |comment| %>
+      <%= render "comments/show", locals: {comment: comment}%>
+    <% end %>
+  </aside>
+</section>
+
+<script>
+$(function(){
+  var color = "<%= @player == @white ? 'white' : 'black' %>",
+      damage = "<%= @player.damage %>"
+
+  $(color + " info").append("<li>" + damage + "</li>")
+})
+</script>

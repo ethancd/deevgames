@@ -11,6 +11,9 @@ class User < ActiveRecord::Base
 
   attr_accessor :login
 
+  has_many :played_games, class_name: Player
+  has_many :games, through: :played_games
+
   has_attached_file :avatar, {
       styles: {
         thumb: "50x50#",
@@ -25,6 +28,7 @@ class User < ActiveRecord::Base
 
   validates :avatar, attachment_size: { less_than: 250.kilobytes },
             attachment_content_type: { content_type: /image/ }
+
 
   def self.find_first_by_auth_conditions(warden_conditions)
     conditions = warden_conditions.dup

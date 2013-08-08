@@ -11,7 +11,18 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130807204858) do
+ActiveRecord::Schema.define(:version => 20130808155749) do
+
+  create_table "cards", :force => true do |t|
+    t.string   "dir"
+    t.integer  "value"
+    t.integer  "player_id"
+    t.integer  "game_id"
+    t.string   "location"
+    t.boolean  "shot"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
 
   create_table "comments", :force => true do |t|
     t.text     "body",       :limit => 255
@@ -28,11 +39,34 @@ ActiveRecord::Schema.define(:version => 20130807204858) do
   add_index "comments", ["parent_id"], :name => "index_comments_on_parent_id"
   add_index "comments", ["topic_id"], :name => "index_comments_on_topic_id"
 
+  create_table "damage_tokens", :force => true do |t|
+    t.integer  "value"
+    t.integer  "player_id"
+    t.integer  "game_id"
+    t.boolean  "fake",       :default => false
+    t.datetime "created_at",                    :null => false
+    t.datetime "updated_at",                    :null => false
+  end
+
   create_table "feedbacks", :force => true do |t|
     t.string   "topic"
     t.text     "body",       :limit => 255
     t.datetime "created_at",                :null => false
     t.datetime "updated_at",                :null => false
+  end
+
+  create_table "games", :force => true do |t|
+    t.string   "phase"
+    t.string   "result"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  create_table "players", :force => true do |t|
+    t.integer  "game_id"
+    t.integer  "user_id"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
 
   create_table "posts", :force => true do |t|
@@ -52,6 +86,15 @@ ActiveRecord::Schema.define(:version => 20130807204858) do
     t.string   "game"
     t.datetime "created_at",                :null => false
     t.datetime "updated_at",                :null => false
+  end
+
+  create_table "tanks", :force => true do |t|
+    t.integer  "position"
+    t.integer  "player_id"
+    t.integer  "game_id"
+    t.boolean  "fake"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
 
   create_table "users", :force => true do |t|
