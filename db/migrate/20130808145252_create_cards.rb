@@ -6,7 +6,7 @@ class CreateCards < ActiveRecord::Migration
       t.integer :player_id
       t.integer :game_id
       t.string :location
-      t.boolean :shot
+      t.boolean :shot, default: true
 
       t.timestamps
     end

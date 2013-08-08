@@ -5,9 +5,64 @@ section.njt.game {
     float: left;
     min-width: 900px;
 
+    .damage_token {
+      width: 50px;
+      height: 44px;
+      overflow: hidden;
+      background-image: url(dmgsprite.png);
+
+      &[data-fd="true"] {
+        background-position: 0 0 !important;
+      }
+
+      &[data-value="1"] {
+        background-position: 0 -44px;
+      }
+      &[data-value="2"] {
+        background-position: 0 -88px;
+      }
+      &[data-value="3"] {
+        background-position: 0 -132px;
+      }
+
+    }
+
+    .card {
+      width: 100px;
+      height: 142px;
+      overflow: hidden;
+      background-image: url(cardsprite.png);
+
+      &[data-fd="true"] {
+        background-position: 0 0 !important;
+      }
+
+      &[data-info="1-back"] {
+        background-position: 0 -142px;
+      }
+      &[data-info="2-back"] {
+        background-position: 0 -284px;
+      }
+      &[data-info="3-back"] {
+        background-position: 0 -426px;
+      }
+      &[data-info="1-forward"] {
+        background-position: 0 -568px;
+      }
+      &[data-info="2-forward"] {
+        background-position: 0 -710px;
+      }
+      &[data-info="3-forward"] {
+        background-position: 0 -852px;
+      }
+
+    }
+
     header {
+      margin: 25px;
       text-align: center;
-      img {
+
+      div {
         float: left;
       }
       button{
@@ -16,25 +71,113 @@ section.njt.game {
     }
 
     section.board {
+      margin: 25px;
+
+      strong {
+        display: block;
+      }
+
       figure.damage {
-        &.white {
+        width: 150px;
+        float: left;
+        overflow: hidden;
+
+        ul.info {
           float: left;
         }
-        &.black {
-          float: right;
+
+        ul.tokens {
+          float: left;
         }
       }
 
       figure.board {
+        float: left;
         margin: auto;
-        background: #a22;
+        background: #ffe4c4;
         width: 600px;
+        height: 300px;
+      }
+    }
+
+    section.main-cards {
+      width: 700px;
+      margin: auto;
+      .deck {
+        float: left;
+        width: 100px;
+        height: 142px;
+        overflow: hidden;
+        border: 5px dashed blue;
+      }
+      .undo {
+        float: left;
+      }
+      .active {
+        float: left;
+
+        nav {
+          margin-bottom: 5px;
+
+          button {
+            width: 30px;
+            height: 50px;
+            border: 2px solid $accent;
+            border: {
+              right: 3px solid darken($accent, 20%);
+              bottom: 3px solid darken($accent, 20%);
+            }
+            border-radius: 10px;
+
+            &.feint {
+              background-image: url(smoke.png);
+              margin-right: 45px;
+            }
+
+            &:hover {
+              cursor: pointer;
+            }
+          }
+        }
+
+
+//        .move {
+//          &.forward {
+//            background-image: url(up.png);
+//          }
+//          &.back {
+//            background-image: url(down.png);
+//          }
+//        }
+
+        #play-1, #play-2 {
+          border: 5px dashed yellow;
+          width: 100px;
+          height: 142px;
+          overflow: hidden;
+        }
+        #play-2 {
+          border: 5px dashed red;
+        }
+      }
+      .confirm {
+        float: left;
+      }
+      .discard {
+        float: left;
+        width: 100px;
+        height: 142px;
+        overflow: hidden;
+        border: 5px dashed gray;
       }
     }
 
     ul.hand {
+      width: 700px;
+      margin: 25px auto;
       li {
         float: left;
+        margin: 0px 15px;
       }
     }
   }

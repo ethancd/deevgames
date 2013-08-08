@@ -1,7 +1,7 @@
 <section class="njt game content group">
   <section class="game-field">
     <header class="group">
-      <%= image_tag "dmgsprite.png", class: "damage_token", data: {fd: true} %>
+      <div class="damage_token" data-fd="true"></div>
       <h3><%= @game.phase.split("_").map(&:capitalize).join(" ") %></h3>
       <button>Quit</button>
     </header>
@@ -10,22 +10,21 @@
       <figure class="white damage">
         <ul class="white info">
           <li><%= image_tag @white.user.avatar.url(:thumb) %>
-              <strong><%= @white.user.username %></strong></li>
+          <strong><%= @white.user.username %></strong></li>
           <li><%= "#{@white.cards.count} cards" %></li>
           <li><%= "#{@white.damage_tokens.count} tokens"%></li>
         </ul>
 
         <ul class="white tokens">
           <% @white.damage_tokens.each do |token| %>
-            <li>
+            <li class="damage_token"
               <% if @player == @white %>
-                <%= image_tag 'dmgsprite.png', class: "damage_token",
-                    data: { value: token.value, fd: token.fake } %>
+                data-value="<%= token.value %>"
+                data-fd="<%= token.fake %>"
               <% else %>
-                <%= image_tag 'dmgsprite.png', class: "damage_token",
-                    data: { fd: true } %>
+                data-fd="true"
               <% end %>
-            </li>
+            ></li>
           <% end %>
         </ul>
       </figure>
@@ -43,57 +42,75 @@
       </figure>
 
       <figure class="black damage">
-        <ul class="black info">
-          <li><strong><%= @black.user.username %></strong>
-              <%= image_tag @black.user.avatar.url(:thumb) %></li>
-          <li><%= "#{@black.cards.count} cards" %></li>
-          <li><%= "#{@black.damage_tokens.count} tokens"%></li>
-        </ul>
-
         <ul class="black tokens">
           <% @black.damage_tokens.each do |token| %>
-            <li>
+            <li class="damage_token"
               <% if @player == @black %>
-                <%= image_tag 'dmgsprite.png', class: "damage_token",
-                    data: { value: token.value, fd: token.fake } %>
+                data-value="<%= token.value %>"
+                data-fd="<%= token.fake %>"
               <% else %>
-                <%= image_tag 'dmgsprite.png', class: "damage_token",
-                    data: { fd: true } %>
+                data-fd="true"
               <% end %>
-            </li>
+            ></li>
           <% end %>
+        </ul>
+
+        <ul class="black info">
+          <li><%= image_tag @black.user.avatar.url(:thumb) %>
+            <strong><%= @black.user.username %></strong></li>
+          <li><%= "#{@black.cards.count} cards" %></li>
+          <li><%= "#{@black.damage_tokens.count} tokens"%></li>
         </ul>
       </figure>
     </section>
 
 
-    <!-- <section class="main-cards">
-      deck
-      undo
-      active-1
-      feint
-      move
-      play-1
-      active-2
-      feint
-      move
-      play-2
-      confirm
-      discard
-    </section> -->
+    <section class="main-cards group">
+      <div class="deck card" data-fd="true"></div>
+
+      <button class="undo">Undo</button>
+
+      <figure class="active" id="active-1">
+        <nav class="group">
+          <button class="feint"></button>
+          <button class="move"></button>
+        </nav>
+        <div class="play" id="play-1"></div>
+      </figure>
+
+      <figure class="active" id="active-2">
+        <nav class="group">
+          <button class="feint"></button>
+          <button class="move"></button>
+        </nav>
+        <div class="play" id="play-2"></div>
+      </figure>
+
+      <button class="confirm">Confirm</button>
+
+      <% top_discard = @game.cards.where(location: "discard").last %>
+      <div
+      <% if top_discard %>
+           class="discard card"
+           data-info="<%="#{top_discard.value}-#{top_discard.dir}"%>"
+           data-shot="<%= top_discard.shot %>"
+      <% else %>
+           class="discard"
+      <% end %>
+      ></div>
+    </section>
 
     <ul class="hand group">
       <% @player.cards.each do |card|%>
-        <li>
-          <%= image_tag 'cardsprite.png', class="card", data:
-              {info: "#{card.value}#{card.dir}", shot: card.shot} %>
+        <li class="card" data-info="<%= "#{card.value}-#{card.dir}" %>"
+            data-shot="<%= card.shot %>">
         </li>
       <% end %>
     </ul>
   </section>
 
   <aside class="chat">
-    <% @game.comments each do |comment| %>
+    <% @game.comments.each do |comment| %>
       <%= render "comments/show", locals: {comment: comment}%>
     <% end %>
   </aside>

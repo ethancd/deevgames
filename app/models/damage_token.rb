@@ -4,6 +4,18 @@ class DamageToken < ActiveRecord::Base
   belongs_to :game
   belongs_to :player, class_name: User
 
-  validates :game, :value, :fake, presence: true
+  validates :game, :value, presence: true
   validates :value, inclusion: {in: [1, 2, 3]}
+
+  def self.setup_stack(game_id)
+    stack = []
+
+    [1,2,3].each do |value|
+      10.times do
+        stack << DamageToken.create(game_id: game_id, value: value)
+      end
+    end
+
+    stack
+  end
 end

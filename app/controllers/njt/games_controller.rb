@@ -5,19 +5,23 @@ class Njt::GamesController < ApplicationController
   end
 
   def create
-    @game = Game.new(params[:game])
+    @game = Game.create(phase: "play")
+    @game.players << Player.create(user_id: current_user.id)
+    @game.setup_game(params[:ai])
 
     if @game.save
-      redirect_to @game
+      redirect_to njt_game_url(@game.id)
     else
-      render :new
+      flash[:notice] ||= []
+      flash[:notice] << @game.errors.full_messages
+      redirect_to :root
     end
   end
 
   def show
     @game = Game.find(params[:id])
-    @white = Game.players.first
-    @black = Game.players.last
+    @white = @game.players.first
+    @black = @game.players.last
     @player = current_user == @white.user ? @white : @black
   end
 

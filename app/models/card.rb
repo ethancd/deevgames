@@ -8,4 +8,19 @@ class Card < ActiveRecord::Base
   validates :dir,      inclusion: {in: %w[forward back]}
   validates :value,    inclusion: {in: [1, 2, 3]}
   validates :location, inclusion: {in: %w[deck hand played discard]}
+
+  def self.setup_deck(game_id)
+    deck = []
+
+    [1,2,3].each do |value|
+      %w[forward back].each do |dir|
+        5.times do
+          deck << Card.create(game_id: game_id, value: value,
+                              dir: dir, location: "deck")
+        end
+      end
+    end
+
+    deck
+  end
 end

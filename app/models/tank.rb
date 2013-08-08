@@ -4,6 +4,6 @@ class Tank < ActiveRecord::Base
   belongs_to :game
   belongs_to :player, class_name: User
 
-  validates :game, :value, :fake, :player, presence: true
+  validates :game, :position, :player, presence: true
   validates :position, inclusion: {in: [1, 2, 3]}
 end

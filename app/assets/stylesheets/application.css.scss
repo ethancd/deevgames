@@ -44,8 +44,8 @@ ul {
   background: $ground;
 }
 
-input[type="submit"], select {
-  background: $button;
+input[type="submit"], select, button {
+  background-color: $button;
   color: $light;
   border-radius: 10px;
   border: 2px solid $accent;
@@ -54,6 +54,11 @@ input[type="submit"], select {
     bottom: 3px solid darken($accent, 20%);
   }
   cursor: pointer;
+
+  &:hover{
+    background-color: $ground;
+    color: $dark;
+  }
 }
 
 textarea {
