@@ -106,14 +106,9 @@ header.layout {
 
   .button {
     margin: 0 10px;
-    border: 1px solid darken($light, 20%);
-    border-right-width: 2px;
-    border-bottom-width: 2px;
-    background: darken($light, 10%);
     display: block;
     width: 50px;
     height: 30px;
-    cursor: pointer;
 
     &.log-out {
       width: 70px;

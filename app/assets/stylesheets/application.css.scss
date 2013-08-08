@@ -44,4 +44,20 @@ ul {
   background: $ground;
 }
 
+input[type="submit"], select {
+  background: $button;
+  color: $light;
+  border-radius: 10px;
+  border: 2px solid $accent;
+  border: {
+    right: 3px solid darken($accent, 20%);
+    bottom: 3px solid darken($accent, 20%);
+  }
+  cursor: pointer;
+}
+
+textarea {
+  max-width: 600px
+}
+
 

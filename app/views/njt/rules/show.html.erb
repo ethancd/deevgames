@@ -1,5 +1,5 @@
-<section class="njt rules">
-  <aside>
+<section class="njt rules group">
+  <aside class="group">
     <a class="logo" href="<%= njt_splash_url%>">
       <%= image_tag "njt/njtlogo.png", id: "njt"%>
     </a>
@@ -10,25 +10,43 @@
     </nav>
   </aside>
 
-  <header>
-    <h2>Rules</h2>
-    <h3><%= @rule.title %></h3>
-  </header>
+  <article>
+    <header>
+      <h2>Rules</h2>
+      <h3><%= @rule.title %></h3>
+    </header>
 
-  <ul>
-    <% @rule.text.split("\\n").each do |line|%>
-      <li><p><%= line.html_safe %></p></li>
-    <% end %>
-  </ul>
+    <ul>
+      <% @rule.text.split("\\n").each do |line|%>
+        <li><p><%= line.html_safe %></p></li>
+      <% end %>
+    </ul>
 
-  <nav class="page">
-    <% unless @rule.id == 1 %>
-      <%= link_to "<– Prev Page", njt_rule_url(@rule.id-1) %>
-    <% end %>
-    <% unless @rule.id == 9 %>
-      <%= link_to "Next Page –>", njt_rule_url(@rule.id+1) %>
-    <% end %>
-  </nav>
+    <nav class="page group">
+      <%= link_to "Prev Page", njt_rule_url(@rule.id-1) %>
 
+      <%= link_to "Next Page", njt_rule_url(@rule.id+1) %>
+    </nav>
+  </article>
 
 </section>
+
+<script>
+$(function(){
+  var $prev = $(".page a:first-child"), prevUrl = $prev.attr("href"),
+      $next = $(".page a:last-child"), nextUrl = $next.attr("href")
+
+      console.log(prevUrl)
+      console.log(nextUrl)
+
+    if(prevUrl.charAt(prevUrl.length - 1) == "0"){
+      $prev.addClass("hidden")
+    }
+
+    if(nextUrl.charAt(nextUrl.length - 1) == "0"){
+      $next.addClass("hidden")
+    }
+  }
+)
+
+</script>
