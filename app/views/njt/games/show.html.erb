@@ -66,7 +66,7 @@
 
 
     <section class="main-cards group">
-      <div class="deck card" data-fd="true"></div>
+      <div class="deck card phased" data-fd="true"></div>
 
       <button class="undo">Undo</button>
 
@@ -75,7 +75,7 @@
           <button class="feint"></button>
           <button class="move"></button>
         </nav>
-        <div class="play" id="play-1"></div>
+        <div class="play phased" id="play-1"></div>
       </figure>
 
       <figure class="active" id="active-2">
@@ -83,7 +83,7 @@
           <button class="feint"></button>
           <button class="move"></button>
         </nav>
-        <div class="play" id="play-2"></div>
+        <div class="play phased" id="play-2"></div>
       </figure>
 
       <button class="confirm">Confirm</button>
@@ -91,11 +91,11 @@
       <% top_discard = @game.cards.where(location: "discard").last %>
       <div
       <% if top_discard %>
-           class="discard card"
+           class="discard card phased"
            data-info="<%="#{top_discard.value}-#{top_discard.dir}"%>"
            data-shot="<%= top_discard.shot %>"
       <% else %>
-           class="discard"
+           class="discard phased"
       <% end %>
       ></div>
     </section>

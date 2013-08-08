@@ -108,7 +108,11 @@ section.njt.game {
         width: 100px;
         height: 142px;
         overflow: hidden;
-        border: 5px dashed blue;
+
+        &.phased {
+          box-shadow: 0px 0px 40px #0ff;
+        }
+
       }
       .undo {
         float: left;
@@ -131,7 +135,7 @@ section.njt.game {
 
             &.feint {
               background-image: url(smoke.png);
-              margin-right: 45px;
+              margin-right: 35px;
             }
 
             &:hover {
@@ -151,13 +155,17 @@ section.njt.game {
 //        }
 
         #play-1, #play-2 {
-          border: 5px dashed yellow;
           width: 100px;
           height: 142px;
           overflow: hidden;
+          &.phased {
+            box-shadow: 0px 0px 40px #ff0;
+          }
         }
         #play-2 {
-          border: 5px dashed red;
+          &.phased {
+            box-shadow: 0px 0px 40px #f00;
+          }
         }
       }
       .confirm {
@@ -168,7 +176,10 @@ section.njt.game {
         width: 100px;
         height: 142px;
         overflow: hidden;
-        border: 5px dashed gray;
+
+        &.phased {
+          box-shadow: 0px 0px 40px #333;
+        }
       }
     }
 
