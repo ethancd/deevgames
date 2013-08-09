@@ -72,6 +72,7 @@ section.njt.game {
     }
 
     section.board {
+      width: 1090px;
       margin: auto;
 
       strong {
@@ -84,32 +85,48 @@ section.njt.game {
 
         ul.info {
           width: 130px;
-          float: left;
+
+          &.black {
+            float: left;
+          }
+          &.white {
+            float:right;
+          }
+
+          li:first-child{
+            margin-bottom: 10px;
+          }
 
           &.white {
             text-align: right;
-            strong {
+
+            strong, img{
               float: right;
             }
           }
         }
 
         ul.tokens {
-          float: left;
+          &.black {
+            float: left;
+          }
+          &.white {
+            float:right;
+          }
         }
       }
 
       figure.board {
         float: left;
-        margin: 0px 30px;
+        margin: 0px 15px;
         background: #ffe4c4;
         width: 600px;
-        height: 300px;
+        height: 150px;
 
         .tank {
           float: left;
           width: 80px;
-          height: 300px;
+          height: 150px;
           background-color: blue;
           margin: 0px 12px;
 
@@ -131,8 +148,9 @@ section.njt.game {
     }
 
     section.main-cards {
-      width: 700px;
-      margin: auto;
+      width: 930px;
+      margin: 25px auto;
+
       .deck {
         float: left;
         width: 100px;
@@ -146,9 +164,16 @@ section.njt.game {
       }
       .undo {
         float: left;
+        margin: 50px 25px 0px 50px;
       }
       .active {
         float: left;
+
+        margin: 25px 25px;
+
+        &#active-1 {
+          margin-right: 160px;
+        }
 
         nav {
           margin-bottom: 5px;
@@ -198,8 +223,9 @@ section.njt.game {
           }
         }
       }
-      .confirm {
+      .confirm-warning {
         float: left;
+        margin: 50px 50px 0px 25px;
       }
       .discard {
         float: left;
@@ -214,7 +240,7 @@ section.njt.game {
     }
 
     ul.hand {
-      width: 700px;
+      width: 675px;
       margin: 25px auto;
       li {
         float: left;
