@@ -219,21 +219,32 @@ var Game = (function(){
   }
 
   var phaseDraw = function() {
+    var drawnCards = 0;
+    dropify($(".hand"), handIn, handOut)
+  }
+
+  var handIn(event, ui) {
 
   }
+
+  var handOut(event, ui) {
+
+  }
+
+
   var phasePlay = function() {
-    dropify($("#play-1"), play1Up, play1Down)
+    dropify($("#play-1"), play1In, play1Out)
   }
 
-  var play1Up = function(event, ui) {
-    dropify($("#play-2"), play2Up, play2Down)
+  var play1In = function(event, ui) {
+    dropify($("#play-2"), play2In, play2Out)
     $("button.flow").removeAttr("disabled")
     if (ui.draggable.hasClass("shot-down")){
       addMoveFeint("#active-1", ui)
     }
   }
 
-  var play1Down = function() {
+  var play1Out = function() {
     $("#play-2").removeClass("phased slot")
     $("#play-2").droppable('destroy')
     $("button.flow").attr("disabled", "disabled")
@@ -242,10 +253,10 @@ var Game = (function(){
       $("#active-1 .move").click()
     }
 
-    play2Down()
+    play2Out()
   }
 
-  var play2Up = function(event, ui) {
+  var play2In = function(event, ui) {
     $(".warning").removeClass("hidden")
 
     if (ui.draggable.hasClass("shot-down")){
@@ -253,7 +264,7 @@ var Game = (function(){
     }
   }
 
-  var play2Down = function() {
+  var play2Out = function() {
     $(".warning").addClass("hidden")
     $("#active-2 nav").addClass("hidden")
     if ($("#active-2 .move").hasClass("not-chosen")){
@@ -263,7 +274,7 @@ var Game = (function(){
   }
 
   var phaseDiscard = function() {
-    dropify($(".discard"), discardUp, discardDown)
+    dropify($(".discard"), discardUp, discardOut)
   }
 
   var addMoveFeint = function(target, ui) {
