@@ -67,7 +67,12 @@
 
 
     <section class="main-cards group">
-      <div class="deck card" data-fd="true"></div>
+
+      <div class="deck">
+      <% @deck.count.times do %>
+        <div class="card" data-fd="true"></div>
+      <% end %>
+      </div>
 
       <button class="undo flow" disabled="true">Undo</button>
 
@@ -179,8 +184,9 @@ var Game = (function(){
       }
     })
 
-    $(".card").draggable({
+    $(".hand .card").draggable({
       snap: ".slot",
+      snapMode: "inner",
       cursor: "move",
       start: function(event, ui) {$(this).addClass('noclick')},
     })
@@ -219,16 +225,32 @@ var Game = (function(){
   }
 
   var phaseDraw = function() {
-    var drawnCards = 0;
+    drawnCards = 0;
+
+    $(".deck .card").draggable({
+      snap: ".slot",
+      snapMode: "inner",
+      cursor: "move",
+      start: function(event, ui) {$(this).addClass('noclick')},
+    })
+    dropify($(".deck"), deckIn, deckOut)
     dropify($(".hand"), handIn, handOut)
   }
 
-  var handIn(event, ui) {
+  var deckIn = function () {}
+  var deckOut = function () {}
 
+
+  var handIn = function(event, ui) {
+    drawnCards += 1;
+    $("button.flow").removeAttr("disabled")
   }
 
-  var handOut(event, ui) {
-
+  var handOut = function(event, ui) {
+    drawnCards -= 1;
+    if (drawnCards === 0) {
+      $("button.flow").attr("disabled", "disabled")
+    }
   }
 
 
@@ -245,15 +267,17 @@ var Game = (function(){
   }
 
   var play1Out = function() {
-    $("#play-2").removeClass("phased slot")
-    $("#play-2").droppable('destroy')
     $("button.flow").attr("disabled", "disabled")
     $("#active-1 nav").addClass("hidden")
     if ($("#active-1 .move").hasClass("not-chosen")){
       $("#active-1 .move").click()
     }
 
-    play2Out()
+    if ($("#play-2").hasClass("ui-droppable")){
+      $("#play-2").removeClass("phased slot")
+      $("#play-2").droppable('destroy')
+      play2Out()
+    }
   }
 
   var play2In = function(event, ui) {

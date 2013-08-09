@@ -173,10 +173,15 @@ section.njt.game {
       margin: 25px auto;
 
       .deck {
+        position: relative;
         float: left;
         width: 100px;
         height: 142px;
         overflow: hidden;
+
+        .card {
+          position: relative;
+        }
 
         &.phased {
           box-shadow: 0px 0px 40px #0ff;
