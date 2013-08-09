@@ -69,7 +69,7 @@
     <section class="main-cards group">
       <div class="deck card" data-fd="true"></div>
 
-      <button class="undo" disabled>Undo</button>
+      <button class="undo flow" disabled="true">Undo</button>
 
       <figure class="active" id="active-1">
         <nav class="group hidden">
@@ -85,12 +85,12 @@
           <button class="move"></button>
         </nav>
         <div class="play" id="play-2">
-          <div class="warning"></div>
         </div>
+        <div class="warning hidden"></div>
       </figure>
 
       <figure class="confirm-warning">
-        <button class="confirm" disabled>Confirm</button>
+        <button class="confirm flow" disabled="true">Confirm</button>
         <div class="warning"></div>
       </figure>
 
@@ -184,9 +184,6 @@ var Game = (function(){
       snap: ".slot",
       cursor: "move",
       start: function(event, ui) {$(this).addClass('noclick')},
-      stop: function(event, ui) {
-
-      }
     })
   };
 
@@ -226,7 +223,33 @@ var Game = (function(){
 
   }
   var phasePlay = function() {
-    $("#play-1").addClass("phased slot")
+    dropify($("#play-1"), play1Up, play1Down)
+  }
+
+  var play1Up = function() {
+    dropify($("#play-2"), play2Up, play2Down)
+    $("button.flow").removeAttr("disabled")
+  }
+
+  var play1Down = function() {
+    $("#play-2").removeClass("phased slot")
+    $("button.flow").attr("disabled", "disabled")
+  }
+
+  var play2Up = function() {
+    $(".active .warning").removeClass("hidden")
+  }
+
+  var play2Down = function() {
+    $(".active .warning").addClass("hidden")
+  }
+
+  var dropify = function($el, dropHandler, outHandler) {
+    $el.addClass("phased slot")
+    $el.droppable({
+      drop: dropHandler,
+      out: outHandler
+    })
   }
 
   return {

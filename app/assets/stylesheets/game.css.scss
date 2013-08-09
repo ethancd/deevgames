@@ -247,6 +247,16 @@ section.njt.game {
             box-shadow: 0px 0px 40px #f00;
           }
         }
+        .warning {
+          width: 50px;
+          height: 59px;
+
+          margin: auto;
+          background: {
+            image: url(overheating.png);
+            color: yellow;
+          }
+        }
       }
 
       button[disabled] {
