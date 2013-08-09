@@ -1,55 +1,61 @@
-<header class="layout">
-  <div class="top-line group">
-    <% if user_signed_in? %>
-    <div class="logged-in group">
-      <aside><small>playing as</small> <strong><%= current_user.username %></strong></aside>
+<header class="layout group">
+  <figure class="logo">
+    <h1>Deev Games</h1>
+    <a href="<%= root_url %>">
+      <%= image_tag "deevgameslogo.png", class: "logo"%>
+    </a>
+  </figure>
 
-      <%= image_tag current_user.avatar.url(:thumb) %>
+  <section class="info group">
+    <div class="user-info group">
+      <% if user_signed_in? %>
+      <div class="logged-in group">
+        <aside><small>playing as</small> <strong><%= current_user.username %></strong></aside>
 
-      <form class="log-out" action="<%= destroy_user_session_url %>" method="post">
-        <input type="hidden" name="_method" value="delete">
-        <input type="hidden" name="authenticity_token"
-          value="<%=form_authenticity_token%>">
+        <%= image_tag current_user.avatar.url(:thumb) %>
 
-        <input class="button log-out" type="submit" value="LOG OUT">
-      </form>
+        <form class="log-out" action="<%= destroy_user_session_url %>" method="post">
+          <input type="hidden" name="_method" value="delete">
+          <input type="hidden" name="authenticity_token"
+            value="<%=form_authenticity_token%>">
+
+          <input class="button log-out" type="submit" value="LOG OUT">
+        </form>
+      </div>
+
+      <% else %>
+        <form class="log-in group" action="<%= user_session_url %>" method="post">
+          <input type="hidden" name="authenticity_token"
+            value="<%=form_authenticity_token%>">
+
+          <div class="username-box">
+            <label>Email or Username
+              <input type="text" name="user[login]">
+            </label>
+
+            <br>
+            <input name="user[remember_me]" type="hidden" value="0">
+            <label class="remember-me">
+              <input name="user[remember_me]" type="checkbox" value="1">Remember me
+            </label>
+          </div>
+          <div class="password-box">
+            <label>Password
+              <input type="password" name="user[password]">
+            </label>
+
+            <br>
+
+            <%= link_to "Forgot your password?", new_user_password_url %>
+          </div>
+
+          <input class="button log-in" type="submit" value="LOG IN">
+        </form>
+      <% end %>
     </div>
 
-    <% else %>
-      <form class="log-in group" action="<%= user_session_url %>" method="post">
-        <input type="hidden" name="authenticity_token"
-          value="<%=form_authenticity_token%>">
 
-        <div class="username-box">
-          <label>Email or Username
-            <input type="text" name="user[login]">
-          </label>
-
-          <br>
-          <input name="user[remember_me]" type="hidden" value="0">
-          <label class="remember-me">
-            <input name="user[remember_me]" type="checkbox" value="1">Remember me
-          </label>
-        </div>
-        <div class="password-box">
-          <label>Password
-            <input type="password" name="user[password]">
-          </label>
-
-          <br>
-
-          <%= link_to "Forgot your password?", new_user_password_url %>
-        </div>
-
-        <input class="button log-in" type="submit" value="LOG IN">
-      </form>
-    <% end %>
-  </div>
-
-  <div class="second-line group">
-    <h1><a href="<%= root_url %>">Deev Games</a></h1>
-
-    <nav>
+    <nav class="group">
       <ul class="group">
         <li><a href="<%= blog_url %>">Blog</a></li>
         <li><a href="<%= njt_splash_url %>">Ninja Tanks</a></li>
@@ -63,6 +69,7 @@
         </a></li>
       </ul>
     </nav>
-  </div>
+
+  </section>
 
 </header>

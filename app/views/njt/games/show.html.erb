@@ -31,7 +31,7 @@
       </figure>
 
       <figure class="board">
-        <%#= image_tag 'fullboard.png'%>
+        <%= image_tag 'fullboard.png'%>
         <ul class="spaces group">
           <li class="tank" id="white-1"></li>
           <li class="tank" id="white-2"></li>
@@ -67,48 +67,47 @@
 
 
     <section class="main-cards group">
-      <div class="deck card phased" data-fd="true"></div>
+      <div class="deck card" data-fd="true"></div>
 
-      <button class="undo">Undo</button>
+      <button class="undo" disabled>Undo</button>
 
       <figure class="active" id="active-1">
-        <nav class="group">
+        <nav class="group hidden">
           <button class="feint"></button>
           <button class="move"></button>
         </nav>
-        <div class="play phased" id="play-1"></div>
+        <div class="play" id="play-1"></div>
       </figure>
 
       <figure class="active" id="active-2">
-        <nav class="group">
+        <nav class="group hidden">
           <button class="feint"></button>
           <button class="move"></button>
         </nav>
-        <div class="play phased" id="play-2">
+        <div class="play" id="play-2">
           <div class="warning"></div>
         </div>
       </figure>
 
       <figure class="confirm-warning">
-        <button class="confirm">Confirm</button>
+        <button class="confirm" disabled>Confirm</button>
         <div class="warning"></div>
       </figure>
 
       <div
       <% if @discards %>
-           class="discard card phased"
+           class="discard card <%= "shot-down" unless @discards.last.shot %>"
            data-info="<%="#{@discards.last.value}-#{@discards.last.dir}"%>"
-           data-shot="<%= @discards.last.shot %>"
       <% else %>
-           class="discard phased"
+           class="discard"
       <% end %>
       ></div>
     </section>
 
-    <ul class="hand group">
+    <ul class="hand group slot">
       <% @player.cards.each do |card|%>
-        <li class="card" data-info="<%= "#{card.value}-#{card.dir}" %>"
-            data-shot="<%= card.shot %>">
+        <li class="card <%= "shot-down" unless card.shot %>"
+          data-info="<%= "#{card.value}-#{card.dir}" %>">
         </li>
       <% end %>
     </ul>
@@ -171,14 +170,73 @@ var Game = (function(){
     })
   };
 
+  var bindCards = function(){
+    $(".card").on("click", function(){
+
+      if ($(this).hasClass('noclick')) {
+        $(this).removeClass('noclick');
+      } else {
+        $(this).toggleClass("shot-down")
+      }
+    })
+
+    $(".card").draggable({
+      snap: ".slot",
+      cursor: "move",
+      start: function(event, ui) {$(this).addClass('noclick')},
+      stop: function(event, ui) {
+
+      }
+    })
+  };
+
+  var display = function(){
+    totalDamage();
+    tankDisplay();
+    bindCards();
+  };
+
+  var activate = function(phase) {
+    switch(phase) {
+    case "draw":
+      phaseDraw();
+      break;
+    case "play":
+      phasePlay();
+      break;
+    case "move":
+      resolveMoves();
+      break;
+    case "shoot":
+      resolveShots();
+      break;
+    case "end?":
+      checkEnd();
+      break;
+    case "discard":
+      phaseDiscard();
+      break;
+    case "game_over":
+      gameOver();
+      break;
+    }
+  }
+
+  var phaseDraw = function() {
+
+  }
+  var phasePlay = function() {
+    $("#play-1").addClass("phased slot")
+  }
+
   return {
-    totalDamage: totalDamage,
-    tankDisplay: tankDisplay
+    display: display,
+    activate: activate
   };
 })();
 
 $(function(){
-  Game.totalDamage();
-  Game.tankDisplay();
+  Game.activate("<%= @game.phase %>");
+  Game.display();
 })
 </script>

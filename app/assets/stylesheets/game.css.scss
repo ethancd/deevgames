@@ -1,4 +1,5 @@
 @import "colors";
+@import "njt";
 
 section.njt.game {
   .game-field {
@@ -33,6 +34,11 @@ section.njt.game {
       height: 142px;
       overflow: hidden;
       background-image: url(cardsprite.png);
+      -webkit-transition: -webkit-transform 0.25s ease-out;
+
+      &.shot-down {
+        -webkit-transform: rotate(180deg);
+      }
 
       &[data-fd="true"] {
         background-position: 0 0 !important;
@@ -60,13 +66,20 @@ section.njt.game {
     }
 
     header {
-      margin: 25px;
+      margin: 25px 420px 25px 240px;
+      width: 600px;
       text-align: center;
 
       div {
         float: left;
       }
+      h3 {
+        display: inline;
+        @include stencil;
+        font-size: 250%;
+      }
       button{
+        margin-top: 15px;
         float: right;
       }
     }
@@ -117,21 +130,29 @@ section.njt.game {
       }
 
       figure.board {
+        position: relative;
         float: left;
         margin: 0px 15px;
-        background: #ffe4c4;
-        width: 600px;
-        height: 150px;
+
+        img {
+          position: absolute;
+          float: left;
+          width: 600px;
+          height: 150px;
+        }
 
         .tank {
           float: left;
-          width: 80px;
+          width: 79px;
           height: 150px;
-          background-color: blue;
-          margin: 0px 12px;
+          margin: 0px 5.5px;
 
           &:first-child {
             margin-left: 0;
+          }
+
+          &:nth-child(3) {
+            margin-right: 75px;
           }
 
           &:last-child {
@@ -193,21 +214,25 @@ section.njt.game {
               margin-right: 35px;
             }
 
-            &:hover {
-              cursor: pointer;
+            &.move {
+              background-repeat: no-repeat;
+
+              &.up {
+                background: {
+                  image: url(up.png);
+                  position: 3px 4px;
+                }
+              }
+
+              &.down {
+                background: {
+                  image: url(down.png);
+                  position: 2px 5px;
+                }
+              }
             }
           }
         }
-
-
-//        .move {
-//          &.forward {
-//            background-image: url(up.png);
-//          }
-//          &.back {
-//            background-image: url(down.png);
-//          }
-//        }
 
         #play-1, #play-2 {
           width: 100px;
@@ -223,6 +248,13 @@ section.njt.game {
           }
         }
       }
+
+      button[disabled] {
+        background-color: $ground;
+        color: lighten($ground, 10%);
+        cursor: default;
+      }
+
       .confirm-warning {
         float: left;
         margin: 50px 50px 0px 25px;

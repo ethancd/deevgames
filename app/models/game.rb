@@ -32,7 +32,7 @@ class Game < ActiveRecord::Base
       self.damage_tokens = stack
     end
 
-    5.times do
+    10.times do
       card = self.cards.sample
       card.location = "discard"
       card.save

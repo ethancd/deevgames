@@ -1,11 +1,12 @@
 <section class="njt rules group">
   <aside class="group">
     <a class="logo" href="<%= njt_splash_url%>">
-      <%= image_tag "njt/njtlogo.png", id: "njt"%>
+      <%= image_tag "njtlogo.png", id: "njt"%>
     </a>
 
     <nav class="group game">
-      <%= link_to "New Game vs A.I.", "#" %>
+      <%= button_to "New Game
+vs A.I.", {controller: "njt/games", action: "create", ai: true}%>
       <%= link_to "New Game vs Human", "#" %>
     </nav>
   </aside>

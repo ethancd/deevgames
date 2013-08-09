@@ -11,132 +11,145 @@
 header.layout {
   border-bottom: 5px solid $accent;
 
-  ul {
+  figure.logo {
+    float: left;
+
+    img.logo {
+      width: 400px;
+      height: auto;
+    }
+
+    h1 {
+      display: none;
+      margin-left: 10px;
+      line-height: 0px;
+      font-size: 400%;
+      font-weight: bold;
+      float: left;
+      color: $accent;
+
+      a:hover {
+        text-decoration: none;
+      }
+    }
+  }
+
+  section.info {
     float: right;
-  }
 
-  li {
-    float: left;
-  }
+    .logged-in {
+      float: right;
 
-  h1 {
-    margin-left: 10px;
-    line-height: 0px;
-    font-size: 400%;
-    font-weight: bold;
-    float: left;
-    color: $accent;
+      aside {
+        display: block;
+        float: left;
+        margin: 15px 5px;
 
-    a:hover {
-      text-decoration: none;
-    }
-  }
-
-  .top-line {
-    margin: 5px 10px 10px 10px;
-  }
-
-  nav a {
-    position: relative;
-    display: block;
-    text-align: center;
-    padding: 10px 10px;
-    border: 2px solid $accent;
-    border-bottom: 0;
-    border-top-left-radius: 7px;
-    /*  border-top-right-radius: 7px;*/
-
-      .game {
-        visibility: visible;
+        strong {
+          color: $accent;
+          font-size: 1.5em;
+        }
       }
 
-      .message {
-        visibility: hidden;
+      img {
+        float: left;
+        margin: 5px;
       }
 
-    &:hover {
-      background: $accent;
-      color: $light;
-      text-decoration: none;
-
-      .game {
-        visibility: hidden;
+      .log-out {
+        float: left;
+        margin: 8px 5px;
       }
 
-      .message {
-        visibility: visible;
-      }
     }
 
-    small {
-      position: absolute;
+    .button {
+      margin: 0 10px;
       display: block;
-      width: 100%;
-      top: 13px;
-      left: 0;
-      font-size: 11px;
-    }
-  }
+      width: 50px;
+      height: 30px;
 
-  .logged-in {
-    float: right;
-
-    aside {
-      display: block;
-      float: left;
-      margin: 15px 5px;
-
-      strong {
-        color: $accent;
-        font-size: 1.5em;
+      &.log-out {
+        width: 70px;
       }
     }
 
-    img {
+    form.log-out {
       float: left;
-      margin: 5px;
     }
 
-    .log-out {
-      float: left;
-      margin: 8px 5px;
-    }
+    form.log-in {
+      margin-bottom: 23px;
+      float: right;
 
-  }
+      .username-box, .password-box, .button {
+        text-align: right;
+        float: left;
 
-  .button {
-    margin: 0 10px;
-    display: block;
-    width: 50px;
-    height: 30px;
+        a {
+          font-size:13px;
+          text-decoration: underline;
+        }
 
-    &.log-out {
-      width: 70px;
-    }
-  }
-
-  form.log-out {
-    float: left;
-  }
-
-  form.log-in {
-    float: right;
-
-    .username-box, .password-box, .button {
-      text-align: right;
-      float: left;
-
-      a {
-        font-size:13px;
-        text-decoration: underline;
-      }
-
-      .remember-me {
-        font-size:13px;
+        .remember-me {
+          font-size:13px;
+        }
       }
     }
   }
 
+  nav {
+
+    ul {
+      float: right;
+
+      li {
+        float: left;
+
+        a {
+          float: right;
+          position: relative;
+          display: block;
+          text-align: center;
+          padding: 10px 10px;
+          border: 2px solid $accent;
+          border-bottom: 0;
+          border-top-left-radius: 7px;
+
+          small {
+            position: absolute;
+            display: block;
+            width: 100%;
+            top: 13px;
+            left: 0;
+            font-size: 11px;
+          }
+
+          .game {
+            visibility: visible;
+          }
+
+          .message {
+            visibility: hidden;
+          }
+
+          &:hover {
+            background: $accent;
+            color: $light;
+            text-decoration: none;
+
+            .game {
+              visibility: hidden;
+            }
+
+            .message {
+              visibility: visible;
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
 footer.layout {

@@ -28,11 +28,11 @@ gem 'aws-sdk'
 
 gem 'figaro'
 
-gem 'guard'
-
 gem 'kaminari'
 
 gem 'faker'
+
+gem 'jquery-ui-rails'
 
 group :production do
   gem 'pg'

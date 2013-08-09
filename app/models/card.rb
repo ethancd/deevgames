@@ -15,8 +15,9 @@ class Card < ActiveRecord::Base
     [1,2,3].each do |value|
       %w[forward back].each do |dir|
         5.times do
+          shot = rand < 0.5
           deck << Card.create(game_id: game_id, value: value,
-                              dir: dir, location: "deck")
+                              dir: dir, location: "deck", shot: shot)
         end
       end
     end
