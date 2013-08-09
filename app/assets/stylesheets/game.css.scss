@@ -4,7 +4,7 @@
 section.njt.game {
   .game-field {
     float: left;
-    width: 1140px;
+    width: 1132px;
 
     .damage_token {
       width: 50px;
@@ -209,6 +209,11 @@ section.njt.game {
             }
             border-radius: 10px;
 
+            &.chosen {
+              background-color: $ground;
+              cursor: default;
+            }
+
             &.feint {
               background-image: url(smoke.png);
               margin-right: 35px;
@@ -238,6 +243,7 @@ section.njt.game {
           width: 100px;
           height: 142px;
           overflow: hidden;
+
           &.phased {
             box-shadow: 0px 0px 40px #ff0;
           }
@@ -245,16 +251,6 @@ section.njt.game {
         #play-2 {
           &.phased {
             box-shadow: 0px 0px 40px #f00;
-          }
-        }
-        .warning {
-          width: 50px;
-          height: 59px;
-
-          margin: auto;
-          background: {
-            image: url(overheating.png);
-            color: yellow;
           }
         }
       }
@@ -268,6 +264,16 @@ section.njt.game {
       .confirm-warning {
         float: left;
         margin: 50px 50px 0px 25px;
+
+        .warning {
+          width: 50px;
+          height: 59px;
+
+          margin: auto;
+          background: {
+            image: url(overheating.png);
+          }
+        }
       }
       .discard {
         float: left;
@@ -292,9 +298,13 @@ section.njt.game {
   }
   .chat {
     float: right;
-    width: 200px;
+    width: 205px;
     height: 900px;
-    background: invert($ground);
+    border-left: 3px solid $body;
     display: block;
+
+    h3 {
+      font-size: 250%;
+    }
   }
 }

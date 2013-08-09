@@ -73,25 +73,23 @@
 
       <figure class="active" id="active-1">
         <nav class="group hidden">
-          <button class="feint"></button>
-          <button class="move"></button>
+          <button class="feint not-chosen"></button>
+          <button class="move chosen"></button>
         </nav>
         <div class="play" id="play-1"></div>
       </figure>
 
       <figure class="active" id="active-2">
         <nav class="group hidden">
-          <button class="feint"></button>
-          <button class="move"></button>
+          <button class="feint not-chosen"></button>
+          <button class="move chosen"></button>
         </nav>
-        <div class="play" id="play-2">
-        </div>
-        <div class="warning hidden"></div>
+        <div class="play" id="play-2"></div>
       </figure>
 
       <figure class="confirm-warning">
         <button class="confirm flow" disabled="true">Confirm</button>
-        <div class="warning"></div>
+        <div class="warning hidden"></div>
       </figure>
 
       <div
@@ -114,6 +112,7 @@
   </section>
 
   <aside class="chat">
+    <h3>Chat</h3>
     <% @game.comments.each do |comment| %>
       <%= render "comments/show", locals: {comment: comment}%>
     <% end %>
@@ -226,22 +225,67 @@ var Game = (function(){
     dropify($("#play-1"), play1Up, play1Down)
   }
 
-  var play1Up = function() {
+  var play1Up = function(event, ui) {
     dropify($("#play-2"), play2Up, play2Down)
     $("button.flow").removeAttr("disabled")
+    if (ui.draggable.hasClass("shot-down")){
+      addMoveFeint("#active-1", ui)
+    }
   }
 
   var play1Down = function() {
     $("#play-2").removeClass("phased slot")
+    $("#play-2").droppable('destroy')
     $("button.flow").attr("disabled", "disabled")
+    $("#active-1 nav").addClass("hidden")
+    if ($("#active-1 .move").hasClass("not-chosen")){
+      $("#active-1 .move").click()
+    }
+
+    play2Down()
   }
 
-  var play2Up = function() {
-    $(".active .warning").removeClass("hidden")
+  var play2Up = function(event, ui) {
+    $(".warning").removeClass("hidden")
+
+    if (ui.draggable.hasClass("shot-down")){
+      addMoveFeint("#active-2", ui)
+    }
   }
 
   var play2Down = function() {
-    $(".active .warning").addClass("hidden")
+    $(".warning").addClass("hidden")
+    $("#active-2 nav").addClass("hidden")
+    if ($("#active-2 .move").hasClass("not-chosen")){
+      $("#active-2 .move").click()
+    }
+
+  }
+
+  var phaseDiscard = function() {
+    dropify($(".discard"), discardUp, discardDown)
+  }
+
+  var addMoveFeint = function(target, ui) {
+    $(target + " nav").removeClass("hidden")
+    $(target + " button").on("click", swapActive)
+
+    if (ui.draggable.attr("data-info").slice(2) == "forward"){
+      $(target + " .move").addClass("up")
+    } else {
+      $(target + " .move").addClass("down")
+    }
+  }
+
+  var swapActive = function(event) {
+    if ($(event.target).hasClass("not-chosen")){
+      $(event.target).siblings().addBack().toggleClass("chosen not-chosen")
+      if ($(event.target).hasClass("feint")){
+        $(event.target).parent().siblings().css("opacity", 0.5)
+      } else {
+        $(event.target).parent().siblings().css("opacity", 1.0)
+      }
+    }
   }
 
   var dropify = function($el, dropHandler, outHandler) {
