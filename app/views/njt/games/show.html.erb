@@ -31,13 +31,13 @@
 
       <figure class="board">
         <%#= image_tag 'fullboard.png'%>
-        <ul class="spaces">
-          <li id:"white-1"></li>
-          <li id:"white-2"></li>
-          <li id:"white-3"></li>
-          <li id:"black-3"></li>
-          <li id:"black-2"></li>
-          <li id:"black-1"></li>
+        <ul class="spaces group">
+          <li class="tank" id="white-1"></li>
+          <li class="tank" id="white-2"></li>
+          <li class="tank" id="white-3"></li>
+          <li class="tank" id="black-3"></li>
+          <li class="tank" id="black-2"></li>
+          <li class="tank" id="black-1"></li>
         </ul>
       </figure>
 
@@ -83,17 +83,21 @@
           <button class="feint"></button>
           <button class="move"></button>
         </nav>
-        <div class="play phased" id="play-2"></div>
+        <div class="play phased" id="play-2">
+          <div class="warning"></div>
+        </div>
       </figure>
 
-      <button class="confirm">Confirm</button>
+      <figure class="confirm-warning">
+        <button class="confirm">Confirm</button>
+        <div class="warning"></div>
+      </figure>
 
-      <% top_discard = @game.cards.where(location: "discard").last %>
       <div
-      <% if top_discard %>
+      <% if @discards %>
            class="discard card phased"
-           data-info="<%="#{top_discard.value}-#{top_discard.dir}"%>"
-           data-shot="<%= top_discard.shot %>"
+           data-info="<%="#{@discards.last.value}-#{@discards.last.dir}"%>"
+           data-shot="<%= @discards.last.shot %>"
       <% else %>
            class="discard phased"
       <% end %>
@@ -117,10 +121,63 @@
 </section>
 
 <script>
-$(function(){
-  var color = "<%= @player == @white ? 'white' : 'black' %>",
-      damage = "<%= @player.damage %>"
+var Game = (function(){
+  var playerColor = "<%= @color %>";
+  var damage = "<%= @player.damage %>";
+  var tanks = [];
 
-  $("." + color + ".info").append("<li>" + damage + " damage</li>")
+  <% [[@white, "white"], [@black, "black"]].each do |(player, color)| %>
+    <% if player.tanks.count > 1 && @player != player %>
+
+      <% player.tanks.each do |tank| %>
+        tanks.push({
+          space: "<%= "#{color}-#{tank.position}" %>",
+          color: "<%= color %>",
+          fake: "true"
+        })
+      <% end %>
+
+    <% else %>
+
+      <% player.tanks.each do |tank| %>
+        tanks.push({
+          space: "<%= "#{color}-#{tank.position}" %>",
+          color: "<%= color %>",
+          fake: "<%= tank.fake %>"
+        })
+      <% end %>
+
+    <% end %>
+  <% end %>
+
+  var totalDamage = function(){
+    $("." + playerColor + ".info").append("<li>" + damage + " damage</li>");
+  };
+
+  var tankDisplay = function(){
+    tanks.forEach(function(tank){
+      var $space = $("#" + tank.space)
+
+      if (tank.color == "white"){
+        $space.html("<img src=<%= asset_path("whitetank.png") %>>")
+      } else {
+        $space.html("<img src=<%= asset_path("blacktank.png") %>>")
+      }
+
+      if (tank.fake === "true") {
+        $space.find("img").css("opacity", "0.5")
+      }
+    })
+  };
+
+  return {
+    totalDamage: totalDamage,
+    tankDisplay: tankDisplay
+  };
+})();
+
+$(function(){
+  Game.totalDamage();
+  Game.tankDisplay();
 })
 </script>

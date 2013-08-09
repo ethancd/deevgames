@@ -13,7 +13,7 @@
  */
 @import "colors";
 
-html, body, header, footer, strong,
+html, body, header, footer, section, article, strong, figure, aside,
   div, form, nav, em, h1, h2, h3, h4, h5, ul, li, p, a {
   padding: 0;
   margin: 0;
@@ -38,7 +38,7 @@ ul {
 }
 
 .total-wrap {
-  width: 1140px;
+  width: 1340px;
   margin: 50px auto;
   border: 5px solid $accent;
   background: $ground;

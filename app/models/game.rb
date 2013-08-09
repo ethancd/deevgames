@@ -32,14 +32,11 @@ class Game < ActiveRecord::Base
       self.damage_tokens = stack
     end
 
-    deck = self.cards.shuffle
-
-    deck.pop(5).each do |card|
+    5.times do
+      card = self.cards.sample
       card.location = "discard"
       card.save
     end
-
-    self.cards = deck
   end
 
 

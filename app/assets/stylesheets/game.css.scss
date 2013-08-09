@@ -3,13 +3,14 @@
 section.njt.game {
   .game-field {
     float: left;
-    min-width: 900px;
+    width: 1140px;
 
     .damage_token {
       width: 50px;
       height: 44px;
       overflow: hidden;
       background-image: url(dmgsprite.png);
+      margin: 2px;
 
       &[data-fd="true"] {
         background-position: 0 0 !important;
@@ -71,19 +72,26 @@ section.njt.game {
     }
 
     section.board {
-      margin: 25px;
+      margin: auto;
 
       strong {
         display: block;
       }
 
       figure.damage {
-        width: 150px;
+        width: 200px;
         float: left;
-        overflow: hidden;
 
         ul.info {
+          width: 130px;
           float: left;
+
+          &.white {
+            text-align: right;
+            strong {
+              float: right;
+            }
+          }
         }
 
         ul.tokens {
@@ -93,10 +101,32 @@ section.njt.game {
 
       figure.board {
         float: left;
-        margin: auto;
+        margin: 0px 30px;
         background: #ffe4c4;
         width: 600px;
         height: 300px;
+
+        .tank {
+          float: left;
+          width: 80px;
+          height: 300px;
+          background-color: blue;
+          margin: 0px 12px;
+
+          &:first-child {
+            margin-left: 0;
+          }
+
+          &:last-child {
+            margin-right: 0;
+          }
+
+          img {
+            margin-top: 120px;
+            width: 80px;
+            height: auto;
+          }
+        }
       }
     }
 
@@ -195,5 +225,8 @@ section.njt.game {
   .chat {
     float: right;
     width: 200px;
+    height: 900px;
+    background: invert($ground);
+    display: block;
   }
 }

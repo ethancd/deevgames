@@ -23,6 +23,8 @@ class Njt::GamesController < ApplicationController
     @white = @game.players.first
     @black = @game.players.last
     @player = current_user == @white.user ? @white : @black
+    @color = @player == @white ? "white" : "black"
+    @discards = @game.cards.where(location: "discard")
   end
 
   def update
