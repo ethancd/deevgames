@@ -225,14 +225,14 @@ section.njt.game {
               &.up {
                 background: {
                   image: url(up.png);
-                  position: 3px 4px;
+                  position: 0px 3px;
                 }
               }
 
               &.down {
                 background: {
                   image: url(down.png);
-                  position: 2px 5px;
+                  position: 0px 3px;
                 }
               }
             }

@@ -22,10 +22,16 @@ class Game < ActiveRecord::Base
 
     self.players.each do |player|
       self.tanks << Tank.create(game_id: self.id, player_id: player.id, position: 2)
+      self.tanks << Tank.create(game_id: self.id, player_id: player.id,
+      fake: true, position: rand < 0.5 ? 3 : 1)
       deck = self.cards.shuffle
       stack = self.damage_tokens.shuffle
 
-      player.cards = deck.pop(3)
+      deck.pop(3).each do |card|
+        card.location = "hand"
+        player.cards << card
+      end
+
       player.damage_tokens = stack.pop(4)
 
       self.cards = deck
@@ -33,7 +39,7 @@ class Game < ActiveRecord::Base
     end
 
     10.times do
-      card = self.cards.sample
+      card = self.cards.where(location: "deck").sample
       card.location = "discard"
       card.save
     end
