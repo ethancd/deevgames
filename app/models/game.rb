@@ -11,7 +11,7 @@ class Game < ActiveRecord::Base
 
   #validate :players_not_the_same
   validates :phase, presence: true,
-              inclusion: { in: %w[draw play move shoot end? discard game_over]}
+              inclusion: { in: %w[draw play discard game_over]}
 
   def setup_game(ai=false)
     self.phase = "play"
@@ -24,18 +24,9 @@ class Game < ActiveRecord::Base
       self.tanks << Tank.create(game_id: self.id, player_id: player.id, position: 2)
       self.tanks << Tank.create(game_id: self.id, player_id: player.id,
       fake: true, position: rand < 0.5 ? 3 : 1)
-      deck = self.cards.shuffle
-      stack = self.damage_tokens.shuffle
 
-      deck.pop(3).each do |card|
-        card.location = "hand"
-        player.cards << card
-      end
-
-      player.damage_tokens = stack.pop(4)
-
-      self.cards = deck
-      self.damage_tokens = stack
+      deal(3, player)
+      harm(4, player, false)
     end
 
     10.times do

@@ -55,15 +55,6 @@ var Game = (function(){
     case "play":
       phasePlay();
       break;
-    case "move":
-      resolveMoves();
-      break;
-    case "shoot":
-      resolveShots();
-      break;
-    case "end?":
-      checkEnd();
-      break;
     case "discard":
       phaseDiscard();
       break;
@@ -159,13 +150,12 @@ var Game = (function(){
     dropify($(".deck"), deckIn, deckOut)
 
     $(".confirm").on("click", function(){
-      console.log(overheating)
       $.ajax({
         url: window.gameUrl,
         type: "PUT",
         data: {
+          "phase": "draw",
           "drawn_cards": drawnCards,
-          "phase": "play",
           "overheating": overheating
         },
         success: function(returnData){
@@ -186,7 +176,7 @@ var Game = (function(){
 
     var addMoveFeint = function(target, ui) {
       $(target + " nav").removeClass("hidden")
-      $(target + " button").on("click", swapActive)
+      $(target + " button").on("click", {card: ui.draggable}, swapActive)
 
       if (ui.draggable.attr("data-info").slice(2) == "forward"){
         $(target + " .move").addClass("up")
@@ -198,10 +188,11 @@ var Game = (function(){
     var swapActive = function(event) {
       if ($(event.target).hasClass("not-chosen")){
         $(event.target).siblings().addBack().toggleClass("chosen not-chosen")
+
         if ($(event.target).hasClass("feint")){
-          $(event.target).parent().siblings().css("opacity", 0.5)
+          event.data.card.addClass("feint")
         } else {
-          $(event.target).parent().siblings().css("opacity", 1.0)
+          event.data.card.removeClass("feint")
         }
       }
     }
@@ -215,18 +206,21 @@ var Game = (function(){
       }
     }
 
-    var play1Out = function() {
+    var play1Out = function(event, ui) {
+
       $("button.flow").attr("disabled", "disabled")
       $("#active-1 nav").addClass("hidden")
+
       if ($("#active-1 .move").hasClass("not-chosen")){
         $("#active-1 .move").click()
       }
+      $("#active-1 button").off("click")
       $(".played").removeClass("played")
 
       if ($("#play-2").hasClass("ui-droppable")){
         $("#play-2").removeClass("phased slot")
         $("#play-2").droppable('destroy')
-        play2Out()
+        play2Out(event, ui)
       }
     }
 
@@ -239,17 +233,54 @@ var Game = (function(){
       }
     }
 
-    var play2Out = function() {
+    var play2Out = function(event, ui) {
       $(".warning").addClass("hidden")
       $("#active-2 nav").addClass("hidden")
       ui.draggable.removeClass("played")
       if ($("#active-2 .move").hasClass("not-chosen")){
         $("#active-2 .move").click()
       }
+      $("#active-2 button").off("click")
     }
 
     dropify($("#play-1"), play1In, play1Out)
     dropify($(".hand"))
+
+    $(".confirm").on("click", function(){
+      var actions = [], overheating
+
+      $(".played").each(function(){
+        action = {}
+        action.value = $(this).attr("data-info")[0]
+        action.dir = $(this).attr("data-info").slice(2)
+
+        if ($(this).hasClass("shot-down")) {
+          if ($(this).hasClass("feint")) {
+            action.type = "feint"
+          } else {
+            action.type = "move"
+          }
+        } else {
+          action.type = "shot"
+        }
+        actions.push(action)
+      })
+
+      overheating = actions.length === 2
+
+      $.ajax({
+        url: window.gameUrl,
+        type: "PUT",
+        data: {
+          "actions": actions,
+          "phase": "play",
+          "overheating": overheating
+        },
+        success: function(returnData){
+
+        }
+      })
+    })
   }
 
   var phaseDiscard = function() {
@@ -311,6 +342,32 @@ var Game = (function(){
 
     dropify($(".discard"), discardIn, discardOut)
     dropify($(".hand"), handIn, handOut)
+
+    $(".confirm").on("click", function(){
+      var discards = []
+      $(".discarded").each(function(){
+        card = {}
+        card.value = $(this).attr("data-info")[0]
+        card.dir = $(this).attr("data-info").slice(2)
+        discards.push(card)
+      })
+
+      $.ajax({
+        url: window.gameUrl,
+        type: "PUT",
+        data: {
+          "phase": "discard",
+          "discarded_cards": discards
+        },
+        success: function(returnData){
+
+        }
+      })
+    })
+  }
+
+  var gameOver = function() {
+
   }
 
   return {

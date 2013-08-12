@@ -40,6 +40,10 @@ section.njt.game {
         -webkit-transform: rotate(180deg);
       }
 
+      &.feint {
+        opacity: 0.5;
+      }
+
       &[data-fd="true"] {
         background-position: 0 0 !important;
       }
