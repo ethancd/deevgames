@@ -29,6 +29,16 @@ class Njt::GamesController < ApplicationController
   end
 
   def update
+    @game = Game.find(params[:id])
+    @player = @game.players.where(user_id: current_user.id).first
+    @game.phase = params[:phase]
+    if params[:drawn_cards]
+      @game.deal(params[:drawn_cards], @player)
+      @game.harm(2, @player, params[:overheating][:fake]) if params[:overheating]
+    end
+    @game.save
+
+    render :show
   end
 
 end

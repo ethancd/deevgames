@@ -75,6 +75,7 @@ var Game = (function(){
 
   var phaseDraw = function() {
     var drawnCards = 0;
+    var overheating = false;
     bindCards(".deck", -3);
     $(".undo").on("click", function(){
       resetCards();
@@ -84,13 +85,53 @@ var Game = (function(){
 
     $(".main-cards").append("<strong>Cards to draw: 0</strong>")
 
+    var drawWarning = function(){
+      var $one = $("#" + playerColor + "-1"),
+          $two = $("#" + playerColor + "-2")
+      switch(drawnCards) {
+      case 1:
+        $(".warning").addClass("hidden");
+        break;
+      case 2:
+        if ($one.html()) {
+          $(".warning").removeClass("hidden")
+          overheating = {fake: false}
+
+          if ($one.find("img").css("opacity") == "0.5") {
+            $(".warning").addClass("fake")
+            overheating = {fake: true}
+          }
+        } else {
+          $(".warning").addClass("hidden");
+          overheating = false
+        }
+        break;
+      case 3:
+        if ($one.html() || $two.html()) {
+          $(".warning").removeClass("hidden")
+
+          if (($one.find("img") === undefined ||
+               $one.find("img").css("opacity") == "0.5") &&
+              ($two.find("img") === undefined ||
+               $two.find("img").css("opacity") == "0.5")){
+            $(".warning").addClass("fake")
+            overheating = {fake: true}
+          } else {
+            $(".warning").removeClass("fake")
+            overheating = {fake: false}
+          }
+        }
+      }
+    }
+
     var handIn = function(event, ui) {
       if ($(ui.draggable).hasClass("from-deck")){
         drawnCards += 1;
         $(".main-cards strong").html("Cards to draw: " + drawnCards)
         if (drawnCards === 1) {
           $("button.flow").removeAttr("disabled")
-        }
+        } else drawWarning()
+
         $(ui.draggable).removeClass("from-deck")
       }
     }
@@ -105,7 +146,7 @@ var Game = (function(){
         $(".main-cards strong").html("Cards to draw: " + drawnCards)
         if (drawnCards === 0) {
           $("button.flow").attr("disabled", "disabled")
-        }
+        } else drawWarning()
         $(ui.draggable).removeClass("from-hand")
       }
     }
@@ -116,6 +157,22 @@ var Game = (function(){
 
     dropify($(".hand"), handIn, handOut)
     dropify($(".deck"), deckIn, deckOut)
+
+    $(".confirm").on("click", function(){
+      console.log(overheating)
+      $.ajax({
+        url: window.gameUrl,
+        type: "PUT",
+        data: {
+          "drawn_cards": drawnCards,
+          "phase": "play",
+          "overheating": overheating
+        },
+        success: function(returnData){
+
+        }
+      })
+    })
   }
 
   var phasePlay = function() {

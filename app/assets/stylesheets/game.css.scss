@@ -277,6 +277,10 @@ section.njt.game {
           background: {
             image: url(overheating.png);
           }
+
+          &.fake {
+            background-image: url(smokeheating.png);
+          }
         }
       }
       .discard {

@@ -45,6 +45,40 @@ class Game < ActiveRecord::Base
     end
   end
 
+  def deal(n, player)
+    n = n.to_i
+    if n <= self.cards.where(location: "deck").count
+      taken_cards = self.cards.where(location: "deck").sample(n)
+      taken_cards.each do |card|
+        card.location = "hand"
+        card.player_id = player.id
+        card.save
+      end
+    else
+      m = n - self.cards.where(location: "deck").count
+      deal(self.cards.where(location: "deck").count, player)
+
+      self.cards.where(location: "discard").each do |card|
+        card.location = "deck"
+        card.save
+      end
+
+      deal(m, player)
+    end
+  end
+
+  def harm(n, player, fake)
+    if n > self.damage_tokens.count
+      self.damage_tokens = DamageToken.setup_stack(self.id)
+    end
+
+    grabbed_tokens = self.damage_tokens.sample(n)
+    grabbed_tokens.sort_by(&:value)[0...-1].each do |token|
+      token.player_id = player.id
+      token.fake = fake
+      token.save
+    end
+  end
 
   private
     def players_not_the_same

@@ -69,7 +69,7 @@
     <section class="main-cards group">
 
       <div class="deck">
-      <% @deck.count.times do %>
+      <% 4.times do %>
         <div class="card" data-fd="true"></div>
       <% end %>
       </div>
@@ -98,7 +98,7 @@
       </figure>
 
       <div
-      <% if @discards %>
+      <% if @discards.count > 0 %>
            class="discard card <%= "shot-down" unless @discards.last.shot %>"
            data-info="<%="#{@discards.last.value}-#{@discards.last.dir}"%>"
       <% else %>
@@ -126,7 +126,6 @@
 
 <script>
 var Display = (function(){
-  var playerColor = "<%= @color %>";
   var damage = "<%= @player.damage %>";
   var tanks = [];
 
@@ -185,7 +184,9 @@ var Display = (function(){
 })();
 
 $(function(){
-  Game.activate("<%= @game.phase %>");
+  window.gameUrl = "<%= njt_game_url(@game) %>";
+  window.playerColor = "<%= @color %>";
   Display.display();
+  Game.activate("<%= @game.phase %>");
 })
 </script>
