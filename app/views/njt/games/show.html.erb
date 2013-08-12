@@ -125,7 +125,7 @@
 </section>
 
 <script>
-var Game = (function(){
+var Display = (function(){
   var playerColor = "<%= @color %>";
   var damage = "<%= @player.damage %>";
   var tanks = [];
@@ -174,171 +174,18 @@ var Game = (function(){
     })
   };
 
-  var bindCards = function(){
-    $(".card").on("click", function(){
-
-      if ($(this).hasClass('noclick')) {
-        $(this).removeClass('noclick');
-      } else {
-        $(this).toggleClass("shot-down")
-      }
-    })
-
-    $(".hand .card").draggable({
-      snap: ".slot",
-      snapMode: "inner",
-      cursor: "move",
-      start: function(event, ui) {$(this).addClass('noclick')},
-    })
-  };
-
   var display = function(){
     totalDamage();
     tankDisplay();
-    bindCards();
   };
-
-  var activate = function(phase) {
-    switch(phase) {
-    case "draw":
-      phaseDraw();
-      break;
-    case "play":
-      phasePlay();
-      break;
-    case "move":
-      resolveMoves();
-      break;
-    case "shoot":
-      resolveShots();
-      break;
-    case "end?":
-      checkEnd();
-      break;
-    case "discard":
-      phaseDiscard();
-      break;
-    case "game_over":
-      gameOver();
-      break;
-    }
-  }
-
-  var phaseDraw = function() {
-    drawnCards = 0;
-
-    $(".deck .card").draggable({
-      snap: ".slot",
-      snapMode: "inner",
-      cursor: "move",
-      start: function(event, ui) {$(this).addClass('noclick')},
-    })
-    dropify($(".deck"), deckIn, deckOut)
-    dropify($(".hand"), handIn, handOut)
-  }
-
-  var deckIn = function () {}
-  var deckOut = function () {}
-
-
-  var handIn = function(event, ui) {
-    drawnCards += 1;
-    $("button.flow").removeAttr("disabled")
-  }
-
-  var handOut = function(event, ui) {
-    drawnCards -= 1;
-    if (drawnCards === 0) {
-      $("button.flow").attr("disabled", "disabled")
-    }
-  }
-
-
-  var phasePlay = function() {
-    dropify($("#play-1"), play1In, play1Out)
-  }
-
-  var play1In = function(event, ui) {
-    dropify($("#play-2"), play2In, play2Out)
-    $("button.flow").removeAttr("disabled")
-    if (ui.draggable.hasClass("shot-down")){
-      addMoveFeint("#active-1", ui)
-    }
-  }
-
-  var play1Out = function() {
-    $("button.flow").attr("disabled", "disabled")
-    $("#active-1 nav").addClass("hidden")
-    if ($("#active-1 .move").hasClass("not-chosen")){
-      $("#active-1 .move").click()
-    }
-
-    if ($("#play-2").hasClass("ui-droppable")){
-      $("#play-2").removeClass("phased slot")
-      $("#play-2").droppable('destroy')
-      play2Out()
-    }
-  }
-
-  var play2In = function(event, ui) {
-    $(".warning").removeClass("hidden")
-
-    if (ui.draggable.hasClass("shot-down")){
-      addMoveFeint("#active-2", ui)
-    }
-  }
-
-  var play2Out = function() {
-    $(".warning").addClass("hidden")
-    $("#active-2 nav").addClass("hidden")
-    if ($("#active-2 .move").hasClass("not-chosen")){
-      $("#active-2 .move").click()
-    }
-
-  }
-
-  var phaseDiscard = function() {
-    dropify($(".discard"), discardUp, discardOut)
-  }
-
-  var addMoveFeint = function(target, ui) {
-    $(target + " nav").removeClass("hidden")
-    $(target + " button").on("click", swapActive)
-
-    if (ui.draggable.attr("data-info").slice(2) == "forward"){
-      $(target + " .move").addClass("up")
-    } else {
-      $(target + " .move").addClass("down")
-    }
-  }
-
-  var swapActive = function(event) {
-    if ($(event.target).hasClass("not-chosen")){
-      $(event.target).siblings().addBack().toggleClass("chosen not-chosen")
-      if ($(event.target).hasClass("feint")){
-        $(event.target).parent().siblings().css("opacity", 0.5)
-      } else {
-        $(event.target).parent().siblings().css("opacity", 1.0)
-      }
-    }
-  }
-
-  var dropify = function($el, dropHandler, outHandler) {
-    $el.addClass("phased slot")
-    $el.droppable({
-      drop: dropHandler,
-      out: outHandler
-    })
-  }
 
   return {
     display: display,
-    activate: activate
   };
 })();
 
 $(function(){
   Game.activate("<%= @game.phase %>");
-  Game.display();
+  Display.display();
 })
 </script>

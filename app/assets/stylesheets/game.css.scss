@@ -177,10 +177,9 @@ section.njt.game {
         float: left;
         width: 100px;
         height: 142px;
-        overflow: hidden;
 
         .card {
-          position: relative;
+          position: absolute;
         }
 
         &.phased {
@@ -284,7 +283,6 @@ section.njt.game {
         float: left;
         width: 100px;
         height: 142px;
-        overflow: hidden;
 
         &.phased {
           box-shadow: 0px 0px 40px #333;
