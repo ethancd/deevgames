@@ -1,4 +1,5 @@
 @import "colors";
+
 @import url(http://fonts.googleapis.com/css?family=Stardos+Stencil:400,700);
 
 @mixin stencil {
@@ -40,7 +41,7 @@ section.njt.splash {
         border: 3px solid $accent;
         border-radius: 5px;
         padding: 5px 10px;
-        margin-right: 50px;
+        margin-right: 20px;
         font-size: 170%;
         text-decoration: none;
         cursor: pointer;
@@ -80,121 +81,4 @@ section.njt.splash {
       }
     }
 
-}
-
-section.njt.rules {
-  width: 900px;
-  margin: 50px auto;
-  text-align: left;
-
-  header {
-  text-align: center;
-
-    h2 {
-      @include stencil;
-      font-size: 300%;
-      display: inline;
-    }
-
-    h3 {
-      font-size: 200%;
-      width: 300px;
-      margin: auto;
-    }
-  }
-
-  aside {
-    display: block;
-    float: left;
-    margin-right: 40px;
-
-    a.logo {
-      display: block;
-      width: 160px;
-    }
-
-    img {
-      width: 100%;
-      height: auto;
-    }
-    nav.game {
-
-      a, input[type="submit"] {
-        @include stencil;
-        text-align: center;
-        display: block;
-        background: $ground;
-        border: 3px solid $accent;
-        border-radius: 5px;
-        padding: 2px 5px;
-        width: 130px;
-        margin: 30px 0px;
-        font-size: 130%;
-        text-decoration: none;
-        cursor: pointer;
-
-        &:hover {
-          background: $accent;
-          color: $light;
-          border-color: $light;
-        }
-      }
-    }
-  }
-
-  article {
-    padding-left: 10px;
-    border-left: 5px dashed $accent;
-    float: left;
-    height: 600px;
-    position: relative;
-
-    ul {
-      width: 550px;
-      margin: 50px auto;
-      list-style-type: disc;
-      list-style-position: inside;
-
-      li {
-        margin: 20px;
-
-        p {
-          font-size: 130%;
-          padding-left: 50px;
-          text-indent: -50px;
-
-        }
-      }
-    }
-
-    nav.page {
-      width: 300px;
-      position: absolute;
-      top: 575px;
-      left: 120px;
-
-      a {
-        text-decoration: none;
-        font-size: 130%;
-        font-weight: bold;
-        display: block;
-
-        &:hover {
-          text-decoration: underline;
-        }
-
-        &:first-child {
-          float: left;
-        }
-
-        &:last-child {
-          float: right;
-        }
-
-        &.hidden {
-          display: none;
-        }
-      }
-    }
-  }
 }

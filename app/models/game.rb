@@ -1,5 +1,5 @@
 class Game < ActiveRecord::Base
-  attr_accessible :phase, :result
+  attr_accessible :phase, :result, :queue
 
   has_many :players
   has_many :users, through: :players
@@ -13,9 +13,8 @@ class Game < ActiveRecord::Base
   validates :phase, presence: true,
               inclusion: { in: %w[draw play discard game_over]}
 
-  def setup_game(ai=false)
+  def setup_game
     self.phase = "play"
-    self.players << Player.create(user_id: 2) if ai
 
     self.cards = Card.setup_deck(self.id)
     self.damage_tokens = DamageToken.setup_stack(self.id)

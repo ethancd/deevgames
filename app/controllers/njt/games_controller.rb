@@ -1,32 +1,86 @@
 class Njt::GamesController < ApplicationController
   include GamesHelper
 
-  def new
-    @game = Game.new
-  end
+  before_filter :auth_only!
 
   def create
     @game = Game.create(phase: "play")
     @game.players << Player.create(user_id: current_user.id)
-    @game.setup_game(params[:ai])
-
-    if @game.save
-      redirect_to njt_game_url(@game.id)
+    @game.players << Player.create(user_id: 2) if params[:ai]
+    @game.save
+    if @game.players.count == 1
+      redirect_to njt_game_pregame_url(@game)
     else
-      flash[:notice] ||= []
-      flash[:notice] << @game.errors.full_messages
-      redirect_to :root
+      @game.setup_game
+
+      if @game.save
+        redirect_to njt_game_url(@game.id)
+      else
+        flash[:notice] ||= []
+        flash[:notice] << @game.errors.full_messages
+        redirect_to :root
+      end
     end
+  end
+
+  def enqueue
+    @queue = Game.find_by_queue(true)
+
+    if @queue.nil?
+      @queue = Game.create(phase: "play", queue: true)
+      @queue.players << Player.create(user_id: current_user.id)
+      flash[:notice] ||= []
+      flash[:notice] << "Waiting for another player..."
+      redirect_to njt_pregame_url(@queue)
+    elsif @queue.players.count > 1
+      @queue.update_attributes(queue: false)
+      enqueue
+    else
+      @queue.players << Player.create(user_id: current_user.id)
+      @queue.update_attributes(queue: false)
+      redirect_to njt_game_url(@queue)
+    end
+  end
+
+  def pregame
+    @game = Game.find(params[:game_id])
   end
 
   def show
     @game = Game.find(params[:id])
-    @white = @game.players.first
-    @black = @game.players.last
-    @player = current_user == @white.user ? @white : @black
+    @white = @game.players[0]
+
+    if @game.players.count == 1
+      if current_user == @white.user
+        flash[:notice] ||= []
+        flash[:notice] << "Waiting for another player..."
+        redirect_to njt_game_pregame_url(@game)
+        return
+      else
+        @game.players << Player.create(user_id: current_user.id)
+        @game.setup_game
+        @game.save
+      end
+    end
+
+    @black = @game.players[1]
+
+    if current_user == @white.user
+      @player = @white
+    elsif current_user == @black.user
+      @player = @black
+    end
+
     @color = @player == @white ? "white" : "black"
     @discards = @game.cards.where(location: "discard")
     @deck = @game.cards.where(location: "deck")
+
+    if @player.nil?
+      flash[:notice] ||= []
+      flash[:notice] << "Spectating is currently disabled."
+      redirect_to njt_splash_url
+      return
+    end
   end
 
   def update
@@ -66,6 +120,15 @@ class Njt::GamesController < ApplicationController
 
 
   private
+    def auth_only!
+      unless user_signed_in?
+        flash[:notice] ||= []
+        flash[:notice] << "Must be signed in to play (if you don't have " +
+                          "an account, try signing in as a guest!)"
+        redirect_to :out
+      end
+    end
+
     def draw(params)
       @game.deal(params[:drawn_cards], @player)
       if params[:overheating] != "false"

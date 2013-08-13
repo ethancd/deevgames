@@ -20,8 +20,8 @@ require "debugger"
   #       redirect_to @game
   #     end
   #   else
-  #     flash[:notices] ||= []
-  #     flash[:notices] << "Waiting for opponent"
+  #     flash[:notice] ||= []
+  #     flash[:notice] << "Waiting for opponent"
   #     redirect_to @game
   #   end
   # end
@@ -282,20 +282,20 @@ module GamesHelper
     if LEGAL_SHOTS[action["value"].to_i].include?(paper_tanks.find{|t| !t[:fake] }[:position])
       true
     else
-      flash[:notices] ||= []
-      flash[:notices] << "That shot is out of range."
+      flash[:notice] ||= []
+      flash[:notice] << "That shot is out of range."
       false
     end
   end
 
   def valid_move?(action, paper_tanks)
     if action["dir"] == "forward" && paper_tanks.find{|t| !t[:fake] && t[:position] == 3}
-      flash[:notices] ||= []
-      flash[:notices] << "Can't move further up."
+      flash[:notice] ||= []
+      flash[:notice] << "Can't move further up."
       false
     elsif action["dir"] == "back" && paper_tanks.find{|t| !t[:fake] && t[:position] == 1}
-      flash[:notices] ||= []
-      flash[:notices] << "Can't move further back."
+      flash[:notice] ||= []
+      flash[:notice] << "Can't move further back."
       false
     else
       true
@@ -304,12 +304,12 @@ module GamesHelper
 
   def valid_feint?(action, paper_tanks)
     if action["dir"] == "forward" && paper_tanks.map{|t| t[:position]}.min == 3
-      flash[:notices] ||= []
-      flash[:notices] << "Can't pretend to move further up."
+      flash[:notice] ||= []
+      flash[:notice] << "Can't pretend to move further up."
       false
     elsif action["dir"] == "back" && paper_tanks.map{|t| t[:position]}.max == 1
-      flash[:notices] ||= []
-      flash[:notices] << "Can't pretend to move further back."
+      flash[:notice] ||= []
+      flash[:notice] << "Can't pretend to move further back."
       false
     else
       true
