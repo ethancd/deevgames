@@ -87,13 +87,16 @@ class Njt::GamesController < ApplicationController
     @game = Game.find(params[:id])
     @player = @game.players.find_by_user_id(current_user.id)
 
-    case params[:phase]
-    when "draw"
-      draw(params)
-      ai_draw if ai?
-      @game.phase = "play"
-    when "play"
-      if play(params)
+    @player.ready = true
+    play(params) if params[:phase] == "play"
+
+    if @game.players.all?{|p| p.ready}
+      case params[:phase]
+      when "draw"
+        draw(params)
+        ai_draw if ai?
+        @game.phase = "play"
+      when "play"
         ai_play if ai?
         resolve_all_actions
 
@@ -102,20 +105,25 @@ class Njt::GamesController < ApplicationController
         else
           @game.phase = "discard"
         end
+      when "discard"
+        if params[:discarded_cards]
+          discard(params[:discarded_cards].map{ |discard| discard[1] }, @player)
+        end
+        ai_discard if ai?
+        @game.phase = "draw"
       end
 
-    when "discard"
-      if params[:discarded_cards]
-        discard(params[:discarded_cards].map{ |discard| discard[1] }, @player)
-      end
-      ai_discard if ai?
-      @game.phase = "draw"
+      @game.players.update_attributes(ready: false)
+      @ai.update_attributes(ready: true) if ai?
+      @game.save
+
+      show #fix this so it returns something sensible to ajax calls
+      render :show
+    else
+      flash[:notice] ||= []
+      flash[:notice] << "Waiting for opponent"
+      render #the params somehow? so they can be resubmitted?
     end
-
-    @game.save
-
-    show
-    render :show
   end
 
 

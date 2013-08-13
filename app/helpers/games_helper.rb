@@ -1,30 +1,4 @@
 require "debugger"
-  # def advance_phase(next_phase)
-  #   @current_user == @game.p1 ? @game.p1_done = true : @game.p2_done = true
-  #
-  #   if next_phase == "discard" || next_phase == "game_over"
-  #     @game.p1_done = true
-  #     @game.p2_done = true
-  #   end
-  #
-  #   @game.save
-  #
-  #   if @game.p1_done && @game.p2_done
-  #     @game.phase = next_phase
-  #     @game.p1_done = @game.p2_done = false
-  #     @game.save
-  #
-  #     if next_phase == "resolution"
-  #       resolve(@game, self)
-  #     else
-  #       redirect_to @game
-  #     end
-  #   else
-  #     flash[:notice] ||= []
-  #     flash[:notice] << "Waiting for opponent"
-  #     redirect_to @game
-  #   end
-  # end
 
 module GamesHelper
   LEGAL_SHOTS = {1 => [3], 2 => [2,3], 3 => [1,2,3] }

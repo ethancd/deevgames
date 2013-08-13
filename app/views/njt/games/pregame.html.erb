@@ -2,3 +2,9 @@
   <h4>Invite your friend!</h4>
   <em>share this url: <%= njt_game_url(@game) %></em>
 </section>
+
+<script>
+setTimeout(function(){
+   window.location.href="<%= njt_game_url(@game)%>";
+}, 10000);
+</script>
