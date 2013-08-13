@@ -1,5 +1,6 @@
 class Game < ActiveRecord::Base
-  attr_accessible :phase, :result, :queue
+  LEGAL_SHOTS = {1 => [3], 2 => [2,3], 3 => [1,2,3] }
+  attr_accessible :phase, :result, :queue, :winner_id, :loser_id
 
   has_many :players
   has_many :users, through: :players
@@ -9,31 +10,55 @@ class Game < ActiveRecord::Base
   has_many :tanks
   has_many :comments, as: :topic
 
+  belongs_to :winner, class_name: User
+  belongs_to :loser, class_name: User
+
   #validate :players_not_the_same
   validates :phase, presence: true,
               inclusion: { in: %w[draw play discard game_over]}
 
   def setup_game
     self.phase = "play"
-
     self.cards = Card.setup_deck(self.id)
     self.damage_tokens = DamageToken.setup_stack(self.id)
 
     self.players.each do |player|
       self.tanks << Tank.create(game_id: self.id, player_id: player.id,
       fake: false, position: 2)
-      # self.tanks << Tank.create(game_id: self.id, player_id: player.id,
-      # fake: true, position: rand < 0.5 ? 3 : 1)
 
       deal(3, player)
-      # harm(4, player, false)
+      player.cards.each{|card| card.update_attributes(location: "hand")}
     end
+  end
 
-    # 10.times do
-    #   card = self.cards.where(location: "deck").sample
-    #   card.location = "discard"
-    #   card.save
-    # end
+  def game_over(current_user)
+    self.phase = "game_over"
+    self.players.each{|player| player.update_attributes(ready: false)}
+
+    if self.players.all?{|player| player.damage < 9}
+      self.update_attributes(loser_id: current_user.id,
+      winner_id: opponent_id(current_user),
+      result: "quit")
+    else
+      if self.players[0].damage >= 9 && self.players[1].damage >= 9
+        self.result = "tie"
+      else
+        self.players.each_with_index do |player, i|
+          if player.damage >= 9
+            self.loser_id = player.user_id
+          else
+            self.winner_id = player.user_id
+            self.result = i == 0 ? "white_victory" : "black_victory"
+          end
+        end
+      end
+
+      self.save
+    end
+  end
+
+  def opponent_id(current_user)
+    (self.players.map(&:user) - [current_user])[0].id
   end
 
   def deal(n, player)
@@ -70,6 +95,117 @@ class Game < ActiveRecord::Base
       token.save!
     end
   end
+
+  def resolve_all_actions
+    players = self.players
+
+    overheat(players)
+    move(players)
+    shoot(players)
+  end
+
+  def overheat(players)
+    players.each do |player|
+      if player.cards.where(location: "action").count == 2
+        self.harm(2, player, false)
+      end
+    end
+  end
+
+  def move(players)
+    players.each do |player|
+      player.cards.where(location: "action").each do |action|
+        if action.action_type == "feint" || action.action_type == "move"
+          p "*********************************************"
+          p action
+          p "**********************************************"
+          resolve_move(action, player)
+          action.player_id = nil
+          action.location = "discard"
+          action.save
+        end
+      end
+    end
+  end
+
+  def shoot(players)
+    players.each do |player|
+      player.cards.where(location: "action").each do |action|
+        p "*********************************************"
+        p action
+        p "**********************************************"
+        resolve_shot(action, player)
+        action.player_id = nil
+        action.location = "discard"
+        action.save
+      end
+    end
+  end
+
+  def resolve(action, tanks)
+    if action["action_type"] == "shot"
+      resolve_shot(action, tanks.first.player)
+    else
+      resolve_move(action, tanks.first.player)
+    end
+  end
+
+  def resolve_move(action, player)
+    dx = action["dir"] == "forward" ? 1 : -1
+    temp_tanks = []
+
+    player.tanks.each do |tank|
+      unless [0,4].include?(tank.position + dx)
+        t = Tank.new(player_id: player.id, game_id: self.id,
+                     position: tank.position + dx)
+        if action["action_type"] == "move" && !tank.fake
+          t.fake = false
+          tank.fake = true
+        else
+          t.fake = true
+        end
+        t.save
+        temp_tanks << t
+      end
+      tank.save
+      temp_tanks << tank
+    end
+
+    player.tanks = temp_tanks
+
+    unless player.tanks.pluck(:position).uniq.count == player.tanks.count
+      needed_tanks = []
+      player.tanks.pluck(:position).uniq.each do |pos|
+        real = player.tanks.find_by_position_and_fake(pos, false)
+        if real.nil?
+          needed_tanks << player.tanks.find_by_position(pos)
+        else
+          needed_tanks << real
+        end
+      end
+
+      player.tanks = needed_tanks
+    end
+    player.tanks.map(&:save)
+  end
+
+  def resolve_shot(action, player)
+    enemy = player == self.players.first ? self.players.last : self.players.first
+
+    not_spots = [1,2,3] - LEGAL_SHOTS[action[:value].to_i]
+    player.tanks.where(position: not_spots).map(&:destroy)
+
+    if enemy.tanks.find_by_position_and_fake(action[:value], false)
+      self.harm(3, enemy, false)
+
+      enemy.tanks = [enemy.tanks.create(game_id: self.id,
+        position: action[:value].to_i, fake: false)]
+    else
+      target = enemy.tanks.find_by_position(action[:value])
+      target.destroy unless target.nil?
+    end
+  end
+
 
   private
     def players_not_the_same

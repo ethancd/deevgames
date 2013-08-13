@@ -17,7 +17,7 @@ DeevGamesDevelopment::Application.routes.draw do
     get "/", to: "splash#index", as: :splash
     resources :feedback, only: [:new]
     resources :rules, only: [:show]
-    resources :games, only: [:create, :show, :update] do
+    resources :games, only: [:create, :show, :update, :destroy] do
       get "pregame", to: "games#pregame"
     end
     post "enqueue", to: "games#enqueue"

@@ -9,8 +9,9 @@
           ><%= @game.phase.split("_").map(&:capitalize).join(" ") %>
         <% end %>
       </h3>
-      <button>Quit</button>
-      <button>Skip Turn</button>
+      <%= button_to "Quit",
+          njt_game_url(@game), method: :delete,
+          data: { confirm: "Are you sure? You will lose the game." } %>
     </header>
 
     <section class="board group">

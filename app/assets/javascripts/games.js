@@ -358,13 +358,15 @@ var Game = (function(){
     dropify($(".hand"), handIn, handOut)
 
     $(".confirm").on("click", function(){
-      var discards = [""]
+      var discards = []
       $(".discarded").each(function(){
         card = {}
         card.value = $(this).attr("data-info")[0]
         card.dir = $(this).attr("data-info").slice(2)
         discards.push(card)
       })
+
+      console.log(discards)
 
       $.ajax({
         url: window.gameUrl,

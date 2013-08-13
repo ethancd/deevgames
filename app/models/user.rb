@@ -13,6 +13,8 @@ class User < ActiveRecord::Base
 
   has_many :played_games, class_name: Player
   has_many :games, through: :played_games
+  has_many :won_games, class_name: Game, foreign_key: :winner_id
+  has_many :lost_games, class_name: Game, foreign_key: :loser_id
 
   has_attached_file :avatar, {
       styles: {

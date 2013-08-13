@@ -1,3 +1,4 @@
+require "debugger"
 class Njt::GamesController < ApplicationController
   include GamesHelper
 
@@ -96,41 +97,45 @@ class Njt::GamesController < ApplicationController
     unless @player.ready
       case params[:phase]
       when "draw"
-        drawify(params[:drawn_cards], @player)
-        ai_draw if ai?
+        @player.drawify(params[:drawn_cards])
+        @ai.ai_draw if ai?
         @player.update_attributes(ready: true)
       when "play"
-        if play(params)
-          ai_play if ai?
+        if @player.play(params)
+          @ai.ai_play if ai?
           @player.update_attributes(ready: true)
         end
       when "discard"
-        trashify(params[:discarded_cards].map{ |discard| discard[1] }, @player)
-        ai_discard if ai?
+        @player.trashify(params[:discarded_cards])
+        @ai.ai_discard if ai?
         @player.update_attributes(ready: true)
       end
     end
 
-    if @game.players.all?{|p| p.ready}
+    if @game.players(reload: true).all?{|p| p.ready}
       @game.players.each_with_index do |player, play_resolved|
         player.update_attributes(ready: false)
 
         case params[:phase]
         when "draw"
           drawn = player.cards.where(location: "drawn")
-          draw(drawn, player)
+          player.draw(drawn)
           @game.phase = "play"
+          if player.legal_plays.empty?
+            @game.harm(10, player, false)
+            @game.game_over(current_user)
+          end
         when "play"
           next if play_resolved == 1
-          resolve_all_actions
+          @game.resolve_all_actions
           if @game.players.any?{ |player| player.damage >= 9 }
-            @game.phase = "game_over"
+            @game.game_over(current_user)
           else
             @game.phase = "discard"
           end
         when "discard"
           trashed = player.cards.where(location: "trashed")
-          discard(trashed, player)
+          player.discard(trashed)
           @game.phase = "draw"
         end
       end
@@ -148,6 +153,18 @@ class Njt::GamesController < ApplicationController
     end
   end
 
+  def destroy
+    @game = Game.find(params[:id])
+    @game.game_over(current_user)
+
+    if @game.result == "quit"
+      flash[:notice] ||= []
+      flash[:notice] << "You have quit the game"
+      redirect_to njt_splash_url
+    else
+      redirect_to njt_game_url(@game)
+    end
+  end
 
   private
     def auth_only!
@@ -159,63 +176,12 @@ class Njt::GamesController < ApplicationController
       end
     end
 
-    def draw(drawn, player)
-      real = player.tanks.find_by_fake(false).position
-      minimum = player.tanks.where(fake: true).pluck(:position).min || 0
-
-      drawn.each do |card|
-        card.update_attributes(location: "hand")
-      end
-
-      @game.harm(2, player, drawn.count <= real) if drawn.count > minimum
-    end
-
-    def play(params)
-      paper_tanks = @player.tanks.map do |tank|
-        {position: tank.position, fake: tank.fake}
-      end
-
-      @actions = params[:actions].map{ |action| action[1] }
-      loop_over(paper_tanks)
-
-      if @actions.empty?
-        actify(params[:actions].map{ |action| action[1] }, @player)
-        true
+    def ai?
+      if @game.players.last.user_id == 2
+        @human, @ai = @game.players
       else
-        #raise errors
         false
       end
     end
 
-    def discard(trashed, player)
-      trashed.each do |card|
-        card.player_id = nil
-        card.location = "discard"
-        card.save!
-      end
-    end
-
-    def drawify(count, player)
-      @game.deal(count.to_i, player)
-    end
-
-    def trashify(discards, player)
-      return if discards = [nil]
-      discards.each do |discard|
-        card = player.cards.find_by_value_and_dir(
-          discard["value"].to_i, discard["dir"])
-        card.location = "trashed"
-        card.save!
-      end
-    end
-
-    def actify(actions, player)
-      actions.each do |action|
-        card = player.cards.where(location: "hand").find_by_value_and_dir(
-          action["value"].to_i, action["dir"])
-        card.location = "action"
-        card.action_type = action["action_type"]
-        card.save!
-      end
-    end
 end
