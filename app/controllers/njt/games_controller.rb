@@ -36,9 +36,11 @@ class Njt::GamesController < ApplicationController
     case params[:phase]
     when "draw"
       draw(params)
+      ai_draw if ai?
       @game.phase = "play"
     when "play"
       if play(params)
+        ai_play if ai?
         if @game.players.any?{ |player| player.damage >= 9 }
           @game.phase = "game_over"
         else
@@ -47,7 +49,8 @@ class Njt::GamesController < ApplicationController
       end
 
     when "discard"
-      discard(params[:discarded_cards]) if params[:discarded_cards]
+      discard(params[:discarded_cards], @player) if params[:discarded_cards]
+      ai_discard if ai?
       @game.phase = "draw"
     end
 
@@ -87,7 +90,7 @@ class Njt::GamesController < ApplicationController
         end
 
         @game.harm(2, @player, false) unless params[:overheating] == "false"
-        discard(params[:actions])
+        discard(params[:actions], @player)
         true
       else
         #raise errors
@@ -95,9 +98,10 @@ class Njt::GamesController < ApplicationController
       end
     end
 
-    def discard(discards)
+    def discard(discards, player)
       discards.each do |discard|
-        card = @player.cards.find_by_value_and_dir(discard[1]["value"].to_i, discard[1]["dir"])
+        card = player.cards.find_by_value_and_dir(
+          discard[1]["value"].to_i, discard[1]["dir"])
         card.player_id = nil
         card.location = "discard"
         card.save!

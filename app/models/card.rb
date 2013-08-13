@@ -2,7 +2,7 @@ class Card < ActiveRecord::Base
   attr_accessible :dir, :game_id, :location, :player_id, :shot, :value
 
   belongs_to :game
-  belongs_to :player, class_name: User
+  belongs_to :player
 
   validates :dir, :value, :game, :location, presence: true
   validates :dir,      inclusion: {in: %w[forward back]}
