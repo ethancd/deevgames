@@ -101,9 +101,9 @@ var Game = (function(){
         if ($one.html() || $two.html()) {
           $(".warning").removeClass("hidden")
 
-          if (($one.find("img") === undefined ||
+          if (($one.find("img").length == 0 ||
                $one.find("img").css("opacity") == "0.5") &&
-              ($two.find("img") === undefined ||
+              ($two.find("img").length == 0 ||
                $two.find("img").css("opacity") == "0.5")){
             $(".warning").addClass("fake")
             overheating = {fake: true}
