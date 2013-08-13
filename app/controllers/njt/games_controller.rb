@@ -77,11 +77,13 @@ class Njt::GamesController < ApplicationController
       if @actions.empty?
         actions = params[:actions].map{ |action| action[1] }
         2.times do |i|
+          finished_actions = []
           actions.each do |action|
             next if i == 0 && action["type"] == "shot"
             resolve(action, @player.tanks)
-            actions.delete(action)
+            finished_actions << action
           end
+          actions -= finished_actions
         end
 
         @game.harm(2, @player, false) unless params[:overheating] == "false"

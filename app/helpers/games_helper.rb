@@ -56,26 +56,29 @@ module GamesHelper
   end
 
   def loop_over_moves(paper_tanks)
+    finished_actions = []
     @actions.each do |action|
       next if action["type"] == "shot"
-
+      debugger
       if valid?(action, paper_tanks)
         paper_tanks = trial_move(action, paper_tanks)
-        @actions.delete(action)
+        finished_actions << action
       end
     end
-
+    @actions -= finished_actions
     paper_tanks
   end
 
   def loop_over_shots(paper_tanks)
+    finished_actions = []
     @actions.each do |action|
       next unless action["type"] == "shot"
 
       if valid?(action, paper_tanks)
-        @actions.delete(action)
+        finished_actions << action
       end
     end
+    @actions -= finished_actions
   end
 
   def resolve(action, tanks)
@@ -91,7 +94,6 @@ module GamesHelper
   end
 
   def trial_move(action, paper_tanks)
-    debugger
     dx = action["dir"] == "forward" ? 1 : -1
     temp_tanks = []
 
@@ -152,6 +154,8 @@ module GamesHelper
   def resolve_shot(action)
     @enemy = @player == @game.players.first ? @game.players.last : @game.players.first
 
+    p @enemy.tanks.pluck(:position)
+
     not_spots = [1,2,3] - LEGAL_SHOTS[action[:value].to_i]
     @player.tanks.where(position: not_spots).map(&:destroy)
 
@@ -185,11 +189,11 @@ module GamesHelper
   end
 
   def valid_move?(action, paper_tanks)
-    if action["dir"] == "forward" && paper_tanks.find{|t| !t[:fake] && [:position] == 3}
+    if action["dir"] == "forward" && paper_tanks.find{|t| !t[:fake] && t[:position] == 3}
       flash[:notices] ||= []
       flash[:notices] << "Can't move further up."
       false
-    elsif action["dir"] == "back" && paper_tanks.find{|t| !t[:fake] && [:position] == 1}
+    elsif action["dir"] == "back" && paper_tanks.find{|t| !t[:fake] && t[:position] == 1}
       flash[:notices] ||= []
       flash[:notices] << "Can't move further back."
       false
@@ -199,11 +203,11 @@ module GamesHelper
   end
 
   def valid_feint?(action, paper_tanks)
-    if action["dir"] == "forward" && paper_tanks.min_by{|t| t[:position]} == 3
+    if action["dir"] == "forward" && paper_tanks.map{|t| t[:position]}.min == 3
       flash[:notices] ||= []
       flash[:notices] << "Can't pretend to move further up."
       false
-    elsif action["dir"] == "back" && paper_tanks.max_by{|t| t[:position]} == 1
+    elsif action["dir"] == "back" && paper_tanks.map{|t| t[:position]}.max == 1
       flash[:notices] ||= []
       flash[:notices] << "Can't pretend to move further back."
       false

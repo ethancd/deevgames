@@ -160,7 +160,9 @@ var Display = (function(){
   <% end %>
 
   var totalDamage = function(){
-    $("." + playerColor + ".info").append("<li>" + damage + " damage</li>");
+    if (damage > 0){
+      $("." + playerColor + ".info").append("<li>" + damage + " damage</li>");
+    }
   };
 
   var tankDisplay = function(){

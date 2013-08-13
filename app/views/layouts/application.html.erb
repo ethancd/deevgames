@@ -15,6 +15,9 @@
 
     <p class="notice"><%= notice %></p>
     <p class="alert"><%= alert %></p>
+    <% flash[:notices].try(:each) do |msg| %>
+      <%= msg %>
+    <% end %>
     <%= debug params %>
 
     <%= yield %>
