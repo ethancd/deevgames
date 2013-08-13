@@ -2,8 +2,15 @@
   <section class="game-field">
     <header class="group">
       <div class="damage_token" data-fd="true"></div>
-      <h3><%= @game.phase.split("_").map(&:capitalize).join(" ") %></h3>
+      <h3
+        <% if @player.ready %>
+          class = "ready">Waiting
+        <% else %>
+          ><%= @game.phase.split("_").map(&:capitalize).join(" ") %>
+        <% end %>
+      </h3>
       <button>Quit</button>
+      <button>Skip Turn</button>
     </header>
 
     <section class="board group">
@@ -25,7 +32,7 @@
             <div class="group"><%= image_tag @white.user.avatar.url(:thumb)%></div>
             <strong><%= @white.user.username %></strong>
           </li>
-          <li><%= "#{@white.cards.count} cards" %></li>
+          <li><%= "#{@white.cards.where(location: ["hand", "action","trashed"]).count} cards" %></li>
           <li><%= "#{@white.damage_tokens.count} tokens"%></li>
         </ul>
       </figure>
@@ -59,7 +66,7 @@
         <ul class="black info">
           <li><%= image_tag @black.user.avatar.url(:thumb) %>
             <strong><%= @black.user.username %></strong></li>
-          <li><%= "#{@black.cards.count} cards" %></li>
+          <li><%= "#{@black.cards.where(location: ["hand", "action","trashed"]).count} cards" %></li>
           <li><%= "#{@black.damage_tokens.count} tokens"%></li>
         </ul>
       </figure>

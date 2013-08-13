@@ -7,7 +7,7 @@ class Card < ActiveRecord::Base
   validates :dir, :value, :game, :location, presence: true
   validates :dir,      inclusion: {in: %w[forward back]}
   validates :value,    inclusion: {in: [1, 2, 3]}
-  validates :location, inclusion: {in: %w[deck hand action discard]}
+  validates :location, inclusion: {in: %w[deck drawn hand action trashed discard]}
 
   def self.setup_deck(game_id)
     deck = []

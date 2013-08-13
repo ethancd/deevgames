@@ -60,8 +60,22 @@ var Game = (function(){
       break;
     case "game_over":
       gameOver();
-      break;
     }
+    if($("h3").hasClass("ready")){
+      setRefreshTimer();
+      freezeAll();
+    }
+  }
+
+  var setRefreshTimer = function() {
+    setTimeout(function(){
+       window.location.reload(1);
+    }, 5000);
+  }
+
+  var freezeAll = function() {
+    $("button.flow").attr("disabled", "disabled")
+    $(".ui-draggable").draggable("destroy")
   }
 
   var phaseDraw = function() {
@@ -344,7 +358,7 @@ var Game = (function(){
     dropify($(".hand"), handIn, handOut)
 
     $(".confirm").on("click", function(){
-      var discards = []
+      var discards = [""]
       $(".discarded").each(function(){
         card = {}
         card.value = $(this).attr("data-info")[0]

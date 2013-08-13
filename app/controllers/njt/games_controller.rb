@@ -6,7 +6,7 @@ class Njt::GamesController < ApplicationController
   def create
     @game = Game.create(phase: "play")
     @game.players << Player.create(user_id: current_user.id)
-    @game.players << Player.create(user_id: 2) if params[:ai]
+    @game.players << Player.create(user_id: 2, ready: true) if params[:ai]
     @game.save
     if @game.players.count == 1
       redirect_to njt_game_pregame_url(@game)
@@ -31,12 +31,18 @@ class Njt::GamesController < ApplicationController
       @queue.players << Player.create(user_id: current_user.id)
       flash[:notice] ||= []
       flash[:notice] << "Waiting for another player..."
-      redirect_to njt_pregame_url(@queue)
+      redirect_to njt_game_pregame_url(@queue)
     elsif @queue.players.count > 1
       @queue.update_attributes(queue: false)
       enqueue
+    elsif @queue.players.first.user == current_user
+      flash[:notice] ||= []
+      flash[:notice] << "Waiting for another player..."
+      redirect_to njt_game_pregame_url(@queue)
     else
       @queue.players << Player.create(user_id: current_user.id)
+      @queue.setup_game
+      @queue.save
       @queue.update_attributes(queue: false)
       redirect_to njt_game_url(@queue)
     end
@@ -73,7 +79,7 @@ class Njt::GamesController < ApplicationController
 
     @color = @player == @white ? "white" : "black"
     @discards = @game.cards.where(location: "discard")
-    @deck = @game.cards.where(location: "deck")
+    @deck = @game.cards.where(location: ["deck", "drawn"])
 
     if @player.nil?
       flash[:notice] ||= []
@@ -87,33 +93,48 @@ class Njt::GamesController < ApplicationController
     @game = Game.find(params[:id])
     @player = @game.players.find_by_user_id(current_user.id)
 
-    @player.ready = true
-    play(params) if params[:phase] == "play"
-
-    if @game.players.all?{|p| p.ready}
+    unless @player.ready
       case params[:phase]
       when "draw"
-        draw(params)
+        drawify(params[:drawn_cards], @player)
         ai_draw if ai?
-        @game.phase = "play"
+        @player.update_attributes(ready: true)
       when "play"
-        ai_play if ai?
-        resolve_all_actions
-
-        if @game.players.any?{ |player| player.damage >= 9 }
-          @game.phase = "game_over"
-        else
-          @game.phase = "discard"
+        if play(params)
+          ai_play if ai?
+          @player.update_attributes(ready: true)
         end
       when "discard"
-        if params[:discarded_cards]
-          discard(params[:discarded_cards].map{ |discard| discard[1] }, @player)
-        end
+        trashify(params[:discarded_cards].map{ |discard| discard[1] }, @player)
         ai_discard if ai?
-        @game.phase = "draw"
+        @player.update_attributes(ready: true)
+      end
+    end
+
+    if @game.players.all?{|p| p.ready}
+      @game.players.each_with_index do |player, play_resolved|
+        player.update_attributes(ready: false)
+
+        case params[:phase]
+        when "draw"
+          drawn = player.cards.where(location: "drawn")
+          draw(drawn, player)
+          @game.phase = "play"
+        when "play"
+          next if play_resolved == 1
+          resolve_all_actions
+          if @game.players.any?{ |player| player.damage >= 9 }
+            @game.phase = "game_over"
+          else
+            @game.phase = "discard"
+          end
+        when "discard"
+          trashed = player.cards.where(location: "trashed")
+          discard(trashed, player)
+          @game.phase = "draw"
+        end
       end
 
-      @game.players.update_attributes(ready: false)
       @ai.update_attributes(ready: true) if ai?
       @game.save
 
@@ -122,7 +143,8 @@ class Njt::GamesController < ApplicationController
     else
       flash[:notice] ||= []
       flash[:notice] << "Waiting for opponent"
-      render #the params somehow? so they can be resubmitted?
+      show
+      render :show
     end
   end
 
@@ -137,11 +159,15 @@ class Njt::GamesController < ApplicationController
       end
     end
 
-    def draw(params)
-      @game.deal(params[:drawn_cards], @player)
-      if params[:overheating] != "false"
-        @game.harm(2, @player, params[:overheating][:fake])
+    def draw(drawn, player)
+      real = player.tanks.find_by_fake(false).position
+      minimum = player.tanks.where(fake: true).pluck(:position).min || 0
+
+      drawn.each do |card|
+        card.update_attributes(location: "hand")
       end
+
+      @game.harm(2, player, drawn.count <= real) if drawn.count > minimum
     end
 
     def play(params)
@@ -153,7 +179,7 @@ class Njt::GamesController < ApplicationController
       loop_over(paper_tanks)
 
       if @actions.empty?
-        active_cards(params[:actions].map{ |action| action[1] }, @player)
+        actify(params[:actions].map{ |action| action[1] }, @player)
         true
       else
         #raise errors
@@ -161,17 +187,29 @@ class Njt::GamesController < ApplicationController
       end
     end
 
-    def discard(discards, player)
-      discards.each do |discard|
-        card = player.cards.find_by_value_and_dir(
-          discard["value"].to_i, discard["dir"])
+    def discard(trashed, player)
+      trashed.each do |card|
         card.player_id = nil
         card.location = "discard"
         card.save!
       end
     end
 
-    def active_cards(actions, player)
+    def drawify(count, player)
+      @game.deal(count.to_i, player)
+    end
+
+    def trashify(discards, player)
+      return if discards = [nil]
+      discards.each do |discard|
+        card = player.cards.find_by_value_and_dir(
+          discard["value"].to_i, discard["dir"])
+        card.location = "trashed"
+        card.save!
+      end
+    end
+
+    def actify(actions, player)
       actions.each do |action|
         card = player.cards.where(location: "hand").find_by_value_and_dir(
           action["value"].to_i, action["dir"])

@@ -303,7 +303,13 @@ section.njt.game {
 
     ul.hand {
       width: 800px;
+      height: 142px;
       margin: 25px auto;
+
+      &.phased {
+        box-shadow: 0px 0px 40px #fff;
+      }
+
       li {
         float: left;
         margin: 0px 15px;

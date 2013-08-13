@@ -60,21 +60,19 @@ module GamesHelper
 
   def ai_draw
     if @ai.tanks.count == 1
-      @game.deal(@ai.tanks.first.position, @ai)
+      draw(drawify(@ai.tanks.first.position, @ai), @ai)
     else
       real = @ai.tanks.find_by_fake(false).position
       fakes = @ai.tanks.where(fake: true).pluck(:position)
       drawn = rand < 0.5 ? real : fakes.sample
-      @game.deal(drawn, @ai)
-
-      @game.harm(2, @ai, drawn <= real) if drawn > fakes.min
+      draw(drawify(drawn, @ai), @ai)
     end
   end
 
   def ai_play
     # legal = false
     # if rand < 0.7 || @ai.cards.count == 1
-        active_cards([pick_ai_action(legal_plays)], @ai)
+        actify([pick_ai_action(legal_plays)], @ai)
         # legal = !!actions[0]
       # end
     # else

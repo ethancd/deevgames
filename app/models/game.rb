@@ -41,7 +41,7 @@ class Game < ActiveRecord::Base
     if n <= self.cards.where(location: "deck").count
       taken_cards = self.cards.where(location: "deck").sample(n)
       taken_cards.each do |card|
-        card.location = "hand"
+        card.location = "drawn"
         card.player_id = player.id
         card.save
       end

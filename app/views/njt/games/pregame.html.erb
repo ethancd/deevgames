@@ -1,6 +1,12 @@
 <section class="content new-game">
-  <h4>Invite your friend!</h4>
-  <em>share this url: <%= njt_game_url(@game) %></em>
+  <% if @game.queue %>
+    <h4>Finding you an opponent... sit tight.</h4>
+    <em>(oh, and you can still invite a friend instead!
+      just share this url: <%= njt_game_url(@game) %> )</em>
+  <% else %>
+    <h4>Invite your friend!</h4>
+    <em>share this url: <%= njt_game_url(@game) %></em>
+  <% end %>
 </section>
 
 <script>
