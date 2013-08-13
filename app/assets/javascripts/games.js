@@ -367,7 +367,7 @@ var Game = (function(){
   }
 
   var gameOver = function() {
-
+    $(".game-over").removeClass("hidden")
   }
 
   return {

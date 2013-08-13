@@ -114,6 +114,12 @@
         </li>
       <% end %>
     </ul>
+    <section class='game-over hidden'>
+      <strong>The game is over! Congratulations/Condolences.</strong>
+      <br>
+      <%= button_to "Replay vs. AI?", {controller: "njt/games", action: "create", ai: true}%>
+    </section>
+
   </section>
 
   <aside class="chat">

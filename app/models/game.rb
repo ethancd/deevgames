@@ -21,7 +21,8 @@ class Game < ActiveRecord::Base
     self.damage_tokens = DamageToken.setup_stack(self.id)
 
     self.players.each do |player|
-      self.tanks << Tank.create(game_id: self.id, player_id: player.id, position: 2)
+      self.tanks << Tank.create(game_id: self.id, player_id: player.id,
+      fake: false, position: 2)
       self.tanks << Tank.create(game_id: self.id, player_id: player.id,
       fake: true, position: rand < 0.5 ? 3 : 1)
 
@@ -59,15 +60,15 @@ class Game < ActiveRecord::Base
   end
 
   def harm(n, player, fake)
-    if n > self.damage_tokens.count
-      self.damage_tokens = DamageToken.setup_stack(self.id)
+    if n > self.damage_tokens.where(player_id: nil).count
+      self.damage_tokens += DamageToken.setup_stack(self.id)
     end
 
-    grabbed_tokens = self.damage_tokens.sample(n)
+    grabbed_tokens = self.damage_tokens.where(player_id: nil).sample(n)
     grabbed_tokens.sort_by(&:value)[0...-1].each do |token|
       token.player_id = player.id
       token.fake = fake
-      token.save
+      token.save!
     end
   end
 

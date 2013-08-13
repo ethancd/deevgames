@@ -1,123 +1,175 @@
+require "debugger"
+  # def advance_phase(next_phase)
+  #   @current_user == @game.p1 ? @game.p1_done = true : @game.p2_done = true
+  #
+  #   if next_phase == "discard" || next_phase == "game_over"
+  #     @game.p1_done = true
+  #     @game.p2_done = true
+  #   end
+  #
+  #   @game.save
+  #
+  #   if @game.p1_done && @game.p2_done
+  #     @game.phase = next_phase
+  #     @game.p1_done = @game.p2_done = false
+  #     @game.save
+  #
+  #     if next_phase == "resolution"
+  #       resolve(@game, self)
+  #     else
+  #       redirect_to @game
+  #     end
+  #   else
+  #     flash[:notices] ||= []
+  #     flash[:notices] << "Waiting for opponent"
+  #     redirect_to @game
+  #   end
+  # end
+
 module GamesHelper
   LEGAL_SHOTS = {1 => [3], 2 => [2,3], 3 => [1,2,3] }
 
-  def resolve(game, controller)
-    players = game.players
+  # def resolve(game, controller)
+  #   players = game.players
+  #
+  #   players.each do |player|
+  #     actions = player.tank.actions
+  #     actions.each do |action|
+  #       if action.direction
+  #         resolve_move(action, player.tank)
+  #         action.destroy
+  #       end
+  #     end
+  #   end
+  #
+  #   players.each do |player|
+  #     player.tank.actions.each do |action|
+  #       resolve_shot(action, player.tank)
+  #       action.destroy
+  #     end
+  #   end
+  #
+  # end
 
-    players.each do |player|
-      actions = player.tank.actions
-      actions.each do |action|
-        if action.direction
-          resolve_move(action, player.tank)
-          action.destroy
+  def loop_over(paper_tanks)
+    loop_over_shots(loop_over_moves(loop_over_moves(paper_tanks)))
+  end
+
+  def loop_over_moves(paper_tanks)
+    @actions.each do |action|
+      next if action["type"] == "shot"
+
+      if valid?(action, paper_tanks)
+        trial_move(action, paper_tanks)
+        @actions.delete(action)
+      end
+    end
+
+    paper_tanks
+  end
+
+  def loop_over_shots(paper_tanks)
+    @actions.each do |action|
+      next unless action["type"] == "shot"
+
+      if valid?(action, paper_tanks)
+        @actions.delete(action)
+      end
+    end
+  end
+
+  def resolve(action, tanks)
+    if action["type"] == "shot"
+      resolve_shot(action)
+    else
+      if tanks.first.class == Hash
+        trial_move(action, tanks)
+      else
+        resolve_move(action)
+      end
+    end
+  end
+
+  def trial_move(action, paper_tanks)
+    dx = action["dir"] == "forward" ? 1 : -1
+    temp_tanks = []
+
+    paper_tanks.each do |tank|
+      unless [0,4].include?(tank[:position] + dx)
+        t = {position: tank[:position] + dx, fake: false}
+        if action["type"] == "move" && !tank[:fake]
+          t[:fake] = false
+          tank[:fake] = true
+        end
+        temp_tanks << t
+      end
+      temp_tanks << tank
+    end
+  end
+
+  def resolve_move(action)
+    dx = action["dir"] == "forward" ? 1 : -1
+    temp_tanks = []
+
+    @player.tanks.each do |tank|
+      unless [0,4].include?(tank.position + dx)
+        t = Tank.new(player_id: @player.id, game_id: @game.id,
+                     position: tank.position + dx)
+        if action["type"] == "move" && !tank.fake
+          t.fake = false
+          tank.fake = true
+        else
+          t.fake = true
+        end
+        t.save
+        temp_tanks << t
+      end
+      tank.save
+      temp_tanks << tank
+    end
+
+    @player.tanks = temp_tanks
+
+    unless @player.tanks.pluck(:position).uniq.count == @player.tanks.count
+      needed_tanks = []
+      @player.tanks.pluck(:position).uniq.each do |pos|
+        real = @player.tanks.find_by_position_and_fake(pos, false)
+        if real.nil?
+          needed_tanks << @player.tanks.find_by_position(pos)
+        else
+          needed_tanks << real
         end
       end
+
+      @player.tanks = needed_tanks
     end
-
-    players.each do |player|
-      player.tank.actions.each do |action|
-        resolve_shot(action, player.tank)
-        action.destroy
-      end
-    end
-
-    if game_over?
-      controller.advance_phase("game_over")
-    else
-      controller.advance_phase("discard")
-    end
+    @player.tanks.map(&:save)
   end
 
-  def precedence_sort(actions)
-    actions
-  end
-
-  def game_over?
-    false
-  end
-
-  def load_game
-    @game = Game.find(params[:id])
-  end
-
-  def setup(game)
-    Deck.setup(game)
-    Pile.setup(game)
-    Tank.setup(game)
-    game.phase = "play"
-    game.save
-  end
-
-  def loop_over_moves(card_actions, tank)
-    card_actions.each do |card_id, action_name|
-      next if ["1","2","3"].include?(action_name)
-
-      card = Card.find(card_id)
-      action = Action.new(get_attrs(card, action_name))
-
-      if valid?(action, tank)
-        resolve_move(action, tank)
-        card_actions.delete(card_id)
-      end
-    end
-    card_actions
-  end
-
-  def loop_over_shots(card_actions, tank)
-    card_actions.each do |card_id, action_name|
-      next if ["up", "down", "feint"].include?(action_name)
-
-      card = Card.find(card_id)
-      action = Action.new(get_attrs(card, action_name))
-
-      if valid?(action, tank)
-        card_actions.delete(card_id)
-      end
-    end
-    card_actions
-  end
-
-  def resolve_move(action, tank)
-    dx = action.direction == "up" ? 1 : -1
-
-    tank.potentials.create(position: tank.actual + dx)
-    tank.actual += dx unless action.feint
-    tank.save
-  end
-
-  def resolve_shot(action, tank)
-    @opponent = @current_user == @game.p1 ? @game.p2 : @game.p1
+  def resolve_shot(action)
+    @enemy = @player == @game.players.first ? @game.players.last : @game.players.first
 
     not_spots = [1,2,3] - LEGAL_SHOTS[action.value]
-    not_posses = tank.potentials.where(position: not_spots)
-    tank.potentials.delete(not_posses)
+    @player.tanks.where(position: not_spots).map(&:destroy)
 
-    if @opponent.tank.actual == action.value
-      @opponent.tank.potentials = @opponent.tank.potentials.build(position: action.value)
-      @game.pile.give_shot(@opponent)
+    if @enemy.tanks.find_by_position(action[:value]).fake
+      @enemy.tanks.find_by_position(action[:value]).destroy
     else
-      misses = @opponent.tank.potentials.where(position: action.value)
-      @opponent.tank.potentials.delete(misses)
+      @game.harm(3, @enemy, false)
+      @enemy.tanks = @enemy.tanks.build(game_id: @game.id, position: action["value"])
     end
   end
 
-  def get_attrs(card, action_name)
-    if action_name == "feint"
-      {feint: true, direction: card.direction}
-    elsif ["up", "down"].include?(action_name)
-      {feint: false, direction: action_name}
-    elsif ["1","2","3"].include?(action_name)
-      {value: action_name}
+  def valid?(action, paper_tanks)
+    case action["type"]
+    when "shot" then valid_shot?(action, paper_tanks)
+    when "move" then valid_move?(action, paper_tanks)
+    when "feint" then valid_feint?(action, paper_tanks)
     end
   end
 
-  def valid?(action, tank)
-    valid_shot?(action, tank) if action.value
-    valid_move?(action, tank) if action.direction
-  end
-
-  def valid_shot?(action, tank)
-    if LEGAL_SHOTS[action.value].include?(tank.actual)
+  def valid_shot?(action, paper_tanks)
+    if LEGAL_SHOTS[action["value"].to_i].include?(paper_tanks.find{|t| !t[:fake] }[:position])
       true
     else
       flash[:notices] ||= []
@@ -126,38 +178,28 @@ module GamesHelper
     end
   end
 
-  def valid_move?(action, tank)
-    return valid_feint?(action, tank) if action.feint
-
-    if action.direction == "up" && tank.actual == 3
+  def valid_move?(action, paper_tanks)
+    if action["dir"] == "forward" && paper_tanks.find{|t| !t[:fake] && [:position] == 3}
       flash[:notices] ||= []
       flash[:notices] << "Can't move further up."
       false
-    elsif action.direction == "back" && tank.actual == 1
+    elsif action["dir"] == "back" && paper_tanks.find{|t| !t[:fake] && [:position] == 1}
       flash[:notices] ||= []
       flash[:notices] << "Can't move further back."
-      false
-    elsif !(["up", "back"].include?(action.direction))
-      flash[:notices] ||= []
-      flash[:notices] << "Move must be up or back."
       false
     else
       true
     end
   end
 
-  def valid_feint?(action, tank)
-    if action.direction == "up" && tank.potentials.min_by(&:position) == 3
+  def valid_feint?(action, paper_tanks)
+    if action["dir"] == "forward" && paper_tanks.min_by{|t| t[:position]} == 3
       flash[:notices] ||= []
       flash[:notices] << "Can't pretend to move further up."
       false
-    elsif action.direction == "back" && tank.potentials.max_by(&:position) == 1
+    elsif action["dir"] == "back" && paper_tanks.max_by{|t| t[:position]} == 1
       flash[:notices] ||= []
       flash[:notices] << "Can't pretend to move further back."
-      false
-    elsif !(["up", "back"].include?(action.direction))
-      flash[:notices] ||= []
-      flash[:notices] << "Move must be up or back."
       false
     else
       true

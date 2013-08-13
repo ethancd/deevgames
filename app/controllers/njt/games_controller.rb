@@ -1,4 +1,5 @@
 class Njt::GamesController < ApplicationController
+  include GamesHelper
 
   def new
     @game = Game.new
@@ -37,12 +38,12 @@ class Njt::GamesController < ApplicationController
       draw(params)
       @game.phase = "play"
     when "play"
-      play(params)
-
-      if @game.players.any?{ |player| player.damage >= 9 }
-        @game.phase = "game_over"
-      else
-        @game.phase = "discard"
+      if play(params)
+        if @game.players.any?{ |player| player.damage >= 9 }
+          @game.phase = "game_over"
+        else
+          @game.phase = "discard"
+        end
       end
 
     when "discard"
@@ -66,10 +67,30 @@ class Njt::GamesController < ApplicationController
     end
 
     def play(params)
-      if params[:overheating] != "false"
-        @game.harm(2, @player, false)
+      paper_tanks = @player.tanks.map do |tank|
+        {position: tank.position, fake: tank.fake}
       end
-      discard(params[:actions])
+
+      @actions = params[:actions].map{ |action| action[1] }
+      loop_over(paper_tanks)
+
+      if @actions.empty?
+        actions = params[:actions].map{ |action| action[1] }
+        2.times do |i|
+          actions.each do |action|
+            next if i == 0 && action["type"] == "shot"
+            resolve(action, @player.tanks)
+            actions.delete(action)
+          end
+        end
+
+        @game.harm(2, @player, false) unless params[:overheating] == "false"
+        discard(params[:actions])
+        true
+      else
+        #raise errors
+        false
+      end
     end
 
     def discard(discards)
