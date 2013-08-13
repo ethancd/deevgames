@@ -99,7 +99,7 @@
 
       <div
       <% if @discards.count > 0 %>
-           class="discard card <%= "shot-down" unless @discards.last.shot %>"
+           class="discard card"
            data-info="<%="#{@discards.last.value}-#{@discards.last.dir}"%>"
       <% else %>
            class="discard"
@@ -109,7 +109,7 @@
 
     <ul class="hand group slot">
       <% @player.cards.each do |card|%>
-        <li class="card <%= "shot-down" unless card.shot %>"
+        <li class="card"
           data-info="<%= "#{card.value}-#{card.dir}" %>">
         </li>
       <% end %>
@@ -195,6 +195,6 @@ $(function(){
   window.gameUrl = "<%= njt_game_url(@game) %>";
   window.playerColor = "<%= @color %>";
   Display.display();
-  Game.activate("<%= @game.phase %>");
+  Game.init("<%= @game.phase %>");
 })
 </script>

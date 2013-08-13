@@ -41,6 +41,8 @@ class Njt::GamesController < ApplicationController
     when "play"
       if play(params)
         ai_play if ai?
+        resolve_all_actions
+
         if @game.players.any?{ |player| player.damage >= 9 }
           @game.phase = "game_over"
         else
@@ -49,7 +51,9 @@ class Njt::GamesController < ApplicationController
       end
 
     when "discard"
-      discard(params[:discarded_cards], @player) if params[:discarded_cards]
+      if params[:discarded_cards]
+        discard(params[:discarded_cards].map{ |discard| discard[1] }, @player)
+      end
       ai_discard if ai?
       @game.phase = "draw"
     end
@@ -78,19 +82,7 @@ class Njt::GamesController < ApplicationController
       loop_over(paper_tanks)
 
       if @actions.empty?
-        actions = params[:actions].map{ |action| action[1] }
-        2.times do |i|
-          finished_actions = []
-          actions.each do |action|
-            next if i == 0 && action["type"] == "shot"
-            resolve(action, @player.tanks)
-            finished_actions << action
-          end
-          actions -= finished_actions
-        end
-
-        @game.harm(2, @player, false) unless params[:overheating] == "false"
-        discard(params[:actions], @player)
+        active_cards(params[:actions].map{ |action| action[1] }, @player)
         true
       else
         #raise errors
@@ -101,9 +93,19 @@ class Njt::GamesController < ApplicationController
     def discard(discards, player)
       discards.each do |discard|
         card = player.cards.find_by_value_and_dir(
-          discard[1]["value"].to_i, discard[1]["dir"])
+          discard["value"].to_i, discard["dir"])
         card.player_id = nil
         card.location = "discard"
+        card.save!
+      end
+    end
+
+    def active_cards(actions, player)
+      actions.each do |action|
+        card = player.cards.where(location: "hand").find_by_value_and_dir(
+          action["value"].to_i, action["dir"])
+        card.location = "action"
+        card.action_type = action["action_type"]
         card.save!
       end
     end

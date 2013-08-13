@@ -1,5 +1,5 @@
 class Card < ActiveRecord::Base
-  attr_accessible :dir, :game_id, :location, :player_id, :shot, :value
+  attr_accessible :dir, :game_id, :location, :player_id, :action_type, :value
 
   belongs_to :game
   belongs_to :player
@@ -7,7 +7,7 @@ class Card < ActiveRecord::Base
   validates :dir, :value, :game, :location, presence: true
   validates :dir,      inclusion: {in: %w[forward back]}
   validates :value,    inclusion: {in: [1, 2, 3]}
-  validates :location, inclusion: {in: %w[deck hand played discard]}
+  validates :location, inclusion: {in: %w[deck hand action discard]}
 
   def self.setup_deck(game_id)
     deck = []
@@ -15,9 +15,8 @@ class Card < ActiveRecord::Base
     [1,2,3].each do |value|
       %w[forward back].each do |dir|
         5.times do
-          shot = rand < 0.5
           deck << Card.create(game_id: game_id, value: value,
-                              dir: dir, location: "deck", shot: shot)
+                              dir: dir, location: "deck")
         end
       end
     end

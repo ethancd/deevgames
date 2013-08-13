@@ -18,7 +18,6 @@
     <% flash[:notices].try(:each) do |msg| %>
       <%= msg %>
     <% end %>
-    <%= debug params %>
 
     <%= yield %>
 

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130808155749) do
+ActiveRecord::Schema.define(:version => 20130813132526) do
 
   create_table "cards", :force => true do |t|
     t.string   "dir"
@@ -19,9 +19,9 @@ ActiveRecord::Schema.define(:version => 20130808155749) do
     t.integer  "player_id"
     t.integer  "game_id"
     t.string   "location"
-    t.boolean  "shot"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+    t.string   "action_type"
   end
 
   create_table "comments", :force => true do |t|

@@ -29,27 +29,52 @@ require "debugger"
 module GamesHelper
   LEGAL_SHOTS = {1 => [3], 2 => [2,3], 3 => [1,2,3] }
 
-  # def resolve(game, controller)
-  #   players = game.players
-  #
-  #   players.each do |player|
-  #     actions = player.tank.actions
-  #     actions.each do |action|
-  #       if action.direction
-  #         resolve_move(action, player.tank)
-  #         action.destroy
-  #       end
-  #     end
-  #   end
-  #
-  #   players.each do |player|
-  #     player.tank.actions.each do |action|
-  #       resolve_shot(action, player.tank)
-  #       action.destroy
-  #     end
-  #   end
-  #
-  # end
+  def resolve_all_actions
+    players = @game.players
+
+    overheat(players)
+    move(players)
+    shoot(players)
+  end
+
+  def overheat(players)
+    players.each do |player|
+      if player.cards.where(location: "action").count == 2
+        @game.harm(2, player, false)
+      end
+    end
+  end
+
+
+  def move(players)
+    players.each do |player|
+      player.cards.where(location: "action").each do |action|
+        if action.action_type == "feint" || action.action_type == "move"
+          p "*********************************************"
+          p action
+          p "**********************************************"
+          resolve_move(action, player)
+          action.player_id = nil
+          action.location = "discard"
+          action.save
+        end
+      end
+    end
+  end
+
+  def shoot(players)
+    players.each do |player|
+      player.cards.where(location: "action").each do |action|
+        p "*********************************************"
+        p action
+        p "**********************************************"
+        resolve_shot(action, player)
+        action.player_id = nil
+        action.location = "discard"
+        action.save
+      end
+    end
+  end
 
   def ai?
     if @game.players.last.user_id == 2
@@ -66,9 +91,6 @@ module GamesHelper
       real = @ai.tanks.find_by_fake(false).position
       fakes = @ai.tanks.where(fake: true).pluck(:position)
       drawn = rand < 0.5 ? real : fakes.sample
-      p real
-      p fakes
-      p drawn
       @game.deal(drawn, @ai)
 
       @game.harm(2, @ai, drawn <= real) if drawn > fakes.min
@@ -76,74 +98,60 @@ module GamesHelper
   end
 
   def ai_play
-    legal_plays = []
+    # legal = false
+    # if rand < 0.7 || @ai.cards.count == 1
+        active_cards([pick_ai_action(legal_plays)], @ai)
+        # legal = !!actions[0]
+      # end
+    # else
+#       until legal
+#         paper_tanks = @ai.tanks.map do |tank|
+#           {position: tank.position, fake: tank.fake}
+#         end
+#
+#         @actions = []
+#         2.times{ @actions << pick_ai_action(legal_plays) }
+#         actions = @actions.dup
+#         next if @actions.map{|a| a["id"]}.uniq.count == 1
+#
+#         loop_over(paper_tanks)
+#         legal = @actions.empty?
+#       end
+#     end
+  end
+
+  def legal_plays
+    plays = []
     paper_tanks = @ai.tanks.map do |tank|
       {position: tank.position, fake: tank.fake}
     end
 
     @ai.cards.each_with_index do |card, i|
-      if valid?({"value"=> card.value, "dir"=> card.dir, "type" => "shot"}, paper_tanks)
-        legal_plays << {value: card.value, dir: card.dir, type: "shot", id: i}
+      if valid?({"value"=> card.value, "dir"=> card.dir, "action_type" => "shot"}, paper_tanks)
+        plays << {"value" => card.value, "dir" => card.dir, "action_type" => "shot", "id" => i}
       end
-      if valid?({"value"=> card.value, "dir"=> card.dir, "type"=> "move"}, paper_tanks)
-        legal_plays << {value: card.value, dir: card.dir, type: "move", id: i}
-        legal_plays << {value: card.value, dir: card.dir, type: "feint", id: i}
-      end
-    end
-
-    legal = false
-    if rand < 0.7 || @ai.cards.count == 1
-      until legal
-        actions = [pick_ai_action(legal_plays)]
-        legal = !!actions[0]
-      end
-    else
-      until legal
-        paper_tanks = @ai.tanks.map do |tank|
-          {position: tank.position, fake: tank.fake}
-        end
-
-        @actions = []
-        2.times{ @actions << pick_ai_action(legal_plays) }
-        actions = @actions.dup
-        next if @actions.map{|a| a[:id]}.uniq.count == 1
-
-        loop_over(paper_tanks)
-        legal = @actions.empty?
+      if valid?({"value"=> card.value, "dir"=> card.dir, "action_type"=> "move"}, paper_tanks)
+        plays << {"value" => card.value, "dir" => card.dir, "action_type" => "move", "id" => i}
+        plays << {"value" => card.value, "dir" => card.dir, "action_type" => "feint", "id" => i}
       end
     end
 
-
-    2.times do |i|
-      finished_actions = []
-      actions.each do |action|
-        next if i == 0 && action["type"] == "shot"
-        resolve(action, @ai.tanks)
-        flash[:notices] ||= []
-        flash[:notices] << action
-        finished_actions << action
-      end
-      actions -= finished_actions
-    end
-
-
-    @game.harm(2, @ai, false) if actions.count == 2
-    discard(actions.map{|a| [0, a]}, @ai)
+    plays
   end
 
-  def pick_ai_action(legal_plays)
-    case rand
-    when 0...0.5
-      legal_plays.select{|p| p[:type] == "shot"}.sample
-    when 0.5...0.8
-      legal_plays.select{|p| p[:type] == "move"}.sample
-    when 0.8...1
-      legal_plays.select{|p| p[:type] == "feint"}.sample
+  def pick_ai_action(plays)
+    shots = plays.select{|p| p["action_type"] == "shot"}
+    if shots.count > 0 && rand < 0.6
+      action = shots.sample
+    else
+      action = (plays - shots).sample
+      rand < 0.8 ? action["action_type"] = "move" : action["action_type"] = "feint"
     end
+    action
   end
 
   def ai_discard
-    discard(@ai.cards.shuffle[3..-1].map{|c| [0, c]}, @ai) if @ai.cards.count > 3
+    discard(@ai.cards.shuffle[3..-1], @ai) if @ai.cards.count > 3
   end
 
   def loop_over(paper_tanks)
@@ -153,7 +161,7 @@ module GamesHelper
   def loop_over_moves(paper_tanks)
     finished_actions = []
     @actions.each do |action|
-      next if action["type"] == "shot"
+      next if action["action_type"] == "shot"
       if valid?(action, paper_tanks)
         paper_tanks = trial_move(action, paper_tanks)
         finished_actions << action
@@ -166,7 +174,7 @@ module GamesHelper
   def loop_over_shots(paper_tanks)
     finished_actions = []
     @actions.each do |action|
-      next unless action["type"] == "shot"
+      next unless action["action_type"] == "shot"
 
       if valid?(action, paper_tanks)
         finished_actions << action
@@ -176,7 +184,7 @@ module GamesHelper
   end
 
   def resolve(action, tanks)
-    if action["type"] == "shot"
+    if action["action_type"] == "shot"
       resolve_shot(action, tanks.first.player)
     else
       if tanks.first.class == Hash
@@ -194,7 +202,7 @@ module GamesHelper
     paper_tanks.each do |tank|
       unless [0,4].include?(tank[:position] + dx)
         t = {position: tank[:position] + dx, fake: true}
-        if action["type"] == "move" && !tank[:fake]
+        if action["action_type"] == "move" && !tank[:fake]
           t[:fake] = false
           tank[:fake] = true
         end
@@ -214,7 +222,7 @@ module GamesHelper
       unless [0,4].include?(tank.position + dx)
         t = Tank.new(player_id: player.id, game_id: @game.id,
                      position: tank.position + dx)
-        if action["type"] == "move" && !tank.fake
+        if action["action_type"] == "move" && !tank.fake
           t.fake = false
           tank.fake = true
         else
@@ -263,7 +271,7 @@ module GamesHelper
   end
 
   def valid?(action, paper_tanks)
-    case action["type"]
+    case action["action_type"]
     when "shot" then valid_shot?(action, paper_tanks)
     when "move" then valid_move?(action, paper_tanks)
     when "feint" then valid_feint?(action, paper_tanks)

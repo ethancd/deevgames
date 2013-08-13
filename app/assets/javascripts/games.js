@@ -47,7 +47,7 @@ var Game = (function(){
     })
   }
 
-  var activate = function(phase) {
+  var init = function(phase) {
     switch(phase) {
     case "draw":
       phaseDraw();
@@ -256,12 +256,12 @@ var Game = (function(){
 
         if ($(this).hasClass("shot-down")) {
           if ($(this).hasClass("feint")) {
-            action.type = "feint"
+            action.action_type = "feint"
           } else {
-            action.type = "move"
+            action.action_type = "move"
           }
         } else {
-          action.type = "shot"
+          action.action_type = "shot"
         }
         actions.push(action)
       })
@@ -371,6 +371,6 @@ var Game = (function(){
   }
 
   return {
-    activate: activate,
+    init: init,
   };
 })();
