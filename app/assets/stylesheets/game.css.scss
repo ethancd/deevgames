@@ -316,27 +316,37 @@ section.njt.game {
       }
     }
   }
-  .chat {
-    float: right;
-    width: 205px;
-    height: 900px;
-    font-size: 14px;
-    border-left: 3px solid $body;
-    display: block;
-    overflow: {
-      x: hidden;
-      y: scroll;
-    }
+  aside {
     h3 {
-      font-size: 250%;
+      @include stencil;
+      text-align: center;
+      font-size: 150%;
     }
 
-    label {
-      font-size: 16px;
-    }
+    .chat {
+      float: right;
+      width: 200px;
+      height: 530px;
+      font-size: 13px;
+      border: 3px solid $body;
+      border-right: 0;
+      display: block;
+      overflow: {
+        x: hidden;
+        y: scroll;
+      }
 
-    li {
-      margin-bottom: 5px;
+      strong, p {
+        display: inline;
+      }
+
+      label {
+        font-size: 16px;
+      }
+
+      li {
+        margin:0px 1px 5px 1px;
+      }
     }
   }
 }

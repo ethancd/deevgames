@@ -1,4 +1,6 @@
 class Player < ActiveRecord::Base
+  include ActionView::Helpers::TextHelper
+
   LEGAL_SHOTS = {1 => [3], 2 => [2,3], 3 => [1,2,3] }
   attr_accessible :game_id, :user_id, :ready
 
@@ -20,14 +22,23 @@ class Player < ActiveRecord::Base
   end
 
   def draw(drawn)
+
     real = self.tanks.find_by_fake(false).position
-    minimum = self.tanks.where(fake: true).pluck(:position).min || 0
+    minimum = self.tanks.pluck(:position).min
     count = drawn.count
     drawn.each do |card|
       card.update_attributes(location: "hand")
     end
 
-    self.game.harm(2, self, count <= real) if count > minimum
+    report = "#{self.user.username} draws #{pluralize(count, "card")}"
+    if count > minimum
+      self.game.harm(2, self, count <= real)
+      report += " and takes overheating damage... or do they?"
+    else
+      report += "."
+    end
+
+    self.game.write(report)
   end
 
   def play(params)
@@ -47,6 +58,9 @@ class Player < ActiveRecord::Base
   end
 
   def discard(trashed)
+    self.game.write("#{self.user.username} discards "+
+                    "#{pluralize(trashed.count, "card")}.")
+
     trashed.each do |card|
       card.player_id = nil
       card.location = "discard"
@@ -200,19 +214,19 @@ class Player < ActiveRecord::Base
 
   def ai_draw
     if self.tanks.count == 1
-      draw(drawify(self.tanks.first.position, self), self)
+      draw(drawify(self.tanks.first.position))
     else
       real = self.tanks.find_by_fake(false).position
       fakes = self.tanks.where(fake: true).pluck(:position)
       drawn = rand < 0.5 ? real : fakes.sample
-      draw(drawify(drawn, self), self)
+      draw(drawify(drawn))
     end
   end
 
   def ai_play
     # legal = false
     # if rand < 0.7 || @ai.cards.count == 1
-        actify([pick_ai_action(legal_plays(self))], self)
+        actify([pick_ai_action(legal_plays)])
         # legal = !!actions[0]
       # end
     # else
@@ -244,6 +258,6 @@ class Player < ActiveRecord::Base
   end
 
   def ai_discard
-    discard(self.cards.shuffle[3..-1], self) if self.cards.count > 3
+    self.cards.count > 3 ? discard(self.cards.shuffle[3..-1]) : discard([])
   end
 end

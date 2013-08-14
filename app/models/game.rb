@@ -17,6 +17,10 @@ class Game < ActiveRecord::Base
   validates :phase, presence: true,
               inclusion: { in: %w[draw play discard game_over]}
 
+  def write(string)
+    self.comments.build({body: string}).save(validate: false)
+  end
+
   def setup_game
     self.phase = "play"
     self.cards = Card.setup_deck(self.id)
@@ -29,6 +33,8 @@ class Game < ActiveRecord::Base
       deal(3, player)
       player.cards.each{|card| card.update_attributes(location: "hand")}
     end
+
+    write("#{self.users[0].username} vs #{self.users[1].username} has begun!")
   end
 
   def game_over(current_user)
@@ -54,6 +60,17 @@ class Game < ActiveRecord::Base
       self.update_attributes(loser_id: current_user.id,
       winner_id: opponent_id(current_user),
       result: "quit")
+    end
+
+    if result == "tie"
+      write("Hahaha, you blew each other up! No winners or losers this time. " +
+            "How 'bout a rematch?")
+    elsif result == "quit"
+      write("Rats, looks like #{self.loser.username} left. " +
+            "#{self.winner.username} wins by technicality!")
+    else
+      write("Game over! #{self.winner.username} has beaten "+
+            "#{self.loser.username}. How 'bout a rematch?")
     end
   end
 
@@ -115,6 +132,8 @@ class Game < ActiveRecord::Base
       players.each do |player|
         if player.cards.where(location: "action").count == 2
           self.harm(2, player, false)
+          write("#{player.user.username} does a double action and takes " +
+                "overheating damage.")
         end
       end
     end
@@ -152,28 +171,34 @@ class Game < ActiveRecord::Base
     end
 
     def resolve_move(action, player)
-      dx = action["dir"] == "forward" ? 1 : -1
+      write("#{player.user.username} moves #{action["dir"]}... or do they?")
+
+      player.tanks = update_tanks(action, player)
+      player.tanks = unify_tanks(player.tanks)
+    end
+
+    def update_tanks(action, player)
       temp_tanks = []
+      dx = action["dir"] == "forward" ? 1 : -1
 
       player.tanks.each do |tank|
         unless [0,4].include?(tank.position + dx)
-          t = Tank.new(player_id: player.id, game_id: self.id,
+          new_tank = Tank.new(player_id: player.id, game_id: self.id,
                        position: tank.position + dx)
+
           if action["action_type"] == "move" && !tank.fake
-            t.fake = false
-            tank.fake = true
+            new_tank.update_attributes(fake: false)
+            tank.update_attributes(fake: true)
           else
-            t.fake = true
+            new_tank.update_attributes(fake: true)
           end
-          t.save
-          temp_tanks << t
+
+          temp_tanks << new_tank
         end
-        tank.save
         temp_tanks << tank
       end
 
-      player.tanks = unify_tanks(player.tanks)
-      player.tanks.map(&:save)
+      temp_tanks
     end
 
     def unify_tanks(tanks)
@@ -188,20 +213,35 @@ class Game < ActiveRecord::Base
     end
 
     def resolve_shot(action, player)
+      report = "#{player.user.username} fires at #{action[:value]}"
       enemy = player == self.players.first ? self.players.last : self.players.first
 
       not_spots = [1,2,3] - LEGAL_SHOTS[action[:value].to_i]
-      player.tanks.where(position: not_spots).map(&:destroy)
+      player.tanks.where(position: not_spots).each_with_index do |decoy, first|
+        if first == 0
+          report += ", abandoning a decoy at #{decoy.position},"
+        else
+          report = report[0...-1] + " and #{decoy.position},"
+        end
+        decoy.destroy
+      end
 
       if enemy.tanks.find_by_position_and_fake(action[:value], false)
         self.harm(3, enemy, false)
-
-        enemy.tanks = [enemy.tanks.create(game_id: self.id,
+        report += " and hits the bullseye."
+        enemy.tanks = [Tank.create(game_id: self.id, player_id: enemy.id,
           position: action[:value].to_i, fake: false)]
       else
         target = enemy.tanks.find_by_position(action[:value])
-        target.destroy unless target.nil?
+        if target.nil?
+          report += " and completely whiffs."
+        else
+          report += " and knocks out a decoy."
+          target.destroy
+        end
       end
+
+      write(report)
     end
 
 end

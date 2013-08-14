@@ -130,13 +130,16 @@
     </section>
   </section>
 
-  <aside class="chat">
+  <aside>
     <h3>Chat</h3>
-    <ul>
+    <ul class="chat">
     <% @game.comments.each do |comment| %>
       <li>
-        <strong><time><%= comment.created_at.utc.strftime("%H:%M") %></time>
-        <%= comment.author.username %>:</strong>
+        <strong><time><%= comment.created_at.strftime("%H:%M") %></time>
+          <% if comment.author %>
+            <%= "#{comment.author.username}:" %>
+          <% end %>
+        </strong>
         <p class="display"><%= comment.body %></p>
       </li>
     <% end %>

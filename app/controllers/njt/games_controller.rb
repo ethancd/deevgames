@@ -96,7 +96,6 @@ class Njt::GamesController < ApplicationController
       case params[:phase]
       when "draw"
         @player.drawify(params[:drawn_cards])
-        @ai.ai_draw if ai?
         @player.update_attributes(ready: true)
       when "play"
         if @player.play(params)
@@ -105,7 +104,6 @@ class Njt::GamesController < ApplicationController
         end
       when "discard"
         @player.trashify(params[:discarded_cards])
-        @ai.ai_discard if ai?
         @player.update_attributes(ready: true)
       end
     end
@@ -117,7 +115,7 @@ class Njt::GamesController < ApplicationController
         case params[:phase]
         when "draw"
           drawn = player.cards.where(location: "drawn")
-          player.draw(drawn)
+          player == ai? ? @ai.ai_draw : player.draw(drawn)
           @game.phase = "play"
           if player.legal_plays.empty?
             @game.harm(10, player, false)
@@ -126,14 +124,14 @@ class Njt::GamesController < ApplicationController
         when "play"
           next if play_resolved == 1
           @game.resolve_all_actions
-          if @game.players.any?{ |player| player.damage >= 9 }
+          if @game.players.any?{ |player| player.destroyed? }
             @game.game_over(current_user)
           else
             @game.phase = "discard"
           end
         when "discard"
           trashed = player.cards.where(location: "trashed")
-          player.discard(trashed)
+          player == ai? ? @ai.ai_discard : player.discard(trashed)
           @game.phase = "draw"
         end
       end
@@ -144,8 +142,8 @@ class Njt::GamesController < ApplicationController
       show #fix this so it returns something sensible to ajax calls
       render :show
     else
-      flash[:notice] ||= []
-      flash[:notice] << "Waiting for opponent"
+      enemy = current_user == @game.users.first ? @game.users.last : @game.users.first
+      @game.write("Waiting for #{enemy.username}.")
       show
       render :show
     end
@@ -176,7 +174,7 @@ class Njt::GamesController < ApplicationController
 
     def ai?
       if @game.players.last.user_id == 2
-        @human, @ai = @game.players
+        @ai = @game.players.last
       else
         false
       end
