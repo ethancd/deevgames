@@ -320,11 +320,23 @@ section.njt.game {
     float: right;
     width: 205px;
     height: 900px;
+    font-size: 14px;
     border-left: 3px solid $body;
     display: block;
-
+    overflow: {
+      x: hidden;
+      y: scroll;
+    }
     h3 {
       font-size: 250%;
+    }
+
+    label {
+      font-size: 16px;
+    }
+
+    li {
+      margin-bottom: 5px;
     }
   }
 }

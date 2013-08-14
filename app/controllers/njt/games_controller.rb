@@ -1,7 +1,5 @@
 require "debugger"
 class Njt::GamesController < ApplicationController
-  include GamesHelper
-
   before_filter :auth_only!
 
   def create

@@ -132,9 +132,25 @@
 
   <aside class="chat">
     <h3>Chat</h3>
+    <ul>
     <% @game.comments.each do |comment| %>
-      <%= render "comments/show", locals: {comment: comment}%>
+      <li>
+        <strong><time><%= comment.created_at.utc.strftime("%H:%M") %></time>
+        <%= comment.author.username %>:</strong>
+        <p class="display"><%= comment.body %></p>
+      </li>
     <% end %>
+    <ul>
+    <form class="add-comment top" action="<%= njt_game_comments_url(@game) %>" method="post">
+      <input type="hidden" name="authenticity_token"
+        value="<%=form_authenticity_token%>">
+        <input type="hidden" name="comment[parent_id]" value="<%= nil %>">
+      <label for="comment_body">Add new comment</label>
+      <textarea id="comment_body" placeholder="Comment here..." name="comment[body]"></textarea>
+
+      <input type="submit" value="Submit">
+    </form>
+
   </aside>
 </section>
 
@@ -189,9 +205,13 @@ var Display = (function(){
     })
   };
 
+  var setScroll = function(){
+    $(".chat").scrollTop($(".chat")[0].scrollHeight);
+  }
   var display = function(){
     totalDamage();
     tankDisplay();
+    setScroll();
   };
 
   return {

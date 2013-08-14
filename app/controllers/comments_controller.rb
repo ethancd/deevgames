@@ -15,14 +15,17 @@ class CommentsController < ApplicationController
 
       @comment = Comment.new(params[:comment])
       @comment.author_id = current_user.id
-      @comment.topic_id = params[:post_id]
-      @comment.topic_type = "Post"
 
-      if @comment.save
-        redirect_to "#{post_url(params[:post_id])}#comments"
-      else
-        render :new
+      if params[:post_id]
+        @comment.topic_id = params[:post_id]
+        @comment.topic_type = "Post"
+      elsif params[:game_id]
+        @comment.topic_id = params[:game_id]
+        @comment.topic_type = "Game"
       end
+
+      @comment.save!
+      redirect_to :back
     end
   end
 
