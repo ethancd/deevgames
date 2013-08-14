@@ -3,8 +3,6 @@
 FactoryGirl.define do
   factory :damage_token do
     value 1
-    player_id 1
-    game_id 1
-    fake false
+    game_id { FactoryGirl.create(:game).id }
   end
 end

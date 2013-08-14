@@ -32,19 +32,15 @@ class Game < ActiveRecord::Base
   end
 
   def game_over(current_user)
-    self.phase = "game_over"
+    self.update_attributes(phase: "game_over")
     self.players.each{|player| player.update_attributes(ready: false)}
 
-    if self.players.all?{|player| player.damage < 9}
-      self.update_attributes(loser_id: current_user.id,
-      winner_id: opponent_id(current_user),
-      result: "quit")
-    else
-      if self.players[0].damage >= 9 && self.players[1].damage >= 9
+    if self.players.any?{ |player| player.destroyed? }
+      if self.players.all? { |player| player.destroyed? }
         self.result = "tie"
       else
         self.players.each_with_index do |player, i|
-          if player.damage >= 9
+          if player.destroyed?
             self.loser_id = player.user_id
           else
             self.winner_id = player.user_id
@@ -52,8 +48,12 @@ class Game < ActiveRecord::Base
           end
         end
       end
-
       self.save
+
+    else
+      self.update_attributes(loser_id: current_user.id,
+      winner_id: opponent_id(current_user),
+      result: "quit")
     end
   end
 
@@ -104,113 +104,104 @@ class Game < ActiveRecord::Base
     shoot(players)
   end
 
-  def overheat(players)
-    players.each do |player|
-      if player.cards.where(location: "action").count == 2
-        self.harm(2, player, false)
-      end
-    end
-  end
-
-  def move(players)
-    players.each do |player|
-      player.cards.where(location: "action").each do |action|
-        if action.action_type == "feint" || action.action_type == "move"
-          p "*********************************************"
-          p action
-          p "**********************************************"
-          resolve_move(action, player)
-          action.player_id = nil
-          action.location = "discard"
-          action.save
-        end
-      end
-    end
-  end
-
-  def shoot(players)
-    players.each do |player|
-      player.cards.where(location: "action").each do |action|
-        p "*********************************************"
-        p action
-        p "**********************************************"
-        resolve_shot(action, player)
-        action.player_id = nil
-        action.location = "discard"
-        action.save
-      end
-    end
-  end
-
-  def resolve(action, tanks)
-    if action["action_type"] == "shot"
-      resolve_shot(action, tanks.first.player)
-    else
-      resolve_move(action, tanks.first.player)
-    end
-  end
-
-  def resolve_move(action, player)
-    dx = action["dir"] == "forward" ? 1 : -1
-    temp_tanks = []
-
-    player.tanks.each do |tank|
-      unless [0,4].include?(tank.position + dx)
-        t = Tank.new(player_id: player.id, game_id: self.id,
-                     position: tank.position + dx)
-        if action["action_type"] == "move" && !tank.fake
-          t.fake = false
-          tank.fake = true
-        else
-          t.fake = true
-        end
-        t.save
-        temp_tanks << t
-      end
-      tank.save
-      temp_tanks << tank
-    end
-
-    player.tanks = temp_tanks
-
-    unless player.tanks.pluck(:position).uniq.count == player.tanks.count
-      needed_tanks = []
-      player.tanks.pluck(:position).uniq.each do |pos|
-        real = player.tanks.find_by_position_and_fake(pos, false)
-        if real.nil?
-          needed_tanks << player.tanks.find_by_position(pos)
-        else
-          needed_tanks << real
-        end
-      end
-
-      player.tanks = needed_tanks
-    end
-    player.tanks.map(&:save)
-  end
-
-  def resolve_shot(action, player)
-    enemy = player == self.players.first ? self.players.last : self.players.first
-
-    not_spots = [1,2,3] - LEGAL_SHOTS[action[:value].to_i]
-    player.tanks.where(position: not_spots).map(&:destroy)
-
-    if enemy.tanks.find_by_position_and_fake(action[:value], false)
-      self.harm(3, enemy, false)
-
-      enemy.tanks = [enemy.tanks.create(game_id: self.id,
-        position: action[:value].to_i, fake: false)]
-    else
-      target = enemy.tanks.find_by_position(action[:value])
-      target.destroy unless target.nil?
-    end
-  end
-
-
   private
     def players_not_the_same
       if self.users.uniq.count < self.users.count
         errors.add(:player, "you can't play against yourself!")
       end
     end
+
+    def overheat(players)
+      players.each do |player|
+        if player.cards.where(location: "action").count == 2
+          self.harm(2, player, false)
+        end
+      end
+    end
+
+    def move(players)
+      players.each do |player|
+        player.cards.where(location: "action").each do |action|
+          if action.action_type == "feint" || action.action_type == "move"
+            resolve_move(action, player)
+            action.player_id = nil
+            action.location = "discard"
+            action.save
+          end
+        end
+      end
+    end
+
+    def shoot(players)
+      players.each do |player|
+        player.cards.where(location: "action").each do |action|
+          resolve_shot(action, player)
+          action.player_id = nil
+          action.location = "discard"
+          action.save
+        end
+      end
+    end
+
+    def resolve(action, tanks)
+      if action["action_type"] == "shot"
+        resolve_shot(action, tanks.first.player)
+      else
+        resolve_move(action, tanks.first.player)
+      end
+    end
+
+    def resolve_move(action, player)
+      dx = action["dir"] == "forward" ? 1 : -1
+      temp_tanks = []
+
+      player.tanks.each do |tank|
+        unless [0,4].include?(tank.position + dx)
+          t = Tank.new(player_id: player.id, game_id: self.id,
+                       position: tank.position + dx)
+          if action["action_type"] == "move" && !tank.fake
+            t.fake = false
+            tank.fake = true
+          else
+            t.fake = true
+          end
+          t.save
+          temp_tanks << t
+        end
+        tank.save
+        temp_tanks << tank
+      end
+
+      player.tanks = unify_tanks(player.tanks)
+      player.tanks.map(&:save)
+    end
+
+    def unify_tanks(tanks)
+      unless tanks.pluck(:position).uniq.count == tanks.count
+        tanks = tanks.pluck(:position).uniq.map do |pos|
+          real = tanks.find_by_position_and_fake(pos, false)
+          real.nil? ? tanks.find_by_position(pos) : real
+        end
+      end
+
+      tanks
+    end
+
+    def resolve_shot(action, player)
+      enemy = player == self.players.first ? self.players.last : self.players.first
+
+      not_spots = [1,2,3] - LEGAL_SHOTS[action[:value].to_i]
+      player.tanks.where(position: not_spots).map(&:destroy)
+
+      if enemy.tanks.find_by_position_and_fake(action[:value], false)
+        self.harm(3, enemy, false)
+
+        enemy.tanks = [enemy.tanks.create(game_id: self.id,
+          position: action[:value].to_i, fake: false)]
+      else
+        target = enemy.tanks.find_by_position(action[:value])
+        target.destroy unless target.nil?
+      end
+    end
+
 end

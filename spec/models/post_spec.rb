@@ -2,10 +2,6 @@ require 'spec_helper'
 
 describe Post do
 
-  before(:all) do
-    FactoryGirl.create(:user) unless User.first
-  end
-
   it "has a valid factory" do
     FactoryGirl.create(:post).should be_valid
   end

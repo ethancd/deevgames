@@ -15,6 +15,10 @@ class Player < ActiveRecord::Base
     self.damage_tokens.where(fake: false).pluck(:value).inject(:+) || 0
   end
 
+  def destroyed?
+    self.damage >= 9
+  end
+
   def draw(drawn)
     real = self.tanks.find_by_fake(false).position
     minimum = self.tanks.where(fake: true).pluck(:position).min || 0

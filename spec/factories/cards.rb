@@ -2,11 +2,9 @@
 
 FactoryGirl.define do
   factory :card do
-    dir "MyString"
+    dir "forward"
     value 1
-    player_id 1
-    game_id 1
-    location "MyString"
-    shot false
+    game_id { FactoryGirl.create(:game).id }
+    location "deck"
   end
 end

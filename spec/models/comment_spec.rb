@@ -2,11 +2,6 @@ require 'spec_helper'
 
 describe Comment do
 
-  before(:all) do
-    FactoryGirl.create(:user) unless User.first
-    FactoryGirl.create(:post) unless Post.first
-  end
-
   it "has a valid factory" do
     FactoryGirl.create(:comment).should be_valid
   end

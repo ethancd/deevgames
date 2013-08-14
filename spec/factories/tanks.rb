@@ -2,9 +2,9 @@
 
 FactoryGirl.define do
   factory :tank do
-    position 1
-    player_id 1
-    game_id 1
+    position 2
+    player_id { FactoryGirl.create(:player).id }
+    game_id { FactoryGirl.create(:game).id }
     fake false
   end
 end
