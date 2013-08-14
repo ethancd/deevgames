@@ -366,8 +366,6 @@ var Game = (function(){
         discards.push(card)
       })
 
-      console.log(discards)
-
       $.ajax({
         url: window.gameUrl,
         type: "PUT",

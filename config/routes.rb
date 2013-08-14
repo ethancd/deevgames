@@ -22,6 +22,5 @@ DeevGamesDevelopment::Application.routes.draw do
       get "pregame", to: "games#pregame"
     end
     post "enqueue", to: "games#enqueue"
-    resources :replays, only: [:index, :show]
   end
 end

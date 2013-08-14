@@ -4,7 +4,7 @@
 section.njt.game {
   .game-field {
     float: left;
-    width: 1132px;
+    width: 760px;
 
     .damage_token {
       width: 50px;
@@ -70,41 +70,42 @@ section.njt.game {
     }
 
     header {
-      margin: 25px 420px 25px 240px;
-      width: 600px;
+      margin: 25px auto;
+      width: 720px;
       text-align: center;
 
-      div {
+      .stack {
         float: left;
       }
-      h3 {
-        display: inline;
-        @include stencil;
-        font-size: 250%;
-      }
-      button{
-        margin-top: 15px;
-        float: right;
-      }
-    }
 
-    section.board {
-      width: 1090px;
-      margin: auto;
-
-      strong {
+      .phase {
         display: block;
+        width: 320px;
+        float: left;
+        text-align: center;
+
+        h3 {
+          @include stencil;
+          display: inline;
+          font-size: 250%;
+        }
+      }
+      .button-top {
+        margin-top: 15px;
+        float: left;
       }
 
       figure.damage {
-        width: 200px;
+        width: 150px;
         float: left;
 
         ul.info {
-          width: 130px;
+          width: 80px;
+          height: 132px;
 
           &.black {
             float: left;
+            text-align: left;
           }
           &.white {
             float:right;
@@ -135,15 +136,21 @@ section.njt.game {
           }
         }
       }
+    }
+
+    section.board {
+      width: 600px;
+      margin: auto;
+
+      strong {
+        display: block;
+      }
 
       figure.board {
         position: relative;
-        float: left;
-        margin: 0px 15px;
 
         img {
           position: absolute;
-          float: left;
           width: 600px;
           height: 150px;
         }
@@ -176,7 +183,7 @@ section.njt.game {
     }
 
     section.main-cards {
-      width: 930px;
+      width: 720px;
       margin: 25px auto;
 
       .deck {
@@ -196,7 +203,7 @@ section.njt.game {
       }
       .undo {
         float: left;
-        margin: 50px 25px 0px 50px;
+        margin: 50px 20px 0px 25px;
       }
       .active {
         float: left;
@@ -204,7 +211,7 @@ section.njt.game {
         margin: 25px 25px;
 
         &#active-1 {
-          margin-right: 160px;
+          margin-right: 60px;
         }
 
         nav {
@@ -274,7 +281,7 @@ section.njt.game {
 
       .confirm-warning {
         float: left;
-        margin: 50px 50px 0px 25px;
+        margin: 50px 30px 0px 0px;
 
         .warning {
           width: 50px;
@@ -302,7 +309,7 @@ section.njt.game {
     }
 
     ul.hand {
-      width: 800px;
+      width: 720px;
       height: 142px;
       margin: 25px auto;
 
@@ -312,7 +319,13 @@ section.njt.game {
 
       li {
         float: left;
-        margin: 0px 15px;
+        margin: 0px 12px;
+        &:first-child{
+          margin-left: 0;
+        }
+        &:last-child{
+          margin-right: 0;
+        }
       }
     }
   }
@@ -325,8 +338,8 @@ section.njt.game {
 
     .chat {
       float: right;
-      width: 200px;
-      height: 530px;
+      width: 197px;
+      height: 550px;
       font-size: 13px;
       border: 3px solid $body;
       border-right: 0;
@@ -340,12 +353,27 @@ section.njt.game {
         display: inline;
       }
 
-      label {
-        font-size: 16px;
-      }
-
       li {
         margin:0px 1px 5px 1px;
+      }
+    }
+
+    .add-comment {
+
+      label {
+        display: none;
+      }
+
+      textarea {
+        resize: none;
+        background-color: lighten($ground, 10%);
+        width: 120px;
+        float: left;
+      }
+
+      input[type="submit"] {
+        float: right;
+        margin-top: 10px;
       }
     }
   }

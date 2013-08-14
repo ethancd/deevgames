@@ -1,20 +1,8 @@
 <section class="njt game content group">
   <section class="game-field">
     <header class="group">
-      <div class="damage_token" data-fd="true"></div>
-      <h3
-        <% if @player.ready %>
-          class = "ready">Waiting
-        <% else %>
-          ><%= @game.phase.split("_").map(&:capitalize).join(" ") %>
-        <% end %>
-      </h3>
-      <%= button_to "Quit",
-          njt_game_url(@game), method: :delete,
-          data: { confirm: "Are you sure? You will lose the game." } %>
-    </header>
+      <div class="stack damage_token" data-fd="true"></div>
 
-    <section class="board group">
       <figure class="white damage">
         <ul class="white tokens">
           <% @white.damage_tokens.each do |token| %>
@@ -38,17 +26,16 @@
         </ul>
       </figure>
 
-      <figure class="board">
-        <%= image_tag 'fullboard.png'%>
-        <ul class="spaces group">
-          <li class="tank" id="white-1"></li>
-          <li class="tank" id="white-2"></li>
-          <li class="tank" id="white-3"></li>
-          <li class="tank" id="black-3"></li>
-          <li class="tank" id="black-2"></li>
-          <li class="tank" id="black-1"></li>
-        </ul>
-      </figure>
+      <div class="phase">
+        <h3
+          <% if @player.ready %>
+            class = "ready">Waiting
+          <% else %>
+            ><%= @game.phase.split("_").map(&:capitalize).join(" ") %>
+          <% end %>
+        </h3>
+      </div>
+
 
       <figure class="black damage">
         <ul class="black tokens">
@@ -69,6 +56,24 @@
             <strong><%= @black.user.username %></strong></li>
           <li><%= "#{@black.cards.where(location: ["hand", "action","trashed"]).count} cards" %></li>
           <li><%= "#{@black.damage_tokens.count} tokens"%></li>
+        </ul>
+      </figure>
+
+      <%= button_to "Quit",
+          njt_game_url(@game), method: :delete,
+          data: { confirm: "Are you sure? You will lose the game." } %>
+    </header>
+
+    <section class="board group">
+      <figure class="board">
+        <%= image_tag 'fullboard.png'%>
+        <ul class="spaces group">
+          <li class="tank" id="white-1"></li>
+          <li class="tank" id="white-2"></li>
+          <li class="tank" id="white-3"></li>
+          <li class="tank" id="black-3"></li>
+          <li class="tank" id="black-2"></li>
+          <li class="tank" id="black-1"></li>
         </ul>
       </figure>
     </section>
@@ -124,9 +129,21 @@
     </ul>
 
     <section class='game-over hidden'>
-      <strong>The game is over! Congratulations/Condolences.</strong>
-      <br>
-      <%= button_to "Replay vs. AI?", {controller: "njt/games", action: "create", ai: true}%>
+      <strong>
+        <% if @game.result == "tie" %>
+          <%= "A tie! Epic! Up for a rematch?"%>
+        <% elsif ["white_victory", "black_victory"].include?(@game.result) %>
+          <%= "#{@game.winner.username} has won over #{@game.loser.username}." +
+              " Up for a rematch?" %>
+        <% elsif @game.result == "quit" %>
+          <%= "Looks like #{@game.loser.username} quit." %>
+        <% else %>
+          It's still anybody's game!
+        <% end %>
+      </strong>
+      <% opponent_id = @player == @white ? @black.user_id : @white.user_id %>
+      <button class="rematch">Rematch</button>
+      <%= button_to "New Quick Play", {controller: "njt/games", action: "enqueue"}%>
     </section>
   </section>
 
@@ -148,10 +165,10 @@
       <input type="hidden" name="authenticity_token"
         value="<%=form_authenticity_token%>">
         <input type="hidden" name="comment[parent_id]" value="<%= nil %>">
-      <label for="comment_body">Add new comment</label>
-      <textarea id="comment_body" placeholder="Comment here..." name="comment[body]"></textarea>
+      <label for="comment_body">Chat</label>
+      <textarea id="comment_body" name="comment[body]"></textarea>
 
-      <input type="submit" value="Submit">
+      <input type="submit" value="Enter">
     </form>
 
   </aside>
