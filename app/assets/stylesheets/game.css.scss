@@ -101,7 +101,6 @@ section.njt.game {
 
         ul.info {
           width: 80px;
-          height: 132px;
 
           &.black {
             float: left;
@@ -122,6 +121,9 @@ section.njt.game {
         }
 
         ul.tokens {
+          position: relative;
+          height: 132px;
+          z-index: 1;
           &.black {
             float: left;
           }
@@ -130,6 +132,9 @@ section.njt.game {
           }
           li {
             margin-top: -20px;
+            &.accordion {
+              margin-top: -35px;
+            }
             &:first-child{
              margin-top: 2px;
             }
@@ -328,8 +333,35 @@ section.njt.game {
         }
       }
     }
+
+    section.game-over {
+      float: left;
+      width: 320px;
+      text-align: center;
+
+      nav {
+        width: 184px;
+        margin: auto;
+
+        button, .button_to {
+          display: block;
+          float: left;
+          margin-top: 15px;
+        }
+
+        button {
+          margin-right: 20px;
+        }
+        input {
+          margin: 0;
+        }
+      }
+    }
   }
   aside {
+    float: right;
+    border-bottom: 3px solid $body;
+
     h3 {
       @include stencil;
       text-align: center;
@@ -337,16 +369,15 @@ section.njt.game {
     }
 
     .chat {
-      float: right;
       width: 197px;
-      height: 550px;
+      height: 520px;
       font-size: 13px;
-      border: 3px solid $body;
-      border-right: 0;
+      border-top: 3px solid $body;
+      border-left: 3px solid $body;
       display: block;
       overflow: {
         x: hidden;
-        y: scroll;
+        y: auto;
       }
 
       strong, p {
@@ -359,6 +390,7 @@ section.njt.game {
     }
 
     .add-comment {
+      border-left: 3px solid $body;
 
       label {
         display: none;
@@ -367,7 +399,7 @@ section.njt.game {
       textarea {
         resize: none;
         background-color: lighten($ground, 10%);
-        width: 120px;
+        width: 140px;
         float: left;
       }
 

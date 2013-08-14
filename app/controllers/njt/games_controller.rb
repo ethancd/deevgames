@@ -53,6 +53,11 @@ class Njt::GamesController < ApplicationController
 
   def show
     @game = Game.find(params[:id])
+    # if @game != current_user.games.last
+    #   redirect_to njt_game_url(current_user.games.last)
+    #   return
+    # end
+
     @white = @game.players[0]
 
     if @game.players.count == 1
@@ -105,11 +110,15 @@ class Njt::GamesController < ApplicationController
       when "discard"
         @player.trashify(params[:discarded_cards])
         @player.update_attributes(ready: true)
+      when "game_over"
+        debugger
+        @player.update_attributes(ready: true)
+        @ai.update_attributes(ready: true) if ai?
       end
     end
 
     if @game.players(reload: true).all?{|p| p.ready}
-      @game.players.each_with_index do |player, play_resolved|
+      @game.players.each_with_index do |player, resolved|
         player.update_attributes(ready: false)
 
         case params[:phase]
@@ -122,7 +131,7 @@ class Njt::GamesController < ApplicationController
             @game.game_over(current_user)
           end
         when "play"
-          next if play_resolved == 1
+          next if resolved == 1
           @game.resolve_all_actions
           if @game.players.any?{ |player| player.destroyed? }
             @game.game_over(current_user)
@@ -133,6 +142,16 @@ class Njt::GamesController < ApplicationController
           trashed = player.cards.where(location: "trashed")
           player == ai? ? @ai.ai_discard : player.discard(trashed)
           @game.phase = "draw"
+        when "game_over"
+          next if resolved == 1
+          @new_game = Game.create(phase: "play")
+          @game.players.each do |player|
+            @new_game.players << Player.create(user_id: player.user_id)
+          end
+          @new_game.save
+          @new_game.setup_game
+          redirect_to njt_game_url(@new_game)
+          return
         end
       end
 

@@ -97,6 +97,27 @@
         <div class="play" id="play-1"></div>
       </figure>
 
+      <section class='game-over gone'>
+        <strong>
+          <% if @game.result == "tie" %>
+            <%= "A tie. Epic! Up for a rematch?"%>
+          <% elsif ["white_victory", "black_victory"].include?(@game.result) %>
+            <%= "#{@game.winner.username} has won over #{@game.loser.username}." +
+                " Up for a rematch?" %>
+          <% elsif @game.result == "quit" %>
+            <%= "Looks like #{@game.loser.username} quit." %>
+          <% else %>
+            It's still anybody's game!
+          <% end %>
+        </strong>
+
+        <nav class="group">
+          <% opponent_id = @player == @white ? @black.user_id : @white.user_id %>
+          <button class="rematch">Rematch</button>
+          <%= button_to "New Quick Play", {controller: "njt/games", action: "enqueue"}%>
+        </nav>
+      </section>
+
       <figure class="active" id="active-2">
         <nav class="group hidden">
           <button class="feint not-chosen"></button>
@@ -127,24 +148,6 @@
         </li>
       <% end %>
     </ul>
-
-    <section class='game-over hidden'>
-      <strong>
-        <% if @game.result == "tie" %>
-          <%= "A tie! Epic! Up for a rematch?"%>
-        <% elsif ["white_victory", "black_victory"].include?(@game.result) %>
-          <%= "#{@game.winner.username} has won over #{@game.loser.username}." +
-              " Up for a rematch?" %>
-        <% elsif @game.result == "quit" %>
-          <%= "Looks like #{@game.loser.username} quit." %>
-        <% else %>
-          It's still anybody's game!
-        <% end %>
-      </strong>
-      <% opponent_id = @player == @white ? @black.user_id : @white.user_id %>
-      <button class="rematch">Rematch</button>
-      <%= button_to "New Quick Play", {controller: "njt/games", action: "enqueue"}%>
-    </section>
   </section>
 
   <aside>
@@ -160,8 +163,8 @@
         <p class="display"><%= comment.body %></p>
       </li>
     <% end %>
-    <ul>
-    <form class="add-comment top" action="<%= njt_game_comments_url(@game) %>" method="post">
+    </ul>
+    <form class="add-comment top group" action="<%= njt_game_comments_url(@game) %>" method="post">
       <input type="hidden" name="authenticity_token"
         value="<%=form_authenticity_token%>">
         <input type="hidden" name="comment[parent_id]" value="<%= nil %>">
@@ -175,74 +178,14 @@
 </section>
 
 <script>
-var Display = (function(){
-  var damage = "<%= @player.damage %>";
-  var tanks = [];
-
-  <% [[@white, "white"], [@black, "black"]].each do |(player, color)| %>
-    <% if player.tanks.count > 1 && @player != player %>
-
-      <% player.tanks.each do |tank| %>
-        tanks.push({
-          space: "<%= "#{color}-#{tank.position}" %>",
-          color: "<%= color %>",
-          fake: "true"
-        })
-      <% end %>
-
-    <% else %>
-
-      <% player.tanks.each do |tank| %>
-        tanks.push({
-          space: "<%= "#{color}-#{tank.position}" %>",
-          color: "<%= color %>",
-          fake: "<%= tank.fake %>"
-        })
-      <% end %>
-
-    <% end %>
-  <% end %>
-
-  var totalDamage = function(){
-    if (damage > 0){
-      $("." + playerColor + ".info").append("<li>" + damage + " damage</li>");
-    }
-  };
-
-  var tankDisplay = function(){
-    tanks.forEach(function(tank){
-      var $space = $("#" + tank.space)
-
-      if (tank.color == "white"){
-        $space.html("<img src=<%= asset_path("whitetank.png") %>>")
-      } else {
-        $space.html("<img src=<%= asset_path("blacktank.png") %>>")
-      }
-
-      if (tank.fake === "true") {
-        $space.find("img").css("opacity", "0.5")
-      }
-    })
-  };
-
-  var setScroll = function(){
-    $(".chat").scrollTop($(".chat")[0].scrollHeight);
-  }
-  var display = function(){
-    totalDamage();
-    tankDisplay();
-    setScroll();
-  };
-
-  return {
-    display: display,
-  };
-})();
-
 $(function(){
+  window.damage = "<%= @player.damage %>";
   window.gameUrl = "<%= njt_game_url(@game) %>";
   window.playerColor = "<%= @color %>";
+  window.whiteTanks
+  window.blackTanks
+  window.whiteTankSrc = "<%= asset_path("whitetank.png") %>"
   Display.display();
   Game.init("<%= @game.phase %>");
-})
+});
 </script>

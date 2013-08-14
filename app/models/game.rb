@@ -34,6 +34,7 @@ class Game < ActiveRecord::Base
       player.cards.each{|card| card.update_attributes(location: "hand")}
     end
 
+    self.save
     write("#{self.users[0].username} vs #{self.users[1].username} has begun!")
   end
 
