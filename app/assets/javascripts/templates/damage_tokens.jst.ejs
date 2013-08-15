@@ -1,0 +1,12 @@
+<ul class="tokens '<%= color %>'">
+  <% damageTokens.forEach(function(token){ %>
+    <li class="damage_token"
+      <% if (playerColor == color){ %>
+        data-value="<%= token.value %>"
+        data-fd="<%= token.fake %>"
+      <% } else { %>
+        data-fd="true"
+      <% } %>
+    ></li>
+  <% }); %>
+</ul>

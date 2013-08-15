@@ -1,0 +1,12 @@
+<ul class="chat">
+  <% comments.forEach(function(comment){ %>
+    <li>
+      <strong><time><%= comment.createdAt %></time>
+        <% if (comment.username) { %>
+          <%= comment.username + ":" %>
+        <% } %>
+      </strong>
+      <p class="display"><%= comment.body %></p>
+    </li>
+  <% }) %>
+</ul>

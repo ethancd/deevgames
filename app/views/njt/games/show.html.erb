@@ -80,9 +80,9 @@
     <section class="main-cards group">
 
       <div class="deck">
-      <% 4.times do %>
-        <div class="card" data-fd="true"></div>
-      <% end %>
+        <% 4.times do %>
+          <div class="card" data-fd="true"></div>
+        <% end %>
       </div>
 
       <button class="undo flow" disabled="true">Undo</button>
@@ -110,7 +110,6 @@
         </strong>
 
         <nav class="group">
-          <% opponent_id = @player == @white ? @black.user_id : @white.user_id %>
           <button class="rematch gone">Rematch</button>
           <%= button_to "New Quick Play", {controller: "njt/games", action: "enqueue"}%>
         </nav>
@@ -139,7 +138,8 @@
       ></div>
     </section>
 
-    <ul class="hand group slot">
+    <ul class="hand group slot
+    <%= 'black' if @color == "black"%>">
       <% @player.cards.each do |card|%>
         <li class="card"
           data-info="<%= "#{card.value}-#{card.dir}" %>">
@@ -151,16 +151,16 @@
   <aside>
     <h3>Chat</h3>
     <ul class="chat">
-    <% @game.comments.each do |comment| %>
-      <li>
-        <strong><time><%= comment.created_at.strftime("%H:%M") %></time>
-          <% if comment.author %>
-            <%= "#{comment.author.username}:" %>
-          <% end %>
-        </strong>
-        <p class="display"><%= comment.body %></p>
-      </li>
-    <% end %>
+      <% @game.comments.each do |comment| %>
+        <li>
+          <strong><time><%= comment.created_at.strftime("%H:%M") %></time>
+            <% if comment.author %>
+              <%= "#{comment.author.username}:" %>
+            <% end %>
+          </strong>
+          <p class="display"><%= comment.body %></p>
+        </li>
+      <% end %>
     </ul>
     <form class="add-comment top group" action="<%= njt_game_comments_url(@game) %>" method="post">
       <input type="hidden" name="authenticity_token"

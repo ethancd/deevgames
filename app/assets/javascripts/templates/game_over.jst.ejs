@@ -1,0 +1,16 @@
+<strong>
+  <% switch(result) { %>
+  <% case "tie": %>
+    A tie. That's epic! Up for a rematch?"
+  <% break; %>
+  <% case "white_victory": %>
+  <% case "black_victory": %>
+    <%= winnerName +  " has won over " + loserName + ". Up for a rematch?" %>
+  <% break; %>
+  <% case "quit": %>
+    <%= "Looks like " + loserName + " quit." %>
+  <% break; %>
+  <% default:  %>
+    It's still anybody's game!
+  <% } %>
+</strong>

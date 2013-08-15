@@ -25,7 +25,7 @@ gem 'devise'
 
 gem 'paperclip'
 gem 'aws-sdk'
-
+gem 'ejs'
 gem 'figaro'
 
 gem 'kaminari'

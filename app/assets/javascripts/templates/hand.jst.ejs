@@ -1,0 +1,9 @@
+<ul class="hand group slot
+  <% if (color == "black") { %>
+    black
+  <% }%>">
+  <% cards.forEach(function(card){ %>
+    <li class="card" data-info="<%= card.value + "-" + card.dir %>">
+    </li>
+  <% }) %>
+</ul>
