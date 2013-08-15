@@ -186,15 +186,22 @@ section.njt.game {
     section.main-cards {
       width: 720px;
       margin: 25px auto;
+      text-align: right;
 
       .deck {
         position: relative;
         float: left;
         width: 100px;
         height: 142px;
+        text-align: center;
 
         .card {
           position: absolute;
+        }
+
+        strong {
+          position: relative;
+          top: 142px;
         }
 
         &.phased {
@@ -206,6 +213,7 @@ section.njt.game {
         float: left;
         margin: 50px 20px 0px 25px;
       }
+
       .active {
         float: left;
 
@@ -302,6 +310,7 @@ section.njt.game {
         float: left;
         width: 100px;
         height: 142px;
+        text-align: center;
 
         &.phased {
           box-shadow: 0px 0px 40px #333;

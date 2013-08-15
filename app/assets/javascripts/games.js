@@ -69,10 +69,7 @@ var Game = (function(){
   };
 
   var discardDisplay = function(){
-    var discardTemplate = "";
-    if (gameData.discard.length > 0) {
-      discardTemplate = JST["templates/discard"]({ discard: gameData.discard });
-    }
+    var discardTemplate = JST["templates/discard"]({ discard: gameData.discard });
     $("div.discard").html(discardTemplate);
   };
 
@@ -145,6 +142,14 @@ var Game = (function(){
     });
   };
 
+  var clearBindings = function(){
+    $(".ui-droppable").removeClass("phased slot").droppable("destroy");
+    $(".ui-draggable").draggable("destroy");
+    $(".moved-count").html("");
+    $("button.flow").off("click");
+    $("figure.active nav").addClass("hidden");
+  };
+
   var refresh = function(returnData) {
     gameData = returnData;
     player = gameData.players[gameData.player_index]
@@ -192,10 +197,10 @@ var Game = (function(){
     $(".undo").on("click", function(){
       resetCards();
       drawnCards = 0;
-      $(".moved-count").html("Cards to draw: " + drawnCards);
+      $(".moved-count").html("Drawn cards: " + drawnCards);
     });
 
-    $(".moved-count").html("Cards to draw: 0");
+    $(".moved-count").html("Drawn cards: 0");
 
     var drawWarning = function(){
       var $one = $("#" + playerColor + "-1"),
@@ -205,7 +210,7 @@ var Game = (function(){
         $(".warning").addClass("hidden");
         break;
       case 2:
-        if ($one.html()) {
+        if ($one.find("img").length) {
           $(".warning").removeClass("hidden");
           overheating = {fake: false};
 
@@ -219,7 +224,7 @@ var Game = (function(){
         }
         break;
       case 3:
-        if ($one.html() || $two.html()) {
+        if ($one.find("img").length || $two.find("img").length) {
           $(".warning").removeClass("hidden");
 
           if (($one.find("img").length == 0 ||
@@ -240,7 +245,7 @@ var Game = (function(){
       $(ui.draggable).offset({top: $(this).offset().top});
       if ($(ui.draggable).hasClass("from-deck")){
         drawnCards += 1;
-        $(".moved-count").html("Cards to draw: " + drawnCards);
+        $(".moved-count").html("Drawn cards: " + drawnCards);
         if (drawnCards === 1) {
           $("button.flow").removeAttr("disabled");
         } else {
@@ -260,7 +265,7 @@ var Game = (function(){
 
       if ($(ui.draggable).hasClass("from-hand")){
         drawnCards -= 1;
-        $(".moved-count").html("Cards to draw: " + drawnCards);
+        $(".moved-count").html("Drawn cards: " + drawnCards);
         if (drawnCards === 0) {
           $("button.flow").attr("disabled", "disabled");
         } else {
@@ -287,6 +292,7 @@ var Game = (function(){
           "overheating": overheating
         },
         success: function(returnData){
+          clearBindings();
           refresh(returnData);
         }
       });
@@ -411,6 +417,7 @@ var Game = (function(){
           "overheating": overheating
         },
         success: function(returnData){
+          clearBindings();
           refresh(returnData);
         }
       });
@@ -420,7 +427,7 @@ var Game = (function(){
   var renderDiscard = function() {
     var discardedCards = 0;
     var toDiscard = function(){
-      if (player.inward_hand.count < 4) {
+      if (player.outward_hand.length < 4) {
         return 0;
       } else {
         return $(".hand .card").length - 3 - discardedCards;
@@ -503,6 +510,7 @@ var Game = (function(){
           "discarded_cards": discards
         },
         success: function(returnData){
+          clearBindings();
           refresh(returnData);
         }
       });

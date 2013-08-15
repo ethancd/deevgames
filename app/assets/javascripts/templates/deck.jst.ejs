@@ -1,10 +1,6 @@
 <% for (var i = 0; i < 4; i++) { %>
   <div class="card" data-fd="true"></div>
 <% } %>
-<p>
-  <% if (deck.length == 1) { %>
-    deck (1 card)
-  <% } else { %>
-    <%= "deck (" + deck.length + " cards)" %>
-  <% } %>
-</p>
+<strong>
+  <%= "Deck (" + deck.length + ")" %>
+</strong>
