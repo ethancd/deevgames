@@ -160,7 +160,7 @@ class Njt::GamesController < ApplicationController
       @game.write("Waiting for #{enemy.username}.")
     end
 
-    render json: @game
+    render json: @game, root: false
   end
 
   def destroy

@@ -2,88 +2,29 @@
   <section class="game-field">
     <header class="group">
       <figure class="white player-box">
-        <ul class="white tokens">
-          <% @white.damage_tokens.each do |token| %>
-            <li class="damage_token"
-              <% if @player == @white %>
-                data-value="<%= token.value %>"
-                data-fd="<%= token.fake %>"
-              <% else %>
-                data-fd="true"
-              <% end %>
-            ></li>
-          <% end %>
-        </ul>
-        <ul class="white info">
-          <li class="group">
-            <div class="group"><%= image_tag @white.user.avatar.url(:thumb)%></div>
-            <strong><%= @white.user.username %></strong>
-          </li>
-          <li><%= "#{@white.cards.where(location: ["hand", "action","trashed"]).count} cards" %></li>
-          <li><%= "#{@white.damage_tokens.count} tokens"%></li>
-        </ul>
+        <ul class="info"></ul>
+        <ul class="tokens"></ul>
       </figure>
-
-      <div class="phase">
-        <h3
-          <% if @player.ready %>
-            class = "ready">Waiting
-          <% else %>
-            ><%= @game.phase.split("_").map(&:capitalize).join(" ") %>
-          <% end %>
-        </h3>
-      </div>
-
-
+      <div class="phase"></div>
       <figure class="black player-box">
-        <ul class="black tokens">
-          <% @black.damage_tokens.each do |token| %>
-            <li class="damage_token"
-              <% if @player == @black %>
-                data-value="<%= token.value %>"
-                data-fd="<%= token.fake %>"
-              <% else %>
-                data-fd="true"
-              <% end %>
-            ></li>
-          <% end %>
-        </ul>
-
-        <ul class="black info">
-          <li><%= image_tag @black.user.avatar.url(:thumb) %>
-            <strong><%= @black.user.username %></strong></li>
-          <li><%= "#{@black.cards.where(location: ["hand", "action","trashed"]).count} cards" %></li>
-          <li><%= "#{@black.damage_tokens.count} tokens"%></li>
-        </ul>
+        <ul class="info"></ul>
+        <ul class="tokens"></ul>
       </figure>
 
-      <%= button_to "Quit",
-          njt_game_url(@game), method: :delete,
+      <%= button_to "Quit", njt_game_url(@game), method: :delete,
           data: { confirm: "Are you sure? You will lose the game." } %>
     </header>
 
     <section class="board group">
       <figure class="board">
         <%= image_tag 'fullboard.png'%>
-        <ul class="spaces group">
-          <li class="tank" id="white-1"></li>
-          <li class="tank" id="white-2"></li>
-          <li class="tank" id="white-3"></li>
-          <li class="tank" id="black-3"></li>
-          <li class="tank" id="black-2"></li>
-          <li class="tank" id="black-1"></li>
-        </ul>
+        <ul class="spaces group"></ul>
       </figure>
     </section>
 
-
     <section class="main-cards group">
 
-      <div class="deck">
-        <% 4.times do %>
-          <div class="card" data-fd="true"></div>
-        <% end %>
-      </div>
+      <div class="deck"></div>
 
       <button class="undo flow" disabled="true">Undo</button>
 
@@ -96,19 +37,7 @@
       </figure>
 
       <section class='game-over gone'>
-        <strong>
-          <% if @game.result == "tie" %>
-            <%= "A tie. Epic! Up for a rematch?"%>
-          <% elsif ["white_victory", "black_victory"].include?(@game.result) %>
-            <%= "#{@game.winner.username} has won over #{@game.loser.username}." +
-                " Up for a rematch?" %>
-          <% elsif @game.result == "quit" %>
-            <%= "Looks like #{@game.loser.username} quit." %>
-          <% else %>
-            It's still anybody's game!
-          <% end %>
-        </strong>
-
+        <strong></strong>
         <nav class="group">
           <button class="rematch gone">Rematch</button>
           <%= button_to "New Quick Play", {controller: "njt/games", action: "enqueue"}%>
@@ -126,36 +55,18 @@
       <figure class="confirm-warning">
         <button class="confirm flow" disabled="true">Confirm</button>
         <div class="warning hidden"></div>
+        <strong "moved-count"></strong>
       </figure>
 
-      <div class="discard">
-        <% if @discards.count > 0 %>
-             <div class="card" data-info="<%="#{@discard.last.value}-#{@discard.last.dir}"%>"></div>
-        <% end %>
-      </div>
+      <div class="discard"></div>
     </section>
 
-    <ul class="hand group slot <%= 'black' if @color == "black"%>">
-      <% @player.cards.each do |card|%>
-        <li class="card" data-info="<%= "#{card.value}-#{card.dir}" %>"></li>
-      <% end %>
-    </ul>
+    <ul class="hand group slot <%= 'black' if @color == "black"%>"></ul>
   </section>
 
   <aside>
     <h3>Chat</h3>
-    <ul class="chat">
-      <% @game.comments.each do |comment| %>
-        <li>
-          <strong><time><%= comment.created_at.strftime("%H:%M") %></time>
-            <% if comment.author %>
-              <%= "#{comment.author.username}:" %>
-            <% end %>
-          </strong>
-          <p class="display"><%= comment.body %></p>
-        </li>
-      <% end %>
-    </ul>
+    <ul class="chat"></ul>
     <form class="add-comment top group" action="<%= njt_game_comments_url(@game) %>" method="post">
       <input type="hidden" name="authenticity_token"
         value="<%=form_authenticity_token%>">
@@ -170,7 +81,7 @@
 </section>
 
 <script type="application/json" id="bootstrapped_game_json">
-  <%= @game.to_json.html_safe %>
+  <%= GameSerializer.new(@game).to_json.html_safe %>
 </script>
 
 <script>
@@ -181,6 +92,6 @@ $(function(){
   window.blackTankSrc = "<%= asset_path("blacktank.png") %>";
   var gameData = JSON.parse($("#bootstrapped_game_json").html());
 
-  Game.init(gameData);
+  Game.init(gameData.game);
 });
 </script>

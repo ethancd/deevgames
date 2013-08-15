@@ -1,3 +1,8 @@
 <div class="card" data-info=
   "<%= discard.slice(-1)[0].value + "-" + discard.slice(-1)[0].dir %>">
+  <% if (discard.length == 1) { %>
+    discard (1 card)
+  <% } else { %>
+    <%= "discard (" + discard.length + " cards)" %>
+  <% } %>
 </div>

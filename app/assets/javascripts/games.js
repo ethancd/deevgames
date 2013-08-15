@@ -1,54 +1,57 @@
 // Place all the behaviors and hooks related to the matching controller here.
 // All this logic will automatically be available in application.js.
 var Game = (function(){
-  var allDisplay = function(gameData){
-    phaseDisplay(gameData)
-    tankDisplay(gameData.players);
-    playerBoxDisplay(gameData.players);
-    deckDisplay(gameData.deck);
-    discardDisplay(gameData.discard);
-    handDisplay(gameData.player);
-    chatDisplay(gameData.comments);
+  var gameData, player;
+
+
+  var allDisplay = function(){
+    console.log(gameData)
+    window.gameData = gameData
+    phaseDisplay();
+    tankDisplay();
+    playerBoxDisplay();
+    deckDisplay();
+    discardDisplay();
+    handDisplay();
+    chatDisplay();
   }
 
-  var phaseDisplay = function(gameData){
+  var phaseDisplay = function(){
     var phaseTemplate = JST["templates/phase"]({
       phase: gameData.phase,
-      ready: gameData.player.ready
+      ready: player.ready
     });
-    $("div.phase").append(phaseTemplate);
+    $("div.phase").html(phaseTemplate);
   };
 
-  var tankDisplay = function(players){
-    var tankTemplate = JST["templates/tank"]({ players });
-
-    console.log(tankTemplate);
-    $("ul.spaces").append(tankTemplate);
+  var tankDisplay = function(){
+    var tankTemplate = JST["templates/tank"]({ players: gameData.players });
+    $("ul.spaces").html(tankTemplate);
   };
 
-  var playerBoxDisplay = function(players){
-    $("figure.player-box").each(renderTokens(i, $box))
-    $("figure.player-box").each(renderInfo(i, $box))
+  var playerBoxDisplay = function(){
+    $("figure.player-box").each(renderTokens)
+    $("figure.player-box").each(renderInfo)
   };
 
-  var renderTokens = function(i, $box){
-    var color = $box.hasClass("white") ? "white" : "black";
-    var player = players[i];
+  var renderTokens = function(i, box){
+    var color = $(box).hasClass("white") ? "white" : "black";
+    var player = gameData.players[i];
     var damageTemplate = JST["templates/damage_tokens"]({
       color: color,
       damageTokens: player.damage_tokens
     });
 
-    $box.append(damageTemplate)
+    $(box).find("ul.tokens").html(damageTemplate)
     if($(".tokens." + color).children().length > 5) {
       $(".tokens." + color).children().addClass("accordion");
     }
   };
 
-  var renderInfo = function(i, $box){
-    var color = $box.hasClass("white") ? "white" : "black";
-    var player = players[i];
-    var infoTemplate = JST["templates/damage_tokens"]({
+  var renderInfo = function(i, box){
+    var color = $(box).hasClass("white") ? "white" : "black";
+    var player = gameData.players[i];
+    var infoTemplate = JST["templates/player_info"]({
       color: color,
       hand: player.outward_hand,
       tokens: player.damage_tokens,
@@ -57,41 +60,42 @@ var Game = (function(){
       damage: player.damage
     });
 
-    $box.append(infoTemplate);
+    $(box).find("ul.info").html(infoTemplate);
   };
 
-  var deckDisplay = function(deck){
-    var deckTemplate = JST["templates/deck"]({ deck: deck });
-    $("div.deck").append(deckTemplate);
+  var deckDisplay = function(){
+    var deckTemplate = JST["templates/deck"]({ deck: gameData.deck });
+    $("div.deck").html(deckTemplate);
   };
 
-  var discardDisplay = function(discard){
+  var discardDisplay = function(){
     var discardTemplate = "";
-    if (discard.length > 0) {
-      discardTemplate = JST["templates/discard"]({ discard: discard });
+    if (gameData.discard.length > 0) {
+      discardTemplate = JST["templates/discard"]({ discard: gameData.discard });
     }
-    $("div.discard").append(discardTemplate);
+    $("div.discard").html(discardTemplate);
   };
 
-  var handDisplay = function(player){
-    var handTemplate = JST["templates/hand"]({ hand: player.inward_hand });
-    $("ul.hand").append(handTemplate);
+  var handDisplay = function(){
+    var hand = player.inward_hand;
+    var handTemplate = JST["templates/hand"]({ hand: hand });
+    $("ul.hand").html(handTemplate);
   };
 
-  var chatDisplay = function(comments){
-    var chatTemplate = JST["templates/chat"]({ comments: comments });
-    $("ul.chat").append(chatTemplate);
+  var chatDisplay = function(){
+    var chatTemplate = JST["templates/chat"]({ comments: gameData.comments });
+    $("ul.chat").html(chatTemplate);
     $(".chat").scrollTop($(".chat")[0].scrollHeight);
   };
 
-  var resultsDisplay = function(gameData){
+  var resultsDisplay = function(){
     var resultsTemplate = JST["templates/game_over"]({
       result: gameData.result,
       winnerName: gameData.winner.username,
       loserName: gameData.loser.username
     });
 
-    $("section.game-over strong").append(resultsTemplate);
+    $("section.game-over strong").html(resultsTemplate);
   };
 
   var bindCards = function(zone, index){
@@ -141,9 +145,11 @@ var Game = (function(){
     });
   };
 
-  var refresh = function(gameData) {
-    allDisplay(gameData)
-    if (gameData.player.ready) {
+  var refresh = function(returnData) {
+    gameData = returnData;
+    player = gameData.players[gameData.player_index]
+    allDisplay();
+    if (player.ready) {
       wait();
     } else {
       switch(gameData.phase) {
@@ -157,12 +163,12 @@ var Game = (function(){
         renderDiscard();
         break;
       case "game_over":
-        renderOver(gameData);
+        renderOver();
       };
     }
   };
 
-  var wait(){
+  var wait = function(){
     setRefreshTimer();
     freezeAll();
   }
@@ -186,10 +192,10 @@ var Game = (function(){
     $(".undo").on("click", function(){
       resetCards();
       drawnCards = 0;
-      $(".main-cards strong").html("Cards to draw: " + drawnCards);
+      $(".moved-count").html("Cards to draw: " + drawnCards);
     });
 
-    $(".main-cards").append("<strong>Cards to draw: 0</strong>");
+    $(".moved-count").html("Cards to draw: 0");
 
     var drawWarning = function(){
       var $one = $("#" + playerColor + "-1"),
@@ -234,7 +240,7 @@ var Game = (function(){
       $(ui.draggable).offset({top: $(this).offset().top});
       if ($(ui.draggable).hasClass("from-deck")){
         drawnCards += 1;
-        $(".main-cards strong").html("Cards to draw: " + drawnCards);
+        $(".moved-count").html("Cards to draw: " + drawnCards);
         if (drawnCards === 1) {
           $("button.flow").removeAttr("disabled");
         } else {
@@ -254,7 +260,7 @@ var Game = (function(){
 
       if ($(ui.draggable).hasClass("from-hand")){
         drawnCards -= 1;
-        $(".main-cards strong").html("Cards to draw: " + drawnCards);
+        $(".moved-count").html("Cards to draw: " + drawnCards);
         if (drawnCards === 0) {
           $("button.flow").attr("disabled", "disabled");
         } else {
@@ -280,8 +286,8 @@ var Game = (function(){
           "drawn_cards": drawnCards,
           "overheating": overheating
         },
-        success: function(gameData){
-          refresh(gameData);
+        success: function(returnData){
+          refresh(returnData);
         }
       });
     });
@@ -404,8 +410,8 @@ var Game = (function(){
           "phase": "play",
           "overheating": overheating
         },
-        success: function(gameData){
-          refresh(gameData);
+        success: function(returnData){
+          refresh(returnData);
         }
       });
     });
@@ -413,13 +419,20 @@ var Game = (function(){
 
   var renderDiscard = function() {
     var discardedCards = 0;
+    var toDiscard = function(){
+      if (player.inward_hand.count < 4) {
+        return 0;
+      } else {
+        return $(".hand .card").length - 3 - discardedCards;
+      }
+    }
 
     bindCards(".hand", 0);
 
     $(".undo").on("click", function(){
       resetCards();
       discardedCards = 0;
-      $(".main-cards strong").html("Cards to discard: " + discardedCards);
+      $(".moved-count").html("Cards to discard: " + toDiscard());
       canConfirm();
     })
 
@@ -434,13 +447,13 @@ var Game = (function(){
 
     canConfirm();
 
-    $(".main-cards").append("<strong>Cards to discard: 0</strong>");
+    $(".moved-count").html("Cards to discard: " + toDiscard());
 
     var handIn = function(event, ui) {
       $(ui.draggable).offset({top: $(this).offset().top});
       if ($(ui.draggable).hasClass("from-discard")){
         discardedCards -= 1;
-        $(".main-cards strong").html("Cards to discard: " + discardedCards);
+        $(".moved-count").html("Cards to discard: " + toDiscard());
         if (discardedCards === 0) {
           $("button.undo").attr("disabled", "disabled");
         }
@@ -458,7 +471,7 @@ var Game = (function(){
       $(ui.draggable).offset($(this).offset());
       if ($(ui.draggable).hasClass("from-hand")){
         discardedCards += 1;
-        $(".main-cards strong").html("Cards to discard: " + discardedCards);
+        $(".moved-count").html("Cards to discard: " + toDiscard());
         canConfirm();
         $("button.undo").removeAttr("disabled");
         $(ui.draggable).removeClass("from-hand");
@@ -489,17 +502,17 @@ var Game = (function(){
           "phase": "discard",
           "discarded_cards": discards
         },
-        success: function(gameData){
-          refresh(gameData);
+        success: function(returnData){
+          refresh(returnData);
         }
       });
     });
   };
 
-  var renderOver = function(gameData) {
+  var renderOver = function() {
     $(".game-over").removeClass("gone");
     $(".active").addClass("gone");
-    resultsDisplay(gameData);
+    resultsDisplay();
 
     // var setRematch = function() {
 //       $.ajax({

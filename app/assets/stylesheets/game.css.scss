@@ -98,11 +98,20 @@ section.njt.game {
         ul.info {
           width: 80px;
 
-          &.black {
+          li:first-child{
+            margin-bottom: 10px;
+          }
+        }
+
+        &.black {
+          ul.info, ul.tokens{
             float: left;
             text-align: left;
           }
-          &.white {
+        }
+
+        &.white {
+          ul.info, ul.tokens {
             float:right;
             text-align: right;
 
@@ -110,22 +119,13 @@ section.njt.game {
               float: right;
             }
           }
-
-          li:first-child{
-            margin-bottom: 10px;
-          }
         }
 
         ul.tokens {
           position: relative;
           height: 132px;
           z-index: 1;
-          &.black {
-            float: left;
-          }
-          &.white {
-            float:right;
-          }
+
           li {
             margin-top: -20px;
             &.accordion {

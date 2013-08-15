@@ -1,18 +1,19 @@
 <% players.forEach(function(player, c){ %>
   <% var tanks = player.tanks %>
-  <% var color = c == 0 ? "white" : "black" %>
-  <% var src = color == "white" ? whiteTankSrc : blackTankSrc %>
+  <% var color = (c == 0 ? "white" : "black") %>
+  <% var src = (color == "white" ? whiteTankSrc : blackTankSrc) %>
 
   <% for (var i = 1; i <=3; i++) { %>
-    <% var i = color == "white" ? i : 4-i %>
-    <% var tank = _.findWhere(tanks, {position == i}%>
+    <% var j = (color == "white" ? i : 4-i) %>
+    <% var tank = _.findWhere(tanks, {position: j}) %>
     <li class="tank" id="<%= color + "-" + i %>">
-      <% if (tank) {%>
+      <% if (tank) { %>
         <% if (tank.fake || (tanks.length > 1 && color != playerColor)) { %>
           <img src="<%= src %>" style="opacity: 0.5;">
         <% } else { %>
           <img src="<%= src %>">
+        <% } %>
       <% } %>
     </li>
   <% } %>
-<% } %>
+<% }) %>

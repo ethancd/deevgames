@@ -7,7 +7,7 @@ class PlayerSerializer < ActiveModel::Serializer
   attributes :ready, :damage, :outward_hand, :inward_hand
 
   def damage
-    object.damage_tokens.where(fake: false).pluck(:value).inject(:+) || 0
+    object.damage
   end
 
   def outward_hand

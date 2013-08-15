@@ -13,6 +13,10 @@ class Player < ActiveRecord::Base
 
   validates :game, :user, presence: true
 
+  def damage
+    self.damage_tokens.where(fake: false).pluck(:value).inject(:+) || 0
+  end
+
   def destroyed?
     self.damage >= 9
   end

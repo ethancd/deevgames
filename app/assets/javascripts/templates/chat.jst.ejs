@@ -1,7 +1,7 @@
 <% comments.forEach(function(comment){ %>
   <li>
     <strong><time><%= comment.timestamp %></time>
-      <% if (comment.author.username) { %>
+      <% if (comment.author) { %>
         <%= comment.author.username + ":" %>
       <% } %>
     </strong>
