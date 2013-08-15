@@ -1,4 +1,3 @@
-require "debugger"
 class Njt::GamesController < ApplicationController
   before_filter :auth_only!
 
