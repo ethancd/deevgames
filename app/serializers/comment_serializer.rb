@@ -1,5 +1,9 @@
 class CommentSerializer < ActiveModel::Serializer
   has_one :author
 
-  attributes :body, :created_at
+  attributes :body, :timestamp
+
+  def timestamp
+    object.created_at.strftime("%H:%M")
+  end
 end

@@ -1,8 +1,18 @@
-<ul class="spaces group">
-  <li class="tank" id="white-1"></li>
-  <li class="tank" id="white-2"></li>
-  <li class="tank" id="white-3"></li>
-  <li class="tank" id="black-3"></li>
-  <li class="tank" id="black-2"></li>
-  <li class="tank" id="black-1"></li>
-</ul>
+<% players.forEach(function(player, c){ %>
+  <% var tanks = player.tanks %>
+  <% var color = c == 0 ? "white" : "black" %>
+  <% var src = color == "white" ? whiteTankSrc : blackTankSrc %>
+
+  <% for (var i = 1; i <=3; i++) { %>
+    <% var i = color == "white" ? i : 4-i %>
+    <% var tank = _.findWhere(tanks, {position == i}%>
+    <li class="tank" id="<%= color + "-" + i %>">
+      <% if (tank) {%>
+        <% if (tank.fake || (tanks.length > 1 && color != playerColor)) { %>
+          <img src="<%= src %>" style="opacity: 0.5;">
+        <% } else { %>
+          <img src="<%= src %>">
+      <% } %>
+    </li>
+  <% } %>
+<% } %>

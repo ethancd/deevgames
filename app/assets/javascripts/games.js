@@ -1,67 +1,97 @@
 // Place all the behaviors and hooks related to the matching controller here.
 // All this logic will automatically be available in application.js.
 var Game = (function(){
-  var totalDamage = function(){
-    if (damage > 0){
-      $("." + playerColor + ".info").append("<li>" + damage + " damage</li>");
-    };
-    $("ul.tokens").each(function(){
-      if($(this).children().length > 5) {
-        $(this).children().addClass("accordion");
-      }
-    });
-  };
-
-  var tankDisplay = function(){
-    var tankLocate = function(){
-      var locatedTanks = [];
-      [whiteTanks, blackTanks].forEach(function(tanks, i){
-        var color = i == 0 ? "white" : "black"
-        if (tanks.length > 1 && color !== playerColor ) {
-          tanks.forEach(function(tank){
-            locatedTanks.push({
-              space: color + "-" + tank.position,
-              color: color,
-              fake: true
-            });
-          });
-        } else {
-          tanks.forEach(function(tank){
-            locatedTanks.push({
-              space: color + "-" + tank.position,
-              color: color,
-              fake: tank.fake
-            });
-          });
-        }
-      });
-
-      return locatedTanks;
-    };
-
-    tanks = tankLocate()
-    tanks.forEach(function(tank){
-      var $space = $("#" + tank.space)
-
-      if (tank.color == "white"){
-        $space.html("<img src=" + whiteTankSrc + ">");
-      } else {
-        $space.html("<img src=" + blackTankSrc + ">");
-      }
-
-      if (tank.fake === true) {
-        $space.find("img").css("opacity", "0.5");
-      }
-    });
-  };
-
-  var setScroll = function(){
-    $(".chat").scrollTop($(".chat")[0].scrollHeight);
+  var allDisplay = function(gameData){
+    phaseDisplay(gameData)
+    tankDisplay(gameData.players);
+    playerBoxDisplay(gameData.players);
+    deckDisplay(gameData.deck);
+    discardDisplay(gameData.discard);
+    handDisplay(gameData.player);
+    chatDisplay(gameData.comments);
   }
-  var display = function(){
-    totalDamage();
-    tankDisplay();
-    setScroll();
+
+  var phaseDisplay = function(gameData){
+    var phaseTemplate = JST["templates/phase"]({
+      phase: gameData.phase,
+      ready: gameData.player.ready
+    });
+    $("div.phase").append(phaseTemplate);
+  };
+
+  var tankDisplay = function(players){
+    var tankTemplate = JST["templates/tank"]({ players });
+
+    console.log(tankTemplate);
+    $("ul.spaces").append(tankTemplate);
+  };
+
+  var playerBoxDisplay = function(players){
+    $("figure.player-box").each(renderTokens(i, $box))
+    $("figure.player-box").each(renderInfo(i, $box))
+  };
+
+  var renderTokens = function(i, $box){
+    var color = $box.hasClass("white") ? "white" : "black";
+    var player = players[i];
+    var damageTemplate = JST["templates/damage_tokens"]({
+      color: color,
+      damageTokens: player.damage_tokens
+    });
+
+    $box.append(damageTemplate)
+    if($(".tokens." + color).children().length > 5) {
+      $(".tokens." + color).children().addClass("accordion");
+    }
+  };
+
+  var renderInfo = function(i, $box){
+    var color = $box.hasClass("white") ? "white" : "black";
+    var player = players[i];
+    var infoTemplate = JST["templates/damage_tokens"]({
+      color: color,
+      hand: player.outward_hand,
+      tokens: player.damage_tokens,
+      avatarUrl: player.user.avatar.url,
+      username: player.user.username,
+      damage: player.damage
+    });
+
+    $box.append(infoTemplate);
+  };
+
+  var deckDisplay = function(deck){
+    var deckTemplate = JST["templates/deck"]({ deck: deck });
+    $("div.deck").append(deckTemplate);
+  };
+
+  var discardDisplay = function(discard){
+    var discardTemplate = "";
+    if (discard.length > 0) {
+      discardTemplate = JST["templates/discard"]({ discard: discard });
+    }
+    $("div.discard").append(discardTemplate);
+  };
+
+  var handDisplay = function(player){
+    var handTemplate = JST["templates/hand"]({ hand: player.inward_hand });
+    $("ul.hand").append(handTemplate);
+  };
+
+  var chatDisplay = function(comments){
+    var chatTemplate = JST["templates/chat"]({ comments: comments });
+    $("ul.chat").append(chatTemplate);
+    $(".chat").scrollTop($(".chat")[0].scrollHeight);
+  };
+
+  var resultsDisplay = function(gameData){
+    var resultsTemplate = JST["templates/game_over"]({
+      result: gameData.result,
+      winnerName: gameData.winner.username,
+      loserName: gameData.loser.username
+    });
+
+    $("section.game-over strong").append(resultsTemplate);
   };
 
   var bindCards = function(zone, index){
@@ -84,8 +114,8 @@ var Game = (function(){
     });
 
     $(".card").data({
-        'originalLeft': $(".card").css('left'),
-        'originalTop': $(".card").css('top')
+      'originalLeft': $(".card").css('left'),
+      'originalTop': $(".card").css('top')
     });
   };
 
@@ -111,26 +141,31 @@ var Game = (function(){
     });
   };
 
-  var init = function(phase) {
-    display()
-    switch(phase) {
-    case "draw":
-      phaseDraw();
-      break;
-    case "play":
-      phasePlay();
-      break;
-    case "discard":
-      phaseDiscard();
-      break;
-    case "game_over":
-      gameOver();
-    };
-    if($("h3").hasClass("ready")){
-      setRefreshTimer();
-      freezeAll();
+  var refresh = function(gameData) {
+    allDisplay(gameData)
+    if (gameData.player.ready) {
+      wait();
+    } else {
+      switch(gameData.phase) {
+      case "draw":
+        renderDraw();
+        break;
+      case "play":
+        renderPlay();
+        break;
+      case "discard":
+        renderDiscard();
+        break;
+      case "game_over":
+        renderOver(gameData);
+      };
     }
   };
+
+  var wait(){
+    setRefreshTimer();
+    freezeAll();
+  }
 
   var setRefreshTimer = function() {
     setTimeout(function(){
@@ -143,7 +178,7 @@ var Game = (function(){
     $(".ui-draggable").draggable("destroy");
   };
 
-  var phaseDraw = function() {
+  var renderDraw = function() {
     var drawnCards = 0;
     var overheating = false;
     bindCards(".deck", -3);
@@ -245,14 +280,14 @@ var Game = (function(){
           "drawn_cards": drawnCards,
           "overheating": overheating
         },
-        success: function(returnData){
-
+        success: function(gameData){
+          refresh(gameData);
         }
       });
     });
   };
 
-  var phasePlay = function() {
+  var renderPlay = function() {
     bindCards(".hand", 0);
 
     $(".undo").on("click", function(){
@@ -369,14 +404,14 @@ var Game = (function(){
           "phase": "play",
           "overheating": overheating
         },
-        success: function(returnData){
-          console.log(returnData)
+        success: function(gameData){
+          refresh(gameData);
         }
       });
     });
   };
 
-  var phaseDiscard = function() {
+  var renderDiscard = function() {
     var discardedCards = 0;
 
     bindCards(".hand", 0);
@@ -454,34 +489,35 @@ var Game = (function(){
           "phase": "discard",
           "discarded_cards": discards
         },
-        success: function(returnData){
-
+        success: function(gameData){
+          refresh(gameData);
         }
       });
     });
   };
 
-  var gameOver = function() {
+  var renderOver = function(gameData) {
     $(".game-over").removeClass("gone");
     $(".active").addClass("gone");
+    resultsDisplay(gameData);
 
-    var setRematch = function() {
-      $.ajax({
-        url: window.gameUrl,
-        type: "PUT",
-        data: {
-          "phase": "game_over",
-        },
-        success: function(returnData){
-
-        }
-      });
-    };
-
-    $(".rematch").on("click", setRematch);
+    // var setRematch = function() {
+//       $.ajax({
+//         url: window.gameUrl,
+//         type: "PUT",
+//         data: {
+//           "phase": "game_over",
+//         },
+//         success: function(returnData){
+//
+//         }
+//       });
+//     };
+//
+//     $(".rematch").on("click", setRematch);
   };
 
   return {
-    init: init,
+    init: refresh
   };
 })();

@@ -1,7 +1,7 @@
 <section class="njt game content group">
   <section class="game-field">
     <header class="group">
-      <figure class="white damage">
+      <figure class="white player-box">
         <ul class="white tokens">
           <% @white.damage_tokens.each do |token| %>
             <li class="damage_token"
@@ -35,7 +35,7 @@
       </div>
 
 
-      <figure class="black damage">
+      <figure class="black player-box">
         <ul class="black tokens">
           <% @black.damage_tokens.each do |token| %>
             <li class="damage_token"
@@ -128,22 +128,16 @@
         <div class="warning hidden"></div>
       </figure>
 
-      <div
-      <% if @discards.count > 0 %>
-           class="discard card"
-           data-info="<%="#{@discards.last.value}-#{@discards.last.dir}"%>"
-      <% else %>
-           class="discard"
-      <% end %>
-      ></div>
+      <div class="discard">
+        <% if @discards.count > 0 %>
+             <div class="card" data-info="<%="#{@discard.last.value}-#{@discard.last.dir}"%>"></div>
+        <% end %>
+      </div>
     </section>
 
-    <ul class="hand group slot
-    <%= 'black' if @color == "black"%>">
+    <ul class="hand group slot <%= 'black' if @color == "black"%>">
       <% @player.cards.each do |card|%>
-        <li class="card"
-          data-info="<%= "#{card.value}-#{card.dir}" %>">
-        </li>
+        <li class="card" data-info="<%= "#{card.value}-#{card.dir}" %>"></li>
       <% end %>
     </ul>
   </section>
@@ -175,18 +169,18 @@
   </aside>
 </section>
 
+<script type="application/json" id="bootstrapped_game_json">
+  <%= @game.to_json.html_safe %>
+</script>
+
 <script>
 $(function(){
-  window.damage = "<%= @player.damage %>";
   window.gameUrl = "<%= njt_game_url(@game) %>";
   window.playerColor = "<%= @color %>";
-  window.whiteTanks = JSON.parse(
-    '<%= @white.tanks.to_json.html_safe %>')
-  window.blackTanks = JSON.parse(
-    '<%= @black.tanks.to_json.html_safe %>')
-  window.whiteTankSrc = "<%= asset_path("whitetank.png") %>"
-  window.blackTankSrc = "<%= asset_path("blacktank.png") %>"
+  window.whiteTankSrc = "<%= asset_path("whitetank.png") %>";
+  window.blackTankSrc = "<%= asset_path("blacktank.png") %>";
+  var gameData = JSON.parse($("#bootstrapped_game_json").html());
 
-  Game.init("<%= @game.phase %>");
+  Game.init(gameData);
 });
 </script>

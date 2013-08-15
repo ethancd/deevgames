@@ -1,8 +1,3 @@
-<div
-<% if (discards.count > 0) { %>
-     class="discard card"
-     data-info="<%= discards.slice(-1)[0].value + "-" + discards.slice(-1)[0].dir} %>"
-<% else %>
-     class="discard"
-<% end %>
-></div>
+<div class="card" data-info=
+  "<%= discard.slice(-1)[0].value + "-" + discard.slice(-1)[0].dir %>">
+</div>

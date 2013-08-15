@@ -1,16 +1,9 @@
-<strong>
-  <% switch(result) { %>
-  <% case "tie": %>
+  <% if (result == "tie") { %>
     A tie. That's epic! Up for a rematch?"
-  <% break; %>
-  <% case "white_victory": %>
-  <% case "black_victory": %>
+  <% } else if (result.slice(6) == "victory") { %>
     <%= winnerName +  " has won over " + loserName + ". Up for a rematch?" %>
-  <% break; %>
-  <% case "quit": %>
+  <% } else if (result == "quit") { %>
     <%= "Looks like " + loserName + " quit." %>
-  <% break; %>
-  <% default:  %>
+  <% } else { %>
     It's still anybody's game!
   <% } %>
-</strong>

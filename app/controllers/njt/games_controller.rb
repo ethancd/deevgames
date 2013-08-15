@@ -81,7 +81,7 @@ class Njt::GamesController < ApplicationController
     end
 
     @color = @player == @white ? "white" : "black"
-    @discards = @game.cards.where(location: "discard")
+    @discard = @game.cards.where(location: "discard")
     @deck = @game.cards.where(location: ["deck", "drawn"])
 
     # if @player.nil?

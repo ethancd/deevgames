@@ -1,13 +1,13 @@
 <ul class="info '<%= color %>'">
   <li class="group">
-    <div class="group"><img src="<%%= avatarUrl%>"></div>
-    <strong><%%= username %></strong>
+    <div class="group"><img src="<%= avatarUrl %>"></div>
+    <strong><%= username %></strong>
   </li>
   <li>
-    <% if (cards.length == 1) { %>
+    <% if (hand.length == 1) { %>
       1 card
     <% } else { %>
-      <%= cards.length + " cards" %>
+      <%= hand.length + " cards" %>
     <% } %>
   </li>
   <li>
@@ -17,4 +17,8 @@
       <%= tokens.length + " tokens" %>
     <% } %>
   </li>
+
+  <% if (playerColor == color) { %>
+    <li><%= damage %> damage</li>
+  <% } %>
 </ul>
