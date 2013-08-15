@@ -84,33 +84,33 @@ class Njt::GamesController < ApplicationController
     @discards = @game.cards.where(location: "discard")
     @deck = @game.cards.where(location: ["deck", "drawn"])
 
-    if @player.nil?
-      flash[:notice] ||= []
-      flash[:notice] << "Spectating is currently disabled."
-      redirect_to njt_splash_url
-      return
-    end
+    # if @player.nil?
+    #   flash[:notice] ||= []
+    #   flash[:notice] << "Spectating is currently disabled."
+    #   redirect_to njt_splash_url
+    #   return
+    # end
   end
 
   def update
     @game = Game.find(params[:id])
-    @player = @game.players.find_by_user_id(current_user.id)
+    player = @game.players.find_by_user_id(current_user.id)
 
-    unless @player.ready
+    unless player.ready
       case params[:phase]
       when "draw"
-        @player.drawify(params[:drawn_cards])
-        @player.update_attributes(ready: true)
+        player.drawify(params[:drawn_cards])
+        player.update_attributes(ready: true)
       when "play"
-        if @player.play(params)
+        if player.play(params)
           @ai.ai_play if ai?
-          @player.update_attributes(ready: true)
+          player.update_attributes(ready: true)
         end
       when "discard"
-        @player.trashify(params[:discarded_cards])
-        @player.update_attributes(ready: true)
+        player.trashify(params[:discarded_cards])
+        player.update_attributes(ready: true)
       when "game_over"
-        @player.update_attributes(ready: true)
+        player.update_attributes(ready: true)
         @ai.update_attributes(ready: true) if ai?
       end
     end
@@ -155,15 +155,12 @@ class Njt::GamesController < ApplicationController
 
       @ai.update_attributes(ready: true) if ai?
       @game.save
-
-      show #fix this so it returns something sensible to ajax calls
-      render :show
     else
       enemy = current_user == @game.users.first ? @game.users.last : @game.users.first
       @game.write("Waiting for #{enemy.username}.")
-      show
-      render :show
     end
+
+    render json: @game
   end
 
   def destroy

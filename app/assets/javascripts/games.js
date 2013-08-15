@@ -370,7 +370,7 @@ var Game = (function(){
           "overheating": overheating
         },
         success: function(returnData){
-
+          console.log(returnData)
         }
       });
     });

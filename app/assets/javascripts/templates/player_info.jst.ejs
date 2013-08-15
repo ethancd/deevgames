@@ -1,0 +1,20 @@
+<ul class="info '<%= color %>'">
+  <li class="group">
+    <div class="group"><img src="<%%= avatarUrl%>"></div>
+    <strong><%%= username %></strong>
+  </li>
+  <li>
+    <% if (cards.length == 1) { %>
+      1 card
+    <% } else { %>
+      <%= cards.length + " cards" %>
+    <% } %>
+  </li>
+  <li>
+    <% if (tokens.length == 1) { %>
+      1 token
+    <% } else { %>
+      <%= tokens.length + " tokens" %>
+    <% } %>
+  </li>
+</ul>

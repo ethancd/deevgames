@@ -25,14 +25,14 @@ gem 'devise'
 
 gem 'paperclip'
 gem 'aws-sdk'
-gem 'ejs'
 gem 'figaro'
-
 gem 'kaminari'
 
 gem 'faker'
 
 gem 'jquery-ui-rails'
+gem 'ejs'
+gem 'active_model_serializers'
 
 group :production do
   gem 'pg'
