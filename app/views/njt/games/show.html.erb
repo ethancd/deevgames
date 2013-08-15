@@ -1,8 +1,6 @@
 <section class="njt game content group">
   <section class="game-field">
     <header class="group">
-      <div class="stack damage_token" data-fd="true"></div>
-
       <figure class="white damage">
         <ul class="white tokens">
           <% @white.damage_tokens.each do |token| %>
@@ -113,7 +111,7 @@
 
         <nav class="group">
           <% opponent_id = @player == @white ? @black.user_id : @white.user_id %>
-          <button class="rematch">Rematch</button>
+          <button class="rematch gone">Rematch</button>
           <%= button_to "New Quick Play", {controller: "njt/games", action: "enqueue"}%>
         </nav>
       </section>
@@ -182,10 +180,13 @@ $(function(){
   window.damage = "<%= @player.damage %>";
   window.gameUrl = "<%= njt_game_url(@game) %>";
   window.playerColor = "<%= @color %>";
-  window.whiteTanks
-  window.blackTanks
+  window.whiteTanks = JSON.parse(
+    '<%= @white.tanks.to_json.html_safe %>')
+  window.blackTanks = JSON.parse(
+    '<%= @black.tanks.to_json.html_safe %>')
   window.whiteTankSrc = "<%= asset_path("whitetank.png") %>"
-  Display.display();
+  window.blackTankSrc = "<%= asset_path("blacktank.png") %>"
+
   Game.init("<%= @game.phase %>");
 });
 </script>

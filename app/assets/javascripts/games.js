@@ -1,32 +1,6 @@
 // Place all the behaviors and hooks related to the matching controller here.
 // All this logic will automatically be available in application.js.
 var Game = (function(){
-  var tanks = [];
-
-  <% [[whiteTanks, "white"], [blackTanks, "black"]].each do |(tanks, color)| %>
-    <% if player.tanks.count > 1 && @player != player %>
-
-      <% player.tanks.each do |tank| %>
-        tanks.push({
-          space: "<%= "#{color}-#{tank.position}" %>",
-          color: "<%= color %>",
-          fake: "true"
-        });
-      <% end %>
-
-    <% else %>
-
-      <% player.tanks.each do |tank| %>
-        tanks.push({
-          space: "<%= "#{color}-#{tank.position}" %>",
-          color: "<%= color %>",
-          fake: "<%= tank.fake %>"
-        });
-      <% end %>
-
-    <% end %>
-  <% end %>
-
   var totalDamage = function(){
     if (damage > 0){
       $("." + playerColor + ".info").append("<li>" + damage + " damage</li>");
@@ -39,16 +13,43 @@ var Game = (function(){
   };
 
   var tankDisplay = function(){
+    var tankLocate = function(){
+      var locatedTanks = [];
+      [whiteTanks, blackTanks].forEach(function(tanks, i){
+        var color = i == 0 ? "white" : "black"
+        if (tanks.length > 1 && color !== playerColor ) {
+          tanks.forEach(function(tank){
+            locatedTanks.push({
+              space: color + "-" + tank.position,
+              color: color,
+              fake: true
+            });
+          });
+        } else {
+          tanks.forEach(function(tank){
+            locatedTanks.push({
+              space: color + "-" + tank.position,
+              color: color,
+              fake: tank.fake
+            });
+          });
+        }
+      });
+
+      return locatedTanks;
+    };
+
+    tanks = tankLocate()
     tanks.forEach(function(tank){
       var $space = $("#" + tank.space)
 
       if (tank.color == "white"){
-        $space.html("<img src=>");
+        $space.html("<img src=" + whiteTankSrc + ">");
       } else {
-        $space.html("<img src=<%= asset_path("blacktank.png") %>>");
+        $space.html("<img src=" + blackTankSrc + ">");
       }
 
-      if (tank.fake === "true") {
+      if (tank.fake === true) {
         $space.find("img").css("opacity", "0.5");
       }
     });

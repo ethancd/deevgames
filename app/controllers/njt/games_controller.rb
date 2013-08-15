@@ -111,7 +111,6 @@ class Njt::GamesController < ApplicationController
         @player.trashify(params[:discarded_cards])
         @player.update_attributes(ready: true)
       when "game_over"
-        debugger
         @player.update_attributes(ready: true)
         @ai.update_attributes(ready: true) if ai?
       end

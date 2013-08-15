@@ -38,11 +38,11 @@ ul {
 }
 
 .hidden {
-  visibility: hidden;
+  visibility: hidden !important;
 }
 
 .gone {
-  display: none;
+  display: none !important;
 }
 
 .total-wrap {

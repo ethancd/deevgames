@@ -15,8 +15,10 @@
 
     <p class="notice"><%= notice %></p>
     <p class="alert"><%= alert %></p>
-    <% flash[:notice].try(:each) do |msg| %>
-      <%= msg %>
+    <% if flash[:notice].is_a? Array %>
+      <% flash[:notice].try(:each) do |msg| %>
+        <%= msg %>
+      <% end %>
     <% end %>
 
     <%= yield %>
