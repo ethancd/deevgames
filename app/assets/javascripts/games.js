@@ -166,6 +166,11 @@ var Game = (function(){
 
   var chatBind = function(){
     $(".add-comment").on("submit", enterComment)
+    $(".add-comment textarea").on("keydown", function(event){
+      if (event.which == 13) {
+        $(this).submit();
+      }
+    });
   };
 
   var enterComment = function(){
