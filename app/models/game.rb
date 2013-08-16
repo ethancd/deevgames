@@ -2,13 +2,13 @@ class Game < ActiveRecord::Base
   LEGAL_SHOTS = {1 => [3], 2 => [2,3], 3 => [1,2,3] }
   attr_accessible :phase, :result, :queue, :winner_id, :loser_id
 
-  has_many :players
+  has_many :players, dependent: :destroy
   has_many :users, through: :players
 
-  has_many :cards
-  has_many :damage_tokens
-  has_many :tanks
-  has_many :comments, as: :topic
+  has_many :cards, dependent: :destroy
+  has_many :damage_tokens, dependent: :destroy
+  has_many :tanks, dependent: :destroy
+  has_many :comments, as: :topic, dependent: :destroy
 
   belongs_to :winner, class_name: User
   belongs_to :loser, class_name: User
@@ -38,7 +38,7 @@ class Game < ActiveRecord::Base
     write("#{self.users[0].username} vs #{self.users[1].username} has begun!")
   end
 
-  def game_over(current_user)
+  def game_over(current_user="nil")
     self.update_attributes(phase: "game_over")
     self.players.each{|player| player.update_attributes(ready: false)}
 
@@ -111,6 +111,16 @@ class Game < ActiveRecord::Base
       token.player_id = player.id
       token.fake = fake
       token.save!
+    end
+  end
+
+  def advance_phase(params)
+    case params[:phase]
+    when "draw" then self.phase = "play"
+    when "play"
+      self.phase = "discard"
+      game_over if self.players.any?{ |player| player.destroyed? }
+    when "discard" then self.phase = "draw"
     end
   end
 
@@ -224,7 +234,7 @@ class Game < ActiveRecord::Base
         else
           report = report[0...-1] + " and #{decoy.position},"
         end
-        decoy.destroy
+        player.tanks.delete(decoy)
       end
 
       if enemy.tanks.find_by_position_and_fake(action[:value], false)
@@ -238,7 +248,7 @@ class Game < ActiveRecord::Base
           report += " and completely whiffs."
         else
           report += " and knocks out a decoy."
-          target.destroy
+          enemy.tanks.delete(target)
         end
       end
 

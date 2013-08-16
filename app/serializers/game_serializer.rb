@@ -6,11 +6,7 @@ class GameSerializer < ActiveModel::Serializer
   has_one :winner
   has_one :loser
 
-  attributes :phase, :result, :deck, :discard, :player_index
-
-  def player_index
-    0 #object.players[0].user == current_user ? 0 : 1
-  end
+  attributes :phase, :result, :deck, :discard
 
   def deck
     object.cards.where(location: ["deck", "drawn"])

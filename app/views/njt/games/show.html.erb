@@ -27,7 +27,7 @@
       <div class="deck"></div>
 
       <button class="undo flow" disabled="true">Undo</button>
-
+      <strong class="moved-count"></strong>
       <figure class="active" id="active-1">
         <nav class="group hidden">
           <button class="feint not-chosen"></button>
@@ -36,12 +36,14 @@
         <div class="play" id="play-1"></div>
       </figure>
 
-      <strong class="moved-count"></strong>
+
       <section class='game-over gone'>
         <strong></strong>
         <nav class="group">
-          <button class="rematch gone">Rematch</button>
-          <%= button_to "New Quick Play", {controller: "njt/games", action: "enqueue"}%>
+          <%= button_to "New Game vs A.I.",
+            {controller: "njt/games", action: "create", ai: true} %>
+          <%= button_to "New Quick Play",
+            {controller: "njt/games", action: "enqueue"}%>
         </nav>
       </section>
 
@@ -79,7 +81,6 @@
 
   </aside>
 </section>
-
 <script type="application/json" id="bootstrapped_game_json">
   <%= GameSerializer.new(@game).to_json.html_safe %>
 </script>
@@ -87,6 +88,7 @@
 <script>
 $(function(){
   window.gameUrl = "<%= njt_game_url(@game) %>";
+  window.commentUrl = "<%= njt_game_comments_url(@game) %>";
   window.playerColor = "<%= @color %>";
   window.whiteTankSrc = "<%= asset_path("whitetank.png") %>";
   window.blackTankSrc = "<%= asset_path("blacktank.png") %>";

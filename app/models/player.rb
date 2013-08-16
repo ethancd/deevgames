@@ -7,9 +7,9 @@ class Player < ActiveRecord::Base
   belongs_to :game
   belongs_to :user
 
-  has_many :tanks
-  has_many :cards
-  has_many :damage_tokens
+  has_many :tanks, dependent: :destroy
+  has_many :cards, dependent: :destroy
+  has_many :damage_tokens, dependent: :destroy
 
   validates :game, :user, presence: true
 
@@ -18,7 +18,16 @@ class Player < ActiveRecord::Base
   end
 
   def destroyed?
-    self.damage >= 9
+    self.damage >= 6
+  end
+
+  def step_forward(params)
+    case params[:phase]
+    when "draw" then drawify(params[:drawn_cards])
+    when "play" then return false unless play(params)
+    when "discard" then trashify(params[:discarded_cards])
+    end
+    true
   end
 
   def draw(drawn)
@@ -178,19 +187,19 @@ class Player < ActiveRecord::Base
   end
 
   def valid_feint?(action, paper_tanks)
-    if action["dir"] == "forward" &&
-        paper_tanks.map{|t| t[:position]}.min == 3
-      #flash[:notice] ||= []
-      #flash[:notice] << "Can't pretend to move further up."
-      false
-    elsif action["dir"] == "back" &&
-        paper_tanks.map{|t| t[:position]}.max == 1
-      #flash[:notice] ||= []
-      #flash[:notice] << "Can't pretend to move further back."
-      false
-    else
+    # if action["dir"] == "forward" &&
+    #     paper_tanks.map{|t| t[:position]}.min == 3
+    #   #flash[:notice] ||= []
+    #   #flash[:notice] << "Can't pretend to move further up."
+    #   false
+    # elsif action["dir"] == "back" &&
+    #     paper_tanks.map{|t| t[:position]}.max == 1
+    #   #flash[:notice] ||= []
+    #   #flash[:notice] << "Can't pretend to move further back."
+    #   false
+    # else
       true
-    end
+    # end
   end
 
   def legal_plays
@@ -224,26 +233,7 @@ class Player < ActiveRecord::Base
   end
 
   def ai_play
-    # legal = false
-    # if rand < 0.7 || @ai.cards.count == 1
-        actify([pick_ai_action(legal_plays)])
-        # legal = !!actions[0]
-      # end
-    # else
-#       until legal
-#         paper_tanks = @ai.tanks.map do |tank|
-#           {position: tank.position, fake: tank.fake}
-#         end
-#
-#         @actions = []
-#         2.times{ @actions << pick_ai_action(legal_plays) }
-#         actions = @actions.dup
-#         next if @actions.map{|a| a["id"]}.uniq.count == 1
-#
-#         loop_over(paper_tanks)
-#         legal = @actions.empty?
-#       end
-#     end
+    actify([pick_ai_action(legal_plays)])
   end
 
   def pick_ai_action(plays)

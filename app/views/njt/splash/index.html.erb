@@ -12,7 +12,6 @@
 
   <nav class="group game">
     <%= button_to "Quick Play", {controller: "njt/games", action: "enqueue"} %>
-    <%= button_to "New Game vs Friend", {controller: "njt/games", action: "create"}%>
     <%= button_to "New Game vs A.I.", {controller: "njt/games", action: "create", ai: true}%>
   </nav>
 </section>

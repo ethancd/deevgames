@@ -1,16 +1,21 @@
 @import "colors";
 
-.layout a {
+.layout {
+  background: darken($ground, 10%);
+
+  a {
   text-decoration: none;
 
-  &:hover {
+    &:hover {
     text-decoration: underline;
+    }
   }
 }
 
 header.layout {
-  border-bottom: 5px solid $accent;
 
+  box-shadow: 0px 5px 5px darken($ground, 20%);
+  margin-bottom: 10px;
   figure.logo {
     float: left;
 
@@ -46,7 +51,6 @@ header.layout {
         margin: 15px 5px;
 
         strong {
-          color: $accent;
           font-size: 1.5em;
         }
       }
@@ -113,7 +117,6 @@ header.layout {
           text-align: center;
           padding: 10px 10px;
           border: 2px solid $accent;
-          border-bottom: 0;
           border-top-left-radius: 7px;
 
           small {
@@ -153,8 +156,8 @@ header.layout {
 }
 
 footer.layout {
-  border-top: 5px solid $accent;
-
+  box-shadow: 0px -1px 5px darken($ground, 20%);
+  margin-top: 10px;
   small {
     display: block;
     margin: 5px 10px;

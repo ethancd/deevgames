@@ -1,6 +1,6 @@
 <% damageTokens.forEach(function(token){ %>
   <li class="damage_token"
-    <% if (playerColor == color){ %>
+    <% if (playerColor == color || phase == "game_over"){ %>
       data-value="<%= token.value %>"
       data-fd="<%= token.fake %>"
     <% } else { %>

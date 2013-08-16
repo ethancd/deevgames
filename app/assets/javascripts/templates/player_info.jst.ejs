@@ -17,6 +17,6 @@
   <% } %>
 </li>
 
-<% if (playerColor == color) { %>
+<% if (playerColor == color || phase == "game_over") { %>
   <li><%= damage %> damage</li>
 <% } %>

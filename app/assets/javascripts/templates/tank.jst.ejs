@@ -8,7 +8,8 @@
     <% var tank = _.findWhere(tanks, {position: j}) %>
     <li class="tank" id="<%= color + "-" + i %>">
       <% if (tank) { %>
-        <% if (tank.fake || (tanks.length > 1 && color != playerColor)) { %>
+        <% if (tank.fake || (tanks.length > 1 &&
+                color != playerColor && phase != "game_over")) { %>
           <img src="<%= src %>" style="opacity: 0.5;">
         <% } else { %>
           <img src="<%= src %>">

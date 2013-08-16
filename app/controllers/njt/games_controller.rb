@@ -52,44 +52,28 @@ class Njt::GamesController < ApplicationController
 
   def show
     @game = Game.find(params[:id])
-    # if @game != current_user.games.last
-    #   redirect_to njt_game_url(current_user.games.last)
-    #   return
-    # end
 
-    @white = @game.players[0]
+    if current_user == @game.users[0]
+      @player, @color = @game.players[0], "white"
+    elsif current_user == @game.users[1]
+      @player, @color = @game.players[1], "black"
+    end
 
     if @game.players.count == 1
-      if current_user == @white.user
+      if @player
         flash[:notice] ||= []
         flash[:notice] << "Waiting for another player..."
-        redirect_to njt_game_pregame_url(@game)
-        return
       else
-        @game.players << Player.create(user_id: current_user.id)
-        @game.setup_game
-        @game.save
+        flash[:notice] ||= []
+        flash[:notice] << "Want to play in this game? Click the 'Join' button!"
+      end
+      redirect_to njt_game_pregame_url(@game)
+    else
+      respond_to do |format|
+        format.html
+        format.json { render json: @game, root: false }
       end
     end
-
-    @black = @game.players[1]
-
-    if current_user == @white.user
-      @player = @white
-    elsif current_user == @black.user
-      @player = @black
-    end
-
-    @color = @player == @white ? "white" : "black"
-    @discard = @game.cards.where(location: "discard")
-    @deck = @game.cards.where(location: ["deck", "drawn"])
-
-    # if @player.nil?
-    #   flash[:notice] ||= []
-    #   flash[:notice] << "Spectating is currently disabled."
-    #   redirect_to njt_splash_url
-    #   return
-    # end
   end
 
   def update
@@ -97,19 +81,7 @@ class Njt::GamesController < ApplicationController
     player = @game.players.find_by_user_id(current_user.id)
 
     unless player.ready
-      case params[:phase]
-      when "draw"
-        player.drawify(params[:drawn_cards])
-        player.update_attributes(ready: true)
-      when "play"
-        if player.play(params)
-          @ai.ai_play if ai?
-          player.update_attributes(ready: true)
-        end
-      when "discard"
-        player.trashify(params[:discarded_cards])
-        player.update_attributes(ready: true)
-      when "game_over"
+      if player.step_forward(params)
         player.update_attributes(ready: true)
         @ai.update_attributes(ready: true) if ai?
       end
@@ -123,41 +95,18 @@ class Njt::GamesController < ApplicationController
         when "draw"
           drawn = player.cards.where(location: "drawn")
           player == ai? ? @ai.ai_draw : player.draw(drawn)
-          @game.phase = "play"
-          if player.legal_plays.empty?
-            @game.harm(10, player, false)
-            @game.game_over(current_user)
-          end
         when "play"
           next if resolved == 1
+          @ai.ai_play if ai?
           @game.resolve_all_actions
-          if @game.players.any?{ |player| player.destroyed? }
-            @game.game_over(current_user)
-          else
-            @game.phase = "discard"
-          end
         when "discard"
           trashed = player.cards.where(location: "trashed")
           player == ai? ? @ai.ai_discard : player.discard(trashed)
-          @game.phase = "draw"
-        when "game_over"
-          next if resolved == 1
-          @new_game = Game.create(phase: "play")
-          @game.players.each do |player|
-            @new_game.players << Player.create(user_id: player.user_id)
-          end
-          @new_game.save
-          @new_game.setup_game
-          redirect_to njt_game_url(@new_game)
-          return
         end
       end
 
-      @ai.update_attributes(ready: true) if ai?
+      @game.advance_phase(params)
       @game.save
-    else
-      enemy = current_user == @game.users.first ? @game.users.last : @game.users.first
-      @game.write("Waiting for #{enemy.username}.")
     end
 
     render json: @game, root: false
