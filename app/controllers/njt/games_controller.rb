@@ -58,9 +58,9 @@ class Njt::GamesController < ApplicationController
   def show
     @game = Game.find(params[:id])
 
-    if current_user == @game.users[0]
+    if current_user == @game.players[0].user
       @player, @color = @game.players[0], "white"
-    elsif current_user == @game.users[1]
+    elsif current_user == @game.players[1].user
       @player, @color = @game.players[1], "black"
     end
 

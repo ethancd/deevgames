@@ -12,11 +12,7 @@ $($(window).on("unload", function(){
   $.ajax({
     url: "<%= njt_game_url(@game)%>",
     dataType: "json",
-    type: "DELETE",
-    success: function(returnData){
-      clearBindings();
-      refresh(returnData);
-    }
+    type: "DELETE"
   });
 }))
 
