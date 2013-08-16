@@ -1,7 +1,8 @@
 // Place all the behaviors and hooks related to the matching controller here.
 // All this logic will automatically be available in application.js.
 var Game = (function(){
-  var gameData, player;
+  gameData = "";
+  player = "";
 
 
   var allDisplay = function(){

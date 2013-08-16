@@ -48,6 +48,11 @@ class Njt::GamesController < ApplicationController
 
   def pregame
     @game = Game.find(params[:game_id])
+
+    respond_to do |format|
+      format.html
+      format.json { render json: @game, root: false }
+    end
   end
 
   def show
@@ -63,11 +68,12 @@ class Njt::GamesController < ApplicationController
       if @player
         flash[:notice] ||= []
         flash[:notice] << "Waiting for another player..."
+        redirect_to njt_game_pregame_url(@game)
       else
         flash[:notice] ||= []
-        flash[:notice] << "Want to play in this game? Click the 'Join' button!"
+        flash[:notice] << 'Want to play in this game? Click "Quick Play"!'
+        redirect_to njt_splash_url
       end
-      redirect_to njt_game_pregame_url(@game)
     else
       respond_to do |format|
         format.html
@@ -113,7 +119,13 @@ class Njt::GamesController < ApplicationController
   end
 
   def destroy
-    @game = Game.find(params[:id])
+    @game = Game.find(params[:game_id])
+    @game.destroy
+    render json: @game, root: false
+  end
+
+  def gameover
+    @game = Game.find(params[:game_id])
     @game.game_over(current_user)
 
     if @game.result == "quit"

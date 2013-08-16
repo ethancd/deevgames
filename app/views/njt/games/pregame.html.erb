@@ -8,7 +8,23 @@
 </section>
 
 <script>
-setTimeout(function(){
-   window.location.href="<%= njt_game_url(@game)%>";
-}, 5000);
+$($(window).on("unload", function(){
+  $.ajax({
+    url: "<%= njt_game_url(@game)%>",
+    dataType: "json",
+    type: "DELETE",
+    success: function(returnData){
+      clearBindings();
+      refresh(returnData);
+    }
+  });
+}))
+
+  window.setInterval(function(){
+    $.getJSON("<%= njt_game_url(@game)%>", function(gameData){
+      if (gameData.players.length == 2) {
+        $.get("<%= njt_game_url(@game)%>");
+      }
+    });
+  }, 5000);)
 </script>

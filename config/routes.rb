@@ -19,6 +19,7 @@ DeevGamesDevelopment::Application.routes.draw do
     resources :rules, only: [:show]
     resources :games, only: [:create, :show, :update, :destroy] do
       resources :comments, only: [:index, :create]
+      delete "gameover", to: "games#gameover"
       get "pregame", to: "games#pregame"
     end
     post "enqueue", to: "games#enqueue"
