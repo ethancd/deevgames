@@ -14,4 +14,5 @@
 //= require jquery_ujs
 //= require jquery.ui.all
 //= require underscore-min
+//= require jquery.ui.touch-punch.min
 //= require_tree .

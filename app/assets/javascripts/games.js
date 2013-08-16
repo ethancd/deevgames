@@ -117,10 +117,7 @@ var Game = (function(){
       cursor: "move",
       revert: "invalid",
       stack: ".card",
-      start: function(event, ui){
-        event.stopPropagation();
-        $(this).addClass('noclick');
-      }
+      start: function(event, ui){$(this).addClass('noclick');}
     });
 
     $(".card").data({
