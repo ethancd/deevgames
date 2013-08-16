@@ -8,7 +8,7 @@ class CommentsController < ApplicationController
 
   def create
 
-    unless user_signed_in? #&& user.not_a_guest
+    unless user_signed_in?
       flash = "Must be signed in to comment"
       redirect_to "#{post_url(params[:post_id])}#comments"
     else
@@ -17,15 +17,22 @@ class CommentsController < ApplicationController
       @comment.author_id = current_user.id
 
       if params[:post_id]
+        @topic = Post.find(params[:post_id])
         @comment.topic_id = params[:post_id]
         @comment.topic_type = "Post"
       elsif params[:game_id]
+        @topic = Game.find(params[:game_id])
         @comment.topic_id = params[:game_id]
         @comment.topic_type = "Game"
       end
 
       @comment.save!
-      redirect_to :back
+
+      respond_to do |format|
+        format.html { redirect_to @topic}
+        format.json { render json: @topic, root: false }
+      end
+
     end
   end
 

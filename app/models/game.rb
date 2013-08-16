@@ -2,13 +2,13 @@ class Game < ActiveRecord::Base
   LEGAL_SHOTS = {1 => [3], 2 => [2,3], 3 => [1,2,3] }
   attr_accessible :phase, :result, :queue, :winner_id, :loser_id
 
-  has_many :players, dependent: :destroy
+  has_many :players, dependent: :destroy, order: "id ASC"
   has_many :users, through: :players
 
   has_many :cards, dependent: :destroy
   has_many :damage_tokens, dependent: :destroy
   has_many :tanks, dependent: :destroy
-  has_many :comments, as: :topic, dependent: :destroy
+  has_many :comments, as: :topic, dependent: :destroy, order: "id ASC"
 
   belongs_to :winner, class_name: User
   belongs_to :loser, class_name: User

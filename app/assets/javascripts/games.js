@@ -84,7 +84,9 @@ var Game = (function(){
   };
 
   var chatDisplay = function(){
-    var chatTemplate = JST["templates/chat"]({ comments: gameData.comments });
+    var chatTemplate = JST["templates/chat"]({
+      comments: gameData.comments
+    });
     $("ul.chat").html(chatTemplate);
     $(".chat").scrollTop($(".chat")[0].scrollHeight);
   };
@@ -115,7 +117,10 @@ var Game = (function(){
       cursor: "move",
       revert: "invalid",
       stack: ".card",
-      start: function(event, ui) {$(this).addClass('noclick')}
+      start: function(event, ui){
+        event.stopPropagation();
+        $(this).addClass('noclick');
+      }
     });
 
     $(".card").data({
@@ -168,6 +173,7 @@ var Game = (function(){
     var body = $("#comment_body").val();
     $.ajax({
       url: window.commentUrl,
+      dataType: 'json',
       type: "POST",
       data: {
         comment: {
