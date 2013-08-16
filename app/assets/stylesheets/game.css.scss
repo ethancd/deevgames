@@ -69,13 +69,13 @@ section.njt.game {
     }
 
     header {
-      margin: 25px auto;
-      width: 670px;
+      margin: 25px 0px 25px 100px;
+      width: 620px;
       text-align: center;
 
       .phase {
         display: block;
-        width: 320px;
+        width: 260px;
         float: left;
         text-align: center;
 
@@ -367,6 +367,7 @@ section.njt.game {
       }
     }
   }
+
   aside {
     float: right;
     border-bottom: 3px solid $accent;
