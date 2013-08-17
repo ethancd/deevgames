@@ -64,7 +64,8 @@ section.njt.splash {
           display: block;
           font-size: 250%;
           text-decoration: none;
-          padding: 10px 10px;
+          padding: 10px;
+          margin: 30px 0px;
 
           &:hover {
             color: $light;
@@ -73,10 +74,12 @@ section.njt.splash {
 
         &:first-child a {
           padding-top: 0;
+          margin-top: 0;
         }
 
         &:last-child a {
           padding-bottom: 0;
+          margin-bottom: 0;
         }
       }
     }

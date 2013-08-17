@@ -4,20 +4,16 @@ class Njt::GamesController < ApplicationController
   def create
     @game = Game.create(phase: "play")
     @game.players << Player.create(user_id: current_user.id)
-    @game.players << Player.create(user_id: 2, ready: true) if params[:ai]
+    if params[:ai]
+      @game.players << Player.create(user_id: 2, ready: true, absent: true)
+    end
     @game.save
+
     if @game.players.count == 1
       redirect_to njt_game_pregame_url(@game)
     else
       @game.setup_game
-
-      if @game.save
-        redirect_to njt_game_url(@game.id)
-      else
-        flash[:notice] ||= []
-        flash[:notice] << @game.errors.full_messages
-        redirect_to :root
-      end
+      redirect_to njt_game_url(@game.id)
     end
   end
 
@@ -75,6 +71,8 @@ class Njt::GamesController < ApplicationController
         redirect_to njt_splash_url
       end
     else
+      @player.update_attributes(absent: false)
+
       respond_to do |format|
         format.html
         format.json { render json: @game, root: false }
@@ -85,7 +83,7 @@ class Njt::GamesController < ApplicationController
   def update
     @game = Game.find(params[:id])
     player = @game.players.find_by_user_id(current_user.id)
-
+    player.update_attributes(absent: params[:absent])
     unless player.ready
       if player.step_forward(params)
         player.update_attributes(ready: true)
@@ -119,7 +117,7 @@ class Njt::GamesController < ApplicationController
   end
 
   def destroy
-    @game = Game.find(params[:game_id])
+    @game = Game.find(params[:id])
     @game.destroy
     render json: @game, root: false
   end

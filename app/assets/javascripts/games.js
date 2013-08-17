@@ -110,7 +110,7 @@ var Game = (function(){
         $(this).toggleClass("shot-down");
       }
     });
-
+    $(zone + " .card").slice(index).addClass("phased")
     $(zone + " .card").slice(index).draggable({
       snap: ".slot",
       snapMode: "inner",
@@ -198,14 +198,38 @@ var Game = (function(){
     });
   };
 
+  var destroyIfGone = function(){
+    var opponent = gameData.players[(playerColor == "black") ? 0 : 1]
+    $(window).on("unload", function(){
+
+      if (opponent && opponent.absent) {
+        console.log("whaaat")
+        $.ajax({
+          async : false,
+          url: window.gameUrl,
+          dataType: "json",
+          type: "DELETE"
+        });
+      } else {
+        $.ajax({
+          async : false,
+          url: window.gameUrl,
+          type: "PUT",
+          data: {"absent": true}
+        });
+      }
+    })
+  };
+
   var init = function(gameData){
     chatBind();
     refresh(gameData);
+    destroyIfGone();
   };
 
   var refresh = function(returnData) {
     gameData = returnData;
-    player = playerColor == "white" ? gameData.players[0] : gameData.players[1]
+    player = gameData.players[(playerColor == "white") ? 0 : 1]
     allDisplay();
     if (player.ready) {
       setRefreshTimer();

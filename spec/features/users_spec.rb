@@ -40,7 +40,7 @@ describe "Users" do
       page.should have_content "Signed in successfully."
       page.should have_content "playing as #{u.username}"
       page.should have_selector "input.log-out"
-      page.should have_content "Main Portal"
+      page.should have_selector "section.main-portal"
     end
   end
 
@@ -71,7 +71,7 @@ describe "Users" do
       click_button "Play as Guest"
       page.should have_content "playing as guest_"
       page.should have_selector "input.log-out"
-      page.should have_content "Main Portal"
+      page.should have_selector "section.main-portal"
     end
   end
 end

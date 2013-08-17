@@ -1,6 +1,6 @@
 $ground:  #7C94A9;
-$accent:  #12103B;
+$accent:  #191B8B;
 $dark:  #000;
 $light: #fff;
-$button: #34325A;
-$body: #6C8CA9;
+$button: lighten(saturate($accent, 10%), 10%);
+$body: #aCcCe9;

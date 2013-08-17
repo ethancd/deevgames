@@ -49,6 +49,7 @@ ul {
   width: 960px;
   margin: 50px auto;
   background: $ground;
+  box-shadow: 0px 0px 20px #000;
 }
 
 input[type="submit"], select, button {
@@ -57,8 +58,8 @@ input[type="submit"], select, button {
   border-radius: 10px;
   border: 2px solid $accent;
   border: {
-    right: 3px solid darken($accent, 20%);
-    bottom: 3px solid darken($accent, 20%);
+    right: 3px solid darken($accent, 10%);
+    bottom: 3px solid darken($accent, 10%);
   }
   cursor: pointer;
 

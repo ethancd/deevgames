@@ -4,7 +4,7 @@ class PlayerSerializer < ActiveModel::Serializer
   has_many :damage_tokens
   has_many :tanks
 
-  attributes :ready, :damage, :outward_hand, :inward_hand
+  attributes :ready, :absent, :damage, :outward_hand, :inward_hand
 
   def damage
     object.damage

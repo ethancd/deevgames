@@ -35,6 +35,9 @@ section.njt.game {
       background-image: url(cardsprite.png);
       -webkit-transition: -webkit-transform 0.25s ease-out;
 
+      &.phased {
+        box-shadow: 0px 0px 10px $accent;
+      }
       &.shot-down {
         -webkit-transform: rotate(180deg);
       }

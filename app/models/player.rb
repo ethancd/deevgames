@@ -2,7 +2,7 @@ class Player < ActiveRecord::Base
   include ActionView::Helpers::TextHelper
 
   LEGAL_SHOTS = {1 => [3], 2 => [2,3], 3 => [1,2,3] }
-  attr_accessible :game_id, :user_id, :ready
+  attr_accessible :game_id, :user_id, :ready, :absent
 
   belongs_to :game
   belongs_to :user

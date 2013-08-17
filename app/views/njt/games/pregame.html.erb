@@ -4,19 +4,23 @@
 
 <script>
 $(function(){
+  skipDeleteCall = false
+
   $(window).on("unload", function(){
-    $.ajax({
-      url: "<%= njt_game_url(@game)%>",
-      dataType: "json",
-      type: "DELETE"
-    });
+    if (!skipDeleteCall){
+      $.ajax({
+        async : false,
+        url: "<%= njt_game_url(@game)%>",
+        dataType: "json",
+        type: "DELETE"
+      });
+    }
   });
 
   window.setInterval(function(){
-    console.log("INTERVAL");
     $.getJSON("<%= njt_game_url(@game)%>", function(gameData){
-      console.log(gameData);
       if (gameData.players.length == 2) {
+        skipDeleteCall = true;
         window.location = "<%= njt_game_url(@game)%>";
       }
     });
