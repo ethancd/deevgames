@@ -3,6 +3,8 @@ Deev Games
 
 A site for my (theoretical) board game company. It features a user registration and sign-in system, an admin blog where users can make nested comments, and a JavaScript implementation of one of my board games.
 
+Find it at <deevgames.com>!
+
 ---
 
 Features
@@ -48,11 +50,11 @@ Technologies
   * Kaminari
   * ActiveModel::Serializers
   * RSpec
-    * Capybara
+  * Capybara
 * JavaScript
   * jQuery
-    * AJAX
-    * jQuery UI
+  * AJAX
+  * jQuery UI
   * Embedded JS
 * CSS / Sass
 * Heroku
@@ -70,10 +72,10 @@ TODO
   * use YAML conversion to save game states iteratively
   * track player wins and losses
   * track player ratings (elo)
-  * Replays
-    * searching for replays by date or player
-    * add step back, step forward, and continue forward ("play") for replays
-    * be able to add comments to a game at specific turns (think Soundcloud)
+* Replays
+  * searching for replays by date or player
+  * add step back, step forward, and continue forward ("play") for replays
+  * be able to add comments to a game at specific turns (think Soundcloud)
 * Game Page
   * increase test coverage of game creation and interaction (use Jasmine for the JavaScript)
   * use jQuery UI sortable to change ordering of cards in hand, and maintain ordering and rotation across refreshes
