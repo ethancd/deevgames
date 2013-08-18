@@ -32,10 +32,6 @@ header.layout {
       font-weight: bold;
       float: left;
       color: $accent;
-
-      a:hover {
-        text-decoration: none;
-      }
     }
   }
 
@@ -49,6 +45,11 @@ header.layout {
         display: block;
         float: left;
         margin: 15px 5px;
+
+        a:hover {
+          color: $light;
+          text-decoration: none;
+        }
 
         strong {
           font-size: 150%;

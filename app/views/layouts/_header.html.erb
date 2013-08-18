@@ -10,7 +10,16 @@
     <div class="user-info group">
       <% if user_signed_in? %>
       <div class="logged-in group">
-        <aside><small>playing as</small> <strong><%= current_user.username %></strong></aside>
+        <aside>
+          <small>playing as</small>
+          <% if current_user.guest %>
+            <strong><%= current_user.username %></strong>
+          <% else %>
+            <a href="<%= edit_user_registration_url %>">
+              <strong><%= current_user.username %></strong>
+            </a>
+          <% end %>
+        </aside>
 
         <%= image_tag current_user.avatar.url(:thumb) %>
 

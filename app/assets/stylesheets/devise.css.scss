@@ -4,15 +4,47 @@
 @import "colors";
 
 section.devise {
-  width: 450px;
-  margin: 50px auto;
-  text-align: center;
+  width: 400px;
+  margin: 50px auto 0px auto;
   font-size: 16px;
   color: $dark;
 
-  h2 {
+  >h2 {
+    text-align: center;
     font-size: 200%;
     margin-bottom: 10px;
     color: $accent;
   }
+
+  form {
+    margin-bottom: 30px;
+    div {
+      margin: 5px auto;
+
+      label, input[type="checkbox"]{
+        float: left;
+      }
+
+      input{
+        float: right;
+      }
+
+      &.avatar{
+        margin: 20px 0px;
+      }
+
+      &.confirm {
+        margin-top: 30px;
+      }
+      .remember_me {
+        float: right;
+      }
+    }
+  }
+
+  a {
+    display: block;
+    float: right;
+  }
+
 }
