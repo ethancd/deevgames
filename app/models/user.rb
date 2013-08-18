@@ -16,11 +16,7 @@ class User < ActiveRecord::Base
   has_many :lost_games, class_name: Game, foreign_key: :loser_id
 
   has_attached_file :avatar, {
-      styles: {
-        thumb: "50x50#",
-        medium: "300x300>",
-        large: "600x600>"
-      },
+      styles: { thumb: "50x50>" },
       default_url: "http://s3.amazonaws.com/DeevDevelopment/users/avatars/000/000/001/thumb1/pengu.jpg?1375805615"
   }
 
