@@ -198,32 +198,9 @@ var Game = (function(){
     });
   };
 
-  var destroyIfGone = function(){
-    var opponent = gameData.players[(playerColor == "black") ? 0 : 1]
-    $(window).on("unload", function(){
-
-      if (opponent && opponent.absent) {
-        $.ajax({
-          async : false,
-          url: window.gameUrl,
-          dataType: "json",
-          type: "DELETE"
-        });
-      } else {
-        $.ajax({
-          async : false,
-          url: window.gameUrl,
-          type: "PUT",
-          data: {"absent": true}
-        });
-      }
-    })
-  };
-
   var init = function(gameData){
     chatBind();
     refresh(gameData);
-    //destroyIfGone();
   };
 
   var refresh = function(returnData) {

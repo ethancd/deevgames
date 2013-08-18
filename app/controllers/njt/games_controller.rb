@@ -2,10 +2,11 @@ class Njt::GamesController < ApplicationController
   before_filter :auth_only!
 
   def create
+    Game.delete_abandoned
     @game = Game.create(phase: "play")
     @game.players << Player.create(user_id: current_user.id)
     if params[:ai]
-      @game.players << Player.create(user_id: 2, ready: true, absent: true)
+      @game.players << Player.create(user_id: 2, ready: true)
     end
     @game.save
 
@@ -71,8 +72,6 @@ class Njt::GamesController < ApplicationController
         redirect_to njt_splash_url
       end
     else
-      @player.update_attributes(absent: false)
-
       respond_to do |format|
         format.html
         format.json { render json: @game, root: false }
@@ -83,7 +82,7 @@ class Njt::GamesController < ApplicationController
   def update
     @game = Game.find(params[:id])
     player = @game.players.find_by_user_id(current_user.id)
-    player.update_attributes(absent: params[:absent])
+
     unless player.ready
       begin
         player.step_forward(params)

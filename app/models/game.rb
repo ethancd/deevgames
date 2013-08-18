@@ -17,6 +17,10 @@ class Game < ActiveRecord::Base
   validates :phase, presence: true,
               inclusion: { in: %w[draw play discard game_over]}
 
+  def self.delete_abandoned
+    Game.where("updated_at < ?", 1.hour.ago).destroy_all
+  end
+
   def write(string)
     self.comments.build({body: string}).save(validate: false)
   end
