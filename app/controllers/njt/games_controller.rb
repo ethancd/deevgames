@@ -141,7 +141,7 @@ class Njt::GamesController < ApplicationController
         flash[:notice] ||= []
         flash[:notice] << "Must be signed in to play (if you don't have " +
                           "an account, try signing in as a guest!)"
-        redirect_to :out
+        redirect_to :root
       end
     end
 

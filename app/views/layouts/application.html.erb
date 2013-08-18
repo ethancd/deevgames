@@ -12,14 +12,15 @@
 
   <div class="total-wrap">
     <%= render "layouts/header" %>
-
-    <p class="notice"><%= notice %></p>
     <p class="alert"><%= alert %></p>
-    <%# if flash[:notice].is_a? Array %>
-      <%# flash[:notice].try(:each) do |msg| %>
-        <%#= msg %>
-      <%# end %>
-    <%# end %>
+
+    <% if flash[:notice].is_a? Array %>
+      <% flash[:notice].try(:each) do |msg| %>
+        <%= msg %>
+      <% end %>
+    <% else %>
+      <p class="notice"><%= notice %></p>
+    <% end %>
 
     <%= yield %>
 

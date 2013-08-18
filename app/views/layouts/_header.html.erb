@@ -34,10 +34,7 @@
             </label>
 
             <br>
-            <input name="user[remember_me]" type="hidden" value="0">
-            <label class="remember-me">
-              <input name="user[remember_me]" type="checkbox" value="1">Remember me
-            </label>
+
           </div>
           <div class="password-box">
             <label>Password
@@ -45,8 +42,11 @@
             </label>
 
             <br>
-
-            <%= link_to "Forgot your password?", new_user_password_url %>
+            <input name="user[remember_me]" type="hidden" value="0">
+            <label class="remember-me">
+              <input name="user[remember_me]" type="checkbox" value="1">Remember me
+            </label>
+            <%#= link_to "Forgot your password?", new_user_password_url %>
           </div>
 
           <input class="button log-in" type="submit" value="LOG IN">

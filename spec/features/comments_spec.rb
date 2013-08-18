@@ -17,7 +17,7 @@ describe "Comments" do
 
       it "sees comments" do
 
-        visit out_path
+        visit root_path
 
         fill_in "Email or Username", with: user.username
         fill_in "Password", with: user.password
@@ -40,7 +40,7 @@ describe "Comments" do
     context "guest" do
 
       it "has restricted access" do
-        visit out_path
+        visit root_path
         click_button "Play as Guest"
 
         visit blog_path
@@ -65,7 +65,7 @@ describe "Comments" do
 
       it "can moderate comments" do
 
-        visit out_path
+        visit root_path
 
         fill_in "Email or Username", with: user.username
         fill_in "Password", with: user.password

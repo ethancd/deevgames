@@ -8,9 +8,6 @@ class GuestsController < ApplicationController
     redirect_to :root
   end
 
-  def edit
-  end
-
   def destroy
   end
 

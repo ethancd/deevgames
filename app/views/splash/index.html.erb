@@ -1,0 +1,25 @@
+<section class="content main-portal">
+  <h2>Welcome to Deev Games!</h2>
+
+  <% unless user_signed_in? %>
+    <nav>
+      <ul class="group">
+        <li><%= link_to "Sign Up", new_user_registration_url %></li>
+        <li><%= link_to "Log In", new_user_session_url %></li>
+        <li><%= button_to "Play as Guest", guest_url, method: :post, class: "guest" %></li>
+      </ul>
+    </nav>
+  <% end %>
+
+  <a href="<%= njt_splash_url %>">
+    <%= image_tag "njtlogo.png", id: "njt"%>
+  </a>
+  <a href="#">
+    <%= image_tag "hexlogo.png", id: "hex" %>
+  </a>
+
+  <a href="#">
+    <%= image_tag "blindlogo.png", id: "blind" %>
+  </a>
+
+</section>

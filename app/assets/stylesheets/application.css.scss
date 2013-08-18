@@ -31,6 +31,9 @@ ul {
   list-style: none;
 }
 
+.notice, .alert {
+  position: absolute;
+}
 .group:after {
   content: "";
   clear: both;

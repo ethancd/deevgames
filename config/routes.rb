@@ -1,9 +1,7 @@
 DeevGamesDevelopment::Application.routes.draw do
   devise_for :users
 
-  root to: "splash#in"
-  get "not_logged_in", to: "splash#out", as: :out
-
+  root to: "splash#index"
   resource :guest, only: [:create, :edit, :destroy]
   resources :feedback, only: [:new, :create, :index, :destroy]
 

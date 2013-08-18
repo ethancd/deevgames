@@ -44,8 +44,6 @@ describe "Posts" do
 
         visit blog_path
 
-        page.should have_content "Edit this post"
-
         first('.post').click_link "Edit this post"
 
         within "h3" do
