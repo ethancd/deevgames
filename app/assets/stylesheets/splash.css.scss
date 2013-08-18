@@ -28,6 +28,10 @@ section.main-portal {
       float: left;
       margin-top: 100px;
     }
+
+    &#hex, &#blind {
+      cursor: default;
+    }
   }
 
   nav {

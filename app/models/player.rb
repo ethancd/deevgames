@@ -238,12 +238,10 @@ class Player < ActiveRecord::Base
   def pick_ai_action(plays)
     shots = plays.select{|p| p["action_type"] == "shot"}
     if shots.count > 0 && rand < 0.6
-      action = shots.sample
+      shots.sample
     else
-      action = (plays - shots).sample
-      action["action_type"] = rand < 0.8 ? "move" : "feint"
+      (plays - shots).sample
     end
-    action
   end
 
   def ai_discard
