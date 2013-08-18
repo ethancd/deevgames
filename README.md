@@ -3,7 +3,7 @@ Deev Games
 
 A site for my (theoretical) board game company. It features a user registration and sign-in system, an admin blog where users can make nested comments, and a JavaScript implementation of one of my board games.
 
-Find it at <deevgames.com>!
+Find it at [deevgames.com](http://www.deevgames.com)!
 
 ---
 
