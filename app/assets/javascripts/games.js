@@ -203,7 +203,6 @@ var Game = (function(){
     $(window).on("unload", function(){
 
       if (opponent && opponent.absent) {
-        console.log("whaaat")
         $.ajax({
           async : false,
           url: window.gameUrl,
@@ -224,7 +223,7 @@ var Game = (function(){
   var init = function(gameData){
     chatBind();
     refresh(gameData);
-    destroyIfGone();
+    //destroyIfGone();
   };
 
   var refresh = function(returnData) {
@@ -510,6 +509,11 @@ var Game = (function(){
         success: function(returnData){
           clearBindings();
           refresh(returnData);
+        },
+        error: function(request){
+          if (request.status == 422) {
+            alert(JSON.parse(request.responseText).error)
+          }
         }
       });
     });

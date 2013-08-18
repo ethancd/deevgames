@@ -85,7 +85,12 @@ class Njt::GamesController < ApplicationController
     player = @game.players.find_by_user_id(current_user.id)
     player.update_attributes(absent: params[:absent])
     unless player.ready
-      if player.step_forward(params)
+      begin
+        player.step_forward(params)
+      rescue InvalidMove => e
+        render json: {error: e.message}, status: 422
+        return
+      else
         player.update_attributes(ready: true)
         @ai.update_attributes(ready: true) if ai?
       end

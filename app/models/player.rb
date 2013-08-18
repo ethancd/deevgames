@@ -24,7 +24,7 @@ class Player < ActiveRecord::Base
   def step_forward(params)
     case params[:phase]
     when "draw" then drawify(params[:drawn_cards])
-    when "play" then return false unless play(params)
+    when "play" then play(params)
     when "discard" then trashify(params[:discarded_cards])
     end
     true
@@ -59,10 +59,6 @@ class Player < ActiveRecord::Base
 
     if loop_over(actions, paper_tanks).empty?
       actify(params[:actions].map{ |action| action[1] })
-      true
-    else
-      #raise errors
-      false
     end
   end
 
@@ -161,11 +157,13 @@ class Player < ActiveRecord::Base
   end
 
   def valid_shot?(action, paper_tanks)
-    if LEGAL_SHOTS[action["value"].to_i].include?(paper_tanks.find{|t| !t[:fake] }[:position])
+    if LEGAL_SHOTS[action["value"].to_i]
+      .include?(paper_tanks.find{|t| !t[:fake] }[:position])
       true
     else
-      #flash[:notice] ||= []
-      #flash[:notice] << "That shot is out of range."
+      unless self.user_id == 2
+        raise InvalidMove, "Can't move further up."
+      end
       false
     end
   end
@@ -173,13 +171,15 @@ class Player < ActiveRecord::Base
   def valid_move?(action, paper_tanks)
     if action["dir"] == "forward" &&
         paper_tanks.find{|t| !t[:fake] && t[:position] == 3}
-      #flash[:notice] ||= []
-      #flash[:notice] << "Can't move further up."
+      unless self.user_id == 2
+        raise InvalidMove, "Can't move further up."
+      end
       false
     elsif action["dir"] == "back" && paper_tanks.find{|t| !t[:fake] &&
         t[:position] == 1}
-      #flash[:notice] ||= []
-      #flash[:notice] << "Can't move further back."
+        unless self.user_id == 2
+          raise InvalidMove, "Can't move further back."
+        end
       false
     else
       true
@@ -187,15 +187,14 @@ class Player < ActiveRecord::Base
   end
 
   def valid_feint?(action, paper_tanks)
-    # if action["dir"] == "forward" &&
-    #     paper_tanks.map{|t| t[:position]}.min == 3
-    #   #flash[:notice] ||= []
-    #   #flash[:notice] << "Can't pretend to move further up."
+    # if action["dir"] == "forward" && paper_tanks.map{|t| t[:position]}.min == 3
+    #   unless player.user_id == 2
+    #   "Can't pretend to move further up."
+    #   end
     #   false
     # elsif action["dir"] == "back" &&
     #     paper_tanks.map{|t| t[:position]}.max == 1
-    #   #flash[:notice] ||= []
-    #   #flash[:notice] << "Can't pretend to move further back."
+    # "Can't pretend to move further back."
     #   false
     # else
       true
@@ -242,7 +241,7 @@ class Player < ActiveRecord::Base
       action = shots.sample
     else
       action = (plays - shots).sample
-      rand < 0.8 ? action["action_type"] = "move" : action["action_type"] = "feint"
+      action["action_type"] = rand < 0.8 ? "move" : "feint"
     end
     action
   end
@@ -250,4 +249,7 @@ class Player < ActiveRecord::Base
   def ai_discard
     self.cards.count > 3 ? discard(self.cards.shuffle[3..-1]) : discard([])
   end
+end
+
+class InvalidMove < StandardError
 end
