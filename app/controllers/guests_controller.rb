@@ -1,5 +1,6 @@
 class GuestsController < ApplicationController
   def create
+    User.delete_old_guests
     g = guest_name
     u = User.new(username: g, email: guest_email(g), avatar: guest_avatar)
     u.guest = true

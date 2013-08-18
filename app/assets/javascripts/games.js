@@ -364,9 +364,9 @@ var Game = (function(){
       $(target + " button").on("click", {card: ui.draggable}, swapActive);
 
       if (ui.draggable.attr("data-info").slice(2) == "forward"){
-        $(target + " .move").addClass("up");
+        $(target + " .move").addClass("up").removeClass("down");
       } else {
-        $(target + " .move").addClass("down");
+        $(target + " .move").addClass("down").removeClass("up");
       }
     };
 

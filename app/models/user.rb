@@ -40,4 +40,8 @@ class User < ActiveRecord::Base
     end
   end
 
+  def self.delete_old_guests
+    User.where(guest: true).where("created_at < ?", 1.day.ago).destroy_all
+  end
+
 end

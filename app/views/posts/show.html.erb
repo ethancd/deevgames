@@ -11,7 +11,7 @@
 
 
       <figure>
-        <img src="<%= @post.image_url %>">
+        <%= image_tag @post.image.url %>
       </figure>
 
       <% ps = @post.body.split("\n") %>

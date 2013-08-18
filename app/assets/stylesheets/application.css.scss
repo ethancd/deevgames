@@ -24,7 +24,7 @@ html, body, header, footer, section, article, strong, figure, aside,
 }
 
 body {
-  background: $body;
+  background: url('blue_marble.png');
 }
 
 ul {
@@ -50,7 +50,8 @@ ul {
 
 .total-wrap {
   width: 960px;
-  margin: 50px auto;
+  height: 100%;
+  margin: 10px auto;
   background: $ground;
   box-shadow: 0px 0px 20px #000;
 }

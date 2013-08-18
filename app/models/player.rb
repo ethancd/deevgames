@@ -162,7 +162,7 @@ class Player < ActiveRecord::Base
       true
     else
       unless self.user_id == 2
-        raise InvalidMove, "Can't move further up."
+        raise InvalidMove, "That shot is out of range."
       end
       false
     end

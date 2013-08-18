@@ -15,7 +15,7 @@
 
         <figure>
           <a href="<%= post_url(post) %>" class="main-img">
-            <img src="<%= post.image_url %>">
+            <%= image_tag post.image.url %>
           </a>
         </figure>
 
@@ -39,8 +39,8 @@
         </aside>
 
 
-        <%= link_to "Comments (#{post.comments.count})",
-            "#{post_url(post)}#comments" %>
+        <h4><%= link_to "Comments (#{post.comments.count})",
+            "#{post_url(post)}#comments" %></h4>
 
         <% if as_admin? %>
           <%= link_to "Edit this post", edit_post_url(post) %>

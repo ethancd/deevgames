@@ -4,7 +4,7 @@ users = User.new(
   {username: "deev", email: "ethancdickinson@gmail.com", password: "12341234",
     avatar: File.new("#{Rails.root}/app/assets/images/avatars/dragon.png")},
   {username: "Ninja_Bot", email: "lalalafake@gmail.com", password: "12341234",
-    avatar: File.new("#{Rails.root}/app/assets/images/avatars/100cat.jpg")},
+    avatar: File.new("#{Rails.root}/app/assets/images/avatars/ninjabot.png")},
   {username: "demo", email: "demo@example.com", password: "12341234"})
 
 users.first.admin = true

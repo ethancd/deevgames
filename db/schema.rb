@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130813195308) do
+ActiveRecord::Schema.define(:version => 20130818170959) do
 
   create_table "cards", :force => true do |t|
     t.string   "dir"
@@ -75,11 +75,14 @@ ActiveRecord::Schema.define(:version => 20130813195308) do
 
   create_table "posts", :force => true do |t|
     t.string   "title"
-    t.text     "body",       :limit => 255
-    t.string   "image_url"
+    t.text     "body",               :limit => 255
     t.integer  "author_id"
-    t.datetime "created_at",                :null => false
-    t.datetime "updated_at",                :null => false
+    t.datetime "created_at",                        :null => false
+    t.datetime "updated_at",                        :null => false
+    t.string   "image_file_name"
+    t.string   "image_content_type"
+    t.integer  "image_file_size"
+    t.datetime "image_updated_at"
   end
 
   add_index "posts", ["author_id"], :name => "index_posts_on_author_id"
