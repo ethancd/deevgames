@@ -129,6 +129,7 @@ var Game = (function(){
   var resetCards = function(){
     $(".card").css({
       "-webkit-transition-property": "-webkit-transform, top, left",
+      "transition-property": "transform, top, left",
       'left': $(".card").data('originalLeft'),
       'top': $(".card").data('originalTop')
     });
@@ -136,7 +137,9 @@ var Game = (function(){
     $("button.flow").attr("disabled", "disabled");
 
     setTimeout(function(){
-      $(".card").css({"-webkit-transition-property": "-webkit-transform"})
+      $(".card").css({
+        "-webkit-transition-property": "-webkit-transform",
+        "transition-property": "transform"})
     }, 250);
   };
 
@@ -355,8 +358,7 @@ var Game = (function(){
 
     $(".undo").on("click", function(){
       resetCards();
-      play1Out();
-      play2Out();
+      deactivatePlay1();
     })
 
     var addMoveFeint = function(target, ui) {
@@ -395,23 +397,27 @@ var Game = (function(){
       }
     };
 
+    var deactivatePlay1 = function() {
+      $("button.flow").attr("disabled", "disabled");
+      $("#active-1 nav").addClass("hidden");
+
+      if ($("#active-1 .move").hasClass("not-chosen")){
+        $("#active-1 .move").click();
+      }
+      $("#active-1 button").off("click");
+      $(".played").removeClass("played");
+
+      if ($("#play-2").hasClass("ui-droppable")){
+        $("#play-2").removeClass("phased slot");
+        $("#play-2").droppable('destroy');
+        deactivatePlay2();
+      }
+    }
+
     var play1Out = function(event, ui) {
       if (!($(ui.draggable).hasClass("from-hand"))){
-        $(ui.draggable).addClass("from-active")
-        $("button.flow").attr("disabled", "disabled");
-        $("#active-1 nav").addClass("hidden");
-
-        if ($("#active-1 .move").hasClass("not-chosen")){
-          $("#active-1 .move").click();
-        }
-        $("#active-1 button").off("click");
-        $(".played").removeClass("played");
-
-        if ($("#play-2").hasClass("ui-droppable")){
-          $("#play-2").removeClass("phased slot");
-          $("#play-2").droppable('destroy');
-          play2Out(event, ui);
-        }
+        $(ui.draggable).addClass("from-active");
+        deactivatePlay1();
       }
     };
 
@@ -419,7 +425,7 @@ var Game = (function(){
       if ($(ui.draggable).hasClass("from-hand")){
         $(ui.draggable).offset($(this).offset());
         $(".warning").removeClass("hidden");
-        ui.draggable.addClass("played");
+        ui.draggable.addClass("played second");
 
         if (ui.draggable.hasClass("shot-down")){
           addMoveFeint("#active-2", ui);
@@ -428,15 +434,19 @@ var Game = (function(){
       }
     };
 
-    var play2Out = function(event, ui) {
-      $(ui.draggable).addClass("from-active")
+    var deactivatePlay2 = function() {
       $(".warning").addClass("hidden");
       $("#active-2 nav").addClass("hidden");
-      ui.draggable.removeClass("played");
+      $(".second").removeClass("played second");
       if ($("#active-2 .move").hasClass("not-chosen")){
         $("#active-2 .move").click();
       }
       $("#active-2 button").off("click");
+    }
+
+    var play2Out = function(event, ui) {
+      $(ui.draggable).addClass("from-active");
+      deactivatePlay2();
     };
 
     var handIn = function(event, ui) {
