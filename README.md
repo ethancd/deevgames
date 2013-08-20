@@ -83,6 +83,7 @@ TODO
   * on click/hover, make discard pile display count of each card type
   * add spinner gif for waiting during AJAX lag
   * fix minor timing bugs (double move across boundary, double shot revealing target location)
+  * remove hidden information from json object so it can't be accessed in the page source
 * Social
   * add OmniAuth for Facebook / Google sign in
   * add friends list
