@@ -85,6 +85,7 @@ TODO
   * fix minor timing bugs (double move across boundary, double shot revealing target location)
   * remove hidden information from json object so it can't be accessed in the page source
 * Social
+  * add a counter of current players who are logged in
   * add OmniAuth for Facebook / Google sign in
   * add friends list
   * add group chats
