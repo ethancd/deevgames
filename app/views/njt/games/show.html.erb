@@ -89,8 +89,6 @@ $(function(){
   window.gameUrl = "<%= njt_game_url(@game) %>";
   window.commentUrl = "<%= njt_game_comments_url(@game) %>";
   window.playerColor = "<%= @color %>";
-  window.whiteTankSrc = "<%= asset_path("whitetank.png") %>";
-  window.blackTankSrc = "<%= asset_path("blacktank.png") %>";
   var gameData = JSON.parse($("#bootstrapped_game_json").html());
 
   Game.init(gameData.game);
