@@ -257,39 +257,36 @@ var Game = (function(){
     $(".moved-count").html("Drawn cards: 0");
 
     var drawWarning = function(){
-      var $one = $("#" + playerColor + "-1"),
-          $two = $("#" + playerColor + "-2");
+      var space1 = $("#" + playerColor + "-1 .tank").css("opacity"),
+          space2 = $("#" + playerColor + "-2 .tank").css("opacity");
       switch(drawnCards) {
       case 1:
         $(".warning").addClass("hidden");
         break;
       case 2:
-        if ($one.find("img").length) {
+        if (space1 == "0") {
+          $(".warning").addClass("hidden");
+          overheating = false;
+        } else {
           $(".warning").removeClass("hidden");
           overheating = {fake: false};
 
-          if ($one.find("img").css("opacity") == "0.5") {
+          if (space1 == "0.5") {
             $(".warning").addClass("fake");
             overheating = {fake: true};
           }
-        } else {
-          $(".warning").addClass("hidden");
-          overheating = false;
         }
         break;
       case 3:
-        if ($one.find("img").length || $two.find("img").length) {
+        if (space1 != "0" || space2 != "0") {
           $(".warning").removeClass("hidden");
 
-          if (($one.find("img").length == 0 ||
-               $one.find("img").css("opacity") == "0.5") &&
-              ($two.find("img").length == 0 ||
-               $two.find("img").css("opacity") == "0.5")){
-            $(".warning").addClass("fake");
-            overheating = {fake: true};
-          } else {
+          if (space1 == "1" || space2 == "1") {
             $(".warning").removeClass("fake");
             overheating = {fake: false};
+          } else {
+            $(".warning").addClass("fake");
+            overheating = {fake: true};
           }
         }
       };

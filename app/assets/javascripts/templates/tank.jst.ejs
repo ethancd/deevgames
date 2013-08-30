@@ -1,20 +1,26 @@
 <% players.forEach(function(player, c){ %>
   <% var tanks = player.tanks %>
   <% var color = (c == 0 ? "white" : "black") %>
-  <% var src = (color == "white" ? whiteTankSrc : blackTankSrc) %>
+  <% var offset = (color == "white" ? "-150px;" : "-200px;") %>
 
   <% for (var i = 1; i <=3; i++) { %>
     <% var j = (color == "white" ? i : 4-i) %>
     <% var tank = _.findWhere(tanks, {position: j}) %>
-    <li class="tank" id="<%= color + "-" + j %>">
+    <% var alpha %>
+    <li class="space" id="<%= color + "-" + j %>">
       <% if (tank) { %>
         <% if (tank.fake || (tanks.length > 1 &&
                 color != playerColor && phase != "game_over")) { %>
-          <img src="<%= src %>" style="opacity: 0.5;">
+            <% alpha = "0.5;" %>
         <% } else { %>
-          <img src="<%= src %>">
+            <% alpha = "1;" %>
         <% } %>
+      <% } else { %>
+        <% alpha = "0;" %>
       <% } %>
+      <div class="tank" 
+        style="<%= "background-position-y:" + offset + "opacity:" + alpha %>">
+      </div>
     </li>
   <% } %>
 <% }) %>

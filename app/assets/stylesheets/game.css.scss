@@ -9,21 +9,21 @@ section.njt.game {
       width: 50px;
       height: 44px;
       overflow: hidden;
-      background-image: url(dmgsprite.png);
+      background-image: url(njtsprite.png);
       margin: 2px;
 
       &[data-fd="true"] {
-        background-position: 0 0 !important;
+        background-position: -400px 0 !important;
       }
 
       &[data-value="1"] {
-        background-position: 0 -44px;
+        background-position: -400px -50px;
       }
       &[data-value="2"] {
-        background-position: 0 -88px;
+        background-position: -400px -100px;
       }
       &[data-value="3"] {
-        background-position: 0 -132px;
+        background-position: -400px -150px;
       }
 
     }
@@ -32,7 +32,7 @@ section.njt.game {
       width: 100px;
       height: 142px;
       overflow: hidden;
-      background-image: url(cardsprite.png);
+      background-image: url(njtsprite.png);
       -webkit-transition: -webkit-transform 0.25s ease-out;
       transition: transform 0.25s ease-out;
 
@@ -49,26 +49,26 @@ section.njt.game {
       }
 
       &[data-fd="true"] {
-        background-position: 0 0 !important;
+        background-position: -300px 0 !important;
       }
 
       &[data-info="1-back"] {
-        background-position: 0 -142px;
+        background-position: 0 0;
       }
       &[data-info="2-back"] {
-        background-position: 0 -284px;
+        background-position: -100px 0;
       }
       &[data-info="3-back"] {
-        background-position: 0 -426px;
+        background-position: -200px 0;
       }
       &[data-info="1-forward"] {
-        background-position: 0 -568px;
+        background-position: 0 -150px;
       }
       &[data-info="2-forward"] {
-        background-position: 0 -710px;
+        background-position: -100px -150px;
       }
       &[data-info="3-forward"] {
-        background-position: 0 -852px;
+        background-position: -200px -150px;
       }
 
     }
@@ -152,15 +152,15 @@ section.njt.game {
       }
 
       figure.board {
-        position: relative;
-
-        img {
-          position: absolute;
-          width: 600px;
-          height: 150px;
+        width: 600px;
+        height: 150px;
+        overflow: hidden;
+        background: {
+          image: url(njtsprite.png);
+          position: 0 -300px;
         }
 
-        .tank {
+        .space {
           float: left;
           width: 79px;
           height: 150px;
@@ -178,10 +178,15 @@ section.njt.game {
             margin-right: 0;
           }
 
-          img {
+          .tank {
             margin-top: 102px;
             width: 80px;
-            height: auto;
+            height: 46px;
+            overflow: hidden;
+            background : {
+              image: url(njtsprite.png);
+              position-x: 300px;
+            }
           }
         }
       }
@@ -242,6 +247,7 @@ section.njt.game {
               bottom: 3px solid darken($accent, 20%);
             }
             border-radius: 10px;
+            background-image: url(njtsprite.png);
 
             &.chosen {
               background-color: $ground;
@@ -249,26 +255,15 @@ section.njt.game {
             }
 
             &.feint {
-              background-image: url(smoke.png);
+              background-position: -450px -100px;
               margin-right: 35px;
             }
+            &.up {
+              background-position: -450px -50px;
+            }
 
-            &.move {
-              background-repeat: no-repeat;
-
-              &.up {
-                background: {
-                  image: url(up.png);
-                  position: 0px 3px;
-                }
-              }
-
-              &.down {
-                background: {
-                  image: url(down.png);
-                  position: 0px 3px;
-                }
-              }
+            &.down {
+              background-position: -450px 0;
             }
           }
         }
@@ -305,11 +300,12 @@ section.njt.game {
 
           margin: auto;
           background: {
-            image: url(overheating.png);
+            image: url(njtsprite.png);
+            position: -500px 0px;
           }
 
           &.fake {
-            background-image: url(smokeheating.png);
+            background-position: -500px -100px;
           }
         }
       }
