@@ -61,7 +61,16 @@ Technologies
 
 ---
 
-TODO
+TO DO LIST
+===
+* use JSON conversion to save game states additively throughout a game
+* add replay viewing and commenting
+* add global chat
+* add "players currently online" list
+* implement Blind Loyalty
+
+
+WOULD BE NICE TO DO LIST
 ===
 
 * Game Creation
@@ -69,13 +78,11 @@ TODO
   * implement better way to play against a friend
   * create rematch button for end of a game
 * Persistence
-  * use YAML conversion to save game states iteratively
   * track player wins and losses
   * track player ratings (elo)
 * Replays
   * searching for replays by date or player
-  * add step back, step forward, and continue forward ("play") for replays
-  * be able to add comments to a game at specific turns (think Soundcloud)
+  * add step back, step forward for replays
 * Game Page
   * increase test coverage of game creation and interaction (use Jasmine for the JavaScript)
   * use jQuery UI sortable to change ordering of cards in hand, and maintain ordering and rotation across refreshes
@@ -83,17 +90,11 @@ TODO
   * on click/hover, make discard pile display count of each card type
   * add spinner gif for waiting during AJAX lag
   * fix minor timing bugs (double move across boundary, double shot revealing target location)
-  * remove hidden information from json object so it can't be accessed in the page source
 * Social
-  * add a counter of current players who are logged in
   * add OmniAuth for Facebook / Google sign in
-  * add friends list
-  * add group chats
 * Chat
   * reimplement chat using Pusher for actual real-time interaction
 * Add links to game store for physical board game copies
   * activate said game store
 * Reimplement JavaScript code as Backbone for improved code organization
-* Abstract jQuery logic into "card-moving" library for use between games
-* Implement Blind Loyalty (second game)
-* Implement Hex Strike (third game)
+* Implement Hex Strike
