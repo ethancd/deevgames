@@ -1,4 +1,4 @@
-import type { GameState, Position, SymbolPool, PlayerIndex, Card } from './types';
+import type { GameState, Position, SymbolPool, PlayerIndex } from './types';
 import { positionToKey, getAdjacentPositions } from './adjacency';
 import { deductSymbols, canPayCost } from './payment';
 import { flipAdjacentCards, dealNewCards, getNewCardPositions } from './gridExpansion';

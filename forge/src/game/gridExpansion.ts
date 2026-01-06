@@ -1,4 +1,4 @@
-import type { GridState, Position, Card } from './types';
+import type { GridState, Position } from './types';
 import { getAdjacentPositions, positionToKey } from './adjacency';
 import { updateGridBounds } from './grid';
 
