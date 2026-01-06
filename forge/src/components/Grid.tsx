@@ -76,8 +76,8 @@ export function Grid({ grid, onCardClick }: GridProps) {
   }
 
   return (
-    <div className="glass-panel p-6 rounded-xl overflow-auto max-h-[700px] shadow-2xl">
-      <div className="inline-block">{rows}</div>
+    <div className="glass-panel p-6 rounded-xl shadow-2xl inline-block">
+      <div>{rows}</div>
     </div>
   );
 }

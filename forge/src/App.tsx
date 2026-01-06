@@ -135,9 +135,10 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen p-6 animate-fadeIn">
-      <div className="container mx-auto max-w-7xl">
-        <div className="flex items-center justify-between mb-6">
+    <div className="min-h-screen flex flex-col animate-fadeIn overflow-hidden">
+      {/* Fixed Header */}
+      <header className="flex-shrink-0 p-4 border-b border-amber-900/30">
+        <div className="container mx-auto max-w-7xl flex items-center justify-between">
           <h1
             className="text-5xl font-bold tracking-wider text-shadow-glow"
             style={{ fontFamily: 'Cinzel, serif', color: 'var(--gold)' }}
@@ -152,85 +153,94 @@ function App() {
             New Game
           </button>
         </div>
+      </header>
 
-        <div className="grid grid-cols-2 gap-4 mb-4">
-          <PlayerPanel
-            player={gameState.players[0]}
-            isCurrentPlayer={gameState.currentPlayerIndex === 0}
-            gameState={gameState}
-          />
-          <PlayerPanel
-            player={gameState.players[1]}
-            isCurrentPlayer={gameState.currentPlayerIndex === 1}
-            gameState={gameState}
-          />
-        </div>
-
-        <div className="mb-4">
+      {/* Scrollable Grid Area */}
+      <div className="flex-1 overflow-auto p-4">
+        <div className="container mx-auto max-w-7xl flex justify-center">
           <Grid grid={gameState.grid} onCardClick={handleCardClick} />
         </div>
+      </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <Tableau cards={gameState.players[0].tableau} playerName={gameState.players[0].name} />
-          <Tableau cards={gameState.players[1].tableau} playerName={gameState.players[1].name} />
+      {/* Fixed Player Info & Tableaus */}
+      <footer className="flex-shrink-0 border-t border-amber-900/30 p-4 bg-stone-950/80 backdrop-blur">
+        <div className="container mx-auto max-w-7xl">
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <PlayerPanel
+              player={gameState.players[0]}
+              isCurrentPlayer={gameState.currentPlayerIndex === 0}
+              gameState={gameState}
+            />
+            <PlayerPanel
+              player={gameState.players[1]}
+              isCurrentPlayer={gameState.currentPlayerIndex === 1}
+              gameState={gameState}
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <Tableau cards={gameState.players[0].tableau} playerName={gameState.players[0].name} />
+            <Tableau cards={gameState.players[1].tableau} playerName={gameState.players[1].name} />
+          </div>
         </div>
+      </footer>
 
-        {modalState.type === 'buy' && (
-          <BidModal
-            card={
-              gameState.grid.cells.get(`${modalState.pos.x},${modalState.pos.y}`)!.card!
-            }
-            availableSymbols={currentPlayer.symbols}
-            requiredCost={
-              gameState.grid.cells.get(`${modalState.pos.x},${modalState.pos.y}`)!.card!
-                .parsedCost
-            }
-            onConfirm={handleBuyConfirm}
-            onCancel={() => setModalState({ type: 'none' })}
-          />
-        )}
+      {/* Modals */}
+      {modalState.type === 'buy' && (
+        <BidModal
+          card={
+            gameState.grid.cells.get(`${modalState.pos.x},${modalState.pos.y}`)!.card!
+          }
+          availableSymbols={currentPlayer.symbols}
+          requiredCost={
+            gameState.grid.cells.get(`${modalState.pos.x},${modalState.pos.y}`)!.card!
+              .parsedCost
+          }
+          onConfirm={handleBuyConfirm}
+          onCancel={() => setModalState({ type: 'none' })}
+        />
+      )}
 
-        {modalState.type === 'counter' && gameState.activeBid && (
-          <CounterBidModal
-            card={
-              gameState.grid.cells.get(
-                `${gameState.activeBid.cardPos.x},${gameState.activeBid.cardPos.y}`
-              )!.card!
-            }
-            onCounter={handleCounter}
-            onDecline={handleCounterDecline}
-          />
-        )}
+      {modalState.type === 'counter' && gameState.activeBid && (
+        <CounterBidModal
+          card={
+            gameState.grid.cells.get(
+              `${gameState.activeBid.cardPos.x},${gameState.activeBid.cardPos.y}`
+            )!.card!
+          }
+          onCounter={handleCounter}
+          onDecline={handleCounterDecline}
+        />
+      )}
 
-        {modalState.type === 'burn_confirm' && (
-          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn">
-            <div className="glass-panel p-8 rounded-xl border-2 border-red-600/30 shadow-2xl animate-slideIn">
-              <h2
-                className="text-2xl font-bold mb-6 text-center"
-                style={{ fontFamily: 'Cinzel, serif', color: 'var(--gold)' }}
+      {modalState.type === 'burn_confirm' && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn">
+          <div className="glass-panel p-8 rounded-xl border-2 border-red-600/30 shadow-2xl animate-slideIn">
+            <h2
+              className="text-2xl font-bold mb-6 text-center"
+              style={{ fontFamily: 'Cinzel, serif', color: 'var(--gold)' }}
+            >
+              🔥 Burn this card? 🔥
+            </h2>
+            <div className="flex gap-4">
+              <button
+                onClick={() => setModalState({ type: 'none' })}
+                className="flex-1 glass-panel px-6 py-3 rounded-lg font-bold border-2 border-amber-900/30 hover:border-amber-700 transition-all"
+                style={{ fontFamily: 'Cinzel, serif', color: 'var(--bronze)' }}
               >
-                🔥 Burn this card? 🔥
-              </h2>
-              <div className="flex gap-4">
-                <button
-                  onClick={() => setModalState({ type: 'none' })}
-                  className="flex-1 glass-panel px-6 py-3 rounded-lg font-bold border-2 border-amber-900/30 hover:border-amber-700 transition-all"
-                  style={{ fontFamily: 'Cinzel, serif', color: 'var(--bronze)' }}
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleBurnConfirm}
-                  className="flex-1 bg-gradient-to-r from-red-800 to-red-700 hover:from-red-700 hover:to-red-600 px-6 py-3 rounded-lg font-bold shadow-lg hover:shadow-red-500/50 transition-all border-2 border-red-600"
-                  style={{ fontFamily: 'Cinzel, serif' }}
-                >
-                  Burn
-                </button>
-              </div>
+                Cancel
+              </button>
+              <button
+                onClick={handleBurnConfirm}
+                className="flex-1 bg-gradient-to-r from-red-800 to-red-700 hover:from-red-700 hover:to-red-600 px-6 py-3 rounded-lg font-bold shadow-lg hover:shadow-red-500/50 transition-all border-2 border-red-600"
+                style={{ fontFamily: 'Cinzel, serif' }}
+              >
+                Burn
+              </button>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
