@@ -382,27 +382,38 @@ function evaluateConditional(
   state: GameState,
   card: Card
 ): number {
-  // Parse and evaluate conditional strings
-  // Examples (will be updated based on spreadsheet):
-  // "+1 per Crimson Covenant card" → count faction cards in tableau
-  // "+1 per faction represented" → count distinct factions
-  // "+3 if you won a card by counter-bidding" → check tracking
-  // "+2 per card you won by counter-bidding" → multiply by tracking
-  // "+3 if ≤12 cards remain in grid" → count card cells
-  // "+1 per ruins space in grid" → count ruins
-  // "+3 if you have ≤4 cards total" → check tableau size
-  // "+2 per card fewer than opponent (min 0)" → compare tableau sizes
-  // "+3 if you have ≥6 unspent symbols" → sum remaining symbols
-  // "+1 per 2 unspent symbols (rounded up)" → math on symbols
-  // "+3 if this is your 5th+ card" → check tableau size (at game end)
-  // "+1 per card you have (including this)" → count tableau
-  // "+3 if ≥3 cards have been burned" → check global tracking
-  // "+1 per card burned this game (either player)" → global tracking
-  // "+1 per faction represented" → count factions (General doesn't count)
-  // "+4 if cards from 4+ factions" → boolean check
-  // "+2 if exactly 2 factions represented" → boolean check
+  // All conditional VP patterns from card data:
 
-  // Implementation: regex patterns + switch/case
+  // Faction-based:
+  // "+2 if you have another card of this faction"
+  // "+1 per [Faction] card" (e.g., "+1 per Crimson Covenant card")
+  // "+1 per faction represented" (General doesn't count)
+  // "+2 per faction with 2+ cards"
+  // "+2 if cards from 3+ factions"
+  // "+4 if cards from 4+ factions"
+
+  // Counter-bidding:
+  // "+3 if you won a card by counter-bidding"
+  // "+2 per card you won by counter-bidding"
+
+  // Grid state:
+  // "+3 if ≤12 cards remain face up in grid"
+  // "+1 per ruins space in grid"
+  // "+3 if you have burned 3+ cards"
+  // "+2 if ≥4 cards burned this game"
+  // "+1 per card you burned this game"
+
+  // Tableau size:
+  // "+3 if you have ≤4 cards total"
+  // "+2 per card fewer than opponent (min 0)"
+  // "+3 if this is your 5th+ card"
+  // "+1 per card you have (including this)"
+
+  // Symbol-based:
+  // "+4 if you have 1 of each symbol unspent"
+  // "+8 if you have 2 of each symbol unspent"
+
+  // Implementation: regex patterns + evaluator functions (see Appendix below)
 }
 ```
 
@@ -671,14 +682,22 @@ function parseSymbols(symbolStr: string): SymbolCost {
     return { mars: 0, venus: 0, mercury: 0, moon: 0, any: 0 };
   }
 
-  // Will update based on actual spreadsheet format
-  return {
-    mars: (symbolStr.match(/♂/g) || []).length,
-    venus: (symbolStr.match(/♀/g) || []).length,
-    mercury: (symbolStr.match(/☿/g) || []).length,
-    moon: (symbolStr.match(/☽/g) || []).length,
-    any: (symbolStr.toLowerCase().match(/any/g) || []).length,
-  };
+  // Count specific symbols
+  const mars = (symbolStr.match(/♂/g) || []).length;
+  const venus = (symbolStr.match(/♀/g) || []).length;
+  const mercury = (symbolStr.match(/☿/g) || []).length;
+  const moon = (symbolStr.match(/☽/g) || []).length;
+
+  // Count "any" keyword occurrences
+  let any = (symbolStr.toLowerCase().match(/any/g) || []).length;
+
+  // Handle digit notation (e.g., "♂☽1" means mars + moon + 1 any)
+  const digitMatch = symbolStr.match(/\d+/);
+  if (digitMatch) {
+    any += parseInt(digitMatch[0]);
+  }
+
+  return { mars, venus, mercury, moon, any };
 }
 ```
 
