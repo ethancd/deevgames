@@ -1,0 +1,740 @@
+[
+  {
+    "name": "Bloodthorn Seedling",
+    "faction": "Crimson Covenant",
+    "cost": 1,
+    "symbols": "♂",
+    "baseVP": 0,
+    "conditionalVP": "+2 if you have another card of this faction",
+    "game3Effect": "—"
+  },
+  {
+    "name": "Symbiote Spawn",
+    "faction": "Crimson Covenant",
+    "cost": 1,
+    "symbols": "♀",
+    "baseVP": 1,
+    "conditionalVP": "",
+    "game3Effect": "Swarm: +1 Swarmling unit"
+  },
+  {
+    "name": "Crimson Agent",
+    "faction": "Crimson Covenant",
+    "cost": 2,
+    "symbols": "♂♀",
+    "baseVP": 2,
+    "conditionalVP": "",
+    "game3Effect": "Regeneration: heals 1/round"
+  },
+  {
+    "name": "Crimson Agent",
+    "faction": "Crimson Covenant",
+    "cost": 2,
+    "symbols": "♂♀",
+    "baseVP": 2,
+    "conditionalVP": "",
+    "game3Effect": "Regeneration: heals 1/round"
+  },
+  {
+    "name": "Hostile Takeover",
+    "faction": "Crimson Covenant",
+    "cost": 2,
+    "symbols": "♂♂",
+    "baseVP": 0,
+    "conditionalVP": "+3 if you won a card by counter-bidding",
+    "game3Effect": "—"
+  },
+  {
+    "name": "Predator Pack",
+    "faction": "Crimson Covenant",
+    "cost": 2,
+    "symbols": "♀♀",
+    "baseVP": 2,
+    "conditionalVP": "",
+    "game3Effect": "Swarm: +2 Swarmling units"
+  },
+  {
+    "name": "Crimson Base: The Hivemind",
+    "faction": "Crimson Covenant",
+    "cost": 3,
+    "symbols": "♂♂♀",
+    "baseVP": 0,
+    "conditionalVP": "+1 per Crimson Covenant card",
+    "game3Effect": "Swarm: spawns 3 Swarmlings"
+  },
+  {
+    "name": "Crimson Leader: Thorne",
+    "faction": "Crimson Covenant",
+    "cost": 3,
+    "symbols": "♂♀♀",
+    "baseVP": 0,
+    "conditionalVP": "+1 per faction represented",
+    "game3Effect": "Poison: all your units inflict poison"
+  },
+  {
+    "name": "Carrion Caller",
+    "faction": "Crimson Covenant",
+    "cost": 3,
+    "symbols": "♂♀1",
+    "baseVP": 3,
+    "conditionalVP": "",
+    "game3Effect": "Regeneration: resurrect 1 lost unit once"
+  },
+  {
+    "name": "Apex Predator",
+    "faction": "Crimson Covenant",
+    "cost": 4,
+    "symbols": "♂♂♀♀",
+    "baseVP": 0,
+    "conditionalVP": "+2 per card you won by counter-bidding",
+    "game3Effect": "Poison: immobile hunter that poisons adjacent"
+  },
+  {
+    "name": "Raid Scout",
+    "faction": "Iron Tide",
+    "cost": 1,
+    "symbols": "☿",
+    "baseVP": 0,
+    "conditionalVP": "+2 if you have another card of this faction",
+    "game3Effect": "—"
+  },
+  {
+    "name": "Strike Runner",
+    "faction": "Iron Tide",
+    "cost": 1,
+    "symbols": "♂",
+    "baseVP": 1,
+    "conditionalVP": "",
+    "game3Effect": "Speed: moves 2 spaces"
+  },
+  {
+    "name": "Iron Agent",
+    "faction": "Iron Tide",
+    "cost": 2,
+    "symbols": "♂☿",
+    "baseVP": 2,
+    "conditionalVP": "",
+    "game3Effect": "Speed: moves 2 spaces"
+  },
+  {
+    "name": "Iron Agent",
+    "faction": "Iron Tide",
+    "cost": 2,
+    "symbols": "♂☿",
+    "baseVP": 2,
+    "conditionalVP": "",
+    "game3Effect": "Speed: moves 2 spaces"
+  },
+  {
+    "name": "Scorched Advance",
+    "faction": "Iron Tide",
+    "cost": 2,
+    "symbols": "♂♂",
+    "baseVP": 0,
+    "conditionalVP": "+3 if ≤12 cards remain face up in grid",
+    "game3Effect": "—"
+  },
+  {
+    "name": "Shock Trooper",
+    "faction": "Iron Tide",
+    "cost": 2,
+    "symbols": "☿☿",
+    "baseVP": 2,
+    "conditionalVP": "",
+    "game3Effect": "Regeneration: self-repairs once"
+  },
+  {
+    "name": "Iron Base: The Foundry",
+    "faction": "Iron Tide",
+    "cost": 3,
+    "symbols": "♂♂☿",
+    "baseVP": 0,
+    "conditionalVP": "+1 per Iron Tide card",
+    "game3Effect": "Regeneration: rebuild 1 lost construct/round"
+  },
+  {
+    "name": "Iron Leader: Commander Vex",
+    "faction": "Iron Tide",
+    "cost": 3,
+    "symbols": "♂☿☿",
+    "baseVP": 0,
+    "conditionalVP": "+1 per faction represented",
+    "game3Effect": "Reveal: see opponent's duel hand always"
+  },
+  {
+    "name": "Blitz Squadron",
+    "faction": "Iron Tide",
+    "cost": 3,
+    "symbols": "♂☿1",
+    "baseVP": 3,
+    "conditionalVP": "",
+    "game3Effect": "Speed: 3 Fast units"
+  },
+  {
+    "name": "War Engine",
+    "faction": "Iron Tide",
+    "cost": 4,
+    "symbols": "♂♂☿☿",
+    "baseVP": 0,
+    "conditionalVP": "+1 per ruins space in grid",
+    "game3Effect": "Reveal: massive unit, opponent always reveals first"
+  },
+  {
+    "name": "Null Shard",
+    "faction": "Void Legion",
+    "cost": 1,
+    "symbols": "☽",
+    "baseVP": 0,
+    "conditionalVP": "+2 if you have another card of this faction",
+    "game3Effect": "—"
+  },
+  {
+    "name": "Fanatic Initiate",
+    "faction": "Void Legion",
+    "cost": 1,
+    "symbols": "♂",
+    "baseVP": 1,
+    "conditionalVP": "",
+    "game3Effect": "Swarm: 2 Weak expendable units"
+  },
+  {
+    "name": "Void Agent",
+    "faction": "Void Legion",
+    "cost": 2,
+    "symbols": "♂☽",
+    "baseVP": 2,
+    "conditionalVP": "",
+    "game3Effect": "Berserker: strong but moves randomly"
+  },
+  {
+    "name": "Void Agent",
+    "faction": "Void Legion",
+    "cost": 2,
+    "symbols": "♂☽",
+    "baseVP": 2,
+    "conditionalVP": "",
+    "game3Effect": "Berserker: strong but moves randomly"
+  },
+  {
+    "name": "Cult of Less",
+    "faction": "Void Legion",
+    "cost": 2,
+    "symbols": "☽☽",
+    "baseVP": 0,
+    "conditionalVP": "+3 if you have ≤4 cards total",
+    "game3Effect": "—"
+  },
+  {
+    "name": "Chaos Warrior",
+    "faction": "Void Legion",
+    "cost": 2,
+    "symbols": "♂♂",
+    "baseVP": 2,
+    "conditionalVP": "",
+    "game3Effect": "Swarm: 2 Fanatics"
+  },
+  {
+    "name": "Void Base: The Rift",
+    "faction": "Void Legion",
+    "cost": 3,
+    "symbols": "♂♂☽",
+    "baseVP": 0,
+    "conditionalVP": "+1 per Void Legion card",
+    "game3Effect": "Swarm: spawns 3 Fanatics"
+  },
+  {
+    "name": "Void Leader: Entropy",
+    "faction": "Void Legion",
+    "cost": 3,
+    "symbols": "♂☽☽",
+    "baseVP": 0,
+    "conditionalVP": "+1 per faction represented",
+    "game3Effect": "Trump: Moon beats Empty; Empty beats non-Moon"
+  },
+  {
+    "name": "Doom Herald",
+    "faction": "Void Legion",
+    "cost": 3,
+    "symbols": "♂☽1",
+    "baseVP": 3,
+    "conditionalVP": "",
+    "game3Effect": "Berserker: 1 strong uncontrollable unit"
+  },
+  {
+    "name": "Oblivion Gate",
+    "faction": "Void Legion",
+    "cost": 4,
+    "symbols": "♂♂☽☽",
+    "baseVP": 0,
+    "conditionalVP": "+2 per card fewer than opponent (min 0)",
+    "game3Effect": "Berserker: 1 Doom unit (devastating, uncontrollable)"
+  },
+  {
+    "name": "Trade Contact",
+    "faction": "Silk Network",
+    "cost": 1,
+    "symbols": "☿",
+    "baseVP": 0,
+    "conditionalVP": "+2 if you have another card of this faction",
+    "game3Effect": "—"
+  },
+  {
+    "name": "Courier",
+    "faction": "Silk Network",
+    "cost": 1,
+    "symbols": "♀",
+    "baseVP": 1,
+    "conditionalVP": "",
+    "game3Effect": "Speed: moves 2 spaces"
+  },
+  {
+    "name": "Silk Agent",
+    "faction": "Silk Network",
+    "cost": 2,
+    "symbols": "♀☿",
+    "baseVP": 2,
+    "conditionalVP": "",
+    "game3Effect": "Information: see opponent symbol count"
+  },
+  {
+    "name": "Silk Agent",
+    "faction": "Silk Network",
+    "cost": 2,
+    "symbols": "♀☿",
+    "baseVP": 2,
+    "conditionalVP": "",
+    "game3Effect": "Information: see opponent symbol count"
+  },
+  {
+    "name": "Liquid Assets",
+    "faction": "Silk Network",
+    "cost": 2,
+    "symbols": "☿☿",
+    "baseVP": 0,
+    "conditionalVP": "+4 if you have 1 of each symbol unspent",
+    "game3Effect": "—"
+  },
+  {
+    "name": "Diplomat Envoy",
+    "faction": "Silk Network",
+    "cost": 2,
+    "symbols": "♀♀",
+    "baseVP": 2,
+    "conditionalVP": "",
+    "game3Effect": "Diplomat: can't be attacked first"
+  },
+  {
+    "name": "Silk Base: The Exchange",
+    "faction": "Silk Network",
+    "cost": 3,
+    "symbols": "♀♀☿",
+    "baseVP": 0,
+    "conditionalVP": "+1 per Silk Network card",
+    "game3Effect": "Speed: all your units +1 movement"
+  },
+  {
+    "name": "Silk Leader: The Broker",
+    "faction": "Silk Network",
+    "cost": 3,
+    "symbols": "♀☿☿",
+    "baseVP": 0,
+    "conditionalVP": "+1 per faction represented",
+    "game3Effect": "Information: see opponent's full duel hand"
+  },
+  {
+    "name": "Embassy Guard",
+    "faction": "Silk Network",
+    "cost": 3,
+    "symbols": "♀☿1",
+    "baseVP": 3,
+    "conditionalVP": "",
+    "game3Effect": "Diplomat: 2 Envoys (can't be attacked first)"
+  },
+  {
+    "name": "Golden Reserves",
+    "faction": "Silk Network",
+    "cost": 4,
+    "symbols": "♀♀☿☿",
+    "baseVP": 0,
+    "conditionalVP": "+8 if you have 2 of each symbol unspent",
+    "game3Effect": "Diplomat: 2 Envoys that generate extra symbols in G3"
+  },
+  {
+    "name": "Seedling Shrine",
+    "faction": "Dream Garden",
+    "cost": 1,
+    "symbols": "☽",
+    "baseVP": 0,
+    "conditionalVP": "+2 if you have another card of this faction",
+    "game3Effect": "—"
+  },
+  {
+    "name": "Moon Tender",
+    "faction": "Dream Garden",
+    "cost": 1,
+    "symbols": "♀",
+    "baseVP": 1,
+    "conditionalVP": "",
+    "game3Effect": "Terrain: place 1 sacred ground tile"
+  },
+  {
+    "name": "Dream Agent",
+    "faction": "Dream Garden",
+    "cost": 2,
+    "symbols": "♀☽",
+    "baseVP": 2,
+    "conditionalVP": "",
+    "game3Effect": "Psychic: reduces enemy duel by 1"
+  },
+  {
+    "name": "Dream Agent",
+    "faction": "Dream Garden",
+    "cost": 2,
+    "symbols": "♀☽",
+    "baseVP": 2,
+    "conditionalVP": "",
+    "game3Effect": "Psychic: reduces enemy duel by 1"
+  },
+  {
+    "name": "Late Bloom",
+    "faction": "Dream Garden",
+    "cost": 2,
+    "symbols": "☽☽",
+    "baseVP": 0,
+    "conditionalVP": "+3 if this is your 5th+ card",
+    "game3Effect": "—"
+  },
+  {
+    "name": "Grove Keeper",
+    "faction": "Dream Garden",
+    "cost": 2,
+    "symbols": "♀♀",
+    "baseVP": 2,
+    "conditionalVP": "",
+    "game3Effect": "Terrain: place 1 sacred ground tile"
+  },
+  {
+    "name": "Dream Base: The Grove",
+    "faction": "Dream Garden",
+    "cost": 3,
+    "symbols": "♀♀☽",
+    "baseVP": 0,
+    "conditionalVP": "+1 per Dream Garden card",
+    "game3Effect": "Terrain: 2 sacred ground tiles"
+  },
+  {
+    "name": "Dream Leader: Oracle Syl",
+    "faction": "Dream Garden",
+    "cost": 3,
+    "symbols": "♀☽☽",
+    "baseVP": 0,
+    "conditionalVP": "+1 per faction represented",
+    "game3Effect": "Psychic: all your units reduce enemy duels"
+  },
+  {
+    "name": "Moonrise Sanctum",
+    "faction": "Dream Garden",
+    "cost": 3,
+    "symbols": "♀☽1",
+    "baseVP": 3,
+    "conditionalVP": "",
+    "game3Effect": "Trump: terrain where Moon always wins"
+  },
+  {
+    "name": "World Tree",
+    "faction": "Dream Garden",
+    "cost": 4,
+    "symbols": "♀♀☽☽",
+    "baseVP": 0,
+    "conditionalVP": "+1 per card you have (including this)",
+    "game3Effect": "Psychic + Terrain: sacred ground that weakens all enemies"
+  },
+  {
+    "name": "Data Fragment",
+    "faction": "Ghost Protocol",
+    "cost": 1,
+    "symbols": "☿",
+    "baseVP": 0,
+    "conditionalVP": "+2 if you have another card of this faction",
+    "game3Effect": "—"
+  },
+  {
+    "name": "Shadow Seed",
+    "faction": "Ghost Protocol",
+    "cost": 1,
+    "symbols": "☽",
+    "baseVP": 1,
+    "conditionalVP": "",
+    "game3Effect": "Terrain: place 1 null zone tile"
+  },
+  {
+    "name": "Ghost Agent",
+    "faction": "Ghost Protocol",
+    "cost": 2,
+    "symbols": "☿☽",
+    "baseVP": 2,
+    "conditionalVP": "",
+    "game3Effect": "Infiltration: starts behind enemy lines"
+  },
+  {
+    "name": "Ghost Agent",
+    "faction": "Ghost Protocol",
+    "cost": 2,
+    "symbols": "☿☽",
+    "baseVP": 2,
+    "conditionalVP": "",
+    "game3Effect": "Infiltration: starts behind enemy lines"
+  },
+  {
+    "name": "Scorched Data",
+    "faction": "Ghost Protocol",
+    "cost": 2,
+    "symbols": "☿☿",
+    "baseVP": 0,
+    "conditionalVP": "+3 if you have burned 3+ cards",
+    "game3Effect": "—"
+  },
+  {
+    "name": "Void Marker",
+    "faction": "Ghost Protocol",
+    "cost": 2,
+    "symbols": "☽☽",
+    "baseVP": 2,
+    "conditionalVP": "",
+    "game3Effect": "Terrain: place 1 null zone tile"
+  },
+  {
+    "name": "Ghost Base: The Archive",
+    "faction": "Ghost Protocol",
+    "cost": 3,
+    "symbols": "☿☿☽",
+    "baseVP": 0,
+    "conditionalVP": "+1 per Ghost Protocol card",
+    "game3Effect": "Terrain: 2 null zones"
+  },
+  {
+    "name": "Ghost Leader: Specter",
+    "faction": "Ghost Protocol",
+    "cost": 3,
+    "symbols": "☿☽☽",
+    "baseVP": 0,
+    "conditionalVP": "+1 per faction represented",
+    "game3Effect": "Infiltration: 2 units start behind lines"
+  },
+  {
+    "name": "Deep Cover Cell",
+    "faction": "Ghost Protocol",
+    "cost": 3,
+    "symbols": "☿☽1",
+    "baseVP": 3,
+    "conditionalVP": "",
+    "game3Effect": "Information: see all opponent cards"
+  },
+  {
+    "name": "Erasure Protocol",
+    "faction": "Ghost Protocol",
+    "cost": 4,
+    "symbols": "☿☿☽☽",
+    "baseVP": 0,
+    "conditionalVP": "+1 per card you burned this game",
+    "game3Effect": "Infiltration: 3 units start behind enemy lines"
+  },
+  {
+    "name": "Hidden Cache",
+    "faction": "General",
+    "cost": 0,
+    "symbols": "free",
+    "baseVP": 1,
+    "conditionalVP": "",
+    "game3Effect": "—"
+  },
+  {
+    "name": "Supply Cache",
+    "faction": "General",
+    "cost": 1,
+    "symbols": "any",
+    "baseVP": 2,
+    "conditionalVP": "",
+    "game3Effect": "+2 symbol cards"
+  },
+  {
+    "name": "Supply Cache",
+    "faction": "General",
+    "cost": 1,
+    "symbols": "any",
+    "baseVP": 2,
+    "conditionalVP": "",
+    "game3Effect": "+2 symbol cards"
+  },
+  {
+    "name": "Supply Cache",
+    "faction": "General",
+    "cost": 1,
+    "symbols": "any",
+    "baseVP": 2,
+    "conditionalVP": "",
+    "game3Effect": "+2 symbol cards"
+  },
+  {
+    "name": "Forward Outpost",
+    "faction": "General",
+    "cost": 1,
+    "symbols": "any",
+    "baseVP": 2,
+    "conditionalVP": "",
+    "game3Effect": "Control point starts in your favor"
+  },
+  {
+    "name": "Forward Outpost",
+    "faction": "General",
+    "cost": 1,
+    "symbols": "any",
+    "baseVP": 2,
+    "conditionalVP": "",
+    "game3Effect": "Control point starts in your favor"
+  },
+  {
+    "name": "Stolen Plans",
+    "faction": "General",
+    "cost": 1,
+    "symbols": "☿",
+    "baseVP": 0,
+    "conditionalVP": "+2 if cards from 3+ factions",
+    "game3Effect": "Copy one opponent G3 asset"
+  },
+  {
+    "name": "Scorched Earth",
+    "faction": "General",
+    "cost": 1,
+    "symbols": "♂",
+    "baseVP": 0,
+    "conditionalVP": "+2 if ≥4 cards burned this game",
+    "game3Effect": "—"
+  },
+  {
+    "name": "Fortification",
+    "faction": "General",
+    "cost": 2,
+    "symbols": "any any",
+    "baseVP": 3,
+    "conditionalVP": "",
+    "game3Effect": "Terrain: defensive bonus tile"
+  },
+  {
+    "name": "Fortification",
+    "faction": "General",
+    "cost": 2,
+    "symbols": "any any",
+    "baseVP": 3,
+    "conditionalVP": "",
+    "game3Effect": "Terrain: defensive bonus tile"
+  },
+  {
+    "name": "Fortification",
+    "faction": "General",
+    "cost": 2,
+    "symbols": "any any",
+    "baseVP": 3,
+    "conditionalVP": "",
+    "game3Effect": "Terrain: defensive bonus tile"
+  },
+  {
+    "name": "Mercenary Squad",
+    "faction": "General",
+    "cost": 2,
+    "symbols": "any any",
+    "baseVP": 3,
+    "conditionalVP": "",
+    "game3Effect": "2 Standard units"
+  },
+  {
+    "name": "Mercenary Squad",
+    "faction": "General",
+    "cost": 2,
+    "symbols": "any any",
+    "baseVP": 3,
+    "conditionalVP": "",
+    "game3Effect": "2 Standard units"
+  },
+  {
+    "name": "Mercenary Squad",
+    "faction": "General",
+    "cost": 2,
+    "symbols": "any any",
+    "baseVP": 3,
+    "conditionalVP": "",
+    "game3Effect": "2 Standard units"
+  },
+  {
+    "name": "Veteran Captain",
+    "faction": "General",
+    "cost": 2,
+    "symbols": "any any",
+    "baseVP": 3,
+    "conditionalVP": "",
+    "game3Effect": "1 Strong unit"
+  },
+  {
+    "name": "Veteran Captain",
+    "faction": "General",
+    "cost": 2,
+    "symbols": "any any",
+    "baseVP": 3,
+    "conditionalVP": "",
+    "game3Effect": "1 Strong unit"
+  },
+  {
+    "name": "Ancient Ruin",
+    "faction": "General",
+    "cost": 2,
+    "symbols": "☽☽",
+    "baseVP": 0,
+    "conditionalVP": "+1 per faction represented",
+    "game3Effect": "Terrain: mystery bonus tile"
+  },
+  {
+    "name": "Ancient Ruin",
+    "faction": "General",
+    "cost": 2,
+    "symbols": "☽☽",
+    "baseVP": 0,
+    "conditionalVP": "+1 per faction represented",
+    "game3Effect": "Terrain: mystery bonus tile"
+  },
+  {
+    "name": "Adaptable Doctrine",
+    "faction": "General",
+    "cost": 3,
+    "symbols": "any any any",
+    "baseVP": 0,
+    "conditionalVP": "+2 per faction with 2+ cards",
+    "game3Effect": "Copy one of your other G3 assets"
+  },
+  {
+    "name": "Adaptable Doctrine",
+    "faction": "General",
+    "cost": 3,
+    "symbols": "any any any",
+    "baseVP": 0,
+    "conditionalVP": "+2 per faction with 2+ cards",
+    "game3Effect": "Copy one of your other G3 assets"
+  },
+  {
+    "name": "Wild Tech",
+    "faction": "General",
+    "cost": 3,
+    "symbols": "any any any",
+    "baseVP": 0,
+    "conditionalVP": "+4 if cards from 4+ factions",
+    "game3Effect": "Choose any G3 effect from a card you own"
+  },
+  {
+    "name": "Grand Arsenal",
+    "faction": "General",
+    "cost": 4,
+    "symbols": "any any any any",
+    "baseVP": 5,
+    "conditionalVP": "",
+    "game3Effect": "3 Strong units"
+  }
+]
