@@ -5,7 +5,7 @@ import App from '../../src/App';
 describe('App Component', () => {
   it('should render the game title', () => {
     render(<App />);
-    expect(screen.getByText('FORGE')).toBeInTheDocument();
+    expect(screen.getByText('⚔ FORGE ⚔')).toBeInTheDocument();
   });
 
   it('should render player panels', () => {
