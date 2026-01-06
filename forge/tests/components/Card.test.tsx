@@ -42,21 +42,21 @@ describe('Card component sizing', () => {
       const card2 = container2.querySelector('div');
       const card3 = container3.querySelector('div');
 
-      // All cards should have the same width and height classes
-      expect(card1?.className).toContain('w-32');
-      expect(card1?.className).toContain('h-44');
-      expect(card1?.className).toContain('min-w-[8rem]');
-      expect(card1?.className).toContain('min-h-[11rem]');
+      // All cards should have the same width and height classes (6rem squares)
+      expect(card1?.className).toContain('w-24');
+      expect(card1?.className).toContain('h-24');
+      expect(card1?.className).toContain('min-w-[6rem]');
+      expect(card1?.className).toContain('min-h-[6rem]');
 
-      expect(card2?.className).toContain('w-32');
-      expect(card2?.className).toContain('h-44');
-      expect(card2?.className).toContain('min-w-[8rem]');
-      expect(card2?.className).toContain('min-h-[11rem]');
+      expect(card2?.className).toContain('w-24');
+      expect(card2?.className).toContain('h-24');
+      expect(card2?.className).toContain('min-w-[6rem]');
+      expect(card2?.className).toContain('min-h-[6rem]');
 
-      expect(card3?.className).toContain('w-32');
-      expect(card3?.className).toContain('h-44');
-      expect(card3?.className).toContain('min-w-[8rem]');
-      expect(card3?.className).toContain('min-h-[11rem]');
+      expect(card3?.className).toContain('w-24');
+      expect(card3?.className).toContain('h-24');
+      expect(card3?.className).toContain('min-w-[6rem]');
+      expect(card3?.className).toContain('min-h-[6rem]');
     });
 
     it('should render face-down cards with consistent dimensions', () => {
@@ -66,10 +66,10 @@ describe('Card component sizing', () => {
       const card1 = container1.querySelector('div');
       const card2 = container2.querySelector('div');
 
-      expect(card1?.className).toContain('w-32');
-      expect(card1?.className).toContain('h-44');
-      expect(card2?.className).toContain('w-32');
-      expect(card2?.className).toContain('h-44');
+      expect(card1?.className).toContain('w-24');
+      expect(card1?.className).toContain('h-24');
+      expect(card2?.className).toContain('w-24');
+      expect(card2?.className).toContain('h-24');
     });
   });
 
@@ -81,20 +81,14 @@ describe('Card component sizing', () => {
       expect(card?.className).toContain('overflow-hidden');
     });
 
-    it('should have overflow-y-auto on text content sections', () => {
+    it('should constrain text overflow with overflow-hidden and line-clamp', () => {
       const { container } = render(<Card card={longCard} faceUp={true} />);
-
-      // Conditional VP section should have scroll
-      const textSections = container.querySelectorAll('.overflow-y-auto');
-      expect(textSections.length).toBeGreaterThan(0);
-    });
-
-    it('should have fixed heights on text sections', () => {
-      const { container } = render(<Card card={longCard} faceUp={true} />);
-
-      // Check that text sections have fixed height classes
       const html = container.innerHTML;
-      expect(html).toContain('h-6'); // Card name height
+
+      // Card name should use line-clamp for truncation
+      expect(html).toContain('line-clamp-2');
+      // Content sections should have overflow-hidden
+      expect(html).toContain('overflow-hidden');
     });
   });
 
@@ -142,12 +136,13 @@ describe('Card component sizing', () => {
   });
 
   describe('Face-down card behavior', () => {
-    it('should show faction name but not question mark', () => {
+    it('should show faction emoji only (not faction name)', () => {
       const { container } = render(<Card card={longCard} faceUp={false} />);
 
       const text = container.textContent;
-      expect(text).toContain('Crimson Covenant');
-      expect(text).not.toContain('?');
+      // Should show emoji not text
+      expect(text).toContain('🩸'); // Crimson Covenant emoji
+      expect(text).not.toContain('Crimson Covenant'); // No faction name text
     });
 
     it('should use dark background for face-down cards', () => {
@@ -172,19 +167,20 @@ describe('Card component sizing', () => {
     it('should render symbol cost in larger, bolder font', () => {
       const { container } = render(<Card card={longCard} faceUp={true} />);
 
-      // Should have text-base and font-black for cost
+      // Should have text-xs and font-black for cost (smaller for square cards)
       const html = container.innerHTML;
-      expect(html).toContain('text-base');
+      expect(html).toContain('text-xs');
       expect(html).toContain('font-black');
     });
 
-    it('should render VP in a text box at the bottom', () => {
+    it('should render VP in a text box at the bottom with "N ★" format', () => {
       const { container } = render(<Card card={longCard} faceUp={true} />);
 
       // VP should be in a box with dark background
       const html = container.innerHTML;
       expect(html).toContain('bg-stone-900/80');
-      expect(html).toContain('5 VP');
+      expect(html).toContain('5 ★'); // New format: "N ★"
+      expect(html).not.toContain('VP'); // No "VP" text
     });
   });
 
