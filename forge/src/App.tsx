@@ -5,11 +5,13 @@ import { PlayerPanel } from './components/PlayerPanel';
 import { Tableau } from './components/Tableau';
 import { BidModal } from './components/BidModal';
 import { CounterBidModal } from './components/CounterBidModal';
+import { CardModal } from './components/CardModal';
 import { calculateWinner } from './game/scoring';
 import type { Position } from './game/types';
 
 type ModalState =
   | { type: 'none' }
+  | { type: 'card_detail'; pos: Position }
   | { type: 'buy'; pos: Position }
   | { type: 'counter' }
   | { type: 'final' }
@@ -24,7 +26,15 @@ function App() {
   const handleCardClick = (x: number, y: number) => {
     if (gameState.phase !== 'playing') return;
 
-    setModalState({ type: 'buy', pos: { x, y } });
+    setModalState({ type: 'card_detail', pos: { x, y } });
+  };
+
+  const handleCardModalBuy = (pos: Position) => {
+    setModalState({ type: 'buy', pos });
+  };
+
+  const handleCardModalBurn = (pos: Position) => {
+    actions.burn(pos);
   };
 
   const handleBuyConfirm = (payment: typeof currentPlayer.symbols) => {
@@ -186,6 +196,24 @@ function App() {
       </footer>
 
       {/* Modals */}
+      {modalState.type === 'card_detail' && (() => {
+        const cell = gameState.grid.cells.get(`${modalState.pos.x},${modalState.pos.y}`);
+        if (!cell || cell.type !== 'card' || !cell.card) return null;
+
+        const isAvailable = cell.faceUp; // Simple check for now - can be refined
+
+        return (
+          <CardModal
+            card={cell.card}
+            position={modalState.pos}
+            onClose={() => setModalState({ type: 'none' })}
+            onBurn={handleCardModalBurn}
+            onBuy={handleCardModalBuy}
+            canBuy={isAvailable}
+          />
+        );
+      })()}
+
       {modalState.type === 'buy' && (
         <BidModal
           card={
