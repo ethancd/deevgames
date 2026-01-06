@@ -54,41 +54,72 @@ function App() {
     const { winner, scores } = calculateWinner(gameState);
 
     return (
-      <div className="min-h-screen bg-gray-900 text-white p-8">
-        <div className="container mx-auto max-w-4xl">
-          <h1 className="text-5xl font-bold mb-8 text-center">GAME OVER</h1>
+      <div className="min-h-screen p-8 animate-fadeIn">
+        <div className="container mx-auto max-w-5xl">
+          <h1
+            className="text-6xl font-bold mb-8 text-center text-shadow-glow"
+            style={{ fontFamily: 'Cinzel, serif', color: 'var(--gold)' }}
+          >
+            GAME OVER
+          </h1>
 
-          <div className="bg-gray-800 p-8 rounded-lg mb-8">
+          <div className="glass-panel p-8 rounded-xl mb-8 border-2 border-amber-600/30 shadow-2xl animate-slideIn">
             {winner === 'tie' ? (
-              <h2 className="text-3xl font-bold text-center mb-4">It's a Tie!</h2>
+              <h2
+                className="text-4xl font-bold text-center mb-6"
+                style={{ fontFamily: 'Cinzel, serif', color: 'var(--silver)' }}
+              >
+                ⚔ It's a Tie! ⚔
+              </h2>
             ) : (
-              <h2 className="text-3xl font-bold text-center mb-4">
-                {gameState.players[winner].name} Wins!
+              <h2
+                className="text-4xl font-bold text-center mb-6"
+                style={{ fontFamily: 'Cinzel, serif', color: 'var(--gold)' }}
+              >
+                ★ {gameState.players[winner].name} Wins! ★
               </h2>
             )}
 
-            <div className="grid grid-cols-2 gap-8">
+            <div className="grid grid-cols-2 gap-8 mb-8">
               {gameState.players.map((player, idx) => (
-                <div key={player.id} className="text-center">
-                  <div className="text-2xl font-bold mb-2">{player.name}</div>
-                  <div className="text-4xl text-yellow-400 mb-2">{scores[idx]} VP</div>
-                  <div className="text-gray-400">
+                <div
+                  key={player.id}
+                  className={`text-center p-6 rounded-lg border-2 ${
+                    winner !== 'tie' && winner === idx
+                      ? 'border-amber-500 bg-amber-950/30'
+                      : 'border-amber-900/30 bg-transparent'
+                  }`}
+                >
+                  <div className="text-2xl font-bold mb-3" style={{ fontFamily: 'Cinzel, serif' }}>
+                    {player.name}
+                  </div>
+                  <div
+                    className="text-5xl mb-3"
+                    style={{
+                      fontFamily: 'Cinzel, serif',
+                      color: winner !== 'tie' && winner === idx ? 'var(--gold)' : 'var(--bronze)',
+                    }}
+                  >
+                    {scores[idx]} VP
+                  </div>
+                  <div className="text-amber-600 text-sm">
                     <div>{player.tableau.length} cards</div>
                     <div>
                       {player.symbols.mars + player.symbols.venus + player.symbols.mercury + player.symbols.moon}{' '}
-                      symbols left
+                      symbols remaining
                     </div>
                   </div>
                 </div>
               ))}
             </div>
 
-            <div className="mt-8 text-center">
+            <div className="text-center">
               <button
                 onClick={actions.newGame}
-                className="bg-blue-600 hover:bg-blue-500 px-8 py-3 rounded-lg text-xl font-bold"
+                className="bg-gradient-to-r from-amber-700 to-amber-600 hover:from-amber-600 hover:to-amber-500 px-10 py-4 rounded-lg text-xl font-bold shadow-lg hover:shadow-amber-500/50 transition-all duration-200 border-2 border-amber-500"
+                style={{ fontFamily: 'Cinzel, serif' }}
               >
-                New Game
+                ⚔ New Game ⚔
               </button>
             </div>
           </div>
@@ -104,13 +135,19 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-4">
-      <div className="container mx-auto">
-        <div className="flex items-center justify-between mb-4">
-          <h1 className="text-4xl font-bold">FORGE</h1>
+    <div className="min-h-screen p-6 animate-fadeIn">
+      <div className="container mx-auto max-w-7xl">
+        <div className="flex items-center justify-between mb-6">
+          <h1
+            className="text-5xl font-bold tracking-wider text-shadow-glow"
+            style={{ fontFamily: 'Cinzel, serif', color: 'var(--gold)' }}
+          >
+            ⚔ FORGE ⚔
+          </h1>
           <button
             onClick={actions.newGame}
-            className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded"
+            className="glass-panel px-6 py-3 rounded-lg font-bold hover:border-amber-500 border-2 border-amber-900/30 transition-all duration-200 shadow-lg hover:shadow-amber-500/30"
+            style={{ fontFamily: 'Cinzel, serif', color: 'var(--bronze)' }}
           >
             New Game
           </button>
@@ -166,19 +203,26 @@ function App() {
         )}
 
         {modalState.type === 'burn_confirm' && (
-          <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-            <div className="bg-gray-800 p-6 rounded-lg">
-              <h2 className="text-xl font-bold mb-4">Burn this card?</h2>
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn">
+            <div className="glass-panel p-8 rounded-xl border-2 border-red-600/30 shadow-2xl animate-slideIn">
+              <h2
+                className="text-2xl font-bold mb-6 text-center"
+                style={{ fontFamily: 'Cinzel, serif', color: 'var(--gold)' }}
+              >
+                🔥 Burn this card? 🔥
+              </h2>
               <div className="flex gap-4">
                 <button
                   onClick={() => setModalState({ type: 'none' })}
-                  className="bg-gray-700 px-4 py-2 rounded"
+                  className="flex-1 glass-panel px-6 py-3 rounded-lg font-bold border-2 border-amber-900/30 hover:border-amber-700 transition-all"
+                  style={{ fontFamily: 'Cinzel, serif', color: 'var(--bronze)' }}
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleBurnConfirm}
-                  className="bg-red-600 px-4 py-2 rounded"
+                  className="flex-1 bg-gradient-to-r from-red-800 to-red-700 hover:from-red-700 hover:to-red-600 px-6 py-3 rounded-lg font-bold shadow-lg hover:shadow-red-500/50 transition-all border-2 border-red-600"
+                  style={{ fontFamily: 'Cinzel, serif' }}
                 >
                   Burn
                 </button>

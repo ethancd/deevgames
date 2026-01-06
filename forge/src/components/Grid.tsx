@@ -28,7 +28,7 @@ export function Grid({ grid, onCardClick }: GridProps) {
         cells.push(
           <div
             key={key}
-            className="w-32 h-44 m-1 flex items-center justify-center text-gray-700 text-xs"
+            className="w-40 h-56 min-w-[10rem] min-h-[14rem] m-1 flex items-center justify-center"
           >
             {/* Empty space */}
           </div>
@@ -37,7 +37,7 @@ export function Grid({ grid, onCardClick }: GridProps) {
         cells.push(
           <div
             key={key}
-            className="w-32 h-44 m-1 border-2 border-dashed border-gray-700 rounded-lg flex items-center justify-center text-gray-500"
+            className="w-40 h-56 min-w-[10rem] min-h-[14rem] m-1 border-2 border-dashed border-amber-900/20 rounded-lg flex items-center justify-center text-amber-800/40 font-serif animate-fadeIn"
           >
             Empty
           </div>
@@ -46,9 +46,12 @@ export function Grid({ grid, onCardClick }: GridProps) {
         cells.push(
           <div
             key={key}
-            className="w-32 h-44 m-1 bg-gray-900 border-4 border-gray-800 rounded-lg flex items-center justify-center text-gray-600 font-bold"
+            className="w-40 h-56 min-w-[10rem] min-h-[14rem] m-1 bg-gradient-to-br from-stone-950 to-stone-900 border-2 border-stone-800 rounded-lg flex items-center justify-center text-stone-600 font-bold text-sm animate-fadeIn shadow-lg relative overflow-hidden"
           >
-            RUINS
+            <div className="absolute inset-0 bg-gradient-to-br from-transparent via-stone-700/10 to-transparent"></div>
+            <span className="relative" style={{ fontFamily: 'Cinzel, serif' }}>
+              RUINS
+            </span>
           </div>
         );
       } else if (cell.type === 'card' && cell.card) {
@@ -73,7 +76,7 @@ export function Grid({ grid, onCardClick }: GridProps) {
   }
 
   return (
-    <div className="bg-gray-950 p-4 rounded-lg overflow-auto max-h-[600px]">
+    <div className="glass-panel p-6 rounded-xl overflow-auto max-h-[700px] shadow-2xl">
       <div className="inline-block">{rows}</div>
     </div>
   );

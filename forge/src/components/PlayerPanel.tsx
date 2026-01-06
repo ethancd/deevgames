@@ -13,26 +13,38 @@ export function PlayerPanel({ player, isCurrentPlayer, gameState }: PlayerPanelP
 
   return (
     <div
-      className={`p-4 rounded-lg border-2 ${
-        isCurrentPlayer ? 'bg-blue-900 border-blue-500' : 'bg-gray-800 border-gray-600'
+      className={`glass-panel p-5 rounded-xl border-2 transition-all duration-300 shadow-lg ${
+        isCurrentPlayer
+          ? 'border-amber-500 shadow-amber-500/20 animate-slideIn'
+          : 'border-amber-900/30'
       }`}
     >
-      <div className="flex items-center justify-between mb-2">
-        <h3 className="text-xl font-bold text-white">{player.name}</h3>
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-xl font-bold" style={{ fontFamily: 'Cinzel, serif', color: '#eee8d5' }}>
+          {player.name}
+        </h3>
         {isCurrentPlayer && (
-          <span className="text-yellow-400 text-sm font-bold">YOUR TURN</span>
+          <span className="text-amber-400 text-sm font-bold tracking-wider animate-pulse">
+            ★ YOUR TURN
+          </span>
         )}
       </div>
 
-      <div className="flex gap-4 mb-2 text-lg">
-        <span className="text-red-400">♂:{player.symbols.mars}</span>
-        <span className="text-pink-400">♀:{player.symbols.venus}</span>
-        <span className="text-orange-400">☿:{player.symbols.mercury}</span>
-        <span className="text-blue-400">☽:{player.symbols.moon}</span>
+      <div className="flex gap-4 mb-3 text-lg font-medium">
+        <span style={{ color: 'var(--mars)' }}>♂ {player.symbols.mars}</span>
+        <span style={{ color: 'var(--venus)' }}>♀ {player.symbols.venus}</span>
+        <span style={{ color: 'var(--mercury)' }}>☿ {player.symbols.mercury}</span>
+        <span style={{ color: 'var(--moon)' }}>☽ {player.symbols.moon}</span>
       </div>
 
-      <div className="text-yellow-400 text-lg font-bold">VP: {vp}</div>
-      <div className="text-gray-400 text-sm">Cards: {player.tableau.length}</div>
+      <div className="flex items-center gap-4">
+        <div className="text-amber-400 text-2xl font-bold" style={{ fontFamily: 'Cinzel, serif' }}>
+          {vp} <span className="text-sm text-amber-500">VP</span>
+        </div>
+        <div className="text-amber-700 text-sm">
+          {player.tableau.length} {player.tableau.length === 1 ? 'card' : 'cards'}
+        </div>
+      </div>
     </div>
   );
 }
