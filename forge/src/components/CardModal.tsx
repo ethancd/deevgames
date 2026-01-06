@@ -32,7 +32,7 @@ export function CardModal({ card, position, onClose, onBurn, onBuy, canBuy }: Ca
 
   const handleBuyClick = () => {
     onBuy(position);
-    onClose();
+    // Don't call onClose() - onBuy will change the modal state
   };
 
   return (

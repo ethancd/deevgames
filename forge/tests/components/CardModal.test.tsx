@@ -189,7 +189,7 @@ describe('CardModal', () => {
     fireEvent.click(buyButtons[0]);
 
     expect(onBuy).toHaveBeenCalledWith(testPosition);
-    expect(onClose).toHaveBeenCalled();
+    // onClose is NOT called - the parent component handles modal state change
   });
 
   it('should call onClose when Cancel button is clicked (mobile)', () => {
