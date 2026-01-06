@@ -1,4 +1,5 @@
 import type { Card as CardType, Faction } from '../game/types';
+import { FACTION_EMOJIS, emojifyConditionalVP, formatSymbolCost } from '../constants/emojis';
 
 interface CardProps {
   card?: CardType;
@@ -58,80 +59,72 @@ const factionStyles: Record<
 export function Card({ card, faceUp, isAvailable, onClick }: CardProps) {
   if (!card) {
     return (
-      <div className="w-32 h-44 min-w-[8rem] min-h-[11rem] border-2 border-dashed border-amber-900/30 rounded-lg flex items-center justify-center text-amber-800/50 font-serif animate-fadeIn">
+      <div className="w-24 h-24 min-w-[6rem] min-h-[6rem] border-2 border-dashed border-amber-900/30 rounded-lg flex items-center justify-center text-amber-800/50 font-serif animate-fadeIn">
         Empty
       </div>
     );
   }
 
   const styles = factionStyles[card.faction];
+  const factionEmoji = FACTION_EMOJIS[card.faction as keyof typeof FACTION_EMOJIS] || '❓';
+  const formattedCost = formatSymbolCost(card.symbols);
+  const formattedConditionalVP = emojifyConditionalVP(card.conditionalVP);
+
   const availableGlow = isAvailable ? 'animate-glow ring-2 ring-amber-500' : '';
+  const baseOpacity = onClick && isAvailable ? 'opacity-80' : '';
   const clickable = onClick
-    ? 'cursor-pointer hover:scale-105 hover:-translate-y-1 transition-all duration-200'
+    ? 'cursor-pointer hover:opacity-100 transition-opacity duration-200'
     : '';
 
   if (!faceUp) {
     return (
       <div
-        className={`w-32 h-44 min-w-[8rem] min-h-[11rem] ${styles.faceDownBg} ${styles.border} rounded-lg border-2 flex flex-col items-center justify-center shadow-lg ${styles.glow} ${clickable} animate-fadeIn relative overflow-hidden`}
+        className={`w-24 h-24 min-w-[6rem] min-h-[6rem] ${styles.faceDownBg} ${styles.border} rounded-lg border-2 flex items-center justify-center shadow-lg ${styles.glow} ${clickable} ${baseOpacity} animate-fadeIn relative overflow-hidden`}
         onClick={onClick}
       >
-        {/* Decorative corner accents */}
-        <div className="absolute top-1 left-1 w-3 h-3 border-t-2 border-l-2 border-amber-600/50"></div>
-        <div className="absolute top-1 right-1 w-3 h-3 border-t-2 border-r-2 border-amber-600/50"></div>
-        <div className="absolute bottom-1 left-1 w-3 h-3 border-b-2 border-l-2 border-amber-600/50"></div>
-        <div className="absolute bottom-1 right-1 w-3 h-3 border-b-2 border-r-2 border-amber-600/50"></div>
-
-        <div className="text-amber-200/90 text-sm font-bold px-2 text-center" style={{ fontFamily: 'Cinzel, serif' }}>
-          {card.faction}
-        </div>
+        {/* Faction emoji only */}
+        <div className="text-5xl">{factionEmoji}</div>
       </div>
     );
   }
 
   return (
     <div
-      className={`w-32 h-44 min-w-[8rem] min-h-[11rem] ${styles.faceUpBg} ${styles.border} rounded-lg border-2 p-2 flex flex-col shadow-lg ${styles.glow} ${clickable} ${availableGlow} animate-fadeIn relative overflow-hidden`}
+      className={`w-24 h-24 min-w-[6rem] min-h-[6rem] ${styles.faceUpBg} ${styles.border} rounded-lg border-2 p-1.5 flex flex-col shadow-lg ${styles.glow} ${clickable} ${baseOpacity} ${availableGlow} animate-fadeIn relative overflow-hidden`}
       onClick={onClick}
       title={card.game3Effect || undefined}
     >
-      {/* Decorative top border */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-amber-500/30 to-transparent"></div>
-
-      {/* Card name - fixed height */}
-      <div className="card-title text-stone-900 text-xs leading-tight mb-1 h-6 overflow-hidden font-bold">
-        {card.name}
+      {/* Top row: Name (truncated) + Faction emoji */}
+      <div className="flex items-start justify-between mb-0.5">
+        <div className="card-title text-stone-900 text-[0.5rem] leading-tight font-bold flex-1 overflow-hidden line-clamp-2">
+          {card.name}
+        </div>
+        <div className="text-base ml-0.5">{factionEmoji}</div>
       </div>
 
-      {/* Cost - bigger and bolder */}
-      <div className="text-stone-800 text-base mb-2 font-black">
-        {card.symbols || 'Free'}
+      {/* Cost - bigger and bolder with circumpunct */}
+      <div className="text-stone-800 text-xs font-black mb-0.5">
+        {formattedCost}
       </div>
 
-      {/* Conditional VP - fixed height with scroll */}
-      {card.conditionalVP && (
-        <div
-          className="text-stone-700 text-[0.6rem] leading-tight mb-1 flex-1 overflow-y-auto"
-          style={{ fontFamily: 'Crimson Pro, serif' }}
-        >
-          {card.conditionalVP}
+      {/* Conditional VP - emojified */}
+      {formattedConditionalVP && (
+        <div className="text-stone-700 text-[0.45rem] leading-tight mb-0.5 flex-1 overflow-hidden">
+          {formattedConditionalVP}
         </div>
       )}
 
       {/* Spacer to push VP to bottom */}
-      {!card.conditionalVP && <div className="flex-1"></div>}
+      {!formattedConditionalVP && <div className="flex-1"></div>}
 
-      {/* VP in text box at bottom - centered */}
+      {/* VP in text box at bottom - "N ★" format */}
       {card.baseVP > 0 && (
-        <div className="bg-stone-900/80 border border-stone-700 rounded px-2 py-1 text-center">
-          <div className="text-amber-400 text-sm font-black" style={{ fontFamily: 'Cinzel, serif' }}>
-            <span className="text-amber-500">★</span> {card.baseVP} VP
+        <div className="bg-stone-900/80 border border-stone-700 rounded px-1 py-0.5 text-center">
+          <div className="text-amber-400 text-[0.5rem] font-black" style={{ fontFamily: 'Cinzel, serif' }}>
+            {card.baseVP} ★
           </div>
         </div>
       )}
-
-      {/* Decorative bottom accent */}
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-amber-500/20 to-transparent"></div>
     </div>
   );
 }
