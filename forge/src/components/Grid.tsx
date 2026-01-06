@@ -28,7 +28,7 @@ export function Grid({ grid, onCardClick }: GridProps) {
         cells.push(
           <div
             key={key}
-            className="w-32 h-44 min-w-[8rem] min-h-[11rem] m-1 flex items-center justify-center"
+            className="w-24 h-24 min-w-[6rem] min-h-[6rem] m-1 flex items-center justify-center"
           >
             {/* Empty space */}
           </div>
@@ -37,7 +37,7 @@ export function Grid({ grid, onCardClick }: GridProps) {
         cells.push(
           <div
             key={key}
-            className="w-32 h-44 min-w-[8rem] min-h-[11rem] m-1 border-2 border-dashed border-amber-900/20 rounded-lg flex items-center justify-center text-amber-800/40 font-serif animate-fadeIn"
+            className="w-24 h-24 min-w-[6rem] min-h-[6rem] m-1 border-2 border-dashed border-amber-900/20 rounded-lg flex items-center justify-center text-amber-800/40 font-serif animate-fadeIn"
           >
             Empty
           </div>
@@ -46,7 +46,7 @@ export function Grid({ grid, onCardClick }: GridProps) {
         cells.push(
           <div
             key={key}
-            className="w-32 h-44 min-w-[8rem] min-h-[11rem] m-1 bg-gradient-to-br from-stone-950 to-stone-900 border-2 border-stone-800 rounded-lg flex items-center justify-center text-stone-600 font-bold text-sm animate-fadeIn shadow-lg relative overflow-hidden"
+            className="w-24 h-24 min-w-[6rem] min-h-[6rem] m-1 bg-gradient-to-br from-stone-950 to-stone-900 border-2 border-stone-800 rounded-lg flex items-center justify-center text-stone-600 font-bold text-xs animate-fadeIn shadow-lg relative overflow-hidden"
           >
             <div className="absolute inset-0 bg-gradient-to-br from-transparent via-stone-700/10 to-transparent"></div>
             <span className="relative" style={{ fontFamily: 'Cinzel, serif' }}>
