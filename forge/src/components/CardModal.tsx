@@ -124,9 +124,11 @@ export function CardModal({ card, position, onClose, onBurn, onBuy, canBuy }: Ca
       {/* Desktop: Side panel (>768px) */}
       <div
         className="hidden md:block fixed inset-0 z-50 pointer-events-none"
-        onClick={handleClickOutside}
       >
-        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm pointer-events-auto" />
+        <div
+          className="absolute inset-0 bg-black/60 backdrop-blur-sm pointer-events-auto"
+          onClick={handleClickOutside}
+        />
         <div className="absolute top-0 right-0 h-full w-96 glass-panel border-l-2 border-amber-900/30 shadow-2xl animate-slideIn pointer-events-auto p-6 overflow-y-auto">
           {/* Close button */}
           <button
