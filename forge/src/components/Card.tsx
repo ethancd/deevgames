@@ -96,10 +96,10 @@ export function Card({ card, faceUp, isAvailable, onClick }: CardProps) {
     >
       {/* Top row: Name (truncated) + Faction emoji */}
       <div className="flex items-start justify-between mb-0.5">
-        <div className="card-title text-stone-900 text-[0.5rem] leading-tight font-bold flex-1 overflow-hidden line-clamp-2">
+        <div className="card-title text-stone-900 text-xs leading-tight font-bold flex-1 overflow-hidden line-clamp-2 break-words">
           {card.name}
         </div>
-        <div className="text-base ml-0.5">{factionEmoji}</div>
+        <div className="text-base ml-0.5 flex-shrink-0">{factionEmoji}</div>
       </div>
 
       {/* Cost - bigger and bolder with circumpunct */}
