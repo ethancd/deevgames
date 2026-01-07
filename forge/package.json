@@ -9,12 +9,14 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:ui": "vitest --ui"
+    "test:ui": "vitest --ui",
+    "generate-images": "tsx scripts/generate-images.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/node": "^22.16.0",
     "@tailwindcss/postcss": "^4.1.18",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.1",
@@ -29,7 +31,8 @@
     "tailwindcss": "^4.1.18",
     "typescript": "^5.9.3",
     "vite": "^7.3.0",
-    "vitest": "^4.0.16"
+    "vitest": "^4.0.16",
+    "tsx": "^4.20.0"
   },
   "dependencies": {
     "react": "^19.2.3",

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useGameState } from './hooks/useGameState';
 import { Grid } from './components/Grid';
 import { PlayerPanel } from './components/PlayerPanel';
@@ -6,6 +6,7 @@ import { Tableau } from './components/Tableau';
 import { BidModal } from './components/BidModal';
 import { CounterBidModal } from './components/CounterBidModal';
 import { CardModal } from './components/CardModal';
+import { CardBrowser } from './components/CardBrowser';
 import { calculateWinner } from './game/scoring';
 import type { Position } from './game/types';
 
@@ -20,6 +21,21 @@ type ModalState =
 function App() {
   const { gameState, actions } = useGameState();
   const [modalState, setModalState] = useState<ModalState>({ type: 'none' });
+  const [currentPage, setCurrentPage] = useState(() => {
+    return window.location.hash === '#/cards' ? 'cards' : 'game';
+  });
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      setCurrentPage(window.location.hash === '#/cards' ? 'cards' : 'game');
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  if (currentPage === 'cards') {
+    return <CardBrowser />;
+  }
 
   const currentPlayer = gameState.players[gameState.currentPlayerIndex];
 
@@ -155,13 +171,22 @@ function App() {
           >
             ⚔ FORGE ⚔
           </h1>
-          <button
-            onClick={actions.newGame}
-            className="glass-panel px-6 py-3 rounded-lg font-bold hover:border-amber-500 border-2 border-amber-900/30 transition-all duration-200 shadow-lg hover:shadow-amber-500/30"
-            style={{ fontFamily: 'Cinzel, serif', color: 'var(--bronze)' }}
-          >
-            New Game
-          </button>
+          <div className="flex gap-3">
+            <a
+              href="#/cards"
+              className="glass-panel px-6 py-3 rounded-lg font-bold hover:border-amber-500 border-2 border-amber-900/30 transition-all duration-200 shadow-lg hover:shadow-amber-500/30"
+              style={{ fontFamily: 'Cinzel, serif', color: 'var(--bronze)' }}
+            >
+              Card Gallery
+            </a>
+            <button
+              onClick={actions.newGame}
+              className="glass-panel px-6 py-3 rounded-lg font-bold hover:border-amber-500 border-2 border-amber-900/30 transition-all duration-200 shadow-lg hover:shadow-amber-500/30"
+              style={{ fontFamily: 'Cinzel, serif', color: 'var(--bronze)' }}
+            >
+              New Game
+            </button>
+          </div>
         </div>
       </header>
 

@@ -11,8 +11,18 @@ interface CardModalProps {
   canBuy: boolean;
 }
 
+function toKebabCase(str: string): string {
+  return str
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
 export function CardModal({ card, position, onClose, onBurn, onBuy, canBuy }: CardModalProps) {
   const [burnConfirmState, setBurnConfirmState] = useState<'idle' | 'confirming'>('idle');
+  const [imageError, setImageError] = useState(false);
+
+  const cardImagePath = `/images/${toKebabCase(card.name)}.png`;
 
   const handleBurnClick = () => {
     if (burnConfirmState === 'idle') {
@@ -49,6 +59,19 @@ export function CardModal({ card, position, onClose, onBurn, onBuy, canBuy }: Ca
               <Card card={card} faceUp={true} />
             </div>
           </div>
+
+          {/* Card Image */}
+          {!imageError && (
+            <div className="flex justify-center mb-6">
+              <img
+                src={cardImagePath}
+                alt={card.name}
+                className="max-w-full h-auto rounded-lg border-2 border-amber-900/30 shadow-lg"
+                onError={() => setImageError(true)}
+                style={{ maxHeight: '300px' }}
+              />
+            </div>
+          )}
 
           {/* Card details */}
           <div className="text-center mb-6">
@@ -119,6 +142,19 @@ export function CardModal({ card, position, onClose, onBurn, onBuy, canBuy }: Ca
               <Card card={card} faceUp={true} />
             </div>
           </div>
+
+          {/* Card Image */}
+          {!imageError && (
+            <div className="flex justify-center mb-6">
+              <img
+                src={cardImagePath}
+                alt={card.name}
+                className="max-w-full h-auto rounded-lg border-2 border-amber-900/30 shadow-lg"
+                onError={() => setImageError(true)}
+                style={{ maxHeight: '400px' }}
+              />
+            </div>
+          )}
 
           {/* Card details */}
           <div className="mb-6">
