@@ -16,6 +16,118 @@ Think like a slime mold seeking nutrients - explore all paths and gravitate towa
 
 If there's a "correct" choice that dominates all others, that's a balance leak.
 
+## Critical Analysis Dimensions
+
+Before calculating ratios, ALWAYS consider these foundational constraints:
+
+### A. Mechanical Constraints (Accessibility)
+
+**The Vacuum Fallacy:** Naive analysis assumes you can freely choose any game element. In reality, most games have constraints:
+
+**Questions to ask:**
+- Can you freely acquire any card/resource, or is availability random/limited?
+- What's the realistic budget? (Not "infinite resources" but actual expected spend)
+- How many cards/units can a player realistically acquire per game?
+- Does acquiring one thing prevent acquiring another? (Opportunity cost)
+
+**FORGE Example - Card Availability:**
+```
+WRONG: "I'll just buy 3 Supply Caches and 3 Fortifications"
+RIGHT: Cards become available based on grid expansion and opponent actions.
+       You might never see a Supply Cache, or it might appear when you're
+       out of symbols, or opponent might burn it before you can buy.
+```
+
+**FORGE Example - Budget Constraints:**
+```
+- Total symbols: 16 (4 of each)
+- Realistic game budget: 12-24 symbols (accounting for counter-bids)
+- At 2 symbols average per card: ~6-12 cards per player
+- High-cost cards (3-4 symbols) significantly limit total acquisitions
+```
+
+**Synergy Value of Faction Cards:**
+```
+WRONG: "Faction Agent gives 2 VP, General card gives 3 VP, General wins"
+RIGHT: Faction cards can trigger OTHER cards' conditionals:
+       - Base cards: +1 per faction card owned
+       - Seed cards: +2 if another card of faction
+       - Adaptable Doctrine: +2 per faction with 2+ cards
+
+A single Crimson Agent might actually provide:
+- 2 VP base
+- +1 VP to Crimson Base (if owned)
+- +2 VP to Bloodthorn Seedling (if owned)
+- +2 VP toward Adaptable Doctrine threshold
+= 5-7 VP effective value vs 3 VP from General card
+```
+
+### B. Adversarial Response (Opponent Interaction)
+
+**The Passive Opponent Fallacy:** Naive analysis assumes opponents let you execute your strategy unopposed. Real opponents will:
+- Contest high-value acquisitions
+- Deny key combo pieces
+- Punish predictable strategies
+
+**Questions to ask:**
+- Can opponents interfere with your acquisition? How?
+- What's the cost of that interference?
+- Does interference change the effective value of cards?
+- Are some cards easier to contest than others?
+
+**FORGE Example - Counter-Bidding Changes Everything:**
+```
+Naive analysis of Supply Cache:
+- Cost: 1 any symbol
+- VP: 2
+- Ratio: 2.0 VP/symbol (amazing!)
+
+But with adversarial counter-bidding:
+- You bid 1 symbol on Supply Cache (2 VP)
+- Opponent counter-bids (2 symbols)
+- Now you either:
+  A) Let them have it: They get 2 VP for 2 symbols (1.0 ratio) - fair trade
+  B) Final-bid (3 symbols): You get 2 VP for 3 symbols (0.67 ratio) - bad!
+
+Effective ratio under contestation:
+- If contested and you win: 0.67 VP/symbol
+- If contested and you concede: 0 VP, opponent gets 1.0 ratio
+- Only uncontested: 2.0 VP/symbol
+
+High-efficiency cards are HIGH-PRIORITY TARGETS for opponents.
+```
+
+**When Faction Cards Are Safer:**
+```
+Faction cards with specific symbol costs are:
+1. Less universally desirable (opponent may not want your faction)
+2. Harder for opponent to counter-bid (may not have right symbols)
+3. Worth MORE to you than to opponent (synergy value)
+
+Crimson Agent (♂♀, 2 VP):
+- Only valuable to Crimson-focused player
+- Opponent may lack ♂ or ♀ to counter
+- Triggers YOUR other Crimson conditionals
+
+vs General Fortification (any any, 3 VP):
+- Universally desirable (everyone wants 3 VP)
+- Anyone can counter-bid with any symbols
+- No synergy value to contest
+```
+
+**Adversarial Equilibrium:**
+```
+In a game with counter-bidding:
+- "Efficient" cards get contested more often
+- Contested cards have worse effective ratios
+- "Synergy" cards get contested less (opponent-specific value)
+- Uncontested cards achieve theoretical value
+
+This creates NATURAL BALANCE that naive ratio analysis misses.
+```
+
+---
+
 ## Analysis Framework
 
 When analyzing game elements, systematically examine:
@@ -207,30 +319,63 @@ And Card B costs ♂♀ and gives 2 VP
 - How are resources acquired?
 - What are the exchange rates?
 - Which resources are bottlenecks?
+- **What's the realistic budget per game?** (Not theoretical max, but expected spend)
 
-### Step 3: Calculate Efficiency Ratios
+### Step 3: Assess Mechanical Constraints
+- **Availability:** Can I freely choose any card, or is access limited/random?
+- **Budget:** How many cards can I realistically acquire? (e.g., 12-24 symbols = 6-12 cards)
+- **Opportunity cost:** What do I give up by taking this path?
+- **Synergy chains:** Does this element trigger bonuses on OTHER elements I own?
+
+### Step 4: Model Adversarial Response
+- **Will opponents contest this?** (High-value targets get contested)
+- **What's the effective cost under contestation?** (Not base cost, but bidding war cost)
+- **What's opponent's counter-play?** (Can they deny, burn, or steal?)
+- **Is this safer uncontested?** (Faction-specific vs universally desirable)
+
+**FORGE Contestation Math:**
+```
+Card value V, base cost C:
+- Uncontested: V/C ratio (theoretical)
+- Contested, you win: V/(C+2) ratio (final-bid premium)
+- Contested, you concede: Opponent gets V/(C+1) ratio
+
+For Supply Cache (V=2, C=1):
+- Uncontested: 2.0 ratio
+- Contested win: 0.67 ratio (terrible!)
+- Contested concede: Opponent gets 1.0 ratio
+
+For Faction Agent (V=2+synergy, C=2):
+- Base ratio: 1.0
+- With synergy (+2 to Seedling, +1 to Base): effective 5/2 = 2.5 ratio
+- Less likely contested (opponent may not want your faction)
+```
+
+### Step 5: Calculate Realistic Efficiency Ratios
 For each game element, calculate:
-- **VP per resource spent**
-- **VP per turn invested**
-- **Resource generation per turn**
-- **Opportunity cost** (what else could I do instead?)
+- **Theoretical VP/cost** (vacuum analysis)
+- **Contested VP/cost** (assuming opponent interference)
+- **Synergy VP/cost** (including bonuses to other owned cards)
+- **Expected VP/cost** (weighted by likelihood of contestation)
 
-### Step 4: Find Outliers
-- Which cards/strategies have the best ratios?
-- Are there "broken" cards that are clearly superior?
-- What would a rational min-maxer always choose?
+### Step 6: Find ACTUAL Outliers
+- Which cards have best **realistic** ratios after contestation modeling?
+- Which cards have **hidden synergy value** that makes them better than they look?
+- Which cards LOOK good but get contested into mediocrity?
+- What would a rational player choose **knowing opponent will respond**?
 
-### Step 5: Test for Dominant Strategies
-- If every player plays optimally, what happens?
-- Is there a single best opening?
-- Is there a strategy that beats all others?
-- Can the game be "solved"?
+### Step 7: Test for Dominant Strategies
+- If every player plays optimally **and opponents counter optimally**, what happens?
+- Is there a strategy that beats all others **even when contested**?
+- Does the game reach an equilibrium where multiple strategies are viable?
+- Can the game be "solved" or does adversarial response create depth?
 
-### Step 6: Look for Leaks and Exploits
+### Step 8: Look for Leaks and Exploits
 - **Rules interactions:** Do any rules combine in unintended ways?
 - **Edge cases:** What happens at minimum/maximum values?
 - **Degenerate strategies:** Can I win by doing nothing? By ignoring mechanics?
 - **Infinite loops:** Are there unbounded cycles?
+- **Contest-proof combos:** Are there strategies opponents CAN'T interfere with?
 
 ## Balance Analysis Template
 
@@ -247,31 +392,58 @@ Use this when evaluating a game or set of game entities:
 - **Resource Sources:** [How are resources acquired?]
 - **Resource Sinks:** [What are resources spent on?]
 - **Bottlenecks:** [Which resources limit strategy?]
+- **Realistic Budget:** [Expected resources spent per game, not theoretical max]
 
-### Cost-Benefit Analysis
-| Entity | Cost | Benefit | Ratio | Notes |
-|--------|------|---------|-------|-------|
-| Card A | ♂   | 3 VP    | 3.0   | Best VP/cost |
-| Card B | ♂♀  | 2 VP    | 1.0   | Worse ratio, needs synergy |
+### Mechanical Constraints
+- **Accessibility:** [Can players freely choose any card/resource?]
+- **Randomness:** [What determines availability?]
+- **Budget Limits:** [How many cards can a player realistically acquire?]
+- **Synergy Networks:** [Do elements boost other elements' value?]
 
-**Outliers:** [List any cards/entities with exceptional ratios]
+### Adversarial Response Analysis
+- **Contestation Mechanics:** [Can opponents interfere with acquisitions?]
+- **Interference Costs:** [What does it cost to contest?]
+- **High-Value Targets:** [Which elements will opponents always contest?]
+- **Safe Acquisitions:** [Which elements are unlikely to be contested?]
+
+### Cost-Benefit Analysis (Three-Column)
+| Entity | Theoretical Ratio | Contested Ratio | Synergy Value | Realistic Ratio |
+|--------|-------------------|-----------------|---------------|-----------------|
+| Card A | 2.0 (2VP/1cost)   | 0.67 (final bid)| +0 (no synergy)| 1.0-1.5 (contested) |
+| Card B | 1.0 (2VP/2cost)   | 0.5 (final bid) | +3 (faction)  | 2.0-2.5 (synergy) |
+
+**Notes:**
+- Theoretical = vacuum analysis (no opponent, free choice)
+- Contested = assuming opponent counter-bids
+- Synergy = bonuses this card grants to OTHER owned cards
+- Realistic = expected value accounting for game dynamics
+
+**True Outliers:** [Cards that dominate EVEN after modeling contestation and constraints]
 
 ### Dominant Strategies
 - **Strategy 1:** [Describe optimal path]
-  - Win rate: [X%]
-  - Counter-play: [What beats this?]
+  - Theoretical win rate: [X%]
+  - Under adversarial play: [How does opponent counter?]
+  - Realistic win rate: [X% after modeling response]
   - Weakness: [What are the drawbacks?]
+
+### Adversarial Equilibrium
+- **Do high-efficiency cards get naturally balanced by contestation?**
+- **Do synergy cards become better because they're less contested?**
+- **What strategies survive when opponents play optimally?**
 
 ### Potential Exploits
 1. **[Exploit name]:** [Describe the imbalance]
    - Why it works: [Explain the underlying cause]
+   - Can opponent counter?: [Is there adversarial response?]
    - Impact: [How game-breaking is this?]
    - Fix: [Suggested balance changes]
 
 ### Meaningful Choice Assessment
 - **Choice points:** [Where do players make decisions?]
-- **Trap options:** [Are there options that look good but aren't?]
-- **Dominant options:** [Are there always-correct choices?]
+- **Trap options:** [Cards that LOOK good but get contested into mediocrity]
+- **Hidden value:** [Cards that look weak but have synergy value]
+- **Dominant options:** [Cards that dominate even under contestation]
 
 ### Fairness and Symmetry
 - **Type:** [Symmetric/Asymmetric]
@@ -283,9 +455,11 @@ Use this when evaluating a game or set of game entities:
 
 **Strengths:**
 - [What works well]
+- [Natural balancing through adversarial response?]
 
 **Weaknesses:**
 - [What needs improvement]
+- [Strategies that bypass contestation?]
 
 **Recommendations:**
 1. [Specific change to improve balance]
@@ -324,34 +498,93 @@ When someone shares game rules, card stats, or asks about balance:
    - New mechanics to create counter-play
    - Rule clarifications
 
-## Example: FORGE Card Analysis
+## Example: FORGE Card Analysis (With Full Constraints)
 
-Let's analyze a hypothetical imbalance:
+Let's compare a "high efficiency" General card vs a "synergy" Faction card:
 
-**Card: "Quick Victory"**
-- Cost: ♂ (1 symbol)
-- Base VP: 2
-- Conditional VP: +2 if you have another Crimson Covenant card
+### Naive Analysis (WRONG)
 
-**Analysis:**
-- Cost: Very cheap (1 symbol)
-- Base VP: 2 (already 2.0 ratio, matches average)
-- Conditional: Extremely easy to trigger (+2 more = 4 VP total)
-- **Final ratio: 4.0 VP per symbol**
+**Supply Cache (General)**
+- Cost: 1 any symbol
+- VP: 2
+- Ratio: 2.0 VP/symbol
+- Conclusion: "Best card in game, always buy"
 
-**Compare to:**
-- Average VP/cost in game: ~2.0
-- This card gives 2x the value
+**Crimson Agent (Crimson Covenant)**
+- Cost: ♂♀ (2 specific symbols)
+- VP: 2
+- Ratio: 1.0 VP/symbol
+- Conclusion: "Strictly worse than Supply Cache"
 
-**Strategic exploit:**
-- Players will ALWAYS take Crimson Covenant cards early
-- Getting even one CC card makes all future CC cards worth 4 VP for 1 symbol
-- Optimal strategy: Rush CC cards, ignore other factions
+### Correct Analysis (WITH CONSTRAINTS)
 
-**Recommendation:**
-- Increase cost to ♂♂ (ratio becomes 2.0, balanced)
-- OR reduce conditional to +1 (ratio becomes 3.0, still good but not broken)
-- OR change conditional to require 3+ CC cards (harder to trigger)
+**Supply Cache under realistic conditions:**
+
+1. **Mechanical Constraints:**
+   - Card availability is random (may not see Supply Cache)
+   - Only 3 copies in 82-card deck
+   - Budget: 12-24 symbols means ~6-12 cards total
+
+2. **Adversarial Response:**
+   - Supply Cache is universally desirable (everyone wants 2 VP for 1)
+   - Opponent WILL counter-bid if they can
+   - Counter-bid cost: 2 symbols for 2 VP = 1.0 ratio
+   - Final-bid cost: 3 symbols for 2 VP = 0.67 ratio
+
+3. **Realistic Ratio:**
+   - Uncontested (rare): 2.0
+   - Contested, you win: 0.67
+   - Contested, you concede: 0 VP, opponent gets 1.0
+   - **Expected: ~1.0-1.3 VP/symbol**
+
+**Crimson Agent under realistic conditions:**
+
+1. **Mechanical Constraints:**
+   - Requires ♂♀ specifically (harder to contest for some opponents)
+   - 2 copies available
+   - Faction-specific (opponent may not want it)
+
+2. **Adversarial Response:**
+   - Only valuable if opponent is ALSO building Crimson
+   - Often uncontested (opponent doesn't share your faction)
+   - Even if contested, opponent gets less synergy value than you
+
+3. **Synergy Value:**
+   - Base: 2 VP
+   - Triggers Bloodthorn Seedling: +2 VP (if you have it)
+   - Triggers Crimson Base: +1 VP (if you have it)
+   - Contributes to Adaptable Doctrine threshold
+   - **Effective VP: 2-5 VP depending on tableau**
+
+4. **Realistic Ratio:**
+   - Base ratio: 1.0
+   - With 1 synergy card: 2.0
+   - With 2 synergy cards: 2.5
+   - Less contested than General cards
+   - **Expected: ~1.5-2.5 VP/symbol**
+
+### Conclusion
+
+**Naive analysis:** Supply Cache (2.0) >> Crimson Agent (1.0)
+**Realistic analysis:** Crimson Agent (1.5-2.5) >= Supply Cache (1.0-1.3)
+
+**The game is more balanced than vacuum analysis suggests because:**
+1. High-efficiency cards get contested into mediocrity
+2. Synergy cards provide hidden value
+3. Faction-specific costs create natural protection from contestation
+4. Budget limits prevent "just buy all the good stuff"
+
+### When to Worry
+
+Balance problems exist when cards dominate **even after accounting for:**
+- Contestation (opponent can't or won't counter)
+- Synergy (no synergy network competes)
+- Mechanical constraints (always available, no opportunity cost)
+
+Example of TRUE imbalance: A card that is both high-efficiency AND:
+- Hard to contest (specific symbol cost opponent can't pay)
+- High synergy (triggers multiple conditionals)
+- Always available (common card type)
 
 ## Twelve Types of Balance (Schell)
 

@@ -22,7 +22,7 @@ export function CardModal({ card, position, onClose, onBurn, onBuy, canBuy }: Ca
   const [burnConfirmState, setBurnConfirmState] = useState<'idle' | 'confirming'>('idle');
   const [imageError, setImageError] = useState(false);
 
-  const cardImagePath = `/images/cards/${toKebabCase(card.name)}.png`;
+  const cardImagePath = `/images/${toKebabCase(card.name)}.png`;
 
   const handleBurnClick = () => {
     if (burnConfirmState === 'idle') {
