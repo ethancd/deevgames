@@ -80,7 +80,20 @@ interface CardPrompt {
   faction: string;
   description: string;
   cartoonDescription?: string; // Optional cartoon-specific description
+  cost: number;
+  isLeaderOrBase?: boolean;
 }
+
+// Cost-based scale modifiers
+const SCALE_MODIFIERS: Record<number, string> = {
+  0: 'Keep the composition minimal and simple - a small, unassuming subject with sparse detail and empty space.',
+  1: 'Keep the image slight and sparse - a small or simple subject, minimal complexity, understated presence.',
+  2: 'Render with modest scope - a moderately sized subject, some visual interest but not overwhelming.',
+  3: 'Make this substantial and impressive - detailed subject, rich textures, commanding presence.',
+  4: 'Make this epic and grand - maximum visual complexity, imposing scale, awe-inspiring detail.',
+};
+
+const LEADER_BASE_MODIFIER = 'Extra emphasis on grandeur and importance.';
 
 // All 66 unique cards with their unit-specific descriptions
 const CARDS: CardPrompt[] = [
@@ -89,6 +102,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Bloodthorn Seedling',
     fileName: 'bloodthorn-seedling',
     faction: 'Crimson Covenant',
+    cost: 1,
     description: 'A thorny seedling pod with organic tendrils, dripping with crimson sap, half-buried in dark soil. Barely emerged but already predatory.',
     cartoonDescription: 'A cute baby strawberry plant just sprouting from the ground, with tiny leaves and a happy face. Dewdrops sparkle like gems.'
   },
@@ -96,6 +110,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Symbiote Spawn',
     fileName: 'symbiote-spawn',
     faction: 'Crimson Covenant',
+    cost: 1,
     description: 'Small chitinous creatures clustering together, each one part-insect part-something-worse, moving as a coordinated swarm.',
     cartoonDescription: 'A group of adorable berry buddies - little strawberries, raspberries, and cherries playing together in a berry patch.'
   },
@@ -103,6 +118,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Crimson Agent',
     fileName: 'crimson-agent',
     faction: 'Crimson Covenant',
+    cost: 2,
     description: 'A humanoid figure in bio-organic armor, crimson and black, with thorn-like protrusions. Face partially obscured by chitinous plates. Carries organic weapons that look grown, not forged.',
     cartoonDescription: 'A friendly strawberry character wearing a gardening apron, carrying a watering can and trowel, ready to help plants grow.'
   },
@@ -110,6 +126,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Hostile Takeover',
     fileName: 'hostile-takeover',
     faction: 'Crimson Covenant',
+    cost: 2,
     description: 'A scene of one unit consuming or overgrowing another, aggressive biological warfare in action, thorny vines crushing steel.',
     cartoonDescription: 'Berry friends giving big warm hugs, vines gently wrapping around in a friendly embrace. Hearts and sparkles everywhere.'
   },
@@ -117,6 +134,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Predator Pack',
     fileName: 'predator-pack',
     faction: 'Crimson Covenant',
+    cost: 2,
     description: 'Multiple sleek predatory forms hunting together, low to the ground, all teeth and claws and hungry intent.',
     cartoonDescription: 'A patrol of berry scouts on an adventure, wearing little explorer hats, looking for treasure in the garden.'
   },
@@ -124,6 +142,8 @@ const CARDS: CardPrompt[] = [
     cardName: 'Crimson Base: The Hivemind',
     fileName: 'crimson-base-the-hivemind',
     faction: 'Crimson Covenant',
+    cost: 3,
+    isLeaderOrBase: true,
     description: 'A massive organic structure, part hive, part fortress, pulsing with internal light. Entrances like mouths, walls like ribs.',
     cartoonDescription: 'A magical treehouse made of strawberry vines and leaves, with windows shaped like hearts and a welcoming front door.'
   },
@@ -131,6 +151,8 @@ const CARDS: CardPrompt[] = [
     cardName: 'Crimson Leader: Thorne',
     fileName: 'crimson-leader-thorne',
     faction: 'Crimson Covenant',
+    cost: 3,
+    isLeaderOrBase: true,
     description: 'A regal figure in elaborate bio-armor, more evolved than the agents. Crown of thorns, cape of living tissue. Eyes that evaluate, calculate, dominate.',
     cartoonDescription: 'Queen Strawberry - a majestic strawberry character with a crown of leaves, wearing a beautiful red gown, kind and wise.'
   },
@@ -138,6 +160,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Carrion Caller',
     fileName: 'carrion-caller',
     faction: 'Crimson Covenant',
+    cost: 3,
     description: 'A robed figure with staff topped by a skull wreathed in vines. Summoning dead tissue back to terrible life.',
     cartoonDescription: 'A garden singer - a cheerful berry character with a microphone made of flowers, singing songs that make plants grow.'
   },
@@ -145,6 +168,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Apex Predator',
     fileName: 'apex-predator',
     faction: 'Crimson Covenant',
+    cost: 4,
     description: 'The ultimate predator - massive, powerful, covered in scars from countless kills. Part trophy, part nightmare.',
     cartoonDescription: 'Big Berry Bear - a large, fluffy, friendly bear made of berries, giving out hugs and protecting the berry patch.'
   },
@@ -154,6 +178,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Raid Scout',
     fileName: 'raid-scout',
     faction: 'Iron Tide',
+    cost: 1,
     description: 'A light mechanized unit, all speed and reconnaissance gear. Think motorcycle-tank hybrid, stripped down to essentials.',
     cartoonDescription: 'A small, zippy robot on wheels with big friendly eyes and a spinning radar dish, scouting for fun adventures.'
   },
@@ -161,6 +186,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Strike Runner',
     fileName: 'strike-runner',
     faction: 'Iron Tide',
+    cost: 1,
     description: 'Bipedal war machine, smaller scale, weapons at the ready. Built for hit-and-run, every line suggesting forward motion.',
     cartoonDescription: 'A speedy robot friend with running legs, always zooming around to deliver packages and help friends quickly.'
   },
@@ -168,6 +194,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Iron Agent',
     fileName: 'iron-agent',
     faction: 'Iron Tide',
+    cost: 2,
     description: 'Standard war construct - humanoid frame in heavy armor plating, carrying oversized weapons. Functional, brutal, efficient.',
     cartoonDescription: 'A helpful robot assistant with a toolbox, ready to fix broken toys and build new things. Friendly LED smile.'
   },
@@ -175,6 +202,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Scorched Advance',
     fileName: 'scorched-advance',
     faction: 'Iron Tide',
+    cost: 2,
     description: 'A battlefield scene showing burned ground, advancing machines leaving destruction in their wake.',
     cartoonDescription: 'Robots using rocket boosters to zoom forward, leaving colorful sparkle trails. Adventure time!'
   },
@@ -182,6 +210,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Shock Trooper',
     fileName: 'shock-trooper',
     faction: 'Iron Tide',
+    cost: 2,
     description: 'Heavy assault construct, extra armor plating, weapons integrated into arms. Built to take damage and keep advancing.',
     cartoonDescription: 'A big sturdy robot friend with extra-strong arms for giving super hugs and lifting heavy things to help.'
   },
@@ -189,6 +218,8 @@ const CARDS: CardPrompt[] = [
     cardName: 'Iron Base: The Foundry',
     fileName: 'iron-base-the-foundry',
     faction: 'Iron Tide',
+    cost: 3,
+    isLeaderOrBase: true,
     description: 'Massive industrial complex belching smoke and flame. Assembly lines visible through openings, producing war machines endlessly.',
     cartoonDescription: 'A colorful robot workshop with conveyor belts, gears, and friendly robots being built and waking up with smiles.'
   },
@@ -196,6 +227,8 @@ const CARDS: CardPrompt[] = [
     cardName: 'Iron Leader: Commander Vex',
     fileName: 'iron-leader-commander-vex',
     faction: 'Iron Tide',
+    cost: 3,
+    isLeaderOrBase: true,
     description: 'Command construct, taller and more heavily armed than standard units. Multiple sensor arrays, communication equipment. The brain of the war machine.',
     cartoonDescription: 'Captain Gearhead - a tall, wise robot with a captain hat, multiple friendly eyes, leading the robot team on adventures.'
   },
@@ -203,6 +236,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Blitz Squadron',
     fileName: 'blitz-squadron',
     faction: 'Iron Tide',
+    cost: 3,
     description: 'Three fast-attack units in formation, caught mid-charge, weapons firing, leaving trails of exhaust and destruction.',
     cartoonDescription: 'A team of three robot friends zooming together in formation, leaving rainbow trails and high-fiving.'
   },
@@ -210,6 +244,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'War Engine',
     fileName: 'war-engine',
     faction: 'Iron Tide',
+    cost: 4,
     description: 'Absolutely massive construct, dwarfing everything around it. Multiple weapon systems, enough armor to be a mobile fortress. The thing armies have nightmares about.',
     cartoonDescription: 'Mega Bot - a giant friendly robot that small robot friends ride on, like a robot bus or playground.'
   },
@@ -219,6 +254,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Null Shard',
     fileName: 'null-shard',
     faction: 'Void Legion',
+    cost: 1,
     description: 'A fragment of void-crystal, floating, geometric but wrong, casting shadows that defy light sources.',
     cartoonDescription: 'A beautiful floating magic crystal that sparkles with all rainbow colors, spreading glitter wherever it goes.'
   },
@@ -226,6 +262,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Fanatic Initiate',
     fileName: 'fanatic-initiate',
     faction: 'Void Legion',
+    cost: 1,
     description: 'Hooded cultist figures, faces hidden, clutching improvised weapons. Desperation and fervor in their posture.',
     cartoonDescription: 'Sparkle students - young fairy sprites learning magic, holding glittery wands, excited to learn new spells.'
   },
@@ -233,6 +270,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Void Agent',
     fileName: 'void-agent',
     faction: 'Void Legion',
+    cost: 2,
     description: 'Armored figure with cult symbols, wielding chaotic-looking weapons. Shadows cling to them unnaturally.',
     cartoonDescription: 'A fairy friend with sparkly wings and a star wand, spreading magic dust and making wishes come true.'
   },
@@ -240,6 +278,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Cult of Less',
     fileName: 'cult-of-less',
     faction: 'Void Legion',
+    cost: 2,
     description: 'A group of cultists burning their own possessions, icons, cards. Worship through destruction.',
     cartoonDescription: 'A sharing circle of sparkle sprites, happily giving away toys and treasures to friends. Sharing is caring!'
   },
@@ -247,6 +286,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Chaos Warrior',
     fileName: 'chaos-warrior',
     faction: 'Void Legion',
+    cost: 2,
     description: 'Heavily-armored cultist berserker, weapon raised, mid-scream. Barely-controlled violence incarnate.',
     cartoonDescription: 'A glitter knight in shiny rainbow armor, with a sparkly shield, protector of all magical creatures.'
   },
@@ -254,6 +294,8 @@ const CARDS: CardPrompt[] = [
     cardName: 'Void Base: The Rift',
     fileName: 'void-base-the-rift',
     faction: 'Void Legion',
+    cost: 3,
+    isLeaderOrBase: true,
     description: 'A tear in reality, edges purple and black, writhing. Architecture dissolving at the edges, becoming un-geometries.',
     cartoonDescription: 'A beautiful rainbow portal swirling with magical colors, gateway to a land of wonder and adventure.'
   },
@@ -261,6 +303,8 @@ const CARDS: CardPrompt[] = [
     cardName: 'Void Leader: Entropy',
     fileName: 'void-leader-entropy',
     faction: 'Void Legion',
+    cost: 3,
+    isLeaderOrBase: true,
     description: 'A figure whose edges blur and fragment, holding reality barely together. Their presence makes the air itself uncertain.',
     cartoonDescription: 'Princess Sparkle - a beautiful fairy princess made of stardust, with flowing rainbow hair and kind eyes.'
   },
@@ -268,6 +312,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Doom Herald',
     fileName: 'doom-herald',
     faction: 'Void Legion',
+    cost: 3,
     description: 'A robed prophet figure, staff in hand, surrounded by swirling void energy. Bearer of ending.',
     cartoonDescription: 'A magic messenger sprite carrying a glowing letter, delivering good news and party invitations.'
   },
@@ -275,6 +320,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Oblivion Gate',
     fileName: 'oblivion-gate',
     faction: 'Void Legion',
+    cost: 4,
     description: 'A massive portal to nowhere, architecture of madness forming its frame. The destination is not a place you would survive.',
     cartoonDescription: 'A wonder gateway - a huge sparkling archway decorated with stars and moons, leading to a magical playground.'
   },
@@ -284,6 +330,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Trade Contact',
     fileName: 'trade-contact',
     faction: 'Silk Network',
+    cost: 1,
     description: 'A merchant stall or caravan scene, goods displayed, but guards are clearly present and deadly.',
     cartoonDescription: 'A cheerful toy shop stall with colorful displays of toys, candy, and gifts. Everyone is welcome!'
   },
@@ -291,6 +338,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Courier',
     fileName: 'courier',
     faction: 'Silk Network',
+    cost: 1,
     description: 'A lightly-armored runner mid-motion, carrying sealed documents, parkour-style movement through urban environment.',
     cartoonDescription: 'A fast delivery friend zooming on roller skates, carrying wrapped presents with ribbons trailing behind.'
   },
@@ -298,6 +346,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Silk Agent',
     fileName: 'silk-agent',
     faction: 'Silk Network',
+    cost: 2,
     description: 'Diplomatic figure in fine robes with hidden weapons visible on close inspection. Charming smile, dangerous eyes.',
     cartoonDescription: 'A gift wrapper expert in a pretty outfit, surrounded by ribbons and bows, making presents beautiful.'
   },
@@ -305,6 +354,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Liquid Assets',
     fileName: 'liquid-assets',
     faction: 'Silk Network',
+    cost: 2,
     description: 'Vault scene showing organized wealth - gold bars, gems, currency from many factions. But it is mobile, ready to move.',
     cartoonDescription: 'A cute piggy bank surrounded by chocolate coins and toy gems, saving up for something special.'
   },
@@ -312,6 +362,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Diplomat Envoy',
     fileName: 'diplomat-envoy',
     faction: 'Silk Network',
+    cost: 2,
     description: 'Pair of well-dressed negotiators flanked by subtle bodyguards. The appearance of peace backed by capability for violence.',
     cartoonDescription: 'Party planners in fancy outfits, carrying clipboards and balloons, organizing the best parties ever.'
   },
@@ -319,6 +370,8 @@ const CARDS: CardPrompt[] = [
     cardName: 'Silk Base: The Exchange',
     fileName: 'silk-base-the-exchange',
     faction: 'Silk Network',
+    cost: 3,
+    isLeaderOrBase: true,
     description: 'Trading house architecture - grand hall with vaulted ceilings, information boards, but also fortified positions and guard posts.',
     cartoonDescription: 'A magical trading post decorated with golden banners, where friends come to trade toys and treasures.'
   },
@@ -326,6 +379,8 @@ const CARDS: CardPrompt[] = [
     cardName: 'Silk Leader: The Broker',
     fileName: 'silk-leader-the-broker',
     faction: 'Silk Network',
+    cost: 3,
+    isLeaderOrBase: true,
     description: 'A figure in magnificent robes, surrounded by floating holographic information displays, seeing all, knowing all. Power through knowledge.',
     cartoonDescription: 'Mayor Goldheart - a kind leader in golden robes, always making sure everyone gets fair trades and good deals.'
   },
@@ -333,6 +388,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Embassy Guard',
     fileName: 'embassy-guard',
     faction: 'Silk Network',
+    cost: 3,
     description: 'Two elite soldiers in ceremonial but functional armor, guarding embassy doors. Beauty and strength combined.',
     cartoonDescription: 'Treasure keepers - two friendly guards in shiny armor protecting a treasure chest, waving to visitors.'
   },
@@ -340,6 +396,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Golden Reserves',
     fileName: 'golden-reserves',
     faction: 'Silk Network',
+    cost: 4,
     description: 'Vast wealth in secure vaults, enough resources to fuel entire campaigns. The treasure that buys armies.',
     cartoonDescription: 'A giant treasure chest overflowing with chocolate coins, toy gems, and wonderful surprises for everyone.'
   },
@@ -349,6 +406,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Seedling Shrine',
     fileName: 'seedling-shrine',
     faction: 'Dream Garden',
+    cost: 1,
     description: 'A small sacred space, tended plants glowing with lunar light, altar of natural stone. The beginning of belief manifest.',
     cartoonDescription: 'A tiny magical garden with glowing flowers, a little fairy house, and happy butterflies visiting.'
   },
@@ -356,6 +414,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Moon Tender',
     fileName: 'moon-tender',
     faction: 'Dream Garden',
+    cost: 1,
     description: 'Robed figure kneeling, hands in soil, moonlight streaming down. Growing the sacred with patient care.',
     cartoonDescription: 'A garden helper - a cute character with a sunhat and watering can, lovingly caring for happy plants.'
   },
@@ -363,6 +422,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Dream Agent',
     fileName: 'dream-agent',
     faction: 'Dream Garden',
+    cost: 2,
     description: 'Mystic warrior with psychic energy visible as soft glows, wearing living plant armor, eyes that see beyond sight.',
     cartoonDescription: 'A flower fairy with petal wings and a flower crown, spreading seeds of happiness and making gardens bloom.'
   },
@@ -370,6 +430,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Late Bloom',
     fileName: 'late-bloom',
     faction: 'Dream Garden',
+    cost: 2,
     description: 'A flower opening for the first time, massive and beautiful, releasing spores or light. Late, but worth the wait.',
     cartoonDescription: 'A surprise flower finally blooming - the most beautiful rainbow flower, with a happy face and sparkles.'
   },
@@ -377,6 +438,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Grove Keeper',
     fileName: 'grove-keeper',
     faction: 'Dream Garden',
+    cost: 2,
     description: 'Guardian figure, half-plant half-person, staff in hand, protecting the sacred grove with absolute dedication.',
     cartoonDescription: 'A garden guard - a friendly tree person with a leaf hat, protecting all the little flowers and bugs.'
   },
@@ -384,6 +446,8 @@ const CARDS: CardPrompt[] = [
     cardName: 'Dream Base: The Grove',
     fileName: 'dream-base-the-grove',
     faction: 'Dream Garden',
+    cost: 3,
+    isLeaderOrBase: true,
     description: 'Ancient tree circle, moonlight filtering through impossible canopy, sacred ground visibly different from mundane earth.',
     cartoonDescription: 'A magical garden with a rainbow, singing flowers, dancing trees, and friendly garden creatures everywhere.'
   },
@@ -391,6 +455,8 @@ const CARDS: CardPrompt[] = [
     cardName: 'Dream Leader: Oracle Syl',
     fileName: 'dream-leader-oracle-syl',
     faction: 'Dream Garden',
+    cost: 3,
+    isLeaderOrBase: true,
     description: 'Seer figure with eyes glowing, surrounded by floating flowers and psychic energy. The garden speaks, they translate.',
     cartoonDescription: 'Wise Sunflower - a tall, kind sunflower character with glasses, knowing all about gardening and nature.'
   },
@@ -398,6 +464,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Moonrise Sanctum',
     fileName: 'moonrise-sanctum',
     faction: 'Dream Garden',
+    cost: 3,
     description: 'Temple structure grown from living trees, moonlight concentrating into visible beams, holiest of holy grounds.',
     cartoonDescription: 'A moonlight garden where flowers glow at night, fireflies dance, and everything is magical and peaceful.'
   },
@@ -405,6 +472,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'World Tree',
     fileName: 'world-tree',
     faction: 'Dream Garden',
+    cost: 4,
     description: 'Massive tree reaching from earth to sky, roots and branches supporting countless ecosystems, trunk carved with every history. The center of all growth.',
     cartoonDescription: 'The Friendship Tree - a giant tree with a tree-face smiling, branches holding all the garden friends together.'
   },
@@ -414,6 +482,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Data Fragment',
     fileName: 'data-fragment',
     faction: 'Ghost Protocol',
+    cost: 1,
     description: 'Corrupted data visualization, glitch effects, partial information floating in void space.',
     cartoonDescription: 'A fluffy cloud puff floating in the sky, soft and cute, leaving little cloud trails behind it.'
   },
@@ -421,6 +490,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Shadow Seed',
     fileName: 'shadow-seed',
     faction: 'Ghost Protocol',
+    cost: 1,
     description: 'Planting device half-digital half-physical, creating zones where reality destabilizes.',
     cartoonDescription: 'A magical dream seed that when planted grows into clouds and cotton candy.'
   },
@@ -428,6 +498,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Ghost Agent',
     fileName: 'ghost-agent',
     faction: 'Ghost Protocol',
+    cost: 2,
     description: 'Figure in tactical gear with active camouflage glitching, half-visible, digital artifacts surrounding them.',
     cartoonDescription: 'A cloud buddy - a fluffy cloud character with a happy face, floating and playing with friends.'
   },
@@ -435,6 +506,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Scorched Data',
     fileName: 'scorched-data',
     faction: 'Ghost Protocol',
+    cost: 2,
     description: 'Burning servers or files, information being destroyed, digital flames consuming data.',
     cartoonDescription: 'A disappearing act - a cute magician cloud making things vanish in a puff of sparkles. Ta-da!'
   },
@@ -442,6 +514,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Void Marker',
     fileName: 'void-marker',
     faction: 'Ghost Protocol',
+    cost: 2,
     description: 'Device creating dead zones, EMPs and signal nullification made visible, reality desaturating around it.',
     cartoonDescription: 'A hide spot - a cozy cloud fort perfect for playing hide and seek with friends.'
   },
@@ -449,6 +522,8 @@ const CARDS: CardPrompt[] = [
     cardName: 'Ghost Base: The Archive',
     fileName: 'ghost-base-the-archive',
     faction: 'Ghost Protocol',
+    cost: 3,
+    isLeaderOrBase: true,
     description: 'Server room aesthetic, endless data banks, but also shadows that move wrong, information that manifests physically.',
     cartoonDescription: 'A cloud castle floating in the sky, soft and fluffy, with slide-clouds and bounce-clouds for playing.'
   },
@@ -456,6 +531,8 @@ const CARDS: CardPrompt[] = [
     cardName: 'Ghost Leader: Specter',
     fileName: 'ghost-leader-specter',
     faction: 'Ghost Protocol',
+    cost: 3,
+    isLeaderOrBase: true,
     description: 'Figure that is barely there, glitching between states, commanding information warfare with a gesture.',
     cartoonDescription: 'Captain Whisper - a gentle cloud leader who speaks softly, telling bedtime stories and lullabies.'
   },
@@ -463,6 +540,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Deep Cover Cell',
     fileName: 'deep-cover-cell',
     faction: 'Ghost Protocol',
+    cost: 3,
     description: 'Three agents in infiltration gear, faces obscured, blending into shadows and data streams, everywhere and nowhere.',
     cartoonDescription: 'Secret friends - three cloud buddies playing hide and seek, giggling behind fluffy cloud hideouts.'
   },
@@ -470,6 +548,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Erasure Protocol',
     fileName: 'erasure-protocol',
     faction: 'Ghost Protocol',
+    cost: 4,
     description: 'Scene of massive data destruction, everything being deleted, wiped, made as if it never was. Information death at scale.',
     cartoonDescription: 'Naptime magic - clouds creating a cozy sleepy atmosphere, tucking everyone in for sweet dreams.'
   },
@@ -479,6 +558,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Hidden Cache',
     fileName: 'hidden-cache',
     faction: 'General',
+    cost: 0,
     description: 'Crate or buried supplies, unmarked, utilitarian. Resources waiting to be claimed.',
     cartoonDescription: 'A secret box hiding fun surprises - toys, treats, and treasures wrapped in rainbow paper.'
   },
@@ -486,6 +566,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Supply Cache',
     fileName: 'supply-cache',
     faction: 'General',
+    cost: 1,
     description: 'Military supply drop, parachute still attached, crates of equipment ready for use.',
     cartoonDescription: 'A treasure drop from the sky - boxes with parachutes bringing presents and supplies for everyone.'
   },
@@ -493,6 +574,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Forward Outpost',
     fileName: 'forward-outpost',
     faction: 'General',
+    cost: 1,
     description: 'Fortified position, sandbags and barriers, flag flying, tactical location secured.',
     cartoonDescription: 'An adventure camp with a flag, campfire, and cozy tent, ready for exciting explorations.'
   },
@@ -500,6 +582,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Stolen Plans',
     fileName: 'stolen-plans',
     faction: 'General',
+    cost: 1,
     description: 'Document folder or data drive, faction symbols crossed out, being traded in shadows.',
     cartoonDescription: 'A treasure map with an X marks the spot, leading to fun adventures and hidden surprises.'
   },
@@ -507,6 +590,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Scorched Earth',
     fileName: 'scorched-earth',
     faction: 'General',
+    cost: 1,
     description: 'Burned landscape, destroyed resources, denial warfare. Nothing left for the enemy.',
     cartoonDescription: 'Cleanup time - friendly helpers with brooms and dustpans, making everything tidy and nice again.'
   },
@@ -514,6 +598,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Fortification',
     fileName: 'fortification',
     faction: 'General',
+    cost: 2,
     description: 'Defensive structure, heavy walls, gun emplacements, built to withstand siege.',
     cartoonDescription: 'A pillow fort - the coziest, most amazing blanket and pillow fort ever built!'
   },
@@ -521,6 +606,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Mercenary Squad',
     fileName: 'mercenary-squad',
     faction: 'General',
+    cost: 2,
     description: 'Professional soldiers in mismatched gear, well-equipped, battle-scarred. They fight for pay but they fight well.',
     cartoonDescription: 'A helper team - a group of friendly characters ready to lend a hand with any task or adventure.'
   },
@@ -528,6 +614,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Veteran Captain',
     fileName: 'veteran-captain',
     faction: 'General',
+    cost: 2,
     description: 'Single elite soldier, decorated armor, commanding presence. The professional who has seen it all.',
     cartoonDescription: 'A wise leader - a kind character with a special badge, always knowing the best adventures to go on.'
   },
@@ -535,6 +622,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Ancient Ruin',
     fileName: 'ancient-ruin',
     faction: 'General',
+    cost: 2,
     description: 'Pre-war structure, fragments of all factions visible in architecture, mystery in its purpose.',
     cartoonDescription: 'An old playground - a charming, mossy play structure with slides and swings, full of character.'
   },
@@ -542,6 +630,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Adaptable Doctrine',
     fileName: 'adaptable-doctrine',
     faction: 'General',
+    cost: 3,
     description: 'Training manual or tactical display showing multiple faction strategies being synthesized.',
     cartoonDescription: 'A how-to book with colorful pages showing how to do fun crafts and helpful activities.'
   },
@@ -549,6 +638,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Wild Tech',
     fileName: 'wild-tech',
     faction: 'General',
+    cost: 3,
     description: 'Experimental device combining technologies from multiple factions, unstable but powerful.',
     cartoonDescription: 'A magic gadget covered in buttons, lights, and spinning parts - it does amazing surprising things!'
   },
@@ -556,6 +646,7 @@ const CARDS: CardPrompt[] = [
     cardName: 'Grand Arsenal',
     fileName: 'grand-arsenal',
     faction: 'General',
+    cost: 4,
     description: 'Massive weapons cache, equipment from every faction, enough firepower to equip an army.',
     cartoonDescription: 'A toy warehouse filled with every kind of toy imaginable - balls, dolls, games, and crafts!'
   }
@@ -566,7 +657,9 @@ function buildPrompt(card: CardPrompt, isCartoon: boolean): string {
   const description = isCartoon && card.cartoonDescription
     ? card.cartoonDescription
     : card.description;
-  return `${STYLE_PREFIX} ${factionTheme} ${description}`;
+  const scaleModifier = SCALE_MODIFIERS[card.cost] || SCALE_MODIFIERS[2];
+  const leaderBaseExtra = card.isLeaderOrBase ? ` ${LEADER_BASE_MODIFIER}` : '';
+  return `${STYLE_PREFIX} ${factionTheme} ${description} ${scaleModifier}${leaderBaseExtra}`;
 }
 
 function sleep(ms: number): Promise<void> {
