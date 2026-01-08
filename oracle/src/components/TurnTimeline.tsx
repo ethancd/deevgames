@@ -36,25 +36,23 @@ export function TurnTimeline({ turnQueue, currentTurnIndex, enemies }: TurnTimel
 
   return (
     <div className="mb-6">
-      {/* Current Turn Indicator - FIXED HEIGHT */}
+      {/* Current Turn Indicator */}
       <div
         className={`
           text-center py-4 px-6 rounded-xl border-2 font-bold text-lg mb-4
-          transition-colors duration-300 min-h-[4rem] flex items-center justify-center
+          transition-colors duration-300
           ${isPlayerTurn
             ? 'bg-blue-900/40 border-blue-600/60 text-blue-300'
             : 'bg-red-900/40 border-red-600/60 text-red-300'
           }
         `}
       >
-        <span className="inline-block w-full">
-          {isPlayerTurn ? 'YOUR TURN' : `${getEntityName(currentTurn).toUpperCase()}'S TURN`}
-          {!isPlayerTurn && <span className="ml-2">⏳</span>}
-        </span>
+        {isPlayerTurn ? 'YOUR TURN' : `${getEntityName(currentTurn).toUpperCase()}'S TURN`}
+        {!isPlayerTurn && <span className="ml-2">⏳</span>}
       </div>
 
-      {/* Upcoming Turns Timeline - FIXED HEIGHT */}
-      <div className="bg-stone-900/40 border border-stone-700/50 rounded-lg p-3 min-h-[5rem]">
+      {/* Upcoming Turns Timeline */}
+      <div className="bg-stone-900/40 border border-stone-700/50 rounded-lg p-3">
         <div className="text-xs text-stone-500 mb-2 font-bold uppercase tracking-wider">
           Turn Order
         </div>
@@ -70,7 +68,6 @@ export function TurnTimeline({ turnQueue, currentTurnIndex, enemies }: TurnTimel
                 key={`${turn.entityId}-${idx}`}
                 className={`
                   flex-1 text-center py-2 px-2 rounded-lg border-2 transition-all duration-300
-                  min-h-[3rem] flex flex-col items-center justify-center
                   ${isCurrent
                     ? isPlayer
                       ? 'bg-blue-900/60 border-blue-500 scale-105'

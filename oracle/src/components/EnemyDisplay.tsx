@@ -20,7 +20,6 @@ export function EnemyDisplay({ enemy, onAttack, isPlayerTurn, damageAnimation }:
         disabled={!isPlayerTurn || isDead}
         className={`
           w-full p-6 rounded-xl border-2 transition-all duration-200
-          min-h-[7.5rem] flex flex-col justify-center
           ${isDead
             ? 'bg-stone-900/30 border-stone-800/30 opacity-40'
             : isPlayerTurn
@@ -29,12 +28,10 @@ export function EnemyDisplay({ enemy, onAttack, isPlayerTurn, damageAnimation }:
           }
         `}
       >
-        {/* Name - Fixed height */}
-        <div className="text-xl font-bold mb-3 text-red-300 min-h-[1.75rem] flex items-center justify-center">
+        <div className="text-xl font-bold mb-3 text-red-300">
           {enemy.name}
         </div>
 
-        {/* HP Bar - Fixed height */}
         <div className="w-full bg-stone-900/60 rounded-full h-6 mb-2 overflow-hidden">
           <div
             className="bg-gradient-to-r from-red-600 to-red-500 h-full transition-all duration-300 flex items-center justify-center text-sm font-bold"
@@ -48,10 +45,11 @@ export function EnemyDisplay({ enemy, onAttack, isPlayerTurn, damageAnimation }:
           </div>
         </div>
 
-        {/* Status text - Fixed height */}
-        <div className="text-stone-500 font-bold text-sm min-h-[1.25rem] flex items-center justify-center">
-          {isDead && '☠ DEFEATED ☠'}
-        </div>
+        {isDead && (
+          <div className="text-stone-500 font-bold text-sm">
+            ☠ DEFEATED ☠
+          </div>
+        )}
       </button>
 
       {damageAnimation && (
