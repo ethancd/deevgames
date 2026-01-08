@@ -158,6 +158,17 @@ h1, h2, h3 {
   }
 }
 
+@keyframes damageFloat {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) translateY(-50px);
+  }
+}
+
 .animate-fadeIn {
   animation: fadeIn 0.4s ease-out;
 }
@@ -168,6 +179,10 @@ h1, h2, h3 {
 
 .animate-glow {
   animation: glow 2s ease-in-out infinite;
+}
+
+.animate-damage-float {
+  animation: damageFloat 1s ease-out forwards;
 }
 
 /* Custom scrollbar */
