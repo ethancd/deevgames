@@ -103,13 +103,6 @@ export function CombatScreen() {
             damageAnimation={getDamageAnimation('player')}
           />
         </div>
-
-        {/* Instructions */}
-        {playerTurn && (
-          <div className="text-center text-sm text-blue-400 animate-pulse">
-            👆 Tap an enemy to attack!
-          </div>
-        )}
       </div>
     </div>
   );
