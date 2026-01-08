@@ -538,7 +538,7 @@ describe('Layout Invariance - Enemy to Player Spacing', () => {
 });
 
 describe('Layout Invariance - Computed Styles', () => {
-  it('enemy buttons have explicit minimum height in computed styles', () => {
+  it('enemy buttons have explicit fixed height in computed styles', () => {
     const enemy = { id: 'e1', type: 'enemy' as const, name: 'Test', hp: 10, maxHP: 20 };
     const { container } = render(
       <EnemyDisplay enemy={enemy} onAttack={() => {}} isPlayerTurn={true} />
@@ -547,30 +547,30 @@ describe('Layout Invariance - Computed Styles', () => {
     const button = container.querySelector('button');
     expect(button).toBeTruthy();
 
-    // Check computed style has an explicit min-height value
+    // Check computed style has an explicit height value
     const computedStyle = window.getComputedStyle(button!);
-    const minHeight = computedStyle.minHeight;
+    const height = computedStyle.height;
 
-    // Should have a numeric min-height value (not 'auto' or '0px')
-    expect(minHeight).not.toBe('auto');
-    expect(minHeight).not.toBe('0px');
-    expect(parseFloat(minHeight)).toBeGreaterThan(0);
+    // Should have a numeric height value (not 'auto' or '0px')
+    expect(height).not.toBe('auto');
+    expect(height).not.toBe('0px');
+    expect(parseFloat(height)).toBeGreaterThan(0);
   });
 
-  it('player display has explicit minimum height in computed styles', () => {
+  it('player display has explicit fixed height in computed styles', () => {
     const player = { id: 'player', type: 'player' as const, hp: 30, maxHP: 50 };
     const { container } = render(<PlayerDisplay player={player} />);
 
     const playerDiv = container.querySelector('div');
     expect(playerDiv).toBeTruthy();
 
-    // Check computed style has an explicit min-height value
+    // Check computed style has an explicit height value
     const computedStyle = window.getComputedStyle(playerDiv!);
-    const minHeight = computedStyle.minHeight;
+    const height = computedStyle.height;
 
-    // Should have a numeric min-height value (not 'auto' or '0px')
-    expect(minHeight).not.toBe('auto');
-    expect(minHeight).not.toBe('0px');
-    expect(parseFloat(minHeight)).toBeGreaterThan(0);
+    // Should have a numeric height value (not 'auto' or '0px')
+    expect(height).not.toBe('auto');
+    expect(height).not.toBe('0px');
+    expect(parseFloat(height)).toBeGreaterThan(0);
   });
 });

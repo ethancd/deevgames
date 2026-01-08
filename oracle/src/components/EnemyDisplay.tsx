@@ -18,7 +18,7 @@ export function EnemyDisplay({ enemy, onAttack, isPlayerTurn, damageAnimation }:
       <button
         onClick={onAttack}
         disabled={!isPlayerTurn || isDead}
-        style={{ minHeight: '7.5rem', minWidth: '12rem' }}
+        style={{ height: '7.5rem', minWidth: '12rem' }}
         className={`
           w-full p-6 rounded-xl border-2 transition-all duration-200
           flex flex-col justify-center
@@ -35,18 +35,18 @@ export function EnemyDisplay({ enemy, onAttack, isPlayerTurn, damageAnimation }:
           {enemy.name}
         </div>
 
-        {/* HP Bar - Fixed height */}
-        <div className="w-full bg-stone-900/60 rounded-full h-6 mb-2 overflow-hidden">
+        {/* HP Bar - Fixed height with text overlay */}
+        <div className="w-full bg-stone-900/60 rounded-full h-6 mb-2 overflow-hidden relative">
           <div
-            className="bg-gradient-to-r from-red-600 to-red-500 h-full transition-all duration-300 flex items-center justify-center text-sm font-bold"
+            className="bg-gradient-to-r from-red-600 to-red-500 h-full transition-all duration-300"
             style={{ width: `${hpPercentage}%` }}
-          >
-            {enemy.hp > 0 && (
-              <span className="text-white drop-shadow-lg">
-                {enemy.hp} / {enemy.maxHP}
-              </span>
-            )}
-          </div>
+          />
+          {/* HP text positioned absolutely so it doesn't affect bar width */}
+          {enemy.hp > 0 && (
+            <span className="absolute inset-0 flex items-center justify-center text-sm font-bold text-white drop-shadow-lg">
+              {enemy.hp} / {enemy.maxHP}
+            </span>
+          )}
         </div>
 
         {/* Status text - Fixed height */}
