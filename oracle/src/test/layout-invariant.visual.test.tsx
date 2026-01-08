@@ -51,6 +51,33 @@ describe('Layout Invariance - Enemy Display', () => {
     expect(lowHPButton?.classList.contains('min-h-[7.5rem]')).toBe(true);
   });
 
+  it('enemy HP numbers of different widths maintain stable layout', () => {
+    // Test single-digit vs double-digit HP display
+    const singleDigit = createEnemy(5, 20);
+    const doubleDigit = createEnemy(18, 20);
+
+    const { container: single } = render(
+      <EnemyDisplay enemy={singleDigit} onAttack={() => {}} isPlayerTurn={true} />
+    );
+
+    const { container: double } = render(
+      <EnemyDisplay enemy={doubleDigit} onAttack={() => {}} isPlayerTurn={true} />
+    );
+
+    const singleButton = single.querySelector('button');
+    const doubleButton = double.querySelector('button');
+
+    // Both should have same fixed height regardless of number width
+    expect(singleButton?.classList.contains('min-h-[7.5rem]')).toBe(true);
+    expect(doubleButton?.classList.contains('min-h-[7.5rem]')).toBe(true);
+
+    // HP bar container should have fixed height
+    const singleHPBar = single.querySelector('[class*="h-6"]');
+    const doubleHPBar = double.querySelector('[class*="h-6"]');
+    expect(singleHPBar).toBeTruthy();
+    expect(doubleHPBar).toBeTruthy();
+  });
+
   it('enemy alive vs defeated should maintain same height', () => {
     const aliveEnemy = createEnemy(10);
     const deadEnemy = createEnemy(0);
@@ -68,6 +95,32 @@ describe('Layout Invariance - Enemy Display', () => {
 
     expect(aliveButton?.classList.contains('min-h-[7.5rem]')).toBe(true);
     expect(deadButton?.classList.contains('min-h-[7.5rem]')).toBe(true);
+  });
+
+  it('enemy with different name lengths maintain stable layout', () => {
+    const shortName = { ...createEnemy(15), name: 'Rat' };
+    const longName = { ...createEnemy(15), name: 'Ancient Dragon' };
+
+    const { container: short } = render(
+      <EnemyDisplay enemy={shortName} onAttack={() => {}} isPlayerTurn={true} />
+    );
+
+    const { container: long } = render(
+      <EnemyDisplay enemy={longName} onAttack={() => {}} isPlayerTurn={true} />
+    );
+
+    const shortButton = short.querySelector('button');
+    const longButton = long.querySelector('button');
+
+    // Both maintain fixed height despite name length variation
+    expect(shortButton?.classList.contains('min-h-[7.5rem]')).toBe(true);
+    expect(longButton?.classList.contains('min-h-[7.5rem]')).toBe(true);
+
+    // Name container has min-height
+    const shortNameContainer = short.querySelector('[class*="min-h-[1.75rem]"]');
+    const longNameContainer = long.querySelector('[class*="min-h-[1.75rem]"]');
+    expect(shortNameContainer).toBeTruthy();
+    expect(longNameContainer).toBeTruthy();
   });
 });
 
