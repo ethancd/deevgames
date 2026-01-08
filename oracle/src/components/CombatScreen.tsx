@@ -64,10 +64,10 @@ export function CombatScreen() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-stone-950 to-stone-900">
-      <div className="max-w-md w-full space-y-6">
+      <div className="max-w-md w-full" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold mb-2 text-amber-400" style={{ fontFamily: 'Cinzel, serif' }}>
+        <div className="text-center">
+          <h1 className="text-4xl font-bold text-amber-400" style={{ fontFamily: 'Cinzel, serif', marginBottom: '0.5rem' }}>
             ⚔ Oracle of Delve ⚔
           </h1>
           <p className="text-sm text-stone-500">V0 - Combat Prototype</p>
@@ -81,21 +81,23 @@ export function CombatScreen() {
         />
 
         {/* Enemies */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <h2 className="text-center text-lg font-bold text-red-400 mb-2">ENEMIES</h2>
-          {combatState.enemies.map(enemy => (
-            <EnemyDisplay
-              key={enemy.id}
-              enemy={enemy}
-              onAttack={() => actions.playerAttack(enemy.id)}
-              isPlayerTurn={playerTurn}
-              damageAnimation={getDamageAnimation(enemy.id)}
-            />
-          ))}
+        <div>
+          <h2 className="text-center text-lg font-bold text-red-400" style={{ marginBottom: '0.5rem' }}>ENEMIES</h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            {combatState.enemies.map(enemy => (
+              <EnemyDisplay
+                key={enemy.id}
+                enemy={enemy}
+                onAttack={() => actions.playerAttack(enemy.id)}
+                isPlayerTurn={playerTurn}
+                damageAnimation={getDamageAnimation(enemy.id)}
+              />
+            ))}
+          </div>
         </div>
 
         {/* Player */}
-        <div className="pt-4">
+        <div style={{ paddingTop: '1rem' }}>
           <PlayerDisplay
             player={combatState.player}
             damageAnimation={getDamageAnimation('player')}

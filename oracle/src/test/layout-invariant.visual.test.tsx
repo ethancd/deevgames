@@ -404,6 +404,139 @@ describe('Layout Invariance - Enemy List Spacing', () => {
   });
 });
 
+describe('Layout Invariance - Enemy to Player Spacing', () => {
+  const createEnemy = (id: string, name: string, hp: number, maxHP: number = 20): Enemy => ({
+    id,
+    type: 'enemy',
+    name,
+    hp,
+    maxHP,
+  });
+
+  const createPlayer = (hp: number, maxHP: number = 50): Player => ({
+    id: 'player',
+    type: 'player',
+    hp,
+    maxHP,
+  });
+
+  // Helper to render enemies + player in a layout (simulating CombatScreen)
+  const CombatLayout = ({
+    enemies,
+    player,
+    isPlayerTurn
+  }: {
+    enemies: Enemy[];
+    player: Player;
+    isPlayerTurn: boolean;
+  }) => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }} data-testid="combat-layout">
+      {/* Enemies section */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }} data-testid="enemy-section">
+        {enemies.map(enemy => (
+          <EnemyDisplay
+            key={enemy.id}
+            enemy={enemy}
+            onAttack={() => {}}
+            isPlayerTurn={isPlayerTurn}
+          />
+        ))}
+      </div>
+
+      {/* Player section */}
+      <div style={{ paddingTop: '1rem' }} data-testid="player-section">
+        <PlayerDisplay player={player} />
+      </div>
+    </div>
+  );
+
+  it('spacing between enemies and player stays constant regardless of enemy HP', () => {
+    const fullHPEnemies = [
+      createEnemy('e1', 'Goblin', 20, 20),
+      createEnemy('e2', 'Orc', 30, 30),
+    ];
+    const lowHPEnemies = [
+      createEnemy('e1', 'Goblin', 3, 20),
+      createEnemy('e2', 'Orc', 0, 30),  // Dead
+    ];
+    const player = createPlayer(50);
+
+    const { container: fullHP } = render(
+      <CombatLayout enemies={fullHPEnemies} player={player} isPlayerTurn={true} />
+    );
+    const { container: lowHP } = render(
+      <CombatLayout enemies={lowHPEnemies} player={player} isPlayerTurn={true} />
+    );
+
+    // Get the last enemy button and player div in each
+    const fullHPEnemyButtons = fullHP.querySelectorAll('[data-testid="enemy-section"] button');
+    const lowHPEnemyButtons = lowHP.querySelectorAll('[data-testid="enemy-section"] button');
+    const fullHPPlayer = fullHP.querySelector('[data-testid="player-section"] > div');
+    const lowHPPlayer = lowHP.querySelector('[data-testid="player-section"] > div');
+
+    const lastFullHPEnemy = fullHPEnemyButtons[fullHPEnemyButtons.length - 1];
+    const lastLowHPEnemy = lowHPEnemyButtons[lowHPEnemyButtons.length - 1];
+
+    // Calculate gap between last enemy and player
+    const fullHPGap = fullHPPlayer!.getBoundingClientRect().top -
+                      lastFullHPEnemy.getBoundingClientRect().bottom;
+    const lowHPGap = lowHPPlayer!.getBoundingClientRect().top -
+                     lastLowHPEnemy.getBoundingClientRect().bottom;
+
+    expect(fullHPGap).toBe(lowHPGap);
+  });
+
+  it('spacing between enemies and player stays constant regardless of player HP', () => {
+    const enemies = [createEnemy('e1', 'Goblin', 15, 20)];
+    const fullHPPlayer = createPlayer(50, 50);
+    const lowHPPlayer = createPlayer(10, 50);
+    const deadPlayer = createPlayer(0, 50);
+
+    const { container: fullHP } = render(
+      <CombatLayout enemies={enemies} player={fullHPPlayer} isPlayerTurn={true} />
+    );
+    const { container: lowHP } = render(
+      <CombatLayout enemies={enemies} player={lowHPPlayer} isPlayerTurn={true} />
+    );
+    const { container: dead } = render(
+      <CombatLayout enemies={enemies} player={deadPlayer} isPlayerTurn={false} />
+    );
+
+    const getGap = (container: Element) => {
+      const enemyButton = container.querySelector('[data-testid="enemy-section"] button');
+      const playerDiv = container.querySelector('[data-testid="player-section"] > div');
+      return playerDiv!.getBoundingClientRect().top - enemyButton!.getBoundingClientRect().bottom;
+    };
+
+    const fullHPGap = getGap(fullHP);
+    const lowHPGap = getGap(lowHP);
+    const deadGap = getGap(dead);
+
+    expect(fullHPGap).toBe(lowHPGap);
+    expect(fullHPGap).toBe(deadGap);
+  });
+
+  it('combat layout has explicit gap between sections in computed styles', () => {
+    const enemies = [createEnemy('e1', 'Goblin', 20, 20)];
+    const player = createPlayer(50);
+
+    const { container } = render(
+      <CombatLayout enemies={enemies} player={player} isPlayerTurn={true} />
+    );
+
+    const layout = container.querySelector('[data-testid="combat-layout"]');
+    expect(layout).toBeTruthy();
+
+    const computedStyle = window.getComputedStyle(layout!);
+    const gap = computedStyle.gap || computedStyle.rowGap;
+
+    // Should have an explicit gap value
+    expect(gap).not.toBe('normal');
+    expect(gap).not.toBe('0px');
+    expect(parseFloat(gap)).toBeGreaterThan(0);
+  });
+});
+
 describe('Layout Invariance - Computed Styles', () => {
   it('enemy buttons have explicit minimum height in computed styles', () => {
     const enemy = { id: 'e1', type: 'enemy' as const, name: 'Test', hp: 10, maxHP: 20 };
