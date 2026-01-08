@@ -81,7 +81,7 @@ export function CombatScreen() {
         />
 
         {/* Enemies */}
-        <div className="space-y-4">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <h2 className="text-center text-lg font-bold text-red-400 mb-2">ENEMIES</h2>
           {combatState.enemies.map(enemy => (
             <EnemyDisplay

@@ -265,6 +265,145 @@ describe('Layout Invariance - Turn Timeline', () => {
   });
 });
 
+describe('Layout Invariance - Enemy List Spacing', () => {
+  const createEnemy = (id: string, name: string, hp: number, maxHP: number = 20): Enemy => ({
+    id,
+    type: 'enemy',
+    name,
+    hp,
+    maxHP,
+  });
+
+  // Helper to render a list of enemies in a container (simulating CombatScreen layout)
+  const EnemyList = ({ enemies, isPlayerTurn }: { enemies: Enemy[]; isPlayerTurn: boolean }) => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }} data-testid="enemy-list">
+      {enemies.map(enemy => (
+        <EnemyDisplay
+          key={enemy.id}
+          enemy={enemy}
+          onAttack={() => {}}
+          isPlayerTurn={isPlayerTurn}
+        />
+      ))}
+    </div>
+  );
+
+  it('spacing between enemies stays constant regardless of HP values', () => {
+    const fullHPEnemies = [
+      createEnemy('e1', 'Goblin', 20, 20),
+      createEnemy('e2', 'Orc', 30, 30),
+      createEnemy('e3', 'Troll', 40, 40),
+    ];
+
+    const mixedHPEnemies = [
+      createEnemy('e1', 'Goblin', 5, 20),   // Low HP
+      createEnemy('e2', 'Orc', 0, 30),      // Dead
+      createEnemy('e3', 'Troll', 40, 40),   // Full HP
+    ];
+
+    const { container: fullHP } = render(<EnemyList enemies={fullHPEnemies} isPlayerTurn={true} />);
+    const { container: mixedHP } = render(<EnemyList enemies={mixedHPEnemies} isPlayerTurn={true} />);
+
+    // Get all enemy buttons in each list
+    const fullHPButtons = fullHP.querySelectorAll('button');
+    const mixedHPButtons = mixedHP.querySelectorAll('button');
+
+    expect(fullHPButtons.length).toBe(3);
+    expect(mixedHPButtons.length).toBe(3);
+
+    // Calculate gaps between consecutive enemies
+    const getGaps = (buttons: NodeListOf<Element>) => {
+      const gaps: number[] = [];
+      for (let i = 0; i < buttons.length - 1; i++) {
+        const current = buttons[i].getBoundingClientRect();
+        const next = buttons[i + 1].getBoundingClientRect();
+        // Gap = top of next element - bottom of current element
+        gaps.push(next.top - current.bottom);
+      }
+      return gaps;
+    };
+
+    const fullHPGaps = getGaps(fullHPButtons);
+    const mixedHPGaps = getGaps(mixedHPButtons);
+
+    // All gaps should be equal within each list
+    expect(fullHPGaps[0]).toBe(fullHPGaps[1]);
+    expect(mixedHPGaps[0]).toBe(mixedHPGaps[1]);
+
+    // Gaps should be the same between both lists
+    expect(fullHPGaps[0]).toBe(mixedHPGaps[0]);
+    expect(fullHPGaps[1]).toBe(mixedHPGaps[1]);
+  });
+
+  it('spacing between enemies stays constant regardless of turn state', () => {
+    const enemies = [
+      createEnemy('e1', 'Goblin', 15, 20),
+      createEnemy('e2', 'Orc', 25, 30),
+    ];
+
+    const { container: playerTurn } = render(<EnemyList enemies={enemies} isPlayerTurn={true} />);
+    const { container: enemyTurn } = render(<EnemyList enemies={enemies} isPlayerTurn={false} />);
+
+    const playerTurnButtons = playerTurn.querySelectorAll('button');
+    const enemyTurnButtons = enemyTurn.querySelectorAll('button');
+
+    // Calculate gap between the two enemies
+    const playerTurnGap = playerTurnButtons[1].getBoundingClientRect().top -
+                          playerTurnButtons[0].getBoundingClientRect().bottom;
+    const enemyTurnGap = enemyTurnButtons[1].getBoundingClientRect().top -
+                         enemyTurnButtons[0].getBoundingClientRect().bottom;
+
+    // Gap should be the same regardless of turn state
+    expect(playerTurnGap).toBe(enemyTurnGap);
+  });
+
+  it('spacing between enemies stays constant with different name lengths', () => {
+    const shortNames = [
+      createEnemy('e1', 'Rat', 10, 20),
+      createEnemy('e2', 'Bat', 10, 20),
+    ];
+
+    const longNames = [
+      createEnemy('e1', 'Ancient Dragon', 10, 20),
+      createEnemy('e2', 'Skeleton Warrior', 10, 20),
+    ];
+
+    const { container: shortContainer } = render(<EnemyList enemies={shortNames} isPlayerTurn={true} />);
+    const { container: longContainer } = render(<EnemyList enemies={longNames} isPlayerTurn={true} />);
+
+    const shortButtons = shortContainer.querySelectorAll('button');
+    const longButtons = longContainer.querySelectorAll('button');
+
+    const shortGap = shortButtons[1].getBoundingClientRect().top -
+                     shortButtons[0].getBoundingClientRect().bottom;
+    const longGap = longButtons[1].getBoundingClientRect().top -
+                    longButtons[0].getBoundingClientRect().bottom;
+
+    // Gap should be the same regardless of name length
+    expect(shortGap).toBe(longGap);
+  });
+
+  it('enemy list container has explicit gap in computed styles', () => {
+    const enemies = [
+      createEnemy('e1', 'Goblin', 20, 20),
+      createEnemy('e2', 'Orc', 30, 30),
+    ];
+
+    const { container } = render(<EnemyList enemies={enemies} isPlayerTurn={true} />);
+    const list = container.querySelector('[data-testid="enemy-list"]');
+
+    expect(list).toBeTruthy();
+
+    const computedStyle = window.getComputedStyle(list!);
+    const gap = computedStyle.gap || computedStyle.rowGap;
+
+    // Should have an explicit gap value (not '0px' or 'normal')
+    expect(gap).not.toBe('normal');
+    expect(gap).not.toBe('0px');
+    expect(parseFloat(gap)).toBeGreaterThan(0);
+  });
+});
+
 describe('Layout Invariance - Computed Styles', () => {
   it('enemy buttons have explicit minimum height in computed styles', () => {
     const enemy = { id: 'e1', type: 'enemy' as const, name: 'Test', hp: 10, maxHP: 20 };
