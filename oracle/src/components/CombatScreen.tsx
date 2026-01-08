@@ -3,13 +3,12 @@
 import { useCombatState } from '../hooks/useCombatState';
 import { EnemyDisplay } from './EnemyDisplay';
 import { PlayerDisplay } from './PlayerDisplay';
-import { TurnIndicator } from './TurnIndicator';
-import { isPlayerTurn, getCurrentTurn } from '../game/combat';
+import { TurnTimeline } from './TurnTimeline';
+import { isPlayerTurn } from '../game/combat';
 
 export function CombatScreen() {
   const { combatState, actions } = useCombatState();
 
-  const currentTurn = getCurrentTurn(combatState);
   const playerTurn = isPlayerTurn(combatState);
 
   // Find damage animations for specific entities
@@ -20,21 +19,26 @@ export function CombatScreen() {
   if (combatState.phase === 'victory') {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
-        <div className="bg-green-950/60 border-2 border-green-600/60 rounded-xl p-12 max-w-md w-full text-center">
-          <h1 className="text-5xl font-bold mb-6 text-green-400">
+        <div className="bg-green-950/60 border-2 border-green-600/60 rounded-xl p-12 max-w-md w-full text-center min-h-[20rem] flex flex-col justify-center">
+          {/* Title - Fixed height to match game title */}
+          <h1 className="text-5xl font-bold mb-6 text-green-400 min-h-[3.5rem] flex items-center justify-center">
             ⚔ VICTORY! ⚔
           </h1>
-          <p className="text-xl mb-8 text-green-300">
+          {/* Message - Fixed height */}
+          <p className="text-xl mb-8 text-green-300 min-h-[2rem]">
             You have defeated all enemies!
           </p>
-          <button
-            onClick={actions.restart}
-            className="bg-gradient-to-r from-green-700 to-green-600 hover:from-green-600 hover:to-green-500
-                     px-8 py-4 rounded-lg text-xl font-bold transition-all duration-200
-                     border-2 border-green-500 hover:scale-105 active:scale-95"
-          >
-            Play Again
-          </button>
+          {/* Button - Fixed height */}
+          <div className="flex justify-center min-h-[4rem] items-center">
+            <button
+              onClick={actions.restart}
+              className="bg-gradient-to-r from-green-700 to-green-600 hover:from-green-600 hover:to-green-500
+                       px-8 py-4 rounded-lg text-xl font-bold transition-all duration-200
+                       border-2 border-green-500 hover:scale-105 active:scale-95"
+            >
+              Play Again
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -43,21 +47,26 @@ export function CombatScreen() {
   if (combatState.phase === 'defeat') {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
-        <div className="bg-red-950/60 border-2 border-red-600/60 rounded-xl p-12 max-w-md w-full text-center">
-          <h1 className="text-5xl font-bold mb-6 text-red-400">
+        <div className="bg-red-950/60 border-2 border-red-600/60 rounded-xl p-12 max-w-md w-full text-center min-h-[20rem] flex flex-col justify-center">
+          {/* Title - Fixed height to match game title */}
+          <h1 className="text-5xl font-bold mb-6 text-red-400 min-h-[3.5rem] flex items-center justify-center">
             ☠ DEFEAT ☠
           </h1>
-          <p className="text-xl mb-8 text-red-300">
+          {/* Message - Fixed height */}
+          <p className="text-xl mb-8 text-red-300 min-h-[2rem]">
             You have been slain...
           </p>
-          <button
-            onClick={actions.restart}
-            className="bg-gradient-to-r from-red-700 to-red-600 hover:from-red-600 hover:to-red-500
-                     px-8 py-4 rounded-lg text-xl font-bold transition-all duration-200
-                     border-2 border-red-500 hover:scale-105 active:scale-95"
-          >
-            Try Again
-          </button>
+          {/* Button - Fixed height */}
+          <div className="flex justify-center min-h-[4rem] items-center">
+            <button
+              onClick={actions.restart}
+              className="bg-gradient-to-r from-red-700 to-red-600 hover:from-red-600 hover:to-red-500
+                       px-8 py-4 rounded-lg text-xl font-bold transition-all duration-200
+                       border-2 border-red-500 hover:scale-105 active:scale-95"
+            >
+              Try Again
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -66,16 +75,20 @@ export function CombatScreen() {
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-stone-950 to-stone-900">
       <div className="max-w-md w-full space-y-6">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold mb-2 text-amber-400" style={{ fontFamily: 'Cinzel, serif' }}>
+        {/* Header - Fixed height */}
+        <div className="text-center mb-8 min-h-[5rem] flex flex-col justify-center">
+          <h1 className="text-4xl font-bold mb-2 text-amber-400 min-h-[3rem] flex items-center justify-center" style={{ fontFamily: 'Cinzel, serif' }}>
             ⚔ Oracle of Delve ⚔
           </h1>
-          <p className="text-sm text-stone-500">V0 - Combat Prototype</p>
+          <p className="text-sm text-stone-500 min-h-[1.25rem]">V0 - Combat Prototype</p>
         </div>
 
-        {/* Turn Indicator */}
-        <TurnIndicator currentTurn={currentTurn} enemies={combatState.enemies} />
+        {/* Turn Timeline */}
+        <TurnTimeline
+          turnQueue={combatState.turnQueue}
+          currentTurnIndex={combatState.currentTurnIndex}
+          enemies={combatState.enemies}
+        />
 
         {/* Enemies */}
         <div className="space-y-4">
@@ -99,12 +112,14 @@ export function CombatScreen() {
           />
         </div>
 
-        {/* Instructions */}
-        {playerTurn && (
-          <div className="text-center text-sm text-blue-400 animate-pulse">
-            👆 Tap an enemy to attack!
-          </div>
-        )}
+        {/* Instructions - Fixed height */}
+        <div className="text-center text-sm text-blue-400 min-h-[2rem] flex items-center justify-center">
+          {playerTurn && (
+            <span className="animate-pulse">
+              👆 Tap an enemy to attack!
+            </span>
+          )}
+        </div>
       </div>
     </div>
   );

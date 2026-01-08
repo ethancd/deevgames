@@ -32,10 +32,11 @@ export function createInitialCombatState(): CombatState {
     },
   ];
 
-  // Fixed turn order: Player, Enemy1, Enemy2, Player, Enemy1, Enemy2...
+  // Fixed turn order: Player, Enemy1, Player, Enemy2, (repeat)
   const turnQueue: TurnQueueEntry[] = [
     { entityId: player.id, entityType: 'player' },
     { entityId: enemies[0].id, entityType: 'enemy' },
+    { entityId: player.id, entityType: 'player' },
     { entityId: enemies[1].id, entityType: 'enemy' },
   ];
 
