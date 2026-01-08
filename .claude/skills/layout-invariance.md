@@ -45,13 +45,31 @@ Variable content should appear in:
 ## Development Process: Test-Driven Stability
 
 ### Step 1: Write Tests That Will Fail
-Before fixing layout, write tests that vary content and assert geometry stays constant:
+Before fixing layout, write tests that vary content and assert **actual rendered dimensions** stay constant:
+
 ```tsx
 // Test enemy card with different HP values
 const fullHP = render(<Enemy hp={20} />);
 const lowHP = render(<Enemy hp={5} />);
-// Assert: Both cards have same height
+
+const fullHPButton = fullHP.querySelector('button');
+const lowHPButton = lowHP.querySelector('button');
+
+// ✅ CORRECT: Measure actual rendered dimensions
+const fullHPRect = fullHPButton.getBoundingClientRect();
+const lowHPRect = lowHPButton.getBoundingClientRect();
+expect(fullHPRect.height).toBe(lowHPRect.height);
+
+// OR: Compare computed styles
+const fullHPHeight = getComputedStyle(fullHPButton).height;
+const lowHPHeight = getComputedStyle(lowHPButton).height;
+expect(fullHPHeight).toBe(lowHPHeight);
+
+// ❌ WRONG: Checking CSS classes doesn't prove stability
+expect(fullHPButton.classList.contains('min-h-[7.5rem]')).toBe(true); // Useless!
 ```
+
+**Critical:** CSS classes can be present but overridden, misconfigured, or ineffective. Only test what users see: actual rendered pixels.
 
 **These tests will fail initially. That's good.** Failures show where layout is content-dependent.
 

@@ -1,12 +1,23 @@
 /**
  * Visual Regression Tests for Layout Invariance
  *
- * These tests ensure that UI elements maintain fixed sizes regardless of content:
- * - Enemy HP changes shouldn't change target size
- * - Turn indicator with/without hourglass should have same height
- * - Title changes (game/victory/defeat) shouldn't move elements
+ * These tests ensure that UI elements maintain fixed sizes regardless of content by:
+ * - Measuring actual rendered dimensions with getBoundingClientRect()
+ * - Comparing computed styles with getComputedStyle()
+ * - Verifying geometry stays constant across content variations
  *
- * To run: npm run test:visual
+ * Test approach:
+ * ✅ Measure actual rendered pixels (getBoundingClientRect)
+ * ✅ Compare computed styles (getComputedStyle)
+ * ❌ NOT checking CSS classes (classes can be overridden or misconfigured)
+ *
+ * Coverage:
+ * - Enemy HP changes shouldn't change card dimensions
+ * - Turn indicator with/without hourglass should have same height
+ * - Player alive/defeated should maintain same container height
+ * - Name length variations shouldn't affect card size
+ *
+ * To run: npm test
  *
  * Based on techniques from:
  * - https://blog.openreplay.com/preventing-layout-shift-modern-css/
@@ -41,14 +52,18 @@ describe('Layout Invariance - Enemy Display', () => {
       <EnemyDisplay enemy={lowHPEnemy} onAttack={() => {}} isPlayerTurn={true} />
     );
 
-    // Both should have min-h-[7.5rem] = 120px
     const fullHPButton = fullHP.querySelector('button');
     const lowHPButton = lowHP.querySelector('button');
 
     expect(fullHPButton).toBeTruthy();
     expect(lowHPButton).toBeTruthy();
-    expect(fullHPButton?.classList.contains('min-h-[7.5rem]')).toBe(true);
-    expect(lowHPButton?.classList.contains('min-h-[7.5rem]')).toBe(true);
+
+    // Measure actual rendered dimensions
+    const fullHPRect = fullHPButton!.getBoundingClientRect();
+    const lowHPRect = lowHPButton!.getBoundingClientRect();
+
+    expect(fullHPRect.height).toBe(lowHPRect.height);
+    expect(fullHPRect.width).toBe(lowHPRect.width);
   });
 
   it('enemy HP numbers of different widths maintain stable layout', () => {
@@ -67,15 +82,15 @@ describe('Layout Invariance - Enemy Display', () => {
     const singleButton = single.querySelector('button');
     const doubleButton = double.querySelector('button');
 
-    // Both should have same fixed height regardless of number width
-    expect(singleButton?.classList.contains('min-h-[7.5rem]')).toBe(true);
-    expect(doubleButton?.classList.contains('min-h-[7.5rem]')).toBe(true);
+    expect(singleButton).toBeTruthy();
+    expect(doubleButton).toBeTruthy();
 
-    // HP bar container should have fixed height
-    const singleHPBar = single.querySelector('[class*="h-6"]');
-    const doubleHPBar = double.querySelector('[class*="h-6"]');
-    expect(singleHPBar).toBeTruthy();
-    expect(doubleHPBar).toBeTruthy();
+    // Measure actual rendered dimensions
+    const singleRect = singleButton!.getBoundingClientRect();
+    const doubleRect = doubleButton!.getBoundingClientRect();
+
+    expect(singleRect.height).toBe(doubleRect.height);
+    expect(singleRect.width).toBe(doubleRect.width);
   });
 
   it('enemy alive vs defeated should maintain same height', () => {
@@ -93,8 +108,14 @@ describe('Layout Invariance - Enemy Display', () => {
     const aliveButton = alive.querySelector('button');
     const deadButton = dead.querySelector('button');
 
-    expect(aliveButton?.classList.contains('min-h-[7.5rem]')).toBe(true);
-    expect(deadButton?.classList.contains('min-h-[7.5rem]')).toBe(true);
+    expect(aliveButton).toBeTruthy();
+    expect(deadButton).toBeTruthy();
+
+    // Measure actual rendered dimensions
+    const aliveRect = aliveButton!.getBoundingClientRect();
+    const deadRect = deadButton!.getBoundingClientRect();
+
+    expect(aliveRect.height).toBe(deadRect.height);
   });
 
   it('enemy with different name lengths maintain stable layout', () => {
@@ -112,15 +133,15 @@ describe('Layout Invariance - Enemy Display', () => {
     const shortButton = short.querySelector('button');
     const longButton = long.querySelector('button');
 
-    // Both maintain fixed height despite name length variation
-    expect(shortButton?.classList.contains('min-h-[7.5rem]')).toBe(true);
-    expect(longButton?.classList.contains('min-h-[7.5rem]')).toBe(true);
+    expect(shortButton).toBeTruthy();
+    expect(longButton).toBeTruthy();
 
-    // Name container has min-height
-    const shortNameContainer = short.querySelector('[class*="min-h-[1.75rem]"]');
-    const longNameContainer = long.querySelector('[class*="min-h-[1.75rem]"]');
-    expect(shortNameContainer).toBeTruthy();
-    expect(longNameContainer).toBeTruthy();
+    // Measure actual rendered dimensions
+    const shortRect = shortButton!.getBoundingClientRect();
+    const longRect = longButton!.getBoundingClientRect();
+
+    expect(shortRect.height).toBe(longRect.height);
+    expect(shortRect.width).toBe(longRect.width);
   });
 });
 
@@ -139,11 +160,18 @@ describe('Layout Invariance - Player Display', () => {
     const { container: fullHP } = render(<PlayerDisplay player={fullHPPlayer} />);
     const { container: lowHP } = render(<PlayerDisplay player={lowHPPlayer} />);
 
-    const fullHPDiv = fullHP.querySelector('[class*="min-h-[8rem]"]');
-    const lowHPDiv = lowHP.querySelector('[class*="min-h-[8rem]"]');
+    const fullHPDiv = fullHP.querySelector('div');
+    const lowHPDiv = lowHP.querySelector('div');
 
     expect(fullHPDiv).toBeTruthy();
     expect(lowHPDiv).toBeTruthy();
+
+    // Measure actual rendered dimensions
+    const fullHPRect = fullHPDiv!.getBoundingClientRect();
+    const lowHPRect = lowHPDiv!.getBoundingClientRect();
+
+    expect(fullHPRect.height).toBe(lowHPRect.height);
+    expect(fullHPRect.width).toBe(lowHPRect.width);
   });
 
   it('player alive vs defeated should maintain same height', () => {
@@ -153,11 +181,17 @@ describe('Layout Invariance - Player Display', () => {
     const { container: alive } = render(<PlayerDisplay player={alivePlayer} />);
     const { container: dead } = render(<PlayerDisplay player={deadPlayer} />);
 
-    const aliveDiv = alive.querySelector('[class*="min-h-[8rem]"]');
-    const deadDiv = dead.querySelector('[class*="min-h-[8rem]"]');
+    const aliveDiv = alive.querySelector('div');
+    const deadDiv = dead.querySelector('div');
 
     expect(aliveDiv).toBeTruthy();
     expect(deadDiv).toBeTruthy();
+
+    // Measure actual rendered dimensions
+    const aliveRect = aliveDiv!.getBoundingClientRect();
+    const deadRect = deadDiv!.getBoundingClientRect();
+
+    expect(aliveRect.height).toBe(deadRect.height);
   });
 });
 
@@ -174,58 +208,89 @@ describe('Layout Invariance - Turn Timeline', () => {
     { entityId: 'enemy-2', entityType: 'enemy' },
   ];
 
-  it('current turn indicator should have fixed height for player turn', () => {
-    const { container } = render(
+  it('current turn indicator has same height for player turn and enemy turn (with emoji)', () => {
+    const { container: playerTurn } = render(
       <TurnTimeline turnQueue={turnQueue} currentTurnIndex={0} enemies={enemies} />
     );
 
-    // Current turn indicator should have min-h-[4rem]
-    const turnIndicator = container.querySelector('[class*="min-h-[4rem]"]');
-    expect(turnIndicator).toBeTruthy();
-  });
-
-  it('current turn indicator should have fixed height for enemy turn', () => {
-    const { container } = render(
+    const { container: enemyTurn } = render(
       <TurnTimeline turnQueue={turnQueue} currentTurnIndex={1} enemies={enemies} />
     );
 
-    // Current turn indicator should have min-h-[4rem] even with hourglass emoji
-    const turnIndicator = container.querySelector('[class*="min-h-[4rem]"]');
-    expect(turnIndicator).toBeTruthy();
+    // Find the turn indicator divs (first div child inside the timeline)
+    const playerIndicator = playerTurn.querySelector('div > div');
+    const enemyIndicator = enemyTurn.querySelector('div > div');
+
+    expect(playerIndicator).toBeTruthy();
+    expect(enemyIndicator).toBeTruthy();
+
+    // Measure actual rendered dimensions
+    const playerRect = playerIndicator!.getBoundingClientRect();
+    const enemyRect = enemyIndicator!.getBoundingClientRect();
+
+    // Heights should match despite emoji in enemy turn
+    expect(playerRect.height).toBe(enemyRect.height);
   });
 
-  it('turn timeline should have fixed min-height', () => {
-    const { container } = render(
+  it('turn timeline container has consistent height with different queue states', () => {
+    const { container: firstTurn } = render(
       <TurnTimeline turnQueue={turnQueue} currentTurnIndex={0} enemies={enemies} />
     );
 
-    // Timeline container should have min-h-[5rem]
-    const timeline = container.querySelector('[class*="min-h-[5rem]"]');
-    expect(timeline).toBeTruthy();
+    const { container: lastTurn } = render(
+      <TurnTimeline turnQueue={turnQueue} currentTurnIndex={3} enemies={enemies} />
+    );
+
+    // Find the entire timeline container (outermost div)
+    const firstTimeline = firstTurn.querySelector('div');
+    const lastTimeline = lastTurn.querySelector('div');
+
+    expect(firstTimeline).toBeTruthy();
+    expect(lastTimeline).toBeTruthy();
+
+    // Measure actual rendered dimensions
+    const firstRect = firstTimeline!.getBoundingClientRect();
+    const lastRect = lastTimeline!.getBoundingClientRect();
+
+    // Timeline height should be consistent regardless of current turn index
+    expect(firstRect.height).toBe(lastRect.height);
   });
 });
 
-describe('Layout Invariance - CSS Verification', () => {
-  it('all interactive elements should use flexbox for vertical centering', () => {
+describe('Layout Invariance - Computed Styles', () => {
+  it('enemy buttons have explicit minimum height in computed styles', () => {
     const enemy = { id: 'e1', type: 'enemy' as const, name: 'Test', hp: 10, maxHP: 20 };
     const { container } = render(
       <EnemyDisplay enemy={enemy} onAttack={() => {}} isPlayerTurn={true} />
     );
 
     const button = container.querySelector('button');
-    expect(button?.classList.toString()).toContain('flex');
-    expect(button?.classList.toString()).toContain('flex-col');
-    expect(button?.classList.toString()).toContain('justify-center');
+    expect(button).toBeTruthy();
+
+    // Check computed style has an explicit min-height value
+    const computedStyle = window.getComputedStyle(button!);
+    const minHeight = computedStyle.minHeight;
+
+    // Should have a numeric min-height value (not 'auto' or '0px')
+    expect(minHeight).not.toBe('auto');
+    expect(minHeight).not.toBe('0px');
+    expect(parseFloat(minHeight)).toBeGreaterThan(0);
   });
 
-  it('all text containers should have min-height declarations', () => {
-    const enemy = { id: 'e1', type: 'enemy' as const, name: 'Test', hp: 10, maxHP: 20 };
-    const { container } = render(
-      <EnemyDisplay enemy={enemy} onAttack={() => {}} isPlayerTurn={true} />
-    );
+  it('player display has explicit minimum height in computed styles', () => {
+    const player = { id: 'player', type: 'player' as const, hp: 30, maxHP: 50 };
+    const { container } = render(<PlayerDisplay player={player} />);
 
-    // Name should have min-height
-    const nameDiv = container.querySelector('[class*="min-h-[1.75rem]"]');
-    expect(nameDiv).toBeTruthy();
+    const playerDiv = container.querySelector('div');
+    expect(playerDiv).toBeTruthy();
+
+    // Check computed style has an explicit min-height value
+    const computedStyle = window.getComputedStyle(playerDiv!);
+    const minHeight = computedStyle.minHeight;
+
+    // Should have a numeric min-height value (not 'auto' or '0px')
+    expect(minHeight).not.toBe('auto');
+    expect(minHeight).not.toBe('0px');
+    expect(parseFloat(minHeight)).toBeGreaterThan(0);
   });
 });
