@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { Card, SymbolPool, SymbolCost } from '../game/types';
 import { validatePayment } from '../game/payment';
+import { useSkin } from '../skins/SkinContext';
 
 interface BidModalProps {
   card: Card;
@@ -19,6 +20,7 @@ export function BidModal({
   onCancel,
   title = 'Buy Card',
 }: BidModalProps) {
+  const { skin } = useSkin();
   const [payment, setPayment] = useState<SymbolPool>({
     mars: requiredCost.mars,
     venus: requiredCost.venus,
@@ -27,6 +29,7 @@ export function BidModal({
   });
 
   const isValid = validatePayment(payment, availableSymbols, requiredCost);
+  const displayName = skin.cardNames?.[card.name] ?? card.name;
 
   const adjust = (symbol: keyof SymbolPool, delta: number) => {
     setPayment(prev => ({
@@ -36,10 +39,10 @@ export function BidModal({
   };
 
   const symbolIcons: Record<keyof SymbolPool, string> = {
-    mars: '♂',
-    venus: '♀',
-    mercury: '☿',
-    moon: '☽',
+    mars: skin.symbols.mars,
+    venus: skin.symbols.venus,
+    mercury: skin.symbols.mercury,
+    moon: skin.symbols.moon,
   };
 
   const symbolColors: Record<keyof SymbolPool, string> = {
@@ -54,12 +57,12 @@ export function BidModal({
       <div className="glass-panel p-8 rounded-xl max-w-md w-full border-2 border-amber-600/30 shadow-2xl animate-slideIn">
         <h2
           className="text-3xl font-bold mb-6 text-center"
-          style={{ fontFamily: 'Cinzel, serif', color: 'var(--gold)' }}
+          style={{ fontFamily: 'var(--font-display)', color: 'var(--gold)' }}
         >
           {title}
         </h2>
         <div className="mb-6 p-4 rounded-lg bg-amber-950/30 border border-amber-800/30">
-          <div className="card-title text-amber-100 text-lg mb-2">{card.name}</div>
+          <div className="card-title text-amber-100 text-lg mb-2">{displayName}</div>
           <div className="text-amber-300/90 text-sm mb-1">Required: {card.symbols}</div>
           <div className="text-amber-400/80 text-sm">
             Total:{' '}
@@ -71,7 +74,7 @@ export function BidModal({
         <div className="mb-6">
           <div
             className="font-bold mb-3 text-lg"
-            style={{ fontFamily: 'Cinzel, serif', color: 'var(--bronze)' }}
+            style={{ fontFamily: 'var(--font-display)', color: 'var(--bronze)' }}
           >
             Pay with:
           </div>
@@ -118,7 +121,7 @@ export function BidModal({
           <button
             onClick={onCancel}
             className="flex-1 glass-panel px-6 py-3 rounded-lg font-bold border-2 border-amber-900/30 hover:border-amber-700 transition-all"
-            style={{ fontFamily: 'Cinzel, serif', color: 'var(--bronze)' }}
+            style={{ fontFamily: 'var(--font-display)', color: 'var(--bronze)' }}
           >
             Cancel
           </button>
@@ -126,7 +129,7 @@ export function BidModal({
             onClick={() => onConfirm(payment)}
             disabled={!isValid}
             className="flex-1 bg-gradient-to-r from-amber-700 to-amber-600 hover:from-amber-600 hover:to-amber-500 px-6 py-3 rounded-lg font-bold shadow-lg disabled:from-stone-800 disabled:to-stone-700 disabled:cursor-not-allowed disabled:opacity-50 transition-all border-2 border-amber-500 disabled:border-stone-600"
-            style={{ fontFamily: 'Cinzel, serif' }}
+            style={{ fontFamily: 'var(--font-display)' }}
           >
             Confirm
           </button>

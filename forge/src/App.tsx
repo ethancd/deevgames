@@ -7,6 +7,7 @@ import { BidModal } from './components/BidModal';
 import { CounterBidModal } from './components/CounterBidModal';
 import { CardModal } from './components/CardModal';
 import { CardBrowser } from './components/CardBrowser';
+import { SkinSelectorCompact } from './components/SkinSelector';
 import { calculateWinner } from './game/scoring';
 import type { Position } from './game/types';
 
@@ -84,7 +85,7 @@ function App() {
         <div className="container mx-auto max-w-5xl">
           <h1
             className="text-6xl font-bold mb-8 text-center text-shadow-glow"
-            style={{ fontFamily: 'Cinzel, serif', color: 'var(--gold)' }}
+            style={{ fontFamily: 'var(--font-display)', color: 'var(--gold)' }}
           >
             GAME OVER
           </h1>
@@ -93,14 +94,14 @@ function App() {
             {winner === 'tie' ? (
               <h2
                 className="text-4xl font-bold text-center mb-6"
-                style={{ fontFamily: 'Cinzel, serif', color: 'var(--silver)' }}
+                style={{ fontFamily: 'var(--font-display)', color: 'var(--silver)' }}
               >
                 ⚔ It's a Tie! ⚔
               </h2>
             ) : (
               <h2
                 className="text-4xl font-bold text-center mb-6"
-                style={{ fontFamily: 'Cinzel, serif', color: 'var(--gold)' }}
+                style={{ fontFamily: 'var(--font-display)', color: 'var(--gold)' }}
               >
                 ★ {gameState.players[winner].name} Wins! ★
               </h2>
@@ -116,13 +117,13 @@ function App() {
                       : 'border-amber-900/30 bg-transparent'
                   }`}
                 >
-                  <div className="text-2xl font-bold mb-3" style={{ fontFamily: 'Cinzel, serif' }}>
+                  <div className="text-2xl font-bold mb-3" style={{ fontFamily: 'var(--font-display)' }}>
                     {player.name}
                   </div>
                   <div
                     className="text-5xl mb-3"
                     style={{
-                      fontFamily: 'Cinzel, serif',
+                      fontFamily: 'var(--font-display)',
                       color: winner !== 'tie' && winner === idx ? 'var(--gold)' : 'var(--bronze)',
                     }}
                   >
@@ -143,7 +144,7 @@ function App() {
               <button
                 onClick={actions.newGame}
                 className="bg-gradient-to-r from-amber-700 to-amber-600 hover:from-amber-600 hover:to-amber-500 px-10 py-4 rounded-lg text-xl font-bold shadow-lg hover:shadow-amber-500/50 transition-all duration-200 border-2 border-amber-500"
-                style={{ fontFamily: 'Cinzel, serif' }}
+                style={{ fontFamily: 'var(--font-display)' }}
               >
                 ⚔ New Game ⚔
               </button>
@@ -167,22 +168,23 @@ function App() {
         <div className="container mx-auto max-w-7xl flex items-center justify-between">
           <h1
             className="text-5xl font-bold tracking-wider text-shadow-glow"
-            style={{ fontFamily: 'Cinzel, serif', color: 'var(--gold)' }}
+            style={{ fontFamily: 'var(--font-display)', color: 'var(--gold)' }}
           >
             ⚔ FORGE ⚔
           </h1>
-          <div className="flex gap-3">
+          <div className="flex items-center gap-3">
+            <SkinSelectorCompact />
             <a
               href="#/cards"
               className="glass-panel px-6 py-3 rounded-lg font-bold hover:border-amber-500 border-2 border-amber-900/30 transition-all duration-200 shadow-lg hover:shadow-amber-500/30"
-              style={{ fontFamily: 'Cinzel, serif', color: 'var(--bronze)' }}
+              style={{ fontFamily: 'var(--font-display)', color: 'var(--bronze)' }}
             >
               Card Gallery
             </a>
             <button
               onClick={actions.newGame}
               className="glass-panel px-6 py-3 rounded-lg font-bold hover:border-amber-500 border-2 border-amber-900/30 transition-all duration-200 shadow-lg hover:shadow-amber-500/30"
-              style={{ fontFamily: 'Cinzel, serif', color: 'var(--bronze)' }}
+              style={{ fontFamily: 'var(--font-display)', color: 'var(--bronze)' }}
             >
               New Game
             </button>
@@ -271,7 +273,7 @@ function App() {
           <div className="glass-panel p-8 rounded-xl border-2 border-red-600/30 shadow-2xl animate-slideIn">
             <h2
               className="text-2xl font-bold mb-6 text-center"
-              style={{ fontFamily: 'Cinzel, serif', color: 'var(--gold)' }}
+              style={{ fontFamily: 'var(--font-display)', color: 'var(--gold)' }}
             >
               🔥 Burn this card? 🔥
             </h2>
@@ -279,14 +281,14 @@ function App() {
               <button
                 onClick={() => setModalState({ type: 'none' })}
                 className="flex-1 glass-panel px-6 py-3 rounded-lg font-bold border-2 border-amber-900/30 hover:border-amber-700 transition-all"
-                style={{ fontFamily: 'Cinzel, serif', color: 'var(--bronze)' }}
+                style={{ fontFamily: 'var(--font-display)', color: 'var(--bronze)' }}
               >
                 Cancel
               </button>
               <button
                 onClick={handleBurnConfirm}
                 className="flex-1 bg-gradient-to-r from-red-800 to-red-700 hover:from-red-700 hover:to-red-600 px-6 py-3 rounded-lg font-bold shadow-lg hover:shadow-red-500/50 transition-all border-2 border-red-600"
-                style={{ fontFamily: 'Cinzel, serif' }}
+                style={{ fontFamily: 'var(--font-display)' }}
               >
                 Burn
               </button>

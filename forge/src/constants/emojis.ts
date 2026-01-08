@@ -1,4 +1,5 @@
 // Emoji mappings for FORGE card game
+import type { Skin, SymbolTheme, OriginalFaction } from '../skins/types';
 
 export const FACTION_EMOJIS = {
   'Crimson Covenant': '🩸',  // blood drop
@@ -51,27 +52,45 @@ export const VP_CONDITION_EMOJIS = {
 } as const;
 
 /**
+ * Get faction emoji from skin or fallback to defaults
+ */
+function getFactionEmoji(faction: string, skin?: Skin): string {
+  if (skin?.factions[faction as OriginalFaction]) {
+    return skin.factions[faction as OriginalFaction].emoji;
+  }
+  return FACTION_EMOJIS[faction as keyof typeof FACTION_EMOJIS] || '❓';
+}
+
+/**
  * Convert conditional VP text to emojified format
  * Examples:
  *   "+1 per Crimson Covenant card" → "★ x 🩸"
  *   "+3 if you have burned 3+ cards" → "3★ if 3+🔥"
  */
-export function emojifyConditionalVP(conditionalVP: string): string {
+export function emojifyConditionalVP(conditionalVP: string, skin?: Skin): string {
   if (!conditionalVP) return '';
 
   // Extract VP amount from start
   const vpMatch = conditionalVP.match(/^\+?(\d+)/);
   const vpAmount = vpMatch ? vpMatch[1] : '';
 
+  // Get faction emojis from skin or use defaults
+  const crimsonEmoji = getFactionEmoji('Crimson Covenant', skin);
+  const ironEmoji = getFactionEmoji('Iron Tide', skin);
+  const voidEmoji = getFactionEmoji('Void Legion', skin);
+  const silkEmoji = getFactionEmoji('Silk Network', skin);
+  const dreamEmoji = getFactionEmoji('Dream Garden', skin);
+  const ghostEmoji = getFactionEmoji('Ghost Protocol', skin);
+
   // Mapping of text patterns to emoji representations
   const patterns: Array<{ regex: RegExp; replacer: (match: RegExpMatchArray) => string }> = [
     // Faction-specific patterns
-    { regex: /per Crimson Covenant card/i, replacer: () => `${vpAmount}★ x 🩸` },
-    { regex: /per Iron Tide card/i, replacer: () => `${vpAmount}★ x ⚙️` },
-    { regex: /per Void Legion card/i, replacer: () => `${vpAmount}★ x 🌀` },
-    { regex: /per Silk Network card/i, replacer: () => `${vpAmount}★ x 🕸️` },
-    { regex: /per Dream Garden card/i, replacer: () => `${vpAmount}★ x 🪷` },
-    { regex: /per Ghost Protocol card/i, replacer: () => `${vpAmount}★ x 👤` },
+    { regex: /per Crimson Covenant card/i, replacer: () => `${vpAmount}★ x ${crimsonEmoji}` },
+    { regex: /per Iron Tide card/i, replacer: () => `${vpAmount}★ x ${ironEmoji}` },
+    { regex: /per Void Legion card/i, replacer: () => `${vpAmount}★ x ${voidEmoji}` },
+    { regex: /per Silk Network card/i, replacer: () => `${vpAmount}★ x ${silkEmoji}` },
+    { regex: /per Dream Garden card/i, replacer: () => `${vpAmount}★ x ${dreamEmoji}` },
+    { regex: /per Ghost Protocol card/i, replacer: () => `${vpAmount}★ x ${ghostEmoji}` },
 
     // Game mechanic patterns
     { regex: /per card you won by counter-bidding/i, replacer: () => `${vpAmount}★ x ⚔️` },
@@ -118,14 +137,16 @@ export function emojifyConditionalVP(conditionalVP: string): string {
 }
 
 /**
- * Replace "any" with ☉ in symbol costs
+ * Replace "any" with appropriate symbol in costs
  */
-export function formatSymbolCost(symbols: string): string {
+export function formatSymbolCost(symbols: string, skinSymbols?: SymbolTheme): string {
   if (!symbols) return 'Free';
   if (symbols === 'free') return 'Free';
 
+  const anySymbol = skinSymbols?.any ?? '☉';
+
   return symbols
-    .replace(/any/g, '☉')
+    .replace(/any/g, anySymbol)
     .replace(/\s+/g, ' ')
     .trim();
 }
