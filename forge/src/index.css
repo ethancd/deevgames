@@ -1,10 +1,18 @@
+/* Original skin fonts */
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Crimson+Pro:wght@300;400;600;700&family=Epilogue:wght@400;500;600;700&display=swap');
+
+/* Cartoon skin fonts */
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700&family=Quicksand:wght@400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
+/* ========================================
+   ORIGINAL SKIN (Default - Dark Fantasy)
+   ======================================== */
+:root,
+:root.skin-original {
   /* Cosmic color palette */
   --cosmic-void: #0a0a0f;
   --cosmic-deep: #121218;
@@ -35,6 +43,64 @@
   --venus: #FF8ED4;
   --mercury: #FFB84D;
   --moon: #87CEEB;
+
+  /* Typography */
+  --font-display: 'Cinzel', serif;
+  --font-card-title: 'Crimson Pro', serif;
+  --font-body: 'Epilogue', sans-serif;
+
+  /* Effects */
+  --glow-color: rgba(212, 175, 55, 0.3);
+  --glow-color-strong: rgba(212, 175, 55, 0.6);
+  --glass-bg: rgba(26, 26, 46, 0.7);
+  --glass-border: rgba(238, 232, 213, 0.1);
+}
+
+/* ========================================
+   CARTOON SKIN (Kid-friendly)
+   ======================================== */
+:root.skin-cartoon {
+  /* Bright cheerful palette */
+  --cosmic-void: #FFF5E6;
+  --cosmic-deep: #FFE4CC;
+  --cosmic-nebula: #E8F4FD;
+  --cosmic-star: #2D3748;
+
+  /* Faction colors - bright and friendly */
+  --crimson: #FF6B9D;
+  --crimson-light: #FF8FB3;
+  --iron: #5BB5E0;
+  --iron-light: #7EC8ED;
+  --void: #B794F6;
+  --void-light: #D6BCFA;
+  --silk: #FFD93D;
+  --silk-light: #FFE566;
+  --dream: #7ED957;
+  --dream-light: #9EE879;
+  --ghost: #A8D5E5;
+  --ghost-light: #C5E4EF;
+
+  /* Playful accents */
+  --gold: #FF9F43;
+  --bronze: #FFA07A;
+  --silver: #B8C5D0;
+
+  /* Planetary symbols - bright */
+  --mars: #FF7675;
+  --venus: #FD79A8;
+  --mercury: #FFEAA7;
+  --moon: #81ECEC;
+
+  /* Typography */
+  --font-display: 'Fredoka', sans-serif;
+  --font-card-title: 'Nunito', sans-serif;
+  --font-body: 'Quicksand', sans-serif;
+
+  /* Effects - softer */
+  --glow-color: rgba(255, 159, 67, 0.3);
+  --glow-color-strong: rgba(255, 159, 67, 0.5);
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(0, 0, 0, 0.1);
 }
 
 * {
@@ -44,12 +110,13 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: 'Epilogue', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: var(--font-body), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background: var(--cosmic-void);
   color: var(--cosmic-star);
   overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Animated starfield background */
@@ -108,13 +175,28 @@ body::after {
 
 /* Typography */
 h1, h2, h3 {
-  font-family: 'Cinzel', serif;
+  font-family: var(--font-display);
   letter-spacing: 0.05em;
 }
 
 .card-title {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--font-card-title);
   font-weight: 600;
+}
+
+/* Cartoon skin: Hide dark starfield/nebula effects */
+.skin-cartoon body::before,
+.skin-cartoon body::after {
+  display: none;
+}
+
+/* Cartoon skin: Cheerful cloud background */
+.skin-cartoon body {
+  background:
+    radial-gradient(ellipse at 20% 20%, rgba(129, 236, 236, 0.2) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(255, 159, 67, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(253, 121, 168, 0.1) 0%, transparent 50%),
+    var(--cosmic-void);
 }
 
 /* Smooth animations */
@@ -142,10 +224,10 @@ h1, h2, h3 {
 
 @keyframes glow {
   0%, 100% {
-    box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+    box-shadow: 0 0 10px var(--glow-color);
   }
   50% {
-    box-shadow: 0 0 20px rgba(212, 175, 55, 0.6), 0 0 30px rgba(212, 175, 55, 0.3);
+    box-shadow: 0 0 20px var(--glow-color-strong), 0 0 30px var(--glow-color);
   }
 }
 
@@ -199,7 +281,19 @@ h1, h2, h3 {
 }
 
 .glass-panel {
-  background: rgba(26, 26, 46, 0.7);
+  background: var(--glass-bg);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(238, 232, 213, 0.1);
+  border: 1px solid var(--glass-border);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Cartoon skin: Rounder corners and softer shadows */
+.skin-cartoon .glass-panel {
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Cartoon skin: Softer card text for light backgrounds */
+.skin-cartoon .card-title {
+  color: #374151;
 }

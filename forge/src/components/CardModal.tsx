@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { Card as CardType } from '../game/types';
 import { Card } from './Card';
+import { useSkin } from '../skins/SkinContext';
 
 interface CardModalProps {
   card: CardType;
@@ -11,18 +12,13 @@ interface CardModalProps {
   canBuy: boolean;
 }
 
-function toKebabCase(str: string): string {
-  return str
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-}
-
 export function CardModal({ card, position, onClose, onBurn, onBuy, canBuy }: CardModalProps) {
+  const { skin } = useSkin();
   const [burnConfirmState, setBurnConfirmState] = useState<'idle' | 'confirming'>('idle');
   const [imageError, setImageError] = useState(false);
 
-  const cardImagePath = `/images/${toKebabCase(card.name)}.png`;
+  const cardImagePath = skin.imagePath(card.name);
+  const displayName = skin.cardNames?.[card.name] ?? card.name;
 
   const handleBurnClick = () => {
     if (burnConfirmState === 'idle') {
@@ -65,7 +61,7 @@ export function CardModal({ card, position, onClose, onBurn, onBuy, canBuy }: Ca
             <div className="flex justify-center mb-6">
               <img
                 src={cardImagePath}
-                alt={card.name}
+                alt={displayName}
                 className="max-w-full h-auto rounded-lg border-2 border-amber-900/30 shadow-lg"
                 onError={() => setImageError(true)}
                 style={{ maxHeight: '300px' }}
@@ -77,9 +73,9 @@ export function CardModal({ card, position, onClose, onBurn, onBuy, canBuy }: Ca
           <div className="text-center mb-6">
             <h2
               className="text-2xl font-bold mb-2"
-              style={{ fontFamily: 'Cinzel, serif', color: 'var(--gold)' }}
+              style={{ fontFamily: 'var(--font-display)', color: 'var(--gold)' }}
             >
-              {card.name}
+              {displayName}
             </h2>
             {card.game3Effect && (
               <p className="text-sm text-amber-600/80 mb-2">
@@ -94,7 +90,7 @@ export function CardModal({ card, position, onClose, onBurn, onBuy, canBuy }: Ca
               <button
                 onClick={handleBuyClick}
                 className="bg-gradient-to-r from-amber-700 to-amber-600 hover:from-amber-600 hover:to-amber-500 px-6 py-3 rounded-lg font-bold shadow-lg hover:shadow-amber-500/50 transition-all duration-200 border-2 border-amber-500"
-                style={{ fontFamily: 'Cinzel, serif' }}
+                style={{ fontFamily: 'var(--font-display)' }}
               >
                 Buy Card
               </button>
@@ -106,14 +102,14 @@ export function CardModal({ card, position, onClose, onBurn, onBuy, canBuy }: Ca
                   ? 'bg-gradient-to-r from-red-800 to-red-700 hover:from-red-700 hover:to-red-600 border-red-600 animate-glow'
                   : 'bg-gradient-to-r from-stone-700 to-stone-600 hover:from-stone-600 hover:to-stone-500 border-stone-500'
               }`}
-              style={{ fontFamily: 'Cinzel, serif' }}
+              style={{ fontFamily: 'var(--font-display)' }}
             >
               {burnConfirmState === 'confirming' ? '🔥 Confirm Burn 🔥' : 'Burn Card'}
             </button>
             <button
               onClick={onClose}
               className="glass-panel px-6 py-3 rounded-lg font-bold border-2 border-amber-900/30 hover:border-amber-700 transition-all"
-              style={{ fontFamily: 'Cinzel, serif', color: 'var(--bronze)' }}
+              style={{ fontFamily: 'var(--font-display)', color: 'var(--bronze)' }}
             >
               Cancel
             </button>
@@ -148,7 +144,7 @@ export function CardModal({ card, position, onClose, onBurn, onBuy, canBuy }: Ca
             <div className="flex justify-center mb-6">
               <img
                 src={cardImagePath}
-                alt={card.name}
+                alt={displayName}
                 className="max-w-full h-auto rounded-lg border-2 border-amber-900/30 shadow-lg"
                 onError={() => setImageError(true)}
                 style={{ maxHeight: '400px' }}
@@ -160,15 +156,15 @@ export function CardModal({ card, position, onClose, onBurn, onBuy, canBuy }: Ca
           <div className="mb-6">
             <h2
               className="text-3xl font-bold mb-4 text-center"
-              style={{ fontFamily: 'Cinzel, serif', color: 'var(--gold)' }}
+              style={{ fontFamily: 'var(--font-display)', color: 'var(--gold)' }}
             >
-              {card.name}
+              {displayName}
             </h2>
             {card.game3Effect && (
               <div className="glass-panel p-4 rounded-lg border border-amber-900/30 mb-4">
                 <h3
                   className="text-sm font-bold mb-2"
-                  style={{ fontFamily: 'Cinzel, serif', color: 'var(--bronze)' }}
+                  style={{ fontFamily: 'var(--font-display)', color: 'var(--bronze)' }}
                 >
                   Game 3 Effect:
                 </h3>
@@ -185,7 +181,7 @@ export function CardModal({ card, position, onClose, onBurn, onBuy, canBuy }: Ca
               <button
                 onClick={handleBuyClick}
                 className="bg-gradient-to-r from-amber-700 to-amber-600 hover:from-amber-600 hover:to-amber-500 px-6 py-3 rounded-lg font-bold shadow-lg hover:shadow-amber-500/50 transition-all duration-200 border-2 border-amber-500"
-                style={{ fontFamily: 'Cinzel, serif' }}
+                style={{ fontFamily: 'var(--font-display)' }}
               >
                 Buy Card
               </button>
@@ -197,7 +193,7 @@ export function CardModal({ card, position, onClose, onBurn, onBuy, canBuy }: Ca
                   ? 'bg-gradient-to-r from-red-800 to-red-700 hover:from-red-700 hover:to-red-600 border-red-600 animate-glow'
                   : 'bg-gradient-to-r from-stone-700 to-stone-600 hover:from-stone-600 hover:to-stone-500 border-stone-500'
               }`}
-              style={{ fontFamily: 'Cinzel, serif' }}
+              style={{ fontFamily: 'var(--font-display)' }}
             >
               {burnConfirmState === 'confirming' ? '🔥 Confirm Burn 🔥' : 'Burn Card'}
             </button>

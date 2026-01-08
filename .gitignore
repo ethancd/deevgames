@@ -20,3 +20,7 @@ _yardoc
 doc/
 # Ignore application configuration
 /config/application.yml
+
+# Environment variables
+.env
+.env.*
