@@ -17,11 +17,19 @@
  * - Player alive/defeated should maintain same container height
  * - Name length variations shouldn't affect card size
  *
- * To run: npm test
+ * To run:
+ * - `npm test` - Quick tests using jsdom (may have false positives due to no layout engine)
+ * - `npm run test:visual` - Full browser tests with Playwright (requires browser install)
+ *
+ * ⚠️  jsdom Limitation:
+ * jsdom doesn't perform real layout calculations. getBoundingClientRect() may return 0x0
+ * for all elements, causing tests to pass incorrectly. For true visual regression testing,
+ * use Playwright with `npm run test:visual` (requires `npx playwright install chromium`).
  *
  * Based on techniques from:
  * - https://blog.openreplay.com/preventing-layout-shift-modern-css/
  * - https://vitest.dev/guide/browser/visual-regression-testing
+ * - https://vitest.dev/config/browser
  */
 
 import { describe, it, expect } from 'vitest';
