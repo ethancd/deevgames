@@ -5,7 +5,7 @@ import { createInitialGameState, getUnitById } from '../game/board';
 import { getValidMoves } from '../game/movement';
 import { getValidAttacks, resolveCombat } from '../game/combat';
 import { executeMine, canMine } from '../game/mining';
-import { useAction, endTurn as endTurnLogic } from '../game/turn';
+import { useAction, endTurn as endTurnLogic, startActionPhase } from '../game/turn';
 import { checkVictory } from '../game/victory';
 import { applyAction as applyAIAction } from '../ai/simulate';
 
@@ -184,6 +184,14 @@ function gameReducer(state: GameState, action: GameAction): GameState {
       };
     }
 
+    case 'END_PLACE_PHASE': {
+      if (state.turn.phase !== 'place') {
+        return state;
+      }
+
+      return startActionPhase(state);
+    }
+
     case 'END_ACTION_PHASE': {
       if (state.turn.phase !== 'action') {
         return state;
@@ -257,6 +265,10 @@ export function useGameState() {
     dispatch({ type: 'MINE', unitId });
   }, []);
 
+  const endPlacePhase = useCallback(() => {
+    dispatch({ type: 'END_PLACE_PHASE' });
+  }, []);
+
   const endActionPhase = useCallback(() => {
     dispatch({ type: 'END_ACTION_PHASE' });
   }, []);
@@ -292,6 +304,7 @@ export function useGameState() {
     moveUnit,
     attackWith,
     mineWith,
+    endPlacePhase,
     endActionPhase,
     endTurn,
     resign,

@@ -75,8 +75,32 @@ describe('Turn Module', () => {
   });
 
   describe('startTurn', () => {
-    it('sets phase to place', () => {
+    it('skips to action when nothing to do in place phase', () => {
+      // Initial state has no units to place and no resources to promote
       const state = createInitialGameState();
+      const newState = startTurn(state, 'player');
+
+      // Place phase is skipped when there's nothing to do
+      expect(newState.turn.phase).toBe('action');
+    });
+
+    it('stays in place when there are units to place', () => {
+      let state = createInitialGameState();
+
+      // Add a ready unit to the queue
+      state = {
+        ...state,
+        players: {
+          ...state.players,
+          player: {
+            ...state.players.player,
+            buildQueue: [
+              { id: 'q1', definitionId: 'fire_1', turnsRemaining: 1, owner: 'player' as const }
+            ]
+          }
+        }
+      };
+
       const newState = startTurn(state, 'player');
 
       expect(newState.turn.phase).toBe('place');
@@ -417,16 +441,13 @@ describe('Turn Module', () => {
   });
 
   describe('Full turn cycle', () => {
-    it('player turn cycle: place -> action -> queue -> end', () => {
+    it('player turn cycle: action -> queue -> end (place skipped when empty)', () => {
       let state = createInitialGameState();
 
-      // Start in place phase
-      expect(state.turn.phase).toBe('place');
-      expect(state.turn.currentPlayer).toBe('player');
-
-      // Move to action phase
-      state = startActionPhase(state);
+      // Place phase is skipped when there's nothing to do
+      // Initial state starts in action phase since no units to place/promote
       expect(state.turn.phase).toBe('action');
+      expect(state.turn.currentPlayer).toBe('player');
       expect(state.turn.actionsRemaining).toBe(4);
 
       // Use some actions
@@ -441,7 +462,8 @@ describe('Turn Module', () => {
       // End turn - switches to AI
       state = endTurn(state);
       expect(state.turn.currentPlayer).toBe('ai');
-      expect(state.turn.phase).toBe('place');
+      // AI also has nothing to place/promote, so skips to action
+      expect(state.turn.phase).toBe('action');
     });
   });
 });

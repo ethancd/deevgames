@@ -10,6 +10,8 @@ import {
   MAX_ACTIONS_PER_TURN,
   getPlayerUnits,
 } from './board';
+import { getPromotableUnits } from './promotion';
+import { getAllSpawnPositions } from './spawning';
 
 /**
  * Advance build queues for a player, returning units ready to place
@@ -39,7 +41,7 @@ export function advanceBuildQueue(queue: QueuedUnit[]): {
  * Start a new turn for the specified player
  * - Advance their build queue
  * - Reset their units' action flags
- * - Set phase to 'place'
+ * - Set phase to 'place' (or 'action' if nothing to do in place phase)
  */
 export function startTurn(state: GameState, player: PlayerId): GameState {
   const playerState = state.players[player];
@@ -57,7 +59,8 @@ export function startTurn(state: GameState, player: PlayerId): GameState {
     ...updatedQueue,
   ];
 
-  return {
+  // Create intermediate state to check if place phase is needed
+  const intermediateState: GameState = {
     ...state,
     board: newBoard,
     players: {
@@ -77,6 +80,13 @@ export function startTurn(state: GameState, player: PlayerId): GameState {
     validMoves: [],
     validAttacks: [],
   };
+
+  // Skip place phase if player can't do anything in it
+  if (!canActInPlacePhase(intermediateState, player)) {
+    return startActionPhase(intermediateState);
+  }
+
+  return intermediateState;
 }
 
 /**
@@ -218,4 +228,35 @@ export function skipToQueuePhase(state: GameState): GameState {
       actionsRemaining: 0,
     },
   });
+}
+
+/**
+ * Check if a player can do anything in place phase
+ * (has placeable units OR can promote any units)
+ */
+export function canActInPlacePhase(state: GameState, player: PlayerId): boolean {
+  const playerState = state.players[player];
+
+  // Check for ready units to place
+  const readyUnits = getReadyUnits(playerState);
+  if (readyUnits.length > 0) {
+    // Check if there are valid spawn positions
+    const spawnPositions = getAllSpawnPositions(player, state.board);
+    if (spawnPositions.length > 0) {
+      return true;
+    }
+  }
+
+  // Check for promotable units
+  const buildState = { queue: [], crystals: playerState.resources };
+  const promotableUnits = getPromotableUnits(state.board, player, buildState);
+
+  return promotableUnits.length > 0;
+}
+
+/**
+ * Skip place phase and go directly to action phase
+ */
+export function skipPlacePhase(state: GameState): GameState {
+  return startActionPhase(state);
 }

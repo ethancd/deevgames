@@ -229,7 +229,7 @@ export function createInitialGameState(): GameState {
 
   const turnState: TurnState = {
     currentPlayer: 'player',
-    phase: 'place',
+    phase: 'action', // Start in action phase since nothing to do in place phase at game start
     actionsRemaining: MAX_ACTIONS_PER_TURN,
     turnNumber: 1,
   };

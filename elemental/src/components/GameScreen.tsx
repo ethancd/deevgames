@@ -21,6 +21,7 @@ export function GameScreen() {
     moveUnit,
     attackWith,
     mineWith,
+    endPlacePhase,
     endActionPhase,
     endTurn,
     applyAIAction,
@@ -186,6 +187,7 @@ export function GameScreen() {
               <ActionBar
                 actionsRemaining={state.turn.actionsRemaining}
                 phase={state.turn.phase}
+                onEndPlacePhase={endPlacePhase}
                 onEndActionPhase={endActionPhase}
                 onEndTurn={endTurn}
                 isPlayerTurn={isPlayerTurn && !isThinking}

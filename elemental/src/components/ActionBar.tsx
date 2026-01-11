@@ -1,6 +1,7 @@
 interface ActionBarProps {
   actionsRemaining: number;
   phase: 'place' | 'action' | 'queue';
+  onEndPlacePhase: () => void;
   onEndActionPhase: () => void;
   onEndTurn: () => void;
   isPlayerTurn: boolean;
@@ -9,6 +10,7 @@ interface ActionBarProps {
 export function ActionBar({
   actionsRemaining,
   phase,
+  onEndPlacePhase,
   onEndActionPhase,
   onEndTurn,
   isPlayerTurn,
@@ -17,25 +19,44 @@ export function ActionBar({
 
   return (
     <div className="flex items-center gap-4 p-3 bg-gray-800 rounded-lg">
-      {/* Action steps indicator */}
-      <div className="flex items-center gap-1">
-        <span className="text-gray-300 text-sm mr-2">Actions:</span>
-        {steps.map((step) => (
-          <div
-            key={step}
-            className={`
-              w-4 h-4 rounded-full
-              ${step < actionsRemaining ? 'bg-green-500' : 'bg-gray-600'}
-              transition-colors duration-200
-            `}
-          />
-        ))}
+      {/* Phase label */}
+      <div className="text-sm text-gray-400 capitalize">
+        {phase} Phase
       </div>
 
       {/* Divider */}
       <div className="w-px h-6 bg-gray-600" />
 
+      {/* Action steps indicator (only show in action phase) */}
+      {phase === 'action' && (
+        <div className="flex items-center gap-1">
+          <span className="text-gray-300 text-sm mr-2">Actions:</span>
+          {steps.map((step) => (
+            <div
+              key={step}
+              className={`
+                w-4 h-4 rounded-full
+                ${step < actionsRemaining ? 'bg-green-500' : 'bg-gray-600'}
+                transition-colors duration-200
+              `}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Divider */}
+      {phase === 'action' && <div className="w-px h-6 bg-gray-600" />}
+
       {/* Phase controls */}
+      {phase === 'place' && isPlayerTurn && (
+        <button
+          onClick={onEndPlacePhase}
+          className="px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white text-sm rounded transition-colors"
+        >
+          End Placement
+        </button>
+      )}
+
       {phase === 'action' && isPlayerTurn && (
         <button
           onClick={onEndActionPhase}

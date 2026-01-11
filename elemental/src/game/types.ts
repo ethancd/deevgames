@@ -119,6 +119,7 @@ export type GameAction =
   | { type: 'MOVE'; unitId: string; to: Position }
   | { type: 'ATTACK'; unitId: string; targetPosition: Position }
   | { type: 'MINE'; unitId: string }
+  | { type: 'END_PLACE_PHASE' }
   | { type: 'END_ACTION_PHASE' }
   | { type: 'QUEUE_UNIT'; definitionId: string }
   | { type: 'PROMOTE_UNIT'; unitId: string }

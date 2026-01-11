@@ -260,10 +260,11 @@ describe('Board Module', () => {
       expect(state.players.ai.resources).toBe(0);
     });
 
-    it('turn starts with player in place phase', () => {
+    it('turn starts with player in action phase (place skipped when empty)', () => {
       const state = createInitialGameState();
       expect(state.turn.currentPlayer).toBe('player');
-      expect(state.turn.phase).toBe('place');
+      // Place phase is skipped at game start since nothing to place/promote
+      expect(state.turn.phase).toBe('action');
       expect(state.turn.turnNumber).toBe(1);
     });
   });
