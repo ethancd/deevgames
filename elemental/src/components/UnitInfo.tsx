@@ -4,11 +4,59 @@ import { getElementHex } from '../utils/colors';
 
 interface UnitInfoProps {
   unit: Unit | null;
+  previewDefinitionId?: string | null; // For showing stats of units not yet on board
   onMine?: () => void;
   canMine?: boolean;
 }
 
-export function UnitInfo({ unit, onMine, canMine }: UnitInfoProps) {
+export function UnitInfo({ unit, previewDefinitionId, onMine, canMine }: UnitInfoProps) {
+  // Show preview stats if no unit but have a preview definition
+  if (!unit && previewDefinitionId) {
+    const def = getUnitDefinition(previewDefinitionId);
+    const color = getElementHex(def.element);
+
+    return (
+      <div className="p-3 bg-gray-800 rounded border border-cyan-600">
+        <div className="text-xs text-cyan-400 mb-2">Ready to Place</div>
+        <div className="flex items-center gap-3 mb-3">
+          <div
+            className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg"
+            style={{ backgroundColor: color }}
+          >
+            {def.tier}
+          </div>
+          <div>
+            <div className="font-medium text-white">{def.name}</div>
+            <div className="text-xs text-gray-400 capitalize">{def.element} T{def.tier}</div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2 text-sm">
+          <div className="flex justify-between">
+            <span className="text-gray-400">ATK</span>
+            <span className="text-red-400 font-medium">{def.attack}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-400">DEF</span>
+            <span className="text-blue-400 font-medium">{def.defense}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-400">SPD</span>
+            <span className="text-green-400 font-medium">{def.speed}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-400">MINE</span>
+            <span className="text-purple-400 font-medium">{def.mining}</span>
+          </div>
+        </div>
+
+        <div className="mt-3 text-xs text-cyan-400">
+          Click a highlighted cell to place
+        </div>
+      </div>
+    );
+  }
+
   if (!unit) {
     return (
       <div className="p-3 bg-gray-800 rounded border border-gray-700">

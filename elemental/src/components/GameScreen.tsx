@@ -52,6 +52,15 @@ export function GameScreen() {
     return getAllSpawnPositions('player', state.board);
   }, [state.turn.phase, selectedReadyUnitId, state.board]);
 
+  // Get the definition ID for the selected ready unit (for preview)
+  const selectedReadyDefinitionId = useMemo(() => {
+    if (!selectedReadyUnitId) return null;
+    const queuedUnit = state.players.player.buildQueue.find(
+      (q) => q.id === selectedReadyUnitId
+    );
+    return queuedUnit?.definitionId ?? null;
+  }, [selectedReadyUnitId, state.players.player.buildQueue]);
+
   const { isThinking, executeAITurn, setDifficulty } = useAI({
     difficulty: aiDifficulty,
     thinkingDelay: 400,
@@ -261,6 +270,7 @@ export function GameScreen() {
             )}
             <UnitInfo
               unit={selectedUnitData}
+              previewDefinitionId={selectedReadyDefinitionId}
               onMine={handleMine}
               canMine={canMineHere()}
             />
