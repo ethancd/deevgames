@@ -4,11 +4,12 @@ interface CellProps {
   cell: CellType;
   isValidMove: boolean;
   isValidAttack: boolean;
+  isValidSpawn: boolean;
   isSelected: boolean;
   onClick: (position: Position) => void;
 }
 
-export function Cell({ cell, isValidMove, isValidAttack, isSelected, onClick }: CellProps) {
+export function Cell({ cell, isValidMove, isValidAttack, isValidSpawn, isSelected, onClick }: CellProps) {
   const { position, resourceLayers } = cell;
 
   // Resource visualization: darker = more resources
@@ -27,6 +28,9 @@ export function Cell({ cell, isValidMove, isValidAttack, isSelected, onClick }: 
   } else if (isValidAttack) {
     borderClass = 'border-red-400';
     bgClass = 'bg-red-100';
+  } else if (isValidSpawn) {
+    borderClass = 'border-cyan-400';
+    bgClass = 'bg-cyan-100';
   }
 
   return (

@@ -9,6 +9,7 @@ interface BoardProps {
   selectedUnit: string | null;
   validMoves: Position[];
   validAttacks: Position[];
+  validSpawns: Position[];
   onCellClick: (position: Position) => void;
   onUnitClick: (unitId: string) => void;
 }
@@ -19,6 +20,7 @@ export function Board({
   selectedUnit,
   validMoves,
   validAttacks,
+  validSpawns,
   onCellClick,
   onUnitClick,
 }: BoardProps) {
@@ -27,6 +29,9 @@ export function Board({
 
   const isValidAttack = (pos: Position) =>
     validAttacks.some((a) => a.x === pos.x && a.y === pos.y);
+
+  const isValidSpawn = (pos: Position) =>
+    validSpawns.some((s) => s.x === pos.x && s.y === pos.y);
 
   return (
     <div className="inline-block border-2 border-gray-300 bg-gray-100 p-1 rounded">
@@ -43,6 +48,7 @@ export function Board({
                   cell={cell}
                   isValidMove={isValidMove(pos)}
                   isValidAttack={isValidAttack(pos)}
+                  isValidSpawn={isValidSpawn(pos)}
                   isSelected={isSelected}
                   onClick={onCellClick}
                 />

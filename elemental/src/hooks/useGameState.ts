@@ -8,7 +8,8 @@ import { executeMine, canMine } from '../game/mining';
 import { useAction, endTurn as endTurnLogic, startActionPhase } from '../game/turn';
 import { checkVictory } from '../game/victory';
 import { applyAction as applyAIAction } from '../ai/simulate';
-import { getBuildCost, getBuildTime, canBuildUnit } from '../game/building';
+import { getBuildCost, getBuildTime, canBuildUnit, meetsTechRequirement, createUnitFromDefinition } from '../game/building';
+import { isValidSpawnPosition } from '../game/spawning';
 
 function gameReducer(state: GameState, action: GameAction): GameState {
   switch (action.type) {
@@ -193,6 +194,61 @@ function gameReducer(state: GameState, action: GameAction): GameState {
       return startActionPhase(state);
     }
 
+    case 'PLACE_UNIT': {
+      if (state.turn.phase !== 'place') {
+        return state;
+      }
+
+      const currentPlayer = state.turn.currentPlayer;
+      const playerState = state.players[currentPlayer];
+
+      // Find the queued unit
+      const queuedUnit = playerState.buildQueue.find(
+        (q) => q.id === action.queuedUnitId && q.turnsRemaining === 0
+      );
+      if (!queuedUnit) {
+        return state;
+      }
+
+      // Check tech requirement is still met
+      if (!meetsTechRequirement(queuedUnit.definitionId, currentPlayer, state.board)) {
+        return state;
+      }
+
+      // Validate spawn position
+      if (!isValidSpawnPosition(action.position, currentPlayer, state.board)) {
+        return state;
+      }
+
+      // Create the unit
+      const newUnitId = `unit-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+      const newUnit = createUnitFromDefinition(
+        queuedUnit.definitionId,
+        currentPlayer,
+        action.position,
+        newUnitId
+      );
+
+      // Remove from queue and add to board
+      const newQueue = playerState.buildQueue.filter((q) => q.id !== action.queuedUnitId);
+      const newBoard = {
+        ...state.board,
+        units: [...state.board.units, newUnit],
+      };
+
+      return {
+        ...state,
+        board: newBoard,
+        players: {
+          ...state.players,
+          [currentPlayer]: {
+            ...playerState,
+            buildQueue: newQueue,
+          },
+        },
+      };
+    }
+
     case 'END_ACTION_PHASE': {
       if (state.turn.phase !== 'action') {
         return state;
@@ -320,6 +376,10 @@ export function useGameState() {
     dispatch({ type: 'QUEUE_UNIT', definitionId });
   }, []);
 
+  const placeUnit = useCallback((queuedUnitId: string, position: Position) => {
+    dispatch({ type: 'PLACE_UNIT', queuedUnitId, position });
+  }, []);
+
   const endTurn = useCallback(() => {
     dispatch({ type: 'END_TURN' });
   }, []);
@@ -354,6 +414,7 @@ export function useGameState() {
     endPlacePhase,
     endActionPhase,
     queueUnit,
+    placeUnit,
     endTurn,
     resign,
     applyAIAction: applyAIActionToState,

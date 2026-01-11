@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useGameState } from '../hooks/useGameState';
 import { useAI } from '../hooks/useAI';
 import { Board } from './Board';
@@ -11,6 +11,7 @@ import { UnitShop } from './UnitShop';
 import { VictoryScreen } from './VictoryScreen';
 import { getUnitById } from '../game/board';
 import { canMine } from '../game/mining';
+import { getAllSpawnPositions } from '../game/spawning';
 import type { Position } from '../game/types';
 import type { AIDifficulty } from '../ai/types';
 
@@ -25,6 +26,7 @@ export function GameScreen() {
     endPlacePhase,
     endActionPhase,
     queueUnit,
+    placeUnit,
     endTurn,
     applyAIAction,
     resetGame,
@@ -33,6 +35,22 @@ export function GameScreen() {
   } = useGameState();
 
   const [aiDifficulty, setAIDifficulty] = useState<AIDifficulty>('medium');
+  const [selectedReadyUnitId, setSelectedReadyUnitId] = useState<string | null>(null);
+
+  // Clear selected ready unit when phase changes or turn ends
+  useEffect(() => {
+    if (state.turn.phase !== 'place' || !isPlayerTurn) {
+      setSelectedReadyUnitId(null);
+    }
+  }, [state.turn.phase, isPlayerTurn]);
+
+  // Compute valid spawn positions when a ready unit is selected
+  const validSpawns = useMemo(() => {
+    if (state.turn.phase !== 'place' || !selectedReadyUnitId) {
+      return [];
+    }
+    return getAllSpawnPositions('player', state.board);
+  }, [state.turn.phase, selectedReadyUnitId, state.board]);
 
   const { isThinking, executeAITurn, setDifficulty } = useAI({
     difficulty: aiDifficulty,
@@ -51,7 +69,27 @@ export function GameScreen() {
   }, [state.turn.currentPlayer, state.phase, isThinking, state, executeAITurn, applyAIAction]);
 
   const handleCellClick = (position: Position) => {
-    if (!isPlayerTurn || state.turn.phase !== 'action' || isThinking) {
+    if (!isPlayerTurn || isThinking) {
+      return;
+    }
+
+    // Handle place phase - placing ready units
+    if (state.turn.phase === 'place' && selectedReadyUnitId) {
+      const isSpawnValid = validSpawns.some(
+        (s) => s.x === position.x && s.y === position.y
+      );
+      if (isSpawnValid) {
+        placeUnit(selectedReadyUnitId, position);
+        setSelectedReadyUnitId(null);
+      } else {
+        // Clicking invalid cell deselects
+        setSelectedReadyUnitId(null);
+      }
+      return;
+    }
+
+    // Handle action phase - movement and attacks
+    if (state.turn.phase !== 'action') {
       return;
     }
 
@@ -179,6 +217,7 @@ export function GameScreen() {
                 selectedUnit={state.selectedUnit}
                 validMoves={state.validMoves}
                 validAttacks={state.validAttacks}
+                validSpawns={validSpawns}
                 onCellClick={handleCellClick}
                 onUnitClick={handleUnitClick}
               />
@@ -206,6 +245,11 @@ export function GameScreen() {
             <BuildQueue
               queue={state.players.player.buildQueue}
               isOwner={true}
+              isPlacePhase={state.turn.phase === 'place' && isPlayerTurn && !isThinking}
+              board={state.board}
+              player="player"
+              selectedReadyId={selectedReadyUnitId}
+              onSelectReady={setSelectedReadyUnitId}
             />
             {state.turn.phase === 'queue' && isPlayerTurn && !isThinking && (
               <UnitShop
