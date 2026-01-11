@@ -1,4 +1,4 @@
-import { useReducer, useCallback, useMemo, useEffect, useRef } from 'react';
+import { useReducer, useCallback, useMemo } from 'react';
 import type { GameState, GameAction, Position } from '../game/types';
 import type { AIAction } from '../ai/types';
 import { createInitialGameState, getUnitById } from '../game/board';
@@ -382,6 +382,30 @@ function gameReducer(state: GameState, action: GameAction): GameState {
   }
 }
 
+// Actions that trigger a save (phase transitions and game end)
+const SAVE_ACTIONS = new Set([
+  'END_PLACE_PHASE',
+  'END_ACTION_PHASE',
+  'END_TURN',
+  'RESIGN',
+]);
+
+function gameReducerWithSave(state: GameState, action: GameAction): GameState {
+  const newState = gameReducer(state, action);
+
+  // Save after phase transitions (only if state actually changed)
+  if (SAVE_ACTIONS.has(action.type) && newState !== state) {
+    saveGameState(newState);
+  }
+
+  // Also save when victory is detected (from MOVE or ATTACK)
+  if (newState.phase === 'victory' && state.phase !== 'victory') {
+    saveGameState(newState);
+  }
+
+  return newState;
+}
+
 function getInitialState(): GameState {
   const saved = loadGameState();
   if (saved) {
@@ -391,27 +415,7 @@ function getInitialState(): GameState {
 }
 
 export function useGameState() {
-  const [state, dispatch] = useReducer(gameReducer, undefined, getInitialState);
-  const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  // Save state to localStorage on changes (debounced)
-  useEffect(() => {
-    // Clear any pending save
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current);
-    }
-
-    // Debounce saves by 500ms to avoid excessive writes
-    saveTimeoutRef.current = setTimeout(() => {
-      saveGameState(state);
-    }, 500);
-
-    return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
-      }
-    };
-  }, [state]);
+  const [state, dispatch] = useReducer(gameReducerWithSave, undefined, getInitialState);
 
   const selectUnit = useCallback((unitId: string) => {
     dispatch({ type: 'SELECT_UNIT', unitId });

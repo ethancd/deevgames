@@ -144,14 +144,45 @@ export function UnitInfo({
         const promotedDefId = getPromotedDefinitionId(unit);
         const promotedDef = promotedDefId ? getUnitDefinition(promotedDefId) : null;
         const canAffordPromotion = cost !== null && resources >= cost;
+        const promotedColor = promotedDef ? getElementHex(promotedDef.element) : color;
 
         return (
           <div className="mt-3 pt-3 border-t border-gray-700">
             <div className="text-xs text-yellow-400 mb-2">Upgrade Available</div>
             {promotedDef && (
-              <div className="text-xs text-gray-400 mb-2">
-                → {promotedDef.name} (T{promotedDef.tier})
-              </div>
+              <>
+                <div className="flex items-center gap-3 mb-3">
+                  <div
+                    className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg"
+                    style={{ backgroundColor: promotedColor }}
+                  >
+                    {promotedDef.tier}
+                  </div>
+                  <div>
+                    <div className="font-medium text-white">{promotedDef.name}</div>
+                    <div className="text-xs text-gray-400 capitalize">{promotedDef.element} T{promotedDef.tier}</div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 text-sm mb-3">
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">ATK</span>
+                    <span className="text-red-400 font-medium">{promotedDef.attack}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">DEF</span>
+                    <span className="text-blue-400 font-medium">{promotedDef.defense}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">SPD</span>
+                    <span className="text-green-400 font-medium">{promotedDef.speed}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">MINE</span>
+                    <span className="text-purple-400 font-medium">{promotedDef.mining}</span>
+                  </div>
+                </div>
+              </>
             )}
             <button
               onClick={onPromote}
