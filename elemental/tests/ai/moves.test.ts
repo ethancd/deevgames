@@ -31,6 +31,7 @@ function createTestUnit(
     hasAttacked: false,
     hasMined: false,
     canActThisTurn: true,
+    damageTaken: 0,
     ...overrides,
   };
 }

@@ -64,16 +64,27 @@ export function calculateAttackPower(
 }
 
 /**
- * Calculate the effective defense of a unit
- * Defense is not modified by elemental matchups.
+ * Get the base (max) defense of a unit from its definition
  */
-export function calculateDefense(defender: Unit): number {
+export function getBaseDefense(defender: Unit): number {
   const defenderDef = getUnitDefinition(defender.definitionId);
   return defenderDef.defense;
 }
 
 /**
- * Resolve a single attack (Phase 1: no combined attacks)
+ * Calculate the effective defense of a unit
+ * Accounts for damage taken (reduces effective defense).
+ * Defense cannot go below 0.
+ */
+export function calculateDefense(defender: Unit): number {
+  const baseDef = getBaseDefense(defender);
+  return Math.max(0, baseDef - defender.damageTaken);
+}
+
+/**
+ * Resolve a single attack
+ * - If attack >= effective defense, defender is eliminated
+ * - Otherwise, defender takes damage equal to attack (reduces their defense temporarily)
  * Returns the updated board state and whether the defender was eliminated
  */
 export function resolveCombat(
@@ -104,6 +115,16 @@ export function resolveCombat(
     newBoard = removeUnit(newBoard, defender.id);
     return { board: newBoard, eliminated: true };
   }
+
+  // Non-lethal attack: apply damage to defender (reduces their effective defense)
+  newBoard = {
+    ...newBoard,
+    units: newBoard.units.map((u) =>
+      u.id === defender.id
+        ? { ...u, damageTaken: u.damageTaken + attackPower }
+        : u
+    ),
+  };
 
   return { board: newBoard, eliminated: false };
 }

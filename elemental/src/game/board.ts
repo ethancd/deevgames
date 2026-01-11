@@ -106,6 +106,7 @@ export function createUnit(
     hasAttacked: false,
     hasMined: false,
     canActThisTurn: canAct,
+    damageTaken: 0,
   };
 }
 
@@ -266,6 +267,7 @@ export function resetUnitActions(
             hasAttacked: false,
             hasMined: false,
             canActThisTurn: true,
+            damageTaken: 0, // Reset damage taken from previous opponent's turn
           }
         : u
     ),

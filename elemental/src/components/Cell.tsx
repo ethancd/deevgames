@@ -6,10 +6,12 @@ interface CellProps {
   isValidAttack: boolean;
   isValidSpawn: boolean;
   isSelected: boolean;
+  elementalBonus?: number; // -1, 0, or +1 for attack targets
+  isInvalidSpawn?: boolean; // Show red X for invalid spawn click
   onClick: (position: Position) => void;
 }
 
-export function Cell({ cell, isValidMove, isValidAttack, isValidSpawn, isSelected, onClick }: CellProps) {
+export function Cell({ cell, isValidMove, isValidAttack, isValidSpawn, isSelected, elementalBonus, isInvalidSpawn, onClick }: CellProps) {
   const { position, resourceLayers } = cell;
 
   // Resource visualization: darker = more resources
@@ -19,7 +21,10 @@ export function Cell({ cell, isValidMove, isValidAttack, isValidSpawn, isSelecte
   let borderClass = 'border-gray-200';
   let bgClass = 'bg-gray-50';
 
-  if (isSelected) {
+  if (isInvalidSpawn) {
+    borderClass = 'border-red-500 border-2';
+    bgClass = 'bg-red-100';
+  } else if (isSelected) {
     borderClass = 'border-blue-500 border-2';
     bgClass = 'bg-blue-100';
   } else if (isValidMove) {
@@ -51,6 +56,25 @@ export function Cell({ cell, isValidMove, isValidAttack, isValidSpawn, isSelecte
       {resourceLayers > 0 && (
         <span className="absolute bottom-0.5 right-0.5 text-[10px] text-purple-600 font-mono">
           {resourceLayers}
+        </span>
+      )}
+
+      {/* Elemental bonus indicator for attack targets */}
+      {isValidAttack && elementalBonus !== undefined && elementalBonus !== 0 && (
+        <span
+          className={`
+            absolute top-0.5 left-0.5 text-[10px] font-bold
+            ${elementalBonus > 0 ? 'text-green-600' : 'text-red-600'}
+          `}
+        >
+          ⚔️{elementalBonus > 0 ? '+1' : '-1'}
+        </span>
+      )}
+
+      {/* Invalid spawn indicator */}
+      {isInvalidSpawn && (
+        <span className="absolute inset-0 flex items-center justify-center text-2xl text-red-600 font-bold">
+          ✕
         </span>
       )}
     </div>

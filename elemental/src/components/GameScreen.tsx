@@ -9,10 +9,17 @@ import { BuildQueue } from './BuildQueue';
 import { UnitInfo } from './UnitInfo';
 import { UnitShop } from './UnitShop';
 import { VictoryScreen } from './VictoryScreen';
-import { getUnitById } from '../game/board';
+import { ElementLegend } from './ElementLegend';
+import { getUnitById, getCell } from '../game/board';
+import { getUnitDefinition } from '../game/units';
 import { canMine } from '../game/mining';
-import { getAllSpawnPositions } from '../game/spawning';
+import { getAllSpawnPositions, getSpawnInvalidReason } from '../game/spawning';
 import type { Position } from '../game/types';
+
+type SpawnFeedback = {
+  position: Position;
+  reason: 'enemy_blocking' | 'outside_control';
+} | null;
 import type { AIDifficulty } from '../ai/types';
 
 export function GameScreen() {
@@ -38,14 +45,24 @@ export function GameScreen() {
   const [aiDifficulty, setAIDifficulty] = useState<AIDifficulty>('medium');
   const [selectedReadyUnitId, setSelectedReadyUnitId] = useState<string | null>(null);
   const [selectedPlaceUnitId, setSelectedPlaceUnitId] = useState<string | null>(null);
+  const [spawnFeedback, setSpawnFeedback] = useState<SpawnFeedback>(null);
 
   // Clear place phase selections when phase changes or turn ends
   useEffect(() => {
     if (state.turn.phase !== 'place' || !isPlayerTurn) {
       setSelectedReadyUnitId(null);
       setSelectedPlaceUnitId(null);
+      setSpawnFeedback(null);
     }
   }, [state.turn.phase, isPlayerTurn]);
+
+  // Clear spawn feedback after 2 seconds
+  useEffect(() => {
+    if (spawnFeedback) {
+      const timer = setTimeout(() => setSpawnFeedback(null), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [spawnFeedback]);
 
   // Compute valid spawn positions when a ready unit is selected
   const validSpawns = useMemo(() => {
@@ -99,9 +116,16 @@ export function GameScreen() {
       if (isSpawnValid) {
         placeUnit(selectedReadyUnitId, position);
         setSelectedReadyUnitId(null);
+        setSpawnFeedback(null);
       } else {
-        // Clicking invalid cell deselects
-        setSelectedReadyUnitId(null);
+        // Check why it's invalid and show feedback
+        const reason = getSpawnInvalidReason(position, 'player', state.board);
+        if (reason === 'enemy_blocking' || reason === 'outside_control') {
+          setSpawnFeedback({ position, reason });
+        } else {
+          // Occupied cell - just clear feedback
+          setSpawnFeedback(null);
+        }
       }
       return;
     }
@@ -194,6 +218,13 @@ export function GameScreen() {
     return canMine(selectedUnitData, state.board);
   };
 
+  // Get cell info for selected unit (for mining depth feedback)
+  const selectedUnitCell = useMemo(() => {
+    const unitToShow = selectedPlaceUnitData ?? selectedUnitData;
+    if (!unitToShow) return null;
+    return getCell(state.board, unitToShow.position);
+  }, [selectedPlaceUnitData, selectedUnitData, state.board]);
+
   const handlePlayAgain = () => {
     resetGame();
   };
@@ -260,9 +291,11 @@ export function GameScreen() {
                 board={state.board}
                 currentPlayer={state.turn.currentPlayer}
                 selectedUnit={state.selectedUnit}
+                selectedUnitElement={selectedUnitData ? getUnitDefinition(selectedUnitData.definitionId).element : null}
                 validMoves={state.validMoves}
                 validAttacks={state.validAttacks}
                 validSpawns={validSpawns}
+                invalidSpawnPosition={spawnFeedback?.position ?? null}
                 onCellClick={handleCellClick}
                 onUnitClick={handleUnitClick}
               />
@@ -309,10 +342,12 @@ export function GameScreen() {
               previewDefinitionId={selectedReadyDefinitionId}
               onMine={handleMine}
               canMine={canMineHere()}
+              cellInfo={selectedUnitCell}
               isPlacePhase={state.turn.phase === 'place' && isPlayerTurn && !isThinking}
               resources={state.players.player.resources}
               onPromote={handlePromote}
             />
+            <ElementLegend />
           </div>
         </div>
 
@@ -320,6 +355,12 @@ export function GameScreen() {
         <div className="mt-4 text-center text-gray-500 text-sm">
           {isThinking ? (
             <span className="text-yellow-400">AI is making its move...</span>
+          ) : spawnFeedback ? (
+            <span className="text-red-400">
+              {spawnFeedback.reason === 'enemy_blocking'
+                ? 'Enemies are blocking this area'
+                : 'Outside your controlled area'}
+            </span>
           ) : (
             <>
               Click a unit to select, then click a highlighted cell to move/attack.

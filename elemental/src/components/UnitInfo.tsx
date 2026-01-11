@@ -1,4 +1,4 @@
-import type { Unit } from '../game/types';
+import type { Unit, Cell } from '../game/types';
 import { getUnitDefinition } from '../game/units';
 import { getElementHex } from '../utils/colors';
 import { getPromotionCost, getPromotedDefinitionId, isMaxTier } from '../game/promotion';
@@ -8,6 +8,7 @@ interface UnitInfoProps {
   previewDefinitionId?: string | null; // For showing stats of units not yet on board
   onMine?: () => void;
   canMine?: boolean;
+  cellInfo?: Cell | null; // Cell unit is standing on (for mining depth feedback)
   // Promotion props
   isPlacePhase?: boolean;
   resources?: number;
@@ -19,6 +20,7 @@ export function UnitInfo({
   previewDefinitionId,
   onMine,
   canMine,
+  cellInfo,
   isPlacePhase = false,
   resources = 0,
   onPromote,
@@ -103,7 +105,14 @@ export function UnitInfo({
         </div>
         <div className="flex justify-between">
           <span className="text-gray-400">DEF</span>
-          <span className="text-blue-400 font-medium">{def.defense}</span>
+          {unit.damageTaken > 0 ? (
+            <span>
+              <span className="text-red-400 font-medium">{Math.max(0, def.defense - unit.damageTaken)}</span>
+              <span className="text-gray-500"> / {def.defense}</span>
+            </span>
+          ) : (
+            <span className="text-blue-400 font-medium">{def.defense}</span>
+          )}
         </div>
         <div className="flex justify-between">
           <span className="text-gray-400">SPD</span>
@@ -129,14 +138,41 @@ export function UnitInfo({
       </div>
 
       {/* Mine button */}
-      {onMine && canMine && !unit.hasMined && unit.canActThisTurn && (
-        <button
-          onClick={onMine}
-          className="w-full py-1 px-3 bg-purple-600 hover:bg-purple-700 text-white text-sm rounded transition-colors"
-        >
-          Mine Resources
-        </button>
-      )}
+      {(() => {
+        const canMineNow = onMine && canMine && !unit.hasMined && unit.canActThisTurn;
+        const hasResources = cellInfo && cellInfo.resourceLayers > 0;
+        const tooDeep = hasResources && !canMine && !unit.hasMined && unit.canActThisTurn;
+        const requiredMining = cellInfo ? cellInfo.minedDepth + 1 : 0;
+
+        if (canMineNow) {
+          return (
+            <button
+              onClick={onMine}
+              className="w-full py-1 px-3 bg-purple-600 hover:bg-purple-700 text-white text-sm rounded transition-colors"
+            >
+              Mine Resources
+            </button>
+          );
+        }
+
+        if (tooDeep) {
+          return (
+            <div>
+              <button
+                disabled
+                className="w-full py-1 px-3 bg-gray-700 text-gray-500 text-sm rounded cursor-not-allowed"
+              >
+                Mine Resources
+              </button>
+              <div className="text-xs text-red-400 mt-1">
+                Resources too deep — need Mining {requiredMining}+
+              </div>
+            </div>
+          );
+        }
+
+        return null;
+      })()}
 
       {/* Promotion section - only during place phase */}
       {isPlacePhase && unit.owner === 'player' && !isMaxTier(unit) && (() => {

@@ -48,6 +48,8 @@ export interface Unit {
   hasMined: boolean;
   // State flags
   canActThisTurn: boolean; // False if just placed or promoted
+  // Damage state (resets at end of attacker's turn)
+  damageTaken: number; // Reduces effective defense; resets when attacked player's turn starts
 }
 
 // === Board ===

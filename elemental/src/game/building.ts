@@ -163,6 +163,7 @@ export function createUnitFromDefinition(
     hasAttacked: false,
     hasMined: false,
     canActThisTurn: false, // Units placed this turn cannot act
+    damageTaken: 0,
   };
 }
 

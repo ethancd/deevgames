@@ -153,6 +153,54 @@ export function isValidSpawnPosition(
 }
 
 /**
+ * Determine why a spawn position is invalid.
+ * Returns null if position is valid, otherwise a reason string.
+ */
+export function getSpawnInvalidReason(
+  position: Position,
+  player: PlayerId,
+  board: BoardState
+): 'occupied' | 'enemy_blocking' | 'outside_control' | null {
+  // Position is occupied
+  if (getUnitAt(board, position)) {
+    return 'occupied';
+  }
+
+  // Check each anchor's spawn rectangle
+  const playerUnits = getPlayerUnits(board, player);
+  const startCorner = getStartCorner(player);
+
+  let inAnyRectangle = false;
+
+  for (const anchor of playerUnits) {
+    const rectangle = getSpawnRectangle(startCorner, anchor.position);
+
+    // Check if position is in this rectangle
+    const inRectangle = rectangle.some(
+      (p) => p.x === position.x && p.y === position.y
+    );
+
+    if (inRectangle) {
+      inAnyRectangle = true;
+
+      // Check if this rectangle is blocked
+      if (!hasEnemyInRectangle(rectangle, board, player)) {
+        // Found a valid unblocked rectangle containing this position
+        // So position is valid (empty and in unblocked zone)
+        return null;
+      }
+    }
+  }
+
+  if (!inAnyRectangle) {
+    return 'outside_control';
+  }
+
+  // Position is in at least one rectangle, but all containing rectangles are blocked
+  return 'enemy_blocking';
+}
+
+/**
  * Get the largest spawn zone available to a player.
  * Useful for AI evaluation.
  */

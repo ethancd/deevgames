@@ -157,6 +157,7 @@ function applyPlaceUnit(state: GameState, queuedUnitId: string, position: Positi
     hasAttacked: false,
     hasMined: false,
     canActThisTurn: false, // Just placed, can't act
+    damageTaken: 0,
   };
 
   const newBoard = placeUnit(state.board, newUnit);

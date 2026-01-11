@@ -22,6 +22,8 @@ export function Unit({ unit, isSelected, isOwned, onClick }: UnitProps) {
   }[definition.tier];
 
   const canAct = unit.canActThisTurn && (!unit.hasMoved || !unit.hasAttacked || !unit.hasMined);
+  const isDamaged = unit.damageTaken > 0;
+  const effectiveDefense = Math.max(0, definition.defense - unit.damageTaken);
 
   return (
     <div
@@ -31,20 +33,29 @@ export function Unit({ unit, isSelected, isOwned, onClick }: UnitProps) {
         flex items-center justify-center
         cursor-pointer
         transition-all duration-150
+        relative
         ${isSelected ? 'ring-2 ring-offset-2 ring-blue-500 scale-110' : ''}
         ${!canAct ? 'opacity-60' : 'hover:scale-105'}
         ${isOwned ? 'ring-1 ring-white' : 'ring-1 ring-black/30'}
+        ${isDamaged ? 'ring-2 ring-red-500' : ''}
       `}
       style={{ backgroundColor: color }}
       onClick={(e) => {
         e.stopPropagation();
         onClick();
       }}
-      title={`${definition.name} (T${definition.tier}) - ATK:${definition.attack} DEF:${definition.defense}`}
+      title={`${definition.name} (T${definition.tier}) - ATK:${definition.attack} DEF:${effectiveDefense}${isDamaged ? `/${definition.defense}` : ''}`}
     >
       <span className="text-white font-bold text-xs sm:text-sm drop-shadow-md">
         {definition.tier}
       </span>
+
+      {/* Damage indicator */}
+      {isDamaged && (
+        <span className="absolute -bottom-1 -right-1 bg-red-600 text-white text-[8px] px-1 rounded font-bold">
+          -{unit.damageTaken}
+        </span>
+      )}
     </div>
   );
 }
