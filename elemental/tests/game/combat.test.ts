@@ -124,18 +124,26 @@ describe('Combat Module', () => {
       expect(calculateAttackPower(attacker, defender)).toBe(3); // 2 + 1
     });
 
-    it('no bonus when disadvantaged', () => {
+    it('subtracts 1 when disadvantaged', () => {
       const attacker = createUnit('fire_1', 'player', { x: 0, y: 0 }); // Attack: 2
       const defender = createUnit('water_1', 'ai', { x: 0, y: 1 }); // Water beats Fire
 
-      expect(calculateAttackPower(attacker, defender)).toBe(2); // No bonus
+      expect(calculateAttackPower(attacker, defender)).toBe(1); // 2 - 1
     });
 
-    it('no bonus for same element', () => {
+    it('no modifier for same element', () => {
       const attacker = createUnit('fire_1', 'player', { x: 0, y: 0 });
       const defender = createUnit('fire_1', 'ai', { x: 0, y: 1 });
 
       expect(calculateAttackPower(attacker, defender)).toBe(2);
+    });
+
+    it('attack power cannot go below 0', () => {
+      // Radi has attack 1, disadvantage gives -1, should floor at 0
+      const attacker = createUnit('lightning_1', 'player', { x: 0, y: 0 }); // Attack: 1
+      const defender = createUnit('wind_1', 'ai', { x: 0, y: 1 }); // Wind beats Lightning
+
+      expect(calculateAttackPower(attacker, defender)).toBe(0); // max(0, 1-1)
     });
   });
 
@@ -205,17 +213,16 @@ describe('Combat Module', () => {
       expect(result.eliminated).toBe(true);
     });
 
-    it('elemental disadvantage can prevent a kill', () => {
+    it('elemental disadvantage prevents a kill', () => {
       let board = createEmptyBoard();
       const attacker = createUnit('fire_1', 'player', { x: 5, y: 5 }); // Attack: 2
       const defender = createUnit('water_1', 'ai', { x: 5, y: 4 }); // Defense: 2
-      // Fire is weak to Water, but no penalty - 2 vs 2 = kill
-      // Actually no penalty for being disadvantaged, so this still kills
+      // Fire is weak to Water: 2 - 1 = 1 attack vs 2 defense = survives
       board = addUnit(board, attacker);
       board = addUnit(board, defender);
 
       const result = resolveCombat(board, attacker.id, { x: 5, y: 4 });
-      expect(result.eliminated).toBe(true); // 2 >= 2
+      expect(result.eliminated).toBe(false); // 1 < 2
     });
 
     it('returns original board if attacker not found', () => {
@@ -345,6 +352,114 @@ describe('Combat Module', () => {
       // Fire has advantage over Plant: 6 + 1 = 7 >= 5
       const result = resolveCombat(board, attacker.id, { x: 0, y: 1 });
       expect(result.eliminated).toBe(true);
+    });
+  });
+
+  describe('Combined attacks with elemental modifiers (Phase 2 preview)', () => {
+    // These tests demonstrate how elemental modifiers affect combined attacks
+    // The actual combined attack resolution will be implemented in Phase 2,
+    // but we test the math here to ensure the modifier system works correctly
+
+    it('three disadvantaged 2-atk units cannot kill a 4-def unit', () => {
+      // Scenario: 3x Fire units (2 atk each) vs Water unit (4 def, made up for test)
+      // Fire is weak to Water: each attacker gets -1
+      // Combined: (2-1) + (2-1) + (2-1) = 3 total attack
+      // 3 < 4, so defender survives
+
+      const attacker1 = createUnit('fire_1', 'player', { x: 0, y: 0 }); // 2 atk
+      const attacker2 = createUnit('fire_1', 'player', { x: 1, y: 1 }); // 2 atk
+      const attacker3 = createUnit('fire_1', 'player', { x: 2, y: 2 }); // 2 atk
+      const defender = createUnit('water_3', 'ai', { x: 5, y: 5 }); // 4 def (Aegirinn)
+
+      // Calculate individual attack powers
+      const power1 = calculateAttackPower(attacker1, defender);
+      const power2 = calculateAttackPower(attacker2, defender);
+      const power3 = calculateAttackPower(attacker3, defender);
+
+      expect(power1).toBe(1); // 2 - 1 disadvantage
+      expect(power2).toBe(1);
+      expect(power3).toBe(1);
+
+      // Combined attack
+      const totalAttack = power1 + power2 + power3;
+      const defense = calculateDefense(defender);
+
+      expect(totalAttack).toBe(3);
+      expect(defense).toBe(4);
+      expect(totalAttack < defense).toBe(true); // Defender survives!
+    });
+
+    it('three neutral 2-atk units CAN kill a 4-def unit', () => {
+      // Same scenario but cross-triangle (neutral matchup)
+      // Combined: 2 + 2 + 2 = 6 total attack
+      // 6 >= 4, defender eliminated
+
+      const attacker1 = createUnit('fire_1', 'player', { x: 0, y: 0 }); // 2 atk
+      const attacker2 = createUnit('fire_1', 'player', { x: 1, y: 1 }); // 2 atk
+      const attacker3 = createUnit('fire_1', 'player', { x: 2, y: 2 }); // 2 atk
+      const defender = createUnit('lightning_3', 'ai', { x: 5, y: 5 }); // Cross-triangle
+
+      const power1 = calculateAttackPower(attacker1, defender);
+      const power2 = calculateAttackPower(attacker2, defender);
+      const power3 = calculateAttackPower(attacker3, defender);
+
+      expect(power1).toBe(2); // No modifier
+      expect(power2).toBe(2);
+      expect(power3).toBe(2);
+
+      const totalAttack = power1 + power2 + power3;
+      expect(totalAttack).toBe(6);
+    });
+
+    it('three advantaged 1-atk units CAN kill a 4-def unit', () => {
+      // 3x Lightning units (1 atk each) vs Metal unit (4 def)
+      // Lightning beats Metal: each attacker gets +1
+      // Combined: (1+1) + (1+1) + (1+1) = 6 total attack
+      // 6 >= 4, defender eliminated
+
+      const attacker1 = createUnit('lightning_1', 'player', { x: 0, y: 0 }); // 1 atk
+      const attacker2 = createUnit('lightning_1', 'player', { x: 1, y: 1 }); // 1 atk
+      const attacker3 = createUnit('lightning_1', 'player', { x: 2, y: 2 }); // 1 atk
+      const defender = createUnit('metal_2', 'ai', { x: 5, y: 5 }); // 4 def (Mazaska)
+
+      const power1 = calculateAttackPower(attacker1, defender);
+      const power2 = calculateAttackPower(attacker2, defender);
+      const power3 = calculateAttackPower(attacker3, defender);
+
+      expect(power1).toBe(2); // 1 + 1 advantage
+      expect(power2).toBe(2);
+      expect(power3).toBe(2);
+
+      const totalAttack = power1 + power2 + power3;
+      const defense = calculateDefense(defender);
+
+      expect(totalAttack).toBe(6);
+      expect(defense).toBe(4);
+      expect(totalAttack >= defense).toBe(true); // Defender eliminated!
+    });
+
+    it('mixed elemental modifiers in combined attack', () => {
+      // Fire + Water + Lightning vs Plant (3 def)
+      // Fire vs Plant: advantage (+1) → 2+1 = 3
+      // Water vs Plant: disadvantage (-1) → 2-1 = 1
+      // Lightning vs Plant: neutral → 1
+      // Combined: 3 + 1 + 1 = 5 >= 3, defender eliminated
+
+      const fireAttacker = createUnit('fire_1', 'player', { x: 0, y: 0 }); // 2 atk
+      const waterAttacker = createUnit('water_1', 'player', { x: 1, y: 1 }); // 2 atk
+      const lightningAttacker = createUnit('lightning_1', 'player', { x: 2, y: 2 }); // 1 atk
+      const defender = createUnit('plant_1', 'ai', { x: 5, y: 5 }); // 3 def
+
+      const firePower = calculateAttackPower(fireAttacker, defender);
+      const waterPower = calculateAttackPower(waterAttacker, defender);
+      const lightningPower = calculateAttackPower(lightningAttacker, defender);
+
+      expect(firePower).toBe(3); // advantage
+      expect(waterPower).toBe(1); // disadvantage
+      expect(lightningPower).toBe(1); // neutral (cross-triangle)
+
+      const totalAttack = firePower + waterPower + lightningPower;
+      expect(totalAttack).toBe(5);
     });
   });
 });

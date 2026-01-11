@@ -1,7 +1,7 @@
 import type { BoardState, Position, Unit, PlayerId } from './types';
 import { isAdjacent, getAdjacentPositions, getUnitAt, removeUnit } from './board';
 import { getUnitDefinition } from './units';
-import { getCombatBonus } from './elements';
+import { getAttackModifier } from './elements';
 
 /**
  * Check if a unit can attack (hasn't attacked this turn and can act)
@@ -45,7 +45,10 @@ export function isValidAttack(
 
 /**
  * Calculate the attack power of a unit against a specific defender
- * Includes elemental bonus if applicable
+ * Includes elemental modifier:
+ * - Advantage: +1 attack
+ * - Disadvantage: -1 attack
+ * - Neutral: no modifier
  */
 export function calculateAttackPower(
   attacker: Unit,
@@ -54,17 +57,15 @@ export function calculateAttackPower(
   const attackerDef = getUnitDefinition(attacker.definitionId);
   const defenderDef = getUnitDefinition(defender.definitionId);
 
-  const { attackBonus } = getCombatBonus(
-    attackerDef.element,
-    defenderDef.element
-  );
+  const modifier = getAttackModifier(attackerDef.element, defenderDef.element);
 
-  return attackerDef.attack + attackBonus;
+  // Attack power cannot go below 0
+  return Math.max(0, attackerDef.attack + modifier);
 }
 
 /**
- * Calculate the effective defense of a unit against a specific attacker
- * (In this game, elemental bonus adds to attacker's defense, not defender's)
+ * Calculate the effective defense of a unit
+ * Defense is not modified by elemental matchups.
  */
 export function calculateDefense(defender: Unit): number {
   const defenderDef = getUnitDefinition(defender.definitionId);

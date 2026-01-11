@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import {
   hasAdvantage,
   hasDisadvantage,
-  getCombatBonus,
+  getAttackModifier,
   getAdvantageTarget,
   getWeakness,
   inSameTriangle,
@@ -82,30 +82,29 @@ describe('Elemental System', () => {
     });
   });
 
-  describe('getCombatBonus', () => {
-    it('returns +1/+1 when attacker has advantage', () => {
-      const bonus = getCombatBonus('fire', 'plant');
-      expect(bonus.attackBonus).toBe(1);
-      expect(bonus.defenseBonus).toBe(1);
+  describe('getAttackModifier', () => {
+    it('returns +1 when attacker has advantage', () => {
+      expect(getAttackModifier('fire', 'plant')).toBe(1);
+      expect(getAttackModifier('water', 'fire')).toBe(1);
+      expect(getAttackModifier('lightning', 'metal')).toBe(1);
     });
 
-    it('returns +0/+0 for neutral matchup', () => {
-      const bonus = getCombatBonus('fire', 'lightning');
-      expect(bonus.attackBonus).toBe(0);
-      expect(bonus.defenseBonus).toBe(0);
+    it('returns -1 when attacker has disadvantage', () => {
+      expect(getAttackModifier('plant', 'fire')).toBe(-1);
+      expect(getAttackModifier('fire', 'water')).toBe(-1);
+      expect(getAttackModifier('metal', 'lightning')).toBe(-1);
     });
 
-    it('returns +0/+0 when attacker is disadvantaged', () => {
-      // Even though fire is weak to water, the bonus goes to the attacker only
-      const bonus = getCombatBonus('fire', 'water');
-      expect(bonus.attackBonus).toBe(0);
-      expect(bonus.defenseBonus).toBe(0);
+    it('returns 0 for neutral matchup (cross-triangle)', () => {
+      expect(getAttackModifier('fire', 'lightning')).toBe(0);
+      expect(getAttackModifier('plant', 'metal')).toBe(0);
+      expect(getAttackModifier('water', 'wind')).toBe(0);
     });
 
-    it('returns +0/+0 for same element', () => {
-      const bonus = getCombatBonus('fire', 'fire');
-      expect(bonus.attackBonus).toBe(0);
-      expect(bonus.defenseBonus).toBe(0);
+    it('returns 0 for same element', () => {
+      expect(getAttackModifier('fire', 'fire')).toBe(0);
+      expect(getAttackModifier('plant', 'plant')).toBe(0);
+      expect(getAttackModifier('metal', 'metal')).toBe(0);
     });
   });
 

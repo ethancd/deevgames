@@ -33,17 +33,24 @@ export function hasDisadvantage(attacker: Element, defender: Element): boolean {
 }
 
 /**
- * Get combat bonuses for an attack
- * Returns +1 attack and +1 defense if attacker has advantage
+ * Get combat modifier for an attack
+ * - Advantage: +1 attack
+ * - Disadvantage: -1 attack
+ * - Neutral: 0
+ *
+ * Defense is never modified by elements.
  */
-export function getCombatBonus(
+export function getAttackModifier(
   attackerElement: Element,
   defenderElement: Element
-): { attackBonus: number; defenseBonus: number } {
+): number {
   if (hasAdvantage(attackerElement, defenderElement)) {
-    return { attackBonus: 1, defenseBonus: 1 };
+    return 1;
   }
-  return { attackBonus: 0, defenseBonus: 0 };
+  if (hasDisadvantage(attackerElement, defenderElement)) {
+    return -1;
+  }
+  return 0;
 }
 
 /**
