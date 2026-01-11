@@ -120,6 +120,11 @@ export function addUnit(board: BoardState, unit: Unit): BoardState {
 }
 
 /**
+ * Alias for addUnit - place a unit on the board
+ */
+export const placeUnit = addUnit;
+
+/**
  * Remove a unit from the board (immutably)
  */
 export function removeUnit(board: BoardState, unitId: string): BoardState {

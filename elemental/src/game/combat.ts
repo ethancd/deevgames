@@ -169,3 +169,78 @@ export function canBeEliminated(
   const defenseValue = calculateDefense(target);
   return attackPower >= defenseValue;
 }
+
+/**
+ * Calculate combined attack power from multiple attackers against a defender.
+ * Each attacker's elemental modifier is applied individually before summing.
+ */
+export function calculateCombinedAttackPower(
+  attackers: Unit[],
+  defender: Unit
+): number {
+  return attackers.reduce((total, attacker) => {
+    return total + calculateAttackPower(attacker, defender);
+  }, 0);
+}
+
+/**
+ * Check if a group of attackers can eliminate a target with a combined attack
+ */
+export function canBeEliminatedByCombined(
+  target: Unit,
+  attackers: Unit[]
+): boolean {
+  const totalAttack = calculateCombinedAttackPower(attackers, target);
+  const defenseValue = calculateDefense(target);
+  return totalAttack >= defenseValue;
+}
+
+/**
+ * Resolve a combined attack from multiple attackers against a single defender.
+ * All attackers must be adjacent to the defender.
+ * Returns the updated board state and whether the defender was eliminated.
+ */
+export function resolveCombinedCombat(
+  board: BoardState,
+  attackerIds: string[],
+  defenderPosition: Position
+): { board: BoardState; eliminated: boolean; totalAttack: number } {
+  const defender = getUnitAt(board, defenderPosition);
+  if (!defender) {
+    return { board, eliminated: false, totalAttack: 0 };
+  }
+
+  // Get all valid attackers
+  const attackers: Unit[] = [];
+  for (const id of attackerIds) {
+    const attacker = board.units.find((u) => u.id === id);
+    if (attacker && isAdjacent(attacker.position, defenderPosition)) {
+      attackers.push(attacker);
+    }
+  }
+
+  if (attackers.length === 0) {
+    return { board, eliminated: false, totalAttack: 0 };
+  }
+
+  // Calculate combined attack power
+  const totalAttack = calculateCombinedAttackPower(attackers, defender);
+  const defenseValue = calculateDefense(defender);
+
+  // Mark all attackers as having attacked
+  let newBoard: BoardState = {
+    ...board,
+    units: board.units.map((u) =>
+      attackerIds.includes(u.id) ? { ...u, hasAttacked: true } : u
+    ),
+  };
+
+  // If combined attack >= defense, defender is eliminated
+  if (totalAttack >= defenseValue) {
+    newBoard = removeUnit(newBoard, defender.id);
+    return { board: newBoard, eliminated: true, totalAttack };
+  }
+
+  return { board: newBoard, eliminated: false, totalAttack };
+}
+
