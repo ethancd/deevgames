@@ -92,6 +92,9 @@ export interface PlayerState {
   resources: number;
   buildQueue: QueuedUnit[];
   startCorner: Position; // (0,0) or (9,9)
+  // Visible stats for opponent tracking (gained is always visible, spent updates on place not queue)
+  resourcesGained: number; // Total resources ever mined
+  resourcesSpent: number; // Total cost of placed pieces (updates when placed, not queued)
 }
 
 export interface GameState {

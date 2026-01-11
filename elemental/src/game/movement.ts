@@ -3,7 +3,6 @@ import {
   isValidPosition,
   isOccupied,
   manhattanDistance,
-  BOARD_SIZE,
 } from './board';
 import { getUnitDefinition } from './units';
 

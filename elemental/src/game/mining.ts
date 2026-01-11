@@ -1,5 +1,5 @@
-import type { BoardState, Cell, Unit, GameState, PlayerId } from './types';
-import { getCell, updateCell, INITIAL_RESOURCE_LAYERS } from './board';
+import type { BoardState, Cell, Unit } from './types';
+import { getCell, updateCell } from './board';
 import { getUnitDefinition } from './units';
 
 /**
@@ -51,11 +51,6 @@ export function calculateMiningYield(unit: Unit, cell: Cell): number {
   // How many layers can we reach from the top?
   // We can reach depths from topLayerDepth to miningPower
   const reachableDepth = miningPower;
-  const deepestReachableLayer = reachableDepth;
-
-  // But we can only take what's there
-  // Layers exist from (minedDepth+1) to (minedDepth + remainingLayers)
-  const deepestExistingLayer = cell.minedDepth + remainingLayers;
 
   // We take from topLayerDepth to min(reachableDepth, deepestExistingLayer)
   const layersToTake = Math.min(

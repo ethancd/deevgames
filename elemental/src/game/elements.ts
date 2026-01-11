@@ -74,11 +74,11 @@ export function getWeakness(element: Element): Element {
  */
 export function inSameTriangle(a: Element, b: Element): boolean {
   const triangle1: Element[] = ['fire', 'plant', 'water'];
-  const triangle2: Element[] = ['lightning', 'metal', 'wind'];
 
   const aInT1 = triangle1.includes(a);
   const bInT1 = triangle1.includes(b);
 
+  // Both in triangle1, or both NOT in triangle1 (meaning both in triangle2)
   return aInT1 === bInT1;
 }
 

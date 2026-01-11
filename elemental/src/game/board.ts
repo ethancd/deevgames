@@ -214,6 +214,8 @@ export function createInitialGameState(): GameState {
     resources: 0,
     buildQueue: [],
     startCorner: getStartCorner('player'),
+    resourcesGained: 0,
+    resourcesSpent: 0,
   };
 
   const aiState: PlayerState = {
@@ -221,6 +223,8 @@ export function createInitialGameState(): GameState {
     resources: 0,
     buildQueue: [],
     startCorner: getStartCorner('ai'),
+    resourcesGained: 0,
+    resourcesSpent: 0,
   };
 
   const turnState: TurnState = {
