@@ -8,6 +8,7 @@ import { executeMine, canMine } from '../game/mining';
 import { useAction, endTurn as endTurnLogic, startActionPhase } from '../game/turn';
 import { checkVictory } from '../game/victory';
 import { applyAction as applyAIAction } from '../ai/simulate';
+import { getBuildCost, getBuildTime, canBuildUnit } from '../game/building';
 
 function gameReducer(state: GameState, action: GameAction): GameState {
   switch (action.type) {
@@ -209,6 +210,48 @@ function gameReducer(state: GameState, action: GameAction): GameState {
       };
     }
 
+    case 'QUEUE_UNIT': {
+      if (state.turn.phase !== 'queue') {
+        return state;
+      }
+
+      const currentPlayer = state.turn.currentPlayer;
+      const playerState = state.players[currentPlayer];
+      const buildState = { queue: [], crystals: playerState.resources };
+
+      // Check if can build (affordable + meets tech requirements)
+      if (!canBuildUnit(action.definitionId, currentPlayer, state.board, buildState)) {
+        return state;
+      }
+
+      const cost = getBuildCost(action.definitionId);
+      const buildTime = getBuildTime(action.definitionId);
+
+      // Generate unique ID for queued unit
+      const queuedId = `queued-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+
+      return {
+        ...state,
+        players: {
+          ...state.players,
+          [currentPlayer]: {
+            ...playerState,
+            resources: playerState.resources - cost,
+            resourcesSpent: playerState.resourcesSpent + cost,
+            buildQueue: [
+              ...playerState.buildQueue,
+              {
+                id: queuedId,
+                definitionId: action.definitionId,
+                turnsRemaining: buildTime,
+                owner: currentPlayer,
+              },
+            ],
+          },
+        },
+      };
+    }
+
     case 'END_TURN': {
       const newState = endTurnLogic(state);
       return {
@@ -273,6 +316,10 @@ export function useGameState() {
     dispatch({ type: 'END_ACTION_PHASE' });
   }, []);
 
+  const queueUnit = useCallback((definitionId: string) => {
+    dispatch({ type: 'QUEUE_UNIT', definitionId });
+  }, []);
+
   const endTurn = useCallback(() => {
     dispatch({ type: 'END_TURN' });
   }, []);
@@ -306,6 +353,7 @@ export function useGameState() {
     mineWith,
     endPlacePhase,
     endActionPhase,
+    queueUnit,
     endTurn,
     resign,
     applyAIAction: applyAIActionToState,

@@ -1,6 +1,6 @@
 import type { BoardState, Unit, PlayerId, Position } from './types';
 import { getUnitDefinition, UNIT_DEFINITIONS } from './units';
-import { placeUnit } from './board';
+import { placeUnit, getPlayerUnits } from './board';
 import { isValidSpawnPosition, getAllSpawnPositions } from './spawning';
 
 /**
@@ -20,21 +20,19 @@ export interface BuildState {
 }
 
 /**
- * Get the cost to build a unit based on tier
- * Tier 1: 1 crystal, Tier 2: 2 crystals, Tier 3: 3 crystals, Tier 4: 4 crystals
+ * Get the cost to build a unit (from unit definition)
  */
 export function getBuildCost(definitionId: string): number {
   const def = getUnitDefinition(definitionId);
-  return def.tier;
+  return def.cost;
 }
 
 /**
- * Get the build time for a unit based on tier
- * Tier 1: 1 turn, Tier 2: 2 turns, Tier 3: 3 turns, Tier 4: 4 turns
+ * Get the build time for a unit (from unit definition)
  */
 export function getBuildTime(definitionId: string): number {
   const def = getUnitDefinition(definitionId);
-  return def.tier;
+  return def.buildTime;
 }
 
 /**
@@ -43,6 +41,56 @@ export function getBuildTime(definitionId: string): number {
 export function canAfford(buildState: BuildState, definitionId: string): boolean {
   const cost = getBuildCost(definitionId);
   return buildState.crystals >= cost;
+}
+
+/**
+ * Check if a player meets the tech requirements to build a unit.
+ * - T1 units: Always available
+ * - T2+ units: Require a unit of the same element at tier (N-1) or higher on the board
+ */
+export function meetsTechRequirement(
+  definitionId: string,
+  player: PlayerId,
+  board: BoardState
+): boolean {
+  const def = getUnitDefinition(definitionId);
+
+  // T1 units are always available
+  if (def.tier === 1) {
+    return true;
+  }
+
+  // For T2+, need a unit of same element at tier (N-1) or higher
+  const requiredTier = def.tier - 1;
+  const playerUnits = getPlayerUnits(board, player);
+
+  return playerUnits.some((unit) => {
+    const unitDef = getUnitDefinition(unit.definitionId);
+    return unitDef.element === def.element && unitDef.tier >= requiredTier;
+  });
+}
+
+/**
+ * Get the required tier for building a unit (tier - 1, or 0 for T1)
+ */
+export function getRequiredTier(definitionId: string): number {
+  const def = getUnitDefinition(definitionId);
+  return Math.max(0, def.tier - 1);
+}
+
+/**
+ * Check if a player can build a unit (affordable + meets tech requirements)
+ */
+export function canBuildUnit(
+  definitionId: string,
+  player: PlayerId,
+  board: BoardState,
+  buildState: BuildState
+): boolean {
+  return (
+    canAfford(buildState, definitionId) &&
+    meetsTechRequirement(definitionId, player, board)
+  );
 }
 
 /**

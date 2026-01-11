@@ -7,6 +7,7 @@ import { PhaseIndicator } from './PhaseIndicator';
 import { ResourceDisplay } from './ResourceDisplay';
 import { BuildQueue } from './BuildQueue';
 import { UnitInfo } from './UnitInfo';
+import { UnitShop } from './UnitShop';
 import { VictoryScreen } from './VictoryScreen';
 import { getUnitById } from '../game/board';
 import { canMine } from '../game/mining';
@@ -23,6 +24,7 @@ export function GameScreen() {
     mineWith,
     endPlacePhase,
     endActionPhase,
+    queueUnit,
     endTurn,
     applyAIAction,
     resetGame,
@@ -205,6 +207,14 @@ export function GameScreen() {
               queue={state.players.player.buildQueue}
               isOwner={true}
             />
+            {state.turn.phase === 'queue' && isPlayerTurn && !isThinking && (
+              <UnitShop
+                resources={state.players.player.resources}
+                player="player"
+                board={state.board}
+                onQueueUnit={queueUnit}
+              />
+            )}
             <UnitInfo
               unit={selectedUnitData}
               onMine={handleMine}
