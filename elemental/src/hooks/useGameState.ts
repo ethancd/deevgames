@@ -1,11 +1,13 @@
 import { useReducer, useCallback, useMemo } from 'react';
 import type { GameState, GameAction, Position } from '../game/types';
+import type { AIAction } from '../ai/types';
 import { createInitialGameState, getUnitById } from '../game/board';
 import { getValidMoves } from '../game/movement';
 import { getValidAttacks, resolveCombat } from '../game/combat';
 import { executeMine, canMine } from '../game/mining';
 import { useAction, endTurn as endTurnLogic } from '../game/turn';
 import { checkVictory } from '../game/victory';
+import { applyAction as applyAIAction } from '../ai/simulate';
 
 function gameReducer(state: GameState, action: GameAction): GameState {
   switch (action.type) {
@@ -218,6 +220,15 @@ function gameReducer(state: GameState, action: GameAction): GameState {
       };
     }
 
+    case 'APPLY_AI_ACTION': {
+      // Apply an AI action to the state
+      return applyAIAction(state, action.aiAction);
+    }
+
+    case 'RESET_GAME': {
+      return createInitialGameState();
+    }
+
     default:
       return state;
   }
@@ -258,6 +269,14 @@ export function useGameState() {
     dispatch({ type: 'RESIGN' });
   }, []);
 
+  const applyAIActionToState = useCallback((aiAction: AIAction) => {
+    dispatch({ type: 'APPLY_AI_ACTION', aiAction });
+  }, []);
+
+  const resetGame = useCallback(() => {
+    dispatch({ type: 'RESET_GAME' });
+  }, []);
+
   const selectedUnitData = useMemo(() => {
     if (!state.selectedUnit) return null;
     return getUnitById(state.board, state.selectedUnit);
@@ -276,6 +295,8 @@ export function useGameState() {
     endActionPhase,
     endTurn,
     resign,
+    applyAIAction: applyAIActionToState,
+    resetGame,
     selectedUnitData,
     isPlayerTurn,
     canEndTurn,

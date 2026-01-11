@@ -1,4 +1,6 @@
+import { useEffect, useState } from 'react';
 import { useGameState } from '../hooks/useGameState';
+import { useAI } from '../hooks/useAI';
 import { Board } from './Board';
 import { ActionBar } from './ActionBar';
 import { PhaseIndicator } from './PhaseIndicator';
@@ -9,6 +11,7 @@ import { VictoryScreen } from './VictoryScreen';
 import { getUnitById } from '../game/board';
 import { canMine } from '../game/mining';
 import type { Position } from '../game/types';
+import type { AIDifficulty } from '../ai/types';
 
 export function GameScreen() {
   const {
@@ -20,12 +23,32 @@ export function GameScreen() {
     mineWith,
     endActionPhase,
     endTurn,
+    applyAIAction,
+    resetGame,
     selectedUnitData,
     isPlayerTurn,
   } = useGameState();
 
+  const [aiDifficulty, setAIDifficulty] = useState<AIDifficulty>('medium');
+
+  const { isThinking, executeAITurn, setDifficulty } = useAI({
+    difficulty: aiDifficulty,
+    thinkingDelay: 400,
+  });
+
+  // Trigger AI turn when it becomes AI's turn
+  useEffect(() => {
+    if (
+      state.turn.currentPlayer === 'ai' &&
+      state.phase === 'playing' &&
+      !isThinking
+    ) {
+      executeAITurn(state, applyAIAction);
+    }
+  }, [state.turn.currentPlayer, state.phase, isThinking, state, executeAITurn, applyAIAction]);
+
   const handleCellClick = (position: Position) => {
-    if (!isPlayerTurn || state.turn.phase !== 'action') {
+    if (!isPlayerTurn || state.turn.phase !== 'action' || isThinking) {
       return;
     }
 
@@ -49,7 +72,7 @@ export function GameScreen() {
   };
 
   const handleUnitClick = (unitId: string) => {
-    if (!isPlayerTurn || state.turn.phase !== 'action') {
+    if (!isPlayerTurn || state.turn.phase !== 'action' || isThinking) {
       return;
     }
 
@@ -74,7 +97,7 @@ export function GameScreen() {
   };
 
   const handleMine = () => {
-    if (state.selectedUnit) {
+    if (state.selectedUnit && !isThinking) {
       mineWith(state.selectedUnit);
     }
   };
@@ -86,7 +109,12 @@ export function GameScreen() {
   };
 
   const handlePlayAgain = () => {
-    window.location.reload();
+    resetGame();
+  };
+
+  const handleDifficultyChange = (newDifficulty: AIDifficulty) => {
+    setAIDifficulty(newDifficulty);
+    setDifficulty(newDifficulty);
   };
 
   return (
@@ -99,12 +127,30 @@ export function GameScreen() {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-4">
-          <h1 className="text-xl font-bold text-gray-100">Elemental Tactics</h1>
-          <PhaseIndicator
-            turnNumber={state.turn.turnNumber}
-            phase={state.turn.phase}
-            currentPlayer={state.turn.currentPlayer}
-          />
+          <div className="flex items-center gap-4">
+            <h1 className="text-xl font-bold text-gray-100">Elemental Tactics</h1>
+            {/* Difficulty selector */}
+            <select
+              value={aiDifficulty}
+              onChange={(e) => handleDifficultyChange(e.target.value as AIDifficulty)}
+              className="bg-gray-700 text-white px-2 py-1 rounded text-sm"
+              disabled={!isPlayerTurn}
+            >
+              <option value="easy">Easy AI</option>
+              <option value="medium">Medium AI</option>
+              <option value="hard">Hard AI</option>
+            </select>
+          </div>
+          <div className="flex items-center gap-4">
+            {isThinking && (
+              <span className="text-yellow-400 animate-pulse">AI thinking...</span>
+            )}
+            <PhaseIndicator
+              turnNumber={state.turn.turnNumber}
+              phase={state.turn.phase}
+              currentPlayer={state.turn.currentPlayer}
+            />
+          </div>
         </div>
 
         {/* Main layout */}
@@ -123,15 +169,17 @@ export function GameScreen() {
 
           {/* Center - Board */}
           <div className="flex-1 flex flex-col items-center">
-            <Board
-              board={state.board}
-              currentPlayer={state.turn.currentPlayer}
-              selectedUnit={state.selectedUnit}
-              validMoves={state.validMoves}
-              validAttacks={state.validAttacks}
-              onCellClick={handleCellClick}
-              onUnitClick={handleUnitClick}
-            />
+            <div className={isThinking ? 'opacity-75 pointer-events-none' : ''}>
+              <Board
+                board={state.board}
+                currentPlayer={state.turn.currentPlayer}
+                selectedUnit={state.selectedUnit}
+                validMoves={state.validMoves}
+                validAttacks={state.validAttacks}
+                onCellClick={handleCellClick}
+                onUnitClick={handleUnitClick}
+              />
+            </div>
 
             {/* Action bar below board */}
             <div className="mt-4">
@@ -140,7 +188,7 @@ export function GameScreen() {
                 phase={state.turn.phase}
                 onEndActionPhase={endActionPhase}
                 onEndTurn={endTurn}
-                isPlayerTurn={isPlayerTurn}
+                isPlayerTurn={isPlayerTurn && !isThinking}
               />
             </div>
           </div>
@@ -165,9 +213,15 @@ export function GameScreen() {
 
         {/* Controls hint */}
         <div className="mt-4 text-center text-gray-500 text-sm">
-          Click a unit to select, then click a highlighted cell to move/attack.
-          {selectedUnitData && !selectedUnitData.hasMined && canMineHere() && (
-            <span className="text-purple-400"> You can mine here!</span>
+          {isThinking ? (
+            <span className="text-yellow-400">AI is making its move...</span>
+          ) : (
+            <>
+              Click a unit to select, then click a highlighted cell to move/attack.
+              {selectedUnitData && !selectedUnitData.hasMined && canMineHere() && (
+                <span className="text-purple-400"> You can mine here!</span>
+              )}
+            </>
           )}
         </div>
       </div>

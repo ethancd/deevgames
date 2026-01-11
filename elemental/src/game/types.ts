@@ -124,4 +124,6 @@ export type GameAction =
   | { type: 'PROMOTE_UNIT'; unitId: string }
   | { type: 'PLACE_UNIT'; queuedUnitId: string; position: Position }
   | { type: 'END_TURN' }
-  | { type: 'RESIGN' };
+  | { type: 'RESIGN' }
+  | { type: 'APPLY_AI_ACTION'; aiAction: import('../ai/types').AIAction }
+  | { type: 'RESET_GAME' };
