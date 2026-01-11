@@ -301,7 +301,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
   },
   {
     id: 'metal_3',
-    name: 'Tunkasila',
+    name: 'Tankasila',
     element: 'metal',
     tier: 3,
     archetype: 'expand',

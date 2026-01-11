@@ -1,15 +1,28 @@
 import type { Unit } from '../game/types';
 import { getUnitDefinition } from '../game/units';
 import { getElementHex } from '../utils/colors';
+import { getPromotionCost, getPromotedDefinitionId, isMaxTier } from '../game/promotion';
 
 interface UnitInfoProps {
   unit: Unit | null;
   previewDefinitionId?: string | null; // For showing stats of units not yet on board
   onMine?: () => void;
   canMine?: boolean;
+  // Promotion props
+  isPlacePhase?: boolean;
+  resources?: number;
+  onPromote?: () => void;
 }
 
-export function UnitInfo({ unit, previewDefinitionId, onMine, canMine }: UnitInfoProps) {
+export function UnitInfo({
+  unit,
+  previewDefinitionId,
+  onMine,
+  canMine,
+  isPlacePhase = false,
+  resources = 0,
+  onPromote,
+}: UnitInfoProps) {
   // Show preview stats if no unit but have a preview definition
   if (!unit && previewDefinitionId) {
     const def = getUnitDefinition(previewDefinitionId);
@@ -124,6 +137,43 @@ export function UnitInfo({ unit, previewDefinitionId, onMine, canMine }: UnitInf
           Mine Resources
         </button>
       )}
+
+      {/* Promotion section - only during place phase */}
+      {isPlacePhase && unit.owner === 'player' && !isMaxTier(unit) && (() => {
+        const cost = getPromotionCost(unit);
+        const promotedDefId = getPromotedDefinitionId(unit);
+        const promotedDef = promotedDefId ? getUnitDefinition(promotedDefId) : null;
+        const canAffordPromotion = cost !== null && resources >= cost;
+
+        return (
+          <div className="mt-3 pt-3 border-t border-gray-700">
+            <div className="text-xs text-yellow-400 mb-2">Upgrade Available</div>
+            {promotedDef && (
+              <div className="text-xs text-gray-400 mb-2">
+                → {promotedDef.name} (T{promotedDef.tier})
+              </div>
+            )}
+            <button
+              onClick={onPromote}
+              disabled={!canAffordPromotion || !onPromote}
+              className={`
+                w-full py-1 px-3 text-sm rounded transition-colors
+                ${canAffordPromotion
+                  ? 'bg-yellow-600 hover:bg-yellow-700 text-white'
+                  : 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                }
+              `}
+            >
+              Upgrade ({cost} 💎)
+            </button>
+            {!canAffordPromotion && cost !== null && (
+              <div className="text-xs text-red-400 mt-1">
+                Need {cost - resources} more crystals
+              </div>
+            )}
+          </div>
+        );
+      })()}
     </div>
   );
 }

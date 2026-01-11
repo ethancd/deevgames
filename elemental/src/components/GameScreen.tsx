@@ -27,6 +27,7 @@ export function GameScreen() {
     endActionPhase,
     queueUnit,
     placeUnit,
+    promoteUnit,
     endTurn,
     applyAIAction,
     resetGame,
@@ -36,11 +37,13 @@ export function GameScreen() {
 
   const [aiDifficulty, setAIDifficulty] = useState<AIDifficulty>('medium');
   const [selectedReadyUnitId, setSelectedReadyUnitId] = useState<string | null>(null);
+  const [selectedPlaceUnitId, setSelectedPlaceUnitId] = useState<string | null>(null);
 
-  // Clear selected ready unit when phase changes or turn ends
+  // Clear place phase selections when phase changes or turn ends
   useEffect(() => {
     if (state.turn.phase !== 'place' || !isPlayerTurn) {
       setSelectedReadyUnitId(null);
+      setSelectedPlaceUnitId(null);
     }
   }, [state.turn.phase, isPlayerTurn]);
 
@@ -60,6 +63,12 @@ export function GameScreen() {
     );
     return queuedUnit?.definitionId ?? null;
   }, [selectedReadyUnitId, state.players.player.buildQueue]);
+
+  // Get the unit data for unit selected during place phase (for promotion)
+  const selectedPlaceUnitData = useMemo(() => {
+    if (!selectedPlaceUnitId) return null;
+    return getUnitById(state.board, selectedPlaceUnitId);
+  }, [selectedPlaceUnitId, state.board]);
 
   const { isThinking, executeAITurn, setDifficulty } = useAI({
     difficulty: aiDifficulty,
@@ -122,12 +131,32 @@ export function GameScreen() {
   };
 
   const handleUnitClick = (unitId: string) => {
-    if (!isPlayerTurn || state.turn.phase !== 'action' || isThinking) {
+    if (!isPlayerTurn || isThinking) {
       return;
     }
 
     const unit = getUnitById(state.board, unitId);
     if (!unit) return;
+
+    // Handle place phase - selecting units for promotion
+    if (state.turn.phase === 'place') {
+      if (unit.owner === 'player') {
+        // Clear ready unit selection if selecting a board unit
+        setSelectedReadyUnitId(null);
+        // Toggle selection
+        if (selectedPlaceUnitId === unitId) {
+          setSelectedPlaceUnitId(null);
+        } else {
+          setSelectedPlaceUnitId(unitId);
+        }
+      }
+      return;
+    }
+
+    // Handle action phase
+    if (state.turn.phase !== 'action') {
+      return;
+    }
 
     if (unit.owner === 'player') {
       if (state.selectedUnit === unitId) {
@@ -149,6 +178,13 @@ export function GameScreen() {
   const handleMine = () => {
     if (state.selectedUnit && !isThinking) {
       mineWith(state.selectedUnit);
+    }
+  };
+
+  const handlePromote = () => {
+    if (selectedPlaceUnitId && !isThinking) {
+      promoteUnit(selectedPlaceUnitId);
+      setSelectedPlaceUnitId(null);
     }
   };
 
@@ -269,10 +305,13 @@ export function GameScreen() {
               />
             )}
             <UnitInfo
-              unit={selectedUnitData}
+              unit={selectedPlaceUnitData ?? selectedUnitData}
               previewDefinitionId={selectedReadyDefinitionId}
               onMine={handleMine}
               canMine={canMineHere()}
+              isPlacePhase={state.turn.phase === 'place' && isPlayerTurn && !isThinking}
+              resources={state.players.player.resources}
+              onPromote={handlePromote}
             />
           </div>
         </div>

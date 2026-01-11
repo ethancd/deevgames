@@ -10,6 +10,7 @@ import { checkVictory } from '../game/victory';
 import { applyAction as applyAIAction } from '../ai/simulate';
 import { getBuildCost, getBuildTime, canBuildUnit, meetsTechRequirement, createUnitFromDefinition } from '../game/building';
 import { isValidSpawnPosition } from '../game/spawning';
+import { promoteUnit, canPromote, getPromotionCost } from '../game/promotion';
 
 function gameReducer(state: GameState, action: GameAction): GameState {
   switch (action.type) {
@@ -249,6 +250,45 @@ function gameReducer(state: GameState, action: GameAction): GameState {
       };
     }
 
+    case 'PROMOTE_UNIT': {
+      if (state.turn.phase !== 'place') {
+        return state;
+      }
+
+      const currentPlayer = state.turn.currentPlayer;
+      const playerState = state.players[currentPlayer];
+      const unit = getUnitById(state.board, action.unitId);
+
+      if (!unit || unit.owner !== currentPlayer) {
+        return state;
+      }
+
+      const buildState = { queue: [], crystals: playerState.resources };
+      if (!canPromote(unit, buildState)) {
+        return state;
+      }
+
+      const result = promoteUnit(state.board, action.unitId, buildState);
+      if (!result) {
+        return state;
+      }
+
+      const cost = getPromotionCost(unit) ?? 0;
+
+      return {
+        ...state,
+        board: result.board,
+        players: {
+          ...state.players,
+          [currentPlayer]: {
+            ...playerState,
+            resources: playerState.resources - cost,
+            resourcesSpent: playerState.resourcesSpent + cost,
+          },
+        },
+      };
+    }
+
     case 'END_ACTION_PHASE': {
       if (state.turn.phase !== 'action') {
         return state;
@@ -380,6 +420,10 @@ export function useGameState() {
     dispatch({ type: 'PLACE_UNIT', queuedUnitId, position });
   }, []);
 
+  const promoteUnitAction = useCallback((unitId: string) => {
+    dispatch({ type: 'PROMOTE_UNIT', unitId });
+  }, []);
+
   const endTurn = useCallback(() => {
     dispatch({ type: 'END_TURN' });
   }, []);
@@ -415,6 +459,7 @@ export function useGameState() {
     endActionPhase,
     queueUnit,
     placeUnit,
+    promoteUnit: promoteUnitAction,
     endTurn,
     resign,
     applyAIAction: applyAIActionToState,
