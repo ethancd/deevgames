@@ -1,4 +1,4 @@
-import { useReducer, useCallback, useMemo } from 'react';
+import { useReducer, useCallback, useMemo, useEffect, useRef } from 'react';
 import type { GameState, GameAction, Position } from '../game/types';
 import type { AIAction } from '../ai/types';
 import { createInitialGameState, getUnitById } from '../game/board';
@@ -11,6 +11,7 @@ import { applyAction as applyAIAction } from '../ai/simulate';
 import { getBuildCost, getBuildTime, canBuildUnit, meetsTechRequirement, createUnitFromDefinition } from '../game/building';
 import { isValidSpawnPosition } from '../game/spawning';
 import { promoteUnit, canPromote, getPromotionCost } from '../game/promotion';
+import { loadGameState, saveGameState, clearGameState } from '../utils/persistence';
 
 function gameReducer(state: GameState, action: GameAction): GameState {
   switch (action.type) {
@@ -381,8 +382,36 @@ function gameReducer(state: GameState, action: GameAction): GameState {
   }
 }
 
+function getInitialState(): GameState {
+  const saved = loadGameState();
+  if (saved) {
+    return saved;
+  }
+  return createInitialGameState();
+}
+
 export function useGameState() {
-  const [state, dispatch] = useReducer(gameReducer, undefined, createInitialGameState);
+  const [state, dispatch] = useReducer(gameReducer, undefined, getInitialState);
+  const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Save state to localStorage on changes (debounced)
+  useEffect(() => {
+    // Clear any pending save
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+
+    // Debounce saves by 500ms to avoid excessive writes
+    saveTimeoutRef.current = setTimeout(() => {
+      saveGameState(state);
+    }, 500);
+
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+    };
+  }, [state]);
 
   const selectUnit = useCallback((unitId: string) => {
     dispatch({ type: 'SELECT_UNIT', unitId });
@@ -437,6 +466,7 @@ export function useGameState() {
   }, []);
 
   const resetGame = useCallback(() => {
+    clearGameState();
     dispatch({ type: 'RESET_GAME' });
   }, []);
 
