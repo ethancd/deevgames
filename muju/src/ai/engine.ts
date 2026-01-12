@@ -156,6 +156,11 @@ export class AIEngine {
       let maxScore = -Infinity;
 
       for (const action of actions) {
+        // Time check in loop
+        if (Date.now() - this.startTime > this.config.maxTime) {
+          break;
+        }
+
         const newState = applyAction(state, action);
 
         // Determine if next level should maximize or minimize
@@ -184,6 +189,11 @@ export class AIEngine {
       let minScore = Infinity;
 
       for (const action of actions) {
+        // Time check in loop
+        if (Date.now() - this.startTime > this.config.maxTime) {
+          break;
+        }
+
         const newState = applyAction(state, action);
 
         // After opponent acts, check if it's back to our player
