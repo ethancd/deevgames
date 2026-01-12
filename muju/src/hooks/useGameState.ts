@@ -434,6 +434,15 @@ function gameReducerWithSave(state: GameState, action: GameAction): GameState {
     saveGameState(newState);
   }
 
+  // Save when turn changes to player (catches AI turn ending via APPLY_AI_ACTION)
+  if (
+    newState.turn.currentPlayer === 'player' &&
+    state.turn.currentPlayer === 'ai' &&
+    newState !== state
+  ) {
+    saveGameState(newState);
+  }
+
   // Also save when victory is detected (from MOVE or ATTACK)
   if (newState.phase === 'victory' && state.phase !== 'victory') {
     saveGameState(newState);

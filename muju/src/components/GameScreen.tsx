@@ -337,7 +337,7 @@ export function GameScreen() {
         {/* Main layout - vertical with board centered */}
         <div className="flex flex-col items-center gap-4">
           {/* Player info row - above board */}
-          <div className="flex flex-wrap items-start justify-center gap-3 w-full max-w-3xl">
+          <div className="relative flex flex-wrap items-start justify-center gap-3 w-full max-w-3xl">
             <ResourceDisplay
               playerState={state.players.player}
               viewerIsOwner={true}
@@ -360,28 +360,10 @@ export function GameScreen() {
               />
             )}
             <ElementLegend />
-          </div>
 
-          {/* Board with unit info popover */}
-          <div className="relative">
-            <div className={isThinking ? 'opacity-75 pointer-events-none' : ''}>
-              <Board
-                board={state.board}
-                currentPlayer={state.turn.currentPlayer}
-                selectedUnit={state.selectedUnit}
-                selectedUnitElement={selectedUnitData ? getUnitDefinition(selectedUnitData.definitionId).element : null}
-                validMoves={state.validMoves}
-                validAttacks={state.validAttacks}
-                validSpawns={validSpawns}
-                invalidSpawnPosition={spawnFeedback?.position ?? null}
-                onCellClick={handleCellClick}
-                onUnitClick={handleUnitClick}
-              />
-            </div>
-
-            {/* Unit info popover - positioned over the board */}
+            {/* Unit info popover - overlays player info area */}
             {(selectedPlaceUnitData || selectedUnitData || viewedEnemyUnitData || selectedReadyDefinitionId) && (
-              <div className="absolute top-2 right-2 w-48 z-10">
+              <div className="absolute top-0 right-0 w-48 z-20">
                 <UnitInfo
                   unit={selectedPlaceUnitData ?? selectedUnitData ?? viewedEnemyUnitData}
                   previewDefinitionId={selectedReadyDefinitionId}
@@ -396,6 +378,22 @@ export function GameScreen() {
                 />
               </div>
             )}
+          </div>
+
+          {/* Board */}
+          <div className={isThinking ? 'opacity-75 pointer-events-none' : ''}>
+            <Board
+              board={state.board}
+              currentPlayer={state.turn.currentPlayer}
+              selectedUnit={state.selectedUnit}
+              selectedUnitElement={selectedUnitData ? getUnitDefinition(selectedUnitData.definitionId).element : null}
+              validMoves={state.validMoves}
+              validAttacks={state.validAttacks}
+              validSpawns={validSpawns}
+              invalidSpawnPosition={spawnFeedback?.position ?? null}
+              onCellClick={handleCellClick}
+              onUnitClick={handleUnitClick}
+            />
           </div>
 
           {/* Action bar below board */}

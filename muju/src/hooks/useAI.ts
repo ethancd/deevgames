@@ -49,11 +49,16 @@ export function useAI(options: UseAIOptions = {}): UseAIReturn {
 
       setIsThinking(true);
       const turnActions: AIAction[] = [];
+      const turnStartTime = Date.now();
+      const minThinkingTime = aiRef.current.getMinThinkingTime();
 
       // Check if AI should resign (all difficulties resign when position is hopeless)
       if (shouldResign(state, 'ai')) {
-        // Add a delay before resigning
-        await new Promise((resolve) => setTimeout(resolve, thinkingDelay * 2));
+        // Wait minimum thinking time before resigning
+        const elapsed = Date.now() - turnStartTime;
+        if (elapsed < minThinkingTime) {
+          await new Promise((resolve) => setTimeout(resolve, minThinkingTime - elapsed));
+        }
         const resignAction: AIAction = { type: 'RESIGN' };
         onAction(resignAction);
         turnActions.push(resignAction);
@@ -65,6 +70,7 @@ export function useAI(options: UseAIOptions = {}): UseAIReturn {
       let currentState = state;
       let iterations = 0;
       const maxIterations = 20;
+      let firstActionTaken = false;
 
       try {
         while (iterations < maxIterations) {
@@ -80,11 +86,20 @@ export function useAI(options: UseAIOptions = {}): UseAIReturn {
             break;
           }
 
-          // Add thinking delay for visual effect
-          await new Promise((resolve) => setTimeout(resolve, thinkingDelay));
-
-          // Find best action
+          // Find best action (this does the heavy thinking)
           const result = aiRef.current.findBestAction(currentState);
+
+          // Before first action, ensure minimum thinking time has passed
+          if (!firstActionTaken) {
+            const elapsed = Date.now() - turnStartTime;
+            if (elapsed < minThinkingTime) {
+              await new Promise((resolve) => setTimeout(resolve, minThinkingTime - elapsed));
+            }
+            firstActionTaken = true;
+          } else {
+            // Add small delay between subsequent actions for visual effect
+            await new Promise((resolve) => setTimeout(resolve, thinkingDelay));
+          }
 
           if (result.plan.actions.length === 0) {
             // No actions, need to end phase/turn

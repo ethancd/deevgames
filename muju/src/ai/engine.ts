@@ -16,7 +16,6 @@ import { applyAction, isTerminal, getOpponent } from './simulate';
  * Main AI engine class
  */
 export class AIEngine {
-  private difficulty: AIDifficulty;
   private config: SearchConfig;
   private weights: EvaluationWeights;
   private nodesSearched: number = 0;
@@ -26,37 +25,20 @@ export class AIEngine {
     difficulty: AIDifficulty = 'medium',
     weights: EvaluationWeights = DEFAULT_WEIGHTS
   ) {
-    this.difficulty = difficulty;
     this.config = DIFFICULTY_CONFIGS[difficulty];
     this.weights = weights;
   }
 
   /**
    * Find the best action for the AI to take
+   * All difficulty levels use minimax with different depths
    */
   findBestAction(state: GameState): AIResult {
     this.nodesSearched = 0;
     this.startTime = Date.now();
 
     const player = state.turn.currentPlayer;
-    let bestPlan: AITurnPlan;
-
-    switch (this.difficulty) {
-      case 'easy':
-        bestPlan = this.findRandomAction(state, player);
-        break;
-
-      case 'medium':
-        bestPlan = this.findGreedyAction(state, player);
-        break;
-
-      case 'hard':
-        bestPlan = this.findMinimaxAction(state, player);
-        break;
-
-      default:
-        bestPlan = this.findRandomAction(state, player);
-    }
+    const bestPlan = this.findMinimaxAction(state, player);
 
     const timeMs = Date.now() - this.startTime;
 
@@ -69,58 +51,15 @@ export class AIEngine {
   }
 
   /**
-   * Easy: Pick a random legal action
+   * Get the minimum thinking time for the current difficulty
    */
-  private findRandomAction(state: GameState, player: PlayerId): AITurnPlan {
-    const actions = generateAllActions(state, player);
-    this.nodesSearched = actions.length;
-
-    if (actions.length === 0) {
-      return { actions: [], score: 0 };
-    }
-
-    const randomIndex = Math.floor(Math.random() * actions.length);
-    const action = actions[randomIndex];
-
-    return {
-      actions: [action],
-      score: 0,
-    };
+  getMinThinkingTime(): number {
+    return this.config.minTime;
   }
 
   /**
-   * Medium: Pick the action with best immediate evaluation
-   */
-  private findGreedyAction(state: GameState, player: PlayerId): AITurnPlan {
-    const actions = generateAllActions(state, player);
-    this.nodesSearched = actions.length;
-
-    if (actions.length === 0) {
-      return { actions: [], score: evaluatePosition(state, player, this.weights) };
-    }
-
-    let bestAction: AIAction = actions[0];
-    let bestScore = -Infinity;
-
-    for (const action of actions) {
-      const newState = applyAction(state, action);
-      const score = evaluatePosition(newState, player, this.weights);
-      this.nodesSearched++;
-
-      if (score > bestScore) {
-        bestScore = score;
-        bestAction = action;
-      }
-    }
-
-    return {
-      actions: [bestAction],
-      score: bestScore,
-    };
-  }
-
-  /**
-   * Hard: Minimax with alpha-beta pruning
+   * Minimax with alpha-beta pruning and iterative deepening
+   * Searches progressively deeper until time runs out
    */
   private findMinimaxAction(state: GameState, player: PlayerId): AITurnPlan {
     const actions = getSortedActions(generateAllActions(state, player));
@@ -131,31 +70,50 @@ export class AIEngine {
 
     let bestAction: AIAction = actions[0];
     let bestScore = -Infinity;
-    let alpha = -Infinity;
-    const beta = Infinity;
 
-    for (const action of actions) {
-      // Time check
+    // Iterative deepening: search depth 1, then 2, then 3...
+    const startDepth = this.config.useIterativeDeepening ? 1 : this.config.maxDepth;
+
+    for (let depth = startDepth; depth <= this.config.maxDepth; depth++) {
+      // Time check before starting new depth
       if (Date.now() - this.startTime > this.config.maxTime) {
         break;
       }
 
-      const newState = applyAction(state, action);
-      const score = this.minimax(
-        newState,
-        this.config.maxDepth - 1,
-        alpha,
-        beta,
-        false, // Opponent's turn next
-        player
-      );
+      let currentBestAction: AIAction = actions[0];
+      let currentBestScore = -Infinity;
+      let alpha = -Infinity;
+      const beta = Infinity;
 
-      if (score > bestScore) {
-        bestScore = score;
-        bestAction = action;
+      for (const action of actions) {
+        // Time check during search
+        if (Date.now() - this.startTime > this.config.maxTime) {
+          break;
+        }
+
+        const newState = applyAction(state, action);
+        const score = this.minimax(
+          newState,
+          depth - 1,
+          alpha,
+          beta,
+          false, // Opponent's turn next
+          player
+        );
+
+        if (score > currentBestScore) {
+          currentBestScore = score;
+          currentBestAction = action;
+        }
+
+        alpha = Math.max(alpha, score);
       }
 
-      alpha = Math.max(alpha, score);
+      // Only update best if we completed this depth (not interrupted by time)
+      if (Date.now() - this.startTime <= this.config.maxTime) {
+        bestAction = currentBestAction;
+        bestScore = currentBestScore;
+      }
     }
 
     return {
@@ -269,7 +227,6 @@ export class AIEngine {
    * Set difficulty
    */
   setDifficulty(difficulty: AIDifficulty): void {
-    this.difficulty = difficulty;
     this.config = DIFFICULTY_CONFIGS[difficulty];
   }
 
