@@ -74,7 +74,7 @@ export interface SearchConfig {
  * Uses iterative deepening with reasonable depths that complete within time limits
  * - Easy: 1 second thinking, depth 2
  * - Medium: 3 seconds thinking, depth 3
- * - Hard: 5 seconds thinking, depth 4
+ * - Hard: 15 seconds thinking, depth 6
  */
 export const DIFFICULTY_CONFIGS: Record<AIDifficulty, SearchConfig> = {
   easy: {
@@ -92,9 +92,9 @@ export const DIFFICULTY_CONFIGS: Record<AIDifficulty, SearchConfig> = {
     useIterativeDeepening: true,
   },
   hard: {
-    maxDepth: 4,
-    maxTime: 6000,
-    minTime: 5000,
+    maxDepth: 6,
+    maxTime: 15000,
+    minTime: 10000,
     useAlphaBeta: true,
     useIterativeDeepening: true,
   },
