@@ -4,9 +4,10 @@ interface PhaseIndicatorProps {
   turnNumber: number;
   phase: TurnPhase;
   currentPlayer: PlayerId;
+  playerNames?: { player: string; ai: string };
 }
 
-export function PhaseIndicator({ turnNumber, phase, currentPlayer }: PhaseIndicatorProps) {
+export function PhaseIndicator({ turnNumber, phase, currentPlayer, playerNames }: PhaseIndicatorProps) {
   const phaseLabels: Record<TurnPhase, string> = {
     place: 'Place',
     action: 'Action',
@@ -18,6 +19,14 @@ export function PhaseIndicator({ turnNumber, phase, currentPlayer }: PhaseIndica
     action: 'bg-blue-500',
     queue: 'bg-amber-500',
   };
+
+  const playerName = playerNames
+    ? playerNames[currentPlayer]
+    : (currentPlayer === 'player' ? 'You' : 'AI');
+
+  const turnLabel = playerNames
+    ? `${playerName}'s Turn`
+    : (currentPlayer === 'player' ? 'Your Turn' : 'AI Turn');
 
   return (
     <div className="flex items-center gap-4 text-white">
@@ -42,7 +51,7 @@ export function PhaseIndicator({ turnNumber, phase, currentPlayer }: PhaseIndica
           font-medium
           ${currentPlayer === 'player' ? 'text-green-400' : 'text-red-400'}
         `}>
-          {currentPlayer === 'player' ? 'Your Turn' : 'AI Turn'}
+          {turnLabel}
         </span>
       </div>
     </div>

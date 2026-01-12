@@ -3,11 +3,14 @@ import type { PlayerState } from '../game/types';
 interface ResourceDisplayProps {
   playerState: PlayerState;
   viewerIsOwner: boolean; // Whether the viewer owns this player's resources
+  label?: string; // Optional custom label to override default
 }
 
-export function ResourceDisplay({ playerState, viewerIsOwner }: ResourceDisplayProps) {
+export function ResourceDisplay({ playerState, viewerIsOwner, label }: ResourceDisplayProps) {
   const { resources, resourcesGained, resourcesSpent } = playerState;
   const isPlayer = playerState.id === 'player';
+
+  const displayLabel = label ?? (isPlayer ? 'You' : 'Opponent');
 
   return (
     <div className={`
@@ -16,7 +19,7 @@ export function ResourceDisplay({ playerState, viewerIsOwner }: ResourceDisplayP
     `}>
       <div className="flex items-center justify-between mb-2">
         <span className={`font-medium ${isPlayer ? 'text-green-400' : 'text-red-400'}`}>
-          {isPlayer ? 'You' : 'Opponent'}
+          {displayLabel}
         </span>
       </div>
 

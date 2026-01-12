@@ -7,6 +7,18 @@ export interface Position {
 
 export type PlayerId = 'player' | 'ai';
 
+// === Game Modes ===
+
+export type GameMode = 'vs-ai' | 'pass-play' | 'ai-vs-ai';
+
+export type ControlType = 'human' | 'ai';
+
+export interface GameConfig {
+  mode: GameMode;
+  controls: Record<PlayerId, ControlType>;
+  aiDifficulty: Record<PlayerId, import('../ai/types').AIDifficulty>;
+}
+
 // === Elements ===
 
 export type Element =

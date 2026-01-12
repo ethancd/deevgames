@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { useGameState } from '../hooks/useGameState';
 import { useAI } from '../hooks/useAI';
 import { Board } from './Board';
@@ -11,19 +11,24 @@ import { UnitShop } from './UnitShop';
 import { VictoryScreen } from './VictoryScreen';
 import { ElementLegend } from './ElementLegend';
 import { AIRecap } from './AIRecap';
+import { PassDeviceOverlay } from './PassDeviceOverlay';
 import { getUnitById, getCell } from '../game/board';
 import { getUnitDefinition } from '../game/units';
 import { canMine } from '../game/mining';
 import { getAllSpawnPositions, getSpawnInvalidReason } from '../game/spawning';
-import type { Position } from '../game/types';
+import type { Position, GameConfig, PlayerId } from '../game/types';
 
 type SpawnFeedback = {
   position: Position;
   reason: 'enemy_blocking' | 'outside_control';
 } | null;
-import type { AIDifficulty } from '../ai/types';
 
-export function GameScreen() {
+interface GameScreenProps {
+  config: GameConfig;
+  onBackToMenu: () => void;
+}
+
+export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
   const {
     state,
     selectUnit,
@@ -42,23 +47,33 @@ export function GameScreen() {
     undo,
     canUndo,
     selectedUnitData,
-    isPlayerTurn,
   } = useGameState();
 
-  const [aiDifficulty, setAIDifficulty] = useState<AIDifficulty>('medium');
   const [selectedReadyUnitId, setSelectedReadyUnitId] = useState<string | null>(null);
   const [selectedPlaceUnitId, setSelectedPlaceUnitId] = useState<string | null>(null);
   const [spawnFeedback, setSpawnFeedback] = useState<SpawnFeedback>(null);
   const [viewedEnemyUnitId, setViewedEnemyUnitId] = useState<string | null>(null);
+  const [showPassOverlay, setShowPassOverlay] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const lastTurnPlayer = useRef<PlayerId | null>(null);
+
+  // Helper: check if current player is human-controlled
+  const isCurrentPlayerHuman = config.controls[state.turn.currentPlayer] === 'human';
+  const isPlayerTurn = state.turn.currentPlayer === 'player';
+
+  // For display purposes - who's "playing" right now
+  const currentPlayerName = isPlayerTurn
+    ? (config.mode === 'pass-play' ? 'Player 1' : 'You')
+    : (config.mode === 'pass-play' ? 'Player 2' : 'AI');
 
   // Clear place phase selections when phase changes or turn ends
   useEffect(() => {
-    if (state.turn.phase !== 'place' || !isPlayerTurn) {
+    if (state.turn.phase !== 'place' || !isCurrentPlayerHuman) {
       setSelectedReadyUnitId(null);
       setSelectedPlaceUnitId(null);
       setSpawnFeedback(null);
     }
-  }, [state.turn.phase, isPlayerTurn]);
+  }, [state.turn.phase, isCurrentPlayerHuman]);
 
   // Clear enemy view when selecting own units or turn changes
   useEffect(() => {
@@ -75,22 +90,34 @@ export function GameScreen() {
     }
   }, [spawnFeedback]);
 
+  // Show pass device overlay when turn changes in pass-play mode
+  useEffect(() => {
+    if (config.mode === 'pass-play') {
+      const currentPlayer = state.turn.currentPlayer;
+      if (lastTurnPlayer.current !== null && lastTurnPlayer.current !== currentPlayer) {
+        setShowPassOverlay(true);
+      }
+      lastTurnPlayer.current = currentPlayer;
+    }
+  }, [state.turn.currentPlayer, config.mode]);
+
   // Compute valid spawn positions when a ready unit is selected
   const validSpawns = useMemo(() => {
     if (state.turn.phase !== 'place' || !selectedReadyUnitId) {
       return [];
     }
-    return getAllSpawnPositions('player', state.board);
-  }, [state.turn.phase, selectedReadyUnitId, state.board]);
+    return getAllSpawnPositions(state.turn.currentPlayer, state.board);
+  }, [state.turn.phase, selectedReadyUnitId, state.board, state.turn.currentPlayer]);
 
   // Get the definition ID for the selected ready unit (for preview)
   const selectedReadyDefinitionId = useMemo(() => {
     if (!selectedReadyUnitId) return null;
-    const queuedUnit = state.players.player.buildQueue.find(
+    const currentPlayerState = state.players[state.turn.currentPlayer];
+    const queuedUnit = currentPlayerState.buildQueue.find(
       (q) => q.id === selectedReadyUnitId
     );
     return queuedUnit?.definitionId ?? null;
-  }, [selectedReadyUnitId, state.players.player.buildQueue]);
+  }, [selectedReadyUnitId, state.players, state.turn.currentPlayer]);
 
   // Get the unit data for unit selected during place phase (for promotion)
   const selectedPlaceUnitData = useMemo(() => {
@@ -104,49 +131,87 @@ export function GameScreen() {
     return getUnitById(state.board, viewedEnemyUnitId);
   }, [viewedEnemyUnitId, state.board]);
 
-  const { isThinking, executeAITurn, setDifficulty, lastTurnActions, clearLastTurnActions } = useAI({
-    difficulty: aiDifficulty,
+  // AI for "player" side (used in AI vs AI mode)
+  const playerAI = useAI({
+    difficulty: config.aiDifficulty.player,
     thinkingDelay: 400,
+    enabled: config.controls.player === 'ai',
   });
+
+  // AI for "ai" side (used in vs-ai and ai-vs-ai modes)
+  const aiAI = useAI({
+    difficulty: config.aiDifficulty.ai,
+    thinkingDelay: 400,
+    enabled: config.controls.ai === 'ai',
+  });
+
   const [showAIRecap, setShowAIRecap] = useState(false);
 
-  // Track which turn number AI has executed to prevent duplicate execution on reload
-  const [aiExecutedTurn, setAiExecutedTurn] = useState<number | null>(null);
+  // Track which turn number each AI has executed to prevent duplicate execution on reload
+  const [playerAiExecutedTurn, setPlayerAiExecutedTurn] = useState<number | null>(null);
+  const [aiAiExecutedTurn, setAiAiExecutedTurn] = useState<number | null>(null);
 
-  // Trigger AI turn when it becomes AI's turn
+  // Combined isThinking state
+  const isThinking = playerAI.isThinking || aiAI.isThinking;
+
+  // Trigger AI turn for 'player' side (AI vs AI mode)
+  useEffect(() => {
+    if (
+      state.turn.currentPlayer === 'player' &&
+      config.controls.player === 'ai' &&
+      state.phase === 'playing' &&
+      !playerAI.isThinking &&
+      !isPaused &&
+      playerAiExecutedTurn !== state.turn.turnNumber
+    ) {
+      setPlayerAiExecutedTurn(state.turn.turnNumber);
+      playerAI.executeAITurn(state, applyAIAction);
+    }
+  }, [state.turn.currentPlayer, state.phase, playerAI, isPaused, state, applyAIAction, playerAiExecutedTurn, config.controls.player]);
+
+  // Trigger AI turn for 'ai' side
   useEffect(() => {
     if (
       state.turn.currentPlayer === 'ai' &&
+      config.controls.ai === 'ai' &&
       state.phase === 'playing' &&
-      !isThinking &&
-      aiExecutedTurn !== state.turn.turnNumber
+      !aiAI.isThinking &&
+      !isPaused &&
+      aiAiExecutedTurn !== state.turn.turnNumber
     ) {
-      setAiExecutedTurn(state.turn.turnNumber);
-      executeAITurn(state, applyAIAction);
+      setAiAiExecutedTurn(state.turn.turnNumber);
+      aiAI.executeAITurn(state, applyAIAction);
     }
-  }, [state.turn.currentPlayer, state.phase, isThinking, state, executeAITurn, applyAIAction, aiExecutedTurn]);
+  }, [state.turn.currentPlayer, state.phase, aiAI, isPaused, state, applyAIAction, aiAiExecutedTurn, config.controls.ai]);
 
-  // Show AI recap when AI's turn ends and player's turn begins
+  // Show AI recap when AI's turn ends and human's turn begins (only in vs-ai mode)
   useEffect(() => {
     if (
+      config.mode === 'vs-ai' &&
       isPlayerTurn &&
       !isThinking &&
-      lastTurnActions.length > 0 &&
+      aiAI.lastTurnActions.length > 0 &&
       state.turn.turnNumber > 1
     ) {
       setShowAIRecap(true);
     }
-  }, [isPlayerTurn, isThinking, lastTurnActions.length, state.turn.turnNumber]);
+  }, [config.mode, isPlayerTurn, isThinking, aiAI.lastTurnActions.length, state.turn.turnNumber]);
 
   const handleDismissRecap = () => {
     setShowAIRecap(false);
-    clearLastTurnActions();
+    aiAI.clearLastTurnActions();
+  };
+
+  const handleContinueFromPass = () => {
+    setShowPassOverlay(false);
   };
 
   const handleCellClick = (position: Position) => {
-    if (!isPlayerTurn || isThinking) {
+    if (!isCurrentPlayerHuman || isThinking || showPassOverlay) {
       return;
     }
+
+    const currentPlayer = state.turn.currentPlayer;
 
     // Handle place phase - placing ready units
     if (state.turn.phase === 'place' && selectedReadyUnitId) {
@@ -159,7 +224,7 @@ export function GameScreen() {
         setSpawnFeedback(null);
       } else {
         // Check why it's invalid and show feedback
-        const reason = getSpawnInvalidReason(position, 'player', state.board);
+        const reason = getSpawnInvalidReason(position, currentPlayer, state.board);
         if (reason === 'enemy_blocking' || reason === 'outside_control') {
           setSpawnFeedback({ position, reason });
         } else {
@@ -195,16 +260,19 @@ export function GameScreen() {
   };
 
   const handleUnitClick = (unitId: string) => {
-    if (!isPlayerTurn || isThinking) {
+    if (!isCurrentPlayerHuman || isThinking || showPassOverlay) {
       return;
     }
 
     const unit = getUnitById(state.board, unitId);
     if (!unit) return;
 
+    const currentPlayer = state.turn.currentPlayer;
+    const isOwnUnit = unit.owner === currentPlayer;
+
     // Handle place phase - selecting units for promotion
     if (state.turn.phase === 'place') {
-      if (unit.owner === 'player') {
+      if (isOwnUnit) {
         // Clear ready unit selection if selecting a board unit
         setSelectedReadyUnitId(null);
         setViewedEnemyUnitId(null);
@@ -227,7 +295,7 @@ export function GameScreen() {
       return;
     }
 
-    if (unit.owner === 'player') {
+    if (isOwnUnit) {
       if (state.selectedUnit === unitId) {
         deselect();
       } else {
@@ -278,25 +346,54 @@ export function GameScreen() {
   }, [selectedPlaceUnitData, selectedUnitData, state.board]);
 
   const handlePlayAgain = () => {
-    setAiExecutedTurn(null);
+    setPlayerAiExecutedTurn(null);
+    setAiAiExecutedTurn(null);
+    lastTurnPlayer.current = null;
+    setShowPassOverlay(false);
     resetGame();
   };
 
-  const handleDifficultyChange = (newDifficulty: AIDifficulty) => {
-    setAIDifficulty(newDifficulty);
-    setDifficulty(newDifficulty);
+  const handleBackToMenuClick = () => {
+    onBackToMenu();
   };
+
+  const togglePause = () => {
+    setIsPaused(!isPaused);
+  };
+
+  // Get the current player's state for resource/queue display
+  const currentPlayerState = state.players[state.turn.currentPlayer];
+  const opponentPlayer: PlayerId = state.turn.currentPlayer === 'player' ? 'ai' : 'player';
+  const opponentState = state.players[opponentPlayer];
+
+  // In pass-play mode, each player should only see their own queue
+  const showOpponentQueue = config.mode !== 'pass-play';
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-4">
       {/* Victory overlay */}
       {state.phase === 'victory' && state.winner && (
-        <VictoryScreen winner={state.winner} onPlayAgain={handlePlayAgain} />
+        <VictoryScreen
+          winner={state.winner}
+          onPlayAgain={handlePlayAgain}
+          playerNames={config.mode === 'pass-play'
+            ? { player: 'Player 1', ai: 'Player 2' }
+            : { player: 'You', ai: 'AI' }
+          }
+        />
+      )}
+
+      {/* Pass device overlay for pass-play mode */}
+      {showPassOverlay && config.mode === 'pass-play' && (
+        <PassDeviceOverlay
+          nextPlayer={state.turn.currentPlayer}
+          onContinue={handleContinueFromPass}
+        />
       )}
 
       {/* AI turn recap */}
       {showAIRecap && (
-        <AIRecap actions={lastTurnActions} onDismiss={handleDismissRecap} />
+        <AIRecap actions={aiAI.lastTurnActions} onDismiss={handleDismissRecap} />
       )}
 
       <div className="max-w-7xl mx-auto">
@@ -304,57 +401,83 @@ export function GameScreen() {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-4">
           <div className="flex items-center gap-4">
             <h1 className="text-xl font-bold text-gray-100">Muju Hono Tanka</h1>
-            {/* Difficulty selector */}
-            <select
-              value={aiDifficulty}
-              onChange={(e) => handleDifficultyChange(e.target.value as AIDifficulty)}
-              className="bg-gray-700 text-white px-2 py-1 rounded text-sm"
-              disabled={!isPlayerTurn}
+            <span className="text-sm text-gray-400">
+              {config.mode === 'vs-ai' && 'vs AI'}
+              {config.mode === 'pass-play' && 'Pass & Play'}
+              {config.mode === 'ai-vs-ai' && 'AI vs AI'}
+            </span>
+            <button
+              onClick={handleBackToMenuClick}
+              className="bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded text-sm transition-colors"
             >
-              <option value="easy">Easy AI</option>
-              <option value="medium">Medium AI</option>
-              <option value="hard">Hard AI</option>
-            </select>
+              Menu
+            </button>
             <button
               onClick={handlePlayAgain}
               className="bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded text-sm transition-colors"
             >
               New Game
             </button>
+            {config.mode === 'ai-vs-ai' && (
+              <button
+                onClick={togglePause}
+                className={`px-3 py-1 rounded text-sm transition-colors ${
+                  isPaused
+                    ? 'bg-green-600 hover:bg-green-500'
+                    : 'bg-yellow-600 hover:bg-yellow-500'
+                }`}
+              >
+                {isPaused ? 'Resume' : 'Pause'}
+              </button>
+            )}
           </div>
           <div className="flex items-center gap-4">
             {isThinking && (
-              <span className="text-yellow-400 animate-pulse">AI thinking...</span>
+              <span className="text-yellow-400 animate-pulse">
+                {config.mode === 'ai-vs-ai'
+                  ? `${isPlayerTurn ? 'AI 1' : 'AI 2'} thinking...`
+                  : 'AI thinking...'}
+              </span>
+            )}
+            {isPaused && config.mode === 'ai-vs-ai' && (
+              <span className="text-yellow-400">Paused</span>
             )}
             <PhaseIndicator
               turnNumber={state.turn.turnNumber}
               phase={state.turn.phase}
               currentPlayer={state.turn.currentPlayer}
+              playerNames={config.mode === 'pass-play'
+                ? { player: 'Player 1', ai: 'Player 2' }
+                : config.mode === 'ai-vs-ai'
+                ? { player: 'AI 1', ai: 'AI 2' }
+                : { player: 'You', ai: 'AI' }
+              }
             />
           </div>
         </div>
 
         {/* Main layout - vertical with board centered */}
         <div className="flex flex-col items-center gap-4">
-          {/* Player info row - above board */}
+          {/* Current player info row - above board */}
           <div className="relative flex flex-wrap items-start justify-center gap-3 w-full max-w-3xl">
             <ResourceDisplay
-              playerState={state.players.player}
+              playerState={currentPlayerState}
               viewerIsOwner={true}
+              label={config.mode === 'pass-play' ? currentPlayerName : undefined}
             />
             <BuildQueue
-              queue={state.players.player.buildQueue}
+              queue={currentPlayerState.buildQueue}
               isOwner={true}
-              isPlacePhase={state.turn.phase === 'place' && isPlayerTurn && !isThinking}
+              isPlacePhase={state.turn.phase === 'place' && isCurrentPlayerHuman && !isThinking && !showPassOverlay}
               board={state.board}
-              player="player"
+              player={state.turn.currentPlayer}
               selectedReadyId={selectedReadyUnitId}
               onSelectReady={setSelectedReadyUnitId}
             />
-            {state.turn.phase === 'queue' && isPlayerTurn && !isThinking && (
+            {state.turn.phase === 'queue' && isCurrentPlayerHuman && !isThinking && !showPassOverlay && (
               <UnitShop
-                resources={state.players.player.resources}
-                player="player"
+                resources={currentPlayerState.resources}
+                player={state.turn.currentPlayer}
                 board={state.board}
                 onQueueUnit={queueUnit}
               />
@@ -370,9 +493,9 @@ export function GameScreen() {
                   onMine={handleMine}
                   canMine={canMineHere()}
                   cellInfo={selectedUnitCell}
-                  isPlacePhase={state.turn.phase === 'place' && isPlayerTurn && !isThinking}
-                  isActionPhase={state.turn.phase === 'action' && isPlayerTurn && !isThinking}
-                  resources={state.players.player.resources}
+                  isPlacePhase={state.turn.phase === 'place' && isCurrentPlayerHuman && !isThinking && !showPassOverlay}
+                  isActionPhase={state.turn.phase === 'action' && isCurrentPlayerHuman && !isThinking && !showPassOverlay}
+                  resources={currentPlayerState.resources}
                   onPromote={handlePromote}
                   isEnemyView={!!viewedEnemyUnitData && !selectedPlaceUnitData && !selectedUnitData}
                 />
@@ -381,7 +504,7 @@ export function GameScreen() {
           </div>
 
           {/* Board */}
-          <div className={isThinking ? 'opacity-75 pointer-events-none' : ''}>
+          <div className={isThinking || showPassOverlay ? 'opacity-75 pointer-events-none' : ''}>
             <Board
               board={state.board}
               currentPlayer={state.turn.currentPlayer}
@@ -403,28 +526,42 @@ export function GameScreen() {
             onEndPlacePhase={endPlacePhase}
             onEndActionPhase={endActionPhase}
             onEndTurn={endTurn}
-            isPlayerTurn={isPlayerTurn && !isThinking}
+            isPlayerTurn={isCurrentPlayerHuman && !isThinking && !showPassOverlay}
             onUndo={undo}
-            canUndo={canUndo}
+            canUndo={canUndo && isCurrentPlayerHuman}
           />
 
           {/* Opponent info row - below board */}
           <div className="flex flex-wrap items-start justify-center gap-3 w-full max-w-3xl">
             <ResourceDisplay
-              playerState={state.players.ai}
+              playerState={opponentState}
               viewerIsOwner={false}
+              label={config.mode === 'pass-play'
+                ? (opponentPlayer === 'player' ? 'Player 1' : 'Player 2')
+                : config.mode === 'ai-vs-ai'
+                ? (opponentPlayer === 'player' ? 'AI 1' : 'AI 2')
+                : 'AI'
+              }
             />
-            <BuildQueue
-              queue={state.players.ai.buildQueue}
-              isOwner={false}
-            />
+            {showOpponentQueue && (
+              <BuildQueue
+                queue={opponentState.buildQueue}
+                isOwner={false}
+              />
+            )}
           </div>
         </div>
 
         {/* Controls hint */}
         <div className="mt-4 text-center text-gray-500 text-sm">
           {isThinking ? (
-            <span className="text-yellow-400">AI is making its move...</span>
+            <span className="text-yellow-400">
+              {config.mode === 'ai-vs-ai'
+                ? `${isPlayerTurn ? 'AI 1' : 'AI 2'} is making its move...`
+                : 'AI is making its move...'}
+            </span>
+          ) : showPassOverlay ? (
+            <span className="text-blue-400">Tap to continue</span>
           ) : spawnFeedback ? (
             <span className="text-red-400">
               {spawnFeedback.reason === 'enemy_blocking'
