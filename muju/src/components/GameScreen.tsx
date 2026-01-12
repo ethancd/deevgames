@@ -303,7 +303,7 @@ export function GameScreen() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-4">
           <div className="flex items-center gap-4">
-            <h1 className="text-xl font-bold text-gray-100">Elemental Tactics</h1>
+            <h1 className="text-xl font-bold text-gray-100">Muju Hono Tanka</h1>
             {/* Difficulty selector */}
             <select
               value={aiDifficulty}
@@ -315,6 +315,12 @@ export function GameScreen() {
               <option value="medium">Medium AI</option>
               <option value="hard">Hard AI</option>
             </select>
+            <button
+              onClick={handlePlayAgain}
+              className="bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded text-sm transition-colors"
+            >
+              New Game
+            </button>
           </div>
           <div className="flex items-center gap-4">
             {isThinking && (
