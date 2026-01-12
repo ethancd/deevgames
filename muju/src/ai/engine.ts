@@ -12,8 +12,15 @@ import { generateAllActions, getSortedActions } from './moves';
 import { evaluatePosition, quickEvaluate } from './evaluation';
 import { applyAction, isTerminal, getOpponent } from './simulate';
 
+// Yield to event loop every N nodes to keep UI responsive
+const YIELD_INTERVAL = 100;
+
+// Helper to yield control to the event loop
+const yieldToEventLoop = () => new Promise<void>((resolve) => setTimeout(resolve, 0));
+
 /**
  * Main AI engine class
+ * Uses async methods to yield control periodically and keep UI responsive
  */
 export class AIEngine {
   private config: SearchConfig;
@@ -30,15 +37,14 @@ export class AIEngine {
   }
 
   /**
-   * Find the best action for the AI to take
-   * All difficulty levels use minimax with different depths
+   * Find the best action for the AI to take (async to allow UI updates)
    */
-  findBestAction(state: GameState): AIResult {
+  async findBestAction(state: GameState): Promise<AIResult> {
     this.nodesSearched = 0;
     this.startTime = Date.now();
 
     const player = state.turn.currentPlayer;
-    const bestPlan = this.findMinimaxAction(state, player);
+    const bestPlan = await this.findMinimaxAction(state, player);
 
     const timeMs = Date.now() - this.startTime;
 
@@ -59,9 +65,9 @@ export class AIEngine {
 
   /**
    * Minimax with alpha-beta pruning and iterative deepening
-   * Searches progressively deeper until time runs out
+   * Async to yield control periodically
    */
-  private findMinimaxAction(state: GameState, player: PlayerId): AITurnPlan {
+  private async findMinimaxAction(state: GameState, player: PlayerId): Promise<AITurnPlan> {
     const actions = getSortedActions(generateAllActions(state, player));
 
     if (actions.length === 0) {
@@ -92,7 +98,7 @@ export class AIEngine {
         }
 
         const newState = applyAction(state, action);
-        const score = this.minimax(
+        const score = await this.minimax(
           newState,
           depth - 1,
           alpha,
@@ -123,17 +129,22 @@ export class AIEngine {
   }
 
   /**
-   * Minimax algorithm with alpha-beta pruning
+   * Minimax algorithm with alpha-beta pruning (async for UI responsiveness)
    */
-  private minimax(
+  private async minimax(
     state: GameState,
     depth: number,
     alpha: number,
     beta: number,
     isMaximizing: boolean,
     forPlayer: PlayerId
-  ): number {
+  ): Promise<number> {
     this.nodesSearched++;
+
+    // Yield to event loop periodically to keep UI responsive
+    if (this.nodesSearched % YIELD_INTERVAL === 0) {
+      await yieldToEventLoop();
+    }
 
     // Terminal conditions
     if (depth === 0 || isTerminal(state)) {
@@ -162,12 +173,9 @@ export class AIEngine {
         }
 
         const newState = applyAction(state, action);
-
-        // Determine if next level should maximize or minimize
-        // This depends on whether we're still in the same player's turn
         const nextIsMax = this.isStillSameTurn(state, newState, forPlayer);
 
-        const score = this.minimax(
+        const score = await this.minimax(
           newState,
           depth - 1,
           alpha,
@@ -195,13 +203,11 @@ export class AIEngine {
         }
 
         const newState = applyAction(state, action);
-
-        // After opponent acts, check if it's back to our player
         const nextIsMax = this.isStillSameTurn(state, newState, getOpponent(forPlayer))
           ? false
           : true;
 
-        const score = this.minimax(
+        const score = await this.minimax(
           newState,
           depth - 1,
           alpha,
@@ -253,61 +259,4 @@ export class AIEngine {
  */
 export function createAI(difficulty: AIDifficulty = 'medium'): AIEngine {
   return new AIEngine(difficulty);
-}
-
-/**
- * Execute a complete AI turn
- * Returns all actions the AI wants to take this turn
- */
-export function executeAITurn(
-  state: GameState,
-  difficulty: AIDifficulty = 'medium'
-): AIAction[] {
-  const ai = new AIEngine(difficulty);
-  const allActions: AIAction[] = [];
-
-  let currentState = state;
-  let iterations = 0;
-  const maxIterations = 20; // Safety limit
-
-  while (iterations < maxIterations) {
-    iterations++;
-
-    // Check if it's still AI's turn
-    if (currentState.turn.currentPlayer !== 'ai') {
-      break;
-    }
-
-    // Check if game is over
-    if (currentState.phase === 'victory') {
-      break;
-    }
-
-    // Find best action
-    const result = ai.findBestAction(currentState);
-
-    if (result.plan.actions.length === 0) {
-      // No actions available, end turn
-      if (currentState.turn.phase === 'action') {
-        allActions.push({ type: 'END_ACTION_PHASE' });
-        break;
-      } else if (currentState.turn.phase === 'queue') {
-        allActions.push({ type: 'END_TURN' });
-        break;
-      }
-      break;
-    }
-
-    // Apply the action
-    const action = result.plan.actions[0];
-    allActions.push(action);
-    currentState = applyAction(currentState, action);
-
-    // Check for turn-ending actions
-    if (action.type === 'END_TURN') {
-      break;
-    }
-  }
-
-  return allActions;
 }

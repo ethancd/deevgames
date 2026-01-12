@@ -86,8 +86,8 @@ export function useAI(options: UseAIOptions = {}): UseAIReturn {
             break;
           }
 
-          // Find best action (this does the heavy thinking)
-          const result = aiRef.current.findBestAction(currentState);
+          // Find best action (async to keep UI responsive)
+          const result = await aiRef.current.findBestAction(currentState);
 
           // Before first action, ensure minimum thinking time has passed
           if (!firstActionTaken) {
