@@ -110,16 +110,21 @@ export function GameScreen() {
   });
   const [showAIRecap, setShowAIRecap] = useState(false);
 
+  // Track which turn number AI has executed to prevent duplicate execution on reload
+  const [aiExecutedTurn, setAiExecutedTurn] = useState<number | null>(null);
+
   // Trigger AI turn when it becomes AI's turn
   useEffect(() => {
     if (
       state.turn.currentPlayer === 'ai' &&
       state.phase === 'playing' &&
-      !isThinking
+      !isThinking &&
+      aiExecutedTurn !== state.turn.turnNumber
     ) {
+      setAiExecutedTurn(state.turn.turnNumber);
       executeAITurn(state, applyAIAction);
     }
-  }, [state.turn.currentPlayer, state.phase, isThinking, state, executeAITurn, applyAIAction]);
+  }, [state.turn.currentPlayer, state.phase, isThinking, state, executeAITurn, applyAIAction, aiExecutedTurn]);
 
   // Show AI recap when AI's turn ends and player's turn begins
   useEffect(() => {
@@ -273,6 +278,7 @@ export function GameScreen() {
   }, [selectedPlaceUnitData, selectedUnitData, state.board]);
 
   const handlePlayAgain = () => {
+    setAiExecutedTurn(null);
     resetGame();
   };
 
@@ -322,54 +328,10 @@ export function GameScreen() {
           </div>
         </div>
 
-        {/* Main layout */}
-        <div className="flex flex-col lg:flex-row gap-4">
-          {/* Left sidebar - Opponent info */}
-          <div className="lg:w-48 space-y-3">
-            <ResourceDisplay
-              playerState={state.players.ai}
-              viewerIsOwner={false}
-            />
-            <BuildQueue
-              queue={state.players.ai.buildQueue}
-              isOwner={false}
-            />
-          </div>
-
-          {/* Center - Board */}
-          <div className="flex-1 flex flex-col items-center">
-            <div className={isThinking ? 'opacity-75 pointer-events-none' : ''}>
-              <Board
-                board={state.board}
-                currentPlayer={state.turn.currentPlayer}
-                selectedUnit={state.selectedUnit}
-                selectedUnitElement={selectedUnitData ? getUnitDefinition(selectedUnitData.definitionId).element : null}
-                validMoves={state.validMoves}
-                validAttacks={state.validAttacks}
-                validSpawns={validSpawns}
-                invalidSpawnPosition={spawnFeedback?.position ?? null}
-                onCellClick={handleCellClick}
-                onUnitClick={handleUnitClick}
-              />
-            </div>
-
-            {/* Action bar below board */}
-            <div className="mt-4">
-              <ActionBar
-                actionsRemaining={state.turn.actionsRemaining}
-                phase={state.turn.phase}
-                onEndPlacePhase={endPlacePhase}
-                onEndActionPhase={endActionPhase}
-                onEndTurn={endTurn}
-                isPlayerTurn={isPlayerTurn && !isThinking}
-                onUndo={undo}
-                canUndo={canUndo}
-              />
-            </div>
-          </div>
-
-          {/* Right sidebar - Player info */}
-          <div className="lg:w-48 space-y-3">
+        {/* Main layout - vertical with board centered */}
+        <div className="flex flex-col items-center gap-4">
+          {/* Player info row - above board */}
+          <div className="flex flex-wrap items-start justify-center gap-3 w-full max-w-3xl">
             <ResourceDisplay
               playerState={state.players.player}
               viewerIsOwner={true}
@@ -391,18 +353,67 @@ export function GameScreen() {
                 onQueueUnit={queueUnit}
               />
             )}
-            <UnitInfo
-              unit={selectedPlaceUnitData ?? selectedUnitData ?? viewedEnemyUnitData}
-              previewDefinitionId={selectedReadyDefinitionId}
-              onMine={handleMine}
-              canMine={canMineHere()}
-              cellInfo={selectedUnitCell}
-              isPlacePhase={state.turn.phase === 'place' && isPlayerTurn && !isThinking}
-              resources={state.players.player.resources}
-              onPromote={handlePromote}
-              isEnemyView={!!viewedEnemyUnitData && !selectedPlaceUnitData && !selectedUnitData}
-            />
             <ElementLegend />
+          </div>
+
+          {/* Board with unit info popover */}
+          <div className="relative">
+            <div className={isThinking ? 'opacity-75 pointer-events-none' : ''}>
+              <Board
+                board={state.board}
+                currentPlayer={state.turn.currentPlayer}
+                selectedUnit={state.selectedUnit}
+                selectedUnitElement={selectedUnitData ? getUnitDefinition(selectedUnitData.definitionId).element : null}
+                validMoves={state.validMoves}
+                validAttacks={state.validAttacks}
+                validSpawns={validSpawns}
+                invalidSpawnPosition={spawnFeedback?.position ?? null}
+                onCellClick={handleCellClick}
+                onUnitClick={handleUnitClick}
+              />
+            </div>
+
+            {/* Unit info popover - positioned over the board */}
+            {(selectedPlaceUnitData || selectedUnitData || viewedEnemyUnitData || selectedReadyDefinitionId) && (
+              <div className="absolute top-2 right-2 w-48 z-10">
+                <UnitInfo
+                  unit={selectedPlaceUnitData ?? selectedUnitData ?? viewedEnemyUnitData}
+                  previewDefinitionId={selectedReadyDefinitionId}
+                  onMine={handleMine}
+                  canMine={canMineHere()}
+                  cellInfo={selectedUnitCell}
+                  isPlacePhase={state.turn.phase === 'place' && isPlayerTurn && !isThinking}
+                  isActionPhase={state.turn.phase === 'action' && isPlayerTurn && !isThinking}
+                  resources={state.players.player.resources}
+                  onPromote={handlePromote}
+                  isEnemyView={!!viewedEnemyUnitData && !selectedPlaceUnitData && !selectedUnitData}
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Action bar below board */}
+          <ActionBar
+            actionsRemaining={state.turn.actionsRemaining}
+            phase={state.turn.phase}
+            onEndPlacePhase={endPlacePhase}
+            onEndActionPhase={endActionPhase}
+            onEndTurn={endTurn}
+            isPlayerTurn={isPlayerTurn && !isThinking}
+            onUndo={undo}
+            canUndo={canUndo}
+          />
+
+          {/* Opponent info row - below board */}
+          <div className="flex flex-wrap items-start justify-center gap-3 w-full max-w-3xl">
+            <ResourceDisplay
+              playerState={state.players.ai}
+              viewerIsOwner={false}
+            />
+            <BuildQueue
+              queue={state.players.ai.buildQueue}
+              isOwner={false}
+            />
           </div>
         </div>
 

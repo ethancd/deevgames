@@ -203,7 +203,8 @@ function applyPromoteUnit(state: GameState, unitId: string): GameState {
 
   // Find next tier unit of same element
   const nextTierDef = getUnitDefinition(`${def.element}_${def.tier + 1}`);
-  const promotionCost = def.tier + 1; // T1→T2 costs 2, T2→T3 costs 3, etc.
+  // Promotion cost is the difference between next tier and current tier costs
+  const promotionCost = nextTierDef.cost - def.cost;
 
   if (playerState.resources < promotionCost) return state;
 

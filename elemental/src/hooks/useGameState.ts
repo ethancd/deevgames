@@ -5,7 +5,7 @@ import { createInitialGameState, getUnitById } from '../game/board';
 import { getValidMoves } from '../game/movement';
 import { getValidAttacks, resolveCombat } from '../game/combat';
 import { executeMine, canMine } from '../game/mining';
-import { useAction, endTurn as endTurnLogic, startActionPhase } from '../game/turn';
+import { useAction, endTurn as endTurnLogic, startActionPhase, canActInPlacePhase, canActInQueuePhase } from '../game/turn';
 import { checkVictory } from '../game/victory';
 import { applyAction as applyAIAction } from '../ai/simulate';
 import { getBuildCost, getBuildTime, canBuildUnit, meetsTechRequirement, createUnitFromDefinition } from '../game/building';
@@ -248,7 +248,7 @@ function gameReducer(state: GameState, action: GameAction): GameState {
         units: [...state.board.units, newUnit],
       };
 
-      return {
+      let newState: GameState = {
         ...state,
         board: newBoard,
         players: {
@@ -259,6 +259,13 @@ function gameReducer(state: GameState, action: GameAction): GameState {
           },
         },
       };
+
+      // Auto-transition to action phase if nothing left to do in place phase
+      if (!canActInPlacePhase(newState, currentPlayer)) {
+        newState = startActionPhase(newState);
+      }
+
+      return newState;
     }
 
     case 'PROMOTE_UNIT': {
@@ -286,7 +293,7 @@ function gameReducer(state: GameState, action: GameAction): GameState {
 
       const cost = getPromotionCost(unit) ?? 0;
 
-      return {
+      let newState: GameState = {
         ...state,
         board: result.board,
         players: {
@@ -298,6 +305,13 @@ function gameReducer(state: GameState, action: GameAction): GameState {
           },
         },
       };
+
+      // Auto-transition to action phase if nothing left to do in place phase
+      if (!canActInPlacePhase(newState, currentPlayer)) {
+        newState = startActionPhase(newState);
+      }
+
+      return newState;
     }
 
     case 'END_ACTION_PHASE': {
@@ -337,7 +351,7 @@ function gameReducer(state: GameState, action: GameAction): GameState {
       // Generate unique ID for queued unit
       const queuedId = `queued-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 
-      return {
+      let newState: GameState = {
         ...state,
         players: {
           ...state.players,
@@ -357,6 +371,13 @@ function gameReducer(state: GameState, action: GameAction): GameState {
           },
         },
       };
+
+      // Auto-end turn if nothing left to do in queue phase
+      if (!canActInQueuePhase(newState, currentPlayer)) {
+        newState = endTurnLogic(newState);
+      }
+
+      return newState;
     }
 
     case 'END_TURN': {
@@ -442,13 +463,15 @@ export function useGameState() {
     ) {
       setUndoHistory((prev) => [...prev, state]);
     }
-    // Clear undo history on phase/turn transitions
+    // Also save state before phase transitions so player can undo back through phases
     if (
-      action.type === 'END_PLACE_PHASE' ||
-      action.type === 'END_ACTION_PHASE' ||
-      action.type === 'END_TURN' ||
-      action.type === 'RESET_GAME'
+      (action.type === 'END_PLACE_PHASE' || action.type === 'END_ACTION_PHASE') &&
+      state.turn.currentPlayer === 'player'
     ) {
+      setUndoHistory((prev) => [...prev, state]);
+    }
+    // Clear undo history only on turn end or game reset (not phase transitions)
+    if (action.type === 'END_TURN' || action.type === 'RESET_GAME') {
       setUndoHistory([]);
     }
     dispatch(action);

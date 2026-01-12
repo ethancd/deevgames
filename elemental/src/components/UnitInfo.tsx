@@ -11,6 +11,7 @@ interface UnitInfoProps {
   cellInfo?: Cell | null; // Cell unit is standing on (for mining depth feedback)
   // Promotion props
   isPlacePhase?: boolean;
+  isActionPhase?: boolean; // True when in action phase (for showing mine button)
   resources?: number;
   onPromote?: () => void;
   isEnemyView?: boolean; // True when viewing enemy unit stats
@@ -23,6 +24,7 @@ export function UnitInfo({
   canMine,
   cellInfo,
   isPlacePhase = false,
+  isActionPhase = false,
   resources = 0,
   onPromote,
   isEnemyView = false,
@@ -144,8 +146,8 @@ export function UnitInfo({
         </div>
       )}
 
-      {/* Mine button - only for own units */}
-      {!isEnemyView && (() => {
+      {/* Mine button - only for own units during action phase */}
+      {!isEnemyView && isActionPhase && (() => {
         const canMineNow = onMine && canMine && !unit.hasMined && unit.canActThisTurn;
         const hasResources = cellInfo && cellInfo.resourceLayers > 0;
         const tooDeep = hasResources && !canMine && !unit.hasMined && unit.canActThisTurn;
