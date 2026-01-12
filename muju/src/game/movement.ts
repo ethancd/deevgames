@@ -7,10 +7,11 @@ import {
 import { getUnitDefinition } from './units';
 
 /**
- * Check if a unit can move (hasn't moved this turn and can act)
+ * Check if a unit can move (can act this turn)
+ * Units can move multiple times per turn if they have actions remaining.
  */
 export function canMove(unit: Unit): boolean {
-  return !unit.hasMoved && unit.canActThisTurn;
+  return unit.canActThisTurn;
 }
 
 /**

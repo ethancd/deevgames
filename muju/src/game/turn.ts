@@ -229,10 +229,7 @@ export function canCurrentPlayerAct(state: GameState): boolean {
   const playerUnits = getPlayerUnits(state.board, state.turn.currentPlayer);
 
   // Check if any unit can still do something
-  return playerUnits.some(
-    (u) =>
-      u.canActThisTurn && (!u.hasMoved || !u.hasAttacked || !u.hasMined)
-  );
+  return playerUnits.some((u) => u.canActThisTurn);
 }
 
 /**

@@ -34,10 +34,10 @@ function gameReducer(state: GameState, action: GameAction): GameState {
         return state;
       }
 
-      const validMoves = unit.canActThisTurn && !unit.hasMoved
+      const validMoves = unit.canActThisTurn
         ? getValidMoves(unit, state.board)
         : [];
-      const validAttacks = unit.canActThisTurn && !unit.hasAttacked
+      const validAttacks = unit.canActThisTurn
         ? getValidAttacks(unit, state.board)
         : [];
 
@@ -64,7 +64,7 @@ function gameReducer(state: GameState, action: GameAction): GameState {
       }
 
       const unit = getUnitById(state.board, action.unitId);
-      if (!unit || unit.owner !== state.turn.currentPlayer || unit.hasMoved) {
+      if (!unit || unit.owner !== state.turn.currentPlayer || !unit.canActThisTurn) {
         return state;
       }
 
@@ -110,7 +110,7 @@ function gameReducer(state: GameState, action: GameAction): GameState {
       }
 
       const unit = getUnitById(state.board, action.unitId);
-      if (!unit || unit.owner !== state.turn.currentPlayer || unit.hasAttacked) {
+      if (!unit || unit.owner !== state.turn.currentPlayer || !unit.canActThisTurn) {
         return state;
       }
 
@@ -153,7 +153,7 @@ function gameReducer(state: GameState, action: GameAction): GameState {
       }
 
       const unit = getUnitById(state.board, action.unitId);
-      if (!unit || unit.owner !== state.turn.currentPlayer || unit.hasMined) {
+      if (!unit || unit.owner !== state.turn.currentPlayer || !unit.canActThisTurn) {
         return state;
       }
 

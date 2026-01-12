@@ -17,7 +17,7 @@ export function generateMoveActions(state: GameState, player: PlayerId): AIActio
   const units = getPlayerUnits(state.board, player);
 
   for (const unit of units) {
-    if (!unit.canActThisTurn || unit.hasMoved) continue;
+    if (!unit.canActThisTurn) continue;
 
     const validMoves = getValidMoves(unit, state.board);
     for (const to of validMoves) {
@@ -36,7 +36,7 @@ export function generateAttackActions(state: GameState, player: PlayerId): AIAct
   const units = getPlayerUnits(state.board, player);
 
   for (const unit of units) {
-    if (!unit.canActThisTurn || unit.hasAttacked) continue;
+    if (!unit.canActThisTurn) continue;
 
     const validAttacks = getValidAttacks(unit, state.board);
     for (const targetPosition of validAttacks) {
@@ -55,7 +55,7 @@ export function generateMineActions(state: GameState, player: PlayerId): AIActio
   const units = getPlayerUnits(state.board, player);
 
   for (const unit of units) {
-    if (!unit.canActThisTurn || unit.hasMined) continue;
+    if (!unit.canActThisTurn) continue;
 
     if (canMine(unit, state.board)) {
       actions.push({ type: 'MINE', unitId: unit.id });
@@ -214,10 +214,7 @@ export function hasActionsAvailable(state: GameState, player: PlayerId): boolean
   if (state.turn.actionsRemaining <= 0) return false;
 
   const units = getPlayerUnits(state.board, player);
-  return units.some(
-    (u) =>
-      u.canActThisTurn && (!u.hasMoved || !u.hasAttacked || !u.hasMined)
-  );
+  return units.some((u) => u.canActThisTurn);
 }
 
 /**

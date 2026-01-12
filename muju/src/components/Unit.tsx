@@ -21,7 +21,7 @@ export function Unit({ unit, isSelected, isOwned, onClick }: UnitProps) {
     4: 'w-9 h-9 sm:w-10 sm:h-10',
   }[definition.tier];
 
-  const canAct = unit.canActThisTurn && (!unit.hasMoved || !unit.hasAttacked || !unit.hasMined);
+  const canAct = unit.canActThisTurn;
   const isDamaged = unit.damageTaken > 0;
   const effectiveDefense = Math.max(0, definition.defense - unit.damageTaken);
 

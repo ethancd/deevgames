@@ -436,7 +436,7 @@ export function GameScreen() {
           ) : (
             <>
               Click a unit to select, then click a highlighted cell to move/attack.
-              {selectedUnitData && !selectedUnitData.hasMined && canMineHere() && (
+              {selectedUnitData && canMineHere() && (
                 <span className="text-purple-400"> You can mine here!</span>
               )}
             </>

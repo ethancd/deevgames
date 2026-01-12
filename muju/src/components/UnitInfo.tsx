@@ -131,26 +131,11 @@ export function UnitInfo({
         </div>
       </div>
 
-      {/* Action status - only for own units */}
-      {!isEnemyView && (
-        <div className="flex gap-2 text-xs mb-3">
-          <span className={unit.hasMoved ? 'text-gray-500' : 'text-green-400'}>
-            {unit.hasMoved ? '✓ Moved' : '○ Move'}
-          </span>
-          <span className={unit.hasAttacked ? 'text-gray-500' : 'text-red-400'}>
-            {unit.hasAttacked ? '✓ Attacked' : '○ Attack'}
-          </span>
-          <span className={unit.hasMined ? 'text-gray-500' : 'text-purple-400'}>
-            {unit.hasMined ? '✓ Mined' : '○ Mine'}
-          </span>
-        </div>
-      )}
-
       {/* Mine button - only for own units during action phase */}
       {!isEnemyView && isActionPhase && (() => {
-        const canMineNow = onMine && canMine && !unit.hasMined && unit.canActThisTurn;
+        const canMineNow = onMine && canMine && unit.canActThisTurn;
         const hasResources = cellInfo && cellInfo.resourceLayers > 0;
-        const tooDeep = hasResources && !canMine && !unit.hasMined && unit.canActThisTurn;
+        const tooDeep = hasResources && !canMine && unit.canActThisTurn;
         const requiredMining = cellInfo ? cellInfo.minedDepth + 1 : 0;
 
         if (canMineNow) {

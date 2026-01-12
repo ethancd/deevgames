@@ -4,10 +4,11 @@ import { getUnitDefinition } from './units';
 import { getAttackModifier } from './elements';
 
 /**
- * Check if a unit can attack (hasn't attacked this turn and can act)
+ * Check if a unit can attack (can act this turn)
+ * Units can attack multiple times per turn if they have actions remaining.
  */
 export function canAttack(unit: Unit): boolean {
-  return !unit.hasAttacked && unit.canActThisTurn;
+  return unit.canActThisTurn;
 }
 
 /**

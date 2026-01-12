@@ -3,10 +3,11 @@ import { getCell, updateCell } from './board';
 import { getUnitDefinition } from './units';
 
 /**
- * Check if a unit can mine (hasn't mined this turn and can act)
+ * Check if a unit can mine (can act this turn)
+ * Units can mine multiple times per turn if they have actions remaining.
  */
 export function canMineAction(unit: Unit): boolean {
-  return !unit.hasMined && unit.canActThisTurn;
+  return unit.canActThisTurn;
 }
 
 /**
