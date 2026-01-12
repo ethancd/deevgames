@@ -34,36 +34,36 @@ describe('Elemental System', () => {
       expect(hasDisadvantage('metal', 'lightning')).toBe(true);
     });
 
-    it('metal has advantage over wind', () => {
-      expect(hasAdvantage('metal', 'wind')).toBe(true);
-      expect(hasDisadvantage('wind', 'metal')).toBe(true);
+    it('metal has advantage over shadow', () => {
+      expect(hasAdvantage('metal', 'shadow')).toBe(true);
+      expect(hasDisadvantage('shadow', 'metal')).toBe(true);
     });
 
-    it('wind has advantage over lightning', () => {
-      expect(hasAdvantage('wind', 'lightning')).toBe(true);
-      expect(hasDisadvantage('lightning', 'wind')).toBe(true);
+    it('shadow has advantage over lightning', () => {
+      expect(hasAdvantage('shadow', 'lightning')).toBe(true);
+      expect(hasDisadvantage('lightning', 'shadow')).toBe(true);
     });
   });
 
   describe('Cross-triangle matchups are neutral', () => {
     const triangle1: Element[] = ['fire', 'plant', 'water'];
-    const triangle2: Element[] = ['lightning', 'metal', 'wind'];
+    const triangle2: Element[] = ['lightning', 'metal', 'shadow'];
 
-    it('fire vs lightning/metal/wind are neutral', () => {
+    it('fire vs lightning/metal/shadow are neutral', () => {
       for (const t2 of triangle2) {
         expect(hasAdvantage('fire', t2)).toBe(false);
         expect(hasAdvantage(t2, 'fire')).toBe(false);
       }
     });
 
-    it('plant vs lightning/metal/wind are neutral', () => {
+    it('plant vs lightning/metal/shadow are neutral', () => {
       for (const t2 of triangle2) {
         expect(hasAdvantage('plant', t2)).toBe(false);
         expect(hasAdvantage(t2, 'plant')).toBe(false);
       }
     });
 
-    it('water vs lightning/metal/wind are neutral', () => {
+    it('water vs lightning/metal/shadow are neutral', () => {
       for (const t2 of triangle2) {
         expect(hasAdvantage('water', t2)).toBe(false);
         expect(hasAdvantage(t2, 'water')).toBe(false);
@@ -72,7 +72,7 @@ describe('Elemental System', () => {
   });
 
   describe('Same-element matchups are neutral', () => {
-    const elements: Element[] = ['fire', 'lightning', 'water', 'wind', 'plant', 'metal'];
+    const elements: Element[] = ['fire', 'lightning', 'water', 'shadow', 'plant', 'metal'];
 
     it('no element has advantage over itself', () => {
       for (const element of elements) {
@@ -98,7 +98,7 @@ describe('Elemental System', () => {
     it('returns 0 for neutral matchup (cross-triangle)', () => {
       expect(getAttackModifier('fire', 'lightning')).toBe(0);
       expect(getAttackModifier('plant', 'metal')).toBe(0);
-      expect(getAttackModifier('water', 'wind')).toBe(0);
+      expect(getAttackModifier('water', 'shadow')).toBe(0);
     });
 
     it('returns 0 for same element', () => {
@@ -145,20 +145,20 @@ describe('Elemental System', () => {
 
     it('lightning and metal are in same triangle', () => {
       expect(inSameTriangle('lightning', 'metal')).toBe(true);
-      expect(inSameTriangle('lightning', 'wind')).toBe(true);
-      expect(inSameTriangle('metal', 'wind')).toBe(true);
+      expect(inSameTriangle('lightning', 'shadow')).toBe(true);
+      expect(inSameTriangle('metal', 'shadow')).toBe(true);
     });
 
     it('fire and lightning are NOT in same triangle', () => {
       expect(inSameTriangle('fire', 'lightning')).toBe(false);
       expect(inSameTriangle('plant', 'metal')).toBe(false);
-      expect(inSameTriangle('water', 'wind')).toBe(false);
+      expect(inSameTriangle('water', 'shadow')).toBe(false);
     });
   });
 
   describe('ELEMENT_INFO', () => {
     it('contains all 6 elements', () => {
-      const elements: Element[] = ['fire', 'lightning', 'water', 'wind', 'plant', 'metal'];
+      const elements: Element[] = ['fire', 'lightning', 'water', 'shadow', 'plant', 'metal'];
       for (const element of elements) {
         expect(ELEMENT_INFO[element]).toBeDefined();
         expect(ELEMENT_INFO[element].name).toBeTruthy();
@@ -172,7 +172,7 @@ describe('Elemental System', () => {
       expect(ELEMENT_INFO.fire.language).toBe('Japanese');
       expect(ELEMENT_INFO.lightning.language).toBe('Swahili');
       expect(ELEMENT_INFO.water.language).toBe('Norse');
-      expect(ELEMENT_INFO.wind.language).toBe('Hawaiian/Māori');
+      expect(ELEMENT_INFO.shadow.language).toBe('Turkish/Slavic');
       expect(ELEMENT_INFO.plant.language).toBe('Quechua/Nahuatl');
       expect(ELEMENT_INFO.metal.language).toBe('Lakota');
     });

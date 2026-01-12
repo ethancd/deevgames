@@ -275,3 +275,43 @@ export function scoreAction(
       return 0;
   }
 }
+
+/**
+ * Check if a player should consider resigning
+ * Returns true if the position is hopeless
+ */
+export function shouldResign(state: GameState, player: PlayerId): boolean {
+  const opponent: PlayerId = player === 'player' ? 'ai' : 'player';
+
+  // Get unit values
+  const playerValue = calculateUnitValue(state, player);
+  const opponentValue = calculateUnitValue(state, opponent);
+
+  // If player has no units, they've already lost (don't need resignation)
+  if (playerValue === 0) return false;
+
+  // If opponent has 3x or more unit value, consider resigning
+  if (opponentValue >= playerValue * 3) {
+    return true;
+  }
+
+  // If player only has 1 unit and opponent has 3+
+  const playerUnits = getPlayerUnits(state.board, player);
+  const opponentUnits = getPlayerUnits(state.board, opponent);
+
+  if (playerUnits.length === 1 && opponentUnits.length >= 3) {
+    // And the player's unit is lower tier
+    const playerMaxTier = Math.max(
+      ...playerUnits.map((u) => getUnitDefinition(u.definitionId).tier)
+    );
+    const opponentMaxTier = Math.max(
+      ...opponentUnits.map((u) => getUnitDefinition(u.definitionId).tier)
+    );
+
+    if (opponentMaxTier > playerMaxTier) {
+      return true;
+    }
+  }
+
+  return false;
+}

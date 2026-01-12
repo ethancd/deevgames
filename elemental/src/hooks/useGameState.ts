@@ -1,4 +1,4 @@
-import { useReducer, useCallback, useMemo } from 'react';
+import { useReducer, useCallback, useMemo, useState } from 'react';
 import type { GameState, GameAction, Position } from '../game/types';
 import type { AIAction } from '../ai/types';
 import { createInitialGameState, getUnitById } from '../game/board';
@@ -12,6 +12,16 @@ import { getBuildCost, getBuildTime, canBuildUnit, meetsTechRequirement, createU
 import { isValidSpawnPosition } from '../game/spawning';
 import { promoteUnit, canPromote, getPromotionCost } from '../game/promotion';
 import { loadGameState, saveGameState, clearGameState } from '../utils/persistence';
+
+// Actions that can be undone during player's turn
+const UNDOABLE_ACTIONS = new Set([
+  'MOVE',
+  'ATTACK',
+  'MINE',
+  'PLACE_UNIT',
+  'PROMOTE_UNIT',
+  'QUEUE_UNIT',
+]);
 
 function gameReducer(state: GameState, action: GameAction): GameState {
   switch (action.type) {
@@ -377,6 +387,11 @@ function gameReducer(state: GameState, action: GameAction): GameState {
       return createInitialGameState();
     }
 
+    case 'RESTORE_STATE': {
+      // Restore a previous state (used for undo)
+      return action.state;
+    }
+
     default:
       return state;
   }
@@ -416,50 +431,81 @@ function getInitialState(): GameState {
 
 export function useGameState() {
   const [state, dispatch] = useReducer(gameReducerWithSave, undefined, getInitialState);
+  const [undoHistory, setUndoHistory] = useState<GameState[]>([]);
+
+  // Wrap dispatch to track undo history for undoable actions
+  const dispatchWithUndo = useCallback((action: GameAction) => {
+    // Save current state before undoable player actions
+    if (
+      UNDOABLE_ACTIONS.has(action.type) &&
+      state.turn.currentPlayer === 'player'
+    ) {
+      setUndoHistory((prev) => [...prev, state]);
+    }
+    // Clear undo history on phase/turn transitions
+    if (
+      action.type === 'END_PLACE_PHASE' ||
+      action.type === 'END_ACTION_PHASE' ||
+      action.type === 'END_TURN' ||
+      action.type === 'RESET_GAME'
+    ) {
+      setUndoHistory([]);
+    }
+    dispatch(action);
+  }, [state]);
+
+  const undo = useCallback(() => {
+    if (undoHistory.length === 0) return;
+    const previousState = undoHistory[undoHistory.length - 1];
+    setUndoHistory((prev) => prev.slice(0, -1));
+    dispatch({ type: 'RESTORE_STATE', state: previousState });
+  }, [undoHistory]);
+
+  const canUndo = undoHistory.length > 0 && state.turn.currentPlayer === 'player';
 
   const selectUnit = useCallback((unitId: string) => {
-    dispatch({ type: 'SELECT_UNIT', unitId });
-  }, []);
+    dispatchWithUndo({ type: 'SELECT_UNIT', unitId });
+  }, [dispatchWithUndo]);
 
   const deselect = useCallback(() => {
     dispatch({ type: 'DESELECT' });
   }, []);
 
   const moveUnit = useCallback((unitId: string, to: Position) => {
-    dispatch({ type: 'MOVE', unitId, to });
-  }, []);
+    dispatchWithUndo({ type: 'MOVE', unitId, to });
+  }, [dispatchWithUndo]);
 
   const attackWith = useCallback((unitId: string, targetPosition: Position) => {
-    dispatch({ type: 'ATTACK', unitId, targetPosition });
-  }, []);
+    dispatchWithUndo({ type: 'ATTACK', unitId, targetPosition });
+  }, [dispatchWithUndo]);
 
   const mineWith = useCallback((unitId: string) => {
-    dispatch({ type: 'MINE', unitId });
-  }, []);
+    dispatchWithUndo({ type: 'MINE', unitId });
+  }, [dispatchWithUndo]);
 
   const endPlacePhase = useCallback(() => {
-    dispatch({ type: 'END_PLACE_PHASE' });
-  }, []);
+    dispatchWithUndo({ type: 'END_PLACE_PHASE' });
+  }, [dispatchWithUndo]);
 
   const endActionPhase = useCallback(() => {
-    dispatch({ type: 'END_ACTION_PHASE' });
-  }, []);
+    dispatchWithUndo({ type: 'END_ACTION_PHASE' });
+  }, [dispatchWithUndo]);
 
   const queueUnit = useCallback((definitionId: string) => {
-    dispatch({ type: 'QUEUE_UNIT', definitionId });
-  }, []);
+    dispatchWithUndo({ type: 'QUEUE_UNIT', definitionId });
+  }, [dispatchWithUndo]);
 
   const placeUnit = useCallback((queuedUnitId: string, position: Position) => {
-    dispatch({ type: 'PLACE_UNIT', queuedUnitId, position });
-  }, []);
+    dispatchWithUndo({ type: 'PLACE_UNIT', queuedUnitId, position });
+  }, [dispatchWithUndo]);
 
   const promoteUnitAction = useCallback((unitId: string) => {
-    dispatch({ type: 'PROMOTE_UNIT', unitId });
-  }, []);
+    dispatchWithUndo({ type: 'PROMOTE_UNIT', unitId });
+  }, [dispatchWithUndo]);
 
   const endTurn = useCallback(() => {
-    dispatch({ type: 'END_TURN' });
-  }, []);
+    dispatchWithUndo({ type: 'END_TURN' });
+  }, [dispatchWithUndo]);
 
   const resign = useCallback(() => {
     dispatch({ type: 'RESIGN' });
@@ -471,8 +517,8 @@ export function useGameState() {
 
   const resetGame = useCallback(() => {
     clearGameState();
-    dispatch({ type: 'RESET_GAME' });
-  }, []);
+    dispatchWithUndo({ type: 'RESET_GAME' });
+  }, [dispatchWithUndo]);
 
   const selectedUnitData = useMemo(() => {
     if (!state.selectedUnit) return null;
@@ -498,6 +544,8 @@ export function useGameState() {
     resign,
     applyAIAction: applyAIActionToState,
     resetGame,
+    undo,
+    canUndo,
     selectedUnitData,
     isPlayerTurn,
     canEndTurn,

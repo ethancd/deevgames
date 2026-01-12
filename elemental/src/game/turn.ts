@@ -12,6 +12,7 @@ import {
 } from './board';
 import { getPromotableUnits } from './promotion';
 import { getAllSpawnPositions } from './spawning';
+import { UNIT_DEFINITIONS } from './units';
 
 /**
  * Advance build queues for a player, returning units ready to place
@@ -132,9 +133,10 @@ export function hasActionsRemaining(state: GameState): boolean {
 
 /**
  * Transition from action phase to queue phase
+ * Auto-ends turn if nothing can be done in queue phase
  */
 export function startQueuePhase(state: GameState): GameState {
-  return {
+  const queueState: GameState = {
     ...state,
     turn: {
       ...state.turn,
@@ -144,6 +146,33 @@ export function startQueuePhase(state: GameState): GameState {
     validMoves: [],
     validAttacks: [],
   };
+
+  // Auto-end if player can't do anything in queue phase
+  if (!canActInQueuePhase(queueState, state.turn.currentPlayer)) {
+    return endTurn(queueState);
+  }
+
+  return queueState;
+}
+
+/**
+ * Check if a player can do anything in queue phase
+ * (can afford to queue any unit OR can promote any unit)
+ */
+export function canActInQueuePhase(state: GameState, player: PlayerId): boolean {
+  const playerState = state.players[player];
+
+  // Check if player can afford to queue any unit
+  const cheapestUnit = Math.min(...UNIT_DEFINITIONS.map((d) => d.cost));
+  if (playerState.resources >= cheapestUnit) {
+    return true;
+  }
+
+  // Check if player can promote any units (even with low resources)
+  const buildState = { queue: [], crystals: playerState.resources };
+  const promotableUnits = getPromotableUnits(state.board, player, buildState);
+
+  return promotableUnits.length > 0;
 }
 
 /**
@@ -155,21 +184,10 @@ export function endTurn(state: GameState): GameState {
 
   const isNewRound = nextPlayer === 'player';
 
-  // Remove placed units from queue (turnsRemaining === 0)
-  const currentPlayerState = state.players[currentPlayer];
-  const remainingQueue = currentPlayerState.buildQueue.filter(
-    (u) => u.turnsRemaining > 0
-  );
-
+  // Keep all units in queue - ready units persist until actually placed
+  // (build queue persistence: units are never auto-deleted)
   const stateWithCleanedQueue: GameState = {
     ...state,
-    players: {
-      ...state.players,
-      [currentPlayer]: {
-        ...currentPlayerState,
-        buildQueue: remainingQueue,
-      },
-    },
     turn: {
       ...state.turn,
       turnNumber: isNewRound ? state.turn.turnNumber + 1 : state.turn.turnNumber,

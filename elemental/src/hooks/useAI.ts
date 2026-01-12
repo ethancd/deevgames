@@ -3,6 +3,7 @@ import type { GameState } from '../game/types';
 import type { AIAction, AIDifficulty } from '../ai/types';
 import { AIEngine } from '../ai/engine';
 import { applyAction } from '../ai/simulate';
+import { shouldResign } from '../ai/evaluation';
 
 interface UseAIOptions {
   difficulty?: AIDifficulty;
@@ -15,6 +16,8 @@ interface UseAIReturn {
   executeAITurn: (state: GameState, onAction: (action: AIAction) => void) => Promise<void>;
   difficulty: AIDifficulty;
   setDifficulty: (d: AIDifficulty) => void;
+  lastTurnActions: AIAction[];
+  clearLastTurnActions: () => void;
 }
 
 export function useAI(options: UseAIOptions = {}): UseAIReturn {
@@ -26,7 +29,12 @@ export function useAI(options: UseAIOptions = {}): UseAIReturn {
 
   const [difficulty, setDifficulty] = useState<AIDifficulty>(initialDifficulty);
   const [isThinking, setIsThinking] = useState(false);
+  const [lastTurnActions, setLastTurnActions] = useState<AIAction[]>([]);
   const aiRef = useRef<AIEngine>(new AIEngine(initialDifficulty));
+
+  const clearLastTurnActions = useCallback(() => {
+    setLastTurnActions([]);
+  }, []);
 
   // Update AI when difficulty changes
   useEffect(() => {
@@ -40,6 +48,19 @@ export function useAI(options: UseAIOptions = {}): UseAIReturn {
       }
 
       setIsThinking(true);
+      const turnActions: AIAction[] = [];
+
+      // Check if AI should resign (only on hard difficulty - others fight to the end)
+      if (difficulty === 'hard' && shouldResign(state, 'ai')) {
+        // Add a delay before resigning
+        await new Promise((resolve) => setTimeout(resolve, thinkingDelay * 2));
+        const resignAction: AIAction = { type: 'RESIGN' };
+        onAction(resignAction);
+        turnActions.push(resignAction);
+        setLastTurnActions(turnActions);
+        setIsThinking(false);
+        return;
+      }
 
       let currentState = state;
       let iterations = 0;
@@ -68,11 +89,15 @@ export function useAI(options: UseAIOptions = {}): UseAIReturn {
           if (result.plan.actions.length === 0) {
             // No actions, need to end phase/turn
             if (currentState.turn.phase === 'action') {
-              onAction({ type: 'END_ACTION_PHASE' });
-              currentState = applyAction(currentState, { type: 'END_ACTION_PHASE' });
+              const endAction: AIAction = { type: 'END_ACTION_PHASE' };
+              onAction(endAction);
+              turnActions.push(endAction);
+              currentState = applyAction(currentState, endAction);
               continue;
             } else if (currentState.turn.phase === 'queue') {
-              onAction({ type: 'END_TURN' });
+              const endAction: AIAction = { type: 'END_TURN' };
+              onAction(endAction);
+              turnActions.push(endAction);
               break;
             } else if (currentState.turn.phase === 'place') {
               // Skip to action phase
@@ -88,6 +113,7 @@ export function useAI(options: UseAIOptions = {}): UseAIReturn {
           // Execute the action
           const action = result.plan.actions[0];
           onAction(action);
+          turnActions.push(action);
           currentState = applyAction(currentState, action);
 
           // If ended turn, we're done
@@ -96,6 +122,7 @@ export function useAI(options: UseAIOptions = {}): UseAIReturn {
           }
         }
       } finally {
+        setLastTurnActions(turnActions);
         setIsThinking(false);
       }
     },
@@ -107,5 +134,7 @@ export function useAI(options: UseAIOptions = {}): UseAIReturn {
     executeAITurn,
     difficulty,
     setDifficulty,
+    lastTurnActions,
+    clearLastTurnActions,
   };
 }

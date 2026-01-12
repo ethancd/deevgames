@@ -13,6 +13,7 @@ interface UnitInfoProps {
   isPlacePhase?: boolean;
   resources?: number;
   onPromote?: () => void;
+  isEnemyView?: boolean; // True when viewing enemy unit stats
 }
 
 export function UnitInfo({
@@ -24,6 +25,7 @@ export function UnitInfo({
   isPlacePhase = false,
   resources = 0,
   onPromote,
+  isEnemyView = false,
 }: UnitInfoProps) {
   // Show preview stats if no unit but have a preview definition
   if (!unit && previewDefinitionId) {
@@ -84,7 +86,10 @@ export function UnitInfo({
   const color = getElementHex(def.element);
 
   return (
-    <div className="p-3 bg-gray-800 rounded border border-gray-700">
+    <div className={`p-3 bg-gray-800 rounded border ${isEnemyView ? 'border-red-600' : 'border-gray-700'}`}>
+      {isEnemyView && (
+        <div className="text-xs text-red-400 mb-2">Enemy Unit</div>
+      )}
       <div className="flex items-center gap-3 mb-3">
         <div
           className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg"
@@ -124,21 +129,23 @@ export function UnitInfo({
         </div>
       </div>
 
-      {/* Action status */}
-      <div className="flex gap-2 text-xs mb-3">
-        <span className={unit.hasMoved ? 'text-gray-500' : 'text-green-400'}>
-          {unit.hasMoved ? '✓ Moved' : '○ Move'}
-        </span>
-        <span className={unit.hasAttacked ? 'text-gray-500' : 'text-red-400'}>
-          {unit.hasAttacked ? '✓ Attacked' : '○ Attack'}
-        </span>
-        <span className={unit.hasMined ? 'text-gray-500' : 'text-purple-400'}>
-          {unit.hasMined ? '✓ Mined' : '○ Mine'}
-        </span>
-      </div>
+      {/* Action status - only for own units */}
+      {!isEnemyView && (
+        <div className="flex gap-2 text-xs mb-3">
+          <span className={unit.hasMoved ? 'text-gray-500' : 'text-green-400'}>
+            {unit.hasMoved ? '✓ Moved' : '○ Move'}
+          </span>
+          <span className={unit.hasAttacked ? 'text-gray-500' : 'text-red-400'}>
+            {unit.hasAttacked ? '✓ Attacked' : '○ Attack'}
+          </span>
+          <span className={unit.hasMined ? 'text-gray-500' : 'text-purple-400'}>
+            {unit.hasMined ? '✓ Mined' : '○ Mine'}
+          </span>
+        </div>
+      )}
 
-      {/* Mine button */}
-      {(() => {
+      {/* Mine button - only for own units */}
+      {!isEnemyView && (() => {
         const canMineNow = onMine && canMine && !unit.hasMined && unit.canActThisTurn;
         const hasResources = cellInfo && cellInfo.resourceLayers > 0;
         const tooDeep = hasResources && !canMine && !unit.hasMined && unit.canActThisTurn;

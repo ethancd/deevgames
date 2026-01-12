@@ -5,6 +5,8 @@ interface ActionBarProps {
   onEndActionPhase: () => void;
   onEndTurn: () => void;
   isPlayerTurn: boolean;
+  onUndo?: () => void;
+  canUndo?: boolean;
 }
 
 export function ActionBar({
@@ -14,8 +16,10 @@ export function ActionBar({
   onEndActionPhase,
   onEndTurn,
   isPlayerTurn,
+  onUndo,
+  canUndo = false,
 }: ActionBarProps) {
-  const steps = [0, 1, 2, 3];
+  const steps = [0, 1, 2, 3, 4, 5];
 
   return (
     <div className="flex items-center gap-4 p-3 bg-gray-800 rounded-lg">
@@ -46,6 +50,16 @@ export function ActionBar({
 
       {/* Divider */}
       {phase === 'action' && <div className="w-px h-6 bg-gray-600" />}
+
+      {/* Undo button */}
+      {isPlayerTurn && canUndo && onUndo && (
+        <button
+          onClick={onUndo}
+          className="px-3 py-1 bg-gray-600 hover:bg-gray-500 text-white text-sm rounded transition-colors"
+        >
+          ↶ Undo
+        </button>
+      )}
 
       {/* Phase controls */}
       {phase === 'place' && isPlayerTurn && (

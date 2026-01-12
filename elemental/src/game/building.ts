@@ -162,7 +162,7 @@ export function createUnitFromDefinition(
     hasMoved: false,
     hasAttacked: false,
     hasMined: false,
-    canActThisTurn: false, // Units placed this turn cannot act
+    canActThisTurn: true, // Units can act immediately (no summoning sickness)
     damageTaken: 0,
   };
 }

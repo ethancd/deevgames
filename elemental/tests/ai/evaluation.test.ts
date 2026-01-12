@@ -56,7 +56,7 @@ function createTestState(board: BoardState, currentPlayer: PlayerId = 'ai'): Gam
     turn: {
       currentPlayer,
       phase: 'action',
-      actionsRemaining: 4,
+      actionsRemaining: 6,
       turnNumber: 1,
     },
     winner: null,
@@ -222,13 +222,14 @@ describe('AI Evaluation', () => {
     });
 
     it('returns higher score for units with attack options', () => {
+      // Use Speed 1 unit (water_1) - Speed 2+ units can lose moves that balance out attack bonus
       const board = createEmptyBoard();
-      const aiUnit = createTestUnit('ai-1', 'fire_1', 'ai', 5, 5);
-      const nearEnemy = createTestUnit('player-1', 'water_1', 'player', 5, 6);
+      const aiUnit = createTestUnit('ai-1', 'water_1', 'ai', 5, 5);
+      const nearEnemy = createTestUnit('player-1', 'fire_1', 'player', 5, 6);
       board.units.push(aiUnit, nearEnemy);
 
       const boardNoEnemy = createEmptyBoard();
-      const aiAlone = createTestUnit('ai-1', 'fire_1', 'ai', 5, 5);
+      const aiAlone = createTestUnit('ai-1', 'water_1', 'ai', 5, 5);
       boardNoEnemy.units.push(aiAlone);
 
       const stateWithEnemy = createTestState(board);

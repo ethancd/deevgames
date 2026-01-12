@@ -113,13 +113,13 @@ describe('Turn Module', () => {
       expect(newState.turn.currentPlayer).toBe('ai');
     });
 
-    it('resets actionsRemaining to 4', () => {
+    it('resets actionsRemaining to 6', () => {
       let state = createInitialGameState();
       state = { ...state, turn: { ...state.turn, actionsRemaining: 1 } };
 
       const newState = startTurn(state, 'player');
 
-      expect(newState.turn.actionsRemaining).toBe(4);
+      expect(newState.turn.actionsRemaining).toBe(6);
     });
 
     it('resets unit action flags', () => {
@@ -222,18 +222,23 @@ describe('Turn Module', () => {
       expect(newState.turn.phase).toBe('action');
     });
 
-    it('startActionPhase resets actions to 4', () => {
+    it('startActionPhase resets actions to 6', () => {
       let state = createInitialGameState();
       state = { ...state, turn: { ...state.turn, actionsRemaining: 0 } };
 
       const newState = startActionPhase(state);
 
-      expect(newState.turn.actionsRemaining).toBe(4);
+      expect(newState.turn.actionsRemaining).toBe(6);
     });
 
     it('startQueuePhase sets phase to queue', () => {
       let state = createInitialGameState();
-      state = { ...state, turn: { ...state.turn, phase: 'action' } };
+      // Give player resources so queue phase doesn't auto-end
+      state = {
+        ...state,
+        turn: { ...state.turn, phase: 'action' },
+        players: { ...state.players, player: { ...state.players.player, resources: 10 } },
+      };
 
       const newState = startQueuePhase(state);
 
@@ -246,11 +251,23 @@ describe('Turn Module', () => {
         ...state,
         turn: { ...state.turn, phase: 'action' },
         selectedUnit: 'some-id',
+        players: { ...state.players, player: { ...state.players.player, resources: 10 } },
       };
 
       const newState = startQueuePhase(state);
 
       expect(newState.selectedUnit).toBeNull();
+    });
+
+    it('startQueuePhase auto-ends turn when no resources', () => {
+      let state = createInitialGameState();
+      // No resources = can't queue anything = auto-end
+      state = { ...state, turn: { ...state.turn, phase: 'action' } };
+
+      const newState = startQueuePhase(state);
+
+      // Should have switched to AI's turn
+      expect(newState.turn.currentPlayer).toBe('ai');
     });
   });
 
@@ -259,13 +276,13 @@ describe('Turn Module', () => {
       let state = createInitialGameState();
       state = startActionPhase(state);
 
+      expect(state.turn.actionsRemaining).toBe(6);
+
+      state = useAction(state);
+      expect(state.turn.actionsRemaining).toBe(5);
+
+      state = useAction(state);
       expect(state.turn.actionsRemaining).toBe(4);
-
-      state = useAction(state);
-      expect(state.turn.actionsRemaining).toBe(3);
-
-      state = useAction(state);
-      expect(state.turn.actionsRemaining).toBe(2);
     });
 
     it('does not go below 0', () => {
@@ -330,7 +347,7 @@ describe('Turn Module', () => {
       expect(newState.turn.turnNumber).toBe(5);
     });
 
-    it('removes placed units from queue (turnsRemaining 0)', () => {
+    it('preserves ready units in queue (build queue persistence)', () => {
       let state = createInitialGameState();
       state = {
         ...state,
@@ -348,9 +365,10 @@ describe('Turn Module', () => {
 
       const newState = endTurn(state);
 
-      // After ending player's turn, player's queue should have ready units removed
-      expect(newState.players.player.buildQueue).toHaveLength(1);
-      expect(newState.players.player.buildQueue[0].definitionId).toBe('water_1');
+      // Ready units persist in queue until actually placed (build queue persistence)
+      expect(newState.players.player.buildQueue).toHaveLength(2);
+      expect(newState.players.player.buildQueue[0].definitionId).toBe('fire_1');
+      expect(newState.players.player.buildQueue[1].definitionId).toBe('water_1');
     });
   });
 
@@ -431,7 +449,12 @@ describe('Turn Module', () => {
   describe('skipToQueuePhase', () => {
     it('sets actionsRemaining to 0 and phase to queue', () => {
       let state = createInitialGameState();
-      state = { ...state, turn: { ...state.turn, phase: 'action', actionsRemaining: 3 } };
+      // Give player resources so queue phase doesn't auto-end
+      state = {
+        ...state,
+        turn: { ...state.turn, phase: 'action', actionsRemaining: 3 },
+        players: { ...state.players, player: { ...state.players.player, resources: 10 } },
+      };
 
       const newState = skipToQueuePhase(state);
 
@@ -443,17 +466,22 @@ describe('Turn Module', () => {
   describe('Full turn cycle', () => {
     it('player turn cycle: action -> queue -> end (place skipped when empty)', () => {
       let state = createInitialGameState();
+      // Give player resources to stay in queue phase
+      state = {
+        ...state,
+        players: { ...state.players, player: { ...state.players.player, resources: 10 } },
+      };
 
       // Place phase is skipped when there's nothing to do
       // Initial state starts in action phase since no units to place/promote
       expect(state.turn.phase).toBe('action');
       expect(state.turn.currentPlayer).toBe('player');
-      expect(state.turn.actionsRemaining).toBe(4);
+      expect(state.turn.actionsRemaining).toBe(6);
 
       // Use some actions
       state = useAction(state);
       state = useAction(state);
-      expect(state.turn.actionsRemaining).toBe(2);
+      expect(state.turn.actionsRemaining).toBe(4);
 
       // Move to queue phase
       state = startQueuePhase(state);

@@ -36,7 +36,7 @@ export function Unit({ unit, isSelected, isOwned, onClick }: UnitProps) {
         relative
         ${isSelected ? 'ring-2 ring-offset-2 ring-blue-500 scale-110' : ''}
         ${!canAct ? 'opacity-60' : 'hover:scale-105'}
-        ${isOwned ? 'ring-1 ring-white' : 'ring-1 ring-black/30'}
+        ${isOwned ? 'ring-2 ring-white' : 'ring-2 ring-black'}
         ${isDamaged ? 'ring-2 ring-red-500' : ''}
       `}
       style={{ backgroundColor: color }}

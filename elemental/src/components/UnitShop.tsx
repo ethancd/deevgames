@@ -13,12 +13,12 @@ const ELEMENT_EMOJI: Record<Element, string> = {
   fire: '🔥',
   lightning: '⚡',
   water: '💧',
-  wind: '💨',
+  shadow: '🌑',
   plant: '🌿',
   metal: '⚙️',
 };
 
-const ELEMENT_ORDER: Element[] = ['fire', 'lightning', 'water', 'wind', 'plant', 'metal'];
+const ELEMENT_ORDER: Element[] = ['fire', 'lightning', 'water', 'shadow', 'plant', 'metal'];
 
 interface UnitShopProps {
   resources: number;

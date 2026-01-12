@@ -13,7 +13,7 @@ export type Element =
   | 'fire'
   | 'lightning'
   | 'water'
-  | 'wind'
+  | 'shadow'
   | 'plant'
   | 'metal';
 
@@ -81,7 +81,7 @@ export type TurnPhase = 'place' | 'action' | 'queue';
 export interface TurnState {
   currentPlayer: PlayerId;
   phase: TurnPhase;
-  actionsRemaining: number; // 0-4 during action phase
+  actionsRemaining: number; // 0-6 during action phase
   turnNumber: number;
 }
 
@@ -129,4 +129,5 @@ export type GameAction =
   | { type: 'END_TURN' }
   | { type: 'RESIGN' }
   | { type: 'APPLY_AI_ACTION'; aiAction: import('../ai/types').AIAction }
-  | { type: 'RESET_GAME' };
+  | { type: 'RESET_GAME' }
+  | { type: 'RESTORE_STATE'; state: GameState };

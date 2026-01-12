@@ -16,10 +16,10 @@ export const ELEMENT_COLORS: Record<Element, { primary: string; secondary: strin
     secondary: 'bg-blue-300',
     text: 'text-blue-500',
   },
-  wind: {
-    primary: 'bg-cyan-400',
-    secondary: 'bg-cyan-200',
-    text: 'text-cyan-400',
+  shadow: {
+    primary: 'bg-purple-600',
+    secondary: 'bg-purple-400',
+    text: 'text-purple-500',
   },
   plant: {
     primary: 'bg-green-500',
@@ -37,7 +37,7 @@ export const ELEMENT_HEX: Record<Element, string> = {
   fire: '#EF4444',
   lightning: '#EAB308',
   water: '#3B82F6',
-  wind: '#22D3EE',
+  shadow: '#7C3AED',
   plant: '#22C55E',
   metal: '#6B7280',
 };

@@ -61,7 +61,7 @@ function createTestState(board: BoardState, player: PlayerId = 'ai'): GameState 
     turn: {
       currentPlayer: player,
       phase: 'action',
-      actionsRemaining: 4,
+      actionsRemaining: 6,
       turnNumber: 1,
     },
     winner: null,

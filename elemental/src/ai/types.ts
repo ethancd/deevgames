@@ -19,7 +19,8 @@ export type AIAction =
   | { type: 'END_TURN' }
   | { type: 'QUEUE_UNIT'; definitionId: string }
   | { type: 'PLACE_UNIT'; queuedUnitId: string; position: Position }
-  | { type: 'PROMOTE_UNIT'; unitId: string };
+  | { type: 'PROMOTE_UNIT'; unitId: string }
+  | { type: 'RESIGN' };
 
 /**
  * A complete turn plan (sequence of actions)

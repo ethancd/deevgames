@@ -75,7 +75,7 @@ describe('Promotion System', () => {
     });
 
     it('preserves element through promotion', () => {
-      const elements = ['fire', 'water', 'plant', 'lightning', 'metal', 'wind'];
+      const elements = ['fire', 'water', 'plant', 'lightning', 'metal', 'shadow'];
       for (const element of elements) {
         const unit = createUnit('p1', 'player', { x: 0, y: 0 }, `${element}_1`);
         const promoted = getPromotedDefinitionId(unit);
@@ -149,9 +149,9 @@ describe('Promotion System', () => {
 
     it('preserves unit position and owner', () => {
       let board = createEmptyBoard();
-      const unit = createUnit('p1', 'player', { x: 3, y: 4 }, 'water_2');
+      const unit = createUnit('p1', 'player', { x: 3, y: 4 }, 'fire_2');
       board = placeUnit(board, unit);
-      const buildState: BuildState = { queue: [], crystals: 5 };
+      const buildState: BuildState = { queue: [], crystals: 5 }; // fire_2→fire_3 costs 3
 
       const result = promoteUnit(board, 'p1', buildState);
 
@@ -195,8 +195,8 @@ describe('Promotion System', () => {
   describe('getPromotableUnits', () => {
     it('returns units that can be promoted', () => {
       let board = createEmptyBoard();
-      const unit1 = createUnit('p1', 'player', { x: 1, y: 1 }, 'fire_1');
-      const unit2 = createUnit('p2', 'player', { x: 2, y: 2 }, 'water_2');
+      const unit1 = createUnit('p1', 'player', { x: 1, y: 1 }, 'fire_1'); // costs 2
+      const unit2 = createUnit('p2', 'player', { x: 2, y: 2 }, 'fire_2'); // costs 3
       board = placeUnit(board, unit1);
       board = placeUnit(board, unit2);
       const buildState: BuildState = { queue: [], crystals: 3 };
@@ -208,8 +208,8 @@ describe('Promotion System', () => {
 
     it('excludes units player cannot afford to promote', () => {
       let board = createEmptyBoard();
-      const unit1 = createUnit('p1', 'player', { x: 1, y: 1 }, 'fire_1'); // needs 2
-      const unit2 = createUnit('p2', 'player', { x: 2, y: 2 }, 'water_3'); // needs 4
+      const unit1 = createUnit('p1', 'player', { x: 1, y: 1 }, 'fire_1'); // needs 2 (3-1)
+      const unit2 = createUnit('p2', 'player', { x: 2, y: 2 }, 'fire_3'); // needs 4 (10-6)
       board = placeUnit(board, unit1);
       board = placeUnit(board, unit2);
       const buildState: BuildState = { queue: [], crystals: 2 };

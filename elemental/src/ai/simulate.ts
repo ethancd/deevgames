@@ -37,9 +37,21 @@ export function applyAction(state: GameState, action: AIAction): GameState {
     case 'PROMOTE_UNIT':
       return applyPromoteUnit(state, action.unitId);
 
+    case 'RESIGN':
+      return applyResign(state);
+
     default:
       return state;
   }
+}
+
+function applyResign(state: GameState): GameState {
+  const winner = state.turn.currentPlayer === 'player' ? 'ai' : 'player';
+  return {
+    ...state,
+    phase: 'victory',
+    winner,
+  };
 }
 
 function applyMove(state: GameState, unitId: string, to: Position): GameState {
@@ -156,7 +168,7 @@ function applyPlaceUnit(state: GameState, queuedUnitId: string, position: Positi
     hasMoved: false,
     hasAttacked: false,
     hasMined: false,
-    canActThisTurn: false, // Just placed, can't act
+    canActThisTurn: true, // Can act immediately (no summoning sickness)
     damageTaken: 0,
   };
 
@@ -199,7 +211,7 @@ function applyPromoteUnit(state: GameState, unitId: string): GameState {
     ...state.board,
     units: state.board.units.map((u) =>
       u.id === unitId
-        ? { ...u, definitionId: nextTierDef.id, canActThisTurn: false }
+        ? { ...u, definitionId: nextTierDef.id } // Keep existing canActThisTurn
         : u
     ),
   };

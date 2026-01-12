@@ -4,14 +4,25 @@ import type { BuildState } from './building';
 
 /**
  * Get the promotion cost for upgrading a unit to the next tier
- * Cost = next tier value (e.g., promoting T1→T2 costs 2 crystals)
+ * Cost = difference between current and next tier unit costs
  */
 export function getPromotionCost(unit: Unit): number | null {
   const def = getUnitDefinition(unit.definitionId);
   if (def.tier >= 4) {
     return null; // Can't promote T4 units
   }
-  return def.tier + 1;
+
+  // Find next tier definition
+  const nextTier = def.tier + 1;
+  const nextDef = UNIT_DEFINITIONS.find(
+    (d) => d.element === def.element && d.tier === nextTier
+  );
+
+  if (!nextDef) {
+    return null;
+  }
+
+  return nextDef.cost - def.cost;
 }
 
 /**

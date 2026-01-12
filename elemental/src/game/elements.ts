@@ -3,7 +3,7 @@ import type { Element } from './types';
 /**
  * Combat advantage relationships:
  * Triangle 1: Fire → Plant → Water → Fire
- * Triangle 2: Lightning → Metal → Wind → Lightning
+ * Triangle 2: Lightning → Metal → Shadow → Lightning
  *
  * Cross-triangle matchups are neutral.
  */
@@ -14,8 +14,8 @@ const ADVANTAGE_MAP: Record<Element, Element> = {
   plant: 'water',
   water: 'fire',
   lightning: 'metal',
-  metal: 'wind',
-  wind: 'lightning',
+  metal: 'shadow',
+  shadow: 'lightning',
 };
 
 /**
@@ -107,11 +107,11 @@ export const ELEMENT_INFO: Record<
     region: 'Europe',
     color: '#3B82F6',
   },
-  wind: {
-    name: 'Wind',
-    language: 'Hawaiian/Māori',
-    region: 'Oceania',
-    color: '#22D3EE',
+  shadow: {
+    name: 'Shadow',
+    language: 'Turkish/Slavic',
+    region: 'Eurasia',
+    color: '#7C3AED',
   },
   plant: {
     name: 'Plant',

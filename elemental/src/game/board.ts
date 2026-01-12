@@ -12,7 +12,7 @@ import { STARTING_UNITS } from './units';
 
 export const BOARD_SIZE = 10;
 export const INITIAL_RESOURCE_LAYERS = 5;
-export const MAX_ACTIONS_PER_TURN = 4;
+export const MAX_ACTIONS_PER_TURN = 6;
 
 /**
  * Create a fresh cell at a position with full resources
@@ -251,26 +251,35 @@ export function createInitialGameState(): GameState {
 }
 
 /**
- * Reset action flags for all units of a player at the start of their turn
+ * Reset action flags for all units of a player at the start of their turn.
+ * Also resets damageTaken on OPPONENT's units (damage from player's previous turn).
  */
 export function resetUnitActions(
   board: BoardState,
   player: PlayerId
 ): BoardState {
+  const opponent = player === 'player' ? 'ai' : 'player';
   return {
     ...board,
-    units: board.units.map((u) =>
-      u.owner === player
-        ? {
-            ...u,
-            hasMoved: false,
-            hasAttacked: false,
-            hasMined: false,
-            canActThisTurn: true,
-            damageTaken: 0, // Reset damage taken from previous opponent's turn
-          }
-        : u
-    ),
+    units: board.units.map((u) => {
+      if (u.owner === player) {
+        // Reset action flags for current player's units
+        return {
+          ...u,
+          hasMoved: false,
+          hasAttacked: false,
+          hasMined: false,
+          canActThisTurn: true,
+        };
+      } else if (u.owner === opponent) {
+        // Reset damage on opponent's units (damage dealt by this player last turn)
+        return {
+          ...u,
+          damageTaken: 0,
+        };
+      }
+      return u;
+    }),
   };
 }
 

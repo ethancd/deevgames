@@ -47,11 +47,11 @@ describe('Mining Module', () => {
         expect(calculateMiningYield(unit, cell)).toBe(1);
       });
 
-      it('Muju (Mining 2) extracts 2 resources from fresh cell', () => {
-        const unit = createUnit('plant_1', 'player', { x: 0, y: 0 }); // Mining: 2
+      it('Muju (Mining 3) extracts 3 resources from fresh cell', () => {
+        const unit = createUnit('plant_1', 'player', { x: 0, y: 0 }); // Mining: 3
         const cell = { position: { x: 0, y: 0 }, resourceLayers: 5, minedDepth: 0 };
 
-        expect(calculateMiningYield(unit, cell)).toBe(2);
+        expect(calculateMiningYield(unit, cell)).toBe(3);
       });
 
       it('Cuauhtlimallki (Mining 5) extracts all 5 resources from fresh cell', () => {
@@ -72,22 +72,22 @@ describe('Mining Module', () => {
         expect(calculateMiningYield(unit, cell)).toBe(0);
       });
 
-      it('Muju (Mining 2) gets 1 from cell where depth 1 is mined', () => {
-        const unit = createUnit('plant_1', 'player', { x: 0, y: 0 }); // Mining: 2
+      it('Muju (Mining 3) gets 2 from cell where depth 1 is mined', () => {
+        const unit = createUnit('plant_1', 'player', { x: 0, y: 0 }); // Mining: 3
         // minedDepth=1, top layer at depth 2
         const cell = { position: { x: 0, y: 0 }, resourceLayers: 4, minedDepth: 1 };
 
-        // Muju can reach depths 1-2, top layer is at depth 2, gets 1 layer
-        expect(calculateMiningYield(unit, cell)).toBe(1);
+        // Muju can reach depths 1-3, top layer is at depth 2, gets 2 layers (depths 2-3)
+        expect(calculateMiningYield(unit, cell)).toBe(2);
       });
 
-      it('Muju (Mining 2) gets 0 from cell where depths 1-2 are mined', () => {
-        const unit = createUnit('plant_1', 'player', { x: 0, y: 0 }); // Mining: 2
+      it('Muju (Mining 3) gets 1 from cell where depths 1-2 are mined', () => {
+        const unit = createUnit('plant_1', 'player', { x: 0, y: 0 }); // Mining: 3
         // minedDepth=2, top layer at depth 3
         const cell = { position: { x: 0, y: 0 }, resourceLayers: 3, minedDepth: 2 };
 
-        // Muju can reach depths 1-2, but top layer is at depth 3
-        expect(calculateMiningYield(unit, cell)).toBe(0);
+        // Muju can reach depths 1-3, top layer is at depth 3, gets 1 layer
+        expect(calculateMiningYield(unit, cell)).toBe(1);
       });
 
       it('Sachita (Mining 3) gets 1 from cell where depths 1-2 are mined', () => {
@@ -150,17 +150,17 @@ describe('Mining Module', () => {
   describe('executeMine', () => {
     it('extracts correct resources and updates cell', () => {
       let board = createEmptyBoard();
-      const unit = createUnit('plant_1', 'player', { x: 5, y: 5 }); // Mining: 2
+      const unit = createUnit('plant_1', 'player', { x: 5, y: 5 }); // Mining: 3
       board = addUnit(board, unit);
 
       const result = executeMine(board, unit.id, 0);
 
-      expect(result.amountMined).toBe(2);
-      expect(result.newResources).toBe(2);
+      expect(result.amountMined).toBe(3);
+      expect(result.newResources).toBe(3);
 
       const cell = getCell(result.board, { x: 5, y: 5 });
-      expect(cell?.resourceLayers).toBe(3);
-      expect(cell?.minedDepth).toBe(2);
+      expect(cell?.resourceLayers).toBe(2);
+      expect(cell?.minedDepth).toBe(3);
     });
 
     it('marks unit as having mined', () => {
@@ -176,12 +176,12 @@ describe('Mining Module', () => {
 
     it('adds to existing resources', () => {
       let board = createEmptyBoard();
-      const unit = createUnit('plant_1', 'player', { x: 5, y: 5 }); // Mining: 2
+      const unit = createUnit('plant_1', 'player', { x: 5, y: 5 }); // Mining: 3
       board = addUnit(board, unit);
 
       const result = executeMine(board, unit.id, 10);
 
-      expect(result.newResources).toBe(12);
+      expect(result.newResources).toBe(13);
     });
 
     it('returns 0 if cell is dry for unit', () => {
@@ -244,7 +244,7 @@ describe('Mining Module', () => {
     });
 
     it('returns false if unit can reach remaining layers', () => {
-      const unit = createUnit('plant_1', 'player', { x: 0, y: 0 }); // Mining: 2
+      const unit = createUnit('plant_1', 'player', { x: 0, y: 0 }); // Mining: 3
       const cell = { position: { x: 0, y: 0 }, resourceLayers: 4, minedDepth: 1 };
       expect(isDryForUnit(unit, cell)).toBe(false);
     });
@@ -260,7 +260,7 @@ describe('Mining Module', () => {
     it('sequence: Hi mines, then Muju mines, then Hi is dry', () => {
       let board = createEmptyBoard();
       const hi = createUnit('fire_1', 'player', { x: 0, y: 0 }); // Mining: 1
-      const muju = createUnit('plant_1', 'player', { x: 0, y: 0 }); // Mining: 2
+      const muju = createUnit('plant_1', 'player', { x: 0, y: 0 }); // Mining: 3
       muju.id = 'muju-test'; // Override for testing
 
       // Start fresh - Hi mines depth 1
@@ -274,14 +274,14 @@ describe('Mining Module', () => {
       // Hi is now dry (top layer at depth 2, Hi can only reach depth 1)
       expect(calculateMiningYield(hi, cell)).toBe(0);
 
-      // Muju can still mine (depth 2)
-      expect(calculateMiningYield(muju, cell)).toBe(1);
+      // Muju can still mine (depths 2-3)
+      expect(calculateMiningYield(muju, cell)).toBe(2);
 
-      // After Muju mines
-      board = updateCell(board, { x: 0, y: 0 }, { resourceLayers: 3, minedDepth: 2 });
+      // After Muju mines (extracts 2 layers from depths 2-3)
+      board = updateCell(board, { x: 0, y: 0 }, { resourceLayers: 2, minedDepth: 3 });
       cell = getCell(board, { x: 0, y: 0 })!;
 
-      // Muju is now dry too (top layer at depth 3)
+      // Muju is now dry too (top layer at depth 4, Muju can only reach depth 3)
       expect(calculateMiningYield(muju, cell)).toBe(0);
     });
 

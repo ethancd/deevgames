@@ -40,10 +40,10 @@ describe('Movement Module', () => {
       expect(getValidMoves(unit, board)).toEqual([]);
     });
 
-    describe('Speed 1 unit (Hi - fire_1)', () => {
+    describe('Speed 1 unit (Sjor - water_1)', () => {
       it('can move to 4 adjacent squares in open board', () => {
         let board = createEmptyBoard();
-        const unit = createUnit('fire_1', 'player', { x: 5, y: 5 });
+        const unit = createUnit('water_1', 'player', { x: 5, y: 5 });
         board = addUnit(board, unit);
 
         const moves = getValidMoves(unit, board);
@@ -56,7 +56,7 @@ describe('Movement Module', () => {
 
       it('has 2 moves at corner', () => {
         let board = createEmptyBoard();
-        const unit = createUnit('fire_1', 'player', { x: 0, y: 0 });
+        const unit = createUnit('water_1', 'player', { x: 0, y: 0 });
         board = addUnit(board, unit);
 
         const moves = getValidMoves(unit, board);
@@ -67,8 +67,8 @@ describe('Movement Module', () => {
 
       it('cannot move to occupied square', () => {
         let board = createEmptyBoard();
-        const unit = createUnit('fire_1', 'player', { x: 5, y: 5 });
-        const blocker = createUnit('water_1', 'player', { x: 5, y: 4 });
+        const unit = createUnit('water_1', 'player', { x: 5, y: 5 });
+        const blocker = createUnit('fire_1', 'player', { x: 5, y: 4 });
         board = addUnit(board, unit);
         board = addUnit(board, blocker);
 
@@ -164,7 +164,7 @@ describe('Movement Module', () => {
   describe('isValidMove', () => {
     it('returns true for valid destination', () => {
       let board = createEmptyBoard();
-      const unit = createUnit('fire_1', 'player', { x: 5, y: 5 });
+      const unit = createUnit('water_1', 'player', { x: 5, y: 5 }); // Speed 1
       board = addUnit(board, unit);
 
       expect(isValidMove(unit, { x: 5, y: 4 }, board)).toBe(true);
@@ -172,7 +172,7 @@ describe('Movement Module', () => {
 
     it('returns false for out-of-range destination', () => {
       let board = createEmptyBoard();
-      const unit = createUnit('fire_1', 'player', { x: 5, y: 5 });
+      const unit = createUnit('water_1', 'player', { x: 5, y: 5 }); // Speed 1
       board = addUnit(board, unit);
 
       expect(isValidMove(unit, { x: 5, y: 3 }, board)).toBe(false);
@@ -180,8 +180,8 @@ describe('Movement Module', () => {
 
     it('returns false for occupied destination', () => {
       let board = createEmptyBoard();
-      const unit = createUnit('fire_1', 'player', { x: 5, y: 5 });
-      const blocker = createUnit('water_1', 'player', { x: 5, y: 4 });
+      const unit = createUnit('water_1', 'player', { x: 5, y: 5 }); // Speed 1
+      const blocker = createUnit('fire_1', 'player', { x: 5, y: 4 });
       board = addUnit(board, unit);
       board = addUnit(board, blocker);
 
@@ -234,16 +234,16 @@ describe('Movement Module', () => {
   describe('Edge cases', () => {
     it('unit cannot move to its own position', () => {
       let board = createEmptyBoard();
-      const unit = createUnit('fire_1', 'player', { x: 5, y: 5 });
+      const unit = createUnit('water_1', 'player', { x: 5, y: 5 }); // Speed 1
       board = addUnit(board, unit);
 
       const moves = getValidMoves(unit, board);
       expect(moves).not.toContainEqual({ x: 5, y: 5 });
     });
 
-    it('diagonals are not valid moves', () => {
+    it('diagonals are not valid for Speed 1 units', () => {
       let board = createEmptyBoard();
-      const unit = createUnit('fire_1', 'player', { x: 5, y: 5 });
+      const unit = createUnit('water_1', 'player', { x: 5, y: 5 }); // Speed 1
       board = addUnit(board, unit);
 
       const moves = getValidMoves(unit, board);
@@ -251,14 +251,24 @@ describe('Movement Module', () => {
       expect(moves).not.toContainEqual({ x: 4, y: 4 });
     });
 
+    it('diagonals ARE valid for Speed 2 units (via L-path)', () => {
+      let board = createEmptyBoard();
+      const unit = createUnit('fire_1', 'player', { x: 5, y: 5 }); // Speed 2
+      board = addUnit(board, unit);
+
+      const moves = getValidMoves(unit, board);
+      expect(moves).toContainEqual({ x: 6, y: 6 });
+      expect(moves).toContainEqual({ x: 4, y: 4 });
+    });
+
     it('completely surrounded unit has no moves', () => {
       let board = createEmptyBoard();
-      const unit = createUnit('fire_1', 'player', { x: 5, y: 5 });
+      const unit = createUnit('water_1', 'player', { x: 5, y: 5 }); // Speed 1
       board = addUnit(board, unit);
-      board = addUnit(board, createUnit('water_1', 'player', { x: 5, y: 4 }));
-      board = addUnit(board, createUnit('water_1', 'player', { x: 5, y: 6 }));
-      board = addUnit(board, createUnit('water_1', 'player', { x: 4, y: 5 }));
-      board = addUnit(board, createUnit('water_1', 'player', { x: 6, y: 5 }));
+      board = addUnit(board, createUnit('fire_1', 'player', { x: 5, y: 4 }));
+      board = addUnit(board, createUnit('fire_1', 'player', { x: 5, y: 6 }));
+      board = addUnit(board, createUnit('fire_1', 'player', { x: 4, y: 5 }));
+      board = addUnit(board, createUnit('fire_1', 'player', { x: 6, y: 5 }));
 
       const moves = getValidMoves(unit, board);
       expect(moves).toHaveLength(0);

@@ -10,6 +10,7 @@ import { UnitInfo } from './UnitInfo';
 import { UnitShop } from './UnitShop';
 import { VictoryScreen } from './VictoryScreen';
 import { ElementLegend } from './ElementLegend';
+import { AIRecap } from './AIRecap';
 import { getUnitById, getCell } from '../game/board';
 import { getUnitDefinition } from '../game/units';
 import { canMine } from '../game/mining';
@@ -38,6 +39,8 @@ export function GameScreen() {
     endTurn,
     applyAIAction,
     resetGame,
+    undo,
+    canUndo,
     selectedUnitData,
     isPlayerTurn,
   } = useGameState();
@@ -46,6 +49,7 @@ export function GameScreen() {
   const [selectedReadyUnitId, setSelectedReadyUnitId] = useState<string | null>(null);
   const [selectedPlaceUnitId, setSelectedPlaceUnitId] = useState<string | null>(null);
   const [spawnFeedback, setSpawnFeedback] = useState<SpawnFeedback>(null);
+  const [viewedEnemyUnitId, setViewedEnemyUnitId] = useState<string | null>(null);
 
   // Clear place phase selections when phase changes or turn ends
   useEffect(() => {
@@ -55,6 +59,13 @@ export function GameScreen() {
       setSpawnFeedback(null);
     }
   }, [state.turn.phase, isPlayerTurn]);
+
+  // Clear enemy view when selecting own units or turn changes
+  useEffect(() => {
+    if (state.selectedUnit) {
+      setViewedEnemyUnitId(null);
+    }
+  }, [state.selectedUnit]);
 
   // Clear spawn feedback after 2 seconds
   useEffect(() => {
@@ -87,10 +98,17 @@ export function GameScreen() {
     return getUnitById(state.board, selectedPlaceUnitId);
   }, [selectedPlaceUnitId, state.board]);
 
-  const { isThinking, executeAITurn, setDifficulty } = useAI({
+  // Get the viewed enemy unit data (for enemy stats display)
+  const viewedEnemyUnitData = useMemo(() => {
+    if (!viewedEnemyUnitId) return null;
+    return getUnitById(state.board, viewedEnemyUnitId);
+  }, [viewedEnemyUnitId, state.board]);
+
+  const { isThinking, executeAITurn, setDifficulty, lastTurnActions, clearLastTurnActions } = useAI({
     difficulty: aiDifficulty,
     thinkingDelay: 400,
   });
+  const [showAIRecap, setShowAIRecap] = useState(false);
 
   // Trigger AI turn when it becomes AI's turn
   useEffect(() => {
@@ -102,6 +120,23 @@ export function GameScreen() {
       executeAITurn(state, applyAIAction);
     }
   }, [state.turn.currentPlayer, state.phase, isThinking, state, executeAITurn, applyAIAction]);
+
+  // Show AI recap when AI's turn ends and player's turn begins
+  useEffect(() => {
+    if (
+      isPlayerTurn &&
+      !isThinking &&
+      lastTurnActions.length > 0 &&
+      state.turn.turnNumber > 1
+    ) {
+      setShowAIRecap(true);
+    }
+  }, [isPlayerTurn, isThinking, lastTurnActions.length, state.turn.turnNumber]);
+
+  const handleDismissRecap = () => {
+    setShowAIRecap(false);
+    clearLastTurnActions();
+  };
 
   const handleCellClick = (position: Position) => {
     if (!isPlayerTurn || isThinking) {
@@ -167,12 +202,17 @@ export function GameScreen() {
       if (unit.owner === 'player') {
         // Clear ready unit selection if selecting a board unit
         setSelectedReadyUnitId(null);
+        setViewedEnemyUnitId(null);
         // Toggle selection
         if (selectedPlaceUnitId === unitId) {
           setSelectedPlaceUnitId(null);
         } else {
           setSelectedPlaceUnitId(unitId);
         }
+      } else {
+        // Allow viewing enemy stats during place phase
+        setSelectedPlaceUnitId(null);
+        setViewedEnemyUnitId(viewedEnemyUnitId === unitId ? null : unitId);
       }
       return;
     }
@@ -195,7 +235,14 @@ export function GameScreen() {
       );
       if (isValidAttack) {
         attackWith(state.selectedUnit, unit.position);
+      } else {
+        // Not a valid attack - just view enemy stats
+        deselect();
+        setViewedEnemyUnitId(unitId);
       }
+    } else {
+      // No selection - view enemy stats
+      setViewedEnemyUnitId(viewedEnemyUnitId === unitId ? null : unitId);
     }
   };
 
@@ -239,6 +286,11 @@ export function GameScreen() {
       {/* Victory overlay */}
       {state.phase === 'victory' && state.winner && (
         <VictoryScreen winner={state.winner} onPlayAgain={handlePlayAgain} />
+      )}
+
+      {/* AI turn recap */}
+      {showAIRecap && (
+        <AIRecap actions={lastTurnActions} onDismiss={handleDismissRecap} />
       )}
 
       <div className="max-w-7xl mx-auto">
@@ -310,6 +362,8 @@ export function GameScreen() {
                 onEndActionPhase={endActionPhase}
                 onEndTurn={endTurn}
                 isPlayerTurn={isPlayerTurn && !isThinking}
+                onUndo={undo}
+                canUndo={canUndo}
               />
             </div>
           </div>
@@ -338,7 +392,7 @@ export function GameScreen() {
               />
             )}
             <UnitInfo
-              unit={selectedPlaceUnitData ?? selectedUnitData}
+              unit={selectedPlaceUnitData ?? selectedUnitData ?? viewedEnemyUnitData}
               previewDefinitionId={selectedReadyDefinitionId}
               onMine={handleMine}
               canMine={canMineHere()}
@@ -346,6 +400,7 @@ export function GameScreen() {
               isPlacePhase={state.turn.phase === 'place' && isPlayerTurn && !isThinking}
               resources={state.players.player.resources}
               onPromote={handlePromote}
+              isEnemyView={!!viewedEnemyUnitData && !selectedPlaceUnitData && !selectedUnitData}
             />
             <ElementLegend />
           </div>

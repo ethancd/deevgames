@@ -282,7 +282,7 @@ describe('Building System', () => {
       expect(unit.definitionId).toBe('fire_1');
       expect(unit.owner).toBe('player');
       expect(unit.position).toEqual({ x: 1, y: 1 });
-      expect(unit.canActThisTurn).toBe(false); // New units can't act
+      expect(unit.canActThisTurn).toBe(true); // Units can act immediately (no summoning sickness)
     });
 
     it('creates units with fresh action states', () => {
@@ -336,7 +336,7 @@ describe('Building System', () => {
       const state: BuildState = { queue: [], crystals: 3 };
       const options = getAvailableBuildOptions(state);
 
-      // Can afford: fire_1(1), lightning_1(1), water_1(2), wind_1(2), plant_1(3), metal_1(3), fire_2(3), lightning_2(3)
+      // Can afford: fire_1(1), lightning_1(1), water_1(2), shadow_1(2), plant_1(3), metal_1(3), fire_2(3), lightning_2(3)
       expect(options).toContain('fire_1');
       expect(options).toContain('fire_2'); // costs 3
       expect(options).not.toContain('fire_3'); // costs 6

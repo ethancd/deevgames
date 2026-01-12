@@ -16,13 +16,13 @@ export function ElementLegend() {
         <span style={{ color: ELEMENT_INFO.fire.color }}>Fire</span>
       </div>
 
-      {/* Triangle 2: Lightning → Metal → Wind → Lightning */}
+      {/* Triangle 2: Lightning → Metal → Shadow → Lightning */}
       <div className="flex items-center gap-1">
         <span style={{ color: ELEMENT_INFO.lightning.color }}>Lightning</span>
         <span className="text-gray-500">→</span>
         <span style={{ color: ELEMENT_INFO.metal.color }}>Metal</span>
         <span className="text-gray-500">→</span>
-        <span style={{ color: ELEMENT_INFO.wind.color }}>Wind</span>
+        <span style={{ color: ELEMENT_INFO.shadow.color }}>Shadow</span>
         <span className="text-gray-500">→</span>
         <span style={{ color: ELEMENT_INFO.lightning.color }}>Lightning</span>
       </div>

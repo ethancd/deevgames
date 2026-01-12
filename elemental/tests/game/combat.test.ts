@@ -141,7 +141,7 @@ describe('Combat Module', () => {
     it('attack power cannot go below 0', () => {
       // Radi has attack 1, disadvantage gives -1, should floor at 0
       const attacker = createUnit('lightning_1', 'player', { x: 0, y: 0 }); // Attack: 1
-      const defender = createUnit('wind_1', 'ai', { x: 0, y: 1 }); // Wind beats Lightning
+      const defender = createUnit('shadow_1', 'ai', { x: 0, y: 1 }); // Wind beats Lightning
 
       expect(calculateAttackPower(attacker, defender)).toBe(0); // max(0, 1-1)
     });

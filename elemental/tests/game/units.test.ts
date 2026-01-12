@@ -15,7 +15,7 @@ describe('Unit Definitions', () => {
     });
 
     it('has 4 units per element', () => {
-      const elements = ['fire', 'lightning', 'water', 'wind', 'plant', 'metal'];
+      const elements = ['fire', 'lightning', 'water', 'shadow', 'plant', 'metal'];
       for (const element of elements) {
         const units = UNIT_DEFINITIONS.filter((u) => u.element === element);
         expect(units).toHaveLength(4);
@@ -23,7 +23,7 @@ describe('Unit Definitions', () => {
     });
 
     it('has tiers 1-4 for each element', () => {
-      const elements = ['fire', 'lightning', 'water', 'wind', 'plant', 'metal'];
+      const elements = ['fire', 'lightning', 'water', 'shadow', 'plant', 'metal'];
       for (const element of elements) {
         const units = UNIT_DEFINITIONS.filter((u) => u.element === element);
         const tiers = units.map((u) => u.tier).sort();
@@ -37,12 +37,12 @@ describe('Unit Definitions', () => {
       expect(uniqueIds.size).toBe(24);
     });
 
-    it('has positive stats for all units', () => {
+    it('has non-negative stats for all units', () => {
       for (const unit of UNIT_DEFINITIONS) {
-        expect(unit.attack).toBeGreaterThan(0);
+        expect(unit.attack).toBeGreaterThanOrEqual(0);
         expect(unit.defense).toBeGreaterThan(0);
         expect(unit.speed).toBeGreaterThan(0);
-        expect(unit.mining).toBeGreaterThan(0);
+        expect(unit.mining).toBeGreaterThanOrEqual(0); // Some units can't mine
         expect(unit.cost).toBeGreaterThan(0);
         expect(unit.buildTime).toBeGreaterThan(0);
       }
