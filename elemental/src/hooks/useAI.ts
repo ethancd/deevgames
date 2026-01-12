@@ -50,8 +50,8 @@ export function useAI(options: UseAIOptions = {}): UseAIReturn {
       setIsThinking(true);
       const turnActions: AIAction[] = [];
 
-      // Check if AI should resign (only on hard difficulty - others fight to the end)
-      if (difficulty === 'hard' && shouldResign(state, 'ai')) {
+      // Check if AI should resign (all difficulties resign when position is hopeless)
+      if (shouldResign(state, 'ai')) {
         // Add a delay before resigning
         await new Promise((resolve) => setTimeout(resolve, thinkingDelay * 2));
         const resignAction: AIAction = { type: 'RESIGN' };
