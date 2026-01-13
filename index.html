@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeevGames - Strategy Games Collection</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #312e81 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 3rem;
+            opacity: 0.9;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .game-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .game-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .game-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .game-title {
+            font-size: 1.8rem;
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+        }
+
+        .game-description {
+            opacity: 0.85;
+            line-height: 1.6;
+            font-size: 1rem;
+        }
+
+        .game-status {
+            margin-top: 1rem;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            display: inline-block;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-playable {
+            background: rgba(34, 197, 94, 0.3);
+            border: 1px solid rgba(34, 197, 94, 0.5);
+        }
+
+        .status-development {
+            background: rgba(250, 204, 21, 0.3);
+            border: 1px solid rgba(250, 204, 21, 0.5);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .subtitle {
+                font-size: 1.1rem;
+            }
+
+            .games-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 DeevGames</h1>
+        <p class="subtitle">A Collection of Strategic Browser Games</p>
+
+        <div class="games-grid">
+            <a href="./muju/" class="game-card">
+                <span class="game-icon">⚔️</span>
+                <div class="game-title">Muju Hono Tanka</div>
+                <div class="game-description">
+                    Strategic territorial combat on a 10×10 grid. Control elements, manage resources, and outmaneuver your opponent in this deep tactical experience.
+                </div>
+                <span class="game-status status-playable">Fully Playable</span>
+            </a>
+
+            <a href="./forge/" class="game-card">
+                <span class="game-icon">🃏</span>
+                <div class="game-title">FORGE</div>
+                <div class="game-description">
+                    Competitive card drafting meets strategic bidding. Build your deck, manage resources, and forge the perfect combination to victory.
+                </div>
+                <span class="game-status status-development">In Development</span>
+            </a>
+
+            <a href="./oracle/" class="game-card">
+                <span class="game-icon">🗡️</span>
+                <div class="game-title">Oracle of Delve</div>
+                <div class="game-description">
+                    Roguelike dungeon crawler with turn-based combat. Explore mysterious depths, battle monsters, and seek the wisdom of the Oracle.
+                </div>
+                <span class="game-status status-playable">Fully Playable</span>
+            </a>
+        </div>
+    </div>
+</body>
+</html>
