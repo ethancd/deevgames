@@ -164,6 +164,7 @@ export function createUnitFromDefinition(
     hasMined: false,
     canActThisTurn: true, // Units can act immediately (no summoning sickness)
     damageTaken: 0,
+    promotedThisPlacement: false,
   };
 }
 

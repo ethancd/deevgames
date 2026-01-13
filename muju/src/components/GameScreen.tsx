@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useRef } from 'react';
+import { useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import { useGameState } from '../hooks/useGameState';
 import { useAI } from '../hooks/useAI';
 import { Board } from './Board';
@@ -13,11 +13,13 @@ import { ElementLegend } from './ElementLegend';
 import { AIRecap } from './AIRecap';
 import { AIConsole } from './AIConsole';
 import { PassDeviceOverlay } from './PassDeviceOverlay';
-import { getUnitById, getCell } from '../game/board';
-import { getUnitDefinition } from '../game/units';
+import { getUnitById, getCell, isOccupied, isValidPosition } from '../game/board';
+import { getUnitDefinition, UNIT_DEFINITIONS } from '../game/units';
 import { canMine } from '../game/mining';
+import { canPromote } from '../game/promotion';
 import { getAllSpawnPositions, getSpawnInvalidReason } from '../game/spawning';
-import type { Position, GameConfig, PlayerId } from '../game/types';
+import { canBuildUnit } from '../game/building';
+import type { Position, GameConfig, PlayerId, Element } from '../game/types';
 
 type SpawnFeedback = {
   position: Position;
@@ -57,6 +59,9 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
   const [showPassOverlay, setShowPassOverlay] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const lastTurnPlayer = useRef<PlayerId | null>(null);
+
+  // Unit shop keyboard navigation state
+  const [shopSelectedId, setShopSelectedId] = useState<string | null>(null);
 
   // Helper: check if current player is human-controlled
   const isCurrentPlayerHuman = config.controls[state.turn.currentPlayer] === 'human';
@@ -333,6 +338,183 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
     }
   };
 
+  // Element order for keyboard shortcuts (1-6)
+  const ELEMENT_ORDER: Element[] = ['fire', 'lightning', 'water', 'shadow', 'plant', 'metal'];
+
+  // Get player's own units on the board for Tab cycling
+  const playerOwnUnits = useMemo(() => {
+    return state.board.units.filter(u => u.owner === state.turn.currentPlayer);
+  }, [state.board.units, state.turn.currentPlayer]);
+
+  // Keyboard handler
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    // Don't handle if AI is thinking, overlay is shown, or it's not human's turn
+    if (!isCurrentPlayerHuman || isThinking || showPassOverlay) return;
+    // Don't handle if typing in an input
+    if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+
+    const key = e.key.toLowerCase();
+    const currentPlayer = state.turn.currentPlayer;
+    const currentPlayerState = state.players[currentPlayer];
+
+    // === Tab: Cycle between own units ===
+    if (key === 'tab') {
+      e.preventDefault();
+      if (playerOwnUnits.length === 0) return;
+
+      let currentIndex = -1;
+      const currentSelectedId = state.turn.phase === 'action'
+        ? state.selectedUnit
+        : selectedPlaceUnitId;
+
+      if (currentSelectedId) {
+        currentIndex = playerOwnUnits.findIndex(u => u.id === currentSelectedId);
+      }
+
+      const nextIndex = (currentIndex + 1) % playerOwnUnits.length;
+      const nextUnit = playerOwnUnits[nextIndex];
+
+      if (state.turn.phase === 'action') {
+        selectUnit(nextUnit.id);
+      } else if (state.turn.phase === 'place') {
+        setSelectedPlaceUnitId(nextUnit.id);
+        setSelectedReadyUnitId(null);
+        setViewedEnemyUnitId(null);
+      }
+      return;
+    }
+
+    // === Queue phase: Unit shop shortcuts ===
+    if (state.turn.phase === 'queue') {
+      // 1-6: Select tier 1 unit of that element
+      if (['1', '2', '3', '4', '5', '6'].includes(e.key)) {
+        e.preventDefault();
+        const elementIndex = parseInt(e.key) - 1;
+        const element = ELEMENT_ORDER[elementIndex];
+        const tier1Unit = UNIT_DEFINITIONS.find(d => d.element === element && d.tier === 1);
+        if (tier1Unit) {
+          setShopSelectedId(tier1Unit.id);
+        }
+        return;
+      }
+
+      // Arrow keys: Navigate unit shop
+      if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(key)) {
+        e.preventDefault();
+        // Build the unit grid structure for navigation
+        const unitsByTier: Record<number, typeof UNIT_DEFINITIONS> = {
+          1: UNIT_DEFINITIONS.filter(d => d.tier === 1).sort((a, b) => ELEMENT_ORDER.indexOf(a.element) - ELEMENT_ORDER.indexOf(b.element)),
+          2: UNIT_DEFINITIONS.filter(d => d.tier === 2).sort((a, b) => ELEMENT_ORDER.indexOf(a.element) - ELEMENT_ORDER.indexOf(b.element)),
+          3: UNIT_DEFINITIONS.filter(d => d.tier === 3).sort((a, b) => ELEMENT_ORDER.indexOf(a.element) - ELEMENT_ORDER.indexOf(b.element)),
+          4: UNIT_DEFINITIONS.filter(d => d.tier === 4).sort((a, b) => ELEMENT_ORDER.indexOf(a.element) - ELEMENT_ORDER.indexOf(b.element)),
+        };
+
+        // Find current position in grid
+        let currentTier = 1;
+        let currentCol = 0;
+        if (shopSelectedId) {
+          const selectedDef = UNIT_DEFINITIONS.find(d => d.id === shopSelectedId);
+          if (selectedDef) {
+            currentTier = selectedDef.tier;
+            currentCol = ELEMENT_ORDER.indexOf(selectedDef.element);
+          }
+        }
+
+        // Calculate new position
+        let newTier = currentTier;
+        let newCol = currentCol;
+
+        if (key === 'arrowup') newTier = Math.max(1, currentTier - 1);
+        if (key === 'arrowdown') newTier = Math.min(4, currentTier + 1);
+        if (key === 'arrowleft') newCol = Math.max(0, currentCol - 1);
+        if (key === 'arrowright') newCol = Math.min(5, currentCol + 1);
+
+        // Find unit at new position
+        const newUnit = unitsByTier[newTier][newCol];
+        if (newUnit) {
+          setShopSelectedId(newUnit.id);
+        }
+        return;
+      }
+
+      // Enter/B: Build selected unit in shop
+      if ((key === 'enter' || key === 'b') && shopSelectedId) {
+        e.preventDefault();
+        const buildState = { queue: [], crystals: currentPlayerState.resources };
+        if (canBuildUnit(shopSelectedId, currentPlayer, state.board, buildState)) {
+          queueUnit(shopSelectedId);
+          setShopSelectedId(null);
+        }
+        return;
+      }
+    }
+
+    // === Place phase shortcuts ===
+    if (state.turn.phase === 'place') {
+      // U: Upgrade/promote selected unit
+      if (key === 'u' && selectedPlaceUnitId) {
+        e.preventDefault();
+        const unit = getUnitById(state.board, selectedPlaceUnitId);
+        if (unit) {
+          const buildState = { queue: [], crystals: currentPlayerState.resources };
+          if (canPromote(unit, buildState)) {
+            promoteUnit(selectedPlaceUnitId);
+            setSelectedPlaceUnitId(null);
+          }
+        }
+        return;
+      }
+    }
+
+    // === Action phase shortcuts ===
+    if (state.turn.phase === 'action' && state.selectedUnit) {
+      const unit = getUnitById(state.board, state.selectedUnit);
+      if (!unit || !unit.canActThisTurn) return;
+
+      // M: Mine
+      if (key === 'm') {
+        e.preventDefault();
+        if (canMine(unit, state.board)) {
+          mineWith(state.selectedUnit);
+        }
+        return;
+      }
+
+      // Arrow keys: Move one step in direction (partial movement for high-speed units)
+      if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(key)) {
+        e.preventDefault();
+        const pos = unit.position;
+        let targetPos: Position;
+
+        if (key === 'arrowup') targetPos = { x: pos.x, y: pos.y - 1 };
+        else if (key === 'arrowdown') targetPos = { x: pos.x, y: pos.y + 1 };
+        else if (key === 'arrowleft') targetPos = { x: pos.x - 1, y: pos.y };
+        else targetPos = { x: pos.x + 1, y: pos.y };
+
+        // Check if valid move position
+        if (isValidPosition(targetPos) && !isOccupied(state.board, targetPos)) {
+          // Verify it's in the valid moves list
+          const isValid = state.validMoves.some(
+            m => m.x === targetPos.x && m.y === targetPos.y
+          );
+          if (isValid) {
+            moveUnit(state.selectedUnit, targetPos);
+          }
+        }
+        return;
+      }
+    }
+  }, [
+    isCurrentPlayerHuman, isThinking, showPassOverlay, state, playerOwnUnits,
+    selectUnit, selectedPlaceUnitId, promoteUnit, mineWith, moveUnit, queueUnit, shopSelectedId
+  ]);
+
+  // Attach keyboard listener
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleKeyDown]);
+
   // Check if selected unit can mine
   const canMineHere = () => {
     if (!selectedUnitData) return false;
@@ -482,6 +664,8 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
                 player={state.turn.currentPlayer}
                 board={state.board}
                 onQueueUnit={queueUnit}
+                selectedId={shopSelectedId}
+                onSelectId={setShopSelectedId}
               />
             )}
             <ElementLegend />

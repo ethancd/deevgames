@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
 import type { Element, BoardState, PlayerId } from '../game/types';
 import { UNIT_DEFINITIONS, getUnitDefinition } from '../game/units';
 import {
@@ -25,10 +25,16 @@ interface UnitShopProps {
   player: PlayerId;
   board: BoardState;
   onQueueUnit: (definitionId: string) => void;
+  // External keyboard selection control
+  selectedId: string | null;
+  onSelectId: (id: string | null) => void;
 }
 
-export function UnitShop({ resources, player, board, onQueueUnit }: UnitShopProps) {
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+export function UnitShop({ resources, player, board, onQueueUnit, selectedId, onSelectId }: UnitShopProps) {
+  // Clear selection when component unmounts or resources change significantly
+  useEffect(() => {
+    return () => onSelectId(null);
+  }, [onSelectId]);
 
   const buildState = { queue: [], crystals: resources };
 
@@ -57,7 +63,7 @@ export function UnitShop({ resources, player, board, onQueueUnit }: UnitShopProp
   const handleBuild = () => {
     if (selectedId && canBuildSelected) {
       onQueueUnit(selectedId);
-      setSelectedId(null);
+      onSelectId(null);
     }
   };
 
@@ -84,7 +90,7 @@ export function UnitShop({ resources, player, board, onQueueUnit }: UnitShopProp
                 return (
                   <button
                     key={def.id}
-                    onClick={() => setSelectedId(def.id)}
+                    onClick={() => onSelectId(def.id)}
                     className={`
                       w-8 h-8 rounded flex items-center justify-center text-sm
                       transition-all duration-150

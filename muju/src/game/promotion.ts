@@ -44,8 +44,13 @@ export function getPromotedDefinitionId(unit: Unit): string | null {
 
 /**
  * Check if a unit can be promoted
+ * Units can only be promoted once per placement phase
  */
 export function canPromote(unit: Unit, buildState: BuildState): boolean {
+  // Check if already promoted this placement phase
+  if (unit.promotedThisPlacement) {
+    return false;
+  }
   const cost = getPromotionCost(unit);
   if (cost === null) {
     return false;
@@ -64,6 +69,7 @@ export function isMaxTier(unit: Unit): boolean {
 /**
  * Promote a unit to the next tier
  * Returns the updated board state and build state
+ * Marks unit as having been promoted this placement phase
  */
 export function promoteUnit(
   board: BoardState,
@@ -86,11 +92,11 @@ export function promoteUnit(
     return null;
   }
 
-  // Update the unit's definition ID (keeps same position, owner, etc.)
+  // Update the unit's definition ID and mark as promoted this placement
   const newBoard: BoardState = {
     ...board,
     units: board.units.map((u) =>
-      u.id === unitId ? { ...u, definitionId: newDefId } : u
+      u.id === unitId ? { ...u, definitionId: newDefId, promotedThisPlacement: true } : u
     ),
   };
 

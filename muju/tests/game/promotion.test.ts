@@ -108,6 +108,26 @@ describe('Promotion System', () => {
       const buildState: BuildState = { queue: [], crystals: 2 };
       expect(canPromote(unit, buildState)).toBe(true);
     });
+
+    it('returns false if unit was already promoted this placement phase', () => {
+      const unit: Unit = {
+        ...createUnit('p1', 'player', { x: 0, y: 0 }, 'fire_2'),
+        promotedThisPlacement: true,
+        damageTaken: 0,
+      };
+      const buildState: BuildState = { queue: [], crystals: 100 };
+      expect(canPromote(unit, buildState)).toBe(false);
+    });
+
+    it('returns true if unit has not been promoted this placement phase', () => {
+      const unit: Unit = {
+        ...createUnit('p1', 'player', { x: 0, y: 0 }, 'fire_1'),
+        promotedThisPlacement: false,
+        damageTaken: 0,
+      };
+      const buildState: BuildState = { queue: [], crystals: 5 };
+      expect(canPromote(unit, buildState)).toBe(true);
+    });
   });
 
   describe('isMaxTier', () => {
@@ -189,6 +209,23 @@ describe('Promotion System', () => {
       const result = promoteUnit(board, 'p1', buildState);
 
       expect(result).toBeNull();
+    });
+
+    it('sets promotedThisPlacement flag after promotion', () => {
+      let board = createEmptyBoard();
+      const unit: Unit = {
+        ...createUnit('p1', 'player', { x: 1, y: 1 }, 'fire_1'),
+        damageTaken: 0,
+        promotedThisPlacement: false,
+      };
+      board = placeUnit(board, unit);
+      const buildState: BuildState = { queue: [], crystals: 5 };
+
+      const result = promoteUnit(board, 'p1', buildState);
+
+      expect(result).not.toBeNull();
+      const promotedUnit = result!.board.units.find((u) => u.id === 'p1');
+      expect(promotedUnit?.promotedThisPlacement).toBe(true);
     });
   });
 

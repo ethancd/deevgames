@@ -62,6 +62,8 @@ export interface Unit {
   canActThisTurn: boolean; // False if just placed or promoted
   // Damage state (resets at end of attacker's turn)
   damageTaken: number; // Reduces effective defense; resets when attacked player's turn starts
+  // Promotion tracking (resets at end of placement phase)
+  promotedThisPlacement?: boolean; // True if already promoted during current placement phase
 }
 
 // === Board ===

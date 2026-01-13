@@ -107,6 +107,7 @@ export function createUnit(
     hasMined: false,
     canActThisTurn: canAct,
     damageTaken: 0,
+    promotedThisPlacement: false,
   };
 }
 

@@ -21,6 +21,7 @@ const immediateKill: TacticalTemplate = {
     if (state.turn.phase !== 'action') return false;
     const attacks = generateAttackActions(state, player);
     return attacks.some((action) => {
+      if (action.type !== 'ATTACK') return false;
       const attacker = state.board.units.find((u) => u.id === action.unitId);
       const target = state.board.units.find(
         (u) => u.position.x === action.targetPosition.x && u.position.y === action.targetPosition.y
@@ -32,12 +33,13 @@ const immediateKill: TacticalTemplate = {
     if (state.turn.phase !== 'action') return [];
     const attacks = generateAttackActions(state, player);
     return attacks
-      .filter((action) => {
+      .filter((action): action is { type: 'ATTACK'; unitId: string; targetPosition: { x: number; y: number } } => {
+        if (action.type !== 'ATTACK') return false;
         const attacker = state.board.units.find((u) => u.id === action.unitId);
         const target = state.board.units.find(
           (u) => u.position.x === action.targetPosition.x && u.position.y === action.targetPosition.y
         );
-        return attacker && target && canBeEliminated(target, attacker);
+        return !!(attacker && target && canBeEliminated(target, attacker));
       })
       .map((action) => ({ id: planId([action]), actions: [action], score: 0, tags: ['kill'] }));
   },
@@ -55,6 +57,7 @@ const moveThenKill: TacticalTemplate = {
       const movedState = applyAction(state, move);
       const attacks = generateAttackActions(movedState, player);
       for (const attack of attacks) {
+        if (attack.type !== 'ATTACK') continue;
         const attacker = movedState.board.units.find((u) => u.id === attack.unitId);
         const target = movedState.board.units.find(
           (u) => u.position.x === attack.targetPosition.x && u.position.y === attack.targetPosition.y
