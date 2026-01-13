@@ -31,3 +31,4 @@ package-lock.json
 
 # Build output
 dist/
+_site/
