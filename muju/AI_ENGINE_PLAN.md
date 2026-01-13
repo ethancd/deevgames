@@ -90,21 +90,32 @@ interface OpponentParticle {
 }
 ```
 
-### 1.2 Observable Events Contract
+### 1.2 Observable Events Contract (CONFIRMED)
 
-Define exactly what a player can observe:
+What each player can observe:
 
-| Event | Observable By Opponent? |
-|-------|------------------------|
-| Unit placement | Yes (unit appears on board) |
-| Unit position/movement | Yes |
-| Mining action | Yes (see unit mine, can track mined squares) |
-| Attack action | Yes |
-| Promotion | Yes (unit tier changes) |
-| Resources gained from mine | No (but inferable from mining stat + cell depth) |
-| Resources spent on queue | No |
-| Queue contents | No |
-| Resource stockpile | **TBD - KEY QUESTION** |
+| Information | Visible? | Details |
+|-------------|----------|---------|
+| **Board state** | Yes | All unit positions, types, tiers |
+| **Cell state** | Yes | Mined depths, remaining layers |
+| **Movement** | Yes | Unit moves are visible |
+| **Attacks** | Yes | Combat is visible |
+| **Mining yield** | Yes | Exact resources gained are visible |
+| **Placement** | Yes | Unit type, position, cost spent, earliest queue turn |
+| **Promotion** | Yes | Unit tier change + cost spent |
+| **Resource stockpile** | **No** | Hidden from opponent |
+| **Queue contents** | **No** | Hidden (except when units place) |
+| **Queue timing** | Partial | Placement reveals "earliest possible queue turn" |
+
+**Key implications:**
+
+1. **Mining is fully observable** - When opponent mines, you see exact yield
+2. **Placements reveal spending** - You know they spent X resources on that unit
+3. **Queue timing is bounded** - If a 2-build-time unit places on turn 5, it was queued turn 3 or earlier
+4. **Stockpile must be inferred** - Track: observed mining gains - observed spending = lower bound
+
+**Belief model simplification:**
+Since mining yields are visible, resource tracking is deterministic up to unobserved queue spending. The uncertainty is "did they queue something we haven't seen yet?"
 
 ### 1.3 Implementation Tasks
 
@@ -139,42 +150,65 @@ interface BeliefState {
 }
 ```
 
-### 2.2 Belief Update Rules
+### 2.2 Belief Update Rules (Simplified by Visible Mining)
+
+Since mining yields are visible, we track **deterministic bounds** plus **particle hypotheses** for hidden queue spending.
+
+**Resource Tracking (Deterministic):**
+```typescript
+interface ResourceBounds {
+  observed_income: number;    // Sum of all observed mining yields
+  observed_spending: number;  // Sum of all placement/promotion costs seen
+  min_resources: number;      // observed_income - observed_spending - max_possible_queue_cost
+  max_resources: number;      // observed_income - observed_spending (if no hidden queue)
+}
+```
 
 **On Observed Mining:**
 ```
-For each particle:
-  particle.resources += inferred_gain
-  // inferred_gain = min(unit.mining, cell.resourceLayers - cell.minedDepth)
+bounds.observed_income += exact_yield  // Visible!
+bounds.min_resources += exact_yield
+bounds.max_resources += exact_yield
 ```
 
 **On Observed Placement:**
 ```
-For each particle:
-  cost = unit_definition.cost
-  if particle.resources < cost:
-    kill particle (impossible state)
+cost = unit_definition.cost
+bounds.observed_spending += cost
+
+// Placement reveals this was queued N turns ago (where N = build_time)
+// This constrains when spending occurred, narrowing particle hypotheses
+for each particle:
+  if particle couldn't have afforded this at queue_time:
+    kill particle
   else:
-    particle.resources -= cost
-    remove matching item from particle.buildQueue
+    retroactively deduct cost from particle's resource history
+    update particle.buildQueue to include this unit at correct time
 ```
 
 **On Observed Promotion:**
 ```
-For each particle:
-  cost = promotion_cost_difference
-  if particle.resources < cost:
-    kill particle
-  else:
-    particle.resources -= cost
+cost = promotion_cost_difference
+bounds.observed_spending += cost
+bounds.min_resources -= cost
+bounds.max_resources -= cost
 ```
 
 **On Turn Boundary (Queue Phase End):**
 ```
-For each particle:
+for each particle:
   advance buildQueue timers
-  // Particles may spawn new queue items probabilistically
-  // based on resource availability and "opponent style" prior
+  // Particles may hypothesize new queue spending
+  // Amount spent is bounded by particle's resource availability
+  // What they queue is sampled from affordable units
+```
+
+**Particle Death Condition:**
+```
+A particle dies if:
+  - It hypothesizes more spending than resources allow
+  - A placement occurs that contradicts its queue history
+  - Its resource estimate goes negative
 ```
 
 ### 2.3 Implementation Tasks

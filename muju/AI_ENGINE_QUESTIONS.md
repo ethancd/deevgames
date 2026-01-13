@@ -4,71 +4,36 @@ These questions need answers before proceeding with implementation. I've organiz
 
 ---
 
-## Critical Questions (Block Implementation)
+## Critical Questions - ANSWERED
 
-### Q1: Resource Stockpile Visibility
+### Q1: Resource Stockpile Visibility - ANSWERED
 
-**The fundamental hidden information question.**
+**Answer: Resource stockpile is HIDDEN**
 
-Your SPEC says "Queue is hidden from opponent" but doesn't explicitly state whether **resource stockpile** is visible.
-
-**Option A: Stockpile is hidden (resources AND queue hidden)**
-- More interesting strategically (opponent can't calculate if you can afford something)
-- AI must track belief distribution over resources
-- Mining events + spending inferences create a "fog of war" economy
-
-**Option B: Stockpile is visible, only queue/spending is hidden**
-- Simpler belief model (only queue contents unknown)
-- Player can see "they have 15 resources" but not "are they saving or did they queue something?"
-- Still interesting but less deception possible
-
-**My recommendation:** Option A (fully hidden) makes for deeper gameplay and is what the architecture is designed for. But it's harder to implement well.
-
-**Your call?**
+The opponent cannot see your current resource count. They must infer it from:
+- Observed mining yields (visible)
+- Observed spending (placements and promotions reveal cost)
 
 ---
 
-### Q2: What Information Does Placement Reveal?
+### Q2: What Information Does Placement Reveal? - ANSWERED
 
-When a unit is placed (appears on the board), what does the opponent learn?
+**Answer: Placement reveals:**
+- Unit type and position (obviously - it's on the board now)
+- Cost spent (the unit's cost is known)
+- Earliest possible queue turn (build time tells you when it could have been queued)
 
-**Option A: Only that a unit appeared**
-- Opponent sees: "A Fire tier-2 unit appeared at (3,4)"
-- Opponent does NOT know: when it was queued, how much was spent
-
-**Option B: Placement reveals exact cost deduction**
-- Opponent sees placement AND can infer "they spent 3 resources on that 2 turns ago"
-- Makes belief tracking much easier but removes some uncertainty
-
-**Option C: Placement reveals queue timing**
-- Opponent knows "that unit was queued 2 turns ago" (from build time)
-- But doesn't know if other things were queued at the same time
-
-**My recommendation:** Option A (minimal reveal) is most consistent with "hidden queue" philosophy.
-
-**Your call?**
+This is a rich reveal: if a T2 unit (2 build time) places on turn 5, you know it was queued on turn 3 or earlier.
 
 ---
 
-### Q3: Can Players See Mining Results?
+### Q3: Can Players See Mining Results? - ANSWERED
 
-When a unit mines, what does the opponent see?
+**Answer: Yes - exact mining yield is visible**
 
-**Option A: See that mining happened, not the yield**
-- Opponent sees: "Their Muju mined at (5,5)"
-- But the exact resource gain is hidden (though inferable from mining stat + visible cell state)
-
-**Option B: See exact resources gained**
-- More transparent, simplifies belief updates
-- Less "fog of war"
-
-**Option C: Only see cell state change (after)**
-- Opponent doesn't see the action happen, just notices the cell is more depleted
-- Maximum hidden information
-
-**My recommendation:** Option A - mining action is visible, yield is technically inferable from public information (mining stat + cell depth), so hiding it adds complexity without real benefit.
-
-**Your call?**
+When an opponent mines, you see exactly how many resources they gained. This simplifies belief tracking significantly:
+- Income is deterministic (sum of observed yields)
+- Only uncertainty is hidden queue spending
 
 ---
 
@@ -252,10 +217,10 @@ The build queue is a key strategic decision. Questions:
 
 ## Summary: Priority Order for Answers
 
-**Must answer before implementation:**
-1. Q1 (Stockpile visibility) - Determines belief model complexity
-2. Q2 (Placement reveal) - Determines belief update rules
-3. Q3 (Mining visibility) - Determines observation contract
+**ANSWERED - Ready for implementation:**
+- [x] Q1 (Stockpile visibility) - **Hidden**
+- [x] Q2 (Placement reveal) - **Unit, cost, earliest queue turn**
+- [x] Q3 (Mining visibility) - **Exact yield visible**
 
 **Should answer before tuning:**
 4. Q5 (Spawn denial aggression)
@@ -272,4 +237,11 @@ The build queue is a key strategic decision. Questions:
 
 ---
 
-Let me know your answers and I'll update the implementation plan accordingly!
+## Next Steps
+
+The critical questions are answered. Implementation can begin with Phase 1 (Public/Private state separation).
+
+The remaining questions (Q4-Q12) can be answered iteratively as we build and tune the engine. They primarily affect:
+- Evaluation weight tuning
+- Difficulty scaling
+- Game feel / polish
