@@ -45,8 +45,13 @@ export function getPromotedDefinitionId(unit: Unit): string | null {
 /**
  * Check if a unit can be promoted
  * Units can only be promoted once per placement phase
+ * Units cannot be promoted on the same turn they were placed
  */
 export function canPromote(unit: Unit, buildState: BuildState): boolean {
+  // Check if placed this turn (can't promote same turn as placement)
+  if (unit.placedThisTurn) {
+    return false;
+  }
   // Check if already promoted this placement phase
   if (unit.promotedThisPlacement) {
     return false;

@@ -253,30 +253,29 @@ export function createInitialGameState(): GameState {
 
 /**
  * Reset action flags for all units of a player at the start of their turn.
- * Also resets damageTaken on OPPONENT's units (damage from player's previous turn).
+ * Also resets damageTaken on the player's own units (damage heals at start of own turn).
  */
 export function resetUnitActions(
   board: BoardState,
   player: PlayerId
 ): BoardState {
-  const opponent = player === 'player' ? 'ai' : 'player';
   return {
     ...board,
     units: board.units.map((u) => {
       if (u.owner === player) {
         // Reset action flags for current player's units
+        // Also reset placedThisTurn so units placed last turn can now be promoted
+        // Reset damage so units heal at the start of their own turn
+        // Reset attackedThisTurn so units can attack any enemy again
         return {
           ...u,
           hasMoved: false,
           hasAttacked: false,
           hasMined: false,
           canActThisTurn: true,
-        };
-      } else if (u.owner === opponent) {
-        // Reset damage on opponent's units (damage dealt by this player last turn)
-        return {
-          ...u,
+          placedThisTurn: false,
           damageTaken: 0,
+          attackedThisTurn: [],
         };
       }
       return u;

@@ -64,6 +64,10 @@ export interface Unit {
   damageTaken: number; // Reduces effective defense; resets when attacked player's turn starts
   // Promotion tracking (resets at end of placement phase)
   promotedThisPlacement?: boolean; // True if already promoted during current placement phase
+  // Placement tracking (resets at start of owning player's turn)
+  placedThisTurn?: boolean; // True if unit was placed this turn (can't be promoted same turn)
+  // Attack tracking (resets at start of owning player's turn)
+  attackedThisTurn?: string[]; // Unit IDs this unit has attacked this turn (can't attack same enemy twice)
 }
 
 // === Board ===
