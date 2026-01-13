@@ -11,6 +11,7 @@ import { UnitShop } from './UnitShop';
 import { VictoryScreen } from './VictoryScreen';
 import { ElementLegend } from './ElementLegend';
 import { AIRecap } from './AIRecap';
+import { AIConsole } from './AIConsole';
 import { PassDeviceOverlay } from './PassDeviceOverlay';
 import { getUnitById, getCell } from '../game/board';
 import { getUnitDefinition } from '../game/units';
@@ -368,6 +369,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
 
   // In pass-play mode, each player should only see their own queue
   const showOpponentQueue = config.mode !== 'pass-play';
+  const showAIConsole = config.controls.player === 'ai' || config.controls.ai === 'ai';
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-4">
@@ -550,6 +552,25 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
               />
             )}
           </div>
+
+          {showAIConsole && (
+            <div className="w-full max-w-3xl flex flex-col gap-3">
+              {config.controls.player === 'ai' && (
+                <AIConsole
+                  title={config.mode === 'ai-vs-ai' ? 'AI 1 Console' : 'AI Console'}
+                  debug={playerAI.lastDebug}
+                  isThinking={playerAI.isThinking}
+                />
+              )}
+              {config.controls.ai === 'ai' && (
+                <AIConsole
+                  title={config.mode === 'ai-vs-ai' ? 'AI 2 Console' : 'AI Console'}
+                  debug={aiAI.lastDebug}
+                  isThinking={aiAI.isThinking}
+                />
+              )}
+            </div>
+          )}
         </div>
 
         {/* Controls hint */}

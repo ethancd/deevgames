@@ -30,6 +30,26 @@ export interface AITurnPlan {
   score: number;
 }
 
+export interface AIDebugPlan {
+  id: string;
+  score: number;
+  tags: string[];
+  actions: AIAction[];
+}
+
+export interface AIDebugInfo {
+  planCount: number;
+  topPlans: AIDebugPlan[];
+  config: {
+    mctsIterations: number;
+    mctsTimeLimit: number;
+    beamWidth: number;
+    outputPlans: number;
+    particleCount: number;
+    tacticalDepth: number;
+  };
+}
+
 /**
  * Evaluation weights for position scoring
  */
@@ -42,6 +62,13 @@ export interface EvaluationWeights {
   mobility: number;            // Number of valid moves (optionality)
   centerControl: number;       // Control of central squares
   unitHealth: number;          // Defense-weighted unit evaluation
+  killThreatsReceived: number;
+  combinedAttackPotential: number;
+  spawnDenialPressure: number;
+  spawnInfiltration: number;
+  queueValue: number;
+  stepEfficiency: number;
+  techTreeProgress: number;
 }
 
 /**
@@ -56,6 +83,13 @@ export const DEFAULT_WEIGHTS: EvaluationWeights = {
   mobility: 0.3,
   centerControl: 0.2,
   unitHealth: 0.1,
+  killThreatsReceived: -2.0,
+  combinedAttackPotential: 0.8,
+  spawnDenialPressure: -1.5,
+  spawnInfiltration: 1.0,
+  queueValue: 0.3,
+  stepEfficiency: 0.2,
+  techTreeProgress: 0.4,
 };
 
 /**
@@ -107,4 +141,5 @@ export interface AIResult {
   nodesSearched: number;
   timeMs: number;
   depth: number;
+  debug?: AIDebugInfo;
 }

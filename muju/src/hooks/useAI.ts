@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import type { GameState } from '../game/types';
-import type { AIAction, AIDifficulty } from '../ai/types';
+import type { AIAction, AIDifficulty, AIDebugInfo } from '../ai/types';
 import { AIEngine } from '../ai/engine';
 import { applyAction } from '../ai/simulate';
 import { shouldResign } from '../ai/evaluation';
@@ -17,6 +17,7 @@ interface UseAIReturn {
   difficulty: AIDifficulty;
   setDifficulty: (d: AIDifficulty) => void;
   lastTurnActions: AIAction[];
+  lastDebug: AIDebugInfo | null;
   clearLastTurnActions: () => void;
 }
 
@@ -30,10 +31,12 @@ export function useAI(options: UseAIOptions = {}): UseAIReturn {
   const [difficulty, setDifficulty] = useState<AIDifficulty>(initialDifficulty);
   const [isThinking, setIsThinking] = useState(false);
   const [lastTurnActions, setLastTurnActions] = useState<AIAction[]>([]);
+  const [lastDebug, setLastDebug] = useState<AIDebugInfo | null>(null);
   const aiRef = useRef<AIEngine>(new AIEngine(initialDifficulty));
 
   const clearLastTurnActions = useCallback(() => {
     setLastTurnActions([]);
+    setLastDebug(null);
   }, []);
 
   // Update AI when difficulty changes
@@ -101,6 +104,8 @@ export function useAI(options: UseAIOptions = {}): UseAIReturn {
             await new Promise((resolve) => setTimeout(resolve, thinkingDelay));
           }
 
+          setLastDebug(result.debug ?? null);
+
           if (result.plan.actions.length === 0) {
             // No actions, need to end phase/turn
             if (currentState.turn.phase === 'action') {
@@ -150,6 +155,7 @@ export function useAI(options: UseAIOptions = {}): UseAIReturn {
     difficulty,
     setDifficulty,
     lastTurnActions,
+    lastDebug,
     clearLastTurnActions,
   };
 }
