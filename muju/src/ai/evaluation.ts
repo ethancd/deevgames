@@ -4,7 +4,12 @@ import { DEFAULT_WEIGHTS } from './types';
 import { getPlayerUnits } from '../game/board';
 import { getUnitDefinition } from '../game/units';
 import { getValidMoves } from '../game/movement';
-import { getValidAttacks, canBeEliminated } from '../game/combat';
+import {
+  getValidAttacks,
+  canBeEliminated,
+  getAttackersFor,
+  canBeEliminatedByCombined,
+} from '../game/combat';
 import { canMine } from '../game/mining';
 import { getAllSpawnPositions } from '../game/spawning';
 import { checkVictory } from '../game/victory';
@@ -79,6 +84,48 @@ export function evaluatePosition(
   score += weights.unitHealth * (
     calculateUnitHealth(state, forPlayer) -
     calculateUnitHealth(state, opponent)
+  );
+
+  // Kill threats received
+  score += weights.killThreatsReceived * (
+    calculateKillThreatsReceived(state, forPlayer) -
+    calculateKillThreatsReceived(state, opponent)
+  );
+
+  // Combined attack potential
+  score += weights.combinedAttackPotential * (
+    calculateCombinedAttackPotential(state, forPlayer) -
+    calculateCombinedAttackPotential(state, opponent)
+  );
+
+  // Spawn denial pressure
+  score += weights.spawnDenialPressure * (
+    calculateSpawnDenialPressure(state, forPlayer) -
+    calculateSpawnDenialPressure(state, opponent)
+  );
+
+  // Spawn infiltration
+  score += weights.spawnInfiltration * (
+    calculateSpawnInfiltration(state, forPlayer) -
+    calculateSpawnInfiltration(state, opponent)
+  );
+
+  // Queue value
+  score += weights.queueValue * (
+    calculateQueueValue(state, forPlayer) -
+    calculateQueueValue(state, opponent)
+  );
+
+  // Step efficiency
+  score += weights.stepEfficiency * (
+    calculateStepEfficiency(state, forPlayer) -
+    calculateStepEfficiency(state, opponent)
+  );
+
+  // Tech tree progress
+  score += weights.techTreeProgress * (
+    calculateTechTreeProgress(state, forPlayer) -
+    calculateTechTreeProgress(state, opponent)
   );
 
   return score;
@@ -199,6 +246,108 @@ function calculateUnitHealth(state: GameState, player: PlayerId): number {
     const def = getUnitDefinition(unit.definitionId);
     return total + def.defense;
   }, 0);
+}
+
+function calculateKillThreatsReceived(state: GameState, player: PlayerId): number {
+  const units = getPlayerUnits(state.board, player);
+  let threats = 0;
+
+  for (const unit of units) {
+    const attackers = getAttackersFor(unit.position, state.board, getOpponent(player));
+    for (const attacker of attackers) {
+      if (canBeEliminated(unit, attacker)) {
+        threats += getUnitDefinition(unit.definitionId).cost;
+        break;
+      }
+    }
+  }
+
+  return threats;
+}
+
+function calculateCombinedAttackPotential(state: GameState, player: PlayerId): number {
+  const enemyUnits = getPlayerUnits(state.board, getOpponent(player));
+  let potential = 0;
+
+  for (const enemy of enemyUnits) {
+    const attackers = getAttackersFor(enemy.position, state.board, player);
+    if (attackers.length < 2) continue;
+    if (canBeEliminatedByCombined(enemy, attackers)) {
+      potential += getUnitDefinition(enemy.definitionId).cost;
+    }
+  }
+
+  return potential;
+}
+
+function calculateSpawnDenialPressure(state: GameState, player: PlayerId): number {
+  const spawnPositions = getAllSpawnPositions(player, state.board);
+  const opponentUnits = getPlayerUnits(state.board, getOpponent(player));
+  let pressure = 0;
+
+  for (const unit of opponentUnits) {
+    if (spawnPositions.some((pos) => pos.x === unit.position.x && pos.y === unit.position.y)) {
+      pressure += 1;
+    }
+  }
+
+  return pressure;
+}
+
+function calculateSpawnInfiltration(state: GameState, player: PlayerId): number {
+  const spawnPositions = getAllSpawnPositions(getOpponent(player), state.board);
+  const units = getPlayerUnits(state.board, player);
+  let infiltration = 0;
+
+  for (const unit of units) {
+    if (spawnPositions.some((pos) => pos.x === unit.position.x && pos.y === unit.position.y)) {
+      infiltration += 1;
+    }
+  }
+
+  return infiltration;
+}
+
+function calculateQueueValue(state: GameState, player: PlayerId): number {
+  const queue = state.players[player].buildQueue;
+  let value = 0;
+  for (const queuedUnit of queue) {
+    const def = getUnitDefinition(queuedUnit.definitionId);
+    const discount = Math.pow(0.9, queuedUnit.turnsRemaining);
+    value += def.cost * discount;
+  }
+  return value;
+}
+
+function calculateStepEfficiency(state: GameState, player: PlayerId): number {
+  if (state.turn.currentPlayer !== player || state.turn.phase !== 'action') {
+    return 0;
+  }
+
+  const units = getPlayerUnits(state.board, player);
+  const activeUnits = units.filter((unit) => unit.canActThisTurn).length;
+  return Math.min(activeUnits, state.turn.actionsRemaining);
+}
+
+function calculateTechTreeProgress(state: GameState, player: PlayerId): number {
+  const units = getPlayerUnits(state.board, player);
+  let progress = 0;
+  const tiers = new Set<number>();
+
+  for (const unit of units) {
+    const def = getUnitDefinition(unit.definitionId);
+    tiers.add(def.tier);
+  }
+
+  if (tiers.has(2)) progress += 1;
+  if (tiers.has(3)) progress += 1;
+  if (tiers.has(4)) progress += 1;
+
+  return progress;
+}
+
+function getOpponent(player: PlayerId): PlayerId {
+  return player === 'player' ? 'ai' : 'player';
 }
 
 /**
