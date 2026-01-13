@@ -12,6 +12,7 @@ import { VictoryScreen } from './VictoryScreen';
 import { ElementLegend } from './ElementLegend';
 import { AIRecap } from './AIRecap';
 import { PassDeviceOverlay } from './PassDeviceOverlay';
+import { InstructionsModal } from './InstructionsModal';
 import { getUnitById, getCell } from '../game/board';
 import { getUnitDefinition } from '../game/units';
 import { canMine } from '../game/mining';
@@ -55,6 +56,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
   const [viewedEnemyUnitId, setViewedEnemyUnitId] = useState<string | null>(null);
   const [showPassOverlay, setShowPassOverlay] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  const [showInstructions, setShowInstructions] = useState(false);
   const lastTurnPlayer = useRef<PlayerId | null>(null);
 
   // Helper: check if current player is human-controlled
@@ -396,6 +398,12 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
         <AIRecap actions={aiAI.lastTurnActions} onDismiss={handleDismissRecap} />
       )}
 
+      {/* Instructions modal */}
+      <InstructionsModal
+        isOpen={showInstructions}
+        onClose={() => setShowInstructions(false)}
+      />
+
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-4">
@@ -406,6 +414,12 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
               {config.mode === 'pass-play' && 'Pass & Play'}
               {config.mode === 'ai-vs-ai' && 'AI vs AI'}
             </span>
+            <button
+              onClick={() => setShowInstructions(true)}
+              className="bg-cyan-700 hover:bg-cyan-600 text-white px-3 py-1 rounded text-sm transition-colors"
+            >
+              How to Play
+            </button>
             <button
               onClick={handleBackToMenuClick}
               className="bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded text-sm transition-colors"
