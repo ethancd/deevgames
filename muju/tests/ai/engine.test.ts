@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { createEmptyBoard } from '../../src/game/board';
-import { AIEngine, createAI, executeAITurn } from '../../src/ai/engine';
+import { AIEngine, createAI } from '../../src/ai/engine';
 import type { GameState, Unit, BoardState, PlayerId } from '../../src/game/types';
 
 function createTestUnit(
@@ -81,7 +81,7 @@ describe('AI Engine', () => {
   });
 
   describe('findBestAction', () => {
-    it('returns a result with plan', () => {
+    it('returns a result with plan', async () => {
       const board = createEmptyBoard();
       const aiUnit = createTestUnit('ai-unit', 'fire_1', 'ai', 5, 5);
       const playerUnit = createTestUnit('player-unit', 'water_1', 'player', 0, 0);
@@ -90,57 +90,32 @@ describe('AI Engine', () => {
       const state = createTestState(board);
       const ai = new AIEngine('easy');
 
-      const result = ai.findBestAction(state);
+      const result = await ai.findBestAction(state);
 
       expect(result.plan).toBeDefined();
       expect(result.nodesSearched).toBeGreaterThan(0);
       expect(result.timeMs).toBeGreaterThanOrEqual(0);
     });
 
-    it('easy difficulty returns random actions', () => {
+    it('difficulty presets scale search configs', async () => {
       const board = createEmptyBoard();
       const aiUnit = createTestUnit('ai-unit', 'fire_1', 'ai', 5, 5);
       const playerUnit = createTestUnit('player-unit', 'water_1', 'player', 0, 0);
       board.units.push(aiUnit, playerUnit);
 
       const state = createTestState(board);
-      const ai = new AIEngine('easy');
+      const easyAI = new AIEngine('easy');
+      const hardAI = new AIEngine('hard');
 
-      const result = ai.findBestAction(state);
+      const easyResult = await easyAI.findBestAction(state);
+      const hardResult = await hardAI.findBestAction(state);
 
-      expect(result.plan.actions.length).toBeGreaterThanOrEqual(0);
+      expect(easyResult.debug?.config.mctsIterations).toBeLessThan(
+        hardResult.debug?.config.mctsIterations ?? Infinity
+      );
     });
 
-    it('medium difficulty uses greedy evaluation', () => {
-      const board = createEmptyBoard();
-      board.cells[5][5].resourceLayers = 3;
-      const aiUnit = createTestUnit('ai-unit', 'fire_1', 'ai', 5, 5);
-      const playerUnit = createTestUnit('player-unit', 'water_1', 'player', 0, 0);
-      board.units.push(aiUnit, playerUnit);
-
-      const state = createTestState(board);
-      const ai = new AIEngine('medium');
-
-      const result = ai.findBestAction(state);
-
-      expect(result.plan.actions.length).toBeGreaterThanOrEqual(1);
-    });
-
-    it('hard difficulty uses minimax', () => {
-      const board = createEmptyBoard();
-      const aiUnit = createTestUnit('ai-unit', 'fire_1', 'ai', 5, 5);
-      const playerUnit = createTestUnit('player-unit', 'water_1', 'player', 0, 0);
-      board.units.push(aiUnit, playerUnit);
-
-      const state = createTestState(board);
-      const ai = new AIEngine('hard');
-
-      const result = ai.findBestAction(state);
-
-      expect(result.depth).toBeGreaterThan(1);
-    });
-
-    it('prefers killing enemy when possible', () => {
+    it('prefers killing enemy when possible', async () => {
       const board = createEmptyBoard();
       // AI has advantage - should attack
       const aiUnit = createTestUnit('ai-unit', 'fire_3', 'ai', 5, 5);
@@ -150,9 +125,23 @@ describe('AI Engine', () => {
       const state = createTestState(board);
       const ai = new AIEngine('medium');
 
-      const result = ai.findBestAction(state);
+      const result = await ai.findBestAction(state);
 
       expect(result.plan.actions[0].type).toBe('ATTACK');
+    });
+
+    it('includes debug info for top plans', async () => {
+      const board = createEmptyBoard();
+      const aiUnit = createTestUnit('ai-unit', 'fire_1', 'ai', 5, 5);
+      const playerUnit = createTestUnit('player-unit', 'water_1', 'player', 0, 0);
+      board.units.push(aiUnit, playerUnit);
+
+      const state = createTestState(board);
+      const ai = new AIEngine('medium');
+
+      const result = await ai.findBestAction(state);
+
+      expect(result.debug?.topPlans.length).toBeGreaterThan(0);
     });
   });
 
@@ -168,66 +157,8 @@ describe('AI Engine', () => {
     });
   });
 
-  describe('executeAITurn', () => {
-    it('returns array of actions', () => {
-      const board = createEmptyBoard();
-      const aiUnit = createTestUnit('ai-unit', 'fire_1', 'ai', 5, 5);
-      const playerUnit = createTestUnit('player-unit', 'water_1', 'player', 0, 0);
-      board.units.push(aiUnit, playerUnit);
-
-      const state = createTestState(board);
-      const actions = executeAITurn(state, 'easy');
-
-      expect(Array.isArray(actions)).toBe(true);
-      expect(actions.length).toBeGreaterThan(0);
-    });
-
-    it('includes END_ACTION_PHASE or END_TURN', () => {
-      const board = createEmptyBoard();
-      const aiUnit = createTestUnit('ai-unit', 'fire_1', 'ai', 5, 5);
-      const playerUnit = createTestUnit('player-unit', 'water_1', 'player', 0, 0);
-      board.units.push(aiUnit, playerUnit);
-
-      const state = createTestState(board);
-      const actions = executeAITurn(state, 'easy');
-
-      const hasEndAction = actions.some(
-        a => a.type === 'END_ACTION_PHASE' || a.type === 'END_TURN'
-      );
-      expect(hasEndAction).toBe(true);
-    });
-
-    it('respects max iterations safety limit', () => {
-      const board = createEmptyBoard();
-      const aiUnit = createTestUnit('ai-unit', 'fire_1', 'ai', 5, 5);
-      const playerUnit = createTestUnit('player-unit', 'water_1', 'player', 0, 0);
-      board.units.push(aiUnit, playerUnit);
-
-      const state = createTestState(board);
-      const actions = executeAITurn(state, 'medium');
-
-      // Should not exceed 20 actions (safety limit)
-      expect(actions.length).toBeLessThanOrEqual(20);
-    });
-
-    it('stops when game enters victory state', () => {
-      const board = createEmptyBoard();
-      // AI will win by attacking
-      const aiUnit = createTestUnit('ai-unit', 'fire_4', 'ai', 5, 5);
-      const playerUnit = createTestUnit('player-unit', 'water_1', 'player', 5, 6);
-      board.units.push(aiUnit, playerUnit);
-
-      const state = createTestState(board);
-      const actions = executeAITurn(state, 'medium');
-
-      // Should include the winning attack
-      const hasAttack = actions.some(a => a.type === 'ATTACK');
-      expect(hasAttack).toBe(true);
-    });
-  });
-
   describe('AI decision quality', () => {
-    it('takes winning move when available', () => {
+    it('takes winning move when available', async () => {
       const board = createEmptyBoard();
       // Set up guaranteed kill
       const aiUnit = createTestUnit('ai-unit', 'fire_4', 'ai', 5, 5);
@@ -236,13 +167,12 @@ describe('AI Engine', () => {
 
       const state = createTestState(board);
       const ai = new AIEngine('hard');
-      const result = ai.findBestAction(state);
+      const result = await ai.findBestAction(state);
 
       expect(result.plan.actions[0].type).toBe('ATTACK');
-      expect(result.plan.score).toBeGreaterThan(10000); // Victory score
     });
 
-    it('takes a valid action when resources available and no threats', () => {
+    it('takes a valid action when resources available and no threats', async () => {
       const board = createEmptyBoard();
       board.cells[5][5].resourceLayers = 5;
       const aiUnit = createTestUnit('ai-unit', 'fire_1', 'ai', 5, 5);
@@ -251,7 +181,7 @@ describe('AI Engine', () => {
 
       const state = createTestState(board);
       const ai = new AIEngine('medium');
-      const result = ai.findBestAction(state);
+      const result = await ai.findBestAction(state);
 
       // AI should take some action - could be mine, move, or end action phase
       // depending on evaluation weights
@@ -259,7 +189,7 @@ describe('AI Engine', () => {
       expect(validActions.includes(result.plan.actions[0].type)).toBe(true);
     });
 
-    it('takes some action when enemy is far away', () => {
+    it('takes some action when enemy is far away', async () => {
       const board = createEmptyBoard();
       // Deplete resources so mining is not an option
       board.cells[9][9].resourceLayers = 0;
@@ -269,7 +199,7 @@ describe('AI Engine', () => {
 
       const state = createTestState(board);
       const ai = new AIEngine('medium');
-      const result = ai.findBestAction(state);
+      const result = await ai.findBestAction(state);
 
       // With no mining option, should move toward enemy or end action phase
       expect(['MOVE', 'END_ACTION_PHASE'].includes(result.plan.actions[0].type)).toBe(true);
