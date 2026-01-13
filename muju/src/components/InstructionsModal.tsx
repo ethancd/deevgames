@@ -178,8 +178,8 @@ const instructionPages: InstructionPage[] = [
         <div className="bg-gray-800 p-3 rounded border border-gray-700">
           <h4 className="text-green-400 font-medium mb-2">Victory Condition</h4>
           <p className="text-gray-300 text-sm">
-            Eliminate all enemy units while they have no units queued to build. If your opponent has nothing
-            on the board and nothing coming, you win!
+            Eliminate all enemy units. If your opponent has nothing on the board, they can't spawn
+            anything — you win!
           </p>
         </div>
       </div>
@@ -213,7 +213,7 @@ const instructionPages: InstructionPage[] = [
             <div className="text-center">
               <div className="flex gap-1 justify-center mb-1">
                 <DemoUnit element="fire" tier={1} size="sm" />
-                <DemoUnit element="lightning" tier={1} size="sm" />
+                <DemoUnit element="water" tier={1} size="sm" />
                 <DemoUnit element="plant" tier={1} size="sm" />
               </div>
               <span className="text-xs text-gray-400">You (corner)</span>
@@ -222,14 +222,14 @@ const instructionPages: InstructionPage[] = [
             <div className="text-center">
               <div className="flex gap-1 justify-center mb-1">
                 <DemoUnit element="fire" tier={1} size="sm" isPlayer={false} />
-                <DemoUnit element="lightning" tier={1} size="sm" isPlayer={false} />
+                <DemoUnit element="water" tier={1} size="sm" isPlayer={false} />
                 <DemoUnit element="plant" tier={1} size="sm" isPlayer={false} />
               </div>
               <span className="text-xs text-gray-400">Enemy (opposite)</span>
             </div>
           </div>
           <p className="text-gray-400 text-sm mt-2 text-center">
-            Both players start with Hi (Fire), Radi (Lightning), and Muju (Plant) — tier 1 units
+            Both players start with Hi (Fire), Kapp (Water), and Muju (Plant) — tier 1 units
           </p>
         </div>
       </div>
@@ -290,7 +290,7 @@ const instructionPages: InstructionPage[] = [
         <div className="flex justify-center">
           <DemoBoardSection>
             <div className="grid grid-cols-5 gap-0">
-              <DemoCell highlighted highlightType="move" />
+              <DemoCell />
               <DemoCell />
               <DemoCell highlighted highlightType="move" />
               <DemoCell />
@@ -343,36 +343,39 @@ const instructionPages: InstructionPage[] = [
       <div className="space-y-4">
         <p className="text-gray-300">
           Attack adjacent enemies (orthogonally). Compare <strong className="text-red-400">Attack</strong> vs
-          <strong className="text-green-400"> Defense</strong> to deal damage.
+          <strong className="text-green-400"> Defense</strong> to overcome and destroy.
         </p>
         <div className="flex justify-center items-center gap-4">
           <div className="text-center">
-            <DemoUnit element="fire" tier={2} size="lg" />
+            <div className="relative inline-block">
+              <DemoUnit element="fire" tier={2} size="lg" />
+              <span className="absolute -top-1 -right-3 text-green-400 text-sm font-bold">+1⚔</span>
+            </div>
             <div className="flex gap-1 mt-2 justify-center">
               <DemoStatBox label="ATK" value={4} color="text-red-400" />
             </div>
           </div>
           <span className="text-2xl text-gray-500">→</span>
           <div className="text-center">
-            <DemoUnit element="plant" tier={2} size="lg" isPlayer={false} damage={2} />
+            <DemoUnit element="plant" tier={2} size="lg" isPlayer={false} />
             <div className="flex gap-1 mt-2 justify-center">
               <DemoStatBox label="DEF" value={4} color="text-green-400" />
             </div>
           </div>
         </div>
         <div className="bg-gray-800 p-3 rounded border border-gray-700">
-          <h4 className="text-red-400 font-medium mb-2">Damage Calculation</h4>
+          <h4 className="text-red-400 font-medium mb-2">How Combat Works</h4>
           <p className="text-gray-300 text-sm">
-            <code className="bg-gray-700 px-1 rounded">Damage = Attack - Defense + Element Modifier</code>
+            <code className="bg-gray-700 px-1 rounded">Effective Attack = Attack + Element Modifier</code>
           </p>
           <ul className="text-sm text-gray-400 mt-2 space-y-1">
-            <li>• Damage reduces effective defense temporarily</li>
-            <li>• When effective defense reaches 0, unit is eliminated</li>
-            <li>• Damage resets at the start of the defender's turn</li>
+            <li>• If effective attack ≥ defense, the enemy is <strong className="text-red-400">destroyed</strong></li>
+            <li>• If effective attack &lt; defense, enemy takes damage equal to the difference</li>
+            <li>• Damage reduces effective defense until the defender's next turn</li>
           </ul>
         </div>
         <p className="text-gray-400 text-sm text-center">
-          Fire (ATK 4) + Element bonus (+1) vs Plant (DEF 4) = 1 damage dealt, shown as <span className="text-red-400">-1</span>
+          Fire (ATK 4) + type advantage (+1) = 5 vs Plant (DEF 4) → <span className="text-red-400">destroyed!</span>
         </p>
       </div>
     ),
@@ -383,7 +386,7 @@ const instructionPages: InstructionPage[] = [
       <div className="space-y-4">
         <p className="text-gray-300">
           Elements are paired and form a <strong className="text-white">rock-paper-scissors triangle</strong>.
-          Advantage grants <strong className="text-green-400">+1 Attack</strong>.
+          Advantage grants <strong className="text-green-400">+1 attack</strong>, disadvantage grants <strong className="text-red-400">-1 attack</strong>.
         </p>
         <div className="bg-gray-800 p-3 rounded border border-gray-700">
           <div className="space-y-2 text-sm">
@@ -523,7 +526,7 @@ const instructionPages: InstructionPage[] = [
         <div className="bg-gray-800 p-3 rounded border border-gray-700 text-sm">
           <h4 className="text-cyan-400 font-medium mb-1">Tech Requirement</h4>
           <p className="text-gray-300">
-            To build a tier 2+ unit, you must have a unit of that element (any tier) on the board.
+            To build a tier II+ unit, you must have a unit of that element at tier (N-1) or higher on the board.
           </p>
         </div>
       </div>
@@ -570,12 +573,6 @@ const instructionPages: InstructionPage[] = [
               Pay the cost difference to upgrade a unit to the next tier
             </p>
           </div>
-        </div>
-        <div className="bg-gray-800 p-3 rounded border border-gray-700 text-sm">
-          <p className="text-gray-300">
-            <strong className="text-yellow-400">Note:</strong> Newly placed or promoted units cannot act until
-            your next turn.
-          </p>
         </div>
       </div>
     ),
