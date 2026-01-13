@@ -35,6 +35,7 @@ rm -rf _site
 mkdir -p _site
 cp index.html _site/
 cp CNAME _site/
+touch _site/.nojekyll
 cp -r muju/dist _site/muju
 cp -r forge/dist _site/forge
 cp -r oracle/dist _site/oracle
