@@ -8,10 +8,11 @@ interface CellProps {
   isSelected: boolean;
   elementalBonus?: number; // -1, 0, or +1 for attack targets
   isInvalidSpawn?: boolean; // Show red X for invalid spawn click
+  isPendingMove?: boolean; // Show pending partial movement
   onClick: (position: Position) => void;
 }
 
-export function Cell({ cell, isValidMove, isValidAttack, isValidSpawn, isSelected, elementalBonus, isInvalidSpawn, onClick }: CellProps) {
+export function Cell({ cell, isValidMove, isValidAttack, isValidSpawn, isSelected, elementalBonus, isInvalidSpawn, isPendingMove, onClick }: CellProps) {
   const { position, resourceLayers } = cell;
 
   // Resource visualization: amber coloring based on depth (0-5)
@@ -32,6 +33,9 @@ export function Cell({ cell, isValidMove, isValidAttack, isValidSpawn, isSelecte
   if (isInvalidSpawn) {
     borderClass = 'border-red-500 border-2';
     bgClass = 'bg-red-200';
+  } else if (isPendingMove) {
+    borderClass = 'border-yellow-500 border-2';
+    bgClass = 'bg-yellow-200';
   } else if (isSelected) {
     borderClass = 'border-blue-500 border-2';
     bgClass = 'bg-blue-200';
@@ -82,6 +86,13 @@ export function Cell({ cell, isValidMove, isValidAttack, isValidSpawn, isSelecte
       {isInvalidSpawn && (
         <span className="absolute inset-0 flex items-center justify-center text-2xl text-red-600 font-bold">
           ✕
+        </span>
+      )}
+
+      {/* Pending move indicator */}
+      {isPendingMove && (
+        <span className="absolute inset-0 flex items-center justify-center text-lg text-yellow-700 font-bold">
+          ●
         </span>
       )}
     </div>

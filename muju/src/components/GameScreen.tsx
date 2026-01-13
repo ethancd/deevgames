@@ -65,6 +65,9 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
   // Unit shop keyboard navigation state
   const [shopSelectedId, setShopSelectedId] = useState<string | null>(null);
 
+  // Partial movement state: tracks pending move path before committing
+  const [pendingMovePath, setPendingMovePath] = useState<Position[]>([]);
+
   // Helper: check if current player is human-controlled
   const isCurrentPlayerHuman = config.controls[state.turn.currentPlayer] === 'human';
   const isPlayerTurn = state.turn.currentPlayer === 'player';
@@ -348,6 +351,13 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
     return state.board.units.filter(u => u.owner === state.turn.currentPlayer);
   }, [state.board.units, state.turn.currentPlayer]);
 
+  // Clear pending move when unit is deselected or phase changes
+  useEffect(() => {
+    if (!state.selectedUnit || state.turn.phase !== 'action') {
+      setPendingMovePath([]);
+    }
+  }, [state.selectedUnit, state.turn.phase]);
+
   // Keyboard handler
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     // Don't handle if AI is thinking, overlay is shown, or it's not human's turn
@@ -359,10 +369,45 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
     const currentPlayer = state.turn.currentPlayer;
     const currentPlayerState = state.players[currentPlayer];
 
+    // === Cmd+Z / Ctrl+Z: Undo ===
+    if ((e.metaKey || e.ctrlKey) && key === 'z') {
+      e.preventDefault();
+      if (canUndo) {
+        // Clear pending move before undo
+        setPendingMovePath([]);
+        undo();
+      }
+      return;
+    }
+
+    // === Enter: End current phase ===
+    if (key === 'enter' && state.turn.phase !== 'queue') {
+      e.preventDefault();
+      // Commit any pending move first
+      if (pendingMovePath.length > 0 && state.selectedUnit) {
+        const finalPosition = pendingMovePath[pendingMovePath.length - 1];
+        moveUnit(state.selectedUnit, finalPosition);
+        setPendingMovePath([]);
+      }
+      if (state.turn.phase === 'place') {
+        endPlacePhase();
+      } else if (state.turn.phase === 'action') {
+        endActionPhase();
+      }
+      return;
+    }
+
     // === Tab: Cycle between own units ===
     if (key === 'tab') {
       e.preventDefault();
       if (playerOwnUnits.length === 0) return;
+
+      // Commit any pending move before switching units
+      if (pendingMovePath.length > 0 && state.selectedUnit) {
+        const finalPosition = pendingMovePath[pendingMovePath.length - 1];
+        moveUnit(state.selectedUnit, finalPosition);
+        setPendingMovePath([]);
+      }
 
       let currentIndex = -1;
       const currentSelectedId = state.turn.phase === 'action'
@@ -473,42 +518,73 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
       const unit = getUnitById(state.board, state.selectedUnit);
       if (!unit || !unit.canActThisTurn) return;
 
-      // M: Mine
+      const unitDef = getUnitDefinition(unit.definitionId);
+      const unitSpeed = unitDef.speed;
+
+      // M: Mine (commits pending move first)
       if (key === 'm') {
         e.preventDefault();
-        if (canMine(unit, state.board)) {
+        // Commit pending move first if any
+        if (pendingMovePath.length > 0) {
+          const finalPosition = pendingMovePath[pendingMovePath.length - 1];
+          moveUnit(state.selectedUnit, finalPosition);
+          setPendingMovePath([]);
+        } else if (canMine(unit, state.board)) {
           mineWith(state.selectedUnit);
         }
         return;
       }
 
-      // Arrow keys: Move one step in direction (partial movement for high-speed units)
+      // Arrow keys: Partial movement (accumulate steps until full speed)
       if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(key)) {
         e.preventDefault();
-        const pos = unit.position;
+
+        // Get current position (original unit position or last pending position)
+        const currentPos = pendingMovePath.length > 0
+          ? pendingMovePath[pendingMovePath.length - 1]
+          : unit.position;
+
         let targetPos: Position;
+        if (key === 'arrowup') targetPos = { x: currentPos.x, y: currentPos.y - 1 };
+        else if (key === 'arrowdown') targetPos = { x: currentPos.x, y: currentPos.y + 1 };
+        else if (key === 'arrowleft') targetPos = { x: currentPos.x - 1, y: currentPos.y };
+        else targetPos = { x: currentPos.x + 1, y: currentPos.y };
 
-        if (key === 'arrowup') targetPos = { x: pos.x, y: pos.y - 1 };
-        else if (key === 'arrowdown') targetPos = { x: pos.x, y: pos.y + 1 };
-        else if (key === 'arrowleft') targetPos = { x: pos.x - 1, y: pos.y };
-        else targetPos = { x: pos.x + 1, y: pos.y };
-
-        // Check if valid move position
+        // Check if the target is valid (not occupied and within board bounds)
+        // For pending moves, we need to check if it would be valid from the pending position
         if (isValidPosition(targetPos) && !isOccupied(state.board, targetPos)) {
-          // Verify it's in the valid moves list
-          const isValid = state.validMoves.some(
-            m => m.x === targetPos.x && m.y === targetPos.y
-          );
-          if (isValid) {
-            moveUnit(state.selectedUnit, targetPos);
+          // Also check that the path doesn't loop back through the original position
+          const isNotLoopingBack = !pendingMovePath.some(
+            p => p.x === targetPos.x && p.y === targetPos.y
+          ) && !(targetPos.x === unit.position.x && targetPos.y === unit.position.y);
+
+          if (isNotLoopingBack) {
+            const newPath = [...pendingMovePath, targetPos];
+
+            // If we've reached full speed, commit the move
+            if (newPath.length >= unitSpeed) {
+              moveUnit(state.selectedUnit, targetPos);
+              setPendingMovePath([]);
+            } else {
+              // Otherwise, just add to pending path
+              setPendingMovePath(newPath);
+            }
           }
         }
+        return;
+      }
+
+      // Escape: Cancel pending move
+      if (key === 'escape' && pendingMovePath.length > 0) {
+        e.preventDefault();
+        setPendingMovePath([]);
         return;
       }
     }
   }, [
     isCurrentPlayerHuman, isThinking, showPassOverlay, state, playerOwnUnits,
-    selectUnit, selectedPlaceUnitId, promoteUnit, mineWith, moveUnit, queueUnit, shopSelectedId
+    selectUnit, selectedPlaceUnitId, promoteUnit, mineWith, moveUnit, queueUnit, shopSelectedId,
+    canUndo, undo, endPlacePhase, endActionPhase, pendingMovePath
   ]);
 
   // Attach keyboard listener
@@ -544,6 +620,20 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
 
   const togglePause = () => {
     setIsPaused(!isPaused);
+  };
+
+  // Handler to close unit info / deselect unit
+  const handleCloseUnitInfo = () => {
+    // Clear pending move if any
+    setPendingMovePath([]);
+    // Deselect unit in action phase
+    if (state.selectedUnit) {
+      deselect();
+    }
+    // Clear place phase selections
+    setSelectedPlaceUnitId(null);
+    setSelectedReadyUnitId(null);
+    setViewedEnemyUnitId(null);
   };
 
   // Get the current player's state for resource/queue display
@@ -698,6 +788,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
                   resources={currentPlayerState.resources}
                   onPromote={handlePromote}
                   isEnemyView={!!viewedEnemyUnitData && !selectedPlaceUnitData && !selectedUnitData}
+                  onClose={handleCloseUnitInfo}
                 />
               </div>
             )}
@@ -714,6 +805,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
               validAttacks={state.validAttacks}
               validSpawns={validSpawns}
               invalidSpawnPosition={spawnFeedback?.position ?? null}
+              pendingMovePath={pendingMovePath}
               onCellClick={handleCellClick}
               onUnitClick={handleUnitClick}
             />
