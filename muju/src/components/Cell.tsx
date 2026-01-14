@@ -9,11 +9,13 @@ interface CellProps {
   elementalBonus?: number; // -1, 0, or +1 for attack targets
   isInvalidSpawn?: boolean; // Show red X for invalid spawn click
   isPendingMove?: boolean; // Show pending partial movement
+  movementRangeActions?: number; // Show remaining actions for movement range preview
   onClick: (position: Position) => void;
 }
 
-export function Cell({ cell, isValidMove, isValidAttack, isValidSpawn, isSelected, elementalBonus, isInvalidSpawn, isPendingMove, onClick }: CellProps) {
+export function Cell({ cell, isValidMove, isValidAttack, isValidSpawn, isSelected, elementalBonus, isInvalidSpawn, isPendingMove, movementRangeActions, onClick }: CellProps) {
   const { position, resourceLayers } = cell;
+  const showMovementRange = movementRangeActions !== undefined;
 
   // Resource visualization: amber coloring based on depth (0-5)
   // Colors progress from gray (depleted) to rich amber (full)
@@ -39,6 +41,9 @@ export function Cell({ cell, isValidMove, isValidAttack, isValidSpawn, isSelecte
   } else if (isSelected) {
     borderClass = 'border-blue-500 border-2';
     bgClass = 'bg-blue-200';
+  } else if (showMovementRange) {
+    borderClass = 'border-purple-400 border-2';
+    // Keep amber background visible but add purple tint
   } else if (isValidMove) {
     borderClass = 'border-blue-400 border-2';
     // Keep amber background visible but add blue tint
@@ -93,6 +98,13 @@ export function Cell({ cell, isValidMove, isValidAttack, isValidSpawn, isSelecte
       {isPendingMove && (
         <span className="absolute inset-0 flex items-center justify-center text-lg text-yellow-700 font-bold">
           ●
+        </span>
+      )}
+
+      {/* Movement range actions remaining indicator */}
+      {showMovementRange && (
+        <span className="absolute inset-0 flex items-center justify-center text-lg text-purple-700 font-bold">
+          {movementRangeActions}
         </span>
       )}
     </div>

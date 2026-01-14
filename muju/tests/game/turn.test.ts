@@ -426,18 +426,17 @@ describe('Turn Module', () => {
       expect(canCurrentPlayerAct(state)).toBe(true);
     });
 
-    it('returns false if all units have exhausted their actions', () => {
+    it('returns false if all units cannot act this turn', () => {
       let state = createInitialGameState();
       state = startActionPhase(state);
 
-      // Mark all player units as having done everything
+      // Mark all player units as unable to act (e.g., newly placed units)
+      // Note: hasMoved/hasAttacked/hasMined don't block actions; only canActThisTurn does
       const playerUnits = getPlayerUnits(state.board, 'player');
       let newBoard = state.board;
       for (const unit of playerUnits) {
         newBoard = updateUnit(newBoard, unit.id, {
-          hasMoved: true,
-          hasAttacked: true,
-          hasMined: true,
+          canActThisTurn: false,
         });
       }
       state = { ...state, board: newBoard };

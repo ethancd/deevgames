@@ -86,15 +86,15 @@ describe('AI Move Generation', () => {
       expect(moves.every(m => m.unitId === 'ai-unit')).toBe(true);
     });
 
-    it('does not generate moves for units that have already moved', () => {
+    it('generates moves even for units that have already moved (multiple moves per turn)', () => {
       const board = createEmptyBoard();
       const unit = createTestUnit('ai-unit', 'fire_1', 'ai', 5, 5, { hasMoved: true });
       board.units.push(unit);
 
       const state = createTestState(board);
       const moves = generateMoveActions(state, 'ai');
-
-      expect(moves.length).toBe(0);
+      // Units can move multiple times per turn, hasMoved is just tracking
+      expect(moves.length).toBeGreaterThan(0);
     });
 
     it('does not generate moves for units that cannot act this turn', () => {
@@ -137,7 +137,7 @@ describe('AI Move Generation', () => {
       expect(attacks[0].targetPosition).toEqual({ x: 5, y: 6 });
     });
 
-    it('does not generate attacks for units that have already attacked', () => {
+    it('generates attacks even for units that have already attacked (multiple attacks per turn, just not same enemy)', () => {
       const board = createEmptyBoard();
       const aiUnit = createTestUnit('ai-unit', 'fire_1', 'ai', 5, 5, { hasAttacked: true });
       const playerUnit = createTestUnit('player-unit', 'water_1', 'player', 5, 6);
@@ -145,8 +145,8 @@ describe('AI Move Generation', () => {
 
       const state = createTestState(board);
       const attacks = generateAttackActions(state, 'ai');
-
-      expect(attacks.length).toBe(0);
+      // Units can attack multiple times per turn (just not the same enemy twice)
+      expect(attacks.length).toBeGreaterThan(0);
     });
 
     it('does not generate attacks when no enemies in range', () => {
@@ -178,7 +178,7 @@ describe('AI Move Generation', () => {
       expect(mines[0].unitId).toBe('ai-unit');
     });
 
-    it('does not generate mine actions for units that have already mined', () => {
+    it('generates mine actions even for units that have already mined (multiple mines per turn)', () => {
       const board = createEmptyBoard();
       board.cells[5][5].resourceLayers = 3;
       const unit = createTestUnit('ai-unit', 'fire_1', 'ai', 5, 5, { hasMined: true });
@@ -186,8 +186,8 @@ describe('AI Move Generation', () => {
 
       const state = createTestState(board);
       const mines = generateMineActions(state, 'ai');
-
-      expect(mines.length).toBe(0);
+      // Units can mine multiple times per turn, hasMined is just tracking
+      expect(mines.length).toBeGreaterThan(0);
     });
 
     it('does not generate mine actions on depleted cells', () => {

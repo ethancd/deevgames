@@ -194,3 +194,162 @@ function reconstructPathLength(
 
   return length;
 }
+
+/**
+ * Position with remaining actions to reach it
+ */
+export interface MovementRangePosition {
+  position: Position;
+  actionsRemaining: number;
+}
+
+/**
+ * Calculate all reachable positions with the number of actions remaining
+ * after reaching each position.
+ *
+ * @param startPosition - Starting position of the unit
+ * @param speed - Movement speed per action
+ * @param totalActions - Total actions available (e.g., 6)
+ * @param board - Current board state for obstacle checking
+ * @returns Array of positions with their remaining actions cost
+ */
+export function getMovementRange(
+  startPosition: Position,
+  speed: number,
+  totalActions: number,
+  board: BoardState
+): MovementRangePosition[] {
+  const result: MovementRangePosition[] = [];
+  const posKey = (p: Position) => `${p.x},${p.y}`;
+
+  // Track visited positions with their minimum cost (total squares moved)
+  const visited = new Map<string, number>();
+  visited.set(posKey(startPosition), 0);
+
+  // BFS queue: position and total squares moved to get there
+  const queue: { pos: Position; squaresMoved: number }[] = [
+    { pos: startPosition, squaresMoved: 0 },
+  ];
+
+  // Maximum squares we can move with all actions
+  const maxSquares = speed * totalActions;
+
+  while (queue.length > 0) {
+    const { pos, squaresMoved } = queue.shift()!;
+
+    // If we've moved at least 1 square and position is not occupied, it's reachable
+    if (squaresMoved > 0 && !isOccupied(board, pos)) {
+      // Calculate actions used: each full "speed" squares = 1 action
+      // Even partial moves consume a full action
+      const actionsUsed = Math.ceil(squaresMoved / speed);
+      const actionsRemaining = totalActions - actionsUsed;
+
+      // Only add if we have a valid path (0 or more actions remaining)
+      if (actionsRemaining >= 0) {
+        result.push({ position: pos, actionsRemaining });
+      }
+    }
+
+    // Don't explore further if we've reached max squares
+    if (squaresMoved >= maxSquares) continue;
+
+    // Explore orthogonal neighbors
+    const neighbors = [
+      { x: pos.x, y: pos.y - 1 },
+      { x: pos.x, y: pos.y + 1 },
+      { x: pos.x - 1, y: pos.y },
+      { x: pos.x + 1, y: pos.y },
+    ];
+
+    for (const neighbor of neighbors) {
+      if (!isValidPosition(neighbor)) continue;
+
+      const key = posKey(neighbor);
+      const newSquaresMoved = squaresMoved + 1;
+
+      // Skip if we've already found a shorter path to this position
+      if (visited.has(key) && visited.get(key)! <= newSquaresMoved) continue;
+
+      // Can only pass through empty squares
+      if (isOccupied(board, neighbor)) {
+        visited.set(key, newSquaresMoved);
+        continue;
+      }
+
+      visited.set(key, newSquaresMoved);
+      queue.push({ pos: neighbor, squaresMoved: newSquaresMoved });
+    }
+  }
+
+  return result;
+}
+
+/**
+ * Calculate the number of actions required to move from one position to another.
+ * Returns null if the position is not reachable.
+ *
+ * @param startPosition - Starting position
+ * @param targetPosition - Target position
+ * @param speed - Unit's movement speed
+ * @param board - Current board state
+ * @returns Number of actions required, or null if unreachable
+ */
+export function getMoveCost(
+  startPosition: Position,
+  targetPosition: Position,
+  speed: number,
+  board: BoardState
+): number | null {
+  const posKey = (p: Position) => `${p.x},${p.y}`;
+
+  // BFS to find shortest path
+  const visited = new Map<string, number>();
+  visited.set(posKey(startPosition), 0);
+
+  const queue: { pos: Position; squaresMoved: number }[] = [
+    { pos: startPosition, squaresMoved: 0 },
+  ];
+
+  while (queue.length > 0) {
+    const { pos, squaresMoved } = queue.shift()!;
+
+    // Check if we've reached the target
+    if (pos.x === targetPosition.x && pos.y === targetPosition.y && squaresMoved > 0) {
+      // Check if target is not occupied
+      if (!isOccupied(board, pos)) {
+        return Math.ceil(squaresMoved / speed);
+      }
+      return null;
+    }
+
+    // Explore orthogonal neighbors
+    const neighbors = [
+      { x: pos.x, y: pos.y - 1 },
+      { x: pos.x, y: pos.y + 1 },
+      { x: pos.x - 1, y: pos.y },
+      { x: pos.x + 1, y: pos.y },
+    ];
+
+    for (const neighbor of neighbors) {
+      if (!isValidPosition(neighbor)) continue;
+
+      const key = posKey(neighbor);
+      const newSquaresMoved = squaresMoved + 1;
+
+      // Skip if we've already found a shorter path to this position
+      if (visited.has(key) && visited.get(key)! <= newSquaresMoved) continue;
+
+      // Allow passing through only if not target, or if target check destination
+      const isTarget = neighbor.x === targetPosition.x && neighbor.y === targetPosition.y;
+      if (!isTarget && isOccupied(board, neighbor)) {
+        visited.set(key, newSquaresMoved);
+        continue;
+      }
+
+      visited.set(key, newSquaresMoved);
+      queue.push({ pos: neighbor, squaresMoved: newSquaresMoved });
+    }
+  }
+
+  return null; // Unreachable
+}

@@ -1,4 +1,5 @@
 import type { BoardState, Position, PlayerId, Element } from '../game/types';
+import type { MovementRangePosition } from '../game/movement';
 import { getUnitAt } from '../game/board';
 import { getAttackModifier } from '../game/elements';
 import { getUnitDefinition } from '../game/units';
@@ -15,6 +16,7 @@ interface BoardProps {
   validSpawns: Position[];
   invalidSpawnPosition?: Position | null; // For showing red X on invalid spawn click
   pendingMovePath?: Position[]; // For showing partial movement path
+  movementRange?: MovementRangePosition[]; // For showing movement range preview with actions remaining
   onCellClick: (position: Position) => void;
   onUnitClick: (unitId: string) => void;
 }
@@ -29,6 +31,7 @@ export function Board({
   validSpawns,
   invalidSpawnPosition,
   pendingMovePath = [],
+  movementRange = [],
   onCellClick,
   onUnitClick,
 }: BoardProps) {
@@ -49,6 +52,13 @@ export function Board({
 
   const isPendingMove = (pos: Position) =>
     pendingMovePath.some((p) => p.x === pos.x && p.y === pos.y);
+
+  const getMovementRangeActions = (pos: Position): number | undefined => {
+    const rangePos = movementRange.find(
+      (r) => r.position.x === pos.x && r.position.y === pos.y
+    );
+    return rangePos?.actionsRemaining;
+  };
 
   // Get elemental bonus for an attack target
   const getElementalBonus = (pos: Position): number | undefined => {
@@ -79,6 +89,7 @@ export function Board({
                   elementalBonus={isValidAttack(pos) ? getElementalBonus(pos) : undefined}
                   isInvalidSpawn={isInvalidSpawn(pos)}
                   isPendingMove={isPendingMove(pos)}
+                  movementRangeActions={getMovementRangeActions(pos)}
                   onClick={onCellClick}
                 />
                 {unit && (
