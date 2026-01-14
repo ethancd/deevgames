@@ -188,6 +188,7 @@ function applyPlaceUnit(state: GameState, queuedUnitId: string, position: Positi
         ...playerState,
         buildQueue: newQueue,
         resourcesSpent: playerState.resourcesSpent + def.cost,
+        resourcesManifested: playerState.resourcesManifested + def.cost,
       },
     },
   };
@@ -234,6 +235,7 @@ function applyPromoteUnit(state: GameState, unitId: string): GameState {
         ...playerState,
         resources: playerState.resources - promotionCost,
         resourcesSpent: playerState.resourcesSpent + promotionCost,
+        resourcesManifested: playerState.resourcesManifested + promotionCost,
       },
     },
   };

@@ -7,7 +7,7 @@ interface ResourceDisplayProps {
 }
 
 export function ResourceDisplay({ playerState, viewerIsOwner, label }: ResourceDisplayProps) {
-  const { resources, resourcesGained, resourcesSpent } = playerState;
+  const { resources, resourcesGained, resourcesSpent, resourcesManifested } = playerState;
   const isPlayer = playerState.id === 'white';
 
   const displayLabel = label ?? (isPlayer ? 'You' : 'Opponent');
@@ -43,10 +43,18 @@ export function ResourceDisplay({ playerState, viewerIsOwner, label }: ResourceD
           <span className="text-purple-400">{resourcesGained}</span>
         </div>
 
-        {/* Spent on placed units - visible to all */}
+        {/* Spent - only show for owner (includes queued units) */}
+        {viewerIsOwner && (
+          <div className="flex justify-between">
+            <span className="text-gray-400">Spent:</span>
+            <span className="text-orange-400">{resourcesSpent}</span>
+          </div>
+        )}
+
+        {/* Manifested - visible to all (only promoted + placed units) */}
         <div className="flex justify-between">
-          <span className="text-gray-400">Spent:</span>
-          <span className="text-orange-400">{resourcesSpent}</span>
+          <span className="text-gray-400">{viewerIsOwner ? 'Manifested:' : 'Spent:'}</span>
+          <span className="text-orange-400">{resourcesManifested}</span>
         </div>
 
         {/* Estimated range for opponent */}
@@ -54,7 +62,7 @@ export function ResourceDisplay({ playerState, viewerIsOwner, label }: ResourceD
           <div className="flex justify-between text-xs mt-1 pt-1 border-t border-gray-700">
             <span className="text-gray-500">Est. range:</span>
             <span className="text-gray-400">
-              {Math.max(0, resourcesGained - resourcesSpent - 20)} - {resourcesGained - resourcesSpent}
+              {Math.max(0, resourcesGained - resourcesManifested - 20)} - {resourcesGained - resourcesManifested}
             </span>
           </div>
         )}
