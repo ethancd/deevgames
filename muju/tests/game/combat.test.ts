@@ -464,11 +464,12 @@ describe('Combat Module', () => {
     });
 
     it('mixed elemental modifiers in combined attack', () => {
+      // Double-thick triangle: Fire/Lightning pair beats Plant/Metal pair
       // Fire + Water + Lightning vs Plant (3 def)
       // Fire vs Plant: advantage (+1) → 2+1 = 3
       // Water vs Plant: disadvantage (-1) → 2-1 = 1
-      // Lightning vs Plant: neutral → 1
-      // Combined: 3 + 1 + 1 = 5 >= 3, defender eliminated
+      // Lightning vs Plant: advantage (+1) → 1+1 = 2 (Fire/Lightning pair beats Plant/Metal pair)
+      // Combined: 3 + 1 + 2 = 6 >= 3, defender eliminated
 
       const fireAttacker = createUnit('fire_1', 'white', { x: 0, y: 0 }); // 2 atk
       const waterAttacker = createUnit('water_1', 'white', { x: 1, y: 1 }); // 2 atk
@@ -479,12 +480,12 @@ describe('Combat Module', () => {
       const waterPower = calculateAttackPower(waterAttacker, defender);
       const lightningPower = calculateAttackPower(lightningAttacker, defender);
 
-      expect(firePower).toBe(3); // advantage
-      expect(waterPower).toBe(1); // disadvantage
-      expect(lightningPower).toBe(1); // neutral (cross-triangle)
+      expect(firePower).toBe(3); // advantage (Fire/Lightning pair beats Plant/Metal pair)
+      expect(waterPower).toBe(1); // disadvantage (Water/Shadow pair loses to Plant/Metal pair)
+      expect(lightningPower).toBe(2); // advantage (Fire/Lightning pair beats Plant/Metal pair)
 
       const totalAttack = firePower + waterPower + lightningPower;
-      expect(totalAttack).toBe(5);
+      expect(totalAttack).toBe(6);
     });
   });
 });

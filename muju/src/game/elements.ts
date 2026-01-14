@@ -1,41 +1,46 @@
 import type { Element } from './types';
 
 /**
- * Combat advantage relationships - Dual Triangle System:
+ * Combat advantage relationships - Double-Thick Triangle:
  *
- * Triangle 1: Fire → Plant → Water → Fire
- * Triangle 2: Lightning → Metal → Shadow → Lightning
+ * Fire & Lightning → Plant & Metal → Water & Shadow → Fire & Lightning
  *
- * Cross-triangle matchups (e.g., Fire vs Lightning) are neutral.
+ * Each element has advantage over TWO elements (paired opponents),
+ * and is weak to TWO elements (paired counters).
  */
 
-// Which triangle each element belongs to
-const TRIANGLE_1: Element[] = ['fire', 'plant', 'water'];
-// Triangle 2 elements are those not in Triangle 1
+// Element pairs that share advantages
+type ElementPair = 'fire-lightning' | 'plant-metal' | 'water-shadow';
 
-// Advantage mapping within each triangle
-const ADVANTAGE_MAP: Record<Element, Element> = {
-  // Triangle 1
-  fire: 'plant',
-  plant: 'water',
-  water: 'fire',
-  // Triangle 2
-  lightning: 'metal',
-  metal: 'shadow',
-  shadow: 'lightning',
+const ELEMENT_TO_PAIR: Record<Element, ElementPair> = {
+  fire: 'fire-lightning',
+  lightning: 'fire-lightning',
+  plant: 'plant-metal',
+  metal: 'plant-metal',
+  water: 'water-shadow',
+  shadow: 'water-shadow',
+};
+
+// Which pair beats which pair
+const PAIR_ADVANTAGE: Record<ElementPair, ElementPair> = {
+  'fire-lightning': 'plant-metal',   // Fire & Lightning beat Plant & Metal
+  'plant-metal': 'water-shadow',     // Plant & Metal beat Water & Shadow
+  'water-shadow': 'fire-lightning',  // Water & Shadow beat Fire & Lightning
 };
 
 /**
  * Check if attacker has elemental advantage over defender
  */
 export function hasAdvantage(attacker: Element, defender: Element): boolean {
-  // Same element is never advantaged
-  if (attacker === defender) {
+  const attackerPair = ELEMENT_TO_PAIR[attacker];
+  const defenderPair = ELEMENT_TO_PAIR[defender];
+
+  // Elements in the same pair are neutral to each other
+  if (attackerPair === defenderPair) {
     return false;
   }
 
-  // Check if attacker beats defender in the advantage map
-  return ADVANTAGE_MAP[attacker] === defender;
+  return PAIR_ADVANTAGE[attackerPair] === defenderPair;
 }
 
 /**
@@ -67,49 +72,36 @@ export function getAttackModifier(
 }
 
 /**
- * Get the element that this element has advantage over
- */
-export function getAdvantageTarget(element: Element): Element {
-  return ADVANTAGE_MAP[element];
-}
-
-/**
- * Get all elements that this element has advantage over (always just one in this system)
+ * Get all elements that this element has advantage over
  */
 export function getAdvantageTargets(element: Element): Element[] {
-  return [ADVANTAGE_MAP[element]];
+  const myPair = ELEMENT_TO_PAIR[element];
+  const weakPair = PAIR_ADVANTAGE[myPair];
+
+  return (Object.entries(ELEMENT_TO_PAIR) as [Element, ElementPair][])
+    .filter(([_, pair]) => pair === weakPair)
+    .map(([el]) => el);
 }
 
 /**
- * Get the element that has advantage over this element
- */
-export function getWeakness(element: Element): Element {
-  // Find the element whose target is this element
-  return (Object.entries(ADVANTAGE_MAP) as [Element, Element][])
-    .find(([_, target]) => target === element)![0];
-}
-
-/**
- * Get all elements that have advantage over this element (always just one in this system)
+ * Get all elements that have advantage over this element
  */
 export function getWeaknesses(element: Element): Element[] {
-  return [getWeakness(element)];
+  const myPair = ELEMENT_TO_PAIR[element];
+
+  // Find which pair beats my pair
+  const strongPair = (Object.entries(PAIR_ADVANTAGE) as [ElementPair, ElementPair][])
+    .find(([_, weakPair]) => weakPair === myPair)?.[0];
+
+  if (!strongPair) return [];
+
+  return (Object.entries(ELEMENT_TO_PAIR) as [Element, ElementPair][])
+    .filter(([_, pair]) => pair === strongPair)
+    .map(([el]) => el);
 }
 
 /**
- * Check if two elements are in the same triangle
- * Triangle 1: Fire, Plant, Water
- * Triangle 2: Lightning, Metal, Shadow
- */
-export function inSameTriangle(a: Element, b: Element): boolean {
-  const aInTriangle1 = TRIANGLE_1.includes(a);
-  const bInTriangle1 = TRIANGLE_1.includes(b);
-
-  return aInTriangle1 === bInTriangle1;
-}
-
-/**
- * Get the paired element (same position in the other triangle)
+ * Get the paired element (shares advantages/weaknesses)
  */
 export function getPairedElement(element: Element): Element {
   const pairMap: Record<Element, Element> = {
@@ -124,10 +116,10 @@ export function getPairedElement(element: Element): Element {
 }
 
 /**
- * Check if two elements are paired (same position in their respective triangles)
+ * Check if two elements are paired (share advantages/weaknesses)
  */
 export function arePaired(a: Element, b: Element): boolean {
-  return getPairedElement(a) === b;
+  return ELEMENT_TO_PAIR[a] === ELEMENT_TO_PAIR[b];
 }
 
 /**
