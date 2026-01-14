@@ -1,7 +1,8 @@
 import type { GameState } from '../game/types';
 
 // Bump this when GameState structure changes incompatibly
-const SCHEMA_VERSION = 1;
+// v2: Changed player IDs from 'player'/'ai' to 'white'/'black'
+const SCHEMA_VERSION = 2;
 
 const STORAGE_KEY = 'elemental-tactics-save';
 
@@ -89,7 +90,7 @@ function validateGameState(state: unknown): state is GameState {
 
   // Check players structure
   const players = s.players as Record<string, unknown>;
-  if (!players.player || !players.ai) return false;
+  if (!players.white || !players.black) return false;
 
   // Check turn structure
   const turn = s.turn as Record<string, unknown>;

@@ -3,40 +3,81 @@ import {
   hasAdvantage,
   hasDisadvantage,
   getAttackModifier,
-  getAdvantageTarget,
-  getWeakness,
-  inSameTriangle,
+  getAdvantageTargets,
+  getWeaknesses,
+  arePaired,
+  getPairedElement,
   ELEMENT_INFO,
 } from '../../src/game/elements';
 import type { Element } from '../../src/game/types';
 
-describe('Elemental System', () => {
-  describe('Triangle 1: Fire → Plant → Water → Fire', () => {
+describe('Elemental System - Double-Thick Triangle', () => {
+  /**
+   * Double-Thick Triangle:
+   * Fire & Lightning → Plant & Metal → Water & Shadow → Fire & Lightning
+   *
+   * Each element has advantage over TWO elements (its paired opponents),
+   * and is weak to TWO elements (its paired counters).
+   */
+
+  describe('Fire/Lightning pair beats Plant/Metal pair', () => {
     it('fire has advantage over plant', () => {
       expect(hasAdvantage('fire', 'plant')).toBe(true);
       expect(hasDisadvantage('plant', 'fire')).toBe(true);
     });
 
+    it('fire has advantage over metal', () => {
+      expect(hasAdvantage('fire', 'metal')).toBe(true);
+      expect(hasDisadvantage('metal', 'fire')).toBe(true);
+    });
+
+    it('lightning has advantage over plant', () => {
+      expect(hasAdvantage('lightning', 'plant')).toBe(true);
+      expect(hasDisadvantage('plant', 'lightning')).toBe(true);
+    });
+
+    it('lightning has advantage over metal', () => {
+      expect(hasAdvantage('lightning', 'metal')).toBe(true);
+      expect(hasDisadvantage('metal', 'lightning')).toBe(true);
+    });
+  });
+
+  describe('Plant/Metal pair beats Water/Shadow pair', () => {
     it('plant has advantage over water', () => {
       expect(hasAdvantage('plant', 'water')).toBe(true);
       expect(hasDisadvantage('water', 'plant')).toBe(true);
     });
 
-    it('water has advantage over fire', () => {
-      expect(hasAdvantage('water', 'fire')).toBe(true);
-      expect(hasDisadvantage('fire', 'water')).toBe(true);
+    it('plant has advantage over shadow', () => {
+      expect(hasAdvantage('plant', 'shadow')).toBe(true);
+      expect(hasDisadvantage('shadow', 'plant')).toBe(true);
     });
-  });
 
-  describe('Triangle 2: Lightning → Metal → Wind → Lightning', () => {
-    it('lightning has advantage over metal', () => {
-      expect(hasAdvantage('lightning', 'metal')).toBe(true);
-      expect(hasDisadvantage('metal', 'lightning')).toBe(true);
+    it('metal has advantage over water', () => {
+      expect(hasAdvantage('metal', 'water')).toBe(true);
+      expect(hasDisadvantage('water', 'metal')).toBe(true);
     });
 
     it('metal has advantage over shadow', () => {
       expect(hasAdvantage('metal', 'shadow')).toBe(true);
       expect(hasDisadvantage('shadow', 'metal')).toBe(true);
+    });
+  });
+
+  describe('Water/Shadow pair beats Fire/Lightning pair', () => {
+    it('water has advantage over fire', () => {
+      expect(hasAdvantage('water', 'fire')).toBe(true);
+      expect(hasDisadvantage('fire', 'water')).toBe(true);
+    });
+
+    it('water has advantage over lightning', () => {
+      expect(hasAdvantage('water', 'lightning')).toBe(true);
+      expect(hasDisadvantage('lightning', 'water')).toBe(true);
+    });
+
+    it('shadow has advantage over fire', () => {
+      expect(hasAdvantage('shadow', 'fire')).toBe(true);
+      expect(hasDisadvantage('fire', 'shadow')).toBe(true);
     });
 
     it('shadow has advantage over lightning', () => {
@@ -45,29 +86,20 @@ describe('Elemental System', () => {
     });
   });
 
-  describe('Cross-triangle matchups are neutral', () => {
-    const triangle1: Element[] = ['fire', 'plant', 'water'];
-    const triangle2: Element[] = ['lightning', 'metal', 'shadow'];
-
-    it('fire vs lightning/metal/shadow are neutral', () => {
-      for (const t2 of triangle2) {
-        expect(hasAdvantage('fire', t2)).toBe(false);
-        expect(hasAdvantage(t2, 'fire')).toBe(false);
-      }
+  describe('Same-pair matchups are neutral', () => {
+    it('fire vs lightning is neutral (same pair)', () => {
+      expect(hasAdvantage('fire', 'lightning')).toBe(false);
+      expect(hasAdvantage('lightning', 'fire')).toBe(false);
     });
 
-    it('plant vs lightning/metal/shadow are neutral', () => {
-      for (const t2 of triangle2) {
-        expect(hasAdvantage('plant', t2)).toBe(false);
-        expect(hasAdvantage(t2, 'plant')).toBe(false);
-      }
+    it('plant vs metal is neutral (same pair)', () => {
+      expect(hasAdvantage('plant', 'metal')).toBe(false);
+      expect(hasAdvantage('metal', 'plant')).toBe(false);
     });
 
-    it('water vs lightning/metal/shadow are neutral', () => {
-      for (const t2 of triangle2) {
-        expect(hasAdvantage('water', t2)).toBe(false);
-        expect(hasAdvantage(t2, 'water')).toBe(false);
-      }
+    it('water vs shadow is neutral (same pair)', () => {
+      expect(hasAdvantage('water', 'shadow')).toBe(false);
+      expect(hasAdvantage('shadow', 'water')).toBe(false);
     });
   });
 
@@ -85,17 +117,19 @@ describe('Elemental System', () => {
   describe('getAttackModifier', () => {
     it('returns +1 when attacker has advantage', () => {
       expect(getAttackModifier('fire', 'plant')).toBe(1);
+      expect(getAttackModifier('fire', 'metal')).toBe(1);
       expect(getAttackModifier('water', 'fire')).toBe(1);
-      expect(getAttackModifier('lightning', 'metal')).toBe(1);
+      expect(getAttackModifier('shadow', 'lightning')).toBe(1);
     });
 
     it('returns -1 when attacker has disadvantage', () => {
       expect(getAttackModifier('plant', 'fire')).toBe(-1);
-      expect(getAttackModifier('fire', 'water')).toBe(-1);
       expect(getAttackModifier('metal', 'lightning')).toBe(-1);
+      expect(getAttackModifier('fire', 'water')).toBe(-1);
+      expect(getAttackModifier('lightning', 'shadow')).toBe(-1);
     });
 
-    it('returns 0 for neutral matchup (cross-triangle)', () => {
+    it('returns 0 for same-pair matchup', () => {
       expect(getAttackModifier('fire', 'lightning')).toBe(0);
       expect(getAttackModifier('plant', 'metal')).toBe(0);
       expect(getAttackModifier('water', 'shadow')).toBe(0);
@@ -108,51 +142,85 @@ describe('Elemental System', () => {
     });
   });
 
-  describe('getAdvantageTarget', () => {
-    it('fire targets plant', () => {
-      expect(getAdvantageTarget('fire')).toBe('plant');
+  describe('getAdvantageTargets', () => {
+    it('fire targets plant and metal', () => {
+      const targets = getAdvantageTargets('fire');
+      expect(targets).toContain('plant');
+      expect(targets).toContain('metal');
+      expect(targets).toHaveLength(2);
     });
 
-    it('plant targets water', () => {
-      expect(getAdvantageTarget('plant')).toBe('water');
+    it('water targets fire and lightning', () => {
+      const targets = getAdvantageTargets('water');
+      expect(targets).toContain('fire');
+      expect(targets).toContain('lightning');
+      expect(targets).toHaveLength(2);
     });
 
-    it('lightning targets metal', () => {
-      expect(getAdvantageTarget('lightning')).toBe('metal');
-    });
-  });
-
-  describe('getWeakness', () => {
-    it('fire is weak to water', () => {
-      expect(getWeakness('fire')).toBe('water');
-    });
-
-    it('plant is weak to fire', () => {
-      expect(getWeakness('plant')).toBe('fire');
-    });
-
-    it('metal is weak to lightning', () => {
-      expect(getWeakness('metal')).toBe('lightning');
+    it('plant targets water and shadow', () => {
+      const targets = getAdvantageTargets('plant');
+      expect(targets).toContain('water');
+      expect(targets).toContain('shadow');
+      expect(targets).toHaveLength(2);
     });
   });
 
-  describe('inSameTriangle', () => {
-    it('fire and plant are in same triangle', () => {
-      expect(inSameTriangle('fire', 'plant')).toBe(true);
-      expect(inSameTriangle('fire', 'water')).toBe(true);
-      expect(inSameTriangle('plant', 'water')).toBe(true);
+  describe('getWeaknesses', () => {
+    it('fire is weak to water and shadow', () => {
+      const weaknesses = getWeaknesses('fire');
+      expect(weaknesses).toContain('water');
+      expect(weaknesses).toContain('shadow');
+      expect(weaknesses).toHaveLength(2);
     });
 
-    it('lightning and metal are in same triangle', () => {
-      expect(inSameTriangle('lightning', 'metal')).toBe(true);
-      expect(inSameTriangle('lightning', 'shadow')).toBe(true);
-      expect(inSameTriangle('metal', 'shadow')).toBe(true);
+    it('plant is weak to fire and lightning', () => {
+      const weaknesses = getWeaknesses('plant');
+      expect(weaknesses).toContain('fire');
+      expect(weaknesses).toContain('lightning');
+      expect(weaknesses).toHaveLength(2);
     });
 
-    it('fire and lightning are NOT in same triangle', () => {
-      expect(inSameTriangle('fire', 'lightning')).toBe(false);
-      expect(inSameTriangle('plant', 'metal')).toBe(false);
-      expect(inSameTriangle('water', 'shadow')).toBe(false);
+    it('water is weak to plant and metal', () => {
+      const weaknesses = getWeaknesses('water');
+      expect(weaknesses).toContain('plant');
+      expect(weaknesses).toContain('metal');
+      expect(weaknesses).toHaveLength(2);
+    });
+  });
+
+  describe('arePaired', () => {
+    it('fire and lightning are paired', () => {
+      expect(arePaired('fire', 'lightning')).toBe(true);
+    });
+
+    it('plant and metal are paired', () => {
+      expect(arePaired('plant', 'metal')).toBe(true);
+    });
+
+    it('water and shadow are paired', () => {
+      expect(arePaired('water', 'shadow')).toBe(true);
+    });
+
+    it('fire and plant are not paired', () => {
+      expect(arePaired('fire', 'plant')).toBe(false);
+    });
+
+    it('elements are paired with themselves', () => {
+      expect(arePaired('fire', 'fire')).toBe(true);
+    });
+  });
+
+  describe('getPairedElement', () => {
+    it('fire is paired with lightning', () => {
+      expect(getPairedElement('fire')).toBe('lightning');
+    });
+
+    it('plant is paired with metal', () => {
+      expect(getPairedElement('plant')).toBe('metal');
+    });
+
+    it('water is paired with shadow', () => {
+      expect(getPairedElement('water')).toBe('shadow');
     });
   });
 
