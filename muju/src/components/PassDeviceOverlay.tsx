@@ -6,8 +6,8 @@ interface PassDeviceOverlayProps {
 }
 
 export function PassDeviceOverlay({ nextPlayer, onContinue }: PassDeviceOverlayProps) {
-  const playerName = nextPlayer === 'player' ? 'Player 1' : 'Player 2';
-  const playerColor = nextPlayer === 'player' ? 'text-blue-400' : 'text-red-400';
+  const playerName = nextPlayer === 'white' ? 'Player 1' : 'Player 2';
+  const playerColor = nextPlayer === 'white' ? 'text-blue-400' : 'text-red-400';
 
   return (
     <div

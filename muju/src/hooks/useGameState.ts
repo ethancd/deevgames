@@ -395,7 +395,7 @@ function gameReducer(state: GameState, action: GameAction): GameState {
     }
 
     case 'RESIGN': {
-      const winner = state.turn.currentPlayer === 'player' ? 'ai' : 'player';
+      const winner = state.turn.currentPlayer === 'white' ? 'black' : 'white';
       return {
         ...state,
         phase: 'victory',
@@ -440,8 +440,8 @@ function gameReducerWithSave(state: GameState, action: GameAction): GameState {
 
   // Save when turn changes to player (catches AI turn ending via APPLY_AI_ACTION)
   if (
-    newState.turn.currentPlayer === 'player' &&
-    state.turn.currentPlayer === 'ai' &&
+    newState.turn.currentPlayer === 'white' &&
+    state.turn.currentPlayer === 'black' &&
     newState !== state
   ) {
     saveGameState(newState);
@@ -469,18 +469,12 @@ export function useGameState() {
 
   // Wrap dispatch to track undo history for undoable actions
   const dispatchWithUndo = useCallback((action: GameAction) => {
-    // Save current state before undoable player actions
-    if (
-      UNDOABLE_ACTIONS.has(action.type) &&
-      state.turn.currentPlayer === 'player'
-    ) {
+    // Save current state before undoable player actions (for any player's turn)
+    if (UNDOABLE_ACTIONS.has(action.type)) {
       setUndoHistory((prev) => [...prev, state]);
     }
     // Also save state before phase transitions so player can undo back through phases
-    if (
-      (action.type === 'END_PLACE_PHASE' || action.type === 'END_ACTION_PHASE') &&
-      state.turn.currentPlayer === 'player'
-    ) {
+    if (action.type === 'END_PLACE_PHASE' || action.type === 'END_ACTION_PHASE') {
       setUndoHistory((prev) => [...prev, state]);
     }
     // Clear undo history only on turn end or game reset (not phase transitions)
@@ -497,7 +491,7 @@ export function useGameState() {
     dispatch({ type: 'RESTORE_STATE', state: previousState });
   }, [undoHistory]);
 
-  const canUndo = undoHistory.length > 0 && state.turn.currentPlayer === 'player';
+  const canUndo = undoHistory.length > 0;
 
   const selectUnit = useCallback((unitId: string) => {
     dispatchWithUndo({ type: 'SELECT_UNIT', unitId });
@@ -561,7 +555,7 @@ export function useGameState() {
     return getUnitById(state.board, state.selectedUnit);
   }, [state.selectedUnit, state.board]);
 
-  const isPlayerTurn = state.turn.currentPlayer === 'player';
+  const isPlayerTurn = state.turn.currentPlayer === 'white';
   const canEndTurn = state.turn.phase === 'queue';
 
   return {

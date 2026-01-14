@@ -21,39 +21,52 @@ import {
 describe('Combat Module', () => {
   describe('canAttack', () => {
     it('returns true for fresh unit', () => {
-      const unit = createUnit('fire_1', 'player', { x: 0, y: 0 });
+      const unit = createUnit('fire_1', 'white', { x: 0, y: 0 });
       expect(canAttack(unit)).toBe(true);
     });
 
-    it('returns false if unit has already attacked', () => {
-      const unit = createUnit('fire_1', 'player', { x: 0, y: 0 });
+    it('returns true even if unit has already attacked (multi-attack allowed)', () => {
+      const unit = createUnit('fire_1', 'white', { x: 0, y: 0 });
       unit.hasAttacked = true;
-      expect(canAttack(unit)).toBe(false);
+      // Units can attack multiple different targets per turn
+      expect(canAttack(unit)).toBe(true);
     });
 
     it('returns false if unit cannot act this turn', () => {
-      const unit = createUnit('fire_1', 'player', { x: 0, y: 0 });
+      const unit = createUnit('fire_1', 'white', { x: 0, y: 0 });
       unit.canActThisTurn = false;
       expect(canAttack(unit)).toBe(false);
     });
   });
 
   describe('getValidAttacks', () => {
-    it('returns empty if unit cannot attack', () => {
+    it('returns empty if unit cannot act this turn', () => {
       let board = createEmptyBoard();
-      const unit = createUnit('fire_1', 'player', { x: 5, y: 5 });
-      unit.hasAttacked = true;
-      const enemy = createUnit('fire_1', 'ai', { x: 5, y: 4 });
+      const unit = createUnit('fire_1', 'white', { x: 5, y: 5 });
+      unit.canActThisTurn = false; // Unit cannot act, not just "has attacked"
+      const enemy = createUnit('fire_1', 'black', { x: 5, y: 4 });
       board = addUnit(board, unit);
       board = addUnit(board, enemy);
 
       expect(getValidAttacks(unit, board)).toEqual([]);
     });
 
+    it('excludes targets already attacked this turn', () => {
+      let board = createEmptyBoard();
+      const unit = createUnit('fire_1', 'white', { x: 5, y: 5 });
+      const enemy = createUnit('fire_1', 'black', { x: 5, y: 4 });
+      unit.attackedThisTurn = [enemy.id]; // Already attacked this enemy
+      board = addUnit(board, unit);
+      board = addUnit(board, enemy);
+
+      // Cannot attack same target twice, but could attack other targets
+      expect(getValidAttacks(unit, board)).toEqual([]);
+    });
+
     it('returns adjacent enemy positions', () => {
       let board = createEmptyBoard();
-      const unit = createUnit('fire_1', 'player', { x: 5, y: 5 });
-      const enemy = createUnit('fire_1', 'ai', { x: 5, y: 4 });
+      const unit = createUnit('fire_1', 'white', { x: 5, y: 5 });
+      const enemy = createUnit('fire_1', 'black', { x: 5, y: 4 });
       board = addUnit(board, unit);
       board = addUnit(board, enemy);
 
@@ -64,8 +77,8 @@ describe('Combat Module', () => {
 
     it('does not include friendly units', () => {
       let board = createEmptyBoard();
-      const unit = createUnit('fire_1', 'player', { x: 5, y: 5 });
-      const friendly = createUnit('water_1', 'player', { x: 5, y: 4 });
+      const unit = createUnit('fire_1', 'white', { x: 5, y: 5 });
+      const friendly = createUnit('water_1', 'white', { x: 5, y: 4 });
       board = addUnit(board, unit);
       board = addUnit(board, friendly);
 
@@ -75,9 +88,9 @@ describe('Combat Module', () => {
 
     it('returns multiple adjacent enemies', () => {
       let board = createEmptyBoard();
-      const unit = createUnit('fire_1', 'player', { x: 5, y: 5 });
-      const enemy1 = createUnit('fire_1', 'ai', { x: 5, y: 4 });
-      const enemy2 = createUnit('fire_1', 'ai', { x: 4, y: 5 });
+      const unit = createUnit('fire_1', 'white', { x: 5, y: 5 });
+      const enemy1 = createUnit('fire_1', 'black', { x: 5, y: 4 });
+      const enemy2 = createUnit('fire_1', 'black', { x: 4, y: 5 });
       board = addUnit(board, unit);
       board = addUnit(board, enemy1);
       board = addUnit(board, enemy2);
@@ -88,8 +101,8 @@ describe('Combat Module', () => {
 
     it('does not include non-adjacent enemies', () => {
       let board = createEmptyBoard();
-      const unit = createUnit('fire_1', 'player', { x: 5, y: 5 });
-      const enemy = createUnit('fire_1', 'ai', { x: 5, y: 3 }); // 2 squares away
+      const unit = createUnit('fire_1', 'white', { x: 5, y: 5 });
+      const enemy = createUnit('fire_1', 'black', { x: 5, y: 3 }); // 2 squares away
       board = addUnit(board, unit);
       board = addUnit(board, enemy);
 
@@ -99,8 +112,8 @@ describe('Combat Module', () => {
 
     it('does not include diagonal enemies', () => {
       let board = createEmptyBoard();
-      const unit = createUnit('fire_1', 'player', { x: 5, y: 5 });
-      const enemy = createUnit('fire_1', 'ai', { x: 6, y: 6 }); // diagonal
+      const unit = createUnit('fire_1', 'white', { x: 5, y: 5 });
+      const enemy = createUnit('fire_1', 'black', { x: 6, y: 6 }); // diagonal
       board = addUnit(board, unit);
       board = addUnit(board, enemy);
 
@@ -111,37 +124,37 @@ describe('Combat Module', () => {
 
   describe('calculateAttackPower', () => {
     it('returns base attack for neutral matchup', () => {
-      const attacker = createUnit('fire_1', 'player', { x: 0, y: 0 }); // Attack: 2
-      const defender = createUnit('lightning_1', 'ai', { x: 0, y: 1 });
+      const attacker = createUnit('fire_1', 'white', { x: 0, y: 0 }); // Attack: 2
+      const defender = createUnit('lightning_1', 'black', { x: 0, y: 1 });
 
       expect(calculateAttackPower(attacker, defender)).toBe(2);
     });
 
     it('adds +1 for elemental advantage', () => {
-      const attacker = createUnit('fire_1', 'player', { x: 0, y: 0 }); // Attack: 2
-      const defender = createUnit('plant_1', 'ai', { x: 0, y: 1 }); // Fire beats Plant
+      const attacker = createUnit('fire_1', 'white', { x: 0, y: 0 }); // Attack: 2
+      const defender = createUnit('plant_1', 'black', { x: 0, y: 1 }); // Fire beats Plant
 
       expect(calculateAttackPower(attacker, defender)).toBe(3); // 2 + 1
     });
 
     it('subtracts 1 when disadvantaged', () => {
-      const attacker = createUnit('fire_1', 'player', { x: 0, y: 0 }); // Attack: 2
-      const defender = createUnit('water_1', 'ai', { x: 0, y: 1 }); // Water beats Fire
+      const attacker = createUnit('fire_1', 'white', { x: 0, y: 0 }); // Attack: 2
+      const defender = createUnit('water_1', 'black', { x: 0, y: 1 }); // Water beats Fire
 
       expect(calculateAttackPower(attacker, defender)).toBe(1); // 2 - 1
     });
 
     it('no modifier for same element', () => {
-      const attacker = createUnit('fire_1', 'player', { x: 0, y: 0 });
-      const defender = createUnit('fire_1', 'ai', { x: 0, y: 1 });
+      const attacker = createUnit('fire_1', 'white', { x: 0, y: 0 });
+      const defender = createUnit('fire_1', 'black', { x: 0, y: 1 });
 
       expect(calculateAttackPower(attacker, defender)).toBe(2);
     });
 
     it('attack power cannot go below 0', () => {
       // Radi has attack 1, disadvantage gives -1, should floor at 0
-      const attacker = createUnit('lightning_1', 'player', { x: 0, y: 0 }); // Attack: 1
-      const defender = createUnit('shadow_1', 'ai', { x: 0, y: 1 }); // Wind beats Lightning
+      const attacker = createUnit('lightning_1', 'white', { x: 0, y: 0 }); // Attack: 1
+      const defender = createUnit('shadow_1', 'black', { x: 0, y: 1 }); // Wind beats Lightning
 
       expect(calculateAttackPower(attacker, defender)).toBe(0); // max(0, 1-1)
     });
@@ -149,12 +162,12 @@ describe('Combat Module', () => {
 
   describe('calculateDefense', () => {
     it('returns base defense value', () => {
-      const defender = createUnit('fire_1', 'ai', { x: 0, y: 0 }); // Defense: 1
+      const defender = createUnit('fire_1', 'black', { x: 0, y: 0 }); // Defense: 1
       expect(calculateDefense(defender)).toBe(1);
     });
 
     it('returns high defense for metal units', () => {
-      const defender = createUnit('metal_4', 'ai', { x: 0, y: 0 }); // Defense: 8
+      const defender = createUnit('metal_4', 'black', { x: 0, y: 0 }); // Defense: 8
       expect(calculateDefense(defender)).toBe(8);
     });
   });
@@ -162,8 +175,8 @@ describe('Combat Module', () => {
   describe('resolveCombat', () => {
     it('eliminates defender when attack >= defense', () => {
       let board = createEmptyBoard();
-      const attacker = createUnit('fire_1', 'player', { x: 5, y: 5 }); // Attack: 2
-      const defender = createUnit('fire_1', 'ai', { x: 5, y: 4 }); // Defense: 1
+      const attacker = createUnit('fire_1', 'white', { x: 5, y: 5 }); // Attack: 2
+      const defender = createUnit('fire_1', 'black', { x: 5, y: 4 }); // Defense: 1
       board = addUnit(board, attacker);
       board = addUnit(board, defender);
 
@@ -175,8 +188,8 @@ describe('Combat Module', () => {
 
     it('defender survives when attack < defense', () => {
       let board = createEmptyBoard();
-      const attacker = createUnit('lightning_1', 'player', { x: 5, y: 5 }); // Attack: 1
-      const defender = createUnit('water_1', 'ai', { x: 5, y: 4 }); // Defense: 2
+      const attacker = createUnit('lightning_1', 'white', { x: 5, y: 5 }); // Attack: 1
+      const defender = createUnit('water_1', 'black', { x: 5, y: 4 }); // Defense: 2
       board = addUnit(board, attacker);
       board = addUnit(board, defender);
 
@@ -188,8 +201,8 @@ describe('Combat Module', () => {
 
     it('marks attacker as having attacked', () => {
       let board = createEmptyBoard();
-      const attacker = createUnit('fire_1', 'player', { x: 5, y: 5 });
-      const defender = createUnit('fire_1', 'ai', { x: 5, y: 4 });
+      const attacker = createUnit('fire_1', 'white', { x: 5, y: 5 });
+      const defender = createUnit('fire_1', 'black', { x: 5, y: 4 });
       board = addUnit(board, attacker);
       board = addUnit(board, defender);
 
@@ -203,8 +216,8 @@ describe('Combat Module', () => {
       let board = createEmptyBoard();
       // Hi (Fire, Attack 2) vs Sjor (Water, Defense 2)
       // Normally 2 vs 2 = kill, but let's test with elemental advantage
-      const attacker = createUnit('fire_1', 'player', { x: 5, y: 5 }); // Attack: 2
-      const defender = createUnit('plant_1', 'ai', { x: 5, y: 4 }); // Defense: 3
+      const attacker = createUnit('fire_1', 'white', { x: 5, y: 5 }); // Attack: 2
+      const defender = createUnit('plant_1', 'black', { x: 5, y: 4 }); // Defense: 3
       // Fire has advantage over Plant: 2+1 = 3 vs 3 = kill
       board = addUnit(board, attacker);
       board = addUnit(board, defender);
@@ -215,8 +228,8 @@ describe('Combat Module', () => {
 
     it('elemental disadvantage prevents a kill', () => {
       let board = createEmptyBoard();
-      const attacker = createUnit('fire_1', 'player', { x: 5, y: 5 }); // Attack: 2
-      const defender = createUnit('water_1', 'ai', { x: 5, y: 4 }); // Defense: 2
+      const attacker = createUnit('fire_1', 'white', { x: 5, y: 5 }); // Attack: 2
+      const defender = createUnit('water_1', 'black', { x: 5, y: 4 }); // Defense: 2
       // Fire is weak to Water: 2 - 1 = 1 attack vs 2 defense = survives
       board = addUnit(board, attacker);
       board = addUnit(board, defender);
@@ -236,8 +249,8 @@ describe('Combat Module', () => {
   describe('getThreatsTo', () => {
     it('returns adjacent enemy units', () => {
       let board = createEmptyBoard();
-      const unit = createUnit('fire_1', 'player', { x: 5, y: 5 });
-      const enemy = createUnit('fire_1', 'ai', { x: 5, y: 4 });
+      const unit = createUnit('fire_1', 'white', { x: 5, y: 5 });
+      const enemy = createUnit('fire_1', 'black', { x: 5, y: 4 });
       board = addUnit(board, unit);
       board = addUnit(board, enemy);
 
@@ -248,8 +261,8 @@ describe('Combat Module', () => {
 
     it('does not include friendly units', () => {
       let board = createEmptyBoard();
-      const unit = createUnit('fire_1', 'player', { x: 5, y: 5 });
-      const friendly = createUnit('water_1', 'player', { x: 5, y: 4 });
+      const unit = createUnit('fire_1', 'white', { x: 5, y: 5 });
+      const friendly = createUnit('water_1', 'white', { x: 5, y: 4 });
       board = addUnit(board, unit);
       board = addUnit(board, friendly);
 
@@ -261,47 +274,59 @@ describe('Combat Module', () => {
   describe('getAttackersFor', () => {
     it('returns friendly units that can attack target position', () => {
       let board = createEmptyBoard();
-      const attacker = createUnit('fire_1', 'player', { x: 5, y: 5 });
-      const enemy = createUnit('fire_1', 'ai', { x: 5, y: 4 });
+      const attacker = createUnit('fire_1', 'white', { x: 5, y: 5 });
+      const enemy = createUnit('fire_1', 'black', { x: 5, y: 4 });
       board = addUnit(board, attacker);
       board = addUnit(board, enemy);
 
-      const attackers = getAttackersFor({ x: 5, y: 4 }, board, 'player');
+      const attackers = getAttackersFor({ x: 5, y: 4 }, board, 'white');
       expect(attackers).toHaveLength(1);
       expect(attackers[0].id).toBe(attacker.id);
     });
 
-    it('excludes units that have already attacked', () => {
+    it('excludes units that cannot act this turn', () => {
       let board = createEmptyBoard();
-      const attacker = createUnit('fire_1', 'player', { x: 5, y: 5 });
-      attacker.hasAttacked = true;
-      const enemy = createUnit('fire_1', 'ai', { x: 5, y: 4 });
+      const attacker = createUnit('fire_1', 'white', { x: 5, y: 5 });
+      attacker.canActThisTurn = false; // Cannot act, not just "has attacked"
+      const enemy = createUnit('fire_1', 'black', { x: 5, y: 4 });
       board = addUnit(board, attacker);
       board = addUnit(board, enemy);
 
-      const attackers = getAttackersFor({ x: 5, y: 4 }, board, 'player');
+      const attackers = getAttackersFor({ x: 5, y: 4 }, board, 'white');
       expect(attackers).toHaveLength(0);
+    });
+
+    it('includes units that have attacked but can still act', () => {
+      let board = createEmptyBoard();
+      const attacker = createUnit('fire_1', 'white', { x: 5, y: 5 });
+      attacker.hasAttacked = true; // Has attacked, but can still attack other targets
+      const enemy = createUnit('fire_1', 'black', { x: 5, y: 4 });
+      board = addUnit(board, attacker);
+      board = addUnit(board, enemy);
+
+      const attackers = getAttackersFor({ x: 5, y: 4 }, board, 'white');
+      expect(attackers).toHaveLength(1);
     });
   });
 
   describe('canBeEliminated', () => {
     it('returns true if attacker can kill defender', () => {
-      const attacker = createUnit('fire_1', 'player', { x: 0, y: 0 }); // Attack: 2
-      const defender = createUnit('fire_1', 'ai', { x: 0, y: 1 }); // Defense: 1
+      const attacker = createUnit('fire_1', 'white', { x: 0, y: 0 }); // Attack: 2
+      const defender = createUnit('fire_1', 'black', { x: 0, y: 1 }); // Defense: 1
 
       expect(canBeEliminated(defender, attacker)).toBe(true);
     });
 
     it('returns false if attacker cannot kill defender', () => {
-      const attacker = createUnit('lightning_1', 'player', { x: 0, y: 0 }); // Attack: 1
-      const defender = createUnit('water_1', 'ai', { x: 0, y: 1 }); // Defense: 2
+      const attacker = createUnit('lightning_1', 'white', { x: 0, y: 0 }); // Attack: 1
+      const defender = createUnit('water_1', 'black', { x: 0, y: 1 }); // Defense: 2
 
       expect(canBeEliminated(defender, attacker)).toBe(false);
     });
 
     it('accounts for elemental advantage', () => {
-      const attacker = createUnit('fire_1', 'player', { x: 0, y: 0 }); // Attack: 2
-      const defender = createUnit('plant_1', 'ai', { x: 0, y: 1 }); // Defense: 3
+      const attacker = createUnit('fire_1', 'white', { x: 0, y: 0 }); // Attack: 2
+      const defender = createUnit('plant_1', 'black', { x: 0, y: 1 }); // Defense: 3
       // Fire has advantage: 2 + 1 = 3 >= 3
 
       expect(canBeEliminated(defender, attacker)).toBe(true);
@@ -311,8 +336,8 @@ describe('Combat Module', () => {
   describe('Combat scenarios from game rules', () => {
     it('Hi (Fire, 2 atk) kills Hi (Fire, 1 def)', () => {
       let board = createEmptyBoard();
-      const attacker = createUnit('fire_1', 'player', { x: 0, y: 0 });
-      const defender = createUnit('fire_1', 'ai', { x: 0, y: 1 });
+      const attacker = createUnit('fire_1', 'white', { x: 0, y: 0 });
+      const defender = createUnit('fire_1', 'black', { x: 0, y: 1 });
       board = addUnit(board, attacker);
       board = addUnit(board, defender);
 
@@ -322,8 +347,8 @@ describe('Combat Module', () => {
 
     it('Radi (Lightning, 1 atk) cannot kill Sjor (Water, 2 def)', () => {
       let board = createEmptyBoard();
-      const attacker = createUnit('lightning_1', 'player', { x: 0, y: 0 });
-      const defender = createUnit('water_1', 'ai', { x: 0, y: 1 });
+      const attacker = createUnit('lightning_1', 'white', { x: 0, y: 0 });
+      const defender = createUnit('water_1', 'black', { x: 0, y: 1 });
       board = addUnit(board, attacker);
       board = addUnit(board, defender);
 
@@ -333,8 +358,8 @@ describe('Combat Module', () => {
 
     it('Muju (Plant, 1 atk) cannot kill Inyan (Metal, 3 def)', () => {
       let board = createEmptyBoard();
-      const attacker = createUnit('plant_1', 'player', { x: 0, y: 0 });
-      const defender = createUnit('metal_1', 'ai', { x: 0, y: 1 });
+      const attacker = createUnit('plant_1', 'white', { x: 0, y: 0 });
+      const defender = createUnit('metal_1', 'black', { x: 0, y: 1 });
       board = addUnit(board, attacker);
       board = addUnit(board, defender);
 
@@ -344,8 +369,8 @@ describe('Combat Module', () => {
 
     it('Gokamoka (Fire tier 4, 6 atk) kills Cuauhtlimallki (Plant tier 4, 5 def)', () => {
       let board = createEmptyBoard();
-      const attacker = createUnit('fire_4', 'player', { x: 0, y: 0 });
-      const defender = createUnit('plant_4', 'ai', { x: 0, y: 1 });
+      const attacker = createUnit('fire_4', 'white', { x: 0, y: 0 });
+      const defender = createUnit('plant_4', 'black', { x: 0, y: 1 });
       board = addUnit(board, attacker);
       board = addUnit(board, defender);
 
@@ -366,10 +391,10 @@ describe('Combat Module', () => {
       // Combined: (2-1) + (2-1) + (2-1) = 3 total attack
       // 3 < 4, so defender survives
 
-      const attacker1 = createUnit('fire_1', 'player', { x: 0, y: 0 }); // 2 atk
-      const attacker2 = createUnit('fire_1', 'player', { x: 1, y: 1 }); // 2 atk
-      const attacker3 = createUnit('fire_1', 'player', { x: 2, y: 2 }); // 2 atk
-      const defender = createUnit('water_3', 'ai', { x: 5, y: 5 }); // 4 def (Aegirinn)
+      const attacker1 = createUnit('fire_1', 'white', { x: 0, y: 0 }); // 2 atk
+      const attacker2 = createUnit('fire_1', 'white', { x: 1, y: 1 }); // 2 atk
+      const attacker3 = createUnit('fire_1', 'white', { x: 2, y: 2 }); // 2 atk
+      const defender = createUnit('water_3', 'black', { x: 5, y: 5 }); // 4 def (Aegirinn)
 
       // Calculate individual attack powers
       const power1 = calculateAttackPower(attacker1, defender);
@@ -394,10 +419,10 @@ describe('Combat Module', () => {
       // Combined: 2 + 2 + 2 = 6 total attack
       // 6 >= 4, defender eliminated
 
-      const attacker1 = createUnit('fire_1', 'player', { x: 0, y: 0 }); // 2 atk
-      const attacker2 = createUnit('fire_1', 'player', { x: 1, y: 1 }); // 2 atk
-      const attacker3 = createUnit('fire_1', 'player', { x: 2, y: 2 }); // 2 atk
-      const defender = createUnit('lightning_3', 'ai', { x: 5, y: 5 }); // Cross-triangle
+      const attacker1 = createUnit('fire_1', 'white', { x: 0, y: 0 }); // 2 atk
+      const attacker2 = createUnit('fire_1', 'white', { x: 1, y: 1 }); // 2 atk
+      const attacker3 = createUnit('fire_1', 'white', { x: 2, y: 2 }); // 2 atk
+      const defender = createUnit('lightning_3', 'black', { x: 5, y: 5 }); // Cross-triangle
 
       const power1 = calculateAttackPower(attacker1, defender);
       const power2 = calculateAttackPower(attacker2, defender);
@@ -417,10 +442,10 @@ describe('Combat Module', () => {
       // Combined: (1+1) + (1+1) + (1+1) = 6 total attack
       // 6 >= 4, defender eliminated
 
-      const attacker1 = createUnit('lightning_1', 'player', { x: 0, y: 0 }); // 1 atk
-      const attacker2 = createUnit('lightning_1', 'player', { x: 1, y: 1 }); // 1 atk
-      const attacker3 = createUnit('lightning_1', 'player', { x: 2, y: 2 }); // 1 atk
-      const defender = createUnit('metal_2', 'ai', { x: 5, y: 5 }); // 4 def (Mazaska)
+      const attacker1 = createUnit('lightning_1', 'white', { x: 0, y: 0 }); // 1 atk
+      const attacker2 = createUnit('lightning_1', 'white', { x: 1, y: 1 }); // 1 atk
+      const attacker3 = createUnit('lightning_1', 'white', { x: 2, y: 2 }); // 1 atk
+      const defender = createUnit('metal_2', 'black', { x: 5, y: 5 }); // 4 def (Mazaska)
 
       const power1 = calculateAttackPower(attacker1, defender);
       const power2 = calculateAttackPower(attacker2, defender);
@@ -445,10 +470,10 @@ describe('Combat Module', () => {
       // Lightning vs Plant: neutral → 1
       // Combined: 3 + 1 + 1 = 5 >= 3, defender eliminated
 
-      const fireAttacker = createUnit('fire_1', 'player', { x: 0, y: 0 }); // 2 atk
-      const waterAttacker = createUnit('water_1', 'player', { x: 1, y: 1 }); // 2 atk
-      const lightningAttacker = createUnit('lightning_1', 'player', { x: 2, y: 2 }); // 1 atk
-      const defender = createUnit('plant_1', 'ai', { x: 5, y: 5 }); // 3 def
+      const fireAttacker = createUnit('fire_1', 'white', { x: 0, y: 0 }); // 2 atk
+      const waterAttacker = createUnit('water_1', 'white', { x: 1, y: 1 }); // 2 atk
+      const lightningAttacker = createUnit('lightning_1', 'white', { x: 2, y: 2 }); // 1 atk
+      const defender = createUnit('plant_1', 'black', { x: 5, y: 5 }); // 3 def
 
       const firePower = calculateAttackPower(fireAttacker, defender);
       const waterPower = calculateAttackPower(waterAttacker, defender);

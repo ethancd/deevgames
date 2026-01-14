@@ -34,7 +34,7 @@ export function evaluatePosition(
     return victory.winner === forPlayer ? VICTORY_SCORE : -VICTORY_SCORE;
   }
 
-  const opponent: PlayerId = forPlayer === 'player' ? 'ai' : 'player';
+  const opponent: PlayerId = forPlayer === 'white' ? 'black' : 'white';
 
   let score = 0;
 
@@ -347,7 +347,7 @@ function calculateTechTreeProgress(state: GameState, player: PlayerId): number {
 }
 
 function getOpponent(player: PlayerId): PlayerId {
-  return player === 'player' ? 'ai' : 'player';
+  return player === 'white' ? 'black' : 'white';
 }
 
 /**
@@ -359,7 +359,7 @@ export function quickEvaluate(state: GameState, forPlayer: PlayerId): number {
     return victory.winner === forPlayer ? VICTORY_SCORE : -VICTORY_SCORE;
   }
 
-  const opponent: PlayerId = forPlayer === 'player' ? 'ai' : 'player';
+  const opponent: PlayerId = forPlayer === 'white' ? 'black' : 'white';
 
   // Just unit value difference
   return calculateUnitValue(state, forPlayer) - calculateUnitValue(state, opponent);
@@ -430,7 +430,7 @@ export function scoreAction(
  * Returns true if the position is hopeless
  */
 export function shouldResign(state: GameState, player: PlayerId): boolean {
-  const opponent: PlayerId = player === 'player' ? 'ai' : 'player';
+  const opponent: PlayerId = player === 'white' ? 'black' : 'white';
 
   // Get unit values
   const playerValue = calculateUnitValue(state, player);

@@ -113,9 +113,9 @@ describe('Board Module', () => {
 
   describe('Unit management', () => {
     it('createUnit creates a unit with correct properties', () => {
-      const unit = createUnit('fire_1', 'player', { x: 1, y: 0 });
+      const unit = createUnit('fire_1', 'white', { x: 1, y: 0 });
       expect(unit.definitionId).toBe('fire_1');
-      expect(unit.owner).toBe('player');
+      expect(unit.owner).toBe('white');
       expect(unit.position).toEqual({ x: 1, y: 0 });
       expect(unit.hasMoved).toBe(false);
       expect(unit.hasAttacked).toBe(false);
@@ -124,14 +124,14 @@ describe('Board Module', () => {
     });
 
     it('createUnit generates unique IDs', () => {
-      const unit1 = createUnit('fire_1', 'player', { x: 0, y: 0 });
-      const unit2 = createUnit('fire_1', 'player', { x: 1, y: 0 });
+      const unit1 = createUnit('fire_1', 'white', { x: 0, y: 0 });
+      const unit2 = createUnit('fire_1', 'white', { x: 1, y: 0 });
       expect(unit1.id).not.toBe(unit2.id);
     });
 
     it('addUnit adds a unit to the board', () => {
       let board = createEmptyBoard();
-      const unit = createUnit('fire_1', 'player', { x: 1, y: 0 });
+      const unit = createUnit('fire_1', 'white', { x: 1, y: 0 });
       board = addUnit(board, unit);
       expect(board.units).toHaveLength(1);
       expect(board.units[0]).toBe(unit);
@@ -139,7 +139,7 @@ describe('Board Module', () => {
 
     it('removeUnit removes a unit from the board', () => {
       let board = createEmptyBoard();
-      const unit = createUnit('fire_1', 'player', { x: 1, y: 0 });
+      const unit = createUnit('fire_1', 'white', { x: 1, y: 0 });
       board = addUnit(board, unit);
       board = removeUnit(board, unit.id);
       expect(board.units).toHaveLength(0);
@@ -147,7 +147,7 @@ describe('Board Module', () => {
 
     it('updateUnit updates unit properties', () => {
       let board = createEmptyBoard();
-      const unit = createUnit('fire_1', 'player', { x: 1, y: 0 });
+      const unit = createUnit('fire_1', 'white', { x: 1, y: 0 });
       board = addUnit(board, unit);
       board = updateUnit(board, unit.id, { hasMoved: true });
       expect(board.units[0].hasMoved).toBe(true);
@@ -155,7 +155,7 @@ describe('Board Module', () => {
 
     it('getUnitAt returns unit at position', () => {
       let board = createEmptyBoard();
-      const unit = createUnit('fire_1', 'player', { x: 1, y: 0 });
+      const unit = createUnit('fire_1', 'white', { x: 1, y: 0 });
       board = addUnit(board, unit);
       expect(getUnitAt(board, { x: 1, y: 0 })).toBe(unit);
     });
@@ -167,14 +167,14 @@ describe('Board Module', () => {
 
     it('getUnitById returns unit by ID', () => {
       let board = createEmptyBoard();
-      const unit = createUnit('fire_1', 'player', { x: 1, y: 0 });
+      const unit = createUnit('fire_1', 'white', { x: 1, y: 0 });
       board = addUnit(board, unit);
       expect(getUnitById(board, unit.id)).toBe(unit);
     });
 
     it('isOccupied returns true if position has unit', () => {
       let board = createEmptyBoard();
-      const unit = createUnit('fire_1', 'player', { x: 1, y: 0 });
+      const unit = createUnit('fire_1', 'white', { x: 1, y: 0 });
       board = addUnit(board, unit);
       expect(isOccupied(board, { x: 1, y: 0 })).toBe(true);
       expect(isOccupied(board, { x: 0, y: 0 })).toBe(false);
@@ -182,13 +182,13 @@ describe('Board Module', () => {
 
     it('getPlayerUnits returns only units for that player', () => {
       let board = createEmptyBoard();
-      board = addUnit(board, createUnit('fire_1', 'player', { x: 0, y: 0 }));
-      board = addUnit(board, createUnit('water_1', 'player', { x: 1, y: 0 }));
-      board = addUnit(board, createUnit('fire_1', 'ai', { x: 9, y: 9 }));
+      board = addUnit(board, createUnit('fire_1', 'white', { x: 0, y: 0 }));
+      board = addUnit(board, createUnit('water_1', 'white', { x: 1, y: 0 }));
+      board = addUnit(board, createUnit('fire_1', 'black', { x: 9, y: 9 }));
 
-      const playerUnits = getPlayerUnits(board, 'player');
-      expect(playerUnits).toHaveLength(2);
-      expect(playerUnits.every((u) => u.owner === 'player')).toBe(true);
+      const whiteUnits = getPlayerUnits(board, 'white');
+      expect(whiteUnits).toHaveLength(2);
+      expect(whiteUnits.every((u) => u.owner === 'white')).toBe(true);
     });
   });
 
@@ -204,15 +204,15 @@ describe('Board Module', () => {
 
   describe('Starting positions', () => {
     it('player starts at corner (0,0)', () => {
-      expect(getStartCorner('player')).toEqual({ x: 0, y: 0 });
+      expect(getStartCorner('white')).toEqual({ x: 0, y: 0 });
     });
 
     it('AI starts at corner (9,9)', () => {
-      expect(getStartCorner('ai')).toEqual({ x: 9, y: 9 });
+      expect(getStartCorner('black')).toEqual({ x: 9, y: 9 });
     });
 
     it('player starting positions are near (0,0)', () => {
-      const positions = getStartingPositions('player');
+      const positions = getStartingPositions('white');
       expect(positions).toHaveLength(3);
       for (const pos of positions) {
         expect(pos.x).toBeLessThanOrEqual(1);
@@ -221,7 +221,7 @@ describe('Board Module', () => {
     });
 
     it('AI starting positions are near (9,9)', () => {
-      const positions = getStartingPositions('ai');
+      const positions = getStartingPositions('black');
       expect(positions).toHaveLength(3);
       for (const pos of positions) {
         expect(pos.x).toBeGreaterThanOrEqual(8);
@@ -244,25 +244,25 @@ describe('Board Module', () => {
 
     it('each player has correct starting units', () => {
       const state = createInitialGameState();
-      const playerUnits = getPlayerUnits(state.board, 'player');
-      const aiUnits = getPlayerUnits(state.board, 'ai');
+      const whiteUnits = getPlayerUnits(state.board, 'white');
+      const blackUnits = getPlayerUnits(state.board, 'black');
 
-      expect(playerUnits).toHaveLength(3);
-      expect(aiUnits).toHaveLength(3);
+      expect(whiteUnits).toHaveLength(3);
+      expect(blackUnits).toHaveLength(3);
 
-      const playerDefs = playerUnits.map((u) => u.definitionId).sort();
+      const playerDefs = whiteUnits.map((u) => u.definitionId).sort();
       expect(playerDefs).toEqual(['fire_1', 'plant_1', 'water_1']);
     });
 
     it('players start with 0 resources', () => {
       const state = createInitialGameState();
-      expect(state.players.player.resources).toBe(0);
-      expect(state.players.ai.resources).toBe(0);
+      expect(state.players.white.resources).toBe(0);
+      expect(state.players.black.resources).toBe(0);
     });
 
     it('turn starts with player in action phase (place skipped when empty)', () => {
       const state = createInitialGameState();
-      expect(state.turn.currentPlayer).toBe('player');
+      expect(state.turn.currentPlayer).toBe('white');
       // Place phase is skipped at game start since nothing to place/promote
       expect(state.turn.phase).toBe('action');
       expect(state.turn.turnNumber).toBe(1);
@@ -272,14 +272,14 @@ describe('Board Module', () => {
   describe('resetUnitActions', () => {
     it('resets action flags for player units only', () => {
       let board = createEmptyBoard();
-      const playerUnit = createUnit('fire_1', 'player', { x: 0, y: 0 });
-      const aiUnit = createUnit('fire_1', 'ai', { x: 9, y: 9 });
+      const playerUnit = createUnit('fire_1', 'white', { x: 0, y: 0 });
+      const aiUnit = createUnit('fire_1', 'black', { x: 9, y: 9 });
       board = addUnit(board, playerUnit);
       board = addUnit(board, aiUnit);
       board = updateUnit(board, playerUnit.id, { hasMoved: true, hasAttacked: true });
       board = updateUnit(board, aiUnit.id, { hasMoved: true });
 
-      const newBoard = resetUnitActions(board, 'player');
+      const newBoard = resetUnitActions(board, 'white');
       const updatedPlayerUnit = getUnitById(newBoard, playerUnit.id)!;
       const updatedAiUnit = getUnitById(newBoard, aiUnit.id)!;
 

@@ -188,9 +188,9 @@ export function canActInQueuePhase(state: GameState, player: PlayerId): boolean 
  */
 export function endTurn(state: GameState): GameState {
   const currentPlayer = state.turn.currentPlayer;
-  const nextPlayer: PlayerId = currentPlayer === 'player' ? 'ai' : 'player';
+  const nextPlayer: PlayerId = currentPlayer === 'white' ? 'black' : 'white';
 
-  const isNewRound = nextPlayer === 'player';
+  const isNewRound = nextPlayer === 'white';
 
   // Keep all units in queue - ready units persist until actually placed
   // (build queue persistence: units are never auto-deleted)
@@ -210,7 +210,7 @@ export function endTurn(state: GameState): GameState {
  * Get the opponent of a player
  */
 export function getOpponent(player: PlayerId): PlayerId {
-  return player === 'player' ? 'ai' : 'player';
+  return player === 'white' ? 'black' : 'white';
 }
 
 /**

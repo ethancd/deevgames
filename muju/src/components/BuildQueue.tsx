@@ -19,7 +19,7 @@ export function BuildQueue({
   isOwner,
   isPlacePhase = false,
   board,
-  player = 'player',
+  player = 'white',
   selectedReadyId,
   onSelectReady,
 }: BuildQueueProps) {

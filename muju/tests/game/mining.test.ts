@@ -21,19 +21,19 @@ import {
 describe('Mining Module', () => {
   describe('canMineAction', () => {
     it('returns true for fresh unit', () => {
-      const unit = createUnit('fire_1', 'player', { x: 0, y: 0 });
+      const unit = createUnit('fire_1', 'white', { x: 0, y: 0 });
       expect(canMineAction(unit)).toBe(true);
     });
 
     it('returns true even if unit has already mined (multiple mines per turn allowed)', () => {
-      const unit = createUnit('fire_1', 'player', { x: 0, y: 0 });
+      const unit = createUnit('fire_1', 'white', { x: 0, y: 0 });
       unit.hasMined = true;
       // Units can mine multiple times per turn, hasMined is just tracking
       expect(canMineAction(unit)).toBe(true);
     });
 
     it('returns false if unit cannot act this turn', () => {
-      const unit = createUnit('fire_1', 'player', { x: 0, y: 0 });
+      const unit = createUnit('fire_1', 'white', { x: 0, y: 0 });
       unit.canActThisTurn = false;
       expect(canMineAction(unit)).toBe(false);
     });
@@ -42,21 +42,21 @@ describe('Mining Module', () => {
   describe('The Well Metaphor - calculateMiningYield', () => {
     describe('Fresh cell (all 5 layers available)', () => {
       it('Hi (Mining 1) extracts 1 resource from fresh cell', () => {
-        const unit = createUnit('fire_1', 'player', { x: 0, y: 0 }); // Mining: 1
+        const unit = createUnit('fire_1', 'white', { x: 0, y: 0 }); // Mining: 1
         const cell = { position: { x: 0, y: 0 }, resourceLayers: 5, minedDepth: 0 };
 
         expect(calculateMiningYield(unit, cell)).toBe(1);
       });
 
       it('Muju (Mining 3) extracts 3 resources from fresh cell', () => {
-        const unit = createUnit('plant_1', 'player', { x: 0, y: 0 }); // Mining: 3
+        const unit = createUnit('plant_1', 'white', { x: 0, y: 0 }); // Mining: 3
         const cell = { position: { x: 0, y: 0 }, resourceLayers: 5, minedDepth: 0 };
 
         expect(calculateMiningYield(unit, cell)).toBe(3);
       });
 
       it('Cuauhtlimallki (Mining 5) extracts all 5 resources from fresh cell', () => {
-        const unit = createUnit('plant_4', 'player', { x: 0, y: 0 }); // Mining: 5
+        const unit = createUnit('plant_4', 'white', { x: 0, y: 0 }); // Mining: 5
         const cell = { position: { x: 0, y: 0 }, resourceLayers: 5, minedDepth: 0 };
 
         expect(calculateMiningYield(unit, cell)).toBe(5);
@@ -65,7 +65,7 @@ describe('Mining Module', () => {
 
     describe('Partially mined cell', () => {
       it('Hi (Mining 1) gets 0 from cell where depth 1 is already mined', () => {
-        const unit = createUnit('fire_1', 'player', { x: 0, y: 0 }); // Mining: 1
+        const unit = createUnit('fire_1', 'white', { x: 0, y: 0 }); // Mining: 1
         // Cell was mined once: minedDepth=1, top layer now at depth 2
         const cell = { position: { x: 0, y: 0 }, resourceLayers: 4, minedDepth: 1 };
 
@@ -74,7 +74,7 @@ describe('Mining Module', () => {
       });
 
       it('Muju (Mining 3) gets 2 from cell where depth 1 is mined', () => {
-        const unit = createUnit('plant_1', 'player', { x: 0, y: 0 }); // Mining: 3
+        const unit = createUnit('plant_1', 'white', { x: 0, y: 0 }); // Mining: 3
         // minedDepth=1, top layer at depth 2
         const cell = { position: { x: 0, y: 0 }, resourceLayers: 4, minedDepth: 1 };
 
@@ -83,7 +83,7 @@ describe('Mining Module', () => {
       });
 
       it('Muju (Mining 3) gets 1 from cell where depths 1-2 are mined', () => {
-        const unit = createUnit('plant_1', 'player', { x: 0, y: 0 }); // Mining: 3
+        const unit = createUnit('plant_1', 'white', { x: 0, y: 0 }); // Mining: 3
         // minedDepth=2, top layer at depth 3
         const cell = { position: { x: 0, y: 0 }, resourceLayers: 3, minedDepth: 2 };
 
@@ -92,7 +92,7 @@ describe('Mining Module', () => {
       });
 
       it('Sachita (Mining 3) gets 1 from cell where depths 1-2 are mined', () => {
-        const unit = createUnit('plant_2', 'player', { x: 0, y: 0 }); // Mining: 3
+        const unit = createUnit('plant_2', 'white', { x: 0, y: 0 }); // Mining: 3
         const cell = { position: { x: 0, y: 0 }, resourceLayers: 3, minedDepth: 2 };
 
         // Can reach depth 3, gets 1 layer
@@ -102,7 +102,7 @@ describe('Mining Module', () => {
 
     describe('Depleted cell', () => {
       it('returns 0 for completely depleted cell', () => {
-        const unit = createUnit('plant_4', 'player', { x: 0, y: 0 }); // Mining: 5
+        const unit = createUnit('plant_4', 'white', { x: 0, y: 0 }); // Mining: 5
         const cell = { position: { x: 0, y: 0 }, resourceLayers: 0, minedDepth: 5 };
 
         expect(calculateMiningYield(unit, cell)).toBe(0);
@@ -113,7 +113,7 @@ describe('Mining Module', () => {
   describe('canMine', () => {
     it('returns true if unit can extract resources', () => {
       let board = createEmptyBoard();
-      const unit = createUnit('fire_1', 'player', { x: 5, y: 5 });
+      const unit = createUnit('fire_1', 'white', { x: 5, y: 5 });
       board = addUnit(board, unit);
 
       expect(canMine(unit, board)).toBe(true);
@@ -121,7 +121,7 @@ describe('Mining Module', () => {
 
     it('returns false if cell is dry for this unit', () => {
       let board = createEmptyBoard();
-      const unit = createUnit('fire_1', 'player', { x: 5, y: 5 }); // Mining: 1
+      const unit = createUnit('fire_1', 'white', { x: 5, y: 5 }); // Mining: 1
       board = addUnit(board, unit);
       // Mine depth 1 already
       board = updateCell(board, { x: 5, y: 5 }, { resourceLayers: 4, minedDepth: 1 });
@@ -131,7 +131,7 @@ describe('Mining Module', () => {
 
     it('returns true even if unit has already mined (multiple mines per turn allowed)', () => {
       let board = createEmptyBoard();
-      const unit = createUnit('fire_1', 'player', { x: 5, y: 5 });
+      const unit = createUnit('fire_1', 'white', { x: 5, y: 5 });
       unit.hasMined = true;
       board = addUnit(board, unit);
       // Units can mine multiple times per turn, hasMined is just tracking
@@ -140,7 +140,7 @@ describe('Mining Module', () => {
 
     it('returns false if cell is completely depleted', () => {
       let board = createEmptyBoard();
-      const unit = createUnit('plant_4', 'player', { x: 5, y: 5 }); // Mining: 5
+      const unit = createUnit('plant_4', 'white', { x: 5, y: 5 }); // Mining: 5
       board = addUnit(board, unit);
       board = updateCell(board, { x: 5, y: 5 }, { resourceLayers: 0, minedDepth: 5 });
 
@@ -151,7 +151,7 @@ describe('Mining Module', () => {
   describe('executeMine', () => {
     it('extracts correct resources and updates cell', () => {
       let board = createEmptyBoard();
-      const unit = createUnit('plant_1', 'player', { x: 5, y: 5 }); // Mining: 3
+      const unit = createUnit('plant_1', 'white', { x: 5, y: 5 }); // Mining: 3
       board = addUnit(board, unit);
 
       const result = executeMine(board, unit.id, 0);
@@ -166,7 +166,7 @@ describe('Mining Module', () => {
 
     it('marks unit as having mined', () => {
       let board = createEmptyBoard();
-      const unit = createUnit('fire_1', 'player', { x: 5, y: 5 });
+      const unit = createUnit('fire_1', 'white', { x: 5, y: 5 });
       board = addUnit(board, unit);
 
       const result = executeMine(board, unit.id, 0);
@@ -177,7 +177,7 @@ describe('Mining Module', () => {
 
     it('adds to existing resources', () => {
       let board = createEmptyBoard();
-      const unit = createUnit('plant_1', 'player', { x: 5, y: 5 }); // Mining: 3
+      const unit = createUnit('plant_1', 'white', { x: 5, y: 5 }); // Mining: 3
       board = addUnit(board, unit);
 
       const result = executeMine(board, unit.id, 10);
@@ -187,7 +187,7 @@ describe('Mining Module', () => {
 
     it('returns 0 if cell is dry for unit', () => {
       let board = createEmptyBoard();
-      const unit = createUnit('fire_1', 'player', { x: 5, y: 5 }); // Mining: 1
+      const unit = createUnit('fire_1', 'white', { x: 5, y: 5 }); // Mining: 1
       board = addUnit(board, unit);
       board = updateCell(board, { x: 5, y: 5 }, { resourceLayers: 4, minedDepth: 1 });
 
@@ -199,7 +199,7 @@ describe('Mining Module', () => {
 
     it('is immutable - original board unchanged', () => {
       let board = createEmptyBoard();
-      const unit = createUnit('plant_1', 'player', { x: 5, y: 5 });
+      const unit = createUnit('plant_1', 'white', { x: 5, y: 5 });
       board = addUnit(board, unit);
 
       executeMine(board, unit.id, 0);
@@ -217,7 +217,7 @@ describe('Mining Module', () => {
 
     it('decreases after mining', () => {
       let board = createEmptyBoard();
-      const unit = createUnit('plant_4', 'player', { x: 5, y: 5 }); // Mining: 5
+      const unit = createUnit('plant_4', 'white', { x: 5, y: 5 }); // Mining: 5
       board = addUnit(board, unit);
 
       const result = executeMine(board, unit.id, 0);
@@ -239,19 +239,19 @@ describe('Mining Module', () => {
 
   describe('isDryForUnit', () => {
     it('returns true if unit cannot reach remaining layers', () => {
-      const unit = createUnit('fire_1', 'player', { x: 0, y: 0 }); // Mining: 1
+      const unit = createUnit('fire_1', 'white', { x: 0, y: 0 }); // Mining: 1
       const cell = { position: { x: 0, y: 0 }, resourceLayers: 4, minedDepth: 1 };
       expect(isDryForUnit(unit, cell)).toBe(true);
     });
 
     it('returns false if unit can reach remaining layers', () => {
-      const unit = createUnit('plant_1', 'player', { x: 0, y: 0 }); // Mining: 3
+      const unit = createUnit('plant_1', 'white', { x: 0, y: 0 }); // Mining: 3
       const cell = { position: { x: 0, y: 0 }, resourceLayers: 4, minedDepth: 1 };
       expect(isDryForUnit(unit, cell)).toBe(false);
     });
 
     it('returns true for depleted cell', () => {
-      const unit = createUnit('plant_4', 'player', { x: 0, y: 0 });
+      const unit = createUnit('plant_4', 'white', { x: 0, y: 0 });
       const cell = { position: { x: 0, y: 0 }, resourceLayers: 0, minedDepth: 5 };
       expect(isDryForUnit(unit, cell)).toBe(true);
     });
@@ -260,8 +260,8 @@ describe('Mining Module', () => {
   describe('Mining progression scenarios', () => {
     it('sequence: Hi mines, then Muju mines, then Hi is dry', () => {
       let board = createEmptyBoard();
-      const hi = createUnit('fire_1', 'player', { x: 0, y: 0 }); // Mining: 1
-      const muju = createUnit('plant_1', 'player', { x: 0, y: 0 }); // Mining: 3
+      const hi = createUnit('fire_1', 'white', { x: 0, y: 0 }); // Mining: 1
+      const muju = createUnit('plant_1', 'white', { x: 0, y: 0 }); // Mining: 3
       muju.id = 'muju-test'; // Override for testing
 
       // Start fresh - Hi mines depth 1
@@ -288,7 +288,7 @@ describe('Mining Module', () => {
 
     it('Cuauhtlimallki (Mining 5) can fully deplete a cell in one action', () => {
       let board = createEmptyBoard();
-      const unit = createUnit('plant_4', 'player', { x: 5, y: 5 }); // Mining: 5
+      const unit = createUnit('plant_4', 'white', { x: 5, y: 5 }); // Mining: 5
       board = addUnit(board, unit);
 
       const result = executeMine(board, unit.id, 0);
@@ -304,7 +304,7 @@ describe('Mining Module', () => {
 
       // First: Sachita (Mining 3) extracts 3
       let cell = getCell(board, { x: 0, y: 0 })!;
-      const sachita = createUnit('plant_2', 'player', { x: 0, y: 0 });
+      const sachita = createUnit('plant_2', 'white', { x: 0, y: 0 });
       expect(calculateMiningYield(sachita, cell)).toBe(3);
 
       board = updateCell(board, { x: 0, y: 0 }, { resourceLayers: 2, minedDepth: 3 });
@@ -314,7 +314,7 @@ describe('Mining Module', () => {
       expect(calculateMiningYield(sachita, cell)).toBe(0);
 
       // Sachakuna (Mining 4) can get 1 more
-      const sachakuna = createUnit('plant_3', 'player', { x: 0, y: 0 });
+      const sachakuna = createUnit('plant_3', 'white', { x: 0, y: 0 });
       expect(calculateMiningYield(sachakuna, cell)).toBe(1);
 
       board = updateCell(board, { x: 0, y: 0 }, { resourceLayers: 1, minedDepth: 4 });
@@ -324,7 +324,7 @@ describe('Mining Module', () => {
       expect(calculateMiningYield(sachakuna, cell)).toBe(0);
 
       // Only Cuauhtlimallki (Mining 5) can get the last one
-      const cuauhtlimallki = createUnit('plant_4', 'player', { x: 0, y: 0 });
+      const cuauhtlimallki = createUnit('plant_4', 'white', { x: 0, y: 0 });
       expect(calculateMiningYield(cuauhtlimallki, cell)).toBe(1);
     });
   });

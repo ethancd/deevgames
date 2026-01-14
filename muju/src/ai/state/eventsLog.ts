@@ -4,7 +4,7 @@ import { getUnitById } from '../../game/board';
 import type { GameEvent } from './events';
 
 function getOpponent(playerId: PlayerId): PlayerId {
-  return playerId === 'player' ? 'ai' : 'player';
+  return playerId === 'white' ? 'black' : 'white';
 }
 
 export function collectObservedEvents(

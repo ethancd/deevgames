@@ -121,12 +121,12 @@ export class AIEngineV2 {
 
     if (!this.belief) {
       const minResources = 0;
-      const maxResources = Math.max(0, state.players[player === 'player' ? 'ai' : 'player'].resourcesGained -
-        state.players[player === 'player' ? 'ai' : 'player'].resourcesSpent);
+      const maxResources = Math.max(0, state.players[player === 'white' ? 'black' : 'white'].resourcesGained -
+        state.players[player === 'white' ? 'black' : 'white'].resourcesSpent);
       this.belief = createInitialBelief(this.config.particleCount, minResources, maxResources);
     }
 
-    const opponentId: PlayerId = player === 'player' ? 'ai' : 'player';
+    const opponentId: PlayerId = player === 'white' ? 'black' : 'white';
     this.belief = updateBelief(this.belief, observed.observedEvents, opponentId);
     this.belief = maybeResample(this.belief, this.config.resampleThreshold);
     this.lastObservedState = state;

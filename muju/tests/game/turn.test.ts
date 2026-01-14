@@ -28,8 +28,8 @@ describe('Turn Module', () => {
   describe('advanceBuildQueue', () => {
     it('decrements turnsRemaining for queued units', () => {
       const queue: QueuedUnit[] = [
-        { id: 'q1', definitionId: 'fire_1', turnsRemaining: 3, owner: 'player' },
-        { id: 'q2', definitionId: 'water_1', turnsRemaining: 2, owner: 'player' },
+        { id: 'q1', definitionId: 'fire_1', turnsRemaining: 3, owner: 'white' },
+        { id: 'q2', definitionId: 'water_1', turnsRemaining: 2, owner: 'white' },
       ];
 
       const { updatedQueue, readyUnits } = advanceBuildQueue(queue);
@@ -42,8 +42,8 @@ describe('Turn Module', () => {
 
     it('moves units with turnsRemaining 1 to readyUnits', () => {
       const queue: QueuedUnit[] = [
-        { id: 'q1', definitionId: 'fire_1', turnsRemaining: 1, owner: 'player' },
-        { id: 'q2', definitionId: 'water_1', turnsRemaining: 2, owner: 'player' },
+        { id: 'q1', definitionId: 'fire_1', turnsRemaining: 1, owner: 'white' },
+        { id: 'q2', definitionId: 'water_1', turnsRemaining: 2, owner: 'white' },
       ];
 
       const { updatedQueue, readyUnits } = advanceBuildQueue(queue);
@@ -63,8 +63,8 @@ describe('Turn Module', () => {
 
     it('handles all units ready at once', () => {
       const queue: QueuedUnit[] = [
-        { id: 'q1', definitionId: 'fire_1', turnsRemaining: 1, owner: 'player' },
-        { id: 'q2', definitionId: 'water_1', turnsRemaining: 1, owner: 'player' },
+        { id: 'q1', definitionId: 'fire_1', turnsRemaining: 1, owner: 'white' },
+        { id: 'q2', definitionId: 'water_1', turnsRemaining: 1, owner: 'white' },
       ];
 
       const { updatedQueue, readyUnits } = advanceBuildQueue(queue);
@@ -78,7 +78,7 @@ describe('Turn Module', () => {
     it('skips to action when nothing to do in place phase', () => {
       // Initial state has no units to place and no resources to promote
       const state = createInitialGameState();
-      const newState = startTurn(state, 'player');
+      const newState = startTurn(state, 'white');
 
       // Place phase is skipped when there's nothing to do
       expect(newState.turn.phase).toBe('action');
@@ -92,50 +92,50 @@ describe('Turn Module', () => {
         ...state,
         players: {
           ...state.players,
-          player: {
-            ...state.players.player,
+          white: {
+            ...state.players.white,
             buildQueue: [
-              { id: 'q1', definitionId: 'fire_1', turnsRemaining: 1, owner: 'player' as const }
+              { id: 'q1', definitionId: 'fire_1', turnsRemaining: 1, owner: 'white' as const }
             ]
           }
         }
       };
 
-      const newState = startTurn(state, 'player');
+      const newState = startTurn(state, 'white');
 
       expect(newState.turn.phase).toBe('place');
     });
 
     it('sets currentPlayer correctly', () => {
       const state = createInitialGameState();
-      const newState = startTurn(state, 'ai');
+      const newState = startTurn(state, 'black');
 
-      expect(newState.turn.currentPlayer).toBe('ai');
+      expect(newState.turn.currentPlayer).toBe('black');
     });
 
     it('resets actionsRemaining to 6', () => {
       let state = createInitialGameState();
       state = { ...state, turn: { ...state.turn, actionsRemaining: 1 } };
 
-      const newState = startTurn(state, 'player');
+      const newState = startTurn(state, 'white');
 
       expect(newState.turn.actionsRemaining).toBe(6);
     });
 
     it('resets unit action flags', () => {
       let state = createInitialGameState();
-      const playerUnits = getPlayerUnits(state.board, 'player');
+      const whiteUnits = getPlayerUnits(state.board, 'white');
       state = {
         ...state,
-        board: updateUnit(state.board, playerUnits[0].id, {
+        board: updateUnit(state.board, whiteUnits[0].id, {
           hasMoved: true,
           hasAttacked: true,
           hasMined: true,
         }),
       };
 
-      const newState = startTurn(state, 'player');
-      const unit = getPlayerUnits(newState.board, 'player')[0];
+      const newState = startTurn(state, 'white');
+      const unit = getPlayerUnits(newState.board, 'white')[0];
 
       expect(unit.hasMoved).toBe(false);
       expect(unit.hasAttacked).toBe(false);
@@ -148,18 +148,18 @@ describe('Turn Module', () => {
         ...state,
         players: {
           ...state.players,
-          player: {
-            ...state.players.player,
+          white: {
+            ...state.players.white,
             buildQueue: [
-              { id: 'q1', definitionId: 'fire_1', turnsRemaining: 2, owner: 'player' },
+              { id: 'q1', definitionId: 'fire_1', turnsRemaining: 2, owner: 'white' },
             ],
           },
         },
       };
 
-      const newState = startTurn(state, 'player');
+      const newState = startTurn(state, 'white');
 
-      expect(newState.players.player.buildQueue[0].turnsRemaining).toBe(1);
+      expect(newState.players.white.buildQueue[0].turnsRemaining).toBe(1);
     });
 
     it('clears selection state', () => {
@@ -171,7 +171,7 @@ describe('Turn Module', () => {
         validAttacks: [{ x: 2, y: 2 }],
       };
 
-      const newState = startTurn(state, 'player');
+      const newState = startTurn(state, 'white');
 
       expect(newState.selectedUnit).toBeNull();
       expect(newState.validMoves).toEqual([]);
@@ -182,12 +182,12 @@ describe('Turn Module', () => {
   describe('getReadyUnits', () => {
     it('returns units with turnsRemaining 0', () => {
       const playerState = {
-        id: 'player' as PlayerId,
+        id: 'white' as PlayerId,
         resources: 10,
         startCorner: { x: 0, y: 0 },
         buildQueue: [
-          { id: 'q1', definitionId: 'fire_1', turnsRemaining: 0, owner: 'player' as PlayerId },
-          { id: 'q2', definitionId: 'water_1', turnsRemaining: 2, owner: 'player' as PlayerId },
+          { id: 'q1', definitionId: 'fire_1', turnsRemaining: 0, owner: 'white' as PlayerId },
+          { id: 'q2', definitionId: 'water_1', turnsRemaining: 2, owner: 'white' as PlayerId },
         ],
       };
 
@@ -199,11 +199,11 @@ describe('Turn Module', () => {
 
     it('returns empty array when no units ready', () => {
       const playerState = {
-        id: 'player' as PlayerId,
+        id: 'white' as PlayerId,
         resources: 10,
         startCorner: { x: 0, y: 0 },
         buildQueue: [
-          { id: 'q1', definitionId: 'fire_1', turnsRemaining: 1, owner: 'player' as PlayerId },
+          { id: 'q1', definitionId: 'fire_1', turnsRemaining: 1, owner: 'white' as PlayerId },
         ],
       };
 
@@ -237,7 +237,7 @@ describe('Turn Module', () => {
       state = {
         ...state,
         turn: { ...state.turn, phase: 'action' },
-        players: { ...state.players, player: { ...state.players.player, resources: 10 } },
+        players: { ...state.players, white: { ...state.players.white, resources: 10 } },
       };
 
       const newState = startQueuePhase(state);
@@ -251,7 +251,7 @@ describe('Turn Module', () => {
         ...state,
         turn: { ...state.turn, phase: 'action' },
         selectedUnit: 'some-id',
-        players: { ...state.players, player: { ...state.players.player, resources: 10 } },
+        players: { ...state.players, white: { ...state.players.white, resources: 10 } },
       };
 
       const newState = startQueuePhase(state);
@@ -267,7 +267,7 @@ describe('Turn Module', () => {
       const newState = startQueuePhase(state);
 
       // Should have switched to AI's turn
-      expect(newState.turn.currentPlayer).toBe('ai');
+      expect(newState.turn.currentPlayer).toBe('black');
     });
   });
 
@@ -314,23 +314,23 @@ describe('Turn Module', () => {
   describe('endTurn', () => {
     it('switches to opponent', () => {
       let state = createInitialGameState();
-      state = { ...state, turn: { ...state.turn, currentPlayer: 'player' } };
+      state = { ...state, turn: { ...state.turn, currentPlayer: 'white' } };
 
       const newState = endTurn(state);
 
-      expect(newState.turn.currentPlayer).toBe('ai');
+      expect(newState.turn.currentPlayer).toBe('black');
     });
 
     it('AI to player switch increments turn number', () => {
       let state = createInitialGameState();
       state = {
         ...state,
-        turn: { ...state.turn, currentPlayer: 'ai', turnNumber: 5 },
+        turn: { ...state.turn, currentPlayer: 'black', turnNumber: 5 },
       };
 
       const newState = endTurn(state);
 
-      expect(newState.turn.currentPlayer).toBe('player');
+      expect(newState.turn.currentPlayer).toBe('white');
       expect(newState.turn.turnNumber).toBe(6);
     });
 
@@ -338,12 +338,12 @@ describe('Turn Module', () => {
       let state = createInitialGameState();
       state = {
         ...state,
-        turn: { ...state.turn, currentPlayer: 'player', turnNumber: 5 },
+        turn: { ...state.turn, currentPlayer: 'white', turnNumber: 5 },
       };
 
       const newState = endTurn(state);
 
-      expect(newState.turn.currentPlayer).toBe('ai');
+      expect(newState.turn.currentPlayer).toBe('black');
       expect(newState.turn.turnNumber).toBe(5);
     });
 
@@ -353,11 +353,11 @@ describe('Turn Module', () => {
         ...state,
         players: {
           ...state.players,
-          player: {
-            ...state.players.player,
+          white: {
+            ...state.players.white,
             buildQueue: [
-              { id: 'q1', definitionId: 'fire_1', turnsRemaining: 0, owner: 'player' },
-              { id: 'q2', definitionId: 'water_1', turnsRemaining: 2, owner: 'player' },
+              { id: 'q1', definitionId: 'fire_1', turnsRemaining: 0, owner: 'white' },
+              { id: 'q2', definitionId: 'water_1', turnsRemaining: 2, owner: 'white' },
             ],
           },
         },
@@ -366,29 +366,29 @@ describe('Turn Module', () => {
       const newState = endTurn(state);
 
       // Ready units persist in queue until actually placed (build queue persistence)
-      expect(newState.players.player.buildQueue).toHaveLength(2);
-      expect(newState.players.player.buildQueue[0].definitionId).toBe('fire_1');
-      expect(newState.players.player.buildQueue[1].definitionId).toBe('water_1');
+      expect(newState.players.white.buildQueue).toHaveLength(2);
+      expect(newState.players.white.buildQueue[0].definitionId).toBe('fire_1');
+      expect(newState.players.white.buildQueue[1].definitionId).toBe('water_1');
     });
   });
 
   describe('getOpponent', () => {
     it('returns ai for player', () => {
-      expect(getOpponent('player')).toBe('ai');
+      expect(getOpponent('white')).toBe('black');
     });
 
     it('returns player for ai', () => {
-      expect(getOpponent('ai')).toBe('player');
+      expect(getOpponent('black')).toBe('white');
     });
   });
 
   describe('isPlayerTurn / isPhase', () => {
     it('isPlayerTurn checks current player', () => {
       let state = createInitialGameState();
-      state = { ...state, turn: { ...state.turn, currentPlayer: 'player' } };
+      state = { ...state, turn: { ...state.turn, currentPlayer: 'white' } };
 
-      expect(isPlayerTurn(state, 'player')).toBe(true);
-      expect(isPlayerTurn(state, 'ai')).toBe(false);
+      expect(isPlayerTurn(state, 'white')).toBe(true);
+      expect(isPlayerTurn(state, 'black')).toBe(false);
     });
 
     it('isPhase checks current phase', () => {
@@ -432,9 +432,9 @@ describe('Turn Module', () => {
 
       // Mark all player units as unable to act (e.g., newly placed units)
       // Note: hasMoved/hasAttacked/hasMined don't block actions; only canActThisTurn does
-      const playerUnits = getPlayerUnits(state.board, 'player');
+      const whiteUnits = getPlayerUnits(state.board, 'white');
       let newBoard = state.board;
-      for (const unit of playerUnits) {
+      for (const unit of whiteUnits) {
         newBoard = updateUnit(newBoard, unit.id, {
           canActThisTurn: false,
         });
@@ -452,7 +452,7 @@ describe('Turn Module', () => {
       state = {
         ...state,
         turn: { ...state.turn, phase: 'action', actionsRemaining: 3 },
-        players: { ...state.players, player: { ...state.players.player, resources: 10 } },
+        players: { ...state.players, white: { ...state.players.white, resources: 10 } },
       };
 
       const newState = skipToQueuePhase(state);
@@ -468,13 +468,13 @@ describe('Turn Module', () => {
       // Give player resources to stay in queue phase
       state = {
         ...state,
-        players: { ...state.players, player: { ...state.players.player, resources: 10 } },
+        players: { ...state.players, white: { ...state.players.white, resources: 10 } },
       };
 
       // Place phase is skipped when there's nothing to do
       // Initial state starts in action phase since no units to place/promote
       expect(state.turn.phase).toBe('action');
-      expect(state.turn.currentPlayer).toBe('player');
+      expect(state.turn.currentPlayer).toBe('white');
       expect(state.turn.actionsRemaining).toBe(6);
 
       // Use some actions
@@ -488,7 +488,7 @@ describe('Turn Module', () => {
 
       // End turn - switches to AI
       state = endTurn(state);
-      expect(state.turn.currentPlayer).toBe('ai');
+      expect(state.turn.currentPlayer).toBe('black');
       // AI also has nothing to place/promote, so skips to action
       expect(state.turn.phase).toBe('action');
     });

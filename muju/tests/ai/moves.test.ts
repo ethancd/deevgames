@@ -36,21 +36,21 @@ function createTestUnit(
   };
 }
 
-function createTestState(board: BoardState, player: PlayerId = 'ai'): GameState {
+function createTestState(board: BoardState, currentPlayer: PlayerId = 'black'): GameState {
   return {
     phase: 'playing',
     board,
     players: {
-      player: {
-        id: 'player',
+      white: {
+        id: 'white',
         resources: 20,
         buildQueue: [],
         startCorner: { x: 0, y: 0 },
         resourcesGained: 20,
         resourcesSpent: 0,
       },
-      ai: {
-        id: 'ai',
+      black: {
+        id: 'black',
         resources: 20,
         buildQueue: [],
         startCorner: { x: 9, y: 9 },
@@ -59,7 +59,7 @@ function createTestState(board: BoardState, player: PlayerId = 'ai'): GameState 
       },
     },
     turn: {
-      currentPlayer: player,
+      currentPlayer,
       phase: 'action',
       actionsRemaining: 6,
       turnNumber: 1,
@@ -75,11 +75,11 @@ describe('AI Move Generation', () => {
   describe('generateMoveActions', () => {
     it('generates move actions for units that can move', () => {
       const board = createEmptyBoard();
-      const unit = createTestUnit('ai-unit', 'fire_1', 'ai', 5, 5);
+      const unit = createTestUnit('ai-unit', 'fire_1', 'black', 5, 5);
       board.units.push(unit);
 
       const state = createTestState(board);
-      const moves = generateMoveActions(state, 'ai');
+      const moves = generateMoveActions(state, 'black');
 
       expect(moves.length).toBeGreaterThan(0);
       expect(moves.every(m => m.type === 'MOVE')).toBe(true);
@@ -88,34 +88,34 @@ describe('AI Move Generation', () => {
 
     it('generates moves even for units that have already moved (multiple moves per turn)', () => {
       const board = createEmptyBoard();
-      const unit = createTestUnit('ai-unit', 'fire_1', 'ai', 5, 5, { hasMoved: true });
+      const unit = createTestUnit('ai-unit', 'fire_1', 'black', 5, 5, { hasMoved: true });
       board.units.push(unit);
 
       const state = createTestState(board);
-      const moves = generateMoveActions(state, 'ai');
+      const moves = generateMoveActions(state, 'black');
       // Units can move multiple times per turn, hasMoved is just tracking
       expect(moves.length).toBeGreaterThan(0);
     });
 
     it('does not generate moves for units that cannot act this turn', () => {
       const board = createEmptyBoard();
-      const unit = createTestUnit('ai-unit', 'fire_1', 'ai', 5, 5, { canActThisTurn: false });
+      const unit = createTestUnit('ai-unit', 'fire_1', 'black', 5, 5, { canActThisTurn: false });
       board.units.push(unit);
 
       const state = createTestState(board);
-      const moves = generateMoveActions(state, 'ai');
+      const moves = generateMoveActions(state, 'black');
 
       expect(moves.length).toBe(0);
     });
 
     it('only generates moves for the specified player', () => {
       const board = createEmptyBoard();
-      const aiUnit = createTestUnit('ai-unit', 'fire_1', 'ai', 5, 5);
-      const playerUnit = createTestUnit('player-unit', 'fire_1', 'player', 3, 3);
+      const aiUnit = createTestUnit('ai-unit', 'fire_1', 'black', 5, 5);
+      const playerUnit = createTestUnit('player-unit', 'fire_1', 'white', 3, 3);
       board.units.push(aiUnit, playerUnit);
 
       const state = createTestState(board);
-      const moves = generateMoveActions(state, 'ai');
+      const moves = generateMoveActions(state, 'black');
 
       expect(moves.every(m => m.unitId === 'ai-unit')).toBe(true);
     });
@@ -124,12 +124,12 @@ describe('AI Move Generation', () => {
   describe('generateAttackActions', () => {
     it('generates attack actions when enemy is in range', () => {
       const board = createEmptyBoard();
-      const aiUnit = createTestUnit('ai-unit', 'fire_1', 'ai', 5, 5);
-      const playerUnit = createTestUnit('player-unit', 'water_1', 'player', 5, 6); // Adjacent
+      const aiUnit = createTestUnit('ai-unit', 'fire_1', 'black', 5, 5);
+      const playerUnit = createTestUnit('player-unit', 'water_1', 'white', 5, 6); // Adjacent
       board.units.push(aiUnit, playerUnit);
 
       const state = createTestState(board);
-      const attacks = generateAttackActions(state, 'ai');
+      const attacks = generateAttackActions(state, 'black');
 
       expect(attacks.length).toBe(1);
       expect(attacks[0].type).toBe('ATTACK');
@@ -139,24 +139,24 @@ describe('AI Move Generation', () => {
 
     it('generates attacks even for units that have already attacked (multiple attacks per turn, just not same enemy)', () => {
       const board = createEmptyBoard();
-      const aiUnit = createTestUnit('ai-unit', 'fire_1', 'ai', 5, 5, { hasAttacked: true });
-      const playerUnit = createTestUnit('player-unit', 'water_1', 'player', 5, 6);
+      const aiUnit = createTestUnit('ai-unit', 'fire_1', 'black', 5, 5, { hasAttacked: true });
+      const playerUnit = createTestUnit('player-unit', 'water_1', 'white', 5, 6);
       board.units.push(aiUnit, playerUnit);
 
       const state = createTestState(board);
-      const attacks = generateAttackActions(state, 'ai');
+      const attacks = generateAttackActions(state, 'black');
       // Units can attack multiple times per turn (just not the same enemy twice)
       expect(attacks.length).toBeGreaterThan(0);
     });
 
     it('does not generate attacks when no enemies in range', () => {
       const board = createEmptyBoard();
-      const aiUnit = createTestUnit('ai-unit', 'fire_1', 'ai', 5, 5);
-      const playerUnit = createTestUnit('player-unit', 'water_1', 'player', 0, 0); // Far away
+      const aiUnit = createTestUnit('ai-unit', 'fire_1', 'black', 5, 5);
+      const playerUnit = createTestUnit('player-unit', 'water_1', 'white', 0, 0); // Far away
       board.units.push(aiUnit, playerUnit);
 
       const state = createTestState(board);
-      const attacks = generateAttackActions(state, 'ai');
+      const attacks = generateAttackActions(state, 'black');
 
       expect(attacks.length).toBe(0);
     });
@@ -167,11 +167,11 @@ describe('AI Move Generation', () => {
       const board = createEmptyBoard();
       // Place unit on a cell with resources
       board.cells[5][5].resourceLayers = 3;
-      const unit = createTestUnit('ai-unit', 'fire_1', 'ai', 5, 5);
+      const unit = createTestUnit('ai-unit', 'fire_1', 'black', 5, 5);
       board.units.push(unit);
 
       const state = createTestState(board);
-      const mines = generateMineActions(state, 'ai');
+      const mines = generateMineActions(state, 'black');
 
       expect(mines.length).toBe(1);
       expect(mines[0].type).toBe('MINE');
@@ -181,11 +181,11 @@ describe('AI Move Generation', () => {
     it('generates mine actions even for units that have already mined (multiple mines per turn)', () => {
       const board = createEmptyBoard();
       board.cells[5][5].resourceLayers = 3;
-      const unit = createTestUnit('ai-unit', 'fire_1', 'ai', 5, 5, { hasMined: true });
+      const unit = createTestUnit('ai-unit', 'fire_1', 'black', 5, 5, { hasMined: true });
       board.units.push(unit);
 
       const state = createTestState(board);
-      const mines = generateMineActions(state, 'ai');
+      const mines = generateMineActions(state, 'black');
       // Units can mine multiple times per turn, hasMined is just tracking
       expect(mines.length).toBeGreaterThan(0);
     });
@@ -195,11 +195,11 @@ describe('AI Move Generation', () => {
       // Deplete the cell's resources
       board.cells[5][5].resourceLayers = 0;
       board.cells[5][5].minedDepth = 5;
-      const unit = createTestUnit('ai-unit', 'fire_1', 'ai', 5, 5);
+      const unit = createTestUnit('ai-unit', 'fire_1', 'black', 5, 5);
       board.units.push(unit);
 
       const state = createTestState(board);
-      const mines = generateMineActions(state, 'ai');
+      const mines = generateMineActions(state, 'black');
 
       expect(mines.length).toBe(0);
     });
@@ -210,9 +210,9 @@ describe('AI Move Generation', () => {
       const board = createEmptyBoard();
       const state = createTestState(board);
       state.turn.phase = 'queue';
-      state.players.ai.resources = 5; // Enough for T1 units
+      state.players.black.resources = 5; // Enough for T1 units
 
-      const queues = generateQueueActions(state, 'ai');
+      const queues = generateQueueActions(state, 'black');
 
       expect(queues.length).toBeGreaterThan(0);
       expect(queues.every(q => q.type === 'QUEUE_UNIT')).toBe(true);
@@ -224,9 +224,9 @@ describe('AI Move Generation', () => {
       const board = createEmptyBoard();
       const state = createTestState(board);
       state.turn.phase = 'action';
-      state.players.ai.resources = 5;
+      state.players.black.resources = 5;
 
-      const queues = generateQueueActions(state, 'ai');
+      const queues = generateQueueActions(state, 'black');
 
       // It generates actions based on resources, not phase
       expect(queues.length).toBeGreaterThan(0);
@@ -236,9 +236,9 @@ describe('AI Move Generation', () => {
       const board = createEmptyBoard();
       const state = createTestState(board);
       state.turn.phase = 'queue';
-      state.players.ai.resources = 0; // No resources
+      state.players.black.resources = 0; // No resources
 
-      const queues = generateQueueActions(state, 'ai');
+      const queues = generateQueueActions(state, 'black');
 
       expect(queues.length).toBe(0);
     });
@@ -248,19 +248,19 @@ describe('AI Move Generation', () => {
     it('generates place actions for ready units when spawn positions exist', () => {
       const board = createEmptyBoard();
       // Place AI unit at corner to establish spawn zone
-      const aiUnit = createTestUnit('ai-unit', 'fire_1', 'ai', 9, 9);
+      const aiUnit = createTestUnit('ai-unit', 'fire_1', 'black', 9, 9);
       board.units.push(aiUnit);
 
       const state = createTestState(board);
       state.turn.phase = 'place';
-      state.players.ai.buildQueue = [{
+      state.players.black.buildQueue = [{
         id: 'queued-1',
         definitionId: 'fire_1',
         turnsRemaining: 0,
-        owner: 'ai',
+        owner: 'black',
       }];
 
-      const places = generatePlaceActions(state, 'ai');
+      const places = generatePlaceActions(state, 'black');
 
       // Spawn positions depend on getAllSpawnPositions logic
       // If there are valid spawn positions, actions should be generated
@@ -272,19 +272,19 @@ describe('AI Move Generation', () => {
 
     it('does not generate place actions for units still building', () => {
       const board = createEmptyBoard();
-      const aiUnit = createTestUnit('ai-unit', 'fire_1', 'ai', 9, 9);
+      const aiUnit = createTestUnit('ai-unit', 'fire_1', 'black', 9, 9);
       board.units.push(aiUnit);
 
       const state = createTestState(board);
       state.turn.phase = 'place';
-      state.players.ai.buildQueue = [{
+      state.players.black.buildQueue = [{
         id: 'queued-1',
         definitionId: 'fire_1',
         turnsRemaining: 2, // Still building
-        owner: 'ai',
+        owner: 'black',
       }];
 
-      const places = generatePlaceActions(state, 'ai');
+      const places = generatePlaceActions(state, 'black');
 
       expect(places.length).toBe(0);
     });
@@ -293,14 +293,14 @@ describe('AI Move Generation', () => {
   describe('generatePromoteActions', () => {
     it('generates promote actions for eligible units', () => {
       const board = createEmptyBoard();
-      const aiUnit = createTestUnit('ai-unit', 'fire_1', 'ai', 5, 5);
+      const aiUnit = createTestUnit('ai-unit', 'fire_1', 'black', 5, 5);
       board.units.push(aiUnit);
 
       const state = createTestState(board);
       state.turn.phase = 'queue';
-      state.players.ai.resources = 10; // Enough for promotion
+      state.players.black.resources = 10; // Enough for promotion
 
-      const promotes = generatePromoteActions(state, 'ai');
+      const promotes = generatePromoteActions(state, 'black');
 
       expect(promotes.length).toBe(1);
       expect(promotes[0].type).toBe('PROMOTE_UNIT');
@@ -309,28 +309,28 @@ describe('AI Move Generation', () => {
 
     it('does not generate promote for T4 units', () => {
       const board = createEmptyBoard();
-      const aiUnit = createTestUnit('ai-unit', 'fire_4', 'ai', 5, 5);
+      const aiUnit = createTestUnit('ai-unit', 'fire_4', 'black', 5, 5);
       board.units.push(aiUnit);
 
       const state = createTestState(board);
       state.turn.phase = 'queue';
-      state.players.ai.resources = 10;
+      state.players.black.resources = 10;
 
-      const promotes = generatePromoteActions(state, 'ai');
+      const promotes = generatePromoteActions(state, 'black');
 
       expect(promotes.length).toBe(0);
     });
 
     it('does not generate promote without enough resources', () => {
       const board = createEmptyBoard();
-      const aiUnit = createTestUnit('ai-unit', 'fire_1', 'ai', 5, 5);
+      const aiUnit = createTestUnit('ai-unit', 'fire_1', 'black', 5, 5);
       board.units.push(aiUnit);
 
       const state = createTestState(board);
       state.turn.phase = 'queue';
-      state.players.ai.resources = 0; // Not enough
+      state.players.black.resources = 0; // Not enough
 
-      const promotes = generatePromoteActions(state, 'ai');
+      const promotes = generatePromoteActions(state, 'black');
 
       expect(promotes.length).toBe(0);
     });
@@ -340,12 +340,12 @@ describe('AI Move Generation', () => {
     it('generates all types of actions in action phase', () => {
       const board = createEmptyBoard();
       board.cells[5][5].resourceLayers = 3;
-      const aiUnit = createTestUnit('ai-unit', 'fire_1', 'ai', 5, 5);
-      const playerUnit = createTestUnit('player-unit', 'water_1', 'player', 5, 6);
+      const aiUnit = createTestUnit('ai-unit', 'fire_1', 'black', 5, 5);
+      const playerUnit = createTestUnit('player-unit', 'water_1', 'white', 5, 6);
       board.units.push(aiUnit, playerUnit);
 
       const state = createTestState(board);
-      const actions = generateAllActions(state, 'ai');
+      const actions = generateAllActions(state, 'black');
 
       const types = new Set(actions.map(a => a.type));
       expect(types.has('MOVE')).toBe(true);
@@ -357,7 +357,7 @@ describe('AI Move Generation', () => {
     it('includes END_ACTION_PHASE in action phase', () => {
       const board = createEmptyBoard();
       const state = createTestState(board);
-      const actions = generateAllActions(state, 'ai');
+      const actions = generateAllActions(state, 'black');
 
       expect(actions.some(a => a.type === 'END_ACTION_PHASE')).toBe(true);
     });
@@ -367,7 +367,7 @@ describe('AI Move Generation', () => {
       const state = createTestState(board);
       state.turn.phase = 'queue';
 
-      const actions = generateAllActions(state, 'ai');
+      const actions = generateAllActions(state, 'black');
 
       expect(actions.some(a => a.type === 'END_TURN')).toBe(true);
     });

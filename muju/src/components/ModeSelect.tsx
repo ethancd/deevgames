@@ -20,22 +20,22 @@ export function ModeSelect({ onStartGame }: ModeSelectProps) {
       case 'vs-ai':
         config = {
           mode: 'vs-ai',
-          controls: { player: 'human', ai: 'ai' },
-          aiDifficulty: { player: 'medium', ai: aiDifficulty },
+          controls: { white: 'human', black: 'ai' },
+          aiDifficulty: { white: 'medium', black: aiDifficulty },
         };
         break;
       case 'pass-play':
         config = {
           mode: 'pass-play',
-          controls: { player: 'human', ai: 'human' },
-          aiDifficulty: { player: 'medium', ai: 'medium' },
+          controls: { white: 'human', black: 'human' },
+          aiDifficulty: { white: 'medium', black: 'medium' },
         };
         break;
       case 'ai-vs-ai':
         config = {
           mode: 'ai-vs-ai',
-          controls: { player: 'ai', ai: 'ai' },
-          aiDifficulty: { player: playerDifficulty, ai: aiDifficulty },
+          controls: { white: 'ai', black: 'ai' },
+          aiDifficulty: { white: playerDifficulty, black: aiDifficulty },
         };
         break;
     }

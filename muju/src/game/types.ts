@@ -5,7 +5,7 @@ export interface Position {
   y: number; // 0-9
 }
 
-export type PlayerId = 'player' | 'ai';
+export type PlayerId = 'white' | 'black';
 
 // === Game Modes ===
 
@@ -121,8 +121,8 @@ export interface GameState {
   phase: GamePhase;
   board: BoardState;
   players: {
-    player: PlayerState;
-    ai: PlayerState;
+    white: PlayerState;
+    black: PlayerState;
   };
   turn: TurnState;
   winner: PlayerId | null;

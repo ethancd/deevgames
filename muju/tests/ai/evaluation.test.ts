@@ -31,21 +31,21 @@ function createTestUnit(
   };
 }
 
-function createTestState(board: BoardState, currentPlayer: PlayerId = 'ai'): GameState {
+function createTestState(board: BoardState, currentPlayer: PlayerId = 'black'): GameState {
   return {
     phase: 'playing',
     board,
     players: {
-      player: {
-        id: 'player',
+      white: {
+        id: 'white',
         resources: 10,
         buildQueue: [],
         startCorner: { x: 0, y: 0 },
         resourcesGained: 10,
         resourcesSpent: 0,
       },
-      ai: {
-        id: 'ai',
+      black: {
+        id: 'black',
         resources: 10,
         buildQueue: [],
         startCorner: { x: 9, y: 9 },
@@ -70,31 +70,31 @@ describe('AI Evaluation', () => {
   describe('evaluatePosition', () => {
     it('returns positive score when AI has more units', () => {
       const board = createEmptyBoard();
-      const aiUnit1 = createTestUnit('ai-1', 'fire_1', 'ai', 5, 5);
-      const aiUnit2 = createTestUnit('ai-2', 'fire_1', 'ai', 6, 6);
-      const playerUnit = createTestUnit('player-1', 'water_1', 'player', 0, 0);
+      const aiUnit1 = createTestUnit('ai-1', 'fire_1', 'black', 5, 5);
+      const aiUnit2 = createTestUnit('ai-2', 'fire_1', 'black', 6, 6);
+      const playerUnit = createTestUnit('player-1', 'water_1', 'white', 0, 0);
       board.units.push(aiUnit1, aiUnit2, playerUnit);
 
       const state = createTestState(board);
-      const score = evaluatePosition(state, 'ai');
+      const score = evaluatePosition(state, 'black');
 
       expect(score).toBeGreaterThan(0);
     });
 
     it('returns lower score when AI has fewer units than opponent', () => {
       const board1 = createEmptyBoard();
-      const aiUnit1 = createTestUnit('ai-1', 'fire_1', 'ai', 5, 5);
-      const playerUnit1 = createTestUnit('player-1', 'water_1', 'player', 0, 0);
+      const aiUnit1 = createTestUnit('ai-1', 'fire_1', 'black', 5, 5);
+      const playerUnit1 = createTestUnit('player-1', 'water_1', 'white', 0, 0);
       board1.units.push(aiUnit1, playerUnit1);
 
       const board2 = createEmptyBoard();
-      const aiUnit2 = createTestUnit('ai-1', 'fire_1', 'ai', 5, 5);
-      const playerUnit2 = createTestUnit('player-1', 'water_1', 'player', 0, 0);
-      const playerUnit3 = createTestUnit('player-2', 'water_1', 'player', 1, 1);
+      const aiUnit2 = createTestUnit('ai-1', 'fire_1', 'black', 5, 5);
+      const playerUnit2 = createTestUnit('player-1', 'water_1', 'white', 0, 0);
+      const playerUnit3 = createTestUnit('player-2', 'water_1', 'white', 1, 1);
       board2.units.push(aiUnit2, playerUnit2, playerUnit3);
 
-      const scoreEqual = evaluatePosition(createTestState(board1), 'ai');
-      const scoreDisadvantage = evaluatePosition(createTestState(board2), 'ai');
+      const scoreEqual = evaluatePosition(createTestState(board1), 'black');
+      const scoreDisadvantage = evaluatePosition(createTestState(board2), 'black');
 
       // Having fewer units should result in a lower score
       expect(scoreDisadvantage).toBeLessThan(scoreEqual);
@@ -103,11 +103,11 @@ describe('AI Evaluation', () => {
     it('returns very high score for victory state', () => {
       const board = createEmptyBoard();
       // Only AI has units - victory!
-      const aiUnit = createTestUnit('ai-1', 'fire_1', 'ai', 5, 5);
+      const aiUnit = createTestUnit('ai-1', 'fire_1', 'black', 5, 5);
       board.units.push(aiUnit);
 
       const state = createTestState(board);
-      const score = evaluatePosition(state, 'ai');
+      const score = evaluatePosition(state, 'black');
 
       expect(score).toBeGreaterThan(10000);
     });
@@ -115,66 +115,66 @@ describe('AI Evaluation', () => {
     it('returns very low score for loss state', () => {
       const board = createEmptyBoard();
       // Only player has units - loss for AI
-      const playerUnit = createTestUnit('player-1', 'water_1', 'player', 0, 0);
+      const playerUnit = createTestUnit('player-1', 'water_1', 'white', 0, 0);
       board.units.push(playerUnit);
 
       const state = createTestState(board);
-      const score = evaluatePosition(state, 'ai');
+      const score = evaluatePosition(state, 'black');
 
       expect(score).toBeLessThan(-10000);
     });
 
     it('considers resource advantage', () => {
       const board = createEmptyBoard();
-      const aiUnit = createTestUnit('ai-1', 'fire_1', 'ai', 5, 5);
-      const playerUnit = createTestUnit('player-1', 'water_1', 'player', 0, 0);
+      const aiUnit = createTestUnit('ai-1', 'fire_1', 'black', 5, 5);
+      const playerUnit = createTestUnit('player-1', 'water_1', 'white', 0, 0);
       board.units.push(aiUnit, playerUnit);
 
       // AI has more resources
       const stateRich = createTestState(board);
-      stateRich.players.ai.resources = 50;
-      stateRich.players.player.resources = 10;
+      stateRich.players.black.resources = 50;
+      stateRich.players.white.resources = 10;
 
       const statePoor = createTestState(board);
-      statePoor.players.ai.resources = 10;
-      statePoor.players.player.resources = 50;
+      statePoor.players.black.resources = 10;
+      statePoor.players.white.resources = 50;
 
-      const scoreRich = evaluatePosition(stateRich, 'ai');
-      const scorePoor = evaluatePosition(statePoor, 'ai');
+      const scoreRich = evaluatePosition(stateRich, 'black');
+      const scorePoor = evaluatePosition(statePoor, 'black');
 
       expect(scoreRich).toBeGreaterThan(scorePoor);
     });
 
     it('values higher tier units more', () => {
       const board1 = createEmptyBoard();
-      const aiT1 = createTestUnit('ai-1', 'fire_1', 'ai', 5, 5);
-      const playerT1 = createTestUnit('player-1', 'water_1', 'player', 0, 0);
+      const aiT1 = createTestUnit('ai-1', 'fire_1', 'black', 5, 5);
+      const playerT1 = createTestUnit('player-1', 'water_1', 'white', 0, 0);
       board1.units.push(aiT1, playerT1);
 
       const board2 = createEmptyBoard();
-      const aiT3 = createTestUnit('ai-1', 'fire_3', 'ai', 5, 5);
-      const playerT1_2 = createTestUnit('player-1', 'water_1', 'player', 0, 0);
+      const aiT3 = createTestUnit('ai-1', 'fire_3', 'black', 5, 5);
+      const playerT1_2 = createTestUnit('player-1', 'water_1', 'white', 0, 0);
       board2.units.push(aiT3, playerT1_2);
 
-      const scoreT1 = evaluatePosition(createTestState(board1), 'ai');
-      const scoreT3 = evaluatePosition(createTestState(board2), 'ai');
+      const scoreT1 = evaluatePosition(createTestState(board1), 'black');
+      const scoreT3 = evaluatePosition(createTestState(board2), 'black');
 
       expect(scoreT3).toBeGreaterThan(scoreT1);
     });
 
     it('values center control', () => {
       const boardCenter = createEmptyBoard();
-      const aiCenter = createTestUnit('ai-1', 'fire_1', 'ai', 5, 5);
-      const playerCorner = createTestUnit('player-1', 'water_1', 'player', 0, 0);
+      const aiCenter = createTestUnit('ai-1', 'fire_1', 'black', 5, 5);
+      const playerCorner = createTestUnit('player-1', 'water_1', 'white', 0, 0);
       boardCenter.units.push(aiCenter, playerCorner);
 
       const boardEdge = createEmptyBoard();
-      const aiEdge = createTestUnit('ai-1', 'fire_1', 'ai', 9, 9);
-      const playerCorner2 = createTestUnit('player-1', 'water_1', 'player', 0, 0);
+      const aiEdge = createTestUnit('ai-1', 'fire_1', 'black', 9, 9);
+      const playerCorner2 = createTestUnit('player-1', 'water_1', 'white', 0, 0);
       boardEdge.units.push(aiEdge, playerCorner2);
 
-      const scoreCenter = evaluatePosition(createTestState(boardCenter), 'ai');
-      const scoreEdge = evaluatePosition(createTestState(boardEdge), 'ai');
+      const scoreCenter = evaluatePosition(createTestState(boardCenter), 'black');
+      const scoreEdge = evaluatePosition(createTestState(boardEdge), 'black');
 
       expect(scoreCenter).toBeGreaterThan(scoreEdge);
     });
@@ -184,12 +184,12 @@ describe('AI Evaluation', () => {
     it('returns higher score for more AI unit value', () => {
       // Use higher tier AI unit for clear material advantage
       const board = createEmptyBoard();
-      const aiUnit1 = createTestUnit('ai-1', 'fire_3', 'ai', 5, 5); // T3 = cost 7
-      const playerUnit = createTestUnit('player-1', 'water_1', 'player', 0, 0); // T1 = cost 2
+      const aiUnit1 = createTestUnit('ai-1', 'fire_3', 'black', 5, 5); // T3 = cost 7
+      const playerUnit = createTestUnit('player-1', 'water_1', 'white', 0, 0); // T1 = cost 2
       board.units.push(aiUnit1, playerUnit);
 
       const state = createTestState(board);
-      const score = quickEvaluate(state, 'ai');
+      const score = quickEvaluate(state, 'black');
 
       // AI T3 (cost 7) vs player T1 (cost 2) = +5 advantage
       expect(score).toBeGreaterThan(0);
@@ -197,11 +197,11 @@ describe('AI Evaluation', () => {
 
     it('handles victory conditions', () => {
       const board = createEmptyBoard();
-      const aiUnit = createTestUnit('ai-1', 'fire_1', 'ai', 5, 5);
+      const aiUnit = createTestUnit('ai-1', 'fire_1', 'black', 5, 5);
       board.units.push(aiUnit);
 
       const state = createTestState(board);
-      const score = quickEvaluate(state, 'ai');
+      const score = quickEvaluate(state, 'black');
 
       expect(score).toBeGreaterThan(10000);
     });
@@ -210,8 +210,8 @@ describe('AI Evaluation', () => {
   describe('evaluateUnitPosition', () => {
     it('returns higher score for center positions', () => {
       const board = createEmptyBoard();
-      const centerUnit = createTestUnit('center', 'fire_1', 'ai', 5, 5);
-      const edgeUnit = createTestUnit('edge', 'fire_1', 'ai', 0, 0);
+      const centerUnit = createTestUnit('center', 'fire_1', 'black', 5, 5);
+      const edgeUnit = createTestUnit('edge', 'fire_1', 'black', 0, 0);
       board.units.push(centerUnit, edgeUnit);
 
       const state = createTestState(board);
@@ -224,12 +224,12 @@ describe('AI Evaluation', () => {
     it('returns higher score for units with attack options', () => {
       // Use Speed 1 unit (water_1) - Speed 2+ units can lose moves that balance out attack bonus
       const board = createEmptyBoard();
-      const aiUnit = createTestUnit('ai-1', 'water_1', 'ai', 5, 5);
-      const nearEnemy = createTestUnit('player-1', 'fire_1', 'player', 5, 6);
+      const aiUnit = createTestUnit('ai-1', 'water_1', 'black', 5, 5);
+      const nearEnemy = createTestUnit('player-1', 'fire_1', 'white', 5, 6);
       board.units.push(aiUnit, nearEnemy);
 
       const boardNoEnemy = createEmptyBoard();
-      const aiAlone = createTestUnit('ai-1', 'water_1', 'ai', 5, 5);
+      const aiAlone = createTestUnit('ai-1', 'water_1', 'black', 5, 5);
       boardNoEnemy.units.push(aiAlone);
 
       const stateWithEnemy = createTestState(board);
@@ -245,7 +245,7 @@ describe('AI Evaluation', () => {
   describe('scoreAction', () => {
     it('scores attacks highest', () => {
       const board = createEmptyBoard();
-      const playerUnit = createTestUnit('player-1', 'fire_3', 'player', 5, 5);
+      const playerUnit = createTestUnit('player-1', 'fire_3', 'white', 5, 5);
       board.units.push(playerUnit);
 
       const state = createTestState(board);
@@ -266,8 +266,8 @@ describe('AI Evaluation', () => {
 
     it('scores attacks by target value', () => {
       const board = createEmptyBoard();
-      const t1Unit = createTestUnit('player-t1', 'fire_1', 'player', 1, 1);
-      const t3Unit = createTestUnit('player-t3', 'fire_3', 'player', 2, 2);
+      const t1Unit = createTestUnit('player-t1', 'fire_1', 'white', 1, 1);
+      const t3Unit = createTestUnit('player-t3', 'fire_3', 'white', 2, 2);
       board.units.push(t1Unit, t3Unit);
 
       const state = createTestState(board);

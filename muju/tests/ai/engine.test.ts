@@ -25,21 +25,21 @@ function createTestUnit(
   };
 }
 
-function createTestState(board: BoardState, currentPlayer: PlayerId = 'ai'): GameState {
+function createTestState(board: BoardState, currentPlayer: PlayerId = 'black'): GameState {
   return {
     phase: 'playing',
     board,
     players: {
-      player: {
-        id: 'player',
+      white: {
+        id: 'white',
         resources: 10,
         buildQueue: [],
         startCorner: { x: 0, y: 0 },
         resourcesGained: 10,
         resourcesSpent: 0,
       },
-      ai: {
-        id: 'ai',
+      black: {
+        id: 'black',
         resources: 10,
         buildQueue: [],
         startCorner: { x: 9, y: 9 },
@@ -83,8 +83,8 @@ describe('AI Engine', () => {
   describe('findBestAction', () => {
     it('returns a result with plan', async () => {
       const board = createEmptyBoard();
-      const aiUnit = createTestUnit('ai-unit', 'fire_1', 'ai', 5, 5);
-      const playerUnit = createTestUnit('player-unit', 'water_1', 'player', 0, 0);
+      const aiUnit = createTestUnit('ai-unit', 'fire_1', 'black', 5, 5);
+      const playerUnit = createTestUnit('player-unit', 'water_1', 'white', 0, 0);
       board.units.push(aiUnit, playerUnit);
 
       const state = createTestState(board);
@@ -99,8 +99,8 @@ describe('AI Engine', () => {
 
     it('difficulty presets scale search configs', async () => {
       const board = createEmptyBoard();
-      const aiUnit = createTestUnit('ai-unit', 'fire_1', 'ai', 5, 5);
-      const playerUnit = createTestUnit('player-unit', 'water_1', 'player', 0, 0);
+      const aiUnit = createTestUnit('ai-unit', 'fire_1', 'black', 5, 5);
+      const playerUnit = createTestUnit('player-unit', 'water_1', 'white', 0, 0);
       board.units.push(aiUnit, playerUnit);
 
       const state = createTestState(board);
@@ -118,8 +118,8 @@ describe('AI Engine', () => {
     it('prefers killing enemy when possible', async () => {
       const board = createEmptyBoard();
       // AI has advantage - should attack
-      const aiUnit = createTestUnit('ai-unit', 'fire_3', 'ai', 5, 5);
-      const playerUnit = createTestUnit('player-unit', 'plant_1', 'player', 5, 6);
+      const aiUnit = createTestUnit('ai-unit', 'fire_3', 'black', 5, 5);
+      const playerUnit = createTestUnit('player-unit', 'plant_1', 'white', 5, 6);
       board.units.push(aiUnit, playerUnit);
 
       const state = createTestState(board);
@@ -132,8 +132,8 @@ describe('AI Engine', () => {
 
     it('includes debug info for top plans', async () => {
       const board = createEmptyBoard();
-      const aiUnit = createTestUnit('ai-unit', 'fire_1', 'ai', 5, 5);
-      const playerUnit = createTestUnit('player-unit', 'water_1', 'player', 0, 0);
+      const aiUnit = createTestUnit('ai-unit', 'fire_1', 'black', 5, 5);
+      const playerUnit = createTestUnit('player-unit', 'water_1', 'white', 0, 0);
       board.units.push(aiUnit, playerUnit);
 
       const state = createTestState(board);
@@ -161,8 +161,8 @@ describe('AI Engine', () => {
     it('takes winning move when available', async () => {
       const board = createEmptyBoard();
       // Set up guaranteed kill
-      const aiUnit = createTestUnit('ai-unit', 'fire_4', 'ai', 5, 5);
-      const playerUnit = createTestUnit('player-unit', 'water_1', 'player', 5, 6);
+      const aiUnit = createTestUnit('ai-unit', 'fire_4', 'black', 5, 5);
+      const playerUnit = createTestUnit('player-unit', 'water_1', 'white', 5, 6);
       board.units.push(aiUnit, playerUnit);
 
       const state = createTestState(board);
@@ -175,8 +175,8 @@ describe('AI Engine', () => {
     it('takes a valid action when resources available and no threats', async () => {
       const board = createEmptyBoard();
       board.cells[5][5].resourceLayers = 5;
-      const aiUnit = createTestUnit('ai-unit', 'fire_1', 'ai', 5, 5);
-      const playerUnit = createTestUnit('player-unit', 'water_1', 'player', 0, 0);
+      const aiUnit = createTestUnit('ai-unit', 'fire_1', 'black', 5, 5);
+      const playerUnit = createTestUnit('player-unit', 'water_1', 'white', 0, 0);
       board.units.push(aiUnit, playerUnit);
 
       const state = createTestState(board);
@@ -193,8 +193,8 @@ describe('AI Engine', () => {
       const board = createEmptyBoard();
       // Deplete resources so mining is not an option
       board.cells[9][9].resourceLayers = 0;
-      const aiUnit = createTestUnit('ai-unit', 'fire_1', 'ai', 9, 9);
-      const playerUnit = createTestUnit('player-unit', 'water_1', 'player', 0, 0);
+      const aiUnit = createTestUnit('ai-unit', 'fire_1', 'black', 9, 9);
+      const playerUnit = createTestUnit('player-unit', 'water_1', 'white', 0, 0);
       board.units.push(aiUnit, playerUnit);
 
       const state = createTestState(board);

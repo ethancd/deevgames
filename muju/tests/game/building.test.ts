@@ -22,7 +22,7 @@ import type { Unit, Position } from '../../src/game/types';
 
 function createUnit(
   id: string,
-  owner: 'player' | 'ai',
+  owner: 'white' | 'black',
   position: Position,
   definitionId: string = 'fire_1'
 ): Unit {
@@ -109,70 +109,70 @@ describe('Building System', () => {
     it('T1 units are always available', () => {
       const board = createEmptyBoard();
       // T1 units don't need any existing units
-      expect(meetsTechRequirement('fire_1', 'player', board)).toBe(true);
-      expect(meetsTechRequirement('water_1', 'player', board)).toBe(true);
+      expect(meetsTechRequirement('fire_1', 'white', board)).toBe(true);
+      expect(meetsTechRequirement('water_1', 'white', board)).toBe(true);
     });
 
     it('T2 units require T1+ of same element', () => {
       let board = createEmptyBoard();
       // No fire units - can't build fire_2
-      expect(meetsTechRequirement('fire_2', 'player', board)).toBe(false);
+      expect(meetsTechRequirement('fire_2', 'white', board)).toBe(false);
 
       // Add fire_1 - now can build fire_2
-      const fireT1 = createUnit('p1', 'player', { x: 2, y: 2 }, 'fire_1');
+      const fireT1 = createUnit('p1', 'white', { x: 2, y: 2 }, 'fire_1');
       board = placeUnit(board, fireT1);
-      expect(meetsTechRequirement('fire_2', 'player', board)).toBe(true);
+      expect(meetsTechRequirement('fire_2', 'white', board)).toBe(true);
     });
 
     it('T3 units require T2+ of same element', () => {
       let board = createEmptyBoard();
-      const fireT1 = createUnit('p1', 'player', { x: 2, y: 2 }, 'fire_1');
+      const fireT1 = createUnit('p1', 'white', { x: 2, y: 2 }, 'fire_1');
       board = placeUnit(board, fireT1);
 
       // T1 not enough for T3
-      expect(meetsTechRequirement('fire_3', 'player', board)).toBe(false);
+      expect(meetsTechRequirement('fire_3', 'white', board)).toBe(false);
 
       // Add fire_2
-      const fireT2 = createUnit('p2', 'player', { x: 3, y: 3 }, 'fire_2');
+      const fireT2 = createUnit('p2', 'white', { x: 3, y: 3 }, 'fire_2');
       board = placeUnit(board, fireT2);
-      expect(meetsTechRequirement('fire_3', 'player', board)).toBe(true);
+      expect(meetsTechRequirement('fire_3', 'white', board)).toBe(true);
     });
 
     it('higher tier units satisfy lower tier requirements', () => {
       let board = createEmptyBoard();
       // Have fire_3 on the board
-      const fireT3 = createUnit('p1', 'player', { x: 2, y: 2 }, 'fire_3');
+      const fireT3 = createUnit('p1', 'white', { x: 2, y: 2 }, 'fire_3');
       board = placeUnit(board, fireT3);
 
       // Can build fire_2 (needs T1+, fire_3 is T3 >= T1)
-      expect(meetsTechRequirement('fire_2', 'player', board)).toBe(true);
+      expect(meetsTechRequirement('fire_2', 'white', board)).toBe(true);
       // Can build fire_3 (needs T2+, fire_3 is T3 >= T2)
-      expect(meetsTechRequirement('fire_3', 'player', board)).toBe(true);
+      expect(meetsTechRequirement('fire_3', 'white', board)).toBe(true);
       // Can build fire_4 (needs T3+, fire_3 is T3 >= T3)
-      expect(meetsTechRequirement('fire_4', 'player', board)).toBe(true);
+      expect(meetsTechRequirement('fire_4', 'white', board)).toBe(true);
     });
 
     it('different elements do not satisfy requirements', () => {
       let board = createEmptyBoard();
-      const waterT3 = createUnit('p1', 'player', { x: 2, y: 2 }, 'water_3');
+      const waterT3 = createUnit('p1', 'white', { x: 2, y: 2 }, 'water_3');
       board = placeUnit(board, waterT3);
 
       // Water T3 doesn't help with fire T2
-      expect(meetsTechRequirement('fire_2', 'player', board)).toBe(false);
+      expect(meetsTechRequirement('fire_2', 'white', board)).toBe(false);
       // But does help with water T2 and higher
-      expect(meetsTechRequirement('water_3', 'player', board)).toBe(true);
+      expect(meetsTechRequirement('water_3', 'white', board)).toBe(true);
     });
 
     it('checks correct player ownership', () => {
       let board = createEmptyBoard();
       // AI has fire_1
-      const aiFireT1 = createUnit('ai1', 'ai', { x: 5, y: 5 }, 'fire_1');
+      const aiFireT1 = createUnit('ai1', 'black', { x: 5, y: 5 }, 'fire_1');
       board = placeUnit(board, aiFireT1);
 
       // Player cannot use AI's units for tech
-      expect(meetsTechRequirement('fire_2', 'player', board)).toBe(false);
+      expect(meetsTechRequirement('fire_2', 'white', board)).toBe(false);
       // AI can
-      expect(meetsTechRequirement('fire_2', 'ai', board)).toBe(true);
+      expect(meetsTechRequirement('fire_2', 'black', board)).toBe(true);
     });
   });
 
@@ -191,21 +191,21 @@ describe('Building System', () => {
   describe('canBuildUnit', () => {
     it('requires both affordability and tech', () => {
       let board = createEmptyBoard();
-      const fireT1 = createUnit('p1', 'player', { x: 2, y: 2 }, 'fire_1');
+      const fireT1 = createUnit('p1', 'white', { x: 2, y: 2 }, 'fire_1');
       board = placeUnit(board, fireT1);
 
       // Have fire_1, so can build fire_2 tech-wise
       // fire_2 costs 3
       const richState: BuildState = { queue: [], crystals: 5 };
-      expect(canBuildUnit('fire_2', 'player', board, richState)).toBe(true);
+      expect(canBuildUnit('fire_2', 'white', board, richState)).toBe(true);
 
       // Can't afford
       const poorState: BuildState = { queue: [], crystals: 2 };
-      expect(canBuildUnit('fire_2', 'player', board, poorState)).toBe(false);
+      expect(canBuildUnit('fire_2', 'white', board, poorState)).toBe(false);
 
       // Can afford but no tech for fire_3 (need T2+)
       const richState2: BuildState = { queue: [], crystals: 10 };
-      expect(canBuildUnit('fire_3', 'player', board, richState2)).toBe(false);
+      expect(canBuildUnit('fire_3', 'white', board, richState2)).toBe(false);
     });
   });
 
@@ -276,17 +276,17 @@ describe('Building System', () => {
 
   describe('createUnitFromDefinition', () => {
     it('creates a unit with correct properties', () => {
-      const unit = createUnitFromDefinition('fire_1', 'player', { x: 1, y: 1 }, 'unit-1');
+      const unit = createUnitFromDefinition('fire_1', 'white', { x: 1, y: 1 }, 'unit-1');
 
       expect(unit.id).toBe('unit-1');
       expect(unit.definitionId).toBe('fire_1');
-      expect(unit.owner).toBe('player');
+      expect(unit.owner).toBe('white');
       expect(unit.position).toEqual({ x: 1, y: 1 });
       expect(unit.canActThisTurn).toBe(true); // Units can act immediately (no summoning sickness)
     });
 
     it('creates units with fresh action states', () => {
-      const unit = createUnitFromDefinition('water_2', 'ai', { x: 5, y: 5 }, 'unit-2');
+      const unit = createUnitFromDefinition('water_2', 'black', { x: 5, y: 5 }, 'unit-2');
 
       expect(unit.hasMoved).toBe(false);
       expect(unit.hasAttacked).toBe(false);
@@ -297,10 +297,10 @@ describe('Building System', () => {
   describe('placeBuiltUnit', () => {
     it('places unit at valid spawn position', () => {
       let board = createEmptyBoard();
-      const anchor = createUnit('p1', 'player', { x: 2, y: 2 });
+      const anchor = createUnit('p1', 'white', { x: 2, y: 2 });
       board = placeUnit(board, anchor);
 
-      const newBoard = placeBuiltUnit(board, 'fire_1', 'player', { x: 1, y: 1 }, 'new-unit');
+      const newBoard = placeBuiltUnit(board, 'fire_1', 'white', { x: 1, y: 1 }, 'new-unit');
 
       expect(newBoard).not.toBeNull();
       expect(newBoard!.units.length).toBe(2);
@@ -309,23 +309,23 @@ describe('Building System', () => {
 
     it('returns null for invalid spawn position', () => {
       let board = createEmptyBoard();
-      const anchor = createUnit('p1', 'player', { x: 2, y: 2 });
+      const anchor = createUnit('p1', 'white', { x: 2, y: 2 });
       board = placeUnit(board, anchor);
 
       // Position outside spawn zone
-      const newBoard = placeBuiltUnit(board, 'fire_1', 'player', { x: 5, y: 5 }, 'new-unit');
+      const newBoard = placeBuiltUnit(board, 'fire_1', 'white', { x: 5, y: 5 }, 'new-unit');
 
       expect(newBoard).toBeNull();
     });
 
     it('returns null when spawn zone is blocked', () => {
       let board = createEmptyBoard();
-      const anchor = createUnit('p1', 'player', { x: 3, y: 3 });
-      const enemy = createUnit('e1', 'ai', { x: 1, y: 1 });
+      const anchor = createUnit('p1', 'white', { x: 3, y: 3 });
+      const enemy = createUnit('e1', 'black', { x: 1, y: 1 });
       board = placeUnit(board, anchor);
       board = placeUnit(board, enemy);
 
-      const newBoard = placeBuiltUnit(board, 'fire_1', 'player', { x: 2, y: 2 }, 'new-unit');
+      const newBoard = placeBuiltUnit(board, 'fire_1', 'white', { x: 2, y: 2 }, 'new-unit');
 
       expect(newBoard).toBeNull();
     });
@@ -366,20 +366,20 @@ describe('Building System', () => {
   describe('hasValidSpawnPositions', () => {
     it('returns true when player has valid spawn zones', () => {
       let board = createEmptyBoard();
-      const unit = createUnit('p1', 'player', { x: 2, y: 2 });
+      const unit = createUnit('p1', 'white', { x: 2, y: 2 });
       board = placeUnit(board, unit);
 
-      expect(hasValidSpawnPositions('player', board)).toBe(true);
+      expect(hasValidSpawnPositions('white', board)).toBe(true);
     });
 
     it('returns false when all spawn zones are blocked', () => {
       let board = createEmptyBoard();
-      const unit = createUnit('p1', 'player', { x: 5, y: 5 });
-      const enemy = createUnit('e1', 'ai', { x: 2, y: 2 });
+      const unit = createUnit('p1', 'white', { x: 5, y: 5 });
+      const enemy = createUnit('e1', 'black', { x: 2, y: 2 });
       board = placeUnit(board, unit);
       board = placeUnit(board, enemy);
 
-      expect(hasValidSpawnPositions('player', board)).toBe(false);
+      expect(hasValidSpawnPositions('white', board)).toBe(false);
     });
   });
 

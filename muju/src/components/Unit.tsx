@@ -1,6 +1,6 @@
 import type { Unit as UnitType } from '../game/types';
 import { getUnitDefinition } from '../game/units';
-import { getElementHex } from '../utils/colors';
+import { getElementHexForPlayer } from '../utils/colors';
 
 interface UnitProps {
   unit: UnitType;
@@ -11,7 +11,7 @@ interface UnitProps {
 
 export function Unit({ unit, isSelected, isOwned, onClick }: UnitProps) {
   const definition = getUnitDefinition(unit.definitionId);
-  const color = getElementHex(definition.element);
+  const color = getElementHexForPlayer(definition.element, unit.owner);
 
   // Size based on tier
   const sizeClass = {

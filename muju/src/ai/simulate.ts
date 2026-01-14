@@ -46,7 +46,7 @@ export function applyAction(state: GameState, action: AIAction): GameState {
 }
 
 function applyResign(state: GameState): GameState {
-  const winner = state.turn.currentPlayer === 'player' ? 'ai' : 'player';
+  const winner = state.turn.currentPlayer === 'white' ? 'black' : 'white';
   return {
     ...state,
     phase: 'victory',
@@ -261,5 +261,5 @@ export function isTerminal(state: GameState): boolean {
  * Get the opponent player
  */
 export function getOpponent(player: PlayerId): PlayerId {
-  return player === 'player' ? 'ai' : 'player';
+  return player === 'white' ? 'black' : 'white';
 }

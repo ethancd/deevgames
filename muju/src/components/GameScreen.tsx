@@ -74,7 +74,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
 
   // Helper: check if current player is human-controlled
   const isCurrentPlayerHuman = config.controls[state.turn.currentPlayer] === 'human';
-  const isPlayerTurn = state.turn.currentPlayer === 'player';
+  const isPlayerTurn = state.turn.currentPlayer === 'white';
 
   // For display purposes - who's "playing" right now
   const currentPlayerName = isPlayerTurn
@@ -174,18 +174,18 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
     return getMovementRange(unit.position, speed, totalActions, state.board);
   }, [selectedUnitData, viewedEnemyUnitData, selectedPlaceUnitData, state.turn.currentPlayer, state.turn.phase, state.turn.actionsRemaining, state.board, isCurrentPlayerHuman]);
 
-  // AI for "player" side (used in AI vs AI mode)
-  const playerAI = useAI({
-    difficulty: config.aiDifficulty.player,
+  // AI for "white" side (used in AI vs AI mode)
+  const whiteAI = useAI({
+    difficulty: config.aiDifficulty.white,
     thinkingDelay: 400,
-    enabled: config.controls.player === 'ai',
+    enabled: config.controls.white === 'ai',
   });
 
-  // AI for "ai" side (used in vs-ai and ai-vs-ai modes)
-  const aiAI = useAI({
-    difficulty: config.aiDifficulty.ai,
+  // AI for "black" side (used in vs-ai and ai-vs-ai modes)
+  const blackAI = useAI({
+    difficulty: config.aiDifficulty.black,
     thinkingDelay: 400,
-    enabled: config.controls.ai === 'ai',
+    enabled: config.controls.black === 'ai',
   });
 
   const [showAIRecap, setShowAIRecap] = useState(false);
@@ -195,37 +195,37 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
   const [aiAiExecutedTurn, setAiAiExecutedTurn] = useState<number | null>(null);
 
   // Combined isThinking state
-  const isThinking = playerAI.isThinking || aiAI.isThinking;
+  const isThinking = whiteAI.isThinking || blackAI.isThinking;
 
-  // Trigger AI turn for 'player' side (AI vs AI mode)
+  // Trigger AI turn for 'white' side (AI vs AI mode)
   useEffect(() => {
     if (
-      state.turn.currentPlayer === 'player' &&
-      config.controls.player === 'ai' &&
+      state.turn.currentPlayer === 'white' &&
+      config.controls.white === 'ai' &&
       state.phase === 'playing' &&
-      !playerAI.isThinking &&
+      !whiteAI.isThinking &&
       !isPaused &&
       playerAiExecutedTurn !== state.turn.turnNumber
     ) {
       setPlayerAiExecutedTurn(state.turn.turnNumber);
-      playerAI.executeAITurn(state, applyAIAction);
+      whiteAI.executeAITurn(state, applyAIAction, 'white');
     }
-  }, [state.turn.currentPlayer, state.phase, playerAI, isPaused, state, applyAIAction, playerAiExecutedTurn, config.controls.player]);
+  }, [state.turn.currentPlayer, state.phase, whiteAI, isPaused, state, applyAIAction, playerAiExecutedTurn, config.controls.white]);
 
-  // Trigger AI turn for 'ai' side
+  // Trigger AI turn for 'black' side
   useEffect(() => {
     if (
-      state.turn.currentPlayer === 'ai' &&
-      config.controls.ai === 'ai' &&
+      state.turn.currentPlayer === 'black' &&
+      config.controls.black === 'ai' &&
       state.phase === 'playing' &&
-      !aiAI.isThinking &&
+      !blackAI.isThinking &&
       !isPaused &&
       aiAiExecutedTurn !== state.turn.turnNumber
     ) {
       setAiAiExecutedTurn(state.turn.turnNumber);
-      aiAI.executeAITurn(state, applyAIAction);
+      blackAI.executeAITurn(state, applyAIAction, 'black');
     }
-  }, [state.turn.currentPlayer, state.phase, aiAI, isPaused, state, applyAIAction, aiAiExecutedTurn, config.controls.ai]);
+  }, [state.turn.currentPlayer, state.phase, blackAI, isPaused, state, applyAIAction, aiAiExecutedTurn, config.controls.black]);
 
   // Show AI recap when AI's turn ends and human's turn begins (only in vs-ai mode)
   useEffect(() => {
@@ -233,16 +233,16 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
       config.mode === 'vs-ai' &&
       isPlayerTurn &&
       !isThinking &&
-      aiAI.lastTurnActions.length > 0 &&
+      blackAI.lastTurnActions.length > 0 &&
       state.turn.turnNumber > 1
     ) {
       setShowAIRecap(true);
     }
-  }, [config.mode, isPlayerTurn, isThinking, aiAI.lastTurnActions.length, state.turn.turnNumber]);
+  }, [config.mode, isPlayerTurn, isThinking, blackAI.lastTurnActions.length, state.turn.turnNumber]);
 
   const handleDismissRecap = () => {
     setShowAIRecap(false);
-    aiAI.clearLastTurnActions();
+    blackAI.clearLastTurnActions();
   };
 
   const handleContinueFromPass = () => {
@@ -678,12 +678,12 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
 
   // Get the current player's state for resource/queue display
   const currentPlayerState = state.players[state.turn.currentPlayer];
-  const opponentPlayer: PlayerId = state.turn.currentPlayer === 'player' ? 'ai' : 'player';
+  const opponentPlayer: PlayerId = state.turn.currentPlayer === 'white' ? 'black' : 'white';
   const opponentState = state.players[opponentPlayer];
 
   // In pass-play mode, each player should only see their own queue
   const showOpponentQueue = config.mode !== 'pass-play';
-  const showAIConsole = config.controls.player === 'ai' || config.controls.ai === 'ai';
+  const showAIConsole = config.controls.white === 'ai' || config.controls.black === 'ai';
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-4">
@@ -693,8 +693,8 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
           winner={state.winner}
           onPlayAgain={handlePlayAgain}
           playerNames={config.mode === 'pass-play'
-            ? { player: 'Player 1', ai: 'Player 2' }
-            : { player: 'You', ai: 'AI' }
+            ? { white: 'Player 1', black: 'Player 2' }
+            : { white: 'You', black: 'AI' }
           }
         />
       )}
@@ -709,7 +709,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
 
       {/* AI turn recap */}
       {showAIRecap && (
-        <AIRecap actions={aiAI.lastTurnActions} onDismiss={handleDismissRecap} />
+        <AIRecap actions={blackAI.lastTurnActions} onDismiss={handleDismissRecap} />
       )}
 
       {/* Instructions modal */}
@@ -785,10 +785,10 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
               phase={state.turn.phase}
               currentPlayer={state.turn.currentPlayer}
               playerNames={config.mode === 'pass-play'
-                ? { player: 'Player 1', ai: 'Player 2' }
+                ? { white: 'Player 1', black: 'Player 2' }
                 : config.mode === 'ai-vs-ai'
-                ? { player: 'AI 1', ai: 'AI 2' }
-                : { player: 'You', ai: 'AI' }
+                ? { white: 'AI 1', black: 'AI 2' }
+                : { white: 'You', black: 'AI' }
               }
             />
           </div>
@@ -850,6 +850,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
                   onPromote={handlePromote}
                   isEnemyView={!!viewedEnemyUnitData && !selectedPlaceUnitData && !selectedUnitData}
                   onClose={handleCloseUnitInfo}
+                  currentPlayer={state.turn.currentPlayer}
                 />
               </div>
             )}
@@ -891,9 +892,9 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
               playerState={opponentState}
               viewerIsOwner={false}
               label={config.mode === 'pass-play'
-                ? (opponentPlayer === 'player' ? 'Player 1' : 'Player 2')
+                ? (opponentPlayer === 'white' ? 'Player 1' : 'Player 2')
                 : config.mode === 'ai-vs-ai'
-                ? (opponentPlayer === 'player' ? 'AI 1' : 'AI 2')
+                ? (opponentPlayer === 'white' ? 'AI 1' : 'AI 2')
                 : 'AI'
               }
             />
@@ -907,18 +908,18 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
 
           {showAIConsole && (
             <div className="w-full max-w-3xl flex flex-col gap-3">
-              {config.controls.player === 'ai' && (
+              {config.controls.white === 'ai' && (
                 <AIConsole
                   title={config.mode === 'ai-vs-ai' ? 'AI 1 Console' : 'AI Console'}
-                  debug={playerAI.lastDebug}
-                  isThinking={playerAI.isThinking}
+                  debug={whiteAI.lastDebug}
+                  isThinking={whiteAI.isThinking}
                 />
               )}
-              {config.controls.ai === 'ai' && (
+              {config.controls.black === 'ai' && (
                 <AIConsole
                   title={config.mode === 'ai-vs-ai' ? 'AI 2 Console' : 'AI Console'}
-                  debug={aiAI.lastDebug}
-                  isThinking={aiAI.isThinking}
+                  debug={blackAI.lastDebug}
+                  isThinking={blackAI.isThinking}
                 />
               )}
             </div>
