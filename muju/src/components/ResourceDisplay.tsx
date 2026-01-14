@@ -8,7 +8,7 @@ interface ResourceDisplayProps {
 
 export function ResourceDisplay({ playerState, viewerIsOwner, label }: ResourceDisplayProps) {
   const { resources, resourcesGained, resourcesSpent } = playerState;
-  const isPlayer = playerState.id === 'player';
+  const isPlayer = playerState.id === 'white';
 
   const displayLabel = label ?? (isPlayer ? 'You' : 'Opponent');
 

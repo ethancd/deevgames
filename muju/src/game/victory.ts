@@ -31,22 +31,22 @@ export function getUnitCount(board: BoardState, player: PlayerId): number {
  * Check the current game state and determine if there's a winner
  */
 export function checkVictory(board: BoardState): GameResult {
-  const playerUnits = getPlayerUnits(board, 'player');
-  const aiUnits = getPlayerUnits(board, 'ai');
+  const whiteUnits = getPlayerUnits(board, 'white');
+  const blackUnits = getPlayerUnits(board, 'black');
 
   // If both players have no units, it's a draw (shouldn't happen normally)
-  if (playerUnits.length === 0 && aiUnits.length === 0) {
+  if (whiteUnits.length === 0 && blackUnits.length === 0) {
     return { status: 'draw' };
   }
 
-  // If player has no units, AI wins
-  if (playerUnits.length === 0) {
-    return { status: 'victory', winner: 'ai' };
+  // If white has no units, black wins
+  if (whiteUnits.length === 0) {
+    return { status: 'victory', winner: 'black' };
   }
 
-  // If AI has no units, player wins
-  if (aiUnits.length === 0) {
-    return { status: 'victory', winner: 'player' };
+  // If black has no units, white wins
+  if (blackUnits.length === 0) {
+    return { status: 'victory', winner: 'white' };
   }
 
   // Game continues
@@ -57,7 +57,7 @@ export function checkVictory(board: BoardState): GameResult {
  * Get the opponent of a player
  */
 export function getOpponent(player: PlayerId): PlayerId {
-  return player === 'player' ? 'ai' : 'player';
+  return player === 'white' ? 'black' : 'white';
 }
 
 /**
@@ -88,13 +88,13 @@ export function isGameOngoing(board: BoardState): boolean {
  * Get game summary for display
  */
 export function getGameSummary(board: BoardState): {
-  playerUnits: number;
-  aiUnits: number;
+  whiteUnits: number;
+  blackUnits: number;
   result: GameResult;
 } {
   return {
-    playerUnits: getUnitCount(board, 'player'),
-    aiUnits: getUnitCount(board, 'ai'),
+    whiteUnits: getUnitCount(board, 'white'),
+    blackUnits: getUnitCount(board, 'black'),
     result: checkVictory(board),
   };
 }

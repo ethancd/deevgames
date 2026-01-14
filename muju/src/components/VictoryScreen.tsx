@@ -3,11 +3,11 @@ import type { PlayerId } from '../game/types';
 interface VictoryScreenProps {
   winner: PlayerId;
   onPlayAgain: () => void;
-  playerNames?: { player: string; ai: string };
+  playerNames?: { white: string; black: string };
 }
 
 export function VictoryScreen({ winner, onPlayAgain, playerNames }: VictoryScreenProps) {
-  const isPlayerWinner = winner === 'player';
+  const isPlayerWinner = winner === 'white';
   const winnerName = playerNames
     ? playerNames[winner]
     : (isPlayerWinner ? 'You' : 'AI');

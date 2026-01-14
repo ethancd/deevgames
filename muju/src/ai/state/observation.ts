@@ -7,7 +7,7 @@ export function extractPublicState(
   asPlayer: PlayerId,
   events: PublicState['observedEvents'] = []
 ): PublicState {
-  const opponent: PlayerId = asPlayer === 'player' ? 'ai' : 'player';
+  const opponent: PlayerId = asPlayer === 'white' ? 'black' : 'white';
   return {
     board: state.board,
     turn: state.turn,

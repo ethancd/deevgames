@@ -170,7 +170,7 @@ export function updateCell(
  * Get the starting corner for a player
  */
 export function getStartCorner(player: PlayerId): Position {
-  return player === 'player' ? { x: 0, y: 0 } : { x: 9, y: 9 };
+  return player === 'white' ? { x: 0, y: 0 } : { x: 9, y: 9 };
 }
 
 /**
@@ -179,7 +179,7 @@ export function getStartCorner(player: PlayerId): Position {
  * AI at (9,9): Hi at (8,9), Sjor at (8,8), Muju at (9,8)
  */
 export function getStartingPositions(player: PlayerId): Position[] {
-  if (player === 'player') {
+  if (player === 'white') {
     return [
       { x: 1, y: 0 }, // Hi (Fire)
       { x: 1, y: 1 }, // Sjor (Water)
@@ -201,7 +201,7 @@ export function createInitialGameState(): GameState {
   let board = createEmptyBoard();
 
   // Add starting units for both players
-  const players: PlayerId[] = ['player', 'ai'];
+  const players: PlayerId[] = ['white', 'black'];
 
   for (const player of players) {
     const positions = getStartingPositions(player);
@@ -211,26 +211,26 @@ export function createInitialGameState(): GameState {
     });
   }
 
-  const playerState: PlayerState = {
-    id: 'player',
+  const whiteState: PlayerState = {
+    id: 'white',
     resources: 0,
     buildQueue: [],
-    startCorner: getStartCorner('player'),
+    startCorner: getStartCorner('white'),
     resourcesGained: 0,
     resourcesSpent: 0,
   };
 
-  const aiState: PlayerState = {
-    id: 'ai',
+  const blackState: PlayerState = {
+    id: 'black',
     resources: 0,
     buildQueue: [],
-    startCorner: getStartCorner('ai'),
+    startCorner: getStartCorner('black'),
     resourcesGained: 0,
     resourcesSpent: 0,
   };
 
   const turnState: TurnState = {
-    currentPlayer: 'player',
+    currentPlayer: 'white',
     phase: 'action', // Start in action phase since nothing to do in place phase at game start
     actionsRemaining: MAX_ACTIONS_PER_TURN,
     turnNumber: 1,
@@ -240,8 +240,8 @@ export function createInitialGameState(): GameState {
     phase: 'playing',
     board,
     players: {
-      player: playerState,
-      ai: aiState,
+      white: whiteState,
+      black: blackState,
     },
     turn: turnState,
     winner: null,

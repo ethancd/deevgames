@@ -14,7 +14,7 @@ import type { Unit, Position } from '../../src/game/types';
 
 function createUnit(
   id: string,
-  owner: 'player' | 'ai',
+  owner: 'white' | 'black',
   position: Position,
   definitionId: string = 'fire_1'
 ): Unit {
@@ -34,50 +34,50 @@ describe('Victory System', () => {
   describe('isPlayerEliminated', () => {
     it('returns true when player has no units', () => {
       const board = createEmptyBoard();
-      expect(isPlayerEliminated(board, 'player')).toBe(true);
+      expect(isPlayerEliminated(board, 'white')).toBe(true);
     });
 
     it('returns false when player has units', () => {
       let board = createEmptyBoard();
-      const unit = createUnit('p1', 'player', { x: 1, y: 1 });
+      const unit = createUnit('p1', 'white', { x: 1, y: 1 });
       board = placeUnit(board, unit);
 
-      expect(isPlayerEliminated(board, 'player')).toBe(false);
+      expect(isPlayerEliminated(board, 'white')).toBe(false);
     });
 
     it('checks correct player', () => {
       let board = createEmptyBoard();
-      const playerUnit = createUnit('p1', 'player', { x: 1, y: 1 });
+      const playerUnit = createUnit('p1', 'white', { x: 1, y: 1 });
       board = placeUnit(board, playerUnit);
 
-      expect(isPlayerEliminated(board, 'player')).toBe(false);
-      expect(isPlayerEliminated(board, 'ai')).toBe(true);
+      expect(isPlayerEliminated(board, 'white')).toBe(false);
+      expect(isPlayerEliminated(board, 'black')).toBe(true);
     });
   });
 
   describe('getUnitCount', () => {
     it('returns 0 for empty board', () => {
       const board = createEmptyBoard();
-      expect(getUnitCount(board, 'player')).toBe(0);
-      expect(getUnitCount(board, 'ai')).toBe(0);
+      expect(getUnitCount(board, 'white')).toBe(0);
+      expect(getUnitCount(board, 'black')).toBe(0);
     });
 
     it('counts only units for specified player', () => {
       let board = createEmptyBoard();
-      board = placeUnit(board, createUnit('p1', 'player', { x: 1, y: 1 }));
-      board = placeUnit(board, createUnit('p2', 'player', { x: 2, y: 2 }));
-      board = placeUnit(board, createUnit('a1', 'ai', { x: 8, y: 8 }));
+      board = placeUnit(board, createUnit('p1', 'white', { x: 1, y: 1 }));
+      board = placeUnit(board, createUnit('p2', 'white', { x: 2, y: 2 }));
+      board = placeUnit(board, createUnit('a1', 'black', { x: 8, y: 8 }));
 
-      expect(getUnitCount(board, 'player')).toBe(2);
-      expect(getUnitCount(board, 'ai')).toBe(1);
+      expect(getUnitCount(board, 'white')).toBe(2);
+      expect(getUnitCount(board, 'black')).toBe(1);
     });
   });
 
   describe('checkVictory', () => {
     it('returns ongoing when both players have units', () => {
       let board = createEmptyBoard();
-      board = placeUnit(board, createUnit('p1', 'player', { x: 1, y: 1 }));
-      board = placeUnit(board, createUnit('a1', 'ai', { x: 8, y: 8 }));
+      board = placeUnit(board, createUnit('p1', 'white', { x: 1, y: 1 }));
+      board = placeUnit(board, createUnit('a1', 'black', { x: 8, y: 8 }));
 
       const result = checkVictory(board);
       expect(result.status).toBe('ongoing');
@@ -85,20 +85,20 @@ describe('Victory System', () => {
 
     it('returns AI victory when player has no units', () => {
       let board = createEmptyBoard();
-      board = placeUnit(board, createUnit('a1', 'ai', { x: 8, y: 8 }));
+      board = placeUnit(board, createUnit('a1', 'black', { x: 8, y: 8 }));
 
       const result = checkVictory(board);
       expect(result.status).toBe('victory');
-      expect(result).toHaveProperty('winner', 'ai');
+      expect(result).toHaveProperty('winner', 'black');
     });
 
     it('returns player victory when AI has no units', () => {
       let board = createEmptyBoard();
-      board = placeUnit(board, createUnit('p1', 'player', { x: 1, y: 1 }));
+      board = placeUnit(board, createUnit('p1', 'white', { x: 1, y: 1 }));
 
       const result = checkVictory(board);
       expect(result.status).toBe('victory');
-      expect(result).toHaveProperty('winner', 'player');
+      expect(result).toHaveProperty('winner', 'white');
     });
 
     it('returns draw when both players have no units', () => {
@@ -111,64 +111,64 @@ describe('Victory System', () => {
 
   describe('getOpponent', () => {
     it('returns ai for player', () => {
-      expect(getOpponent('player')).toBe('ai');
+      expect(getOpponent('white')).toBe('black');
     });
 
     it('returns player for ai', () => {
-      expect(getOpponent('ai')).toBe('player');
+      expect(getOpponent('black')).toBe('white');
     });
   });
 
   describe('hasWon', () => {
     it('returns true when player has won', () => {
       let board = createEmptyBoard();
-      board = placeUnit(board, createUnit('p1', 'player', { x: 1, y: 1 }));
+      board = placeUnit(board, createUnit('p1', 'white', { x: 1, y: 1 }));
 
-      expect(hasWon(board, 'player')).toBe(true);
-      expect(hasWon(board, 'ai')).toBe(false);
+      expect(hasWon(board, 'white')).toBe(true);
+      expect(hasWon(board, 'black')).toBe(false);
     });
 
     it('returns false when game is ongoing', () => {
       let board = createEmptyBoard();
-      board = placeUnit(board, createUnit('p1', 'player', { x: 1, y: 1 }));
-      board = placeUnit(board, createUnit('a1', 'ai', { x: 8, y: 8 }));
+      board = placeUnit(board, createUnit('p1', 'white', { x: 1, y: 1 }));
+      board = placeUnit(board, createUnit('a1', 'black', { x: 8, y: 8 }));
 
-      expect(hasWon(board, 'player')).toBe(false);
-      expect(hasWon(board, 'ai')).toBe(false);
+      expect(hasWon(board, 'white')).toBe(false);
+      expect(hasWon(board, 'black')).toBe(false);
     });
   });
 
   describe('hasLost', () => {
     it('returns true when player has lost', () => {
       let board = createEmptyBoard();
-      board = placeUnit(board, createUnit('a1', 'ai', { x: 8, y: 8 }));
+      board = placeUnit(board, createUnit('a1', 'black', { x: 8, y: 8 }));
 
-      expect(hasLost(board, 'player')).toBe(true);
-      expect(hasLost(board, 'ai')).toBe(false);
+      expect(hasLost(board, 'white')).toBe(true);
+      expect(hasLost(board, 'black')).toBe(false);
     });
 
     it('returns false when game is ongoing', () => {
       let board = createEmptyBoard();
-      board = placeUnit(board, createUnit('p1', 'player', { x: 1, y: 1 }));
-      board = placeUnit(board, createUnit('a1', 'ai', { x: 8, y: 8 }));
+      board = placeUnit(board, createUnit('p1', 'white', { x: 1, y: 1 }));
+      board = placeUnit(board, createUnit('a1', 'black', { x: 8, y: 8 }));
 
-      expect(hasLost(board, 'player')).toBe(false);
-      expect(hasLost(board, 'ai')).toBe(false);
+      expect(hasLost(board, 'white')).toBe(false);
+      expect(hasLost(board, 'black')).toBe(false);
     });
   });
 
   describe('isGameOngoing', () => {
     it('returns true when both players have units', () => {
       let board = createEmptyBoard();
-      board = placeUnit(board, createUnit('p1', 'player', { x: 1, y: 1 }));
-      board = placeUnit(board, createUnit('a1', 'ai', { x: 8, y: 8 }));
+      board = placeUnit(board, createUnit('p1', 'white', { x: 1, y: 1 }));
+      board = placeUnit(board, createUnit('a1', 'black', { x: 8, y: 8 }));
 
       expect(isGameOngoing(board)).toBe(true);
     });
 
     it('returns false when one player has no units', () => {
       let board = createEmptyBoard();
-      board = placeUnit(board, createUnit('p1', 'player', { x: 1, y: 1 }));
+      board = placeUnit(board, createUnit('p1', 'white', { x: 1, y: 1 }));
 
       expect(isGameOngoing(board)).toBe(false);
     });
@@ -177,27 +177,27 @@ describe('Victory System', () => {
   describe('getGameSummary', () => {
     it('returns correct summary for ongoing game', () => {
       let board = createEmptyBoard();
-      board = placeUnit(board, createUnit('p1', 'player', { x: 1, y: 1 }));
-      board = placeUnit(board, createUnit('p2', 'player', { x: 2, y: 2 }));
-      board = placeUnit(board, createUnit('a1', 'ai', { x: 8, y: 8 }));
+      board = placeUnit(board, createUnit('p1', 'white', { x: 1, y: 1 }));
+      board = placeUnit(board, createUnit('p2', 'white', { x: 2, y: 2 }));
+      board = placeUnit(board, createUnit('a1', 'black', { x: 8, y: 8 }));
 
       const summary = getGameSummary(board);
 
-      expect(summary.playerUnits).toBe(2);
-      expect(summary.aiUnits).toBe(1);
+      expect(summary.whiteUnits).toBe(2);
+      expect(summary.blackUnits).toBe(1);
       expect(summary.result.status).toBe('ongoing');
     });
 
     it('returns correct summary when player wins', () => {
       let board = createEmptyBoard();
-      board = placeUnit(board, createUnit('p1', 'player', { x: 1, y: 1 }));
+      board = placeUnit(board, createUnit('p1', 'white', { x: 1, y: 1 }));
 
       const summary = getGameSummary(board);
 
-      expect(summary.playerUnits).toBe(1);
-      expect(summary.aiUnits).toBe(0);
+      expect(summary.whiteUnits).toBe(1);
+      expect(summary.blackUnits).toBe(0);
       expect(summary.result.status).toBe('victory');
-      expect(summary.result).toHaveProperty('winner', 'player');
+      expect(summary.result).toHaveProperty('winner', 'white');
     });
   });
 
@@ -205,34 +205,34 @@ describe('Victory System', () => {
     it('eliminating all enemy units wins the game', () => {
       // Start with both players having units
       let board = createEmptyBoard();
-      board = placeUnit(board, createUnit('p1', 'player', { x: 1, y: 1 }));
-      board = placeUnit(board, createUnit('a1', 'ai', { x: 8, y: 8 }));
+      board = placeUnit(board, createUnit('p1', 'white', { x: 1, y: 1 }));
+      board = placeUnit(board, createUnit('a1', 'black', { x: 8, y: 8 }));
 
       expect(isGameOngoing(board)).toBe(true);
 
       // Remove AI's last unit (simulating elimination)
       board = {
         ...board,
-        units: board.units.filter((u) => u.owner !== 'ai'),
+        units: board.units.filter((u) => u.owner !== 'black'),
       };
 
       expect(isGameOngoing(board)).toBe(false);
-      expect(hasWon(board, 'player')).toBe(true);
+      expect(hasWon(board, 'white')).toBe(true);
     });
 
     it('losing all your units loses the game', () => {
       let board = createEmptyBoard();
-      board = placeUnit(board, createUnit('p1', 'player', { x: 1, y: 1 }));
-      board = placeUnit(board, createUnit('a1', 'ai', { x: 8, y: 8 }));
+      board = placeUnit(board, createUnit('p1', 'white', { x: 1, y: 1 }));
+      board = placeUnit(board, createUnit('a1', 'black', { x: 8, y: 8 }));
 
       // Remove player's last unit
       board = {
         ...board,
-        units: board.units.filter((u) => u.owner !== 'player'),
+        units: board.units.filter((u) => u.owner !== 'white'),
       };
 
-      expect(hasLost(board, 'player')).toBe(true);
-      expect(hasWon(board, 'ai')).toBe(true);
+      expect(hasLost(board, 'white')).toBe(true);
+      expect(hasWon(board, 'black')).toBe(true);
     });
   });
 });

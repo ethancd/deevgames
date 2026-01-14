@@ -395,7 +395,7 @@ function gameReducer(state: GameState, action: GameAction): GameState {
     }
 
     case 'RESIGN': {
-      const winner = state.turn.currentPlayer === 'player' ? 'ai' : 'player';
+      const winner = state.turn.currentPlayer === 'white' ? 'black' : 'white';
       return {
         ...state,
         phase: 'victory',
@@ -440,8 +440,8 @@ function gameReducerWithSave(state: GameState, action: GameAction): GameState {
 
   // Save when turn changes to player (catches AI turn ending via APPLY_AI_ACTION)
   if (
-    newState.turn.currentPlayer === 'player' &&
-    state.turn.currentPlayer === 'ai' &&
+    newState.turn.currentPlayer === 'white' &&
+    state.turn.currentPlayer === 'black' &&
     newState !== state
   ) {
     saveGameState(newState);
@@ -555,7 +555,7 @@ export function useGameState() {
     return getUnitById(state.board, state.selectedUnit);
   }, [state.selectedUnit, state.board]);
 
-  const isPlayerTurn = state.turn.currentPlayer === 'player';
+  const isPlayerTurn = state.turn.currentPlayer === 'white';
   const canEndTurn = state.turn.phase === 'queue';
 
   return {

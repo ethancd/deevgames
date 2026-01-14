@@ -57,7 +57,7 @@ export function tagPlan(plan: TurnPlan, state: GameState, forPlayer: PlayerId): 
 }
 
 function getOpponent(player: PlayerId): PlayerId {
-  return player === 'player' ? 'ai' : 'player';
+  return player === 'white' ? 'black' : 'white';
 }
 
 export function estimateUnitValue(unitId: string): number {

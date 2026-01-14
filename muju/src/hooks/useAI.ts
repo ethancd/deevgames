@@ -13,7 +13,7 @@ interface UseAIOptions {
 
 interface UseAIReturn {
   isThinking: boolean;
-  executeAITurn: (state: GameState, onAction: (action: AIAction) => void, playerId: 'player' | 'ai') => Promise<void>;
+  executeAITurn: (state: GameState, onAction: (action: AIAction) => void, playerId: 'white' | 'black') => Promise<void>;
   difficulty: AIDifficulty;
   setDifficulty: (d: AIDifficulty) => void;
   lastTurnActions: AIAction[];
@@ -45,7 +45,7 @@ export function useAI(options: UseAIOptions = {}): UseAIReturn {
   }, [difficulty]);
 
   const executeAITurn = useCallback(
-    async (state: GameState, onAction: (action: AIAction) => void, playerId: 'player' | 'ai'): Promise<void> => {
+    async (state: GameState, onAction: (action: AIAction) => void, playerId: 'white' | 'black'): Promise<void> => {
       if (!enabled || state.turn.currentPlayer !== playerId) {
         return;
       }

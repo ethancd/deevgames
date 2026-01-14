@@ -4,7 +4,7 @@ interface PhaseIndicatorProps {
   turnNumber: number;
   phase: TurnPhase;
   currentPlayer: PlayerId;
-  playerNames?: { player: string; ai: string };
+  playerNames?: { white: string; black: string };
 }
 
 export function PhaseIndicator({ turnNumber, phase, currentPlayer, playerNames }: PhaseIndicatorProps) {
@@ -22,11 +22,11 @@ export function PhaseIndicator({ turnNumber, phase, currentPlayer, playerNames }
 
   const playerName = playerNames
     ? playerNames[currentPlayer]
-    : (currentPlayer === 'player' ? 'You' : 'AI');
+    : (currentPlayer === 'white' ? 'You' : 'AI');
 
   const turnLabel = playerNames
     ? `${playerName}'s Turn`
-    : (currentPlayer === 'player' ? 'Your Turn' : 'AI Turn');
+    : (currentPlayer === 'white' ? 'Your Turn' : 'AI Turn');
 
   return (
     <div className="flex items-center gap-4 text-white">
@@ -49,7 +49,7 @@ export function PhaseIndicator({ turnNumber, phase, currentPlayer, playerNames }
       <div className="flex items-center gap-2">
         <span className={`
           font-medium
-          ${currentPlayer === 'player' ? 'text-green-400' : 'text-red-400'}
+          ${currentPlayer === 'white' ? 'text-green-400' : 'text-red-400'}
         `}>
           {turnLabel}
         </span>
