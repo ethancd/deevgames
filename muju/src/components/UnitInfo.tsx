@@ -101,7 +101,7 @@ export function UnitInfo({
   const color = getElementHex(def.element);
 
   return (
-    <div className={`p-3 bg-gray-800 rounded border ${isEnemyView ? 'border-red-600' : 'border-gray-700'} relative`}>
+    <div className={`p-3 bg-gray-800 rounded border ${unit.owner === 'white' ? 'border-slate-400' : 'border-slate-600'} relative`}>
       {onClose && (
         <button
           onClick={onClose}
@@ -112,7 +112,9 @@ export function UnitInfo({
         </button>
       )}
       {isEnemyView && (
-        <div className="text-xs text-red-400 mb-2">Enemy Unit</div>
+        <div className={`text-xs mb-2 ${unit.owner === 'white' ? 'text-slate-300' : 'text-slate-500'}`}>
+          {unit.owner === 'white' ? 'White' : 'Black'} Unit
+        </div>
       )}
       <div className="flex items-center gap-3 mb-3">
         <div
