@@ -8,17 +8,17 @@ interface ResourceDisplayProps {
 
 export function ResourceDisplay({ playerState, viewerIsOwner, label }: ResourceDisplayProps) {
   const { resources, resourcesGained, resourcesSpent, resourcesManifested } = playerState;
-  const isPlayer = playerState.id === 'white';
+  const isWhite = playerState.id === 'white';
 
-  const displayLabel = label ?? (isPlayer ? 'You' : 'Opponent');
+  const displayLabel = label ?? (isWhite ? 'White' : 'Black');
 
   return (
     <div className={`
       p-3 rounded-lg
-      ${isPlayer ? 'bg-green-900/30 border border-green-700' : 'bg-red-900/30 border border-red-700'}
+      ${isWhite ? 'bg-slate-300/20 border border-slate-400' : 'bg-slate-900/50 border border-slate-600'}
     `}>
       <div className="flex items-center justify-between mb-2">
-        <span className={`font-medium ${isPlayer ? 'text-green-400' : 'text-red-400'}`}>
+        <span className={`font-medium ${isWhite ? 'text-slate-200' : 'text-slate-400'}`}>
           {displayLabel}
         </span>
       </div>
