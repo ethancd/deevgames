@@ -13,7 +13,7 @@ interface UseAIOptions {
 
 interface UseAIReturn {
   isThinking: boolean;
-  executeAITurn: (state: GameState, onAction: (action: AIAction) => void) => Promise<void>;
+  executeAITurn: (state: GameState, onAction: (action: AIAction) => void, playerId: 'player' | 'ai') => Promise<void>;
   difficulty: AIDifficulty;
   setDifficulty: (d: AIDifficulty) => void;
   lastTurnActions: AIAction[];
@@ -45,8 +45,8 @@ export function useAI(options: UseAIOptions = {}): UseAIReturn {
   }, [difficulty]);
 
   const executeAITurn = useCallback(
-    async (state: GameState, onAction: (action: AIAction) => void): Promise<void> => {
-      if (!enabled || state.turn.currentPlayer !== 'ai') {
+    async (state: GameState, onAction: (action: AIAction) => void, playerId: 'player' | 'ai'): Promise<void> => {
+      if (!enabled || state.turn.currentPlayer !== playerId) {
         return;
       }
 
@@ -56,7 +56,7 @@ export function useAI(options: UseAIOptions = {}): UseAIReturn {
       const minThinkingTime = aiRef.current.getMinThinkingTime();
 
       // Check if AI should resign (all difficulties resign when position is hopeless)
-      if (shouldResign(state, 'ai')) {
+      if (shouldResign(state, playerId)) {
         // Wait minimum thinking time before resigning
         const elapsed = Date.now() - turnStartTime;
         if (elapsed < minThinkingTime) {
@@ -80,7 +80,7 @@ export function useAI(options: UseAIOptions = {}): UseAIReturn {
           iterations++;
 
           // Check if still AI's turn
-          if (currentState.turn.currentPlayer !== 'ai') {
+          if (currentState.turn.currentPlayer !== playerId) {
             break;
           }
 

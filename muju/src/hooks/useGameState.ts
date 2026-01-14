@@ -469,18 +469,12 @@ export function useGameState() {
 
   // Wrap dispatch to track undo history for undoable actions
   const dispatchWithUndo = useCallback((action: GameAction) => {
-    // Save current state before undoable player actions
-    if (
-      UNDOABLE_ACTIONS.has(action.type) &&
-      state.turn.currentPlayer === 'player'
-    ) {
+    // Save current state before undoable player actions (for any player's turn)
+    if (UNDOABLE_ACTIONS.has(action.type)) {
       setUndoHistory((prev) => [...prev, state]);
     }
     // Also save state before phase transitions so player can undo back through phases
-    if (
-      (action.type === 'END_PLACE_PHASE' || action.type === 'END_ACTION_PHASE') &&
-      state.turn.currentPlayer === 'player'
-    ) {
+    if (action.type === 'END_PLACE_PHASE' || action.type === 'END_ACTION_PHASE') {
       setUndoHistory((prev) => [...prev, state]);
     }
     // Clear undo history only on turn end or game reset (not phase transitions)
@@ -497,7 +491,7 @@ export function useGameState() {
     dispatch({ type: 'RESTORE_STATE', state: previousState });
   }, [undoHistory]);
 
-  const canUndo = undoHistory.length > 0 && state.turn.currentPlayer === 'player';
+  const canUndo = undoHistory.length > 0;
 
   const selectUnit = useCallback((unitId: string) => {
     dispatchWithUndo({ type: 'SELECT_UNIT', unitId });

@@ -1,4 +1,4 @@
-import type { Unit, Cell } from '../game/types';
+import type { Unit, Cell, PlayerId } from '../game/types';
 import { getUnitDefinition } from '../game/units';
 import { getElementHex } from '../utils/colors';
 import { getPromotionCost, getPromotedDefinitionId, isMaxTier } from '../game/promotion';
@@ -16,6 +16,7 @@ interface UnitInfoProps {
   onPromote?: () => void;
   isEnemyView?: boolean; // True when viewing enemy unit stats
   onClose?: () => void; // Close/deselect callback
+  currentPlayer?: PlayerId; // Current player for ownership checks
 }
 
 export function UnitInfo({
@@ -30,6 +31,7 @@ export function UnitInfo({
   onPromote,
   isEnemyView = false,
   onClose,
+  currentPlayer,
 }: UnitInfoProps) {
   // Show preview stats if no unit but have a preview definition
   if (!unit && previewDefinitionId) {
@@ -189,8 +191,8 @@ export function UnitInfo({
         return null;
       })()}
 
-      {/* Promotion section - only during place phase */}
-      {isPlacePhase && unit.owner === 'player' && !isMaxTier(unit) && (() => {
+      {/* Promotion section - only during place phase for own units */}
+      {isPlacePhase && currentPlayer && unit.owner === currentPlayer && !isMaxTier(unit) && (() => {
         const cost = getPromotionCost(unit);
         const promotedDefId = getPromotedDefinitionId(unit);
         const promotedDef = promotedDefId ? getUnitDefinition(promotedDefId) : null;

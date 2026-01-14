@@ -208,7 +208,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
       playerAiExecutedTurn !== state.turn.turnNumber
     ) {
       setPlayerAiExecutedTurn(state.turn.turnNumber);
-      playerAI.executeAITurn(state, applyAIAction);
+      playerAI.executeAITurn(state, applyAIAction, 'player');
     }
   }, [state.turn.currentPlayer, state.phase, playerAI, isPaused, state, applyAIAction, playerAiExecutedTurn, config.controls.player]);
 
@@ -223,7 +223,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
       aiAiExecutedTurn !== state.turn.turnNumber
     ) {
       setAiAiExecutedTurn(state.turn.turnNumber);
-      aiAI.executeAITurn(state, applyAIAction);
+      aiAI.executeAITurn(state, applyAIAction, 'ai');
     }
   }, [state.turn.currentPlayer, state.phase, aiAI, isPaused, state, applyAIAction, aiAiExecutedTurn, config.controls.ai]);
 
@@ -850,6 +850,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
                   onPromote={handlePromote}
                   isEnemyView={!!viewedEnemyUnitData && !selectedPlaceUnitData && !selectedUnitData}
                   onClose={handleCloseUnitInfo}
+                  currentPlayer={state.turn.currentPlayer}
                 />
               </div>
             )}
