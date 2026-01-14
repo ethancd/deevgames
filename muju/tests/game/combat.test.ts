@@ -25,10 +25,11 @@ describe('Combat Module', () => {
       expect(canAttack(unit)).toBe(true);
     });
 
-    it('returns false if unit has already attacked', () => {
+    it('returns true even if unit has already attacked (multi-attack allowed)', () => {
       const unit = createUnit('fire_1', 'white', { x: 0, y: 0 });
       unit.hasAttacked = true;
-      expect(canAttack(unit)).toBe(false);
+      // Units can attack multiple different targets per turn
+      expect(canAttack(unit)).toBe(true);
     });
 
     it('returns false if unit cannot act this turn', () => {
@@ -39,14 +40,26 @@ describe('Combat Module', () => {
   });
 
   describe('getValidAttacks', () => {
-    it('returns empty if unit cannot attack', () => {
+    it('returns empty if unit cannot act this turn', () => {
       let board = createEmptyBoard();
       const unit = createUnit('fire_1', 'white', { x: 5, y: 5 });
-      unit.hasAttacked = true;
+      unit.canActThisTurn = false; // Unit cannot act, not just "has attacked"
       const enemy = createUnit('fire_1', 'black', { x: 5, y: 4 });
       board = addUnit(board, unit);
       board = addUnit(board, enemy);
 
+      expect(getValidAttacks(unit, board)).toEqual([]);
+    });
+
+    it('excludes targets already attacked this turn', () => {
+      let board = createEmptyBoard();
+      const unit = createUnit('fire_1', 'white', { x: 5, y: 5 });
+      const enemy = createUnit('fire_1', 'black', { x: 5, y: 4 });
+      unit.attackedThisTurn = [enemy.id]; // Already attacked this enemy
+      board = addUnit(board, unit);
+      board = addUnit(board, enemy);
+
+      // Cannot attack same target twice, but could attack other targets
       expect(getValidAttacks(unit, board)).toEqual([]);
     });
 
@@ -271,16 +284,28 @@ describe('Combat Module', () => {
       expect(attackers[0].id).toBe(attacker.id);
     });
 
-    it('excludes units that have already attacked', () => {
+    it('excludes units that cannot act this turn', () => {
       let board = createEmptyBoard();
       const attacker = createUnit('fire_1', 'white', { x: 5, y: 5 });
-      attacker.hasAttacked = true;
+      attacker.canActThisTurn = false; // Cannot act, not just "has attacked"
       const enemy = createUnit('fire_1', 'black', { x: 5, y: 4 });
       board = addUnit(board, attacker);
       board = addUnit(board, enemy);
 
       const attackers = getAttackersFor({ x: 5, y: 4 }, board, 'white');
       expect(attackers).toHaveLength(0);
+    });
+
+    it('includes units that have attacked but can still act', () => {
+      let board = createEmptyBoard();
+      const attacker = createUnit('fire_1', 'white', { x: 5, y: 5 });
+      attacker.hasAttacked = true; // Has attacked, but can still attack other targets
+      const enemy = createUnit('fire_1', 'black', { x: 5, y: 4 });
+      board = addUnit(board, attacker);
+      board = addUnit(board, enemy);
+
+      const attackers = getAttackersFor({ x: 5, y: 4 }, board, 'white');
+      expect(attackers).toHaveLength(1);
     });
   });
 
