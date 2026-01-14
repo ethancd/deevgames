@@ -2,7 +2,8 @@ import { useReducer, useCallback, useMemo, useState } from 'react';
 import type { GameState, GameAction, Position } from '../game/types';
 import type { AIAction } from '../ai/types';
 import { createInitialGameState, getUnitById } from '../game/board';
-import { getValidMoves } from '../game/movement';
+import { getValidMoves, getMoveCost } from '../game/movement';
+import { getUnitDefinition } from '../game/units';
 import { getValidAttacks, resolveCombat } from '../game/combat';
 import { executeMine, canMine } from '../game/mining';
 import { useAction, endTurn as endTurnLogic, startActionPhase, canActInPlacePhase, canActInQueuePhase } from '../game/turn';
@@ -68,12 +69,12 @@ function gameReducer(state: GameState, action: GameAction): GameState {
         return state;
       }
 
-      // Validate move
-      const validMoves = getValidMoves(unit, state.board);
-      const isValidMove = validMoves.some(
-        (pos: Position) => pos.x === action.to.x && pos.y === action.to.y
-      );
-      if (!isValidMove) {
+      // Calculate the cost of this move (number of actions required)
+      const unitDef = getUnitDefinition(unit.definitionId);
+      const moveCost = getMoveCost(unit.position, action.to, unitDef.speed, state.board);
+
+      // Check if valid move (reachable and have enough actions)
+      if (moveCost === null || moveCost > state.turn.actionsRemaining) {
         return state;
       }
 
@@ -87,14 +88,17 @@ function gameReducer(state: GameState, action: GameAction): GameState {
         ),
       };
 
-      // Use action (decrements actions remaining)
-      const stateAfterAction = useAction(state);
+      // Use multiple actions if needed
+      let stateAfterActions = state;
+      for (let i = 0; i < moveCost; i++) {
+        stateAfterActions = useAction(stateAfterActions);
+      }
 
       // Check victory after move
       const victoryResult = checkVictory(newBoard);
 
       return {
-        ...stateAfterAction,
+        ...stateAfterActions,
         board: newBoard,
         selectedUnit: null,
         validMoves: [],

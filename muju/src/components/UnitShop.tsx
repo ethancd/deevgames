@@ -24,13 +24,16 @@ interface UnitShopProps {
   resources: number;
   player: PlayerId;
   board: BoardState;
-  onQueueUnit: (definitionId: string) => void;
+  onQueueUnit?: (definitionId: string) => void;
   // External keyboard selection control
   selectedId: string | null;
   onSelectId: (id: string | null) => void;
+  // Inspect-only mode: just show stats, no building
+  inspectOnly?: boolean;
+  onClose?: () => void;
 }
 
-export function UnitShop({ resources, player, board, onQueueUnit, selectedId, onSelectId }: UnitShopProps) {
+export function UnitShop({ resources, player, board, onQueueUnit, selectedId, onSelectId, inspectOnly = false, onClose }: UnitShopProps) {
   // Clear selection when component unmounts or resources change significantly
   useEffect(() => {
     return () => onSelectId(null);
@@ -61,7 +64,7 @@ export function UnitShop({ resources, player, board, onQueueUnit, selectedId, on
   const canBuildSelected = canAffordSelected && meetsTechSelected;
 
   const handleBuild = () => {
-    if (selectedId && canBuildSelected) {
+    if (selectedId && canBuildSelected && onQueueUnit) {
       onQueueUnit(selectedId);
       onSelectId(null);
     }
@@ -71,8 +74,19 @@ export function UnitShop({ resources, player, board, onQueueUnit, selectedId, on
     <div className="p-3 bg-gray-800 rounded border border-gray-700">
       {/* Header */}
       <div className="flex justify-between items-center mb-3">
-        <div className="text-sm text-gray-400">Build Units</div>
-        <div className="text-sm text-yellow-400">{resources} 💎</div>
+        <div className="text-sm text-gray-400">{inspectOnly ? 'Unit Stats' : 'Build Units'}</div>
+        <div className="flex items-center gap-2">
+          {!inspectOnly && <div className="text-sm text-yellow-400">{resources} 💎</div>}
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-white text-lg leading-none"
+              title="Close"
+            >
+              ×
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Unit Grid */}
@@ -160,20 +174,29 @@ export function UnitShop({ resources, player, board, onQueueUnit, selectedId, on
             </div>
           )}
 
-          {/* Build Button */}
-          <button
-            onClick={handleBuild}
-            disabled={!canBuildSelected}
-            className={`
-              w-full py-2 rounded text-sm font-medium transition-colors
-              ${canBuildSelected
-                ? 'bg-green-600 hover:bg-green-700 text-white'
-                : 'bg-gray-700 text-gray-500 cursor-not-allowed'
-              }
-            `}
-          >
-            Build ({getBuildCost(selectedDef.id)} 💎)
-          </button>
+          {/* Build Button (hidden in inspect mode) */}
+          {!inspectOnly && (
+            <button
+              onClick={handleBuild}
+              disabled={!canBuildSelected}
+              className={`
+                w-full py-2 rounded text-sm font-medium transition-colors
+                ${canBuildSelected
+                  ? 'bg-green-600 hover:bg-green-700 text-white'
+                  : 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                }
+              `}
+            >
+              Build ({getBuildCost(selectedDef.id)} 💎)
+            </button>
+          )}
+
+          {/* Cost info in inspect mode */}
+          {inspectOnly && (
+            <div className="text-xs text-gray-400 text-center">
+              Cost: {getBuildCost(selectedDef.id)} 💎 · Build: {getBuildTime(selectedDef.id)} turn{getBuildTime(selectedDef.id) > 1 ? 's' : ''}
+            </div>
+          )}
         </div>
       )}
 

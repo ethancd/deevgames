@@ -25,10 +25,11 @@ describe('Mining Module', () => {
       expect(canMineAction(unit)).toBe(true);
     });
 
-    it('returns false if unit has already mined', () => {
+    it('returns true even if unit has already mined (multiple mines per turn allowed)', () => {
       const unit = createUnit('fire_1', 'player', { x: 0, y: 0 });
       unit.hasMined = true;
-      expect(canMineAction(unit)).toBe(false);
+      // Units can mine multiple times per turn, hasMined is just tracking
+      expect(canMineAction(unit)).toBe(true);
     });
 
     it('returns false if unit cannot act this turn', () => {
@@ -128,13 +129,13 @@ describe('Mining Module', () => {
       expect(canMine(unit, board)).toBe(false);
     });
 
-    it('returns false if unit has already mined', () => {
+    it('returns true even if unit has already mined (multiple mines per turn allowed)', () => {
       let board = createEmptyBoard();
       const unit = createUnit('fire_1', 'player', { x: 5, y: 5 });
       unit.hasMined = true;
       board = addUnit(board, unit);
-
-      expect(canMine(unit, board)).toBe(false);
+      // Units can mine multiple times per turn, hasMined is just tracking
+      expect(canMine(unit, board)).toBe(true);
     });
 
     it('returns false if cell is completely depleted', () => {

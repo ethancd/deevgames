@@ -19,10 +19,11 @@ describe('Movement Module', () => {
       expect(canMove(unit)).toBe(true);
     });
 
-    it('returns false if unit has already moved', () => {
+    it('returns true even if unit has already moved (multiple moves per turn allowed)', () => {
       const unit = createUnit('fire_1', 'player', { x: 0, y: 0 });
       unit.hasMoved = true;
-      expect(canMove(unit)).toBe(false);
+      // Units can move multiple times per turn, hasMoved is just tracking
+      expect(canMove(unit)).toBe(true);
     });
 
     it('returns false if unit cannot act this turn', () => {
@@ -35,7 +36,7 @@ describe('Movement Module', () => {
   describe('getValidMoves', () => {
     it('returns empty array if unit cannot move', () => {
       const unit = createUnit('fire_1', 'player', { x: 5, y: 5 });
-      unit.hasMoved = true;
+      unit.canActThisTurn = false; // Units can move multiple times per turn, only canActThisTurn blocks
       const board = createEmptyBoard();
       expect(getValidMoves(unit, board)).toEqual([]);
     });

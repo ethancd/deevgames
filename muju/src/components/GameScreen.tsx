@@ -14,12 +14,13 @@ import { AIRecap } from './AIRecap';
 import { AIConsole } from './AIConsole';
 import { PassDeviceOverlay } from './PassDeviceOverlay';
 import { InstructionsModal } from './InstructionsModal';
-import { getUnitById, getCell, isOccupied, isValidPosition } from '../game/board';
-import { getUnitDefinition, UNIT_DEFINITIONS } from '../game/units';
+import { getUnitById, getCell, isOccupied, isValidPosition, MAX_ACTIONS_PER_TURN } from '../game/board';
+import { getUnitDefinition, getNextTierDefinition, UNIT_DEFINITIONS } from '../game/units';
 import { canMine } from '../game/mining';
 import { canPromote } from '../game/promotion';
 import { getAllSpawnPositions, getSpawnInvalidReason } from '../game/spawning';
 import { canBuildUnit } from '../game/building';
+import { getMovementRange, type MovementRangePosition } from '../game/movement';
 import type { Position, GameConfig, PlayerId, Element } from '../game/types';
 
 type SpawnFeedback = {
@@ -67,6 +68,9 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
 
   // Partial movement state: tracks pending move path before committing
   const [pendingMovePath, setPendingMovePath] = useState<Position[]>([]);
+
+  // Unit shop inspection mode (show shop outside of queue phase)
+  const [showUnitShopInspection, setShowUnitShopInspection] = useState(false);
 
   // Helper: check if current player is human-controlled
   const isCurrentPlayerHuman = config.controls[state.turn.currentPlayer] === 'human';
@@ -141,6 +145,34 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
     if (!viewedEnemyUnitId) return null;
     return getUnitById(state.board, viewedEnemyUnitId);
   }, [viewedEnemyUnitId, state.board]);
+
+  // Calculate movement range for any viewed/selected unit
+  const movementRange = useMemo((): MovementRangePosition[] => {
+    // Determine which unit to show movement range for
+    const unit = selectedUnitData ?? viewedEnemyUnitData ?? selectedPlaceUnitData;
+    if (!unit) return [];
+
+    const isOwnUnit = unit.owner === state.turn.currentPlayer;
+    const unitDef = getUnitDefinition(unit.definitionId);
+
+    let speed = unitDef.speed;
+    let totalActions = MAX_ACTIONS_PER_TURN;
+
+    // If viewing enemy unit during my turn, show upgraded movement
+    if (!isOwnUnit && isCurrentPlayerHuman) {
+      const nextTierDef = getNextTierDefinition(unit.definitionId);
+      if (nextTierDef) {
+        speed = nextTierDef.speed;
+      }
+    }
+
+    // If it's my unit during action phase, use remaining actions
+    if (isOwnUnit && state.turn.phase === 'action') {
+      totalActions = state.turn.actionsRemaining;
+    }
+
+    return getMovementRange(unit.position, speed, totalActions, state.board);
+  }, [selectedUnitData, viewedEnemyUnitData, selectedPlaceUnitData, state.turn.currentPlayer, state.turn.phase, state.turn.actionsRemaining, state.board, isCurrentPlayerHuman]);
 
   // AI for "player" side (used in AI vs AI mode)
   const playerAI = useAI({
@@ -251,7 +283,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
       return;
     }
 
-    // Check if clicking on valid move
+    // Check if clicking on valid move (single action)
     const isValidMove = state.validMoves.some(
       (m) => m.x === position.x && m.y === position.y
     );
@@ -261,10 +293,18 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
       (a) => a.x === position.x && a.y === position.y
     );
 
+    // Check if clicking on movement range (multi-action move)
+    const movementRangePos = movementRange.find(
+      (r) => r.position.x === position.x && r.position.y === position.y
+    );
+
     if (isValidMove && state.selectedUnit) {
       moveUnit(state.selectedUnit, position);
     } else if (isValidAttack && state.selectedUnit) {
       attackWith(state.selectedUnit, position);
+    } else if (movementRangePos && state.selectedUnit && selectedUnitData?.owner === state.turn.currentPlayer) {
+      // Multi-action move to a position in movement range
+      moveUnit(state.selectedUnit, position);
     } else {
       deselect();
     }
@@ -706,6 +746,16 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
             >
               New Game
             </button>
+            <button
+              onClick={() => setShowUnitShopInspection(!showUnitShopInspection)}
+              className={`px-3 py-1 rounded text-sm transition-colors ${
+                showUnitShopInspection
+                  ? 'bg-purple-600 hover:bg-purple-500 text-white'
+                  : 'bg-gray-700 hover:bg-gray-600 text-white'
+              }`}
+            >
+              Units
+            </button>
             {config.mode === 'ai-vs-ai' && (
               <button
                 onClick={togglePause}
@@ -772,6 +822,17 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
                 onSelectId={setShopSelectedId}
               />
             )}
+            {showUnitShopInspection && state.turn.phase !== 'queue' && (
+              <UnitShop
+                resources={currentPlayerState.resources}
+                player={state.turn.currentPlayer}
+                board={state.board}
+                selectedId={shopSelectedId}
+                onSelectId={setShopSelectedId}
+                inspectOnly={true}
+                onClose={() => setShowUnitShopInspection(false)}
+              />
+            )}
             <ElementLegend />
 
             {/* Unit info popover - overlays player info area */}
@@ -806,6 +867,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
               validSpawns={validSpawns}
               invalidSpawnPosition={spawnFeedback?.position ?? null}
               pendingMovePath={pendingMovePath}
+              movementRange={movementRange}
               onCellClick={handleCellClick}
               onUnitClick={handleUnitClick}
             />
