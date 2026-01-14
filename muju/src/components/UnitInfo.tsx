@@ -15,6 +15,7 @@ interface UnitInfoProps {
   resources?: number;
   onPromote?: () => void;
   isEnemyView?: boolean; // True when viewing enemy unit stats
+  onClose?: () => void; // Close/deselect callback
 }
 
 export function UnitInfo({
@@ -28,6 +29,7 @@ export function UnitInfo({
   resources = 0,
   onPromote,
   isEnemyView = false,
+  onClose,
 }: UnitInfoProps) {
   // Show preview stats if no unit but have a preview definition
   if (!unit && previewDefinitionId) {
@@ -35,7 +37,16 @@ export function UnitInfo({
     const color = getElementHex(def.element);
 
     return (
-      <div className="p-3 bg-gray-800 rounded border border-cyan-600">
+      <div className="p-3 bg-gray-800 rounded border border-cyan-600 relative">
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="absolute top-1 right-1 text-gray-400 hover:text-white text-lg leading-none p-1"
+            aria-label="Close"
+          >
+            ×
+          </button>
+        )}
         <div className="text-xs text-cyan-400 mb-2">Ready to Place</div>
         <div className="flex items-center gap-3 mb-3">
           <div
@@ -88,7 +99,16 @@ export function UnitInfo({
   const color = getElementHex(def.element);
 
   return (
-    <div className={`p-3 bg-gray-800 rounded border ${isEnemyView ? 'border-red-600' : 'border-gray-700'}`}>
+    <div className={`p-3 bg-gray-800 rounded border ${isEnemyView ? 'border-red-600' : 'border-gray-700'} relative`}>
+      {onClose && (
+        <button
+          onClick={onClose}
+          className="absolute top-1 right-1 text-gray-400 hover:text-white text-lg leading-none p-1"
+          aria-label="Close"
+        >
+          ×
+        </button>
+      )}
       {isEnemyView && (
         <div className="text-xs text-red-400 mb-2">Enemy Unit</div>
       )}
@@ -143,8 +163,9 @@ export function UnitInfo({
             <button
               onClick={onMine}
               className="w-full py-1 px-3 bg-purple-600 hover:bg-purple-700 text-white text-sm rounded transition-colors"
+              title="Mine Resources (M)"
             >
-              Mine Resources
+              Mine Resources <span className="text-purple-300">(M)</span>
             </button>
           );
         }
@@ -156,7 +177,7 @@ export function UnitInfo({
                 disabled
                 className="w-full py-1 px-3 bg-gray-700 text-gray-500 text-sm rounded cursor-not-allowed"
               >
-                Mine Resources
+                Mine Resources <span className="text-gray-600">(M)</span>
               </button>
               <div className="text-xs text-red-400 mt-1">
                 Resources too deep — need Mining {requiredMining}+
@@ -224,8 +245,9 @@ export function UnitInfo({
                   : 'bg-gray-700 text-gray-500 cursor-not-allowed'
                 }
               `}
+              title="Upgrade (U)"
             >
-              Upgrade ({cost} 💎)
+              Upgrade ({cost} 💎) <span className={canAffordPromotion ? 'text-yellow-300' : 'text-gray-600'}>(U)</span>
             </button>
             {!canAffordPromotion && cost !== null && (
               <div className="text-xs text-red-400 mt-1">

@@ -8,34 +8,46 @@ interface CellProps {
   isSelected: boolean;
   elementalBonus?: number; // -1, 0, or +1 for attack targets
   isInvalidSpawn?: boolean; // Show red X for invalid spawn click
+  isPendingMove?: boolean; // Show pending partial movement
   onClick: (position: Position) => void;
 }
 
-export function Cell({ cell, isValidMove, isValidAttack, isValidSpawn, isSelected, elementalBonus, isInvalidSpawn, onClick }: CellProps) {
+export function Cell({ cell, isValidMove, isValidAttack, isValidSpawn, isSelected, elementalBonus, isInvalidSpawn, isPendingMove, onClick }: CellProps) {
   const { position, resourceLayers } = cell;
 
-  // Resource visualization: darker = more resources
-  const resourceOpacity = resourceLayers / 5;
-  const resourceColor = `rgba(139, 92, 246, ${resourceOpacity * 0.3})`; // Purple tint for resources
+  // Resource visualization: amber coloring based on depth (0-5)
+  // Colors progress from gray (depleted) to rich amber (full)
+  const resourceBgColors = [
+    'bg-gray-200', // 0 = depleted
+    'bg-amber-100', // 1
+    'bg-amber-200', // 2
+    'bg-amber-300', // 3
+    'bg-amber-400', // 4
+    'bg-amber-500', // 5 = full
+  ];
 
-  let borderClass = 'border-gray-200';
-  let bgClass = 'bg-gray-50';
+  let borderClass = 'border-gray-300';
+  let bgClass = resourceBgColors[resourceLayers] || resourceBgColors[0];
 
+  // Override background for special states
   if (isInvalidSpawn) {
     borderClass = 'border-red-500 border-2';
-    bgClass = 'bg-red-100';
+    bgClass = 'bg-red-200';
+  } else if (isPendingMove) {
+    borderClass = 'border-yellow-500 border-2';
+    bgClass = 'bg-yellow-200';
   } else if (isSelected) {
     borderClass = 'border-blue-500 border-2';
-    bgClass = 'bg-blue-100';
+    bgClass = 'bg-blue-200';
   } else if (isValidMove) {
-    borderClass = 'border-green-400';
-    bgClass = 'bg-green-100';
+    borderClass = 'border-blue-400 border-2';
+    // Keep amber background visible but add blue tint
   } else if (isValidAttack) {
-    borderClass = 'border-red-400';
-    bgClass = 'bg-red-100';
+    borderClass = 'border-red-400 border-2';
+    // Keep amber background visible but add red tint
   } else if (isValidSpawn) {
-    borderClass = 'border-cyan-400';
-    bgClass = 'bg-cyan-100';
+    borderClass = 'border-cyan-400 border-2';
+    // Keep amber background visible
   }
 
   return (
@@ -48,13 +60,12 @@ export function Cell({ cell, isValidMove, isValidAttack, isValidSpawn, isSelecte
         transition-all duration-150
         relative
       `}
-      style={{ backgroundColor: resourceLayers > 0 ? resourceColor : undefined }}
       onClick={() => onClick(position)}
       data-testid={`cell-${position.x}-${position.y}`}
     >
       {/* Resource indicator */}
       {resourceLayers > 0 && (
-        <span className="absolute bottom-0.5 right-0.5 text-[10px] text-purple-600 font-mono">
+        <span className="absolute bottom-0.5 right-0.5 text-[10px] text-amber-900 font-mono font-bold">
           {resourceLayers}
         </span>
       )}
@@ -75,6 +86,13 @@ export function Cell({ cell, isValidMove, isValidAttack, isValidSpawn, isSelecte
       {isInvalidSpawn && (
         <span className="absolute inset-0 flex items-center justify-center text-2xl text-red-600 font-bold">
           ✕
+        </span>
+      )}
+
+      {/* Pending move indicator */}
+      {isPendingMove && (
+        <span className="absolute inset-0 flex items-center justify-center text-lg text-yellow-700 font-bold">
+          ●
         </span>
       )}
     </div>

@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useRef } from 'react';
+import { useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import { useGameState } from '../hooks/useGameState';
 import { useAI } from '../hooks/useAI';
 import { Board } from './Board';
@@ -14,11 +14,13 @@ import { AIRecap } from './AIRecap';
 import { AIConsole } from './AIConsole';
 import { PassDeviceOverlay } from './PassDeviceOverlay';
 import { InstructionsModal } from './InstructionsModal';
-import { getUnitById, getCell } from '../game/board';
-import { getUnitDefinition } from '../game/units';
+import { getUnitById, getCell, isOccupied, isValidPosition } from '../game/board';
+import { getUnitDefinition, UNIT_DEFINITIONS } from '../game/units';
 import { canMine } from '../game/mining';
+import { canPromote } from '../game/promotion';
 import { getAllSpawnPositions, getSpawnInvalidReason } from '../game/spawning';
-import type { Position, GameConfig, PlayerId } from '../game/types';
+import { canBuildUnit } from '../game/building';
+import type { Position, GameConfig, PlayerId, Element } from '../game/types';
 
 type SpawnFeedback = {
   position: Position;
@@ -59,6 +61,12 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
   const [isPaused, setIsPaused] = useState(false);
   const [showInstructions, setShowInstructions] = useState(false);
   const lastTurnPlayer = useRef<PlayerId | null>(null);
+
+  // Unit shop keyboard navigation state
+  const [shopSelectedId, setShopSelectedId] = useState<string | null>(null);
+
+  // Partial movement state: tracks pending move path before committing
+  const [pendingMovePath, setPendingMovePath] = useState<Position[]>([]);
 
   // Helper: check if current player is human-controlled
   const isCurrentPlayerHuman = config.controls[state.turn.currentPlayer] === 'human';
@@ -335,6 +343,256 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
     }
   };
 
+  // Element order for keyboard shortcuts (1-6)
+  const ELEMENT_ORDER: Element[] = ['fire', 'lightning', 'water', 'shadow', 'plant', 'metal'];
+
+  // Get player's own units on the board for Tab cycling
+  const playerOwnUnits = useMemo(() => {
+    return state.board.units.filter(u => u.owner === state.turn.currentPlayer);
+  }, [state.board.units, state.turn.currentPlayer]);
+
+  // Clear pending move when unit is deselected or phase changes
+  useEffect(() => {
+    if (!state.selectedUnit || state.turn.phase !== 'action') {
+      setPendingMovePath([]);
+    }
+  }, [state.selectedUnit, state.turn.phase]);
+
+  // Keyboard handler
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    // Don't handle if AI is thinking, overlay is shown, or it's not human's turn
+    if (!isCurrentPlayerHuman || isThinking || showPassOverlay) return;
+    // Don't handle if typing in an input
+    if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+
+    const key = e.key.toLowerCase();
+    const currentPlayer = state.turn.currentPlayer;
+    const currentPlayerState = state.players[currentPlayer];
+
+    // === Cmd+Z / Ctrl+Z: Undo ===
+    if ((e.metaKey || e.ctrlKey) && key === 'z') {
+      e.preventDefault();
+      if (canUndo) {
+        // Clear pending move before undo
+        setPendingMovePath([]);
+        undo();
+      }
+      return;
+    }
+
+    // === Enter: End current phase ===
+    if (key === 'enter' && state.turn.phase !== 'queue') {
+      e.preventDefault();
+      // Commit any pending move first
+      if (pendingMovePath.length > 0 && state.selectedUnit) {
+        const finalPosition = pendingMovePath[pendingMovePath.length - 1];
+        moveUnit(state.selectedUnit, finalPosition);
+        setPendingMovePath([]);
+      }
+      if (state.turn.phase === 'place') {
+        endPlacePhase();
+      } else if (state.turn.phase === 'action') {
+        endActionPhase();
+      }
+      return;
+    }
+
+    // === Tab: Cycle between own units ===
+    if (key === 'tab') {
+      e.preventDefault();
+      if (playerOwnUnits.length === 0) return;
+
+      // Commit any pending move before switching units
+      if (pendingMovePath.length > 0 && state.selectedUnit) {
+        const finalPosition = pendingMovePath[pendingMovePath.length - 1];
+        moveUnit(state.selectedUnit, finalPosition);
+        setPendingMovePath([]);
+      }
+
+      let currentIndex = -1;
+      const currentSelectedId = state.turn.phase === 'action'
+        ? state.selectedUnit
+        : selectedPlaceUnitId;
+
+      if (currentSelectedId) {
+        currentIndex = playerOwnUnits.findIndex(u => u.id === currentSelectedId);
+      }
+
+      const nextIndex = (currentIndex + 1) % playerOwnUnits.length;
+      const nextUnit = playerOwnUnits[nextIndex];
+
+      if (state.turn.phase === 'action') {
+        selectUnit(nextUnit.id);
+      } else if (state.turn.phase === 'place') {
+        setSelectedPlaceUnitId(nextUnit.id);
+        setSelectedReadyUnitId(null);
+        setViewedEnemyUnitId(null);
+      }
+      return;
+    }
+
+    // === Queue phase: Unit shop shortcuts ===
+    if (state.turn.phase === 'queue') {
+      // 1-6: Select tier 1 unit of that element
+      if (['1', '2', '3', '4', '5', '6'].includes(e.key)) {
+        e.preventDefault();
+        const elementIndex = parseInt(e.key) - 1;
+        const element = ELEMENT_ORDER[elementIndex];
+        const tier1Unit = UNIT_DEFINITIONS.find(d => d.element === element && d.tier === 1);
+        if (tier1Unit) {
+          setShopSelectedId(tier1Unit.id);
+        }
+        return;
+      }
+
+      // Arrow keys: Navigate unit shop
+      if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(key)) {
+        e.preventDefault();
+        // Build the unit grid structure for navigation
+        const unitsByTier: Record<number, typeof UNIT_DEFINITIONS> = {
+          1: UNIT_DEFINITIONS.filter(d => d.tier === 1).sort((a, b) => ELEMENT_ORDER.indexOf(a.element) - ELEMENT_ORDER.indexOf(b.element)),
+          2: UNIT_DEFINITIONS.filter(d => d.tier === 2).sort((a, b) => ELEMENT_ORDER.indexOf(a.element) - ELEMENT_ORDER.indexOf(b.element)),
+          3: UNIT_DEFINITIONS.filter(d => d.tier === 3).sort((a, b) => ELEMENT_ORDER.indexOf(a.element) - ELEMENT_ORDER.indexOf(b.element)),
+          4: UNIT_DEFINITIONS.filter(d => d.tier === 4).sort((a, b) => ELEMENT_ORDER.indexOf(a.element) - ELEMENT_ORDER.indexOf(b.element)),
+        };
+
+        // Find current position in grid
+        let currentTier = 1;
+        let currentCol = 0;
+        if (shopSelectedId) {
+          const selectedDef = UNIT_DEFINITIONS.find(d => d.id === shopSelectedId);
+          if (selectedDef) {
+            currentTier = selectedDef.tier;
+            currentCol = ELEMENT_ORDER.indexOf(selectedDef.element);
+          }
+        }
+
+        // Calculate new position
+        let newTier = currentTier;
+        let newCol = currentCol;
+
+        if (key === 'arrowup') newTier = Math.max(1, currentTier - 1);
+        if (key === 'arrowdown') newTier = Math.min(4, currentTier + 1);
+        if (key === 'arrowleft') newCol = Math.max(0, currentCol - 1);
+        if (key === 'arrowright') newCol = Math.min(5, currentCol + 1);
+
+        // Find unit at new position
+        const newUnit = unitsByTier[newTier][newCol];
+        if (newUnit) {
+          setShopSelectedId(newUnit.id);
+        }
+        return;
+      }
+
+      // Enter/B: Build selected unit in shop
+      if ((key === 'enter' || key === 'b') && shopSelectedId) {
+        e.preventDefault();
+        const buildState = { queue: [], crystals: currentPlayerState.resources };
+        if (canBuildUnit(shopSelectedId, currentPlayer, state.board, buildState)) {
+          queueUnit(shopSelectedId);
+          setShopSelectedId(null);
+        }
+        return;
+      }
+    }
+
+    // === Place phase shortcuts ===
+    if (state.turn.phase === 'place') {
+      // U: Upgrade/promote selected unit
+      if (key === 'u' && selectedPlaceUnitId) {
+        e.preventDefault();
+        const unit = getUnitById(state.board, selectedPlaceUnitId);
+        if (unit) {
+          const buildState = { queue: [], crystals: currentPlayerState.resources };
+          if (canPromote(unit, buildState)) {
+            promoteUnit(selectedPlaceUnitId);
+            setSelectedPlaceUnitId(null);
+          }
+        }
+        return;
+      }
+    }
+
+    // === Action phase shortcuts ===
+    if (state.turn.phase === 'action' && state.selectedUnit) {
+      const unit = getUnitById(state.board, state.selectedUnit);
+      if (!unit || !unit.canActThisTurn) return;
+
+      const unitDef = getUnitDefinition(unit.definitionId);
+      const unitSpeed = unitDef.speed;
+
+      // M: Mine (commits pending move first)
+      if (key === 'm') {
+        e.preventDefault();
+        // Commit pending move first if any
+        if (pendingMovePath.length > 0) {
+          const finalPosition = pendingMovePath[pendingMovePath.length - 1];
+          moveUnit(state.selectedUnit, finalPosition);
+          setPendingMovePath([]);
+        } else if (canMine(unit, state.board)) {
+          mineWith(state.selectedUnit);
+        }
+        return;
+      }
+
+      // Arrow keys: Partial movement (accumulate steps until full speed)
+      if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(key)) {
+        e.preventDefault();
+
+        // Get current position (original unit position or last pending position)
+        const currentPos = pendingMovePath.length > 0
+          ? pendingMovePath[pendingMovePath.length - 1]
+          : unit.position;
+
+        let targetPos: Position;
+        if (key === 'arrowup') targetPos = { x: currentPos.x, y: currentPos.y - 1 };
+        else if (key === 'arrowdown') targetPos = { x: currentPos.x, y: currentPos.y + 1 };
+        else if (key === 'arrowleft') targetPos = { x: currentPos.x - 1, y: currentPos.y };
+        else targetPos = { x: currentPos.x + 1, y: currentPos.y };
+
+        // Check if the target is valid (not occupied and within board bounds)
+        // For pending moves, we need to check if it would be valid from the pending position
+        if (isValidPosition(targetPos) && !isOccupied(state.board, targetPos)) {
+          // Also check that the path doesn't loop back through the original position
+          const isNotLoopingBack = !pendingMovePath.some(
+            p => p.x === targetPos.x && p.y === targetPos.y
+          ) && !(targetPos.x === unit.position.x && targetPos.y === unit.position.y);
+
+          if (isNotLoopingBack) {
+            const newPath = [...pendingMovePath, targetPos];
+
+            // If we've reached full speed, commit the move
+            if (newPath.length >= unitSpeed) {
+              moveUnit(state.selectedUnit, targetPos);
+              setPendingMovePath([]);
+            } else {
+              // Otherwise, just add to pending path
+              setPendingMovePath(newPath);
+            }
+          }
+        }
+        return;
+      }
+
+      // Escape: Cancel pending move
+      if (key === 'escape' && pendingMovePath.length > 0) {
+        e.preventDefault();
+        setPendingMovePath([]);
+        return;
+      }
+    }
+  }, [
+    isCurrentPlayerHuman, isThinking, showPassOverlay, state, playerOwnUnits,
+    selectUnit, selectedPlaceUnitId, promoteUnit, mineWith, moveUnit, queueUnit, shopSelectedId,
+    canUndo, undo, endPlacePhase, endActionPhase, pendingMovePath
+  ]);
+
+  // Attach keyboard listener
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleKeyDown]);
+
   // Check if selected unit can mine
   const canMineHere = () => {
     if (!selectedUnitData) return false;
@@ -362,6 +620,20 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
 
   const togglePause = () => {
     setIsPaused(!isPaused);
+  };
+
+  // Handler to close unit info / deselect unit
+  const handleCloseUnitInfo = () => {
+    // Clear pending move if any
+    setPendingMovePath([]);
+    // Deselect unit in action phase
+    if (state.selectedUnit) {
+      deselect();
+    }
+    // Clear place phase selections
+    setSelectedPlaceUnitId(null);
+    setSelectedReadyUnitId(null);
+    setViewedEnemyUnitId(null);
   };
 
   // Get the current player's state for resource/queue display
@@ -496,6 +768,8 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
                 player={state.turn.currentPlayer}
                 board={state.board}
                 onQueueUnit={queueUnit}
+                selectedId={shopSelectedId}
+                onSelectId={setShopSelectedId}
               />
             )}
             <ElementLegend />
@@ -514,6 +788,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
                   resources={currentPlayerState.resources}
                   onPromote={handlePromote}
                   isEnemyView={!!viewedEnemyUnitData && !selectedPlaceUnitData && !selectedUnitData}
+                  onClose={handleCloseUnitInfo}
                 />
               </div>
             )}
@@ -530,6 +805,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
               validAttacks={state.validAttacks}
               validSpawns={validSpawns}
               invalidSpawnPosition={spawnFeedback?.position ?? null}
+              pendingMovePath={pendingMovePath}
               onCellClick={handleCellClick}
               onUnitClick={handleUnitClick}
             />

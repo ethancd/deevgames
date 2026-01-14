@@ -26,8 +26,6 @@ function formatAction(action: AIAction): string {
       return 'End turn';
     case 'RESIGN':
       return 'Resign';
-    default:
-      return action.type;
   }
 }
 

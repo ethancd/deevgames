@@ -14,6 +14,7 @@ interface BoardProps {
   validAttacks: Position[];
   validSpawns: Position[];
   invalidSpawnPosition?: Position | null; // For showing red X on invalid spawn click
+  pendingMovePath?: Position[]; // For showing partial movement path
   onCellClick: (position: Position) => void;
   onUnitClick: (unitId: string) => void;
 }
@@ -27,6 +28,7 @@ export function Board({
   validAttacks,
   validSpawns,
   invalidSpawnPosition,
+  pendingMovePath = [],
   onCellClick,
   onUnitClick,
 }: BoardProps) {
@@ -44,6 +46,9 @@ export function Board({
     invalidSpawnPosition !== undefined &&
     invalidSpawnPosition.x === pos.x &&
     invalidSpawnPosition.y === pos.y;
+
+  const isPendingMove = (pos: Position) =>
+    pendingMovePath.some((p) => p.x === pos.x && p.y === pos.y);
 
   // Get elemental bonus for an attack target
   const getElementalBonus = (pos: Position): number | undefined => {
@@ -73,6 +78,7 @@ export function Board({
                   isSelected={isSelected}
                   elementalBonus={isValidAttack(pos) ? getElementalBonus(pos) : undefined}
                   isInvalidSpawn={isInvalidSpawn(pos)}
+                  isPendingMove={isPendingMove(pos)}
                   onClick={onCellClick}
                 />
                 {unit && (

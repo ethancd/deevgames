@@ -13,17 +13,22 @@ export function canAttack(unit: Unit): boolean {
 
 /**
  * Get all valid attack targets for a unit (adjacent enemy positions)
+ * A unit can only attack a given enemy once per turn
  */
 export function getValidAttacks(unit: Unit, board: BoardState): Position[] {
   if (!canAttack(unit)) return [];
 
   const adjacentPositions = getAdjacentPositions(unit.position);
   const validTargets: Position[] = [];
+  const alreadyAttacked = unit.attackedThisTurn ?? [];
 
   for (const pos of adjacentPositions) {
     const targetUnit = getUnitAt(board, pos);
     if (targetUnit && targetUnit.owner !== unit.owner) {
-      validTargets.push(pos);
+      // Only include targets this unit hasn't attacked this turn
+      if (!alreadyAttacked.includes(targetUnit.id)) {
+        validTargets.push(pos);
+      }
     }
   }
 
@@ -103,11 +108,17 @@ export function resolveCombat(
   const attackPower = calculateAttackPower(attacker, defender);
   const defenseValue = calculateDefense(defender);
 
-  // Mark attacker as having attacked
+  // Mark attacker as having attacked and track this specific target
   let newBoard: BoardState = {
     ...board,
     units: board.units.map((u) =>
-      u.id === attackerId ? { ...u, hasAttacked: true } : u
+      u.id === attackerId
+        ? {
+            ...u,
+            hasAttacked: true,
+            attackedThisTurn: [...(u.attackedThisTurn ?? []), defender.id]
+          }
+        : u
     ),
   };
 
@@ -249,11 +260,17 @@ export function resolveCombinedCombat(
   const totalAttack = calculateCombinedAttackPower(attackers, defender);
   const defenseValue = calculateDefense(defender);
 
-  // Mark all attackers as having attacked
+  // Mark all attackers as having attacked and track this specific target
   let newBoard: BoardState = {
     ...board,
     units: board.units.map((u) =>
-      attackerIds.includes(u.id) ? { ...u, hasAttacked: true } : u
+      attackerIds.includes(u.id)
+        ? {
+            ...u,
+            hasAttacked: true,
+            attackedThisTurn: [...(u.attackedThisTurn ?? []), defender.id]
+          }
+        : u
     ),
   };
 

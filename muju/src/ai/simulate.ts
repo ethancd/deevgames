@@ -170,6 +170,8 @@ function applyPlaceUnit(state: GameState, queuedUnitId: string, position: Positi
     hasMined: false,
     canActThisTurn: true, // Can act immediately (no summoning sickness)
     damageTaken: 0,
+    promotedThisPlacement: false,
+    placedThisTurn: true, // Can't be promoted on the same turn it's placed
   };
 
   const newBoard = placeUnit(state.board, newUnit);
@@ -195,6 +197,12 @@ function applyPromoteUnit(state: GameState, unitId: string): GameState {
   const unit = getUnitById(state.board, unitId);
   if (!unit) return state;
 
+  // Check if placed this turn (can't promote same turn as placement)
+  if (unit.placedThisTurn) return state;
+
+  // Check if already promoted this placement phase
+  if (unit.promotedThisPlacement) return state;
+
   const currentPlayer = unit.owner;
   const playerState = state.players[currentPlayer];
   const def = getUnitDefinition(unit.definitionId);
@@ -212,7 +220,7 @@ function applyPromoteUnit(state: GameState, unitId: string): GameState {
     ...state.board,
     units: state.board.units.map((u) =>
       u.id === unitId
-        ? { ...u, definitionId: nextTierDef.id } // Keep existing canActThisTurn
+        ? { ...u, definitionId: nextTierDef.id, promotedThisPlacement: true }
         : u
     ),
   };

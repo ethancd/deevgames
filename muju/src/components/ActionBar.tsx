@@ -56,8 +56,9 @@ export function ActionBar({
         <button
           onClick={onUndo}
           className="px-3 py-1 bg-gray-600 hover:bg-gray-500 text-white text-sm rounded transition-colors"
+          title="Undo (⌘Z)"
         >
-          ↶ Undo
+          ↶ Undo <span className="text-gray-400">(⌘Z)</span>
         </button>
       )}
 
@@ -66,8 +67,9 @@ export function ActionBar({
         <button
           onClick={onEndPlacePhase}
           className="px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white text-sm rounded transition-colors"
+          title="End Placement (Return)"
         >
-          End Placement
+          End Placement <span className="text-purple-300">(↵)</span>
         </button>
       )}
 
@@ -75,8 +77,9 @@ export function ActionBar({
         <button
           onClick={onEndActionPhase}
           className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded transition-colors"
+          title="End Actions (Return)"
         >
-          End Actions
+          End Actions <span className="text-blue-300">(↵)</span>
         </button>
       )}
 

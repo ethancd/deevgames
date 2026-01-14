@@ -99,10 +99,18 @@ export function getReadyUnits(playerState: PlayerState): QueuedUnit[] {
 
 /**
  * Transition from place phase to action phase
+ * Resets promotedThisPlacement flag on all units
  */
 export function startActionPhase(state: GameState): GameState {
+  // Reset the promotedThisPlacement flag on all units
+  const newBoard = {
+    ...state.board,
+    units: state.board.units.map(u => ({ ...u, promotedThisPlacement: false })),
+  };
+
   return {
     ...state,
+    board: newBoard,
     turn: {
       ...state.turn,
       phase: 'action',
