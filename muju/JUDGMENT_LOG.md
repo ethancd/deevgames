@@ -47,3 +47,47 @@ not autonomous rulings, recorded for traceability):
   D1-cheating distorts baseline matrices materially, fix D1/D2 first and
   re-stamp.
 - **Blast radius:** experiment ordering. **Reversal cost:** low.
+
+## J-003: Harness engine bots get throughput presets via an additive AIEngineV2.setConfig
+
+- **Question:** UI-speed MCTS presets (800–3000 ms per re-plan, ~10+ re-plans
+  per turn) make mass runs infeasible (~12 s/game even with caps). How do
+  engine bots run at lab throughput?
+- **Options:** (a) run experiments only at UI speed with tiny N; (b) fork the
+  engine for the lab; (c) add a small additive `setConfig(overrides)` to
+  `AIEngineV2` and define `AIv2-*-fast` presets (mctsTimeLimit 120 ms,
+  60 iterations, 10 particles, difficulty shape otherwise preserved).
+- **Ruling:** (c). Gameplay code still uses difficulty presets only; the
+  shipped presets are unchanged. UI-speed bots remain in the registry for
+  confirmation subsets, per the plan ("MCTS for confirmation subsets only").
+- **Blast radius:** one additive method on the engine; experiment validity
+  (fast presets are weaker than UI presets — results labeled `-fast` and gate
+  E2 checks both where feasible). **Reversal cost:** trivial.
+
+## J-004: Capped games adjudicated by material + stockpile + queue value
+
+- **Question:** The plan requires a turn cap with "repetition adjudication by
+  material+stockpile". Exact scoring?
+- **Ruling:** At `maxTurns` (default 120 rounds) or the ply safety cap, the
+  winner is the higher of: Σ on-board unit cost + current resources +
+  Σ queued unit cost. Equal → draw. Win type recorded as `adjudication`
+  (rates always reported per pairing in summary.csv).
+- **Rationale:** cost-weighted material is the only common currency across
+  archetypes; including stockpile+queue avoids punishing a player mid-convert.
+  No positional component — a positional edge that never converts within 120
+  rounds is not an edge this game's win condition recognizes.
+- **Blast radius:** capped games only (Random/Turtle mirrors mostly).
+  **Reversal cost:** low (rerun affected cells).
+
+## J-005: Scripted-bot legality is enforced by construction; engine-bot legality is observed, not enforced
+
+- **Question:** Should the harness block illegal engine actions (D1/D2)?
+- **Ruling:** Default `legality: 'as-shipped'` — engine emissions are checked
+  against the legal set, violations *counted* per game, but applied anyway,
+  because APPLY_AI_ACTION applies them in the real game. A `strict` mode
+  exists for post-fix (P4a) comparison runs. Scripted bots can only choose
+  from the rules-filtered legal set (J-001), so probes/ladder cannot cheat.
+- **Rationale:** J-002 — baseline matrices must measure the game as-shipped;
+  the illegal-action counter is exactly the signal that decides whether
+  D1/D2 must be fixed before calibration claims are made.
+- **Blast radius:** all engine-bot rows. **Reversal cost:** none (flag flip).

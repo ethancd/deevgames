@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Muju Hono Tanka — Replay Viewer</title>
+<style>
+  :root {
+    --bg: #121214;
+    --panel: #1b1b1f;
+    --panel2: #222227;
+    --border: #2e2e35;
+    --text: #e7e7ea;
+    --muted: #9b9ba3;
+    --accent: #38bdf8;
+    --move: #3b82f6;
+    --attack: #ef4444;
+    --place: #22c55e;
+    --mine: #eab308;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  button, select, input { font: inherit; color: inherit; }
+
+  /* ---------- header ---------- */
+  header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 8px 14px;
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+    min-height: 46px;
+  }
+  header h1 {
+    font-size: 15px;
+    margin: 0;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    white-space: nowrap;
+  }
+  header h1 span { color: var(--muted); font-weight: 400; }
+  #matchup { display: flex; align-items: center; gap: 8px; font-weight: 600; white-space: nowrap; }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 9px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--panel2);
+    font-size: 12.5px;
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; border: 1px solid #555; }
+  .dot.white { background: #f8fafc; }
+  .dot.black { background: #0b0b0d; border-color: #777; }
+  #meta-line {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    color: var(--muted);
+    font-size: 12px;
+    margin-left: auto;
+  }
+  #meta-line b { color: var(--text); font-weight: 600; }
+  #file-btn {
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 12px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  #file-btn:hover { border-color: var(--accent); color: var(--accent); }
+  #file-input { display: none; }
+
+  /* ---------- main ---------- */
+  main { flex: 1; display: flex; min-height: 0; }
+  #board-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    min-width: 0;
+  }
+  #board {
+    max-width: 100%;
+    max-height: 100%;
+    aspect-ratio: 1;
+    border-radius: 8px;
+  }
+  aside {
+    width: 330px;
+    flex-shrink: 0;
+    border-left: 1px solid var(--border);
+    background: var(--panel);
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .panel-section { padding: 10px 14px; border-bottom: 1px solid var(--border); }
+  .panel-section h2 {
+    margin: 0 0 6px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  #step-info { font-size: 13px; }
+  #step-info .stat-row { display: flex; gap: 14px; flex-wrap: wrap; color: var(--muted); margin-bottom: 6px; }
+  #step-info .stat-row b { color: var(--text); }
+  #action-desc {
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    padding: 7px 10px;
+    font-weight: 500;
+    min-height: 34px;
+  }
+  .res-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+  }
+  .res-line .vals { color: var(--muted); }
+  .res-line .vals b { color: var(--text); font-weight: 600; }
+  #log-section { flex: 1; display: flex; flex-direction: column; min-height: 0; border-bottom: none; }
+  #log {
+    flex: 1;
+    overflow-y: auto;
+    margin: 0 -6px 0 -6px;
+    padding: 0 2px;
+    scrollbar-width: thin;
+  }
+  .log-row {
+    display: flex;
+    gap: 8px;
+    padding: 3px 8px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12.5px;
+    align-items: baseline;
+    border: 1px solid transparent;
+  }
+  .log-row:hover { background: var(--panel2); }
+  .log-row.current { background: #283143; border-color: #3a4f78; }
+  .log-row .ply { color: var(--muted); width: 38px; flex-shrink: 0; text-align: right; font-variant-numeric: tabular-nums; }
+  .log-row .pdot { width: 8px; height: 8px; border-radius: 50%; align-self: center; flex-shrink: 0; border: 1px solid #555; }
+  .log-row.turn-start { border-top: 1px dashed #3a3a42; margin-top: 2px; padding-top: 4px; }
+
+  /* ---------- footer / transport ---------- */
+  footer {
+    background: var(--panel);
+    border-top: 1px solid var(--border);
+    padding: 8px 14px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  #transport { display: flex; align-items: center; gap: 8px; }
+  #transport button {
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    width: 36px;
+    height: 30px;
+    cursor: pointer;
+    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #transport button:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+  #transport button:disabled { opacity: 0.35; cursor: default; }
+  #btn-play { width: 44px; font-size: 14px; }
+  #speed {
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    height: 30px;
+    padding: 0 6px;
+    cursor: pointer;
+  }
+  #scrubber { flex: 1; accent-color: var(--accent); cursor: pointer; min-width: 80px; }
+  #ply-readout { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; white-space: nowrap; min-width: 110px; text-align: right; }
+  #spark-row { display: flex; align-items: center; gap: 10px; }
+  #spark-label { color: var(--muted); font-size: 11px; white-space: nowrap; width: 130px; line-height: 1.3; }
+  #spark-label .lg { display: flex; align-items: center; gap: 5px; }
+  #spark-label .sw { display: inline-block; width: 14px; height: 2px; }
+  #sparkline { flex: 1; height: 56px; cursor: crosshair; display: block; background: var(--panel2); border: 1px solid var(--border); border-radius: 6px; }
+
+  /* ---------- empty state / drop / errors ---------- */
+  #empty-state {
+    position: absolute;
+    inset: 46px 0 0 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    color: var(--muted);
+    background: var(--bg);
+    z-index: 5;
+    text-align: center;
+    padding: 20px;
+  }
+  #empty-state .big { font-size: 18px; color: var(--text); }
+  #empty-state .hint { border: 2px dashed var(--border); border-radius: 12px; padding: 26px 44px; }
+  #drop-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(56, 189, 248, 0.12);
+    border: 3px dashed var(--accent);
+    z-index: 50;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    color: var(--accent);
+    pointer-events: none;
+  }
+  #error-banner {
+    position: fixed;
+    top: 56px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #3b1418;
+    border: 1px solid #7f1d1d;
+    color: #fecaca;
+    padding: 8px 18px;
+    border-radius: 8px;
+    z-index: 60;
+    display: none;
+    max-width: 80vw;
+  }
+  @media (max-width: 900px) { aside { width: 270px; } }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Muju Hono Tanka <span>· replay viewer</span></h1>
+  <div id="matchup" style="display:none"></div>
+  <div id="meta-line"></div>
+  <button id="file-btn">Load replay…</button>
+  <input type="file" id="file-input" accept=".json,application/json">
+</header>
+
+<main>
+  <div id="board-wrap"><canvas id="board"></canvas></div>
+  <aside>
+    <div class="panel-section" id="step-info">
+      <h2>Current step</h2>
+      <div class="stat-row">
+        <span>ply <b id="si-ply">–</b></span>
+        <span>turn <b id="si-turn">–</b></span>
+        <span>phase <b id="si-phase">–</b></span>
+        <span>actions left <b id="si-ar">–</b></span>
+      </div>
+      <div id="action-desc">–</div>
+    </div>
+    <div class="panel-section">
+      <h2>Resources</h2>
+      <div class="res-line"><span class="dot white"></span><span class="vals" id="res-white">–</span></div>
+      <div class="res-line"><span class="dot black"></span><span class="vals" id="res-black">–</span></div>
+    </div>
+    <div class="panel-section" id="log-section">
+      <h2>Action log</h2>
+      <div id="log"></div>
+    </div>
+  </aside>
+</main>
+
+<footer>
+  <div id="transport">
+    <button id="btn-first" title="First (Home)">⏮</button>
+    <button id="btn-prev" title="Previous (←)">◀</button>
+    <button id="btn-play" title="Play / pause (Space)">▶</button>
+    <button id="btn-next" title="Next (→)">▶︎▍</button>
+    <button id="btn-last" title="Last (End)">⏭</button>
+    <select id="speed" title="Playback speed">
+      <option value="1">1×</option>
+      <option value="4">4×</option>
+      <option value="16">16×</option>
+    </select>
+    <input type="range" id="scrubber" min="0" max="0" value="0" step="1">
+    <span id="ply-readout">no replay</span>
+  </div>
+  <div id="spark-row">
+    <div id="spark-label">
+      units on board (Σ tier)
+      <div class="lg"><span class="sw" style="background:#f5f5f5"></span>white <span class="sw" style="background:#fbbf24;margin-left:8px"></span>black</div>
+    </div>
+    <canvas id="sparkline"></canvas>
+  </div>
+</footer>
+
+<div id="empty-state">
+  <div class="hint">
+    <div class="big">Drop a replay JSON anywhere on this page</div>
+    <div>or use the <b>Load replay…</b> button above</div>
+    <div style="margin-top:8px;font-size:12px">expects schema <code>muju-lab-replay-v1</code></div>
+  </div>
+</div>
+<div id="drop-overlay">Drop replay JSON to load</div>
+<div id="error-banner"></div>
+
+<script>
+'use strict';
+
+/* ============================== constants ============================== */
+
+const ELEMENTS = {
+  fire:      { color: '#EF4444', names: ['Hi', 'Hono', 'Kagari', 'Gokamoka'] },
+  lightning: { color: '#EAB308', names: ['Radi', 'Umeme', 'Kimubunga', 'Dhorubakali'] },
+  water:     { color: '#3B82F6', names: ['Sjor', 'Straumr', 'Aegirinn', 'Hafkafstormur'] },
+  shadow:    { color: '#7C3AED', names: ['Göl', 'Gölge', 'Karanlık', 'Karabasan'] },
+  plant:     { color: '#22C55E', names: ['Muju', 'Sachita', 'Sachakuna', 'Cuauhtlimallki'] },
+  metal:     { color: '#6B7280', names: ['Inyan', 'Mazaska', 'Tankasila', 'Wakanwicasa'] },
+};
+
+const HL = { move: '#3b82f6', attack: '#ef4444', place: '#22c55e', mine: '#eab308', actor: '#94a3b8' };
+const N = 10;
+
+function defInfo(definitionId) {
+  const m = /^([a-z]+)_(\d+)$/.exec(definitionId || '');
+  if (!m || !ELEMENTS[m[1]]) return { element: 'metal', tier: 1, color: '#6B7280', name: definitionId || '?' };
+  const el = ELEMENTS[m[1]];
+  const tier = Math.max(1, Math.min(4, parseInt(m[2], 10)));
+  return { element: m[1], tier, color: el.color, name: el.names[tier - 1] || definitionId };
+}
+
+/* ============================== state ============================== */
+
+let replay = null;       // validated ReplayFile
+let idx = 0;             // current step index
+let playing = false;
+let playTimer = null;
+let stepAnnos = [];      // per-step annotation: { text, hl: [{x,y,kind}], arrow }
+let material = { white: [], black: [] };
+let materialMax = 1;
+
+/* ============================== dom refs ============================== */
+
+const $ = (id) => document.getElementById(id);
+const boardCanvas = $('board'), boardCtx = boardCanvas.getContext('2d');
+const sparkCanvas = $('sparkline'), sparkCtx = sparkCanvas.getContext('2d');
+const logEl = $('log'), scrubber = $('scrubber');
+
+/* ============================== loading ============================== */
+
+function showError(msg) {
+  const b = $('error-banner');
+  b.textContent = msg;
+  b.style.display = 'block';
+  clearTimeout(showError._t);
+  showError._t = setTimeout(() => { b.style.display = 'none'; }, 6000);
+}
+
+function loadFile(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onerror = () => showError('Could not read file "' + file.name + '".');
+  reader.onload = () => {
+    let data;
+    try { data = JSON.parse(reader.result); }
+    catch (e) { showError('"' + file.name + '" is not valid JSON: ' + e.message); return; }
+    try { initReplay(data); }
+    catch (e) { showError('Failed to load replay: ' + e.message); }
+  };
+  reader.readAsText(file);
+}
+
+function validate(data) {
+  if (!data || typeof data !== 'object') throw new Error('top-level value is not an object.');
+  if (data.schema !== 'muju-lab-replay-v1')
+    throw new Error('unexpected schema "' + data.schema + '" (expected "muju-lab-replay-v1").');
+  if (!Array.isArray(data.steps) || data.steps.length === 0)
+    throw new Error('replay contains no steps.');
+  if (!data.meta || typeof data.meta !== 'object') throw new Error('missing meta record.');
+  for (const s of data.steps) {
+    if (!Array.isArray(s.units) || typeof s.cells !== 'string' || s.cells.length !== 100 || !s.res)
+      throw new Error('malformed step at ply ' + s.ply + '.');
+  }
+}
+
+function initReplay(data) {
+  validate(data);
+  stopPlayback();
+  replay = data;
+  idx = 0;
+  buildAnnotations();
+  buildMaterialSeries();
+  renderHeader();
+  buildLog();
+  scrubber.max = replay.steps.length - 1;
+  $('empty-state').style.display = 'none';
+  seek(0);
+  sizeSparkline();
+}
+
+/* ============================== analysis ============================== */
+
+function unitKey(u) { return u.o + '|' + u.d + '|' + u.x + ',' + u.y; }
+function posStr(p) { return '(' + p.x + ',' + p.y + ')'; }
+function unitAt(step, x, y) { return step.units.find((u) => u.x === x && u.y === y) || null; }
+function nameOf(u) { return u ? defInfo(u.d).name : 'unit'; }
+
+// Compare prev/cur snapshots to recover squares the action data alone doesn't give us.
+function analyzeStep(i) {
+  const cur = replay.steps[i];
+  const prev = i > 0 ? replay.steps[i - 1] : null;
+  const a = cur.action;
+  const anno = { text: '', hl: [], arrow: null };
+  if (!a) { anno.text = 'Initial position'; return anno; }
+  const who = cur.player;
+
+  switch (a.type) {
+    case 'MOVE': {
+      const to = a.to;
+      const moved = unitAt(cur, to.x, to.y);
+      let from = null;
+      if (prev && moved) {
+        const curKeys = new Set(cur.units.map(unitKey));
+        from = prev.units.find((u) => u.o === who && u.d === moved.d && !curKeys.has(unitKey(u))) || null;
+      }
+      anno.text = who + ' MOVE ' + nameOf(moved) + ' to ' + posStr(to);
+      if (from) {
+        anno.hl.push({ x: from.x, y: from.y, kind: 'actor' });
+        anno.arrow = { from: { x: from.x, y: from.y }, to, color: HL.move };
+      }
+      anno.hl.push({ x: to.x, y: to.y, kind: 'move' });
+      break;
+    }
+    case 'ATTACK': {
+      const t = a.targetPosition;
+      const victim = prev ? unitAt(prev, t.x, t.y) : null;
+      const after = unitAt(cur, t.x, t.y);
+      const killed = victim && (!after || after.o === who);
+      anno.text = who + ' ATTACK ' + (victim ? nameOf(victim) + ' at ' : '') + posStr(t) + (killed ? ' — destroyed!' : '');
+      anno.hl.push({ x: t.x, y: t.y, kind: 'attack' });
+      break;
+    }
+    case 'MINE': {
+      let sq = null;
+      if (prev) {
+        for (let c = 0; c < 100; c++) {
+          if (cur.cells[c] < prev.cells[c]) { sq = { x: c % N, y: (c / N) | 0 }; break; }
+        }
+      }
+      const miner = sq ? unitAt(cur, sq.x, sq.y) : null;
+      anno.text = who + ' MINE' + (miner ? ' with ' + nameOf(miner) : '') + (sq ? ' at ' + posStr(sq) : '');
+      if (sq) anno.hl.push({ x: sq.x, y: sq.y, kind: 'mine' });
+      break;
+    }
+    case 'PLACE_UNIT': {
+      const p = a.position;
+      const placed = unitAt(cur, p.x, p.y);
+      anno.text = who + ' PLACE ' + nameOf(placed) + ' at ' + posStr(p);
+      anno.hl.push({ x: p.x, y: p.y, kind: 'place' });
+      break;
+    }
+    case 'PROMOTE_UNIT': {
+      let found = null;
+      if (prev) {
+        for (const u of cur.units) {
+          if (u.o !== who) continue;
+          const before = unitAt(prev, u.x, u.y);
+          if (before && before.o === who && before.d !== u.d) { found = { before, after: u }; break; }
+        }
+      }
+      anno.text = found
+        ? who + ' PROMOTE ' + nameOf(found.before) + ' → ' + nameOf(found.after) + ' at ' + posStr(found.after)
+        : who + ' PROMOTE unit';
+      if (found) anno.hl.push({ x: found.after.x, y: found.after.y, kind: 'actor' });
+      break;
+    }
+    case 'QUEUE_UNIT': {
+      const d = defInfo(a.definitionId);
+      anno.text = who + ' QUEUE ' + d.name + ' (' + a.definitionId + ')';
+      break;
+    }
+    case 'END_ACTION_PHASE': anno.text = who + ' ends action phase'; break;
+    case 'END_TURN':         anno.text = who + ' ends turn';         break;
+    case 'RESIGN':           anno.text = who + ' RESIGNS';           break;
+    default:                 anno.text = who + ' ' + a.type;
+  }
+  return anno;
+}
+
+function buildAnnotations() {
+  stepAnnos = replay.steps.map((_, i) => analyzeStep(i));
+}
+
+function buildMaterialSeries() {
+  material = { white: [], black: [] };
+  materialMax = 1;
+  for (const s of replay.steps) {
+    let w = 0, b = 0;
+    for (const u of s.units) {
+      const t = defInfo(u.d).tier;
+      if (u.o === 'white') w += t; else b += t;
+    }
+    material.white.push(w);
+    material.black.push(b);
+    materialMax = Math.max(materialMax, w, b);
+  }
+}
+
+/* ============================== header ============================== */
+
+function renderHeader() {
+  const m = replay.meta || {};
+  const wBot = (m.players && m.players.white && m.players.white.bot) || '?';
+  const bBot = (m.players && m.players.black && m.players.black.bot) || '?';
+  const mu = $('matchup');
+  mu.style.display = 'flex';
+  mu.innerHTML =
+    '<span class="chip"><span class="dot white"></span>' + esc(wBot) + '</span>' +
+    '<span style="color:var(--muted)">vs</span>' +
+    '<span class="chip"><span class="dot black"></span>' + esc(bBot) + '</span>';
+
+  const winner = m.winner ? m.winner + (m.winType ? ' · ' + m.winType : '') : 'draw / none';
+  const parts = [
+    ['winner', winner],
+    ['seed', m.seed],
+    ['experiment', m.experiment],
+    ['run', m.runId],
+    ['engine', m.engineHash ? String(m.engineHash).slice(0, 8) : undefined],
+    ['turns', m.turns],
+    ['plies', m.plies],
+  ];
+  $('meta-line').innerHTML = parts
+    .filter(([, v]) => v !== undefined && v !== null && v !== '')
+    .map(([k, v]) => esc(k) + ' <b>' + esc(v) + '</b>')
+    .join('<span style="opacity:.4">|</span>');
+}
+
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, (c) =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+}
+
+/* ============================== board rendering ============================== */
+
+function cellFill(layer) {
+  // 0 = pale/depleted, 5 = rich dark warm tint (subtle)
+  const t = Math.max(0, Math.min(5, layer)) / 5;
+  const r = Math.round(50 + t * 32);   // 50 -> 82
+  const g = Math.round(49 + t * 11);   // 49 -> 60
+  const b = Math.round(52 - t * 24);   // 52 -> 28
+  return 'rgb(' + r + ',' + g + ',' + b + ')';
+}
+
+function renderBoard() {
+  const step = replay && replay.steps[idx];
+  const wrap = $('board-wrap');
+  const sizeCss = Math.max(240, Math.min(wrap.clientWidth, wrap.clientHeight) - 8);
+  const dpr = window.devicePixelRatio || 1;
+  boardCanvas.style.width = sizeCss + 'px';
+  boardCanvas.style.height = sizeCss + 'px';
+  boardCanvas.width = Math.round(sizeCss * dpr);
+  boardCanvas.height = Math.round(sizeCss * dpr);
+  const ctx = boardCtx;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  const pad = Math.round(sizeCss * 0.042);
+  const cell = (sizeCss - pad - 4) / N;
+  const ox = pad, oy = pad;
+  const cx = (x) => ox + (x + 0.5) * cell;
+  const cy = (y) => oy + (y + 0.5) * cell;
+
+  ctx.fillStyle = '#18181b';
+  ctx.fillRect(0, 0, sizeCss, sizeCss);
+  if (!step) return;
+
+  // cells
+  for (let y = 0; y < N; y++) {
+    for (let x = 0; x < N; x++) {
+      ctx.fillStyle = cellFill(+step.cells[y * N + x]);
+      ctx.fillRect(ox + x * cell, oy + y * cell, cell, cell);
+    }
+  }
+
+  // corner wedges (home corners)
+  const wedge = cell * 0.42;
+  ctx.globalAlpha = 0.5;
+  ctx.fillStyle = '#f8fafc';
+  ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(ox + wedge, oy); ctx.lineTo(ox, oy + wedge); ctx.fill();
+  ctx.fillStyle = '#000';
+  const ex = ox + N * cell, ey = oy + N * cell;
+  ctx.beginPath(); ctx.moveTo(ex, ey); ctx.lineTo(ex - wedge, ey); ctx.lineTo(ex, ey - wedge); ctx.fill();
+  ctx.globalAlpha = 1;
+
+  // grid
+  ctx.strokeStyle = 'rgba(0,0,0,0.45)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  for (let i = 0; i <= N; i++) {
+    ctx.moveTo(ox + i * cell, oy); ctx.lineTo(ox + i * cell, oy + N * cell);
+    ctx.moveTo(ox, oy + i * cell); ctx.lineTo(ox + N * cell, oy + i * cell);
+  }
+  ctx.stroke();
+
+  // coordinate labels
+  ctx.fillStyle = '#71717a';
+  ctx.font = Math.round(pad * 0.42) + 'px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  for (let i = 0; i < N; i++) {
+    ctx.fillText(i, cx(i), oy * 0.5);
+    ctx.fillText(i, ox * 0.5, cy(i));
+  }
+
+  // action highlights
+  const anno = stepAnnos[idx] || { hl: [], arrow: null };
+  for (const h of anno.hl) {
+    const px = ox + h.x * cell, py = oy + h.y * cell;
+    if (h.kind === 'mine') {
+      ctx.strokeStyle = HL.mine;
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(cx(h.x), cy(h.y), cell * 0.46, 0, Math.PI * 2);
+      ctx.stroke();
+    } else if (h.kind === 'actor') {
+      ctx.strokeStyle = HL.actor;
+      ctx.lineWidth = 2;
+      ctx.setLineDash([4, 3]);
+      ctx.strokeRect(px + 2, py + 2, cell - 4, cell - 4);
+      ctx.setLineDash([]);
+    } else {
+      const col = HL[h.kind] || HL.actor;
+      ctx.strokeStyle = col;
+      ctx.lineWidth = 3;
+      ctx.strokeRect(px + 2, py + 2, cell - 4, cell - 4);
+      ctx.globalAlpha = 0.14;
+      ctx.fillStyle = col;
+      ctx.fillRect(px + 2, py + 2, cell - 4, cell - 4);
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  // units
+  const r = cell * 0.34;
+  for (const u of step.units) {
+    const info = defInfo(u.d);
+    const ux = cx(u.x), uy = cy(u.y);
+    ctx.beginPath();
+    ctx.arc(ux, uy, r, 0, Math.PI * 2);
+    ctx.fillStyle = info.color;
+    ctx.fill();
+    ctx.lineWidth = Math.max(2.5, cell * 0.075);
+    ctx.strokeStyle = u.o === 'white' ? '#f8fafc' : '#0a0a0a';
+    ctx.stroke();
+    // tier number (dark text on light fills)
+    const light = info.element === 'lightning' || info.element === 'plant';
+    ctx.fillStyle = light ? '#1c1917' : '#fff';
+    ctx.font = '700 ' + Math.round(r * 1.0) + 'px sans-serif';
+    ctx.fillText(info.tier, ux, uy + r * 0.05);
+    // damage badge
+    if (u.dmg > 0) {
+      const br = Math.max(6, r * 0.42);
+      const bx = ux + r * 0.85, by = uy - r * 0.85;
+      ctx.beginPath();
+      ctx.arc(bx, by, br, 0, Math.PI * 2);
+      ctx.fillStyle = '#dc2626';
+      ctx.fill();
+      ctx.strokeStyle = '#18181b';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.fillStyle = '#fff';
+      ctx.font = '700 ' + Math.round(br * 1.25) + 'px sans-serif';
+      ctx.fillText(u.dmg, bx, by + 0.5);
+    }
+  }
+
+  // movement arrow (drawn above units so the path reads clearly)
+  if (anno.arrow) {
+    drawArrow(ctx, cx(anno.arrow.from.x), cy(anno.arrow.from.y), cx(anno.arrow.to.x), cy(anno.arrow.to.y), anno.arrow.color, cell);
+  }
+}
+
+function drawArrow(ctx, x1, y1, x2, y2, color, cell) {
+  const dx = x2 - x1, dy = y2 - y1;
+  const len = Math.hypot(dx, dy) || 1;
+  const ux = dx / len, uy = dy / len;
+  const startGap = cell * 0.18, endGap = cell * 0.42;
+  const sx = x1 + ux * startGap, sy = y1 + uy * startGap;
+  const tx = x2 - ux * endGap, ty = y2 - uy * endGap;
+  const head = Math.min(11, cell * 0.22);
+  ctx.save();
+  ctx.strokeStyle = color;
+  ctx.fillStyle = color;
+  ctx.globalAlpha = 0.9;
+  ctx.lineWidth = 3;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(sx, sy);
+  ctx.lineTo(tx, ty);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(tx + ux * head, ty + uy * head);
+  ctx.lineTo(tx - uy * head * 0.6, ty + ux * head * 0.6);
+  ctx.lineTo(tx + uy * head * 0.6, ty - ux * head * 0.6);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
+
+/* ============================== side panel & log ============================== */
+
+function renderSidePanel() {
+  const s = replay.steps[idx];
+  $('si-ply').textContent = s.ply;
+  $('si-turn').textContent = s.turn + ' (' + s.player + ')';
+  $('si-phase').textContent = s.phase;
+  $('si-ar').textContent = s.actionsRemaining;
+  $('action-desc').textContent = stepAnnos[idx].text;
+
+  for (const p of ['white', 'black']) {
+    const r = s.res[p] || { r: 0, g: 0, s: 0, q: 0 };
+    $('res-' + p).innerHTML =
+      'stock <b>' + r.r + '</b> &nbsp; gained <b>' + r.g + '</b> &nbsp; spent <b>' + r.s +
+      '</b> &nbsp; queue <b>' + r.q + '</b>';
+  }
+}
+
+function buildLog() {
+  logEl.innerHTML = '';
+  const frag = document.createDocumentFragment();
+  let lastTurn = null;
+  replay.steps.forEach((s, i) => {
+    const row = document.createElement('div');
+    row.className = 'log-row';
+    if (s.turn !== lastTurn && i > 0) row.classList.add('turn-start');
+    lastTurn = s.turn;
+    row.dataset.i = i;
+    const dot = s.action ? '<span class="pdot ' + (s.player === 'white' ? 'white' : 'black') +
+      '" style="background:' + (s.player === 'white' ? '#f8fafc' : '#0b0b0d') + '"></span>' :
+      '<span class="pdot" style="background:transparent;border-color:transparent"></span>';
+    row.innerHTML = '<span class="ply">#' + s.ply + '</span>' + dot +
+      '<span>' + esc(stepAnnos[i].text) + '</span>';
+    frag.appendChild(row);
+  });
+  logEl.appendChild(frag);
+}
+
+function highlightLog() {
+  const prev = logEl.querySelector('.log-row.current');
+  if (prev) prev.classList.remove('current');
+  const row = logEl.children[idx];
+  if (row) {
+    row.classList.add('current');
+    row.scrollIntoView({ block: 'nearest' });
+  }
+}
+
+logEl.addEventListener('click', (e) => {
+  const row = e.target.closest('.log-row');
+  if (row) { stopPlayback(); seek(+row.dataset.i); }
+});
+
+/* ============================== sparkline ============================== */
+
+function sizeSparkline() {
+  const dpr = window.devicePixelRatio || 1;
+  const w = sparkCanvas.clientWidth, h = sparkCanvas.clientHeight;
+  if (w === 0) return;
+  sparkCanvas.width = Math.round(w * dpr);
+  sparkCanvas.height = Math.round(h * dpr);
+  sparkCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  renderSparkline();
+}
+
+function sparkX(i, w) {
+  const n = replay.steps.length;
+  return n > 1 ? 4 + (i / (n - 1)) * (w - 8) : w / 2;
+}
+
+function renderSparkline() {
+  if (!replay) return;
+  const w = sparkCanvas.clientWidth, h = sparkCanvas.clientHeight;
+  const ctx = sparkCtx;
+  ctx.clearRect(0, 0, w, h);
+  const yOf = (v) => h - 5 - (v / materialMax) * (h - 10);
+
+  for (const [side, color] of [['white', '#f5f5f5'], ['black', '#fbbf24']]) {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    material[side].forEach((v, i) => {
+      const x = sparkX(i, w), y = yOf(v);
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+  }
+
+  // cursor
+  const x = sparkX(idx, w);
+  ctx.strokeStyle = 'rgba(56,189,248,0.9)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(x, 2);
+  ctx.lineTo(x, h - 2);
+  ctx.stroke();
+
+  // current values
+  ctx.font = '10px sans-serif';
+  ctx.textAlign = x > w - 70 ? 'right' : 'left';
+  ctx.textBaseline = 'top';
+  const tx = x > w - 70 ? x - 5 : x + 5;
+  ctx.fillStyle = '#f5f5f5';
+  ctx.fillText('W ' + material.white[idx], tx, 3);
+  ctx.fillStyle = '#fbbf24';
+  ctx.fillText('B ' + material.black[idx], tx, 15);
+}
+
+sparkCanvas.addEventListener('click', (e) => {
+  if (!replay) return;
+  const rect = sparkCanvas.getBoundingClientRect();
+  const frac = (e.clientX - rect.left - 4) / Math.max(1, rect.width - 8);
+  stopPlayback();
+  seek(Math.round(frac * (replay.steps.length - 1)));
+});
+
+/* ============================== transport ============================== */
+
+function seek(i) {
+  if (!replay) return;
+  idx = Math.max(0, Math.min(replay.steps.length - 1, i));
+  scrubber.value = idx;
+  $('ply-readout').textContent = 'ply ' + replay.steps[idx].ply + ' / ' + replay.steps[replay.steps.length - 1].ply;
+  renderBoard();
+  renderSidePanel();
+  highlightLog();
+  renderSparkline();
+  updateButtons();
+}
+
+function updateButtons() {
+  const atStart = !replay || idx === 0;
+  const atEnd = !replay || idx === replay.steps.length - 1;
+  $('btn-first').disabled = atStart;
+  $('btn-prev').disabled = atStart;
+  $('btn-next').disabled = atEnd;
+  $('btn-last').disabled = atEnd;
+  $('btn-play').disabled = !replay;
+  $('btn-play').textContent = playing ? '⏸' : '▶';
+}
+
+function stopPlayback() {
+  playing = false;
+  clearInterval(playTimer);
+  playTimer = null;
+  updateButtons();
+}
+
+function startPlayback() {
+  if (!replay) return;
+  if (idx >= replay.steps.length - 1) seek(0);
+  playing = true;
+  schedulePlay();
+  updateButtons();
+}
+
+function schedulePlay() {
+  clearInterval(playTimer);
+  const ms = 600 / parseInt($('speed').value, 10);
+  playTimer = setInterval(() => {
+    if (idx >= replay.steps.length - 1) { stopPlayback(); return; }
+    seek(idx + 1);
+  }, ms);
+}
+
+$('btn-first').addEventListener('click', () => { stopPlayback(); seek(0); });
+$('btn-prev').addEventListener('click', () => { stopPlayback(); seek(idx - 1); });
+$('btn-next').addEventListener('click', () => { stopPlayback(); seek(idx + 1); });
+$('btn-last').addEventListener('click', () => { stopPlayback(); seek(replay ? replay.steps.length - 1 : 0); });
+$('btn-play').addEventListener('click', () => { playing ? stopPlayback() : startPlayback(); });
+$('speed').addEventListener('change', () => { if (playing) schedulePlay(); });
+scrubber.addEventListener('input', () => { stopPlayback(); seek(+scrubber.value); });
+
+window.addEventListener('keydown', (e) => {
+  if (!replay) return;
+  const tag = (e.target.tagName || '').toLowerCase();
+  if (tag === 'select') return;
+  if (e.key === 'ArrowLeft') { e.preventDefault(); stopPlayback(); seek(idx - 1); }
+  else if (e.key === 'ArrowRight') { e.preventDefault(); stopPlayback(); seek(idx + 1); }
+  else if (e.key === ' ') { e.preventDefault(); playing ? stopPlayback() : startPlayback(); }
+  else if (e.key === 'Home') { e.preventDefault(); stopPlayback(); seek(0); }
+  else if (e.key === 'End') { e.preventDefault(); stopPlayback(); seek(replay.steps.length - 1); }
+});
+
+/* ============================== file picker & drag-drop ============================== */
+
+$('file-btn').addEventListener('click', () => $('file-input').click());
+$('file-input').addEventListener('change', (e) => {
+  loadFile(e.target.files[0]);
+  e.target.value = '';
+});
+
+let dragDepth = 0;
+window.addEventListener('dragenter', (e) => {
+  e.preventDefault();
+  dragDepth++;
+  $('drop-overlay').style.display = 'flex';
+});
+window.addEventListener('dragleave', (e) => {
+  e.preventDefault();
+  dragDepth = Math.max(0, dragDepth - 1);
+  if (dragDepth === 0) $('drop-overlay').style.display = 'none';
+});
+window.addEventListener('dragover', (e) => e.preventDefault());
+window.addEventListener('drop', (e) => {
+  e.preventDefault();
+  dragDepth = 0;
+  $('drop-overlay').style.display = 'none';
+  const file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+  if (file) loadFile(file);
+  else showError('No file found in the drop.');
+});
+
+/* ============================== resize ============================== */
+
+window.addEventListener('resize', () => {
+  if (!replay) return;
+  renderBoard();
+  sizeSparkline();
+});
+
+updateButtons();
+</script>
+</body>
+</html>
