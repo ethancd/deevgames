@@ -1,3 +1,4 @@
+// @vitest-environment node
 import { describe, it, expect } from 'vitest';
 import type { BoardState, Unit, PlayerId } from '../../src/game/types';
 import { createEmptyBoard, addUnit, createUnit } from '../../src/game/board';

@@ -1,10 +1,15 @@
-# Muju Hono Tanka — Spec/Engine Audit (Phase 1, IN PROGRESS)
+# Muju Hono Tanka — Spec/Engine Audit (Phase 1, COMPLETE)
 
 Status: divergence hunt complete for `src/game` + `src/ai` core paths; property
 tests + adversarial fixtures committed (`tests/game/properties.test.ts`,
-`tests/game/audit-fixtures.test.ts`, 42 tests, green). Remaining P1 work:
-SPEC.md rewrite to current rules, clause→code traceability table,
-v1.0→v1.1→code delta table.
+`tests/game/audit-fixtures.test.ts`, 42 tests, green). `muju/SPEC.md`
+rewritten to current rules (v1.2, 2026-06-09) from the stale-spec inventory
+below; clause→code traceability table appended (§Traceability). The
+v1.0→v1.1→code delta is captured by the stale-spec inventory (v1.0→current)
+plus the per-element "Changes from v1.0" notes in `docs/v1.1-spec.md` §3
+(v1.0→v1.1); the only v1.1→code deltas found are D3 (resourcesSpent timing)
+and the v1.1 §2.3 archetype triangle, which was NOT adopted (ruling E-1
+keeps the Double-Thick Triangle).
 
 ## Divergence list (found by code reading, 2026-06-09)
 
@@ -23,6 +28,8 @@ Severity: **C** = correctness/cheating bug, **I** = information-leak bug,
 | D8 | **D** | `src/game/board.ts:resetUnitActions` | Damage fully heals at the start of the **owner's** turn — kills must complete within one enemy turn; no cross-turn chip damage. This is the board-game-ability ruling (state = position + at most a transient within-turn damage marker). | Keep (per Ethan ruling #3). Balance implications measured in P3 (one-turn-kill walls hypothesis). |
 | D9 | **D** | `src/game/combat.ts:getValidAttacks` | A unit may attack the same enemy only once per turn (`attackedThisTurn`), but may attack different enemies multiple times, and may move/attack/mine repeatedly within the 6-action budget. SPEC.md v1.0's "one action type per piece per turn" is gone (v1.1 §1.1). | Keep. Fixtured. |
 | D10 | **D** | `src/game/movement.ts:getMoveCost` + `useGameState.ts` MOVE | Human path allows multi-action moves (cost = ceil(squares/speed)); AI generator only emits single-action moves (`getValidMoves`, speed-bounded). Not a rules divergence (same budget), but an AI capability gap: the AI never plans multi-action repositioning in one dispatch (it can chain MOVEs across re-plans). | Note for P4a eval; no engine change. |
+| D11 | **P** | `useGameState.ts` END_ACTION_PHASE vs `turn.ts:startQueuePhase` | The reducer's END_ACTION_PHASE sets `phase: 'queue'` directly instead of calling `startQueuePhase`, so the queue-phase auto-end (v1.1 §1.5) does not fire on phase *entry* on the human path — only after a QUEUE_UNIT leaves nothing affordable. A player entering queue phase broke must click End Turn. UX-only; engine helper is correct. | Fix in P4a alongside D4 (route both paths through `startQueuePhase`). |
+| D12 | **P** | `turn.ts:canActInQueuePhase` | Counts affordable *promotions* as a reason the queue phase is actionable, but PROMOTE_UNIT is only legal in the **place** phase (reducer guard). Net effect: queue phase can refuse to auto-end for a player who can only promote (must click End Turn); harmless but wrong predicate. | Fix in P4a: drop the promotion clause (or move promotion into queue phase per design — needs ruling; default is drop the clause). |
 
 ## Stale-spec inventory (drives the SPEC.md rewrite)
 
@@ -56,8 +63,40 @@ regression), spawn-rectangle edges (corner anchor, blocking, multi-anchor,
 black corner), well-metaphor dry cells, lightning can't-mine, promotion
 timing/cost, victory ruling, catalog monotonicity.
 
-## Next (remaining P1)
+## Traceability — SPEC.md (v1.2) clause → code → tests
 
-1. Rewrite `muju/SPEC.md` to current rules (inventory above is the worklist).
-2. Clause→code/test traceability table appended here.
-3. Checkpoint-1 commit.
+Spec section references are to the rewritten `muju/SPEC.md`. "props" =
+`tests/game/properties.test.ts`, "fixtures" = `tests/game/audit-fixtures.test.ts`.
+
+| Spec clause | Code | Tests |
+|---|---|---|
+| §1 board 10×10, 5 layers/cell | `board.ts:BOARD_SIZE,INITIAL_RESOURCE_LAYERS,createEmptyBoard` | `board.test.ts`; props (layers+depth ≡ 5, conservation ≡ 500) |
+| §1 start corners + starting units/positions | `board.ts:getStartCorner,getStartingPositions,createInitialGameState`; `units.ts:STARTING_UNITS` | `board.test.ts` |
+| §1 White first, turn 1 starts in action phase | `board.ts:createInitialGameState` (phase 'action') | `board.test.ts`, `turn.test.ts` |
+| §2 phase order place→action→queue | `turn.ts:startTurn,startActionPhase,startQueuePhase` | `turn.test.ts` |
+| §2 six actions per turn | `board.ts:MAX_ACTIONS_PER_TURN`; `turn.ts:useAction` | props (budget ∈ [0,6]); `turn.test.ts` |
+| §2 no per-unit action-type limit | `movement.ts:canMove`, `combat.ts:canAttack`, `mining.ts:canMineAction` (all = `canActThisTurn`) | fixtures (repeat actions) |
+| §2 queue advance at turn start; ready at 0 | `turn.ts:advanceBuildQueue,startTurn` | `turn.test.ts`, `building.test.ts` |
+| §2 action-flag + damage reset at owner's turn start | `board.ts:resetUnitActions` | fixtures (heal reset); props (heal semantics) |
+| §2 place phase auto-skip | `turn.ts:canActInPlacePhase,startTurn`; reducer PLACE_UNIT/PROMOTE_UNIT auto-transition | `turn.test.ts` |
+| §2 queue phase auto-end | `turn.ts:canActInQueuePhase,startQueuePhase`; reducer QUEUE_UNIT | `turn.test.ts` (see D11/D12) |
+| §3 orthogonal BFS movement, no pass-through | `movement.ts:getValidMoves` | `movement.test.ts` |
+| §3 multi-action move cost ceil(squares/speed) | `movement.ts:getMoveCost,getMovementRange`; reducer MOVE | `movement.test.ts` (see D10) |
+| §4.1 melee adjacency | `combat.ts:getValidAttacks`; `board.ts:isAdjacent` | `combat.test.ts` |
+| §4.1 ±1 ATK elemental modifier, ATK floor 0 | `elements.ts:getAttackModifier`; `combat.ts:calculateAttackPower` | `elements.test.ts`; fixtures (ATK floor, mixed-element combined) |
+| §4.2 same-target once per turn | `combat.ts:getValidAttacks` + `attackedThisTurn` | fixtures (same-target rule) |
+| §4.3 kill iff ATK ≥ DEF_eff; chip damage accumulates | `combat.ts:resolveCombat,calculateDefense` | `combat.test.ts`; fixtures (v1.1 §6.1 regression) |
+| §4.3 full heal at owner's turn start | `board.ts:resetUnitActions` (D8 ruling) | fixtures |
+| §5.1 well metaphor, dry cells, mining-0 | `mining.ts:calculateMiningYield,canMine` | `mining.test.ts`; fixtures (dry cells, lightning can't mine) |
+| §5.2 queue cost/build-time; hidden | `building.ts:addToBuildQueue,getBuildCost,getBuildTime`; reducer QUEUE_UNIT; `ai/state/observation.ts` | `building.test.ts` |
+| §5.2 tech gating at queue AND place | `building.ts:meetsTechRequirement,canBuildUnit`; reducer QUEUE_UNIT + PLACE_UNIT re-check | `building.test.ts` (AI path: D1) |
+| §5.2 queue persistence (never auto-deleted) | `turn.ts:advanceBuildQueue,endTurn` | `turn.test.ts`, fixtures |
+| §5.3 spawn rectangle, enemy blocking, empty-square | `spawning.ts:getSpawnRectangle,isValidSpawnPosition,getSpawnZone` | `spawning.test.ts`; fixtures (corner anchor, blocking, multi-anchor) |
+| §5.3 placement action-free, no summoning sickness | `building.ts:createUnitFromDefinition` (canAct true); reducer PLACE_UNIT (place phase, no useAction) | `building.test.ts`; fixtures |
+| §5.4 promotion cost diff, once/place-phase, not on placement turn, T4 terminal | `promotion.ts:getPromotionCost,canPromote`; `units.ts:getNextTierDefinition` | `promotion.test.ts`; fixtures (promotion timing/cost) |
+| §6 Double-Thick Triangle, pair neutrality | `elements.ts:ELEMENT_TO_PAIR,PAIR_ADVANTAGE,hasAdvantage` | `elements.test.ts` |
+| §7 stat tables | `units.ts:UNIT_DEFINITIONS` | `units.test.ts`; fixtures (catalog monotonicity) |
+| §8 hidden stockpile/queue; gained public; spent at place | `types.ts:PlayerState` doc; `ai/state/observation.ts:observeState` | `ai/` tests (human path bug: D3) |
+| §9 elimination at zero units (queue irrelevant) | `victory.ts:checkVictory` (D7 ruling) | `victory.test.ts`; fixtures (queued-units-don't-prevent-loss) |
+| §9 resignation | reducer RESIGN | `useGameState` coverage |
+| §9 draw on mutual elimination | `victory.ts:checkVictory` | `victory.test.ts` |
