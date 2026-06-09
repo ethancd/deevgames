@@ -79,6 +79,10 @@ export interface MatchOptions {
   recordReplay: boolean;
   /** Run invariant checks after every action (cheap; abort game on violation). */
   checkInvariants: boolean;
+  /** Advantage graph for this game (E7). Default: the shipped incumbent. */
+  elementGraph: 'double-thick' | 'dual-triangle' | 'rush-edge-only' | 'none';
+  /** Global ATK handicap per player (instrument sensitivity gate). */
+  handicap: { white: number; black: number };
 }
 
 export const DEFAULT_MATCH_OPTIONS: MatchOptions = {
@@ -87,6 +91,8 @@ export const DEFAULT_MATCH_OPTIONS: MatchOptions = {
   legality: 'as-shipped',
   recordReplay: false,
   checkInvariants: true,
+  elementGraph: 'double-thick',
+  handicap: { white: 0, black: 0 },
 };
 
 export type WinType =

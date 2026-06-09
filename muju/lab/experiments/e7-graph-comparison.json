@@ -1,0 +1,295 @@
+{
+  "name": "e7-graph-comparison",
+  "seed": 70001,
+  "replaySample": 0.001,
+  "pairings": [
+    {
+      "white": "Rush",
+      "black": "AntiRush",
+      "games": 200,
+      "mirror": true,
+      "options": {
+        "elementGraph": "double-thick"
+      }
+    },
+    {
+      "white": "Rush",
+      "black": "Expand",
+      "games": 150,
+      "mirror": true,
+      "options": {
+        "elementGraph": "double-thick"
+      }
+    },
+    {
+      "white": "Rush",
+      "black": "Balanced",
+      "games": 150,
+      "mirror": true,
+      "options": {
+        "elementGraph": "double-thick"
+      }
+    },
+    {
+      "white": "Balanced",
+      "black": "Expand",
+      "games": 150,
+      "mirror": true,
+      "options": {
+        "elementGraph": "double-thick"
+      }
+    },
+    {
+      "white": "Mono-fire",
+      "black": "Mono-plant",
+      "games": 150,
+      "mirror": true,
+      "options": {
+        "elementGraph": "double-thick"
+      }
+    },
+    {
+      "white": "Mono-plant",
+      "black": "Mono-water",
+      "games": 150,
+      "mirror": true,
+      "options": {
+        "elementGraph": "double-thick"
+      }
+    },
+    {
+      "white": "Mono-water",
+      "black": "Mono-fire",
+      "games": 150,
+      "mirror": true,
+      "options": {
+        "elementGraph": "double-thick"
+      }
+    },
+    {
+      "white": "Mono-lightning",
+      "black": "Mono-metal",
+      "games": 150,
+      "mirror": true,
+      "options": {
+        "elementGraph": "double-thick"
+      }
+    },
+    {
+      "white": "Rush",
+      "black": "AntiRush",
+      "games": 200,
+      "mirror": true,
+      "options": {
+        "elementGraph": "dual-triangle"
+      }
+    },
+    {
+      "white": "Rush",
+      "black": "Expand",
+      "games": 150,
+      "mirror": true,
+      "options": {
+        "elementGraph": "dual-triangle"
+      }
+    },
+    {
+      "white": "Rush",
+      "black": "Balanced",
+      "games": 150,
+      "mirror": true,
+      "options": {
+        "elementGraph": "dual-triangle"
+      }
+    },
+    {
+      "white": "Balanced",
+      "black": "Expand",
+      "games": 150,
+      "mirror": true,
+      "options": {
+        "elementGraph": "dual-triangle"
+      }
+    },
+    {
+      "white": "Mono-fire",
+      "black": "Mono-plant",
+      "games": 150,
+      "mirror": true,
+      "options": {
+        "elementGraph": "dual-triangle"
+      }
+    },
+    {
+      "white": "Mono-plant",
+      "black": "Mono-water",
+      "games": 150,
+      "mirror": true,
+      "options": {
+        "elementGraph": "dual-triangle"
+      }
+    },
+    {
+      "white": "Mono-water",
+      "black": "Mono-fire",
+      "games": 150,
+      "mirror": true,
+      "options": {
+        "elementGraph": "dual-triangle"
+      }
+    },
+    {
+      "white": "Mono-lightning",
+      "black": "Mono-metal",
+      "games": 150,
+      "mirror": true,
+      "options": {
+        "elementGraph": "dual-triangle"
+      }
+    },
+    {
+      "white": "Rush",
+      "black": "AntiRush",
+      "games": 200,
+      "mirror": true,
+      "options": {
+        "elementGraph": "rush-edge-only"
+      }
+    },
+    {
+      "white": "Rush",
+      "black": "Expand",
+      "games": 150,
+      "mirror": true,
+      "options": {
+        "elementGraph": "rush-edge-only"
+      }
+    },
+    {
+      "white": "Rush",
+      "black": "Balanced",
+      "games": 150,
+      "mirror": true,
+      "options": {
+        "elementGraph": "rush-edge-only"
+      }
+    },
+    {
+      "white": "Balanced",
+      "black": "Expand",
+      "games": 150,
+      "mirror": true,
+      "options": {
+        "elementGraph": "rush-edge-only"
+      }
+    },
+    {
+      "white": "Mono-fire",
+      "black": "Mono-plant",
+      "games": 150,
+      "mirror": true,
+      "options": {
+        "elementGraph": "rush-edge-only"
+      }
+    },
+    {
+      "white": "Mono-plant",
+      "black": "Mono-water",
+      "games": 150,
+      "mirror": true,
+      "options": {
+        "elementGraph": "rush-edge-only"
+      }
+    },
+    {
+      "white": "Mono-water",
+      "black": "Mono-fire",
+      "games": 150,
+      "mirror": true,
+      "options": {
+        "elementGraph": "rush-edge-only"
+      }
+    },
+    {
+      "white": "Mono-lightning",
+      "black": "Mono-metal",
+      "games": 150,
+      "mirror": true,
+      "options": {
+        "elementGraph": "rush-edge-only"
+      }
+    },
+    {
+      "white": "Rush",
+      "black": "AntiRush",
+      "games": 200,
+      "mirror": true,
+      "options": {
+        "elementGraph": "none"
+      }
+    },
+    {
+      "white": "Rush",
+      "black": "Expand",
+      "games": 150,
+      "mirror": true,
+      "options": {
+        "elementGraph": "none"
+      }
+    },
+    {
+      "white": "Rush",
+      "black": "Balanced",
+      "games": 150,
+      "mirror": true,
+      "options": {
+        "elementGraph": "none"
+      }
+    },
+    {
+      "white": "Balanced",
+      "black": "Expand",
+      "games": 150,
+      "mirror": true,
+      "options": {
+        "elementGraph": "none"
+      }
+    },
+    {
+      "white": "Mono-fire",
+      "black": "Mono-plant",
+      "games": 150,
+      "mirror": true,
+      "options": {
+        "elementGraph": "none"
+      }
+    },
+    {
+      "white": "Mono-plant",
+      "black": "Mono-water",
+      "games": 150,
+      "mirror": true,
+      "options": {
+        "elementGraph": "none"
+      }
+    },
+    {
+      "white": "Mono-water",
+      "black": "Mono-fire",
+      "games": 150,
+      "mirror": true,
+      "options": {
+        "elementGraph": "none"
+      }
+    },
+    {
+      "white": "Mono-lightning",
+      "black": "Mono-metal",
+      "games": 150,
+      "mirror": true,
+      "options": {
+        "elementGraph": "none"
+      }
+    }
+  ]
+}

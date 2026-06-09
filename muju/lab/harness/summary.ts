@@ -9,6 +9,8 @@ import { wilson, mean, fmtCI } from './stats';
 export interface PairingSummary {
   botA: string; // alphabetically first
   botB: string;
+  /** non-default match options (element graph / handicap), '' for baseline */
+  variant: string;
   games: number;
   aWins: number;
   bWins: number;
@@ -27,18 +29,30 @@ export interface PairingSummary {
   meanDurationMs: number;
 }
 
+function variantOf(r: GameRecord): string {
+  const parts: string[] = [];
+  if (r.options.elementGraph && r.options.elementGraph !== 'double-thick') {
+    parts.push(`graph=${r.options.elementGraph}`);
+  }
+  const h = r.options.handicap;
+  if (h && (h.white !== 0 || h.black !== 0)) {
+    parts.push(`handicap=w${h.white}/b${h.black}`);
+  }
+  return parts.join(' ');
+}
+
 export function summarize(records: GameRecord[]): PairingSummary[] {
   const groups = new Map<string, GameRecord[]>();
   for (const r of records) {
     const bots = [r.players.white.bot, r.players.black.bot].sort();
-    const key = `${bots[0]}|${bots[1]}`;
+    const key = `${bots[0]}|${bots[1]}|${variantOf(r)}`;
     if (!groups.has(key)) groups.set(key, []);
     groups.get(key)!.push(r);
   }
 
   const rows: PairingSummary[] = [];
   for (const [key, recs] of groups) {
-    const [botA, botB] = key.split('|');
+    const [botA, botB, variant] = key.split('|');
     let aWins = 0;
     let bWins = 0;
     let draws = 0;
@@ -82,6 +96,7 @@ export function summarize(records: GameRecord[]): PairingSummary[] {
     rows.push({
       botA,
       botB,
+      variant,
       games: recs.length,
       aWins,
       bWins,
@@ -107,6 +122,7 @@ export function summaryToCsv(rows: PairingSummary[]): string {
   const header = [
     'botA',
     'botB',
+    'variant',
     'games',
     'aWins',
     'bWins',
@@ -130,6 +146,7 @@ export function summaryToCsv(rows: PairingSummary[]): string {
       [
         r.botA,
         r.botB,
+        r.variant,
         r.games,
         r.aWins,
         r.bWins,
@@ -156,7 +173,7 @@ export function printSummary(rows: PairingSummary[]): void {
   for (const r of rows) {
     const ci = { p: r.aWinRate, lo: r.aWinLo, hi: r.aWinHi };
     console.log(
-      `${r.botA} vs ${r.botB}: ${r.aWins}-${r.bWins}-${r.draws} (${r.games} games) ` +
+      `${r.botA} vs ${r.botB}${r.variant ? ` [${r.variant}]` : ''}: ${r.aWins}-${r.bWins}-${r.draws} (${r.games} games) ` +
         `| ${r.botA} WR ${fmtCI(ci)} ` +
         `| as white ${r.aWinsAsWhite}/${r.gamesAasWhite}, as black ${r.aWinsAsBlack}/${r.gamesAasBlack} ` +
         `| turns ${r.meanTurns.toFixed(1)} | adjud ${(100 * r.adjudicationRate).toFixed(0)}% ` +

@@ -4,6 +4,7 @@ import { createGreedyBot } from './greedy';
 import { createRushBot, createExpandBot, createBalancedBot } from './archetypes';
 import { createTurtleBot, createTier1SpamBot, createMiningDenialBot, createAntiRushBot } from './probes';
 import { createEngineBot } from './engine';
+import { createMonoElementBot } from './mono';
 
 /**
  * Bot registry. Names are the public identifiers used in experiment configs
@@ -22,6 +23,12 @@ const FACTORIES: Record<string, () => Bot> = {
   Tier1Spam: createTier1SpamBot,
   MiningDenial: createMiningDenialBot,
   AntiRush: createAntiRushBot,
+  'Mono-fire': () => createMonoElementBot('fire'),
+  'Mono-lightning': () => createMonoElementBot('lightning'),
+  'Mono-water': () => createMonoElementBot('water'),
+  'Mono-shadow': () => createMonoElementBot('shadow'),
+  'Mono-plant': () => createMonoElementBot('plant'),
+  'Mono-metal': () => createMonoElementBot('metal'),
   'AIv2-easy-fast': () => createEngineBot({ difficulty: 'easy', speed: 'fast' }),
   'AIv2-medium-fast': () => createEngineBot({ difficulty: 'medium', speed: 'fast' }),
   'AIv2-hard-fast': () => createEngineBot({ difficulty: 'hard', speed: 'fast' }),

@@ -1,0 +1,17 @@
+{
+  "name": "e6-degenerate-probes",
+  "seed": 60001,
+  "replaySample": 0.005,
+  "pairings": [
+    { "white": "Rush", "black": "AntiRush", "games": 400, "mirror": true },
+    { "white": "Rush", "black": "Turtle", "games": 200, "mirror": true },
+    { "white": "Rush", "black": "Expand", "games": 200, "mirror": true },
+    { "white": "Tier1Spam", "black": "AntiRush", "games": 200, "mirror": true },
+    { "white": "Tier1Spam", "black": "Greedy", "games": 200, "mirror": true },
+    { "white": "MiningDenial", "black": "Greedy", "games": 200, "mirror": true },
+    { "white": "MiningDenial", "black": "Balanced", "games": 200, "mirror": true },
+    { "white": "MiningDenial", "black": "Expand", "games": 200, "mirror": true },
+    { "white": "Turtle", "black": "Greedy", "games": 200, "mirror": true },
+    { "white": "Turtle", "black": "Balanced", "games": 200, "mirror": true }
+  ]
+}

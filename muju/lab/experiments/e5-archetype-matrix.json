@@ -1,0 +1,11 @@
+{
+  "name": "e5-archetype-matrix",
+  "seed": 50001,
+  "replaySample": 0.002,
+  "pairings": [
+    { "white": "Rush", "black": "Expand", "games": 400, "mirror": true },
+    { "white": "Rush", "black": "Balanced", "games": 400, "mirror": true },
+    { "white": "Balanced", "black": "Expand", "games": 400, "mirror": true },
+    { "white": "Expand", "black": "Expand", "games": 200 }
+  ]
+}

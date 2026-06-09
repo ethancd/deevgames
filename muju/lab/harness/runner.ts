@@ -21,6 +21,8 @@ import { DEFAULT_MATCH_OPTIONS } from './types';
 import { legalActions, actionsEqual, isLegalNow } from './legal';
 import { checkInvariants, InvariantViolation } from './invariants';
 import { mulberry32, deriveSeed } from './rng';
+import { setElementGraph } from '../../src/game/elements';
+import { setCombatHandicap, resetCombatHandicap } from '../../src/game/combat';
 
 function otherPlayer(p: PlayerId): PlayerId {
   return p === 'white' ? 'black' : 'white';
@@ -119,6 +121,21 @@ export interface PlayGameResult {
 
 export async function playGame(args: PlayGameArgs): Promise<PlayGameResult> {
   const options: MatchOptions = { ...DEFAULT_MATCH_OPTIONS, ...args.options };
+
+  // Engine knobs for this game (module-global; games run sequentially).
+  // Reset in the finally below so no game leaks config into the next.
+  setElementGraph(options.elementGraph);
+  setCombatHandicap('white', options.handicap.white);
+  setCombatHandicap('black', options.handicap.black);
+  try {
+    return await playGameInner(args, options);
+  } finally {
+    setElementGraph('double-thick');
+    resetCombatHandicap();
+  }
+}
+
+async function playGameInner(args: PlayGameArgs, options: MatchOptions): Promise<PlayGameResult> {
   const { bots, seed } = args;
   const startedAt = new Date().toISOString();
   const t0 = Date.now();

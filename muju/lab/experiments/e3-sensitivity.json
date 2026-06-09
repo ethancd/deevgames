@@ -1,0 +1,19 @@
+{
+  "name": "e3-sensitivity",
+  "seed": 30002,
+  "replaySample": 0.002,
+  "pairings": [
+    {
+      "white": "Greedy",
+      "black": "Greedy",
+      "games": 400,
+      "options": { "handicap": { "white": 1, "black": 0 } }
+    },
+    {
+      "white": "Balanced",
+      "black": "Balanced",
+      "games": 400,
+      "options": { "handicap": { "white": 1, "black": 0 } }
+    }
+  ]
+}

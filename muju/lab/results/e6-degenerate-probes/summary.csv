@@ -1,0 +1,11 @@
+botA,botB,variant,games,aWins,bWins,draws,aWinRate,aWinLo,aWinHi,aWinsAsWhite,gamesAasWhite,aWinsAsBlack,gamesAasBlack,meanTurns,adjudicationRate,invariantViolations,illegalActionsTotal,meanDurationMs
+AntiRush,Rush,,800,686,114,0,0.8575,0.8316,0.8800,313,400,373,400,105.1,0.858,0,0,14
+AntiRush,Tier1Spam,,400,398,2,0,0.9950,0.9820,0.9986,199,200,199,200,45.3,0.015,0,0,38
+Balanced,MiningDenial,,400,294,94,12,0.7350,0.6897,0.7759,193,200,101,200,57.3,0.247,0,0,13
+Balanced,Turtle,,400,397,3,0,0.9925,0.9782,0.9974,200,200,197,200,120.7,0.995,0,0,51
+Expand,MiningDenial,,400,357,43,0,0.8925,0.8583,0.9192,183,200,174,200,110.8,0.902,0,0,11
+Expand,Rush,,400,11,389,0,0.0275,0.0154,0.0486,6,200,5,200,14.9,0.025,0,0,3
+Greedy,MiningDenial,,400,396,4,0,0.9900,0.9746,0.9961,200,200,196,200,22.7,0.025,0,0,6
+Greedy,Tier1Spam,,400,400,0,0,1.0000,0.9905,1.0000,200,200,200,200,20.7,0.000,0,0,11
+Greedy,Turtle,,400,248,149,3,0.6200,0.5715,0.6662,126,200,122,200,92.4,0.682,0,0,25
+Rush,Turtle,,400,176,223,1,0.4400,0.3922,0.4890,99,200,77,200,73.2,0.560,0,0,6

@@ -29,18 +29,60 @@ const PAIR_ADVANTAGE: Record<ElementPair, ElementPair> = {
 };
 
 /**
+ * Injectable advantage graph (balance-lab experiment E7). The shipped game
+ * always uses 'double-thick' (the incumbent — design ruling E-1); the lab
+ * swaps graphs to compare alternatives that preserve the rush→expand edge.
+ *
+ * - 'double-thick': the pair cycle above (default).
+ * - 'dual-triangle': v1.0's two independent triangles —
+ *   fire→plant→water→fire and lightning→metal→shadow→lightning.
+ * - 'rush-edge-only': fire/lightning beat plant/metal; everything else neutral.
+ * - 'none': no elemental advantages (instrument control; NOT a design
+ *   candidate — it violates ruling E-1).
+ */
+export type ElementGraphName = 'double-thick' | 'dual-triangle' | 'rush-edge-only' | 'none';
+
+let activeGraph: ElementGraphName = 'double-thick';
+
+export function setElementGraph(graph: ElementGraphName): void {
+  activeGraph = graph;
+}
+
+export function getElementGraph(): ElementGraphName {
+  return activeGraph;
+}
+
+const DUAL_TRIANGLE: Record<Element, Element> = {
+  // attacker -> the single element it beats
+  fire: 'plant',
+  plant: 'water',
+  water: 'fire',
+  lightning: 'metal',
+  metal: 'shadow',
+  shadow: 'lightning',
+};
+
+/**
  * Check if attacker has elemental advantage over defender
  */
 export function hasAdvantage(attacker: Element, defender: Element): boolean {
-  const attackerPair = ELEMENT_TO_PAIR[attacker];
-  const defenderPair = ELEMENT_TO_PAIR[defender];
-
-  // Elements in the same pair are neutral to each other
-  if (attackerPair === defenderPair) {
-    return false;
+  switch (activeGraph) {
+    case 'none':
+      return false;
+    case 'dual-triangle':
+      return DUAL_TRIANGLE[attacker] === defender;
+    case 'rush-edge-only':
+      return ELEMENT_TO_PAIR[attacker] === 'fire-lightning' && ELEMENT_TO_PAIR[defender] === 'plant-metal';
+    case 'double-thick': {
+      const attackerPair = ELEMENT_TO_PAIR[attacker];
+      const defenderPair = ELEMENT_TO_PAIR[defender];
+      // Elements in the same pair are neutral to each other
+      if (attackerPair === defenderPair) {
+        return false;
+      }
+      return PAIR_ADVANTAGE[attackerPair] === defenderPair;
+    }
   }
-
-  return PAIR_ADVANTAGE[attackerPair] === defenderPair;
 }
 
 /**
@@ -71,33 +113,22 @@ export function getAttackModifier(
   return 0;
 }
 
+const ALL_ELEMENTS: Element[] = ['fire', 'lightning', 'water', 'shadow', 'plant', 'metal'];
+
 /**
  * Get all elements that this element has advantage over
+ * (graph-aware: derived from hasAdvantage so it tracks the active graph)
  */
 export function getAdvantageTargets(element: Element): Element[] {
-  const myPair = ELEMENT_TO_PAIR[element];
-  const weakPair = PAIR_ADVANTAGE[myPair];
-
-  return (Object.entries(ELEMENT_TO_PAIR) as [Element, ElementPair][])
-    .filter(([_, pair]) => pair === weakPair)
-    .map(([el]) => el);
+  return ALL_ELEMENTS.filter((other) => hasAdvantage(element, other));
 }
 
 /**
  * Get all elements that have advantage over this element
+ * (graph-aware: derived from hasAdvantage so it tracks the active graph)
  */
 export function getWeaknesses(element: Element): Element[] {
-  const myPair = ELEMENT_TO_PAIR[element];
-
-  // Find which pair beats my pair
-  const strongPair = (Object.entries(PAIR_ADVANTAGE) as [ElementPair, ElementPair][])
-    .find(([_, weakPair]) => weakPair === myPair)?.[0];
-
-  if (!strongPair) return [];
-
-  return (Object.entries(ELEMENT_TO_PAIR) as [Element, ElementPair][])
-    .filter(([_, pair]) => pair === strongPair)
-    .map(([el]) => el);
+  return ALL_ELEMENTS.filter((other) => hasAdvantage(other, element));
 }
 
 /**

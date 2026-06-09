@@ -1,0 +1,9 @@
+{
+  "name": "e6-rush-vs-ai",
+  "seed": 60002,
+  "replaySample": 0.05,
+  "pairings": [
+    { "white": "Rush", "black": "AIv2-hard-fast", "games": 15, "mirror": true },
+    { "white": "Tier1Spam", "black": "AIv2-hard-fast", "games": 10, "mirror": true }
+  ]
+}

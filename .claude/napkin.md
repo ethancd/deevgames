@@ -10,6 +10,8 @@
 - Design rulings E-1..E-3 are settled — do not re-litigate (rush>expand intended; mass-Fire_1 rush target 35-55% WR vs competent defense; no persistent per-unit HP).
 
 ## Patterns That Work
+- Harness invariant checks pay off: the occupancy check caught a real engine bug (D13: Date.now()+3-char IDs collide same-ms → by-ID MOVE teleports two units). When generating IDs in this codebase, always include a monotonic counter.
+- Muju engine knobs for experiments: keep them additive + default-off (setElementGraph, setCombatHandicap, AIEngineV2.setConfig), pin defaults with tests.
 - chrome-devtools MCP `upload_file` rejects paths outside workspace roots (e.g. /tmp) — copy test fixtures into the repo temporarily, then delete.
 - Verified file:// single-page tools end-to-end via chrome-devtools MCP: new_page → upload_file on the picker button → evaluate_script to drive state → screenshot + list_console_messages.
 

@@ -1,0 +1,11 @@
+{
+  "name": "e3-first-player",
+  "seed": 30001,
+  "replaySample": 0.002,
+  "pairings": [
+    { "white": "Greedy", "black": "Greedy", "games": 400 },
+    { "white": "Rush", "black": "Rush", "games": 400 },
+    { "white": "Balanced", "black": "Balanced", "games": 400 },
+    { "white": "AntiRush", "black": "AntiRush", "games": 200 }
+  ]
+}

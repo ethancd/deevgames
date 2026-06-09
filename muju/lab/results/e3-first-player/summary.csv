@@ -1,0 +1,5 @@
+botA,botB,variant,games,aWins,bWins,draws,aWinRate,aWinLo,aWinHi,aWinsAsWhite,gamesAasWhite,aWinsAsBlack,gamesAasBlack,meanTurns,adjudicationRate,invariantViolations,illegalActionsTotal,meanDurationMs
+AntiRush,AntiRush,,200,97,91,12,0.4850,0.4167,0.5539,97,200,0,0,121.0,0.940,0,0,47
+Balanced,Balanced,,400,206,190,4,0.5150,0.4661,0.5636,206,400,0,0,119.1,0.963,0,0,45
+Greedy,Greedy,,400,211,189,0,0.5275,0.4785,0.5759,211,400,0,0,34.4,0.092,0,0,9
+Rush,Rush,,400,193,206,0,0.4837,0.4351,0.5327,193,400,0,0,16.2,0.000,1,0,4

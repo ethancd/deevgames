@@ -91,3 +91,44 @@ not autonomous rulings, recorded for traceability):
   the illegal-action counter is exactly the signal that decides whether
   D1/D2 must be fixed before calibration claims are made.
 - **Blast radius:** all engine-bot rows. **Reversal cost:** none (flag flip).
+
+## J-006: E4 mono-element bots keep the standard starting trio; only the queue is element-restricted
+
+- **Question:** The plan sketches E4 as "fixed trio of that element's T1s,
+  queue restricted — logged harness ruling". Lightning and Shadow T1s have
+  Mining 0; a trio of them has literally zero income, so those two rows would
+  be lost-by-construction and measure nothing beyond a stat we can read off
+  the table.
+- **Ruling:** Mono-X bots start with the standard symmetric trio
+  (fire_1/water_1/plant_1, same as real games) and restrict only QUEUE_UNIT
+  (and PROMOTE_UNIT) to element X. The matrix then measures "element X as a
+  build strategy on the real opening", which is the question players face.
+- **Blast radius:** E4/E7 interpretation — rows measure element *lines*, not
+  element-pure armies. **Reversal cost:** low (bot variant + rerun, ~2 min).
+
+## J-007: Archetype ladder gate interpreted vs Random, not vs Greedy
+
+- **Question:** Plan gate "each tier ≥70% vs tier below" — archetype bots
+  (L2) vs Greedy (L1)?
+- **Ruling:** Gate G1 requires archetypes ≥70% vs Random; the Greedy cells
+  are measured and reported but not gated. Archetypes are *stances* (Expand
+  deliberately refuses combat), not uniformly stronger policies; failing
+  Expand-vs-Greedy says "aggression beats greed", which is a finding, not an
+  instrument failure.
+- **Blast radius:** gate bookkeeping only. **Reversal cost:** none.
+
+## J-008: D13 (ID collisions in ai/simulate) fixed immediately, not deferred to P4a
+
+- **Question:** J-002 defers AI-path divergences to P4a so baselines measure
+  the game as-shipped. The lab's occupancy invariant caught a new one mid-E3:
+  simulate IDs (Date.now() + 3 random chars) collide for same-millisecond
+  units, and a by-ID MOVE then relocates BOTH units (seed 1720018195).
+  Defer or fix now?
+- **Ruling:** Fix immediately (monotonic counter + 5 random chars in
+  queue/place IDs). This is the J-002 exception by design: ID collisions are
+  random state corruption, not a strategic property of the shipped game —
+  leaving them in distorts baselines with noise no player experiences as
+  "balance". Scripted experiments are rerun on the fixed engine
+  (hash-stamped); the one aborted E3 game is excluded either way.
+- **Blast radius:** engine IDs only; no rules change. **Reversal cost:** n/a
+  (strictly a correctness fix; regression-tested).
