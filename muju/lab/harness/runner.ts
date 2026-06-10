@@ -237,6 +237,7 @@ async function playGameInner(args: PlayGameArgs, options: MatchOptions): Promise
       action = await bot.nextAction(state, player);
       if (action && !isLegalNow(state, player, action)) {
         stats[player].illegalActions++;
+        anomalies.push(`illegal ${player} action at ply ${ply + 1}: ${JSON.stringify(action)}`);
         if (options.legality === 'strict') {
           action = null; // replaced with phase-end fallback below
         }

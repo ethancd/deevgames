@@ -1,3 +1,2 @@
 botA,botB,variant,games,aWins,bWins,draws,aWinRate,aWinLo,aWinHi,aWinsAsWhite,gamesAasWhite,aWinsAsBlack,gamesAasBlack,meanTurns,adjudicationRate,invariantViolations,illegalActionsTotal,meanDurationMs
-Balanced,Balanced,handicap=w1/b0,400,381,16,3,0.9525,0.9270,0.9694,381,400,0,0,82.4,0.500,0,0,29
-Greedy,Greedy,handicap=w1/b0,400,392,8,0,0.9800,0.9610,0.9898,392,400,0,0,16.6,0.003,0,0,5
+AIv2-medium-fast,Greedy,,32,27,5,0,0.8438,0.6825,0.9314,14,16,13,16,7.5,0.000,0,9,22144
