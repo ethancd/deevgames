@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#1a1a2e" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="apple-touch-icon" href="/leyline/icon-192.png" />
+  <title>Leyline Garden</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #1a1a2e; touch-action: none; }
+    #game { width: 100%; height: 100%; }
+    #ui-overlay {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      pointer-events: none;
+    }
+    #toolbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      padding-bottom: max(8px, env(safe-area-inset-bottom));
+      background: rgba(10, 10, 20, 0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      pointer-events: auto;
+    }
+    .tool-btn {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 16px;
+      border: 2px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 14px;
+      font-family: system-ui, sans-serif;
+      cursor: pointer;
+      transition: all 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .tool-btn.active {
+      border-color: #fbbf24;
+      background: rgba(251, 191, 36, 0.15);
+      color: #fbbf24;
+    }
+    #carried-display {
+      display: flex;
+      align-items: center;
+      margin-left: auto;
+      padding: 6px 12px;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.03);
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 13px;
+      font-family: system-ui, sans-serif;
+      cursor: pointer;
+      transition: all 0.15s;
+      -webkit-tap-highlight-color: transparent;
+      white-space: nowrap;
+    }
+    #carried-display.carrying {
+      border-color: rgba(74, 222, 128, 0.4);
+      background: rgba(74, 222, 128, 0.08);
+      color: rgba(255, 255, 255, 0.9);
+    }
+    .tool-btn.hidden {
+      display: none;
+    }
+    #game-tooltip {
+      position: fixed;
+      z-index: 200;
+      background: rgba(10, 10, 25, 0.95);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+      padding: 10px 14px;
+      pointer-events: auto;
+      max-width: 220px;
+      font-family: system-ui, sans-serif;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+    #game-tooltip.hidden { display: none; }
+    .tip-header { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+    .tip-stage { font-size: 12px; color: rgba(255,255,255,0.6); margin-bottom: 6px; }
+    .tip-needs { font-size: 12px; margin-bottom: 4px; }
+    .tip-prod { font-size: 12px; color: rgba(255,255,255,0.7); }
+    .tip-buffer { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 2px; }
+    .tip-desc { font-size: 12px; color: rgba(255,255,255,0.6); }
+    .tree-buy-btn {
+      display: block;
+      width: 100%;
+      padding: 5px 8px;
+      margin-top: 3px;
+      border: 1px solid rgba(167,139,250,0.3);
+      border-radius: 5px;
+      background: rgba(167,139,250,0.1);
+      color: rgba(255,255,255,0.9);
+      font-size: 12px;
+      font-family: system-ui, sans-serif;
+      text-align: left;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .tree-buy-btn:active { background: rgba(167,139,250,0.25); }
+    .tree-buy-btn.tree-buy-disabled {
+      opacity: 0.35;
+      pointer-events: none;
+    }
+    #help-modal {
+      position: fixed; inset: 0; z-index: 300;
+      display: flex; align-items: center; justify-content: center;
+    }
+    #help-modal.hidden { display: none; }
+    .help-backdrop {
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.6);
+    }
+    .help-content {
+      position: relative;
+      background: rgba(15, 15, 30, 0.97);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 14px;
+      width: 90%;
+      max-width: 360px;
+      max-height: 80vh;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      font-family: system-ui, sans-serif;
+      color: rgba(255,255,255,0.9);
+    }
+    .help-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      font-size: 16px; font-weight: 600;
+    }
+    .help-header button {
+      background: none; border: none; color: rgba(255,255,255,0.5);
+      font-size: 18px; cursor: pointer; padding: 4px 8px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .help-body { padding: 8px 16px 16px; }
+    .help-plant {
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .help-plant:last-child { border-bottom: none; }
+    .help-name { font-size: 14px; font-weight: 500; margin-bottom: 3px; }
+    .help-layer { font-size: 11px; color: rgba(255,255,255,0.4); font-weight: 400; }
+    .help-detail { font-size: 12px; color: rgba(255,255,255,0.6); margin-top: 2px; }
+    #welcome-back {
+      position: fixed; inset: 0; z-index: 400;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.7);
+      font-family: system-ui, sans-serif;
+      color: rgba(255,255,255,0.9);
+      -webkit-tap-highlight-color: transparent;
+    }
+    #welcome-back.hidden { display: none; }
+    .wb-card {
+      background: rgba(15,15,30,0.97);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 14px;
+      padding: 20px 24px;
+      max-width: 320px;
+      width: 85%;
+      text-align: center;
+    }
+    .wb-title { font-size: 18px; font-weight: 600; margin-bottom: 12px; }
+    .wb-time { font-size: 12px; color: rgba(255,255,255,0.4); margin-bottom: 12px; }
+    .wb-items { text-align: left; font-size: 13px; line-height: 1.6; margin-bottom: 16px; }
+    .wb-item { color: rgba(255,255,255,0.7); }
+    .wb-tap { font-size: 12px; color: rgba(255,255,255,0.3); }
+  </style>
+</head>
+<body>
+  <div id="game"></div>
+  <div id="ui-overlay"></div>
+  <div id="game-tooltip" class="hidden"></div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
