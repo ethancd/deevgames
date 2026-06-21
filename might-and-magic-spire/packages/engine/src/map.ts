@@ -16,30 +16,35 @@ export interface MapGenConfig {
 const DEFAULT_CONFIG: MapGenConfig = { rows: 12, width: 4 };
 
 /**
- * Node type for an interior row. Early rows skew to combat; rest/shop/elite/
- * event are sprinkled in by row band so the act has a recognizable rhythm:
+ * Node type for an interior row. Early rows skew to combat; growth/economy
+ * nodes (dwelling/altar/shrine/merchant) and rest are sprinkled in by row band
+ * so the act has a recognizable rhythm:
  *   - row 0: always combat (a gentle opener)
- *   - mid rows: weighted mix
+ *   - mid rows: weighted mix of combat + growth nodes
  *   - a guaranteed rest before the boss (penultimate row)
+ *
+ * The town is gone, so growth happens on the map: DWELLING (recruit a stack),
+ * ALTAR (upgrade a stack), SHRINE (learn a spell), MERCHANT (buy artifacts).
  */
 function rollNodeType(rng: Rng, row: number, totalRows: number): NodeType {
   if (row === 0) return "combat";
   if (row === totalRows - 1) return "rest"; // breather before the boss
 
-  // Weighted table. Elites appear from the mid-act onward.
+  // Weighted table. Elites + altars appear from the mid-act onward.
   const lateGame = row >= Math.floor(totalRows / 2);
   const table: NodeType[] = [
     "combat",
     "combat",
     "combat",
-    "event",
-    "shop",
+    "dwelling",
+    "shrine",
+    "merchant",
     "rest",
   ];
   if (lateGame) {
-    table.push("elite", "elite", "combat");
+    table.push("elite", "elite", "altar", "combat");
   } else {
-    table.push("combat");
+    table.push("dwelling", "combat");
   }
   return rng.pick(table);
 }

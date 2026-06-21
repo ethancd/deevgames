@@ -79,4 +79,33 @@ describe("act-map graph generator", () => {
     const penultimate = map.filter((n) => n.row === maxRow - 1);
     expect(penultimate.every((n) => n.type === "rest")).toBe(true);
   });
+
+  it("only generates the army-model node types (no STS event/shop)", () => {
+    const valid = new Set<MapNode["type"]>([
+      "combat",
+      "elite",
+      "boss",
+      "dwelling",
+      "altar",
+      "shrine",
+      "merchant",
+      "rest",
+    ]);
+    for (let i = 0; i < 30; i++) {
+      const map = generateMap(makeRng(`types-${i}`), 1);
+      for (const n of map) expect(valid.has(n.type)).toBe(true);
+    }
+  });
+
+  it("sprinkles in growth nodes (dwelling/shrine/merchant) across many seeds", () => {
+    const seen = new Set<string>();
+    for (let i = 0; i < 40; i++) {
+      const map = generateMap(makeRng(`growth-${i}`), 1);
+      for (const n of map) seen.add(n.type);
+    }
+    expect(seen.has("dwelling")).toBe(true);
+    expect(seen.has("shrine")).toBe(true);
+    expect(seen.has("merchant")).toBe(true);
+    expect(seen.has("altar")).toBe(true);
+  });
 });

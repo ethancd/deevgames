@@ -1,107 +1,180 @@
 // Run orchestration — the top-level state machine the frontend drives.
 //
-// Public operations (all PURE — return new RunState, never mutate inputs):
-//   startRun(seed)                  -> RunState
-//   chooseNode(run, nodeId)         -> RunState   (enters a node; starts combat)
-//   playCard(run, cardId, targetId) -> RunState   (delegates into combat)
-//   endTurn(run)                    -> RunState   (delegates into combat)
-//   pickReward(run, choiceIndex)    -> RunState   (resolves post-combat rewards)
+// All operations are PURE: they return a new RunState and never mutate inputs.
+// The army is the player's life: an empty army (every stack dead) loses the run;
+// beating the act boss wins it.
 
-import type { CardDef } from "@mms/schema";
 import { makeRng, type Rng } from "./rng";
 import type {
+  Army,
+  ArtifactSlot,
+  CombatSpell,
   CombatState,
-  Enemy,
+  Hero,
   MapNode,
-  Relic,
+  PrimaryStat,
   RewardChoice,
   RunState,
+  Stack,
 } from "./types";
 import { generateMap, startNodeIds } from "./map";
 import {
-  CREATURES,
+  ALL_CREATURES,
   ARTIFACTS,
+  BASE_CREATURES,
+  CREATURES,
   DEFAULT_HERO,
+  SPELLS,
+  artifactById,
   creatureById,
+  spellById,
+  upgradeFormOf,
 } from "./content";
 import {
-  adaptArtifact,
-  adaptCreature,
-  signatureRelicForHero,
+  adaptEquipment,
+  adaptSpell,
+  adaptStack,
+  deriveHero,
+  MANA_PER_KNOWLEDGE,
 } from "./adapter";
 import {
-  endTurn as combatEndTurn,
-  makeEnemy,
-  playCard as combatPlayCard,
-  startCombat,
-} from "./combat";
+  armyAlive,
+  chooseEnemyIntent,
+  legalTargets as battleLegalTargets,
+  livingStacks,
+  resolveAttack,
+  spellMagnitude,
+  applyDamage,
+  applyHeal,
+  hasAbility,
+  withStack,
+} from "./battle";
 
-export const STARTING_HP = 70;
-export const STARTING_GOLD = 99;
-export const DECK_SIZE = 10; // starter deck: copies of low-tier creatures
+// ===========================================================================
+// LEVERS (see COMBAT.md)
+// ===========================================================================
 
-// ---------------------------------------------------------------------------
-// Start
-// ---------------------------------------------------------------------------
+export const STARTING_GOLD = 200;
+export const ARMY_CAP = 7;
 
 /**
- * The basic "Defend" skill — a deckbuilder needs a block tool or it's
- * unwinnable. Not adapted from a creature; it's a neutral starter skill (the
- * hero's shield arm), mirroring Slay the Spire's starting Defends.
+ * Necromancy raise % by Necromancy skill rank (index by rank; 0 = no skill).
+ * This is the central GROWTH lever (plan lever #3): too low and the army ball
+ * deflates under attrition (unrecoverable), too high and you snowball skeletons.
+ * Tuned via the full-run sim so a Necromancy-1 hero net-recovers from a typical
+ * fight. (See COMBAT.md / run.test.ts sweep.)
  */
-export function defendCard(n: number): CardDef {
-  return {
-    id: `card_defend#${n}`,
-    sourceId: "starter_defend",
-    name: "Defend",
-    type: "skill",
-    faction: "Neutral",
-    cost: 1,
-    rarity: "starter",
-    effects: [{ kind: "block", amount: 6, target: "self" }],
-    upgradeOf: null,
-    text: "Gain 6 block.",
-    imageRef: "starter_defend",
+export const NECRO_BASE_PCT = [0, 0.3, 0.4, 0.5, 0.6];
+export const NECRO_CAP = 0.75;
+export const SKELETON_ID = "necropolis_skeleton";
+
+/** Rest node: mana regen + light army heal. */
+export const REST_MANA_FRACTION = 1.0; // full mana refill
+export const REST_HEAL_PER_STACK = 0.25; // heal 25% of each stack's missing pool
+
+/** Per-turn mana regen at the start of each player turn. */
+export const TURN_MANA_REGEN = 1;
+
+/** Economy (gold). */
+export const RECRUIT_COST_PER_TIER = 30;
+export const UPGRADE_COST_PER_TIER = 50;
+export const SHRINE_COST_PER_LEVEL = 40;
+export const ARTIFACT_COST: Record<string, number> = {
+  Treasure: 60,
+  Minor: 100,
+  Major: 180,
+  Relic: 300,
+};
+
+/**
+ * Encounter scaling. Enemies are built from a POWER BUDGET that tracks the
+ * player's current army value (the snowball) so attrition stays survivable but
+ * real. Budget = playerArmyValue * MULT, where MULT rises with map depth and
+ * node type. armyValue(stack) = count * (hp + avgDamage*2) — a rough "how scary".
+ *
+ * These multipliers are the central difficulty levers (see COMBAT.md). Combat
+ * fights are designed to be *winnable with attrition*; elites/bosses bite.
+ */
+export const ENCOUNTER = {
+  /** combat fight budget vs player army value, by depth fraction (0..1). */
+  combatMult: [0.22, 0.42] as [number, number], // start .22x -> .42x near boss
+  eliteMult: [0.45, 0.65] as [number, number],
+  bossMult: 0.7,
+  /** Max Bone Dragons in the boss fight (the rest of the budget is Lich guard). */
+  bossMaxDragons: 2,
+  /** Max enemy stacks. */
+  maxStacks: 4,
+};
+
+/** Rough "scariness" value of a stack for budget math. */
+export function armyValue(s: { count: number; maxHpPer: number; damageMin: number; damageMax: number }): number {
+  const avgDmg = (s.damageMin + s.damageMax) / 2;
+  return s.count * (s.maxHpPer + avgDmg * 2);
+}
+
+// ===========================================================================
+// HERO STAT DERIVATION (equipment-aware)
+// ===========================================================================
+
+/** Recompute a hero's primaries + maxMana from base + equipped artifacts. */
+export function recomputeHero(hero: Hero): Hero {
+  const deltas: Record<PrimaryStat, number> = {
+    attack: 0,
+    defense: 0,
+    power: 0,
+    knowledge: 0,
   };
+  let manaMaxBonus = 0;
+  for (const eq of Object.values(hero.equipment)) {
+    if (!eq) continue;
+    for (const k of Object.keys(eq.primaryDeltas) as PrimaryStat[]) {
+      deltas[k] += eq.primaryDeltas[k] ?? 0;
+    }
+    for (const e of eq.effects) {
+      if (e.kind === "manaMax") manaMaxBonus += e.amount;
+    }
+  }
+  const knowledge = hero.baseKnowledge + deltas.knowledge;
+  const maxMana = knowledge * MANA_PER_KNOWLEDGE + manaMaxBonus;
+  const next: Hero = {
+    ...hero,
+    attack: hero.baseAttack + deltas.attack,
+    defense: hero.baseDefense + deltas.defense,
+    power: hero.basePower + deltas.power,
+    knowledge,
+    maxMana,
+    mana: Math.min(hero.mana, maxMana),
+  };
+  return next;
 }
 
-/** Build the starter deck: cheap strikes + Defends, Slay-the-Spire-style. */
-function buildStarterDeck(): CardDef[] {
-  const skeleton = creatureById("necropolis_skeleton")!;
-  const deck: CardDef[] = [];
-  // 6 Skeleton strikes + 4 Defends = a 10-card starter that can both hit and
-  // survive. Distinct instance ids so copies coexist.
-  for (let i = 0; i < 6; i++) deck.push(instanceCard(adaptCreature(skeleton), i));
-  for (let i = 0; i < 4; i++) deck.push(defendCard(i));
-  return deck;
+/** Total necromancy bonus from equipped artifacts (e.g. Cloak of the Undead King). */
+function equipmentNecroBonus(hero: Hero): number {
+  let bonus = 0;
+  for (const eq of Object.values(hero.equipment)) {
+    if (!eq) continue;
+    for (const e of eq.effects) if (e.kind === "necromancyBonus") bonus += e.amount;
+  }
+  return bonus;
 }
 
-/** Give a card a unique instance id so multiple copies coexist in a deck. */
-export function instanceCard(card: CardDef, n: number): CardDef {
-  return { ...card, id: `${card.id}#${n}` };
-}
+// ===========================================================================
+// START
+// ===========================================================================
 
 export function startRun(seed: string): RunState {
   const rng = makeRng(seed);
-  const hero = DEFAULT_HERO;
-  const signature = signatureRelicForHero(hero);
-
-  // Signature relic may raise max HP at acquisition.
-  let maxHp = STARTING_HP;
-  const relics: Relic[] = [signature];
-  for (const r of relics) {
-    if (r.effect.kind === "maxHp") maxHp += r.effect.amount;
-  }
-
+  const { hero, startingArmy } = deriveHero(DEFAULT_HERO, {
+    creatures: CREATURES,
+    spells: SPELLS,
+  });
   const map = generateMap(rng, /*act*/ 1);
 
   return {
     seed,
-    hp: maxHp,
-    maxHp,
+    hero,
+    army: startingArmy,
     gold: STARTING_GOLD,
-    deck: buildStarterDeck(),
-    relics,
     map,
     currentNodeId: null,
     act: 1,
@@ -112,12 +185,10 @@ export function startRun(seed: string): RunState {
   };
 }
 
-// ---------------------------------------------------------------------------
-// Node navigation
-// ---------------------------------------------------------------------------
+// ===========================================================================
+// NODE NAVIGATION
+// ===========================================================================
 
-/** Is `nodeId` a legal move right now? Either a start node (nothing chosen yet)
- *  or reachable from the current node. */
 export function legalNextNodes(run: RunState): string[] {
   if (run.currentNodeId === null) return startNodeIds(run.map);
   const cur = run.map.find((n) => n.id === run.currentNodeId);
@@ -128,8 +199,7 @@ export function chooseNode(run: RunState, nodeId: string): RunState {
   if (run.outcome !== "ongoing") return run;
   if (run.combat && run.combat.outcome === "ongoing")
     throw new Error("chooseNode: resolve the current combat first");
-  if (run.pendingRewards)
-    throw new Error("chooseNode: pick a reward first");
+  if (run.pendingRewards) throw new Error("chooseNode: pick a reward first");
 
   const legal = legalNextNodes(run);
   if (!legal.includes(nodeId))
@@ -151,146 +221,630 @@ export function chooseNode(run: RunState, nodeId: string): RunState {
       next.combat = openCombat(next, node, rng);
       break;
     case "rest":
-      // Heal 30% of max HP and clear the node.
-      next.hp = Math.min(next.maxHp, next.hp + Math.floor(next.maxHp * 0.3));
+      applyRest(next);
       next.clearedNodeIds.push(nodeId);
       break;
-    case "shop":
-      // Lightweight shop: offer a relic + a card to buy via rewards channel.
-      next.pendingRewards = rollShop(next, rng);
+    case "dwelling":
+      next.pendingRewards = rollDwelling(rng);
       break;
-    case "event":
-      // Simple deterministic event: small gold or small heal.
-      next.pendingRewards = rollEvent(rng);
+    case "altar":
+      next.pendingRewards = rollAltar(next, rng);
+      break;
+    case "shrine":
+      next.pendingRewards = rollShrine(next, rng);
+      break;
+    case "merchant":
+      next.pendingRewards = rollMerchant(rng);
       break;
   }
-
   return next;
 }
 
-// ---------------------------------------------------------------------------
-// Combat lifecycle within a run
-// ---------------------------------------------------------------------------
-
-function openCombat(run: RunState, node: MapNode, rng: Rng): CombatState {
-  const enemies = rollEncounter(node, rng);
-  return startCombat({
-    deck: run.deck,
-    playerHp: run.hp,
-    playerMaxHp: run.maxHp,
-    enemies,
-    relics: run.relics,
-    rng: rng.fork("combat"),
+function applyRest(run: RunState): void {
+  run.hero = { ...run.hero, mana: run.hero.maxMana };
+  run.army = run.army.map((s) => {
+    if (s.count <= 0) return s;
+    const pool = s.hpTop + (s.count - 1) * s.maxHpPer;
+    const maxPool = s.count * s.maxHpPer;
+    const missing = maxPool - pool;
+    const heal = Math.floor(missing * REST_HEAL_PER_STACK);
+    return applyHeal(s, heal, s.count);
   });
 }
 
-/** Pick enemies for a node. Bosses/elites are tougher and more numerous. */
-function rollEncounter(node: MapNode, rng: Rng): Enemy[] {
-  const eRng = rng.fork("encounter");
-  if (node.type === "boss") {
-    const boss = creatureById("necropolis_bone_dragon")!;
-    const enemy = makeEnemy(boss, eRng, "_boss");
-    // Act-1 boss is tuned to be the hardest *winnable* fight against a starter
-    // deck, not the raw HoMM stat-block. We cap HP and give it a telegraphed
-    // attack/attack/wind-up rhythm so a player who blocks the big hit survives.
-    // (Balance lever — documented in ADAPTER.md.)
-    enemy.hp = 80;
-    enemy.maxHp = 80;
-    enemy.intentScript = [
-      { kind: "attack", value: 10, label: "Attacks for 10" },
-      { kind: "attack", value: 10, label: "Attacks for 10" },
-      { kind: "buff", value: 3, label: "Wreathes in flame (+3)" },
-      { kind: "attack", value: 16, label: "Attacks for 16" },
-    ];
-    enemy.intentIndex = 0;
-    enemy.intent = enemy.intentScript[0];
-    return [enemy];
-  }
-  if (node.type === "elite") {
-    const pool = CREATURES.filter((c) => c.tier >= 4 && c.tier <= 5);
-    const lead = eRng.pick(pool);
-    const adds = CREATURES.filter((c) => c.tier <= 2);
-    return [
-      makeEnemy(lead, eRng, "_e0"),
-      makeEnemy(eRng.pick(adds), eRng, "_e1"),
-    ];
-  }
-  // Normal combat: 1–3 low/mid-tier creatures.
-  const pool = CREATURES.filter((c) => c.tier <= 3);
-  const count = eRng.int(1, 3);
-  const out: Enemy[] = [];
-  for (let i = 0; i < count; i++) {
-    out.push(makeEnemy(eRng.pick(pool), eRng, `_n${i}`));
-  }
-  return out;
+// ===========================================================================
+// COMBAT — open / encounter generation
+// ===========================================================================
+
+function openCombat(run: RunState, node: MapNode, rng: Rng): CombatState {
+  const bossRow = Math.max(...run.map.map((n) => n.row));
+  const depth = bossRow > 0 ? node.row / bossRow : 0;
+  const playerValue = run.army.reduce((sum, s) => sum + armyValue(s), 0);
+  const enemyArmy = rollEncounter(node, depth, playerValue, rng.fork("encounter"));
+  // Fresh copies of the player's army for battle (carried back on win).
+  const yourStacks = run.army.map((s) => ({
+    ...s,
+    hasActed: false,
+    isDefending: false,
+    hasRetaliated: false,
+    startCount: s.count,
+  }));
+  const state: CombatState = {
+    round: 1,
+    whoseTurn: "player",
+    yourArmy: { stacks: yourStacks, side: "player" },
+    enemyArmy,
+    spellCastThisTurn: false,
+    log: [`Battle begins (${node.type}).`],
+    outcome: "ongoing",
+    actedStackIds: [],
+    slainEnemies: {},
+  };
+  // Telegraph the enemy's opening intents.
+  refreshTelegraphs(state, run.hero);
+  return state;
 }
 
-/** Sync the player's run-level HP from combat, and roll rewards on a win. */
-function settleCombat(run: RunState, rng: Rng): RunState {
-  const combat = run.combat!;
-  const next: RunState = { ...run, hp: combat.playerHp };
+const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
-  if (combat.outcome === "lost") {
-    next.outcome = "lost";
-    next.combat = combat;
-    return next;
+/**
+ * Build an enemy army to roughly `budget` total armyValue, drawn from a tier
+ * band that widens with depth. Greedily fills up to maxStacks, dividing the
+ * budget across stacks. Always returns at least one non-empty stack.
+ */
+function rollEncounter(
+  node: MapNode,
+  depth: number,
+  playerValue: number,
+  rng: Rng,
+): Army {
+  // Minimum floor so an empty/whittled player army still faces a token foe.
+  const baseValue = Math.max(playerValue, 300);
+
+  let mult: number;
+  let tierMin: number;
+  let tierMax: number;
+  if (node.type === "boss") {
+    mult = ENCOUNTER.bossMult;
+    tierMin = 1;
+    tierMax = 7;
+  } else if (node.type === "elite") {
+    mult = lerp(ENCOUNTER.eliteMult[0], ENCOUNTER.eliteMult[1], depth);
+    tierMin = Math.max(2, Math.floor(lerp(2, 4, depth)));
+    tierMax = Math.min(7, Math.ceil(lerp(4, 6, depth)));
+  } else {
+    mult = lerp(ENCOUNTER.combatMult[0], ENCOUNTER.combatMult[1], depth);
+    tierMin = 1;
+    tierMax = Math.min(7, Math.max(2, Math.ceil(lerp(2, 5, depth))));
   }
 
-  // Won.
-  const node = run.map.find((n) => n.id === run.currentNodeId)!;
-  next.clearedNodeIds = [...run.clearedNodeIds, node.id];
-  next.combat = null;
+  const budget = baseValue * mult;
+  const pool = BASE_CREATURES.filter((c) => c.tier >= tierMin && c.tier <= tierMax);
+  const stacks: Stack[] = [];
 
   if (node.type === "boss") {
-    // Beating the act boss wins the run (single-act build; multi-act is a
-    // straightforward extension: regen the map and bump `act`).
+    // The boss is a Bone Dragon stack + a Lich guard. The dragon count is held
+    // LOW (1..ENCOUNTER.bossMaxDragons): a few hp-150 dragons one-rounding the
+    // front is the trap; the fight should reward a high-tier army + spells, not
+    // be an unkillable wall. Excess budget goes to the Lich guard.
+    const boss = creatureById("necropolis_bone_dragon")!;
+    const bossPer = armyValue({ count: 1, maxHpPer: boss.hp, damageMin: boss.damageMin, damageMax: boss.damageMax });
+    const bossCount = Math.max(
+      1,
+      Math.min(ENCOUNTER.bossMaxDragons, Math.round((budget * 0.5) / bossPer)),
+    );
+    stacks.push(adaptStack(boss, bossCount, { side: "enemy", idSuffix: "_boss" }));
+    const lich = creatureById("necropolis_lich")!;
+    const lichPer = armyValue({ count: 1, maxHpPer: lich.hp, damageMin: lich.damageMin, damageMax: lich.damageMax });
+    const usedByDragons = bossCount * bossPer;
+    const lichCount = Math.max(2, Math.round(Math.max(0, budget - usedByDragons) / lichPer));
+    stacks.push(adaptStack(lich, lichCount, { side: "enemy", idSuffix: "_bossguard" }));
+    return { stacks, side: "enemy" };
+  }
+
+  const nStacks = Math.max(1, Math.min(ENCOUNTER.maxStacks, rng.int(1, ENCOUNTER.maxStacks)));
+  const perStackBudget = budget / nStacks;
+  for (let i = 0; i < nStacks; i++) {
+    const c = rng.pick(pool);
+    const per = armyValue({ count: 1, maxHpPer: c.hp, damageMin: c.damageMin, damageMax: c.damageMax });
+    const count = Math.max(1, Math.round(perStackBudget / per));
+    stacks.push(adaptStack(c, count, { side: "enemy", idSuffix: `_n${i}` }));
+  }
+  return { stacks, side: "enemy" };
+}
+
+// The enemy has no hero of its own; it fights with a null commander (zeros).
+const NULL_HERO: Hero = {
+  id: "enemy", name: "Enemy", heroClass: "", specialty: "",
+  attack: 0, defense: 0, power: 0, knowledge: 0, mana: 0, maxMana: 0,
+  equipment: {}, spellbook: [], skills: {}, imageRef: "",
+  baseAttack: 0, baseDefense: 0, basePower: 0, baseKnowledge: 0,
+};
+
+// ===========================================================================
+// COMBAT — telegraphs (honest: the same planner drives shown + executed)
+// ===========================================================================
+
+function refreshTelegraphs(state: CombatState, playerHero: Hero): void {
+  for (const s of state.enemyArmy.stacks) {
+    if (s.count <= 0) {
+      s.telegraph = undefined;
+      continue;
+    }
+    s.telegraph = chooseEnemyIntent(s, state.yourArmy, NULL_HERO, playerHero);
+  }
+}
+
+// ===========================================================================
+// COMBAT — player turn
+// ===========================================================================
+
+/** Reset per-turn flags and apply regen at the start of the player's turn. */
+function startPlayerTurn(run: RunState): RunState {
+  const combat = run.combat!;
+  const hero = {
+    ...run.hero,
+    mana: Math.min(run.hero.maxMana, run.hero.mana + TURN_MANA_REGEN),
+  };
+  // Regeneration ability heals the top creature of each player stack.
+  const yourStacks = combat.yourArmy.stacks.map((s) => {
+    let ns = { ...s, hasActed: false, isDefending: false };
+    if (hasAbility(s, "regeneration") && s.count > 0 && s.hpTop < s.maxHpPer) {
+      ns = { ...ns, hpTop: s.maxHpPer };
+    }
+    return ns;
+  });
+  const next: RunState = {
+    ...run,
+    hero,
+    combat: {
+      ...combat,
+      whoseTurn: "player",
+      spellCastThisTurn: false,
+      actedStackIds: [],
+      yourArmy: { ...combat.yourArmy, stacks: yourStacks },
+    },
+  };
+  refreshTelegraphs(next.combat!, hero);
+  return next;
+}
+
+export function legalCommandTargets(run: RunState, stackId: string): string[] {
+  const combat = run.combat;
+  if (!combat || combat.outcome !== "ongoing") return [];
+  const actor = combat.yourArmy.stacks.find((s) => s.id === stackId);
+  if (!actor || actor.count <= 0) return [];
+  return battleLegalTargets(actor, combat.enemyArmy).map((s) => s.id);
+}
+
+export function commandStack(
+  run: RunState,
+  stackId: string,
+  action: "attack" | "defend",
+  targetId?: string,
+): RunState {
+  const combat = run.combat;
+  if (!combat) throw new Error("commandStack: no active combat");
+  if (combat.outcome !== "ongoing") throw new Error("commandStack: combat is over");
+  if (combat.whoseTurn !== "player") throw new Error("commandStack: not your turn");
+
+  const actor = combat.yourArmy.stacks.find((s) => s.id === stackId);
+  if (!actor) throw new Error(`commandStack: no such stack ${stackId}`);
+  if (actor.count <= 0) throw new Error("commandStack: stack is dead");
+  if (combat.actedStackIds.includes(stackId))
+    throw new Error("commandStack: stack already acted this turn");
+
+  const rng = combatRng(run).fork(`cmd:${combat.round}:${stackId}`);
+  let yourArmy = combat.yourArmy;
+  let enemyArmy = combat.enemyArmy;
+  const log = combat.log.slice();
+  const slain = { ...combat.slainEnemies };
+
+  if (action === "defend") {
+    yourArmy = withStack(yourArmy, { ...actor, isDefending: true });
+    log.push(`${actor.name} defends.`);
+  } else {
+    if (!targetId) throw new Error("commandStack: attack needs a targetId");
+    const legal = battleLegalTargets(actor, enemyArmy).map((s) => s.id);
+    if (!legal.includes(targetId))
+      throw new Error(`commandStack: ${targetId} is not a legal target`);
+    const target = enemyArmy.stacks.find((s) => s.id === targetId)!;
+    const res = resolveAttack(actor, target, run.hero, NULL_HERO, rng);
+    yourArmy = withStack(yourArmy, res.attacker);
+    enemyArmy = withStack(enemyArmy, res.defender);
+    for (const line of res.log) log.push(line);
+    if (res.defenderKilled > 0) {
+      slain[target.sourceId] = (slain[target.sourceId] ?? 0) + res.defenderKilled;
+    }
+  }
+
+  const nextCombat: CombatState = {
+    ...combat,
+    yourArmy,
+    enemyArmy,
+    log,
+    slainEnemies: slain,
+    actedStackIds: [...combat.actedStackIds, stackId],
+  };
+  let next: RunState = { ...run, combat: nextCombat };
+  next = checkCombatEnd(next);
+  return next;
+}
+
+export function legalSpellTargets(run: RunState, spellId: string): string[] {
+  const combat = run.combat;
+  if (!combat || combat.outcome !== "ongoing") return [];
+  const spell = run.hero.spellbook.find((s) => s.id === spellId);
+  if (!spell) return [];
+  switch (spell.targeting) {
+    case "enemyStack":
+      return livingStacks(combat.enemyArmy).map((s) => s.id);
+    case "allyStack":
+      return livingStacks(combat.yourArmy).map((s) => s.id);
+    default:
+      return [];
+  }
+}
+
+export function castSpell(
+  run: RunState,
+  spellId: string,
+  targetId?: string,
+): RunState {
+  const combat = run.combat;
+  if (!combat) throw new Error("castSpell: no active combat");
+  if (combat.outcome !== "ongoing") throw new Error("castSpell: combat is over");
+  if (combat.whoseTurn !== "player") throw new Error("castSpell: not your turn");
+  if (combat.spellCastThisTurn) throw new Error("castSpell: already cast this turn");
+
+  const spell = run.hero.spellbook.find((s) => s.id === spellId);
+  if (!spell) throw new Error(`castSpell: hero does not know ${spellId}`);
+  if (run.hero.mana < spell.manaCost) throw new Error("castSpell: not enough mana");
+
+  const rng = combatRng(run).fork(`cast:${combat.round}:${spellId}`);
+  const hero = { ...run.hero, mana: run.hero.mana - spell.manaCost };
+  let yourArmy = combat.yourArmy;
+  let enemyArmy = combat.enemyArmy;
+  const log = combat.log.slice();
+  const slain = { ...combat.slainEnemies };
+
+  const result = applySpell(spell, run.hero, yourArmy, enemyArmy, targetId, rng);
+  yourArmy = result.yourArmy;
+  enemyArmy = result.enemyArmy;
+  for (const line of result.log) log.push(line);
+  for (const [sourceId, n] of Object.entries(result.slain)) {
+    slain[sourceId] = (slain[sourceId] ?? 0) + n;
+  }
+
+  const nextCombat: CombatState = {
+    ...combat,
+    yourArmy,
+    enemyArmy,
+    spellCastThisTurn: true,
+    log,
+    slainEnemies: slain,
+  };
+  let next: RunState = { ...run, hero, combat: nextCombat };
+  next = checkCombatEnd(next);
+  return next;
+}
+
+function applySpell(
+  spell: CombatSpell,
+  hero: Hero,
+  yourArmy: Army,
+  enemyArmy: Army,
+  targetId: string | undefined,
+  rng: Rng,
+): { yourArmy: Army; enemyArmy: Army; log: string[]; slain: Record<string, number> } {
+  const log: string[] = [];
+  const slain: Record<string, number> = {};
+  const mag = spellMagnitude(spell.effect, hero);
+  const eff = spell.effect;
+
+  const damageEnemy = (target: Stack) => {
+    const res = applyDamage(target, mag);
+    enemyArmy = withStack(enemyArmy, res.defender);
+    if (res.killed > 0) slain[target.sourceId] = (slain[target.sourceId] ?? 0) + res.killed;
+    log.push(`${spell.name} hits ${target.name} for ${res.dealt}` + (res.killed > 0 ? ` (${res.killed} slain)` : ""));
+  };
+
+  if (eff.kind === "damage") {
+    if (eff.target === "allEnemies") {
+      for (const t of livingStacks(enemyArmy)) damageEnemy(t);
+    } else {
+      const t = targetId
+        ? enemyArmy.stacks.find((s) => s.id === targetId && s.count > 0)
+        : livingStacks(enemyArmy)[0];
+      if (!t) throw new Error("castSpell: no valid enemy target");
+      damageEnemy(t);
+    }
+  } else if (eff.kind === "heal") {
+    const t = targetId
+      ? yourArmy.stacks.find((s) => s.id === targetId)
+      : livingStacks(yourArmy)[0];
+    if (!t) throw new Error("castSpell: no valid ally target");
+    const healed = applyHeal(t, mag, t.startCount > 0 ? t.startCount : t.count);
+    yourArmy = withStack(yourArmy, healed);
+    log.push(`${spell.name} restores ${t.name} (now ${healed.count}).`);
+  } else if (eff.kind === "buff") {
+    const t = targetId
+      ? yourArmy.stacks.find((s) => s.id === targetId && s.count > 0)
+      : livingStacks(yourArmy)[0];
+    if (!t) throw new Error("castSpell: no valid ally target");
+    yourArmy = withStack(yourArmy, applyStatMod(t, eff.stat, mag));
+    log.push(`${spell.name} buffs ${t.name} (+${mag} ${eff.stat}).`);
+  } else if (eff.kind === "debuff") {
+    const t = targetId
+      ? enemyArmy.stacks.find((s) => s.id === targetId && s.count > 0)
+      : livingStacks(enemyArmy)[0];
+    if (!t) throw new Error("castSpell: no valid enemy target");
+    enemyArmy = withStack(enemyArmy, applyStatMod(t, eff.stat, -mag));
+    log.push(`${spell.name} weakens ${t.name} (-${mag} ${eff.stat}).`);
+  } else {
+    // disable: mark the target as defending-suppressed (v1: zero its damage roll).
+    const t = targetId
+      ? enemyArmy.stacks.find((s) => s.id === targetId && s.count > 0)
+      : livingStacks(enemyArmy)[0];
+    if (!t) throw new Error("castSpell: no valid enemy target");
+    enemyArmy = withStack(enemyArmy, { ...t, damageMin: 0, damageMax: 0 });
+    log.push(`${spell.name} disables ${t.name}.`);
+  }
+  void rng;
+  return { yourArmy, enemyArmy, log, slain };
+}
+
+function applyStatMod(
+  stack: Stack,
+  stat: "attack" | "defense" | "speed" | "damage",
+  delta: number,
+): Stack {
+  switch (stat) {
+    case "attack":
+      return { ...stack, attack: Math.max(0, stack.attack + delta) };
+    case "defense":
+      return { ...stack, defense: Math.max(0, stack.defense + delta) };
+    case "speed":
+      return { ...stack, speed: Math.max(1, stack.speed + delta) };
+    case "damage":
+      return {
+        ...stack,
+        damageMin: Math.max(0, stack.damageMin + delta),
+        damageMax: Math.max(0, stack.damageMax + delta),
+      };
+  }
+}
+
+// ===========================================================================
+// COMBAT — enemy turn (end of player turn)
+// ===========================================================================
+
+export function endPlayerTurn(run: RunState): RunState {
+  const combat = run.combat;
+  if (!combat) throw new Error("endPlayerTurn: no active combat");
+  if (combat.outcome !== "ongoing") throw new Error("endPlayerTurn: combat is over");
+  if (combat.whoseTurn !== "player") throw new Error("endPlayerTurn: not your turn");
+
+  let next: RunState = { ...run, combat: { ...combat, whoseTurn: "enemy" } };
+
+  // Enemy acts in speed order, highest first. The SAME chooseEnemyIntent that
+  // produced each telegraph picks the action -> the telegraph is honest.
+  const order = livingStacks(next.combat!.enemyArmy)
+    .slice()
+    .sort((a, b) => b.speed - a.speed || a.id.localeCompare(b.id));
+
+  for (const planned of order) {
+    next = enemyAct(next, planned.id);
+    // settleCombat nulls `combat` on a win; a loss leaves combat with outcome.
+    if (!next.combat || next.combat.outcome !== "ongoing") break;
+  }
+
+  // Combat resolved (won -> combat null & outcome set; lost -> outcome 'lost').
+  if (!next.combat || next.combat.outcome !== "ongoing") return next;
+
+  // New round: increment, reset retaliation, refresh telegraphs, hand back.
+  const combat2 = next.combat;
+  const enemyArmy = {
+    ...combat2.enemyArmy,
+    stacks: combat2.enemyArmy.stacks.map((s) => ({ ...s, hasRetaliated: false, isDefending: false })),
+  };
+  const yourArmy = {
+    ...combat2.yourArmy,
+    stacks: combat2.yourArmy.stacks.map((s) => ({ ...s, hasRetaliated: false })),
+  };
+  next = {
+    ...next,
+    combat: { ...combat2, enemyArmy, yourArmy, round: combat2.round + 1 },
+  };
+  return startPlayerTurn(next);
+}
+
+/** Resolve one enemy stack's telegraphed action against the player army. */
+function enemyAct(run: RunState, stackId: string): RunState {
+  const combat = run.combat!;
+  const actor = combat.enemyArmy.stacks.find((s) => s.id === stackId);
+  if (!actor || actor.count <= 0) return run;
+
+  // Re-plan from current board state (honest: same pure planner as the telegraph;
+  // the telegraph shown to the player was computed from the pre-turn board, and
+  // here we re-derive against the now-current board for correct resolution).
+  const intent = chooseEnemyIntent(actor, combat.yourArmy, NULL_HERO, run.hero);
+  if (intent.kind === "defend" || !intent.targetStackId) {
+    const log = [...combat.log, `${actor.name} holds.`];
+    return { ...run, combat: { ...combat, log } };
+  }
+
+  const target = combat.yourArmy.stacks.find(
+    (s) => s.id === intent.targetStackId && s.count > 0,
+  );
+  if (!target) {
+    // Telegraphed target died; fall back to any legal target.
+    const legal = battleLegalTargets(actor, combat.yourArmy);
+    if (legal.length === 0) return run;
+    return enemyAttack(run, actor, legal[0]);
+  }
+  return enemyAttack(run, actor, target);
+}
+
+function enemyAttack(run: RunState, actor: Stack, target: Stack): RunState {
+  const combat = run.combat!;
+  const rng = combatRng(run).fork(`enemy:${combat.round}:${actor.id}`);
+  const res = resolveAttack(actor, target, NULL_HERO, run.hero, rng);
+  const enemyArmy = withStack(combat.enemyArmy, res.attacker);
+  const yourArmy = withStack(combat.yourArmy, res.defender);
+  const log = [...combat.log, ...res.log];
+  let next: RunState = {
+    ...run,
+    combat: { ...combat, enemyArmy, yourArmy, log },
+  };
+  next = checkCombatEnd(next);
+  return next;
+}
+
+// ===========================================================================
+// COMBAT — end detection + settlement
+// ===========================================================================
+
+function checkCombatEnd(run: RunState): RunState {
+  const combat = run.combat!;
+  if (combat.outcome !== "ongoing") return run;
+  const enemyAliveNow = armyAlive(combat.enemyArmy);
+  const youAlive = armyAlive(combat.yourArmy);
+  if (enemyAliveNow && youAlive) return run;
+
+  const outcome: CombatState["outcome"] = !youAlive ? "lost" : "won";
+  const settled: CombatState = { ...combat, outcome };
+  return settleCombat({ ...run, combat: settled });
+}
+
+function settleCombat(run: RunState): RunState {
+  const combat = run.combat!;
+  const node = run.map.find((n) => n.id === run.currentNodeId)!;
+
+  if (combat.outcome === "lost") {
+    // Terminal state: the army (life) is gone. Keep a uniform shape with wins —
+    // combat is cleared, the run outcome carries the result.
+    return { ...run, outcome: "lost", army: [], combat: null };
+  }
+
+  // Won. Carry the surviving army back (drop dead stacks).
+  const survivors: Stack[] = combat.yourArmy.stacks
+    .filter((s) => s.count > 0)
+    .map((s) => ({ ...s, isDefending: false, hasRetaliated: false, hasActed: false }));
+
+  let next: RunState = {
+    ...run,
+    army: survivors,
+    clearedNodeIds: [...run.clearedNodeIds, node.id],
+    combat: null,
+  };
+
+  if (node.type === "boss") {
     next.outcome = "won";
     return next;
   }
 
-  next.pendingRewards = rollCombatRewards(node, rng.fork("rewards"));
+  // Necromancy + combat rewards.
+  next = applyNecromancy(next, combat);
+  next.pendingRewards = rollCombatRewards(node, makeRng(run.seed).fork(`rewards:${node.id}`));
   return next;
 }
 
-// ---------------------------------------------------------------------------
-// Rewards
-// ---------------------------------------------------------------------------
+// ===========================================================================
+// NECROMANCY
+// ===========================================================================
+
+/** Compute the raise from a battle's slain ledger; mutate army or queue a raise. */
+export function applyNecromancy(run: RunState, combat: CombatState): RunState {
+  const skill = run.hero.skills["Necromancy"] ?? 0;
+  const basePct = NECRO_BASE_PCT[Math.min(skill, NECRO_BASE_PCT.length - 1)] ?? 0;
+  const pct = Math.min(NECRO_CAP, basePct + equipmentNecroBonus(run.hero));
+  if (pct <= 0) return run;
+
+  // Slain hp = sum over slain enemy creatures of their per-creature maxHp.
+  let slainHp = 0;
+  let slainCreatures = 0;
+  for (const [sourceId, n] of Object.entries(combat.slainEnemies)) {
+    const c = creatureById(sourceId);
+    if (!c) continue;
+    slainHp += c.hp * n;
+    slainCreatures += n;
+  }
+  if (slainCreatures <= 0) return run;
+
+  const skeleton = creatureById(SKELETON_ID)!;
+  let raised = Math.floor((slainHp * pct) / skeleton.hp);
+  raised = Math.min(raised, slainCreatures); // never raise more bodies than fell
+  if (raised <= 0) return run;
+
+  // Add to an existing Skeleton stack, else create one, else queue a raise reward.
+  const existing = run.army.find((s) => s.sourceId === SKELETON_ID && s.count > 0);
+  if (existing) {
+    const army = run.army.map((s) =>
+      s.id === existing.id
+        ? { ...s, count: s.count + raised, startCount: s.count + raised }
+        : s,
+    );
+    return { ...run, army };
+  }
+  if (run.army.length < ARMY_CAP) {
+    const newStack = adaptStack(skeleton, raised, { idSuffix: `_raised_${run.clearedNodeIds.length}` });
+    return { ...run, army: [...run.army, newStack] };
+  }
+  // Army full and no skeleton stack: surface as a pending raise reward.
+  const raiseChoice: RewardChoice = { kind: "raise", creatureId: SKELETON_ID, count: raised };
+  return { ...run, pendingRewards: [raiseChoice, { kind: "skip" }] };
+}
+
+// ===========================================================================
+// REWARDS
+// ===========================================================================
 
 function rollCombatRewards(node: MapNode, rng: Rng): RewardChoice[] {
-  const gold = node.type === "elite" ? rng.int(25, 40) : rng.int(10, 20);
+  const gold = node.type === "elite" ? rng.int(40, 70) : rng.int(20, 40);
   const rewards: RewardChoice[] = [{ kind: "gold", amount: gold }];
-
-  // Offer 1–2 card choices from creatures (excluding the bone dragon boss).
-  const pool = CREATURES.filter((c) => c.tier >= 1 && c.tier <= 5);
-  const a = adaptCreature(rng.pick(pool));
-  const b = adaptCreature(rng.pick(pool));
-  rewards.push({ kind: "card", card: { ...a, id: `${a.id}#reward` } });
-  if (a.id !== b.id) rewards.push({ kind: "card", card: { ...b, id: `${b.id}#reward2` } });
-
-  // Elites also drop a relic.
-  if (node.type === "elite") {
-    rewards.push({ kind: "relic", relic: adaptArtifact(rng.pick(ARTIFACTS)) });
-  }
-
   rewards.push({ kind: "skip" });
   return rewards;
 }
 
-function rollShop(run: RunState, rng: Rng): RewardChoice[] {
-  const sRng = rng.fork("shop");
+// --- node reward rolls ---
+
+function rollDwelling(rng: Rng): RewardChoice[] {
+  const pool = BASE_CREATURES.filter((c) => c.tier <= 5);
+  const c = rng.pick(pool);
+  const count = rng.int(3, 8);
+  const cost = c.tier * RECRUIT_COST_PER_TIER;
+  return [{ kind: "recruit", creatureId: c.id, count, cost }, { kind: "skip" }];
+}
+
+function rollAltar(run: RunState, _rng: Rng): RewardChoice[] {
+  // Offer to upgrade each stack that has an upgrade form (cost by tier).
   const out: RewardChoice[] = [];
-  out.push({ kind: "relic", relic: adaptArtifact(sRng.pick(ARTIFACTS)) });
-  const card = adaptCreature(sRng.pick(CREATURES.filter((c) => c.tier <= 4)));
-  out.push({ kind: "card", card: { ...card, id: `${card.id}#shop` } });
+  for (const s of run.army) {
+    const up = upgradeFormOf(s.sourceId);
+    if (up) out.push({ kind: "upgrade", stackId: s.id, toCreatureId: up.id, cost: s.tier * UPGRADE_COST_PER_TIER });
+  }
   out.push({ kind: "skip" });
-  void run;
   return out;
 }
 
-function rollEvent(rng: Rng): RewardChoice[] {
-  const eRng = rng.fork("event");
-  if (eRng.chance(0.5)) return [{ kind: "gold", amount: eRng.int(15, 30) }, { kind: "skip" }];
-  return [{ kind: "heal", amount: eRng.int(8, 16) }, { kind: "skip" }];
+function rollShrine(run: RunState, rng: Rng): RewardChoice[] {
+  const known = new Set(run.hero.spellbook.map((s) => s.id));
+  const pool = SPELLS.filter((s) => !known.has(`spell_${tail(s.id)}`));
+  if (pool.length === 0) return [{ kind: "skip" }];
+  const s = rng.pick(pool);
+  const cost = s.level * SHRINE_COST_PER_LEVEL;
+  return [{ kind: "learn", spellId: s.id, cost }, { kind: "skip" }];
+}
+
+function rollMerchant(rng: Rng): RewardChoice[] {
+  const a = rng.pick(ARTIFACTS);
+  const b = rng.pick(ARTIFACTS);
+  const out: RewardChoice[] = [];
+  out.push({ kind: "buy", artifactId: a.id, slot: a.slot, cost: ARTIFACT_COST[a.class] ?? 100 });
+  if (b.id !== a.id) out.push({ kind: "buy", artifactId: b.id, slot: b.slot, cost: ARTIFACT_COST[b.class] ?? 100 });
+  out.push({ kind: "skip" });
+  return out;
 }
 
 export function pickReward(run: RunState, choiceIndex: number): RunState {
@@ -298,76 +852,203 @@ export function pickReward(run: RunState, choiceIndex: number): RunState {
   const choice = run.pendingRewards[choiceIndex];
   if (!choice) throw new Error(`pickReward: invalid choice ${choiceIndex}`);
 
-  const next: RunState = {
+  let next: RunState = {
     ...run,
-    deck: run.deck.slice(),
-    relics: run.relics.slice(),
+    army: run.army.slice(),
     clearedNodeIds: run.clearedNodeIds.slice(),
     pendingRewards: null,
   };
+  next = applyReward(next, choice);
 
-  applyReward(next, choice);
-
-  // Clear the node now that its reward is resolved (shops/events have no combat
-  // so they were not cleared by settleCombat).
   if (run.currentNodeId && !next.clearedNodeIds.includes(run.currentNodeId)) {
-    next.clearedNodeIds.push(run.currentNodeId);
+    next.clearedNodeIds = [...next.clearedNodeIds, run.currentNodeId];
   }
   return next;
 }
 
-function applyReward(run: RunState, choice: RewardChoice): void {
+function applyReward(run: RunState, choice: RewardChoice): RunState {
   switch (choice.kind) {
-    case "card":
-      run.deck.push(choice.card);
-      break;
-    case "relic":
-      if (!run.relics.some((r) => r.id === choice.relic.id)) {
-        run.relics.push(choice.relic);
-        if (choice.relic.effect.kind === "maxHp") {
-          run.maxHp += choice.relic.effect.amount;
-          run.hp += choice.relic.effect.amount;
-        }
-      }
-      break;
     case "gold":
-      run.gold += choice.amount;
-      break;
-    case "heal":
-      run.hp = Math.min(run.maxHp, run.hp + choice.amount);
-      break;
+      return { ...run, gold: run.gold + choice.amount };
+    case "raise": {
+      const skeleton = creatureById(choice.creatureId)!;
+      if (run.army.length >= ARMY_CAP) {
+        // Replace the weakest stack with the raised one.
+        const weakest = [...run.army].sort((a, b) => a.tier - b.tier || a.count - b.count)[0];
+        const army = run.army.map((s) =>
+          s.id === weakest.id
+            ? adaptStack(skeleton, choice.count, { idSuffix: `_raised_${run.clearedNodeIds.length}` })
+            : s,
+        );
+        return { ...run, army };
+      }
+      const newStack = adaptStack(skeleton, choice.count, { idSuffix: `_raised_${run.clearedNodeIds.length}` });
+      return { ...run, army: [...run.army, newStack] };
+    }
+    case "recruit":
+      return recruit(run, choice.creatureId, choice.count, choice.cost);
+    case "upgrade":
+      return upgrade(run, choice.stackId, choice.toCreatureId, choice.cost);
+    case "learn":
+      return learn(run, choice.spellId, choice.cost);
+    case "buy":
+      return buy(run, choice.artifactId, choice.cost);
     case "skip":
-      break;
+      return run;
   }
 }
 
-// ---------------------------------------------------------------------------
-// Combat delegation (keeps the public surface uniform on RunState)
-// ---------------------------------------------------------------------------
+// ===========================================================================
+// NODE INTERACTIONS (also callable directly by the app)
+// ===========================================================================
+
+function recruit(run: RunState, creatureId: string, count: number, cost: number): RunState {
+  if (run.gold < cost) throw new Error("recruit: not enough gold");
+  const c = creatureById(creatureId);
+  if (!c) throw new Error(`recruit: no creature ${creatureId}`);
+  // Merge into an existing same-type stack, else add (respecting cap).
+  const existing = run.army.find((s) => s.sourceId === creatureId && s.count > 0);
+  let army: Stack[];
+  if (existing) {
+    army = run.army.map((s) =>
+      s.id === existing.id ? { ...s, count: s.count + count, startCount: s.count + count } : s,
+    );
+  } else {
+    if (run.army.length >= ARMY_CAP) throw new Error("recruit: army is full");
+    army = [...run.army, adaptStack(c, count, { idSuffix: `_rec_${run.clearedNodeIds.length}_${run.army.length}` })];
+  }
+  return { ...run, army, gold: run.gold - cost };
+}
+
+function upgrade(run: RunState, stackId: string, toCreatureId: string, cost: number): RunState {
+  if (run.gold < cost) throw new Error("upgrade: not enough gold");
+  const stack = run.army.find((s) => s.id === stackId);
+  if (!stack) throw new Error(`upgrade: no stack ${stackId}`);
+  const up = creatureById(toCreatureId);
+  if (!up) throw new Error(`upgrade: no creature ${toCreatureId}`);
+  if (up.upgradeOf !== stack.sourceId) throw new Error("upgrade: not a valid upgrade form");
+  // New stack of upgraded creatures, preserving count (capped at new maxHp).
+  const upgraded: Stack = {
+    ...adaptStack(up, stack.count, { idSuffix: "" }),
+    id: stack.id,
+  };
+  const army = run.army.map((s) => (s.id === stackId ? upgraded : s));
+  return { ...run, army, gold: run.gold - cost };
+}
+
+function learn(run: RunState, spellId: string, cost: number): RunState {
+  if (run.gold < cost) throw new Error("learn: not enough gold");
+  const s = spellById(spellId);
+  if (!s) throw new Error(`learn: no spell ${spellId}`);
+  const adapted = adaptSpell(s);
+  if (run.hero.spellbook.some((sp) => sp.id === adapted.id)) return run;
+  const hero = { ...run.hero, spellbook: [...run.hero.spellbook, adapted] };
+  return { ...run, hero, gold: run.gold - cost };
+}
+
+function buy(run: RunState, artifactId: string, cost: number): RunState {
+  if (run.gold < cost) throw new Error("buy: not enough gold");
+  const a = artifactById(artifactId);
+  if (!a) throw new Error(`buy: no artifact ${artifactId}`);
+  const eq = adaptEquipment(a);
+  // Auto-equip into its slot, recompute hero.
+  const equipment = { ...run.hero.equipment, [eq.slot]: eq };
+  let hero = { ...run.hero, equipment };
+  hero = recomputeHero(hero);
+  return { ...run, hero, gold: run.gold - cost };
+}
+
+// --- public node-interaction wrappers (find the offer at the node) ---
+
+export function recruitAt(run: RunState, nodeId: string, offerId: string): RunState {
+  return resolveOffer(run, nodeId, offerId, "recruit");
+}
+export function upgradeAt(run: RunState, nodeId: string, stackId: string): RunState {
+  if (!run.pendingRewards) throw new Error("upgradeAt: no pending offers");
+  const idx = run.pendingRewards.findIndex(
+    (r) => r.kind === "upgrade" && r.stackId === stackId,
+  );
+  if (idx < 0) throw new Error(`upgradeAt: no upgrade offer for ${stackId}`);
+  void nodeId;
+  return pickReward(run, idx);
+}
+export function learnAt(run: RunState, nodeId: string, spellId: string): RunState {
+  if (!run.pendingRewards) throw new Error("learnAt: no pending offers");
+  const idx = run.pendingRewards.findIndex(
+    (r) => r.kind === "learn" && r.spellId === spellId,
+  );
+  if (idx < 0) throw new Error(`learnAt: no learn offer for ${spellId}`);
+  void nodeId;
+  return pickReward(run, idx);
+}
+export function buyAt(run: RunState, nodeId: string, offerId: string): RunState {
+  return resolveOffer(run, nodeId, offerId, "buy");
+}
+
+function resolveOffer(
+  run: RunState,
+  nodeId: string,
+  offerId: string,
+  kind: "recruit" | "buy",
+): RunState {
+  if (!run.pendingRewards) throw new Error(`${kind}: no pending offers`);
+  const idx = run.pendingRewards.findIndex((r) => {
+    if (kind === "recruit") return r.kind === "recruit" && r.creatureId === offerId;
+    return r.kind === "buy" && r.artifactId === offerId;
+  });
+  if (idx < 0) throw new Error(`${kind}: no offer ${offerId}`);
+  void nodeId;
+  return pickReward(run, idx);
+}
+
+// ===========================================================================
+// EQUIPMENT (paper-doll on the map)
+// ===========================================================================
+
+export function equipArtifact(
+  run: RunState,
+  equipmentId: string,
+  slot: ArtifactSlot,
+): RunState {
+  // equipmentId may be an artifact id OR an equipment id; resolve via content.
+  const a = ARTIFACTS.find((x) => x.id === equipmentId || `equip_${tail(x.id)}` === equipmentId);
+  if (!a) throw new Error(`equipArtifact: unknown ${equipmentId}`);
+  const eq = adaptEquipment(a);
+  const equipment = { ...run.hero.equipment, [slot]: eq };
+  const hero = recomputeHero({ ...run.hero, equipment });
+  return { ...run, hero };
+}
+
+export function unequipArtifact(run: RunState, slot: ArtifactSlot): RunState {
+  const equipment = { ...run.hero.equipment };
+  delete equipment[slot];
+  const hero = recomputeHero({ ...run.hero, equipment });
+  return { ...run, hero };
+}
+
+export function pendingRewards(run: RunState): RewardChoice[] | null {
+  return run.pendingRewards;
+}
+
+// ===========================================================================
+// internals
+// ===========================================================================
 
 function combatRng(run: RunState): Rng {
-  // Stable per-node combat RNG so replays are deterministic.
-  return makeRng(run.seed).fork(`combatplay:${run.currentNodeId}`);
+  return makeRng(run.seed).fork(`combat:${run.currentNodeId}`);
 }
 
-export function playCard(
-  run: RunState,
-  cardId: string,
-  targetId?: string,
-): RunState {
-  if (!run.combat) throw new Error("playCard: no active combat");
-  const rng = combatRng(run);
-  const combat = combatPlayCard(run.combat, cardId, targetId, rng);
-  const next: RunState = { ...run, combat };
-  if (combat.outcome !== "ongoing") return settleCombat(next, makeRng(run.seed).fork(`settle:${run.currentNodeId}`));
-  return next;
+function tail(id: string): string {
+  return id.includes("_") ? id.slice(id.indexOf("_") + 1) : id;
 }
 
-export function endTurn(run: RunState): RunState {
-  if (!run.combat) throw new Error("endTurn: no active combat");
-  const rng = combatRng(run);
-  const combat = combatEndTurn(run.combat, rng);
-  const next: RunState = { ...run, combat };
-  if (combat.outcome !== "ongoing") return settleCombat(next, makeRng(run.seed).fork(`settle:${run.currentNodeId}`));
-  return next;
-}
+// Re-export content arrays + lookups for the app/Codex.
+export {
+  ALL_CREATURES,
+  ARTIFACTS,
+  CREATURES,
+  SPELLS,
+  creatureById,
+  spellById,
+  artifactById,
+};

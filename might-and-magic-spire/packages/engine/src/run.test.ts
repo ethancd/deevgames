@@ -1,169 +1,271 @@
 import { describe, it, expect } from "vitest";
 import {
   startRun,
-  chooseNode,
   legalNextNodes,
-  playCard,
-  endTurn,
+  chooseNode,
   pickReward,
+  commandStack,
+  castSpell,
+  endPlayerTurn,
+  legalCommandTargets,
+  legalSpellTargets,
+  recruitAt,
+  upgradeAt,
+  learnAt,
+  buyAt,
+  equipArtifact,
+  unequipArtifact,
+  pendingRewards,
+  ARMY_CAP,
 } from "./run";
-import { bossNode } from "./map";
-import type { RunState } from "./types";
+import { artifactById } from "./content";
+import type { RunState, Stack } from "./types";
 
-// ---------------------------------------------------------------------------
-// A headless auto-player: a dumb-but-deterministic policy that drives the
-// engine from a seed to a terminal outcome with ZERO frontend dependency.
-// ---------------------------------------------------------------------------
+// ===========================================================================
+// A headless greedy auto-player. Drives the public API end-to-end. Doubles as
+// the balance-tuning harness (sweep seeds, report win-rate).
+// ===========================================================================
 
-/**
- * Resolve the current combat with a simple-but-competent policy: estimate this
- * turn's incoming damage, play Defends until block covers it, then dump Strikes
- * into the lowest-HP enemy (focus fire). End the turn when out of plays.
- * Bounded so a stalemate can't loop forever.
- */
-function autoFight(run: RunState): RunState {
-  let state = run;
+const threat = (s: Stack) => s.count * ((s.damageMin + s.damageMax) / 2);
+
+function pickRewardSafely(r: RunState): RunState {
+  const rs = r.pendingRewards!;
+  const find = (p: (c: typeof rs[number]) => boolean) => rs.findIndex(p);
+  let i = find((c) => c.kind === "raise");
+  if (i < 0) i = find((c) => c.kind === "recruit" && r.gold >= c.cost);
+  if (i < 0) i = find((c) => c.kind === "upgrade" && r.gold >= c.cost);
+  if (i < 0) i = find((c) => c.kind === "buy" && r.gold >= c.cost);
+  if (i < 0) i = find((c) => c.kind === "learn" && r.gold >= c.cost);
+  if (i < 0) i = find((c) => c.kind === "gold");
+  if (i < 0) i = find((c) => c.kind === "skip");
+  if (i < 0) i = 0;
+  return pickReward(r, i);
+}
+
+function autoCombat(run: RunState): RunState {
+  let r = run;
   let guard = 0;
-  while (state.combat && state.combat.outcome === "ongoing") {
-    if (guard++ > 1000) throw new Error("combat did not terminate");
-    const combat = state.combat;
-
-    // Incoming damage this turn = sum of attack intents (+ strength).
-    const incoming = combat.enemies
-      .filter((e) => e.intent.kind === "attack")
-      .reduce((s, e) => s + (e.intent.value ?? 0) + e.strength, 0);
-
-    const block = combat.hand.find(
-      (c) => c.effects.some((e) => e.kind === "block") && c.cost <= combat.energy,
+  while (r.combat && r.combat.outcome === "ongoing" && guard++ < 400) {
+    const dmg = r.hero.spellbook.find(
+      (s) => s.targeting === "enemyStack" && r.hero.mana >= s.manaCost,
     );
-    const strike = combat.hand.find(
-      (c) => c.effects.some((e) => e.kind === "damage") && c.cost <= combat.energy,
-    );
-
-    // Block if still threatened and a block card is affordable.
-    if (block && combat.playerBlock < incoming) {
-      state = playCard(state, block.id);
-      continue;
+    if (dmg && !r.combat.spellCastThisTurn) {
+      const ids = legalSpellTargets(r, dmg.id);
+      if (ids.length) r = castSpell(r, dmg.id, ids[0]);
     }
-    // Otherwise focus-fire the weakest living enemy.
-    if (strike && combat.enemies.length) {
-      const target = [...combat.enemies].sort((a, b) => a.hp - b.hp)[0];
-      state = playCard(state, strike.id, target.id);
-      continue;
-    }
-    state = endTurn(state);
-  }
-  return state;
-}
-
-/** Take any non-skip reward if present (prefer cards to thicken the deck). */
-function autoReward(run: RunState): RunState {
-  if (!run.pendingRewards) return run;
-  const cardIdx = run.pendingRewards.findIndex((r) => r.kind === "card");
-  const goldIdx = run.pendingRewards.findIndex((r) => r.kind === "gold");
-  const idx = cardIdx >= 0 ? cardIdx : goldIdx >= 0 ? goldIdx : 0;
-  return pickReward(run, idx);
-}
-
-/** Walk the map toward the boss, fighting/resolving each node, until the run
- *  ends. Picks the next node greedily toward higher rows. */
-function autoRun(seed: string): RunState {
-  let run = startRun(seed);
-  const boss = bossNode(run.map)!;
-  let guard = 0;
-
-  while (run.outcome === "ongoing") {
-    if (guard++ > 1000) throw new Error("run did not terminate");
-
-    // Resolve any pending combat first.
-    if (run.combat && run.combat.outcome === "ongoing") {
-      run = autoFight(run);
-      continue;
-    }
-    if (run.pendingRewards) {
-      run = autoReward(run);
-      continue;
-    }
-
-    const options = legalNextNodes(run);
-    if (options.length === 0) break;
-
-    // Greedy: pick the option in the highest row (closest to boss), ties broken
-    // by preferring the boss node and otherwise the first option.
-    const ranked = options
-      .map((id) => run.map.find((n) => n.id === id)!)
-      .sort((a, b) => b.row - a.row || (a.id === boss.id ? -1 : 0));
-    run = chooseNode(run, ranked[0].id);
-  }
-  return run;
-}
-
-describe("full headless run", () => {
-  it("resolves from a seed to a terminal outcome (no frontend)", () => {
-    const run = autoRun("integration-seed-1");
-    expect(["won", "lost"]).toContain(run.outcome);
-  });
-
-  it("is fully deterministic: same seed → identical final state", () => {
-    const a = autoRun("determinism-seed");
-    const b = autoRun("determinism-seed");
-    expect(a.outcome).toBe(b.outcome);
-    expect(a.hp).toBe(b.hp);
-    expect(a.gold).toBe(b.gold);
-    expect(a.deck.map((c) => c.id)).toEqual(b.deck.map((c) => c.id));
-    expect(a.clearedNodeIds).toEqual(b.clearedNodeIds);
-  });
-
-  it("can win the run by beating the act boss on a favorable seed", () => {
-    // Search a handful of seeds; at least one should be winnable by the dumb
-    // policy, proving the win path (map → combats → elite → boss) is live.
-    let anyWin = false;
-    for (let i = 0; i < 40 && !anyWin; i++) {
-      const run = autoRun(`win-search-${i}`);
-      if (run.outcome === "won") {
-        anyWin = true;
-        // A win means the boss node was cleared.
-        const boss = bossNode(run.map)!;
-        expect(run.clearedNodeIds).toContain(boss.id);
+    if (!r.combat || r.combat.outcome !== "ongoing") break;
+    const order = r.combat.yourArmy.stacks
+      .filter((s) => s.count > 0 && !r.combat!.actedStackIds.includes(s.id))
+      .sort((a, b) => threat(b) - threat(a));
+    for (const s of order) {
+      if (r.combat!.actedStackIds.includes(s.id)) continue;
+      const ids = legalCommandTargets(r, s.id);
+      if (!ids.length) {
+        r = commandStack(r, s.id, "defend");
+        continue;
       }
+      const tgt = ids
+        .map((id) => r.combat!.enemyArmy.stacks.find((x) => x.id === id)!)
+        .sort((a, b) => threat(b) - threat(a))[0];
+      r = commandStack(r, s.id, "attack", tgt.id);
+      if (!r.combat || r.combat.outcome !== "ongoing") break;
     }
-    expect(anyWin).toBe(true);
-  });
+    if (!r.combat || r.combat.outcome !== "ongoing") break;
+    r = endPlayerTurn(r);
+  }
+  return r;
+}
 
-  it("starts with the hero's signature relic and a 10-card starter deck", () => {
-    const run = startRun("start-state");
-    expect(run.relics).toHaveLength(1);
-    expect(run.relics[0].rarity).toBe("starter");
-    expect(run.deck).toHaveLength(10);
-    expect(run.currentNodeId).toBeNull();
-    expect(run.combat).toBeNull();
-  });
-
-  it("does not mutate the input RunState (purity)", () => {
-    const run = startRun("purity");
-    const before = JSON.stringify(run);
-    chooseNode(run, legalNextNodes(run)[0]);
-    expect(JSON.stringify(run)).toBe(before);
-  });
-
-  it("rejects unreachable node choices", () => {
-    const run = startRun("reject");
-    expect(() => chooseNode(run, "a1_boss")).toThrow(/reachable/);
-  });
-
-  it("a rest node heals the player", () => {
-    // Build a run, damage the player, then find/visit a rest node.
-    let run = startRun("rest-seed");
-    run = { ...run, hp: 10 };
-    // Find a reachable path to any rest node by greedy walk, intercepting rest.
-    const restNode = run.map.find((n) => n.type === "rest" && n.row === 0);
-    if (restNode && legalNextNodes(run).includes(restNode.id)) {
-      const after = chooseNode(run, restNode.id);
-      expect(after.hp).toBeGreaterThan(10);
-    } else {
-      // Rest isn't at row 0 by design (row 0 is always combat); assert that
-      // invariant instead so the test still validates something meaningful.
-      expect(run.map.filter((n) => n.row === 0).every((n) => n.type === "combat")).toBe(true);
+function autoRun(seed: string, avoidElites = true): RunState {
+  let r = startRun(seed);
+  let guard = 0;
+  while (r.outcome === "ongoing" && guard++ < 120) {
+    if (r.pendingRewards) {
+      r = pickRewardSafely(r);
+      continue;
     }
+    if (r.combat && r.combat.outcome === "ongoing") {
+      r = autoCombat(r);
+      continue;
+    }
+    const legal = legalNextNodes(r);
+    if (!legal.length) break;
+    const nodes = legal.map((id) => r.map.find((n) => n.id === id)!);
+    const safe = avoidElites
+      ? (nodes.find((n) => n.type !== "elite") ?? nodes[0])
+      : nodes[0];
+    r = chooseNode(r, safe.id);
+    if (r.combat && r.combat.outcome === "ongoing") r = autoCombat(r);
+  }
+  return r;
+}
+
+// ===========================================================================
+// KEYSTONE
+// ===========================================================================
+
+describe("full run (the keystone)", () => {
+  it("resolves headless from a seed to won/lost (no hangs)", () => {
+    for (let i = 0; i < 25; i++) {
+      const r = autoRun(`resolve-${i}`);
+      expect(["won", "lost"]).toContain(r.outcome);
+      expect(r.combat).toBeNull();
+    }
+  });
+
+  it("is byte-identical for the same seed (determinism)", () => {
+    const a = autoRun("determinism-A");
+    const b = autoRun("determinism-A");
+    expect(JSON.stringify(a)).toBe(JSON.stringify(b));
+  });
+
+  it("different seeds diverge", () => {
+    const a = autoRun("seed-alpha");
+    const b = autoRun("seed-beta");
+    expect(JSON.stringify(a)).not.toBe(JSON.stringify(b));
+  });
+
+  it("the game is winnable (a winnable seed exists in a small search)", () => {
+    let found: string | null = null;
+    for (let i = 0; i < 60 && !found; i++) {
+      if (autoRun(`win-${i}`).outcome === "won") found = `win-${i}`;
+    }
+    expect(found).not.toBeNull();
+  });
+
+  it("win-rate sweep stays in a sane band (not 0%, not 100%)", () => {
+    let wins = 0;
+    const N = 60;
+    for (let i = 0; i < N; i++) {
+      if (autoRun(`band-${i}`).outcome === "won") wins++;
+    }
+    // The greedy bot should win sometimes but not always — a skill-expressive
+    // difficulty. Wide band so the assertion is robust, not a snapshot.
+    expect(wins).toBeGreaterThan(N * 0.15);
+    expect(wins).toBeLessThan(N * 0.95);
+  });
+});
+
+// ===========================================================================
+// Node interactions through the public API
+// ===========================================================================
+
+describe("startRun shape", () => {
+  it("starts with a hero, an army, gold, a map, ongoing", () => {
+    const r = startRun("shape");
+    expect(r.hero).toBeTruthy();
+    expect(r.hero.mana).toBe(r.hero.maxMana);
+    expect(r.army.length).toBeGreaterThan(0);
+    expect(r.army.length).toBeLessThanOrEqual(ARMY_CAP);
+    expect(r.gold).toBeGreaterThan(0);
+    expect(r.map.length).toBeGreaterThan(0);
+    expect(r.combat).toBeNull();
+    expect(r.outcome).toBe("ongoing");
+  });
+});
+
+/** Walk a run forward until it reaches a pending offer of a given reward kind. */
+function advanceToOffer(seed: string, kind: string): RunState | null {
+  let r = startRun(seed);
+  let guard = 0;
+  while (r.outcome === "ongoing" && guard++ < 60) {
+    if (r.pendingRewards) {
+      if (r.pendingRewards.some((c) => c.kind === kind)) return r;
+      r = pickRewardSafely(r);
+      continue;
+    }
+    if (r.combat && r.combat.outcome === "ongoing") {
+      r = autoCombat(r);
+      continue;
+    }
+    const legal = legalNextNodes(r);
+    if (!legal.length) break;
+    const nodes = legal.map((id) => r.map.find((n) => n.id === id)!);
+    const safe = nodes.find((n) => n.type !== "elite") ?? nodes[0];
+    r = chooseNode(r, safe.id);
+    if (r.combat && r.combat.outcome === "ongoing") r = autoCombat(r);
+  }
+  return null;
+}
+
+describe("node interactions", () => {
+  it("recruitAt adds (or merges) a stack and spends gold", () => {
+    for (const seed of ["rec-1", "rec-2", "rec-3", "rec-4", "rec-5"]) {
+      const r = advanceToOffer(seed, "recruit");
+      if (!r) continue;
+      const offer = r.pendingRewards!.find((c) => c.kind === "recruit");
+      if (!offer || offer.kind !== "recruit" || r.gold < offer.cost) continue;
+      const goldBefore = r.gold;
+      const after = recruitAt(r, r.currentNodeId!, offer.creatureId);
+      expect(after.gold).toBe(goldBefore - offer.cost);
+      expect(after.pendingRewards).toBeNull();
+      return;
+    }
+  });
+
+  it("learnAt adds a spell to the spellbook", () => {
+    for (const seed of ["learn-1", "learn-2", "learn-3", "learn-4"]) {
+      const r = advanceToOffer(seed, "learn");
+      if (!r) continue;
+      const offer = r.pendingRewards!.find((c) => c.kind === "learn");
+      if (!offer || offer.kind !== "learn" || r.gold < offer.cost) continue;
+      const before = r.hero.spellbook.length;
+      const after = learnAt(r, r.currentNodeId!, offer.spellId);
+      expect(after.hero.spellbook.length).toBe(before + 1);
+      return;
+    }
+  });
+
+  it("buyAt equips an artifact and recomputes hero stats", () => {
+    for (const seed of ["buy-1", "buy-2", "buy-3", "buy-4", "buy-5", "buy-6"]) {
+      const r = advanceToOffer(seed, "buy");
+      if (!r) continue;
+      const offer = r.pendingRewards!.find((c) => c.kind === "buy");
+      if (!offer || offer.kind !== "buy" || r.gold < offer.cost) continue;
+      const after = buyAt(r, r.currentNodeId!, offer.artifactId);
+      expect(after.hero.equipment[offer.slot]).toBeTruthy();
+      return;
+    }
+  });
+
+  it("upgradeAt replaces a stack with its upgraded form", () => {
+    for (const seed of ["up-1", "up-2", "up-3", "up-4", "up-5", "up-6", "up-7"]) {
+      const r = advanceToOffer(seed, "upgrade");
+      if (!r) continue;
+      const offer = r.pendingRewards!.find((c) => c.kind === "upgrade");
+      if (!offer || offer.kind !== "upgrade" || r.gold < offer.cost) continue;
+      const after = upgradeAt(r, r.currentNodeId!, offer.stackId);
+      const up = after.army.find((s) => s.id === offer.stackId)!;
+      expect(up.sourceId).toBe(offer.toCreatureId);
+      expect(up.upgraded).toBe(true);
+      return;
+    }
+  });
+});
+
+describe("equipment paper-doll", () => {
+  it("equipArtifact applies primary deltas; unequip reverts them", () => {
+    const r = startRun("equip");
+    const axe = artifactById("artifact_centaurs_axe")!; // +2 Attack, RightHand
+    const baseAtk = r.hero.attack;
+    const equipped = equipArtifact(r, axe.id, "RightHand");
+    expect(equipped.hero.attack).toBe(baseAtk + 2);
+    const reverted = unequipArtifact(equipped, "RightHand");
+    expect(reverted.hero.attack).toBe(baseAtk);
+  });
+
+  it("equipping a +knowledge artifact raises maxMana and clamps mana", () => {
+    const r = startRun("equip-mana");
+    const helm = artifactById("artifact_helm_of_the_alabaster_unicorn")!; // +1 Knowledge
+    const before = r.hero.maxMana;
+    const after = equipArtifact(r, helm.id, "Head");
+    expect(after.hero.maxMana).toBeGreaterThan(before);
+    expect(after.hero.mana).toBeLessThanOrEqual(after.hero.maxMana);
+  });
+});
+
+describe("pendingRewards accessor", () => {
+  it("returns null with no pending offers", () => {
+    expect(pendingRewards(startRun("pr"))).toBeNull();
   });
 });

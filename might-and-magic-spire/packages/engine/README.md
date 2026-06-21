@@ -1,35 +1,45 @@
-# @mms/engine — Mechanics (Agent 3)
+# @mms/engine — Mechanics (army model)
 
-Owner: **Mechanics**. Branch: `agent/mechanics`.
+The headless game engine. A pure library — **no React, no DOM**. This is the game.
 
-The headless engine. A pure library — **no React, no DOM**. This is the game.
+The combat model is **HoMM3 with one hero and no town**: a hero with primary
+stats (Attack/Defense/Power/Knowledge), a paper-doll of artifacts and a spellbook,
+commanding an **army of creature stacks** that carry between battles with attrition
+(the "rolling army ball"). The army is the player's life — empty army = you lose.
 
-## You own
+> The Slay-the-Spire deckbuilder model (cards/energy/hand, `Enemy.intent`, the
+> `Source → Card` adapter, and the `adapt(creature)===card` invariant) has been
+> **retired**. See `ADAPTER.md`.
 
-- **Seeded RNG.** Every run reproducible from a seed. Non-negotiable.
-- **Run state + act-map graph generator** (combat / elite / event / shop / rest / boss).
-- **Combat resolution** — turn structure, energy, block, the effect system from
-  `CardDef.effects`.
-- **Card / relic / intent systems.** Relics come from Artifacts (rarity from
-  `ArtifactClass`) and hero specialties (the signature relic). Intents telegraph;
-  the AI is a lookup table, not a planner.
-- **The `Source → Card` adapter** — the seam where HoMM stats become card numbers.
+## What you own
+
+- **Seeded RNG** (`rng.ts`, verbatim) — every run reproducible from a seed.
+- **Act-map graph** (`map.ts`) — node types: combat / elite / boss / **dwelling /
+  altar / shrine / merchant** / rest.
+- **Battle resolution** (`battle.ts`) — two-rank reach, the A/D damage curve, the
+  kill/chip pool model, retaliation, life-drain, the deterministic enemy planner.
+- **Run state machine** (`run.ts`) — the side-alternation turn loop, Necromancy,
+  node interactions (recruit/upgrade/learn/buy/equip), rewards.
+- **Source → runtime adapters** (`adapter.ts`) — `adaptStack`, `adaptEquipment`,
+  `adaptSpell`, `deriveHero`. The design surface; documented in `ADAPTER.md`.
 
 ## The runtime contract
 
-Export `RunState`, `Enemy`, `Intent`, `CombatState` as your public API from
-`src/index.ts`. **The frontend imports these from you, not from `@mms/schema`.**
+The frontend imports `RunState`, `Hero`, `Stack`, `Army`, `CombatState`,
+`CombatSpell`, `Equipment`, `RewardChoice`, … from `src/index.ts` — **not** from
+`@mms/schema`. The engine's `RunState`/`CombatState` may be a structural superset
+of the app contract (extra internal fields); the app seam casts.
 
-## The adapter is design, not engineering
+## Balance is design, not engineering
 
-Surface it. Emit your stat→fun mapping as a readable table in
-`packages/engine/ADAPTER.md`: how attack/damage/hp/tier/growth map to cost,
-magnitude, and rarity. Ethan vetoes balance; don't auto-decide it silently. The
-`fixtureCard` in `@mms/schema` is the agreed output shape for the Skeleton —
-match it.
+Every formula and constant is a named lever in **`COMBAT.md`** (A/D curve, defend
+bonus, retaliation, reach, necromancy table + caps, life-drain cap, economy,
+encounter scaling, `ARMY_CAP`, starting army) and **`ADAPTER.md`** (the four
+adapters). Ethan vetoes balance by editing the constant.
 
-## Build against fixtures, test everything
+## Verify
 
-Unit tests on combat math, the graph generator, and the adapter. Zero frontend
-dependency. Done when a full run resolves headless from a seed (map → combats →
-elite → boss), the suite is green, and `ADAPTER.md` lays out the balance calls.
+`pnpm --filter @mms/engine typecheck` and `pnpm --filter @mms/engine test` are
+green. A full run resolves headless from a seed (map → army battles → boss →
+won/lost), byte-identical for the same seed. The `run.test.ts` sweep doubles as the
+balance-tuning harness (win-rate over many seeds).

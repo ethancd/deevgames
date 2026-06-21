@@ -1,139 +1,87 @@
-// The Source → Card adapter — the seam where HoMM3 stats become card numbers.
+// Source -> runtime adapters (v2, ARMY model). The seam where HoMM3 stat-blocks
+// become engine objects. THIS IS DESIGN, NOT ENGINEERING — the balance choices
+// live here and are documented in ADAPTER.md.
 //
-// THIS IS DESIGN, NOT ENGINEERING. The balance decisions live here and are
-// documented in ADAPTER.md. Ethan vetoes balance; the formulas are laid out to
-// be read and argued with, not buried.
-//
-// HARD CONSTRAINT: adapt(fixtureCreature) MUST deep-equal fixtureCard. There is
-// a test asserting exactly this. Touch a number here, run the test.
+// RETIRED: the old card adapter `adapt(creature) -> CardDef` and its
+// `adapt(fixtureCreature) === fixtureCard` invariant. Creatures no longer become
+// cards; they become STACKS. The fixtureCard contract is gone.
 
 import type {
-  CardDef,
   SourceArtifact,
   SourceCreature,
   SourceHero,
+  SourceSpell,
 } from "@mms/schema";
-import type { CardType, Effect, Rarity, ArtifactClass } from "./schema-types";
-import type { Relic, RelicEffect } from "./types";
+import type { ArtifactClass, Rarity } from "./schema-types";
+import type {
+  CombatSpell,
+  Equipment,
+  EquipmentEffect,
+  Hero,
+  PrimaryStat,
+  Rank,
+  SpellEffect,
+  SpellTargeting,
+  Stack,
+} from "./types";
 
-// ---------------------------------------------------------------------------
-// CREATURE → CARD
-// ---------------------------------------------------------------------------
+// ===========================================================================
+// CREATURE -> STACK
+// ===========================================================================
 
-/**
- * Card energy cost from creature tier.
- *
- * HoMM tiers run 1–7. Spire energy is 3/turn, costs 0–3 (STS-like). We compress
- * 7 tiers into a 0–3 cost curve so the cheapest creatures are playable two-a-
- * turn and the apex creatures are an entire turn's energy:
- *
- *   tier 1–2 → 1   (skeletons, pikemen: the bread-and-butter strikes)
- *   tier 3–4 → 2
- *   tier 5–6 → 3
- *   tier 7   → 3   (capped; apex creatures lean on big magnitude, not cost)
- *
- * Skeleton is tier 1 → cost 1. ✓ (matches fixtureCard)
- */
-export function costForTier(tier: number): number {
-  if (tier <= 2) return 1;
-  if (tier <= 4) return 2;
-  return 3;
+/** Back-rank creatures: anything that shoots or casts. Else front (melee). */
+export function rankForCreature(c: SourceCreature): Rank {
+  const a = c.abilities.map((x) => x.toLowerCase());
+  const isBack = a.some(
+    (x) => x.includes("shooter") || x.includes("ranged") || x.includes("caster"),
+  );
+  return isBack ? "back" : "front";
 }
 
 /**
- * Attack magnitude. We use the creature's **attack** stat directly as the
- * damage number — it's the cleanest read of "how hard does this thing hit" and
- * it's what the fixture pins (Skeleton attack 5 → "Deal 5 damage.").
- *
- * The damageMin/damageMax range is flavor we intentionally drop: a deckbuilder
- * wants a single deterministic number on the card face, not a dice roll, so
- * combat stays readable and the telegraph stays honest.
- *
- * Skeleton attack 5 → magnitude 5. ✓
+ * Adapt a SourceCreature into a Stack of `count` of it. We carry the REAL HoMM3
+ * stats verbatim — attack/defense/hp/damageMin/damageMax/speed/abilities — so
+ * the battle math reads off the source numbers directly. The stack starts at
+ * full strength: every creature at full hp (`hpTop = maxHpPer = hp`).
  */
-export function magnitudeForCreature(c: SourceCreature): number {
-  return c.attack;
-}
-
-/**
- * Rarity from weekly **growth** (inverse availability) with **tier** as a
- * tiebreak. In HoMM, growth is how many spawn per week — Skeletons flood in at
- * ~12/week, Archangels trickle at 1/week. So growth is a ready-made rarity
- * signal: common things are common.
- *
- *   growth >= 10 → common      (Skeleton growth 12 → common ✓)
- *   growth 6–9   → uncommon
- *   growth <= 5  → rare
- *
- * Tier nudges the edges: a tier-7 creature is never "common" no matter its
- * growth, and a tier-1 creature is never "rare".
- */
-export function rarityForCreature(c: SourceCreature): Rarity {
-  let base: Rarity;
-  if (c.growth >= 10) base = "common";
-  else if (c.growth >= 6) base = "uncommon";
-  else base = "rare";
-
-  // Tier guardrails so the growth signal can't produce absurdities.
-  if (c.tier >= 7 && base === "common") base = "uncommon";
-  if (c.tier >= 6 && base === "common") base = "uncommon";
-  if (c.tier <= 1 && base === "rare") base = "uncommon";
-
-  return base;
-}
-
-/** A creature card is always a "strike" — it's a body you throw at the enemy. */
-function typeForCreature(_c: SourceCreature): CardType {
-  return "strike";
-}
-
-/** Stable card id derived from the source id: `card_<sourceTail>`. */
-function cardIdFor(c: SourceCreature): string {
-  // "necropolis_skeleton" → "card_skeleton"; falls back to full id if no "_".
-  const tail = c.id.includes("_") ? c.id.slice(c.id.indexOf("_") + 1) : c.id;
-  return `card_${tail}`;
-}
-
-/**
- * Adapt a SourceCreature into a playable CardDef.
- *
- * INVARIANT: adapt(fixtureCreature) deep-equals fixtureCard.
- */
-export function adaptCreature(c: SourceCreature): CardDef {
-  const amount = magnitudeForCreature(c);
-  const effects: Effect[] = [{ kind: "damage", amount, target: "enemy" }];
-
+export function adaptStack(
+  c: SourceCreature,
+  count: number,
+  opts: { side?: Stack["side"]; idSuffix?: string } = {},
+): Stack {
+  const side = opts.side ?? "player";
+  const suffix = opts.idSuffix ?? "";
   return {
-    id: cardIdFor(c),
+    id: `stack_${tail(c.id)}${suffix}`,
     sourceId: c.id,
     name: c.name,
-    type: typeForCreature(c),
-    faction: c.faction,
-    cost: costForTier(c.tier),
-    rarity: rarityForCreature(c),
-    effects,
+    tier: c.tier,
+    upgraded: c.upgraded,
     upgradeOf: c.upgradeOf,
-    text: `Deal ${amount} damage.`,
+    count,
+    hpTop: c.hp,
+    maxHpPer: c.hp,
+    attack: c.attack,
+    defense: c.defense,
+    damageMin: c.damageMin,
+    damageMax: c.damageMax,
+    speed: c.speed,
+    rank: rankForCreature(c),
+    abilities: c.abilities.slice(),
+    side,
+    hasActed: false,
+    isDefending: false,
+    hasRetaliated: false,
     imageRef: c.imageRef,
+    startCount: count,
   };
 }
 
-/** Public entry point named `adapt` per the brief. */
-export const adapt = adaptCreature;
+// ===========================================================================
+// ARTIFACT -> EQUIPMENT
+// ===========================================================================
 
-// ---------------------------------------------------------------------------
-// ARTIFACT → RELIC
-// ---------------------------------------------------------------------------
-
-/**
- * ArtifactClass maps cleanly onto Spire's Rarity ladder. HoMM has no "starter"
- * tier of artifact, so "starter" is reserved for the hero's signature relic.
- *
- *   Treasure → common
- *   Minor    → uncommon   (Centaur's Axe is Minor → uncommon)
- *   Major    → rare
- *   Relic    → rare       (the apex class; same display rarity, richer effect)
- */
+/** ArtifactClass -> Rarity ladder (Relic shares 'rare' display rarity). */
 export function rarityForArtifactClass(cls: ArtifactClass): Rarity {
   switch (cls) {
     case "Treasure":
@@ -147,86 +95,315 @@ export function rarityForArtifactClass(cls: ArtifactClass): Rarity {
   }
 }
 
+const STAT_WORD: Record<string, PrimaryStat> = {
+  attack: "attack",
+  defense: "defense",
+  power: "power",
+  knowledge: "knowledge",
+};
+
 /**
- * Parse a relic's mechanical effect from its human-readable `bonuses` string.
- * HoMM artifact bonuses are terse ("+2 Attack", "+1 Defense", "+350 Spell
- * Points"). We map the common stat words onto combat hooks:
- *
- *   "+N Attack"          → +N Strength each combat (startStrength)
- *   "+N Defense"         → +N*2 starting Block each combat (startBlock)
- *   "+N Knowledge/Spell" → +1 card draw / turn (drawBonus) if N large enough
- *   "+N Power/Spell Pwr" → +1 energy / turn (startEnergy)
- *   anything else        → flavor (none)
- *
- * The Attack→Strength and Defense→Block lines are the load-bearing ones; the
- * rest are best-effort and documented in ADAPTER.md.
+ * Parse a `bonuses` string into primary-stat deltas + special effects.
+ * Examples handled:
+ *   "+2 Attack"                     -> { attack: 2 }
+ *   "+1 Attack, +1 Defense"         -> { attack: 1, defense: 1 }
+ *   "+3 to all primary skills"      -> { attack/defense/power/knowledge: 3 }
+ *   "+12 Attack, +12 Defense, +500 spell points" -> deltas + manaMax 500
+ *   "+1 Health point per creature"  -> effect hpPerCreature 1
+ *   "+1 Speed to all creatures..."  -> effect speedAll 1
+ *   "Greatly improves Necromancy"   -> effect necromancyBonus (Cloak)
  */
-export function effectForArtifactBonuses(bonuses: string): RelicEffect {
-  const m = /([+-]?\d+)\s*([A-Za-z ]+)/.exec(bonuses);
-  if (!m) return { kind: "none" };
-  const n = parseInt(m[1], 10);
-  const stat = m[2].trim().toLowerCase();
+export function parseBonuses(bonuses: string): {
+  primaryDeltas: Partial<Record<PrimaryStat, number>>;
+  effects: EquipmentEffect[];
+} {
+  const text = bonuses.toLowerCase();
+  const primaryDeltas: Partial<Record<PrimaryStat, number>> = {};
+  const effects: EquipmentEffect[] = [];
 
-  if (stat.startsWith("attack")) return { kind: "startStrength", amount: n };
-  if (stat.startsWith("defense")) return { kind: "startBlock", amount: n * 2 };
-  if (stat.startsWith("power") || stat.includes("spell power"))
-    return { kind: "startEnergy", amount: n >= 1 ? 1 : 0 };
-  if (stat.startsWith("knowledge") || stat.includes("spell"))
-    return { kind: "drawBonus", amount: n >= 1 ? 1 : 0 };
+  // "+N to all primary skills" -> +N to each.
+  const allPrimary = /([+-]?\d+)\s*to all primary/.exec(text);
+  if (allPrimary) {
+    const n = parseInt(allPrimary[1], 10);
+    primaryDeltas.attack = (primaryDeltas.attack ?? 0) + n;
+    primaryDeltas.defense = (primaryDeltas.defense ?? 0) + n;
+    primaryDeltas.power = (primaryDeltas.power ?? 0) + n;
+    primaryDeltas.knowledge = (primaryDeltas.knowledge ?? 0) + n;
+  }
 
-  return { kind: "none" };
+  // Each "+N <stat>" clause where <stat> is a primary stat word.
+  const re = /([+-]?\d+)\s+([a-z]+)/g;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(text)) !== null) {
+    const n = parseInt(m[1], 10);
+    const word = m[2];
+    const stat = STAT_WORD[word];
+    if (stat) primaryDeltas[stat] = (primaryDeltas[stat] ?? 0) + n;
+  }
+
+  // Special, machine-readable effects.
+  const hpPer = /([+-]?\d+)\s*health point per creature/.exec(text);
+  if (hpPer) effects.push({ kind: "hpPerCreature", amount: parseInt(hpPer[1], 10) });
+
+  const spd = /([+-]?\d+)\s*speed to all creatures/.exec(text);
+  if (spd) effects.push({ kind: "speedAll", amount: parseInt(spd[1], 10) });
+
+  const spellPts = /([+-]?\d+)\s*spell points/.exec(text);
+  if (spellPts) effects.push({ kind: "manaMax", amount: parseInt(spellPts[1], 10) });
+
+  if (text.includes("necromancy")) {
+    // Cloak of the Undead King: "Greatly improves Necromancy".
+    effects.push({ kind: "necromancyBonus", amount: 0.15 });
+  }
+
+  return { primaryDeltas, effects };
 }
 
-export function adaptArtifact(a: SourceArtifact): Relic {
+export function adaptEquipment(a: SourceArtifact): Equipment {
+  const { primaryDeltas, effects } = parseBonuses(a.bonuses);
   return {
-    id: `relic_${a.id.includes("_") ? a.id.slice(a.id.indexOf("_") + 1) : a.id}`,
+    id: `equip_${tail(a.id)}`,
+    sourceId: a.id,
     name: a.name,
+    slot: a.slot,
     rarity: rarityForArtifactClass(a.class),
     description: a.bonuses,
     imageRef: a.imageRef,
-    effect: effectForArtifactBonuses(a.bonuses),
+    primaryDeltas,
+    effects: effects.length ? effects : [{ kind: "none" }],
   };
 }
 
-// ---------------------------------------------------------------------------
-// HERO SPECIALTY → SIGNATURE RELIC
-// ---------------------------------------------------------------------------
+// ===========================================================================
+// SPELL -> COMBAT SPELL
+// ===========================================================================
 
 /**
- * A hero's `specialty` becomes their signature starting relic — the run's
- * identity piece. These are deliberately stronger than common artifacts (they
- * define a build) and get rarity "starter": owned from turn one, never offered
- * again.
+ * powerScale table — GREENFIELD. The schema only gives effectTags + description;
+ * the per-point Power scaling is pure design and the single biggest tuning lever.
+ * Magnitude resolves at cast time as `base + powerScale * hero.power`.
  *
- * The effect is keyed off the specialty word where we recognize it; otherwise a
- * generic "+1 Strength" signature so every hero has a working relic.
- *
- *   "Skeletons"  → +2 Strength each combat (Galthran's necro-bruiser identity)
- *   "Offense"    → +2 Strength
- *   "Armorer"    → +4 starting Block
- *   "Wisdom"     → +1 energy / turn
- *   "Logistics"  → +1 card draw / turn
- *   (fallback)   → +1 Strength
+ * Damage spells scale by spell level (a level-5 nuke hits far harder than a
+ * level-1 Magic Arrow); heals/buffs/debuffs use flat-ish curves.
  */
-export function signatureEffectForSpecialty(specialty: string): RelicEffect {
-  const s = specialty.toLowerCase();
-  if (s.includes("skeleton")) return { kind: "startStrength", amount: 2 };
-  if (s.includes("offense")) return { kind: "startStrength", amount: 2 };
-  if (s.includes("armor")) return { kind: "startBlock", amount: 4 };
-  if (s.includes("wisdom") || s.includes("intelligence"))
-    return { kind: "startEnergy", amount: 1 };
-  if (s.includes("logistics") || s.includes("scouting"))
-    return { kind: "drawBonus", amount: 1 };
-  return { kind: "startStrength", amount: 1 };
+const DAMAGE_BASE_BY_LEVEL = [0, 10, 18, 28, 45, 70]; // index by level 1..5
+const DAMAGE_SCALE_BY_LEVEL = [0, 10, 12, 15, 18, 22];
+
+function targetingFromTags(tags: string[], kind: SpellEffect["kind"]): SpellTargeting {
+  const t = tags.map((x) => x.toLowerCase());
+  if (t.includes("all-units")) return "allEnemies"; // battlefield-wide damage hits enemies primarily
+  if (t.includes("area") || t.includes("multi-target") || t.includes("chain"))
+    return "enemyStack"; // engine v1 resolves area as single-stack (lever)
+  const isFriendly =
+    kind === "heal" || kind === "buff" || t.includes("undead-synergy");
+  if (kind === "damage" || kind === "debuff") return "enemyStack";
+  if (kind === "disable") return "enemyStack";
+  return isFriendly ? "allyStack" : "enemyStack";
 }
 
-export function signatureRelicForHero(h: SourceHero): Relic {
+/** Classify a spell's mechanical kind from its effectTags. */
+function kindFromTags(tags: string[]): SpellEffect["kind"] {
+  const t = tags.map((x) => x.toLowerCase());
+  if (t.includes("damage")) return "damage";
+  if (t.includes("heal") || t.includes("resurrect")) return "heal";
+  if (t.includes("disable")) return "disable";
+  if (t.includes("buff")) return "buff";
+  if (t.includes("debuff")) return "debuff";
+  return "buff"; // dispel/terrain-only -> treated as a benign self/ally effect
+}
+
+export function adaptSpell(s: SourceSpell): CombatSpell {
+  const tags = s.effectTags;
+  const t = tags.map((x) => x.toLowerCase());
+  const kind = kindFromTags(tags);
+  const lvl = Math.max(1, Math.min(5, s.level));
+
+  let effect: SpellEffect;
+  let targeting: SpellTargeting;
+
+  if (kind === "damage") {
+    targeting = targetingFromTags(tags, kind);
+    effect = {
+      kind: "damage",
+      target: targeting,
+      base: DAMAGE_BASE_BY_LEVEL[lvl],
+      powerScale: DAMAGE_SCALE_BY_LEVEL[lvl],
+    };
+  } else if (kind === "heal") {
+    targeting = "allyStack";
+    effect = { kind: "heal", target: targeting, base: 10 * lvl, powerScale: 10 };
+  } else if (kind === "disable") {
+    targeting = "enemyStack";
+    effect = { kind: "disable", target: targeting, base: 1, powerScale: 0 };
+  } else if (kind === "buff") {
+    targeting = "allyStack";
+    const stat = t.includes("speed")
+      ? "speed"
+      : t.includes("defense")
+        ? "defense"
+        : t.includes("damage-increase") || t.includes("attack")
+          ? "attack"
+          : t.includes("ranged")
+            ? "damage"
+            : "attack";
+    effect = { kind: "buff", target: targeting, stat, base: 2 + lvl, powerScale: 1 };
+  } else {
+    targeting = "enemyStack";
+    const stat = t.includes("speed")
+      ? "speed"
+      : t.includes("defense") || t.includes("damage-reduction")
+        ? "defense"
+        : "attack";
+    effect = { kind: "debuff", target: targeting, stat, base: 2 + lvl, powerScale: 1 };
+  }
+
   return {
-    id: `relic_signature_${h.id.includes("_") ? h.id.slice(h.id.indexOf("_") + 1) : h.id}`,
-    name: `${h.name}'s ${h.specialty}`,
-    rarity: "starter",
-    description: `Signature of ${h.name} (${h.heroClass}): specialty ${h.specialty}.`,
-    imageRef: h.imageRef,
-    effect: signatureEffectForSpecialty(h.specialty),
+    id: `spell_${tail(s.id)}`,
+    name: s.name,
+    school: s.school,
+    level: s.level,
+    manaCost: s.manaCost,
+    description: s.description,
+    targeting,
+    imageRef: s.imageRef,
+    effect,
   };
+}
+
+// ===========================================================================
+// HERO -> DERIVED HERO
+// ===========================================================================
+
+export const MANA_PER_KNOWLEDGE = 10;
+
+/** Class base primary stats (HoMM3-flavored). Death Knight is a might/necro
+ *  bruiser; Necromancer leans magic. +1 to the stat their specialty implies. */
+function classBaseStats(heroClass: string): {
+  attack: number;
+  defense: number;
+  power: number;
+  knowledge: number;
+} {
+  switch (heroClass) {
+    case "Death Knight":
+      return { attack: 2, defense: 2, power: 1, knowledge: 1 };
+    case "Necromancer":
+      return { attack: 1, defense: 1, power: 2, knowledge: 2 };
+    default:
+      return { attack: 1, defense: 1, power: 1, knowledge: 1 };
+  }
+}
+
+/** Which primary a specialty/skill nudges (+1). */
+function specialtyBonus(specialty: string): Partial<
+  Record<PrimaryStat, number>
+> {
+  const s = specialty.toLowerCase();
+  if (s.includes("wisdom") || s.includes("intelligence")) return { knowledge: 1 };
+  if (s.includes("sorcery") || s.includes("meteor") || s.includes("ripple"))
+    return { power: 1 };
+  if (s.includes("offense") || s.includes("knight")) return { attack: 1 };
+  if (s.includes("armor")) return { defense: 1 };
+  // Creature specialties (Skeletons, Vampires, ...) nudge attack — a martial
+  // commander who leads that creature into battle.
+  return { attack: 1 };
+}
+
+/** Which creature a hero's specialty implies, for the sensible starting army. */
+function specialtyCreatureId(specialty: string): string | null {
+  const s = specialty.toLowerCase();
+  if (s.includes("skeleton")) return "necropolis_skeleton";
+  if (s.includes("walking dead") || s.includes("zombie")) return "necropolis_walking_dead";
+  if (s.includes("wight")) return "necropolis_wight";
+  if (s.includes("vampire")) return "necropolis_vampire";
+  if (s.includes("lich")) return "necropolis_lich";
+  if (s.includes("black knight")) return "necropolis_black_knight";
+  return null;
+}
+
+/**
+ * Derive a runtime Hero from a SourceHero. Primary stats from class + specialty,
+ * maxMana from knowledge, a sensible starting army, a starter spellbook, and the
+ * hero's skills (Necromancy seeded to rank 1 for necro heroes).
+ *
+ * `allCreatures` / `allSpells` are passed so the engine layer can supply the
+ * @mms/data corpus without the adapter importing content directly.
+ */
+export function deriveHero(
+  h: SourceHero,
+  deps: {
+    creatures: SourceCreature[];
+    spells: SourceSpell[];
+  },
+): { hero: Hero; startingArmy: Stack[] } {
+  const base = classBaseStats(h.heroClass);
+  const bonus = specialtyBonus(h.specialty);
+  const attack = base.attack + (bonus.attack ?? 0);
+  const defense = base.defense + (bonus.defense ?? 0);
+  const power = base.power + (bonus.power ?? 0);
+  const knowledge = base.knowledge + (bonus.knowledge ?? 0);
+
+  // Skills: seed from startingSkills (rank 1 each).
+  const skills: Record<string, number> = {};
+  for (const s of h.startingSkills) skills[s] = 1;
+
+  // Starter spellbook: Magic Arrow always; plus Curse if available (cheap debuff).
+  const spellbook: CombatSpell[] = [];
+  const byId = (id: string) => h && deps.spells.find((s) => s.id === id);
+  const starterSpellIds = ["spell_magic_arrow", "spell_bless", "spell_haste"];
+  for (const id of starterSpellIds) {
+    const s = byId(id);
+    if (s) spellbook.push(adaptSpell(s));
+  }
+
+  const maxMana = knowledge * MANA_PER_KNOWLEDGE;
+
+  const hero: Hero = {
+    id: h.id,
+    name: h.name,
+    heroClass: h.heroClass,
+    specialty: h.specialty,
+    attack,
+    defense,
+    power,
+    knowledge,
+    mana: maxMana,
+    maxMana,
+    equipment: {},
+    spellbook,
+    skills,
+    imageRef: h.imageRef,
+    baseAttack: attack,
+    baseDefense: defense,
+    basePower: power,
+    baseKnowledge: knowledge,
+  };
+
+  // Starting army: a big stack of Skeletons (the bread-and-butter) plus a stack
+  // of the hero's specialty creature if it differs.
+  const find = (id: string) => deps.creatures.find((c) => c.id === id);
+  const startingArmy: Stack[] = [];
+  const skeleton = find("necropolis_skeleton");
+  if (skeleton) startingArmy.push(adaptStack(skeleton, 20, { idSuffix: "_start" }));
+
+  const specId = specialtyCreatureId(h.specialty);
+  if (specId && specId !== "necropolis_skeleton") {
+    const spec = find(specId);
+    if (spec) {
+      // Fewer of the stronger specialty creature.
+      const n = spec.tier <= 2 ? 10 : spec.tier <= 4 ? 5 : 2;
+      startingArmy.push(adaptStack(spec, n, { idSuffix: "_start2" }));
+    }
+  } else {
+    // No distinct specialty creature -> add a stack of Walking Dead for a body.
+    const wd = find("necropolis_walking_dead");
+    if (wd) startingArmy.push(adaptStack(wd, 10, { idSuffix: "_start2" }));
+  }
+
+  return { hero, startingArmy };
+}
+
+// ---------------------------------------------------------------------------
+function tail(id: string): string {
+  return id.includes("_") ? id.slice(id.indexOf("_") + 1) : id;
 }
