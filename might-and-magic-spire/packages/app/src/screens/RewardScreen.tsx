@@ -1,65 +1,30 @@
-// REWARD / NODE-RESOLUTION — shown after a combat win, or when standing on a
-// rest / shop / event node. The engine tells us (via pendingRewards) what
-// choices exist; we render them as tappable cards/relics/heals and dispatch
-// pickReward. The node's flavour (rest vs shop vs event vs spoils) sets the
-// heading so each non-combat node still reads distinctly.
-import type { CardDef } from '@mms/schema';
-import type { NodeType, RewardChoice, Relic, RunState } from '../engine';
-import { Card } from '../components/Card';
+// REWARD / NODE-RESOLUTION — shown after a battle is won (spoils + Necromancy
+// raise) or on a rest node. The engine tells us (via pendingRewards) what
+// choices exist; we render them as tappable tiles and dispatch pickReward. The
+// army economy nodes (dwelling/altar/shrine/merchant) have their OWN screens;
+// this handles the post-combat raise/gold and the rest stop.
+import type { NodeType, RewardChoice, RunState } from '../engine';
+import { creatureLookup } from '../engine';
 import { ContentImage } from '../chrome/ContentImage';
-import { HeartIcon } from '../chrome/icons';
+import { GoldPip } from '../components/StatBar';
 
-// The mock's pools, surfaced for rendering choice previews. At integration the
-// engine should return rich choices (with the CardDef/Relic inline); until
-// then we look them up from the run-visible context where possible and fall
-// back to a label.
-function ChoiceTile({
-  choice,
-  cardLookup,
-  relicLookup,
-  onPick,
-}: {
-  choice: RewardChoice;
-  cardLookup: (id: string) => CardDef | undefined;
-  relicLookup: (id: string) => Relic | undefined;
-  onPick: () => void;
-}) {
-  if (choice.kind === 'card') {
-    const card = cardLookup(choice.cardId);
-    return card ? (
-      <Card card={card} playable onClick={onPick} />
-    ) : (
-      <GenericTile label={`Card: ${choice.cardId}`} onPick={onPick} />
-    );
-  }
-  if (choice.kind === 'relic') {
-    const relic = relicLookup(choice.relicId);
+function ChoiceTile({ choice, onPick }: { choice: RewardChoice; onPick: () => void }) {
+  if (choice.kind === 'raise') {
+    const c = creatureLookup(choice.creatureId);
     return (
       <button
         type="button"
-        data-testid="reward-relic"
+        data-testid="reward-raise"
         onClick={onPick}
-        className="flex w-32 flex-col items-center gap-2 rounded-lg border border-verd-500 bg-grave-700 p-3 verd-frame active:scale-95"
+        className="flex w-36 flex-col items-center gap-2 rounded-lg border border-necro-400/60 bg-grave-700 p-3 verd-frame active:scale-95"
       >
-        <div className="h-14 w-14 overflow-hidden rounded-full border border-verd-500">
-          <ContentImage imageRef={relic?.imageRef ?? 'unknown'} alt={relic?.name ?? 'Relic'} className="h-full w-full" />
+        <div className="h-16 w-16 overflow-hidden rounded-full border border-necro-400/60">
+          <ContentImage imageRef={c?.imageRef ?? 'necropolis_skeleton'} alt={c?.name ?? 'Undead'} className="h-full w-full" />
         </div>
-        <div className="font-display text-xs engraved">{relic?.name ?? choice.relicId}</div>
-        <div className="text-[0.6rem] text-bone-300">{relic?.description}</div>
-      </button>
-    );
-  }
-  if (choice.kind === 'heal') {
-    return (
-      <button
-        type="button"
-        data-testid="reward-heal"
-        onClick={onPick}
-        className="flex w-32 flex-col items-center gap-2 rounded-lg border border-blood-500 bg-grave-700 p-4 verd-frame active:scale-95"
-      >
-        <HeartIcon className="text-2xl text-blood-400" />
-        <div className="font-display text-sm engraved">Rest</div>
-        <div className="text-[0.65rem] text-bone-300">Heal {choice.amount} HP</div>
+        <div className="font-display text-sm engraved text-necro-400">Raise the Dead</div>
+        <div className="text-[0.65rem] text-bone-300">
+          +{choice.count} {c?.name ?? 'Skeletons'} from the slain
+        </div>
       </button>
     );
   }
@@ -69,69 +34,55 @@ function ChoiceTile({
         type="button"
         data-testid="reward-gold"
         onClick={onPick}
-        className="flex w-32 flex-col items-center gap-2 rounded-lg border border-bone-400 bg-grave-700 p-4 verd-frame active:scale-95"
+        className="flex w-36 flex-col items-center justify-center gap-2 rounded-lg border border-amber-300/50 bg-grave-700 p-4 verd-frame active:scale-95"
       >
-        <span className="text-2xl">⛃</span>
+        <span className="text-3xl text-amber-300/90">⛃</span>
         <div className="font-display text-sm engraved">Spoils</div>
-        <div className="text-[0.65rem] text-bone-300">{choice.amount} gold</div>
+        <div className="text-[0.7rem] text-bone-300">{choice.amount} gold</div>
       </button>
     );
   }
-  return <GenericTile label="Move on" onPick={onPick} testid="reward-skip" />;
-}
-
-function GenericTile({ label, onPick, testid }: { label: string; onPick: () => void; testid?: string }) {
   return (
     <button
       type="button"
-      data-testid={testid}
+      data-testid="reward-skip"
       onClick={onPick}
-      className="flex h-40 w-32 flex-col items-center justify-center rounded-lg border border-grave-600 bg-grave-700 p-3 text-bone-300 active:scale-95"
+      className="flex h-36 w-36 flex-col items-center justify-center rounded-lg border border-grave-600 bg-grave-700 p-3 text-bone-300 active:scale-95"
     >
-      <span className="font-display text-sm">{label}</span>
+      <span className="font-display text-sm uppercase tracking-widest">Press on</span>
     </button>
   );
 }
 
-const HEADINGS: Record<NodeType, { title: string; sub: string }> = {
-  combat: { title: 'Spoils of the Dead', sub: 'Take one into your deck.' },
-  elite: { title: 'Elite Spoils', sub: 'A relic stirs among the bones.' },
+const HEADINGS: Partial<Record<NodeType, { title: string; sub: string }>> = {
+  combat: { title: 'Spoils of the Dead', sub: 'Gather the bones and gold of the fallen.' },
+  elite: { title: 'Elite Spoils', sub: 'A greater horde, a greater raising.' },
   boss: { title: 'The Spire Yields', sub: 'Claim your reward.' },
-  rest: { title: 'A Quiet Crypt', sub: 'Mend your wounds, or press on.' },
-  shop: { title: 'The Bone Pedlar', sub: 'Spend your gold among the wares.' },
-  event: { title: 'An Omen', sub: 'The dead offer a choice.' },
+  rest: { title: 'A Quiet Crypt', sub: 'A moment among the silent dead.' },
 };
 
 export function RewardScreen({
   run,
   choices,
-  cardLookup,
-  relicLookup,
   onPick,
 }: {
   run: RunState;
   choices: RewardChoice[];
-  cardLookup: (id: string) => CardDef | undefined;
-  relicLookup: (id: string) => Relic | undefined;
   onPick: (choice: RewardChoice) => void;
 }) {
-  const nodeType: NodeType =
-    run.map.find((n) => n.id === run.currentNodeId)?.type ?? 'combat';
-  const head = HEADINGS[nodeType];
+  const nodeType: NodeType = run.map.find((n) => n.id === run.currentNodeId)?.type ?? 'combat';
+  const head = HEADINGS[nodeType] ?? HEADINGS.combat!;
 
   return (
-    <div className="flex h-full flex-col items-center justify-center bg-necropolis px-4 py-8 text-center animate-fade-in">
+    <div className="flex h-full flex-col items-center bg-necropolis px-4 py-8 text-center animate-fade-in">
+      <div className="mb-4 self-stretch flex justify-end">
+        <GoldPip gold={run.gold} />
+      </div>
       <h2 className="font-display text-2xl tracking-widest text-bone-100 engraved">{head.title}</h2>
       <p className="mt-1 mb-6 text-sm italic text-bone-500">{head.sub}</p>
       <div className="flex flex-wrap items-stretch justify-center gap-3" data-testid="reward-choices">
         {choices.map((choice, i) => (
-          <ChoiceTile
-            key={i}
-            choice={choice}
-            cardLookup={cardLookup}
-            relicLookup={relicLookup}
-            onPick={() => onPick(choice)}
-          />
+          <ChoiceTile key={i} choice={choice} onPick={() => onPick(choice)} />
         ))}
       </div>
     </div>
