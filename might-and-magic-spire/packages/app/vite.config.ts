@@ -43,5 +43,9 @@ export default defineConfig({
   server: {
     port: 3003,
     host: true,
+    // Allow Tailscale MagicDNS hostnames (e.g. the-work-box, *.ts.net) — Vite 7
+    // 403s hostname Host headers by default, which blocks phone access over
+    // Tailscale (the app's "add to home screen" distribution path).
+    allowedHosts: true,
   },
 })
