@@ -1,14 +1,18 @@
-// Image pass: ensure every imageRef in the manifest resolves to a real WebP in
-// assets/images/, and that the manifest's width/height match the file on disk.
+// Image pass: download the REAL artwork for every manifest entry from
+// heroes.thelazy.net, normalize to WebP, and record the real width/height back
+// into manifest.json.
 //
-// Strategy:
-//   1. For each manifest entry, if assets/images/<ref>.webp already exists, keep
-//      it. Otherwise try to download the source image, dedupe by content hash,
-//      and normalize to a web-sized WebP (max 100x130, contain).
-//   2. If the download fails (egress restricted in the v0 build environment),
-//      generate a deterministic solid-color 100x130 placeholder WebP so the ref
-//      still resolves. Placeholders are tracked and reported.
-//   3. Rewrite manifest.json with real width/height read back from each file.
+// Each manifest entry's `sourceUrl` is the record's wiki *page* (not a direct
+// image URL). So for each entry we:
+//   1. fetch the page (cache-first via lib/http.ts — never re-hit the network),
+//   2. extract the type-appropriate artwork URL by name (lib/parse.ts:
+//      parseRecordImageUrl — Creature_*/Hero_*/Artifact_*/<spell>.png),
+//   3. download that image, dedupe by content hash, convert to WebP at native
+//      resolution (these are already web-sized sprites; we cap at MAX px),
+//   4. read the real width/height back from the file into the manifest.
+//
+// If the page or image can't be fetched/decoded, we keep a deterministic
+// solid-color placeholder so every imageRef still resolves, and report it.
 //
 //   pnpm --filter @mms/data images   (alias: tsx scripts/images.ts)
 
@@ -18,12 +22,17 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
 import { ImageManifest, type ImageManifestEntry } from "@mms/schema";
+import { fetchCached } from "./lib/http.ts";
+import { parseRecordImageUrl, type RecordKind } from "./lib/parse.ts";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const SRC = join(__dirname, "..", "src");
 const ASSETS = join(__dirname, "..", "..", "..", "assets", "images");
-const MAX_W = 100;
-const MAX_H = 130;
+// Sprites on thelazy are small (<=100x130); cap defensively so nothing huge
+// sneaks through, but otherwise preserve native resolution.
+const MAX = 256;
+const PLACEHOLDER_W = 100;
+const PLACEHOLDER_H = 130;
 
 async function exists(p: string): Promise<boolean> {
   try {
@@ -38,7 +47,6 @@ async function exists(p: string): Promise<boolean> {
 // and visually distinguishable per record.
 function colorFor(ref: string): { r: number; g: number; b: number } {
   const h = createHash("md5").update(ref).digest();
-  // Bias toward mid-tones so text/overlay would remain legible.
   return {
     r: 60 + (h[0] % 150),
     g: 60 + (h[1] % 150),
@@ -50,8 +58,8 @@ async function makePlaceholder(ref: string, outPath: string): Promise<void> {
   const { r, g, b } = colorFor(ref);
   await sharp({
     create: {
-      width: MAX_W,
-      height: MAX_H,
+      width: PLACEHOLDER_W,
+      height: PLACEHOLDER_H,
       channels: 4,
       background: { r, g, b, alpha: 1 },
     },
@@ -60,16 +68,46 @@ async function makePlaceholder(ref: string, outPath: string): Promise<void> {
     .toFile(outPath);
 }
 
-async function tryDownloadNormalize(url: string, outPath: string): Promise<boolean> {
+/** ref prefix -> record kind + page-name (decoded from the sourceUrl path). */
+function describe(entry: ImageManifestEntry): { kind: RecordKind; name: string } {
+  const last = entry.sourceUrl.split("/").pop() ?? "";
+  const name = decodeURIComponent(last).replace(/_/g, " ");
+  const kind: RecordKind = entry.ref.startsWith("hero_")
+    ? "hero"
+    : entry.ref.startsWith("artifact_")
+      ? "artifact"
+      : entry.ref.startsWith("spell_")
+        ? "spell"
+        : "creature";
+  return { kind, name };
+}
+
+/**
+ * Fetch the page, find the real artwork URL, download + normalize to WebP.
+ * Returns true on success (file written), false if anything failed (caller
+ * falls back to a placeholder).
+ */
+async function tryRealImage(
+  entry: ImageManifestEntry,
+  outPath: string,
+): Promise<boolean> {
   try {
-    const res = await fetch(url, {
-      headers: { "User-Agent": "MMS-Researcher/0.1 (image pass)" },
+    const { kind, name } = describe(entry);
+    const html = await fetchCached(entry.sourceUrl);
+    const imageUrl = parseRecordImageUrl(html, kind, name);
+    if (!imageUrl) return false;
+
+    const res = await fetch(imageUrl, {
+      headers: { "User-Agent": "MMS-Researcher/0.1 (image pass; contact ethan@survivalandflourishing.com)" },
     });
     if (!res.ok) return false;
     const buf = Buffer.from(await res.arrayBuffer());
-    await sharp(buf)
-      .resize({ width: MAX_W, height: MAX_H, fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } })
-      .webp({ quality: 82 })
+
+    // Preserve native resolution; only shrink if larger than MAX. `without
+    // enlargement` keeps small sprites at their true size.
+    await sharp(buf, { animated: false })
+      .resize({ width: MAX, height: MAX, fit: "inside", withoutEnlargement: true })
+      .webp({ quality: 90 })
       .toFile(outPath);
     return true;
   } catch {
@@ -85,35 +123,44 @@ async function main(): Promise<void> {
 
   const placeholders: string[] = [];
   const out: ImageManifestEntry[] = [];
+  let real = 0;
 
   for (const entry of manifest) {
     const outPath = join(ASSETS, `${entry.ref}.webp`);
-    if (!(await exists(outPath))) {
-      const ok = await tryDownloadNormalize(entry.sourceUrl, outPath);
-      if (!ok) {
-        await makePlaceholder(entry.ref, outPath);
-        placeholders.push(entry.ref);
-      }
+    // Always (re)attempt the real download this run, overwriting v0 placeholders.
+    const ok = await tryRealImage(entry, outPath);
+    if (ok) {
+      real++;
+    } else if (!(await exists(outPath))) {
+      await makePlaceholder(entry.ref, outPath);
+      placeholders.push(entry.ref);
+    } else {
+      // Couldn't fetch a real image and a file already exists — treat as a
+      // standing placeholder so it's reported honestly.
+      placeholders.push(entry.ref);
     }
+
     const meta = await sharp(outPath).metadata();
     out.push({
       ...entry,
       localPath: `assets/images/${entry.ref}.webp`,
-      width: meta.width ?? MAX_W,
-      height: meta.height ?? MAX_H,
+      width: meta.width ?? PLACEHOLDER_W,
+      height: meta.height ?? PLACEHOLDER_H,
     });
   }
 
   await writeFile(join(SRC, "manifest.json"), JSON.stringify(out, null, 2) + "\n", "utf8");
 
   // eslint-disable-next-line no-console
-  console.log(`image pass: ${out.length} refs resolved, ${placeholders.length} placeholder(s)`);
+  console.log(
+    `image pass: ${out.length} refs resolved, ${real} real, ${placeholders.length} placeholder(s)`,
+  );
+  await writeFile(
+    join(SRC, "placeholders.json"),
+    JSON.stringify(placeholders, null, 2) + "\n",
+    "utf8",
+  );
   if (placeholders.length) {
-    await writeFile(
-      join(SRC, "placeholders.json"),
-      JSON.stringify(placeholders, null, 2) + "\n",
-      "utf8",
-    );
     console.log(`placeholder refs written to src/placeholders.json`);
   }
 }

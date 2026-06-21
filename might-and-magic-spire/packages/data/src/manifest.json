@@ -116,463 +116,463 @@
     "localPath": "assets/images/hero_galthran.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Galthran",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 58,
+    "height": 64
   },
   {
     "ref": "hero_isra",
     "localPath": "assets/images/hero_isra.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Isra",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 58,
+    "height": 64
   },
   {
     "ref": "hero_clavius",
     "localPath": "assets/images/hero_clavius.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Clavius",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 58,
+    "height": 64
   },
   {
     "ref": "hero_moandor",
     "localPath": "assets/images/hero_moandor.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Moandor",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 58,
+    "height": 64
   },
   {
     "ref": "hero_charna",
     "localPath": "assets/images/hero_charna.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Charna",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 58,
+    "height": 64
   },
   {
     "ref": "hero_tamika",
     "localPath": "assets/images/hero_tamika.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Tamika",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 58,
+    "height": 64
   },
   {
     "ref": "hero_straker",
     "localPath": "assets/images/hero_straker.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Straker",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 58,
+    "height": 64
   },
   {
     "ref": "hero_vokial",
     "localPath": "assets/images/hero_vokial.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Vokial",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 58,
+    "height": 64
   },
   {
     "ref": "hero_thant",
     "localPath": "assets/images/hero_thant.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Thant",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 58,
+    "height": 64
   },
   {
     "ref": "hero_sandro",
     "localPath": "assets/images/hero_sandro.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Sandro",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 58,
+    "height": 64
   },
   {
     "ref": "hero_nimbus",
     "localPath": "assets/images/hero_nimbus.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Nimbus",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 58,
+    "height": 64
   },
   {
     "ref": "hero_vidomina",
     "localPath": "assets/images/hero_vidomina.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Vidomina",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 58,
+    "height": 64
   },
   {
     "ref": "hero_aislinn",
     "localPath": "assets/images/hero_aislinn.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Aislinn",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 58,
+    "height": 64
   },
   {
     "ref": "hero_septienna",
     "localPath": "assets/images/hero_septienna.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Septienna",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 58,
+    "height": 64
   },
   {
     "ref": "spell_magic_arrow",
     "localPath": "assets/images/spell_magic_arrow.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Magic%20Arrow",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 74,
+    "height": 70
   },
   {
     "ref": "spell_curse",
     "localPath": "assets/images/spell_curse.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Curse",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 74,
+    "height": 70
   },
   {
     "ref": "spell_fire_wall",
     "localPath": "assets/images/spell_fire_wall.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Fire%20Wall",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 74,
+    "height": 70
   },
   {
     "ref": "spell_blind",
     "localPath": "assets/images/spell_blind.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Blind",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 74,
+    "height": 70
   },
   {
     "ref": "spell_fireball",
     "localPath": "assets/images/spell_fireball.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Fireball",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 74,
+    "height": 70
   },
   {
     "ref": "spell_inferno",
     "localPath": "assets/images/spell_inferno.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Inferno",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 48,
+    "height": 32
   },
   {
     "ref": "spell_armageddon",
     "localPath": "assets/images/spell_armageddon.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Armageddon",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 74,
+    "height": 70
   },
   {
     "ref": "spell_shield",
     "localPath": "assets/images/spell_shield.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Shield",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 74,
+    "height": 70
   },
   {
     "ref": "spell_slow",
     "localPath": "assets/images/spell_slow.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Slow",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 74,
+    "height": 70
   },
   {
     "ref": "spell_stone_skin",
     "localPath": "assets/images/spell_stone_skin.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Stone%20Skin",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 74,
+    "height": 70
   },
   {
     "ref": "spell_death_ripple",
     "localPath": "assets/images/spell_death_ripple.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Death%20Ripple",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 74,
+    "height": 70
   },
   {
     "ref": "spell_animate_dead",
     "localPath": "assets/images/spell_animate_dead.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Animate%20Dead",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 74,
+    "height": 70
   },
   {
     "ref": "spell_meteor_shower",
     "localPath": "assets/images/spell_meteor_shower.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Meteor%20Shower",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 74,
+    "height": 70
   },
   {
     "ref": "spell_resurrection",
     "localPath": "assets/images/spell_resurrection.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Resurrection",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 74,
+    "height": 70
   },
   {
     "ref": "spell_implosion",
     "localPath": "assets/images/spell_implosion.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Implosion",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 74,
+    "height": 70
   },
   {
     "ref": "spell_haste",
     "localPath": "assets/images/spell_haste.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Haste",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 74,
+    "height": 70
   },
   {
     "ref": "spell_disrupting_ray",
     "localPath": "assets/images/spell_disrupting_ray.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Disrupting%20Ray",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 74,
+    "height": 70
   },
   {
     "ref": "spell_precision",
     "localPath": "assets/images/spell_precision.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Precision",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 74,
+    "height": 70
   },
   {
     "ref": "spell_lightning_bolt",
     "localPath": "assets/images/spell_lightning_bolt.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Lightning%20Bolt",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 74,
+    "height": 70
   },
   {
     "ref": "spell_chain_lightning",
     "localPath": "assets/images/spell_chain_lightning.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Chain%20Lightning",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 74,
+    "height": 70
   },
   {
     "ref": "spell_titans_lightning_bolt",
     "localPath": "assets/images/spell_titans_lightning_bolt.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Titan's%20Lightning%20Bolt",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 74,
+    "height": 70
   },
   {
     "ref": "spell_bless",
     "localPath": "assets/images/spell_bless.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Bless",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 74,
+    "height": 70
   },
   {
     "ref": "spell_cure",
     "localPath": "assets/images/spell_cure.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Cure",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 74,
+    "height": 70
   },
   {
     "ref": "spell_dispel",
     "localPath": "assets/images/spell_dispel.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Dispel",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 74,
+    "height": 70
   },
   {
     "ref": "spell_weakness",
     "localPath": "assets/images/spell_weakness.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Weakness",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 74,
+    "height": 70
   },
   {
     "ref": "spell_forgetfulness",
     "localPath": "assets/images/spell_forgetfulness.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Forgetfulness",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 74,
+    "height": 70
   },
   {
     "ref": "spell_prayer",
     "localPath": "assets/images/spell_prayer.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Prayer",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 74,
+    "height": 70
   },
   {
     "ref": "artifact_centaurs_axe",
     "localPath": "assets/images/artifact_centaurs_axe.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Centaur's%20Axe",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 44,
+    "height": 44
   },
   {
     "ref": "artifact_shield_of_the_dwarven_lords",
     "localPath": "assets/images/artifact_shield_of_the_dwarven_lords.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Shield%20of%20the%20Dwarven%20Lords",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 44,
+    "height": 44
   },
   {
     "ref": "artifact_ring_of_vitality",
     "localPath": "assets/images/artifact_ring_of_vitality.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Ring%20of%20Vitality",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 44,
+    "height": 44
   },
   {
     "ref": "artifact_cape_of_conjuring",
     "localPath": "assets/images/artifact_cape_of_conjuring.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Cape%20of%20Conjuring",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 44,
+    "height": 44
   },
   {
     "ref": "artifact_speculum",
     "localPath": "assets/images/artifact_speculum.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Speculum",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 44,
+    "height": 44
   },
   {
     "ref": "artifact_helm_of_the_alabaster_unicorn",
     "localPath": "assets/images/artifact_helm_of_the_alabaster_unicorn.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Helm%20of%20the%20Alabaster%20Unicorn",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 44,
+    "height": 44
   },
   {
     "ref": "artifact_quiet_eye_of_the_dragon",
     "localPath": "assets/images/artifact_quiet_eye_of_the_dragon.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Quiet%20Eye%20of%20the%20Dragon",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 44,
+    "height": 44
   },
   {
     "ref": "artifact_necklace_of_swiftness",
     "localPath": "assets/images/artifact_necklace_of_swiftness.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Necklace%20of%20Swiftness",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 44,
+    "height": 44
   },
   {
     "ref": "artifact_pendant_of_death",
     "localPath": "assets/images/artifact_pendant_of_death.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Pendant%20of%20Death",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 44,
+    "height": 44
   },
   {
     "ref": "artifact_sword_of_hellfire",
     "localPath": "assets/images/artifact_sword_of_hellfire.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Sword%20of%20Hellfire",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 44,
+    "height": 44
   },
   {
     "ref": "artifact_dragon_wing_tabard",
     "localPath": "assets/images/artifact_dragon_wing_tabard.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Dragon%20Wing%20Tabard",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 44,
+    "height": 44
   },
   {
     "ref": "artifact_orb_of_the_firmament",
     "localPath": "assets/images/artifact_orb_of_the_firmament.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Orb%20of%20the%20Firmament",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 44,
+    "height": 44
   },
   {
     "ref": "artifact_ring_of_the_wayfarer",
     "localPath": "assets/images/artifact_ring_of_the_wayfarer.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Ring%20of%20the%20Wayfarer",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 44,
+    "height": 44
   },
   {
     "ref": "artifact_cloak_of_the_undead_king",
     "localPath": "assets/images/artifact_cloak_of_the_undead_king.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Cloak%20of%20the%20Undead%20King",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 44,
+    "height": 44
   },
   {
     "ref": "artifact_armor_of_the_damned",
     "localPath": "assets/images/artifact_armor_of_the_damned.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Armor%20of%20the%20Damned",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 44,
+    "height": 44
   },
   {
     "ref": "artifact_sword_of_judgement",
     "localPath": "assets/images/artifact_sword_of_judgement.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Sword%20of%20Judgement",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 44,
+    "height": 44
   },
   {
     "ref": "artifact_armageddons_blade",
     "localPath": "assets/images/artifact_armageddons_blade.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Armageddon's%20Blade",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
-    "width": 100,
-    "height": 130
+    "width": 42,
+    "height": 32
   }
 ]
