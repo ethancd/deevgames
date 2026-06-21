@@ -17,6 +17,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@mms/data": "workspace:*",
     "@mms/schema": "workspace:*",
     "zod": "^3.23.8"
   },

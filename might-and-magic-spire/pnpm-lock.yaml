@@ -17,6 +17,9 @@ importers:
 
   packages/app:
     dependencies:
+      '@mms/data':
+        specifier: workspace:*
+        version: link:../data
       '@mms/engine':
         specifier: workspace:*
         version: link:../engine
@@ -106,6 +109,9 @@ importers:
 
   packages/engine:
     dependencies:
+      '@mms/data':
+        specifier: workspace:*
+        version: link:../data
       '@mms/schema':
         specifier: workspace:*
         version: link:../schema

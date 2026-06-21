@@ -1,35 +1,28 @@
 // Content-art image resolution (the researcher's stream).
 //
-// Build-time content step: Vite globs every webp under assets/images and the
-// `@mms/data` manifest is consulted (when present) to validate refs. An
-// `imageRef` from the engine/schema resolves to a hashed bundled URL; a
-// missing asset returns null so the UI can drop in its own placeholder chrome.
+// The researcher's WebP art lives at the repo-level assets/images/<ref>.webp and
+// is copied into public/content/<ref>.webp by the build-time content step
+// (scripts/sync-content.mjs, run before dev/build). We resolve an imageRef to
+// that public URL, gated on the @mms/data image manifest so a ref the data
+// layer doesn't know about returns null and the UI drops in placeholder chrome.
 //
 // IMPORTANT: this is the CONTENT stream. Card frames, faction backgrounds,
 // icons and buttons are CHROME and live in src/chrome — never here.
+import { manifest } from '@mms/data';
 
-// Eagerly glob bundled content art. `assets/images/<ref>.webp`. When the
-// researcher's real assets land they drop into this folder and resolve for
-// free. `import.meta.glob` returns {} cleanly when the folder is empty.
-const modules = import.meta.glob<string>('../../assets/images/*.webp', {
-  eager: true,
-  query: '?url',
-  import: 'default',
-});
+// Every ref the content DB actually ships an image for.
+const refs = new Set(manifest.map((m) => m.ref));
 
-const byRef: Record<string, string> = {};
-for (const [path, url] of Object.entries(modules)) {
-  const ref = path.split('/').pop()!.replace(/\.webp$/, '');
-  byRef[ref] = url as string;
-}
+// Vite serves public/ at the app's base URL (base: './' for portable deploys).
+const base = import.meta.env.BASE_URL ?? '/';
 
-/** Resolve a content-art imageRef to a bundled URL, or null if absent. */
+/** Resolve a content-art imageRef to its bundled public URL, or null if absent. */
 export function resolveImage(ref: string | undefined): string | null {
-  if (!ref) return null;
-  return byRef[ref] ?? null;
+  if (!ref || !refs.has(ref)) return null;
+  return `${base}content/${ref}.webp`;
 }
 
-/** Whether any content art is bundled (false during fixture-only dev). */
+/** Whether any content art is available (false only if the manifest is empty). */
 export function hasContentArt(): boolean {
-  return Object.keys(byRef).length > 0;
+  return refs.size > 0;
 }

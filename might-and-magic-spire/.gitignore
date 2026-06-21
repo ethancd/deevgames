@@ -6,3 +6,6 @@ dist/
 # Researcher's raw-HTML scrape cache — re-runs re-parse from here, but it is
 # not source of truth and should not be committed.
 packages/data/.cache/
+
+# App content art, generated from assets/images by scripts/sync-content.mjs.
+packages/app/public/content/
