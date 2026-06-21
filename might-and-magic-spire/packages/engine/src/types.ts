@@ -91,6 +91,12 @@ export interface Telegraph {
 export interface Stack {
   id: string;
   sourceId: string; // back-ref to the SourceCreature
+  /**
+   * App-facing alias of `sourceId` (the pinned app contract names this
+   * `creatureId` and uses it for art lookup). Kept in lockstep with `sourceId`
+   * in every Stack constructor so the seam needs no per-field translation.
+   */
+  creatureId: string;
   name: string;
   tier: number;
   upgraded: boolean;

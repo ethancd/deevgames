@@ -1,16 +1,11 @@
-// SHRINE — learn a new combat spell into the hero's spellbook. The shrine
-// offers a few combat spells the hero doesn't yet know, gold-gated. Already-
-// known spells are filtered out.
-import { SPELLS, spellLookup, type RunState } from '../engine';
+// SHRINE — learn a new combat spell into the hero's spellbook. The engine rolls
+// the shrine's offers into run.pendingRewards (kind 'learn', each carrying a
+// spellId and gold cost) and validates the selection against them. Already-known
+// spells are never offered. Gold-gated.
+import { spellLookup, engine, type RewardChoice, type RunState } from '../engine';
 import { NodeScreenShell, OfferTile } from './NodeScreenShell';
 
-// Spells a shrine may teach (combat-relevant, beyond the starter set).
-const SHRINE_OFFER_IDS = ['spell_lightning_bolt', 'spell_animate_dead', 'spell_curse', 'spell_bless'];
-
-function learnCost(spellId: string): number {
-  const s = spellLookup(spellId);
-  return s ? s.manaCost * 8 : 60;
-}
+type LearnOffer = Extract<RewardChoice, { kind: 'learn' }>;
 
 export function ShrineScreen({
   run,
@@ -21,8 +16,9 @@ export function ShrineScreen({
   onLearn: (spellId: string) => void;
   onSkip: () => void;
 }) {
-  const known = new Set(run.hero.spellbook.map((s) => s.id));
-  const offers = SHRINE_OFFER_IDS.filter((id) => !known.has(id) && SPELLS.some((s) => s.id === id));
+  const offers = (engine.pendingRewards?.(run) ?? []).filter(
+    (r): r is LearnOffer => r.kind === 'learn',
+  );
 
   return (
     <NodeScreenShell
@@ -34,20 +30,21 @@ export function ShrineScreen({
       {offers.length === 0 && (
         <p className="text-sm italic text-bone-500">You have learned all the shrine can teach.</p>
       )}
-      {offers.map((spellId) => {
-        const s = spellLookup(spellId)!;
-        const cost = learnCost(spellId);
+      {offers.map((offer) => {
+        const s = spellLookup(offer.spellId);
+        if (!s) return null;
+        const affordable = run.gold >= offer.cost;
         return (
           <OfferTile
-            key={spellId}
+            key={offer.spellId}
             testid="shrine-offer"
-            dataAttrs={{ 'data-spell-id': spellId }}
+            dataAttrs={{ 'data-spell-id': offer.spellId }}
             imageRef={s.imageRef}
             name={s.name}
             detail={`${s.school} · L${s.level} · ${s.manaCost} mana`}
-            cost={cost}
-            affordable={run.gold >= cost}
-            onClick={() => onLearn(spellId)}
+            cost={offer.cost}
+            affordable={affordable}
+            onClick={() => onLearn(offer.spellId)}
           />
         );
       })}

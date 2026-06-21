@@ -1,16 +1,12 @@
-// DWELLING — recruit a fresh stack into the army. The dwelling offers a couple
-// of undead at a per-creature gold cost; you take a bundle. Gold-gated: an
-// unaffordable offer is dimmed and inert. Reuses the reward-screen chrome.
-import { creatureLookup, dwellingCost, type RunState } from '../engine';
+// DWELLING — recruit a fresh stack into the army. The engine rolls the
+// dwelling's offers into run.pendingRewards (kind 'recruit', each carrying a
+// creatureId, count and gold cost) and strictly validates the selection against
+// them. We render whatever the engine offers; an unaffordable offer is dimmed
+// and inert. Reuses the reward-screen chrome.
+import { creatureLookup, engine, type RewardChoice, type RunState } from '../engine';
 import { NodeScreenShell, OfferTile } from './NodeScreenShell';
 
-// What each dwelling offers (deterministic per content; the mock surfaces a
-// fixed Necropolis menu — the real engine will roll these from the node).
-const DWELLING_OFFERS: { creatureId: string; count: number }[] = [
-  { creatureId: 'necropolis_skeleton', count: 20 },
-  { creatureId: 'necropolis_walking_dead', count: 8 },
-  { creatureId: 'necropolis_wight', count: 5 },
-];
+type RecruitOffer = Extract<RewardChoice, { kind: 'recruit' }>;
 
 export function DwellingScreen({
   run,
@@ -21,6 +17,10 @@ export function DwellingScreen({
   onRecruit: (creatureId: string, count: number) => void;
   onSkip: () => void;
 }) {
+  const offers = (engine.pendingRewards?.(run) ?? []).filter(
+    (r): r is RecruitOffer => r.kind === 'recruit',
+  );
+
   return (
     <NodeScreenShell
       title="The Boneyard Dwelling"
@@ -28,21 +28,24 @@ export function DwellingScreen({
       gold={run.gold}
       onSkip={onSkip}
     >
-      {DWELLING_OFFERS.map(({ creatureId, count }) => {
-        const c = creatureLookup(creatureId);
+      {offers.length === 0 && (
+        <p className="text-sm italic text-bone-500">The dwelling stands silent.</p>
+      )}
+      {offers.map((offer) => {
+        const c = creatureLookup(offer.creatureId);
         if (!c) return null;
-        const cost = dwellingCost(c.tier) * count;
+        const affordable = run.gold >= offer.cost;
         return (
           <OfferTile
-            key={creatureId}
+            key={offer.creatureId}
             testid="dwelling-offer"
-            dataAttrs={{ 'data-creature-id': creatureId }}
+            dataAttrs={{ 'data-creature-id': offer.creatureId }}
             imageRef={c.imageRef}
-            name={`${c.name} ×${count}`}
+            name={`${c.name} ×${offer.count}`}
             detail={`A${c.attack} D${c.defense} HP${c.hp} · spd ${c.speed}`}
-            cost={cost}
-            affordable={run.gold >= cost}
-            onClick={() => onRecruit(creatureId, count)}
+            cost={offer.cost}
+            affordable={affordable}
+            onClick={() => onRecruit(offer.creatureId, offer.count)}
           />
         );
       })}

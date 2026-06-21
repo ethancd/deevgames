@@ -16,6 +16,15 @@ import { HeroDollFull } from '../src/components/HeroDoll';
 
 const alive = (stacks: Stack[]) => stacks.filter((s) => s.count > 0);
 
+// A run standing on a node of `type`, with its offers rolled into
+// pendingRewards (the mock + real engine both roll economy offers on chooseNode;
+// the node screens render and dispatch against those offers).
+function nodeRun(type: RunState['map'][number]['type'], seed: string): RunState {
+  const start = mockEngine.startRun(seed);
+  const node = start.map.find((n) => n.type === type)!;
+  return mockEngine.chooseNode(start, node.id);
+}
+
 // A run sitting in a fresh combat at the first combat node.
 function combatRun(seed = 'screen-combat'): RunState {
   let run = mockEngine.startRun(seed);
@@ -205,7 +214,9 @@ describe('HeroDoll equip', () => {
 
 describe('economy node screens (gold-gated)', () => {
   it('Dwelling: affordable offers enabled, recruit dispatches', () => {
-    const run = mockEngine.startRun('dwell-seed');
+    // Offers are rolled into pendingRewards on chooseNode; the screen renders
+    // them. Ensure gold so at least one offer is affordable.
+    const run = { ...nodeRun('dwelling', 'dwell-seed'), gold: 1000 };
     let recruited: { id: string; count: number } | null = null;
     render(
       <DwellingScreen
@@ -222,15 +233,16 @@ describe('economy node screens (gold-gated)', () => {
   });
 
   it('Dwelling: an unaffordable offer is disabled', () => {
-    const run = { ...mockEngine.startRun('dwell-poor'), gold: 0 };
+    const run = { ...nodeRun('dwelling', 'dwell-poor'), gold: 0 };
     render(<DwellingScreen run={run} onRecruit={() => {}} onSkip={() => {}} />);
     const offers = screen.getAllByTestId('dwelling-offer');
+    expect(offers.length).toBeGreaterThan(0);
     expect(offers.every((o) => o.getAttribute('data-affordable') === 'false')).toBe(true);
     offers.forEach((o) => expect(o).toBeDisabled());
   });
 
   it('Altar: previews before→after and upgrades', () => {
-    const run = mockEngine.startRun('altar-seed');
+    const run = { ...nodeRun('altar', 'altar-seed'), gold: 5000 };
     let upgraded: string | null = null;
     render(<AltarScreen run={run} onUpgrade={(id) => (upgraded = id)} onSkip={() => {}} />);
     const offers = screen.getAllByTestId('altar-offer');
@@ -243,7 +255,7 @@ describe('economy node screens (gold-gated)', () => {
   });
 
   it('Shrine: learn a spell dispatches', () => {
-    const run = mockEngine.startRun('shrine-seed');
+    const run = { ...nodeRun('shrine', 'shrine-seed'), gold: 1000 };
     let learned: string | null = null;
     render(<ShrineScreen run={run} onLearn={(id) => (learned = id)} onSkip={() => {}} />);
     const offers = screen.getAllByTestId('shrine-offer');
@@ -254,7 +266,7 @@ describe('economy node screens (gold-gated)', () => {
   });
 
   it('Merchant: buy an artifact dispatches; gold gating respected', () => {
-    const run = mockEngine.startRun('merch-seed');
+    const run = { ...nodeRun('merchant', 'merch-seed'), gold: 1000 };
     let bought: string | null = null;
     render(<MerchantScreen run={run} onBuy={(id) => (bought = id)} onSkip={() => {}} />);
     const offers = screen.getAllByTestId('merchant-offer');
@@ -265,7 +277,7 @@ describe('economy node screens (gold-gated)', () => {
   });
 
   it('node screens have a Press-on skip', () => {
-    const run = mockEngine.startRun('skip-seed');
+    const run = nodeRun('dwelling', 'skip-seed');
     let skipped = false;
     render(<DwellingScreen run={run} onRecruit={() => {}} onSkip={() => (skipped = true)} />);
     fireEvent.click(screen.getByTestId('node-skip'));
@@ -274,12 +286,10 @@ describe('economy node screens (gold-gated)', () => {
 });
 
 describe('App routes economy nodes to their screens', () => {
-  it('routes to a dwelling/altar/shrine/merchant when standing on one', () => {
-    // Drive App into a node via the engine, then verify the right screen mounts.
-    // We start a run and walk into each node type by manipulating the route via
-    // the engine + a manual render is complex; instead assert the within() of a
-    // directly-rendered node screen carries its heading.
-    const run = mockEngine.startRun('route-seed');
+  it('routes to a dwelling when standing on one with offers pending', () => {
+    // The dwelling's offers are rolled into pendingRewards by chooseNode; the
+    // screen renders them under the node-offers grid.
+    const run = nodeRun('dwelling', 'route-seed');
     render(<DwellingScreen run={run} onRecruit={() => {}} onSkip={() => {}} />);
     expect(within(screen.getByTestId('node-offers')).getAllByTestId('dwelling-offer').length).toBeGreaterThan(0);
   });

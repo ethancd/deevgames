@@ -1,18 +1,27 @@
 // Integration smoke for the app↔engine seam (packages/app/src/engine).
 //
-// The UI only ever touches the engine through this seam. Today the seam resolves
-// to the fixture-backed ARMY mock (USE_REAL_ENGINE=false); at integration the
-// orchestrator flips it to the rebuilt @mms/engine, and this test should keep
-// passing unchanged because both sides implement the same pinned EngineApi.
+// The UI only ever touches the engine through this seam, which now resolves to
+// the rebuilt REAL @mms/engine (USE_REAL_ENGINE=true). Both the real engine and
+// the mock implement the same pinned EngineApi, so this drive exercises the
+// real engine end to end through the seam.
 //
 // This drives a FULL army battle through the seam — commandStack → castSpell →
 // endPlayerTurn — and resolves nodes (incl. the pickReward choice-OBJECT path
 // the seam translates), without importing @mms/engine directly.
 import { describe, it, expect } from 'vitest';
 import { engine } from '../src/engine';
-import type { Stack } from '../src/engine';
+import type { CombatState, Stack } from '../src/engine';
 
 const alive = (stacks: Stack[]) => stacks.filter((s) => s.count > 0);
+
+// The real engine tracks "commanded this turn" in combat.actedStackIds (an
+// engine-internal extension of the pinned CombatState); the mock uses the
+// per-stack `hasActed` flag. Read both so the drive works under either engine.
+function actedIds(combat: CombatState): Set<string> {
+  const fromList = (combat as unknown as { actedStackIds?: string[] }).actedStackIds ?? [];
+  const fromFlags = combat.yourArmy.stacks.filter((s) => s.hasActed).map((s) => s.id);
+  return new Set([...fromList, ...fromFlags]);
+}
 
 describe('app ↔ engine seam (army)', () => {
   it('drives a seeded army battle + reward resolution without throwing', () => {
@@ -38,7 +47,8 @@ describe('app ↔ engine seam (army)', () => {
             continue;
           }
         }
-        const me = combat.yourArmy.stacks.find((s) => s.count > 0 && !s.hasActed);
+        const acted = actedIds(combat);
+        const me = combat.yourArmy.stacks.find((s) => s.count > 0 && !acted.has(s.id));
         if (me) {
           const targets = engine.legalTargets(run, me.id);
           run = targets.length
@@ -51,16 +61,22 @@ describe('app ↔ engine seam (army)', () => {
         continue;
       }
 
-      // On a node: take a pending reward by its OBJECT (the seam's choice→index
-      // translation path), else press on through an economy node.
+      // On a node with pending offers (post-combat spoils OR an economy node):
+      // take an affordable one by its OBJECT — exercises the seam's choice→index
+      // translation and the validated recruit/learn/buy/upgrade path. We prefer
+      // a free choice (gold/raise), else an affordable purchase, else skip — the
+      // engine strictly rejects an unaffordable selection. A rest/cleared node
+      // carries no offers and we just move on.
       const pending = engine.pendingRewards?.(run) ?? null;
       if (pending && pending.length > 0) {
-        run = engine.pickReward(run, pending[0]);
-        resolvedANode = true;
-        continue;
-      }
-      if (run.currentNodeId != null) {
-        run = engine.pickReward(run, { kind: 'skip' });
+        const cost = (c: (typeof pending)[number]) =>
+          'cost' in c ? (c as { cost: number }).cost : 0;
+        const free = pending.find((c) => c.kind === 'gold' || c.kind === 'raise');
+        const affordable = pending.find(
+          (c) => c.kind !== 'skip' && cost(c) <= run.gold,
+        );
+        const choice = free ?? affordable ?? { kind: 'skip' as const };
+        run = engine.pickReward(run, choice);
         resolvedANode = true;
         continue;
       }

@@ -66,6 +66,19 @@ function clone<T>(v: T): T {
   return JSON.parse(JSON.stringify(v));
 }
 
+// The mock stores rolled node offers on `run.pendingRewards` — the SAME field
+// the real engine uses (an additive field; the pinned app-contract RunState is a
+// subset, so this is harmless). Storing them here means the live seam's
+// pendingRewards() resolves them identically whether the run was built by the
+// mock or the real engine. The node screens render and dispatch against them.
+type RunWithPending = RunState & { pendingRewards?: RewardChoice[] | null };
+function setPending(run: RunState, rewards: RewardChoice[] | null): void {
+  (run as RunWithPending).pendingRewards = rewards;
+}
+function getPending(run: RunState): RewardChoice[] | null {
+  return (run as RunWithPending).pendingRewards ?? null;
+}
+
 // ---------------------------------------------------------------------------
 // Content adapters — turn @mms/data records into army-contract objects.
 // ---------------------------------------------------------------------------
@@ -461,6 +474,73 @@ function syncArmyFromCombat(run: RunState): void {
 }
 
 // ---------------------------------------------------------------------------
+// Node offer rolls (deterministic) — mirror the real engine's pendingRewards
+// shapes so the screens render the same kinds of offers under either engine.
+// ---------------------------------------------------------------------------
+const BASE_CREATURES = srcCreatures.filter(
+  (c) => c.faction === 'Necropolis' && !c.upgraded,
+);
+
+function pick<T>(arr: T[], rng: () => number): T {
+  return arr[Math.min(arr.length - 1, Math.floor(rng() * arr.length))];
+}
+
+function rollDwelling(rng: () => number): RewardChoice[] {
+  // A couple of distinct recruit offers from the base Necropolis roster.
+  const pool = BASE_CREATURES.filter((c) => c.tier <= 5);
+  const out: RewardChoice[] = [];
+  const seen = new Set<string>();
+  for (let i = 0; i < 3 && pool.length > 0; i++) {
+    const c = pick(pool, rng);
+    if (seen.has(c.id)) continue;
+    seen.add(c.id);
+    const count = rngInt(rng, 3, 8);
+    out.push({ kind: 'recruit', creatureId: c.id, count, cost: dwellingCost(c.tier) * count });
+  }
+  out.push({ kind: 'skip' });
+  return out;
+}
+
+function rollAltar(run: RunState, _rng: () => number): RewardChoice[] {
+  const out: RewardChoice[] = [];
+  for (const s of run.army) {
+    const up = srcCreatures.find((c) => c.upgradeOf === s.creatureId);
+    if (up) out.push({ kind: 'upgrade', stackId: s.id, toCreatureId: up.id, cost: upgradeCost(run, s.id) });
+  }
+  out.push({ kind: 'skip' });
+  return out;
+}
+
+function rollShrine(run: RunState, rng: () => number): RewardChoice[] {
+  const known = new Set(run.hero.spellbook.map((s) => s.id));
+  const pool = srcSpells.filter((s) => s.isCombat && !known.has(s.id));
+  if (pool.length === 0) return [{ kind: 'skip' }];
+  const out: RewardChoice[] = [];
+  const seen = new Set<string>();
+  for (let i = 0; i < 3 && pool.length > 0; i++) {
+    const s = pick(pool, rng);
+    if (seen.has(s.id)) continue;
+    seen.add(s.id);
+    out.push({ kind: 'learn', spellId: s.id, cost: s.manaCost * 8 });
+  }
+  out.push({ kind: 'skip' });
+  return out;
+}
+
+function rollMerchant(rng: () => number): RewardChoice[] {
+  const out: RewardChoice[] = [];
+  const seen = new Set<string>();
+  for (let i = 0; i < 3 && srcArtifacts.length > 0; i++) {
+    const a = pick(srcArtifacts as SrcArtifact[], rng);
+    if (seen.has(a.id)) continue;
+    seen.add(a.id);
+    out.push({ kind: 'buy', artifactId: a.id, slot: a.slot as ArtifactSlot, cost: artifactCost(a.id) });
+  }
+  out.push({ kind: 'skip' });
+  return out;
+}
+
+// ---------------------------------------------------------------------------
 // The engine implementation.
 // ---------------------------------------------------------------------------
 class MockEngine implements EngineApi, EngineRewardSource {
@@ -494,11 +574,20 @@ class MockEngine implements EngineApi, EngineRewardSource {
     const node = next.map.find((n) => n.id === nodeId);
     if (!node) return next;
     next.currentNodeId = nodeId;
+    setPending(next, null);
     if (node.type === 'combat' || node.type === 'elite' || node.type === 'boss') {
       const rng = mulberry32(hashSeed(run.seed + nodeId));
       next.combat = startCombat(next.army, node.type, rng, next.hero);
     } else {
-      next.combat = null; // dwelling/altar/shrine/merchant/rest -> interaction screen
+      // dwelling/altar/shrine/merchant roll their offers into pendingRewards,
+      // exactly like the real engine — the node screens render those offers and
+      // dispatch the matching op. (rest carries no offers.)
+      next.combat = null;
+      const rng = mulberry32(hashSeed(run.seed + nodeId + 'offers'));
+      if (node.type === 'dwelling') setPending(next, rollDwelling(rng));
+      else if (node.type === 'altar') setPending(next, rollAltar(next, rng));
+      else if (node.type === 'shrine') setPending(next, rollShrine(next, rng));
+      else if (node.type === 'merchant') setPending(next, rollMerchant(rng));
     }
     return next;
   }
@@ -719,9 +808,9 @@ class MockEngine implements EngineApi, EngineRewardSource {
     if (node.type === 'rest') {
       return [{ kind: 'gold', amount: 40 }, { kind: 'skip' }];
     }
-    // dwelling/altar/shrine/merchant are handled by their own node screens,
-    // which call recruit/upgrade/learn/buy directly. No generic reward list.
-    return null;
+    // dwelling/altar/shrine/merchant surface their rolled offers (set by
+    // chooseNode); the node screens render and dispatch against these.
+    return getPending(run);
   }
 
   legalSpellTargets(run: RunState, spellId: string): string[] {
@@ -740,6 +829,7 @@ class MockEngine implements EngineApi, EngineRewardSource {
     if (run.combat) syncArmyFromCombat(run);
     run.currentNodeId = null;
     run.combat = null;
+    setPending(run, null);
     if (wasBoss) run.outcome = 'won';
     return run;
   }

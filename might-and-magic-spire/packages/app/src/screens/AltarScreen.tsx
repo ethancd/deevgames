@@ -1,13 +1,13 @@
 // ALTAR — upgrade one of your stacks to its higher form (Skeleton → Skeleton
-// Warrior, etc.). Each upgradeable stack shows a before→after stat preview and
-// a gold cost. Stacks with no upgrade form are listed as already-ascended.
-import { CREATURES, creatureLookup, upgradeCost, type RunState } from '../engine';
+// Warrior, etc.). The engine rolls one 'upgrade' offer per upgradeable stack
+// into run.pendingRewards (each carrying the stackId, the target creature id and
+// a gold cost) and validates the selection against them. Each offer shows a
+// before→after stat preview. Gold-gated.
+import { creatureLookup, engine, type RewardChoice, type RunState } from '../engine';
 import { NodeScreenShell } from './NodeScreenShell';
 import { ContentImage } from '../chrome/ContentImage';
 
-function upgradeOf(creatureId: string) {
-  return CREATURES.find((c) => c.upgradeOf === creatureId);
-}
+type UpgradeOffer = Extract<RewardChoice, { kind: 'upgrade' }>;
 
 export function AltarScreen({
   run,
@@ -18,7 +18,9 @@ export function AltarScreen({
   onUpgrade: (stackId: string) => void;
   onSkip: () => void;
 }) {
-  const upgradeable = run.army.filter((s) => !!upgradeOf(s.creatureId));
+  const offers = (engine.pendingRewards?.(run) ?? []).filter(
+    (r): r is UpgradeOffer => r.kind === 'upgrade',
+  );
 
   return (
     <NodeScreenShell
@@ -27,23 +29,24 @@ export function AltarScreen({
       gold={run.gold}
       onSkip={onSkip}
     >
-      {upgradeable.length === 0 && (
+      {offers.length === 0 && (
         <p className="text-sm italic text-bone-500">Every stack has already ascended.</p>
       )}
-      {upgradeable.map((stack) => {
-        const from = creatureLookup(stack.creatureId)!;
-        const to = upgradeOf(stack.creatureId)!;
-        const cost = upgradeCost(run, stack.id);
-        const affordable = run.gold >= cost;
+      {offers.map((offer) => {
+        const stack = run.army.find((s) => s.id === offer.stackId);
+        const from = stack ? creatureLookup(stack.creatureId) : undefined;
+        const to = creatureLookup(offer.toCreatureId);
+        if (!stack || !from || !to) return null;
+        const affordable = run.gold >= offer.cost;
         return (
           <button
-            key={stack.id}
+            key={offer.stackId}
             type="button"
             data-testid="altar-offer"
-            data-stack-id={stack.id}
+            data-stack-id={offer.stackId}
             data-affordable={affordable ? 'true' : 'false'}
             disabled={!affordable}
-            onClick={() => onUpgrade(stack.id)}
+            onClick={() => onUpgrade(offer.stackId)}
             className={[
               'flex w-44 flex-col items-center gap-2 rounded-lg border bg-grave-700 p-3 verd-frame transition',
               affordable ? 'border-verd-500 active:scale-95' : 'border-grave-600 opacity-45 grayscale',
@@ -65,7 +68,7 @@ export function AltarScreen({
               A{from.attack}/D{from.defense}/spd{from.speed} → A{to.attack}/D{to.defense}/spd{to.speed}
             </div>
             <div className={`mt-auto font-display text-xs ${affordable ? 'text-amber-300/90' : 'text-blood-400'}`}>
-              {cost} gold
+              {offer.cost} gold
             </div>
           </button>
         );

@@ -94,24 +94,30 @@ export default function App() {
 
   // Standing on a node (combat just won, or a non-combat node).
   if (node) {
-    // Post-combat / rest rewards surface through pendingRewards.
     const choices = pendingRewards();
-    if (choices.length > 0) {
-      return shell(<RewardScreen run={run} choices={choices} onPick={pickReward} />);
-    }
-    // Economy nodes route to their own screens.
     const skip = () => pickReward({ kind: 'skip' });
-    if (node.type === 'dwelling') {
-      return shell(<DwellingScreen run={run} onRecruit={recruit} onSkip={skip} />);
-    }
-    if (node.type === 'altar') {
-      return shell(<AltarScreen run={run} onUpgrade={upgrade} onSkip={skip} />);
-    }
-    if (node.type === 'shrine') {
-      return shell(<ShrineScreen run={run} onLearn={learn} onSkip={skip} />);
-    }
-    if (node.type === 'merchant') {
-      return shell(<MerchantScreen run={run} onBuy={buy} onSkip={skip} />);
+
+    // Economy nodes drive their OWN screens off pendingRewards (the engine rolls
+    // recruit/upgrade/learn/buy offers there and validates selections against
+    // them). The screen shows while offers are pending; once the player picks
+    // one or skips, pendingRewards clears and we fall through to the map. The
+    // bespoke economy screens take precedence over the generic reward screen.
+    if (choices.length > 0) {
+      if (node.type === 'dwelling') {
+        return shell(<DwellingScreen run={run} onRecruit={recruit} onSkip={skip} />);
+      }
+      if (node.type === 'altar') {
+        return shell(<AltarScreen run={run} onUpgrade={upgrade} onSkip={skip} />);
+      }
+      if (node.type === 'shrine') {
+        return shell(<ShrineScreen run={run} onLearn={learn} onSkip={skip} />);
+      }
+      if (node.type === 'merchant') {
+        return shell(<MerchantScreen run={run} onBuy={buy} onSkip={skip} />);
+      }
+
+      // Post-combat / rest spoils (gold / raise / skip) surface generically.
+      return shell(<RewardScreen run={run} choices={choices} onPick={pickReward} />);
     }
   }
 

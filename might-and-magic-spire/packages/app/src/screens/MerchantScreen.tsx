@@ -1,16 +1,11 @@
-// MERCHANT — buy an artifact for the hero's paper-doll. The pedlar offers a few
-// artifacts; buying one adds it to the hero (auto-equipped if its slot is free,
-// else stashed in the satchel to equip from the Hero Doll). Gold-gated; already-
-// owned artifacts are filtered out.
-import { ARTIFACTS, artifactCost, artifactLookup, ownedArtifacts, type RunState } from '../engine';
+// MERCHANT — buy an artifact for the hero's paper-doll. The engine rolls the
+// pedlar's offers into run.pendingRewards (kind 'buy', each carrying an
+// artifactId, slot and gold cost) and validates the selection against them.
+// Buying auto-equips into the artifact's slot. Gold-gated.
+import { artifactLookup, engine, type RewardChoice, type RunState } from '../engine';
 import { NodeScreenShell, OfferTile } from './NodeScreenShell';
 
-const MERCHANT_OFFER_IDS = [
-  'artifact_centaurs_axe',
-  'artifact_necklace_of_swiftness',
-  'artifact_ring_of_vitality',
-  'artifact_cloak_of_the_undead_king',
-];
+type BuyOffer = Extract<RewardChoice, { kind: 'buy' }>;
 
 export function MerchantScreen({
   run,
@@ -21,8 +16,9 @@ export function MerchantScreen({
   onBuy: (artifactId: string) => void;
   onSkip: () => void;
 }) {
-  const owned = new Set(ownedArtifacts(run).map((a) => a.id));
-  const offers = MERCHANT_OFFER_IDS.filter((id) => !owned.has(id) && ARTIFACTS.some((a) => a.id === id));
+  const offers = (engine.pendingRewards?.(run) ?? []).filter(
+    (r): r is BuyOffer => r.kind === 'buy',
+  );
 
   return (
     <NodeScreenShell
@@ -32,22 +28,23 @@ export function MerchantScreen({
       onSkip={onSkip}
     >
       {offers.length === 0 && (
-        <p className="text-sm italic text-bone-500">The pedlar has nothing left you do not own.</p>
+        <p className="text-sm italic text-bone-500">The pedlar has nothing left to sell.</p>
       )}
-      {offers.map((artifactId) => {
-        const a = artifactLookup(artifactId)!;
-        const cost = artifactCost(artifactId);
+      {offers.map((offer) => {
+        const a = artifactLookup(offer.artifactId);
+        if (!a) return null;
+        const affordable = run.gold >= offer.cost;
         return (
           <OfferTile
-            key={artifactId}
+            key={offer.artifactId}
             testid="merchant-offer"
-            dataAttrs={{ 'data-artifact-id': artifactId }}
+            dataAttrs={{ 'data-artifact-id': offer.artifactId }}
             imageRef={a.imageRef}
             name={a.name}
             detail={`${a.slot} · ${a.bonuses}`}
-            cost={cost}
-            affordable={run.gold >= cost}
-            onClick={() => onBuy(artifactId)}
+            cost={offer.cost}
+            affordable={affordable}
+            onClick={() => onBuy(offer.artifactId)}
           />
         );
       })}

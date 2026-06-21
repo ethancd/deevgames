@@ -1,78 +1,52 @@
 // THE ENGINE SEAM.
 //
-// The UI imports its engine EXCLUSIVELY from here. Today it resolves to the
-// fixture-backed ARMY mock (./mockEngine), which implements the pinned army
-// `EngineApi` from ./contract. At integration the orchestrator flips
-// USE_REAL_ENGINE to true to point at the rebuilt @mms/engine — and nothing in
-// the UI layer changes, because both sides implement the same pinned contract.
+// The UI imports its engine EXCLUSIVELY from here. It now resolves to the
+// rebuilt HoMM3-army `@mms/engine` (USE_REAL_ENGINE = true). Both the real
+// engine and the fixture mock implement the same pinned army `EngineApi` from
+// ./contract, so nothing in the UI layer changed when we flipped the flag — the
+// seam absorbs the few legitimate divergences between the app contract and the
+// engine's actual (positional / by-id) op signatures.
 //
-// IMPORTANT: this file deliberately does NOT `import '@mms/engine'` at module
-// scope. The currently-published @mms/engine is the OLD Slay-the-Spire build,
-// whose surface (playCard/endTurn/Enemy/CombatState.hand...) is incompatible
-// with the new army contract. Importing it would break typecheck. When the real
-// ARMY engine ships, the orchestrator: (1) sets USE_REAL_ENGINE = true, and
-// (2) restores the `realApi` block below (it is written against the EXPECTED
-// real-engine surface and kept here, behind the flag, as the integration spec).
-//
-// ── Integration assumptions the realApi block makes about the real engine ──
-// The real @mms/engine is expected to export PURE ops mirroring the contract,
-// but with two legitimate divergences the seam reconciles (same pattern as the
-// previous integration):
-//   1. pickReward — the engine consumes `pickReward(run, index)` indexing into
+// ── Divergences the seam reconciles ──
+//   1. commandStack — app passes a CommandOrder OBJECT; the engine is positional
+//      `commandStack(run, stackId, action, targetId?)`. We spread the order.
+//   2. legalTargets — the engine names it `legalCommandTargets`.
+//   3. recruit/upgrade/learn/buy — the engine validates the selection against
+//      `run.pendingRewards` via node-scoped ops `recruitAt/upgradeAt/learnAt/
+//      buyAt(run, nodeId, id)`. The seam routes through the current node id.
+//   4. equipArtifact — the engine takes an EQUIPMENT id (`equip_*`) or artifact
+//      id and a slot; the HeroDoll passes the equipment's `.id`, which the
+//      engine resolves. (Buying already auto-equips, so this is the move/re-slot
+//      path.)
+//   5. pickReward — the engine consumes `pickReward(run, index)` indexing into
 //      run.pendingRewards, while the app contract pins `pickReward(run, choice)`.
 //      We translate the app's choice OBJECT to the engine's INDEX here.
-//   2. id→display caches — node screens render creatures/artifacts/spells by id;
-//      the engine owns the canonical content. We seed caches from @mms/data so
-//      previews resolve regardless of which engine is live.
-//   3. legalTargets — if the real engine omits it, the seam falls back to a
-//      front-rank/shooter reach computation (mirrors the mock) so the UI's
-//      target-glow never goes dark.
+//   6. id→display caches — node screens render creatures/artifacts/spells by id;
+//      the engine owns the canonical content, surfaced here via its by-id
+//      lookups + content arrays (resolved through @mms/data).
+import * as real from '@mms/engine';
 import { mockEngine } from './mockEngine';
 import type {
+  ArtifactSlot,
+  CommandOrder,
   EngineApi,
   EngineRewardSource,
+  Equipment as AppEquipment,
   RewardChoice as AppRewardChoice,
   RunState as AppRunState,
 } from './contract';
 
-const USE_REAL_ENGINE = false;
+const USE_REAL_ENGINE = true;
 
 // ──────────────────────────────────────────────────────────────────────────
-// REAL-ENGINE ADAPTER (dormant until USE_REAL_ENGINE flips).
-//
-// Kept as a typed spec rather than live code so the app stays green against the
-// OLD @mms/engine. To activate at integration:
-//   • add `import * as real from '@mms/engine';` at the top of this file,
-//   • restore the body of `buildRealApi` below to call `real.*`,
-//   • set USE_REAL_ENGINE = true.
-// The expected real surface (pure (state,...args)->state) is:
-//   real.startRun(seed), real.legalNextNodes(run), real.chooseNode(run,nodeId),
-//   real.commandStack(run,stackId,order), real.castSpell(run,spellId,targetId?),
-//   real.endPlayerTurn(run), real.legalTargets(run,stackId),
-//   real.recruit/upgrade/learn/buy(run,...), real.equipArtifact(run,id,slot),
-//   real.pickReward(run, index|choice), and optional real.pendingRewards(run),
-//   real.legalSpellTargets(run,spellId).
+// The ACTUAL real-engine surface the seam binds to. The engine's RunState is a
+// structural SUPERSET of the app contract's RunState (extra internal fields),
+// so we cast at the boundary with `as unknown as`.
 // ──────────────────────────────────────────────────────────────────────────
-type RealModule = {
-  startRun(seed: string): AppRunState;
-  legalNextNodes(run: AppRunState): string[];
-  chooseNode(run: AppRunState, nodeId: string): AppRunState;
-  commandStack(run: AppRunState, stackId: string, order: unknown): AppRunState;
-  castSpell(run: AppRunState, spellId: string, targetId?: string): AppRunState;
-  endPlayerTurn(run: AppRunState): AppRunState;
-  legalTargets?(run: AppRunState, stackId: string): string[];
-  recruit(run: AppRunState, creatureId: string, count: number): AppRunState;
-  upgrade(run: AppRunState, stackId: string): AppRunState;
-  learn(run: AppRunState, spellId: string): AppRunState;
-  buy(run: AppRunState, artifactId: string): AppRunState;
-  equipArtifact(run: AppRunState, artifactId: string, slot: string): AppRunState;
-  pickReward(run: AppRunState, indexOrChoice: number | AppRewardChoice): AppRunState;
-  pendingRewards?(run: AppRunState): AppRewardChoice[] | null;
-  legalSpellTargets?(run: AppRunState, spellId: string): string[];
-};
+type RealRun = Parameters<typeof real.legalNextNodes>[0];
 
-// Translate an app choice OBJECT to the engine's pending-list INDEX, for engines
-// that pick rewards by index. (No-op-safe: returns -1 if not found.)
+// Translate an app choice OBJECT to the engine's pending-list INDEX. The engine
+// picks rewards by index into run.pendingRewards. (Returns -1 if not found.)
 function indexOfChoice(
   pending: AppRewardChoice[] | null | undefined,
   choice: AppRewardChoice,
@@ -99,70 +73,138 @@ function indexOfChoice(
   });
 }
 
-// Front-rank/shooter reach fallback if the real engine omits legalTargets.
-function reachFallback(run: AppRunState, stackId: string): string[] {
-  const c = run.combat;
-  if (!c || c.outcome !== 'ongoing' || c.whoseTurn !== 'player') return [];
-  const stack = c.yourArmy.stacks.find((s) => s.id === stackId);
-  if (!stack || stack.count <= 0 || stack.hasActed) return [];
-  const enemyAlive = c.enemyArmy.stacks.filter((s) => s.count > 0);
-  const shooter = stack.abilities.some((a) => /Ranged|Shooter/i.test(a));
-  if (shooter) return enemyAlive.map((s) => s.id);
-  const front = enemyAlive.filter((s) => s.rank === 'front');
-  return (front.length > 0 ? front : enemyAlive).map((s) => s.id);
-}
+// Build the real-engine-backed EngineApi. Casts marshal the structural superset
+// RunState across the seam boundary in both directions.
+function buildRealApi(): EngineApi & EngineRewardSource {
+  const toApp = (r: RealRun) => r as unknown as AppRunState;
+  const toReal = (r: AppRunState) => r as unknown as RealRun;
 
-// Build the real-engine-backed EngineApi. `real` is injected at integration;
-// kept as a factory so the dormant path type-checks without importing the
-// incompatible legacy @mms/engine.
-export function buildRealApi(real: RealModule): EngineApi & EngineRewardSource {
   return {
-    startRun: (seed) => real.startRun(seed),
-    legalNextNodes: (run) => real.legalNextNodes(run),
-    chooseNode: (run, nodeId) => real.chooseNode(run, nodeId),
-    commandStack: (run, stackId, order) => real.commandStack(run, stackId, order),
-    castSpell: (run, spellId, targetId) => real.castSpell(run, spellId, targetId),
-    endPlayerTurn: (run) => real.endPlayerTurn(run),
-    legalTargets: (run, stackId) =>
-      real.legalTargets ? real.legalTargets(run, stackId) : reachFallback(run, stackId),
-    recruit: (run, creatureId, count) => real.recruit(run, creatureId, count),
-    upgrade: (run, stackId) => real.upgrade(run, stackId),
-    learn: (run, spellId) => real.learn(run, spellId),
-    buy: (run, artifactId) => real.buy(run, artifactId),
-    equipArtifact: (run, artifactId, slot) => real.equipArtifact(run, artifactId, slot),
+    startRun: (seed) => toApp(real.startRun(seed)),
+    legalNextNodes: (run) => real.legalNextNodes(toReal(run)),
+    chooseNode: (run, nodeId) => toApp(real.chooseNode(toReal(run), nodeId)),
+
+    // combat — the engine is positional; spread the CommandOrder object.
+    commandStack: (run, stackId, order: CommandOrder) =>
+      toApp(real.commandStack(toReal(run), stackId, order.kind, order.targetId)),
+    castSpell: (run, spellId, targetId) =>
+      toApp(real.castSpell(toReal(run), spellId, targetId)),
+    endPlayerTurn: (run) => toApp(real.endPlayerTurn(toReal(run))),
+    legalTargets: (run, stackId) => real.legalCommandTargets(toReal(run), stackId),
+
+    // node interactions — node-scoped ops validate against pendingRewards.
+    recruit: (run, creatureId) =>
+      toApp(real.recruitAt(toReal(run), currentNodeId(run), creatureId)),
+    upgrade: (run, stackId) =>
+      toApp(real.upgradeAt(toReal(run), currentNodeId(run), stackId)),
+    learn: (run, spellId) =>
+      toApp(real.learnAt(toReal(run), currentNodeId(run), spellId)),
+    buy: (run, artifactId) =>
+      toApp(real.buyAt(toReal(run), currentNodeId(run), artifactId)),
+    equipArtifact: (run, equipmentId, slot) =>
+      toApp(real.equipArtifact(toReal(run), equipmentId, slot as ArtifactSlot)),
+
+    // rewards — translate the app's choice OBJECT to the engine's INDEX.
     pickReward: (run, choice) => {
-      // The real engine may pick by index; translate the app's choice object.
-      const pending = real.pendingRewards ? real.pendingRewards(run) : null;
-      const idx = indexOfChoice(pending, choice);
-      return real.pickReward(run, idx >= 0 ? idx : choice);
+      const pending = real.pendingRewards(toReal(run));
+      const idx = indexOfChoice(pending as AppRewardChoice[] | null, choice);
+      if (idx < 0) throw new Error(`pickReward: no matching offer for ${choice.kind}`);
+      return toApp(real.pickReward(toReal(run), idx));
     },
-    pendingRewards: (run) => (real.pendingRewards ? real.pendingRewards(run) : null),
-    legalSpellTargets: (run, spellId) =>
-      real.legalSpellTargets ? real.legalSpellTargets(run, spellId) : [],
+    pendingRewards: (run) =>
+      real.pendingRewards(toReal(run)) as AppRewardChoice[] | null,
+    legalSpellTargets: (run, spellId) => real.legalSpellTargets(toReal(run), spellId),
   };
 }
 
-// The live engine. USE_REAL_ENGINE is false today, so this is the army mock.
-// (When true, the orchestrator passes the imported real module to buildRealApi.)
+function currentNodeId(run: AppRunState): string {
+  if (run.currentNodeId == null) throw new Error('no current node');
+  return run.currentNodeId;
+}
+
+// The live engine.
 export const engine: EngineApi & EngineRewardSource = USE_REAL_ENGINE
-  ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    buildRealApi((globalThis as any).__MMS_REAL_ENGINE__ as RealModule)
+  ? buildRealApi()
   : mockEngine;
 
-// Content lookups the node screens use to render offers/previews by id. These
-// resolve through @mms/data and are engine-agnostic, so they work under either
-// engine. (Re-exported from the mock, which owns the @mms/data adapters.)
-export {
-  creatureLookup,
-  artifactLookup,
-  spellLookup,
-  ownedArtifacts,
-  dwellingCost,
-  upgradeCost,
-  artifactCost,
-  CREATURES,
-  ARTIFACTS,
-  SPELLS,
-} from './mockEngine';
+// ──────────────────────────────────────────────────────────────────────────
+// Content lookups + economy helpers the node screens use to render offers and
+// previews by id. Resolved against the REAL engine / @mms/data so they work
+// regardless of which engine backs `engine` above.
+// ──────────────────────────────────────────────────────────────────────────
+
+// Source-record arrays (creatures/spells/artifacts) the Codex + screens read.
+export const CREATURES = real.CREATURES;
+export const SPELLS = real.SPELLS;
+export const ARTIFACTS = real.ARTIFACTS;
+
+// id → Source record. The engine's by-id lookups span the whole corpus.
+export const creatureLookup = real.creatureById;
+export const spellLookup = real.spellById;
+export const artifactLookup = real.artifactById;
+
+// --- economy helpers -------------------------------------------------------
+// Costs are authored by the engine and surfaced on each offer's `cost` in
+// pendingRewards; the screens now read that directly. These helpers remain for
+// any preview math and resolve costs from the live node offers when present,
+// falling back to the engine's pricing constants.
+
+export function dwellingCost(tier: number): number {
+  return tier * real.RECRUIT_COST_PER_TIER;
+}
+
+export function upgradeCost(run: AppRunState, stackId: string): number {
+  const pending = engine.pendingRewards?.(run) ?? null;
+  const offer = pending?.find(
+    (r): r is Extract<AppRewardChoice, { kind: 'upgrade' }> =>
+      r.kind === 'upgrade' && r.stackId === stackId,
+  );
+  if (offer) return offer.cost;
+  const stack = run.army.find((s) => s.id === stackId);
+  return stack ? stack.tier * real.UPGRADE_COST_PER_TIER : 0;
+}
+
+export function artifactCost(artifactId: string): number {
+  const a = real.artifactById(artifactId) as { class?: string } | undefined;
+  return real.ARTIFACT_COST[a?.class ?? 'Treasure'] ?? 100;
+}
+
+/**
+ * The hero's currently-equipped artifacts, as app-contract Equipment. The
+ * HeroDoll satchel/equip flow and any "already owned" gate read this. The
+ * engine stores richer Equipment (description + parsed effects); we project it
+ * onto the app shape (`bonuses` <- description), keeping the engine equipment
+ * `.id` (e.g. `equip_*`) so the doll's equip dispatch round-trips through
+ * `real.equipArtifact`.
+ */
+export function ownedArtifacts(run: AppRunState): AppEquipment[] {
+  type AnyEquip = {
+    id: string;
+    name: string;
+    slot: ArtifactSlot;
+    rarity: AppEquipment['rarity'];
+    description?: string;
+    bonuses?: string;
+    imageRef: string;
+  };
+  const toApp = (e: AnyEquip): AppEquipment => ({
+    id: e.id,
+    name: e.name,
+    slot: e.slot,
+    rarity: e.rarity,
+    // Engine Equipment carries `description`; the app/mock contract uses
+    // `bonuses`. Accept either so this works under both engines.
+    bonuses: e.bonuses ?? e.description ?? '',
+    imageRef: e.imageRef,
+  });
+  const equipped = Object.values(run.hero.equipment).filter(
+    (e): e is NonNullable<typeof e> => !!e,
+  ) as unknown as AnyEquip[];
+  // The mock overflows bought-but-unequippable artifacts into a side bag; the
+  // real engine auto-equips on buy (no bag). Surface either so the HeroDoll's
+  // satchel/equip flow works under both engines.
+  const bag = ((run as unknown as { _bag?: AnyEquip[] })._bag ?? []);
+  return [...equipped, ...bag].map(toApp);
+}
 
 export * from './contract';

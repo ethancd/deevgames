@@ -2,12 +2,13 @@
 // screen). It browses the imported @mms/data corpus (creatures, spells,
 // artifacts, heroes) with the researcher's real art, and shows each record's
 // raw HoMM3 SOURCE stats side-by-side with the IN-GAME object the engine's
-// adapter turns it into (a CardDef for creatures, a Relic for artifacts/heroes).
+// adapter turns it into (a creature STACK, an artifact EQUIPMENT — the army
+// model; the old card/relic adapters were retired with the STS combat model).
 //
 // Editing a source value re-runs the adapter live, so you can see exactly how a
-// stat change moves the card numbers — the brief's "adapter is design, surface
-// it" made interactive. Edits are in-memory; "Export" downloads the edited
-// array as JSON to drop back into packages/data.
+// stat change moves the in-game numbers — the brief's "adapter is design,
+// surface it" made interactive. Edits are in-memory; "Export" downloads the
+// edited array as JSON to drop back into packages/data.
 import { useMemo, useState } from 'react';
 import {
   creatures as srcCreatures,
@@ -15,14 +16,13 @@ import {
   artifacts as srcArtifacts,
   heroes as srcHeroes,
 } from '@mms/data';
-import { adaptCreature, adaptArtifact, signatureRelicForHero } from '@mms/engine';
+import { adaptStack, adaptEquipment } from '@mms/engine';
 import type {
   SourceCreature,
   SourceSpell,
   SourceArtifact,
   SourceHero,
 } from '@mms/schema';
-import { Card } from '../components/Card';
 import { ContentImage } from '../chrome/ContentImage';
 
 type Tab = 'creatures' | 'spells' | 'artifacts' | 'heroes';
@@ -167,28 +167,7 @@ const RARITY_COLOR: Record<string, string> = {
   rare: 'text-amber-300',
 };
 
-function AdaptedCreature({ c }: { c: SourceCreature }) {
-  const card = adaptCreature(c);
-  const eff = card.effects[0];
-  return (
-    <div className="flex flex-col items-start gap-4 sm:flex-row">
-      <Card card={card} />
-      <StatTable
-        rows={[
-          ['Card id', <code className="text-xs text-verd-300">{card.id}</code>],
-          ['Cost', card.cost],
-          ['Type', card.type],
-          ['Rarity', <span className={RARITY_COLOR[card.rarity]}>{card.rarity}</span>],
-          ['Text', card.text],
-          ['Effect', `${eff.kind} ${eff.amount ?? ''} → ${eff.target ?? ''}`],
-          ['As enemy', `HP ${c.hp}, telegraphs ~${c.attack} dmg`],
-        ]}
-      />
-    </div>
-  );
-}
-
-function RelicTile({ imageRef, name }: { imageRef: string; name: string }) {
+function ContentTile({ imageRef, name }: { imageRef: string; name: string }) {
   return (
     <div className="flex w-28 flex-col items-center gap-2">
       <div className="h-16 w-16 overflow-hidden rounded-full border border-verd-500">
@@ -199,17 +178,50 @@ function RelicTile({ imageRef, name }: { imageRef: string; name: string }) {
   );
 }
 
-function AdaptedArtifact({ a }: { a: SourceArtifact }) {
-  const relic = adaptArtifact(a);
+function AdaptedCreature({ c }: { c: SourceCreature }) {
+  // The engine adapts a creature into a STACK (one unit shown here). Editing a
+  // source stat re-rolls the stack so you can see the in-game numbers move.
+  const stack = adaptStack(c, 1);
   return (
     <div className="flex flex-col items-start gap-4 sm:flex-row">
-      <RelicTile imageRef={relic.imageRef} name={relic.name} />
+      <ContentTile imageRef={stack.imageRef} name={stack.name} />
       <StatTable
         rows={[
-          ['Relic id', <code className="text-xs text-verd-300">{relic.id}</code>],
-          ['Rarity', <span className={RARITY_COLOR[relic.rarity]}>{relic.rarity}</span>],
-          ['Effect', `${relic.effect.kind}${'amount' in relic.effect ? ` (${relic.effect.amount})` : ''}`],
-          ['Description', relic.description],
+          ['Stack id', <code className="text-xs text-verd-300">{stack.id}</code>],
+          ['Tier', stack.tier],
+          ['Rank', stack.rank],
+          ['Attack', stack.attack],
+          ['Defense', stack.defense],
+          ['HP / creature', stack.maxHpPer],
+          ['Damage', `${stack.damageMin}–${stack.damageMax}`],
+          ['Speed', stack.speed],
+          ['Abilities', stack.abilities.join(', ') || '—'],
+        ]}
+      />
+    </div>
+  );
+}
+
+function AdaptedArtifact({ a }: { a: SourceArtifact }) {
+  const eq = adaptEquipment(a);
+  const deltas = Object.entries(eq.primaryDeltas)
+    .map(([k, v]) => `${(v as number) >= 0 ? '+' : ''}${v} ${k}`)
+    .join(', ');
+  const effects = eq.effects
+    .filter((e): e is Exclude<typeof e, { kind: 'none' }> => e.kind !== 'none')
+    .map((e) => `${e.kind} (${e.amount})`)
+    .join(', ');
+  return (
+    <div className="flex flex-col items-start gap-4 sm:flex-row">
+      <ContentTile imageRef={eq.imageRef} name={eq.name} />
+      <StatTable
+        rows={[
+          ['Equipment id', <code className="text-xs text-verd-300">{eq.id}</code>],
+          ['Slot', eq.slot],
+          ['Rarity', <span className={RARITY_COLOR[eq.rarity]}>{eq.rarity}</span>],
+          ['Primary deltas', deltas || '—'],
+          ['Effects', effects || '—'],
+          ['Bonuses', eq.description],
         ]}
       />
     </div>
@@ -217,16 +229,18 @@ function AdaptedArtifact({ a }: { a: SourceArtifact }) {
 }
 
 function AdaptedHero({ h }: { h: SourceHero }) {
-  const relic = signatureRelicForHero(h);
+  // Heroes are derived at run start (class + specialty -> primaries, starting
+  // army & skills), not adapted per-record. Surface the source levers here.
   return (
     <div className="flex flex-col items-start gap-4 sm:flex-row">
-      <RelicTile imageRef={relic.imageRef} name={relic.name} />
+      <ContentTile imageRef={h.imageRef} name={h.name} />
       <StatTable
         rows={[
-          ['Signature relic', <code className="text-xs text-verd-300">{relic.id}</code>],
-          ['Rarity', <span className={RARITY_COLOR[relic.rarity]}>{relic.rarity}</span>],
-          ['Effect', `${relic.effect.kind}${'amount' in relic.effect ? ` (${relic.effect.amount})` : ''}`],
-          ['Description', relic.description],
+          ['Hero id', <code className="text-xs text-verd-300">{h.id}</code>],
+          ['Class', h.heroClass],
+          ['Specialty', h.specialty],
+          ['Faction', h.faction],
+          ['Starting skills', h.startingSkills.join(', ') || '—'],
         ]}
       />
     </div>

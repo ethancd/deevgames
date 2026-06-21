@@ -107,6 +107,10 @@ export {
   ARMY_CAP,
   NECRO_BASE_PCT,
   NECRO_CAP,
+  RECRUIT_COST_PER_TIER,
+  UPGRADE_COST_PER_TIER,
+  SHRINE_COST_PER_LEVEL,
+  ARTIFACT_COST,
 } from "./run";
 
 // --- Content arrays + lookups for the Codex / app to reuse ---

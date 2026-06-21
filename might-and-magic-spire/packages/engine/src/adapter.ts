@@ -54,6 +54,7 @@ export function adaptStack(
   return {
     id: `stack_${tail(c.id)}${suffix}`,
     sourceId: c.id,
+    creatureId: c.id, // app-facing alias of sourceId (art lookup)
     name: c.name,
     tier: c.tier,
     upgraded: c.upgraded,
