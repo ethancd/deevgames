@@ -63,6 +63,20 @@ function ChoiceTile({
       </button>
     );
   }
+  if (choice.kind === 'gold') {
+    return (
+      <button
+        type="button"
+        data-testid="reward-gold"
+        onClick={onPick}
+        className="flex w-32 flex-col items-center gap-2 rounded-lg border border-bone-400 bg-grave-700 p-4 verd-frame active:scale-95"
+      >
+        <span className="text-2xl">⛃</span>
+        <div className="font-display text-sm engraved">Spoils</div>
+        <div className="text-[0.65rem] text-bone-300">{choice.amount} gold</div>
+      </button>
+    );
+  }
   return <GenericTile label="Move on" onPick={onPick} testid="reward-skip" />;
 }
 

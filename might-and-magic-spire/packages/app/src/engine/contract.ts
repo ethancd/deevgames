@@ -83,6 +83,7 @@ export interface RunState {
 export type RewardChoice =
   | { kind: 'card'; cardId: string }
   | { kind: 'relic'; relicId: string }
+  | { kind: 'gold'; amount: number }
   | { kind: 'heal'; amount: number }
   | { kind: 'skip' };
 
