@@ -32,3 +32,7 @@ package-lock.json
 # Build output
 dist/
 _site/
+
+# Claude Code on the web: transient agent worktrees (linked working trees,
+# never committed into the parent repo)
+.claude/worktrees/
