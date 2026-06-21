@@ -3,7 +3,13 @@
 import { useState } from 'react';
 import { SkullIcon } from '../chrome/icons';
 
-export function TitleScreen({ onStart }: { onStart: (seed: string) => void }) {
+export function TitleScreen({
+  onStart,
+  onOpenCodex,
+}: {
+  onStart: (seed: string) => void;
+  onOpenCodex?: () => void;
+}) {
   const [seed, setSeed] = useState('necropolis-1');
   return (
     <div className="flex h-full flex-col items-center justify-center bg-necropolis px-6 text-center">
@@ -37,6 +43,17 @@ export function TitleScreen({ onStart }: { onStart: (seed: string) => void }) {
       >
         Begin the Descent
       </button>
+
+      {onOpenCodex && (
+        <button
+          type="button"
+          data-testid="open-codex"
+          onClick={onOpenCodex}
+          className="mt-5 text-xs uppercase tracking-widest text-bone-600 underline-offset-4 hover:text-verd-300 hover:underline"
+        >
+          ✦ Codex — data explorer
+        </button>
+      )}
     </div>
   );
 }

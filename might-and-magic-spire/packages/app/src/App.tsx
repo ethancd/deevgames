@@ -6,6 +6,7 @@
 //   active combat     -> Combat (or Reward when combat just won)
 //   standing on node  -> Reward (rest/shop/event resolution)
 //   otherwise         -> Map
+import { useEffect, useState } from 'react';
 import { useRun } from './hooks/useRun';
 import { lookupCard, lookupRelic } from './engine';
 import { TitleScreen } from './screens/TitleScreen';
@@ -13,17 +14,31 @@ import { MapScreen } from './screens/MapScreen';
 import { CombatScreen } from './screens/CombatScreen';
 import { RewardScreen } from './screens/RewardScreen';
 import { OutcomeScreen } from './screens/OutcomeScreen';
+import { CodexScreen } from './screens/CodexScreen';
 
 export default function App() {
   const { run, startRun, chooseNode, playCard, endTurn, pickReward, pendingRewards, reset } =
     useRun();
 
+  // Hash route: #codex opens the data explorer/editor (a design tool, full-width
+  // and outside the phone shell). Everything else is the game.
+  const [hash, setHash] = useState(() => (typeof window !== 'undefined' ? window.location.hash : ''));
+  useEffect(() => {
+    const onHash = () => setHash(window.location.hash);
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
+  }, []);
+
   const shell = (child: React.ReactNode) => (
     <div className="mx-auto h-[100dvh] max-w-md overflow-hidden">{child}</div>
   );
 
+  if (hash.startsWith('#codex')) {
+    return <CodexScreen onExit={() => { window.location.hash = ''; }} />;
+  }
+
   if (!run) {
-    return shell(<TitleScreen onStart={startRun} />);
+    return shell(<TitleScreen onStart={startRun} onOpenCodex={() => { window.location.hash = '#codex'; }} />);
   }
 
   if (run.outcome === 'won' || run.outcome === 'lost') {
