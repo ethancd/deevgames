@@ -1,0 +1,401 @@
+[
+  {
+    "id": "spell_magic_arrow",
+    "name": "Magic Arrow",
+    "school": "All",
+    "level": 1,
+    "manaCost": 5,
+    "isCombat": true,
+    "description": "Deals direct magic damage to a single target.",
+    "effectTags": [
+      "damage",
+      "single-target"
+    ],
+    "imageRef": "spell_magic_arrow"
+  },
+  {
+    "id": "spell_curse",
+    "name": "Curse",
+    "school": "Fire",
+    "level": 1,
+    "manaCost": 6,
+    "isCombat": true,
+    "description": "Cursed creatures always inflict minimum damage with their attacks.",
+    "effectTags": [
+      "debuff",
+      "damage-reduction"
+    ],
+    "imageRef": "spell_curse"
+  },
+  {
+    "id": "spell_fire_wall",
+    "name": "Fire Wall",
+    "school": "Fire",
+    "level": 2,
+    "manaCost": 6,
+    "isCombat": true,
+    "description": "Creates a wall of fire; creatures passing through or standing in it take damage.",
+    "effectTags": [
+      "damage",
+      "area",
+      "terrain"
+    ],
+    "imageRef": "spell_fire_wall"
+  },
+  {
+    "id": "spell_blind",
+    "name": "Blind",
+    "school": "Fire",
+    "level": 2,
+    "manaCost": 10,
+    "isCombat": true,
+    "description": "Blinds a target stack so it cannot act until attacked or the spell ends.",
+    "effectTags": [
+      "disable",
+      "single-target"
+    ],
+    "imageRef": "spell_blind"
+  },
+  {
+    "id": "spell_fireball",
+    "name": "Fireball",
+    "school": "Fire",
+    "level": 3,
+    "manaCost": 15,
+    "isCombat": true,
+    "description": "Damages a target area in a small radius.",
+    "effectTags": [
+      "damage",
+      "area"
+    ],
+    "imageRef": "spell_fireball"
+  },
+  {
+    "id": "spell_inferno",
+    "name": "Inferno",
+    "school": "Fire",
+    "level": 4,
+    "manaCost": 16,
+    "isCombat": true,
+    "description": "Engulfs a large area in flame, damaging all stacks within it.",
+    "effectTags": [
+      "damage",
+      "area"
+    ],
+    "imageRef": "spell_inferno"
+  },
+  {
+    "id": "spell_armageddon",
+    "name": "Armageddon",
+    "school": "Fire",
+    "level": 5,
+    "manaCost": 24,
+    "isCombat": true,
+    "description": "Sears every creature on the battlefield, friend and foe alike, with fire.",
+    "effectTags": [
+      "damage",
+      "all-units"
+    ],
+    "imageRef": "spell_armageddon"
+  },
+  {
+    "id": "spell_shield",
+    "name": "Shield",
+    "school": "Earth",
+    "level": 1,
+    "manaCost": 5,
+    "isCombat": true,
+    "description": "Reduces damage taken from melee attacks.",
+    "effectTags": [
+      "buff",
+      "defense",
+      "single-target"
+    ],
+    "imageRef": "spell_shield"
+  },
+  {
+    "id": "spell_slow",
+    "name": "Slow",
+    "school": "Earth",
+    "level": 1,
+    "manaCost": 6,
+    "isCombat": true,
+    "description": "Reduces the speed of a target enemy stack.",
+    "effectTags": [
+      "debuff",
+      "speed",
+      "single-target"
+    ],
+    "imageRef": "spell_slow"
+  },
+  {
+    "id": "spell_stone_skin",
+    "name": "Stone Skin",
+    "school": "Earth",
+    "level": 1,
+    "manaCost": 5,
+    "isCombat": true,
+    "description": "Increases the defense of a target friendly stack.",
+    "effectTags": [
+      "buff",
+      "defense",
+      "single-target"
+    ],
+    "imageRef": "spell_stone_skin"
+  },
+  {
+    "id": "spell_death_ripple",
+    "name": "Death Ripple",
+    "school": "Earth",
+    "level": 2,
+    "manaCost": 10,
+    "isCombat": true,
+    "description": "Damages all living creatures on the battlefield; undead are immune.",
+    "effectTags": [
+      "damage",
+      "all-units",
+      "undead-synergy"
+    ],
+    "imageRef": "spell_death_ripple"
+  },
+  {
+    "id": "spell_animate_dead",
+    "name": "Animate Dead",
+    "school": "Earth",
+    "level": 3,
+    "manaCost": 15,
+    "isCombat": true,
+    "description": "Resurrects fallen undead creatures in a friendly stack.",
+    "effectTags": [
+      "heal",
+      "resurrect",
+      "undead-synergy",
+      "single-target"
+    ],
+    "imageRef": "spell_animate_dead"
+  },
+  {
+    "id": "spell_meteor_shower",
+    "name": "Meteor Shower",
+    "school": "Earth",
+    "level": 4,
+    "manaCost": 16,
+    "isCombat": true,
+    "description": "Calls down meteors on a target area, damaging all within it.",
+    "effectTags": [
+      "damage",
+      "area"
+    ],
+    "imageRef": "spell_meteor_shower"
+  },
+  {
+    "id": "spell_resurrection",
+    "name": "Resurrection",
+    "school": "Earth",
+    "level": 4,
+    "manaCost": 20,
+    "isCombat": true,
+    "description": "Restores a friendly stack, raising fallen creatures.",
+    "effectTags": [
+      "heal",
+      "resurrect",
+      "single-target"
+    ],
+    "imageRef": "spell_resurrection"
+  },
+  {
+    "id": "spell_implosion",
+    "name": "Implosion",
+    "school": "Earth",
+    "level": 5,
+    "manaCost": 30,
+    "isCombat": true,
+    "description": "Deals massive direct damage to a single target stack.",
+    "effectTags": [
+      "damage",
+      "single-target",
+      "nuke"
+    ],
+    "imageRef": "spell_implosion"
+  },
+  {
+    "id": "spell_haste",
+    "name": "Haste",
+    "school": "Air",
+    "level": 1,
+    "manaCost": 6,
+    "isCombat": true,
+    "description": "Increases the speed of a target friendly stack.",
+    "effectTags": [
+      "buff",
+      "speed",
+      "single-target"
+    ],
+    "imageRef": "spell_haste"
+  },
+  {
+    "id": "spell_disrupting_ray",
+    "name": "Disrupting Ray",
+    "school": "Air",
+    "level": 1,
+    "manaCost": 6,
+    "isCombat": true,
+    "description": "Lowers the defense of a target enemy stack.",
+    "effectTags": [
+      "debuff",
+      "defense",
+      "single-target"
+    ],
+    "imageRef": "spell_disrupting_ray"
+  },
+  {
+    "id": "spell_precision",
+    "name": "Precision",
+    "school": "Air",
+    "level": 2,
+    "manaCost": 8,
+    "isCombat": true,
+    "description": "Increases the damage of a friendly ranged stack.",
+    "effectTags": [
+      "buff",
+      "ranged",
+      "single-target"
+    ],
+    "imageRef": "spell_precision"
+  },
+  {
+    "id": "spell_lightning_bolt",
+    "name": "Lightning Bolt",
+    "school": "Air",
+    "level": 2,
+    "manaCost": 10,
+    "isCombat": true,
+    "description": "Strikes a single target with a bolt of lightning.",
+    "effectTags": [
+      "damage",
+      "single-target"
+    ],
+    "imageRef": "spell_lightning_bolt"
+  },
+  {
+    "id": "spell_chain_lightning",
+    "name": "Chain Lightning",
+    "school": "Air",
+    "level": 4,
+    "manaCost": 24,
+    "isCombat": true,
+    "description": "Strikes a target then arcs to nearby stacks, dealing diminishing damage.",
+    "effectTags": [
+      "damage",
+      "multi-target",
+      "chain"
+    ],
+    "imageRef": "spell_chain_lightning"
+  },
+  {
+    "id": "spell_titans_lightning_bolt",
+    "name": "Titan's Lightning Bolt",
+    "school": "Air",
+    "level": 5,
+    "manaCost": 30,
+    "isCombat": true,
+    "description": "Strikes a single target with a devastating lightning bolt.",
+    "effectTags": [
+      "damage",
+      "single-target",
+      "nuke"
+    ],
+    "imageRef": "spell_titans_lightning_bolt"
+  },
+  {
+    "id": "spell_bless",
+    "name": "Bless",
+    "school": "Water",
+    "level": 1,
+    "manaCost": 5,
+    "isCombat": true,
+    "description": "Blessed creatures always inflict maximum damage with their attacks.",
+    "effectTags": [
+      "buff",
+      "damage-increase",
+      "single-target"
+    ],
+    "imageRef": "spell_bless"
+  },
+  {
+    "id": "spell_cure",
+    "name": "Cure",
+    "school": "Water",
+    "level": 1,
+    "manaCost": 6,
+    "isCombat": true,
+    "description": "Heals a friendly stack and removes negative spell effects from it.",
+    "effectTags": [
+      "heal",
+      "dispel",
+      "single-target"
+    ],
+    "imageRef": "spell_cure"
+  },
+  {
+    "id": "spell_dispel",
+    "name": "Dispel",
+    "school": "Water",
+    "level": 1,
+    "manaCost": 5,
+    "isCombat": true,
+    "description": "Removes all active spell effects from a target stack.",
+    "effectTags": [
+      "dispel",
+      "single-target"
+    ],
+    "imageRef": "spell_dispel"
+  },
+  {
+    "id": "spell_weakness",
+    "name": "Weakness",
+    "school": "Water",
+    "level": 2,
+    "manaCost": 8,
+    "isCombat": true,
+    "description": "Reduces the attack of a target enemy stack.",
+    "effectTags": [
+      "debuff",
+      "attack",
+      "single-target"
+    ],
+    "imageRef": "spell_weakness"
+  },
+  {
+    "id": "spell_forgetfulness",
+    "name": "Forgetfulness",
+    "school": "Water",
+    "level": 2,
+    "manaCost": 8,
+    "isCombat": true,
+    "description": "A target ranged stack forgets how to shoot and must attack in melee.",
+    "effectTags": [
+      "debuff",
+      "ranged",
+      "single-target"
+    ],
+    "imageRef": "spell_forgetfulness"
+  },
+  {
+    "id": "spell_prayer",
+    "name": "Prayer",
+    "school": "Water",
+    "level": 3,
+    "manaCost": 16,
+    "isCombat": true,
+    "description": "Increases the attack, defense, and speed of a friendly stack.",
+    "effectTags": [
+      "buff",
+      "attack",
+      "defense",
+      "speed",
+      "single-target"
+    ],
+    "imageRef": "spell_prayer"
+  }
+]

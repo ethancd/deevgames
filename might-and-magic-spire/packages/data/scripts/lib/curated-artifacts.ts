@@ -1,0 +1,157 @@
+// Hand-authored HoMM3 artifact spread (Shadow of Death).
+//
+// Covers all FOUR classes (Treasure / Minor / Major / Relic) and a range of
+// slots. `bonuses` is the human-readable effect string (the adapter parses it);
+// `slot` is the equip slot. Includes the Necropolis signature relic, Cloak of
+// the Undead King, so the necro heroes have a thematic top-end artifact.
+
+import type { SourceArtifact } from "@mms/schema";
+
+export const artifacts: SourceArtifact[] = [
+  // ── Treasure ───────────────────────────────────────────────────────────
+  {
+    id: "artifact_centaurs_axe",
+    name: "Centaur's Axe",
+    class: "Treasure",
+    slot: "RightHand",
+    bonuses: "+2 Attack",
+    imageRef: "artifact_centaurs_axe",
+  },
+  {
+    id: "artifact_shield_of_the_dwarven_lords",
+    name: "Shield of the Dwarven Lords",
+    class: "Treasure",
+    slot: "LeftHand",
+    bonuses: "+2 Defense",
+    imageRef: "artifact_shield_of_the_dwarven_lords",
+  },
+  {
+    id: "artifact_ring_of_vitality",
+    name: "Ring of Vitality",
+    class: "Treasure",
+    slot: "Ring",
+    bonuses: "+1 Health point per creature",
+    imageRef: "artifact_ring_of_vitality",
+  },
+  {
+    id: "artifact_cape_of_conjuring",
+    name: "Cape of Conjuring",
+    class: "Treasure",
+    slot: "Neck",
+    bonuses: "Extends the duration of all spells cast by the hero",
+    imageRef: "artifact_cape_of_conjuring",
+  },
+  {
+    id: "artifact_speculum",
+    name: "Speculum",
+    class: "Treasure",
+    slot: "Misc",
+    bonuses: "Increases the hero's scouting radius",
+    imageRef: "artifact_speculum",
+  },
+
+  // ── Minor ──────────────────────────────────────────────────────────────
+  {
+    id: "artifact_helm_of_the_alabaster_unicorn",
+    name: "Helm of the Alabaster Unicorn",
+    class: "Minor",
+    slot: "Head",
+    bonuses: "+1 Knowledge",
+    imageRef: "artifact_helm_of_the_alabaster_unicorn",
+  },
+  {
+    id: "artifact_quiet_eye_of_the_dragon",
+    name: "Quiet Eye of the Dragon",
+    class: "Minor",
+    slot: "Ring",
+    bonuses: "+1 Attack, +1 Defense",
+    imageRef: "artifact_quiet_eye_of_the_dragon",
+  },
+  {
+    id: "artifact_necklace_of_swiftness",
+    name: "Necklace of Swiftness",
+    class: "Minor",
+    slot: "Neck",
+    bonuses: "+1 Speed to all creatures in the army",
+    imageRef: "artifact_necklace_of_swiftness",
+  },
+  {
+    id: "artifact_pendant_of_death",
+    name: "Pendant of Death",
+    class: "Minor",
+    slot: "Neck",
+    bonuses: "Protects the army from the Death Ripple spell",
+    imageRef: "artifact_pendant_of_death",
+  },
+
+  // ── Major ──────────────────────────────────────────────────────────────
+  {
+    id: "artifact_sword_of_hellfire",
+    name: "Sword of Hellfire",
+    class: "Major",
+    slot: "RightHand",
+    bonuses: "+6 Attack",
+    imageRef: "artifact_sword_of_hellfire",
+  },
+  {
+    id: "artifact_dragon_wing_tabard",
+    name: "Dragon Wing Tabard",
+    class: "Major",
+    slot: "Torso",
+    bonuses: "+3 to all primary skills",
+    imageRef: "artifact_dragon_wing_tabard",
+  },
+  {
+    id: "artifact_orb_of_the_firmament",
+    name: "Orb of the Firmament",
+    class: "Major",
+    slot: "Misc",
+    bonuses: "Increases the effectiveness of all Air spells cast by the hero",
+    imageRef: "artifact_orb_of_the_firmament",
+  },
+  {
+    id: "artifact_ring_of_the_wayfarer",
+    name: "Ring of the Wayfarer",
+    class: "Major",
+    slot: "Ring",
+    bonuses: "+1 Morale, increased movement on land",
+    imageRef: "artifact_ring_of_the_wayfarer",
+  },
+
+  // ── Relic ──────────────────────────────────────────────────────────────
+  {
+    id: "artifact_cloak_of_the_undead_king",
+    name: "Cloak of the Undead King",
+    class: "Relic",
+    slot: "Neck",
+    bonuses:
+      "Greatly improves Necromancy: raises additional and higher-tier undead after each battle",
+    imageRef: "artifact_cloak_of_the_undead_king",
+  },
+  {
+    id: "artifact_armor_of_the_damned",
+    name: "Armor of the Damned",
+    class: "Relic",
+    slot: "Torso",
+    bonuses:
+      "Casts Slow, Curse, Weakness, and Misfortune on all enemy stacks at the start of combat",
+    imageRef: "artifact_armor_of_the_damned",
+  },
+  {
+    id: "artifact_sword_of_judgement",
+    name: "Sword of Judgement",
+    class: "Relic",
+    slot: "RightHand",
+    bonuses: "+12 Attack, +12 Defense, +500 spell points",
+    imageRef: "artifact_sword_of_judgement",
+  },
+  {
+    id: "artifact_armageddons_blade",
+    name: "Armageddon's Blade",
+    class: "Relic",
+    slot: "RightHand",
+    bonuses:
+      "+3 to all primary skills; allows casting Armageddon as an expert; immunity to Armageddon",
+    imageRef: "artifact_armageddons_blade",
+  },
+];
