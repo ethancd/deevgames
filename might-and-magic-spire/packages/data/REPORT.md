@@ -1,132 +1,158 @@
-# @mms/data — Reconciliation Report (v0)
+# @mms/data — Reconciliation Report (LIVE re-run)
 
-Agent 1 (Researcher). Branch `worktree-agent-a1717609aa3572193`, rebased onto
-the Phase 0 schema contract (`claude/mms-orchestrator-phase-0-60vsr7`).
+Agent 1 (Researcher). Branch `leyline/mms-researcher-live`, built atop the v0
+researcher branch (`claude/mms-researcher`) and the Phase 0 schema contract.
 
-## Path taken: CURATED (scrape blocked by egress policy)
+## Path taken: LIVE SCRAPE (web access works this run)
 
-Outbound network in this build environment is restricted by an allowlist.
-`heroes.thelazy.net`, `mightandmagic.fandom.com`, and even `example.com` all
-return HTTP 403 — "Host not in allowlist". External scraping is impossible here.
+The v0 run shipped a curated dataset + a scrape/image pipeline that never got to
+run (the build sandbox returned HTTP 403 for every host). This run executed that
+pipeline against the **live** `heroes.thelazy.net` (HTTP 200). The parser — which
+had been written without ever seeing a real page — was rewritten against the real
+markup, every Necropolis creature was scraped and validated, scraped values were
+reconciled against and promoted over the curated ones, and all 72 manifest images
+are now **real artwork** downloaded from the source (zero placeholders).
 
-Per the brief, both paths were delivered:
+### What the pages actually look like (and why v0's parser found nothing)
 
-1. Scrape pipeline built as code (runs, fails politely, never crashes):
-   - `scripts/lib/http.ts` — cache-first fetcher: caches raw HTML to `.cache/`
-     (gitignored) before parsing, re-parses from cache on re-runs, throttles
-     live requests (1.5s), sends a descriptive User-Agent.
-   - `scripts/lib/parse.ts` — cheerio parser for thelazy infobox stat tables.
-   - `scripts/scrape.ts` — orchestrator: fetch -> cache -> parse ->
-     `SourceCreature.parse()` -> write `src/creatures.scraped.json` (a separate
-     file, never overwriting curated data — promotion is a human review step).
-     Today it reports "0 validated, 14 dropped (HTTP 403)" and exits cleanly.
-   - `scripts/images.ts` — image pass: download -> dedupe (content hash) ->
-     normalize to <=100x130 WebP; on download failure, writes a deterministic
-     solid-color placeholder so every ref still resolves.
+thelazy does NOT use a MediaWiki infobox/wikitable for creature stats. A creature
+URL (e.g. `/index.php/Skeleton`) is a *combined* base+upgrade page ("Skeleton and
+Skeleton Warrior") that renders each creature as a "card": a stack of
+absolutely-positioned `<div>` pairs (left-positioned label div beside a
+right-positioned value div) laid over a portrait. The v0 parser keyed on
+`table.infobox tr / th+td` and matched nothing. `parse.ts` was rewritten to:
+segment the page into cards at each "Attack Skill" label, pair label/value divs
+by document order, read the trailing special-ability note out of the card text,
+and select the base vs. upgrade card by the crawl-index `upgraded` flag.
 
-2. Curated Necropolis v0 dataset, hand-authored from HoMM3: Shadow of Death
-   stat tables, validated clean against `@mms/schema`. Source of truth until the
-   scrape hosts are reachable.
+## Creatures — 14/14 scraped + validated LIVE
 
-When the hosts become reachable: `pnpm --filter @mms/data scrape`, then diff
-`src/creatures.scraped.json` against `src/creatures.json` and reconcile.
+`pnpm scrape` -> **14 validated, 0 dropped**. Output written to
+`src/creatures.scraped.json` (committed for transparency), diffed against the
+curated `src/creatures.json`, and the authoritative scraped values were promoted
+to canonical. Curated wiring (`id` / `upgradeOf` upgrade arrows, `imageRef`) was
+identical to the scrape's and is preserved. `curated-creatures.ts` was updated to
+match so `build:data` stays idempotent with the live data.
 
-## Record counts (validated, written)
+attack / defense / hp / damageMin / damageMax / speed **all matched** the v0
+from-memory values exactly across all 14 creatures — good corroboration. The
+diffs that were promoted:
 
-| Type      | Written | Dropped | Expected (Necropolis v0)             |
-|-----------|---------|---------|--------------------------------------|
-| Creatures | 14      | 0       | 14 (7 base + 7 upgrade, tiers 1-7)   |
-| Heroes    | 14      | 0       | ~16 total (Necro/Death Knight)       |
-| Spells    | 27      | 0       | "solid spread" — combat, all schools |
-| Artifacts | 17      | 0       | spread across all 4 classes          |
-| Manifest  | 72      | —       | one per distinct imageRef            |
+| Creature | Field | Curated (memory) | Scraped (thelazy) | Promoted |
+|----------|-------|------------------|-------------------|----------|
+| Walking Dead | growth | 9 | **8** | yes |
+| Zombie | growth | 9 | **8** | yes |
+| Wight | abilities | (no Flying) | **adds "Flying"** | yes |
+| Wraith | abilities | (no Flying) | **adds "Flying"** | yes |
+| Vampire | growth | 5 | **4** | yes |
+| Vampire Lord | growth | 5 | **4** | yes |
+| Lich | growth | 4 | **3** | yes |
+| Power Lich | growth | 4 | **3** | yes |
+| Power Lich | abilities | had "24 shots" | **removed** | yes |
+| Black Knight | growth | 3 | **2** | yes |
+| Dread Knight | growth | 3 | **2** | yes |
+| Bone/Ghost Dragon | abilities | order Flying,Dragon | **order Dragon,Flying** | yes (cosmetic) |
 
-Necropolis-only is intentionally far fewer than the full game (~150 creatures /
-~70 spells / ~140 artifacts / ~150 heroes). Breadth (other factions) deferred.
+### Notable, re: items flagged in v0
 
-### Creatures — full Necropolis roster, upgrade arrows populated
+- **Wight / Wraith HP** (v0 low-confidence): the scraped **HP matched** curated
+  (18 / 18). The real surprise was abilities — both creatures **Fly** on the
+  page, which the from-memory set omitted. Promoted.
+- **Lich / Power Lich shot counts** (v0 low-confidence): the page's special-
+  ability note for the Lich line is "Undead. Shoots. Death Cloud attack." — it
+  does **not** list a "24 shots" ability. The v0 "24 shots" on Power Lich was a
+  from-memory embellishment and was **removed** to match the authoritative page.
+  (Shot *count* is presented elsewhere on the page as a stat, not an ability, and
+  the schema has no shot-count field, so it is intentionally not carried.) Both
+  Lich growths also corrected 4->3.
+- **Skeleton** still exactly matches the schema's `fixtureCreature` shape
+  (`necropolis_skeleton`, growth 12 — confirmed unchanged; schema tests 12/12).
 
-All 7 tiers, base + upgrade, `upgradeOf` set on every upgrade and `null` on
-every base:
+## Spells / Artifacts / Heroes — kept CURATED, spot-verified live
 
-| Tier | Base         | Upgrade (upgradeOf -> base) |
-|------|--------------|-----------------------------|
-| 1    | Skeleton     | Skeleton Warrior            |
-| 2    | Walking Dead | Zombie                      |
-| 3    | Wight        | Wraith                      |
-| 4    | Vampire      | Vampire Lord                |
-| 5    | Lich         | Power Lich                  |
-| 6    | Black Knight | Dread Knight                |
-| 7    | Bone Dragon  | Ghost Dragon                |
+These pages are NOT cleanly tabular either (no infobox/wikitable; spell and
+artifact data is free-text like `Class: Treasure Slot: Weapon Cost: 2000` and
+`School: all schools Level: 1st Cost: 5/4`). A full scrape would need bespoke
+per-field text parsing plus vocabulary mapping into the schema enums
+(`ArtifactSlot`, `SpellSchool`) for 27 + 17 + 14 records. Given the creature
+reconciliation + real-image work was the high-value core, these three sets were
+**kept curated** but spot-verified against the live pages:
 
-### Heroes
+- **Magic Arrow** — page says "School: all schools", "Level: 1st", "Cost: 5/4".
+  Matches curated (`All`, level 1, manaCost 5 = base/un-skilled). OK
+- **Galthran** — page: Death Knight, Skeleton specialty, Necromancy + Armorer
+  skills. Matches curated. OK
+- **Centaur's Axe** — page: "**Class: Treasure**", "+2 Attack", slot Weapon.
+  Curated `Treasure` / `+2 Attack` / `RightHand` is correct. **This confirms the
+  schema fixture's `class: "Minor"` is the discrepancy, not the data** (see
+  Flagged #1). OK
 
-8 Death Knights (might) + 6 Necromancers (magic). Each carries its HoMM3
-`specialty` (becomes the signature relic downstream) and two starting skills.
-Galthran matches the canonical fixture exactly.
+Curated artifact/spell/hero values are therefore trustworthy for v1; a full
+structured scrape of these is a clean follow-up if breadth is wanted.
 
-### Spells
+## Images — 72/72 REAL, 0 placeholders
 
-27 combat spells spanning all four schools (Air/Earth/Fire/Water) and one
-universal (All: Magic Arrow, matching the fixture), levels 1-5. Includes the
-Necropolis-flavoured set (Death Ripple, Animate Dead, Curse) plus the universal
-damage/buff/debuff spread.
+`pnpm images` now fetches each record's wiki page (cache-first), extracts the
+real artwork URL by name (`parseRecordImageUrl`: `Creature_*`, `Hero_*`,
+`Artifact_*` / `*-artif`, and bare `<Spell>.png`), downloads it, and converts to
+WebP at native resolution (capped at 256px; these are already small sprites).
+The v0 solid-colour placeholders are all replaced.
 
-### Artifacts
-
-17 artifacts across all four classes: Treasure (5), Minor (4), Major (4),
-Relic (4). Slots vary (Head/Neck/Torso/RightHand/LeftHand/Ring/Misc). Includes
-the Necropolis signature relic Cloak of the Undead King. Centaur's Axe matches
-the fixture id/name (class caveat below).
-
-## Dropped records
-
-None. Every authored record passed `Source*.parse()` and was written.
+- **72 real / 0 placeholders.** `src/placeholders.json` is now `[]`.
+- Manifest `width`/`height` are read back from the real files — **real
+  dimensions**, not the fixture 100x130 the frontend had assumed:
+  - Creatures: 100x130 (14)
+  - Heroes: 58x64 (14)
+  - Spells: 74x70 (26), 42x32 (1: Magic Arrow icon variant)
+  - Artifacts: 44x44 (16), 48x32 (1)
+  - **Overall range: 42–100 wide, 32–130 tall.**
+- Apostrophe gotcha fixed: MediaWiki file URLs encode `'` as `%27`, but JS
+  `encodeURIComponent` leaves `'` untouched — the three apostrophe artifacts
+  (Centaur's Axe, Armageddon's Blade, Titan's Lightning Bolt) failed until the
+  matcher was taught to try the `%27` spelling explicitly.
 
 ## Flagged for human review
 
-1. Images are placeholders. All 72 `assets/images/*.webp` are deterministic
-   solid-colour 100x130 WebPs (color seeded from the ref), generated because the
-   real images could not be downloaded (egress block). Refs listed in
-   `src/placeholders.json`. Replace by running `pnpm images` once the hosts are
-   reachable — the pipeline will fetch, normalize, and overwrite, then rewrite
-   `manifest.json` width/height from the real files. Each manifest `sourceUrl`
-   is the thelazy page (not a direct image URL); when wiring real downloads,
-   point `images.ts` at the parsed portrait URL (`parseCreatureImageUrl`).
+1. **Centaur's Axe class — schema fixture vs. reality.** The schema fixture in
+   `packages/schema` says `class: "Minor"`. The live thelazy page says
+   **`Class: Treasure`**, and the curated dataset uses Treasure (correct). The
+   discrepancy is in the *fixture*, not the data. Schema is the fixed contract
+   (not touched here) — if the fixture's "Minor" is wrong, that's a schema-owner
+   change to route through the orchestrator.
 
-2. Centaur's Axe class. The schema fixture says `class: "Minor"`. In HoMM3 SoD,
-   Centaur's Axe is a Treasure artifact. The curated dataset uses Treasure (the
-   accurate value). If the fixture's Minor is intentional, reconcile — surfaced
-   rather than silently changed.
+2. **Spells / Artifacts / Heroes still curated (spot-verified, not scraped).**
+   High confidence from spot checks, but not a wholesale live scrape. A bespoke
+   text parser for these pages is the follow-up to make them as authoritative as
+   the creatures now are.
 
-3. Creature stats are SoD values from memory, not scraped. Cross-check against
-   thelazy when reachable. Highest confidence: Skeleton, Vampire Lord, Bone/Ghost
-   Dragon. Lower confidence (verify damage/HP): Wight/Wraith HP, Lich/Power Lich
-   shot counts.
+3. **Lich shot count is not represented.** The schema has no shot-count field, so
+   the Lich line's ammo (a real stat on the page) isn't carried anywhere. If the
+   downstream adapter needs it, that's a schema addition.
 
-4. Hero starting skills are typical SoD loadouts; verify a few magic heroes'
-   second skill (Septienna->Scholar, Sandro->Sorcery) against the hero table.
-   Necromancy is listed for all Necropolis heroes (town innate); confirm whether
-   the downstream adapter wants it de-duplicated.
-
-5. Spell mana costs are base (un-skilled) costs. If the adapter needs per-skill
-   costs, that is a schema-level addition (route through the orchestrator); the
-   current schema has a single `manaCost`.
+4. **Spell mana costs are base (un-skilled).** thelazy shows "Cost: 5/4"
+   (basic/advanced). The schema has a single `manaCost`; curated uses the base
+   value. Per-skill costs would be a schema change.
 
 ## How to reproduce
 
 ```
-pnpm --filter @mms/data build:data   # validate curated -> src/*.json
-pnpm --filter @mms/data images        # image pass -> assets/images + manifest
-pnpm --filter @mms/data test          # 19 tests: validation + ref resolution
-pnpm --filter @mms/data scrape        # live pipeline (403 until egress opens)
+pnpm install
+pnpm --filter @mms/data scrape       # live: 14 validated, 0 dropped -> src/creatures.scraped.json
+pnpm --filter @mms/data build:data   # validate curated -> src/*.json (idempotent with scrape)
+pnpm --filter @mms/data images        # download real art -> assets/images + manifest dims
+pnpm --filter @mms/data test          # 19 tests: validation + ref resolution + on-disk files
 ```
+
+(`.cache/` holds the raw fetched HTML — gitignored, never committed. Re-runs of
+scrape/images read from cache and never re-hit the site.)
 
 ## Done-when checklist
 
 - [x] `pnpm --filter @mms/data test` green (19/19)
-- [x] Every imageRef resolves to a manifest entry (asserted at module load AND in tests)
-- [x] Every manifest localPath file exists on disk (asserted in tests)
-- [x] index.ts re-validates all JSON against the schema at import, throws on failure
-- [x] Scrape pipeline present (fetch->cache->parse->validate) and image pass present
-- [x] REPORT.md shows what is complete and what is thin
+- [x] `pnpm --filter @mms/schema test` green (12/12) — fixed contract intact
+- [x] 14/14 Necropolis creatures scraped + validated LIVE (0 dropped)
+- [x] Scraped stats reconciled and promoted to canonical `src/creatures.json`
+- [x] Skeleton still matches `fixtureCreature` (`necropolis_skeleton`)
+- [x] 72/72 real images downloaded; 0 placeholders; real dimensions in manifest
+- [x] Every imageRef resolves to a manifest entry that exists on disk
+- [x] All changes confined to `packages/data/**` + `assets/images/**`

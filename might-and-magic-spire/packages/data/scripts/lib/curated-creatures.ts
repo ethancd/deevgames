@@ -1,9 +1,13 @@
-// Hand-authored Necropolis creature roster (HoMM3: Shadow of Death stats).
+// Necropolis creature roster — RECONCILED against heroes.thelazy.net (live).
 //
-// Source of truth for v0 because the scrape hosts (heroes.thelazy.net, fandom)
-// are unreachable from the build environment (HTTP 403, egress allowlist). Stats
-// are transcribed from the HoMM3 SoD creature tables. When the scrape pipeline
-// can reach the sources, reconcile `pnpm scrape` output against these values.
+// History: originally hand-authored from memory (v0, when egress was blocked).
+// On the live re-run, `pnpm scrape` parsed the real thelazy creature cards and
+// every stat was diffed against these values; the authoritative scraped values
+// were promoted. Corrections applied from the page: weekly Growth (Walking
+// Dead/Zombie 9→8, Vampire/Lord 5→4, Lich/Power Lich 4→3, Black/Dread Knight
+// 3→2), Flying added to Wight/Wraith, and Power Lich's "24 shots" removed (not
+// listed as an ability on the page). attack/defense/hp/damage/speed all matched
+// memory exactly. Keep this file in sync with src/creatures.json (promoted).
 //
 // upgradeOf is the upgrade arrow the game runs on: every upgraded creature
 // points at the id of its base form; every base form is null.
@@ -51,7 +55,7 @@ export const necropolisCreatures: SourceCreature[] = [
     upgradeOf: null,
     attack: 5, defense: 5, hp: 15,
     damageMin: 2, damageMax: 3,
-    speed: 3, growth: 9,
+    speed: 3, growth: 8,
     abilities: ["Undead", "No morale penalty"],
     imageRef: "necropolis_walking_dead",
   },
@@ -64,7 +68,7 @@ export const necropolisCreatures: SourceCreature[] = [
     upgradeOf: "necropolis_walking_dead",
     attack: 5, defense: 5, hp: 20,
     damageMin: 2, damageMax: 3,
-    speed: 4, growth: 9,
+    speed: 4, growth: 8,
     abilities: ["Undead", "No morale penalty", "Disease"],
     imageRef: "necropolis_zombie",
   },
@@ -80,7 +84,7 @@ export const necropolisCreatures: SourceCreature[] = [
     attack: 7, defense: 7, hp: 18,
     damageMin: 3, damageMax: 5,
     speed: 5, growth: 7,
-    abilities: ["Undead", "No morale penalty", "Regeneration"],
+    abilities: ["Undead", "No morale penalty", "Flying", "Regeneration"],
     imageRef: "necropolis_wight",
   },
   {
@@ -93,7 +97,7 @@ export const necropolisCreatures: SourceCreature[] = [
     attack: 7, defense: 7, hp: 18,
     damageMin: 3, damageMax: 5,
     speed: 7, growth: 7,
-    abilities: ["Undead", "No morale penalty", "Regeneration", "Drains enemy mana"],
+    abilities: ["Undead", "No morale penalty", "Flying", "Regeneration", "Drains enemy mana"],
     imageRef: "necropolis_wraith",
   },
 
@@ -107,7 +111,7 @@ export const necropolisCreatures: SourceCreature[] = [
     upgradeOf: null,
     attack: 10, defense: 9, hp: 30,
     damageMin: 5, damageMax: 8,
-    speed: 6, growth: 5,
+    speed: 6, growth: 4,
     abilities: ["Undead", "No morale penalty", "Flying", "No enemy retaliation"],
     imageRef: "necropolis_vampire",
   },
@@ -120,7 +124,7 @@ export const necropolisCreatures: SourceCreature[] = [
     upgradeOf: "necropolis_vampire",
     attack: 10, defense: 10, hp: 40,
     damageMin: 5, damageMax: 8,
-    speed: 9, growth: 5,
+    speed: 9, growth: 4,
     abilities: [
       "Undead", "No morale penalty", "Flying",
       "No enemy retaliation", "Life drain",
@@ -138,7 +142,7 @@ export const necropolisCreatures: SourceCreature[] = [
     upgradeOf: null,
     attack: 13, defense: 10, hp: 30,
     damageMin: 11, damageMax: 13,
-    speed: 6, growth: 4,
+    speed: 6, growth: 3,
     abilities: ["Undead", "No morale penalty", "Ranged", "Death cloud attack"],
     imageRef: "necropolis_lich",
   },
@@ -151,11 +155,9 @@ export const necropolisCreatures: SourceCreature[] = [
     upgradeOf: "necropolis_lich",
     attack: 13, defense: 10, hp: 40,
     damageMin: 11, damageMax: 15,
-    speed: 7, growth: 4,
-    abilities: [
-      "Undead", "No morale penalty", "Ranged",
-      "Death cloud attack", "24 shots",
-    ],
+    speed: 7, growth: 3,
+    // "24 shots" removed: not listed as a special ability on the thelazy card.
+    abilities: ["Undead", "No morale penalty", "Ranged", "Death cloud attack"],
     imageRef: "necropolis_power_lich",
   },
 
@@ -169,7 +171,7 @@ export const necropolisCreatures: SourceCreature[] = [
     upgradeOf: null,
     attack: 16, defense: 16, hp: 120,
     damageMin: 15, damageMax: 30,
-    speed: 7, growth: 3,
+    speed: 7, growth: 2,
     abilities: ["Undead", "No morale penalty", "Curse"],
     imageRef: "necropolis_black_knight",
   },
@@ -182,7 +184,7 @@ export const necropolisCreatures: SourceCreature[] = [
     upgradeOf: "necropolis_black_knight",
     attack: 18, defense: 18, hp: 120,
     damageMin: 15, damageMax: 30,
-    speed: 9, growth: 3,
+    speed: 9, growth: 2,
     abilities: ["Undead", "No morale penalty", "Curse", "Death blow"],
     imageRef: "necropolis_dread_knight",
   },
@@ -199,8 +201,8 @@ export const necropolisCreatures: SourceCreature[] = [
     damageMin: 25, damageMax: 50,
     speed: 9, growth: 1,
     abilities: [
-      "Undead", "No morale penalty", "Flying",
-      "Dragon", "Reduces enemy morale",
+      "Undead", "No morale penalty", "Dragon",
+      "Flying", "Reduces enemy morale",
     ],
     imageRef: "necropolis_bone_dragon",
   },
@@ -215,8 +217,8 @@ export const necropolisCreatures: SourceCreature[] = [
     damageMin: 25, damageMax: 50,
     speed: 14, growth: 1,
     abilities: [
-      "Undead", "No morale penalty", "Flying",
-      "Dragon", "Reduces enemy morale", "Aging",
+      "Undead", "No morale penalty", "Dragon",
+      "Flying", "Reduces enemy morale", "Aging",
     ],
     imageRef: "necropolis_ghost_dragon",
   },
