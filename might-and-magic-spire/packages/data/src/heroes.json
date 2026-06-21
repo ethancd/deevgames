@@ -1,0 +1,170 @@
+[
+  {
+    "id": "hero_galthran",
+    "name": "Galthran",
+    "faction": "Necropolis",
+    "heroClass": "Death Knight",
+    "specialty": "Skeletons",
+    "startingSkills": [
+      "Necromancy",
+      "Offense"
+    ],
+    "imageRef": "hero_galthran"
+  },
+  {
+    "id": "hero_isra",
+    "name": "Isra",
+    "faction": "Necropolis",
+    "heroClass": "Death Knight",
+    "specialty": "Vampires",
+    "startingSkills": [
+      "Necromancy",
+      "Wisdom"
+    ],
+    "imageRef": "hero_isra"
+  },
+  {
+    "id": "hero_clavius",
+    "name": "Clavius",
+    "faction": "Necropolis",
+    "heroClass": "Death Knight",
+    "specialty": "Walking Dead",
+    "startingSkills": [
+      "Necromancy",
+      "Offense"
+    ],
+    "imageRef": "hero_clavius"
+  },
+  {
+    "id": "hero_moandor",
+    "name": "Moandor",
+    "faction": "Necropolis",
+    "heroClass": "Death Knight",
+    "specialty": "Liches",
+    "startingSkills": [
+      "Necromancy",
+      "Wisdom"
+    ],
+    "imageRef": "hero_moandor"
+  },
+  {
+    "id": "hero_charna",
+    "name": "Charna",
+    "faction": "Necropolis",
+    "heroClass": "Death Knight",
+    "specialty": "Wights",
+    "startingSkills": [
+      "Necromancy",
+      "Tactics"
+    ],
+    "imageRef": "hero_charna"
+  },
+  {
+    "id": "hero_tamika",
+    "name": "Tamika",
+    "faction": "Necropolis",
+    "heroClass": "Death Knight",
+    "specialty": "Black Knights",
+    "startingSkills": [
+      "Necromancy",
+      "Offense"
+    ],
+    "imageRef": "hero_tamika"
+  },
+  {
+    "id": "hero_straker",
+    "name": "Straker",
+    "faction": "Necropolis",
+    "heroClass": "Death Knight",
+    "specialty": "Walking Dead",
+    "startingSkills": [
+      "Necromancy",
+      "Archery"
+    ],
+    "imageRef": "hero_straker"
+  },
+  {
+    "id": "hero_vokial",
+    "name": "Vokial",
+    "faction": "Necropolis",
+    "heroClass": "Death Knight",
+    "specialty": "Vampires",
+    "startingSkills": [
+      "Necromancy",
+      "Artillery"
+    ],
+    "imageRef": "hero_vokial"
+  },
+  {
+    "id": "hero_thant",
+    "name": "Thant",
+    "faction": "Necropolis",
+    "heroClass": "Necromancer",
+    "specialty": "Animate Dead",
+    "startingSkills": [
+      "Necromancy",
+      "Wisdom"
+    ],
+    "imageRef": "hero_thant"
+  },
+  {
+    "id": "hero_sandro",
+    "name": "Sandro",
+    "faction": "Necropolis",
+    "heroClass": "Necromancer",
+    "specialty": "Sorcery",
+    "startingSkills": [
+      "Necromancy",
+      "Sorcery"
+    ],
+    "imageRef": "hero_sandro"
+  },
+  {
+    "id": "hero_nimbus",
+    "name": "Nimbus",
+    "faction": "Necropolis",
+    "heroClass": "Necromancer",
+    "specialty": "Wisdom",
+    "startingSkills": [
+      "Necromancy",
+      "Wisdom"
+    ],
+    "imageRef": "hero_nimbus"
+  },
+  {
+    "id": "hero_vidomina",
+    "name": "Vidomina",
+    "faction": "Necropolis",
+    "heroClass": "Necromancer",
+    "specialty": "Necromancy",
+    "startingSkills": [
+      "Necromancy",
+      "Wisdom"
+    ],
+    "imageRef": "hero_vidomina"
+  },
+  {
+    "id": "hero_aislinn",
+    "name": "Aislinn",
+    "faction": "Necropolis",
+    "heroClass": "Necromancer",
+    "specialty": "Meteor Shower",
+    "startingSkills": [
+      "Necromancy",
+      "Wisdom"
+    ],
+    "imageRef": "hero_aislinn"
+  },
+  {
+    "id": "hero_septienna",
+    "name": "Septienna",
+    "faction": "Necropolis",
+    "heroClass": "Necromancer",
+    "specialty": "Death Ripple",
+    "startingSkills": [
+      "Necromancy",
+      "Scholar"
+    ],
+    "imageRef": "hero_septienna"
+  }
+]
