@@ -1,0 +1,10 @@
+{
+  "name": "@mms/data",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Researcher output: validated HoMM3 Source* records + image manifest.",
+  "dependencies": {
+    "@mms/schema": "workspace:*"
+  }
+}

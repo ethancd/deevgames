@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.vite/
+*.tsbuildinfo
+
+# Researcher's raw-HTML scrape cache — re-runs re-parse from here, but it is
+# not source of truth and should not be committed.
+packages/data/.cache/
