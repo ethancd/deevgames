@@ -1,28 +1,9 @@
 import { BaseGameScene } from './BaseGameScene'
 import { GridPos, Layer, ResourceType, TileType, RESOURCE_COLORS, WORLD_COLS, WORLD_ROWS, samePos } from '../../sim/types'
-import { gridToScreen, screenToGrid, HALF_W, HALF_H } from '../IsoUtils'
+import { gridToScreen, HALF_W, HALF_H } from '../IsoUtils'
 import { notifyCarriedItem, setCurrentLayer } from '../../bridge'
-import { markDirty } from '../../sim/SaveManager'
-
-const SUN_SPAWN_MIN = 4000
-const SUN_SPAWN_MAX = 7000
-const SUN_FALL_SPEED = 12
-const SUN_LIFETIME = 15000
-const SUN_SIZE = 10
-
-interface SunMote {
-  sprite: Phaser.GameObjects.Ellipse
-  glow: Phaser.GameObjects.Ellipse
-  x: number
-  y: number
-  age: number
-  col: number
-}
 
 export class SurfaceScene extends BaseGameScene {
-  private sunMotes: SunMote[] = []
-  private sunSpawnTimer = 0
-  private nextSunSpawn = 3000
   private holePositions: GridPos[] = []
 
   constructor() {
@@ -41,10 +22,6 @@ export class SurfaceScene extends BaseGameScene {
         if (grid[r][c] === TileType.HOLE) this.holePositions.push({ col: c, row: r })
       }
     }
-
-    this.sunMotes = []
-    this.sunSpawnTimer = 0
-    this.nextSunSpawn = 2000
 
     const fromBelow = this.registry.get('arriveFromBelow') as boolean
     if (fromBelow) {
@@ -97,15 +74,6 @@ export class SurfaceScene extends BaseGameScene {
     }
   }
 
-  shutdown(): void {
-    super.shutdown()
-    for (const sun of this.sunMotes) {
-      sun.sprite.destroy()
-      sun.glow.destroy()
-    }
-    this.sunMotes = []
-  }
-
   getLayer(): Layer {
     return Layer.SURFACE
   }
@@ -145,7 +113,7 @@ export class SurfaceScene extends BaseGameScene {
       if (result.type === 'picked_up') {
         notifyCarriedItem(this.world.state.carriedItem)
         this.syncCarriedSprite()
-        this.showCollectEffect(pos, '💧')
+        this.showCollectEffect(pos, '\u{1F4A7}')
       } else if (result.type === 'hands_full') {
         this.showFloatingText(pos, 'Hands full!', 0xf87171)
       }
@@ -171,121 +139,6 @@ export class SurfaceScene extends BaseGameScene {
     if (tile === TileType.HOLE) {
       this.transitionToUnderground(pos)
     }
-  }
-
-  protected handleTap(target: GridPos): void {
-    if (this.trySunMoteTap(target)) return
-    super.handleTap(target)
-  }
-
-  update(time: number, delta: number): void {
-    super.update(time, delta)
-    this.updateSunMotes(delta)
-  }
-
-  private updateSunMotes(delta: number): void {
-    this.sunSpawnTimer += delta
-    if (this.sunSpawnTimer >= this.nextSunSpawn) {
-      this.sunSpawnTimer = 0
-      this.nextSunSpawn = SUN_SPAWN_MIN + Math.random() * (SUN_SPAWN_MAX - SUN_SPAWN_MIN)
-      this.spawnSunMote()
-    }
-
-    const toRemove: number[] = []
-    for (let i = 0; i < this.sunMotes.length; i++) {
-      const sun = this.sunMotes[i]
-      sun.age += delta
-      sun.y += SUN_FALL_SPEED * delta / 1000
-
-      sun.sprite.setPosition(sun.x, sun.y)
-      sun.glow.setPosition(sun.x, sun.y)
-
-      const fadeStart = SUN_LIFETIME * 0.6
-      if (sun.age > fadeStart) {
-        const fade = 1 - (sun.age - fadeStart) / (SUN_LIFETIME - fadeStart)
-        sun.sprite.setAlpha(Math.max(0, fade))
-        sun.glow.setAlpha(Math.max(0, fade * 0.4))
-      }
-
-      const gp = screenToGrid(sun.x, sun.y)
-      if (gp) {
-        const plant = this.world.getPlantAt(gp, Layer.SURFACE)
-        if (plant && plant.stage !== 'mature') {
-          const result = this.world.feedPlantResource(gp, Layer.SURFACE, ResourceType.SUNLIGHT)
-          if (result.type === 'fed') {
-            this.showCollectEffect(gp, '☀️')
-            toRemove.push(i)
-            continue
-          }
-        }
-      }
-
-      const bottomRight = gridToScreen(WORLD_COLS - 1, WORLD_ROWS - 1)
-      if (sun.age >= SUN_LIFETIME || sun.y > bottomRight.y + HALF_H * 4) {
-        toRemove.push(i)
-      }
-    }
-
-    for (let i = toRemove.length - 1; i >= 0; i--) {
-      const sun = this.sunMotes[toRemove[i]]
-      sun.sprite.destroy()
-      sun.glow.destroy()
-      this.sunMotes.splice(toRemove[i], 1)
-    }
-  }
-
-  private spawnSunMote(): void {
-    const col = 1 + Math.floor(Math.random() * (WORLD_COLS - 2))
-    const row = Math.floor(Math.random() * WORLD_ROWS)
-    const s = gridToScreen(col, row)
-    const x = s.x + (Math.random() - 0.5) * HALF_W
-    const y = s.y - HALF_H * 8
-
-    const glow = this.add.ellipse(x, y, SUN_SIZE * 3, SUN_SIZE * 3, 0xfbbf24, 0.4)
-    glow.setDepth(5000)
-
-    const sprite = this.add.ellipse(x, y, SUN_SIZE, SUN_SIZE, 0xfef3c7, 1)
-    sprite.setDepth(5001)
-
-    this.tweens.add({
-      targets: sprite,
-      scaleX: { from: 0.9, to: 1.1 },
-      scaleY: { from: 0.9, to: 1.1 },
-      duration: 800,
-      yoyo: true,
-      repeat: -1,
-      ease: 'Sine.easeInOut',
-    })
-
-    this.sunMotes.push({ sprite, glow, x, y, age: 0, col })
-  }
-
-  private trySunMoteTap(target: GridPos): boolean {
-    const ts = gridToScreen(target.col, target.row)
-
-    for (let i = this.sunMotes.length - 1; i >= 0; i--) {
-      const sun = this.sunMotes[i]
-      const dx = sun.x - ts.x
-      const dy = sun.y - ts.y
-      if (dx * dx + dy * dy < (HALF_W * HALF_W * 4)) {
-        const pickResult = this.world.pickUpSunlight()
-        if (pickResult.type !== 'picked_up') {
-          this.showFloatingText(target, 'Hands full!', 0xf87171)
-          return true
-        }
-        notifyCarriedItem(this.world.state.carriedItem)
-        this.syncCarriedSprite()
-
-        const pos = screenToGrid(sun.x, sun.y) ?? target
-        this.showCollectEffect(pos, '☀️')
-
-        sun.sprite.destroy()
-        sun.glow.destroy()
-        this.sunMotes.splice(i, 1)
-        return true
-      }
-    }
-    return false
   }
 
   private transitionToUnderground(pos: GridPos): void {

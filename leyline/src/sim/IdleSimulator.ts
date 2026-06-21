@@ -8,8 +8,9 @@ import {
   getStageReq, nextStage, crystalTypeForSeed,
   SEED_DISPLAY, STAGE_DISPLAY,
 } from './PlantConfig'
+import { simulateIdleWeather } from './WeatherSystem'
 
-const EMIT_INTERVAL = 2000
+const EMIT_INTERVAL = 2500
 const MAX_IDLE_MS = 24 * 60 * 60 * 1000
 const MIN_IDLE_MS = 10_000
 
@@ -35,11 +36,6 @@ function plantAt(state: WorldState, pos: GridPos, layer: Layer): Plant | undefin
   return state.plants[`${layer}:${posKey(pos)}`]
 }
 
-function tileRes(t: TileType): ResourceType | null {
-  if (t === TileType.CRYSTAL_RED) return ResourceType.CRYSTAL_RED
-  if (t === TileType.CRYSTAL_BLUE) return ResourceType.CRYSTAL_BLUE
-  return null
-}
 
 function plantNeedsResource(plant: Plant, resource: ResourceType): boolean {
   if (plant.stage === GrowthStage.MATURE) return false
@@ -184,6 +180,9 @@ export function simulateIdle(state: WorldState, elapsedMs: number): IdleSummary 
   }
   if (capped < MIN_IDLE_MS) return summary
 
+  // Simulate weather effects (surface sun/rain + hole ambient feeds)
+  simulateIdleWeather(state, capped)
+
   const totalEmits = Math.floor(capped / EMIT_INTERVAL)
 
   // Find source leylines (near source tiles or source plants) and their mote counts
@@ -194,32 +193,16 @@ export function simulateIdle(state: WorldState, elapsedMs: number): IdleSummary 
     if (ley.path.length < 2) continue
     const start = ley.path[0]
 
-    let found = false
-    for (const d of NEIGHBORS) {
-      const n = { col: start.col + d.col, row: start.row + d.row }
-      const r = tileRes(tileAt(state, ley.layer, n))
-      if (r) {
-        sourceMotes.set(ley.id, { resource: r, count: totalEmits })
-        found = true
-        break
-      }
-    }
-    if (found) continue
+    const startTile = tileAt(state, ley.layer, start)
 
-    const area = [start, ...NEIGHBORS.map(d => ({ col: start.col + d.col, row: start.row + d.row }))]
-    for (const pos of area) {
-      const plant = plantAt(state, pos, ley.layer)
-      if (plant && plant.stage === GrowthStage.MATURE && isSourcePlant(plant.seedType)) {
-        const t = tileAt(state, ley.layer, pos)
-        const r = getPlantOutput(plant, t)
-        const pk = `${ley.layer}:${posKey(pos)}`
-        plantShareCount.set(pk, (plantShareCount.get(pk) ?? 0) + 1)
-        sourceMotes.set(ley.id, { resource: r, count: 0 })
-        found = true
-        break
-      }
+    const startPlant = plantAt(state, start, ley.layer)
+    if (startPlant && startPlant.stage === GrowthStage.MATURE && isSourcePlant(startPlant.seedType)) {
+      const r = getPlantOutput(startPlant, startTile)
+      const pk = `${ley.layer}:${posKey(start)}`
+      plantShareCount.set(pk, (plantShareCount.get(pk) ?? 0) + 1)
+      sourceMotes.set(ley.id, { resource: r, count: 0 })
+      continue
     }
-    if (found) continue
 
     let hasUpstream = false
     for (const other of state.leylines) {
@@ -228,18 +211,11 @@ export function simulateIdle(state: WorldState, elapsedMs: number): IdleSummary 
       if (other.layer === ley.layer && isAdjacent(otherEnd, start)) { hasUpstream = true; break }
       if (other.layer !== ley.layer) {
         const otherEndTile = tileAt(state, other.layer, otherEnd)
-        if (otherEndTile === TileType.HOLE && (samePos(otherEnd, start) || isAdjacent(otherEnd, start))) { hasUpstream = true; break }
+        if (otherEndTile === TileType.HOLE && samePos(otherEnd, start)) { hasUpstream = true; break }
       }
     }
-    if (!hasUpstream) {
-      for (const d of NEIGHBORS) {
-        const n = { col: start.col + d.col, row: start.row + d.row }
-        if (tileAt(state, ley.layer, n) === TileType.HOLE) {
-          sourceMotes.set(ley.id, { resource: ResourceType.SUNLIGHT, count: totalEmits })
-          break
-        }
-      }
-    }
+    // Holes no longer act as leyline sunlight sources — they feed adjacent
+    // plants directly via the weather system instead.
   }
 
   // Apply plant sharing: source plants split totalEmits across their leylines
@@ -297,10 +273,10 @@ export function simulateIdle(state: WorldState, elapsedMs: number): IdleSummary 
 
       const in1 = (incoming.get(recipe.input1) ?? 0) + plant.transmuteInput1
       const in2 = (incoming.get(recipe.input2) ?? 0) + plant.transmuteInput2
-      const produced = Math.min(in1, in2, totalEmits)
+      const produced = Math.min(Math.floor(in1 / 3), Math.floor(in2 / 3), totalEmits)
 
-      plant.transmuteInput1 = Math.min(in1 - produced, 3)
-      plant.transmuteInput2 = Math.min(in2 - produced, 3)
+      plant.transmuteInput1 = Math.min(in1 - produced * 3, 3)
+      plant.transmuteInput2 = Math.min(in2 - produced * 3, 3)
 
       if (produced <= 0) continue
 

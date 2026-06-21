@@ -28,7 +28,7 @@ interface Mote {
 }
 
 const MOTE_SPEED = 2
-const EMIT_INTERVAL = 2000
+const EMIT_INTERVAL = 2500
 const MAX_MOTES = 200
 
 const NEIGHBORS: GridPos[] = [
@@ -36,40 +36,30 @@ const NEIGHBORS: GridPos[] = [
   { col: 0, row: -1 }, { col: 0, row: 1 },
 ]
 
-function tileResource(tile: TileType): ResourceType | null {
-  if (tile === TileType.CRYSTAL_RED) return ResourceType.CRYSTAL_RED
-  if (tile === TileType.CRYSTAL_BLUE) return ResourceType.CRYSTAL_BLUE
+function findSourceAtStart(ley: Leyline, world: World): ResourceType | null {
+  const start = ley.path[0]
+  const tile = world.getTile(ley.layer, start)
+
+  const plant = world.getPlantAt(start, ley.layer)
+  if (plant && plant.stage === GrowthStage.MATURE) {
+    return getPlantOutput(plant, tile)
+  }
+
   return null
 }
 
-function findSourceNearStart(ley: Leyline, world: World): ResourceType | null {
-  const start = ley.path[0]
-
-  for (const d of NEIGHBORS) {
-    const neighbor = { col: start.col + d.col, row: start.row + d.row }
-    const tile = world.getTile(ley.layer, neighbor)
-    const res = tileResource(tile)
-    if (res) return res
-  }
-
-  const positions = [start, ...NEIGHBORS.map(d => ({ col: start.col + d.col, row: start.row + d.row }))]
-  for (const pos of positions) {
-    const plant = world.getPlantAt(pos, ley.layer)
-    if (plant && plant.stage === GrowthStage.MATURE) {
-      const tile = world.getTile(ley.layer, pos)
-      return getPlantOutput(plant, tile)
-    }
-  }
-
-  return null
+function canAcceptResource(plant: Plant): boolean {
+  if (plant.stage !== GrowthStage.MATURE) return true
+  return !isSourcePlant(plant.seedType)
 }
 
 function hasPlantNear(pos: GridPos, layer: Layer, world: World): boolean {
   const plant = world.getPlantAt(pos, layer)
-  if (plant) return true
+  if (plant && canAcceptResource(plant)) return true
   for (const d of NEIGHBORS) {
     const neighbor = { col: pos.col + d.col, row: pos.row + d.row }
-    if (world.getPlantAt(neighbor, layer)) return true
+    const adj = world.getPlantAt(neighbor, layer)
+    if (adj && canAcceptResource(adj)) return true
   }
   return false
 }
@@ -81,11 +71,11 @@ function absorptionAt(pos: GridPos, resourceType: ResourceType): AbsorptionEvent
 
 export class LeylineEngine {
   private motes: Mote[] = []
-  private emitTimers: Map<string, number> = new Map()
+  private globalEmitTimer = 0
   private resolved: Map<string, ResourceType> = new Map()
   private forkCounters: Map<string, number> = new Map()
-  private transmuteTimers: Map<string, number> = new Map()
   private _absorptions: AbsorptionEvent[] = []
+  private _emittedThisFrame = false
 
   drainAbsorptions(): AbsorptionEvent[] {
     const result = this._absorptions
@@ -97,13 +87,21 @@ export class LeylineEngine {
     return this.resolved.get(leylineId) ?? null
   }
 
+  getEmitProgress(): number {
+    return this.globalEmitTimer / EMIT_INTERVAL
+  }
+
+  get emittedThisFrame(): boolean {
+    return this._emittedThisFrame
+  }
+
   private resolveResources(world: World): void {
     this.resolved.clear()
     const leylines = world.state.leylines
 
     for (const ley of leylines) {
       if (ley.path.length < 2) continue
-      const res = findSourceNearStart(ley, world)
+      const res = findSourceAtStart(ley, world)
       if (res) this.resolved.set(ley.id, res)
     }
 
@@ -134,7 +132,7 @@ export class LeylineEngine {
 
           if (other.layer !== ley.layer) {
             const otherEndTile = world.getTile(other.layer, otherEnd)
-            if (otherEndTile === TileType.HOLE && (samePos(otherEnd, start) || isAdjacent(otherEnd, start))) {
+            if (otherEndTile === TileType.HOLE && samePos(otherEnd, start)) {
               this.resolved.set(ley.id, otherRes)
               changed = true
               break
@@ -144,37 +142,45 @@ export class LeylineEngine {
       }
     }
 
-    for (const ley of leylines) {
-      if (ley.path.length < 2) continue
-      if (this.resolved.has(ley.id)) continue
-      const start = ley.path[0]
-      const startTile = world.getTile(ley.layer, start)
-      if (startTile === TileType.HOLE) {
-        this.resolved.set(ley.id, ResourceType.SUNLIGHT)
-        continue
-      }
-      for (const d of NEIGHBORS) {
-        const neighbor = { col: start.col + d.col, row: start.row + d.row }
-        const tile = world.getTile(ley.layer, neighbor)
-        if (tile === TileType.HOLE) {
-          this.resolved.set(ley.id, ResourceType.SUNLIGHT)
-          break
-        }
-      }
+  }
+
+  private leyPathCache: Map<string, GridPos[]> = new Map()
+
+  private rebuildPathCache(world: World): void {
+    this.leyPathCache.clear()
+    for (const ley of world.state.leylines) {
+      this.leyPathCache.set(ley.id, ley.path)
     }
   }
 
-  private isTileOccupied(leylineId: string, tileIdx: number): boolean {
-    return this.motes.some(m => m.leylineId === leylineId && m.tileIdx === tileIdx && m.progress < 1)
+  private isGridTileOccupied(pos: GridPos, layer: Layer, excludeMote?: Mote): boolean {
+    for (const m of this.motes) {
+      if (m === excludeMote || m.layer !== layer) continue
+      const path = this.leyPathCache.get(m.leylineId)
+      if (!path) continue
+      if (samePos(path[m.tileIdx], pos)) return true
+    }
+    return false
+  }
+
+  private leylineFull(ley: Leyline): boolean {
+    const count = this.motes.filter(m => m.leylineId === ley.id).length
+    return count >= ley.path.length - 1
   }
 
   tick(delta: number, world: World): void {
     this.resolveResources(world)
+    this.rebuildPathCache(world)
 
     const leylines = world.state.leylines
 
-    this.processSourceTiles(delta, leylines, world)
-    this.processPlantEmission(delta, world)
+    this._emittedThisFrame = false
+    this.globalEmitTimer += delta
+    if (this.globalEmitTimer >= EMIT_INTERVAL) {
+      this.globalEmitTimer -= EMIT_INTERVAL
+      this._emittedThisFrame = true
+      this.processPlantEmission(world)
+    }
 
     const speed = MOTE_SPEED * delta / 1000
     const toRemove: number[] = []
@@ -215,7 +221,7 @@ export class LeylineEngine {
           break
         }
 
-        if (this.isTileOccupied(mote.leylineId, nextIdx)) {
+        if (this.isGridTileOccupied(ley.path[nextIdx], mote.layer)) {
           mote.progress = 0.99
           break
         }
@@ -239,48 +245,7 @@ export class LeylineEngine {
     this.motes = this.motes.filter((_, i) => !removeSet.has(i))
   }
 
-  private processSourceTiles(delta: number, leylines: Leyline[], world: World): void {
-    for (const ley of leylines) {
-      if (ley.path.length < 2) continue
-      const start = ley.path[0]
-
-      let sourceRes: ResourceType | null = null
-      for (const d of NEIGHBORS) {
-        const neighbor = { col: start.col + d.col, row: start.row + d.row }
-        const tile = world.getTile(ley.layer, neighbor)
-        const res = tileResource(tile)
-        if (res) { sourceRes = res; break }
-      }
-
-      if (!sourceRes && this.resolved.get(ley.id) === ResourceType.SUNLIGHT) {
-        sourceRes = ResourceType.SUNLIGHT
-      }
-
-      if (!sourceRes) continue
-
-      const key = `src:${start.col},${start.row}:${ley.layer}:${ley.id}`
-      const timer = (this.emitTimers.get(key) ?? 0) + delta
-
-      if (timer >= EMIT_INTERVAL) {
-        if (this.motes.length < MAX_MOTES && !this.isTileOccupied(ley.id, 0)) {
-          this.motes.push({
-            leylineId: ley.id,
-            resourceType: sourceRes,
-            tileIdx: 0,
-            progress: 0,
-            layer: ley.layer,
-          })
-          this.emitTimers.set(key, 0)
-        } else {
-          this.emitTimers.set(key, timer)
-        }
-      } else {
-        this.emitTimers.set(key, timer)
-      }
-    }
-  }
-
-  private processPlantEmission(delta: number, world: World): void {
+  private processPlantEmission(world: World): void {
     const plants = Object.values(world.state.plants)
     const leylines = world.state.leylines
 
@@ -289,15 +254,7 @@ export class LeylineEngine {
 
       const source = isSourcePlant(plant.seedType)
 
-      if (!source && (plant.transmuteInput1 < 1 || plant.transmuteInput2 < 1)) continue
-
-      const key = `tx:${plant.pos.col},${plant.pos.row}:${plant.layer}`
-      const timer = (this.transmuteTimers.get(key) ?? 0) + delta
-
-      if (timer < EMIT_INTERVAL) {
-        this.transmuteTimers.set(key, timer)
-        continue
-      }
+      if (!source && (plant.transmuteInput1 < 3 || plant.transmuteInput2 < 3)) continue
 
       const tile = world.getTile(plant.layer, plant.pos)
       const output = getPlantOutput(plant, tile)
@@ -305,11 +262,13 @@ export class LeylineEngine {
       const outLeylines = leylines.filter(l =>
         l.layer === plant.layer &&
         l.path.length >= 2 &&
-        (samePos(l.path[0], plant.pos) || isAdjacent(l.path[0], plant.pos)) &&
-        !this.isTileOccupied(l.id, 0)
+        samePos(l.path[0], plant.pos) &&
+        !this.isGridTileOccupied(l.path[0], l.layer) &&
+        !this.leylineFull(l)
       )
 
       if (outLeylines.length > 0 && this.motes.length < MAX_MOTES) {
+        const key = `tx:${plant.pos.col},${plant.pos.row}:${plant.layer}`
         const pick = this.pickFork(key, outLeylines)
         this.motes.push({
           leylineId: pick.id,
@@ -319,12 +278,9 @@ export class LeylineEngine {
           layer: plant.layer,
         })
         if (!source) {
-          plant.transmuteInput1--
-          plant.transmuteInput2--
+          plant.transmuteInput1 -= 3
+          plant.transmuteInput2 -= 3
         }
-        this.transmuteTimers.set(key, 0)
-      } else {
-        this.transmuteTimers.set(key, timer)
       }
     }
   }
@@ -378,7 +334,6 @@ export class LeylineEngine {
   }
 
   onLeylineRemoved(id: string): void {
-    this.emitTimers.delete(id)
     this.motes = this.motes.filter(m => m.leylineId !== id)
     this.resolved.delete(id)
     this.forkCounters.delete(id)
@@ -416,6 +371,26 @@ export class LeylineEngine {
       }
     }
 
+    const positions = [sinkPos, ...NEIGHBORS.map(d => ({ col: sinkPos.col + d.col, row: sinkPos.row + d.row }))]
+
+    for (const pos of positions) {
+      if (world.getTile(ley.layer, pos) === TileType.MAGIC_TREE) {
+        world.feedTree(mote.resourceType)
+        this._absorptions.push(absorptionAt(pos, mote.resourceType))
+        return true
+      }
+    }
+
+    for (const pos of positions) {
+      const result = world.feedPlantResource(pos, ley.layer, mote.resourceType)
+      if (result.type === 'fed') {
+        this._absorptions.push(absorptionAt(pos, mote.resourceType))
+        return true
+      }
+    }
+
+    if (hasPlantNear(sinkPos, ley.layer, world)) return false
+
     if (sinkTile === TileType.HOLE) {
       const otherLayer = ley.layer === Layer.SURFACE ? Layer.UNDERGROUND : Layer.SURFACE
       const relays = world.state.leylines.filter(l =>
@@ -425,7 +400,7 @@ export class LeylineEngine {
       )
       if (relays.length > 0) {
         const relay = this.pickFork(ley.id, relays)
-        if (this.motes.length < MAX_MOTES && !this.isTileOccupied(relay.id, 0)) {
+        if (this.motes.length < MAX_MOTES && !this.isGridTileOccupied(relay.path[0], otherLayer, mote)) {
           this.motes.push({
             leylineId: relay.id,
             resourceType: mote.resourceType,
@@ -447,7 +422,7 @@ export class LeylineEngine {
     )
     if (downstreams.length > 0) {
       const downstream = this.pickFork(ley.id, downstreams)
-      if (this.motes.length < MAX_MOTES && !this.isTileOccupied(downstream.id, 0)) {
+      if (this.motes.length < MAX_MOTES && !this.isGridTileOccupied(downstream.path[0], ley.layer, mote)) {
         this.motes.push({
           leylineId: downstream.id,
           resourceType: mote.resourceType,
@@ -460,25 +435,113 @@ export class LeylineEngine {
       return false
     }
 
-    const positions = [sinkPos, ...NEIGHBORS.map(d => ({ col: sinkPos.col + d.col, row: sinkPos.row + d.row }))]
-
-    for (const pos of positions) {
-      if (world.getTile(ley.layer, pos) === TileType.MAGIC_TREE) {
-        world.feedTree(mote.resourceType)
-        this._absorptions.push(absorptionAt(pos, mote.resourceType))
-        return true
-      }
-    }
-
-    for (const pos of positions) {
-      const result = world.feedPlantResource(pos, ley.layer, mote.resourceType)
-      if (result.type === 'fed') {
-        this._absorptions.push(absorptionAt(pos, mote.resourceType))
-        return true
-      }
-    }
-
     return false
+  }
+
+  getEmissionDebug(world: World): Array<{
+    plantPos: GridPos
+    layer: Layer
+    output: ResourceType
+    canEmit: boolean
+    reason: string
+    targetTile: GridPos | null
+  }> {
+    const results: Array<{
+      plantPos: GridPos; layer: Layer; output: ResourceType
+      canEmit: boolean; reason: string; targetTile: GridPos | null
+    }> = []
+    const plants = Object.values(world.state.plants)
+    const leylines = world.state.leylines
+
+    for (const plant of plants) {
+      if (plant.stage !== GrowthStage.MATURE) continue
+      const source = isSourcePlant(plant.seedType)
+      const tile = world.getTile(plant.layer, plant.pos)
+      const output = getPlantOutput(plant, tile)
+
+      if (!source && (plant.transmuteInput1 < 3 || plant.transmuteInput2 < 3)) {
+        results.push({ plantPos: plant.pos, layer: plant.layer, output, canEmit: false,
+          reason: `transmute: ${plant.transmuteInput1}/3, ${plant.transmuteInput2}/3`, targetTile: null })
+        continue
+      }
+
+      const connected = leylines.filter(l =>
+        l.layer === plant.layer && l.path.length >= 2 && samePos(l.path[0], plant.pos))
+      if (connected.length === 0) {
+        results.push({ plantPos: plant.pos, layer: plant.layer, output, canEmit: false,
+          reason: 'no leyline', targetTile: null })
+        continue
+      }
+
+      const available = connected.filter(l =>
+        !this.isGridTileOccupied(l.path[0], l.layer) && !this.leylineFull(l))
+      if (available.length === 0) {
+        const full = connected.filter(l => this.leylineFull(l)).length
+        const occupied = connected.filter(l => this.isGridTileOccupied(l.path[0], l.layer)).length
+        results.push({ plantPos: plant.pos, layer: plant.layer, output, canEmit: false,
+          reason: `blocked (${full} full, ${occupied} occupied)`, targetTile: null })
+        continue
+      }
+
+      if (this.motes.length >= MAX_MOTES) {
+        results.push({ plantPos: plant.pos, layer: plant.layer, output, canEmit: false,
+          reason: 'global mote cap', targetTile: available[0].path[1] })
+        continue
+      }
+
+      const key = `tx:${plant.pos.col},${plant.pos.row}:${plant.layer}`
+      const counter = this.forkCounters.get(key) ?? 0
+      const pick = available[counter % available.length]
+      results.push({ plantPos: plant.pos, layer: plant.layer, output, canEmit: true,
+        reason: 'ready', targetTile: pick.path[1] })
+    }
+    // Holes: show relay status for leylines that end at holes
+    const holePositions = new Set<string>()
+    for (let r = 0; r < 16; r++) {
+      for (let c = 0; c < 24; c++) {
+        if (world.getTile(Layer.SURFACE, { col: c, row: r }) === TileType.HOLE ||
+            world.getTile(Layer.UNDERGROUND, { col: c, row: r }) === TileType.HOLE) {
+          holePositions.add(`${c},${r}`)
+        }
+      }
+    }
+    for (const holeKey of holePositions) {
+      const [hc, hr] = holeKey.split(',').map(Number)
+      const holePos = { col: hc, row: hr }
+      for (const layer of [Layer.SURFACE, Layer.UNDERGROUND]) {
+        const otherLayer = layer === Layer.SURFACE ? Layer.UNDERGROUND : Layer.SURFACE
+        const incoming = leylines.filter(l =>
+          l.layer === layer && l.path.length >= 2 && samePos(l.path[l.path.length - 1], holePos))
+        if (incoming.length === 0) continue
+        const outgoing = leylines.filter(l =>
+          l.layer === otherLayer && l.path.length >= 2 && samePos(l.path[0], holePos))
+        const motesIncoming = this.motes.filter(m =>
+          incoming.some(l => l.id === m.leylineId) && m.tileIdx >= (leylines.find(l => l.id === m.leylineId)!.path.length - 2))
+        if (outgoing.length === 0) {
+          if (motesIncoming.length > 0) {
+            results.push({ plantPos: holePos, layer: otherLayer, output: motesIncoming[0].resourceType,
+              canEmit: false, reason: 'hole: no outgoing leyline', targetTile: null })
+          }
+          continue
+        }
+        const availableOut = outgoing.filter(l =>
+          !this.isGridTileOccupied(l.path[0], otherLayer) && !this.leylineFull(l))
+        if (motesIncoming.length > 0 || availableOut.length > 0) {
+          const canRelay = availableOut.length > 0
+          const full = outgoing.filter(l => this.leylineFull(l)).length
+          const occupied = outgoing.filter(l => this.isGridTileOccupied(l.path[0], otherLayer)).length
+          results.push({
+            plantPos: holePos, layer: otherLayer,
+            output: motesIncoming.length > 0 ? motesIncoming[0].resourceType : ResourceType.SUNLIGHT,
+            canEmit: canRelay,
+            reason: canRelay ? `hole: relay ready (${availableOut.length} out)` : `hole: blocked (${full} full, ${occupied} occupied)`,
+            targetTile: canRelay ? availableOut[0].path[1] : null,
+          })
+        }
+      }
+    }
+
+    return results
   }
 
   private pickFork(leyId: string, candidates: Leyline[]): Leyline {

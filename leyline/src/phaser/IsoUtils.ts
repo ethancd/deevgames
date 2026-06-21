@@ -17,8 +17,10 @@ export function gridToScreenCenter(col: number, row: number): { x: number; y: nu
 }
 
 export function screenToGrid(sx: number, sy: number): GridPos | null {
-  const col = Math.floor((sx / HALF_W + sy / HALF_H) / 2)
-  const row = Math.floor((sy / HALF_H - sx / HALF_W) / 2)
+  const fcol = sx / HALF_W + sy / HALF_H
+  const frow = sy / HALF_H - sx / HALF_W
+  const col = Math.round(fcol / 2)
+  const row = Math.round(frow / 2)
   if (col < 0 || col >= WORLD_COLS || row < 0 || row >= WORLD_ROWS) return null
   return { col, row }
 }

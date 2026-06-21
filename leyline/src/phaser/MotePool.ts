@@ -10,7 +10,7 @@ export class MotePool {
     for (let i = 0; i < count; i++) {
       const sprite = scene.add.image(0, 0, 'mote')
       sprite.setVisible(false)
-      sprite.setDepth(1500)
+      sprite.setDepth(9200)
       sprite.setBlendMode(Phaser.BlendModes.ADD)
       sprite.setScale(1.5)
       this.sprites.push(sprite)

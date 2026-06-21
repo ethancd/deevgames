@@ -1,18 +1,24 @@
 import Phaser from 'phaser'
 import { World, BuyTreeResult } from '../../sim/World'
 import {
-  CarriableItem, GridPos, GrowthStage, Layer, Plant, ResourceType, RESOURCE_COLORS, RESOURCE_EMOJI, RESOURCE_NAMES, TileType,
+  CarriableItem, GridPos, GrowthStage, Layer, Leyline, Plant, ResourceType, RESOURCE_COLORS, RESOURCE_EMOJI, RESOURCE_NAMES, TileType,
   WORLD_COLS, WORLD_ROWS, SeedType, samePos,
 } from '../../sim/types'
 import { gridToScreen, screenToGrid, isoDepth, isoWorldBounds, HALF_W, HALF_H } from '../IsoUtils'
+import { getTimeOfDayTint, getCloudedTint, getHoleLightAlpha } from '../Lighting'
 import {
   getTool, setTool, getUnlocks,
   onToolChange, notifyCarriedItem, setUnlocks,
   showTooltip, hideTooltip, onDropRequest, onTreeBuyRequest, requestHelp, requestNewGame,
+  notifyWeather,
+  notifyEmitProgress,
+  onDebugAction, DebugAction,
 } from '../../bridge'
-import { getStageReq, crystalTypeForSeed, getTransmuteRecipe, getPlantOutput, isSourcePlant, SEED_DISPLAY, STAGE_DISPLAY } from '../../sim/PlantConfig'
+import { getDebugPlantMode, isDebugEmissionEnabled } from '../../ui'
+import { getStageReq, crystalTypeForSeed, getTransmuteRecipe, getPlantOutput, isSourcePlant, seedLayer, SEED_DISPLAY, STAGE_DISPLAY } from '../../sim/PlantConfig'
 import { isWalkable } from '../../sim/Pathfinding'
 import { LeylineEngine } from '../../sim/LeylineEngine'
+import { tickWeather, advanceClock, weatherFeedTick } from '../../sim/WeatherSystem'
 import { MotePool } from '../MotePool'
 import { facingFromDelta, PixieDir } from '../PixieSprites'
 
@@ -84,6 +90,8 @@ export abstract class BaseGameScene extends Phaser.Scene {
   protected portalGlow: Phaser.GameObjects.Arc | null = null
   private lastPortalLevel = -1
   private pulseTime = 0
+  private activeTooltipPlant: { pos: GridPos; layer: Layer } | null = null
+  private activeTooltipPortal = false
   protected facing: PixieDir = 'S'
   protected carriedSprite: Phaser.GameObjects.Sprite | null = null
   private kbUp: Phaser.Input.Keyboard.Key | null = null
@@ -96,6 +104,20 @@ export abstract class BaseGameScene extends Phaser.Scene {
   private kbD: Phaser.Input.Keyboard.Key | null = null
   private boundKeyDown: ((e: KeyboardEvent) => void) | null = null
   private boundWheel: ((e: WheelEvent) => void) | null = null
+  private weatherHudTimer = 0
+
+  // Lighting state
+  protected lightOverlay: Phaser.GameObjects.Rectangle | null = null
+  protected cloudFactor = 0
+  protected crystalGlows: Map<string, Phaser.GameObjects.Shape> = new Map()
+  protected holeLightGlows: Map<string, Phaser.GameObjects.Shape> = new Map()
+  private rainGraphics: Phaser.GameObjects.Graphics | null = null
+  private rainTime = 0
+  private holeSplashes: Array<{ x: number; y: number; sprite: Phaser.GameObjects.Arc; timer: number }> = []
+  private splashTimer = 0
+  private unsubDebug: (() => void) | null = null
+  private debugGraphics: Phaser.GameObjects.Graphics | null = null
+  private debugTexts: Phaser.GameObjects.Text[] = []
 
   abstract getLayer(): Layer
   abstract getGrid(): TileType[][]
@@ -124,6 +146,11 @@ export abstract class BaseGameScene extends Phaser.Scene {
     this.drawingPath = null
     this.facing = 'S'
     this.carriedSprite = null
+    this.weatherHudTimer = 0
+    this.lightOverlay = null
+    this.cloudFactor = 0
+    this.crystalGlows = new Map()
+    this.holeLightGlows = new Map()
 
     this.renderTilemap()
     this.renderPlants()
@@ -138,17 +165,28 @@ export abstract class BaseGameScene extends Phaser.Scene {
 
     this.leylineEngine = this.registry.get('leylineEngine') as LeylineEngine
     this.leylineGraphics = this.add.graphics()
-    this.leylineGraphics.setDepth(500)
+    this.leylineGraphics.setDepth(9100)
     this.drawPreviewGraphics = this.add.graphics()
-    this.drawPreviewGraphics.setDepth(501)
+    this.drawPreviewGraphics.setDepth(9101)
     this.motePool = new MotePool(this, 300)
     this.drawLeylines()
 
+    this.setupLighting()
+
+    this.rainGraphics = this.add.graphics()
+    this.rainGraphics.setDepth(9300)
+    this.rainGraphics.setScrollFactor(0)
+
+    this.debugGraphics = this.add.graphics()
+    this.debugGraphics.setDepth(9400)
+
+    this.unsubDebug = onDebugAction((action) => this.handleDebugAction(action))
     this.unsubToolChange = onToolChange(() => {})
     this.unsubDrop = onDropRequest(() => this.handleDrop())
     this.unsubTreeBuy = onTreeBuyRequest((seed) => this.handleTreeBuy(seed))
 
     this.syncCarriedSprite()
+    notifyWeather(this.world.state.weather)
   }
 
   shutdown(): void {
@@ -163,6 +201,21 @@ export abstract class BaseGameScene extends Phaser.Scene {
     this.portalSprite = null
     this.carriedSprite?.destroy()
     this.carriedSprite = null
+    this.lightOverlay?.destroy()
+    this.lightOverlay = null
+    for (const glow of this.crystalGlows.values()) glow.destroy()
+    this.crystalGlows.clear()
+    for (const glow of this.holeLightGlows.values()) glow.destroy()
+    this.holeLightGlows.clear()
+    for (const s of this.holeSplashes) s.sprite.destroy()
+    this.holeSplashes.length = 0
+    this.rainGraphics?.destroy()
+    this.rainGraphics = null
+    this.debugGraphics?.destroy()
+    this.debugGraphics = null
+    for (const t of this.debugTexts) t.destroy()
+    this.debugTexts.length = 0
+    this.unsubDebug?.()
     if (this.boundKeyDown) {
       window.removeEventListener('keydown', this.boundKeyDown)
       this.boundKeyDown = null
@@ -204,7 +257,8 @@ export abstract class BaseGameScene extends Phaser.Scene {
     const ps = gridToScreen(portal.pos.col, portal.pos.row)
 
     this.portalGlow = this.add.circle(ps.x, ps.y, HALF_W * 0.8, 0xd946ef, 0.15)
-    this.portalGlow.setDepth(isoDepth(portal.pos.col, portal.pos.row, 0))
+    this.portalGlow.setBlendMode(Phaser.BlendModes.ADD)
+    this.portalGlow.setDepth(9050)
     this.tweens.add({
       targets: this.portalGlow,
       scaleX: { from: 0.8, to: 1.6 },
@@ -216,7 +270,7 @@ export abstract class BaseGameScene extends Phaser.Scene {
     })
 
     this.portalSprite = this.add.sprite(ps.x, ps.y, `portal_${level}`)
-    this.portalSprite.setDepth(isoDepth(portal.pos.col, portal.pos.row, 1))
+    this.portalSprite.setDepth(9051)
     this.portalSprite.setScale(1.5)
     this.lastPortalLevel = level
 
@@ -304,6 +358,7 @@ export abstract class BaseGameScene extends Phaser.Scene {
     sprite.setDepth(isoDepth(plant.pos.col, plant.pos.row, 1))
 
     if (plant.stage === GrowthStage.MATURE) {
+      sprite.setDepth(9050 + (plant.pos.col + plant.pos.row) * 0.1)
       this.tweens.add({
         targets: sprite,
         scaleX: { from: 0.95, to: 1.1 },
@@ -330,7 +385,7 @@ export abstract class BaseGameScene extends Phaser.Scene {
     const ps = gridToScreen(col, row)
     this.player = this.add.sprite(ps.x, ps.y, `pixie_${this.facing}_0`)
     this.player.play(`pixie_${this.facing}`)
-    this.player.setDepth(isoDepth(col, row, 5))
+    this.player.setDepth(9055 + (col + row) * 0.1)
     this.playerBaseY = this.player.y
   }
 
@@ -356,8 +411,7 @@ export abstract class BaseGameScene extends Phaser.Scene {
       if (!pos) return
 
       const tile = this.world.getTile(this.getLayer(), pos)
-      if (tile === TileType.STONE || tile === TileType.WATER ||
-          tile === TileType.CRYSTAL_RED || tile === TileType.CRYSTAL_BLUE ||
+      if (tile === TileType.STONE ||
           tile === TileType.MAGIC_TREE || tile === TileType.MOLDERING_LOG) return
 
       this.drawingPath = [pos]
@@ -378,11 +432,20 @@ export abstract class BaseGameScene extends Phaser.Scene {
       const last = this.drawingPath[this.drawingPath.length - 1]
       if (samePos(pos, last)) return
       if (Math.abs(pos.col - last.col) + Math.abs(pos.row - last.row) !== 1) return
-      if (this.drawingPath.some(p => samePos(p, pos))) return
+
+      const existing = this.drawingPath.findIndex(p => samePos(p, pos))
+      if (existing >= 0) {
+        this.drawingPath = this.drawingPath.slice(0, existing + 1)
+        this.updateDrawPreview()
+        return
+      }
+
+      if (this.isLeylineTerminal(last, this.getLayer()) && this.drawingPath.length > 1) return
+
+      if (this.world.isSegmentOccupied(last, pos, this.getLayer())) return
 
       const tile = this.world.getTile(this.getLayer(), pos)
-      if (tile === TileType.STONE || tile === TileType.WATER ||
-          tile === TileType.CRYSTAL_RED || tile === TileType.CRYSTAL_BLUE ||
+      if (tile === TileType.STONE ||
           tile === TileType.MAGIC_TREE || tile === TileType.MOLDERING_LOG) return
 
       this.drawingPath.push(pos)
@@ -393,7 +456,7 @@ export abstract class BaseGameScene extends Phaser.Scene {
       if (this.drawingPath) {
         if (this.drawingPath.length >= 2) {
           this.commitLeyline()
-        } else if (this.drawingPath.length === 1) {
+        } else if (this.drawingPath.length === 1 && pointer.getDistance() < 10) {
           const pos = this.drawingPath[0]
           const removedId = this.world.removeLeylineAt(pos, this.getLayer())
           if (removedId) {
@@ -411,8 +474,9 @@ export abstract class BaseGameScene extends Phaser.Scene {
 
       const pos = this.pointerToGrid(pointer)
       if (!pos) return
+      const wp = this.cameras.main.getWorldPoint(pointer.x, pointer.y)
 
-      this.handleTap(pos)
+      this.handleTap(pos, wp)
     })
   }
 
@@ -475,11 +539,17 @@ export abstract class BaseGameScene extends Phaser.Scene {
     })
   }
 
-  protected handleTap(target: GridPos): void {
+  protected handleTap(target: GridPos, worldPoint?: { x: number; y: number }): void {
+    const debugSeed = getDebugPlantMode()
+    if (debugSeed) {
+      this.debugPlaceMaturePlant(target, debugSeed)
+      return
+    }
+
     const tool = getTool()
     if (tool === 'leyline') return
 
-    hideTooltip()
+    this.dismissTooltip()
 
     const plant = this.world.getPlantAt(target, this.getLayer())
     const tile = this.getGrid()[target.row][target.col]
@@ -548,6 +618,28 @@ export abstract class BaseGameScene extends Phaser.Scene {
         this.showFloatingText(target, 'Hands full!', 0xf87171)
       }
       return
+    }
+
+    const leyAtTile = this.world.state.leylines.find(l =>
+      l.layer === this.getLayer() && l.path.some(p => samePos(p, target))
+    )
+    if (leyAtTile) {
+      const res = this.leylineEngine.getActiveResource(leyAtTile.id)
+      if (res) {
+        if (tile === TileType.HOLE && worldPoint) {
+          const hitLey = this.findLeylineNearPoint(worldPoint)
+          if (!hitLey) {
+            this.handleTapToMove(target)
+            return
+          }
+        }
+        const emoji = RESOURCE_EMOJI[res]
+        const name = RESOURCE_NAMES[res]
+        const scr = this.gridToWorldScreen(target.col, target.row, -HALF_H)
+        showTooltip({ screenX: scr.x, screenY: scr.y, html:
+          `<div class="tip-header">Leyline</div><div class="tip-desc">Carrying ${emoji} ${name}</div>` })
+        return
+      }
     }
 
     this.handleTapToMove(target)
@@ -787,7 +879,7 @@ export abstract class BaseGameScene extends Phaser.Scene {
       const display = SEED_DISPLAY[seed]
       this.showFloatingText({ col: 16, row: 6 }, `${display.emoji} Bought!`, 0xa78bfa)
       this.showPickupEffect({ col: 16, row: 6 }, 0xa78bfa)
-      hideTooltip()
+      this.dismissTooltip()
     } else if (result.type === 'hands_full') {
       this.showFloatingText(this.world.state.playerPos, 'Hands full!', 0xf87171)
     } else {
@@ -835,7 +927,58 @@ export abstract class BaseGameScene extends Phaser.Scene {
     return this.worldToScreen(gs.x, gs.y + yOffset)
   }
 
-  private showPlantTooltip(pos: GridPos, plant: Plant): void {
+  private findLeylineNearPoint(wp: { x: number; y: number }): Leyline | null {
+    const HIT_DIST = 12
+    const layer = this.getLayer()
+    for (const ley of this.world.state.leylines) {
+      if (ley.layer !== layer || ley.path.length < 2) continue
+      for (let i = 0; i < ley.path.length - 1; i++) {
+        const a = gridToScreen(ley.path[i].col, ley.path[i].row)
+        const b = gridToScreen(ley.path[i + 1].col, ley.path[i + 1].row)
+        const dx = b.x - a.x, dy = b.y - a.y
+        const len2 = dx * dx + dy * dy
+        if (len2 === 0) continue
+        const t = Math.max(0, Math.min(1, ((wp.x - a.x) * dx + (wp.y - a.y) * dy) / len2))
+        const px = a.x + t * dx, py = a.y + t * dy
+        const dist = Math.sqrt((wp.x - px) ** 2 + (wp.y - py) ** 2)
+        if (dist <= HIT_DIST) return ley
+      }
+    }
+    return null
+  }
+
+  private isLeylineTerminal(pos: GridPos, layer: Layer): boolean {
+    const tile = this.world.getTile(layer, pos)
+    if (tile === TileType.HOLE || tile === TileType.WATER ||
+        tile === TileType.CRYSTAL_RED || tile === TileType.CRYSTAL_BLUE) return true
+    if (this.world.getPlantAt(pos, layer)) return true
+    return false
+  }
+
+  private dismissTooltip(): void {
+    this.activeTooltipPlant = null
+    this.activeTooltipPortal = false
+    hideTooltip()
+  }
+
+  private refreshActiveTooltip(): void {
+    if (this.activeTooltipPortal) {
+      this.showPortalTooltip(false)
+      return
+    }
+    if (!this.activeTooltipPlant) return
+    const { pos, layer } = this.activeTooltipPlant
+    const plant = this.world.getPlantAt(pos, layer)
+    if (!plant) {
+      this.activeTooltipPlant = null
+      this.dismissTooltip()
+      return
+    }
+    this.showPlantTooltip(pos, plant, false)
+  }
+
+  private showPlantTooltip(pos: GridPos, plant: Plant, track = true): void {
+    if (track) this.activeTooltipPlant = { pos, layer: plant.layer }
     const scr = this.gridToWorldScreen(pos.col, pos.row, -HALF_H)
     const display = SEED_DISPLAY[plant.seedType]
     const stageIcon = plant.stage === GrowthStage.MATURE ? '✨' : '🌱'
@@ -876,7 +1019,8 @@ export abstract class BaseGameScene extends Phaser.Scene {
     showTooltip({ screenX: scr.x, screenY: scr.y, html })
   }
 
-  private showPortalTooltip(): void {
+  private showPortalTooltip(track = true): void {
+    if (track) this.activeTooltipPortal = true
     const portal = this.world.state.portal
     const pos = portal.pos
     const scr = this.gridToWorldScreen(pos.col, pos.row, -HALF_H)
@@ -994,7 +1138,8 @@ export abstract class BaseGameScene extends Phaser.Scene {
 
   private commitLeyline(): void {
     if (!this.drawingPath || this.drawingPath.length < 2) return
-    this.world.addLeyline(this.drawingPath, this.getLayer())
+    const { consumed } = this.world.addAndMergeLeyline(this.drawingPath, this.getLayer())
+    for (const id of consumed) this.leylineEngine.onLeylineRemoved(id)
     this.drawLeylines()
     const endPos = this.drawingPath[this.drawingPath.length - 1]
     this.showFloatingText(endPos, '✨ Path laid!', 0x4ade80)
@@ -1010,53 +1155,369 @@ export abstract class BaseGameScene extends Phaser.Scene {
       const color = res ? RESOURCE_COLORS[res] : 0xcccccc
       const alpha = res ? 0.5 : 0.25
 
-      this.leylineGraphics.lineStyle(2, color, alpha)
-      this.leylineGraphics.beginPath()
       const first = ley.path[0]
       const fp = gridToScreen(first.col, first.row)
-      this.leylineGraphics.moveTo(fp.x, fp.y)
-      for (let i = 1; i < ley.path.length; i++) {
-        const p = ley.path[i]
-        const pp = gridToScreen(p.col, p.row)
-        this.leylineGraphics.lineTo(pp.x, pp.y)
+      const isUnderground = this.getLayer() === Layer.UNDERGROUND
+
+      // Underground glow: draw a wider, faint background stroke for a glow effect
+      if (isUnderground) {
+        this.leylineGraphics.lineStyle(7, color, res ? 0.15 : 0.08)
+        this.leylineGraphics.beginPath()
+        this.leylineGraphics.moveTo(fp.x, fp.y)
+        for (let i = 1; i < ley.path.length; i++) {
+          const p = ley.path[i]
+          const pp = gridToScreen(p.col, p.row)
+          this.leylineGraphics.lineTo(pp.x, pp.y)
+        }
+        this.leylineGraphics.strokePath()
       }
-      this.leylineGraphics.strokePath()
 
       if (res) {
         const segments = ley.path.length - 1
-        const pulsePos = (this.pulseTime / 1500) % 1
-        const segF = pulsePos * segments
-        const segIdx = Math.floor(segF)
-        const segT = segF - segIdx
-        if (segIdx < segments) {
-          const a = ley.path[segIdx]
-          const b = ley.path[segIdx + 1]
+        const SHIMMER_STEPS = 6
+        const phase = this.pulseTime / 3000
+        for (let i = 0; i < segments; i++) {
+          const a = ley.path[i]
+          const b = ley.path[i + 1]
           const as = gridToScreen(a.col, a.row)
           const bs = gridToScreen(b.col, b.row)
-          const lx = as.x + (bs.x - as.x) * segT
-          const ly = as.y + (bs.y - as.y) * segT
-          this.leylineGraphics.fillStyle(color, 0.8)
-          this.leylineGraphics.fillCircle(lx, ly, 3)
-          this.leylineGraphics.fillStyle(0xffffff, 0.4)
-          this.leylineGraphics.fillCircle(lx, ly, 2)
+          for (let s = 0; s < SHIMMER_STEPS; s++) {
+            const t0 = s / SHIMMER_STEPS
+            const t1 = (s + 1) / SHIMMER_STEPS
+            const frac = (i + t0) / segments
+            const baseShimmer = 0.3 + 0.35 * (Math.sin((frac - phase) * Math.PI * 2) * 0.5 + 0.5)
+            const shimmer = isUnderground ? Math.min(baseShimmer + 0.2, 1.0) : baseShimmer
+            const x0 = as.x + (bs.x - as.x) * t0
+            const y0 = as.y + (bs.y - as.y) * t0
+            const x1 = as.x + (bs.x - as.x) * t1
+            const y1 = as.y + (bs.y - as.y) * t1
+            this.leylineGraphics.lineStyle(3, color, shimmer)
+            this.leylineGraphics.beginPath()
+            this.leylineGraphics.moveTo(x0, y0)
+            this.leylineGraphics.lineTo(x1, y1)
+            this.leylineGraphics.strokePath()
+          }
         }
+      } else {
+        this.leylineGraphics.lineStyle(2, color, alpha)
+        this.leylineGraphics.beginPath()
+        this.leylineGraphics.moveTo(fp.x, fp.y)
+        for (let i = 1; i < ley.path.length; i++) {
+          const p = ley.path[i]
+          const pp = gridToScreen(p.col, p.row)
+          this.leylineGraphics.lineTo(pp.x, pp.y)
+        }
+        this.leylineGraphics.strokePath()
       }
 
-      for (let i = 0; i < ley.path.length - 1; i++) {
-        this.drawDirectionArrow(ley.path[i], ley.path[i + 1], color, alpha)
-      }
-
-      this.leylineGraphics.fillStyle(color, alpha * 0.6)
+      this.leylineGraphics.fillStyle(color, res ? 0.7 : alpha * 0.6)
       this.leylineGraphics.fillCircle(fp.x, fp.y, 4)
 
       const last = ley.path[ley.path.length - 1]
       const lp = gridToScreen(last.col, last.row)
-      this.leylineGraphics.fillStyle(color, alpha * 0.8)
+      this.leylineGraphics.fillStyle(color, res ? 0.8 : alpha * 0.8)
       this.leylineGraphics.fillCircle(lp.x, lp.y, 3)
     }
   }
 
+  /** Create lighting overlays and glow effects based on current layer. */
+  private setupLighting(): void {
+    const bounds = isoWorldBounds()
+    const pad = 400
+
+    if (this.getLayer() === Layer.SURFACE) {
+      // Surface time-of-day multiply overlay
+      const tint = getTimeOfDayTint(this.world.state.weather.timeOfDay)
+      this.lightOverlay = this.add.rectangle(
+        bounds.x + bounds.width / 2,
+        bounds.y + bounds.height / 2,
+        bounds.width + pad * 2,
+        bounds.height + pad * 2,
+        tint,
+        1.0,
+      )
+      this.lightOverlay.setBlendMode(Phaser.BlendModes.MULTIPLY)
+      this.lightOverlay.setDepth(9000)
+      this.lightOverlay.setScrollFactor(1)
+
+      // Magic tree glow
+      const treePos = gridToScreen(16, 6)
+      const treeGlow = this.add.circle(treePos.x, treePos.y - 24, HALF_W * 1.2, 0xa8e6cf, 0.2)
+      treeGlow.setBlendMode(Phaser.BlendModes.ADD)
+      treeGlow.setDepth(9050)
+      this.tweens.add({
+        targets: treeGlow,
+        scaleX: { from: 0.9, to: 1.3 },
+        scaleY: { from: 0.9, to: 1.3 },
+        alpha: { from: 0.2, to: 0.05 },
+        duration: 3000,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut',
+      })
+
+      // Magic tree sprite above overlay
+      const treeTileSprite = this.tileSprites[6]?.[16]
+      if (treeTileSprite) treeTileSprite.setDepth(9050)
+    } else {
+      // Underground dark overlay — moderately dim, not pitch black
+      this.lightOverlay = this.add.rectangle(
+        bounds.x + bounds.width / 2,
+        bounds.y + bounds.height / 2,
+        bounds.width + pad * 2,
+        bounds.height + pad * 2,
+        0x556655,
+        1.0,
+      )
+      this.lightOverlay.setBlendMode(Phaser.BlendModes.MULTIPLY)
+      this.lightOverlay.setDepth(9000)
+      this.lightOverlay.setScrollFactor(1)
+
+      // Create crystal glows and hole light shafts
+      this.createUndergroundGlows()
+    }
+  }
+
+  private createUndergroundGlows(): void {
+    const grid = this.getGrid()
+    const visited = new Set<string>()
+
+    const floodFill = (startR: number, startC: number, tileType: TileType): Array<{c: number, r: number}> => {
+      const group: Array<{c: number, r: number}> = []
+      const stack = [{r: startR, c: startC}]
+      while (stack.length > 0) {
+        const {r, c} = stack.pop()!
+        const k = `${c},${r}`
+        if (visited.has(k)) continue
+        if (r < 0 || r >= WORLD_ROWS || c < 0 || c >= WORLD_COLS) continue
+        if (grid[r][c] !== tileType) continue
+        visited.add(k)
+        group.push({c, r})
+        stack.push({r: r-1, c}, {r: r+1, c}, {r, c: c-1}, {r, c: c+1})
+      }
+      return group
+    }
+
+    for (let r = 0; r < WORLD_ROWS; r++) {
+      for (let c = 0; c < WORLD_COLS; c++) {
+        const tile = grid[r][c]
+
+        if ((tile === TileType.CRYSTAL_RED || tile === TileType.CRYSTAL_BLUE) && !visited.has(`${c},${r}`)) {
+          const group = floodFill(r, c, tile)
+          let cx = 0, cy = 0
+          for (const t of group) {
+            const s = gridToScreen(t.c, t.r)
+            cx += s.x; cy += s.y
+          }
+          cx /= group.length; cy /= group.length
+          const spanC = group.reduce((mx, t) => Math.max(mx, t.c), 0) - group.reduce((mn, t) => Math.min(mn, t.c), Infinity) + 1
+          const spanR = group.reduce((mx, t) => Math.max(mx, t.r), 0) - group.reduce((mn, t) => Math.min(mn, t.r), Infinity) + 1
+          const w = HALF_W * 2 * (0.8 + 0.4 * (spanC - 1)) * 1.3
+          const h = HALF_H * 2 * (0.8 + 0.4 * (spanR - 1)) * 1.3
+          const color = tile === TileType.CRYSTAL_RED ? 0xef4444 : 0x6666ff
+          const glow = this.add.ellipse(cx, cy, w, h, color, 0.25)
+          glow.setBlendMode(Phaser.BlendModes.ADD)
+          glow.setDepth(9050)
+          this.crystalGlows.set(`group_${c},${r}`, glow)
+        }
+
+        if (tile === TileType.HOLE) {
+          const sp = gridToScreen(c, r)
+          const timeOfDay = this.world.state.weather.timeOfDay
+          const tint = getTimeOfDayTint(timeOfDay)
+          const alpha = getHoleLightAlpha(timeOfDay)
+          const glow = this.add.ellipse(sp.x, sp.y, HALF_W * 2.6, HALF_H * 2.6, tint, alpha)
+          glow.setBlendMode(Phaser.BlendModes.ADD)
+          glow.setDepth(9050)
+          this.holeLightGlows.set(`${c},${r}`, glow)
+        }
+      }
+    }
+  }
+
+  /** Update lighting overlays and glow each frame. */
+  private updateLighting(delta: number): void {
+    const weather = this.world.state.weather
+
+    // Update cloud factor (ramp toward 1 when raining, 0 when clear)
+    const rampRate = delta / 60000 // reach target in ~60 seconds
+    if (weather.isRaining) {
+      this.cloudFactor = Math.min(1.0, this.cloudFactor + rampRate)
+    } else {
+      this.cloudFactor = Math.max(0.0, this.cloudFactor - rampRate)
+    }
+
+    if (this.getLayer() === Layer.SURFACE) {
+      // Update surface overlay tint with time-of-day + cloud dimming
+      if (this.lightOverlay) {
+        const baseTint = getTimeOfDayTint(weather.timeOfDay)
+        const finalTint = getCloudedTint(baseTint, this.cloudFactor)
+        this.lightOverlay.setFillStyle(finalTint)
+      }
+    } else {
+      // Underground: update hole light shaft glows
+      for (const [, glow] of this.holeLightGlows) {
+        const tint = getTimeOfDayTint(weather.timeOfDay)
+        const cloudedTint = getCloudedTint(tint, this.cloudFactor)
+        const baseAlpha = getHoleLightAlpha(weather.timeOfDay)
+        // Dim alpha further when cloudy
+        const alpha = baseAlpha * (1.0 - this.cloudFactor * 0.3)
+        glow.setFillStyle(cloudedTint, alpha)
+      }
+    }
+  }
+
   protected updateLightShaftTints(): void {}
+
+  private updateRain(delta: number): void {
+    if (!this.rainGraphics) return
+    this.rainGraphics.clear()
+
+    const isRaining = this.world.state.weather.isRaining
+
+    if (this.getLayer() === Layer.SURFACE && isRaining) {
+      this.rainTime += delta
+      const cam = this.cameras.main
+      const w = cam.width
+      const h = cam.height
+      const density = 80
+      const seed = Math.floor(this.rainTime / 50)
+
+      this.rainGraphics.lineStyle(1, 0x88aadd, 0.4)
+      for (let i = 0; i < density; i++) {
+        const hash = (seed * 127 + i * 311) & 0xffff
+        const x = (hash * 7919) % w
+        const yBase = ((hash * 6271 + this.rainTime * 0.8) % (h + 40)) - 20
+        this.rainGraphics.beginPath()
+        this.rainGraphics.moveTo(x, yBase)
+        this.rainGraphics.lineTo(x - 4, yBase + 14)
+        this.rainGraphics.strokePath()
+      }
+    }
+
+    if (this.getLayer() === Layer.UNDERGROUND && isRaining) {
+      this.splashTimer += delta
+      if (this.splashTimer > 300) {
+        this.splashTimer = 0
+        const grid = this.getGrid()
+        for (let r = 0; r < WORLD_ROWS; r++) {
+          for (let c = 0; c < WORLD_COLS; c++) {
+            if (grid[r][c] !== TileType.HOLE) continue
+            if (Math.random() > 0.3) continue
+            const sp = gridToScreen(c, r)
+            const ox = (Math.random() - 0.5) * HALF_W * 0.8
+            const oy = (Math.random() - 0.5) * HALF_H * 0.8
+            const splash = this.add.circle(sp.x + ox, sp.y + oy, 2, 0x88bbee, 0.6)
+            splash.setBlendMode(Phaser.BlendModes.ADD)
+            splash.setDepth(9060)
+            this.holeSplashes.push({ x: sp.x + ox, y: sp.y + oy, sprite: splash, timer: 0 })
+          }
+        }
+      }
+
+      for (let i = this.holeSplashes.length - 1; i >= 0; i--) {
+        const s = this.holeSplashes[i]
+        s.timer += delta
+        const t = s.timer / 400
+        s.sprite.setScale(1 + t * 3)
+        s.sprite.setAlpha(0.6 * (1 - t))
+        if (t >= 1) {
+          s.sprite.destroy()
+          this.holeSplashes.splice(i, 1)
+        }
+      }
+    } else {
+      for (const s of this.holeSplashes) s.sprite.destroy()
+      this.holeSplashes.length = 0
+    }
+  }
+
+  private handleDebugAction(action: DebugAction): void {
+    const weather = this.world.state.weather
+    if (action.type === 'toggleRain') {
+      weather.isRaining = !weather.isRaining
+      weather.rainTimer = 60_000
+      notifyWeather(weather)
+    } else if (action.type === 'toggleDayNight') {
+      weather.timeOfDay = weather.timeOfDay >= 0.25 && weather.timeOfDay < 0.75 ? 0.85 : 0.5
+      notifyWeather(weather)
+    } else if (action.type === 'placeMaturePlant') {
+      // Handled in handleTap via getDebugPlantMode()
+    }
+  }
+
+  private debugPlaceMaturePlant(pos: GridPos, seed: SeedType): void {
+    const layer = this.getLayer()
+    if (seedLayer(seed) !== layer) {
+      this.showFloatingText(pos, 'Wrong layer!', 0xf87171)
+      return
+    }
+    if (this.world.getPlantAt(pos, layer)) {
+      this.showFloatingText(pos, 'Occupied!', 0xf87171)
+      return
+    }
+    const key = `${layer}:${pos.col},${pos.row}`
+    const plant: Plant = {
+      pos: { ...pos }, layer, seedType: seed,
+      stage: GrowthStage.MATURE,
+      waterFed: 0, crystalFed: 0, sunlightFed: 0,
+      transmuteInput1: 0, transmuteInput2: 0,
+    }
+    this.world.state.plants[key] = plant
+    this.addPlantSprite(plant)
+    const display = SEED_DISPLAY[seed]
+    this.showFloatingText(pos, `${display.emoji} Placed!`, 0x22c55e)
+  }
+
+  private updateEmissionDebug(): void {
+    if (!this.debugGraphics) return
+    this.debugGraphics.clear()
+    for (const t of this.debugTexts) t.destroy()
+    this.debugTexts.length = 0
+    if (!isDebugEmissionEnabled()) return
+
+    const debugData = this.leylineEngine.getEmissionDebug(this.world)
+    const layer = this.getLayer()
+
+    for (const entry of debugData) {
+      if (entry.layer !== layer) continue
+      const sp = gridToScreen(entry.plantPos.col, entry.plantPos.row)
+
+      if (entry.canEmit && entry.targetTile) {
+        this.debugGraphics.fillStyle(0x00ff00, 0.5)
+        this.debugGraphics.fillCircle(sp.x, sp.y - 12, 4)
+
+        const tp = gridToScreen(entry.targetTile.col, entry.targetTile.row)
+        this.debugGraphics.lineStyle(2, 0x00ff00, 0.4)
+        this.debugGraphics.beginPath()
+        this.debugGraphics.moveTo(sp.x, sp.y - 12)
+        this.debugGraphics.lineTo(tp.x, tp.y)
+        this.debugGraphics.strokePath()
+
+        this.debugGraphics.fillStyle(0x00ff00, 0.3)
+        this.debugGraphics.fillCircle(tp.x, tp.y, 6)
+
+        const label = this.add.text(sp.x, sp.y - 22, entry.reason, { fontSize: '8px', color: '#00ff00' })
+        label.setOrigin(0.5, 1).setDepth(9401)
+        this.debugTexts.push(label)
+      } else {
+        this.debugGraphics.fillStyle(0xff4444, 0.5)
+        this.debugGraphics.fillCircle(sp.x, sp.y - 12, 4)
+
+        this.debugGraphics.lineStyle(1, 0xff4444, 0.6)
+        this.debugGraphics.beginPath()
+        this.debugGraphics.moveTo(sp.x - 4, sp.y - 16)
+        this.debugGraphics.lineTo(sp.x + 4, sp.y - 8)
+        this.debugGraphics.moveTo(sp.x + 4, sp.y - 16)
+        this.debugGraphics.lineTo(sp.x - 4, sp.y - 8)
+        this.debugGraphics.strokePath()
+
+        const label = this.add.text(sp.x, sp.y - 22, entry.reason, { fontSize: '8px', color: '#ff4444' })
+        label.setOrigin(0.5, 1).setDepth(9401)
+        this.debugTexts.push(label)
+      }
+    }
+  }
 
   private drawDirectionArrow(from: GridPos, to: GridPos, color: number, alpha: number): void {
     const fs = gridToScreen(from.col, from.row)
@@ -1153,6 +1614,7 @@ export abstract class BaseGameScene extends Phaser.Scene {
         sprite.setTexture(expected)
         if (plant.stage === GrowthStage.MATURE) {
           hadNewMature = true
+          sprite.setDepth(9050 + (plant.pos.col + plant.pos.row) * 0.1)
           this.tweens.add({
             targets: sprite,
             scaleX: { from: 0.95, to: 1.1 },
@@ -1237,10 +1699,27 @@ export abstract class BaseGameScene extends Phaser.Scene {
     this.player.y = this.playerBaseY + floatOffset
 
     this.leylineEngine.tick(delta, this.world)
+    notifyEmitProgress(this.leylineEngine.getEmitProgress(), this.leylineEngine.emittedThisFrame)
+    if (this.leylineEngine.emittedThisFrame) {
+      advanceClock(this.world.state)
+      weatherFeedTick(this.world.state)
+    }
+    tickWeather(this.world.state, delta)
+
+    this.weatherHudTimer += delta
+    if (this.weatherHudTimer >= 1000 || this.leylineEngine.emittedThisFrame) {
+      this.weatherHudTimer = 0
+      notifyWeather(this.world.state.weather)
+    }
+
     this.drawLeylines()
+    this.updateLighting(delta)
     this.updateLightShaftTints()
+    this.updateRain(delta)
+    this.updateEmissionDebug()
     this.motePool.update(this.leylineEngine.getMotePositions(this.getLayer(), this.world))
     this.processAbsorptions()
+    this.refreshActiveTooltip()
     this.checkPlantUpdates()
     this.updatePortalSprite()
 
@@ -1281,7 +1760,7 @@ export abstract class BaseGameScene extends Phaser.Scene {
     if (dist <= step) {
       this.player.x = targetX
       this.playerBaseY = targetY
-      this.player.setDepth(isoDepth(target.col, target.row, 5))
+      this.player.setDepth(9055 + (target.col + target.row) * 0.1)
       this.world.movePlayer(target)
 
       this.pathIndex++
@@ -1349,7 +1828,7 @@ export abstract class BaseGameScene extends Phaser.Scene {
 
     switch (e.key) {
       case '1': case 'm': case 'M': setTool('move'); break
-      case '2': case 'd': case 'D': setTool('shovel'); break
+      case '2': setTool('shovel'); break
       case '3': case 'p': case 'P': setTool('plant'); break
       case '4': case 'l': case 'L':
         if (getUnlocks().leyline) setTool('leyline')
@@ -1361,9 +1840,6 @@ export abstract class BaseGameScene extends Phaser.Scene {
         e.preventDefault()
         this.handleInteract()
         break
-      case 'q': case 'Q':
-        this.handleDrop()
-        break
       case 'Escape':
         this.handleEscape()
         break
@@ -1373,9 +1849,6 @@ export abstract class BaseGameScene extends Phaser.Scene {
         break
       case '?': case 'h': case 'H':
         requestHelp()
-        break
-      case 'n': case 'N':
-        requestNewGame()
         break
       case '=': case '+':
         this.adjustZoom(0.3)
@@ -1458,7 +1931,7 @@ export abstract class BaseGameScene extends Phaser.Scene {
   }
 
   private handleEscape(): void {
-    hideTooltip()
+    this.dismissTooltip()
 
     if (this.drawingPath) {
       this.drawingPath = null

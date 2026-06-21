@@ -7,6 +7,21 @@ import {
 import { findPath } from './Pathfinding'
 import { crystalTypeForSeed, getStageReq, nextStage, seedLayer } from './PlantConfig'
 import { bindState, markDirty } from './SaveManager'
+import { createDefaultWeather } from './WeatherSystem'
+
+const TIER1_LADDER = [1, 2, 5, 10, 20, 30, 40, 50]
+const TIER2_LADDER = [2, 5, 10, 25, 50, 100]
+const TIER3_LADDER = [10, 25, 50, 100, 250, 500, 1000]
+
+const SEED_COST_LADDERS: Record<SeedType, number[]> = {
+  [SeedType.SUNFLOWER]: TIER1_LADDER,
+  [SeedType.WATER_LILY]: TIER1_LADDER,
+  [SeedType.LICHEN]: TIER1_LADDER,
+  [SeedType.LIFELEAF]: TIER2_LADDER,
+  [SeedType.ROOTWEAVE]: TIER2_LADDER,
+  [SeedType.DEWBELL]: TIER3_LADDER,
+  [SeedType.GLIMSTONE]: TIER3_LADDER,
+}
 
 function createSurfaceMap(): TileType[][] {
   const grid: TileType[][] = []
@@ -181,7 +196,14 @@ export class World {
         unlocks: { leyline: false },
         treeBuffer: {},
         treePurchases: {},
+        weather: createDefaultWeather(),
       }
+    }
+    if (!this.state.weather) {
+      this.state.weather = createDefaultWeather()
+    }
+    if (this.state.weather.dayCount == null) {
+      this.state.weather.dayCount = 1
     }
     bindState(this.state)
   }
@@ -291,6 +313,42 @@ export class World {
     return this.state.playerLayer
   }
 
+  private segmentKey(a: GridPos, b: GridPos): string {
+    const k1 = `${a.col},${a.row}`
+    const k2 = `${b.col},${b.row}`
+    return k1 < k2 ? `${k1}-${k2}` : `${k2}-${k1}`
+  }
+
+  getOccupiedSegments(layer: Layer): Set<string> {
+    const segs = new Set<string>()
+    for (const ley of this.state.leylines) {
+      if (ley.layer !== layer) continue
+      for (let i = 0; i < ley.path.length - 1; i++) {
+        segs.add(this.segmentKey(ley.path[i], ley.path[i + 1]))
+      }
+    }
+    return segs
+  }
+
+  isSegmentOccupied(a: GridPos, b: GridPos, layer: Layer): boolean {
+    const key = this.segmentKey(a, b)
+    for (const ley of this.state.leylines) {
+      if (ley.layer !== layer) continue
+      for (let i = 0; i < ley.path.length - 1; i++) {
+        if (this.segmentKey(ley.path[i], ley.path[i + 1]) === key) return true
+      }
+    }
+    return false
+  }
+
+  private isLeylineJunction(pos: GridPos, layer: Layer): boolean {
+    const tile = this.getTile(layer, pos)
+    if (tile === TileType.HOLE || tile === TileType.MAGIC_TREE || tile === TileType.MOLDERING_LOG) return true
+    if (this.getPlantAt(pos, layer)) return true
+    if (layer === Layer.SURFACE && samePos(pos, this.state.portal.pos)) return true
+    return false
+  }
+
   addLeyline(path: GridPos[], layer: Layer): Leyline {
     const leyline: Leyline = {
       id: `ley_${this.nextLeylineId++}`,
@@ -300,6 +358,82 @@ export class World {
     this.state.leylines.push(leyline)
     markDirty()
     return leyline
+  }
+
+  private leylineConnectionCount(pos: GridPos, layer: Layer): number {
+    let count = 0
+    for (const ley of this.state.leylines) {
+      if (ley.layer !== layer || ley.path.length < 2) continue
+      if (samePos(ley.path[0], pos)) count++
+      if (samePos(ley.path[ley.path.length - 1], pos)) count++
+    }
+    return count
+  }
+
+  private splitLeylineAt(pos: GridPos, layer: Layer): string[] {
+    const consumed: string[] = []
+    for (let i = this.state.leylines.length - 1; i >= 0; i--) {
+      const existing = this.state.leylines[i]
+      if (existing.layer !== layer) continue
+      const idx = existing.path.findIndex((p, j) =>
+        j > 0 && j < existing.path.length - 1 && samePos(p, pos)
+      )
+      if (idx < 0) continue
+
+      consumed.push(existing.id)
+      const firstHalf = existing.path.slice(0, idx + 1)
+      const secondHalf = existing.path.slice(idx)
+      this.state.leylines.splice(i, 1)
+      if (firstHalf.length >= 2) this.addLeyline(firstHalf, layer)
+      if (secondHalf.length >= 2) this.addLeyline(secondHalf, layer)
+      break
+    }
+    return consumed
+  }
+
+  addAndMergeLeyline(path: GridPos[], layer: Layer): { result: Leyline, consumed: string[] } {
+    const consumed: string[] = []
+
+    consumed.push(...this.splitLeylineAt(path[0], layer))
+    consumed.push(...this.splitLeylineAt(path[path.length - 1], layer))
+
+    const leyline = this.addLeyline(path, layer)
+
+    let merged = true
+    while (merged) {
+      merged = false
+      const start = leyline.path[0]
+      const end = leyline.path[leyline.path.length - 1]
+
+      for (let i = this.state.leylines.length - 1; i >= 0; i--) {
+        const other = this.state.leylines[i]
+        if (other.id === leyline.id || other.layer !== layer) continue
+
+        const otherEnd = other.path[other.path.length - 1]
+        const otherStart = other.path[0]
+
+        if (samePos(otherEnd, start) && !this.isLeylineJunction(start, layer)
+            && this.leylineConnectionCount(start, layer) <= 2) {
+          leyline.path = [...other.path, ...leyline.path.slice(1)]
+          consumed.push(other.id)
+          this.state.leylines.splice(i, 1)
+          merged = true
+          break
+        }
+
+        if (samePos(otherStart, end) && !this.isLeylineJunction(end, layer)
+            && this.leylineConnectionCount(end, layer) <= 2) {
+          leyline.path = [...leyline.path, ...other.path.slice(1)]
+          consumed.push(other.id)
+          this.state.leylines.splice(i, 1)
+          merged = true
+          break
+        }
+      }
+    }
+
+    markDirty()
+    return { result: leyline, consumed }
   }
 
   removeLeylineAt(pos: GridPos, layer: Layer): string | null {
@@ -508,14 +642,14 @@ export class World {
   }
 
   getTreeSeedCost(seed: SeedType): { resource: ResourceType; amount: number } {
-    if (seed === SeedType.SUNFLOWER) {
-      return { resource: ResourceType.SUNLIGHT, amount: 1 }
-    }
-    if (seed === SeedType.WATER_LILY) {
-      return { resource: ResourceType.WATER, amount: 1 }
-    }
     const purchased = this.state.treePurchases[seed] ?? 0
-    return { resource: ResourceType.LIFE_ESSENCE, amount: Math.pow(2, purchased) }
+    const ladder = SEED_COST_LADDERS[seed]
+    const amount = purchased < ladder.length ? ladder[purchased] : ladder[ladder.length - 1]
+    let resource: ResourceType
+    if (seed === SeedType.SUNFLOWER) resource = ResourceType.SUNLIGHT
+    else if (seed === SeedType.WATER_LILY) resource = ResourceType.WATER
+    else resource = ResourceType.LIFE_ESSENCE
+    return { resource, amount }
   }
 
   canAffordTreeSeed(seed: SeedType): boolean {

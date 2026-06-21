@@ -1,4 +1,4 @@
-import { ToolMode, CarriableItem, SeedType, Layer, Unlocks } from './sim/types'
+import { ToolMode, CarriableItem, SeedType, Layer, Unlocks, WeatherState, GridPos } from './sim/types'
 
 let _tool: ToolMode = 'move'
 const toolListeners: Array<(t: ToolMode) => void> = []
@@ -149,5 +149,53 @@ export function onNewGameRequest(fn: () => void): () => void {
   return () => {
     const i = newGameListeners.indexOf(fn)
     if (i >= 0) newGameListeners.splice(i, 1)
+  }
+}
+
+const weatherListeners: Array<(w: WeatherState) => void> = []
+
+export function notifyWeather(w: WeatherState): void {
+  weatherListeners.forEach(fn => fn(w))
+}
+
+export function onWeatherChange(fn: (w: WeatherState) => void): () => void {
+  weatherListeners.push(fn)
+  return () => {
+    const i = weatherListeners.indexOf(fn)
+    if (i >= 0) weatherListeners.splice(i, 1)
+  }
+}
+
+const emitListeners: Array<(progress: number, fired: boolean) => void> = []
+
+export function notifyEmitProgress(progress: number, fired: boolean): void {
+  emitListeners.forEach(fn => fn(progress, fired))
+}
+
+export function onEmitProgress(fn: (progress: number, fired: boolean) => void): () => void {
+  emitListeners.push(fn)
+  return () => {
+    const i = emitListeners.indexOf(fn)
+    if (i >= 0) emitListeners.splice(i, 1)
+  }
+}
+
+// Debug panel (desktop only)
+export type DebugAction =
+  | { type: 'toggleRain' }
+  | { type: 'toggleDayNight' }
+  | { type: 'placeMaturePlant'; seed: SeedType }
+
+const debugListeners: Array<(action: DebugAction) => void> = []
+
+export function requestDebugAction(action: DebugAction): void {
+  debugListeners.forEach(fn => fn(action))
+}
+
+export function onDebugAction(fn: (action: DebugAction) => void): () => void {
+  debugListeners.push(fn)
+  return () => {
+    const i = debugListeners.indexOf(fn)
+    if (i >= 0) debugListeners.splice(i, 1)
   }
 }

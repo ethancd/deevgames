@@ -37,13 +37,13 @@ export enum ResourceType {
 }
 
 export const RESOURCE_COLORS: Record<ResourceType, number> = {
-  [ResourceType.WATER]: 0x3b82f6,
+  [ResourceType.WATER]: 0xb0d4f1,
   [ResourceType.CRYSTAL_RED]: 0xef4444,
-  [ResourceType.CRYSTAL_BLUE]: 0x6366f1,
+  [ResourceType.CRYSTAL_BLUE]: 0x3a0080,
   [ResourceType.SUNLIGHT]: 0xfbbf24,
-  [ResourceType.LIFE_ESSENCE]: 0x4ade80,
-  [ResourceType.MUSIC_NOTES]: 0xd946ef,
-  [ResourceType.CRYSTAL_GREEN]: 0x22c55e,
+  [ResourceType.LIFE_ESSENCE]: 0xa8e6cf,
+  [ResourceType.MUSIC_NOTES]: 0x1a1a2e,
+  [ResourceType.CRYSTAL_GREEN]: 0x0a6e2e,
 }
 
 export const RESOURCE_EMOJI: Record<ResourceType, string> = {
@@ -106,6 +106,15 @@ export interface Portal {
   level: number
 }
 
+export interface WeatherState {
+  timeOfDay: number      // 0.0–1.0 (0=midnight, 0.25=dawn, 0.5=noon, 0.75=dusk)
+  isRaining: boolean
+  rainTimer: number      // ms until rain state changes
+  weatherFeedTimer: number  // ms accumulator for feed interval
+  dayCount: number       // in-game day number, increments each time timeOfDay wraps past 0
+  treeFeedCounter: number  // counts feed ticks; tree gets fed every 6th tick
+}
+
 export interface Unlocks {
   leyline: boolean
 }
@@ -125,6 +134,7 @@ export interface WorldState {
   unlocks: Unlocks
   treeBuffer: Record<string, number>
   treePurchases: Record<string, number>
+  weather: WeatherState
 }
 
 export type ToolMode = 'move' | 'shovel' | 'plant' | 'leyline'

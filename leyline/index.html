@@ -188,12 +188,113 @@
     .wb-items { text-align: left; font-size: 13px; line-height: 1.6; margin-bottom: 16px; }
     .wb-item { color: rgba(255,255,255,0.7); }
     .wb-tap { font-size: 12px; color: rgba(255,255,255,0.3); }
+    #weather-hud {
+      position: fixed;
+      top: max(8px, env(safe-area-inset-top));
+      right: 8px;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      background: rgba(10, 10, 20, 0.7);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      font-family: system-ui, sans-serif;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.8);
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    #weather-hud .hud-day {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 11px;
+    }
+    .emit-clock {
+      position: relative;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(255,255,255,0.3);
+      flex-shrink: 0;
+    }
+    .emit-clock .tick-dot {
+      position: absolute;
+      top: 1px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.4);
+      transition: background 0.15s;
+    }
+    .emit-clock .tick-dot.flash {
+      background: #4ade80;
+    }
+    .emit-clock .needle {
+      position: absolute;
+      bottom: 50%;
+      left: 50%;
+      width: 1.5px;
+      height: 8px;
+      background: rgba(255,255,255,0.6);
+      transform-origin: bottom center;
+      transform: translateX(-50%) rotate(0deg);
+      border-radius: 1px;
+    }
+    /* Debug panel — desktop only */
+    #debug-panel {
+      position: fixed; top: 8px; left: 8px; z-index: 200;
+      font-family: monospace; font-size: 12px; color: #e2e8f0;
+      pointer-events: auto;
+    }
+    #debug-toggle {
+      background: rgba(30,30,50,0.85); padding: 4px 10px;
+      border-radius: 6px; cursor: pointer; display: inline-block;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+    #debug-body {
+      background: rgba(20,20,40,0.92); border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 8px; padding: 8px; margin-top: 4px;
+      backdrop-filter: blur(8px); min-width: 180px;
+    }
+    #debug-body.hidden { display: none; }
+    .dbg-section { margin-bottom: 8px; }
+    .dbg-label { font-size: 11px; color: #94a3b8; margin-bottom: 4px; }
+    .dbg-btn {
+      display: block; width: 100%; margin: 3px 0; padding: 4px 8px;
+      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+      color: #e2e8f0; border-radius: 4px; cursor: pointer; font-size: 12px;
+      text-align: left;
+    }
+    .dbg-btn:hover { background: rgba(255,255,255,0.15); }
+    #dbg-plant-grid { display: flex; gap: 4px; flex-wrap: wrap; }
+    .dbg-seed-btn {
+      width: 28px; height: 28px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.08); cursor: pointer; font-size: 16px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .dbg-seed-btn:hover { background: rgba(255,255,255,0.2); }
+    .dbg-seed-btn.active { background: rgba(251,191,36,0.3); border-color: #fbbf24; }
+    .dbg-hint { font-size: 10px; color: #64748b; margin-top: 4px; }
   </style>
 </head>
 <body>
   <div id="game"></div>
   <div id="ui-overlay"></div>
   <div id="game-tooltip" class="hidden"></div>
+  <div id="weather-hud">
+    <div class="emit-clock" id="emit-clock">
+      <div class="tick-dot" id="emit-tick"></div>
+      <div class="needle" id="emit-needle"></div>
+    </div>
+    <span id="hud-weather-icon">☀️</span>
+    <span id="hud-clock">12:00 PM</span>
+    <span id="hud-day" class="hud-day">Day 1</span>
+  </div>
   <script type="module" src="/src/main.ts"></script>
 </body>
 </html>
