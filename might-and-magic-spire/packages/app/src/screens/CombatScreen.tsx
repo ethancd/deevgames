@@ -1,125 +1,230 @@
-// COMBAT — the heart of the loop. Top: enemies with telegraphed intents.
-// Middle: player stats. Bottom: the hand fanned for thumb reach, an energy
-// orb, and End Turn. Targeting model: tap an enemy to select it, then tap a
-// single-target card; AoE/self cards ignore selection. All touch, no keyboard.
-import { useEffect, useState } from 'react';
-import type { CardDef } from '@mms/schema';
-import type { RunState } from '../engine';
-import { HpPip, HudShell } from '../components/StatBar';
-import { RelicBar } from '../components/RelicBar';
-import { EnemyView } from '../components/EnemyView';
-import { Card } from '../components/Card';
-import { ShieldIcon } from '../chrome/icons';
+// COMBAT — the heart of the loop, rebuilt as a HoMM3 ARMY battle. Top: the
+// enemy army across two ranks with honest telegraphs. Middle: a sunken combat
+// log. Bottom (thumb reach): your two ranks, the hero-doll strip, a mana-gated
+// Spellbook drawer, and End Turn.
+//
+// Interaction (all touch, side-alternation):
+//   • Tap one of YOUR unacted stacks → its legal enemy targets glow
+//     (animate-pulse-blood), illegal stacks dim → tap an enemy to ATTACK it, or
+//     tap Defend to brace.
+//   • Tap a spell → it arms → tap a legal target (or it resolves if self/all).
+//   • End Turn runs the enemy army; log deltas + floating damage numbers flash.
+// The army roster is the life total: when your last stack falls you lose.
+import { useEffect, useRef, useState } from 'react';
+import type { CombatSpell, CommandOrder, RunState, Stack } from '../engine';
+import { BattleField } from '../components/BattleField';
+import { Spellbook } from '../components/Spellbook';
+import { HeroDollStrip } from '../components/HeroDoll';
+import { ArmyPip, HudShell } from '../components/StatBar';
+import type { FloatKind } from '../components/FloatingNumber';
 
-function needsTarget(card: CardDef): boolean {
-  return card.effects.some(
-    (e) => e.kind === 'damage' && e.target !== 'allEnemies' && e.target !== 'self',
-  );
-}
+type Float = { id: string; text: string; kind: FloatKind };
+
+let floatSeq = 0;
 
 export function CombatScreen({
   run,
-  onPlayCard,
+  onCommandStack,
+  onCastSpell,
   onEndTurn,
+  legalTargets,
+  legalSpellTargets,
+  onOpenDoll,
 }: {
   run: RunState;
-  onPlayCard: (cardId: string, targetId?: string) => void;
+  onCommandStack: (stackId: string, order: CommandOrder) => void;
+  onCastSpell: (spellId: string, targetId?: string) => void;
   onEndTurn: () => void;
+  legalTargets: (stackId: string) => string[];
+  legalSpellTargets: (spellId: string) => string[];
+  onOpenDoll?: () => void;
 }) {
   const combat = run.combat!;
-  const [target, setTarget] = useState<string | null>(null);
+  const [selectedStackId, setSelectedStackId] = useState<string | null>(null);
+  const [armedSpell, setArmedSpell] = useState<CombatSpell | null>(null);
+  const [spellbookOpen, setSpellbookOpen] = useState(false);
+  const [floats, setFloats] = useState<Record<string, Float[]>>({});
 
-  // Keep selection valid as enemies die; default to the first living enemy.
+  // Diff stack counts between renders to spawn floating loss numbers.
+  const prevCounts = useRef<Record<string, number>>({});
   useEffect(() => {
-    if (combat.enemies.length === 0) return;
-    if (!target || !combat.enemies.some((e) => e.id === target)) {
-      setTarget(combat.enemies[0].id);
+    const all = [...combat.yourArmy.stacks, ...combat.enemyArmy.stacks];
+    const next: Record<string, Float[]> = {};
+    for (const s of all) {
+      const before = prevCounts.current[s.id];
+      if (before != null && s.count < before) {
+        const lost = before - s.count;
+        const id = `f${floatSeq++}`;
+        next[s.id] = [{ id, text: `-${lost}`, kind: 'loss' }];
+      }
     }
-  }, [combat.enemies, target]);
+    if (Object.keys(next).length > 0) {
+      setFloats((cur) => {
+        const merged = { ...cur };
+        for (const [k, v] of Object.entries(next)) merged[k] = [...(merged[k] ?? []), ...v];
+        return merged;
+      });
+    }
+    const counts: Record<string, number> = {};
+    for (const s of all) counts[s.id] = s.count;
+    prevCounts.current = counts;
+  }, [combat]);
 
-  const play = (card: CardDef) => {
-    if (card.cost > combat.energy) return;
-    onPlayCard(card.id, needsTarget(card) ? target ?? undefined : undefined);
+  const clearFloat = (sid: string, fid: string) =>
+    setFloats((cur) => ({ ...cur, [sid]: (cur[sid] ?? []).filter((f) => f.id !== fid) }));
+
+  // Whose stacks can act / what's a legal target right now.
+  const selectableIds = new Set(
+    combat.yourArmy.stacks.filter((s) => s.count > 0 && !s.hasActed).map((s) => s.id),
+  );
+
+  let targetableIds = new Set<string>();
+  if (armedSpell) {
+    targetableIds = new Set(legalSpellTargets(armedSpell.id));
+  } else if (selectedStackId) {
+    targetableIds = new Set(legalTargets(selectedStackId));
+  }
+
+  const tapStack = (s: Stack) => {
+    // Casting a spell at a legal target.
+    if (armedSpell) {
+      if (targetableIds.has(s.id)) {
+        onCastSpell(armedSpell.id, s.id);
+        setArmedSpell(null);
+        setSpellbookOpen(false);
+      }
+      return;
+    }
+    // Selecting one of your stacks to command.
+    if (s.side === 'player') {
+      if (selectableIds.has(s.id)) {
+        setSelectedStackId((cur) => (cur === s.id ? null : s.id));
+      }
+      return;
+    }
+    // Attacking with the selected stack.
+    if (s.side === 'enemy' && selectedStackId && targetableIds.has(s.id)) {
+      onCommandStack(selectedStackId, { kind: 'attack', targetId: s.id });
+      setSelectedStackId(null);
+    }
   };
 
-  return (
-    <div className="flex h-full flex-col bg-necropolis">
-      <HudShell>
-        <div className="flex items-center gap-2 text-xs text-bone-300">
-          <span className="font-display tracking-widest text-verd-300">TURN {combat.turn}</span>
-        </div>
-        <div className="text-[0.65rem] text-bone-500">
-          Draw {combat.drawCount} · Discard {combat.discardCount}
-        </div>
-      </HudShell>
-      <div className="border-b border-verd-700 bg-grave-900/60">
-        <RelicBar relics={run.relics} />
-      </div>
+  const defendSelected = () => {
+    if (!selectedStackId) return;
+    onCommandStack(selectedStackId, { kind: 'defend' });
+    setSelectedStackId(null);
+  };
 
-      {/* Enemy stage */}
-      <div className="flex flex-1 items-start justify-center gap-3 overflow-y-auto px-3 pt-6">
-        {combat.enemies.map((e) => (
-          <EnemyView
-            key={e.id}
-            enemy={e}
-            selected={target === e.id}
-            onSelect={() => setTarget(e.id)}
-          />
+  const armSpell = (spell: CombatSpell) => {
+    setSelectedStackId(null);
+    // Self/all spells need no target — resolve immediately.
+    if (spell.targeting === 'self' || spell.targeting === 'allEnemies' || spell.targeting === 'allAllies' || spell.targeting === 'none') {
+      onCastSpell(spell.id);
+      setSpellbookOpen(false);
+      setArmedSpell(null);
+      return;
+    }
+    setArmedSpell((cur) => (cur?.id === spell.id ? null : spell));
+    setSpellbookOpen(false);
+  };
+
+  const selected = selectedStackId
+    ? combat.yourArmy.stacks.find((s) => s.id === selectedStackId)
+    : null;
+
+  return (
+    <div className="relative flex h-full flex-col bg-necropolis">
+      <HudShell>
+        <div className="flex items-center gap-3">
+          <span className="font-display text-xs tracking-widest text-verd-300">ROUND {combat.round}</span>
+          <ArmyPip army={combat.yourArmy.stacks} />
+        </div>
+        <span className="font-display text-[0.65rem] uppercase tracking-widest text-bone-500">
+          {combat.whoseTurn === 'player' ? 'Your command' : 'Enemy acts'}
+        </span>
+      </HudShell>
+
+      <BattleField
+        combat={combat}
+        selectedId={selectedStackId}
+        targetableIds={targetableIds}
+        selectableIds={selectableIds}
+        floats={floats}
+        onClearFloat={(fid) => {
+          // find which stack owns this float id
+          for (const [sid, list] of Object.entries(floats)) {
+            if (list.some((f) => f.id === fid)) return clearFloat(sid, fid);
+          }
+        }}
+        onTapStack={tapStack}
+      />
+
+      {/* Combat log trench */}
+      <div
+        data-testid="combat-log"
+        className="max-h-16 overflow-y-auto border-y border-verd-700 bg-grave-900/80 px-3 py-1 text-[0.62rem] leading-snug text-bone-400"
+      >
+        {combat.log.slice(-4).map((line, i) => (
+          <div key={i} className={i === Math.min(3, combat.log.length - 1) ? 'text-bone-200' : ''}>
+            {line}
+          </div>
         ))}
       </div>
 
-      {/* Player band */}
-      <div className="flex items-center justify-between gap-3 border-t border-verd-700 bg-grave-800/90 px-3 py-2">
-        <HpPip hp={combat.playerHp} maxHp={combat.playerMaxHp} />
-        {combat.playerBlock > 0 && (
-          <div
-            data-testid="player-block"
-            className="flex items-center gap-1 rounded-full border border-verd-500 bg-grave-900 px-2 py-0.5 text-sm text-verd-300"
-            aria-label={`Block ${combat.playerBlock}`}
-          >
-            <ShieldIcon /> {combat.playerBlock}
-          </div>
-        )}
-      </div>
-
-      {/* Hand + controls */}
-      <div className="relative bg-grave-900/95 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-3">
-        <div className="flex items-end justify-center gap-2 overflow-x-auto px-3">
-          {combat.hand.map((card, i) => (
-            <Card
-              key={`${card.id}-${i}`}
-              card={card}
-              playable={card.cost <= combat.energy && combat.outcome === 'ongoing'}
-              onClick={() => play(card)}
-            />
-          ))}
-          {combat.hand.length === 0 && (
-            <div className="py-8 text-sm italic text-bone-500">Hand empty — end your turn.</div>
+      {/* Action bar */}
+      <div className="flex items-center justify-between gap-2 bg-grave-800/90 px-3 py-2">
+        <div className="min-w-0 flex-1 text-[0.65rem] text-bone-400">
+          {armedSpell ? (
+            <span className="text-necro-400">Casting {armedSpell.name} — tap a target.</span>
+          ) : selected ? (
+            <span className="text-bone-200">{selected.name} selected — tap an enemy or Defend.</span>
+          ) : (
+            <span className="italic">Tap one of your stacks to command it.</span>
           )}
         </div>
-
-        <div className="mt-3 flex items-center justify-between px-4">
-          {/* Energy orb */}
-          <div
-            data-testid="energy"
-            aria-label={`Energy ${combat.energy} of ${combat.maxEnergy}`}
-            className="flex h-14 w-14 flex-col items-center justify-center rounded-full border-2 border-verd-300 bg-gradient-to-b from-verd-500 to-grave-800 font-display text-bone-50 shadow-lg"
-          >
-            <span className="text-lg font-bold leading-none">{combat.energy}</span>
-            <span className="text-[0.55rem] leading-none text-bone-300">/{combat.maxEnergy}</span>
-          </div>
-
-          <button
-            type="button"
-            data-testid="end-turn"
-            onClick={onEndTurn}
-            disabled={combat.outcome !== 'ongoing'}
-            className="rounded-md border border-blood-500 bg-blood-500/20 px-6 py-3 font-display text-sm uppercase tracking-widest text-bone-100 active:scale-95 disabled:opacity-40"
-          >
-            End Turn
-          </button>
-        </div>
+        <button
+          type="button"
+          data-testid="defend"
+          disabled={!selectedStackId}
+          onClick={defendSelected}
+          className="rounded border border-verd-500 bg-verd-700/30 px-3 py-2 font-display text-xs uppercase tracking-widest text-bone-100 active:scale-95 disabled:opacity-30"
+        >
+          Defend
+        </button>
+        <button
+          type="button"
+          data-testid="open-spellbook"
+          onClick={() => setSpellbookOpen(true)}
+          className="rounded border border-necro-400/60 bg-grave-900 px-3 py-2 font-display text-xs uppercase tracking-widest text-necro-400 active:scale-95"
+        >
+          Spells
+        </button>
+        <button
+          type="button"
+          data-testid="end-turn"
+          onClick={() => {
+            setSelectedStackId(null);
+            setArmedSpell(null);
+            onEndTurn();
+          }}
+          disabled={combat.outcome !== 'ongoing'}
+          className="rounded-md border border-blood-500 bg-blood-500/20 px-4 py-2 font-display text-xs uppercase tracking-widest text-bone-100 active:scale-95 disabled:opacity-40"
+        >
+          End Turn
+        </button>
       </div>
+
+      <HeroDollStrip hero={run.hero} onOpen={onOpenDoll} />
+
+      <Spellbook
+        open={spellbookOpen}
+        spells={run.hero.spellbook}
+        mana={run.hero.mana}
+        spellCastThisTurn={combat.spellCastThisTurn}
+        armedSpellId={armedSpell?.id ?? null}
+        onArm={armSpell}
+        onClose={() => setSpellbookOpen(false)}
+      />
     </div>
   );
 }

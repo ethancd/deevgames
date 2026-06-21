@@ -4,16 +4,18 @@
 // node's `next`; the UI only renders and gates taps.
 import { useMemo } from 'react';
 import type { RunState } from '../engine';
-import { HpPip, GoldPip, HudShell } from '../components/StatBar';
-import { RelicBar } from '../components/RelicBar';
+import { ArmyPip, GoldPip, HudShell } from '../components/StatBar';
+import { HeroDollStrip } from '../components/HeroDoll';
 import { nodeIcon, NODE_LABEL } from '../components/icons-for-node';
 
 export function MapScreen({
   run,
   onChoose,
+  onOpenDoll,
 }: {
   run: RunState;
   onChoose: (nodeId: string) => void;
+  onOpenDoll?: () => void;
 }) {
   const rows = useMemo(() => {
     const maxRow = Math.max(...run.map.map((n) => n.row));
@@ -36,17 +38,13 @@ export function MapScreen({
     <div className="flex h-full flex-col bg-necropolis">
       <HudShell>
         <div className="flex items-center gap-3">
-          <HpPip hp={run.hp} maxHp={run.maxHp} />
+          <ArmyPip army={run.army} />
           <GoldPip gold={run.gold} />
         </div>
         <div className="font-display text-sm tracking-widest text-verd-300">
           ACT {run.act}
         </div>
       </HudShell>
-
-      <div className="border-b border-verd-700 bg-grave-900/60">
-        <RelicBar relics={run.relics} />
-      </div>
 
       <div className="flex-1 overflow-y-auto px-4 py-6">
         <h2 className="mb-4 text-center font-display text-lg tracking-[0.2em] text-bone-300 engraved">
@@ -99,6 +97,8 @@ export function MapScreen({
           Climb toward the Lich King. Tap a glowing path.
         </p>
       </div>
+
+      <HeroDollStrip hero={run.hero} onOpen={onOpenDoll} />
     </div>
   );
 }

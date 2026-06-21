@@ -1,57 +1,87 @@
-// Integration smoke for the app↔real-engine seam (packages/app/src/engine).
+// Integration smoke for the app↔engine seam (packages/app/src/engine).
 //
-// The existing app tests were written against the fixture mock. This one drives
-// a full seeded run through the REAL engine via the seam, exercising the two
-// pieces that only exist at integration: the pickReward choice-object →
-// engine-index translation, and the engine→app RewardChoice mapping (incl. the
-// `gold` kind the engine emits that the contract didn't originally model).
+// The UI only ever touches the engine through this seam. Today the seam resolves
+// to the fixture-backed ARMY mock (USE_REAL_ENGINE=false); at integration the
+// orchestrator flips it to the rebuilt @mms/engine, and this test should keep
+// passing unchanged because both sides implement the same pinned EngineApi.
+//
+// This drives a FULL army battle through the seam — commandStack → castSpell →
+// endPlayerTurn — and resolves nodes (incl. the pickReward choice-OBJECT path
+// the seam translates), without importing @mms/engine directly.
 import { describe, it, expect } from 'vitest';
 import { engine } from '../src/engine';
-import { legalNextNodes, type RunState as EngineRunState } from '@mms/engine';
+import type { Stack } from '../src/engine';
 
-describe('app ↔ real engine seam', () => {
-  it('plays a seeded run through combat + reward translation without throwing', () => {
-    let run = engine.startRun('integration-smoke');
-    expect(run.deck.length).toBeGreaterThan(0);
+const alive = (stacks: Stack[]) => stacks.filter((s) => s.count > 0);
 
-    let pickedAReward = false;
+describe('app ↔ engine seam (army)', () => {
+  it('drives a seeded army battle + reward resolution without throwing', () => {
+    let run = engine.startRun('integration-army');
+    expect(run.army.length).toBeGreaterThan(0);
+    expect(run.hero.spellbook.length).toBeGreaterThan(0);
+
+    let commandedAStack = false;
+    let castASpell = false;
+    let resolvedANode = false;
     let guard = 0;
 
-    while (run.outcome === 'ongoing' && guard++ < 1000) {
+    while (run.outcome === 'ongoing' && guard++ < 800) {
       const combat = run.combat;
       if (combat && combat.outcome === 'ongoing') {
-        const playable = combat.hand.find((card) => card.cost <= combat.energy);
-        if (playable) {
-          run = engine.playCard(run, playable.id, combat.enemies[0]?.id);
-        } else {
-          run = engine.endTurn(run);
+        // Cast once per turn if affordable (exercises castSpell through the seam).
+        if (!combat.spellCastThisTurn) {
+          const spell = run.hero.spellbook.find((s) => run.hero.mana >= s.manaCost);
+          const enemy = alive(combat.enemyArmy.stacks)[0];
+          if (spell && enemy && spell.targeting === 'enemyStack') {
+            run = engine.castSpell(run, spell.id, enemy.id);
+            castASpell = true;
+            continue;
+          }
         }
+        const me = combat.yourArmy.stacks.find((s) => s.count > 0 && !s.hasActed);
+        if (me) {
+          const targets = engine.legalTargets(run, me.id);
+          run = targets.length
+            ? engine.commandStack(run, me.id, { kind: 'attack', targetId: targets[0] })
+            : engine.commandStack(run, me.id, { kind: 'defend' });
+          commandedAStack = true;
+          continue;
+        }
+        run = engine.endPlayerTurn(run);
         continue;
       }
 
-      const choices = engine.pendingRewards?.(run) ?? [];
-      if (choices.length > 0) {
-        // Picking by the app's choice OBJECT exercises the choice→index adapter.
-        run = engine.pickReward(run, choices[0]);
-        pickedAReward = true;
+      // On a node: take a pending reward by its OBJECT (the seam's choice→index
+      // translation path), else press on through an economy node.
+      const pending = engine.pendingRewards?.(run) ?? null;
+      if (pending && pending.length > 0) {
+        run = engine.pickReward(run, pending[0]);
+        resolvedANode = true;
+        continue;
+      }
+      if (run.currentNodeId != null) {
+        run = engine.pickReward(run, { kind: 'skip' });
+        resolvedANode = true;
         continue;
       }
 
-      const next = legalNextNodes(run as unknown as EngineRunState);
+      const next = engine.legalNextNodes(run);
       if (next.length === 0) break;
       run = engine.chooseNode(run, next[0]);
     }
 
-    expect(pickedAReward).toBe(true);
+    expect(commandedAStack).toBe(true);
+    expect(castASpell).toBe(true);
+    expect(resolvedANode).toBe(true);
     expect(['ongoing', 'won', 'lost']).toContain(run.outcome);
-    // A deterministic seed must resolve well within the guard.
-    expect(guard).toBeLessThan(1000);
+    expect(guard).toBeLessThan(800);
   });
 
-  it('is deterministic: the same seed yields the same starting deck', () => {
+  it('is deterministic: same seed yields the same hero + army + map', () => {
     const a = engine.startRun('determinism-check');
     const b = engine.startRun('determinism-check');
-    expect(a.deck.map((c) => c.id)).toEqual(b.deck.map((c) => c.id));
+    expect(a.army.map((s) => s.creatureId)).toEqual(b.army.map((s) => s.creatureId));
     expect(a.map.map((n) => n.id)).toEqual(b.map.map((n) => n.id));
+    expect(a.hero.id).toEqual(b.hero.id);
   });
 });

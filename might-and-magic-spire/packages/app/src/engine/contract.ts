@@ -1,54 +1,141 @@
-// The runtime contract, PINNED by the orchestrator.
+// The runtime contract, PINNED by the orchestrator for the ARMY combat redesign.
 //
-// The engine (Agent 3 / @mms/engine) is being built against this EXACT
-// definition in parallel. The app codes its screens against these types and
-// call signatures. At integration we swap the mock for the real engine import
-// in ./index.ts; nothing in the UI layer changes because the UI only ever
-// imports from ./engine, never from the mock directly.
-import type { CardDef } from '@mms/schema';
+// The real @mms/engine (Agent 3) is being rebuilt against this EXACT definition
+// in parallel — a HoMM3-style army battle: a hero with no HP commanding creature
+// STACKS across two ranks, a spellbook, and a paper-doll of artifacts. The app
+// codes its screens against these types and call signatures. At integration the
+// orchestrator swaps the mock for the real engine import in ./index.ts; nothing
+// in the UI layer changes because the UI only ever imports from ./engine, never
+// from the mock (or @mms/engine) directly.
+//
+// NOTE: this contract intentionally does NOT import @mms/engine — the app must
+// build green against the mock today, before the army engine ships.
 
-// @mms/schema exports `Rarity` as a Zod enum *value*; the runtime contract
-// pins the inferred string-literal *type*. CardDef.rarity already carries it,
-// so we derive it here without taking a zod dependency in the app.
-export type Rarity = CardDef['rarity'];
+// Rarity for equipment, pinned as a plain string-literal union (no zod dep).
+export type Rarity = 'common' | 'uncommon' | 'rare' | 'relic';
 
-export type NodeType = 'combat' | 'elite' | 'event' | 'shop' | 'rest' | 'boss';
+// Map node types — the army roguelite adds dwelling/altar/shrine/merchant.
+export type NodeType =
+  | 'combat'
+  | 'elite'
+  | 'boss'
+  | 'dwelling'
+  | 'altar'
+  | 'shrine'
+  | 'merchant'
+  | 'rest';
 
-export interface Intent {
-  kind: 'attack' | 'block' | 'buff' | 'debuff' | 'unknown';
+// The nine anatomical artifact slots of the hero paper-doll.
+export type ArtifactSlot =
+  | 'Head'
+  | 'Neck'
+  | 'Torso'
+  | 'RightHand'
+  | 'LeftHand'
+  | 'Ring'
+  | 'Feet'
+  | 'Misc'
+  | 'Special';
+
+// The four primary hero stats (the hero has NO hp — the army is the life total).
+export type PrimaryStat = 'attack' | 'defense' | 'power' | 'knowledge';
+
+// Spell schools mirror HoMM3's magic guilds.
+export type SpellSchool = 'Air' | 'Earth' | 'Fire' | 'Water' | 'All';
+
+// What a spell can be aimed at.
+export type SpellTargeting =
+  | 'enemyStack'
+  | 'allyStack'
+  | 'allEnemies'
+  | 'allAllies'
+  | 'self'
+  | 'none';
+
+export interface Equipment {
+  id: string;
+  name: string;
+  slot: ArtifactSlot;
+  rarity: Rarity;
+  bonuses: string;
+  imageRef: string;
+}
+
+export interface CombatSpell {
+  id: string;
+  name: string;
+  school: SpellSchool;
+  level: number;
+  manaCost: number;
+  description: string;
+  targeting: SpellTargeting;
+  imageRef: string;
+}
+
+export interface Hero {
+  id: string;
+  name: string;
+  heroClass: string;
+  specialty: string;
+  attack: number;
+  defense: number;
+  power: number;
+  knowledge: number;
+  mana: number;
+  maxMana: number;
+  equipment: Partial<Record<ArtifactSlot, Equipment>>;
+  spellbook: CombatSpell[];
+  skills: Record<string, number>;
+  imageRef: string;
+}
+
+// An enemy stack's telegraphed intent for the coming turn — the only way the
+// player reads the AI. Honest: the same plan drives the shown label and the
+// executed action.
+export interface Telegraph {
+  kind: 'attack' | 'shoot' | 'defend' | 'cast' | 'wait' | 'unknown';
   value?: number;
+  targetStackId?: string;
   label: string;
 }
 
-export interface Enemy {
+// A creature STACK (type × count). Stacks DO have hp; the army of stacks is the
+// player's life total. `creatureId` is the SourceCreature id used for art.
+export interface Stack {
   id: string;
+  creatureId: string;
   name: string;
-  hp: number;
-  maxHp: number;
-  block: number;
-  intent: Intent;
+  tier: number;
+  count: number;
+  hpTop: number; // hp remaining on the topmost (currently-fighting) creature
+  maxHpPer: number;
+  attack: number;
+  defense: number;
+  damageMin: number;
+  damageMax: number;
+  speed: number;
+  rank: 'front' | 'back';
+  abilities: string[];
+  side: 'player' | 'enemy';
+  hasActed: boolean;
+  isDefending: boolean;
+  hasRetaliated: boolean;
+  telegraph?: Telegraph;
   imageRef: string;
 }
 
-export interface Relic {
-  id: string;
-  name: string;
-  rarity: Rarity;
-  description: string;
-  imageRef: string;
+export interface Army {
+  stacks: Stack[];
+  side: 'player' | 'enemy';
 }
 
 export interface CombatState {
-  turn: number;
-  energy: number;
-  maxEnergy: number;
-  playerHp: number;
-  playerMaxHp: number;
-  playerBlock: number;
-  hand: CardDef[];
-  drawCount: number;
-  discardCount: number;
-  enemies: Enemy[];
+  round: number;
+  whoseTurn: 'player' | 'enemy';
+  yourArmy: Army;
+  enemyArmy: Army;
+  spellCastThisTurn: boolean;
+  log: string[];
   outcome: 'ongoing' | 'won' | 'lost';
 }
 
@@ -62,11 +149,9 @@ export interface MapNode {
 
 export interface RunState {
   seed: string;
-  hp: number;
-  maxHp: number;
+  hero: Hero;
+  army: Stack[];
   gold: number;
-  deck: CardDef[];
-  relics: Relic[];
   map: MapNode[];
   currentNodeId: string | null;
   act: number;
@@ -75,17 +160,25 @@ export interface RunState {
 }
 
 /**
- * A reward choice surfaced after a node resolves. `pickReward` consumes it.
- * The engine is the source of truth for what choices exist; the UI renders
- * whatever it returns. We model the two reward shapes the brief calls out
- * (card pick, relic pick) plus a "skip" escape hatch.
+ * A reward / node-interaction choice. `pickReward` consumes it. The engine is
+ * the source of truth for what choices exist; the UI renders whatever it
+ * returns. Covers the army economy (recruit/upgrade/learn/buy), the no-town
+ * growth lever (raise undead), plus gold and a skip escape hatch.
  */
 export type RewardChoice =
-  | { kind: 'card'; cardId: string }
-  | { kind: 'relic'; relicId: string }
+  | { kind: 'recruit'; creatureId: string; count: number; cost: number }
+  | { kind: 'upgrade'; stackId: string; toCreatureId: string; cost: number }
+  | { kind: 'learn'; spellId: string; cost: number }
+  | { kind: 'buy'; artifactId: string; slot: ArtifactSlot; cost: number }
+  | { kind: 'raise'; creatureId: string; count: number }
   | { kind: 'gold'; amount: number }
-  | { kind: 'heal'; amount: number }
   | { kind: 'skip' };
+
+// A command issued to one of your stacks on your turn (once per stack).
+export interface CommandOrder {
+  kind: 'attack' | 'defend';
+  targetId?: string;
+}
 
 /**
  * The pinned op surface. Every op is pure: (state, …args) -> next state.
@@ -93,18 +186,31 @@ export type RewardChoice =
  */
 export interface EngineApi {
   startRun(seed: string): RunState;
+  legalNextNodes(run: RunState): string[];
   chooseNode(run: RunState, nodeId: string): RunState;
-  playCard(run: RunState, cardId: string, targetId?: string): RunState;
-  endTurn(run: RunState): RunState;
+
+  // --- combat (side-alternation army turns) ---
+  commandStack(run: RunState, stackId: string, order: CommandOrder): RunState;
+  castSpell(run: RunState, spellId: string, targetId?: string): RunState;
+  endPlayerTurn(run: RunState): RunState;
+  legalTargets(run: RunState, stackId: string): string[];
+
+  // --- node interactions / economy ---
   pickReward(run: RunState, choice: RewardChoice): RunState;
+  recruit(run: RunState, creatureId: string, count: number): RunState;
+  upgrade(run: RunState, stackId: string): RunState;
+  learn(run: RunState, spellId: string): RunState;
+  buy(run: RunState, artifactId: string): RunState;
+  equipArtifact(run: RunState, artifactId: string, slot: ArtifactSlot): RunState;
 }
 
 /**
- * The engine may additionally expose what rewards a freshly-resolved node
- * offers. This is not in the minimal pinned op list, so we keep it optional
- * and provide it from the mock; if the real engine lacks it, the UI falls
- * back to a generic "continue" affordance.
+ * Optional introspection the engine MAY expose. Kept optional so the seam can
+ * fall back when the real engine omits them.
+ *  - pendingRewards: what a freshly-resolved node offers.
+ *  - legalSpellTargets: which stacks a given spell may be aimed at.
  */
 export interface EngineRewardSource {
-  pendingRewards?(run: RunState): RewardChoice[];
+  pendingRewards?(run: RunState): RewardChoice[] | null;
+  legalSpellTargets?(run: RunState, spellId: string): string[];
 }

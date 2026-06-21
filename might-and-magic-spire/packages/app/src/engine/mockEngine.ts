@@ -1,24 +1,41 @@
-// Fixture-backed mock engine implementing the pinned runtime contract.
+// Fixture-backed ARMY engine implementing the pinned runtime contract.
 //
-// This lets the app be developed and tested NOW, before @mms/engine ships its
-// real build. It is intentionally a faithful-enough Slay-the-Spire loop — a
-// branching act map, seeded deterministic combat with intents, card play that
-// mutates HP/block/energy, rewards, and an act boss — so the whole run is
-// touch-playable end to end. At integration this file is dropped in favour of
-// the real engine; see ./index.ts for the swap seam.
-import type { CardDef } from '@mms/schema';
-import { fixtureCard } from '@mms/schema';
+// This lets the app be developed and tested NOW, before the rebuilt army
+// @mms/engine ships. It is a faithful-enough HoMM3-with-one-hero loop: a
+// branching act map with dwelling/altar/shrine/merchant/rest rows, a Galthran-
+// like hero (Attack/Defense/Power/Knowledge + mana + one equipped artifact + a
+// small spellbook), a starting army of creature STACKS across two ranks, and
+// side-alternation combat — you command each living stack once (attack/defend),
+// cast <=1 hero spell, then watch the enemy army act on its honest telegraph.
+// Simple but real damage (count × avg damage × A/D factor) with kill/chip on
+// count+hpTop, one retaliation per melee defender per round, and the no-town
+// growth economy (recruit/upgrade/learn/buy/raise/equip).
+//
+// It pulls REAL @mms/data content (stats + art refs) so portraits resolve and
+// the Codex stays consistent. At integration this file is dropped in favour of
+// the real engine; see ./index.ts for the swap seam. Determinism via mulberry32.
+import {
+  creatures as srcCreatures,
+  artifacts as srcArtifacts,
+  spells as srcSpells,
+  heroes as srcHeroes,
+} from '@mms/data';
 import type {
-  CombatState,
-  Enemy,
+  ArtifactSlot,
+  CombatSpell,
+  CommandOrder,
+  Equipment,
+  Hero,
   EngineApi,
   EngineRewardSource,
-  Intent,
   MapNode,
   NodeType,
-  Relic,
   RewardChoice,
   RunState,
+  SpellSchool,
+  SpellTargeting,
+  Stack,
+  Telegraph,
 } from './contract';
 
 // ---------------------------------------------------------------------------
@@ -41,123 +58,153 @@ function mulberry32(a: number): () => number {
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
 }
-
-// ---------------------------------------------------------------------------
-// Necropolis card pool — derived from the schema fixture card so we never
-// drift from the content contract. Mechanics owns the real adapter; this is a
-// stand-in deck that exercises every effect kind the UI must render.
-// ---------------------------------------------------------------------------
-function mkCard(over: Partial<CardDef> & { id: string }): CardDef {
-  return { ...fixtureCard, ...over };
+function rngInt(rng: () => number, lo: number, hi: number): number {
+  return lo + Math.floor(rng() * (hi - lo + 1));
 }
 
-const CARD_POOL: CardDef[] = [
-  mkCard({
-    id: 'card_skeleton',
-    name: 'Skeleton',
-    type: 'strike',
-    cost: 1,
-    rarity: 'common',
-    effects: [{ kind: 'damage', amount: 5, target: 'enemy' }],
-    text: 'Deal 5 damage.',
-    imageRef: 'necropolis_skeleton',
-  }),
-  mkCard({
-    id: 'card_bone_wall',
-    name: 'Bone Wall',
-    type: 'skill',
-    cost: 1,
-    rarity: 'common',
-    effects: [{ kind: 'block', amount: 5, target: 'self' }],
-    text: 'Gain 5 Block.',
-    imageRef: 'necropolis_wraith',
-  }),
-  mkCard({
-    id: 'card_walking_dead',
-    name: 'Walking Dead',
-    type: 'strike',
-    cost: 1,
-    rarity: 'common',
-    effects: [{ kind: 'damage', amount: 7, target: 'enemy' }],
-    text: 'Deal 7 damage.',
-    imageRef: 'necropolis_zombie',
-  }),
-  mkCard({
-    id: 'card_vampiric_touch',
-    name: 'Vampiric Touch',
-    type: 'skill',
-    cost: 2,
-    rarity: 'uncommon',
-    effects: [
-      { kind: 'damage', amount: 6, target: 'enemy' },
-      { kind: 'block', amount: 6, target: 'self' },
-    ],
-    text: 'Deal 6 damage. Gain 6 Block.',
-    imageRef: 'necropolis_vampire',
-  }),
-  mkCard({
-    id: 'card_raise_dead',
-    name: 'Raise Dead',
-    type: 'power',
-    cost: 1,
-    rarity: 'uncommon',
-    effects: [{ kind: 'draw', amount: 2, target: 'self' }],
-    text: 'Draw 2 cards.',
-    imageRef: 'necropolis_lich',
-  }),
-  mkCard({
-    id: 'card_death_cloud',
-    name: 'Death Cloud',
-    type: 'strike',
-    cost: 2,
-    rarity: 'rare',
-    effects: [{ kind: 'damage', amount: 8, target: 'allEnemies' }],
-    text: 'Deal 8 damage to ALL enemies.',
-    imageRef: 'necropolis_lich',
-  }),
-];
-
-const RELIC_POOL: Relic[] = [
-  {
-    id: 'relic_skull_of_galthran',
-    name: 'Skull of Galthran',
-    rarity: 'uncommon',
-    description: 'At the start of combat, gain 4 Block.',
-    imageRef: 'artifact_centaurs_axe',
-  },
-  {
-    id: 'relic_vial_of_lifeblood',
-    name: 'Vial of Lifeblood',
-    rarity: 'common',
-    description: 'Heal 2 HP after each combat.',
-    imageRef: 'artifact_centaurs_axe',
-  },
-  {
-    id: 'relic_necromancers_amulet',
-    name: "Necromancer's Amulet",
-    rarity: 'rare',
-    description: 'The first card you play each turn costs 0.',
-    imageRef: 'artifact_centaurs_axe',
-  },
-];
-
-const STARTER_DECK: CardDef[] = [
-  CARD_POOL[0], CARD_POOL[0], CARD_POOL[0], CARD_POOL[0],
-  CARD_POOL[1], CARD_POOL[1], CARD_POOL[1],
-  CARD_POOL[2], CARD_POOL[2],
-  CARD_POOL[3],
-];
+function clone<T>(v: T): T {
+  return JSON.parse(JSON.stringify(v));
+}
 
 // ---------------------------------------------------------------------------
-// Map generation — a small branching act, ~7 rows, ending in a boss.
+// Content adapters — turn @mms/data records into army-contract objects.
+// ---------------------------------------------------------------------------
+type SrcCreature = (typeof srcCreatures)[number];
+
+const creatureById = new Map(srcCreatures.map((c) => [c.id, c]));
+
+function rankFor(c: SrcCreature): 'front' | 'back' {
+  return c.abilities.some((a) => /Ranged|Shooter/i.test(a)) ? 'back' : 'front';
+}
+
+let stackSeq = 0;
+function adaptStack(c: SrcCreature, count: number, side: 'player' | 'enemy'): Stack {
+  return {
+    id: `stk_${side}_${c.id}_${stackSeq++}`,
+    creatureId: c.id,
+    name: c.name,
+    tier: c.tier,
+    count,
+    hpTop: c.hp,
+    maxHpPer: c.hp,
+    attack: c.attack,
+    defense: c.defense,
+    damageMin: c.damageMin,
+    damageMax: c.damageMax,
+    speed: c.speed,
+    rank: rankFor(c),
+    abilities: [...c.abilities],
+    side,
+    hasActed: false,
+    isDefending: false,
+    hasRetaliated: false,
+    imageRef: c.imageRef,
+  };
+}
+
+function artifactRarity(klass: string): Equipment['rarity'] {
+  switch (klass) {
+    case 'Treasure':
+      return 'common';
+    case 'Minor':
+      return 'uncommon';
+    case 'Major':
+      return 'rare';
+    default:
+      return 'relic';
+  }
+}
+
+type SrcArtifact = (typeof srcArtifacts)[number];
+function adaptEquipment(a: SrcArtifact): Equipment {
+  return {
+    id: a.id,
+    name: a.name,
+    slot: a.slot as ArtifactSlot,
+    rarity: artifactRarity((a as { class?: string }).class ?? 'Treasure'),
+    bonuses: a.bonuses,
+    imageRef: a.imageRef,
+  };
+}
+
+type SrcSpell = (typeof srcSpells)[number];
+function spellTargeting(s: SrcSpell): SpellTargeting {
+  const tags = s.effectTags;
+  const heals = tags.some((t) => /heal|resurrect/.test(t));
+  if (tags.some((t) => /all-units/.test(t))) return 'allEnemies';
+  if (tags.some((t) => /area|multi-target|chain/.test(t))) return 'allEnemies';
+  if (heals || tags.some((t) => /buff/.test(t))) return 'allyStack';
+  if (tags.some((t) => /damage|debuff|disable/.test(t))) return 'enemyStack';
+  return 'none';
+}
+
+function adaptSpell(s: SrcSpell): CombatSpell {
+  return {
+    id: s.id,
+    name: s.name,
+    school: s.school as SpellSchool,
+    level: s.level,
+    manaCost: s.manaCost,
+    description: s.description,
+    targeting: spellTargeting(s),
+    imageRef: s.imageRef,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Hero — a Galthran-like Death Knight: A/D/P/K, mana 10, a few spells, one
+// equipped artifact. Derived from the real hero record + content.
+// ---------------------------------------------------------------------------
+function makeHero(): Hero {
+  const src = srcHeroes.find((h) => h.id === 'hero_galthran') ?? srcHeroes[0];
+  const starterSpellIds = ['spell_magic_arrow', 'spell_death_ripple', 'spell_slow'];
+  const spellbook = starterSpellIds
+    .map((id) => srcSpells.find((s) => s.id === id))
+    .filter((s): s is SrcSpell => !!s)
+    .map(adaptSpell);
+  const axe = srcArtifacts.find((a) => a.id === 'artifact_sword_of_hellfire');
+  const equipment: Hero['equipment'] = {};
+  if (axe) equipment[axe.slot as ArtifactSlot] = adaptEquipment(axe);
+  return {
+    id: src.id,
+    name: src.name,
+    heroClass: src.heroClass,
+    specialty: src.specialty,
+    attack: 2,
+    defense: 2,
+    power: 1,
+    knowledge: 2,
+    mana: 10,
+    maxMana: 10,
+    equipment,
+    spellbook,
+    skills: { Necromancy: 1, Offense: 1 },
+    imageRef: src.imageRef,
+  };
+}
+
+function startingArmy(): Stack[] {
+  stackSeq = 0;
+  const skel = creatureById.get('necropolis_skeleton')!;
+  const lich = creatureById.get('necropolis_lich')!;
+  const walking = creatureById.get('necropolis_walking_dead')!;
+  return [
+    adaptStack(skel, 40, 'player'),
+    adaptStack(walking, 12, 'player'),
+    adaptStack(lich, 4, 'player'),
+  ];
+}
+
+// ---------------------------------------------------------------------------
+// Map generation — a small branching act with the new node rows, ending boss.
 // ---------------------------------------------------------------------------
 const ROW_TYPES: NodeType[][] = [
   ['combat', 'combat'],
-  ['combat', 'event'],
-  ['elite', 'combat'],
-  ['rest', 'shop'],
-  ['combat', 'event'],
-  ['elite', 'shop'],
+  ['dwelling', 'combat'],
+  ['altar', 'shrine'],
+  ['combat', 'merchant'],
+  ['elite', 'rest'],
+  ['shrine', 'dwelling'],
   ['boss'],
 ];
 
@@ -174,22 +221,20 @@ function buildMap(rng: () => number): MapNode[] {
     byRow.push(ids);
   });
   const node = (id: string) => nodes.find((n) => n.id === id)!;
-  const pick = <T,>(arr: T[]): T => arr[Math.min(arr.length - 1, Math.floor(rng() * arr.length))];
+  const pick = <T,>(arr: T[]): T =>
+    arr[Math.min(arr.length - 1, Math.floor(rng() * arr.length))];
 
-  // Wire each node to 1-2 nodes in the next row.
   for (let row = 0; row < byRow.length - 1; row++) {
     const cur = byRow[row];
     const nxt = byRow[row + 1];
     cur.forEach((id) => {
       const target = pick(nxt);
       node(id).next = [target];
-      // occasionally fan out to a second next node
       if (nxt.length > 1 && rng() > 0.5) {
         const alt = nxt.find((t) => t !== target);
         if (alt) node(id).next.push(alt);
       }
     });
-    // guarantee every next-row node is reachable
     nxt.forEach((tid) => {
       if (!cur.some((id) => node(id).next.includes(tid))) {
         node(pick(cur)).next.push(tid);
@@ -200,76 +245,219 @@ function buildMap(rng: () => number): MapNode[] {
 }
 
 // ---------------------------------------------------------------------------
-// Enemy templates + intent telegraphing.
+// Enemy army composition per node type.
 // ---------------------------------------------------------------------------
-function makeIntent(rng: () => number, atk: number): Intent {
-  const roll = rng();
-  if (roll < 0.6) return { kind: 'attack', value: atk, label: `Attack ${atk}` };
-  if (roll < 0.85) return { kind: 'block', value: 6, label: 'Defend' };
-  return { kind: 'buff', label: 'Empower' };
-}
-
-function spawnEnemies(type: NodeType, rng: () => number): Enemy[] {
-  const mk = (id: string, name: string, hp: number, atk: number, ref: string): Enemy => ({
-    id,
-    name,
-    hp,
-    maxHp: hp,
-    block: 0,
-    intent: makeIntent(rng, atk),
-    imageRef: ref,
-  });
+function spawnEnemyArmy(type: NodeType, rng: () => number): Stack[] {
+  stackSeq = 1000;
+  const mk = (id: string, count: number) =>
+    adaptStack(creatureById.get(id)!, count, 'enemy');
   switch (type) {
     case 'boss':
-      return [mk('e_boss', 'Lich King', 80, 14, 'necropolis_lich')];
+      return [
+        mk('necropolis_black_knight', 3),
+        mk('necropolis_power_lich', 6),
+        mk('necropolis_bone_dragon', 1),
+      ];
     case 'elite':
       return [
-        mk('e_vamp', 'Vampire Lord', 38, 9, 'necropolis_vampire'),
-        mk('e_wraith', 'Wraith', 22, 6, 'necropolis_wraith'),
+        mk('necropolis_vampire', rngInt(rng, 4, 6)),
+        mk('necropolis_wight', rngInt(rng, 6, 9)),
       ];
     default:
       return [
-        mk('e_skel1', 'Skeleton', 16, 5, 'necropolis_skeleton'),
-        mk('e_zomb', 'Zombie', 20, 4, 'necropolis_zombie'),
+        mk('necropolis_skeleton', rngInt(rng, 20, 30)),
+        mk('necropolis_zombie', rngInt(rng, 8, 12)),
       ];
   }
 }
 
 // ---------------------------------------------------------------------------
-// Combat helpers.
+// Combat math.
 // ---------------------------------------------------------------------------
-function startCombat(run: RunState, type: NodeType, rng: () => number): CombatState {
-  // Apply "start of combat" relics (Skull of Galthran).
-  let startBlock = 0;
-  if (run.relics.some((r) => r.id === 'relic_skull_of_galthran')) startBlock = 4;
-  const enemies = spawnEnemies(type, rng);
-  const hand = drawHand(run.deck, rng, 5);
+function effAttack(stack: Stack, hero: Hero): number {
+  return stack.attack + hero.attack;
+}
+function effDefense(stack: Stack, hero: Hero): number {
+  const base = stack.defense + hero.defense;
+  return stack.isDefending ? base + Math.round(stack.defense * 0.2) + 1 : base;
+}
+
+// total hp pool of a stack = top creature's remaining + full creatures behind.
+function poolHp(stack: Stack): number {
+  return stack.hpTop + (stack.count - 1) * stack.maxHpPer;
+}
+
+// Apply `dmg` to a stack, recomputing count + hpTop. Returns creatures killed.
+function applyDamage(stack: Stack, dmg: number): number {
+  const before = stack.count;
+  const remaining = poolHp(stack) - dmg;
+  if (remaining <= 0) {
+    stack.count = 0;
+    stack.hpTop = 0;
+    return before;
+  }
+  const count = Math.ceil(remaining / stack.maxHpPer);
+  const hpTop = remaining - (count - 1) * stack.maxHpPer;
+  stack.count = count;
+  stack.hpTop = hpTop;
+  return before - count;
+}
+
+function damageOf(
+  attacker: Stack,
+  defender: Stack,
+  attackerHero: Hero,
+  defenderHero: Hero,
+  rng: () => number,
+): number {
+  const perCreature = rngInt(rng, attacker.damageMin, attacker.damageMax);
+  const base = attacker.count * perCreature;
+  const diff = effAttack(attacker, attackerHero) - effDefense(defender, defenderHero);
+  const factor =
+    diff >= 0 ? 1 + Math.min(diff * 0.05, 3.0) : 1 - Math.min(-diff * 0.025, 0.7);
+  return Math.max(1, Math.round(base * factor));
+}
+
+function isShooter(s: Stack): boolean {
+  return s.abilities.some((a) => /Ranged|Shooter/i.test(a));
+}
+function noRetaliation(s: Stack): boolean {
+  return s.abilities.some((a) => /No enemy retaliation/i.test(a));
+}
+
+function aliveStacks(army: Stack[]): Stack[] {
+  return army.filter((s) => s.count > 0);
+}
+
+// Two-rank reach: melee may hit the front rank until it's empty, then back.
+// Shooters (and the hero spells) may hit any rank.
+function legalMeleeTargets(enemyAlive: Stack[]): Stack[] {
+  const front = enemyAlive.filter((s) => s.rank === 'front');
+  return front.length > 0 ? front : enemyAlive;
+}
+
+// ---------------------------------------------------------------------------
+// Enemy AI telegraph — honest: the same plan is shown and executed.
+// ---------------------------------------------------------------------------
+function planTelegraph(
+  attacker: Stack,
+  playerAlive: Stack[],
+): Telegraph {
+  if (playerAlive.length === 0) return { kind: 'wait', label: 'Wait' };
+  const shooter = isShooter(attacker);
+  const reachable = shooter ? playerAlive : legalMeleeTargets(playerAlive);
+  // target the player stack with the lowest remaining pool (a clean kill).
+  const target = [...reachable].sort((a, b) => poolHp(a) - poolHp(b))[0];
+  const avg = Math.round((attacker.damageMin + attacker.damageMax) / 2) * attacker.count;
   return {
-    turn: 1,
-    energy: 3,
-    maxEnergy: 3,
-    playerHp: run.hp,
-    playerMaxHp: run.maxHp,
-    playerBlock: startBlock,
-    hand,
-    drawCount: Math.max(0, run.deck.length - hand.length),
-    discardCount: 0,
-    enemies,
-    outcome: 'ongoing',
+    kind: shooter ? 'shoot' : 'attack',
+    value: avg,
+    targetStackId: target.id,
+    label: `${shooter ? 'Shoot' : 'Attack'} ${target.name}`,
   };
 }
 
-function drawHand(deck: CardDef[], rng: () => number, n: number): CardDef[] {
-  const pool = [...deck];
-  const out: CardDef[] = [];
-  for (let i = 0; i < n && pool.length; i++) {
-    out.push(pool.splice(Math.floor(rng() * pool.length), 1)[0]);
+function refreshTelegraphs(combat: RunState['combat'], hero: Hero): void {
+  if (!combat) return;
+  const playerAlive = aliveStacks(combat.yourArmy.stacks);
+  for (const e of aliveStacks(combat.enemyArmy.stacks)) {
+    e.telegraph = planTelegraph(e, playerAlive);
   }
-  return out;
+  void hero;
 }
 
-function clone<T>(v: T): T {
-  return JSON.parse(JSON.stringify(v));
+// ---------------------------------------------------------------------------
+// Spell resolution (mock): a couple of representative effects.
+// ---------------------------------------------------------------------------
+function resolveSpell(
+  combat: NonNullable<RunState['combat']>,
+  hero: Hero,
+  spell: CombatSpell,
+  targetId: string | undefined,
+  rng: () => number,
+): void {
+  const power = hero.power;
+  const enemyAlive = aliveStacks(combat.enemyArmy.stacks);
+  const dmgBase = (spell.level + 1) * 6 + power * 4;
+  const apply = (s: Stack, amount: number) => {
+    const killed = applyDamage(s, amount);
+    combat.log.push(
+      `${hero.name} casts ${spell.name} on ${s.name} (${amount} dmg${killed ? `, ${killed} slain` : ''}).`,
+    );
+  };
+  switch (spell.targeting) {
+    case 'allEnemies':
+      for (const s of enemyAlive) apply(s, Math.round(dmgBase * 0.6));
+      break;
+    case 'enemyStack': {
+      const t = enemyAlive.find((s) => s.id === targetId) ?? enemyAlive[0];
+      if (t) apply(t, dmgBase);
+      break;
+    }
+    case 'allyStack': {
+      const t = aliveStacks(combat.yourArmy.stacks).find((s) => s.id === targetId);
+      // mock "buff/heal": top up the lead creature a little.
+      if (t) {
+        t.hpTop = Math.min(t.maxHpPer, t.hpTop + Math.round(dmgBase * 0.5));
+        combat.log.push(`${hero.name} casts ${spell.name} on ${t.name}.`);
+      }
+      break;
+    }
+    default:
+      combat.log.push(`${hero.name} casts ${spell.name}.`);
+  }
+  void rng;
+}
+
+// ---------------------------------------------------------------------------
+// Combat lifecycle.
+// ---------------------------------------------------------------------------
+function startCombat(
+  army: Stack[],
+  type: NodeType,
+  rng: () => number,
+  hero: Hero,
+): NonNullable<RunState['combat']> {
+  const yourStacks = clone(army).map((s) => ({
+    ...s,
+    hasActed: false,
+    isDefending: false,
+    hasRetaliated: false,
+  }));
+  const enemyStacks = spawnEnemyArmy(type, rng);
+  const combat: NonNullable<RunState['combat']> = {
+    round: 1,
+    whoseTurn: 'player',
+    yourArmy: { stacks: yourStacks, side: 'player' },
+    enemyArmy: { stacks: enemyStacks, side: 'enemy' },
+    spellCastThisTurn: false,
+    log: ['The dead rise. Battle is joined.'],
+    outcome: 'ongoing',
+  };
+  refreshTelegraphs(combat, hero);
+  return combat;
+}
+
+function checkOutcome(
+  combat: NonNullable<RunState['combat']>,
+): 'ongoing' | 'won' | 'lost' {
+  const youAlive = aliveStacks(combat.yourArmy.stacks).length > 0;
+  const enemyAlive = aliveStacks(combat.enemyArmy.stacks).length > 0;
+  if (!enemyAlive) combat.outcome = 'won';
+  else if (!youAlive) combat.outcome = 'lost';
+  return combat.outcome;
+}
+
+// Sync the persistent army roster from the surviving combat stacks (attrition).
+function syncArmyFromCombat(run: RunState): void {
+  if (!run.combat) return;
+  run.army = aliveStacks(run.combat.yourArmy.stacks).map((s) => ({
+    ...s,
+    hasActed: false,
+    isDefending: false,
+    hasRetaliated: false,
+    telegraph: undefined,
+  }));
 }
 
 // ---------------------------------------------------------------------------
@@ -281,11 +469,9 @@ class MockEngine implements EngineApi, EngineRewardSource {
     const map = buildMap(rng);
     return {
       seed,
-      hp: 50,
-      maxHp: 50,
-      gold: 99,
-      deck: [...STARTER_DECK],
-      relics: [],
+      hero: makeHero(),
+      army: startingArmy(),
+      gold: 200,
       map,
       currentNodeId: null,
       act: 1,
@@ -294,200 +480,407 @@ class MockEngine implements EngineApi, EngineRewardSource {
     };
   }
 
+  legalNextNodes(run: RunState): string[] {
+    if (run.currentNodeId == null) {
+      const minRow = Math.min(...run.map.map((n) => n.row));
+      return run.map.filter((n) => n.row === minRow).map((n) => n.id);
+    }
+    const cur = run.map.find((n) => n.id === run.currentNodeId);
+    return cur?.next ?? [];
+  }
+
   chooseNode(run: RunState, nodeId: string): RunState {
     const next = clone(run);
     const node = next.map.find((n) => n.id === nodeId);
     if (!node) return next;
     next.currentNodeId = nodeId;
-    const rng = mulberry32(hashSeed(run.seed + nodeId));
     if (node.type === 'combat' || node.type === 'elite' || node.type === 'boss') {
-      next.combat = startCombat(next, node.type, rng);
+      const rng = mulberry32(hashSeed(run.seed + nodeId));
+      next.combat = startCombat(next.army, node.type, rng, next.hero);
     } else {
-      // rest / shop / event resolve immediately into a reward step.
-      next.combat = null;
+      next.combat = null; // dwelling/altar/shrine/merchant/rest -> interaction screen
     }
     return next;
   }
 
-  playCard(run: RunState, cardId: string, targetId?: string): RunState {
-    const next = clone(run);
-    const c = next.combat;
-    if (!c || c.outcome !== 'ongoing') return next;
-    const idx = c.hand.findIndex((card) => card.id === cardId);
-    if (idx === -1) return next;
-    const card = c.hand[idx];
-
-    // Necromancer's Amulet: first card each turn costs 0.
-    const firstFree =
-      next.relics.some((r) => r.id === 'relic_necromancers_amulet') &&
-      c.discardCount === 0;
-    const cost = firstFree ? 0 : card.cost;
-    if (c.energy < cost) return next;
-    c.energy -= cost;
-
-    const targets = targetId
-      ? c.enemies.filter((e) => e.id === targetId)
-      : c.enemies.slice(0, 1);
-
-    for (const effect of card.effects) {
-      const amt = effect.amount ?? 0;
-      switch (effect.kind) {
-        case 'damage': {
-          const hitList = effect.target === 'allEnemies' ? c.enemies : targets;
-          for (const e of hitList) {
-            const afterBlock = Math.max(0, amt - e.block);
-            e.block = Math.max(0, e.block - amt);
-            e.hp = Math.max(0, e.hp - afterBlock);
-          }
-          break;
-        }
-        case 'block':
-          c.playerBlock += amt;
-          break;
-        case 'draw': {
-          const drawn = drawHand(next.deck, mulberry32(hashSeed(run.seed + c.turn + cardId)), amt);
-          c.hand.push(...drawn);
-          break;
-        }
-        default:
-          break; // summon/buff/debuff/mana — telegraphed but not modelled in the mock
-      }
-    }
-
-    // Discard the played card.
-    c.hand.splice(idx, 1);
-    c.discardCount += 1;
-    c.enemies = c.enemies.filter((e) => e.hp > 0);
-
-    if (c.enemies.length === 0) {
-      c.outcome = 'won';
-      this.resolveCombatWin(next);
-    }
-    return next;
+  // --- combat ---------------------------------------------------------------
+  legalTargets(run: RunState, stackId: string): string[] {
+    const c = run.combat;
+    if (!c || c.outcome !== 'ongoing' || c.whoseTurn !== 'player') return [];
+    const stack = c.yourArmy.stacks.find((s) => s.id === stackId);
+    if (!stack || stack.count <= 0 || stack.hasActed) return [];
+    const enemyAlive = aliveStacks(c.enemyArmy.stacks);
+    const reachable = isShooter(stack) ? enemyAlive : legalMeleeTargets(enemyAlive);
+    return reachable.map((s) => s.id);
   }
 
-  endTurn(run: RunState): RunState {
+  commandStack(run: RunState, stackId: string, order: CommandOrder): RunState {
     const next = clone(run);
     const c = next.combat;
-    if (!c || c.outcome !== 'ongoing') return next;
+    if (!c || c.outcome !== 'ongoing' || c.whoseTurn !== 'player') return next;
+    const stack = c.yourArmy.stacks.find((s) => s.id === stackId);
+    if (!stack || stack.count <= 0 || stack.hasActed) return next;
 
-    // Enemies act on their telegraphed intents.
-    const rng = mulberry32(hashSeed(run.seed + 'turn' + c.turn));
-    for (const e of c.enemies) {
-      if (e.intent.kind === 'attack' && e.intent.value) {
-        const dmg = Math.max(0, e.intent.value - c.playerBlock);
-        c.playerBlock = Math.max(0, c.playerBlock - e.intent.value);
-        c.playerHp = Math.max(0, c.playerHp - dmg);
-      } else if (e.intent.kind === 'block' && e.intent.value) {
-        e.block += e.intent.value;
-      } else if (e.intent.kind === 'buff') {
-        e.intent = { kind: 'attack', value: 12, label: 'Attack 12' };
-      }
-    }
-
-    if (c.playerHp <= 0) {
-      c.outcome = 'lost';
-      next.outcome = 'lost';
-      next.hp = 0;
+    if (order.kind === 'defend') {
+      stack.isDefending = true;
+      stack.hasActed = true;
+      c.log.push(`${stack.name} braces in defense.`);
       return next;
     }
 
-    // New turn: refresh energy, reset block, retelegraph, redraw.
-    c.turn += 1;
-    c.energy = c.maxEnergy;
-    c.playerBlock = 0;
-    for (const e of c.enemies) {
-      e.intent = makeIntent(rng, e.name === 'Lich King' ? 14 : 5);
+    // attack
+    const legal = this.legalTargets(next, stackId);
+    const targetId = order.targetId && legal.includes(order.targetId) ? order.targetId : legal[0];
+    const target = c.enemyArmy.stacks.find((s) => s.id === targetId);
+    if (!target || target.count <= 0) return next;
+
+    const rng = mulberry32(hashSeed(run.seed + 'atk' + c.round + stackId));
+    const dmg = damageOf(stack, target, next.hero, next.hero, rng);
+    const killed = applyDamage(target, dmg);
+    c.log.push(
+      `${stack.name} strikes ${target.name} for ${dmg}${killed ? ` (${killed} slain)` : ''}.`,
+    );
+
+    // Retaliation: one melee defender hits back once per round, unless suppressed.
+    if (
+      target.count > 0 &&
+      !target.hasRetaliated &&
+      !isShooter(stack) &&
+      !noRetaliation(stack) &&
+      !isShooter(target)
+    ) {
+      const rdmg = damageOf(target, stack, next.hero, next.hero, mulberry32(hashSeed(run.seed + 'ret' + c.round + targetId)));
+      const rkilled = applyDamage(stack, rdmg);
+      target.hasRetaliated = true;
+      c.log.push(
+        `${target.name} retaliates for ${rdmg}${rkilled ? ` (${rkilled} slain)` : ''}.`,
+      );
     }
-    c.hand = drawHand(next.deck, rng, 5);
-    c.discardCount = 0;
-    next.hp = c.playerHp;
+
+    stack.hasActed = true;
+    const result = checkOutcome(c);
+    if (result === 'won') {
+      this.onCombatWon(next);
+    } else if (result === 'lost') {
+      next.outcome = 'lost';
+    }
     return next;
   }
 
-  pickReward(run: RunState, choice: RewardChoice): RunState {
+  castSpell(run: RunState, spellId: string, targetId?: string): RunState {
     const next = clone(run);
-    switch (choice.kind) {
-      case 'card': {
-        const card = CARD_POOL.find((c) => c.id === choice.cardId);
-        if (card) next.deck.push(card);
-        break;
-      }
-      case 'relic': {
-        const relic = RELIC_POOL.find((r) => r.id === choice.relicId);
-        if (relic && !next.relics.some((r) => r.id === relic.id)) next.relics.push(relic);
-        break;
-      }
-      case 'heal':
-        next.hp = Math.min(next.maxHp, next.hp + choice.amount);
-        break;
-      case 'skip':
-        break;
-    }
-    // Clear the resolved node; the player returns to the map.
-    const wasBoss = next.map.find((n) => n.id === next.currentNodeId)?.type === 'boss';
-    next.currentNodeId = null;
-    next.combat = null;
-    if (wasBoss) next.outcome = 'won';
+    const c = next.combat;
+    if (!c || c.outcome !== 'ongoing' || c.whoseTurn !== 'player') return next;
+    if (c.spellCastThisTurn) return next;
+    const spell = next.hero.spellbook.find((s) => s.id === spellId);
+    if (!spell || next.hero.mana < spell.manaCost) return next;
+
+    next.hero.mana -= spell.manaCost;
+    c.spellCastThisTurn = true;
+    const rng = mulberry32(hashSeed(run.seed + 'spell' + c.round + spellId));
+    resolveSpell(c, next.hero, spell, targetId, rng);
+
+    if (checkOutcome(c) === 'won') this.onCombatWon(next);
     return next;
   }
 
-  pendingRewards(run: RunState): RewardChoice[] {
+  endPlayerTurn(run: RunState): RunState {
+    const next = clone(run);
+    const c = next.combat;
+    if (!c || c.outcome !== 'ongoing') return next;
+
+    // Enemy army acts in speed order against its honest telegraph.
+    c.whoseTurn = 'enemy';
+    const actors = aliveStacks(c.enemyArmy.stacks).sort((a, b) => b.speed - a.speed);
+    for (const e of actors) {
+      if (e.count <= 0) continue;
+      const playerAlive = aliveStacks(c.yourArmy.stacks);
+      if (playerAlive.length === 0) break;
+      // Re-plan against the live board so the executed action stays legal/honest.
+      const plan = planTelegraph(e, playerAlive);
+      e.telegraph = plan;
+      if (plan.kind !== 'attack' && plan.kind !== 'shoot') continue;
+      const target =
+        playerAlive.find((s) => s.id === plan.targetStackId) ?? playerAlive[0];
+      const rng = mulberry32(hashSeed(run.seed + 'enemy' + c.round + e.id));
+      const dmg = damageOf(e, target, next.hero, next.hero, rng);
+      const killed = applyDamage(target, dmg);
+      c.log.push(
+        `${e.name} ${plan.kind === 'shoot' ? 'shoots' : 'hits'} ${target.name} for ${dmg}${killed ? ` (${killed} slain)` : ''}.`,
+      );
+      // Retaliation from the player's struck melee stack.
+      if (
+        target.count > 0 &&
+        !target.hasRetaliated &&
+        plan.kind === 'attack' &&
+        !noRetaliation(e) &&
+        !isShooter(target)
+      ) {
+        const rdmg = damageOf(target, e, next.hero, next.hero, mulberry32(hashSeed(run.seed + 'pret' + c.round + e.id)));
+        const rkilled = applyDamage(e, rdmg);
+        target.hasRetaliated = true;
+        c.log.push(
+          `${target.name} retaliates for ${rdmg}${rkilled ? ` (${rkilled} slain)` : ''}.`,
+        );
+      }
+      if (checkOutcome(c) !== 'ongoing') break;
+    }
+
+    const result = checkOutcome(c);
+    if (result === 'lost') {
+      next.outcome = 'lost';
+      return next;
+    }
+    if (result === 'won') {
+      this.onCombatWon(next);
+      return next;
+    }
+
+    // New round: reset acted/defend/retaliation/spell, refresh telegraphs.
+    c.round += 1;
+    c.whoseTurn = 'player';
+    c.spellCastThisTurn = false;
+    next.hero.mana = Math.min(next.hero.maxMana, next.hero.mana + 1);
+    for (const s of c.yourArmy.stacks) {
+      s.hasActed = false;
+      s.isDefending = false;
+      s.hasRetaliated = false;
+    }
+    for (const e of c.enemyArmy.stacks) e.hasRetaliated = false;
+    refreshTelegraphs(c, next.hero);
+    return next;
+  }
+
+  // --- node interactions ----------------------------------------------------
+  pickReward(run: RunState, choice: RewardChoice): RunState {
+    switch (choice.kind) {
+      case 'recruit':
+        return this.finishNode(this.applyRecruit(run, choice.creatureId, choice.count, choice.cost));
+      case 'upgrade':
+        return this.finishNode(this.applyUpgrade(run, choice.stackId, choice.cost));
+      case 'learn':
+        return this.finishNode(this.applyLearn(run, choice.spellId, choice.cost));
+      case 'buy':
+        return this.finishNode(this.applyBuy(run, choice.artifactId, choice.cost));
+      case 'raise': {
+        const next = this.applyRaise(run, choice.creatureId, choice.count);
+        return this.finishNode(next);
+      }
+      case 'gold': {
+        const next = clone(run);
+        next.gold += choice.amount;
+        return this.finishNode(next);
+      }
+      case 'skip':
+        return this.finishNode(clone(run));
+    }
+  }
+
+  recruit(run: RunState, creatureId: string, count: number): RunState {
+    const c = creatureById.get(creatureId);
+    if (!c) return run;
+    return this.finishNode(this.applyRecruit(run, creatureId, count, dwellingCost(c.tier) * count));
+  }
+
+  upgrade(run: RunState, stackId: string): RunState {
+    return this.finishNode(this.applyUpgrade(run, stackId, upgradeCost(run, stackId)));
+  }
+
+  learn(run: RunState, spellId: string): RunState {
+    const s = srcSpells.find((x) => x.id === spellId);
+    return this.finishNode(this.applyLearn(run, spellId, s ? s.manaCost * 8 : 60));
+  }
+
+  buy(run: RunState, artifactId: string): RunState {
+    return this.finishNode(this.applyBuy(run, artifactId, artifactCost(artifactId)));
+  }
+
+  equipArtifact(run: RunState, artifactId: string, slot: ArtifactSlot): RunState {
+    const next = clone(run);
+    const owned = ownedArtifacts(next).find((a) => a.id === artifactId);
+    if (!owned) return next;
+    next.hero.equipment[slot] = owned;
+    return next;
+  }
+
+  // --- reward introspection -------------------------------------------------
+  pendingRewards(run: RunState): RewardChoice[] | null {
     const node = run.map.find((n) => n.id === run.currentNodeId);
-    if (!node) return [];
+    if (!node) return null;
+    if (run.combat && run.combat.outcome === 'won') {
+      // Necromancy raise after a battle won + standard gold spoils.
+      const raised = necromancyRaise(run);
+      const choices: RewardChoice[] = [];
+      if (raised > 0) choices.push({ kind: 'raise', creatureId: 'necropolis_skeleton', count: raised });
+      choices.push({ kind: 'gold', amount: node.type === 'boss' ? 300 : node.type === 'elite' ? 120 : 60 });
+      choices.push({ kind: 'skip' });
+      return choices;
+    }
     if (node.type === 'rest') {
-      return [{ kind: 'heal', amount: 15 }, { kind: 'skip' }];
+      return [{ kind: 'gold', amount: 40 }, { kind: 'skip' }];
     }
-    if (node.type === 'shop') {
-      return [
-        { kind: 'relic', relicId: 'relic_vial_of_lifeblood' },
-        { kind: 'card', cardId: 'card_death_cloud' },
-        { kind: 'skip' },
-      ];
-    }
-    if (node.type === 'event') {
-      return [{ kind: 'heal', amount: 8 }, { kind: 'card', cardId: 'card_raise_dead' }, { kind: 'skip' }];
-    }
-    // combat / elite / boss rewards are produced on win (see resolveCombatWin)
-    return run.combat?.outcome === 'won' ? this.combatRewards(node.type) : [];
+    // dwelling/altar/shrine/merchant are handled by their own node screens,
+    // which call recruit/upgrade/learn/buy directly. No generic reward list.
+    return null;
   }
 
-  private combatRewards(type: NodeType): RewardChoice[] {
-    const base: RewardChoice[] = [
-      { kind: 'card', cardId: 'card_vampiric_touch' },
-      { kind: 'card', cardId: 'card_walking_dead' },
-    ];
-    if (type === 'elite' || type === 'boss') {
-      base.unshift({ kind: 'relic', relicId: 'relic_skull_of_galthran' });
-    }
-    return base;
+  legalSpellTargets(run: RunState, spellId: string): string[] {
+    const c = run.combat;
+    if (!c || c.outcome !== 'ongoing') return [];
+    const spell = run.hero.spellbook.find((s) => s.id === spellId);
+    if (!spell) return [];
+    if (spell.targeting === 'enemyStack') return aliveStacks(c.enemyArmy.stacks).map((s) => s.id);
+    if (spell.targeting === 'allyStack') return aliveStacks(c.yourArmy.stacks).map((s) => s.id);
+    return [];
   }
 
-  private resolveCombatWin(run: RunState): void {
-    // Vial of Lifeblood heals after combat.
-    if (run.relics.some((r) => r.id === 'relic_vial_of_lifeblood')) {
-      run.hp = Math.min(run.maxHp, run.hp + 2);
-    } else if (run.combat) {
-      run.hp = run.combat.playerHp;
-    }
+  // --- internals ------------------------------------------------------------
+  private finishNode(run: RunState): RunState {
+    const wasBoss = run.map.find((n) => n.id === run.currentNodeId)?.type === 'boss';
+    if (run.combat) syncArmyFromCombat(run);
+    run.currentNodeId = null;
+    run.combat = null;
+    if (wasBoss) run.outcome = 'won';
+    return run;
   }
+
+  private onCombatWon(run: RunState): void {
+    // Attrition carries forward: persist surviving stacks to the roster.
+    syncArmyFromCombat(run);
+  }
+
+  private applyRecruit(run: RunState, creatureId: string, count: number, cost: number): RunState {
+    const next = clone(run);
+    if (next.gold < cost) return next;
+    const c = creatureById.get(creatureId);
+    if (!c) return next;
+    next.gold -= cost;
+    const existing = next.army.find((s) => s.creatureId === creatureId);
+    if (existing) {
+      existing.count += count;
+    } else {
+      next.army.push(adaptStack(c, count, 'player'));
+    }
+    return next;
+  }
+
+  private applyUpgrade(run: RunState, stackId: string, cost: number): RunState {
+    const next = clone(run);
+    if (next.gold < cost) return next;
+    const stack = next.army.find((s) => s.id === stackId);
+    if (!stack) return next;
+    const up = srcCreatures.find((c) => c.upgradeOf === stack.creatureId);
+    if (!up) return next;
+    next.gold -= cost;
+    const upgraded = adaptStack(up, stack.count, 'player');
+    upgraded.id = stack.id; // preserve identity
+    // carry partial top-hp proportionally
+    upgraded.hpTop = Math.min(upgraded.maxHpPer, stack.hpTop);
+    const idx = next.army.findIndex((s) => s.id === stackId);
+    next.army[idx] = upgraded;
+    return next;
+  }
+
+  private applyLearn(run: RunState, spellId: string, cost: number): RunState {
+    const next = clone(run);
+    if (next.gold < cost) return next;
+    if (next.hero.spellbook.some((s) => s.id === spellId)) return next;
+    const s = srcSpells.find((x) => x.id === spellId);
+    if (!s) return next;
+    next.gold -= cost;
+    next.hero.spellbook.push(adaptSpell(s));
+    return next;
+  }
+
+  private applyBuy(run: RunState, artifactId: string, cost: number): RunState {
+    const next = clone(run);
+    if (next.gold < cost) return next;
+    const a = srcArtifacts.find((x) => x.id === artifactId);
+    if (!a) return next;
+    if (ownedArtifacts(next).some((e) => e.id === artifactId)) return next;
+    next.gold -= cost;
+    const eq = adaptEquipment(a);
+    // auto-equip into its slot if empty, else stash in Misc-style overflow via
+    // equipment under its own slot (mock keeps it simple: occupy the slot).
+    if (!next.hero.equipment[eq.slot]) {
+      next.hero.equipment[eq.slot] = eq;
+    } else {
+      // overflow: keep it in a side bag the UI can offer to equip later.
+      (next as RunState & { _bag?: Equipment[] })._bag =
+        ((next as RunState & { _bag?: Equipment[] })._bag ?? []).concat(eq);
+    }
+    return next;
+  }
+
+  private applyRaise(run: RunState, creatureId: string, count: number): RunState {
+    const next = clone(run);
+    const c = creatureById.get(creatureId);
+    if (!c || count <= 0) return next;
+    const existing = next.army.find((s) => s.creatureId === creatureId);
+    if (existing) existing.count += count;
+    else next.army.push(adaptStack(c, count, 'player'));
+    return next;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Economy helpers + content registries surfaced for node screens.
+// ---------------------------------------------------------------------------
+export function dwellingCost(tier: number): number {
+  return [0, 8, 14, 25, 40, 70, 120, 200][tier] ?? 50;
+}
+export function upgradeCost(run: RunState, stackId: string): number {
+  const stack = run.army.find((s) => s.id === stackId);
+  if (!stack) return 0;
+  const up = srcCreatures.find((c) => c.upgradeOf === stack.creatureId);
+  if (!up) return 0;
+  return Math.round(dwellingCost(stack.tier) * 0.6 * stack.count);
+}
+export function artifactCost(artifactId: string): number {
+  const a = srcArtifacts.find((x) => x.id === artifactId);
+  if (!a) return 100;
+  const klass = (a as { class?: string }).class ?? 'Treasure';
+  return { Treasure: 60, Minor: 110, Major: 180, Relic: 300 }[klass] ?? 100;
+}
+
+export function ownedArtifacts(run: RunState): Equipment[] {
+  const equipped = Object.values(run.hero.equipment).filter((e): e is Equipment => !!e);
+  const bag = (run as RunState & { _bag?: Equipment[] })._bag ?? [];
+  return [...equipped, ...bag];
+}
+
+// Necromancy: a fraction of the battle's slain return as skeletons. The mock
+// estimates the haul deterministically from the enemy army's total hp pool and
+// the hero's Necromancy level (the real engine tracks exact slain hp).
+function necromancyRaise(run: RunState): number {
+  const c = run.combat;
+  if (!c) return 0;
+  const necroLvl = run.hero.skills.Necromancy ?? 0;
+  const pct = Math.min(0.6, 0.1 * (necroLvl + 1));
+  const skel = creatureById.get('necropolis_skeleton')!;
+  // Original enemy pool ≈ max hp of every enemy stack at its surviving/known
+  // count; on a win all enemies are dead, so this is the full battle strength.
+  const enemyHp = c.enemyArmy.stacks.reduce(
+    (sum, s) => sum + s.maxHpPer * Math.max(s.count, 1),
+    0,
+  );
+  return Math.max(2, Math.round((enemyHp * pct) / skel.hp));
 }
 
 export const mockEngine = new MockEngine();
 
-// Read-only registries so the reward UI can render previews by id. At
-// integration, prefer the real engine returning rich choices inline; until
-// then these bridge an id -> renderable.
-export const CARD_REGISTRY: Record<string, CardDef> = Object.fromEntries(
-  CARD_POOL.map((c) => [c.id, c]),
-);
-export const RELIC_REGISTRY: Record<string, Relic> = Object.fromEntries(
-  RELIC_POOL.map((r) => [r.id, r]),
-);
+// Content registries so node screens can render previews + offers by id.
+export const CREATURES = srcCreatures;
+export const ARTIFACTS = srcArtifacts;
+export const SPELLS = srcSpells;
 
-export function lookupCard(id: string): CardDef | undefined {
-  return CARD_REGISTRY[id];
+export function creatureLookup(id: string): SrcCreature | undefined {
+  return creatureById.get(id);
 }
-export function lookupRelic(id: string): Relic | undefined {
-  return RELIC_REGISTRY[id];
+export function artifactLookup(id: string): SrcArtifact | undefined {
+  return srcArtifacts.find((a) => a.id === id);
 }
+export function spellLookup(id: string): SrcSpell | undefined {
+  return srcSpells.find((s) => s.id === id);
+}
+export { adaptStack, adaptEquipment, adaptSpell };

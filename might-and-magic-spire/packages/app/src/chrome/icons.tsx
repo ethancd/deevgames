@@ -148,3 +148,59 @@ export const ShopIcon = (p: IconProps) =>
       </>
     ),
   });
+
+// A drawn bow + arrow — the ranged/shoot telegraph for back-rank stacks.
+export const ShootIcon = (p: IconProps) =>
+  base({
+    ...p,
+    children: (
+      <>
+        <path d="M4 20C4 12 12 4 20 4" />
+        <path d="M20 4l-4 .5M20 4l-.5 4" />
+        <path d="M5 19l14-14" />
+        <path d="M3 21l3.5-1.2-2.3-2.3z" fill="currentColor" stroke="none" />
+      </>
+    ),
+  });
+
+// A creature dwelling — a tomb/portal arch from which a stack is recruited.
+export const DwellingIcon = (p: IconProps) =>
+  base({
+    ...p,
+    children: (
+      <>
+        <path d="M5 21V9a7 7 0 0 1 14 0v12" />
+        <path d="M5 21h14" />
+        <path d="M10 21v-5a2 2 0 0 1 4 0v5" />
+      </>
+    ),
+  });
+
+// An altar — upgrade a stack to its higher form. A stepped plinth with a flame.
+export const AltarIcon = (p: IconProps) =>
+  base({
+    ...p,
+    children: (
+      <>
+        <path d="M6 21h12" />
+        <path d="M7 21v-4h10v4" />
+        <path d="M9 17v-3h6v3" />
+        <path d="M12 3c.8 2-1.4 2.8-1.4 4.6a1.4 1.4 0 0 0 2.8 0c0-.7-.4-1.2-.4-1.2 1.4.7 2 2 2 3.6a3 3 0 0 1-6 0c0-2.2 3-3.4 3-7z" />
+      </>
+    ),
+  });
+
+// A shrine — learn a spell. An open grimoire / sigil tablet.
+export const ShrineIcon = (p: IconProps) =>
+  base({
+    ...p,
+    children: (
+      <>
+        <path d="M4 5c2.5 0 4.5.6 6 1.6v12C14.5 17.6 12.5 17 10 17H4z" />
+        <path d="M20 5c-2.5 0-4.5.6-6 1.6v12C15.5 17.6 17.5 17 20 17h0z" transform="translate(-4 0)" />
+        <path d="M12 6.6V18" />
+        <circle cx="16" cy="9" r="2.4" />
+        <path d="M16 6.6v4.8M13.6 9h4.8" />
+      </>
+    ),
+  });
