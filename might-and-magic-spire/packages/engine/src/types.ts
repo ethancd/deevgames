@@ -46,6 +46,11 @@ export interface Hero {
   name: string;
   heroClass: string;
   specialty: string;
+  /** The hero's faction — "Necropolis" | "Castle" | "Stronghold". Drives the
+   *  run's growth (Necromancy is skill-gated) and dwelling recruit pool. Set by
+   *  `deriveHero`; optional so test/enemy hero literals needn't carry it (the
+   *  canonical run faction lives on `RunState.faction`). */
+  faction?: string;
 
   // Primary stats. Attack/Defense buff the whole army; Power scales spells;
   // Knowledge sets max mana.
@@ -348,6 +353,10 @@ export interface CombatState {
 
 export interface RunState {
   seed: string;
+  /** The run's faction (the chosen hero's faction). Drives the dwelling recruit
+   *  pool (you grow your OWN faction) and growth gating. Optional on the app
+   *  side; the engine always sets it in startRun. */
+  faction?: string;
   hero: Hero;
   army: Stack[]; // the carried "rolling army ball"; empty => you lose
   gold: number;

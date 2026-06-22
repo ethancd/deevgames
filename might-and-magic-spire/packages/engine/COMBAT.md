@@ -607,3 +607,50 @@ Per the analysis SKIP list, these remain inert and documented (see §13):
   penalty, so Zealot's perk is moot, not faked).
 - Archangel's **resurrection** and Royal Griffin/Champion's positional identities
   beyond the reskins above.
+
+## 22. Multi-faction playability (Necropolis / Castle / Stronghold)
+
+The run is now playable as ANY faction's hero, not just Necropolis.
+`startRun(seed, heroId?)` derives the chosen hero (default `hero_galthran`,
+Necropolis, byte-identical to v0) and sets `RunState.faction = hero.faction`.
+
+### Per-faction wiring (no new subsystem)
+
+- **Starting army** (`adapter.deriveHero`): a tier-1 core stack (×20) of the
+  hero's faction plus a second stack — the hero's specialty creature if its name
+  matches a faction base creature, else the faction's tier-2 base (×10/5/2 by
+  tier). Necropolis/Galthran is unchanged: 20 Skeleton + 10 Walking Dead.
+- **Starter spellbook/skills** (`adapter`): faction-flavored —
+  Necropolis → Necromancy opener (Magic Arrow/Bless/Haste), Castle → Bless +
+  Cure, Stronghold → Haste only (it wins by swinging). Skills seed from the
+  hero's `startingSkills` (rank 1).
+- **Encounters** (`rollEncounter`): foes are drawn from a **broad cross-faction
+  pool** (`ALL_BASE_CREATURES` — every faction's base creatures), NOT the
+  player's own roster (no civil war), budget-matched so difficulty is unchanged.
+  The **boss** stays a fixed Necropolis antagonist theme (the Spire's Lich King:
+  Bone Dragon + Lich guard) for every run.
+- **Dwellings** (`rollDwelling`): recruit the **player's OWN faction**
+  (`basePool(run.faction)`) so you grow your own army. Altar upgrades remain
+  faction-agnostic (`upgradeFormOf`).
+
+### Growth: Necromancy stays skill-gated
+
+`applyNecromancy` reads `hero.skills["Necromancy"]`; non-Necromancer factions
+get 0 → no raise. They **sustain via Dwellings (recruit), Rest (heal+mana) and
+gold** — the rubber-banding encounter budget keeps attrition survivable. No new
+growth subsystem was added.
+
+### Balance: NO lever changed
+
+A seed sweep of the dumb auto-player (80 seeds) confirms every faction lands in
+the sane win band with **no tuning**:
+
+| Faction (hero) | Win rate |
+|---|---|
+| Necropolis (Galthran, default) | ~46% |
+| Castle (Tyris / Sir Mullich) | ~45–49% |
+| Stronghold (Crag Hack) | ~33% |
+
+Castle (the keystone non-Necropolis target, `factions.test.ts`) needed **no
+balance tuning** — it sits right beside Necropolis. The existing levers (rest
+heal %, encounter mult, dwelling cost) were left untouched.

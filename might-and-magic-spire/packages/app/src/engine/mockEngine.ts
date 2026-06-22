@@ -169,9 +169,16 @@ function adaptSpell(s: SrcSpell): CombatSpell {
 // Hero — a Galthran-like Death Knight: A/D/P/K, mana 10, a few spells, one
 // equipped artifact. Derived from the real hero record + content.
 // ---------------------------------------------------------------------------
-function makeHero(): Hero {
-  const src = srcHeroes.find((h) => h.id === 'hero_galthran') ?? srcHeroes[0];
-  const starterSpellIds = ['spell_magic_arrow', 'spell_death_ripple', 'spell_slow'];
+function makeHero(heroId?: string): Hero {
+  const src =
+    (heroId ? srcHeroes.find((h) => h.id === heroId) : undefined) ??
+    srcHeroes.find((h) => h.id === 'hero_galthran') ??
+    srcHeroes[0];
+  const isNecro = src.faction === 'Necropolis';
+  // Necromancy is skill-gated; only Necropolis (necromancer) heroes carry it.
+  const starterSpellIds = isNecro
+    ? ['spell_magic_arrow', 'spell_death_ripple', 'spell_slow']
+    : ['spell_magic_arrow', 'spell_bless', 'spell_haste'];
   const spellbook = starterSpellIds
     .map((id) => srcSpells.find((s) => s.id === id))
     .filter((s): s is SrcSpell => !!s)
@@ -179,11 +186,14 @@ function makeHero(): Hero {
   const axe = srcArtifacts.find((a) => a.id === 'artifact_sword_of_hellfire');
   const equipment: Hero['equipment'] = {};
   if (axe) equipment[axe.slot as ArtifactSlot] = adaptEquipment(axe);
+  const skills: Record<string, number> = {};
+  for (const s of (src as { startingSkills?: string[] }).startingSkills ?? []) skills[s] = 1;
   return {
     id: src.id,
     name: src.name,
     heroClass: src.heroClass,
     specialty: src.specialty,
+    faction: src.faction,
     attack: 2,
     defense: 2,
     power: 1,
@@ -192,21 +202,36 @@ function makeHero(): Hero {
     maxMana: 10,
     equipment,
     spellbook,
-    skills: { Necromancy: 1, Offense: 1 },
+    skills: Object.keys(skills).length ? skills : { Necromancy: 1, Offense: 1 },
     imageRef: src.imageRef,
   };
 }
 
-function startingArmy(): Stack[] {
+/** A faction-appropriate starting army from the faction's base creatures
+ *  (lowest three tiers), so a non-Necropolis hero starts with its own roster. */
+function startingArmy(heroId?: string): Stack[] {
   stackSeq = 0;
-  const skel = creatureById.get('necropolis_skeleton')!;
-  const lich = creatureById.get('necropolis_lich')!;
-  const walking = creatureById.get('necropolis_walking_dead')!;
-  return [
-    adaptStack(skel, 40, 'player'),
-    adaptStack(walking, 12, 'player'),
-    adaptStack(lich, 4, 'player'),
-  ];
+  const src =
+    (heroId ? srcHeroes.find((h) => h.id === heroId) : undefined) ??
+    srcHeroes.find((h) => h.id === 'hero_galthran') ??
+    srcHeroes[0];
+  const faction = src.faction;
+  if (faction === 'Necropolis') {
+    // Preserve the legacy Necropolis starting army (back-compat for app tests).
+    const skel = creatureById.get('necropolis_skeleton')!;
+    const lich = creatureById.get('necropolis_lich')!;
+    const walking = creatureById.get('necropolis_walking_dead')!;
+    return [
+      adaptStack(skel, 40, 'player'),
+      adaptStack(walking, 12, 'player'),
+      adaptStack(lich, 4, 'player'),
+    ];
+  }
+  const base = srcCreatures
+    .filter((c) => c.faction === faction && !c.upgraded)
+    .sort((a, b) => a.tier - b.tier);
+  const counts = [40, 12, 4];
+  return base.slice(0, 3).map((c, i) => adaptStack(c, counts[i] ?? 4, 'player'));
 }
 
 // ---------------------------------------------------------------------------
@@ -486,9 +511,11 @@ function pick<T>(arr: T[], rng: () => number): T {
   return arr[Math.min(arr.length - 1, Math.floor(rng() * arr.length))];
 }
 
-function rollDwelling(rng: () => number): RewardChoice[] {
-  // A couple of distinct recruit offers from the base Necropolis roster.
-  const pool = BASE_CREATURES.filter((c) => c.tier <= 5);
+function rollDwelling(run: RunState, rng: () => number): RewardChoice[] {
+  // Recruit offers from the PLAYER'S faction roster (you grow your own army).
+  const faction = run.faction ?? run.hero.faction ?? 'Necropolis';
+  const factionBase = srcCreatures.filter((c) => c.faction === faction && !c.upgraded);
+  const pool = (factionBase.length ? factionBase : BASE_CREATURES).filter((c) => c.tier <= 5);
   const out: RewardChoice[] = [];
   const seen = new Set<string>();
   for (let i = 0; i < 3 && pool.length > 0; i++) {
@@ -545,13 +572,15 @@ function rollMerchant(rng: () => number): RewardChoice[] {
 // The engine implementation.
 // ---------------------------------------------------------------------------
 class MockEngine implements EngineApi, EngineRewardSource {
-  startRun(seed: string): RunState {
+  startRun(seed: string, heroId?: string): RunState {
     const rng = mulberry32(hashSeed(seed));
     const map = buildMap(rng);
+    const hero = makeHero(heroId);
     return {
       seed,
-      hero: makeHero(),
-      army: startingArmy(),
+      faction: hero.faction,
+      hero,
+      army: startingArmy(heroId),
       gold: 200,
       map,
       currentNodeId: null,
@@ -585,7 +614,7 @@ class MockEngine implements EngineApi, EngineRewardSource {
       // dispatch the matching op. (rest carries no offers.)
       next.combat = null;
       const rng = mulberry32(hashSeed(run.seed + nodeId + 'offers'));
-      if (node.type === 'dwelling') setPending(next, rollDwelling(rng));
+      if (node.type === 'dwelling') setPending(next, rollDwelling(next, rng));
       else if (node.type === 'altar') setPending(next, rollAltar(next, rng));
       else if (node.type === 'shrine') setPending(next, rollShrine(next, rng));
       else if (node.type === 'merchant') setPending(next, rollMerchant(rng));
