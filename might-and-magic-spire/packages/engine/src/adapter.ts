@@ -206,11 +206,14 @@ function targetingFromTags(tags: string[], kind: SpellEffect["kind"]): SpellTarg
 function kindFromTags(tags: string[]): SpellEffect["kind"] {
   const t = tags.map((x) => x.toLowerCase());
   if (t.includes("damage")) return "damage";
+  // heal wins over dispel so Cure (heal+dispel) stays a heal (with a reset rider
+  // added in adaptSpell); a pure-dispel spell (Dispel) becomes `reset`. (§3.3)
   if (t.includes("heal") || t.includes("resurrect")) return "heal";
+  if (t.includes("dispel")) return "reset";
   if (t.includes("disable")) return "disable";
   if (t.includes("buff")) return "buff";
   if (t.includes("debuff")) return "debuff";
-  return "buff"; // dispel/terrain-only -> treated as a benign self/ally effect
+  return "buff"; // terrain-only -> treated as a benign self/ally effect
 }
 
 export function adaptSpell(s: SourceSpell): CombatSpell {
@@ -218,44 +221,81 @@ export function adaptSpell(s: SourceSpell): CombatSpell {
   const t = tags.map((x) => x.toLowerCase());
   const kind = kindFromTags(tags);
   const lvl = Math.max(1, Math.min(5, s.level));
+  // LIGHT remaps key off the canonical source id (stable across runs).
+  const id = s.id;
 
   let effect: SpellEffect;
   let targeting: SpellTargeting;
 
   if (kind === "damage") {
     targeting = targetingFromTags(tags, kind);
-    effect = {
+    const dmg: Extract<SpellEffect, { kind: "damage" }> = {
       kind: "damage",
       target: targeting,
       base: DAMAGE_BASE_BY_LEVEL[lvl],
       powerScale: DAMAGE_SCALE_BY_LEVEL[lvl],
     };
+    // LIGHT §3.4/§3.5: the two all-units nukes hit BOTH armies. Death Ripple
+    // honors undead immunity (the roster is all-undead → safe nuke); Armageddon
+    // does NOT (friend-and-foe downside returns).
+    if (id === "spell_death_ripple") {
+      dmg.bothArmies = true;
+      dmg.skipUndead = true;
+    } else if (id === "spell_armageddon") {
+      dmg.bothArmies = true;
+    }
+    effect = dmg;
   } else if (kind === "heal") {
     targeting = "allyStack";
-    effect = { kind: "heal", target: targeting, base: 10 * lvl, powerScale: 10 };
+    // LIGHT §3.3: Cure's otherwise-dead `dispel` tag gets a job — a reset rider.
+    const reset = t.includes("dispel");
+    effect = { kind: "heal", target: targeting, base: 10 * lvl, powerScale: 10, reset };
+  } else if (kind === "reset") {
+    // LIGHT §3.3: Dispel — set the enemy target back to its base creature stats.
+    targeting = "enemyStack";
+    effect = { kind: "reset", target: targeting, base: 0, powerScale: 0 };
   } else if (kind === "disable") {
     targeting = "enemyStack";
     effect = { kind: "disable", target: targeting, base: 1, powerScale: 0 };
   } else if (kind === "buff") {
     targeting = "allyStack";
-    const stat = t.includes("speed")
-      ? "speed"
-      : t.includes("defense")
-        ? "defense"
-        : t.includes("damage-increase") || t.includes("attack")
-          ? "attack"
-          : t.includes("ranged")
-            ? "damage"
-            : "attack";
-    effect = { kind: "buff", target: targeting, stat, base: 2 + lvl, powerScale: 1 };
+    // LIGHT §3.2: Bless → roll-mode (ally always rolls max damage).
+    if (id === "spell_bless") {
+      effect = { kind: "rollmode", target: "allyStack", mode: "max", base: 0, powerScale: 0 };
+    } else if (id === "spell_prayer") {
+      // LIGHT §3.6: Prayer → +mag to attack AND defense AND speed.
+      effect = { kind: "buffAll", target: "allyStack", base: 2 + lvl, powerScale: 1 };
+    } else {
+      const stat = t.includes("speed")
+        ? "speed"
+        : t.includes("defense")
+          ? "defense"
+          : t.includes("damage-increase") || t.includes("attack")
+            ? "attack"
+            : t.includes("ranged")
+              ? "damage"
+              : "attack";
+      // LIGHT §3.7: Precision only buffs a back-rank ally (else it whiffs).
+      const backRankOnly = id === "spell_precision";
+      effect = { kind: "buff", target: targeting, stat, base: 2 + lvl, powerScale: 1, backRankOnly };
+    }
   } else {
+    // debuff
     targeting = "enemyStack";
-    const stat = t.includes("speed")
-      ? "speed"
-      : t.includes("defense") || t.includes("damage-reduction")
-        ? "defense"
-        : "attack";
-    effect = { kind: "debuff", target: targeting, stat, base: 2 + lvl, powerScale: 1 };
+    // LIGHT §3.2: Curse → roll-mode (enemy always rolls min damage).
+    if (id === "spell_curse") {
+      effect = { kind: "rollmode", target: "enemyStack", mode: "min", base: 0, powerScale: 0 };
+    } else if (id === "spell_forgetfulness") {
+      // LIGHT §3.7: Forgetfulness forces a shooter to melee (noShoot), not a stat hit.
+      effect = { kind: "debuff", target: "enemyStack", stat: "attack", base: 2 + lvl, powerScale: 1, noShoot: true };
+    } else {
+      const stat = t.includes("speed")
+        ? "speed"
+        : t.includes("defense") || t.includes("damage-reduction")
+          ? "defense"
+          : "attack";
+      effect = { kind: "debuff", target: targeting, stat, base: 2 + lvl, powerScale: 1 };
+    }
   }
 
   return {

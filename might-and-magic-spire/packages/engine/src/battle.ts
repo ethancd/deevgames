@@ -78,6 +78,9 @@ export function hasAbility(stack: Stack, name: string): boolean {
 }
 
 export function isShooter(stack: Stack): boolean {
+  // Forgetfulness (LIGHT §3.7): a `noShoot` stack is forced to melee for the
+  // battle — it loses reach and eats retaliation.
+  if (stack.noShoot) return false;
   return hasAbility(stack, "shooter") || hasAbility(stack, "ranged");
 }
 
@@ -270,7 +273,10 @@ export function resolveAttack(
 // ===========================================================================
 
 export function spellMagnitude(effect: SpellEffect, hero: Hero): number {
-  if (effect.kind === "disable") return 0;
+  // disable/rollmode/reset have no scalar magnitude — they edit roll state /
+  // restore base stats rather than apply a sized delta.
+  if (effect.kind === "disable" || effect.kind === "rollmode" || effect.kind === "reset")
+    return 0;
   return effect.base + effect.powerScale * hero.power;
 }
 

@@ -54,3 +54,18 @@
 - vitest globals=true auto-cleans between tests, but multiple render() in ONE test coexist in
   document → scope queries with within(container) or getAllByTestId.
 - Build runs sync:content (copies 72 webp). 35 tests, all green.
+
+## LIGHT balance set (2026-06-21, engine §3 BALANCE_PROPOSALS)
+- THIS session's task = engine LIGHT balance (NOT the app). Worktree branched from 69e313c
+  (pre-MMS) AGAIN; reset --hard to 14d3d8e (tip of claude/mms-orchestrator-phase-0-60vsr7,
+  which has full engine + BALANCE_PROPOSALS.md). Branch: worktree-agent-a00942a5bfab0e8f6.
+- App contract (packages/app/src/engine/contract.ts) is STRUCTURAL and does NOT import the
+  engine's SpellEffect/EquipmentEffect/Stack — new engine-internal fields (noShoot, blindedFrom,
+  rollmode/reset/buffAll, bothArmies/skipUndead/backRankOnly/noShoot/reset flags) are additive-safe,
+  NO app/mock change needed. Verified: app typecheck+test(38)+build all green.
+- Testing castSpell deterministically: startRun + chooseNode(row-0 combat node) to get a real
+  combat + currentNodeId, THEN overwrite combat.yourArmy/enemyArmy + hero.spellbook with hand-built
+  adaptStack stacks. GOTCHA: a spell that wipes the only enemy stack settles the win and NULLs
+  run.combat → use big high-hp stacks (necropolis_bone_dragon hp150) so combat stays ongoing.
+- Roster is ALL undead → Death Ripple (skipUndead) hits your army for 0; Liches are the only shooters.
+- Final: typecheck 4/4, engine 105 (was 86, +19 light), app 38, schema 12, data 19; app build OK.

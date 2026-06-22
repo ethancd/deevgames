@@ -127,6 +127,21 @@ export interface Stack {
 
   // --- engine-internal: battle-start count, the cap for life-drain resurrect. ---
   startCount: number;
+
+  // --- engine-internal LIGHT-balance fields (additive; the app never reads
+  //     these — they only steer combat math) ---
+  /**
+   * Forgetfulness: when set, `isShooter` returns false, forcing a back-rank
+   * shooter to melee (it eats retaliation and loses reach). Permanent for the
+   * battle, like every other LIGHT debuff. (BALANCE_PROPOSALS §3 item 7.)
+   */
+  noShoot?: boolean;
+  /**
+   * Blind (`disable`): the stack's pre-zero damage roll, stored when Blind
+   * zeroes it so the NEXT action by this stack can restore it — Blind costs the
+   * target one action, then wears off. (BALANCE_PROPOSALS §3 item 8.)
+   */
+  blindedFrom?: { damageMin: number; damageMax: number };
 }
 
 export interface Army {
@@ -148,22 +163,53 @@ export type SpellTargeting =
 
 /** What a spell does, mechanically. magnitude = base + powerScale * hero.power. */
 export type SpellEffect =
-  | { kind: "damage"; target: SpellTargeting; base: number; powerScale: number }
-  | { kind: "heal"; target: SpellTargeting; base: number; powerScale: number }
+  | {
+      kind: "damage";
+      target: SpellTargeting;
+      base: number;
+      powerScale: number;
+      /**
+       * LIGHT: when true the all-units loop hits BOTH armies (friend and foe),
+       * not just enemies — Armageddon (no skip) and Death Ripple (with
+       * `skipUndead`). (BALANCE_PROPOSALS §3 items 4 & 5.)
+       */
+      bothArmies?: boolean;
+      /** LIGHT: skip any stack with the `undead` ability — Death Ripple's
+       *  signature "safe nuke" on an all-undead roster. (§3 item 4.) */
+      skipUndead?: boolean;
+    }
+  | { kind: "heal"; target: SpellTargeting; base: number; powerScale: number; /** LIGHT: Cure rider — also reset the healed ally to base stats. (§3 item 3.) */ reset?: boolean }
   | {
       kind: "buff";
       target: SpellTargeting;
       stat: "attack" | "defense" | "speed" | "damage";
       base: number;
       powerScale: number;
+      /**
+       * LIGHT: Precision only buffs a back-rank ally (else it whiffs).
+       * (BALANCE_PROPOSALS §3 item 7.)
+       */
+      backRankOnly?: boolean;
     }
+  // LIGHT: Prayer — apply +mag to attack AND defense AND speed on one ally.
+  // (BALANCE_PROPOSALS §3 item 6.)
+  | { kind: "buffAll"; target: SpellTargeting; base: number; powerScale: number }
   | {
       kind: "debuff";
       target: SpellTargeting;
       stat: "attack" | "defense" | "speed";
       base: number;
       powerScale: number;
+      /** LIGHT: Forgetfulness sets the enemy target's `noShoot` flag instead of
+       *  a stat delta — a shooter forced to melee. (§3 item 7.) */
+      noShoot?: boolean;
     }
+  // LIGHT: roll-mode — Bless (ally → always max roll) / Curse (enemy → always
+  // min roll). Reuses the damage-roll edit the disable path uses. (§3 item 2.)
+  | { kind: "rollmode"; target: SpellTargeting; mode: "max" | "min"; base: number; powerScale: number }
+  // LIGHT: reset — Dispel sets the target back to its BASE creature stats,
+  // undoing any buff or debuff. Pure base-stat lookup. (§3 item 3.)
+  | { kind: "reset"; target: SpellTargeting; base: number; powerScale: number }
   | { kind: "disable"; target: SpellTargeting; base: number; powerScale: number };
 
 export interface CombatSpell {

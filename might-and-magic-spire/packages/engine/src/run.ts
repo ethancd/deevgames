@@ -197,6 +197,25 @@ function equipmentNecroBonus(hero: Hero): number {
   return bonus;
 }
 
+/**
+ * LIGHT §3.1: sum the hero's equipped COMBAT effects that the army carries into
+ * battle. `hpPerCreature` (Ring of Vitality) and `speedAll` (Necklace of
+ * Swiftness) were parsed but never applied; we apply them to every player stack
+ * at battle open. `manaMax`/`necromancyBonus` are hero-level (handled elsewhere).
+ */
+function equipmentCombatBonuses(hero: Hero): { hpPerCreature: number; speedAll: number } {
+  let hpPerCreature = 0;
+  let speedAll = 0;
+  for (const eq of Object.values(hero.equipment)) {
+    if (!eq) continue;
+    for (const e of eq.effects) {
+      if (e.kind === "hpPerCreature") hpPerCreature += e.amount;
+      else if (e.kind === "speedAll") speedAll += e.amount;
+    }
+  }
+  return { hpPerCreature, speedAll };
+}
+
 // ===========================================================================
 // START
 // ===========================================================================
@@ -301,14 +320,24 @@ function openCombat(run: RunState, node: MapNode, rng: Rng): CombatState {
   const depth = bossRow > 0 ? node.row / bossRow : 0;
   const playerValue = run.army.reduce((sum, s) => sum + armyValue(s), 0);
   const enemyArmy = rollEncounter(node, depth, playerValue, rng.fork("encounter"));
+  // LIGHT §3.1: sum equipped combat effects once, apply to every player stack.
+  const { hpPerCreature, speedAll } = equipmentCombatBonuses(run.hero);
   // Fresh copies of the player's army for battle (carried back on win).
-  const yourStacks = run.army.map((s) => ({
-    ...s,
-    hasActed: false,
-    isDefending: false,
-    hasRetaliated: false,
-    startCount: s.count,
-  }));
+  const yourStacks = run.army.map((s) => {
+    const maxHpPer = s.maxHpPer + hpPerCreature;
+    return {
+      ...s,
+      maxHpPer,
+      // hpTop tracks the (full) top creature; bump it by the same amount so the
+      // pool grows by hpPerCreature on every living creature.
+      hpTop: s.hpTop + hpPerCreature,
+      speed: s.speed + speedAll,
+      hasActed: false,
+      isDefending: false,
+      hasRetaliated: false,
+      startCount: s.count,
+    };
+  });
   const state: CombatState = {
     round: 1,
     whoseTurn: "player",
@@ -539,6 +568,10 @@ export function commandStack(
     actedStackIds: [...combat.actedStackIds, stackId],
   };
   let next: RunState = { ...run, combat: nextCombat, lastEvents: events };
+  // LIGHT §3.8: a blinded player stack that just acted has its roll restored
+  // (Blind costs one action). (Enemies have no spellbook today, so this is the
+  // symmetric path; it keeps the rule general if enemy casting is ever added.)
+  next = restoreBlindAfterAction(next, stackId);
   next = checkCombatEnd(next);
   return next;
 }
@@ -621,9 +654,23 @@ function applySpell(
     if (res.killed > 0) slain[target.sourceId] = (slain[target.sourceId] ?? 0) + res.killed;
     log.push(`${spell.name} hits ${target.name} for ${res.dealt}` + (res.killed > 0 ? ` (${res.killed} slain)` : ""));
   };
+  // Damage a stack of YOUR army (Armageddon friend-and-foe). Does not feed the
+  // slain-enemy ledger (those are your own creatures).
+  const damageAlly = (target: Stack) => {
+    const res = applyDamage(target, mag);
+    yourArmy = withStack(yourArmy, res.defender);
+    log.push(`${spell.name} hits ${target.name} for ${res.dealt}` + (res.killed > 0 ? ` (${res.killed} slain)` : ""));
+  };
 
   if (eff.kind === "damage") {
-    if (eff.target === "allEnemies") {
+    if (eff.bothArmies) {
+      // LIGHT §3.4/§3.5: hit BOTH armies. Death Ripple skips undead; Armageddon
+      // does not. Snapshot the living lists first so newly-zeroed stacks aren't
+      // re-hit and `withStack` updates stay consistent.
+      const skip = (s: Stack) => (eff.skipUndead ? hasAbility(s, "undead") : false);
+      for (const tgt of livingStacks(enemyArmy)) if (!skip(tgt)) damageEnemy(tgt);
+      for (const tgt of livingStacks(yourArmy)) if (!skip(tgt)) damageAlly(tgt);
+    } else if (eff.target === "allEnemies") {
       for (const t of livingStacks(enemyArmy)) damageEnemy(t);
     } else {
       const t = targetId
@@ -637,34 +684,106 @@ function applySpell(
       ? yourArmy.stacks.find((s) => s.id === targetId)
       : livingStacks(yourArmy)[0];
     if (!t) throw new Error("castSpell: no valid ally target");
-    const healed = applyHeal(t, mag, t.startCount > 0 ? t.startCount : t.count);
+    let healed = applyHeal(t, mag, t.startCount > 0 ? t.startCount : t.count);
+    // LIGHT §3.3: Cure's `dispel` rider — also reset the ally to base stats.
+    if (eff.reset) healed = resetStackToBase(healed);
     yourArmy = withStack(yourArmy, healed);
     log.push(`${spell.name} restores ${t.name} (now ${healed.count}).`);
+  } else if (eff.kind === "reset") {
+    // LIGHT §3.3: Dispel — restore the enemy target to its base creature stats.
+    const t = targetId
+      ? enemyArmy.stacks.find((s) => s.id === targetId && s.count > 0)
+      : livingStacks(enemyArmy)[0];
+    if (!t) throw new Error("castSpell: no valid enemy target");
+    enemyArmy = withStack(enemyArmy, resetStackToBase(t));
+    log.push(`${spell.name} dispels ${t.name} (stats reset).`);
   } else if (eff.kind === "buff") {
     const t = targetId
       ? yourArmy.stacks.find((s) => s.id === targetId && s.count > 0)
       : livingStacks(yourArmy)[0];
     if (!t) throw new Error("castSpell: no valid ally target");
-    yourArmy = withStack(yourArmy, applyStatMod(t, eff.stat, mag));
-    log.push(`${spell.name} buffs ${t.name} (+${mag} ${eff.stat}).`);
+    // LIGHT §3.7: Precision only buffs a back-rank ally (else it whiffs).
+    if (eff.backRankOnly && t.rank !== "back") {
+      log.push(`${spell.name} has no effect on ${t.name} (not back rank).`);
+    } else {
+      yourArmy = withStack(yourArmy, applyStatMod(t, eff.stat, mag));
+      log.push(`${spell.name} buffs ${t.name} (+${mag} ${eff.stat}).`);
+    }
+  } else if (eff.kind === "buffAll") {
+    // LIGHT §3.6: Prayer — +mag to attack AND defense AND speed on the ally.
+    const t = targetId
+      ? yourArmy.stacks.find((s) => s.id === targetId && s.count > 0)
+      : livingStacks(yourArmy)[0];
+    if (!t) throw new Error("castSpell: no valid ally target");
+    let buffed = applyStatMod(t, "attack", mag);
+    buffed = applyStatMod(buffed, "defense", mag);
+    buffed = applyStatMod(buffed, "speed", mag);
+    yourArmy = withStack(yourArmy, buffed);
+    log.push(`${spell.name} blesses ${t.name} (+${mag} attack/defense/speed).`);
+  } else if (eff.kind === "rollmode") {
+    // LIGHT §3.2: Bless (ally → always max roll) / Curse (enemy → always min).
+    if (eff.target === "allyStack") {
+      const t = targetId
+        ? yourArmy.stacks.find((s) => s.id === targetId && s.count > 0)
+        : livingStacks(yourArmy)[0];
+      if (!t) throw new Error("castSpell: no valid ally target");
+      yourArmy = withStack(yourArmy, { ...t, damageMin: t.damageMax });
+      log.push(`${spell.name} blesses ${t.name} (always max damage).`);
+    } else {
+      const t = targetId
+        ? enemyArmy.stacks.find((s) => s.id === targetId && s.count > 0)
+        : livingStacks(enemyArmy)[0];
+      if (!t) throw new Error("castSpell: no valid enemy target");
+      enemyArmy = withStack(enemyArmy, { ...t, damageMax: t.damageMin });
+      log.push(`${spell.name} curses ${t.name} (always min damage).`);
+    }
   } else if (eff.kind === "debuff") {
     const t = targetId
       ? enemyArmy.stacks.find((s) => s.id === targetId && s.count > 0)
       : livingStacks(enemyArmy)[0];
     if (!t) throw new Error("castSpell: no valid enemy target");
-    enemyArmy = withStack(enemyArmy, applyStatMod(t, eff.stat, -mag));
-    log.push(`${spell.name} weakens ${t.name} (-${mag} ${eff.stat}).`);
+    if (eff.noShoot) {
+      // LIGHT §3.7: Forgetfulness — force a shooter to melee.
+      enemyArmy = withStack(enemyArmy, { ...t, noShoot: true });
+      log.push(`${spell.name} makes ${t.name} forget how to shoot.`);
+    } else {
+      enemyArmy = withStack(enemyArmy, applyStatMod(t, eff.stat, -mag));
+      log.push(`${spell.name} weakens ${t.name} (-${mag} ${eff.stat}).`);
+    }
   } else {
-    // disable: mark the target as defending-suppressed (v1: zero its damage roll).
+    // disable (Blind): zero the target's damage roll. LIGHT §3.8: store the
+    // pre-zero roll on the stack so its NEXT action restores it (Blind wears off
+    // after costing the target one action). Don't overwrite an existing snapshot.
     const t = targetId
       ? enemyArmy.stacks.find((s) => s.id === targetId && s.count > 0)
       : livingStacks(enemyArmy)[0];
     if (!t) throw new Error("castSpell: no valid enemy target");
-    enemyArmy = withStack(enemyArmy, { ...t, damageMin: 0, damageMax: 0 });
+    const blindedFrom = t.blindedFrom ?? { damageMin: t.damageMin, damageMax: t.damageMax };
+    enemyArmy = withStack(enemyArmy, { ...t, damageMin: 0, damageMax: 0, blindedFrom });
     log.push(`${spell.name} disables ${t.name}.`);
   }
   void rng;
   return { yourArmy, enemyArmy, log, slain };
+}
+
+/**
+ * LIGHT §3.3: restore a stack's combat stats to its BASE creature stats (undoes
+ * any buff or debuff), via a pure content lookup — no per-effect tracking. Count
+ * and hp are NOT touched (those are battle state, not buffs). Also clears the
+ * Blind snapshot, since damageMin/Max are now back to base.
+ */
+function resetStackToBase(stack: Stack): Stack {
+  const base = creatureById(stack.sourceId);
+  if (!base) return stack;
+  return {
+    ...stack,
+    attack: base.attack,
+    defense: base.defense,
+    speed: base.speed,
+    damageMin: base.damageMin,
+    damageMax: base.damageMax,
+    blindedFrom: undefined,
+  };
 }
 
 function applyStatMod(
@@ -747,21 +866,49 @@ function enemyAct(run: RunState, stackId: string): RunState {
   // the telegraph shown to the player was computed from the pre-turn board, and
   // here we re-derive against the now-current board for correct resolution).
   const intent = chooseEnemyIntent(actor, combat.yourArmy, NULL_HERO, run.hero);
+  let next: RunState;
   if (intent.kind === "defend" || !intent.targetStackId) {
     const log = [...combat.log, `${actor.name} holds.`];
-    return { ...run, combat: { ...combat, log } };
+    next = { ...run, combat: { ...combat, log } };
+  } else {
+    const target = combat.yourArmy.stacks.find(
+      (s) => s.id === intent.targetStackId && s.count > 0,
+    );
+    if (!target) {
+      // Telegraphed target died; fall back to any legal target.
+      const legal = battleLegalTargets(actor, combat.yourArmy);
+      if (legal.length === 0) next = run;
+      else next = enemyAttack(run, actor, legal[0]);
+    } else {
+      next = enemyAttack(run, actor, target);
+    }
   }
+  // LIGHT §3.8: Blind wears off after the blinded stack acts. The action above
+  // resolved with the zeroed roll (it cost the stack this turn); now restore.
+  return restoreBlindAfterAction(next, stackId);
+}
 
-  const target = combat.yourArmy.stacks.find(
-    (s) => s.id === intent.targetStackId && s.count > 0,
-  );
-  if (!target) {
-    // Telegraphed target died; fall back to any legal target.
-    const legal = battleLegalTargets(actor, combat.yourArmy);
-    if (legal.length === 0) return run;
-    return enemyAttack(run, actor, legal[0]);
-  }
-  return enemyAttack(run, actor, target);
+/**
+ * LIGHT §3.8: if a blinded stack just took its action, restore its pre-Blind
+ * damage roll and clear the flag — Blind costs exactly one action. Looks the
+ * stack up in whichever army holds it (works for both sides).
+ */
+function restoreBlindAfterAction(run: RunState, stackId: string): RunState {
+  const combat = run.combat;
+  if (!combat) return run; // combat may have settled to a win (null)
+  const inEnemy = combat.enemyArmy.stacks.find((s) => s.id === stackId);
+  const inYour = combat.yourArmy.stacks.find((s) => s.id === stackId);
+  const actor = inEnemy ?? inYour;
+  if (!actor || !actor.blindedFrom) return run;
+  const restored: Stack = {
+    ...actor,
+    damageMin: actor.blindedFrom.damageMin,
+    damageMax: actor.blindedFrom.damageMax,
+    blindedFrom: undefined,
+  };
+  const enemyArmy = inEnemy ? withStack(combat.enemyArmy, restored) : combat.enemyArmy;
+  const yourArmy = inYour ? withStack(combat.yourArmy, restored) : combat.yourArmy;
+  return { ...run, combat: { ...combat, enemyArmy, yourArmy } };
 }
 
 function enemyAttack(run: RunState, actor: Stack, target: Stack): RunState {

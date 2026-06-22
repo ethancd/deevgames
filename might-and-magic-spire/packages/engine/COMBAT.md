@@ -213,6 +213,11 @@ design** and the single biggest tuning item after Necromancy. Tables live in
 v1 simplifications (levers): **area/chain/all-units spells resolve as single-target**
 (no AoE geometry without a hex grid); **disable** zeroes the target's damage roll.
 
+See **§14 LIGHT balance rules** for the additive spell re-maps (Bless/Curse
+roll-mode, Dispel/Cure reset, Death Ripple/Armageddon both-armies, Prayer
+all-three-stats, Precision back-rank gate, Forgetfulness no-shoot, Blind expiry)
+layered on top of these magnitude tables.
+
 ---
 
 ## 11. Enemy AI — deterministic lookup planner (honest telegraph)
@@ -258,3 +263,35 @@ byte-identical final `RunState` for the same seed.
 - Morale/luck, mana drain, curses, death-cloud, aging, disease (abilities present
   on creatures but not yet mechanized — currently flavor).
 - Multi-act runs (the run wins at the act-1 boss today; regen the map + bump `act`).
+
+---
+
+## 14. LIGHT balance rules (BALANCE_PROPOSALS.md §3)
+
+The **LIGHT** set: additive only, reuse existing kinds, **no new subsystem** (no
+duration/status layer, no initiative, no positions). It turns ~8 broken/inert
+spells and 2 inert artifacts correct with no UI change. Everything below is a
+named lever; the app seam casts structurally, so the new engine-internal fields
+(`Stack.noShoot`, `Stack.blindedFrom`, `SpellEffect` `rollmode`/`reset`/
+`buffAll` + the `bothArmies`/`skipUndead`/`backRankOnly`/`noShoot`/`reset` flags)
+need **no app contract/mock change** — the UI never reads them.
+
+| # | Rule | Spell/artifact fixed | Where |
+|---|---|---|---|
+| 1 | **Equipment combat effects applied at battle open.** `hpPerCreature` → every player stack `maxHpPer += n` and `hpTop += n`; `speedAll` → `speed += n`. | Ring of Vitality, Necklace of Swiftness (were parsed-but-dropped) | `run.ts` `equipmentCombatBonuses` + `openCombat` |
+| 2 | **Bless/Curse → roll-mode.** Bless (ally) sets `damageMin = damageMax` (always max). Curse (enemy) sets `damageMax = damageMin` (always min). Reuses the disable damage-roll edit; distinct from Weakness/Stone Skin. | Bless, Curse | `adapter.ts` (`rollmode` kind) + `run.ts` `applySpell` |
+| 3 | **Dispel/Cure → reset to base.** `reset` looks up `creatureById(stack.sourceId)` and restores `attack/defense/speed/damageMin/damageMax` to base — undoes any buff OR debuff, zero tracking. Dispel = pure reset on an enemy (was a mislabeled +attack ally buff — a real correctness bug). Cure = heal **+ reset rider**. | Dispel, Cure | `adapter.ts` (`reset` kind, Cure `heal.reset`) + `run.ts` `resetStackToBase` |
+| 4 | **Death Ripple → both armies, skip undead.** `damage` effect flags `bothArmies + skipUndead`; the loop hits `enemyArmy` and `yourArmy`, skipping any `hasAbility(s,"undead")`. Roster is all-undead → your army takes 0 (signature "safe nuke"). | Death Ripple | `adapter.ts` flags + `run.ts` `applySpell` |
+| 5 | **Armageddon → both armies (no skip).** `bothArmies` only — friend-and-foe downside/identity returns. | Armageddon | `adapter.ts` flag + `run.ts` `applySpell` |
+| 6 | **Prayer → all three stats.** `buffAll` kind applies `+mag` to attack AND defense AND speed on the ally (was silently speed-only). | Prayer | `adapter.ts` (`buffAll`) + `run.ts` `applySpell` |
+| 7 | **Precision back-rank gate + Forgetfulness no-shoot.** Precision's `+damage` buff only lands on a `rank==="back"` ally (else whiffs). Forgetfulness sets the enemy's `noShoot` flag; `isShooter` returns false when set → a shooter is forced to melee (eats retaliation, loses reach). | Precision, Forgetfulness | `adapter.ts` (`backRankOnly`, `debuff.noShoot`), `battle.ts` `isShooter`, `run.ts` `applySpell` |
+| 8 | **Blind expires.** When `disable` (Blind) zeroes a stack's roll, it stores the pre-zero `{damageMin,damageMax}` in `Stack.blindedFrom`. At that stack's **next action** (`commandStack` for player stacks, `enemyAct` for enemy stacks) the roll is restored and the flag cleared — Blind costs the target one action, then wears off (kills the permanent-lock exploit). | Blind | `types.ts` `Stack.blindedFrom`, `run.ts` `applySpell` + `restoreBlindAfterAction` |
+
+**Determinism preserved.** All rules are pure stat edits / content lookups; no
+new RNG draws. The keystone full-run + byte-identical determinism tests in
+`run.test.ts` stay green, and `light.test.ts` pins all 8 behaviors.
+
+**NOT in LIGHT** (left for MEDIUM/HEAVY): morale, luck, initiative, real AoE
+geometry, flying reach-back, on-combat-start artifact casting, per-school spell
+scaling, duration timers. Speed stays weak (rule 1 only makes Necklace non-inert,
+not strong); Shield stays a Stone-Skin dup (needs `block` — MEDIUM).
