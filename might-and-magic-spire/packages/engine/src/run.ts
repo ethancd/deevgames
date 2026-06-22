@@ -173,13 +173,24 @@ export function recomputeHero(hero: Hero): Hero {
       if (e.kind === "manaMax") manaMaxBonus += e.amount;
     }
   }
-  const knowledge = hero.baseKnowledge + deltas.knowledge;
+  // Tolerate stale saves predating the base* fields: fall back to the live
+  // primary, and BACKFILL the base fields on the returned hero so it self-heals.
+  const baseAttack = hero.baseAttack ?? hero.attack;
+  const baseDefense = hero.baseDefense ?? hero.defense;
+  const basePower = hero.basePower ?? hero.power;
+  const baseKnowledge = hero.baseKnowledge ?? hero.knowledge;
+  const knowledge = baseKnowledge + deltas.knowledge;
   const maxMana = knowledge * MANA_PER_KNOWLEDGE + manaMaxBonus;
   const next: Hero = {
     ...hero,
-    attack: hero.baseAttack + deltas.attack,
-    defense: hero.baseDefense + deltas.defense,
-    power: hero.basePower + deltas.power,
+    baseAttack,
+    baseDefense,
+    basePower,
+    baseKnowledge,
+    baseSpellbook: hero.baseSpellbook ?? hero.spellbook ?? [],
+    attack: baseAttack + deltas.attack,
+    defense: baseDefense + deltas.defense,
+    power: basePower + deltas.power,
     knowledge,
     maxMana,
     mana: Math.min(hero.mana, maxMana),
@@ -200,7 +211,10 @@ export function recomputeHero(hero: Hero): Hero {
  * `spell_misfortune`, which has no data record) are skipped. (COMBAT.md §19.)
  */
 function effectiveSpellbook(hero: Hero): CombatSpell[] {
-  const out: CombatSpell[] = hero.baseSpellbook.slice();
+  // Tolerate stale saves from before `baseSpellbook` existed: fall back to the
+  // current spellbook (the learned set), else empty. Prevents a crash on equip
+  // when an old localStorage run is restored.
+  const out: CombatSpell[] = (hero.baseSpellbook ?? hero.spellbook ?? []).slice();
   const seen = new Set(out.map((s) => s.id));
   for (const eq of Object.values(hero.equipment)) {
     if (!eq) continue;
