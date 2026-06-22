@@ -163,25 +163,31 @@ Skeletons. Tuned against the full-run sweep in `run.test.ts`.
 
 ---
 
-## 9. Encounter scaling — the difficulty curve
+## 9. Encounter scaling — the difficulty curve (PURELY DEPTH-BASED)
 
-Enemies are built from a **power budget** that tracks the player's *current* army
-value, so attrition is self-correcting (a weakened player faces a smaller foe — a
-natural rubber band).
+**No rubber-banding, no floor/ceiling.** Enemy power is a fixed function of map
+**depth** only — it does NOT track your army. Your growth (Necromancy / Dwellings)
+is yours to leverage: out-grow the curve and you win (then play again); fall
+behind and you lose. The roguelite covenant — the run is an honest gauntlet.
 
 ```
-armyValue(stack) = count * (maxHpPer + avgDamage*2)
-budget           = max(playerArmyValue, 300) * mult        // mult by node type + depth
-depth            = node.row / bossRow                       // 0 at the opener, 1 at the boss
+armyValue(stack) = count * (maxHpPer + avgDamage*2)        // "how scary"
+depth            = node.row / bossRow                       // 0 opener, 1 boss
+budget           = basePower * (1 + (bossGrowth-1)*depth) * nodeTypeMult
 ```
 
 | Lever | Default | Note |
 |---|---|---|
-| `combatMult` | `[0.22, 0.42]` | lerp by depth: 0.22× at row 0 → 0.42× near boss |
-| `eliteMult` | `[0.45, 0.65]` | |
-| `bossMult` | `0.7` | |
+| `basePower` | `90` | enemy budget at the opener (depth 0) — a gentle first fight, ~matched to the starting army |
+| `bossGrowth` | `4.0` | budget multiplies 1×→4× from opener to boss row; tuned so competent growth out-paces it |
+| `eliteMult` | `1.4` | elite node multiplier on the depth curve |
+| `bossMult` | `1.3` | boss node multiplier |
 | `bossMaxDragons` | `2` | **critical** — see degenerate cases |
 | `maxStacks` | `4` | |
+
+Tuned via the `run.test.ts` / `factions.test.ts` win-rate sweeps (the dumb-bot
+sweep lands in a sane band for both Necropolis and Castle — winnable, not
+trivial). There is **no** player-army term and **no** minimum floor.
 
 **Why `bossMaxDragons` is load-bearing:** a Bone Dragon is hp150, A17, dmg25–50. A
 stack of 3+ one-rounds the player's whole front, and a Skeleton-heavy army cannot

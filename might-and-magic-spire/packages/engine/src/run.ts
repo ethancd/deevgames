@@ -130,24 +130,36 @@ export const ARTIFACT_COST: Record<string, number> = {
 };
 
 /**
- * Encounter scaling. Enemies are built from a POWER BUDGET that tracks the
- * player's current army value (the snowball) so attrition stays survivable but
- * real. Budget = playerArmyValue * MULT, where MULT rises with map depth and
- * node type. armyValue(stack) = count * (hp + avgDamage*2) — a rough "how scary".
+ * Encounter scaling — PURELY DEPTH-BASED. No rubber-banding, no floor/ceiling.
+ * Enemy power is a fixed function of how far up the Spire you are (depth 0 at the
+ * opener → 1 at the boss); it does NOT track your army. Your growth (Necromancy /
+ * Dwellings) is yours to leverage: out-grow the curve and you win (then play
+ * again); fall behind and you lose. That is the roguelite covenant.
  *
- * These multipliers are the central difficulty levers (see COMBAT.md). Combat
- * fights are designed to be *winnable with attrition*; elites/bosses bite.
+ *   budget = basePower * (1 + (bossGrowth-1)*depth) * nodeTypeMult
+ *
+ * armyValue(stack) = count * (hp + avgDamage*2) — a rough "how scary". These are
+ * the central difficulty levers (see COMBAT.md); tuned via the run.test sweep.
  */
 export const ENCOUNTER = {
-  /** combat fight budget vs player army value, by depth fraction (0..1). */
-  combatMult: [0.22, 0.42] as [number, number], // start .22x -> .42x near boss
-  eliteMult: [0.45, 0.65] as [number, number],
-  bossMult: 0.7,
+  /** Enemy budget at the opener (depth 0, combat node) — a gentle first fight. */
+  basePower: 90,
+  /** Enemy budget multiplies from 1x (opener) to this at the boss row (depth 1).
+   *  Tuned so a competent player's Necromancy/Dwelling growth can out-pace it. */
+  bossGrowth: 4.0,
+  /** Node-type multipliers layered on the depth curve. */
+  eliteMult: 1.4,
+  bossMult: 1.3,
   /** Max Bone Dragons in the boss fight (the rest of the budget is Lich guard). */
   bossMaxDragons: 2,
   /** Max enemy stacks. */
   maxStacks: 4,
 };
+
+/** The pure depth curve: enemy budget multiplier from opener (0) to boss (1). */
+function depthGrowth(depth: number): number {
+  return 1 + (ENCOUNTER.bossGrowth - 1) * Math.max(0, Math.min(1, depth));
+}
 
 /** Rough "scariness" value of a stack for budget math. */
 export function armyValue(s: { count: number; maxHpPer: number; damageMin: number; damageMax: number }): number {
@@ -374,8 +386,7 @@ function applyRest(run: RunState): void {
 function openCombat(run: RunState, node: MapNode, rng: Rng): CombatState {
   const bossRow = Math.max(...run.map.map((n) => n.row));
   const depth = bossRow > 0 ? node.row / bossRow : 0;
-  const playerValue = run.army.reduce((sum, s) => sum + armyValue(s), 0);
-  const enemyArmy = rollEncounter(node, depth, playerValue, rng.fork("encounter"));
+  const enemyArmy = rollEncounter(node, depth, rng.fork("encounter"));
   // LIGHT §3.1: sum equipped combat effects once, apply to every player stack.
   const { hpPerCreature, speedAll } = equipmentCombatBonuses(run.hero);
   // Fresh copies of the player's army for battle (carried back on win).
@@ -448,33 +459,26 @@ const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
  * band that widens with depth. Greedily fills up to maxStacks, dividing the
  * budget across stacks. Always returns at least one non-empty stack.
  */
-function rollEncounter(
-  node: MapNode,
-  depth: number,
-  playerValue: number,
-  rng: Rng,
-): Army {
-  // Minimum floor so an empty/whittled player army still faces a token foe.
-  const baseValue = Math.max(playerValue, 300);
+function rollEncounter(node: MapNode, depth: number, rng: Rng): Army {
+  // Pure depth budget — no player-army term, no floor. (Roguelite covenant.)
+  const curve = ENCOUNTER.basePower * depthGrowth(depth);
 
-  let mult: number;
+  let budget: number;
   let tierMin: number;
   let tierMax: number;
   if (node.type === "boss") {
-    mult = ENCOUNTER.bossMult;
+    budget = curve * ENCOUNTER.bossMult;
     tierMin = 1;
     tierMax = 7;
   } else if (node.type === "elite") {
-    mult = lerp(ENCOUNTER.eliteMult[0], ENCOUNTER.eliteMult[1], depth);
+    budget = curve * ENCOUNTER.eliteMult;
     tierMin = Math.max(2, Math.floor(lerp(2, 4, depth)));
     tierMax = Math.min(7, Math.ceil(lerp(4, 6, depth)));
   } else {
-    mult = lerp(ENCOUNTER.combatMult[0], ENCOUNTER.combatMult[1], depth);
+    budget = curve;
     tierMin = 1;
     tierMax = Math.min(7, Math.max(2, Math.ceil(lerp(2, 5, depth))));
   }
-
-  const budget = baseValue * mult;
   // Foes are drawn from a BROAD cross-faction pool (every faction's base
   // creatures), not the player's own roster — no civil war, and varied enemies.
   // Budget-matched scaling keeps difficulty intact regardless of which creatures
