@@ -55,6 +55,42 @@ export const AGING_FRACTION = 0.5;
 export const DISEASE_ATK = 1;
 export const DISEASE_DEF = 1;
 
+// --- ITEM F: extra strikes (double attack / double shot) (COMBAT.md §20). ---
+
+/**
+ * Generic double-attack/double-shot. A creature whose ability list contains one
+ * of these precise phrases deals its MAIN hit `EXTRA_STRIKES + 1` times in one
+ * action. Matched by exact (case-insensitive) phrase via `hasAbilityPhrase` —
+ * NOT a loose substring — so a creature can't trip it by accident.
+ */
+export const DOUBLE_ATTACK_PHRASES = ["attacks twice", "strikes twice", "shoots twice"];
+/** Extra strikes a double-attacker gets (1 → it hits a total of 2 times). */
+export const EXTRA_STRIKES = 1;
+
+// --- ITEM F: extra / unlimited retaliation (COMBAT.md §20 / Item F). ---
+
+/** "Two retaliations" → this many counters per round. */
+export const TWO_RETALIATIONS = 2;
+/** Default retaliation budget for any stack (HoMM3: once per round). */
+export const DEFAULT_RETALIATIONS = 1;
+
+// --- ITEM G: Jousting (Cavalier/Champion) (COMBAT.md §21). ---
+
+/**
+ * Jousting is a positional charge bonus in HoMM3 (+dmg per hex traveled). With
+ * NO positions/movement in this engine we reskin it as a FLAT damage premium on
+ * the attacker's main hit when it has the "Jousting" ability. Simplification
+ * noted in COMBAT.md §21.
+ */
+export const JOUSTING_BONUS = 0.25; // +25% main-hit damage
+
+// --- ITEM G: Behemoth / Ancient Behemoth "Reduces enemy defense" (COMBAT.md §21). ---
+
+/** Defense the Behemoth strips from the defender on-hit (once per defender). */
+export const DEFENSE_SHRED = 4;
+/** Ancient Behemoth strips more. */
+export const DEFENSE_SHRED_ANCIENT = 8;
+
 // ===========================================================================
 // EFFECTIVE STATS
 // ===========================================================================
@@ -94,6 +130,36 @@ const lc = (s: string) => s.toLowerCase();
 export function hasAbility(stack: Stack, name: string): boolean {
   const n = lc(name);
   return stack.abilities.some((a) => lc(a).includes(n));
+}
+
+/**
+ * Precise (whole-string, case-insensitive) ability match. Unlike `hasAbility`
+ * (a substring match), this requires an ability entry to EQUAL the phrase. Used
+ * for the new ability checks so the §1/§4 "substring landmine" can't misfire —
+ * e.g. a Royal Griffin tagged "Unlimited retaliation" must NOT be read as having
+ * "no enemy retaliation", and double-attack detection can't trip on a partial.
+ */
+export function hasAbilityPhrase(stack: Stack, phrase: string): boolean {
+  const p = lc(phrase);
+  return stack.abilities.some((a) => lc(a) === p);
+}
+
+/** Extra MAIN-hit strikes this attacker gets (0 = a single normal hit). */
+export function extraStrikes(stack: Stack): number {
+  return DOUBLE_ATTACK_PHRASES.some((ph) => hasAbilityPhrase(stack, ph))
+    ? EXTRA_STRIKES
+    : 0;
+}
+
+/**
+ * How many times this stack may retaliate per round. "Unlimited retaliation" →
+ * ∞; "Two retaliations" → 2; everything else → 1. Precise-phrase matched so
+ * "unlimited"/"two retaliations" can't be mistaken for "no enemy retaliation".
+ */
+export function retaliationBudget(stack: Stack): number {
+  if (hasAbilityPhrase(stack, "unlimited retaliation")) return Infinity;
+  if (hasAbilityPhrase(stack, "two retaliations")) return TWO_RETALIATIONS;
+  return DEFAULT_RETALIATIONS;
 }
 
 export function isShooter(stack: Stack): boolean {
@@ -236,6 +302,38 @@ export function applyCurseOnHit(defender: Stack): { defender: Stack; log: string
   };
 }
 
+/**
+ * Behemoth / Ancient Behemoth "Reduces enemy defense" (Item G): once per
+ * defender, subtract `amount` defense (floored at 0). Lower defense feeds the
+ * A/D multiplier — every subsequent attacker hits the defender harder. Ancient
+ * Behemoth passes the larger `DEFENSE_SHRED_ANCIENT`.
+ */
+export function applyDefenseShred(
+  defender: Stack,
+  amount: number,
+): { defender: Stack; log: string | null } {
+  if (defender.defenseShred || defender.count <= 0) return { defender, log: null };
+  return {
+    defender: {
+      ...defender,
+      defenseShred: true,
+      defense: Math.max(0, defender.defense - amount),
+    },
+    log: `${defender.name}'s defense is reduced (-${amount})`,
+  };
+}
+
+/**
+ * Defense-shred magnitude for an attacker with "Reduces enemy defense". Both
+ * Behemoth and Ancient Behemoth carry the same ability string, so the Ancient
+ * (larger shred) is distinguished by its stable id/name containing "ancient".
+ */
+export function defenseShredAmount(attacker: Stack): number {
+  const isAncient =
+    lc(attacker.sourceId).includes("ancient") || lc(attacker.name).includes("ancient");
+  return isAncient ? DEFENSE_SHRED_ANCIENT : DEFENSE_SHRED;
+}
+
 // ===========================================================================
 // REACH (two ranks)
 // ===========================================================================
@@ -295,21 +393,39 @@ export function resolveAttack(
 ): ResolvedAttack {
   const log: string[] = [];
   const shooting = isShooter(attacker);
+  const hasJousting = hasAbilityPhrase(attacker, "jousting");
 
-  // Main hit. ITEM D.1: Dread Knight "Death blow" — roll the death-blow chance
-  // off the SAME attack rng (deterministic) BEFORE applying, and double on a hit.
-  let dmg = computeDamage(attacker, defender, attackerHero, defenderHero, rng);
-  if (hasAbility(attacker, "death blow") && rng.next() < DEATH_BLOW_CHANCE) {
-    dmg *= DEATH_BLOW_MULT;
-    log.push("Death blow!");
-  }
-  const res = applyDamage(defender, dmg);
-  let newDefender = res.defender;
+  // Main hit, applied `1 + extraStrikes` times (ITEM F: double attack / double
+  // shot — Marksman/Crusader/Wolf Raider). Each strike rolls its own damage off
+  // the SAME attack rng (deterministic), applies the jousting premium and the
+  // death-blow chance, and chips the defender; we stop early once it dies.
+  let newDefender = defender;
   let newAttacker = attacker;
-  log.push(
-    `${attacker.name} ${shooting ? "shoots" : "hits"} ${defender.name} for ${res.dealt}` +
-      (res.killed > 0 ? ` (${res.killed} slain)` : ""),
-  );
+  const strikes = 1 + extraStrikes(attacker);
+  let totalDealt = 0;
+  let totalKilled = 0;
+  for (let i = 0; i < strikes; i++) {
+    if (newDefender.count <= 0) break;
+    // ITEM D.1: Dread Knight "Death blow" — roll the death-blow chance off the
+    // SAME attack rng (deterministic) BEFORE applying, and double on a hit.
+    let dmg = computeDamage(newAttacker, newDefender, attackerHero, defenderHero, rng);
+    if (hasJousting) dmg = Math.floor(dmg * (1 + JOUSTING_BONUS)); // ITEM G: jousting premium
+    if (hasAbility(attacker, "death blow") && rng.next() < DEATH_BLOW_CHANCE) {
+      dmg *= DEATH_BLOW_MULT;
+      log.push("Death blow!");
+    }
+    const hit = applyDamage(newDefender, dmg);
+    newDefender = hit.defender;
+    totalDealt += hit.dealt;
+    totalKilled += hit.killed;
+    log.push(
+      `${attacker.name} ${shooting ? "shoots" : "hits"} ${defender.name} for ${hit.dealt}` +
+        (hit.killed > 0 ? ` (${hit.killed} slain)` : ""),
+    );
+  }
+  // `res` keeps the aggregate so the rest of the function (life-drain, ledger,
+  // events) reads totals across all strikes.
+  const res = { dealt: totalDealt, killed: totalKilled };
 
   // ITEM D.3/4/5: on-hit debuffs — applied to the SURVIVING defender, once per
   // stack via a flag so they can't infinitely re-stack. Off the MAIN hit only.
@@ -329,6 +445,13 @@ export function resolveAttack(
     // stack whose ability list contains "Curse" qualifies.
     if (hasAbility(attacker, "curse")) {
       const r = applyCurseOnHit(newDefender);
+      newDefender = r.defender;
+      if (r.log) log.push(r.log);
+    }
+    // ITEM G: Behemoth / Ancient Behemoth "Reduces enemy defense". Precise-phrase
+    // matched so only the exact ability fires; Ancient shreds more.
+    if (hasAbilityPhrase(attacker, "reduces enemy defense")) {
+      const r = applyDefenseShred(newDefender, defenseShredAmount(attacker));
       newDefender = r.defender;
       if (r.log) log.push(r.log);
     }
@@ -358,12 +481,23 @@ export function resolveAttack(
     }
   }
 
-  // Retaliation: defender strikes back once/round, melee only, if still alive
-  // and the attacker didn't shoot and isn't No-retaliation.
+  // Retaliation: a melee defender strikes back ONCE per attacking action if it
+  // still has retaliations left this round. ITEM F: most stacks have a budget of
+  // 1 (HoMM3); Royal Griffin "Unlimited retaliation" = ∞, Griffin "Two
+  // retaliations" = 2 — so they can counter MULTIPLE different attackers in a
+  // round. Even vs a double-attacker the defender retaliates at most once per
+  // action (HoMM3 rule), which falls out naturally since we resolve one counter
+  // per `resolveAttack`. Suppressed by shooting or "No enemy retaliation"
+  // (precise phrase — "unlimited/two retaliations" do NOT match it).
+  // `retaliationsUsed` is authoritative when present; fall back to the legacy
+  // `hasRetaliated` boolean (1 if set) so callers that only flip the boolean
+  // still get the once-per-round behavior.
+  const used = defender.retaliationsUsed ?? (defender.hasRetaliated ? 1 : 0);
+  const budget = retaliationBudget(defender);
   const retaliationSuppressed =
     shooting ||
-    hasAbility(attacker, "no enemy retaliation") ||
-    defender.hasRetaliated ||
+    hasAbilityPhrase(attacker, "no enemy retaliation") ||
+    used >= budget ||
     newDefender.count <= 0;
   let retaliation: { dealt: number; killed: number } | null = null;
   if (!retaliationSuppressed) {
@@ -376,7 +510,11 @@ export function resolveAttack(
     );
     const r = applyDamage(newAttacker, back);
     newAttacker = r.defender;
-    newDefender = { ...newDefender, hasRetaliated: true };
+    newDefender = {
+      ...newDefender,
+      hasRetaliated: true,
+      retaliationsUsed: used + 1,
+    };
     retaliation = { dealt: r.dealt, killed: r.killed };
     log.push(
       `${defender.name} retaliates for ${r.dealt}` +

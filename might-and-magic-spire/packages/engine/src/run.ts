@@ -993,11 +993,20 @@ export function endPlayerTurn(run: RunState): RunState {
   const combat2 = next.combat;
   const enemyArmy = {
     ...combat2.enemyArmy,
-    stacks: combat2.enemyArmy.stacks.map((s) => ({ ...s, hasRetaliated: false, isDefending: false })),
+    stacks: combat2.enemyArmy.stacks.map((s) => ({
+      ...s,
+      hasRetaliated: false,
+      retaliationsUsed: 0,
+      isDefending: false,
+    })),
   };
   const yourArmy = {
     ...combat2.yourArmy,
-    stacks: combat2.yourArmy.stacks.map((s) => ({ ...s, hasRetaliated: false })),
+    stacks: combat2.yourArmy.stacks.map((s) => ({
+      ...s,
+      hasRetaliated: false,
+      retaliationsUsed: 0,
+    })),
   };
   next = {
     ...next,
@@ -1114,7 +1123,7 @@ function settleCombat(run: RunState): RunState {
   // Won. Carry the surviving army back (drop dead stacks).
   const survivors: Stack[] = combat.yourArmy.stacks
     .filter((s) => s.count > 0)
-    .map((s) => ({ ...s, isDefending: false, hasRetaliated: false, hasActed: false }));
+    .map((s) => ({ ...s, isDefending: false, hasRetaliated: false, retaliationsUsed: 0, hasActed: false }));
 
   let next: RunState = {
     ...run,

@@ -135,6 +135,15 @@ export interface Stack {
   hasActed: boolean; // commanded this turn (player) / acted this round (enemy)
   isDefending: boolean; // chose Defend -> +defense bonus, resets next turn
   hasRetaliated: boolean; // already struck back this round
+  /**
+   * Extra-retaliation budget tracking (COMBAT.md §20 / Item F). How many times
+   * this stack has retaliated so far THIS round. Default 0; reset at round start
+   * alongside `hasRetaliated`. A stack may retaliate while
+   * `retaliationsUsed < retaliationBudget(stack)` (1 normally, 2 for "Two
+   * retaliations", ∞ for "Unlimited retaliation"). `hasRetaliated` is kept in
+   * lockstep for back-compat (true once a stack has retaliated ≥1 time).
+   */
+  retaliationsUsed?: number;
 
   /** Honest telegraph for enemy stacks (undefined for the player's). */
   telegraph?: Telegraph;
@@ -185,6 +194,12 @@ export interface Stack {
    * once. (COMBAT.md §17 / item D.5.)
    */
   cursed?: boolean;
+  /**
+   * Behemoth / Ancient Behemoth "Reduces enemy defense" on-hit: once per
+   * defender, `-DEFENSE_SHRED_*` defense (floored at 0). Ancient shreds more.
+   * Flagged so it fires once. (COMBAT.md §21 / Item G.)
+   */
+  defenseShred?: boolean;
 }
 
 export interface Army {

@@ -266,6 +266,12 @@ byte-identical final `RunState` for the same seed.
   multi-target/AoE), **Reduces enemy morale / No morale penalty** (needs the
   morale subsystem), **Dragon/Death typing** (needs spell-immunity).
 - Multi-act runs (the run wins at the act-1 boss today; regen the map + bump `act`).
+- **Double attack/shot, extra/unlimited retaliation, jousting, and Behemoth
+  defense-shred are now MECHANIZED** — see §20–§21 (Items F/G). Still deferred
+  there: **creature spellcasting** (Ogre Magi Bloodlust, Thunderbird lightning —
+  needs a caster/proc hook), **morale auras** (Archangel — needs morale),
+  **resurrection** (Archangel), and **true jousting-by-distance** (needs
+  positions).
 
 ---
 
@@ -498,3 +504,106 @@ debuff). Deterministic — these are stat edits, no RNG.
 | `deriveSpellId` | `adapter.ts` | pure name → data-id; no content import in the adapter. |
 | `applySpellEffectToStack` | `run.ts` | shared per-enemy-stack cast core (turn cast + castOnStart). |
 | `applyCastOnStart` | `run.ts` | opening Relic casts in `openCombat`. |
+
+---
+
+## 20. Castle/Stronghold ability mechanization — strikes & retaliation (Item F)
+
+Two FREE+LIGHT wins from `BREADTH_ANALYSIS.md` (the "double-attack" Group A and
+the "extra retaliation" Group B). **Additive only** — no positions, no
+initiative, no morale/luck. Deterministic via the attack `rng` (new draws only
+fire when the attacker actually has the ability). All levers live in `battle.ts`;
+behavior pinned in `abilities.test.ts`.
+
+### 20.1 `extraStrikes` — double attack / double shot
+
+A creature whose ability list contains an exact double-attack phrase deals its
+**main hit `1 + EXTRA_STRIKES` times** in one action. The loop reruns the
+full main-hit path (damage roll + jousting premium + death-blow chance +
+`applyDamage`) per strike and **stops early if the defender dies**; the
+death-blow and life-drain hooks ride along naturally. **Retaliation still occurs
+at most ONCE per action** (HoMM3: the defender counters a double-attacker only
+once) — this falls out because retaliation is resolved once per `resolveAttack`,
+after all strikes. Shooters that double-shot take no retaliation (shooting
+suppresses it), exactly like a single shot.
+
+| Lever | Default | Note |
+|---|---|---|
+| `DOUBLE_ATTACK_PHRASES` | `["attacks twice","strikes twice","shoots twice"]` | exact (case-insensitive whole-string) phrases via `hasAbilityPhrase` — NOT a loose substring. |
+| `EXTRA_STRIKES` | `1` | extra strikes granted (total hits = 2). |
+
+Activates **Marksman** ("Shoots twice"), **Crusader** & **Wolf Raider**
+("Attacks twice"). Zealot is a plain shooter in the data (no double-attack
+phrase) so it is not affected — matches the analysis.
+
+### 20.2 Extra / unlimited retaliation — a per-round budget
+
+The boolean `hasRetaliated` is supplemented by a per-stack **`retaliationsUsed`**
+counter (reset at round start in `endPlayerTurn`, and on settle). A defender may
+counter while `retaliationsUsed < retaliationBudget(stack)`. So **Royal Griffin
+("Unlimited retaliation")** can counter every attacker that hits it in a round,
+and **Griffin ("Two retaliations")** counters twice. `retaliationsUsed` is
+authoritative when present; if only the legacy `hasRetaliated` boolean is set
+(older callers/tests), it falls back to "1 used", preserving once-per-round.
+
+| Lever | Default | Note |
+|---|---|---|
+| `DEFAULT_RETALIATIONS` | `1` | HoMM3 once-per-round budget for any stack. |
+| `TWO_RETALIATIONS` | `2` | "Two retaliations" (Griffin). |
+| `retaliationBudget(stack)` | — | `∞` for "Unlimited retaliation", `2` for "Two retaliations", else `DEFAULT_RETALIATIONS`. |
+| `Stack.retaliationsUsed?` | `0` | counters used this round; reset alongside `hasRetaliated`. |
+
+### 20.3 The `hasAbilityPhrase` substring-landmine guard (analysis §1/§4)
+
+`hasAbility` is a **case-insensitive SUBSTRING** match. The analysis flagged that
+importing **Royal Griffin ("Unlimited retaliation")** could accidentally trip the
+`no enemy retaliation` branch. New ability checks therefore use
+**`hasAbilityPhrase`** (whole-string equality): the retaliation-suppression check
+and all the new strike/jousting/defense-shred checks match precise phrases.
+`abilities.test.ts` pins that a Royal Griffin attacker does **not** suppress its
+victim's retaliation, while a real "No enemy retaliation" creature still does.
+
+---
+
+## 21. Castle/Stronghold ability mechanization — jousting & defense-shred (Item G)
+
+### 21.1 Jousting (Cavalier / Champion) — reskinned as a flat premium
+
+HoMM3 jousting is `+dmg per hex charged`. With **no positions/movement** in this
+engine we reskin it as a **flat damage premium** on the attacker's main hit
+(applied per strike, before death-blow). **Simplification:** it is a constant
+bonus, not distance-scaled.
+
+| Lever | Default | Note |
+|---|---|---|
+| `JOUSTING_BONUS` | `0.25` | +25% main-hit damage when the attacker has the exact "Jousting" ability. |
+
+### 21.2 Behemoth / Ancient Behemoth "Reduces enemy defense" (S-tier feed)
+
+On hit, a Behemoth applies a **once-per-defender defense debuff** (reusing the
+Disease-style flag mechanism). Lower defense feeds the **A/D multiplier** — the
+engine's strongest lever (analysis flags this S-tier) — so every subsequent
+attacker hits the debuffed stack harder. **Ancient Behemoth shreds more.** Both
+creatures carry the same `"Reduces enemy defense"` ability string, so the Ancient
+(larger shred) is distinguished by its stable `sourceId`/`name` containing
+`"ancient"`.
+
+| Lever | Default | Flag | Note |
+|---|---|---|---|
+| `DEFENSE_SHRED` | `4` | `Stack.defenseShred?` | defense stripped by a Behemoth, floored at 0. |
+| `DEFENSE_SHRED_ANCIENT` | `8` | — | Ancient Behemoth strips this much. |
+| `defenseShredAmount(attacker)` | — | — | picks the Ancient amount when id/name includes "ancient". |
+
+### 21.3 Deferred (need subsystems — NOT faked here)
+
+Per the analysis SKIP list, these remain inert and documented (see §13):
+- **Caster-on-hit creatures** — Ogre Magi "Casts Bloodlust", Thunderbird
+  "Lightning strike" (spell-as-proc). Needs the creature-casting hook / a
+  bonus-damage-proc mechanism; they do **not** fit the existing buff/debuff/damage
+  hooks trivially, so they are **deferred** (Group C / Thunderbird in the
+  analysis). The bodies still work (Ogre Magi = melee brick, Thunderbird = flyer).
+- **"Hates X" / creature typing, morale auras** (Archangel), **true
+  jousting-by-distance**, **no-melee-penalty shooters** (the engine has no melee
+  penalty, so Zealot's perk is moot, not faked).
+- Archangel's **resurrection** and Royal Griffin/Champion's positional identities
+  beyond the reskins above.

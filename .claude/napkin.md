@@ -116,3 +116,26 @@
 - thelazy combined base+upgrade pages: some upgrades (Orc Chief) have NO standalone page (404) — art is on the base page. Fix: CREATURE_PAGE_OVERRIDE in build.ts (points sourceUrl at base page) + IMAGE_NAME_ALIASES in parse.ts (Orc Chief->Orc Chieftain) + images.ts describe() derives creature name from `ref` not page title.
 - Creature image matcher must drop HotA/HD variants (URL-encoded %28HotA%29) to select base-game (RoE) art.
 - Lord Haart = both Castle Knight + Necropolis Death Knight -> id hero_lord_haart_knight. Tyraxor is Stronghold, not Castle.
+
+---
+
+# MMS Creature Abilities — FREE+LIGHT wins (2026-06-22, worktree-agent-acf6d73c3d4955e6a)
+
+## Domain Notes
+- THIS task = mechanize new Castle/Stronghold abilities in `might-and-magic-spire/packages/engine` ONLY:
+  extraStrikes (double attack/shot), extra/unlimited retaliation, jousting (+dmg), Behemoth defense-shred, substring-landmine guard.
+- I own battle.ts, types.ts Stack flags, resolveAttack/enemy-attack/on-hit sections of run.ts.
+  AVOID content.ts, adapter.ts deriveHero, startRun, the app, RunState/Hero (concurrent faction-selection agent).
+- Same wrong-base gotcha: worktree branched from 69e313c (pre-MMS). git checkout -b leyline/mms-creature-abilities off claude/mms-orchestrator-phase-0-60vsr7 (tip 66d1143). pnpm install needed.
+- Exact data ability strings: double = "Shoots twice"/"Attacks twice"; retaliation = "Two retaliations"(=2)/"Unlimited retaliation"(=Inf);
+  jousting = "Jousting"; behemoth = "Reduces enemy defense" (BOTH Behemoth + Ancient; distinguish Ancient by sourceId/name "ancient").
+- Substring trap: "unlimited retaliation"/"two retaliations" do NOT contain "no enemy retaliation" → safe. Add a guard test anyway.
+- Retaliation budget: keep hasRetaliated boolean for back-compat but base suppression on a new retaliationsUsed counter + retaliationBudget(stack). Reset retaliationsUsed alongside hasRetaliated at round start (run.ts ~996/1000) and settle survivors (~1117).
+
+## Patterns That Work (creature abilities)
+- GOTCHA: an existing test set `defender.hasRetaliated = true` directly (boolean-only legacy). New budget logic must fall back: `used = retaliationsUsed ?? (hasRetaliated ? 1 : 0)` so old boolean-only callers still get once-per-round.
+- Deterministic multiplier tests (2x strike, jousting +25%): set damageMin==damageMax (fixed roll, stream-independent) → assert exact multiple. For death-blow style, compare same-seed WITH vs WITHOUT ability.
+- extraStrikes loop: stop early if `newDefender.count <= 0` so the 2nd strike doesn't fire on a corpse; retaliation resolved ONCE after the loop (HoMM3: defender counters a double-attacker only once) — falls out free since retaliation is per-resolveAttack.
+- Added hasAbilityPhrase (whole-string ===) for ALL new checks; used it for the no-enemy-retaliation suppression too (defensive). All existing no-retal creatures use exact "No enemy retaliation" so phrase-match keeps them working.
+- Ancient Behemoth vs Behemoth: same ability string "Reduces enemy defense"; distinguish Ancient by sourceId/name includes "ancient" → larger shred.
+- FINAL gates green: typecheck 4/4; tests schema12/data19/engine154(+18)/app38; app build OK. New test file: abilities.test.ts (18 tests).
