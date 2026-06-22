@@ -648,6 +648,18 @@ function applySpell(
   const mag = spellMagnitude(spell.effect, hero);
   const eff = spell.effect;
 
+  // ITEM A (open-Q #2): no re-stack of the SAME spell. For stat-mod kinds
+  // (buff/buffAll/debuff/rollmode — NOT damage/heal/reset), a spell already
+  // applied to a stack is a NO-OP on recast. `alreadyMarked` reports it; `mark`
+  // appends the spell id to the stack so a future recast is a no-op. DIFFERENT
+  // spells still stack. (See COMBAT.md §16.)
+  const alreadyMarked = (s: Stack): boolean =>
+    (s.spellMarks ?? []).includes(spell.id);
+  const mark = (s: Stack): Stack => ({
+    ...s,
+    spellMarks: [...(s.spellMarks ?? []), spell.id],
+  });
+
   const damageEnemy = (target: Stack) => {
     const res = applyDamage(target, mag);
     enemyArmy = withStack(enemyArmy, res.defender);
@@ -705,8 +717,10 @@ function applySpell(
     // LIGHT §3.7: Precision only buffs a back-rank ally (else it whiffs).
     if (eff.backRankOnly && t.rank !== "back") {
       log.push(`${spell.name} has no effect on ${t.name} (not back rank).`);
+    } else if (alreadyMarked(t)) {
+      log.push(`${t.name} is already affected by ${spell.name}.`); // ITEM A
     } else {
-      yourArmy = withStack(yourArmy, applyStatMod(t, eff.stat, mag));
+      yourArmy = withStack(yourArmy, mark(applyStatMod(t, eff.stat, mag)));
       log.push(`${spell.name} buffs ${t.name} (+${mag} ${eff.stat}).`);
     }
   } else if (eff.kind === "buffAll") {
@@ -715,11 +729,15 @@ function applySpell(
       ? yourArmy.stacks.find((s) => s.id === targetId && s.count > 0)
       : livingStacks(yourArmy)[0];
     if (!t) throw new Error("castSpell: no valid ally target");
-    let buffed = applyStatMod(t, "attack", mag);
-    buffed = applyStatMod(buffed, "defense", mag);
-    buffed = applyStatMod(buffed, "speed", mag);
-    yourArmy = withStack(yourArmy, buffed);
-    log.push(`${spell.name} blesses ${t.name} (+${mag} attack/defense/speed).`);
+    if (alreadyMarked(t)) {
+      log.push(`${t.name} is already affected by ${spell.name}.`); // ITEM A
+    } else {
+      let buffed = applyStatMod(t, "attack", mag);
+      buffed = applyStatMod(buffed, "defense", mag);
+      buffed = applyStatMod(buffed, "speed", mag);
+      yourArmy = withStack(yourArmy, mark(buffed));
+      log.push(`${spell.name} blesses ${t.name} (+${mag} attack/defense/speed).`);
+    }
   } else if (eff.kind === "rollmode") {
     // LIGHT §3.2: Bless (ally → always max roll) / Curse (enemy → always min).
     if (eff.target === "allyStack") {
@@ -727,27 +745,37 @@ function applySpell(
         ? yourArmy.stacks.find((s) => s.id === targetId && s.count > 0)
         : livingStacks(yourArmy)[0];
       if (!t) throw new Error("castSpell: no valid ally target");
-      yourArmy = withStack(yourArmy, { ...t, damageMin: t.damageMax });
-      log.push(`${spell.name} blesses ${t.name} (always max damage).`);
+      if (alreadyMarked(t)) {
+        log.push(`${t.name} is already affected by ${spell.name}.`); // ITEM A
+      } else {
+        yourArmy = withStack(yourArmy, mark({ ...t, damageMin: t.damageMax }));
+        log.push(`${spell.name} blesses ${t.name} (always max damage).`);
+      }
     } else {
       const t = targetId
         ? enemyArmy.stacks.find((s) => s.id === targetId && s.count > 0)
         : livingStacks(enemyArmy)[0];
       if (!t) throw new Error("castSpell: no valid enemy target");
-      enemyArmy = withStack(enemyArmy, { ...t, damageMax: t.damageMin });
-      log.push(`${spell.name} curses ${t.name} (always min damage).`);
+      if (alreadyMarked(t)) {
+        log.push(`${t.name} is already affected by ${spell.name}.`); // ITEM A
+      } else {
+        enemyArmy = withStack(enemyArmy, mark({ ...t, damageMax: t.damageMin }));
+        log.push(`${spell.name} curses ${t.name} (always min damage).`);
+      }
     }
   } else if (eff.kind === "debuff") {
     const t = targetId
       ? enemyArmy.stacks.find((s) => s.id === targetId && s.count > 0)
       : livingStacks(enemyArmy)[0];
     if (!t) throw new Error("castSpell: no valid enemy target");
-    if (eff.noShoot) {
+    if (alreadyMarked(t)) {
+      log.push(`${t.name} is already affected by ${spell.name}.`); // ITEM A
+    } else if (eff.noShoot) {
       // LIGHT §3.7: Forgetfulness — force a shooter to melee.
-      enemyArmy = withStack(enemyArmy, { ...t, noShoot: true });
+      enemyArmy = withStack(enemyArmy, mark({ ...t, noShoot: true }));
       log.push(`${spell.name} makes ${t.name} forget how to shoot.`);
     } else {
-      enemyArmy = withStack(enemyArmy, applyStatMod(t, eff.stat, -mag));
+      enemyArmy = withStack(enemyArmy, mark(applyStatMod(t, eff.stat, -mag)));
       log.push(`${spell.name} weakens ${t.name} (-${mag} ${eff.stat}).`);
     }
   } else {
@@ -918,8 +946,15 @@ function enemyAttack(run: RunState, actor: Stack, target: Stack): RunState {
   const enemyArmy = withStack(combat.enemyArmy, res.attacker);
   const yourArmy = withStack(combat.yourArmy, res.defender);
   const log = [...combat.log, ...res.log];
+  // ITEM D.2: Wraith "Drains enemy mana" — subtract drained mana from the hero
+  // (clamped ≥ 0). resolveAttack only reports a drain on an enemy→player hit.
+  const hero =
+    res.manaDrain > 0
+      ? { ...run.hero, mana: Math.max(0, run.hero.mana - res.manaDrain) }
+      : run.hero;
   let next: RunState = {
     ...run,
+    hero,
     combat: { ...combat, enemyArmy, yourArmy, log },
     lastEvents: [...(run.lastEvents ?? []), ...attackEvents("enemy", actor, target, res)],
   };

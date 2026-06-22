@@ -116,7 +116,7 @@
     "name": "Armor of the Damned",
     "class": "Relic",
     "slot": "Torso",
-    "bonuses": "Casts Slow, Curse, Weakness, and Misfortune on all enemy stacks at the start of combat",
+    "bonuses": "+4 Defense; Casts Slow, Curse, Weakness, and Misfortune on all enemy stacks at the start of combat",
     "imageRef": "artifact_armor_of_the_damned"
   },
   {

@@ -36,6 +36,25 @@ export const LIFE_DRAIN_FRACTION = 1.0;
 /** Regeneration: top creature heals this fraction of maxHp at round start. */
 export const REGEN_FRACTION = 1.0; // full heal of the wounded top creature
 
+// --- ITEM D: creature on-hit ability levers (COMBAT.md §17). All fire off the
+//     MAIN hit only (not retaliation), are deterministic via the attack rng, and
+//     each debuff applies ONCE per stack via a flag so it can't infinitely
+//     re-stack. ---
+
+/** Dread Knight "Death blow": chance the main hit deals DOUBLE damage. */
+export const DEATH_BLOW_CHANCE = 0.2;
+export const DEATH_BLOW_MULT = 2; // damage multiplier when it triggers
+
+/** Wraith "Drains enemy mana": mana stolen from the hero on an enemy→player hit. */
+export const MANA_DRAIN_AMOUNT = 2;
+
+/** Ghost Dragon "Aging": fraction the defender's maxHpPer shrinks to (0.5 = halve). */
+export const AGING_FRACTION = 0.5;
+
+/** Zombie "Disease": attack/defense the defender loses (floored at 0). */
+export const DISEASE_ATK = 1;
+export const DISEASE_DEF = 1;
+
 // ===========================================================================
 // EFFECTIVE STATS
 // ===========================================================================
@@ -165,6 +184,59 @@ export function applyHeal(stack: Stack, amount: number, countCap: number): Stack
 }
 
 // ===========================================================================
+// ITEM D — on-hit creature ability effects (once per defender via a flag)
+// ===========================================================================
+
+/**
+ * Ghost Dragon "Aging" (D.3): once per defender, halve `maxHpPer` (floored at 1)
+ * and re-clamp the pool to the shrunk ceiling. The pool can't exceed
+ * `count*maxHpPer`, so creatures over the new ceiling die (the HoMM3 effect).
+ */
+export function applyAging(defender: Stack): { defender: Stack; log: string | null } {
+  if (defender.aged || defender.count <= 0) return { defender, log: null };
+  const newMax = Math.max(1, Math.floor(defender.maxHpPer * AGING_FRACTION));
+  // Re-clamp: current pool capped at the new ceiling; hpTop can't exceed newMax.
+  const oldPool = defender.hpTop + (defender.count - 1) * defender.maxHpPer;
+  const newCap = defender.count * newMax;
+  const pool = Math.min(oldPool, newCap);
+  const newCount = Math.max(0, Math.ceil(pool / newMax));
+  const newTop = newCount > 0 ? pool - (newCount - 1) * newMax : 0;
+  return {
+    defender: { ...defender, aged: true, maxHpPer: newMax, count: newCount, hpTop: Math.min(newTop, newMax) },
+    log: `${defender.name} ages (max hp halved)`,
+  };
+}
+
+/**
+ * Zombie "Disease" (D.4): once per defender, `-DISEASE_ATK` attack and
+ * `-DISEASE_DEF` defense (each floored at 0).
+ */
+export function applyDisease(defender: Stack): { defender: Stack; log: string | null } {
+  if (defender.diseased || defender.count <= 0) return { defender, log: null };
+  return {
+    defender: {
+      ...defender,
+      diseased: true,
+      attack: Math.max(0, defender.attack - DISEASE_ATK),
+      defense: Math.max(0, defender.defense - DISEASE_DEF),
+    },
+    log: `${defender.name} is diseased`,
+  };
+}
+
+/**
+ * Black/Dread Knight "Curse" on-hit (D.5, distinct from the Curse SPELL): once
+ * per defender, set to min-roll (`damageMax = damageMin`), like the Curse spell.
+ */
+export function applyCurseOnHit(defender: Stack): { defender: Stack; log: string | null } {
+  if (defender.cursed || defender.count <= 0) return { defender, log: null };
+  return {
+    defender: { ...defender, cursed: true, damageMax: defender.damageMin },
+    log: `${defender.name} is cursed (min damage)`,
+  };
+}
+
+// ===========================================================================
 // REACH (two ranks)
 // ===========================================================================
 
@@ -200,6 +272,12 @@ export interface ResolvedAttack {
   dealt: number;
   /** The defender's retaliation onto the attacker, if one occurred. */
   retaliation: { dealt: number; killed: number } | null;
+  /**
+   * ITEM D.2 (Wraith "Drains enemy mana"): mana the attacker drained on the main
+   * hit. The caller (run.ts enemy-attack path) subtracts it from the player hero;
+   * enemies have no mana so a player→enemy drain is inert. 0 when no drain.
+   */
+  manaDrain: number;
 }
 
 /**
@@ -218,8 +296,13 @@ export function resolveAttack(
   const log: string[] = [];
   const shooting = isShooter(attacker);
 
-  // Main hit.
-  const dmg = computeDamage(attacker, defender, attackerHero, defenderHero, rng);
+  // Main hit. ITEM D.1: Dread Knight "Death blow" — roll the death-blow chance
+  // off the SAME attack rng (deterministic) BEFORE applying, and double on a hit.
+  let dmg = computeDamage(attacker, defender, attackerHero, defenderHero, rng);
+  if (hasAbility(attacker, "death blow") && rng.next() < DEATH_BLOW_CHANCE) {
+    dmg *= DEATH_BLOW_MULT;
+    log.push("Death blow!");
+  }
   const res = applyDamage(defender, dmg);
   let newDefender = res.defender;
   let newAttacker = attacker;
@@ -227,6 +310,40 @@ export function resolveAttack(
     `${attacker.name} ${shooting ? "shoots" : "hits"} ${defender.name} for ${res.dealt}` +
       (res.killed > 0 ? ` (${res.killed} slain)` : ""),
   );
+
+  // ITEM D.3/4/5: on-hit debuffs — applied to the SURVIVING defender, once per
+  // stack via a flag so they can't infinitely re-stack. Off the MAIN hit only.
+  let manaDrain = 0;
+  if (newDefender.count > 0) {
+    if (hasAbility(attacker, "aging")) {
+      const r = applyAging(newDefender);
+      newDefender = r.defender;
+      if (r.log) log.push(r.log);
+    }
+    if (hasAbility(attacker, "disease")) {
+      const r = applyDisease(newDefender);
+      newDefender = r.defender;
+      if (r.log) log.push(r.log);
+    }
+    // "Curse" on-hit (Black/Dread Knight). hasAbility is a substring match, so a
+    // stack whose ability list contains "Curse" qualifies.
+    if (hasAbility(attacker, "curse")) {
+      const r = applyCurseOnHit(newDefender);
+      newDefender = r.defender;
+      if (r.log) log.push(r.log);
+    }
+  }
+  // ITEM D.2: Wraith "Drains enemy mana" — fires when an enemy stack with this
+  // ability hits a PLAYER stack. Only enemy→player matters (enemies use
+  // NULL_HERO with no mana). The caller subtracts `manaDrain` from the hero.
+  if (
+    hasAbility(attacker, "drains enemy mana") &&
+    attacker.side === "enemy" &&
+    defender.side === "player"
+  ) {
+    manaDrain = MANA_DRAIN_AMOUNT;
+    log.push(`${attacker.name} drains ${manaDrain} mana`);
+  }
 
   // Life drain: heal the attacker by damage dealt, capped at battle-start count.
   if (hasAbility(attacker, "life drain") && res.dealt > 0) {
@@ -274,6 +391,7 @@ export function resolveAttack(
     defenderKilled: res.killed,
     dealt: res.dealt,
     retaliation,
+    manaDrain,
   };
 }
 

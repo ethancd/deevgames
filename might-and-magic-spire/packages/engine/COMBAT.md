@@ -259,8 +259,12 @@ byte-identical final `RunState` for the same seed.
 ## 13. Things deliberately deferred (levers to revisit)
 
 - AoE spell geometry (§10) — needs positions/hex.
-- Morale/luck, mana drain, curses, death-cloud, aging, disease (abilities present
-  on creatures but not yet mechanized — currently flavor).
+- Morale/luck (needs a morale/luck subsystem); spell-school typing /
+  spell-immunity (Dragon/Death typing — needs an immunity layer).
+- **Mana drain, aging, disease, curse-on-hit are now MECHANIZED** — see §17
+  (Item D). Still deferred there: **Death cloud** (Lich splash — needs
+  multi-target/AoE), **Reduces enemy morale / No morale penalty** (needs the
+  morale subsystem), **Dragon/Death typing** (needs spell-immunity).
 - Multi-act runs (the run wins at the act-1 boss today; regen the map + bump `act`).
 
 ---
@@ -308,3 +312,104 @@ eating a counter (except Vampires, which also have `No enemy retaliation`).
 Enemy flyers route through the same `legalTargets`, so their telegraphs now
 correctly threaten your back rank. Verified: keystone full-run + win-search tests
 stay green with flyers enabled.
+
+---
+
+## 16. BATCH balance: no re-stack + pool/stat-stick fixes (approved decisions)
+
+Additive only — **no new subsystem** (no morale/luck, no initiative, no
+positions/AoE, no duration layer). New `Stack`/`SpellEffect` flags are
+engine-internal; the app seam casts structurally and never reads them. All
+behavior is pinned in `batch.test.ts`; the keystone determinism tests stay green.
+
+### Item A — no re-stack of the SAME spell (open-Q #2)
+
+Stat-mod spells (`buff`, `buffAll`, `debuff`, `rollmode` — **not** `damage`,
+`heal`, `reset`) used to **stack permanently and additively** on recast. Now a
+spell that's already been applied to a stack is a **NO-OP on recast of the SAME
+spell**: `applySpell` checks `target.spellMarks` for the casting spell's id —
+if present, it logs `"… is already affected by …"` and does nothing; else it
+applies the change and appends the spell id to `spellMarks`. **DIFFERENT** spells
+still stack (Curse + Weakness both land); the **same** spell can't re-stack.
+
+| Lever | Where | Note |
+|---|---|---|
+| `Stack.spellMarks?: string[]` | `types.ts` | per-stack record of stat-mod spell ids already applied; pure, no RNG. |
+
+This closes the "out-mana-regen a fight → stack Curse/Weakness to delete enemy
+damage" exploit without a duration layer. `damage`/`heal`/`reset` are unmarked by
+design (nukes/heals/Dispel are meant to repeat).
+
+### Item B — Shield cut from the pool (open-Q #5)
+
+**Shield** (`spell_shield`) and **Stone Skin** are identical +defense buffs;
+differentiating Shield needs the `block` field (MEDIUM). We ship **one** and cut
+the other: `content.ts` filters `spell_shield` out of `SPELLS` via the
+`CUT_SPELLS` set lever, so Shrines and starter books never offer it. **Stone
+Skin stays.** The `spell_shield` data record is left intact (free to revive when
+`block` lands).
+
+| Lever | Where | Default |
+|---|---|---|
+| `CUT_SPELLS` | `content.ts` | `{ "spell_shield" }` — ids dropped from the usable pool. |
+
+### Item C — Armor of the Damned → real stat stick (open-Q #4)
+
+The Relic's headline ("Casts Slow, Curse, Weakness, Misfortune on all enemy
+stacks at combat start") parses to **nothing** — on-combat-start enemy casting is
+a deferred subsystem. Rather than ship a dead Relic, its `bonuses` string is
+**prepended with `+4 Defense`** in `packages/data/src/artifacts.json`.
+`parseBonuses` reads the leading `+N <primary>`, so the Torso Relic now adapts to
+`{ defense: +4 }` (a fitting armor stat). `bonuses` is a free string, so the
+`@mms/data` schema tests are unaffected; the flavor text is preserved after the
+stat.
+
+---
+
+## 17. BATCH balance: mechanized creature on-hit abilities (Item D, open-Q #6)
+
+Five creature abilities, previously flavor, are now wired into combat
+resolution. Each fires off the **MAIN hit only** (never retaliation — keeps it
+simple), is **deterministic** via the existing attack `rng`, **logs a line**, and
+(where it's a debuff) applies **ONCE per defender stack** via a flag so it can't
+infinitely re-stack. Detection uses `hasAbility(stack, "…")` (case-insensitive
+substring, already in `battle.ts`). All levers live in `battle.ts`.
+
+| # | Ability (creature) | Effect | Lever(s) | Default | Flag |
+|---|---|---|---|---|---|
+| D.1 | **Death blow** (Dread Knight) | `rng.next() < CHANCE` → main-hit damage ×`MULT`. Logs `"Death blow!"`. | `DEATH_BLOW_CHANCE` / `DEATH_BLOW_MULT` | `0.2` / `2` | — |
+| D.2 | **Drains enemy mana** (Wraith) | enemy→player hit drains `AMOUNT` from `hero.mana` (clamp ≥ 0). `resolveAttack` returns `manaDrain`; the `run.ts` enemy-attack path subtracts it. Player→enemy is inert (enemies use `NULL_HERO`, no mana). | `MANA_DRAIN_AMOUNT` | `2` | — |
+| D.3 | **Aging** (Ghost Dragon) | once per defender: `maxHpPer → max(1, floor(maxHpPer * FRACTION))`, then re-clamp the pool to `count*maxHpPer` (excess creatures die — the HoMM3 effect). Logs `"… ages (max hp halved)"`. | `AGING_FRACTION` | `0.5` | `aged?` |
+| D.4 | **Disease** (Zombie) | once per defender: `-ATK` attack, `-DEF` defense (floored at 0). Logs `"… is diseased"`. | `DISEASE_ATK` / `DISEASE_DEF` | `1` / `1` | `diseased?` |
+| D.5 | **Curse on-hit** (Black & Dread Knight) | once per defender: set min-roll (`damageMax = damageMin`), matching the Curse SPELL but as an on-hit rider. Logs `"… is cursed (min damage)"`. | — | — | `cursed?` |
+
+The on-hit debuffs (D.3–D.5) run on the **surviving** defender after the main
+hit (skipped if the stack died). `aged?/diseased?/cursed?` are additive
+engine-internal `Stack` flags. Death blow's `rng.next()` draw is **conditional on
+the attacker having the ability**, so it doesn't perturb the RNG stream of any
+ability-less attacker — the byte-identical determinism tests stay green.
+
+**Explicitly deferred (need subsystems we're not building here):**
+- **Death cloud** (Lich splash) — needs multi-target / real AoE geometry.
+- **Reduces enemy morale / No morale penalty** — needs a morale subsystem.
+- **Dragon / Death typing** — needs spell-immunity (a spell-school type layer).
+
+We don't fake these; they're flagged in §13.
+
+---
+
+## 18. BATCH balance: Death Ripple is a power lever (Item E, open-Q #3)
+
+**Death Ripple's mechanic is unchanged** — `bothArmies + skipUndead` (it nukes
+both armies but skips any `undead` stack) stays exactly as in §14 rule 4. On the
+all-undead Necropolis roster your own army takes **0**, so it is the signature
+"safe nuke" and, by design, a **near-auto-include**.
+
+That power level is an **explicit balance lever**, not an accident: the knobs are
+its **mana cost** (`SourceSpell.manaCost` in the data corpus) and its **base
+damage** (`DAMAGE_BASE_BY_LEVEL` / `DAMAGE_SCALE_BY_LEVEL` in `adapter.ts`, indexed
+by spell level). If the all-undead auto-include becomes oppressive in the sim,
+**raise its mana cost** (cheapest, most surgical) or trim its level's base before
+touching the mechanic. We are **not** nudging the cost in this batch — it isn't
+trivially low and no change is obviously warranted yet; this note simply flags the
+lever so the decision is deliberate next time the run is tuned.

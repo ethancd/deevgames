@@ -32,8 +32,20 @@ export const CREATURES: SourceCreature[] = allCreatures.filter(
 /** Base (un-upgraded) Necropolis forms — dwelling/encounter pools draw here. */
 export const BASE_CREATURES: SourceCreature[] = CREATURES.filter((c) => !c.upgraded);
 
-/** Combat spells (Shrines teach these; heroes cast them). */
-export const SPELLS: SourceSpell[] = allSpells.filter((s) => s.isCombat);
+/**
+ * Spells the engine CUTS from the usable pool — the data record stays intact,
+ * but Shrines/starting books never offer these. (BALANCE_PROPOSALS open-Q #5.)
+ *
+ * `spell_shield` (Shield) and `spell_stone_skin` (Stone Skin) are identical
+ * +defense buffs today; differentiating Shield needs the `block` field (MEDIUM),
+ * so we ship ONE and cut the other. Stone Skin stays; Shield is removed.
+ */
+export const CUT_SPELLS: ReadonlySet<string> = new Set(["spell_shield"]);
+
+/** Combat spells (Shrines teach these; heroes cast them), minus CUT_SPELLS. */
+export const SPELLS: SourceSpell[] = allSpells.filter(
+  (s) => s.isCombat && !CUT_SPELLS.has(s.id),
+);
 
 /** Artifacts become equipment (Merchants sell them). Full corpus is fine. */
 export const ARTIFACTS: SourceArtifact[] = allArtifacts;

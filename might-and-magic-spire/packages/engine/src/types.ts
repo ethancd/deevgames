@@ -142,6 +142,34 @@ export interface Stack {
    * target one action, then wears off. (BALANCE_PROPOSALS §3 item 8.)
    */
   blindedFrom?: { damageMin: number; damageMax: number };
+
+  // --- engine-internal BATCH-balance fields (additive; the app never reads
+  //     these). See COMBAT.md §16/§17. ---
+  /**
+   * No-re-stack (open-Q #2): the ids of stat-mod spells already applied to this
+   * stack. A buff/buffAll/debuff/rollmode spell whose id is already present is a
+   * NO-OP on recast — the SAME spell can't re-stack, but DIFFERENT spells still
+   * stack (Curse + Weakness both apply). (COMBAT.md §16 / item A.)
+   */
+  spellMarks?: string[];
+  /**
+   * Ghost Dragon "Aging" on-hit: once per defender, the stack's `maxHpPer` is
+   * halved (floored at 1) and its pool re-clamped — flagged so it fires once.
+   * (COMBAT.md §17 / item D.3.)
+   */
+  aged?: boolean;
+  /**
+   * Zombie "Disease" on-hit: once per defender, `-DISEASE_ATK` attack and
+   * `-DISEASE_DEF` defense (floored at 0). Flagged so it fires once.
+   * (COMBAT.md §17 / item D.4.)
+   */
+  diseased?: boolean;
+  /**
+   * Black/Dread Knight "Curse" on-hit (distinct from the Curse SPELL): once per
+   * defender, set to min-roll (`damageMax = damageMin`). Flagged so it fires
+   * once. (COMBAT.md §17 / item D.5.)
+   */
+  cursed?: boolean;
 }
 
 export interface Army {

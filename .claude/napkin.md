@@ -69,3 +69,16 @@
   run.combat → use big high-hp stacks (necropolis_bone_dragon hp150) so combat stays ongoing.
 - Roster is ALL undead → Death Ripple (skipUndead) hits your army for 0; Liches are the only shooters.
 - Final: typecheck 4/4, engine 105 (was 86, +19 light), app 38, schema 12, data 19; app build OK.
+
+## CORRECTION (real path)
+- The harness PINS edits to /Users/ashkie/src/deevgames/.claude/worktrees/agent-a97a9513628618ab8 ONLY.
+- Fixed by: `git checkout -b leyline/mms-balance-batch claude/mms-orchestrator-phase-0-60vsr7` INSIDE the pinned worktree.
+- Now at c498ff0, spire project present. ALL edits go under:
+  /Users/ashkie/src/deevgames/.claude/worktrees/agent-a97a9513628618ab8/might-and-magic-spire
+
+## Patterns That Work (spire batch)
+- light.test.ts combatRun() harness is the template for engine combat tests (startRun → chooseNode → overwrite combat).
+- Conditional rng.next() (gated on attacker ability) does NOT break byte-identical determinism — ability-less attackers never draw.
+- Death-blow test: compare same-seed Dread Knight WITH vs WITHOUT the ability (filter abilities) → identical pre-double roll → assert dealt is exactly 2x.
+- hasAbility is case-insensitive SUBSTRING; "curse" matches both Black/Dread Knight ability lists.
+- Verified gates: pnpm -r typecheck, pnpm -r test (schema12/data19/engine124/app38), pnpm --filter @mms/app build.
