@@ -397,5 +397,595 @@
       "single-target"
     ],
     "imageRef": "spell_prayer"
+  },
+  {
+    "id": "spell_bloodlust",
+    "name": "Bloodlust",
+    "school": "Fire",
+    "level": 1,
+    "manaCost": 5,
+    "isCombat": true,
+    "description": "Increases the attack of a target friendly stack for the battle.",
+    "effectTags": [
+      "buff",
+      "attack",
+      "single-target"
+    ],
+    "imageRef": "spell_bloodlust"
+  },
+  {
+    "id": "spell_protection_from_air",
+    "name": "Protection from Air",
+    "school": "Air",
+    "level": 2,
+    "manaCost": 7,
+    "isCombat": true,
+    "description": "Reduces the damage a target friendly stack takes from Air-school spells.",
+    "effectTags": [
+      "buff",
+      "magic-resistance",
+      "single-target"
+    ],
+    "imageRef": "spell_protection_from_air"
+  },
+  {
+    "id": "spell_protection_from_fire",
+    "name": "Protection from Fire",
+    "school": "Fire",
+    "level": 1,
+    "manaCost": 5,
+    "isCombat": true,
+    "description": "Reduces the damage a target friendly stack takes from Fire-school spells.",
+    "effectTags": [
+      "buff",
+      "magic-resistance",
+      "single-target"
+    ],
+    "imageRef": "spell_protection_from_fire"
+  },
+  {
+    "id": "spell_protection_from_water",
+    "name": "Protection from Water",
+    "school": "Water",
+    "level": 1,
+    "manaCost": 5,
+    "isCombat": true,
+    "description": "Reduces the damage a target friendly stack takes from Water-school spells.",
+    "effectTags": [
+      "buff",
+      "magic-resistance",
+      "single-target"
+    ],
+    "imageRef": "spell_protection_from_water"
+  },
+  {
+    "id": "spell_protection_from_earth",
+    "name": "Protection from Earth",
+    "school": "Earth",
+    "level": 3,
+    "manaCost": 12,
+    "isCombat": true,
+    "description": "Reduces the damage a target friendly stack takes from Earth-school spells.",
+    "effectTags": [
+      "buff",
+      "magic-resistance",
+      "single-target"
+    ],
+    "imageRef": "spell_protection_from_earth"
+  },
+  {
+    "id": "spell_ice_bolt",
+    "name": "Ice Bolt",
+    "school": "Water",
+    "level": 2,
+    "manaCost": 8,
+    "isCombat": true,
+    "description": "Deals direct cold damage to a single enemy stack.",
+    "effectTags": [
+      "damage",
+      "single-target"
+    ],
+    "imageRef": "spell_ice_bolt"
+  },
+  {
+    "id": "spell_frost_ring",
+    "name": "Frost Ring",
+    "school": "Water",
+    "level": 3,
+    "manaCost": 12,
+    "isCombat": true,
+    "description": "Deals cold damage to all stacks in a ring around the target hex.",
+    "effectTags": [
+      "damage",
+      "area"
+    ],
+    "imageRef": "spell_frost_ring"
+  },
+  {
+    "id": "spell_fortune",
+    "name": "Fortune",
+    "school": "Air",
+    "level": 2,
+    "manaCost": 7,
+    "isCombat": true,
+    "description": "Raises the luck of a target friendly stack for the battle.",
+    "effectTags": [
+      "buff",
+      "luck",
+      "single-target"
+    ],
+    "imageRef": "spell_fortune"
+  },
+  {
+    "id": "spell_mirth",
+    "name": "Mirth",
+    "school": "Water",
+    "level": 3,
+    "manaCost": 12,
+    "isCombat": true,
+    "description": "Raises the morale of friendly troops.",
+    "effectTags": [
+      "buff",
+      "morale"
+    ],
+    "imageRef": "spell_mirth"
+  },
+  {
+    "id": "spell_sorrow",
+    "name": "Sorrow",
+    "school": "Earth",
+    "level": 4,
+    "manaCost": 16,
+    "isCombat": true,
+    "description": "Lowers the morale of enemy troops.",
+    "effectTags": [
+      "debuff",
+      "morale"
+    ],
+    "imageRef": "spell_sorrow"
+  },
+  {
+    "id": "spell_misfortune",
+    "name": "Misfortune",
+    "school": "Fire",
+    "level": 3,
+    "manaCost": 12,
+    "isCombat": true,
+    "description": "Lowers the luck of enemy troops.",
+    "effectTags": [
+      "debuff",
+      "luck"
+    ],
+    "imageRef": "spell_misfortune"
+  },
+  {
+    "id": "spell_anti_magic",
+    "name": "Anti-Magic",
+    "school": "Earth",
+    "level": 3,
+    "manaCost": 15,
+    "isCombat": true,
+    "description": "Makes a friendly stack immune to spells up to a level cap set by the caster's skill.",
+    "effectTags": [
+      "buff",
+      "spell-immunity",
+      "single-target"
+    ],
+    "imageRef": "spell_anti_magic"
+  },
+  {
+    "id": "spell_air_shield",
+    "name": "Air Shield",
+    "school": "Air",
+    "level": 3,
+    "manaCost": 12,
+    "isCombat": true,
+    "description": "Reduces the ranged damage taken by a target friendly stack.",
+    "effectTags": [
+      "buff",
+      "defense",
+      "ranged",
+      "single-target"
+    ],
+    "imageRef": "spell_air_shield"
+  },
+  {
+    "id": "spell_fire_shield",
+    "name": "Fire Shield",
+    "school": "Fire",
+    "level": 4,
+    "manaCost": 16,
+    "isCombat": true,
+    "description": "Reflects a portion of melee damage back at attackers of the target stack.",
+    "effectTags": [
+      "buff",
+      "retaliation",
+      "single-target"
+    ],
+    "imageRef": "spell_fire_shield"
+  },
+  {
+    "id": "spell_frenzy",
+    "name": "Frenzy",
+    "school": "Fire",
+    "level": 4,
+    "manaCost": 16,
+    "isCombat": true,
+    "description": "Adds the target stack's defense to its attack for the battle, but drops its defense to zero.",
+    "effectTags": [
+      "buff",
+      "attack",
+      "single-target"
+    ],
+    "imageRef": "spell_frenzy"
+  },
+  {
+    "id": "spell_berserk",
+    "name": "Berserk",
+    "school": "Fire",
+    "level": 4,
+    "manaCost": 20,
+    "isCombat": true,
+    "description": "Forces affected enemy stacks to attack their nearest neighbor, friend or foe.",
+    "effectTags": [
+      "debuff",
+      "mind-control",
+      "area"
+    ],
+    "imageRef": "spell_berserk"
+  },
+  {
+    "id": "spell_counterstrike",
+    "name": "Counterstrike",
+    "school": "Air",
+    "level": 4,
+    "manaCost": 24,
+    "isCombat": true,
+    "description": "Grants a friendly stack one or more extra retaliations each round.",
+    "effectTags": [
+      "buff",
+      "retaliation",
+      "single-target"
+    ],
+    "imageRef": "spell_counterstrike"
+  },
+  {
+    "id": "spell_magic_mirror",
+    "name": "Magic Mirror",
+    "school": "Air",
+    "level": 5,
+    "manaCost": 25,
+    "isCombat": true,
+    "description": "Gives a friendly stack a chance to reflect enemy spells back at a random enemy stack.",
+    "effectTags": [
+      "buff",
+      "spell-reflect",
+      "single-target"
+    ],
+    "imageRef": "spell_magic_mirror"
+  },
+  {
+    "id": "spell_hypnotize",
+    "name": "Hypnotize",
+    "school": "Air",
+    "level": 3,
+    "manaCost": 18,
+    "isCombat": true,
+    "description": "Takes control of an enemy stack for the battle, subject to a hit-point cap.",
+    "effectTags": [
+      "debuff",
+      "mind-control",
+      "single-target"
+    ],
+    "imageRef": "spell_hypnotize"
+  },
+  {
+    "id": "spell_destroy_undead",
+    "name": "Destroy Undead",
+    "school": "Air",
+    "level": 3,
+    "manaCost": 15,
+    "isCombat": true,
+    "description": "Deals damage to all undead stacks on the battlefield.",
+    "effectTags": [
+      "damage",
+      "all-units",
+      "undead-synergy"
+    ],
+    "imageRef": "spell_destroy_undead"
+  },
+  {
+    "id": "spell_quicksand",
+    "name": "Quicksand",
+    "school": "Earth",
+    "level": 2,
+    "manaCost": 8,
+    "isCombat": true,
+    "description": "Places hidden quicksand traps that immobilize stacks entering them.",
+    "effectTags": [
+      "terrain",
+      "trap",
+      "area"
+    ],
+    "imageRef": "spell_quicksand"
+  },
+  {
+    "id": "spell_land_mine",
+    "name": "Land Mine",
+    "school": "Fire",
+    "level": 3,
+    "manaCost": 18,
+    "isCombat": true,
+    "description": "Places hidden mines that explode for fire damage when an enemy stack enters them.",
+    "effectTags": [
+      "damage",
+      "terrain",
+      "trap"
+    ],
+    "imageRef": "spell_land_mine"
+  },
+  {
+    "id": "spell_force_field",
+    "name": "Force Field",
+    "school": "Earth",
+    "level": 3,
+    "manaCost": 12,
+    "isCombat": true,
+    "description": "Creates an impassable wall of hexes on the battlefield.",
+    "effectTags": [
+      "terrain",
+      "obstacle"
+    ],
+    "imageRef": "spell_force_field"
+  },
+  {
+    "id": "spell_earthquake",
+    "name": "Earthquake",
+    "school": "Earth",
+    "level": 3,
+    "manaCost": 20,
+    "isCombat": true,
+    "description": "Damages the walls and towers of a besieged town during a siege.",
+    "effectTags": [
+      "siege",
+      "terrain"
+    ],
+    "imageRef": "spell_earthquake"
+  },
+  {
+    "id": "spell_clone",
+    "name": "Clone",
+    "school": "Water",
+    "level": 4,
+    "manaCost": 24,
+    "isCombat": true,
+    "description": "Creates a temporary copy of a friendly stack that vanishes when killed.",
+    "effectTags": [
+      "summon",
+      "single-target"
+    ],
+    "imageRef": "spell_clone"
+  },
+  {
+    "id": "spell_sacrifice",
+    "name": "Sacrifice",
+    "school": "Fire",
+    "level": 5,
+    "manaCost": 25,
+    "isCombat": true,
+    "description": "Destroys one friendly stack to resurrect a larger number of creatures into another stack.",
+    "effectTags": [
+      "heal",
+      "resurrect",
+      "single-target"
+    ],
+    "imageRef": "spell_sacrifice"
+  },
+  {
+    "id": "spell_teleport",
+    "name": "Teleport",
+    "school": "Water",
+    "level": 3,
+    "manaCost": 15,
+    "isCombat": true,
+    "description": "Instantly moves a friendly stack to another hex on the battlefield.",
+    "effectTags": [
+      "utility",
+      "movement",
+      "single-target"
+    ],
+    "imageRef": "spell_teleport"
+  },
+  {
+    "id": "spell_remove_obstacle",
+    "name": "Remove Obstacle",
+    "school": "Water",
+    "level": 2,
+    "manaCost": 7,
+    "isCombat": true,
+    "description": "Removes a battlefield obstacle from a hex.",
+    "effectTags": [
+      "terrain",
+      "utility"
+    ],
+    "imageRef": "spell_remove_obstacle"
+  },
+  {
+    "id": "spell_summon_air_elemental",
+    "name": "Summon Air Elemental",
+    "school": "Air",
+    "level": 5,
+    "manaCost": 25,
+    "isCombat": true,
+    "description": "Summons a stack of Air Elementals to fight for you; only one elemental type may be summoned per battle.",
+    "effectTags": [
+      "summon"
+    ],
+    "imageRef": "spell_summon_air_elemental"
+  },
+  {
+    "id": "spell_summon_earth_elemental",
+    "name": "Summon Earth Elemental",
+    "school": "Earth",
+    "level": 5,
+    "manaCost": 25,
+    "isCombat": true,
+    "description": "Summons a stack of Earth Elementals to fight for you; only one elemental type may be summoned per battle.",
+    "effectTags": [
+      "summon"
+    ],
+    "imageRef": "spell_summon_earth_elemental"
+  },
+  {
+    "id": "spell_summon_fire_elemental",
+    "name": "Summon Fire Elemental",
+    "school": "Fire",
+    "level": 5,
+    "manaCost": 25,
+    "isCombat": true,
+    "description": "Summons a stack of Fire Elementals to fight for you; only one elemental type may be summoned per battle.",
+    "effectTags": [
+      "summon"
+    ],
+    "imageRef": "spell_summon_fire_elemental"
+  },
+  {
+    "id": "spell_summon_water_elemental",
+    "name": "Summon Water Elemental",
+    "school": "Water",
+    "level": 5,
+    "manaCost": 25,
+    "isCombat": true,
+    "description": "Summons a stack of Water Elementals to fight for you; only one elemental type may be summoned per battle.",
+    "effectTags": [
+      "summon"
+    ],
+    "imageRef": "spell_summon_water_elemental"
+  },
+  {
+    "id": "spell_visions",
+    "name": "Visions",
+    "school": "All",
+    "level": 2,
+    "manaCost": 4,
+    "isCombat": false,
+    "description": "Reveals details about wandering monster stacks and map dwellings or objects.",
+    "effectTags": [
+      "adventure",
+      "scouting"
+    ],
+    "imageRef": "spell_visions"
+  },
+  {
+    "id": "spell_view_air",
+    "name": "View Air",
+    "school": "Air",
+    "level": 1,
+    "manaCost": 2,
+    "isCombat": false,
+    "description": "Reveals the locations of resources, artifacts, and heroes on the world map.",
+    "effectTags": [
+      "adventure",
+      "scouting"
+    ],
+    "imageRef": "spell_view_air"
+  },
+  {
+    "id": "spell_view_earth",
+    "name": "View Earth",
+    "school": "Earth",
+    "level": 1,
+    "manaCost": 2,
+    "isCombat": false,
+    "description": "Reveals the locations of mines and towns on the world map.",
+    "effectTags": [
+      "adventure",
+      "scouting"
+    ],
+    "imageRef": "spell_view_earth"
+  },
+  {
+    "id": "spell_scuttle_boat",
+    "name": "Scuttle Boat",
+    "school": "Water",
+    "level": 2,
+    "manaCost": 8,
+    "isCombat": false,
+    "description": "Destroys a nearby boat on the adventure map.",
+    "effectTags": [
+      "adventure",
+      "utility"
+    ],
+    "imageRef": "spell_scuttle_boat"
+  },
+  {
+    "id": "spell_summon_boat",
+    "name": "Summon Boat",
+    "school": "Water",
+    "level": 1,
+    "manaCost": 8,
+    "isCombat": false,
+    "description": "Summons one of your unoccupied boats to the nearest shore.",
+    "effectTags": [
+      "adventure",
+      "utility"
+    ],
+    "imageRef": "spell_summon_boat"
+  },
+  {
+    "id": "spell_water_walk",
+    "name": "Water Walk",
+    "school": "Water",
+    "level": 4,
+    "manaCost": 12,
+    "isCombat": false,
+    "description": "Lets the hero's army travel across water as if it were land.",
+    "effectTags": [
+      "adventure",
+      "movement"
+    ],
+    "imageRef": "spell_water_walk"
+  },
+  {
+    "id": "spell_fly",
+    "name": "Fly",
+    "school": "Air",
+    "level": 5,
+    "manaCost": 20,
+    "isCombat": false,
+    "description": "Lets the hero fly over impassable adventure-map terrain.",
+    "effectTags": [
+      "adventure",
+      "movement"
+    ],
+    "imageRef": "spell_fly"
+  },
+  {
+    "id": "spell_town_portal",
+    "name": "Town Portal",
+    "school": "Earth",
+    "level": 4,
+    "manaCost": 16,
+    "isCombat": false,
+    "description": "Teleports the hero to a friendly town.",
+    "effectTags": [
+      "adventure",
+      "movement"
+    ],
+    "imageRef": "spell_town_portal"
+  },
+  {
+    "id": "spell_dimension_door",
+    "name": "Dimension Door",
+    "school": "Air",
+    "level": 5,
+    "manaCost": 25,
+    "isCombat": false,
+    "description": "Teleports the hero a fixed distance across the adventure map, through obstacles.",
+    "effectTags": [
+      "adventure",
+      "movement"
+    ],
+    "imageRef": "spell_dimension_door"
   }
 ]
