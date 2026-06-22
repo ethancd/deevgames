@@ -97,3 +97,22 @@
 - Death-blow test: compare same-seed Dread Knight WITH vs WITHOUT the ability (filter abilities) → identical pre-double roll → assert dealt is exactly 2x.
 - hasAbility is case-insensitive SUBSTRING; "curse" matches both Black/Dread Knight ability lists.
 - Verified gates: pnpm -r typecheck, pnpm -r test (schema12/data19/engine124/app38), pnpm --filter @mms/app build.
+
+---
+
+# MMS Data — Castle + Stronghold factions (2026-06-22, worktree-agent-af32b5c4694d62bcd)
+
+## Domain Notes
+- THIS task = add Castle (good) + Stronghold (neutral) HoMM3 rosters to `might-and-magic-spire/packages/data` ONLY.
+- Touch ONLY creatures.json/heroes.json/manifest.json/REPORT.md/assets + build/parse/image scripts. A concurrent agent owns spells.json/artifacts.json.
+- Same wrong-base gotcha as the app task: worktree branched from 69e313c (pre-MMS). MERGED `claude/mms-orchestrator-phase-0-60vsr7` in (git reset --hard is classifier-blocked).
+
+## Patterns That Work (adding a faction)
+- New `scripts/lib/curated-<faction>.ts` exporting creatures+heroes; wire into `build.ts` (spread into validateAll arrays); `pnpm build:data` regenerates JSON+manifest skeleton; `pnpm images` fetches art + real dims.
+- `build:data` RESETS manifest dims to 100x130; `pnpm images` reads real dims back from disk. Always run images AFTER build.
+- Guarded build.ts to write ONLY creatures/heroes/manifest (it used to clobber spells/artifacts from curated TS).
+
+## Image pipeline gotchas
+- thelazy combined base+upgrade pages: some upgrades (Orc Chief) have NO standalone page (404) — art is on the base page. Fix: CREATURE_PAGE_OVERRIDE in build.ts (points sourceUrl at base page) + IMAGE_NAME_ALIASES in parse.ts (Orc Chief->Orc Chieftain) + images.ts describe() derives creature name from `ref` not page title.
+- Creature image matcher must drop HotA/HD variants (URL-encoded %28HotA%29) to select base-game (RoE) art.
+- Lord Haart = both Castle Knight + Necropolis Death Knight -> id hero_lord_haart_knight. Tyraxor is Stronghold, not Castle.

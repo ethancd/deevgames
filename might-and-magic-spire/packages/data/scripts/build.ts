@@ -22,6 +22,8 @@ import {
 } from "@mms/schema";
 import { necropolisCreatures } from "./lib/curated-creatures.ts";
 import { necropolisHeroes } from "./lib/curated-heroes.ts";
+import { castleCreatures, castleHeroes } from "./lib/curated-castle.ts";
+import { strongholdCreatures, strongholdHeroes } from "./lib/curated-stronghold.ts";
 import { spells } from "./lib/curated-spells.ts";
 import { artifacts } from "./lib/curated-artifacts.ts";
 
@@ -76,8 +78,16 @@ function assertUpgradeArrows(creatures: { id: string; upgradeOf: string | null }
 async function main(): Promise<void> {
   await mkdir(SRC, { recursive: true });
 
-  const creatures = validateAll("creature", SourceCreature, necropolisCreatures);
-  const heroes = validateAll("hero", SourceHero, necropolisHeroes);
+  const creatures = validateAll("creature", SourceCreature, [
+    ...necropolisCreatures,
+    ...castleCreatures,
+    ...strongholdCreatures,
+  ]);
+  const heroes = validateAll("hero", SourceHero, [
+    ...necropolisHeroes,
+    ...castleHeroes,
+    ...strongholdHeroes,
+  ]);
   const spellRows = validateAll("spell", SourceSpell, spells);
   const artifactRows = validateAll("artifact", SourceArtifact, artifacts);
 
@@ -95,9 +105,18 @@ async function main(): Promise<void> {
   const add = (ref: string, sourceUrl: string, attribution: string) => {
     if (!refs.has(ref)) refs.set(ref, { sourceUrl, attribution });
   };
-  for (const c of creatures)
-    add(c.imageRef, `https://heroes.thelazy.net/index.php/${encodeURIComponent(c.name)}`,
+  // Most creatures have their own thelazy page, but a few upgrades have no
+  // standalone page — their art lives on the combined base+upgrade page. Point
+  // the sourceUrl at the page that actually exists; the image parser's name
+  // alias still selects the correct (upgrade) sprite from it.
+  const CREATURE_PAGE_OVERRIDE: Record<string, string> = {
+    "Orc Chief": "Orc", // /index.php/Orc%20Chief 404s; art is on the Orc page.
+  };
+  for (const c of creatures) {
+    const pageName = CREATURE_PAGE_OVERRIDE[c.name] ?? c.name;
+    add(c.imageRef, `https://heroes.thelazy.net/index.php/${encodeURIComponent(pageName)}`,
       "HoMM3 / heroes.thelazy.net, reference use");
+  }
   for (const h of heroes)
     add(h.imageRef, `https://heroes.thelazy.net/index.php/${encodeURIComponent(h.name)}`,
       "HoMM3 / heroes.thelazy.net, reference use");
@@ -124,8 +143,11 @@ async function main(): Promise<void> {
 
   await write("creatures.json", creatures);
   await write("heroes.json", heroes);
-  await write("spells.json", spellRows);
-  await write("artifacts.json", artifactRows);
+  // NOTE: spells.json / artifacts.json are NOT (re)written here. They are
+  // hand-maintained / owned by a separate content stream; this build only emits
+  // the creature + hero JSON and the manifest (which still references the spell
+  // and artifact imageRefs derived from the curated arrays above). Re-emitting
+  // them from the curated TS would silently clobber any manual edits.
   await write("manifest.json", manifest);
 
   // eslint-disable-next-line no-console

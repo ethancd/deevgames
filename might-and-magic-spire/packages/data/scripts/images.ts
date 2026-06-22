@@ -68,10 +68,18 @@ async function makePlaceholder(ref: string, outPath: string): Promise<void> {
     .toFile(outPath);
 }
 
-/** ref prefix -> record kind + page-name (decoded from the sourceUrl path). */
+/** ref prefix -> record kind + record name (used to pick the sprite ON the page).
+ *
+ * The name is recovered from the sourceUrl page title, EXCEPT for creatures: a
+ * creature's sourceUrl may point at a combined base+upgrade page (e.g. orc_chief
+ * -> the "Orc" page), so the page title is not the creature's own name. For
+ * creatures we recover the name from the ref (`<faction>_<snake_name>`) so the
+ * sprite-name match in parseRecordImageUrl still targets the right creature. */
+const FACTION_PREFIXES = [
+  "necropolis_", "castle_", "rampart_", "tower_", "inferno_",
+  "dungeon_", "stronghold_", "fortress_", "conflux_", "neutral_",
+];
 function describe(entry: ImageManifestEntry): { kind: RecordKind; name: string } {
-  const last = entry.sourceUrl.split("/").pop() ?? "";
-  const name = decodeURIComponent(last).replace(/_/g, " ");
   const kind: RecordKind = entry.ref.startsWith("hero_")
     ? "hero"
     : entry.ref.startsWith("artifact_")
@@ -79,6 +87,15 @@ function describe(entry: ImageManifestEntry): { kind: RecordKind; name: string }
       : entry.ref.startsWith("spell_")
         ? "spell"
         : "creature";
+  if (kind === "creature") {
+    const prefix = FACTION_PREFIXES.find((p) => entry.ref.startsWith(p)) ?? "";
+    const bare = entry.ref.slice(prefix.length).replace(/_/g, " ");
+    // Title-case so it matches the page's "Orc Chief" file-name spelling.
+    const name = bare.replace(/\b\w/g, (m) => m.toUpperCase());
+    return { kind, name };
+  }
+  const last = entry.sourceUrl.split("/").pop() ?? "";
+  const name = decodeURIComponent(last).replace(/_/g, " ");
   return { kind, name };
 }
 

@@ -112,6 +112,230 @@
     "height": 130
   },
   {
+    "ref": "castle_pikeman",
+    "localPath": "assets/images/castle_pikeman.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Pikeman",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 100,
+    "height": 130
+  },
+  {
+    "ref": "castle_halberdier",
+    "localPath": "assets/images/castle_halberdier.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Halberdier",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 100,
+    "height": 130
+  },
+  {
+    "ref": "castle_archer",
+    "localPath": "assets/images/castle_archer.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Archer",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 100,
+    "height": 130
+  },
+  {
+    "ref": "castle_marksman",
+    "localPath": "assets/images/castle_marksman.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Marksman",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 100,
+    "height": 130
+  },
+  {
+    "ref": "castle_griffin",
+    "localPath": "assets/images/castle_griffin.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Griffin",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 100,
+    "height": 130
+  },
+  {
+    "ref": "castle_royal_griffin",
+    "localPath": "assets/images/castle_royal_griffin.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Royal%20Griffin",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 100,
+    "height": 130
+  },
+  {
+    "ref": "castle_swordsman",
+    "localPath": "assets/images/castle_swordsman.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Swordsman",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 100,
+    "height": 130
+  },
+  {
+    "ref": "castle_crusader",
+    "localPath": "assets/images/castle_crusader.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Crusader",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 100,
+    "height": 130
+  },
+  {
+    "ref": "castle_monk",
+    "localPath": "assets/images/castle_monk.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Monk",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 100,
+    "height": 130
+  },
+  {
+    "ref": "castle_zealot",
+    "localPath": "assets/images/castle_zealot.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Zealot",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 100,
+    "height": 130
+  },
+  {
+    "ref": "castle_cavalier",
+    "localPath": "assets/images/castle_cavalier.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Cavalier",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 100,
+    "height": 130
+  },
+  {
+    "ref": "castle_champion",
+    "localPath": "assets/images/castle_champion.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Champion",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 100,
+    "height": 130
+  },
+  {
+    "ref": "castle_angel",
+    "localPath": "assets/images/castle_angel.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Angel",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 100,
+    "height": 130
+  },
+  {
+    "ref": "castle_archangel",
+    "localPath": "assets/images/castle_archangel.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Archangel",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 100,
+    "height": 130
+  },
+  {
+    "ref": "stronghold_goblin",
+    "localPath": "assets/images/stronghold_goblin.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Goblin",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 100,
+    "height": 130
+  },
+  {
+    "ref": "stronghold_hobgoblin",
+    "localPath": "assets/images/stronghold_hobgoblin.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Hobgoblin",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 100,
+    "height": 130
+  },
+  {
+    "ref": "stronghold_wolf_rider",
+    "localPath": "assets/images/stronghold_wolf_rider.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Wolf%20Rider",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 100,
+    "height": 130
+  },
+  {
+    "ref": "stronghold_wolf_raider",
+    "localPath": "assets/images/stronghold_wolf_raider.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Wolf%20Raider",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 100,
+    "height": 130
+  },
+  {
+    "ref": "stronghold_orc",
+    "localPath": "assets/images/stronghold_orc.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Orc",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 100,
+    "height": 130
+  },
+  {
+    "ref": "stronghold_orc_chief",
+    "localPath": "assets/images/stronghold_orc_chief.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Orc",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 100,
+    "height": 130
+  },
+  {
+    "ref": "stronghold_ogre",
+    "localPath": "assets/images/stronghold_ogre.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Ogre",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 100,
+    "height": 130
+  },
+  {
+    "ref": "stronghold_ogre_mage",
+    "localPath": "assets/images/stronghold_ogre_mage.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Ogre%20Mage",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 100,
+    "height": 130
+  },
+  {
+    "ref": "stronghold_roc",
+    "localPath": "assets/images/stronghold_roc.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Roc",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 100,
+    "height": 130
+  },
+  {
+    "ref": "stronghold_thunderbird",
+    "localPath": "assets/images/stronghold_thunderbird.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Thunderbird",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 100,
+    "height": 130
+  },
+  {
+    "ref": "stronghold_cyclops",
+    "localPath": "assets/images/stronghold_cyclops.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Cyclops",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 100,
+    "height": 130
+  },
+  {
+    "ref": "stronghold_cyclops_king",
+    "localPath": "assets/images/stronghold_cyclops_king.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Cyclops%20King",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 100,
+    "height": 130
+  },
+  {
+    "ref": "stronghold_behemoth",
+    "localPath": "assets/images/stronghold_behemoth.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Behemoth",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 100,
+    "height": 130
+  },
+  {
+    "ref": "stronghold_ancient_behemoth",
+    "localPath": "assets/images/stronghold_ancient_behemoth.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Ancient%20Behemoth",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 100,
+    "height": 130
+  },
+  {
     "ref": "hero_galthran",
     "localPath": "assets/images/hero_galthran.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Galthran",
@@ -219,6 +443,262 @@
     "ref": "hero_septienna",
     "localPath": "assets/images/hero_septienna.webp",
     "sourceUrl": "https://heroes.thelazy.net/index.php/Septienna",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 58,
+    "height": 64
+  },
+  {
+    "ref": "hero_sir_mullich",
+    "localPath": "assets/images/hero_sir_mullich.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Sir%20Mullich",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 58,
+    "height": 64
+  },
+  {
+    "ref": "hero_tyris",
+    "localPath": "assets/images/hero_tyris.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Tyris",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 58,
+    "height": 64
+  },
+  {
+    "ref": "hero_lord_haart_knight",
+    "localPath": "assets/images/hero_lord_haart_knight.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Lord%20Haart",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 58,
+    "height": 64
+  },
+  {
+    "ref": "hero_sorsha",
+    "localPath": "assets/images/hero_sorsha.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Sorsha",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 58,
+    "height": 64
+  },
+  {
+    "ref": "hero_christian",
+    "localPath": "assets/images/hero_christian.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Christian",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 58,
+    "height": 64
+  },
+  {
+    "ref": "hero_catherine",
+    "localPath": "assets/images/hero_catherine.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Catherine",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 58,
+    "height": 64
+  },
+  {
+    "ref": "hero_roland",
+    "localPath": "assets/images/hero_roland.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Roland",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 58,
+    "height": 64
+  },
+  {
+    "ref": "hero_valeska",
+    "localPath": "assets/images/hero_valeska.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Valeska",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 58,
+    "height": 64
+  },
+  {
+    "ref": "hero_rion",
+    "localPath": "assets/images/hero_rion.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Rion",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 58,
+    "height": 64
+  },
+  {
+    "ref": "hero_adela",
+    "localPath": "assets/images/hero_adela.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Adela",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 58,
+    "height": 64
+  },
+  {
+    "ref": "hero_cuthbert",
+    "localPath": "assets/images/hero_cuthbert.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Cuthbert",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 58,
+    "height": 64
+  },
+  {
+    "ref": "hero_adelaide",
+    "localPath": "assets/images/hero_adelaide.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Adelaide",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 58,
+    "height": 64
+  },
+  {
+    "ref": "hero_sephinroth",
+    "localPath": "assets/images/hero_sephinroth.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Sephinroth",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 58,
+    "height": 64
+  },
+  {
+    "ref": "hero_loynis",
+    "localPath": "assets/images/hero_loynis.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Loynis",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 58,
+    "height": 64
+  },
+  {
+    "ref": "hero_caitlin",
+    "localPath": "assets/images/hero_caitlin.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Caitlin",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 58,
+    "height": 64
+  },
+  {
+    "ref": "hero_ingham",
+    "localPath": "assets/images/hero_ingham.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Ingham",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 58,
+    "height": 64
+  },
+  {
+    "ref": "hero_crag_hack",
+    "localPath": "assets/images/hero_crag_hack.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Crag%20Hack",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 58,
+    "height": 64
+  },
+  {
+    "ref": "hero_gurnisson",
+    "localPath": "assets/images/hero_gurnisson.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Gurnisson",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 58,
+    "height": 64
+  },
+  {
+    "ref": "hero_jabarkas",
+    "localPath": "assets/images/hero_jabarkas.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Jabarkas",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 58,
+    "height": 64
+  },
+  {
+    "ref": "hero_shakti",
+    "localPath": "assets/images/hero_shakti.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Shakti",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 58,
+    "height": 64
+  },
+  {
+    "ref": "hero_yog",
+    "localPath": "assets/images/hero_yog.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Yog",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 58,
+    "height": 64
+  },
+  {
+    "ref": "hero_gretchin",
+    "localPath": "assets/images/hero_gretchin.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Gretchin",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 58,
+    "height": 64
+  },
+  {
+    "ref": "hero_krellion",
+    "localPath": "assets/images/hero_krellion.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Krellion",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 58,
+    "height": 64
+  },
+  {
+    "ref": "hero_tyraxor_stronghold",
+    "localPath": "assets/images/hero_tyraxor_stronghold.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Tyraxor",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 58,
+    "height": 64
+  },
+  {
+    "ref": "hero_saurug",
+    "localPath": "assets/images/hero_saurug.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Saurug",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 58,
+    "height": 64
+  },
+  {
+    "ref": "hero_gird",
+    "localPath": "assets/images/hero_gird.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Gird",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 58,
+    "height": 64
+  },
+  {
+    "ref": "hero_vey",
+    "localPath": "assets/images/hero_vey.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Vey",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 58,
+    "height": 64
+  },
+  {
+    "ref": "hero_dessa",
+    "localPath": "assets/images/hero_dessa.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Dessa",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 58,
+    "height": 64
+  },
+  {
+    "ref": "hero_terek",
+    "localPath": "assets/images/hero_terek.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Terek",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 58,
+    "height": 64
+  },
+  {
+    "ref": "hero_zubin",
+    "localPath": "assets/images/hero_zubin.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Zubin",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 58,
+    "height": 64
+  },
+  {
+    "ref": "hero_gundula",
+    "localPath": "assets/images/hero_gundula.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Gundula",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 58,
+    "height": 64
+  },
+  {
+    "ref": "hero_oris",
+    "localPath": "assets/images/hero_oris.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Oris",
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
     "width": 58,
     "height": 64
