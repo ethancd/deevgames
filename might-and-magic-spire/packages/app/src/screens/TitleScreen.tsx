@@ -3,9 +3,12 @@
 // run as the chosen hero. The default is Galthran (Necropolis), preserving the
 // v0 entry path + keystone.
 //
-// CHROME NOTE: every faction currently renders in the Necropolis gothic chrome
-// (bone/verd palette, Cinzel display). Faction-specific theming is deferred.
-import { useState } from 'react';
+// CHROME NOTE: the picker LIVE-PREVIEWS each faction's chrome — selecting a
+// champion sets `data-faction` on the shell wrapper, so the page re-themes
+// (Necropolis gothic ↔ Castle gilt-azure ↔ Stronghold bronze-iron) as you
+// browse. The palette swap is driven entirely by the `[data-faction]` scopes
+// in index.css; this screen only declares the active faction.
+import { useEffect, useState } from 'react';
 import { SkullIcon } from '../chrome/icons';
 import { ContentImage } from '../chrome/ContentImage';
 import { FACTIONS, PLAYABLE_HEROES, DEFAULT_HERO_ID } from '../engine';
@@ -18,15 +21,24 @@ function heroById(id: string): PlayableHero | undefined {
 export function TitleScreen({
   onStart,
   onOpenCodex,
+  onPreviewFaction,
 }: {
   onStart: (seed: string, heroId?: string) => void;
   onOpenCodex?: () => void;
+  /** Notifies the shell which faction's chrome to preview as the player browses. */
+  onPreviewFaction?: (faction: string) => void;
 }) {
   const [seed, setSeed] = useState('necropolis-1');
   const [heroId, setHeroId] = useState<string>(
     heroById(DEFAULT_HERO_ID) ? DEFAULT_HERO_ID : PLAYABLE_HEROES[0]?.id ?? '',
   );
   const selected = heroById(heroId);
+  // Live theme preview: the shell's data-faction follows the SELECTED hero, so
+  // picking Sir Mullich flips the whole page to Castle's gilt-azure chrome.
+  const previewFaction = selected?.faction ?? 'Necropolis';
+  useEffect(() => {
+    onPreviewFaction?.(previewFaction);
+  }, [previewFaction, onPreviewFaction]);
 
   return (
     <div className="flex h-full flex-col bg-necropolis px-4 pb-4 pt-6 text-center">

@@ -127,6 +127,54 @@ describe('App run flow', () => {
   });
 });
 
+// Per-faction chrome: the app shell carries `data-faction`, which re-maps the
+// palette (Necropolis ↔ Castle ↔ Stronghold) via the [data-faction] scopes in
+// index.css. The title screen previews the SELECTED hero's faction; an active
+// run reports the run's faction.
+describe('per-faction chrome', () => {
+  it('defaults the title shell to Necropolis', () => {
+    render(<App />);
+    expect(screen.getByTestId('app-shell').getAttribute('data-faction')).toBe('Necropolis');
+  });
+
+  it('selecting a Castle hero live-previews the Castle theme on the shell', () => {
+    render(<App />);
+    const castleHero = screen
+      .getAllByTestId('hero-option')
+      .find((h) => h.getAttribute('data-faction') === 'Castle')!;
+    fireEvent.click(castleHero);
+    expect(screen.getByTestId('app-shell').getAttribute('data-faction')).toBe('Castle');
+  });
+
+  it('selecting a Stronghold hero live-previews the Stronghold theme', () => {
+    render(<App />);
+    const strongholdHero = screen
+      .getAllByTestId('hero-option')
+      .find((h) => h.getAttribute('data-faction') === 'Stronghold')!;
+    fireEvent.click(strongholdHero);
+    expect(screen.getByTestId('app-shell').getAttribute('data-faction')).toBe('Stronghold');
+  });
+
+  it('a Castle run renders the shell + spire heading in Castle chrome', () => {
+    render(<App />);
+    const castleHero = screen
+      .getAllByTestId('hero-option')
+      .find((h) => h.getAttribute('data-faction') === 'Castle')!;
+    fireEvent.click(castleHero);
+    fireEvent.click(screen.getByTestId('start-run'));
+    // On the act map now: the run's shell reports Castle and the heading reflects it.
+    expect(screen.getByTestId('app-shell').getAttribute('data-faction')).toBe('Castle');
+    expect(screen.getByText('THE CASTLE SPIRE')).toBeInTheDocument();
+  });
+
+  it('the default run stays in Necropolis chrome', () => {
+    render(<App />);
+    fireEvent.click(screen.getByTestId('start-run'));
+    expect(screen.getByTestId('app-shell').getAttribute('data-faction')).toBe('Necropolis');
+    expect(screen.getByText('THE NECROPOLIS SPIRE')).toBeInTheDocument();
+  });
+});
+
 describe('CombatScreen', () => {
   const noop = () => {};
   const renderCombat = (run: RunState, overrides = {}) =>
