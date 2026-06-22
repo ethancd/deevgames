@@ -574,5 +574,733 @@
     "attribution": "HoMM3 / heroes.thelazy.net, reference use",
     "width": 42,
     "height": 32
+  },
+  {
+    "ref": "spell_bloodlust",
+    "localPath": "assets/images/spell_bloodlust.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Bloodlust",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 74,
+    "height": 70
+  },
+  {
+    "ref": "spell_protection_from_air",
+    "localPath": "assets/images/spell_protection_from_air.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Protection%20from%20Air",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 74,
+    "height": 70
+  },
+  {
+    "ref": "spell_protection_from_fire",
+    "localPath": "assets/images/spell_protection_from_fire.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Protection%20from%20Fire",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 74,
+    "height": 70
+  },
+  {
+    "ref": "spell_protection_from_water",
+    "localPath": "assets/images/spell_protection_from_water.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Protection%20from%20Water",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 74,
+    "height": 70
+  },
+  {
+    "ref": "spell_protection_from_earth",
+    "localPath": "assets/images/spell_protection_from_earth.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Protection%20from%20Earth",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 74,
+    "height": 70
+  },
+  {
+    "ref": "spell_ice_bolt",
+    "localPath": "assets/images/spell_ice_bolt.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Ice%20Bolt",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 74,
+    "height": 70
+  },
+  {
+    "ref": "spell_frost_ring",
+    "localPath": "assets/images/spell_frost_ring.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Frost%20Ring",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 74,
+    "height": 70
+  },
+  {
+    "ref": "spell_fortune",
+    "localPath": "assets/images/spell_fortune.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Fortune",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 74,
+    "height": 70
+  },
+  {
+    "ref": "spell_mirth",
+    "localPath": "assets/images/spell_mirth.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Mirth",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 74,
+    "height": 70
+  },
+  {
+    "ref": "spell_sorrow",
+    "localPath": "assets/images/spell_sorrow.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Sorrow",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 74,
+    "height": 70
+  },
+  {
+    "ref": "spell_misfortune",
+    "localPath": "assets/images/spell_misfortune.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Misfortune",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 74,
+    "height": 70
+  },
+  {
+    "ref": "spell_anti_magic",
+    "localPath": "assets/images/spell_anti_magic.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Anti-Magic",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 74,
+    "height": 70
+  },
+  {
+    "ref": "spell_air_shield",
+    "localPath": "assets/images/spell_air_shield.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Air%20Shield",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 74,
+    "height": 70
+  },
+  {
+    "ref": "spell_fire_shield",
+    "localPath": "assets/images/spell_fire_shield.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Fire%20Shield",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 74,
+    "height": 70
+  },
+  {
+    "ref": "spell_frenzy",
+    "localPath": "assets/images/spell_frenzy.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Frenzy",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 74,
+    "height": 70
+  },
+  {
+    "ref": "spell_berserk",
+    "localPath": "assets/images/spell_berserk.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Berserk",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 74,
+    "height": 70
+  },
+  {
+    "ref": "spell_counterstrike",
+    "localPath": "assets/images/spell_counterstrike.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Counterstrike",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 74,
+    "height": 70
+  },
+  {
+    "ref": "spell_magic_mirror",
+    "localPath": "assets/images/spell_magic_mirror.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Magic%20Mirror",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 74,
+    "height": 70
+  },
+  {
+    "ref": "spell_hypnotize",
+    "localPath": "assets/images/spell_hypnotize.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Hypnotize",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 74,
+    "height": 70
+  },
+  {
+    "ref": "spell_destroy_undead",
+    "localPath": "assets/images/spell_destroy_undead.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Destroy%20Undead",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 74,
+    "height": 70
+  },
+  {
+    "ref": "spell_quicksand",
+    "localPath": "assets/images/spell_quicksand.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Quicksand",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 74,
+    "height": 70
+  },
+  {
+    "ref": "spell_land_mine",
+    "localPath": "assets/images/spell_land_mine.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Land%20Mine",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 74,
+    "height": 70
+  },
+  {
+    "ref": "spell_force_field",
+    "localPath": "assets/images/spell_force_field.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Force%20Field",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 74,
+    "height": 70
+  },
+  {
+    "ref": "spell_earthquake",
+    "localPath": "assets/images/spell_earthquake.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Earthquake",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 74,
+    "height": 70
+  },
+  {
+    "ref": "spell_clone",
+    "localPath": "assets/images/spell_clone.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Clone",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 74,
+    "height": 70
+  },
+  {
+    "ref": "spell_sacrifice",
+    "localPath": "assets/images/spell_sacrifice.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Sacrifice",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 74,
+    "height": 70
+  },
+  {
+    "ref": "spell_teleport",
+    "localPath": "assets/images/spell_teleport.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Teleport",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 74,
+    "height": 70
+  },
+  {
+    "ref": "spell_remove_obstacle",
+    "localPath": "assets/images/spell_remove_obstacle.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Remove%20Obstacle",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 74,
+    "height": 70
+  },
+  {
+    "ref": "spell_summon_air_elemental",
+    "localPath": "assets/images/spell_summon_air_elemental.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Summon%20Air%20Elemental",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 74,
+    "height": 70
+  },
+  {
+    "ref": "spell_summon_earth_elemental",
+    "localPath": "assets/images/spell_summon_earth_elemental.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Summon%20Earth%20Elemental",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 74,
+    "height": 70
+  },
+  {
+    "ref": "spell_summon_fire_elemental",
+    "localPath": "assets/images/spell_summon_fire_elemental.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Summon%20Fire%20Elemental",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 74,
+    "height": 70
+  },
+  {
+    "ref": "spell_summon_water_elemental",
+    "localPath": "assets/images/spell_summon_water_elemental.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Summon%20Water%20Elemental",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 74,
+    "height": 70
+  },
+  {
+    "ref": "spell_visions",
+    "localPath": "assets/images/spell_visions.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Visions",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 74,
+    "height": 70
+  },
+  {
+    "ref": "spell_view_air",
+    "localPath": "assets/images/spell_view_air.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/View%20Air",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 74,
+    "height": 70
+  },
+  {
+    "ref": "spell_view_earth",
+    "localPath": "assets/images/spell_view_earth.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/View%20Earth",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 74,
+    "height": 70
+  },
+  {
+    "ref": "spell_scuttle_boat",
+    "localPath": "assets/images/spell_scuttle_boat.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Scuttle%20Boat",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 74,
+    "height": 70
+  },
+  {
+    "ref": "spell_summon_boat",
+    "localPath": "assets/images/spell_summon_boat.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Summon%20Boat",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 74,
+    "height": 70
+  },
+  {
+    "ref": "spell_water_walk",
+    "localPath": "assets/images/spell_water_walk.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Water%20Walk",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 74,
+    "height": 70
+  },
+  {
+    "ref": "spell_fly",
+    "localPath": "assets/images/spell_fly.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Fly",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 74,
+    "height": 70
+  },
+  {
+    "ref": "spell_town_portal",
+    "localPath": "assets/images/spell_town_portal.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Town%20Portal",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 74,
+    "height": 70
+  },
+  {
+    "ref": "spell_dimension_door",
+    "localPath": "assets/images/spell_dimension_door.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Dimension%20Door",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 74,
+    "height": 70
+  },
+  {
+    "ref": "artifact_spyglass",
+    "localPath": "assets/images/artifact_spyglass.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Spyglass",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 44
+  },
+  {
+    "ref": "artifact_bird_of_perception",
+    "localPath": "assets/images/artifact_bird_of_perception.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Bird%20of%20Perception",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 44
+  },
+  {
+    "ref": "artifact_stoic_watchman",
+    "localPath": "assets/images/artifact_stoic_watchman.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Stoic%20Watchman",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 44
+  },
+  {
+    "ref": "artifact_emblem_of_cognizance",
+    "localPath": "assets/images/artifact_emblem_of_cognizance.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Emblem%20of%20Cognizance",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 44
+  },
+  {
+    "ref": "artifact_boots_of_speed",
+    "localPath": "assets/images/artifact_boots_of_speed.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Boots%20of%20Speed",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 44
+  },
+  {
+    "ref": "artifact_boots_of_levitation",
+    "localPath": "assets/images/artifact_boots_of_levitation.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Boots%20of%20Levitation",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 44
+  },
+  {
+    "ref": "artifact_boots_of_polarity",
+    "localPath": "assets/images/artifact_boots_of_polarity.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Boots%20of%20Polarity",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 44
+  },
+  {
+    "ref": "artifact_glyph_of_gallantry",
+    "localPath": "assets/images/artifact_glyph_of_gallantry.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Glyph%20of%20Gallantry",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 44
+  },
+  {
+    "ref": "artifact_badge_of_courage",
+    "localPath": "assets/images/artifact_badge_of_courage.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Badge%20of%20Courage",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 44
+  },
+  {
+    "ref": "artifact_crest_of_valor",
+    "localPath": "assets/images/artifact_crest_of_valor.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Crest%20of%20Valor",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 44
+  },
+  {
+    "ref": "artifact_ladybird_of_luck",
+    "localPath": "assets/images/artifact_ladybird_of_luck.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Ladybird%20of%20Luck",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 44
+  },
+  {
+    "ref": "artifact_clover_of_fortune",
+    "localPath": "assets/images/artifact_clover_of_fortune.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Clover%20of%20Fortune",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 44
+  },
+  {
+    "ref": "artifact_cards_of_prophecy",
+    "localPath": "assets/images/artifact_cards_of_prophecy.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Cards%20of%20Prophecy",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 44
+  },
+  {
+    "ref": "artifact_still_eye_of_the_dragon",
+    "localPath": "assets/images/artifact_still_eye_of_the_dragon.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Still%20Eye%20of%20the%20Dragon",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 44
+  },
+  {
+    "ref": "artifact_hourglass_of_the_evil_hour",
+    "localPath": "assets/images/artifact_hourglass_of_the_evil_hour.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Hourglass%20of%20the%20Evil%20Hour",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 44
+  },
+  {
+    "ref": "artifact_spirit_of_oppression",
+    "localPath": "assets/images/artifact_spirit_of_oppression.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Spirit%20of%20Oppression",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 44
+  },
+  {
+    "ref": "artifact_garniture_of_interference",
+    "localPath": "assets/images/artifact_garniture_of_interference.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Garniture%20of%20Interference",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 36
+  },
+  {
+    "ref": "artifact_pendant_of_free_will",
+    "localPath": "assets/images/artifact_pendant_of_free_will.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Pendant%20of%20Free%20Will",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 44
+  },
+  {
+    "ref": "artifact_necklace_of_dragonteeth",
+    "localPath": "assets/images/artifact_necklace_of_dragonteeth.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Necklace%20of%20Dragonteeth",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 44
+  },
+  {
+    "ref": "artifact_crown_of_dragontooth",
+    "localPath": "assets/images/artifact_crown_of_dragontooth.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Crown%20of%20Dragontooth",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 44
+  },
+  {
+    "ref": "artifact_charm_of_mana",
+    "localPath": "assets/images/artifact_charm_of_mana.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Charm%20of%20Mana",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 44
+  },
+  {
+    "ref": "artifact_talisman_of_mana",
+    "localPath": "assets/images/artifact_talisman_of_mana.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Talisman%20of%20Mana",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 37
+  },
+  {
+    "ref": "artifact_mystic_orb_of_mana",
+    "localPath": "assets/images/artifact_mystic_orb_of_mana.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Mystic%20Orb%20of%20Mana",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 44
+  },
+  {
+    "ref": "artifact_vial_of_lifeblood",
+    "localPath": "assets/images/artifact_vial_of_lifeblood.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Vial%20of%20Lifeblood",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 44
+  },
+  {
+    "ref": "artifact_bow_of_elven_cherrywood",
+    "localPath": "assets/images/artifact_bow_of_elven_cherrywood.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Bow%20of%20Elven%20Cherrywood",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 44
+  },
+  {
+    "ref": "artifact_recanters_cloak",
+    "localPath": "assets/images/artifact_recanters_cloak.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Recanter%27s%20Cloak",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 44
+  },
+  {
+    "ref": "artifact_spellbinders_hat",
+    "localPath": "assets/images/artifact_spellbinders_hat.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Spellbinder%27s%20Hat",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 44
+  },
+  {
+    "ref": "artifact_orb_of_vulnerability",
+    "localPath": "assets/images/artifact_orb_of_vulnerability.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Orb%20of%20Vulnerability",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 44
+  },
+  {
+    "ref": "artifact_tome_of_fire_magic",
+    "localPath": "assets/images/artifact_tome_of_fire_magic.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Tome%20of%20Fire%20Magic",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 44
+  },
+  {
+    "ref": "artifact_tome_of_air_magic",
+    "localPath": "assets/images/artifact_tome_of_air_magic.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Tome%20of%20Air%20Magic",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 44
+  },
+  {
+    "ref": "artifact_tome_of_earth_magic",
+    "localPath": "assets/images/artifact_tome_of_earth_magic.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Tome%20of%20Earth%20Magic",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 44
+  },
+  {
+    "ref": "artifact_tome_of_water_magic",
+    "localPath": "assets/images/artifact_tome_of_water_magic.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Tome%20of%20Water%20Magic",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 44
+  },
+  {
+    "ref": "artifact_endless_bag_of_gold",
+    "localPath": "assets/images/artifact_endless_bag_of_gold.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Endless%20Bag%20of%20Gold",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 44
+  },
+  {
+    "ref": "artifact_endless_purse_of_gold",
+    "localPath": "assets/images/artifact_endless_purse_of_gold.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Endless%20Purse%20of%20Gold",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 44
+  },
+  {
+    "ref": "artifact_everpouring_vial_of_mercury",
+    "localPath": "assets/images/artifact_everpouring_vial_of_mercury.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Everpouring%20Vial%20of%20Mercury",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 44
+  },
+  {
+    "ref": "artifact_eversmoking_ring_of_sulfur",
+    "localPath": "assets/images/artifact_eversmoking_ring_of_sulfur.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Eversmoking%20Ring%20of%20Sulfur",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 44
+  },
+  {
+    "ref": "artifact_inexhaustible_cart_of_ore",
+    "localPath": "assets/images/artifact_inexhaustible_cart_of_ore.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Inexhaustible%20Cart%20of%20Ore",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 44
+  },
+  {
+    "ref": "artifact_inexhaustible_cart_of_lumber",
+    "localPath": "assets/images/artifact_inexhaustible_cart_of_lumber.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Inexhaustible%20Cart%20of%20Lumber",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 44
+  },
+  {
+    "ref": "artifact_statesmans_medal",
+    "localPath": "assets/images/artifact_statesmans_medal.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Statesman%27s%20Medal",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 44
+  },
+  {
+    "ref": "artifact_diplomats_ring",
+    "localPath": "assets/images/artifact_diplomats_ring.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Diplomat%27s%20Ring",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 44
+  },
+  {
+    "ref": "artifact_rib_cage",
+    "localPath": "assets/images/artifact_rib_cage.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Rib%20Cage",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 44
+  },
+  {
+    "ref": "artifact_breastplate_of_petrified_wood",
+    "localPath": "assets/images/artifact_breastplate_of_petrified_wood.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Breastplate%20of%20Petrified%20Wood",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 44
+  },
+  {
+    "ref": "artifact_breastplate_of_brimstone",
+    "localPath": "assets/images/artifact_breastplate_of_brimstone.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Breastplate%20of%20Brimstone",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 44
+  },
+  {
+    "ref": "artifact_tunic_of_the_cyclops_king",
+    "localPath": "assets/images/artifact_tunic_of_the_cyclops_king.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Tunic%20of%20the%20Cyclops%20King",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 44
+  },
+  {
+    "ref": "artifact_buckler_of_the_gnoll_king",
+    "localPath": "assets/images/artifact_buckler_of_the_gnoll_king.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Buckler%20of%20the%20Gnoll%20King",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 44
+  },
+  {
+    "ref": "artifact_greater_gnolls_flail",
+    "localPath": "assets/images/artifact_greater_gnolls_flail.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Greater%20Gnoll%27s%20Flail",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 44
+  },
+  {
+    "ref": "artifact_ogres_club_of_havoc",
+    "localPath": "assets/images/artifact_ogres_club_of_havoc.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Ogre%27s%20Club%20of%20Havoc",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 44
+  },
+  {
+    "ref": "artifact_red_dragon_flame_tongue",
+    "localPath": "assets/images/artifact_red_dragon_flame_tongue.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Red%20Dragon%20Flame%20Tongue",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 44
+  },
+  {
+    "ref": "artifact_dragon_scale_shield",
+    "localPath": "assets/images/artifact_dragon_scale_shield.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Dragon%20Scale%20Shield",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 44
+  },
+  {
+    "ref": "artifact_dragon_scale_armor",
+    "localPath": "assets/images/artifact_dragon_scale_armor.webp",
+    "sourceUrl": "https://heroes.thelazy.net/index.php/Dragon%20Scale%20Armor",
+    "attribution": "HoMM3 / heroes.thelazy.net, reference use",
+    "width": 44,
+    "height": 44
   }
 ]

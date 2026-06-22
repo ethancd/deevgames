@@ -156,3 +156,80 @@ scrape/images read from cache and never re-hit the site.)
 - [x] 72/72 real images downloaded; 0 placeholders; real dimensions in manifest
 - [x] Every imageRef resolves to a manifest entry that exists on disk
 - [x] All changes confined to `packages/data/**` + `assets/images/**`
+
+---
+
+## Content expansion — Spells & Artifacts (base HoMM3 / Restoration of Erathia)
+
+This pass widened the spell and artifact databases to broad base-game coverage.
+Scope was confined to `spells.json`, `artifacts.json`, `manifest.json`,
+`REPORT.md`, and `assets/images/**` (creatures/heroes/index.ts untouched — a
+concurrent worktree owns those).
+
+### Counts
+
+| Record type | Before | Added | After |
+|-------------|-------:|------:|------:|
+| Spells      | 27     | 41    | 68    |
+| Artifacts   | 17     | 50    | 67    |
+| Manifest    | 72     | 91    | 163   |
+
+**Spells** now span all five schools across all five levels:
+
+- Air L1-5, Earth L1-5, Fire L1-5, Water L1-5, plus All (L1-2).
+- 59 combat + 9 adventure spells. Adventure spells (`isCombat: false`):
+  Visions, View Air, View Earth, Scuttle Boat, Summon Boat, Water Walk, Fly,
+  Town Portal, Dimension Door.
+- New iconic combat spells include Bloodlust, Frenzy, Berserk, Counterstrike,
+  Magic Mirror, Hypnotize, Sacrifice, Clone, Teleport, Anti-Magic, the four
+  Protection-from-element spells, Air/Fire Shield, Fortune/Mirth/Sorrow/
+  Misfortune (luck & morale), Ice Bolt, Frost Ring, Destroy Undead, Quicksand,
+  Land Mine, Force Field, Earthquake, Remove Obstacle, and all four
+  Summon-Elemental spells.
+
+**Artifacts** now cover all four classes (Treasure 19 / Minor 11 / Major 21 /
+Relic 16) and varied slots (Head, Neck, Torso, RightHand, LeftHand, Ring, Feet,
+Misc). New entries include the luck/morale set (Ladybird of Luck, Clover of
+Fortune, Cards of Prophecy, Glyph of Gallantry, Badge of Courage, Crest of
+Valor, Still Eye of the Dragon, Hourglass of the Evil Hour, Spirit of
+Oppression), the mana set (Charm/Talisman/Mystic Orb of Mana), the four Tomes of
+Magic, the gold/resource generators (Endless Bag/Purse of Gold, the Mercury/
+Sulfur/Ore/Lumber generators), Spell-Power and combat stat-sticks (Necklace/
+Crown of Dragontooth, the dragon-king and creature-king pieces, Dragon Scale
+Armor/Shield), and the magic-suppression relics (Recanter's Cloak, Orb of
+Vulnerability, Spellbinder's Hat, Boots of Polarity).
+
+### Images
+
+- **163/163 real images downloaded — 0 placeholders.** The image pipeline
+  (`pnpm --filter @mms/data images`) fetched real artwork from
+  heroes.thelazy.net for every new spell (74×70 sprites) and artifact (44×44
+  sprites); real dimensions are recorded in `manifest.json`. `placeholders.json`
+  remains empty.
+
+### Schema validity
+
+- `pnpm --filter @mms/data test` — 19/19 green.
+- `pnpm --filter @mms/data typecheck` — clean.
+- Every new `imageRef` resolves to a manifest entry whose WebP exists on disk.
+- All ids are unique within each record type (`spell_<snake>`,
+  `artifact_<snake>`).
+
+### Guessed / flagged values
+
+- **Spell mana costs** are base (un-skilled) values per the existing curated
+  convention. Mostly verified against thelazy.net; a few (e.g. Land Mine 18,
+  Earthquake 20, Hypnotize 18) are the commonly-misremembered ones and were
+  double-checked.
+- **Cape-slot artifacts** (Recanter's Cloak) are mapped to `Misc` because the
+  schema's slot enum has no Cape slot — consistent with how Cape of Conjuring
+  was already handled. If a Cape slot is added to the schema, these should move.
+- **Expansion-only items deliberately EXCLUDED** to keep strictly to base RoE:
+  Orb of Inhibition and Sea Captain's Hat (both Shadow of Death / Armageddon's
+  Blade era), and Sleep (a Heroes 2 spell that does not exist in HoMM3 — its
+  analog Blind was already present).
+- **Gold generators**: Endless Bag of Gold (+1500/day, Relic) and Endless Purse
+  of Gold (+1000/day, Major) included with confident values; the +750/day
+  "Endless Sack of Gold" tier was omitted as its exact value was uncertain.
+- **Badge of Courage** secondary clause ("immune to fear") is a best-effort
+  detail beyond its confirmed +1 Morale.
