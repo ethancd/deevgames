@@ -38,6 +38,41 @@ export function MapScreen({
     return new Set(cur?.next ?? []);
   }, [run.map, run.currentNodeId]);
 
+  // The trail you've walked (visited nodes incl. where you stand now).
+  const trail = useMemo(() => {
+    const s = new Set(run.clearedNodeIds ?? []);
+    if (run.currentNodeId) s.add(run.currentNodeId);
+    return s;
+  }, [run.clearedNodeIds, run.currentNodeId]);
+
+  // Everything still reachable going forward from where you stand (BFS over
+  // `next`). Before you've chosen a start node the whole map is open.
+  const forward = useMemo(() => {
+    const s = new Set<string>();
+    if (run.currentNodeId == null) {
+      run.map.forEach((n) => s.add(n.id));
+      return s;
+    }
+    const byId = new Map(run.map.map((n) => [n.id, n]));
+    const stack = [run.currentNodeId];
+    while (stack.length) {
+      const id = stack.pop()!;
+      if (s.has(id)) continue;
+      s.add(id);
+      byId.get(id)?.next.forEach((nx) => stack.push(nx));
+    }
+    return s;
+  }, [run.map, run.currentNodeId]);
+
+  // Classify a node into a visual tier.
+  const tierOf = (id: string): 'current' | 'reachable' | 'trail' | 'open' | 'locked' => {
+    if (id === run.currentNodeId) return 'current';
+    if (reachable.has(id)) return 'reachable';
+    if (trail.has(id)) return 'trail';
+    if (forward.has(id)) return 'open';
+    return 'locked';
+  };
+
   // --- measured node centres, for drawing the path lines --------------------
   const fieldRef = useRef<HTMLDivElement>(null);
   const nodeEls = useRef(new Map<string, HTMLButtonElement>());
@@ -71,19 +106,27 @@ export function MapScreen({
     return () => ro.disconnect();
   }, [measure, run.map]);
 
-  // Edges from each node to its `next`. Highlighted when they lead out of the
-  // node we currently stand on (the immediate, available choices).
-  const edges = useMemo(
-    () =>
-      run.map.flatMap((n) =>
-        n.next.map((to) => ({
-          from: n.id,
-          to,
-          live: run.currentNodeId != null && n.id === run.currentNodeId,
-        })),
-      ),
-    [run.map, run.currentNodeId],
-  );
+  // Edges from each node to its `next`, classified for styling: the walked
+  // TRAIL (both ends visited), the LIVE choices out of where you stand, OPEN
+  // edges you can still reach, and LOCKED branches you no longer can.
+  const edges = useMemo(() => {
+    const kindOf = (from: string, to: string): 'trail' | 'live' | 'open' | 'locked' => {
+      if (trail.has(from) && trail.has(to)) return 'trail';
+      if (from === run.currentNodeId) return 'live';
+      if (forward.has(from)) return 'open';
+      return 'locked';
+    };
+    return run.map.flatMap((n) =>
+      n.next.map((to) => ({ from: n.id, to, kind: kindOf(n.id, to) })),
+    );
+  }, [run.map, run.currentNodeId, trail, forward]);
+
+  const EDGE_STYLE = {
+    trail: { cls: 'stroke-bone-500', w: 2, o: 0.7 },
+    live: { cls: 'stroke-verd-300', w: 2.5, o: 0.95 },
+    open: { cls: 'stroke-verd-500', w: 1.5, o: 0.45 },
+    locked: { cls: 'stroke-grave-600', w: 1, o: 0.25 },
+  } as const;
 
   return (
     <div className="flex h-full flex-col bg-necropolis">
@@ -110,21 +153,22 @@ export function MapScreen({
             height={size.h}
             aria-hidden
           >
-            {edges.map(({ from, to, live }) => {
+            {edges.map(({ from, to, kind }) => {
               const a = pts[from];
               const b = pts[to];
               if (!a || !b) return null;
               const my = (a.y + b.y) / 2;
               const d = `M ${a.x} ${a.y} C ${a.x} ${my}, ${b.x} ${my}, ${b.x} ${b.y}`;
+              const st = EDGE_STYLE[kind];
               return (
                 <path
                   key={`${from}->${to}`}
                   d={d}
                   fill="none"
-                  className={live ? 'stroke-verd-300' : 'stroke-verd-500'}
-                  strokeWidth={live ? 2.5 : 1.5}
+                  className={st.cls}
+                  strokeWidth={st.w}
                   strokeLinecap="round"
-                  opacity={live ? 0.95 : 0.45}
+                  opacity={st.o}
                 />
               );
             })}
@@ -139,8 +183,8 @@ export function MapScreen({
                 data-testid="map-row"
               >
                 {rowNodes.map((node) => {
-                  const isReachable = reachable.has(node.id);
-                  const isCurrent = node.id === run.currentNodeId;
+                  const tier = tierOf(node.id);
+                  const isReachable = tier === 'reachable';
                   return (
                     <button
                       key={node.id}
@@ -149,18 +193,19 @@ export function MapScreen({
                       data-testid="map-node"
                       data-node-type={node.type}
                       data-reachable={isReachable}
+                      data-tier={tier}
                       disabled={!isReachable}
                       onClick={() => isReachable && onChoose(node.id)}
-                      aria-label={`${NODE_LABEL[node.type]} node${isReachable ? ', available' : ''}`}
+                      aria-label={`${NODE_LABEL[node.type]} node${isReachable ? ', available' : tier === 'trail' ? ', visited' : tier === 'locked' ? ', unreachable' : ''}`}
                       className={[
                         'flex h-16 w-16 flex-col items-center justify-center rounded-full border-2 text-2xl transition',
-                        isCurrent ? 'border-bone-100 bg-verd-700' : '',
-                        isReachable && !isCurrent
+                        tier === 'current' ? 'border-bone-100 bg-verd-700 text-bone-100' : '',
+                        tier === 'reachable'
                           ? 'border-verd-300 bg-grave-700 text-verd-300 animate-pulse-blood active:scale-90'
                           : '',
-                        !isReachable && !isCurrent
-                          ? 'border-grave-600 bg-grave-800 text-bone-500 opacity-50'
-                          : '',
+                        tier === 'trail' ? 'border-bone-500 bg-grave-700 text-bone-400' : '',
+                        tier === 'open' ? 'border-grave-600 bg-grave-800 text-bone-500 opacity-60' : '',
+                        tier === 'locked' ? 'border-grave-700 bg-grave-900 text-bone-600 opacity-30 grayscale' : '',
                         node.type === 'boss' ? 'h-20 w-20 border-blood-500 text-blood-400' : '',
                       ].join(' ')}
                     >

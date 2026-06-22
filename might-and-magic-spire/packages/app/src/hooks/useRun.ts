@@ -1,12 +1,48 @@
 // The single source of UI truth: it holds the latest RunState and exposes the
 // pinned engine ops as thin dispatchers. The UI never mutates state directly —
 // every transition goes through the engine, which returns the next RunState.
-import { useCallback, useState } from 'react';
+//
+// The run is PERSISTED to localStorage on every change and restored on load, so
+// a page reload resumes exactly where you were (RunState is pure, serializable
+// engine state). `reset` (and a finished run) clears it.
+import { useCallback, useEffect, useState } from 'react';
 import { engine } from '../engine';
-import type { ArtifactSlot, CommandOrder, RewardChoice, RunState } from '../engine';
+import type {
+  ArtifactSlot,
+  CommandOrder,
+  DamageForecast,
+  RewardChoice,
+  RunState,
+} from '../engine';
+
+const STORAGE_KEY = 'mms:run:v1';
+
+function loadSavedRun(): RunState | null {
+  try {
+    const raw = typeof localStorage !== 'undefined' && localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as RunState;
+    // Minimal sanity check — ignore anything that isn't a plausible run.
+    if (!parsed || typeof parsed.seed !== 'string' || !Array.isArray(parsed.map)) return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
 
 export function useRun() {
-  const [run, setRun] = useState<RunState | null>(null);
+  const [run, setRun] = useState<RunState | null>(loadSavedRun);
+
+  // Persist on every change; clear when the run ends or is reset.
+  useEffect(() => {
+    try {
+      if (typeof localStorage === 'undefined') return;
+      if (run) localStorage.setItem(STORAGE_KEY, JSON.stringify(run));
+      else localStorage.removeItem(STORAGE_KEY);
+    } catch {
+      /* storage full / unavailable — non-fatal, run just won't persist */
+    }
+  }, [run]);
 
   const startRun = useCallback((seed: string) => {
     setRun(engine.startRun(seed));
@@ -42,6 +78,12 @@ export function useRun() {
   const legalSpellTargets = useCallback(
     (spellId: string): string[] =>
       run && engine.legalSpellTargets ? engine.legalSpellTargets(run, spellId) : [],
+    [run],
+  );
+
+  const forecast = useCallback(
+    (attackerId: string, targetId: string): DamageForecast | null =>
+      run && engine.forecastAttack ? engine.forecastAttack(run, attackerId, targetId) : null,
     [run],
   );
 
@@ -88,6 +130,7 @@ export function useRun() {
     endPlayerTurn,
     legalTargets,
     legalSpellTargets,
+    forecast,
     pickReward,
     recruit,
     upgrade,

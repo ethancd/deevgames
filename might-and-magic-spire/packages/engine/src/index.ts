@@ -33,6 +33,7 @@ export type {
   RunState,
   RewardChoice,
   ArtifactSlot,
+  DamageForecast,
 } from "./types";
 
 // --- Seeded RNG (the determinism backbone) ---
@@ -91,6 +92,7 @@ export {
   endPlayerTurn,
   legalCommandTargets,
   legalSpellTargets,
+  forecastAttack,
   // node interactions
   recruitAt,
   upgradeAt,

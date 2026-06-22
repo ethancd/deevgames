@@ -243,6 +243,14 @@ export interface RunState {
   pendingRewards: RewardChoice[] | null;
 }
 
+/** A predicted attack outcome — damage range and creatures slain at each end. */
+export interface DamageForecast {
+  damageMin: number;
+  damageMax: number;
+  killsMin: number;
+  killsMax: number;
+}
+
 /** A single offered reward; `pickReward(run, index)` selects one. */
 export type RewardChoice =
   | { kind: "recruit"; creatureId: string; count: number; cost: number }

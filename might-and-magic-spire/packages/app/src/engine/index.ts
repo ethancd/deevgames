@@ -29,6 +29,7 @@ import { mockEngine } from './mockEngine';
 import type {
   ArtifactSlot,
   CommandOrder,
+  DamageForecast,
   EngineApi,
   EngineRewardSource,
   Equipment as AppEquipment,
@@ -91,6 +92,8 @@ function buildRealApi(): EngineApi & EngineRewardSource {
       toApp(real.castSpell(toReal(run), spellId, targetId)),
     endPlayerTurn: (run) => toApp(real.endPlayerTurn(toReal(run))),
     legalTargets: (run, stackId) => real.legalCommandTargets(toReal(run), stackId),
+    forecastAttack: (run, attackerStackId, targetStackId) =>
+      real.forecastAttack(toReal(run), attackerStackId, targetStackId) as DamageForecast | null,
 
     // node interactions — node-scoped ops validate against pendingRewards.
     recruit: (run, creatureId) =>

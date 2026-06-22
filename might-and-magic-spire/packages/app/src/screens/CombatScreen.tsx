@@ -11,7 +11,7 @@
 //   • End Turn runs the enemy army; log deltas + floating damage numbers flash.
 // The army roster is the life total: when your last stack falls you lose.
 import { useEffect, useRef, useState } from 'react';
-import type { CombatSpell, CommandOrder, RunState, Stack } from '../engine';
+import type { CombatSpell, CommandOrder, DamageForecast, RunState, Stack } from '../engine';
 import { BattleField } from '../components/BattleField';
 import { Spellbook } from '../components/Spellbook';
 import { HeroDollStrip } from '../components/HeroDoll';
@@ -29,6 +29,7 @@ export function CombatScreen({
   onEndTurn,
   legalTargets,
   legalSpellTargets,
+  forecast,
   onOpenDoll,
 }: {
   run: RunState;
@@ -37,6 +38,7 @@ export function CombatScreen({
   onEndTurn: () => void;
   legalTargets: (stackId: string) => string[];
   legalSpellTargets: (spellId: string) => string[];
+  forecast: (attackerId: string, targetId: string) => DamageForecast | null;
   onOpenDoll?: () => void;
 }) {
   const combat = run.combat!;
@@ -83,6 +85,15 @@ export function CombatScreen({
     targetableIds = new Set(legalSpellTargets(armedSpell.id));
   } else if (selectedStackId) {
     targetableIds = new Set(legalTargets(selectedStackId));
+  }
+
+  // Damage forecast on each legal target while aiming a stack's attack.
+  const forecasts: Record<string, DamageForecast> = {};
+  if (!armedSpell && selectedStackId) {
+    for (const id of targetableIds) {
+      const f = forecast(selectedStackId, id);
+      if (f) forecasts[id] = f;
+    }
   }
 
   const tapStack = (s: Stack) => {
@@ -149,6 +160,7 @@ export function CombatScreen({
         selectedId={selectedStackId}
         targetableIds={targetableIds}
         selectableIds={selectableIds}
+        forecasts={forecasts}
         floats={floats}
         onClearFloat={(fid) => {
           // find which stack owns this float id

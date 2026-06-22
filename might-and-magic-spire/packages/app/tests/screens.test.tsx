@@ -2,7 +2,7 @@
 // the ARMY redesign: a two-rank battlefield, defend, mana-gated spellbook, end
 // turn, loss routing, the hero paper-doll equip flow, and each economy node
 // screen with gold gating.
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { render, screen, fireEvent, within } from '@testing-library/react';
 import App from '../src/App';
 import { mockEngine } from '../src/engine/mockEngine';
@@ -38,6 +38,10 @@ function combatRun(seed = 'screen-combat'): RunState {
   }
   return run;
 }
+
+// The run now persists to localStorage; clear it between tests so each starts
+// from a clean slate (otherwise a saved run leaks into the next App mount).
+beforeEach(() => localStorage.clear());
 
 describe('App run flow', () => {
   it('boots on the title screen', () => {
@@ -78,6 +82,18 @@ describe('App run flow', () => {
       expect(screen.queryByTestId('node-offers') ?? screen.queryByTestId('reward-choices')).toBeTruthy();
     }
   });
+
+  it('persists the run across a reload (remount restores it)', () => {
+    const { unmount } = render(<App />);
+    fireEvent.click(screen.getByTestId('start-run'));
+    expect(screen.getByText('THE NECROPOLIS SPIRE')).toBeInTheDocument();
+    unmount();
+    // Remount = page reload. No startRun is called; the saved run is restored,
+    // so we land on the map, not the title.
+    render(<App />);
+    expect(screen.getByText('THE NECROPOLIS SPIRE')).toBeInTheDocument();
+    expect(screen.queryByTestId('start-run')).toBeNull();
+  });
 });
 
 describe('CombatScreen', () => {
@@ -91,9 +107,31 @@ describe('CombatScreen', () => {
         onEndTurn={noop}
         legalTargets={(id) => mockEngine.legalTargets(run, id)}
         legalSpellTargets={(id) => mockEngine.legalSpellTargets!(run, id)}
+        forecast={(a, t) => mockEngine.forecastAttack?.(run, a, t) ?? null}
         {...overrides}
       />,
     );
+
+  it('shows every stack its attack & defense', () => {
+    const run = combatRun();
+    renderCombat(run);
+    const stackCount =
+      alive(run.combat!.yourArmy.stacks).length + alive(run.combat!.enemyArmy.stacks).length;
+    expect(screen.getAllByTestId('stack-stats').length).toBe(stackCount);
+  });
+
+  it('forecasts damage on a legal target when a stack is selected', () => {
+    const run = combatRun();
+    renderCombat(run);
+    const mine = screen
+      .getAllByTestId('stack')
+      .find(
+        (s) =>
+          s.getAttribute('data-side') === 'player' && s.getAttribute('data-acted') === 'false',
+      );
+    fireEvent.click(mine!);
+    expect(screen.getAllByTestId('forecast').length).toBeGreaterThan(0);
+  });
 
   it('renders both armies across two ranks', () => {
     const run = combatRun();

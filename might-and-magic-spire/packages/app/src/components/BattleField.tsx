@@ -2,11 +2,12 @@
 // the far (top) ground: its back rank highest, front rank facing the trench.
 // YOUR army holds the near (bottom) ground for thumb reach: front rank meeting
 // the enemy, back rank + hero behind. A sunken combat-log trench divides them.
-import type { CombatState, Stack } from '../engine';
+import type { CombatState, DamageForecast, Stack } from '../engine';
 import { StackView } from './StackView';
 import type { FloatKind } from './FloatingNumber';
 
 type FloatMap = Record<string, { id: string; text: string; kind: FloatKind }[]>;
+type ForecastMap = Record<string, DamageForecast>;
 
 function Rank({
   stacks,
@@ -14,6 +15,7 @@ function Rank({
   selectedId,
   targetableIds,
   selectableIds,
+  forecasts,
   floats,
   onClearFloat,
   onTapStack,
@@ -23,6 +25,7 @@ function Rank({
   selectedId: string | null;
   targetableIds: Set<string>;
   selectableIds: Set<string>;
+  forecasts: ForecastMap;
   floats: FloatMap;
   onClearFloat: (id: string) => void;
   onTapStack: (s: Stack) => void;
@@ -51,6 +54,7 @@ function Rank({
             selected={selectedId === s.id}
             targetable={targetable}
             dimmed={dimmed}
+            forecast={forecasts[s.id]}
             floats={floats[s.id] ?? []}
             onClearFloat={onClearFloat}
             onTap={() => onTapStack(s)}
@@ -66,6 +70,7 @@ export function BattleField({
   selectedId,
   targetableIds,
   selectableIds,
+  forecasts = {},
   floats,
   onClearFloat,
   onTapStack,
@@ -74,6 +79,7 @@ export function BattleField({
   selectedId: string | null;
   targetableIds: Set<string>;
   selectableIds: Set<string>;
+  forecasts?: ForecastMap;
   floats: FloatMap;
   onClearFloat: (id: string) => void;
   onTapStack: (s: Stack) => void;
@@ -89,6 +95,7 @@ export function BattleField({
     selectedId,
     targetableIds,
     selectableIds,
+    forecasts,
     floats,
     onClearFloat,
     onTapStack,

@@ -48,7 +48,11 @@ import {
   applyHeal,
   hasAbility,
   withStack,
+  adMultiplier,
+  effAttack,
+  effDefense,
 } from "./battle";
+import type { DamageForecast } from "./types";
 
 // ===========================================================================
 // LEVERS (see COMBAT.md)
@@ -415,6 +419,36 @@ export function legalCommandTargets(run: RunState, stackId: string): string[] {
   const actor = combat.yourArmy.stacks.find((s) => s.id === stackId);
   if (!actor || actor.count <= 0) return [];
   return battleLegalTargets(actor, combat.enemyArmy).map((s) => s.id);
+}
+
+/**
+ * Predict the damage one of your stacks would deal to an enemy stack, as a
+ * range (the per-creature damage roll spans [damageMin, damageMax]) plus the
+ * creatures it would slay at each end. Mirrors `computeDamage` exactly — same
+ * A/D curve, same hero bonuses (player hero attacks into a null enemy hero) —
+ * so the forecast can't drift from resolution. Returns null if the pairing
+ * isn't a live, legal attack.
+ */
+export function forecastAttack(
+  run: RunState,
+  attackerStackId: string,
+  targetStackId: string,
+): DamageForecast | null {
+  const combat = run.combat;
+  if (!combat || combat.outcome !== "ongoing") return null;
+  const attacker = combat.yourArmy.stacks.find((s) => s.id === attackerStackId);
+  const target = combat.enemyArmy.stacks.find((s) => s.id === targetStackId);
+  if (!attacker || !target || attacker.count <= 0 || target.count <= 0) return null;
+
+  const mult = adMultiplier(effAttack(attacker, run.hero), effDefense(target, NULL_HERO));
+  const damageMin = Math.max(0, Math.floor(attacker.count * attacker.damageMin * mult));
+  const damageMax = Math.max(0, Math.floor(attacker.count * attacker.damageMax * mult));
+  return {
+    damageMin,
+    damageMax,
+    killsMin: applyDamage(target, damageMin).killed,
+    killsMax: applyDamage(target, damageMax).killed,
+  };
 }
 
 export function commandStack(

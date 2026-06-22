@@ -21,6 +21,7 @@ import {
   heroes as srcHeroes,
 } from '@mms/data';
 import type {
+  DamageForecast,
   ArtifactSlot,
   CombatSpell,
   CommandOrder,
@@ -601,6 +602,21 @@ class MockEngine implements EngineApi, EngineRewardSource {
     const enemyAlive = aliveStacks(c.enemyArmy.stacks);
     const reachable = isShooter(stack) ? enemyAlive : legalMeleeTargets(enemyAlive);
     return reachable.map((s) => s.id);
+  }
+
+  forecastAttack(run: RunState, attackerStackId: string, targetStackId: string): DamageForecast | null {
+    const c = run.combat;
+    if (!c || c.outcome !== 'ongoing') return null;
+    const a = c.yourArmy.stacks.find((s) => s.id === attackerStackId);
+    const t = c.enemyArmy.stacks.find((s) => s.id === targetStackId);
+    if (!a || !t || a.count <= 0 || t.count <= 0) return null;
+    const diff = effAttack(a, run.hero) - effDefense(t, run.hero);
+    const factor = diff >= 0 ? 1 + Math.min(diff * 0.05, 3.0) : 1 - Math.min(-diff * 0.025, 0.7);
+    const dMin = Math.max(1, Math.round(a.count * a.damageMin * factor));
+    const dMax = Math.max(1, Math.round(a.count * a.damageMax * factor));
+    const pool = poolHp(t);
+    const killsFor = (d: number) => (d >= pool ? t.count : t.count - Math.ceil((pool - d) / t.maxHpPer));
+    return { damageMin: dMin, damageMax: dMax, killsMin: killsFor(dMin), killsMax: killsFor(dMax) };
   }
 
   commandStack(run: RunState, stackId: string, order: CommandOrder): RunState {

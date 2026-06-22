@@ -9,6 +9,7 @@ import {
   endPlayerTurn,
   legalCommandTargets,
   legalSpellTargets,
+  forecastAttack,
   recruitAt,
   upgradeAt,
   learnAt,
@@ -103,6 +104,31 @@ function autoRun(seed: string, avoidElites = true): RunState {
 // ===========================================================================
 // KEYSTONE
 // ===========================================================================
+
+describe("forecastAttack", () => {
+  it("predicts a damage range + kills for a legal attack, null otherwise", () => {
+    let r = startRun("forecast-seed");
+    r = chooseNode(r, legalNextNodes(r)[0]); // row 0 is always a combat node
+    expect(r.combat?.outcome).toBe("ongoing");
+    const attacker = r.combat!.yourArmy.stacks.find((s) => s.count > 0)!;
+    const targetId = legalCommandTargets(r, attacker.id)[0];
+    const f = forecastAttack(r, attacker.id, targetId)!;
+    expect(f).toBeTruthy();
+    expect(f.damageMin).toBeLessThanOrEqual(f.damageMax);
+    expect(f.killsMin).toBeLessThanOrEqual(f.killsMax);
+    expect(f.damageMin).toBeGreaterThanOrEqual(0);
+    // unknown / illegal target → null
+    expect(forecastAttack(r, attacker.id, "no_such_stack")).toBeNull();
+  });
+
+  it("is deterministic (same run → same forecast)", () => {
+    let r = startRun("forecast-seed-2");
+    r = chooseNode(r, legalNextNodes(r)[0]);
+    const a = r.combat!.yourArmy.stacks.find((s) => s.count > 0)!;
+    const t = legalCommandTargets(r, a.id)[0];
+    expect(forecastAttack(r, a.id, t)).toEqual(forecastAttack(r, a.id, t));
+  });
+});
 
 describe("full run (the keystone)", () => {
   it("resolves headless from a seed to won/lost (no hangs)", () => {

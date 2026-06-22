@@ -31,6 +31,7 @@ export default function App() {
     endPlayerTurn,
     legalTargets,
     legalSpellTargets,
+    forecast,
     pickReward,
     recruit,
     upgrade,
@@ -87,6 +88,7 @@ export default function App() {
         onEndTurn={endPlayerTurn}
         legalTargets={legalTargets}
         legalSpellTargets={legalSpellTargets}
+        forecast={forecast}
         onOpenDoll={() => setDollOpen(true)}
       />,
     );

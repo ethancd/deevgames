@@ -157,6 +157,18 @@ export interface RunState {
   act: number;
   combat: CombatState | null;
   outcome: 'ongoing' | 'won' | 'lost';
+  // Node ids already visited/cleared this run — drives the map's walked trail
+  // and lock-out. Engine-owned; optional so the contract tolerates its absence.
+  clearedNodeIds?: string[];
+}
+
+// A predicted attack outcome: the damage range (per-creature roll spans
+// [damageMin, damageMax]) and the creatures slain at each end.
+export interface DamageForecast {
+  damageMin: number;
+  damageMax: number;
+  killsMin: number;
+  killsMax: number;
 }
 
 /**
@@ -194,6 +206,9 @@ export interface EngineApi {
   castSpell(run: RunState, spellId: string, targetId?: string): RunState;
   endPlayerTurn(run: RunState): RunState;
   legalTargets(run: RunState, stackId: string): string[];
+  // Predict an attack's damage/kills for the UI (non-mutating). Optional so the
+  // seam can no-op if a backing engine omits it.
+  forecastAttack?(run: RunState, attackerStackId: string, targetStackId: string): DamageForecast | null;
 
   // --- node interactions / economy ---
   pickReward(run: RunState, choice: RewardChoice): RunState;

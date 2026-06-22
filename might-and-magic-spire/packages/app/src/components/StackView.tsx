@@ -3,10 +3,12 @@
 // top-HP sliver for the lead creature, speed/rank marks, ability chips, and —
 // for enemy stacks — the honest TELEGRAPH of its coming action. Replaces
 // EnemyView. All touch; tapping dispatches the parent's onTap.
-import type { Stack } from '../engine';
+import type { DamageForecast, Stack } from '../engine';
 import { ContentImage } from '../chrome/ContentImage';
 import { SwordIcon, ShieldIcon, ShootIcon, QuestionIcon, FlameIcon } from '../chrome/icons';
 import { FloatingNumber, type FloatKind } from './FloatingNumber';
+
+const range = (lo: number, hi: number) => (lo === hi ? `${lo}` : `${lo}–${hi}`);
 
 function TelegraphBadge({ stack }: { stack: Stack }) {
   const t = stack.telegraph;
@@ -49,6 +51,7 @@ export function StackView({
   selected,
   targetable,
   dimmed,
+  forecast,
   floats = [],
   onClearFloat,
   onTap,
@@ -57,6 +60,7 @@ export function StackView({
   selected?: boolean;
   targetable?: boolean;
   dimmed?: boolean;
+  forecast?: DamageForecast | null;
   floats?: { id: string; text: string; kind: FloatKind }[];
   onClearFloat?: (id: string) => void;
   onTap?: () => void;
@@ -76,7 +80,7 @@ export function StackView({
       data-defending={stack.isDefending ? 'true' : 'false'}
       disabled={!onTap || dead}
       onClick={onTap}
-      aria-label={`${stack.name} ×${stack.count}, ${stack.rank} rank.${stack.telegraph ? ` ${stack.telegraph.label}.` : ''}`}
+      aria-label={`${stack.name} ×${stack.count}, attack ${stack.attack}, defense ${stack.defense}, ${stack.rank} rank.${stack.telegraph ? ` ${stack.telegraph.label}.` : ''}${forecast ? ` Predicted ${range(forecast.damageMin, forecast.damageMax)} damage.` : ''}`}
       className={[
         'relative flex w-[4.7rem] shrink-0 flex-col items-center gap-0.5 rounded-lg p-1 transition',
         selected ? 'ring-2 ring-bone-100' : 'ring-1 ring-transparent',
@@ -120,11 +124,42 @@ export function StackView({
         />
       </div>
 
-      <div className="flex w-full items-center justify-center gap-1 text-[0.5rem] text-bone-400">
-        <span className="font-display tracking-wide">{stack.rank === 'back' ? 'BACK' : 'FRONT'}</span>
-        <span className="tabular-nums">·spd {stack.speed}</span>
+      {/* always-on attack / defense / speed — so damage is predictable */}
+      <div
+        data-testid="stack-stats"
+        className="flex w-full items-center justify-center gap-1 text-[0.5rem] text-bone-300"
+      >
+        <span className="flex items-center gap-0.5" title="Attack">
+          <SwordIcon className="text-[0.6rem] text-blood-400" />
+          <span className="tabular-nums">{stack.attack}</span>
+        </span>
+        <span className="flex items-center gap-0.5" title="Defense">
+          <ShieldIcon className="text-[0.6rem] text-verd-300" />
+          <span className="tabular-nums">{stack.defense}</span>
+        </span>
+        <span className="tabular-nums text-bone-500" title="Speed">
+          spd{stack.speed}
+        </span>
       </div>
-      <div className="max-w-[4.6rem] truncate font-display text-[0.6rem] engraved">{stack.name}</div>
+      <div className="max-w-[4.6rem] truncate font-display text-[0.6rem] engraved">
+        <span className="text-[0.45rem] uppercase tracking-wider text-bone-600">
+          {stack.rank === 'back' ? 'back ' : 'front '}
+        </span>
+        {stack.name}
+      </div>
+
+      {/* damage forecast — shown on a legal target while you're aiming */}
+      {forecast && (
+        <div
+          data-testid="forecast"
+          className="rounded-sm border border-blood-500/60 bg-grave-900/90 px-1 py-0.5 text-[0.5rem] font-bold tabular-nums text-blood-300"
+        >
+          ≈{range(forecast.damageMin, forecast.damageMax)}
+          {forecast.killsMax > 0 && (
+            <span className="ml-1 text-bone-200">☠{range(forecast.killsMin, forecast.killsMax)}</span>
+          )}
+        </div>
+      )}
 
       {chips.length > 0 && (
         <div className="flex flex-wrap justify-center gap-0.5">
