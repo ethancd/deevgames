@@ -9,6 +9,7 @@ import {
   legalTargets,
   resolveAttack,
   isShooter,
+  isFlying,
   hasAbility,
   AD_ATTACK_CAP,
   AD_DEFENSE_CAP,
@@ -119,6 +120,20 @@ describe("two-rank reach", () => {
     expect(isShooter(lich)).toBe(true);
     const targets = legalTargets(lich, enemyArmy());
     expect(targets.length).toBe(2);
+  });
+  it("flyers reach the back rank while the front still lives", () => {
+    const vampire = stackOf("necropolis_vampire", 4); // Flying, ground melee
+    expect(isFlying(vampire)).toBe(true);
+    expect(isShooter(vampire)).toBe(false);
+    const targets = legalTargets(vampire, enemyArmy());
+    expect(targets.length).toBe(2); // front AND back, despite the front living
+    expect(targets.map((t) => t.rank)).toContain("back");
+  });
+  it("a flyer still TAKES retaliation (it is melee, not a shooter)", () => {
+    const flyer = stackOf("necropolis_wight", 6); // Flying, NOT no-retaliation
+    const defender = stackOf("necropolis_skeleton", 10, "enemy");
+    const res = resolveAttack(flyer, defender, HERO0, HERO0, makeRng("retal"));
+    expect(res.retaliation).not.toBeNull();
   });
 });
 

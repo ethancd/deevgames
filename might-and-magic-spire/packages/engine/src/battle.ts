@@ -84,6 +84,14 @@ export function isShooter(stack: Stack): boolean {
   return hasAbility(stack, "shooter") || hasAbility(stack, "ranged");
 }
 
+/** Flying: reaches ANY rank (ignores the front wall) but is still MELEE — it
+ *  takes and deals retaliation, unlike a shooter. Necropolis is flyer-heavy
+ *  (Wight/Wraith/Vampire(s)/Bone & Ghost Dragon), so this is core to the
+ *  faction's tactics: flyers dive your back-rank casters, and yours dive theirs. */
+export function isFlying(stack: Stack): boolean {
+  return hasAbility(stack, "flying");
+}
+
 /**
  * Compute raw damage an attacker stack deals to a defender stack. One shared
  * per-creature damage roll (HoMM3-style), scaled by count and the A/D curve.
@@ -166,12 +174,13 @@ const frontLiving = (army: Army) =>
 
 /**
  * Legal targets for an attacker against the opposing army.
- * - Shooters hit ANY living stack (no rank restriction).
- * - Melee may hit the enemy FRONT only, until the front is empty, then the back.
- * Flying-reach-back is DISABLED in v1 (lever in COMBAT.md).
+ * - Shooters hit ANY living stack (no rank restriction, no retaliation taken).
+ * - Flyers hit ANY living stack (ignore the front wall) but are MELEE, so they
+ *   still take retaliation. (Flying reach-back is ON — see COMBAT.md §15.)
+ * - Ground melee may hit the enemy FRONT only, until the front is empty.
  */
 export function legalTargets(attacker: Stack, enemyArmy: Army): Stack[] {
-  if (isShooter(attacker)) return living(enemyArmy);
+  if (isShooter(attacker) || isFlying(attacker)) return living(enemyArmy);
   const front = frontLiving(enemyArmy);
   if (front.length > 0) return front;
   return living(enemyArmy); // front empty -> melee may reach the back

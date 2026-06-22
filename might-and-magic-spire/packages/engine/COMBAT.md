@@ -86,16 +86,16 @@ A melee defender strikes back **once per round**. Suppressed when:
 
 ---
 
-## 5. Reach — two ranks (plan lever #1: flying-reach-back OFF)
+## 5. Reach — two ranks (flying-reach-back ON; see §15)
 
-- **Melee** may target the enemy **front rank only**, until the front is empty,
-  then it reaches the back.
+- **Melee (ground)** may target the enemy **front rank only**, until the front is
+  empty, then it reaches the back.
 - **Shooters** (Lich/Power Lich: ability `Ranged`) hit **any** rank, and take **no
   retaliation** when shooting.
-- **FLYING-REACH-BACK IS DISABLED in v1.** Necropolis is flyer-heavy (Wights,
-  Vampires, Dragons all fly); letting flyers ignore the front would collapse the
-  front/back tension the whole model rests on. Re-enable by extending
-  `battle.legalTargets` to treat `hasAbility(s,"flying")` like a shooter for reach.
+- **Flyers** (`Flying`: Wight, Wraith, Vampire(s), Bone & Ghost Dragon) hit **any**
+  rank — they ignore the front wall — but are **melee**, so they still **take and
+  deal retaliation** (unlike shooters). This is the faction's core tactic: flyers
+  dive the back-rank casters. (`battle.isFlying` / `legalTargets`; lever §15.)
 
 ---
 
@@ -258,7 +258,6 @@ byte-identical final `RunState` for the same seed.
 
 ## 13. Things deliberately deferred (levers to revisit)
 
-- Flying reaches the back rank (§5).
 - AoE spell geometry (§10) — needs positions/hex.
 - Morale/luck, mana drain, curses, death-cloud, aging, disease (abilities present
   on creatures but not yet mechanized — currently flavor).
@@ -292,6 +291,20 @@ new RNG draws. The keystone full-run + byte-identical determinism tests in
 `run.test.ts` stay green, and `light.test.ts` pins all 8 behaviors.
 
 **NOT in LIGHT** (left for MEDIUM/HEAVY): morale, luck, initiative, real AoE
-geometry, flying reach-back, on-combat-start artifact casting, per-school spell
-scaling, duration timers. Speed stays weak (rule 1 only makes Necklace non-inert,
-not strong); Shield stays a Stone-Skin dup (needs `block` — MEDIUM).
+geometry, on-combat-start artifact casting, per-school spell scaling, duration
+timers. Speed stays weak (rule 1 only makes Necklace non-inert, not strong);
+Shield stays a Stone-Skin dup (needs `block` — MEDIUM).
+
+---
+
+## 15. Flying reach-back (post-LIGHT addition)
+
+Flying was the one HEAVY-tier item pulled forward by request — it's core to the
+Necropolis identity (half the roster flies). A `Flying` stack (`battle.isFlying`)
+targets **any** rank like a shooter, but it is **melee**: it still takes and
+deals **retaliation** (a shooter does not). So flyers are the back-line divers —
+your Vampires/Dragons reach their casters, theirs reach yours — at the cost of
+eating a counter (except Vampires, which also have `No enemy retaliation`).
+Enemy flyers route through the same `legalTargets`, so their telegraphs now
+correctly threaten your back rank. Verified: keystone full-run + win-search tests
+stay green with flyers enabled.
