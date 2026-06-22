@@ -68,6 +68,10 @@ export function StackView({
   const hpPct = Math.max(0, Math.min(100, (stack.hpTop / stack.maxHpPer) * 100));
   const chips = abilityChips(stack);
   const dead = stack.count <= 0;
+  // Aggregate HP of the whole stack (lead creature's remaining hp + the rest at
+  // full) and its current ceiling — so durability reads at a glance.
+  const totalHp = Math.max(0, (stack.count - 1) * stack.maxHpPer + stack.hpTop);
+  const maxTotalHp = stack.count * stack.maxHpPer;
 
   return (
     <button
@@ -116,18 +120,24 @@ export function StackView({
         ))}
       </div>
 
-      {/* top-creature hp sliver */}
-      <div className="relative h-1 w-[3.9rem] overflow-hidden rounded-sm border border-grave-600 bg-grave-900">
+      {/* aggregate stack HP — current total over the lead-creature sliver */}
+      <div className="relative h-2 w-[3.9rem] overflow-hidden rounded-sm border border-grave-600 bg-grave-900" title={`Stack HP ${totalHp}/${maxTotalHp}`}>
         <div
           className="h-full bg-gradient-to-r from-blood-500 to-blood-400"
           style={{ width: `${hpPct}%` }}
         />
+        <span
+          data-testid="stack-hp"
+          className="absolute inset-0 flex items-center justify-center text-[0.5rem] font-bold leading-none text-bone-50 tabular-nums [text-shadow:0_1px_1px_rgba(0,0,0,0.9)]"
+        >
+          ♥{totalHp}
+        </span>
       </div>
 
-      {/* always-on attack / defense / speed — so damage is predictable */}
+      {/* always-on attack / defense — so damage is predictable */}
       <div
         data-testid="stack-stats"
-        className="flex w-full items-center justify-center gap-1 text-[0.5rem] text-bone-300"
+        className="flex w-full items-center justify-center gap-1.5 text-[0.5rem] text-bone-300"
       >
         <span className="flex items-center gap-0.5" title="Attack">
           <SwordIcon className="text-[0.6rem] text-blood-400" />
@@ -136,9 +146,6 @@ export function StackView({
         <span className="flex items-center gap-0.5" title="Defense">
           <ShieldIcon className="text-[0.6rem] text-verd-300" />
           <span className="tabular-nums">{stack.defense}</span>
-        </span>
-        <span className="tabular-nums text-bone-500" title="Speed">
-          spd{stack.speed}
         </span>
       </div>
       <div className="max-w-[4.6rem] truncate font-display text-[0.6rem] engraved">

@@ -130,6 +130,36 @@ describe("forecastAttack", () => {
   });
 });
 
+describe("combat events (damage popups)", () => {
+  it("a player attack emits an attack event with damage", () => {
+    let r = startRun("events-seed");
+    r = chooseNode(r, legalNextNodes(r)[0]);
+    const attacker = r.combat!.yourArmy.stacks.find((s) => s.count > 0)!;
+    const targetId = legalCommandTargets(r, attacker.id)[0];
+    r = commandStack(r, attacker.id, "attack", targetId);
+    const evts = r.lastEvents ?? [];
+    expect(evts.length).toBeGreaterThan(0);
+    const atk = evts.find((e) => e.kind === "attack")!;
+    expect(atk.side).toBe("player");
+    expect(atk.attackerId).toBe(attacker.id);
+    expect(atk.targetId).toBe(targetId);
+    expect(atk.damage).toBeGreaterThanOrEqual(0);
+  });
+
+  it("the enemy turn emits enemy strike events", () => {
+    let r = startRun("events-seed-2");
+    r = chooseNode(r, legalNextNodes(r)[0]);
+    r = endPlayerTurn(r); // enemies act
+    // If the battle is still going, the enemy turn produced strike events.
+    if (r.combat && r.combat.outcome === "ongoing") {
+      const evts = r.lastEvents ?? [];
+      expect(evts.some((e) => e.side === "enemy")).toBe(true);
+    } else {
+      expect(["won", "lost"]).toContain(r.outcome === "ongoing" ? r.combat?.outcome : r.outcome);
+    }
+  });
+});
+
 describe("full run (the keystone)", () => {
   it("resolves headless from a seed to won/lost (no hangs)", () => {
     for (let i = 0; i < 25; i++) {

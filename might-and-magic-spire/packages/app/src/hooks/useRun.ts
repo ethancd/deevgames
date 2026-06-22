@@ -24,7 +24,8 @@ function loadSavedRun(): RunState | null {
     const parsed = JSON.parse(raw) as RunState;
     // Minimal sanity check — ignore anything that isn't a plausible run.
     if (!parsed || typeof parsed.seed !== 'string' || !Array.isArray(parsed.map)) return null;
-    return parsed;
+    // Don't replay last turn's damage popups on reload.
+    return { ...parsed, lastEvents: undefined };
   } catch {
     return null;
   }

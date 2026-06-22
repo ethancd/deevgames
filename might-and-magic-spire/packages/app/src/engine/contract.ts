@@ -160,6 +160,8 @@ export interface RunState {
   // Node ids already visited/cleared this run — drives the map's walked trail
   // and lock-out. Engine-owned; optional so the contract tolerates its absence.
   clearedNodeIds?: string[];
+  // Structured strikes from the most recent op, for damage-popup playback.
+  lastEvents?: CombatEvent[];
 }
 
 // A predicted attack outcome: the damage range (per-creature roll spans
@@ -169,6 +171,19 @@ export interface DamageForecast {
   damageMax: number;
   killsMin: number;
   killsMax: number;
+}
+
+// A single resolved strike from the most recent op — the UI plays these as
+// damage popups (your attack, a retaliation, each enemy strike).
+export interface CombatEvent {
+  kind: 'attack' | 'retaliate' | 'spell';
+  side: 'player' | 'enemy';
+  attackerId: string;
+  attackerName: string;
+  targetId: string;
+  targetName: string;
+  damage: number;
+  killed: number;
 }
 
 /**

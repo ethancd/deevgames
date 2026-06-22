@@ -184,6 +184,10 @@ export interface ResolvedAttack {
   log: string[];
   /** Creatures of the defender killed (for the slain ledger). */
   defenderKilled: number;
+  /** Damage the main hit dealt to the defender (for UI popups). */
+  dealt: number;
+  /** The defender's retaliation onto the attacker, if one occurred. */
+  retaliation: { dealt: number; killed: number } | null;
 }
 
 /**
@@ -232,6 +236,7 @@ export function resolveAttack(
     hasAbility(attacker, "no enemy retaliation") ||
     defender.hasRetaliated ||
     newDefender.count <= 0;
+  let retaliation: { dealt: number; killed: number } | null = null;
   if (!retaliationSuppressed) {
     const back = computeDamage(
       newDefender,
@@ -243,6 +248,7 @@ export function resolveAttack(
     const r = applyDamage(newAttacker, back);
     newAttacker = r.defender;
     newDefender = { ...newDefender, hasRetaliated: true };
+    retaliation = { dealt: r.dealt, killed: r.killed };
     log.push(
       `${defender.name} retaliates for ${r.dealt}` +
         (r.killed > 0 ? ` (${r.killed} slain)` : ""),
@@ -254,6 +260,8 @@ export function resolveAttack(
     defender: newDefender,
     log,
     defenderKilled: res.killed,
+    dealt: res.dealt,
+    retaliation,
   };
 }
 

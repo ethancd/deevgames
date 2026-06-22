@@ -11,7 +11,7 @@
 //   • End Turn runs the enemy army; log deltas + floating damage numbers flash.
 // The army roster is the life total: when your last stack falls you lose.
 import { useEffect, useRef, useState } from 'react';
-import type { CombatSpell, CommandOrder, DamageForecast, RunState, Stack } from '../engine';
+import type { CombatEvent, CombatSpell, CommandOrder, DamageForecast, RunState, Stack } from '../engine';
 import { BattleField } from '../components/BattleField';
 import { Spellbook } from '../components/Spellbook';
 import { HeroDollStrip } from '../components/HeroDoll';
@@ -47,30 +47,30 @@ export function CombatScreen({
   const [spellbookOpen, setSpellbookOpen] = useState(false);
   const [floats, setFloats] = useState<Record<string, Float[]>>({});
 
-  // Diff stack counts between renders to spawn floating loss numbers.
-  const prevCounts = useRef<Record<string, number>>({});
+  // Play the engine's per-strike events as staggered damage popups: your
+  // attack, its retaliation, and every enemy strike on the enemy turn — so the
+  // hits are legible instead of the board silently jumping to a new state.
+  const playedRef = useRef<CombatEvent[] | null>(null);
   useEffect(() => {
-    const all = [...combat.yourArmy.stacks, ...combat.enemyArmy.stacks];
-    const next: Record<string, Float[]> = {};
-    for (const s of all) {
-      const before = prevCounts.current[s.id];
-      if (before != null && s.count < before) {
-        const lost = before - s.count;
-        const id = `f${floatSeq++}`;
-        next[s.id] = [{ id, text: `-${lost}`, kind: 'loss' }];
-      }
-    }
-    if (Object.keys(next).length > 0) {
-      setFloats((cur) => {
-        const merged = { ...cur };
-        for (const [k, v] of Object.entries(next)) merged[k] = [...(merged[k] ?? []), ...v];
-        return merged;
-      });
-    }
-    const counts: Record<string, number> = {};
-    for (const s of all) counts[s.id] = s.count;
-    prevCounts.current = counts;
-  }, [combat]);
+    const events = run.lastEvents;
+    if (!events || events.length === 0 || events === playedRef.current) return;
+    playedRef.current = events;
+    const STAGGER = 600;
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    events.forEach((e, i) => {
+      timers.push(
+        setTimeout(() => {
+          const id = `f${floatSeq++}`;
+          const text = e.killed > 0 ? `−${e.damage} ☠${e.killed}` : `−${e.damage}`;
+          setFloats((cur) => ({
+            ...cur,
+            [e.targetId]: [...(cur[e.targetId] ?? []), { id, text, kind: 'loss' }],
+          }));
+        }, i * STAGGER),
+      );
+    });
+    return () => timers.forEach(clearTimeout);
+  }, [run.lastEvents]);
 
   const clearFloat = (sid: string, fid: string) =>
     setFloats((cur) => ({ ...cur, [sid]: (cur[sid] ?? []).filter((f) => f.id !== fid) }));

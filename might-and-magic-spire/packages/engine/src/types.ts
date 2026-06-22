@@ -241,6 +241,21 @@ export interface RunState {
   // --- engine-internal extensions ---
   clearedNodeIds: string[];
   pendingRewards: RewardChoice[] | null;
+  /** Structured strikes from the MOST RECENT op, for the UI to animate as
+   *  damage popups. Replaced on each op; survives combat settlement. */
+  lastEvents?: CombatEvent[];
+}
+
+/** A single resolved strike, for damage popups. `side` is who threw it. */
+export interface CombatEvent {
+  kind: "attack" | "retaliate" | "spell";
+  side: Side;
+  attackerId: string;
+  attackerName: string;
+  targetId: string;
+  targetName: string;
+  damage: number;
+  killed: number;
 }
 
 /** A predicted attack outcome — damage range and creatures slain at each end. */

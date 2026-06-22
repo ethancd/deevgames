@@ -34,6 +34,7 @@ export type {
   RewardChoice,
   ArtifactSlot,
   DamageForecast,
+  CombatEvent,
 } from "./types";
 
 // --- Seeded RNG (the determinism backbone) ---

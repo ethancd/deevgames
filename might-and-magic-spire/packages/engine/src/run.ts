@@ -52,7 +52,42 @@ import {
   effAttack,
   effDefense,
 } from "./battle";
-import type { DamageForecast } from "./types";
+import type { ResolvedAttack } from "./battle";
+import type { CombatEvent, DamageForecast, Side } from "./types";
+
+/** Build damage-popup events for a resolved attack (+ its retaliation). */
+function attackEvents(
+  side: Side,
+  attacker: Stack,
+  target: Stack,
+  res: ResolvedAttack,
+): CombatEvent[] {
+  const evts: CombatEvent[] = [
+    {
+      kind: "attack",
+      side,
+      attackerId: attacker.id,
+      attackerName: attacker.name,
+      targetId: target.id,
+      targetName: target.name,
+      damage: res.dealt,
+      killed: res.defenderKilled,
+    },
+  ];
+  if (res.retaliation) {
+    evts.push({
+      kind: "retaliate",
+      side: side === "player" ? "enemy" : "player",
+      attackerId: target.id,
+      attackerName: target.name,
+      targetId: attacker.id,
+      targetName: attacker.name,
+      damage: res.retaliation.dealt,
+      killed: res.retaliation.killed,
+    });
+  }
+  return evts;
+}
 
 // ===========================================================================
 // LEVERS (see COMBAT.md)
@@ -216,6 +251,7 @@ export function chooseNode(run: RunState, nodeId: string): RunState {
     ...run,
     currentNodeId: nodeId,
     clearedNodeIds: run.clearedNodeIds.slice(),
+    lastEvents: undefined, // entering a node clears stale combat popups
   };
 
   switch (node.type) {
@@ -473,6 +509,7 @@ export function commandStack(
   let enemyArmy = combat.enemyArmy;
   const log = combat.log.slice();
   const slain = { ...combat.slainEnemies };
+  let events: CombatEvent[] = [];
 
   if (action === "defend") {
     yourArmy = withStack(yourArmy, { ...actor, isDefending: true });
@@ -490,6 +527,7 @@ export function commandStack(
     if (res.defenderKilled > 0) {
       slain[target.sourceId] = (slain[target.sourceId] ?? 0) + res.defenderKilled;
     }
+    events = attackEvents("player", actor, target, res);
   }
 
   const nextCombat: CombatState = {
@@ -500,7 +538,7 @@ export function commandStack(
     slainEnemies: slain,
     actedStackIds: [...combat.actedStackIds, stackId],
   };
-  let next: RunState = { ...run, combat: nextCombat };
+  let next: RunState = { ...run, combat: nextCombat, lastEvents: events };
   next = checkCombatEnd(next);
   return next;
 }
@@ -558,7 +596,8 @@ export function castSpell(
     log,
     slainEnemies: slain,
   };
-  let next: RunState = { ...run, hero, combat: nextCombat };
+  // Spells surface via the log for now (no per-target popup yet).
+  let next: RunState = { ...run, hero, combat: nextCombat, lastEvents: [] };
   next = checkCombatEnd(next);
   return next;
 }
@@ -659,7 +698,8 @@ export function endPlayerTurn(run: RunState): RunState {
   if (combat.outcome !== "ongoing") throw new Error("endPlayerTurn: combat is over");
   if (combat.whoseTurn !== "player") throw new Error("endPlayerTurn: not your turn");
 
-  let next: RunState = { ...run, combat: { ...combat, whoseTurn: "enemy" } };
+  // Fresh event batch for this enemy turn (enemyAttack appends to it).
+  let next: RunState = { ...run, combat: { ...combat, whoseTurn: "enemy" }, lastEvents: [] };
 
   // Enemy acts in speed order, highest first. The SAME chooseEnemyIntent that
   // produced each telegraph picks the action -> the telegraph is honest.
@@ -674,7 +714,10 @@ export function endPlayerTurn(run: RunState): RunState {
   }
 
   // Combat resolved (won -> combat null & outcome set; lost -> outcome 'lost').
+  // The accumulated lastEvents survive on `next` for the UI to play out.
   if (!next.combat || next.combat.outcome !== "ongoing") return next;
+
+  const turnEvents = next.lastEvents ?? [];
 
   // New round: increment, reset retaliation, refresh telegraphs, hand back.
   const combat2 = next.combat;
@@ -690,7 +733,8 @@ export function endPlayerTurn(run: RunState): RunState {
     ...next,
     combat: { ...combat2, enemyArmy, yourArmy, round: combat2.round + 1 },
   };
-  return startPlayerTurn(next);
+  // Preserve the enemy turn's events through startPlayerTurn so the UI can play them.
+  return { ...startPlayerTurn(next), lastEvents: turnEvents };
 }
 
 /** Resolve one enemy stack's telegraphed action against the player army. */
@@ -730,6 +774,7 @@ function enemyAttack(run: RunState, actor: Stack, target: Stack): RunState {
   let next: RunState = {
     ...run,
     combat: { ...combat, enemyArmy, yourArmy, log },
+    lastEvents: [...(run.lastEvents ?? []), ...attackEvents("enemy", actor, target, res)],
   };
   next = checkCombatEnd(next);
   return next;

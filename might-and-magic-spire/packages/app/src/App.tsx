@@ -66,7 +66,7 @@ export default function App() {
   }
 
   if (run.outcome === 'won' || run.outcome === 'lost') {
-    return shell(<OutcomeScreen outcome={run.outcome} onRestart={reset} />);
+    return shell(<OutcomeScreen outcome={run.outcome} events={run.lastEvents} onRestart={reset} />);
   }
 
   // Hero doll overlay takes precedence so it can be opened over map or combat.
