@@ -166,5 +166,389 @@
       "Scholar"
     ],
     "imageRef": "hero_septienna"
+  },
+  {
+    "id": "hero_sir_mullich",
+    "name": "Sir Mullich",
+    "faction": "Castle",
+    "heroClass": "Knight",
+    "specialty": "Speed",
+    "startingSkills": [
+      "Leadership",
+      "Armorer"
+    ],
+    "imageRef": "hero_sir_mullich"
+  },
+  {
+    "id": "hero_tyris",
+    "name": "Tyris",
+    "faction": "Castle",
+    "heroClass": "Knight",
+    "specialty": "Swordsmen",
+    "startingSkills": [
+      "Leadership",
+      "Offense"
+    ],
+    "imageRef": "hero_tyris"
+  },
+  {
+    "id": "hero_lord_haart_knight",
+    "name": "Lord Haart",
+    "faction": "Castle",
+    "heroClass": "Knight",
+    "specialty": "Estates",
+    "startingSkills": [
+      "Estates",
+      "Leadership"
+    ],
+    "imageRef": "hero_lord_haart_knight"
+  },
+  {
+    "id": "hero_sorsha",
+    "name": "Sorsha",
+    "faction": "Castle",
+    "heroClass": "Knight",
+    "specialty": "Swordsmen",
+    "startingSkills": [
+      "Leadership",
+      "Offense"
+    ],
+    "imageRef": "hero_sorsha"
+  },
+  {
+    "id": "hero_christian",
+    "name": "Christian",
+    "faction": "Castle",
+    "heroClass": "Knight",
+    "specialty": "Ballista",
+    "startingSkills": [
+      "Leadership",
+      "Artillery"
+    ],
+    "imageRef": "hero_christian"
+  },
+  {
+    "id": "hero_catherine",
+    "name": "Catherine",
+    "faction": "Castle",
+    "heroClass": "Knight",
+    "specialty": "Crusaders",
+    "startingSkills": [
+      "Leadership",
+      "Offense"
+    ],
+    "imageRef": "hero_catherine"
+  },
+  {
+    "id": "hero_roland",
+    "name": "Roland",
+    "faction": "Castle",
+    "heroClass": "Knight",
+    "specialty": "Swordsmen",
+    "startingSkills": [
+      "Leadership",
+      "Armorer"
+    ],
+    "imageRef": "hero_roland"
+  },
+  {
+    "id": "hero_valeska",
+    "name": "Valeska",
+    "faction": "Castle",
+    "heroClass": "Knight",
+    "specialty": "Archers",
+    "startingSkills": [
+      "Archery",
+      "Leadership"
+    ],
+    "imageRef": "hero_valeska"
+  },
+  {
+    "id": "hero_rion",
+    "name": "Rion",
+    "faction": "Castle",
+    "heroClass": "Cleric",
+    "specialty": "First Aid",
+    "startingSkills": [
+      "Wisdom",
+      "First Aid"
+    ],
+    "imageRef": "hero_rion"
+  },
+  {
+    "id": "hero_adela",
+    "name": "Adela",
+    "faction": "Castle",
+    "heroClass": "Cleric",
+    "specialty": "Bless",
+    "startingSkills": [
+      "Wisdom",
+      "Diplomacy"
+    ],
+    "imageRef": "hero_adela"
+  },
+  {
+    "id": "hero_cuthbert",
+    "name": "Cuthbert",
+    "faction": "Castle",
+    "heroClass": "Cleric",
+    "specialty": "Armorer",
+    "startingSkills": [
+      "Wisdom",
+      "Armorer"
+    ],
+    "imageRef": "hero_cuthbert"
+  },
+  {
+    "id": "hero_adelaide",
+    "name": "Adelaide",
+    "faction": "Castle",
+    "heroClass": "Cleric",
+    "specialty": "Frost Ring",
+    "startingSkills": [
+      "Wisdom",
+      "Water Magic"
+    ],
+    "imageRef": "hero_adelaide"
+  },
+  {
+    "id": "hero_sephinroth",
+    "name": "Sephinroth",
+    "faction": "Castle",
+    "heroClass": "Cleric",
+    "specialty": "Crystal",
+    "startingSkills": [
+      "Wisdom",
+      "Diplomacy"
+    ],
+    "imageRef": "hero_sephinroth"
+  },
+  {
+    "id": "hero_loynis",
+    "name": "Loynis",
+    "faction": "Castle",
+    "heroClass": "Cleric",
+    "specialty": "Prayer",
+    "startingSkills": [
+      "Wisdom",
+      "Learning"
+    ],
+    "imageRef": "hero_loynis"
+  },
+  {
+    "id": "hero_caitlin",
+    "name": "Caitlin",
+    "faction": "Castle",
+    "heroClass": "Cleric",
+    "specialty": "Intelligence",
+    "startingSkills": [
+      "Wisdom",
+      "Intelligence"
+    ],
+    "imageRef": "hero_caitlin"
+  },
+  {
+    "id": "hero_ingham",
+    "name": "Ingham",
+    "faction": "Castle",
+    "heroClass": "Cleric",
+    "specialty": "Monks",
+    "startingSkills": [
+      "Wisdom",
+      "Mysticism"
+    ],
+    "imageRef": "hero_ingham"
+  },
+  {
+    "id": "hero_crag_hack",
+    "name": "Crag Hack",
+    "faction": "Stronghold",
+    "heroClass": "Barbarian",
+    "specialty": "Offense",
+    "startingSkills": [
+      "Offense",
+      "Resistance"
+    ],
+    "imageRef": "hero_crag_hack"
+  },
+  {
+    "id": "hero_gurnisson",
+    "name": "Gurnisson",
+    "faction": "Stronghold",
+    "heroClass": "Barbarian",
+    "specialty": "Ballista",
+    "startingSkills": [
+      "Offense",
+      "Artillery"
+    ],
+    "imageRef": "hero_gurnisson"
+  },
+  {
+    "id": "hero_jabarkas",
+    "name": "Jabarkas",
+    "faction": "Stronghold",
+    "heroClass": "Barbarian",
+    "specialty": "Orcs",
+    "startingSkills": [
+      "Offense",
+      "Archery"
+    ],
+    "imageRef": "hero_jabarkas"
+  },
+  {
+    "id": "hero_shakti",
+    "name": "Shakti",
+    "faction": "Stronghold",
+    "heroClass": "Barbarian",
+    "specialty": "Ogres",
+    "startingSkills": [
+      "Offense",
+      "Tactics"
+    ],
+    "imageRef": "hero_shakti"
+  },
+  {
+    "id": "hero_yog",
+    "name": "Yog",
+    "faction": "Stronghold",
+    "heroClass": "Barbarian",
+    "specialty": "Cyclopes",
+    "startingSkills": [
+      "Offense",
+      "Ballistics"
+    ],
+    "imageRef": "hero_yog"
+  },
+  {
+    "id": "hero_gretchin",
+    "name": "Gretchin",
+    "faction": "Stronghold",
+    "heroClass": "Barbarian",
+    "specialty": "Pathfinding",
+    "startingSkills": [
+      "Offense",
+      "Pathfinding"
+    ],
+    "imageRef": "hero_gretchin"
+  },
+  {
+    "id": "hero_krellion",
+    "name": "Krellion",
+    "faction": "Stronghold",
+    "heroClass": "Barbarian",
+    "specialty": "Behemoths",
+    "startingSkills": [
+      "Offense",
+      "Resistance"
+    ],
+    "imageRef": "hero_krellion"
+  },
+  {
+    "id": "hero_tyraxor_stronghold",
+    "name": "Tyraxor",
+    "faction": "Stronghold",
+    "heroClass": "Barbarian",
+    "specialty": "Goblins",
+    "startingSkills": [
+      "Offense",
+      "Tactics"
+    ],
+    "imageRef": "hero_tyraxor_stronghold"
+  },
+  {
+    "id": "hero_saurug",
+    "name": "Saurug",
+    "faction": "Stronghold",
+    "heroClass": "Barbarian",
+    "specialty": "Rocs",
+    "startingSkills": [
+      "Offense",
+      "Resistance"
+    ],
+    "imageRef": "hero_saurug"
+  },
+  {
+    "id": "hero_gird",
+    "name": "Gird",
+    "faction": "Stronghold",
+    "heroClass": "Battle Mage",
+    "specialty": "Wolf Riders",
+    "startingSkills": [
+      "Wisdom",
+      "Offense"
+    ],
+    "imageRef": "hero_gird"
+  },
+  {
+    "id": "hero_vey",
+    "name": "Vey",
+    "faction": "Stronghold",
+    "heroClass": "Battle Mage",
+    "specialty": "Ogres",
+    "startingSkills": [
+      "Leadership",
+      "Offense"
+    ],
+    "imageRef": "hero_vey"
+  },
+  {
+    "id": "hero_dessa",
+    "name": "Dessa",
+    "faction": "Stronghold",
+    "heroClass": "Battle Mage",
+    "specialty": "Logistics",
+    "startingSkills": [
+      "Wisdom",
+      "Logistics"
+    ],
+    "imageRef": "hero_dessa"
+  },
+  {
+    "id": "hero_terek",
+    "name": "Terek",
+    "faction": "Stronghold",
+    "heroClass": "Battle Mage",
+    "specialty": "Haste",
+    "startingSkills": [
+      "Wisdom",
+      "Tactics"
+    ],
+    "imageRef": "hero_terek"
+  },
+  {
+    "id": "hero_zubin",
+    "name": "Zubin",
+    "faction": "Stronghold",
+    "heroClass": "Battle Mage",
+    "specialty": "Magic Arrow",
+    "startingSkills": [
+      "Wisdom",
+      "Air Magic"
+    ],
+    "imageRef": "hero_zubin"
+  },
+  {
+    "id": "hero_gundula",
+    "name": "Gundula",
+    "faction": "Stronghold",
+    "heroClass": "Battle Mage",
+    "specialty": "Offense",
+    "startingSkills": [
+      "Offense",
+      "Tactics"
+    ],
+    "imageRef": "hero_gundula"
+  },
+  {
+    "id": "hero_oris",
+    "name": "Oris",
+    "faction": "Stronghold",
+    "heroClass": "Battle Mage",
+    "specialty": "Eagle Eye",
+    "startingSkills": [
+      "Wisdom",
+      "Eagle Eye"
+    ],
+    "imageRef": "hero_oris"
   }
 ]

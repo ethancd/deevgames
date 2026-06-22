@@ -245,6 +245,14 @@ export type RecordKind = "creature" | "hero" | "spell" | "artifact";
  * Returns an absolute URL, or undefined if no confident match is found (the
  * caller then keeps a placeholder).
  */
+// A few records' canonical (in-game) names differ from the file name thelazy
+// uses for the artwork. Map record name -> the name used in the image file so
+// the pipeline resolves real art without manual intervention.
+const IMAGE_NAME_ALIASES: Record<string, string> = {
+  // RoE creature is "Orc Chief"; the wiki art file is "Creature_Orc_Chieftain.png".
+  "Orc Chief": "Orc Chieftain",
+};
+
 export function parseRecordImageUrl(
   html: string,
   kind: RecordKind,
@@ -253,7 +261,8 @@ export function parseRecordImageUrl(
   const $ = cheerio.load(html);
   // WikiMedia file names use underscores for spaces and percent-encode
   // punctuation in the URL (apostrophe -> %27). Match against several spellings.
-  const file = wikiFile(name); // "Centaur's_Axe"
+  const aliased = IMAGE_NAME_ALIASES[name] ?? name;
+  const file = wikiFile(aliased); // "Centaur's_Axe"
   // NB: encodeURIComponent does NOT encode "'" — MediaWiki URLs use %27, so do
   // it by hand. (’ curly apostrophe also normalises to %27 here.)
   const enc = file.replace(/['’]/g, "%27"); // "Centaur%27s_Axe"
@@ -273,6 +282,15 @@ export function parseRecordImageUrl(
   switch (kind) {
     case "creature":
       pool = srcs.filter((s) => /Creature_/.test(s) && matchesName(s));
+      // Prefer the plain base-game (RoE/SoD) sprite over expansion variants
+      // (HotA/HD) when both are present, so base-game art is selected.
+      {
+        // URLs encode the parens, e.g. "Creature_Orc_%28HotA%29.png".
+        const plain = pool.filter(
+          (s) => !/\(HotA\)|%28HotA%29|\(HD\)|%28HD%29/i.test(s),
+        );
+        if (plain.length) pool = plain;
+      }
       break;
     case "spell":
       // Spell art is "<Name>.png" with no prefix; constrain to name match and

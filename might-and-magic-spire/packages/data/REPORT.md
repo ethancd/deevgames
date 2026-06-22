@@ -156,3 +156,116 @@ scrape/images read from cache and never re-hit the site.)
 - [x] 72/72 real images downloaded; 0 placeholders; real dimensions in manifest
 - [x] Every imageRef resolves to a manifest entry that exists on disk
 - [x] All changes confined to `packages/data/**` + `assets/images/**`
+
+---
+
+# Castle + Stronghold expansion (Agent: factions)
+
+Added the full **Castle** (good) and **Stronghold** (neutral) rosters from base
+HoMM3 (Restoration of Erathia, **no expansion units**), matching the Necropolis
+authoring pattern. Curated in two new files —
+`scripts/lib/curated-castle.ts` and `scripts/lib/curated-stronghold.ts` — wired
+into `scripts/build.ts`, validated against `@mms/schema`, and emitted to
+`src/creatures.json` / `src/heroes.json` / `src/manifest.json`.
+
+## Counts added
+
+| Faction | Creatures (base+upgrade) | Heroes | Hero classes |
+|---------|--------------------------|--------|--------------|
+| Castle | 14 (7 tiers × base+upgrade) | 16 | Knight ×8, Cleric ×8 |
+| Stronghold | 14 (7 tiers × base+upgrade) | 16 | Barbarian ×9, Battle Mage ×7 |
+| **Added total** | **28 creatures** | **32 heroes** | |
+
+Dataset totals after this work: **42 creatures** (Necropolis 14 + Castle 14 +
+Stronghold 14), **46 heroes** (Necropolis 14 + Castle 16 + Stronghold 16), 27
+spells, 17 artifacts (the latter two untouched — owned by a concurrent stream),
+**132 manifest entries**.
+
+### Castle creatures (tiers 1–7)
+Pikeman/Halberdier, Archer/Marksman ("Shoots twice"), Griffin ("Two
+retaliations")/Royal Griffin ("Unlimited retaliation"), Swordsman/Crusader
+("Attacks twice"), Monk/Zealot (both "Ranged"), Cavalier/Champion ("Jousting"),
+Angel/Archangel ("Flying", "Hates Devils"; Archangel "Resurrects allies").
+
+### Stronghold creatures (tiers 1–7)
+Goblin/Hobgoblin, Wolf Rider/Wolf Raider ("Attacks twice"), Orc/Orc Chief (both
+"Ranged"), Ogre/Ogre Mage ("Casts Bloodlust"), Roc/Thunderbird ("Lightning
+strike"), Cyclops/Cyclops King (both "Ranged"), Behemoth/Ancient Behemoth (both
+"Reduces enemy defense").
+
+## Stats source & confidence
+
+All `attack / defense / hp / damageMin / damageMax / speed / growth` values are
+the canonical RoE base-game stats from HoMM3 domain knowledge (the same values
+thelazy renders on the creature cards). These were authored from knowledge, NOT
+re-scraped this run (the live creature scraper targets Necropolis page wiring);
+they are high-confidence standard base-game numbers. **Abilities** use the
+existing canonical vocabulary where one exists ("Flying", "Ranged", "Attacks
+twice", "Jousting", "Unlimited retaliation", "Reduces enemy defense") and
+descriptive verbatim strings otherwise ("Casts Bloodlust", "Lightning strike",
+"Hates Devils", "Resurrects allies", "Two retaliations", "No melee penalty",
+"Attacks adjacent walls", "+1 morale to all allies").
+
+### Heroes — names & specialties
+Real RoE hero names and specialties per class. Castle Knights include Sir
+Mullich (Speed), Tyris/Sorsha/Roland (Swordsmen), Christian (Ballista),
+Catherine (Crusaders), Valeska (Archers), Lord Haart (Estates); Clerics include
+Rion (First Aid), Adela (Bless), Loynis (Prayer), Caitlin (Intelligence),
+Adelaide (Frost Ring), Ingham (Monks), Cuthbert (Armorer), Sephinroth (Crystal).
+Stronghold Barbarians include Crag Hack (Offense), Gurnisson (Ballista), Yog
+(Cyclopes), Krellion (Behemoths), Jabarkas (Orcs), Shakti (Ogres), Saurug
+(Rocs), Gretchin (Pathfinding), Tyraxor (Goblins); Battle Mages include Gird,
+Vey, Dessa (Logistics), Terek (Haste), Zubin (Magic Arrow), Gundula, Oris (Eagle
+Eye). `startingSkills` are the two secondaries each hero begins with.
+
+ID-collision notes: Lord Haart exists as both a Castle Knight and a Necropolis
+Death Knight, so the Castle record uses `hero_lord_haart_knight`. Tyraxor is a
+Stronghold Barbarian (`hero_tyraxor_stronghold`); an earlier draft mistakenly
+also placed him in Castle — that fabricated Castle entry was removed.
+
+## Images — 132/132 REAL, 0 placeholders
+
+Ran the existing `pnpm images` pipeline against live `heroes.thelazy.net` (HTTP
+200 this run). All 28 new creature sprites + 32 new hero portraits downloaded as
+real artwork; combined with the existing 72 Necropolis refs that is **132/132
+real, 0 placeholders** (`src/placeholders.json` is `[]`). Manifest `width`/
+`height` are read back from the real files (creatures 100×130, heroes 58×64).
+
+Pipeline fixes made so the run is reproducible (not one-off manual patches):
+- **`Orc Chief` had no standalone wiki page** (`/index.php/Orc%20Chief` → 404);
+  its art lives on the combined **Orc** page. Added a `CREATURE_PAGE_OVERRIDE`
+  in `build.ts` so the manifest `sourceUrl` for `stronghold_orc_chief` points at
+  the Orc page, an `IMAGE_NAME_ALIASES` entry (`Orc Chief` → `Orc Chieftain`,
+  the wiki file-name spelling) in `parse.ts`, and made `images.ts:describe()`
+  derive a creature's sprite-match name from its `ref` rather than the page
+  title (the page title is wrong for combined-page upgrades).
+- **Base-game art preference:** the creature image matcher now drops expansion
+  variants (`(HotA)`/`%28HotA%29`, `(HD)`) when a plain RoE/SoD sprite exists, so
+  base-game art is selected (this also corrected the Orc base sprite, which had
+  been resolving to the HotA variant).
+
+## Safety / scope
+
+- Touched ONLY `creatures.json`, `heroes.json`, `manifest.json`, `REPORT.md`,
+  `assets/images/**`, plus the build/parse/image **scripts** and two new curated
+  TS files. **`spells.json` and `artifacts.json` are byte-for-byte unchanged**
+  (a concurrent agent owns them). To guarantee this, `build.ts` no longer
+  re-emits `spells.json`/`artifacts.json` — it still pulls their `imageRef`s into
+  the manifest from the curated arrays, but writes only creatures/heroes/manifest.
+- Necropolis data is unchanged (all 14 creatures, 14 heroes, their stats and the
+  `fixtureCreature` Skeleton match).
+
+## Flagged for human review (Castle + Stronghold)
+
+1. **Stats authored from knowledge, not live-scraped.** Unlike Necropolis (which
+   was reconciled against a live scrape), the 28 new creatures' numbers are
+   standard RoE base-game values written from domain knowledge. High confidence,
+   but a live scrape of the Castle/Stronghold creature pages would be the
+   belt-and-suspenders follow-up to make them as authoritative as Necropolis.
+2. **Ability strings are partly free-text.** Effects without an existing
+   canonical token (e.g. "Casts Bloodlust", "Lightning strike", "Two
+   retaliations") are descriptive verbatim strings; the downstream adapter may
+   want to normalise these into a shared vocabulary.
+3. **`hero_lord_haart_knight` id suffix** disambiguates the Castle Knight from a
+   possible future Necropolis "Lord Haart" Death Knight (same person, two
+   classes across the campaign).
