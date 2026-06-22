@@ -183,8 +183,40 @@ export function recomputeHero(hero: Hero): Hero {
     knowledge,
     maxMana,
     mana: Math.min(hero.mana, maxMana),
+    // Rebuild the effective spellbook: the LEARNED base set plus any spells
+    // granted by equipped artifacts, deduped by id (COMBAT.md §19). Granted ids
+    // that don't resolve in the corpus are skipped. Equipping a `grantSpell`
+    // Relic (e.g. Armageddon's Blade) makes its spell castable; unequipping
+    // removes it UNLESS it was also learned (still in baseSpellbook).
+    spellbook: effectiveSpellbook(hero),
   };
   return next;
+}
+
+/**
+ * The effective spellbook = `baseSpellbook` (learned) ∪ artifact-granted spells,
+ * deduped by spell id (the learned form wins ties). Granted ids are resolved via
+ * `spellById` over the raw corpus and adapted; unresolved ids (e.g.
+ * `spell_misfortune`, which has no data record) are skipped. (COMBAT.md §19.)
+ */
+function effectiveSpellbook(hero: Hero): CombatSpell[] {
+  const out: CombatSpell[] = hero.baseSpellbook.slice();
+  const seen = new Set(out.map((s) => s.id));
+  for (const eq of Object.values(hero.equipment)) {
+    if (!eq) continue;
+    for (const e of eq.effects) {
+      if (e.kind !== "grantSpell") continue;
+      for (const id of e.spellIds) {
+        const src = spellById(id);
+        if (!src) continue; // unresolved (e.g. spell_misfortune) — skip gracefully
+        const adapted = adaptSpell(src);
+        if (seen.has(adapted.id)) continue; // already known (learned or another Relic)
+        seen.add(adapted.id);
+        out.push(adapted);
+      }
+    }
+  }
+  return out;
 }
 
 /** Total necromancy bonus from equipped artifacts (e.g. Cloak of the Undead King). */
@@ -349,9 +381,40 @@ function openCombat(run: RunState, node: MapNode, rng: Rng): CombatState {
     actedStackIds: [],
     slainEnemies: {},
   };
-  // Telegraph the enemy's opening intents.
+  // Relic plumbing (COMBAT.md §19): script-cast each equipped `castOnStart` spell
+  // onto every enemy stack now that the enemy army is built (e.g. Armor of the
+  // Damned opens with Slow + Curse + Weakness). Deterministic: pure stat edits.
+  applyCastOnStart(state, run.hero);
+  // Telegraph the enemy's opening intents (after the opening casts land).
   refreshTelegraphs(state, run.hero);
   return state;
+}
+
+/**
+ * Relic plumbing (COMBAT.md §19): for every equipped artifact `castOnStart` spell
+ * id, resolve it via the corpus (`spellById` → `adaptSpell`; unresolved ids like
+ * `spell_misfortune` are skipped) and apply its effect to EVERY living enemy
+ * stack at combat open, reusing the same per-stack core as a normal cast. Mutates
+ * `state.enemyArmy` and appends a log line per cast. The wielder's `power` scales
+ * the magnitude. No RNG — fully deterministic.
+ */
+function applyCastOnStart(state: CombatState, hero: Hero): void {
+  for (const eq of Object.values(hero.equipment)) {
+    if (!eq) continue;
+    for (const e of eq.effects) {
+      if (e.kind !== "castOnStart") continue;
+      for (const id of e.spellIds) {
+        const src = spellById(id);
+        if (!src) continue; // unresolved (e.g. spell_misfortune) — skip gracefully
+        const spell = adaptSpell(src);
+        for (const target of livingStacks(state.enemyArmy)) {
+          const r = applySpellEffectToStack(spell, hero, target);
+          state.enemyArmy = withStack(state.enemyArmy, r.stack);
+          state.log.push(r.log);
+        }
+      }
+    }
+  }
 }
 
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
@@ -427,7 +490,7 @@ const NULL_HERO: Hero = {
   id: "enemy", name: "Enemy", heroClass: "", specialty: "",
   attack: 0, defense: 0, power: 0, knowledge: 0, mana: 0, maxMana: 0,
   equipment: {}, spellbook: [], skills: {}, imageRef: "",
-  baseAttack: 0, baseDefense: 0, basePower: 0, baseKnowledge: 0,
+  baseAttack: 0, baseDefense: 0, basePower: 0, baseKnowledge: 0, baseSpellbook: [],
 };
 
 // ===========================================================================
@@ -635,6 +698,58 @@ export function castSpell(
   return next;
 }
 
+/**
+ * Apply ONE spell's effect to a SINGLE enemy stack and return the transformed
+ * stack plus a log line and any creatures slain. The per-enemy-stack core of a
+ * cast, shared by `applySpell` (the player's turn cast) and `openCombat`'s
+ * `castOnStart` Relic scripting (COMBAT.md §19) so the two never drift.
+ *
+ * Honors the no-re-stack `spellMarks` rule (COMBAT.md §16): a stat-mod spell
+ * (debuff/rollmode-min) already applied to the stack is a NO-OP on recast. The
+ * magnitude scales off the wielder's `power` exactly like a normal cast. Returns
+ * `slain` so a damaging cast feeds the necromancy ledger.
+ */
+function applySpellEffectToStack(
+  spell: CombatSpell,
+  hero: Hero,
+  stack: Stack,
+): { stack: Stack; log: string; slain: number } {
+  const eff = spell.effect;
+  const mag = spellMagnitude(eff, hero);
+  const alreadyMarked = (stack.spellMarks ?? []).includes(spell.id);
+  const mark = (s: Stack): Stack => ({
+    ...s,
+    spellMarks: [...(s.spellMarks ?? []), spell.id],
+  });
+
+  if (eff.kind === "damage") {
+    const res = applyDamage(stack, mag);
+    return {
+      stack: res.defender,
+      log: `${spell.name} hits ${stack.name} for ${res.dealt}` + (res.killed > 0 ? ` (${res.killed} slain)` : ""),
+      slain: res.killed,
+    };
+  }
+  if (eff.kind === "reset") {
+    return { stack: resetStackToBase(stack), log: `${spell.name} dispels ${stack.name} (stats reset).`, slain: 0 };
+  }
+  if (eff.kind === "rollmode") {
+    // Enemy roll-mode is always min (Curse). (Ally "max" is handled in applySpell.)
+    if (alreadyMarked) return { stack, log: `${stack.name} is already affected by ${spell.name}.`, slain: 0 };
+    return { stack: mark({ ...stack, damageMax: stack.damageMin }), log: `${spell.name} curses ${stack.name} (always min damage).`, slain: 0 };
+  }
+  if (eff.kind === "debuff") {
+    if (alreadyMarked) return { stack, log: `${stack.name} is already affected by ${spell.name}.`, slain: 0 };
+    if (eff.noShoot) {
+      return { stack: mark({ ...stack, noShoot: true }), log: `${spell.name} makes ${stack.name} forget how to shoot.`, slain: 0 };
+    }
+    return { stack: mark(applyStatMod(stack, eff.stat, -mag)), log: `${spell.name} weakens ${stack.name} (-${mag} ${eff.stat}).`, slain: 0 };
+  }
+  // disable (Blind): zero the roll, snapshotting the pre-zero values once.
+  const blindedFrom = stack.blindedFrom ?? { damageMin: stack.damageMin, damageMax: stack.damageMax };
+  return { stack: { ...stack, damageMin: 0, damageMax: 0, blindedFrom }, log: `${spell.name} disables ${stack.name}.`, slain: 0 };
+}
+
 function applySpell(
   spell: CombatSpell,
   hero: Hero,
@@ -689,7 +804,10 @@ function applySpell(
         ? enemyArmy.stacks.find((s) => s.id === targetId && s.count > 0)
         : livingStacks(enemyArmy)[0];
       if (!t) throw new Error("castSpell: no valid enemy target");
-      damageEnemy(t);
+      const r = applySpellEffectToStack(spell, hero, t);
+      enemyArmy = withStack(enemyArmy, r.stack);
+      if (r.slain > 0) slain[t.sourceId] = (slain[t.sourceId] ?? 0) + r.slain;
+      log.push(r.log);
     }
   } else if (eff.kind === "heal") {
     const t = targetId
@@ -707,8 +825,9 @@ function applySpell(
       ? enemyArmy.stacks.find((s) => s.id === targetId && s.count > 0)
       : livingStacks(enemyArmy)[0];
     if (!t) throw new Error("castSpell: no valid enemy target");
-    enemyArmy = withStack(enemyArmy, resetStackToBase(t));
-    log.push(`${spell.name} dispels ${t.name} (stats reset).`);
+    const r = applySpellEffectToStack(spell, hero, t);
+    enemyArmy = withStack(enemyArmy, r.stack);
+    log.push(r.log);
   } else if (eff.kind === "buff") {
     const t = targetId
       ? yourArmy.stacks.find((s) => s.id === targetId && s.count > 0)
@@ -756,28 +875,18 @@ function applySpell(
         ? enemyArmy.stacks.find((s) => s.id === targetId && s.count > 0)
         : livingStacks(enemyArmy)[0];
       if (!t) throw new Error("castSpell: no valid enemy target");
-      if (alreadyMarked(t)) {
-        log.push(`${t.name} is already affected by ${spell.name}.`); // ITEM A
-      } else {
-        enemyArmy = withStack(enemyArmy, mark({ ...t, damageMax: t.damageMin }));
-        log.push(`${spell.name} curses ${t.name} (always min damage).`);
-      }
+      const r = applySpellEffectToStack(spell, hero, t);
+      enemyArmy = withStack(enemyArmy, r.stack);
+      log.push(r.log);
     }
   } else if (eff.kind === "debuff") {
     const t = targetId
       ? enemyArmy.stacks.find((s) => s.id === targetId && s.count > 0)
       : livingStacks(enemyArmy)[0];
     if (!t) throw new Error("castSpell: no valid enemy target");
-    if (alreadyMarked(t)) {
-      log.push(`${t.name} is already affected by ${spell.name}.`); // ITEM A
-    } else if (eff.noShoot) {
-      // LIGHT §3.7: Forgetfulness — force a shooter to melee.
-      enemyArmy = withStack(enemyArmy, mark({ ...t, noShoot: true }));
-      log.push(`${spell.name} makes ${t.name} forget how to shoot.`);
-    } else {
-      enemyArmy = withStack(enemyArmy, mark(applyStatMod(t, eff.stat, -mag)));
-      log.push(`${spell.name} weakens ${t.name} (-${mag} ${eff.stat}).`);
-    }
+    const r = applySpellEffectToStack(spell, hero, t);
+    enemyArmy = withStack(enemyArmy, r.stack);
+    log.push(r.log);
   } else {
     // disable (Blind): zero the target's damage roll. LIGHT §3.8: store the
     // pre-zero roll on the stack so its NEXT action restores it (Blind wears off
@@ -786,9 +895,9 @@ function applySpell(
       ? enemyArmy.stacks.find((s) => s.id === targetId && s.count > 0)
       : livingStacks(enemyArmy)[0];
     if (!t) throw new Error("castSpell: no valid enemy target");
-    const blindedFrom = t.blindedFrom ?? { damageMin: t.damageMin, damageMax: t.damageMax };
-    enemyArmy = withStack(enemyArmy, { ...t, damageMin: 0, damageMax: 0, blindedFrom });
-    log.push(`${spell.name} disables ${t.name}.`);
+    const r = applySpellEffectToStack(spell, hero, t);
+    enemyArmy = withStack(enemyArmy, r.stack);
+    log.push(r.log);
   }
   void rng;
   return { yourArmy, enemyArmy, log, slain };
@@ -1202,8 +1311,15 @@ function learn(run: RunState, spellId: string, cost: number): RunState {
   const s = spellById(spellId);
   if (!s) throw new Error(`learn: no spell ${spellId}`);
   const adapted = adaptSpell(s);
-  if (run.hero.spellbook.some((sp) => sp.id === adapted.id)) return run;
-  const hero = { ...run.hero, spellbook: [...run.hero.spellbook, adapted] };
+  // Learn into the BASE (learned) spellbook, not the effective one — so an
+  // artifact-granted spell is never confused for a learned one (COMBAT.md §19).
+  if (run.hero.baseSpellbook.some((sp) => sp.id === adapted.id)) return run;
+  // recomputeHero rebuilds the effective `spellbook` (base ∪ granted), so a
+  // shrine-learned spell survives any later equip/unequip cycle.
+  const hero = recomputeHero({
+    ...run.hero,
+    baseSpellbook: [...run.hero.baseSpellbook, adapted],
+  });
   return { ...run, hero, gold: run.gold - cost };
 }
 

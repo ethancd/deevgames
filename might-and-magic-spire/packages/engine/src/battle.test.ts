@@ -22,7 +22,7 @@ const HERO0: Hero = {
   id: "h", name: "H", heroClass: "", specialty: "",
   attack: 0, defense: 0, power: 0, knowledge: 0, mana: 0, maxMana: 0,
   equipment: {}, spellbook: [], skills: {}, imageRef: "",
-  baseAttack: 0, baseDefense: 0, basePower: 0, baseKnowledge: 0,
+  baseAttack: 0, baseDefense: 0, basePower: 0, baseKnowledge: 0, baseSpellbook: [],
 };
 
 function stackOf(id: string, count: number, side: Stack["side"] = "player"): Stack {

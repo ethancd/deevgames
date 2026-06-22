@@ -47,6 +47,7 @@ export {
   adaptEquipment,
   adaptSpell,
   deriveHero,
+  deriveSpellId,
   parseBonuses,
   rankForCreature,
   rarityForArtifactClass,

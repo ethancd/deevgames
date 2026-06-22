@@ -209,7 +209,9 @@ function AdaptedArtifact({ a }: { a: SourceArtifact }) {
     .join(', ');
   const effects = eq.effects
     .filter((e): e is Exclude<typeof e, { kind: 'none' }> => e.kind !== 'none')
-    .map((e) => `${e.kind} (${e.amount})`)
+    .map((e) =>
+      'amount' in e ? `${e.kind} (${e.amount})` : `${e.kind} (${e.spellIds.join(', ')})`,
+    )
     .join(', ');
   return (
     <div className="flex flex-col items-start gap-4 sm:flex-row">

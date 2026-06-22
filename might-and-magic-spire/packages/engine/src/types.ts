@@ -59,7 +59,12 @@ export interface Hero {
 
   /** Paper-doll of equipped artifacts, keyed by slot. */
   equipment: Partial<Record<ArtifactSlot, Equipment>>;
-  /** Combat spells the hero may cast (one per turn). */
+  /**
+   * Combat spells the hero may cast (one per turn). EFFECTIVE spellbook: the
+   * union of `baseSpellbook` (learned) and any spells GRANTED by equipped
+   * artifacts (COMBAT.md §19). The app reads THIS field. Rebuilt by
+   * `recomputeHero` on every equip/unequip.
+   */
   spellbook: CombatSpell[];
   /** Skill name -> rank, e.g. { Necromancy: 1, Offense: 1 }. */
   skills: Record<string, number>;
@@ -71,6 +76,16 @@ export interface Hero {
   baseDefense: number;
   basePower: number;
   baseKnowledge: number;
+
+  /**
+   * engine-internal: the LEARNED spellbook (starting spells + shrine-learned),
+   * WITHOUT artifact-granted spells. `recomputeHero` rebuilds the effective
+   * `spellbook` as `baseSpellbook` ∪ {granted spells} so equipping/unequipping
+   * an artifact adds/removes its granted spells without ever dropping a learned
+   * one. The app never reads this — it reads the effective `spellbook`.
+   * (COMBAT.md §19.)
+   */
+  baseSpellbook: CombatSpell[];
 }
 
 // ---------------------------------------------------------------------------
@@ -261,6 +276,21 @@ export type EquipmentEffect =
   | { kind: "speedAll"; amount: number }
   | { kind: "manaMax"; amount: number }
   | { kind: "necromancyBonus"; amount: number } // e.g. Cloak of the Undead King
+  /**
+   * Relic plumbing (COMBAT.md §19): an artifact that GRANTS castable spells to
+   * the wielder's spellbook while equipped. `recomputeHero` unions these (resolved
+   * via `spellById`) into `hero.spellbook` on top of `baseSpellbook`, and they
+   * fall away on unequip. e.g. Armageddon's Blade → ["spell_armageddon"].
+   */
+  | { kind: "grantSpell"; spellIds: string[] }
+  /**
+   * Relic plumbing (COMBAT.md §19): an artifact that SCRIPT-CASTS spells on every
+   * enemy stack at the start of combat (`openCombat`), magnitude scaling off the
+   * wielder's power like a normal cast. Unresolved ids (e.g. `spell_misfortune`,
+   * which has no data record) are skipped. e.g. Armor of the Damned →
+   * ["spell_slow","spell_curse","spell_weakness","spell_misfortune"].
+   */
+  | { kind: "castOnStart"; spellIds: string[] }
   | { kind: "none" };
 
 export interface Equipment {

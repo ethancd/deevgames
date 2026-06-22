@@ -76,6 +76,21 @@
 - Now at c498ff0, spire project present. ALL edits go under:
   /Users/ashkie/src/deevgames/.claude/worktrees/agent-a97a9513628618ab8/might-and-magic-spire
 
+## Relics-deliver session (2026-06-21, this task)
+- Pinned worktree: /Users/ashkie/src/deevgames/.claude/worktrees/agent-aaec6c6dcdd16315d
+- Branched leyline/mms-relics-deliver off acccf20 (== leyline/mms-balance-batch tip). pnpm install was needed.
+- Task: grantSpell + castOnStart EquipmentEffect kinds; Hero.baseSpellbook; recomputeHero rebuilds spellbook; castOnStart applied at openCombat. Engine-only, NO packages/app.
+- §16 Item C already prepended "+4 Defense" to AOTD bonuses; batch.test pins defense===4. Now ADD castOnStart parse on top (the on-combat-start casting that §16 deferred is now being implemented).
+- spell_misfortune absent in data → spellById returns undefined → skip gracefully in recomputeHero/openCombat.
+- deriveId("Slow")=spell_slow: name.toLowerCase().replace(/[^a-z0-9]+/g,"_") then trim leading/trailing _.
+
+## EDGE: app typecheck (relics-deliver)
+- CodexScreen.tsx imports adaptEquipment DIRECTLY from @mms/engine (not via the structural contract seam),
+  and does `e.amount` over the whole EquipmentEffect union. Adding grantSpell/castOnStart (no `amount`)
+  BROKE `pnpm --filter @mms/app typecheck/build`. "Don't change app" vs "build green" conflict.
+  Resolution: minimal display-only narrowing `'amount' in e ? ...(e.amount) : ...(e.spellIds.join())`.
+  No behavior change, debug Codex tile only. Required to keep the DONE-WHEN build gate green.
+
 ## Patterns That Work (spire batch)
 - light.test.ts combatRun() harness is the template for engine combat tests (startRun → chooseNode → overwrite combat).
 - Conditional rng.next() (gated on attacker ability) does NOT break byte-identical determinism — ability-less attackers never draw.

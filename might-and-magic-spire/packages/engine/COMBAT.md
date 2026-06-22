@@ -295,8 +295,8 @@ new RNG draws. The keystone full-run + byte-identical determinism tests in
 `run.test.ts` stay green, and `light.test.ts` pins all 8 behaviors.
 
 **NOT in LIGHT** (left for MEDIUM/HEAVY): morale, luck, initiative, real AoE
-geometry, on-combat-start artifact casting, per-school spell scaling, duration
-timers. Speed stays weak (rule 1 only makes Necklace non-inert, not strong);
+geometry, ~~on-combat-start artifact casting~~ (now done — see §19), per-school
+spell scaling, duration timers. Speed stays weak (rule 1 only makes Necklace non-inert, not strong);
 Shield stays a Stone-Skin dup (needs `block` — MEDIUM).
 
 ---
@@ -355,10 +355,16 @@ Skin stays.** The `spell_shield` data record is left intact (free to revive when
 
 ### Item C — Armor of the Damned → real stat stick (open-Q #4)
 
+> **Superseded by §19.** The on-combat-start casting deferred here is now
+> IMPLEMENTED (`castOnStart` effect kind). The `+4 Defense` stat stick below
+> STAYS — AOTD is now both a +4 Defense armor AND opens combat with
+> Slow/Curse/Weakness on every enemy. (Misfortune is still inert — no data
+> record; see §19.)
+
 The Relic's headline ("Casts Slow, Curse, Weakness, Misfortune on all enemy
-stacks at combat start") parses to **nothing** — on-combat-start enemy casting is
-a deferred subsystem. Rather than ship a dead Relic, its `bonuses` string is
-**prepended with `+4 Defense`** in `packages/data/src/artifacts.json`.
+stacks at combat start") originally parsed to **nothing** — on-combat-start enemy
+casting was a deferred subsystem. Rather than ship a dead Relic, its `bonuses`
+string is **prepended with `+4 Defense`** in `packages/data/src/artifacts.json`.
 `parseBonuses` reads the leading `+N <primary>`, so the Torso Relic now adapts to
 `{ defense: +4 }` (a fitting armor stat). `bonuses` is a free string, so the
 `@mms/data` schema tests are unaffected; the flavor text is preserved after the
@@ -413,3 +419,82 @@ by spell level). If the all-undead auto-include becomes oppressive in the sim,
 touching the mechanic. We are **not** nudging the cost in this batch — it isn't
 trivially low and no change is obviously warranted yet; this note simply flags the
 lever so the decision is deliberate next time the run is tuned.
+
+---
+
+## 19. Relic plumbing: artifact → spell (grantSpell + castOnStart)
+
+Two HoMM3 Relics carried PROSE in their `bonuses` that `parseBonuses` dropped on
+the floor — the spells already existed as castable `CombatSpell`s, but nothing
+wired the artifact to them. Both directives now parse to engine-internal
+`EquipmentEffect` kinds and deliver. **Additive only** — no new subsystem, no
+RNG, pure stat edits / content lookups; the keystone byte-identical determinism
+test stays green. The app reads `hero.spellbook` (the EFFECTIVE book) and the
+combat log, so no app contract change is needed (one display-only narrowing in
+the debug Codex tile, since it enumerates effect kinds).
+
+### Effect kinds (`types.ts`)
+
+| Kind | Shape | Meaning |
+|---|---|---|
+| `grantSpell` | `{ spellIds: string[] }` | While equipped, these spells are castable (unioned into `hero.spellbook`). |
+| `castOnStart` | `{ spellIds: string[] }` | At combat open, script-cast each spell onto **every** enemy stack. |
+
+### Parsing (`adapter.ts`, pure string work — no `content.ts` import)
+
+`deriveSpellId(name)` mirrors the data id convention
+`spell_<name lowercased, non-alphanumerics → "_">` ("Armageddon" →
+`spell_armageddon`). `parseBonuses` adds two directive matchers on top of the
+existing `+N stat` parse (which is untouched — A'sB still yields **+3 all**, AOTD
+still yields **+4 Defense**):
+
+- `"(allows )?casting <Spell>( as …)"` → `grantSpell [deriveSpellId(Spell)]`.
+- `"Casts A, B, C(, and D) on … combat"` → `castOnStart` with the derived ids of
+  every listed name.
+- `"immunity to <X>"` → **IGNORED** (needs an immunity subsystem we are not
+  building — see the Armageddon caveat below).
+
+### grantSpell → the effective spellbook (`Hero.baseSpellbook` + `recomputeHero`)
+
+`Hero` gains an engine-internal `baseSpellbook: CombatSpell[]` — the LEARNED set
+(starting spells + shrine-learned). `deriveHero` seeds it; `learnAt`/`learn`
+append to it (never to `spellbook` directly). `recomputeHero` (already run on
+equip/unequip) rebuilds the effective `spellbook` as
+`baseSpellbook ∪ {adaptSpell(spellById(id)) for each grantSpell id}`, **deduped
+by spell id**; ids that don't resolve are skipped. So equipping Armageddon's
+Blade makes Armageddon castable and unequipping removes it — **unless** the hero
+also learned it at a shrine (it stays in `baseSpellbook`).
+
+### castOnStart → every enemy stack at combat open (`run.ts`)
+
+`openCombat` (the same place LIGHT `hpPerCreature`/`speedAll` are applied) calls
+`applyCastOnStart` **after** the enemy army is built: for each equipped
+`castOnStart` spell id, resolve `adaptSpell(spellById(id))` (skip unresolved),
+and apply its effect to every living enemy stack via
+`applySpellEffectToStack(spell, hero, stack)` — the **same** per-stack core a
+normal cast uses (extracted so the two never drift). Magnitude scales off the
+wielder's `hero.power` like any cast; the no-restack `spellMarks` rule applies;
+one log line per cast. So **Armor of the Damned** opens combat by hitting every
+enemy with **Slow** (speed debuff) + **Curse** (min-roll) + **Weakness** (attack
+debuff). Deterministic — these are stat edits, no RNG.
+
+### Edge: Misfortune & the Armageddon no-immunity caveat
+
+- **Misfortune** is a Luck spell with **no data record** (`spell_misfortune`).
+  It's still listed in AOTD's prose, so it derives to `spell_misfortune` and is
+  carried in `castOnStart.spellIds` — but `spellById` returns `undefined`, so it
+  is **skipped gracefully** (no crash, no mark). If a luck system ever lands,
+  adding the data record is all it takes.
+- **No "immunity to Armageddon".** We do NOT implement the immunity subsystem, so
+  a hero who casts their granted Armageddon **also hits their own army** (it's a
+  `bothArmies` damage spell — see §14 rule 5). That is the honest, accepted
+  tradeoff of delivering the cast without the immunity: Armageddon's Blade makes
+  Armageddon *castable*, not *safe*.
+
+| Lever | Where | Note |
+|---|---|---|
+| `EquipmentEffect.grantSpell` / `castOnStart` | `types.ts` | engine-internal effect kinds; app reads only the resolved `spellbook`/log. |
+| `Hero.baseSpellbook` | `types.ts` | learned set; effective `spellbook` = base ∪ granted (recomputeHero). |
+| `deriveSpellId` | `adapter.ts` | pure name → data-id; no content import in the adapter. |
+| `applySpellEffectToStack` | `run.ts` | shared per-enemy-stack cast core (turn cast + castOnStart). |
+| `applyCastOnStart` | `run.ts` | opening Relic casts in `openCombat`. |

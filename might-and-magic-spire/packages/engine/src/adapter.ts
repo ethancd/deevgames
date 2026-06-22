@@ -104,6 +104,22 @@ const STAT_WORD: Record<string, PrimaryStat> = {
 };
 
 /**
+ * Derive a `@mms/data` spell id from a spell NAME, mirroring the data's id
+ * convention `spell_<name lowercased, runs of non-alphanumerics → "_">`.
+ * "Armageddon" → "spell_armageddon"; "Stone Skin" → "spell_stone_skin". This is
+ * PURE string work so the adapter never has to import the content corpus —
+ * resolution (skipping ids with no record, e.g. "Misfortune") happens later in
+ * the run layer via `spellById`. (COMBAT.md §19.)
+ */
+export function deriveSpellId(name: string): string {
+  const slug = name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+  return `spell_${slug}`;
+}
+
+/**
  * Parse a `bonuses` string into primary-stat deltas + special effects.
  * Examples handled:
  *   "+2 Attack"                     -> { attack: 2 }
@@ -155,6 +171,28 @@ export function parseBonuses(bonuses: string): {
   if (text.includes("necromancy")) {
     // Cloak of the Undead King: "Greatly improves Necromancy".
     effects.push({ kind: "necromancyBonus", amount: 0.15 });
+  }
+
+  // --- Relic prose directives (COMBAT.md §19) -----------------------------
+  // These parse to engine-internal effect kinds; the run layer resolves the
+  // derived spell ids against the corpus (unresolved ones are skipped).
+
+  // "Casts A, B, C(, and D) on ... combat" -> castOnStart with all listed names.
+  // Anchored on the trailing " on … combat" so the directive is unambiguous;
+  // captures the comma/and-separated name list that precedes it.
+  const castsList = /casts\s+(.+?)\s+on\b.*?\bcombat/.exec(text);
+  if (castsList) {
+    const spellIds = splitSpellNames(castsList[1]).map(deriveSpellId);
+    if (spellIds.length) effects.push({ kind: "castOnStart", spellIds });
+  }
+
+  // "(allows )?casting <SpellName>( as …)" -> grantSpell with that one spell.
+  // Stops the name at " as ", a comma, a semicolon, or end-of-clause so a
+  // trailing rank/qualifier ("as an expert") isn't folded into the name.
+  const grants = /(?:allows\s+)?casting\s+([a-z0-9' ]+?)(?:\s+as\b|[,;]|$)/.exec(text);
+  if (grants) {
+    const id = deriveSpellId(grants[1]);
+    effects.push({ kind: "grantSpell", spellIds: [id] });
   }
 
   return { primaryDeltas, effects };
@@ -411,13 +449,17 @@ export function deriveHero(
     mana: maxMana,
     maxMana,
     equipment: {},
-    spellbook,
+    // No artifacts equipped at derive time, so the effective spellbook equals
+    // the learned base spellbook (COMBAT.md §19). `recomputeHero` re-derives the
+    // union once equipment is in play.
+    spellbook: spellbook.slice(),
     skills,
     imageRef: h.imageRef,
     baseAttack: attack,
     baseDefense: defense,
     basePower: power,
     baseKnowledge: knowledge,
+    baseSpellbook: spellbook,
   };
 
   // Starting army: a big stack of Skeletons (the bread-and-butter) plus a stack
@@ -447,4 +489,16 @@ export function deriveHero(
 // ---------------------------------------------------------------------------
 function tail(id: string): string {
   return id.includes("_") ? id.slice(id.indexOf("_") + 1) : id;
+}
+
+/**
+ * Split a comma/and-separated spell-name list ("slow, curse, weakness, and
+ * misfortune") into trimmed, non-empty names. Tolerates the Oxford "and" with or
+ * without a preceding comma. (COMBAT.md §19.)
+ */
+function splitSpellNames(list: string): string[] {
+  return list
+    .split(/,|\band\b/)
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
 }
