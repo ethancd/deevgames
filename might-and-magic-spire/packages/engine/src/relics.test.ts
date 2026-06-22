@@ -107,14 +107,14 @@ describe("grantSpell unions into hero.spellbook on equip, drops on unequip", () 
 
   it("a grantSpell id that does not resolve is skipped (no crash, no phantom spell)", () => {
     let r = startRun("relic-grant-unresolved");
-    // Forge an artifact whose grant points at the non-existent Misfortune spell.
+    // Forge an artifact whose grant points at a spell id with no data record.
     const eq = adaptEquipment(artifactById(ARMAGEDDONS_BLADE)!);
     const before = r.hero.spellbook.length;
     r = {
       ...r,
       hero: {
         ...r.hero,
-        equipment: { ...r.hero.equipment, RightHand: { ...eq, effects: [{ kind: "grantSpell", spellIds: ["spell_misfortune"] }] } },
+        equipment: { ...r.hero.equipment, RightHand: { ...eq, effects: [{ kind: "grantSpell", spellIds: ["spell_does_not_exist_zzz"] }] } },
       },
     };
     // recomputeHero runs via equipArtifact normally; here exercise it directly.
@@ -149,8 +149,9 @@ describe("castOnStart script-casts onto every enemy stack at combat open", () =>
       expect(s.spellMarks).toContain("spell_slow");
       expect(s.spellMarks).toContain("spell_curse");
       expect(s.spellMarks).toContain("spell_weakness");
-      // Misfortune never resolved → never marked (skipped gracefully).
-      expect(s.spellMarks ?? []).not.toContain("spell_misfortune");
+      // Misfortune now exists in the data (added with the spell expansion); it
+      // resolves to a -attack debuff (no luck system) and is also cast + marked.
+      expect(s.spellMarks).toContain("spell_misfortune");
     }
 
     // The log carries a line per resolved cast per enemy stack (3 spells).
@@ -159,14 +160,14 @@ describe("castOnStart script-casts onto every enemy stack at combat open", () =>
     expect(curseLines).toBe(liveEnemies);
   });
 
-  it("spell_misfortune is skipped without error when only it is castOnStart", () => {
-    let r = startRun("relic-misfortune-only");
+  it("an unresolvable castOnStart spell id is skipped without error", () => {
+    let r = startRun("relic-castonstart-unresolved");
     const eq = adaptEquipment(artifactById(ARMOR_OF_THE_DAMNED)!);
     r = {
       ...r,
       hero: {
         ...r.hero,
-        equipment: { ...r.hero.equipment, Torso: { ...eq, effects: [{ kind: "castOnStart", spellIds: ["spell_misfortune"] }] } },
+        equipment: { ...r.hero.equipment, Torso: { ...eq, effects: [{ kind: "castOnStart", spellIds: ["spell_does_not_exist_zzz"] }] } },
       },
     };
     // Opening combat must not throw and must leave enemy stacks unmarked.
@@ -174,19 +175,20 @@ describe("castOnStart script-casts onto every enemy stack at combat open", () =>
       r = chooseNode(r, legalNextNodes(r)[0]);
     }).not.toThrow();
     for (const s of r.combat!.enemyArmy.stacks) {
-      expect(s.spellMarks ?? []).not.toContain("spell_misfortune");
+      expect(s.spellMarks ?? []).not.toContain("spell_does_not_exist_zzz");
     }
   });
 });
 
-// Sanity: the resolved spells exist so the test isn't vacuous; Misfortune doesn't.
+// Sanity: the resolved spells exist so the test isn't vacuous. (Misfortune now
+// also exists after the spell expansion — it resolves to a -attack debuff.)
 describe("data assumptions", () => {
-  it("slow/curse/weakness/armageddon resolve; misfortune does not", () => {
+  it("slow/curse/weakness/armageddon/misfortune all resolve", () => {
     expect(spellById("spell_slow")).toBeDefined();
     expect(spellById("spell_curse")).toBeDefined();
     expect(spellById("spell_weakness")).toBeDefined();
     expect(spellById("spell_armageddon")).toBeDefined();
-    expect(spellById("spell_misfortune")).toBeUndefined();
+    expect(spellById("spell_misfortune")).toBeDefined();
     // adaptSpell(spell_curse) is a min roll-mode (what castOnStart applies).
     expect(adaptSpell(spellById("spell_curse")!).effect.kind).toBe("rollmode");
   });
