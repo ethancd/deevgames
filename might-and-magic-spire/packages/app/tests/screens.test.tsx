@@ -60,6 +60,37 @@ describe('App run flow', () => {
     expect(reachable.length).toBeGreaterThan(0);
   });
 
+  it('the hero picker lists heroes from multiple factions', () => {
+    render(<App />);
+    const groups = screen.getAllByTestId('faction-group');
+    const factions = new Set(groups.map((g) => g.getAttribute('data-faction')));
+    expect(factions.has('Necropolis')).toBe(true);
+    expect(factions.has('Castle')).toBe(true);
+    expect(factions.has('Stronghold')).toBe(true);
+    // Each faction surfaces at least one selectable hero.
+    const castleHeroes = screen
+      .getAllByTestId('hero-option')
+      .filter((h) => h.getAttribute('data-faction') === 'Castle');
+    expect(castleHeroes.length).toBeGreaterThan(0);
+  });
+
+  it('selecting a Castle hero and beginning routes into a run as that faction', () => {
+    render(<App />);
+    const castleHero = screen
+      .getAllByTestId('hero-option')
+      .find((h) => h.getAttribute('data-faction') === 'Castle')!;
+    fireEvent.click(castleHero);
+    // The detail panel reflects the Castle selection.
+    expect(screen.getByTestId('hero-detail').textContent).toMatch(/Castle/);
+    fireEvent.click(screen.getByTestId('start-run'));
+    // We left the title and are on the act map (no more start-run button).
+    expect(screen.queryByTestId('start-run')).toBeNull();
+    const reachable = screen
+      .getAllByTestId('map-node')
+      .filter((n) => n.getAttribute('data-reachable') === 'true');
+    expect(reachable.length).toBeGreaterThan(0);
+  });
+
   it('enters a combat node and shows two ranks + telegraphs + end turn', () => {
     render(<App />);
     fireEvent.click(screen.getByTestId('start-run'));

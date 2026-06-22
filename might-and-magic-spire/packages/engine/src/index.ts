@@ -121,6 +121,7 @@ export {
 export {
   CREATURES,
   ALL_CREATURES,
+  ALL_BASE_CREATURES,
   BASE_CREATURES,
   ARTIFACTS,
   HEROES,
@@ -131,4 +132,11 @@ export {
   artifactById,
   heroById,
   upgradeFormOf,
+  // faction / hero selection
+  FACTIONS,
+  DEFAULT_FACTION,
+  PLAYABLE_HEROES,
+  heroesOfFaction,
+  creaturesOfFaction,
+  basePool,
 } from "./content";

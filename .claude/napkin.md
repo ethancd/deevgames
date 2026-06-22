@@ -116,3 +116,44 @@
 - thelazy combined base+upgrade pages: some upgrades (Orc Chief) have NO standalone page (404) — art is on the base page. Fix: CREATURE_PAGE_OVERRIDE in build.ts (points sourceUrl at base page) + IMAGE_NAME_ALIASES in parse.ts (Orc Chief->Orc Chieftain) + images.ts describe() derives creature name from `ref` not page title.
 - Creature image matcher must drop HotA/HD variants (URL-encoded %28HotA%29) to select base-game (RoE) art.
 - Lord Haart = both Castle Knight + Necropolis Death Knight -> id hero_lord_haart_knight. Tyraxor is Stronghold, not Castle.
+
+---
+
+# MMS Factions PLAYABLE (2026-06-22, worktree-agent-ade28fbf059140d7a)
+## Domain Notes
+- THIS task = make non-Necropolis factions playable. Add hero/faction selection (TitleScreen) + per-faction runs.
+- Worktree started on leyline/initial-commit (pre-MMS). Created branch `agent/mms-factions-playable` off
+  `claude/mms-orchestrator-phase-0-60vsr7` (latest orchestrator tip, data 42/46/68/67). All work under
+  /Users/ashkie/src/deevgames/.claude/worktrees/agent-ade28fbf059140d7a/might-and-magic-spire
+- I own: content.ts, adapter.ts (deriveHero), startRun/encounter/dwelling/RunState.faction in run.ts,
+  types.ts RunState/Hero, app files. AVOID battle.ts + resolveAttack/on-hit sections of run.ts.
+- Necromancy already skill-gated (applyNecromancy checks hero.skills["Necromancy"]). Non-necro sustain via
+  Dwellings/Rest/gold. NO new growth subsystem.
+
+## ENGINE done (this session)
+- content.ts: added FACTIONS, DEFAULT_FACTION, creaturesOfFaction/basePool, ALL_BASE_CREATURES,
+  heroesOfFaction, PLAYABLE_HEROES. Kept CREATURES/BASE_CREATURES/HEROES (Necropolis) for back-compat.
+  GOTCHA: c.faction is the schema `Faction` enum, not string — cast `(c.faction as string)` in helpers.
+- adapter.deriveHero: faction-general. starterSpellIds(faction); classBaseStats adds Knight/Cleric/
+  Barbarian; specialtyCreatureId(specialty, factionBase) matches specialty vs faction base NAMES;
+  army = tier-1 core (20) + specialty-or-tier-2 (10/5/2). Necropolis/Galthran byte-identical.
+- run.startRun(seed, heroId?): default Galthran; sets RunState.faction. Passes ALL_CREATURES to deriveHero.
+  rollEncounter uses ALL_BASE_CREATURES (cross-faction foes). rollDwelling(run,rng) uses basePool(run.faction).
+  Boss stays Necropolis Lich-King theme. Hero.faction OPTIONAL (so other agent's battle/batch test hero
+  literals don't break).
+- WIN RATES (80 seeds, dumb bot): Necro 46%, Castle 45-49%, Stronghold 33%. Castle needed ZERO tuning.
+- New test: factions.test.ts (11 tests). Engine 136 -> 147.
+
+## APP done (this session)
+- contract.ts: startRun(seed, heroId?); Hero.faction?, RunState.faction? (optional); added PlayableHero type.
+- engine/index.ts seam: startRun threads heroId; exported FACTIONS, DEFAULT_HERO_ID, PLAYABLE_HEROES,
+  heroesOfFaction (projected to PlayableHero). The seam uses USE_REAL_ENGINE=true so App tests on <App/>
+  exercise the REAL engine — good for the Castle-routing integration test.
+- mockEngine: makeHero(heroId)/startingArmy(heroId) faction-aware; rollDwelling(run,rng) uses run.faction.
+  Necropolis path byte-identical (legacy 40 skel/12 wd/4 lich).
+- useRun.startRun(seed, heroId?); App passes onStart={startRun} (TitleScreen onStart sig now (seed, heroId?)).
+- TitleScreen rewritten: faction-grouped hero picker (testids hero-picker/faction-group/hero-option/
+  hero-detail), portraits via ContentImage, default Galthran. Gothic chrome for all factions (deferred theming).
+- COMBAT.md §20 documents the faction wiring + win-rate table + "no lever changed".
+- DEFERRED: faction-specific visual chrome (all factions render Necropolis gothic palette for now).
+- FINAL GATES: typecheck 4/4; schema 12 data 19 engine 147 app 40; app build OK.

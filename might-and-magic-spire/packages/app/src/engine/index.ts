@@ -81,7 +81,7 @@ function buildRealApi(): EngineApi & EngineRewardSource {
   const toReal = (r: AppRunState) => r as unknown as RealRun;
 
   return {
-    startRun: (seed) => toApp(real.startRun(seed)),
+    startRun: (seed, heroId) => toApp(real.startRun(seed, heroId)),
     legalNextNodes: (run) => real.legalNextNodes(toReal(run)),
     chooseNode: (run, nodeId) => toApp(real.chooseNode(toReal(run), nodeId)),
 
@@ -145,6 +145,48 @@ export const ARTIFACTS = real.ARTIFACTS;
 export const creatureLookup = real.creatureById;
 export const spellLookup = real.spellById;
 export const artifactLookup = real.artifactById;
+
+// --- hero / faction selection (TitleScreen) --------------------------------
+// Playable factions + the heroes in each, projected onto the app's PlayableHero
+// shape. Resolved through the engine's content exports (backed by @mms/data) so
+// the picker is available regardless of which engine backs `engine` above.
+import type { PlayableHero } from './contract';
+
+/** Faction display order (Necropolis, Castle, Stronghold, …). */
+export const FACTIONS: string[] = real.FACTIONS;
+
+/** The default starting hero id (Galthran) — the picker's initial selection. */
+export const DEFAULT_HERO_ID: string = real.DEFAULT_HERO.id;
+
+type SrcHeroLike = {
+  id: string;
+  name: string;
+  faction: string;
+  heroClass: string;
+  specialty: string;
+  imageRef: string;
+};
+
+function toPlayableHero(h: SrcHeroLike): PlayableHero {
+  return {
+    id: h.id,
+    name: h.name,
+    faction: h.faction,
+    heroClass: h.heroClass,
+    specialty: h.specialty,
+    imageRef: h.imageRef,
+  };
+}
+
+/** Every playable hero (all factions), as PlayableHero summaries. */
+export const PLAYABLE_HEROES: PlayableHero[] = (
+  real.PLAYABLE_HEROES as SrcHeroLike[]
+).map(toPlayableHero);
+
+/** Heroes of one faction (display order matches the corpus). */
+export function heroesOfFaction(faction: string): PlayableHero[] {
+  return (real.heroesOfFaction(faction) as SrcHeroLike[]).map(toPlayableHero);
+}
 
 // --- economy helpers -------------------------------------------------------
 // Costs are authored by the engine and surfaced on each offer's `cost` in

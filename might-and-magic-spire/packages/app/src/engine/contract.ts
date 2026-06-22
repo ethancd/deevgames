@@ -77,6 +77,8 @@ export interface Hero {
   name: string;
   heroClass: string;
   specialty: string;
+  /** Hero faction (Necropolis | Castle | Stronghold). Optional for back-compat. */
+  faction?: string;
   attack: number;
   defense: number;
   power: number;
@@ -149,6 +151,8 @@ export interface MapNode {
 
 export interface RunState {
   seed: string;
+  /** The run's faction (the chosen hero's faction). Engine-owned; optional. */
+  faction?: string;
   hero: Hero;
   army: Stack[];
   gold: number;
@@ -212,7 +216,9 @@ export interface CommandOrder {
  * The UI holds the latest RunState and replaces it wholesale on each op.
  */
 export interface EngineApi {
-  startRun(seed: string): RunState;
+  // `heroId` selects the starting hero/faction; omitted = the default (Galthran,
+  // Necropolis), preserving the v0 entry path.
+  startRun(seed: string, heroId?: string): RunState;
   legalNextNodes(run: RunState): string[];
   chooseNode(run: RunState, nodeId: string): RunState;
 
@@ -243,4 +249,17 @@ export interface EngineApi {
 export interface EngineRewardSource {
   pendingRewards?(run: RunState): RewardChoice[] | null;
   legalSpellTargets?(run: RunState, spellId: string): string[];
+}
+
+/**
+ * A playable hero summary for the TitleScreen's hero/faction picker. Projected
+ * from the engine's SourceHero corpus (or @mms/data) via the seam.
+ */
+export interface PlayableHero {
+  id: string;
+  name: string;
+  faction: string;
+  heroClass: string;
+  specialty: string;
+  imageRef: string;
 }

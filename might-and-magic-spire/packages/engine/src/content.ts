@@ -19,18 +19,44 @@ import type {
   SourceSpell,
 } from "@mms/schema";
 
-const FACTION = "Necropolis";
+/** The default starting faction (preserves the v0 / keystone behavior). */
+export const DEFAULT_FACTION = "Necropolis";
+
+/** Every playable faction in the corpus, in stable display order. */
+export const FACTIONS: string[] = (() => {
+  const order = ["Necropolis", "Castle", "Stronghold"];
+  const seen = new Set<string>(allCreatures.map((c) => c.faction as string));
+  const known = order.filter((f) => seen.has(f));
+  // Append any faction present in data but not in the explicit order (forward-compat).
+  for (const f of seen) if (!known.includes(f)) known.push(f);
+  return known;
+})();
 
 /** Full creature corpus, including upgrade forms (Altar upgrades need them). */
 export const ALL_CREATURES: SourceCreature[] = allCreatures;
 
-/** Necropolis creatures (base + upgraded). */
-export const CREATURES: SourceCreature[] = allCreatures.filter(
-  (c) => c.faction === FACTION,
+/** All creatures of one faction (base + upgraded). `faction` is a plain string
+ *  (the run/app layers don't carry the schema enum); we compare as strings. */
+export function creaturesOfFaction(faction: string): SourceCreature[] {
+  return allCreatures.filter((c) => (c.faction as string) === faction);
+}
+
+/** Base (un-upgraded) forms of one faction — dwelling/starting-army pools. */
+export function basePool(faction: string): SourceCreature[] {
+  return creaturesOfFaction(faction).filter((c) => !c.upgraded);
+}
+
+/** Base (un-upgraded) forms across ALL factions — the encounter pool draws here
+ *  so foes are varied and never the player's own civil-war army. */
+export const ALL_BASE_CREATURES: SourceCreature[] = allCreatures.filter(
+  (c) => !c.upgraded,
 );
 
-/** Base (un-upgraded) Necropolis forms — dwelling/encounter pools draw here. */
-export const BASE_CREATURES: SourceCreature[] = CREATURES.filter((c) => !c.upgraded);
+/** Necropolis creatures (base + upgraded). Kept for back-compat. */
+export const CREATURES: SourceCreature[] = creaturesOfFaction(DEFAULT_FACTION);
+
+/** Base (un-upgraded) Necropolis forms. Kept for back-compat. */
+export const BASE_CREATURES: SourceCreature[] = basePool(DEFAULT_FACTION);
 
 /**
  * Spells the engine CUTS from the usable pool — the data record stays intact,
@@ -50,12 +76,20 @@ export const SPELLS: SourceSpell[] = allSpells.filter(
 /** Artifacts become equipment (Merchants sell them). Full corpus is fine. */
 export const ARTIFACTS: SourceArtifact[] = allArtifacts;
 
-/** Necropolis heroes; class+specialty derive the runtime hero. */
-export const HEROES: SourceHero[] = allHeroes.filter((h) => h.faction === FACTION);
+/** Every playable hero (all factions); class+specialty derive the runtime hero. */
+export const PLAYABLE_HEROES: SourceHero[] = allHeroes;
 
-/** Galthran (Skeletons) is the v0 starting hero — falls back to any Necro hero. */
+/** Heroes of one faction. */
+export function heroesOfFaction(faction: string): SourceHero[] {
+  return allHeroes.filter((h) => (h.faction as string) === faction);
+}
+
+/** Necropolis heroes. Kept for back-compat. */
+export const HEROES: SourceHero[] = heroesOfFaction(DEFAULT_FACTION);
+
+/** Galthran (Skeletons) is the default starting hero — falls back to any hero. */
 export const DEFAULT_HERO: SourceHero =
-  HEROES.find((h) => h.id === "hero_galthran") ?? HEROES[0];
+  allHeroes.find((h) => h.id === "hero_galthran") ?? HEROES[0] ?? allHeroes[0];
 
 /** Look up a creature by id across the WHOLE corpus. */
 export function creatureById(id: string): SourceCreature | undefined {

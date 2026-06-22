@@ -45,8 +45,8 @@ export function useRun() {
     }
   }, [run]);
 
-  const startRun = useCallback((seed: string) => {
-    setRun(engine.startRun(seed));
+  const startRun = useCallback((seed: string, heroId?: string) => {
+    setRun(engine.startRun(seed, heroId));
   }, []);
 
   const legalNextNodes = useCallback(

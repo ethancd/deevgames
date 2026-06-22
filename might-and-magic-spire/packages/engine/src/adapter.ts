@@ -355,8 +355,10 @@ export function adaptSpell(s: SourceSpell): CombatSpell {
 
 export const MANA_PER_KNOWLEDGE = 10;
 
-/** Class base primary stats (HoMM3-flavored). Death Knight is a might/necro
- *  bruiser; Necromancer leans magic. +1 to the stat their specialty implies. */
+/** Class base primary stats (HoMM3-flavored). Might classes (Death Knight,
+ *  Knight, Barbarian) are attack/defense bruisers; magic classes (Necromancer)
+ *  lean power/knowledge. +1 to the stat their specialty implies. Stronghold's
+ *  Barbarian is the most martial (high attack, low magic). */
 function classBaseStats(heroClass: string): {
   attack: number;
   defense: number;
@@ -368,8 +370,39 @@ function classBaseStats(heroClass: string): {
       return { attack: 2, defense: 2, power: 1, knowledge: 1 };
     case "Necromancer":
       return { attack: 1, defense: 1, power: 2, knowledge: 2 };
+    case "Knight":
+      // Castle might hero: strong defense, modest magic (Wisdom heroes still get
+      // their +knowledge specialty bump on top of this).
+      return { attack: 2, defense: 3, power: 1, knowledge: 1 };
+    case "Cleric":
+      // Castle magic hero: balanced caster.
+      return { attack: 1, defense: 1, power: 2, knowledge: 2 };
+    case "Barbarian":
+      // Stronghold might hero: heaviest attack, almost no magic.
+      return { attack: 3, defense: 2, power: 1, knowledge: 1 };
+    case "Battle Mage":
+      return { attack: 2, defense: 1, power: 2, knowledge: 1 };
     default:
       return { attack: 1, defense: 1, power: 1, knowledge: 1 };
+  }
+}
+
+/**
+ * A faction's starter spellbook ids (resolved against the corpus; missing ids
+ * skipped). Necropolis keeps its offensive opener; Castle (good/order) leans on
+ * Bless + a heal; Stronghold (might) gets only Haste — it wins by swinging, not
+ * by casting. All factions get Magic Arrow as a baseline ranged option.
+ */
+function starterSpellIds(faction: string): string[] {
+  switch (faction) {
+    case "Necropolis":
+      return ["spell_magic_arrow", "spell_bless", "spell_haste"];
+    case "Castle":
+      return ["spell_magic_arrow", "spell_bless", "spell_cure"];
+    case "Stronghold":
+      return ["spell_magic_arrow", "spell_haste"];
+    default:
+      return ["spell_magic_arrow", "spell_bless", "spell_haste"];
   }
 }
 
@@ -388,15 +421,23 @@ function specialtyBonus(specialty: string): Partial<
   return { attack: 1 };
 }
 
-/** Which creature a hero's specialty implies, for the sensible starting army. */
-function specialtyCreatureId(specialty: string): string | null {
-  const s = specialty.toLowerCase();
-  if (s.includes("skeleton")) return "necropolis_skeleton";
-  if (s.includes("walking dead") || s.includes("zombie")) return "necropolis_walking_dead";
-  if (s.includes("wight")) return "necropolis_wight";
-  if (s.includes("vampire")) return "necropolis_vampire";
-  if (s.includes("lich")) return "necropolis_lich";
-  if (s.includes("black knight")) return "necropolis_black_knight";
+/**
+ * Which creature a hero's specialty names, for the sensible starting army.
+ * Faction-general: we match the specialty word against the NAMES of that
+ * faction's base creatures (e.g. "Skeletons" → necropolis_skeleton, "Swordsmen"
+ * → castle_swordsman, "Orcs" → stronghold_orc). Specialties that aren't a
+ * creature (Speed, Offense, Estates, Ballista, …) return null — the army builder
+ * falls back to the faction's tier-1/2 bread-and-butter. PURE: matching only.
+ */
+function specialtyCreatureId(
+  specialty: string,
+  factionBase: SourceCreature[],
+): string | null {
+  const s = specialty.toLowerCase().replace(/s$/, ""); // singularize ("Skeletons"→"skeleton")
+  for (const c of factionBase) {
+    const name = c.name.toLowerCase();
+    if (name.includes(s) || s.includes(name)) return c.id;
+  }
   return null;
 }
 
@@ -426,11 +467,11 @@ export function deriveHero(
   const skills: Record<string, number> = {};
   for (const s of h.startingSkills) skills[s] = 1;
 
-  // Starter spellbook: Magic Arrow always; plus Curse if available (cheap debuff).
+  // Starter spellbook — faction-flavored (see `starterSpellIds`). Each id is
+  // resolved against the corpus; missing ones are skipped.
   const spellbook: CombatSpell[] = [];
   const byId = (id: string) => h && deps.spells.find((s) => s.id === id);
-  const starterSpellIds = ["spell_magic_arrow", "spell_bless", "spell_haste"];
-  for (const id of starterSpellIds) {
+  for (const id of starterSpellIds(h.faction)) {
     const s = byId(id);
     if (s) spellbook.push(adaptSpell(s));
   }
@@ -442,6 +483,7 @@ export function deriveHero(
     name: h.name,
     heroClass: h.heroClass,
     specialty: h.specialty,
+    faction: h.faction,
     attack,
     defense,
     power,
@@ -462,25 +504,30 @@ export function deriveHero(
     baseSpellbook: spellbook,
   };
 
-  // Starting army: a big stack of Skeletons (the bread-and-butter) plus a stack
-  // of the hero's specialty creature if it differs.
+  // Starting army (FACTION-GENERAL): a big tier-1 core stack (the
+  // bread-and-butter) plus a second stack — the hero's specialty creature if it
+  // names a distinct one, else the faction's tier-2 base creature for a body.
+  // The Necropolis/Galthran path is byte-identical to v0: 20 Skeleton (`_start`)
+  // + 10 Walking Dead (`_start2`).
   const find = (id: string) => deps.creatures.find((c) => c.id === id);
+  const factionBase = deps.creatures
+    .filter((c) => c.faction === h.faction && !c.upgraded)
+    .sort((a, b) => a.tier - b.tier);
   const startingArmy: Stack[] = [];
-  const skeleton = find("necropolis_skeleton");
-  if (skeleton) startingArmy.push(adaptStack(skeleton, 20, { idSuffix: "_start" }));
 
-  const specId = specialtyCreatureId(h.specialty);
-  if (specId && specId !== "necropolis_skeleton") {
-    const spec = find(specId);
-    if (spec) {
-      // Fewer of the stronger specialty creature.
-      const n = spec.tier <= 2 ? 10 : spec.tier <= 4 ? 5 : 2;
-      startingArmy.push(adaptStack(spec, n, { idSuffix: "_start2" }));
-    }
+  const core = factionBase[0];
+  if (core) startingArmy.push(adaptStack(core, 20, { idSuffix: "_start" }));
+
+  const specId = specialtyCreatureId(h.specialty, factionBase);
+  if (specId && specId !== core?.id) {
+    const spec = find(specId)!;
+    // Fewer of the stronger specialty creature.
+    const n = spec.tier <= 2 ? 10 : spec.tier <= 4 ? 5 : 2;
+    startingArmy.push(adaptStack(spec, n, { idSuffix: "_start2" }));
   } else {
-    // No distinct specialty creature -> add a stack of Walking Dead for a body.
-    const wd = find("necropolis_walking_dead");
-    if (wd) startingArmy.push(adaptStack(wd, 10, { idSuffix: "_start2" }));
+    // No distinct specialty creature -> add the faction's tier-2 base for a body.
+    const second = factionBase.find((c) => c.id !== core?.id);
+    if (second) startingArmy.push(adaptStack(second, 10, { idSuffix: "_start2" }));
   }
 
   return { hero, startingArmy };

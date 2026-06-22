@@ -19,14 +19,18 @@ import type {
 } from "./types";
 import { generateMap, startNodeIds } from "./map";
 import {
+  ALL_BASE_CREATURES,
   ALL_CREATURES,
   ARTIFACTS,
   BASE_CREATURES,
   CREATURES,
+  DEFAULT_FACTION,
   DEFAULT_HERO,
   SPELLS,
   artifactById,
+  basePool,
   creatureById,
+  heroById,
   spellById,
   upgradeFormOf,
 } from "./content";
@@ -266,16 +270,22 @@ function equipmentCombatBonuses(hero: Hero): { hpPerCreature: number; speedAll: 
 // START
 // ===========================================================================
 
-export function startRun(seed: string): RunState {
+export function startRun(seed: string, heroId?: string): RunState {
   const rng = makeRng(seed);
-  const { hero, startingArmy } = deriveHero(DEFAULT_HERO, {
-    creatures: CREATURES,
+  // Default to Galthran (preserves v0 behavior + the keystone determinism test).
+  // An unknown heroId falls back to the default rather than throwing.
+  const sourceHero = (heroId && heroById(heroId)) || DEFAULT_HERO;
+  // deriveHero filters by the hero's faction itself, so we hand it the WHOLE
+  // corpus — the chosen faction's starting army resolves regardless of hero.
+  const { hero, startingArmy } = deriveHero(sourceHero, {
+    creatures: ALL_CREATURES,
     spells: SPELLS,
   });
   const map = generateMap(rng, /*act*/ 1);
 
   return {
     seed,
+    faction: hero.faction,
     hero,
     army: startingArmy,
     gold: STARTING_GOLD,
@@ -330,7 +340,7 @@ export function chooseNode(run: RunState, nodeId: string): RunState {
       next.clearedNodeIds.push(nodeId);
       break;
     case "dwelling":
-      next.pendingRewards = rollDwelling(rng);
+      next.pendingRewards = rollDwelling(next, rng);
       break;
     case "altar":
       next.pendingRewards = rollAltar(next, rng);
@@ -465,7 +475,12 @@ function rollEncounter(
   }
 
   const budget = baseValue * mult;
-  const pool = BASE_CREATURES.filter((c) => c.tier >= tierMin && c.tier <= tierMax);
+  // Foes are drawn from a BROAD cross-faction pool (every faction's base
+  // creatures), not the player's own roster — no civil war, and varied enemies.
+  // Budget-matched scaling keeps difficulty intact regardless of which creatures
+  // fill the band. (The boss below stays a fixed Necropolis antagonist theme —
+  // the Spire's Lich King — for every run.)
+  const pool = ALL_BASE_CREATURES.filter((c) => c.tier >= tierMin && c.tier <= tierMax);
   const stacks: Stack[] = [];
 
   if (node.type === "boss") {
@@ -501,7 +516,7 @@ function rollEncounter(
 
 // The enemy has no hero of its own; it fights with a null commander (zeros).
 const NULL_HERO: Hero = {
-  id: "enemy", name: "Enemy", heroClass: "", specialty: "",
+  id: "enemy", name: "Enemy", heroClass: "", specialty: "", faction: "",
   attack: 0, defense: 0, power: 0, knowledge: 0, mana: 0, maxMana: 0,
   equipment: {}, spellbook: [], skills: {}, imageRef: "",
   baseAttack: 0, baseDefense: 0, basePower: 0, baseKnowledge: 0, baseSpellbook: [],
@@ -1193,8 +1208,12 @@ function rollCombatRewards(node: MapNode, rng: Rng): RewardChoice[] {
 
 // --- node reward rolls ---
 
-function rollDwelling(rng: Rng): RewardChoice[] {
-  const pool = BASE_CREATURES.filter((c) => c.tier <= 5);
+function rollDwelling(run: RunState, rng: Rng): RewardChoice[] {
+  // Dwellings recruit the PLAYER'S OWN faction (you grow your army). Falls back
+  // to the default faction's pool for legacy runs with no faction set.
+  const faction = run.faction ?? run.hero.faction ?? DEFAULT_FACTION;
+  const factionPool = basePool(faction).filter((c) => c.tier <= 5);
+  const pool = factionPool.length ? factionPool : BASE_CREATURES.filter((c) => c.tier <= 5);
   const c = rng.pick(pool);
   const count = rng.int(3, 8);
   const cost = c.tier * RECRUIT_COST_PER_TIER;
@@ -1433,13 +1452,26 @@ function tail(id: string): string {
   return id.includes("_") ? id.slice(id.indexOf("_") + 1) : id;
 }
 
-// Re-export content arrays + lookups for the app/Codex.
+// Re-export content arrays + lookups for the app/Codex + hero selection.
 export {
   ALL_CREATURES,
+  ALL_BASE_CREATURES,
   ARTIFACTS,
   CREATURES,
   SPELLS,
   creatureById,
   spellById,
   artifactById,
+  heroById,
+  basePool,
 };
+// Faction/hero selection surface for the TitleScreen (re-exported from content).
+export {
+  FACTIONS,
+  DEFAULT_FACTION,
+  PLAYABLE_HEROES,
+  HEROES,
+  DEFAULT_HERO,
+  heroesOfFaction,
+  creaturesOfFaction,
+} from "./content";
