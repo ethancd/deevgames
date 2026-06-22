@@ -7,8 +7,9 @@
 //   active combat     -> Combat
 //   standing on node  -> the node's screen (reward / dwelling / altar / …)
 //   otherwise         -> Map
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRun } from './hooks/useRun';
+import type { RunState } from './engine';
 import { TitleScreen } from './screens/TitleScreen';
 import { MapScreen } from './screens/MapScreen';
 import { CombatScreen } from './screens/CombatScreen';
@@ -53,6 +54,38 @@ export default function App() {
   // The hero paper-doll overlay, reachable from the map/combat HUD.
   const [dollOpen, setDollOpen] = useState(false);
 
+  // End-of-battle playback: when a turn ENDS the combat (the engine settles and
+  // clears the board), hold the battlefield and replay the final strikes before
+  // routing to Outcome/Reward — so a loss/win is never silent.
+  const lastCombatRunRef = useRef<RunState | null>(null);
+  useEffect(() => {
+    if (run?.combat) lastCombatRunRef.current = run;
+  }, [run]);
+  const [endingPlayback, setEndingPlayback] = useState(false);
+  const playedEndRef = useRef<unknown>(null);
+  useEffect(() => {
+    if (!run) {
+      setEndingPlayback(false);
+      return;
+    }
+    // "Combat just ended with strikes to show": the board was cleared by the
+    // engine's settlement, lastEvents holds that final turn, and we retained the
+    // pre-end board. (lastEvents is cleared on node entry, so this can't fire on
+    // the map.) The played-ref guard prevents re-triggering for the same batch.
+    const combatGone = run.combat == null;
+    const hasEvents = (run.lastEvents?.length ?? 0) > 0;
+    if (
+      combatGone &&
+      hasEvents &&
+      lastCombatRunRef.current?.combat &&
+      run.lastEvents !== playedEndRef.current
+    ) {
+      playedEndRef.current = run.lastEvents;
+      setEndingPlayback(true);
+    }
+  }, [run]);
+  const onPlaybackDone = useCallback(() => setEndingPlayback(false), []);
+
   const shell = (child: React.ReactNode) => (
     <div className="mx-auto h-[100dvh] max-w-md overflow-hidden">{child}</div>
   );
@@ -63,6 +96,24 @@ export default function App() {
 
   if (!run) {
     return shell(<TitleScreen onStart={startRun} onOpenCodex={() => { window.location.hash = '#codex'; }} />);
+  }
+
+  // Replay the battle-ending turn over the retained board before anything else.
+  if (endingPlayback && lastCombatRunRef.current?.combat && run.lastEvents) {
+    return shell(
+      <CombatScreen
+        run={lastCombatRunRef.current}
+        onCommandStack={commandStack}
+        onCastSpell={castSpell}
+        onEndTurn={endPlayerTurn}
+        legalTargets={legalTargets}
+        legalSpellTargets={legalSpellTargets}
+        forecast={forecast}
+        onOpenDoll={() => setDollOpen(true)}
+        playbackEvents={run.lastEvents}
+        onPlaybackDone={onPlaybackDone}
+      />,
+    );
   }
 
   if (run.outcome === 'won' || run.outcome === 'lost') {

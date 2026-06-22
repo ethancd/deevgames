@@ -11,7 +11,16 @@
 //   • End Turn runs the enemy army; log deltas + floating damage numbers flash.
 // The army roster is the life total: when your last stack falls you lose.
 import { useEffect, useRef, useState } from 'react';
-import type { CombatEvent, CombatSpell, CommandOrder, DamageForecast, RunState, Stack } from '../engine';
+import type {
+  Army,
+  CombatEvent,
+  CombatSpell,
+  CombatState,
+  CommandOrder,
+  DamageForecast,
+  RunState,
+  Stack,
+} from '../engine';
 import { BattleField } from '../components/BattleField';
 import { Spellbook } from '../components/Spellbook';
 import { HeroDollStrip } from '../components/HeroDoll';
@@ -22,6 +31,23 @@ type Float = { id: string; text: string; kind: FloatKind };
 
 let floatSeq = 0;
 
+// Apply one strike's outcome to a board snapshot — used to replay the final
+// turn blow-by-blow over a retained battlefield (the engine settled & cleared
+// the live combat, so we animate from a kept copy).
+function applyEventToBoard(combat: CombatState, e: CombatEvent): CombatState {
+  const upd = (army: Army): Army => ({
+    ...army,
+    stacks: army.stacks.map((s) => {
+      if (s.id !== e.targetId) return s;
+      const count = Math.max(0, s.count - e.killed);
+      const hpTop =
+        count <= 0 ? 0 : e.killed > 0 ? s.maxHpPer : Math.max(1, s.hpTop - e.damage);
+      return { ...s, count, hpTop };
+    }),
+  });
+  return { ...combat, yourArmy: upd(combat.yourArmy), enemyArmy: upd(combat.enemyArmy) };
+}
+
 export function CombatScreen({
   run,
   onCommandStack,
@@ -31,6 +57,8 @@ export function CombatScreen({
   legalSpellTargets,
   forecast,
   onOpenDoll,
+  playbackEvents,
+  onPlaybackDone,
 }: {
   run: RunState;
   onCommandStack: (stackId: string, order: CommandOrder) => void;
@@ -40,18 +68,28 @@ export function CombatScreen({
   legalSpellTargets: (spellId: string) => string[];
   forecast: (attackerId: string, targetId: string) => DamageForecast | null;
   onOpenDoll?: () => void;
+  // When set, the screen REPLAYS these events over the (retained) board and
+  // calls onPlaybackDone when finished — used to show the battle-ending turn
+  // blow-by-blow before routing to Outcome/Reward. Interaction is locked.
+  playbackEvents?: CombatEvent[];
+  onPlaybackDone?: () => void;
 }) {
-  const combat = run.combat!;
+  const playing = !!playbackEvents;
   const [selectedStackId, setSelectedStackId] = useState<string | null>(null);
   const [armedSpell, setArmedSpell] = useState<CombatSpell | null>(null);
   const [spellbookOpen, setSpellbookOpen] = useState(false);
   const [floats, setFloats] = useState<Record<string, Float[]>>({});
+  // The displayed board: the live combat normally, or a locally-replayed
+  // snapshot during end-of-battle playback.
+  const [simCombat, setSimCombat] = useState<CombatState>(run.combat!);
+  const combat = playing ? simCombat : run.combat!;
 
   // Play the engine's per-strike events as staggered damage popups: your
   // attack, its retaliation, and every enemy strike on the enemy turn — so the
   // hits are legible instead of the board silently jumping to a new state.
   const playedRef = useRef<CombatEvent[] | null>(null);
   useEffect(() => {
+    if (playing) return; // playback effect drives popups during end-of-battle replay
     const events = run.lastEvents;
     if (!events || events.length === 0 || events === playedRef.current) return;
     playedRef.current = events;
@@ -70,15 +108,41 @@ export function CombatScreen({
       );
     });
     return () => timers.forEach(clearTimeout);
-  }, [run.lastEvents]);
+  }, [run.lastEvents]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // End-of-battle replay: step the retained board forward one strike at a time.
+  useEffect(() => {
+    if (!playbackEvents) return;
+    let board = run.combat!;
+    setSimCombat(board);
+    const STEP = 650;
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    playbackEvents.forEach((e, i) => {
+      timers.push(
+        setTimeout(() => {
+          board = applyEventToBoard(board, e);
+          setSimCombat(board);
+          const id = `f${floatSeq++}`;
+          const text = e.killed > 0 ? `−${e.damage} ☠${e.killed}` : `−${e.damage}`;
+          setFloats((cur) => ({
+            ...cur,
+            [e.targetId]: [...(cur[e.targetId] ?? []), { id, text, kind: 'loss' }],
+          }));
+        }, i * STEP),
+      );
+    });
+    timers.push(setTimeout(() => onPlaybackDone?.(), playbackEvents.length * STEP + 1000));
+    return () => timers.forEach(clearTimeout);
+  }, [playbackEvents]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const clearFloat = (sid: string, fid: string) =>
     setFloats((cur) => ({ ...cur, [sid]: (cur[sid] ?? []).filter((f) => f.id !== fid) }));
 
-  // Whose stacks can act / what's a legal target right now.
-  const selectableIds = new Set(
-    combat.yourArmy.stacks.filter((s) => s.count > 0 && !s.hasActed).map((s) => s.id),
-  );
+  // Whose stacks can act / what's a legal target right now. (None during the
+  // end-of-battle replay — the board is locked while it animates.)
+  const selectableIds = playing
+    ? new Set<string>()
+    : new Set(combat.yourArmy.stacks.filter((s) => s.count > 0 && !s.hasActed).map((s) => s.id));
 
   let targetableIds = new Set<string>();
   if (armedSpell) {
@@ -97,6 +161,7 @@ export function CombatScreen({
   }
 
   const tapStack = (s: Stack) => {
+    if (playing) return; // board is locked during end-of-battle replay
     // Casting a spell at a legal target.
     if (armedSpell) {
       if (targetableIds.has(s.id)) {
@@ -151,7 +216,7 @@ export function CombatScreen({
           <ArmyPip army={combat.yourArmy.stacks} />
         </div>
         <span className="font-display text-[0.65rem] uppercase tracking-widest text-bone-500">
-          {combat.whoseTurn === 'player' ? 'Your command' : 'Enemy acts'}
+          {playing ? 'Resolving…' : combat.whoseTurn === 'player' ? 'Your command' : 'Enemy acts'}
         </span>
       </HudShell>
 
@@ -186,7 +251,9 @@ export function CombatScreen({
       {/* Action bar */}
       <div className="flex items-center justify-between gap-2 bg-grave-800/90 px-3 py-2">
         <div className="min-w-0 flex-1 text-[0.65rem] text-bone-400">
-          {armedSpell ? (
+          {playing ? (
+            <span className="italic text-bone-300">Resolving the battle…</span>
+          ) : armedSpell ? (
             <span className="text-necro-400">Casting {armedSpell.name} — tap a target.</span>
           ) : selected ? (
             <span className="text-bone-200">{selected.name} selected — tap an enemy or Defend.</span>
@@ -197,7 +264,7 @@ export function CombatScreen({
         <button
           type="button"
           data-testid="defend"
-          disabled={!selectedStackId}
+          disabled={!selectedStackId || playing}
           onClick={defendSelected}
           className="rounded border border-verd-500 bg-verd-700/30 px-3 py-2 font-display text-xs uppercase tracking-widest text-bone-100 active:scale-95 disabled:opacity-30"
         >
@@ -206,8 +273,9 @@ export function CombatScreen({
         <button
           type="button"
           data-testid="open-spellbook"
+          disabled={playing}
           onClick={() => setSpellbookOpen(true)}
-          className="rounded border border-necro-400/60 bg-grave-900 px-3 py-2 font-display text-xs uppercase tracking-widest text-necro-400 active:scale-95"
+          className="rounded border border-necro-400/60 bg-grave-900 px-3 py-2 font-display text-xs uppercase tracking-widest text-necro-400 active:scale-95 disabled:opacity-30"
         >
           Spells
         </button>
@@ -219,7 +287,7 @@ export function CombatScreen({
             setArmedSpell(null);
             onEndTurn();
           }}
-          disabled={combat.outcome !== 'ongoing'}
+          disabled={combat.outcome !== 'ongoing' || playing}
           className="rounded-md border border-blood-500 bg-blood-500/20 px-4 py-2 font-display text-xs uppercase tracking-widest text-bone-100 active:scale-95 disabled:opacity-40"
         >
           End Turn
