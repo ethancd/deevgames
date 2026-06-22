@@ -142,7 +142,7 @@ export function MapScreen({
 
       <div className="flex-1 overflow-y-auto px-4 py-6">
         <h2 className="mb-4 text-center font-display text-lg tracking-[0.2em] text-bone-300 engraved">
-          THE NECROPOLIS SPIRE
+          THE {(run.faction ?? 'Necropolis').toUpperCase()} SPIRE
         </h2>
 
         {/* Positioned field: SVG path lines beneath, the node rows above. */}

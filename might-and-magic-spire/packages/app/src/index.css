@@ -2,36 +2,161 @@
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap');
 
 /* ===========================================================================
-   MIGHT & MAGIC: SPIRE — Necropolis visual identity.
-   Art-historical register: gothic memento-mori. Bone & verdigris on grave-
-   black, with a single blood-crimson accent. Deliberately NOT a framework
-   default — ornamental serif display, oxidized-copper greens, bone ivory.
+   MIGHT & MAGIC: SPIRE — per-faction visual chrome.
+
+   ONE component structure, THREE art-historical registers. The semantic colour
+   ramps (grave / bone / verd / blood / necro) are Tailwind utilities whose
+   VALUES are CSS variables. A `[data-faction="…"]` scope on the app shell
+   re-maps those variables, so every existing class (`text-verd-300`,
+   `bg-grave-800`, `.engraved`, `.verd-frame`, `.bg-necropolis`) shifts palette
+   WITHOUT touching the components.
+
+     • Necropolis — gothic memento-mori. Bone ivory + verdigris on grave-black,
+       a single blood-crimson accent. (The default; no override.)
+     • Castle — holy / heraldic illuminated manuscript. Warm ivory + gold +
+       luminous azure, ordered and radiant.
+     • Stronghold — barbarian iron-age. Iron-grey + ochre/bronze + blood-red,
+       rough and brutal.
+
+   `blood` stays the shared warning/cost red across all three.
    =========================================================================== */
 
+/* ---------------------------------------------------------------------------
+   NECROPOLIS — the canonical ramp values, held on :root as raw variables so
+   the faction scopes can override them. (Unchanged hexes from v0.)
+   --------------------------------------------------------------------------- */
+:root {
+  /* Grave palette (backdrop) */
+  --grave-900: #07080a;
+  --grave-800: #0b0d0a;
+  --grave-700: #12150f;
+  --grave-600: #1b1f17;
+
+  /* Bone (parchment ivory — text) */
+  --bone-50: #f4efe0;
+  --bone-100: #e8e2d0;
+  --bone-300: #c8c0a8;
+  --bone-500: #9a9277;
+
+  /* Verdigris (oxidized copper) — the PRIMARY accent */
+  --verd-300: #7cae9e;
+  --verd-500: #3a6b5f;
+  --verd-700: #234039;
+
+  /* Blood — the shared warning/cost red (NOT re-mapped per faction) */
+  --blood-500: #8b1a1a;
+  --blood-400: #b22b2b;
+
+  /* Telegraph green (poison/buff) — re-tinted per faction */
+  --necro-400: #8fbf5a;
+
+  /* Backdrop atmosphere knobs the .bg-necropolis vignette reads. */
+  --bg-base: var(--grave-800);
+  --bg-glow-top: rgba(58, 107, 95, 0.18);   /* verdigris halo from above   */
+  --bg-glow-bottom: rgba(139, 26, 26, 0.12); /* faint blood pool below      */
+  --bg-rule: rgba(232, 226, 208, 0.02);      /* bone-dust horizontal lines  */
+
+  /* Chrome glow accents (engraved highlight + verd-frame inner glow). */
+  --engrave-hi: rgba(232, 226, 208, 0.12);
+  --frame-glow: rgba(124, 174, 158, 0.08);
+
+  --display-tracking: 0.04em;
+}
+
+/* ---------------------------------------------------------------------------
+   CASTLE — holy / heraldic illuminated manuscript.
+   Accent verd→luminous azure; bone→gold-warmed ivory; backdrop→a radiant
+   azure night lit by golden light from above; telegraph→holy gold.
+   --------------------------------------------------------------------------- */
+[data-faction="Castle"] {
+  --grave-900: #0c1322;
+  --grave-800: #121d35;
+  --grave-700: #1d2c4c;
+  --grave-600: #2b3e66;
+
+  --bone-50: #fbf6e7;
+  --bone-100: #f4ecd4;
+  --bone-300: #ddca9c;
+  --bone-500: #ad9a6e;
+
+  /* Heraldic azure */
+  --verd-300: #82b4ee;
+  --verd-500: #3f72bd;
+  --verd-700: #274a86;
+
+  /* Illuminated gold for buff/telegraph */
+  --necro-400: #e9c75c;
+
+  --bg-base: var(--grave-800);
+  --bg-glow-top: rgba(233, 199, 92, 0.22);   /* gilded radiance from above  */
+  --bg-glow-bottom: rgba(63, 114, 189, 0.16); /* azure pooling below         */
+  --bg-rule: rgba(244, 236, 212, 0.03);       /* ivory manuscript ruling     */
+
+  --engrave-hi: rgba(233, 199, 92, 0.22);     /* gold leaf catch-light       */
+  --frame-glow: rgba(233, 199, 92, 0.14);     /* gilt frame                  */
+
+  --display-tracking: 0.05em;
+}
+
+/* ---------------------------------------------------------------------------
+   STRONGHOLD — barbarian iron-age.
+   Accent verd→ochre/bronze; bone→weathered bone; backdrop→iron murk lit by
+   forge-embers from below; telegraph→molten ochre. Rough and brutal.
+   --------------------------------------------------------------------------- */
+[data-faction="Stronghold"] {
+  --grave-900: #0b0907;
+  --grave-800: #15110c;
+  --grave-700: #221a11;
+  --grave-600: #322617;
+
+  --bone-50: #ece3d2;
+  --bone-100: #ddd0b6;
+  --bone-300: #b2a07e;
+  --bone-500: #837458;
+
+  /* Hammered bronze / ochre */
+  --verd-300: #d59a4d;
+  --verd-500: #9c6a2c;
+  --verd-700: #5a3a18;
+
+  /* Molten ochre for buff/telegraph */
+  --necro-400: #c79a3e;
+
+  --bg-base: var(--grave-800);
+  --bg-glow-top: rgba(90, 58, 24, 0.20);     /* dull iron sky               */
+  --bg-glow-bottom: rgba(176, 43, 43, 0.16);  /* forge embers / blood below  */
+  --bg-rule: rgba(213, 154, 77, 0.03);        /* ochre scoring               */
+
+  --engrave-hi: rgba(213, 154, 77, 0.18);     /* bronze catch-light          */
+  --frame-glow: rgba(213, 154, 77, 0.10);     /* riveted bronze frame        */
+
+  --display-tracking: 0.06em;                 /* heavier, brutal spacing     */
+}
+
+/* ---------------------------------------------------------------------------
+   Theme: bind the Tailwind colour utilities to the (overridable) variables.
+   `text-verd-300`, `bg-grave-800`, `border-blood-500`, etc. now resolve through
+   the active faction scope.
+   --------------------------------------------------------------------------- */
 @theme {
-  /* Grave palette */
-  --color-grave-900: #07080a;
-  --color-grave-800: #0b0d0a;
-  --color-grave-700: #12150f;
-  --color-grave-600: #1b1f17;
+  --color-grave-900: var(--grave-900);
+  --color-grave-800: var(--grave-800);
+  --color-grave-700: var(--grave-700);
+  --color-grave-600: var(--grave-600);
 
-  /* Bone (parchment ivory) */
-  --color-bone-50: #f4efe0;
-  --color-bone-100: #e8e2d0;
-  --color-bone-300: #c8c0a8;
-  --color-bone-500: #9a9277;
+  --color-bone-50: var(--bone-50);
+  --color-bone-100: var(--bone-100);
+  --color-bone-300: var(--bone-300);
+  --color-bone-500: var(--bone-500);
 
-  /* Verdigris (oxidized copper) — the Necropolis signature */
-  --color-verd-300: #7cae9e;
-  --color-verd-500: #3a6b5f;
-  --color-verd-700: #234039;
+  --color-verd-300: var(--verd-300);
+  --color-verd-500: var(--verd-500);
+  --color-verd-700: var(--verd-700);
 
-  /* Blood — the lone warm accent, used sparingly */
-  --color-blood-500: #8b1a1a;
-  --color-blood-400: #b22b2b;
+  --color-blood-500: var(--blood-500);
+  --color-blood-400: var(--blood-400);
 
-  /* Sickly necrotic green for poison/buff telegraphs */
-  --color-necro-400: #8fbf5a;
+  --color-necro-400: var(--necro-400);
 
   --font-display: "Cinzel", "Trajan Pro", Georgia, serif;
   --font-body: "EB Garamond", Georgia, serif;
@@ -46,8 +171,8 @@ body {
   margin: 0;
   padding: 0;
   height: 100%;
-  background: var(--color-grave-900);
-  color: var(--color-bone-100);
+  background: var(--grave-900);
+  color: var(--bone-100);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -62,39 +187,42 @@ body {
     env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 
-/* Faction backdrop: a cold crypt with a faint verdigris vignette + bone dust. */
+/* Faction backdrop. The vignette reads --bg-* so the SAME class paints a cold
+   crypt (Necropolis), a gilded azure radiance (Castle), or an ember-lit iron
+   murk (Stronghold) depending on the active faction scope. */
 .bg-necropolis {
-  background-color: var(--color-grave-800);
+  background-color: var(--bg-base);
   background-image:
-    radial-gradient(120% 80% at 50% -10%, rgba(58, 107, 95, 0.18), transparent 60%),
-    radial-gradient(90% 60% at 50% 120%, rgba(139, 26, 26, 0.12), transparent 60%),
+    radial-gradient(120% 80% at 50% -10%, var(--bg-glow-top), transparent 60%),
+    radial-gradient(90% 60% at 50% 120%, var(--bg-glow-bottom), transparent 60%),
     repeating-linear-gradient(
       0deg,
       transparent,
       transparent 38px,
-      rgba(232, 226, 208, 0.02) 39px,
+      var(--bg-rule) 39px,
       transparent 40px
     );
 }
 
 .font-display {
   font-family: var(--font-display);
-  letter-spacing: 0.04em;
+  letter-spacing: var(--display-tracking);
 }
 
-/* Etched/engraved heading — looks chiselled into bone. */
+/* Etched/engraved heading — chiselled into bone (Necropolis), gilt-leafed
+   (Castle), or bronze-struck (Stronghold) via --engrave-hi. */
 .engraved {
-  color: var(--color-bone-100);
+  color: var(--bone-100);
   text-shadow:
     0 1px 0 rgba(0, 0, 0, 0.7),
-    0 -1px 0 rgba(232, 226, 208, 0.12);
+    0 -1px 0 var(--engrave-hi);
 }
 
-/* Verdigris hairline used to frame chrome panels. */
+/* Hairline used to frame chrome panels — verdigris / gilt / bronze per faction. */
 .verd-frame {
-  border: 1px solid var(--color-verd-700);
+  border: 1px solid var(--verd-700);
   box-shadow:
-    inset 0 0 0 1px rgba(124, 174, 158, 0.08),
+    inset 0 0 0 1px var(--frame-glow),
     0 2px 12px rgba(0, 0, 0, 0.6);
 }
 

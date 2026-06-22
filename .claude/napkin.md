@@ -299,3 +299,20 @@
 - COMBAT.md §20 documents the faction wiring + win-rate table + "no lever changed".
 - DEFERRED: faction-specific visual chrome (all factions render Necropolis gothic palette for now).
 - FINAL GATES: typecheck 4/4; schema 12 data 19 engine 147 app 40; app build OK.
+
+---
+
+# MMS Per-faction CHROME (2026-06-22, worktree-agent-a31c3c65644a0cdfa) — THIS task picks up the DEFERRED chrome above
+## Setup
+- Worktree was on `worktree-agent-...` branch with NO spire app on disk (task header lied about branch).
+  `git reset --hard agent/mms-factions-playable` (ff34c3b, the latest with faction picker). pnpm install needed.
+- Baseline: app test 40, typecheck clean, build OK.
+## Mechanism (CSS-var indirection — zero component edits for palette)
+- index.css `@theme` color values moved into root CSS vars; `@theme { --color-verd-300: var(--verd-300) }`.
+  Per-faction `[data-faction="Castle"|"Stronghold"] { --verd-300: ...; --bone-100: ...; }` re-maps ramps.
+  `.bg-necropolis`, `.engraved`, `.verd-frame` re-skinned per-faction scope. Necropolis = default (no override).
+- data-faction set on the App shell wrapper (App.tsx `shell()`), derived from run?.faction ?? 'Necropolis'.
+  TitleScreen sets it from the SELECTED hero (live preview) via its own wrapper data-faction.
+## Test asserts (don't break)
+- map heading /THE NECROPOLIS SPIRE/ (Necropolis default run only — keep exact). hero-detail matches /Castle/.
+- New test: app shell carries data-faction reflecting selected hero / run.

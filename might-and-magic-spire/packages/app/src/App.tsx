@@ -86,8 +86,19 @@ export default function App() {
   }, [run]);
   const onPlaybackDone = useCallback(() => setEndingPlayback(false), []);
 
-  const shell = (child: React.ReactNode) => (
-    <div className="mx-auto h-[100dvh] max-w-md overflow-hidden">{child}</div>
+  // The app shell carries the active faction so the per-faction chrome (palette
+  // re-mapped via `[data-faction="…"]` in index.css) themes everything inside.
+  // During a run that's the run's faction; on the title screen it follows the
+  // hero the player is previewing. Necropolis is the default.
+  const [titleFaction, setTitleFaction] = useState('Necropolis');
+  const shell = (child: React.ReactNode, faction?: string) => (
+    <div
+      data-testid="app-shell"
+      data-faction={faction ?? run?.faction ?? 'Necropolis'}
+      className="mx-auto h-[100dvh] max-w-md overflow-hidden"
+    >
+      {child}
+    </div>
   );
 
   if (hash.startsWith('#codex')) {
@@ -95,7 +106,14 @@ export default function App() {
   }
 
   if (!run) {
-    return shell(<TitleScreen onStart={startRun} onOpenCodex={() => { window.location.hash = '#codex'; }} />);
+    return shell(
+      <TitleScreen
+        onStart={startRun}
+        onOpenCodex={() => { window.location.hash = '#codex'; }}
+        onPreviewFaction={setTitleFaction}
+      />,
+      titleFaction,
+    );
   }
 
   // Replay the battle-ending turn over the retained board before anything else.
