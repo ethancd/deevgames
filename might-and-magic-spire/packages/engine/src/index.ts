@@ -92,6 +92,7 @@ export {
   commandStack,
   castSpell,
   endPlayerTurn,
+  winCombatNow,
   legalCommandTargets,
   legalSpellTargets,
   forecastAttack,

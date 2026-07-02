@@ -71,6 +71,11 @@ export function useRun() {
     setRun((r) => (r ? engine.endPlayerTurn(r) : r));
   }, []);
 
+  // PLAYTEST: instantly win the current combat.
+  const winCombatNow = useCallback(() => {
+    setRun((r) => (r && engine.winCombatNow ? engine.winCombatNow(r) : r));
+  }, []);
+
   const legalTargets = useCallback(
     (stackId: string): string[] => (run ? engine.legalTargets(run, stackId) : []),
     [run],
@@ -129,6 +134,7 @@ export function useRun() {
     commandStack,
     castSpell,
     endPlayerTurn,
+    winCombatNow,
     legalTargets,
     legalSpellTargets,
     forecast,

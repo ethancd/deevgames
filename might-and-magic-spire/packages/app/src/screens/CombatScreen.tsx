@@ -53,6 +53,7 @@ export function CombatScreen({
   onCommandStack,
   onCastSpell,
   onEndTurn,
+  onWinCombat,
   legalTargets,
   legalSpellTargets,
   forecast,
@@ -64,6 +65,8 @@ export function CombatScreen({
   onCommandStack: (stackId: string, order: CommandOrder) => void;
   onCastSpell: (spellId: string, targetId?: string) => void;
   onEndTurn: () => void;
+  /** PLAYTEST: instantly win this combat. */
+  onWinCombat?: () => void;
   legalTargets: (stackId: string) => string[];
   legalSpellTargets: (spellId: string) => string[];
   forecast: (attackerId: string, targetId: string) => DamageForecast | null;
@@ -210,6 +213,15 @@ export function CombatScreen({
 
   return (
     <div className="relative flex h-full flex-col bg-necropolis">
+      {onWinCombat && !playing && (
+        <button
+          onClick={onWinCombat}
+          title="Playtest: instantly win this combat"
+          className="absolute right-2 top-2 z-30 rounded border border-amber-300 bg-amber-500/90 px-2 py-1 font-display text-[0.6rem] uppercase tracking-widest text-black shadow-lg hover:bg-amber-300"
+        >
+          ⚡ Win
+        </button>
+      )}
       <HudShell>
         <div className="flex items-center gap-3">
           <span className="font-display text-xs tracking-widest text-verd-300">ROUND {combat.round}</span>

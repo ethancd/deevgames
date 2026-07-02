@@ -28,14 +28,10 @@ function nodeRun(type: RunState['map'][number]['type'], seed: string): RunState 
 // A run sitting in a fresh combat at the first combat node.
 function combatRun(seed = 'screen-combat'): RunState {
   let run = mockEngine.startRun(seed);
-  const combatNode = run.map.find((n) => n.type === 'combat')!;
-  // walk to it from the start (it may be on row 0)
+  // The opener row is always a combat (mirrors the real engine).
+  const minRow = Math.min(...run.map.map((n) => n.row));
+  const combatNode = run.map.find((n) => n.row === minRow)!;
   run = mockEngine.chooseNode(run, combatNode.id);
-  if (!run.combat) {
-    // fall back to the bottom row node which is always combat
-    const minRow = Math.min(...run.map.map((n) => n.row));
-    run = mockEngine.chooseNode(run, run.map.find((n) => n.row === minRow)!.id);
-  }
   return run;
 }
 

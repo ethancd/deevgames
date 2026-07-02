@@ -165,6 +165,13 @@ export function parseBonuses(bonuses: string): {
   const spd = /([+-]?\d+)\s*speed to all creatures/.exec(text);
   if (spd) effects.push({ kind: "speedAll", amount: parseInt(spd[1], 10) });
 
+  // Army-wide luck / morale (Clover of Luck "+1 Luck", "+1 Morale" artifacts).
+  const luck = /([+-]?\d+)\s*luck/.exec(text);
+  if (luck) effects.push({ kind: "luckAll", amount: parseInt(luck[1], 10) });
+
+  const morale = /([+-]?\d+)\s*morale/.exec(text);
+  if (morale) effects.push({ kind: "moraleAll", amount: parseInt(morale[1], 10) });
+
   const spellPts = /([+-]?\d+)\s*spell points/.exec(text);
   if (spellPts) effects.push({ kind: "manaMax", amount: parseInt(spellPts[1], 10) });
 
@@ -490,6 +497,8 @@ export function deriveHero(
     knowledge,
     mana: maxMana,
     maxMana,
+    level: 1,
+    xp: 0,
     equipment: {},
     // No artifacts equipped at derive time, so the effective spellbook equals
     // the learned base spellbook (COMBAT.md §19). `recomputeHero` re-derives the

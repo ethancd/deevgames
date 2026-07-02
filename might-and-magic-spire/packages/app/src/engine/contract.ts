@@ -15,15 +15,23 @@
 export type Rarity = 'common' | 'uncommon' | 'rare' | 'relic';
 
 // Map node types — the army roguelite adds dwelling/altar/shrine/merchant.
+// A node is a guarded TILE (engine §27). `type` is the underlying bonus.
 export type NodeType =
-  | 'combat'
-  | 'elite'
-  | 'boss'
+  | 'attack'
+  | 'defense'
+  | 'power'
+  | 'knowledge'
+  | 'xp'
+  | 'gold'
+  | 'mana'
   | 'dwelling'
   | 'altar'
   | 'shrine'
   | 'merchant'
-  | 'rest';
+  | 'rest'
+  | 'boss';
+
+export type Difficulty = 'bronze' | 'silver' | 'gold' | 'diamond';
 
 // The nine anatomical artifact slots of the hero paper-doll.
 export type ArtifactSlot =
@@ -147,6 +155,14 @@ export interface MapNode {
   row: number;
   col: number;
   next: string[];
+  // Calendar + guarded-tile fields (engine §25/§27). Optional so the contract
+  // tolerates older shapes; the real engine always sets them.
+  day?: number;
+  week?: number;
+  guarded?: boolean;
+  tough?: boolean;
+  difficulty?: Difficulty;
+  guardCreatureId?: string;
 }
 
 export interface RunState {
@@ -164,8 +180,13 @@ export interface RunState {
   // Node ids already visited/cleared this run — drives the map's walked trail
   // and lock-out. Engine-owned; optional so the contract tolerates its absence.
   clearedNodeIds?: string[];
+  // When set, a weekly muster is open and the named Monday node's resolution is
+  // deferred until "march on". Engine-owned; optional.
+  pendingMusterNodeId?: string | null;
   // Structured strikes from the most recent op, for damage-popup playback.
   lastEvents?: CombatEvent[];
+  // The bonus just claimed from an instant tile (§27), for a map toast.
+  lastClaim?: { tile: NodeType; amount: number } | null;
 }
 
 // A predicted attack outcome: the damage range (per-creature roll spans
@@ -203,6 +224,7 @@ export type RewardChoice =
   | { kind: 'buy'; artifactId: string; slot: ArtifactSlot; cost: number }
   | { kind: 'raise'; creatureId: string; count: number }
   | { kind: 'gold'; amount: number }
+  | { kind: 'muster'; stackId: string; creatureId: string; count: number; cost: number }
   | { kind: 'skip' };
 
 // A command issued to one of your stacks on your turn (once per stack).
@@ -226,6 +248,8 @@ export interface EngineApi {
   commandStack(run: RunState, stackId: string, order: CommandOrder): RunState;
   castSpell(run: RunState, spellId: string, targetId?: string): RunState;
   endPlayerTurn(run: RunState): RunState;
+  /** PLAYTEST: instantly win the current combat (optional; seam no-ops if absent). */
+  winCombatNow?(run: RunState): RunState;
   legalTargets(run: RunState, stackId: string): string[];
   // Predict an attack's damage/kills for the UI (non-mutating). Optional so the
   // seam can no-op if a backing engine omits it.

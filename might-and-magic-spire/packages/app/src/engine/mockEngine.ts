@@ -238,11 +238,11 @@ function startingArmy(heroId?: string): Stack[] {
 // Map generation — a small branching act with the new node rows, ending boss.
 // ---------------------------------------------------------------------------
 const ROW_TYPES: NodeType[][] = [
-  ['combat', 'combat'],
-  ['dwelling', 'combat'],
+  ['gold', 'attack'],
+  ['dwelling', 'gold'],
   ['altar', 'shrine'],
-  ['combat', 'merchant'],
-  ['elite', 'rest'],
+  ['xp', 'merchant'],
+  ['power', 'rest'],
   ['shrine', 'dwelling'],
   ['boss'],
 ];
@@ -297,7 +297,7 @@ function spawnEnemyArmy(type: NodeType, rng: () => number): Stack[] {
         mk('necropolis_power_lich', 6),
         mk('necropolis_bone_dragon', 1),
       ];
-    case 'elite':
+    case 'mana':
       return [
         mk('necropolis_vampire', rngInt(rng, 4, 6)),
         mk('necropolis_wight', rngInt(rng, 6, 9)),
@@ -605,7 +605,9 @@ class MockEngine implements EngineApi, EngineRewardSource {
     if (!node) return next;
     next.currentNodeId = nodeId;
     setPending(next, null);
-    if (node.type === 'combat' || node.type === 'elite' || node.type === 'boss') {
+    // Dormant mock: the boss and the opener row are combats (mirrors the real
+    // engine's "opener always guarded"); other tiles roll offers / are inert.
+    if (node.type === 'boss' || node.row === 0) {
       const rng = mulberry32(hashSeed(run.seed + nodeId));
       next.combat = startCombat(next.army, node.type, rng, next.hero);
     } else {
@@ -723,9 +725,10 @@ class MockEngine implements EngineApi, EngineRewardSource {
     const c = next.combat;
     if (!c || c.outcome !== 'ongoing') return next;
 
-    // Enemy army acts in speed order against its honest telegraph.
+    // Enemy army acts in board order against its honest telegraph. Speed no
+    // longer decides who acts first — it feeds dodge, not initiative.
     c.whoseTurn = 'enemy';
-    const actors = aliveStacks(c.enemyArmy.stacks).sort((a, b) => b.speed - a.speed);
+    const actors = aliveStacks(c.enemyArmy.stacks);
     for (const e of actors) {
       if (e.count <= 0) continue;
       const playerAlive = aliveStacks(c.yourArmy.stacks);
@@ -805,6 +808,12 @@ class MockEngine implements EngineApi, EngineRewardSource {
         next.gold += choice.amount;
         return this.finishNode(next);
       }
+      case 'muster': {
+        // Mock engine has no calendar/muster — treat a muster pick as a no-op
+        // reinforce-less skip so the dormant fallback stays exhaustive.
+        const next = clone(run);
+        return this.finishNode(next);
+      }
       case 'skip':
         return this.finishNode(clone(run));
     }
@@ -846,7 +855,7 @@ class MockEngine implements EngineApi, EngineRewardSource {
       const raised = necromancyRaise(run);
       const choices: RewardChoice[] = [];
       if (raised > 0) choices.push({ kind: 'raise', creatureId: 'necropolis_skeleton', count: raised });
-      choices.push({ kind: 'gold', amount: node.type === 'boss' ? 300 : node.type === 'elite' ? 120 : 60 });
+      choices.push({ kind: 'gold', amount: node.type === 'boss' ? 300 : 60 });
       choices.push({ kind: 'skip' });
       return choices;
     }

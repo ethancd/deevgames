@@ -12,6 +12,7 @@ import { useRun } from './hooks/useRun';
 import type { RunState } from './engine';
 import { TitleScreen } from './screens/TitleScreen';
 import { MapScreen } from './screens/MapScreen';
+import { ClaimToast } from './components/ClaimToast';
 import { CombatScreen } from './screens/CombatScreen';
 import { RewardScreen } from './screens/RewardScreen';
 import { OutcomeScreen } from './screens/OutcomeScreen';
@@ -20,6 +21,7 @@ import { DwellingScreen } from './screens/DwellingScreen';
 import { AltarScreen } from './screens/AltarScreen';
 import { ShrineScreen } from './screens/ShrineScreen';
 import { MerchantScreen } from './screens/MerchantScreen';
+import { MusterScreen } from './screens/MusterScreen';
 import { HeroDollFull } from './components/HeroDoll';
 
 export default function App() {
@@ -30,6 +32,7 @@ export default function App() {
     commandStack,
     castSpell,
     endPlayerTurn,
+    winCombatNow,
     legalTargets,
     legalSpellTargets,
     forecast,
@@ -95,7 +98,7 @@ export default function App() {
     <div
       data-testid="app-shell"
       data-faction={faction ?? run?.faction ?? 'Necropolis'}
-      className="mx-auto h-[100dvh] max-w-md overflow-hidden"
+      className="relative mx-auto h-[100dvh] max-w-md overflow-hidden"
     >
       {child}
     </div>
@@ -155,6 +158,7 @@ export default function App() {
         onCommandStack={commandStack}
         onCastSpell={castSpell}
         onEndTurn={endPlayerTurn}
+        onWinCombat={winCombatNow}
         legalTargets={legalTargets}
         legalSpellTargets={legalSpellTargets}
         forecast={forecast}
@@ -174,6 +178,13 @@ export default function App() {
     // one or skips, pendingRewards clears and we fall through to the map. The
     // bespoke economy screens take precedence over the generic reward screen.
     if (choices.length > 0) {
+      // Weekly muster (§25): the Monday node's resolution is deferred; show the
+      // muster shop until the player marches on. Takes precedence over node type.
+      if (run.pendingMusterNodeId) {
+        return shell(
+          <MusterScreen run={run} onPick={pickReward} onMarchOn={skip} />,
+        );
+      }
       if (node.type === 'dwelling') {
         return shell(<DwellingScreen run={run} onRecruit={recruit} onSkip={skip} />);
       }
@@ -192,5 +203,17 @@ export default function App() {
     }
   }
 
-  return shell(<MapScreen run={run} onChoose={chooseNode} onOpenDoll={() => setDollOpen(true)} />);
+  return shell(
+    <>
+      <MapScreen
+        run={run}
+        onChoose={chooseNode}
+        onOpenDoll={() => setDollOpen(true)}
+        onNewGame={reset}
+      />
+      {run.lastClaim && (
+        <ClaimToast claim={run.lastClaim} resetKey={run.currentNodeId ?? ''} />
+      )}
+    </>,
+  );
 }

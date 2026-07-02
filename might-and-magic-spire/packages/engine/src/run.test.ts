@@ -18,8 +18,15 @@ import {
   unequipArtifact,
   pendingRewards,
   ARMY_CAP,
+  armyLuckMorale,
+  awardXp,
+  winCombatNow,
+  PLAYTEST,
+  STARTING_UNLOCKED_TIER,
+  tierCapForAct,
 } from "./run";
-import { artifactById } from "./content";
+import { artifactById, creatureById } from "./content";
+import { adaptStack } from "./adapter";
 import type { RunState, Stack } from "./types";
 
 // ===========================================================================
@@ -33,6 +40,7 @@ function pickRewardSafely(r: RunState): RunState {
   const rs = r.pendingRewards!;
   const find = (p: (c: typeof rs[number]) => boolean) => rs.findIndex(p);
   let i = find((c) => c.kind === "raise");
+  if (i < 0) i = find((c) => c.kind === "muster" && r.gold >= c.cost);
   if (i < 0) i = find((c) => c.kind === "recruit" && r.gold >= c.cost);
   if (i < 0) i = find((c) => c.kind === "upgrade" && r.gold >= c.cost);
   if (i < 0) i = find((c) => c.kind === "buy" && r.gold >= c.cost);
@@ -80,7 +88,7 @@ function autoCombat(run: RunState): RunState {
 function autoRun(seed: string, avoidElites = true): RunState {
   let r = startRun(seed);
   let guard = 0;
-  while (r.outcome === "ongoing" && guard++ < 120) {
+  while (r.outcome === "ongoing" && guard++ < 600) {
     if (r.pendingRewards) {
       r = pickRewardSafely(r);
       continue;
@@ -93,7 +101,7 @@ function autoRun(seed: string, avoidElites = true): RunState {
     if (!legal.length) break;
     const nodes = legal.map((id) => r.map.find((n) => n.id === id)!);
     const safe = avoidElites
-      ? (nodes.find((n) => n.type !== "elite") ?? nodes[0])
+      ? (nodes.find((n) => !n.tough) ?? nodes[0])
       : nodes[0];
     r = chooseNode(r, safe.id);
     if (r.combat && r.combat.outcome === "ongoing") r = autoCombat(r);
@@ -190,15 +198,22 @@ describe("full run (the keystone)", () => {
   });
 
   it("win-rate sweep stays in a sane band (not 0%, not 100%)", () => {
-    let wins = 0;
-    const N = 60;
-    for (let i = 0; i < N; i++) {
-      if (autoRun(`band-${i}`).outcome === "won") wins++;
+    // Measure TRUE difficulty: disable the playtest gold cheat for the sweep.
+    const savedGold = PLAYTEST.goldMult;
+    PLAYTEST.goldMult = 1;
+    try {
+      let wins = 0;
+      const N = 60;
+      for (let i = 0; i < N; i++) {
+        if (autoRun(`band-${i}`).outcome === "won") wins++;
+      }
+      // The greedy bot should win sometimes but not always — a skill-expressive
+      // difficulty. Wide band so the assertion is robust, not a snapshot.
+      expect(wins).toBeGreaterThan(N * 0.15);
+      expect(wins).toBeLessThan(N * 0.95);
+    } finally {
+      PLAYTEST.goldMult = savedGold;
     }
-    // The greedy bot should win sometimes but not always — a skill-expressive
-    // difficulty. Wide band so the assertion is robust, not a snapshot.
-    expect(wins).toBeGreaterThan(N * 0.15);
-    expect(wins).toBeLessThan(N * 0.95);
   });
 });
 
@@ -237,7 +252,7 @@ function advanceToOffer(seed: string, kind: string): RunState | null {
     const legal = legalNextNodes(r);
     if (!legal.length) break;
     const nodes = legal.map((id) => r.map.find((n) => n.id === id)!);
-    const safe = nodes.find((n) => n.type !== "elite") ?? nodes[0];
+    const safe = nodes.find((n) => !n.tough) ?? nodes[0];
     r = chooseNode(r, safe.id);
     if (r.combat && r.combat.outcome === "ongoing") r = autoCombat(r);
   }
@@ -323,5 +338,203 @@ describe("equipment paper-doll", () => {
 describe("pendingRewards accessor", () => {
   it("returns null with no pending offers", () => {
     expect(pendingRewards(startRun("pr"))).toBeNull();
+  });
+});
+
+describe("army-wide luck & morale sourcing (§24)", () => {
+  const stk = (id: string, side: "player" | "enemy" = "player") =>
+    adaptStack(creatureById(id)!, 5, { side });
+
+  it("undead 'No morale penalty' neutral-locks the army to 0", () => {
+    // Skeletons are undead; even against a morale-reducing enemy, morale is 0.
+    const undead = [stk("necropolis_skeleton")];
+    const foe = [stk("necropolis_bone_dragon", "enemy")]; // Reduces enemy morale
+    expect(armyLuckMorale(undead, null, foe).morale).toBe(0);
+  });
+
+  it("'+1 morale to all allies' aura raises a non-undead army's morale", () => {
+    const castle = [stk("castle_angel")]; // not undead -> aura applies
+    expect(armyLuckMorale(castle, null, []).morale).toBe(1);
+  });
+
+  it("an opposing 'Reduces enemy morale' stack lowers a non-undead army by 1", () => {
+    const castle = [stk("castle_angel")]; // +1 aura
+    const foe = [stk("necropolis_bone_dragon", "enemy")]; // -1 to them
+    expect(armyLuckMorale(castle, null, foe).morale).toBe(0); // +1 - 1
+  });
+
+  it("luck stays 0 with no luck source (no hero / no luck artifact)", () => {
+    expect(armyLuckMorale([stk("castle_angel")], null, [])).toEqual({
+      luck: 0,
+      morale: 1, // from the angel's aura
+    });
+  });
+});
+
+describe("multi-act progression + leveling (§25/§26)", () => {
+  it("awardXp levels the hero and grants a permanent primary bump", () => {
+    const r = startRun("xp");
+    expect(r.hero.level).toBe(1);
+    expect(r.hero.xp).toBe(0);
+    const leveled = awardXp(r.hero, 350); // crosses several thresholds (100,200,...)
+    expect(leveled.level).toBeGreaterThan(1);
+    const sum = (h: typeof r.hero) => h.baseAttack + h.baseDefense + h.basePower + h.baseKnowledge;
+    expect(sum(leveled)).toBe(sum(r.hero) + (leveled.level - 1)); // +1 primary / level
+  });
+
+  it("beating the act-1 boss advances to act 2 on a fresh map (not a run win)", () => {
+    let r = startRun("act-advance");
+    let guard = 0;
+    while (r.outcome === "ongoing" && r.act === 1 && guard++ < 600) {
+      if (r.pendingRewards) { r = pickRewardSafely(r); continue; }
+      if (r.combat && r.combat.outcome === "ongoing") { r = autoCombat(r); continue; }
+      const legal = legalNextNodes(r);
+      if (!legal.length) break;
+      const nodes = legal.map((id) => r.map.find((n) => n.id === id)!);
+      r = chooseNode(r, (nodes.find((n) => !n.tough) ?? nodes[0]).id);
+      if (r.combat && r.combat.outcome === "ongoing") r = autoCombat(r);
+    }
+    if (r.outcome === "ongoing") {
+      expect(r.act).toBe(2);
+      expect(r.currentNodeId).toBeNull();
+      expect(r.map.every((n) => n.id.startsWith("a2_"))).toBe(true);
+      expect(Math.max(...r.map.map((n) => n.row))).toBe(14); // act 2 = 2 weeks
+    }
+  });
+});
+
+describe("PLAYTEST: winCombatNow", () => {
+  it("instantly resolves a combat (enemies dead, rewards/XP fire)", () => {
+    let r = startRun("instawin");
+    r = chooseNode(r, legalNextNodes(r)[0]); // row 0 = combat
+    expect(r.combat?.outcome).toBe("ongoing");
+    const beforeXp = r.hero.xp + (r.hero.level - 1) * 1000; // monotone proxy
+    r = winCombatNow(r);
+    // Combat is settled (won) — either pending rewards on the map or advanced.
+    expect(r.combat).toBeNull();
+    expect(r.outcome).not.toBe("lost");
+    // The slain ledger fed XP/necromancy: hero advanced or rewards are pending.
+    const afterXp = r.hero.xp + (r.hero.level - 1) * 1000;
+    expect(afterXp).toBeGreaterThanOrEqual(beforeXp);
+    expect(r.pendingRewards === null || r.pendingRewards.length > 0).toBe(true);
+  });
+});
+
+describe("weekly muster (§25)", () => {
+  it("a Monday (non-opener) node opens a muster that defers the node, and 'march on' resolves it", () => {
+    // Walk to the first muster (day 8 = a Monday): keep choosing the first legal
+    // node, resolving combats, until a muster appears (pendingMusterNodeId set).
+    let r = startRun("muster-walk");
+    let guard = 0;
+    let sawMuster = false;
+    while (r.outcome === "ongoing" && guard++ < 200) {
+      if (r.pendingMusterNodeId) {
+        sawMuster = true;
+        const offers = r.pendingRewards!;
+        expect(offers.some((c) => c.kind === "muster")).toBe(true);
+        expect(r.combat).toBeNull(); // node resolution is DEFERRED
+        // Buy one reinforcement, then march on.
+        const buy = offers.find((c) => c.kind === "muster" && r.gold >= c.cost);
+        if (buy) {
+          const idx = offers.indexOf(buy);
+          const before = r.army.find((s) => s.id === (buy as { stackId: string }).stackId)!.count;
+          r = pickReward(r, idx);
+          const after = r.army.find((s) => s.id === (buy as { stackId: string }).stackId)!.count;
+          expect(after).toBeGreaterThan(before); // reinforced
+          expect(r.pendingMusterNodeId).toBeTruthy(); // still mustering (re-offered)
+        }
+        // March on: pick skip -> node resolves (combat opens or rewards/clear).
+        const skipIdx = r.pendingRewards!.findIndex((c) => c.kind === "skip");
+        r = pickReward(r, skipIdx);
+        expect(r.pendingMusterNodeId == null).toBe(true);
+        break;
+      }
+      if (r.pendingRewards) { r = pickRewardSafely(r); continue; }
+      if (r.combat && r.combat.outcome === "ongoing") { r = autoCombat(r); continue; }
+      const legal = legalNextNodes(r);
+      if (!legal.length) break;
+      r = chooseNode(r, legal[0]);
+      if (r.combat && r.combat.outcome === "ongoing") r = autoCombat(r);
+    }
+    expect(sawMuster).toBe(true);
+  });
+});
+
+describe("creature-tier unlocks (§28)", () => {
+  it("starts at tier 2, with per-act caps 4/6/7", () => {
+    expect(startRun("tiers").unlockedTier).toBe(STARTING_UNLOCKED_TIER);
+    expect(STARTING_UNLOCKED_TIER).toBe(2);
+    expect(tierCapForAct(1)).toBe(4);
+    expect(tierCapForAct(2)).toBe(6);
+    expect(tierCapForAct(3)).toBe(7);
+  });
+
+  it("guarantees the act cap is unlocked by the final week (before the boss)", () => {
+    let r = startRun("tier-guarantee");
+    let guard = 0;
+    let enteredFinalWeek = false;
+    while (r.outcome === "ongoing" && r.act === 1 && guard++ < 300) {
+      if (r.pendingRewards) { r = pickRewardSafely(r); continue; }
+      if (r.combat && r.combat.outcome === "ongoing") { r = winCombatNow(r); continue; }
+      const legal = legalNextNodes(r);
+      if (!legal.length) break;
+      const node = r.map.find((n) => n.id === legal[0])!;
+      r = chooseNode(r, legal[0]);
+      if (node.week >= 3) {
+        // Final week of Act 1 (3 weeks): the cap (tier 4) is now guaranteed.
+        enteredFinalWeek = true;
+        expect(r.unlockedTier).toBeGreaterThanOrEqual(4);
+        break;
+      }
+      if (r.combat && r.combat.outcome === "ongoing") r = winCombatNow(r);
+    }
+    expect(enteredFinalWeek).toBe(true);
+  });
+
+  it("dwellings and musters never offer a locked tier", () => {
+    let r = startRun("tier-gate");
+    let guard = 0;
+    while (r.outcome === "ongoing" && guard++ < 200) {
+      const offers = r.pendingRewards ?? [];
+      for (const o of offers) {
+        if (o.kind === "recruit") {
+          const c = creatureById(o.creatureId);
+          if (c) expect(c.tier).toBeLessThanOrEqual(r.unlockedTier);
+        }
+      }
+      if (r.pendingRewards) { r = pickRewardSafely(r); continue; }
+      if (r.combat && r.combat.outcome === "ongoing") { r = winCombatNow(r); continue; }
+      const legal = legalNextNodes(r);
+      if (!legal.length) break;
+      r = chooseNode(r, legal[0]);
+      if (r.combat && r.combat.outcome === "ongoing") r = winCombatNow(r);
+    }
+  });
+});
+
+describe("instant-tile claim toast (§27)", () => {
+  it("claiming an instant tile records lastClaim", () => {
+    let r = startRun("claim-toast");
+    r = chooseNode(r, legalNextNodes(r)[0]); // opener: a guarded gentle tile
+    expect(r.combat).toBeTruthy();
+    const goldBefore = r.gold;
+    r = winCombatNow(r); // win → settleCombat claims the opener's tile
+    expect(r.lastClaim).toBeTruthy();
+    expect(["attack", "defense", "gold"]).toContain(r.lastClaim!.tile);
+    if (r.lastClaim!.tile === "gold") expect(r.gold).toBeGreaterThan(goldBefore);
+  });
+
+  it("entering a guarded node clears a stale claim (no new claim until the win)", () => {
+    let r = startRun("claim-clear");
+    r = winCombatNow(chooseNode(r, legalNextNodes(r)[0]));
+    expect(r.lastClaim).toBeTruthy();
+    // A guarded next node opens combat and sets no claim → the stale one is gone.
+    const guarded = legalNextNodes(r)
+      .map((id) => r.map.find((n) => n.id === id)!)
+      .find((n) => n.guarded);
+    if (guarded) {
+      r = chooseNode(r, guarded.id);
+      expect(r.lastClaim == null).toBe(true);
+    }
   });
 });

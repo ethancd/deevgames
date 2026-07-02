@@ -265,8 +265,10 @@ byte-identical final `RunState` for the same seed.
 ## 13. Things deliberately deferred (levers to revisit)
 
 - AoE spell geometry (§10) — needs positions/hex.
-- Morale/luck (needs a morale/luck subsystem); spell-school typing /
-  spell-immunity (Dragon/Death typing — needs an immunity layer).
+- **Speed is now `dodge`, not initiative — see §23.** `luck → crit` and
+  `morale → bonus/lost action` are the planned siblings (they need a numeric
+  luck/morale stat + a source). Spell-school typing / spell-immunity
+  (Dragon/Death typing — needs an immunity layer) is still deferred.
 - **Mana drain, aging, disease, curse-on-hit are now MECHANIZED** — see §17
   (Item D). Still deferred there: **Death cloud** (Lich splash — needs
   multi-target/AoE), **Reduces enemy morale / No morale penalty** (needs the
@@ -308,7 +310,8 @@ new RNG draws. The keystone full-run + byte-identical determinism tests in
 
 **NOT in LIGHT** (left for MEDIUM/HEAVY): morale, luck, initiative, real AoE
 geometry, ~~on-combat-start artifact casting~~ (now done — see §19), per-school
-spell scaling, duration timers. Speed stays weak (rule 1 only makes Necklace non-inert, not strong);
+spell scaling, duration timers. (Speed is **no longer weak** — it now drives
+`dodge`; see §23. `luck`/`morale` remain unbuilt.)
 Shield stays a Stone-Skin dup (needs `block` — MEDIUM).
 
 ---
@@ -660,3 +663,206 @@ the sane win band with **no tuning**:
 Castle (the keystone non-Necropolis target, `factions.test.ts`) needed **no
 balance tuning** — it sits right beside Necropolis. The existing levers (rest
 heal %, encounter mult, dwelling cost) were left untouched.
+
+---
+
+## 23. Speed → dodge (speed is NO LONGER initiative)
+
+**The abstraction changed.** Speed used to do exactly one thing — sort the order
+enemy stacks acted in (`endPlayerTurn`) — which made it near-cosmetic and left
+Haste/Slow/Prayer-speed/Necklace inert. That initiative role is **removed**:
+enemy stacks now act in **board order** (`run.ts` `endPlayerTurn`, and the
+dormant `mockEngine`), and nothing in the engine reads speed for turn order.
+
+Instead, **speed is a defensive dodge stat**. When a stack is attacked, if it is
+**faster** than its attacker it has a chance to *dodge* — the whole attack action
+deals **half** damage.
+
+| Lever | Value | Meaning |
+|---|---|---|
+| `DODGE_STEP` | `0.05` | +5% dodge chance per point of `defender.speed − attacker.speed` |
+| `DODGE_CHANCE_CAP` | `0.25` | capped at 25% (reached at a **5-point** speed lead) |
+| `DODGE_DAMAGE_MULT` | `0.5` | a dodged attack deals half damage (not zero) |
+
+Rules:
+- **Defender-faster only.** Equal or slower → 0% (and **no rng is drawn**, so
+  every equal/slower matchup is bit-for-bit identical to before — the keystone
+  determinism + 165 prior tests stayed green).
+- **One roll per attack action.** A double-attacker's strikes are all halved (or
+  all not) by a single roll — "the whole stack of attacks."
+- **Retaliation dodges too.** The counter is its own attack, so the original
+  attacker dodges it when *it* is the faster stack (`dodgeChance(newAttacker,
+  newDefender)`).
+- **Live speed feeds it.** `stack.speed` includes Haste/Slow/Prayer/Necklace, so
+  those finally matter — as dodge swings, not turn order.
+- Drawn off the attack `rng` (deterministic). Pinned in `battle.test.ts`
+  (`speed -> dodge`).
+
+**Sibling subsystems (planned, see open design note):** `luck → crit` and
+`morale → bonus/lost action` are the other two halves of this redesign. They
+need a numeric luck/morale stat + a source (no such field exists yet), so they
+are **not** implemented here — speed/dodge ships first.
+
+---
+
+## 24. Luck → crit and Morale → action economy
+
+The two siblings of §23's speed→dodge. Same shape (5%/point, capped at 25%),
+both **army-wide, HoMM3-style**, sourced once at `openCombat` onto `Army.luck`
+and `Army.morale` (default 0 each).
+
+### Levers (battle.ts)
+
+| Lever | Value | Meaning |
+|---|---|---|
+| `CRIT_STEP` | `0.05` | +5% crit chance per point of the **attacking army's** luck |
+| `CRIT_CHANCE_CAP` | `0.25` | capped at 25% (luck 5) |
+| `CRIT_DAMAGE_MULT` | `1.5` | a crit deals **+50%** |
+| `MORALE_STEP` | `0.05` | morale-event chance per point of `|morale|` |
+| `MORALE_CHANCE_CAP` | `0.25` | capped at 25% (\|morale\| 5) |
+
+### Luck → crit
+`critChance(luck)` drives one roll per attack action in `resolveAttack`
+(`attackerLuck` param, default 0 — so every call that omits it draws no rng and
+is unchanged). A success multiplies the whole action by 1.5. Luck ≤ 0 → no crit
+and **no bad-luck penalty** (crit-only, per the brief). Drawn before the dodge
+roll; a hit that both crits and is dodged nets ×0.75.
+
+### Morale → bonus / lost action (double-edged)
+Consumed by the **turn loop** in run.ts, not by `resolveAttack`:
+- **Enemy** (`endPlayerTurn`): before each stack acts, if morale < 0 it may
+  *freeze* (lost action, `continue`); after it acts, if morale > 0 it may take
+  one *immediate extra* action.
+- **Player** (`commandStack`): a per-command roll (independent rng sub-stream,
+  only when morale ≠ 0). Negative → the command is consumed with no effect (lost
+  action); positive → the stack is left OFF `actedStackIds` so it may be
+  commanded again, with `Stack.moraleBonusUsed` set so the re-command can't loop.
+  No app change — the bonus surfaces through the existing `actedStackIds`
+  contract.
+
+### Sourcing (`armyLuckMorale`, run.ts)
+- **luck** = summed `luckAll` artifact effects (Clover/Ladybird of Luck). No
+  creature luck source today → enemies (no hero) sit at 0.
+- **morale** = summed `moraleAll` artifacts + creature `"+N morale to all
+  allies"` auras (Castle Angel/Archangel), minus 1 per **opposing** `"Reduces
+  enemy morale"` stack (Bone/Ghost Dragon).
+- **Undead neutral-lock:** any `"No morale penalty"` stack pins that army's
+  morale to **0** (the franchise's undead morale model). So all-undead
+  Necropolis never rolls morale — it leans on luck instead, and its dragons
+  debuff *enemy* morale.
+
+Pinned in `battle.test.ts` (`luck -> crit`, `moraleChance`), `run.test.ts`
+(`luck & morale sourcing`), `adapter.test.ts` (bonus-text parse). Determinism
+held: the default undead army is luck-0 / morale-0, so the keystone full-run and
+all prior tests are byte-identical.
+
+---
+
+## 25. The outer loop — days, weeks, acts (calendar-driven DAG)
+
+The map is a Spire-style DAG climbed upward (no going back/sideways). **Every node
+is one "day" of travel.** Acts are whole weeks; later acts are shorter but denser
+and harder.
+
+| Act | Weeks | Interior rows | Boss row / day | Width (density) |
+|---|---|---|---|---|
+| 1 | 3 | 21 | row 21 / day 22 | 4 |
+| 2 | 2 | 14 | row 14 / day 15 | 5 |
+| 3 | 1 | 7 | row 7 / day 8 | 6 |
+
+Levers (`map.ts`): `ACT_WEEKS = [3,2,1]`, `ACT_WIDTH = [4,5,6]`, `DAYS_PER_WEEK = 7`.
+- `day = row + 1`; `week = ceil(day/7)`; a node is a **Monday** when `(day-1)%7===0`
+  (`isMusterDay`). Because interior rows = `weeks×7`, the boss always lands on day
+  `7w+1` — a Monday — so the **weekly muster falls right before every boss**.
+- Per-act enemy power: `ENCOUNTER.actPower = [1, 1.4, 1.9]` multiplies the depth
+  curve, so later acts bite harder even though depth re-normalizes to [0,1] each act.
+- Density: later acts have wider rows + more elites in the node table.
+
+**Multi-act progression** (`run.ts` `settleCombat`): beating a non-final boss
+advances `act`, regenerates a fresh (denser) map, and resets `currentNodeId` —
+army/hero/gold/XP carry over. Beating the **Act-3** boss wins the run. (Previously
+the run ended at the Act-1 boss.)
+
+### The weekly muster (the growth half — BUILT)
+On the first node of each week **after the opener** (`day > 1` and a Monday),
+entering the node **defers** its resolution and opens a **muster**: a multi-buy
+shop (`RewardChoice` kind `muster`) to reinforce each living stack. Because the
+boss sits on a Monday, the **last muster lands right before each boss**. Buying
+re-offers the muster; "march on" (skip) closes it and resolves the deferred node
+(`pendingMusterNodeId` / `resolveNodeEffects`). App: `MusterScreen`.
+
+Levers (`run.ts`): `MUSTER = { costPerTier: 3, growthMult: 2 }` — reinforcement
+`count = round((8 - tier) × growthMult)` (low tiers grow faster) at
+`count × tier × costPerTier` gold. This gold→army engine lets **non-Necropolis
+factions sustain the long climbs**. Measured win-rates (true 1× gold) with
+musters + `actPower = [1, 1.3, 1.7]`: **Necropolis ~84%, Castle ~70%, Stronghold
+~26%** — all in band; the Castle keystone tests are re-enabled.
+
+### Playtest cheats (`PLAYTEST`, mutable; reset to ship)
+- `PLAYTEST.goldMult = 10` — multiplies combat gold rewards. Balance sweeps set
+  it to 1 so difficulty is measured honestly.
+- `winCombatNow(run)` — instantly wins the current combat (zeros enemies, credits
+  the slain ledger so XP/necromancy/rewards still fire, then settles). Surfaced
+  as the **⚡ Win** button (upper-right) in combat.
+
+## 26. Hero XP & leveling
+
+`Hero.level` / `Hero.xp` (start 1 / 0). A won battle awards `slainHp × XP_PER_SLAIN_HP`
+XP (tougher fights pay more). Crossing `level × LEVEL_XP_BASE` (=`100`) raises the
+level and grants **+1 to a primary stat**, class-weighted: casters
+(power+knowledge > attack+defense) grow Power→Knowledge→Attack→Defense; might
+heroes the reverse. The bump lands on BASE stats, then `recomputeHero` refreshes
+live primaries + `maxMana`. Pinned in `run.test.ts` (`awardXp`). Tiles
+`Tree of Knowledge` (+1 level) and `Learning Stone` (+XP) will hook this (see
+`TILES_RESEARCH.md`).
+
+---
+
+## 28. Creature-tier unlocks (BUILT)
+
+You start able to recruit tiers **1–2**; higher tiers unlock as you climb.
+`RunState.unlockedTier` (start `STARTING_UNLOCKED_TIER = 2`). Per-act caps
+`ACT_TIER_CAP = [4, 6, 7]` (Act 1 ≤ 4, Act 2 ≤ 6, Act 3 ≤ 7).
+
+- **Earned:** beating a **tough combat** (elite/boss) raises `unlockedTier` by 1,
+  capped at `tierCapForAct(act)` (`settleCombat`).
+- **Guaranteed:** entering an act's **final week** floors `unlockedTier` to the
+  act cap (`chooseNode`, `node.week >= weeksForAct(act)`) — so tiers **4 / 6 / 7
+  are always available before each boss and its pre-boss muster**, even if you
+  skipped the elites.
+- **Where they appear:** `rollDwelling` and `rollMuster` only offer creatures
+  with `tier <= unlockedTier`. The **muster now also offers to recruit a NEW
+  stack** of any unlocked tier you don't field yet (`MusterScreen` shows reinforce
+  tiles with a `count → count+N` delta and NEW-badged recruit tiles).
+
+Pinned in `run.test.ts` (`creature-tier unlocks`) + `musterScreen.test.tsx`.
+
+---
+
+## 27. Guarded-tile map (BUILT)
+
+The map is **tiles** (HoMM3 map objects), each possibly **guarded**. `NodeType`
+is the tile (bonus); `combat`/`elite` are gone. Each node carries `guarded`,
+`tough`, `difficulty?`, `guardCreatureId?` (`map.ts`).
+
+- **Tiles** (`rollTile`): stat bumps `attack/defense/power/knowledge` (+1 base
+  primary), economy `xp` (`XP_TILE_AMOUNT`) / `gold` (`GOLD_TILE_AMOUNT`×goldMult)
+  / `mana` (full refill), shops `dwelling/altar/shrine/merchant`, `rest`, `boss`.
+  Claimed in `claimTile` — instant tiles apply + clear; shops open `pendingRewards`.
+- **~1/3–1/2 guarded** (`GUARD_FRACTION = 0.45`; opener row always guarded as a
+  gentle bronze intro). Unguarded tiles grant their bonus free → there's **often
+  a low-combat route** (measured: a fight-avoiding bot still wins ~56% as Castle).
+- **Difficulty ring** `difficultyOf(act, tough, boss)`: bronze (Act-1 normal),
+  silver (Act-1 tough / Act-2 normal), gold (Act-2 tough / Act-3 normal), diamond
+  (Act-3 tough / boss).
+- A guarded node's **most-dangerous guard creature** is pre-rolled at map-gen
+  (`buildMap` → `mostDangerousCreatureId`) using the SAME encounter `openCombat`
+  rolls, so the **map image matches the actual fight** (deterministic).
+- Flow (`run.ts`): `chooseNode` → guarded opens combat (tile claimed on the win
+  in `settleCombat`), unguarded claims immediately. Ties to §28: tough (silver+)
+  guards are the elites whose defeat unlocks tiers.
+- App: `MapScreen` renders each tile as **icon + difficulty ring + guard image**;
+  `icons-for-node.tsx` maps tiles→glyphs and `DIFFICULTY_RING`.
+
+Pinned in `map.test.ts` (`§27` cases) + the full-run/band suites. Standard win
+rates (true 1× gold): **Necropolis ~72%, Castle ~46%** — both in band.

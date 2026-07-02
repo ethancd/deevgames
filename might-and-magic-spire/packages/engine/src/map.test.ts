@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { makeRng } from "./rng";
-import { generateMap, startNodeIds, bossNode } from "./map";
+import { generateMap, startNodeIds, bossNode, isMusterDay } from "./map";
 import type { MapNode } from "./types";
 
 function byId(map: MapNode[]): Map<string, MapNode> {
@@ -71,25 +71,57 @@ describe("act-map graph generator", () => {
     }
   });
 
-  it("opens with combat and rests before the boss", () => {
-    const map = generateMap(makeRng("rhythm"), 1);
-    const row0 = map.filter((n) => n.row === 0);
-    expect(row0.every((n) => n.type === "combat")).toBe(true);
-    const maxRow = Math.max(...map.map((n) => n.row));
-    const penultimate = map.filter((n) => n.row === maxRow - 1);
-    expect(penultimate.every((n) => n.type === "rest")).toBe(true);
+  it("acts are whole weeks (3/2/1) and the boss lands on a Monday (§25)", () => {
+    for (const [act, weeks] of [[1, 3], [2, 2], [3, 1]] as const) {
+      const map = generateMap(makeRng(`cal-${act}`), act);
+      const boss = bossNode(map)!;
+      // Interior rows = weeks*7; boss is one row above, on day weeks*7+1.
+      expect(boss.row).toBe(weeks * 7);
+      expect(boss.day).toBe(weeks * 7 + 1);
+      // Every node's day = row+1, week = ceil(day/7).
+      for (const n of map) {
+        expect(n.day).toBe(n.row + 1);
+        expect(n.week).toBe(Math.ceil(n.day / 7));
+      }
+      // The boss day is a "Monday" — the muster falls right before it.
+      expect(isMusterDay(boss.day)).toBe(true);
+    }
   });
 
-  it("only generates the army-model node types (no STS event/shop)", () => {
+  it("later acts are denser (wider) than earlier ones (§25)", () => {
+    const widthOf = (act: number) =>
+      Math.max(...generateMap(makeRng(`w-${act}`), act).map((n) => n.col)) + 1;
+    expect(widthOf(3)).toBeGreaterThanOrEqual(widthOf(1));
+  });
+
+  it("opener tiles are gentle and ~1/3–1/2 of tiles are guarded (§27)", () => {
+    const map = generateMap(makeRng("rhythm"), 1);
+    for (const n of map.filter((n) => n.row === 0)) {
+      expect(["attack", "defense", "gold"]).toContain(n.type); // gentle opener tile
+      expect(n.tough).toBe(false);
+      if (n.guarded) expect(n.difficulty).toBe("bronze");
+    }
+    // A low-combat route should usually exist: guard fraction in a sane band.
+    const interior = map.filter((n) => n.type !== "boss");
+    const frac = interior.filter((n) => n.guarded).length / interior.length;
+    expect(frac).toBeGreaterThan(0.2);
+    expect(frac).toBeLessThan(0.7);
+  });
+
+  it("guarded nodes carry a difficulty ring; unguarded ones don't (§27)", () => {
+    const map = generateMap(makeRng("rings"), 2);
+    for (const n of map) {
+      if (n.guarded) expect(n.difficulty).toBeTruthy();
+      else expect(n.difficulty).toBeUndefined();
+    }
+    expect(bossNode(map)!.guarded).toBe(true);
+    expect(bossNode(map)!.difficulty).toBe("gold"); // Act-2 boss
+  });
+
+  it("only generates tile node types (§27)", () => {
     const valid = new Set<MapNode["type"]>([
-      "combat",
-      "elite",
-      "boss",
-      "dwelling",
-      "altar",
-      "shrine",
-      "merchant",
-      "rest",
+      "attack", "defense", "power", "knowledge", "xp", "gold", "mana",
+      "dwelling", "altar", "shrine", "merchant", "rest", "boss",
     ]);
     for (let i = 0; i < 30; i++) {
       const map = generateMap(makeRng(`types-${i}`), 1);

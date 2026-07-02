@@ -54,9 +54,11 @@ function ChoiceTile({ choice, onPick }: { choice: RewardChoice; onPick: () => vo
   );
 }
 
+const DEFAULT_HEADING = {
+  title: 'Spoils of the Dead',
+  sub: 'Gather the bones and gold of the fallen.',
+};
 const HEADINGS: Partial<Record<NodeType, { title: string; sub: string }>> = {
-  combat: { title: 'Spoils of the Dead', sub: 'Gather the bones and gold of the fallen.' },
-  elite: { title: 'Elite Spoils', sub: 'A greater horde, a greater raising.' },
   boss: { title: 'The Spire Yields', sub: 'Claim your reward.' },
   rest: { title: 'A Quiet Crypt', sub: 'A moment among the silent dead.' },
 };
@@ -70,8 +72,8 @@ export function RewardScreen({
   choices: RewardChoice[];
   onPick: (choice: RewardChoice) => void;
 }) {
-  const nodeType: NodeType = run.map.find((n) => n.id === run.currentNodeId)?.type ?? 'combat';
-  const head = HEADINGS[nodeType] ?? HEADINGS.combat!;
+  const nodeType = run.map.find((n) => n.id === run.currentNodeId)?.type;
+  const head = (nodeType && HEADINGS[nodeType]) ?? DEFAULT_HEADING;
 
   return (
     <div className="flex h-full flex-col items-center bg-necropolis px-4 py-8 text-center animate-fade-in">

@@ -87,6 +87,14 @@ describe("adaptEquipment (artifact -> equipment)", () => {
     const neck = artifactById("artifact_necklace_of_swiftness")!;
     expect(adaptEquipment(neck).effects).toContainEqual({ kind: "speedAll", amount: 1 });
   });
+
+  it("parses army-wide luck and morale from bonus text (§24)", () => {
+    expect(parseBonuses("+1 Luck").effects).toContainEqual({ kind: "luckAll", amount: 1 });
+    expect(parseBonuses("+1 Morale, increased movement on land").effects).toContainEqual({
+      kind: "moraleAll",
+      amount: 1,
+    });
+  });
 });
 
 describe("adaptSpell (spell -> combat spell)", () => {

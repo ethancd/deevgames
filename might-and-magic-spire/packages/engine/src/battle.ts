@@ -27,6 +27,37 @@ export const AD_ATTACK_CAP = 3.0; // capped at +300%
 export const AD_DEFENSE_STEP = 0.025; // -2.5% per point of (defense - attack)
 export const AD_DEFENSE_CAP = 0.7; // capped at -70%
 
+/**
+ * SPEED → dodge (the ONLY thing speed does now — it no longer decides turn
+ * order; see COMBAT.md §23). A defender FASTER than its attacker may "dodge":
+ * the whole attack action deals reduced damage. Rolled ONCE per attack action
+ * (covers every strike of a double-attacker), off the attack rng, and ONLY when
+ * the defender is faster (no rng is drawn otherwise, so equal/slower matchups
+ * are bit-for-bit unchanged). Capped low so speed is a real but bounded
+ * mitigation, never a hard counter.
+ */
+export const DODGE_STEP = 0.05; // +5% dodge chance per point of (defender.speed - attacker.speed)
+export const DODGE_CHANCE_CAP = 0.25; // capped at 25% (reached at a 5-point speed lead)
+export const DODGE_DAMAGE_MULT = 0.5; // a dodged attack deals half damage
+
+/**
+ * LUCK → crit (COMBAT.md §24). The attacker's army-wide luck gives a chance for
+ * the whole attack action to deal +50%. Rolled ONCE per action (like dodge),
+ * off the attack rng, and only when luck > 0 (no rng drawn otherwise).
+ */
+export const CRIT_STEP = 0.05; // +5% crit chance per point of army luck
+export const CRIT_CHANCE_CAP = 0.25; // capped at 25% (reached at luck 5)
+export const CRIT_DAMAGE_MULT = 1.5; // a crit deals +50% damage
+
+/**
+ * MORALE → action economy (COMBAT.md §24). Per-action chance, `MORALE_STEP` per
+ * point of |army morale|, capped at `MORALE_CHANCE_CAP`: positive morale → an
+ * immediate extra action, negative morale → a lost action. Consumed by the turn
+ * loop in run.ts (not by resolveAttack).
+ */
+export const MORALE_STEP = 0.05; // +5% morale-event chance per point of |morale|
+export const MORALE_CHANCE_CAP = 0.25; // capped at 25% (reached at |morale| 5)
+
 /** Defending adds round(defense * this) to effective defense. */
 export const DEFEND_DEFENSE_FRACTION = 0.2;
 
@@ -120,6 +151,30 @@ export function adMultiplier(attackVal: number, defenseVal: number): number {
   const diff = attackVal - defenseVal;
   if (diff >= 0) return 1 + Math.min(diff * AD_ATTACK_STEP, AD_ATTACK_CAP);
   return 1 - Math.min(-diff * AD_DEFENSE_STEP, AD_DEFENSE_CAP);
+}
+
+/**
+ * Dodge chance for a defender being attacked: `DODGE_STEP` per point the
+ * defender's speed exceeds the attacker's, capped at `DODGE_CHANCE_CAP`. Zero
+ * when the defender is equal or slower (so no rng is drawn for it). Speed here
+ * is the live `stack.speed`, so Haste/Slow/Prayer/Necklace all feed it.
+ */
+export function dodgeChance(defender: Stack, attacker: Stack): number {
+  const lead = defender.speed - attacker.speed;
+  if (lead <= 0) return 0;
+  return Math.min(lead * DODGE_STEP, DODGE_CHANCE_CAP);
+}
+
+/** Crit chance from the attacking army's luck (0 at luck ≤ 0). */
+export function critChance(luck: number): number {
+  if (luck <= 0) return 0;
+  return Math.min(luck * CRIT_STEP, CRIT_CHANCE_CAP);
+}
+
+/** Morale-event chance from |army morale| (0 at morale 0). The SIGN of morale
+ *  (extra vs lost action) is decided by the caller; this is just the magnitude. */
+export function moraleChance(morale: number): number {
+  return Math.min(Math.abs(morale) * MORALE_STEP, MORALE_CHANCE_CAP);
 }
 
 // ===========================================================================
@@ -390,6 +445,7 @@ export function resolveAttack(
   attackerHero: Hero,
   defenderHero: Hero,
   rng: Rng,
+  attackerLuck = 0,
 ): ResolvedAttack {
   const log: string[] = [];
   const shooting = isShooter(attacker);
@@ -404,6 +460,15 @@ export function resolveAttack(
   const strikes = 1 + extraStrikes(attacker);
   let totalDealt = 0;
   let totalKilled = 0;
+  // LUCK → crit and SPEED → dodge: one roll each for the whole attack action
+  // (all strikes), each drawn only when it can matter (luck > 0 / defender
+  // faster). A crit adds +50%; a dodge halves. Both can land (×1.5 then ×0.5).
+  const critRoll = critChance(attackerLuck);
+  const crited = critRoll > 0 && rng.next() < critRoll;
+  if (crited) log.push(`${attacker.name} strikes with luck (+50%)`);
+  const mainDodgeChance = dodgeChance(defender, attacker);
+  const mainDodged = mainDodgeChance > 0 && rng.next() < mainDodgeChance;
+  if (mainDodged) log.push(`${defender.name} dodges (half damage)`);
   for (let i = 0; i < strikes; i++) {
     if (newDefender.count <= 0) break;
     // ITEM D.1: Dread Knight "Death blow" — roll the death-blow chance off the
@@ -414,6 +479,8 @@ export function resolveAttack(
       dmg *= DEATH_BLOW_MULT;
       log.push("Death blow!");
     }
+    if (crited) dmg = Math.floor(dmg * CRIT_DAMAGE_MULT);
+    if (mainDodged) dmg = Math.floor(dmg * DODGE_DAMAGE_MULT);
     const hit = applyDamage(newDefender, dmg);
     newDefender = hit.defender;
     totalDealt += hit.dealt;
@@ -501,13 +568,20 @@ export function resolveAttack(
     newDefender.count <= 0;
   let retaliation: { dealt: number; killed: number } | null = null;
   if (!retaliationSuppressed) {
-    const back = computeDamage(
+    let back = computeDamage(
       newDefender,
       newAttacker,
       defenderHero,
       attackerHero,
       rng,
     );
+    // SPEED → dodge on the counter: the original attacker (now the defender of
+    // the retaliation) dodges if it is the faster stack. Same conditional draw.
+    const retalDodgeChance = dodgeChance(newAttacker, newDefender);
+    if (retalDodgeChance > 0 && rng.next() < retalDodgeChance) {
+      back = Math.floor(back * DODGE_DAMAGE_MULT);
+      log.push(`${newAttacker.name} dodges the retaliation (half damage)`);
+    }
     const r = applyDamage(newAttacker, back);
     newAttacker = r.defender;
     newDefender = {

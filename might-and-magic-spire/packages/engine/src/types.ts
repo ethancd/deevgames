@@ -17,22 +17,55 @@ export type { ArtifactSlot };
 // Map
 // ---------------------------------------------------------------------------
 
+/**
+ * A node is a TILE (COMBAT.md §27): a HoMM3-style map bonus. `NodeType` is the
+ * underlying tile — the good thing you claim. Combat is NOT a tile type: ~1/3–1/2
+ * of tiles are GUARDED (`MapNode.guarded`) by an enemy stack you must beat first;
+ * the rest grant their bonus for free (so there's often a low-combat route).
+ *  - stat tiles bump a hero primary; xp/gold/mana are economy tiles;
+ *  - dwelling/altar/shrine/merchant/rest are shop/utility tiles; boss is the climax.
+ */
 export type NodeType =
-  | "combat"
-  | "elite"
-  | "boss"
+  | "attack"
+  | "defense"
+  | "power"
+  | "knowledge"
+  | "xp"
+  | "gold"
+  | "mana"
   | "dwelling"
   | "altar"
   | "shrine"
   | "merchant"
-  | "rest";
+  | "rest"
+  | "boss";
+
+/** Guard difficulty ring (COMBAT.md §27): bronze→silver→gold→diamond. */
+export type Difficulty = "bronze" | "silver" | "gold" | "diamond";
 
 export interface MapNode {
   id: string;
-  type: NodeType;
+  type: NodeType; // the underlying tile (bonus)
   row: number;
   col: number;
   next: string[]; // ids of reachable nodes in the next row
+  /** Calendar (COMBAT.md §25): every node is one "day" of travel. `day` = row+1
+   *  within the act; `week` = ceil(day/7). A node is a "Monday" (weekly muster)
+   *  when (day-1) % 7 === 0. Act lengths are whole weeks so the boss lands on a
+   *  Monday — the muster falls right before each boss. */
+  day: number;
+  week: number;
+  // --- Guarded-tile fields (COMBAT.md §27) ---
+  /** Is this tile guarded by a combat? ~1/3–1/2 of tiles; boss always is. */
+  guarded: boolean;
+  /** A "tough" guard (silver+ ring): bumps difficulty + encounter power. Only
+   *  meaningful when `guarded`. */
+  tough: boolean;
+  /** Guard difficulty ring (bronze/silver/gold/diamond). Undefined if unguarded. */
+  difficulty?: Difficulty;
+  /** Stable id of the guard's MOST DANGEROUS stack (for the map image), pre-rolled
+   *  so it matches the actual fight. Undefined if unguarded. */
+  guardCreatureId?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -61,6 +94,12 @@ export interface Hero {
 
   mana: number;
   maxMana: number;
+
+  /** Leveling (COMBAT.md §26): `xp` accrues from won combats; crossing a
+   *  threshold raises `level` and grants a permanent primary-stat bump. Both
+   *  default to level 1 / 0 xp in `startRun`. */
+  level: number;
+  xp: number;
 
   /** Paper-doll of equipped artifacts, keyed by slot. */
   equipment: Partial<Record<ArtifactSlot, Equipment>>;
@@ -149,6 +188,12 @@ export interface Stack {
    * lockstep for back-compat (true once a stack has retaliated ≥1 time).
    */
   retaliationsUsed?: number;
+  /**
+   * Morale (COMBAT.md §24): set true once this stack has spent its one good-
+   * morale BONUS action this turn, so a re-command can't re-roll morale and loop.
+   * Reset at the owner's turn start alongside `hasActed`.
+   */
+  moraleBonusUsed?: boolean;
 
   /** Honest telegraph for enemy stacks (undefined for the player's). */
   telegraph?: Telegraph;
@@ -210,6 +255,22 @@ export interface Stack {
 export interface Army {
   stacks: Stack[];
   side: Side;
+  /**
+   * Army-wide LUCK (HoMM3-style, default 0). Drives the attacker's crit chance
+   * (`CRIT_STEP` per point, capped at `CRIT_CHANCE_CAP`); a crit deals +50%.
+   * Sourced once at `openCombat` from equipped artifacts (`luckAll`) — enemies
+   * have no hero, so theirs is 0 today. See COMBAT.md §24.
+   */
+  luck?: number;
+  /**
+   * Army-wide MORALE (HoMM3-style, default 0). Drives the per-action morale
+   * roll: positive → a chance at an immediate extra action, negative → a chance
+   * to lose the action. Sourced at `openCombat` from `moraleAll` artifacts +
+   * creature auras ("+N morale to all allies"), minus enemy "Reduces enemy
+   * morale", and **clamped to 0 for any army containing an undead "No morale
+   * penalty" stack** (the franchise's neutral-locked undead). See COMBAT.md §24.
+   */
+  morale?: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -294,6 +355,8 @@ export interface CombatSpell {
 export type EquipmentEffect =
   | { kind: "hpPerCreature"; amount: number }
   | { kind: "speedAll"; amount: number }
+  | { kind: "luckAll"; amount: number } // +N army-wide luck (Clover/Ladybird of Luck)
+  | { kind: "moraleAll"; amount: number } // +N army-wide morale (+Morale artifacts)
   | { kind: "manaMax"; amount: number }
   | { kind: "necromancyBonus"; amount: number } // e.g. Cloak of the Undead King
   /**
@@ -363,15 +426,31 @@ export interface RunState {
   map: MapNode[];
   currentNodeId: string | null;
   act: number;
+  /** Highest creature TIER you may recruit/muster (COMBAT.md §28). Starts at 2;
+   *  rises by beating tough combats (capped per act) and is floored to the act's
+   *  cap in its final week — so tiers 4/6/7 are guaranteed before each boss. */
+  unlockedTier: number;
   combat: CombatState | null;
   outcome: "ongoing" | "won" | "lost";
 
   // --- engine-internal extensions ---
   clearedNodeIds: string[];
   pendingRewards: RewardChoice[] | null;
+  /** When set, a weekly muster (COMBAT.md §25) is open and the named Monday node's
+   *  resolution is DEFERRED until "march on". Null outside a muster. */
+  pendingMusterNodeId?: string | null;
   /** Structured strikes from the MOST RECENT op, for the UI to animate as
    *  damage popups. Replaced on each op; survives combat settlement. */
   lastEvents?: CombatEvent[];
+  /** The bonus just claimed from an instant tile (§27), for a UI toast. Set by
+   *  `claimTile`; cleared on entering the next node. `amount` is 0 for mana/rest. */
+  lastClaim?: TileClaim | null;
+}
+
+/** A claimed instant-tile bonus (§27) — drives the map's claim toast. */
+export interface TileClaim {
+  tile: NodeType;
+  amount: number;
 }
 
 /** A single resolved strike, for damage popups. `side` is who threw it. */
@@ -402,4 +481,8 @@ export type RewardChoice =
   | { kind: "buy"; artifactId: string; slot: ArtifactSlot; cost: number }
   | { kind: "raise"; creatureId: string; count: number }
   | { kind: "gold"; amount: number }
+  // Weekly muster (COMBAT.md §25): reinforce an EXISTING stack by `count` for
+  // `cost` gold. A multi-buy shop — picking one re-offers the muster; "skip"
+  // ("march on") closes it and resolves the deferred Monday node.
+  | { kind: "muster"; stackId: string; creatureId: string; count: number; cost: number }
   | { kind: "skip" };

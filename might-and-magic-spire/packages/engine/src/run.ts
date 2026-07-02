@@ -17,7 +17,7 @@ import type {
   RunState,
   Stack,
 } from "./types";
-import { generateMap, startNodeIds } from "./map";
+import { generateMap, startNodeIds, ACT_WEEKS, isMusterDay, weeksForAct } from "./map";
 import {
   ALL_BASE_CREATURES,
   ALL_CREATURES,
@@ -55,6 +55,7 @@ import {
   adMultiplier,
   effAttack,
   effDefense,
+  moraleChance,
 } from "./battle";
 import type { ResolvedAttack } from "./battle";
 import type { CombatEvent, DamageForecast, Side } from "./types";
@@ -150,6 +151,11 @@ export const ENCOUNTER = {
   /** Node-type multipliers layered on the depth curve. */
   eliteMult: 1.4,
   bossMult: 1.3,
+  /** Per-act power multiplier (COMBAT.md §25): Act 1 baseline, later acts harder
+   *  even though depth re-normalizes to [0,1] each act. Index by act-1.
+   *  NOTE: balanced against Necromancy's snowball; non-Necropolis factions need
+   *  the weekly muster (planned) to sustain the longer climbs — see §25. */
+  actPower: [1, 1.3, 1.7],
   /** Max Bone Dragons in the boss fight (the rest of the budget is Lich guard). */
   bossMaxDragons: 2,
   /** Max enemy stacks. */
@@ -278,12 +284,51 @@ function equipmentCombatBonuses(hero: Hero): { hpPerCreature: number; speedAll: 
   return { hpPerCreature, speedAll };
 }
 
+/**
+ * COMBAT.md §24: army-wide luck & morale, sourced once at battle open.
+ *  - luck: summed `luckAll` artifact effects (no creature source today).
+ *  - morale: summed `moraleAll` artifact effects + creature "+N morale to all
+ *    allies" auras, minus 1 per OPPOSING stack with "Reduces enemy morale".
+ *  - Undead neutral-lock: any "No morale penalty" stack pins this army's morale
+ *    to 0 (the franchise's undead morale model — neither bonus nor penalty).
+ */
+export function armyLuckMorale(
+  stacks: Stack[],
+  hero: Hero | null,
+  opposingStacks: Stack[],
+): { luck: number; morale: number } {
+  let luck = 0;
+  let morale = 0;
+  if (hero) {
+    for (const eq of Object.values(hero.equipment)) {
+      if (!eq) continue;
+      for (const e of eq.effects) {
+        if (e.kind === "luckAll") luck += e.amount;
+        else if (e.kind === "moraleAll") morale += e.amount;
+      }
+    }
+  }
+  for (const s of stacks) {
+    for (const a of s.abilities) {
+      const m = /([+-]?\d+)\s*morale to all allies/i.exec(a);
+      if (m) morale += parseInt(m[1], 10);
+    }
+  }
+  for (const s of opposingStacks) {
+    if (s.abilities.some((a) => /reduces enemy morale/i.test(a))) morale -= 1;
+  }
+  const undeadLock = stacks.some((s) =>
+    s.abilities.some((a) => /no morale penalty/i.test(a)),
+  );
+  if (undeadLock) morale = 0;
+  return { luck, morale };
+}
+
 // ===========================================================================
 // START
 // ===========================================================================
 
 export function startRun(seed: string, heroId?: string): RunState {
-  const rng = makeRng(seed);
   // Default to Galthran (preserves v0 behavior + the keystone determinism test).
   // An unknown heroId falls back to the default rather than throwing.
   const sourceHero = (heroId && heroById(heroId)) || DEFAULT_HERO;
@@ -293,7 +338,7 @@ export function startRun(seed: string, heroId?: string): RunState {
     creatures: ALL_CREATURES,
     spells: SPELLS,
   });
-  const map = generateMap(rng, /*act*/ 1);
+  const map = buildMap(seed, /*act*/ 1);
 
   return {
     seed,
@@ -304,12 +349,24 @@ export function startRun(seed: string, heroId?: string): RunState {
     map,
     currentNodeId: null,
     act: 1,
+    unlockedTier: STARTING_UNLOCKED_TIER,
     combat: null,
     outcome: "ongoing",
     clearedNodeIds: [],
     pendingRewards: null,
   };
 }
+
+// ===========================================================================
+// CREATURE-TIER UNLOCKS (COMBAT.md §28)
+// ===========================================================================
+
+/** Tiers 1–2 are available from the start. */
+export const STARTING_UNLOCKED_TIER = 2;
+/** Max recruitable tier per act: Act 1 → 4, Act 2 → 6, Act 3 → 7. */
+export const ACT_TIER_CAP = [4, 6, 7];
+export const tierCapForAct = (act: number) =>
+  ACT_TIER_CAP[act - 1] ?? ACT_TIER_CAP[ACT_TIER_CAP.length - 1];
 
 // ===========================================================================
 // NODE NAVIGATION
@@ -339,32 +396,162 @@ export function chooseNode(run: RunState, nodeId: string): RunState {
     currentNodeId: nodeId,
     clearedNodeIds: run.clearedNodeIds.slice(),
     lastEvents: undefined, // entering a node clears stale combat popups
+    lastClaim: null, // and stale tile-claim toasts
   };
 
-  switch (node.type) {
-    case "combat":
-    case "elite":
-    case "boss":
-      next.combat = openCombat(next, node, rng);
-      break;
-    case "rest":
-      applyRest(next);
-      next.clearedNodeIds.push(nodeId);
-      break;
-    case "dwelling":
-      next.pendingRewards = rollDwelling(next, rng);
-      break;
-    case "altar":
-      next.pendingRewards = rollAltar(next, rng);
-      break;
-    case "shrine":
-      next.pendingRewards = rollShrine(next, rng);
-      break;
-    case "merchant":
-      next.pendingRewards = rollMerchant(rng);
-      break;
+  // Tier-unlock guarantee (§28): in the act's FINAL week, floor the unlocked tier
+  // to the act cap — so 4/6/7 are available before the boss + pre-boss muster,
+  // even if you skipped the tough combats that would have unlocked them earlier.
+  if (node.week >= weeksForAct(run.act)) {
+    next.unlockedTier = Math.max(next.unlockedTier, tierCapForAct(run.act));
   }
-  return next;
+
+  // Weekly muster (§25): at the start of each week AFTER the opener (day > 1), on
+  // a Monday, reinforce your existing stacks BEFORE the node resolves — so the
+  // last muster lands right before each boss. Deferred to `pickReward` ("march
+  // on"). Skipped on the act opener (day 1) and when you have nothing to buy.
+  if (node.day > 1 && isMusterDay(node.day) && musterableStacks(next).length > 0) {
+    next.pendingMusterNodeId = nodeId;
+    next.pendingRewards = rollMuster(next);
+    return next;
+  }
+  return resolveNodeEffects(next, node, rng);
+}
+
+/** Enter a node (§27): a GUARDED tile opens its combat (the tile is claimed on
+ *  the win, in `settleCombat`); an UNGUARDED tile is claimed immediately. Split
+ *  out of `chooseNode` so the muster can defer it to "march on". */
+function resolveNodeEffects(next: RunState, node: MapNode, rng: Rng): RunState {
+  if (node.guarded) {
+    next.combat = openCombat(next, node, rng);
+    return next;
+  }
+  return claimTile(next, node, rng);
+}
+
+// --- Tile economy levers (COMBAT.md §27) ---
+export const STAT_TILE_BONUS = 1; // +1 hero primary from a stat tile
+export const XP_TILE_AMOUNT = 120; // Learning Stone
+export const GOLD_TILE_AMOUNT = 40; // Campfire/Treasure (× PLAYTEST.goldMult)
+
+/** Claim a tile's bonus (§27). Stat/xp/gold/mana/rest apply immediately and clear
+ *  the node; shop tiles open their offer screen via `pendingRewards`. Called for
+ *  an unguarded tile on entry, or for a guarded tile after the win (`settleCombat`). */
+function claimTile(run: RunState, node: MapNode, rng: Rng): RunState {
+  // Mark cleared + record the claim (for the UI toast) on instant tiles.
+  const done = (r: RunState, amount: number): RunState => ({
+    ...r,
+    clearedNodeIds: r.clearedNodeIds.includes(node.id)
+      ? r.clearedNodeIds
+      : [...r.clearedNodeIds, node.id],
+    lastClaim: { tile: node.type, amount },
+  });
+  switch (node.type) {
+    case "attack":
+    case "defense":
+    case "power":
+    case "knowledge":
+      return done({ ...run, hero: bumpPrimary(run.hero, node.type, STAT_TILE_BONUS) }, STAT_TILE_BONUS);
+    case "xp":
+      return done({ ...run, hero: awardXp(run.hero, XP_TILE_AMOUNT) }, XP_TILE_AMOUNT);
+    case "gold": {
+      const amount = GOLD_TILE_AMOUNT * PLAYTEST.goldMult;
+      return done({ ...run, gold: run.gold + amount }, amount);
+    }
+    case "mana":
+      return done({ ...run, hero: { ...run.hero, mana: run.hero.maxMana } }, 0);
+    case "rest": {
+      const r = { ...run };
+      applyRest(r);
+      return done(r, 0);
+    }
+    case "dwelling":
+      return { ...run, pendingRewards: rollDwelling(run, rng) };
+    case "altar":
+      return { ...run, pendingRewards: rollAltar(run, rng) };
+    case "shrine":
+      return { ...run, pendingRewards: rollShrine(run, rng) };
+    case "merchant":
+      return { ...run, pendingRewards: rollMerchant(rng) };
+    case "boss":
+      return run; // boss is always guarded — handled by settleCombat's act advance
+  }
+}
+
+/** +`amount` to a hero BASE primary, then refresh live stats (§27 stat tiles). */
+function bumpPrimary(hero: Hero, stat: PrimaryStat, amount: number): Hero {
+  const base = {
+    attack: hero.baseAttack,
+    defense: hero.baseDefense,
+    power: hero.basePower,
+    knowledge: hero.baseKnowledge,
+  };
+  base[stat] += amount;
+  return recomputeHero({
+    ...hero,
+    baseAttack: base.attack,
+    baseDefense: base.defense,
+    basePower: base.power,
+    baseKnowledge: base.knowledge,
+  });
+}
+
+// ===========================================================================
+// WEEKLY MUSTER (COMBAT.md §25) — reinforce existing stacks each Monday
+// ===========================================================================
+
+/** Muster economy levers (mutable so balance sweeps can tune them).
+ *  `costPerTier` = gold per (count × tier); `growthMult` scales reinforcement size. */
+export const MUSTER = { costPerTier: 3, growthMult: 2 };
+
+/** Weekly reinforcement size for a stack of `tier` (low tiers grow faster). */
+function musterGrowth(tier: number): number {
+  return Math.max(1, Math.round((8 - tier) * MUSTER.growthMult));
+}
+
+/** The living stacks a muster can reinforce. */
+function musterableStacks(run: RunState): Stack[] {
+  return run.army.filter((s) => s.count > 0);
+}
+
+/** A fresh set of muster offers: reinforce each living stack, recruit any
+ *  newly-unlocked stack you don't yet field (§28), then "march on". */
+function rollMuster(run: RunState): RewardChoice[] {
+  const offers: RewardChoice[] = [];
+  // Reinforce existing stacks.
+  for (const s of musterableStacks(run)) {
+    const count = musterGrowth(s.tier);
+    const cost = count * s.tier * MUSTER.costPerTier;
+    offers.push({ kind: "muster", stackId: s.id, creatureId: s.sourceId, count, cost });
+  }
+  // Recruit a NEW stack of any unlocked tier you don't already field (army not
+  // full). This is where freshly-unlocked tiers (3/4, 5/6, 7) show up to buy.
+  if (run.army.length < ARMY_CAP) {
+    const faction = run.faction ?? run.hero.faction ?? DEFAULT_FACTION;
+    const have = new Set(run.army.filter((s) => s.count > 0).map((s) => s.sourceId));
+    for (const c of basePool(faction)) {
+      if (c.tier > run.unlockedTier || have.has(c.id)) continue;
+      const count = musterGrowth(c.tier);
+      const cost = count * c.tier * RECRUIT_COST_PER_TIER;
+      offers.push({ kind: "recruit", creatureId: c.id, count, cost });
+    }
+  }
+  offers.push({ kind: "skip" }); // "march on" — close the muster, resolve the node
+  return offers;
+}
+
+/** Reinforce a stack at the muster: add `count` creatures, deduct `cost` gold. */
+function applyMuster(
+  run: RunState,
+  choice: Extract<RewardChoice, { kind: "muster" }>,
+): RunState {
+  if (run.gold < choice.cost) throw new Error("muster: not enough gold");
+  const army = run.army.map((s) =>
+    s.id === choice.stackId
+      ? { ...s, count: s.count + choice.count, startCount: s.count + choice.count }
+      : s,
+  );
+  return { ...run, army, gold: run.gold - choice.cost };
 }
 
 function applyRest(run: RunState): void {
@@ -386,7 +573,7 @@ function applyRest(run: RunState): void {
 function openCombat(run: RunState, node: MapNode, rng: Rng): CombatState {
   const bossRow = Math.max(...run.map.map((n) => n.row));
   const depth = bossRow > 0 ? node.row / bossRow : 0;
-  const enemyArmy = rollEncounter(node, depth, rng.fork("encounter"));
+  const enemyArmy = rollEncounter(node, depth, run.act, rng.fork("encounter"));
   // LIGHT §3.1: sum equipped combat effects once, apply to every player stack.
   const { hpPerCreature, speedAll } = equipmentCombatBonuses(run.hero);
   // Fresh copies of the player's army for battle (carried back on win).
@@ -405,11 +592,14 @@ function openCombat(run: RunState, node: MapNode, rng: Rng): CombatState {
       startCount: s.count,
     };
   });
+  // COMBAT.md §24: army-wide luck & morale, computed once both rosters exist.
+  const playerLM = armyLuckMorale(yourStacks, run.hero, enemyArmy.stacks);
+  const enemyLM = armyLuckMorale(enemyArmy.stacks, null, yourStacks);
   const state: CombatState = {
     round: 1,
     whoseTurn: "player",
-    yourArmy: { stacks: yourStacks, side: "player" },
-    enemyArmy,
+    yourArmy: { stacks: yourStacks, side: "player", luck: playerLM.luck, morale: playerLM.morale },
+    enemyArmy: { ...enemyArmy, luck: enemyLM.luck, morale: enemyLM.morale },
     spellCastThisTurn: false,
     log: [`Battle begins (${node.type}).`],
     outcome: "ongoing",
@@ -454,14 +644,46 @@ function applyCastOnStart(state: CombatState, hero: Hero): void {
 
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
+/** Generate an act's map and ANNOTATE each guarded node with its most-dangerous
+ *  guard creature (§27) — pre-rolling the SAME encounter `openCombat` will roll,
+ *  so the map image matches the actual fight. */
+function buildMap(seed: string, act: number): MapNode[] {
+  const map = generateMap(makeRng(seed), act);
+  const maxRow = Math.max(...map.map((n) => n.row));
+  for (const node of map) {
+    if (!node.guarded) continue;
+    const depth = maxRow > 0 ? node.row / maxRow : 0;
+    const rng = makeRng(seed).fork(`node:${node.id}`).fork("encounter");
+    const army = rollEncounter(node, depth, act, rng);
+    node.guardCreatureId = mostDangerousCreatureId(army.stacks);
+  }
+  return map;
+}
+
+/** The sourceId of the highest-threat (most dangerous) stack in an army (§27). */
+function mostDangerousCreatureId(stacks: Stack[]): string {
+  let best: Stack | undefined;
+  let bestScore = -Infinity;
+  for (const s of stacks) {
+    const score = s.count * ((s.damageMin + s.damageMax) / 2) + s.attack;
+    if (score > bestScore) {
+      bestScore = score;
+      best = s;
+    }
+  }
+  return best?.sourceId ?? "";
+}
+
 /**
  * Build an enemy army to roughly `budget` total armyValue, drawn from a tier
  * band that widens with depth. Greedily fills up to maxStacks, dividing the
  * budget across stacks. Always returns at least one non-empty stack.
  */
-function rollEncounter(node: MapNode, depth: number, rng: Rng): Army {
+function rollEncounter(node: MapNode, depth: number, act: number, rng: Rng): Army {
   // Pure depth budget — no player-army term, no floor. (Roguelite covenant.)
-  const curve = ENCOUNTER.basePower * depthGrowth(depth);
+  // Scaled by the per-act power multiplier so later (shorter) acts bite harder.
+  const actMult = ENCOUNTER.actPower[act - 1] ?? ENCOUNTER.actPower[ENCOUNTER.actPower.length - 1];
+  const curve = ENCOUNTER.basePower * depthGrowth(depth) * actMult;
 
   let budget: number;
   let tierMin: number;
@@ -470,7 +692,7 @@ function rollEncounter(node: MapNode, depth: number, rng: Rng): Army {
     budget = curve * ENCOUNTER.bossMult;
     tierMin = 1;
     tierMax = 7;
-  } else if (node.type === "elite") {
+  } else if (node.tough) {
     budget = curve * ENCOUNTER.eliteMult;
     tierMin = Math.max(2, Math.floor(lerp(2, 4, depth)));
     tierMax = Math.min(7, Math.ceil(lerp(4, 6, depth)));
@@ -522,6 +744,7 @@ function rollEncounter(node: MapNode, depth: number, rng: Rng): Army {
 const NULL_HERO: Hero = {
   id: "enemy", name: "Enemy", heroClass: "", specialty: "", faction: "",
   attack: 0, defense: 0, power: 0, knowledge: 0, mana: 0, maxMana: 0,
+  level: 1, xp: 0,
   equipment: {}, spellbook: [], skills: {}, imageRef: "",
   baseAttack: 0, baseDefense: 0, basePower: 0, baseKnowledge: 0, baseSpellbook: [],
 };
@@ -553,7 +776,7 @@ function startPlayerTurn(run: RunState): RunState {
   };
   // Regeneration ability heals the top creature of each player stack.
   const yourStacks = combat.yourArmy.stacks.map((s) => {
-    let ns = { ...s, hasActed: false, isDefending: false };
+    let ns = { ...s, hasActed: false, isDefending: false, moraleBonusUsed: false };
     if (hasAbility(s, "regeneration") && s.count > 0 && s.hpTop < s.maxHpPer) {
       ns = { ...ns, hpTop: s.maxHpPer };
     }
@@ -636,6 +859,27 @@ export function commandStack(
   const slain = { ...combat.slainEnemies };
   let events: CombatEvent[] = [];
 
+  // MORALE (§24): one roll per command, skipped once this stack has spent its
+  // good-morale bonus this turn (so a re-command can't loop). Drawn off an
+  // independent sub-stream, only when morale ≠ 0, so the attack rng — and every
+  // existing test — is unchanged. Negative morale can freeze the stack (lost
+  // action, returned now); positive morale grants a bonus action (applied after).
+  const morale = combat.yourArmy.morale ?? 0;
+  let bonusAction = false;
+  if (morale !== 0 && !actor.moraleBonusUsed) {
+    const moraleHit = rng.fork("morale").next() < moraleChance(morale);
+    if (moraleHit && morale < 0) {
+      const frozenCombat: CombatState = {
+        ...combat,
+        yourArmy: withStack(yourArmy, { ...actor, moraleBonusUsed: true }),
+        log: [...log, `${actor.name} is unnerved and loses its action.`],
+        actedStackIds: [...combat.actedStackIds, stackId],
+      };
+      return checkCombatEnd({ ...run, combat: frozenCombat, lastEvents: [] });
+    }
+    if (moraleHit && morale > 0) bonusAction = true;
+  }
+
   if (action === "defend") {
     yourArmy = withStack(yourArmy, { ...actor, isDefending: true });
     log.push(`${actor.name} defends.`);
@@ -645,7 +889,7 @@ export function commandStack(
     if (!legal.includes(targetId))
       throw new Error(`commandStack: ${targetId} is not a legal target`);
     const target = enemyArmy.stacks.find((s) => s.id === targetId)!;
-    const res = resolveAttack(actor, target, run.hero, NULL_HERO, rng);
+    const res = resolveAttack(actor, target, run.hero, NULL_HERO, rng, combat.yourArmy.luck ?? 0);
     yourArmy = withStack(yourArmy, res.attacker);
     enemyArmy = withStack(enemyArmy, res.defender);
     for (const line of res.log) log.push(line);
@@ -655,13 +899,24 @@ export function commandStack(
     events = attackEvents("player", actor, target, res);
   }
 
+  // MORALE bonus: leave the stack OFF actedStackIds so it may act again, and
+  // flag it so the re-command won't re-roll. Only if it survived its action.
+  let actedStackIds = [...combat.actedStackIds, stackId];
+  if (bonusAction) {
+    const acted = yourArmy.stacks.find((s) => s.id === stackId);
+    if (acted && acted.count > 0) {
+      yourArmy = withStack(yourArmy, { ...acted, moraleBonusUsed: true });
+      log.push(`${actor.name}'s morale grants a bonus action!`);
+      actedStackIds = [...combat.actedStackIds];
+    }
+  }
   const nextCombat: CombatState = {
     ...combat,
     yourArmy,
     enemyArmy,
     log,
     slainEnemies: slain,
-    actedStackIds: [...combat.actedStackIds, stackId],
+    actedStackIds,
   };
   let next: RunState = { ...run, combat: nextCombat, lastEvents: events };
   // LIGHT §3.8: a blinded player stack that just acted has its roll restored
@@ -990,16 +1245,32 @@ export function endPlayerTurn(run: RunState): RunState {
   // Fresh event batch for this enemy turn (enemyAttack appends to it).
   let next: RunState = { ...run, combat: { ...combat, whoseTurn: "enemy" }, lastEvents: [] };
 
-  // Enemy acts in speed order, highest first. The SAME chooseEnemyIntent that
-  // produced each telegraph picks the action -> the telegraph is honest.
-  const order = livingStacks(next.combat!.enemyArmy)
-    .slice()
-    .sort((a, b) => b.speed - a.speed || a.id.localeCompare(b.id));
+  // Enemy stacks act in board order (as listed in the army). Speed does NOT
+  // decide who acts first — speed feeds dodge, not initiative (COMBAT.md §23).
+  // The SAME chooseEnemyIntent that produced each telegraph picks the action ->
+  // the telegraph is honest.
+  const order = livingStacks(next.combat!.enemyArmy).slice();
 
   for (const planned of order) {
+    // MORALE (§24): a per-action roll, drawn only when the enemy army's morale
+    // is non-zero. Negative → the stack freezes (lost action); positive → it
+    // acts, then has a chance at one immediate extra action.
+    const morale = next.combat!.enemyArmy.morale ?? 0;
+    const mrng = combatRng(next).fork(`morale:enemy:${next.combat!.round}:${planned.id}`);
+    if (morale < 0 && mrng.next() < moraleChance(morale)) {
+      const c = next.combat!;
+      next = { ...next, combat: { ...c, log: [...c.log, `${planned.name} is unnerved and holds.`] } };
+      continue;
+    }
     next = enemyAct(next, planned.id);
     // settleCombat nulls `combat` on a win; a loss leaves combat with outcome.
     if (!next.combat || next.combat.outcome !== "ongoing") break;
+    if (morale > 0 && mrng.next() < moraleChance(morale)) {
+      const c = next.combat!;
+      next = { ...next, combat: { ...c, log: [...c.log, `${planned.name}'s morale grants a bonus action!`] } };
+      next = enemyAct(next, planned.id);
+      if (!next.combat || next.combat.outcome !== "ongoing") break;
+    }
   }
 
   // Combat resolved (won -> combat null & outcome set; lost -> outcome 'lost').
@@ -1093,7 +1364,7 @@ function restoreBlindAfterAction(run: RunState, stackId: string): RunState {
 function enemyAttack(run: RunState, actor: Stack, target: Stack): RunState {
   const combat = run.combat!;
   const rng = combatRng(run).fork(`enemy:${combat.round}:${actor.id}`);
-  const res = resolveAttack(actor, target, NULL_HERO, run.hero, rng);
+  const res = resolveAttack(actor, target, NULL_HERO, run.hero, rng, combat.enemyArmy.luck ?? 0);
   const enemyArmy = withStack(combat.enemyArmy, res.attacker);
   const yourArmy = withStack(combat.yourArmy, res.defender);
   const log = [...combat.log, ...res.log];
@@ -1117,6 +1388,26 @@ function enemyAttack(run: RunState, actor: Stack, target: Stack): RunState {
 // COMBAT — end detection + settlement
 // ===========================================================================
 
+/**
+ * PLAYTEST: instantly win the current combat. Zeroes every enemy stack and
+ * credits the slain ledger as if you'd killed them, so necromancy, XP, and
+ * rewards all fire normally — then runs the standard settle path (which also
+ * advances the act on a boss). No-op outside an ongoing combat.
+ */
+export function winCombatNow(run: RunState): RunState {
+  const combat = run.combat;
+  if (!combat || combat.outcome !== "ongoing") return run;
+  const slain = { ...combat.slainEnemies };
+  for (const s of combat.enemyArmy.stacks) {
+    if (s.count > 0) slain[s.sourceId] = (slain[s.sourceId] ?? 0) + s.count;
+  }
+  const enemyArmy = {
+    ...combat.enemyArmy,
+    stacks: combat.enemyArmy.stacks.map((s) => ({ ...s, count: 0, hpTop: 0 })),
+  };
+  return checkCombatEnd({ ...run, combat: { ...combat, enemyArmy, slainEnemies: slain } });
+}
+
 function checkCombatEnd(run: RunState): RunState {
   const combat = run.combat!;
   if (combat.outcome !== "ongoing") return run;
@@ -1128,6 +1419,71 @@ function checkCombatEnd(run: RunState): RunState {
   const settled: CombatState = { ...combat, outcome };
   return settleCombat({ ...run, combat: settled });
 }
+
+// ===========================================================================
+// HERO XP & LEVELING (COMBAT.md §26)
+// ===========================================================================
+
+/** XP to advance FROM level L to L+1 = `L * LEVEL_XP_BASE` (a gentle ramp). */
+export const LEVEL_XP_BASE = 100;
+/** XP earned per point of slain-enemy maxHp in a won battle. */
+export const XP_PER_SLAIN_HP = 1;
+
+/** Total maxHp of the creatures slain this battle (shared with necromancy). */
+function slainHp(combat: CombatState): number {
+  let hp = 0;
+  for (const [sourceId, n] of Object.entries(combat.slainEnemies)) {
+    const c = creatureById(sourceId);
+    if (c) hp += c.hp * n;
+  }
+  return hp;
+}
+
+/** Stat-gain priority on level-up: casters grow Power/Knowledge first, might
+ *  heroes Attack/Defense, inferred from the hero's starting primaries. */
+function levelPriority(hero: Hero): PrimaryStat[] {
+  const martial = hero.baseAttack + hero.baseDefense;
+  const arcane = hero.basePower + hero.baseKnowledge;
+  return arcane > martial
+    ? ["power", "knowledge", "attack", "defense"]
+    : ["attack", "defense", "power", "knowledge"];
+}
+
+/** Add XP and apply any level-ups: each level grants +1 to a primary (class-
+ *  weighted, deterministic). Bumps BASE stats, then `recomputeHero` refreshes
+ *  live primaries + maxMana. */
+export function awardXp(hero: Hero, amount: number): Hero {
+  if (amount <= 0) return hero;
+  let level = hero.level;
+  let xp = hero.xp + amount;
+  const priority = levelPriority(hero);
+  const base: Record<PrimaryStat, number> = {
+    attack: hero.baseAttack,
+    defense: hero.baseDefense,
+    power: hero.basePower,
+    knowledge: hero.baseKnowledge,
+  };
+  let leveled = false;
+  while (xp >= level * LEVEL_XP_BASE) {
+    xp -= level * LEVEL_XP_BASE;
+    level += 1;
+    base[priority[(level - 2) % priority.length]] += 1; // level 2 -> priority[0]
+    leveled = true;
+  }
+  if (!leveled) return { ...hero, xp };
+  return recomputeHero({
+    ...hero,
+    level,
+    xp,
+    baseAttack: base.attack,
+    baseDefense: base.defense,
+    basePower: base.power,
+    baseKnowledge: base.knowledge,
+  });
+}
+
+/** The final act (run is won by beating its boss). */
+const MAX_ACT = ACT_WEEKS.length;
 
 function settleCombat(run: RunState): RunState {
   const combat = run.combat!;
@@ -1144,21 +1500,47 @@ function settleCombat(run: RunState): RunState {
     .filter((s) => s.count > 0)
     .map((s) => ({ ...s, isDefending: false, hasRetaliated: false, retaliationsUsed: 0, hasActed: false }));
 
+  // Hero XP for the win (every battle, scaled by what fell).
+  const hero = awardXp(run.hero, slainHp(combat) * XP_PER_SLAIN_HP);
+
+  // Tier-unlock (§28): beating a TOUGH guard (silver+ ring) or a boss unlocks the
+  // next creature tier, capped by the act.
+  const tough = node.tough || node.type === "boss";
+  const unlockedTier = tough
+    ? Math.min(run.unlockedTier + 1, tierCapForAct(run.act))
+    : run.unlockedTier;
+
   let next: RunState = {
     ...run,
+    hero,
+    unlockedTier,
     army: survivors,
     clearedNodeIds: [...run.clearedNodeIds, node.id],
     combat: null,
   };
 
   if (node.type === "boss") {
-    next.outcome = "won";
-    return next;
+    // Beating the final act's boss wins the run; otherwise climb into the next,
+    // shorter + denser act with a fresh map (army/hero/gold/XP carry over).
+    if (run.act >= MAX_ACT) {
+      next.outcome = "won";
+      return next;
+    }
+    const nextAct = run.act + 1;
+    return {
+      ...next,
+      act: nextAct,
+      map: buildMap(run.seed, nextAct),
+      currentNodeId: null,
+      clearedNodeIds: [],
+      pendingRewards: null,
+    };
   }
 
-  // Necromancy + combat rewards.
+  // Necromancy raise, then CLAIM THE TILE this guard was protecting (§27): stat/
+  // xp/gold/mana/rest apply now; a shop tile opens its offer screen.
   next = applyNecromancy(next, combat);
-  next.pendingRewards = rollCombatRewards(node, makeRng(run.seed).fork(`rewards:${node.id}`));
+  next = claimTile(next, node, makeRng(run.seed).fork(`tile:${node.id}`));
   return next;
 }
 
@@ -1212,12 +1594,9 @@ export function applyNecromancy(run: RunState, combat: CombatState): RunState {
 // REWARDS
 // ===========================================================================
 
-function rollCombatRewards(node: MapNode, rng: Rng): RewardChoice[] {
-  const gold = node.type === "elite" ? rng.int(40, 70) : rng.int(20, 40);
-  const rewards: RewardChoice[] = [{ kind: "gold", amount: gold }];
-  rewards.push({ kind: "skip" });
-  return rewards;
-}
+/** PLAYTEST cheats (mutable so balance tests can measure true difficulty at 1×).
+ *  `goldMult` multiplies tile gold (§27 gold tiles). Reset to 1 to ship. */
+export const PLAYTEST = { goldMult: 10 };
 
 // --- node reward rolls ---
 
@@ -1225,8 +1604,10 @@ function rollDwelling(run: RunState, rng: Rng): RewardChoice[] {
   // Dwellings recruit the PLAYER'S OWN faction (you grow your army). Falls back
   // to the default faction's pool for legacy runs with no faction set.
   const faction = run.faction ?? run.hero.faction ?? DEFAULT_FACTION;
-  const factionPool = basePool(faction).filter((c) => c.tier <= 5);
-  const pool = factionPool.length ? factionPool : BASE_CREATURES.filter((c) => c.tier <= 5);
+  // Only UNLOCKED tiers are recruitable (§28).
+  const cap = run.unlockedTier;
+  const factionPool = basePool(faction).filter((c) => c.tier <= cap);
+  const pool = factionPool.length ? factionPool : BASE_CREATURES.filter((c) => c.tier <= cap);
   const c = rng.pick(pool);
   const count = rng.int(3, 8);
   const cost = c.tier * RECRUIT_COST_PER_TIER;
@@ -1267,6 +1648,26 @@ export function pickReward(run: RunState, choiceIndex: number): RunState {
   if (!run.pendingRewards) throw new Error("pickReward: no rewards pending");
   const choice = run.pendingRewards[choiceIndex];
   if (!choice) throw new Error(`pickReward: invalid choice ${choiceIndex}`);
+
+  // --- Weekly muster (§25): a multi-buy shop. Buying re-offers the muster;
+  //     "march on" (skip) closes it and resolves the deferred Monday node. ---
+  if (run.pendingMusterNodeId) {
+    if (choice.kind === "muster") {
+      const reinforced = applyMuster(run, choice);
+      return { ...reinforced, pendingRewards: rollMuster(reinforced) };
+    }
+    if (choice.kind === "recruit") {
+      // Recruit a new stack at the muster, then re-offer (stay mustering).
+      const recruited = recruit(run, choice.creatureId, choice.count, choice.cost);
+      return { ...recruited, pendingRewards: rollMuster(recruited) };
+    }
+    // March on: resolve the stashed node now (same rng fork chooseNode would use).
+    const nodeId = run.pendingMusterNodeId;
+    const node = run.map.find((n) => n.id === nodeId)!;
+    const rng = makeRng(run.seed).fork(`node:${nodeId}`);
+    const entered: RunState = { ...run, pendingRewards: null, pendingMusterNodeId: null };
+    return resolveNodeEffects(entered, node, rng);
+  }
 
   let next: RunState = {
     ...run,
@@ -1309,6 +1710,9 @@ function applyReward(run: RunState, choice: RewardChoice): RunState {
       return learn(run, choice.spellId, choice.cost);
     case "buy":
       return buy(run, choice.artifactId, choice.cost);
+    case "muster":
+      // Musters are handled in `pickReward` (multi-buy re-offer), never here.
+      return applyMuster(run, choice);
     case "skip":
       return run;
   }

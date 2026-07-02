@@ -68,6 +68,8 @@ function indexOfChoice(
         return c.creatureId === (choice as { creatureId: string }).creatureId;
       case 'gold':
         return c.amount === (choice as { amount: number }).amount;
+      case 'muster':
+        return c.stackId === (choice as { stackId: string }).stackId;
       case 'skip':
         return true;
     }
@@ -91,6 +93,7 @@ function buildRealApi(): EngineApi & EngineRewardSource {
     castSpell: (run, spellId, targetId) =>
       toApp(real.castSpell(toReal(run), spellId, targetId)),
     endPlayerTurn: (run) => toApp(real.endPlayerTurn(toReal(run))),
+    winCombatNow: (run) => toApp(real.winCombatNow(toReal(run))),
     legalTargets: (run, stackId) => real.legalCommandTargets(toReal(run), stackId),
     forecastAttack: (run, attackerStackId, targetStackId) =>
       real.forecastAttack(toReal(run), attackerStackId, targetStackId) as DamageForecast | null,

@@ -7,7 +7,7 @@
 import { describe, it, expect } from "vitest";
 import {
   startRun, legalNextNodes, chooseNode, pickReward, commandStack, castSpell,
-  endPlayerTurn, legalCommandTargets, legalSpellTargets, ARMY_CAP,
+  endPlayerTurn, legalCommandTargets, legalSpellTargets, ARMY_CAP, PLAYTEST,
 } from "./run";
 import { FACTIONS, PLAYABLE_HEROES, heroesOfFaction, basePool } from "./content";
 import type { RunState, Stack } from "./types";
@@ -19,6 +19,7 @@ function pickRewardSafely(r: RunState): RunState {
   const rs = r.pendingRewards!;
   const find = (p: (c: typeof rs[number]) => boolean) => rs.findIndex(p);
   let i = find((c) => c.kind === "raise");
+  if (i < 0) i = find((c) => c.kind === "muster" && r.gold >= c.cost);
   if (i < 0) i = find((c) => c.kind === "recruit" && r.gold >= c.cost);
   if (i < 0) i = find((c) => c.kind === "upgrade" && r.gold >= c.cost);
   if (i < 0) i = find((c) => c.kind === "buy" && r.gold >= c.cost);
@@ -63,13 +64,13 @@ function autoCombat(run: RunState): RunState {
 function autoRun(seed: string, heroId?: string): RunState {
   let r = startRun(seed, heroId);
   let guard = 0;
-  while (r.outcome === "ongoing" && guard++ < 120) {
+  while (r.outcome === "ongoing" && guard++ < 600) {
     if (r.pendingRewards) { r = pickRewardSafely(r); continue; }
     if (r.combat && r.combat.outcome === "ongoing") { r = autoCombat(r); continue; }
     const legal = legalNextNodes(r);
     if (!legal.length) break;
     const nodes = legal.map((id) => r.map.find((n) => n.id === id)!);
-    const safe = nodes.find((n) => n.type !== "elite") ?? nodes[0];
+    const safe = nodes.find((n) => !n.tough) ?? nodes[0];
     r = chooseNode(r, safe.id);
     if (r.combat && r.combat.outcome === "ongoing") r = autoCombat(r);
   }
@@ -158,7 +159,7 @@ describe("per-faction pools", () => {
       const legal = legalNextNodes(r);
       if (!legal.length) break;
       const dwell = legal.map((id) => r.map.find((n) => n.id === id)!).find((n) => n.type === "dwelling");
-      const pick = dwell ?? legal.map((id) => r.map.find((n) => n.id === id)!).find((n) => n.type !== "elite") ?? r.map.find((n) => n.id === legal[0])!;
+      const pick = dwell ?? legal.map((id) => r.map.find((n) => n.id === id)!).find((n) => !n.tough) ?? r.map.find((n) => n.id === legal[0])!;
       r = chooseNode(r, pick.id);
       if (r.combat && r.combat.outcome === "ongoing") r = autoCombat(r);
     }
@@ -185,7 +186,7 @@ describe("per-faction pools", () => {
         const legal = legalNextNodes(r);
         if (!legal.length) break;
         const nodes = legal.map((id) => r.map.find((n) => n.id === id)!);
-        const cmb = nodes.find((n) => n.type === "combat") ?? nodes[0];
+        const cmb = nodes.find((n) => n.guarded) ?? nodes[0];
         r = chooseNode(r, cmb.id);
       }
     }
@@ -213,6 +214,8 @@ describe("Castle full run (the non-Necropolis keystone)", () => {
     expect(JSON.stringify(a)).toBe(JSON.stringify(b));
   });
 
+  // Restored by the weekly muster (COMBAT.md §25): Castle sustains the 3/2/1-week
+  // climbs by reinforcing existing stacks each Monday (no Necromancy needed).
   it("is winnable (a winnable Castle seed exists in a small search)", () => {
     let found: string | null = null;
     for (let i = 0; i < 60 && !found; i++) {
@@ -222,15 +225,20 @@ describe("Castle full run (the non-Necropolis keystone)", () => {
   });
 
   it("win-rate sweep stays in a sane band (not 0%, not 100%)", () => {
-    let wins = 0;
-    const N = 60;
-    for (let i = 0; i < N; i++) {
-      if (autoRun(`castle-band-${i}`, CASTLE_HERO.id).outcome === "won") wins++;
+    // Measure TRUE difficulty: disable the playtest gold cheat for the sweep.
+    const savedGold = PLAYTEST.goldMult;
+    PLAYTEST.goldMult = 1;
+    try {
+      let wins = 0;
+      const N = 60;
+      for (let i = 0; i < N; i++) {
+        if (autoRun(`castle-band-${i}`, CASTLE_HERO.id).outcome === "won") wins++;
+      }
+      expect(wins).toBeGreaterThan(N * 0.15);
+      expect(wins).toBeLessThan(N * 0.95);
+    } finally {
+      PLAYTEST.goldMult = savedGold;
     }
-    // Castle sustains via Dwellings/Rest/gold (no Necromancy) and the dumb bot
-    // still wins a healthy share — non-Necropolis is genuinely playable.
-    expect(wins).toBeGreaterThan(N * 0.15);
-    expect(wins).toBeLessThan(N * 0.95);
   });
 });
 

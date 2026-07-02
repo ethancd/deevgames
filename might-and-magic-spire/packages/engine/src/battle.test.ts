@@ -11,17 +11,25 @@ import {
   isShooter,
   isFlying,
   hasAbility,
+  dodgeChance,
+  critChance,
+  moraleChance,
   AD_ATTACK_CAP,
   AD_DEFENSE_CAP,
+  DODGE_CHANCE_CAP,
+  CRIT_CHANCE_CAP,
+  MORALE_CHANCE_CAP,
 } from "./battle";
 import { adaptStack, deriveHero } from "./adapter";
 import { CREATURES, SPELLS, creatureById, heroById } from "./content";
 import type { Army, Hero, Stack } from "./types";
+import type { Rng } from "./rng";
 
 const HERO0: Hero = {
   id: "h", name: "H", heroClass: "", specialty: "",
   attack: 0, defense: 0, power: 0, knowledge: 0, mana: 0, maxMana: 0,
   equipment: {}, spellbook: [], skills: {}, imageRef: "",
+  level: 1, xp: 0,
   baseAttack: 0, baseDefense: 0, basePower: 0, baseKnowledge: 0, baseSpellbook: [],
 };
 
@@ -213,6 +221,81 @@ describe("regeneration + heal", () => {
     const healed = applyHeal(skel, 100, 10);
     expect(healed.count).toBe(10);
     expect(healed.hpTop).toBe(6);
+  });
+});
+
+describe("speed -> dodge", () => {
+  // A scripted Rng: `next()` is constant (drives the dodge roll) and `int()`
+  // returns a fixed per-creature roll so damage is deterministic. Only next/int
+  // are exercised by resolveAttack here; the rest throw if ever touched.
+  const scriptRng = (nextVal: number, intVal: number): Rng =>
+    ({
+      seed: "scripted",
+      next: () => nextVal,
+      int: () => intVal,
+      float: () => nextVal,
+      pick: <T,>(xs: readonly T[]) => xs[0],
+      shuffle: <T,>(xs: readonly T[]) => xs.slice(),
+      chance: () => nextVal < 0.5,
+      fork() {
+        return this;
+      },
+    }) as unknown as Rng;
+
+  it("dodgeChance: 5% per point the defender outspeeds the attacker", () => {
+    const slow = { ...stackOf("necropolis_skeleton", 1), speed: 4 };
+    const fast1 = { ...stackOf("necropolis_skeleton", 1), speed: 5 };
+    const fast5 = { ...stackOf("necropolis_skeleton", 1), speed: 9 };
+    const fast10 = { ...stackOf("necropolis_skeleton", 1), speed: 14 };
+    expect(dodgeChance(fast1, slow)).toBeCloseTo(0.05, 5);
+    expect(dodgeChance(fast5, slow)).toBeCloseTo(0.25, 5);
+    expect(dodgeChance(fast10, slow)).toBe(DODGE_CHANCE_CAP); // capped at 25%
+    expect(dodgeChance(slow, fast5)).toBe(0); // equal-or-slower never dodges
+    expect(dodgeChance(slow, slow)).toBe(0);
+  });
+
+  it("a faster defender halves the whole attack on a successful dodge", () => {
+    const attacker = { ...stackOf("necropolis_skeleton", 10, "player"), speed: 4 };
+    const fastDef = { ...stackOf("necropolis_skeleton", 10, "enemy"), speed: 9 }; // +5 -> 25%
+    // next=0 -> the dodge roll always succeeds; int=1 -> per-creature damage 1.
+    const dodged = resolveAttack(attacker, fastDef, HERO0, HERO0, scriptRng(0, 1));
+    // next=0.99 -> the same roll fails -> full damage, same fixed rolls.
+    const full = resolveAttack(attacker, fastDef, HERO0, HERO0, scriptRng(0.99, 1));
+    expect(full.dealt).toBeGreaterThan(0);
+    expect(dodged.dealt).toBe(Math.floor(full.dealt * 0.5));
+    expect(dodged.log.some((l) => l.includes("dodges"))).toBe(true);
+    expect(full.log.some((l) => l.includes("dodges"))).toBe(false);
+  });
+
+  it("an equal-speed defender never dodges, even on a guaranteed roll", () => {
+    const attacker = { ...stackOf("necropolis_skeleton", 10, "player"), speed: 4 };
+    const evenDef = { ...stackOf("necropolis_skeleton", 10, "enemy"), speed: 4 };
+    const res = resolveAttack(attacker, evenDef, HERO0, HERO0, scriptRng(0, 1));
+    expect(res.log.some((l) => l.includes("dodges"))).toBe(false);
+  });
+
+  it("luck -> crit: +5% per luck point, capped, +50% on a hit", () => {
+    expect(critChance(0)).toBe(0);
+    expect(critChance(-2)).toBe(0); // no luck -> no crit (and no bad-luck penalty)
+    expect(critChance(1)).toBeCloseTo(0.05, 5);
+    expect(critChance(5)).toBeCloseTo(0.25, 5);
+    expect(critChance(10)).toBe(CRIT_CHANCE_CAP);
+
+    const attacker = { ...stackOf("necropolis_skeleton", 10, "player"), speed: 4 };
+    const defender = { ...stackOf("necropolis_skeleton", 10, "enemy"), speed: 4 }; // equal -> no dodge
+    // next=0 -> the luck roll always succeeds; luck=5 -> 25% (so a 0 roll crits).
+    const crit = resolveAttack(attacker, defender, HERO0, HERO0, scriptRng(0, 1), 5);
+    const base = resolveAttack(attacker, defender, HERO0, HERO0, scriptRng(0.99, 1), 5);
+    expect(base.dealt).toBeGreaterThan(0);
+    expect(crit.dealt).toBe(Math.floor(base.dealt * 1.5));
+    expect(crit.log.some((l) => l.includes("luck"))).toBe(true);
+  });
+
+  it("moraleChance: magnitude is symmetric in the sign of morale", () => {
+    expect(moraleChance(0)).toBe(0);
+    expect(moraleChance(3)).toBeCloseTo(0.15, 5);
+    expect(moraleChance(-3)).toBeCloseTo(0.15, 5); // |morale|
+    expect(moraleChance(10)).toBe(MORALE_CHANCE_CAP);
   });
 });
 

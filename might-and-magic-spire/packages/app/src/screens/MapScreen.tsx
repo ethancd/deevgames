@@ -6,9 +6,11 @@
 // via each node's `next`; the UI only renders and gates taps.
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { RunState } from '../engine';
+import { creatureLookup } from '../engine';
 import { ArmyPip, GoldPip, HudShell } from '../components/StatBar';
 import { HeroDollStrip } from '../components/HeroDoll';
-import { nodeIcon, NODE_LABEL } from '../components/icons-for-node';
+import { nodeIcon, NODE_LABEL, DIFFICULTY_RING } from '../components/icons-for-node';
+import { ContentImage } from '../chrome/ContentImage';
 
 type Pt = { x: number; y: number };
 
@@ -16,10 +18,12 @@ export function MapScreen({
   run,
   onChoose,
   onOpenDoll,
+  onNewGame,
 }: {
   run: RunState;
   onChoose: (nodeId: string) => void;
   onOpenDoll?: () => void;
+  onNewGame?: () => void;
 }) {
   const rows = useMemo(() => {
     const maxRow = Math.max(...run.map.map((n) => n.row));
@@ -135,8 +139,21 @@ export function MapScreen({
           <ArmyPip army={run.army} />
           <GoldPip gold={run.gold} />
         </div>
-        <div className="font-display text-sm tracking-widest text-verd-300">
-          ACT {run.act}
+        <div className="flex items-center gap-3">
+          <div className="font-display text-sm tracking-widest text-verd-300">
+            ACT {run.act}
+          </div>
+          {onNewGame && (
+            <button
+              type="button"
+              data-testid="new-game"
+              onClick={onNewGame}
+              title="Abandon this run and start a new game"
+              className="rounded border border-grave-600 px-2 py-1 font-display text-[0.55rem] uppercase tracking-widest text-bone-400 active:scale-95 hover:border-blood-500 hover:text-blood-400"
+            >
+              New Game
+            </button>
+          )}
         </div>
       </HudShell>
 
@@ -185,35 +202,50 @@ export function MapScreen({
                 {rowNodes.map((node) => {
                   const tier = tierOf(node.id);
                   const isReachable = tier === 'reachable';
+                  // Guarded tiles (§27) get a difficulty RING + the most-dangerous
+                  // guard's IMAGE; the tile ICON sits at center.
+                  const ring = node.guarded && node.difficulty ? DIFFICULTY_RING[node.difficulty] : '';
+                  const guard = node.guardCreatureId ? creatureLookup(node.guardCreatureId) : null;
                   return (
-                    <button
+                    <div
                       key={node.id}
-                      ref={setNodeRef(node.id)}
-                      type="button"
-                      data-testid="map-node"
-                      data-node-type={node.type}
-                      data-reachable={isReachable}
-                      data-tier={tier}
-                      disabled={!isReachable}
-                      onClick={() => isReachable && onChoose(node.id)}
-                      aria-label={`${NODE_LABEL[node.type]} node${isReachable ? ', available' : tier === 'trail' ? ', visited' : tier === 'locked' ? ', unreachable' : ''}`}
-                      className={[
-                        'flex h-16 w-16 flex-col items-center justify-center rounded-full border-2 text-2xl transition',
-                        tier === 'current' ? 'border-bone-100 bg-verd-700 text-bone-100' : '',
-                        tier === 'reachable'
-                          ? 'border-verd-300 bg-grave-700 text-verd-300 animate-pulse-blood active:scale-90'
-                          : '',
-                        tier === 'trail' ? 'border-bone-500 bg-grave-700 text-bone-400' : '',
-                        tier === 'open' ? 'border-grave-600 bg-grave-800 text-bone-500 opacity-60' : '',
-                        tier === 'locked' ? 'border-grave-700 bg-grave-900 text-bone-600 opacity-30 grayscale' : '',
-                        node.type === 'boss' ? 'h-20 w-20 border-blood-500 text-blood-400' : '',
-                      ].join(' ')}
+                      className={['relative rounded-full', ring ? `p-[3px] ${ring}` : ''].join(' ')}
                     >
-                      {nodeIcon(node.type)}
-                      <span className="mt-0.5 text-[0.5rem] uppercase tracking-wider">
-                        {NODE_LABEL[node.type]}
-                      </span>
-                    </button>
+                      <button
+                        ref={setNodeRef(node.id)}
+                        type="button"
+                        data-testid="map-node"
+                        data-node-type={node.type}
+                        data-guarded={node.guarded ? 'true' : 'false'}
+                        data-difficulty={node.difficulty ?? ''}
+                        data-reachable={isReachable}
+                        data-tier={tier}
+                        disabled={!isReachable}
+                        onClick={() => isReachable && onChoose(node.id)}
+                        aria-label={`${NODE_LABEL[node.type]} tile${node.guarded ? `, ${node.difficulty} guard` : ''}${isReachable ? ', available' : tier === 'trail' ? ', visited' : tier === 'locked' ? ', unreachable' : ''}`}
+                        className={[
+                          'flex h-16 w-16 flex-col items-center justify-center rounded-full border-2 text-2xl transition',
+                          tier === 'current' ? 'border-bone-100 bg-verd-700 text-bone-100' : '',
+                          tier === 'reachable'
+                            ? 'border-verd-300 bg-grave-700 text-verd-300 animate-pulse-blood active:scale-90'
+                            : '',
+                          tier === 'trail' ? 'border-bone-500 bg-grave-700 text-bone-400' : '',
+                          tier === 'open' ? 'border-grave-600 bg-grave-800 text-bone-500 opacity-60' : '',
+                          tier === 'locked' ? 'border-grave-700 bg-grave-900 text-bone-600 opacity-30 grayscale' : '',
+                          node.type === 'boss' ? 'h-20 w-20 border-blood-500 text-blood-400' : '',
+                        ].join(' ')}
+                      >
+                        {nodeIcon(node.type)}
+                        <span className="mt-0.5 text-[0.5rem] uppercase tracking-wider">
+                          {NODE_LABEL[node.type]}
+                        </span>
+                      </button>
+                      {guard && (
+                        <span className="pointer-events-none absolute -bottom-1 -right-1 h-7 w-7 overflow-hidden rounded-full border border-grave-900 bg-grave-800 shadow">
+                          <ContentImage imageRef={guard.imageRef} alt={guard.name} className="h-full w-full" />
+                        </span>
+                      )}
+                    </div>
                   );
                 })}
               </div>
