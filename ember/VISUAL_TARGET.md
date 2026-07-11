@@ -66,10 +66,53 @@ ground truth). Game canvas is pure retro pixel art; the surrounding UI is
 modern, minimal, dark-mode dashboard styling. Sharp, legible, no photorealism,
 no 3D.
 
-## Variant B (healthy-state reference frame)
+## Variant B — daytime EXPLORE (healthy-state reference frame)
 
-Same layout, but daytime EXPLORE mode: bright golden glow with a wide light
-radius, no wolf, sunpatch tiles glinting on the grass, green "EXPLORE" mode
-chip, fuel meter high, activation low, speech bubble reads "Warm. Plenty of
-light. Ranging east." Useful as the contrast image showing what the same UI
-looks like when the body is well-regulated.
+Contrast image showing the same UI when the body is well-regulated: wide glow
+blending into daylight (vs. small circle in darkness), panels agreeing (vs.
+diverging), green EXPLORE chip (vs. red DEFEND), short urgency bars, and the
+wolf present only in ground truth ("PATROL (far)") while absent from the pilot
+view — it's outside perception.
+
+### Image-generation prompt (Variant B)
+
+A high-fidelity screenshot of a 2D pixel-art survival simulation game running
+in a dark-themed web app, 16:9 desktop viewport. The layout is split: the left
+two-thirds is the game canvas, the right third is a vertical stack of dark
+slate-colored UI telemetry panels with clean sans-serif text.
+
+Game canvas (left): Crisp 16×16-pixel-tile pixel art, integer-scaled with
+sharp square pixels, no anti-aliasing, limited 32-color palette. A sunny
+wilderness at midday: warm green grass tiles and dense pine-forest clusters
+under soft golden daylight, scattered gray rock outcrops, a small blue pond
+glinting in one corner, fallen deadwood logs, and a stone den entrance at the
+top edge. Bright golden sunpatch tiles shimmer on open grass. At center: a
+small ember-spirit character — a floating teardrop-shaped flame creature,
+burning bright golden-orange with a lively flickering core — casting a wide,
+generous circle of warm light that blends into the daylight, with a cheerful
+trail of four or five drifting spark particles behind it. No wolf anywhere;
+the scene feels open and safe. Above the ember, a small white pixel-art speech
+bubble reads: "Warm. Plenty of light. Ranging east." A thin dotted path line
+traces a long exploratory route curving east across the map toward unexplored
+forest.
+
+UI panels (right, top to bottom): (1) A panel titled "PILOT VIEW" showing an
+interoception readout: rows of qualitative labels like "capacity: HIGH",
+"activation: LOW", "stability: HIGH", each with a small confidence percentage,
+and a drives list with thin, mostly short urgency bars — "explore 0.62",
+"fuel 0.31" — plus a calm teal intent card reading "skill: move_to →
+east_forest (cautious: off)". (2) A panel titled "GROUND TRUTH (dev)" with six
+horizontal meter bars in muted colors (fuel nearly full in bright orange, heat
+comfortable in warm yellow, activation low in green, damage empty, fatigue
+low, stability high) each with a tiny sparkline history, a green mode chip
+reading "EXPLORE", and a line "wolf: PATROL (far)". (3) A narrow scrolling
+event-log ticker with monospace lines like "t=312 world.resource.detected
+sunpatch" and "t=308 skill.completed gather". Bottom bar: pixel-style
+pause/step/play controls, "1× 4×" speed toggles, a seed field, and a dropdown
+reading "Pilot: Claude".
+
+Overall mood: bright, warm, and inviting — a healthy well-regulated creature
+ranging confidently through daylight; the two right-hand panels agree with
+each other and show comfortable green/full readings. Game canvas is pure retro
+pixel art; the surrounding UI is modern, minimal, dark-mode dashboard styling.
+Sharp, legible, no photorealism, no 3D.
