@@ -6,6 +6,35 @@ may be shared back into the session as a reference; workflows should treat the
 **layout and mood** as the target, not the exact rendered text (image models
 mangle small text — the authoritative strings live in PLAN.md).
 
+## Canonical reference images
+
+Generated from the prompts below and adopted as the WF2 rendering targets:
+
+- `reference/night-defend.png` — Scenario 3, DEFEND mode at night.
+- `reference/day-explore.png` — healthy daytime EXPLORE contrast frame.
+
+Treat layout, palette, glow falloff, panel structure, and mood as the target.
+Details from the renders now **adopted into the spec**:
+
+- Pilot-view interoception shows a fourth `temperature` row (COOL/WARM) with
+  per-row confidence percentages in a right-aligned column.
+- Ground-truth meters each get a small icon (🔥🌡⚡🛡🌙⚖-style pixel glyphs)
+  and a sparkline to the right of the value.
+- Intent card is a full-width tinted banner below the drives (amber in DEFEND,
+  teal in EXPLORE) with a small glyph.
+- Mode chip is an outlined pill (red DEFEND / green EXPLORE) on the same row
+  as `wolf: <FSM state>`.
+- Event-log values are color-coded by topic (mode red, resources orange,
+  paths green).
+- Dotted amber path line for the current route; speech bubble in cream with
+  pixel font.
+
+**Non-canonical** (image-model inventions to ignore): the `deer` entity in the
+day frame's event log (no deer in scope), the day frame's painterly sub-tile
+detail (real renderer uses strict 16×16 tiles; match palette and density, not
+per-pixel foliage), and any numeric inconsistencies between panels — real
+numbers come from the kernel.
+
 ## What must be true of the real screenshot
 
 - 16:9 split layout: game canvas ~left 2/3, telemetry panel stack ~right 1/3.
