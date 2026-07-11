@@ -8,9 +8,9 @@
  * byte-identical, per PLAN.md's replay rule: "a run is (seed, scenarioId,
  * recordedIntents[])... replays are exact".
  *
- * NOTE: depends on createSim from '../engine' (a throwing stub as written
- * by this agent — see src/engine/index.ts). Expected to fail until the
- * integrate agent wires the real engine.
+ * See also src/engine/determinism.test.ts, which covers two additional
+ * determinism properties: two fully independent live runs (no replay
+ * involved), and a shared Pilot instance across interleaved Sims.
  */
 
 import { describe, expect, it } from 'vitest';

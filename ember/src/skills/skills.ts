@@ -37,6 +37,7 @@ import {
   GATHER_MIN_STABILITY,
   GATHER_RATE,
   GATHER_TICKS,
+  MODE_COST_MULT,
   MOVE_EFFORT_CAUTIOUS,
   MOVE_EFFORT_DIRECT,
   MOVE_FATIGUE_PER_STEP,
@@ -47,6 +48,14 @@ import {
 } from './constants';
 import { optionalEnum, requireFiniteNumber, requireString, requireVec } from './params';
 import { chebyshev, clamp, sign, vecEq } from './vecUtils';
+
+/** PLAN §2/§3's per-mode "action cost multiplier" — every SkillDef.estCost()
+ *  below scales its forecast by this so estimated costs genuinely differ
+ *  between modes (not just perceptionRadius/salience — see
+ *  src/skills/constants.ts's MODE_COST_MULT doc and skills.test.ts). */
+function modeMult(ctx: SkillCtx): number {
+  return MODE_COST_MULT[ctx.body.mode];
+}
 
 // -------------------------------------------------------------- move_to
 
@@ -90,7 +99,8 @@ const moveTo: SkillDef = {
     const style = moveStyle(params);
     const path = findPath(ctx.world, ctx.world.ember.pos, dest, style === 'cautious');
     const steps = path.length;
-    return { fatigue: steps * MOVE_FATIGUE_PER_STEP, fuel: -steps * MOVE_FUEL_PER_STEP };
+    const mult = modeMult(ctx);
+    return { fatigue: steps * MOVE_FATIGUE_PER_STEP * mult, fuel: -steps * MOVE_FUEL_PER_STEP * mult };
   },
   start(params, ctx): SkillExec {
     const dest = moveDest(params, ctx);
@@ -170,8 +180,8 @@ const gather: SkillDef = {
     if (!src.ok) return src.reason;
     return true;
   },
-  estCost() {
-    return { fatigue: GATHER_TICKS * GATHER_FATIGUE_PER_TICK };
+  estCost(_params, ctx) {
+    return { fatigue: GATHER_TICKS * GATHER_FATIGUE_PER_TICK * modeMult(ctx) };
   },
   start(params): SkillExec {
     const targetR = requireString(params, 'target');
@@ -208,10 +218,13 @@ const consume: SkillDef = {
     if (!src.ok) return src.reason;
     return true;
   },
-  estCost() {
+  estCost(_params, ctx) {
+    const mult = modeMult(ctx);
     return {
-      fuel: CONSUME_RATE * CONSUME_TICKS,
-      fatigue: CONSUME_TICKS * CONSUME_FATIGUE_PER_TICK,
+      // benefit (fuel intake) shrinks under a costlier mode; the fatigue
+      // cost of the act itself grows.
+      fuel: (CONSUME_RATE * CONSUME_TICKS) / mult,
+      fatigue: CONSUME_TICKS * CONSUME_FATIGUE_PER_TICK * mult,
     };
   },
   start(params): SkillExec {
@@ -248,11 +261,14 @@ const rest: SkillDef = {
     if (!durR.ok) return durR.reason;
     return true;
   },
-  estCost(params) {
+  estCost(params, ctx) {
     const durR = requireFiniteNumber(params, 'duration', { min: 1, max: REST_MAX_DURATION });
     const duration = durR.ok ? durR.value : 0;
     const capped = Math.min(duration, 200);
-    return { fatigue: -capped * 0.01, damage: -capped * 0.002 };
+    // Recovery is a benefit — it shrinks (rest is less restorative) under a
+    // costlier mode like DEFEND, rather than growing.
+    const mult = modeMult(ctx);
+    return { fatigue: (-capped * 0.01) / mult, damage: (-capped * 0.002) / mult };
   },
   start(params): SkillExec {
     const durR = requireFiniteNumber(params, 'duration', { min: 1, max: REST_MAX_DURATION });
@@ -281,7 +297,8 @@ const shelter: SkillDef = {
   },
   estCost(_params, ctx) {
     const path = findPath(ctx.world, ctx.world.ember.pos, ctx.world.denPos, false);
-    return { heat: 0.05, fatigue: path.length * MOVE_FATIGUE_PER_STEP };
+    const mult = modeMult(ctx);
+    return { heat: 0.05 * mult, fatigue: path.length * MOVE_FATIGUE_PER_STEP * mult };
   },
   start(): SkillExec {
     return {
@@ -316,10 +333,11 @@ const flee: SkillDef = {
     if (!fromR.ok) return fromR.reason;
     return true;
   },
-  estCost() {
+  estCost(_params, ctx) {
+    const mult = modeMult(ctx);
     return {
-      fatigue: FLEE_DURATION * FLEE_FATIGUE_PER_TICK,
-      fuel: -FLEE_DURATION * FLEE_FUEL_PER_TICK,
+      fatigue: FLEE_DURATION * FLEE_FATIGUE_PER_TICK * mult,
+      fuel: -FLEE_DURATION * FLEE_FUEL_PER_TICK * mult,
     };
   },
   start(params, ctx): SkillExec {
@@ -367,8 +385,8 @@ const focus: SkillDef = {
     }
     return true;
   },
-  estCost() {
-    return { fatigue: FOCUS_DURATION * 0.0004 };
+  estCost(_params, ctx) {
+    return { fatigue: FOCUS_DURATION * 0.0004 * modeMult(ctx) };
   },
   start(): SkillExec {
     let ticks = 0;
@@ -394,9 +412,10 @@ const wait: SkillDef = {
     }
     return true;
   },
-  estCost(params) {
-    if (params['flare'] === true) return { fuel: FLARE_FUEL_COST };
-    return { fatigue: WAIT_DURATION * 0.0004 };
+  estCost(params, ctx) {
+    const mult = modeMult(ctx);
+    if (params['flare'] === true) return { fuel: FLARE_FUEL_COST * mult };
+    return { fatigue: WAIT_DURATION * 0.0004 * mult };
   },
   start(params): SkillExec {
     const isFlare = params['flare'] === true;

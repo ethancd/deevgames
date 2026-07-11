@@ -5,17 +5,40 @@
  * that "missing/mistyped params" and "NaN/out-of-range numeric params" are
  * rejected uniformly and with specific reason strings (these reasons flow
  * back to the pilot as `whyNot`).
+ *
+ * Hardened against a fixed audit finding: a pilot-supplied params object
+ * could define a throwing getter on a property these helpers read (e.g.
+ * `dest`), crashing precondition()/estCost() uncaught. Every property read
+ * below goes through safeGet(), which turns a throwing accessor into a
+ * clean "could not be read" rejection instead of propagating the throw.
  */
 
 import type { Vec } from '../core/types';
 
 export type ParamResult<T> = { ok: true; value: T } | { ok: false; reason: string };
 
+/** Reads params[key] defensively — a throwing getter becomes `{ threw: true }`
+ *  instead of propagating the exception up through precondition()/estCost(). */
+function safeGet(
+  params: Record<string, unknown>,
+  key: string,
+): { threw: true } | { threw: false; value: unknown } {
+  try {
+    return { threw: false, value: params[key] };
+  } catch {
+    return { threw: true };
+  }
+}
+
 export function requireString(
   params: Record<string, unknown>,
   key: string,
 ): ParamResult<string> {
-  const v = params[key];
+  const read = safeGet(params, key);
+  if (read.threw) {
+    return { ok: false, reason: `param "${key}" could not be read` };
+  }
+  const v = read.value;
   if (v === undefined || v === null) {
     return { ok: false, reason: `missing required param "${key}"` };
   }
@@ -30,7 +53,11 @@ export function requireFiniteNumber(
   key: string,
   opts?: { min?: number; max?: number },
 ): ParamResult<number> {
-  const v = params[key];
+  const read = safeGet(params, key);
+  if (read.threw) {
+    return { ok: false, reason: `param "${key}" could not be read` };
+  }
+  const v = read.value;
   if (v === undefined || v === null) {
     return { ok: false, reason: `missing required param "${key}"` };
   }
@@ -51,13 +78,23 @@ export function requireVec(
   key: string,
   opts?: { boundsWidth?: number; boundsHeight?: number },
 ): ParamResult<Vec> {
-  const v = params[key];
+  const read = safeGet(params, key);
+  if (read.threw) {
+    return { ok: false, reason: `param "${key}" could not be read` };
+  }
+  const v = read.value;
   if (v === undefined || v === null || typeof v !== 'object') {
     return { ok: false, reason: `missing required param "${key}" (expected {x, y})` };
   }
   const obj = v as Record<string, unknown>;
-  const x = obj.x;
-  const y = obj.y;
+  let x: unknown;
+  let y: unknown;
+  try {
+    x = obj.x;
+    y = obj.y;
+  } catch {
+    return { ok: false, reason: `param "${key}" could not be read` };
+  }
   if (
     typeof x !== 'number' ||
     typeof y !== 'number' ||
@@ -83,7 +120,11 @@ export function optionalEnum<T extends string>(
   allowed: readonly T[],
   fallback: T,
 ): ParamResult<T> {
-  const v = params[key];
+  const read = safeGet(params, key);
+  if (read.threw) {
+    return { ok: false, reason: `param "${key}" could not be read` };
+  }
+  const v = read.value;
   if (v === undefined || v === null) return { ok: true, value: fallback };
   if (typeof v !== 'string' || !allowed.includes(v as T)) {
     return {

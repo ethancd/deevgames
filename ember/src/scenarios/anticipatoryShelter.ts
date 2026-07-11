@@ -34,57 +34,68 @@ function stageWorld(world: WorldState): void {
   world.weather = 'clear';
 }
 
+/** The scenario's full staging + assertions, parameterized by
+ *  narrationEnabled. `Scenario.run()` is pinned to take zero arguments (see
+ *  src/core/types.ts), so this is exported separately for
+ *  src/scenarios/antiRoleplay.test.ts to exercise the narrationEnabled=false
+ *  path directly. This scenario's pass criterion (firstIntentTick keyed on
+ *  `it.skill`) was already structural/narration-independent, but no test
+ *  previously exercised it with narration actually off — see the fixed
+ *  audit finding in src/scenarios/restedVsDepleted.ts's header. */
+export async function evaluateAnticipatoryShelter(narrationEnabled: boolean): Promise<ScenarioResult> {
+  const sim = createSim({
+    seed: SEED,
+    pilot: createScriptedPilot(),
+    worldPatch: stageWorld,
+    bodyOverrides: { heat: 0.5, fuel: 0.85, damage: 0, fatigue: 0.1, activation: 0.05 },
+    narrationEnabled,
+  });
+  const frames = await trackTicks(sim, WINDOW_TICKS);
+
+  const shelterTick = firstIntentTick(frames, 'shelter');
+
+  const heatExitedEvent = sim.log
+    .all()
+    .find(
+      (e) =>
+        e.topic === 'body.var.crossed' &&
+        (e.payload as { var?: string; direction?: string } | null)?.var === 'heat' &&
+        (e.payload as { var?: string; direction?: string } | null)?.direction === 'exited',
+    );
+
+  const problems: string[] = [];
+  if (shelterTick === undefined) {
+    problems.push('pilot never issued a shelter intent during the dusk/night window');
+  }
+  if (heatExitedEvent !== undefined && shelterTick !== undefined && shelterTick > heatExitedEvent.tick) {
+    problems.push(
+      `shelter intent (tick ${shelterTick}) came AFTER heat left its viable band (tick ${heatExitedEvent.tick}) — regulation followed crisis instead of preceding it`,
+    );
+  }
+  if (heatExitedEvent !== undefined && shelterTick === undefined) {
+    problems.push(
+      `heat left its viable band at tick ${heatExitedEvent.tick} and no shelter intent was ever issued`,
+    );
+  }
+
+  const pass = problems.length === 0;
+  return {
+    id: 'anticipatory-shelter',
+    pass,
+    details: pass
+      ? shelterTick !== undefined && heatExitedEvent === undefined
+        ? `shelter requested at tick ${shelterTick}; heat never left its viable band — crisis fully averted.`
+        : `shelter requested at tick ${shelterTick}, ${
+            heatExitedEvent ? `before heat exited its band at tick ${heatExitedEvent.tick}` : 'heat stayed in band'
+          }.`
+      : problems.join('; '),
+  };
+}
+
 export const anticipatoryShelter: Scenario = {
   id: 'anticipatory-shelter',
   description:
     'Dusk approaching, ember afield with comfortable-but-not-high heat: the pilot must ' +
     'head for the den before heat actually leaves its viable band.',
-  async run(): Promise<ScenarioResult> {
-    const sim = createSim({
-      seed: SEED,
-      pilot: createScriptedPilot(),
-      worldPatch: stageWorld,
-      bodyOverrides: { heat: 0.5, fuel: 0.85, damage: 0, fatigue: 0.1, activation: 0.05 },
-    });
-    const frames = await trackTicks(sim, WINDOW_TICKS);
-
-    const shelterTick = firstIntentTick(frames, 'shelter');
-
-    const heatExitedEvent = sim.log
-      .all()
-      .find(
-        (e) =>
-          e.topic === 'body.var.crossed' &&
-          (e.payload as { var?: string; direction?: string } | null)?.var === 'heat' &&
-          (e.payload as { var?: string; direction?: string } | null)?.direction === 'exited',
-      );
-
-    const problems: string[] = [];
-    if (shelterTick === undefined) {
-      problems.push('pilot never issued a shelter intent during the dusk/night window');
-    }
-    if (heatExitedEvent !== undefined && shelterTick !== undefined && shelterTick > heatExitedEvent.tick) {
-      problems.push(
-        `shelter intent (tick ${shelterTick}) came AFTER heat left its viable band (tick ${heatExitedEvent.tick}) — regulation followed crisis instead of preceding it`,
-      );
-    }
-    if (heatExitedEvent !== undefined && shelterTick === undefined) {
-      problems.push(
-        `heat left its viable band at tick ${heatExitedEvent.tick} and no shelter intent was ever issued`,
-      );
-    }
-
-    const pass = problems.length === 0;
-    return {
-      id: 'anticipatory-shelter',
-      pass,
-      details: pass
-        ? shelterTick !== undefined && heatExitedEvent === undefined
-          ? `shelter requested at tick ${shelterTick}; heat never left its viable band — crisis fully averted.`
-          : `shelter requested at tick ${shelterTick}, ${
-              heatExitedEvent ? `before heat exited its band at tick ${heatExitedEvent.tick}` : 'heat stayed in band'
-            }.`
-        : problems.join('; '),
-    };
-  },
+  run: () => evaluateAnticipatoryShelter(true),
 };

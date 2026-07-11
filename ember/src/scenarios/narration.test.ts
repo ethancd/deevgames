@@ -11,9 +11,9 @@
  * (recursively, wherever they appear — deliberately not hard-coded to one
  * assumed event topic/shape) and assert the remainder is deep-equal.
  *
- * NOTE: depends on createSim from '../engine' (a throwing stub as written
- * by this agent — see src/engine/index.ts). Expected to fail until the
- * integrate agent wires the real engine.
+ * See also src/scenarios/antiRoleplay.test.ts, which exercises this same
+ * toggle against scenarios 1-3's own staged setups specifically (not just
+ * this file's plain default-body config).
  */
 
 import { describe, expect, it } from 'vitest';

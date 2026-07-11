@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { SkillCtx, SkillTickResult, Vec } from '../core/types';
+import type { SkillCtx, SkillName, SkillTickResult, Vec } from '../core/types';
 import {
   CONSUME_TICKS,
   FLEE_DURATION,
@@ -289,5 +289,75 @@ describe('wait', () => {
     expect(r.status).toBe('done');
     expect(r.exertion.effort).toBe(1);
     expect(r.exertion.fuelDelta).toBeLessThan(0);
+  });
+});
+
+// --------------------------------------------------------- mode consequences
+//
+// Permanent regression test for a fixed audit finding: mode consequences
+// were decorative except for perceptionRadius — no SkillDef's estCost() or
+// precondition() ever read ctx.body.mode, so DEFEND and EXPLORE produced
+// byte-identical cost estimates. Every estCost() now scales by
+// MODE_COST_MULT (src/skills/constants.ts), so at least one (in practice,
+// every) skill's forecast genuinely differs by mode.
+
+describe('mode-conditioned action costs (PLAN §2/§3)', () => {
+  const REPRESENTATIVE_PARAMS: Record<SkillName, Record<string, unknown>> = {
+    move_to: { dest: { x: 5, y: 8 }, style: 'direct' },
+    gather: { target: 'dw-1' },
+    consume: { item: 'dw-1' },
+    rest: { duration: 20 },
+    shelter: {},
+    flee: { from: { x: 4, y: 5 } },
+    focus: { region: 'fuel' },
+    wait: {},
+  };
+
+  it('estCost() differs between DEFEND and EXPLORE for at least one skill (was: zero mismatches)', () => {
+    const dw = makeDeadwood({ id: 'dw-1', pos: { x: 5, y: 6 }, fuel: 0.5 });
+    const world = makeWorld({ ember: { pos: { x: 5, y: 5 } }, deadwood: [dw] });
+    const log = freshLog();
+    const rng = makeCtx().rng;
+
+    const exploreBody = makeBody({
+      fuel: 0.6,
+      heat: 0.6,
+      damage: 0.1,
+      fatigue: 0.2,
+      activation: 0.5,
+      mode: 'EXPLORE',
+    });
+    const defendBody = { ...exploreBody, mode: 'DEFEND' as const };
+
+    const exploreCtx: SkillCtx = { world, body: exploreBody, rng, log, tick: 0 };
+    const defendCtx: SkillCtx = { world, body: defendBody, rng, log, tick: 0 };
+
+    let mismatches = 0;
+    for (const name of Object.keys(SKILLS) as SkillName[]) {
+      const def = SKILLS[name];
+      const params = REPRESENTATIVE_PARAMS[name];
+      const exploreCost = JSON.stringify(def.estCost(params, exploreCtx));
+      const defendCost = JSON.stringify(def.estCost(params, defendCtx));
+      if (exploreCost !== defendCost) mismatches++;
+    }
+    expect(mismatches).toBeGreaterThan(0);
+  });
+
+  it('move_to costs strictly more fatigue/fuel in DEFEND than EXPLORE for an identical path', () => {
+    const world = makeWorld({ ember: { pos: { x: 5, y: 5 } } });
+    const ctx = makeCtx({ world });
+    const params = { dest: { x: 5, y: 8 }, style: 'direct' as const };
+
+    const exploreCost = SKILLS.move_to.estCost(params, {
+      ...ctx,
+      body: { ...ctx.body, mode: 'EXPLORE' },
+    });
+    const defendCost = SKILLS.move_to.estCost(params, {
+      ...ctx,
+      body: { ...ctx.body, mode: 'DEFEND' },
+    });
+
+    expect(Math.abs(defendCost.fatigue ?? 0)).toBeGreaterThan(Math.abs(exploreCost.fatigue ?? 0));
+    expect(Math.abs(defendCost.fuel ?? 0)).toBeGreaterThan(Math.abs(exploreCost.fuel ?? 0));
   });
 });

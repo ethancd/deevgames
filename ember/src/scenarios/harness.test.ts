@@ -3,11 +3,6 @@
  *
  * Asserts every scenario in SCENARIOS passes headless, and that the ids
  * match exactly the 4 pinned in src/core/types.ts.
- *
- * NOTE: this suite depends on createSim from '../engine', which is a
- * throwing stub at the time this agent wrote it (see src/engine/index.ts).
- * It will fail until the integrate agent wires the real engine — that is
- * expected (see this agent's task brief) and not a bug in this test file.
  */
 
 import { describe, expect, it } from 'vitest';

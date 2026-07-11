@@ -115,7 +115,17 @@ const CONDITION_RE = /^(fuel|heat|damage|fatigue|activation|stability|threat)_(a
  *  'threat'). Malformed strings are ignored but reported together in a
  *  single `skill.interrupt.invalid` event (emitted once per call, not once
  *  per bad string). Returns the first condition (in array order) whose
- *  comparison currently holds, or null if none do. */
+ *  comparison currently holds, or null if none do.
+ *
+ *  Defensive against a fixed audit finding: `conds` is typed `string[]`,
+ *  but a hostile/malformed caller could hand it a non-string element (e.g.
+ *  one with a throwing toString()/Symbol.toPrimitive) — RegExp#exec would
+ *  ToString-coerce it and crash uncaught. Non-string elements are now
+ *  treated as malformed (same as a regex-mismatching string) rather than
+ *  handed to the regex at all. In normal operation this never fires:
+ *  src/skills/arbiter.ts's validateIntent() already rejects any intent
+ *  whose interruptConditions isn't a string[] before it can become the
+ *  active intent. */
 export function interruptTriggered(
   conds: string[],
   ctx: SkillCtx,
@@ -125,6 +135,10 @@ export function interruptTriggered(
   let firstMatch: string | null = null;
 
   for (const cond of conds) {
+    if (typeof cond !== 'string') {
+      sawInvalid = true;
+      continue;
+    }
     const m = CONDITION_RE.exec(cond);
     if (!m) {
       sawInvalid = true;

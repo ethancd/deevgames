@@ -8,6 +8,24 @@
  * belief is allowed to be imprecise — see PLAN.md §4 rule 3).
  */
 
+import type { Mode } from '../core/types';
+
+// ------------------------------------------------------------------- mode
+/** PLAN §2/§3: "Each mode is a parameter bundle: perception radius, action
+ *  cost multipliers, interrupt thresholds..." — every SkillDef.estCost()
+ *  scales its forecast by this per-mode multiplier so mode has a real,
+ *  testable action-cost consequence beyond perceptionRadius (see
+ *  src/skills/skills.test.ts's mode-conditioned cost test). DEFEND is more
+ *  expensive across the board (heightened vigilance taxes every action and
+ *  blunts recovery); CONSERVE/RECOVER are cheaper, nudging the pilot toward
+ *  efficient behavior while depleted or healing. */
+export const MODE_COST_MULT: Record<Mode, number> = {
+  EXPLORE: 1.0,
+  CONSERVE: 0.85,
+  DEFEND: 1.3,
+  RECOVER: 0.9,
+};
+
 // ------------------------------------------------------------- move_to
 export const MOVE_EFFORT_DIRECT = 0.6;
 export const MOVE_EFFORT_CAUTIOUS = 0.4;

@@ -2,17 +2,35 @@
  * EMBER — ScriptedPilot (src/pilot/scripted.ts).
  *
  * Deterministic, rule-based Pilot. Reads ONLY the ContextPacket handed to
- * decide() — no world/body access, no Date.now(), no Math.random(). Any
- * "memory" it keeps (visited-direction counters, last-gather target, a
- * dead-reckoned belief about its own position) lives in the closure
- * returned by createScriptedPilot() and is derived solely from past
- * ContextPackets/Intents it produced itself, never from ground truth.
+ * decide() — no world/body access, no Date.now(), no Math.random(), and
+ * (per a fixed audit finding) NO mutable closure state that persists across
+ * decide() calls either. Every decision is a pure function of the single
+ * ContextPacket argument: whatever "memory" the pilot needs (which
+ * direction it explored last, a dead-reckoned belief about its own
+ * position, what it just finished gathering) is reconstructed each call
+ * from `ctx.activeIntent` and `ctx.recentEvents` — i.e. from this sim's own
+ * event log, not from anything shared across Pilot instances or Sims.
+ * createScriptedPilot() instances hold zero mutable fields, so the exact
+ * same Pilot object can safely be handed to any number of concurrently
+ * stepped Sims without cross-contaminating their trajectories (see
+ * src/engine/determinism.test.ts).
+ *
+ * A second fixed audit finding: earlier versions of this pilot partly keyed
+ * its fuel-seeking branch on the noisy interoception's freeform prose
+ * (`salient[].qualities` strings like 'dim'/'hungry'). That made a purely
+ * cosmetic relabeling of those strings change the pilot's plan — a
+ * prose-grounding violation. This pilot now reacts ONLY to typed, numeric
+ * interoception fields (`global.capacity` Bucket, `drives[].urgency`,
+ * `drives[].predictedTicksToLimit`) which src/body/interoception.ts computes
+ * as genuinely noisy, attention-sensitive readings (see its driveUrgencyAndForecast).
+ * `qualities` strings are still read only for constructing this pilot's own
+ * non-causal `thought`/`goal` narration — never for branching.
  *
  * Priority order (first matching, feasible branch wins — PLAN §5 / task
  * brief):
  *   1. visible wolf, or elevated "safety" drive urgency  -> flee / shelter
- *   2. very-low felt capacity, believed-low fuel, or an  -> gather nearest
- *      urgent "fuel" drive                                  deadwood/sunpatch,
+ *   2. very-low felt capacity, or an urgent "fuel" drive -> gather nearest
+ *      (noisy but typed — not prose)                        deadwood/sunpatch,
  *                                                            then consume it
  *   3. urgent "warmth" drive, or a small predicted-ticks- -> shelter (den)
  *      to-limit on warmth while dusk is approaching
@@ -132,49 +150,118 @@ function fuelSourceId(o: Observation): string {
   return typeof id === 'string' ? id : `${o.what}@${o.pos.x},${o.pos.y}`;
 }
 
+// -------------------------------------------------- stateless self-memory
+//
+// This pilot keeps no closure state (see file header). Instead, whatever it
+// needs to "remember" between calls is reconstructed each decide() purely
+// from ctx.activeIntent / ctx.recentEvents — both of which are built by the
+// engine from THIS sim's own event log, so two Sims sharing the same Pilot
+// object can never see each other's history here.
+
+function vecParam(it: Intent | undefined, key: string): Vec | undefined {
+  if (!it) return undefined;
+  const v = (it.params as Record<string, unknown> | undefined)?.[key];
+  if (
+    v &&
+    typeof v === 'object' &&
+    typeof (v as Vec).x === 'number' &&
+    typeof (v as Vec).y === 'number'
+  ) {
+    return v as Vec;
+  }
+  return undefined;
+}
+
+function acceptedIntentFromEvent(payload: unknown): Intent | undefined {
+  const p = payload as { intent?: Intent } | null | undefined;
+  return p?.intent;
+}
+
+/** Best-effort dead-reckoned belief about the ember's own position, derived
+ *  solely from the intents this pilot has itself issued (via ctx), never
+ *  from ground truth. Falls back to the map center on a cold start. */
+function estimateSelfPos(ctx: ContextPacket): Vec {
+  const active = ctx.activeIntent?.intent;
+  if (active) {
+    if (active.skill === 'move_to') {
+      const dest = vecParam(active, 'dest');
+      if (dest) return dest;
+    }
+    if (active.skill === 'flee') {
+      const from = vecParam(active, 'from');
+      if (from) return from; // last known danger bearing
+    }
+  }
+  for (let i = ctx.recentEvents.length - 1; i >= 0; i--) {
+    const e = ctx.recentEvents[i];
+    if (e.topic !== 'pilot.intent.accepted') continue;
+    const it = acceptedIntentFromEvent(e.payload);
+    if (!it) continue;
+    if (it.skill === 'move_to') {
+      const dest = vecParam(it, 'dest');
+      if (dest) return dest;
+    } else if (it.skill === 'flee') {
+      const from = vecParam(it, 'from');
+      if (from) return from;
+    }
+  }
+  return { x: Math.floor(GRID_W / 2), y: Math.floor(GRID_H / 2) };
+}
+
+/** Explore legs stamp a `_exploreDir` marker into their own (non-narration)
+ *  params so a later call can recover which directions were already tried,
+ *  purely by scanning ctx.recentEvents — no closure counters needed. */
+function pastExploreDirs(ctx: ContextPacket): number[] {
+  const dirs: number[] = [];
+  for (const e of ctx.recentEvents) {
+    if (e.topic !== 'pilot.intent.accepted') continue;
+    const it = acceptedIntentFromEvent(e.payload);
+    if (!it || it.skill !== 'move_to') continue;
+    const raw = (it.params as Record<string, unknown> | undefined)?.['_exploreDir'];
+    if (typeof raw === 'number' && Number.isInteger(raw) && raw >= 0 && raw < EXPLORE_DIRS.length) {
+      dirs.push(raw);
+    }
+  }
+  return dirs;
+}
+
+function pickExploreDir(ctx: ContextPacket): number {
+  const past = pastExploreDirs(ctx);
+  const counts = new Array(EXPLORE_DIRS.length).fill(0) as number[];
+  for (const d of past) counts[d] += 1;
+  const cursor = past.length > 0 ? (past[past.length - 1] + 1) % EXPLORE_DIRS.length : 0;
+  let bestIdx = 0;
+  let bestCount = Infinity;
+  for (let i = 0; i < EXPLORE_DIRS.length; i++) {
+    const idx = (cursor + i) % EXPLORE_DIRS.length;
+    if (counts[idx] < bestCount) {
+      bestCount = counts[idx];
+      bestIdx = idx;
+    }
+  }
+  return bestIdx;
+}
+
+function exploreIntent(ctx: ContextPacket, reason: string): Intent {
+  const dirIdx = pickExploreDir(ctx);
+  const d = EXPLORE_DIRS[dirIdx];
+  const origin = estimateSelfPos(ctx);
+  const dest: Vec = {
+    x: clamp(origin.x + d.x * EXPLORE_STEP, 0, GRID_W - 1),
+    y: clamp(origin.y + d.y * EXPLORE_STEP, 0, GRID_H - 1),
+  };
+  return intent(
+    'move_to',
+    { dest, style: 'direct', _exploreDir: dirIdx },
+    `Explore ${reason}`,
+    'Nothing urgent — time to look around.',
+    interrupts('threat_above_0.5', 'fuel_below_0.2', 'activation_above_0.6'),
+  );
+}
+
 // ------------------------------------------------------------------- pilot
 
 export function createScriptedPilot(): Pilot {
-  // --- closure memory (derived only from this pilot's own past outputs) ---
-  const visitCounts = new Map<number, number>(); // dir index -> times chosen
-  let believedPos: Vec = { x: Math.floor(GRID_W / 2), y: Math.floor(GRID_H / 2) };
-  let dirCursor = 0;
-  let lastGatherTarget: { id: string; what: string; pos: Vec } | null = null;
-
-  function pickExploreDir(): number {
-    let bestIdx = 0;
-    let bestCount = Infinity;
-    for (let i = 0; i < EXPLORE_DIRS.length; i++) {
-      // round-robin starting point so ties don't always favor N
-      const idx = (dirCursor + i) % EXPLORE_DIRS.length;
-      const count = visitCounts.get(idx) ?? 0;
-      if (count < bestCount) {
-        bestCount = count;
-        bestIdx = idx;
-      }
-    }
-    dirCursor = (bestIdx + 1) % EXPLORE_DIRS.length;
-    visitCounts.set(bestIdx, (visitCounts.get(bestIdx) ?? 0) + 1);
-    return bestIdx;
-  }
-
-  function exploreIntent(reason: string): Intent {
-    const dirIdx = pickExploreDir();
-    const d = EXPLORE_DIRS[dirIdx];
-    const dest: Vec = {
-      x: clamp(believedPos.x + d.x * EXPLORE_STEP, 0, GRID_W - 1),
-      y: clamp(believedPos.y + d.y * EXPLORE_STEP, 0, GRID_H - 1),
-    };
-    believedPos = dest; // optimistic dead reckoning; only this pilot's belief
-    return intent(
-      'move_to',
-      { dest, style: 'direct' },
-      `Explore ${reason}`,
-      'Nothing urgent — time to look around.',
-      interrupts('threat_above_0.5', 'fuel_below_0.2', 'activation_above_0.6'),
-    );
-  }
-
   function decide(ctx: ContextPacket): Intent {
     const wolfObs = ctx.observations.find((o) => o.what === 'wolf');
     const safetyUrgency = driveUrgency(ctx, 'safety');
@@ -186,7 +273,6 @@ export function createScriptedPilot(): Pilot {
     // ---- 1. safety: visible wolf or elevated safety urgency ----
     if (wolfObs || safetyUrgency > SAFETY_URGENT) {
       if (wolfObs && isFeasible(ctx, 'flee')) {
-        believedPos = wolfObs.pos; // last known danger bearing
         return intent(
           'flee',
           { from: wolfObs.pos },
@@ -207,30 +293,31 @@ export function createScriptedPilot(): Pilot {
       // neither feasible (e.g. gated by low stability) — fall through.
     }
 
-    // ---- 2. fuel: felt capacity very low, believed-low fuel, or urgent drive ----
+    // ---- 2. fuel: felt capacity very low, or an urgent (noisy, typed,
+    //      attention-sensitive) fuel drive. Deliberately does NOT read
+    //      interoception.salient[].qualities prose — see file header. ----
     const capacityVeryLow = ctx.interoception.global.capacity === 'very_low';
-    const fuelSalient = ctx.interoception.salient.find((s) => s.region === 'fuel');
-    const believedLowFuel = fuelSalient
-      ? fuelSalient.qualities.includes('dim') || fuelSalient.qualities.includes('hungry')
-      : false;
-    const fuelUrgentTrue = fuelDrive > DRIVE_URGENT;
+    const fuelUrgent = fuelDrive > DRIVE_URGENT;
 
-    if (capacityVeryLow || believedLowFuel || fuelUrgentTrue) {
+    if (capacityVeryLow || fuelUrgent) {
       // Finish a gather we just completed by consuming what we gathered.
+      // The target id is read straight off the just-completed intent's own
+      // params — no separate "what we last gathered" memory needed.
       if (
         ctx.activeIntent?.intent.skill === 'gather' &&
         ctx.activeIntent.status === 'done' &&
-        lastGatherTarget &&
         isFeasible(ctx, 'consume')
       ) {
-        const target = lastGatherTarget;
-        return intent(
-          'consume',
-          { item: target.id, kind: target.what },
-          `Eat the ${target.what}`,
-          'That will keep the ember burning.',
-          interrupts('threat_above_0.5'),
-        );
+        const targetId = (ctx.activeIntent.intent.params as Record<string, unknown>)?.['target'];
+        if (typeof targetId === 'string') {
+          return intent(
+            'consume',
+            { item: targetId },
+            'Eat the gathered fuel',
+            'That will keep the ember burning.',
+            interrupts('threat_above_0.5'),
+          );
+        }
       }
 
       const source = nearestFuelSource(ctx);
@@ -238,7 +325,6 @@ export function createScriptedPilot(): Pilot {
         // gather()/consume() require being adjacent to (or on) the source —
         // close the distance first, then gather once we're there.
         if (source.distance <= 1 && isFeasible(ctx, 'gather')) {
-          lastGatherTarget = { id: fuelSourceId(source), what: source.what, pos: source.pos };
           return intent(
             'gather',
             { target: fuelSourceId(source) },
@@ -248,7 +334,6 @@ export function createScriptedPilot(): Pilot {
           );
         }
         if (isFeasible(ctx, 'move_to')) {
-          believedPos = source.pos;
           return intent(
             'move_to',
             { dest: source.pos, style: 'direct' },
@@ -261,7 +346,7 @@ export function createScriptedPilot(): Pilot {
       // Nothing in sight to refuel from — fold into exploration so the
       // pilot keeps looking, but be honest about why in the narration.
       if (isFeasible(ctx, 'move_to')) {
-        return exploreIntent('for fuel');
+        return exploreIntent(ctx, 'for fuel');
       }
     }
 
@@ -298,7 +383,7 @@ export function createScriptedPilot(): Pilot {
 
     // ---- 5. otherwise: explore ----
     if (isFeasible(ctx, 'move_to')) {
-      return exploreIntent('the unknown');
+      return exploreIntent(ctx, 'the unknown');
     }
 
     // Every movement/action skill was infeasible — hold position.

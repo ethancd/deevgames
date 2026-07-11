@@ -109,25 +109,39 @@ const DRIVES: DriveDef[] = [
   { drive: 'rest', kind: 'accumulation', varKey: 'fatigue' },
 ];
 
+/** Same attention-sensitive noise model used for the salient[] readings
+ *  (see `attended` below and PLAN §4 rule 3: focus() sharpens belief,
+ *  never touches ground truth) — applied here too, so `urgency` and
+ *  `predictedTicksToLimit` are genuinely noisy, typed, non-prose channels a
+ *  pilot can legitimately react to (and legitimately benefit from
+ *  focus()'ing on), rather than the felt reading only living in freeform
+ *  `qualities` strings. */
 function driveUrgencyAndForecast(
   body: BodyState,
   def: DriveDef,
+  attention: string | null,
+  sigma: number,
+  rng: Rng,
 ): { urgency: number; predictedTicksToLimit?: number } {
   const [lo, hi] = VIABLE_BANDS[def.varKey];
-  const value = body[def.varKey];
+  const attended = attention === def.varKey;
+  const regionSigma = attended ? sigma * 0.35 : sigma;
+  const believedValue = noisyReading(body[def.varKey], regionSigma, rng);
   const slope = recentSlope(body, def.varKey);
 
   if (def.kind === 'depletion') {
     const margin = lo * 1.3;
-    const urgency = value < margin ? clamp01((margin - value) / Math.max(margin, 1e-6)) : 0;
+    const urgency =
+      believedValue < margin ? clamp01((margin - believedValue) / Math.max(margin, 1e-6)) : 0;
     const predictedTicksToLimit =
-      slope < 0 ? Math.max(0, Math.round((value - lo) / -slope)) : undefined;
+      slope < 0 ? Math.max(0, Math.round((believedValue - lo) / -slope)) : undefined;
     return { urgency, predictedTicksToLimit };
   }
   const margin = hi * 0.85;
-  const urgency = value > margin ? clamp01((value - margin) / Math.max(1 - margin, 1e-6)) : 0;
+  const urgency =
+    believedValue > margin ? clamp01((believedValue - margin) / Math.max(1 - margin, 1e-6)) : 0;
   const predictedTicksToLimit =
-    slope > 0 ? Math.max(0, Math.round((hi - value) / slope)) : undefined;
+    slope > 0 ? Math.max(0, Math.round((hi - believedValue) / slope)) : undefined;
   return { urgency, predictedTicksToLimit };
 }
 
@@ -210,8 +224,18 @@ export function computeInteroception(
     return { region: v, qualities: qualitiesFor(v, bucket), confidence };
   });
 
+  // Forked off the top-level `rng` param (not `introRng`) so this never
+  // perturbs the global/salient draw sequence above — existing consumers of
+  // those exact numeric sequences are unaffected by this drives-noise model.
+  const drivesRng = rng.fork('drives');
   const drives = DRIVES.map((def) => {
-    const { urgency, predictedTicksToLimit } = driveUrgencyAndForecast(body, def);
+    const { urgency, predictedTicksToLimit } = driveUrgencyAndForecast(
+      body,
+      def,
+      attention,
+      sigma,
+      drivesRng.fork(def.drive),
+    );
     return { drive: def.drive, urgency, predictedTicksToLimit };
   }).sort((a, b) => b.urgency - a.urgency);
 

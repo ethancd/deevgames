@@ -238,11 +238,15 @@ describe('createScriptedPilot — priority 2: fuel', () => {
     expect(out.skill).toBe('gather');
   });
 
-  it('gathers when the believed (noisy) fuel reading itself looks dim/hungry, once adjacent', () => {
+  it('prose immunity: "dim"/"hungry" salient qualities text alone does NOT trigger fuel-seeking ' +
+    '(capacity high, fuel drive at 0) — only the typed capacity Bucket / drives.fuel.urgency channels ' +
+    'are causal', () => {
     const pilot = createScriptedPilot();
     const ctx = baseCtx({
       observations: [adjacentDeadwoodObservation],
       interoception: baseInteroception({
+        // global.capacity stays 'high' and drives.fuel.urgency stays 0 (the
+        // defaults) — only the freeform qualities text says "dim"/"hungry".
         salient: [
           { region: 'fuel', qualities: ['dim', 'hungry'], confidence: 0.4 },
           { region: 'heat', qualities: ['comfortable'], confidence: 0.9 },
@@ -253,7 +257,8 @@ describe('createScriptedPilot — priority 2: fuel', () => {
       }),
     });
     const out = pilot.decide(ctx) as import('../core/types').Intent;
-    expect(out.skill).toBe('gather');
+    expect(out.skill).not.toBe('gather');
+    expect(out.skill).not.toBe('consume');
   });
 
   it('consumes after a gather completes against the same target', () => {
@@ -404,18 +409,40 @@ describe('createScriptedPilot — priority 5: explore', () => {
     expect(out.params.dest).toBeDefined();
   });
 
-  it('spreads exploration across different directions over repeated calls (visited memory)', () => {
+  it('spreads exploration across different directions over repeated calls (memory reconstructed ' +
+    'from ctx.recentEvents, not closure state)', () => {
     const pilot = createScriptedPilot();
     const dests = new Set<string>();
+    // The pilot keeps no closure memory (see src/pilot/scripted.ts's header)
+    // — round-robin fairness across explore legs is reconstructed each call
+    // purely from ctx.recentEvents, so this test must feed back the
+    // 'pilot.intent.accepted' event a real engine would have logged for
+    // each prior decide() output, exactly like a live sim would.
+    const recentEvents: import('../core/types').SimEvent[] = [];
     for (let i = 0; i < 8; i++) {
-      const out = pilot.decide(baseCtx({ tick: 100 + i })) as import('../core/types').Intent;
+      const out = pilot.decide(
+        baseCtx({ tick: 100 + i, recentEvents: [...recentEvents] }),
+      ) as import('../core/types').Intent;
       expect(out.skill).toBe('move_to');
       const dest = out.params.dest as { x: number; y: number };
       dests.add(`${dest.x},${dest.y}`);
+      recentEvents.push({
+        tick: 100 + i,
+        topic: 'pilot.intent.accepted',
+        payload: { intent: out },
+      });
     }
     // 8 explore calls in a row with round-robin least-visited direction
     // selection must not all pile into a single destination.
     expect(dests.size).toBeGreaterThan(1);
+  });
+
+  it('two independently-created pilots given the exact same (empty-history) ctx twice in a row ' +
+    'pick the same direction — proving there is no hidden per-instance closure state', () => {
+    const pilotA = createScriptedPilot();
+    const outA1 = pilotA.decide(baseCtx({ tick: 100 })) as import('../core/types').Intent;
+    const outA2 = pilotA.decide(baseCtx({ tick: 100 })) as import('../core/types').Intent;
+    expect(outA1).toEqual(outA2);
   });
 
   it('falls back to wait when every movement/action skill is infeasible', () => {
