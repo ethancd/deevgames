@@ -356,6 +356,12 @@ export function createSim(cfg: SimConfig): Sim {
   let activeExec: SkillExec | null = null;
   let activeIntent: { intent: Intent; status: string } | null = null;
   let lastConsultTick = 0;
+  // WF2 additive field (src/ui/contracts.ts header): the most recent
+  // ContextPacket built for a pilot consultation. Exposed on the returned
+  // Sim via a getter (see the return statement) so callers reading
+  // `sim.lastPacket` always see the current value rather than a snapshot
+  // captured at construction time.
+  let lastPacket: ContextPacket | null = null;
   let reflexActiveLastTick = false;
   const seenEntityKinds = new Set<string>();
 
@@ -548,6 +554,7 @@ export function createSim(cfg: SimConfig): Sim {
     if (due) {
       lastConsultTick = tick;
       const ctxPacket = buildContextPacket(tick, obs);
+      lastPacket = ctxPacket;
       let rawIntent: unknown;
       if (pilotQueue) {
         rawIntent =
@@ -589,5 +596,15 @@ export function createSim(cfg: SimConfig): Sim {
     }
   }
 
-  return { world, body, log, intents, step, run };
+  return {
+    world,
+    body,
+    log,
+    intents,
+    get lastPacket(): ContextPacket | null {
+      return lastPacket;
+    },
+    step,
+    run,
+  };
 }

@@ -335,6 +335,11 @@ export interface Sim {
   log: EventLog;
   /** Every pilot output in order — replaying these must reproduce the log. */
   intents: Intent[];
+  /** WF2 additive field (see src/ui/contracts.ts header): the most recent
+   *  ContextPacket the engine built for a pilot consultation (live or
+   *  replay), or null before the first consultation. Set wherever
+   *  src/engine/index.ts builds a packet; never mutated elsewhere. */
+  lastPacket: ContextPacket | null;
   step(): Promise<void>;
   run(ticks: number): Promise<void>;
 }
