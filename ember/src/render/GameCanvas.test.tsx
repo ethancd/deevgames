@@ -65,6 +65,8 @@ async function buildFakeSession(): Promise<SessionApi> {
     presetId: 'free-run',
     narrationEnabled: true,
     replaying: false,
+    pilotKind: 'scripted',
+    llm: null,
   };
 
   const listeners = new Set<() => void>();
@@ -82,6 +84,7 @@ async function buildFakeSession(): Promise<SessionApi> {
     restart: () => {},
     exportReplay: (): ReplayFile => ({ version: 1, seed: 7, intents: sim.intents }),
     loadReplay: () => {},
+    setPilot: () => {},
   };
 }
 

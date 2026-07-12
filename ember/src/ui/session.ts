@@ -29,11 +29,25 @@
  *     mutating state after a newer sim has taken over.
  */
 
-import type { BodyState, Intent, Sim, SimEvent } from '../core/types';
+import type { BodyState, Intent, Pilot, Sim, SimEvent } from '../core/types';
 import { createSim } from '../engine';
+// NOTE: this file is typed ONLY against the pinned src/pilot/llmContracts.ts
+// (LLMPilotConfig/LLMPilotEvent/LLMModelId/DEFAULT_LLM_MODEL — all exist).
+// The actual `createLLMPilot` value lives in src/pilot/llm.ts, agent LLM's
+// WF3 deliverable built in parallel with this file, so it is loaded via a
+// lazy `import('../pilot/llm')` inside defaultLLMPilotFactory below rather
+// than a top-level static import: nothing in this module's own load, nor
+// any test that doesn't exercise the 'claude' pilot path (or that injects
+// its own `llmPilotFactory`, see createSession's opts), needs that module
+// to exist. This keeps the seam thin and this file's test suite decoupled
+// from landing order between the two WF3 agents.
+import { DEFAULT_LLM_MODEL } from '../pilot/llmContracts';
+import type { LLMModelId, LLMPilotConfig, LLMPilotEvent } from '../pilot/llmContracts';
 import { createScriptedPilot } from '../pilot/scripted';
 import type {
   BodyHistoryPoint,
+  LLMSessionInfo,
+  PilotKind,
   Preset,
   PresetId,
   ReplayFile,
@@ -68,7 +82,45 @@ function bodyHistoryPoint(tick: number, body: BodyState): BodyHistoryPoint {
   };
 }
 
-export function createSession(opts?: { seed?: number; presetId?: PresetId }): SessionApi {
+/** Constructs the 'claude' delegate Pilot from an LLMPilotConfig. */
+type LLMPilotFactory = (config: LLMPilotConfig) => Pilot;
+
+/**
+ * Default factory: lazily imports the real LLM pilot the first (and only
+ * the first) time a 'claude' pilot is actually requested, deferring module
+ * resolution to runtime instead of session.ts's own static import graph.
+ * Until that first call, `../pilot/llm` is never touched at all.
+ */
+const defaultLLMPilotFactory: LLMPilotFactory = (config) => {
+  let inner: Pilot | null = null;
+  // `/* @vite-ignore */` tells Vite's import-analysis plugin not to
+  // eagerly resolve this specifier at transform time (which would break
+  // every test that merely loads session.ts, even ones that never touch
+  // the 'claude' pilot) — the real resolution happens at call time, once
+  // src/pilot/llm.ts (agent LLM's WF3 deliverable) exists on disk.
+  const ready: Promise<Pilot> = import(/* @vite-ignore */ '../pilot/llm').then(({ createLLMPilot }) => {
+    const built = createLLMPilot(config);
+    inner = built;
+    return built;
+  });
+  return {
+    async decide(ctx) {
+      const target = inner ?? (await ready);
+      return target.decide(ctx);
+    },
+  };
+};
+
+export function createSession(opts?: {
+  seed?: number;
+  presetId?: PresetId;
+  /** Test seam (additive to the pinned signature): overrides how the
+   *  'claude' pilot is constructed. Lets tests inject a fake LLM pilot
+   *  without depending on src/pilot/llm.ts's presence/timing. Defaults to
+   *  defaultLLMPilotFactory (the real thing) in production. */
+  llmPilotFactory?: LLMPilotFactory;
+}): SessionApi {
+  const llmPilotFactory = opts?.llmPilotFactory ?? defaultLLMPilotFactory;
   let presetId: PresetId = opts?.presetId ?? 'free-run';
   let seed: number = opts?.seed ?? PRESETS[presetId].seed;
   let speed: Speed = 1;
@@ -85,6 +137,87 @@ export function createSession(opts?: { seed?: number; presetId?: PresetId }): Se
   let generation = 0;
   let timer: ReturnType<typeof setInterval> | null = null;
   let stepChain: Promise<void> = Promise.resolve();
+
+  // ---------------------------------------------------------- pilot swap
+  // A single DelegatingPilot is installed into every createSim() call this
+  // session ever makes (see buildSim below) — its identity never changes,
+  // only `currentDelegate` does. setPilot() swaps `currentDelegate` live;
+  // the engine keeps calling the same delegatingPilot.decide() throughout,
+  // so switching pilots never requires a sim restart. The engine's
+  // sanitize/validate layer (src/skills/validateIntent) stays the
+  // authoritative gate on whatever the delegate returns, per contracts.ts.
+  let pilotKind: PilotKind = 'scripted';
+  let llmInfo: LLMSessionInfo | null = null;
+  let currentDelegate: Pilot = createScriptedPilot();
+  // Bumped on every setPilot() call so a stray onEvent from a
+  // since-replaced LLM pilot instance (a consultation that was still in
+  // flight when the user switched away) can't clobber newer state.
+  let llmGeneration = 0;
+
+  const delegatingPilot: Pilot = {
+    decide: (ctx) => currentDelegate.decide(ctx),
+  };
+
+  function handleLLMEvent(myGen: number, e: LLMPilotEvent): void {
+    if (myGen !== llmGeneration || !llmInfo) return;
+    switch (e.kind) {
+      case 'consult_start':
+      case 'consult_retry':
+        llmInfo = { ...llmInfo, busy: true };
+        break;
+      case 'consult_ok':
+        llmInfo = {
+          ...llmInfo,
+          busy: false,
+          lastError: null,
+          consultCount: llmInfo.consultCount + 1,
+        };
+        break;
+      case 'consult_failed':
+        llmInfo = {
+          ...llmInfo,
+          busy: false,
+          lastError: e.detail ?? 'LLM consultation failed.',
+          consultCount: llmInfo.consultCount + 1,
+        };
+        break;
+      case 'auth_error':
+        // Fixed, non-leaking copy — never surface e.detail here, so a key
+        // accidentally echoed by a transport error can never reach the UI.
+        llmInfo = {
+          ...llmInfo,
+          busy: false,
+          lastError: 'Invalid API key — check it and reconnect',
+        };
+        break;
+    }
+    publish();
+  }
+
+  function setPilot(kind: PilotKind, config?: { apiKey: string; model?: string }): void {
+    llmGeneration += 1;
+    if (kind === 'scripted') {
+      currentDelegate = createScriptedPilot();
+      pilotKind = 'scripted';
+      llmInfo = null;
+      publish();
+      return;
+    }
+
+    if (!config || !config.apiKey) {
+      throw new Error("setPilot('claude', config) requires config.apiKey");
+    }
+    const myGen = llmGeneration;
+    const model = (config.model as LLMModelId | undefined) ?? DEFAULT_LLM_MODEL;
+    pilotKind = 'claude';
+    llmInfo = { model, busy: false, lastError: null, consultCount: 0 };
+    currentDelegate = llmPilotFactory({
+      apiKey: config.apiKey,
+      model,
+      onEvent: (e) => handleLLMEvent(myGen, e),
+    });
+    publish();
+  }
 
   const listeners = new Set<() => void>();
   // Always defined before any external call can observe it — the very
@@ -114,6 +247,8 @@ export function createSession(opts?: { seed?: number; presetId?: PresetId }): Se
       presetId,
       narrationEnabled,
       replaying,
+      pilotKind,
+      llm: llmInfo,
     };
     for (const listener of listeners) listener();
   }
@@ -213,7 +348,7 @@ export function createSession(opts?: { seed?: number; presetId?: PresetId }): Se
 
     sim = createSim({
       seed,
-      pilot: createScriptedPilot(),
+      pilot: delegatingPilot,
       bodyOverrides: preset.bodyOverrides,
       worldPatch: preset.worldPatch,
       recordedIntents,
@@ -289,5 +424,6 @@ export function createSession(opts?: { seed?: number; presetId?: PresetId }): Se
     restart,
     exportReplay,
     loadReplay,
+    setPilot,
   };
 }

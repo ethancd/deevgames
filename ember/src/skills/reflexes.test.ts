@@ -12,6 +12,7 @@ describe('checkReflex', () => {
     expect(intent).not.toBeNull();
     expect(intent?.goal).toBe('reflex:collapse');
     expect(intent?.skill).toBe('rest');
+    expect(intent?.params._reflexSource).toBe(true);
     expect(log.byTopic('reflex.collapse').length).toBe(1);
     expect(log.byTopic('reflex.collapse')[0].tick).toBe(5);
   });
@@ -35,6 +36,7 @@ describe('checkReflex', () => {
     expect(intent).not.toBeNull();
     expect(intent?.goal).toBe('reflex:flinch');
     expect(intent?.skill).toBe('move_to');
+    expect(intent?.params._reflexSource).toBe(true);
     const dest = intent?.params.dest as { x: number; y: number };
     // Stepping away from a wolf to the north should move south (or stay put
     // only if nothing improves distance, which isn't the case here).
@@ -57,6 +59,7 @@ describe('checkReflex', () => {
     expect(intent?.goal).toBe('reflex:flare');
     expect(intent?.skill).toBe('wait');
     expect(intent?.params.flare).toBe(true);
+    expect(intent?.params._reflexSource).toBe(true);
     expect(log.byTopic('reflex.flare').length).toBe(1);
     expect(log.byTopic('reflex.flinch').length).toBe(0);
   });

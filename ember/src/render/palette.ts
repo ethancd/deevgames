@@ -57,11 +57,20 @@ export const PALETTE = {
     outer: 'rgba(255, 150, 60, 0)',
   },
   night: {
-    // Cold indigo/blue-violet, high opacity: blended over green grass/forest
-    // tiles this still needs to read as near-black-indigo (reference:
-    // ~#000309), not the teal-green a lower-opacity/greener-leaning value
-    // lets bleed through.
-    overlay: 'rgba(4, 4, 18, 0.93)',
+    // Cold indigo/blue-violet. WF2 judge round 1 shipped this at 0.93 alpha
+    // over a near-black rgb(4,4,18), which crushed terrain outside the glow
+    // to a flat near-black — trees/rocks/pond unreadable (WF3 polish task).
+    // Tuned by rendering + resampling ember/screenshots/night-defend.png
+    // against ember/reference/night-defend.png across three passes (0.93 ->
+    // 0.85 -> 0.7, base color nudged a touch bluer each time): 0.85 alone
+    // still crushed nearly flat; 0.7 with this slightly bluer base is the
+    // first pass where distinct tile types (rock/forest/grass/water) keep
+    // separated brightness under the overlay instead of collapsing to one
+    // tone, while the far-from-glow canvas background (rgb(5,7,20), drawn
+    // separately in GameCanvas.tsx) still reads as near-black night. The
+    // wolf (drawn after this overlay) stays darker than tinted terrain, so
+    // its eyes still pop.
+    overlay: 'rgba(6, 8, 26, 0.74)',
     tint: 'rgba(14, 16, 40, 0.5)',
   },
   day: {

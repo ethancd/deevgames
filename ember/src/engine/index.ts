@@ -10,14 +10,28 @@
  *     to stepBody (skills never touch BodyState either),
  *   - decides when the pilot is consulted and adopts/validates its Intent.
  *
+ * Fixed audit finding (llm-audit, high): recordedIntents replay filtering
+ * used to identify reflex-authored Intents by a `goal.startsWith('reflex:')`
+ * string check. `goal` is pilot-authored free-text narration with no
+ * reserved namespace (core/types.ts: "narration, non-causal"); a real LLM
+ * pilot choosing a goal like "reflex: dodge and reassess" would have been
+ * silently misclassified and dropped from the replay pilotQueue, desyncing
+ * every subsequent queue index for the rest of that replay with no error or
+ * log entry. isReflexIntent() below now checks a structural
+ * `params._reflexSource === true` marker that ONLY src/skills/reflexes.ts
+ * ever sets (see its header) — a pilot cannot forge it (the LLM path is
+ * forced strict tool-use with `additionalProperties: false`, so a real
+ * model's submitted params structurally cannot carry an extra key). See
+ * src/engine/reflexIntentProvenance.test.ts for the regression coverage.
+ *
  * Tick order (per task spec):
  *   1. stepWorld(world, rng, log, glowRadius(body.fuel))         → world.*
  *   2. advance the active skill 1 tick; apply moveTo; fold wolf attack
  *      damage into Exertion.damageDelta                          → skill.*
  *   3. stepBody(body, world, exertion, rng, log)                 → body.*
  *   4. checkReflex — a firing reflex REPLACES the active intent immediately
- *      and is recorded in sim.intents like a pilot intent (tagged via its
- *      `goal: 'reflex:<name>'` prefix — see reflexes.ts)          → reflex.*
+ *      and is recorded in sim.intents like a pilot intent (tagged via a
+ *      structural `params._reflexSource` marker — see reflexes.ts)  → reflex.*
  *   5. interrupt check on the (possibly just-replaced) active intent's
  *      conditions; threat = wolf visible ? 1 - distance/perceptionRadius : 0
  *   6. if pilot due: build ContextPacket from COPIES (structuredClone),
@@ -109,15 +123,24 @@ function clamp01(x: number): number {
   return x;
 }
 
-/** Reflex intents are tagged via the `reflex:<name>` goal prefix that
- *  src/skills/reflexes.ts always assigns (and that this engine never
- *  narration-strips — see stripNarration()'s comment below). Used to keep
- *  replay's recordedIntents queue (built from a flat sim.intents mix of
- *  pilot- and reflex-authored entries) pilot-only: reflexes are always
+/** Reflex intents are identified by the structural `params._reflexSource
+ *  === true` marker that src/skills/reflexes.ts always sets (see its header
+ *  comment) — NOT by the `reflex:<name>` goal text those same intents also
+ *  carry (that text is a human-readable label only; `goal` is pilot-
+ *  controlled free-text narration with no reserved namespace, so an earlier
+ *  goal-prefix check here could be spoofed by an ordinary, unremarkable
+ *  pilot-authored goal — see the file-header audit-finding note). Used to
+ *  keep replay's recordedIntents queue (built from a flat sim.intents mix
+ *  of pilot- and reflex-authored entries) pilot-only: reflexes are always
  *  recomputed live from the deterministic body/world trajectory, never
  *  replayed from the queue. */
 function isReflexIntent(intent: Intent): boolean {
-  return typeof intent.goal === 'string' && intent.goal.startsWith('reflex:');
+  const params = intent.params;
+  return (
+    params !== null &&
+    typeof params === 'object' &&
+    (params as Record<string, unknown>)['_reflexSource'] === true
+  );
 }
 
 // ------------------------------------------------------- intent sanitizing
@@ -226,9 +249,12 @@ function sanitizeIntent(raw: unknown): SanitizeResult {
 }
 
 /** Strips the two non-causal narration fields. Applied ONLY to
- *  pilot-authored intents when narrationEnabled=false — reflex intents'
- *  `goal` ('reflex:collapse' etc.) is a structural source tag, not pilot
- *  prose, and is deliberately left intact (see isReflexIntent()). */
+ *  pilot-authored intents when narrationEnabled=false — reflex intents are
+ *  never routed through here at all (adoptReflexIntent() below calls
+ *  adoptExecFor() directly), so their `goal` ('reflex:collapse' etc.,
+ *  a human-readable label, NOT the source-of-truth used by
+ *  isReflexIntent() — see its comment) is always left intact regardless of
+ *  the narration setting. */
 function stripNarration(intent: Intent): Intent {
   return { ...intent, goal: '', thought: undefined };
 }

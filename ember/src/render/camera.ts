@@ -28,12 +28,6 @@ export interface CameraOpts {
 
 export function computeCamera(canvasPxW: number, canvasPxH: number, followPos: Vec, opts?: CameraOpts): Camera {
   const fitScale = Math.floor(Math.min(canvasPxW / WORLD_PX_W, canvasPxH / WORLD_PX_H));
-  // A caller explicitly asking for a minScale (the DEFEND-mode forced zoom)
-  // wants the ember centered even right at a map edge — clamping the camera
-  // to never reveal past the grid would instead pin the ember flush against
-  // the canvas edge there, clipping its glow. The unforced small-canvas
-  // fallback path (opts omitted) keeps the original clamped behavior.
-  const forced = opts?.minScale !== undefined;
   const minScale = Math.max(1, Math.floor(opts?.minScale ?? 1));
   if (fitScale >= 1 && fitScale >= minScale) {
     return {
@@ -47,8 +41,27 @@ export function computeCamera(canvasPxW: number, canvasPxH: number, followPos: V
   const viewHtiles = Math.max(1, Math.floor(canvasPxH / (TILE_PX * scale)));
   const rawCamTileX = followPos.x - Math.floor(viewWtiles / 2);
   const rawCamTileY = followPos.y - Math.floor(viewHtiles / 2);
-  const camTileX = forced ? rawCamTileX : Math.max(0, Math.min(GRID_W - viewWtiles, rawCamTileX));
-  const camTileY = forced ? rawCamTileY : Math.max(0, Math.min(GRID_H - viewHtiles, rawCamTileY));
+  // Always clamp the follow camera to the world's bounds — including under
+  // a caller-forced minScale (DEFEND's tighter zoom). An earlier version
+  // deliberately left the forced path unclamped, reasoning that clamping
+  // would "pin the ember flush against the canvas edge, clipping its glow"
+  // near a map boundary. That reasoning was wrong in practice: skipping the
+  // clamp doesn't recenter anything, it just lets camTileX/camTileY run past
+  // the world's edge into tiles that were never generated — the renderer
+  // then has nothing to draw there but a flat fallback fill, producing a
+  // large uniform void band (confirmed in the night-defend capture, where
+  // DEFEND's forced 3x zoom near the world's top edge left ~40% of the
+  // canvas a flat, textureless #05070f fill). Clamping instead leaves the
+  // ember off-center near the edge of the viewport — fully visible, glow
+  // included — with real terrain drawn edge-to-edge, exactly like every
+  // other edge-of-map camera position already handles correctly (see
+  // 'never produces a follow-mode origin that reveals past the grid edge'
+  // in camera.test.ts, which this forced path now satisfies too). Bare
+  // Math.max(0, Math.min(...)) below degrades gracefully even when the
+  // viewport is wider/taller than the whole world (GRID_W - viewWtiles < 0):
+  // it pins to 0, matching the pre-existing unforced fallback behavior.
+  const camTileX = Math.max(0, Math.min(GRID_W - viewWtiles, rawCamTileX));
+  const camTileY = Math.max(0, Math.min(GRID_H - viewHtiles, rawCamTileY));
   // (`|| 0` normalizes -0 -> 0 for camTileX/Y === 0, which JS's unary
   // negation would otherwise produce and which some equality assertions —
   // Object.is-based ones — treat as distinct from 0.)

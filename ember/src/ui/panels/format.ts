@@ -197,12 +197,19 @@ function formatParamValue(v: unknown): string {
  *  has params, and to '(no params)' when it truly has none. */
 const SUMMARY_KEY_PRIORITY = ['dest', 'target', 'item', 'region', 'from', 'duration'];
 
+/** Private, non-schema scratch keys stamped into `params` by engine-internal
+ *  code (ScriptedPilot's `_exploreDir` self-memory; src/skills/reflexes.ts's
+ *  `_reflexSource` replay-provenance marker — see engine/index.ts's
+ *  isReflexIntent()). Neither is meant for a player to see, so both are
+ *  excluded from the "show every remaining param" banner fallback below. */
+const HIDDEN_PARAM_KEYS = new Set(['_exploreDir', '_reflexSource']);
+
 export function summarizeParams(intent: Intent): string {
   const params = (intent.params ?? {}) as Record<string, unknown>;
   for (const key of SUMMARY_KEY_PRIORITY) {
     if (key in params) return `${key}: ${formatParamValue(params[key])}`;
   }
-  const rest = Object.keys(params).filter((k) => k !== '_exploreDir');
+  const rest = Object.keys(params).filter((k) => !HIDDEN_PARAM_KEYS.has(k));
   if (rest.length === 0) return '(no params)';
   return rest.map((k) => `${k}: ${formatParamValue(params[k])}`).join(', ');
 }

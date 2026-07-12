@@ -7,9 +7,15 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import type { Intent, Pilot } from '../core/types';
+import type { LLMPilotConfig, LLMPilotEvent } from '../pilot/llmContracts';
 import type { ReplayFile } from './contracts';
 import { PRESETS } from './presets';
 import { createSession } from './session';
+
+function fakeIntent(goal: string): Intent {
+  return { goal, skill: 'wait', params: {}, interruptConditions: [] };
+}
 
 describe('createSession', () => {
   beforeEach(() => {
@@ -150,5 +156,151 @@ describe('createSession', () => {
   it('a zero-warmup preset (both night-defend and day-explore) is immediately paused, not idle', () => {
     expect(createSession({ presetId: 'night-defend' }).getState().status).toBe('paused');
     expect(createSession({ presetId: 'day-explore' }).getState().status).toBe('paused');
+  });
+});
+
+describe('createSession — WF3 setPilot() delegation', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('starts on the scripted pilot with pilotKind "scripted" and llm null', () => {
+    const session = createSession({ presetId: 'free-run', seed: 7 });
+    const s = session.getState();
+    expect(s.pilotKind).toBe('scripted');
+    expect(s.llm).toBeNull();
+  });
+
+  it('setPilot swaps the live delegate without restarting the sim (same tick/seed continue)', async () => {
+    const fakeLLM: Pilot = { decide: async () => fakeIntent('fake-llm-goal') };
+    const session = createSession({
+      presetId: 'free-run',
+      seed: 7,
+      llmPilotFactory: () => fakeLLM,
+    });
+
+    await session.stepOnce();
+    const seedBeforeSwitch = session.getState().seed;
+    const presetBeforeSwitch = session.getState().presetId;
+
+    session.setPilot('claude', { apiKey: 'sk-test-does-not-matter' });
+    expect(session.getState().pilotKind).toBe('claude');
+
+    // The pilot is only re-consulted every PILOT_PERIOD ticks (or on
+    // interrupt) — step forward (same sim, same seed throughout: proof
+    // there was no restart) until a fresh consultation lands.
+    let sawFakeGoal = false;
+    for (let i = 0; i < 20 && !sawFakeGoal; i++) {
+      await session.stepOnce();
+      expect(session.getState().seed).toBe(seedBeforeSwitch);
+      expect(session.getState().presetId).toBe(presetBeforeSwitch);
+      sawFakeGoal = session.getState().lastIntent?.goal === 'fake-llm-goal';
+    }
+    expect(sawFakeGoal).toBe(true);
+    const tickAfterFakeGoal = session.getState().tick;
+
+    // Swap back — again, no restart.
+    session.setPilot('scripted');
+    expect(session.getState().pilotKind).toBe('scripted');
+    expect(session.getState().llm).toBeNull();
+    await session.stepOnce();
+    expect(session.getState().seed).toBe(seedBeforeSwitch);
+    expect(session.getState().tick).toBe(tickAfterFakeGoal + 1);
+  });
+
+  it("setPilot('claude', ...) without a config throws (apiKey is required)", () => {
+    const session = createSession({ presetId: 'free-run', seed: 7, llmPilotFactory: () => ({ decide: async () => fakeIntent('x') }) });
+    expect(() => session.setPilot('claude')).toThrow();
+  });
+
+  it('setPilot defaults the model to DEFAULT_LLM_MODEL when none is given', () => {
+    const session = createSession({ presetId: 'free-run', seed: 7, llmPilotFactory: () => ({ decide: async () => fakeIntent('x') }) });
+    session.setPilot('claude', { apiKey: 'k' });
+    expect(session.getState().llm?.model).toBe('claude-sonnet-5');
+  });
+
+  it('maps LLMPilotEvent kinds onto llm session state (busy/consultCount/lastError)', () => {
+    let fire: ((e: LLMPilotEvent) => void) | undefined;
+    const session = createSession({
+      presetId: 'free-run',
+      seed: 7,
+      llmPilotFactory: (config: LLMPilotConfig) => {
+        fire = (e) => config.onEvent?.(e);
+        return { decide: async () => fakeIntent('g') };
+      },
+    });
+
+    session.setPilot('claude', { apiKey: 'k', model: 'claude-haiku-4-5' });
+    expect(session.getState().llm).toEqual({
+      model: 'claude-haiku-4-5',
+      busy: false,
+      lastError: null,
+      consultCount: 0,
+    });
+
+    fire?.({ kind: 'consult_start' });
+    expect(session.getState().llm?.busy).toBe(true);
+
+    fire?.({ kind: 'consult_ok' });
+    expect(session.getState().llm).toEqual({
+      model: 'claude-haiku-4-5',
+      busy: false,
+      lastError: null,
+      consultCount: 1,
+    });
+
+    fire?.({ kind: 'consult_failed', detail: 'network blip' });
+    expect(session.getState().llm?.busy).toBe(false);
+    expect(session.getState().llm?.lastError).toBe('network blip');
+    expect(session.getState().llm?.consultCount).toBe(2);
+
+    // 401s must never surface the raw transport detail (it could echo the
+    // key or other sensitive text) — always the fixed, friendly copy.
+    fire?.({ kind: 'auth_error', detail: 'raw 401 body: key sk-ant-should-never-leak-here' });
+    expect(session.getState().llm?.lastError).toBe('Invalid API key — check it and reconnect');
+  });
+
+  it('ignores a stale onEvent from a pilot instance superseded by a later setPilot() call', () => {
+    let fireOld: ((e: LLMPilotEvent) => void) | undefined;
+    const session = createSession({
+      presetId: 'free-run',
+      seed: 7,
+      llmPilotFactory: (config: LLMPilotConfig) => {
+        fireOld = (e) => config.onEvent?.(e);
+        return { decide: async () => fakeIntent('g') };
+      },
+    });
+
+    session.setPilot('claude', { apiKey: 'k' });
+    session.setPilot('scripted'); // switches away — fireOld now refers to a dead delegate
+
+    fireOld?.({ kind: 'consult_failed', detail: 'late arrival from the old pilot' });
+
+    expect(session.getState().pilotKind).toBe('scripted');
+    expect(session.getState().llm).toBeNull();
+  });
+
+  it('never leaks the api key into getState() or exportReplay() output', async () => {
+    const SECRET = 'sk-ant-super-secret-marker-should-never-appear-anywhere';
+    const session = createSession({
+      presetId: 'free-run',
+      seed: 7,
+      llmPilotFactory: () => ({ decide: async () => fakeIntent('g') }),
+    });
+
+    session.setPilot('claude', { apiKey: SECRET });
+    await session.stepOnce();
+    await session.stepOnce();
+
+    expect(JSON.stringify(session.getState())).not.toContain(SECRET);
+
+    const replay = session.exportReplay();
+    expect(JSON.stringify(replay)).not.toContain(SECRET);
+    // Structural guarantee too: ReplayFile has no field that could carry it.
+    expect(Object.keys(replay).sort()).toEqual(['bodyOverrides', 'intents', 'presetId', 'seed', 'version']);
   });
 });

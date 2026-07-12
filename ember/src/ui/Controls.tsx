@@ -8,14 +8,38 @@
  * Pixel-style transport controls (pause/step/play), 1x/4x speed, a seed
  * field + restart, a preset picker, a ground-truth dev-panel toggle, a
  * narration toggle, replay download/upload via Blob + a hidden file input,
- * and a pilot selector showing "Scripted" with "Claude" present but
- * disabled/greyed ("WF3" — LLM pilot wiring is out of this workflow's
- * scope; PLAN.md §7 WF3).
+ * and a pilot selector: "Scripted" (default) and "Claude" (WF3).
+ *
+ * Claude key handling (PLAN.md §7 WF3 / llmContracts.ts header):
+ *   - The API key is held in a local `apiKeyInput` field (native
+ *     `type="password"` masking) and persisted ONLY to
+ *     localStorage['ember.anthropicKey'] — never to session state, never
+ *     logged, never sent anywhere but into `session.setPilot('claude', …)`.
+ *   - `session.getState().llm` never carries the key (see contracts.ts'
+ *     LLMSessionInfo — model/busy/lastError/consultCount only), so nothing
+ *     rendered from session state can ever leak it.
+ *   - "forget key" clears storage, the input, and falls back to the
+ *     Scripted pilot so there's never a connected-without-a-stored-key
+ *     dangling state.
  */
 
 import { useEffect, useRef, useState, type ChangeEvent } from 'react';
-import type { PresetId, ReplayFile, SessionApi, SessionState } from './contracts';
+import type { LLMModelId } from '../pilot/llmContracts';
+import { DEFAULT_LLM_MODEL } from '../pilot/llmContracts';
+import type { PilotKind, PresetId, ReplayFile, SessionApi, SessionState } from './contracts';
 import { PRESETS } from './presets';
+
+export const ANTHROPIC_KEY_STORAGE_KEY = 'ember.anthropicKey';
+
+const LLM_MODELS: LLMModelId[] = ['claude-sonnet-5', 'claude-haiku-4-5', 'claude-opus-4-8'];
+
+function readStoredKey(): string {
+  try {
+    return window.localStorage.getItem(ANTHROPIC_KEY_STORAGE_KEY) ?? '';
+  } catch {
+    return ''; // localStorage unavailable (private mode, tests, etc.)
+  }
+}
 
 export interface ControlsProps {
   session: SessionApi;
@@ -41,11 +65,66 @@ export function Controls({ session, state, devMode, onToggleDev }: ControlsProps
   const [seedInput, setSeedInput] = useState(String(state.seed));
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
+  // Draft pilot selection: the <select> reflects what the user has picked,
+  // which can briefly differ from state.pilotKind while a 'claude' pick is
+  // still showing the key-entry panel (nothing is connected yet). Picking
+  // 'scripted' applies immediately since it needs no key.
+  const [draftPilotKind, setDraftPilotKind] = useState<PilotKind>(state.pilotKind);
+  const [apiKeyInput, setApiKeyInput] = useState<string>(() => readStoredKey());
+  const [selectedModel, setSelectedModel] = useState<LLMModelId>(DEFAULT_LLM_MODEL);
+  // Locally "dismissed" error text — hides the red strip without touching
+  // session state (lastError only truly clears on the pilot's next
+  // successful consultation, per contracts.ts' LLMSessionInfo).
+  const [dismissedError, setDismissedError] = useState<string | null>(null);
+
   // Keep the seed field in sync when the session's seed changes from
   // elsewhere (preset switch, a loaded replay) rather than this input.
   useEffect(() => {
     setSeedInput(String(state.seed));
   }, [state.seed]);
+
+  // If the session's actual pilot changes from elsewhere (or on first
+  // successful connect), keep the select in sync.
+  useEffect(() => {
+    setDraftPilotKind(state.pilotKind);
+  }, [state.pilotKind]);
+
+  const llmError = state.llm?.lastError ?? null;
+  const showErrorStrip = llmError !== null && llmError !== dismissedError;
+
+  function handlePilotSelectChange(e: ChangeEvent<HTMLSelectElement>): void {
+    const kind = e.target.value as PilotKind;
+    setDraftPilotKind(kind);
+    if (kind === 'scripted') {
+      session.setPilot('scripted');
+    }
+    // 'claude' just reveals the key-entry panel below; connecting happens
+    // on the explicit "connect" click.
+  }
+
+  function handleConnectClick(): void {
+    const key = apiKeyInput.trim();
+    if (!key) return;
+    try {
+      window.localStorage.setItem(ANTHROPIC_KEY_STORAGE_KEY, key);
+    } catch {
+      // localStorage unavailable — still connect for this session.
+    }
+    setDismissedError(null);
+    session.setPilot('claude', { apiKey: key, model: selectedModel });
+  }
+
+  function handleForgetKeyClick(): void {
+    try {
+      window.localStorage.removeItem(ANTHROPIC_KEY_STORAGE_KEY);
+    } catch {
+      // localStorage unavailable — nothing to clear.
+    }
+    setApiKeyInput('');
+    setDismissedError(null);
+    setDraftPilotKind('scripted');
+    session.setPilot('scripted');
+  }
 
   function handleRestartClick(): void {
     const parsed = Number.parseInt(seedInput, 10);
@@ -217,19 +296,97 @@ export function Controls({ session, state, devMode, onToggleDev }: ControlsProps
         />
       </div>
 
-      <label className="ml-auto flex items-center gap-1">
-        <span className="text-slate-500">pilot</span>
-        <select
-          defaultValue="scripted"
-          className="border border-slate-700 bg-slate-950 px-1 py-0.5 text-slate-100"
-          aria-label="pilot selector"
+      <div className="ml-auto flex items-center gap-2">
+        <label className="flex items-center gap-1">
+          <span className="text-slate-500">pilot</span>
+          <select
+            value={draftPilotKind}
+            onChange={handlePilotSelectChange}
+            className="border border-slate-700 bg-slate-950 px-1 py-0.5 text-slate-100"
+            aria-label="pilot selector"
+          >
+            <option value="scripted">Scripted</option>
+            <option value="claude">Claude</option>
+          </select>
+        </label>
+
+        {state.pilotKind === 'claude' && (
+          <span className="flex items-center gap-2 text-slate-400" data-testid="llm-status">
+            {state.llm?.busy ? (
+              <span className="animate-pulse text-amber-300" aria-live="polite" data-testid="llm-busy">
+                ● consulting…
+              </span>
+            ) : null}
+            <span className="tabular-nums text-slate-500" title="LLM consultations so far" data-testid="llm-consult-count">
+              #{state.llm?.consultCount ?? 0}
+            </span>
+          </span>
+        )}
+      </div>
+
+      {showErrorStrip && llmError !== null && (
+        <div
+          role="alert"
+          className="flex w-full items-center justify-between gap-2 border border-red-700 bg-red-950/80 px-2 py-1 text-red-200"
+          data-testid="llm-error-strip"
         >
-          <option value="scripted">Scripted</option>
-          <option value="claude" disabled>
-            Claude (WF3)
-          </option>
-        </select>
-      </label>
+          <span>{llmError}</span>
+          <button
+            type="button"
+            className="border border-red-700 px-1 text-red-200 hover:bg-red-900"
+            onClick={() => setDismissedError(llmError)}
+            aria-label="dismiss llm error"
+          >
+            ×
+          </button>
+        </div>
+      )}
+
+      {draftPilotKind === 'claude' && (
+        <div
+          className="flex w-full flex-wrap items-center gap-2 border-t border-slate-800 pt-2 text-slate-300"
+          data-testid="llm-key-panel"
+        >
+          <label className="flex items-center gap-1">
+            <span className="text-slate-500">key</span>
+            <input
+              type="password"
+              value={apiKeyInput}
+              onChange={(e) => setApiKeyInput(e.target.value)}
+              placeholder="sk-ant-..."
+              className="w-40 border border-slate-700 bg-slate-950 px-1 py-0.5 text-slate-100"
+              aria-label="anthropic api key"
+              autoComplete="off"
+            />
+          </label>
+          <label className="flex items-center gap-1">
+            <span className="text-slate-500">model</span>
+            <select
+              value={selectedModel}
+              onChange={(e) => setSelectedModel(e.target.value as LLMModelId)}
+              className="border border-slate-700 bg-slate-950 px-1 py-0.5 text-slate-100"
+              aria-label="llm model"
+            >
+              {LLM_MODELS.map((m) => (
+                <option key={m} value={m}>
+                  {m}
+                </option>
+              ))}
+            </select>
+          </label>
+          <button
+            type="button"
+            className={pixelBtn(state.pilotKind === 'claude')}
+            onClick={handleConnectClick}
+            disabled={apiKeyInput.trim().length === 0}
+          >
+            connect
+          </button>
+          <button type="button" className={BTN} onClick={handleForgetKeyClick} aria-label="forget key">
+            forget key
+          </button>
+        </div>
+      )}
     </div>
   );
 }

@@ -4,9 +4,30 @@
  * checkReflex() is arbiter-owned and can preempt ANY active intent — it is
  * called every tick regardless of whether the pilot is due, and its output
  * (when non-null) replaces the currently running intent. Reflex intents get
- * goal `reflex:<name>` and log a `reflex.<name>` event at the moment they're
+ * goal `reflex:<name>` (a human-readable label only — see the
+ * `_reflexSource` note below for why the engine no longer treats this text
+ * as authoritative) and log a `reflex.<name>` event at the moment they're
  * built (so, e.g., src/sim/wolf.ts's flare-flee check — which reads the log
  * for `reflex.flare` — sees it the same tick).
+ *
+ * Each returned Intent also carries a private `_reflexSource: true` marker
+ * in `params` (same non-schema-scratch-key convention src/pilot/scripted.ts
+ * uses for `_exploreDir` — see its header comment and
+ * src/pilot/intentSchema.test.ts's toToolInputShape(), which strips both
+ * before validating against the pilot-facing tool schema). This is the
+ * structural signal src/engine/index.ts's isReflexIntent() filters
+ * recordedIntents on for replay. It is NOT the `goal` string: `goal` is
+ * pilot-authored free-text narration (core/types.ts: "narration,
+ * non-causal") that a real LLM pilot fully controls and could legitimately
+ * phrase as e.g. "reflex: dodge and reassess" — no schema or validation
+ * layer reserves that prefix for engine use. `_reflexSource` is safe
+ * because only THIS module ever sets it, and a pilot cannot forge it: the
+ * LLM path is forced tool-use with `strict: true` /
+ * `additionalProperties: false` (src/pilot/llmContracts.ts), so a real
+ * model's tool call structurally cannot include an extra params property,
+ * and engine/index.ts's sanitizeIntent()/adoptPilotIntent() never read a
+ * pilot's raw output as anything but pilot-authored regardless of what
+ * keys it contains.
  *
  * Priority: collapse > flare > flinch. `attackedThisTick` (flare's trigger)
  * is a strict subset of `adjacentAttackingWolf` (flinch's trigger) — a
@@ -67,7 +88,7 @@ export function checkReflex(ctx: SkillCtx): Intent | null {
     return {
       goal: 'reflex:collapse',
       skill: 'rest',
-      params: { duration: COLLAPSE_REST_DURATION },
+      params: { duration: COLLAPSE_REST_DURATION, _reflexSource: true },
       interruptConditions: [],
     };
   }
@@ -81,7 +102,7 @@ export function checkReflex(ctx: SkillCtx): Intent | null {
     return {
       goal: 'reflex:flare',
       skill: 'wait',
-      params: { flare: true },
+      params: { flare: true, _reflexSource: true },
       interruptConditions: [],
     };
   }
@@ -96,7 +117,7 @@ export function checkReflex(ctx: SkillCtx): Intent | null {
     return {
       goal: 'reflex:flinch',
       skill: 'move_to',
-      params: { dest, style: 'direct' },
+      params: { dest, style: 'direct', _reflexSource: true },
       interruptConditions: [],
     };
   }
