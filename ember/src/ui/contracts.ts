@@ -82,6 +82,21 @@ export interface SessionState {
   narrationEnabled: boolean;
   /** True while consuming a loaded ReplayFile's intents. */
   replaying: boolean;
+  /** WF3: which pilot is currently deciding. */
+  pilotKind: PilotKind;
+  /** WF3: LLM pilot status for the UI; null while pilotKind is 'scripted'. */
+  llm: LLMSessionInfo | null;
+}
+
+// WF3 additions (supervisor-authored) ------------------------------------
+
+export type PilotKind = 'scripted' | 'claude';
+
+export interface LLMSessionInfo {
+  model: string;
+  busy: boolean; // a consultation is in flight
+  lastError: string | null; // human-readable; cleared on next success
+  consultCount: number;
 }
 
 /** useSyncExternalStore-compatible store + imperative controls.
@@ -102,6 +117,15 @@ export interface SessionApi {
   restart(opts?: { seed?: number; presetId?: PresetId }): void;
   exportReplay(): ReplayFile;
   loadReplay(file: ReplayFile): void;
+  /** WF3: swap the deciding pilot live, WITHOUT restarting the sim. The
+   *  session driver installs a single delegating Pilot into createSim and
+   *  setPilot swaps the delegate; the engine's sanitize/validate layer stays
+   *  the authoritative gate either way. Replays are unaffected (recorded
+   *  intents are pilot-agnostic). config required when kind is 'claude'. */
+  setPilot(
+    kind: PilotKind,
+    config?: { apiKey: string; model?: string },
+  ): void;
 }
 
 export const TICKS_PER_SECOND_BASE = 8;
