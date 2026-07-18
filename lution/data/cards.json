@@ -1,0 +1,741 @@
+[
+  {
+    "id": "starter-pocket-nebula",
+    "name": "The Inflationary Yeti",
+    "effectText": "Keeper. Worth 1 point while in play.",
+    "creatorId": "starter",
+    "createdInRound": 0,
+    "destroyed": false,
+    "implemented": true,
+    "startingOwner": "human"
+  },
+  {
+    "id": "starter-humble-lemma",
+    "name": "Singular Value Sprite",
+    "effectText": "Keeper. Worth 1 point while in play.",
+    "creatorId": "starter",
+    "createdInRound": 0,
+    "destroyed": false,
+    "implemented": true,
+    "startingOwner": "human"
+  },
+  {
+    "id": "starter-invisible-hand-puppet",
+    "name": "The Bayesian Basilisk",
+    "effectText": "Keeper. Worth 1 point while in play.",
+    "creatorId": "starter",
+    "createdInRound": 0,
+    "destroyed": false,
+    "implemented": true,
+    "startingOwner": "human"
+  },
+  {
+    "id": "starter-sentient-teacup",
+    "name": "Fractal Tollbooth Gnome",
+    "effectText": "Keeper. Worth 1 point while in play.",
+    "creatorId": "starter",
+    "createdInRound": 0,
+    "destroyed": false,
+    "implemented": true,
+    "startingOwner": "human"
+  },
+  {
+    "id": "starter-modest-proposal",
+    "name": "The Depreciation Djinn",
+    "effectText": "Keeper. Worth 1 point while in play.",
+    "creatorId": "starter",
+    "createdInRound": 0,
+    "destroyed": false,
+    "implemented": true,
+    "startingOwner": "human"
+  },
+  {
+    "id": "starter-gnome-de-plume",
+    "name": "Null Set Necromancer",
+    "effectText": "Keeper. Worth 1 point while in play.",
+    "creatorId": "starter",
+    "createdInRound": 0,
+    "destroyed": false,
+    "implemented": true,
+    "startingOwner": "human"
+  },
+  {
+    "id": "starter-slightly-magic-bean",
+    "name": "The Vector Field Vulture",
+    "effectText": "Keeper. Worth 1 point while in play.",
+    "creatorId": "starter",
+    "createdInRound": 0,
+    "destroyed": false,
+    "implemented": true,
+    "startingOwner": "human"
+  },
+  {
+    "id": "starter-compound-interest-golem",
+    "name": "Cryogenic Collateral Wisp",
+    "effectText": "Keeper. Worth 2 points while in play.",
+    "creatorId": "starter",
+    "createdInRound": 0,
+    "destroyed": false,
+    "implemented": true,
+    "startingOwner": "human"
+  },
+  {
+    "id": "starter-twin-prime-suspect",
+    "name": "The Bond Market Banshee",
+    "effectText": "Keeper. Worth 2 points while in play.",
+    "creatorId": "starter",
+    "createdInRound": 0,
+    "destroyed": false,
+    "implemented": true,
+    "startingOwner": "human"
+  },
+  {
+    "id": "starter-fed-chair-of-chairs",
+    "name": "Quantum Interest Golem",
+    "effectText": "Keeper. Worth 3 points while in play.",
+    "creatorId": "starter",
+    "createdInRound": 0,
+    "destroyed": false,
+    "implemented": true,
+    "startingOwner": "human"
+  },
+  {
+    "id": "starter-quantum-duckling",
+    "name": "The Prime Number Phantom",
+    "effectText": "Keeper. Worth 1 point while in play.",
+    "creatorId": "starter",
+    "createdInRound": 0,
+    "destroyed": false,
+    "implemented": true,
+    "startingOwner": "claude"
+  },
+  {
+    "id": "starter-axiom-of-choice-cut",
+    "name": "Isomorphic Ice Imp",
+    "effectText": "Keeper. Worth 1 point while in play.",
+    "creatorId": "starter",
+    "createdInRound": 0,
+    "destroyed": false,
+    "implemented": true,
+    "startingOwner": "claude"
+  },
+  {
+    "id": "starter-bureau-of-weights",
+    "name": "The Ledger Wraith of Ur",
+    "effectText": "Keeper. Worth 1 point while in play.",
+    "creatorId": "starter",
+    "createdInRound": 0,
+    "destroyed": false,
+    "implemented": true,
+    "startingOwner": "claude"
+  },
+  {
+    "id": "starter-space-bureaucrat",
+    "name": "Nonlinear Newt",
+    "effectText": "Keeper. Worth 1 point while in play.",
+    "creatorId": "starter",
+    "createdInRound": 0,
+    "destroyed": false,
+    "implemented": true,
+    "startingOwner": "claude"
+  },
+  {
+    "id": "starter-feral-abacus",
+    "name": "The Escrow Ent",
+    "effectText": "Keeper. Worth 1 point while in play.",
+    "creatorId": "starter",
+    "createdInRound": 0,
+    "destroyed": false,
+    "implemented": true,
+    "startingOwner": "claude"
+  },
+  {
+    "id": "starter-discount-oracle",
+    "name": "Chaotic Attractor Crab",
+    "effectText": "Keeper. Worth 1 point while in play.",
+    "creatorId": "starter",
+    "createdInRound": 0,
+    "destroyed": false,
+    "implemented": true,
+    "startingOwner": "claude"
+  },
+  {
+    "id": "starter-lint-elemental",
+    "name": "The Currency Peg Phoenix",
+    "effectText": "Keeper. Worth 1 point while in play.",
+    "creatorId": "starter",
+    "createdInRound": 0,
+    "destroyed": false,
+    "implemented": true,
+    "startingOwner": "claude"
+  },
+  {
+    "id": "starter-dragon-hoard-index",
+    "name": "Manifold Merchant",
+    "effectText": "Keeper. Worth 2 points while in play.",
+    "creatorId": "starter",
+    "createdInRound": 0,
+    "destroyed": false,
+    "implemented": true,
+    "startingOwner": "claude"
+  },
+  {
+    "id": "starter-nash-equilibrium-knight",
+    "name": "The Sunk Cost Siren",
+    "effectText": "Keeper. Worth 2 points while in play.",
+    "creatorId": "starter",
+    "createdInRound": 0,
+    "destroyed": false,
+    "implemented": true,
+    "startingOwner": "claude"
+  },
+  {
+    "id": "starter-banach-tarski-pinata",
+    "name": "Riemann Sum Raccoon",
+    "effectText": "Keeper. Worth 3 points while in play.",
+    "creatorId": "starter",
+    "createdInRound": 0,
+    "destroyed": false,
+    "implemented": true,
+    "startingOwner": "claude"
+  },
+  {
+    "id": "r1-claude-recursive-refund-clause",
+    "name": "Recursive Refund Clause",
+    "effectText": "Keeper. Worth 1 point while in play. Whenever an opponent's card effect would destroy this keeper, return it to your hand instead of sending it to the discard pile.",
+    "creatorId": "claude",
+    "createdInRound": 1,
+    "destroyed": false,
+    "implemented": true,
+    "composition": {
+      "cardType": "keeper",
+      "baseValue": 1,
+      "effects": [
+        {
+          "trigger": "onBeforeDestroy",
+          "body": {
+            "atom": "bounceToHand"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "id": "r1-human-recount",
+    "name": "Recount",
+    "effectText": "When you play this card, draw 1 card, then your opponent discards 1 card from their hand.",
+    "creatorId": "human",
+    "createdInRound": 1,
+    "destroyed": true,
+    "implemented": true
+  },
+  {
+    "id": "r2-claude-the-audit-trail",
+    "name": "The Audit Trail",
+    "effectText": "Keeper. Worth 1 point while in play. At the start of an opponent's turn, if they have more keepers in play than you, you draw a card.",
+    "creatorId": "claude",
+    "createdInRound": 2,
+    "destroyed": false,
+    "implemented": true,
+    "composition": {
+      "cardType": "keeper",
+      "baseValue": 1,
+      "effects": [
+        {
+          "trigger": "onTurnStart",
+          "side": "opponent",
+          "body": {
+            "type": "if",
+            "condition": {
+              "type": "compare",
+              "left": {
+                "type": "count",
+                "selector": {
+                  "zone": "inPlay",
+                  "owner": "opponent",
+                  "pick": "all"
+                }
+              },
+              "op": ">",
+              "right": {
+                "type": "count",
+                "selector": {
+                  "zone": "inPlay",
+                  "owner": "self",
+                  "pick": "all"
+                }
+              }
+            },
+            "then": {
+              "type": "seq",
+              "steps": [
+                {
+                  "atom": "log",
+                  "message": "{owner}'s {card} notices the opponent is ahead on keepers and files a draw."
+                },
+                {
+                  "atom": "draw",
+                  "target": "self"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "strategy": {
+        "playValue": 1,
+        "stealTargetValue": 1
+      }
+    }
+  },
+  {
+    "id": "r2-human-omnistr-m-the-uniter",
+    "name": "Omniström the Uniter",
+    "effectText": "Keeper. Worth 1 point for every keeper in play.",
+    "creatorId": "human",
+    "createdInRound": 2,
+    "destroyed": false,
+    "implemented": true
+  },
+  {
+    "id": "r2-claude-the-insolvency-clause",
+    "name": "The Insolvency Clause",
+    "effectText": "When you play this card, destroy the opponent's most valuable keeper in play. If there's a tie, the opponent chooses which one is destroyed.",
+    "creatorId": "claude",
+    "createdInRound": 2,
+    "destroyed": true,
+    "implemented": true
+  },
+  {
+    "id": "r2-human-audit-the-auditors",
+    "name": "Audit the Auditors",
+    "effectText": "When you play this card, look at your opponent’s hand, then discard 1 random card from it.",
+    "creatorId": "human",
+    "createdInRound": 2,
+    "destroyed": true,
+    "implemented": true
+  },
+  {
+    "id": "r1-claude-the-snowballing-interest-trust",
+    "name": "The Snowballing Interest Trust",
+    "effectText": "Keeper. Worth 1 point while in play. At the start of your turn, this card's point value increases by 1, permanently.",
+    "creatorId": "claude",
+    "createdInRound": 1,
+    "destroyed": true,
+    "implemented": true,
+    "composition": {
+      "cardType": "keeper",
+      "baseValue": 1,
+      "effects": [
+        {
+          "trigger": "onTurnStart",
+          "side": "owner",
+          "body": {
+            "type": "seq",
+            "steps": [
+              {
+                "atom": "incrementCounter",
+                "name": "bonus"
+              },
+              {
+                "atom": "log",
+                "message": "{owner}'s {card} compounds by 1 point."
+              }
+            ]
+          }
+        },
+        {
+          "trigger": "onLeavePlay",
+          "body": {
+            "atom": "setCounter",
+            "name": "bonus",
+            "value": {
+              "type": "literal",
+              "value": 0
+            }
+          }
+        }
+      ],
+      "scoreDelta": {
+        "type": "counter",
+        "name": "bonus",
+        "default": 0
+      },
+      "strategy": {
+        "playValue": 1.5
+      }
+    }
+  },
+  {
+    "id": "r1-human-bone-chilling-breeze",
+    "name": "Bone-Chilling Breeze",
+    "effectText": "Freeze all keepers in play. They each contribute only 1 point until thawed.",
+    "creatorId": "human",
+    "createdInRound": 1,
+    "destroyed": true,
+    "implemented": true,
+    "composition": {
+      "cardType": "action",
+      "baseValue": 0,
+      "effects": [
+        {
+          "trigger": "onPlay",
+          "body": {
+            "atom": "freezeInPlay",
+            "selector": {
+              "zone": "inPlay",
+              "owner": "any",
+              "pick": "all"
+            },
+            "to": {
+              "type": "literal",
+              "value": 1
+            },
+            "duration": "permanent"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "id": "r2-claude-the-marginal-utility-magnate",
+    "name": "The Marginal Utility Magnate",
+    "effectText": "Keeper. Worth 1 point, plus 1 point for every other keeper you control worth more than 1 point.",
+    "creatorId": "claude",
+    "createdInRound": 2,
+    "destroyed": true,
+    "implemented": true,
+    "composition": {
+      "cardType": "keeper",
+      "baseValue": 1,
+      "effects": [],
+      "scoreDelta": {
+        "type": "count",
+        "selector": {
+          "zone": "inPlay",
+          "owner": "self",
+          "pick": "all",
+          "filter": {
+            "type": "and",
+            "filters": [
+              {
+                "type": "excludeSelf"
+              },
+              {
+                "type": "valueCompare",
+                "op": ">",
+                "value": {
+                  "type": "literal",
+                  "value": 1
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "r2-human-crystalline-vampire",
+    "name": "Crystalline Vampire",
+    "effectText": "Keeper. Worth 1 point for each frozen card in the game.",
+    "creatorId": "human",
+    "createdInRound": 2,
+    "destroyed": true,
+    "implemented": true
+  },
+  {
+    "id": "r3-claude-the-reflationary-thaw",
+    "name": "The Reflationary Thaw",
+    "effectText": "When you play this card, thaw all frozen keepers you control, restoring their normal point value.",
+    "creatorId": "claude",
+    "createdInRound": 3,
+    "destroyed": true,
+    "implemented": false
+  },
+  {
+    "id": "r3-claude-the-recursive-dividend-engine",
+    "name": "The Recursive Dividend Engine",
+    "effectText": "Keeper. Worth 1 point. Whenever another keeper you control's point value increases, this keeper's point value increases by 1 as well, permanently.",
+    "creatorId": "claude",
+    "createdInRound": 3,
+    "destroyed": true,
+    "implemented": false
+  },
+  {
+    "id": "r3-human-immuno-compromised-sloth",
+    "name": "Immuno-Compromised Sloth",
+    "effectText": "If you have any frozen cards, this card is unplayable. Otherwise, destroy an opponent’s keeper.",
+    "creatorId": "human",
+    "createdInRound": 3,
+    "destroyed": true,
+    "implemented": false
+  },
+  {
+    "id": "r4-claude-the-hostile-takeover-tribunal",
+    "name": "The Hostile Takeover Tribunal",
+    "effectText": "When you play this card, exchange your least valuable keeper for your opponent's most valuable keeper. If there's a tie for either, you choose which keeper is selected.",
+    "creatorId": "claude",
+    "createdInRound": 4,
+    "destroyed": false,
+    "implemented": true
+  },
+  {
+    "id": "r4-human-subzero-serpent",
+    "name": "Subzero Serpent",
+    "effectText": "Keeper, worth 1 point. At the start of each turn, freeze a non-frozen keeper in play; if you can’t, this card is discarded. Frozen keepers are worth 1 point.",
+    "creatorId": "human",
+    "createdInRound": 4,
+    "destroyed": false,
+    "implemented": true,
+    "composition": {
+      "cardType": "keeper",
+      "baseValue": 1,
+      "effects": [
+        {
+          "trigger": "onTurnStart",
+          "side": "any",
+          "body": {
+            "type": "if",
+            "condition": {
+              "type": "selectorNonEmpty",
+              "selector": {
+                "zone": "inPlay",
+                "owner": "any",
+                "filter": {
+                  "type": "not",
+                  "filter": {
+                    "type": "frozen"
+                  }
+                },
+                "pick": "all"
+              }
+            },
+            "then": {
+              "type": "seq",
+              "steps": [
+                {
+                  "atom": "freezeInPlay",
+                  "selector": {
+                    "zone": "inPlay",
+                    "owner": "any",
+                    "filter": {
+                      "type": "not",
+                      "filter": {
+                        "type": "frozen"
+                      }
+                    },
+                    "pick": "chooser",
+                    "chooser": "self"
+                  },
+                  "to": {
+                    "type": "literal",
+                    "value": 1
+                  },
+                  "duration": "permanent"
+                },
+                {
+                  "atom": "log",
+                  "message": "{owner}'s {card} freezes {target} down to 1 point."
+                }
+              ]
+            },
+            "else": {
+              "type": "seq",
+              "steps": [
+                {
+                  "atom": "log",
+                  "message": "{owner}'s {card} finds nothing left to freeze and slithers into the discard pile."
+                },
+                {
+                  "atom": "destroy",
+                  "selector": {
+                    "zone": "inPlay",
+                    "owner": "self",
+                    "pick": "self"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "strategy": {
+        "playValue": 1.5,
+        "stealTargetValue": 1.5
+      }
+    }
+  },
+  {
+    "id": "r5-claude-the-halting-problem-s-solution",
+    "name": "The Halting Problem's Solution",
+    "effectText": "When you play this card, you win the game.",
+    "creatorId": "claude",
+    "createdInRound": 5,
+    "destroyed": false,
+    "implemented": true,
+    "composition": {
+      "cardType": "action",
+      "baseValue": 0,
+      "effects": [
+        {
+          "trigger": "onPlay",
+          "body": {
+            "type": "seq",
+            "steps": [
+              {
+                "atom": "log",
+                "message": "{owner}'s {card} proves it halts -- {owner} wins the game."
+              },
+              {
+                "atom": "forceWin",
+                "winner": "self"
+              }
+            ]
+          }
+        }
+      ],
+      "strategy": {
+        "playValue": 1000000,
+        "stealTargetValue": 0
+      }
+    }
+  },
+  {
+    "id": "r5-human-frost-pact",
+    "name": "Frost Pact",
+    "effectText": "Keeper. On enter, freeze a chosen card in your hand and a random card in your opponent’s hand; they are revealed and can’t be played. This card is worth the base point values of each card frozen in any players hand, or 1 pt per card in cases where there isn’t a base value.",
+    "creatorId": "human",
+    "createdInRound": 5,
+    "destroyed": true,
+    "implemented": true
+  },
+  {
+    "id": "r7-claude-the-adiabatic-escrow-vault",
+    "name": "The Adiabatic Escrow Vault",
+    "effectText": "Keeper. Worth 1 point while in play. Your keepers can't be frozen.",
+    "creatorId": "claude",
+    "createdInRound": 7,
+    "destroyed": false,
+    "implemented": true
+  },
+  {
+    "id": "r7-human-rime-portal",
+    "name": "Rime Portal",
+    "effectText": "Freeze all cards in your hand; they can’t be played. Then find a card in your deck and play it.",
+    "creatorId": "human",
+    "createdInRound": 7,
+    "destroyed": false,
+    "implemented": true
+  },
+  {
+    "id": "r8-claude-the-glacial-arbitrage-fund",
+    "name": "The Glacial Arbitrage Fund",
+    "effectText": "Keeper. Worth 1 point, plus 1 point for each frozen keeper your opponent controls.",
+    "creatorId": "claude",
+    "createdInRound": 8,
+    "destroyed": false,
+    "implemented": true,
+    "composition": {
+      "cardType": "keeper",
+      "baseValue": 1,
+      "effects": [],
+      "scoreDelta": {
+        "type": "count",
+        "selector": {
+          "zone": "inPlay",
+          "owner": "opponent",
+          "filter": {
+            "type": "and",
+            "filters": [
+              {
+                "type": "byType",
+                "cardType": "keeper"
+              },
+              {
+                "type": "frozen"
+              }
+            ]
+          },
+          "pick": "all"
+        }
+      }
+    }
+  },
+  {
+    "id": "r8-human-radium",
+    "name": "Radium",
+    "effectText": "Keeper. Worth -1 point, and an additional -1 each turn it’s out.",
+    "creatorId": "human",
+    "createdInRound": 8,
+    "destroyed": false,
+    "implemented": false
+  },
+  {
+    "id": "r1-human-quantum-contagion",
+    "name": "Quantum Contagion",
+    "effectText": "Keeper. This keeper and all your other keepers are worth as much as the most valuable keeper in your hand.",
+    "creatorId": "human",
+    "createdInRound": 1,
+    "destroyed": false,
+    "implemented": true
+  },
+  {
+    "id": "r3-claude-the-eminent-domain-writ",
+    "name": "The Eminent Domain Writ",
+    "effectText": "When you play this card, take control of your opponent's most valuable keeper in play. If there's a tie, you choose which one.",
+    "creatorId": "claude",
+    "createdInRound": 3,
+    "destroyed": false,
+    "implemented": true
+  },
+  {
+    "id": "r3-human-hoot-hoot-library-djinn",
+    "name": "Hoot-Hoot, Library Djinn",
+    "effectText": "Keeper. Worth 1 point for each card in a deck.",
+    "creatorId": "human",
+    "createdInRound": 3,
+    "destroyed": false,
+    "implemented": true,
+    "composition": {
+      "cardType": "keeper",
+      "baseValue": 0,
+      "effects": [],
+      "scoreDelta": {
+        "type": "count",
+        "selector": {
+          "zone": "drawPile",
+          "owner": "self",
+          "pick": "all"
+        }
+      }
+    }
+  },
+  {
+    "id": "r5-human-hunger-vortex",
+    "name": "Hunger Vortex",
+    "effectText": "Find a card in your opponent’s deck and play it as your own.",
+    "creatorId": "human",
+    "createdInRound": 5,
+    "destroyed": false,
+    "implemented": true
+  },
+  {
+    "id": "r6-claude-the-permafrost-bailiff",
+    "name": "The Permafrost Bailiff",
+    "effectText": "Keeper. Worth 1 point while in play. At the start of your turn, freeze your opponent's most valuable non-frozen keeper in play, permanently.",
+    "creatorId": "claude",
+    "createdInRound": 6,
+    "destroyed": false,
+    "implemented": true
+  },
+  {
+    "id": "r6-human-mirrorblob",
+    "name": "Mirrorblob",
+    "effectText": "Pick a card in your hand or your opponent’s hand — copy the effect of that card.",
+    "creatorId": "human",
+    "createdInRound": 6,
+    "destroyed": false,
+    "implemented": true
+  }
+]
