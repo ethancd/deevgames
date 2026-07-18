@@ -1,0 +1,108 @@
+name: PR Preview on Fly.io
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  deploy-preview:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Fly CLI
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Verify Staging App Exists
+        run: |
+          echo "Checking for staging app..."
+          if ! flyctl apps list | grep -q "django-mythgarden-staging"; then
+            echo "Error: Staging app 'django-mythgarden-staging' does not exist."
+            echo "Please create it manually with: fly apps create django-mythgarden-staging"
+            exit 1
+          fi
+          echo "Staging app exists"
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      - name: Deploy to Staging
+        run: |
+          echo "Starting deployment to staging..."
+          echo "Step 1: Building and deploying image..."
+          flyctl deploy --config fly.staging.toml --remote-only --detach
+          echo "Step 2: Deployment command completed, waiting for app to stabilize..."
+          sleep 15
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      - name: Wait for Deployment Health
+        run: |
+          echo "Waiting for app to become healthy..."
+          flyctl status --config fly.staging.toml
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      - name: Update Deploy Info
+        run: |
+          # Set deploy metadata (this triggers a quick restart, but deploy is done)
+          BRANCH_NAME="${{ github.head_ref }}"
+          DEPLOY_TIME=$(TZ=America/Los_Angeles date '+%Y-%m-%d %I:%M %p PST')
+
+          echo "Updating deploy info: $BRANCH_NAME at $DEPLOY_TIME"
+          flyctl secrets set \
+            BRANCH_NAME="$BRANCH_NAME" \
+            DEPLOY_TIME="$DEPLOY_TIME" \
+            -a django-mythgarden-staging
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      - name: Get Staging URL
+        id: staging-url
+        run: |
+          URL=$(flyctl status --config fly.staging.toml --json | jq -r '.Hostname')
+          echo "url=https://${URL}" >> $GITHUB_OUTPUT
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      - name: Comment PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const botComment = comments.find(comment =>
+              comment.user.type === 'Bot' &&
+              comment.body.includes('Preview deployment')
+            );
+
+            const output = `### Preview deployment updated! 🚀
+
+            **Staging URL:** ${{ steps.staging-url.outputs.url }}
+
+            This staging environment is shared across all PRs. The latest PR to be updated will be deployed.
+
+            <sub>Deployed from commit ${context.sha}</sub>`;
+
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: output
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: output
+              });
+            }

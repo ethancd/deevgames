@@ -1,0 +1,27 @@
+Place,name,image,place_type,
+Place,The Farm,places/idyllic-green-farm.png,FARM,
+Place,The Town,places/old-timey-general-store.png,TOWN,
+Place,The Forest,places/forest-unsplash.jpeg,WILD,
+Place,The Mountains,places/foothills-unsplash.jpeg,WILD,
+Place,The Beach,places/beach-unsplash.jpeg,WILD,
+,,,,
+Building,name,image,place_type,fk__place__surround
+Building,farmhouse,default,HOME,The Farm
+Building,general store,default,SHOP,The Town
+Building,house_a,default,HOME,The Town
+Building,house_b,default,HOME,The Town
+Building,house_c,default,HOME,The Town
+Building,house_d,default,HOME,The Forest
+Building,house_e,default,HOME,The Forest
+Building,house_f,default,HOME,The Mountains
+Building,house_g,default,HOME,The Beach
+,,,,
+Bridge,fk__place__place_1,fk__place__place_2,direction_1,direction_2
+Bridge,The Farm,The Forest,NORTH,SOUTH
+Bridge,The Farm,The Town,WEST,EAST
+Bridge,The Town,The Mountains,SOUTH,NORTH
+Bridge,The Town,The Beach,NORTH,SOUTH
+,,,,
+Item,name,icon,price,item_type
+,,,,
+Villager,name,portrait,fk__place__home,
