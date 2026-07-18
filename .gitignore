@@ -36,3 +36,8 @@ _site/
 # Claude Code on the web: transient agent worktrees (linked working trees,
 # never committed into the parent repo)
 .claude/worktrees/
+# Local forge-ai worktree checkout (branch claude-forge-ai), not repo content
+forge-ai/
+# Vite/TS build caches
+.vite/
+*.tsbuildinfo
