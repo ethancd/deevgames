@@ -1,0 +1,7 @@
+botA,botB,variant,games,aWins,bWins,draws,aWinRate,aWinLo,aWinHi,aWinsAsWhite,gamesAasWhite,aWinsAsBlack,gamesAasBlack,meanTurns,adjudicationRate,invariantViolations,illegalActionsTotal,meanDurationMs
+Balanced,Greedy,,200,39,159,2,0.1950,0.1461,0.2554,23,100,16,100,52.7,0.285,0,0,17
+Balanced,Random,,100,99,1,0,0.9900,0.9455,0.9982,50,50,49,50,40.9,0.010,0,0,28
+Expand,Greedy,,200,32,168,0,0.1600,0.1157,0.2171,14,100,18,100,39.8,0.195,0,0,14
+Greedy,Random,,200,200,0,0,1.0000,0.9812,1.0000,100,100,100,100,13.7,0.005,0,0,5
+Greedy,Rush,,200,188,12,0,0.9400,0.8981,0.9653,98,100,90,100,15.9,0.000,0,0,4
+Random,Rush,,100,1,99,0,0.0100,0.0018,0.0545,1,50,0,50,11.4,0.000,0,0,3

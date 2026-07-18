@@ -1,0 +1,27 @@
+Place,name,image,place_type,
+Place,The Farm,places/idyllic-green-farm.png,FARM,
+Place,The Town,places/old-timey-general-store.png,TOWN,
+Place,The Forest,places/forest-unsplash.jpeg,WILD,
+Place,The Mountains,places/foothills-unsplash.jpeg,WILD,
+Place,The Beach,places/beach-unsplash.jpeg,WILD,
+,,,,
+Building,name,image,place_type,surround
+Building,farmhouse,places/old-timey-general-store.png,HOME,The Farm
+Building,general store,places/old-timey-general-store.png,SHOP,The Town
+Building,house_a,places/old-timey-general-store.png,HOME,The Town
+Building,house_b,places/old-timey-general-store.png,HOME,The Town
+Building,house_c,places/old-timey-general-store.png,HOME,The Town
+Building,house_d,places/old-timey-general-store.png,HOME,The Forest
+Building,house_e,places/old-timey-general-store.png,HOME,The Forest
+Building,house_f,places/old-timey-general-store.png,HOME,The Mountains
+Building,house_g,places/old-timey-general-store.png,HOME,The Beach
+,,,,
+Bridge,place_1,place_2,direction_1,direction_2
+Bridge,The Farm,The Forest,NORTH,SOUTH
+Bridge,The Farm,The Town,WEST,EAST
+Bridge,The Town,The Mountains,SOUTH,NORTH
+Bridge,The Town,The Beach,NORTH,SOUTH
+,,,,
+Item,name,icon,price,item_type
+,,,,
+Villager,name,portrait,home,

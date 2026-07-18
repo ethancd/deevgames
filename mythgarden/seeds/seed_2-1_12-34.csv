@@ -1,0 +1,165 @@
+Item,name,item_type,icon,price,rarity
+Item,Arrowhead,ARTIFACT,none,3,COMMON
+Item,Pottery Shard,ARTIFACT,none,4,COMMON
+Item,Rusty Spoon,ARTIFACT,none,2,COMMON
+Item,Rusty Spur,ARTIFACT,none,2,COMMON
+Item,Fossilized Skull,ARTIFACT,none,50,EPIC
+Item,Golden Plate,ARTIFACT,none,100,EPIC
+Item,Ammonite,ARTIFACT,none,15,RARE
+Item,Dinosaur Egg,ARTIFACT,none,50,EPIC
+Item,Fossilized Claw,ARTIFACT,none,15,RARE
+Item,Fossilized Shell,ARTIFACT,none,20,RARE
+Item,Fossilized Tooth,ARTIFACT,none,15,RARE
+Item,Trilobite,ARTIFACT,none,15,RARE
+Item,Amber,ARTIFACT,none,8,UNCOMMON
+Item,Coprolite,ARTIFACT,none,1,UNCOMMON
+Item,Footprint,ARTIFACT,none,5,UNCOMMON
+Item,Petrified Leaf,ARTIFACT,none,6,UNCOMMON
+Item,Petrified Twig,ARTIFACT,none,7,UNCOMMON
+Item,Prehistoric Handaxe,ARTIFACT,none,10,UNCOMMON
+Item,Prehistoric Tool,ARTIFACT,none,10,UNCOMMON
+Item,Anchovy,FISH,none,2,COMMON
+Item,Carp,FISH,none,2,COMMON
+Item,Chub,FISH,none,2,COMMON
+Item,Goldfish,FISH,none,2,COMMON
+Item,Sardine,FISH,none,2,COMMON
+Item,Herring,FISH,none,3,COMMON
+Item,Shad,FISH,none,3,COMMON
+Item,Trout,FISH,none,3,COMMON
+Item,Bass,FISH,none,4,COMMON
+Item,Flounder,FISH,none,4,COMMON
+Item,Angelfish,FISH,none,50,EPIC
+Item,Lionfish,FISH,none,50,EPIC
+Item,Catfish,FISH,none,15,RARE
+Item,Sturgeon,FISH,none,15,RARE
+Item,Octopus,FISH,none,20,RARE
+Item,Squid,FISH,none,20,RARE
+Item,Jellyfish,FISH,none,1,UNCOMMON
+Item,Eel,FISH,none,5,UNCOMMON
+Item,Perch,FISH,none,5,UNCOMMON
+Item,Pike,FISH,none,6,UNCOMMON
+Item,Halibut,FISH,none,7,UNCOMMON
+Item,Albacore,FISH,none,8,UNCOMMON
+Item,Tilapia,FISH,none,8,UNCOMMON
+Item,Tuna,FISH,none,8,UNCOMMON
+Item,Salmon,FISH,none,10,UNCOMMON
+Item,Basalt,MINERAL,none,2,COMMON
+Item,Granite,MINERAL,none,2,COMMON
+Item,Limestone,MINERAL,none,2,COMMON
+Item,Quartz,MINERAL,none,4,COMMON
+Item,Sandstone,MINERAL,none,2,COMMON
+Item,Soapstone,MINERAL,none,4,COMMON
+Item,Diamond,MINERAL,none,100,EPIC
+Item,Amethyst,MINERAL,none,35,RARE
+Item,Emerald,MINERAL,none,50,RARE
+Item,Jade,MINERAL,none,35,RARE
+Item,Pearl,MINERAL,none,35,RARE
+Item,Ruby,MINERAL,none,50,RARE
+Item,Sapphire,MINERAL,none,50,RARE
+Item,Topaz,MINERAL,none,35,RARE
+Item,Aquamarine,MINERAL,none,25,UNCOMMON
+Item,Hematite,MINERAL,none,10,UNCOMMON
+Item,Jasper,MINERAL,none,10,UNCOMMON
+Item,Malachite,MINERAL,none,8,UNCOMMON
+Item,Marble,MINERAL,none,8,UNCOMMON
+Item,Neptunite,MINERAL,none,8,UNCOMMON
+Item,Obsidian,MINERAL,none,10,UNCOMMON
+Item,Opal,MINERAL,none,15,UNCOMMON
+Item,Pyrite,MINERAL,none,1,UNCOMMON
+Item,Slate,MINERAL,none,5,UNCOMMON
+Item,Wild Hyacinth,FLOWER,none,8,UNCOMMON
+Item,Wild Lily,FLOWER,none,6,UNCOMMON
+Item,Wild Mum,FLOWER,none,6,UNCOMMON
+Item,Wild Pansy,FLOWER,none,8,UNCOMMON
+Item,Wild Rose,FLOWER,none,20,RARE
+Item,Wild Tulip,FLOWER,none,20,RARE
+Item,Wild Violet,FLOWER,none,20,RARE
+Item,Wild Carnation,FLOWER,none,15,RARE
+Item,Wild Safflina,FLOWER,none,15,RARE
+Item,Thistle,FLOWER,none,5,UNCOMMON
+Item,Nightshade,FLOWER,none,5,UNCOMMON
+Item,Amaranth,FLOWER,none,5,UNCOMMON
+Item,Daffodil,FLOWER,none,1,COMMON
+Item,Dandelion,FLOWER,none,1,COMMON
+Item,Sweet Pea,FLOWER,none,2,COMMON
+Item,Crocus,FLOWER,none,2,COMMON
+Item,Wild Sunflower,FLOWER,none,8,UNCOMMON
+Item,Wild Poppy,FLOWER,none,15,RARE
+Item,Jade Vine,FLOWER,none,50,EPIC
+Item,White Water Lily,FLOWER,none,50,EPIC
+Item,Flame Lily,FLOWER,none,50,EPIC
+Item,Black Bat Flower,FLOWER,none,50,EPIC
+Item,Ghost Orchid,FLOWER,none,50,EPIC
+Item,Chocolate Cosmos,FLOWER,none,50,EPIC
+Item,Sage,HERB,none,2,COMMON
+Item,Ginger,HERB,none,4,UNCOMMON
+Item,Rosemary,HERB,none,2,COMMON
+Item,Thyme,HERB,none,2,COMMON
+Item,Tarragon,HERB,none,3,UNCOMMON
+Item,Mint,HERB,none,3,UNCOMMON
+Item,Garlic,HERB,none,4,UNCOMMON
+Item,Parsley,HERB,none,2,COMMON
+Item,Kingsfoil,HERB,none,50,EPIC
+Item,Chamomile,HERB,none,5,UNCOMMON
+Item,Cinquefoil,HERB,none,10,RARE
+Item,Echinacea,HERB,none,5,UNCOMMON
+Item,Jewelweed,HERB,none,10,RARE
+Item,Mugwort,HERB,none,5,UNCOMMON
+Item,Sassafras,HERB,none,10,RARE
+Item,Sorrel,HERB,none,3,UNCOMMON
+Item,Mulberries,BERRY,none,3,UNCOMMON
+Item,Blueberries,BERRY,none,5,RARE
+Item,Blackberries,BERRY,none,3,UNCOMMON
+Item,Raspberries,BERRY,none,3,UNCOMMON
+Item,Gooseberries,BERRY,none,1,COMMON
+Item,Huckleberries,BERRY,none,1,COMMON
+Item,Salmonberries,BERRY,none,1,COMMON
+Item,Spiceberries,BERRY,none,3,UNCOMMON
+Item,Juniperberries,BERRY,none,5,RARE
+,,,,,
+,,,,,
+,,,,,
+Place,name,image,place_type,,
+Place,The Farm,places/idyllic-green-farm.png,FARM,,
+Place,The Town,places/old-timey-general-store.png,TOWN,,
+Place,The Forest,places/forest-unsplash.jpeg,FOREST,,
+Place,The Mountains,places/foothills-unsplash.jpeg,MOUNTAIN,,
+Place,The Beach,places/beach-unsplash.jpeg,BEACH,,
+,,,,,
+Bridge,fk__place__place_1,fk__place__place_2,direction_1,direction_2,
+Bridge,The Farm,The Forest,NORTH,SOUTH,
+Bridge,The Farm,The Town,WEST,EAST,
+Bridge,The Town,The Mountains,SOUTH,NORTH,
+Bridge,The Town,The Beach,NORTH,SOUTH,
+,,,,,
+Building,name,image,place_type,fk__place__surround,
+Building,lil farmhouse,default,HOME,The Farm,
+Building,mom and pop shop,default,SHOP,The Town,
+Building,town hall pub and grill,default,HOME,The Town,
+Building,charming victorian,default,HOME,The Town,
+Building,quite big log cabin,default,HOME,The Forest,
+Building,oak tree duplex,default,HOME,The Forest,
+Building,comfortable beach shack,default,HOME,The Beach,
+Building,house-sized clamshell,default,HOME,The Beach,
+Building,cozy cavern,default,HOME,The Mountains,
+Building,stonework chalet,default,HOME,The Mountains,
+Building,spoopy cave system,default,HOME,The Mountains,
+,,,,,
+Villager,name,full_name,friendliness,portrait,fk__building__home
+Villager,Donatella,Donatella Fortlescue,7,default,charming victorian
+Villager,Tourmaline,none,6,default,cozy cavern
+Villager,Trix,Trix the Rabbit,6,default,none
+Villager,Damey,Damey Hoodiehome,5,default,oak tree duplex
+Villager,Bonbon,Bonbon X. Skellington,5,default,spoopy cave system
+Villager,Angie,none,5,default,mom and pop shop
+Villager,Bayla,Bayla Stoutstein,4,default,stonework chalet
+Villager,Zuck,Zuck (no relation),4,default,spoopy cave system
+Villager,Dev,none,4,default,mom and pop shop
+Villager,Light,Hypermayor Light 1.1.5,4,default,town hall pub and grill
+Villager,Vir,Vir Vipi,4,default,charming victorian
+Villager,Vida,Vida Vipi,3,default,charming victorian
+Villager,Daffodil,Daffodil V. Human,3,default,house-sized clamshell
+Villager,Wren,none,3,default,oak tree duplex
+Villager,Joss,Joss Vipi,2,default,charming victorian
+Villager,Samyel,Samyel Eschbringer,2,default,comfortable beach shack
+Villager,Bjölf,Bjölf Bjölfsen,1,default,quite big log cabin

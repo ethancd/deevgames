@@ -1,0 +1,10 @@
+{
+  "name": "e2-engine-gates",
+  "seed": 20002,
+  "replaySample": 0.02,
+  "pairings": [
+    { "white": "AIv2-medium-fast", "black": "Random", "games": 20, "mirror": true },
+    { "white": "AIv2-medium-fast", "black": "Greedy", "games": 20, "mirror": true },
+    { "white": "AIv2-hard-fast", "black": "Greedy", "games": 15, "mirror": true }
+  ]
+}

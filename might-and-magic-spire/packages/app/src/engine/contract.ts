@@ -1,0 +1,289 @@
+// The runtime contract, PINNED by the orchestrator for the ARMY combat redesign.
+//
+// The real @mms/engine (Agent 3) is being rebuilt against this EXACT definition
+// in parallel — a HoMM3-style army battle: a hero with no HP commanding creature
+// STACKS across two ranks, a spellbook, and a paper-doll of artifacts. The app
+// codes its screens against these types and call signatures. At integration the
+// orchestrator swaps the mock for the real engine import in ./index.ts; nothing
+// in the UI layer changes because the UI only ever imports from ./engine, never
+// from the mock (or @mms/engine) directly.
+//
+// NOTE: this contract intentionally does NOT import @mms/engine — the app must
+// build green against the mock today, before the army engine ships.
+
+// Rarity for equipment, pinned as a plain string-literal union (no zod dep).
+export type Rarity = 'common' | 'uncommon' | 'rare' | 'relic';
+
+// Map node types — the army roguelite adds dwelling/altar/shrine/merchant.
+// A node is a guarded TILE (engine §27). `type` is the underlying bonus.
+export type NodeType =
+  | 'attack'
+  | 'defense'
+  | 'power'
+  | 'knowledge'
+  | 'xp'
+  | 'gold'
+  | 'mana'
+  | 'dwelling'
+  | 'altar'
+  | 'shrine'
+  | 'merchant'
+  | 'rest'
+  | 'boss';
+
+export type Difficulty = 'bronze' | 'silver' | 'gold' | 'diamond';
+
+// The nine anatomical artifact slots of the hero paper-doll.
+export type ArtifactSlot =
+  | 'Head'
+  | 'Neck'
+  | 'Torso'
+  | 'RightHand'
+  | 'LeftHand'
+  | 'Ring'
+  | 'Feet'
+  | 'Misc'
+  | 'Special';
+
+// The four primary hero stats (the hero has NO hp — the army is the life total).
+export type PrimaryStat = 'attack' | 'defense' | 'power' | 'knowledge';
+
+// Spell schools mirror HoMM3's magic guilds.
+export type SpellSchool = 'Air' | 'Earth' | 'Fire' | 'Water' | 'All';
+
+// What a spell can be aimed at.
+export type SpellTargeting =
+  | 'enemyStack'
+  | 'allyStack'
+  | 'allEnemies'
+  | 'allAllies'
+  | 'self'
+  | 'none';
+
+export interface Equipment {
+  id: string;
+  name: string;
+  slot: ArtifactSlot;
+  rarity: Rarity;
+  bonuses: string;
+  imageRef: string;
+}
+
+export interface CombatSpell {
+  id: string;
+  name: string;
+  school: SpellSchool;
+  level: number;
+  manaCost: number;
+  description: string;
+  targeting: SpellTargeting;
+  imageRef: string;
+}
+
+export interface Hero {
+  id: string;
+  name: string;
+  heroClass: string;
+  specialty: string;
+  /** Hero faction (Necropolis | Castle | Stronghold). Optional for back-compat. */
+  faction?: string;
+  attack: number;
+  defense: number;
+  power: number;
+  knowledge: number;
+  mana: number;
+  maxMana: number;
+  equipment: Partial<Record<ArtifactSlot, Equipment>>;
+  spellbook: CombatSpell[];
+  skills: Record<string, number>;
+  imageRef: string;
+}
+
+// An enemy stack's telegraphed intent for the coming turn — the only way the
+// player reads the AI. Honest: the same plan drives the shown label and the
+// executed action.
+export interface Telegraph {
+  kind: 'attack' | 'shoot' | 'defend' | 'cast' | 'wait' | 'unknown';
+  value?: number;
+  targetStackId?: string;
+  label: string;
+}
+
+// A creature STACK (type × count). Stacks DO have hp; the army of stacks is the
+// player's life total. `creatureId` is the SourceCreature id used for art.
+export interface Stack {
+  id: string;
+  creatureId: string;
+  name: string;
+  tier: number;
+  count: number;
+  hpTop: number; // hp remaining on the topmost (currently-fighting) creature
+  maxHpPer: number;
+  attack: number;
+  defense: number;
+  damageMin: number;
+  damageMax: number;
+  speed: number;
+  rank: 'front' | 'back';
+  abilities: string[];
+  side: 'player' | 'enemy';
+  hasActed: boolean;
+  isDefending: boolean;
+  hasRetaliated: boolean;
+  telegraph?: Telegraph;
+  imageRef: string;
+}
+
+export interface Army {
+  stacks: Stack[];
+  side: 'player' | 'enemy';
+}
+
+export interface CombatState {
+  round: number;
+  whoseTurn: 'player' | 'enemy';
+  yourArmy: Army;
+  enemyArmy: Army;
+  spellCastThisTurn: boolean;
+  log: string[];
+  outcome: 'ongoing' | 'won' | 'lost';
+}
+
+export interface MapNode {
+  id: string;
+  type: NodeType;
+  row: number;
+  col: number;
+  next: string[];
+  // Calendar + guarded-tile fields (engine §25/§27). Optional so the contract
+  // tolerates older shapes; the real engine always sets them.
+  day?: number;
+  week?: number;
+  guarded?: boolean;
+  tough?: boolean;
+  difficulty?: Difficulty;
+  guardCreatureId?: string;
+}
+
+export interface RunState {
+  seed: string;
+  /** The run's faction (the chosen hero's faction). Engine-owned; optional. */
+  faction?: string;
+  hero: Hero;
+  army: Stack[];
+  gold: number;
+  map: MapNode[];
+  currentNodeId: string | null;
+  act: number;
+  combat: CombatState | null;
+  outcome: 'ongoing' | 'won' | 'lost';
+  // Node ids already visited/cleared this run — drives the map's walked trail
+  // and lock-out. Engine-owned; optional so the contract tolerates its absence.
+  clearedNodeIds?: string[];
+  // When set, a weekly muster is open and the named Monday node's resolution is
+  // deferred until "march on". Engine-owned; optional.
+  pendingMusterNodeId?: string | null;
+  // Structured strikes from the most recent op, for damage-popup playback.
+  lastEvents?: CombatEvent[];
+  // The bonus just claimed from an instant tile (§27), for a map toast.
+  lastClaim?: { tile: NodeType; amount: number } | null;
+}
+
+// A predicted attack outcome: the damage range (per-creature roll spans
+// [damageMin, damageMax]) and the creatures slain at each end.
+export interface DamageForecast {
+  damageMin: number;
+  damageMax: number;
+  killsMin: number;
+  killsMax: number;
+}
+
+// A single resolved strike from the most recent op — the UI plays these as
+// damage popups (your attack, a retaliation, each enemy strike).
+export interface CombatEvent {
+  kind: 'attack' | 'retaliate' | 'spell';
+  side: 'player' | 'enemy';
+  attackerId: string;
+  attackerName: string;
+  targetId: string;
+  targetName: string;
+  damage: number;
+  killed: number;
+}
+
+/**
+ * A reward / node-interaction choice. `pickReward` consumes it. The engine is
+ * the source of truth for what choices exist; the UI renders whatever it
+ * returns. Covers the army economy (recruit/upgrade/learn/buy), the no-town
+ * growth lever (raise undead), plus gold and a skip escape hatch.
+ */
+export type RewardChoice =
+  | { kind: 'recruit'; creatureId: string; count: number; cost: number }
+  | { kind: 'upgrade'; stackId: string; toCreatureId: string; cost: number }
+  | { kind: 'learn'; spellId: string; cost: number }
+  | { kind: 'buy'; artifactId: string; slot: ArtifactSlot; cost: number }
+  | { kind: 'raise'; creatureId: string; count: number }
+  | { kind: 'gold'; amount: number }
+  | { kind: 'muster'; stackId: string; creatureId: string; count: number; cost: number }
+  | { kind: 'skip' };
+
+// A command issued to one of your stacks on your turn (once per stack).
+export interface CommandOrder {
+  kind: 'attack' | 'defend';
+  targetId?: string;
+}
+
+/**
+ * The pinned op surface. Every op is pure: (state, …args) -> next state.
+ * The UI holds the latest RunState and replaces it wholesale on each op.
+ */
+export interface EngineApi {
+  // `heroId` selects the starting hero/faction; omitted = the default (Galthran,
+  // Necropolis), preserving the v0 entry path.
+  startRun(seed: string, heroId?: string): RunState;
+  legalNextNodes(run: RunState): string[];
+  chooseNode(run: RunState, nodeId: string): RunState;
+
+  // --- combat (side-alternation army turns) ---
+  commandStack(run: RunState, stackId: string, order: CommandOrder): RunState;
+  castSpell(run: RunState, spellId: string, targetId?: string): RunState;
+  endPlayerTurn(run: RunState): RunState;
+  /** PLAYTEST: instantly win the current combat (optional; seam no-ops if absent). */
+  winCombatNow?(run: RunState): RunState;
+  legalTargets(run: RunState, stackId: string): string[];
+  // Predict an attack's damage/kills for the UI (non-mutating). Optional so the
+  // seam can no-op if a backing engine omits it.
+  forecastAttack?(run: RunState, attackerStackId: string, targetStackId: string): DamageForecast | null;
+
+  // --- node interactions / economy ---
+  pickReward(run: RunState, choice: RewardChoice): RunState;
+  recruit(run: RunState, creatureId: string, count: number): RunState;
+  upgrade(run: RunState, stackId: string): RunState;
+  learn(run: RunState, spellId: string): RunState;
+  buy(run: RunState, artifactId: string): RunState;
+  equipArtifact(run: RunState, artifactId: string, slot: ArtifactSlot): RunState;
+}
+
+/**
+ * Optional introspection the engine MAY expose. Kept optional so the seam can
+ * fall back when the real engine omits them.
+ *  - pendingRewards: what a freshly-resolved node offers.
+ *  - legalSpellTargets: which stacks a given spell may be aimed at.
+ */
+export interface EngineRewardSource {
+  pendingRewards?(run: RunState): RewardChoice[] | null;
+  legalSpellTargets?(run: RunState, spellId: string): string[];
+}
+
+/**
+ * A playable hero summary for the TitleScreen's hero/faction picker. Projected
+ * from the engine's SourceHero corpus (or @mms/data) via the seam.
+ */
+export interface PlayableHero {
+  id: string;
+  name: string;
+  faction: string;
+  heroClass: string;
+  specialty: string;
+  imageRef: string;
+}

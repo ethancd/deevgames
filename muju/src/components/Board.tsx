@@ -1,4 +1,4 @@
-import type { BoardState, Position, PlayerId, Element } from '../game/types';
+import type { BoardState, Position, Element } from '../game/types';
 import type { MovementRangePosition } from '../game/movement';
 import { getUnitAt } from '../game/board';
 import { getAttackModifier } from '../game/elements';
@@ -8,7 +8,6 @@ import { Unit } from './Unit';
 
 interface BoardProps {
   board: BoardState;
-  currentPlayer: PlayerId;
   selectedUnit: string | null;
   selectedUnitElement?: Element | null; // For computing elemental bonuses
   validMoves: Position[];
@@ -23,7 +22,6 @@ interface BoardProps {
 
 export function Board({
   board,
-  currentPlayer,
   selectedUnit,
   selectedUnitElement,
   validMoves,
@@ -98,7 +96,6 @@ export function Board({
                       <Unit
                         unit={unit}
                         isSelected={isSelected}
-                        isOwned={unit.owner === currentPlayer}
                         onClick={() => onUnitClick(unit.id)}
                       />
                     </div>

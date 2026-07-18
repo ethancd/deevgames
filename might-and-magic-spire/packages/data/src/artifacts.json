@@ -1,0 +1,538 @@
+[
+  {
+    "id": "artifact_centaurs_axe",
+    "name": "Centaur's Axe",
+    "class": "Treasure",
+    "slot": "RightHand",
+    "bonuses": "+2 Attack",
+    "imageRef": "artifact_centaurs_axe"
+  },
+  {
+    "id": "artifact_shield_of_the_dwarven_lords",
+    "name": "Shield of the Dwarven Lords",
+    "class": "Treasure",
+    "slot": "LeftHand",
+    "bonuses": "+2 Defense",
+    "imageRef": "artifact_shield_of_the_dwarven_lords"
+  },
+  {
+    "id": "artifact_ring_of_vitality",
+    "name": "Ring of Vitality",
+    "class": "Treasure",
+    "slot": "Ring",
+    "bonuses": "+1 Health point per creature",
+    "imageRef": "artifact_ring_of_vitality"
+  },
+  {
+    "id": "artifact_cape_of_conjuring",
+    "name": "Cape of Conjuring",
+    "class": "Treasure",
+    "slot": "Neck",
+    "bonuses": "Extends the duration of all spells cast by the hero",
+    "imageRef": "artifact_cape_of_conjuring"
+  },
+  {
+    "id": "artifact_speculum",
+    "name": "Speculum",
+    "class": "Treasure",
+    "slot": "Misc",
+    "bonuses": "Increases the hero's scouting radius",
+    "imageRef": "artifact_speculum"
+  },
+  {
+    "id": "artifact_helm_of_the_alabaster_unicorn",
+    "name": "Helm of the Alabaster Unicorn",
+    "class": "Minor",
+    "slot": "Head",
+    "bonuses": "+1 Knowledge",
+    "imageRef": "artifact_helm_of_the_alabaster_unicorn"
+  },
+  {
+    "id": "artifact_quiet_eye_of_the_dragon",
+    "name": "Quiet Eye of the Dragon",
+    "class": "Minor",
+    "slot": "Ring",
+    "bonuses": "+1 Attack, +1 Defense",
+    "imageRef": "artifact_quiet_eye_of_the_dragon"
+  },
+  {
+    "id": "artifact_necklace_of_swiftness",
+    "name": "Necklace of Swiftness",
+    "class": "Minor",
+    "slot": "Neck",
+    "bonuses": "+1 Speed to all creatures in the army",
+    "imageRef": "artifact_necklace_of_swiftness"
+  },
+  {
+    "id": "artifact_pendant_of_death",
+    "name": "Pendant of Death",
+    "class": "Minor",
+    "slot": "Neck",
+    "bonuses": "Protects the army from the Death Ripple spell",
+    "imageRef": "artifact_pendant_of_death"
+  },
+  {
+    "id": "artifact_sword_of_hellfire",
+    "name": "Sword of Hellfire",
+    "class": "Major",
+    "slot": "RightHand",
+    "bonuses": "+6 Attack",
+    "imageRef": "artifact_sword_of_hellfire"
+  },
+  {
+    "id": "artifact_dragon_wing_tabard",
+    "name": "Dragon Wing Tabard",
+    "class": "Major",
+    "slot": "Torso",
+    "bonuses": "+3 to all primary skills",
+    "imageRef": "artifact_dragon_wing_tabard"
+  },
+  {
+    "id": "artifact_orb_of_the_firmament",
+    "name": "Orb of the Firmament",
+    "class": "Major",
+    "slot": "Misc",
+    "bonuses": "Increases the effectiveness of all Air spells cast by the hero",
+    "imageRef": "artifact_orb_of_the_firmament"
+  },
+  {
+    "id": "artifact_ring_of_the_wayfarer",
+    "name": "Ring of the Wayfarer",
+    "class": "Major",
+    "slot": "Ring",
+    "bonuses": "+1 Morale, increased movement on land",
+    "imageRef": "artifact_ring_of_the_wayfarer"
+  },
+  {
+    "id": "artifact_cloak_of_the_undead_king",
+    "name": "Cloak of the Undead King",
+    "class": "Relic",
+    "slot": "Neck",
+    "bonuses": "Greatly improves Necromancy: raises additional and higher-tier undead after each battle",
+    "imageRef": "artifact_cloak_of_the_undead_king"
+  },
+  {
+    "id": "artifact_armor_of_the_damned",
+    "name": "Armor of the Damned",
+    "class": "Relic",
+    "slot": "Torso",
+    "bonuses": "+4 Defense; Casts Slow, Curse, Weakness, and Misfortune on all enemy stacks at the start of combat",
+    "imageRef": "artifact_armor_of_the_damned"
+  },
+  {
+    "id": "artifact_sword_of_judgement",
+    "name": "Sword of Judgement",
+    "class": "Relic",
+    "slot": "RightHand",
+    "bonuses": "+12 Attack, +12 Defense, +500 spell points",
+    "imageRef": "artifact_sword_of_judgement"
+  },
+  {
+    "id": "artifact_armageddons_blade",
+    "name": "Armageddon's Blade",
+    "class": "Relic",
+    "slot": "RightHand",
+    "bonuses": "+3 to all primary skills; allows casting Armageddon as an expert; immunity to Armageddon",
+    "imageRef": "artifact_armageddons_blade"
+  },
+  {
+    "id": "artifact_spyglass",
+    "name": "Spyglass",
+    "class": "Treasure",
+    "slot": "Misc",
+    "bonuses": "+1 Scouting radius",
+    "imageRef": "artifact_spyglass"
+  },
+  {
+    "id": "artifact_bird_of_perception",
+    "name": "Bird of Perception",
+    "class": "Treasure",
+    "slot": "Misc",
+    "bonuses": "+5% Eagle Eye chance",
+    "imageRef": "artifact_bird_of_perception"
+  },
+  {
+    "id": "artifact_stoic_watchman",
+    "name": "Stoic Watchman",
+    "class": "Minor",
+    "slot": "Misc",
+    "bonuses": "+10% Eagle Eye chance",
+    "imageRef": "artifact_stoic_watchman"
+  },
+  {
+    "id": "artifact_emblem_of_cognizance",
+    "name": "Emblem of Cognizance",
+    "class": "Major",
+    "slot": "Misc",
+    "bonuses": "+15% Eagle Eye chance",
+    "imageRef": "artifact_emblem_of_cognizance"
+  },
+  {
+    "id": "artifact_boots_of_speed",
+    "name": "Boots of Speed",
+    "class": "Minor",
+    "slot": "Feet",
+    "bonuses": "+600 movement points on land",
+    "imageRef": "artifact_boots_of_speed"
+  },
+  {
+    "id": "artifact_boots_of_levitation",
+    "name": "Boots of Levitation",
+    "class": "Major",
+    "slot": "Feet",
+    "bonuses": "Permanent Water Walk",
+    "imageRef": "artifact_boots_of_levitation"
+  },
+  {
+    "id": "artifact_boots_of_polarity",
+    "name": "Boots of Polarity",
+    "class": "Relic",
+    "slot": "Feet",
+    "bonuses": "+15% Magic Resistance",
+    "imageRef": "artifact_boots_of_polarity"
+  },
+  {
+    "id": "artifact_glyph_of_gallantry",
+    "name": "Glyph of Gallantry",
+    "class": "Treasure",
+    "slot": "Misc",
+    "bonuses": "+1 Morale",
+    "imageRef": "artifact_glyph_of_gallantry"
+  },
+  {
+    "id": "artifact_badge_of_courage",
+    "name": "Badge of Courage",
+    "class": "Treasure",
+    "slot": "Misc",
+    "bonuses": "+1 Morale; army is immune to fear",
+    "imageRef": "artifact_badge_of_courage"
+  },
+  {
+    "id": "artifact_crest_of_valor",
+    "name": "Crest of Valor",
+    "class": "Treasure",
+    "slot": "Misc",
+    "bonuses": "+1 Morale",
+    "imageRef": "artifact_crest_of_valor"
+  },
+  {
+    "id": "artifact_ladybird_of_luck",
+    "name": "Ladybird of Luck",
+    "class": "Treasure",
+    "slot": "Misc",
+    "bonuses": "+1 Luck",
+    "imageRef": "artifact_ladybird_of_luck"
+  },
+  {
+    "id": "artifact_clover_of_fortune",
+    "name": "Clover of Fortune",
+    "class": "Treasure",
+    "slot": "Misc",
+    "bonuses": "+1 Luck",
+    "imageRef": "artifact_clover_of_fortune"
+  },
+  {
+    "id": "artifact_cards_of_prophecy",
+    "name": "Cards of Prophecy",
+    "class": "Treasure",
+    "slot": "Misc",
+    "bonuses": "+1 Luck",
+    "imageRef": "artifact_cards_of_prophecy"
+  },
+  {
+    "id": "artifact_still_eye_of_the_dragon",
+    "name": "Still Eye of the Dragon",
+    "class": "Treasure",
+    "slot": "Ring",
+    "bonuses": "+1 Luck, +1 Morale",
+    "imageRef": "artifact_still_eye_of_the_dragon"
+  },
+  {
+    "id": "artifact_hourglass_of_the_evil_hour",
+    "name": "Hourglass of the Evil Hour",
+    "class": "Relic",
+    "slot": "Misc",
+    "bonuses": "Negates all enemy positive Luck",
+    "imageRef": "artifact_hourglass_of_the_evil_hour"
+  },
+  {
+    "id": "artifact_spirit_of_oppression",
+    "name": "Spirit of Oppression",
+    "class": "Relic",
+    "slot": "Misc",
+    "bonuses": "Negates all enemy positive Morale",
+    "imageRef": "artifact_spirit_of_oppression"
+  },
+  {
+    "id": "artifact_garniture_of_interference",
+    "name": "Garniture of Interference",
+    "class": "Major",
+    "slot": "Neck",
+    "bonuses": "+5% Magic Resistance to all creatures in the army",
+    "imageRef": "artifact_garniture_of_interference"
+  },
+  {
+    "id": "artifact_pendant_of_free_will",
+    "name": "Pendant of Free Will",
+    "class": "Treasure",
+    "slot": "Neck",
+    "bonuses": "Army is immune to the Hypnotize spell",
+    "imageRef": "artifact_pendant_of_free_will"
+  },
+  {
+    "id": "artifact_necklace_of_dragonteeth",
+    "name": "Necklace of Dragonteeth",
+    "class": "Major",
+    "slot": "Neck",
+    "bonuses": "+3 Spell Power, +3 Knowledge",
+    "imageRef": "artifact_necklace_of_dragonteeth"
+  },
+  {
+    "id": "artifact_crown_of_dragontooth",
+    "name": "Crown of Dragontooth",
+    "class": "Relic",
+    "slot": "Head",
+    "bonuses": "+4 Spell Power, +4 Knowledge",
+    "imageRef": "artifact_crown_of_dragontooth"
+  },
+  {
+    "id": "artifact_charm_of_mana",
+    "name": "Charm of Mana",
+    "class": "Treasure",
+    "slot": "Misc",
+    "bonuses": "+1 spell point regenerated per day",
+    "imageRef": "artifact_charm_of_mana"
+  },
+  {
+    "id": "artifact_talisman_of_mana",
+    "name": "Talisman of Mana",
+    "class": "Minor",
+    "slot": "Misc",
+    "bonuses": "+2 spell points regenerated per day",
+    "imageRef": "artifact_talisman_of_mana"
+  },
+  {
+    "id": "artifact_mystic_orb_of_mana",
+    "name": "Mystic Orb of Mana",
+    "class": "Major",
+    "slot": "Misc",
+    "bonuses": "+3 spell points regenerated per day",
+    "imageRef": "artifact_mystic_orb_of_mana"
+  },
+  {
+    "id": "artifact_vial_of_lifeblood",
+    "name": "Vial of Lifeblood",
+    "class": "Treasure",
+    "slot": "Misc",
+    "bonuses": "+2 Health points per creature in the army",
+    "imageRef": "artifact_vial_of_lifeblood"
+  },
+  {
+    "id": "artifact_bow_of_elven_cherrywood",
+    "name": "Bow of Elven Cherrywood",
+    "class": "Treasure",
+    "slot": "Misc",
+    "bonuses": "+5% Archery (ranged damage)",
+    "imageRef": "artifact_bow_of_elven_cherrywood"
+  },
+  {
+    "id": "artifact_recanters_cloak",
+    "name": "Recanter's Cloak",
+    "class": "Major",
+    "slot": "Misc",
+    "bonuses": "Prevents either side from casting spells above level 2 in combat",
+    "imageRef": "artifact_recanters_cloak"
+  },
+  {
+    "id": "artifact_spellbinders_hat",
+    "name": "Spellbinder's Hat",
+    "class": "Relic",
+    "slot": "Head",
+    "bonuses": "Allows casting all level-5 spells in the hero's spellbook",
+    "imageRef": "artifact_spellbinders_hat"
+  },
+  {
+    "id": "artifact_orb_of_vulnerability",
+    "name": "Orb of Vulnerability",
+    "class": "Relic",
+    "slot": "Misc",
+    "bonuses": "Removes spell immunity from all creatures on both sides",
+    "imageRef": "artifact_orb_of_vulnerability"
+  },
+  {
+    "id": "artifact_tome_of_fire_magic",
+    "name": "Tome of Fire Magic",
+    "class": "Relic",
+    "slot": "Misc",
+    "bonuses": "Grants all Fire-school spells (levels 1-5)",
+    "imageRef": "artifact_tome_of_fire_magic"
+  },
+  {
+    "id": "artifact_tome_of_air_magic",
+    "name": "Tome of Air Magic",
+    "class": "Relic",
+    "slot": "Misc",
+    "bonuses": "Grants all Air-school spells (levels 1-5)",
+    "imageRef": "artifact_tome_of_air_magic"
+  },
+  {
+    "id": "artifact_tome_of_earth_magic",
+    "name": "Tome of Earth Magic",
+    "class": "Relic",
+    "slot": "Misc",
+    "bonuses": "Grants all Earth-school spells (levels 1-5)",
+    "imageRef": "artifact_tome_of_earth_magic"
+  },
+  {
+    "id": "artifact_tome_of_water_magic",
+    "name": "Tome of Water Magic",
+    "class": "Relic",
+    "slot": "Misc",
+    "bonuses": "Grants all Water-school spells (levels 1-5)",
+    "imageRef": "artifact_tome_of_water_magic"
+  },
+  {
+    "id": "artifact_endless_bag_of_gold",
+    "name": "Endless Bag of Gold",
+    "class": "Relic",
+    "slot": "Misc",
+    "bonuses": "+1500 Gold per day",
+    "imageRef": "artifact_endless_bag_of_gold"
+  },
+  {
+    "id": "artifact_endless_purse_of_gold",
+    "name": "Endless Purse of Gold",
+    "class": "Major",
+    "slot": "Misc",
+    "bonuses": "+1000 Gold per day",
+    "imageRef": "artifact_endless_purse_of_gold"
+  },
+  {
+    "id": "artifact_everpouring_vial_of_mercury",
+    "name": "Everpouring Vial of Mercury",
+    "class": "Major",
+    "slot": "Misc",
+    "bonuses": "+1 Mercury per day",
+    "imageRef": "artifact_everpouring_vial_of_mercury"
+  },
+  {
+    "id": "artifact_eversmoking_ring_of_sulfur",
+    "name": "Eversmoking Ring of Sulfur",
+    "class": "Major",
+    "slot": "Ring",
+    "bonuses": "+1 Sulfur per day",
+    "imageRef": "artifact_eversmoking_ring_of_sulfur"
+  },
+  {
+    "id": "artifact_inexhaustible_cart_of_ore",
+    "name": "Inexhaustible Cart of Ore",
+    "class": "Major",
+    "slot": "Misc",
+    "bonuses": "+1 Ore per day",
+    "imageRef": "artifact_inexhaustible_cart_of_ore"
+  },
+  {
+    "id": "artifact_inexhaustible_cart_of_lumber",
+    "name": "Inexhaustible Cart of Lumber",
+    "class": "Major",
+    "slot": "Misc",
+    "bonuses": "+1 Wood per day",
+    "imageRef": "artifact_inexhaustible_cart_of_lumber"
+  },
+  {
+    "id": "artifact_statesmans_medal",
+    "name": "Statesman's Medal",
+    "class": "Major",
+    "slot": "Neck",
+    "bonuses": "-10% surrender cost",
+    "imageRef": "artifact_statesmans_medal"
+  },
+  {
+    "id": "artifact_diplomats_ring",
+    "name": "Diplomat's Ring",
+    "class": "Major",
+    "slot": "Ring",
+    "bonuses": "-10% surrender cost; improves chance enemies join the army",
+    "imageRef": "artifact_diplomats_ring"
+  },
+  {
+    "id": "artifact_rib_cage",
+    "name": "Rib Cage",
+    "class": "Minor",
+    "slot": "Torso",
+    "bonuses": "+2 Spell Power",
+    "imageRef": "artifact_rib_cage"
+  },
+  {
+    "id": "artifact_breastplate_of_petrified_wood",
+    "name": "Breastplate of Petrified Wood",
+    "class": "Treasure",
+    "slot": "Torso",
+    "bonuses": "+1 Spell Power",
+    "imageRef": "artifact_breastplate_of_petrified_wood"
+  },
+  {
+    "id": "artifact_breastplate_of_brimstone",
+    "name": "Breastplate of Brimstone",
+    "class": "Major",
+    "slot": "Torso",
+    "bonuses": "+5 Spell Power",
+    "imageRef": "artifact_breastplate_of_brimstone"
+  },
+  {
+    "id": "artifact_tunic_of_the_cyclops_king",
+    "name": "Tunic of the Cyclops King",
+    "class": "Major",
+    "slot": "Torso",
+    "bonuses": "+4 Spell Power",
+    "imageRef": "artifact_tunic_of_the_cyclops_king"
+  },
+  {
+    "id": "artifact_buckler_of_the_gnoll_king",
+    "name": "Buckler of the Gnoll King",
+    "class": "Minor",
+    "slot": "LeftHand",
+    "bonuses": "+4 Defense",
+    "imageRef": "artifact_buckler_of_the_gnoll_king"
+  },
+  {
+    "id": "artifact_greater_gnolls_flail",
+    "name": "Greater Gnoll's Flail",
+    "class": "Minor",
+    "slot": "RightHand",
+    "bonuses": "+4 Attack",
+    "imageRef": "artifact_greater_gnolls_flail"
+  },
+  {
+    "id": "artifact_ogres_club_of_havoc",
+    "name": "Ogre's Club of Havoc",
+    "class": "Major",
+    "slot": "RightHand",
+    "bonuses": "+5 Attack",
+    "imageRef": "artifact_ogres_club_of_havoc"
+  },
+  {
+    "id": "artifact_red_dragon_flame_tongue",
+    "name": "Red Dragon Flame Tongue",
+    "class": "Minor",
+    "slot": "RightHand",
+    "bonuses": "+2 Attack, +2 Defense",
+    "imageRef": "artifact_red_dragon_flame_tongue"
+  },
+  {
+    "id": "artifact_dragon_scale_shield",
+    "name": "Dragon Scale Shield",
+    "class": "Major",
+    "slot": "LeftHand",
+    "bonuses": "+3 Attack, +3 Defense",
+    "imageRef": "artifact_dragon_scale_shield"
+  },
+  {
+    "id": "artifact_dragon_scale_armor",
+    "name": "Dragon Scale Armor",
+    "class": "Relic",
+    "slot": "Torso",
+    "bonuses": "+4 Attack, +4 Defense",
+    "imageRef": "artifact_dragon_scale_armor"
+  }
+]

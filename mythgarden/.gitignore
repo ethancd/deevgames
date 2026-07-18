@@ -1,0 +1,8 @@
+.env
+app-env
+.DS_Store
+*.pyc
+node_modules/
+.coverage
+/static/
+/.sass-cache/
