@@ -64,10 +64,10 @@ export function CombatScreen() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-stone-950 to-stone-900">
-      <div className="max-w-md w-full" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      <div className="max-w-md w-full flex flex-col gap-6">
         {/* Header */}
         <div className="text-center">
-          <h1 className="text-4xl font-bold text-amber-400" style={{ fontFamily: 'Cinzel, serif', marginBottom: '0.5rem' }}>
+          <h1 className="text-4xl font-bold text-amber-400 font-serif mb-2">
             ⚔ Oracle of Delve ⚔
           </h1>
           <p className="text-sm text-stone-500">V0 - Combat Prototype</p>
@@ -82,8 +82,8 @@ export function CombatScreen() {
 
         {/* Enemies */}
         <div>
-          <h2 className="text-center text-lg font-bold text-red-400" style={{ marginBottom: '0.5rem' }}>ENEMIES</h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <h2 className="text-center text-lg font-bold text-red-400 mb-2">ENEMIES</h2>
+          <div className="flex flex-col gap-4">
             {combatState.enemies.map(enemy => (
               <EnemyDisplay
                 key={enemy.id}
@@ -97,7 +97,7 @@ export function CombatScreen() {
         </div>
 
         {/* Player */}
-        <div style={{ paddingTop: '1rem' }}>
+        <div className="pt-4">
           <PlayerDisplay
             player={combatState.player}
             damageAnimation={getDamageAnimation('player')}
