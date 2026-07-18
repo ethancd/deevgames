@@ -37,21 +37,21 @@ export function Grid({ grid, onCardClick }: GridProps) {
         cells.push(
           <div
             key={key}
-            className="w-24 h-24 min-w-[6rem] min-h-[6rem] m-1 border-2 border-dashed border-amber-900/20 rounded-lg flex items-center justify-center text-amber-800/40 font-serif animate-fadeIn"
+            className="w-24 h-24 min-w-[6rem] min-h-[6rem] m-1 border-2 border-dashed border-amber-900/20 rounded-lg animate-fadeIn"
           >
-            Empty
           </div>
         );
       } else if (cell.type === 'ruins') {
         cells.push(
           <div
             key={key}
-            className="w-24 h-24 min-w-[6rem] min-h-[6rem] m-1 bg-gradient-to-br from-stone-950 to-stone-900 border-2 border-stone-800 rounded-lg flex items-center justify-center text-stone-600 font-bold text-xs animate-fadeIn shadow-lg relative overflow-hidden"
+            className="w-24 h-24 min-w-[6rem] min-h-[6rem] m-1 bg-gradient-to-br from-stone-950 to-stone-900 border-2 border-stone-800 rounded-lg animate-fadeIn shadow-lg relative overflow-hidden"
           >
             <div className="absolute inset-0 bg-gradient-to-br from-transparent via-stone-700/10 to-transparent"></div>
-            <span className="relative" style={{ fontFamily: 'Cinzel, serif' }}>
-              RUINS
-            </span>
+            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100">
+              <line x1="0" y1="0" x2="100" y2="100" stroke="#78716c" strokeWidth="2" />
+              <line x1="100" y1="0" x2="0" y2="100" stroke="#78716c" strokeWidth="2" />
+            </svg>
           </div>
         );
       } else if (cell.type === 'card' && cell.card) {
