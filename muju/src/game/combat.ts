@@ -50,6 +50,22 @@ export function isValidAttack(
 }
 
 /**
+ * Global per-player attack handicap. Always 0 in real games; the balance-lab
+ * harness sets it to measure instrument sensitivity (a +1 global ATK edge
+ * must move win rates, or the lab cannot support fine-grained stat claims).
+ */
+const combatHandicap: Record<PlayerId, number> = { white: 0, black: 0 };
+
+export function setCombatHandicap(player: PlayerId, bonus: number): void {
+  combatHandicap[player] = bonus;
+}
+
+export function resetCombatHandicap(): void {
+  combatHandicap.white = 0;
+  combatHandicap.black = 0;
+}
+
+/**
  * Calculate the attack power of a unit against a specific defender
  * Includes elemental modifier:
  * - Advantage: +1 attack
@@ -66,7 +82,7 @@ export function calculateAttackPower(
   const modifier = getAttackModifier(attackerDef.element, defenderDef.element);
 
   // Attack power cannot go below 0
-  return Math.max(0, attackerDef.attack + modifier);
+  return Math.max(0, attackerDef.attack + modifier + combatHandicap[attacker.owner]);
 }
 
 /**

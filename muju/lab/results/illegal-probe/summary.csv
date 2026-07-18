@@ -1,0 +1,2 @@
+botA,botB,variant,games,aWins,bWins,draws,aWinRate,aWinLo,aWinHi,aWinsAsWhite,gamesAasWhite,aWinsAsBlack,gamesAasBlack,meanTurns,adjudicationRate,invariantViolations,illegalActionsTotal,meanDurationMs
+AIv2-medium-fast,Greedy,,32,27,5,0,0.8438,0.6825,0.9314,14,16,13,16,7.5,0.000,0,9,22144

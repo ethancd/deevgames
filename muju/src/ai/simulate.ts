@@ -8,6 +8,14 @@ import { useAction, endTurn } from '../game/turn';
 import { checkVictory } from '../game/victory';
 
 /**
+ * Monotonic counter folded into generated IDs. Date.now() + a short random
+ * suffix alone is NOT unique: two units queued/placed in the same millisecond
+ * can collide (observed in lab seed 1720018195 — a MOVE then teleported both
+ * units to one square, SPEC_AUDIT divergence D13).
+ */
+let idCounter = 0;
+
+/**
  * Apply an action to a game state and return the new state
  * This is a simulation - doesn't affect the real game
  */
@@ -131,7 +139,7 @@ function applyQueueUnit(state: GameState, definitionId: string): GameState {
   }
 
   const queuedUnit = {
-    id: `queued_${definitionId}_${Date.now()}_${Math.random().toString(36).slice(2, 5)}`,
+    id: `queued_${definitionId}_${Date.now()}_${++idCounter}_${Math.random().toString(36).slice(2, 7)}`,
     definitionId,
     turnsRemaining: def.buildTime,
     owner: currentPlayer,
@@ -161,7 +169,7 @@ function applyPlaceUnit(state: GameState, queuedUnitId: string, position: Positi
 
   // Create the new unit
   const newUnit = {
-    id: `${currentPlayer}_${queuedUnit.definitionId}_${Date.now()}_${Math.random().toString(36).slice(2, 5)}`,
+    id: `${currentPlayer}_${queuedUnit.definitionId}_${Date.now()}_${++idCounter}_${Math.random().toString(36).slice(2, 7)}`,
     definitionId: queuedUnit.definitionId,
     owner: currentPlayer,
     position,
