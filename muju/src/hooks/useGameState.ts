@@ -245,6 +245,9 @@ function gameReducer(state: GameState, action: GameAction): GameState {
         newUnitId
       );
 
+      // Get the cost of this unit for manifested resources tracking
+      const unitCost = getBuildCost(queuedUnit.definitionId);
+
       // Remove from queue and add to board
       const newQueue = playerState.buildQueue.filter((q) => q.id !== action.queuedUnitId);
       const newBoard = {
@@ -260,6 +263,7 @@ function gameReducer(state: GameState, action: GameAction): GameState {
           [currentPlayer]: {
             ...playerState,
             buildQueue: newQueue,
+            resourcesManifested: playerState.resourcesManifested + unitCost,
           },
         },
       };
@@ -306,6 +310,7 @@ function gameReducer(state: GameState, action: GameAction): GameState {
             ...playerState,
             resources: playerState.resources - cost,
             resourcesSpent: playerState.resourcesSpent + cost,
+            resourcesManifested: playerState.resourcesManifested + cost,
           },
         },
       };

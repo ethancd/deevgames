@@ -5,11 +5,10 @@ import { getElementHexForPlayer } from '../utils/colors';
 interface UnitProps {
   unit: UnitType;
   isSelected: boolean;
-  isOwned: boolean;
   onClick: () => void;
 }
 
-export function Unit({ unit, isSelected, isOwned, onClick }: UnitProps) {
+export function Unit({ unit, isSelected, onClick }: UnitProps) {
   const definition = getUnitDefinition(unit.definitionId);
   const color = getElementHexForPlayer(definition.element, unit.owner);
 
@@ -36,7 +35,7 @@ export function Unit({ unit, isSelected, isOwned, onClick }: UnitProps) {
         relative
         ${isSelected ? 'ring-2 ring-offset-2 ring-blue-500 scale-110' : ''}
         ${!canAct ? 'opacity-60' : 'hover:scale-105'}
-        ${isOwned ? 'ring-2 ring-white' : 'ring-2 ring-black'}
+        ${unit.owner === 'white' ? 'ring-2 ring-white' : 'ring-2 ring-black'}
         ${isDamaged ? 'ring-2 ring-red-500' : ''}
       `}
       style={{ backgroundColor: color }}
