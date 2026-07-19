@@ -1,0 +1,13 @@
+mission,id,name,brief,fk__int__plyCap,south,north
+mission,m01,First March,"Slim pieces run faster: your lance is a line (speed 3) while the hollowed slab only manages 2. Close the distance and run it down.",10,"4x1x1@1,7","m2:2x2x1@2,1"
+mission,m02,Broadside,"A strike deals damage per cell of contact. Point-first your lance would poke for 1; laid flat against the wide slab it lands 3 cells at once and kills in a single blow.",4,"4x1x1@1,3","m3:3x2x1@1,1"
+mission,m03,Full Extension,"Attack reach equals speed: slide up to speed minus one cells, then strike one further. The wounded keep sits exactly three cells out — slide two, strike the third.",4,"1x1x4@2,5","m2:2x2x2@2,1"
+mission,m04,Fold to Spear,"Folding reshapes your box around a shared cell. Turn the flat lance into a four-deep spear and your tip leaps three ranks up the board in a single action.",16,"4x1x1@1,7","m2:2x2x1@0,0"
+mission,m05,"One Blow, Two Graves","A strike footprint damages every enemy piece it touches. Line up both hollowed slabs under your lance's shadow and cleave the pair with one strike.",4,"4x1x1@1,4","m2:2x2x1@1,1;m2:2x2x1@3,1"
+mission,m06,High Ground,"Damage per cell of contact is the lesser of the two heights. Your two-high keep crushes the wounded keep for 2 per cell where a flat piece would only scratch for 1.",4,"2x2x2@2,3","m3:2x2x2@2,1"
+mission,m07,Re-forge,"A wounded piece still lumbers around in its old fat shape. Fold your hollowed slab compact into a true lance — measure 4, volume 4 — and it speeds up from 2 to 3.",14,"m4:3x2x1@1,5","m2:2x2x1@2,1"
+mission,m08,Tempo,"A fold costs your entire turn. With the clock at two plies there is no time to re-forge — strike now or the game is adjudicated out from under you.",2,"m4:3x2x1@1,3","m2:2x2x1@1,1"
+mission,m09,The Picket Line,"No piece may pass through another, friend or foe. The picket ahead of your lance must fall before you can reach the slab hiding behind it.",12,"4x1x1@1,6","m1:4x1x1@1,5;m2:2x2x1@2,1"
+mission,m10,Waste Not,"Damage beyond a piece's remaining measure simply evaporates. Let the keep's heavy fist flatten the scrap beside it, and send the lance after the real prize.",12,"2x2x2@2,3;4x1x1@1,7","m1:2x2x1@2,1;m2:2x2x1@4,1"
+mission,m11,Race the Clock,"When the ply cap lands, the board is adjudicated on total measure — but this campaign demands annihilation. Hunt down both slabs before time is called.",14,"4x1x1@1,7;2x1x1@0,5","m2:2x2x1@1,1;m2:2x2x1@4,2"
+mission,m12,The Last Field,"Everything at once: the north fields its full array, hollowed and brittle. Fold, cleave and crush — leave nothing standing.",20,"3x2x1@0,5;2x2x2@3,5;4x1x1@1,7","m2:3x2x1@3,1;m2:2x2x2@1,1;m1:4x1x1@1,0"

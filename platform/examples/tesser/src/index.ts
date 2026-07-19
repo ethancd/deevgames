@@ -17,3 +17,17 @@ export type { Piece, TesserState, TesserAction, TesserConfig, TesserSeat, Dir, C
 export { persistence, tesserStateSchema } from './persist.ts';
 export { tesserEval, moveCount, bestStrikeDamage, advanceScore } from './eval.ts';
 export { tesserMinimaxBot, orderTesserMoves, TESSER_MINIMAX_BUDGET } from './bots.ts';
+export {
+  missionSchema,
+  missionPieceSchema,
+  parsePieceString,
+  parsePieceList,
+  parseCampaignCsv,
+  campaignContent,
+  missionVerifier,
+  missionSolvedByBot,
+  missionPieces,
+  missionConfig,
+  TESSER_VERIFY_BUDGET,
+} from './puzzles.ts';
+export type { Mission, MissionPiece } from './puzzles.ts';

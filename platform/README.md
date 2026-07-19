@@ -33,6 +33,10 @@ Dependency edges: `lab → core`; `ai → core` (+ `lab` as dev, for benchmarks)
 - **content**: the puzzle pack ships as a self-describing CSV, schema-validated, and machine-verified (every position winnable-for-first and not pre-solved — with a test proving the verifier catches a zero-Grundy trap).
 - **llm**: a `RawBot` that picks moves via `structuredCall` against a scripted mock client — llm → lab → core composition with zero network. (UI coverage is intentionally thin; the confirm machine is exercised in @deev/ui's own suite.)
 
+## The first real game
+
+`examples/tesser` — TESSER, winner of the July 2026 design tournament (`docs/game-design-tournament-2026-07.md`): a dueling tactics game where pieces are conserved hypervolume folded between spear/slab/tower geometries. Five kits load-bearing (llm deferred to post-V1 shape drops by design), 68 tests, machine-verified 12-mission campaign, playable portrait web UI. See its `SPEC.md` and `README.md`.
+
 ## Starting a new game on the platform
 
 1. `mkdir examples/<your-game>` (or a sibling repo) with a package.json declaring `workspace:*` deps on the kits you need.
