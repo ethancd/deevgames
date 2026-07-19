@@ -51,6 +51,14 @@ export class AIEngineV2 {
     this.config = { ...DEFAULT_CONFIG, ...DIFFICULTY_PRESETS[difficulty] };
   }
 
+  /**
+   * Override individual engine knobs (used by the balance-lab harness to run
+   * throughput presets; gameplay code uses difficulty presets only).
+   */
+  setConfig(overrides: Partial<AIEngineConfig>): void {
+    this.config = { ...this.config, ...overrides };
+  }
+
   setWeights(weights: Partial<EvaluationWeights>): void {
     this.weights = { ...this.weights, ...weights };
   }

@@ -1,0 +1,4 @@
+# Raw per-game logs and replays can be huge; summaries are the committed canon.
+# Commit summary.csv (and small curated replays) explicitly; ignore the bulk.
+*/games.jsonl
+*/replays/sample-*.json

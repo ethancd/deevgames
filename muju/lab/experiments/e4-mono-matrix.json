@@ -1,0 +1,127 @@
+{
+  "name": "e4-mono-matrix",
+  "seed": 40001,
+  "replaySample": 0.002,
+  "pairings": [
+    {
+      "white": "Mono-fire",
+      "black": "Mono-fire",
+      "games": 200
+    },
+    {
+      "white": "Mono-fire",
+      "black": "Mono-lightning",
+      "games": 200,
+      "mirror": true
+    },
+    {
+      "white": "Mono-fire",
+      "black": "Mono-water",
+      "games": 200,
+      "mirror": true
+    },
+    {
+      "white": "Mono-fire",
+      "black": "Mono-shadow",
+      "games": 200,
+      "mirror": true
+    },
+    {
+      "white": "Mono-fire",
+      "black": "Mono-plant",
+      "games": 200,
+      "mirror": true
+    },
+    {
+      "white": "Mono-fire",
+      "black": "Mono-metal",
+      "games": 200,
+      "mirror": true
+    },
+    {
+      "white": "Mono-lightning",
+      "black": "Mono-lightning",
+      "games": 200
+    },
+    {
+      "white": "Mono-lightning",
+      "black": "Mono-water",
+      "games": 200,
+      "mirror": true
+    },
+    {
+      "white": "Mono-lightning",
+      "black": "Mono-shadow",
+      "games": 200,
+      "mirror": true
+    },
+    {
+      "white": "Mono-lightning",
+      "black": "Mono-plant",
+      "games": 200,
+      "mirror": true
+    },
+    {
+      "white": "Mono-lightning",
+      "black": "Mono-metal",
+      "games": 200,
+      "mirror": true
+    },
+    {
+      "white": "Mono-water",
+      "black": "Mono-water",
+      "games": 200
+    },
+    {
+      "white": "Mono-water",
+      "black": "Mono-shadow",
+      "games": 200,
+      "mirror": true
+    },
+    {
+      "white": "Mono-water",
+      "black": "Mono-plant",
+      "games": 200,
+      "mirror": true
+    },
+    {
+      "white": "Mono-water",
+      "black": "Mono-metal",
+      "games": 200,
+      "mirror": true
+    },
+    {
+      "white": "Mono-shadow",
+      "black": "Mono-shadow",
+      "games": 200
+    },
+    {
+      "white": "Mono-shadow",
+      "black": "Mono-plant",
+      "games": 200,
+      "mirror": true
+    },
+    {
+      "white": "Mono-shadow",
+      "black": "Mono-metal",
+      "games": 200,
+      "mirror": true
+    },
+    {
+      "white": "Mono-plant",
+      "black": "Mono-plant",
+      "games": 200
+    },
+    {
+      "white": "Mono-plant",
+      "black": "Mono-metal",
+      "games": 200,
+      "mirror": true
+    },
+    {
+      "white": "Mono-metal",
+      "black": "Mono-metal",
+      "games": 200
+    }
+  ]
+}

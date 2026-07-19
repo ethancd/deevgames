@@ -218,6 +218,7 @@ export function createInitialGameState(): GameState {
     startCorner: getStartCorner('white'),
     resourcesGained: 0,
     resourcesSpent: 0,
+    resourcesManifested: 0,
   };
 
   const blackState: PlayerState = {
@@ -227,6 +228,7 @@ export function createInitialGameState(): GameState {
     startCorner: getStartCorner('black'),
     resourcesGained: 0,
     resourcesSpent: 0,
+    resourcesManifested: 0,
   };
 
   const turnState: TurnState = {

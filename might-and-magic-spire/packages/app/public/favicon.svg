@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="38%" r="70%">
+      <stop offset="0%" stop-color="#1b1f17"/>
+      <stop offset="100%" stop-color="#07080a"/>
+    </radialGradient>
+    <linearGradient id="verd" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#7cae9e"/>
+      <stop offset="100%" stop-color="#234039"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="96" fill="url(#bg)"/>
+  <!-- spire silhouette -->
+  <path d="M256 60 L300 150 L286 150 L320 250 L300 250 L340 420 L172 420 L212 250 L192 250 L226 150 L212 150 Z"
+        fill="#234039" opacity="0.5"/>
+  <!-- skull -->
+  <g fill="#e8e2d0">
+    <path d="M256 150c-66 0-108 44-108 104 0 33 15 58 34 73 8 6 12 15 12 26v18a14 14 0 0 0 14 14h12v-34a8 8 0 0 1 16 0v34h20v-34a8 8 0 0 1 16 0v34h12a14 14 0 0 0 14-14v-18c0-11 4-20 12-26 19-15 34-40 34-73 0-60-42-104-108-104z"/>
+  </g>
+  <g fill="#07080a">
+    <ellipse cx="212" cy="270" rx="30" ry="34"/>
+    <ellipse cx="300" cy="270" rx="30" ry="34"/>
+    <path d="M256 312 l-18 38 h36 z"/>
+  </g>
+  <!-- verdigris brow tint -->
+  <path d="M256 150c-66 0-108 44-108 104 0 8 1 16 3 23 18-44 58-71 105-71s87 27 105 71c2-7 3-15 3-23 0-60-42-104-108-104z"
+        fill="url(#verd)" opacity="0.45"/>
+</svg>

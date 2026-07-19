@@ -1,0 +1,47 @@
+Place,name,image,place_type,,
+Place,The Farm,places/idyllic-green-farm.png,FARM,,
+Place,The Town,places/old-timey-general-store.png,TOWN,,
+Place,The Forest,places/forest-unsplash.jpeg,WILD,,
+Place,The Mountains,places/foothills-unsplash.jpeg,WILD,,
+Place,The Beach,places/beach-unsplash.jpeg,WILD,,
+,,,,,
+Bridge,fk__place__place_1,fk__place__place_2,direction_1,direction_2,
+Bridge,The Farm,The Forest,NORTH,SOUTH,
+Bridge,The Farm,The Town,WEST,EAST,
+Bridge,The Town,The Mountains,SOUTH,NORTH,
+Bridge,The Town,The Beach,NORTH,SOUTH,
+,,,,,
+Building,name,image,place_type,fk__place__surround,
+Building,lil farmhouse,default,HOME,The Farm,
+Building,mom and pop shop,default,SHOP,The Town,
+Building,town hall pub and grill,default,HOME,The Town,
+Building,charming victorian,default,HOME,The Town,
+Building,quite big log cabin,default,HOME,The Forest,
+Building,oak tree duplex,default,HOME,The Forest,
+Building,comfortable beach shack,default,HOME,The Beach,
+Building,house-sized clamshell,default,HOME,The Beach,
+Building,cozy cavern,default,HOME,The Mountains,
+Building,stonework chalet,default,HOME,The Mountains,
+Building,spoopy cave system,default,HOME,The Mountains,
+,,,,,
+Villager,name,full_name,friendliness,portrait,fk__place__home
+Villager,Donatella,Donatella Fortlescue,7,default,charming victorian
+Villager,Tourmaline,none,6,default,cozy cavern
+Villager,Trix,Trix the Rabbit,6,default,none
+Villager,Damey Hoodiehome,Damey Hoodiehome,5,default,oak tree duplex
+Villager,Bonbon,Bonbon X. Skellington,5,default,spoopy cave system
+Villager,Angie,none,5,default,mom and pop shop
+Villager,Bayla,Bayla Stoutstein,4,default,stonework chalet
+Villager,Zuck,Zuck (no relation),4,default,spoopy cave system
+Villager,Dev,none,4,default,mom and pop shop
+Villager,Light,Hypermayor Light 1.1.5,4,default,town hall pub and grill
+Villager,Vir,Vir Vipi,4,default,charming victorian
+Villager,Vida,Vida Vipi,3,default,charming victorian
+Villager,Daffodil,Daffodil V. Human,3,default,house-sized clamshell
+Villager,Wren,none,3,default,oak tree duplex
+Villager,Joss,Joss Vipi,2,default,charming victorian
+Villager,Samyel,Samyel Eschbringer,2,default,comfortable beach shack
+Villager,Bjölf,Bjölf Bjölfsen,1,default,quite big log cabin
+,,,,,
+,,,,,
+Item,name,icon,price,item_type,

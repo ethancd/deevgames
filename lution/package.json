@@ -1,0 +1,23 @@
+{
+  "name": "lution",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Lution: a self-expanding card game vs live Claude",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:cards": "vitest run tests/structural.test.ts tests/cards"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.0",
+    "vitest": "^4.0.16"
+  },
+  "dependencies": {
+    "@anthropic-ai/claude-agent-sdk": "^0.3.198"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "e2-ladder-gates",
+  "seed": 20001,
+  "replaySample": 0.005,
+  "pairings": [
+    { "white": "Greedy", "black": "Random", "games": 100, "mirror": true },
+    { "white": "Rush", "black": "Greedy", "games": 100, "mirror": true },
+    { "white": "Expand", "black": "Greedy", "games": 100, "mirror": true },
+    { "white": "Balanced", "black": "Greedy", "games": 100, "mirror": true },
+    { "white": "Rush", "black": "Random", "games": 50, "mirror": true },
+    { "white": "Balanced", "black": "Random", "games": 50, "mirror": true }
+  ]
+}

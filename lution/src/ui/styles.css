@@ -1,0 +1,2069 @@
+/* Lution — mobile-first card-table aesthetic. No framework; plain CSS.
+   Primary target: a phone viewport (~390x844) held in portrait, touch only.
+   Desktop gets a widened, two-column enhancement below (see the min-width
+   media query near the bottom) but every layout works standalone at
+   360-430px with no horizontal scroll except the intentional hand strip. */
+
+:root {
+  color-scheme: dark;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* Table + surfaces (dark-friendly: easy on the eyes at night). */
+  --felt: #123b2c;
+  --felt-dark: #081b14;
+  --surface: #16241d;
+  --surface-raised: #1e332a;
+  --surface-sunken: #0f1c16;
+  --ink: #f4efe1;
+  --ink-dim: #b7c2b8;
+  --ink-faint: #7f8d82;
+  --line: rgba(244, 239, 225, 0.14);
+  --line-strong: rgba(244, 239, 225, 0.28);
+
+  /* Cards themselves stay light parchment, so they read as physical cards
+     on a dark table and names/effects stay legible. */
+  --paper: #fbf6e8;
+  --paper-dim: #efe6cf;
+  --paper-ink: #241c0f;
+
+  /* Two-player identity: warm for you, cool for Claude. */
+  --accent-human: #e0954f;
+  --accent-human-strong: #c97a2e;
+  --accent-claude: #5fb8c9;
+  --accent-claude-strong: #3d93a4;
+
+  /* General accent (buttons not tied to a specific player). */
+  --accent: #d9b25c;
+  --accent-strong: #b8912f;
+  --danger: #e2685f;
+  --danger-strong: #c94a41;
+  --success: #6fcf8f;
+
+  --radius: 0.7rem;
+  --radius-lg: 1.1rem;
+  --radius-sm: 0.45rem;
+
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+
+  --tap-min: 44px;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  overflow-x: hidden;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  height: 100%;
+  min-height: 100dvh;
+  background: radial-gradient(ellipse at top, var(--felt) 0%, var(--felt-dark) 75%);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+#app {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+  color: inherit;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Prevent iOS Safari from zooming the page when an input/textarea is
+   focused: any font-size >= 16px on form controls avoids the auto-zoom. */
+input,
+textarea,
+select {
+  font: inherit;
+  font-size: 16px;
+}
+
+code {
+  background: rgba(0, 0, 0, 0.25);
+  padding: 0.1em 0.35em;
+  border-radius: 0.25em;
+}
+
+/* === app shell === */
+/* Flex column filling the dynamic viewport: sticky header, a scrollable
+   content region, and (on the playing screen) a docked hand strip that
+   never scrolls away. `100dvh` — not `vh` — so the layout reflows correctly
+   when the on-screen keyboard opens/closes on mobile. */
+
+.app-shell {
+  min-height: 100dvh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  /* #app is a flex container, so as a flex item this would otherwise size to
+     max-content (the unwrapped hand strip) and overflow the viewport. */
+  width: 100%;
+  min-width: 0;
+  max-width: 30rem;
+  margin: 0 auto;
+  padding-left: var(--safe-left);
+  padding-right: var(--safe-right);
+}
+
+.app-header {
+  flex: 0 0 auto;
+  color: var(--paper);
+  padding: calc(0.6rem + var(--safe-top)) 0.9rem 0.5rem;
+  background: linear-gradient(180deg, rgba(8, 27, 20, 0.96), rgba(8, 27, 20, 0.86));
+  border-bottom: 1px solid var(--line);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  backdrop-filter: blur(6px);
+}
+
+.app-header__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.app-header__title {
+  margin: 0;
+  font-size: 1.15rem;
+  letter-spacing: 0.02em;
+}
+
+.app-header__phase {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+
+.app-header__controls {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 0.4rem;
+}
+
+/* Subtle, always-available header controls ("Compact"/"Expand", "Codex",
+   "New match") -- deliberately understated (small, low-contrast, no fill) so
+   none of them ever compete with the phase label for attention. */
+.app-header__compact-toggle,
+.app-header__codex,
+.app-header__new-match {
+  flex: 0 0 auto;
+  background: none;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  color: var(--ink-dim);
+  font-size: 0.68rem;
+  letter-spacing: 0.02em;
+  padding: 0.15rem 0.55rem;
+  opacity: 0.7;
+}
+
+.app-header__compact-toggle:hover,
+.app-header__compact-toggle:focus-visible,
+.app-header__codex:hover,
+.app-header__codex:focus-visible,
+.app-header__new-match:hover,
+.app-header__new-match:focus-visible {
+  opacity: 1;
+}
+
+.app-header__compact-toggle[aria-pressed='true'] {
+  color: var(--accent);
+  border-color: var(--accent-strong);
+  opacity: 1;
+}
+
+.app-header__status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
+  font-size: 0.78rem;
+}
+
+.app-header__status:empty {
+  display: none;
+  margin-top: 0;
+}
+
+.turn-indicator {
+  font-weight: 700;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+}
+
+.turn-indicator--yours {
+  color: var(--felt-dark);
+  background: var(--accent-human);
+  border-color: var(--accent-human-strong);
+}
+
+.turn-indicator--theirs {
+  color: var(--felt-dark);
+  background: var(--accent-claude);
+  border-color: var(--accent-claude-strong);
+}
+
+.tally {
+  color: var(--ink-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+.app-content {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background: var(--surface);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.app-shell--playing .app-content {
+  padding: 0.75rem 0.75rem 1rem;
+}
+
+/* The design-round sheet manages its own internal scroll region + sticky
+   submit footer (see .design-round--sheet below), so the shell's own
+   content padding/scroll would just get in the way here. */
+.app-shell--designing .app-content {
+  padding: 0;
+  overflow: hidden;
+}
+
+/* === card chips === */
+/* A "card": name + point value, always visible; the full effect text is
+   revealed by TAP — never hover-only. `.card-chip--reveal` variants (used on
+   already-spacious reveal/keep-steal screens) show the effect text
+   unconditionally since there's room and only 1-2 cards on screen. */
+
+.card-chip {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+  background: var(--paper);
+  color: var(--paper-ink);
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.65rem;
+  font-size: 0.88rem;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.12);
+  text-align: left;
+  width: 100%;
+}
+
+.card-chip__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.card-chip__name {
+  font-weight: 700;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.card-chip__value {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  padding: 0 0.35rem;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #2a1f00;
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+.card-chip__tooltip {
+  display: none;
+  width: 100%;
+  font-size: 0.8rem;
+  line-height: 1.35;
+  color: #4a3f28;
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 0.4rem;
+  padding: 0.45rem 0.55rem;
+}
+
+.card-chip.is-expanded .card-chip__tooltip,
+.card-chip--reveal .card-chip__tooltip,
+.card-chip:focus-visible .card-chip__tooltip {
+  display: block;
+}
+
+/* Desktop bonus: hover also reveals it (mobile ignores :hover entirely). */
+@media (hover: hover) and (pointer: fine) {
+  .card-chip:hover .card-chip__tooltip {
+    display: block;
+  }
+}
+
+button.card-chip {
+  border: 1px solid rgba(0, 0, 0, 0.18);
+}
+
+.card-chip--keeper {
+  min-height: var(--tap-min);
+}
+
+.card-chip--disabled {
+  opacity: 0.55;
+}
+
+/* Player-identity accents on keepers: warm border in your zone, cool in
+   Claude's. */
+.zone--self .card-chip--keeper {
+  border-left: 4px solid var(--accent-human-strong);
+}
+
+.zone--opponent .card-chip--keeper {
+  border-left: 4px solid var(--accent-claude-strong);
+}
+
+/* === playing screen: zones === */
+
+.zone {
+  display: block;
+}
+
+.player-column {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 0.75rem;
+  background: var(--surface-raised);
+}
+
+.player-column--self {
+  border-color: rgba(224, 149, 79, 0.4);
+}
+
+.player-column--opponent {
+  border-color: rgba(95, 184, 201, 0.35);
+}
+
+.player-column--active {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.player-column__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  gap: 0.5rem;
+}
+
+.player-column__header h2 {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--ink);
+}
+
+.player-column--self .player-column__header h2 {
+  color: var(--accent-human);
+}
+
+.player-column--opponent .player-column__header h2 {
+  color: var(--accent-claude);
+}
+
+.turn-badge {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: var(--accent);
+  color: #2a1f00;
+  padding: 0.12rem 0.45rem;
+  border-radius: 999px;
+  vertical-align: middle;
+}
+
+.player-column__score {
+  font-size: 1.3rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.score-target {
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: var(--ink-faint);
+}
+
+.zone-counts {
+  display: flex;
+  gap: 0.85rem;
+  font-size: 0.76rem;
+  color: var(--ink-dim);
+  margin-bottom: 0.55rem;
+  flex-wrap: wrap;
+}
+
+.zone-empty {
+  font-size: 0.85rem;
+  color: var(--ink-faint);
+  font-style: italic;
+  margin: 0;
+}
+
+.keeper-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.keeper-row .card-chip {
+  width: auto;
+  min-width: 7rem;
+  max-width: 11rem;
+}
+
+/* === compact starters (view-only toggle, see viewPrefs.ts) === */
+/* Plain starter-deck keepers collapse into one tappable summary pill so
+   designed (human/claude) cards stand out. Tapping the pill expands the
+   starters inline for that zone only -- deliberately NOT persisted, so it
+   collapses again on the next re-render (see board.ts's
+   attachKeeperSummaryToggle). */
+
+.keeper-summary-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.keeper-summary {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  min-height: var(--tap-min);
+  background: var(--paper-dim);
+  color: var(--paper-ink);
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  border-radius: 999px;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.12);
+}
+
+.keeper-row--starters {
+  display: none;
+}
+
+.keeper-row--starters.is-expanded {
+  display: flex;
+}
+
+/* Slim hand chip: name + value badge only, roughly half width, name
+   truncated with an ellipsis instead of wrapping. The effect-text tooltip
+   row is already suppressed for every hand chip (see `.card-chip--hand
+   .card-chip__tooltip` below), so slim only needs to shrink the footprint. */
+.card-chip--slim {
+  min-height: 3.6rem;
+  padding: 0.4rem 0.5rem;
+}
+
+.card-chip--slim .card-chip__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+/* === event log (collapsible <details>) === */
+
+.log-panel {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface-sunken);
+  overflow: hidden;
+}
+
+.log-panel__toggle {
+  list-style: none;
+  cursor: pointer;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-dim);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: var(--tap-min);
+}
+
+.log-panel__toggle::-webkit-details-marker {
+  display: none;
+}
+
+.log-panel__toggle::after {
+  content: '▾';
+  transition: transform 0.15s ease;
+}
+
+.log-panel:not([open]) .log-panel__toggle::after {
+  transform: rotate(-90deg);
+}
+
+.log-panel__body {
+  max-height: 9rem;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 0.75rem 0.6rem;
+  font-size: 0.8rem;
+  border-top: 1px solid var(--line);
+}
+
+.log-empty {
+  color: var(--ink-faint);
+  font-style: italic;
+  margin: 0.5rem 0 0;
+}
+
+.log-list {
+  list-style: none;
+  margin: 0;
+  padding: 0.5rem 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.log-entry {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.log-entry__turn {
+  color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.log-entry__who {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.narration-line {
+  margin: 0.25rem 0;
+}
+
+/* === hand dock (fixed near the thumb) === */
+
+.hand-dock {
+  flex: 0 0 auto;
+  background: linear-gradient(180deg, rgba(8, 27, 20, 0.9), var(--felt-dark) 40%);
+  border-top: 1px solid var(--line-strong);
+  padding-bottom: var(--safe-bottom);
+  position: sticky;
+  bottom: 0;
+  z-index: 15;
+}
+
+.hand-dock:empty {
+  display: none;
+}
+
+.hand-dock__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.6rem 0.75rem 0.5rem;
+}
+
+.hand-dock__body--locked {
+  opacity: 0.65;
+}
+
+.hand-dock__locked-note {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--ink-dim);
+  font-style: italic;
+}
+
+.hand-strip {
+  display: flex;
+  gap: 0.55rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
+  padding: 0.15rem 0.1rem 0.35rem;
+  margin: 0 -0.1rem;
+}
+
+.hand-strip .card-chip {
+  width: 8.5rem;
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+  min-height: 4.4rem;
+}
+
+/* Roughly half the standard hand-chip width -- same specificity as the rule
+   above, so source order (this comes after) is what makes it win. */
+.hand-strip .card-chip--slim {
+  width: 4.3rem;
+}
+
+/* The hand strip's own effect-text tooltip is redundant with the preview
+   panel below (tap = select, which opens the preview) — hide it here so a
+   tap doesn't fight two behaviors. */
+.card-chip--hand .card-chip__tooltip {
+  display: none !important;
+}
+
+.card-chip--hand.is-selected {
+  outline: 3px solid var(--accent-human);
+  outline-offset: -3px;
+  box-shadow: 0 0 0 1px var(--accent-human-strong);
+}
+
+.hand-empty {
+  color: var(--ink-dim);
+  font-style: italic;
+  margin: 0.5rem 0;
+}
+
+.hand-preview {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  background: var(--surface-raised);
+  border: 1px solid var(--accent-human-strong);
+  border-radius: var(--radius);
+  padding: 0.6rem 0.7rem;
+}
+
+.hand-preview__text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.hand-preview__name {
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 0.2rem;
+  overflow-wrap: anywhere;
+}
+
+.hand-preview__effect {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--ink-dim);
+  line-height: 1.35;
+}
+
+.hand-preview__actions {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.hand-preview__cancel,
+.hand-preview__play,
+.hand-preview__forge-watch {
+  min-height: var(--tap-min);
+  border-radius: var(--radius-sm);
+  padding: 0.4rem 0.85rem;
+  font-weight: 600;
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+
+.hand-preview__cancel {
+  background: transparent;
+  border: 1px solid var(--line-strong);
+  color: var(--ink-dim);
+}
+
+.hand-preview__play {
+  background: var(--accent-human);
+  border: 1px solid var(--accent-human-strong);
+  color: #2a1300;
+}
+
+.hand-preview__forge-watch {
+  background: var(--accent);
+  border: 1px solid var(--accent-strong);
+  color: #2a1f00;
+}
+
+.pass-button {
+  min-height: var(--tap-min);
+  background: transparent;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.9rem;
+  color: var(--ink-dim);
+  font-weight: 600;
+  width: 100%;
+}
+
+/* === modal (requestChoice) === */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  padding: 1rem calc(1rem + var(--safe-right)) calc(1rem + var(--safe-bottom)) calc(1rem + var(--safe-left));
+}
+
+.modal {
+  background: var(--surface-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 1.1rem;
+  max-width: 26rem;
+  width: 100%;
+  max-height: 80dvh;
+  overflow-y: auto;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+
+.modal h3 {
+  margin-top: 0;
+  color: var(--ink);
+}
+
+.modal__options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.modal__option {
+  min-height: var(--tap-min);
+  border: 1px solid var(--accent-strong);
+  background: var(--paper);
+  color: var(--paper-ink);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 0.8rem;
+  text-align: left;
+  font-weight: 600;
+}
+
+/* === design-screen status strip === */
+/* Compact "you won/lost the last game" + running match-tally strip shown
+   above the design form's header (and, in .design-status-strip__tally form
+   alone, above the loser's keep/steal decision screen). Sits OUTSIDE
+   .design-round--sheet's own flex/scroll region since app-shell--designing
+   zeroes out .app-content's padding for the sheet -- this strip needs its
+   own spacing back, same reasoning as .reveal/.void-notice below. */
+.design-status-strip {
+  flex: 0 0 auto;
+  padding: 0.7rem 0.9rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.design-status-strip__result {
+  margin: 0;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.design-status-strip__tally {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--ink-dim);
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-sm);
+  padding: 0.35rem 0.6rem;
+  align-self: flex-start;
+}
+
+/* === design round (full-screen sheet) === */
+
+.design-round {
+  color: var(--ink);
+}
+
+.design-round--sheet {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-shell--designing .app-content {
+  padding: 0;
+  overflow: hidden;
+}
+
+.design-round__header {
+  flex: 0 0 auto;
+  padding: 0.9rem 0.9rem 0.6rem;
+}
+
+.design-round__header h2 {
+  margin: 0 0 0.4rem;
+}
+
+.design-round__intro {
+  font-size: 0.84rem;
+  color: var(--ink-dim);
+  margin: 0 0 0.5rem;
+}
+
+/* Opening-round-only explainer (round 1, before any inner game has been
+   played): states which rule assigned the loser's keep/steal choice. */
+.design-round__opening-note,
+.keep-steal__opening-note {
+  font-size: 0.82rem;
+  color: var(--accent);
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.65rem;
+  margin: 0 0 0.6rem;
+}
+
+.design-round__claude-status {
+  font-size: 0.84rem;
+  color: var(--accent);
+  margin: 0;
+}
+
+.design-form {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.design-form__fields {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 0.9rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.design-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+  color: var(--ink-dim);
+}
+
+.design-form__field input,
+.design-form__field textarea {
+  padding: 0.6rem 0.65rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface-sunken);
+  color: var(--ink);
+  resize: vertical;
+}
+
+.design-form__field input:focus,
+.design-form__field textarea:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.design-form__violations {
+  margin: 0;
+  padding-left: 1.1rem;
+  color: var(--danger);
+  font-size: 0.82rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.design-form__footer {
+  flex: 0 0 auto;
+  padding: 0.7rem 0.9rem calc(0.7rem + var(--safe-bottom));
+  border-top: 1px solid var(--line);
+  background: var(--surface);
+  position: sticky;
+  bottom: 0;
+}
+
+.design-form__submit {
+  width: 100%;
+  min-height: 3rem;
+  background: var(--accent);
+  color: #2a1f00;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.design-round--locked {
+  justify-content: flex-start;
+  padding: 0.9rem;
+  gap: 1rem;
+}
+
+.design-round__locked {
+  color: var(--ink-dim);
+  font-size: 0.9rem;
+}
+
+.design-round__locked-card {
+  padding: 0 0.9rem;
+}
+
+/* .reveal and .void-notice render inside the same 'designing' screen shell
+   as the full-bleed design-form sheet (app-content's padding is 0 there so
+   the sheet can go edge-to-edge) — they need their own padding back since
+   they're normal, non-sheet content blocks. */
+.reveal,
+.void-notice {
+  padding: 1rem;
+}
+
+.reveal__cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.85rem;
+  margin: 0.75rem 0;
+}
+
+.reveal__card h3 {
+  margin: 0 0 0.4rem;
+  font-size: 0.85rem;
+  color: var(--ink-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.reveal__continue,
+.void-notice__continue {
+  width: 100%;
+  min-height: 3rem;
+  background: var(--accent);
+  color: #2a1f00;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  font-size: 1rem;
+  margin-top: 0.5rem;
+}
+
+/* === design failure / ghostwrite === */
+
+.design-failure {
+  color: var(--ink);
+}
+
+.design-failure__error {
+  background: rgba(226, 104, 95, 0.15);
+  border: 1px solid var(--danger);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 0.75rem;
+  color: var(--ink);
+}
+
+.design-failure__retry {
+  width: 100%;
+  min-height: var(--tap-min);
+  background: var(--accent);
+  color: #2a1f00;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  margin: 0.5rem 0;
+}
+
+.design-failure__ghostwrite summary {
+  cursor: pointer;
+  padding: 0.6rem 0;
+  min-height: var(--tap-min);
+  display: flex;
+  align-items: center;
+  color: var(--ink-dim);
+  font-weight: 600;
+}
+
+/* === keep / steal === */
+
+.keep-steal {
+  color: var(--ink);
+}
+
+.keep-steal__choice {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+
+.keep-steal__keep,
+.keep-steal__reveal-steal {
+  min-height: 3.5rem;
+  border: 1px solid var(--accent-human-strong);
+  background: var(--surface-raised);
+  border-radius: var(--radius);
+  padding: 0.85rem;
+  text-align: left;
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.keep-steal__reveal-steal {
+  justify-content: center;
+  border-color: var(--accent-claude-strong);
+}
+
+.keep-steal__options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.keep-steal__option {
+  min-height: 3.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.35rem;
+  border: 1px solid var(--line-strong);
+  background: var(--surface-raised);
+  border-radius: var(--radius);
+  padding: 0.7rem 0.8rem;
+  text-align: left;
+}
+
+.keep-steal__outcome {
+  font-size: 0.78rem;
+  color: var(--ink-dim);
+}
+
+/* Persistent warning banner on the two steal-pick screens (loser's step-1
+   pick, winner's step-2 counter-raid pick): stays visible above the option
+   list the whole time, since the consequence it names (destroying the
+   spurned design) applies to every 'existing' option below, not just one. */
+.keep-steal__warning {
+  margin: 0.75rem 0;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--accent-claude-strong);
+  border-radius: var(--radius);
+  background: var(--surface-raised);
+  color: var(--ink);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.round-narration__lines {
+  padding-left: 1.1rem;
+  color: var(--ink-dim);
+  line-height: 1.5;
+}
+
+/* === job status / paused === */
+
+.job-status,
+.paused {
+  color: var(--ink);
+}
+
+.job-status__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: var(--surface-raised);
+  border: 1px solid var(--line);
+  margin-bottom: 0.75rem;
+}
+
+.job-status__badge--done {
+  background: rgba(111, 207, 143, 0.18);
+  color: var(--success);
+  border-color: var(--success);
+}
+
+.job-status__badge--failed,
+.job-status__badge--interrupted {
+  background: rgba(226, 104, 95, 0.18);
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+.job-status__badge--needs-clarification {
+  background: rgba(217, 178, 92, 0.18);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.spinner {
+  width: 0.9em;
+  height: 0.9em;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  animation: spin 0.8s linear infinite;
+  opacity: 0.85;
+}
+
+.job-status__badge--done .spinner,
+.job-status__badge--failed .spinner,
+.job-status__badge--interrupted .spinner,
+.job-status__badge--needs-clarification .spinner {
+  display: none;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.job-status__log {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.8rem;
+  background: var(--surface-sunken);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 0.65rem 0.8rem;
+  list-style: none;
+  margin: 0;
+  color: var(--ink-dim);
+  line-height: 1.5;
+}
+
+.job-status__hint {
+  font-size: 0.78rem;
+  color: var(--ink-faint);
+}
+
+.paused__question,
+.paused__error {
+  background: rgba(226, 104, 95, 0.12);
+  border: 1px solid var(--danger);
+  border-radius: var(--radius-sm);
+  padding: 0.65rem 0.8rem;
+}
+
+.paused__manual {
+  margin-top: 1rem;
+  border-top: 1px dashed var(--line);
+  padding-top: 0.75rem;
+}
+
+.paused__manual ol {
+  color: var(--ink-dim);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  padding-left: 1.2rem;
+}
+
+.paused__verify,
+.paused__retry-button {
+  width: 100%;
+  min-height: 3rem;
+  background: var(--accent);
+  color: #2a1f00;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  font-size: 1rem;
+  margin-top: 0.5rem;
+}
+
+.paused__retry {
+  margin-top: 1rem;
+}
+
+/* === game-end beat === */
+/* Full-screen interstitial (a SCREEN, not an overlay) shown right after an
+   inner game ends, before the next phase (design round, or an immediate
+   draw-replay) begins. Victory/defeat reuse the same warm-human/cool-claude
+   accent tokens the rest of the UI uses for "whose turn/zone is this";
+   draw is neutral (the plain --accent gold, same as match-over). */
+.game-end {
+  text-align: center;
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin: auto 0;
+}
+
+.game-end__heading {
+  margin: 0;
+}
+
+.game-end--victory .game-end__heading {
+  color: var(--accent-human);
+}
+
+.game-end--defeat .game-end__heading {
+  color: var(--accent-claude);
+}
+
+.game-end--draw .game-end__heading {
+  color: var(--accent);
+}
+
+.game-end__body,
+.game-end__score {
+  color: var(--ink-dim);
+  margin: 0;
+}
+
+.game-end__tally {
+  font-size: 0.9rem;
+  color: var(--ink-dim);
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-sm);
+  padding: 0.4rem 0.7rem;
+  margin: 0.25rem 0 0;
+}
+
+.game-end__continue {
+  width: 100%;
+  min-height: 3rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  font-size: 1rem;
+  margin-top: 1rem;
+  color: #2a1f00;
+  background: var(--accent);
+}
+
+.game-end--victory .game-end__continue {
+  background: var(--accent-human);
+  border: 1px solid var(--accent-human-strong);
+  color: #2a1500;
+}
+
+.game-end--defeat .game-end__continue {
+  background: var(--accent-claude);
+  border: 1px solid var(--accent-claude-strong);
+  color: #062226;
+}
+
+/* === match over === */
+
+.match-over {
+  text-align: center;
+  color: var(--ink);
+}
+
+.match-over__new {
+  width: 100%;
+  min-height: 3rem;
+  background: var(--accent);
+  color: #2a1f00;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  font-size: 1rem;
+  margin-top: 1rem;
+}
+
+/* === card reveal ("see what your card became") === */
+
+.card-reveal {
+  color: var(--ink);
+}
+
+.card-reveal__intro {
+  font-size: 0.86rem;
+  color: var(--ink-dim);
+}
+
+.card-reveal__cards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin: 0.75rem 0;
+}
+
+.card-reveal__card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.card-reveal__continue {
+  width: 100%;
+  min-height: 3rem;
+  background: var(--accent);
+  color: #2a1f00;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  font-size: 1rem;
+  margin-top: 0.5rem;
+}
+
+/* === code view ("view the law") === */
+/* Shared by the Codex and the card-reveal screen (src/ui/codeView.ts). The
+   <pre> blocks are the ONLY thing allowed to scroll horizontally -- never
+   the page (html/body already sets overflow-x: hidden at the top of this
+   file as a backstop). */
+
+.code-view {
+  margin-top: 0.2rem;
+}
+
+.code-view__toggle {
+  min-height: var(--tap-min);
+  background: transparent;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  padding: 0.35rem 0.75rem;
+  color: var(--ink-dim);
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+.code-view__body {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.code-view__pre {
+  margin: 0;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  white-space: pre;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.74rem;
+  line-height: 1.45;
+  background: var(--surface-sunken);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 0.65rem 0.75rem;
+  color: var(--ink-dim);
+}
+
+.code-view__test-toggle {
+  align-self: flex-start;
+  min-height: var(--tap-min);
+  background: transparent;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-sm);
+  padding: 0.3rem 0.65rem;
+  color: var(--accent);
+  font-size: 0.76rem;
+  font-weight: 600;
+}
+
+/* === the Codex (full-screen card-gallery overlay) === */
+/* Appended directly to document.body (see src/ui/codex.ts's module doc) --
+   NOT part of .app-shell, so it needs its own top-level fixed positioning
+   and safe-area handling rather than inheriting the shell's. */
+
+.codex-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.codex-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+}
+
+.codex-panel {
+  position: relative;
+  width: 100%;
+  max-width: 34rem;
+  height: 100%;
+  max-height: 100dvh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background: var(--surface);
+  color: var(--ink);
+  padding: calc(0.9rem + var(--safe-top)) calc(0.9rem + var(--safe-right)) calc(1.5rem + var(--safe-bottom))
+    calc(0.9rem + var(--safe-left));
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.codex-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  position: sticky;
+  top: calc(-0.9rem - var(--safe-top));
+  margin: calc(-0.9rem - var(--safe-top)) calc(-0.9rem - var(--safe-right)) 0 calc(-0.9rem - var(--safe-left));
+  padding: calc(0.9rem + var(--safe-top)) calc(0.9rem + var(--safe-right)) 0.6rem calc(0.9rem + var(--safe-left));
+  background: var(--surface);
+  z-index: 1;
+}
+
+.codex-panel__header h1 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.codex-close {
+  flex: 0 0 auto;
+  width: var(--tap-min);
+  height: var(--tap-min);
+  background: none;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  color: var(--ink-dim);
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.codex-summary {
+  font-size: 0.82rem;
+  color: var(--ink-dim);
+  margin: 0 0 0.9rem;
+}
+
+.codex-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.codex-section__title {
+  margin: 0 0 0.6rem;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+}
+
+.codex-section__count {
+  color: var(--ink-faint);
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: 400;
+}
+
+.codex-section__cards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.codex-card {
+  background: var(--paper);
+  color: var(--paper-ink);
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 0.7rem;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.12);
+}
+
+.codex-card__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.codex-card__name {
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.codex-card__value {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  padding: 0 0.35rem;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #2a1f00;
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+.codex-card__effect {
+  margin: 0.35rem 0;
+  font-size: 0.82rem;
+  line-height: 1.35;
+  color: #4a3f28;
+}
+
+.codex-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.3rem;
+}
+
+.codex-chip {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.08);
+  color: #4a3f28;
+}
+
+.codex-chip--creator-human {
+  background: rgba(224, 149, 79, 0.28);
+  color: var(--accent-human-strong);
+}
+
+.codex-chip--creator-claude {
+  background: rgba(95, 184, 201, 0.28);
+  color: var(--accent-claude-strong);
+}
+
+.codex-chip--creator-starter {
+  background: rgba(0, 0, 0, 0.1);
+  color: #6b6042;
+}
+
+/* "The Fallen" -- gravestone styling: muted, strikethrough name, but the
+   effect text itself stays fully readable (the graveyard is design-space
+   history, not something to hide). */
+.codex-card--fallen {
+  opacity: 0.72;
+  background: var(--paper-dim);
+}
+
+.codex-card--fallen .codex-card__name {
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+}
+
+.codex-card__epitaph {
+  margin: 0.4rem 0 0;
+  font-size: 0.78rem;
+  font-style: italic;
+  color: #6b6042;
+}
+
+.codex-card .code-view__toggle {
+  border-color: rgba(0, 0, 0, 0.25);
+  color: #4a3f28;
+}
+
+.codex-card .code-view__pre {
+  color: #241c0f;
+  background: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
+/* === locked cards (non-blocking implement job) === */
+/* A locked card (registry implemented: false && destroyed: false) is
+   drawable/holdable but not playable while its implement job forges in the
+   background -- muted parchment + a "being forged" badge everywhere a point
+   value would normally show, on every surface that renders a card-chip. */
+
+.card-chip__value--locked,
+.codex-card__value--locked {
+  background: var(--surface-sunken);
+  color: var(--ink-dim);
+}
+
+.card-chip--locked {
+  opacity: 0.72;
+  background: var(--paper-dim);
+}
+
+.hand-preview--locked {
+  border-color: var(--line-strong);
+}
+
+.hand-preview__locked-note {
+  margin: 0.4rem 0 0;
+  font-size: 0.78rem;
+  font-style: italic;
+  color: var(--ink-dim);
+}
+
+/* === header background-job indicators === */
+
+.app-header__job-chip {
+  flex: 0 0 auto;
+  background: none;
+  border: none;
+  padding: 0.2rem 0.4rem;
+  min-height: var(--tap-min);
+  cursor: pointer;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.app-banner {
+  flex: 0 0 auto;
+}
+
+.app-banner__button {
+  display: block;
+  width: 100%;
+  background: rgba(226, 104, 95, 0.16);
+  border: none;
+  border-bottom: 1px solid var(--danger);
+  color: var(--ink);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.5rem 0.9rem;
+  text-align: left;
+}
+
+/* === job-issue overlay (failed/needs-clarification, non-blocking) === */
+/* Same body-appended-overlay pattern as .codex-overlay -- the game
+   underneath stays live and playable while this is open. */
+
+.job-issue-overlay,
+.card-reveal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.job-issue-overlay__backdrop,
+.card-reveal-overlay__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+}
+
+.job-issue-overlay__panel,
+.card-reveal-overlay__panel {
+  position: relative;
+  width: 100%;
+  max-width: 34rem;
+  max-height: 90dvh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background: var(--surface);
+  color: var(--ink);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  padding: calc(1rem + var(--safe-top)) calc(1rem + var(--safe-right)) calc(1.5rem + var(--safe-bottom))
+    calc(1rem + var(--safe-left));
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.job-issue-overlay__close,
+.card-reveal-overlay__close {
+  position: sticky;
+  float: right;
+  top: 0;
+  width: var(--tap-min);
+  height: var(--tap-min);
+  background: none;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  color: var(--ink-dim);
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+/* === the Forge (live forge-progress overlay) === */
+/* Same body-appended-overlay pattern as .job-issue-overlay/.card-reveal-overlay
+   above -- the game underneath stays live and playable while this is open.
+   z-index 105: above the Codex (100), below job-issue/card-reveal (110) --
+   those two close themselves before this ever needs to stack above them. */
+
+.forge-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 105;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.forge-overlay__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+}
+
+.forge-overlay__panel {
+  position: relative;
+  width: 100%;
+  max-width: 34rem;
+  max-height: 90dvh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background: var(--surface);
+  color: var(--ink);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  padding: calc(1rem + var(--safe-top)) calc(1rem + var(--safe-right)) calc(1.5rem + var(--safe-bottom))
+    calc(1rem + var(--safe-left));
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.forge-overlay__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.6rem;
+}
+
+.forge-overlay__header h1 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.forge-overlay__close {
+  flex: 0 0 auto;
+  width: var(--tap-min);
+  height: var(--tap-min);
+  background: none;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  color: var(--ink-dim);
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.forge-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.6rem;
+}
+
+.forge-card-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: var(--surface-raised);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.8rem;
+  color: var(--ink);
+}
+
+.forge-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.5rem 0;
+}
+
+.forge-status__attempt {
+  font-size: 0.78rem;
+  color: var(--ink-dim);
+}
+
+.forge-log {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.78rem;
+  background: var(--surface-sunken);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 0.75rem;
+  max-height: 42vh;
+  overflow-y: auto;
+  overflow-x: auto;
+  color: var(--ink-dim);
+  line-height: 1.45;
+  -webkit-overflow-scrolling: touch;
+}
+
+.forge-log__line {
+  white-space: pre;
+  padding: 0.05rem 0;
+}
+
+.forge-log__line--tool {
+  color: var(--ink-faint);
+  font-style: italic;
+}
+
+.forge-log__empty {
+  color: var(--ink-faint);
+  font-style: italic;
+  margin: 0;
+}
+
+.forge-terminal {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed var(--line);
+}
+
+.forge-terminal__headline {
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+}
+
+.forge-terminal__button {
+  width: 100%;
+  min-height: var(--tap-min);
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  font-size: 1rem;
+  border: none;
+  background: var(--accent);
+  color: #2a1f00;
+}
+
+/* === unlock toast (non-blocking implement job, background success) === */
+
+.unlock-toast-stack {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(1rem + var(--safe-bottom));
+  z-index: 90;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 1rem;
+  pointer-events: none;
+}
+
+.unlock-toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  max-width: 26rem;
+  width: 100%;
+  background: var(--surface-raised);
+  border: 1px solid var(--accent-strong);
+  border-radius: var(--radius);
+  padding: 0.55rem 0.7rem;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+  font-size: 0.82rem;
+}
+
+.unlock-toast__text {
+  flex: 1 1 auto;
+  color: var(--ink);
+  line-height: 1.3;
+}
+
+.unlock-toast__view {
+  flex: 0 0 auto;
+  background: var(--accent);
+  color: #2a1f00;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  font-size: 0.76rem;
+  padding: 0.3rem 0.6rem;
+}
+
+.unlock-toast__dismiss {
+  flex: 0 0 auto;
+  background: none;
+  border: none;
+  color: var(--ink-dim);
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0.1rem 0.2rem;
+}
+
+@media (min-width: 46rem) {
+  .job-issue-overlay,
+  .card-reveal-overlay,
+  .forge-overlay {
+    align-items: center;
+  }
+
+  .job-issue-overlay__panel,
+  .card-reveal-overlay__panel,
+  .forge-overlay__panel {
+    border-radius: var(--radius-lg);
+  }
+}
+
+/* === fatal error === */
+
+.fatal-error {
+  max-width: 40rem;
+  margin: 1.5rem auto;
+  background: rgba(226, 104, 95, 0.12);
+  border: 1px solid var(--danger);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  color: var(--ink);
+}
+
+.fatal-error pre {
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: 0.78rem;
+  color: var(--ink-dim);
+}
+
+.fatal-error--network {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--line-strong);
+}
+
+.fatal-error__reload {
+  display: block;
+  width: 100%;
+  min-height: 3rem;
+  margin-top: 1rem;
+  background: var(--accent);
+  color: #2a1f00;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+/* === desktop enhancement === */
+/* Mobile layout is the baseline; from here up we simply have more room to
+   breathe — wider shell, opponent/self zones side-by-side, a wrapping hand
+   instead of an edge-to-edge dock. Still fully usable with a mouse. */
+
+@media (min-width: 46rem) {
+  .app-shell {
+    max-width: 52rem;
+  }
+
+  .app-shell--playing .app-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      'opponent self'
+      'log log';
+    align-items: start;
+  }
+
+  .zone--opponent {
+    grid-area: opponent;
+  }
+
+  .zone--self {
+    grid-area: self;
+  }
+
+  .log-panel {
+    grid-area: log;
+  }
+
+  .keeper-row .card-chip {
+    max-width: 13rem;
+  }
+
+  .hand-strip {
+    flex-wrap: wrap;
+    overflow-x: visible;
+  }
+
+  .hand-strip .card-chip {
+    width: 10rem;
+  }
+
+  .hand-strip .card-chip--slim {
+    width: 5rem;
+  }
+
+  .keep-steal__choice {
+    flex-direction: row;
+  }
+
+  .keep-steal__keep,
+  .keep-steal__reveal-steal {
+    flex: 1 1 0;
+  }
+
+  .reveal__cards {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .codex-overlay {
+    align-items: center;
+  }
+
+  .codex-panel {
+    height: auto;
+    max-height: 85dvh;
+    border-radius: var(--radius-lg);
+  }
+
+  .codex-section__cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+}

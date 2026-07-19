@@ -12,9 +12,9 @@ export function PlayerDisplay({ player, damageAnimation }: PlayerDisplayProps) {
   const isLowHP = hpPercentage < 30;
 
   return (
-    <div style={{ height: '8rem' }} className="relative bg-blue-950/40 border-2 border-blue-900/50 rounded-xl p-6 flex flex-col justify-center">
+    <div className="h-32 relative bg-blue-950/40 border-2 border-blue-900/50 rounded-xl p-6 flex flex-col justify-center">
       {/* Name - Fixed height */}
-      <div style={{ minHeight: '1.75rem' }} className="text-xl font-bold mb-3 text-blue-300 flex items-center justify-center">
+      <div className="min-h-7 text-xl font-bold mb-3 text-blue-300 flex items-center justify-center">
         ⚔ You ⚔
       </div>
 
@@ -37,7 +37,7 @@ export function PlayerDisplay({ player, damageAnimation }: PlayerDisplayProps) {
       </div>
 
       {/* Status text - Fixed height */}
-      <div style={{ minHeight: '1.5rem' }} className="mt-2 text-red-500 font-bold text-center flex items-center justify-center">
+      <div className="min-h-6 mt-2 text-red-500 font-bold text-center flex items-center justify-center">
         {player.hp <= 0 && '☠ DEFEATED ☠'}
       </div>
 

@@ -860,7 +860,6 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
           <div className={isThinking || showPassOverlay ? 'opacity-75 pointer-events-none' : ''}>
             <Board
               board={state.board}
-              currentPlayer={state.turn.currentPlayer}
               selectedUnit={state.selectedUnit}
               selectedUnitElement={selectedUnitData ? getUnitDefinition(selectedUnitData.definitionId).element : null}
               validMoves={state.validMoves}

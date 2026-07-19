@@ -1,0 +1,1402 @@
+{
+  "talc.jpg": {
+    "item": "talc",
+    "source": "https://commons.wikimedia.org/wiki/File:Talc.jpg",
+    "title": "File:Talc.jpg",
+    "license": "CC BY-SA 4.0",
+    "artist": "Didier Descouens",
+    "via": "Wikimedia Commons"
+  },
+  "gypsum.jpg": {
+    "item": "gypsum",
+    "source": "https://commons.wikimedia.org/wiki/File:Gypsum_-_Sieroszowice_mine,_Lubin,_Lower_Silesia,_Poland.jpg",
+    "title": "File:Gypsum - Sieroszowice mine, Lubin, Lower Silesia, Poland.jpg",
+    "license": "CC BY-SA 4.0",
+    "artist": "Ivar Leidus",
+    "via": "Wikimedia Commons"
+  },
+  "calcite.jpg": {
+    "item": "calcite",
+    "source": "https://commons.wikimedia.org/wiki/File:Fluorescence_in_calcite.jpg",
+    "title": "File:Fluorescence in calcite.jpg",
+    "license": "CC BY-SA 4.0",
+    "artist": "Jan Pavelka",
+    "via": "Wikimedia Commons"
+  },
+  "apatite.jpg": {
+    "item": "apatite",
+    "source": "https://commons.wikimedia.org/wiki/File:Apatite_Canada.jpg",
+    "title": "File:Apatite Canada.jpg",
+    "license": "CC BY-SA 4.0",
+    "artist": "Didier Descouens",
+    "via": "Wikimedia Commons"
+  },
+  "orthoclase.jpg": {
+    "item": "orthoclase",
+    "source": "https://commons.wikimedia.org/wiki/File:OrthoclaseBresil.jpg",
+    "title": "File:OrthoclaseBresil.jpg",
+    "license": "CC BY-SA 4.0",
+    "artist": "Didier Descouens",
+    "via": "Wikimedia Commons"
+  },
+  "quartz.jpg": {
+    "item": "quartz",
+    "source": "https://commons.wikimedia.org/wiki/File:Quartz,_Tibet.jpg",
+    "title": "File:Quartz, Tibet.jpg",
+    "license": "CC BY-SA 2.5",
+    "artist": "JJ Harrison (https://www.jjharrison.com.au/)",
+    "via": "Wikimedia Commons"
+  },
+  "topaz.jpg": {
+    "item": "topaz",
+    "source": "https://commons.wikimedia.org/wiki/File:TopazeRose2.jpg",
+    "title": "File:TopazeRose2.jpg",
+    "license": "CC BY 3.0",
+    "artist": "Didier Descouens",
+    "via": "Wikimedia Commons"
+  },
+  "halite.jpg": {
+    "item": "halite",
+    "source": "https://commons.wikimedia.org/wiki/File:Halite(Salt)USGOV.jpg",
+    "title": "File:Halite(Salt)USGOV.jpg",
+    "license": "Public domain",
+    "artist": "Unknown",
+    "via": "Wikimedia Commons"
+  },
+  "pyrite.jpg": {
+    "item": "pyrite",
+    "source": "https://commons.wikimedia.org/wiki/File:Pyrite_-_Huanzala_mine,_Huallanca,_Bolognesi,_Ancash,_Peru.jpg",
+    "title": "File:Pyrite - Huanzala mine, Huallanca, Bolognesi, Ancash, Peru.jpg",
+    "license": "CC BY-SA 4.0",
+    "artist": "Ivar Leidus",
+    "via": "Wikimedia Commons"
+  },
+  "graphite.jpg": {
+    "item": "graphite",
+    "source": "https://commons.wikimedia.org/wiki/File:Glassy_carbon_and_a_1cm3_graphite_cube_HP68-79.jpg",
+    "title": "File:Glassy carbon and a 1cm3 graphite cube HP68-79.jpg",
+    "license": "FAL",
+    "artist": "Alchemist-hp (talk) (www.pse-mendelejew.de)",
+    "via": "Wikimedia Commons"
+  },
+  "sphalerite.jpg": {
+    "item": "sphalerite",
+    "source": "https://commons.wikimedia.org/wiki/File:Sphalerite_-_Creede,_Mineral_County,_Colorado,_USA.jpg",
+    "title": "File:Sphalerite - Creede, Mineral County, Colorado, USA.jpg",
+    "license": "CC BY-SA 4.0",
+    "artist": "Ivar Leidus",
+    "via": "Wikimedia Commons"
+  },
+  "cinnabar.jpg": {
+    "item": "cinnabar",
+    "source": "https://commons.wikimedia.org/wiki/File:Cinnabar_on_Dolomite.jpg",
+    "title": "File:Cinnabar on Dolomite.jpg",
+    "license": "CC BY-SA 3.0",
+    "artist": "JJ Harrison (https://www.jjharrison.com.au/)",
+    "via": "Wikimedia Commons"
+  },
+  "fluorite.jpg": {
+    "item": "fluorite",
+    "source": "https://commons.wikimedia.org/wiki/File:9104_-_Milano_-_Museo_storia_naturale_-_Fluorite_-_Foto_Giovanni_Dall%27Orto_22-Apr-2007.jpg",
+    "title": "File:9104 - Milano - Museo storia naturale - Fluorite - Foto Giovanni Dall'Orto 22-Apr-2007.jpg",
+    "license": "CC BY-SA 2.5 it",
+    "artist": "Giovanni Dall'Orto",
+    "via": "Wikimedia Commons"
+  },
+  "corundum.jpg": {
+    "item": "corundum",
+    "source": "https://commons.wikimedia.org/wiki/File:Corundum_5.jpg",
+    "title": "File:Corundum 5.jpg",
+    "license": "CC BY 2.0",
+    "artist": "James St. John",
+    "via": "Wikimedia Commons"
+  },
+  "diamond.jpg": {
+    "item": "diamond",
+    "source": "https://commons.wikimedia.org/wiki/File:Colorado_Diamond_Crystal,_Freedom_Diamond,_Uncle_Sam_Diamond,_Canary_Diamond.jpg",
+    "title": "File:Colorado Diamond Crystal, Freedom Diamond, Uncle Sam Diamond, Canary Diamond.jpg",
+    "license": "Public domain",
+    "artist": "Smithsonian Institution",
+    "via": "Wikimedia Commons"
+  },
+  "galena.jpg": {
+    "item": "galena",
+    "source": "https://commons.wikimedia.org/wiki/File:Galena_-_Huallanca,_Bologesi,_Ancash,_Peru.jpg",
+    "title": "File:Galena - Huallanca, Bologesi, Ancash, Peru.jpg",
+    "license": "CC BY-SA 4.0",
+    "artist": "Ivar Leidus",
+    "via": "Wikimedia Commons"
+  },
+  "hematite.jpg": {
+    "item": "hematite",
+    "source": "https://commons.wikimedia.org/wiki/File:Pyrit-with-hematite-01.jpg",
+    "title": "File:Pyrit-with-hematite-01.jpg",
+    "license": "CC BY-SA 3.0",
+    "artist": "CEphoto, Uwe Aranas",
+    "via": "Wikimedia Commons"
+  },
+  "magnetite.jpg": {
+    "item": "magnetite",
+    "source": "https://commons.wikimedia.org/wiki/File:Magnetite.jpg",
+    "title": "File:Magnetite.jpg",
+    "license": "CC BY-SA 3.0",
+    "artist": "Archaeodontosaurus",
+    "via": "Wikimedia Commons"
+  },
+  "chalcopyrite.jpg": {
+    "item": "chalcopyrite",
+    "source": "https://commons.wikimedia.org/wiki/File:Chalcopyrite_botro%C3%AFdale.jpg",
+    "title": "File:Chalcopyrite botroïdale.jpg",
+    "license": "CC BY-SA 3.0",
+    "artist": "Didier Descouens",
+    "via": "Wikimedia Commons"
+  },
+  "malachite.jpg": {
+    "item": "malachite",
+    "source": "https://commons.wikimedia.org/wiki/File:Malachite,_Zaire.jpg",
+    "title": "File:Malachite, Zaire.jpg",
+    "license": "CC BY-SA 3.0",
+    "artist": "JJ Harrison (https://www.jjharrison.com.au/)",
+    "via": "Wikimedia Commons"
+  },
+  "gold.jpg": {
+    "item": "gold",
+    "source": "https://commons.wikimedia.org/wiki/File:GoldNuggetUSGOV.jpg",
+    "title": "File:GoldNuggetUSGOV.jpg",
+    "license": "Public domain",
+    "artist": "Unknown authorUnknown author",
+    "via": "Wikimedia Commons"
+  },
+  "silver.jpg": {
+    "item": "silver",
+    "source": "https://commons.wikimedia.org/wiki/File:Silver_crystal.jpg",
+    "title": "File:Silver crystal.jpg",
+    "license": "CC BY-SA 3.0 de",
+    "artist": "Alchemist-hp (talk) (www.pse-mendelejew.de)",
+    "via": "Wikimedia Commons"
+  },
+  "copper.jpg": {
+    "item": "copper",
+    "source": "https://commons.wikimedia.org/wiki/File:Natural_Copper_Ore_Macro_1.JPG",
+    "title": "File:Natural Copper Ore Macro 1.JPG",
+    "license": "CC BY-SA 3.0",
+    "artist": "“Jon Zander (Digon3)\"",
+    "via": "Wikimedia Commons"
+  },
+  "sulfur.jpg": {
+    "item": "sulfur",
+    "source": "https://commons.wikimedia.org/wiki/File:Sulphur-Dolomite-195453.jpg",
+    "title": "File:Sulphur-Dolomite-195453.jpg",
+    "license": "CC BY-SA 3.0",
+    "artist": "Robert M. Lavinsky",
+    "via": "Wikimedia Commons"
+  },
+  "granite.jpg": {
+    "item": "granite",
+    "source": "https://commons.wikimedia.org/wiki/File:Granite,_P%C3%A1tka.jpg",
+    "title": "File:Granite, Pátka.jpg",
+    "license": "Public domain",
+    "artist": "Szilas",
+    "via": "Wikimedia Commons"
+  },
+  "basalt.jpg": {
+    "item": "basalt",
+    "source": "https://commons.wikimedia.org/wiki/File:Rock_sample_4_Aphanitic_basalt_Addi_Amyuq_pass.jpg",
+    "title": "File:Rock sample 4 Aphanitic basalt Addi Amyuq pass.jpg",
+    "license": "CC BY-SA 4.0",
+    "artist": "Jan Nyssen",
+    "via": "Wikimedia Commons"
+  },
+  "obsidian.jpg": {
+    "item": "obsidian",
+    "source": "https://commons.wikimedia.org/wiki/File:Obsidian_%26_devitrified_obsidian_gravel_(Obsidian_Cliff,_Yellowstone,_Wyoming,_USA)_4.jpg",
+    "title": "File:Obsidian & devitrified obsidian gravel (Obsidian Cliff, Yellowstone, Wyoming, USA) 4.jpg",
+    "license": "CC BY 2.0",
+    "artist": "James St. John",
+    "via": "Wikimedia Commons"
+  },
+  "pumice.jpg": {
+    "item": "pumice",
+    "source": "https://commons.wikimedia.org/wiki/File:Pumice_stone_detail444.jpg",
+    "title": "File:Pumice stone detail444.jpg",
+    "license": "CC BY-SA 3.0",
+    "artist": "Benjamint444",
+    "via": "Wikimedia Commons"
+  },
+  "sandstone.jpg": {
+    "item": "sandstone",
+    "source": "https://commons.wikimedia.org/wiki/File:Sandstone_Soil_Sample.JPG",
+    "title": "File:Sandstone Soil Sample.JPG",
+    "license": "Public domain",
+    "artist": "ZooFari",
+    "via": "Wikimedia Commons"
+  },
+  "limestone.jpg": {
+    "item": "limestone",
+    "source": "https://commons.wikimedia.org/wiki/File:Rock_sample_6_Limestone_with_mollusks_Azef.jpg",
+    "title": "File:Rock sample 6 Limestone with mollusks Azef.jpg",
+    "license": "CC BY-SA 4.0",
+    "artist": "Jan Nyssen",
+    "via": "Wikimedia Commons"
+  },
+  "shale.jpg": {
+    "item": "shale",
+    "source": "https://commons.wikimedia.org/wiki/File:Rock_sample_3_Agula_shale_May_Bi%27ati.jpg",
+    "title": "File:Rock sample 3 Agula shale May Bi'ati.jpg",
+    "license": "CC BY-SA 4.0",
+    "artist": "Jan Nyssen",
+    "via": "Wikimedia Commons"
+  },
+  "conglomerate.jpg": {
+    "item": "conglomerate",
+    "source": "https://commons.wikimedia.org/wiki/File:Conglomerate,_C%C3%A1k.jpg",
+    "title": "File:Conglomerate, Cák.jpg",
+    "license": "Public domain",
+    "artist": "Szilas",
+    "via": "Wikimedia Commons"
+  },
+  "marble.jpg": {
+    "item": "marble",
+    "source": "https://commons.wikimedia.org/wiki/File:Moycullen_-_Connemara_Marble_Factory_-_Marble_Samples_%5E_Machinery_-_geograph.org.uk_-_3768421.jpg",
+    "title": "File:Moycullen - Connemara Marble Factory - Marble Samples ^ Machinery - geograph.org.uk - 3768421.jpg",
+    "license": "CC BY-SA 2.0",
+    "artist": "Joseph Mischyshyn",
+    "via": "Wikimedia Commons"
+  },
+  "slate.jpg": {
+    "item": "slate",
+    "source": "https://commons.wikimedia.org/wiki/File:Green_slate_(GeoDIL_number_-_422).jpg",
+    "title": "File:Green slate (GeoDIL number - 422).jpg",
+    "license": "CC0",
+    "artist": "Creator:Mike Davis",
+    "via": "Wikimedia Commons"
+  },
+  "gneiss.jpg": {
+    "item": "gneiss",
+    "source": "https://commons.wikimedia.org/wiki/File:Rock_Gneiss_5174.jpg",
+    "title": "File:Rock Gneiss 5174.jpg",
+    "license": "CC BY-SA 4.0",
+    "artist": "Chris Light",
+    "via": "Wikimedia Commons"
+  },
+  "quartzite.jpg": {
+    "item": "quartzite",
+    "source": "https://commons.wikimedia.org/wiki/File:Rock_Tintic_Quartzite_5172.jpg",
+    "title": "File:Rock Tintic Quartzite 5172.jpg",
+    "license": "CC BY-SA 4.0",
+    "artist": "Chris Light",
+    "via": "Wikimedia Commons"
+  },
+  "schist.jpg": {
+    "item": "schist",
+    "source": "https://commons.wikimedia.org/wiki/File:Schist_detail.jpg",
+    "title": "File:Schist detail.jpg",
+    "license": "CC BY-SA 3.0",
+    "artist": "Michael C. Rygel",
+    "via": "Wikimedia Commons"
+  },
+  "bauxite.jpg": {
+    "item": "bauxite",
+    "source": "https://commons.wikimedia.org/wiki/File:Pisolitic_bauxite_(Alcoa_Bauxite_Mine,_Arkansas,_USA)_8.jpg",
+    "title": "File:Pisolitic bauxite (Alcoa Bauxite Mine, Arkansas, USA) 8.jpg",
+    "license": "CC BY 2.0",
+    "artist": "James St. John",
+    "via": "Wikimedia Commons"
+  },
+  "cassiterite.jpg": {
+    "item": "cassiterite",
+    "source": "https://commons.wikimedia.org/wiki/File:Cassiterite_prebuz.jpg",
+    "title": "File:Cassiterite prebuz.jpg",
+    "license": "CC BY-SA 3.0",
+    "artist": "Geomartin",
+    "via": "Wikimedia Commons"
+  },
+  "time-cambrian.jpg": {
+    "item": "time-cambrian",
+    "source": "https://commons.wikimedia.org/wiki/File:Trilobite_fossil,_Desert_Museum.jpg",
+    "title": "File:Trilobite fossil, Desert Museum.jpg",
+    "license": "CC BY-SA 4.0",
+    "artist": "Juan Carlos Fonseca Mata",
+    "via": "Wikimedia Commons"
+  },
+  "time-ordovician.jpg": {
+    "item": "time-ordovician",
+    "source": "https://commons.wikimedia.org/wiki/File:Ordovician_period_trilobite_impression_fossil_near_J%C3%A4gala_waterfall.jpg",
+    "title": "File:Ordovician period trilobite impression fossil near Jägala waterfall.jpg",
+    "license": "CC BY 4.0",
+    "artist": "ErikAbner",
+    "via": "Wikimedia Commons"
+  },
+  "time-silurian.jpg": {
+    "item": "time-silurian",
+    "source": "https://commons.wikimedia.org/wiki/File:Eurypterid_(fossil_sea_scorpion).jpg",
+    "title": "File:Eurypterid (fossil sea scorpion).jpg",
+    "license": "CC BY 2.0",
+    "artist": "James St. John",
+    "via": "Wikimedia Commons"
+  },
+  "time-devonian.jpg": {
+    "item": "time-devonian",
+    "source": "https://commons.wikimedia.org/wiki/File:Dunkleosteus_marsaisi_marocco.JPG",
+    "title": "File:Dunkleosteus marsaisi marocco.JPG",
+    "license": "CC BY-SA 3.0",
+    "artist": "Ghedoghedo",
+    "via": "Wikimedia Commons"
+  },
+  "time-carboniferous.jpg": {
+    "item": "time-carboniferous",
+    "source": "https://commons.wikimedia.org/wiki/File:Carboniferous_fossil_plant_Neuropteris.jpg",
+    "title": "File:Carboniferous fossil plant Neuropteris.jpg",
+    "license": "CC BY 4.0",
+    "artist": "IvanSakhno",
+    "via": "Wikimedia Commons"
+  },
+  "time-permian.jpg": {
+    "item": "time-permian",
+    "source": "https://commons.wikimedia.org/wiki/File:Dimetrodon_incisivum_01.jpg",
+    "title": "File:Dimetrodon incisivum 01.jpg",
+    "license": "CC BY-SA 3.0",
+    "artist": "H. Zell",
+    "via": "Wikimedia Commons"
+  },
+  "time-triassic.jpg": {
+    "item": "time-triassic",
+    "source": "https://commons.wikimedia.org/wiki/File:Plateosaurus_longiceps.jpg",
+    "title": "File:Plateosaurus longiceps.jpg",
+    "license": "CC0",
+    "artist": "s. o.",
+    "via": "Wikimedia Commons"
+  },
+  "time-jurassic.jpg": {
+    "item": "time-jurassic",
+    "source": "https://commons.wikimedia.org/wiki/File:Allosaurus_fragilis_moulage_MNHN_paleontologie_1.JPG",
+    "title": "File:Allosaurus fragilis moulage MNHN paleontologie 1.JPG",
+    "license": "Public domain",
+    "artist": "Jebulon",
+    "via": "Wikimedia Commons"
+  },
+  "time-cretaceous.jpg": {
+    "item": "time-cretaceous",
+    "source": "https://commons.wikimedia.org/wiki/File:Tyrannosaurus_rex_skeleton_(cast_of_specimen_MOR_555)_at_Cleveland_Museum_of_Natural_History.jpg",
+    "title": "File:Tyrannosaurus rex skeleton (cast of specimen MOR 555) at Cleveland Museum of Natural History.jpg",
+    "license": "CC BY-SA 3.0",
+    "artist": "Robosorne",
+    "via": "Wikimedia Commons"
+  },
+  "time-paleogene.jpg": {
+    "item": "time-paleogene",
+    "source": "https://commons.wikimedia.org/wiki/File:Moeritherium_lyonsi_(fossil_mammal)_(Eocene)_(32167459460).jpg",
+    "title": "File:Moeritherium lyonsi (fossil mammal) (Eocene) (32167459460).jpg",
+    "license": "CC BY 2.0",
+    "artist": "James St. John",
+    "via": "Wikimedia Commons"
+  },
+  "time-neogene.jpg": {
+    "item": "time-neogene",
+    "source": "https://commons.wikimedia.org/wiki/File:Dinohyus_hollandi_(fossil_mammal)Lower_Miocene_of_Nebraska.jpg",
+    "title": "File:Dinohyus hollandi (fossil mammal)Lower Miocene of Nebraska.jpg",
+    "license": "CC BY 2.0",
+    "artist": "James St. John",
+    "via": "Wikimedia Commons"
+  },
+  "time-quaternary.jpg": {
+    "item": "time-quaternary",
+    "source": "https://commons.wikimedia.org/wiki/File:Woolly_Mammoth-RBC.jpg",
+    "title": "File:Woolly Mammoth-RBC.jpg",
+    "license": "CC BY-SA 3.0",
+    "artist": "WolfmanSF",
+    "via": "Wikimedia Commons"
+  },
+  "olivine.jpg": {
+    "item": "olivine",
+    "source": "https://commons.wikimedia.org/wiki/File:Olivine-gem7-10a.jpg",
+    "title": "File:Olivine-gem7-10a.jpg",
+    "license": "CC BY-SA 3.0",
+    "artist": "Robert M. Lavinsky",
+    "via": "Wikimedia Commons"
+  },
+  "metal-aluminum.jpg": {
+    "item": "metal-aluminum",
+    "source": "https://commons.wikimedia.org/wiki/File:Aluminium_bar_surface_etched.jpg",
+    "title": "File:Aluminium bar surface etched.jpg",
+    "license": "FAL",
+    "artist": "Alchemist-hp (talk) (www.pse-mendelejew.de)",
+    "via": "Wikimedia Commons"
+  },
+  "metal-lead.jpg": {
+    "item": "metal-lead",
+    "source": "https://commons.wikimedia.org/wiki/File:Lead_Ingot_with_Monograms_MET_tr39312001obv.jpg",
+    "title": "File:Lead Ingot with Monograms MET tr39312001obv.jpg",
+    "license": "CC0",
+    "artist": "Unknown",
+    "via": "Wikimedia Commons"
+  },
+  "metal-tin.jpg": {
+    "item": "metal-tin",
+    "source": "https://commons.wikimedia.org/wiki/File:Heartlands_-_Tin_Ingot_-_geograph.org.uk_-_3661416.jpg",
+    "title": "File:Heartlands - Tin Ingot - geograph.org.uk - 3661416.jpg",
+    "license": "CC BY-SA 2.0",
+    "artist": "Ashley Dace",
+    "via": "Wikimedia Commons"
+  },
+  "metal-gold.jpg": {
+    "item": "metal-gold",
+    "source": "https://commons.wikimedia.org/wiki/File:Bullion_Gold_bar_at_Swiss_Money_Museum_(Ank_Kumar,_Infosys).jpg",
+    "title": "File:Bullion Gold bar at Swiss Money Museum (Ank Kumar, Infosys).jpg",
+    "license": "CC BY-SA 4.0",
+    "artist": "Ank Kumar",
+    "via": "Wikimedia Commons"
+  },
+  "metal-iron.jpg": {
+    "item": "metal-iron",
+    "source": "https://commons.wikimedia.org/wiki/File:Iron_electrolytic_and_1cm3_cube.jpg",
+    "title": "File:Iron electrolytic and 1cm3 cube.jpg",
+    "license": "FAL",
+    "artist": "Alchemist-hp (talk) (www.pse-mendelejew.de)",
+    "via": "Wikimedia Commons"
+  },
+  "metal-zinc.jpg": {
+    "item": "metal-zinc",
+    "source": "https://commons.wikimedia.org/wiki/File:Zinc_fragment_sublimed_and_1cm3_cube.jpg",
+    "title": "File:Zinc fragment sublimed and 1cm3 cube.jpg",
+    "license": "FAL",
+    "artist": "Alchemist-hp (talk) (www.pse-mendelejew.de)",
+    "via": "Wikimedia Commons"
+  },
+  "metal-mercury.jpg": {
+    "item": "metal-mercury",
+    "source": "https://commons.wikimedia.org/wiki/File:Pouring_liquid_mercury_bionerd.jpg",
+    "title": "File:Pouring liquid mercury bionerd.jpg",
+    "license": "CC BY 3.0",
+    "artist": "Bionerd",
+    "via": "Wikimedia Commons"
+  },
+  "metal-copper.jpg": {
+    "item": "metal-copper",
+    "source": "https://commons.wikimedia.org/wiki/File:Copper_ingot_MET_DT261186.jpg",
+    "title": "File:Copper ingot MET DT261186.jpg",
+    "license": "CC0",
+    "artist": "Unknown",
+    "via": "Wikimedia Commons"
+  },
+  "time-hadean.png": {
+    "item": "time-hadean",
+    "source": "https://commons.wikimedia.org/wiki/File:Hadean.png",
+    "title": "File:Hadean.png",
+    "license": "CC BY-SA 4.0",
+    "artist": "Tim Bertelink",
+    "via": "Wikimedia Commons"
+  },
+  "time-archean.jpg": {
+    "item": "time-archean",
+    "source": "https://commons.wikimedia.org/wiki/File:Stromatolites_in_Sharkbay.jpg",
+    "title": "File:Stromatolites in Sharkbay.jpg",
+    "license": "CC BY-SA 3.0",
+    "artist": "Paul Harrison",
+    "via": "Wikimedia Commons"
+  },
+  "time-proterozoic.jpg": {
+    "item": "time-proterozoic",
+    "source": "https://commons.wikimedia.org/wiki/File:Banded_iron_formation_Dales_Gorge.jpg",
+    "title": "File:Banded iron formation Dales Gorge.jpg",
+    "license": "CC BY 2.0",
+    "artist": "Graeme Churchard from Bristol, UK",
+    "via": "Wikimedia Commons"
+  },
+  "time-phanerozoic.jpg": {
+    "item": "time-phanerozoic",
+    "source": "https://commons.wikimedia.org/wiki/File:Ammonite_section.JPG",
+    "title": "File:Ammonite section.JPG",
+    "license": "CC BY 2.5",
+    "artist": "Tomomarusan",
+    "via": "Wikimedia Commons"
+  },
+  "time-paleozoic.jpg": {
+    "item": "time-paleozoic",
+    "source": "https://commons.wikimedia.org/wiki/File:Kaibab_Formation_-_fossil_brachiopod_and_crinoid_columnals.jpg",
+    "title": "File:Kaibab Formation - fossil brachiopod and crinoid columnals.jpg",
+    "license": "Public domain",
+    "artist": "National Park Service",
+    "via": "Wikimedia Commons"
+  },
+  "time-mesozoic.jpg": {
+    "item": "time-mesozoic",
+    "source": "https://commons.wikimedia.org/wiki/File:Stegosaurus_skeleton_at_National_Museum_of_Scotland.jpg",
+    "title": "File:Stegosaurus skeleton at National Museum of Scotland.jpg",
+    "license": "CC BY-SA 2.0",
+    "artist": "Mike Pennington",
+    "via": "Wikimedia Commons"
+  },
+  "time-cenozoic.jpg": {
+    "item": "time-cenozoic",
+    "source": "https://commons.wikimedia.org/wiki/File:Smilodon_californicus_skeleton_UCMP.JPG",
+    "title": "File:Smilodon californicus skeleton UCMP.JPG",
+    "license": "CC BY-SA 3.0",
+    "artist": "BrokenSphere",
+    "via": "Wikimedia Commons"
+  },
+  "el-li.jpg": {
+    "item": "el-li",
+    "element": "Lithium",
+    "source": "https://commons.wikimedia.org/wiki/File:Lithium_element_cropped.jpg",
+    "title": "File:Lithium element cropped.jpg",
+    "license": "CC BY-SA 3.0",
+    "artist": "W. Oelen",
+    "via": "Wikimedia Commons"
+  },
+  "el-na.jpg": {
+    "item": "el-na",
+    "element": "Sodium",
+    "source": "https://commons.wikimedia.org/wiki/File:Na_(Sodium).jpg",
+    "title": "File:Na (Sodium).jpg",
+    "license": "CC BY-SA 3.0",
+    "artist": "The original uploader was Dnn87 at English Wikipedia.",
+    "via": "Wikimedia Commons"
+  },
+  "el-k.jpg": {
+    "item": "el-k",
+    "element": "Potassium",
+    "source": "https://commons.wikimedia.org/wiki/File:Potassium_(Element_-_19).jpg",
+    "title": "File:Potassium (Element - 19).jpg",
+    "license": "CC BY 2.0",
+    "artist": "James St. John",
+    "via": "Wikimedia Commons"
+  },
+  "el-rb.jpg": {
+    "item": "el-rb",
+    "element": "Rubidium",
+    "source": "https://commons.wikimedia.org/wiki/File:Rubidium_(Element_-_37).jpg",
+    "title": "File:Rubidium (Element - 37).jpg",
+    "license": "CC BY 2.0",
+    "artist": "James St. John",
+    "via": "Wikimedia Commons"
+  },
+  "el-fr.jpg": {
+    "item": "el-fr",
+    "element": "Francium",
+    "source": "https://commons.wikimedia.org/wiki/File:Francium_(Element_-_87)_1.jpg",
+    "title": "File:Francium (Element - 87) 1.jpg",
+    "license": "CC BY 2.0",
+    "artist": "James St. John",
+    "via": "Wikimedia Commons"
+  },
+  "el-be.jpg": {
+    "item": "el-be",
+    "element": "Beryllium",
+    "source": "https://commons.wikimedia.org/wiki/File:Beryllium_(Element_-_4)_4.jpg",
+    "title": "File:Beryllium (Element - 4) 4.jpg",
+    "license": "CC BY 2.0",
+    "artist": "James St. John",
+    "via": "Wikimedia Commons"
+  },
+  "el-mg.jpg": {
+    "item": "el-mg",
+    "element": "Magnesium",
+    "source": "https://commons.wikimedia.org/wiki/File:Magnesium_crystals.jpg",
+    "title": "File:Magnesium crystals.jpg",
+    "license": "CC BY-SA 3.0",
+    "artist": "Warut Roonguthai",
+    "via": "Wikimedia Commons"
+  },
+  "el-ca.jpg": {
+    "item": "el-ca",
+    "element": "Calcium",
+    "source": "https://commons.wikimedia.org/wiki/File:Calcium_unter_Argon_Schutzgasatmosph%C3%A4re.jpg",
+    "title": "File:Calcium unter Argon Schutzgasatmosphäre.jpg",
+    "license": "Public domain",
+    "artist": "Matthias Zepper",
+    "via": "Wikimedia Commons"
+  },
+  "el-sr.jpg": {
+    "item": "el-sr",
+    "element": "Strontium",
+    "source": "https://commons.wikimedia.org/wiki/File:Strontium_destilled_crystals.jpg",
+    "title": "File:Strontium destilled crystals.jpg",
+    "license": "FAL",
+    "artist": "Alchemist-hp (talk) (www.pse-mendelejew.de)",
+    "via": "Wikimedia Commons"
+  },
+  "el-ba.jpg": {
+    "item": "el-ba",
+    "element": "Barium",
+    "source": "https://commons.wikimedia.org/wiki/File:Barium_unter_Argon_Schutzgas_Atmosph%C3%A4re.jpg",
+    "title": "File:Barium unter Argon Schutzgas Atmosphäre.jpg",
+    "license": "Public domain",
+    "artist": "Matthias Zepper",
+    "via": "Wikimedia Commons"
+  },
+  "el-ra.jpg": {
+    "item": "el-ra",
+    "element": "Radium",
+    "source": "https://commons.wikimedia.org/wiki/File:Radium_(Element_-_88)_2.jpg",
+    "title": "File:Radium (Element - 88) 2.jpg",
+    "license": "CC BY 2.0",
+    "artist": "James St. John",
+    "via": "Wikimedia Commons"
+  },
+  "el-sc.jpg": {
+    "item": "el-sc",
+    "element": "Scandium",
+    "source": "https://commons.wikimedia.org/wiki/File:Scandium_sublimed_dendritic_and_1cm3_cube.jpg",
+    "title": "File:Scandium sublimed dendritic and 1cm3 cube.jpg",
+    "license": "FAL",
+    "artist": "Alchemist-hp (talk) (www.pse-mendelejew.de)",
+    "via": "Wikimedia Commons"
+  },
+  "el-ti.jpg": {
+    "item": "el-ti",
+    "element": "Titanium",
+    "source": "https://commons.wikimedia.org/wiki/File:Titanium_crystal-bars.jpg",
+    "title": "File:Titanium crystal-bars.jpg",
+    "license": "FAL",
+    "artist": "Alchemist-hp (pse-mendelejew.de)",
+    "via": "Wikimedia Commons"
+  },
+  "el-v.jpg": {
+    "item": "el-v",
+    "element": "Vanadium",
+    "source": "https://commons.wikimedia.org/wiki/File:Vanadium_crystal_bar_and_1cm3_cube.jpg",
+    "title": "File:Vanadium crystal bar and 1cm3 cube.jpg",
+    "license": "FAL",
+    "artist": "Alchemist-hp (pse-mendelejew.de).",
+    "via": "Wikimedia Commons"
+  },
+  "el-cr.jpg": {
+    "item": "el-cr",
+    "element": "Chromium",
+    "source": "https://commons.wikimedia.org/wiki/File:Chromium_crystals_and_1cm3_cube.jpg",
+    "title": "File:Chromium crystals and 1cm3 cube.jpg",
+    "license": "FAL",
+    "artist": "Alchemist-hp (talk) (www.pse-mendelejew.de)",
+    "via": "Wikimedia Commons"
+  },
+  "el-mn.jpg": {
+    "item": "el-mn",
+    "element": "Manganese",
+    "source": "https://commons.wikimedia.org/wiki/File:Manganese_electrolytic_and_1cm3_cube.jpg",
+    "title": "File:Manganese electrolytic and 1cm3 cube.jpg",
+    "license": "FAL",
+    "artist": "Alchemist-hp (talk) (www.pse-mendelejew.de)",
+    "via": "Wikimedia Commons"
+  },
+  "el-fe.jpg": {
+    "item": "el-fe",
+    "element": "Iron",
+    "source": "https://commons.wikimedia.org/wiki/File:Iron_electrolytic_and_1cm3_cube.jpg",
+    "title": "File:Iron electrolytic and 1cm3 cube.jpg",
+    "license": "FAL",
+    "artist": "Alchemist-hp (talk) (www.pse-mendelejew.de)",
+    "via": "Wikimedia Commons"
+  },
+  "el-co.jpg": {
+    "item": "el-co",
+    "element": "Cobalt",
+    "source": "https://commons.wikimedia.org/wiki/File:Cobalt_(Element_-_27).jpg",
+    "title": "File:Cobalt (Element - 27).jpg",
+    "license": "CC BY 2.0",
+    "artist": "James St. John",
+    "via": "Wikimedia Commons"
+  },
+  "el-ni.jpg": {
+    "item": "el-ni",
+    "element": "Nickel",
+    "source": "https://commons.wikimedia.org/wiki/File:Nickel_electrolytic_and_1cm3_cube.jpg",
+    "title": "File:Nickel electrolytic and 1cm3 cube.jpg",
+    "license": "FAL",
+    "artist": "Alchemist-hp (talk) (www.pse-mendelejew.de)",
+    "via": "Wikimedia Commons"
+  },
+  "el-cu.jpg": {
+    "item": "el-cu",
+    "element": "Copper",
+    "source": "https://commons.wikimedia.org/wiki/File:Copper_(Element_-_29).jpg",
+    "title": "File:Copper (Element - 29).jpg",
+    "license": "CC BY 2.0",
+    "artist": "James St. John",
+    "via": "Wikimedia Commons"
+  },
+  "el-zn.jpg": {
+    "item": "el-zn",
+    "element": "Zinc",
+    "source": "https://commons.wikimedia.org/wiki/File:Zinc_fragment_sublimed_and_1cm3_cube.jpg",
+    "title": "File:Zinc fragment sublimed and 1cm3 cube.jpg",
+    "license": "FAL",
+    "artist": "Alchemist-hp (talk) (www.pse-mendelejew.de)",
+    "via": "Wikimedia Commons"
+  },
+  "el-y.jpg": {
+    "item": "el-y",
+    "element": "Yttrium",
+    "source": "https://commons.wikimedia.org/wiki/File:Yttrium_sublimed_dendritic_and_1cm3_cube.jpg",
+    "title": "File:Yttrium sublimed dendritic and 1cm3 cube.jpg",
+    "license": "FAL",
+    "artist": "Alchemist-hp (www.pse-mendelejew.de)",
+    "via": "Wikimedia Commons"
+  },
+  "el-zr.jpg": {
+    "item": "el-zr",
+    "element": "Zirconium",
+    "source": "https://commons.wikimedia.org/wiki/File:Zirconium_crystal_bar_and_1cm3_cube.jpg",
+    "title": "File:Zirconium crystal bar and 1cm3 cube.jpg",
+    "license": "FAL",
+    "artist": "Alchemist-hp (pse-mendelejew.de).",
+    "via": "Wikimedia Commons"
+  },
+  "el-nb.jpg": {
+    "item": "el-nb",
+    "element": "Niobium",
+    "source": "https://commons.wikimedia.org/wiki/File:Niobium_crystals_and_1cm3_cube.jpg",
+    "title": "File:Niobium crystals and 1cm3 cube.jpg",
+    "license": "FAL",
+    "artist": "Alchemist-hp (talk) (www.pse-mendelejew.de)",
+    "via": "Wikimedia Commons"
+  },
+  "el-mo.jpg": {
+    "item": "el-mo",
+    "element": "Molybdenum",
+    "source": "https://commons.wikimedia.org/wiki/File:Molybdenum_crystaline_fragment_and_1cm3_cube.jpg",
+    "title": "File:Molybdenum crystaline fragment and 1cm3 cube.jpg",
+    "license": "FAL",
+    "artist": "Alchemist-hp (talk) (www.pse-mendelejew.de)",
+    "via": "Wikimedia Commons"
+  },
+  "el-tc.jpg": {
+    "item": "el-tc",
+    "element": "Technetium",
+    "source": "https://commons.wikimedia.org/wiki/File:Technetium_(Element_-_43).jpg",
+    "title": "File:Technetium (Element - 43).jpg",
+    "license": "CC BY 2.0",
+    "artist": "James St. John",
+    "via": "Wikimedia Commons"
+  },
+  "el-ru.jpg": {
+    "item": "el-ru",
+    "element": "Ruthenium",
+    "source": "https://commons.wikimedia.org/wiki/File:Ruthenium_a_half_bar.jpg",
+    "title": "File:Ruthenium a half bar.jpg",
+    "license": "FAL",
+    "artist": "Alchemist-hp (talk) (www.pse-mendelejew.de)",
+    "via": "Wikimedia Commons"
+  },
+  "el-rh.jpg": {
+    "item": "el-rh",
+    "element": "Rhodium",
+    "source": "https://commons.wikimedia.org/wiki/File:Rhodium_powder_pressed_melted.jpg",
+    "title": "File:Rhodium powder pressed melted.jpg",
+    "license": "CC BY-SA 3.0 de",
+    "artist": "Alchemist-hp (talk) www.pse-mendelejew.de derivative work: Purpy Pupple (talk)",
+    "via": "Wikimedia Commons"
+  },
+  "el-pd.jpg": {
+    "item": "el-pd",
+    "element": "Palladium",
+    "source": "https://commons.wikimedia.org/wiki/File:Palladium_1-noReflection.jpg",
+    "title": "File:Palladium 1-noReflection.jpg",
+    "license": "CC BY-SA 3.0",
+    "artist": "Materialscientist (talk)",
+    "via": "Wikimedia Commons"
+  },
+  "el-ag.jpg": {
+    "item": "el-ag",
+    "element": "Silver",
+    "source": "https://commons.wikimedia.org/wiki/File:Silver_crystal.jpg",
+    "title": "File:Silver crystal.jpg",
+    "license": "CC BY-SA 3.0 de",
+    "artist": "Alchemist-hp (talk) (www.pse-mendelejew.de)",
+    "via": "Wikimedia Commons"
+  },
+  "el-cd.jpg": {
+    "item": "el-cd",
+    "element": "Cadmium",
+    "source": "https://commons.wikimedia.org/wiki/File:Cadmium-crystal_bar.jpg",
+    "title": "File:Cadmium-crystal bar.jpg",
+    "license": "FAL",
+    "artist": "Alchemist-hp (talk) (www.pse-mendelejew.de)",
+    "via": "Wikimedia Commons"
+  },
+  "el-hf.jpg": {
+    "item": "el-hf",
+    "element": "Hafnium",
+    "source": "https://commons.wikimedia.org/wiki/File:Hafnium_ebeam_remelted.jpg",
+    "title": "File:Hafnium ebeam remelted.jpg",
+    "license": "FAL",
+    "artist": "Alchemist-hp (talk) (www.pse-mendelejew.de)",
+    "via": "Wikimedia Commons"
+  },
+  "el-ta.jpg": {
+    "item": "el-ta",
+    "element": "Tantalum",
+    "source": "https://commons.wikimedia.org/wiki/File:Tantalum_single_crystal_and_1cm3_cube.jpg",
+    "title": "File:Tantalum single crystal and 1cm3 cube.jpg",
+    "license": "FAL",
+    "artist": "Alchemist-hp (talk) (www.pse-mendelejew.de)",
+    "via": "Wikimedia Commons"
+  },
+  "el-w.jpg": {
+    "item": "el-w",
+    "element": "Tungsten",
+    "source": "https://commons.wikimedia.org/wiki/File:Tungsten_(Element_-_74).jpg",
+    "title": "File:Tungsten (Element - 74).jpg",
+    "license": "CC BY 2.0",
+    "artist": "James St. John",
+    "via": "Wikimedia Commons"
+  },
+  "el-re.jpg": {
+    "item": "el-re",
+    "element": "Rhenium",
+    "source": "https://commons.wikimedia.org/wiki/File:Rhenium_single_crystal_bar_and_1cm3_cube.jpg",
+    "title": "File:Rhenium single crystal bar and 1cm3 cube.jpg",
+    "license": "FAL",
+    "artist": "Alchemist-hp (talk) (www.pse-mendelejew.de)",
+    "via": "Wikimedia Commons"
+  },
+  "el-os.jpg": {
+    "item": "el-os",
+    "element": "Osmium",
+    "source": "https://commons.wikimedia.org/wiki/File:Osmium_crystals.jpg",
+    "title": "File:Osmium crystals.jpg",
+    "license": "FAL",
+    "artist": "Alchemist-hp (talk) (www.pse-mendelejew.de)",
+    "via": "Wikimedia Commons"
+  },
+  "el-ir.jpg": {
+    "item": "el-ir",
+    "element": "Iridium",
+    "source": "https://commons.wikimedia.org/wiki/File:Iridium_foil.jpg",
+    "title": "File:Iridium foil.jpg",
+    "license": "CC BY 2.5",
+    "artist": "Dschwen",
+    "via": "Wikimedia Commons"
+  },
+  "el-pt.jpg": {
+    "item": "el-pt",
+    "element": "Platinum",
+    "source": "https://commons.wikimedia.org/wiki/File:Platinum_crystals.jpg",
+    "title": "File:Platinum crystals.jpg",
+    "license": "CC BY 3.0",
+    "artist": "Periodictableru",
+    "via": "Wikimedia Commons"
+  },
+  "el-au.jpg": {
+    "item": "el-au",
+    "element": "Gold",
+    "source": "https://commons.wikimedia.org/wiki/File:Gold-crystals.jpg",
+    "title": "File:Gold-crystals.jpg",
+    "license": "CC BY-SA 3.0 de",
+    "artist": "Alchemist-hp (talk) www.pse-mendelejew.de",
+    "via": "Wikimedia Commons"
+  },
+  "el-hg.jpg": {
+    "item": "el-hg",
+    "element": "Mercury",
+    "source": "https://commons.wikimedia.org/wiki/File:Hg_Mercury.jpg",
+    "title": "File:Hg Mercury.jpg",
+    "license": "Public domain",
+    "artist": "А",
+    "via": "Wikimedia Commons"
+  },
+  "el-la.jpg": {
+    "item": "el-la",
+    "element": "Lanthanum",
+    "source": "https://commons.wikimedia.org/wiki/File:Lanthanum_(Element_-_57)_3.jpg",
+    "title": "File:Lanthanum (Element - 57) 3.jpg",
+    "license": "CC BY 2.0",
+    "artist": "James St. John",
+    "via": "Wikimedia Commons"
+  },
+  "el-ce.jpg": {
+    "item": "el-ce",
+    "element": "Cerium",
+    "source": "https://commons.wikimedia.org/wiki/File:Cerium_(Element_-_58)_1.jpg",
+    "title": "File:Cerium (Element - 58) 1.jpg",
+    "license": "CC BY 2.0",
+    "artist": "James St. John",
+    "via": "Wikimedia Commons"
+  },
+  "el-nd.jpg": {
+    "item": "el-nd",
+    "element": "Neodymium",
+    "source": "https://commons.wikimedia.org/wiki/File:Neodymium_from_Nd2Fe14B.jpg",
+    "title": "File:Neodymium from Nd2Fe14B.jpg",
+    "license": "CC BY-SA 4.0",
+    "artist": "FlorianRost",
+    "via": "Wikimedia Commons"
+  },
+  "el-pm.jpg": {
+    "item": "el-pm",
+    "element": "Promethium",
+    "source": "https://commons.wikimedia.org/wiki/File:Promethium-147_solution.jpg",
+    "title": "File:Promethium-147 solution.jpg",
+    "license": "Public domain",
+    "artist": "Oak Ridge National Laboratory",
+    "via": "Wikimedia Commons"
+  },
+  "el-eu.jpg": {
+    "item": "el-eu",
+    "element": "Europium",
+    "source": "https://commons.wikimedia.org/wiki/File:Europium_(Element_-_63)_2.jpg",
+    "title": "File:Europium (Element - 63) 2.jpg",
+    "license": "CC BY 2.0",
+    "artist": "James St. John",
+    "via": "Wikimedia Commons"
+  },
+  "el-gd.jpg": {
+    "item": "el-gd",
+    "element": "Gadolinium",
+    "source": "https://commons.wikimedia.org/wiki/File:Gadolinium-2.jpg",
+    "title": "File:Gadolinium-2.jpg",
+    "license": "CC BY 3.0",
+    "artist": "Jurii",
+    "via": "Wikimedia Commons"
+  },
+  "el-tb.jpg": {
+    "item": "el-tb",
+    "element": "Terbium",
+    "source": "https://commons.wikimedia.org/wiki/File:Terbium_element.jpg",
+    "title": "File:Terbium element.jpg",
+    "license": "CC BY-SA 3.0",
+    "artist": "W. Oelen",
+    "via": "Wikimedia Commons"
+  },
+  "el-dy.jpg": {
+    "item": "el-dy",
+    "element": "Dysprosium",
+    "source": "https://commons.wikimedia.org/wiki/File:Dysprosium_(Element_-_66)_2.jpg",
+    "title": "File:Dysprosium (Element - 66) 2.jpg",
+    "license": "CC BY 2.0",
+    "artist": "James St. John",
+    "via": "Wikimedia Commons"
+  },
+  "el-ho.jpg": {
+    "item": "el-ho",
+    "element": "Holmium",
+    "source": "https://commons.wikimedia.org/wiki/File:Holmium_(Element_-_67)_3.jpg",
+    "title": "File:Holmium (Element - 67) 3.jpg",
+    "license": "CC BY 2.0",
+    "artist": "James St. John",
+    "via": "Wikimedia Commons"
+  },
+  "el-er.jpg": {
+    "item": "el-er",
+    "element": "Erbium",
+    "source": "https://commons.wikimedia.org/wiki/File:Erbium_(Element_-_68).jpg",
+    "title": "File:Erbium (Element - 68).jpg",
+    "license": "CC BY 2.0",
+    "artist": "James St. John",
+    "via": "Wikimedia Commons"
+  },
+  "el-tm.jpg": {
+    "item": "el-tm",
+    "element": "Thulium",
+    "source": "https://commons.wikimedia.org/wiki/File:Thulium_sublimed_dendritic_and_1cm3_cube.jpg",
+    "title": "File:Thulium sublimed dendritic and 1cm3 cube.jpg",
+    "license": "FAL",
+    "artist": "Alchemist-hp (talk) (www.pse-mendelejew.de)",
+    "via": "Wikimedia Commons"
+  },
+  "el-yb.jpg": {
+    "item": "el-yb",
+    "element": "Ytterbium",
+    "source": "https://commons.wikimedia.org/wiki/File:Ytterbium_element.jpg",
+    "title": "File:Ytterbium element.jpg",
+    "license": "CC BY-SA 3.0",
+    "artist": "W. Oelen",
+    "via": "Wikimedia Commons"
+  },
+  "el-lu.jpg": {
+    "item": "el-lu",
+    "element": "Lutetium",
+    "source": "https://commons.wikimedia.org/wiki/File:Lutetium_sublimed_dendritic_and_1cm3_cube.jpg",
+    "title": "File:Lutetium sublimed dendritic and 1cm3 cube.jpg",
+    "license": "FAL",
+    "artist": "Alchemist-hp (talk) (www.pse-mendelejew.de)",
+    "via": "Wikimedia Commons"
+  },
+  "el-ac.png": {
+    "item": "el-ac",
+    "element": "Actinium",
+    "source": "https://commons.wikimedia.org/wiki/File:Actinium_sample_(31481701837).png",
+    "title": "File:Actinium sample (31481701837).png",
+    "license": "CC BY 2.0",
+    "artist": "Oak Ridge National Laboratory",
+    "via": "Wikimedia Commons"
+  },
+  "el-th.jpg": {
+    "item": "el-th",
+    "element": "Thorium",
+    "source": "https://commons.wikimedia.org/wiki/File:Yellowing_of_thorium_lenses.jpg",
+    "title": "File:Yellowing of thorium lenses.jpg",
+    "license": "CC BY-SA 4.0",
+    "artist": "El Grafo",
+    "via": "Wikimedia Commons"
+  },
+  "el-pa.jpg": {
+    "item": "el-pa",
+    "element": "Protactinium",
+    "source": "https://commons.wikimedia.org/wiki/File:Protactinium_(Element_-_91)_2.jpg",
+    "title": "File:Protactinium (Element - 91) 2.jpg",
+    "license": "CC BY 2.0",
+    "artist": "James St. John",
+    "via": "Wikimedia Commons"
+  },
+  "el-u.jpg": {
+    "item": "el-u",
+    "element": "Uranium",
+    "source": "https://commons.wikimedia.org/wiki/File:Ames_Process_uranium_biscuit.jpg",
+    "title": "File:Ames Process uranium biscuit.jpg",
+    "license": "Public domain",
+    "artist": "Unknown authorUnknown author",
+    "via": "Wikimedia Commons"
+  },
+  "el-np.jpg": {
+    "item": "el-np",
+    "element": "Neptunium",
+    "source": "https://commons.wikimedia.org/wiki/File:Neptunium_(Element_-_93)_1.jpg",
+    "title": "File:Neptunium (Element - 93) 1.jpg",
+    "license": "CC BY 2.0",
+    "artist": "James St. John",
+    "via": "Wikimedia Commons"
+  },
+  "el-am.jpg": {
+    "item": "el-am",
+    "element": "Americium",
+    "source": "https://commons.wikimedia.org/wiki/File:Americium_microscope.jpg",
+    "title": "File:Americium microscope.jpg",
+    "license": "CC BY 3.0",
+    "artist": "Bionerd",
+    "via": "Wikimedia Commons"
+  },
+  "el-cm.jpg": {
+    "item": "el-cm",
+    "element": "Curium",
+    "source": "https://commons.wikimedia.org/wiki/File:Curium_(Element_-_96)_2.jpg",
+    "title": "File:Curium (Element - 96) 2.jpg",
+    "license": "CC BY 2.0",
+    "artist": "James St. John",
+    "via": "Wikimedia Commons"
+  },
+  "el-bk.jpg": {
+    "item": "el-bk",
+    "element": "Berkelium",
+    "source": "https://commons.wikimedia.org/wiki/File:Berkelium_metal.jpg",
+    "title": "File:Berkelium metal.jpg",
+    "license": "Public domain",
+    "artist": "Oak Ridge National Laboratory, US Department of Energy",
+    "via": "Wikimedia Commons"
+  },
+  "el-cf.jpg": {
+    "item": "el-cf",
+    "element": "Californium",
+    "source": "https://commons.wikimedia.org/wiki/File:Californium.jpg",
+    "title": "File:Californium.jpg",
+    "license": "Public domain",
+    "artist": "United States Department of Energy (see File:Einsteinium.jpg)",
+    "via": "Wikimedia Commons"
+  },
+  "el-es.jpg": {
+    "item": "el-es",
+    "element": "Einsteinium",
+    "source": "https://commons.wikimedia.org/wiki/File:Einsteinium_(Element_-_99)_1.jpg",
+    "title": "File:Einsteinium (Element - 99) 1.jpg",
+    "license": "CC BY 2.0",
+    "artist": "James St. John",
+    "via": "Wikimedia Commons"
+  },
+  "el-al.jpg": {
+    "item": "el-al",
+    "element": "Aluminium",
+    "source": "https://commons.wikimedia.org/wiki/File:Aluminium_bar_surface_etched.jpg",
+    "title": "File:Aluminium bar surface etched.jpg",
+    "license": "FAL",
+    "artist": "Alchemist-hp (talk) (www.pse-mendelejew.de)",
+    "via": "Wikimedia Commons"
+  },
+  "el-ga.jpg": {
+    "item": "el-ga",
+    "element": "Gallium",
+    "source": "https://commons.wikimedia.org/wiki/File:Gallium_crystals.jpg",
+    "title": "File:Gallium crystals.jpg",
+    "license": "CC BY-SA 3.0",
+    "artist": "en:user:foobar",
+    "via": "Wikimedia Commons"
+  },
+  "el-in.jpg": {
+    "item": "el-in",
+    "element": "Indium",
+    "source": "https://commons.wikimedia.org/wiki/File:Indium_wetting_glass.jpg",
+    "title": "File:Indium wetting glass.jpg",
+    "license": "Public domain",
+    "artist": "Schtone",
+    "via": "Wikimedia Commons"
+  },
+  "el-sn.jpg": {
+    "item": "el-sn",
+    "element": "Tin",
+    "source": "https://commons.wikimedia.org/wiki/File:Tin_(Element_-_50).jpg",
+    "title": "File:Tin (Element - 50).jpg",
+    "license": "CC BY 2.0",
+    "artist": "James St. John",
+    "via": "Wikimedia Commons"
+  },
+  "el-tl.jpg": {
+    "item": "el-tl",
+    "element": "Thallium",
+    "source": "https://commons.wikimedia.org/wiki/File:Thallium_(Element_-_81)_1.jpg",
+    "title": "File:Thallium (Element - 81) 1.jpg",
+    "license": "CC BY 2.0",
+    "artist": "James St. John",
+    "via": "Wikimedia Commons"
+  },
+  "el-pb.jpg": {
+    "item": "el-pb",
+    "element": "Lead",
+    "source": "https://commons.wikimedia.org/wiki/File:Lead_electrolytic_and_1cm3_cube.jpg",
+    "title": "File:Lead electrolytic and 1cm3 cube.jpg",
+    "license": "FAL",
+    "artist": "Alchemist-hp (talk) (www.pse-mendelejew.de)",
+    "via": "Wikimedia Commons"
+  },
+  "el-bi.jpg": {
+    "item": "el-bi",
+    "element": "Bismuth",
+    "source": "https://commons.wikimedia.org/wiki/File:Bismuth_crystals_and_1cm3_cube.jpg",
+    "title": "File:Bismuth crystals and 1cm3 cube.jpg",
+    "license": "FAL",
+    "artist": "Alchemist-hp (talk) (www.pse-mendelejew.de)",
+    "via": "Wikimedia Commons"
+  },
+  "el-po.jpg": {
+    "item": "el-po",
+    "element": "Polonium",
+    "source": "https://commons.wikimedia.org/wiki/File:2019-11-22_Spark_plugs_and_static_eliminators_with_radioactive_polonium_at_museum_display.jpg",
+    "title": "File:2019-11-22 Spark plugs and static eliminators with radioactive polonium at museum display.jpg",
+    "license": "CC BY-SA 4.0",
+    "artist": "Maksym Kozlenko",
+    "via": "Wikimedia Commons"
+  },
+  "el-nh.jpg": {
+    "item": "el-nh",
+    "element": "Nihonium",
+    "source": "https://commons.wikimedia.org/wiki/File:Nihonium_monument_P4208307.jpg",
+    "title": "File:Nihonium monument P4208307.jpg",
+    "license": "CC BY-SA 4.0",
+    "artist": "Kestrel",
+    "via": "Wikimedia Commons"
+  },
+  "el-b.jpg": {
+    "item": "el-b",
+    "element": "Boron",
+    "source": "https://commons.wikimedia.org/wiki/File:Boron_(Element_-_5).jpg",
+    "title": "File:Boron (Element - 5).jpg",
+    "license": "CC BY 2.0",
+    "artist": "James St. John",
+    "via": "Wikimedia Commons"
+  },
+  "el-si.jpg": {
+    "item": "el-si",
+    "element": "Silicon",
+    "source": "https://commons.wikimedia.org/wiki/File:SiliconCroda.jpg",
+    "title": "File:SiliconCroda.jpg",
+    "license": "Public domain",
+    "artist": "Enricoros at English Wikipedia",
+    "via": "Wikimedia Commons"
+  },
+  "el-ge.jpg": {
+    "item": "el-ge",
+    "element": "Germanium",
+    "source": "https://commons.wikimedia.org/wiki/File:EFD108_Point_Contact_Germanium_Diode.jpg",
+    "title": "File:EFD108 Point Contact Germanium Diode.jpg",
+    "license": "CC BY-SA 4.0",
+    "artist": "Mister rf",
+    "via": "Wikimedia Commons"
+  },
+  "el-as.jpg": {
+    "item": "el-as",
+    "element": "Arsenic",
+    "source": "https://commons.wikimedia.org/wiki/File:Arsenic_(Element_-_33).jpg",
+    "title": "File:Arsenic (Element - 33).jpg",
+    "license": "CC BY 2.0",
+    "artist": "James St. John",
+    "via": "Wikimedia Commons"
+  },
+  "el-sb.jpg": {
+    "item": "el-sb",
+    "element": "Antimony",
+    "source": "https://commons.wikimedia.org/wiki/File:Antimony-4.jpg",
+    "title": "File:Antimony-4.jpg",
+    "license": "CC BY 3.0",
+    "artist": "Unknown authorUnknown author",
+    "via": "Wikimedia Commons"
+  },
+  "el-te.jpg": {
+    "item": "el-te",
+    "element": "Tellurium",
+    "source": "https://commons.wikimedia.org/wiki/File:Tellurium_element_2.jpg",
+    "title": "File:Tellurium element 2.jpg",
+    "license": "CC BY-SA 3.0",
+    "artist": "W. Oelen",
+    "via": "Wikimedia Commons"
+  },
+  "el-h.jpg": {
+    "item": "el-h",
+    "element": "Hydrogen",
+    "source": "https://commons.wikimedia.org/wiki/File:Hydrogen_discharge_tube.jpg",
+    "title": "File:Hydrogen discharge tube.jpg",
+    "license": "FAL",
+    "artist": "Alchemist-hp (talk) (www.pse-mendelejew.de)",
+    "via": "Wikimedia Commons"
+  },
+  "el-c.jpg": {
+    "item": "el-c",
+    "element": "Carbon",
+    "source": "https://commons.wikimedia.org/wiki/File:Glassy_carbon_and_a_1cm3_graphite_cube_HP68-79.jpg",
+    "title": "File:Glassy carbon and a 1cm3 graphite cube HP68-79.jpg",
+    "license": "FAL",
+    "artist": "Alchemist-hp (talk) (www.pse-mendelejew.de)",
+    "via": "Wikimedia Commons"
+  },
+  "el-n.jpg": {
+    "item": "el-n",
+    "element": "Nitrogen",
+    "source": "https://commons.wikimedia.org/wiki/File:Nitrogen-glow.jpg",
+    "title": "File:Nitrogen-glow.jpg",
+    "license": "CC BY 3.0",
+    "artist": "Jurii",
+    "via": "Wikimedia Commons"
+  },
+  "el-o.jpg": {
+    "item": "el-o",
+    "element": "Oxygen",
+    "source": "https://commons.wikimedia.org/wiki/File:Liquid_oxygen_in_a_beaker_4.jpg",
+    "title": "File:Liquid oxygen in a beaker 4.jpg",
+    "license": "Public domain",
+    "artist": "U.S. Air Force/Staff Sgt. Jim Araos",
+    "via": "Wikimedia Commons"
+  },
+  "el-p.jpg": {
+    "item": "el-p",
+    "element": "Phosphorus",
+    "source": "https://commons.wikimedia.org/wiki/File:Phosphorus_(Element_-_15).jpg",
+    "title": "File:Phosphorus (Element - 15).jpg",
+    "license": "CC BY 2.0",
+    "artist": "James St. John",
+    "via": "Wikimedia Commons"
+  },
+  "el-s.jpg": {
+    "item": "el-s",
+    "element": "Sulfur",
+    "source": "https://commons.wikimedia.org/wiki/File:Sulfur_-_El_Desierto_mine,_San_Pablo_de_Napa,_Daniel_Campos_Province,_Potos%C3%AD,_Bolivia.jpg",
+    "title": "File:Sulfur - El Desierto mine, San Pablo de Napa, Daniel Campos Province, Potosí, Bolivia.jpg",
+    "license": "CC BY-SA 4.0",
+    "artist": "Ivar Leidus",
+    "via": "Wikimedia Commons"
+  },
+  "el-se.jpg": {
+    "item": "el-se",
+    "element": "Selenium",
+    "source": "https://commons.wikimedia.org/wiki/File:Selenium_(Element_-_34).jpg",
+    "title": "File:Selenium (Element - 34).jpg",
+    "license": "CC BY 2.0",
+    "artist": "James St. John",
+    "via": "Wikimedia Commons"
+  },
+  "el-f.jpg": {
+    "item": "el-f",
+    "element": "Fluorine",
+    "source": "https://commons.wikimedia.org/wiki/File:Liquid_fluorine_tighter_crop.jpg",
+    "title": "File:Liquid fluorine tighter crop.jpg",
+    "license": "CC BY-SA 3.0",
+    "artist": ".mw-parser-output .plainlist ul{line-height:inherit;list-style:none none;margin:0}.mw-parser-output .plainlist ul li{margin-bottom:0} Liquid_fluorine.jpg: Prof B. G. Mueller derivative work: TCO (talk)",
+    "via": "Wikimedia Commons"
+  },
+  "el-cl.jpg": {
+    "item": "el-cl",
+    "element": "Chlorine",
+    "source": "https://commons.wikimedia.org/wiki/File:Chlorine_liquid_in_an_ampoule.jpg",
+    "title": "File:Chlorine liquid in an ampoule.jpg",
+    "license": "FAL",
+    "artist": "Alchemist-hp (talk) (www.pse-mendelejew.de)",
+    "via": "Wikimedia Commons"
+  },
+  "el-br.jpg": {
+    "item": "el-br",
+    "element": "Bromine",
+    "source": "https://commons.wikimedia.org/wiki/File:Bromine_vial_in_acrylic_cube.jpg",
+    "title": "File:Bromine vial in acrylic cube.jpg",
+    "license": "CC BY-SA 3.0 de",
+    "artist": "Alchemist-hp (pse-mendelejew.de)",
+    "via": "Wikimedia Commons"
+  },
+  "el-i.jpg": {
+    "item": "el-i",
+    "element": "Iodine",
+    "source": "https://commons.wikimedia.org/wiki/File:Ampoule,_iodine_(AM_1999.114.2-3).jpg",
+    "title": "File:Ampoule, iodine (AM 1999.114.2-3).jpg",
+    "license": "CC BY 4.0",
+    "artist": "Unknown authorUnknown author",
+    "via": "Wikimedia Commons"
+  },
+  "el-at.jpg": {
+    "item": "el-at",
+    "element": "Astatine",
+    "source": "https://commons.wikimedia.org/wiki/File:Astatine_(Element_-_85).jpg",
+    "title": "File:Astatine (Element - 85).jpg",
+    "license": "CC BY 2.0",
+    "artist": "James St. John",
+    "via": "Wikimedia Commons"
+  },
+  "el-he.jpg": {
+    "item": "el-he",
+    "element": "Helium",
+    "source": "https://commons.wikimedia.org/wiki/File:Helium_discharge_tube.jpg",
+    "title": "File:Helium discharge tube.jpg",
+    "license": "GFDL 1.2",
+    "artist": "Alchemist-hp (talk) (www.pse-mendelejew.de)",
+    "via": "Wikimedia Commons"
+  },
+  "el-ne.jpg": {
+    "item": "el-ne",
+    "element": "Neon",
+    "source": "https://commons.wikimedia.org/wiki/File:Neon-glow.jpg",
+    "title": "File:Neon-glow.jpg",
+    "license": "CC BY 3.0",
+    "artist": "Jurii",
+    "via": "Wikimedia Commons"
+  },
+  "el-ar.jpg": {
+    "item": "el-ar",
+    "element": "Argon",
+    "source": "https://commons.wikimedia.org/wiki/File:Argon_discharge_tube.jpg",
+    "title": "File:Argon discharge tube.jpg",
+    "license": "GFDL 1.2",
+    "artist": "Alchemist-hp (talk) (www.pse-mendelejew.de)",
+    "via": "Wikimedia Commons"
+  },
+  "el-kr.jpg": {
+    "item": "el-kr",
+    "element": "Krypton",
+    "source": "https://commons.wikimedia.org/wiki/File:Krypton_discharge_tube.jpg",
+    "title": "File:Krypton discharge tube.jpg",
+    "license": "GFDL 1.2",
+    "artist": "Alchemist-hp (talk) (www.pse-mendelejew.de)",
+    "via": "Wikimedia Commons"
+  },
+  "el-xe.jpg": {
+    "item": "el-xe",
+    "element": "Xenon",
+    "source": "https://commons.wikimedia.org/wiki/File:Xenon_discharge_tube.jpg",
+    "title": "File:Xenon discharge tube.jpg",
+    "license": "FAL",
+    "artist": "Alchemist-hp (talk) (www.pse-mendelejew.de)",
+    "via": "Wikimedia Commons"
+  },
+  "el-rn.jpg": {
+    "item": "el-rn",
+    "element": "Radon",
+    "source": "https://commons.wikimedia.org/wiki/File:Radon_(Element_-_86)_2.jpg",
+    "title": "File:Radon (Element - 86) 2.jpg",
+    "license": "CC BY 2.0",
+    "artist": "James St. John",
+    "via": "Wikimedia Commons"
+  }
+}

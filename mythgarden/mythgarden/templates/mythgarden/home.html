@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <link href='https://fonts.googleapis.com/css?family=Montserrat|Lobster Two' rel='stylesheet'>
+    <link rel="stylesheet" href="{% static 'mythgarden/style.css' %}">
+    <script type="module" src="{% static 'mythgarden/dist/bundle.js' %}"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mythgarden</title>
+    {{ ctx | json_script:"app-data" }}
+</head>
+<body ontouchstart>
+    <div id="app-root"></div>
+</body>
+</html>
