@@ -1,0 +1,16 @@
+{
+  "name": "@deev/core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Deterministic game substrate: GameDef contract, seeded serializable RNG, transcripts/replay, versioned saves, undo, idempotency.",
+  "exports": { ".": { "types": "./src/index.ts", "import": "./src/index.ts" } },
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {},
+  "devDependencies": {"typescript": "^5.9.3", "vitest": "^4.0.16"}
+}
