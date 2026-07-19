@@ -15,6 +15,15 @@
 
 ## Patterns That Work
 - Per-game dev ports in this repo: muju 3002, leyline 3003, lution 3004. Vite + strict TS is the house stack.
+- Anchor-commit trick (2026-07-18 consolidation): to merge a branch that tracks a dir which exists untracked-but-identical in the main worktree (lution/) WITHOUT touching files a live dev server is serving, commit the untracked dir on master first ("anchor"), then merge — identical content on both sides means the merge writes nothing to disk. Beats moving the dir aside or killing the server.
+- Branch archaeology before merging (2026-07-18): `git rev-list --left-right --count master...branch` for every branch + `git merge-base --is-ancestor` pairwise checks collapsed 30+ branches to 8 real merge sources — claude/mms-orchestrator-phase-0-60vsr7 contained ALL mms branches, cartoon-skin-spec contained claude-forge-ai. Always map ancestry before planning merges.
+
+## Repo-consolidation state (2026-07-18)
+- master now contains every game: muju, forge, oracle, leyline, lution, might-and-magic-spire, mythgarden (imported copy; standalone repo remains at github.com/ethancd/mythgarden), geology-quiz (Rock Stars, was never under git).
+- forge-ai/ is a local worktree checkout of branch claude-forge-ai, now gitignored; the orchestrator branch's forge-ai gitlink was dropped in the consolidation prep commit.
+- worktree-agent-* branches are transient and all contained in the orchestrator branch — never push or merge them individually.
+- muju/lab/results/e7-graph-comparison/games.jsonl is 61MB (GitHub warns >50MB); consider pruning or LFS if the repo gets heavy.
+- The Claude Code auto-mode classifier blocks `git push origin master` (direct default-branch push) and `kill <pid>` — plan around both; branch pushes are fine.
 
 ## Patterns That Don't Work
 - Debounced persistence serializing a LIVE mutable object: Lution's schedulePersist captured `this.match` by reference; by the time the 300ms debounce fired, an AI turn/draw had mutated it, persisting mid-turn state → reload re-ran the draw phase (double-draw). Fix: structuredClone the snapshot at schedule time (2026-07-02).
