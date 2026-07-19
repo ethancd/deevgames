@@ -1,0 +1,82 @@
+/*
+ * Mobile app-shell — Lution's Round 2 mobile UI pass (napkin.md, "Round 2:
+ * mobile UI pass"). Plain CSS, `dv-` prefixed classes, no framework
+ * required. Import manually: `import '@deev/ui/src/shell.css'`.
+ *
+ * Structure: a flex column pinned to the viewport, with a sticky header,
+ * a scrollable content region, and an action dock that lives OUTSIDE the
+ * scroll region so it stays reachable while content scrolls underneath it.
+ */
+
+.dv-shell {
+  display: flex;
+  flex-direction: column;
+  /* Fallback for browsers with no `dvh` support — this line is simply
+     overridden by the next one where `dvh` is understood, so it costs
+     nothing to keep. */
+  height: 100vh;
+  /* `vh` is the LARGEST possible viewport size and does NOT shrink when the
+     iOS on-screen keyboard opens, so a `100vh` shell gets pushed up and
+     clipped behind the keyboard. `100dvh` (dynamic viewport height) tracks
+     the *visual* viewport and reflows live as the keyboard opens/closes —
+     napkin Round 2's fix for Lution's mobile keyboard bug. */
+  height: 100dvh;
+  /* Without this, a flex child's default `min-height: auto` can force the
+     column taller than its container instead of letting .dv-shell-content
+     scroll internally. */
+  min-height: 0;
+}
+
+.dv-shell-header {
+  position: sticky;
+  top: 0;
+  /* Never let the header get squeezed by its flex siblings. */
+  flex-shrink: 0;
+}
+
+.dv-shell-content {
+  /* Takes all remaining vertical space between header and dock. */
+  flex: 1;
+  overflow-y: auto;
+  /* Momentum scrolling on iOS Safari; without it, scrolling inside a flex
+     child can feel "sticky"/janky on older WebKit. */
+  -webkit-overflow-scrolling: touch;
+  min-height: 0;
+}
+
+.dv-shell-dock {
+  /* Never let the dock get squeezed by its flex siblings. */
+  flex-shrink: 0;
+  /* Docked OUTSIDE .dv-shell-content (a sibling, not a child) — this is the
+     load-bearing structural choice from napkin Round 2's hand-dock pattern:
+     it keeps the action bar in thumb reach at all times while everything
+     above it scrolls underneath, instead of scrolling away with the rest
+     of the content. Do not nest the dock inside the scroll region. */
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dv-shell,
+  .dv-shell-header,
+  .dv-shell-content,
+  .dv-shell-dock,
+  .dv-shell *,
+  .dv-shell-header *,
+  .dv-shell-content *,
+  .dv-shell-dock * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/*
+ * Specificity gotcha (napkin.md, "Round 2: mobile UI pass"): AVOID `:not()`
+ * SCOPING TRICKS ENTIRELY. A rule like
+ *   `.dv-shell:not(.dv-shell--playing) .dv-shell-content { ... }`
+ * has HIGHER specificity than a same-level, screen-specific override like
+ *   `.dv-shell--designing .dv-shell-content { ... }`
+ * because the argument to `:not()` counts toward specificity too — so the
+ * "not X" rule can silently beat the override it was meant to yield to.
+ * If you need per-screen variants, add an equal-specificity modifier class
+ * combo instead of reaching for `:not()`.
+ */
