@@ -1,0 +1,16 @@
+{
+  "name": "@deev/lab",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Headless balance lab over any @deev/core GameDef: bots, seeded series runner, Wilson CIs, reports, experiments.",
+  "exports": { ".": { "types": "./src/index.ts", "import": "./src/index.ts" } },
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {"@deev/core": "workspace:*"},
+  "devDependencies": {"typescript": "^5.9.3", "vitest": "^4.0.16"}
+}

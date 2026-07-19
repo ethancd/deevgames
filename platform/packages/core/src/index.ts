@@ -1,0 +1,15 @@
+export type { Seat, Result, GameDef } from './game.ts';
+export { observeAs } from './game.ts';
+export { mulberry32, mulberry32Step } from './rng.ts';
+export type { Rng, RngState } from './rng.ts';
+export { stableStringify, fnv1a, stableHash, engineHash, configHash, stateHash } from './hash.ts';
+export { runMatch } from './match.ts';
+export type { Policy, Transcript, TranscriptEntry, RunMatchOptions } from './match.ts';
+export { replayTranscript, assertReplayConverges, createChoiceCursor } from './replay.ts';
+export type { RecordedChoice, PendingTurn, ChoiceCursor } from './replay.ts';
+export { definePersistence, PersistError } from './persist.ts';
+export type { SaveEnvelope, PersistenceSpec, Persistence } from './persist.ts';
+export { UndoStack } from './undo.ts';
+export type { UndoEntry } from './undo.ts';
+export { consumeOnce, resetLifecycle } from './idempotency.ts';
+export type { ConsumedSet } from './idempotency.ts';
