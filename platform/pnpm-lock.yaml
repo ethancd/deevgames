@@ -13,20 +13,38 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^4.0.16
-        version: 4.1.10(jsdom@25.0.1)(vite@8.1.5)
+        version: 4.1.10(@types/node@22.20.1)(jsdom@25.0.1)(vite@8.1.5(@types/node@22.20.1))
 
   examples/pebble-duel:
     dependencies:
+      '@deev/ai':
+        specifier: workspace:*
+        version: link:../../packages/ai
+      '@deev/content':
+        specifier: workspace:*
+        version: link:../../packages/content
       '@deev/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@deev/lab':
+        specifier: workspace:*
+        version: link:../../packages/lab
+      '@deev/llm':
+        specifier: workspace:*
+        version: link:../../packages/llm
+      zod:
+        specifier: ^3.23.8
+        version: 3.25.76
     devDependencies:
+      '@types/node':
+        specifier: ^22.20.1
+        version: 22.20.1
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
       vitest:
         specifier: ^4.0.16
-        version: 4.1.10(jsdom@25.0.1)(vite@8.1.5)
+        version: 4.1.10(@types/node@22.20.1)(jsdom@25.0.1)(vite@8.1.5(@types/node@22.20.1))
 
   packages/ai:
     dependencies:
@@ -42,7 +60,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^4.0.16
-        version: 4.1.10(jsdom@25.0.1)(vite@8.1.5)
+        version: 4.1.10(@types/node@22.20.1)(jsdom@25.0.1)(vite@8.1.5(@types/node@22.20.1))
 
   packages/content:
     dependencies:
@@ -55,7 +73,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^4.0.16
-        version: 4.1.10(jsdom@25.0.1)(vite@8.1.5)
+        version: 4.1.10(@types/node@22.20.1)(jsdom@25.0.1)(vite@8.1.5(@types/node@22.20.1))
 
   packages/core:
     devDependencies:
@@ -64,7 +82,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^4.0.16
-        version: 4.1.10(jsdom@25.0.1)(vite@8.1.5)
+        version: 4.1.10(@types/node@22.20.1)(jsdom@25.0.1)(vite@8.1.5(@types/node@22.20.1))
 
   packages/lab:
     dependencies:
@@ -77,7 +95,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^4.0.16
-        version: 4.1.10(jsdom@25.0.1)(vite@8.1.5)
+        version: 4.1.10(@types/node@22.20.1)(jsdom@25.0.1)(vite@8.1.5(@types/node@22.20.1))
 
   packages/llm:
     devDependencies:
@@ -89,7 +107,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^4.0.16
-        version: 4.1.10(jsdom@25.0.1)(vite@8.1.5)
+        version: 4.1.10(@types/node@22.20.1)(jsdom@25.0.1)(vite@8.1.5(@types/node@22.20.1))
 
   packages/ui:
     dependencies:
@@ -105,7 +123,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^4.0.16
-        version: 4.1.10(jsdom@25.0.1)(vite@8.1.5)
+        version: 4.1.10(@types/node@22.20.1)(jsdom@25.0.1)(vite@8.1.5(@types/node@22.20.1))
 
 packages:
 
@@ -357,6 +375,9 @@ packages:
 
   '@types/estree@1.0.9':
     resolution: {integrity: sha512-GhdPgy1el4/ImP05X05Uw4cw2/M93BCUmnEvWZNStlCzEKME4Fkk+YpoA5OiHNQmoS7Cafb8Xa3Pya8m1Qrzeg==}
+
+  '@types/node@22.20.1':
+    resolution: {integrity: sha512-EANqOCF9QFyra+4pfxUcX9STKJpCLjMbObVzljIJomAWSnuSIEAvyzEU53GaajbXJEgdh0iEcPL+DGvpUd4k1Q==}
 
   '@vitest/expect@4.1.10':
     resolution: {integrity: sha512-YsCn+qAk1GWjQOWFEsEcL2gNQ0zmVmQu3T03qP6UyjhtmdtwtbuI+DASn/7iQB3HGTXkdBwGddzxPlmiql5vlA==}
@@ -1029,6 +1050,9 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
+  undici-types@6.21.0:
+    resolution: {integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==}
+
   unpipe@1.0.0:
     resolution: {integrity: sha512-pjy2bYhSsufwWlKwPc+l3cN7+wuJlK6uz0YdJEOlQDbl6jo/YlPi4mb8agUkVC8BF7V8NuzeyPNqRksA3hztKQ==}
     engines: {node: '>= 0.8'}
@@ -1382,6 +1406,10 @@ snapshots:
 
   '@types/estree@1.0.9': {}
 
+  '@types/node@22.20.1':
+    dependencies:
+      undici-types: 6.21.0
+
   '@vitest/expect@4.1.10':
     dependencies:
       '@standard-schema/spec': 1.1.0
@@ -1391,13 +1419,13 @@ snapshots:
       chai: 6.2.2
       tinyrainbow: 3.1.0
 
-  '@vitest/mocker@4.1.10(vite@8.1.5)':
+  '@vitest/mocker@4.1.10(vite@8.1.5(@types/node@22.20.1))':
     dependencies:
       '@vitest/spy': 4.1.10
       estree-walker: 3.0.3
       magic-string: 0.30.21
     optionalDependencies:
-      vite: 8.1.5
+      vite: 8.1.5(@types/node@22.20.1)
 
   '@vitest/pretty-format@4.1.10':
     dependencies:
@@ -2064,11 +2092,13 @@ snapshots:
 
   typescript@5.9.3: {}
 
+  undici-types@6.21.0: {}
+
   unpipe@1.0.0: {}
 
   vary@1.1.2: {}
 
-  vite@8.1.5:
+  vite@8.1.5(@types/node@22.20.1):
     dependencies:
       lightningcss: 1.32.0
       picomatch: 4.0.5
@@ -2076,12 +2106,13 @@ snapshots:
       rolldown: 1.1.5
       tinyglobby: 0.2.17
     optionalDependencies:
+      '@types/node': 22.20.1
       fsevents: 2.3.3
 
-  vitest@4.1.10(jsdom@25.0.1)(vite@8.1.5):
+  vitest@4.1.10(@types/node@22.20.1)(jsdom@25.0.1)(vite@8.1.5(@types/node@22.20.1)):
     dependencies:
       '@vitest/expect': 4.1.10
-      '@vitest/mocker': 4.1.10(vite@8.1.5)
+      '@vitest/mocker': 4.1.10(vite@8.1.5(@types/node@22.20.1))
       '@vitest/pretty-format': 4.1.10
       '@vitest/runner': 4.1.10
       '@vitest/snapshot': 4.1.10
@@ -2098,9 +2129,10 @@ snapshots:
       tinyexec: 1.2.4
       tinyglobby: 0.2.17
       tinyrainbow: 3.1.0
-      vite: 8.1.5
+      vite: 8.1.5(@types/node@22.20.1)
       why-is-node-running: 2.3.0
     optionalDependencies:
+      '@types/node': 22.20.1
       jsdom: 25.0.1
     transitivePeerDependencies:
       - msw

@@ -1,0 +1,4 @@
+puzzle,id,name,m2m__int__heaps
+puzzle,p1,Classic Spires,3|5|7
+puzzle,p2,Uneven Ground,1|2|4
+puzzle,p3,The Monolith,7|0|0
