@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DeevGames — Game Design Portfolio</title>
+<style>
+  :root {
+    --bg: #0c0e14;
+    --bg-soft: #12151f;
+    --card: #171b28;
+    --card-edge: #262c3f;
+    --ink: #e8eaf2;
+    --ink-dim: #9aa1b5;
+    --ink-faint: #6b7288;
+    --accent: #7c9cff;
+    --accent-2: #5eead4;
+    --accent-3: #f0abfc;
+    --gold: #fbbf24;
+    --green: #34d399;
+    --radius: 14px;
+    --max: 1200px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.6;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    position: relative;
+    padding: 5rem 1.5rem 3.5rem;
+    text-align: center;
+    background:
+      radial-gradient(ellipse 70% 50% at 50% -10%, rgba(124,156,255,0.22), transparent),
+      radial-gradient(ellipse 40% 35% at 85% 15%, rgba(94,234,212,0.10), transparent),
+      radial-gradient(ellipse 40% 35% at 15% 20%, rgba(240,171,252,0.09), transparent);
+  }
+  .hero h1 {
+    font-size: clamp(2.4rem, 6vw, 3.8rem);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+  .hero h1 .dice { font-size: 0.9em; }
+  .hero .tagline {
+    margin: 1rem auto 0;
+    max-width: 46rem;
+    font-size: clamp(1.05rem, 2.2vw, 1.25rem);
+    color: var(--ink-dim);
+  }
+  .statline {
+    display: flex; flex-wrap: wrap; justify-content: center;
+    gap: 0.75rem 2.2rem; margin-top: 2.2rem;
+  }
+  .stat { min-width: 7rem; }
+  .stat b { display: block; font-size: 1.6rem; color: var(--accent); }
+  .stat span { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-faint); }
+
+  /* ---------- Nav ---------- */
+  nav {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(12,14,20,0.88);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--card-edge);
+  }
+  nav .inner {
+    max-width: var(--max); margin: 0 auto;
+    display: flex; gap: 0.25rem; overflow-x: auto;
+    padding: 0.6rem 1rem;
+  }
+  nav a {
+    white-space: nowrap; padding: 0.4rem 0.9rem; border-radius: 999px;
+    color: var(--ink-dim); font-size: 0.92rem;
+  }
+  nav a:hover { color: var(--ink); background: var(--card); text-decoration: none; }
+
+  /* ---------- Sections ---------- */
+  section { max-width: var(--max); margin: 0 auto; padding: 3.5rem 1.5rem 1rem; }
+  section > h2 {
+    font-size: 1.9rem; letter-spacing: -0.01em; margin-bottom: 0.4rem;
+  }
+  section > .lede { color: var(--ink-dim); max-width: 52rem; margin-bottom: 1.8rem; }
+  .rule { height: 1px; background: linear-gradient(90deg, var(--card-edge), transparent); margin-top: 3rem; }
+
+  /* ---------- Synthesis ---------- */
+  .synth-grid {
+    display: grid; gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+  }
+  .synth {
+    background: var(--bg-soft); border: 1px solid var(--card-edge);
+    border-radius: var(--radius); padding: 1.4rem 1.5rem;
+  }
+  .synth h3 { font-size: 1.08rem; margin-bottom: 0.5rem; color: var(--accent-2); }
+  .synth p { font-size: 0.95rem; color: var(--ink-dim); }
+  .synth p b { color: var(--ink); font-weight: 600; }
+
+  /* ---------- Filters ---------- */
+  .filters {
+    display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.5rem 0 1.8rem;
+  }
+  .filters button {
+    font: inherit; font-size: 0.85rem; cursor: pointer;
+    color: var(--ink-dim); background: var(--card);
+    border: 1px solid var(--card-edge); border-radius: 999px;
+    padding: 0.35rem 0.95rem; transition: all 0.15s ease;
+  }
+  .filters button:hover { color: var(--ink); border-color: var(--accent); }
+  .filters button.active {
+    color: #0c0e14; background: var(--accent); border-color: var(--accent); font-weight: 600;
+  }
+
+  /* ---------- Game cards ---------- */
+  .games {
+    display: grid; gap: 1.2rem;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  }
+  .game {
+    background: var(--card); border: 1px solid var(--card-edge);
+    border-radius: var(--radius); padding: 1.5rem;
+    display: flex; flex-direction: column; gap: 0.85rem;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+  }
+  .game:hover { transform: translateY(-3px); border-color: #3a4360; }
+  .game.hidden { display: none; }
+  .game-head { display: flex; align-items: flex-start; gap: 0.8rem; }
+  .game-head .emoji { font-size: 2rem; line-height: 1.2; }
+  .game-head h3 { font-size: 1.25rem; line-height: 1.25; }
+  .game-head .meta { font-size: 0.82rem; color: var(--ink-faint); margin-top: 0.15rem; }
+  .badge {
+    margin-left: auto; flex-shrink: 0;
+    font-size: 0.72rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+    padding: 0.25rem 0.65rem; border-radius: 999px; white-space: nowrap;
+  }
+  .b-live     { color: var(--green); background: rgba(52,211,153,0.12); border: 1px solid rgba(52,211,153,0.35); }
+  .b-playable { color: var(--accent); background: rgba(124,156,255,0.12); border: 1px solid rgba(124,156,255,0.35); }
+  .b-proto    { color: var(--gold); background: rgba(251,191,36,0.10); border: 1px solid rgba(251,191,36,0.35); }
+  .b-design   { color: var(--accent-3); background: rgba(240,171,252,0.10); border: 1px solid rgba(240,171,252,0.30); }
+  .theme { font-size: 0.88rem; color: var(--accent-2); font-style: italic; }
+  .game p.desc { font-size: 0.94rem; color: var(--ink-dim); }
+  .mechs { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .mechs span {
+    font-size: 0.76rem; color: var(--ink-dim);
+    background: var(--bg-soft); border: 1px solid var(--card-edge);
+    border-radius: 6px; padding: 0.18rem 0.55rem;
+  }
+  .why {
+    margin-top: auto;
+    border-left: 3px solid var(--accent);
+    background: rgba(124,156,255,0.06);
+    border-radius: 0 8px 8px 0;
+    padding: 0.7rem 0.9rem;
+    font-size: 0.88rem; color: var(--ink-dim);
+  }
+  .why b { color: var(--ink); display: block; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 0.2rem; }
+
+  /* ---------- Directions ---------- */
+  .dir-list { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); }
+  .dir {
+    background: var(--bg-soft); border: 1px solid var(--card-edge);
+    border-radius: var(--radius); padding: 1.4rem 1.5rem;
+  }
+  .dir h3 { font-size: 1.05rem; margin-bottom: 0.45rem; }
+  .dir h3 .num { color: var(--accent); margin-right: 0.4rem; }
+  .dir p { font-size: 0.93rem; color: var(--ink-dim); }
+
+  footer {
+    max-width: var(--max); margin: 0 auto; padding: 3rem 1.5rem 2.5rem;
+    color: var(--ink-faint); font-size: 0.85rem; text-align: center;
+  }
+  @media (max-width: 480px) {
+    .games { grid-template-columns: 1fr; }
+    .badge { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <h1><span class="dice">🎲</span> DeevGames</h1>
+  <p class="tagline">A game design portfolio, 2013–2026: nineteen games built or designed across bluffing duels, expanding-market auctions, hybrid strategy, roguelites, cozy automation, time loops — and a card game that designs itself.</p>
+  <div class="statline">
+    <div class="stat"><b>19</b><span>games</span></div>
+    <div class="stat"><b>12</b><span>built &amp; playable</span></div>
+    <div class="stat"><b>7</b><span>designed briefs</span></div>
+    <div class="stat"><b>13</b><span>years</span></div>
+  </div>
+</header>
+
+<nav>
+  <div class="inner">
+    <a href="#synthesis">What's Distinct</a>
+    <a href="#built">Built &amp; Playable</a>
+    <a href="#designed">Designed, Not Yet Built</a>
+    <a href="#directions">Directions to Push</a>
+  </div>
+</nav>
+
+<!-- ================= SYNTHESIS ================= -->
+<section id="synthesis">
+  <h2>What's distinct about this body of work</h2>
+  <p class="lede">Nineteen games is enough for signatures to emerge. Read together, these aren't nineteen separate ideas — they're a handful of obsessions, each attacked from several angles.</p>
+  <div class="synth-grid">
+    <div class="synth">
+      <h3>Self-balancing rules over stat tables</h3>
+      <p>The house style is to find <b>one rule that makes the economy police itself</b>. FORGE's outbid-loser-keeps-their-turn auction taxes desirable cards automatically. Muju's any-enemy-blocks-the-spawn-rectangle turns board presence into economic denial. Spire's no-restack rule kills buff-stacking with zero new subsystems. Lution's loser-decides steal makes every powerful design a liability. Where most designers reach for tuning knobs, these games reach for incentive geometry.</p>
+    </div>
+    <div class="synth">
+      <h3>Hidden information, honestly engineered</h3>
+      <p>A thirteen-year thread from Ninja Tanks' indistinguishable move/feint decoys to Muju's hidden build queue over <b>public</b> mining income — an asymmetry chosen precisely so an AI can track beliefs without cheating (particle filters + re-determinized ISMCTS). The telegraphs never lie either: Spire's enemy-intent display and its executed action come from the same function. Deception for players, honesty in the machinery.</p>
+    </div>
+    <div class="synth">
+      <h3>The design layer becomes the game</h3>
+      <p>The boldest move in the portfolio: Lution demotes the card game to a scoreboard — <b>the real contest is designing cards under an extinction economy</b>, where every effect ever created is claimed forever and a live LLM opponent designs, judges, and literally codes new cards into the running game. It's the "games as vehicles for alignment intuitions" thread (Palimpsest, the Mage Ladder) made playable.</p>
+    </div>
+    <div class="synth">
+      <h3>Balance as an empirical science</h3>
+      <p>Three escalating tiers of rigor now exist: exploit-hunting analysis (FORGE's triangularity audit), structured design audits (Spire's LIGHT/MEDIUM/HEAVY redesign budgets and dual-rated mechanism inventory), and a full <b>headless balance lab</b> (Muju: seeded match runners, adversarial probe bots, confidence intervals, a judgment log). The lab found real engine bugs, not just numbers — the instrument pays twice.</p>
+    </div>
+    <div class="synth">
+      <h3>Time as a first-class material</h3>
+      <p>Calendar-structured maps where the reinforcement shop always lands before the boss (Spire). A week that loops while knowledge persists, and losing makes you <b>luckier</b> next run (Mythgarden). Damage that heals unless converted to a kill this turn (Muju). Designed-but-unbuilt: inventory with half-lives, decay spent as mana (Halflight), piece strength keyed to move recency. Time isn't a clock here; it's a resource, a bet, and a forgiveness mechanism.</p>
+    </div>
+    <div class="synth">
+      <h3>Engines are pure; content is data</h3>
+      <p>Every modern game keeps a <b>headless, seeded, pure-function engine</b> under a thin UI — which is why replays, idle simulation, honest AI, and empirical balance all come cheap. Content lives in data: 55 CSV world-snapshots (Mythgarden), schema-validated scraped creatures (Spire), a declarative atom language that an LLM compiles cards into (Lution), machine-verified puzzle levels (LUMENGRID).</p>
+    </div>
+  </div>
+</section>
+
+<div class="rule"></div>
+
+<!-- ================= BUILT ================= -->
+<section id="built">
+  <h2>Built &amp; Playable</h2>
+  <p class="lede">Twelve games with working code — from a 2013 Rails site to a 2026 card game with a live LLM opponent. Filter by what interests you.</p>
+
+  <div class="filters" id="filters">
+    <button class="active" data-f="all">All</button>
+    <button data-f="hidden-info">Hidden info &amp; bluffing</button>
+    <button data-f="economy">Economy &amp; auctions</button>
+    <button data-f="tactics">Tactics</button>
+    <button data-f="roguelite">Roguelite</button>
+    <button data-f="cozy">Cozy &amp; family</button>
+    <button data-f="puzzle">Puzzle</button>
+    <button data-f="llm">LLM-native</button>
+  </div>
+
+  <div class="games">
+
+    <article class="game" data-tags="hidden-info tactics">
+      <div class="game-head">
+        <span class="emoji">🥷</span>
+        <div>
+          <h3>Ninja Tanks</h3>
+          <div class="meta">2013 · Rails + jQuery · shipped at deevgames.com</div>
+        </div>
+        <span class="badge b-playable">Shipped</span>
+      </div>
+      <div class="theme">Theme: dueling tanks in the dark — every move might be a lie</div>
+      <p class="desc">A two-player simultaneous-action artillery duel on a 3-zone track. Cards play as Move, Feint, or Fire; after any maneuver your opponent sees translucent ghost tanks for <em>both</em> possible positions. Even overheating damage can be faked. Wrapped in a full community site with matchmaking, guest accounts, and a chat thread that doubles as the game's narrated action log.</p>
+      <div class="mechs">
+        <span>move/feint decoys</span><span>fake damage tokens</span><span>position-gated shots</span><span>simultaneous resolution</span><span>server-side dry-run validation</span>
+      </div>
+      <div class="why"><b>Why it's interesting</b>Deception is threaded through every subsystem, not bolted on — the earliest and purest statement of the portfolio's hidden-information obsession.</div>
+    </article>
+
+    <article class="game" data-tags="economy hidden-info">
+      <div class="game-head">
+        <span class="emoji">🃏</span>
+        <div>
+          <h3>FORGE</h3>
+          <div class="meta">React/TS · playable hot-seat · 82 cards, 7 factions, 2 full art sets</div>
+        </div>
+        <span class="badge b-playable">Playable</span>
+      </div>
+      <div class="theme">Theme: dark cosmic horror with alchemical symbolism — or, one toggle away, a kids' cartoon</div>
+      <p class="desc">Two players bid astrological symbols from a closed, non-renewable budget on cards in an unbounded grid that expands wherever cards are bought. Every purchase can be contested: counter-bid at cost+1, final-bid at cost+2 — and if you're outbid, you keep your turn. Burn cards for free to leave permanent adjacency-blocking ruins. Nearly all victory points are conditional and scored only at game end.</p>
+      <div class="mechs">
+        <span>counter-bid auction</span><span>expanding market grid</span><span>burn-to-ruins denial</span><span>closed 16-symbol economy</span><span>end-game conditional VP</span><span>full reskin architecture</span>
+      </div>
+      <div class="why"><b>Why it's interesting</b>The retained-turn auction makes efficient cards tax themselves — a validated balance triangle (efficiency ↔ contesting ↔ synergy) emerges from one rule. And the horror↔cartoon skin swap reskins the entire game without touching mechanics.</div>
+    </article>
+
+    <article class="game" data-tags="tactics hidden-info economy">
+      <div class="game-head">
+        <span class="emoji">⚔️</span>
+        <div>
+          <h3>Muju Hono Tanka</h3>
+          <div class="meta">React/TS · full rules + AI + balance lab · vs-AI, pass-play, AI-vs-AI</div>
+        </div>
+        <span class="badge b-playable">Playable</span>
+      </div>
+      <div class="theme">Theme: six elemental cultures — Japanese fire, Swahili lightning, Norse water, Turkish shadow, Andean plants, Lakota metal</div>
+      <p class="desc">Go × Chess × StarCraft on a 10×10 grid. Each turn: place units, spend six action steps moving/fighting/mining, then secretly queue new units. Your spawn zone stretches from your corner to any unit you anchor it on — but a single enemy inside blocks it entirely. Cells hold five resource layers; a unit's mining stat is its rope length. Its AI plays hidden information honestly: belief particles over your secret queue, re-determinized Monte Carlo search, and a public "AI recap" of its reasoning.</p>
+      <div class="mechs">
+        <span>place → act → queue turns</span><span>spawn-denial territory</span><span>well/rope mining</span><span>damage as defense erosion</span><span>hidden queue, public income</span><span>ISMCTS belief AI</span><span>headless balance lab</span>
+      </div>
+      <div class="why"><b>Why it's interesting</b>The deepest systems game here, and the most scientifically studied: its balance lab (probe bots, confidence intervals, judgment log) proved the element graph is load-bearing and found two real engine bugs the tests had missed.</div>
+    </article>
+
+    <article class="game" data-tags="roguelite tactics">
+      <div class="game-head">
+        <span class="emoji">🗡️</span>
+        <div>
+          <h3>Oracle of Delve</h3>
+          <div class="meta">React/TS · V0 combat prototype + spec through V3</div>
+        </div>
+        <span class="badge b-proto">Prototype</span>
+      </div>
+      <div class="theme">Theme: fast portrait-mode dungeon dives — die or win in ten rooms</div>
+      <p class="desc">A mobile-first roguelike designed for 5–10 minute runs: elemental combat, draft one gem of three between rooms, choose hard paths for better rarity, boss at room ten. Enemies show <em>when</em> they'll act on a visible timeline but never <em>what</em> they'll do — behaviors are learned by observation. Only the V0 combat core is built, but its real legacy is a rigorous layout-invariance testing methodology (pixel-level geometry assertions, reserved space for conditional content) now used portfolio-wide.</p>
+      <div class="mechs">
+        <span>visible timeline, hidden intent</span><span>path-gated rarity</span><span>stat-mods-first gem ladder</span><span>pure-function combat engine</span><span>layout-invariance tests</span>
+      </div>
+      <div class="why"><b>Why it's interesting</b>A case study in shipping the smallest version that answers a real question — and in a prototype whose <em>testing discipline</em> outlived its gameplay.</div>
+    </article>
+
+    <article class="game" data-tags="roguelite tactics economy">
+      <div class="game-head">
+        <span class="emoji">🏰</span>
+        <div>
+          <h3>Might &amp; Magic: Spire</h3>
+          <div class="meta">TS monorepo PWA · 3 factions, 3 acts, 42 creatures, 68 spells, 67 artifacts</div>
+        </div>
+        <span class="badge b-playable">Playable</span>
+      </div>
+      <div class="theme">Theme: HoMM3 with the serial numbers filed off — one hero, no town, an endless spire</div>
+      <p class="desc">A roguelite where your army of creature stacks <em>is</em> your life bar: no per-fight HP resets, just attrition across a seeded run. Climb a calendar-structured map (one node = one day, acts = weeks, the weekly reinforcement Muster always lands right before a Monday boss). Two-rank battles with the classic attack/defense damage curve, budgeted retaliation, and a stat trinity where speed becomes dodge, luck becomes crit, and morale becomes extra actions — unless your undead army locks morale to zero and leans on luck instead.</p>
+      <div class="mechs">
+        <span>army-as-life-bar</span><span>calendar map</span><span>necromancy compounding</span><span>speed→dodge / luck→crit / morale→actions</span><span>no-restack rule</span><span>honest telegraphs</span><span>seeded determinism</span>
+      </div>
+      <div class="why"><b>Why it's interesting</b>Built by retiring a working Slay-the-Spire clone mid-project — and balanced by document: a LIGHT/MEDIUM/HEAVY redesign budget, an S–F audit of imported content, and named-lever constants where one number (max boss dragons: 2) moved win rates from 4% to 59%.</div>
+    </article>
+
+    <article class="game" data-tags="llm economy hidden-info">
+      <div class="game-head">
+        <span class="emoji">🧬</span>
+        <div>
+          <h3>Lution</h3>
+          <div class="meta">Vanilla TS + Anthropic API + Agent SDK · 47 cards and growing</div>
+        </div>
+        <span class="badge b-playable">Playable</span>
+      </div>
+      <div class="theme">Theme: a card game as a living legal system — "every law you write will someday be enforced against you"</div>
+      <p class="desc">The deck designs itself. After each inner game, both players — you and a live Claude opponent — blind-design one new card each; an agent then <em>writes the card's code</em> into the running game, gated by tests. The loser decides the round's fate: KEEP (both designs survive) or STEAL (a two-pick raid where spurned designs are destroyed, stealing back your own creation executes it, and up to four cards can go extinct at once). Every effect ever designed is claimed forever, so simple ideas are land-grabbed early and late rounds turn baroque.</p>
+      <div class="mechs">
+        <span>self-expanding deck</span><span>extinction-engine keep/steal</span><span>design-space land-grab</span><span>LLM judge (semantic dupes, no-deixis)</span><span>atoms → new atom → bespoke code ladder</span><span>deterministic replay persistence</span>
+      </div>
+      <div class="why"><b>Why it's interesting</b>The most original game in the portfolio: the card game is just the scoreboard — the design round is the game. It's also a working laboratory for LLM-native play: prompt-injected sabotage was caught and refused, agent guardrails were learned the hard way, and the whole card language is a validated AST an LLM compiles against.</div>
+    </article>
+
+    <article class="game" data-tags="cozy roguelite">
+      <div class="game-head">
+        <span class="emoji">🌱</span>
+        <div>
+          <h3>Mythgarden</h3>
+          <div class="meta">Django + React · deployed at mythgarden.ashkie.com</div>
+        </div>
+        <span class="badge b-live">Live</span>
+      </div>
+      <div class="theme">Theme: Stardew Valley × Groundhog Day — the same quirky week, forever</div>
+      <p class="desc">A time-loop farming RPG: farm, fish, mine, and befriend villagers through one repeating Monday-to-Sunday week. Score is money <em>times</em> hearts — lopsided runs can't win. When the loop resets, your knowledge, achievements, and boost level persist; and if you fail to beat your high score, your luck stat rises instead, improving the odds of finding the rule-bending magical mytheggs. The whole world — 182 items, 205 dialogue lines, villager schedules — lives in versioned CSV snapshots.</p>
+      <div class="mechs">
+        <span>time-loop meta-progression</span><span>multiplicative score (koin × hearts)</span><span>loss-compensating luck</span><span>knowledge unlocks</span><span>opt-in difficulty multipliers</span><span>CSV world database</span>
+      </div>
+      <div class="why"><b>Why it's interesting</b>The portfolio's first fully deployed, server-authoritative game — and its kindest design: losing literally makes the next run luckier.</div>
+    </article>
+
+    <article class="game" data-tags="cozy puzzle">
+      <div class="game-head">
+        <span class="emoji">🧚</span>
+        <div>
+          <h3>Leyline Garden</h3>
+          <div class="meta">Phaser 3 + TS · core loop complete, ~225 tests, all-procedural pixel art</div>
+        </div>
+        <span class="badge b-playable">Playable</span>
+      </div>
+      <div class="theme">Theme: a fairy, a garden, and the quiet satisfaction of a well-drawn supply line</div>
+      <p class="desc">A cozy idle/automation game on a two-layer isometric world — sunlit surface, crystal-veined underground, connected by holes you dig. You can carry exactly one thing at a time, which is the whole point: the game is graduating from hand-delivery to drawing leylines along which resource motes flow to source plants, transmute plants, and an endgame portal. Day/night lighting, weather that feeds crops, and a full idle simulation that greets you back after time away.</p>
+      <div class="mechs">
+        <span>carry-one constraint</span><span>leyline mote routing</span><span>source → transmute chains</span><span>two-layer iso world</span><span>idle/away simulation</span><span>procedural pixel art</span>
+      </div>
+      <div class="why"><b>Why it's interesting</b>Mini-Factorio in a cozy skin: the player's physical limitation is what makes automation the core verb — and the sim/render split keeps a pure engine under the Phaser shine.</div>
+    </article>
+
+    <article class="game" data-tags="cozy puzzle">
+      <div class="game-head">
+        <span class="emoji">🪨</span>
+        <div>
+          <h3>Rock Stars</h3>
+          <div class="meta">React · offline, no backend · five decks + a periodic-table mode</div>
+        </div>
+        <span class="badge b-playable">Playable</span>
+      </div>
+      <div class="theme">Theme: geology facts as collectible mastery — closed sets a kid can fully conquer</div>
+      <p class="desc">A tablet-friendly quiz app for kids: Mohs hardness, mineral formulas, geologic time, rock families, ores &amp; metals — each deck playable as flip-card training or multiple-choice tests with same-deck distractors and a review list. Best scores persist per deck and direction; perfection earns a crown. Quietly grew an entire periodic-table gauntlet mode beyond the original scope.</p>
+      <div class="mechs">
+        <span>data-driven decks</span><span>reversible cards</span><span>training vs test modes</span><span>mastery crowns</span><span>Wikimedia image pipeline</span>
+      </div>
+      <div class="why"><b>Why it's interesting</b>The household-utility lane, shipped cheap and disciplined — proof the portfolio's data-driven content patterns scale down as well as up.</div>
+    </article>
+
+    <article class="game" data-tags="puzzle">
+      <div class="game-head">
+        <span class="emoji">🔦</span>
+        <div>
+          <h3>LUMENGRID</h3>
+          <div class="meta">Jul 2026 · single-file React artifact · 2 worlds × 10 levels</div>
+        </div>
+        <span class="badge b-playable">Shipped</span>
+      </div>
+      <div class="theme">Theme: light as logic — route, split, filter, and mix beams to exact colors</div>
+      <p class="desc">A laser-routing puzzle where color is a bitmask: red OR green reads yellow, on-screen and in the engine alike. World 1 teaches mirrors, splitters, filters, and linked toggles; World 2 inverts the problem with composite glass (subtractive logic) and poison beams — overfed sockets fail, so the solve becomes diverting the surplus. All twenty levels are machine-verified solvable-but-not-pre-solved by a standalone Node script.</p>
+      <div class="mechs">
+        <span>bitwise-OR color engine</span><span>SVG screen-blend beams</span><span>exact-match targets</span><span>excess-as-hazard</span><span>automated solvability verifier</span>
+      </div>
+      <div class="why"><b>Why it's interesting</b>The verifier pattern — prove every shipped level honest by machine — generalizes to any deterministic puzzle or procedural content, and belongs in every future game's CI.</div>
+    </article>
+
+    <article class="game" data-tags="puzzle">
+      <div class="game-head">
+        <span class="emoji">💡</span>
+        <div>
+          <h3>Lumen Works</h3>
+          <div class="meta">Jun 2026 · single-file React artifact · 5 levels + sandbox</div>
+        </div>
+        <span class="badge b-proto">Superseded</span>
+      </div>
+      <div class="theme">Theme: a miniature Factorio about the primary colors of light, in synthwave-lab neon</div>
+      <p class="desc">LUMENGRID's predecessor: grid-based live beam simulation with mirrors, prisms, and a multi-input combiner, targeting exact colors where over-mixing fails. Mechanically superseded, but its sandbox mode and combiner never carried forward — a documented reminder that successor games shed good ideas unless you audit the predecessor.</p>
+      <div class="mechs">
+        <span>live beam simulation</span><span>multi-input combiner</span><span>sandbox mode</span><span>exact-color solves</span>
+      </div>
+      <div class="why"><b>Why it's interesting</b>The portfolio's cautionary tale about iteration loss — and the seed that Leyline Garden later grew into a full cozy-automation game.</div>
+    </article>
+
+    <article class="game" data-tags="puzzle">
+      <div class="game-head">
+        <span class="emoji">⬡</span>
+        <div>
+          <h3>Hexagon Maze</h3>
+          <div class="meta">Sep 2024 · small React component</div>
+        </div>
+        <span class="badge b-proto">Sketch</span>
+      </div>
+      <div class="theme">Theme: a honeycomb, a sequence, a start</div>
+      <p class="desc">A honeycomb grid where you click cells in numbered sequence. Mechanically thin, but historically significant: the origin of the "code me up a puzzle in React" collaboration pattern, and the axial-coordinate hex rendering code still waiting for a hex tactics game to claim it.</p>
+      <div class="mechs">
+        <span>axial hex coordinates</span><span>sequence puzzles</span>
+      </div>
+      <div class="why"><b>Why it's interesting</b>Every portfolio has a first sketch; this one left reusable hex math behind.</div>
+    </article>
+
+  </div>
+</section>
+
+<div class="rule"></div>
+
+<!-- ================= DESIGNED ================= -->
+<section id="designed">
+  <h2>Designed, Not Yet Built</h2>
+  <p class="lede">Seven briefs with real design work behind them — art direction, mechanic taxonomies, validation ladders, card lists. Several are now dramatically cheaper to build than when they were written, because the shipped games above already contain their hardest infrastructure.</p>
+
+  <div class="games">
+
+    <article class="game" data-tags="economy roguelite">
+      <div class="game-head">
+        <span class="emoji">☢️</span>
+        <div>
+          <h3>Halflight</h3>
+          <div class="meta">Jul 2026 · fully art-directed · standing request for a prototype</div>
+        </div>
+        <span class="badge b-design">Designed</span>
+      </div>
+      <div class="theme">Theme: purchasing power as radioactive decay — a shop where the inventory is always dying</div>
+      <p class="desc">A Moonlighter-style delve-and-shop loop with one twist that changes everything: every gem has a condition-dependent half-life. Stock decays on the shelf; stacking hot gems risks critical mass; a gem's remaining decay can be spent as casting mana. Fully art-directed down to a pixel-art fold-out poster with a decay-map taxonomy. The one project with an explicit prototype request already on file.</p>
+      <div class="mechs">
+        <span>decaying inventory</span><span>heat / critical mass</span><span>decay-as-mana</span><span>day-loop shop sessions</span>
+      </div>
+      <div class="why"><b>Why it's interesting</b>Every run becomes a resource-curve puzzle — and Spire's run scaffolding plus Mythgarden's shop-loop thinking make this mostly an assembly project now.</div>
+    </article>
+
+    <article class="game" data-tags="llm">
+      <div class="game-head">
+        <span class="emoji">🪜</span>
+        <div>
+          <h3>The Mage Ladder</h3>
+          <div class="meta">Apr 2026 · ten-rung research ladder with per-rung validation tests</div>
+        </div>
+        <span class="badge b-design">Designed</span>
+      </div>
+      <div class="theme">Theme: Mage: the Ascension where two players in the same scene see different realities</div>
+      <p class="desc">An LLM-as-game-engine research program: ten prototypes from a coin-flip narrator (can one bit of entropy be made to <em>matter</em>?) up to a full text-only Mage engine that parses free-text intent, validates it against Sphere mechanics and local consensus reality, scores Paradox risk, and narrates through each character's paradigm filter. Named failure modes: the yes-to-everything narrator and the tyrannical reviewer.</p>
+      <div class="mechs">
+        <span>intent parser / rules validator split</span><span>paradigm-filtered narration</span><span>persistent world-state</span><span>NPC agent loops</span>
+      </div>
+      <div class="why"><b>Why it's interesting</b>The central question — can players discover interactions the designer never anticipated, adjudicated consistently? — and Lution has already shipped its hardest infrastructure: live LLM calls in a game loop, LLM judges, validated ASTs as output languages.</div>
+    </article>
+
+    <article class="game" data-tags="llm">
+      <div class="game-head">
+        <span class="emoji">📜</span>
+        <div>
+          <h3>Palimpsest</h3>
+          <div class="meta">Mar 2026 · GDD written to read like its own subject matter</div>
+        </div>
+        <span class="badge b-design">Designed</span>
+      </div>
+      <div class="theme">Theme: a values-alignment game wearing Homestuck mechanics — revisions bleeding through the text</div>
+      <p class="desc">Four prototype-ready mechanics: Layerlink (chat with two revisions of the same character at once — one degrading, one who doesn't know you), Peeling (scrape scenes back to earlier revisions at a Fidelity cost), a personality parser with its own character, and Annotation — write messages to "the Author" and watch an actual LLM misinterpret them. The alignment gap <em>is</em> the gameplay.</p>
+      <div class="mechs">
+        <span>Layerlink dual-revision chat</span><span>Peeling / Fidelity cost</span><span>characterful parser</span><span>Annotation</span>
+      </div>
+      <div class="why"><b>Why it's interesting</b>The purest expression of the games-for-alignment-intuitions thread — and a natural side-quest on Lution's existing LLM infrastructure.</div>
+    </article>
+
+    <article class="game" data-tags="cozy">
+      <div class="game-head">
+        <span class="emoji">🧚‍♀️</span>
+        <div>
+          <h3>Garden Guardians</h3>
+          <div class="meta">Jan 2026 · card list + action verbs sketched</div>
+        </div>
+        <span class="badge b-design">Designed</span>
+      </div>
+      <div class="theme">Theme: fairies defending a garden with illusion and care, never violence</div>
+      <p class="desc">A two-player co-op deckbuilder for phones, built for 10–20 minute turn-based sessions between two parents around the kids. Aeon's End lineage, deliberately combat-free: nurture plants, guide hungry animals elsewhere, pull weeds. Sacrifice economics — feed doomed plants to animals to protect the high-value crops. First-prototype card list already sketched.</p>
+      <div class="mechs">
+        <span>co-op deckbuilding</span><span>nurture / guide / weed verbs</span><span>sacrifice economics</span><span>async two-phone play</span>
+      </div>
+      <div class="why"><b>Why it's interesting</b>Highest household-utility-per-line-of-code in the queue — and Mythgarden has since proven the hosted, server-authoritative path this game needs.</div>
+    </article>
+
+    <article class="game" data-tags="roguelite">
+      <div class="game-head">
+        <span class="emoji">🎵</span>
+        <div>
+          <h3>Resonance Roguelike</h3>
+          <div class="meta">Jan 2026 · ~2,500-word spec</div>
+        </div>
+        <span class="badge b-design">Designed</span>
+      </div>
+      <div class="theme">Theme: sociology as a rhythm game — interaction rituals rendered in geometry and sound</div>
+      <p class="desc">Randall Collins' Interaction Ritual Chains theory as a rhythm roguelike: geometric beings grow through social encounters staged as musical synchronization challenges, accumulating emotional energy — the theory's own resource — from every successful sync.</p>
+      <div class="mechs">
+        <span>rhythm-sync encounters</span><span>emotional energy resource</span><span>theory-derived progression</span>
+      </div>
+      <div class="why"><b>Why it's interesting</b>The most distinctive theme in the queue: a real sociological framework as the literal game economy.</div>
+    </article>
+
+    <article class="game" data-tags="tactics">
+      <div class="game-head">
+        <span class="emoji">♟️</span>
+        <div>
+          <h3>Elemental Magic Chess &amp; Dynamic Piece Strength</h3>
+          <div class="meta">2025 · phased Canvas/Pixi plan · TS interfaces drafted</div>
+        </div>
+        <span class="badge b-design">Designed</span>
+      </div>
+      <div class="theme">Theme: chess, but the pieces remember — and burn</div>
+      <p class="desc">Two related sketches. Elemental Magic Chess layers elemental effects and spectacle over standard chess. Dynamic Piece Strength is a mechanic in search of a game: pieces gain or lose power by move recency — exhausted (−25%) after moving, prepared (+15%) for waiting, rusted for idling too long, energized by power-ups — making tempo itself a per-piece stat.</p>
+      <div class="mechs">
+        <span>move-recency statuses</span><span>elemental chess effects</span><span>tempo as a stat</span>
+      </div>
+      <div class="why"><b>Why it's interesting</b>The recency taxonomy pairs naturally with Halflight's decay theme and Muju's action economy — a free-floating mechanic waiting for its host.</div>
+    </article>
+
+    <article class="game" data-tags="tactics hidden-info">
+      <div class="game-head">
+        <span class="emoji">🔮</span>
+        <div>
+          <h3>Blind Loyalty &amp; Hex Strike</h3>
+          <div class="meta">c. 2013 · designed board games; database slots reserved, never built</div>
+        </div>
+        <span class="badge b-design">Designed</span>
+      </div>
+      <div class="theme">Theme: the two ghosts of the original board game company</div>
+      <p class="desc">The 2013 site's rules engine reserved slots for three games; only Ninja Tanks shipped. Blind Loyalty and Hex Strike remain names with lost designs — though Hex Strike's name promises the hex-grid tactics itch nothing in the portfolio has yet scratched, and the axial-coordinate hex code already exists.</p>
+      <div class="mechs">
+        <span>unknown — designs predate the repo</span><span>hex tactics (implied)</span>
+      </div>
+      <div class="why"><b>Why it's interesting</b>Thirteen years of standing invitation: the oldest open loop in the portfolio.</div>
+    </article>
+
+  </div>
+</section>
+
+<div class="rule"></div>
+
+<!-- ================= DIRECTIONS ================= -->
+<section id="directions">
+  <h2>Directions worth pushing further</h2>
+  <p class="lede">The synthesis suggests where the next game should lean — not by starting fresh, but by combining assets that already exist.</p>
+  <div class="dir-list">
+    <div class="dir">
+      <h3><span class="num">01</span>LLM-native play, hosted</h3>
+      <p>Lution proved a live LLM can be an opponent, a judge, and a content compiler — but it lives on a local dev server. Hosting it (or building the Mage Ladder / Palimpsest's Annotation on its atoms-and-agents substrate) would put the portfolio's most original work in front of other humans. The design question worth chasing: what else becomes a game when the design layer is the contest?</p>
+    </div>
+    <div class="dir">
+      <h3><span class="num">02</span>Decay and time as the next core resource</h3>
+      <p>Halflight is the standing request, and it's cheap now: Spire's seeded-run scaffolding + Mythgarden's day-loop shop + the dynamic-piece-strength taxonomy as gem states. A decaying-inventory roguelite would extend the portfolio's time-as-material signature into its purest form — every run a resource-curve puzzle.</p>
+    </div>
+    <div class="dir">
+      <h3><span class="num">03</span>The tactical convergence</h3>
+      <p>Three assets are circling one game: FORGE's dormant army-export hooks, Muju's tactics engine and belief AI, and Spire's stack-combat engine. A Skirmish/Hex Strike tactical layer — possibly on the hex grid waiting since 2024 — would close the AZAD MINOR loop and finally cash the portfolio's oldest promissory notes.</p>
+    </div>
+    <div class="dir">
+      <h3><span class="num">04</span>Co-op for two — the unfilled lane</h3>
+      <p>Every multiplayer game here is adversarial. Garden Guardians (two-phone co-op, combat-free, session-friendly) is the one brief targeting the household's actual play context, and Mythgarden's deployed Django stack removed its biggest unknown. Cozy is proven solo (Leyline); co-op cozy is the gap.</p>
+    </div>
+    <div class="dir">
+      <h3><span class="num">05</span>Balance science as a product feature</h3>
+      <p>The Muju lab and Spire's audit ladder are internal tools today. Pushed further, they become player-facing: daily seeds with published fairness stats, an in-game "why the AI did that" layer (Muju's recap, Lution's code reveal), or a design-your-own-content mode where the machine-verification pipeline is the guardrail. The infrastructure for trustworthy UGC already exists here.</p>
+    </div>
+    <div class="dir">
+      <h3><span class="num">06</span>One discipline to adopt everywhere</h3>
+      <p>LUMENGRID's solvability verifier — prove every level or generated batch honest, by machine, in CI — is the single cheapest practice not yet standard across the portfolio. Whatever gets built next, this goes in on day one, alongside the pure seeded engine and the napkin-and-judgment-log habit that made the multi-agent build waves work.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  DeevGames · portfolio compiled from the <a href="../docs/game-design-dossier.md">game design dossier</a> · 2013–2026
+</footer>
+
+<script>
+  const buttons = document.querySelectorAll('#filters button');
+  const cards = document.querySelectorAll('.game');
+  buttons.forEach(btn => btn.addEventListener('click', () => {
+    buttons.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const f = btn.dataset.f;
+    cards.forEach(c => {
+      const show = f === 'all' || (c.dataset.tags || '').split(' ').includes(f);
+      c.classList.toggle('hidden', !show);
+    });
+  }));
+</script>
+
+</body>
+</html>
