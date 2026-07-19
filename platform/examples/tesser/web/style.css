@@ -1,0 +1,336 @@
+/* TESSER web UI — portrait mobile-first. The shell skeleton (flex column,
+ * sticky header, scrollable content, thumb-reach dock) comes from
+ * @deev/ui/src/shell.css; this file styles the game inside it. */
+
+:root {
+  color-scheme: dark;
+  --ts-bg: #0f1115;
+  --ts-panel: #171a21;
+  --ts-line: #2a2f3a;
+  --ts-text: #e8e8f0;
+  --ts-dim: #9aa3b2;
+  --ts-south: #1f4d3a;
+  --ts-south-edge: #4dd2a0;
+  --ts-north: #4d1f2a;
+  --ts-north-edge: #e06a7d;
+  --ts-accent: #ffd75e;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--ts-bg);
+  color: var(--ts-text);
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* header ------------------------------------------------------------------ */
+
+.ts-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--ts-panel);
+  border-bottom: 1px solid var(--ts-line);
+  z-index: 10;
+}
+
+.ts-title {
+  margin: 0;
+  font-size: 1rem;
+  letter-spacing: 0.25em;
+}
+
+.ts-header-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.ts-status {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.ts-measures {
+  font-size: 0.7rem;
+  color: var(--ts-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ts-difficulty {
+  background: var(--ts-bg);
+  color: var(--ts-text);
+  border: 1px solid var(--ts-line);
+  border-radius: 6px;
+  padding: 0.35rem 0.4rem;
+  font-size: 0.8rem;
+}
+
+/* board ------------------------------------------------------------------- */
+
+.ts-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.5rem;
+}
+
+.ts-board-wrap {
+  position: relative;
+  width: min(100%, 26rem, calc((100dvh - 16rem) * 0.75));
+  margin: 0 auto;
+}
+
+.ts-board {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  aspect-ratio: 6 / 8;
+  width: 100%;
+  background: #1b1f28;
+  border: 1px solid var(--ts-line);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.ts-cell {
+  border: 1px solid rgba(255, 255, 255, 0.045);
+}
+
+.ts-cell.ts-last {
+  background: rgba(255, 215, 94, 0.12);
+  box-shadow: inset 0 0 0 1px rgba(255, 215, 94, 0.35);
+}
+
+.ts-cell.ts-cand {
+  background: rgba(80, 160, 255, 0.22);
+  box-shadow: inset 0 0 0 2px rgba(80, 160, 255, 0.55);
+  cursor: pointer;
+}
+
+.ts-cell.ts-sel {
+  background: rgba(80, 255, 160, 0.28);
+  box-shadow: inset 0 0 0 2px rgba(80, 255, 160, 0.75);
+}
+
+/* pieces ------------------------------------------------------------------ */
+
+.ts-pieces {
+  position: absolute;
+  inset: 0;
+  /* Let taps fall through to the cells; individual pieces re-enable. */
+  pointer-events: none;
+}
+
+.ts-piece {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.05rem;
+  border-radius: 6px;
+  border: 2px solid;
+  font-size: 0.62rem;
+  line-height: 1.1;
+  overflow: hidden;
+  cursor: pointer;
+  pointer-events: auto;
+  user-select: none;
+}
+
+.ts-piece.ts-south {
+  background: var(--ts-south);
+  border-color: var(--ts-south-edge);
+}
+
+.ts-piece.ts-north {
+  background: var(--ts-north);
+  border-color: var(--ts-north-edge);
+}
+
+.ts-piece.ts-wounded {
+  border-style: dashed;
+}
+
+.ts-piece.ts-selected {
+  box-shadow: 0 0 0 3px var(--ts-accent);
+  z-index: 2;
+}
+
+/* While picking a destination/target/anchor, every tap must reach the CELLS,
+ * including cells currently under a piece (e.g. fold-in-place anchors). */
+.ts-board.ts-targeting .ts-piece {
+  pointer-events: none;
+}
+
+.ts-p-name {
+  font-weight: 700;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ts-p-stats {
+  display: flex;
+  gap: 0.25em;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.ts-p-h {
+  font-weight: 700;
+}
+
+/* dock -------------------------------------------------------------------- */
+
+.ts-dock {
+  background: var(--ts-panel);
+  border-top: 1px solid var(--ts-line);
+  padding: 0.5rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-height: 7.25rem;
+}
+
+.ts-dock-main {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.ts-hint {
+  font-size: 0.8rem;
+  color: var(--ts-dim);
+}
+
+.ts-row {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.ts-row.ts-wrap {
+  flex-wrap: wrap;
+}
+
+.ts-btn {
+  appearance: none;
+  border: 1px solid var(--ts-line);
+  background: #222735;
+  color: var(--ts-text);
+  border-radius: 8px;
+  padding: 0.55rem 0.8rem;
+  font-size: 0.85rem;
+  min-height: 44px; /* touch target */
+  cursor: pointer;
+}
+
+.ts-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.ts-btn.ts-confirm {
+  background: var(--ts-south-edge);
+  border-color: var(--ts-south-edge);
+  color: #08281c;
+  font-weight: 700;
+}
+
+.ts-btn.ts-ghost {
+  background: transparent;
+}
+
+.ts-btn.ts-shape {
+  font-variant-numeric: tabular-nums;
+}
+
+.ts-pending {
+  border-top: 1px dashed var(--ts-line);
+  padding-top: 0.4rem;
+}
+
+.ts-pending-label {
+  flex: 1;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.ts-meta {
+  justify-content: flex-end;
+}
+
+/* toasts ------------------------------------------------------------------ */
+
+.ts-toasts {
+  position: fixed;
+  top: 3.4rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  z-index: 50;
+  pointer-events: none;
+  width: max-content;
+  max-width: 90vw;
+}
+
+.ts-toast {
+  background: rgba(23, 26, 33, 0.95);
+  border: 1px solid var(--ts-line);
+  border-radius: 8px;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.ts-toast-dealt {
+  border-color: var(--ts-south-edge);
+}
+
+.ts-toast-taken {
+  border-color: var(--ts-north-edge);
+}
+
+.ts-toast-destroy {
+  border-color: var(--ts-accent);
+  font-weight: 700;
+}
+
+/* end-of-game banner ------------------------------------------------------ */
+
+.ts-banner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: rgba(15, 17, 21, 0.82);
+  backdrop-filter: blur(2px);
+  border-radius: 10px;
+  z-index: 5;
+}
+
+.ts-banner-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.ts-banner-why {
+  font-size: 0.85rem;
+  color: var(--ts-dim);
+}

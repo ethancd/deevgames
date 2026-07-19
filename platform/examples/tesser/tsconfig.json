@@ -1,4 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
-  "include": ["src", "tests"]
+  "include": ["src", "tests"],
+  // ui.test.ts needs DOM lib types; it is type-checked by web/tsconfig.json
+  // (`pnpm typecheck:web`) instead, keeping DOM types out of src/ + tests/.
+  "exclude": ["tests/ui.test.ts"]
 }

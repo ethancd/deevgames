@@ -12,9 +12,12 @@
   },
   "types": "./src/index.ts",
   "scripts": {
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p web",
+    "typecheck:web": "tsc --noEmit -p web",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "dev": "vite web",
+    "build": "vite build web"
   },
   "dependencies": {
     "@deev/ai": "workspace:*",
