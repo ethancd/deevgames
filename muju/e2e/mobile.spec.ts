@@ -160,3 +160,27 @@ test('keyboard shortcuts work after tapping a board button; Enter confirms the p
   await expect(page.getByTestId('cell-3-1')).toHaveAttribute('aria-label', /white Sjor/);
   await expect(page.locator('.action-budget strong')).toHaveText('4 actions');
 });
+
+test('v1.3 Lightning combat, Plant extraction and tutorial agree with the catalogue', async ({ page }) => {
+  const state = createInitialGameState();
+  state.board.units.find(u => u.owner === 'white' && u.definitionId === 'fire_1')!.definitionId = 'lightning_1';
+  state.board.units.find(u => u.owner === 'white' && u.definitionId === 'plant_1')!.definitionId = 'plant_2';
+  state.board.units.push(createUnit('metal_1', 'black', { x: 2, y: 0 }));
+  await page.setViewportSize({ width: 390, height: 664 });
+  await start(page, state);
+  await page.getByTestId('cell-1-0').click();
+  await page.getByTestId('cell-2-0').click();
+  await expect(page.locator('.action-preview')).toContainText('Eliminates target');
+  await page.getByRole('button', { name: 'Confirm attack' }).click();
+  await expect(page.getByTestId('cell-2-0')).not.toHaveAttribute('aria-label', /black Inyan/);
+  await page.getByTestId('cell-0-1').click();
+  const mining = getUnitDefinition('plant_2').mining;
+  await page.getByRole('button', { name: `Mine +${mining} ◆`, exact: true }).click();
+  await expect(page.locator('.score-strip>div').first()).toContainText(`◆ ${mining}`);
+  await page.getByRole('button', { name: 'How to play', exact: true }).click();
+  for (let i = 0; i < 5; i++) await page.getByRole('button', { name: 'Next →' }).click();
+  await expect(page.locator('.help-body')).toContainText('damage equal to effective attack');
+  for (let i = 0; i < 2; i++) await page.getByRole('button', { name: 'Next →' }).click();
+  await expect(page.locator('.help-body')).toContainText(`+${mining}`);
+  await expect(page.locator('.help-body')).toContainText('Depleted layers do not return');
+});

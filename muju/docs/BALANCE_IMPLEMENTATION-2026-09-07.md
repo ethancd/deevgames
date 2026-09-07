@@ -93,7 +93,7 @@ The faster threat has counters: Balanced's total result against Lightning rush i
 
 ## Verification and maintenance
 
-- **520 tests pass**, including twelve static-model tests and updated combat/mining fixtures that retain their original rule assertions under the new catalogue.
+- **521 tests pass**, including thirteen static-model tests and updated combat/mining fixtures that retain their original rule assertions under the new catalogue.
 - Production build, solver typecheck and `balance:check` pass.
 - Tests cross-check actual combat/mining formulas, compare DP results with independent exhaustive enumeration, exercise phase-dependent financing and attack–speed complementarity, detect historical dominance, and maintain a static witness for every current unit.
 - E8 reproduction now pins its historical baseline to `lab/solver/baseline-v1.2.json`; future catalogue edits will not silently relabel a new catalogue as the old baseline.
@@ -112,3 +112,9 @@ python3 lab/experiments/summarize-e9.py
 ```
 
 Results are deterministic for the declared catalogue/scenarios/seeds; elapsed wall time is diagnostic metadata. Before rerunning, copy an output whose historical provenance should be retained because each named run overwrites its own artifact.
+
+## Integration with the completed phone UI
+
+The completed UI commit `8c37f3c` was integrated as `0e84932` after the balance change. Catalogue-driven displays pick up v1.3 automatically. Tutorial examples now use the actual catalogue for movement, combat and mining; the stale Water name, mining-depth numbers, and incorrect “damage equals the difference” wording were corrected. The damage example, immediate-action promotion explanation and once-per-target attack rule also match the engine.
+
+The combined build and 521-test suite pass. All sixteen browser cases pass across the phone/landscape/desktop layouts and action flows. The added v1.3 case verifies Radi's kill threshold, Sachita's four-layer extraction and tutorial consistency. The original fifteen cases passed together; the new case passed after its exact button selector was corrected to include the displayed crystal symbol. No gameplay repair was needed for that selector failure. The [updated mining tutorial](v13-mining-help.png) was visually inspected on a 390×664 viewport with no page errors.

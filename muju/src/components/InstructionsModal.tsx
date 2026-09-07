@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { PlayDialog } from './PlayDialog';
-import { ELEMENT_INFO } from '../game/elements';
+import { ELEMENT_INFO, getAttackModifier } from '../game/elements';
+import { getUnitDefinition } from '../game/units';
 import { getElementHex } from '../utils/colors';
 
 interface InstructionsModalProps {
@@ -150,6 +151,13 @@ function DemoActionDots({ remaining, max = 6 }: { remaining: number; max?: numbe
   );
 }
 
+const demoMover = getUnitDefinition('fire_1');
+const demoMiner = getUnitDefinition('plant_2');
+const demoAttacker = getUnitDefinition('fire_2');
+const demoDefender = getUnitDefinition('plant_2');
+const demoAttackModifier = getAttackModifier(demoAttacker.element, demoDefender.element);
+const demoAttackPower = Math.max(0, demoAttacker.attack + demoAttackModifier);
+
 // Instruction page content
 interface InstructionPage {
   title: string;
@@ -241,7 +249,7 @@ const instructionPages: InstructionPage[] = [
             </div>
           </div>
           <p className="text-gray-400 text-sm mt-2 text-center">
-            Both players start with Hi (Fire), Kapp (Water), and Muju (Plant) — tier 1 units
+            Both players start with {getUnitDefinition('fire_1').name} (Fire), {getUnitDefinition('water_1').name} (Water), and {getUnitDefinition('plant_1').name} (Plant) — tier 1 units
           </p>
         </div>
       </div>
@@ -316,7 +324,7 @@ const instructionPages: InstructionPage[] = [
 
               <DemoCell highlighted highlightType="move" />
               <DemoCell highlighted highlightType="move" />
-              <DemoCell><DemoUnit element="lightning" tier={2} /></DemoCell>
+              <DemoCell><DemoUnit element={demoMover.element} tier={demoMover.tier} /></DemoCell>
               <DemoCell highlighted highlightType="move" />
               <DemoCell highlighted highlightType="move" />
 
@@ -335,10 +343,10 @@ const instructionPages: InstructionPage[] = [
           </DemoBoardSection>
         </div>
         <div className="flex justify-center gap-4">
-          <DemoStatBox label="SPD" value={2} color="text-blue-400" />
+          <DemoStatBox label="SPD" value={demoMover.speed} color="text-blue-400" />
         </div>
         <p className="text-gray-400 text-sm text-center">
-          A unit with Speed 2 can move up to 2 squares in any orthogonal direction
+          {demoMover.name} has Speed {demoMover.speed} and can move up to {demoMover.speed} orthogonal squares per action
         </p>
         <div className="bg-gray-800 p-3 rounded border border-gray-700 text-sm">
           <p className="text-gray-300">
@@ -361,33 +369,34 @@ const instructionPages: InstructionPage[] = [
           <div className="text-center">
             <div className="relative inline-block">
               <DemoUnit element="fire" tier={2} size="lg" />
-              <span className="absolute -top-1 -right-3 text-green-400 text-sm font-bold">+1⚔</span>
+              <span className="absolute -top-1 -right-3 text-green-400 text-sm font-bold">+{demoAttackModifier}⚔</span>
             </div>
             <div className="flex gap-1 mt-2 justify-center">
-              <DemoStatBox label="ATK" value={4} color="text-red-400" />
+              <DemoStatBox label="ATK" value={demoAttacker.attack} color="text-red-400" />
             </div>
           </div>
           <span className="text-2xl text-gray-500">→</span>
           <div className="text-center">
             <DemoUnit element="plant" tier={2} size="lg" isPlayer={false} />
             <div className="flex gap-1 mt-2 justify-center">
-              <DemoStatBox label="DEF" value={4} color="text-green-400" />
+              <DemoStatBox label="DEF" value={demoDefender.defense} color="text-green-400" />
             </div>
           </div>
         </div>
         <div className="bg-gray-800 p-3 rounded border border-gray-700">
           <h4 className="text-red-400 font-medium mb-2">How Combat Works</h4>
           <p className="text-gray-300 text-sm">
-            <code className="bg-gray-700 px-1 rounded">Effective Attack = Attack + Element Modifier</code>
+            <code className="bg-gray-700 px-1 rounded">Effective Attack = max(0, Attack + Element Modifier)</code>
           </p>
           <ul className="text-sm text-gray-400 mt-2 space-y-1">
             <li>• If effective attack ≥ defense, the enemy is <strong className="text-red-400">destroyed</strong></li>
-            <li>• If effective attack &lt; defense, enemy takes damage equal to the difference</li>
+            <li>• If effective attack &lt; defense, enemy takes damage equal to effective attack</li>
             <li>• Damage reduces effective defense until the defender's next turn</li>
+            <li>• Each unit can attack a particular enemy only once per turn; combine different attackers to finish tough targets</li>
           </ul>
         </div>
         <p className="text-gray-400 text-sm text-center">
-          Fire (ATK 4) + type advantage (+1) = 5 vs Plant (DEF 4) → <span className="text-red-400">destroyed!</span>
+          {demoAttacker.name} (ATK {demoAttacker.attack}) + type advantage (+{demoAttackModifier}) = {demoAttackPower} vs {demoDefender.name} (DEF {demoDefender.defense}) → <span className="text-red-400">{demoAttackPower >= demoDefender.defense ? 'destroyed!' : `${demoAttackPower} damage`}</span>
         </p>
       </div>
     ),
@@ -471,25 +480,25 @@ const instructionPages: InstructionPage[] = [
           </div>
           <span className="text-2xl text-amber-400">⛏</span>
           <div className="text-center">
-            <DemoCell depth={3}>
+            <DemoCell depth={5 - demoMiner.mining}>
               <DemoUnit element="plant" tier={2} />
             </DemoCell>
             <span className="text-xs text-gray-400 mt-1 block">After</span>
           </div>
         </div>
         <div className="flex justify-center gap-4">
-          <DemoStatBox label="MINE" value={2} color="text-amber-400" />
+          <DemoStatBox label="MINE" value={demoMiner.mining} color="text-amber-400" />
           <span className="text-gray-500 self-center">→</span>
-          <DemoResourceDisplay resources={"+2"} label="Gain" />
+          <DemoResourceDisplay resources={`+${demoMiner.mining}`} label="Gain" />
         </div>
         <div className="bg-gray-800 p-3 rounded border border-gray-700 text-sm">
           <p className="text-gray-300">
-            <strong className="text-yellow-400">Tip:</strong> Plant units have the best mining stats.
-            Muju (tier 1) has 2 mining depth, while higher tiers extract even more!
+            <strong className="text-yellow-400">Tip:</strong> Plant units have the best mining stats.{' '}
+            {getUnitDefinition('plant_1').name} reaches depth {getUnitDefinition('plant_1').mining}. Tiers 2 and 3 reach depths {demoMiner.mining} and {getUnitDefinition('plant_3').mining}; tier 4 relocates at Speed {getUnitDefinition('plant_4').speed}.
           </p>
         </div>
         <p className="text-gray-400 text-sm text-center">
-          Resources are used to queue new units during the Queue Phase
+          Mining takes all remaining layers within your unit’s mining depth. Depleted layers do not return. Spend resources on queued units or promotions.
         </p>
       </div>
     ),
@@ -582,7 +591,7 @@ const instructionPages: InstructionPage[] = [
               <DemoUnit element="fire" tier={2} size="lg" />
             </div>
             <p className="text-xs text-gray-400 text-center">
-              Pay the cost difference to upgrade a unit to the next tier
+              Pay the cost difference to upgrade once per Place phase. Placed and promoted units can act immediately, but a unit cannot promote on the turn it was placed.
             </p>
           </div>
         </div>
@@ -688,7 +697,7 @@ const instructionPages: InstructionPage[] = [
           <div className="bg-gray-800 p-2 rounded border border-gray-700">
             <h4 className="text-xs text-gray-400 mb-2">Damaged Unit</h4>
             <div className="flex items-center gap-2">
-              <DemoUnit element="plant" tier={1} damage={2} />
+              <DemoUnit element="plant" tier={1} damage={1} />
               <span className="text-xs text-gray-300">Red badge shows damage</span>
             </div>
           </div>
