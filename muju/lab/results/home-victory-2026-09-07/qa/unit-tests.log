@@ -1,0 +1,12 @@
+
+> elemental-tactics@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.11 /private/tmp/muju-home-victory-20260907/muju
+
+
+ Test Files  28 passed (28)
+      Tests  574 passed (574)
+   Start at  14:27:11
+   Duration  25.65s (transform 2.03s, setup 1.40s, import 3.14s, tests 46.49s, environment 8.57s)

@@ -1,0 +1,109 @@
+{
+  "n": 20,
+  "shard": 1,
+  "shards": 4,
+  "pairs": [
+    [
+      "Rush",
+      "AntiRush"
+    ],
+    [
+      "LightningRush",
+      "Expand"
+    ],
+    [
+      "Balanced",
+      "Balanced"
+    ],
+    [
+      "InvestT3",
+      "HomeT3"
+    ],
+    [
+      "InvestT3",
+      "Rush"
+    ],
+    [
+      "InvestT4",
+      "InvestT3"
+    ],
+    [
+      "MiningDenial",
+      "Turtle"
+    ],
+    [
+      "Mono-plant",
+      "Mono-shadow"
+    ],
+    [
+      "Invade:LightningRush",
+      "Aware:AntiRush"
+    ],
+    [
+      "Invade:LightningRush",
+      "Aware:InvestT3"
+    ],
+    [
+      "Invade:LightningRush",
+      "Aware:Balanced"
+    ],
+    [
+      "Invade:LightningRush",
+      "Aware:Turtle"
+    ],
+    [
+      "Invade:Balanced",
+      "Aware:Balanced"
+    ],
+    [
+      "Invade:InvestT3",
+      "Aware:HomeT3"
+    ],
+    [
+      "Invade:InvestT3",
+      "Aware:InvestT3"
+    ],
+    [
+      "Invade:MiningDenial",
+      "Aware:AntiRush"
+    ],
+    [
+      "Siege:2",
+      "Aware:Balanced"
+    ],
+    [
+      "Siege:4",
+      "Aware:Balanced"
+    ],
+    [
+      "Siege:4",
+      "Aware:InvestT3"
+    ],
+    [
+      "Siege:4",
+      "Invade:LightningRush"
+    ],
+    [
+      "Invade:Balanced",
+      "Invade:Balanced"
+    ],
+    [
+      "Invade:LightningRush",
+      "Invade:LightningRush"
+    ],
+    [
+      "Aware:InvestT3",
+      "Aware:Balanced"
+    ],
+    [
+      "Invade:InvestT3",
+      "Aware:Mono-plant"
+    ]
+  ],
+  "started": "2026-09-07T19:25:38.343Z",
+  "sourceHash": "8cc48ee785578992cadf7fea1df73e46e9b5f113d1e63de9fbffcca3e4ca6f3e",
+  "unitHash": "7a5fdecdcd77f0dce8c81b0aad357ec439ddcf6f584a7f79f08b212955a2bc43",
+  "seedBase": 9071326,
+  "maxTurns": 120,
+  "notes": "Same policies/seeds/seats, map D, v1.3 units. New-objective probes use bounded public-state home defense on both rule variants."
+}

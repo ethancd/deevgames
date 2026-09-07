@@ -1,0 +1,14 @@
+{
+  "home-victory-2026-09-07": {
+    "games": 1920,
+    "plies": 1533916,
+    "validatedUniqueKeys": true,
+    "zeroIllegalActionsAnomaliesInvariantFailures": true
+  },
+  "home-guard-2026-09-07": {
+    "games": 320,
+    "plies": 216774,
+    "validatedUniqueKeys": true,
+    "zeroIllegalActionsAnomaliesInvariantFailures": true
+  }
+}

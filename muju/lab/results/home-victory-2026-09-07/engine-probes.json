@@ -1,0 +1,40 @@
+[
+  {
+    "player": "white",
+    "scenario": "lightning",
+    "cleared": true,
+    "actions": [
+      "ATTACK"
+    ],
+    "elapsedMs": 170
+  },
+  {
+    "player": "white",
+    "scenario": "metal",
+    "cleared": true,
+    "actions": [
+      "ATTACK",
+      "ATTACK"
+    ],
+    "elapsedMs": 369
+  },
+  {
+    "player": "black",
+    "scenario": "lightning",
+    "cleared": true,
+    "actions": [
+      "ATTACK"
+    ],
+    "elapsedMs": 150
+  },
+  {
+    "player": "black",
+    "scenario": "metal",
+    "cleared": true,
+    "actions": [
+      "ATTACK",
+      "ATTACK"
+    ],
+    "elapsedMs": 317
+  }
+]

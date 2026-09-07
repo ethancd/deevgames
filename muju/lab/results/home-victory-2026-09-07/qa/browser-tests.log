@@ -1,0 +1,32 @@
+
+> elemental-tactics@0.1.0 test:e2e
+> playwright test
+
+
+Running 19 tests using 2 workers
+
+(node:74299) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:74298) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   2 e2e/mobile.spec.ts:29:3 › all play phases fit 375×568 (1.3s)
+  ✓   1 e2e/mobile.spec.ts:29:3 › all play phases fit 320×568 (1.2s)
+  ✓   3 e2e/mobile.spec.ts:29:3 › all play phases fit 375×667 (947ms)
+  ✓   4 e2e/mobile.spec.ts:29:3 › all play phases fit 390×664 (981ms)
+  ✓   5 e2e/mobile.spec.ts:29:3 › all play phases fit 393×706 (920ms)
+  ✓   6 e2e/mobile.spec.ts:29:3 › all play phases fit 390×844 (902ms)
+  ✓   8 e2e/mobile.spec.ts:29:3 › all play phases fit 844×390 (908ms)
+  ✓   7 e2e/mobile.spec.ts:29:3 › all play phases fit 430×932 (939ms)
+  ✓  10 e2e/mobile.spec.ts:62:1 › tap previews do not spend actions; confirmation, mining, undo and phase undo work (786ms)
+  ✓   9 e2e/mobile.spec.ts:29:3 › all play phases fit 1280×900 (1.0s)
+  ✓  11 e2e/mobile.spec.ts:90:1 › attack preview agrees with combat and waits for confirmation (454ms)
+  ✓  12 e2e/mobile.spec.ts:105:1 › promotion preview uses catalogue, and respects already-promoted restriction (454ms)
+  ✓  13 e2e/mobile.spec.ts:116:1 › dialogs trap keyboard navigation; depths and enemy reach are explicit (700ms)
+  ✓  15 e2e/mobile.spec.ts:148:1 › keyboard shortcuts work after tapping a board button; Enter confirms the preview (452ms)
+  ✓  16 e2e/mobile.spec.ts:164:1 › v1.3 Lightning combat, Plant extraction and tutorial agree with the catalogue (801ms)
+  ✓  17 e2e/mobile.spec.ts:188:1 › new games use map D with fresh shallow cells and preserve the layout on reload (572ms)
+  ✓  18 e2e/mobile.spec.ts:205:53 › home invasion warns, resolves, and survives reload 320 (679ms)
+  ✓  14 e2e/mobile.spec.ts:137:1 › AI turn keeps opponent money hidden and human ledger visible (3.5s)
+  ✓  19 e2e/mobile.spec.ts:205:53 › home invasion warns, resolves, and survives reload 390 (669ms)
+
+  19 passed (10.5s)

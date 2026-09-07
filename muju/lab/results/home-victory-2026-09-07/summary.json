@@ -1,0 +1,723 @@
+{
+  "games": 1920,
+  "plies": 1533916,
+  "illegal": 0,
+  "anomalies": 0,
+  "invariants": 0,
+  "rules": {
+    "elimination": {
+      "games": 960,
+      "caps": 438,
+      "homeWins": 0,
+      "medianRounds": 52.0,
+      "meanRoundsCapped": 70.35104166666666,
+      "naturalMedian": 25.0,
+      "homeByRound5": 0,
+      "homeUnitCounts": {},
+      "homeWhileBehindInBoardCost": 0
+    },
+    "home-or-elimination": {
+      "games": 960,
+      "caps": 280,
+      "homeWins": 399,
+      "medianRounds": 27.0,
+      "meanRoundsCapped": 50.21145833333333,
+      "naturalMedian": 17.0,
+      "homeByRound5": 27,
+      "homeUnitCounts": {
+        "plant_1": 26,
+        "metal_1": 22,
+        "water_2": 17,
+        "water_1": 14,
+        "lightning_1": 106,
+        "plant_2": 15,
+        "plant_3": 32,
+        "metal_2": 35,
+        "shadow_1": 6,
+        "shadow_2": 2,
+        "plant_4": 3,
+        "fire_3": 2,
+        "fire_1": 8,
+        "metal_3": 12,
+        "metal_4": 73,
+        "lightning_2": 22,
+        "fire_2": 4
+      },
+      "homeWhileBehindInBoardCost": 75
+    }
+  },
+  "cells": [
+    {
+      "cell": 0,
+      "a": "Rush",
+      "b": "AntiRush",
+      "elimination": {
+        "n": 40,
+        "naturalWins": 4,
+        "naturalLosses": 0,
+        "caps": 36,
+        "homeWins": 0,
+        "meanRounds": 109.75,
+        "medianRounds": 121.0
+      },
+      "home-or-elimination": {
+        "n": 40,
+        "naturalWins": 4,
+        "naturalLosses": 0,
+        "caps": 36,
+        "homeWins": 0,
+        "meanRounds": 109.75,
+        "medianRounds": 121.0
+      },
+      "pairedMeanRoundDelta": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "cell": 1,
+      "a": "LightningRush",
+      "b": "Expand",
+      "elimination": {
+        "n": 40,
+        "naturalWins": 40,
+        "naturalLosses": 0,
+        "caps": 0,
+        "homeWins": 0,
+        "meanRounds": 7.825,
+        "medianRounds": 7.0
+      },
+      "home-or-elimination": {
+        "n": 40,
+        "naturalWins": 40,
+        "naturalLosses": 0,
+        "caps": 0,
+        "homeWins": 2,
+        "meanRounds": 7.825,
+        "medianRounds": 7.0
+      },
+      "pairedMeanRoundDelta": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "cell": 2,
+      "a": "Balanced",
+      "b": "Balanced",
+      "elimination": {
+        "n": 40,
+        "naturalWins": 3,
+        "naturalLosses": 3,
+        "caps": 34,
+        "homeWins": 0,
+        "meanRounds": 111.9,
+        "medianRounds": 121.0
+      },
+      "home-or-elimination": {
+        "n": 40,
+        "naturalWins": 3,
+        "naturalLosses": 3,
+        "caps": 34,
+        "homeWins": 0,
+        "meanRounds": 111.9,
+        "medianRounds": 121.0
+      },
+      "pairedMeanRoundDelta": 0,
+      "ci95": [
+        0,
+        0
+      ]
+    },
+    {
+      "cell": 3,
+      "a": "InvestT3",
+      "b": "HomeT3",
+      "elimination": {
+        "n": 40,
+        "naturalWins": 1,
+        "naturalLosses": 0,
+        "caps": 39,
+        "homeWins": 0,
+        "meanRounds": 119.125,
+        "medianRounds": 121.0
+      },
+      "home-or-elimination": {
+        "n": 40,
+        "naturalWins": 1,
+        "naturalLosses": 0,
+        "caps": 39,
+        "homeWins": 0,
+        "meanRounds": 119.125,
+        "medianRounds": 121.0
+      },
+      "pairedMeanRoundDelta": 0.0,
+      "ci95": [
+        0,
+        0
+      ]
+    },
+    {
+      "cell": 4,
+      "a": "InvestT3",
+      "b": "Rush",
+      "elimination": {
+        "n": 40,
+        "naturalWins": 15,
+        "naturalLosses": 1,
+        "caps": 24,
+        "homeWins": 0,
+        "meanRounds": 84.55,
+        "medianRounds": 121.0
+      },
+      "home-or-elimination": {
+        "n": 40,
+        "naturalWins": 39,
+        "naturalLosses": 1,
+        "caps": 0,
+        "homeWins": 31,
+        "meanRounds": 30,
+        "medianRounds": 31.0
+      },
+      "pairedMeanRoundDelta": -54.55,
+      "ci95": [
+        -68.5,
+        -39.45
+      ]
+    },
+    {
+      "cell": 5,
+      "a": "InvestT4",
+      "b": "InvestT3",
+      "elimination": {
+        "n": 40,
+        "naturalWins": 9,
+        "naturalLosses": 0,
+        "caps": 31,
+        "homeWins": 0,
+        "meanRounds": 103.1,
+        "medianRounds": 121.0
+      },
+      "home-or-elimination": {
+        "n": 40,
+        "naturalWins": 10,
+        "naturalLosses": 1,
+        "caps": 29,
+        "homeWins": 4,
+        "meanRounds": 96.425,
+        "medianRounds": 121.0
+      },
+      "pairedMeanRoundDelta": -6.675,
+      "ci95": [
+        -14.675,
+        -0.625
+      ]
+    },
+    {
+      "cell": 6,
+      "a": "MiningDenial",
+      "b": "Turtle",
+      "elimination": {
+        "n": 40,
+        "naturalWins": 19,
+        "naturalLosses": 0,
+        "caps": 21,
+        "homeWins": 0,
+        "meanRounds": 70.6,
+        "medianRounds": 121.0
+      },
+      "home-or-elimination": {
+        "n": 40,
+        "naturalWins": 32,
+        "naturalLosses": 0,
+        "caps": 8,
+        "homeWins": 30,
+        "meanRounds": 31.025,
+        "medianRounds": 7.0
+      },
+      "pairedMeanRoundDelta": -39.575,
+      "ci95": [
+        -50.2,
+        -28.425
+      ]
+    },
+    {
+      "cell": 7,
+      "a": "Mono-plant",
+      "b": "Mono-shadow",
+      "elimination": {
+        "n": 40,
+        "naturalWins": 13,
+        "naturalLosses": 23,
+        "caps": 4,
+        "homeWins": 0,
+        "meanRounds": 25.4,
+        "medianRounds": 13.0
+      },
+      "home-or-elimination": {
+        "n": 40,
+        "naturalWins": 13,
+        "naturalLosses": 23,
+        "caps": 4,
+        "homeWins": 0,
+        "meanRounds": 25.4,
+        "medianRounds": 13.0
+      },
+      "pairedMeanRoundDelta": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "cell": 8,
+      "a": "Invade:LightningRush",
+      "b": "Aware:AntiRush",
+      "elimination": {
+        "n": 40,
+        "naturalWins": 2,
+        "naturalLosses": 38,
+        "caps": 0,
+        "homeWins": 0,
+        "meanRounds": 43.025,
+        "medianRounds": 43.5
+      },
+      "home-or-elimination": {
+        "n": 40,
+        "naturalWins": 20,
+        "naturalLosses": 20,
+        "caps": 0,
+        "homeWins": 19,
+        "meanRounds": 37.125,
+        "medianRounds": 39.0
+      },
+      "pairedMeanRoundDelta": -5.9,
+      "ci95": [
+        -9.4,
+        -2.9
+      ]
+    },
+    {
+      "cell": 9,
+      "a": "Invade:LightningRush",
+      "b": "Aware:InvestT3",
+      "elimination": {
+        "n": 40,
+        "naturalWins": 4,
+        "naturalLosses": 34,
+        "caps": 2,
+        "homeWins": 0,
+        "meanRounds": 37.5,
+        "medianRounds": 35.0
+      },
+      "home-or-elimination": {
+        "n": 40,
+        "naturalWins": 10,
+        "naturalLosses": 30,
+        "caps": 0,
+        "homeWins": 15,
+        "meanRounds": 30.45,
+        "medianRounds": 30.0
+      },
+      "pairedMeanRoundDelta": -7.05,
+      "ci95": [
+        -14.025,
+        -1.775
+      ]
+    },
+    {
+      "cell": 10,
+      "a": "Invade:LightningRush",
+      "b": "Aware:Balanced",
+      "elimination": {
+        "n": 40,
+        "naturalWins": 35,
+        "naturalLosses": 4,
+        "caps": 1,
+        "homeWins": 0,
+        "meanRounds": 22.3,
+        "medianRounds": 21.0
+      },
+      "home-or-elimination": {
+        "n": 40,
+        "naturalWins": 35,
+        "naturalLosses": 4,
+        "caps": 1,
+        "homeWins": 2,
+        "meanRounds": 22.025,
+        "medianRounds": 21.0
+      },
+      "pairedMeanRoundDelta": -0.275,
+      "ci95": [
+        -0.825,
+        0.0
+      ]
+    },
+    {
+      "cell": 11,
+      "a": "Invade:LightningRush",
+      "b": "Aware:Turtle",
+      "elimination": {
+        "n": 40,
+        "naturalWins": 36,
+        "naturalLosses": 3,
+        "caps": 1,
+        "homeWins": 0,
+        "meanRounds": 22.425,
+        "medianRounds": 19.0
+      },
+      "home-or-elimination": {
+        "n": 40,
+        "naturalWins": 36,
+        "naturalLosses": 3,
+        "caps": 1,
+        "homeWins": 7,
+        "meanRounds": 21.125,
+        "medianRounds": 19.0
+      },
+      "pairedMeanRoundDelta": -1.3,
+      "ci95": [
+        -2.3,
+        -0.425
+      ]
+    },
+    {
+      "cell": 12,
+      "a": "Invade:Balanced",
+      "b": "Aware:Balanced",
+      "elimination": {
+        "n": 40,
+        "naturalWins": 1,
+        "naturalLosses": 19,
+        "caps": 20,
+        "homeWins": 0,
+        "meanRounds": 84.025,
+        "medianRounds": 101.0
+      },
+      "home-or-elimination": {
+        "n": 40,
+        "naturalWins": 5,
+        "naturalLosses": 18,
+        "caps": 17,
+        "homeWins": 4,
+        "meanRounds": 77,
+        "medianRounds": 58.0
+      },
+      "pairedMeanRoundDelta": -7.025,
+      "ci95": [
+        -14.05,
+        -0.975
+      ]
+    },
+    {
+      "cell": 13,
+      "a": "Invade:InvestT3",
+      "b": "Aware:HomeT3",
+      "elimination": {
+        "n": 40,
+        "naturalWins": 4,
+        "naturalLosses": 1,
+        "caps": 35,
+        "homeWins": 0,
+        "meanRounds": 109.7,
+        "medianRounds": 121.0
+      },
+      "home-or-elimination": {
+        "n": 40,
+        "naturalWins": 23,
+        "naturalLosses": 1,
+        "caps": 16,
+        "homeWins": 23,
+        "meanRounds": 61.325,
+        "medianRounds": 31.0
+      },
+      "pairedMeanRoundDelta": -48.375,
+      "ci95": [
+        -60.6,
+        -36.3
+      ]
+    },
+    {
+      "cell": 14,
+      "a": "Invade:InvestT3",
+      "b": "Aware:InvestT3",
+      "elimination": {
+        "n": 40,
+        "naturalWins": 2,
+        "naturalLosses": 2,
+        "caps": 36,
+        "homeWins": 0,
+        "meanRounds": 112.25,
+        "medianRounds": 121.0
+      },
+      "home-or-elimination": {
+        "n": 40,
+        "naturalWins": 17,
+        "naturalLosses": 6,
+        "caps": 17,
+        "homeWins": 21,
+        "meanRounds": 62.325,
+        "medianRounds": 27.5
+      },
+      "pairedMeanRoundDelta": -49.925,
+      "ci95": [
+        -68.65,
+        -31.45
+      ]
+    },
+    {
+      "cell": 15,
+      "a": "Invade:MiningDenial",
+      "b": "Aware:AntiRush",
+      "elimination": {
+        "n": 40,
+        "naturalWins": 15,
+        "naturalLosses": 22,
+        "caps": 3,
+        "homeWins": 0,
+        "meanRounds": 39.025,
+        "medianRounds": 38.5
+      },
+      "home-or-elimination": {
+        "n": 40,
+        "naturalWins": 32,
+        "naturalLosses": 8,
+        "caps": 0,
+        "homeWins": 23,
+        "meanRounds": 26.775,
+        "medianRounds": 27.0
+      },
+      "pairedMeanRoundDelta": -12.25,
+      "ci95": [
+        -19.95,
+        -5.9
+      ]
+    },
+    {
+      "cell": 16,
+      "a": "Siege:2",
+      "b": "Aware:Balanced",
+      "elimination": {
+        "n": 40,
+        "naturalWins": 21,
+        "naturalLosses": 0,
+        "caps": 19,
+        "homeWins": 0,
+        "meanRounds": 79.475,
+        "medianRounds": 73.0
+      },
+      "home-or-elimination": {
+        "n": 40,
+        "naturalWins": 25,
+        "naturalLosses": 0,
+        "caps": 15,
+        "homeWins": 21,
+        "meanRounds": 59.9,
+        "medianRounds": 39.5
+      },
+      "pairedMeanRoundDelta": -19.575,
+      "ci95": [
+        -29.325,
+        -11.1
+      ]
+    },
+    {
+      "cell": 17,
+      "a": "Siege:4",
+      "b": "Aware:Balanced",
+      "elimination": {
+        "n": 40,
+        "naturalWins": 29,
+        "naturalLosses": 0,
+        "caps": 11,
+        "homeWins": 0,
+        "meanRounds": 59.45,
+        "medianRounds": 40.0
+      },
+      "home-or-elimination": {
+        "n": 40,
+        "naturalWins": 36,
+        "naturalLosses": 0,
+        "caps": 4,
+        "homeWins": 35,
+        "meanRounds": 22.5,
+        "medianRounds": 9.0
+      },
+      "pairedMeanRoundDelta": -36.95,
+      "ci95": [
+        -49.275,
+        -25.925
+      ]
+    },
+    {
+      "cell": 18,
+      "a": "Siege:4",
+      "b": "Aware:InvestT3",
+      "elimination": {
+        "n": 40,
+        "naturalWins": 22,
+        "naturalLosses": 0,
+        "caps": 18,
+        "homeWins": 0,
+        "meanRounds": 78.325,
+        "medianRounds": 57.0
+      },
+      "home-or-elimination": {
+        "n": 40,
+        "naturalWins": 35,
+        "naturalLosses": 1,
+        "caps": 4,
+        "homeWins": 36,
+        "meanRounds": 23.65,
+        "medianRounds": 10.0
+      },
+      "pairedMeanRoundDelta": -54.675,
+      "ci95": [
+        -66.7,
+        -42.625
+      ]
+    },
+    {
+      "cell": 19,
+      "a": "Siege:4",
+      "b": "Invade:LightningRush",
+      "elimination": {
+        "n": 40,
+        "naturalWins": 36,
+        "naturalLosses": 3,
+        "caps": 1,
+        "homeWins": 0,
+        "meanRounds": 21.9,
+        "medianRounds": 17.0
+      },
+      "home-or-elimination": {
+        "n": 40,
+        "naturalWins": 36,
+        "naturalLosses": 4,
+        "caps": 0,
+        "homeWins": 30,
+        "meanRounds": 15.35,
+        "medianRounds": 15.5
+      },
+      "pairedMeanRoundDelta": -6.55,
+      "ci95": [
+        -12.8,
+        -2.225
+      ]
+    },
+    {
+      "cell": 20,
+      "a": "Invade:Balanced",
+      "b": "Invade:Balanced",
+      "elimination": {
+        "n": 40,
+        "naturalWins": 7,
+        "naturalLosses": 7,
+        "caps": 26,
+        "homeWins": 0,
+        "meanRounds": 93.2,
+        "medianRounds": 121.0
+      },
+      "home-or-elimination": {
+        "n": 40,
+        "naturalWins": 15,
+        "naturalLosses": 15,
+        "caps": 10,
+        "homeWins": 28,
+        "meanRounds": 55,
+        "medianRounds": 37.5
+      },
+      "pairedMeanRoundDelta": -38.2,
+      "ci95": [
+        -54.7,
+        -22
+      ]
+    },
+    {
+      "cell": 21,
+      "a": "Invade:LightningRush",
+      "b": "Invade:LightningRush",
+      "elimination": {
+        "n": 40,
+        "naturalWins": 11,
+        "naturalLosses": 11,
+        "caps": 18,
+        "homeWins": 0,
+        "meanRounds": 62.05,
+        "medianRounds": 27.5
+      },
+      "home-or-elimination": {
+        "n": 40,
+        "naturalWins": 20,
+        "naturalLosses": 20,
+        "caps": 0,
+        "homeWins": 36,
+        "meanRounds": 12.55,
+        "medianRounds": 10.5
+      },
+      "pairedMeanRoundDelta": -49.5,
+      "ci95": [
+        -71.65,
+        -27.35
+      ]
+    },
+    {
+      "cell": 22,
+      "a": "Aware:InvestT3",
+      "b": "Aware:Balanced",
+      "elimination": {
+        "n": 40,
+        "naturalWins": 0,
+        "naturalLosses": 0,
+        "caps": 40,
+        "homeWins": 0,
+        "meanRounds": 121,
+        "medianRounds": 121.0
+      },
+      "home-or-elimination": {
+        "n": 40,
+        "naturalWins": 0,
+        "naturalLosses": 0,
+        "caps": 40,
+        "homeWins": 0,
+        "meanRounds": 121,
+        "medianRounds": 121.0
+      },
+      "pairedMeanRoundDelta": 0,
+      "ci95": [
+        0,
+        0
+      ]
+    },
+    {
+      "cell": 23,
+      "a": "Invade:InvestT3",
+      "b": "Aware:Mono-plant",
+      "elimination": {
+        "n": 40,
+        "naturalWins": 22,
+        "naturalLosses": 0,
+        "caps": 18,
+        "homeWins": 0,
+        "meanRounds": 70.525,
+        "medianRounds": 67.5
+      },
+      "home-or-elimination": {
+        "n": 40,
+        "naturalWins": 35,
+        "naturalLosses": 0,
+        "caps": 5,
+        "homeWins": 32,
+        "meanRounds": 25.525,
+        "medianRounds": 12.0
+      },
+      "pairedMeanRoundDelta": -45.0,
+      "ci95": [
+        -59.975,
+        -30.45
+      ]
+    }
+  ]
+}

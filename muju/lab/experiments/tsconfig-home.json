@@ -1,1 +1,1 @@
-{"extends":"../tsconfig.json","include":["e13-home-victory.ts","home-policies.ts","../harness/**/*.ts","../../src/**/*.ts"]}
+{"extends":"../tsconfig.json","include":["e13-home-victory.ts","e14-home-guard.ts","home-engine-probes.ts","home-policies.ts","../harness/**/*.ts","../../src/**/*.ts"]}

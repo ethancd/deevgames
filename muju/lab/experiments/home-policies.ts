@@ -44,13 +44,24 @@ export function clearHomePlan(initial:GameState):AIAction[]|null {
  return null;
 }
 export function makeHomeBot(name:string):Bot {
- if(!name.startsWith('Aware:')&&!name.startsWith('Invade:')&&!name.startsWith('Siege:'))return oldBot(name);
+ if(!name.startsWith('Aware:')&&!name.startsWith('Invade:')&&!name.startsWith('Siege:')&&!name.startsWith('Guard:'))return oldBot(name);
  const [kind,baseName]=name.split(':'),siege=kind==='Siege',tier=Number(baseName)||4;
  const base=oldBot(siege?'InvestT3':baseName) as ScriptedBot;
  return {kind:'scripted',name,chooseAction(ctx){
   const {view:v}=ctx;
   if(getHomeOccupier(v.board,v.opponent)) {const plan=clearHomePlan(publicSimulation(v));if(plan?.length)return plan[0];}
   let legal=ctx.legal;
+  if(kind==='Guard'&&v.phase==='action'){
+   const home=v.me.startCorner,guard=v.board.units.find(u=>u.owner===v.player&&dist(u.position,home)===0);
+   if(guard)legal=legal.filter(a=>a.type!=='MOVE'||a.unitId!==guard.id);
+   else {
+    const water=v.board.units.filter(u=>u.owner===v.player&&u.definitionId.startsWith('water')).sort((a,b)=>dist(a.position,home)-dist(b.position,home))[0];
+    const enter=water&&legal.find(a=>a.type==='MOVE'&&a.unitId===water.id&&dist(a.to,home)===0);if(enter)return enter;
+    // Clear a starting adjacent blocker so the Sjor can reach its own corner.
+    const clear=water&&legal.filter(a=>a.type==='MOVE'&&a.unitId!==water.id&&dist(v.board.units.find(u=>u.id===a.unitId)!.position,home)===1&&dist(a.to,home)===2);
+    if(clear&&clear.length)return clear[0];
+   }
+  }
   if(siege){
    const metal=v.board.units.filter(u=>u.owner===v.player&&u.definitionId.startsWith('metal')).sort((a,b)=>getUnitDefinition(b.definitionId).tier-getUnitDefinition(a.definitionId).tier)[0];
    if(v.phase==='place'&&metal&&getUnitDefinition(metal.definitionId).tier<tier){const p=legal.find(a=>a.type==='PROMOTE_UNIT'&&a.unitId===metal.id);if(p)return p;}
@@ -61,7 +72,7 @@ export function makeHomeBot(name:string):Bot {
    }
   }
   const held=getHomeOccupier(v.board,v.player);if(held)legal=legal.filter(a=>a.type!=='MOVE'||a.unitId!==held.id);
-  if(kind!=='Aware'&&v.phase==='action'){
+  if(kind!=='Aware'&&kind!=='Guard'&&v.phase==='action'){
    const target=v.enemy.startCorner;
    const candidates=legal.filter(a=>a.type==='MOVE'&&(!siege||v.board.units.find(u=>u.id===a.unitId)!.definitionId.startsWith('metal'))&&dist(a.to,target)<dist(v.board.units.find(u=>u.id===a.unitId)!.position,target));
    const arrive=candidates.find(a=>a.type==='MOVE'&&dist(a.to,target)===0);if(arrive)return arrive;

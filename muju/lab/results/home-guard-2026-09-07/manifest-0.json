@@ -1,0 +1,29 @@
+{
+  "n": 20,
+  "shard": 0,
+  "shards": 2,
+  "pairs": [
+    [
+      "Invade:LightningRush",
+      "Guard:InvestT3"
+    ],
+    [
+      "Invade:LightningRush",
+      "Guard:Balanced"
+    ],
+    [
+      "Siege:4",
+      "Guard:Balanced"
+    ],
+    [
+      "Invade:InvestT3",
+      "Guard:InvestT3"
+    ]
+  ],
+  "started": "2026-09-07T19:32:23.754Z",
+  "sourceHash": "1180154660e116896ec7bb357f910b5d7ca5dbfaeec27268e283b8a4ce14d757",
+  "unitHash": "7a5fdecdcd77f0dce8c81b0aad357ec439ddcf6f584a7f79f08b212955a2bc43",
+  "seedBase": 9071426,
+  "maxTurns": 120,
+  "notes": "Same policies/seeds/seats, map D, v1.3 units. New-objective probes use bounded public-state home defense on both rule variants."
+}

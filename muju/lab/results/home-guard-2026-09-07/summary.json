@@ -1,0 +1,154 @@
+{
+  "games": 320,
+  "plies": 216774,
+  "illegal": 0,
+  "anomalies": 0,
+  "invariants": 0,
+  "rules": {
+    "elimination": {
+      "games": 160,
+      "caps": 45,
+      "homeWins": 0,
+      "medianRounds": 36.0,
+      "meanRoundsCapped": 55.79375,
+      "naturalMedian": 28,
+      "homeByRound5": 0,
+      "homeUnitCounts": {},
+      "homeWhileBehindInBoardCost": 0
+    },
+    "home-or-elimination": {
+      "games": 160,
+      "caps": 24,
+      "homeWins": 69,
+      "medianRounds": 22.0,
+      "meanRoundsCapped": 35.88125,
+      "naturalMedian": 20.0,
+      "homeByRound5": 0,
+      "homeUnitCounts": {
+        "plant_3": 20,
+        "water_2": 2,
+        "metal_1": 3,
+        "metal_4": 36,
+        "lightning_1": 3,
+        "metal_2": 2,
+        "plant_1": 2,
+        "fire_2": 1
+      },
+      "homeWhileBehindInBoardCost": 13
+    }
+  },
+  "cells": [
+    {
+      "cell": 0,
+      "a": "Invade:LightningRush",
+      "b": "Guard:InvestT3",
+      "elimination": {
+        "n": 40,
+        "naturalWins": 7,
+        "naturalLosses": 28,
+        "caps": 5,
+        "homeWins": 0,
+        "meanRounds": 42.45,
+        "medianRounds": 32.0
+      },
+      "home-or-elimination": {
+        "n": 40,
+        "naturalWins": 7,
+        "naturalLosses": 29,
+        "caps": 4,
+        "homeWins": 11,
+        "meanRounds": 39.025,
+        "medianRounds": 29.0
+      },
+      "pairedMeanRoundDelta": -3.425,
+      "ci95": [
+        -8.425,
+        -0.425
+      ]
+    },
+    {
+      "cell": 1,
+      "a": "Invade:LightningRush",
+      "b": "Guard:Balanced",
+      "elimination": {
+        "n": 40,
+        "naturalWins": 29,
+        "naturalLosses": 10,
+        "caps": 1,
+        "homeWins": 0,
+        "meanRounds": 23.45,
+        "medianRounds": 21.5
+      },
+      "home-or-elimination": {
+        "n": 40,
+        "naturalWins": 29,
+        "naturalLosses": 10,
+        "caps": 1,
+        "homeWins": 1,
+        "meanRounds": 23.375,
+        "medianRounds": 21.5
+      },
+      "pairedMeanRoundDelta": -0.075,
+      "ci95": [
+        -0.225,
+        0.0
+      ]
+    },
+    {
+      "cell": 2,
+      "a": "Siege:4",
+      "b": "Guard:Balanced",
+      "elimination": {
+        "n": 40,
+        "naturalWins": 34,
+        "naturalLosses": 0,
+        "caps": 6,
+        "homeWins": 0,
+        "meanRounds": 51.525,
+        "medianRounds": 41.5
+      },
+      "home-or-elimination": {
+        "n": 40,
+        "naturalWins": 36,
+        "naturalLosses": 0,
+        "caps": 4,
+        "homeWins": 36,
+        "meanRounds": 21.85,
+        "medianRounds": 10.0
+      },
+      "pairedMeanRoundDelta": -29.675,
+      "ci95": [
+        -36.675,
+        -23.65
+      ]
+    },
+    {
+      "cell": 3,
+      "a": "Invade:InvestT3",
+      "b": "Guard:InvestT3",
+      "elimination": {
+        "n": 40,
+        "naturalWins": 5,
+        "naturalLosses": 2,
+        "caps": 33,
+        "homeWins": 0,
+        "meanRounds": 105.75,
+        "medianRounds": 121.0
+      },
+      "home-or-elimination": {
+        "n": 40,
+        "naturalWins": 20,
+        "naturalLosses": 5,
+        "caps": 15,
+        "homeWins": 21,
+        "meanRounds": 59.275,
+        "medianRounds": 29.5
+      },
+      "pairedMeanRoundDelta": -46.475,
+      "ci95": [
+        -61.325,
+        -32.075
+      ]
+    }
+  ]
+}

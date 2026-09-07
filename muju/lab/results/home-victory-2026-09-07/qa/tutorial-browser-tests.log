@@ -1,0 +1,15 @@
+
+> elemental-tactics@0.1.0 test:e2e
+> playwright test --grep home invasion
+
+
+Running 2 tests using 2 workers
+
+(node:75151) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:75150) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 e2e/mobile.spec.ts:205:53 › home invasion warns, resolves, and survives reload 320 (917ms)
+  ✓  2 e2e/mobile.spec.ts:205:53 › home invasion warns, resolves, and survives reload 390 (924ms)
+
+  2 passed (1.7s)
