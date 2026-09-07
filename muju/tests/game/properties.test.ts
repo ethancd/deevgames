@@ -1,6 +1,7 @@
 // @vitest-environment node
 import { describe, it, expect } from 'vitest';
 import type { GameState, PlayerId } from '../../src/game/types';
+import { INITIAL_MAP_RESOURCES, UNEQUAL_ROUTES_MAP } from '../../src/game/resourceMap';
 import { createInitialGameState, BOARD_SIZE, INITIAL_RESOURCE_LAYERS, MAX_ACTIONS_PER_TURN } from '../../src/game/board';
 import { getUnitDefinition } from '../../src/game/units';
 import { canBuildUnit } from '../../src/game/building';
@@ -21,10 +22,10 @@ import { applyAction } from '../../src/ai/simulate';
  * APPLY_AI_ACTION) and assert engine invariants after every action:
  *
  * - Occupancy: no two units ever share a square; all positions in bounds.
- * - Resource conservation: total mined + remaining board layers === 500;
+ * - Resource conservation: total mined + remaining board layers === the initial map stock;
  *   a player never holds more resources than they have mined.
  * - Mining monotonicity: cell layers never increase, minedDepth never
- *   decreases, layers + depth === 5 always.
+ *   decreases, layers + depth === each cell’s initial capacity always.
  * - Action budget: actionsRemaining always within [0, MAX_ACTIONS_PER_TURN].
  * - Tech legality: queue actions are filtered through canBuildUnit before
  *   application (see SPEC_AUDIT divergence D1 - the raw AI generator does
@@ -45,7 +46,7 @@ function mulberry32(seed: number): () => number {
   };
 }
 
-const TOTAL_BOARD_RESOURCES = BOARD_SIZE * BOARD_SIZE * INITIAL_RESOURCE_LAYERS; // 500
+const TOTAL_BOARD_RESOURCES = INITIAL_MAP_RESOURCES; // 340
 
 function legalActions(state: GameState, player: PlayerId): AIAction[] {
   switch (state.turn.phase) {
@@ -141,8 +142,8 @@ function assertInvariants(state: GameState, context: string): void {
       expect(cell.minedDepth, `${context}: depth <= 5`).toBeLessThanOrEqual(INITIAL_RESOURCE_LAYERS);
       expect(
         cell.resourceLayers + cell.minedDepth,
-        `${context}: layers + depth === 5 at ${cell.position.x},${cell.position.y}`
-      ).toBe(INITIAL_RESOURCE_LAYERS);
+        `${context}: layers + depth === initial capacity at ${cell.position.x},${cell.position.y}`
+      ).toBe(UNEQUAL_ROUTES_MAP[cell.position.y * BOARD_SIZE + cell.position.x]);
       remainingLayers += cell.resourceLayers;
     }
   }

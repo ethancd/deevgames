@@ -8,7 +8,7 @@ interface CellProps {
 export function Cell({ cell, isValidMove, isValidAttack, isValidSpawn, isSelected, isInvalidSpawn, isPendingMove, movementRangeActions, isPreview, showResources, moveCost, unitLabel, onClick }: CellProps) {
   const reach = movementRangeActions !== undefined;
   const coord = `${String.fromCharCode(65 + cell.position.x)}${cell.position.y + 1}`;
-  const label = `${coord}${unitLabel ? `, ${unitLabel}` : ''}, ${cell.resourceLayers} resource layers${reach ? `, move costs ${moveCost} actions` : ''}${isValidAttack ? ', attack target' : ''}${isValidSpawn ? ', available for placement' : ''}`;
+  const label = `${coord}${unitLabel ? `, ${unitLabel}` : ''}, ${cell.resourceLayers} resource layers, next layer at depth ${cell.minedDepth + 1}${reach ? `, move costs ${moveCost} actions` : ''}${isValidAttack ? ', attack target' : ''}${isValidSpawn ? ', available for placement' : ''}`;
   return <button type="button" tabIndex={unitLabel ? 0 : -1} aria-label={label} aria-pressed={isSelected || isPreview}
     className={`board-cell depth-${cell.resourceLayers} ${isSelected ? 'selected' : ''} ${isValidAttack ? 'attack-target' : ''} ${isValidSpawn ? 'spawn-target' : ''} ${isPendingMove ? 'path-cell' : ''} ${isPreview ? 'preview-cell' : ''}`}
     onClick={() => onClick(cell.position)} data-testid={`cell-${cell.position.x}-${cell.position.y}`}>

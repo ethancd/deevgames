@@ -12,7 +12,7 @@ export function canMineAction(unit: Unit): boolean {
 
 /**
  * The Well Metaphor:
- * - Each square has 5 depth layers (1-5), each worth 1 resource
+ * - Each square starts with 2–5 depth layers on Unequal routes, each worth 1 resource
  * - A unit's Mining stat is its "rope length"
  * - Mining removes topmost remaining layers up to Mining stat
  * - You cannot skip layers or reach deeper than Mining allows
@@ -20,9 +20,9 @@ export function canMineAction(unit: Unit): boolean {
  * Example:
  * - Fresh cell: layers 1,2,3,4,5 available (resourceLayers=5, minedDepth=0)
  * - Hi (Mining 1) can take layer 1 only → resourceLayers=4, minedDepth=1
- * - Muju (Mining 2) on fresh cell takes layers 1,2 → resourceLayers=3, minedDepth=2
- * - Muju on that same cell later: minedDepth=2, so layer 3 is at "depth 3"
- *   Mining 2 can't reach depth 3, so Muju gets nothing
+ * - Sjor (Mining 2) on a fresh five-layer cell takes layers 1,2 → resourceLayers=3, minedDepth=2
+ * - Sjor on that same cell later: minedDepth=2, so layer 3 is at "depth 3"
+ *   Mining 2 can't reach depth 3, so Sjor gets nothing
  */
 
 /**

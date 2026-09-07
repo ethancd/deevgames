@@ -65,6 +65,8 @@ export interface EngineBot {
 export type Bot = ScriptedBot | EngineBot;
 
 export interface MatchOptions {
+  /** Explicit map for paired comparisons; omitted means current production layout. */
+  resourceLayout?: readonly number[];
   /** Cap on full rounds (turnNumber). Past it the game is adjudicated. */
   maxTurns: number;
   /** Hard safety cap on plies (single actions). */

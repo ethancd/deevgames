@@ -8,6 +8,7 @@ import type {
   PlayerState,
   TurnState,
 } from './types';
+import { UNEQUAL_ROUTES_MAP } from './resourceMap';
 import { STARTING_UNITS } from './units';
 
 export const BOARD_SIZE = 10;
@@ -197,8 +198,11 @@ export function getStartingPositions(player: PlayerId): Position[] {
 /**
  * Create the initial game state
  */
-export function createInitialGameState(): GameState {
+export function createInitialGameState(resourceLayout: readonly number[] = UNEQUAL_ROUTES_MAP): GameState {
+  if (resourceLayout.length !== BOARD_SIZE * BOARD_SIZE || resourceLayout.some(n => !Number.isInteger(n) || n < 0 || n > INITIAL_RESOURCE_LAYERS)) throw new Error('Invalid starting resource layout');
   let board = createEmptyBoard();
+  board.initialResourceLayers = [...resourceLayout];
+  for (const row of board.cells) for (const cell of row) cell.resourceLayers = resourceLayout[cell.position.y * BOARD_SIZE + cell.position.x];
 
   // Add starting units for both players
   const players: PlayerId[] = ['white', 'black'];

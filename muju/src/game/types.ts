@@ -75,10 +75,12 @@ export interface Unit {
 export interface Cell {
   position: Position;
   resourceLayers: number; // 0-5, remaining extractable resources
-  minedDepth: number; // 0-5, how deep mining has gone (5 - resourceLayers)
+  minedDepth: number; // 0-5, how deep mining has gone (initial capacity - resourceLayers)
 }
 
 export interface BoardState {
+  /** Original per-cell capacities. Absent in legacy saves, whose wells all began at five. */
+  initialResourceLayers?: readonly number[];
   cells: Cell[][]; // 10x10 grid, indexed as cells[y][x]
   units: Unit[];
 }

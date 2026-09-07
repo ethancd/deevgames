@@ -184,3 +184,20 @@ test('v1.3 Lightning combat, Plant extraction and tutorial agree with the catalo
   await expect(page.locator('.help-body')).toContainText(`+${mining}`);
   await expect(page.locator('.help-body')).toContainText('Depleted layers do not return');
 });
+
+test('new games use map D with fresh shallow cells and preserve the layout on reload', async ({ page }) => {
+  await start(page);
+  await page.getByRole('button', { name: 'Depths' }).click();
+  const layers = await page.locator('.resource-number').allTextContents();
+  expect(layers.reduce((sum, n) => sum + Number(n), 0)).toBe(340);
+  await expect(page.getByTestId('cell-3-0')).toHaveAttribute('aria-label', /2 resource layers.*next layer at depth 1/);
+  await page.getByTestId('cell-1-1').click();
+  await page.getByRole('button', { name: /Mine \+2/ }).click();
+  await page.getByRole('button', { name: 'Finish actions' }).click();
+  await expect(page.locator('.action-budget strong')).toHaveText('Reinforcements');
+  await page.reload();
+  await page.getByRole('button', { name: 'Pass & Play' }).click();
+  await page.getByRole('button', { name: 'Start Game' }).click();
+  await expect(page.getByTestId('cell-1-1')).toHaveAttribute('aria-label', /3 resource layers.*next layer at depth 3/);
+  await expect(page.getByTestId('cell-3-0')).toHaveAttribute('aria-label', /2 resource layers.*next layer at depth 1/);
+});

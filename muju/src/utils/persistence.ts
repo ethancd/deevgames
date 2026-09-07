@@ -1,6 +1,7 @@
 import type { GameState } from '../game/types';
 
 // Bump this when GameState structure changes incompatibly
+// Unequal routes adds optional initialResourceLayers; v2 saves retain their original board.
 // v2: Changed player IDs from 'player'/'ai' to 'white'/'black'
 const SCHEMA_VERSION = 2;
 

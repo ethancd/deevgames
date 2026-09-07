@@ -140,7 +140,7 @@ async function playGameInner(args: PlayGameArgs, options: MatchOptions): Promise
   const startedAt = new Date().toISOString();
   const t0 = Date.now();
 
-  let state = createInitialGameState();
+  let state = createInitialGameState(options.resourceLayout);
   const rngs: Record<PlayerId, () => number> = {
     white: mulberry32(deriveSeed(seed, 0)),
     black: mulberry32(deriveSeed(seed, 1)),

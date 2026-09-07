@@ -211,7 +211,8 @@ const instructionPages: InstructionPage[] = [
       <div className="space-y-4">
         <p className="text-gray-300">
           The game is played on a <strong className="text-white">10×10 grid</strong>. Each cell contains up to
-          5 layers of resources (shown by amber coloring).
+          5 layers of resources (shown by amber coloring). New games use <strong className="text-white">Unequal routes</strong>:
+          deep starting corners, four-layer shelves, and shallow paths to five-layer expansion wells. The same layout rotates 180° for the other player, with 340 crystals in total.
         </p>
         <div className="flex justify-center items-end gap-2">
           <div className="text-center">
@@ -220,7 +221,7 @@ const instructionPages: InstructionPage[] = [
           </div>
           <div className="text-center">
             <DemoCell depth={3} />
-            <div className="text-xs text-gray-400 mt-1">Partial (3)</div>
+            <div className="text-xs text-gray-400 mt-1">Three layers</div>
           </div>
           <div className="text-center">
             <DemoCell depth={0} />
@@ -498,7 +499,7 @@ const instructionPages: InstructionPage[] = [
           </p>
         </div>
         <p className="text-gray-400 text-sm text-center">
-          Mining takes all remaining layers within your unit’s mining depth. Depleted layers do not return. Spend resources on queued units or promotions.
+          A fresh shallow square starts at depth 1, just like a deep square. Mining takes all remaining layers within your unit’s mining depth. Depleted layers do not return. Spend resources on queued units or promotions.
         </p>
       </div>
     ),

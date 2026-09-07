@@ -784,7 +784,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
         </nav>
       </footer>
       {showMenu && <PlayDialog title="Game menu" onClose={() => setShowMenu(false)}>
-        <p>Your match is saved at phase changes on this device.</p>
+        <p>Your match is saved at phase changes on this device. New games use Unequal routes; existing saves keep their original board.</p>
         <button onClick={() => { setShowMenu(false); handleBackToMenuClick(); }}>Choose game mode</button>
         <button onClick={() => { if (window.confirm('Start a new game? This replaces your saved match.')) { handlePlayAgain(); setShowMenu(false); } }}>New game</button>
         <a href="https://ashkie.com/">Visit Ashkie.com ↗</a>

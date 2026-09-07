@@ -55,7 +55,7 @@ try{for(let cell=0;cell<pairs.length;cell++){
  const [a,b]=pairs[cell],row={a,b,n:0,wins:0,losses:0,draws:0,naturalWins:0,naturalLosses:0,caps:0,rounds:0,illegal:0,invariants:0};
  for(let i=0;i<n;i++)for(const swapped of [false,true]){
   const seed=deriveSeed((variant.startsWith('confirm_')?39072600:29072600)+cell,i),aSeat=swapped?'black':'white';
-  const {record:r}=await playGame({bots:{white:bot(swapped?b:a),black:bot(swapped?a:b)},seed,engineHash:sourceHash,runId:`e9-${variant}`,experiment:variant,options:{legality:'strict',checkInvariants:true,maxTurns:120,recordReplay:false}});
+  const {record:r}=await playGame({bots:{white:bot(swapped?b:a),black:bot(swapped?a:b)},seed,engineHash:sourceHash,runId:`e9-${variant}`,experiment:variant,options:{resourceLayout:Array(100).fill(5),legality:'strict',checkInvariants:true,maxTurns:120,recordReplay:false}});
   const cap=r.turns>(120)||r.plies>=8000;
   row.n++;row.rounds+=r.turns;row.caps+=Number(cap);row.illegal+=r.players.white.illegalActions+r.players.black.illegalActions;row.invariants+=Number(!!r.invariantViolation);
   if(r.winner===null)row.draws++;else if(r.winner===aSeat){row.wins++;if(!cap)row.naturalWins++;}else{row.losses++;if(!cap)row.naturalLosses++;}

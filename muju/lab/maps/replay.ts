@@ -7,7 +7,7 @@ import type { MineralMap } from './maps';
 import type { Opening } from './model';
 /** Replay a beam witness through production rules; the opponent passes every turn. */
 export function replay(map:MineralMap,point:Opening['turns'][number],rotated=false) {
- let state=createInitialGameState();const player=rotated?'black':'white';
+ let state=createInitialGameState(map.cells);const player=rotated?'black':'white';
  state.board.cells.forEach((row,y)=>row.forEach((c,x)=>{c.resourceLayers=map.cells[y*10+x];}));
  const ids=state.board.units.filter(u=>u.owner===player).map(u=>u.id);
  const send=(action:AIAction)=>{assert(isLegalAction(state,action),`Illegal ${map.id} ${JSON.stringify(action)}`);state=applyAction(state,action);};
