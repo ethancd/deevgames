@@ -14,7 +14,10 @@
     "test:e2e:ui": "playwright test --ui",
     "balance:static": "node --import tsx lab/solver/run.ts",
     "balance:check": "node --import tsx lab/solver/run.ts current --check",
-    "balance:types": "tsc -p lab/solver/tsconfig.json --noEmit"
+    "balance:types": "tsc -p lab/solver/tsconfig.json --noEmit",
+    "balance:maps": "node --import tsx lab/maps/run.ts && node --import tsx lab/maps/render.ts",
+    "balance:maps:types": "tsc -p lab/maps/tsconfig.json --noEmit",
+    "balance:maps:page": "node lab/maps/check-page.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.57.0",

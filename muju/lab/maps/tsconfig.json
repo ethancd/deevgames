@@ -1,0 +1,1 @@
+{"extends":"../../tsconfig.json","compilerOptions":{"types":["node"]},"include":["*.ts","../../src/game/**/*.ts","../solver/model.ts"]}

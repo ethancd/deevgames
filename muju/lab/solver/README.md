@@ -96,3 +96,7 @@ The tests compare all 576 elemental power pairs with actual combat and every uni
 `balance:check` rejects duplicate profiles, strict same-tier domination or a unit without a cheapest mission witness. The test suite additionally keeps a sole-cheapest example for each current unit. A failure is a prompt to inspect the model and the catalogue; it is not authorization to blindly change stats until the checkbox turns green.
 
 Use this instrument **before** scripted games: inspect witnesses, price/tempo tradeoffs, attack thresholds and earliest access; then use games to test strategic interactions the static abstractions omit. Never optimize witness counts, average arbitrary scenarios into a universal rating, or price a stat from the very unit prices being justified without acknowledging the circularity. The raw dimensions and assumptions are the useful result.
+
+## Fixed-map comparison
+
+The separate [five-map study](../maps/README.md) holds v1.3 units and board size fixed, measures exact regional extraction, legal opening-income witnesses, conditional tier financing, action reserves and map perturbations. Run `npm run balance:maps`. It does not modify this solver’s historical results or the live game map.
