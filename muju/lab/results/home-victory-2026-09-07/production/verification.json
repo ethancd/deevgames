@@ -1,0 +1,29 @@
+{
+  "verifiedAt": "2026-09-07T19:51:40.128269+00:00",
+  "releaseCommit": "e70a0574c8246e06c7217bb2c0f157324e11c859",
+  "workflow": "https://github.com/ethancd/deevgames/actions/runs/34156801146",
+  "files": [
+    {
+      "url": "https://deevgames.pages.dev/muju/assets/index-C9YSlEcu.js",
+      "bytes": 304513,
+      "sha256": "cee15b0cdc095d8056679ac06162f5a744c385ec70579238a6d86b57b5e676c9"
+    },
+    {
+      "url": "https://deevgames.pages.dev/muju/assets/index-bV8FVf2G.css",
+      "bytes": 39145,
+      "sha256": "222ac62d4f6139c0f517f3b1bce1fbddef32de9412ea9fbe39fd119cb59cb65e"
+    },
+    {
+      "url": "https://deevgames.pages.dev/muju/",
+      "bytes": 431,
+      "sha256": "5bcfb3cc6861805bed6654377fdc7966a0dfd72f7f77d078e0a5f6ae63190530"
+    }
+  ],
+  "deployment": "https://d8137d02.deevgames.pages.dev",
+  "browserTests": 19,
+  "fullSiteSmoke": [
+    "390px",
+    "834px"
+  ],
+  "publishMethod": "Local Wrangler upload with existing credential; GitHub build and smoke checks passed, optional upload skipped because repository credential was unset."
+}

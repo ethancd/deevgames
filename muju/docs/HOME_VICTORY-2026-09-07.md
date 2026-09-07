@@ -1,6 +1,6 @@
 # Home occupation victory: implementation and playtests
 
-Implemented 2026-09-07 on `codex/muju-home-victory`. This report describes a tested branch, not a production deployment. The implementation starts at commit `c2fc2bf`, on top of the map-D playtest branch (`5567168`; map-D release `326f043`).
+Implemented 2026-09-07 on `codex/muju-home-victory`. The rule was subsequently deployed to production the same day; see the deployment record below. The implementation starts at commit `c2fc2bf`, on top of the map-D playtest branch (`5567168`; map-D release `326f043`).
 
 ## The rule
 
@@ -108,3 +108,13 @@ npm run build
 Experiment reruns write fresh raw logs in their result directories; run in a separate checkout to preserve the archived evidence. Analysis reads raw logs when present, otherwise compressed logs, so run all shards before regenerating a summary. Mobile verification uses `MUJU_BASE_URL=<served-build-url>/muju/ npm run test:e2e`.
 
 ![Home invasion warning on a small phone](../lab/results/home-victory-2026-09-07/qa/home-warning-320.png)
+
+## Production deployment — 2026-09-07
+
+Release `e70a0574c8246e06c7217bb2c0f157324e11c859` is live at [Muju](https://deevgames.pages.dev/muju/), deployment [d8137d02](https://d8137d02.deevgames.pages.dev/muju/). Production/master was fast-forwarded after verifying it contained no newer changes.
+
+The GitHub workflow passed the full-site build and phone/tablet checks but skipped its optional upload because its Cloudflare credential was unset. The exact release was built and checked locally, then published with the existing local Cloudflare credential. The separate legacy GitHub Pages build still failed on its pre-existing Jekyll issue; it is not this site's publisher.
+
+All 19 Muju browser tests passed against production, including home victory at both phone sizes and reload. Full-site checks passed at 390px and 834px for Muju, FORGE and Oracle. Production Muju HTML, JavaScript and CSS matched the tested local build byte for byte. No unit or map changes accompanied deployment.
+
+[Deployment receipt and asset hashes](../lab/results/home-victory-2026-09-07/production/verification.json).

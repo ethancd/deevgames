@@ -1,0 +1,32 @@
+
+> elemental-tactics@0.1.0 test:e2e
+> playwright test
+
+
+Running 19 tests using 2 workers
+
+(node:80299) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:80300) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 e2e/mobile.spec.ts:29:3 › all play phases fit 375×568 (1.4s)
+  ✓   2 e2e/mobile.spec.ts:29:3 › all play phases fit 320×568 (1.6s)
+  ✓   3 e2e/mobile.spec.ts:29:3 › all play phases fit 375×667 (1.1s)
+  ✓   4 e2e/mobile.spec.ts:29:3 › all play phases fit 390×664 (1.3s)
+  ✓   5 e2e/mobile.spec.ts:29:3 › all play phases fit 393×706 (1.2s)
+  ✓   6 e2e/mobile.spec.ts:29:3 › all play phases fit 390×844 (1.2s)
+  ✓   7 e2e/mobile.spec.ts:29:3 › all play phases fit 430×932 (1.1s)
+  ✓   8 e2e/mobile.spec.ts:29:3 › all play phases fit 844×390 (1.2s)
+  ✓   9 e2e/mobile.spec.ts:29:3 › all play phases fit 1280×900 (1.2s)
+  ✓  10 e2e/mobile.spec.ts:62:1 › tap previews do not spend actions; confirmation, mining, undo and phase undo work (1.0s)
+  ✓  11 e2e/mobile.spec.ts:90:1 › attack preview agrees with combat and waits for confirmation (844ms)
+  ✓  12 e2e/mobile.spec.ts:105:1 › promotion preview uses catalogue, and respects already-promoted restriction (745ms)
+  ✓  13 e2e/mobile.spec.ts:116:1 › dialogs trap keyboard navigation; depths and enemy reach are explicit (851ms)
+  ✓  15 e2e/mobile.spec.ts:148:1 › keyboard shortcuts work after tapping a board button; Enter confirms the preview (816ms)
+  ✓  16 e2e/mobile.spec.ts:164:1 › v1.3 Lightning combat, Plant extraction and tutorial agree with the catalogue (1.1s)
+  ✓  17 e2e/mobile.spec.ts:188:1 › new games use map D with fresh shallow cells and preserve the layout on reload (958ms)
+  ✓  14 e2e/mobile.spec.ts:137:1 › AI turn keeps opponent money hidden and human ledger visible (3.7s)
+  ✓  18 e2e/mobile.spec.ts:205:53 › home invasion warns, resolves, and survives reload 320 (1.2s)
+  ✓  19 e2e/mobile.spec.ts:205:53 › home invasion warns, resolves, and survives reload 390 (1.3s)
+
+  19 passed (12.8s)
