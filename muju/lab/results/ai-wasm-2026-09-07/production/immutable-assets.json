@@ -1,0 +1,90 @@
+{
+  "verifiedAt": "2026-09-07T22:56:53.528994+00:00",
+  "base": "https://221ebf01.deevgames.pages.dev",
+  "files": [
+    {
+      "url": "https://221ebf01.deevgames.pages.dev/docs/game-design-dossier.md",
+      "bytes": 62128,
+      "sha256": "15b90080d406819d7169804749fdd36007653e758b4cce303bdbf1f08e9dce4a",
+      "contentType": "text/markdown; charset=utf-8"
+    },
+    {
+      "url": "https://221ebf01.deevgames.pages.dev/forge/assets/index-Ceg_56Ku.css",
+      "bytes": 58144,
+      "sha256": "82b76315d56a6c85ed9d6c9a99263033863d311d072afa236252c386f892f5c6",
+      "contentType": "text/css; charset=utf-8"
+    },
+    {
+      "url": "https://221ebf01.deevgames.pages.dev/forge/assets/index-oKVk9DCy.js",
+      "bytes": 251673,
+      "sha256": "b8aa6c4719b172ab5894d3ea9409a58e007e671472f903ea9696314f40b29192",
+      "contentType": "application/javascript"
+    },
+    {
+      "url": "https://221ebf01.deevgames.pages.dev/forge/",
+      "bytes": 811,
+      "sha256": "1016c55abd607b9b9749e8bf1e7dac0274309d894ccfba9c721f02023a741007",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://221ebf01.deevgames.pages.dev/",
+      "bytes": 5454,
+      "sha256": "dac56dc9c918b4fb45e8e653d889269d7ffb60675e00dbff48a18fe60d7a5d8a",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://221ebf01.deevgames.pages.dev/muju/assets/entry-BuqHkt75.js",
+      "bytes": 42561,
+      "sha256": "9a52783e1896dc6c8565b3edf408a6abf1e7b6044b26469b3dbf2583edf9a181",
+      "contentType": "application/javascript"
+    },
+    {
+      "url": "https://221ebf01.deevgames.pages.dev/muju/assets/index-CZAKwAUF.js",
+      "bytes": 289858,
+      "sha256": "8d4bd24a9112808b8abcb8d54c26955071df2fa57e1645716993b7e2da52b80a",
+      "contentType": "application/javascript"
+    },
+    {
+      "url": "https://221ebf01.deevgames.pages.dev/muju/assets/index-bV8FVf2G.css",
+      "bytes": 39145,
+      "sha256": "222ac62d4f6139c0f517f3b1bce1fbddef32de9412ea9fbe39fd119cb59cb65e",
+      "contentType": "text/css; charset=utf-8"
+    },
+    {
+      "url": "https://221ebf01.deevgames.pages.dev/muju/assets/tactics-DkBvaGZM.wasm",
+      "bytes": 7645,
+      "sha256": "1b95bba3783bc1da1afc0d37a5549c3df9b48e21efbc23b84563d82a81f5d05a",
+      "contentType": "application/wasm"
+    },
+    {
+      "url": "https://221ebf01.deevgames.pages.dev/muju/",
+      "bytes": 431,
+      "sha256": "010f75d9656cb6afbf59be618fbd86bddea889b6ad5f174902f94678a9074c8c",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://221ebf01.deevgames.pages.dev/oracle/assets/index-B6GoX3Ll.js",
+      "bytes": 202558,
+      "sha256": "4104ca3164f1c9ea46be6d08117b916656618520deca88d28415f668e123f6c9",
+      "contentType": "application/javascript"
+    },
+    {
+      "url": "https://221ebf01.deevgames.pages.dev/oracle/assets/index-Cfhj-PBN.css",
+      "bytes": 24647,
+      "sha256": "b71c142b44432a66b44c69158ddf281e4b537a268ec4348712900b490f94b807",
+      "contentType": "text/css; charset=utf-8"
+    },
+    {
+      "url": "https://221ebf01.deevgames.pages.dev/oracle/",
+      "bytes": 960,
+      "sha256": "0b6dae537f79057ca5e8f9654ee11680d03182a35a46ed364fdf12c0a756bcd6",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://221ebf01.deevgames.pages.dev/portfolio/",
+      "bytes": 42007,
+      "sha256": "f898e50f4bdbd9ecf50b13657337eea16d4e1ef1d53a3fb2188fa7683ef626b0",
+      "contentType": "text/html; charset=utf-8"
+    }
+  ]
+}

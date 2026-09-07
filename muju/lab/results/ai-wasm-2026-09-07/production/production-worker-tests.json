@@ -1,0 +1,257 @@
+{
+  "config": {
+    "argv": [
+      "/Users/ashkie/.nvm/versions/node/v24.11.1/bin/node",
+      "/private/tmp/deevgames-muju-ai-release/muju/node_modules/.bin/playwright",
+      "test",
+      "e2e/ai-worker.spec.ts",
+      "--output=/private/tmp/muju-ai-release-production-worker-results",
+      "--reporter=json"
+    ],
+    "configFile": "/private/tmp/deevgames-muju-ai-release/muju/playwright.config.ts",
+    "rootDir": "/private/tmp/deevgames-muju-ai-release/muju/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 2
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/private/tmp/muju-ai-release-production-worker-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 2
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/private/tmp/deevgames-muju-ai-release/muju/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.63.0",
+    "workers": 2,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "ai-worker.spec.ts",
+      "file": "ai-worker.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "built worker loads hashed WASM and performs a coordinated home rescue",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2123,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-07T22:56:06.001Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "5d3065408689449ee1b0-ca6f924abe20b232cd77",
+          "file": "ai-worker.spec.ts",
+          "line": 12,
+          "column": 1
+        },
+        {
+          "title": "menu responds during Hard search; mode switch terminates the old worker",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 1,
+                  "status": "passed",
+                  "duration": 2849,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-07T22:56:06.001Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "menu-response-ms",
+                      "contentType": "application/json",
+                      "body": "eyJlbGFwc2VkTXMiOjMuNjAwMDAwMzgxNDY5NzI2NiwiYnJvd3NlciI6IjE1Mi4wLjc5NzcuNzYifQ=="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "5d3065408689449ee1b0-20a909f704ba2af98ef4",
+          "file": "ai-worker.spec.ts",
+          "line": 27,
+          "column": 1
+        },
+        {
+          "title": "restart during search cannot dispatch an old result into the new game",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3424,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-07T22:56:08.467Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "5d3065408689449ee1b0-c8e427c836f5a4d625f9",
+          "file": "ai-worker.spec.ts",
+          "line": 42,
+          "column": 1
+        },
+        {
+          "title": "WASM fetch failure stays in the worker and exposes a usable JS fallback",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 1,
+                  "status": "passed",
+                  "duration": 1287,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-07T22:56:09.195Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "5d3065408689449ee1b0-2f50d9e802457fbcef75",
+          "file": "ai-worker.spec.ts",
+          "line": 52,
+          "column": 1
+        },
+        {
+          "title": "pause terminates native computation and resume starts a fresh worker",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 1,
+                  "status": "passed",
+                  "duration": 662,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-07T22:56:10.491Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "5d3065408689449ee1b0-f4c5ce61b89736923798",
+          "file": "ai-worker.spec.ts",
+          "line": 59,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-09-07T22:56:05.732Z",
+    "duration": 6234.814,
+    "expected": 5,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

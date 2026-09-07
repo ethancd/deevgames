@@ -1,0 +1,41 @@
+{
+  "verifiedAt": "2026-09-07T22:58:08.009630+00:00",
+  "releaseCommit": "ccdd9c59b79d5a6d49d0e1eccf6db5bebb26c74c",
+  "implementationCommit": "4917121cad982b023ee637a848d70a5632869474",
+  "previousProductionCommit": "e70a0574c8246e06c7217bb2c0f157324e11c859",
+  "production": "https://deevgames.pages.dev",
+  "deployment": "https://221ebf01.deevgames.pages.dev",
+  "workflow": "https://github.com/ethancd/deevgames/actions/runs/34168247530",
+  "merge": "Fast-forward of the verified AI branch to origin/master after a fresh fetch; no conflicts or unrelated changes.",
+  "publishMethod": "Local Wrangler 4.129.0 upload with existing credential; GitHub build and gameplay checks passed, optional upload skipped because repository credential is unset.",
+  "checks": {
+    "freshLockedDependencyBuild": "passed for all three games",
+    "localFullSiteSmokeWidths": [
+      390,
+      834
+    ],
+    "productionFullSiteSmokeWidths": [
+      390,
+      834
+    ],
+    "productionWorkerTests": {
+      "startTime": "2026-09-07T22:56:05.732Z",
+      "duration": 6234.814,
+      "expected": 5,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "byteIdenticalPagesAndCodeAssets": {
+      "production": 14,
+      "immutableDeployment": 14
+    },
+    "wasmMIME": "application/wasm",
+    "wasmMagicVerified": true
+  },
+  "visualReview": [
+    "muju-390.png",
+    "wasm-home-rescue.png"
+  ],
+  "scope": "Full static Deev Games site, including Muju, FORGE, Oracle, hub and portfolio. Ashkie.com deployment unchanged."
+}
