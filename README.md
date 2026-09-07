@@ -1,7 +1,9 @@
 Deev Games
 ===
 
-Play at **https://deevgames.ashkie.com**, also linked from **https://ashkie.com**.
+Play at **https://deevgames.pages.dev**, also linked from **https://ashkie.com**.
+The custom domain **deevgames.ashkie.com** is registered with Pages and awaits its
+DNS CNAME to `deevgames.pages.dev` before the home-page link can switch to it.
 The current release hosts Muju Hono Tanka, FORGE, and Oracle of Delve plus the
 design portfolio. These are browser games; Oracle is a short combat prototype.
 
@@ -19,10 +21,18 @@ required pages, and Cloudflare's per-file size limit. It includes only the three
 games, hub, portfolio, public dossier, and a real 404 page. Never deploy the repo
 root: it also contains backend projects and development files.
 
-Pushes to **master** build and deploy through GitHub Actions to the separate
+Pushes to **master** build and check gameplay through GitHub Actions for the separate
 Cloudflare Pages project **deevgames**. The workflow uses repository secrets
-`CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`. Manual workflow dispatch on a
+`CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` for automatic publishing once
+the credential is configured. Without it, the workflow checks the release and
+reports that publishing is manual. Manual workflow dispatch on a
 feature branch publishes a preview; master is the production branch.
+
+For a local deployment, build first and supply those two environment variables
+locally, then run `npx wrangler pages deploy _site --project-name deevgames
+--branch master` from this repo. This explicitly publishes to production: check
+that the validated source includes the latest `origin/master` first. Keep the
+token out of files and Git configuration.
 
 The custom domain `deevgames.ashkie.com` belongs to that Pages project. Ashkie's
 own deployment and offline manifest contain only a link to it. The first three

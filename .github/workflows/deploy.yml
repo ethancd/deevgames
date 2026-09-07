@@ -15,6 +15,8 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -42,6 +44,7 @@ jobs:
           trap 'kill "$server_pid"' EXIT
           node tools/smoke-site.cjs http://127.0.0.1:8941
       - name: Deploy
+        if: env.CLOUDFLARE_API_TOKEN != ''
         uses: cloudflare/wrangler-action@v3
         id: deploy
         with:
@@ -49,6 +52,10 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy _site --project-name deevgames --branch "${{ github.ref_name }}"
       - name: Show deployment URL
+        if: steps.deploy.outcome == 'success'
         env:
           DEPLOYMENT_URL: ${{ steps.deploy.outputs.deployment-url }}
         run: echo "Games deployed to $DEPLOYMENT_URL" >> "$GITHUB_STEP_SUMMARY"
+      - name: Explain manual deployment
+        if: env.CLOUDFLARE_API_TOKEN == ''
+        run: echo "Build and gameplay checks passed. Automatic publishing awaits a configured Cloudflare deployment credential; use the documented local deployment command." >> "$GITHUB_STEP_SUMMARY"
