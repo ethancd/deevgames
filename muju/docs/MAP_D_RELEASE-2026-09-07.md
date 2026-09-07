@@ -17,3 +17,7 @@ Compare A and D with identical v1.3 units, matched seeds and reversed seats. Dis
 5. Mono-element and tier usage should reveal vulnerabilities, not certify that every unit is viable.
 
 Use existing scripted styles as regression controls and report their limitations. The previous static study is a historical experiment with A as the then-current baseline; its raw results remain unchanged. Competitive tests begin only after map D is deployed and verified. Results will be recorded separately.
+
+## Completed playtests
+
+See [the post-deployment report](MAP_D_PLAYTESTS-2026-09-07.md): 5,760 scripted games plus six completed search-AI calibration games, with paired outcomes, mineral-stock controls, limitations and reproducible evidence.

@@ -1,0 +1,23 @@
+{
+  "started": "2026-09-07T16:26:44.819Z",
+  "releaseCommit": "326f04386ff11a0bfc6b6a36c33fc40e8bcf2acb",
+  "productionVerifiedBeforeRun": true,
+  "sourceHash": "042abe35dac2928b8e755857c7d75d343da1087cbb25e15a9884600e4d3cdab0",
+  "unitHash": "7a5fdecdcd77f0dce8c81b0aad357ec439ddcf6f584a7f79f08b212955a2bc43",
+  "n": 1,
+  "shard": 1,
+  "shards": 2,
+  "mode": "engine",
+  "maxTurns": 20,
+  "pairs": [
+    [
+      "AIv2-easy-fast",
+      "Rush"
+    ],
+    [
+      "AIv2-easy-fast",
+      "RouteTech"
+    ]
+  ],
+  "seedBase": 71092026
+}

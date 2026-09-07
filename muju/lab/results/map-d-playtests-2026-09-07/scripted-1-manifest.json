@@ -1,0 +1,111 @@
+{
+  "started": "2026-09-07T16:26:04.570Z",
+  "releaseCommit": "326f04386ff11a0bfc6b6a36c33fc40e8bcf2acb",
+  "productionVerifiedBeforeRun": true,
+  "sourceHash": "042abe35dac2928b8e755857c7d75d343da1087cbb25e15a9884600e4d3cdab0",
+  "unitHash": "7a5fdecdcd77f0dce8c81b0aad357ec439ddcf6f584a7f79f08b212955a2bc43",
+  "n": 40,
+  "shard": 1,
+  "shards": 4,
+  "mode": "scripted",
+  "maxTurns": 120,
+  "pairs": [
+    [
+      "Rush",
+      "AntiRush"
+    ],
+    [
+      "Rush",
+      "Expand"
+    ],
+    [
+      "LightningRush",
+      "AntiRush"
+    ],
+    [
+      "LightningRush",
+      "Turtle"
+    ],
+    [
+      "LightningRush",
+      "Expand"
+    ],
+    [
+      "Balanced",
+      "Expand"
+    ],
+    [
+      "MiningDenial",
+      "Turtle"
+    ],
+    [
+      "Tier1Spam",
+      "Balanced"
+    ],
+    [
+      "Mono-lightning",
+      "Mono-metal"
+    ],
+    [
+      "Mono-lightning",
+      "Mono-fire"
+    ],
+    [
+      "Mono-shadow",
+      "Mono-water"
+    ],
+    [
+      "Mono-plant",
+      "Mono-metal"
+    ],
+    [
+      "Mono-plant",
+      "Mono-shadow"
+    ],
+    [
+      "Mono-fire",
+      "Mono-water"
+    ],
+    [
+      "RouteTech",
+      "Rush"
+    ],
+    [
+      "RouteTech",
+      "LightningRush"
+    ],
+    [
+      "RouteBasic",
+      "Rush"
+    ],
+    [
+      "RouteBasic",
+      "LightningRush"
+    ],
+    [
+      "RouteTech",
+      "HomeTech"
+    ],
+    [
+      "RouteBasic",
+      "HomeTech"
+    ],
+    [
+      "RouteTech",
+      "RouteBasic"
+    ],
+    [
+      "RouteTech",
+      "MiningDenial"
+    ],
+    [
+      "Balanced",
+      "Balanced"
+    ],
+    [
+      "RouteTech",
+      "RouteTech"
+    ]
+  ],
+  "seedBase": 71092026
+}

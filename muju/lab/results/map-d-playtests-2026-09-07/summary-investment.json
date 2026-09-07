@@ -1,0 +1,1079 @@
+{
+  "games": 1280,
+  "maps": {
+    "A": {
+      "games": 640,
+      "caps": 448,
+      "naturalWins": 192,
+      "whiteNaturalWins": 98,
+      "medianNaturalRounds": 31.0,
+      "meanResourcesPerPlayer": 148.66875
+    },
+    "D": {
+      "games": 640,
+      "caps": 468,
+      "naturalWins": 172,
+      "whiteNaturalWins": 98,
+      "medianNaturalRounds": 34.0,
+      "meanResourcesPerPlayer": 130.7796875
+    }
+  },
+  "illegal": 0,
+  "invariants": 0,
+  "anomalies": 0,
+  "plies": 1703325,
+  "cells": [
+    {
+      "cell": 0,
+      "a": "InvestT3",
+      "b": "Rush",
+      "A": {
+        "n": 80,
+        "score": 91.25,
+        "naturalWins": 43,
+        "naturalLosses": 7,
+        "caps": 30,
+        "naturalDraws": 0,
+        "meanRounds": 61.4125,
+        "naturalMedianRounds": 26.0
+      },
+      "D": {
+        "n": 80,
+        "score": 96.25,
+        "naturalWins": 44,
+        "naturalLosses": 3,
+        "caps": 33,
+        "naturalDraws": 0,
+        "meanRounds": 68.025,
+        "naturalMedianRounds": 33
+      },
+      "pairedScoreDeltaPP": 5.0,
+      "ci95": [
+        0.0,
+        11.25
+      ]
+    },
+    {
+      "cell": 1,
+      "a": "InvestT3",
+      "b": "LightningRush",
+      "A": {
+        "n": 80,
+        "score": 83.75,
+        "naturalWins": 39,
+        "naturalLosses": 13,
+        "caps": 28,
+        "naturalDraws": 0,
+        "meanRounds": 59.1,
+        "naturalMedianRounds": 26.0
+      },
+      "D": {
+        "n": 80,
+        "score": 88.75,
+        "naturalWins": 35,
+        "naturalLosses": 9,
+        "caps": 36,
+        "naturalDraws": 0,
+        "meanRounds": 69.5,
+        "naturalMedianRounds": 31.0
+      },
+      "pairedScoreDeltaPP": 5.0,
+      "ci95": [
+        -1.25,
+        12.5
+      ]
+    },
+    {
+      "cell": 2,
+      "a": "InvestT3",
+      "b": "MiningDenial",
+      "A": {
+        "n": 80,
+        "score": 87.5,
+        "naturalWins": 47,
+        "naturalLosses": 10,
+        "caps": 23,
+        "naturalDraws": 0,
+        "meanRounds": 56.4125,
+        "naturalMedianRounds": 31
+      },
+      "D": {
+        "n": 80,
+        "score": 92.5,
+        "naturalWins": 50,
+        "naturalLosses": 6,
+        "caps": 24,
+        "naturalDraws": 0,
+        "meanRounds": 58.15,
+        "naturalMedianRounds": 33.0
+      },
+      "pairedScoreDeltaPP": 5.0,
+      "ci95": [
+        -5.0,
+        15.0
+      ]
+    },
+    {
+      "cell": 3,
+      "a": "InvestT3",
+      "b": "InvestT1",
+      "A": {
+        "n": 80,
+        "score": 70.0,
+        "naturalWins": 2,
+        "naturalLosses": 0,
+        "caps": 78,
+        "naturalDraws": 0,
+        "meanRounds": 119.3375,
+        "naturalMedianRounds": 54.5
+      },
+      "D": {
+        "n": 80,
+        "score": 55.625,
+        "naturalWins": 3,
+        "naturalLosses": 0,
+        "caps": 77,
+        "naturalDraws": 0,
+        "meanRounds": 118.65,
+        "naturalMedianRounds": 67
+      },
+      "pairedScoreDeltaPP": -14.374999999999998,
+      "ci95": [
+        -26.25,
+        -1.875
+      ]
+    },
+    {
+      "cell": 4,
+      "a": "InvestT2",
+      "b": "InvestT1",
+      "A": {
+        "n": 80,
+        "score": 57.49999999999999,
+        "naturalWins": 0,
+        "naturalLosses": 0,
+        "caps": 80,
+        "naturalDraws": 0,
+        "meanRounds": 121.0,
+        "naturalMedianRounds": null
+      },
+      "D": {
+        "n": 80,
+        "score": 51.87500000000001,
+        "naturalWins": 0,
+        "naturalLosses": 0,
+        "caps": 80,
+        "naturalDraws": 0,
+        "meanRounds": 121.0,
+        "naturalMedianRounds": null
+      },
+      "pairedScoreDeltaPP": -5.625,
+      "ci95": [
+        -16.25,
+        5.0
+      ]
+    },
+    {
+      "cell": 5,
+      "a": "InvestT4",
+      "b": "InvestT3",
+      "A": {
+        "n": 80,
+        "score": 71.25,
+        "naturalWins": 27,
+        "naturalLosses": 0,
+        "caps": 53,
+        "naturalDraws": 0,
+        "meanRounds": 94.4,
+        "naturalMedianRounds": 41
+      },
+      "D": {
+        "n": 80,
+        "score": 69.375,
+        "naturalWins": 20,
+        "naturalLosses": 1,
+        "caps": 59,
+        "naturalDraws": 0,
+        "meanRounds": 100.9125,
+        "naturalMedianRounds": 41
+      },
+      "pairedScoreDeltaPP": -1.875,
+      "ci95": [
+        -15.0,
+        11.25
+      ]
+    },
+    {
+      "cell": 6,
+      "a": "InvestT3",
+      "b": "HomeT3",
+      "A": {
+        "n": 80,
+        "score": 100.0,
+        "naturalWins": 0,
+        "naturalLosses": 0,
+        "caps": 80,
+        "naturalDraws": 0,
+        "meanRounds": 121.0,
+        "naturalMedianRounds": null
+      },
+      "D": {
+        "n": 80,
+        "score": 100.0,
+        "naturalWins": 1,
+        "naturalLosses": 0,
+        "caps": 79,
+        "naturalDraws": 0,
+        "meanRounds": 120.0,
+        "naturalMedianRounds": 41
+      },
+      "pairedScoreDeltaPP": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "cell": 7,
+      "a": "InvestT3",
+      "b": "Balanced",
+      "A": {
+        "n": 80,
+        "score": 81.25,
+        "naturalWins": 2,
+        "naturalLosses": 2,
+        "caps": 76,
+        "naturalDraws": 0,
+        "meanRounds": 117.8875,
+        "naturalMedianRounds": 54.0
+      },
+      "D": {
+        "n": 80,
+        "score": 95.0,
+        "naturalWins": 0,
+        "naturalLosses": 0,
+        "caps": 80,
+        "naturalDraws": 0,
+        "meanRounds": 121.0,
+        "naturalMedianRounds": null
+      },
+      "pairedScoreDeltaPP": 13.750000000000002,
+      "ci95": [
+        5.0,
+        22.5
+      ]
+    }
+  ],
+  "bybot": {
+    "Balanced": {
+      "A": {
+        "mineActions": 53.0625,
+        "mineYield": 151.2,
+        "moveActions": 72.9875,
+        "moveBudget": 72.9875,
+        "awayYield": 65.8125,
+        "fourthFifth": 39.5625,
+        "maxHomeDistance": 11.4625,
+        "minedCells": 42.4,
+        "n": 80,
+        "promotions": 0.0,
+        "tierUsage": {
+          "1": 1272,
+          "2": 1042,
+          "3": 334,
+          "4": 9
+        },
+        "incomeAt": {
+          "1": {
+            "n": 80,
+            "mean": 9.0
+          },
+          "2": {
+            "n": 80,
+            "mean": 13.95
+          },
+          "3": {
+            "n": 80,
+            "mean": 24.25
+          },
+          "5": {
+            "n": 80,
+            "mean": 46.1
+          },
+          "10": {
+            "n": 80,
+            "mean": 96.95
+          },
+          "20": {
+            "n": 80,
+            "mean": 137.475
+          }
+        }
+      },
+      "D": {
+        "mineActions": 47.0625,
+        "mineYield": 123.5125,
+        "moveActions": 68.825,
+        "moveBudget": 68.825,
+        "awayYield": 53.1875,
+        "fourthFifth": 11.8625,
+        "maxHomeDistance": 11.1375,
+        "minedCells": 41.2375,
+        "n": 80,
+        "promotions": 0.0,
+        "tierUsage": {
+          "1": 1085,
+          "2": 1010,
+          "3": 208,
+          "4": 0
+        },
+        "incomeAt": {
+          "1": {
+            "n": 80,
+            "mean": 9.0
+          },
+          "2": {
+            "n": 80,
+            "mean": 13.95
+          },
+          "3": {
+            "n": 80,
+            "mean": 23.9625
+          },
+          "5": {
+            "n": 80,
+            "mean": 44.2375
+          },
+          "10": {
+            "n": 80,
+            "mean": 88.05
+          },
+          "20": {
+            "n": 80,
+            "mean": 117.0375
+          }
+        }
+      }
+    },
+    "HomeT3": {
+      "A": {
+        "mineActions": 32.8375,
+        "mineYield": 80.4875,
+        "moveActions": 24.025,
+        "moveBudget": 24.025,
+        "awayYield": 0.0,
+        "fourthFifth": 9.875,
+        "maxHomeDistance": 6.0,
+        "minedCells": 26.6,
+        "n": 80,
+        "promotions": 2.8625,
+        "tierUsage": {
+          "1": 1860,
+          "2": 149,
+          "3": 80,
+          "4": 0
+        },
+        "incomeAt": {
+          "1": {
+            "n": 80,
+            "mean": 9.85
+          },
+          "2": {
+            "n": 80,
+            "mean": 17.875
+          },
+          "3": {
+            "n": 80,
+            "mean": 27.6125
+          },
+          "5": {
+            "n": 80,
+            "mean": 46.5875
+          },
+          "10": {
+            "n": 80,
+            "mean": 78.4375
+          },
+          "20": {
+            "n": 80,
+            "mean": 79.825
+          }
+        }
+      },
+      "D": {
+        "mineActions": 32.925,
+        "mineYield": 73.7375,
+        "moveActions": 27.5875,
+        "moveBudget": 27.5875,
+        "awayYield": 0.0,
+        "fourthFifth": 5.6875,
+        "maxHomeDistance": 6.0,
+        "minedCells": 27.55,
+        "n": 80,
+        "promotions": 2.9625,
+        "tierUsage": {
+          "1": 1850,
+          "2": 157,
+          "3": 80,
+          "4": 0
+        },
+        "incomeAt": {
+          "1": {
+            "n": 80,
+            "mean": 9.85
+          },
+          "2": {
+            "n": 80,
+            "mean": 18.35
+          },
+          "3": {
+            "n": 80,
+            "mean": 26.975
+          },
+          "5": {
+            "n": 80,
+            "mean": 43.475
+          },
+          "10": {
+            "n": 80,
+            "mean": 71.6125
+          },
+          "20": {
+            "n": 80,
+            "mean": 73.0625
+          }
+        }
+      }
+    },
+    "InvestT1": {
+      "A": {
+        "mineActions": 51.93125,
+        "mineYield": 131.575,
+        "moveActions": 36.40625,
+        "moveBudget": 36.40625,
+        "awayYield": 66.04375,
+        "fourthFifth": 0.0,
+        "maxHomeDistance": 12.2875,
+        "minedCells": 49.275,
+        "n": 160,
+        "promotions": 2.06875,
+        "tierUsage": {
+          "1": 6913,
+          "2": 331,
+          "3": 0,
+          "4": 0
+        },
+        "incomeAt": {
+          "1": {
+            "n": 160,
+            "mean": 9.775
+          },
+          "2": {
+            "n": 160,
+            "mean": 16.9375
+          },
+          "3": {
+            "n": 160,
+            "mean": 25.96875
+          },
+          "5": {
+            "n": 160,
+            "mean": 44.99375
+          },
+          "10": {
+            "n": 160,
+            "mean": 93.64375
+          },
+          "20": {
+            "n": 160,
+            "mean": 131.04375
+          }
+        }
+      },
+      "D": {
+        "mineActions": 53.49375,
+        "mineYield": 129.78125,
+        "moveActions": 38.8375,
+        "moveBudget": 38.8375,
+        "awayYield": 66.95625,
+        "fourthFifth": 0.0,
+        "maxHomeDistance": 12.16875,
+        "minedCells": 50.54375,
+        "n": 160,
+        "promotions": 2.2125,
+        "tierUsage": {
+          "1": 7013,
+          "2": 354,
+          "3": 0,
+          "4": 0
+        },
+        "incomeAt": {
+          "1": {
+            "n": 160,
+            "mean": 9.775
+          },
+          "2": {
+            "n": 160,
+            "mean": 16.9375
+          },
+          "3": {
+            "n": 160,
+            "mean": 25.58125
+          },
+          "5": {
+            "n": 160,
+            "mean": 43.375
+          },
+          "10": {
+            "n": 160,
+            "mean": 91.8875
+          },
+          "20": {
+            "n": 160,
+            "mean": 129.09375
+          }
+        }
+      }
+    },
+    "InvestT2": {
+      "A": {
+        "mineActions": 55.7125,
+        "mineYield": 142.6875,
+        "moveActions": 36.95,
+        "moveBudget": 36.95,
+        "awayYield": 71.95,
+        "fourthFifth": 8.0125,
+        "maxHomeDistance": 12.1625,
+        "minedCells": 51.175,
+        "n": 80,
+        "promotions": 3.125,
+        "tierUsage": {
+          "1": 3609,
+          "2": 250,
+          "3": 0,
+          "4": 0
+        },
+        "incomeAt": {
+          "1": {
+            "n": 80,
+            "mean": 9.775
+          },
+          "2": {
+            "n": 80,
+            "mean": 17.7625
+          },
+          "3": {
+            "n": 80,
+            "mean": 26.6875
+          },
+          "5": {
+            "n": 80,
+            "mean": 46.85
+          },
+          "10": {
+            "n": 80,
+            "mean": 99.9375
+          },
+          "20": {
+            "n": 80,
+            "mean": 141.625
+          }
+        }
+      },
+      "D": {
+        "mineActions": 53.9875,
+        "mineYield": 131.7,
+        "moveActions": 37.35,
+        "moveBudget": 37.35,
+        "awayYield": 65.2625,
+        "fourthFifth": 4.675,
+        "maxHomeDistance": 12.075,
+        "minedCells": 49.7,
+        "n": 80,
+        "promotions": 2.8875,
+        "tierUsage": {
+          "1": 3448,
+          "2": 231,
+          "3": 0,
+          "4": 0
+        },
+        "incomeAt": {
+          "1": {
+            "n": 80,
+            "mean": 9.775
+          },
+          "2": {
+            "n": 80,
+            "mean": 18.1875
+          },
+          "3": {
+            "n": 80,
+            "mean": 26.65
+          },
+          "5": {
+            "n": 80,
+            "mean": 45.075
+          },
+          "10": {
+            "n": 80,
+            "mean": 94.2875
+          },
+          "20": {
+            "n": 80,
+            "mean": 131.275
+          }
+        }
+      }
+    },
+    "InvestT3": {
+      "A": {
+        "mineActions": 75.03571428571429,
+        "mineYield": 212.72857142857143,
+        "moveActions": 57.25714285714286,
+        "moveBudget": 57.25714285714286,
+        "awayYield": 131.09107142857144,
+        "fourthFifth": 36.49464285714286,
+        "maxHomeDistance": 14.378571428571428,
+        "minedCells": 66.11428571428571,
+        "n": 560,
+        "promotions": 5.233928571428572,
+        "tierUsage": {
+          "1": 33335,
+          "2": 2231,
+          "3": 686,
+          "4": 14
+        },
+        "incomeAt": {
+          "1": {
+            "n": 560,
+            "mean": 9.939285714285715
+          },
+          "2": {
+            "n": 560,
+            "mean": 17.882142857142856
+          },
+          "3": {
+            "n": 560,
+            "mean": 26.698214285714286
+          },
+          "5": {
+            "n": 556,
+            "mean": 46.15107913669065
+          },
+          "10": {
+            "n": 549,
+            "mean": 99.23497267759562
+          },
+          "20": {
+            "n": 528,
+            "mean": 174.29166666666666
+          }
+        }
+      },
+      "D": {
+        "mineActions": 75.88035714285714,
+        "mineYield": 185.1125,
+        "moveActions": 62.56071428571428,
+        "moveBudget": 62.56071428571428,
+        "awayYield": 113.05535714285715,
+        "fourthFifth": 12.348214285714286,
+        "maxHomeDistance": 14.216071428571428,
+        "minedCells": 67.01785714285714,
+        "n": 560,
+        "promotions": 5.5321428571428575,
+        "tierUsage": {
+          "1": 31144,
+          "2": 2416,
+          "3": 668,
+          "4": 14
+        },
+        "incomeAt": {
+          "1": {
+            "n": 560,
+            "mean": 9.939285714285715
+          },
+          "2": {
+            "n": 560,
+            "mean": 18.460714285714285
+          },
+          "3": {
+            "n": 560,
+            "mean": 26.491071428571427
+          },
+          "5": {
+            "n": 557,
+            "mean": 43.26570915619389
+          },
+          "10": {
+            "n": 552,
+            "mean": 87.51086956521739
+          },
+          "20": {
+            "n": 537,
+            "mean": 147.9906890130354
+          }
+        }
+      }
+    },
+    "InvestT4": {
+      "A": {
+        "mineActions": 68.8,
+        "mineYield": 193.725,
+        "moveActions": 53.775,
+        "moveBudget": 53.775,
+        "awayYield": 119.6,
+        "fourthFifth": 52.7125,
+        "maxHomeDistance": 15.05,
+        "minedCells": 63.25,
+        "n": 80,
+        "promotions": 6.4625,
+        "tierUsage": {
+          "1": 4285,
+          "2": 343,
+          "3": 91,
+          "4": 83
+        },
+        "incomeAt": {
+          "1": {
+            "n": 80,
+            "mean": 9.9
+          },
+          "2": {
+            "n": 80,
+            "mean": 18.0625
+          },
+          "3": {
+            "n": 80,
+            "mean": 27.875
+          },
+          "5": {
+            "n": 80,
+            "mean": 50.55
+          },
+          "10": {
+            "n": 80,
+            "mean": 108.3875
+          },
+          "20": {
+            "n": 80,
+            "mean": 169.6625
+          }
+        }
+      },
+      "D": {
+        "mineActions": 58.225,
+        "mineYield": 148.875,
+        "moveActions": 49.6125,
+        "moveBudget": 49.6125,
+        "awayYield": 78.7375,
+        "fourthFifth": 19.0125,
+        "maxHomeDistance": 14.1625,
+        "minedCells": 53.4625,
+        "n": 80,
+        "promotions": 6.4625,
+        "tierUsage": {
+          "1": 3536,
+          "2": 336,
+          "3": 95,
+          "4": 86
+        },
+        "incomeAt": {
+          "1": {
+            "n": 80,
+            "mean": 9.9
+          },
+          "2": {
+            "n": 80,
+            "mean": 18.675
+          },
+          "3": {
+            "n": 80,
+            "mean": 27.9
+          },
+          "5": {
+            "n": 80,
+            "mean": 48.6
+          },
+          "10": {
+            "n": 80,
+            "mean": 102.9625
+          },
+          "20": {
+            "n": 80,
+            "mean": 141.1375
+          }
+        }
+      }
+    },
+    "LightningRush": {
+      "A": {
+        "mineActions": 8.225,
+        "mineYield": 17.45,
+        "moveActions": 65.3,
+        "moveBudget": 65.3,
+        "awayYield": 4.475,
+        "fourthFifth": 0.0,
+        "maxHomeDistance": 7.7875,
+        "minedCells": 8.225,
+        "n": 80,
+        "promotions": 0.0,
+        "tierUsage": {
+          "1": 1381,
+          "2": 0,
+          "3": 0,
+          "4": 0
+        },
+        "incomeAt": {
+          "1": {
+            "n": 80,
+            "mean": 5.0
+          },
+          "2": {
+            "n": 80,
+            "mean": 5.0
+          },
+          "3": {
+            "n": 80,
+            "mean": 5.125
+          },
+          "5": {
+            "n": 79,
+            "mean": 7.405063291139241
+          },
+          "10": {
+            "n": 72,
+            "mean": 13.222222222222221
+          },
+          "20": {
+            "n": 67,
+            "mean": 18.46268656716418
+          }
+        }
+      },
+      "D": {
+        "mineActions": 8.1875,
+        "mineYield": 17.375,
+        "moveActions": 64.8625,
+        "moveBudget": 64.8625,
+        "awayYield": 4.35,
+        "fourthFifth": 0.0,
+        "maxHomeDistance": 7.6625,
+        "minedCells": 8.1875,
+        "n": 80,
+        "promotions": 0.0,
+        "tierUsage": {
+          "1": 1388,
+          "2": 0,
+          "3": 0,
+          "4": 0
+        },
+        "incomeAt": {
+          "1": {
+            "n": 80,
+            "mean": 5.0
+          },
+          "2": {
+            "n": 80,
+            "mean": 5.0
+          },
+          "3": {
+            "n": 80,
+            "mean": 5.125
+          },
+          "5": {
+            "n": 79,
+            "mean": 7.531645569620253
+          },
+          "10": {
+            "n": 74,
+            "mean": 13.162162162162161
+          },
+          "20": {
+            "n": 68,
+            "mean": 18.38235294117647
+          }
+        }
+      }
+    },
+    "MiningDenial": {
+      "A": {
+        "mineActions": 14.85,
+        "mineYield": 23.8,
+        "moveActions": 83.875,
+        "moveBudget": 83.875,
+        "awayYield": 9.375,
+        "fourthFifth": 0.0,
+        "maxHomeDistance": 12.4875,
+        "minedCells": 14.6125,
+        "n": 80,
+        "promotions": 0.0,
+        "tierUsage": {
+          "1": 1283,
+          "2": 195,
+          "3": 0,
+          "4": 0
+        },
+        "incomeAt": {
+          "1": {
+            "n": 80,
+            "mean": 7.0
+          },
+          "2": {
+            "n": 80,
+            "mean": 8.0
+          },
+          "3": {
+            "n": 80,
+            "mean": 8.0
+          },
+          "5": {
+            "n": 80,
+            "mean": 8.0
+          },
+          "10": {
+            "n": 80,
+            "mean": 11.9375
+          },
+          "20": {
+            "n": 74,
+            "mean": 23.472972972972972
+          }
+        }
+      },
+      "D": {
+        "mineActions": 15.45,
+        "mineYield": 24.175,
+        "moveActions": 89.1125,
+        "moveBudget": 89.1125,
+        "awayYield": 9.8375,
+        "fourthFifth": 0.0,
+        "maxHomeDistance": 13.675,
+        "minedCells": 14.9625,
+        "n": 80,
+        "promotions": 0.0,
+        "tierUsage": {
+          "1": 1299,
+          "2": 168,
+          "3": 0,
+          "4": 0
+        },
+        "incomeAt": {
+          "1": {
+            "n": 80,
+            "mean": 7.0
+          },
+          "2": {
+            "n": 80,
+            "mean": 8.0
+          },
+          "3": {
+            "n": 80,
+            "mean": 8.0
+          },
+          "5": {
+            "n": 80,
+            "mean": 8.0
+          },
+          "10": {
+            "n": 80,
+            "mean": 11.9125
+          },
+          "20": {
+            "n": 73,
+            "mean": 22.041095890410958
+          }
+        }
+      }
+    },
+    "Rush": {
+      "A": {
+        "mineActions": 8.0625,
+        "mineYield": 17.1,
+        "moveActions": 68.9,
+        "moveBudget": 68.9,
+        "awayYield": 4.05,
+        "fourthFifth": 0.0,
+        "maxHomeDistance": 7.675,
+        "minedCells": 8.0625,
+        "n": 80,
+        "promotions": 0.0,
+        "tierUsage": {
+          "1": 1360,
+          "2": 0,
+          "3": 0,
+          "4": 0
+        },
+        "incomeAt": {
+          "1": {
+            "n": 80,
+            "mean": 5.0
+          },
+          "2": {
+            "n": 80,
+            "mean": 5.0
+          },
+          "3": {
+            "n": 80,
+            "mean": 5.075
+          },
+          "5": {
+            "n": 80,
+            "mean": 6.625
+          },
+          "10": {
+            "n": 78,
+            "mean": 12.794871794871796
+          },
+          "20": {
+            "n": 67,
+            "mean": 17.791044776119403
+          }
+        }
+      },
+      "D": {
+        "mineActions": 8.375,
+        "mineYield": 17.75,
+        "moveActions": 74.3125,
+        "moveBudget": 74.3125,
+        "awayYield": 4.1,
+        "fourthFifth": 0.0,
+        "maxHomeDistance": 7.7375,
+        "minedCells": 8.375,
+        "n": 80,
+        "promotions": 0.0,
+        "tierUsage": {
+          "1": 1411,
+          "2": 0,
+          "3": 0,
+          "4": 0
+        },
+        "incomeAt": {
+          "1": {
+            "n": 80,
+            "mean": 5.0
+          },
+          "2": {
+            "n": 80,
+            "mean": 5.0
+          },
+          "3": {
+            "n": 80,
+            "mean": 5.05
+          },
+          "5": {
+            "n": 80,
+            "mean": 6.825
+          },
+          "10": {
+            "n": 78,
+            "mean": 12.948717948717949
+          },
+          "20": {
+            "n": 74,
+            "mean": 17.89189189189189
+          }
+        }
+      }
+    }
+  }
+}

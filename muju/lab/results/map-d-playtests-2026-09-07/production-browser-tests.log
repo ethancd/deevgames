@@ -1,0 +1,30 @@
+
+> elemental-tactics@0.1.0 test:e2e
+> playwright test
+
+
+Running 17 tests using 2 workers
+
+(node:17526) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:17527) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   2 e2e/mobile.spec.ts:29:3 › all play phases fit 375×568 (1.4s)
+  ✓   1 e2e/mobile.spec.ts:29:3 › all play phases fit 320×568 (1.5s)
+  ✓   3 e2e/mobile.spec.ts:29:3 › all play phases fit 375×667 (1.2s)
+  ✓   4 e2e/mobile.spec.ts:29:3 › all play phases fit 390×664 (1.5s)
+  ✓   5 e2e/mobile.spec.ts:29:3 › all play phases fit 393×706 (1.1s)
+  ✓   6 e2e/mobile.spec.ts:29:3 › all play phases fit 390×844 (1.1s)
+  ✓   7 e2e/mobile.spec.ts:29:3 › all play phases fit 430×932 (1.2s)
+  ✓   8 e2e/mobile.spec.ts:29:3 › all play phases fit 844×390 (1.5s)
+  ✓   9 e2e/mobile.spec.ts:29:3 › all play phases fit 1280×900 (1.4s)
+  ✓  10 e2e/mobile.spec.ts:62:1 › tap previews do not spend actions; confirmation, mining, undo and phase undo work (1.1s)
+  ✓  11 e2e/mobile.spec.ts:90:1 › attack preview agrees with combat and waits for confirmation (676ms)
+  ✓  12 e2e/mobile.spec.ts:105:1 › promotion preview uses catalogue, and respects already-promoted restriction (696ms)
+  ✓  13 e2e/mobile.spec.ts:116:1 › dialogs trap keyboard navigation; depths and enemy reach are explicit (863ms)
+  ✓  15 e2e/mobile.spec.ts:148:1 › keyboard shortcuts work after tapping a board button; Enter confirms the preview (721ms)
+  ✓  16 e2e/mobile.spec.ts:164:1 › v1.3 Lightning combat, Plant extraction and tutorial agree with the catalogue (1.1s)
+  ✓  17 e2e/mobile.spec.ts:188:1 › new games use map D with fresh shallow cells and preserve the layout on reload (984ms)
+  ✓  14 e2e/mobile.spec.ts:137:1 › AI turn keeps opponent money hidden and human ledger visible (3.7s)
+
+  17 passed (11.8s)

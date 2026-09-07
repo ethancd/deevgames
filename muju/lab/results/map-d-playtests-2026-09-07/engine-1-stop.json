@@ -1,0 +1,8 @@
+{
+  "stoppedAt": "2026-09-07T16:38:34.835780+00:00",
+  "mode": "engine",
+  "shard": 1,
+  "reason": "Bounded supplementary calibration after the dense A expansion game required 573 seconds for 20 rounds. Its D counterpart completed during shutdown. The reversed-seat A attempt was interrupted and reversed-seat D was not run; no partial game is counted.",
+  "completedGames": 2,
+  "pairedBalanceEvidence": "Maps paired for white only; no reversed-seat comparison, too small and time-dependent for balance inference."
+}

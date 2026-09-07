@@ -1,0 +1,47 @@
+{
+  "started": "2026-09-07T16:33:20.594Z",
+  "releaseCommit": "326f04386ff11a0bfc6b6a36c33fc40e8bcf2acb",
+  "productionVerifiedBeforeRun": true,
+  "sourceHash": "1804ceaa7c5be060e487a46e015459b50175606bf64faef160e9865f52099308",
+  "unitHash": "7a5fdecdcd77f0dce8c81b0aad357ec439ddcf6f584a7f79f08b212955a2bc43",
+  "n": 20,
+  "shard": 0,
+  "shards": 2,
+  "mode": "topology",
+  "maxTurns": 120,
+  "pairs": [
+    [
+      "InvestT3",
+      "Rush"
+    ],
+    [
+      "InvestT3",
+      "LightningRush"
+    ],
+    [
+      "InvestT3",
+      "MiningDenial"
+    ],
+    [
+      "InvestT3",
+      "InvestT1"
+    ],
+    [
+      "InvestT2",
+      "InvestT1"
+    ],
+    [
+      "InvestT4",
+      "InvestT3"
+    ],
+    [
+      "InvestT3",
+      "HomeT3"
+    ],
+    [
+      "InvestT3",
+      "Balanced"
+    ]
+  ],
+  "seedBase": 91092026
+}

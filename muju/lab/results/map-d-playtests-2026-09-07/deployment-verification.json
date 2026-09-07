@@ -1,0 +1,39 @@
+{
+  "verifiedAt": "2026-09-07T16:30:41.745051+00:00",
+  "releaseCommit": "326f04386ff11a0bfc6b6a36c33fc40e8bcf2acb",
+  "deployment": "https://98d645bc.deevgames.pages.dev",
+  "production": "https://deevgames.pages.dev/muju/",
+  "browserTests": 17,
+  "fullSiteSmoke": [
+    "390px",
+    "834px"
+  ],
+  "files": [
+    {
+      "path": "muju/index.html",
+      "sha256": "98a7b2c4f218c85fb8edc3331f6f26746543499f05dcbe7907884a3f1065bb45",
+      "bytes": 431
+    },
+    {
+      "path": "muju/assets/index-jSDc2kZw.js",
+      "sha256": "98dc28fcbc4e848b58d64558e581be738abdf180aca2a04c0b79a964c027ccdb",
+      "bytes": 302886
+    },
+    {
+      "path": "muju/assets/index-C-YBaUoq.css",
+      "sha256": "477768af0d74328421c89bce94530af8e0ee054fd296e0915e8ce9070f21d88f",
+      "bytes": 38929
+    },
+    {
+      "path": "forge/index.html",
+      "sha256": "1016c55abd607b9b9749e8bf1e7dac0274309d894ccfba9c721f02023a741007",
+      "bytes": 811
+    },
+    {
+      "path": "oracle/index.html",
+      "sha256": "0b6dae537f79057ca5e8f9654ee11680d03182a35a46ed364fdf12c0a756bcd6",
+      "bytes": 960
+    }
+  ],
+  "productionBrowserChecksCompletedAt": "2026-09-07T16:24:51.189541+00:00"
+}

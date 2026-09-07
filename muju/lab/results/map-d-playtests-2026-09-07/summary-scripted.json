@@ -1,0 +1,2279 @@
+{
+  "games": 3840,
+  "maps": {
+    "A": {
+      "games": 1920,
+      "caps": 833,
+      "naturalWins": 1087,
+      "whiteNaturalWins": 593,
+      "medianNaturalRounds": 18,
+      "meanResourcesPerPlayer": 87.70234375
+    },
+    "D": {
+      "games": 1920,
+      "caps": 808,
+      "naturalWins": 1112,
+      "whiteNaturalWins": 575,
+      "medianNaturalRounds": 17.0,
+      "meanResourcesPerPlayer": 75.56276041666666
+    }
+  },
+  "illegal": 0,
+  "invariants": 0,
+  "anomalies": 0,
+  "plies": 2909325,
+  "cells": [
+    {
+      "cell": 0,
+      "a": "Rush",
+      "b": "AntiRush",
+      "A": {
+        "n": 80,
+        "score": 11.25,
+        "naturalWins": 9,
+        "naturalLosses": 0,
+        "caps": 71,
+        "naturalDraws": 0,
+        "meanRounds": 108.45,
+        "naturalMedianRounds": 7
+      },
+      "D": {
+        "n": 80,
+        "score": 11.25,
+        "naturalWins": 9,
+        "naturalLosses": 0,
+        "caps": 71,
+        "naturalDraws": 0,
+        "meanRounds": 108.3375,
+        "naturalMedianRounds": 7
+      },
+      "pairedScoreDeltaPP": 0.0,
+      "ci95": [
+        -3.75,
+        3.75
+      ]
+    },
+    {
+      "cell": 1,
+      "a": "Rush",
+      "b": "Expand",
+      "A": {
+        "n": 80,
+        "score": 85.0,
+        "naturalWins": 68,
+        "naturalLosses": 4,
+        "caps": 8,
+        "naturalDraws": 0,
+        "meanRounds": 23.3125,
+        "naturalMedianRounds": 8.5
+      },
+      "D": {
+        "n": 80,
+        "score": 85.0,
+        "naturalWins": 68,
+        "naturalLosses": 0,
+        "caps": 12,
+        "naturalDraws": 0,
+        "meanRounds": 27.05,
+        "naturalMedianRounds": 8.0
+      },
+      "pairedScoreDeltaPP": 0.0,
+      "ci95": [
+        -8.75,
+        8.75
+      ]
+    },
+    {
+      "cell": 2,
+      "a": "LightningRush",
+      "b": "AntiRush",
+      "A": {
+        "n": 80,
+        "score": 45.0,
+        "naturalWins": 36,
+        "naturalLosses": 0,
+        "caps": 44,
+        "naturalDraws": 0,
+        "meanRounds": 69.5375,
+        "naturalMedianRounds": 5.0
+      },
+      "D": {
+        "n": 80,
+        "score": 43.75,
+        "naturalWins": 35,
+        "naturalLosses": 0,
+        "caps": 45,
+        "naturalDraws": 0,
+        "meanRounds": 70.8,
+        "naturalMedianRounds": 5
+      },
+      "pairedScoreDeltaPP": -1.25,
+      "ci95": [
+        -6.25,
+        2.5
+      ]
+    },
+    {
+      "cell": 3,
+      "a": "LightningRush",
+      "b": "Turtle",
+      "A": {
+        "n": 80,
+        "score": 72.5,
+        "naturalWins": 58,
+        "naturalLosses": 0,
+        "caps": 22,
+        "naturalDraws": 0,
+        "meanRounds": 38.7625,
+        "naturalMedianRounds": 6.0
+      },
+      "D": {
+        "n": 80,
+        "score": 77.5,
+        "naturalWins": 62,
+        "naturalLosses": 0,
+        "caps": 18,
+        "naturalDraws": 0,
+        "meanRounds": 33.45,
+        "naturalMedianRounds": 6.0
+      },
+      "pairedScoreDeltaPP": 5.0,
+      "ci95": [
+        -3.75,
+        12.5
+      ]
+    },
+    {
+      "cell": 4,
+      "a": "LightningRush",
+      "b": "Expand",
+      "A": {
+        "n": 80,
+        "score": 93.75,
+        "naturalWins": 75,
+        "naturalLosses": 2,
+        "caps": 3,
+        "naturalDraws": 0,
+        "meanRounds": 12.875,
+        "naturalMedianRounds": 6
+      },
+      "D": {
+        "n": 80,
+        "score": 100.0,
+        "naturalWins": 80,
+        "naturalLosses": 0,
+        "caps": 0,
+        "naturalDraws": 0,
+        "meanRounds": 7.775,
+        "naturalMedianRounds": 6.0
+      },
+      "pairedScoreDeltaPP": 6.25,
+      "ci95": [
+        1.25,
+        11.25
+      ]
+    },
+    {
+      "cell": 5,
+      "a": "Balanced",
+      "b": "Expand",
+      "A": {
+        "n": 80,
+        "score": 35.0,
+        "naturalWins": 5,
+        "naturalLosses": 0,
+        "caps": 75,
+        "naturalDraws": 0,
+        "meanRounds": 119.025,
+        "naturalMedianRounds": 95
+      },
+      "D": {
+        "n": 80,
+        "score": 41.875,
+        "naturalWins": 8,
+        "naturalLosses": 0,
+        "caps": 72,
+        "naturalDraws": 0,
+        "meanRounds": 116.6625,
+        "naturalMedianRounds": 74.0
+      },
+      "pairedScoreDeltaPP": 6.875000000000001,
+      "ci95": [
+        -8.125,
+        21.875
+      ]
+    },
+    {
+      "cell": 6,
+      "a": "MiningDenial",
+      "b": "Turtle",
+      "A": {
+        "n": 80,
+        "score": 51.24999999999999,
+        "naturalWins": 29,
+        "naturalLosses": 0,
+        "caps": 51,
+        "naturalDraws": 0,
+        "meanRounds": 82.2,
+        "naturalMedianRounds": 14
+      },
+      "D": {
+        "n": 80,
+        "score": 67.5,
+        "naturalWins": 38,
+        "naturalLosses": 0,
+        "caps": 42,
+        "naturalDraws": 0,
+        "meanRounds": 70.775,
+        "naturalMedianRounds": 15.0
+      },
+      "pairedScoreDeltaPP": 16.25,
+      "ci95": [
+        1.875,
+        30.625000000000004
+      ]
+    },
+    {
+      "cell": 7,
+      "a": "Tier1Spam",
+      "b": "Balanced",
+      "A": {
+        "n": 80,
+        "score": 15.0,
+        "naturalWins": 12,
+        "naturalLosses": 67,
+        "caps": 1,
+        "naturalDraws": 0,
+        "meanRounds": 35.2875,
+        "naturalMedianRounds": 34
+      },
+      "D": {
+        "n": 80,
+        "score": 32.5,
+        "naturalWins": 26,
+        "naturalLosses": 53,
+        "caps": 1,
+        "naturalDraws": 0,
+        "meanRounds": 30.525,
+        "naturalMedianRounds": 31
+      },
+      "pairedScoreDeltaPP": 17.5,
+      "ci95": [
+        8.75,
+        27.500000000000004
+      ]
+    },
+    {
+      "cell": 8,
+      "a": "Mono-lightning",
+      "b": "Mono-metal",
+      "A": {
+        "n": 80,
+        "score": 27.500000000000004,
+        "naturalWins": 22,
+        "naturalLosses": 58,
+        "caps": 0,
+        "naturalDraws": 0,
+        "meanRounds": 16.25,
+        "naturalMedianRounds": 17.0
+      },
+      "D": {
+        "n": 80,
+        "score": 35.0,
+        "naturalWins": 28,
+        "naturalLosses": 52,
+        "caps": 0,
+        "naturalDraws": 0,
+        "meanRounds": 15.85,
+        "naturalMedianRounds": 17.0
+      },
+      "pairedScoreDeltaPP": 7.5,
+      "ci95": [
+        -2.5,
+        17.5
+      ]
+    },
+    {
+      "cell": 9,
+      "a": "Mono-lightning",
+      "b": "Mono-fire",
+      "A": {
+        "n": 80,
+        "score": 55.00000000000001,
+        "naturalWins": 44,
+        "naturalLosses": 36,
+        "caps": 0,
+        "naturalDraws": 0,
+        "meanRounds": 20.45,
+        "naturalMedianRounds": 20.0
+      },
+      "D": {
+        "n": 80,
+        "score": 53.75,
+        "naturalWins": 43,
+        "naturalLosses": 37,
+        "caps": 0,
+        "naturalDraws": 0,
+        "meanRounds": 20.425,
+        "naturalMedianRounds": 20.0
+      },
+      "pairedScoreDeltaPP": -1.25,
+      "ci95": [
+        -3.75,
+        0.0
+      ]
+    },
+    {
+      "cell": 10,
+      "a": "Mono-shadow",
+      "b": "Mono-water",
+      "A": {
+        "n": 80,
+        "score": 0.0,
+        "naturalWins": 0,
+        "naturalLosses": 80,
+        "caps": 0,
+        "naturalDraws": 0,
+        "meanRounds": 18.7,
+        "naturalMedianRounds": 19.0
+      },
+      "D": {
+        "n": 80,
+        "score": 0.0,
+        "naturalWins": 0,
+        "naturalLosses": 80,
+        "caps": 0,
+        "naturalDraws": 0,
+        "meanRounds": 18.1875,
+        "naturalMedianRounds": 18.0
+      },
+      "pairedScoreDeltaPP": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "cell": 11,
+      "a": "Mono-plant",
+      "b": "Mono-metal",
+      "A": {
+        "n": 80,
+        "score": 15.0,
+        "naturalWins": 0,
+        "naturalLosses": 63,
+        "caps": 17,
+        "naturalDraws": 0,
+        "meanRounds": 44.275,
+        "naturalMedianRounds": 21
+      },
+      "D": {
+        "n": 80,
+        "score": 7.5,
+        "naturalWins": 0,
+        "naturalLosses": 64,
+        "caps": 16,
+        "naturalDraws": 0,
+        "meanRounds": 39.6375,
+        "naturalMedianRounds": 18.0
+      },
+      "pairedScoreDeltaPP": -7.5,
+      "ci95": [
+        -16.25,
+        0.0
+      ]
+    },
+    {
+      "cell": 12,
+      "a": "Mono-plant",
+      "b": "Mono-shadow",
+      "A": {
+        "n": 80,
+        "score": 43.75,
+        "naturalWins": 33,
+        "naturalLosses": 45,
+        "caps": 2,
+        "naturalDraws": 0,
+        "meanRounds": 17.15,
+        "naturalMedianRounds": 14.0
+      },
+      "D": {
+        "n": 80,
+        "score": 32.5,
+        "naturalWins": 23,
+        "naturalLosses": 54,
+        "caps": 3,
+        "naturalDraws": 0,
+        "meanRounds": 18.375,
+        "naturalMedianRounds": 12
+      },
+      "pairedScoreDeltaPP": -11.25,
+      "ci95": [
+        -20.0,
+        -3.75
+      ]
+    },
+    {
+      "cell": 13,
+      "a": "Mono-fire",
+      "b": "Mono-water",
+      "A": {
+        "n": 80,
+        "score": 0.0,
+        "naturalWins": 0,
+        "naturalLosses": 80,
+        "caps": 0,
+        "naturalDraws": 0,
+        "meanRounds": 22.35,
+        "naturalMedianRounds": 21.5
+      },
+      "D": {
+        "n": 80,
+        "score": 0.0,
+        "naturalWins": 0,
+        "naturalLosses": 80,
+        "caps": 0,
+        "naturalDraws": 0,
+        "meanRounds": 22.25,
+        "naturalMedianRounds": 21.0
+      },
+      "pairedScoreDeltaPP": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "cell": 14,
+      "a": "RouteTech",
+      "b": "Rush",
+      "A": {
+        "n": 80,
+        "score": 67.5,
+        "naturalWins": 23,
+        "naturalLosses": 26,
+        "caps": 31,
+        "naturalDraws": 0,
+        "meanRounds": 60.9125,
+        "naturalMedianRounds": 23
+      },
+      "D": {
+        "n": 80,
+        "score": 58.75,
+        "naturalWins": 30,
+        "naturalLosses": 33,
+        "caps": 17,
+        "naturalDraws": 0,
+        "meanRounds": 43.8125,
+        "naturalMedianRounds": 22
+      },
+      "pairedScoreDeltaPP": -8.75,
+      "ci95": [
+        -18.75,
+        1.25
+      ]
+    },
+    {
+      "cell": 15,
+      "a": "RouteTech",
+      "b": "LightningRush",
+      "A": {
+        "n": 80,
+        "score": 61.25000000000001,
+        "naturalWins": 17,
+        "naturalLosses": 31,
+        "caps": 32,
+        "naturalDraws": 0,
+        "meanRounds": 59.5875,
+        "naturalMedianRounds": 10.5
+      },
+      "D": {
+        "n": 80,
+        "score": 55.00000000000001,
+        "naturalWins": 26,
+        "naturalLosses": 36,
+        "caps": 18,
+        "naturalDraws": 0,
+        "meanRounds": 42.975,
+        "naturalMedianRounds": 15.0
+      },
+      "pairedScoreDeltaPP": -6.25,
+      "ci95": [
+        -16.25,
+        2.5
+      ]
+    },
+    {
+      "cell": 16,
+      "a": "RouteBasic",
+      "b": "Rush",
+      "A": {
+        "n": 80,
+        "score": 73.75,
+        "naturalWins": 24,
+        "naturalLosses": 21,
+        "caps": 35,
+        "naturalDraws": 0,
+        "meanRounds": 66.9,
+        "naturalMedianRounds": 28
+      },
+      "D": {
+        "n": 80,
+        "score": 70.0,
+        "naturalWins": 27,
+        "naturalLosses": 24,
+        "caps": 29,
+        "naturalDraws": 0,
+        "meanRounds": 59.5375,
+        "naturalMedianRounds": 25
+      },
+      "pairedScoreDeltaPP": -3.75,
+      "ci95": [
+        -12.5,
+        5.0
+      ]
+    },
+    {
+      "cell": 17,
+      "a": "RouteBasic",
+      "b": "LightningRush",
+      "A": {
+        "n": 80,
+        "score": 66.25,
+        "naturalWins": 19,
+        "naturalLosses": 27,
+        "caps": 34,
+        "naturalDraws": 0,
+        "meanRounds": 62.675,
+        "naturalMedianRounds": 10.0
+      },
+      "D": {
+        "n": 80,
+        "score": 63.74999999999999,
+        "naturalWins": 21,
+        "naturalLosses": 29,
+        "caps": 30,
+        "naturalDraws": 0,
+        "meanRounds": 57.2,
+        "naturalMedianRounds": 10.0
+      },
+      "pairedScoreDeltaPP": -2.5,
+      "ci95": [
+        -10.0,
+        5.0
+      ]
+    },
+    {
+      "cell": 18,
+      "a": "RouteTech",
+      "b": "HomeTech",
+      "A": {
+        "n": 80,
+        "score": 100.0,
+        "naturalWins": 0,
+        "naturalLosses": 0,
+        "caps": 80,
+        "naturalDraws": 0,
+        "meanRounds": 121.0,
+        "naturalMedianRounds": null
+      },
+      "D": {
+        "n": 80,
+        "score": 100.0,
+        "naturalWins": 0,
+        "naturalLosses": 0,
+        "caps": 80,
+        "naturalDraws": 0,
+        "meanRounds": 121.0,
+        "naturalMedianRounds": null
+      },
+      "pairedScoreDeltaPP": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "cell": 19,
+      "a": "RouteBasic",
+      "b": "HomeTech",
+      "A": {
+        "n": 80,
+        "score": 100.0,
+        "naturalWins": 0,
+        "naturalLosses": 0,
+        "caps": 80,
+        "naturalDraws": 0,
+        "meanRounds": 121.0,
+        "naturalMedianRounds": null
+      },
+      "D": {
+        "n": 80,
+        "score": 100.0,
+        "naturalWins": 0,
+        "naturalLosses": 0,
+        "caps": 80,
+        "naturalDraws": 0,
+        "meanRounds": 121.0,
+        "naturalMedianRounds": null
+      },
+      "pairedScoreDeltaPP": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "cell": 20,
+      "a": "RouteTech",
+      "b": "RouteBasic",
+      "A": {
+        "n": 80,
+        "score": 50.0,
+        "naturalWins": 0,
+        "naturalLosses": 0,
+        "caps": 80,
+        "naturalDraws": 0,
+        "meanRounds": 121.0,
+        "naturalMedianRounds": null
+      },
+      "D": {
+        "n": 80,
+        "score": 50.0,
+        "naturalWins": 0,
+        "naturalLosses": 0,
+        "caps": 80,
+        "naturalDraws": 0,
+        "meanRounds": 121.0,
+        "naturalMedianRounds": null
+      },
+      "pairedScoreDeltaPP": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "cell": 21,
+      "a": "RouteTech",
+      "b": "MiningDenial",
+      "A": {
+        "n": 80,
+        "score": 80.0,
+        "naturalWins": 23,
+        "naturalLosses": 16,
+        "caps": 41,
+        "naturalDraws": 0,
+        "meanRounds": 76.9375,
+        "naturalMedianRounds": 38
+      },
+      "D": {
+        "n": 80,
+        "score": 70.0,
+        "naturalWins": 16,
+        "naturalLosses": 24,
+        "caps": 40,
+        "naturalDraws": 0,
+        "meanRounds": 73.2625,
+        "naturalMedianRounds": 18.5
+      },
+      "pairedScoreDeltaPP": -10.0,
+      "ci95": [
+        -22.5,
+        2.5
+      ]
+    },
+    {
+      "cell": 22,
+      "a": "Balanced",
+      "b": "Balanced",
+      "A": {
+        "n": 80,
+        "score": 50.0,
+        "naturalWins": 17,
+        "naturalLosses": 17,
+        "caps": 46,
+        "naturalDraws": 0,
+        "meanRounds": 106.525,
+        "naturalMedianRounds": 86.0
+      },
+      "D": {
+        "n": 80,
+        "score": 50.0,
+        "naturalWins": 3,
+        "naturalLosses": 3,
+        "caps": 74,
+        "naturalDraws": 0,
+        "meanRounds": 116.675,
+        "naturalMedianRounds": 62.0
+      },
+      "pairedScoreDeltaPP": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "cell": 23,
+      "a": "RouteTech",
+      "b": "RouteTech",
+      "A": {
+        "n": 80,
+        "score": 50.0,
+        "naturalWins": 0,
+        "naturalLosses": 0,
+        "caps": 80,
+        "naturalDraws": 0,
+        "meanRounds": 121.0,
+        "naturalMedianRounds": null
+      },
+      "D": {
+        "n": 80,
+        "score": 50.0,
+        "naturalWins": 0,
+        "naturalLosses": 0,
+        "caps": 80,
+        "naturalDraws": 0,
+        "meanRounds": 121.0,
+        "naturalMedianRounds": null
+      },
+      "pairedScoreDeltaPP": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    }
+  ],
+  "bybot": {
+    "AntiRush": {
+      "A": {
+        "mineActions": 42.175,
+        "mineYield": 74.65,
+        "moveActions": 40.2625,
+        "moveBudget": 40.2625,
+        "awayYield": 17.13125,
+        "fourthFifth": 0.0,
+        "maxHomeDistance": 7.6125,
+        "minedCells": 29.94375,
+        "n": 160,
+        "promotions": 0.0,
+        "tierUsage": {
+          "1": 4425,
+          "2": 0,
+          "3": 0,
+          "4": 0
+        },
+        "incomeAt": {
+          "1": {
+            "n": 160,
+            "mean": 7.04375
+          },
+          "2": {
+            "n": 160,
+            "mean": 10.23125
+          },
+          "3": {
+            "n": 159,
+            "mean": 17.654088050314467
+          },
+          "5": {
+            "n": 144,
+            "mean": 26.256944444444443
+          },
+          "10": {
+            "n": 121,
+            "mean": 49.84297520661157
+          },
+          "20": {
+            "n": 117,
+            "mean": 84.21367521367522
+          }
+        }
+      },
+      "D": {
+        "mineActions": 37.625,
+        "mineYield": 67.8625,
+        "moveActions": 40.5375,
+        "moveBudget": 40.5375,
+        "awayYield": 15.95,
+        "fourthFifth": 0.0,
+        "maxHomeDistance": 7.6125,
+        "minedCells": 29.18125,
+        "n": 160,
+        "promotions": 0.0,
+        "tierUsage": {
+          "1": 4030,
+          "2": 0,
+          "3": 0,
+          "4": 0
+        },
+        "incomeAt": {
+          "1": {
+            "n": 160,
+            "mean": 7.04375
+          },
+          "2": {
+            "n": 160,
+            "mean": 10.23125
+          },
+          "3": {
+            "n": 159,
+            "mean": 17.654088050314467
+          },
+          "5": {
+            "n": 144,
+            "mean": 26.17361111111111
+          },
+          "10": {
+            "n": 121,
+            "mean": 48.86776859504132
+          },
+          "20": {
+            "n": 118,
+            "mean": 80.0677966101695
+          }
+        }
+      }
+    },
+    "Balanced": {
+      "A": {
+        "mineActions": 68.846875,
+        "mineYield": 182.715625,
+        "moveActions": 129.384375,
+        "moveBudget": 129.384375,
+        "awayYield": 86.215625,
+        "fourthFifth": 50.834375,
+        "maxHomeDistance": 12.296875,
+        "minedCells": 50.740625,
+        "n": 320,
+        "promotions": 0.0,
+        "tierUsage": {
+          "1": 6460,
+          "2": 4649,
+          "3": 1766,
+          "4": 44
+        },
+        "incomeAt": {
+          "1": {
+            "n": 320,
+            "mean": 9.0
+          },
+          "2": {
+            "n": 320,
+            "mean": 13.3875
+          },
+          "3": {
+            "n": 320,
+            "mean": 23.3625
+          },
+          "5": {
+            "n": 320,
+            "mean": 43.178125
+          },
+          "10": {
+            "n": 317,
+            "mean": 91.60567823343848
+          },
+          "20": {
+            "n": 316,
+            "mean": 151.67088607594937
+          }
+        }
+      },
+      "D": {
+        "mineActions": 51.525,
+        "mineYield": 131.33125,
+        "moveActions": 105.29375,
+        "moveBudget": 105.29375,
+        "awayYield": 59.728125,
+        "fourthFifth": 12.440625,
+        "maxHomeDistance": 11.40625,
+        "minedCells": 44.603125,
+        "n": 320,
+        "promotions": 0.0,
+        "tierUsage": {
+          "1": 4792,
+          "2": 4282,
+          "3": 852,
+          "4": 1
+        },
+        "incomeAt": {
+          "1": {
+            "n": 320,
+            "mean": 9.0
+          },
+          "2": {
+            "n": 320,
+            "mean": 13.3875
+          },
+          "3": {
+            "n": 320,
+            "mean": 22.8875
+          },
+          "5": {
+            "n": 320,
+            "mean": 40.571875
+          },
+          "10": {
+            "n": 313,
+            "mean": 81.42811501597444
+          },
+          "20": {
+            "n": 305,
+            "mean": 123.40983606557377
+          }
+        }
+      }
+    },
+    "Expand": {
+      "A": {
+        "mineActions": 49.17916666666667,
+        "mineYield": 134.3625,
+        "moveActions": 40.925,
+        "moveBudget": 40.925,
+        "awayYield": 57.166666666666664,
+        "fourthFifth": 44.05,
+        "maxHomeDistance": 8.883333333333333,
+        "minedCells": 35.75416666666667,
+        "n": 240,
+        "promotions": 0.0,
+        "tierUsage": {
+          "1": 1941,
+          "2": 1496,
+          "3": 1081,
+          "4": 0
+        },
+        "incomeAt": {
+          "1": {
+            "n": 240,
+            "mean": 9.0
+          },
+          "2": {
+            "n": 240,
+            "mean": 15.0
+          },
+          "3": {
+            "n": 240,
+            "mean": 22.516666666666666
+          },
+          "5": {
+            "n": 225,
+            "mean": 40.30222222222222
+          },
+          "10": {
+            "n": 134,
+            "mean": 90.94776119402985
+          },
+          "20": {
+            "n": 107,
+            "mean": 188.21495327102804
+          }
+        }
+      },
+      "D": {
+        "mineActions": 34.958333333333336,
+        "mineYield": 86.25,
+        "moveActions": 28.654166666666665,
+        "moveBudget": 28.654166666666665,
+        "awayYield": 29.241666666666667,
+        "fourthFifth": 9.004166666666666,
+        "maxHomeDistance": 8.245833333333334,
+        "minedCells": 29.033333333333335,
+        "n": 240,
+        "promotions": 0.0,
+        "tierUsage": {
+          "1": 1170,
+          "2": 1597,
+          "3": 349,
+          "4": 0
+        },
+        "incomeAt": {
+          "1": {
+            "n": 240,
+            "mean": 9.0
+          },
+          "2": {
+            "n": 240,
+            "mean": 15.0
+          },
+          "3": {
+            "n": 240,
+            "mean": 21.425
+          },
+          "5": {
+            "n": 222,
+            "mean": 36.37837837837838
+          },
+          "10": {
+            "n": 133,
+            "mean": 79.53383458646617
+          },
+          "20": {
+            "n": 96,
+            "mean": 139.0
+          }
+        }
+      }
+    },
+    "HomeTech": {
+      "A": {
+        "mineActions": 31.03125,
+        "mineYield": 71.625,
+        "moveActions": 22.3125,
+        "moveBudget": 22.3125,
+        "awayYield": 0.0,
+        "fourthFifth": 0.0,
+        "maxHomeDistance": 6.0,
+        "minedCells": 27.5375,
+        "n": 160,
+        "promotions": 0.9625,
+        "tierUsage": {
+          "1": 3778,
+          "2": 154,
+          "3": 0,
+          "4": 0
+        },
+        "incomeAt": {
+          "1": {
+            "n": 160,
+            "mean": 9.8375
+          },
+          "2": {
+            "n": 160,
+            "mean": 17.09375
+          },
+          "3": {
+            "n": 160,
+            "mean": 25.96875
+          },
+          "5": {
+            "n": 160,
+            "mean": 43.2375
+          },
+          "10": {
+            "n": 160,
+            "mean": 71.03125
+          },
+          "20": {
+            "n": 160,
+            "mean": 71.5375
+          }
+        }
+      },
+      "D": {
+        "mineActions": 30.65,
+        "mineYield": 66.93125,
+        "moveActions": 23.825,
+        "moveBudget": 23.825,
+        "awayYield": 0.0,
+        "fourthFifth": 0.0,
+        "maxHomeDistance": 6.0,
+        "minedCells": 27.54375,
+        "n": 160,
+        "promotions": 0.825,
+        "tierUsage": {
+          "1": 3717,
+          "2": 132,
+          "3": 0,
+          "4": 0
+        },
+        "incomeAt": {
+          "1": {
+            "n": 160,
+            "mean": 9.8375
+          },
+          "2": {
+            "n": 160,
+            "mean": 17.09375
+          },
+          "3": {
+            "n": 160,
+            "mean": 25.5875
+          },
+          "5": {
+            "n": 160,
+            "mean": 41.5
+          },
+          "10": {
+            "n": 160,
+            "mean": 66.2625
+          },
+          "20": {
+            "n": 160,
+            "mean": 66.74375
+          }
+        }
+      }
+    },
+    "LightningRush": {
+      "A": {
+        "mineActions": 5.8775,
+        "mineYield": 12.745,
+        "moveActions": 48.265,
+        "moveBudget": 48.265,
+        "awayYield": 3.03,
+        "fourthFifth": 0.0,
+        "maxHomeDistance": 5.72,
+        "minedCells": 5.8775,
+        "n": 400,
+        "promotions": 0.0,
+        "tierUsage": {
+          "1": 5078,
+          "2": 0,
+          "3": 0,
+          "4": 0
+        },
+        "incomeAt": {
+          "1": {
+            "n": 400,
+            "mean": 5.0
+          },
+          "2": {
+            "n": 400,
+            "mean": 5.0
+          },
+          "3": {
+            "n": 400,
+            "mean": 5.115
+          },
+          "5": {
+            "n": 363,
+            "mean": 6.465564738292011
+          },
+          "10": {
+            "n": 217,
+            "mean": 12.43778801843318
+          },
+          "20": {
+            "n": 185,
+            "mean": 19.248648648648647
+          }
+        }
+      },
+      "D": {
+        "mineActions": 5.6425,
+        "mineYield": 12.2775,
+        "moveActions": 45.57,
+        "moveBudget": 45.57,
+        "awayYield": 2.6975,
+        "fourthFifth": 0.0,
+        "maxHomeDistance": 5.5375,
+        "minedCells": 5.6425,
+        "n": 400,
+        "promotions": 0.0,
+        "tierUsage": {
+          "1": 4885,
+          "2": 0,
+          "3": 0,
+          "4": 0
+        },
+        "incomeAt": {
+          "1": {
+            "n": 400,
+            "mean": 5.0
+          },
+          "2": {
+            "n": 400,
+            "mean": 5.0
+          },
+          "3": {
+            "n": 400,
+            "mean": 5.12
+          },
+          "5": {
+            "n": 363,
+            "mean": 6.487603305785124
+          },
+          "10": {
+            "n": 212,
+            "mean": 12.69811320754717
+          },
+          "20": {
+            "n": 170,
+            "mean": 19.123529411764707
+          }
+        }
+      }
+    },
+    "MiningDenial": {
+      "A": {
+        "mineActions": 16.11875,
+        "mineYield": 26.25625,
+        "moveActions": 79.6625,
+        "moveBudget": 79.6625,
+        "awayYield": 11.45,
+        "fourthFifth": 0.0,
+        "maxHomeDistance": 12.575,
+        "minedCells": 15.975,
+        "n": 160,
+        "promotions": 0.0,
+        "tierUsage": {
+          "1": 2630,
+          "2": 492,
+          "3": 0,
+          "4": 0
+        },
+        "incomeAt": {
+          "1": {
+            "n": 160,
+            "mean": 7.0
+          },
+          "2": {
+            "n": 160,
+            "mean": 8.0
+          },
+          "3": {
+            "n": 160,
+            "mean": 8.0
+          },
+          "5": {
+            "n": 160,
+            "mean": 8.0
+          },
+          "10": {
+            "n": 158,
+            "mean": 12.29746835443038
+          },
+          "20": {
+            "n": 120,
+            "mean": 26.158333333333335
+          }
+        }
+      },
+      "D": {
+        "mineActions": 16.13125,
+        "mineYield": 26.14375,
+        "moveActions": 84.58125,
+        "moveBudget": 84.58125,
+        "awayYield": 11.06875,
+        "fourthFifth": 0.0,
+        "maxHomeDistance": 12.90625,
+        "minedCells": 15.84375,
+        "n": 160,
+        "promotions": 0.0,
+        "tierUsage": {
+          "1": 2655,
+          "2": 483,
+          "3": 0,
+          "4": 0
+        },
+        "incomeAt": {
+          "1": {
+            "n": 160,
+            "mean": 7.0
+          },
+          "2": {
+            "n": 160,
+            "mean": 8.0
+          },
+          "3": {
+            "n": 160,
+            "mean": 8.0
+          },
+          "5": {
+            "n": 160,
+            "mean": 8.0
+          },
+          "10": {
+            "n": 160,
+            "mean": 11.86875
+          },
+          "20": {
+            "n": 104,
+            "mean": 25.5
+          }
+        }
+      }
+    },
+    "Mono-fire": {
+      "A": {
+        "mineActions": 37.23125,
+        "mineYield": 42.825,
+        "moveActions": 55.2875,
+        "moveBudget": 55.2875,
+        "awayYield": 12.3875,
+        "fourthFifth": 0.0,
+        "maxHomeDistance": 10.2,
+        "minedCells": 33.075,
+        "n": 160,
+        "promotions": 0.0,
+        "tierUsage": {
+          "1": 3330,
+          "2": 1086,
+          "3": 1,
+          "4": 0
+        },
+        "incomeAt": {
+          "1": {
+            "n": 160,
+            "mean": 7.0
+          },
+          "2": {
+            "n": 160,
+            "mean": 11.45625
+          },
+          "3": {
+            "n": 160,
+            "mean": 14.7625
+          },
+          "5": {
+            "n": 160,
+            "mean": 19.7
+          },
+          "10": {
+            "n": 160,
+            "mean": 27.75
+          },
+          "20": {
+            "n": 103,
+            "mean": 42.46601941747573
+          }
+        }
+      },
+      "D": {
+        "mineActions": 37.14375,
+        "mineYield": 42.675,
+        "moveActions": 55.14375,
+        "moveBudget": 55.14375,
+        "awayYield": 12.3875,
+        "fourthFifth": 0.0,
+        "maxHomeDistance": 10.20625,
+        "minedCells": 33.025,
+        "n": 160,
+        "promotions": 0.0,
+        "tierUsage": {
+          "1": 3310,
+          "2": 1087,
+          "3": 1,
+          "4": 0
+        },
+        "incomeAt": {
+          "1": {
+            "n": 160,
+            "mean": 7.0
+          },
+          "2": {
+            "n": 160,
+            "mean": 11.45625
+          },
+          "3": {
+            "n": 160,
+            "mean": 14.7625
+          },
+          "5": {
+            "n": 160,
+            "mean": 19.7
+          },
+          "10": {
+            "n": 160,
+            "mean": 27.75
+          },
+          "20": {
+            "n": 101,
+            "mean": 42.475247524752476
+          }
+        }
+      }
+    },
+    "Mono-lightning": {
+      "A": {
+        "mineActions": 15.3625,
+        "mineYield": 25.325,
+        "moveActions": 65.0,
+        "moveBudget": 65.0,
+        "awayYield": 5.40625,
+        "fourthFifth": 0.0,
+        "maxHomeDistance": 9.51875,
+        "minedCells": 13.40625,
+        "n": 160,
+        "promotions": 0.0,
+        "tierUsage": {
+          "1": 3278,
+          "2": 102,
+          "3": 0,
+          "4": 0
+        },
+        "incomeAt": {
+          "1": {
+            "n": 160,
+            "mean": 7.0
+          },
+          "2": {
+            "n": 160,
+            "mean": 8.0
+          },
+          "3": {
+            "n": 160,
+            "mean": 8.0125
+          },
+          "5": {
+            "n": 160,
+            "mean": 8.65
+          },
+          "10": {
+            "n": 152,
+            "mean": 15.151315789473685
+          },
+          "20": {
+            "n": 54,
+            "mean": 27.074074074074073
+          }
+        }
+      },
+      "D": {
+        "mineActions": 15.00625,
+        "mineYield": 24.8625,
+        "moveActions": 64.275,
+        "moveBudget": 64.275,
+        "awayYield": 5.28125,
+        "fourthFifth": 0.0,
+        "maxHomeDistance": 9.44375,
+        "minedCells": 13.38125,
+        "n": 160,
+        "promotions": 0.0,
+        "tierUsage": {
+          "1": 3221,
+          "2": 111,
+          "3": 0,
+          "4": 0
+        },
+        "incomeAt": {
+          "1": {
+            "n": 160,
+            "mean": 7.0
+          },
+          "2": {
+            "n": 160,
+            "mean": 8.0
+          },
+          "3": {
+            "n": 160,
+            "mean": 8.0125
+          },
+          "5": {
+            "n": 160,
+            "mean": 8.6375
+          },
+          "10": {
+            "n": 151,
+            "mean": 15.225165562913908
+          },
+          "20": {
+            "n": 51,
+            "mean": 27.215686274509803
+          }
+        }
+      }
+    },
+    "Mono-metal": {
+      "A": {
+        "mineActions": 34.4,
+        "mineYield": 67.2875,
+        "moveActions": 38.19375,
+        "moveBudget": 38.19375,
+        "awayYield": 35.56875,
+        "fourthFifth": 0.0,
+        "maxHomeDistance": 11.5625,
+        "minedCells": 27.85,
+        "n": 160,
+        "promotions": 0.0,
+        "tierUsage": {
+          "1": 1538,
+          "2": 903,
+          "3": 7,
+          "4": 0
+        },
+        "incomeAt": {
+          "1": {
+            "n": 160,
+            "mean": 7.0
+          },
+          "2": {
+            "n": 160,
+            "mean": 10.225
+          },
+          "3": {
+            "n": 160,
+            "mean": 16.4625
+          },
+          "5": {
+            "n": 160,
+            "mean": 26.55
+          },
+          "10": {
+            "n": 151,
+            "mean": 48.59602649006622
+          },
+          "20": {
+            "n": 76,
+            "mean": 66.22368421052632
+          }
+        }
+      },
+      "D": {
+        "mineActions": 32.75625,
+        "mineYield": 63.20625,
+        "moveActions": 36.35,
+        "moveBudget": 36.35,
+        "awayYield": 32.33125,
+        "fourthFifth": 0.0,
+        "maxHomeDistance": 11.10625,
+        "minedCells": 27.0,
+        "n": 160,
+        "promotions": 0.0,
+        "tierUsage": {
+          "1": 1446,
+          "2": 835,
+          "3": 7,
+          "4": 0
+        },
+        "incomeAt": {
+          "1": {
+            "n": 160,
+            "mean": 7.0
+          },
+          "2": {
+            "n": 160,
+            "mean": 10.225
+          },
+          "3": {
+            "n": 160,
+            "mean": 16.4625
+          },
+          "5": {
+            "n": 160,
+            "mean": 26.2375
+          },
+          "10": {
+            "n": 151,
+            "mean": 47.58278145695364
+          },
+          "20": {
+            "n": 55,
+            "mean": 66.83636363636364
+          }
+        }
+      }
+    },
+    "Mono-plant": {
+      "A": {
+        "mineActions": 35.48125,
+        "mineYield": 83.7125,
+        "moveActions": 32.03125,
+        "moveBudget": 32.03125,
+        "awayYield": 26.65,
+        "fourthFifth": 16.575,
+        "maxHomeDistance": 10.13125,
+        "minedCells": 25.26875,
+        "n": 160,
+        "promotions": 0.0,
+        "tierUsage": {
+          "1": 1134,
+          "2": 1297,
+          "3": 104,
+          "4": 0
+        },
+        "incomeAt": {
+          "1": {
+            "n": 160,
+            "mean": 7.0
+          },
+          "2": {
+            "n": 160,
+            "mean": 10.3125
+          },
+          "3": {
+            "n": 160,
+            "mean": 16.9625
+          },
+          "5": {
+            "n": 160,
+            "mean": 30.89375
+          },
+          "10": {
+            "n": 146,
+            "mean": 61.18493150684932
+          },
+          "20": {
+            "n": 70,
+            "mean": 95.38571428571429
+          }
+        }
+      },
+      "D": {
+        "mineActions": 31.10625,
+        "mineYield": 64.6,
+        "moveActions": 32.30625,
+        "moveBudget": 32.30625,
+        "awayYield": 20.64375,
+        "fourthFifth": 3.8375,
+        "maxHomeDistance": 9.80625,
+        "minedCells": 24.2375,
+        "n": 160,
+        "promotions": 0.0,
+        "tierUsage": {
+          "1": 1015,
+          "2": 1078,
+          "3": 21,
+          "4": 0
+        },
+        "incomeAt": {
+          "1": {
+            "n": 160,
+            "mean": 7.0
+          },
+          "2": {
+            "n": 160,
+            "mean": 10.3125
+          },
+          "3": {
+            "n": 160,
+            "mean": 16.4
+          },
+          "5": {
+            "n": 160,
+            "mean": 28.675
+          },
+          "10": {
+            "n": 144,
+            "mean": 51.52777777777778
+          },
+          "20": {
+            "n": 59,
+            "mean": 79.37288135593221
+          }
+        }
+      }
+    },
+    "Mono-shadow": {
+      "A": {
+        "mineActions": 19.14375,
+        "mineYield": 31.2875,
+        "moveActions": 51.6125,
+        "moveBudget": 51.6125,
+        "awayYield": 8.89375,
+        "fourthFifth": 0.0,
+        "maxHomeDistance": 11.23125,
+        "minedCells": 16.59375,
+        "n": 160,
+        "promotions": 0.0,
+        "tierUsage": {
+          "1": 1914,
+          "2": 196,
+          "3": 0,
+          "4": 0
+        },
+        "incomeAt": {
+          "1": {
+            "n": 160,
+            "mean": 7.0
+          },
+          "2": {
+            "n": 160,
+            "mean": 8.60625
+          },
+          "3": {
+            "n": 160,
+            "mean": 9.36875
+          },
+          "5": {
+            "n": 160,
+            "mean": 11.04375
+          },
+          "10": {
+            "n": 153,
+            "mean": 20.666666666666668
+          },
+          "20": {
+            "n": 35,
+            "mean": 40.97142857142857
+          }
+        }
+      },
+      "D": {
+        "mineActions": 18.8375,
+        "mineYield": 30.5125,
+        "moveActions": 50.4875,
+        "moveBudget": 50.4875,
+        "awayYield": 8.65625,
+        "fourthFifth": 0.0,
+        "maxHomeDistance": 11.16875,
+        "minedCells": 16.46875,
+        "n": 160,
+        "promotions": 0.0,
+        "tierUsage": {
+          "1": 1865,
+          "2": 204,
+          "3": 0,
+          "4": 0
+        },
+        "incomeAt": {
+          "1": {
+            "n": 160,
+            "mean": 7.0
+          },
+          "2": {
+            "n": 160,
+            "mean": 8.60625
+          },
+          "3": {
+            "n": 160,
+            "mean": 9.36875
+          },
+          "5": {
+            "n": 160,
+            "mean": 11.01875
+          },
+          "10": {
+            "n": 147,
+            "mean": 21.040816326530614
+          },
+          "20": {
+            "n": 37,
+            "mean": 40.5945945945946
+          }
+        }
+      }
+    },
+    "Mono-water": {
+      "A": {
+        "mineActions": 41.20625,
+        "mineYield": 68.175,
+        "moveActions": 51.41875,
+        "moveBudget": 51.41875,
+        "awayYield": 37.95,
+        "fourthFifth": 0.0,
+        "maxHomeDistance": 11.81875,
+        "minedCells": 37.81875,
+        "n": 160,
+        "promotions": 0.0,
+        "tierUsage": {
+          "1": 1732,
+          "2": 1786,
+          "3": 0,
+          "4": 0
+        },
+        "incomeAt": {
+          "1": {
+            "n": 160,
+            "mean": 7.0
+          },
+          "2": {
+            "n": 160,
+            "mean": 11.95625
+          },
+          "3": {
+            "n": 160,
+            "mean": 17.78125
+          },
+          "5": {
+            "n": 160,
+            "mean": 27.13125
+          },
+          "10": {
+            "n": 160,
+            "mean": 45.26875
+          },
+          "20": {
+            "n": 91,
+            "mean": 68.45054945054945
+          }
+        }
+      },
+      "D": {
+        "mineActions": 40.975,
+        "mineYield": 67.75625,
+        "moveActions": 50.30625,
+        "moveBudget": 50.30625,
+        "awayYield": 37.56875,
+        "fourthFifth": 0.0,
+        "maxHomeDistance": 11.75,
+        "minedCells": 37.58125,
+        "n": 160,
+        "promotions": 0.0,
+        "tierUsage": {
+          "1": 1722,
+          "2": 1773,
+          "3": 0,
+          "4": 0
+        },
+        "incomeAt": {
+          "1": {
+            "n": 160,
+            "mean": 7.0
+          },
+          "2": {
+            "n": 160,
+            "mean": 11.95625
+          },
+          "3": {
+            "n": 160,
+            "mean": 17.78125
+          },
+          "5": {
+            "n": 160,
+            "mean": 27.13125
+          },
+          "10": {
+            "n": 160,
+            "mean": 45.26875
+          },
+          "20": {
+            "n": 86,
+            "mean": 68.02325581395348
+          }
+        }
+      }
+    },
+    "RouteBasic": {
+      "A": {
+        "mineActions": 73.171875,
+        "mineYield": 174.6,
+        "moveActions": 57.065625,
+        "moveBudget": 57.065625,
+        "awayYield": 106.74375,
+        "fourthFifth": 0.0,
+        "maxHomeDistance": 13.209375,
+        "minedCells": 65.403125,
+        "n": 320,
+        "promotions": 2.903125,
+        "tierUsage": {
+          "1": 18392,
+          "2": 929,
+          "3": 0,
+          "4": 0
+        },
+        "incomeAt": {
+          "1": {
+            "n": 320,
+            "mean": 9.9
+          },
+          "2": {
+            "n": 320,
+            "mean": 16.9625
+          },
+          "3": {
+            "n": 320,
+            "mean": 24.35
+          },
+          "5": {
+            "n": 311,
+            "mean": 39.964630225080384
+          },
+          "10": {
+            "n": 288,
+            "mean": 82.47569444444444
+          },
+          "20": {
+            "n": 273,
+            "mean": 147.89743589743588
+          }
+        }
+      },
+      "D": {
+        "mineActions": 70.1625,
+        "mineYield": 162.6,
+        "moveActions": 56.390625,
+        "moveBudget": 56.390625,
+        "awayYield": 100.346875,
+        "fourthFifth": 0.0,
+        "maxHomeDistance": 13.109375,
+        "minedCells": 63.434375,
+        "n": 320,
+        "promotions": 2.625,
+        "tierUsage": {
+          "1": 17311,
+          "2": 840,
+          "3": 0,
+          "4": 0
+        },
+        "incomeAt": {
+          "1": {
+            "n": 320,
+            "mean": 9.9
+          },
+          "2": {
+            "n": 320,
+            "mean": 16.9625
+          },
+          "3": {
+            "n": 320,
+            "mean": 24.15
+          },
+          "5": {
+            "n": 312,
+            "mean": 38.87820512820513
+          },
+          "10": {
+            "n": 285,
+            "mean": 80.1719298245614
+          },
+          "20": {
+            "n": 271,
+            "mean": 142.29151291512915
+          }
+        }
+      }
+    },
+    "RouteTech": {
+      "A": {
+        "mineActions": 66.90357142857142,
+        "mineYield": 159.86428571428573,
+        "moveActions": 52.675,
+        "moveBudget": 52.675,
+        "awayYield": 93.63214285714285,
+        "fourthFifth": 0.0,
+        "maxHomeDistance": 13.294642857142858,
+        "minedCells": 60.51428571428571,
+        "n": 560,
+        "promotions": 2.5125,
+        "tierUsage": {
+          "1": 28550,
+          "2": 1407,
+          "3": 0,
+          "4": 0
+        },
+        "incomeAt": {
+          "1": {
+            "n": 560,
+            "mean": 9.982142857142858
+          },
+          "2": {
+            "n": 560,
+            "mean": 17.360714285714284
+          },
+          "3": {
+            "n": 560,
+            "mean": 25.510714285714286
+          },
+          "5": {
+            "n": 555,
+            "mean": 41.652252252252254
+          },
+          "10": {
+            "n": 522,
+            "mean": 84.70114942528735
+          },
+          "20": {
+            "n": 494,
+            "mean": 138.89676113360323
+          }
+        }
+      },
+      "D": {
+        "mineActions": 63.16607142857143,
+        "mineYield": 146.84107142857144,
+        "moveActions": 50.385714285714286,
+        "moveBudget": 50.385714285714286,
+        "awayYield": 86.83214285714286,
+        "fourthFifth": 0.0,
+        "maxHomeDistance": 13.160714285714286,
+        "minedCells": 57.93214285714286,
+        "n": 560,
+        "promotions": 2.280357142857143,
+        "tierUsage": {
+          "1": 25703,
+          "2": 1277,
+          "3": 0,
+          "4": 0
+        },
+        "incomeAt": {
+          "1": {
+            "n": 560,
+            "mean": 9.982142857142858
+          },
+          "2": {
+            "n": 560,
+            "mean": 17.376785714285713
+          },
+          "3": {
+            "n": 560,
+            "mean": 25.201785714285716
+          },
+          "5": {
+            "n": 555,
+            "mean": 40.65765765765766
+          },
+          "10": {
+            "n": 518,
+            "mean": 82.503861003861
+          },
+          "20": {
+            "n": 473,
+            "mean": 135.13742071881606
+          }
+        }
+      }
+    },
+    "Rush": {
+      "A": {
+        "mineActions": 6.925,
+        "mineYield": 14.840625,
+        "moveActions": 62.66875,
+        "moveBudget": 62.66875,
+        "awayYield": 3.415625,
+        "fourthFifth": 0.0,
+        "maxHomeDistance": 6.76875,
+        "minedCells": 6.925,
+        "n": 320,
+        "promotions": 0.0,
+        "tierUsage": {
+          "1": 4724,
+          "2": 0,
+          "3": 0,
+          "4": 0
+        },
+        "incomeAt": {
+          "1": {
+            "n": 320,
+            "mean": 5.0
+          },
+          "2": {
+            "n": 320,
+            "mean": 5.0375
+          },
+          "3": {
+            "n": 320,
+            "mean": 5.175
+          },
+          "5": {
+            "n": 317,
+            "mean": 6.570977917981073
+          },
+          "10": {
+            "n": 249,
+            "mean": 12.116465863453815
+          },
+          "20": {
+            "n": 209,
+            "mean": 17.842105263157894
+          }
+        }
+      },
+      "D": {
+        "mineActions": 6.7625,
+        "mineYield": 14.515625,
+        "moveActions": 62.24375,
+        "moveBudget": 62.24375,
+        "awayYield": 3.209375,
+        "fourthFifth": 0.0,
+        "maxHomeDistance": 6.61875,
+        "minedCells": 6.7625,
+        "n": 320,
+        "promotions": 0.0,
+        "tierUsage": {
+          "1": 4598,
+          "2": 0,
+          "3": 0,
+          "4": 0
+        },
+        "incomeAt": {
+          "1": {
+            "n": 320,
+            "mean": 5.0
+          },
+          "2": {
+            "n": 320,
+            "mean": 5.0375
+          },
+          "3": {
+            "n": 320,
+            "mean": 5.2
+          },
+          "5": {
+            "n": 317,
+            "mean": 6.6025236593059935
+          },
+          "10": {
+            "n": 244,
+            "mean": 12.28688524590164
+          },
+          "20": {
+            "n": 198,
+            "mean": 17.92929292929293
+          }
+        }
+      }
+    },
+    "Tier1Spam": {
+      "A": {
+        "mineActions": 47.75,
+        "mineYield": 55.9625,
+        "moveActions": 96.3625,
+        "moveBudget": 96.3625,
+        "awayYield": 26.8625,
+        "fourthFifth": 0.0,
+        "maxHomeDistance": 13.0125,
+        "minedCells": 43.85,
+        "n": 80,
+        "promotions": 0.0,
+        "tierUsage": {
+          "1": 4403,
+          "2": 0,
+          "3": 0,
+          "4": 0
+        },
+        "incomeAt": {
+          "1": {
+            "n": 80,
+            "mean": 7.0
+          },
+          "2": {
+            "n": 80,
+            "mean": 10.7875
+          },
+          "3": {
+            "n": 80,
+            "mean": 12.525
+          },
+          "5": {
+            "n": 80,
+            "mean": 15.275
+          },
+          "10": {
+            "n": 77,
+            "mean": 26.051948051948052
+          },
+          "20": {
+            "n": 76,
+            "mean": 41.473684210526315
+          }
+        }
+      },
+      "D": {
+        "mineActions": 44.4625,
+        "mineYield": 52.2375,
+        "moveActions": 84.3625,
+        "moveBudget": 84.3625,
+        "awayYield": 25.1625,
+        "fourthFifth": 0.0,
+        "maxHomeDistance": 13.125,
+        "minedCells": 41.275,
+        "n": 80,
+        "promotions": 0.0,
+        "tierUsage": {
+          "1": 4115,
+          "2": 0,
+          "3": 0,
+          "4": 0
+        },
+        "incomeAt": {
+          "1": {
+            "n": 80,
+            "mean": 7.0
+          },
+          "2": {
+            "n": 80,
+            "mean": 10.7875
+          },
+          "3": {
+            "n": 80,
+            "mean": 12.525
+          },
+          "5": {
+            "n": 80,
+            "mean": 15.1625
+          },
+          "10": {
+            "n": 74,
+            "mean": 26.094594594594593
+          },
+          "20": {
+            "n": 66,
+            "mean": 41.81818181818182
+          }
+        }
+      }
+    },
+    "Turtle": {
+      "A": {
+        "mineActions": 22.0,
+        "mineYield": 48.4875,
+        "moveActions": 17.7,
+        "moveBudget": 17.7,
+        "awayYield": 0.0,
+        "fourthFifth": 2.1625,
+        "maxHomeDistance": 5.63125,
+        "minedCells": 17.91875,
+        "n": 160,
+        "promotions": 0.0,
+        "tierUsage": {
+          "1": 862,
+          "2": 407,
+          "3": 8,
+          "4": 0
+        },
+        "incomeAt": {
+          "1": {
+            "n": 160,
+            "mean": 9.0
+          },
+          "2": {
+            "n": 160,
+            "mean": 16.20625
+          },
+          "3": {
+            "n": 160,
+            "mean": 23.475
+          },
+          "5": {
+            "n": 140,
+            "mean": 34.02857142857143
+          },
+          "10": {
+            "n": 108,
+            "mean": 51.24074074074074
+          },
+          "20": {
+            "n": 79,
+            "mean": 65.0506329113924
+          }
+        }
+      },
+      "D": {
+        "mineActions": 19.50625,
+        "mineYield": 41.93125,
+        "moveActions": 15.71875,
+        "moveBudget": 15.71875,
+        "awayYield": 0.0,
+        "fourthFifth": 0.93125,
+        "maxHomeDistance": 5.53125,
+        "minedCells": 16.875,
+        "n": 160,
+        "promotions": 0.0,
+        "tierUsage": {
+          "1": 674,
+          "2": 276,
+          "3": 1,
+          "4": 0
+        },
+        "incomeAt": {
+          "1": {
+            "n": 160,
+            "mean": 9.0
+          },
+          "2": {
+            "n": 160,
+            "mean": 16.20625
+          },
+          "3": {
+            "n": 160,
+            "mean": 23.33125
+          },
+          "5": {
+            "n": 140,
+            "mean": 32.621428571428574
+          },
+          "10": {
+            "n": 108,
+            "mean": 44.851851851851855
+          },
+          "20": {
+            "n": 69,
+            "mean": 54.01449275362319
+          }
+        }
+      }
+    }
+  }
+}
