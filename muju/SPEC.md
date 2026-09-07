@@ -8,9 +8,10 @@ document and the code disagree, that is a bug in one of them: see
 of known divergences. The stat tables in §7 are transcriptions of
 `src/game/units.ts`, which is the canonical stat source.
 
-**Spec version:** v1.2 (2026-06-09) — first spec rewrite to match shipped
-rules. History: v1.0 (original design), v1.1 (`docs/v1.1-spec.md`, playtest
-balance pass).
+**Spec version:** v1.3 (2026-09-07) — Lightning threat and Plant economy
+progression, evaluated with a static value solver and paired game trials.
+History: v1.0 (original design), v1.1 (`docs/v1.1-spec.md`, historical playtest
+balance pass), v1.2 (2026-06-09 canonical rules rewrite).
 
 ---
 
@@ -180,10 +181,10 @@ Stat columns: ATK / DEF / SPD / MINE / Cost / Build time.
 ### Lightning (Rush — SPD specialist) — Swahili
 | Tier | Name | ATK | DEF | SPD | MINE | Cost | Build |
 |---|---|---|---|---|---|---|---|
-| 1 | Radi | 1 | 1 | 3 | 0 | 1 | 1 |
-| 2 | Umeme | 2 | 1 | 4 | 0 | 3 | 1 |
-| 3 | Kimubunga | 2 | 1 | 5 | 1 | 6 | 2 |
-| 4 | Dhorubakali | 3 | 1 | 6 | 1 | 10 | 2 |
+| 1 | Radi | 2 | 1 | 3 | 0 | 1 | 1 |
+| 2 | Umeme | 3 | 1 | 4 | 0 | 3 | 1 |
+| 3 | Kimubunga | 3 | 1 | 5 | 1 | 6 | 2 |
+| 4 | Dhorubakali | 4 | 1 | 6 | 1 | 10 | 2 |
 
 ### Water (Balanced — DEF-leaning) — Norse
 | Tier | Name | ATK | DEF | SPD | MINE | Cost | Build |
@@ -205,9 +206,9 @@ Stat columns: ATK / DEF / SPD / MINE / Cost / Build time.
 | Tier | Name | ATK | DEF | SPD | MINE | Cost | Build |
 |---|---|---|---|---|---|---|---|
 | 1 | Muju | 0 | 2 | 1 | 3 | 3 | 2 |
-| 2 | Sachita | 1 | 3 | 1 | 3 | 6 | 2 |
-| 3 | Sachakuna | 2 | 4 | 1 | 4 | 12 | 3 |
-| 4 | Cuauhtlimallki | 3 | 5 | 1 | 5 | 20 | 3 |
+| 2 | Sachita | 1 | 3 | 1 | 4 | 6 | 2 |
+| 3 | Sachakuna | 2 | 4 | 1 | 5 | 12 | 3 |
+| 4 | Cuauhtlimallki | 3 | 5 | 2 | 5 | 20 | 3 |
 
 ### Metal (Expand — DEF specialist) — Lakota
 | Tier | Name | ATK | DEF | SPD | MINE | Cost | Build |
@@ -281,5 +282,6 @@ Engine/UI/AI divergences from this spec are tracked in
 2026-09-07 correctness repair resolves D1–D6 and D11–D14, retains intentional
 rules D7–D9, and documents the remaining planning limitation D10. See
 `docs/AI_CORRECTNESS-2026-09-07.md` for changes and evidence. Design judgment
-calls are in `JUDGMENT_LOG.md`. Catalogue recommendations in
-`docs/BALANCE_REVIEW-2026-09-07.md` are experiments, not current rules.
+calls are in `JUDGMENT_LOG.md`. The initial review in `docs/BALANCE_REVIEW-2026-09-07.md` is historical;
+`docs/BALANCE_IMPLEMENTATION-2026-09-07.md` records the subsequently authorized
+v1.3 catalogue changes and their validation.

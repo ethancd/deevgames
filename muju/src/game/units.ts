@@ -1,6 +1,7 @@
 import type { UnitDefinition, Element } from './types';
 
-// All 24 unit definitions - v1.1 stats
+// All 24 unit definitions — v1.3 role balance (2026-09-07).
+// Evidence and static-value model: docs/BALANCE_IMPLEMENTATION-2026-09-07.md.
 export const UNIT_DEFINITIONS: UnitDefinition[] = [
   // Fire (Rush) - Japanese
   {
@@ -63,7 +64,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     element: 'lightning',
     tier: 1,
     archetype: 'rush',
-    attack: 1,
+    attack: 2,
     defense: 1,
     speed: 3,
     mining: 0,
@@ -76,7 +77,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     element: 'lightning',
     tier: 2,
     archetype: 'rush',
-    attack: 2,
+    attack: 3,
     defense: 1,
     speed: 4,
     mining: 0,
@@ -89,7 +90,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     element: 'lightning',
     tier: 3,
     archetype: 'rush',
-    attack: 2,
+    attack: 3,
     defense: 1,
     speed: 5,
     mining: 1,
@@ -102,7 +103,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     element: 'lightning',
     tier: 4,
     archetype: 'rush',
-    attack: 3,
+    attack: 4,
     defense: 1,
     speed: 6,
     mining: 1,
@@ -241,7 +242,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     attack: 1,
     defense: 3,
     speed: 1,
-    mining: 3,
+    mining: 4,
     cost: 6,
     buildTime: 2,
   },
@@ -254,7 +255,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     attack: 2,
     defense: 4,
     speed: 1,
-    mining: 4,
+    mining: 5,
     cost: 12,
     buildTime: 3,
   },
@@ -266,7 +267,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     archetype: 'expand',
     attack: 3,
     defense: 5,
-    speed: 1,
+    speed: 2,
     mining: 5,
     cost: 20,
     buildTime: 3,

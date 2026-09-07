@@ -91,12 +91,12 @@ describe('Mining Module', () => {
         expect(calculateMiningYield(unit, cell)).toBe(1);
       });
 
-      it('Sachita (Mining 3) gets 1 from cell where depths 1-2 are mined', () => {
-        const unit = createUnit('plant_2', 'white', { x: 0, y: 0 }); // Mining: 3
+      it('Sachita (Mining 4) gets 2 from cell where depths 1-2 are mined', () => {
+        const unit = createUnit('plant_2', 'white', { x: 0, y: 0 }); // Mining: 4
         const cell = { position: { x: 0, y: 0 }, resourceLayers: 3, minedDepth: 2 };
 
-        // Can reach depth 3, gets 1 layer
-        expect(calculateMiningYield(unit, cell)).toBe(1);
+        // Can reach depths 3–4, gets 2 layers
+        expect(calculateMiningYield(unit, cell)).toBe(2);
       });
     });
 
@@ -301,31 +301,29 @@ describe('Mining Module', () => {
 
     it('multiple units mine same cell progressively', () => {
       let board = createEmptyBoard();
-
-      // First: Sachita (Mining 3) extracts 3
       let cell = getCell(board, { x: 0, y: 0 })!;
-      const sachita = createUnit('plant_2', 'white', { x: 0, y: 0 });
-      expect(calculateMiningYield(sachita, cell)).toBe(3);
-
+      const muju = createUnit('plant_1', 'white', { x: 0, y: 0 });
+      expect(calculateMiningYield(muju, cell)).toBe(3);
       board = updateCell(board, { x: 0, y: 0 }, { resourceLayers: 2, minedDepth: 3 });
       cell = getCell(board, { x: 0, y: 0 })!;
+      expect(calculateMiningYield(muju, cell)).toBe(0);
 
-      // Sachita is now dry (top at depth 4)
-      expect(calculateMiningYield(sachita, cell)).toBe(0);
-
-      // Sachakuna (Mining 4) can get 1 more
-      const sachakuna = createUnit('plant_3', 'white', { x: 0, y: 0 });
-      expect(calculateMiningYield(sachakuna, cell)).toBe(1);
-
+      // Sachita reaches one layer deeper, and cannot repeat-mine it.
+      const sachita = createUnit('plant_2', 'white', { x: 0, y: 0 });
+      expect(calculateMiningYield(sachita, cell)).toBe(1);
       board = updateCell(board, { x: 0, y: 0 }, { resourceLayers: 1, minedDepth: 4 });
       cell = getCell(board, { x: 0, y: 0 })!;
+      expect(calculateMiningYield(sachita, cell)).toBe(0);
 
-      // Sachakuna is now dry (top at depth 5)
-      expect(calculateMiningYield(sachakuna, cell)).toBe(0);
-
-      // Only Cuauhtlimallki (Mining 5) can get the last one
+      // Tier 3 now accesses depth 5; tier 4 shares depth access but relocates faster.
+      const sachakuna = createUnit('plant_3', 'white', { x: 0, y: 0 });
       const cuauhtlimallki = createUnit('plant_4', 'white', { x: 0, y: 0 });
+      expect(calculateMiningYield(sachakuna, cell)).toBe(1);
       expect(calculateMiningYield(cuauhtlimallki, cell)).toBe(1);
+      board = updateCell(board, { x: 0, y: 0 }, { resourceLayers: 0, minedDepth: 5 });
+      cell = getCell(board, { x: 0, y: 0 })!;
+      expect(calculateMiningYield(sachakuna, cell)).toBe(0);
+      expect(calculateMiningYield(cuauhtlimallki, cell)).toBe(0);
     });
   });
 });

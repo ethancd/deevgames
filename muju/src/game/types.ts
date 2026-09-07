@@ -59,7 +59,7 @@ export interface Unit {
   hasAttacked: boolean;
   hasMined: boolean;
   // State flags
-  canActThisTurn: boolean; // False if just placed or promoted
+  canActThisTurn: boolean; // Action eligibility; placement and promotion do not impose summoning sickness
   // Damage state (resets at end of attacker's turn)
   damageTaken: number; // Reduces effective defense; resets when attacked player's turn starts
   // Promotion tracking (resets at end of placement phase)

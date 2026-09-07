@@ -152,11 +152,10 @@ describe('Combat Module', () => {
     });
 
     it('attack power cannot go below 0', () => {
-      // Radi has attack 1, disadvantage gives -1, should floor at 0
-      const attacker = createUnit('lightning_1', 'white', { x: 0, y: 0 }); // Attack: 1
-      const defender = createUnit('shadow_1', 'black', { x: 0, y: 1 }); // Wind beats Lightning
-
-      expect(calculateAttackPower(attacker, defender)).toBe(0); // max(0, 1-1)
+      // Muju has attack 0 and is disadvantaged against Fire.
+      const attacker = createUnit('plant_1', 'white', { x: 0, y: 0 });
+      const defender = createUnit('fire_1', 'black', { x: 0, y: 1 });
+      expect(calculateAttackPower(attacker, defender)).toBe(0); // max(0, 0 - 1)
     });
   });
 
@@ -188,7 +187,7 @@ describe('Combat Module', () => {
 
     it('defender survives when attack < defense', () => {
       let board = createEmptyBoard();
-      const attacker = createUnit('lightning_1', 'white', { x: 5, y: 5 }); // Attack: 1
+      const attacker = createUnit('lightning_1', 'white', { x: 5, y: 5 }); // Attack: 2
       const defender = createUnit('water_1', 'black', { x: 5, y: 4 }); // Defense: 2
       board = addUnit(board, attacker);
       board = addUnit(board, defender);
@@ -318,7 +317,7 @@ describe('Combat Module', () => {
     });
 
     it('returns false if attacker cannot kill defender', () => {
-      const attacker = createUnit('lightning_1', 'white', { x: 0, y: 0 }); // Attack: 1
+      const attacker = createUnit('lightning_1', 'white', { x: 0, y: 0 }); // Attack: 2
       const defender = createUnit('water_1', 'black', { x: 0, y: 1 }); // Defense: 2
 
       expect(canBeEliminated(defender, attacker)).toBe(false);
@@ -437,15 +436,15 @@ describe('Combat Module', () => {
     });
 
     it('three advantaged 1-atk units CAN kill a 4-def unit', () => {
-      // 3x Lightning units (1 atk each) vs Metal unit (4 def)
-      // Lightning beats Metal: each attacker gets +1
+      // 3x Inyan units (1 atk each) vs Aegirinn (4 def)
+      // Metal beats Water: each attacker gets +1
       // Combined: (1+1) + (1+1) + (1+1) = 6 total attack
       // 6 >= 4, defender eliminated
 
-      const attacker1 = createUnit('lightning_1', 'white', { x: 0, y: 0 }); // 1 atk
-      const attacker2 = createUnit('lightning_1', 'white', { x: 1, y: 1 }); // 1 atk
-      const attacker3 = createUnit('lightning_1', 'white', { x: 2, y: 2 }); // 1 atk
-      const defender = createUnit('metal_2', 'black', { x: 5, y: 5 }); // 4 def (Mazaska)
+      const attacker1 = createUnit('metal_1', 'white', { x: 0, y: 0 }); // 1 atk
+      const attacker2 = createUnit('metal_1', 'white', { x: 1, y: 1 }); // 1 atk
+      const attacker3 = createUnit('metal_1', 'white', { x: 2, y: 2 }); // 1 atk
+      const defender = createUnit('water_3', 'black', { x: 5, y: 5 }); // 4 def (Aegirinn)
 
       const power1 = calculateAttackPower(attacker1, defender);
       const power2 = calculateAttackPower(attacker2, defender);
@@ -465,16 +464,16 @@ describe('Combat Module', () => {
 
     it('mixed elemental modifiers in combined attack', () => {
       // Double-thick triangle: Fire/Lightning pair beats Plant/Metal pair
-      // Fire + Water + Lightning vs Plant (3 def)
+      // Fire + Water + Lightning vs Plant (2 def)
       // Fire vs Plant: advantage (+1) → 2+1 = 3
       // Water vs Plant: disadvantage (-1) → 2-1 = 1
-      // Lightning vs Plant: advantage (+1) → 1+1 = 2 (Fire/Lightning pair beats Plant/Metal pair)
-      // Combined: 3 + 1 + 2 = 6 >= 3, defender eliminated
+      // Lightning vs Plant: advantage (+1) → 2+1 = 3 (Fire/Lightning pair beats Plant/Metal pair)
+      // Combined: 3 + 1 + 3 = 7 >= 2, defender eliminated
 
       const fireAttacker = createUnit('fire_1', 'white', { x: 0, y: 0 }); // 2 atk
       const waterAttacker = createUnit('water_1', 'white', { x: 1, y: 1 }); // 2 atk
-      const lightningAttacker = createUnit('lightning_1', 'white', { x: 2, y: 2 }); // 1 atk
-      const defender = createUnit('plant_1', 'black', { x: 5, y: 5 }); // 3 def
+      const lightningAttacker = createUnit('lightning_1', 'white', { x: 2, y: 2 }); // 2 atk
+      const defender = createUnit('plant_1', 'black', { x: 5, y: 5 }); // 2 def
 
       const firePower = calculateAttackPower(fireAttacker, defender);
       const waterPower = calculateAttackPower(waterAttacker, defender);
@@ -482,10 +481,10 @@ describe('Combat Module', () => {
 
       expect(firePower).toBe(3); // advantage (Fire/Lightning pair beats Plant/Metal pair)
       expect(waterPower).toBe(1); // disadvantage (Water/Shadow pair loses to Plant/Metal pair)
-      expect(lightningPower).toBe(2); // advantage (Fire/Lightning pair beats Plant/Metal pair)
+      expect(lightningPower).toBe(3); // advantage (Fire/Lightning pair beats Plant/Metal pair)
 
       const totalAttack = firePower + waterPower + lightningPower;
-      expect(totalAttack).toBe(6);
+      expect(totalAttack).toBe(7);
     });
   });
 });

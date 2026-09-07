@@ -1,5 +1,7 @@
 # Muju AI correctness repair — 2026-09-07
 
+> Subsequent authorized work: the static value solver and v1.3 catalogue changes are now implemented. See [implementation and validation](BALANCE_IMPLEMENTATION-2026-09-07.md). The original report below describes its earlier checkpoint.
+
 Base: `512fe0dccf4ed68a69014d7e26ff28ac9ca6b808`. Work branch: `codex/muju-correctness-balance`. This is a source repair, not a production deployment. Unit statistics, elemental relationships and intended gameplay rules are unchanged. See [balance analysis](BALANCE_REVIEW-2026-09-07.md) for separately evaluated prototypes.
 
 ## What changed

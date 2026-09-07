@@ -11,7 +11,10 @@
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
     "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui"
+    "test:e2e:ui": "playwright test --ui",
+    "balance:static": "node --import tsx lab/solver/run.ts",
+    "balance:check": "node --import tsx lab/solver/run.ts current --check",
+    "balance:types": "tsc -p lab/solver/tsconfig.json --noEmit"
   },
   "devDependencies": {
     "@playwright/test": "^1.57.0",

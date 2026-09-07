@@ -79,3 +79,7 @@ Ephemeral container (push at every checkpoint, summaries over raw logs); MCTS to
 ## September 7, 2026 continuation
 
 Correctness repairs and an exploratory E8 design screen are implemented on `codex/muju-correctness-balance`. See [repair](../../docs/AI_CORRECTNESS-2026-09-07.md) and [recommendations with adversarial critique](../../docs/BALANCE_REVIEW-2026-09-07.md). This work does not apply or release a catalogue rebalance. Retire the rigid fixed-Rush target as the sole aggression criterion; evaluate adaptive strategies, actual finishes versus caps, all-tier roles and mixed-army counterplay. The review defines the remaining validation before P4/P5 can be called complete.
+
+## Authorized v1.3 continuation: static solver and applied catalogue
+
+The user subsequently requested implementation. Seven catalogue values now improve Lightning threat and Plant extraction/relocation. The static solver checks discrete role, combat, movement, extraction and financing tradeoffs before scripted play; the new E9 campaign records 12,800 completed games. See [implementation, adversarial review and validation](../../docs/BALANCE_IMPLEMENTATION-2026-09-07.md) and [solver equations/assumptions](../solver/README.md). This is an implemented balance iteration; production deployment and comprehensive human/expert balance validation are separate.

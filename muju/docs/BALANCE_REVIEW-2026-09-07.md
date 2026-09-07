@@ -1,5 +1,7 @@
 # Muju Hono Tanka: preserve the game, expand the viable choices
 
+> Subsequent authorized work: the static value solver and v1.3 catalogue changes are now implemented. See [implementation and validation](BALANCE_IMPLEMENTATION-2026-09-07.md). The original report below describes its earlier checkpoint.
+
 2026-09-07. Base: `512fe0dccf4ed68a69014d7e26ff28ac9ca6b808` (September 7 launch). June 9–10 reports are in `lab/docs/STATUS-2026-06-10.md`, `SPEC_AUDIT.md`, and `EXPERIMENTS.md`. Their lab was merged July 18; their proposed catalogue rebalance was not implemented. This work fixes correctness and evaluates balance candidates. **The production unit catalogue remains unchanged.** All parameter changes below exist only in the experiment process.
 
 ## Recommendation

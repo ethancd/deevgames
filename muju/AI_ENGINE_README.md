@@ -64,3 +64,7 @@ The game screen includes an AI console panel that lists the top candidate plans 
 Human, AI and simulated actions now share `game/legality.ts` and the immutable transition in `ai/simulate.ts`. Illegal actions cost nothing; plans are filtered against the real state, and place/action/queue transitions are explicit. Deterministic entity IDs keep the UI reducer and AI shadow synchronized. Opponent committed spending is masked by public manifested spending. MCTS widens root alternatives and models adversarial choices; tactical search respects multiple actions within one turn. Purchase scoring and resignation now account for recoverable own assets. The UI no longer truncates turns at 20 dispatches.
 
 See [repair details and tests](docs/AI_CORRECTNESS-2026-09-07.md) and [balance recommendations](docs/BALANCE_REVIEW-2026-09-07.md). The production catalogue is unchanged. Correctness is not a claim of optimal play or recalibrated difficulty.
+
+## Static value model and v1.3 catalogue
+
+`npm run balance:static` analyzes the catalogue before playtests; it is intentionally separate from AI evaluation and does not change search weights. v1.3 improves Lightning attack and Plant mining/relocation. Read [implementation and limits](docs/BALANCE_IMPLEMENTATION-2026-09-07.md) and [the model](lab/solver/README.md) before interpreting its local mission witnesses or conditional prices as strategic strength.
