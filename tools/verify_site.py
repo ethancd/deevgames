@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Check the assembled multi-game site before publishing to Pages."""
 import sys
+import re
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
@@ -32,6 +33,14 @@ for file in root.rglob("*"):
         errors.append(f"Over Pages' 25 MiB file limit: {file.relative_to(root)}")
     if file.name.startswith(".") or file.suffix in {".ts", ".tsx", ".rb", ".py"}:
         errors.append(f"Unexpected source/private file: {file.relative_to(root)}")
+    if file.suffix == ".wasm" and file.read_bytes()[:4] != b"\x00asm":
+        errors.append(f"Invalid WASM binary: {file.relative_to(root)}")
+    if file.suffix == ".js":
+        # Vite worker and WASM dependencies are runtime imports, absent from HTML.
+        for url in re.findall(r"[\"'](/(?:muju|forge|oracle)/assets/[^\"']+)[\"']", file.read_text()):
+            target = root / urlsplit(url).path.lstrip("/")
+            if not target.is_file():
+                errors.append(f"Missing runtime asset in {file.relative_to(root)}: {url}")
     if file.suffix != ".html":
         continue
     parser = Links()

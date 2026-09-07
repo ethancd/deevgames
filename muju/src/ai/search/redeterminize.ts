@@ -1,3 +1,4 @@
+import type { RNG } from '../runtime';
 import type { FullKnowledge } from '../state/types';
 import type { GameState, PlayerId } from '../../game/types';
 
@@ -5,9 +6,9 @@ function getOpponent(player: PlayerId): PlayerId {
   return player === 'white' ? 'black' : 'white';
 }
 
-export function redeterminize(knowledge: FullKnowledge, forPlayer: PlayerId): GameState {
+export function redeterminize(knowledge: FullKnowledge, forPlayer: PlayerId, rng: RNG = Math.random): GameState {
   const opponentId = getOpponent(forPlayer);
-  const particle = sampleParticle(knowledge.opponentBelief);
+  const particle = sampleParticle(knowledge.opponentBelief, rng);
 
   return {
     phase: knowledge.public.phase,
@@ -35,13 +36,13 @@ export function redeterminize(knowledge: FullKnowledge, forPlayer: PlayerId): Ga
   };
 }
 
-function sampleParticle(belief: FullKnowledge['opponentBelief']) {
+function sampleParticle(belief: FullKnowledge['opponentBelief'], rng: RNG) {
   if (belief.particles.length === 0) {
     return { resources: belief.minResources, buildQueue: [] };
   }
 
   const totalWeight = belief.particles.reduce((sum, p) => sum + p.weight, 0);
-  const r = Math.random() * totalWeight;
+  const r = rng() * totalWeight;
   let running = 0;
   for (const particle of belief.particles) {
     running += particle.weight;

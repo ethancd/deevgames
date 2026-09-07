@@ -36,7 +36,9 @@ export function evaluatePosition(
 
   const opponent: PlayerId = forPlayer === 'white' ? 'black' : 'white';
 
-  let score = homeOccupationPressure(state, forPlayer);
+  // Occupation is a threat, not a win. Verified reply-turn proofs are injected
+  // by the tactical service; keep the static corner prior modest.
+  let score = 0.08 * homeOccupationPressure(state, forPlayer);
 
   // Unit value (based on cost/tier)
   score += weights.unitValue * (
@@ -362,7 +364,7 @@ export function quickEvaluate(state: GameState, forPlayer: PlayerId): number {
   const opponent: PlayerId = forPlayer === 'white' ? 'black' : 'white';
 
   // Just unit value difference
-  return calculateUnitValue(state, forPlayer) - calculateUnitValue(state, opponent) + homeOccupationPressure(state, forPlayer);
+  return calculateUnitValue(state, forPlayer) - calculateUnitValue(state, opponent) + 0.08 * homeOccupationPressure(state, forPlayer);
 }
 
 /**

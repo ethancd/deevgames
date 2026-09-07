@@ -172,18 +172,23 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
     return getMovementRange(unit.position, speed, totalActions, state.board);
   }, [selectedUnitData, viewedEnemyUnitData, selectedPlaceUnitData, state.turn.currentPlayer, state.turn.phase, state.turn.actionsRemaining, state.board, isCurrentPlayerHuman, showEnemyRange]);
 
+  const latestState = useRef(state); latestState.current = state;
+  const getCurrentState = useCallback(() => latestState.current, []);
+
   // AI for "white" side (used in AI vs AI mode)
   const whiteAI = useAI({
     difficulty: config.aiDifficulty.white,
     thinkingDelay: 400,
-    enabled: config.controls.white === 'ai',
+    enabled: config.controls.white === 'ai' && !isPaused && state.phase === 'playing',
+    getCurrentState, state,
   });
 
   // AI for "black" side (used in vs-ai and ai-vs-ai modes)
   const blackAI = useAI({
     difficulty: config.aiDifficulty.black,
     thinkingDelay: 400,
-    enabled: config.controls.black === 'ai',
+    enabled: config.controls.black === 'ai' && !isPaused && state.phase === 'playing',
+    getCurrentState, state,
   });
 
   const [showAIRecap, setShowAIRecap] = useState(false);
@@ -191,6 +196,12 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
   // Track which turn number each AI has executed to prevent duplicate execution on reload
   const [playerAiExecutedTurn, setPlayerAiExecutedTurn] = useState<number | null>(null);
   const [aiAiExecutedTurn, setAiAiExecutedTurn] = useState<number | null>(null);
+
+  // A changed controller/preset invalidates the old execution marker as well
+  // as its worker, so the current turn can resume with the new configuration.
+  useEffect(() => {
+    setPlayerAiExecutedTurn(null); setAiAiExecutedTurn(null);
+  }, [config.controls.white, config.controls.black, config.aiDifficulty.white, config.aiDifficulty.black]);
 
   // Combined isThinking state
   const isThinking = whiteAI.isThinking || blackAI.isThinking;
@@ -655,6 +666,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
   }, [selectedPlaceUnitData, selectedUnitData, state.board]);
 
   const handlePlayAgain = () => {
+    whiteAI.cancel(); blackAI.cancel();
     setPlayerAiExecutedTurn(null);
     setAiAiExecutedTurn(null);
     lastTurnPlayer.current = null;
@@ -663,10 +675,13 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
   };
 
   const handleBackToMenuClick = () => {
+    whiteAI.cancel(); blackAI.cancel();
     onBackToMenu();
   };
 
   const togglePause = () => {
+    whiteAI.cancel(); blackAI.cancel();
+    setPlayerAiExecutedTurn(null); setAiAiExecutedTurn(null);
     setIsPaused(!isPaused);
   };
 
@@ -721,6 +736,11 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
 
   return (
     <main className="game-shell">
+      {(whiteAI.error || blackAI.error) && <div role="alert">
+        The AI stopped thinking. Try again to keep playing.
+        <button onClick={() => { whiteAI.clearError(); blackAI.clearError(); whiteAI.cancel(); blackAI.cancel(); setPlayerAiExecutedTurn(null); setAiAiExecutedTurn(null); }}>Retry AI</button>
+      </div>}
+      {(whiteAI.warning || blackAI.warning) && <small role="status">AI is using its backup engine.</small>}
       {state.phase === 'victory' && state.winner && <VictoryScreen winner={state.winner} reason={state.victoryReason} onPlayAgain={handlePlayAgain} playerNames={playerNames} />}
       {showPassOverlay && <PassDeviceOverlay nextPlayer={state.turn.currentPlayer} onContinue={handleContinueFromPass} />}
       <InstructionsModal isOpen={showInstructions} onClose={() => setShowInstructions(false)} />

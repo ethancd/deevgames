@@ -1,3 +1,4 @@
+import type { SearchBudget } from '../runtime';
 import type { GameState, PlayerId } from '../../game/types';
 import type { EvaluationWeights } from '../types';
 import { evaluatePosition } from '../evaluation';
@@ -10,9 +11,11 @@ export function tacticalSharpen(
   state: GameState,
   forPlayer: PlayerId,
   depth: number,
-  weights?: EvaluationWeights
+  weights?: EvaluationWeights,
+  budget?: SearchBudget
 ): number {
-  if (depth === 0 || isTerminal(state) || !isHotPosition(state)) {
+  if (budget) budget.stats.evaluations++;
+  if (budget?.exhausted() || depth === 0 || isTerminal(state) || !isHotPosition(state)) {
     return evaluatePosition(state, forPlayer, weights);
   }
 
@@ -27,8 +30,9 @@ export function tacticalSharpen(
   const maximize = currentPlayer === forPlayer;
   let bestValue = evaluatePosition(state, forPlayer, weights);
   for (const action of tacticalPlans) {
+    if (budget && !budget.spend()) break;
     const nextState = applyAction(state, action);
-    const value = tacticalSharpen(nextState, forPlayer, depth - 1, weights);
+    const value = tacticalSharpen(nextState, forPlayer, depth - 1, weights, budget);
     bestValue = maximize ? Math.max(bestValue, value) : Math.min(bestValue, value);
   }
 

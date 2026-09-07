@@ -25,58 +25,7 @@ export function canMove(unit: Unit): boolean {
  */
 export function getValidMoves(unit: Unit, board: BoardState): Position[] {
   if (!canMove(unit)) return [];
-
-  const def = getUnitDefinition(unit.definitionId);
-  const speed = def.speed;
-  const validMoves: Position[] = [];
-
-  // Use BFS to find all reachable positions within speed
-  const visited = new Set<string>();
-  const queue: { pos: Position; distance: number }[] = [
-    { pos: unit.position, distance: 0 },
-  ];
-
-  const posKey = (p: Position) => `${p.x},${p.y}`;
-  visited.add(posKey(unit.position));
-
-  while (queue.length > 0) {
-    const { pos, distance } = queue.shift()!;
-
-    // If we've moved at least 1 square and position is valid, it's a valid move
-    if (distance > 0 && !isOccupied(board, pos)) {
-      validMoves.push(pos);
-    }
-
-    // Don't explore further if we've reached max speed
-    if (distance >= speed) continue;
-
-    // Explore orthogonal neighbors
-    const neighbors = [
-      { x: pos.x, y: pos.y - 1 },
-      { x: pos.x, y: pos.y + 1 },
-      { x: pos.x - 1, y: pos.y },
-      { x: pos.x + 1, y: pos.y },
-    ];
-
-    for (const neighbor of neighbors) {
-      if (!isValidPosition(neighbor)) continue;
-
-      const key = posKey(neighbor);
-      if (visited.has(key)) continue;
-
-      // Can only pass through empty squares (except final destination check is above)
-      if (isOccupied(board, neighbor)) {
-        // Can't move through, but mark as visited so we don't try again
-        visited.add(key);
-        continue;
-      }
-
-      visited.add(key);
-      queue.push({ pos: neighbor, distance: distance + 1 });
-    }
-  }
-
-  return validMoves;
+  return reachable(unit.position, getUnitDefinition(unit.definitionId).speed, board).map(p => p.position);
 }
 
 /**
@@ -219,69 +168,9 @@ export function getMovementRange(
   totalActions: number,
   board: BoardState
 ): MovementRangePosition[] {
-  const result: MovementRangePosition[] = [];
-  const posKey = (p: Position) => `${p.x},${p.y}`;
-
-  // Track visited positions with their minimum cost (total squares moved)
-  const visited = new Map<string, number>();
-  visited.set(posKey(startPosition), 0);
-
-  // BFS queue: position and total squares moved to get there
-  const queue: { pos: Position; squaresMoved: number }[] = [
-    { pos: startPosition, squaresMoved: 0 },
-  ];
-
-  // Maximum squares we can move with all actions
-  const maxSquares = speed * totalActions;
-
-  while (queue.length > 0) {
-    const { pos, squaresMoved } = queue.shift()!;
-
-    // If we've moved at least 1 square and position is not occupied, it's reachable
-    if (squaresMoved > 0 && !isOccupied(board, pos)) {
-      // Calculate actions used: each full "speed" squares = 1 action
-      // Even partial moves consume a full action
-      const actionsUsed = Math.ceil(squaresMoved / speed);
-      const actionsRemaining = totalActions - actionsUsed;
-
-      // Only add if we have a valid path (0 or more actions remaining)
-      if (actionsRemaining >= 0) {
-        result.push({ position: pos, actionsRemaining });
-      }
-    }
-
-    // Don't explore further if we've reached max squares
-    if (squaresMoved >= maxSquares) continue;
-
-    // Explore orthogonal neighbors
-    const neighbors = [
-      { x: pos.x, y: pos.y - 1 },
-      { x: pos.x, y: pos.y + 1 },
-      { x: pos.x - 1, y: pos.y },
-      { x: pos.x + 1, y: pos.y },
-    ];
-
-    for (const neighbor of neighbors) {
-      if (!isValidPosition(neighbor)) continue;
-
-      const key = posKey(neighbor);
-      const newSquaresMoved = squaresMoved + 1;
-
-      // Skip if we've already found a shorter path to this position
-      if (visited.has(key) && visited.get(key)! <= newSquaresMoved) continue;
-
-      // Can only pass through empty squares
-      if (isOccupied(board, neighbor)) {
-        visited.set(key, newSquaresMoved);
-        continue;
-      }
-
-      visited.set(key, newSquaresMoved);
-      queue.push({ pos: neighbor, squaresMoved: newSquaresMoved });
-    }
-  }
-
-  return result;
+  return reachable(startPosition, speed * totalActions, board).map(p => ({
+    position: p.position, actionsRemaining: totalActions - Math.ceil(p.distance / speed),
+  }));
 }
 
 /**
@@ -300,56 +189,33 @@ export function getMoveCost(
   speed: number,
   board: BoardState
 ): number | null {
-  const posKey = (p: Position) => `${p.x},${p.y}`;
+  const distance = distancesFrom(startPosition, board).distances[targetPosition.y * 10 + targetPosition.x];
+  return distance > 0 ? Math.ceil(distance / speed) : null;
+}
 
-  // BFS to find shortest path
-  const visited = new Map<string, number>();
-  visited.set(posKey(startPosition), 0);
 
-  const queue: { pos: Position; squaresMoved: number }[] = [
-    { pos: startPosition, squaresMoved: 0 },
-  ];
-
-  while (queue.length > 0) {
-    const { pos, squaresMoved } = queue.shift()!;
-
-    // Check if we've reached the target
-    if (pos.x === targetPosition.x && pos.y === targetPosition.y && squaresMoved > 0) {
-      // Check if target is not occupied
-      if (!isOccupied(board, pos)) {
-        return Math.ceil(squaresMoved / speed);
-      }
-      return null;
-    }
-
-    // Explore orthogonal neighbors
-    const neighbors = [
-      { x: pos.x, y: pos.y - 1 },
-      { x: pos.x, y: pos.y + 1 },
-      { x: pos.x - 1, y: pos.y },
-      { x: pos.x + 1, y: pos.y },
-    ];
-
-    for (const neighbor of neighbors) {
-      if (!isValidPosition(neighbor)) continue;
-
-      const key = posKey(neighbor);
-      const newSquaresMoved = squaresMoved + 1;
-
-      // Skip if we've already found a shorter path to this position
-      if (visited.has(key) && visited.get(key)! <= newSquaresMoved) continue;
-
-      // Allow passing through only if not target, or if target check destination
-      const isTarget = neighbor.x === targetPosition.x && neighbor.y === targetPosition.y;
-      if (!isTarget && isOccupied(board, neighbor)) {
-        visited.set(key, newSquaresMoved);
-        continue;
-      }
-
-      visited.set(key, newSquaresMoved);
-      queue.push({ pos: neighbor, squaresMoved: newSquaresMoved });
+// Immutable board identity scopes derived data. Weak keys let old game/search
+// positions be collected; the 100-entry FIFO preserves up/down/left/right order.
+const movementCache = new WeakMap<BoardState, Map<number, { distances: Int16Array; order: number[] }>>();
+function distancesFrom(start: Position, board: BoardState) {
+  let cache = movementCache.get(board);
+  if (!cache) { cache = new Map(); movementCache.set(board, cache); }
+  const origin = start.y * 10 + start.x;
+  const cached = cache.get(origin); if (cached) return cached;
+  const occupied = new Uint8Array(100);
+  for (const u of board.units) occupied[u.position.y * 10 + u.position.x] = 1;
+  const distances = new Int16Array(100).fill(-1), queue = new Int16Array(100), order: number[] = [];
+  let head = 0, tail = 1; queue[0] = origin; distances[origin] = 0;
+  while (head < tail) {
+    const p = queue[head++], x = p % 10, y = Math.floor(p / 10);
+    for (const n of [y > 0 ? p - 10 : -1, y < 9 ? p + 10 : -1, x > 0 ? p - 1 : -1, x < 9 ? p + 1 : -1]) {
+      if (n < 0 || occupied[n] || distances[n] >= 0) continue;
+      distances[n] = distances[p] + 1; queue[tail++] = n; order.push(n);
     }
   }
-
-  return null; // Unreachable
+  const result = { distances, order }; cache.set(origin, result); return result;
+}
+function reachable(start: Position, maximum: number, board: BoardState) {
+  const { distances, order } = distancesFrom(start, board);
+  return order.filter(n => distances[n] <= maximum).map(n => ({ position: { x: n % 10, y: Math.floor(n / 10) }, distance: distances[n] }));
 }

@@ -3,14 +3,15 @@ import type { TurnPlan } from './types';
 import { evaluatePosition, quickEvaluate } from '../evaluation';
 import { applyActions } from '../simulate';
 import { getPlayerUnits } from '../../game/board';
+import { calculateMiningYield } from '../../game/mining';
 import { getUnitDefinition } from '../../game/units';
 
-export function scorePartialPlan(plan: TurnPlan, state: GameState, forPlayer: PlayerId): number {
+export function scorePartialPlan(plan: TurnPlan, state: GameState, forPlayer: PlayerId, simulated?: GameState): number {
   if (plan.actions.length === 0) {
     return quickEvaluate(state, forPlayer);
   }
 
-  const simState = applyActions(state, plan.actions);
+  const simState = simulated ?? applyActions(state, plan.actions);
   const baseUnits = getPlayerUnits(state.board, getOpponent(forPlayer));
   const nextUnits = getPlayerUnits(simState.board, getOpponent(forPlayer));
   const killCount = baseUnits.length - nextUnits.length;
@@ -31,9 +32,9 @@ export function scorePartialPlan(plan: TurnPlan, state: GameState, forPlayer: Pl
   );
 }
 
-export function tagPlan(plan: TurnPlan, state: GameState, forPlayer: PlayerId): TurnPlan {
+export function tagPlan(plan: TurnPlan, state: GameState, forPlayer: PlayerId, simulated?: GameState): TurnPlan {
   const tags: TurnPlan['tags'] = [];
-  const simState = applyActions(state, plan.actions);
+  const simState = simulated ?? applyActions(state, plan.actions);
   const opponent = getOpponent(forPlayer);
 
   const baseUnits = getPlayerUnits(state.board, opponent);
@@ -51,6 +52,18 @@ export function tagPlan(plan: TurnPlan, state: GameState, forPlayer: PlayerId): 
     tags.push('promotion_play');
   }
 
+  for (const action of plan.actions) {
+    if (action.type !== 'MOVE') continue;
+    const unit = simState.board.units.find(u => u.id === action.unitId);
+    const before = state.board.units.find(u => u.id === action.unitId);
+    if (!unit || !before) continue;
+    const home = state.players[forPlayer].startCorner, enemyHome = state.players[opponent].startCorner;
+    const distance = (p: typeof home, q: typeof home) => Math.abs(p.x-q.x)+Math.abs(p.y-q.y);
+    if (distance(unit.position, enemyHome) === 0 && !tags.includes('raid')) tags.push('raid');
+    if (distance(unit.position, home) < distance(before.position, home) && !tags.includes('defensive')) tags.push('defensive');
+    const cell = simState.board.cells[unit.position.y][unit.position.x];
+    if (calculateMiningYield(unit, cell) > 0 && !tags.includes('expansion')) tags.push('expansion');
+  }
   if (tags.length === 0) {
     tags.push('passive');
   }

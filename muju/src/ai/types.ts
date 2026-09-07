@@ -2,9 +2,8 @@ import type { Position } from '../game/types';
 
 /**
  * AI difficulty levels
- * - easy: Random legal moves, no lookahead
- * - medium: 1-ply evaluation, simple heuristics
- * - hard: 2-3 ply minimax with full heuristics
+ * Shared rules and evaluation; presets scale tactical search, beam width,
+ * belief sampling and turn CPU allowance. No intentional random blunders.
  */
 export type AIDifficulty = 'easy' | 'medium' | 'hard';
 
@@ -94,53 +93,14 @@ export const DEFAULT_WEIGHTS: EvaluationWeights = {
 };
 
 /**
- * Search configuration
- */
-export interface SearchConfig {
-  maxDepth: number;
-  maxTime: number; // milliseconds
-  minTime: number; // minimum thinking time in milliseconds
-  useAlphaBeta: boolean;
-  useIterativeDeepening: boolean;
-}
-
-/**
- * Default search configs by difficulty
- * - Easy: 1 second max
- * - Medium: 3 seconds max
- * - Hard: 5 seconds max
- */
-export const DIFFICULTY_CONFIGS: Record<AIDifficulty, SearchConfig> = {
-  easy: {
-    maxDepth: 2,
-    maxTime: 1000,
-    minTime: 500,
-    useAlphaBeta: true,
-    useIterativeDeepening: true,
-  },
-  medium: {
-    maxDepth: 3,
-    maxTime: 3000,
-    minTime: 1500,
-    useAlphaBeta: true,
-    useIterativeDeepening: true,
-  },
-  hard: {
-    maxDepth: 4,
-    maxTime: 5000,
-    minTime: 3000,
-    useAlphaBeta: true,
-    useIterativeDeepening: true,
-  },
-};
-
-/**
  * Result of AI computation
  */
 export interface AIResult {
   plan: AITurnPlan;
+  /** Compatibility field: actual completed MCTS iterations, not configured work. */
   nodesSearched: number;
   timeMs: number;
   depth: number;
   debug?: AIDebugInfo;
+  stats?: import('./runtime').SearchStats;
 }

@@ -1,3 +1,4 @@
+import type { SearchBudget } from '../runtime';
 import type { GameState, PlayerId } from '../../game/types';
 import type { TurnPlan } from './types';
 import { generateAttackActions, generateMoveActions } from '../moves';
@@ -7,7 +8,7 @@ import { canBeEliminated } from '../../game/combat';
 interface TacticalTemplate {
   name: string;
   detect: (state: GameState, player: PlayerId) => boolean;
-  generate: (state: GameState, player: PlayerId) => TurnPlan[];
+  generate: (state: GameState, player: PlayerId, budget?: SearchBudget) => TurnPlan[];
 }
 
 function planId(actions: TurnPlan['actions']): string {
@@ -28,8 +29,8 @@ const immediateKill: TacticalTemplate = {
       return attacker && target && canBeEliminated(target, attacker);
     });
   },
-  generate: (state, player) => {
-    if (state.turn.phase !== 'action' || state.turn.actionsRemaining < 1) return [];
+  generate: (state, player, budget) => {
+    if (budget?.exhausted() || state.turn.phase !== 'action' || state.turn.actionsRemaining < 1) return [];
     const attacks = generateAttackActions(state, player);
     return attacks
       .filter((action): action is { type: 'ATTACK'; unitId: string; targetPosition: { x: number; y: number } } => {
@@ -48,11 +49,12 @@ const moveThenKill: TacticalTemplate = {
   name: 'move_then_kill',
   detect: (state, player) =>
     state.turn.phase === 'action' && generateMoveActions(state, player).length > 0,
-  generate: (state, player) => {
+  generate: (state, player, budget) => {
     if (state.turn.phase !== 'action' || state.turn.actionsRemaining < 2) return [];
     const plans: TurnPlan[] = [];
     const moves = generateMoveActions(state, player);
     for (const move of moves) {
+      if (budget && !budget.spend()) break;
       const movedState = applyAction(state, move);
       const attacks = generateAttackActions(movedState, player);
       for (const attack of attacks) {
@@ -77,11 +79,12 @@ const moveThenKill: TacticalTemplate = {
 
 export const TEMPLATES: TacticalTemplate[] = [immediateKill, moveThenKill];
 
-export function generateTemplatePlans(state: GameState, player: PlayerId): TurnPlan[] {
+export function generateTemplatePlans(state: GameState, player: PlayerId, budget?: SearchBudget): TurnPlan[] {
   const plans: TurnPlan[] = [];
   for (const template of TEMPLATES) {
+    if (budget?.exhausted()) break;
     if (template.detect(state, player)) {
-      plans.push(...template.generate(state, player));
+      plans.push(...template.generate(state, player, budget));
     }
   }
   return plans;

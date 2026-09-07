@@ -17,7 +17,13 @@
     "balance:types": "tsc -p lab/solver/tsconfig.json --noEmit",
     "balance:maps": "node --import tsx lab/maps/run.ts && node --import tsx lab/maps/render.ts",
     "balance:maps:types": "tsc -p lab/maps/tsconfig.json --noEmit",
-    "balance:maps:page": "node lab/maps/check-page.mjs"
+    "balance:maps:page": "node lab/maps/check-page.mjs",
+    "ai:wasm": "asc --config asconfig.json",
+    "prebuild": "npm run ai:wasm",
+    "pretest": "npm run ai:wasm",
+    "predev": "npm run ai:wasm",
+    "ai:tactics": "node --import tsx lab/ai/run.ts tactics",
+    "ai:league": "node --import tsx lab/ai/run.ts league"
   },
   "devDependencies": {
     "@playwright/test": "^1.57.0",
@@ -30,6 +36,7 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.2",
     "@vitest/ui": "^4.0.16",
+    "assemblyscript": "0.28.9",
     "jsdom": "^27.4.0",
     "playwright": "^1.57.0",
     "postcss": "^8.5.6",

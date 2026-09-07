@@ -274,14 +274,18 @@ than reading hidden state.
   `promotion.ts`, `turn.ts` (phase machine), `victory.ts`, `units.ts`
   (canonical catalog), `elements.ts` (Double-Thick Triangle).
 - `src/ai/` — `engine-v2.ts` (`AIEngineV2`): belief-state MCTS. Observation
-  layer (`state/`), particle-filter belief over hidden queue/stockpile
+  layer (`state/`), public-economy-constrained hidden queue/stockpile samples
   (`belief/`), beam-search plan generation (`planner/`), UCT MCTS over plans
-  (`search/`), tactical sharpener (`eval/`). Difficulty presets easy/medium/
-  hard scale iterations, beam width, particles, tactical depth.
+  (`search/`), and tactical sharpener (`eval/`). A dedicated browser worker
+  (`worker/`) owns computation. A single-threaded WASM kernel (`assembly/tactics.ts`)
+  searches exact current-turn attack/movement/promotion combinations; the canonical
+  JS transition independently validates every successful witness. See
+  `docs/AI_IMPLEMENTATION_STATUS.md` for scope, difficulty budgets and evidence.
   `src/game/legality.ts` validates actions; `src/ai/simulate.ts` is the
   authoritative transition for human actions, AI actions and search.
 - `src/hooks/useGameState.ts` — React reducer delegates gameplay transitions
-  to the shared engine; `useAI.ts` drives AI turns with explicit phase ends.
+  to the shared engine; `useAI.ts` drives AI turns with explicit phase ends,
+  waits for reducer acknowledgment, and cancels workers across lifecycle changes.
 - `tests/` — unit tests per module plus seeded-playout property tests and
   adversarial audit fixtures (`tests/game/properties.test.ts`,
   `tests/game/audit-fixtures.test.ts`).

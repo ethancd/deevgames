@@ -1,6 +1,9 @@
+import { instantiateTactics } from '../../../src/ai/wasm/kernel';
+import { homeInvader } from '../../../src/ai/tactics/home';
+import { readFileSync } from 'node:fs';
 import type { GameState, PlayerId } from '../../../src/game/types';
 import type { AIAction, AIDifficulty } from '../../../src/ai/types';
-import { AIEngineV2 } from '../../../src/ai/engine-v2';
+import { AIEngineV2, TURN_BUDGET_MS } from '../../../src/ai/engine-v2';
 import { shouldResign } from '../../../src/ai/evaluation';
 import type { EngineBot } from '../types';
 
@@ -45,22 +48,27 @@ export function createEngineBot(opts: Partial<EngineBotOptions> = {}): EngineBot
   let engine: AIEngineV2;
   let turnKey = '';
   let dispatchesThisTurn = 0;
+  let remainingCPU = TURN_BUDGET_MS[options.difficulty];
+  const kernel = instantiateTactics(readFileSync(new URL('../../../src/ai/wasm/tactics.wasm', import.meta.url)));
 
   return {
     kind: 'engine',
     name: `AIv2-${options.difficulty}${options.speed === 'fast' ? '-fast' : ''}`,
-    onGameStart() {
+    onGameStart(_player, seed) {
       engine = new AIEngineV2(options.difficulty);
+      engine.setSeed(seed);
       if (options.speed === 'fast') {
         engine.setConfig(FAST_OVERRIDES);
       }
       turnKey = '';
       dispatchesThisTurn = 0;
+      remainingCPU = TURN_BUDGET_MS[options.difficulty];
     },
     async nextAction(state: GameState, player: PlayerId): Promise<AIAction | null> {
       const key = `${state.turn.turnNumber}:${state.turn.currentPlayer}`;
       if (key !== turnKey) {
         turnKey = key;
+        remainingCPU = TURN_BUDGET_MS[options.difficulty];
         dispatchesThisTurn = 0;
         if (options.resign && shouldResign(state, player)) {
           return { type: 'RESIGN' };
@@ -74,7 +82,11 @@ export function createEngineBot(opts: Partial<EngineBotOptions> = {}): EngineBot
       }
       dispatchesThisTurn++;
 
-      const result = await engine.findBestAction(state);
+      engine.setTacticalSolver(await kernel);
+      const fraction = homeInvader(state, player) ? 1 : state.turn.phase === 'action' ? 1 / Math.max(1, state.turn.actionsRemaining / 2) : 0.25;
+      const allowance = Math.max(0, Math.min(remainingCPU, Math.max(80, remainingCPU * fraction)));
+      const result = await engine.findBestAction(state, allowance);
+      remainingCPU = Math.max(0, remainingCPU - result.timeMs);
       if (result.plan.actions.length === 0) return null;
       return result.plan.actions[0];
     },

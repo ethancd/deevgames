@@ -1,6 +1,8 @@
 import type { AIAction } from '../types';
 
 export type PlanTag =
+  | 'raid'
+  | 'expansion'
   | 'kill'
   | 'setup_kill'
   | 'combined_attack'

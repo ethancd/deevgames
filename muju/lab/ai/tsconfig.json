@@ -1,0 +1,6 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": { "types": ["node"], "noUnusedLocals": true },
+  "include": ["./*.ts", "../../src/ai/**/*.ts", "../harness/**/*.ts"],
+  "exclude": ["../../src/ai/worker/entry.ts"]
+}

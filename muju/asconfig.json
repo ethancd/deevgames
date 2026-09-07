@@ -1,0 +1,4 @@
+{
+  "entries": ["assembly/tactics.ts"],
+  "options": { "outFile": "src/ai/wasm/tactics.wasm", "optimizeLevel": 3, "shrinkLevel": 1, "runtime": "incremental", "maximumMemory": 256 }
+}

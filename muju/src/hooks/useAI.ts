@@ -1,139 +1,88 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import type { GameState } from '../game/types';
 import type { AIAction, AIDifficulty, AIDebugInfo } from '../ai/types';
-import { AIEngine } from '../ai/engine';
+import { AIWorkerClient, SearchCancelled } from '../ai/worker/client';
+import { TURN_BUDGET_MS } from '../ai/engine-v2';
 import { applyAction } from '../ai/simulate';
-import { shouldResign } from '../ai/evaluation';
 import { isLegalAction, phaseEndAction } from '../game/legality';
+import { homeInvader } from '../ai/tactics/home';
 
 interface UseAIOptions {
-  difficulty?: AIDifficulty;
-  thinkingDelay?: number; // ms between actions for animation
-  enabled?: boolean;
+  difficulty?: AIDifficulty; thinkingDelay?: number; enabled?: boolean;
+  /** Authoritative state getter rejects undo/load/restart races after awaits. */
+  getCurrentState?: () => GameState;
+  state?: GameState;
 }
-
-interface UseAIReturn {
-  isThinking: boolean;
-  executeAITurn: (state: GameState, onAction: (action: AIAction) => void, playerId: 'white' | 'black') => Promise<void>;
-  difficulty: AIDifficulty;
-  setDifficulty: (d: AIDifficulty) => void;
-  lastTurnActions: AIAction[];
-  lastDebug: AIDebugInfo | null;
-  clearLastTurnActions: () => void;
-}
-
-export function useAI(options: UseAIOptions = {}): UseAIReturn {
-  const {
-    difficulty: initialDifficulty = 'medium',
-    thinkingDelay = 500,
-    enabled = true,
-  } = options;
-
+export function useAI(options: UseAIOptions = {}) {
+  const { difficulty: initialDifficulty = 'medium', thinkingDelay = 500, enabled = true, getCurrentState } = options;
   const [difficulty, setDifficulty] = useState<AIDifficulty>(initialDifficulty);
   const [isThinking, setIsThinking] = useState(false);
   const [lastTurnActions, setLastTurnActions] = useState<AIAction[]>([]);
   const [lastDebug, setLastDebug] = useState<AIDebugInfo | null>(null);
-  const aiRef = useRef<AIEngine>(new AIEngine(initialDifficulty));
+  const [error, setError] = useState<string | null>(null);
+  const [warning, setWarning] = useState<string | null>(null);
+  const pendingCommit = useRef<((state: GameState | null) => void) | null>(null);
+  useEffect(() => { if (options.state && pendingCommit.current) { const resolve = pendingCommit.current; pendingCommit.current = null; resolve(options.state); } }, [options.state]);
+  const hasAuthoritativeState = options.state !== undefined;
+  const client = useRef<AIWorkerClient | null>(null);
+  const generation = useRef(0), busy = useRef(false);
+  const currentGetter = useRef(getCurrentState); currentGetter.current = getCurrentState;
+  const cancel = useCallback(() => { pendingCommit.current?.(null); pendingCommit.current = null; generation.current++; busy.current = false; client.current?.restart(); setIsThinking(false); }, []);
+  const clearLastTurnActions = useCallback(() => { setLastTurnActions([]); setLastDebug(null); }, []);
+  useEffect(() => { cancel(); }, [difficulty, enabled, cancel]);
+  useEffect(() => { setDifficulty(initialDifficulty); }, [initialDifficulty]);
+  useEffect(() => () => { pendingCommit.current?.(null); pendingCommit.current = null; generation.current++; client.current?.cancel(); }, []);
 
-  const clearLastTurnActions = useCallback(() => {
-    setLastTurnActions([]);
-    setLastDebug(null);
-  }, []);
-
-  // Update AI when difficulty changes
-  useEffect(() => {
-    aiRef.current.setDifficulty(difficulty);
-  }, [difficulty]);
-
-  const executeAITurn = useCallback(
-    async (state: GameState, onAction: (action: AIAction) => void, playerId: 'white' | 'black'): Promise<void> => {
-      if (!enabled || state.phase !== 'playing' || state.turn.currentPlayer !== playerId) {
-        return;
-      }
-
-      setIsThinking(true);
-      const turnActions: AIAction[] = [];
-      const turnStartTime = Date.now();
-      const minThinkingTime = aiRef.current.getMinThinkingTime();
-
-      // Check if AI should resign (all difficulties resign when position is hopeless)
-      if (shouldResign(state, playerId)) {
-        // Wait minimum thinking time before resigning
-        const elapsed = Date.now() - turnStartTime;
-        if (elapsed < minThinkingTime) {
-          await new Promise((resolve) => setTimeout(resolve, minThinkingTime - elapsed));
+  const executeAITurn = useCallback(async (state: GameState, onAction: (action: AIAction) => void, playerId: 'white' | 'black') => {
+    if (!enabled || busy.current || state.phase !== 'playing' || state.turn.currentPlayer !== playerId) return;
+    client.current ??= new AIWorkerClient();
+    const token = ++generation.current;
+    busy.current = true; setIsThinking(true); setError(null);
+    const turnActions: AIAction[] = [];
+    let currentState = state, remainingCPU = TURN_BUDGET_MS[difficulty];
+    const valid = () => {
+      if (token !== generation.current) return false;
+      const real = currentGetter.current?.();
+      // Ignore selection/highlight differences; compare actual gameplay fields.
+      return !real || (real.board === currentState.board && real.players === currentState.players &&
+        real.turn === currentState.turn && real.phase === currentState.phase);
+    };
+    try {
+      while (currentState.phase === 'playing' && currentState.turn.currentPlayer === playerId && token === generation.current) {
+        const fraction = homeInvader(currentState, playerId) ? 1 : currentState.turn.phase === 'action' ? 1 / Math.max(1, currentState.turn.actionsRemaining / 2) : 0.25;
+        const allowance = Math.max(0, Math.min(remainingCPU, Math.max(80, remainingCPU * fraction)));
+        const result = await client.current.findBestAction(currentState, difficulty, allowance, turnActions.length);
+        remainingCPU = Math.max(0, remainingCPU - result.timeMs);
+        if (!valid()) break;
+        if (thinkingDelay > 0) await new Promise(resolve => setTimeout(resolve, thinkingDelay));
+        if (!valid()) break;
+        setLastDebug(result.debug ?? null); setWarning(client.current.warning ?? null);
+        const proposed = result.plan.actions[0];
+        // Empty plans explicitly finish the phase. Invalid proposals are an
+        // engine error, not a hidden pass/resignation.
+        const action = proposed ?? phaseEndAction(currentState);
+        if (!isLegalAction(currentState, action)) throw new Error('AI proposed an invalid action. Please retry.');
+        const expected = applyAction(currentState, action);
+        // React may commit after the next timer tick. Await an explicit state
+        // update rather than assuming a zero-delay timeout acknowledges dispatch.
+        const committed = hasAuthoritativeState ? new Promise<GameState | null>(resolve => { pendingCommit.current = resolve; }) : null;
+        onAction(action); turnActions.push(action);
+        currentState = expected;
+        if (committed) {
+          const actual = await committed;
+          if (!actual || token !== generation.current) break;
+          const gameplay = (s: GameState) => JSON.stringify({ board: s.board, players: s.players, turn: s.turn, phase: s.phase, winner: s.winner });
+          if (gameplay(actual) !== gameplay(expected)) break;
+          currentState = actual;
         }
-        const resignAction: AIAction = { type: 'RESIGN' };
-        onAction(resignAction);
-        turnActions.push(resignAction);
-        setLastTurnActions(turnActions);
-        setIsThinking(false);
-        return;
+
       }
-
-      let currentState = state;
-      // Every legal action consumes resources/actions, a ready queue entry, a
-      // promotion opportunity, or ends a phase. No arbitrary 20-dispatch cutoff.
-      let firstActionTaken = false;
-
-      try {
-        while (true) {
-
-          // Check if still AI's turn
-          if (currentState.turn.currentPlayer !== playerId) {
-            break;
-          }
-
-          // Check if game over
-          if (currentState.phase === 'victory') {
-            break;
-          }
-
-          // Find best action (async to keep UI responsive)
-          const result = await aiRef.current.findBestAction(currentState);
-
-          // Before first action, ensure minimum thinking time has passed
-          if (!firstActionTaken) {
-            const elapsed = Date.now() - turnStartTime;
-            if (elapsed < minThinkingTime) {
-              await new Promise((resolve) => setTimeout(resolve, minThinkingTime - elapsed));
-            }
-            firstActionTaken = true;
-          } else {
-            // Add small delay between subsequent actions for visual effect
-            await new Promise((resolve) => setTimeout(resolve, thinkingDelay));
-          }
-
-          setLastDebug(result.debug ?? null);
-
-          // Execute the action
-          const proposed = result.plan.actions[0];
-          const action = proposed && isLegalAction(currentState, proposed)
-            ? proposed : phaseEndAction(currentState);
-          onAction(action);
-          turnActions.push(action);
-          currentState = applyAction(currentState, action);
-
-          // If ended turn, we're done
-          if (action.type === 'END_TURN') {
-            break;
-          }
-        }
-      } finally {
-        setLastTurnActions(turnActions);
-        setIsThinking(false);
-      }
-    },
-    [enabled, thinkingDelay]
-  );
-
-  return {
-    isThinking,
-    executeAITurn,
-    difficulty,
-    setDifficulty,
-    lastTurnActions,
-    lastDebug,
-    clearLastTurnActions,
-  };
+    } catch (e) {
+      if (token === generation.current && !(e instanceof SearchCancelled)) setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      if (token === generation.current) { busy.current = false; setLastTurnActions(turnActions); setIsThinking(false); }
+    }
+  }, [difficulty, enabled, thinkingDelay, hasAuthoritativeState]);
+  return { isThinking, executeAITurn, difficulty, setDifficulty, lastTurnActions, lastDebug, clearLastTurnActions,
+    cancel, error, warning, clearError: () => setError(null) };
 }
