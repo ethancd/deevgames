@@ -1,0 +1,8 @@
+{
+  "games": 16,
+  "naturalGames": 12,
+  "caps": 4,
+  "candidateWins": 12,
+  "illegalActions": 0,
+  "note": "Fixed-work screening, one seed block, both seats. Caps are not victories; not a measured difficulty ladder."
+}

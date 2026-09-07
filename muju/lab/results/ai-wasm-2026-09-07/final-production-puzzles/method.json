@@ -1,0 +1,7 @@
+{
+  "difficulty": "medium",
+  "turnAllowanceMs": 4000,
+  "lateToleranceMs": 50,
+  "productionSource": "e70a057",
+  "note": "Authored rescue puzzles, both seats. Production RNG was not seedable. Reference source archived separately; no global Math.random replacement. This is not a representative league or throughput comparison."
+}

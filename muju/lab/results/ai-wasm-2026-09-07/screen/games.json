@@ -1,0 +1,2464 @@
+[
+  {
+    "schema": "muju-lab-game-v1",
+    "engineHash": "2a04a8c8968d3fa984f794de0fcef41bf2e4372bc20aba03c1ca05a76ec403e5",
+    "runId": "wasm-screen-Rush-white",
+    "experiment": null,
+    "seed": 20260907,
+    "startedAt": "2026-09-07T21:22:48.496Z",
+    "durationMs": 9031,
+    "options": {
+      "maxTurns": 20,
+      "maxPlies": 8000,
+      "legality": "strict",
+      "recordReplay": false,
+      "checkInvariants": true,
+      "elementGraph": "double-thick",
+      "handicap": {
+        "white": 0,
+        "black": 0
+      }
+    },
+    "winner": "white",
+    "winType": "home-occupation",
+    "turns": 7,
+    "plies": 135,
+    "firstBlood": {
+      "by": "white",
+      "turn": 2
+    },
+    "players": {
+      "white": {
+        "bot": "WASM-medium-screen-1200",
+        "finalResources": 1,
+        "resourcesGained": 11,
+        "resourcesSpent": 10,
+        "finalMaterial": 12,
+        "finalQueueValue": 0,
+        "unitsPlaced": 10,
+        "promotions": 0,
+        "tierUsage": {
+          "1": 10,
+          "2": 0,
+          "3": 0,
+          "4": 0
+        },
+        "elementQueued": {
+          "fire": 10
+        },
+        "unitsLost": 4,
+        "unitsKilled": 9,
+        "illegalActions": 0,
+        "plies": 69
+      },
+      "black": {
+        "bot": "Rush",
+        "finalResources": 0,
+        "resourcesGained": 17,
+        "resourcesSpent": 17,
+        "finalMaterial": 2,
+        "finalQueueValue": 10,
+        "unitsPlaced": 7,
+        "promotions": 0,
+        "tierUsage": {
+          "1": 7,
+          "2": 0,
+          "3": 0,
+          "4": 0
+        },
+        "elementQueued": {
+          "fire": 17
+        },
+        "unitsLost": 9,
+        "unitsKilled": 4,
+        "illegalActions": 0,
+        "plies": 66
+      }
+    },
+    "materialCurve": [
+      {
+        "turn": 1,
+        "white": 6,
+        "black": 6,
+        "whiteRes": 0,
+        "blackRes": 0
+      },
+      {
+        "turn": 2,
+        "white": 6,
+        "black": 6,
+        "whiteRes": 1,
+        "blackRes": 0
+      },
+      {
+        "turn": 3,
+        "white": 6,
+        "black": 7,
+        "whiteRes": 1,
+        "blackRes": 0
+      },
+      {
+        "turn": 4,
+        "white": 7,
+        "black": 8,
+        "whiteRes": 1,
+        "blackRes": 0
+      },
+      {
+        "turn": 5,
+        "white": 13,
+        "black": 8,
+        "whiteRes": 1,
+        "blackRes": 0
+      },
+      {
+        "turn": 6,
+        "white": 12,
+        "black": 5,
+        "whiteRes": 1,
+        "blackRes": 0
+      }
+    ],
+    "invariantViolation": null,
+    "anomalies": []
+  },
+  {
+    "schema": "muju-lab-game-v1",
+    "engineHash": "2a04a8c8968d3fa984f794de0fcef41bf2e4372bc20aba03c1ca05a76ec403e5",
+    "runId": "wasm-screen-Rush-black",
+    "experiment": null,
+    "seed": 20260907,
+    "startedAt": "2026-09-07T21:22:57.529Z",
+    "durationMs": 6189,
+    "options": {
+      "maxTurns": 20,
+      "maxPlies": 8000,
+      "legality": "strict",
+      "recordReplay": false,
+      "checkInvariants": true,
+      "elementGraph": "double-thick",
+      "handicap": {
+        "white": 0,
+        "black": 0
+      }
+    },
+    "winner": "black",
+    "winType": "home-occupation",
+    "turns": 7,
+    "plies": 141,
+    "firstBlood": {
+      "by": "black",
+      "turn": 1
+    },
+    "players": {
+      "white": {
+        "bot": "Rush",
+        "finalResources": 0,
+        "resourcesGained": 17,
+        "resourcesSpent": 17,
+        "finalMaterial": 2,
+        "finalQueueValue": 12,
+        "unitsPlaced": 5,
+        "promotions": 0,
+        "tierUsage": {
+          "1": 5,
+          "2": 0,
+          "3": 0,
+          "4": 0
+        },
+        "elementQueued": {
+          "fire": 17
+        },
+        "unitsLost": 7,
+        "unitsKilled": 3,
+        "illegalActions": 0,
+        "plies": 71
+      },
+      "black": {
+        "bot": "WASM-medium-screen-1200",
+        "finalResources": 1,
+        "resourcesGained": 11,
+        "resourcesSpent": 10,
+        "finalMaterial": 13,
+        "finalQueueValue": 0,
+        "unitsPlaced": 10,
+        "promotions": 0,
+        "tierUsage": {
+          "1": 10,
+          "2": 0,
+          "3": 0,
+          "4": 0
+        },
+        "elementQueued": {
+          "fire": 10
+        },
+        "unitsLost": 3,
+        "unitsKilled": 7,
+        "illegalActions": 0,
+        "plies": 70
+      }
+    },
+    "materialCurve": [
+      {
+        "turn": 1,
+        "white": 6,
+        "black": 6,
+        "whiteRes": 0,
+        "blackRes": 0
+      },
+      {
+        "turn": 2,
+        "white": 5,
+        "black": 6,
+        "whiteRes": 0,
+        "blackRes": 0
+      },
+      {
+        "turn": 3,
+        "white": 7,
+        "black": 5,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 4,
+        "white": 9,
+        "black": 7,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 5,
+        "white": 7,
+        "black": 7,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 6,
+        "white": 5,
+        "black": 7,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 7,
+        "white": 2,
+        "black": 13,
+        "whiteRes": 0,
+        "blackRes": 1
+      }
+    ],
+    "invariantViolation": null,
+    "anomalies": []
+  },
+  {
+    "schema": "muju-lab-game-v1",
+    "engineHash": "2a04a8c8968d3fa984f794de0fcef41bf2e4372bc20aba03c1ca05a76ec403e5",
+    "runId": "wasm-screen-Expand-white",
+    "experiment": null,
+    "seed": 20260907,
+    "startedAt": "2026-09-07T21:23:03.719Z",
+    "durationMs": 5788,
+    "options": {
+      "maxTurns": 20,
+      "maxPlies": 8000,
+      "legality": "strict",
+      "recordReplay": false,
+      "checkInvariants": true,
+      "elementGraph": "double-thick",
+      "handicap": {
+        "white": 0,
+        "black": 0
+      }
+    },
+    "winner": "white",
+    "winType": "home-occupation",
+    "turns": 4,
+    "plies": 71,
+    "firstBlood": {
+      "by": "white",
+      "turn": 3
+    },
+    "players": {
+      "white": {
+        "bot": "WASM-medium-screen-1200",
+        "finalResources": 1,
+        "resourcesGained": 11,
+        "resourcesSpent": 10,
+        "finalMaterial": 16,
+        "finalQueueValue": 0,
+        "unitsPlaced": 10,
+        "promotions": 0,
+        "tierUsage": {
+          "1": 10,
+          "2": 0,
+          "3": 0,
+          "4": 0
+        },
+        "elementQueued": {
+          "fire": 10
+        },
+        "unitsLost": 0,
+        "unitsKilled": 2,
+        "illegalActions": 0,
+        "plies": 45
+      },
+      "black": {
+        "bot": "Expand",
+        "finalResources": 0,
+        "resourcesGained": 21,
+        "resourcesSpent": 21,
+        "finalMaterial": 2,
+        "finalQueueValue": 21,
+        "unitsPlaced": 0,
+        "promotions": 0,
+        "tierUsage": {
+          "1": 0,
+          "2": 0,
+          "3": 0,
+          "4": 0
+        },
+        "elementQueued": {
+          "plant": 5
+        },
+        "unitsLost": 2,
+        "unitsKilled": 0,
+        "illegalActions": 0,
+        "plies": 26
+      }
+    },
+    "materialCurve": [
+      {
+        "turn": 1,
+        "white": 6,
+        "black": 6,
+        "whiteRes": 0,
+        "blackRes": 0
+      },
+      {
+        "turn": 2,
+        "white": 6,
+        "black": 6,
+        "whiteRes": 1,
+        "blackRes": 0
+      },
+      {
+        "turn": 3,
+        "white": 7,
+        "black": 6,
+        "whiteRes": 1,
+        "blackRes": 0
+      }
+    ],
+    "invariantViolation": null,
+    "anomalies": []
+  },
+  {
+    "schema": "muju-lab-game-v1",
+    "engineHash": "2a04a8c8968d3fa984f794de0fcef41bf2e4372bc20aba03c1ca05a76ec403e5",
+    "runId": "wasm-screen-Expand-black",
+    "experiment": null,
+    "seed": 20260907,
+    "startedAt": "2026-09-07T21:23:09.508Z",
+    "durationMs": 8623,
+    "options": {
+      "maxTurns": 20,
+      "maxPlies": 8000,
+      "legality": "strict",
+      "recordReplay": false,
+      "checkInvariants": true,
+      "elementGraph": "double-thick",
+      "handicap": {
+        "white": 0,
+        "black": 0
+      }
+    },
+    "winner": "black",
+    "winType": "home-occupation",
+    "turns": 5,
+    "plies": 101,
+    "firstBlood": {
+      "by": "black",
+      "turn": 3
+    },
+    "players": {
+      "white": {
+        "bot": "Expand",
+        "finalResources": 2,
+        "resourcesGained": 32,
+        "resourcesSpent": 30,
+        "finalMaterial": 2,
+        "finalQueueValue": 21,
+        "unitsPlaced": 2,
+        "promotions": 0,
+        "tierUsage": {
+          "1": 1,
+          "2": 1,
+          "3": 0,
+          "4": 0
+        },
+        "elementQueued": {
+          "plant": 7
+        },
+        "unitsLost": 4,
+        "unitsKilled": 1,
+        "illegalActions": 0,
+        "plies": 48
+      },
+      "black": {
+        "bot": "WASM-medium-screen-1200",
+        "finalResources": 3,
+        "resourcesGained": 13,
+        "resourcesSpent": 10,
+        "finalMaterial": 15,
+        "finalQueueValue": 0,
+        "unitsPlaced": 10,
+        "promotions": 0,
+        "tierUsage": {
+          "1": 10,
+          "2": 0,
+          "3": 0,
+          "4": 0
+        },
+        "elementQueued": {
+          "fire": 10
+        },
+        "unitsLost": 1,
+        "unitsKilled": 4,
+        "illegalActions": 0,
+        "plies": 53
+      }
+    },
+    "materialCurve": [
+      {
+        "turn": 1,
+        "white": 6,
+        "black": 6,
+        "whiteRes": 0,
+        "blackRes": 0
+      },
+      {
+        "turn": 2,
+        "white": 6,
+        "black": 6,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 3,
+        "white": 6,
+        "black": 7,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 4,
+        "white": 5,
+        "black": 16,
+        "whiteRes": 1,
+        "blackRes": 1
+      },
+      {
+        "turn": 5,
+        "white": 2,
+        "black": 15,
+        "whiteRes": 2,
+        "blackRes": 3
+      }
+    ],
+    "invariantViolation": null,
+    "anomalies": []
+  },
+  {
+    "schema": "muju-lab-game-v1",
+    "engineHash": "2a04a8c8968d3fa984f794de0fcef41bf2e4372bc20aba03c1ca05a76ec403e5",
+    "runId": "wasm-screen-Balanced-white",
+    "experiment": null,
+    "seed": 20260907,
+    "startedAt": "2026-09-07T21:23:18.132Z",
+    "durationMs": 6045,
+    "options": {
+      "maxTurns": 20,
+      "maxPlies": 8000,
+      "legality": "strict",
+      "recordReplay": false,
+      "checkInvariants": true,
+      "elementGraph": "double-thick",
+      "handicap": {
+        "white": 0,
+        "black": 0
+      }
+    },
+    "winner": "white",
+    "winType": "home-occupation",
+    "turns": 4,
+    "plies": 55,
+    "firstBlood": {
+      "by": "white",
+      "turn": 3
+    },
+    "players": {
+      "white": {
+        "bot": "WASM-medium-screen-1200",
+        "finalResources": 1,
+        "resourcesGained": 11,
+        "resourcesSpent": 10,
+        "finalMaterial": 16,
+        "finalQueueValue": 0,
+        "unitsPlaced": 10,
+        "promotions": 0,
+        "tierUsage": {
+          "1": 10,
+          "2": 0,
+          "3": 0,
+          "4": 0
+        },
+        "elementQueued": {
+          "fire": 10
+        },
+        "unitsLost": 0,
+        "unitsKilled": 2,
+        "illegalActions": 0,
+        "plies": 45
+      },
+      "black": {
+        "bot": "Balanced",
+        "finalResources": 0,
+        "resourcesGained": 9,
+        "resourcesSpent": 9,
+        "finalMaterial": 2,
+        "finalQueueValue": 9,
+        "unitsPlaced": 0,
+        "promotions": 0,
+        "tierUsage": {
+          "1": 0,
+          "2": 0,
+          "3": 0,
+          "4": 0
+        },
+        "elementQueued": {
+          "plant": 2
+        },
+        "unitsLost": 2,
+        "unitsKilled": 0,
+        "illegalActions": 0,
+        "plies": 10
+      }
+    },
+    "materialCurve": [
+      {
+        "turn": 1,
+        "white": 6,
+        "black": 6,
+        "whiteRes": 0,
+        "blackRes": 0
+      },
+      {
+        "turn": 2,
+        "white": 6,
+        "black": 6,
+        "whiteRes": 1,
+        "blackRes": 0
+      },
+      {
+        "turn": 3,
+        "white": 7,
+        "black": 6,
+        "whiteRes": 1,
+        "blackRes": 0
+      }
+    ],
+    "invariantViolation": null,
+    "anomalies": []
+  },
+  {
+    "schema": "muju-lab-game-v1",
+    "engineHash": "2a04a8c8968d3fa984f794de0fcef41bf2e4372bc20aba03c1ca05a76ec403e5",
+    "runId": "wasm-screen-Balanced-black",
+    "experiment": null,
+    "seed": 20260907,
+    "startedAt": "2026-09-07T21:23:24.178Z",
+    "durationMs": 38247,
+    "options": {
+      "maxTurns": 20,
+      "maxPlies": 8000,
+      "legality": "strict",
+      "recordReplay": false,
+      "checkInvariants": true,
+      "elementGraph": "double-thick",
+      "handicap": {
+        "white": 0,
+        "black": 0
+      }
+    },
+    "winner": "white",
+    "winType": "adjudication",
+    "turns": 21,
+    "plies": 392,
+    "firstBlood": {
+      "by": "black",
+      "turn": 3
+    },
+    "players": {
+      "white": {
+        "bot": "Balanced",
+        "finalResources": 0,
+        "resourcesGained": 47,
+        "resourcesSpent": 47,
+        "finalMaterial": 16,
+        "finalQueueValue": 11,
+        "unitsPlaced": 13,
+        "promotions": 0,
+        "tierUsage": {
+          "1": 10,
+          "2": 3,
+          "3": 0,
+          "4": 0
+        },
+        "elementQueued": {
+          "plant": 5,
+          "shadow": 5,
+          "water": 6
+        },
+        "unitsLost": 10,
+        "unitsKilled": 26,
+        "illegalActions": 0,
+        "plies": 164
+      },
+      "black": {
+        "bot": "WASM-medium-screen-1200",
+        "finalResources": 1,
+        "resourcesGained": 39,
+        "resourcesSpent": 38,
+        "finalMaterial": 10,
+        "finalQueueValue": 8,
+        "unitsPlaced": 30,
+        "promotions": 0,
+        "tierUsage": {
+          "1": 30,
+          "2": 0,
+          "3": 0,
+          "4": 0
+        },
+        "elementQueued": {
+          "fire": 38
+        },
+        "unitsLost": 26,
+        "unitsKilled": 10,
+        "illegalActions": 0,
+        "plies": 228
+      }
+    },
+    "materialCurve": [
+      {
+        "turn": 1,
+        "white": 6,
+        "black": 6,
+        "whiteRes": 0,
+        "blackRes": 0
+      },
+      {
+        "turn": 2,
+        "white": 6,
+        "black": 6,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 3,
+        "white": 6,
+        "black": 7,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 4,
+        "white": 3,
+        "black": 16,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 5,
+        "white": 5,
+        "black": 15,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 6,
+        "white": 6,
+        "black": 14,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 7,
+        "white": 14,
+        "black": 12,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 8,
+        "white": 12,
+        "black": 11,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 9,
+        "white": 12,
+        "black": 9,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 10,
+        "white": 12,
+        "black": 10,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 11,
+        "white": 14,
+        "black": 9,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 12,
+        "white": 14,
+        "black": 13,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 13,
+        "white": 14,
+        "black": 10,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 14,
+        "white": 12,
+        "black": 9,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 15,
+        "white": 10,
+        "black": 9,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 16,
+        "white": 8,
+        "black": 11,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 17,
+        "white": 6,
+        "black": 11,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 18,
+        "white": 8,
+        "black": 10,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 19,
+        "white": 8,
+        "black": 11,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 20,
+        "white": 12,
+        "black": 11,
+        "whiteRes": 0,
+        "blackRes": 1
+      }
+    ],
+    "invariantViolation": null,
+    "anomalies": []
+  },
+  {
+    "schema": "muju-lab-game-v1",
+    "engineHash": "2a04a8c8968d3fa984f794de0fcef41bf2e4372bc20aba03c1ca05a76ec403e5",
+    "runId": "wasm-screen-Turtle-white",
+    "experiment": null,
+    "seed": 20260907,
+    "startedAt": "2026-09-07T21:24:02.426Z",
+    "durationMs": 5781,
+    "options": {
+      "maxTurns": 20,
+      "maxPlies": 8000,
+      "legality": "strict",
+      "recordReplay": false,
+      "checkInvariants": true,
+      "elementGraph": "double-thick",
+      "handicap": {
+        "white": 0,
+        "black": 0
+      }
+    },
+    "winner": "white",
+    "winType": "home-occupation",
+    "turns": 4,
+    "plies": 71,
+    "firstBlood": {
+      "by": "white",
+      "turn": 3
+    },
+    "players": {
+      "white": {
+        "bot": "WASM-medium-screen-1200",
+        "finalResources": 1,
+        "resourcesGained": 11,
+        "resourcesSpent": 10,
+        "finalMaterial": 14,
+        "finalQueueValue": 0,
+        "unitsPlaced": 10,
+        "promotions": 0,
+        "tierUsage": {
+          "1": 10,
+          "2": 0,
+          "3": 0,
+          "4": 0
+        },
+        "elementQueued": {
+          "fire": 10
+        },
+        "unitsLost": 2,
+        "unitsKilled": 2,
+        "illegalActions": 0,
+        "plies": 45
+      },
+      "black": {
+        "bot": "Turtle",
+        "finalResources": 1,
+        "resourcesGained": 19,
+        "resourcesSpent": 18,
+        "finalMaterial": 2,
+        "finalQueueValue": 18,
+        "unitsPlaced": 0,
+        "promotions": 0,
+        "tierUsage": {
+          "1": 0,
+          "2": 0,
+          "3": 0,
+          "4": 0
+        },
+        "elementQueued": {
+          "plant": 2,
+          "metal": 2
+        },
+        "unitsLost": 2,
+        "unitsKilled": 2,
+        "illegalActions": 0,
+        "plies": 26
+      }
+    },
+    "materialCurve": [
+      {
+        "turn": 1,
+        "white": 6,
+        "black": 6,
+        "whiteRes": 0,
+        "blackRes": 0
+      },
+      {
+        "turn": 2,
+        "white": 6,
+        "black": 6,
+        "whiteRes": 1,
+        "blackRes": 0
+      },
+      {
+        "turn": 3,
+        "white": 7,
+        "black": 6,
+        "whiteRes": 1,
+        "blackRes": 0
+      }
+    ],
+    "invariantViolation": null,
+    "anomalies": []
+  },
+  {
+    "schema": "muju-lab-game-v1",
+    "engineHash": "2a04a8c8968d3fa984f794de0fcef41bf2e4372bc20aba03c1ca05a76ec403e5",
+    "runId": "wasm-screen-Turtle-black",
+    "experiment": null,
+    "seed": 20260907,
+    "startedAt": "2026-09-07T21:24:08.207Z",
+    "durationMs": 9392,
+    "options": {
+      "maxTurns": 20,
+      "maxPlies": 8000,
+      "legality": "strict",
+      "recordReplay": false,
+      "checkInvariants": true,
+      "elementGraph": "double-thick",
+      "handicap": {
+        "white": 0,
+        "black": 0
+      }
+    },
+    "winner": "black",
+    "winType": "home-occupation",
+    "turns": 6,
+    "plies": 115,
+    "firstBlood": {
+      "by": "black",
+      "turn": 3
+    },
+    "players": {
+      "white": {
+        "bot": "Turtle",
+        "finalResources": 1,
+        "resourcesGained": 39,
+        "resourcesSpent": 38,
+        "finalMaterial": 2,
+        "finalQueueValue": 26,
+        "unitsPlaced": 3,
+        "promotions": 0,
+        "tierUsage": {
+          "1": 2,
+          "2": 1,
+          "3": 0,
+          "4": 0
+        },
+        "elementQueued": {
+          "plant": 2,
+          "metal": 7,
+          "water": 1
+        },
+        "unitsLost": 5,
+        "unitsKilled": 3,
+        "illegalActions": 0,
+        "plies": 54
+      },
+      "black": {
+        "bot": "WASM-medium-screen-1200",
+        "finalResources": 1,
+        "resourcesGained": 11,
+        "resourcesSpent": 10,
+        "finalMaterial": 13,
+        "finalQueueValue": 0,
+        "unitsPlaced": 10,
+        "promotions": 0,
+        "tierUsage": {
+          "1": 10,
+          "2": 0,
+          "3": 0,
+          "4": 0
+        },
+        "elementQueued": {
+          "fire": 10
+        },
+        "unitsLost": 3,
+        "unitsKilled": 5,
+        "illegalActions": 0,
+        "plies": 61
+      }
+    },
+    "materialCurve": [
+      {
+        "turn": 1,
+        "white": 6,
+        "black": 6,
+        "whiteRes": 0,
+        "blackRes": 0
+      },
+      {
+        "turn": 2,
+        "white": 6,
+        "black": 6,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 3,
+        "white": 6,
+        "black": 7,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 4,
+        "white": 3,
+        "black": 16,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 5,
+        "white": 2,
+        "black": 15,
+        "whiteRes": 1,
+        "blackRes": 1
+      },
+      {
+        "turn": 6,
+        "white": 2,
+        "black": 13,
+        "whiteRes": 0,
+        "blackRes": 1
+      }
+    ],
+    "invariantViolation": null,
+    "anomalies": []
+  },
+  {
+    "schema": "muju-lab-game-v1",
+    "engineHash": "2a04a8c8968d3fa984f794de0fcef41bf2e4372bc20aba03c1ca05a76ec403e5",
+    "runId": "wasm-screen-Tier1Spam-white",
+    "experiment": null,
+    "seed": 20260907,
+    "startedAt": "2026-09-07T21:24:17.600Z",
+    "durationMs": 20124,
+    "options": {
+      "maxTurns": 20,
+      "maxPlies": 8000,
+      "legality": "strict",
+      "recordReplay": false,
+      "checkInvariants": true,
+      "elementGraph": "double-thick",
+      "handicap": {
+        "white": 0,
+        "black": 0
+      }
+    },
+    "winner": "white",
+    "winType": "adjudication",
+    "turns": 21,
+    "plies": 405,
+    "firstBlood": {
+      "by": "white",
+      "turn": 2
+    },
+    "players": {
+      "white": {
+        "bot": "WASM-medium-screen-1200",
+        "finalResources": 1,
+        "resourcesGained": 20,
+        "resourcesSpent": 19,
+        "finalMaterial": 4,
+        "finalQueueValue": 2,
+        "unitsPlaced": 17,
+        "promotions": 0,
+        "tierUsage": {
+          "1": 17,
+          "2": 0,
+          "3": 0,
+          "4": 0
+        },
+        "elementQueued": {
+          "fire": 19
+        },
+        "unitsLost": 17,
+        "unitsKilled": 31,
+        "illegalActions": 0,
+        "plies": 202
+      },
+      "black": {
+        "bot": "Tier1Spam",
+        "finalResources": 0,
+        "resourcesGained": 32,
+        "resourcesSpent": 32,
+        "finalMaterial": 4,
+        "finalQueueValue": 1,
+        "unitsPlaced": 31,
+        "promotions": 0,
+        "tierUsage": {
+          "1": 31,
+          "2": 0,
+          "3": 0,
+          "4": 0
+        },
+        "elementQueued": {
+          "fire": 13,
+          "lightning": 19
+        },
+        "unitsLost": 31,
+        "unitsKilled": 17,
+        "illegalActions": 0,
+        "plies": 203
+      }
+    },
+    "materialCurve": [
+      {
+        "turn": 1,
+        "white": 6,
+        "black": 6,
+        "whiteRes": 0,
+        "blackRes": 0
+      },
+      {
+        "turn": 2,
+        "white": 6,
+        "black": 6,
+        "whiteRes": 1,
+        "blackRes": 0
+      },
+      {
+        "turn": 3,
+        "white": 6,
+        "black": 7,
+        "whiteRes": 1,
+        "blackRes": 0
+      },
+      {
+        "turn": 4,
+        "white": 7,
+        "black": 7,
+        "whiteRes": 1,
+        "blackRes": 0
+      },
+      {
+        "turn": 5,
+        "white": 7,
+        "black": 5,
+        "whiteRes": 1,
+        "blackRes": 0
+      },
+      {
+        "turn": 6,
+        "white": 6,
+        "black": 9,
+        "whiteRes": 1,
+        "blackRes": 0
+      },
+      {
+        "turn": 7,
+        "white": 6,
+        "black": 10,
+        "whiteRes": 1,
+        "blackRes": 0
+      },
+      {
+        "turn": 8,
+        "white": 7,
+        "black": 9,
+        "whiteRes": 1,
+        "blackRes": 0
+      },
+      {
+        "turn": 9,
+        "white": 11,
+        "black": 10,
+        "whiteRes": 1,
+        "blackRes": 0
+      },
+      {
+        "turn": 10,
+        "white": 10,
+        "black": 8,
+        "whiteRes": 1,
+        "blackRes": 0
+      },
+      {
+        "turn": 11,
+        "white": 9,
+        "black": 7,
+        "whiteRes": 1,
+        "blackRes": 0
+      },
+      {
+        "turn": 12,
+        "white": 8,
+        "black": 6,
+        "whiteRes": 1,
+        "blackRes": 0
+      },
+      {
+        "turn": 13,
+        "white": 7,
+        "black": 7,
+        "whiteRes": 1,
+        "blackRes": 0
+      },
+      {
+        "turn": 14,
+        "white": 6,
+        "black": 6,
+        "whiteRes": 1,
+        "blackRes": 0
+      },
+      {
+        "turn": 15,
+        "white": 5,
+        "black": 6,
+        "whiteRes": 1,
+        "blackRes": 0
+      },
+      {
+        "turn": 16,
+        "white": 2,
+        "black": 9,
+        "whiteRes": 1,
+        "blackRes": 0
+      },
+      {
+        "turn": 17,
+        "white": 4,
+        "black": 7,
+        "whiteRes": 1,
+        "blackRes": 0
+      },
+      {
+        "turn": 18,
+        "white": 4,
+        "black": 7,
+        "whiteRes": 1,
+        "blackRes": 0
+      },
+      {
+        "turn": 19,
+        "white": 4,
+        "black": 5,
+        "whiteRes": 1,
+        "blackRes": 0
+      },
+      {
+        "turn": 20,
+        "white": 4,
+        "black": 5,
+        "whiteRes": 1,
+        "blackRes": 0
+      }
+    ],
+    "invariantViolation": null,
+    "anomalies": []
+  },
+  {
+    "schema": "muju-lab-game-v1",
+    "engineHash": "2a04a8c8968d3fa984f794de0fcef41bf2e4372bc20aba03c1ca05a76ec403e5",
+    "runId": "wasm-screen-Tier1Spam-black",
+    "experiment": null,
+    "seed": 20260907,
+    "startedAt": "2026-09-07T21:24:37.725Z",
+    "durationMs": 21235,
+    "options": {
+      "maxTurns": 20,
+      "maxPlies": 8000,
+      "legality": "strict",
+      "recordReplay": false,
+      "checkInvariants": true,
+      "elementGraph": "double-thick",
+      "handicap": {
+        "white": 0,
+        "black": 0
+      }
+    },
+    "winner": "black",
+    "winType": "elimination",
+    "turns": 20,
+    "plies": 398,
+    "firstBlood": {
+      "by": "black",
+      "turn": 2
+    },
+    "players": {
+      "white": {
+        "bot": "Tier1Spam",
+        "finalResources": 0,
+        "resourcesGained": 34,
+        "resourcesSpent": 34,
+        "finalMaterial": 0,
+        "finalQueueValue": 4,
+        "unitsPlaced": 30,
+        "promotions": 0,
+        "tierUsage": {
+          "1": 30,
+          "2": 0,
+          "3": 0,
+          "4": 0
+        },
+        "elementQueued": {
+          "fire": 16,
+          "lightning": 18
+        },
+        "unitsLost": 33,
+        "unitsKilled": 15,
+        "illegalActions": 0,
+        "plies": 204
+      },
+      "black": {
+        "bot": "WASM-medium-screen-1200",
+        "finalResources": 1,
+        "resourcesGained": 21,
+        "resourcesSpent": 20,
+        "finalMaterial": 11,
+        "finalQueueValue": 0,
+        "unitsPlaced": 20,
+        "promotions": 0,
+        "tierUsage": {
+          "1": 20,
+          "2": 0,
+          "3": 0,
+          "4": 0
+        },
+        "elementQueued": {
+          "fire": 20
+        },
+        "unitsLost": 15,
+        "unitsKilled": 33,
+        "illegalActions": 0,
+        "plies": 194
+      }
+    },
+    "materialCurve": [
+      {
+        "turn": 1,
+        "white": 6,
+        "black": 6,
+        "whiteRes": 0,
+        "blackRes": 0
+      },
+      {
+        "turn": 2,
+        "white": 6,
+        "black": 6,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 3,
+        "white": 10,
+        "black": 7,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 4,
+        "white": 8,
+        "black": 16,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 5,
+        "white": 6,
+        "black": 13,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 6,
+        "white": 6,
+        "black": 12,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 7,
+        "white": 8,
+        "black": 11,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 8,
+        "white": 4,
+        "black": 9,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 9,
+        "white": 3,
+        "black": 8,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 10,
+        "white": 4,
+        "black": 7,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 11,
+        "white": 5,
+        "black": 6,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 12,
+        "white": 5,
+        "black": 6,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 13,
+        "white": 7,
+        "black": 5,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 14,
+        "white": 5,
+        "black": 9,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 15,
+        "white": 4,
+        "black": 8,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 16,
+        "white": 4,
+        "black": 7,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 17,
+        "white": 2,
+        "black": 7,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 18,
+        "white": 3,
+        "black": 6,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 19,
+        "white": 2,
+        "black": 12,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 20,
+        "white": 2,
+        "black": 11,
+        "whiteRes": 0,
+        "blackRes": 1
+      }
+    ],
+    "invariantViolation": null,
+    "anomalies": []
+  },
+  {
+    "schema": "muju-lab-game-v1",
+    "engineHash": "2a04a8c8968d3fa984f794de0fcef41bf2e4372bc20aba03c1ca05a76ec403e5",
+    "runId": "wasm-screen-MiningDenial-white",
+    "experiment": null,
+    "seed": 20260907,
+    "startedAt": "2026-09-07T21:24:58.961Z",
+    "durationMs": 14880,
+    "options": {
+      "maxTurns": 20,
+      "maxPlies": 8000,
+      "legality": "strict",
+      "recordReplay": false,
+      "checkInvariants": true,
+      "elementGraph": "double-thick",
+      "handicap": {
+        "white": 0,
+        "black": 0
+      }
+    },
+    "winner": "white",
+    "winType": "home-occupation",
+    "turns": 12,
+    "plies": 226,
+    "firstBlood": {
+      "by": "white",
+      "turn": 2
+    },
+    "players": {
+      "white": {
+        "bot": "WASM-medium-screen-1200",
+        "finalResources": 1,
+        "resourcesGained": 14,
+        "resourcesSpent": 13,
+        "finalMaterial": 12,
+        "finalQueueValue": 0,
+        "unitsPlaced": 13,
+        "promotions": 0,
+        "tierUsage": {
+          "1": 13,
+          "2": 0,
+          "3": 0,
+          "4": 0
+        },
+        "elementQueued": {
+          "fire": 13
+        },
+        "unitsLost": 7,
+        "unitsKilled": 15,
+        "illegalActions": 0,
+        "plies": 111
+      },
+      "black": {
+        "bot": "MiningDenial",
+        "finalResources": 0,
+        "resourcesGained": 25,
+        "resourcesSpent": 25,
+        "finalMaterial": 2,
+        "finalQueueValue": 12,
+        "unitsPlaced": 13,
+        "promotions": 0,
+        "tierUsage": {
+          "1": 13,
+          "2": 0,
+          "3": 0,
+          "4": 0
+        },
+        "elementQueued": {
+          "lightning": 25
+        },
+        "unitsLost": 15,
+        "unitsKilled": 7,
+        "illegalActions": 0,
+        "plies": 115
+      }
+    },
+    "materialCurve": [
+      {
+        "turn": 1,
+        "white": 6,
+        "black": 6,
+        "whiteRes": 0,
+        "blackRes": 0
+      },
+      {
+        "turn": 2,
+        "white": 6,
+        "black": 6,
+        "whiteRes": 1,
+        "blackRes": 0
+      },
+      {
+        "turn": 3,
+        "white": 7,
+        "black": 7,
+        "whiteRes": 1,
+        "blackRes": 0
+      },
+      {
+        "turn": 4,
+        "white": 6,
+        "black": 5,
+        "whiteRes": 1,
+        "blackRes": 0
+      },
+      {
+        "turn": 5,
+        "white": 9,
+        "black": 7,
+        "whiteRes": 1,
+        "blackRes": 0
+      },
+      {
+        "turn": 6,
+        "white": 17,
+        "black": 4,
+        "whiteRes": 1,
+        "blackRes": 0
+      },
+      {
+        "turn": 7,
+        "white": 16,
+        "black": 2,
+        "whiteRes": 1,
+        "blackRes": 0
+      },
+      {
+        "turn": 8,
+        "white": 14,
+        "black": 6,
+        "whiteRes": 1,
+        "blackRes": 0
+      },
+      {
+        "turn": 9,
+        "white": 12,
+        "black": 6,
+        "whiteRes": 1,
+        "blackRes": 0
+      },
+      {
+        "turn": 10,
+        "white": 12,
+        "black": 4,
+        "whiteRes": 1,
+        "blackRes": 0
+      },
+      {
+        "turn": 11,
+        "white": 12,
+        "black": 2,
+        "whiteRes": 1,
+        "blackRes": 0
+      }
+    ],
+    "invariantViolation": null,
+    "anomalies": []
+  },
+  {
+    "schema": "muju-lab-game-v1",
+    "engineHash": "2a04a8c8968d3fa984f794de0fcef41bf2e4372bc20aba03c1ca05a76ec403e5",
+    "runId": "wasm-screen-MiningDenial-black",
+    "experiment": null,
+    "seed": 20260907,
+    "startedAt": "2026-09-07T21:25:13.842Z",
+    "durationMs": 6739,
+    "options": {
+      "maxTurns": 20,
+      "maxPlies": 8000,
+      "legality": "strict",
+      "recordReplay": false,
+      "checkInvariants": true,
+      "elementGraph": "double-thick",
+      "handicap": {
+        "white": 0,
+        "black": 0
+      }
+    },
+    "winner": "black",
+    "winType": "home-occupation",
+    "turns": 7,
+    "plies": 148,
+    "firstBlood": {
+      "by": "black",
+      "turn": 2
+    },
+    "players": {
+      "white": {
+        "bot": "MiningDenial",
+        "finalResources": 0,
+        "resourcesGained": 20,
+        "resourcesSpent": 20,
+        "finalMaterial": 2,
+        "finalQueueValue": 12,
+        "unitsPlaced": 8,
+        "promotions": 0,
+        "tierUsage": {
+          "1": 8,
+          "2": 0,
+          "3": 0,
+          "4": 0
+        },
+        "elementQueued": {
+          "lightning": 20
+        },
+        "unitsLost": 10,
+        "unitsKilled": 3,
+        "illegalActions": 0,
+        "plies": 77
+      },
+      "black": {
+        "bot": "WASM-medium-screen-1200",
+        "finalResources": 1,
+        "resourcesGained": 11,
+        "resourcesSpent": 10,
+        "finalMaterial": 11,
+        "finalQueueValue": 0,
+        "unitsPlaced": 10,
+        "promotions": 0,
+        "tierUsage": {
+          "1": 10,
+          "2": 0,
+          "3": 0,
+          "4": 0
+        },
+        "elementQueued": {
+          "fire": 10
+        },
+        "unitsLost": 3,
+        "unitsKilled": 10,
+        "illegalActions": 0,
+        "plies": 71
+      }
+    },
+    "materialCurve": [
+      {
+        "turn": 1,
+        "white": 6,
+        "black": 6,
+        "whiteRes": 0,
+        "blackRes": 0
+      },
+      {
+        "turn": 2,
+        "white": 6,
+        "black": 6,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 3,
+        "white": 11,
+        "black": 7,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 4,
+        "white": 9,
+        "black": 8,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 5,
+        "white": 6,
+        "black": 9,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 6,
+        "white": 5,
+        "black": 6,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 7,
+        "white": 2,
+        "black": 11,
+        "whiteRes": 0,
+        "blackRes": 1
+      }
+    ],
+    "invariantViolation": null,
+    "anomalies": []
+  },
+  {
+    "schema": "muju-lab-game-v1",
+    "engineHash": "2a04a8c8968d3fa984f794de0fcef41bf2e4372bc20aba03c1ca05a76ec403e5",
+    "runId": "wasm-screen-AntiRush-white",
+    "experiment": null,
+    "seed": 20260907,
+    "startedAt": "2026-09-07T21:25:20.582Z",
+    "durationMs": 46273,
+    "options": {
+      "maxTurns": 20,
+      "maxPlies": 8000,
+      "legality": "strict",
+      "recordReplay": false,
+      "checkInvariants": true,
+      "elementGraph": "double-thick",
+      "handicap": {
+        "white": 0,
+        "black": 0
+      }
+    },
+    "winner": "black",
+    "winType": "adjudication",
+    "turns": 21,
+    "plies": 417,
+    "firstBlood": {
+      "by": "white",
+      "turn": 2
+    },
+    "players": {
+      "white": {
+        "bot": "WASM-medium-screen-1200",
+        "finalResources": 1,
+        "resourcesGained": 29,
+        "resourcesSpent": 28,
+        "finalMaterial": 17,
+        "finalQueueValue": 1,
+        "unitsPlaced": 27,
+        "promotions": 0,
+        "tierUsage": {
+          "1": 27,
+          "2": 0,
+          "3": 0,
+          "4": 0
+        },
+        "elementQueued": {
+          "fire": 28
+        },
+        "unitsLost": 16,
+        "unitsKilled": 16,
+        "illegalActions": 0,
+        "plies": 221
+      },
+      "black": {
+        "bot": "AntiRush",
+        "finalResources": 1,
+        "resourcesGained": 61,
+        "resourcesSpent": 60,
+        "finalMaterial": 23,
+        "finalQueueValue": 0,
+        "unitsPlaced": 24,
+        "promotions": 0,
+        "tierUsage": {
+          "1": 24,
+          "2": 0,
+          "3": 0,
+          "4": 0
+        },
+        "elementQueued": {
+          "plant": 12,
+          "water": 12
+        },
+        "unitsLost": 16,
+        "unitsKilled": 16,
+        "illegalActions": 0,
+        "plies": 196
+      }
+    },
+    "materialCurve": [
+      {
+        "turn": 1,
+        "white": 6,
+        "black": 6,
+        "whiteRes": 0,
+        "blackRes": 0
+      },
+      {
+        "turn": 2,
+        "white": 6,
+        "black": 6,
+        "whiteRes": 1,
+        "blackRes": 1
+      },
+      {
+        "turn": 3,
+        "white": 6,
+        "black": 5,
+        "whiteRes": 1,
+        "blackRes": 0
+      },
+      {
+        "turn": 4,
+        "white": 7,
+        "black": 13,
+        "whiteRes": 1,
+        "blackRes": 0
+      },
+      {
+        "turn": 5,
+        "white": 7,
+        "black": 7,
+        "whiteRes": 1,
+        "blackRes": 1
+      },
+      {
+        "turn": 6,
+        "white": 9,
+        "black": 16,
+        "whiteRes": 1,
+        "blackRes": 0
+      },
+      {
+        "turn": 7,
+        "white": 10,
+        "black": 13,
+        "whiteRes": 1,
+        "blackRes": 0
+      },
+      {
+        "turn": 8,
+        "white": 9,
+        "black": 23,
+        "whiteRes": 1,
+        "blackRes": 0
+      },
+      {
+        "turn": 9,
+        "white": 11,
+        "black": 22,
+        "whiteRes": 1,
+        "blackRes": 1
+      },
+      {
+        "turn": 10,
+        "white": 11,
+        "black": 16,
+        "whiteRes": 1,
+        "blackRes": 0
+      },
+      {
+        "turn": 11,
+        "white": 10,
+        "black": 10,
+        "whiteRes": 1,
+        "blackRes": 0
+      },
+      {
+        "turn": 12,
+        "white": 10,
+        "black": 21,
+        "whiteRes": 1,
+        "blackRes": 0
+      },
+      {
+        "turn": 13,
+        "white": 9,
+        "black": 25,
+        "whiteRes": 1,
+        "blackRes": 0
+      },
+      {
+        "turn": 14,
+        "white": 13,
+        "black": 25,
+        "whiteRes": 1,
+        "blackRes": 0
+      },
+      {
+        "turn": 15,
+        "white": 12,
+        "black": 19,
+        "whiteRes": 1,
+        "blackRes": 0
+      },
+      {
+        "turn": 16,
+        "white": 11,
+        "black": 23,
+        "whiteRes": 1,
+        "blackRes": 0
+      },
+      {
+        "turn": 17,
+        "white": 12,
+        "black": 27,
+        "whiteRes": 1,
+        "blackRes": 1
+      },
+      {
+        "turn": 18,
+        "white": 14,
+        "black": 27,
+        "whiteRes": 1,
+        "blackRes": 1
+      },
+      {
+        "turn": 19,
+        "white": 14,
+        "black": 27,
+        "whiteRes": 1,
+        "blackRes": 1
+      },
+      {
+        "turn": 20,
+        "white": 18,
+        "black": 25,
+        "whiteRes": 1,
+        "blackRes": 1
+      }
+    ],
+    "invariantViolation": null,
+    "anomalies": []
+  },
+  {
+    "schema": "muju-lab-game-v1",
+    "engineHash": "2a04a8c8968d3fa984f794de0fcef41bf2e4372bc20aba03c1ca05a76ec403e5",
+    "runId": "wasm-screen-AntiRush-black",
+    "experiment": null,
+    "seed": 20260907,
+    "startedAt": "2026-09-07T21:26:06.857Z",
+    "durationMs": 26347,
+    "options": {
+      "maxTurns": 20,
+      "maxPlies": 8000,
+      "legality": "strict",
+      "recordReplay": false,
+      "checkInvariants": true,
+      "elementGraph": "double-thick",
+      "handicap": {
+        "white": 0,
+        "black": 0
+      }
+    },
+    "winner": "black",
+    "winType": "adjudication",
+    "turns": 21,
+    "plies": 411,
+    "firstBlood": {
+      "by": "black",
+      "turn": 2
+    },
+    "players": {
+      "white": {
+        "bot": "AntiRush",
+        "finalResources": 0,
+        "resourcesGained": 67,
+        "resourcesSpent": 67,
+        "finalMaterial": 15,
+        "finalQueueValue": 0,
+        "unitsPlaced": 24,
+        "promotions": 0,
+        "tierUsage": {
+          "1": 24,
+          "2": 0,
+          "3": 0,
+          "4": 0
+        },
+        "elementQueued": {
+          "plant": 19,
+          "water": 5
+        },
+        "unitsLost": 20,
+        "unitsKilled": 14,
+        "illegalActions": 0,
+        "plies": 196
+      },
+      "black": {
+        "bot": "WASM-medium-screen-1200",
+        "finalResources": 1,
+        "resourcesGained": 27,
+        "resourcesSpent": 26,
+        "finalMaterial": 12,
+        "finalQueueValue": 6,
+        "unitsPlaced": 20,
+        "promotions": 0,
+        "tierUsage": {
+          "1": 20,
+          "2": 0,
+          "3": 0,
+          "4": 0
+        },
+        "elementQueued": {
+          "fire": 26
+        },
+        "unitsLost": 14,
+        "unitsKilled": 20,
+        "illegalActions": 0,
+        "plies": 215
+      }
+    },
+    "materialCurve": [
+      {
+        "turn": 1,
+        "white": 6,
+        "black": 6,
+        "whiteRes": 0,
+        "blackRes": 0
+      },
+      {
+        "turn": 2,
+        "white": 6,
+        "black": 6,
+        "whiteRes": 1,
+        "blackRes": 1
+      },
+      {
+        "turn": 3,
+        "white": 5,
+        "black": 7,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 4,
+        "white": 13,
+        "black": 7,
+        "whiteRes": 1,
+        "blackRes": 1
+      },
+      {
+        "turn": 5,
+        "white": 16,
+        "black": 7,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 6,
+        "white": 22,
+        "black": 7,
+        "whiteRes": 1,
+        "blackRes": 1
+      },
+      {
+        "turn": 7,
+        "white": 28,
+        "black": 7,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 8,
+        "white": 31,
+        "black": 7,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 9,
+        "white": 36,
+        "black": 7,
+        "whiteRes": 1,
+        "blackRes": 1
+      },
+      {
+        "turn": 10,
+        "white": 36,
+        "black": 7,
+        "whiteRes": 1,
+        "blackRes": 1
+      },
+      {
+        "turn": 11,
+        "white": 33,
+        "black": 9,
+        "whiteRes": 1,
+        "blackRes": 1
+      },
+      {
+        "turn": 12,
+        "white": 21,
+        "black": 8,
+        "whiteRes": 1,
+        "blackRes": 1
+      },
+      {
+        "turn": 13,
+        "white": 9,
+        "black": 8,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 14,
+        "white": 6,
+        "black": 7,
+        "whiteRes": 1,
+        "blackRes": 1
+      },
+      {
+        "turn": 15,
+        "white": 21,
+        "black": 7,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 16,
+        "white": 24,
+        "black": 6,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 17,
+        "white": 24,
+        "black": 13,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 18,
+        "white": 15,
+        "black": 15,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 19,
+        "white": 15,
+        "black": 14,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 20,
+        "white": 15,
+        "black": 13,
+        "whiteRes": 0,
+        "blackRes": 1
+      }
+    ],
+    "invariantViolation": null,
+    "anomalies": []
+  },
+  {
+    "schema": "muju-lab-game-v1",
+    "engineHash": "2a04a8c8968d3fa984f794de0fcef41bf2e4372bc20aba03c1ca05a76ec403e5",
+    "runId": "wasm-screen-Random-white",
+    "experiment": null,
+    "seed": 20260907,
+    "startedAt": "2026-09-07T21:26:33.205Z",
+    "durationMs": 6209,
+    "options": {
+      "maxTurns": 20,
+      "maxPlies": 8000,
+      "legality": "strict",
+      "recordReplay": false,
+      "checkInvariants": true,
+      "elementGraph": "double-thick",
+      "handicap": {
+        "white": 0,
+        "black": 0
+      }
+    },
+    "winner": "white",
+    "winType": "home-occupation",
+    "turns": 4,
+    "plies": 63,
+    "firstBlood": {
+      "by": "white",
+      "turn": 3
+    },
+    "players": {
+      "white": {
+        "bot": "WASM-medium-screen-1200",
+        "finalResources": 1,
+        "resourcesGained": 11,
+        "resourcesSpent": 10,
+        "finalMaterial": 16,
+        "finalQueueValue": 0,
+        "unitsPlaced": 10,
+        "promotions": 0,
+        "tierUsage": {
+          "1": 10,
+          "2": 0,
+          "3": 0,
+          "4": 0
+        },
+        "elementQueued": {
+          "fire": 10
+        },
+        "unitsLost": 0,
+        "unitsKilled": 2,
+        "illegalActions": 0,
+        "plies": 45
+      },
+      "black": {
+        "bot": "Random",
+        "finalResources": 0,
+        "resourcesGained": 2,
+        "resourcesSpent": 2,
+        "finalMaterial": 2,
+        "finalQueueValue": 2,
+        "unitsPlaced": 0,
+        "promotions": 0,
+        "tierUsage": {
+          "1": 0,
+          "2": 0,
+          "3": 0,
+          "4": 0
+        },
+        "elementQueued": {
+          "shadow": 1
+        },
+        "unitsLost": 2,
+        "unitsKilled": 0,
+        "illegalActions": 0,
+        "plies": 18
+      }
+    },
+    "materialCurve": [
+      {
+        "turn": 1,
+        "white": 6,
+        "black": 6,
+        "whiteRes": 0,
+        "blackRes": 0
+      },
+      {
+        "turn": 2,
+        "white": 6,
+        "black": 6,
+        "whiteRes": 1,
+        "blackRes": 0
+      },
+      {
+        "turn": 3,
+        "white": 7,
+        "black": 6,
+        "whiteRes": 1,
+        "blackRes": 0
+      }
+    ],
+    "invariantViolation": null,
+    "anomalies": []
+  },
+  {
+    "schema": "muju-lab-game-v1",
+    "engineHash": "2a04a8c8968d3fa984f794de0fcef41bf2e4372bc20aba03c1ca05a76ec403e5",
+    "runId": "wasm-screen-Random-black",
+    "experiment": null,
+    "seed": 20260907,
+    "startedAt": "2026-09-07T21:26:39.415Z",
+    "durationMs": 38161,
+    "options": {
+      "maxTurns": 20,
+      "maxPlies": 8000,
+      "legality": "strict",
+      "recordReplay": false,
+      "checkInvariants": true,
+      "elementGraph": "double-thick",
+      "handicap": {
+        "white": 0,
+        "black": 0
+      }
+    },
+    "winner": "black",
+    "winType": "home-occupation",
+    "turns": 11,
+    "plies": 151,
+    "firstBlood": {
+      "by": "black",
+      "turn": 3
+    },
+    "players": {
+      "white": {
+        "bot": "Random",
+        "finalResources": 0,
+        "resourcesGained": 9,
+        "resourcesSpent": 9,
+        "finalMaterial": 4,
+        "finalQueueValue": 5,
+        "unitsPlaced": 1,
+        "promotions": 0,
+        "tierUsage": {
+          "1": 0,
+          "2": 1,
+          "3": 0,
+          "4": 0
+        },
+        "elementQueued": {
+          "water": 2,
+          "lightning": 2,
+          "fire": 1
+        },
+        "unitsLost": 3,
+        "unitsKilled": 0,
+        "illegalActions": 0,
+        "plies": 38
+      },
+      "black": {
+        "bot": "WASM-medium-screen-1200",
+        "finalResources": 4,
+        "resourcesGained": 39,
+        "resourcesSpent": 35,
+        "finalMaterial": 41,
+        "finalQueueValue": 0,
+        "unitsPlaced": 13,
+        "promotions": 5,
+        "tierUsage": {
+          "1": 13,
+          "2": 2,
+          "3": 2,
+          "4": 1
+        },
+        "elementQueued": {
+          "fire": 13
+        },
+        "unitsLost": 0,
+        "unitsKilled": 3,
+        "illegalActions": 0,
+        "plies": 113
+      }
+    },
+    "materialCurve": [
+      {
+        "turn": 1,
+        "white": 6,
+        "black": 6,
+        "whiteRes": 0,
+        "blackRes": 0
+      },
+      {
+        "turn": 2,
+        "white": 6,
+        "black": 6,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 3,
+        "white": 6,
+        "black": 7,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 4,
+        "white": 6,
+        "black": 16,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 5,
+        "white": 6,
+        "black": 16,
+        "whiteRes": 0,
+        "blackRes": 1
+      },
+      {
+        "turn": 6,
+        "white": 4,
+        "black": 19,
+        "whiteRes": 2,
+        "blackRes": 2
+      },
+      {
+        "turn": 7,
+        "white": 4,
+        "black": 21,
+        "whiteRes": 0,
+        "blackRes": 6
+      },
+      {
+        "turn": 8,
+        "white": 4,
+        "black": 27,
+        "whiteRes": 0,
+        "blackRes": 5
+      },
+      {
+        "turn": 9,
+        "white": 4,
+        "black": 32,
+        "whiteRes": 0,
+        "blackRes": 7
+      },
+      {
+        "turn": 10,
+        "white": 4,
+        "black": 35,
+        "whiteRes": 0,
+        "blackRes": 7
+      },
+      {
+        "turn": 11,
+        "white": 4,
+        "black": 41,
+        "whiteRes": 0,
+        "blackRes": 4
+      }
+    ],
+    "invariantViolation": null,
+    "anomalies": []
+  }
+]

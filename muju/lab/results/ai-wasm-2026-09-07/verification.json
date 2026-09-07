@@ -1,0 +1,70 @@
+{
+  "sourceCommit": "4917121cad982b023ee637a848d70a5632869474",
+  "unitTests": {
+    "passed": 621,
+    "files": 30,
+    "finalStricterInformationBoundaryTestsPassed": 10
+  },
+  "build": "Muju and full three-game static build passed",
+  "catalogue": "balance:check and balance:types passed; catalogue unchanged",
+  "types": "src, home experiments and lab/ai passed",
+  "siteSmoke": {
+    "widths": [
+      390,
+      834
+    ],
+    "games": [
+      "Muju",
+      "FORGE",
+      "Oracle"
+    ],
+    "passed": true
+  },
+  "browsers": {
+    "chrome": {
+      "fullRun": {
+        "startTime": "2026-09-07T21:38:29.160Z",
+        "duration": 13046.914999999999,
+        "expected": 24,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "finalWorkerLifecycleRun": {
+        "startTime": "2026-09-07T21:42:22.733Z",
+        "duration": 6987.388,
+        "expected": 5,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "menuSample": {
+        "elapsedMs": 14.09999942779541,
+        "browser": "152.0.7977.76"
+      }
+    },
+    "webkit": {
+      "fullRun": {
+        "startTime": "2026-09-07T21:38:32.521Z",
+        "duration": 3706.957,
+        "expected": 5,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "finalWorkerLifecycleRun": {
+        "startTime": "2026-09-07T21:42:26.788Z",
+        "duration": 3590.483,
+        "expected": 5,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "menuSample": {
+        "elapsedMs": 21,
+        "browser": "26.6"
+      }
+    }
+  },
+  "limits": "Menu timings are single frame-response samples with a Hard worker active, not p95 measurements. Headless macOS WebKit is not a real mobile Safari measurement. Final lifecycle/legacy-save fixes were checked after the full suites; normal-game strength records predate those compatibility-only changes."
+}

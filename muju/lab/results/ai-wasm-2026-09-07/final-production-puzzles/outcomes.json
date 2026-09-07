@@ -1,0 +1,290 @@
+[
+  {
+    "fixture": "cheap invasion / one attack",
+    "version": "production-e70a057",
+    "cleared": true,
+    "totalMs": 91.311709,
+    "decisions": 1,
+    "illegal": false
+  },
+  {
+    "fixture": "cheap invasion / one attack",
+    "version": "candidate",
+    "cleared": true,
+    "totalMs": 0.6548749999999757,
+    "decisions": 1,
+    "illegal": false
+  },
+  {
+    "fixture": "cheap invasion / one attack / rotated black",
+    "version": "production-e70a057",
+    "cleared": true,
+    "totalMs": 87.31729100000001,
+    "decisions": 1,
+    "illegal": false
+  },
+  {
+    "fixture": "cheap invasion / one attack / rotated black",
+    "version": "candidate",
+    "cleared": true,
+    "totalMs": 0.12274999999999636,
+    "decisions": 1,
+    "illegal": false
+  },
+  {
+    "fixture": "Metal IV / two Fire II",
+    "version": "production-e70a057",
+    "cleared": true,
+    "totalMs": 1613.426749,
+    "decisions": 2,
+    "illegal": false
+  },
+  {
+    "fixture": "Metal IV / two Fire II",
+    "version": "candidate",
+    "cleared": true,
+    "totalMs": 1.1402499999999236,
+    "decisions": 2,
+    "illegal": false
+  },
+  {
+    "fixture": "Metal IV / two Fire II / rotated black",
+    "version": "production-e70a057",
+    "cleared": true,
+    "totalMs": 1639.9543339999998,
+    "decisions": 2,
+    "illegal": false
+  },
+  {
+    "fixture": "Metal IV / two Fire II / rotated black",
+    "version": "candidate",
+    "cleared": true,
+    "totalMs": 0.501875000000382,
+    "decisions": 2,
+    "illegal": false
+  },
+  {
+    "fixture": "three attacker rotation",
+    "version": "production-e70a057",
+    "cleared": false,
+    "totalMs": 4681.348125,
+    "decisions": 3,
+    "illegal": false
+  },
+  {
+    "fixture": "three attacker rotation",
+    "version": "candidate",
+    "cleared": true,
+    "totalMs": 4.971668000000136,
+    "decisions": 5,
+    "illegal": false
+  },
+  {
+    "fixture": "three attacker rotation / rotated black",
+    "version": "production-e70a057",
+    "cleared": false,
+    "totalMs": 4667.080417000001,
+    "decisions": 3,
+    "illegal": false
+  },
+  {
+    "fixture": "three attacker rotation / rotated black",
+    "version": "candidate",
+    "cleared": true,
+    "totalMs": 2.9052489999994577,
+    "decisions": 5,
+    "illegal": false
+  },
+  {
+    "fixture": "promotion dependent rescue",
+    "version": "production-e70a057",
+    "cleared": false,
+    "totalMs": 4558.275332999998,
+    "decisions": 3,
+    "illegal": false
+  },
+  {
+    "fixture": "promotion dependent rescue",
+    "version": "candidate",
+    "cleared": true,
+    "totalMs": 0.8179170000039448,
+    "decisions": 4,
+    "illegal": false
+  },
+  {
+    "fixture": "promotion dependent rescue / rotated black",
+    "version": "production-e70a057",
+    "cleared": false,
+    "totalMs": 4545.655376000002,
+    "decisions": 3,
+    "illegal": false
+  },
+  {
+    "fixture": "promotion dependent rescue / rotated black",
+    "version": "candidate",
+    "cleared": true,
+    "totalMs": 0.8121250000003783,
+    "decisions": 4,
+    "illegal": false
+  },
+  {
+    "fixture": "mine loses the last saving action",
+    "version": "production-e70a057",
+    "cleared": true,
+    "totalMs": 58.45874999999796,
+    "decisions": 1,
+    "illegal": false
+  },
+  {
+    "fixture": "mine loses the last saving action",
+    "version": "candidate",
+    "cleared": true,
+    "totalMs": 0.06295800000225427,
+    "decisions": 1,
+    "illegal": false
+  },
+  {
+    "fixture": "mine loses the last saving action / rotated black",
+    "version": "production-e70a057",
+    "cleared": true,
+    "totalMs": 67.15799999999945,
+    "decisions": 1,
+    "illegal": false
+  },
+  {
+    "fixture": "mine loses the last saving action / rotated black",
+    "version": "candidate",
+    "cleared": true,
+    "totalMs": 0.06116699999984121,
+    "decisions": 1,
+    "illegal": false
+  },
+  {
+    "fixture": "clear an adjacent lane",
+    "version": "production-e70a057",
+    "cleared": true,
+    "totalMs": 3111.3574569999946,
+    "decisions": 3,
+    "illegal": false
+  },
+  {
+    "fixture": "clear an adjacent lane",
+    "version": "candidate",
+    "cleared": true,
+    "totalMs": 0.503751000000193,
+    "decisions": 3,
+    "illegal": false
+  },
+  {
+    "fixture": "clear an adjacent lane / rotated black",
+    "version": "production-e70a057",
+    "cleared": true,
+    "totalMs": 3133.5550840000033,
+    "decisions": 3,
+    "illegal": false
+  },
+  {
+    "fixture": "clear an adjacent lane / rotated black",
+    "version": "candidate",
+    "cleared": true,
+    "totalMs": 0.4873329999973066,
+    "decisions": 3,
+    "illegal": false
+  },
+  {
+    "fixture": "multi-action approach",
+    "version": "production-e70a057",
+    "cleared": false,
+    "totalMs": 4634.713334,
+    "decisions": 3,
+    "illegal": false
+  },
+  {
+    "fixture": "multi-action approach",
+    "version": "candidate",
+    "cleared": true,
+    "totalMs": 0.7059579999986454,
+    "decisions": 4,
+    "illegal": false
+  },
+  {
+    "fixture": "multi-action approach / rotated black",
+    "version": "production-e70a057",
+    "cleared": false,
+    "totalMs": 4609.116209000007,
+    "decisions": 3,
+    "illegal": false
+  },
+  {
+    "fixture": "multi-action approach / rotated black",
+    "version": "candidate",
+    "cleared": true,
+    "totalMs": 0.7533739999998943,
+    "decisions": 4,
+    "illegal": false
+  },
+  {
+    "fixture": "zero attack occupier",
+    "version": "production-e70a057",
+    "cleared": true,
+    "totalMs": 61.183334000001196,
+    "decisions": 1,
+    "illegal": false
+  },
+  {
+    "fixture": "zero attack occupier",
+    "version": "candidate",
+    "cleared": true,
+    "totalMs": 0.09604199999739649,
+    "decisions": 1,
+    "illegal": false
+  },
+  {
+    "fixture": "zero attack occupier / rotated black",
+    "version": "production-e70a057",
+    "cleared": true,
+    "totalMs": 78.31487500000367,
+    "decisions": 1,
+    "illegal": false
+  },
+  {
+    "fixture": "zero attack occupier / rotated black",
+    "version": "candidate",
+    "cleared": true,
+    "totalMs": 0.06441700000141282,
+    "decisions": 1,
+    "illegal": false
+  },
+  {
+    "fixture": "damage remains during defender reply",
+    "version": "production-e70a057",
+    "cleared": true,
+    "totalMs": 57.22112500000367,
+    "decisions": 1,
+    "illegal": false
+  },
+  {
+    "fixture": "damage remains during defender reply",
+    "version": "candidate",
+    "cleared": true,
+    "totalMs": 0.06895900000381516,
+    "decisions": 1,
+    "illegal": false
+  },
+  {
+    "fixture": "damage remains during defender reply / rotated black",
+    "version": "production-e70a057",
+    "cleared": true,
+    "totalMs": 66.41329199999745,
+    "decisions": 1,
+    "illegal": false
+  },
+  {
+    "fixture": "damage remains during defender reply / rotated black",
+    "version": "candidate",
+    "cleared": true,
+    "totalMs": 0.06375000000116415,
+    "decisions": 1,
+    "illegal": false
+  }
+]

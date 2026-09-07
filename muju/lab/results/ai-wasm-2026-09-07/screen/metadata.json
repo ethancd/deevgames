@@ -1,0 +1,14 @@
+{
+  "schema": "muju-ai-validation-v1",
+  "mode": "league",
+  "base": "e70a0574c8246e06c7217bb2c0f157324e11c859",
+  "sourceDiffSha256": "2a04a8c8968d3fa984f794de0fcef41bf2e4372bc20aba03c1ca05a76ec403e5",
+  "catalogueSha256": "cbbcebecd3014d8ab77199cec022257b2ddd85ac506b46d68e350f1e003445c2",
+  "wasmSha256": "1b95bba3783bc1da1afc0d37a5549c3df9b48e21efbc23b84563d82a81f5d05a",
+  "wasmBytes": 7645,
+  "wasmGzipBytes": 3490,
+  "coldInstantiateMs": 312.735209,
+  "runtime": "v24.11.1",
+  "device": "darwin arm64 Apple M2 Max",
+  "seed": 20260907
+}
