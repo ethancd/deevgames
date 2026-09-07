@@ -229,3 +229,7 @@ The P4a acceptance criterion "hard AI beats Tier1Spam" already holds at
 baseline. D14 emission rates scale with enemy-unit churn (spam games breed
 belief drift: imagined enemies die or move constantly), reinforcing the P4a
 priority on validating actions at application time.
+
+## E8 — September 7, 2026 candidate screen and confirmation
+
+A corrected-transition campaign ran 17,920 scripted games: 12 variants × 960 screened games plus two fresh-seed confirmation variants × 3,200 games. Results distinguish capped adjudication from natural outcomes, retain source hashes and paired seeds, and include seed-block bootstrap comparisons. Engine correctness/strength probes are separate. See [measured tables and raw provenance](../results/e8-2026-09-07/comparison.md), [catalogue audit](../results/e8-2026-09-07/catalog.json), and [interpretation and limitations](../../docs/BALANCE_REVIEW-2026-09-07.md). No prototype changes production unit definitions.

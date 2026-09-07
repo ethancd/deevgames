@@ -16,6 +16,7 @@ export function extractPublicState(
       [opponent]: {
         ...state.players[opponent],
         resources: 0,
+        resourcesSpent: state.players[opponent].resourcesManifested ?? 0,
         buildQueue: [],
       },
     },

@@ -132,3 +132,9 @@ not autonomous rulings, recorded for traceability):
   (hash-stamped); the one aborted E3 game is excluded either way.
 - **Blast radius:** engine IDs only; no rules change. **Reversal cost:** n/a
   (strictly a correctness fix; regression-tested).
+
+## J-009: Correctness before catalogue tuning (2026-09-07)
+
+User requested AI correctness fixes plus brainstorming, evaluation, adversarial critique and design recommendations. Implement the shared legality/transition repair and search logic fixes; evaluate catalogue prototypes only inside lab processes. Keep current catalogue and element graph intact pending recommendation review and stronger mixed-army validation. D3 is resolved by separating committed from manifested spending, not hiding internal accounting needed for own assets.
+
+The June fixed-Fire-Rush target is not a sufficient release criterion: current probes show many AntiRush successes are capped adjudications, and adaptive pressure behaves differently. Prefer meaningful options and counterplay, distinguish natural finishes from caps, and do not infer all-unit viability from mono-line win rates. Highest-priority tested prototype is Lightning ATK 2/3/3/4; Plant differentiation is next; Shadow remains unresolved. See the dated repair and balance reports under `docs/`. Reversal cost: balance prototypes are process-local and never enter normal gameplay.

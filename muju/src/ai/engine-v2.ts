@@ -7,6 +7,9 @@ import { createInitialBelief, updateBelief, maybeResample } from './belief/updat
 import { beamSearchPlans } from './planner/beam';
 import { runMCTS } from './search/mcts';
 import { tacticalSharpen } from './eval/sharpener';
+import { isLegalAction, phaseEndAction } from '../game/legality';
+import { applyAction } from './simulate';
+import { generateAttackActions } from './moves';
 
 interface AIEngineConfig {
   mctsIterations: number;
@@ -40,6 +43,7 @@ export class AIEngineV2 {
   private config: AIEngineConfig;
   private weights: EvaluationWeights;
   private lastObservedState: GameState | null = null;
+  private lastPlayer: PlayerId | null = null;
   private belief: ReturnType<typeof createInitialBelief> | null = null;
 
   constructor(difficulty: AIDifficulty = 'medium', weights: EvaluationWeights = DEFAULT_WEIGHTS) {
@@ -81,8 +85,8 @@ export class AIEngineV2 {
     const evaluator = (simState: GameState, forPlayer: PlayerId) =>
       tacticalSharpen(simState, forPlayer, this.config.tacticalDepth, this.weights);
 
-    const candidatePlans = planGenerator(state, player);
-    const bestPlan = runMCTS(
+    const candidatePlans = planGenerator(knowledge.public, player);
+    let bestPlan = runMCTS(
       knowledge,
       player,
       {
@@ -94,6 +98,23 @@ export class AIEngineV2 {
       evaluator
     );
 
+    const winningAction = generateAttackActions(knowledge.public, player).find(a =>
+      isLegalAction(state, a) && applyAction(state, a).winner === player);
+    if (winningAction) bestPlan = { id: 'immediate-victory', actions: [winningAction], score: Infinity, tags: ['kill'] };
+
+    // A searched plan can contain actions from a different determinization.
+    // Expose only its legal prefix for this actual turn, never a ghost action.
+    const actions = [] as AIResult['plan']['actions'];
+    let current = state;
+    for (const action of bestPlan.actions) {
+      if (current.turn.currentPlayer !== player || !isLegalAction(current, action)) break;
+      actions.push(action);
+      current = applyAction(current, action);
+    }
+    if (!actions.length && state.phase === 'playing') {
+      const fallback = candidatePlans.find(p => p.actions[0] && isLegalAction(state, p.actions[0]));
+      actions.push(fallback?.actions[0] ?? phaseEndAction(state));
+    }
     const timeMs = Date.now() - startTime;
 
     const debug: AIDebugInfo = {
@@ -115,7 +136,7 @@ export class AIEngineV2 {
     };
 
     return {
-      plan: { actions: bestPlan.actions, score: bestPlan.score },
+      plan: { actions, score: bestPlan.score },
       nodesSearched: this.config.mctsIterations,
       timeMs,
       depth: this.config.tacticalDepth,
@@ -124,13 +145,21 @@ export class AIEngineV2 {
   }
 
   private buildKnowledge(state: GameState, player: PlayerId): FullKnowledge {
+    if (this.lastPlayer !== player || (this.lastObservedState &&
+        (state.turn.turnNumber < this.lastObservedState.turn.turnNumber ||
+         state.players.white.resourcesGained < this.lastObservedState.players.white.resourcesGained ||
+         state.players.black.resourcesGained < this.lastObservedState.players.black.resourcesGained))) {
+      this.belief = null;
+      this.lastObservedState = null;
+    }
+    this.lastPlayer = player;
     const observed = observeState(this.lastObservedState, state, player);
     const own = extractPrivateState(state, player);
 
     if (!this.belief) {
       const minResources = 0;
       const maxResources = Math.max(0, state.players[player === 'white' ? 'black' : 'white'].resourcesGained -
-        state.players[player === 'white' ? 'black' : 'white'].resourcesSpent);
+        observed.players[player === 'white' ? 'black' : 'white'].resourcesSpent);
       this.belief = createInitialBelief(this.config.particleCount, minResources, maxResources);
     }
 

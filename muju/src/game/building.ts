@@ -192,9 +192,9 @@ export function placeBuiltUnit(
  * Get all available build options for a player
  * Returns unit definitions they could potentially build
  */
-export function getAvailableBuildOptions(buildState: BuildState): string[] {
+export function getAvailableBuildOptions(buildState: BuildState, player: PlayerId, board: BoardState): string[] {
   return UNIT_DEFINITIONS
-    .filter((def) => canAfford(buildState, def.id))
+    .filter((def) => canBuildUnit(def.id, player, board, buildState))
     .map((def) => def.id);
 }
 

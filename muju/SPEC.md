@@ -226,10 +226,11 @@ Visible to both players at all times:
 - The board (all units, positions, tiers, damage markers) and all cell
   resource states.
 - Each player's `resourcesGained` (total ever mined).
-- Each player's `resourcesSpent` — **intent:** updates when a unit is
-  *placed* (and at promotion, which is public), not when queued, so the
-  hidden queue does not leak. (Known divergence D3: the human path currently
-  updates it at queue time; scheduled fix in lab Phase 4a.)
+- Each player's public manifested spending (`resourcesManifested`), updated
+  when a unit is placed or promoted. Internally, `resourcesSpent` counts
+  committed spending at queue/promotion time; it is private. The opponent
+  observation exposes the manifested total in its `resourcesSpent` slot,
+  so hidden queue purchases do not leak (corrected 2026-09-07).
 
 Hidden from the opponent:
 
@@ -264,9 +265,10 @@ than reading hidden state.
   (`belief/`), beam-search plan generation (`planner/`), UCT MCTS over plans
   (`search/`), tactical sharpener (`eval/`). Difficulty presets easy/medium/
   hard scale iterations, beam width, particles, tactical depth.
-  `src/ai/simulate.ts` applies AI actions to real state (`APPLY_AI_ACTION`).
-- `src/hooks/useGameState.ts` — React reducer for the human path (validation
-  + dispatch); `useAI.ts` drives AI turns.
+  `src/game/legality.ts` validates actions; `src/ai/simulate.ts` is the
+  authoritative transition for human actions, AI actions and search.
+- `src/hooks/useGameState.ts` — React reducer delegates gameplay transitions
+  to the shared engine; `useAI.ts` drives AI turns with explicit phase ends.
 - `tests/` — unit tests per module plus seeded-playout property tests and
   adversarial audit fixtures (`tests/game/properties.test.ts`,
   `tests/game/audit-fixtures.test.ts`).
@@ -275,7 +277,9 @@ than reading hidden state.
 ## 11. Known divergences
 
 Engine/UI/AI divergences from this spec are tracked in
-`lab/docs/SPEC_AUDIT.md` (D1–D12) with dispositions; the load-bearing ones
-(AI legality bypass D1/D2, `resourcesSpent` leak D3) are scheduled for the
-lab's Phase 4a. Design judgment calls made autonomously during the lab are in
-`JUDGMENT_LOG.md`.
+`lab/docs/SPEC_AUDIT.md` (D1–D14) with historical dispositions. The
+2026-09-07 correctness repair resolves D1–D6 and D11–D14, retains intentional
+rules D7–D9, and documents the remaining planning limitation D10. See
+`docs/AI_CORRECTNESS-2026-09-07.md` for changes and evidence. Design judgment
+calls are in `JUDGMENT_LOG.md`. Catalogue recommendations in
+`docs/BALANCE_REVIEW-2026-09-07.md` are experiments, not current rules.

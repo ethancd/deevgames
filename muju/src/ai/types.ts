@@ -15,6 +15,7 @@ export type AIAction =
   | { type: 'MOVE'; unitId: string; to: Position }
   | { type: 'ATTACK'; unitId: string; targetPosition: Position }
   | { type: 'MINE'; unitId: string }
+  | { type: 'END_PLACE_PHASE' }
   | { type: 'END_ACTION_PHASE' }
   | { type: 'END_TURN' }
   | { type: 'QUEUE_UNIT'; definitionId: string }

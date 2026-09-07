@@ -439,6 +439,11 @@ export function shouldResign(state: GameState, player: PlayerId): boolean {
   // If player has no units, they've already lost (don't need resignation)
   if (playerValue === 0) return false;
 
+  // A banked economy or ready reinforcements can reverse a board deficit.
+  // Only inspect our own private assets; opponent queues remain hidden.
+  if (state.players[player].resources > 0 || state.players[player].buildQueue.length > 0) return false;
+  if (generateWinningAttack(state, player)) return false;
+
   // If opponent has 3x or more unit value, consider resigning
   if (opponentValue >= playerValue * 3) {
     return true;
@@ -463,4 +468,11 @@ export function shouldResign(state: GameState, player: PlayerId): boolean {
   }
 
   return false;
+}
+
+function generateWinningAttack(state: GameState, player: PlayerId): boolean {
+  if (state.turn.currentPlayer !== player || state.turn.phase !== 'action' || state.turn.actionsRemaining <= 0) return false;
+  const enemies = getPlayerUnits(state.board, player === 'white' ? 'black' : 'white');
+  return enemies.length === 1 && getPlayerUnits(state.board, player).some(u =>
+    getValidAttacks(u, state.board).some(p => p.x === enemies[0].position.x && p.y === enemies[0].position.y) && canBeEliminated(enemies[0], u));
 }

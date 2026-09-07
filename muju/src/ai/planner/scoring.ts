@@ -16,7 +16,9 @@ export function scorePartialPlan(plan: TurnPlan, state: GameState, forPlayer: Pl
   const killCount = baseUnits.length - nextUnits.length;
 
   const damageScore = nextUnits.reduce((sum, unit) => sum + unit.damageTaken, 0);
-  const resourcesDelta = simState.players[forPlayer].resources - state.players[forPlayer].resources;
+  // Mining creates value. Buying/promoting transfers cash into another asset;
+  // evaluatePosition already accounts for that trade, so do not penalize it twice.
+  const incomeDelta = simState.players[forPlayer].resourcesGained - state.players[forPlayer].resourcesGained;
 
   const staticScore = evaluatePosition(simState, forPlayer);
 
@@ -24,7 +26,7 @@ export function scorePartialPlan(plan: TurnPlan, state: GameState, forPlayer: Pl
     staticScore +
     killCount * 20 +
     damageScore * 0.5 +
-    resourcesDelta * 1.5 -
+    incomeDelta * 1.5 -
     plan.actions.length * 0.1
   );
 }

@@ -20,6 +20,8 @@ function formatAction(action: AIAction): string {
       return `Place ${action.queuedUnitId} → (${action.position.x},${action.position.y})`;
     case 'PROMOTE_UNIT':
       return `Promote ${action.unitId}`;
+    case 'END_PLACE_PHASE':
+      return 'End placement phase';
     case 'END_ACTION_PHASE':
       return 'End action phase';
     case 'END_TURN':

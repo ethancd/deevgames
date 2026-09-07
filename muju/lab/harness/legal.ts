@@ -5,37 +5,14 @@ import {
   generateActionPhaseActions,
   generateQueuePhaseActions,
 } from '../../src/ai/moves';
-import { canBuildUnit } from '../../src/game/building';
+import { isLegalAction } from '../../src/game/legality';
 
-/**
- * Legal actions for the current phase, filtered through the FULL rules.
- *
- * The raw queue generator ignores tech requirements (SPEC_AUDIT divergence
- * D1), so QUEUE_UNIT actions are filtered through canBuildUnit — same ruling
- * as the engine property tests (J-001). Scripted bots therefore cannot cheat
- * by construction; engine bots emit their own actions and are checked against
- * this set by the runner.
- */
+/** Candidate generation plus the same authoritative rules used in actual play. */
 export function legalActions(state: GameState, player: PlayerId): AIAction[] {
-  switch (state.turn.phase) {
-    case 'place':
-      return generatePlacePhaseActions(state, player);
-    case 'action':
-      return generateActionPhaseActions(state, player);
-    case 'queue': {
-      const actions = generateQueuePhaseActions(state, player);
-      return actions.filter((a) => {
-        if (a.type !== 'QUEUE_UNIT') return true;
-        const buildState = {
-          queue: [],
-          crystals: state.players[player].resources,
-        };
-        return canBuildUnit(a.definitionId, player, state.board, buildState);
-      });
-    }
-    default:
-      return [];
-  }
+  const actions = state.turn.phase === 'place' ? generatePlacePhaseActions(state, player)
+    : state.turn.phase === 'action' ? generateActionPhaseActions(state, player)
+    : generateQueuePhaseActions(state, player);
+  return actions.filter(a => isLegalAction(state, a, player));
 }
 
 function posEq(a: { x: number; y: number }, b: { x: number; y: number }): boolean {
@@ -70,33 +47,5 @@ export function actionsEqual(a: AIAction, b: AIAction): boolean {
  * (mirrors the real reducer, which accepts them whenever the phase matches).
  */
 export function isLegalNow(state: GameState, player: PlayerId, action: AIAction): boolean {
-  if (action.type === 'RESIGN') return true;
-  if (action.type === 'END_ACTION_PHASE') return state.turn.phase === 'action';
-  if (action.type === 'END_TURN') return state.turn.phase === 'queue';
-  // MOVE in the action phase: the generator only emits single-action moves,
-  // but multi-action moves are legal on the human path (D10). Accept any MOVE
-  // whose cost fits the remaining budget by checking the generator set first,
-  // then falling back to a cost check.
-  const legal = legalActions(state, player);
-  if (legal.some((l) => actionsEqual(l, action))) return true;
-  if (action.type === 'MOVE' && state.turn.phase === 'action') {
-    return isLegalMultiActionMove(state, player, action);
-  }
-  return false;
-}
-
-import { getUnitById } from '../../src/game/board';
-import { getUnitDefinition } from '../../src/game/units';
-import { getMoveCost } from '../../src/game/movement';
-
-function isLegalMultiActionMove(
-  state: GameState,
-  player: PlayerId,
-  action: Extract<AIAction, { type: 'MOVE' }>
-): boolean {
-  const unit = getUnitById(state.board, action.unitId);
-  if (!unit || unit.owner !== player || !unit.canActThisTurn) return false;
-  const def = getUnitDefinition(unit.definitionId);
-  const cost = getMoveCost(unit.position, action.to, def.speed, state.board);
-  return cost !== null && cost <= state.turn.actionsRemaining;
+  return isLegalAction(state, action, player);
 }

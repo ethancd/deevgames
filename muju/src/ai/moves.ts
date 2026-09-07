@@ -8,6 +8,7 @@ import { getAllSpawnPositions } from '../game/spawning';
 import { getReadyUnits } from '../game/turn';
 import { canPromote, getPromotionCost } from '../game/promotion';
 import { UNIT_DEFINITIONS } from '../game/units';
+import { canBuildUnit, meetsTechRequirement } from '../game/building';
 
 /**
  * Generate all legal move actions for a player's units
@@ -101,6 +102,7 @@ export function generatePlaceActions(state: GameState, player: PlayerId): AIActi
   const spawnPositions = getAllSpawnPositions(player, state.board);
 
   for (const queuedUnit of readyUnits) {
+    if (!meetsTechRequirement(queuedUnit.definitionId, player, state.board)) continue;
     for (const position of spawnPositions) {
       actions.push({
         type: 'PLACE_UNIT',
@@ -145,7 +147,7 @@ export function generateQueueActions(state: GameState, player: PlayerId): AIActi
 
   // Get all units player can afford
   for (const def of UNIT_DEFINITIONS) {
-    if (playerState.resources >= def.cost) {
+    if (canBuildUnit(def.id, player, state.board, { queue: [], crystals: playerState.resources })) {
       actions.push({ type: 'QUEUE_UNIT', definitionId: def.id });
     }
   }
@@ -168,6 +170,7 @@ export function generatePlacePhaseActions(state: GameState, player: PlayerId): A
 
   // Can promote units
   actions.push(...generatePromoteActions(state, player));
+  actions.push({ type: 'END_PLACE_PHASE' });
 
   return actions;
 }
@@ -195,6 +198,7 @@ export function generateQueuePhaseActions(state: GameState, player: PlayerId): A
  * Generate all legal actions for current game phase
  */
 export function generateAllActions(state: GameState, player: PlayerId): AIAction[] {
+  if (state.phase !== 'playing' || state.turn.currentPlayer !== player) return [];
   switch (state.turn.phase) {
     case 'place':
       return generatePlacePhaseActions(state, player);

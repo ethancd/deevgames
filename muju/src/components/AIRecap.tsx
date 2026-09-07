@@ -43,6 +43,7 @@ export function AIRecap({ actions, onDismiss }: AIRecapProps) {
   // Filter out queue phase actions (only show place phase and action phase)
   const meaningfulActions = actions.filter(
     (a) =>
+      a.type !== 'END_PLACE_PHASE' &&
       a.type !== 'END_ACTION_PHASE' &&
       a.type !== 'END_TURN' &&
       a.type !== 'QUEUE_UNIT'

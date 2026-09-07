@@ -8,11 +8,10 @@ import type { EngineBot } from '../types';
  * L3 — the real AI (AIEngineV2: belief-state MCTS over beam-searched plans).
  *
  * Semantics mirror the shipped useAI loop: resign check at turn start,
- * re-plan after every applied action, take plan.actions[0], and (by default)
- * the same 20-dispatch-per-turn cap (divergence D5) so harness measurements
- * reflect the game as-shipped. The engine emits its own actions from full
- * state — it masks hidden info internally — and the runner counts any
- * legality violations (D1/D2).
+ * re-plan after every applied action and take plan.actions[0]. The default
+ * has no arbitrary dispatch cap, matching the corrected useAI loop. The
+ * historical cap remains opt-in for old-experiment reproduction. The engine
+ * masks hidden information internally; the runner counts illegal emissions.
  */
 
 export interface EngineBotOptions {
@@ -22,7 +21,7 @@ export interface EngineBotOptions {
    * UI presets. 'ui' keeps the shipped preset untouched.
    */
   speed: 'ui' | 'fast';
-  /** Mirror useAI's maxIterations=20 per-turn dispatch cap (as-shipped). */
+  /** Reproduce the historical 20-dispatch cap; false for corrected gameplay. */
   mirrorUseAICap: boolean;
   resign: boolean;
 }
@@ -30,7 +29,7 @@ export interface EngineBotOptions {
 const DEFAULT_OPTIONS: EngineBotOptions = {
   difficulty: 'medium',
   speed: 'fast',
-  mirrorUseAICap: true,
+  mirrorUseAICap: false,
   resign: true,
 };
 
@@ -69,8 +68,8 @@ export function createEngineBot(opts: Partial<EngineBotOptions> = {}): EngineBot
       }
 
       if (options.mirrorUseAICap && dispatchesThisTurn >= 20) {
-        // useAI's maxIterations cap (D5): the shipped loop stops dispatching;
-        // returning null makes the runner end the phase, like the UI stalling out.
+        // Historical D5 approximation: null ends this phase in the runner.
+        // This does not reproduce a frozen UI and is disabled by default.
         return null;
       }
       dispatchesThisTurn++;

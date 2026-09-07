@@ -11,8 +11,7 @@ interface TacticalTemplate {
 }
 
 function planId(actions: TurnPlan['actions']): string {
-  return actions.map((action) => `${action.type}:${'unitId' in action ? action.unitId : ''}`)
-    .join('|');
+  return actions.map(a => JSON.stringify(a)).join('|');
 }
 
 const immediateKill: TacticalTemplate = {
@@ -30,7 +29,7 @@ const immediateKill: TacticalTemplate = {
     });
   },
   generate: (state, player) => {
-    if (state.turn.phase !== 'action') return [];
+    if (state.turn.phase !== 'action' || state.turn.actionsRemaining < 1) return [];
     const attacks = generateAttackActions(state, player);
     return attacks
       .filter((action): action is { type: 'ATTACK'; unitId: string; targetPosition: { x: number; y: number } } => {
@@ -50,7 +49,7 @@ const moveThenKill: TacticalTemplate = {
   detect: (state, player) =>
     state.turn.phase === 'action' && generateMoveActions(state, player).length > 0,
   generate: (state, player) => {
-    if (state.turn.phase !== 'action') return [];
+    if (state.turn.phase !== 'action' || state.turn.actionsRemaining < 2) return [];
     const plans: TurnPlan[] = [];
     const moves = generateMoveActions(state, player);
     for (const move of moves) {

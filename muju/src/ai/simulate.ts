@@ -4,22 +4,32 @@ import { getUnitById, placeUnit } from '../game/board';
 import { getUnitDefinition } from '../game/units';
 import { resolveCombat } from '../game/combat';
 import { executeMine } from '../game/mining';
-import { useAction, endTurn } from '../game/turn';
+import { useAction, endTurn, startActionPhase, startQueuePhase, canActInPlacePhase, canActInQueuePhase } from '../game/turn';
+import { isLegalAction } from '../game/legality';
+import { getMoveCost } from '../game/movement';
 import { checkVictory } from '../game/victory';
 
-/**
- * Monotonic counter folded into generated IDs. Date.now() + a short random
- * suffix alone is NOT unique: two units queued/placed in the same millisecond
- * can collide (observed in lab seed 1720018195 — a MOVE then teleported both
- * units to one square, SPEC_AUDIT divergence D13).
+/** Deterministic IDs keep the UI reducer and its AI shadow state in sync.
+ * Uniqueness is checked against every live unit and queue (including saved games).
  */
-let idCounter = 0;
+function nextQueueId(state: GameState): string {
+  const ids = new Set([...state.board.units.map(u => u.id), ...Object.values(state.players).flatMap(p => p.buildQueue.map(q => q.id))]);
+  const prefix = `q-${state.turn.currentPlayer}-${state.turn.turnNumber}-`;
+  let n = 0;
+  while (ids.has(prefix + n) || ids.has('unit-' + prefix + n)) n++;
+  return prefix + n;
+}
 
-/**
- * Apply an action to a game state and return the new state
- * This is a simulation - doesn't affect the real game
+/** Authoritative immutable transition, used by real play AND search.
+ * Rejected actions return the original object without charging an action/resource.
  */
 export function applyAction(state: GameState, action: AIAction): GameState {
+  if (!isLegalAction(state, action)) return state;
+  const next = applyLegalAction(state, action);
+  return next === state ? state : { ...next, selectedUnit: null, validMoves: [], validAttacks: [] };
+}
+
+function applyLegalAction(state: GameState, action: AIAction): GameState {
   switch (action.type) {
     case 'MOVE':
       return applyMove(state, action.unitId, action.to);
@@ -30,8 +40,11 @@ export function applyAction(state: GameState, action: AIAction): GameState {
     case 'MINE':
       return applyMine(state, action.unitId);
 
+    case 'END_PLACE_PHASE':
+      return startActionPhase(state);
+
     case 'END_ACTION_PHASE':
-      return applyEndActionPhase(state);
+      return startQueuePhase(state);
 
     case 'END_TURN':
       return endTurn(state);
@@ -40,10 +53,10 @@ export function applyAction(state: GameState, action: AIAction): GameState {
       return applyQueueUnit(state, action.definitionId);
 
     case 'PLACE_UNIT':
-      return applyPlaceUnit(state, action.queuedUnitId, action.position);
+      return finishPlacement(applyPlaceUnit(state, action.queuedUnitId, action.position));
 
     case 'PROMOTE_UNIT':
-      return applyPromoteUnit(state, action.unitId);
+      return finishPlacement(applyPromoteUnit(state, action.unitId));
 
     case 'RESIGN':
       return applyResign(state);
@@ -70,7 +83,10 @@ function applyMove(state: GameState, unitId: string, to: Position): GameState {
     ),
   };
 
-  const newState = useAction(state);
+  const unit = getUnitById(state.board, unitId)!;
+  const cost = getMoveCost(unit.position, to, getUnitDefinition(unit.definitionId).speed, state.board)!;
+  let newState = state;
+  for (let i = 0; i < cost; i++) newState = useAction(newState);
   return { ...newState, board: newBoard };
 }
 
@@ -119,14 +135,8 @@ function applyMine(state: GameState, unitId: string): GameState {
   return { ...newState, board: newBoard, players: newPlayers };
 }
 
-function applyEndActionPhase(state: GameState): GameState {
-  return {
-    ...state,
-    turn: {
-      ...state.turn,
-      phase: 'queue',
-    },
-  };
+function finishPlacement(state: GameState): GameState {
+  return canActInPlacePhase(state, state.turn.currentPlayer) ? state : startActionPhase(state);
 }
 
 function applyQueueUnit(state: GameState, definitionId: string): GameState {
@@ -139,23 +149,25 @@ function applyQueueUnit(state: GameState, definitionId: string): GameState {
   }
 
   const queuedUnit = {
-    id: `queued_${definitionId}_${Date.now()}_${++idCounter}_${Math.random().toString(36).slice(2, 7)}`,
+    id: nextQueueId(state),
     definitionId,
     turnsRemaining: def.buildTime,
     owner: currentPlayer,
   };
 
-  return {
+  const next = {
     ...state,
     players: {
       ...state.players,
       [currentPlayer]: {
         ...playerState,
         resources: playerState.resources - def.cost,
+        resourcesSpent: playerState.resourcesSpent + def.cost,
         buildQueue: [...playerState.buildQueue, queuedUnit],
       },
     },
   };
+  return canActInQueuePhase(next, currentPlayer) ? next : endTurn(next);
 }
 
 function applyPlaceUnit(state: GameState, queuedUnitId: string, position: Position): GameState {
@@ -169,7 +181,7 @@ function applyPlaceUnit(state: GameState, queuedUnitId: string, position: Positi
 
   // Create the new unit
   const newUnit = {
-    id: `${currentPlayer}_${queuedUnit.definitionId}_${Date.now()}_${++idCounter}_${Math.random().toString(36).slice(2, 7)}`,
+    id: `unit-${queuedUnit.id}`,
     definitionId: queuedUnit.definitionId,
     owner: currentPlayer,
     position,
@@ -195,7 +207,6 @@ function applyPlaceUnit(state: GameState, queuedUnitId: string, position: Positi
       [currentPlayer]: {
         ...playerState,
         buildQueue: newQueue,
-        resourcesSpent: playerState.resourcesSpent + def.cost,
         resourcesManifested: playerState.resourcesManifested + def.cost,
       },
     },
@@ -254,7 +265,9 @@ function applyPromoteUnit(state: GameState, unitId: string): GameState {
  */
 export function applyActions(state: GameState, actions: AIAction[]): GameState {
   let currentState = state;
+  const player = state.turn.currentPlayer;
   for (const action of actions) {
+    if (currentState.turn.currentPlayer !== player || !isLegalAction(currentState, action)) break;
     currentState = applyAction(currentState, action);
   }
   return currentState;

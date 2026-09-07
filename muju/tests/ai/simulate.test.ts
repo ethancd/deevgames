@@ -43,6 +43,7 @@ function createTestState(board: BoardState, currentPlayer: PlayerId = 'black'): 
         startCorner: { x: 0, y: 0 },
         resourcesGained: 20,
         resourcesSpent: 0,
+        resourcesManifested: 0,
       },
       black: {
         id: 'black',
@@ -51,6 +52,7 @@ function createTestState(board: BoardState, currentPlayer: PlayerId = 'black'): 
         startCorner: { x: 9, y: 9 },
         resourcesGained: 20,
         resourcesSpent: 0,
+        resourcesManifested: 0,
       },
     },
     turn: {
@@ -237,7 +239,7 @@ describe('AI State Simulation', () => {
   describe('applyAction - PLACE_UNIT', () => {
     it('places unit on board from queue', () => {
       const board = createEmptyBoard();
-      const existingUnit = createTestUnit('ai-existing', 'fire_1', 'black', 9, 9);
+      const existingUnit = createTestUnit('ai-existing', 'fire_1', 'black', 8, 8);
       board.units.push(existingUnit);
 
       const state = createTestState(board);
@@ -262,9 +264,9 @@ describe('AI State Simulation', () => {
       expect(newUnits.length).toBe(2);
     });
 
-    it('updates resourcesSpent', () => {
+    it('reveals manifested spend without double-charging committed spend', () => {
       const board = createEmptyBoard();
-      const existingUnit = createTestUnit('ai-existing', 'fire_1', 'black', 9, 9);
+      const existingUnit = createTestUnit('ai-existing', 'fire_1', 'black', 8, 8);
       board.units.push(existingUnit);
 
       const state = createTestState(board);
@@ -275,7 +277,7 @@ describe('AI State Simulation', () => {
         turnsRemaining: 0,
         owner: 'black',
       }];
-      state.players.black.resourcesSpent = 0;
+      state.players.black.resourcesSpent = 1;
 
       const action: AIAction = {
         type: 'PLACE_UNIT',
@@ -285,7 +287,8 @@ describe('AI State Simulation', () => {
 
       const newState = applyAction(state, action);
 
-      expect(newState.players.black.resourcesSpent).toBeGreaterThan(0);
+      expect(newState.players.black.resourcesSpent).toBe(1);
+      expect(newState.players.black.resourcesManifested).toBe(1);
     });
   });
 
@@ -296,7 +299,7 @@ describe('AI State Simulation', () => {
       board.units.push(unit);
 
       const state = createTestState(board);
-      state.turn.phase = 'queue';
+      state.turn.phase = 'place';
       state.players.black.resources = 10;
       const action: AIAction = { type: 'PROMOTE_UNIT', unitId: 'ai-unit' };
 
@@ -312,7 +315,7 @@ describe('AI State Simulation', () => {
       board.units.push(unit);
 
       const state = createTestState(board);
-      state.turn.phase = 'queue';
+      state.turn.phase = 'place';
       state.players.black.resources = 10;
       const action: AIAction = { type: 'PROMOTE_UNIT', unitId: 'ai-unit' };
 

@@ -75,3 +75,7 @@ P1 Audit ──► P2 Harness+Bots ──► P3 Calibrate+Experiments ──► 
 ## Risks
 
 Ephemeral container (push at every checkpoint, summaries over raw logs); MCTS too slow for mass runs (bench-gated tiering, Greedy-level matrices + MCTS confirmation); bots too weak for signal (gates + sensitivity, honest failure mode); rush band and ladder gates conflicting after patches (iterate E8, report tradeoff if irreconcilable); looping games (cap + adjudication, rates reported); judgment drift (structured log, per-phase checkpoints).
+
+## September 7, 2026 continuation
+
+Correctness repairs and an exploratory E8 design screen are implemented on `codex/muju-correctness-balance`. See [repair](../../docs/AI_CORRECTNESS-2026-09-07.md) and [recommendations with adversarial critique](../../docs/BALANCE_REVIEW-2026-09-07.md). This work does not apply or release a catalogue rebalance. Retire the rigid fixed-Rush target as the sole aggression criterion; evaluate adaptive strategies, actual finishes versus caps, all-tier roles and mixed-army counterplay. The review defines the remaining validation before P4/P5 can be called complete.

@@ -1,9 +1,10 @@
 import type { GameState, PlayerId } from '../../game/types';
 import type { EvaluationWeights } from '../types';
 import { evaluatePosition } from '../evaluation';
-import { applyAction, isTerminal, getOpponent } from '../simulate';
+import { applyAction, isTerminal } from '../simulate';
 import { generateAttackActions } from '../moves';
 import { getValidAttacks } from '../../game/combat';
+import { isLegalAction } from '../../game/legality';
 
 export function tacticalSharpen(
   state: GameState,
@@ -22,13 +23,13 @@ export function tacticalSharpen(
     return evaluatePosition(state, forPlayer, weights);
   }
 
-  let bestValue = -Infinity;
+  // Actions do not alternate players: six actions belong to the same turn.
+  const maximize = currentPlayer === forPlayer;
+  let bestValue = evaluatePosition(state, forPlayer, weights);
   for (const action of tacticalPlans) {
     const nextState = applyAction(state, action);
-    const value = -tacticalSharpen(nextState, getOpponent(currentPlayer), depth - 1, weights);
-    if (value > bestValue) {
-      bestValue = value;
-    }
+    const value = tacticalSharpen(nextState, forPlayer, depth - 1, weights);
+    bestValue = maximize ? Math.max(bestValue, value) : Math.min(bestValue, value);
   }
 
   return bestValue;
@@ -45,5 +46,5 @@ export function isHotPosition(state: GameState): boolean {
 }
 
 export function generateTacticalPlans(state: GameState, player: PlayerId) {
-  return generateAttackActions(state, player);
+  return generateAttackActions(state, player).filter(a => isLegalAction(state, a, player));
 }

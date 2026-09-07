@@ -249,11 +249,9 @@ async function playGameInner(args: PlayGameArgs, options: MatchOptions): Promise
     // Fallback when the bot passes (or strict mode rejected): end the phase.
     if (!action) {
       if (state.turn.phase === 'place') {
-        // No END_PLACE_PHASE in the AI action union; mirror useAI's phase hop.
-        state = { ...state, turn: { ...state.turn, phase: 'action' } };
-        continue;
+        action = { type: 'END_PLACE_PHASE' };
       }
-      action = state.turn.phase === 'action' ? { type: 'END_ACTION_PHASE' } : { type: 'END_TURN' };
+      action ??= state.turn.phase === 'action' ? { type: 'END_ACTION_PHASE' } : { type: 'END_TURN' };
     }
 
     // Pre-application bookkeeping for kill attribution
@@ -274,7 +272,7 @@ async function playGameInner(args: PlayGameArgs, options: MatchOptions): Promise
       if (consecutiveNoops >= 3) {
         state =
           state.turn.phase === 'place'
-            ? { ...state, turn: { ...state.turn, phase: 'action' } }
+            ? applyAction(state, { type: 'END_PLACE_PHASE' })
             : applyAction(state, state.turn.phase === 'action' ? { type: 'END_ACTION_PHASE' } : { type: 'END_TURN' });
         consecutiveNoops = 0;
       }

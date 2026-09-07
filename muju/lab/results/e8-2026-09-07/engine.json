@@ -1,0 +1,59 @@
+{
+  "variant": "engine",
+  "patch": {},
+  "sourceHash": "2895f1caf2d122776f4abf933fcc0fbb9ca78325279dcb660db537d080e5c2d6",
+  "nPerSeat": 1,
+  "seedBase": 9072600,
+  "started": "2026-09-07T13:59:37.877Z",
+  "elapsedSeconds": 452.14,
+  "rows": [
+    {
+      "a": "AIv2-hard-fast",
+      "b": "Rush",
+      "n": 2,
+      "wins": 2,
+      "losses": 0,
+      "draws": 0,
+      "naturalWins": 2,
+      "naturalLosses": 0,
+      "caps": 0,
+      "rounds": 36,
+      "illegal": 0,
+      "invariants": 0
+    }
+  ],
+  "games": [
+    {
+      "a": "AIv2-hard-fast",
+      "b": "Rush",
+      "seed": 7438266,
+      "swapped": false,
+      "winner": "white",
+      "winType": "elimination",
+      "turns": 21,
+      "plies": 385,
+      "cap": false,
+      "illegal": 0,
+      "invariant": null,
+      "anomalies": []
+    },
+    {
+      "a": "AIv2-hard-fast",
+      "b": "Rush",
+      "seed": 7438266,
+      "swapped": true,
+      "winner": "black",
+      "winType": "elimination",
+      "turns": 15,
+      "plies": 285,
+      "cap": false,
+      "illegal": 0,
+      "invariant": null,
+      "anomalies": []
+    }
+  ],
+  "runStatus": "stopped-after-completed-rush-cell",
+  "plannedMatchups": 4,
+  "completedMatchups": 1,
+  "note": "Only the two completed hard-fast/Rush games are reported. The broader run was interrupted during Tier1Spam after more than 19 minutes total runtime because dense-position search is expensive. No outcome from the unfinished cell is included; this is not an eight-game calibration result."
+}

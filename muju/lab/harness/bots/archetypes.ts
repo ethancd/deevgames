@@ -47,10 +47,10 @@ function chooseFrom(ctx: BotContext, scorer: (a: AIAction) => number): AIAction 
 
 // ---------- Rush ----------
 
-export function createRushBot(): ScriptedBot {
+export function createRushBot(rushUnit = 'fire_1'): ScriptedBot {
   return {
     kind: 'scripted',
-    name: 'Rush',
+    name: rushUnit === 'fire_1' ? 'Rush' : 'LightningRush',
     chooseAction(ctx: BotContext) {
       const { view } = ctx;
       return chooseFrom(ctx, (a) => {
@@ -87,7 +87,7 @@ export function createRushBot(): ScriptedBot {
             return -1; // every crystal goes to more fire_1
           case 'QUEUE_UNIT': {
             const q = a as Extract<AIAction, { type: 'QUEUE_UNIT' }>;
-            return q.definitionId === 'fire_1' ? 500 : -1; // mass fire_1, nothing else
+            return q.definitionId === rushUnit ? 500 : -1; // one-unit rush probe
           }
           default:
             return 0;

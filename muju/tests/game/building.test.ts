@@ -334,7 +334,7 @@ describe('Building System', () => {
   describe('getAvailableBuildOptions', () => {
     it('returns units player can afford', () => {
       const state: BuildState = { queue: [], crystals: 3 };
-      const options = getAvailableBuildOptions(state);
+      const options = getAvailableBuildOptions(state, 'white', { ...createEmptyBoard(), units: [createUnit('tech-f', 'white', {x: 1, y: 1}, 'fire_3'), createUnit('tech-m', 'white', {x: 2, y: 2}, 'metal_3')] });
 
       // Can afford: fire_1(1), lightning_1(1), water_1(2), shadow_1(2), plant_1(3), metal_1(3), fire_2(3), lightning_2(3)
       expect(options).toContain('fire_1');
@@ -345,14 +345,14 @@ describe('Building System', () => {
 
     it('returns empty array when player has no crystals', () => {
       const state: BuildState = { queue: [], crystals: 0 };
-      const options = getAvailableBuildOptions(state);
+      const options = getAvailableBuildOptions(state, 'white', { ...createEmptyBoard(), units: [createUnit('tech-f', 'white', {x: 1, y: 1}, 'fire_3'), createUnit('tech-m', 'white', {x: 2, y: 2}, 'metal_3')] });
 
       expect(options.length).toBe(0);
     });
 
     it('returns more units with higher crystals', () => {
       const state: BuildState = { queue: [], crystals: 20 };
-      const options = getAvailableBuildOptions(state);
+      const options = getAvailableBuildOptions(state, 'white', { ...createEmptyBoard(), units: [createUnit('tech-f', 'white', {x: 1, y: 1}, 'fire_3'), createUnit('tech-m', 'white', {x: 2, y: 2}, 'metal_3')] });
 
       // Should include units of all tiers with 20 crystals
       expect(options).toContain('fire_1');

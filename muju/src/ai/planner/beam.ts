@@ -14,6 +14,9 @@ interface BeamSearchOptions {
 function planId(actions: TurnPlan['actions']): string {
   return actions
     .map((action) => {
+      if (action.type === 'MOVE') return `MOVE:${action.unitId}:${action.to.x},${action.to.y}`;
+      if (action.type === 'ATTACK') return `ATTACK:${action.unitId}:${action.targetPosition.x},${action.targetPosition.y}`;
+      if (action.type === 'PLACE_UNIT') return `PLACE_UNIT:${action.queuedUnitId}:${action.position.x},${action.position.y}`;
       if ('unitId' in action && action.unitId) return `${action.type}:${action.unitId}`;
       if ('queuedUnitId' in action && action.queuedUnitId) return `${action.type}:${action.queuedUnitId}`;
       if ('definitionId' in action && action.definitionId) return `${action.type}:${action.definitionId}`;

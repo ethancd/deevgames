@@ -102,3 +102,9 @@ Spec section references are to the rewritten `muju/SPEC.md`. "props" =
 | §9 elimination at zero units (queue irrelevant) | `victory.ts:checkVictory` (D7 ruling) | `victory.test.ts`; fixtures (queued-units-don't-prevent-loss) |
 | §9 resignation | reducer RESIGN | `useGameState` coverage |
 | §9 draw on mutual elimination | `victory.ts:checkVictory` | `victory.test.ts` |
+
+## September 7, 2026 resolution
+
+The table above records the June findings, not current defect status. D1–D6, D11–D12 and D14 are repaired through a shared legality/transition boundary. D13 is strengthened with deterministic state-derived IDs, fixing AI-shadow versus real-reducer divergence as well as collision risk. D7–D9 remain intentional rules; D10 remains a bounded planning capability gap with correct movement charges. D3 uses separate committed and manifested accounting: committed spending stays private, while opponent observations expose only manifested spending. This supersedes the June suggested field-level remedy without changing the visibility rule.
+
+New fixes cover phase-skip dispatch, distinct plan IDs, root widening, opponent UCT, same-player tactical signs, purchase double-penalties and premature resignation. See [repair matrix and regression evidence](../../docs/AI_CORRECTNESS-2026-09-07.md).

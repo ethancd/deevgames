@@ -4,6 +4,7 @@ import type { AIAction, AIDifficulty, AIDebugInfo } from '../ai/types';
 import { AIEngine } from '../ai/engine';
 import { applyAction } from '../ai/simulate';
 import { shouldResign } from '../ai/evaluation';
+import { isLegalAction, phaseEndAction } from '../game/legality';
 
 interface UseAIOptions {
   difficulty?: AIDifficulty;
@@ -46,7 +47,7 @@ export function useAI(options: UseAIOptions = {}): UseAIReturn {
 
   const executeAITurn = useCallback(
     async (state: GameState, onAction: (action: AIAction) => void, playerId: 'white' | 'black'): Promise<void> => {
-      if (!enabled || state.turn.currentPlayer !== playerId) {
+      if (!enabled || state.phase !== 'playing' || state.turn.currentPlayer !== playerId) {
         return;
       }
 
@@ -71,13 +72,12 @@ export function useAI(options: UseAIOptions = {}): UseAIReturn {
       }
 
       let currentState = state;
-      let iterations = 0;
-      const maxIterations = 20;
+      // Every legal action consumes resources/actions, a ready queue entry, a
+      // promotion opportunity, or ends a phase. No arbitrary 20-dispatch cutoff.
       let firstActionTaken = false;
 
       try {
-        while (iterations < maxIterations) {
-          iterations++;
+        while (true) {
 
           // Check if still AI's turn
           if (currentState.turn.currentPlayer !== playerId) {
@@ -106,32 +106,10 @@ export function useAI(options: UseAIOptions = {}): UseAIReturn {
 
           setLastDebug(result.debug ?? null);
 
-          if (result.plan.actions.length === 0) {
-            // No actions, need to end phase/turn
-            if (currentState.turn.phase === 'action') {
-              const endAction: AIAction = { type: 'END_ACTION_PHASE' };
-              onAction(endAction);
-              turnActions.push(endAction);
-              currentState = applyAction(currentState, endAction);
-              continue;
-            } else if (currentState.turn.phase === 'queue') {
-              const endAction: AIAction = { type: 'END_TURN' };
-              onAction(endAction);
-              turnActions.push(endAction);
-              break;
-            } else if (currentState.turn.phase === 'place') {
-              // Skip to action phase
-              currentState = {
-                ...currentState,
-                turn: { ...currentState.turn, phase: 'action' },
-              };
-              continue;
-            }
-            break;
-          }
-
           // Execute the action
-          const action = result.plan.actions[0];
+          const proposed = result.plan.actions[0];
+          const action = proposed && isLegalAction(currentState, proposed)
+            ? proposed : phaseEndAction(currentState);
           onAction(action);
           turnActions.push(action);
           currentState = applyAction(currentState, action);

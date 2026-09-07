@@ -58,3 +58,9 @@ You can update these presets in the `DIFFICULTY_PRESETS` constant.
 ## AI Console
 
 The game screen includes an AI console panel that lists the top candidate plans and search parameters. It reads debug information returned by `AIEngineV2.findBestAction` and is rendered via `muju/src/components/AIConsole.tsx`. You can expand the debug payload in `AIEngineV2` if you want additional diagnostics.
+
+## September 7, 2026 correctness update
+
+Human, AI and simulated actions now share `game/legality.ts` and the immutable transition in `ai/simulate.ts`. Illegal actions cost nothing; plans are filtered against the real state, and place/action/queue transitions are explicit. Deterministic entity IDs keep the UI reducer and AI shadow synchronized. Opponent committed spending is masked by public manifested spending. MCTS widens root alternatives and models adversarial choices; tactical search respects multiple actions within one turn. Purchase scoring and resignation now account for recoverable own assets. The UI no longer truncates turns at 20 dispatches.
+
+See [repair details and tests](docs/AI_CORRECTNESS-2026-09-07.md) and [balance recommendations](docs/BALANCE_REVIEW-2026-09-07.md). The production catalogue is unchanged. Correctness is not a claim of optimal play or recalibrated difficulty.

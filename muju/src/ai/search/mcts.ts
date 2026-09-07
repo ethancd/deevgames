@@ -36,34 +36,30 @@ export function runMCTS(
     let simState = redeterminize(knowledge, player);
     const path: MCTSNode[] = [root];
 
-    // Selection
+    // Widen at the current node before descending. Previously the root got
+    // one child forever; all later expansion happened below that first choice.
     let node = root;
-    while (node.children.size > 0) {
-      const selected = selectChild(node, 1.4, config.progressiveWideningAlpha);
+    for (let treeDepth = 0; treeDepth < 4 && !isTerminal(simState); treeDepth++) {
+      const plans = planGenerator(simState, simState.turn.currentPlayer);
+      const capacity = Math.max(1, Math.floor(Math.pow(node.visits + 1, config.progressiveWideningAlpha)));
+      const unexpanded = plans.find(p => !node.children.has(p.id));
+      if (unexpanded && node.children.size < capacity) {
+        const childNode = createNode();
+        node.children.set(unexpanded.id, { plan: unexpanded, node: childNode, priorValue: unexpanded.score });
+        simState = applyActions(simState, unexpanded.actions);
+        node = childNode;
+        path.push(node);
+        break;
+      }
+      // A resampled state can invalidate a branch from an earlier iteration.
+      const available = new Set(plans.map(p => p.id));
+      const legalNode = { ...node, children: new Map([...node.children].filter(([id]) => available.has(id))) };
+      const selected = selectChild(legalNode, 1.4, config.progressiveWideningAlpha,
+        simState.turn.currentPlayer === player ? 1 : -1);
       if (!selected) break;
       simState = applyActions(simState, selected.plan.actions);
       node = selected.node;
       path.push(node);
-
-      if (isTerminal(simState)) {
-        break;
-      }
-    }
-
-    // Expansion
-    if (!isTerminal(simState)) {
-      const plans = planGenerator(simState, simState.turn.currentPlayer);
-      for (const plan of plans) {
-        if (!node.children.has(plan.id)) {
-          const childNode = createNode();
-          const child: MCTSChild = { plan, node: childNode, priorValue: plan.score };
-          node.children.set(plan.id, child);
-          simState = applyActions(simState, plan.actions);
-          node = childNode;
-          path.push(node);
-          break;
-        }
-      }
     }
 
     // Simulation

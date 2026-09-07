@@ -13,6 +13,7 @@ import {
 import { getPromotableUnits } from './promotion';
 import { getAllSpawnPositions } from './spawning';
 import { UNIT_DEFINITIONS } from './units';
+import { canBuildUnit, meetsTechRequirement } from './building';
 
 /**
  * Advance build queues for a player, returning units ready to place
@@ -165,22 +166,13 @@ export function startQueuePhase(state: GameState): GameState {
 
 /**
  * Check if a player can do anything in queue phase
- * (can afford to queue any unit OR can promote any unit)
+ * (can afford a tech-legal queued unit; promotion is only in place phase)
  */
 export function canActInQueuePhase(state: GameState, player: PlayerId): boolean {
   const playerState = state.players[player];
 
-  // Check if player can afford to queue any unit
-  const cheapestUnit = Math.min(...UNIT_DEFINITIONS.map((d) => d.cost));
-  if (playerState.resources >= cheapestUnit) {
-    return true;
-  }
-
-  // Check if player can promote any units (even with low resources)
-  const buildState = { queue: [], crystals: playerState.resources };
-  const promotableUnits = getPromotableUnits(state.board, player, buildState);
-
-  return promotableUnits.length > 0;
+  return UNIT_DEFINITIONS.some(d => canBuildUnit(d.id, player, state.board,
+    { queue: [], crystals: playerState.resources }));
 }
 
 /**
@@ -261,7 +253,7 @@ export function canActInPlacePhase(state: GameState, player: PlayerId): boolean 
   const playerState = state.players[player];
 
   // Check for ready units to place
-  const readyUnits = getReadyUnits(playerState);
+  const readyUnits = getReadyUnits(playerState).filter(q => meetsTechRequirement(q.definitionId, player, state.board));
   if (readyUnits.length > 0) {
     // Check if there are valid spawn positions
     const spawnPositions = getAllSpawnPositions(player, state.board);

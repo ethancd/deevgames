@@ -13,6 +13,7 @@ import type { GameState } from '../../src/game/types';
 describe('simulate ID uniqueness (D13)', () => {
   it('mass same-millisecond queue/place never mints duplicate IDs', () => {
     let state: GameState = createInitialGameState();
+    state.board.units.find(u => u.owner === 'white')!.position = { x: 8, y: 8 };
     // give white a fat stockpile so we can queue a lot at once
     state = {
       ...state,
