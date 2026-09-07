@@ -1,5 +1,7 @@
 # Elemental Tactics AI Engine - Technical Implementation Plan
 
+> Historical plan. For the verified September 2026 engine, performance work, and next implementation sequence, use [AI implementation plan — 2026-09-07](docs/AI_IMPLEMENTATION_PLAN-2026-09-07.md). The current-state assessment below describes the predecessor engine.
+
 ## Current State Assessment
 
 ### What Exists
