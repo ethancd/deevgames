@@ -1,0 +1,1 @@
+{"extends":"../tsconfig.json","include":["e10-map-d.ts","map-d-policies.ts","../harness/**/*.ts","../../src/**/*.ts"]}

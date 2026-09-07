@@ -112,6 +112,8 @@ export interface PlayGameArgs {
   runId: string;
   experiment?: string | null;
   options?: Partial<MatchOptions>;
+  /** Read-only lab instrumentation; never supplied by gameplay. */
+  onAction?: (before: GameState, after: GameState, action: AIAction, player: PlayerId) => void;
 }
 
 export interface PlayGameResult {
@@ -279,6 +281,8 @@ async function playGameInner(args: PlayGameArgs, options: MatchOptions): Promise
     } else {
       consecutiveNoops = 0;
     }
+
+    args.onAction?.(before, state, action, player);
 
     // Stats
     const dW = unitsW - unitCount(state, 'white');
