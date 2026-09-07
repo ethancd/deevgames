@@ -3,8 +3,6 @@ import { useGameState } from '../hooks/useGameState';
 import { useAI } from '../hooks/useAI';
 import { Board } from './Board';
 import { ActionBar } from './ActionBar';
-import { PhaseIndicator } from './PhaseIndicator';
-import { ResourceDisplay } from './ResourceDisplay';
 import { BuildQueue } from './BuildQueue';
 import { UnitInfo } from './UnitInfo';
 import { UnitShop } from './UnitShop';
@@ -14,13 +12,15 @@ import { AIRecap } from './AIRecap';
 import { AIConsole } from './AIConsole';
 import { PassDeviceOverlay } from './PassDeviceOverlay';
 import { InstructionsModal } from './InstructionsModal';
-import { getUnitById, getCell, isOccupied, isValidPosition, MAX_ACTIONS_PER_TURN } from '../game/board';
-import { getUnitDefinition, getNextTierDefinition, UNIT_DEFINITIONS } from '../game/units';
-import { canMine } from '../game/mining';
+import { getUnitAt, getUnitById, getCell, isOccupied, isValidPosition, MAX_ACTIONS_PER_TURN } from '../game/board';
+import { getUnitDefinition, UNIT_DEFINITIONS } from '../game/units';
+import { canMine, calculateMiningYield } from '../game/mining';
 import { canPromote } from '../game/promotion';
 import { getAllSpawnPositions, getSpawnInvalidReason } from '../game/spawning';
 import { canBuildUnit } from '../game/building';
-import { getMovementRange, type MovementRangePosition } from '../game/movement';
+import { findPath, getMovementRange, type MovementRangePosition } from '../game/movement';
+import { calculateAttackPower, calculateDefense } from '../game/combat';
+import { PlayDialog } from './PlayDialog';
 import type { Position, GameConfig, PlayerId, Element } from '../game/types';
 
 type SpawnFeedback = {
@@ -61,6 +61,13 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
   const [showPassOverlay, setShowPassOverlay] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [showInstructions, setShowInstructions] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const [showInsights, setShowInsights] = useState(false);
+  const [showResources, setShowResources] = useState(false);
+  const [showEnemyRange, setShowEnemyRange] = useState(false);
+  const [preview, setPreview] = useState<{ kind: 'move' | 'attack'; position: Position } | null>(null);
+  useEffect(() => { setPreview(null); setPendingMovePath([]); }, [state.board, state.selectedUnit, state.turn.phase, state.turn.currentPlayer]);
+  useEffect(() => { setViewedEnemyUnitId(null); setShowEnemyRange(false); }, [state.turn.currentPlayer]);
   const lastTurnPlayer = useRef<PlayerId | null>(null);
 
   // Unit shop keyboard navigation state
@@ -75,11 +82,6 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
   // Helper: check if current player is human-controlled
   const isCurrentPlayerHuman = config.controls[state.turn.currentPlayer] === 'human';
   const isPlayerTurn = state.turn.currentPlayer === 'white';
-
-  // For display purposes - who's "playing" right now
-  const currentPlayerName = isPlayerTurn
-    ? (config.mode === 'pass-play' ? 'Player 1' : 'You')
-    : (config.mode === 'pass-play' ? 'Player 2' : 'AI');
 
   // Clear place phase selections when phase changes or turn ends
   useEffect(() => {
@@ -155,16 +157,11 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
     const isOwnUnit = unit.owner === state.turn.currentPlayer;
     const unitDef = getUnitDefinition(unit.definitionId);
 
-    let speed = unitDef.speed;
+    const speed = unitDef.speed;
     let totalActions = MAX_ACTIONS_PER_TURN;
 
-    // If viewing enemy unit during my turn, show upgraded movement
-    if (!isOwnUnit && isCurrentPlayerHuman) {
-      const nextTierDef = getNextTierDefinition(unit.definitionId);
-      if (nextTierDef) {
-        speed = nextTierDef.speed;
-      }
-    }
+    if (!isOwnUnit && !showEnemyRange) return [];
+    if (isOwnUnit && (state.turn.phase !== 'action' || !unit.canActThisTurn)) return [];
 
     // If it's my unit during action phase, use remaining actions
     if (isOwnUnit && state.turn.phase === 'action') {
@@ -172,7 +169,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
     }
 
     return getMovementRange(unit.position, speed, totalActions, state.board);
-  }, [selectedUnitData, viewedEnemyUnitData, selectedPlaceUnitData, state.turn.currentPlayer, state.turn.phase, state.turn.actionsRemaining, state.board, isCurrentPlayerHuman]);
+  }, [selectedUnitData, viewedEnemyUnitData, selectedPlaceUnitData, state.turn.currentPlayer, state.turn.phase, state.turn.actionsRemaining, state.board, isCurrentPlayerHuman, showEnemyRange]);
 
   // AI for "white" side (used in AI vs AI mode)
   const whiteAI = useAI({
@@ -299,12 +296,12 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
     );
 
     if (isValidMove && state.selectedUnit) {
-      moveUnit(state.selectedUnit, position);
+      setPreview({ kind: 'move', position });
     } else if (isValidAttack && state.selectedUnit) {
-      attackWith(state.selectedUnit, position);
+      setPreview({ kind: 'attack', position });
     } else if (movementRangePos && state.selectedUnit && selectedUnitData?.owner === state.turn.currentPlayer) {
       // Multi-action move to a position in movement range
-      moveUnit(state.selectedUnit, position);
+      setPreview({ kind: 'move', position });
     } else {
       deselect();
     }
@@ -343,6 +340,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
 
     // Handle action phase
     if (state.turn.phase !== 'action') {
+      setViewedEnemyUnitId(viewedEnemyUnitId === unitId ? null : unitId);
       return;
     }
 
@@ -358,7 +356,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
         (a) => a.x === unit.position.x && a.y === unit.position.y
       );
       if (isValidAttack) {
-        attackWith(state.selectedUnit, unit.position);
+        setPreview({ kind: 'attack', position: unit.position });
       } else {
         // Not a valid attack - just view enemy stats
         deselect();
@@ -386,7 +384,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
   // Element order for keyboard shortcuts (1-6)
   const ELEMENT_ORDER: Element[] = ['fire', 'lightning', 'water', 'shadow', 'plant', 'metal'];
 
-  // Get player's own units on the board for Tab cycling
+  // Get player's own units on the board for N cycling
   const playerOwnUnits = useMemo(() => {
     return state.board.units.filter(u => u.owner === state.turn.currentPlayer);
   }, [state.board.units, state.turn.currentPlayer]);
@@ -401,11 +399,20 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
   // Keyboard handler
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     // Don't handle if AI is thinking, overlay is shown, or it's not human's turn
-    if (!isCurrentPlayerHuman || isThinking || showPassOverlay) return;
+    if (!isCurrentPlayerHuman || isThinking || showPassOverlay || showMenu || showInstructions || showUnitShopInspection || showInsights) return;
+    const control = e.target instanceof HTMLElement ? e.target.closest('button, select, a, input, textarea') : null;
+    if (control?.matches('select, input, textarea')) return;
+    if (preview) {
+      if (e.key === 'Escape') { e.preventDefault(); setPreview(null); }
+      if (e.key === 'Enter' && (!control || control.matches('.board-cell'))) { e.preventDefault(); commitPreview(); }
+      return;
+    }
     // Don't handle if typing in an input
     if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
 
     const key = e.key.toLowerCase();
+    // Native button activation and Tab navigation keep their normal behavior.
+    if (control && (key === 'enter' || key === ' ' || (key.startsWith('arrow') && !control.matches('.board-cell')))) return;
     const currentPlayer = state.turn.currentPlayer;
     const currentPlayerState = state.players[currentPlayer];
 
@@ -437,8 +444,8 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
       return;
     }
 
-    // === Tab: Cycle between own units ===
-    if (key === 'tab') {
+    // === N: Cycle between own units ===
+    if (key === 'n') {
       e.preventDefault();
       if (playerOwnUnits.length === 0) return;
 
@@ -624,7 +631,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
   }, [
     isCurrentPlayerHuman, isThinking, showPassOverlay, state, playerOwnUnits,
     selectUnit, selectedPlaceUnitId, promoteUnit, mineWith, moveUnit, queueUnit, shopSelectedId,
-    canUndo, undo, endPlacePhase, endActionPhase, pendingMovePath
+    canUndo, undo, endPlacePhase, endActionPhase, pendingMovePath, preview, showMenu, showInstructions, showUnitShopInspection, showInsights
   ]);
 
   // Attach keyboard listener
@@ -666,6 +673,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
   const handleCloseUnitInfo = () => {
     // Clear pending move if any
     setPendingMovePath([]);
+    setPreview(null);
     // Deselect unit in action phase
     if (state.selectedUnit) {
       deselect();
@@ -678,279 +686,120 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
 
   // Get the current player's state for resource/queue display
   const currentPlayerState = state.players[state.turn.currentPlayer];
-  const opponentPlayer: PlayerId = state.turn.currentPlayer === 'white' ? 'black' : 'white';
+  const viewerPlayer: PlayerId = config.mode === 'vs-ai' ? 'white' : state.turn.currentPlayer;
+  const viewerState = state.players[viewerPlayer];
+  const opponentPlayer: PlayerId = viewerPlayer === 'white' ? 'black' : 'white';
   const opponentState = state.players[opponentPlayer];
 
-  // In pass-play mode, each player should only see their own queue
-  const showOpponentQueue = config.mode !== 'pass-play';
-  const showAIConsole = config.controls.white === 'ai' || config.controls.black === 'ai';
+  const interactive = isCurrentPlayerHuman && !isThinking && !showPassOverlay && state.phase === 'playing';
+  const playerNames = config.mode === 'pass-play' ? { white: 'Player 1', black: 'Player 2' }
+    : config.mode === 'ai-vs-ai' ? { white: 'AI 1', black: 'AI 2' } : { white: 'You', black: 'AI' };
+  const shownUnit = selectedPlaceUnitData ?? selectedUnitData ?? viewedEnemyUnitData;
+  const isEnemyView = !!shownUnit && shownUnit.owner !== state.turn.currentPlayer;
+  const previewRange = preview?.kind === 'move' ? movementRange.find(r => r.position.x === preview.position.x && r.position.y === preview.position.y) : null;
+  const previewTarget = preview?.kind === 'attack' ? getUnitAt(state.board, preview.position) : null;
+  const previewCost = preview?.kind === 'attack' ? 1 : previewRange ? state.turn.actionsRemaining - previewRange.actionsRemaining : 0;
+  const previewPath = preview?.kind === 'move' && selectedUnitData
+    ? findPath(selectedUnitData.position, preview.position, state.board, 100) ?? [] : pendingMovePath;
+  const targetCell = preview ? getCell(state.board, preview.position) : null;
+  const attackPower = selectedUnitData && previewTarget ? calculateAttackPower(selectedUnitData, previewTarget) : 0;
+  const attackDefense = previewTarget ? calculateDefense(previewTarget) : 0;
+  function commitPreview() {
+    if (!preview || !state.selectedUnit || !interactive) return;
+    if (preview.kind === 'move') moveUnit(state.selectedUnit, preview.position);
+    else attackWith(state.selectedUnit, preview.position);
+    setPreview(null);
+  }
+  const phaseHint = !interactive ? (isPaused ? 'Paused' : 'Opponent’s turn')
+    : state.turn.phase === 'place' ? 'Place a ready unit, or select a unit to upgrade.'
+    : state.turn.phase === 'queue' ? 'Build reinforcements, or save crystals for later.'
+    : 'Select a unit. Preview a destination, then confirm.';
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-4">
-      {/* Victory overlay */}
-      {state.phase === 'victory' && state.winner && (
-        <VictoryScreen
-          winner={state.winner}
-          onPlayAgain={handlePlayAgain}
-          playerNames={config.mode === 'pass-play'
-            ? { white: 'Player 1', black: 'Player 2' }
-            : { white: 'You', black: 'AI' }
-          }
-        />
-      )}
-
-      {/* Pass device overlay for pass-play mode */}
-      {showPassOverlay && config.mode === 'pass-play' && (
-        <PassDeviceOverlay
-          nextPlayer={state.turn.currentPlayer}
-          onContinue={handleContinueFromPass}
-        />
-      )}
-
-      {/* AI turn recap */}
-      {showAIRecap && (
-        <AIRecap actions={blackAI.lastTurnActions} onDismiss={handleDismissRecap} />
-      )}
-
-      {/* Instructions modal */}
-      <InstructionsModal
-        isOpen={showInstructions}
-        onClose={() => setShowInstructions(false)}
-      />
-
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-4">
-          <div className="flex flex-wrap justify-center items-center gap-2 sm:gap-4">
-            <h1 className="text-xl font-bold text-gray-100">Muju Hono Tanka</h1>
-            <span className="text-sm text-gray-400">
-              {config.mode === 'vs-ai' && 'vs AI'}
-              {config.mode === 'pass-play' && 'Pass & Play'}
-              {config.mode === 'ai-vs-ai' && 'AI vs AI'}
-            </span>
-            <button
-              onClick={() => setShowInstructions(true)}
-              className="bg-cyan-700 hover:bg-cyan-600 text-white px-3 py-1 rounded text-sm transition-colors"
-            >
-              How to Play
-            </button>
-            <button
-              onClick={handleBackToMenuClick}
-              className="bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded text-sm transition-colors"
-            >
-              Menu
-            </button>
-            <button
-              onClick={handlePlayAgain}
-              className="bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded text-sm transition-colors"
-            >
-              New Game
-            </button>
-            <button
-              onClick={() => setShowUnitShopInspection(!showUnitShopInspection)}
-              className={`px-3 py-1 rounded text-sm transition-colors ${
-                showUnitShopInspection
-                  ? 'bg-purple-600 hover:bg-purple-500 text-white'
-                  : 'bg-gray-700 hover:bg-gray-600 text-white'
-              }`}
-            >
-              Units
-            </button>
-            {config.mode === 'ai-vs-ai' && (
-              <button
-                onClick={togglePause}
-                className={`px-3 py-1 rounded text-sm transition-colors ${
-                  isPaused
-                    ? 'bg-green-600 hover:bg-green-500'
-                    : 'bg-yellow-600 hover:bg-yellow-500'
-                }`}
-              >
-                {isPaused ? 'Resume' : 'Pause'}
-              </button>
-            )}
-          </div>
-          <div className="flex items-center gap-4">
-            {isThinking && (
-              <span className="text-yellow-400 animate-pulse">
-                {config.mode === 'ai-vs-ai'
-                  ? `${isPlayerTurn ? 'AI 1' : 'AI 2'} thinking...`
-                  : 'AI thinking...'}
-              </span>
-            )}
-            {isPaused && config.mode === 'ai-vs-ai' && (
-              <span className="text-yellow-400">Paused</span>
-            )}
-            <PhaseIndicator
-              turnNumber={state.turn.turnNumber}
-              phase={state.turn.phase}
-              currentPlayer={state.turn.currentPlayer}
-              playerNames={config.mode === 'pass-play'
-                ? { white: 'Player 1', black: 'Player 2' }
-                : config.mode === 'ai-vs-ai'
-                ? { white: 'AI 1', black: 'AI 2' }
-                : { white: 'You', black: 'AI' }
-              }
-            />
-          </div>
+    <main className="game-shell">
+      {state.phase === 'victory' && state.winner && <VictoryScreen winner={state.winner} onPlayAgain={handlePlayAgain} playerNames={playerNames} />}
+      {showPassOverlay && <PassDeviceOverlay nextPlayer={state.turn.currentPlayer} onContinue={handleContinueFromPass} />}
+      <InstructionsModal isOpen={showInstructions} onClose={() => setShowInstructions(false)} />
+      <header className="game-header">
+        <a href="../" aria-label="Back to Deev Games">← Games</a>
+        <h1>Muju Hono Tanka</h1>
+        <button onClick={() => setShowMenu(true)} aria-label="Game menu">•••</button>
+      </header>
+      <section className="turn-strip" aria-label="Turn and phases">
+        <strong>{isThinking ? 'Thinking…' : playerNames[state.turn.currentPlayer]} <span>· Turn {state.turn.turnNumber}</span></strong>
+        <div className="phase-steps">{(['place', 'action', 'queue'] as const).map((phase, i) =>
+          <span key={phase} aria-current={state.turn.phase === phase ? 'step' : undefined}>{i + 1} {phase === 'queue' ? 'Build' : phase === 'action' ? 'Act' : 'Place'}</span>
+        )}</div>
+      </section>
+      <section className="score-strip" aria-label="Player resources">
+        <div><strong><i className={`player-dot ${viewerPlayer}`} />{playerNames[viewerPlayer]} <b>◆ {viewerState.resources}</b></strong>
+          <small>Gained {viewerState.resourcesGained} · Spent {viewerState.resourcesSpent} · Field {viewerState.resourcesManifested}</small></div>
+        <div><strong><i className={`player-dot ${opponentPlayer}`} />{playerNames[opponentPlayer]} <b>◆ Hidden</b></strong>
+          <small>Gained {opponentState.resourcesGained} · Field {opponentState.resourcesManifested}</small></div>
+      </section>
+      {viewerState.buildQueue.length > 0 && <BuildQueue queue={viewerState.buildQueue} isOwner={true}
+        isPlacePhase={state.turn.phase === 'place' && interactive} board={state.board} player={state.turn.currentPlayer}
+        selectedReadyId={selectedReadyUnitId} onSelectReady={(id) => { setSelectedReadyUnitId(id); setSelectedPlaceUnitId(null); setViewedEnemyUnitId(null); }} />}
+      <div className={`play-area ${state.turn.phase === 'queue' && interactive ? 'is-building' : ''}`}>
+        <section className="board-stage" aria-label="Battlefield">
+          <Board board={state.board} selectedUnit={shownUnit?.id ?? null}
+            validMoves={state.validMoves} validAttacks={state.validAttacks} validSpawns={validSpawns}
+            invalidSpawnPosition={spawnFeedback?.position ?? null} pendingMovePath={previewPath} movementRange={movementRange}
+            previewPosition={preview?.position} showResources={showResources} actionsRemaining={isEnemyView ? MAX_ACTIONS_PER_TURN : state.turn.actionsRemaining}
+            onCellClick={handleCellClick} onUnitClick={handleUnitClick} />
+        </section>
+        <div className="board-key">
+          <span>{isEnemyView && showEnemyRange ? 'Enemy reach · current speed, 6 actions' : selectedReadyUnitId ? '＋ Safe placement' : '● 1 action · ○ farther · red ring: attack'}</span>
+          <button aria-pressed={showResources} onClick={() => setShowResources(!showResources)}>◆ Depths</button>
         </div>
-
-        {/* Main layout - vertical with board centered */}
-        <div className="flex flex-col items-center gap-4">
-          {/* Current player info row - above board */}
-          <div className="relative flex flex-wrap items-start justify-center gap-3 w-full max-w-3xl">
-            <ResourceDisplay
-              playerState={currentPlayerState}
-              viewerIsOwner={true}
-              label={config.mode === 'pass-play' ? currentPlayerName : undefined}
-            />
-            <BuildQueue
-              queue={currentPlayerState.buildQueue}
-              isOwner={true}
-              isPlacePhase={state.turn.phase === 'place' && isCurrentPlayerHuman && !isThinking && !showPassOverlay}
-              board={state.board}
-              player={state.turn.currentPlayer}
-              selectedReadyId={selectedReadyUnitId}
-              onSelectReady={setSelectedReadyUnitId}
-            />
-            {state.turn.phase === 'queue' && isCurrentPlayerHuman && !isThinking && !showPassOverlay && (
-              <UnitShop
-                resources={currentPlayerState.resources}
-                player={state.turn.currentPlayer}
-                board={state.board}
-                onQueueUnit={queueUnit}
-                selectedId={shopSelectedId}
-                onSelectId={setShopSelectedId}
-              />
-            )}
-            {showUnitShopInspection && state.turn.phase !== 'queue' && (
-              <UnitShop
-                resources={currentPlayerState.resources}
-                player={state.turn.currentPlayer}
-                board={state.board}
-                selectedId={shopSelectedId}
-                onSelectId={setShopSelectedId}
-                inspectOnly={true}
-                onClose={() => setShowUnitShopInspection(false)}
-              />
-            )}
-            <ElementLegend />
-
-            {/* Unit info popover - overlays player info area */}
-            {(selectedPlaceUnitData || selectedUnitData || viewedEnemyUnitData || selectedReadyDefinitionId) && (
-              <div className="absolute top-0 right-0 w-48 z-20">
-                <UnitInfo
-                  unit={selectedPlaceUnitData ?? selectedUnitData ?? viewedEnemyUnitData}
-                  previewDefinitionId={selectedReadyDefinitionId}
-                  onMine={handleMine}
-                  canMine={canMineHere()}
-                  cellInfo={selectedUnitCell}
-                  isPlacePhase={state.turn.phase === 'place' && isCurrentPlayerHuman && !isThinking && !showPassOverlay}
-                  isActionPhase={state.turn.phase === 'action' && isCurrentPlayerHuman && !isThinking && !showPassOverlay}
-                  resources={currentPlayerState.resources}
-                  onPromote={handlePromote}
-                  isEnemyView={!!viewedEnemyUnitData && !selectedPlaceUnitData && !selectedUnitData}
-                  onClose={handleCloseUnitInfo}
-                  currentPlayer={state.turn.currentPlayer}
-                />
-              </div>
-            )}
-          </div>
-
-          {/* Board */}
-          <div className={`w-full max-w-[40.75rem] ${isThinking || showPassOverlay ? 'opacity-75 pointer-events-none' : ''}`}>
-            <Board
-              board={state.board}
-              selectedUnit={state.selectedUnit}
-              selectedUnitElement={selectedUnitData ? getUnitDefinition(selectedUnitData.definitionId).element : null}
-              validMoves={state.validMoves}
-              validAttacks={state.validAttacks}
-              validSpawns={validSpawns}
-              invalidSpawnPosition={spawnFeedback?.position ?? null}
-              pendingMovePath={pendingMovePath}
-              movementRange={movementRange}
-              onCellClick={handleCellClick}
-              onUnitClick={handleUnitClick}
-            />
-          </div>
-
-          {/* Action bar below board */}
-          <ActionBar
-            actionsRemaining={state.turn.actionsRemaining}
-            phase={state.turn.phase}
-            onEndPlacePhase={endPlacePhase}
-            onEndActionPhase={endActionPhase}
-            onEndTurn={endTurn}
-            isPlayerTurn={isCurrentPlayerHuman && !isThinking && !showPassOverlay}
-            onUndo={undo}
-            canUndo={canUndo && isCurrentPlayerHuman}
-          />
-
-          {/* Opponent info row - below board */}
-          <div className="flex flex-wrap items-start justify-center gap-3 w-full max-w-3xl">
-            <ResourceDisplay
-              playerState={opponentState}
-              viewerIsOwner={false}
-              label={config.mode === 'pass-play'
-                ? (opponentPlayer === 'white' ? 'Player 1' : 'Player 2')
-                : config.mode === 'ai-vs-ai'
-                ? (opponentPlayer === 'white' ? 'AI 1' : 'AI 2')
-                : 'AI'
-              }
-            />
-            {showOpponentQueue && (
-              <BuildQueue
-                queue={opponentState.buildQueue}
-                isOwner={false}
-              />
-            )}
-          </div>
-
-          {showAIConsole && (
-            <div className="w-full max-w-3xl flex flex-col gap-3">
-              {config.controls.white === 'ai' && (
-                <AIConsole
-                  title={config.mode === 'ai-vs-ai' ? 'AI 1 Console' : 'AI Console'}
-                  debug={whiteAI.lastDebug}
-                  isThinking={whiteAI.isThinking}
-                />
-              )}
-              {config.controls.black === 'ai' && (
-                <AIConsole
-                  title={config.mode === 'ai-vs-ai' ? 'AI 2 Console' : 'AI Console'}
-                  debug={blackAI.lastDebug}
-                  isThinking={blackAI.isThinking}
-                />
-              )}
+        <section className="decision-panel" aria-label="Current choice">
+          {state.turn.phase === 'queue' && interactive ? <UnitShop resources={currentPlayerState.resources} player={state.turn.currentPlayer} board={state.board}
+            onQueueUnit={queueUnit} selectedId={shopSelectedId} onSelectId={setShopSelectedId} />
+          : preview && selectedUnitData ? <div className="action-preview">
+              <div className="preview-heading"><strong>{preview.kind === 'move' ? 'Move' : 'Attack'} → {String.fromCharCode(65 + preview.position.x)}{preview.position.y + 1}</strong><span>{previewCost} action{previewCost !== 1 ? 's' : ''} · {state.turn.actionsRemaining - previewCost} left</span></div>
+              <p>{preview.kind === 'attack' && previewTarget ? `${getUnitDefinition(previewTarget.definitionId).name}: ${attackPower} attack vs ${attackDefense} defense · ${attackPower >= attackDefense ? 'Eliminates target' : `${attackDefense - attackPower} defense remains`}`
+                : targetCell ? `Mining here: ${calculateMiningYield(selectedUnitData, targetCell)} crystals · ${targetCell.resourceLayers} layers remain` : ''}</p>
+              <div className="preview-buttons"><button onClick={() => setPreview(null)}>Cancel</button><button className="primary" onClick={commitPreview}>Confirm {preview.kind}</button></div>
             </div>
-          )}
-        </div>
-
-        {/* Controls hint */}
-        <div className="mt-4 text-center text-gray-500 text-sm">
-          {isThinking ? (
-            <span className="text-yellow-400">
-              {config.mode === 'ai-vs-ai'
-                ? `${isPlayerTurn ? 'AI 1' : 'AI 2'} is making its move...`
-                : 'AI is making its move...'}
-            </span>
-          ) : showPassOverlay ? (
-            <span className="text-blue-400">Tap to continue</span>
-          ) : spawnFeedback ? (
-            <span className="text-red-400">
-              {spawnFeedback.reason === 'enemy_blocking'
-                ? 'Enemies are blocking this area'
-                : 'Outside your controlled area'}
-            </span>
-          ) : (
-            <>
-              Click a unit to select, then click a highlighted cell to move/attack.
-              {selectedUnitData && canMineHere() && (
-                <span className="text-purple-400"> You can mine here!</span>
-              )}
-            </>
-          )}
-        </div>
+          : shownUnit || selectedReadyDefinitionId ? <UnitInfo unit={shownUnit} previewDefinitionId={selectedReadyDefinitionId}
+              onMine={handleMine} canMine={canMineHere()} cellInfo={selectedUnitCell}
+              isPlacePhase={state.turn.phase === 'place' && interactive} isActionPhase={state.turn.phase === 'action' && interactive}
+              resources={currentPlayerState.resources} onPromote={handlePromote} isEnemyView={isEnemyView}
+              onClose={handleCloseUnitInfo} currentPlayer={state.turn.currentPlayer}
+              showEnemyRange={showEnemyRange} onToggleEnemyRange={() => setShowEnemyRange(!showEnemyRange)} />
+          : <div className="selection-hint"><strong>{isThinking ? 'Your opponent is thinking…' : state.turn.phase === 'place' ? 'Place & upgrade' : 'Your next move'}</strong><p>{phaseHint}</p>
+              <small>Win by eliminating every enemy unit.</small></div>}
+        </section>
       </div>
-    </div>
+      <footer className="play-footer">
+        <div className="context-status" role="status">{spawnFeedback ? spawnFeedback.reason === 'enemy_blocking' ? 'Enemies are blocking that square.' : 'Choose a square in your controlled area.' : phaseHint}</div>
+        <ActionBar actionsRemaining={state.turn.actionsRemaining} phase={state.turn.phase}
+          onEndPlacePhase={endPlacePhase} onEndActionPhase={endActionPhase} onEndTurn={endTurn}
+          isPlayerTurn={interactive} onUndo={() => { setPreview(null); undo(); }} canUndo={canUndo && interactive} />
+        <nav className="reference-bar" aria-label="Game references">
+          <button onClick={() => setShowUnitShopInspection(true)}>Units</button>
+          <button className="counter-key" aria-label="Element advantages and match stats" title="Each pair beats the next: +1 attack" onClick={() => setShowInsights(true)}>🔥⚡ → 🌿⚙ → 💧🌑 ↻ <span>+1</span>{showAIRecap ? ' •' : ''}</button>
+          <button onClick={() => setShowInstructions(true)}>How to play</button>
+          {config.mode === 'ai-vs-ai' && <button onClick={togglePause}>{isPaused ? 'Resume' : 'Pause'}</button>}
+        </nav>
+      </footer>
+      {showMenu && <PlayDialog title="Game menu" onClose={() => setShowMenu(false)}>
+        <p>Your match is saved at phase changes on this device.</p>
+        <button onClick={() => { setShowMenu(false); handleBackToMenuClick(); }}>Choose game mode</button>
+        <button onClick={() => { if (window.confirm('Start a new game? This replaces your saved match.')) { handlePlayAgain(); setShowMenu(false); } }}>New game</button>
+        <a href="https://ashkie.com/">Visit Ashkie.com ↗</a>
+      </PlayDialog>}
+      {showUnitShopInspection && <PlayDialog title="Unit guide" onClose={() => setShowUnitShopInspection(false)}>
+        <UnitShop resources={currentPlayerState.resources} player={state.turn.currentPlayer} board={state.board} selectedId={shopSelectedId} onSelectId={setShopSelectedId} inspectOnly />
+      </PlayDialog>}
+      {showInsights && <PlayDialog title="Elements & match stats" onClose={() => { setShowInsights(false); handleDismissRecap(); }}>
+        <ElementLegend />
+        <p>Advantage adds 1 attack; disadvantage subtracts 1. Attack previews include this bonus.</p>
+        <p>Field is spending revealed by placed or upgraded units. Opponent crystals and reinforcements stay hidden.</p>
+        {showAIRecap && <AIRecap actions={blackAI.lastTurnActions} onDismiss={handleDismissRecap} />}
+        {config.controls.white === 'ai' && <AIConsole title="AI 1 Console" debug={whiteAI.lastDebug} isThinking={whiteAI.isThinking} />}
+        {config.controls.black === 'ai' && <AIConsole title="AI Console" debug={blackAI.lastDebug} isThinking={blackAI.isThinking} />}
+      </PlayDialog>}
+    </main>
   );
 }

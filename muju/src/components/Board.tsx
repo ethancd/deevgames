@@ -1,7 +1,6 @@
-import type { BoardState, Position, Element } from '../game/types';
+import type { BoardState, Position } from '../game/types';
 import type { MovementRangePosition } from '../game/movement';
 import { getUnitAt } from '../game/board';
-import { getAttackModifier } from '../game/elements';
 import { getUnitDefinition } from '../game/units';
 import { Cell } from './Cell';
 import { Unit } from './Unit';
@@ -9,13 +8,15 @@ import { Unit } from './Unit';
 interface BoardProps {
   board: BoardState;
   selectedUnit: string | null;
-  selectedUnitElement?: Element | null; // For computing elemental bonuses
   validMoves: Position[];
   validAttacks: Position[];
   validSpawns: Position[];
   invalidSpawnPosition?: Position | null; // For showing red X on invalid spawn click
   pendingMovePath?: Position[]; // For showing partial movement path
   movementRange?: MovementRangePosition[]; // For showing movement range preview with actions remaining
+  previewPosition?: Position;
+  showResources?: boolean;
+  actionsRemaining?: number;
   onCellClick: (position: Position) => void;
   onUnitClick: (unitId: string) => void;
 }
@@ -23,7 +24,6 @@ interface BoardProps {
 export function Board({
   board,
   selectedUnit,
-  selectedUnitElement,
   validMoves,
   validAttacks,
   validSpawns,
@@ -32,6 +32,7 @@ export function Board({
   movementRange = [],
   onCellClick,
   onUnitClick,
+  previewPosition, showResources = false, actionsRemaining = 6,
 }: BoardProps) {
   const isValidMove = (pos: Position) =>
     validMoves.some((m) => m.x === pos.x && m.y === pos.y);
@@ -58,18 +59,9 @@ export function Board({
     return rangePos?.actionsRemaining;
   };
 
-  // Get elemental bonus for an attack target
-  const getElementalBonus = (pos: Position): number | undefined => {
-    if (!selectedUnitElement) return undefined;
-    const targetUnit = getUnitAt(board, pos);
-    if (!targetUnit) return undefined;
-    const targetDef = getUnitDefinition(targetUnit.definitionId);
-    return getAttackModifier(selectedUnitElement, targetDef.element);
-  };
-
   return (
-    <div className="w-full max-w-[40.75rem] border-2 border-gray-300 bg-gray-100 p-1 rounded">
-      <div className="grid grid-cols-10 gap-0">
+    <div className="battle-board">
+      <div className="battle-grid">
         {board.cells.map((row, y) =>
           row.map((cell, x) => {
             const unit = getUnitAt(board, { x, y });
@@ -77,26 +69,28 @@ export function Board({
             const pos = { x, y };
 
             return (
-              <div key={`${x}-${y}`} className="relative">
+              <div key={`${x}-${y}`} className="board-square">
                 <Cell
                   cell={cell}
                   isValidMove={isValidMove(pos)}
                   isValidAttack={isValidAttack(pos)}
                   isValidSpawn={isValidSpawn(pos)}
                   isSelected={isSelected}
-                  elementalBonus={isValidAttack(pos) ? getElementalBonus(pos) : undefined}
                   isInvalidSpawn={isInvalidSpawn(pos)}
                   isPendingMove={isPendingMove(pos)}
                   movementRangeActions={getMovementRangeActions(pos)}
-                  onClick={onCellClick}
+                  isPreview={previewPosition?.x === x && previewPosition?.y === y}
+                  showResources={showResources}
+                  moveCost={getMovementRangeActions(pos) !== undefined ? actionsRemaining - getMovementRangeActions(pos)! : undefined}
+                  unitLabel={unit ? `${unit.owner} ${getUnitDefinition(unit.definitionId).name}, tier ${getUnitDefinition(unit.definitionId).tier}` : undefined}
+                  onClick={unit ? () => onUnitClick(unit.id) : onCellClick}
                 />
                 {unit && (
                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div className="pointer-events-auto">
+                    <div className="unit-wrap">
                       <Unit
                         unit={unit}
                         isSelected={isSelected}
-                        onClick={() => onUnitClick(unit.id)}
                       />
                     </div>
                   </div>

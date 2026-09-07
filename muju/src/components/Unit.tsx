@@ -5,10 +5,9 @@ import { getElementHexForPlayer } from '../utils/colors';
 interface UnitProps {
   unit: UnitType;
   isSelected: boolean;
-  onClick: () => void;
 }
 
-export function Unit({ unit, isSelected, onClick }: UnitProps) {
+export function Unit({ unit, isSelected }: UnitProps) {
   const definition = getUnitDefinition(unit.definitionId);
   const color = getElementHexForPlayer(definition.element, unit.owner);
 
@@ -27,7 +26,7 @@ export function Unit({ unit, isSelected, onClick }: UnitProps) {
   return (
     <div
       className={`
-        ${sizeClass}
+        unit-token tier-${definition.tier} ${sizeClass}
         rounded-full
         flex items-center justify-center
         cursor-pointer
@@ -39,10 +38,6 @@ export function Unit({ unit, isSelected, onClick }: UnitProps) {
         ${isDamaged ? 'ring-2 ring-red-500' : ''}
       `}
       style={{ backgroundColor: color }}
-      onClick={(e) => {
-        e.stopPropagation();
-        onClick();
-      }}
       title={`${definition.name} (T${definition.tier}) - ATK:${definition.attack} DEF:${effectiveDefense}${isDamaged ? `/${definition.defense}` : ''}`}
     >
       <span className="text-white font-bold text-xs sm:text-sm drop-shadow-md">

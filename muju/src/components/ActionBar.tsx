@@ -8,93 +8,15 @@ interface ActionBarProps {
   onUndo?: () => void;
   canUndo?: boolean;
 }
-
-export function ActionBar({
-  actionsRemaining,
-  phase,
-  onEndPlacePhase,
-  onEndActionPhase,
-  onEndTurn,
-  isPlayerTurn,
-  onUndo,
-  canUndo = false,
-}: ActionBarProps) {
-  const steps = [0, 1, 2, 3, 4, 5];
-
-  return (
-    <div className="flex items-center gap-4 p-3 bg-gray-800 rounded-lg">
-      {/* Phase label */}
-      <div className="text-sm text-gray-400 capitalize">
-        {phase} Phase
-      </div>
-
-      {/* Divider */}
-      <div className="w-px h-6 bg-gray-600" />
-
-      {/* Action steps indicator (only show in action phase) */}
-      {phase === 'action' && (
-        <div className="flex items-center gap-1">
-          <span className="text-gray-300 text-sm mr-2">Actions:</span>
-          {steps.map((step) => (
-            <div
-              key={step}
-              className={`
-                w-4 h-4 rounded-full
-                ${step < actionsRemaining ? 'bg-green-500' : 'bg-gray-600'}
-                transition-colors duration-200
-              `}
-            />
-          ))}
-        </div>
-      )}
-
-      {/* Divider */}
-      {phase === 'action' && <div className="w-px h-6 bg-gray-600" />}
-
-      {/* Undo button */}
-      {isPlayerTurn && canUndo && onUndo && (
-        <button
-          onClick={onUndo}
-          className="px-3 py-1 bg-gray-600 hover:bg-gray-500 text-white text-sm rounded transition-colors"
-          title="Undo (⌘Z)"
-        >
-          ↶ Undo <span className="text-gray-400">(⌘Z)</span>
-        </button>
-      )}
-
-      {/* Phase controls */}
-      {phase === 'place' && isPlayerTurn && (
-        <button
-          onClick={onEndPlacePhase}
-          className="px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white text-sm rounded transition-colors"
-          title="End Placement (Return)"
-        >
-          End Placement <span className="text-purple-300">(↵)</span>
-        </button>
-      )}
-
-      {phase === 'action' && isPlayerTurn && (
-        <button
-          onClick={onEndActionPhase}
-          className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded transition-colors"
-          title="End Actions (Return)"
-        >
-          End Actions <span className="text-blue-300">(↵)</span>
-        </button>
-      )}
-
-      {phase === 'queue' && isPlayerTurn && (
-        <button
-          onClick={onEndTurn}
-          className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-sm rounded transition-colors"
-        >
-          End Turn
-        </button>
-      )}
-
-      {!isPlayerTurn && (
-        <span className="text-yellow-400 text-sm">AI Thinking...</span>
-      )}
+export function ActionBar({ actionsRemaining, phase, onEndPlacePhase, onEndActionPhase, onEndTurn, isPlayerTurn, onUndo, canUndo = false }: ActionBarProps) {
+  return <div className="action-bar">
+    <div className="action-budget" aria-label={`${actionsRemaining} actions remaining`}>
+      <strong>{phase === 'action' ? `${actionsRemaining} actions` : phase === 'place' ? 'Place & upgrade' : 'Reinforcements'}</strong>
+      {phase === 'action' && <span aria-hidden="true">{Array.from({ length: 6 }, (_, i) => <i key={i} className={i < actionsRemaining ? 'available' : ''} />)}</span>}
     </div>
-  );
+    <button onClick={onUndo} disabled={!canUndo || !isPlayerTurn} title="Undo (⌘Z)">↶ Undo</button>
+    <button className="primary" disabled={!isPlayerTurn} onClick={phase === 'place' ? onEndPlacePhase : phase === 'action' ? onEndActionPhase : onEndTurn}>
+      {phase === 'place' ? 'Start actions →' : phase === 'action' ? 'Finish actions →' : 'End turn →'}
+    </button>
+  </div>;
 }

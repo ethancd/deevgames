@@ -1,266 +1,34 @@
 import type { Unit, Cell, PlayerId } from '../game/types';
-import { getUnitDefinition } from '../game/units';
-import { getElementHex } from '../utils/colors';
-import { getPromotionCost, getPromotedDefinitionId, isMaxTier } from '../game/promotion';
+import { getUnitDefinition, getNextTierDefinition } from '../game/units';
+import { getPromotionCost, canPromote } from '../game/promotion';
+import { calculateMiningYield } from '../game/mining';
+import { ELEMENT_SYMBOLS } from './UnitShop';
 
 interface UnitInfoProps {
-  unit: Unit | null;
-  previewDefinitionId?: string | null; // For showing stats of units not yet on board
-  onMine?: () => void;
-  canMine?: boolean;
-  cellInfo?: Cell | null; // Cell unit is standing on (for mining depth feedback)
-  // Promotion props
-  isPlacePhase?: boolean;
-  isActionPhase?: boolean; // True when in action phase (for showing mine button)
-  resources?: number;
-  onPromote?: () => void;
-  isEnemyView?: boolean; // True when viewing enemy unit stats
-  onClose?: () => void; // Close/deselect callback
-  currentPlayer?: PlayerId; // Current player for ownership checks
+  unit: Unit | null; previewDefinitionId?: string | null;
+  onMine?: () => void; canMine?: boolean; cellInfo?: Cell | null;
+  isPlacePhase?: boolean; isActionPhase?: boolean; resources?: number;
+  onPromote?: () => void; isEnemyView?: boolean; onClose?: () => void;
+  currentPlayer?: PlayerId; showEnemyRange?: boolean; onToggleEnemyRange?: () => void;
 }
-
-export function UnitInfo({
-  unit,
-  previewDefinitionId,
-  onMine,
-  canMine,
-  cellInfo,
-  isPlacePhase = false,
-  isActionPhase = false,
-  resources = 0,
-  onPromote,
-  isEnemyView = false,
-  onClose,
-  currentPlayer,
-}: UnitInfoProps) {
-  // Show preview stats if no unit but have a preview definition
-  if (!unit && previewDefinitionId) {
-    const def = getUnitDefinition(previewDefinitionId);
-    const color = getElementHex(def.element);
-
-    return (
-      <div className="p-3 bg-gray-800 rounded border border-cyan-600 relative">
-        {onClose && (
-          <button
-            onClick={onClose}
-            className="absolute top-1 right-1 text-gray-400 hover:text-white text-lg leading-none p-1"
-            aria-label="Close"
-          >
-            ×
-          </button>
-        )}
-        <div className="text-xs text-cyan-400 mb-2">Ready to Place</div>
-        <div className="flex items-center gap-3 mb-3">
-          <div
-            className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg"
-            style={{ backgroundColor: color }}
-          >
-            {def.tier}
-          </div>
-          <div>
-            <div className="font-medium text-white">{def.name}</div>
-            <div className="text-xs text-gray-400 capitalize">{def.element} T{def.tier}</div>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-2 text-sm">
-          <div className="flex justify-between">
-            <span className="text-gray-400">ATK</span>
-            <span className="text-red-400 font-medium">{def.attack}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-400">DEF</span>
-            <span className="text-blue-400 font-medium">{def.defense}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-400">SPD</span>
-            <span className="text-green-400 font-medium">{def.speed}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-400">MINE</span>
-            <span className="text-purple-400 font-medium">{def.mining}</span>
-          </div>
-        </div>
-
-        <div className="mt-3 text-xs text-cyan-400">
-          Click a highlighted cell to place
-        </div>
-      </div>
-    );
-  }
-
-  if (!unit) {
-    return (
-      <div className="p-3 bg-gray-800 rounded border border-gray-700">
-        <div className="text-gray-500 text-sm">Select a unit to see details</div>
-      </div>
-    );
-  }
-
-  const def = getUnitDefinition(unit.definitionId);
-  const color = getElementHex(def.element);
-
-  return (
-    <div className={`p-3 bg-gray-800 rounded border ${unit.owner === 'white' ? 'border-slate-400' : 'border-slate-600'} relative`}>
-      {onClose && (
-        <button
-          onClick={onClose}
-          className="absolute top-1 right-1 text-gray-400 hover:text-white text-lg leading-none p-1"
-          aria-label="Close"
-        >
-          ×
-        </button>
-      )}
-      {isEnemyView && (
-        <div className={`text-xs mb-2 ${unit.owner === 'white' ? 'text-slate-300' : 'text-slate-500'}`}>
-          {unit.owner === 'white' ? 'White' : 'Black'} Unit
-        </div>
-      )}
-      <div className="flex items-center gap-3 mb-3">
-        <div
-          className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg"
-          style={{ backgroundColor: color }}
-        >
-          {def.tier}
-        </div>
-        <div>
-          <div className="font-medium text-white">{def.name}</div>
-          <div className="text-xs text-gray-400 capitalize">{def.element} T{def.tier}</div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-2 text-sm mb-3">
-        <div className="flex justify-between">
-          <span className="text-gray-400">ATK</span>
-          <span className="text-red-400 font-medium">{def.attack}</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="text-gray-400">DEF</span>
-          {unit.damageTaken > 0 ? (
-            <span>
-              <span className="text-red-400 font-medium">{Math.max(0, def.defense - unit.damageTaken)}</span>
-              <span className="text-gray-500"> / {def.defense}</span>
-            </span>
-          ) : (
-            <span className="text-blue-400 font-medium">{def.defense}</span>
-          )}
-        </div>
-        <div className="flex justify-between">
-          <span className="text-gray-400">SPD</span>
-          <span className="text-green-400 font-medium">{def.speed}</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="text-gray-400">MINE</span>
-          <span className="text-purple-400 font-medium">{def.mining}</span>
-        </div>
-      </div>
-
-      {/* Mine button - only for own units during action phase */}
-      {!isEnemyView && isActionPhase && (() => {
-        const canMineNow = onMine && canMine && unit.canActThisTurn;
-        const hasResources = cellInfo && cellInfo.resourceLayers > 0;
-        const tooDeep = hasResources && !canMine && unit.canActThisTurn;
-        const requiredMining = cellInfo ? cellInfo.minedDepth + 1 : 0;
-
-        if (canMineNow) {
-          return (
-            <button
-              onClick={onMine}
-              className="w-full py-1 px-3 bg-purple-600 hover:bg-purple-700 text-white text-sm rounded transition-colors"
-              title="Mine Resources (M)"
-            >
-              Mine Resources <span className="text-purple-300">(M)</span>
-            </button>
-          );
-        }
-
-        if (tooDeep) {
-          return (
-            <div>
-              <button
-                disabled
-                className="w-full py-1 px-3 bg-gray-700 text-gray-500 text-sm rounded cursor-not-allowed"
-              >
-                Mine Resources <span className="text-gray-600">(M)</span>
-              </button>
-              <div className="text-xs text-red-400 mt-1">
-                Resources too deep — need Mining {requiredMining}+
-              </div>
-            </div>
-          );
-        }
-
-        return null;
-      })()}
-
-      {/* Promotion section - only during place phase for own units */}
-      {isPlacePhase && currentPlayer && unit.owner === currentPlayer && !isMaxTier(unit) && (() => {
-        const cost = getPromotionCost(unit);
-        const promotedDefId = getPromotedDefinitionId(unit);
-        const promotedDef = promotedDefId ? getUnitDefinition(promotedDefId) : null;
-        const canAffordPromotion = cost !== null && resources >= cost;
-        const promotedColor = promotedDef ? getElementHex(promotedDef.element) : color;
-
-        return (
-          <div className="mt-3 pt-3 border-t border-gray-700">
-            <div className="text-xs text-yellow-400 mb-2">Upgrade Available</div>
-            {promotedDef && (
-              <>
-                <div className="flex items-center gap-3 mb-3">
-                  <div
-                    className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg"
-                    style={{ backgroundColor: promotedColor }}
-                  >
-                    {promotedDef.tier}
-                  </div>
-                  <div>
-                    <div className="font-medium text-white">{promotedDef.name}</div>
-                    <div className="text-xs text-gray-400 capitalize">{promotedDef.element} T{promotedDef.tier}</div>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2 text-sm mb-3">
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">ATK</span>
-                    <span className="text-red-400 font-medium">{promotedDef.attack}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">DEF</span>
-                    <span className="text-blue-400 font-medium">{promotedDef.defense}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">SPD</span>
-                    <span className="text-green-400 font-medium">{promotedDef.speed}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">MINE</span>
-                    <span className="text-purple-400 font-medium">{promotedDef.mining}</span>
-                  </div>
-                </div>
-              </>
-            )}
-            <button
-              onClick={onPromote}
-              disabled={!canAffordPromotion || !onPromote}
-              className={`
-                w-full py-1 px-3 text-sm rounded transition-colors
-                ${canAffordPromotion
-                  ? 'bg-yellow-600 hover:bg-yellow-700 text-white'
-                  : 'bg-gray-700 text-gray-500 cursor-not-allowed'
-                }
-              `}
-              title="Upgrade (U)"
-            >
-              Upgrade ({cost} 💎) <span className={canAffordPromotion ? 'text-yellow-300' : 'text-gray-600'}>(U)</span>
-            </button>
-            {!canAffordPromotion && cost !== null && (
-              <div className="text-xs text-red-400 mt-1">
-                Need {cost - resources} more crystals
-              </div>
-            )}
-          </div>
-        );
-      })()}
+export function UnitInfo({ unit, previewDefinitionId, onMine, canMine, cellInfo, isPlacePhase, isActionPhase, resources = 0, onPromote, isEnemyView, onClose, currentPlayer, showEnemyRange, onToggleEnemyRange }: UnitInfoProps) {
+  const def = unit ? getUnitDefinition(unit.definitionId) : previewDefinitionId ? getUnitDefinition(previewDefinitionId) : null;
+  if (!def) return null;
+  const next = unit ? getNextTierDefinition(unit.definitionId) : null;
+  const cost = unit ? getPromotionCost(unit) : null;
+  const upgrade = !!unit && canPromote(unit, { queue: [], crystals: resources });
+  const mine = !!unit && canMine && unit.canActThisTurn;
+  const mineYield = unit && cellInfo ? calculateMiningYield(unit, cellInfo) : 0;
+  return <div className="unit-detail">
+    <div className="unit-heading"><strong>{ELEMENT_SYMBOLS[def.element]} {def.name} <small>{def.element} · T{def.tier}{isEnemyView ? ' · Enemy' : ''}</small></strong><button aria-label="Deselect unit" onClick={onClose}>×</button></div>
+    <div className="unit-stats"><span>Attack <b>{def.attack}</b></span><span>Defense <b>{Math.max(0, def.defense - (unit?.damageTaken ?? 0))}{unit?.damageTaken ? `/${def.defense}` : ''}</b></span><span>Speed <b>{def.speed}</b></span><span>Mining <b>{def.mining}</b></span></div>
+    <div className="unit-action-row">
+      {!unit ? <p>Tap a highlighted square to place.</p>
+      : isEnemyView ? <><p>Inspect current movement reach.</p><button aria-pressed={showEnemyRange} onClick={onToggleEnemyRange}>{showEnemyRange ? 'Hide reach' : 'Show reach'}</button></>
+      : isPlacePhase && unit.owner === currentPlayer ? <>
+        <p>{unit.placedThisTurn ? 'Newly placed · upgrade next turn' : unit.promotedThisPlacement ? 'Already upgraded this placement' : next ? `${next.name}: ATK ${next.attack} · DEF ${next.defense} · SPD ${next.speed} · MINE ${next.mining}` : 'Maximum tier'}</p>
+        {next && <button onClick={onPromote} disabled={!upgrade}>Upgrade · ◆ {cost}</button>}
+      </> : isActionPhase ? <><p>{!unit.canActThisTurn ? 'Ready next turn' : mine ? 'Mine here · 1 action' : cellInfo?.resourceLayers ? `Too deep · need Mining ${(cellInfo?.minedDepth ?? 0) + 1}` : 'This square is depleted'}</p><button onClick={onMine} disabled={!mine}>Mine +{mineYield} ◆</button></> : <p>Ready for the next action phase.</p>}
     </div>
-  );
+  </div>;
 }

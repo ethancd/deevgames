@@ -1,0 +1,4 @@
+# Local browser verification and dependency links.
+/node_modules
+/test-results/
+/playwright-report/

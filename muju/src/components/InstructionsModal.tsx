@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { PlayDialog } from './PlayDialog';
 import { ELEMENT_INFO } from '../game/elements';
 import { getElementHex } from '../utils/colors';
 
@@ -156,6 +157,17 @@ interface InstructionPage {
 }
 
 const instructionPages: InstructionPage[] = [
+  {
+    title: 'Playing on a phone',
+    content: <div className="space-y-4 text-sm text-gray-300">
+      <p><strong>Select → preview → confirm.</strong> Tap one of your pieces, then a destination. Check the action cost and mining yield before confirming. Tap a different destination to compare, or Cancel to keep your unit where it is.</p>
+      <p>Solid dots cost one action. Hollow dots are farther away. A red ring marks an attack: tap it to see the attack power, remaining defense, and whether the target will be eliminated.</p>
+      <p><strong>Mine</strong> shows the crystals you can collect here. <strong>Undo</strong> takes back your last action during your turn. Six actions are shared by your whole army.</p>
+      <p><strong>Build:</strong> choose an element and tier, then check the stats, crystal cost, and build time. Locked tiers explain which unit you need on the board. Use the queue to place ready units in the Place phase.</p>
+      <p>Turn on <strong>Depths</strong> for resource numbers. Tap enemy pieces to inspect them; <strong>Show reach</strong> previews current-speed movement with six actions, not possible upgrades or attacks.</p>
+      <p>Keyboard: Tab visits controls, N cycles your units, M mines, U upgrades, ⌘/Ctrl+Z undoes. Enter confirms a preview; Escape cancels it. Arrow keys move or browse the shop; 1–6 choose elements there.</p>
+    </div>,
+  },
   {
     title: 'Welcome to Muju Hono Tanka',
     content: (
@@ -730,7 +742,6 @@ const instructionPages: InstructionPage[] = [
 
 export function InstructionsModal({ isOpen, onClose }: InstructionsModalProps) {
   const [currentPage, setCurrentPage] = useState(0);
-  const [viewMode, setViewMode] = useState<'carousel' | 'scroll'>('carousel');
 
   const goToPage = useCallback((page: number) => {
     setCurrentPage(Math.max(0, Math.min(page, instructionPages.length - 1)));
@@ -748,122 +759,12 @@ export function InstructionsModal({ isOpen, onClose }: InstructionsModalProps) {
 
   const currentInstruction = instructionPages[currentPage];
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/80" onClick={onClose} />
-
-      {/* Modal */}
-      <div className="relative bg-gray-900 border border-gray-700 rounded-lg max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl">
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-700">
-          <h2 className="text-xl font-bold text-white">How to Play</h2>
-          <div className="flex items-center gap-3">
-            {/* View mode toggle */}
-            <div className="flex bg-gray-800 rounded-lg p-0.5">
-              <button
-                onClick={() => setViewMode('carousel')}
-                className={`px-3 py-1 text-sm rounded-md transition-colors ${
-                  viewMode === 'carousel'
-                    ? 'bg-gray-600 text-white'
-                    : 'text-gray-400 hover:text-white'
-                }`}
-              >
-                Pages
-              </button>
-              <button
-                onClick={() => setViewMode('scroll')}
-                className={`px-3 py-1 text-sm rounded-md transition-colors ${
-                  viewMode === 'scroll'
-                    ? 'bg-gray-600 text-white'
-                    : 'text-gray-400 hover:text-white'
-                }`}
-              >
-                Scroll
-              </button>
-            </div>
-            {/* Close button */}
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-white text-2xl leading-none"
-            >
-              ×
-            </button>
-          </div>
-        </div>
-
-        {/* Content */}
-        {viewMode === 'carousel' ? (
-          <>
-            {/* Carousel content */}
-            <div className="flex-1 overflow-y-auto p-6">
-              <h3 className="text-lg font-semibold text-cyan-400 mb-4">
-                {currentInstruction.title}
-              </h3>
-              {currentInstruction.content}
-            </div>
-
-            {/* Carousel navigation */}
-            <div className="p-4 border-t border-gray-700">
-              <div className="flex items-center justify-between">
-                <button
-                  onClick={prevPage}
-                  disabled={currentPage === 0}
-                  className={`px-4 py-2 rounded text-sm transition-colors ${
-                    currentPage === 0
-                      ? 'bg-gray-800 text-gray-600 cursor-not-allowed'
-                      : 'bg-gray-700 hover:bg-gray-600 text-white'
-                  }`}
-                >
-                  ← Previous
-                </button>
-
-                {/* Page indicators */}
-                <div className="flex gap-1.5">
-                  {instructionPages.map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => goToPage(index)}
-                      className={`w-2.5 h-2.5 rounded-full transition-colors ${
-                        index === currentPage
-                          ? 'bg-cyan-400'
-                          : 'bg-gray-600 hover:bg-gray-500'
-                      }`}
-                    />
-                  ))}
-                </div>
-
-                <button
-                  onClick={nextPage}
-                  disabled={currentPage === instructionPages.length - 1}
-                  className={`px-4 py-2 rounded text-sm transition-colors ${
-                    currentPage === instructionPages.length - 1
-                      ? 'bg-gray-800 text-gray-600 cursor-not-allowed'
-                      : 'bg-gray-700 hover:bg-gray-600 text-white'
-                  }`}
-                >
-                  Next →
-                </button>
-              </div>
-              <div className="text-center text-gray-500 text-xs mt-2">
-                Page {currentPage + 1} of {instructionPages.length}
-              </div>
-            </div>
-          </>
-        ) : (
-          /* Scroll mode - all pages in sequence */
-          <div className="flex-1 overflow-y-auto p-6 space-y-8">
-            {instructionPages.map((page, index) => (
-              <div key={index} className="pb-6 border-b border-gray-700 last:border-0">
-                <h3 className="text-lg font-semibold text-cyan-400 mb-4">
-                  {index + 1}. {page.title}
-                </h3>
-                {page.content}
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+  return <PlayDialog title="How to play" onClose={onClose}>
+    <div className="help-navigation">
+      <button onClick={prevPage} disabled={currentPage === 0}>← Previous</button>
+      <span>{currentPage + 1} / {instructionPages.length}</span>
+      <button onClick={nextPage} disabled={currentPage === instructionPages.length - 1}>Next →</button>
     </div>
-  );
+    <div className="help-body"><h3>{currentInstruction.title}</h3>{currentInstruction.content}</div>
+  </PlayDialog>;
 }

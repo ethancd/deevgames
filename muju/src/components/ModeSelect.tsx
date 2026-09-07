@@ -44,8 +44,9 @@ export function ModeSelect({ onStartGame }: ModeSelectProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center p-4">
+    <div className="mode-select min-h-screen bg-gray-900 text-white flex items-center justify-center p-4">
       <div className="max-w-md w-full space-y-6">
+        <a href="../" className="text-sm text-cyan-300">← Deev Games</a>
         <h1 className="text-3xl font-bold text-center">Muju Hono Tanka</h1>
         <p className="text-gray-400 text-center">Select Game Mode</p>
 
