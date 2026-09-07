@@ -92,7 +92,7 @@ export const cartoonSkin: Skin = {
 
   cardNames: CARTOON_CARD_NAMES,
 
-  imagePath: (cardName: string) => `/images-cartoon/${toKebabCase(cardName)}.png`,
+  imagePath: (cardName: string) => `${import.meta.env.BASE_URL}images-cartoon/${toKebabCase(cardName)}.png`,
 
   cssClass: 'skin-cartoon',
 };

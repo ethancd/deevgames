@@ -1,83 +1,54 @@
-name: Deploy Games to GitHub Pages
+name: Deploy Games to Cloudflare Pages
 
 on:
   push:
-    branches:
-      - main
+    branches: [master]
   workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  group: "pages"
+  group: deevgames-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: '24'
+          cache: npm
           cache-dependency-path: |
             muju/package-lock.json
             forge/package-lock.json
             oracle/package-lock.json
-
-      - name: Install Muju dependencies
-        working-directory: ./muju
-        run: npm ci
-
-      - name: Build Muju
-        working-directory: ./muju
-        run: npm run build
-
-      - name: Install Forge dependencies
-        working-directory: ./forge
-        run: npm ci
-
-      - name: Build Forge
-        working-directory: ./forge
-        run: npm run build
-
-      - name: Install Oracle dependencies
-        working-directory: ./oracle
-        run: npm ci
-
-      - name: Build Oracle
-        working-directory: ./oracle
-        run: npm run build
-
-      - name: Prepare deployment directory
+      - name: Install locked dependencies
         run: |
-          mkdir -p _site
-          cp index.html _site/
-          cp CNAME _site/
-          touch _site/.nojekyll
-          cp -r muju/dist _site/muju
-          cp -r forge/dist _site/forge
-          cp -r oracle/dist _site/oracle
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+          for game in muju forge oracle; do
+            (cd "$game" && npm ci --no-audit --no-fund)
+          done
+      - name: Build and verify public files
+        run: bash build-all.sh
+      - name: Install browser for smoke checks
+        working-directory: oracle
+        run: npx playwright install --with-deps chromium
+      - name: Check phone and tablet gameplay
+        run: |
+          python3 -m http.server 8941 --bind 127.0.0.1 --directory _site > /tmp/deevgames-qa.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid"' EXIT
+          node tools/smoke-site.cjs http://127.0.0.1:8941
+      - name: Deploy
+        uses: cloudflare/wrangler-action@v3
+        id: deploy
         with:
-          path: ./_site
-
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy _site --project-name deevgames --branch "${{ github.ref_name }}"
+      - name: Show deployment URL
+        env:
+          DEPLOYMENT_URL: ${{ steps.deploy.outputs.deployment-url }}
+        run: echo "Games deployed to $DEPLOYMENT_URL" >> "$GITHUB_STEP_SUMMARY"

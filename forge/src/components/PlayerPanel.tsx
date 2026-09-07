@@ -19,8 +19,8 @@ export function PlayerPanel({ player, isCurrentPlayer, gameState }: PlayerPanelP
           : 'border-amber-900/30'
       }`}
     >
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="text-xl font-bold" style={{ fontFamily: 'Cinzel, serif', color: '#eee8d5' }}>
+      <div className="flex flex-wrap gap-2 items-center justify-between mb-3">
+        <h3 className="text-xl font-bold" style={{ fontFamily: 'var(--font-display)', color: 'var(--cosmic-star)' }}>
           {player.name}
         </h3>
         {isCurrentPlayer && (
@@ -30,7 +30,7 @@ export function PlayerPanel({ player, isCurrentPlayer, gameState }: PlayerPanelP
         )}
       </div>
 
-      <div className="flex gap-4 mb-3 text-lg font-medium">
+      <div className="flex flex-wrap gap-2 sm:gap-4 mb-3 text-lg font-medium">
         <span style={{ color: 'var(--mars)' }}>♂ {player.symbols.mars}</span>
         <span style={{ color: 'var(--venus)' }}>♀ {player.symbols.venus}</span>
         <span style={{ color: 'var(--mercury)' }}>☿ {player.symbols.mercury}</span>

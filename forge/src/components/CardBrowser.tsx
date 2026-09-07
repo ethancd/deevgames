@@ -36,12 +36,12 @@ export function CardBrowser() {
   }, []);
 
   return (
-    <div className="min-h-screen p-8 animate-fadeIn">
+    <div className="min-h-screen p-4 sm:p-8 animate-fadeIn">
       <div className="container mx-auto max-w-[1800px]">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-wrap gap-4 items-center justify-between mb-8">
           <h1
-            className="text-5xl font-bold tracking-wider text-shadow-glow"
+            className="text-3xl sm:text-5xl font-bold tracking-wider text-shadow-glow"
             style={{ fontFamily: 'var(--font-display)', color: 'var(--gold)' }}
           >
             Card Gallery
@@ -66,7 +66,7 @@ export function CardBrowser() {
               {/* Faction Header */}
               <div className={`glass-panel p-4 rounded-t-xl border-2 ${factionTheme?.browserColors ?? ''}`}>
                 <h2
-                  className="text-3xl font-bold flex items-center gap-3"
+                  className="text-xl sm:text-3xl font-bold flex flex-wrap items-center gap-3"
                   style={{ fontFamily: 'var(--font-display)', color: 'var(--gold)' }}
                 >
                   <span className="text-4xl">{factionEmoji}</span>
@@ -77,7 +77,7 @@ export function CardBrowser() {
 
               {/* Cards Grid */}
               <div className={`glass-panel p-6 rounded-b-xl border-2 border-t-0 ${factionTheme?.browserColors ?? ''}`}>
-                <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(5, 1fr)' }}>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
                   {cards.map(card => (
                     <CardBrowserItem key={card.id} card={card} />
                   ))}

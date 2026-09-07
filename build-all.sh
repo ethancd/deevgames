@@ -1,46 +1,26 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# Install dependencies with npm ci in each game before running this script.
+set -euo pipefail
+cd "$(dirname "$0")"
 
-set -e
+for game in muju forge oracle; do
+  echo "Building $game..."
+  (cd "$game" && npm run build)
+done
 
-echo "🎮 Building all DeevGames..."
-echo ""
+# Assemble only public files. Never publish the repository root or server code.
+stage=$(mktemp -d "${TMPDIR:-/tmp}/deevgames-build.XXXXXX")
+trap 'rm -rf "$stage"' EXIT
+cp index.html 404.html "$stage/"
+mkdir -p "$stage/portfolio" "$stage/docs"
+cp portfolio/index.html "$stage/portfolio/"
+cp docs/game-design-dossier.md "$stage/docs/"
+for game in muju forge oracle; do
+  cp -R "$game/dist" "$stage/$game"
+done
+python3 tools/verify_site.py "$stage"
 
-# Build Muju
-echo "⚔️  Building Muju Hono Tanka..."
-cd muju
-npm run build
-cd ..
-echo "✓ Muju built successfully"
-echo ""
-
-# Build Forge
-echo "🃏 Building FORGE..."
-cd forge
-npm run build
-cd ..
-echo "✓ Forge built successfully"
-echo ""
-
-# Build Oracle
-echo "🗡️  Building Oracle of Delve..."
-cd oracle
-npm run build
-cd ..
-echo "✓ Oracle built successfully"
-echo ""
-
-# Prepare deployment directory
-echo "📦 Preparing deployment directory..."
+# _site is generated exclusively by this script, and ignored by Git.
 rm -rf _site
-mkdir -p _site
-cp index.html _site/
-cp CNAME _site/
-touch _site/.nojekyll
-cp -r muju/dist _site/muju
-cp -r forge/dist _site/forge
-cp -r oracle/dist _site/oracle
-echo "✓ Deployment directory ready"
-echo ""
-
-echo "✅ All games built successfully!"
-echo "Deployment files are in the _site directory"
+mv "$stage" _site
+echo "Ready to publish: _site/"

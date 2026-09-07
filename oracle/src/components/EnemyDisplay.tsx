@@ -20,7 +20,7 @@ export function EnemyDisplay({ enemy, onAttack, isPlayerTurn, damageAnimation }:
         disabled={!isPlayerTurn || isDead}
         className={`
           w-full p-6 rounded-xl border-2 transition-all duration-200
-          flex flex-col justify-center h-[7.5rem] min-w-48
+          flex flex-col justify-center h-44 min-w-48
           ${isDead
             ? 'bg-stone-900/30 border-stone-800/30 opacity-40'
             : isPlayerTurn
@@ -35,7 +35,7 @@ export function EnemyDisplay({ enemy, onAttack, isPlayerTurn, damageAnimation }:
         </div>
 
         {/* HP Bar - Fixed height with text overlay */}
-        <div className="w-full bg-stone-900/60 rounded-full h-6 mb-2 overflow-hidden relative">
+        <div className="w-full bg-stone-900/60 rounded-full h-6 shrink-0 mb-2 overflow-hidden relative">
           <div
             className="bg-gradient-to-r from-red-600 to-red-500 h-full transition-all duration-300"
             style={{ width: `${hpPercentage}%` }}

@@ -1,6 +1,56 @@
 Deev Games
 ===
 
+Play at **https://deevgames.ashkie.com**, also linked from **https://ashkie.com**.
+The current release hosts Muju Hono Tanka, FORGE, and Oracle of Delve plus the
+design portfolio. These are browser games; Oracle is a short combat prototype.
+
+## Build and publish the browser games
+
+Use Node 24 and Python 3. Install each game's locked dependencies, then build:
+
+```bash
+for game in muju forge oracle; do (cd "$game" && npm ci); done
+bash build-all.sh
+```
+
+`_site/` is the complete public artifact. The build validates local HTML links,
+required pages, and Cloudflare's per-file size limit. It includes only the three
+games, hub, portfolio, public dossier, and a real 404 page. Never deploy the repo
+root: it also contains backend projects and development files.
+
+Pushes to **master** build and deploy through GitHub Actions to the separate
+Cloudflare Pages project **deevgames**. The workflow uses repository secrets
+`CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`. Manual workflow dispatch on a
+feature branch publishes a preview; master is the production branch.
+
+The custom domain `deevgames.ashkie.com` belongs to that Pages project. Ashkie's
+own deployment and offline manifest contain only a link to it. The first three
+games require a connection to load; this release does not register a service
+worker or promise offline installation. Games and the hub have return links.
+
+Verify a deployment by opening each game, starting play, refreshing the URL,
+and opening FORGE card art in both skins. Check actual page content and the
+workflow's success, not just HTTP 200. Revert a bad release commit on master and
+push to redeploy the previous source; the Ashkie.com link can be reverted
+independently in `ashkie-pages`.
+
+The browser smoke check exercises navigation, phone/tablet layout, Muju saves,
+FORGE's burn action and both art sets, and an Oracle battle/restart:
+
+```bash
+npx --prefix oracle playwright install chromium
+node tools/smoke-site.cjs http://127.0.0.1:8941
+```
+
+Serve `_site/` on that unused local port first, or pass a deployed URL. Set
+`CHROME_PATH` to use an installed Chrome and `QA_SCREENSHOTS` to capture layouts.
+
+Rock Stars continues at https://ashkie.com/rock-stars/. Mythgarden, Lution, and
+legacy Ninja Tanks have separate backend requirements and are not bundled here.
+
+## Legacy Rails site
+
 A site for my (theoretical) board game company. It features a user registration and sign-in system, an admin blog where users can make nested comments, and a JavaScript implementation of one of my board games.
 
 Find it at [deevgames.com](http://www.deevgames.com)!

@@ -721,7 +721,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-4">
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap justify-center items-center gap-2 sm:gap-4">
             <h1 className="text-xl font-bold text-gray-100">Muju Hono Tanka</h1>
             <span className="text-sm text-gray-400">
               {config.mode === 'vs-ai' && 'vs AI'}
@@ -857,7 +857,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
           </div>
 
           {/* Board */}
-          <div className={isThinking || showPassOverlay ? 'opacity-75 pointer-events-none' : ''}>
+          <div className={`w-full max-w-[40.75rem] ${isThinking || showPassOverlay ? 'opacity-75 pointer-events-none' : ''}`}>
             <Board
               board={state.board}
               selectedUnit={state.selectedUnit}

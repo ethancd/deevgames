@@ -58,7 +58,7 @@ export function Cell({ cell, isValidMove, isValidAttack, isValidSpawn, isSelecte
   return (
     <div
       className={`
-        w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16
+        w-full aspect-square
         border ${borderClass} ${bgClass}
         flex items-center justify-center
         cursor-pointer hover:brightness-95

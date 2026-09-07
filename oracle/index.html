@@ -2,13 +2,18 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <title>Oracle of Delve</title>
+    <style>
+      .deev-nav { background: #111827; padding: 8px 16px; font: 14px/1.5 system-ui, sans-serif; }
+      .deev-nav a { display: inline-block; padding: 4px 0; color: #c7d2fe; text-decoration: underline; }
+      .deev-nav a:focus-visible { outline: 3px solid #fde68a; outline-offset: 4px; }
+    </style>
   </head>
   <body>
+    <nav class="deev-nav" aria-label="Games"><a href="../">← Deev Games</a></nav>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

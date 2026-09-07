@@ -12,14 +12,14 @@ export function PlayerDisplay({ player, damageAnimation }: PlayerDisplayProps) {
   const isLowHP = hpPercentage < 30;
 
   return (
-    <div className="h-32 relative bg-blue-950/40 border-2 border-blue-900/50 rounded-xl p-6 flex flex-col justify-center">
+    <div className="h-44 relative bg-blue-950/40 border-2 border-blue-900/50 rounded-xl p-6 flex flex-col justify-center">
       {/* Name - Fixed height */}
       <div className="min-h-7 text-xl font-bold mb-3 text-blue-300 flex items-center justify-center">
         ⚔ You ⚔
       </div>
 
       {/* HP Bar - Fixed height with text overlay */}
-      <div className="w-full bg-stone-900/60 rounded-full h-8 overflow-hidden relative">
+      <div className="w-full bg-stone-900/60 rounded-full h-8 shrink-0 overflow-hidden relative">
         <div
           className={`h-full transition-all duration-300 ${
             isLowHP

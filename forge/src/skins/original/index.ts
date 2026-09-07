@@ -92,7 +92,7 @@ export const originalSkin: Skin = {
   // No card name overrides - use original names
   cardNames: undefined,
 
-  imagePath: (cardName: string) => `/images/${toKebabCase(cardName)}.png`,
+  imagePath: (cardName: string) => `${import.meta.env.BASE_URL}images/${toKebabCase(cardName)}.png`,
 
   cssClass: 'skin-original',
 };

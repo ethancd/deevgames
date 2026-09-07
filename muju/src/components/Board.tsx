@@ -68,7 +68,7 @@ export function Board({
   };
 
   return (
-    <div className="inline-block border-2 border-gray-300 bg-gray-100 p-1 rounded">
+    <div className="w-full max-w-[40.75rem] border-2 border-gray-300 bg-gray-100 p-1 rounded">
       <div className="grid grid-cols-10 gap-0">
         {board.cells.map((row, y) =>
           row.map((cell, x) => {

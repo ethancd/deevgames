@@ -28,6 +28,7 @@ doc/
 # Node.js
 node_modules/
 package-lock.json
+!muju/package-lock.json
 
 # Build output
 dist/

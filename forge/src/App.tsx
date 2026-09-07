@@ -165,25 +165,25 @@ function App() {
     <div className="min-h-screen flex flex-col animate-fadeIn overflow-hidden">
       {/* Fixed Header */}
       <header className="flex-shrink-0 p-4 border-b border-amber-900/30">
-        <div className="container mx-auto max-w-7xl flex items-center justify-between">
+        <div className="container mx-auto max-w-7xl flex flex-col sm:flex-row gap-4 items-center justify-between">
           <h1
-            className="text-5xl font-bold tracking-wider text-shadow-glow"
+            className="text-3xl sm:text-5xl font-bold tracking-wider text-shadow-glow"
             style={{ fontFamily: 'var(--font-display)', color: 'var(--gold)' }}
           >
             ⚔ FORGE ⚔
           </h1>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap justify-center items-center gap-2">
             <SkinSelectorCompact />
             <a
               href="#/cards"
-              className="glass-panel px-6 py-3 rounded-lg font-bold hover:border-amber-500 border-2 border-amber-900/30 transition-all duration-200 shadow-lg hover:shadow-amber-500/30"
+              className="glass-panel px-3 sm:px-6 py-3 rounded-lg font-bold hover:border-amber-500 border-2 border-amber-900/30 transition-all duration-200 shadow-lg hover:shadow-amber-500/30"
               style={{ fontFamily: 'var(--font-display)', color: 'var(--bronze)' }}
             >
               Card Gallery
             </a>
             <button
               onClick={actions.newGame}
-              className="glass-panel px-6 py-3 rounded-lg font-bold hover:border-amber-500 border-2 border-amber-900/30 transition-all duration-200 shadow-lg hover:shadow-amber-500/30"
+              className="glass-panel px-3 sm:px-6 py-3 rounded-lg font-bold hover:border-amber-500 border-2 border-amber-900/30 transition-all duration-200 shadow-lg hover:shadow-amber-500/30"
               style={{ fontFamily: 'var(--font-display)', color: 'var(--bronze)' }}
             >
               New Game
@@ -193,8 +193,9 @@ function App() {
       </header>
 
       {/* Scrollable Grid Area */}
-      <div className="flex-1 overflow-auto p-4">
-        <div className="container mx-auto max-w-7xl flex justify-center">
+      <p className="px-4 pt-3 text-center text-sm" style={{ color: 'var(--cosmic-star)' }}>Scroll the board to see more cards. Tap a face-up card to buy or burn it.</p>
+      <div className="flex-1 overflow-auto p-4" tabIndex={0} role="region" aria-label="Game board — scroll to explore">
+        <div className="mx-auto min-w-max max-w-7xl flex justify-center">
           <Grid grid={gameState.grid} onCardClick={handleCardClick} />
         </div>
       </div>
@@ -280,7 +281,7 @@ function App() {
             <div className="flex gap-4">
               <button
                 onClick={() => setModalState({ type: 'none' })}
-                className="flex-1 glass-panel px-6 py-3 rounded-lg font-bold border-2 border-amber-900/30 hover:border-amber-700 transition-all"
+                className="flex-1 glass-panel px-3 sm:px-6 py-3 rounded-lg font-bold border-2 border-amber-900/30 hover:border-amber-700 transition-all"
                 style={{ fontFamily: 'var(--font-display)', color: 'var(--bronze)' }}
               >
                 Cancel

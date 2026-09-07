@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DeevGames - Strategy Games Collection</title>
+    <title>Deev Games · Play on Ashkie.com</title>
+    <meta name="description" content="Play Muju Hono Tanka, FORGE, and Oracle of Delve. Strategy games for one player or two players sharing a device.">
     <style>
         * {
             margin: 0;
@@ -42,7 +43,7 @@
 
         .games-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
             gap: 2rem;
             margin-top: 2rem;
         }
@@ -63,6 +64,16 @@
             transform: translateY(-8px);
             box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
             background: rgba(255, 255, 255, 0.15);
+        }
+
+        a:focus-visible { outline: 3px solid #fde68a; outline-offset: 6px; }
+
+        .home-link { display: inline-block; padding: 12px; margin-bottom: 1rem; color: #c7d2fe; }
+        .footer { margin-top: 2rem; line-height: 1.8; color: #c7d2fe; }
+        .footer a { color: inherit; }
+        @media (prefers-reduced-motion: reduce) {
+            .game-card { transition: none; }
+            .game-card:hover { transform: none; }
         }
 
         .game-icon {
@@ -118,39 +129,41 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🎮 DeevGames</h1>
-        <p class="subtitle">A Collection of Strategic Browser Games</p>
-        <p class="subtitle"><a href="./portfolio/" style="color: #a5b4fc;">Explore the full design portfolio →</a></p>
+    <main class="container">
+        <a class="home-link" href="https://ashkie.com/">← Ashkie.com</a>
+        <h1>🎮 Deev Games</h1>
+        <p class="subtitle">Pick a game. Make your next move.</p>
+
 
         <div class="games-grid">
             <a href="./muju/" class="game-card">
                 <span class="game-icon">⚔️</span>
                 <div class="game-title">Muju Hono Tanka</div>
                 <div class="game-description">
-                    Strategic territorial combat on a 10×10 grid. Control elements, manage resources, and outmaneuver your opponent in this deep tactical experience.
+                    Command elemental units on a 10×10 board. Claim territory and outmaneuver the computer or a friend.
                 </div>
-                <span class="game-status status-playable">Fully Playable</span>
+                <span class="game-status status-playable">Solo vs AI · or two players, one device</span>
             </a>
 
             <a href="./forge/" class="game-card">
                 <span class="game-icon">🃏</span>
                 <div class="game-title">FORGE</div>
                 <div class="game-description">
-                    Competitive card drafting meets strategic bidding. Build your deck, manage resources, and forge the perfect combination to victory.
+                    Draft cards and outbid your opponent. Build a winning tableau while sharing one screen with a friend.
                 </div>
-                <span class="game-status status-development">In Development</span>
+                <span class="game-status status-playable">Two players · one device</span>
             </a>
 
             <a href="./oracle/" class="game-card">
                 <span class="game-icon">🗡️</span>
                 <div class="game-title">Oracle of Delve</div>
                 <div class="game-description">
-                    Roguelike dungeon crawler with turn-based combat. Explore mysterious depths, battle monsters, and seek the wisdom of the Oracle.
+                    Try a short dungeon battle. Choose your targets, trade blows, and see whether you can defeat both enemies.
                 </div>
-                <span class="game-status status-playable">Fully Playable</span>
+                <span class="game-status status-development">Solo · combat prototype</span>
             </a>
         </div>
-    </div>
+        <p class="footer"><a href="./portfolio/">Explore the game design portfolio →</a><br>These games need an internet connection to load.</p>
+    </main>
 </body>
 </html>
