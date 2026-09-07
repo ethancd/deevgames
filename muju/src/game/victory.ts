@@ -1,8 +1,9 @@
-import type { BoardState, PlayerId } from './types';
+import type { BoardState, PlayerId, GameState } from './types';
 import { getPlayerUnits } from './board';
 
 /**
- * Victory condition: A player wins when their opponent has no pieces on the board.
+ * Elimination can be checked on a board at any time. Home occupation is checked
+ * only by startTurn, before placement, never when entering the corner.
  * Without pieces, the opponent has no anchor for spawning, so even with a build queue
  * they cannot deploy new units.
  */
@@ -97,4 +98,22 @@ export function getGameSummary(board: BoardState): {
     blackUnits: getUnitCount(board, 'black'),
     result: checkVictory(board),
   };
+}
+
+/** A unit threatening victory on its owner's NEXT turn. Presence alone is not a win. */
+export function getHomeOccupier(board: BoardState, invader: PlayerId) {
+  const corner = invader === 'white' ? board.cells.length - 1 : 0;
+  return board.units.find(u => u.owner === invader && u.position.x === corner && u.position.y === corner);
+}
+
+/** State-aware terminal result, including victories recorded at the turn boundary. */
+export function getGameResult(state: GameState): GameResult {
+  if (state.phase === 'victory' && state.winner) return { status: 'victory', winner: state.winner };
+  return checkVictory(state.board);
+}
+
+/** A visible threat encourages search to consider invasions and clearing home. */
+export function homeOccupationPressure(state: GameState, player: PlayerId): number {
+  if (state.victoryRule === 'elimination') return 0;
+  return 250 * (Number(!!getHomeOccupier(state.board, player)) - Number(!!getHomeOccupier(state.board, getOpponent(player))));
 }

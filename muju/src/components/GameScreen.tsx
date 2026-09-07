@@ -1,3 +1,4 @@
+import { getHomeOccupier } from '../game/victory';
 import { useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import { useGameState } from '../hooks/useGameState';
 import { useAI } from '../hooks/useAI';
@@ -710,6 +711,9 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
     else attackWith(state.selectedUnit, preview.position);
     setPreview(null);
   }
+  const homeNotice = getHomeOccupier(state.board, state.turn.currentPlayer === 'white' ? 'black' : 'white')
+    ? `Clear ${state.turn.currentPlayer === 'white' ? 'A1' : 'J10'} this turn or lose`
+    : getHomeOccupier(state.board, state.turn.currentPlayer) ? `Hold ${state.turn.currentPlayer === 'white' ? 'J10' : 'A1'} until your next turn` : '';
   const phaseHint = !interactive ? (isPaused ? 'Paused' : 'Opponent’s turn')
     : state.turn.phase === 'place' ? 'Place a ready unit, or select a unit to upgrade.'
     : state.turn.phase === 'queue' ? 'Build reinforcements, or save crystals for later.'
@@ -717,7 +721,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
 
   return (
     <main className="game-shell">
-      {state.phase === 'victory' && state.winner && <VictoryScreen winner={state.winner} onPlayAgain={handlePlayAgain} playerNames={playerNames} />}
+      {state.phase === 'victory' && state.winner && <VictoryScreen winner={state.winner} reason={state.victoryReason} onPlayAgain={handlePlayAgain} playerNames={playerNames} />}
       {showPassOverlay && <PassDeviceOverlay nextPlayer={state.turn.currentPlayer} onContinue={handleContinueFromPass} />}
       <InstructionsModal isOpen={showInstructions} onClose={() => setShowInstructions(false)} />
       <header className="game-header">
@@ -749,7 +753,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
             onCellClick={handleCellClick} onUnitClick={handleUnitClick} />
         </section>
         <div className="board-key">
-          <span>{isEnemyView && showEnemyRange ? 'Enemy reach · current speed, 6 actions' : selectedReadyUnitId ? '＋ Safe placement' : '● 1 action · ○ farther · red ring: attack'}</span>
+          <span role="status">{homeNotice || (isEnemyView && showEnemyRange ? 'Enemy reach · current speed, 6 actions' : selectedReadyUnitId ? '＋ Safe placement' : '● 1 action · ○ farther · red ring: attack')}</span>
           <button aria-pressed={showResources} onClick={() => setShowResources(!showResources)}>◆ Depths</button>
         </div>
         <section className="decision-panel" aria-label="Current choice">
@@ -768,7 +772,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
               onClose={handleCloseUnitInfo} currentPlayer={state.turn.currentPlayer}
               showEnemyRange={showEnemyRange} onToggleEnemyRange={() => setShowEnemyRange(!showEnemyRange)} />
           : <div className="selection-hint"><strong>{isThinking ? 'Your opponent is thinking…' : state.turn.phase === 'place' ? 'Place & upgrade' : 'Your next move'}</strong><p>{phaseHint}</p>
-              <small>Win by eliminating every enemy unit.</small></div>}
+              <small>Hold the enemy home until your next turn, or eliminate every enemy unit.</small></div>}
         </section>
       </div>
       <footer className="play-footer">

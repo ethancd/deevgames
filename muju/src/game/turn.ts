@@ -10,6 +10,7 @@ import {
   MAX_ACTIONS_PER_TURN,
   getPlayerUnits,
 } from './board';
+import { getHomeOccupier } from './victory';
 import { getPromotableUnits } from './promotion';
 import { getAllSpawnPositions } from './spawning';
 import { UNIT_DEFINITIONS } from './units';
@@ -46,6 +47,14 @@ export function advanceBuildQueue(queue: QueuedUnit[]): {
  * - Set phase to 'place' (or 'action' if nothing to do in place phase)
  */
 export function startTurn(state: GameState, player: PlayerId): GameState {
+  // Resolve before queue advancement, healing, placement or promotion. Entering
+  // the corner during the previous turn was only a threat; the defender got a reply.
+  if (state.phase === 'victory') return state;
+  if (state.victoryRule !== 'elimination' && getHomeOccupier(state.board, player)) {
+    return { ...state, phase: 'victory', winner: player, victoryReason: 'home-occupation',
+      turn: { ...state.turn, currentPlayer: player, phase: 'place', actionsRemaining: MAX_ACTIONS_PER_TURN },
+      selectedUnit: null, validMoves: [], validAttacks: [] };
+  }
   const playerState = state.players[player];
 
   // Advance build queue

@@ -27,6 +27,8 @@ export function redeterminize(knowledge: FullKnowledge, forPlayer: PlayerId): Ga
       },
     },
     winner: knowledge.public.winner,
+    victoryReason: knowledge.public.victoryReason,
+    victoryRule: knowledge.public.victoryRule,
     selectedUnit: knowledge.public.selectedUnit,
     validMoves: knowledge.public.validMoves,
     validAttacks: knowledge.public.validAttacks,

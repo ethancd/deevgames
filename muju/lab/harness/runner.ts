@@ -143,6 +143,7 @@ async function playGameInner(args: PlayGameArgs, options: MatchOptions): Promise
   const t0 = Date.now();
 
   let state = createInitialGameState(options.resourceLayout);
+  state.victoryRule = options.victoryRule;
   const rngs: Record<PlayerId, () => number> = {
     white: mulberry32(deriveSeed(seed, 0)),
     black: mulberry32(deriveSeed(seed, 1)),
@@ -176,7 +177,7 @@ async function playGameInner(args: PlayGameArgs, options: MatchOptions): Promise
     if (state.phase === 'victory' && state.winner) {
       winner = state.winner;
       const result = checkVictory(state.board);
-      winType = result.status === 'victory' ? 'elimination' : 'resignation';
+      winType = state.victoryReason ?? (result.status === 'victory' ? 'elimination' : 'resignation');
       break;
     }
     const vic = checkVictory(state.board);

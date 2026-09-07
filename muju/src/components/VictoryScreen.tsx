@@ -1,12 +1,13 @@
-import type { PlayerId } from '../game/types';
+import type { PlayerId, VictoryReason } from '../game/types';
 
 interface VictoryScreenProps {
   winner: PlayerId;
+  reason?: VictoryReason;
   onPlayAgain: () => void;
   playerNames?: { white: string; black: string };
 }
 
-export function VictoryScreen({ winner, onPlayAgain, playerNames }: VictoryScreenProps) {
+export function VictoryScreen({ winner, reason, onPlayAgain, playerNames }: VictoryScreenProps) {
   const isPlayerWinner = winner === 'white';
   const winnerName = playerNames
     ? playerNames[winner]
@@ -24,7 +25,8 @@ export function VictoryScreen({ winner, onPlayAgain, playerNames }: VictoryScree
         </h2>
 
         <p className="text-gray-400 mb-6">
-          {playerNames
+          {reason === 'home-occupation' ? `${winnerName} held the enemy home corner until the start of their turn!`
+            : reason === 'resignation' ? 'The opponent resigned.' : playerNames
             ? `${winnerName} has eliminated all enemy forces!`
             : (isPlayerWinner
                 ? 'You have eliminated all enemy forces!'

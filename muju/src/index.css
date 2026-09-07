@@ -143,3 +143,7 @@ button:focus-visible, a:focus-visible { outline: 3px solid #67e8f9; outline-offs
 }
 .game-shell .reference-bar .counter-key { font-size: 12px; letter-spacing: -.3px; }
 .counter-key span { color: #b8ddce; font-size: 10px; }
+
+.home-marker { position: absolute; top: 1px; left: 2px; font-size: 12px; line-height: 1; font-weight: 900; pointer-events: none; }
+.home-white { color: #fff; text-shadow: 0 1px 2px #000; }
+.home-black { color: #101827; text-shadow: 0 1px 2px #fff; }

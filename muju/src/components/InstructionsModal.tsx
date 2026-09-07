@@ -182,7 +182,7 @@ const instructionPages: InstructionPage[] = [
       <div className="space-y-4">
         <p className="text-gray-300">
           <strong className="text-white">Muju Hono Tanka</strong> is a tactical strategy game where you command
-          elemental units on a 10×10 grid. Mine resources, build your army, and eliminate your opponent!
+          elemental units on a 10×10 grid. Mine resources, build your army, and threaten the enemy home!
         </p>
         <div className="flex justify-center gap-4 flex-wrap">
           <DemoUnit element="fire" tier={1} />
@@ -196,10 +196,10 @@ const instructionPages: InstructionPage[] = [
           Six elements, four tiers each — 24 unique units to master
         </p>
         <div className="bg-gray-800 p-3 rounded border border-gray-700">
-          <h4 className="text-green-400 font-medium mb-2">Victory Condition</h4>
+          <h4 className="text-green-400 font-medium mb-2">Two ways to win</h4>
           <p className="text-gray-300 text-sm">
-            Eliminate all enemy units. If your opponent has nothing on the board, they can't spawn
-            anything — you win!
+            Have a unit on the enemy home corner at the start of your turn, before placement or promotion — or eliminate every enemy unit.
+            The opponent gets one full turn to clear an invasion. An enemy on your home blocks all reinforcements; your existing units can still move, attack and promote.
           </p>
         </div>
       </div>

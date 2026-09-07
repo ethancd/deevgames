@@ -120,7 +120,12 @@ export interface PlayerState {
   resourcesManifested: number; // Total cost of visible units only (promoted + placed, not queued)
 }
 
+export type VictoryReason = 'elimination' | 'home-occupation' | 'resignation';
+
 export interface GameState {
+  /** Omitted means current rules; explicit elimination is for historical lab comparisons. */
+  victoryRule?: 'elimination' | 'home-or-elimination';
+  victoryReason?: VictoryReason;
   phase: GamePhase;
   board: BoardState;
   players: {

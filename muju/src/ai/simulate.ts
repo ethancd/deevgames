@@ -72,6 +72,7 @@ function applyResign(state: GameState): GameState {
     ...state,
     phase: 'victory',
     winner,
+    victoryReason: 'resignation',
   };
 }
 
@@ -102,6 +103,7 @@ function applyAttack(state: GameState, unitId: string, targetPosition: Position)
       board: newBoard,
       phase: 'victory',
       winner: victory.winner,
+      victoryReason: 'elimination',
     };
   }
 

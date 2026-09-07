@@ -16,6 +16,8 @@ export interface PublicState {
   players: GameState['players'];
   phase: GamePhase;
   winner: PlayerId | null;
+  victoryReason?: GameState['victoryReason'];
+  victoryRule?: GameState['victoryRule'];
   selectedUnit: string | null;
   validMoves: Position[];
   validAttacks: Position[];

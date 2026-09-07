@@ -12,7 +12,7 @@ import {
 } from '../game/combat';
 import { canMine } from '../game/mining';
 import { getAllSpawnPositions } from '../game/spawning';
-import { checkVictory } from '../game/victory';
+import { getGameResult, homeOccupationPressure } from '../game/victory';
 
 /**
  * Large value for winning positions
@@ -29,14 +29,14 @@ export function evaluatePosition(
   weights: EvaluationWeights = DEFAULT_WEIGHTS
 ): number {
   // Check for victory conditions first
-  const victory = checkVictory(state.board);
+  const victory = getGameResult(state);
   if (victory.status === 'victory') {
     return victory.winner === forPlayer ? VICTORY_SCORE : -VICTORY_SCORE;
   }
 
   const opponent: PlayerId = forPlayer === 'white' ? 'black' : 'white';
 
-  let score = 0;
+  let score = homeOccupationPressure(state, forPlayer);
 
   // Unit value (based on cost/tier)
   score += weights.unitValue * (
@@ -354,7 +354,7 @@ function getOpponent(player: PlayerId): PlayerId {
  * Quick evaluation for leaf nodes (faster, less accurate)
  */
 export function quickEvaluate(state: GameState, forPlayer: PlayerId): number {
-  const victory = checkVictory(state.board);
+  const victory = getGameResult(state);
   if (victory.status === 'victory') {
     return victory.winner === forPlayer ? VICTORY_SCORE : -VICTORY_SCORE;
   }
@@ -362,7 +362,7 @@ export function quickEvaluate(state: GameState, forPlayer: PlayerId): number {
   const opponent: PlayerId = forPlayer === 'white' ? 'black' : 'white';
 
   // Just unit value difference
-  return calculateUnitValue(state, forPlayer) - calculateUnitValue(state, opponent);
+  return calculateUnitValue(state, forPlayer) - calculateUnitValue(state, opponent) + homeOccupationPressure(state, forPlayer);
 }
 
 /**
@@ -430,6 +430,8 @@ export function scoreAction(
  * Returns true if the position is hopeless
  */
 export function shouldResign(state: GameState, player: PlayerId): boolean {
+  // Material ratios cannot prove defeat when an invasion can still win.
+  if (state.victoryRule !== 'elimination') return false;
   const opponent: PlayerId = player === 'white' ? 'black' : 'white';
 
   // Get unit values

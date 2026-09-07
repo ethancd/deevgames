@@ -201,3 +201,22 @@ test('new games use map D with fresh shallow cells and preserve the layout on re
   await expect(page.getByTestId('cell-1-1')).toHaveAttribute('aria-label', /3 resource layers.*next layer at depth 3/);
   await expect(page.getByTestId('cell-3-0')).toHaveAttribute('aria-label', /2 resource layers.*next layer at depth 1/);
 });
+
+for (const [width,height] of [[320,568],[390,664]]) test(`home invasion warns, resolves, and survives reload ${width}`,async({page},info)=>{
+ const s=createInitialGameState();s.turn.currentPlayer='black';s.board.units.find(u=>u.owner==='white'&&u.definitionId==='fire_1')!.position={x:9,y:9};
+ // Use a saved reply turn, then remove the fixture installer before the reload.
+ await page.setViewportSize({width,height});await page.goto('./');
+ await page.evaluate(state=>localStorage.setItem('elemental-tactics-save',JSON.stringify({schemaVersion:2,timestamp:Date.now(),state})),s);
+ await page.reload();await page.getByRole('button',{name:'Pass & Play'}).click();await page.getByRole('button',{name:'Start Game'}).click();
+ await expect(page.getByTestId('cell-9-9')).toHaveAttribute('aria-label',/black home corner/);
+ await expect(page.locator('.board-key')).toContainText('Clear J10 this turn or lose');await fits(page);
+ await page.screenshot({path:info.outputPath('home-warning.png')});
+ await page.getByRole('button',{name:'How to play',exact:true}).click();await page.getByRole('button',{name:'Next →'}).click();
+ await expect(page.getByRole('dialog')).toContainText('Two ways to win');await expect(page.getByRole('dialog')).toContainText('before placement or promotion');
+ await page.screenshot({path:info.outputPath('home-help.png')});await page.keyboard.press('Escape');
+ await page.getByRole('button',{name:'Finish actions'}).click();
+ await expect(page.getByRole('heading',{name:'Player 1 Wins!'})).toBeVisible();
+ await expect(page.getByText(/held the enemy home corner/)).toBeVisible();await page.screenshot({path:info.outputPath('home-victory.png')});
+ await page.reload();await page.getByRole('button',{name:'Pass & Play'}).click();await page.getByRole('button',{name:'Start Game'}).click();
+ await expect(page.getByText(/held the enemy home corner/)).toBeVisible();
+});

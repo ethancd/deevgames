@@ -108,7 +108,7 @@ function gameReducerWithSave(state: GameState, action: GameAction): GameState {
     saveGameState(newState);
   }
 
-  // Also save when victory is detected (from MOVE or ATTACK)
+  // Also save every newly resolved victory, including a home occupation at turn start.
   if (newState.phase === 'victory' && state.phase !== 'victory') {
     saveGameState(newState);
   }

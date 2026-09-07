@@ -34,7 +34,7 @@ for(let cell=0;cell<pairs.length;cell++){
  const [a,b]=pairs[cell];
  for(let i=0;i<n;i++)for(const swapped of [false,true])for(const map of ['A','D']){
   const seed=deriveSeed(71092026+cell,i),aSeat:PlayerId=swapped?'black':'white',telemetry={white:empty(),black:empty()};
-  const {record:r,replay}=await playGame({bots:{white:makeBot(swapped?b:a),black:makeBot(swapped?a:b)},seed,engineHash:sourceHash,runId:`e10-${mode}`,experiment:`map-${map}`,options:{resourceLayout:map==='A'?Array(100).fill(5):UNEQUAL_ROUTES_MAP,legality:'strict',checkInvariants:true,maxTurns,maxPlies:8000,recordReplay:cell===0&&i===0},
+  const {record:r,replay}=await playGame({bots:{white:makeBot(swapped?b:a),black:makeBot(swapped?a:b)},seed,engineHash:sourceHash,runId:`e10-${mode}`,experiment:`map-${map}`,options:{victoryRule:'elimination',resourceLayout:map==='A'?Array(100).fill(5):UNEQUAL_ROUTES_MAP,legality:'strict',checkInvariants:true,maxTurns,maxPlies:8000,recordReplay:cell===0&&i===0},
    onAction(before,after,action,p){const t=telemetry[p];
     if(before===after)return;
     if(action.type==='MINE'){

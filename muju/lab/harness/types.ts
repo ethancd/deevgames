@@ -67,6 +67,7 @@ export type Bot = ScriptedBot | EngineBot;
 export interface MatchOptions {
   /** Explicit map for paired comparisons; omitted means current production layout. */
   resourceLayout?: readonly number[];
+  victoryRule?: GameState['victoryRule'];
   /** Cap on full rounds (turnNumber). Past it the game is adjudicated. */
   maxTurns: number;
   /** Hard safety cap on plies (single actions). */
@@ -98,6 +99,7 @@ export const DEFAULT_MATCH_OPTIONS: MatchOptions = {
 };
 
 export type WinType =
+  | 'home-occupation'
   | 'elimination'
   | 'resignation'
   | 'adjudication' // turn/ply cap hit; material+stockpile decides

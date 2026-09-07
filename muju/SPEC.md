@@ -245,13 +245,25 @@ than reading hidden state.
 
 ## 9. Victory
 
+- **Home occupation:** at the start of your turn, before healing, queue advancement,
+  placement or promotion, if your unit occupies the opponent's home corner, you win.
+  White targets (9,9); Black targets (0,0). Entering the corner does not immediately
+  win: the opponent has one full turn to remove the invader. Any element or tier
+  qualifies; no additional action, countdown or occupation marker is required.
+  An enemy on the home corner blocks every reinforcement rectangle under the
+  existing spawning rules. Existing units can still move, attack and promote.
+  In simultaneous invasion races, the first player's qualifying turn start wins.
+  Existing unfinished saves adopt this rule at subsequent turn boundaries; loading
+  a mid-turn position does not retroactively resolve an occupation.
+
 - **Elimination:** a player with **zero units on the board** loses, even if
   their build queue is non-empty (no unit ⇒ no anchor ⇒ nothing can ever be
   placed). Deliberate ruling; documented in `src/game/victory.ts`.
 - **Draw:** both players simultaneously at zero units (effectively unreachable
   through normal play).
-- **Resignation:** the current player may resign; opponent wins. The AI may
-  resign hopeless positions (v1.1 §5.1).
+- **Resignation:** the current player may resign; opponent wins. The AI plays out current-rule games: material deficits alone do not establish
+  defeat when home occupation can win. Historical elimination-only lab games retain
+  the older material-based resignation heuristic.
 
 ## 10. Architecture (orientation, not contract)
 

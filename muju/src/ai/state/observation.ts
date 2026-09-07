@@ -22,6 +22,8 @@ export function extractPublicState(
     },
     phase: state.phase,
     winner: state.winner,
+    victoryReason: state.victoryReason,
+    victoryRule: state.victoryRule,
     selectedUnit: state.selectedUnit,
     validMoves: state.validMoves,
     validAttacks: state.validAttacks,
