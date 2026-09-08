@@ -1,3 +1,5 @@
+import { VisualKey } from './VisualKey';
+import { describeCrystals } from './CrystalWell';
 import { getHomeOccupier } from '../game/victory';
 import { useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import { useGameState } from '../hooks/useGameState';
@@ -65,6 +67,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
   const [showMenu, setShowMenu] = useState(false);
   const [showInsights, setShowInsights] = useState(false);
   const [showResources, setShowResources] = useState(false);
+  const [showVisualKey, setShowVisualKey] = useState(false);
   const [showEnemyRange, setShowEnemyRange] = useState(false);
   const [preview, setPreview] = useState<{ kind: 'move' | 'attack'; position: Position } | null>(null);
   useEffect(() => { setPreview(null); setPendingMovePath([]); }, [state.board, state.selectedUnit, state.turn.phase, state.turn.currentPlayer]);
@@ -411,7 +414,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
   // Keyboard handler
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     // Don't handle if AI is thinking, overlay is shown, or it's not human's turn
-    if (!isCurrentPlayerHuman || isThinking || showPassOverlay || showMenu || showInstructions || showUnitShopInspection || showInsights) return;
+    if (!isCurrentPlayerHuman || isThinking || showPassOverlay || showMenu || showInstructions || showUnitShopInspection || showInsights || showVisualKey) return;
     const control = e.target instanceof HTMLElement ? e.target.closest('button, select, a, input, textarea') : null;
     if (control?.matches('select, input, textarea')) return;
     if (preview) {
@@ -643,7 +646,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
   }, [
     isCurrentPlayerHuman, isThinking, showPassOverlay, state, playerOwnUnits,
     selectUnit, selectedPlaceUnitId, promoteUnit, mineWith, moveUnit, queueUnit, shopSelectedId,
-    canUndo, undo, endPlacePhase, endActionPhase, pendingMovePath, preview, showMenu, showInstructions, showUnitShopInspection, showInsights
+    canUndo, undo, endPlacePhase, endActionPhase, pendingMovePath, preview, showMenu, showInstructions, showUnitShopInspection, showInsights, showVisualKey
   ]);
 
   // Attach keyboard listener
@@ -773,7 +776,8 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
             onCellClick={handleCellClick} onUnitClick={handleUnitClick} />
         </section>
         <div className="board-key">
-          <span role="status">{homeNotice || (isEnemyView && showEnemyRange ? 'Enemy reach · current speed, 6 actions' : selectedReadyUnitId ? '＋ Safe placement' : '● 1 action · ○ farther · red ring: attack')}</span>
+          <span role="status">{homeNotice || (isEnemyView && showEnemyRange ? 'Enemy reach · current speed, 6 actions' : selectedReadyUnitId ? '＋ Safe placement' : '● 1 action · ○ farther · ⊗ attack')}</span>
+          <button className="visual-key-trigger" onClick={() => setShowVisualKey(true)}>Key</button>
           <button aria-pressed={showResources} onClick={() => setShowResources(!showResources)}>◆ Depths</button>
         </div>
         <section className="decision-panel" aria-label="Current choice">
@@ -782,7 +786,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
           : preview && selectedUnitData ? <div className="action-preview">
               <div className="preview-heading"><strong>{preview.kind === 'move' ? 'Move' : 'Attack'} → {String.fromCharCode(65 + preview.position.x)}{preview.position.y + 1}</strong><span>{previewCost} action{previewCost !== 1 ? 's' : ''} · {state.turn.actionsRemaining - previewCost} left</span></div>
               <p>{preview.kind === 'attack' && previewTarget ? `${getUnitDefinition(previewTarget.definitionId).name}: ${attackPower} attack vs ${attackDefense} defense · ${attackPower >= attackDefense ? 'Eliminates target' : `${attackDefense - attackPower} defense remains`}`
-                : targetCell ? `Mining here: ${calculateMiningYield(selectedUnitData, targetCell)} crystals · ${targetCell.resourceLayers} layers remain` : ''}</p>
+                : targetCell ? `Mining here: ${calculateMiningYield(selectedUnitData, targetCell)} crystals · ${describeCrystals(targetCell)}` : ''}</p>
               <div className="preview-buttons"><button onClick={() => setPreview(null)}>Cancel</button><button className="primary" onClick={commitPreview}>Confirm {preview.kind}</button></div>
             </div>
           : shownUnit || selectedReadyDefinitionId ? <UnitInfo unit={shownUnit} previewDefinitionId={selectedReadyDefinitionId}
@@ -807,6 +811,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
           {config.mode === 'ai-vs-ai' && <button onClick={togglePause}>{isPaused ? 'Resume' : 'Pause'}</button>}
         </nav>
       </footer>
+      {showVisualKey && <PlayDialog title="Read the board" onClose={() => setShowVisualKey(false)}><VisualKey /></PlayDialog>}
       {showMenu && <PlayDialog title="Game menu" onClose={() => setShowMenu(false)}>
         <p>Your match is saved at phase changes on this device. New games use Unequal routes; existing saves keep their original board.</p>
         <button onClick={() => { setShowMenu(false); handleBackToMenuClick(); }}>Choose game mode</button>

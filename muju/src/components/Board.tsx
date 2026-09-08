@@ -82,7 +82,7 @@ export function Board({
                   isPreview={previewPosition?.x === x && previewPosition?.y === y}
                   showResources={showResources}
                   moveCost={getMovementRangeActions(pos) !== undefined ? actionsRemaining - getMovementRangeActions(pos)! : undefined}
-                  unitLabel={unit ? `${unit.owner} ${getUnitDefinition(unit.definitionId).name}, tier ${getUnitDefinition(unit.definitionId).tier}` : undefined}
+                  unitLabel={unit ? `${unit.owner} ${getUnitDefinition(unit.definitionId).name}, ${getUnitDefinition(unit.definitionId).element}, tier ${getUnitDefinition(unit.definitionId).tier}` : undefined}
                   onClick={unit ? () => onUnitClick(unit.id) : onCellClick}
                 />
                 {unit && (

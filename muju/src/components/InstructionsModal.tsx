@@ -172,7 +172,7 @@ const instructionPages: InstructionPage[] = [
       <p>Solid dots cost one action. Hollow dots are farther away. A red ring marks an attack: tap it to see the attack power, remaining defense, and whether the target will be eliminated.</p>
       <p><strong>Mine</strong> shows the crystals you can collect here. <strong>Undo</strong> takes back your last action during your turn. Six actions are shared by your whole army.</p>
       <p><strong>Build:</strong> choose an element and tier, then check the stats, crystal cost, and build time. Locked tiers explain which unit you need on the board. Use the queue to place ready units in the Place phase.</p>
-      <p>Turn on <strong>Depths</strong> for resource numbers. Tap enemy pieces to inspect them; <strong>Show reach</strong> previews current-speed movement with six actions, not possible upgrades or attacks.</p>
+      <p>Open <strong>Key</strong> for the crystal-depth gauge, army shapes, and unit ranks. Turn on <strong>Depths</strong> for crystal counts and the next mining depth. Tap enemy pieces to inspect them; <strong>Show reach</strong> previews current-speed movement with six actions, not possible upgrades or attacks.</p>
       <p>Keyboard: Tab visits controls, N cycles your units, M mines, U upgrades, ⌘/Ctrl+Z undoes. Enter confirms a preview; Escape cancels it. Arrow keys move or browse the shop; 1–6 choose elements there.</p>
     </div>,
   },
