@@ -2,6 +2,7 @@ import type { Unit, Cell, PlayerId } from '../game/types';
 import { getUnitDefinition, getNextTierDefinition } from '../game/units';
 import { getPromotionCost, canPromote } from '../game/promotion';
 import { calculateMiningYield } from '../game/mining';
+import { canAttack, getAttackCount } from '../game/combat';
 import { UnitArtwork } from './UnitArtwork';
 
 interface UnitInfoProps {
@@ -28,7 +29,7 @@ export function UnitInfo({ unit, previewDefinitionId, onMine, canMine, cellInfo,
       : isPlacePhase && unit.owner === currentPlayer ? <>
         <p>{unit.placedThisTurn ? 'Newly placed · upgrade next turn' : unit.promotedThisPlacement ? 'Already upgraded this placement' : next ? `${next.name}: ATK ${next.attack} · DEF ${next.defense} · SPD ${next.speed} · MINE ${next.mining}` : 'Maximum tier'}</p>
         {next && <button onClick={onPromote} disabled={!upgrade}>Upgrade · ◆ {cost}</button>}
-      </> : isActionPhase ? <><p>{!unit.canActThisTurn ? 'Ready next turn' : mine ? `${cellInfo?.resourceLayers} left · next depth ${(cellInfo?.minedDepth ?? 0) + 1}` : cellInfo?.resourceLayers ? `Too deep · need Mining ${(cellInfo?.minedDepth ?? 0) + 1}` : 'This square is depleted'}</p><button onClick={onMine} disabled={!mine}>Mine +{mineYield} ◆</button></> : <p>Ready for the next action phase.</p>}
+      </> : isActionPhase ? <><p><span className="cleave-status" role="status">Attacks {getAttackCount(unit)}/{def.tier} · {!unit.canActThisTurn ? 'Ready next turn' : !canAttack(unit) ? 'Attacks finished' : getAttackCount(unit) > 0 ? 'Cleave ready · 1 action' : def.tier > 1 ? 'Kill to continue' : 'One attack this turn'}</span>{!unit.canActThisTurn ? 'Ready next turn' : mine ? `${cellInfo?.resourceLayers} left · next depth ${(cellInfo?.minedDepth ?? 0) + 1}` : cellInfo?.resourceLayers ? `Too deep · need Mining ${(cellInfo?.minedDepth ?? 0) + 1}` : 'This square is depleted'}</p><button onClick={onMine} disabled={!mine}>Mine +{mineYield} ◆</button></> : <p>Ready for the next action phase.</p>}
     </div>
   </div>;
 }

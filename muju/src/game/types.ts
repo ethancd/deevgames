@@ -67,7 +67,8 @@ export interface Unit {
   // Placement tracking (resets at start of owning player's turn)
   placedThisTurn?: boolean; // True if unit was placed this turn (can't be promoted same turn)
   // Attack tracking (resets at start of owning player's turn)
-  attackedThisTurn?: string[]; // Unit IDs this unit has attacked this turn (can't attack same enemy twice)
+  attackedThisTurn?: string[]; // All targets attacked this turn, including eliminated units
+  lastAttackKilled?: boolean; // Only this unit's own killing blow unlocks its next attack
 }
 
 // === Board ===

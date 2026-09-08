@@ -85,3 +85,33 @@ it('differentially checks every catalogue pairing and damage threshold',async()=
     expect(solver(s,target,100,new SearchBudget()).status).toBe(canonical.board.units.some(u=>u.id===target)?'disproved':'proved');
   }
 });
+it('packs total attacks including dead targets, kill eligibility, and tier identically to JS',async()=>{
+  const {UNIT_DEFINITIONS}=await import('../../src/game/units');
+  for(const def of UNIT_DEFINITIONS) for(const count of [0,1,2,3,4]) for(const lastKill of [undefined,false,true]) {
+    const s=createInitialGameState();s.turn.actionsRemaining=1;
+    const attacker=createUnit(def.id,'white',{x:1,y:0});
+    attacker.hasAttacked=count>0;attacker.attackedThisTurn=Array.from({length:count},(_,i)=>`dead-${i}`);attacker.lastAttackKilled=lastKill;
+    const victim=createUnit('fire_1','black',{x:0,y:0});s.board.units=[attacker,victim];
+    const canonical=applyAction(s,{type:'ATTACK',unitId:attacker.id,targetPosition:victim.position});
+    const expected=canonical.board.units.some(u=>u.id===victim.id)?'disproved':'proved';
+    expect(solver(s,victim.id,100,new SearchBudget()).status).toBe(expected);
+    expect(referenceTactics(s,victim.id,100,new SearchBudget()).status).toBe(expected);
+  }
+});
+for(const tier of [1,2]) it(`Tier ${tier} corridor requires kill, move, then another paid attack`,()=>{
+  const s=createInitialGameState();s.turn.actionsRemaining=3;
+  const attacker=createUnit(`fire_${tier}`,'white',{x:2,y:0});
+  const victim=createUnit('fire_1','black',{x:0,y:0});
+  s.board.units=[attacker,victim,createUnit('fire_1','black',{x:1,y:0}),...[0,1,2].map(x=>{
+    const u=createUnit('metal_4','white',{x,y:1});u.canActThisTurn=false;return u;
+  })];
+  const before=structuredClone(s), expected=tier===1?'disproved':'proved';
+  const result=solver(s,victim.id,10000,new SearchBudget());
+  expect(result.status).toBe(expected);
+  expect(referenceTactics(s,victim.id,10000,new SearchBudget()).status).toBe(expected);
+  expect(s).toEqual(before);
+  if(tier===2) {
+    expect(result.actions.map(a=>a.type)).toEqual(['ATTACK','MOVE','ATTACK']);
+    expect(applyActions(s,result.actions).turn.actionsRemaining).toBe(0);
+  }
+});

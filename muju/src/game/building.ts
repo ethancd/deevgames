@@ -161,6 +161,7 @@ export function createUnitFromDefinition(
     position,
     hasMoved: false,
     hasAttacked: false,
+    lastAttackKilled: false,
     hasMined: false,
     canActThisTurn: true, // Units can act immediately (no summoning sickness)
     damageTaken: 0,

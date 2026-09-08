@@ -25,11 +25,10 @@ describe('Combat Module', () => {
       expect(canAttack(unit)).toBe(true);
     });
 
-    it('returns true even if unit has already attacked (multi-attack allowed)', () => {
+    it('returns false for an already-used Tier I, including legacy saves', () => {
       const unit = createUnit('fire_1', 'white', { x: 0, y: 0 });
       unit.hasAttacked = true;
-      // Units can attack multiple different targets per turn
-      expect(canAttack(unit)).toBe(true);
+      expect(canAttack(unit)).toBe(false);
     });
 
     it('returns false if unit cannot act this turn', () => {
@@ -59,7 +58,7 @@ describe('Combat Module', () => {
       board = addUnit(board, unit);
       board = addUnit(board, enemy);
 
-      // Cannot attack same target twice, but could attack other targets
+      // A nonlethal hit ends this unit's attacks.
       expect(getValidAttacks(unit, board)).toEqual([]);
     });
 
@@ -295,16 +294,16 @@ describe('Combat Module', () => {
       expect(attackers).toHaveLength(0);
     });
 
-    it('includes units that have attacked but can still act', () => {
+    it('excludes units whose attack allowance is spent', () => {
       let board = createEmptyBoard();
       const attacker = createUnit('fire_1', 'white', { x: 5, y: 5 });
-      attacker.hasAttacked = true; // Has attacked, but can still attack other targets
+      attacker.hasAttacked = true; // Can still move/mine, but cannot attack again
       const enemy = createUnit('fire_1', 'black', { x: 5, y: 4 });
       board = addUnit(board, attacker);
       board = addUnit(board, enemy);
 
       const attackers = getAttackersFor({ x: 5, y: 4 }, board, 'white');
-      expect(attackers).toHaveLength(1);
+      expect(attackers).toHaveLength(0);
     });
   });
 

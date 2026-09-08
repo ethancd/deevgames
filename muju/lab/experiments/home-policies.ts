@@ -34,7 +34,7 @@ export function clearHomePlan(initial:GameState):AIAction[]|null {
     const s=applyAction(n.s,a),plan=[...n.plan,a];expanded++;
     if(!getHomeOccupier(s.board,opp))return plan;
     if(s.turn.currentPlayer!==player||s.phase!=='playing')continue;
-    const key=JSON.stringify([s.turn.phase,s.turn.actionsRemaining,s.players[player].resources,s.board.units.map(u=>[u.id,u.definitionId,u.position,u.damageTaken,u.attackedThisTurn,u.promotedThisPlacement])]);
+    const key=JSON.stringify([s.turn.phase,s.turn.actionsRemaining,s.players[player].resources,s.board.units.map(u=>[u.id,u.definitionId,u.position,u.damageTaken,u.attackedThisTurn,u.hasAttacked,u.lastAttackKilled,u.promotedThisPlacement])]);
     if(seen.has(key))continue;seen.add(key);next.push({s,plan});
    }
   }

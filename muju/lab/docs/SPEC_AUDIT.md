@@ -1,5 +1,7 @@
 # Muju Hono Tanka — Spec/Engine Audit (Phase 1, COMPLETE)
 
+> v1.4 follow-up: D9 and §4.2 now use [Cleave](../../docs/CLEAVE_RELEASE-2026-09-07.md). The original audit narrative and measurements below describe the prior rules.
+
 Status: divergence hunt complete for `src/game` + `src/ai` core paths; property
 tests + adversarial fixtures committed (`tests/game/properties.test.ts`,
 `tests/game/audit-fixtures.test.ts`, 42 tests, green). `muju/SPEC.md`
@@ -26,7 +28,7 @@ Severity: **C** = correctness/cheating bug, **I** = information-leak bug,
 | D6 | **P** | `src/game/building.ts:getAvailableBuildOptions` | Ignores tech requirements (affordability only). Currently only used by AI-adjacent code/UI helpers; UI itself uses `meetsTechRequirement` directly. | Fix alongside D1 (use `canBuildUnit`). |
 | D7 | **D** | `src/game/victory.ts` | Loss = zero units on board, even with a non-empty build queue (no anchor → can never spawn). Deviates from SPEC.md v1.0 ("with nothing in build queue") deliberately; ruling documented in file header. | Keep. Fixtured in `audit-fixtures.test.ts`. |
 | D8 | **D** | `src/game/board.ts:resetUnitActions` | Damage fully heals at the start of the **owner's** turn — kills must complete within one enemy turn; no cross-turn chip damage. This is the board-game-ability ruling (state = position + at most a transient within-turn damage marker). | Keep (per Ethan ruling #3). Balance implications measured in P3 (one-turn-kill walls hypothesis). |
-| D9 | **D** | `src/game/combat.ts:getValidAttacks` | A unit may attack the same enemy only once per turn (`attackedThisTurn`), but may attack different enemies multiple times, and may move/attack/mine repeatedly within the 6-action budget. SPEC.md v1.0's "one action type per piece per turn" is gone (v1.1 §1.1). | Keep. Fixtured. |
+| D9 | **D** | `src/game/combat.ts:getValidAttacks` | A unit starts with one attack; a kill unlocks another, up to tier attacks per turn. Every attack costs one shared action. Movement/mining may repeat between attacks. | v1.4 Cleave supersedes the former different-target allowance; `tests/game/cleave.test.ts`. |
 | D10 | **D** | `src/game/movement.ts:getMoveCost` + `useGameState.ts` MOVE | Human path allows multi-action moves (cost = ceil(squares/speed)); AI generator only emits single-action moves (`getValidMoves`, speed-bounded). Not a rules divergence (same budget), but an AI capability gap: the AI never plans multi-action repositioning in one dispatch (it can chain MOVEs across re-plans). | Note for P4a eval; no engine change. |
 | D11 | **P** | `useGameState.ts` END_ACTION_PHASE vs `turn.ts:startQueuePhase` | The reducer's END_ACTION_PHASE sets `phase: 'queue'` directly instead of calling `startQueuePhase`, so the queue-phase auto-end (v1.1 §1.5) does not fire on phase *entry* on the human path — only after a QUEUE_UNIT leaves nothing affordable. A player entering queue phase broke must click End Turn. UX-only; engine helper is correct. | Fix in P4a alongside D4 (route both paths through `startQueuePhase`). |
 | D12 | **P** | `turn.ts:canActInQueuePhase` | Counts affordable *promotions* as a reason the queue phase is actionable, but PROMOTE_UNIT is only legal in the **place** phase (reducer guard). Net effect: queue phase can refuse to auto-end for a player who can only promote (must click End Turn); harmless but wrong predicate. | Fix in P4a: drop the promotion clause (or move promotion into queue phase per design — needs ruling; default is drop the clause). |
@@ -86,7 +88,7 @@ Spec section references are to the rewritten `muju/SPEC.md`. "props" =
 | §3 multi-action move cost ceil(squares/speed) | `movement.ts:getMoveCost,getMovementRange`; reducer MOVE | `movement.test.ts` (see D10) |
 | §4.1 melee adjacency | `combat.ts:getValidAttacks`; `board.ts:isAdjacent` | `combat.test.ts` |
 | §4.1 ±1 ATK elemental modifier, ATK floor 0 | `elements.ts:getAttackModifier`; `combat.ts:calculateAttackPower` | `elements.test.ts`; fixtures (ATK floor, mixed-element combined) |
-| §4.2 same-target once per turn | `combat.ts:getValidAttacks` + `attackedThisTurn` | fixtures (same-target rule) |
+| §4.2 kill-gated Cleave, capped by tier | `combat.ts:canAttack/resolveCombat` + `attackedThisTurn` + `lastAttackKilled` | `tests/game/cleave.test.ts`, WASM differential and browser fixtures |
 | §4.3 kill iff ATK ≥ DEF_eff; chip damage accumulates | `combat.ts:resolveCombat,calculateDefense` | `combat.test.ts`; fixtures (v1.1 §6.1 regression) |
 | §4.3 full heal at owner's turn start | `board.ts:resetUnitActions` (D8 ruling) | fixtures |
 | §5.1 well metaphor, dry cells, mining-0 | `mining.ts:calculateMiningYield,canMine` | `mining.test.ts`; fixtures (dry cells, lightning can't mine) |

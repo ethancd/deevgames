@@ -137,7 +137,7 @@ describe('AI Move Generation', () => {
       expect(attacks[0].targetPosition).toEqual({ x: 5, y: 6 });
     });
 
-    it('generates attacks even for units that have already attacked (multiple attacks per turn, just not same enemy)', () => {
+    it('does not generate a second attack for a spent Tier I', () => {
       const board = createEmptyBoard();
       const aiUnit = createTestUnit('ai-unit', 'fire_1', 'black', 5, 5, { hasAttacked: true });
       const playerUnit = createTestUnit('player-unit', 'water_1', 'white', 5, 6);
@@ -145,8 +145,7 @@ describe('AI Move Generation', () => {
 
       const state = createTestState(board);
       const attacks = generateAttackActions(state, 'black');
-      // Units can attack multiple times per turn (just not the same enemy twice)
-      expect(attacks.length).toBeGreaterThan(0);
+      expect(attacks).toHaveLength(0);
     });
 
     it('does not generate attacks when no enemies in range', () => {

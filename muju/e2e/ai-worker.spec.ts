@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
-import { createInitialGameState } from '../src/game/board';
+import { createInitialGameState, createUnit } from '../src/game/board';
 import { tacticalFixtures } from '../lab/ai/fixtures';
 import type { GameState } from '../src/game/types';
 async function start(page: Page, state: GameState, watch = false) {
@@ -61,4 +61,20 @@ test('pause terminates native computation and resume starts a fresh worker',asyn
   const closed=worker.waitForEvent('close');await page.getByRole('button',{name:'Pause',exact:true}).click();await closed;
   await expect(page.getByRole('button',{name:'Resume',exact:true})).toBeVisible();
   const next=page.waitForEvent('worker');await page.getByRole('button',{name:'Resume',exact:true}).click();await next;
+});
+
+test('Hard worker executes kill, paid move, Cleave to clear home',async({page})=>{
+  const s=createInitialGameState();s.turn.currentPlayer='black';s.turn.actionsRemaining=3;
+  const attacker=createUnit('fire_2','black',{x:7,y:9});
+  s.board.units=[attacker,createUnit('fire_1','white',{x:9,y:9}),createUnit('fire_1','white',{x:8,y:9}),...[7,8,9].map(x=>{
+    const u=createUnit('metal_4','black',{x,y:8});u.canActThisTurn=false;return u;
+  })];
+  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
+  await start(page,s);
+  await expect.poll(async()=>page.evaluate(()=>JSON.parse(localStorage.getItem('elemental-tactics-save')!).state.phase),{timeout:10000}).toBe('victory');
+  const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('elemental-tactics-save')!).state);
+  expect(saved.winner).toBe('black');expect(saved.turn.actionsRemaining).toBe(0);
+  const unit=saved.board.units.find((u:{id:string})=>u.id===attacker.id);
+  expect(unit.attackedThisTurn).toHaveLength(2);expect(unit.lastAttackKilled).toBe(true);expect(unit.position).toEqual({x:8,y:9});
+  expect(errors).toEqual([]);await expect(page.getByText('AI is using its backup engine.',{exact:true})).toHaveCount(0);
 });

@@ -3,17 +3,22 @@ import { isAdjacent, getAdjacentPositions, getUnitAt, removeUnit } from './board
 import { getUnitDefinition } from './units';
 import { getAttackModifier } from './elements';
 
-/**
- * Check if a unit can attack (can act this turn)
- * Units can attack multiple times per turn if they have actions remaining.
- */
+/** Count every attack, including kills whose targets have left the board.
+ * Legacy saves with only hasAttacked still count as having spent an attack. */
+export function getAttackCount(unit: Unit): number {
+  return Math.max(unit.attackedThisTurn?.length ?? 0, unit.hasAttacked ? 1 : 0);
+}
+
+/** One initial attack; kills unlock another, up to the unit's tier. */
 export function canAttack(unit: Unit): boolean {
-  return unit.canActThisTurn;
+  const count = getAttackCount(unit);
+  return unit.canActThisTurn && count < getUnitDefinition(unit.definitionId).tier
+    && (count === 0 || unit.lastAttackKilled === true);
 }
 
 /**
  * Get all valid attack targets for a unit (adjacent enemy positions)
- * A unit can only attack a given enemy once per turn
+ * Only a lethal attack can unlock the next attack, so targets cannot repeat.
  */
 export function getValidAttacks(unit: Unit, board: BoardState): Position[] {
   if (!canAttack(unit)) return [];
@@ -117,7 +122,7 @@ export function resolveCombat(
   const attacker = board.units.find((u) => u.id === attackerId);
   const defender = getUnitAt(board, defenderPosition);
 
-  if (!attacker || !defender) {
+  if (!attacker || !defender || !isValidAttack(attacker, defenderPosition, board)) {
     return { board, eliminated: false };
   }
 
@@ -132,7 +137,8 @@ export function resolveCombat(
         ? {
             ...u,
             hasAttacked: true,
-            attackedThisTurn: [...(u.attackedThisTurn ?? []), defender.id]
+            attackedThisTurn: [...(u.attackedThisTurn ?? []), defender.id],
+            lastAttackKilled: attackPower >= defenseValue
           }
         : u
     ),
@@ -254,48 +260,16 @@ export function resolveCombinedCombat(
   attackerIds: string[],
   defenderPosition: Position
 ): { board: BoardState; eliminated: boolean; totalAttack: number } {
-  const defender = getUnitAt(board, defenderPosition);
-  if (!defender) {
-    return { board, eliminated: false, totalAttack: 0 };
-  }
-
-  // Get all valid attackers
-  const attackers: Unit[] = [];
+  // Resolve in order: only the actual killing blow unlocks Cleave. Stop on death.
+  let current = board, totalAttack = 0;
   for (const id of attackerIds) {
-    const attacker = board.units.find((u) => u.id === id);
-    if (attacker && isAdjacent(attacker.position, defenderPosition)) {
-      attackers.push(attacker);
-    }
+    const attacker = current.units.find(u => u.id === id);
+    const defender = getUnitAt(current, defenderPosition);
+    if (!attacker || !defender || !isValidAttack(attacker, defenderPosition, current)) continue;
+    totalAttack += calculateAttackPower(attacker, defender);
+    const result = resolveCombat(current, id, defenderPosition);
+    current = result.board;
+    if (result.eliminated) return { board: current, eliminated: true, totalAttack };
   }
-
-  if (attackers.length === 0) {
-    return { board, eliminated: false, totalAttack: 0 };
-  }
-
-  // Calculate combined attack power
-  const totalAttack = calculateCombinedAttackPower(attackers, defender);
-  const defenseValue = calculateDefense(defender);
-
-  // Mark all attackers as having attacked and track this specific target
-  let newBoard: BoardState = {
-    ...board,
-    units: board.units.map((u) =>
-      attackerIds.includes(u.id)
-        ? {
-            ...u,
-            hasAttacked: true,
-            attackedThisTurn: [...(u.attackedThisTurn ?? []), defender.id]
-          }
-        : u
-    ),
-  };
-
-  // If combined attack >= defense, defender is eliminated
-  if (totalAttack >= defenseValue) {
-    newBoard = removeUnit(newBoard, defender.id);
-    return { board: newBoard, eliminated: true, totalAttack };
-  }
-
-  return { board: newBoard, eliminated: false, totalAttack };
+  return { board: current, eliminated: false, totalAttack };
 }
-

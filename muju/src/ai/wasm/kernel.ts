@@ -1,6 +1,6 @@
 import type { GameState } from '../../game/types';
 import { UNIT_DEFINITIONS, getUnitDefinition } from '../../game/units';
-import { calculateAttackPower } from '../../game/combat';
+import { calculateAttackPower, canAttack, getAttackCount } from '../../game/combat';
 import { applyAction } from '../simulate';
 import { isLegalAction } from '../../game/legality';
 import type { AIAction } from '../types';
@@ -27,7 +27,7 @@ export async function instantiateTactics(bytes: BufferSource): Promise<TacticalS
     abort: () => { throw new Error('WASM tactical kernel trapped'); },
   } });
   const wasm = instance.exports as unknown as Exports;
-  if (wasm.abiVersion() !== 1 || UNIT_DEFINITIONS.length !== 24) throw new Error('Muju WASM ABI/catalogue mismatch');
+  if (wasm.abiVersion() !== 2 || UNIT_DEFINITIONS.length !== 24) throw new Error('Muju WASM ABI/catalogue mismatch');
   const defs = UNIT_DEFINITIONS;
   return (state, targetId, maxNodes, budget) => {
     const unknown = (): TacticalResult => ({ status: 'unknown', actions: [], nodes: 0, scope });
@@ -37,10 +37,10 @@ export async function instantiateTactics(bytes: BufferSource): Promise<TacticalS
     const corner = state.players[player].startCorner, victim = units[target];
     const homeBlocked = victim.owner !== player && victim.position.x === corner.x && victim.position.y === corner.y;
     if (state.turn.phase === 'place' && !homeBlocked) return unknown();
-    const catalog = new Int32Array(wasm.memory.buffer, wasm.cataloguePtr(), 24 * 5);
+    const catalog = new Int32Array(wasm.memory.buffer, wasm.cataloguePtr(), 24 * 6);
     for (let i = 0; i < defs.length; i++) {
       const d = defs[i], next = defs.findIndex(n => n.element === d.element && n.tier === d.tier + 1);
-      catalog.set([d.attack, d.defense, d.speed, next, next < 0 ? 0 : defs[next].cost - d.cost], i * 5);
+      catalog.set([d.attack, d.defense, d.speed, next, next < 0 ? 0 : defs[next].cost - d.cost, d.tier], i * 6);
     }
     const powers = new Int32Array(wasm.memory.buffer, wasm.powersPtr(), 24 * 24);
     for (let a = 0; a < 24; a++) for (let b = 0; b < 24; b++) {
@@ -49,14 +49,15 @@ export async function instantiateTactics(bytes: BufferSource): Promise<TacticalS
         { definitionId: defs[a].id, owner: player } as GameState['board']['units'][number],
         { definitionId: defs[b].id, owner: 'black' } as GameState['board']['units'][number]);
     }
-    const input = new Int32Array(wasm.memory.buffer, wasm.inputPtr(), 916); input.fill(0);
-    input.set([1, units.length, player === 'white' ? 0 : 1, state.turn.actionsRemaining,
+    const input = new Int32Array(wasm.memory.buffer, wasm.inputPtr(), 1016); input.fill(0);
+    input.set([2, units.length, player === 'white' ? 0 : 1, state.turn.actionsRemaining,
       state.turn.phase === 'place' ? 0 : 1, state.players[player].resources]);
     for (let i = 0; i < units.length; i++) {
-      const u = units[i], offset = 16 + i * 9;
+      const u = units[i], offset = 16 + i * 10;
       input.set([u.position.y * 10 + u.position.x, u.owner === 'white' ? 0 : 1,
         defs.findIndex(d => d.id === u.definitionId), u.damageTaken,
-        (u.canActThisTurn ? 1 : 0) | (u.promotedThisPlacement ? 2 : 0) | (u.placedThisTurn ? 4 : 0)], offset);
+        (u.canActThisTurn ? 1 : 0) | (u.promotedThisPlacement ? 2 : 0) | (u.placedThisTurn ? 4 : 0) | (u.lastAttackKilled ? 8 : 0)], offset);
+      input[offset + 9] = getAttackCount(u);
       for (const id of u.attackedThisTurn ?? []) { const j = units.findIndex(v => v.id === id); if (j >= 0) input[offset + 5 + (j >> 5)] |= 1 << (j & 31); }
     }
     activeBudget = budget;
@@ -85,7 +86,7 @@ export function canPossiblyRemove(state: GameState, targetId: string): boolean {
   const target = state.board.units.find(u => u.id === targetId); if (!target) return true;
   let power = 0, count = 0;
   for (const u of state.board.units) {
-    if (u.owner !== state.turn.currentPlayer || !u.canActThisTurn || u.attackedThisTurn?.includes(targetId)) continue;
+    if (u.owner !== state.turn.currentPlayer || !canAttack(u) || u.attackedThisTurn?.includes(targetId)) continue;
     const distance = Math.max(0, Math.abs(u.position.x - target.position.x) + Math.abs(u.position.y - target.position.y) - 1);
     if (Math.ceil(distance / getUnitDefinition(u.definitionId).speed) + 1 <= state.turn.actionsRemaining) {
       count++; power += calculateAttackPower(u, target);

@@ -83,8 +83,12 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
   }
 }
 
-// Actions that trigger a save (phase transitions and game end)
+// Save each completed action, including AI actions and undo, so reloading resumes
+// the board and its Cleave allowance together. Selection/preview do not save.
 const SAVE_ACTIONS = new Set([
+  ...UNDOABLE_ACTIONS,
+  'APPLY_AI_ACTION',
+  'RESTORE_STATE',
   'END_PLACE_PHASE',
   'END_ACTION_PHASE',
   'END_TURN',
@@ -94,7 +98,7 @@ const SAVE_ACTIONS = new Set([
 function gameReducerWithSave(state: GameState, action: GameAction): GameState {
   const newState = gameReducer(state, action);
 
-  // Save after phase transitions (only if state actually changed)
+  // Save committed gameplay transitions (only if state actually changed)
   if (SAVE_ACTIONS.has(action.type) && newState !== state) {
     saveGameState(newState);
   }

@@ -105,6 +105,7 @@ export function createUnit(
     position,
     hasMoved: false,
     hasAttacked: false,
+    lastAttackKilled: false,
     hasMined: false,
     canActThisTurn: canAct,
     damageTaken: 0,
@@ -272,11 +273,12 @@ export function resetUnitActions(
         // Reset action flags for current player's units
         // Also reset placedThisTurn so units placed last turn can now be promoted
         // Reset damage so units heal at the start of their own turn
-        // Reset attackedThisTurn so units can attack any enemy again
+        // Reset attack history and Cleave eligibility for the new owner turn
         return {
           ...u,
           hasMoved: false,
           hasAttacked: false,
+          lastAttackKilled: false,
           hasMined: false,
           canActThisTurn: true,
           placedThisTurn: false,

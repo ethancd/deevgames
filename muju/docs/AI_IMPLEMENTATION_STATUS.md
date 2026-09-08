@@ -4,6 +4,16 @@ Implementation commit: `4917121cad982b023ee637a848d70a5632869474`. Branch: `code
 
 The user's implementation request explicitly favored WASM and skipping JavaScript benchmarking. This changes the plan's ordering: a native tactical kernel ships with the worker, without a JavaScript profiling/optimization bake-off or a claimed WASM speedup ratio. The strategic planner remains TypeScript. This is a functioning hybrid AI, not a full rewrite of the game engine in WASM.
 
+## Cleave follow-up (2026-09-07)
+
+The subsequent v1.4 combat release adds kill-gated attacks capped by tier while
+retaining the v1.3 catalogue. The kernel now uses **ABI 2**: each unit carries an
+independent total attack count (including eliminated targets) and a last-kill flag;
+the catalogue also carries tier. JS and WASM enforce the same chain eligibility,
+and DFS restores count/flag as well as damage and occupancy when backtracking.
+The measurements and result directories below describe the original AI release,
+not a new balance calibration under Cleave. See `CLEAVE_RELEASE-2026-09-07.md`.
+
 ## Implemented
 
 - **Worker boundary:** versioned game/request/revision/player identity, masked opponent state, own private state, seed and budget. The worker owns separate player contexts. Results are checked against the authoritative game. Restart, pause, mode changes, difficulty changes and unmount invalidate pending work. Termination interrupts even a native call. A watchdog exposes a recoverable Retry path; no worker failure becomes resignation or a hidden pass.

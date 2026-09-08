@@ -1,10 +1,10 @@
-// ABI 1. A complete current-turn target-removal search. No hidden state is read.
+// ABI 2. A complete current-turn target-removal search. No hidden state is read.
 // The host supplies the canonical catalogue and elemental attack matrix.
 // Buffers stay rooted for the instance lifetime; DFS mutates/undoes in place.
 const MAX_UNITS: i32 = 100;
-const STRIDE: i32 = 9; // position, owner, definition, damage, flags, four attack words
+const STRIDE: i32 = 10; // position, owner, definition, damage, flags, four attack words, count
 const input = new Int32Array(16 + MAX_UNITS * STRIDE);
-const catalogue = new Int32Array(24 * 5); // attack, defense, speed, next, promotion cost
+const catalogue = new Int32Array(24 * 6); // attack, defense, speed, next, promotion cost, tier
 const powers = new Int32Array(24 * 24);
 const output = new Int32Array(3 * 108);
 const path = new Int32Array(3 * 108);
@@ -23,7 +23,7 @@ let length: i32 = 0;
 
 @external('env', 'shouldStop')
 declare function shouldStop(): i32;
-export function abiVersion(): i32 { return 1; }
+export function abiVersion(): i32 { return 2; }
 export function inputPtr(): usize { return input.dataStart; }
 export function cataloguePtr(): usize { return catalogue.dataStart; }
 export function powersPtr(): usize { return powers.dataStart; }
@@ -37,8 +37,13 @@ function def(u: i32): i32 { return input[at(u) + 2]; }
 function alive(u: i32): bool { return pos(u) >= 0; }
 function md(a: i32, b: i32): i32 { return abs(a % 10 - b % 10) + abs(a / 10 - b / 10); }
 function attacked(u: i32, v: i32): bool { return (input[at(u) + 5 + (v >> 5)] & (1 << (v & 31))) != 0; }
+function canAttack(u: i32): bool {
+  const flags = input[at(u) + 4], attacks = input[at(u) + 9];
+  return (flags & 1) != 0 && attacks < catalogue[def(u) * 6 + 5]
+    && (attacks == 0 || (flags & 8) != 0);
+}
 function power(u: i32, v: i32): i32 { return powers[def(u) * 24 + def(v)]; }
-function remainingDefense(u: i32): i32 { return max(0, catalogue[def(u) * 5 + 1] - input[at(u) + 3]); }
+function remainingDefense(u: i32): i32 { return max(0, catalogue[def(u) * 6 + 1] - input[at(u) + 3]); }
 function record(depth: i32, kind: i32, unit: i32, dest: i32): void {
   path[depth * 3] = kind; path[depth * 3 + 1] = unit; path[depth * 3 + 2] = dest;
 }
@@ -56,9 +61,9 @@ function enter(): bool {
 function possible(actions: i32): bool {
   let damage = 0, attackers = 0;
   for (let u = 0; u < count; u++) {
-    if (!alive(u) || !own(u) || !(input[at(u) + 4] & 1) || attacked(u, target)) continue;
+    if (!alive(u) || !own(u) || !canAttack(u) || attacked(u, target)) continue;
     const steps = max(0, md(pos(u), pos(target)) - 1);
-    const speed = catalogue[def(u) * 5 + 2];
+    const speed = catalogue[def(u) * 6 + 2];
     if ((steps + speed - 1) / speed + 1 <= actions) { damage += power(u, target); attackers++; }
   }
   return attackers > 0 && damage >= remainingDefense(target);
@@ -69,16 +74,21 @@ function dfs(actions: i32, depth: i32): bool {
   // Target attacks first, then attacks that can clear movement lanes.
   for (let pass = 0; pass < 2; pass++) {
     for (let u = 0; u < count; u++) {
-      if (!alive(u) || !own(u) || !(input[at(u) + 4] & 1)) continue;
+      if (!alive(u) || !own(u) || !canAttack(u)) continue;
       for (let v = 0; v < count; v++) {
         if ((v == target) != (pass == 0) || !alive(v) || own(v) || md(pos(u), pos(v)) != 1 || attacked(u, v)) continue;
         const damage = power(u, v), oldDamage = input[at(v) + 3], oldPos = pos(v);
         const word = at(u) + 5 + (v >> 5), oldWord = input[word];
+        const oldFlags = input[at(u) + 4], oldCount = input[at(u) + 9];
+        const killed = damage >= remainingDefense(v);
+        input[at(u) + 9] = oldCount + 1;
+        input[at(u) + 4] = (oldFlags & ~8) | (killed ? 8 : 0);
         input[word] |= 1 << (v & 31);
-        if (damage >= remainingDefense(v)) { input[at(v)] = -1; occupied[oldPos] = -1; }
+        if (killed) { input[at(v)] = -1; occupied[oldPos] = -1; }
         else input[at(v) + 3] += damage;
         record(depth, 2, u, oldPos);
         const found = dfs(actions - 1, depth + 1);
+        input[at(u) + 4] = oldFlags; input[at(u) + 9] = oldCount;
         input[word] = oldWord; input[at(v) + 3] = oldDamage; input[at(v)] = oldPos; occupied[oldPos] = v;
         if (found) return true;
         if (cutoff) return false;
@@ -89,7 +99,7 @@ function dfs(actions: i32, depth: i32): bool {
   // but also retain retreat/rotation moves: these are essential for corner rescues.
   for (let u = 0; u < count; u++) {
     if (!alive(u) || !own(u) || !(input[at(u) + 4] & 1)) continue;
-    const start = pos(u), speed = catalogue[def(u) * 5 + 2], base = depth * 100;
+    const start = pos(u), speed = catalogue[def(u) * 6 + 2], base = depth * 100;
     for (let k = 0; k < 100; k++) distances[base + k] = -1;
     let head = 0, tail = 1;
     queues[base] = start; distances[base + start] = 0;
@@ -128,7 +138,7 @@ function promotions(first: i32, actions: i32, depth: i32): bool {
   if (cutoff || !enter()) return false;
   for (let u = first; u < count; u++) {
     if (!alive(u) || !own(u) || (input[at(u) + 4] & 6)) continue;
-    const oldDef = def(u), next = catalogue[oldDef * 5 + 3], price = catalogue[oldDef * 5 + 4];
+    const oldDef = def(u), next = catalogue[oldDef * 6 + 3], price = catalogue[oldDef * 6 + 4];
     if (next < 0 || price > resources) continue;
     input[at(u) + 2] = next; resources -= price;
     record(depth, 3, u, 0);
@@ -143,7 +153,7 @@ function promotions(first: i32, actions: i32, depth: i32): bool {
 // Caller only enables placement-phase search with home occupied, otherwise queues
 // and newly placed units would make this scope incomplete.
 export function solve(targetIndex: i32, nodeLimit: i32): i32 {
-  if (input[0] != 1 || input[1] > MAX_UNITS || input[1] < 1 || targetIndex < 0 || targetIndex >= input[1]) return -1;
+  if (input[0] != 2 || input[1] > MAX_UNITS || input[1] < 1 || targetIndex < 0 || targetIndex >= input[1]) return -1;
   count = input[1]; player = input[2]; target = targetIndex; resources = input[5];
   visited = 0; maxNodes = max(0, nodeLimit); cutoff = false; length = 0;
   occupied.fill(-1);

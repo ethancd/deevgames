@@ -8,8 +8,8 @@ document and the code disagree, that is a bug in one of them: see
 of known divergences. The stat tables in §7 are transcriptions of
 `src/game/units.ts`, which is the canonical stat source.
 
-**Spec version:** v1.3 (2026-09-07) — Lightning threat and Plant economy
-progression, evaluated with a static value solver and paired game trials.
+**Spec version:** v1.4 (2026-09-07) — Kill-gated Cleave capped by tier.
+The v1.3 unit catalogue and Unequal routes board are unchanged.
 History: v1.0 (original design), v1.1 (`docs/v1.1-spec.md`, historical playtest
 balance pass), v1.2 (2026-06-09 canonical rules rewrite).
 
@@ -40,9 +40,8 @@ A turn has three phases, in order:
    promotion). The phase is skipped automatically when the player has nothing
    to do in it (no placeable ready units and no affordable promotions).
 2. **Action phase** — spend up to **6 actions** (`MAX_ACTIONS_PER_TURN`).
-   Each action is one move-step, attack, or mine by one unit. There is **no
-   per-unit action-type limit**: a unit may act multiple times and repeat
-   action types within the budget (exception: same-target attack limit, §4.2).
+   Each action is one move-step, attack, or mine by one unit. Movement and
+   mining may repeat within the shared budget; attacks also obey Cleave (§4.2).
 3. **Queue phase** — pay resources to queue new units (hidden from the
    opponent). The phase auto-ends (ending the turn) when the player cannot
    afford anything further.
@@ -51,7 +50,7 @@ Turn bookkeeping at the start of a player's turn:
 
 - Their build queue advances by one turn; entries reaching 0 become **ready**.
 - All their units' action flags reset (`hasMoved`/`hasAttacked`/`hasMined`,
-  `attackedThisTurn`, `placedThisTurn`).
+  `attackedThisTurn`, `lastAttackKilled`, `placedThisTurn`).
 - **All damage on their units heals** (`damageTaken` resets to 0) — see §4.3.
 
 `turnNumber` increments when the turn passes back to White (a full round).
@@ -76,9 +75,21 @@ Turn bookkeeping at the start of a player's turn:
   has advantage over, −1 ATK against an element it is disadvantaged against
   (§6). Defense is never modified. Effective ATK floors at 0.
 
-### 4.2 Same-target limit
-A unit may attack a given enemy **once per turn** (`attackedThisTurn`), but
-may attack different enemies multiple times in one turn, budget permitting.
+### 4.2 Cleave
+- Every unit begins its turn eligible to attack once.
+- **Killing the target** unlocks one further attack by that same unit, with a
+  maximum of **tier attacks per turn** (I: 1, II: 2, III: 3, IV: 4).
+- Each attack still costs **one shared action**. Moving or mining between attacks
+  is allowed at the normal cost; neither restores or consumes attack eligibility.
+- If a target survives, the attack chain ends for that unit this turn, including
+  a zero-damage hit. A later kill by another unit does not reopen that chain.
+- A newly placed Tier I can attack immediately but cannot attack twice.
+- Combined attacks resolve individually; only the actual killing blow unlocks Cleave.
+- History includes eliminated targets (`attackedThisTurn`); `lastAttackKilled`
+  records the result of this unit's last attack. Both reset on its owner's turn.
+  Old mid-turn saves without the kill marker treat previously used attackers as
+  finished until that reset. Saves retain their board and economy. Completed human
+  and AI actions, plus undo, save the board and attack allowance together.
 
 ### 4.3 Damage and elimination
 - If effective ATK ≥ effective DEF, the defender is **eliminated**.
@@ -296,7 +307,8 @@ than reading hidden state.
 Engine/UI/AI divergences from this spec are tracked in
 `lab/docs/SPEC_AUDIT.md` (D1–D14) with historical dispositions. The
 2026-09-07 correctness repair resolves D1–D6 and D11–D14, retains intentional
-rules D7–D9, and documents the remaining planning limitation D10. See
+rules D7–D8, and documents the remaining planning limitation D10.
+The v1.4 release replaces D9 with Cleave. See
 `docs/AI_CORRECTNESS-2026-09-07.md` for changes and evidence. Design judgment
 calls are in `JUDGMENT_LOG.md`. The initial review in `docs/BALANCE_REVIEW-2026-09-07.md` is historical;
 `docs/BALANCE_IMPLEMENTATION-2026-09-07.md` records the subsequently authorized

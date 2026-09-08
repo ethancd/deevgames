@@ -189,6 +189,7 @@ function applyPlaceUnit(state: GameState, queuedUnitId: string, position: Positi
     position,
     hasMoved: false,
     hasAttacked: false,
+    lastAttackKilled: false,
     hasMined: false,
     canActThisTurn: true, // Can act immediately (no summoning sickness)
     damageTaken: 0,

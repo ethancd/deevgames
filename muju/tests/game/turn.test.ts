@@ -431,7 +431,7 @@ describe('Turn Module', () => {
       state = startActionPhase(state);
 
       // Mark all player units as unable to act (e.g., newly placed units)
-      // Note: hasMoved/hasAttacked/hasMined don't block actions; only canActThisTurn does
+      // Movement/mining may repeat; Cleave eligibility separately limits attacks.
       const whiteUnits = getPlayerUnits(state.board, 'white');
       let newBoard = state.board;
       for (const unit of whiteUnits) {

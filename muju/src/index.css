@@ -45,6 +45,7 @@ button:focus-visible, a:focus-visible { outline: 3px solid #67e8f9; outline-offs
 .game-shell .unit-heading button { min-height: 28px; height: 28px; width: 30px; padding: 0; background: transparent; font-size: 20px; }
 .unit-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; font-size: 11px; color: #afbdce; }
 .unit-stats b { color: #eef3f9; font-size: 13px; margin-left: 3px; font-variant-numeric: tabular-nums; }
+.cleave-status { display: block; font-size: 10px; line-height: 1.25; color: #bfe9ca; margin: 0; }
 .unit-action-row { display: flex; align-items: center; gap: 8px; }
 .unit-action-row p { font-size: 11px; color: #becddb; flex: 1; line-height: 1.35; }
 .unit-action-row button { white-space: nowrap; font-size: 12px; flex: none; }

@@ -378,7 +378,9 @@ const instructionPages: InstructionPage[] = [
             <li>• If effective attack ≥ defense, the enemy is <strong className="text-red-400">destroyed</strong></li>
             <li>• If effective attack &lt; defense, enemy takes damage equal to effective attack</li>
             <li>• Damage reduces effective defense until the defender's next turn</li>
-            <li>• Each unit can attack a particular enemy only once per turn; combine different attackers to finish tough targets</li>
+            <li>• <strong>Cleave:</strong> each unit starts with one attack. Kill the target to attack again, up to your tier in total attacks per turn (Tier I: 1, II: 2, III: 3, IV: 4).</li>
+            <li>• Every attack costs 1 action. You may move between attacks at the usual action cost.</li>
+            <li>• If the target survives, that unit is finished attacking this turn. Combine different attackers to finish tough targets.</li>
           </ul>
         </div>
         <p className="text-gray-400 text-sm text-center">
