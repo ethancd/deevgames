@@ -3,6 +3,9 @@ import { PlayDialog } from './PlayDialog';
 import { ELEMENT_INFO, getAttackModifier } from '../game/elements';
 import { getUnitDefinition } from '../game/units';
 import { getElementHex } from '../utils/colors';
+import { UnitArtwork } from './UnitArtwork';
+import { CrystalWell } from './CrystalWell';
+import type { Tier } from '../game/types';
 
 interface InstructionsModalProps {
   isOpen: boolean;
@@ -23,18 +26,10 @@ function DemoUnit({
   size?: 'sm' | 'md' | 'lg';
   damage?: number;
 }) {
-  const color = getElementHex(element);
-  const sizeClass = size === 'sm' ? 'w-6 h-6 text-xs' : size === 'lg' ? 'w-10 h-10 text-base' : 'w-8 h-8 text-sm';
+  const sizeClass = size === 'sm' ? 'w-6 h-6' : size === 'lg' ? 'w-10 h-10' : 'w-8 h-8';
   return (
-    <div className="relative inline-block">
-      <div
-        className={`${sizeClass} rounded-full flex items-center justify-center font-bold text-white ${
-          isPlayer ? 'ring-2 ring-white' : 'ring-2 ring-black'
-        }`}
-        style={{ backgroundColor: color }}
-      >
-        {tier}
-      </div>
+    <div className={`relative inline-block ${sizeClass}`}>
+      <UnitArtwork owner={isPlayer ? 'white' : 'black'} element={element} tier={tier as Tier} />
       {damage > 0 && (
         <div className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
           -{damage}
@@ -55,15 +50,6 @@ function DemoCell({
   highlightType?: 'move' | 'attack' | 'spawn';
   children?: React.ReactNode;
 }) {
-  const depthColors = [
-    'bg-gray-800', // 0 = depleted
-    'bg-amber-900/40',
-    'bg-amber-800/50',
-    'bg-amber-700/60',
-    'bg-amber-600/70',
-    'bg-amber-500/80', // 5 = full
-  ];
-
   let highlightClass = '';
   if (highlighted) {
     if (highlightType === 'move') highlightClass = 'ring-2 ring-blue-400 ring-inset';
@@ -73,8 +59,9 @@ function DemoCell({
 
   return (
     <div
-      className={`w-10 h-10 border border-gray-700 flex items-center justify-center ${depthColors[depth]} ${highlightClass}`}
+      className={`relative w-10 h-10 border border-gray-700 flex items-center justify-center board-cell depth-${depth} ${highlightClass}`}
     >
+      <CrystalWell cell={{position: {x: 0, y: 0}, resourceLayers: depth, minedDepth: 0}} />
       {children}
     </div>
   );
@@ -209,8 +196,8 @@ const instructionPages: InstructionPage[] = [
       <div className="space-y-4">
         <p className="text-gray-300">
           The game is played on a <strong className="text-white">10×10 grid</strong>. Each cell contains up to
-          5 layers of resources (shown by amber coloring). New games use <strong className="text-white">Unequal routes</strong>:
-          deep starting corners, four-layer shelves, and shallow paths to five-layer expansion wells. The same layout rotates 180° for the other player, with 340 crystals in total.
+          5 layers of resources (brighter blue-green squares hold more). New games use <strong className="text-white">Unequal routes</strong>:
+          deep starting corners, four-layer shelves, three-layer seams, and 16 blank squares on the paths to five-layer expansion wells. Blank squares have no crystals, but units can move and be placed there normally. The same layout rotates 180° for the other player, with 308 crystals in total.
         </p>
         <div className="flex justify-center items-end gap-2">
           <div className="text-center">

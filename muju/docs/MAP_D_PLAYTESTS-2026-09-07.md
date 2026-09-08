@@ -1,5 +1,7 @@
 # Map D: production launch and post-deployment playtests
 
+> Historical release/report: the later [empty-approaches update](EMPTY_APPROACHES-2026-09-07.md) changes new games to 308 crystals. The measurements below describe the original 340-crystal map.
+
 **Map D, “Unequal routes,” is live at [deevgames.pages.dev/muju](https://deevgames.pages.dev/muju/).** New games use the fixed 10×10 layout with 340 crystals. The v1.3 unit catalogue is unchanged. Existing saved games retain their original board.
 
 **Recommendation: keep D as the current playtest map, with a specific concern about the return on deep mining.** Deliberate Plant investment and expansion remain useful in these tests. D also strengthens some cheap-pressure strategies and sharply reduces the economic premium of higher-tier miners. These results do not certify that all 24 units are competitively viable, or that D is the best arrangement of its minerals.

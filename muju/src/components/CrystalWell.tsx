@@ -5,7 +5,7 @@ export function describeCrystals(cell: Cell): string {
   const total = cell.minedDepth + cell.resourceLayers;
   return cell.resourceLayers > 0
     ? `${cell.resourceLayers} crystal${cell.resourceLayers === 1 ? '' : 's'} left · next depth ${cell.minedDepth + 1} · bottom ${total}`
-    : `Depleted · ${total} layers mined`;
+    : total > 0 ? `Depleted · ${total} layers mined` : 'No crystals · bedrock';
 }
 
 /** Fixed vertical depth positions prevent confusing a shallow thin seam with

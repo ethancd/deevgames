@@ -1,6 +1,6 @@
 # Crystal wells and elemental armies
 
-Visual implementation based on production source `9c2a94d` (WASM AI, map D and home victory included). This branch changes graphics and explanatory UI only. No mining, unit, balance, map, turn, or AI rules were changed. It has not been deployed.
+Visual implementation based on production source `9c2a94d` (WASM AI, map D and home victory included). The original visual change affected graphics and explanatory UI only. It is included in the [empty-approaches release](EMPTY_APPROACHES-2026-09-07.md), which also changes starting map capacity from 340 to 308 crystals.
 
 ## Reading a square
 
@@ -32,4 +32,4 @@ Open **Key** beside Depths for illustrated examples. This dialog adds no height 
 
 To regenerate the reference from the actual components, run `npm run build` in `muju`, then `node --import tsx tools/render-visual-reference.tsx /private/tmp/muju-visual-reference.html`. Open the generated HTML in a browser at 1072px wide. It embeds the built stylesheet and renders the SVG components directly, so the reference cannot silently diverge from a separate illustration file.
 
-Before deploying, integrate with the latest production branch and use the existing deevgames full-site release workflow. Vite still emits content-hashed CSS/JS and unchanged worker/WASM assets. No ashkie-pages deployable files or offline manifest were edited.
+This release includes the latest production branch and uses the existing deevgames full-site release workflow. Vite still emits content-hashed CSS/JS and unchanged worker/WASM assets. No ashkie-pages deployable files or offline manifest were edited.

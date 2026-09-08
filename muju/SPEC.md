@@ -27,7 +27,7 @@ may be a human or an AI (`vs-ai`, `pass-play`, and `ai-vs-ai` modes).
   starts with 3 units adjacent to their corner and 0 resources.
   - White: Hi (fire_1) at (1,0), Sjor (water_1) at (1,1), Muju (plant_1) at (0,1).
   - Black: Hi at (8,9), Sjor at (8,8), Muju at (9,8).
-- **Resources:** **Unequal routes (map D)**: fixed 180°-rotational layout, 2–5 initial layers per cell, **340 total**. Deep home corners, four-layer shelves and shallow approaches to deep expansion wells. Exact layout: `src/game/resourceMap.ts`. Existing saves retain their original layout.
+- **Resources:** **Unequal routes (map D)**: fixed 180°-rotational layout, 0, 3, 4, or 5 initial layers per cell, **308 total**. Deep home corners, four-layer shelves and sixteen blank approaches to deep expansion wells (walkable and spawn-eligible as usual). Exact layout: `src/game/resourceMap.ts`. Existing saves retain their original layout.
 - **White moves first.** The first turn begins directly in the Action phase
   (there is nothing to place or promote at game start).
 
@@ -96,7 +96,7 @@ may attack different enemies multiple times in one turn, budget permitting.
 ## 5. Economy
 
 ### 5.1 Mining — the Well Metaphor
-- Each cell starts with 2–5 depth layers, numbered from 1 and worth 1 resource each. A unit's **Mining**
+- Each cell starts with 0, 3, 4, or 5 depth layers, numbered from 1 and worth 1 resource each. A unit's **Mining**
   stat is its rope length: it can reach layers down to depth = Mining.
 - A mine action (1 action) extracts **all remaining layers from the current
   top down to the unit's Mining depth**, i.e.
@@ -104,7 +104,7 @@ may attack different enemies multiple times in one turn, budget permitting.
 - If the cell's top remaining layer is deeper than the unit's Mining stat, the
   cell is **dry for that unit** (yield 0; the action is not consumable —
   `canMine` is false). Mining 0 units (Radi, Umeme, Göl) can never mine.
-- Mined layers are gone forever; the board economy is finite (340 total on Unequal routes; 500 in legacy uniform games).
+- Mined layers are gone forever; the board economy is finite (308 total on Unequal routes; 500 in legacy uniform games).
 
 ### 5.2 Build queue (hidden)
 - During the queue phase, the player pays a unit's **Cost** and adds it to

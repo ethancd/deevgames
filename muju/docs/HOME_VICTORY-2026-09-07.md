@@ -1,5 +1,7 @@
 # Home occupation victory: implementation and playtests
 
+> Historical release/report: the later [empty-approaches update](EMPTY_APPROACHES-2026-09-07.md) changes new games to 308 crystals. The measurements below describe the original 340-crystal map.
+
 Implemented 2026-09-07 on `codex/muju-home-victory`. This report describes a tested branch, not a production deployment. The implementation starts at commit `c2fc2bf`, on top of the map-D playtest branch (`5567168`; map-D release `326f043`).
 
 ## The rule

@@ -46,7 +46,7 @@ function mulberry32(seed: number): () => number {
   };
 }
 
-const TOTAL_BOARD_RESOURCES = INITIAL_MAP_RESOURCES; // 340
+const TOTAL_BOARD_RESOURCES = INITIAL_MAP_RESOURCES; // 308
 
 function legalActions(state: GameState, player: PlayerId): AIAction[] {
   switch (state.turn.phase) {

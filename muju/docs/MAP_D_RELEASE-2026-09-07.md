@@ -1,5 +1,7 @@
 # Map D production release — 2026-09-07
 
+> Historical release/report: the later [empty-approaches update](EMPTY_APPROACHES-2026-09-07.md) changes new games to 308 crystals. The measurements below describe the original 340-crystal map.
+
 New games use **Unequal routes**, map D from the five-map study. Board size stays 10×10 and the v1.3 unit catalogue is unchanged. The deterministic layout has 340 crystals: twenty five-layer cells, sixteen four-layer shelves, forty-eight three-layer cells, and sixteen two-layer approaches. It is symmetric under a 180° rotation, with different routes on the two wings.
 
 Each cell starts at mining depth one, even when it contains fewer than five crystals. Existing schema-2 saves retain their exact board and depletion; an old uniform board continues with its original 500-crystal budget. New saves retain the initial capacities for conservation checks.

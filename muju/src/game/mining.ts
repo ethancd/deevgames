@@ -12,7 +12,7 @@ export function canMineAction(unit: Unit): boolean {
 
 /**
  * The Well Metaphor:
- * - Each square starts with 2–5 depth layers on Unequal routes, each worth 1 resource
+ * - Each square starts with 0, 3, 4, or 5 depth layers on Unequal routes, each worth 1 resource
  * - A unit's Mining stat is its "rope length"
  * - Mining removes topmost remaining layers up to Mining stat
  * - You cannot skip layers or reach deeper than Mining allows

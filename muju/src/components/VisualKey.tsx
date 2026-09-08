@@ -8,7 +8,7 @@ const examples = [
   { left: 3, dug: 0, label: 'Thin seam', detail: '3 left · next 1' },
   { left: 3, dug: 2, label: 'Dug down', detail: '3 left · next 3' },
   { left: 1, dug: 4, label: 'Deep', detail: '1 left · next 5' },
-  { left: 1, dug: 0, label: 'Shallow', detail: '1 left · next 1' },
+  { left: 0, dug: 0, label: 'Blank', detail: 'No crystals' },
   { left: 0, dug: 5, label: 'Empty', detail: '0 left' },
 ];
 const elements: Element[] = ['fire', 'lightning', 'water', 'shadow', 'plant', 'metal'];
