@@ -1,6 +1,8 @@
+> v1.7 follow-up: Lightning I/II ATK is now1/2, Lightning III mining0, Metal III mining4. Measurements below preserve the earlier catalogue; see [balance follow-up](BALANCE_FOLLOWUP-2026-09-08.md).
+
 # Tier upkeep and inactivity draw — September 8, 2026
 
-Status: implementation and study verified. The user explicitly authorized publishing the combined tier cap + upkeep + draw on September 8 after verification. No production publication yet.
+Status: implementation and study verified. The user explicitly authorized publishing the combined tier cap + upkeep + draw on September 8 after verification. v1.6 was published from c3f2b7e at https://c5532b4c.deevgames.pages.dev and production deevgames.pages.dev/muju/. Live upkeep/draw/tiercap browser checks6/6 and full-site390/834 smoke passed. v1.7 supersedes only the four later requested stats.
 
 ## Registered before the first study game
 

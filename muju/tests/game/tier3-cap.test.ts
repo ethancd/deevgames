@@ -11,8 +11,8 @@ import { canAttack } from '../../src/game/combat';
 import baseline from '../../lab/solver/baseline-v1.3.json';
 
 describe('v1.5 catalogue boundary', () => {
-  it('preserves every ordered T1–T3 definition except requested Metal names and Tanka Speed 2', () => {
-    expect(UNIT_DEFINITIONS).toEqual(baseline.filter(d => d.tier <= 3).map(d => d.element==='metal' ? {...d,name:['Inyan','Mazask','Tanka'][d.tier-1],speed:d.tier===3?2:d.speed} : d));
+  it('preserves the 18-unit ladder with the explicitly approved metal and Lightning changes', () => {
+    expect(UNIT_DEFINITIONS).toEqual(baseline.filter(d => d.tier <= 3).map(d => ({...d,...(d.element==='metal'?{name:['Inyan','Mazask','Tanka'][d.tier-1],speed:d.tier===3?2:d.speed}:{}),...({lightning_1:{attack:1},lightning_2:{attack:2},lightning_3:{mining:0},metal_3:{mining:4}} as Record<string,object>)[d.id]})));
     expect(UNIT_DEFINITIONS).toHaveLength(18);
   });
   it('caps Cleave at exactly 1/2/3 for every catalogue entry', () => {

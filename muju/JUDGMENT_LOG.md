@@ -174,3 +174,10 @@ Do not install a static power score in the playing AI or claim that a stat has o
 - **Non-progress:** chip attacks, movement, buying, placing, promoting, releasing and resigning do not reset. Zero-yield mining remains illegal. Upkeep losses never count as kills.
 - **Interpretation:**20 complete quiet turns, not resetting during an action then immediately incrementing a progress turn to1. An explicit phase='victory', winner=null, reason='inactivity' persists and evaluates as0 from either side.
 - **Blast radius:** shared transition, observations, AI evaluation, UI/tutorial, schema4, harness telemetry and historical-report pointers.
+
+## J-014: Lightning damage and mining, Tanka extraction (v1.7)
+
+- **Date:** 2026-09-08, explicit user direction after the upkeep release.
+- **Decision:** Radi ATK1, Umeme ATK2, Kimubunga MINE0, Tanka MINE4. Preserve every other stat, price, build time and rule, including Tanka Speed2.
+- **Scope:** shared catalogue propagates into gameplay, AI, WASM catalogue configuration, shop, previews and tutorial. Update reference exports and communicate exact values to the video process.
+- **Evidence:** [balance follow-up](docs/BALANCE_FOLLOWUP-2026-09-08.md). Historical studies remain pinned to their actual catalogues; no old sample is relabeled.

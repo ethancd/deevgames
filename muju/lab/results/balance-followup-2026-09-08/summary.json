@@ -1,0 +1,53 @@
+{
+  "e13": {
+    "games": 960,
+    "prior": {
+      "elimination": 407,
+      "inactivity": 155,
+      "upkeep-elimination": 83,
+      "home-occupation": 315
+    },
+    "current": {
+      "inactivity": 229,
+      "home-occupation": 337,
+      "elimination": 330,
+      "upkeep-elimination": 64
+    },
+    "caps": 0,
+    "illegal": 0,
+    "invariants": 0,
+    "homeInvaders": {
+      "fire_1": 15,
+      "water_2": 2,
+      "plant_1": 29,
+      "metal_1": 32,
+      "water_3": 1,
+      "lightning_1": 137,
+      "shadow_1": 20,
+      "water_1": 12,
+      "metal_2": 78,
+      "plant_2": 2,
+      "fire_3": 2,
+      "metal_3": 1,
+      "fire_2": 3,
+      "lightning_2": 3
+    }
+  },
+  "e9": {
+    "games": 3200,
+    "prior": {
+      "inactivity": 523,
+      "elimination": 2541,
+      "upkeep-elimination": 136
+    },
+    "current": {
+      "inactivity": 895,
+      "elimination": 2203,
+      "upkeep-elimination": 102
+    },
+    "caps": 0,
+    "illegal": 0,
+    "invariants": 0,
+    "homeInvaders": {}
+  }
+}

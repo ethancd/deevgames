@@ -8,12 +8,13 @@ document and the code disagree, that is a bug in one of them: see
 of known divergences. The stat tables in §7 are transcriptions of
 `src/game/units.ts`, which is the canonical stat source.
 
-**Spec version:** v1.6 (2026-09-08) — Tier upkeep and 20-ply inactivity draw, on the 18-unit catalogue.
-Tier 4 is removed. Tanka (Metal III) gains Speed 2; all other v1.3 T1–T3 stats,
-costs and build times, v1.4 Cleave, and the Unequal routes board are unchanged.
+**Spec version:** v1.7 (2026-09-08) — Lightning attack/mining and Tanka mining adjustments, with upkeep and the inactivity draw.
+Tier 4 is removed. Metal names are Inyan/Mazask/Tanka. Tanka has Speed 2 and
+Mining 4. Lightning I/II have Attack 1/2, and Lightning III has Mining 0.
+Other T1–T3 stats, costs/build times, Cleave and Unequal routes remain unchanged.
 History: v1.0 (original design), v1.1 (`docs/v1.1-spec.md`, historical playtest
 balance pass), v1.2 (2026-06-09 canonical rules rewrite), v1.3 (role balance),
-v1.4 (Cleave), v1.5 (tier-3 cap), v1.6 (upkeep and inactivity draw).
+v1.4 (Cleave), v1.5 (tier-3 cap), v1.6 (upkeep and inactivity draw), v1.7 (Lightning/Metal adjustments).
 
 ---
 
@@ -229,9 +230,9 @@ more effectively while retaining the same defensive counterplay.
 ### Lightning (Rush — SPD specialist) — Swahili
 | Tier | Name | ATK | DEF | SPD | MINE | Cost | Build |
 |---|---|---|---|---|---|---|---|
-| 1 | Radi | 2 | 1 | 3 | 0 | 1 | 1 |
-| 2 | Umeme | 3 | 1 | 4 | 0 | 3 | 1 |
-| 3 | Kimubunga | 3 | 1 | 5 | 1 | 6 | 2 |
+| 1 | Radi | 1 | 1 | 3 | 0 | 1 | 1 |
+| 2 | Umeme | 2 | 1 | 4 | 0 | 3 | 1 |
+| 3 | Kimubunga | 3 | 1 | 5 | 0 | 6 | 2 |
 
 ### Water (Balanced — DEF-leaning) — Norse
 | Tier | Name | ATK | DEF | SPD | MINE | Cost | Build |
@@ -259,7 +260,7 @@ more effectively while retaining the same defensive counterplay.
 |---|---|---|---|---|---|---|---|
 | 1 | Inyan | 1 | 3 | 1 | 2 | 3 | 2 |
 | 2 | Mazask | 2 | 4 | 1 | 3 | 6 | 2 |
-| 3 | Tanka | 2 | 6 | 2 | 3 | 12 | 3 |
+| 3 | Tanka | 2 | 6 | 2 | 4 | 12 | 3 |
 
 The Metal ladder is **Inyan → Mazask → Tanka**. The title names a tier-1, tier-2,
 and tier-3 unit: Muju / Hono / Tanka.

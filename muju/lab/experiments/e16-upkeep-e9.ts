@@ -40,7 +40,7 @@ const pairs=[
  ['Mono-lightning','Mono-metal'],['Mono-lightning','Mono-fire'],['Mono-shadow','Mono-water'],['Mono-plant','Mono-metal'],
  ['Mono-plant','Mono-shadow'],['Mono-fire','Mono-water'],['Balanced','Expand'],
  ['LightningRush','AntiRush'],['LightningRush','Turtle'],['LightningRush','Expand'],['AdaptiveEconomy','LightningRush'],['Balanced','LightningRush']];
-const out=`lab/results/upkeep-draw-2026-09-08/e9-${ruleVariant}`;mkdirSync(out,{recursive:true});
+const out=`${process.env.MUJU_STUDY_ROOT??'lab/results/upkeep-draw-2026-09-08'}/e9-${ruleVariant}`;mkdirSync(out,{recursive:true});
 const rows:any[]=[],games:any[]=[],start=Date.now();
 try{for(let cell=0;cell<pairs.length;cell++){
  if(cell%shards!==shard)continue;

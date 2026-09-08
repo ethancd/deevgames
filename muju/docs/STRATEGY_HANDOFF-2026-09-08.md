@@ -1,8 +1,11 @@
 # Muju combined release handoff
 
+**Final approval confirmation:** The user explicitly approved Radi ATK1, Umeme ATK2, Kimubunga MINE0 and Tanka MINE4. These are the final v1.7 values to teach in the element spotlight videos. See J-014 and SPEC v1.7; no further stat decision is pending.
+
 Destination: existing task **Write Muju Hono Tanka strategy guide** (`01a07f13-676d-7950-9d36-0f0f419bc824`). The user authorized propagating the game rules there and to production. The task separately confirmed episodes1–2 deliberately omit upkeep/draw; update curriculum3–18 around these mechanics.
 
-- Catalogue:18 units, three tiers. Metal names Inyan → Mazask → Tanka. Tanka Speed2, ATK2 DEF6 MINE3 cost12 build3. No tier4 or fourth attack.
+- Catalogue:18 units, three tiers. Metal names Inyan → Mazask → Tanka. Tanka Speed2, ATK2 DEF6 MINE4 cost12 build3. No tier4 or fourth attack.
+- New user-approved balance changes: Radi (Lightning I) ATK1; Umeme (Lightning II) ATK2; Kimubunga (Lightning III) MINE0; Tanka (Metal III) MINE4. Update videos and curriculum stats accordingly.
 - Own turn start: home occupation/existing elimination → inactivity draw → upkeep → healing and queue advancement → place/promote → six actions → hidden build queue.
 - Rent: T1=0,T2=1,T3=2 from the existing bank, each own turn. Queued units first owe rent on the next own turn after placement.
 - Affordable rent automatically keeps everyone. Insufficient bank opens a keep-set choice. Optional per-player Review upkeep each turn allows voluntary release, including T1. Last unit released loses by upkeep elimination. No actions, combat history or Cleave effects.

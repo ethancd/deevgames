@@ -48,7 +48,7 @@ const data = { modelVersion: 1, variant, turnFrontiers, catalogueHash: createHas
     noSoleCheapestWitness: rows.filter(d => !d.role.soleCheapest).map(d => d.id) }, rows,
   focusedKillFrontiers: catalogue.filter(d => ['metal_1', 'metal_3', 'metal_4', 'water_3'].includes(d.id))
     .flatMap(target => [1, 4, 7].map(distance => ({ target: target.id, distance, solutions: killFrontier(target, catalogue, distance) }))) };
-const out = resolve(['current','pre-cut'].includes(variant) ? 'lab/results/tier3-cap-2026-09-08/static' : 'lab/results/static-value-2026-09-07'); mkdirSync(out, { recursive: true });
+const out = resolve(process.env.MUJU_BALANCE_OUT ?? (variant === 'current' ? 'lab/results/current-static' : variant === 'pre-cut' ? 'lab/results/tier3-cap-2026-09-08/static' : 'lab/results/static-value-2026-09-07')); mkdirSync(out, { recursive: true });
 writeFileSync(`${out}/${variant}.json`, JSON.stringify(data, null, 2) + '\n');
 const lines = [
   `# Static value solver: ${variant}`, '',

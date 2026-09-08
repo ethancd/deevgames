@@ -466,12 +466,12 @@ describe('Combat Module', () => {
       // Fire + Water + Lightning vs Plant (2 def)
       // Fire vs Plant: advantage (+1) → 2+1 = 3
       // Water vs Plant: disadvantage (-1) → 2-1 = 1
-      // Lightning vs Plant: advantage (+1) → 2+1 = 3 (Fire/Lightning pair beats Plant/Metal pair)
-      // Combined: 3 + 1 + 3 = 7 >= 2, defender eliminated
+      // Lightning vs Plant: advantage (+1) → 1+1 = 2 (Fire/Lightning pair beats Plant/Metal pair)
+      // Combined: 3 + 1 + 2 = 6 >= 2, defender eliminated
 
       const fireAttacker = createUnit('fire_1', 'white', { x: 0, y: 0 }); // 2 atk
       const waterAttacker = createUnit('water_1', 'white', { x: 1, y: 1 }); // 2 atk
-      const lightningAttacker = createUnit('lightning_1', 'white', { x: 2, y: 2 }); // 2 atk
+      const lightningAttacker = createUnit('lightning_1', 'white', { x: 2, y: 2 }); // 1 atk
       const defender = createUnit('plant_1', 'black', { x: 5, y: 5 }); // 2 def
 
       const firePower = calculateAttackPower(fireAttacker, defender);
@@ -480,10 +480,10 @@ describe('Combat Module', () => {
 
       expect(firePower).toBe(3); // advantage (Fire/Lightning pair beats Plant/Metal pair)
       expect(waterPower).toBe(1); // disadvantage (Water/Shadow pair loses to Plant/Metal pair)
-      expect(lightningPower).toBe(3); // advantage (Fire/Lightning pair beats Plant/Metal pair)
+      expect(lightningPower).toBe(2); // advantage (Fire/Lightning pair beats Plant/Metal pair)
 
       const totalAttack = firePower + waterPower + lightningPower;
-      expect(totalAttack).toBe(7);
+      expect(totalAttack).toBe(6);
     });
   });
 });

@@ -15,7 +15,7 @@ const pairs=[['Rush','AntiRush'],['LightningRush','Expand'],['Balanced','Balance
  ['Siege:2','Aware:Balanced'],['Siege:4','Aware:Balanced'],['Siege:4','Aware:InvestT3'],['Siege:4','Invade:LightningRush'],
  ['Invade:Balanced','Invade:Balanced'],['Invade:LightningRush','Invade:LightningRush'],['Aware:InvestT3','Aware:Balanced'],['Invade:InvestT3','Aware:Mono-plant']];
 if(!Number.isInteger(n)||n<1||shard<0||shard>=shards)throw Error('Invalid args');
-const out=`lab/results/upkeep-draw-2026-09-08/e13-${variant}`;mkdirSync(out,{recursive:true});
+const out=`${process.env.MUJU_STUDY_ROOT??'lab/results/upkeep-draw-2026-09-08'}/e13-${variant}`;mkdirSync(out,{recursive:true});
 const digest=createHash('sha256');function hash(d:string){for(const e of readdirSync(d,{withFileTypes:true}).sort((a,b)=>a.name.localeCompare(b.name))){const f=join(d,e.name);if(e.isDirectory())hash(f);else if(f.endsWith('.ts'))digest.update(f).update(readFileSync(f));}}
 hash('src');hash('lab/harness');hash('lab/experiments');const sourceHash=digest.digest('hex');
 writeFileSync(`${out}/manifest-${shard}.json`,JSON.stringify({variant,n,shard,shards,pairs,started:new Date().toISOString(),sourceHash,unitHash:createHash('sha256').update(JSON.stringify(UNIT_DEFINITIONS)).digest('hex'),seedBase:9071326,maxTurns:120,notes:'Same final 18-unit catalogue, policies/seeds/seats and map D; paired upkeep/draw study. Legacy InvestT4/Siege:4 intent caps at highest available tier. New-objective probes use bounded public-state home defense on both rule variants.'},null,2));
