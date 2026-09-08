@@ -38,3 +38,10 @@ The4,160 follow-up games match prior seeds/seats and all pass strict legality an
 Reproduce the new catalogue screen with `MUJU_STUDY_ROOT=lab/results/balance-followup-2026-09-08` using the e16 E13/E9 commands in the upkeep report, shipped variant only. Static output uses `MUJU_BALANCE_OUT=lab/results/balance-followup-2026-09-08/static npm run balance:check`. Raw game archives, manifests, aggregate comparisons and tactical results are under the same result directory.
 
 The video handoff contains these exact changes. Delivery through the app's messaging tool is still failing with “Cannot steer conversation … without an active turn id”; do not claim the receiving video task incorporated the new values until it acknowledges them.
+
+## Verified production release
+
+Published source `0cafb11e2124580854f4fde3f6e9b017563bde8c` on2026-09-08. Immutable deployment: https://dd961def.deevgames.pages.dev. Production: https://deevgames.pages.dev/muju/, reached through the verified ashkie.com Deev Games link. A real Chrome browser verified JS/CSS/WASM against the local tested build byte-for-byte. All7 live tiercap, upkeep/draw and Lightning preview checks passed.
+
+- `/muju/assets/index-BkJnpmfq.css` SHA-256 `01108fed8b12310cc90ea80c695b266a26dd82e28549f8da57034d833cacac49`
+- `/muju/assets/index-D-1-REAd.js` SHA-256 `f7d074d341810fec799fa79ecc61762884cb86310dd149f1e453b2dcc4648c62`
