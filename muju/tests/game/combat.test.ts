@@ -354,7 +354,7 @@ describe('Combat Module', () => {
       expect(result.eliminated).toBe(false);
     });
 
-    it('Muju (Plant, 1 atk) cannot kill Inyan (Metal, 3 def)', () => {
+    it('Muju (Plant, 1 atk) cannot kill Tanka (Metal, 3 def)', () => {
       let board = createEmptyBoard();
       const attacker = createUnit('plant_1', 'white', { x: 0, y: 0 });
       const defender = createUnit('metal_1', 'black', { x: 0, y: 1 });

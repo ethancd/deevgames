@@ -224,9 +224,9 @@ Stat columns: ATK / DEF / SPD / MINE / Cost / Build time.
 ### Metal (Expand — DEF specialist) — Lakota
 | Tier | Name | ATK | DEF | SPD | MINE | Cost | Build |
 |---|---|---|---|---|---|---|---|
-| 1 | Inyan | 1 | 3 | 1 | 2 | 3 | 2 |
+| 1 | Tanka | 1 | 3 | 1 | 2 | 3 | 2 |
 | 2 | Mazaska | 2 | 4 | 1 | 3 | 6 | 2 |
-| 3 | Tankasila | 2 | 6 | 1 | 3 | 12 | 3 |
+| 3 | Inyansila | 2 | 6 | 1 | 3 | 12 | 3 |
 | 4 | Wakanwicasa | 3 | 8 | 1 | 4 | 20 | 3 |
 
 Starting units for both players: `fire_1`, `water_1`, `plant_1`.

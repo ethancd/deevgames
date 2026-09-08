@@ -276,7 +276,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
   // Metal (Expand) - Lakota
   {
     id: 'metal_1',
-    name: 'Inyan',
+    name: 'Tanka',
     element: 'metal',
     tier: 1,
     archetype: 'expand',
@@ -302,7 +302,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
   },
   {
     id: 'metal_3',
-    name: 'Tankasila',
+    name: 'Inyansila',
     element: 'metal',
     tier: 3,
     archetype: 'expand',

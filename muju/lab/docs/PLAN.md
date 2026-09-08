@@ -26,7 +26,7 @@ Goal: improve the balance of Muju Hono Tanka across **ruleset, piece catalog, an
 
 ## Balance hypotheses to test (seeded from static analysis — to validate, not pre-commit)
 
-- **Hi (fire_1) is a stat outlier:** 6 stat-points per 1 cost, build time 1, +1 ATK vs the tanks meant to stop it (one-shots Inyan DEF 3, Muju DEF 2). Candidate patches if the band in ruling #2 is violated: cost 1→2, tank DEF +1, or rush-side build-time friction.
+- **Hi (fire_1) is a stat outlier:** 6 stat-points per 1 cost, build time 1, +1 ATK vs the tanks meant to stop it (one-shots Tanka DEF 3, Muju DEF 2). Candidate patches if the band in ruling #2 is violated: cost 1→2, tank DEF +1, or rush-side build-time friction.
 - **Lightning line is a trap:** DEF 1 at every tier + full-heal rule means the cost-10 Dhorubakali dies to any single attack from anything. Speed-as-defense only works if kiting is real. Candidates: DEF 1/1/2/2 or cost cuts.
 - **One-turn-kill walls:** full heal at owner's turn start means kills must complete within one 6-action turn; Wakanwicasa (DEF 8) needs 8 combined ATK adjacent simultaneously. Tanks may be binary walls; chip strategies don't exist. Any fix must respect ruling #3.
 - **No retaliation:** attacking is risk-free except positioning — measure whether initiative dominates.
