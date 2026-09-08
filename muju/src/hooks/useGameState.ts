@@ -1,4 +1,4 @@
-import { useReducer, useCallback, useMemo, useState } from 'react';
+import { useReducer, useCallback, useMemo, useState, useEffect } from 'react';
 import type { GameState, GameAction, Position } from '../game/types';
 import type { AIAction } from '../ai/types';
 import { createInitialGameState, getUnitById } from '../game/board';
@@ -132,6 +132,12 @@ export function useGameState() {
   const [state, dispatch] = useReducer(gameReducerWithSave, undefined, getInitialState);
   const [undoHistory, setUndoHistory] = useState<GameState[]>([]);
 
+  // A turn can end automatically when there is nothing left to build, without
+  // an END_TURN action. Never carry the previous player's undo into the handoff.
+  useEffect(() => {
+    setUndoHistory([]);
+  }, [state.turn.currentPlayer, state.turn.turnNumber]);
+
   // Wrap dispatch to track undo history for undoable actions
   const dispatchWithUndo = useCallback((action: GameAction) => {
     // Save current state before undoable player actions (for any player's turn)
@@ -149,14 +155,16 @@ export function useGameState() {
     dispatch(action);
   }, [state]);
 
+  const previousState = undoHistory[undoHistory.length - 1];
+  const canUndo = !!previousState &&
+    previousState.turn.currentPlayer === state.turn.currentPlayer &&
+    previousState.turn.turnNumber === state.turn.turnNumber;
+
   const undo = useCallback(() => {
-    if (undoHistory.length === 0) return;
-    const previousState = undoHistory[undoHistory.length - 1];
+    if (!canUndo) return;
     setUndoHistory((prev) => prev.slice(0, -1));
     dispatch({ type: 'RESTORE_STATE', state: previousState });
-  }, [undoHistory]);
-
-  const canUndo = undoHistory.length > 0;
+  }, [canUndo, previousState]);
 
   const selectUnit = useCallback((unitId: string) => {
     dispatchWithUndo({ type: 'SELECT_UNIT', unitId });
