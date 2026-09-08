@@ -1,0 +1,57 @@
+{
+  "verifiedAt": "2026-09-08T01:56:47.250313+00:00",
+  "releaseCommit": "b6c04bc22c1279dd7c61658d61c573d843cd199e",
+  "deployment": "https://d01fcd4c.deevgames.pages.dev",
+  "files": [
+    {
+      "url": "https://deevgames.pages.dev/",
+      "bytes": 5454,
+      "sha256": "dac56dc9c918b4fb45e8e653d889269d7ffb60675e00dbff48a18fe60d7a5d8a"
+    },
+    {
+      "url": "https://deevgames.pages.dev/muju/",
+      "bytes": 431,
+      "sha256": "139f319e35b3a8a81ec4ad51bba859f7c0acd1da3e53b0623cfd62cbd5c68cfc"
+    },
+    {
+      "url": "https://deevgames.pages.dev/forge/",
+      "bytes": 811,
+      "sha256": "1016c55abd607b9b9749e8bf1e7dac0274309d894ccfba9c721f02023a741007"
+    },
+    {
+      "url": "https://deevgames.pages.dev/oracle/",
+      "bytes": 960,
+      "sha256": "0b6dae537f79057ca5e8f9654ee11680d03182a35a46ed364fdf12c0a756bcd6"
+    },
+    {
+      "url": "https://deevgames.pages.dev/muju/assets/entry-ysuHVs9v.js",
+      "bytes": 42561,
+      "sha256": "a95fd8ba8f5fe1aa8a4242a9af681b4630893b43a2766f7a5d0407eca8a1aadf"
+    },
+    {
+      "url": "https://deevgames.pages.dev/muju/assets/index-CVK7JWO2.css",
+      "bytes": 41434,
+      "sha256": "65b7b1abcc0a1180871cf0d867f1a898256b283e804ad41d3412a0ecce998f19"
+    },
+    {
+      "url": "https://deevgames.pages.dev/muju/assets/index-CxH3dLrK.js",
+      "bytes": 295541,
+      "sha256": "91274e24c8362518c9b84a485b223c973936c7e1ae3a500a449a5faba4afb61d"
+    },
+    {
+      "url": "https://deevgames.pages.dev/muju/assets/tactics-DkBvaGZM.wasm",
+      "bytes": 7645,
+      "sha256": "1b95bba3783bc1da1afc0d37a5549c3df9b48e21efbc23b84563d82a81f5d05a"
+    }
+  ],
+  "startingCrystals": 308,
+  "blankSquares": 16,
+  "unitTests": 622,
+  "browserTests": 27,
+  "productionMapAndWasmTests": 2,
+  "webKitViewports": [
+    "390x664",
+    "320x568",
+    "844x390"
+  ]
+}

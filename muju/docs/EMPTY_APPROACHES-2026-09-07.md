@@ -14,3 +14,5 @@ Historical map-study and playtest fixtures remain frozen at 340 crystals. Their 
 - New checks prove the exact 16-cell delta, 308 total, rotation, zero mining yield, normal movement and spawn eligibility, and persistence of two-crystal remainders.
 - The complete three-game build and phone/tablet gameplay smoke checks pass.
 - WebKit touch viewports at 390×664, 320×568 and 844×390 show 16 blank cells, 308 crystals, and no document overflow. The iPhone-size board was visually inspected.
+
+Published source `b6c04bc` to [production](https://deevgames.pages.dev/muju/) via [deployment d01fcd4c](https://d01fcd4c.deevgames.pages.dev). Live HTML, CSS, JavaScript, worker and WASM hashes match the local artifact. Production map/save and WASM rescue tests pass, as do all three games’ phone/tablet smoke checks. The [Games workflow](https://github.com/ethancd/deevgames/actions/runs/34178196394) passed; publishing used local Wrangler. Evidence is in `lab/results/empty-approaches-2026-09-07/production/`.

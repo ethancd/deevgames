@@ -1,0 +1,15 @@
+
+> elemental-tactics@0.1.0 test:e2e
+> playwright test --grep new games use map D|built worker|AI level|worker loads
+
+
+Running 2 tests using 2 workers
+
+(node:47046) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:47045) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  2 e2e/mobile.spec.ts:188:1 › new games use map D with blank approaches and preserve the layout on reload (1.1s)
+  ✓  1 e2e/ai-worker.spec.ts:12:1 › built worker loads hashed WASM and performs a coordinated home rescue (2.1s)
+
+  2 passed (2.8s)
