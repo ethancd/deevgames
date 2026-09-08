@@ -18,6 +18,12 @@ export interface PublicState {
   winner: PlayerId | null;
   victoryReason?: GameState['victoryReason'];
   victoryRule?: GameState['victoryRule'];
+  upkeepPending?: GameState['upkeepPending'];
+  reviewUpkeep?: GameState['reviewUpkeep'];
+  lastUpkeep?: GameState['lastUpkeep'];
+  inactivityPlies?: number;
+  progressThisTurn?: boolean;
+  inactivityRule?: GameState['inactivityRule'];
   selectedUnit: string | null;
   validMoves: Position[];
   validAttacks: Position[];

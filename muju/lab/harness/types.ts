@@ -68,6 +68,8 @@ export interface MatchOptions {
   /** Explicit map for paired comparisons; omitted means current production layout. */
   resourceLayout?: readonly number[];
   victoryRule?: GameState['victoryRule'];
+  upkeep?: 'shipped'|'steep'|'off';
+  inactivityRule?: 'on'|'off';
   /** Cap on full rounds (turnNumber). Past it the game is adjudicated. */
   maxTurns: number;
   /** Hard safety cap on plies (single actions). */
@@ -99,6 +101,8 @@ export const DEFAULT_MATCH_OPTIONS: MatchOptions = {
 };
 
 export type WinType =
+  | 'inactivity'
+  | 'upkeep-elimination'
   | 'home-occupation'
   | 'elimination'
   | 'resignation'
@@ -108,6 +112,11 @@ export type WinType =
 
 export interface PlayerGameStats {
   bot: string;
+  upkeepPaid?: number;
+  upkeepReleased?: {id:string;definitionId:string;tier:number;turn:number;homeDistance?:number|null}[];
+  zeroStockpileTurns?: number;
+  peakTier2Plus?: number;
+  firstTier3Round?: number|null;
   finalResources: number;
   resourcesGained: number;
   resourcesSpent: number;
@@ -129,6 +138,8 @@ export interface MaterialSample {
   turn: number;
   white: number; // on-board material (cost sum)
   black: number;
+  whiteTier2Plus?: number;
+  blackTier2Plus?: number;
   whiteRes: number;
   blackRes: number;
 }
@@ -136,6 +147,9 @@ export interface MaterialSample {
 /** One JSONL row per game. */
 export interface GameRecord {
   schema: 'muju-lab-game-v1';
+  maxInactivityPlies?: number;
+  inactivityDraw?: boolean;
+  upkeepElimination?: boolean;
   engineHash: string;
   runId: string;
   experiment: string | null;

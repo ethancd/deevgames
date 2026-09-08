@@ -4,7 +4,7 @@ import type { GameState } from '../src/game/types';
 import { getUnitDefinition } from '../src/game/units';
 
 async function start(page: Page, state?: GameState, mode = 'Pass & Play') {
-  if (state) await page.addInitScript(saved => localStorage.setItem('elemental-tactics-save', JSON.stringify({ schemaVersion: 3, timestamp: Date.now(), state: saved })), state);
+  if (state) await page.addInitScript(saved => localStorage.setItem('elemental-tactics-save', JSON.stringify({ schemaVersion: 4, timestamp: Date.now(), state: saved })), state);
   await page.goto('./');
   await page.getByRole('button', { name: mode === 'vs AI' ? 'vs AI Play against the computer' : mode, exact: mode === 'vs AI' }).click();
   await page.getByRole('button', { name: 'Start Game' }).click();
@@ -178,7 +178,7 @@ test('v1.3 Lightning combat, Plant extraction and tutorial agree with the catalo
   await page.getByRole('button', { name: `Mine +${mining} ◆`, exact: true }).click();
   await expect(page.locator('.score-strip>div').first()).toContainText(`◆ ${mining}`);
   await page.getByRole('button', { name: 'How to play', exact: true }).click();
-  for (let i = 0; i < 5; i++) await page.getByRole('button', { name: 'Next →' }).click();
+  for (let i = 0; i < 7; i++) await page.getByRole('button', { name: 'Next →' }).click();
   await expect(page.locator('.help-body')).toContainText('damage equal to effective attack');
   for (let i = 0; i < 2; i++) await page.getByRole('button', { name: 'Next →' }).click();
   await expect(page.locator('.help-body')).toContainText(`+${mining}`);
@@ -210,7 +210,7 @@ for (const [width,height] of [[320,568],[390,664]]) test(`home invasion warns, r
  const s=createInitialGameState();s.turn.currentPlayer='black';s.board.units.find(u=>u.owner==='white'&&u.definitionId==='fire_1')!.position={x:9,y:9};
  // Use a saved reply turn, then remove the fixture installer before the reload.
  await page.setViewportSize({width,height});await page.goto('./');
- await page.evaluate(state=>localStorage.setItem('elemental-tactics-save',JSON.stringify({schemaVersion:3,timestamp:Date.now(),state})),s);
+ await page.evaluate(state=>localStorage.setItem('elemental-tactics-save',JSON.stringify({schemaVersion:4,timestamp:Date.now(),state})),s);
  await page.reload();await page.getByRole('button',{name:'Pass & Play'}).click();await page.getByRole('button',{name:'Start Game'}).click();
  await expect(page.getByTestId('cell-9-9')).toHaveAttribute('aria-label',/black home corner/);
  await expect(page.locator('.board-key')).toContainText('Clear J10 this turn or lose');await fits(page);

@@ -214,3 +214,21 @@ button:focus-visible, a:focus-visible { outline: 3px solid #67e8f9; outline-offs
 .board-cell.selected .crystal-gauge, .board-cell.preview-cell .crystal-gauge, .well-example .crystal-gauge { opacity: 1; }
 /* Numeric inspection leaves a clear floor below occupied pieces. */
 .board-square:has(.resource-readout) .unit-wrap { height: 64%; width: 76%; transform: translate(-4%, -23%); }
+
+/* Turn rent and public inactivity clock. */
+.rent-warning { color: #f59e0b !important; }
+.score-strip .rent-warning { color: #f87171 !important; }
+.progress-clock { display: flex; justify-content: space-between; gap: .5rem; padding: 2px 8px; font-size: .7rem; color: #94a3b8; }
+.upkeep-list { display: grid; gap: .35rem; max-height: 48dvh; overflow-y: auto; }
+.upkeep-list label { display: flex; align-items: center; gap: .7rem; padding: .65rem; background: #172033; border-radius: .4rem; }
+.upkeep-list label span { flex: 1; }
+.upkeep-list small { display: block; color: #94a3b8; }
+.upkeep-list input { width: 1.2rem; height: 1.2rem; }
+
+.score-strip small { white-space: normal; }
+@media (orientation: landscape) and (max-height: 600px) {
+  .game-shell { grid-template-rows: 38px 28px 62px 18px minmax(0,1fr) auto; }
+  .progress-clock { grid-column: 2; grid-row: 4; }
+  .queue-strip, .decision-panel { grid-row: 5; }
+  .play-footer, .board-key { grid-row: 6; }
+}

@@ -9,6 +9,7 @@ import type { GameState, Unit } from '../../src/game/types';
 
 function arena(tier: number) {
   const s = createInitialGameState();
+  s.players.white.resources=20;s.players.white.resourcesGained=20;
   const attacker = createUnit(`fire_${tier}`, 'white', { x: 5, y: 5 });
   s.board.units = [attacker, ...[{x:5,y:4},{x:6,y:5},{x:5,y:6},{x:4,y:5}].map(p=>createUnit('fire_1','black',p)),createUnit('water_3','black',{x:9,y:8})];
   return { s, attacker };

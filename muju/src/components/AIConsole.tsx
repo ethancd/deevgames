@@ -8,6 +8,7 @@ interface AIConsoleProps {
 
 function formatAction(action: AIAction): string {
   switch (action.type) {
+    case 'PAY_UPKEEP': return `Pay upkeep · keep ${action.keepUnitIds.length} units`;
     case 'MOVE':
       return `Move ${action.unitId} → (${action.to.x},${action.to.y})`;
     case 'ATTACK':

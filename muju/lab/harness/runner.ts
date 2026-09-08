@@ -1,3 +1,5 @@
+import { setUpkeepVariant, defaultUpkeepAction } from '../../src/game/upkeep';
+import { phaseEndAction } from '../../src/game/legality';
 import type { GameState, PlayerId } from '../../src/game/types';
 import type { AIAction } from '../../src/ai/types';
 import { createInitialGameState } from '../../src/game/board';
@@ -126,12 +128,14 @@ export async function playGame(args: PlayGameArgs): Promise<PlayGameResult> {
 
   // Engine knobs for this game (module-global; games run sequentially).
   // Reset in the finally below so no game leaks config into the next.
+  setUpkeepVariant(options.upkeep??'shipped');
   setElementGraph(options.elementGraph);
   setCombatHandicap('white', options.handicap.white);
   setCombatHandicap('black', options.handicap.black);
   try {
     return await playGameInner(args, options);
   } finally {
+    setUpkeepVariant('shipped');
     setElementGraph('double-thick');
     resetCombatHandicap();
   }
@@ -144,6 +148,7 @@ async function playGameInner(args: PlayGameArgs, options: MatchOptions): Promise
 
   let state = createInitialGameState(options.resourceLayout);
   state.victoryRule = options.victoryRule;
+  state.inactivityRule = options.inactivityRule;
   const rngs: Record<PlayerId, () => number> = {
     white: mulberry32(deriveSeed(seed, 0)),
     black: mulberry32(deriveSeed(seed, 1)),
@@ -167,6 +172,9 @@ async function playGameInner(args: PlayGameArgs, options: MatchOptions): Promise
   let ply = 0;
   let lastSampledTurn = 0;
   let consecutiveNoops = 0;
+  let maxInactivityPlies=0;
+  const sampledStarts={white:1,black:0};
+  stats.white.zeroStockpileTurns=state.players.white.resources===0?1:0;
 
   if (options.recordReplay) {
     steps.push(snapshotStep(state, 0, 'white', null)); // initial position
@@ -174,7 +182,7 @@ async function playGameInner(args: PlayGameArgs, options: MatchOptions): Promise
 
   gameLoop: while (true) {
     // Terminal checks
-    if (state.phase === 'victory' && state.winner) {
+    if (state.phase === 'victory') {
       winner = state.winner;
       const result = checkVictory(state.board);
       winType = state.victoryReason ?? (result.status === 'victory' ? 'elimination' : 'resignation');
@@ -208,10 +216,12 @@ async function playGameInner(args: PlayGameArgs, options: MatchOptions): Promise
     }
 
     // Material curve: sample at the start of each white turn (new round)
-    if (state.turn.currentPlayer === 'white' && state.turn.turnNumber > lastSampledTurn) {
+    if (!state.upkeepPending && state.turn.currentPlayer === 'white' && state.turn.turnNumber > lastSampledTurn) {
       lastSampledTurn = state.turn.turnNumber;
       materialCurve.push({
         turn: state.turn.turnNumber,
+        whiteTier2Plus: state.board.units.filter(u=>u.owner==='white'&&getUnitDefinition(u.definitionId).tier>1).length,
+        blackTier2Plus: state.board.units.filter(u=>u.owner==='black'&&getUnitDefinition(u.definitionId).tier>1).length,
         white: onBoardMaterial(state, 'white'),
         black: onBoardMaterial(state, 'black'),
         whiteRes: state.players.white.resources,
@@ -225,7 +235,9 @@ async function playGameInner(args: PlayGameArgs, options: MatchOptions): Promise
 
     // Choose an action
     let action: AIAction | null = null;
-    if (bot.kind === 'scripted') {
+    if(state.upkeepPending && bot.kind==='scripted') {
+      action=defaultUpkeepAction(state,/AntiRush|Guard/.test(bot.name));
+    } else if (bot.kind === 'scripted') {
       const legal = legalActions(state, player);
       if (legal.length > 0) {
         const ctx = { view: buildView(state, player), legal, rng: rngs[player] };
@@ -250,12 +262,7 @@ async function playGameInner(args: PlayGameArgs, options: MatchOptions): Promise
     }
 
     // Fallback when the bot passes (or strict mode rejected): end the phase.
-    if (!action) {
-      if (state.turn.phase === 'place') {
-        action = { type: 'END_PLACE_PHASE' };
-      }
-      action ??= state.turn.phase === 'action' ? { type: 'END_ACTION_PHASE' } : { type: 'END_TURN' };
-    }
+    if (!action) action=phaseEndAction(state);
 
     // Pre-application bookkeeping for kill attribution
     const unitsW = unitCount(state, 'white');
@@ -285,6 +292,18 @@ async function playGameInner(args: PlayGameArgs, options: MatchOptions): Promise
 
     args.onAction?.(before, state, action, player);
 
+    maxInactivityPlies=Math.max(maxInactivityPlies,state.inactivityPlies??0);
+    if(state.lastUpkeep && state.lastUpkeep!==before.lastUpkeep){
+      const rent=state.lastUpkeep,p=rent.player;
+      stats[p].upkeepPaid!+=rent.paid;
+      stats[p].upkeepReleased!.push(...rent.released.map(u=>{const unit=before.board.units.find(x=>x.id===u.id),home=before.players[p].startCorner;return {...u,turn:rent.turnNumber,homeDistance:unit?Math.abs(unit.position.x-home.x)+Math.abs(unit.position.y-home.y):null};}));
+    }
+    for(const p of ['white','black'] as const){
+      const own=state.board.units.filter(u=>u.owner===p);
+      stats[p].peakTier2Plus=Math.max(stats[p].peakTier2Plus??0,own.filter(u=>getUnitDefinition(u.definitionId).tier>1).length);
+      if(stats[p].firstTier3Round===null&&own.some(u=>getUnitDefinition(u.definitionId).tier===3))stats[p].firstTier3Round=state.turn.turnNumber;
+      if(state.turn.currentPlayer===p&&!state.upkeepPending&&sampledStarts[p]!==state.turn.turnNumber){sampledStarts[p]=state.turn.turnNumber;if(state.players[p].resources===0)stats[p].zeroStockpileTurns!++;}
+    }
     // Stats
     const dW = unitsW - unitCount(state, 'white');
     const dB = unitsB - unitCount(state, 'black');
@@ -345,6 +364,7 @@ async function playGameInner(args: PlayGameArgs, options: MatchOptions): Promise
 
   const record: GameRecord = {
     schema: 'muju-lab-game-v1',
+    maxInactivityPlies,inactivityDraw:state.victoryReason==='inactivity',upkeepElimination:state.victoryReason==='upkeep-elimination',
     engineHash: args.engineHash,
     runId: args.runId,
     experiment: args.experiment ?? null,
@@ -372,6 +392,7 @@ async function playGameInner(args: PlayGameArgs, options: MatchOptions): Promise
 function emptyStats(botName: string): PlayerGameStats {
   return {
     bot: botName,
+    upkeepPaid:0,upkeepReleased:[],zeroStockpileTurns:0,peakTier2Plus:0,firstTier3Round:null,
     finalResources: 0,
     resourcesGained: 0,
     resourcesSpent: 0,

@@ -21,7 +21,7 @@ export const referenceTactics: TacticalSolver = (state, targetId, maxNodes, budg
   let nodes = 0, cutoff = false;
   const rootPlayer = state.turn.currentPlayer;
   const result = (status: TacticalResult['status'], actions: AIAction[] = []): TacticalResult => ({ status, actions, nodes, scope: 'current-turn target removal; all moves/attacks; home-blocked promotions' });
-  if (state.phase !== 'playing' || state.turn.phase === 'queue' ||
+  if (state.upkeepPending || state.phase !== 'playing' || state.turn.phase === 'queue' ||
     (state.turn.phase === 'place' && homeInvader(state, rootPlayer)?.id !== targetId)) return result('unknown');
   const visit = (s: GameState, path: AIAction[], limit: number): AIAction[] | null => {
     if (!s.board.units.some(u => u.id === targetId)) return path;

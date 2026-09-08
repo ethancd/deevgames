@@ -8,12 +8,12 @@ document and the code disagree, that is a bug in one of them: see
 of known divergences. The stat tables in §7 are transcriptions of
 `src/game/units.ts`, which is the canonical stat source.
 
-**Spec version:** v1.5 (2026-09-08) — Six elements, three tiers; 18 units.
+**Spec version:** v1.6 (2026-09-08) — Tier upkeep and 20-ply inactivity draw, on the 18-unit catalogue.
 Tier 4 is removed. Tanka (Metal III) gains Speed 2; all other v1.3 T1–T3 stats,
 costs and build times, v1.4 Cleave, and the Unequal routes board are unchanged.
 History: v1.0 (original design), v1.1 (`docs/v1.1-spec.md`, historical playtest
 balance pass), v1.2 (2026-06-09 canonical rules rewrite), v1.3 (role balance),
-v1.4 (Cleave), v1.5 (tier-3 cap).
+v1.4 (Cleave), v1.5 (tier-3 cap), v1.6 (upkeep and inactivity draw).
 
 ---
 
@@ -49,7 +49,12 @@ A turn has three phases, in order:
    opponent). The phase auto-ends (ending the turn) when the player cannot
    afford anything further.
 
-Turn bookkeeping at the start of a player's turn:
+Turn bookkeeping at the start of a player's turn, in order:
+
+- Check home occupation and existing board elimination (§9).
+- If no win resolved and the public inactivity counter is20, draw (§9).
+- Pay upkeep from the existing stockpile (§5.5). If a selection is required,
+  the place phase pauses here. Removal of the last unit loses by elimination.
 
 - Their build queue advances by one turn; entries reaching 0 become **ready**.
 - All their units' action flags reset (`hasMoved`/`hasAttacked`/`hasMined`,
@@ -91,7 +96,7 @@ Turn bookkeeping at the start of a player's turn:
 - History includes eliminated targets (`attackedThisTurn`); `lastAttackKilled`
   records the result of this unit's last attack. Both reset on its owner's turn.
   Completed human and AI actions, plus undo, save the board and attack allowance
-  together. v1.5 save schema 3 discards unfinished games from older releases;
+  together. v1.6 save schema 4 discards unfinished games from older releases;
   no legacy tier-4 catalogue is loaded.
 
 ### 4.3 Damage and elimination
@@ -147,6 +152,27 @@ Turn bookkeeping at the start of a player's turn:
 - Restrictions: cannot skip tiers; T3 cannot promote; a unit may be promoted
   **at most once per place phase**, and **not on a turn it was placed**.
 - Promoted units can act immediately. Promotion is public information.
+
+### 5.5 Upkeep
+
+Each turn, before placement, pay 1 crystal for each of your tier-2 units and 2
+for each tier-3 (3 for tier4, if present). Any unit you do not pay for is lost.
+Tier1 units are free. Payment uses the existing stockpile and no actions.
+Queued units owe nothing until the next own turn after placement. A promotion
+pays its new tier's rent beginning next own turn, not retroactively.
+
+When the stockpile covers the army, all units are kept and payment is automatic.
+Otherwise the place phase opens with a mandatory affordable keep-set choice.
+The optional **Review upkeep each turn** menu setting allows voluntary release,
+including a free tier1 unit, even when all rent is affordable. Any affordable
+subset is legal. The empty set loses if it removes the last on-board unit.
+Releases are not attacks: they add no combat history, trigger no Cleave, and
+never reset the inactivity clock. Healing and queue advancement follow payment.
+
+Design intent: binary DEF walls require continuing income to sustain their tier.
+An income lead can become a tier lead and then a broken wall. Invading armies
+and corner garrisons pay the same rent. Tier1 swarms remain free; the shared
+six-action pool and Cleave are their counterweights.
 
 ## 6. Elements — the Double-Thick Triangle
 
@@ -248,10 +274,14 @@ Visible to both players at all times:
   resource states.
 - Each player's `resourcesGained` (total ever mined).
 - Each player's public manifested spending (`resourcesManifested`), updated
-  when a unit is placed or promoted. Internally, `resourcesSpent` counts
-  committed spending at queue/promotion time; it is private. The opponent
+  when a unit is placed or promoted and whenever upkeep is paid. Internally,
+  `resourcesSpent` counts queue purchases, promotions and paid upkeep; it is private. The opponent
   observation exposes the manifested total in its `resourcesSpent` slot,
-  so hidden queue purchases do not leak (corrected 2026-09-07).
+  so hidden queue purchases do not leak. `resourcesUpkeep` is the upkeep subtotal,
+  already included in both totals, not added twice. Conservation remains
+  `stockpile + hidden queue cost = gained − manifested`. Voluntary release does
+  not establish that the player was unable to afford the released unit.
+- The inactivity counter, pending upkeep step and last upkeep result are public.
 
 Hidden from the opponent:
 
@@ -278,8 +308,16 @@ than reading hidden state.
 - **Elimination:** a player with **zero units on the board** loses, even if
   their build queue is non-empty (no unit ⇒ no anchor ⇒ nothing can ever be
   placed). Deliberate ruling; documented in `src/game/victory.ts`.
-- **Draw:** both players simultaneously at zero units (effectively unreachable
-  through normal play).
+- **Inactivity draw:** after20 complete player turns without progress, end the
+  game as a draw. A ply means one player's turn, not one action or full round.
+  A mine yielding at least1 crystal or an enemy unit eliminated by attack resets
+  the counter immediately. That progress turn ends at0. Each other completed
+  turn adds1. Zero-yield mining is illegal. Chip attacks, movement, queueing,
+  placement, promotion and upkeep removal do not reset it. At the next turn
+  boundary, home occupation and existing board elimination take precedence;
+  the draw then resolves before upkeep. Saved draws preserve reason `inactivity`.
+  The public counter turns amber above14. Both players at zero units is also a
+  draw, though normal play cannot reach that position.
 - **Resignation:** the current player may resign; opponent wins. The AI plays out current-rule games: material deficits alone do not establish
   defeat when home occupation can win. Historical elimination-only lab games retain
   the older material-based resignation heuristic.

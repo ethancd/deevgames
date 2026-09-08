@@ -1,7 +1,7 @@
 import type { GameState } from '../game/types';
 
 // v3: v1.5 removes tier 4. Unfinished games from earlier releases are discarded.
-export const SCHEMA_VERSION = 3;
+export const SCHEMA_VERSION = 4;
 
 const STORAGE_KEY = 'elemental-tactics-save';
 

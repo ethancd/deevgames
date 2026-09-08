@@ -23,6 +23,7 @@ function posEq(a: { x: number; y: number }, b: { x: number; y: number }): boolea
 export function actionsEqual(a: AIAction, b: AIAction): boolean {
   if (a.type !== b.type) return false;
   switch (a.type) {
+    case 'PAY_UPKEEP': return b.type==='PAY_UPKEEP' && JSON.stringify([...a.keepUnitIds].sort())===JSON.stringify([...b.keepUnitIds].sort());
     case 'MOVE':
       return b.type === 'MOVE' && a.unitId === b.unitId && posEq(a.to, b.to);
     case 'ATTACK':

@@ -34,7 +34,7 @@ export async function instantiateTactics(bytes: BufferSource): Promise<TacticalS
     const unknown = (): TacticalResult => ({ status: 'unknown', actions: [], nodes: 0, scope });
     const units = state.board.units, player = state.turn.currentPlayer;
     const target = units.findIndex(u => u.id === targetId);
-    if (state.phase !== 'playing' || target < 0 || units.length > 100 || state.turn.phase === 'queue') return unknown();
+    if (state.upkeepPending || state.phase !== 'playing' || target < 0 || units.length > 100 || state.turn.phase === 'queue') return unknown();
     const corner = state.players[player].startCorner, victim = units[target];
     const homeBlocked = victim.owner !== player && victim.position.x === corner.x && victim.position.y === corner.y;
     if (state.turn.phase === 'place' && !homeBlocked) return unknown();

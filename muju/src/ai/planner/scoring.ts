@@ -1,3 +1,4 @@
+import { getGameResult } from '../../game/victory';
 import type { GameState, PlayerId } from '../../game/types';
 import type { TurnPlan } from './types';
 import { evaluatePosition, quickEvaluate } from '../evaluation';
@@ -12,6 +13,7 @@ export function scorePartialPlan(plan: TurnPlan, state: GameState, forPlayer: Pl
   }
 
   const simState = simulated ?? applyActions(state, plan.actions);
+  if(getGameResult(simState).status === 'draw')return 0;
   const baseUnits = getPlayerUnits(state.board, getOpponent(forPlayer));
   const nextUnits = getPlayerUnits(simState.board, getOpponent(forPlayer));
   const killCount = baseUnits.length - nextUnits.length;

@@ -4,7 +4,7 @@ import { getUnitById, placeUnit } from '../game/board';
 import { getNextTierDefinition, getUnitDefinition } from '../game/units';
 import { resolveCombat } from '../game/combat';
 import { executeMine } from '../game/mining';
-import { useAction, endTurn, startActionPhase, startQueuePhase, canActInPlacePhase, canActInQueuePhase } from '../game/turn';
+import { completeUpkeep, useAction, endTurn, startActionPhase, startQueuePhase, canActInPlacePhase, canActInQueuePhase } from '../game/turn';
 import { isLegalAction } from '../game/legality';
 import { getMoveCost } from '../game/movement';
 import { checkVictory } from '../game/victory';
@@ -31,6 +31,7 @@ export function applyAction(state: GameState, action: AIAction): GameState {
 
 function applyLegalAction(state: GameState, action: AIAction): GameState {
   switch (action.type) {
+    case 'PAY_UPKEEP': return completeUpkeep(state,action.keepUnitIds);
     case 'MOVE':
       return applyMove(state, action.unitId, action.to);
 
@@ -93,7 +94,8 @@ function applyMove(state: GameState, unitId: string, to: Position): GameState {
 
 function applyAttack(state: GameState, unitId: string, targetPosition: Position): GameState {
   const { board: newBoard } = resolveCombat(state.board, unitId, targetPosition);
-  const newState = useAction(state);
+  const killed = newBoard.units.filter(u => u.owner !== state.turn.currentPlayer).length < state.board.units.filter(u => u.owner !== state.turn.currentPlayer).length;
+  const newState = useAction(killed ? {...state,inactivityPlies:0,progressThisTurn:true} : state);
 
   // Check victory
   const victory = checkVictory(newBoard);
@@ -134,7 +136,7 @@ function applyMine(state: GameState, unitId: string): GameState {
   };
 
   const newState = useAction(state);
-  return { ...newState, board: newBoard, players: newPlayers };
+  return { ...newState, board: newBoard, players: newPlayers, inactivityPlies:0, progressThisTurn:true };
 }
 
 function finishPlacement(state: GameState): GameState {

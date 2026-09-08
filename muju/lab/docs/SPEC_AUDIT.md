@@ -1,3 +1,14 @@
+> v1.6: upkeep and the 20-ply draw are implemented by the shared transition; see [study](../../docs/UPKEEP_DRAW-2026-09-08.md).
+
+| Current clause | Implementation | Verification |
+|---|---|---|
+| §2 turn-start ordering | game/turn.ts startTurn/completeUpkeep | upkeep-draw.test.ts |
+| §5.5 upkeep, chosen keep-set, elimination | game/upkeep.ts, legality.ts, ai/simulate.ts | upkeep-draw.test.ts, upkeep-clock.test.ts |
+| §8 public rent conservation | resourcesManifested/resourcesUpkeep, observation.ts, belief/reconcile.ts | upkeep-draw.test.ts, harness/invariants.ts |
+| §9 inactivity and precedence | game/turn.ts, ai/simulate.ts, victory.ts | upkeep-draw.test.ts, e2e/upkeep-draw.spec.ts |
+| Search terminal zero and paid tactical boards | evaluation.ts, scoring.ts, engine-v2.ts, tactics/home.ts, wasm/kernel.ts | upkeep-clock.test.ts |
+| Persistence schema4 | utils/persistence.ts | upkeep-draw.test.ts |
+
 > v1.5: §7 traceability now covers 18 T1–T3 definitions; Metal III Speed 2 is the only numerical change. D7–D8 rulings stand. See [tier-3 cap](../../docs/TIER3_CAP-2026-09-08.md).
 
 # Muju Hono Tanka — Spec/Engine Audit (Phase 1, COMPLETE)

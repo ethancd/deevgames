@@ -1,3 +1,4 @@
+import { upkeepActions } from '../game/upkeep';
 import type { GameState, PlayerId } from '../game/types';
 import type { AIAction } from './types';
 import { getPlayerUnits } from '../game/board';
@@ -159,6 +160,7 @@ export function generateQueueActions(state: GameState, player: PlayerId): AIActi
  * Generate all actions available during place phase
  */
 export function generatePlacePhaseActions(state: GameState, player: PlayerId): AIAction[] {
+  if(state.upkeepPending)return upkeepActions(state);
   if (state.turn.phase !== 'place') {
     return [];
   }

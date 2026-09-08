@@ -1,3 +1,4 @@
+import { getUnitDefinition } from '../../src/game/units';
 import type { GameState, PlayerId } from '../../src/game/types';
 import { BOARD_SIZE, INITIAL_RESOURCE_LAYERS, MAX_ACTIONS_PER_TURN } from '../../src/game/board';
 
@@ -59,6 +60,8 @@ export function checkInvariants(state: GameState, context: string): void {
 
   for (const player of ['white', 'black'] as PlayerId[]) {
     const p = state.players[player];
+    const queued=p.buildQueue.reduce((n,q)=>n+getUnitDefinition(q.definitionId).cost,0);
+    if(p.resources+p.resourcesSpent!==p.resourcesGained || p.resources+queued!==p.resourcesGained-p.resourcesManifested)throw new InvariantViolation(`${context}: ${player} public spending identity broken`);
     if (p.resources < 0) {
       throw new InvariantViolation(`${context}: ${player} negative resources`);
     }

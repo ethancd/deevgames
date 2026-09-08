@@ -4,7 +4,7 @@ import { UNIT_DEFINITIONS } from '../src/game/units';
 import type { GameState } from '../src/game/types';
 
 async function start(page: Page, state: GameState) {
-  await page.addInitScript(saved => localStorage.setItem('elemental-tactics-save', JSON.stringify({ schemaVersion: 3, timestamp: Date.now(), state: saved })), state);
+  await page.addInitScript(saved => localStorage.setItem('elemental-tactics-save', JSON.stringify({ schemaVersion: 4, timestamp: Date.now(), state: saved })), state);
   await page.goto('./');
   await page.getByRole('button', { name: 'Pass & Play' }).click();
   await page.getByRole('button', { name: 'Start Game' }).click();

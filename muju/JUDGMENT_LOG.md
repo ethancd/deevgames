@@ -155,3 +155,22 @@ Do not install a static power score in the playing AI or claim that a stat has o
 - **Sub-rulings:** Retire the crest, keep the T3 inner rim. Bump save schema to 3 and discard unfinished prior games without migration. ABI 3 adds host-sized catalogue and power buffers. User follow-up names Metal Inyan / Mazask / Tanka, making the unchanged title Muju Hono Tanka a tier-1 / tier-2 / tier-3 sequence.
 - **Blast radius:** catalogue, promotion, AI evaluation/WASM, UI/tutorial, persistence, tactical fixtures, lab policies and reports. Historical runs keep their original data; current study reruns paired v1.4 and v1.5 catalogues with Cleave.
 - **Reversal cost:** restore six definitions and bump the save schema again; rerun validation and publish a new bundle. Discarded unfinished games cannot be recovered by a code rollback.
+
+## J-012: Tier upkeep, player-chosen, unpaid units removed (v1.6)
+
+- **Date:** 2026-09-08.
+- **Decision:** charge own on-board tiers1/2/3 rent0/1/2 from the existing bank before healing and queue advancement; historical tier4 would owe3. No action charge. Queued units first owe rent at their next own turn after placement.
+- **Intent:** income must sustain binary DEF walls. Rent applies equally to forward armies and home garrisons; tier1 swarms stay free, constrained by six actions and Cleave.
+- **Choice:** affordable all-keep defaults automatic. Shortfalls require a legal affordable keep-set. Per-player optional review permits voluntary release of any unit, including free tier1 units. Losing the last unit is elimination. No attack/Cleave/history side effects.
+- **Alternative rejected:** “must pay for every unit you can afford” leaves multiple competing maximal subsets ambiguous and removes the intended voluntary choice.
+- **Public spending:** paid upkeep enters both committed and manifested totals; resourcesUpkeep is a subtotal. Release cannot prove poverty because it is voluntary.
+- **Lab-only alternative:** steep0/1/3/5 is injectable and resets to shipped after each game. No arbitrary static discount is added; search uses real rent transitions.
+- **Evidence/limits:** [paired study](docs/UPKEEP_DRAW-2026-09-08.md). Scripted-policy wins are evidence about those policies, not optimal play.
+
+## J-013: Draw after20 complete quiet plies (v1.6)
+
+- **Date:** 2026-09-08.
+- **Decision:** successful mining or an enemy attack kill resets the public clock immediately; its turn completes at0. Every complete quiet player turn adds1. At20, draw after checking home occupation and existing elimination and before upkeep.
+- **Non-progress:** chip attacks, movement, buying, placing, promoting, releasing and resigning do not reset. Zero-yield mining remains illegal. Upkeep losses never count as kills.
+- **Interpretation:**20 complete quiet turns, not resetting during an action then immediately incrementing a progress turn to1. An explicit phase='victory', winner=null, reason='inactivity' persists and evaluates as0 from either side.
+- **Blast radius:** shared transition, observations, AI evaluation, UI/tutorial, schema4, harness telemetry and historical-report pointers.

@@ -118,15 +118,23 @@ export interface PlayerState {
   // Visible stats for opponent tracking
   resourcesGained: number; // Total resources ever mined
   resourcesSpent: number; // Total cost of all committed spending (includes queued units)
-  resourcesManifested: number; // Total cost of visible units only (promoted + placed, not queued)
+  resourcesUpkeep?: number; // Public upkeep included in both spent and manifested totals
+  resourcesManifested: number; // Public spending: placed units + promotions + upkeep (not hidden queues)
 }
 
-export type VictoryReason = 'elimination' | 'home-occupation' | 'resignation';
+export type VictoryReason = 'elimination' | 'home-occupation' | 'resignation' | 'inactivity' | 'upkeep-elimination';
 
 export interface GameState {
   /** Omitted means current rules; explicit elimination is for historical lab comparisons. */
   victoryRule?: 'elimination' | 'home-or-elimination';
   victoryReason?: VictoryReason;
+  upkeepPending?: boolean;
+  reviewUpkeep?: Partial<Record<PlayerId, boolean>>;
+  lastUpkeep?: {player: PlayerId; paid: number; released: {id: string; definitionId: string; tier: number}[]; turnNumber: number};
+  inactivityPlies?: number;
+  progressThisTurn?: boolean;
+  /** Lab control only; absent enables current draw rule. */
+  inactivityRule?: 'on' | 'off';
   phase: GamePhase;
   board: BoardState;
   players: {
@@ -154,6 +162,8 @@ export type GameAction =
   | { type: 'PROMOTE_UNIT'; unitId: string }
   | { type: 'PLACE_UNIT'; queuedUnitId: string; position: Position }
   | { type: 'END_TURN' }
+  | { type: 'PAY_UPKEEP'; keepUnitIds: string[] }
+  | { type: 'SET_UPKEEP_REVIEW'; player: PlayerId; enabled: boolean }
   | { type: 'RESIGN' }
   | { type: 'APPLY_AI_ACTION'; aiAction: import('../ai/types').AIAction }
   | { type: 'RESET_GAME' }

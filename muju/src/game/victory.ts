@@ -11,7 +11,7 @@ import { getPlayerUnits } from './board';
 export type GameResult =
   | { status: 'ongoing' }
   | { status: 'victory'; winner: PlayerId }
-  | { status: 'draw' }; // Included for completeness, unlikely in this game
+  | { status: 'draw'; reason?: 'inactivity' }; // Included for completeness, unlikely in this game
 
 /**
  * Check if a player has been eliminated (has no units left)
@@ -108,7 +108,7 @@ export function getHomeOccupier(board: BoardState, invader: PlayerId) {
 
 /** State-aware terminal result, including victories recorded at the turn boundary. */
 export function getGameResult(state: GameState): GameResult {
-  if (state.phase === 'victory' && state.winner) return { status: 'victory', winner: state.winner };
+  if (state.phase === 'victory') return state.winner ? { status: 'victory', winner: state.winner } : { status: 'draw', ...(state.victoryReason === 'inactivity' ? {reason: 'inactivity' as const} : {}) };
   return checkVictory(state.board);
 }
 

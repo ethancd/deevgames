@@ -1,0 +1,24 @@
+import { useEffect, useRef, useState } from 'react';
+import type { GameState } from '../game/types';
+import { getUnitDefinition } from '../game/units';
+import { unitUpkeep } from '../game/upkeep';
+
+export function UpkeepPanel({state,onConfirm}:{state:GameState;onConfirm:(ids:string[])=>void}) {
+  const units=state.board.units.filter(u=>u.owner===state.turn.currentPlayer);
+  const [kept,setKept]=useState(()=>units.map(u=>u.id));
+  const dialog=useRef<HTMLDialogElement>(null);
+  useEffect(()=>{dialog.current?.showModal();return ()=>dialog.current?.close();},[]);
+  const cost=units.filter(u=>kept.includes(u.id)).reduce((sum,u)=>sum+unitUpkeep(u),0);
+  const cash=state.players[state.turn.currentPlayer].resources;
+  return <dialog ref={dialog} className="play-dialog upkeep-dialog" aria-label="Choose upkeep" onCancel={e=>e.preventDefault()}>
+    <div className="dialog-content"><h2>Choose units to keep</h2>
+      <p>Pay upkeep before healing and placement. Unchecked units leave the board. This costs no actions.</p>
+      <div className="upkeep-list">{units.map(u=>{const d=getUnitDefinition(u.definitionId);return <label key={u.id}>
+        <input type="checkbox" checked={kept.includes(u.id)} onChange={e=>setKept(e.target.checked?[...kept,u.id]:kept.filter(id=>id!==u.id))}/>
+        <span>{d.name} <small>T{d.tier} · {String.fromCharCode(65+u.position.x)}{u.position.y+1}</small></span><b>◆ {unitUpkeep(u)}</b>
+      </label>;})}</div>
+      <p role="status" className={cost>cash?'rent-warning':''}>Upkeep {cost} / {cash} crystals · {units.length-kept.length} released</p>
+      <button className="primary" disabled={cost>cash} onClick={()=>onConfirm(kept)}>Pay upkeep & continue</button>
+    </div>
+  </dialog>;
+}

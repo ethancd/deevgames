@@ -1,3 +1,4 @@
+import { upkeepDue, settleUpkeep } from './upkeep';
 import type {
   GameState,
   PlayerId,
@@ -10,7 +11,7 @@ import {
   MAX_ACTIONS_PER_TURN,
   getPlayerUnits,
 } from './board';
-import { getHomeOccupier } from './victory';
+import { checkVictory, getHomeOccupier } from './victory';
 import { getPromotableUnits } from './promotion';
 import { getAllSpawnPositions } from './spawning';
 import { UNIT_DEFINITIONS } from './units';
@@ -55,6 +56,23 @@ export function startTurn(state: GameState, player: PlayerId): GameState {
       turn: { ...state.turn, currentPlayer: player, phase: 'place', actionsRemaining: MAX_ACTIONS_PER_TURN },
       selectedUnit: null, validMoves: [], validAttacks: [] };
   }
+  const elimination = checkVictory(state.board);
+  if(elimination.status !== 'ongoing') return {...state,phase:'victory',winner:elimination.status==='victory'?elimination.winner:null,victoryReason:'elimination'};
+  if(state.inactivityRule !== 'off' && (state.inactivityPlies ?? 0) >= 20) return {...state,phase:'victory',winner:null,victoryReason:'inactivity'};
+  const pending: GameState = {...state,upkeepPending:true,turn:{...state.turn,currentPlayer:player,phase:'place',actionsRemaining:MAX_ACTIONS_PER_TURN},selectedUnit:null,validMoves:[],validAttacks:[]};
+  const due=upkeepDue(pending,player);
+  if(due>state.players[player].resources || state.reviewUpkeep?.[player])return pending;
+  return completeUpkeep(pending,pending.board.units.filter(u=>u.owner===player).map(u=>u.id));
+}
+
+/** Called only after a validated selection, or automatic affordable payment. */
+export function completeUpkeep(state: GameState, keepUnitIds: string[]): GameState {
+  const paid=settleUpkeep(state,keepUnitIds),result=checkVictory(paid.board);
+  if(result.status!=='ongoing')return {...paid,phase:'victory',winner:result.status==='victory'?result.winner:null,victoryReason:'upkeep-elimination'};
+  return finishTurnStart(paid,paid.turn.currentPlayer);
+}
+
+function finishTurnStart(state: GameState, player: PlayerId): GameState {
   const playerState = state.players[player];
 
   // Advance build queue
@@ -112,6 +130,7 @@ export function getReadyUnits(playerState: PlayerState): QueuedUnit[] {
  * Resets promotedThisPlacement flag on all units
  */
 export function startActionPhase(state: GameState): GameState {
+  if(state.upkeepPending)return state;
   // Reset the promotedThisPlacement flag on all units
   const newBoard = {
     ...state.board,
@@ -188,6 +207,7 @@ export function canActInQueuePhase(state: GameState, player: PlayerId): boolean 
  * End the current player's turn and start the opponent's
  */
 export function endTurn(state: GameState): GameState {
+  if(state.phase === 'victory' || state.upkeepPending)return state;
   const currentPlayer = state.turn.currentPlayer;
   const nextPlayer: PlayerId = currentPlayer === 'white' ? 'black' : 'white';
 
@@ -197,6 +217,8 @@ export function endTurn(state: GameState): GameState {
   // (build queue persistence: units are never auto-deleted)
   const stateWithCleanedQueue: GameState = {
     ...state,
+    inactivityPlies: state.progressThisTurn ? 0 : (state.inactivityPlies ?? 0) + 1,
+    progressThisTurn: false,
     turn: {
       ...state.turn,
       turnNumber: isNewRound ? state.turn.turnNumber + 1 : state.turn.turnNumber,
@@ -259,6 +281,7 @@ export function skipToQueuePhase(state: GameState): GameState {
  * (has placeable units OR can promote any units)
  */
 export function canActInPlacePhase(state: GameState, player: PlayerId): boolean {
+  if(state.upkeepPending)return true;
   const playerState = state.players[player];
 
   // Check for ready units to place

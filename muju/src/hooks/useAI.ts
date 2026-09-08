@@ -71,7 +71,7 @@ export function useAI(options: UseAIOptions = {}) {
         if (committed) {
           const actual = await committed;
           if (!actual || token !== generation.current) break;
-          const gameplay = (s: GameState) => JSON.stringify({ board: s.board, players: s.players, turn: s.turn, phase: s.phase, winner: s.winner });
+          const gameplay = (s: GameState) => JSON.stringify({ board: s.board, players: s.players, turn: s.turn, phase: s.phase, winner: s.winner, victoryReason: s.victoryReason, upkeepPending: s.upkeepPending, inactivityPlies: s.inactivityPlies, progressThisTurn: s.progressThisTurn });
           if (gameplay(actual) !== gameplay(expected)) break;
           currentState = actual;
         }

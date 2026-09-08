@@ -1,3 +1,4 @@
+import { upkeepForTier } from '../../src/game/upkeep';
 import { UNIT_DEFINITIONS, getNextTierDefinition, getUnitDefinition } from '../../src/game/units';
 import type { UnitDefinition } from '../../src/game/types';
 import { power } from '../solver/model';
@@ -80,6 +81,7 @@ export function opening(map:MineralMap,policy:string,width=256,horizon=5,actions
  let beam:Node[]=[{positions:[1,11,10],depths:'0'.repeat(100),gross:0,cash:0,tier:1,score:0}];
  const turns:Opening['turns']=[];
  for(let turn=1;turn<=horizon;turn++) {
+  if(turn>1)beam=beam.filter(n=>n.cash>=upkeepForTier(n.tier)).map(n=>({...n,cash:n.cash-upkeepForTier(n.tier)}));
   if(policy==='plant'&&turn>1) beam=beam.map(n=>{
    const next=getNextTierDefinition(`plant_${n.tier}`);if(!next)return n;const cost=next.cost-getUnitDefinition(`plant_${n.tier}`).cost;
    return n.cash<cost?n:{...n,cash:n.cash-cost,tier:n.tier+1,parent:n,step:{turn,kind:'promote',unit:2,at:n.positions[2]}};
@@ -122,6 +124,7 @@ export function finance(target:UnitDefinition,incomes:number[],horizon=8) {
  const line=UNIT_DEFINITIONS.filter(u=>u.element===target.element);
  let tier=['fire','water','plant'].includes(target.element)?1:0,cash=0,ready=0,previous=0;
  for(let turn=1;turn<=horizon;turn++) {
+  if(turn>1 && tier>0){const rent=upkeepForTier(tier);if(cash<rent){tier=0;ready=0;}else cash-=rent;}
   let placed=false;if(ready===turn){tier=1;placed=true;}
   if(!placed&&turn>1&&tier>0&&tier<target.tier&&cash>=line[tier].cost-line[tier-1].cost){cash-=line[tier].cost-line[tier-1].cost;tier++;}
   if(tier>=target.tier)return turn;

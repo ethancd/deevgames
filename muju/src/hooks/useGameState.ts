@@ -9,6 +9,7 @@ import { loadGameState, saveGameState, clearGameState } from '../utils/persisten
 
 // Actions that can be undone during player's turn
 const UNDOABLE_ACTIONS = new Set([
+  'PAY_UPKEEP',
   'MOVE',
   'ATTACK',
   'MINE',
@@ -52,6 +53,8 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       };
     }
 
+    case 'SET_UPKEEP_REVIEW': return {...state,reviewUpkeep:{...state.reviewUpkeep,[action.player]:action.enabled}};
+    case 'PAY_UPKEEP':
     case 'MOVE':
     case 'ATTACK':
     case 'MINE':
@@ -87,6 +90,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
 // the board and its Cleave allowance together. Selection/preview do not save.
 const SAVE_ACTIONS = new Set([
   ...UNDOABLE_ACTIONS,
+  'SET_UPKEEP_REVIEW',
   'APPLY_AI_ACTION',
   'RESTORE_STATE',
   'END_PLACE_PHASE',
@@ -232,6 +236,8 @@ export function useGameState() {
   const canEndTurn = state.turn.phase === 'queue';
 
   return {
+    payUpkeep: (keepUnitIds: string[]) => dispatchWithUndo({type:'PAY_UPKEEP',keepUnitIds}),
+    setUpkeepReview: (player: import('../game/types').PlayerId, enabled: boolean) => dispatchWithUndo({type:'SET_UPKEEP_REVIEW',player,enabled}),
     state,
     selectUnit,
     deselect,

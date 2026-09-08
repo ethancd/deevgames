@@ -1,3 +1,4 @@
+import { upkeepDue } from '../game/upkeep';
 import type { GameState, PlayerId, Unit, Position } from '../game/types';
 import type { EvaluationWeights } from './types';
 import { DEFAULT_WEIGHTS } from './types';
@@ -30,6 +31,7 @@ export function evaluatePosition(
 ): number {
   // Check for victory conditions first
   const victory = getGameResult(state);
+  if (victory.status === 'draw') return 0;
   if (victory.status === 'victory') {
     return victory.winner === forPlayer ? VICTORY_SCORE : -VICTORY_SCORE;
   }
@@ -355,6 +357,7 @@ function getOpponent(player: PlayerId): PlayerId {
  */
 export function quickEvaluate(state: GameState, forPlayer: PlayerId): number {
   const victory = getGameResult(state);
+  if (victory.status === 'draw') return 0;
   if (victory.status === 'victory') {
     return victory.winner === forPlayer ? VICTORY_SCORE : -VICTORY_SCORE;
   }
@@ -443,7 +446,7 @@ export function shouldResign(state: GameState, player: PlayerId): boolean {
 
   // A banked economy or ready reinforcements can reverse a board deficit.
   // Only inspect our own private assets; opponent queues remain hidden.
-  if (state.players[player].resources > 0 || state.players[player].buildQueue.length > 0) return false;
+  if (state.players[player].resources > upkeepDue(state,player) || state.players[player].buildQueue.length > 0) return false;
   if (generateWinningAttack(state, player)) return false;
 
   // If opponent has 3x or more unit value, consider resigning

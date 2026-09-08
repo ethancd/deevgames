@@ -1,3 +1,4 @@
+import { UPKEEP_BY_TIER } from '../game/upkeep';
 import { useState, useCallback } from 'react';
 import { PlayDialog } from './PlayDialog';
 import { ELEMENT_INFO, getAttackModifier } from '../game/elements';
@@ -284,6 +285,23 @@ const instructionPages: InstructionPage[] = [
         </div>
       </div>
     ),
+  },
+  {
+    title: 'Paying upkeep',
+    content: <div className="space-y-4 text-sm text-gray-300">
+      <p>At the start of your turn, after checking home occupation, pay upkeep before your units heal or reinforcements become ready.</p>
+      <p>Tier 1 costs {UPKEEP_BY_TIER[1]}, tier 2 costs {UPKEEP_BY_TIER[2]}, and tier 3 costs {UPKEEP_BY_TIER[3]} crystals per unit. Queued units pay nothing.</p>
+      <p>Affordable upkeep is automatic. Otherwise, choose which units to keep. Unpaid units are lost. Losing your last unit loses the game. Upkeep uses none of your six actions.</p>
+      <p>Enable “Review upkeep each turn” in the game menu to voluntarily release units. Keep enough income to sustain your defenders.</p>
+    </div>,
+  },
+  {
+    title: 'The inactivity clock',
+    content: <div className="space-y-4 text-sm text-gray-300">
+      <p>Twenty complete player turns without progress end the game in a draw. One player’s turn is one ply.</p>
+      <p>Mining at least one crystal or eliminating an enemy with an attack resets the clock. Moving, building, placing, upgrading, chip damage and upkeep losses do not.</p>
+      <p>The public counter turns amber after 14 plies. A home-occupation or elimination win at the turn boundary takes priority over the draw.</p>
+    </div>,
   },
   {
     title: 'Movement',

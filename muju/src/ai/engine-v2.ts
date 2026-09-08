@@ -1,3 +1,5 @@
+import { upkeepActions } from '../game/upkeep';
+import { evaluatePosition } from './evaluation';
 import type { GameState, PlayerId } from '../game/types';
 import type { AIResult, AIDifficulty, EvaluationWeights, AIDebugInfo } from './types';
 import { DEFAULT_WEIGHTS } from './types';
@@ -57,6 +59,27 @@ export class AIEngineV2 {
     const player = state.turn.currentPlayer, opponent = player === 'white' ? 'black' : 'white';
     // The public snapshot is the only position retained or searched. Never keep
     // an unrestricted opponent snapshot in the engine/worker history.
+    if(state.upkeepPending) {
+      const view=extractPublicState(state,player);
+      const plans=upkeepActions(view).map((action,i)=>{
+        const next=applyAction(view,action);
+        return {id:`upkeep-${i}`,actions:[action],score:evaluatePosition(next,player,this.weights),tags:[] as TurnPlan['tags']};
+      }).sort((a,b)=>b.score-a.score);
+      // Preserve an affordable home rescue before comparing material. All
+      // proofs run on the paid, healed board, never the pre-upkeep position.
+      const invader=homeInvader(view,player);
+      if(invader && view.victoryRule!=='elimination')for(const plan of plans.slice(0,32)){
+        const paid=applyActions(view,plan.actions);
+        if(paid.phase==='victory')continue;
+        const rescue=this.solver(paid,invader.id,3000,new SearchBudget(Infinity,3000));
+        if(rescue.status==='proved'){plan.score+=100000;break;}
+      }
+      plans.sort((a,b)=>b.score-a.score);
+      const best=plans[0];
+      const stats=budget.finish();
+      return {plan:{actions:best.actions,score:best.score},nodesSearched:plans.length,timeMs:stats.elapsedMs,depth:0,
+        debug:{planCount:plans.length,topPlans:plans.slice(0,5),config:this.config},stats};
+    }
     const observed = observeState(this.lastObservedState, state, player);
     this.lastObservedState = observed;
     const beliefKey = JSON.stringify([player, this.config.particleCount, observed.turn.turnNumber,

@@ -1,3 +1,4 @@
+import { isUpkeepSelectionLegal, defaultUpkeepAction } from './upkeep';
 import type { GameState, PlayerId, Position } from './types';
 import type { AIAction } from '../ai/types';
 import { getUnitById, isValidPosition } from './board';
@@ -16,6 +17,8 @@ const validPosition = (p: Position) => Number.isInteger(p.x) && Number.isInteger
  */
 export function isLegalAction(state: GameState, action: AIAction, player: PlayerId = state.turn.currentPlayer): boolean {
   if (state.phase !== 'playing' || state.turn.currentPlayer !== player) return false;
+  if(action.type==='PAY_UPKEEP')return isUpkeepSelectionLegal(state,action.keepUnitIds);
+  if(state.upkeepPending)return action.type==='RESIGN';
   const phase = state.turn.phase;
   const me = state.players[player];
   switch (action.type) {
@@ -52,5 +55,6 @@ export function isLegalAction(state: GameState, action: AIAction, player: Player
 }
 
 export function phaseEndAction(state: GameState): AIAction {
+  if(state.upkeepPending)return defaultUpkeepAction(state);
   return { type: state.turn.phase === 'place' ? 'END_PLACE_PHASE' : state.turn.phase === 'action' ? 'END_ACTION_PHASE' : 'END_TURN' };
 }

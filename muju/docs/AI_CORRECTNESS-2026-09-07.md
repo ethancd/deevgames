@@ -1,3 +1,5 @@
+> v1.6 follow-up: [upkeep and inactivity draw](UPKEEP_DRAW-2026-09-08.md) supersede the no-upkeep game lengths, cap rates and carrying values below. Historical measurements are preserved.
+
 # Muju AI correctness repair — 2026-09-07
 
 > Subsequent authorized work: the static value solver and v1.3 catalogue changes are now implemented. See [implementation and validation](BALANCE_IMPLEMENTATION-2026-09-07.md). The original report below describes its earlier checkpoint.

@@ -20,6 +20,7 @@ export type AIAction =
   | { type: 'QUEUE_UNIT'; definitionId: string }
   | { type: 'PLACE_UNIT'; queuedUnitId: string; position: Position }
   | { type: 'PROMOTE_UNIT'; unitId: string }
+  | { type: 'PAY_UPKEEP'; keepUnitIds: string[] }
   | { type: 'RESIGN' };
 
 /**

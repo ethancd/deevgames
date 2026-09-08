@@ -1,3 +1,5 @@
+import { UpkeepPanel } from './UpkeepPanel';
+import { upkeepDue } from '../game/upkeep';
 import { VisualKey } from './VisualKey';
 import { describeCrystals } from './CrystalWell';
 import { getHomeOccupier } from '../game/victory';
@@ -38,7 +40,7 @@ interface GameScreenProps {
 
 export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
   const {
-    state,
+    state, payUpkeep, setUpkeepReview,
     selectUnit,
     deselect,
     moveUnit,
@@ -708,7 +710,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
   const opponentPlayer: PlayerId = viewerPlayer === 'white' ? 'black' : 'white';
   const opponentState = state.players[opponentPlayer];
 
-  const interactive = isCurrentPlayerHuman && !isThinking && !showPassOverlay && state.phase === 'playing';
+  const interactive = isCurrentPlayerHuman && !isThinking && !showPassOverlay && state.phase === 'playing' && !state.upkeepPending;
   const playerNames = config.mode === 'pass-play' ? { white: 'Player 1', black: 'Player 2' }
     : config.mode === 'ai-vs-ai' ? { white: 'AI 1', black: 'AI 2' } : { white: 'You', black: 'AI' };
   const shownUnit = selectedPlaceUnitData ?? selectedUnitData ?? viewedEnemyUnitData;
@@ -742,8 +744,9 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
         <button onClick={() => { whiteAI.clearError(); blackAI.clearError(); whiteAI.cancel(); blackAI.cancel(); setPlayerAiExecutedTurn(null); setAiAiExecutedTurn(null); }}>Retry AI</button>
       </div>}
       {(whiteAI.warning || blackAI.warning) && <small role="status">AI is using its backup engine.</small>}
-      {state.phase === 'victory' && state.winner && <VictoryScreen winner={state.winner} reason={state.victoryReason} onPlayAgain={handlePlayAgain} playerNames={playerNames} />}
+      {state.phase === 'victory' && <VictoryScreen winner={state.winner} reason={state.victoryReason} onPlayAgain={handlePlayAgain} playerNames={playerNames} />}
       {showPassOverlay && <PassDeviceOverlay nextPlayer={state.turn.currentPlayer} onContinue={handleContinueFromPass} />}
+      {state.upkeepPending && isCurrentPlayerHuman && !showPassOverlay && <UpkeepPanel state={state} onConfirm={payUpkeep} />}
       <InstructionsModal isOpen={showInstructions} onClose={() => setShowInstructions(false)} />
       <header className="game-header">
         <a href="../" aria-label="Back to Deev Games">← Games</a>
@@ -758,10 +761,11 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
       </section>
       <section className="score-strip" aria-label="Player resources">
         <div><strong><i className={`player-dot ${viewerPlayer}`} />{playerNames[viewerPlayer]} <b>◆ {viewerState.resources}</b></strong>
-          <small>Gained {viewerState.resourcesGained} · Spent {viewerState.resourcesSpent} · Field {viewerState.resourcesManifested}</small></div>
+          <small>Gained {viewerState.resourcesGained} · Public {viewerState.resourcesManifested}</small><small className={upkeepDue(state,viewerPlayer)>viewerState.resources ? 'rent-warning' : ''}>Upkeep {upkeepDue(state,viewerPlayer)} / turn</small></div>
         <div><strong><i className={`player-dot ${opponentPlayer}`} />{playerNames[opponentPlayer]} <b>◆ Hidden</b></strong>
-          <small>Gained {opponentState.resourcesGained} · Field {opponentState.resourcesManifested}</small></div>
+          <small>Gained {opponentState.resourcesGained} · Public {opponentState.resourcesManifested}</small><small>Upkeep {upkeepDue(state,opponentPlayer)} / turn</small></div>
       </section>
+      <div className="progress-clock"><span className={(state.inactivityPlies??0)>14 ? 'rent-warning' : ''}>{state.inactivityPlies??0}/20 ply since progress</span>{state.lastUpkeep && (state.lastUpkeep.paid>0 || state.lastUpkeep.released.length>0) && <span>{playerNames[state.lastUpkeep.player]} paid {state.lastUpkeep.paid} · released {state.lastUpkeep.released.length}</span>}</div>
       {viewerState.buildQueue.length > 0 && <BuildQueue queue={viewerState.buildQueue} isOwner={true}
         isPlacePhase={state.turn.phase === 'place' && interactive} board={state.board} player={state.turn.currentPlayer}
         selectedReadyId={selectedReadyUnitId} onSelectReady={(id) => { setSelectedReadyUnitId(id); setSelectedPlaceUnitId(null); setViewedEnemyUnitId(null); }} />}
@@ -812,6 +816,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
       {showVisualKey && <PlayDialog title="Read the board" onClose={() => setShowVisualKey(false)}><VisualKey /></PlayDialog>}
       {showMenu && <PlayDialog title="Game menu" onClose={() => setShowMenu(false)}>
         <p>Your match is saved at phase changes on this device. New games use Unequal routes; existing saves keep their original board.</p>
+        {isCurrentPlayerHuman && <label><input type="checkbox" checked={!!state.reviewUpkeep?.[state.turn.currentPlayer]} onChange={e=>setUpkeepReview(state.turn.currentPlayer,e.target.checked)} /> Review upkeep each turn (allows voluntary release)</label>}
         <button onClick={() => { setShowMenu(false); handleBackToMenuClick(); }}>Choose game mode</button>
         <button onClick={() => { if (window.confirm('Start a new game? This replaces your saved match.')) { handlePlayAgain(); setShowMenu(false); } }}>New game</button>
         <a href="https://ashkie.com/">Visit Ashkie.com ↗</a>
@@ -822,7 +827,8 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
       {showInsights && <PlayDialog title="Elements & match stats" onClose={() => { setShowInsights(false); handleDismissRecap(); }}>
         <ElementLegend />
         <p>Advantage adds 1 attack; disadvantage subtracts 1. Attack previews include this bonus.</p>
-        <p>Field is spending revealed by placed or upgraded units. Opponent crystals and reinforcements stay hidden.</p>
+        {state.lastUpkeep && <p>Last upkeep: {playerNames[state.lastUpkeep.player]} paid {state.lastUpkeep.paid}. Released: {state.lastUpkeep.released.map(u=>getUnitDefinition(u.definitionId).name).join(', ') || 'none'}.</p>}
+        <p>Public spending includes placed or upgraded units and paid upkeep. Opponent crystals and reinforcements stay hidden.</p>
         {showAIRecap && <AIRecap actions={blackAI.lastTurnActions} onDismiss={handleDismissRecap} />}
         {config.controls.white === 'ai' && <AIConsole title="AI 1 Console" debug={whiteAI.lastDebug} isThinking={whiteAI.isThinking} />}
         {config.controls.black === 'ai' && <AIConsole title="AI Console" debug={blackAI.lastDebug} isThinking={blackAI.isThinking} />}

@@ -224,6 +224,7 @@ export function createInitialGameState(resourceLayout: readonly number[] = UNEQU
     resourcesGained: 0,
     resourcesSpent: 0,
     resourcesManifested: 0,
+    resourcesUpkeep: 0,
   };
 
   const blackState: PlayerState = {
@@ -234,6 +235,7 @@ export function createInitialGameState(resourceLayout: readonly number[] = UNEQU
     resourcesGained: 0,
     resourcesSpent: 0,
     resourcesManifested: 0,
+    resourcesUpkeep: 0,
   };
 
   const turnState: TurnState = {
@@ -245,6 +247,7 @@ export function createInitialGameState(resourceLayout: readonly number[] = UNEQU
 
   return {
     phase: 'playing',
+    inactivityPlies: 0, progressThisTurn: false,
     board,
     players: {
       white: whiteState,
