@@ -2,6 +2,9 @@
   "extends": "../tsconfig.json",
   "include": [
     "e15-tier3-e9.ts",
+    "e16-upkeep-e9.ts",
+    "e16-upkeep-e13.ts",
+    "e16-upkeep-ai.ts",
     "e15-tier3-e13.ts",
     "../harness/**/*.ts",
     "../../src/**/*.ts"

@@ -1,0 +1,4691 @@
+{
+  "e13": {
+    "off": {
+      "games": 960,
+      "outcomes": {
+        "adjudication": 260,
+        "home-occupation": 398,
+        "elimination": 302
+      },
+      "natural": 700,
+      "caps": 260,
+      "medianRound": 21.0,
+      "rentPaid": 0,
+      "released": 0,
+      "combatLosses": 19266,
+      "zeroStockpileTurns": 64057,
+      "firstTier3Round": {
+        "n": 817,
+        "median": 3,
+        "p95": 13,
+        "max": 33,
+        "atLeast20": 9
+      },
+      "peakTier2Plus": {
+        "n": 1920,
+        "median": 2.0,
+        "p95": 12,
+        "max": 31,
+        "atLeast20": 18
+      },
+      "quietNatural": {
+        "n": 700,
+        "median": 1.0,
+        "p95": 4,
+        "max": 21,
+        "atLeast20": 2
+      },
+      "homeInvaders": {
+        "fire_1": 23,
+        "plant_1": 21,
+        "fire_3": 5,
+        "water_1": 5,
+        "metal_1": 21,
+        "water_2": 15,
+        "lightning_1": 122,
+        "plant_2": 17,
+        "shadow_3": 1,
+        "water_3": 3,
+        "metal_2": 47,
+        "shadow_1": 9,
+        "plant_3": 22,
+        "metal_3": 67,
+        "fire_2": 4,
+        "lightning_2": 16
+      },
+      "cells": [
+        {
+          "a": "Rush",
+          "b": "AntiRush",
+          "games": 40,
+          "outcomes": {
+            "adjudication": 25,
+            "home-occupation": 2,
+            "elimination": 13
+          },
+          "natural": 15,
+          "caps": 25,
+          "medianRound": 121.0,
+          "rentPaid": 0,
+          "released": 0,
+          "combatLosses": 900,
+          "zeroStockpileTurns": 5198,
+          "firstTier3Round": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "max": null,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 0.0,
+            "p95": 0,
+            "max": 0,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 15,
+            "median": 1,
+            "p95": 3,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "fire_1": 2
+          },
+          "aNaturalWins": 15,
+          "bNaturalWins": 0
+        },
+        {
+          "a": "InvestT3",
+          "b": "Rush",
+          "games": 40,
+          "outcomes": {
+            "elimination": 16,
+            "home-occupation": 22,
+            "adjudication": 2
+          },
+          "natural": 38,
+          "caps": 2,
+          "medianRound": 28.5,
+          "rentPaid": 0,
+          "released": 0,
+          "combatLosses": 1153,
+          "zeroStockpileTurns": 2077,
+          "firstTier3Round": {
+            "n": 40,
+            "median": 5.0,
+            "p95": 5,
+            "max": 7,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 0.5,
+            "p95": 7,
+            "max": 8,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 38,
+            "median": 1.0,
+            "p95": 3,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "plant_1": 14,
+            "fire_3": 1,
+            "water_1": 2,
+            "metal_1": 2,
+            "fire_1": 2,
+            "water_2": 1
+          },
+          "aNaturalWins": 33,
+          "bNaturalWins": 5
+        },
+        {
+          "a": "Invade:LightningRush",
+          "b": "Aware:AntiRush",
+          "games": 40,
+          "outcomes": {
+            "elimination": 29,
+            "home-occupation": 11
+          },
+          "natural": 40,
+          "caps": 0,
+          "medianRound": 23.5,
+          "rentPaid": 0,
+          "released": 0,
+          "combatLosses": 1273,
+          "zeroStockpileTurns": 1631,
+          "firstTier3Round": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "max": null,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 0.0,
+            "p95": 0,
+            "max": 0,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 40,
+            "median": 1.0,
+            "p95": 2,
+            "max": 2,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "lightning_1": 11
+          },
+          "aNaturalWins": 25,
+          "bNaturalWins": 15
+        },
+        {
+          "a": "Invade:Balanced",
+          "b": "Aware:Balanced",
+          "games": 40,
+          "outcomes": {
+            "elimination": 16,
+            "adjudication": 17,
+            "home-occupation": 7
+          },
+          "natural": 23,
+          "caps": 17,
+          "medianRound": 59.0,
+          "rentPaid": 0,
+          "released": 0,
+          "combatLosses": 1601,
+          "zeroStockpileTurns": 2999,
+          "firstTier3Round": {
+            "n": 28,
+            "median": 13.0,
+            "p95": 23,
+            "max": 33,
+            "atLeast20": 3
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 8.0,
+            "p95": 22,
+            "max": 31,
+            "atLeast20": 8
+          },
+          "quietNatural": {
+            "n": 23,
+            "median": 3,
+            "p95": 5,
+            "max": 12,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "plant_2": 3,
+            "water_2": 2,
+            "shadow_3": 1,
+            "water_3": 1
+          },
+          "aNaturalWins": 9,
+          "bNaturalWins": 14
+        },
+        {
+          "a": "Siege:2",
+          "b": "Aware:Balanced",
+          "games": 40,
+          "outcomes": {
+            "home-occupation": 28,
+            "adjudication": 10,
+            "elimination": 2
+          },
+          "natural": 30,
+          "caps": 10,
+          "medianRound": 23.5,
+          "rentPaid": 0,
+          "released": 0,
+          "combatLosses": 699,
+          "zeroStockpileTurns": 2338,
+          "firstTier3Round": {
+            "n": 54,
+            "median": 3.0,
+            "p95": 8,
+            "max": 18,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 3.0,
+            "p95": 12,
+            "max": 16,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 30,
+            "median": 1.0,
+            "p95": 4,
+            "max": 5,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "metal_2": 27,
+            "metal_1": 1
+          },
+          "aNaturalWins": 30,
+          "bNaturalWins": 0
+        },
+        {
+          "a": "Invade:Balanced",
+          "b": "Invade:Balanced",
+          "games": 40,
+          "outcomes": {
+            "home-occupation": 36,
+            "elimination": 2,
+            "adjudication": 2
+          },
+          "natural": 38,
+          "caps": 2,
+          "medianRound": 26.0,
+          "rentPaid": 0,
+          "released": 0,
+          "combatLosses": 838,
+          "zeroStockpileTurns": 1714,
+          "firstTier3Round": {
+            "n": 4,
+            "median": 17.0,
+            "p95": 21,
+            "max": 21,
+            "atLeast20": 2
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 3.0,
+            "p95": 11,
+            "max": 21,
+            "atLeast20": 2
+          },
+          "quietNatural": {
+            "n": 38,
+            "median": 2.0,
+            "p95": 5,
+            "max": 21,
+            "atLeast20": 2
+          },
+          "homeInvaders": {
+            "plant_2": 14,
+            "water_2": 6,
+            "plant_1": 4,
+            "shadow_1": 8,
+            "fire_1": 2,
+            "water_1": 2
+          },
+          "aNaturalWins": 19,
+          "bNaturalWins": 19
+        },
+        {
+          "a": "LightningRush",
+          "b": "Expand",
+          "games": 40,
+          "outcomes": {
+            "elimination": 36,
+            "home-occupation": 4
+          },
+          "natural": 40,
+          "caps": 0,
+          "medianRound": 7.0,
+          "rentPaid": 0,
+          "released": 0,
+          "combatLosses": 383,
+          "zeroStockpileTurns": 399,
+          "firstTier3Round": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "max": null,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 0.0,
+            "p95": 2,
+            "max": 2,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 40,
+            "median": 1.0,
+            "p95": 1,
+            "max": 1,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "lightning_1": 4
+          },
+          "aNaturalWins": 40,
+          "bNaturalWins": 0
+        },
+        {
+          "a": "InvestT4",
+          "b": "InvestT3",
+          "games": 40,
+          "outcomes": {
+            "adjudication": 40
+          },
+          "natural": 0,
+          "caps": 40,
+          "medianRound": 121.0,
+          "rentPaid": 0,
+          "released": 0,
+          "combatLosses": 866,
+          "zeroStockpileTurns": 7824,
+          "firstTier3Round": {
+            "n": 80,
+            "median": 3.0,
+            "p95": 3,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 2.0,
+            "p95": 5,
+            "max": 5,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "max": null,
+            "atLeast20": 0
+          },
+          "homeInvaders": {},
+          "aNaturalWins": 0,
+          "bNaturalWins": 0
+        },
+        {
+          "a": "Invade:LightningRush",
+          "b": "Aware:InvestT3",
+          "games": 40,
+          "outcomes": {
+            "home-occupation": 12,
+            "elimination": 28
+          },
+          "natural": 40,
+          "caps": 0,
+          "medianRound": 31.5,
+          "rentPaid": 0,
+          "released": 0,
+          "combatLosses": 1581,
+          "zeroStockpileTurns": 1794,
+          "firstTier3Round": {
+            "n": 34,
+            "median": 4.0,
+            "p95": 20,
+            "max": 22,
+            "atLeast20": 3
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 0.5,
+            "p95": 6,
+            "max": 8,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 40,
+            "median": 1.0,
+            "p95": 1,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "lightning_1": 6,
+            "plant_3": 2,
+            "water_3": 2,
+            "water_2": 1,
+            "metal_3": 1
+          },
+          "aNaturalWins": 11,
+          "bNaturalWins": 29
+        },
+        {
+          "a": "Invade:InvestT3",
+          "b": "Aware:HomeT3",
+          "games": 40,
+          "outcomes": {
+            "home-occupation": 22,
+            "adjudication": 15,
+            "elimination": 3
+          },
+          "natural": 25,
+          "caps": 15,
+          "medianRound": 33.5,
+          "rentPaid": 0,
+          "released": 0,
+          "combatLosses": 993,
+          "zeroStockpileTurns": 3820,
+          "firstTier3Round": {
+            "n": 78,
+            "median": 5.0,
+            "p95": 8,
+            "max": 9,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 3.0,
+            "p95": 5,
+            "max": 7,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 25,
+            "median": 2,
+            "p95": 4,
+            "max": 8,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "lightning_1": 2,
+            "fire_1": 5,
+            "metal_1": 7,
+            "plant_3": 6,
+            "metal_2": 1,
+            "fire_2": 1
+          },
+          "aNaturalWins": 23,
+          "bNaturalWins": 2
+        },
+        {
+          "a": "Siege:4",
+          "b": "Aware:Balanced",
+          "games": 40,
+          "outcomes": {
+            "home-occupation": 36,
+            "adjudication": 4
+          },
+          "natural": 36,
+          "caps": 4,
+          "medianRound": 8.0,
+          "rentPaid": 0,
+          "released": 0,
+          "combatLosses": 340,
+          "zeroStockpileTurns": 1256,
+          "firstTier3Round": {
+            "n": 45,
+            "median": 3,
+            "p95": 7,
+            "max": 11,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 2.0,
+            "p95": 8,
+            "max": 15,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 36,
+            "median": 1.0,
+            "p95": 2,
+            "max": 2,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "metal_3": 31,
+            "metal_2": 5
+          },
+          "aNaturalWins": 36,
+          "bNaturalWins": 0
+        },
+        {
+          "a": "Invade:LightningRush",
+          "b": "Invade:LightningRush",
+          "games": 40,
+          "outcomes": {
+            "home-occupation": 32,
+            "elimination": 8
+          },
+          "natural": 40,
+          "caps": 0,
+          "medianRound": 7.5,
+          "rentPaid": 0,
+          "released": 0,
+          "combatLosses": 422,
+          "zeroStockpileTurns": 644,
+          "firstTier3Round": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "max": null,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 0.0,
+            "p95": 0,
+            "max": 0,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 40,
+            "median": 1.0,
+            "p95": 2,
+            "max": 2,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "lightning_1": 30,
+            "fire_1": 2
+          },
+          "aNaturalWins": 20,
+          "bNaturalWins": 20
+        },
+        {
+          "a": "Balanced",
+          "b": "Balanced",
+          "games": 40,
+          "outcomes": {
+            "adjudication": 28,
+            "elimination": 12
+          },
+          "natural": 12,
+          "caps": 28,
+          "medianRound": 121.0,
+          "rentPaid": 0,
+          "released": 0,
+          "combatLosses": 1440,
+          "zeroStockpileTurns": 4968,
+          "firstTier3Round": {
+            "n": 70,
+            "median": 7.0,
+            "p95": 13,
+            "max": 17,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 12.0,
+            "p95": 24,
+            "max": 31,
+            "atLeast20": 8
+          },
+          "quietNatural": {
+            "n": 12,
+            "median": 5.0,
+            "p95": 8,
+            "max": 8,
+            "atLeast20": 0
+          },
+          "homeInvaders": {},
+          "aNaturalWins": 6,
+          "bNaturalWins": 6
+        },
+        {
+          "a": "MiningDenial",
+          "b": "Turtle",
+          "games": 40,
+          "outcomes": {
+            "adjudication": 2,
+            "home-occupation": 38
+          },
+          "natural": 38,
+          "caps": 2,
+          "medianRound": 7.0,
+          "rentPaid": 0,
+          "released": 0,
+          "combatLosses": 320,
+          "zeroStockpileTurns": 934,
+          "firstTier3Round": {
+            "n": 2,
+            "median": 6.0,
+            "p95": 6,
+            "max": 6,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 0.0,
+            "p95": 4,
+            "max": 6,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 38,
+            "median": 1.0,
+            "p95": 4,
+            "max": 4,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "lightning_1": 36,
+            "lightning_2": 2
+          },
+          "aNaturalWins": 38,
+          "bNaturalWins": 0
+        },
+        {
+          "a": "Invade:LightningRush",
+          "b": "Aware:Balanced",
+          "games": 40,
+          "outcomes": {
+            "elimination": 34,
+            "home-occupation": 5,
+            "adjudication": 1
+          },
+          "natural": 39,
+          "caps": 1,
+          "medianRound": 17.0,
+          "rentPaid": 0,
+          "released": 0,
+          "combatLosses": 776,
+          "zeroStockpileTurns": 1144,
+          "firstTier3Round": {
+            "n": 4,
+            "median": 13.0,
+            "p95": 15,
+            "max": 21,
+            "atLeast20": 1
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 0.0,
+            "p95": 7,
+            "max": 14,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 39,
+            "median": 1,
+            "p95": 2,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "lightning_1": 5
+          },
+          "aNaturalWins": 32,
+          "bNaturalWins": 7
+        },
+        {
+          "a": "Invade:InvestT3",
+          "b": "Aware:InvestT3",
+          "games": 40,
+          "outcomes": {
+            "adjudication": 13,
+            "home-occupation": 23,
+            "elimination": 4
+          },
+          "natural": 27,
+          "caps": 13,
+          "medianRound": 23.5,
+          "rentPaid": 0,
+          "released": 0,
+          "combatLosses": 707,
+          "zeroStockpileTurns": 2918,
+          "firstTier3Round": {
+            "n": 75,
+            "median": 5,
+            "p95": 7,
+            "max": 9,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 2.0,
+            "p95": 4,
+            "max": 5,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 27,
+            "median": 1,
+            "p95": 4,
+            "max": 5,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "fire_3": 3,
+            "water_2": 3,
+            "plant_3": 9,
+            "plant_1": 1,
+            "fire_2": 1,
+            "fire_1": 3,
+            "metal_1": 2,
+            "metal_2": 1
+          },
+          "aNaturalWins": 21,
+          "bNaturalWins": 6
+        },
+        {
+          "a": "Siege:4",
+          "b": "Aware:InvestT3",
+          "games": 40,
+          "outcomes": {
+            "adjudication": 14,
+            "home-occupation": 26
+          },
+          "natural": 26,
+          "caps": 14,
+          "medianRound": 20.5,
+          "rentPaid": 0,
+          "released": 0,
+          "combatLosses": 550,
+          "zeroStockpileTurns": 3269,
+          "firstTier3Round": {
+            "n": 80,
+            "median": 3.0,
+            "p95": 3,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 2.0,
+            "p95": 7,
+            "max": 13,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 26,
+            "median": 0.0,
+            "p95": 5,
+            "max": 11,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "metal_3": 21,
+            "plant_3": 1,
+            "metal_1": 2,
+            "metal_2": 2
+          },
+          "aNaturalWins": 25,
+          "bNaturalWins": 1
+        },
+        {
+          "a": "Aware:InvestT3",
+          "b": "Aware:Balanced",
+          "games": 40,
+          "outcomes": {
+            "adjudication": 38,
+            "elimination": 2
+          },
+          "natural": 2,
+          "caps": 38,
+          "medianRound": 121.0,
+          "rentPaid": 0,
+          "released": 0,
+          "combatLosses": 722,
+          "zeroStockpileTurns": 6154,
+          "firstTier3Round": {
+            "n": 68,
+            "median": 3.0,
+            "p95": 9,
+            "max": 15,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 5.0,
+            "p95": 15,
+            "max": 17,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 2,
+            "median": 3.0,
+            "p95": 1,
+            "max": 5,
+            "atLeast20": 0
+          },
+          "homeInvaders": {},
+          "aNaturalWins": 2,
+          "bNaturalWins": 0
+        },
+        {
+          "a": "InvestT3",
+          "b": "HomeT3",
+          "games": 40,
+          "outcomes": {
+            "adjudication": 40
+          },
+          "natural": 0,
+          "caps": 40,
+          "medianRound": 121.0,
+          "rentPaid": 0,
+          "released": 0,
+          "combatLosses": 308,
+          "zeroStockpileTurns": 7930,
+          "firstTier3Round": {
+            "n": 80,
+            "median": 3.0,
+            "p95": 3,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 2.0,
+            "p95": 6,
+            "max": 7,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "max": null,
+            "atLeast20": 0
+          },
+          "homeInvaders": {},
+          "aNaturalWins": 0,
+          "bNaturalWins": 0
+        },
+        {
+          "a": "Mono-plant",
+          "b": "Mono-shadow",
+          "games": 40,
+          "outcomes": {
+            "elimination": 36,
+            "adjudication": 3,
+            "home-occupation": 1
+          },
+          "natural": 37,
+          "caps": 3,
+          "medianRound": 15.0,
+          "rentPaid": 0,
+          "released": 0,
+          "combatLosses": 749,
+          "zeroStockpileTurns": 827,
+          "firstTier3Round": {
+            "n": 4,
+            "median": 12.0,
+            "p95": 14,
+            "max": 16,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 2.0,
+            "p95": 10,
+            "max": 15,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 37,
+            "median": 1,
+            "p95": 2,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "shadow_1": 1
+          },
+          "aNaturalWins": 15,
+          "bNaturalWins": 22
+        },
+        {
+          "a": "Invade:LightningRush",
+          "b": "Aware:Turtle",
+          "games": 40,
+          "outcomes": {
+            "home-occupation": 12,
+            "elimination": 27,
+            "adjudication": 1
+          },
+          "natural": 39,
+          "caps": 1,
+          "medianRound": 13.5,
+          "rentPaid": 0,
+          "released": 0,
+          "combatLosses": 654,
+          "zeroStockpileTurns": 1082,
+          "firstTier3Round": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "max": null,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 0.0,
+            "p95": 1,
+            "max": 5,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 39,
+            "median": 1,
+            "p95": 2,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "lightning_1": 11,
+            "plant_1": 1
+          },
+          "aNaturalWins": 39,
+          "bNaturalWins": 0
+        },
+        {
+          "a": "Invade:MiningDenial",
+          "b": "Aware:AntiRush",
+          "games": 40,
+          "outcomes": {
+            "elimination": 21,
+            "home-occupation": 19
+          },
+          "natural": 40,
+          "caps": 0,
+          "medianRound": 15.0,
+          "rentPaid": 0,
+          "released": 0,
+          "combatLosses": 978,
+          "zeroStockpileTurns": 1215,
+          "firstTier3Round": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "max": null,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 0.0,
+            "p95": 3,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 40,
+            "median": 1.0,
+            "p95": 2,
+            "max": 2,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "lightning_2": 12,
+            "lightning_1": 7
+          },
+          "aNaturalWins": 34,
+          "bNaturalWins": 6
+        },
+        {
+          "a": "Siege:4",
+          "b": "Invade:LightningRush",
+          "games": 40,
+          "outcomes": {
+            "home-occupation": 32,
+            "elimination": 8
+          },
+          "natural": 40,
+          "caps": 0,
+          "medianRound": 13.5,
+          "rentPaid": 0,
+          "released": 0,
+          "combatLosses": 730,
+          "zeroStockpileTurns": 773,
+          "firstTier3Round": {
+            "n": 36,
+            "median": 4.0,
+            "p95": 12,
+            "max": 13,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 0.5,
+            "p95": 5,
+            "max": 7,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 40,
+            "median": 1.0,
+            "p95": 1,
+            "max": 2,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "metal_3": 14,
+            "metal_2": 9,
+            "lightning_1": 6,
+            "metal_1": 3
+          },
+          "aNaturalWins": 33,
+          "bNaturalWins": 7
+        },
+        {
+          "a": "Invade:InvestT3",
+          "b": "Aware:Mono-plant",
+          "games": 40,
+          "outcomes": {
+            "home-occupation": 30,
+            "elimination": 5,
+            "adjudication": 5
+          },
+          "natural": 35,
+          "caps": 5,
+          "medianRound": 11.5,
+          "rentPaid": 0,
+          "released": 0,
+          "combatLosses": 283,
+          "zeroStockpileTurns": 1149,
+          "firstTier3Round": {
+            "n": 35,
+            "median": 6,
+            "p95": 7,
+            "max": 9,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 3.0,
+            "p95": 5,
+            "max": 6,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 35,
+            "median": 1,
+            "p95": 4,
+            "max": 6,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "plant_3": 4,
+            "fire_1": 7,
+            "fire_3": 1,
+            "metal_2": 2,
+            "lightning_2": 2,
+            "water_2": 2,
+            "lightning_1": 4,
+            "metal_1": 4,
+            "fire_2": 2,
+            "water_1": 1,
+            "plant_1": 1
+          },
+          "aNaturalWins": 34,
+          "bNaturalWins": 1
+        }
+      ]
+    },
+    "shipped": {
+      "games": 960,
+      "outcomes": {
+        "inactivity": 155,
+        "home-occupation": 315,
+        "elimination": 407,
+        "upkeep-elimination": 83
+      },
+      "natural": 805,
+      "caps": 0,
+      "medianRound": 15.0,
+      "rentPaid": 23066,
+      "released": 5273,
+      "combatLosses": 12520,
+      "zeroStockpileTurns": 24009,
+      "firstTier3Round": {
+        "n": 474,
+        "median": 4.0,
+        "p95": 12,
+        "max": 27,
+        "atLeast20": 4
+      },
+      "peakTier2Plus": {
+        "n": 1920,
+        "median": 2.0,
+        "p95": 5,
+        "max": 8,
+        "atLeast20": 0
+      },
+      "quietNatural": {
+        "n": 805,
+        "median": 1,
+        "p95": 3,
+        "max": 7,
+        "atLeast20": 0
+      },
+      "homeInvaders": {
+        "fire_1": 9,
+        "metal_1": 29,
+        "lightning_1": 137,
+        "plant_1": 23,
+        "water_3": 1,
+        "shadow_1": 20,
+        "water_1": 10,
+        "metal_2": 71,
+        "plant_2": 2,
+        "fire_2": 5,
+        "fire_3": 2,
+        "metal_3": 1,
+        "lightning_2": 5
+      },
+      "cells": [
+        {
+          "a": "Rush",
+          "b": "AntiRush",
+          "games": 40,
+          "outcomes": {
+            "inactivity": 25,
+            "home-occupation": 2,
+            "elimination": 13
+          },
+          "natural": 15,
+          "caps": 0,
+          "medianRound": 32.0,
+          "rentPaid": 0,
+          "released": 0,
+          "combatLosses": 900,
+          "zeroStockpileTurns": 1654,
+          "firstTier3Round": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "max": null,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 0.0,
+            "p95": 0,
+            "max": 0,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 15,
+            "median": 1,
+            "p95": 3,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "fire_1": 2
+          },
+          "aNaturalWins": 15,
+          "bNaturalWins": 0
+        },
+        {
+          "a": "InvestT3",
+          "b": "Rush",
+          "games": 40,
+          "outcomes": {
+            "elimination": 21,
+            "upkeep-elimination": 10,
+            "home-occupation": 6,
+            "inactivity": 3
+          },
+          "natural": 37,
+          "caps": 0,
+          "medianRound": 18.5,
+          "rentPaid": 1791,
+          "released": 111,
+          "combatLosses": 837,
+          "zeroStockpileTurns": 1231,
+          "firstTier3Round": {
+            "n": 14,
+            "median": 5.0,
+            "p95": 16,
+            "max": 27,
+            "atLeast20": 1
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 0.5,
+            "p95": 6,
+            "max": 6,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 37,
+            "median": 1,
+            "p95": 3,
+            "max": 4,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "metal_1": 2,
+            "lightning_1": 1,
+            "plant_1": 2,
+            "water_3": 1
+          },
+          "aNaturalWins": 16,
+          "bNaturalWins": 21
+        },
+        {
+          "a": "Invade:LightningRush",
+          "b": "Aware:AntiRush",
+          "games": 40,
+          "outcomes": {
+            "elimination": 29,
+            "home-occupation": 11
+          },
+          "natural": 40,
+          "caps": 0,
+          "medianRound": 23.5,
+          "rentPaid": 0,
+          "released": 0,
+          "combatLosses": 1273,
+          "zeroStockpileTurns": 1631,
+          "firstTier3Round": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "max": null,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 0.0,
+            "p95": 0,
+            "max": 0,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 40,
+            "median": 1.0,
+            "p95": 2,
+            "max": 2,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "lightning_1": 11
+          },
+          "aNaturalWins": 25,
+          "bNaturalWins": 15
+        },
+        {
+          "a": "Invade:Balanced",
+          "b": "Aware:Balanced",
+          "games": 40,
+          "outcomes": {
+            "elimination": 24,
+            "home-occupation": 7,
+            "inactivity": 9
+          },
+          "natural": 31,
+          "caps": 0,
+          "medianRound": 22.0,
+          "rentPaid": 183,
+          "released": 599,
+          "combatLosses": 661,
+          "zeroStockpileTurns": 1866,
+          "firstTier3Round": {
+            "n": 9,
+            "median": 10,
+            "p95": 12,
+            "max": 17,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 2.0,
+            "p95": 4,
+            "max": 7,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 31,
+            "median": 2,
+            "p95": 5,
+            "max": 7,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "plant_1": 3,
+            "shadow_1": 3,
+            "water_1": 1
+          },
+          "aNaturalWins": 8,
+          "bNaturalWins": 23
+        },
+        {
+          "a": "Siege:2",
+          "b": "Aware:Balanced",
+          "games": 40,
+          "outcomes": {
+            "home-occupation": 34,
+            "elimination": 5,
+            "inactivity": 1
+          },
+          "natural": 39,
+          "caps": 0,
+          "medianRound": 12.5,
+          "rentPaid": 1032,
+          "released": 341,
+          "combatLosses": 381,
+          "zeroStockpileTurns": 698,
+          "firstTier3Round": {
+            "n": 25,
+            "median": 5,
+            "p95": 12,
+            "max": 16,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 3.0,
+            "p95": 5,
+            "max": 6,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 39,
+            "median": 1,
+            "p95": 5,
+            "max": 7,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "metal_2": 27,
+            "metal_1": 7
+          },
+          "aNaturalWins": 36,
+          "bNaturalWins": 3
+        },
+        {
+          "a": "Invade:Balanced",
+          "b": "Invade:Balanced",
+          "games": 40,
+          "outcomes": {
+            "home-occupation": 34,
+            "inactivity": 2,
+            "elimination": 4
+          },
+          "natural": 38,
+          "caps": 0,
+          "medianRound": 14.5,
+          "rentPaid": 76,
+          "released": 300,
+          "combatLosses": 434,
+          "zeroStockpileTurns": 1170,
+          "firstTier3Round": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "max": null,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 1.0,
+            "p95": 4,
+            "max": 5,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 38,
+            "median": 1.0,
+            "p95": 4,
+            "max": 4,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "shadow_1": 16,
+            "plant_1": 12,
+            "water_1": 6
+          },
+          "aNaturalWins": 19,
+          "bNaturalWins": 19
+        },
+        {
+          "a": "LightningRush",
+          "b": "Expand",
+          "games": 40,
+          "outcomes": {
+            "elimination": 37,
+            "home-occupation": 3
+          },
+          "natural": 40,
+          "caps": 0,
+          "medianRound": 6.0,
+          "rentPaid": 25,
+          "released": 12,
+          "combatLosses": 361,
+          "zeroStockpileTurns": 408,
+          "firstTier3Round": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "max": null,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 0.0,
+            "p95": 2,
+            "max": 2,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 40,
+            "median": 1.0,
+            "p95": 1,
+            "max": 1,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "lightning_1": 3
+          },
+          "aNaturalWins": 40,
+          "bNaturalWins": 0
+        },
+        {
+          "a": "InvestT4",
+          "b": "InvestT3",
+          "games": 40,
+          "outcomes": {
+            "elimination": 26,
+            "inactivity": 14
+          },
+          "natural": 26,
+          "caps": 0,
+          "medianRound": 26.0,
+          "rentPaid": 4840,
+          "released": 442,
+          "combatLosses": 442,
+          "zeroStockpileTurns": 1122,
+          "firstTier3Round": {
+            "n": 74,
+            "median": 4.0,
+            "p95": 4,
+            "max": 7,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 5.0,
+            "p95": 6,
+            "max": 6,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 26,
+            "median": 1.0,
+            "p95": 1,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "homeInvaders": {},
+          "aNaturalWins": 13,
+          "bNaturalWins": 13
+        },
+        {
+          "a": "Invade:LightningRush",
+          "b": "Aware:InvestT3",
+          "games": 40,
+          "outcomes": {
+            "upkeep-elimination": 18,
+            "home-occupation": 14,
+            "elimination": 8
+          },
+          "natural": 40,
+          "caps": 0,
+          "medianRound": 8.5,
+          "rentPaid": 446,
+          "released": 75,
+          "combatLosses": 507,
+          "zeroStockpileTurns": 629,
+          "firstTier3Round": {
+            "n": 7,
+            "median": 4,
+            "p95": 7,
+            "max": 10,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 0.5,
+            "p95": 5,
+            "max": 6,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 40,
+            "median": 1.0,
+            "p95": 1,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "lightning_1": 12,
+            "water_1": 1,
+            "fire_1": 1
+          },
+          "aNaturalWins": 38,
+          "bNaturalWins": 2
+        },
+        {
+          "a": "Invade:InvestT3",
+          "b": "Aware:HomeT3",
+          "games": 40,
+          "outcomes": {
+            "home-occupation": 16,
+            "upkeep-elimination": 9,
+            "elimination": 13,
+            "inactivity": 2
+          },
+          "natural": 38,
+          "caps": 0,
+          "medianRound": 9.5,
+          "rentPaid": 834,
+          "released": 182,
+          "combatLosses": 200,
+          "zeroStockpileTurns": 367,
+          "firstTier3Round": {
+            "n": 39,
+            "median": 4,
+            "p95": 8,
+            "max": 12,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 3.0,
+            "p95": 4,
+            "max": 5,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 38,
+            "median": 1.0,
+            "p95": 3,
+            "max": 5,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "plant_1": 2,
+            "plant_2": 2,
+            "fire_2": 2,
+            "metal_1": 5,
+            "metal_2": 3,
+            "fire_3": 1,
+            "lightning_1": 1
+          },
+          "aNaturalWins": 19,
+          "bNaturalWins": 19
+        },
+        {
+          "a": "Siege:4",
+          "b": "Aware:Balanced",
+          "games": 40,
+          "outcomes": {
+            "elimination": 6,
+            "home-occupation": 33,
+            "inactivity": 1
+          },
+          "natural": 39,
+          "caps": 0,
+          "medianRound": 12.0,
+          "rentPaid": 904,
+          "released": 322,
+          "combatLosses": 363,
+          "zeroStockpileTurns": 589,
+          "firstTier3Round": {
+            "n": 23,
+            "median": 5,
+            "p95": 10,
+            "max": 16,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 3.0,
+            "p95": 5,
+            "max": 6,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 39,
+            "median": 1,
+            "p95": 2,
+            "max": 5,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "metal_2": 28,
+            "metal_1": 5
+          },
+          "aNaturalWins": 38,
+          "bNaturalWins": 1
+        },
+        {
+          "a": "Invade:LightningRush",
+          "b": "Invade:LightningRush",
+          "games": 40,
+          "outcomes": {
+            "home-occupation": 32,
+            "elimination": 8
+          },
+          "natural": 40,
+          "caps": 0,
+          "medianRound": 7.5,
+          "rentPaid": 0,
+          "released": 0,
+          "combatLosses": 422,
+          "zeroStockpileTurns": 644,
+          "firstTier3Round": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "max": null,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 0.0,
+            "p95": 0,
+            "max": 0,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 40,
+            "median": 1.0,
+            "p95": 2,
+            "max": 2,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "lightning_1": 30,
+            "fire_1": 2
+          },
+          "aNaturalWins": 20,
+          "bNaturalWins": 20
+        },
+        {
+          "a": "Balanced",
+          "b": "Balanced",
+          "games": 40,
+          "outcomes": {
+            "inactivity": 16,
+            "elimination": 24
+          },
+          "natural": 24,
+          "caps": 0,
+          "medianRound": 29.0,
+          "rentPaid": 204,
+          "released": 756,
+          "combatLosses": 582,
+          "zeroStockpileTurns": 2028,
+          "firstTier3Round": {
+            "n": 28,
+            "median": 9.0,
+            "p95": 11,
+            "max": 27,
+            "atLeast20": 2
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 2.0,
+            "p95": 3,
+            "max": 5,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 24,
+            "median": 4.0,
+            "p95": 7,
+            "max": 7,
+            "atLeast20": 0
+          },
+          "homeInvaders": {},
+          "aNaturalWins": 12,
+          "bNaturalWins": 12
+        },
+        {
+          "a": "MiningDenial",
+          "b": "Turtle",
+          "games": 40,
+          "outcomes": {
+            "home-occupation": 40
+          },
+          "natural": 40,
+          "caps": 0,
+          "medianRound": 7.0,
+          "rentPaid": 19,
+          "released": 29,
+          "combatLosses": 232,
+          "zeroStockpileTurns": 502,
+          "firstTier3Round": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "max": null,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 0.0,
+            "p95": 2,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 40,
+            "median": 1.0,
+            "p95": 4,
+            "max": 4,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "lightning_1": 40
+          },
+          "aNaturalWins": 40,
+          "bNaturalWins": 0
+        },
+        {
+          "a": "Invade:LightningRush",
+          "b": "Aware:Balanced",
+          "games": 40,
+          "outcomes": {
+            "elimination": 35,
+            "home-occupation": 4,
+            "upkeep-elimination": 1
+          },
+          "natural": 40,
+          "caps": 0,
+          "medianRound": 17.0,
+          "rentPaid": 10,
+          "released": 46,
+          "combatLosses": 794,
+          "zeroStockpileTurns": 1108,
+          "firstTier3Round": {
+            "n": 1,
+            "median": 10,
+            "p95": 10,
+            "max": 10,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 0.0,
+            "p95": 1,
+            "max": 8,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 40,
+            "median": 1.0,
+            "p95": 2,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "lightning_1": 3,
+            "water_1": 1
+          },
+          "aNaturalWins": 36,
+          "bNaturalWins": 4
+        },
+        {
+          "a": "Invade:InvestT3",
+          "b": "Aware:InvestT3",
+          "games": 40,
+          "outcomes": {
+            "elimination": 16,
+            "upkeep-elimination": 17,
+            "home-occupation": 4,
+            "inactivity": 3
+          },
+          "natural": 37,
+          "caps": 0,
+          "medianRound": 9.5,
+          "rentPaid": 1148,
+          "released": 156,
+          "combatLosses": 198,
+          "zeroStockpileTurns": 345,
+          "firstTier3Round": {
+            "n": 36,
+            "median": 4.0,
+            "p95": 7,
+            "max": 8,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 3.0,
+            "p95": 5,
+            "max": 6,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 37,
+            "median": 1,
+            "p95": 1,
+            "max": 5,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "fire_2": 1,
+            "metal_1": 2,
+            "metal_2": 1
+          },
+          "aNaturalWins": 7,
+          "bNaturalWins": 30
+        },
+        {
+          "a": "Siege:4",
+          "b": "Aware:InvestT3",
+          "games": 40,
+          "outcomes": {
+            "home-occupation": 15,
+            "elimination": 17,
+            "inactivity": 7,
+            "upkeep-elimination": 1
+          },
+          "natural": 33,
+          "caps": 0,
+          "medianRound": 19.0,
+          "rentPaid": 3185,
+          "released": 424,
+          "combatLosses": 347,
+          "zeroStockpileTurns": 721,
+          "firstTier3Round": {
+            "n": 61,
+            "median": 4,
+            "p95": 12,
+            "max": 18,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 5.0,
+            "p95": 6,
+            "max": 7,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 33,
+            "median": 1,
+            "p95": 3,
+            "max": 5,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "metal_2": 7,
+            "metal_1": 6,
+            "fire_3": 1,
+            "metal_3": 1
+          },
+          "aNaturalWins": 18,
+          "bNaturalWins": 15
+        },
+        {
+          "a": "Aware:InvestT3",
+          "b": "Aware:Balanced",
+          "games": 40,
+          "outcomes": {
+            "inactivity": 37,
+            "elimination": 3
+          },
+          "natural": 3,
+          "caps": 0,
+          "medianRound": 32.0,
+          "rentPaid": 3111,
+          "released": 634,
+          "combatLosses": 464,
+          "zeroStockpileTurns": 1745,
+          "firstTier3Round": {
+            "n": 58,
+            "median": 4.0,
+            "p95": 14,
+            "max": 21,
+            "atLeast20": 1
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 4.0,
+            "p95": 6,
+            "max": 7,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 3,
+            "median": 1,
+            "p95": 1,
+            "max": 2,
+            "atLeast20": 0
+          },
+          "homeInvaders": {},
+          "aNaturalWins": 2,
+          "bNaturalWins": 1
+        },
+        {
+          "a": "InvestT3",
+          "b": "HomeT3",
+          "games": 40,
+          "outcomes": {
+            "elimination": 15,
+            "inactivity": 24,
+            "upkeep-elimination": 1
+          },
+          "natural": 16,
+          "caps": 0,
+          "medianRound": 30.5,
+          "rentPaid": 4351,
+          "released": 430,
+          "combatLosses": 193,
+          "zeroStockpileTurns": 1365,
+          "firstTier3Round": {
+            "n": 77,
+            "median": 4,
+            "p95": 5,
+            "max": 13,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 5.0,
+            "p95": 6,
+            "max": 7,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 16,
+            "median": 1.0,
+            "p95": 3,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "homeInvaders": {},
+          "aNaturalWins": 16,
+          "bNaturalWins": 0
+        },
+        {
+          "a": "Mono-plant",
+          "b": "Mono-shadow",
+          "games": 40,
+          "outcomes": {
+            "elimination": 30,
+            "inactivity": 8,
+            "upkeep-elimination": 1,
+            "home-occupation": 1
+          },
+          "natural": 32,
+          "caps": 0,
+          "medianRound": 12.0,
+          "rentPaid": 191,
+          "released": 157,
+          "combatLosses": 540,
+          "zeroStockpileTurns": 779,
+          "firstTier3Round": {
+            "n": 1,
+            "median": 18,
+            "p95": 18,
+            "max": 18,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 1.0,
+            "p95": 3,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 32,
+            "median": 1.0,
+            "p95": 1,
+            "max": 2,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "shadow_1": 1
+          },
+          "aNaturalWins": 0,
+          "bNaturalWins": 32
+        },
+        {
+          "a": "Invade:LightningRush",
+          "b": "Aware:Turtle",
+          "games": 40,
+          "outcomes": {
+            "home-occupation": 12,
+            "elimination": 28
+          },
+          "natural": 40,
+          "caps": 0,
+          "medianRound": 14.0,
+          "rentPaid": 2,
+          "released": 11,
+          "combatLosses": 680,
+          "zeroStockpileTurns": 1112,
+          "firstTier3Round": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "max": null,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 0.0,
+            "p95": 1,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 40,
+            "median": 1.0,
+            "p95": 3,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "lightning_1": 11,
+            "plant_1": 1
+          },
+          "aNaturalWins": 40,
+          "bNaturalWins": 0
+        },
+        {
+          "a": "Invade:MiningDenial",
+          "b": "Aware:AntiRush",
+          "games": 40,
+          "outcomes": {
+            "elimination": 24,
+            "home-occupation": 16
+          },
+          "natural": 40,
+          "caps": 0,
+          "medianRound": 21.5,
+          "rentPaid": 0,
+          "released": 72,
+          "combatLosses": 1149,
+          "zeroStockpileTurns": 1487,
+          "firstTier3Round": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "max": null,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 0.0,
+            "p95": 3,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 40,
+            "median": 1.0,
+            "p95": 2,
+            "max": 4,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "lightning_1": 11,
+            "lightning_2": 5
+          },
+          "aNaturalWins": 28,
+          "bNaturalWins": 12
+        },
+        {
+          "a": "Siege:4",
+          "b": "Invade:LightningRush",
+          "games": 40,
+          "outcomes": {
+            "home-occupation": 15,
+            "upkeep-elimination": 18,
+            "elimination": 7
+          },
+          "natural": 40,
+          "caps": 0,
+          "medianRound": 7.0,
+          "rentPaid": 460,
+          "released": 57,
+          "combatLosses": 407,
+          "zeroStockpileTurns": 463,
+          "firstTier3Round": {
+            "n": 9,
+            "median": 6,
+            "p95": 8,
+            "max": 9,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 0.5,
+            "p95": 4,
+            "max": 5,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 40,
+            "median": 1.0,
+            "p95": 1,
+            "max": 2,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "metal_2": 4,
+            "lightning_1": 10,
+            "metal_1": 1
+          },
+          "aNaturalWins": 8,
+          "bNaturalWins": 32
+        },
+        {
+          "a": "Invade:InvestT3",
+          "b": "Aware:Mono-plant",
+          "games": 40,
+          "outcomes": {
+            "upkeep-elimination": 7,
+            "home-occupation": 16,
+            "elimination": 14,
+            "inactivity": 3
+          },
+          "natural": 37,
+          "caps": 0,
+          "medianRound": 6.0,
+          "rentPaid": 254,
+          "released": 117,
+          "combatLosses": 153,
+          "zeroStockpileTurns": 345,
+          "firstTier3Round": {
+            "n": 12,
+            "median": 5.5,
+            "p95": 7,
+            "max": 8,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 2.0,
+            "p95": 3,
+            "max": 4,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 37,
+            "median": 1,
+            "p95": 2,
+            "max": 4,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "metal_2": 1,
+            "lightning_1": 4,
+            "fire_2": 2,
+            "plant_1": 3,
+            "metal_1": 1,
+            "fire_1": 4,
+            "water_1": 1
+          },
+          "aNaturalWins": 18,
+          "bNaturalWins": 19
+        }
+      ]
+    },
+    "steep": {
+      "games": 960,
+      "outcomes": {
+        "inactivity": 159,
+        "home-occupation": 318,
+        "elimination": 400,
+        "upkeep-elimination": 83
+      },
+      "natural": 801,
+      "caps": 0,
+      "medianRound": 15.0,
+      "rentPaid": 23219,
+      "released": 5211,
+      "combatLosses": 12468,
+      "zeroStockpileTurns": 24504,
+      "firstTier3Round": {
+        "n": 475,
+        "median": 4,
+        "p95": 12,
+        "max": 27,
+        "atLeast20": 5
+      },
+      "peakTier2Plus": {
+        "n": 1920,
+        "median": 2.0,
+        "p95": 5,
+        "max": 8,
+        "atLeast20": 0
+      },
+      "quietNatural": {
+        "n": 801,
+        "median": 1,
+        "p95": 3,
+        "max": 7,
+        "atLeast20": 0
+      },
+      "homeInvaders": {
+        "fire_1": 10,
+        "metal_1": 33,
+        "plant_1": 24,
+        "lightning_1": 139,
+        "shadow_1": 20,
+        "water_1": 10,
+        "metal_2": 70,
+        "fire_2": 4,
+        "lightning_2": 6,
+        "plant_2": 1,
+        "plant_3": 1
+      },
+      "cells": [
+        {
+          "a": "Rush",
+          "b": "AntiRush",
+          "games": 40,
+          "outcomes": {
+            "inactivity": 25,
+            "home-occupation": 2,
+            "elimination": 13
+          },
+          "natural": 15,
+          "caps": 0,
+          "medianRound": 32.0,
+          "rentPaid": 0,
+          "released": 0,
+          "combatLosses": 900,
+          "zeroStockpileTurns": 1654,
+          "firstTier3Round": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "max": null,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 0.0,
+            "p95": 0,
+            "max": 0,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 15,
+            "median": 1,
+            "p95": 3,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "fire_1": 2
+          },
+          "aNaturalWins": 15,
+          "bNaturalWins": 0
+        },
+        {
+          "a": "InvestT3",
+          "b": "Rush",
+          "games": 40,
+          "outcomes": {
+            "elimination": 21,
+            "upkeep-elimination": 10,
+            "home-occupation": 7,
+            "inactivity": 2
+          },
+          "natural": 38,
+          "caps": 0,
+          "medianRound": 17.5,
+          "rentPaid": 1540,
+          "released": 104,
+          "combatLosses": 782,
+          "zeroStockpileTurns": 1120,
+          "firstTier3Round": {
+            "n": 14,
+            "median": 5.0,
+            "p95": 16,
+            "max": 27,
+            "atLeast20": 1
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 0.5,
+            "p95": 4,
+            "max": 6,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 38,
+            "median": 1.0,
+            "p95": 3,
+            "max": 4,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "metal_1": 2,
+            "plant_1": 3,
+            "lightning_1": 1,
+            "fire_1": 1
+          },
+          "aNaturalWins": 14,
+          "bNaturalWins": 24
+        },
+        {
+          "a": "Invade:LightningRush",
+          "b": "Aware:AntiRush",
+          "games": 40,
+          "outcomes": {
+            "elimination": 29,
+            "home-occupation": 11
+          },
+          "natural": 40,
+          "caps": 0,
+          "medianRound": 23.5,
+          "rentPaid": 0,
+          "released": 0,
+          "combatLosses": 1273,
+          "zeroStockpileTurns": 1631,
+          "firstTier3Round": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "max": null,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 0.0,
+            "p95": 0,
+            "max": 0,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 40,
+            "median": 1.0,
+            "p95": 2,
+            "max": 2,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "lightning_1": 11
+          },
+          "aNaturalWins": 25,
+          "bNaturalWins": 15
+        },
+        {
+          "a": "Invade:Balanced",
+          "b": "Aware:Balanced",
+          "games": 40,
+          "outcomes": {
+            "elimination": 24,
+            "home-occupation": 7,
+            "inactivity": 9
+          },
+          "natural": 31,
+          "caps": 0,
+          "medianRound": 22.0,
+          "rentPaid": 183,
+          "released": 599,
+          "combatLosses": 661,
+          "zeroStockpileTurns": 1866,
+          "firstTier3Round": {
+            "n": 9,
+            "median": 10,
+            "p95": 12,
+            "max": 17,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 2.0,
+            "p95": 4,
+            "max": 7,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 31,
+            "median": 2,
+            "p95": 5,
+            "max": 7,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "plant_1": 3,
+            "shadow_1": 3,
+            "water_1": 1
+          },
+          "aNaturalWins": 8,
+          "bNaturalWins": 23
+        },
+        {
+          "a": "Siege:2",
+          "b": "Aware:Balanced",
+          "games": 40,
+          "outcomes": {
+            "home-occupation": 34,
+            "elimination": 6
+          },
+          "natural": 40,
+          "caps": 0,
+          "medianRound": 13.0,
+          "rentPaid": 1008,
+          "released": 342,
+          "combatLosses": 377,
+          "zeroStockpileTurns": 696,
+          "firstTier3Round": {
+            "n": 26,
+            "median": 5.0,
+            "p95": 12,
+            "max": 16,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 3.0,
+            "p95": 5,
+            "max": 6,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 40,
+            "median": 1.0,
+            "p95": 4,
+            "max": 5,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "metal_2": 28,
+            "metal_1": 6
+          },
+          "aNaturalWins": 38,
+          "bNaturalWins": 2
+        },
+        {
+          "a": "Invade:Balanced",
+          "b": "Invade:Balanced",
+          "games": 40,
+          "outcomes": {
+            "home-occupation": 34,
+            "inactivity": 2,
+            "elimination": 4
+          },
+          "natural": 38,
+          "caps": 0,
+          "medianRound": 14.5,
+          "rentPaid": 76,
+          "released": 300,
+          "combatLosses": 434,
+          "zeroStockpileTurns": 1170,
+          "firstTier3Round": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "max": null,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 1.0,
+            "p95": 4,
+            "max": 5,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 38,
+            "median": 1.0,
+            "p95": 4,
+            "max": 4,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "shadow_1": 16,
+            "plant_1": 12,
+            "water_1": 6
+          },
+          "aNaturalWins": 19,
+          "bNaturalWins": 19
+        },
+        {
+          "a": "LightningRush",
+          "b": "Expand",
+          "games": 40,
+          "outcomes": {
+            "elimination": 37,
+            "home-occupation": 3
+          },
+          "natural": 40,
+          "caps": 0,
+          "medianRound": 6.0,
+          "rentPaid": 25,
+          "released": 12,
+          "combatLosses": 361,
+          "zeroStockpileTurns": 408,
+          "firstTier3Round": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "max": null,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 0.0,
+            "p95": 2,
+            "max": 2,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 40,
+            "median": 1.0,
+            "p95": 1,
+            "max": 1,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "lightning_1": 3
+          },
+          "aNaturalWins": 40,
+          "bNaturalWins": 0
+        },
+        {
+          "a": "InvestT4",
+          "b": "InvestT3",
+          "games": 40,
+          "outcomes": {
+            "elimination": 22,
+            "inactivity": 18
+          },
+          "natural": 22,
+          "caps": 0,
+          "medianRound": 28.0,
+          "rentPaid": 4976,
+          "released": 412,
+          "combatLosses": 422,
+          "zeroStockpileTurns": 1232,
+          "firstTier3Round": {
+            "n": 76,
+            "median": 4.0,
+            "p95": 6,
+            "max": 12,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 4.0,
+            "p95": 6,
+            "max": 6,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 22,
+            "median": 1.0,
+            "p95": 1,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "homeInvaders": {},
+          "aNaturalWins": 11,
+          "bNaturalWins": 11
+        },
+        {
+          "a": "Invade:LightningRush",
+          "b": "Aware:InvestT3",
+          "games": 40,
+          "outcomes": {
+            "upkeep-elimination": 18,
+            "home-occupation": 13,
+            "elimination": 9
+          },
+          "natural": 40,
+          "caps": 0,
+          "medianRound": 8.5,
+          "rentPaid": 432,
+          "released": 76,
+          "combatLosses": 508,
+          "zeroStockpileTurns": 637,
+          "firstTier3Round": {
+            "n": 7,
+            "median": 4,
+            "p95": 7,
+            "max": 10,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 0.5,
+            "p95": 4,
+            "max": 6,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 40,
+            "median": 1.0,
+            "p95": 1,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "lightning_1": 11,
+            "water_1": 1,
+            "fire_1": 1
+          },
+          "aNaturalWins": 38,
+          "bNaturalWins": 2
+        },
+        {
+          "a": "Invade:InvestT3",
+          "b": "Aware:HomeT3",
+          "games": 40,
+          "outcomes": {
+            "home-occupation": 13,
+            "upkeep-elimination": 9,
+            "elimination": 13,
+            "inactivity": 5
+          },
+          "natural": 35,
+          "caps": 0,
+          "medianRound": 9.0,
+          "rentPaid": 838,
+          "released": 178,
+          "combatLosses": 202,
+          "zeroStockpileTurns": 409,
+          "firstTier3Round": {
+            "n": 38,
+            "median": 4.0,
+            "p95": 8,
+            "max": 9,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 3.0,
+            "p95": 5,
+            "max": 5,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 35,
+            "median": 1,
+            "p95": 3,
+            "max": 5,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "plant_1": 1,
+            "fire_2": 2,
+            "lightning_1": 4,
+            "metal_1": 2,
+            "lightning_2": 1,
+            "metal_2": 3
+          },
+          "aNaturalWins": 16,
+          "bNaturalWins": 19
+        },
+        {
+          "a": "Siege:4",
+          "b": "Aware:Balanced",
+          "games": 40,
+          "outcomes": {
+            "elimination": 5,
+            "home-occupation": 33,
+            "inactivity": 2
+          },
+          "natural": 38,
+          "caps": 0,
+          "medianRound": 11.5,
+          "rentPaid": 834,
+          "released": 314,
+          "combatLosses": 342,
+          "zeroStockpileTurns": 597,
+          "firstTier3Round": {
+            "n": 23,
+            "median": 5,
+            "p95": 9,
+            "max": 16,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 3.0,
+            "p95": 5,
+            "max": 6,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 38,
+            "median": 1.0,
+            "p95": 2,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "metal_2": 28,
+            "metal_1": 5
+          },
+          "aNaturalWins": 38,
+          "bNaturalWins": 0
+        },
+        {
+          "a": "Invade:LightningRush",
+          "b": "Invade:LightningRush",
+          "games": 40,
+          "outcomes": {
+            "home-occupation": 32,
+            "elimination": 8
+          },
+          "natural": 40,
+          "caps": 0,
+          "medianRound": 7.5,
+          "rentPaid": 0,
+          "released": 0,
+          "combatLosses": 422,
+          "zeroStockpileTurns": 644,
+          "firstTier3Round": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "max": null,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 0.0,
+            "p95": 0,
+            "max": 0,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 40,
+            "median": 1.0,
+            "p95": 2,
+            "max": 2,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "lightning_1": 30,
+            "fire_1": 2
+          },
+          "aNaturalWins": 20,
+          "bNaturalWins": 20
+        },
+        {
+          "a": "Balanced",
+          "b": "Balanced",
+          "games": 40,
+          "outcomes": {
+            "inactivity": 16,
+            "elimination": 24
+          },
+          "natural": 24,
+          "caps": 0,
+          "medianRound": 29.0,
+          "rentPaid": 204,
+          "released": 756,
+          "combatLosses": 582,
+          "zeroStockpileTurns": 2028,
+          "firstTier3Round": {
+            "n": 28,
+            "median": 9.0,
+            "p95": 11,
+            "max": 27,
+            "atLeast20": 2
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 2.0,
+            "p95": 3,
+            "max": 5,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 24,
+            "median": 4.0,
+            "p95": 7,
+            "max": 7,
+            "atLeast20": 0
+          },
+          "homeInvaders": {},
+          "aNaturalWins": 12,
+          "bNaturalWins": 12
+        },
+        {
+          "a": "MiningDenial",
+          "b": "Turtle",
+          "games": 40,
+          "outcomes": {
+            "home-occupation": 40
+          },
+          "natural": 40,
+          "caps": 0,
+          "medianRound": 7.0,
+          "rentPaid": 19,
+          "released": 29,
+          "combatLosses": 232,
+          "zeroStockpileTurns": 502,
+          "firstTier3Round": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "max": null,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 0.0,
+            "p95": 2,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 40,
+            "median": 1.0,
+            "p95": 4,
+            "max": 4,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "lightning_1": 40
+          },
+          "aNaturalWins": 40,
+          "bNaturalWins": 0
+        },
+        {
+          "a": "Invade:LightningRush",
+          "b": "Aware:Balanced",
+          "games": 40,
+          "outcomes": {
+            "elimination": 35,
+            "home-occupation": 4,
+            "upkeep-elimination": 1
+          },
+          "natural": 40,
+          "caps": 0,
+          "medianRound": 17.0,
+          "rentPaid": 10,
+          "released": 46,
+          "combatLosses": 794,
+          "zeroStockpileTurns": 1108,
+          "firstTier3Round": {
+            "n": 1,
+            "median": 10,
+            "p95": 10,
+            "max": 10,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 0.0,
+            "p95": 1,
+            "max": 8,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 40,
+            "median": 1.0,
+            "p95": 2,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "lightning_1": 3,
+            "water_1": 1
+          },
+          "aNaturalWins": 36,
+          "bNaturalWins": 4
+        },
+        {
+          "a": "Invade:InvestT3",
+          "b": "Aware:InvestT3",
+          "games": 40,
+          "outcomes": {
+            "elimination": 14,
+            "home-occupation": 5,
+            "upkeep-elimination": 18,
+            "inactivity": 3
+          },
+          "natural": 37,
+          "caps": 0,
+          "medianRound": 9.5,
+          "rentPaid": 1188,
+          "released": 159,
+          "combatLosses": 195,
+          "zeroStockpileTurns": 368,
+          "firstTier3Round": {
+            "n": 37,
+            "median": 4,
+            "p95": 7,
+            "max": 10,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 3.0,
+            "p95": 5,
+            "max": 6,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 37,
+            "median": 1,
+            "p95": 1,
+            "max": 4,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "metal_1": 3,
+            "fire_2": 1,
+            "metal_2": 1
+          },
+          "aNaturalWins": 8,
+          "bNaturalWins": 29
+        },
+        {
+          "a": "Siege:4",
+          "b": "Aware:InvestT3",
+          "games": 40,
+          "outcomes": {
+            "home-occupation": 20,
+            "inactivity": 8,
+            "elimination": 12
+          },
+          "natural": 32,
+          "caps": 0,
+          "medianRound": 18.5,
+          "rentPaid": 3473,
+          "released": 423,
+          "combatLosses": 312,
+          "zeroStockpileTurns": 774,
+          "firstTier3Round": {
+            "n": 60,
+            "median": 4.0,
+            "p95": 13,
+            "max": 26,
+            "atLeast20": 1
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 4.0,
+            "p95": 6,
+            "max": 7,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 32,
+            "median": 1.0,
+            "p95": 3,
+            "max": 5,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "metal_1": 13,
+            "metal_2": 6,
+            "plant_1": 1
+          },
+          "aNaturalWins": 20,
+          "bNaturalWins": 12
+        },
+        {
+          "a": "Aware:InvestT3",
+          "b": "Aware:Balanced",
+          "games": 40,
+          "outcomes": {
+            "inactivity": 34,
+            "elimination": 6
+          },
+          "natural": 6,
+          "caps": 0,
+          "medianRound": 32.0,
+          "rentPaid": 2919,
+          "released": 643,
+          "combatLosses": 512,
+          "zeroStockpileTurns": 1808,
+          "firstTier3Round": {
+            "n": 58,
+            "median": 4.0,
+            "p95": 16,
+            "max": 21,
+            "atLeast20": 1
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 3.0,
+            "p95": 6,
+            "max": 7,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 6,
+            "median": 1.0,
+            "p95": 2,
+            "max": 5,
+            "atLeast20": 0
+          },
+          "homeInvaders": {},
+          "aNaturalWins": 3,
+          "bNaturalWins": 3
+        },
+        {
+          "a": "InvestT3",
+          "b": "HomeT3",
+          "games": 40,
+          "outcomes": {
+            "inactivity": 24,
+            "elimination": 16
+          },
+          "natural": 16,
+          "caps": 0,
+          "medianRound": 32.0,
+          "rentPaid": 4588,
+          "released": 398,
+          "combatLosses": 235,
+          "zeroStockpileTurns": 1664,
+          "firstTier3Round": {
+            "n": 76,
+            "median": 4.0,
+            "p95": 4,
+            "max": 8,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 4.0,
+            "p95": 5,
+            "max": 7,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 16,
+            "median": 1.0,
+            "p95": 5,
+            "max": 7,
+            "atLeast20": 0
+          },
+          "homeInvaders": {},
+          "aNaturalWins": 16,
+          "bNaturalWins": 0
+        },
+        {
+          "a": "Mono-plant",
+          "b": "Mono-shadow",
+          "games": 40,
+          "outcomes": {
+            "elimination": 30,
+            "inactivity": 8,
+            "upkeep-elimination": 1,
+            "home-occupation": 1
+          },
+          "natural": 32,
+          "caps": 0,
+          "medianRound": 12.0,
+          "rentPaid": 191,
+          "released": 157,
+          "combatLosses": 540,
+          "zeroStockpileTurns": 779,
+          "firstTier3Round": {
+            "n": 1,
+            "median": 18,
+            "p95": 18,
+            "max": 18,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 1.0,
+            "p95": 3,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 32,
+            "median": 1.0,
+            "p95": 1,
+            "max": 2,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "shadow_1": 1
+          },
+          "aNaturalWins": 0,
+          "bNaturalWins": 32
+        },
+        {
+          "a": "Invade:LightningRush",
+          "b": "Aware:Turtle",
+          "games": 40,
+          "outcomes": {
+            "home-occupation": 12,
+            "elimination": 28
+          },
+          "natural": 40,
+          "caps": 0,
+          "medianRound": 14.0,
+          "rentPaid": 2,
+          "released": 11,
+          "combatLosses": 680,
+          "zeroStockpileTurns": 1112,
+          "firstTier3Round": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "max": null,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 0.0,
+            "p95": 1,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 40,
+            "median": 1.0,
+            "p95": 3,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "lightning_1": 11,
+            "plant_1": 1
+          },
+          "aNaturalWins": 40,
+          "bNaturalWins": 0
+        },
+        {
+          "a": "Invade:MiningDenial",
+          "b": "Aware:AntiRush",
+          "games": 40,
+          "outcomes": {
+            "elimination": 24,
+            "home-occupation": 16
+          },
+          "natural": 40,
+          "caps": 0,
+          "medianRound": 21.5,
+          "rentPaid": 0,
+          "released": 72,
+          "combatLosses": 1149,
+          "zeroStockpileTurns": 1487,
+          "firstTier3Round": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "max": null,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 0.0,
+            "p95": 3,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 40,
+            "median": 1.0,
+            "p95": 2,
+            "max": 4,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "lightning_1": 11,
+            "lightning_2": 5
+          },
+          "aNaturalWins": 28,
+          "bNaturalWins": 12
+        },
+        {
+          "a": "Siege:4",
+          "b": "Invade:LightningRush",
+          "games": 40,
+          "outcomes": {
+            "home-occupation": 16,
+            "upkeep-elimination": 19,
+            "elimination": 5
+          },
+          "natural": 40,
+          "caps": 0,
+          "medianRound": 7.0,
+          "rentPaid": 454,
+          "released": 59,
+          "combatLosses": 399,
+          "zeroStockpileTurns": 460,
+          "firstTier3Round": {
+            "n": 9,
+            "median": 6,
+            "p95": 8,
+            "max": 9,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 0.5,
+            "p95": 4,
+            "max": 5,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 40,
+            "median": 1.0,
+            "p95": 1,
+            "max": 2,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "metal_2": 4,
+            "lightning_1": 11,
+            "metal_1": 1
+          },
+          "aNaturalWins": 7,
+          "bNaturalWins": 33
+        },
+        {
+          "a": "Invade:InvestT3",
+          "b": "Aware:Mono-plant",
+          "games": 40,
+          "outcomes": {
+            "upkeep-elimination": 7,
+            "elimination": 15,
+            "home-occupation": 15,
+            "inactivity": 3
+          },
+          "natural": 37,
+          "caps": 0,
+          "medianRound": 6.0,
+          "rentPaid": 259,
+          "released": 121,
+          "combatLosses": 154,
+          "zeroStockpileTurns": 350,
+          "firstTier3Round": {
+            "n": 12,
+            "median": 5.5,
+            "p95": 7,
+            "max": 8,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 80,
+            "median": 2.0,
+            "p95": 3,
+            "max": 4,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 37,
+            "median": 1,
+            "p95": 3,
+            "max": 4,
+            "atLeast20": 0
+          },
+          "homeInvaders": {
+            "lightning_1": 3,
+            "fire_1": 4,
+            "plant_1": 3,
+            "plant_2": 1,
+            "metal_1": 1,
+            "water_1": 1,
+            "fire_2": 1,
+            "plant_3": 1
+          },
+          "aNaturalWins": 18,
+          "bNaturalWins": 19
+        }
+      ]
+    }
+  },
+  "e9": {
+    "off": {
+      "games": 3200,
+      "outcomes": {
+        "adjudication": 684,
+        "elimination": 2516
+      },
+      "natural": 2516,
+      "caps": 684,
+      "medianRound": 19.0,
+      "rentPaid": 0,
+      "released": 0,
+      "combatLosses": 85136,
+      "zeroStockpileTurns": 168400,
+      "firstTier3Round": {
+        "n": 960,
+        "median": 9.0,
+        "p95": 26,
+        "max": 44,
+        "atLeast20": 108
+      },
+      "peakTier2Plus": {
+        "n": 6400,
+        "median": 1.0,
+        "p95": 21,
+        "max": 45,
+        "atLeast20": 395
+      },
+      "quietNatural": {
+        "n": 2516,
+        "median": 1.0,
+        "p95": 3,
+        "max": 17,
+        "atLeast20": 0
+      },
+      "homeInvaders": {},
+      "cells": [
+        {
+          "a": "Rush",
+          "b": "AntiRush",
+          "games": 200,
+          "outcomes": {
+            "adjudication": 166,
+            "elimination": 34
+          },
+          "natural": 34,
+          "caps": 166,
+          "medianRound": 121.0,
+          "rentPaid": 0,
+          "released": 0,
+          "combatLosses": 5376,
+          "zeroStockpileTurns": 29125,
+          "firstTier3Round": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "max": null,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 400,
+            "median": 0.0,
+            "p95": 0,
+            "max": 0,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 34,
+            "median": 1.0,
+            "p95": 3,
+            "max": 5,
+            "atLeast20": 0
+          },
+          "homeInvaders": {},
+          "aNaturalWins": 34,
+          "bNaturalWins": 0
+        },
+        {
+          "a": "Mono-lightning",
+          "b": "Mono-metal",
+          "games": 200,
+          "outcomes": {
+            "elimination": 200
+          },
+          "natural": 200,
+          "caps": 0,
+          "medianRound": 17.0,
+          "rentPaid": 0,
+          "released": 0,
+          "combatLosses": 6340,
+          "zeroStockpileTurns": 4401,
+          "firstTier3Round": {
+            "n": 4,
+            "median": 15.5,
+            "p95": 16,
+            "max": 22,
+            "atLeast20": 1
+          },
+          "peakTier2Plus": {
+            "n": 400,
+            "median": 1.0,
+            "p95": 7,
+            "max": 10,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 200,
+            "median": 1.0,
+            "p95": 1,
+            "max": 2,
+            "atLeast20": 0
+          },
+          "homeInvaders": {},
+          "aNaturalWins": 86,
+          "bNaturalWins": 114
+        },
+        {
+          "a": "Mono-plant",
+          "b": "Mono-shadow",
+          "games": 200,
+          "outcomes": {
+            "elimination": 194,
+            "adjudication": 6
+          },
+          "natural": 194,
+          "caps": 6,
+          "medianRound": 17.0,
+          "rentPaid": 0,
+          "released": 0,
+          "combatLosses": 4558,
+          "zeroStockpileTurns": 3224,
+          "firstTier3Round": {
+            "n": 66,
+            "median": 10.0,
+            "p95": 18,
+            "max": 21,
+            "atLeast20": 1
+          },
+          "peakTier2Plus": {
+            "n": 400,
+            "median": 2.5,
+            "p95": 13,
+            "max": 19,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 194,
+            "median": 1.0,
+            "p95": 1,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "homeInvaders": {},
+          "aNaturalWins": 87,
+          "bNaturalWins": 107
+        },
+        {
+          "a": "LightningRush",
+          "b": "Turtle",
+          "games": 200,
+          "outcomes": {
+            "elimination": 167,
+            "adjudication": 33
+          },
+          "natural": 167,
+          "caps": 33,
+          "medianRound": 6.0,
+          "rentPaid": 0,
+          "released": 0,
+          "combatLosses": 2704,
+          "zeroStockpileTurns": 8285,
+          "firstTier3Round": {
+            "n": 2,
+            "median": 9.5,
+            "p95": 8,
+            "max": 11,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 400,
+            "median": 0.0,
+            "p95": 4,
+            "max": 7,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 167,
+            "median": 1,
+            "p95": 1,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "homeInvaders": {},
+          "aNaturalWins": 167,
+          "bNaturalWins": 0
+        },
+        {
+          "a": "Rush",
+          "b": "Expand",
+          "games": 200,
+          "outcomes": {
+            "elimination": 185,
+            "adjudication": 15
+          },
+          "natural": 185,
+          "caps": 15,
+          "medianRound": 9.0,
+          "rentPaid": 0,
+          "released": 0,
+          "combatLosses": 3414,
+          "zeroStockpileTurns": 5675,
+          "firstTier3Round": {
+            "n": 40,
+            "median": 8.0,
+            "p95": 13,
+            "max": 17,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 400,
+            "median": 0.0,
+            "p95": 8,
+            "max": 31,
+            "atLeast20": 12
+          },
+          "quietNatural": {
+            "n": 185,
+            "median": 1,
+            "p95": 1,
+            "max": 4,
+            "atLeast20": 0
+          },
+          "homeInvaders": {},
+          "aNaturalWins": 176,
+          "bNaturalWins": 9
+        },
+        {
+          "a": "Mono-lightning",
+          "b": "Mono-fire",
+          "games": 200,
+          "outcomes": {
+            "elimination": 200
+          },
+          "natural": 200,
+          "caps": 0,
+          "medianRound": 19.0,
+          "rentPaid": 0,
+          "released": 0,
+          "combatLosses": 9983,
+          "zeroStockpileTurns": 7784,
+          "firstTier3Round": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "max": null,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 400,
+            "median": 2.0,
+            "p95": 5,
+            "max": 5,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 200,
+            "median": 1.0,
+            "p95": 1,
+            "max": 1,
+            "atLeast20": 0
+          },
+          "homeInvaders": {},
+          "aNaturalWins": 76,
+          "bNaturalWins": 124
+        },
+        {
+          "a": "Mono-fire",
+          "b": "Mono-water",
+          "games": 200,
+          "outcomes": {
+            "elimination": 200
+          },
+          "natural": 200,
+          "caps": 0,
+          "medianRound": 21.0,
+          "rentPaid": 0,
+          "released": 0,
+          "combatLosses": 7273,
+          "zeroStockpileTurns": 6435,
+          "firstTier3Round": {
+            "n": 3,
+            "median": 16,
+            "p95": 16,
+            "max": 17,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 400,
+            "median": 7.0,
+            "p95": 12,
+            "max": 15,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 200,
+            "median": 1.0,
+            "p95": 3,
+            "max": 7,
+            "atLeast20": 0
+          },
+          "homeInvaders": {},
+          "aNaturalWins": 0,
+          "bNaturalWins": 200
+        },
+        {
+          "a": "LightningRush",
+          "b": "Expand",
+          "games": 200,
+          "outcomes": {
+            "elimination": 197,
+            "adjudication": 3
+          },
+          "natural": 197,
+          "caps": 3,
+          "medianRound": 7.0,
+          "rentPaid": 0,
+          "released": 0,
+          "combatLosses": 2360,
+          "zeroStockpileTurns": 2878,
+          "firstTier3Round": {
+            "n": 9,
+            "median": 9,
+            "p95": 11,
+            "max": 11,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 400,
+            "median": 0.0,
+            "p95": 3,
+            "max": 30,
+            "atLeast20": 2
+          },
+          "quietNatural": {
+            "n": 197,
+            "median": 1,
+            "p95": 1,
+            "max": 1,
+            "atLeast20": 0
+          },
+          "homeInvaders": {},
+          "aNaturalWins": 194,
+          "bNaturalWins": 3
+        },
+        {
+          "a": "AdaptivePressure",
+          "b": "AntiRush",
+          "games": 200,
+          "outcomes": {
+            "elimination": 129,
+            "adjudication": 71
+          },
+          "natural": 129,
+          "caps": 71,
+          "medianRound": 31.5,
+          "rentPaid": 0,
+          "released": 0,
+          "combatLosses": 7388,
+          "zeroStockpileTurns": 18089,
+          "firstTier3Round": {
+            "n": 18,
+            "median": 14.0,
+            "p95": 19,
+            "max": 22,
+            "atLeast20": 1
+          },
+          "peakTier2Plus": {
+            "n": 400,
+            "median": 0.0,
+            "p95": 5,
+            "max": 8,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 129,
+            "median": 1,
+            "p95": 3,
+            "max": 7,
+            "atLeast20": 0
+          },
+          "homeInvaders": {},
+          "aNaturalWins": 129,
+          "bNaturalWins": 0
+        },
+        {
+          "a": "Mono-shadow",
+          "b": "Mono-water",
+          "games": 200,
+          "outcomes": {
+            "elimination": 200
+          },
+          "natural": 200,
+          "caps": 0,
+          "medianRound": 18.0,
+          "rentPaid": 0,
+          "released": 0,
+          "combatLosses": 5487,
+          "zeroStockpileTurns": 3609,
+          "firstTier3Round": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "max": null,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 400,
+            "median": 3.5,
+            "p95": 10,
+            "max": 14,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 200,
+            "median": 1.0,
+            "p95": 3,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "homeInvaders": {},
+          "aNaturalWins": 0,
+          "bNaturalWins": 200
+        },
+        {
+          "a": "Balanced",
+          "b": "Expand",
+          "games": 200,
+          "outcomes": {
+            "adjudication": 185,
+            "elimination": 15
+          },
+          "natural": 15,
+          "caps": 185,
+          "medianRound": 121.0,
+          "rentPaid": 0,
+          "released": 0,
+          "combatLosses": 6335,
+          "zeroStockpileTurns": 21528,
+          "firstTier3Round": {
+            "n": 399,
+            "median": 7,
+            "p95": 10,
+            "max": 13,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 400,
+            "median": 19.0,
+            "p95": 24,
+            "max": 38,
+            "atLeast20": 162
+          },
+          "quietNatural": {
+            "n": 15,
+            "median": 10,
+            "p95": 13,
+            "max": 14,
+            "atLeast20": 0
+          },
+          "homeInvaders": {},
+          "aNaturalWins": 15,
+          "bNaturalWins": 0
+        },
+        {
+          "a": "AdaptiveEconomy",
+          "b": "LightningRush",
+          "games": 200,
+          "outcomes": {
+            "elimination": 164,
+            "adjudication": 36
+          },
+          "natural": 164,
+          "caps": 36,
+          "medianRound": 11.0,
+          "rentPaid": 0,
+          "released": 0,
+          "combatLosses": 4676,
+          "zeroStockpileTurns": 10854,
+          "firstTier3Round": {
+            "n": 72,
+            "median": 15.0,
+            "p95": 30,
+            "max": 35,
+            "atLeast20": 30
+          },
+          "peakTier2Plus": {
+            "n": 400,
+            "median": 0.0,
+            "p95": 32,
+            "max": 44,
+            "atLeast20": 59
+          },
+          "quietNatural": {
+            "n": 164,
+            "median": 1.0,
+            "p95": 1,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "homeInvaders": {},
+          "aNaturalWins": 44,
+          "bNaturalWins": 120
+        },
+        {
+          "a": "AdaptiveEconomy",
+          "b": "Rush",
+          "games": 200,
+          "outcomes": {
+            "elimination": 148,
+            "adjudication": 52
+          },
+          "natural": 148,
+          "caps": 52,
+          "medianRound": 40.5,
+          "rentPaid": 0,
+          "released": 0,
+          "combatLosses": 6016,
+          "zeroStockpileTurns": 15098,
+          "firstTier3Round": {
+            "n": 122,
+            "median": 13.0,
+            "p95": 29,
+            "max": 34,
+            "atLeast20": 33
+          },
+          "peakTier2Plus": {
+            "n": 400,
+            "median": 0.0,
+            "p95": 33,
+            "max": 39,
+            "atLeast20": 100
+          },
+          "quietNatural": {
+            "n": 148,
+            "median": 1.0,
+            "p95": 2,
+            "max": 4,
+            "atLeast20": 0
+          },
+          "homeInvaders": {},
+          "aNaturalWins": 76,
+          "bNaturalWins": 72
+        },
+        {
+          "a": "Mono-plant",
+          "b": "Mono-metal",
+          "games": 200,
+          "outcomes": {
+            "elimination": 170,
+            "adjudication": 30
+          },
+          "natural": 170,
+          "caps": 30,
+          "medianRound": 24.0,
+          "rentPaid": 0,
+          "released": 0,
+          "combatLosses": 4128,
+          "zeroStockpileTurns": 4803,
+          "firstTier3Round": {
+            "n": 128,
+            "median": 10.0,
+            "p95": 13,
+            "max": 19,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 400,
+            "median": 6.0,
+            "p95": 9,
+            "max": 14,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 170,
+            "median": 2.0,
+            "p95": 5,
+            "max": 17,
+            "atLeast20": 0
+          },
+          "homeInvaders": {},
+          "aNaturalWins": 0,
+          "bNaturalWins": 170
+        },
+        {
+          "a": "LightningRush",
+          "b": "AntiRush",
+          "games": 200,
+          "outcomes": {
+            "elimination": 119,
+            "adjudication": 81
+          },
+          "natural": 119,
+          "caps": 81,
+          "medianRound": 6.0,
+          "rentPaid": 0,
+          "released": 0,
+          "combatLosses": 3508,
+          "zeroStockpileTurns": 16585,
+          "firstTier3Round": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "max": null,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 400,
+            "median": 0.0,
+            "p95": 0,
+            "max": 0,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 119,
+            "median": 1,
+            "p95": 1,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "homeInvaders": {},
+          "aNaturalWins": 119,
+          "bNaturalWins": 0
+        },
+        {
+          "a": "Balanced",
+          "b": "LightningRush",
+          "games": 200,
+          "outcomes": {
+            "elimination": 194,
+            "adjudication": 6
+          },
+          "natural": 194,
+          "caps": 6,
+          "medianRound": 25.0,
+          "rentPaid": 0,
+          "released": 0,
+          "combatLosses": 5590,
+          "zeroStockpileTurns": 10027,
+          "firstTier3Round": {
+            "n": 97,
+            "median": 18,
+            "p95": 29,
+            "max": 44,
+            "atLeast20": 42
+          },
+          "peakTier2Plus": {
+            "n": 400,
+            "median": 0.0,
+            "p95": 38,
+            "max": 45,
+            "atLeast20": 60
+          },
+          "quietNatural": {
+            "n": 194,
+            "median": 2.0,
+            "p95": 5,
+            "max": 9,
+            "atLeast20": 0
+          },
+          "homeInvaders": {},
+          "aNaturalWins": 142,
+          "bNaturalWins": 52
+        }
+      ]
+    },
+    "shipped": {
+      "games": 3200,
+      "outcomes": {
+        "inactivity": 523,
+        "elimination": 2541,
+        "upkeep-elimination": 136
+      },
+      "natural": 2677,
+      "caps": 0,
+      "medianRound": 13.0,
+      "rentPaid": 9463,
+      "released": 17745,
+      "combatLosses": 59775,
+      "zeroStockpileTurns": 89201,
+      "firstTier3Round": {
+        "n": 424,
+        "median": 8.0,
+        "p95": 15,
+        "max": 27,
+        "atLeast20": 7
+      },
+      "peakTier2Plus": {
+        "n": 6400,
+        "median": 1.0,
+        "p95": 3,
+        "max": 7,
+        "atLeast20": 0
+      },
+      "quietNatural": {
+        "n": 2677,
+        "median": 1,
+        "p95": 5,
+        "max": 19,
+        "atLeast20": 0
+      },
+      "homeInvaders": {},
+      "cells": [
+        {
+          "a": "Rush",
+          "b": "AntiRush",
+          "games": 200,
+          "outcomes": {
+            "inactivity": 166,
+            "elimination": 34
+          },
+          "natural": 34,
+          "caps": 0,
+          "medianRound": 35.0,
+          "rentPaid": 0,
+          "released": 0,
+          "combatLosses": 5376,
+          "zeroStockpileTurns": 9698,
+          "firstTier3Round": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "max": null,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 400,
+            "median": 0.0,
+            "p95": 0,
+            "max": 0,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 34,
+            "median": 1.0,
+            "p95": 3,
+            "max": 5,
+            "atLeast20": 0
+          },
+          "homeInvaders": {},
+          "aNaturalWins": 34,
+          "bNaturalWins": 0
+        },
+        {
+          "a": "Mono-lightning",
+          "b": "Mono-metal",
+          "games": 200,
+          "outcomes": {
+            "upkeep-elimination": 15,
+            "elimination": 185
+          },
+          "natural": 200,
+          "caps": 0,
+          "medianRound": 11.0,
+          "rentPaid": 480,
+          "released": 402,
+          "combatLosses": 3418,
+          "zeroStockpileTurns": 3150,
+          "firstTier3Round": {
+            "n": 1,
+            "median": 15,
+            "p95": 15,
+            "max": 15,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 400,
+            "median": 1.0,
+            "p95": 2,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 200,
+            "median": 1.0,
+            "p95": 1,
+            "max": 2,
+            "atLeast20": 0
+          },
+          "homeInvaders": {},
+          "aNaturalWins": 200,
+          "bNaturalWins": 0
+        },
+        {
+          "a": "Mono-plant",
+          "b": "Mono-shadow",
+          "games": 200,
+          "outcomes": {
+            "elimination": 153,
+            "inactivity": 29,
+            "upkeep-elimination": 18
+          },
+          "natural": 171,
+          "caps": 0,
+          "medianRound": 12.0,
+          "rentPaid": 1286,
+          "released": 905,
+          "combatLosses": 2825,
+          "zeroStockpileTurns": 3373,
+          "firstTier3Round": {
+            "n": 4,
+            "median": 8.0,
+            "p95": 8,
+            "max": 9,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 400,
+            "median": 2.0,
+            "p95": 3,
+            "max": 4,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 171,
+            "median": 1,
+            "p95": 1,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "homeInvaders": {},
+          "aNaturalWins": 0,
+          "bNaturalWins": 171
+        },
+        {
+          "a": "LightningRush",
+          "b": "Turtle",
+          "games": 200,
+          "outcomes": {
+            "elimination": 200
+          },
+          "natural": 200,
+          "caps": 0,
+          "medianRound": 6.0,
+          "rentPaid": 36,
+          "released": 99,
+          "combatLosses": 1993,
+          "zeroStockpileTurns": 2578,
+          "firstTier3Round": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "max": null,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 400,
+            "median": 0.0,
+            "p95": 1,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 200,
+            "median": 1.0,
+            "p95": 2,
+            "max": 6,
+            "atLeast20": 0
+          },
+          "homeInvaders": {},
+          "aNaturalWins": 200,
+          "bNaturalWins": 0
+        },
+        {
+          "a": "Rush",
+          "b": "Expand",
+          "games": 200,
+          "outcomes": {
+            "elimination": 192,
+            "upkeep-elimination": 7,
+            "inactivity": 1
+          },
+          "natural": 199,
+          "caps": 0,
+          "medianRound": 8.0,
+          "rentPaid": 366,
+          "released": 247,
+          "combatLosses": 2379,
+          "zeroStockpileTurns": 3136,
+          "firstTier3Round": {
+            "n": 15,
+            "median": 9,
+            "p95": 12,
+            "max": 23,
+            "atLeast20": 1
+          },
+          "peakTier2Plus": {
+            "n": 400,
+            "median": 0.0,
+            "p95": 3,
+            "max": 6,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 199,
+            "median": 1,
+            "p95": 3,
+            "max": 6,
+            "atLeast20": 0
+          },
+          "homeInvaders": {},
+          "aNaturalWins": 199,
+          "bNaturalWins": 0
+        },
+        {
+          "a": "Mono-lightning",
+          "b": "Mono-fire",
+          "games": 200,
+          "outcomes": {
+            "elimination": 196,
+            "upkeep-elimination": 4
+          },
+          "natural": 200,
+          "caps": 0,
+          "medianRound": 19.0,
+          "rentPaid": 0,
+          "released": 873,
+          "combatLosses": 8344,
+          "zeroStockpileTurns": 7017,
+          "firstTier3Round": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "max": null,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 400,
+            "median": 2.0,
+            "p95": 2,
+            "max": 2,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 200,
+            "median": 1.0,
+            "p95": 1,
+            "max": 1,
+            "atLeast20": 0
+          },
+          "homeInvaders": {},
+          "aNaturalWins": 135,
+          "bNaturalWins": 65
+        },
+        {
+          "a": "Mono-fire",
+          "b": "Mono-water",
+          "games": 200,
+          "outcomes": {
+            "elimination": 197,
+            "upkeep-elimination": 3
+          },
+          "natural": 200,
+          "caps": 0,
+          "medianRound": 21.0,
+          "rentPaid": 920,
+          "released": 2886,
+          "combatLosses": 6534,
+          "zeroStockpileTurns": 7513,
+          "firstTier3Round": {
+            "n": 1,
+            "median": 13,
+            "p95": 13,
+            "max": 13,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 400,
+            "median": 2.0,
+            "p95": 2,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 200,
+            "median": 1.0,
+            "p95": 1,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "homeInvaders": {},
+          "aNaturalWins": 28,
+          "bNaturalWins": 172
+        },
+        {
+          "a": "LightningRush",
+          "b": "Expand",
+          "games": 200,
+          "outcomes": {
+            "elimination": 195,
+            "upkeep-elimination": 5
+          },
+          "natural": 200,
+          "caps": 0,
+          "medianRound": 7.0,
+          "rentPaid": 196,
+          "released": 105,
+          "combatLosses": 1960,
+          "zeroStockpileTurns": 2366,
+          "firstTier3Round": {
+            "n": 2,
+            "median": 8.5,
+            "p95": 8,
+            "max": 9,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 400,
+            "median": 0.0,
+            "p95": 2,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 200,
+            "median": 1.0,
+            "p95": 1,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "homeInvaders": {},
+          "aNaturalWins": 200,
+          "bNaturalWins": 0
+        },
+        {
+          "a": "AdaptivePressure",
+          "b": "AntiRush",
+          "games": 200,
+          "outcomes": {
+            "elimination": 42,
+            "inactivity": 158
+          },
+          "natural": 42,
+          "caps": 0,
+          "medianRound": 32.0,
+          "rentPaid": 0,
+          "released": 219,
+          "combatLosses": 4224,
+          "zeroStockpileTurns": 9152,
+          "firstTier3Round": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "max": null,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 400,
+            "median": 0.0,
+            "p95": 1,
+            "max": 1,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 42,
+            "median": 1.0,
+            "p95": 3,
+            "max": 5,
+            "atLeast20": 0
+          },
+          "homeInvaders": {},
+          "aNaturalWins": 42,
+          "bNaturalWins": 0
+        },
+        {
+          "a": "Mono-shadow",
+          "b": "Mono-water",
+          "games": 200,
+          "outcomes": {
+            "elimination": 185,
+            "upkeep-elimination": 6,
+            "inactivity": 9
+          },
+          "natural": 191,
+          "caps": 0,
+          "medianRound": 14.5,
+          "rentPaid": 584,
+          "released": 1315,
+          "combatLosses": 4243,
+          "zeroStockpileTurns": 4045,
+          "firstTier3Round": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "max": null,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 400,
+            "median": 2.0,
+            "p95": 2,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 191,
+            "median": 1,
+            "p95": 1,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "homeInvaders": {},
+          "aNaturalWins": 165,
+          "bNaturalWins": 26
+        },
+        {
+          "a": "Balanced",
+          "b": "Expand",
+          "games": 200,
+          "outcomes": {
+            "elimination": 141,
+            "inactivity": 58,
+            "upkeep-elimination": 1
+          },
+          "natural": 142,
+          "caps": 0,
+          "medianRound": 37.0,
+          "rentPaid": 2271,
+          "released": 6513,
+          "combatLosses": 1720,
+          "zeroStockpileTurns": 12532,
+          "firstTier3Round": {
+            "n": 342,
+            "median": 8.0,
+            "p95": 13,
+            "max": 23,
+            "atLeast20": 3
+          },
+          "peakTier2Plus": {
+            "n": 400,
+            "median": 3.0,
+            "p95": 4,
+            "max": 7,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 142,
+            "median": 5.0,
+            "p95": 13,
+            "max": 19,
+            "atLeast20": 0
+          },
+          "homeInvaders": {},
+          "aNaturalWins": 142,
+          "bNaturalWins": 0
+        },
+        {
+          "a": "AdaptiveEconomy",
+          "b": "LightningRush",
+          "games": 200,
+          "outcomes": {
+            "elimination": 188,
+            "upkeep-elimination": 12
+          },
+          "natural": 200,
+          "caps": 0,
+          "medianRound": 7.0,
+          "rentPaid": 145,
+          "released": 348,
+          "combatLosses": 2687,
+          "zeroStockpileTurns": 2965,
+          "firstTier3Round": {
+            "n": 1,
+            "median": 13,
+            "p95": 13,
+            "max": 13,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 400,
+            "median": 0.0,
+            "p95": 2,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 200,
+            "median": 1.0,
+            "p95": 1,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "homeInvaders": {},
+          "aNaturalWins": 0,
+          "bNaturalWins": 200
+        },
+        {
+          "a": "AdaptiveEconomy",
+          "b": "Rush",
+          "games": 200,
+          "outcomes": {
+            "upkeep-elimination": 15,
+            "elimination": 182,
+            "inactivity": 3
+          },
+          "natural": 197,
+          "caps": 0,
+          "medianRound": 10.0,
+          "rentPaid": 296,
+          "released": 611,
+          "combatLosses": 3292,
+          "zeroStockpileTurns": 3953,
+          "firstTier3Round": {
+            "n": 7,
+            "median": 6,
+            "p95": 10,
+            "max": 12,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 400,
+            "median": 0.0,
+            "p95": 2,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 197,
+            "median": 1,
+            "p95": 1,
+            "max": 5,
+            "atLeast20": 0
+          },
+          "homeInvaders": {},
+          "aNaturalWins": 0,
+          "bNaturalWins": 197
+        },
+        {
+          "a": "Mono-plant",
+          "b": "Mono-metal",
+          "games": 200,
+          "outcomes": {
+            "elimination": 144,
+            "upkeep-elimination": 47,
+            "inactivity": 9
+          },
+          "natural": 191,
+          "caps": 0,
+          "medianRound": 17.0,
+          "rentPaid": 2660,
+          "released": 2287,
+          "combatLosses": 2058,
+          "zeroStockpileTurns": 4255,
+          "firstTier3Round": {
+            "n": 41,
+            "median": 10,
+            "p95": 14,
+            "max": 15,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 400,
+            "median": 2.0,
+            "p95": 3,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 191,
+            "median": 1,
+            "p95": 4,
+            "max": 13,
+            "atLeast20": 0
+          },
+          "homeInvaders": {},
+          "aNaturalWins": 0,
+          "bNaturalWins": 191
+        },
+        {
+          "a": "LightningRush",
+          "b": "AntiRush",
+          "games": 200,
+          "outcomes": {
+            "elimination": 119,
+            "inactivity": 81
+          },
+          "natural": 119,
+          "caps": 0,
+          "medianRound": 6.0,
+          "rentPaid": 0,
+          "released": 0,
+          "combatLosses": 3508,
+          "zeroStockpileTurns": 5750,
+          "firstTier3Round": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "max": null,
+            "atLeast20": 0
+          },
+          "peakTier2Plus": {
+            "n": 400,
+            "median": 0.0,
+            "p95": 0,
+            "max": 0,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 119,
+            "median": 1,
+            "p95": 1,
+            "max": 3,
+            "atLeast20": 0
+          },
+          "homeInvaders": {},
+          "aNaturalWins": 119,
+          "bNaturalWins": 0
+        },
+        {
+          "a": "Balanced",
+          "b": "LightningRush",
+          "games": 200,
+          "outcomes": {
+            "elimination": 188,
+            "upkeep-elimination": 3,
+            "inactivity": 9
+          },
+          "natural": 191,
+          "caps": 0,
+          "medianRound": 18.0,
+          "rentPaid": 223,
+          "released": 935,
+          "combatLosses": 5214,
+          "zeroStockpileTurns": 7718,
+          "firstTier3Round": {
+            "n": 10,
+            "median": 16.0,
+            "p95": 21,
+            "max": 27,
+            "atLeast20": 3
+          },
+          "peakTier2Plus": {
+            "n": 400,
+            "median": 0.0,
+            "p95": 3,
+            "max": 6,
+            "atLeast20": 0
+          },
+          "quietNatural": {
+            "n": 191,
+            "median": 3,
+            "p95": 7,
+            "max": 13,
+            "atLeast20": 0
+          },
+          "homeInvaders": {},
+          "aNaturalWins": 93,
+          "bNaturalWins": 98
+        }
+      ]
+    }
+  }
+}

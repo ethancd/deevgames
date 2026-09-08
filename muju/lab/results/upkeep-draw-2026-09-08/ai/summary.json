@@ -1,0 +1,10 @@
+{
+  "games": 12,
+  "wins": 5,
+  "losses": 7,
+  "draws": 0,
+  "upkeepEliminationLosses": 3,
+  "illegal": 0,
+  "invariants": 0,
+  "preset": "Medium, UI speed, 4000 ms shared per turn; one seed block, both seats; no strength claim"
+}
