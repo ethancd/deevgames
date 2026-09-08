@@ -21,7 +21,7 @@
     "ai:wasm": "asc --config asconfig.json",
     "prebuild": "npm run ai:wasm",
     "pretest": "npm run ai:wasm",
-    "predev": "npm run ai:wasm",
+    "predev": "python3 ../.githooks/check-freshness.py pre-dev && npm run ai:wasm",
     "ai:tactics": "node --import tsx lab/ai/run.ts tactics",
     "ai:league": "node --import tsx lab/ai/run.ts league"
   },

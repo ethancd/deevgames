@@ -9,6 +9,30 @@ design portfolio. These are browser games; Oracle is a short combat prototype.
 
 ## Build and publish the browser games
 
+Keep this checkout on current `master`, or start a feature branch from current
+`origin/master`. Releases made from another Git worktree do not update this folder.
+Before starting work, preserve local edits and run `git fetch origin`; on `master`,
+use `git pull --ff-only`.
+
+Install the repository's freshness hooks once per clone (Python 3 required):
+
+```bash
+python3 tools/install-git-hooks.py
+```
+
+The hooks fetch `origin/master` before commits and pushes and block branches missing
+its commits. Network failure also blocks verification; restore access and retry.
+Merge `origin/master` into a feature branch to bring it current. Switching to an
+older checkout prints a warning against the last fetched tip. The hooks never
+automatically switch branches, merge, stash, or change source files.
+
+Installation uses the shared Git directory, so all linked worktrees remain covered
+even when their branches predate these scripts. Re-run installation after changing
+the hook files. Git hooks are local safeguards: they can be bypassed with
+`--no-verify`, do not run in other clones until installed, and cannot prevent an
+idle checkout from falling behind. Muju's `npm run dev` also checks freshness before
+starting Vite. Run `python3 .githooks/check-freshness.py pre-dev` to check manually.
+
 Use Node 24 and Python 3. Install each game's locked dependencies, then build:
 
 ```bash
