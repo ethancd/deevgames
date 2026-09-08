@@ -65,3 +65,32 @@ PLAYWRIGHT_BROWSER=webkit MUJU_BASE_URL=http://127.0.0.1:PORT/muju/ npm run test
 
 The browser commands run from `muju/`. Full-site smoke runs from the root:
 `CHROME_PATH='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' node tools/smoke-site.cjs http://127.0.0.1:PORT`.
+
+## Production receipt
+
+Deployed code: `28a698a50ff0f054aedb961e4ff0d5b071b4f013`.
+Durable checkout: `/Users/ashkie/src/deevgames-muju-cleave`, branch
+`codex/muju-tier-cleave`. Published 2026-09-07 (America/Chicago).
+
+- Live: https://deevgames.pages.dev/muju/
+- Immutable: https://c6f76250.deevgames.pages.dev/muju/
+- Cloudflare published 147 public files (5 uploaded, 142 unchanged).
+- Live Chrome: **31/31 passed**. Live WebKit: **4/4 new Cleave tests passed**,
+  including the Hard worker's paid kill → move → kill rescue.
+- Live full-site smoke: phone 390px and tablet 834px passed for all three games.
+- [Release build workflow](https://github.com/ethancd/deevgames/actions/runs/34183641753)
+  passed. Its optional upload was skipped because the repository's Cloudflare
+  deployment secret is absent; the tested local build was published through the
+  existing authorized Wrangler path. A separate legacy GitHub Pages/Jekyll
+  workflow failed; it does not publish the Cloudflare production site.
+
+All five live Muju runtime files were fetched with a fresh query and compared
+byte-for-byte with the tested build:
+
+| File | Bytes | SHA-256 |
+|---|---:|---|
+| `/muju/` | 431 | `5392ea01b50c3b83b4cd03f4c47f670c773e310db86c87c1c57929c4f0f532d2` |
+| `/muju/assets/entry-DEkBq1G3.js` | 42888 | `437232cebc40471b7293f1119061748d3a389450540f26727fa8e40874dfa4c3` |
+| `/muju/assets/index-kFJ4jG_1.css` | 41518 | `2618fafc58e678d2a5d27743d2a90cb197d670f44bd89936b9c9566bada52c3d` |
+| `/muju/assets/index-umLoCBCt.js` | 296484 | `61b10090bba6f6431dbb27ba19e3091771c9c5d5cfd03be9b0ae920c65789135` |
+| `/muju/assets/tactics-Bi-uSDhY.wasm` | 7883 | `291d79fd92b69dd27970b4600c0883d137d559bc187ed0ef21a34d55f446f84f` |
