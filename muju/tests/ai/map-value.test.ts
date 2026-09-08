@@ -57,6 +57,6 @@ describe('opening witnesses',()=>{
  it('financing pays income after placement, respects build delays and one promotion per turn',()=>{
   expect(finance(getUnitDefinition('plant_2'),[3,3,3,3,3])).toBe(2);
   expect(finance(getUnitDefinition('metal_2'),[6,6,6,6,6])).toBe(4);
-  expect(finance(getUnitDefinition('fire_4'),[100,100,100,100,100])).toBe(4);
+  expect(finance(getUnitDefinition('fire_3'),[100,100,100,100,100])).toBe(3);
  });
 });

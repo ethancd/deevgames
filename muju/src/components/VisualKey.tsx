@@ -29,8 +29,8 @@ export function VisualKey() {
         <UnitArtwork owner="white" element={element} tier={2} /><UnitArtwork owner="black" element={element} tier={2} />
       </div><figcaption><ElementIcon element={element} /> {element}</figcaption></figure>)}</div>
     </section>
-    <section><h3>Rank belongs on the base</h3><div className="rank-examples">{([1, 2, 3, 4] as Tier[]).map(tier => <figure key={tier}><UnitArtwork owner="white" element="water" tier={tier} /><figcaption>Tier {tier}</figcaption></figure>)}</div>
-      <p>Count the one to four rank marks. Higher tiers have larger bases; tiers 3–4 gain an inner rim and tier 4 a crest. Tier is a rank, not a universal attack value—tap a unit to compare its actual stats. A red badge shows damage.</p>
+    <section><h3>Rank belongs on the base</h3><div className="rank-examples">{([1, 2, 3] as Tier[]).map(tier => <figure key={tier}><UnitArtwork owner="white" element="water" tier={tier} /><figcaption>Tier {tier}</figcaption></figure>)}</div>
+      <p>Count the one to three rank marks. Higher tiers have larger bases; tier 3 gains an inner rim. Tier is a rank, not a universal attack value—tap a unit to compare its actual stats. A red badge shows damage.</p>
     </section>
   </div>;
 }

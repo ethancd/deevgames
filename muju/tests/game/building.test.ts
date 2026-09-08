@@ -57,9 +57,9 @@ describe('Building System', () => {
       expect(getBuildCost('plant_3')).toBe(12);
     });
 
-    it('tier 4 units have element-based costs', () => {
-      expect(getBuildCost('fire_4')).toBe(10);
-      expect(getBuildCost('metal_4')).toBe(20);
+    it('tier 3 units have element-based costs', () => {
+      expect(getBuildCost('fire_3')).toBe(6);
+      expect(getBuildCost('metal_3')).toBe(12);
     });
   });
 
@@ -79,9 +79,9 @@ describe('Building System', () => {
       expect(getBuildTime('water_3')).toBe(2);
     });
 
-    it('tier 4 units take 2-3 turns', () => {
-      expect(getBuildTime('fire_4')).toBe(2);
-      expect(getBuildTime('water_4')).toBe(3);
+    it('tier 3 units take 2-3 turns', () => {
+      expect(getBuildTime('fire_3')).toBe(2);
+      expect(getBuildTime('plant_3')).toBe(3);
     });
   });
 
@@ -96,7 +96,7 @@ describe('Building System', () => {
     it('returns false when player lacks crystals', () => {
       const state: BuildState = { queue: [], crystals: 5 };
       expect(canAfford(state, 'fire_3')).toBe(false); // cost 6
-      expect(canAfford(state, 'fire_4')).toBe(false); // cost 10
+      expect(canAfford(state, 'fire_3')).toBe(false); // cost 6
     });
 
     it('returns true for exactly matching crystals', () => {
@@ -148,8 +148,8 @@ describe('Building System', () => {
       expect(meetsTechRequirement('fire_2', 'white', board)).toBe(true);
       // Can build fire_3 (needs T2+, fire_3 is T3 >= T2)
       expect(meetsTechRequirement('fire_3', 'white', board)).toBe(true);
-      // Can build fire_4 (needs T3+, fire_3 is T3 >= T3)
-      expect(meetsTechRequirement('fire_4', 'white', board)).toBe(true);
+      // Can build fire_3 (needs T2+, fire_3 is T3 >= T2)
+      expect(meetsTechRequirement('fire_3', 'white', board)).toBe(true);
     });
 
     it('different elements do not satisfy requirements', () => {
@@ -184,7 +184,7 @@ describe('Building System', () => {
     it('returns tier-1 for higher tier units', () => {
       expect(getRequiredTier('fire_2')).toBe(1);
       expect(getRequiredTier('fire_3')).toBe(2);
-      expect(getRequiredTier('fire_4')).toBe(3);
+      expect(getRequiredTier('fire_3')).toBe(2);
     });
   });
 
@@ -358,8 +358,8 @@ describe('Building System', () => {
       expect(options).toContain('fire_1');
       expect(options).toContain('fire_2');
       expect(options).toContain('fire_3'); // costs 6
-      expect(options).toContain('fire_4'); // costs 10
-      expect(options).toContain('metal_4'); // costs 20 (most expensive)
+      expect(options).toContain('fire_3'); // costs 6
+      expect(options).toContain('metal_3'); // costs 12 (highest remaining price)
     });
   });
 

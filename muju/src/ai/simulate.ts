@@ -1,7 +1,7 @@
 import type { GameState, PlayerId, Position } from '../game/types';
 import type { AIAction } from './types';
 import { getUnitById, placeUnit } from '../game/board';
-import { getUnitDefinition } from '../game/units';
+import { getNextTierDefinition, getUnitDefinition } from '../game/units';
 import { resolveCombat } from '../game/combat';
 import { executeMine } from '../game/mining';
 import { useAction, endTurn, startActionPhase, startQueuePhase, canActInPlacePhase, canActInQueuePhase } from '../game/turn';
@@ -230,10 +230,10 @@ function applyPromoteUnit(state: GameState, unitId: string): GameState {
   const playerState = state.players[currentPlayer];
   const def = getUnitDefinition(unit.definitionId);
 
-  if (def.tier >= 4) return state;
 
   // Find next tier unit of same element
-  const nextTierDef = getUnitDefinition(`${def.element}_${def.tier + 1}`);
+  const nextTierDef = getNextTierDefinition(def.id);
+  if (!nextTierDef) return state;
   // Promotion cost is the difference between next tier and current tier costs
   const promotionCost = nextTierDef.cost - def.cost;
 

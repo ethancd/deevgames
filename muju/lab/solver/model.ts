@@ -5,8 +5,9 @@ import { getAttackModifier } from '../../src/game/elements';
 export type Catalogue = readonly UnitDefinition[];
 export function validateCatalogue(catalogue: Catalogue): void {
   const elements = ['fire', 'lightning', 'water', 'shadow', 'plant', 'metal'];
-  if (catalogue.length !== 24 || new Set(catalogue.map(d => d.id)).size !== 24) throw new Error('Expected 24 unique units');
-  for (const element of elements) for (let tier = 1; tier <= 4; tier++) {
+  const tiers = Math.max(...catalogue.map(d => d.tier));
+  if (catalogue.length !== elements.length * tiers || new Set(catalogue.map(d => d.id)).size !== catalogue.length) throw new Error('Expected complete unique element ladders');
+  for (const element of elements) for (let tier = 1; tier <= tiers; tier++) {
     const unit = catalogue.find(d => d.id === `${element}_${tier}`);
     if (!unit || unit.element !== element || unit.tier !== tier) throw new Error(`Missing/mismatched ${element}_${tier}`);
     for (const key of ['attack', 'defense', 'speed', 'mining', 'cost', 'buildTime'] as const) {

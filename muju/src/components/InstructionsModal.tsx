@@ -181,7 +181,7 @@ const instructionPages: InstructionPage[] = [
           <DemoUnit element="water" tier={3} />
           <DemoUnit element="shadow" tier={1} />
           <DemoUnit element="plant" tier={2} />
-          <DemoUnit element="metal" tier={4} />
+          <DemoUnit element="metal" tier={3} />
         </div>
         <p className="text-gray-400 text-sm text-center">
           An enemy on your home blocks all reinforcements. Your existing units can still move, attack and promote.
@@ -378,7 +378,7 @@ const instructionPages: InstructionPage[] = [
             <li>• If effective attack ≥ defense, the enemy is <strong className="text-red-400">destroyed</strong></li>
             <li>• If effective attack &lt; defense, enemy takes damage equal to effective attack</li>
             <li>• Damage reduces effective defense until the defender's next turn</li>
-            <li>• <strong>Cleave:</strong> each unit starts with one attack. Kill the target to attack again, up to your tier in total attacks per turn (Tier I: 1, II: 2, III: 3, IV: 4).</li>
+            <li>• <strong>Cleave:</strong> each unit starts with one attack. Kill the target to attack again, up to your tier in total attacks per turn (Tier I: 1, II: 2, III: 3).</li>
             <li>• Every attack costs 1 action. You may move between attacks at the usual action cost.</li>
             <li>• If the target survives, that unit is finished attacking this turn. Combine different attackers to finish tough targets.</li>
           </ul>
@@ -482,7 +482,7 @@ const instructionPages: InstructionPage[] = [
         <div className="bg-gray-800 p-3 rounded border border-gray-700 text-sm">
           <p className="text-gray-300">
             <strong className="text-yellow-400">Tip:</strong> Plant units have the best mining stats.{' '}
-            {getUnitDefinition('plant_1').name} reaches depth {getUnitDefinition('plant_1').mining}. Tiers 2 and 3 reach depths {demoMiner.mining} and {getUnitDefinition('plant_3').mining}; tier 4 relocates at Speed {getUnitDefinition('plant_4').speed}.
+            {getUnitDefinition('plant_1').name} reaches depth {getUnitDefinition('plant_1').mining}. Tiers 2 and 3 reach depths {demoMiner.mining} and {getUnitDefinition('plant_3').mining}; tier 3 is the highest tier.
           </p>
         </div>
         <p className="text-gray-400 text-sm text-center">
@@ -525,7 +525,7 @@ const instructionPages: InstructionPage[] = [
               <span className="text-gray-500">• 2 turns</span>
             </div>
             <div className="flex items-center gap-2 text-sm">
-              <DemoUnit element="metal" tier={4} size="sm" />
+              <DemoUnit element="metal" tier={3} size="sm" />
               <span className="text-gray-300">Wakanwicasa</span>
               <span className="text-amber-400">20 res</span>
               <span className="text-gray-500">• 3 turns</span>

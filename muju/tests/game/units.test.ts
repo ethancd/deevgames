@@ -10,31 +10,31 @@ import {
 
 describe('Unit Definitions', () => {
   describe('UNIT_DEFINITIONS', () => {
-    it('contains exactly 24 units (4 tiers × 6 elements)', () => {
-      expect(UNIT_DEFINITIONS).toHaveLength(24);
+    it('contains exactly 18 units (3 tiers × 6 elements)', () => {
+      expect(UNIT_DEFINITIONS).toHaveLength(18);
     });
 
-    it('has 4 units per element', () => {
+    it('has 3 units per element', () => {
       const elements = ['fire', 'lightning', 'water', 'shadow', 'plant', 'metal'];
       for (const element of elements) {
         const units = UNIT_DEFINITIONS.filter((u) => u.element === element);
-        expect(units).toHaveLength(4);
+        expect(units).toHaveLength(3);
       }
     });
 
-    it('has tiers 1-4 for each element', () => {
+    it('has tiers 1-3 for each element', () => {
       const elements = ['fire', 'lightning', 'water', 'shadow', 'plant', 'metal'];
       for (const element of elements) {
         const units = UNIT_DEFINITIONS.filter((u) => u.element === element);
         const tiers = units.map((u) => u.tier).sort();
-        expect(tiers).toEqual([1, 2, 3, 4]);
+        expect(tiers).toEqual([1, 2, 3]);
       }
     });
 
     it('has unique IDs for all units', () => {
       const ids = UNIT_DEFINITIONS.map((u) => u.id);
       const uniqueIds = new Set(ids);
-      expect(uniqueIds.size).toBe(24);
+      expect(uniqueIds.size).toBe(18);
     });
 
     it('has non-negative stats for all units', () => {
@@ -65,7 +65,7 @@ describe('Unit Definitions', () => {
   describe('getUnitsByElement', () => {
     it('returns all fire units', () => {
       const fireUnits = getUnitsByElement('fire');
-      expect(fireUnits).toHaveLength(4);
+      expect(fireUnits).toHaveLength(3);
       expect(fireUnits.every((u) => u.element === 'fire')).toBe(true);
     });
 
@@ -73,7 +73,7 @@ describe('Unit Definitions', () => {
       const waterUnits = getUnitsByElement('water');
       const names = waterUnits.map((u) => u.name);
       expect(names).toContain('Sjor');
-      expect(names).toContain('Hafkafstormur');
+      expect(names).toContain('Aegirinn');
     });
   });
 
@@ -85,14 +85,14 @@ describe('Unit Definitions', () => {
       expect(next?.name).toBe('Hono');
     });
 
-    it('returns next tier unit for tier 3', () => {
-      const next = getNextTierDefinition('plant_3');
-      expect(next?.tier).toBe(4);
-      expect(next?.name).toBe('Cuauhtlimallki');
+    it('returns next tier unit for tier 2', () => {
+      const next = getNextTierDefinition('plant_2');
+      expect(next?.tier).toBe(3);
+      expect(next?.name).toBe('Sachakuna');
     });
 
-    it('returns null for tier 4 units', () => {
-      const next = getNextTierDefinition('metal_4');
+    it('returns null for tier 3 units', () => {
+      const next = getNextTierDefinition('metal_3');
       expect(next).toBeNull();
     });
   });
@@ -110,8 +110,8 @@ describe('Unit Definitions', () => {
       expect(cost).toBe(3);
     });
 
-    it('returns 0 for tier 4 units', () => {
-      const cost = getPromotionCost('fire_4');
+    it('returns 0 for tier 3 units', () => {
+      const cost = getPromotionCost('fire_3');
       expect(cost).toBe(0);
     });
   });
@@ -140,10 +140,8 @@ describe('Unit Definitions', () => {
         const t1 = getUnitDefinition(`${element}_1`);
         const t2 = getUnitDefinition(`${element}_2`);
         const t3 = getUnitDefinition(`${element}_3`);
-        const t4 = getUnitDefinition(`${element}_4`);
         expect(t2.cost).toBeGreaterThan(t1.cost);
         expect(t3.cost).toBeGreaterThan(t2.cost);
-        expect(t4.cost).toBeGreaterThan(t3.cost);
       }
     });
 
@@ -162,8 +160,8 @@ describe('Unit Definitions', () => {
     });
 
     it('metal units have highest defense', () => {
-      const metal4 = getUnitDefinition('metal_4');
-      expect(metal4.defense).toBe(8); // Highest in game
+      const metal3 = getUnitDefinition('metal_3');
+      expect(metal3.defense).toBe(6); // Highest in game
     });
   });
 });

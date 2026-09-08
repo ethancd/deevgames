@@ -55,8 +55,8 @@ describe('Mining Module', () => {
         expect(calculateMiningYield(unit, cell)).toBe(3);
       });
 
-      it('Cuauhtlimallki (Mining 5) extracts all 5 resources from fresh cell', () => {
-        const unit = createUnit('plant_4', 'white', { x: 0, y: 0 }); // Mining: 5
+      it('Sachakuna (Mining 5) extracts all 5 resources from fresh cell', () => {
+        const unit = createUnit('plant_3', 'white', { x: 0, y: 0 }); // Mining: 5
         const cell = { position: { x: 0, y: 0 }, resourceLayers: 5, minedDepth: 0 };
 
         expect(calculateMiningYield(unit, cell)).toBe(5);
@@ -102,7 +102,7 @@ describe('Mining Module', () => {
 
     describe('Depleted cell', () => {
       it('returns 0 for completely depleted cell', () => {
-        const unit = createUnit('plant_4', 'white', { x: 0, y: 0 }); // Mining: 5
+        const unit = createUnit('plant_3', 'white', { x: 0, y: 0 }); // Mining: 5
         const cell = { position: { x: 0, y: 0 }, resourceLayers: 0, minedDepth: 5 };
 
         expect(calculateMiningYield(unit, cell)).toBe(0);
@@ -140,7 +140,7 @@ describe('Mining Module', () => {
 
     it('returns false if cell is completely depleted', () => {
       let board = createEmptyBoard();
-      const unit = createUnit('plant_4', 'white', { x: 5, y: 5 }); // Mining: 5
+      const unit = createUnit('plant_3', 'white', { x: 5, y: 5 }); // Mining: 5
       board = addUnit(board, unit);
       board = updateCell(board, { x: 5, y: 5 }, { resourceLayers: 0, minedDepth: 5 });
 
@@ -217,7 +217,7 @@ describe('Mining Module', () => {
 
     it('decreases after mining', () => {
       let board = createEmptyBoard();
-      const unit = createUnit('plant_4', 'white', { x: 5, y: 5 }); // Mining: 5
+      const unit = createUnit('plant_3', 'white', { x: 5, y: 5 }); // Mining: 5
       board = addUnit(board, unit);
 
       const result = executeMine(board, unit.id, 0);
@@ -251,7 +251,7 @@ describe('Mining Module', () => {
     });
 
     it('returns true for depleted cell', () => {
-      const unit = createUnit('plant_4', 'white', { x: 0, y: 0 });
+      const unit = createUnit('plant_3', 'white', { x: 0, y: 0 });
       const cell = { position: { x: 0, y: 0 }, resourceLayers: 0, minedDepth: 5 };
       expect(isDryForUnit(unit, cell)).toBe(true);
     });
@@ -286,9 +286,9 @@ describe('Mining Module', () => {
       expect(calculateMiningYield(muju, cell)).toBe(0);
     });
 
-    it('Cuauhtlimallki (Mining 5) can fully deplete a cell in one action', () => {
+    it('Sachakuna (Mining 5) can fully deplete a cell in one action', () => {
       let board = createEmptyBoard();
-      const unit = createUnit('plant_4', 'white', { x: 5, y: 5 }); // Mining: 5
+      const unit = createUnit('plant_3', 'white', { x: 5, y: 5 }); // Mining: 5
       board = addUnit(board, unit);
 
       const result = executeMine(board, unit.id, 0);
@@ -315,15 +315,12 @@ describe('Mining Module', () => {
       cell = getCell(board, { x: 0, y: 0 })!;
       expect(calculateMiningYield(sachita, cell)).toBe(0);
 
-      // Tier 3 now accesses depth 5; tier 4 shares depth access but relocates faster.
+      // Terminal tier 3 reaches the deepest layer.
       const sachakuna = createUnit('plant_3', 'white', { x: 0, y: 0 });
-      const cuauhtlimallki = createUnit('plant_4', 'white', { x: 0, y: 0 });
       expect(calculateMiningYield(sachakuna, cell)).toBe(1);
-      expect(calculateMiningYield(cuauhtlimallki, cell)).toBe(1);
       board = updateCell(board, { x: 0, y: 0 }, { resourceLayers: 0, minedDepth: 5 });
       cell = getCell(board, { x: 0, y: 0 })!;
       expect(calculateMiningYield(sachakuna, cell)).toBe(0);
-      expect(calculateMiningYield(cuauhtlimallki, cell)).toBe(0);
     });
   });
 });

@@ -76,7 +76,7 @@ button:focus-visible, a:focus-visible { outline: 3px solid #67e8f9; outline-offs
 .element-picker { display: grid; grid-template-columns: repeat(6,minmax(0,1fr)); gap: 4px; }
 .game-shell .element-picker button { min-height: 42px; font-size: 9px; text-transform: capitalize; padding: 3px 0; font-weight: 500; }
 .element-picker span { display: block; font-size: 17px; line-height: 20px; }
-.tier-picker { display: grid; grid-template-columns: repeat(4,1fr); gap: 4px; }
+.tier-picker { display: grid; grid-template-columns: repeat(3,1fr); gap: 4px; }
 .game-shell .tier-picker button { min-height: 30px; font-size: 11px; padding: 2px; }
 .shop-detail strong { font-size: 14px; display: flex; justify-content: space-between; margin-bottom: 2px; }
 .shop-detail small { font-size: 11px; color: #ebd29e; font-weight: 500; }

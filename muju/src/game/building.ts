@@ -88,6 +88,7 @@ export function canBuildUnit(
   buildState: BuildState
 ): boolean {
   return (
+    UNIT_DEFINITIONS.some(def => def.id === definitionId) &&
     canAfford(buildState, definitionId) &&
     meetsTechRequirement(definitionId, player, board)
   );

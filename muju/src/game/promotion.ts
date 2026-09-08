@@ -1,5 +1,5 @@
 import type { BoardState, Unit, PlayerId } from './types';
-import { getUnitDefinition, UNIT_DEFINITIONS } from './units';
+import { getUnitDefinition, UNIT_DEFINITIONS, getNextTierDefinition } from './units';
 import type { BuildState } from './building';
 
 /**
@@ -8,9 +8,6 @@ import type { BuildState } from './building';
  */
 export function getPromotionCost(unit: Unit): number | null {
   const def = getUnitDefinition(unit.definitionId);
-  if (def.tier >= 4) {
-    return null; // Can't promote T4 units
-  }
 
   // Find next tier definition
   const nextTier = def.tier + 1;
@@ -30,9 +27,6 @@ export function getPromotionCost(unit: Unit): number | null {
  */
 export function getPromotedDefinitionId(unit: Unit): string | null {
   const def = getUnitDefinition(unit.definitionId);
-  if (def.tier >= 4) {
-    return null;
-  }
 
   const nextTier = def.tier + 1;
   const promotedDef = UNIT_DEFINITIONS.find(
@@ -64,11 +58,10 @@ export function canPromote(unit: Unit, buildState: BuildState): boolean {
 }
 
 /**
- * Check if a unit is at max tier (T4)
+ * Check if a unit is at the terminal tier of its element
  */
 export function isMaxTier(unit: Unit): boolean {
-  const def = getUnitDefinition(unit.definitionId);
-  return def.tier >= 4;
+  return getNextTierDefinition(unit.definitionId) === null;
 }
 
 /**

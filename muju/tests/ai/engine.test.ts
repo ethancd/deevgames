@@ -161,7 +161,7 @@ describe('AI Engine', () => {
     it('takes winning move when available', async () => {
       const board = createEmptyBoard();
       // Set up guaranteed kill
-      const aiUnit = createTestUnit('ai-unit', 'fire_4', 'black', 5, 5);
+      const aiUnit = createTestUnit('ai-unit', 'fire_3', 'black', 5, 5);
       const playerUnit = createTestUnit('player-unit', 'water_1', 'white', 5, 6);
       board.units.push(aiUnit, playerUnit);
 

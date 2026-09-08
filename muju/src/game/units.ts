@@ -1,6 +1,6 @@
 import type { UnitDefinition, Element } from './types';
 
-// All 24 unit definitions — v1.3 role balance (2026-09-07).
+// All 18 unit definitions — v1.5 tier-3 cap (2026-09-08); Tanka gains Speed 2; other T1–T3 stats unchanged.
 // Evidence and static-value model: docs/BALANCE_IMPLEMENTATION-2026-09-07.md.
 export const UNIT_DEFINITIONS: UnitDefinition[] = [
   // Fire (Rush) - Japanese
@@ -41,19 +41,6 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     speed: 3,
     mining: 1,
     cost: 6,
-    buildTime: 2,
-  },
-  {
-    id: 'fire_4',
-    name: 'Gokamoka',
-    element: 'fire',
-    tier: 4,
-    archetype: 'rush',
-    attack: 6,
-    defense: 3,
-    speed: 4,
-    mining: 1,
-    cost: 10,
     buildTime: 2,
   },
 
@@ -97,19 +84,6 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     cost: 6,
     buildTime: 2,
   },
-  {
-    id: 'lightning_4',
-    name: 'Dhorubakali',
-    element: 'lightning',
-    tier: 4,
-    archetype: 'rush',
-    attack: 4,
-    defense: 1,
-    speed: 6,
-    mining: 1,
-    cost: 10,
-    buildTime: 2,
-  },
 
   // Water (Balanced) - Norse
   {
@@ -150,19 +124,6 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     mining: 3,
     cost: 10,
     buildTime: 2,
-  },
-  {
-    id: 'water_4',
-    name: 'Hafkafstormur',
-    element: 'water',
-    tier: 4,
-    archetype: 'balanced',
-    attack: 4,
-    defense: 5,
-    speed: 3,
-    mining: 3,
-    cost: 15,
-    buildTime: 3,
   },
 
   // Shadow (Balanced) - Turkish/Slavic (formerly Wind)
@@ -205,19 +166,6 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     cost: 10,
     buildTime: 2,
   },
-  {
-    id: 'shadow_4',
-    name: 'Karabasan',
-    element: 'shadow',
-    tier: 4,
-    archetype: 'balanced',
-    attack: 5,
-    defense: 3,
-    speed: 4,
-    mining: 2,
-    cost: 15,
-    buildTime: 3,
-  },
 
   // Plant (Expand) - Quechua/Nahuatl
   {
@@ -259,24 +207,11 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     cost: 12,
     buildTime: 3,
   },
-  {
-    id: 'plant_4',
-    name: 'Cuauhtlimallki',
-    element: 'plant',
-    tier: 4,
-    archetype: 'expand',
-    attack: 3,
-    defense: 5,
-    speed: 2,
-    mining: 5,
-    cost: 20,
-    buildTime: 3,
-  },
 
   // Metal (Expand) - Lakota
   {
     id: 'metal_1',
-    name: 'Tanka',
+    name: 'Inyan',
     element: 'metal',
     tier: 1,
     archetype: 'expand',
@@ -289,7 +224,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
   },
   {
     id: 'metal_2',
-    name: 'Mazaska',
+    name: 'Mazask',
     element: 'metal',
     tier: 2,
     archetype: 'expand',
@@ -302,28 +237,15 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
   },
   {
     id: 'metal_3',
-    name: 'Inyansila',
+    name: 'Tanka',
     element: 'metal',
     tier: 3,
     archetype: 'expand',
     attack: 2,
     defense: 6,
-    speed: 1,
+    speed: 2,
     mining: 3,
     cost: 12,
-    buildTime: 3,
-  },
-  {
-    id: 'metal_4',
-    name: 'Wakanwicasa',
-    element: 'metal',
-    tier: 4,
-    archetype: 'expand',
-    attack: 3,
-    defense: 8,
-    speed: 1,
-    mining: 4,
-    cost: 20,
     buildTime: 3,
   },
 ];
@@ -353,15 +275,14 @@ export function getUnitsByElement(element: Element): UnitDefinition[] {
 
 /**
  * Get the next tier unit definition for promotion
- * Returns null if already at tier 4
+ * Returns null at the end of the element’s catalogue ladder
  */
 export function getNextTierDefinition(
   currentDefId: string
 ): UnitDefinition | null {
   const current = getUnitDefinition(currentDefId);
-  if (current.tier === 4) return null;
 
-  const nextTier = (current.tier + 1) as 1 | 2 | 3 | 4;
+  const nextTier = current.tier + 1;
   return (
     UNIT_DEFINITIONS.find(
       (def) => def.element === current.element && def.tier === nextTier

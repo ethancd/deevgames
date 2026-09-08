@@ -22,6 +22,5 @@ export function UnitArtwork({ element, owner, tier }: { element: Element; owner:
     <g className="rank-pips">{Array.from({ length: tier }, (_, i) =>
       <rect key={i} x={24 - (tier * 5 - 2) / 2 + i * 5} y="36" width="3" height="4" rx=".8" />
     )}</g>
-    {tier === 4 && <path className="elite-crest" d="m18 4 2-3 4 3 4-3 2 3" fill="none" strokeWidth="1.6" strokeLinejoin="round" />}
   </svg>;
 }

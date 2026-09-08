@@ -8,10 +8,12 @@ document and the code disagree, that is a bug in one of them: see
 of known divergences. The stat tables in §7 are transcriptions of
 `src/game/units.ts`, which is the canonical stat source.
 
-**Spec version:** v1.4 (2026-09-07) — Kill-gated Cleave capped by tier.
-The v1.3 unit catalogue and Unequal routes board are unchanged.
+**Spec version:** v1.5 (2026-09-08) — Six elements, three tiers; 18 units.
+Tier 4 is removed. Tanka (Metal III) gains Speed 2; all other v1.3 T1–T3 stats,
+costs and build times, v1.4 Cleave, and the Unequal routes board are unchanged.
 History: v1.0 (original design), v1.1 (`docs/v1.1-spec.md`, historical playtest
-balance pass), v1.2 (2026-06-09 canonical rules rewrite).
+balance pass), v1.2 (2026-06-09 canonical rules rewrite), v1.3 (role balance),
+v1.4 (Cleave), v1.5 (tier-3 cap).
 
 ---
 
@@ -22,12 +24,13 @@ board game combining territorial control (Go), tactical combat (Chess), and
 economic buildup (StarCraft). Players are **White** and **Black**; either seat
 may be a human or an AI (`vs-ai`, `pass-play`, and `ai-vs-ai` modes).
 
+- **Six elements, three tiers:** 18 units; tier 3 is terminal.
 - **Board:** 10×10 square grid.
 - **Start:** White's corner is (0,0); Black's corner is (9,9). Each player
   starts with 3 units adjacent to their corner and 0 resources.
   - White: Hi (fire_1) at (1,0), Sjor (water_1) at (1,1), Muju (plant_1) at (0,1).
   - Black: Hi at (8,9), Sjor at (8,8), Muju at (9,8).
-- **Resources:** **Unequal routes (map D)**: fixed 180°-rotational layout, 0, 3, 4, or 5 initial layers per cell, **308 total**. Deep home corners, four-layer shelves and sixteen blank approaches to deep expansion wells (walkable and spawn-eligible as usual). Exact layout: `src/game/resourceMap.ts`. Existing saves retain their original layout.
+- **Resources:** **Unequal routes (map D)**: fixed 180°-rotational layout, 0, 3, 4, or 5 initial layers per cell, **308 total**. Deep home corners, four-layer shelves and sixteen blank approaches to deep expansion wells (walkable and spawn-eligible as usual). Exact layout: `src/game/resourceMap.ts`. Save schema 3 starts fresh for older unfinished games.
 - **White moves first.** The first turn begins directly in the Action phase
   (there is nothing to place or promote at game start).
 
@@ -78,7 +81,7 @@ Turn bookkeeping at the start of a player's turn:
 ### 4.2 Cleave
 - Every unit begins its turn eligible to attack once.
 - **Killing the target** unlocks one further attack by that same unit, with a
-  maximum of **tier attacks per turn** (I: 1, II: 2, III: 3, IV: 4).
+  maximum of **tier attacks per turn** (I: 1, II: 2, III: 3).
 - Each attack still costs **one shared action**. Moving or mining between attacks
   is allowed at the normal cost; neither restores or consumes attack eligibility.
 - If a target survives, the attack chain ends for that unit this turn, including
@@ -87,9 +90,9 @@ Turn bookkeeping at the start of a player's turn:
 - Combined attacks resolve individually; only the actual killing blow unlocks Cleave.
 - History includes eliminated targets (`attackedThisTurn`); `lastAttackKilled`
   records the result of this unit's last attack. Both reset on its owner's turn.
-  Old mid-turn saves without the kill marker treat previously used attackers as
-  finished until that reset. Saves retain their board and economy. Completed human
-  and AI actions, plus undo, save the board and attack allowance together.
+  Completed human and AI actions, plus undo, save the board and attack allowance
+  together. v1.5 save schema 3 discards unfinished games from older releases;
+  no legacy tier-4 catalogue is loaded.
 
 ### 4.3 Damage and elimination
 - If effective ATK ≥ effective DEF, the defender is **eliminated**.
@@ -141,7 +144,7 @@ Turn bookkeeping at the start of a player's turn:
 ### 5.4 Promotion
 - During the place phase, pay `cost(next tier) − cost(current tier)` to
   upgrade a unit to the next tier of its element, in place.
-- Restrictions: cannot skip tiers; T4 cannot promote; a unit may be promoted
+- Restrictions: cannot skip tiers; T3 cannot promote; a unit may be promoted
   **at most once per place phase**, and **not on a turn it was placed**.
 - Promoted units can act immediately. Promotion is public information.
 
@@ -174,12 +177,21 @@ play, not a type-chart veto. The archetype triangle of v1.1 §2.3
 Triangle above is the incumbent.
 
 Note the **"Wind" element of v1.0 no longer exists** — it was renamed and
-rethemed to **Shadow** (Turkish names: Göl, Gölge, Karanlık, Karabasan) with
+rethemed to **Shadow** (Turkish names: Göl, Gölge, Karanlık) with
 new stats.
 
 ## 7. Unit catalog (canonical: `src/game/units.ts`)
 
-Stat columns: ATK / DEF / SPD / MINE / Cost / Build time.
+Eighteen units, three per element. Stat columns: ATK / DEF / SPD / MINE / Cost / Build time.
+
+Tier 4 was cut because its cost 10–20 and build time 2–3 bought the weakest
+stat-per-crystal profiles, while Map D reduced fifth-layer mining work from
+100 crystals to 20. Three tiers reduce the learning burden. Metal III’s DEF 6
+corner garrison falls to two Karanlık (3 effective damage each); the former
+DEF 8 Metal IV required stronger attackers. Losing Wakanwicasa’s invasion role
+and Gokamoka’s four-kill sweep is an accepted tradeoff, measured in
+`docs/TIER3_CAP-2026-09-08.md`. Tanka gains Speed 2 to reposition and invade
+more effectively while retaining the same defensive counterplay.
 
 ### Fire (Rush — ATK specialist) — Japanese
 | Tier | Name | ATK | DEF | SPD | MINE | Cost | Build |
@@ -187,7 +199,6 @@ Stat columns: ATK / DEF / SPD / MINE / Cost / Build time.
 | 1 | Hi | 2 | 1 | 2 | 1 | 1 | 1 |
 | 2 | Hono | 3 | 1 | 2 | 1 | 3 | 1 |
 | 3 | Kagari | 4 | 2 | 3 | 1 | 6 | 2 |
-| 4 | Gokamoka | 6 | 3 | 4 | 1 | 10 | 2 |
 
 ### Lightning (Rush — SPD specialist) — Swahili
 | Tier | Name | ATK | DEF | SPD | MINE | Cost | Build |
@@ -195,7 +206,6 @@ Stat columns: ATK / DEF / SPD / MINE / Cost / Build time.
 | 1 | Radi | 2 | 1 | 3 | 0 | 1 | 1 |
 | 2 | Umeme | 3 | 1 | 4 | 0 | 3 | 1 |
 | 3 | Kimubunga | 3 | 1 | 5 | 1 | 6 | 2 |
-| 4 | Dhorubakali | 4 | 1 | 6 | 1 | 10 | 2 |
 
 ### Water (Balanced — DEF-leaning) — Norse
 | Tier | Name | ATK | DEF | SPD | MINE | Cost | Build |
@@ -203,7 +213,6 @@ Stat columns: ATK / DEF / SPD / MINE / Cost / Build time.
 | 1 | Sjor | 2 | 2 | 1 | 2 | 2 | 1 |
 | 2 | Straumr | 2 | 3 | 1 | 2 | 4 | 2 |
 | 3 | Aegirinn | 3 | 4 | 2 | 3 | 10 | 2 |
-| 4 | Hafkafstormur | 4 | 5 | 3 | 3 | 15 | 3 |
 
 ### Shadow (Balanced — ATK/SPD-leaning) — Turkish/Slavic
 | Tier | Name | ATK | DEF | SPD | MINE | Cost | Build |
@@ -211,7 +220,6 @@ Stat columns: ATK / DEF / SPD / MINE / Cost / Build time.
 | 1 | Göl | 2 | 2 | 2 | 0 | 2 | 1 |
 | 2 | Gölge | 3 | 2 | 2 | 1 | 4 | 2 |
 | 3 | Karanlık | 4 | 2 | 3 | 2 | 10 | 2 |
-| 4 | Karabasan | 5 | 3 | 4 | 2 | 15 | 3 |
 
 ### Plant (Expand — MINE specialist) — Quechua/Nahuatl
 | Tier | Name | ATK | DEF | SPD | MINE | Cost | Build |
@@ -219,15 +227,16 @@ Stat columns: ATK / DEF / SPD / MINE / Cost / Build time.
 | 1 | Muju | 0 | 2 | 1 | 3 | 3 | 2 |
 | 2 | Sachita | 1 | 3 | 1 | 4 | 6 | 2 |
 | 3 | Sachakuna | 2 | 4 | 1 | 5 | 12 | 3 |
-| 4 | Cuauhtlimallki | 3 | 5 | 2 | 5 | 20 | 3 |
 
 ### Metal (Expand — DEF specialist) — Lakota
 | Tier | Name | ATK | DEF | SPD | MINE | Cost | Build |
 |---|---|---|---|---|---|---|---|
-| 1 | Tanka | 1 | 3 | 1 | 2 | 3 | 2 |
-| 2 | Mazaska | 2 | 4 | 1 | 3 | 6 | 2 |
-| 3 | Inyansila | 2 | 6 | 1 | 3 | 12 | 3 |
-| 4 | Wakanwicasa | 3 | 8 | 1 | 4 | 20 | 3 |
+| 1 | Inyan | 1 | 3 | 1 | 2 | 3 | 2 |
+| 2 | Mazask | 2 | 4 | 1 | 3 | 6 | 2 |
+| 3 | Tanka | 2 | 6 | 2 | 3 | 12 | 3 |
+
+The Metal ladder is **Inyan → Mazask → Tanka**. The title names a tier-1, tier-2,
+and tier-3 unit: Muju / Hono / Tanka.
 
 Starting units for both players: `fire_1`, `water_1`, `plant_1`.
 
@@ -264,8 +273,7 @@ than reading hidden state.
   An enemy on the home corner blocks every reinforcement rectangle under the
   existing spawning rules. Existing units can still move, attack and promote.
   In simultaneous invasion races, the first player's qualifying turn start wins.
-  Existing unfinished saves adopt this rule at subsequent turn boundaries; loading
-  a mid-turn position does not retroactively resolve an occupation.
+  Loading a current-schema mid-turn position does not retroactively resolve an occupation.
 
 - **Elimination:** a player with **zero units on the board** loses, even if
   their build queue is non-empty (no unit ⇒ no anchor ⇒ nothing can ever be
@@ -289,7 +297,8 @@ than reading hidden state.
   (`belief/`), beam-search plan generation (`planner/`), UCT MCTS over plans
   (`search/`), and tactical sharpener (`eval/`). A dedicated browser worker
   (`worker/`) owns computation. A single-threaded WASM kernel (`assembly/tactics.ts`)
-  searches exact current-turn attack/movement/promotion combinations; the canonical
+  uses ABI 3 with catalogue-length buffers supplied by the host (no fixed roster size),
+  and searches exact current-turn attack/movement/promotion combinations; the canonical
   JS transition independently validates every successful witness. See
   `docs/AI_IMPLEMENTATION_STATUS.md` for scope, difficulty budgets and evidence.
   `src/game/legality.ts` validates actions; `src/ai/simulate.ts` is the

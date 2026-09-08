@@ -165,8 +165,8 @@ describe('Combat Module', () => {
     });
 
     it('returns high defense for metal units', () => {
-      const defender = createUnit('metal_4', 'black', { x: 0, y: 0 }); // Defense: 8
-      expect(calculateDefense(defender)).toBe(8);
+      const defender = createUnit('metal_3', 'black', { x: 0, y: 0 }); // Defense: 6
+      expect(calculateDefense(defender)).toBe(6);
     });
   });
 
@@ -354,7 +354,7 @@ describe('Combat Module', () => {
       expect(result.eliminated).toBe(false);
     });
 
-    it('Muju (Plant, 1 atk) cannot kill Tanka (Metal, 3 def)', () => {
+    it('Muju (Plant, 1 atk) cannot kill Inyan (Metal, 3 def)', () => {
       let board = createEmptyBoard();
       const attacker = createUnit('plant_1', 'white', { x: 0, y: 0 });
       const defender = createUnit('metal_1', 'black', { x: 0, y: 1 });
@@ -365,10 +365,10 @@ describe('Combat Module', () => {
       expect(result.eliminated).toBe(false);
     });
 
-    it('Gokamoka (Fire tier 4, 6 atk) kills Cuauhtlimallki (Plant tier 4, 5 def)', () => {
+    it('Kagari (Fire tier 3, 4 atk) kills Sachakuna (Plant tier 3, 4 def)', () => {
       let board = createEmptyBoard();
-      const attacker = createUnit('fire_4', 'white', { x: 0, y: 0 });
-      const defender = createUnit('plant_4', 'black', { x: 0, y: 1 });
+      const attacker = createUnit('fire_3', 'white', { x: 0, y: 0 });
+      const defender = createUnit('plant_3', 'black', { x: 0, y: 1 });
       board = addUnit(board, attacker);
       board = addUnit(board, defender);
 

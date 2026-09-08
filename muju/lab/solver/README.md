@@ -1,3 +1,5 @@
+> Current v1.5 has 18 units and ends at tier 3. Earlier 24-unit findings below are historical; see `muju/docs/TIER3_CAP-2026-09-08.md` for the paired study, initial lost Metal III witness, and its restoration with Speed 2.
+
 # Muju static value solver
 
 This is a **pre-playtest balance instrument**. It solves small, explicit optimization problems using the actual catalogue and element graph. It does not play scripted games, fit a rating to their results, or collapse every stat into a single power number.
@@ -100,3 +102,5 @@ Use this instrument **before** scripted games: inspect witnesses, price/tempo tr
 ## Fixed-map comparison
 
 The separate [five-map study](../maps/README.md) holds v1.3 units and board size fixed, measures exact regional extraction, legal opening-income witnesses, conditional tier financing, action reserves and map perturbations. Run `npm run balance:maps`. It does not modify this solver’s historical results or the live game map.
+
+For the v1.5 comparison, `node --import tsx lab/solver/run.ts pre-cut --check` uses the frozen `baseline-v1.3.json` (also the v1.4 catalogue); `current --check` uses the 18-unit release. Historical v1.2 component variants remain available separately.

@@ -1,4 +1,4 @@
-import { UNIT_DEFINITIONS, getUnitDefinition } from '../../src/game/units';
+import { UNIT_DEFINITIONS, getNextTierDefinition, getUnitDefinition } from '../../src/game/units';
 import type { UnitDefinition } from '../../src/game/types';
 import { power } from '../solver/model';
 import { distance, xy, REGIONS, type MineralMap } from './maps';
@@ -81,7 +81,7 @@ export function opening(map:MineralMap,policy:string,width=256,horizon=5,actions
  const turns:Opening['turns']=[];
  for(let turn=1;turn<=horizon;turn++) {
   if(policy==='plant'&&turn>1) beam=beam.map(n=>{
-   if(n.tier===4)return n;const cost=getUnitDefinition(`plant_${n.tier+1}`).cost-getUnitDefinition(`plant_${n.tier}`).cost;
+   const next=getNextTierDefinition(`plant_${n.tier}`);if(!next)return n;const cost=next.cost-getUnitDefinition(`plant_${n.tier}`).cost;
    return n.cash<cost?n:{...n,cash:n.cash-cost,tier:n.tier+1,parent:n,step:{turn,kind:'promote',unit:2,at:n.positions[2]}};
   });
   for(let action=0;action<actionsPerTurn;action++) {

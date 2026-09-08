@@ -29,7 +29,7 @@ it('worker handler and direct engine have identical fixed-work outcomes and real
 });
 it('nonzero seeded search is invariant to exact enemy stockpile and hidden queue',async()=>{
  const a=createInitialGameState(), b=structuredClone(a);a.players.black.resourcesGained=b.players.black.resourcesGained=15;
- a.players.black.resources=15;b.players.black.resources=0;b.players.black.resourcesSpent=15;b.players.black.buildQueue=[{id:'secret',owner:'black',definitionId:'water_4',turnsRemaining:3}];
+ a.players.black.resources=15;b.players.black.resources=0;b.players.black.resourcesSpent=15;b.players.black.buildQueue=[{id:'secret',owner:'black',definitionId:'water_3',turnsRemaining:3}];
  const results=[];for(const state of [a,b]) {const e=new AIEngineV2('easy');e.setSeed(90);e.setTacticalSolver(solver);e.setConfig({fixedWork:20000,mctsIterations:3,beamWidth:3,outputPlans:3,tacticalDepth:0});results.push(await e.findBestAction(state));}
  expect(results[0].plan).toEqual(results[1].plan);expect(results[0].debug).toEqual(results[1].debug);
  expect(results[0].stats!.iterations).toBeGreaterThan(0);
@@ -52,7 +52,7 @@ class FakeWorker implements WorkerLike {
 }
 it('masks before posting, ignores stale revisions, and terminates on cancellation',async()=>{
  const workers:FakeWorker[]=[];const c=new AIWorkerClient(()=>{const w=new FakeWorker();workers.push(w);return w;},'game',1);
- const s=createInitialGameState();s.players.black.resources=42;s.players.black.buildQueue=[{id:'secret',owner:'black',definitionId:'metal_4',turnsRemaining:0}];
+ const s=createInitialGameState();s.players.black.resources=42;s.players.black.buildQueue=[{id:'secret',owner:'black',definitionId:'metal_3',turnsRemaining:0}];
  const pending=c.findBestAction(s,'hard',3000,3);const first=workers[0], posted=first.sent[0];
  expect(posted.observation.players.black.resources).toBe(0);expect(posted.observation.players.black.buildQueue).toEqual([]);expect(JSON.stringify(posted)).not.toContain('secret');
  first.reply({...posted,revision:2,type:'error',message:'stale'});

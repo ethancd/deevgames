@@ -1,11 +1,18 @@
-// ABI 2. A complete current-turn target-removal search. No hidden state is read.
+// ABI 3. A complete current-turn target-removal search. No hidden state is read.
 // The host supplies the canonical catalogue and elemental attack matrix.
 // Buffers stay rooted for the instance lifetime; DFS mutates/undoes in place.
 const MAX_UNITS: i32 = 100;
 const STRIDE: i32 = 10; // position, owner, definition, damage, flags, four attack words, count
 const input = new Int32Array(16 + MAX_UNITS * STRIDE);
-const catalogue = new Int32Array(24 * 6); // attack, defense, speed, next, promotion cost, tier
-const powers = new Int32Array(24 * 24);
+let catalogueSize: i32 = 0;
+let catalogue = new Int32Array(0); // attack, defense, speed, next, promotion cost, tier
+let powers = new Int32Array(0);
+export function configureCatalogue(size: i32): void {
+  assert(size > 0 && size <= 1000);
+  catalogueSize = size;
+  catalogue = new Int32Array(size * 6);
+  powers = new Int32Array(size * size);
+}
 const output = new Int32Array(3 * 108);
 const path = new Int32Array(3 * 108);
 const occupied = new Int32Array(100);
@@ -23,7 +30,7 @@ let length: i32 = 0;
 
 @external('env', 'shouldStop')
 declare function shouldStop(): i32;
-export function abiVersion(): i32 { return 2; }
+export function abiVersion(): i32 { return 3; }
 export function inputPtr(): usize { return input.dataStart; }
 export function cataloguePtr(): usize { return catalogue.dataStart; }
 export function powersPtr(): usize { return powers.dataStart; }
@@ -42,7 +49,7 @@ function canAttack(u: i32): bool {
   return (flags & 1) != 0 && attacks < catalogue[def(u) * 6 + 5]
     && (attacks == 0 || (flags & 8) != 0);
 }
-function power(u: i32, v: i32): i32 { return powers[def(u) * 24 + def(v)]; }
+function power(u: i32, v: i32): i32 { return powers[def(u) * catalogueSize + def(v)]; }
 function remainingDefense(u: i32): i32 { return max(0, catalogue[def(u) * 6 + 1] - input[at(u) + 3]); }
 function record(depth: i32, kind: i32, unit: i32, dest: i32): void {
   path[depth * 3] = kind; path[depth * 3 + 1] = unit; path[depth * 3 + 2] = dest;
@@ -153,7 +160,7 @@ function promotions(first: i32, actions: i32, depth: i32): bool {
 // Caller only enables placement-phase search with home occupied, otherwise queues
 // and newly placed units would make this scope incomplete.
 export function solve(targetIndex: i32, nodeLimit: i32): i32 {
-  if (input[0] != 2 || input[1] > MAX_UNITS || input[1] < 1 || targetIndex < 0 || targetIndex >= input[1]) return -1;
+  if (input[0] != 3 || input[1] > MAX_UNITS || input[1] < 1 || targetIndex < 0 || targetIndex >= input[1]) return -1;
   count = input[1]; player = input[2]; target = targetIndex; resources = input[5];
   visited = 0; maxNodes = max(0, nodeLimit); cutoff = false; length = 0;
   occupied.fill(-1);

@@ -3,7 +3,7 @@ import type {Bot,ScriptedBot,BotView} from '../harness/types';
 import type {AIAction} from '../../src/ai/types';
 import {makeBot as oldBot} from './map-d-investment-policies';
 import {createInitialGameState,manhattanDistance as dist} from '../../src/game/board';
-import {getUnitDefinition} from '../../src/game/units';
+import {UNIT_DEFINITIONS,getUnitDefinition} from '../../src/game/units';
 import {getPromotionCost} from '../../src/game/promotion';
 import {getHomeOccupier} from '../../src/game/victory';
 import {applyAction} from '../../src/ai/simulate';
@@ -45,7 +45,7 @@ export function clearHomePlan(initial:GameState):AIAction[]|null {
 }
 export function makeHomeBot(name:string):Bot {
  if(!name.startsWith('Aware:')&&!name.startsWith('Invade:')&&!name.startsWith('Siege:')&&!name.startsWith('Guard:'))return oldBot(name);
- const [kind,baseName]=name.split(':'),siege=kind==='Siege',tier=Number(baseName)||4;
+ const [kind,baseName]=name.split(':'),siege=kind==='Siege',tier=Math.min(Number(baseName)||Infinity,Math.max(...UNIT_DEFINITIONS.filter(d=>d.element==='metal').map(d=>d.tier)));
  const base=oldBot(siege?'InvestT3':baseName) as ScriptedBot;
  return {kind:'scripted',name,chooseAction(ctx){
   const {view:v}=ctx;

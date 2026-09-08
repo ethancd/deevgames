@@ -1,3 +1,5 @@
+> v1.5: §7 traceability now covers 18 T1–T3 definitions; Metal III Speed 2 is the only numerical change. D7–D8 rulings stand. See [tier-3 cap](../../docs/TIER3_CAP-2026-09-08.md).
+
 # Muju Hono Tanka — Spec/Engine Audit (Phase 1, COMPLETE)
 
 > v1.4 follow-up: D9 and §4.2 now use [Cleave](../../docs/CLEAVE_RELEASE-2026-09-07.md). The original audit narrative and measurements below describe the prior rules.
@@ -45,12 +47,12 @@ SPEC.md (v1.0) clauses contradicted by the implemented game (v1.1+):
 4. "Wind" element → **Shadow** (Turkish names; Göl/Gölge/Karanlık/Karabasan).
 5. Summoning sickness ("promoted/placed pieces cannot act") → **removed**; placed units act immediately; promoted units act immediately; but a unit **cannot be promoted on the turn it was placed**, and only once per placement phase.
 6. `PlayerId 'player'/'ai'` → **'white'/'black'**; either seat may be human or AI.
-7. Unit stats table → v1.1 stats (`units.ts` is canonical; e.g. Hi SPD 2, Radi MINE 0/SPD 3, plant_1 ATK 0/MINE 3, fire_3 SPD 3, fire_4 SPD 4, metal_2 MINE 3).
+7. Unit stats table → v1.1 stats (`units.ts` is canonical; e.g. Hi SPD 2, Radi MINE 0/SPD 3, plant_1 ATK 0/MINE 3, fire_3 SPD 3, metal_3 SPD 2, metal_2 MINE 3).
 8. Combat: damage model exists (non-lethal attacks accumulate `damageTaken` within the defender's exposure window; full heal at owner's turn start, D8). v1.0 had binary kill-or-nothing.
 9. Victory: elimination requires only zero units on board (D7); draw nominally possible; resignation exists.
 10. Hidden information: opponent stockpile and queue hidden (Q1–Q3 rulings in AI_ENGINE_QUESTIONS.md); `resourcesGained` public, `resourcesSpent` public-at-place (see D3 bug).
 11. Tech gating (absent from v1.0 spec, implemented): T2+ requires same-element unit of tier ≥ N−1 on board (`building.ts:meetsTechRequirement`); checked at queue AND at place (human path).
-12. Promotion cost = cost difference (v1.1 §1.3), once per placement phase, not on placement turn, T4 terminal.
+12. Promotion cost = cost difference (v1.1 §1.3), once per placement phase, not on placement turn, T3 terminal.
 13. Phase auto-transitions (v1.1 §1.5): place phase skipped when nothing to do; queue phase auto-ends when no affordable action.
 14. Build queue persistence (v1.1 §1.4): ready units stay queued indefinitely if unplaceable.
 
@@ -97,7 +99,7 @@ Spec section references are to the rewritten `muju/SPEC.md`. "props" =
 | §5.2 queue persistence (never auto-deleted) | `turn.ts:advanceBuildQueue,endTurn` | `turn.test.ts`, fixtures |
 | §5.3 spawn rectangle, enemy blocking, empty-square | `spawning.ts:getSpawnRectangle,isValidSpawnPosition,getSpawnZone` | `spawning.test.ts`; fixtures (corner anchor, blocking, multi-anchor) |
 | §5.3 placement action-free, no summoning sickness | `building.ts:createUnitFromDefinition` (canAct true); reducer PLACE_UNIT (place phase, no useAction) | `building.test.ts`; fixtures |
-| §5.4 promotion cost diff, once/place-phase, not on placement turn, T4 terminal | `promotion.ts:getPromotionCost,canPromote`; `units.ts:getNextTierDefinition` | `promotion.test.ts`; fixtures (promotion timing/cost) |
+| §5.4 promotion cost diff, once/place-phase, not on placement turn, T3 terminal | `promotion.ts:getPromotionCost,canPromote`; `units.ts:getNextTierDefinition` | `promotion.test.ts`; fixtures (promotion timing/cost) |
 | §6 Double-Thick Triangle, pair neutrality | `elements.ts:ELEMENT_TO_PAIR,PAIR_ADVANTAGE,hasAdvantage` | `elements.test.ts` |
 | §7 stat tables | `units.ts:UNIT_DEFINITIONS` | `units.test.ts`; fixtures (catalog monotonicity) |
 | §8 hidden stockpile/queue; gained public; spent at place | `types.ts:PlayerState` doc; `ai/state/observation.ts:observeState` | `ai/` tests (human path bug: D3) |

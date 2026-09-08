@@ -1,3 +1,5 @@
+> Catalogue/visual-rank numbers superseded by v1.5: [tier-3 cap report](TIER3_CAP-2026-09-08.md). Historical measurements below remain unchanged.
+
 # Muju v1.3: static unit values and applied balance changes
 
 This continues the user's request to implement the earlier recommendations, create a pre-playtest static value solver, and improve the balance. It follows correctness commit `fc854fb`. The changes below are now in the gameplay catalogue; this document does not claim a production deployment.

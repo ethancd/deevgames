@@ -341,9 +341,7 @@ function calculateTechTreeProgress(state: GameState, player: PlayerId): number {
     tiers.add(def.tier);
   }
 
-  if (tiers.has(2)) progress += 1;
-  if (tiers.has(3)) progress += 1;
-  if (tiers.has(4)) progress += 1;
+  for (const tier of tiers) if (tier > 1) progress += 1;
 
   return progress;
 }

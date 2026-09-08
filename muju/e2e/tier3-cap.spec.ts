@@ -1,0 +1,25 @@
+import { test, expect } from '@playwright/test';
+import { createInitialGameState } from '../src/game/board';
+import { SCHEMA_VERSION } from '../src/utils/persistence';
+for(const width of [390,834]) test(`tier-three shop and terminal promotion at ${width}px`,async({page},info)=>{
+  await page.setViewportSize({width,height:width===390?844:1112});
+  const state=createInitialGameState();state.turn.phase='place';state.players.white.resources=100;
+  state.board.units[0].definitionId='fire_2';state.board.units[0].placedThisTurn=false;
+  await page.addInitScript(({state,schemaVersion})=>localStorage.setItem('elemental-tactics-save',JSON.stringify({schemaVersion,timestamp:Date.now(),state})),{state,schemaVersion:SCHEMA_VERSION});
+  await page.goto('./');await page.getByRole('button',{name:'Pass & Play'}).click();await page.getByRole('button',{name:'Start Game'}).click();
+  await page.getByTestId('cell-1-0').click();await page.getByRole('button',{name:/Upgrade/}).click();
+  await expect(page.getByTestId('cell-1-0')).toHaveAttribute('aria-label',/Kagari/);
+  await page.getByTestId('cell-1-0').click();
+  await expect(page.locator('.unit-detail')).toContainText('Maximum tier · terminal');
+  await expect(page.getByRole('button',{name:/Upgrade/})).toHaveCount(0);
+  await page.screenshot({path:info.outputPath('terminal-promotion.png')});
+  await page.getByRole('button',{name:'Start actions'}).click();await page.getByRole('button',{name:'Finish actions'}).click();
+  await expect(page.getByRole('group',{name:'Unit tier'}).getByRole('button')).toHaveCount(3);
+  await page.getByRole('button',{name:'Tier 3',exact:true}).click();
+  await page.keyboard.press('ArrowDown');
+  await expect(page.getByRole('button',{name:'Tier 3',exact:true})).toHaveAttribute('aria-pressed','true');
+  await expect(page.locator('.shop-detail')).toContainText('Kagari');
+  await expect(page.getByRole('button',{name:/Tier 4/})).toHaveCount(0);
+  await expect(page.locator('.elite-crest')).toHaveCount(0);
+  await page.screenshot({path:info.outputPath('three-tier-shop.png')});
+});

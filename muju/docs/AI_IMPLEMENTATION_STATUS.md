@@ -1,3 +1,5 @@
+> Catalogue/visual-rank numbers superseded by v1.5: [tier-3 cap report](TIER3_CAP-2026-09-08.md). Historical measurements below remain unchanged.
+
 # Muju AI implementation — 2026-09-07
 
 Implementation commit: `4917121cad982b023ee637a848d70a5632869474`. Branch: `codex/muju-wasm-ai`. Permanent worktree: `/Users/ashkie/src/deevgames-muju-ai`. Base: production `e70a0574c8246e06c7217bb2c0f157324e11c859`, fetched before creating the isolated worktree. No rules, map D layout, catalogue prices/stats, action limits, or victory timing were changed. The user subsequently requested production deployment. This implementation was fast-forwarded to production `master` at `ccdd9c59b79d5a6d49d0e1eccf6db5bebb26c74c` and published on 2026-09-07 at [deevgames.pages.dev/muju/](https://deevgames.pages.dev/muju/); immutable deployment: [221ebf01](https://221ebf01.deevgames.pages.dev).

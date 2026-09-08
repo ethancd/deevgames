@@ -4,7 +4,7 @@ import type { GameState } from '../src/game/types';
 import { getUnitDefinition } from '../src/game/units';
 
 async function start(page: Page, state?: GameState, mode = 'Pass & Play') {
-  if (state) await page.addInitScript(saved => localStorage.setItem('elemental-tactics-save', JSON.stringify({ schemaVersion: 2, timestamp: Date.now(), state: saved })), state);
+  if (state) await page.addInitScript(saved => localStorage.setItem('elemental-tactics-save', JSON.stringify({ schemaVersion: 3, timestamp: Date.now(), state: saved })), state);
   await page.goto('./');
   await page.getByRole('button', { name: mode === 'vs AI' ? 'vs AI Play against the computer' : mode, exact: mode === 'vs AI' }).click();
   await page.getByRole('button', { name: 'Start Game' }).click();
@@ -51,10 +51,10 @@ for (const [width, height] of [[320,568],[375,568],[375,667],[390,664],[393,706]
     await page.getByRole('button', { name: 'Confirm move' }).click();
     await page.getByRole('button', { name: 'Finish actions' }).click();
     await page.getByRole('button', { name: 'Lightning', exact: false }).click();
-    await page.getByRole('button', { name: /Tier 4/ }).click();
+    await page.getByRole('button', { name: /Tier 3/ }).click();
     await fits(page);
     await page.screenshot({ path: info.outputPath('build.png') });
-    await expect(page.locator('.shop-action')).toContainText('Needs lightning Tier 3+');
+    await expect(page.locator('.shop-action')).toContainText('Needs lightning Tier 2+');
     await expect(page.locator('.shop-action button')).toBeDisabled();
   });
 }
@@ -130,8 +130,8 @@ test('dialogs trap keyboard navigation; depths and enemy reach are explicit', as
   await expect(page.getByRole('dialog')).toHaveCount(0);
   await page.getByRole('button', { name: 'Units', exact: true }).click();
   await page.getByRole('button', { name: /metal/i }).click();
-  await page.getByRole('button', { name: /Tier 4/ }).click();
-  await expect(page.getByRole('dialog')).toContainText(getUnitDefinition('metal_4').name);
+  await page.getByRole('button', { name: /Tier 3/ }).click();
+  await expect(page.getByRole('dialog')).toContainText(getUnitDefinition('metal_3').name);
 });
 
 test('AI turn keeps opponent money hidden and human ledger visible', async ({ page }) => {
@@ -210,7 +210,7 @@ for (const [width,height] of [[320,568],[390,664]]) test(`home invasion warns, r
  const s=createInitialGameState();s.turn.currentPlayer='black';s.board.units.find(u=>u.owner==='white'&&u.definitionId==='fire_1')!.position={x:9,y:9};
  // Use a saved reply turn, then remove the fixture installer before the reload.
  await page.setViewportSize({width,height});await page.goto('./');
- await page.evaluate(state=>localStorage.setItem('elemental-tactics-save',JSON.stringify({schemaVersion:2,timestamp:Date.now(),state})),s);
+ await page.evaluate(state=>localStorage.setItem('elemental-tactics-save',JSON.stringify({schemaVersion:3,timestamp:Date.now(),state})),s);
  await page.reload();await page.getByRole('button',{name:'Pass & Play'}).click();await page.getByRole('button',{name:'Start Game'}).click();
  await expect(page.getByTestId('cell-9-9')).toHaveAttribute('aria-label',/black home corner/);
  await expect(page.locator('.board-key')).toContainText('Clear J10 this turn or lose');await fits(page);

@@ -1,3 +1,5 @@
+> Catalogue/visual-rank numbers superseded by v1.5: [tier-3 cap report](TIER3_CAP-2026-09-08.md). Historical measurements below remain unchanged.
+
 # Cleave — 2026-09-07
 
 User-authorized rule: one initial attack per unit, then only a killing blow unlocks

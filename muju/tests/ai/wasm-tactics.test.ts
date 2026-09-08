@@ -59,7 +59,7 @@ it('Medium/Hard choose a full-turn rescue before mining, both seats', async () =
   }
 });
 it('an invasion is not an immediate win, and the defender gets its full promotion reply',async()=>{
-  const state=createInitialGameState();state.board.units=[createUnit('metal_4','white',{x:8,y:9}),createUnit('fire_1','black',{x:9,y:8}),createUnit('fire_1','black',{x:8,y:8}),createUnit('water_1','black',{x:0,y:5})];
+  const state=createInitialGameState();state.board.units=[createUnit('metal_3','white',{x:8,y:9}),createUnit('fire_1','black',{x:9,y:8}),createUnit('fire_1','black',{x:8,y:8}),createUnit('water_1','black',{x:0,y:5})];
   state.players.black.resourcesGained=4;state.players.black.resources=4;
   const engine=new AIEngineV2('hard');engine.setTacticalSolver(solver);engine.setConfig({fixedWork:1000});
   const result=await engine.findBestAction(state);
@@ -76,7 +76,7 @@ it('an invasion is not an immediate win, and the defender gets its full promotio
 });
 it('differentially checks every catalogue pairing and damage threshold',async()=>{
   const {UNIT_DEFINITIONS}=await import('../../src/game/units');
-  for(const attacker of UNIT_DEFINITIONS)for(const defender of UNIT_DEFINITIONS)for(const damage of [0,Math.max(0,defender.defense-1)]) {
+  for(const attacker of UNIT_DEFINITIONS)for(const defender of UNIT_DEFINITIONS)for(const damage of Array.from({length:defender.defense+1},(_,i)=>i)) {
     const s=createInitialGameState();s.turn.actionsRemaining=1;
     s.board.units=[createUnit(attacker.id,'white',{x:1,y:0}),createUnit(defender.id,'black',{x:0,y:0})];
     s.board.units[1].damageTaken=damage;
@@ -103,7 +103,7 @@ for(const tier of [1,2]) it(`Tier ${tier} corridor requires kill, move, then ano
   const attacker=createUnit(`fire_${tier}`,'white',{x:2,y:0});
   const victim=createUnit('fire_1','black',{x:0,y:0});
   s.board.units=[attacker,victim,createUnit('fire_1','black',{x:1,y:0}),...[0,1,2].map(x=>{
-    const u=createUnit('metal_4','white',{x,y:1});u.canActThisTurn=false;return u;
+    const u=createUnit('metal_3','white',{x,y:1});u.canActThisTurn=false;return u;
   })];
   const before=structuredClone(s), expected=tier===1?'disproved':'proved';
   const result=solver(s,victim.id,10000,new SearchBudget());

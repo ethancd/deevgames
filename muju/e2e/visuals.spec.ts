@@ -4,7 +4,7 @@ import { UNIT_DEFINITIONS } from '../src/game/units';
 import type { GameState } from '../src/game/types';
 
 async function start(page: Page, state: GameState) {
-  await page.addInitScript(saved => localStorage.setItem('elemental-tactics-save', JSON.stringify({ schemaVersion: 2, timestamp: Date.now(), state: saved })), state);
+  await page.addInitScript(saved => localStorage.setItem('elemental-tactics-save', JSON.stringify({ schemaVersion: 3, timestamp: Date.now(), state: saved })), state);
   await page.goto('./');
   await page.getByRole('button', { name: 'Pass & Play' }).click();
   await page.getByRole('button', { name: 'Start Game' }).click();
@@ -37,17 +37,17 @@ test('equal reserve counts keep different mining depths visible, including after
   await expect(shallow.locator('.resource-readout')).toHaveText('3↓1');
 });
 
-test('both armies retain 24 distinct labelled pieces, exact ranks and damage on a crowded board', async ({ page }, info) => {
+test('both armies retain 18 distinct labelled pieces, exact ranks and damage on a crowded board', async ({ page }, info) => {
   await page.setViewportSize({ width: 390, height: 664 });
   const state = createInitialGameState();
   state.board.units = (['white','black'] as const).flatMap(owner => UNIT_DEFINITIONS.map((def, i) => {
     const unit = createUnit(def.id, owner, { x: 2 + i % 6, y: Math.floor(i / 6) + (owner === 'black' ? 6 : 0) });
-    if (i === 23) unit.damageTaken = 1;
+    if (i === UNIT_DEFINITIONS.length - 1) unit.damageTaken = 1;
     return unit;
   }));
   await start(page, state);
-  await expect(page.locator('.battle-board .army-white')).toHaveCount(24);
-  await expect(page.locator('.battle-board .army-black')).toHaveCount(24);
+  await expect(page.locator('.battle-board .army-white')).toHaveCount(18);
+  await expect(page.locator('.battle-board .army-black')).toHaveCount(18);
   for (const unit of state.board.units) {
     const def = UNIT_DEFINITIONS.find(d => d.id === unit.definitionId)!;
     const square = page.getByTestId(`cell-${unit.position.x}-${unit.position.y}`);

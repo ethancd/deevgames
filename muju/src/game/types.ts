@@ -31,7 +31,7 @@ export type Element =
 
 export type Archetype = 'rush' | 'balanced' | 'expand';
 
-export type Tier = 1 | 2 | 3 | 4;
+export type Tier = 1 | 2 | 3;
 
 // === Units ===
 

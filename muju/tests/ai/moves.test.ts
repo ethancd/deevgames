@@ -306,9 +306,9 @@ describe('AI Move Generation', () => {
       expect(promotes[0].unitId).toBe('ai-unit');
     });
 
-    it('does not generate promote for T4 units', () => {
+    it('does not generate promote for T3 units', () => {
       const board = createEmptyBoard();
-      const aiUnit = createTestUnit('ai-unit', 'fire_4', 'black', 5, 5);
+      const aiUnit = createTestUnit('ai-unit', 'fire_3', 'black', 5, 5);
       board.units.push(aiUnit);
 
       const state = createTestState(board);

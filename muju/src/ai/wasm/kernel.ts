@@ -15,7 +15,7 @@ export type TacticalSolver = (state: GameState, targetId: string, maxNodes: numb
 const scope: TacticalResult['scope'] = 'current-turn target removal; all moves/attacks; home-blocked promotions';
 interface Exports {
   memory: WebAssembly.Memory;
-  abiVersion(): number; inputPtr(): number; cataloguePtr(): number; powersPtr(): number;
+  abiVersion(): number; configureCatalogue(size: number): void; inputPtr(): number; cataloguePtr(): number; powersPtr(): number;
   outputPtr(): number; solve(target: number, maxNodes: number): number; nodes(): number; resultLength(): number;
 }
 
@@ -27,8 +27,9 @@ export async function instantiateTactics(bytes: BufferSource): Promise<TacticalS
     abort: () => { throw new Error('WASM tactical kernel trapped'); },
   } });
   const wasm = instance.exports as unknown as Exports;
-  if (wasm.abiVersion() !== 2 || UNIT_DEFINITIONS.length !== 24) throw new Error('Muju WASM ABI/catalogue mismatch');
+  if (wasm.abiVersion() !== 3) throw new Error('Muju WASM ABI/catalogue mismatch');
   const defs = UNIT_DEFINITIONS;
+  wasm.configureCatalogue(defs.length);
   return (state, targetId, maxNodes, budget) => {
     const unknown = (): TacticalResult => ({ status: 'unknown', actions: [], nodes: 0, scope });
     const units = state.board.units, player = state.turn.currentPlayer;
@@ -37,20 +38,20 @@ export async function instantiateTactics(bytes: BufferSource): Promise<TacticalS
     const corner = state.players[player].startCorner, victim = units[target];
     const homeBlocked = victim.owner !== player && victim.position.x === corner.x && victim.position.y === corner.y;
     if (state.turn.phase === 'place' && !homeBlocked) return unknown();
-    const catalog = new Int32Array(wasm.memory.buffer, wasm.cataloguePtr(), 24 * 6);
+    const catalog = new Int32Array(wasm.memory.buffer, wasm.cataloguePtr(), defs.length * 6);
     for (let i = 0; i < defs.length; i++) {
       const d = defs[i], next = defs.findIndex(n => n.element === d.element && n.tier === d.tier + 1);
       catalog.set([d.attack, d.defense, d.speed, next, next < 0 ? 0 : defs[next].cost - d.cost, d.tier], i * 6);
     }
-    const powers = new Int32Array(wasm.memory.buffer, wasm.powersPtr(), 24 * 24);
-    for (let a = 0; a < 24; a++) for (let b = 0; b < 24; b++) {
+    const powers = new Int32Array(wasm.memory.buffer, wasm.powersPtr(), defs.length * defs.length);
+    for (let a = 0; a < defs.length; a++) for (let b = 0; b < defs.length; b++) {
       // Refresh canonical stats and powers for lab catalogue/element/handicap knobs.
-      powers[a * 24 + b] = calculateAttackPower(
+      powers[a * defs.length + b] = calculateAttackPower(
         { definitionId: defs[a].id, owner: player } as GameState['board']['units'][number],
         { definitionId: defs[b].id, owner: 'black' } as GameState['board']['units'][number]);
     }
     const input = new Int32Array(wasm.memory.buffer, wasm.inputPtr(), 1016); input.fill(0);
-    input.set([2, units.length, player === 'white' ? 0 : 1, state.turn.actionsRemaining,
+    input.set([3, units.length, player === 'white' ? 0 : 1, state.turn.actionsRemaining,
       state.turn.phase === 'place' ? 0 : 1, state.players[player].resources]);
     for (let i = 0; i < units.length; i++) {
       const u = units[i], offset = 16 + i * 10;

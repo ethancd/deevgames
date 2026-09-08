@@ -10,7 +10,7 @@ import { canActInPlacePhase } from '../../src/game/turn';
 import type { AIAction } from '../../src/ai/types';
 function fixture() {
   const s = createInitialGameState();
-  s.board.units = [createUnitFromDefinition('fire_1','white',{x:2,y:2},'w'),createUnitFromDefinition('water_1','white',{x:1,y:1},'anchor'),createUnitFromDefinition('metal_4','black',{x:2,y:3},'b')].map(u=>({...u,placedThisTurn:false}));
+  s.board.units = [createUnitFromDefinition('fire_1','white',{x:2,y:2},'w'),createUnitFromDefinition('water_1','white',{x:1,y:1},'anchor'),createUnitFromDefinition('metal_3','black',{x:2,y:3},'b')].map(u=>({...u,placedThisTurn:false}));
   s.players.white = {...s.players.white,resources:20,resourcesGained:20}; return s;
 }
 describe('authoritative rule enforcement',()=>{

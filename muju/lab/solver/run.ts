@@ -16,8 +16,9 @@ export const patches: Record<string, Patch> = {
 };
 const variant = process.argv[2] ?? 'current';
 const original: UnitDefinition[] = JSON.parse(readFileSync(new URL('./baseline-v1.2.json', import.meta.url), 'utf8'));
-if (variant !== 'current' && !(variant in patches)) throw new Error(`Unknown catalogue: ${variant}`);
-const catalogue = variant === 'current' ? UNIT_DEFINITIONS.map(d => ({ ...d })) : original.map(d => ({ ...d, ...(patches[variant][d.id] ?? {}) }));
+if (variant !== 'current' && variant !== 'pre-cut' && !(variant in patches)) throw new Error(`Unknown catalogue: ${variant}`);
+const preCut: UnitDefinition[] = JSON.parse(readFileSync(new URL('./baseline-v1.3.json', import.meta.url), 'utf8'));
+const catalogue = variant === 'pre-cut' ? preCut : variant === 'current' ? UNIT_DEFINITIONS.map(d => ({ ...d })) : original.map(d => ({ ...d, ...(patches[variant][d.id] ?? {}) }));
 validateCatalogue(catalogue);
 const start = Date.now(), roles = solveRoles(catalogue);
 const rows = catalogue.map(unit => ({ ...unit,
@@ -36,7 +37,7 @@ const data = { modelVersion: 1, variant, turnFrontiers, catalogueHash: createHas
   modelHash: createHash('sha256').update(readFileSync(new URL('./model.ts', import.meta.url))).update(readFileSync(new URL('./run.ts', import.meta.url))).update(readFileSync(new URL('../../src/game/elements.ts', import.meta.url))).digest('hex'),
   elapsedSeconds: (Date.now() - start) / 1000,
   assumptions: ['Open shortest-path distances, no traffic or enemy moves.',
-    'Strike grid: 24 targets, all 18 open-board distances, action budgets 1/2/3; cells are not matchup probabilities.',
+    `Strike grid: ${catalogue.length} targets, all 18 open-board distances, action budgets 1/2/3; cells are not matchup probabilities.`,
     'Kill frontiers: at most four distinct bodies in independent approach lanes, six shared actions; no tech gates.',
     'Mining: exact finite ten-cell corridor, six actions, one unit, no protection or other miners.',
     'Roles: least-cost SINGLE qualifying piece in declared strike/mining/occupation tasks; neither army optimality nor frequency.',
@@ -47,7 +48,7 @@ const data = { modelVersion: 1, variant, turnFrontiers, catalogueHash: createHas
     noSoleCheapestWitness: rows.filter(d => !d.role.soleCheapest).map(d => d.id) }, rows,
   focusedKillFrontiers: catalogue.filter(d => ['metal_1', 'metal_3', 'metal_4', 'water_3'].includes(d.id))
     .flatMap(target => [1, 4, 7].map(distance => ({ target: target.id, distance, solutions: killFrontier(target, catalogue, distance) }))) };
-const out = resolve('lab/results/static-value-2026-09-07'); mkdirSync(out, { recursive: true });
+const out = resolve(['current','pre-cut'].includes(variant) ? 'lab/results/tier3-cap-2026-09-08/static' : 'lab/results/static-value-2026-09-07'); mkdirSync(out, { recursive: true });
 writeFileSync(`${out}/${variant}.json`, JSON.stringify(data, null, 2) + '\n');
 const lines = [
   `# Static value solver: ${variant}`, '',
@@ -77,7 +78,7 @@ lines.push('', '## Capabilities accessible by turn', '',
   'Each is the best individually financed exemplar, not an army affordable all at once. Different pieces may set different maxima. The final column requires ONE available piece to have both the speed and attack for the kill.', '',
   '| Income/turn | Own turn | Max ATK/DEF/SPD/MINE | Target types killable from distance 7 in 3 actions |',
   '|---:|---:|---|---:|');
-for (const f of turnFrontiers) lines.push(`| ${f.income} | ${f.turn} | ${f.maxAttack}/${f.maxDefense}/${f.maxSpeed}/${f.maxMining} | ${f.canKillFrom7With3Actions.length}/24 |`);
+for (const f of turnFrontiers) lines.push(`| ${f.income} | ${f.turn} | ${f.maxAttack}/${f.maxDefense}/${f.maxSpeed}/${f.maxMining} | ${f.canKillFrom7With3Actions.length}/${catalogue.length} |`);
 lines.push('', '## Conditional crystal value of ATK +1', '',
   'Cheapest same-type squad, at most four bodies and six actions, at distances 1/4/7 against every target. Price savings average only cases feasible before AND after; newly feasible cases are reported separately and are not assigned an invented crystal price.', '',
   '| Unit | Mean crystals saved in jointly feasible cases | Newly feasible cases | Example |',
@@ -86,5 +87,5 @@ for (const d of rows) { const v = d.value.changes.attack.squad, e = v.examples[0
   lines.push(`| ${d.id} | ${v.meanCrystalsSaved?.toFixed(2) ?? 'n/a'} (${v.jointlyFeasible} cases) | ${v.newlyFeasible}/${v.cases} | ${e ? `${e.target}, distance ${e.distance}: ${e.beforeCost ?? 'infeasible'} → ${e.afterCost} crystals` : 'none'} |`);
 }
 writeFileSync(`${out}/${variant}.md`, lines.join('\n') + '\n');
-if (process.argv.includes('--check') && (data.checks.distinctStatProfiles !== 24 || data.checks.sameTierDominated.length || data.checks.noMissionWitness.length)) process.exitCode = 1;
+if (process.argv.includes('--check') && (data.checks.distinctStatProfiles !== catalogue.length || data.checks.sameTierDominated.length || data.checks.noSoleCheapestWitness.length)) process.exitCode = 1;
 console.log(JSON.stringify({ variant, ...data.checks, elapsedSeconds: data.elapsedSeconds }));

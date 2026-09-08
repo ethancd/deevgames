@@ -1,3 +1,5 @@
+> Catalogue/visual-rank numbers superseded by v1.5: [tier-3 cap report](TIER3_CAP-2026-09-08.md). Historical measurements below remain unchanged.
+
 # Map D: production launch and post-deployment playtests
 
 > Historical release/report: the later [empty-approaches update](EMPTY_APPROACHES-2026-09-07.md) changes new games to 308 crystals. The measurements below describe the original 340-crystal map.

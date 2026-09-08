@@ -136,9 +136,9 @@ describe('Movement Module', () => {
     });
 
     describe('Speed 3+ units', () => {
-      it('Gokamoka (speed 3) can move up to 3 squares', () => {
+      it('Kagari (speed 3) can move up to 3 squares', () => {
         let board = createEmptyBoard();
-        const unit = createUnit('fire_4', 'white', { x: 5, y: 5 });
+        const unit = createUnit('fire_3', 'white', { x: 5, y: 5 });
         board = addUnit(board, unit);
 
         const moves = getValidMoves(unit, board);
@@ -148,9 +148,9 @@ describe('Movement Module', () => {
         expect(moves).toContainEqual({ x: 8, y: 5 });
       });
 
-      it('Dhorubakali (speed 5) can move up to 5 squares', () => {
+      it('Kimubunga (speed 5) can move up to 5 squares', () => {
         let board = createEmptyBoard();
-        const unit = createUnit('lightning_4', 'white', { x: 5, y: 5 });
+        const unit = createUnit('lightning_3', 'white', { x: 5, y: 5 });
         board = addUnit(board, unit);
 
         const moves = getValidMoves(unit, board);

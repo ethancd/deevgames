@@ -11,7 +11,7 @@ const old = baseline as UnitDefinition[];
 const get = (id: string) => getUnitDefinition(id);
 
 describe('static value model independent checks', () => {
-  it('matches actual elemental combat for all 576 catalogue pairs', () => {
+  it('matches actual elemental combat for all 324 catalogue pairs', () => {
     for (const a of UNIT_DEFINITIONS) for (const b of UNIT_DEFINITIONS) {
       const attacker = createUnitFromDefinition(a.id, 'white', { x: 1, y: 1 }, 'a');
       const defender = createUnitFromDefinition(b.id, 'black', { x: 1, y: 2 }, 'b');
@@ -103,7 +103,7 @@ describe('static value model independent checks', () => {
   it('rejects malformed catalogues instead of inventing value for impossible stats', () => {
     expect(() => validateCatalogue(UNIT_DEFINITIONS)).not.toThrow();
     expect(() => validateCatalogue([...UNIT_DEFINITIONS.slice(1), UNIT_DEFINITIONS[1]])).toThrow();
-    expect(() => validateCatalogue(UNIT_DEFINITIONS.map(d => d.id === 'plant_4' ? { ...d, mining: 6 } : d))).toThrow();
+    expect(() => validateCatalogue(UNIT_DEFINITIONS.map(d => d.id === 'plant_3' ? { ...d, mining: 6 } : d))).toThrow();
   });
   it('rejects impossible corridor descriptions and unsupported finance assumptions', () => {
     expect(() => miningCurve(get('plant_1'), [6])).toThrow();

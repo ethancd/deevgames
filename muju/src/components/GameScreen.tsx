@@ -511,12 +511,10 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
       if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(key)) {
         e.preventDefault();
         // Build the unit grid structure for navigation
-        const unitsByTier: Record<number, typeof UNIT_DEFINITIONS> = {
-          1: UNIT_DEFINITIONS.filter(d => d.tier === 1).sort((a, b) => ELEMENT_ORDER.indexOf(a.element) - ELEMENT_ORDER.indexOf(b.element)),
-          2: UNIT_DEFINITIONS.filter(d => d.tier === 2).sort((a, b) => ELEMENT_ORDER.indexOf(a.element) - ELEMENT_ORDER.indexOf(b.element)),
-          3: UNIT_DEFINITIONS.filter(d => d.tier === 3).sort((a, b) => ELEMENT_ORDER.indexOf(a.element) - ELEMENT_ORDER.indexOf(b.element)),
-          4: UNIT_DEFINITIONS.filter(d => d.tier === 4).sort((a, b) => ELEMENT_ORDER.indexOf(a.element) - ELEMENT_ORDER.indexOf(b.element)),
-        };
+        const unitsByTier: Record<number, typeof UNIT_DEFINITIONS> = Object.fromEntries(
+          [...new Set(UNIT_DEFINITIONS.map(d => d.tier))].map(tier => [tier,
+            UNIT_DEFINITIONS.filter(d => d.tier === tier).sort((a, b) => ELEMENT_ORDER.indexOf(a.element) - ELEMENT_ORDER.indexOf(b.element))])
+        );
 
         // Find current position in grid
         let currentTier = 1;
@@ -534,7 +532,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
         let newCol = currentCol;
 
         if (key === 'arrowup') newTier = Math.max(1, currentTier - 1);
-        if (key === 'arrowdown') newTier = Math.min(4, currentTier + 1);
+        if (key === 'arrowdown') newTier = Math.min(Math.max(...Object.keys(unitsByTier).map(Number)), currentTier + 1);
         if (key === 'arrowleft') newCol = Math.max(0, currentCol - 1);
         if (key === 'arrowright') newCol = Math.min(5, currentCol + 1);
 

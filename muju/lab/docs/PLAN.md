@@ -1,3 +1,5 @@
+> Current v1.5 has 18 units and ends at tier 3. Earlier 24-unit findings below are historical; see `muju/docs/TIER3_CAP-2026-09-08.md` for the paired study and restored Metal III witness with Speed 2.
+
 # Muju Hono Balance Lab (v3 — refined for remote execution)
 
 ## Context

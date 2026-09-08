@@ -1,3 +1,5 @@
+> Catalogue/visual-rank numbers superseded by v1.5: [tier-3 cap report](TIER3_CAP-2026-09-08.md). Historical measurements below remain unchanged.
+
 # Crystal wells and elemental armies
 
 Visual implementation based on production source `9c2a94d` (WASM AI, map D and home victory included). The original visual change affected graphics and explanatory UI only. It is included in the [empty-approaches release](EMPTY_APPROACHES-2026-09-07.md), which also changes starting map capacity from 340 to 308 crystals.

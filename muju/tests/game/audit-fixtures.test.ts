@@ -172,7 +172,7 @@ describe('audit fixtures: mining well metaphor', () => {
   });
 
   it('rope longer than remaining layers takes only what exists', () => {
-    const cuauhtli = placed('plant_4', 'white', 0, 0); // mining 5
+    const cuauhtli = placed('plant_3', 'white', 0, 0); // mining 5
     const nearlyDone = { position: { x: 0, y: 0 }, resourceLayers: 1, minedDepth: 4 };
     expect(calculateMiningYield(cuauhtli, nearlyDone)).toBe(1);
     const empty = { position: { x: 0, y: 0 }, resourceLayers: 0, minedDepth: 5 };
@@ -199,8 +199,8 @@ describe('audit fixtures: promotion timing rules', () => {
     expect(canPromote(unit, richBuildState)).toBe(false);
   });
 
-  it('tier 4 units cannot promote', () => {
-    const unit = placed('metal_4', 'white', 0, 0);
+  it('tier 3 units cannot promote', () => {
+    const unit = placed('metal_3', 'white', 0, 0);
     expect(getPromotionCost(unit)).toBeNull();
     expect(canPromote(unit, richBuildState)).toBe(false);
   });
@@ -208,9 +208,9 @@ describe('audit fixtures: promotion timing rules', () => {
   it('promotion cost is the cost difference to the next tier', () => {
     for (const [defId, expected] of [
       ['fire_1', 2], // 3 - 1
-      ['fire_3', 4], // 10 - 6
+      ['fire_2', 3], // 6 - 3
       ['water_2', 6], // 10 - 4
-      ['plant_3', 8], // 20 - 12
+      ['plant_2', 6], // 12 - 6
     ] as const) {
       const unit = placed(defId, 'white', 0, 0);
       expect(getPromotionCost(unit), defId).toBe(expected);
@@ -232,7 +232,7 @@ describe('audit fixtures: victory ruling', () => {
 
   it('both players having units means the game is ongoing regardless of material gap', () => {
     const board = boardWith(
-      placed('metal_4', 'white', 0, 0),
+      placed('metal_3', 'white', 0, 0),
       placed('lightning_1', 'black', 9, 9)
     );
     expect(checkVictory(board).status).toBe('ongoing');
@@ -240,11 +240,11 @@ describe('audit fixtures: victory ruling', () => {
 });
 
 describe('audit fixtures: catalog sanity', () => {
-  it('every element has exactly tiers 1-4 with monotonically increasing cost', () => {
+  it('every element has exactly tiers 1-3 with monotonically increasing cost', () => {
     const elements = ['fire', 'lightning', 'water', 'shadow', 'plant', 'metal'];
     for (const el of elements) {
       let prevCost = 0;
-      for (const tier of [1, 2, 3, 4]) {
+      for (const tier of [1, 2, 3]) {
         const def = getUnitDefinition(`${el}_${tier}`);
         expect(def.tier).toBe(tier);
         expect(def.element).toBe(el);

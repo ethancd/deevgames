@@ -15,7 +15,7 @@ it('does not collapse different destinations for the same moving piece',()=>{
  expect(new Set(moves.map(p=>p.id)).size).toBe(moves.length);
 });
 it('evaluates consecutive same-player attacks from a fixed perspective',()=>{
- const s=createInitialGameState();s.board.units=[createUnitFromDefinition('fire_4','white',{x:2,y:2},'w'),createUnitFromDefinition('plant_1','black',{x:2,y:3},'b')];
+ const s=createInitialGameState();s.board.units=[createUnitFromDefinition('fire_3','white',{x:2,y:2},'w'),createUnitFromDefinition('plant_1','black',{x:2,y:3},'b')];
  expect(tacticalSharpen(s,'white',1)).toBeGreaterThan(10000);
  expect(tacticalSharpen(s,'black',1)).toBeLessThan(-10000);
  s.turn.actionsRemaining=0;
@@ -58,8 +58,8 @@ it('does not double-penalize promotion spending or resign with reserve assets',a
  const pass={id:'pass',actions:[{type:'END_PLACE_PHASE' as const}],score:0,tags:[]};
  expect(scorePartialPlan(promote,s,'white')).toBeGreaterThan(scorePartialPlan(pass,s,'white'));
  s.board.units=s.board.units.filter(u=>u.owner==='black'||u.id===unit.id);
- for(const u of s.board.units)if(u.owner==='black')u.definitionId='metal_4';
+ for(const u of s.board.units)if(u.owner==='black')u.definitionId='metal_3';
  expect(shouldResign(s,'white')).toBe(false);s.players.white.resources=0;
- s.players.white.buildQueue=[{id:'q',owner:'white',definitionId:'fire_4',turnsRemaining:0}];
+ s.players.white.buildQueue=[{id:'q',owner:'white',definitionId:'fire_3',turnsRemaining:0}];
  expect(shouldResign(s,'white')).toBe(false);
 });

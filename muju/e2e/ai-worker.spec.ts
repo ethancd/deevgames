@@ -3,14 +3,14 @@ import { createInitialGameState, createUnit } from '../src/game/board';
 import { tacticalFixtures } from '../lab/ai/fixtures';
 import type { GameState } from '../src/game/types';
 async function start(page: Page, state: GameState, watch = false) {
-  await page.addInitScript(saved => localStorage.setItem('elemental-tactics-save', JSON.stringify({schemaVersion:2,timestamp:Date.now(),state:saved})),state);
+  await page.addInitScript(saved => localStorage.setItem('elemental-tactics-save', JSON.stringify({schemaVersion:3,timestamp:Date.now(),state:saved})),state);
   await page.goto('./');
   await page.getByRole('button',{name:watch?'Watch AI Spectate AI vs AI match':'vs AI Play against the computer',exact:true}).click();
   for (const select of await page.locator('select').all()) await select.selectOption('hard');
   await page.getByRole('button',{name:'Start Game',exact:true}).click();
 }
 test('built worker loads hashed WASM and performs a coordinated home rescue',async({page,context},info)=>{
-  const fixture=tacticalFixtures().find(f=>f.name==='Metal IV / two Fire II / rotated black')!;
+  const fixture=tacticalFixtures().find(f=>f.name==='Metal III / two Shadow III / rotated black')!;
   const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
   const binary=context.waitForEvent('response',r=>r.url().endsWith('.wasm'));
   const worker=page.waitForEvent('worker');
@@ -19,7 +19,7 @@ test('built worker loads hashed WASM and performs a coordinated home rescue',asy
   expect(native.url()).toMatch(/\/muju\/assets\/entry-[^/]+\.js$/);
   const response=await binary;expect(response.ok()).toBe(true);expect(response.headers()['content-type']).toContain('application/wasm');
   const buffer=await response.body();expect([...buffer.subarray(0,4)]).toEqual([0,97,115,109]);
-  await expect(page.getByTestId('cell-9-9')).not.toHaveAttribute('aria-label',/white Wakanwicasa/,{timeout:10000});
+  await expect(page.getByTestId('cell-9-9')).not.toHaveAttribute('aria-label',/white Tanka/,{timeout:10000});
   await closed;
   await page.screenshot({path:info.outputPath('wasm-home-rescue.png')});
   expect(errors).toEqual([]);await expect(page.getByRole('alert')).toHaveCount(0);
@@ -67,7 +67,7 @@ test('Hard worker executes kill, paid move, Cleave to clear home',async({page})=
   const s=createInitialGameState();s.turn.currentPlayer='black';s.turn.actionsRemaining=3;
   const attacker=createUnit('fire_2','black',{x:7,y:9});
   s.board.units=[attacker,createUnit('fire_1','white',{x:9,y:9}),createUnit('fire_1','white',{x:8,y:9}),...[7,8,9].map(x=>{
-    const u=createUnit('metal_4','black',{x,y:8});u.canActThisTurn=false;return u;
+    const u=createUnit('metal_3','black',{x,y:8});u.canActThisTurn=false;return u;
   })];
   const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
   await start(page,s);

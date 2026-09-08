@@ -1,11 +1,7 @@
 import type { GameState } from '../game/types';
 
-// Bump this when GameState structure changes incompatibly
-// Unequal routes adds optional initialResourceLayers; v2 saves retain their original board.
-// Cleave adds optional lastAttackKilled; old used attackers are conservatively
-// finished until their next turn (canAttack), without discarding saved games.
-// v2: Changed player IDs from 'player'/'ai' to 'white'/'black'
-const SCHEMA_VERSION = 2;
+// v3: v1.5 removes tier 4. Unfinished games from earlier releases are discarded.
+export const SCHEMA_VERSION = 3;
 
 const STORAGE_KEY = 'elemental-tactics-save';
 
