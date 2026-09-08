@@ -1,0 +1,136 @@
+Changed matching lines (historical result data excluded):
+muju/JUDGMENT_LOG.md: +## J-011: Remove tier 4; tier 3 is the cap (v1.5)
+muju/JUDGMENT_LOG.md: +- **Options:** retain all 24; alter tier-4 economics; remove tier 4 with lower values initially frozen.
+muju/SPEC.md: -- Restrictions: cannot skip tiers; T4 cannot promote; a unit may be promoted
+muju/assembly/tactics.ts: -const catalogue = new Int32Array(24 * 6); // attack, defense, speed, next, promotion cost, tier
+muju/assembly/tactics.ts: -const powers = new Int32Array(24 * 24);
+muju/assembly/tactics.ts: -function power(u: i32, v: i32): i32 { return powers[def(u) * 24 + def(v)]; }
+muju/e2e/ai-worker.spec.ts: -    const u=createUnit('metal_4','black',{x,y:8});u.canActThisTurn=false;return u;
+muju/e2e/cleave.spec.ts: -test('a surviving target closes even a Tier IV chain',async({page})=>{
+muju/e2e/cleave.spec.ts: -  const s=arena(4);s.board.units[1].definitionId='metal_4';
+muju/e2e/mobile.spec.ts: -  await expect(page.getByRole('dialog')).toContainText(getUnitDefinition('metal_4').name);
+muju/e2e/visuals.spec.ts: -test('both armies retain 24 distinct labelled pieces, exact ranks and damage on a crowded board', async ({ page }, info) => {
+muju/lab/ai/fixtures.ts: -function fixture(name: string, defenders: [string, number, number][], invader = 'metal_4', actions = 6, resources = 0, placement = false): TacticalFixture {
+muju/lab/ai/fixtures.ts: -  const two = fixture('Metal IV / two Fire II', [['fire_2',1,0],['fire_2',0,1]], 'metal_4', 2);
+muju/lab/ai/fixtures.ts: -  const rotation = fixture('three attacker rotation', [['fire_1',1,0],['fire_1',0,1],['fire_1',2,0]], 'metal_4', 5);
+muju/lab/ai/fixtures.ts: -  const promo = fixture('promotion dependent rescue', [['fire_1',1,0],['fire_1',0,1]], 'metal_4', 6, 4, true);
+muju/lab/ai/fixtures.ts: -  const noMoney = fixture('hidden budget / no promotion money', [['fire_1',1,0],['fire_1',0,1]], 'metal_4', 6, 0, true); noMoney.expected = 'disproved';
+muju/lab/ai/fixtures.ts: -  const longMove = fixture('multi-action approach', [['fire_2',5,0],['fire_2',0,1]], 'metal_4', 4);
+muju/lab/ai/fixtures.ts: -  const impossible = fixture('too few actions for rotation', [['fire_1',1,0],['fire_1',0,1],['fire_1',2,0]], 'metal_4', 3); impossible.expected = 'disproved';
+muju/lab/ai/fixtures.ts: -  const attacked = fixture('same-target limit', [['fire_2',1,0],['fire_2',0,1]], 'metal_4', 6); attacked.state.board.units[1].attackedThisTurn = ['invader']; attacked.expected = 'disproved';
+muju/lab/ai/fixtures.ts: -  const chip = fixture('damage remains during defender reply', [['fire_2',1,0]], 'metal_4', 1); chip.state.board.units[0].damageTaken = 4;
+muju/lab/ai/fixtures.ts: -  const placed = fixture('newly placed unit cannot promote', [['fire_1',1,0],['fire_1',0,1]], 'metal_4', 6, 4, true); placed.state.board.units.slice(1).forEach(u => u.placedThisTurn = true); placed.expected = 'disproved';
+muju/lab/ai/fixtures.ts: -  const noAct = fixture('ineligible defender', [['fire_4',1,0]], 'plant_1', 1); noAct.state.board.units[1].canActThisTurn = false; noAct.expected = 'disproved';
+muju/lab/ai/fixtures.ts: -  const already = fixture('at most one promotion', [['fire_1',1,0],['fire_1',0,1]], 'metal_4', 6, 4, true); already.state.board.units.slice(1).forEach(u => u.promotedThisPlacement = true); already.expected = 'disproved';
+muju/lab/docs/SPEC_AUDIT.md: -7. Unit stats table → v1.1 stats (`units.ts` is canonical; e.g. Hi SPD 2, Radi MINE 0/SPD 3, plant_1 ATK 0/MINE 3, fire_3 SPD 3, fire_4 SPD 4, metal_2 MINE 3).
+muju/lab/docs/SPEC_AUDIT.md: -12. Promotion cost = cost difference (v1.1 §1.3), once per placement phase, not on placement turn, T4 terminal.
+muju/lab/docs/SPEC_AUDIT.md: -| §5.4 promotion cost diff, once/place-phase, not on placement turn, T4 terminal | `promotion.ts:getPromotionCost,canPromote`; `units.ts:getNextTierDefinition` | `promotion.test.ts`; fixtures (promotion timing/cost) |
+muju/lab/maps/model.ts: -   if(n.tier===4)return n;const cost=getUnitDefinition(`plant_${n.tier+1}`).cost-getUnitDefinition(`plant_${n.tier}`).cost;
+muju/lab/solver/model.ts: -  if (catalogue.length !== 24 || new Set(catalogue.map(d => d.id)).size !== 24) throw new Error('Expected 24 unique units');
+muju/lab/solver/model.ts: -  for (const element of elements) for (let tier = 1; tier <= 4; tier++) {
+muju/lab/solver/run.ts: -    'Strike grid: 24 targets, all 18 open-board distances, action budgets 1/2/3; cells are not matchup probabilities.',
+muju/lab/solver/run.ts: -for (const f of turnFrontiers) lines.push(`| ${f.income} | ${f.turn} | ${f.maxAttack}/${f.maxDefense}/${f.maxSpeed}/${f.maxMining} | ${f.canKillFrom7With3Actions.length}/24 |`);
+muju/lab/solver/run.ts: -if (process.argv.includes('--check') && (data.checks.distinctStatProfiles !== 24 || data.checks.sameTierDominated.length || data.checks.noMissionWitness.length)) process.exitCode = 1;
+muju/src/ai/simulate.ts: -  if (def.tier >= 4) return state;
+muju/src/ai/wasm/kernel.ts: -    const catalog = new Int32Array(wasm.memory.buffer, wasm.cataloguePtr(), 24 * 6);
+muju/src/ai/wasm/kernel.ts: -    const powers = new Int32Array(wasm.memory.buffer, wasm.powersPtr(), 24 * 24);
+muju/src/ai/wasm/kernel.ts: -      powers[a * 24 + b] = calculateAttackPower(
+muju/src/components/GameScreen.tsx: -          4: UNIT_DEFINITIONS.filter(d => d.tier === 4).sort((a, b) => ELEMENT_ORDER.indexOf(a.element) - ELEMENT_ORDER.indexOf(b.element)),
+muju/src/components/InstructionsModal.tsx: -            {getUnitDefinition('plant_1').name} reaches depth {getUnitDefinition('plant_1').mining}. Tiers 2 and 3 reach depths {demoMiner.mining} and {getUnitDefinition('plant_3').mining}; tier 4 relocates at Speed {getUnitDefinition('plant_4').speed}.
+muju/src/components/UnitArtwork.tsx: -    {tier === 4 && <path className="elite-crest" d="m18 4 2-3 4 3 4-3 2 3" fill="none" strokeWidth="1.6" strokeLinejoin="round" />}
+muju/src/components/VisualKey.tsx: -      <p>Count the one to four rank marks. Higher tiers have larger bases; tiers 3–4 gain an inner rim and tier 4 a crest. Tier is a rank, not a universal attack value—tap a unit to compare its actual stats. A red badge shows damage.</p>
+muju/src/game/promotion.ts: -  if (def.tier >= 4) {
+muju/src/game/promotion.ts: -    return null; // Can't promote T4 units
+muju/src/game/promotion.ts: -  if (def.tier >= 4) {
+muju/src/game/promotion.ts: - * Check if a unit is at max tier (T4)
+muju/src/game/promotion.ts: -  return def.tier >= 4;
+muju/src/game/units.ts: -// All 24 unit definitions — v1.3 role balance (2026-09-07).
+muju/src/game/units.ts: -    id: 'fire_4',
+muju/src/game/units.ts: -    tier: 4,
+muju/src/game/units.ts: -    id: 'lightning_4',
+muju/src/game/units.ts: -    tier: 4,
+muju/src/game/units.ts: -    id: 'water_4',
+muju/src/game/units.ts: -    tier: 4,
+muju/src/game/units.ts: -    id: 'shadow_4',
+muju/src/game/units.ts: -    tier: 4,
+muju/src/game/units.ts: -    id: 'plant_4',
+muju/src/game/units.ts: -    tier: 4,
+muju/src/game/units.ts: -    id: 'metal_4',
+muju/src/game/units.ts: -    tier: 4,
+muju/src/game/units.ts: - * Returns null if already at tier 4
+muju/src/game/units.ts: -  if (current.tier === 4) return null;
+muju/src/utils/persistence.ts: +// v3: v1.5 removes tier 4. Unfinished games from earlier releases are discarded.
+muju/tests/ai/correctness.test.ts: -  s.board.units = [createUnitFromDefinition('fire_1','white',{x:2,y:2},'w'),createUnitFromDefinition('water_1','white',{x:1,y:1},'anchor'),createUnitFromDefinition('metal_4','black',{x:2,y:3},'b')].map(u=>({...u,placedThisTurn:false}));
+muju/tests/ai/engine.test.ts: -      const aiUnit = createTestUnit('ai-unit', 'fire_4', 'black', 5, 5);
+muju/tests/ai/map-value.test.ts: -  expect(finance(getUnitDefinition('fire_4'),[100,100,100,100,100])).toBe(4);
+muju/tests/ai/moves.test.ts: -    it('does not generate promote for T4 units', () => {
+muju/tests/ai/moves.test.ts: -      const aiUnit = createTestUnit('ai-unit', 'fire_4', 'black', 5, 5);
+muju/tests/ai/search-correctness.test.ts: - const s=createInitialGameState();s.board.units=[createUnitFromDefinition('fire_4','white',{x:2,y:2},'w'),createUnitFromDefinition('plant_1','black',{x:2,y:3},'b')];
+muju/tests/ai/search-correctness.test.ts: - for(const u of s.board.units)if(u.owner==='black')u.definitionId='metal_4';
+muju/tests/ai/search-correctness.test.ts: - s.players.white.buildQueue=[{id:'q',owner:'white',definitionId:'fire_4',turnsRemaining:0}];
+muju/tests/ai/static-value.test.ts: +  it('matches actual elemental combat for all 324 catalogue pairs', () => {
+muju/tests/ai/static-value.test.ts: -    expect(() => validateCatalogue(UNIT_DEFINITIONS.map(d => d.id === 'plant_4' ? { ...d, mining: 6 } : d))).toThrow();
+muju/tests/ai/wasm-tactics.test.ts: -  const state=createInitialGameState();state.board.units=[createUnit('metal_4','white',{x:8,y:9}),createUnit('fire_1','black',{x:9,y:8}),createUnit('fire_1','black',{x:8,y:8}),createUnit('water_1','black',{x:0,y:5})];
+muju/tests/ai/wasm-tactics.test.ts: -    const u=createUnit('metal_4','white',{x,y:1});u.canActThisTurn=false;return u;
+muju/tests/ai/worker.test.ts: - a.players.black.resources=15;b.players.black.resources=0;b.players.black.resourcesSpent=15;b.players.black.buildQueue=[{id:'secret',owner:'black',definitionId:'water_4',turnsRemaining:3}];
+muju/tests/ai/worker.test.ts: - const s=createInitialGameState();s.players.black.resources=42;s.players.black.buildQueue=[{id:'secret',owner:'black',definitionId:'metal_4',turnsRemaining:0}];
+muju/tests/game/audit-fixtures.test.ts: -    const cuauhtli = placed('plant_4', 'white', 0, 0); // mining 5
+muju/tests/game/audit-fixtures.test.ts: -  it('tier 4 units cannot promote', () => {
+muju/tests/game/audit-fixtures.test.ts: -    const unit = placed('metal_4', 'white', 0, 0);
+muju/tests/game/audit-fixtures.test.ts: -      placed('metal_4', 'white', 0, 0),
+muju/tests/game/building.test.ts: -    it('tier 4 units have element-based costs', () => {
+muju/tests/game/building.test.ts: -      expect(getBuildCost('fire_4')).toBe(10);
+muju/tests/game/building.test.ts: -      expect(getBuildCost('metal_4')).toBe(20);
+muju/tests/game/building.test.ts: -    it('tier 4 units take 2-3 turns', () => {
+muju/tests/game/building.test.ts: -      expect(getBuildTime('fire_4')).toBe(2);
+muju/tests/game/building.test.ts: -      expect(getBuildTime('water_4')).toBe(3);
+muju/tests/game/building.test.ts: -      expect(canAfford(state, 'fire_4')).toBe(false); // cost 10
+muju/tests/game/building.test.ts: -      // Can build fire_4 (needs T3+, fire_3 is T3 >= T3)
+muju/tests/game/building.test.ts: -      expect(meetsTechRequirement('fire_4', 'white', board)).toBe(true);
+muju/tests/game/building.test.ts: -      expect(getRequiredTier('fire_4')).toBe(3);
+muju/tests/game/building.test.ts: -      expect(options).toContain('fire_4'); // costs 10
+muju/tests/game/building.test.ts: -      expect(options).toContain('metal_4'); // costs 20 (most expensive)
+muju/tests/game/cleave.test.ts: -  s.board.units = [attacker, ...[{x:5,y:4},{x:6,y:5},{x:5,y:6},{x:4,y:5}].map(p=>createUnit('fire_1','black',p)),createUnit('water_4','black',{x:9,y:8})];
+muju/tests/game/cleave.test.ts: -  it('a nonlethal second hit closes a Tier IV chain, even if another unit finishes that target',()=>{
+muju/tests/game/cleave.test.ts: -    tough.definitionId='metal_4';const helper=createUnit('fire_2','white',{x:6,y:4});s.board.units.push(helper);
+muju/tests/game/cleave.test.ts: -    const {s,attacker}=arena(2);const tough=s.board.units[1];tough.definitionId='metal_4';
+muju/tests/game/combat.test.ts: -      const defender = createUnit('metal_4', 'black', { x: 0, y: 0 }); // Defense: 8
+muju/tests/game/combat.test.ts: -    it('Gokamoka (Fire tier 4, 6 atk) kills Cuauhtlimallki (Plant tier 4, 5 def)', () => {
+muju/tests/game/combat.test.ts: -      const attacker = createUnit('fire_4', 'white', { x: 0, y: 0 });
+muju/tests/game/combat.test.ts: -      const defender = createUnit('plant_4', 'black', { x: 0, y: 1 });
+muju/tests/game/home-victory.test.ts: - let s=createInitialGameState();s.turn.currentPlayer='black';s.board.units=[createUnit('metal_4','white',{x:9,y:9}),createUnit('water_4','black',{x:9,y:8}),createUnit('water_4','black',{x:8,y:9}),createUnit('water_4','black',{x:8,y:8})];
+muju/tests/game/mining.test.ts: -        const unit = createUnit('plant_4', 'white', { x: 0, y: 0 }); // Mining: 5
+muju/tests/game/mining.test.ts: -        const unit = createUnit('plant_4', 'white', { x: 0, y: 0 }); // Mining: 5
+muju/tests/game/mining.test.ts: -      const unit = createUnit('plant_4', 'white', { x: 5, y: 5 }); // Mining: 5
+muju/tests/game/mining.test.ts: -      const unit = createUnit('plant_4', 'white', { x: 5, y: 5 }); // Mining: 5
+muju/tests/game/mining.test.ts: -      const unit = createUnit('plant_4', 'white', { x: 0, y: 0 });
+muju/tests/game/mining.test.ts: -      const unit = createUnit('plant_4', 'white', { x: 5, y: 5 }); // Mining: 5
+muju/tests/game/mining.test.ts: -      // Tier 3 now accesses depth 5; tier 4 shares depth access but relocates faster.
+muju/tests/game/mining.test.ts: -      const cuauhtlimallki = createUnit('plant_4', 'white', { x: 0, y: 0 });
+muju/tests/game/movement.test.ts: -        const unit = createUnit('fire_4', 'white', { x: 5, y: 5 });
+muju/tests/game/movement.test.ts: -        const unit = createUnit('lightning_4', 'white', { x: 5, y: 5 });
+muju/tests/game/promotion.test.ts: -    it('T3 → T4 costs 4 crystals', () => {
+muju/tests/game/promotion.test.ts: -    it('T4 cannot be promoted (returns null)', () => {
+muju/tests/game/promotion.test.ts: -      const unit = createUnit('p1', 'white', { x: 0, y: 0 }, 'fire_4');
+muju/tests/game/promotion.test.ts: -      expect(getPromotedDefinitionId(unit)).toBe('lightning_4');
+muju/tests/game/promotion.test.ts: -    it('returns null for T4 units', () => {
+muju/tests/game/promotion.test.ts: -      const unit = createUnit('p1', 'white', { x: 0, y: 0 }, 'metal_4');
+muju/tests/game/promotion.test.ts: -    it('returns false for T4 units regardless of crystals', () => {
+muju/tests/game/promotion.test.ts: -      const unit = createUnit('p1', 'white', { x: 0, y: 0 }, 'fire_4');
+muju/tests/game/promotion.test.ts: -    it('returns true for T4 units', () => {
+muju/tests/game/promotion.test.ts: -      const unit = createUnit('p1', 'white', { x: 0, y: 0 }, 'fire_4');
+muju/tests/game/promotion.test.ts: -    it('returns null when unit is already T4', () => {
+muju/tests/game/promotion.test.ts: -      const unit = createUnit('p1', 'white', { x: 1, y: 1 }, 'fire_4');
+muju/tests/game/promotion.test.ts: -    it('excludes T4 units', () => {
+muju/tests/game/promotion.test.ts: -      const unit = createUnit('p1', 'white', { x: 1, y: 1 }, 'fire_4');
+muju/tests/game/promotion.test.ts: -    it('returns null values for T4 unit', () => {
+muju/tests/game/promotion.test.ts: -      const unit = createUnit('p1', 'white', { x: 0, y: 0 }, 'fire_4');
+muju/tests/game/units.test.ts: -    it('contains exactly 24 units (4 tiers × 6 elements)', () => {
+muju/tests/game/units.test.ts: -    it('returns null for tier 4 units', () => {
+muju/tests/game/units.test.ts: -      const next = getNextTierDefinition('metal_4');
+muju/tests/game/units.test.ts: -    it('returns 0 for tier 4 units', () => {
+muju/tests/game/units.test.ts: -      const cost = getPromotionCost('fire_4');
+muju/tests/game/units.test.ts: -        const t4 = getUnitDefinition(`${element}_4`);
+muju/tests/game/units.test.ts: -      const metal4 = getUnitDefinition('metal_4');
+
+Retained references: historical baselines/prototype runners/reports and standalone replay labels; zero live catalogue tier-4 definitions.

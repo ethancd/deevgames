@@ -1,0 +1,109 @@
+{
+  "n": 20,
+  "shard": 2,
+  "shards": 4,
+  "pairs": [
+    [
+      "Rush",
+      "AntiRush"
+    ],
+    [
+      "LightningRush",
+      "Expand"
+    ],
+    [
+      "Balanced",
+      "Balanced"
+    ],
+    [
+      "InvestT3",
+      "HomeT3"
+    ],
+    [
+      "InvestT3",
+      "Rush"
+    ],
+    [
+      "InvestT4",
+      "InvestT3"
+    ],
+    [
+      "MiningDenial",
+      "Turtle"
+    ],
+    [
+      "Mono-plant",
+      "Mono-shadow"
+    ],
+    [
+      "Invade:LightningRush",
+      "Aware:AntiRush"
+    ],
+    [
+      "Invade:LightningRush",
+      "Aware:InvestT3"
+    ],
+    [
+      "Invade:LightningRush",
+      "Aware:Balanced"
+    ],
+    [
+      "Invade:LightningRush",
+      "Aware:Turtle"
+    ],
+    [
+      "Invade:Balanced",
+      "Aware:Balanced"
+    ],
+    [
+      "Invade:InvestT3",
+      "Aware:HomeT3"
+    ],
+    [
+      "Invade:InvestT3",
+      "Aware:InvestT3"
+    ],
+    [
+      "Invade:MiningDenial",
+      "Aware:AntiRush"
+    ],
+    [
+      "Siege:2",
+      "Aware:Balanced"
+    ],
+    [
+      "Siege:4",
+      "Aware:Balanced"
+    ],
+    [
+      "Siege:4",
+      "Aware:InvestT3"
+    ],
+    [
+      "Siege:4",
+      "Invade:LightningRush"
+    ],
+    [
+      "Invade:Balanced",
+      "Invade:Balanced"
+    ],
+    [
+      "Invade:LightningRush",
+      "Invade:LightningRush"
+    ],
+    [
+      "Aware:InvestT3",
+      "Aware:Balanced"
+    ],
+    [
+      "Invade:InvestT3",
+      "Aware:Mono-plant"
+    ]
+  ],
+  "started": "2026-09-08T14:28:27.785Z",
+  "sourceHash": "5cb69f138a1ac766e40e5da1c120170d399c1afea9ef713c050541cb63b54d44",
+  "unitHash": "847d7604b21794bea4d93b5dbcb40675667339b97fbad22c659be2493cabc4d3",
+  "seedBase": 9071326,
+  "maxTurns": 120,
+  "notes": "Same policies/seeds/seats, map D, paired catalogue cut study. Legacy InvestT4/Siege:4 intent caps at highest available tier. New-objective probes use bounded public-state home defense on both rule variants."
+}

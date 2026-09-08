@@ -1,0 +1,1086 @@
+{
+  "v1.4": {
+    "e9": {
+      "games": 3200,
+      "naturalGames": 2523,
+      "caps": 677,
+      "medianTurns": 19.0,
+      "naturalMedianTurns": 16,
+      "homeWins": {},
+      "illegal": 0,
+      "invariants": 0,
+      "tierUsage": {
+        "1": 90197,
+        "2": 27418,
+        "3": 7584,
+        "4": 79
+      },
+      "purchases": {
+        "queued": {
+          "1": 94937,
+          "2": 29121,
+          "3": 8162,
+          "4": 80
+        },
+        "promoted": {
+          "1": 0,
+          "2": 331,
+          "3": 0,
+          "4": 0
+        }
+      }
+    },
+    "e13": {
+      "games": 960,
+      "naturalGames": 728,
+      "caps": 232,
+      "medianTurns": 20.0,
+      "naturalMedianTurns": 14.0,
+      "homeWins": {
+        "fire_1": 23,
+        "fire_2": 4,
+        "fire_3": 5,
+        "fire_4": 1,
+        "lightning_1": 120,
+        "lightning_2": 16,
+        "metal_1": 19,
+        "metal_2": 43,
+        "metal_3": 27,
+        "metal_4": 50,
+        "plant_1": 21,
+        "plant_2": 17,
+        "plant_3": 27,
+        "plant_4": 3,
+        "shadow_1": 9,
+        "shadow_3": 1,
+        "water_1": 5,
+        "water_2": 15,
+        "water_3": 3,
+        "water_4": 3
+      },
+      "illegal": 0,
+      "invariants": 0,
+      "tierUsage": {
+        "1": 32755,
+        "2": 6315,
+        "3": 1240,
+        "4": 156
+      }
+    }
+  },
+  "cap-only": {
+    "e9": {
+      "games": 3200,
+      "naturalGames": 2516,
+      "caps": 684,
+      "medianTurns": 19.0,
+      "naturalMedianTurns": 16.0,
+      "homeWins": {},
+      "illegal": 0,
+      "invariants": 0,
+      "tierUsage": {
+        "1": 90251,
+        "2": 27449,
+        "3": 7683,
+        "4": 0
+      }
+    },
+    "e13": {
+      "games": 960,
+      "naturalGames": 691,
+      "caps": 269,
+      "medianTurns": 22.0,
+      "naturalMedianTurns": 14,
+      "homeWins": {
+        "fire_1": 23,
+        "fire_2": 4,
+        "fire_3": 5,
+        "lightning_1": 122,
+        "lightning_2": 16,
+        "metal_1": 22,
+        "metal_2": 44,
+        "metal_3": 57,
+        "plant_1": 21,
+        "plant_2": 17,
+        "plant_3": 23,
+        "shadow_1": 9,
+        "shadow_3": 1,
+        "water_1": 5,
+        "water_2": 15,
+        "water_3": 4
+      },
+      "illegal": 0,
+      "invariants": 0,
+      "tierUsage": {
+        "1": 33980,
+        "2": 6232,
+        "3": 1204,
+        "4": 0
+      }
+    }
+  },
+  "final": {
+    "e9": {
+      "games": 3200,
+      "naturalGames": 2516,
+      "caps": 684,
+      "medianTurns": 19.0,
+      "naturalMedianTurns": 16.0,
+      "homeWins": {},
+      "illegal": 0,
+      "invariants": 0,
+      "tierUsage": {
+        "1": 90274,
+        "2": 27441,
+        "3": 7683,
+        "4": 0
+      },
+      "purchases": {
+        "queued": {
+          "1": 94994,
+          "2": 29146,
+          "3": 8260,
+          "4": 0
+        },
+        "promoted": {
+          "1": 0,
+          "2": 331,
+          "3": 0,
+          "4": 0
+        }
+      }
+    },
+    "e13": {
+      "games": 960,
+      "naturalGames": 700,
+      "caps": 260,
+      "medianTurns": 21.0,
+      "naturalMedianTurns": 14.0,
+      "homeWins": {
+        "fire_1": 23,
+        "fire_2": 4,
+        "fire_3": 5,
+        "lightning_1": 122,
+        "lightning_2": 16,
+        "metal_1": 21,
+        "metal_2": 47,
+        "metal_3": 67,
+        "plant_1": 21,
+        "plant_2": 17,
+        "plant_3": 22,
+        "shadow_1": 9,
+        "shadow_3": 1,
+        "water_1": 5,
+        "water_2": 15,
+        "water_3": 3
+      },
+      "illegal": 0,
+      "invariants": 0,
+      "tierUsage": {
+        "1": 33319,
+        "2": 6170,
+        "3": 1195,
+        "4": 0
+      }
+    }
+  },
+  "matchups-e9": [
+    {
+      "a": "Rush",
+      "b": "AntiRush",
+      "v1.4": {
+        "wins": 34,
+        "losses": 0,
+        "caps": 166,
+        "median": 121.0
+      },
+      "cap-only": {
+        "wins": 34,
+        "losses": 0,
+        "caps": 166,
+        "median": 121.0
+      },
+      "final": {
+        "wins": 34,
+        "losses": 0,
+        "caps": 166,
+        "median": 121.0
+      }
+    },
+    {
+      "a": "Mono-lightning",
+      "b": "Mono-metal",
+      "v1.4": {
+        "wins": 86,
+        "losses": 114,
+        "caps": 0,
+        "median": 17.0
+      },
+      "cap-only": {
+        "wins": 86,
+        "losses": 114,
+        "caps": 0,
+        "median": 17.0
+      },
+      "final": {
+        "wins": 86,
+        "losses": 114,
+        "caps": 0,
+        "median": 17.0
+      }
+    },
+    {
+      "a": "Mono-plant",
+      "b": "Mono-shadow",
+      "v1.4": {
+        "wins": 87,
+        "losses": 107,
+        "caps": 6,
+        "median": 17.0
+      },
+      "cap-only": {
+        "wins": 87,
+        "losses": 107,
+        "caps": 6,
+        "median": 17.0
+      },
+      "final": {
+        "wins": 87,
+        "losses": 107,
+        "caps": 6,
+        "median": 17.0
+      }
+    },
+    {
+      "a": "LightningRush",
+      "b": "Turtle",
+      "v1.4": {
+        "wins": 167,
+        "losses": 0,
+        "caps": 33,
+        "median": 6.0
+      },
+      "cap-only": {
+        "wins": 167,
+        "losses": 0,
+        "caps": 33,
+        "median": 6.0
+      },
+      "final": {
+        "wins": 167,
+        "losses": 0,
+        "caps": 33,
+        "median": 6.0
+      }
+    },
+    {
+      "a": "Rush",
+      "b": "Expand",
+      "v1.4": {
+        "wins": 176,
+        "losses": 9,
+        "caps": 15,
+        "median": 9.0
+      },
+      "cap-only": {
+        "wins": 176,
+        "losses": 9,
+        "caps": 15,
+        "median": 9.0
+      },
+      "final": {
+        "wins": 176,
+        "losses": 9,
+        "caps": 15,
+        "median": 9.0
+      }
+    },
+    {
+      "a": "Mono-lightning",
+      "b": "Mono-fire",
+      "v1.4": {
+        "wins": 76,
+        "losses": 124,
+        "caps": 0,
+        "median": 19.0
+      },
+      "cap-only": {
+        "wins": 76,
+        "losses": 124,
+        "caps": 0,
+        "median": 19.0
+      },
+      "final": {
+        "wins": 76,
+        "losses": 124,
+        "caps": 0,
+        "median": 19.0
+      }
+    },
+    {
+      "a": "Mono-fire",
+      "b": "Mono-water",
+      "v1.4": {
+        "wins": 0,
+        "losses": 200,
+        "caps": 0,
+        "median": 21.0
+      },
+      "cap-only": {
+        "wins": 0,
+        "losses": 200,
+        "caps": 0,
+        "median": 21.0
+      },
+      "final": {
+        "wins": 0,
+        "losses": 200,
+        "caps": 0,
+        "median": 21.0
+      }
+    },
+    {
+      "a": "LightningRush",
+      "b": "Expand",
+      "v1.4": {
+        "wins": 194,
+        "losses": 3,
+        "caps": 3,
+        "median": 7.0
+      },
+      "cap-only": {
+        "wins": 194,
+        "losses": 3,
+        "caps": 3,
+        "median": 7.0
+      },
+      "final": {
+        "wins": 194,
+        "losses": 3,
+        "caps": 3,
+        "median": 7.0
+      }
+    },
+    {
+      "a": "AdaptivePressure",
+      "b": "AntiRush",
+      "v1.4": {
+        "wins": 129,
+        "losses": 0,
+        "caps": 71,
+        "median": 31.5
+      },
+      "cap-only": {
+        "wins": 129,
+        "losses": 0,
+        "caps": 71,
+        "median": 31.5
+      },
+      "final": {
+        "wins": 129,
+        "losses": 0,
+        "caps": 71,
+        "median": 31.5
+      }
+    },
+    {
+      "a": "Mono-shadow",
+      "b": "Mono-water",
+      "v1.4": {
+        "wins": 0,
+        "losses": 200,
+        "caps": 0,
+        "median": 18.0
+      },
+      "cap-only": {
+        "wins": 0,
+        "losses": 200,
+        "caps": 0,
+        "median": 18.0
+      },
+      "final": {
+        "wins": 0,
+        "losses": 200,
+        "caps": 0,
+        "median": 18.0
+      }
+    },
+    {
+      "a": "Balanced",
+      "b": "Expand",
+      "v1.4": {
+        "wins": 21,
+        "losses": 0,
+        "caps": 179,
+        "median": 121.0
+      },
+      "cap-only": {
+        "wins": 15,
+        "losses": 0,
+        "caps": 185,
+        "median": 121.0
+      },
+      "final": {
+        "wins": 15,
+        "losses": 0,
+        "caps": 185,
+        "median": 121.0
+      }
+    },
+    {
+      "a": "AdaptiveEconomy",
+      "b": "LightningRush",
+      "v1.4": {
+        "wins": 43,
+        "losses": 120,
+        "caps": 37,
+        "median": 11.0
+      },
+      "cap-only": {
+        "wins": 44,
+        "losses": 120,
+        "caps": 36,
+        "median": 11.0
+      },
+      "final": {
+        "wins": 44,
+        "losses": 120,
+        "caps": 36,
+        "median": 11.0
+      }
+    },
+    {
+      "a": "AdaptiveEconomy",
+      "b": "Rush",
+      "v1.4": {
+        "wins": 78,
+        "losses": 72,
+        "caps": 50,
+        "median": 40.0
+      },
+      "cap-only": {
+        "wins": 76,
+        "losses": 72,
+        "caps": 52,
+        "median": 40.5
+      },
+      "final": {
+        "wins": 76,
+        "losses": 72,
+        "caps": 52,
+        "median": 40.5
+      }
+    },
+    {
+      "a": "Mono-plant",
+      "b": "Mono-metal",
+      "v1.4": {
+        "wins": 0,
+        "losses": 170,
+        "caps": 30,
+        "median": 24.0
+      },
+      "cap-only": {
+        "wins": 0,
+        "losses": 170,
+        "caps": 30,
+        "median": 24.0
+      },
+      "final": {
+        "wins": 0,
+        "losses": 170,
+        "caps": 30,
+        "median": 24.0
+      }
+    },
+    {
+      "a": "LightningRush",
+      "b": "AntiRush",
+      "v1.4": {
+        "wins": 119,
+        "losses": 0,
+        "caps": 81,
+        "median": 6.0
+      },
+      "cap-only": {
+        "wins": 119,
+        "losses": 0,
+        "caps": 81,
+        "median": 6.0
+      },
+      "final": {
+        "wins": 119,
+        "losses": 0,
+        "caps": 81,
+        "median": 6.0
+      }
+    },
+    {
+      "a": "Balanced",
+      "b": "LightningRush",
+      "v1.4": {
+        "wins": 142,
+        "losses": 52,
+        "caps": 6,
+        "median": 25.0
+      },
+      "cap-only": {
+        "wins": 142,
+        "losses": 52,
+        "caps": 6,
+        "median": 25.0
+      },
+      "final": {
+        "wins": 142,
+        "losses": 52,
+        "caps": 6,
+        "median": 25.0
+      }
+    }
+  ],
+  "matchups-e13": [
+    {
+      "a": "Rush",
+      "b": "AntiRush",
+      "v1.4": {
+        "wins": 15,
+        "losses": 0,
+        "caps": 25,
+        "median": 121.0
+      },
+      "cap-only": {
+        "wins": 15,
+        "losses": 0,
+        "caps": 25,
+        "median": 121.0
+      },
+      "final": {
+        "wins": 15,
+        "losses": 0,
+        "caps": 25,
+        "median": 121.0
+      }
+    },
+    {
+      "a": "InvestT3",
+      "b": "Rush",
+      "v1.4": {
+        "wins": 33,
+        "losses": 5,
+        "caps": 2,
+        "median": 28.5
+      },
+      "cap-only": {
+        "wins": 33,
+        "losses": 5,
+        "caps": 2,
+        "median": 28.5
+      },
+      "final": {
+        "wins": 33,
+        "losses": 5,
+        "caps": 2,
+        "median": 28.5
+      }
+    },
+    {
+      "a": "Invade:LightningRush",
+      "b": "Aware:AntiRush",
+      "v1.4": {
+        "wins": 25,
+        "losses": 15,
+        "caps": 0,
+        "median": 23.5
+      },
+      "cap-only": {
+        "wins": 25,
+        "losses": 15,
+        "caps": 0,
+        "median": 23.5
+      },
+      "final": {
+        "wins": 25,
+        "losses": 15,
+        "caps": 0,
+        "median": 23.5
+      }
+    },
+    {
+      "a": "Invade:Balanced",
+      "b": "Aware:Balanced",
+      "v1.4": {
+        "wins": 9,
+        "losses": 14,
+        "caps": 17,
+        "median": 59.0
+      },
+      "cap-only": {
+        "wins": 9,
+        "losses": 14,
+        "caps": 17,
+        "median": 59.0
+      },
+      "final": {
+        "wins": 9,
+        "losses": 14,
+        "caps": 17,
+        "median": 59.0
+      }
+    },
+    {
+      "a": "Siege:2",
+      "b": "Aware:Balanced",
+      "v1.4": {
+        "wins": 30,
+        "losses": 0,
+        "caps": 10,
+        "median": 23.5
+      },
+      "cap-only": {
+        "wins": 30,
+        "losses": 0,
+        "caps": 10,
+        "median": 23.5
+      },
+      "final": {
+        "wins": 30,
+        "losses": 0,
+        "caps": 10,
+        "median": 23.5
+      }
+    },
+    {
+      "a": "Invade:Balanced",
+      "b": "Invade:Balanced",
+      "v1.4": {
+        "wins": 19,
+        "losses": 19,
+        "caps": 2,
+        "median": 26.0
+      },
+      "cap-only": {
+        "wins": 19,
+        "losses": 19,
+        "caps": 2,
+        "median": 26.0
+      },
+      "final": {
+        "wins": 19,
+        "losses": 19,
+        "caps": 2,
+        "median": 26.0
+      }
+    },
+    {
+      "a": "LightningRush",
+      "b": "Expand",
+      "v1.4": {
+        "wins": 40,
+        "losses": 0,
+        "caps": 0,
+        "median": 7.0
+      },
+      "cap-only": {
+        "wins": 40,
+        "losses": 0,
+        "caps": 0,
+        "median": 7.0
+      },
+      "final": {
+        "wins": 40,
+        "losses": 0,
+        "caps": 0,
+        "median": 7.0
+      }
+    },
+    {
+      "a": "InvestT4",
+      "b": "InvestT3",
+      "v1.4": {
+        "wins": 13,
+        "losses": 5,
+        "caps": 22,
+        "median": 121.0
+      },
+      "cap-only": {
+        "wins": 0,
+        "losses": 0,
+        "caps": 40,
+        "median": 121.0
+      },
+      "final": {
+        "wins": 0,
+        "losses": 0,
+        "caps": 40,
+        "median": 121.0
+      }
+    },
+    {
+      "a": "Invade:LightningRush",
+      "b": "Aware:InvestT3",
+      "v1.4": {
+        "wins": 10,
+        "losses": 30,
+        "caps": 0,
+        "median": 32.0
+      },
+      "cap-only": {
+        "wins": 11,
+        "losses": 29,
+        "caps": 0,
+        "median": 31.5
+      },
+      "final": {
+        "wins": 11,
+        "losses": 29,
+        "caps": 0,
+        "median": 31.5
+      }
+    },
+    {
+      "a": "Invade:InvestT3",
+      "b": "Aware:HomeT3",
+      "v1.4": {
+        "wins": 23,
+        "losses": 2,
+        "caps": 15,
+        "median": 34.0
+      },
+      "cap-only": {
+        "wins": 23,
+        "losses": 2,
+        "caps": 15,
+        "median": 33.5
+      },
+      "final": {
+        "wins": 23,
+        "losses": 2,
+        "caps": 15,
+        "median": 33.5
+      }
+    },
+    {
+      "a": "Siege:4",
+      "b": "Aware:Balanced",
+      "v1.4": {
+        "wins": 37,
+        "losses": 0,
+        "caps": 3,
+        "median": 9.0
+      },
+      "cap-only": {
+        "wins": 34,
+        "losses": 0,
+        "caps": 6,
+        "median": 10.0
+      },
+      "final": {
+        "wins": 36,
+        "losses": 0,
+        "caps": 4,
+        "median": 8.0
+      }
+    },
+    {
+      "a": "Invade:LightningRush",
+      "b": "Invade:LightningRush",
+      "v1.4": {
+        "wins": 20,
+        "losses": 20,
+        "caps": 0,
+        "median": 7.5
+      },
+      "cap-only": {
+        "wins": 20,
+        "losses": 20,
+        "caps": 0,
+        "median": 7.5
+      },
+      "final": {
+        "wins": 20,
+        "losses": 20,
+        "caps": 0,
+        "median": 7.5
+      }
+    },
+    {
+      "a": "Balanced",
+      "b": "Balanced",
+      "v1.4": {
+        "wins": 6,
+        "losses": 6,
+        "caps": 28,
+        "median": 121.0
+      },
+      "cap-only": {
+        "wins": 6,
+        "losses": 6,
+        "caps": 28,
+        "median": 121.0
+      },
+      "final": {
+        "wins": 6,
+        "losses": 6,
+        "caps": 28,
+        "median": 121.0
+      }
+    },
+    {
+      "a": "MiningDenial",
+      "b": "Turtle",
+      "v1.4": {
+        "wins": 38,
+        "losses": 0,
+        "caps": 2,
+        "median": 7.0
+      },
+      "cap-only": {
+        "wins": 38,
+        "losses": 0,
+        "caps": 2,
+        "median": 7.0
+      },
+      "final": {
+        "wins": 38,
+        "losses": 0,
+        "caps": 2,
+        "median": 7.0
+      }
+    },
+    {
+      "a": "Invade:LightningRush",
+      "b": "Aware:Balanced",
+      "v1.4": {
+        "wins": 32,
+        "losses": 7,
+        "caps": 1,
+        "median": 17.0
+      },
+      "cap-only": {
+        "wins": 32,
+        "losses": 7,
+        "caps": 1,
+        "median": 17.0
+      },
+      "final": {
+        "wins": 32,
+        "losses": 7,
+        "caps": 1,
+        "median": 17.0
+      }
+    },
+    {
+      "a": "Invade:InvestT3",
+      "b": "Aware:InvestT3",
+      "v1.4": {
+        "wins": 21,
+        "losses": 6,
+        "caps": 13,
+        "median": 23.5
+      },
+      "cap-only": {
+        "wins": 21,
+        "losses": 6,
+        "caps": 13,
+        "median": 23.5
+      },
+      "final": {
+        "wins": 21,
+        "losses": 6,
+        "caps": 13,
+        "median": 23.5
+      }
+    },
+    {
+      "a": "Siege:4",
+      "b": "Aware:InvestT3",
+      "v1.4": {
+        "wins": 34,
+        "losses": 1,
+        "caps": 5,
+        "median": 10.0
+      },
+      "cap-only": {
+        "wins": 17,
+        "losses": 2,
+        "caps": 21,
+        "median": 121.0
+      },
+      "final": {
+        "wins": 25,
+        "losses": 1,
+        "caps": 14,
+        "median": 20.5
+      }
+    },
+    {
+      "a": "Aware:InvestT3",
+      "b": "Aware:Balanced",
+      "v1.4": {
+        "wins": 2,
+        "losses": 0,
+        "caps": 38,
+        "median": 121.0
+      },
+      "cap-only": {
+        "wins": 2,
+        "losses": 0,
+        "caps": 38,
+        "median": 121.0
+      },
+      "final": {
+        "wins": 2,
+        "losses": 0,
+        "caps": 38,
+        "median": 121.0
+      }
+    },
+    {
+      "a": "InvestT3",
+      "b": "HomeT3",
+      "v1.4": {
+        "wins": 0,
+        "losses": 0,
+        "caps": 40,
+        "median": 121.0
+      },
+      "cap-only": {
+        "wins": 0,
+        "losses": 0,
+        "caps": 40,
+        "median": 121.0
+      },
+      "final": {
+        "wins": 0,
+        "losses": 0,
+        "caps": 40,
+        "median": 121.0
+      }
+    },
+    {
+      "a": "Mono-plant",
+      "b": "Mono-shadow",
+      "v1.4": {
+        "wins": 15,
+        "losses": 22,
+        "caps": 3,
+        "median": 15.0
+      },
+      "cap-only": {
+        "wins": 15,
+        "losses": 22,
+        "caps": 3,
+        "median": 15.0
+      },
+      "final": {
+        "wins": 15,
+        "losses": 22,
+        "caps": 3,
+        "median": 15.0
+      }
+    },
+    {
+      "a": "Invade:LightningRush",
+      "b": "Aware:Turtle",
+      "v1.4": {
+        "wins": 39,
+        "losses": 0,
+        "caps": 1,
+        "median": 13.5
+      },
+      "cap-only": {
+        "wins": 39,
+        "losses": 0,
+        "caps": 1,
+        "median": 13.5
+      },
+      "final": {
+        "wins": 39,
+        "losses": 0,
+        "caps": 1,
+        "median": 13.5
+      }
+    },
+    {
+      "a": "Invade:MiningDenial",
+      "b": "Aware:AntiRush",
+      "v1.4": {
+        "wins": 34,
+        "losses": 6,
+        "caps": 0,
+        "median": 15.0
+      },
+      "cap-only": {
+        "wins": 34,
+        "losses": 6,
+        "caps": 0,
+        "median": 15.0
+      },
+      "final": {
+        "wins": 34,
+        "losses": 6,
+        "caps": 0,
+        "median": 15.0
+      }
+    },
+    {
+      "a": "Siege:4",
+      "b": "Invade:LightningRush",
+      "v1.4": {
+        "wins": 34,
+        "losses": 6,
+        "caps": 0,
+        "median": 13.5
+      },
+      "cap-only": {
+        "wins": 33,
+        "losses": 7,
+        "caps": 0,
+        "median": 14.5
+      },
+      "final": {
+        "wins": 33,
+        "losses": 7,
+        "caps": 0,
+        "median": 13.5
+      }
+    },
+    {
+      "a": "Invade:InvestT3",
+      "b": "Aware:Mono-plant",
+      "v1.4": {
+        "wins": 34,
+        "losses": 1,
+        "caps": 5,
+        "median": 11.5
+      },
+      "cap-only": {
+        "wins": 34,
+        "losses": 1,
+        "caps": 5,
+        "median": 11.5
+      },
+      "final": {
+        "wins": 34,
+        "losses": 1,
+        "caps": 5,
+        "median": 11.5
+      }
+    }
+  ],
+  "signFlipsVsSeptember": [
+    {
+      "a": "Mono-lightning",
+      "b": "Mono-fire",
+      "before": 1,
+      "after": -1
+    },
+    {
+      "a": "AdaptiveEconomy",
+      "b": "Rush",
+      "before": -1,
+      "after": 1
+    }
+  ],
+  "signFlipsVsPairedBaseline": []
+}
