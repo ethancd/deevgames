@@ -1,3 +1,4 @@
+import './historical-experiment';
 import {mkdirSync,writeFileSync,appendFileSync,readFileSync,readdirSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {join} from 'node:path';

@@ -1,4 +1,3 @@
-import { getUnitDefinition } from '../../src/game/units';
 import type { GameState, PlayerId } from '../../src/game/types';
 import { BOARD_SIZE, INITIAL_RESOURCE_LAYERS, MAX_ACTIONS_PER_TURN } from '../../src/game/board';
 
@@ -37,15 +36,15 @@ export function checkInvariants(state: GameState, context: string): void {
 
   // Cells + resource conservation
   const capacities = state.board.initialResourceLayers ?? Array(BOARD_SIZE * BOARD_SIZE).fill(INITIAL_RESOURCE_LAYERS);
-  if (capacities.length !== BOARD_SIZE * BOARD_SIZE || capacities.some(n => !Number.isInteger(n) || n < 0 || n > 5)) throw new InvariantViolation(`${context}: invalid initial capacities`);
+  if (capacities.length !== BOARD_SIZE * BOARD_SIZE || capacities.some(n => !Number.isInteger(n) || n < 0 || n > INITIAL_RESOURCE_LAYERS)) throw new InvariantViolation(`${context}: invalid initial capacities`);
   const total = capacities.reduce((sum,n)=>sum+n,0);
   let remaining = 0;
   for (const row of state.board.cells) {
     for (const cell of row) {
       const capacity = capacities[cell.position.y * BOARD_SIZE + cell.position.x];
-      if (!Number.isInteger(cell.resourceLayers) || !Number.isInteger(cell.minedDepth) || cell.resourceLayers < 0 || cell.minedDepth < 0 || cell.resourceLayers + cell.minedDepth !== capacity) {
+      if (!Number.isInteger(cell.resourceLayers) || cell.resourceLayers < 0 || cell.resourceLayers > capacity) {
         throw new InvariantViolation(
-          `${context}: layers+depth !== ${capacity} at ${cell.position.x},${cell.position.y}`
+          `${context}: reserve outside capacity ${capacity} at ${cell.position.x},${cell.position.y}`
         );
       }
       remaining += cell.resourceLayers;
@@ -60,8 +59,6 @@ export function checkInvariants(state: GameState, context: string): void {
 
   for (const player of ['white', 'black'] as PlayerId[]) {
     const p = state.players[player];
-    const queued=p.buildQueue.reduce((n,q)=>n+getUnitDefinition(q.definitionId).cost,0);
-    if(p.resources+p.resourcesSpent!==p.resourcesGained || p.resources+queued!==p.resourcesGained-p.resourcesManifested)throw new InvariantViolation(`${context}: ${player} public spending identity broken`);
     if (p.resources < 0) {
       throw new InvariantViolation(`${context}: ${player} negative resources`);
     }

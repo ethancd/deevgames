@@ -1,3 +1,5 @@
+import './historical-experiment';
+// Historical matrix; reproduce original results at commit 16ccfd7.
 /** Run AFTER production verification. n seed blocks, shard index, shard count, mode.
  * node --import tsx lab/experiments/e12-map-d-topology.ts 40 0 4 scripted
  */
@@ -25,7 +27,7 @@ const file=`${out}/${mode}-${shard}.jsonl`;writeFileSync(file,'');
 const maxTurns=mode==='engine'?20:120,started=new Date().toISOString();
 writeFileSync(`${out}/topology-control.json`,JSON.stringify({description:'One fixed shuffled D, exact stock and histogram, rotated, preserved 2x2 starting homes',cells:control},null,2));
 writeFileSync(`${out}/${mode}-${shard}-manifest.json`,JSON.stringify({started,releaseCommit:'326f04386ff11a0bfc6b6a36c33fc40e8bcf2acb',productionVerifiedBeforeRun:true,sourceHash,unitHash,n,shard,shards,mode,maxTurns,pairs,seedBase:91092026},null,2));
-const empty=()=>({mineActions:0,mineYield:0,moveActions:0,moveBudget:0,awayYield:0,fourthFifth:0,byDefinition:{} as Record<string,{actions:number,yield:number}>,incomeAt:{} as Record<string,number>,maxHomeDistance:0,minedCells:new Set<string>()});
+const empty=()=>({mineActions:0,mineYield:0,moveActions:0,moveBudget:0,awayYield:0,retiredDepthYield:0,byDefinition:{} as Record<string,{actions:number,yield:number}>,incomeAt:{} as Record<string,number>,maxHomeDistance:0,minedCells:new Set<string>()});
 let count=0;
 for(let cell=0;cell<pairs.length;cell++){
  if(cell%shards!==shard)continue;
@@ -35,12 +37,13 @@ for(let cell=0;cell<pairs.length;cell++){
   const {record:r,replay}=await playGame({bots:{white:makeBot(swapped?b:a),black:makeBot(swapped?a:b)},seed,engineHash:sourceHash,runId:`e12-${mode}`,experiment:`map-${map}`,options:{victoryRule:'elimination',resourceLayout:map==='S'?control:UNEQUAL_ROUTES_MAP,legality:'strict',checkInvariants:true,maxTurns,maxPlies:8000,recordReplay:cell===0&&i===0},
    onAction(before,after,action,p){const t=telemetry[p];
     if(before===after)return;
-    if(action.type==='MINE'){
-     const u=before.board.units.find(u=>u.id===action.unitId)!,c=before.board.cells[u.position.y][u.position.x],yieldNow=after.players[p].resourcesGained-before.players[p].resourcesGained;
-     const home=before.players[p].startCorner,dist=Math.abs(u.position.x-home.x)+Math.abs(u.position.y-home.y);
-     t.mineActions++;t.mineYield+=yieldNow;t.awayYield+=dist>6?yieldNow:0;t.maxHomeDistance=Math.max(t.maxHomeDistance,dist);t.minedCells.add(`${u.position.x},${u.position.y}`);
-     t.fourthFifth+=Math.max(0,c.minedDepth+yieldNow-Math.max(3,c.minedDepth));
-     const v=t.byDefinition[u.definitionId]??={actions:0,yield:0};v.actions++;v.yield+=yieldNow;
+    if(after.lastIncome && after.lastIncome!==before.lastIncome){
+     for(const take of after.lastIncome.takes){
+      const u=before.board.units.find(u=>u.id===take.unitId)!,yieldNow=take.amount;
+      const home=before.players[p].startCorner,dist=Math.abs(u.position.x-home.x)+Math.abs(u.position.y-home.y);
+      t.mineActions++;t.mineYield+=yieldNow;t.awayYield+=dist>6?yieldNow:0;t.maxHomeDistance=Math.max(t.maxHomeDistance,dist);t.minedCells.add(`${u.position.x},${u.position.y}`);
+      const v=t.byDefinition[u.definitionId]??={actions:0,yield:0};v.actions++;v.yield+=yieldNow;
+     }
     }
     if(action.type==='MOVE'){t.moveActions++;t.moveBudget+=before.turn.actionsRemaining-after.turn.actionsRemaining;}
     if(before.turn.currentPlayer!==after.turn.currentPlayer||after.phase==='victory'){

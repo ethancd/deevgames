@@ -1,3 +1,4 @@
+import './historical-experiment';
 /** v1.6 paired E9 control versus shipped upkeep/draw, same 18-unit catalogue. */
 import {readFileSync,readdirSync,mkdirSync,writeFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
@@ -26,11 +27,10 @@ function adaptive(name:string):ScriptedBot{
  const pressure=name==='AdaptivePressure',base=pressure?createRushBot():createExpandBot(),greedy=createGreedyBot();
  return {kind:'scripted',name,chooseAction(ctx){const {view}=ctx;
   if(!pressure){const danger=view.board.units.some(u=>u.owner!==view.player&&Math.abs(u.position.x-view.me.startCorner.x)+Math.abs(u.position.y-view.me.startCorner.y)<=5);return danger?greedy.chooseAction(ctx):base.chooseAction(ctx);}
-  if(view.phase==='place')return greedy.chooseAction(ctx);
-  if(view.phase==='queue'){
+  if(view.phase==='place'){
    const walls=view.board.units.filter(u=>u.owner!==view.player&&['water','shadow'].includes(u.definitionId.split('_')[0])).length;
    const counters=view.board.units.filter(u=>u.owner===view.player&&u.definitionId.startsWith('plant')).length;
-   if(walls>=2&&counters<walls){const legal=ctx.legal.filter(a=>a.type==='QUEUE_UNIT'&&a.definitionId.startsWith('plant'));if(legal.length)return greedy.chooseAction({...ctx,legal});}
+   if(walls>=2&&counters<walls){const legal=ctx.legal.filter(a=>a.type==='BUY_UNIT'&&a.definitionId.startsWith('plant'));if(legal.length)return greedy.chooseAction({...ctx,legal});}
   }return base.chooseAction(ctx);
  }};
 }
@@ -49,7 +49,7 @@ try{for(let cell=0;cell<pairs.length;cell++){
   const seed=deriveSeed((variant.startsWith('confirm_')?39072600:29072600)+cell,i),aSeat=swapped?'black':'white';
   const purchases={queued:{1:0,2:0,3:0,4:0},promoted:{1:0,2:0,3:0,4:0}};
   const {record:r}=await playGame({bots:{white:bot(swapped?b:a),black:bot(swapped?a:b)},seed,engineHash:sourceHash,runId:`e9-${variant}`,experiment:variant,onAction(before,after,action,_player){
-    if(action.type==='QUEUE_UNIT' && after!==before)purchases.queued[getUnitDefinition(action.definitionId).tier]++;
+    if(action.type==='BUY_UNIT' && after!==before)purchases.queued[getUnitDefinition(action.definitionId).tier]++;
     if(action.type==='PROMOTE_UNIT' && after!==before){const unit=after.board.units.find(u=>u.id===action.unitId)!;purchases.promoted[getUnitDefinition(unit.definitionId).tier]++;}
   },options:{upkeep:ruleVariant,inactivityRule:ruleVariant==='off'?'off':'on',victoryRule:'elimination',resourceLayout:Array(100).fill(5),legality:'strict',checkInvariants:true,maxTurns:120,recordReplay:false}});
   const cap=r.turns>(120)||r.plies>=8000;

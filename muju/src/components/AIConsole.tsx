@@ -13,20 +13,14 @@ function formatAction(action: AIAction): string {
       return `Move ${action.unitId} → (${action.to.x},${action.to.y})`;
     case 'ATTACK':
       return `Attack ${action.unitId} → (${action.targetPosition.x},${action.targetPosition.y})`;
-    case 'MINE':
-      return `Mine ${action.unitId}`;
-    case 'QUEUE_UNIT':
-      return `Queue ${action.definitionId}`;
-    case 'PLACE_UNIT':
-      return `Place ${action.queuedUnitId} → (${action.position.x},${action.position.y})`;
+    case 'BUY_UNIT':
+      return `Buy ${action.definitionId} → (${action.position.x},${action.position.y})`;
     case 'PROMOTE_UNIT':
       return `Promote ${action.unitId}`;
     case 'END_PLACE_PHASE':
       return 'End placement phase';
     case 'END_ACTION_PHASE':
       return 'End action phase';
-    case 'END_TURN':
-      return 'End turn';
     case 'RESIGN':
       return 'Resign';
   }
@@ -55,7 +49,6 @@ export function AIConsole({ title, debug, isThinking }: AIConsoleProps) {
               <span className="text-gray-200"> {debug.config.outputPlans}</span> outputs
             </div>
             <div>
-              Belief particles: <span className="text-gray-200">{debug.config.particleCount}</span>,
               tactical depth: <span className="text-gray-200">{debug.config.tacticalDepth}</span>
             </div>
           </div>

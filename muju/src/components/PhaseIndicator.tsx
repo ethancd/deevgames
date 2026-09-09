@@ -11,13 +11,11 @@ export function PhaseIndicator({ turnNumber, phase, currentPlayer, playerNames }
   const phaseLabels: Record<TurnPhase, string> = {
     place: 'Place',
     action: 'Action',
-    queue: 'Build',
   };
 
   const phaseColors: Record<TurnPhase, string> = {
     place: 'bg-purple-500',
     action: 'bg-blue-500',
-    queue: 'bg-amber-500',
   };
 
   const playerName = playerNames

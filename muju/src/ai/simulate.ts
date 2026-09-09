@@ -3,20 +3,18 @@ import type { AIAction } from './types';
 import { getUnitById, placeUnit } from '../game/board';
 import { getNextTierDefinition, getUnitDefinition } from '../game/units';
 import { resolveCombat } from '../game/combat';
-import { executeMine } from '../game/mining';
-import { completeUpkeep, useAction, endTurn, startActionPhase, startQueuePhase, canActInPlacePhase, canActInQueuePhase } from '../game/turn';
+import { createUnitFromDefinition } from '../game/building';
+import { completeUpkeep, useAction, endTurn, startActionPhase, canActInPlacePhase } from '../game/turn';
 import { isLegalAction } from '../game/legality';
 import { getMoveCost } from '../game/movement';
 import { checkVictory } from '../game/victory';
 
-/** Deterministic IDs keep the UI reducer and its AI shadow state in sync.
- * Uniqueness is checked against every live unit and queue (including saved games).
- */
-function nextQueueId(state: GameState): string {
-  const ids = new Set([...state.board.units.map(u => u.id), ...Object.values(state.players).flatMap(p => p.buildQueue.map(q => q.id))]);
-  const prefix = `q-${state.turn.currentPlayer}-${state.turn.turnNumber}-`;
+/** Deterministic IDs agree in the reducer, worker, and every simulated state. */
+function nextUnitId(state: GameState): string {
+  const ids = new Set(state.board.units.map(u => u.id));
+  const prefix = `unit-${state.turn.currentPlayer}-${state.turn.turnNumber}-`;
   let n = 0;
-  while (ids.has(prefix + n) || ids.has('unit-' + prefix + n)) n++;
+  while (ids.has(prefix + n)) n++;
   return prefix + n;
 }
 
@@ -38,23 +36,14 @@ function applyLegalAction(state: GameState, action: AIAction): GameState {
     case 'ATTACK':
       return applyAttack(state, action.unitId, action.targetPosition);
 
-    case 'MINE':
-      return applyMine(state, action.unitId);
-
     case 'END_PLACE_PHASE':
       return startActionPhase(state);
 
     case 'END_ACTION_PHASE':
-      return startQueuePhase(state);
-
-    case 'END_TURN':
       return endTurn(state);
 
-    case 'QUEUE_UNIT':
-      return applyQueueUnit(state, action.definitionId);
-
-    case 'PLACE_UNIT':
-      return finishPlacement(applyPlaceUnit(state, action.queuedUnitId, action.position));
+    case 'BUY_UNIT':
+      return finishPlacement(applyBuyUnit(state, action.definitionId, action.position));
 
     case 'PROMOTE_UNIT':
       return finishPlacement(applyPromoteUnit(state, action.unitId));
@@ -112,110 +101,16 @@ function applyAttack(state: GameState, unitId: string, targetPosition: Position)
   return { ...newState, board: newBoard };
 }
 
-function applyMine(state: GameState, unitId: string): GameState {
-  const unit = getUnitById(state.board, unitId);
-  if (!unit) return state;
-
-  const currentPlayer = unit.owner;
-  const currentResources = state.players[currentPlayer].resources;
-  const { board: newBoard, newResources, amountMined } = executeMine(
-    state.board,
-    unitId,
-    currentResources
-  );
-
-  if (amountMined === 0) return state;
-
-  const newPlayers = {
-    ...state.players,
-    [currentPlayer]: {
-      ...state.players[currentPlayer],
-      resources: newResources,
-      resourcesGained: state.players[currentPlayer].resourcesGained + amountMined,
-    },
-  };
-
-  const newState = useAction(state);
-  return { ...newState, board: newBoard, players: newPlayers, inactivityPlies:0, progressThisTurn:true };
-}
-
 function finishPlacement(state: GameState): GameState {
   return canActInPlacePhase(state, state.turn.currentPlayer) ? state : startActionPhase(state);
 }
 
-function applyQueueUnit(state: GameState, definitionId: string): GameState {
-  const def = getUnitDefinition(definitionId);
-  const currentPlayer = state.turn.currentPlayer;
-  const playerState = state.players[currentPlayer];
-
-  if (playerState.resources < def.cost) {
-    return state;
-  }
-
-  const queuedUnit = {
-    id: nextQueueId(state),
-    definitionId,
-    turnsRemaining: def.buildTime,
-    owner: currentPlayer,
-  };
-
-  const next = {
-    ...state,
-    players: {
-      ...state.players,
-      [currentPlayer]: {
-        ...playerState,
-        resources: playerState.resources - def.cost,
-        resourcesSpent: playerState.resourcesSpent + def.cost,
-        buildQueue: [...playerState.buildQueue, queuedUnit],
-      },
-    },
-  };
-  return canActInQueuePhase(next, currentPlayer) ? next : endTurn(next);
-}
-
-function applyPlaceUnit(state: GameState, queuedUnitId: string, position: Position): GameState {
-  const currentPlayer = state.turn.currentPlayer;
-  const playerState = state.players[currentPlayer];
-
-  const queuedUnit = playerState.buildQueue.find((u) => u.id === queuedUnitId);
-  if (!queuedUnit) return state;
-
-  const def = getUnitDefinition(queuedUnit.definitionId);
-
-  // Create the new unit
-  const newUnit = {
-    id: `unit-${queuedUnit.id}`,
-    definitionId: queuedUnit.definitionId,
-    owner: currentPlayer,
-    position,
-    hasMoved: false,
-    hasAttacked: false,
-    lastAttackKilled: false,
-    hasMined: false,
-    canActThisTurn: true, // Can act immediately (no summoning sickness)
-    damageTaken: 0,
-    promotedThisPlacement: false,
-    placedThisTurn: true, // Can't be promoted on the same turn it's placed
-  };
-
-  const newBoard = placeUnit(state.board, newUnit);
-
-  // Remove from queue, update resourcesSpent
-  const newQueue = playerState.buildQueue.filter((u) => u.id !== queuedUnitId);
-
-  return {
-    ...state,
-    board: newBoard,
-    players: {
-      ...state.players,
-      [currentPlayer]: {
-        ...playerState,
-        buildQueue: newQueue,
-        resourcesManifested: playerState.resourcesManifested + def.cost,
-      },
-    },
-  };
+function applyBuyUnit(state: GameState, definitionId: string, position: Position): GameState {
+  const player = state.turn.currentPlayer;
+  const me = state.players[player];
+  const unit = createUnitFromDefinition(definitionId, player, position, nextUnitId(state));
+  return { ...state, board: placeUnit(state.board, unit),
+    players: { ...state.players, [player]: { ...me, resources: me.resources - getUnitDefinition(definitionId).cost } } };
 }
 
 function applyPromoteUnit(state: GameState, unitId: string): GameState {
@@ -258,8 +153,6 @@ function applyPromoteUnit(state: GameState, unitId: string): GameState {
       [currentPlayer]: {
         ...playerState,
         resources: playerState.resources - promotionCost,
-        resourcesSpent: playerState.resourcesSpent + promotionCost,
-        resourcesManifested: playerState.resourcesManifested + promotionCost,
       },
     },
   };

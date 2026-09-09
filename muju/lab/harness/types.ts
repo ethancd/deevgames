@@ -1,37 +1,17 @@
-import type { GameState, PlayerId, BoardState, TurnPhase, QueuedUnit, Position } from '../../src/game/types';
+import type { GameState, PlayerId, BoardState, TurnPhase, PlayerState } from '../../src/game/types';
 import type { AIAction } from '../../src/ai/types';
 import type { Rng } from './rng';
 
-/**
- * What a scripted bot is allowed to see. Built from the engine's observation
- * layer (`ai/state/observation.ts`): the opponent's stockpile and build queue
- * are masked — hidden-information rulings Q1–Q3 are enforced by construction.
- */
+/** The full, perfect-information game plus convenience fields for policies. */
 export interface BotView {
-  player: PlayerId;
-  opponent: PlayerId;
-  phase: TurnPhase;
-  actionsRemaining: number;
-  turnNumber: number;
-  board: BoardState; // fully public (positions, tiers, damage, cells)
-  me: {
-    resources: number;
-    buildQueue: QueuedUnit[];
-    resourcesGained: number;
-    resourcesSpent: number;
-    startCorner: Position;
-  };
-  /** Public opponent info only. Stockpile/queue are NOT here by design. */
-  enemy: {
-    resourcesGained: number;
-    resourcesSpent: number;
-    startCorner: Position;
-  };
+  state: GameState; player: PlayerId; opponent: PlayerId;
+  phase: TurnPhase; actionsRemaining: number; turnNumber: number; board: BoardState;
+  me: PlayerState; enemy: PlayerState;
 }
 
 export interface BotContext {
   view: BotView;
-  /** Legal actions for this ply, pre-filtered through full rules (incl. tech gating — J-001). */
+  /** Legal actions for this ply, pre-filtered through full rules (including public tier-1 purchases). */
   legal: AIAction[];
   rng: Rng;
 }
@@ -49,8 +29,7 @@ export interface ScriptedBot {
 
 /**
  * An engine bot drives the real AI (AIEngineV2) and emits its own actions from
- * the full state (the engine masks hidden info internally via its observation/
- * belief layer). The runner validates emissions against the legal set and
+ * the full public state. The runner validates emissions against the legal set and
  * counts violations (divergences D1/D2) but by default applies them anyway —
  * "as-shipped" measurement (J-002).
  */
@@ -119,15 +98,15 @@ export interface PlayerGameStats {
   firstTier3Round?: number|null;
   finalResources: number;
   resourcesGained: number;
-  resourcesSpent: number;
+  resourcesSpent: number; // derived telemetry: gained minus bank
   finalMaterial: number; // sum of on-board unit costs at end
-  finalQueueValue: number; // sum of queued unit costs at end
+
   unitsPlaced: number;
   promotions: number;
   /** Units placed or promoted into each tier (placement counts the placed tier). */
   tierUsage: Record<1 | 2 | 3 | 4, number>;
-  /** Units queued per element over the whole game. */
-  elementQueued: Record<string, number>;
+  /** Units purchased per element over the whole game. */
+  elementPurchased: Record<string, number>;
   unitsLost: number;
   unitsKilled: number;
   illegalActions: number; // engine-bot emissions not in the legal set
@@ -146,7 +125,7 @@ export interface MaterialSample {
 
 /** One JSONL row per game. */
 export interface GameRecord {
-  schema: 'muju-lab-game-v1';
+  schema: 'muju-lab-game-v2';
   maxInactivityPlies?: number;
   inactivityDraw?: boolean;
   upkeepElimination?: boolean;
@@ -163,6 +142,11 @@ export interface GameRecord {
   plies: number;
   firstBlood: { by: PlayerId; turn: number } | null;
   players: Record<PlayerId, PlayerGameStats>;
+  incomeCurve: {player:PlayerId;turn:number;income:number;remaining:number;zeroReserveUnits:number;byTier:Record<string,number>;byElement:Record<string,number>;bank:number;tier1Share:number}[];
+  round90Exhaustion: number|null;
+  purchases: {player:PlayerId;turn:number;definitionId:string}[];
+  promotionEvents: {player:PlayerId;turn:number;unitId:string;definitionId:string}[];
+  placedAndAttackedKills: number;
   materialCurve: MaterialSample[]; // sampled at the start of every white turn
   invariantViolation: string | null;
   anomalies: string[];
@@ -184,13 +168,13 @@ export interface ReplayStep {
     y: number;
     dmg: number;
   }>;
-  /** 100 chars, row-major (y*10+x), each char = remaining resourceLayers. */
-  cells: string;
-  res: Record<PlayerId, { r: number; g: number; s: number; q: number }>; // resources, gained, spent, queueCount
+  /** 100 reserves in row-major order; 10 is a single cell value. */
+  cells: number[];
+  res: Record<PlayerId, { r: number; g: number; s: number }>; // resources, gained, spent
 }
 
 export interface ReplayFile {
-  schema: 'muju-lab-replay-v1';
+  schema: 'muju-lab-replay-v2';
   meta: GameRecord;
   steps: ReplayStep[];
 }

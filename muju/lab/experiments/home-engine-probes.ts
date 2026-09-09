@@ -1,3 +1,4 @@
+import './historical-experiment';
 /** Small actual-search tests: removal must precede the invader's next turn. */
 import {createInitialGameState,createUnit} from '../../src/game/board';
 import {getHomeOccupier} from '../../src/game/victory';

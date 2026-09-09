@@ -11,7 +11,7 @@ import {
   getAttackersFor,
   canBeEliminatedByCombined,
 } from '../game/combat';
-import { canMine } from '../game/mining';
+import { projectedIncome } from '../game/mining';
 import { getAllSpawnPositions } from '../game/spawning';
 import { getGameResult, homeOccupationPressure } from '../game/victory';
 
@@ -114,11 +114,6 @@ export function evaluatePosition(
     calculateSpawnInfiltration(state, opponent)
   );
 
-  // Queue value
-  score += weights.queueValue * (
-    calculateQueueValue(state, forPlayer) -
-    calculateQueueValue(state, opponent)
-  );
 
   // Step efficiency
   score += weights.stepEfficiency * (
@@ -158,17 +153,7 @@ function calculateTerritoryControl(state: GameState, player: PlayerId): number {
  * Calculate mining potential (units that can mine * available resources)
  */
 function calculateMiningPotential(state: GameState, player: PlayerId): number {
-  const units = getPlayerUnits(state.board, player);
-  let potential = 0;
-
-  for (const unit of units) {
-    if (canMine(unit, state.board)) {
-      const def = getUnitDefinition(unit.definitionId);
-      potential += def.mining; // Mining power as potential
-    }
-  }
-
-  return potential;
+  return projectedIncome(state, player);
 }
 
 /**
@@ -210,10 +195,6 @@ function calculateMobility(state: GameState, player: PlayerId): number {
     const attacks = getValidAttacks(unit, state.board);
     mobility += attacks.length * 1.5;
 
-    // Mining capability
-    if (canMine(unit, state.board)) {
-      mobility += 1;
-    }
   }
 
   return mobility;
@@ -312,17 +293,6 @@ function calculateSpawnInfiltration(state: GameState, player: PlayerId): number 
   return infiltration;
 }
 
-function calculateQueueValue(state: GameState, player: PlayerId): number {
-  const queue = state.players[player].buildQueue;
-  let value = 0;
-  for (const queuedUnit of queue) {
-    const def = getUnitDefinition(queuedUnit.definitionId);
-    const discount = Math.pow(0.9, queuedUnit.turnsRemaining);
-    value += def.cost * discount;
-  }
-  return value;
-}
-
 function calculateStepEfficiency(state: GameState, player: PlayerId): number {
   if (state.turn.currentPlayer !== player || state.turn.phase !== 'action') {
     return 0;
@@ -334,18 +304,12 @@ function calculateStepEfficiency(state: GameState, player: PlayerId): number {
 }
 
 function calculateTechTreeProgress(state: GameState, player: PlayerId): number {
-  const units = getPlayerUnits(state.board, player);
-  let progress = 0;
-  const tiers = new Set<number>();
-
-  for (const unit of units) {
-    const def = getUnitDefinition(unit.definitionId);
-    tiers.add(def.tier);
+  const highest = new Map<string, number>();
+  for (const u of getPlayerUnits(state.board, player)) {
+    const def = getUnitDefinition(u.definitionId);
+    highest.set(def.element, Math.max(highest.get(def.element) ?? 1, def.tier));
   }
-
-  for (const tier of tiers) if (tier > 1) progress += 1;
-
-  return progress;
+  return [...highest.values()].reduce((sum, tier) => sum + tier - 1, 0);
 }
 
 function getOpponent(player: PlayerId): PlayerId {
@@ -417,8 +381,6 @@ export function scoreAction(
       }
       return 100;
 
-    case 'MINE':
-      return 50; // Medium priority
 
     case 'MOVE':
       return 25; // Lower priority
@@ -445,8 +407,8 @@ export function shouldResign(state: GameState, player: PlayerId): boolean {
   if (playerValue === 0) return false;
 
   // A banked economy or ready reinforcements can reverse a board deficit.
-  // Only inspect our own private assets; opponent queues remain hidden.
-  if (state.players[player].resources > upkeepDue(state,player) || state.players[player].buildQueue.length > 0) return false;
+  // Holding a bank can still fund a rescue or a future purchase.
+  if (state.players[player].resources > upkeepDue(state,player)) return false;
   if (generateWinningAttack(state, player)) return false;
 
   // If opponent has 3x or more unit value, consider resigning

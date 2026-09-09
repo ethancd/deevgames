@@ -1,3 +1,4 @@
+import { incomeMovePriority } from './placement';
 import type { GameState, PlayerId } from '../../game/types';
 import type { TurnPlan } from './types';
 import { applyAction } from '../simulate';
@@ -18,7 +19,7 @@ export function beamSearchPlans(state: GameState, player: PlayerId, options: Bea
   let generated = 0;
   const exhausted = () => budget?.exhausted() || generated >= (options.maxCandidates ?? Infinity) ||
     (options.until !== undefined && budget!.now() >= options.until);
-  const maxSteps = options.maxSteps ?? (state.turn.phase === 'action' ? Math.max(1, state.turn.actionsRemaining) : 1);
+  const maxSteps = options.maxSteps ?? (state.turn.phase === 'action' ? Math.max(1, state.turn.actionsRemaining + 1) : 8);
   type Prefix = { plan: TurnPlan; state: GameState };
   let beam: Prefix[] = [{ plan: { id: 'root', actions: [], score: 0, tags: [] }, state }];
   // Root templates are injected by the engine once; repeated MCTS segments can
@@ -29,7 +30,7 @@ export function beamSearchPlans(state: GameState, player: PlayerId, options: Bea
     const candidates: Prefix[] = [];
     outer: for (const prefix of beam) {
       if (prefix.state.turn.currentPlayer !== player || prefix.state.phase !== 'playing') { candidates.push(prefix); continue; }
-      for (const action of generateAllActions(prefix.state, player)) {
+      for (const action of generateAllActions(prefix.state, player).sort((a,b)=>incomeMovePriority(prefix.state,b)-incomeMovePriority(prefix.state,a))) {
         if (exhausted() || (budget && !budget.spend())) break outer;
         generated++;
         const next = applyAction(prefix.state, action), actions = [...prefix.plan.actions, action];

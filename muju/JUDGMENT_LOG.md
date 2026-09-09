@@ -198,3 +198,78 @@ Do not install a static power score in the playing AI or claim that a stat has o
 - **Decision:** ten consecutive quiet player turns, resolved at the ending turn before the next home-win check. Supersedes J-013's twenty-turn threshold and home-win precedence.
 - **Reason:** simpler timing and faster resolution; the historical upkeep sample had zero of 805 natural wins reaching ten quiet turns. Purposeful maneuvering can still be quiet, so this is a pace choice rather than a universal dead-position claim.
 - **Details and evidence:** [ten-turn decision](docs/DRAW_TEN-2026-09-08.md). T1 upkeep retention remains unchanged.
+
+
+## J-017: Passive end-of-turn mining, reserves 4/8/10 (v2.0)
+
+- **Date:** 2026-09-09, explicit designer direction. The prompt proposed J-015;
+  that identifier already records mandatory T1 retention. Preserve history and
+  append here instead.
+- **Decision:** at the end of your turn, every owned unit takes
+  `min(Mining, reserve)` from its current square, unconditionally. No mine
+  action, depth, idle test or per-unit dryness. Same 10×10 Unequal routes
+  topology and rotation; reserves 0/3/4/5 become 0/4/8/10, total 520.
+- **Intent:** the well made extraction a sequence of one-shot draws whose
+  amounts were fixed by the map; the mining stat mainly changed action costs.
+  Passive income joins combat, rectangles and invasion as a consequence of
+  position, giving a familiar move more consequential meanings. Ordinary
+  Mining 1/2/4 empties in 4/2/1 turns, shelf Mining 2/3/4 in 4/3/2, and rich
+  Mining 3/4/5 in 4/3/2. Experts strip rich cells quickly and must relocate;
+  foragers collect while serving another purpose. Mining 0 never pays income.
+- **Alternatives rejected by the designer:** worker-or-soldier idle condition
+  adds a state test and separates fighting from earning; graded ore with
+  action mining retains a separate operational chore; a Mining-3 deep-well
+  gate adds a threshold exception; doubled 6/8/10 reserves reduce the intended
+  ordinary-ground threshold separation. The latter remains a proposed lab
+  comparator, not a gameplay setting.
+- **Timing:** income → inactivity counter/draw → next player's home/elimination
+  check → upkeep → heal/reset → Place. Positive income resets the clock. Undo
+  cannot cross income settlement. Tiers, costs, Cleave, six actions, upkeep,
+  home occupation and elimination are unchanged.
+- **Evidence/limits:** [implementation report](docs/MINING_SIMPLIFICATION-2026-09-09.md).
+  Tests establish the rule and conservation; they do not establish pacing,
+  expert net value, comeback rates or first-player fairness. A tier-3 Plant's
+  rich-cell gross income 5 minus rent 2 is 3, like a Muju's gross 3 before
+  exhaustion; whether tempo and denial justify the expert is unmeasured.
+- **Blast radius/reversal:** rules, AI, lab, solver, UI/tutorial, documents and
+  save schema 5. Older unfinished games start fresh. Reverting code cannot
+  recover saves already discarded. Tested branch, not production deployment.
+
+## J-018: Public tier-1 purchase and visible promotion climb (v2.1)
+
+- **Date:** 2026-09-09, explicit designer direction. The prompt's J-016 is
+  occupied by the ten-turn draw ruling; this entry appends without renumbering.
+- **Decision:** Place then Act. During Place, buy any affordable number of
+  tier-1 units into legal empty spawn squares and promote existing units in
+  any order. Pay catalogue costs/cost differences, no actions. Six move/attack
+  actions follow. Delete the queue, build times and explicit tech requirement;
+  higher tiers arise only from promotion on the board. Banks and income are
+  public; delete observation/belief/particle/re-determinization machinery.
+- **Haste retained:** placed and promoted units act immediately. This is the
+  existing rule under which September evidence was gathered. The Lightning-I
+  sprint and summon-and-strike remain legal; Guard, blocked rectangles, action
+  costs and Cleave remain available. This is not proof of their balance under
+  the new combined economy.
+- **No promotion on placement turn:** each promoting unit must have existed
+  at Place start and can promote only once per turn. A purchased tier-1 reaches
+  tier-2 no earlier than next own turn and tier-3 the turn after that, exposing
+  the climb to two full opponent turns. Tier 3 is terminal.
+- **Intent:** retire the queue's hidden information, build-time delay,
+  persistence and third phase. The bank replaces blocked-spawn persistence;
+  the visible promotion climb supplies higher-tier delay and a contestable
+  investment. Tier-1 timing is unchanged for build-time-1 lines using last
+  turn's income, but build-time-2 Muju/Inyan can arrive earlier.
+- **Alternatives rejected by the designer:** end-of-turn placement skips the
+  anchor-survival test; start-of-turn summoning sickness changes existing
+  haste; build-only without promotion loses grow-in-place and penalizes slow
+  lines while retaining tech machinery; promotion on purchase turn collapses
+  the intended climb.
+- **Evidence/limits:** [implementation report](docs/PLACEMENT_SIMPLIFICATION-2026-09-09.md).
+  No opening geometry, catalogue, haste, six-action budget or compensation
+  was changed in response to the Sjor-to-E5 concern. Its legality and rectangle
+  blocking are tested; whether White's advantage is overwhelming is unmeasured.
+- **Blast radius/reversal:** rule state and legality, simulation/planning/MCTS,
+  worker protocol 2, WASM ABI 4, public UI, lab and documents. General placement
+  remains outside the tactical proof; bounded purchase templates are planning
+  candidates. Save schema 5 starts older unfinished games fresh. Tested branch,
+  not production deployment.

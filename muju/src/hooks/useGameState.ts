@@ -12,10 +12,8 @@ const UNDOABLE_ACTIONS = new Set([
   'PAY_UPKEEP',
   'MOVE',
   'ATTACK',
-  'MINE',
-  'PLACE_UNIT',
+  'BUY_UNIT',
   'PROMOTE_UNIT',
-  'QUEUE_UNIT',
 ]);
 
 export function gameReducer(state: GameState, action: GameAction): GameState {
@@ -57,13 +55,10 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
     case 'PAY_UPKEEP':
     case 'MOVE':
     case 'ATTACK':
-    case 'MINE':
     case 'END_PLACE_PHASE':
-    case 'PLACE_UNIT':
+    case 'BUY_UNIT':
     case 'PROMOTE_UNIT':
     case 'END_ACTION_PHASE':
-    case 'QUEUE_UNIT':
-    case 'END_TURN':
     case 'RESIGN':
       return applyAIAction(state, action);
 
@@ -95,7 +90,6 @@ const SAVE_ACTIONS = new Set([
   'RESTORE_STATE',
   'END_PLACE_PHASE',
   'END_ACTION_PHASE',
-  'END_TURN',
   'RESIGN',
 ]);
 
@@ -136,8 +130,7 @@ export function useGameState() {
   const [state, dispatch] = useReducer(gameReducerWithSave, undefined, getInitialState);
   const [undoHistory, setUndoHistory] = useState<GameState[]>([]);
 
-  // A turn can end automatically when there is nothing left to build, without
-  // an END_TURN action. Never carry the previous player's undo into the handoff.
+  // Undo never crosses the income settlement or player handoff.
   useEffect(() => {
     setUndoHistory([]);
   }, [state.turn.currentPlayer, state.turn.turnNumber]);
@@ -149,11 +142,11 @@ export function useGameState() {
       setUndoHistory((prev) => [...prev, state]);
     }
     // Also save state before phase transitions so player can undo back through phases
-    if (action.type === 'END_PLACE_PHASE' || action.type === 'END_ACTION_PHASE') {
+    if (action.type === 'END_PLACE_PHASE') {
       setUndoHistory((prev) => [...prev, state]);
     }
     // Clear undo history only on turn end or game reset (not phase transitions)
-    if (action.type === 'END_TURN' || action.type === 'RESET_GAME') {
+    if (action.type === 'END_ACTION_PHASE' || action.type === 'RESET_GAME') {
       setUndoHistory([]);
     }
     dispatch(action);
@@ -186,10 +179,6 @@ export function useGameState() {
     dispatchWithUndo({ type: 'ATTACK', unitId, targetPosition });
   }, [dispatchWithUndo]);
 
-  const mineWith = useCallback((unitId: string) => {
-    dispatchWithUndo({ type: 'MINE', unitId });
-  }, [dispatchWithUndo]);
-
   const endPlacePhase = useCallback(() => {
     dispatchWithUndo({ type: 'END_PLACE_PHASE' });
   }, [dispatchWithUndo]);
@@ -198,20 +187,12 @@ export function useGameState() {
     dispatchWithUndo({ type: 'END_ACTION_PHASE' });
   }, [dispatchWithUndo]);
 
-  const queueUnit = useCallback((definitionId: string) => {
-    dispatchWithUndo({ type: 'QUEUE_UNIT', definitionId });
-  }, [dispatchWithUndo]);
-
-  const placeUnit = useCallback((queuedUnitId: string, position: Position) => {
-    dispatchWithUndo({ type: 'PLACE_UNIT', queuedUnitId, position });
+  const buyUnit = useCallback((definitionId: string, position: Position) => {
+    dispatchWithUndo({ type: 'BUY_UNIT', definitionId, position });
   }, [dispatchWithUndo]);
 
   const promoteUnitAction = useCallback((unitId: string) => {
     dispatchWithUndo({ type: 'PROMOTE_UNIT', unitId });
-  }, [dispatchWithUndo]);
-
-  const endTurn = useCallback(() => {
-    dispatchWithUndo({ type: 'END_TURN' });
   }, [dispatchWithUndo]);
 
   const resign = useCallback(() => {
@@ -233,7 +214,7 @@ export function useGameState() {
   }, [state.selectedUnit, state.board]);
 
   const isPlayerTurn = state.turn.currentPlayer === 'white';
-  const canEndTurn = state.turn.phase === 'queue';
+  const canEndTurn = state.turn.phase === 'action';
 
   return {
     payUpkeep: (keepUnitIds: string[]) => dispatchWithUndo({type:'PAY_UPKEEP',keepUnitIds}),
@@ -243,13 +224,10 @@ export function useGameState() {
     deselect,
     moveUnit,
     attackWith,
-    mineWith,
     endPlacePhase,
     endActionPhase,
-    queueUnit,
-    placeUnit,
+    buyUnit,
     promoteUnit: promoteUnitAction,
-    endTurn,
     resign,
     applyAIAction: applyAIActionToState,
     resetGame,

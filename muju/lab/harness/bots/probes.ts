@@ -1,3 +1,4 @@
+import { withPassiveEconomy } from './bot-utils';
 import type { ScriptedBot, BotContext } from '../types';
 import type { AIAction } from '../../../src/ai/types';
 import { getUnitDefinition } from '../../../src/game/units';
@@ -23,10 +24,10 @@ import {
  */
 
 function chooseFrom(ctx: BotContext, scorer: (a: AIAction) => number): AIAction | null {
-  const best = pickBest(ctx.rng, ctx.legal, scorer);
+  const best = pickBest(ctx.rng, ctx.legal, a => withPassiveEconomy(ctx.view, a, scorer(a)));
   if (!best) return null;
-  if (scorer(best) <= 0) {
-    return ctx.legal.find((a) => a.type === 'END_ACTION_PHASE' || a.type === 'END_TURN') ?? null;
+  if (withPassiveEconomy(ctx.view, best, scorer(best)) <= 0) {
+    return ctx.legal.find((a) => a.type === 'END_ACTION_PHASE' || a.type === 'END_PLACE_PHASE') ?? null;
   }
   return best;
 }
@@ -56,11 +57,6 @@ export function createTurtleBot(): ScriptedBot {
           case 'ATTACK':
             // strictly defensive: only swing at adjacent intruders
             return scoreKillFirstAttack(ctx, a as Extract<AIAction, { type: 'ATTACK' }>);
-          case 'MINE': {
-            const unit = unitById(view, (a as Extract<AIAction, { type: 'MINE' }>).unitId);
-            if (!unit) return -1;
-            return 200 + miningYieldAt(view, unit) * 50;
-          }
           case 'MOVE': {
             const m = a as Extract<AIAction, { type: 'MOVE' }>;
             const unit = unitById(view, m.unitId);
@@ -70,19 +66,12 @@ export function createTurtleBot(): ScriptedBot {
             const def = getUnitDefinition(unit.definitionId);
             const cell = view.board.cells[m.to.y]?.[m.to.x];
             if (!cell || cell.resourceLayers === 0) return -1;
-            const top = cell.minedDepth + 1;
-            if (top > def.mining) return -1;
-            return 50 + Math.min(def.mining - cell.minedDepth, cell.resourceLayers) * 10;
-          }
-          case 'PLACE_UNIT': {
-            const p = a as Extract<AIAction, { type: 'PLACE_UNIT' }>;
-            const d = manhattanDistance(p.position, home);
-            return d <= HOME_RADIUS ? 400 - d * 10 : -1;
+            return 50 + Math.min(def.mining, cell.resourceLayers) * 10;
           }
           case 'PROMOTE_UNIT':
             return 350; // tall, not wide
-          case 'QUEUE_UNIT': {
-            const q = a as Extract<AIAction, { type: 'QUEUE_UNIT' }>;
+          case 'BUY_UNIT': {
+            const q = a as Extract<AIAction, { type: 'BUY_UNIT' }>;
             const def = getUnitDefinition(q.definitionId);
             // defense + economy only
             if (def.element === 'metal') return 320 + def.defense * 10;
@@ -111,11 +100,6 @@ export function createTier1SpamBot(): ScriptedBot {
         switch (a.type) {
           case 'ATTACK':
             return scoreKillFirstAttack(ctx, a as Extract<AIAction, { type: 'ATTACK' }>);
-          case 'MINE': {
-            const unit = unitById(view, (a as Extract<AIAction, { type: 'MINE' }>).unitId);
-            if (!unit) return -1;
-            return 120 + miningYieldAt(view, unit) * 30;
-          }
           case 'MOVE': {
             const m = a as Extract<AIAction, { type: 'MOVE' }>;
             const unit = unitById(view, m.unitId);
@@ -124,14 +108,10 @@ export function createTier1SpamBot(): ScriptedBot {
             const next = nearestEnemyDistance(view, m.to);
             return next < cur ? 20 + (cur - next) * 8 : -1;
           }
-          case 'PLACE_UNIT': {
-            const p = a as Extract<AIAction, { type: 'PLACE_UNIT' }>;
-            return 400 - manhattanDistance(p.position, enemyCorner(view)) * 5;
-          }
           case 'PROMOTE_UNIT':
             return -1;
-          case 'QUEUE_UNIT': {
-            const q = a as Extract<AIAction, { type: 'QUEUE_UNIT' }>;
+          case 'BUY_UNIT': {
+            const q = a as Extract<AIAction, { type: 'BUY_UNIT' }>;
             const def = getUnitDefinition(q.definitionId);
             return def.tier === 1 ? 300 + (5 - def.cost) * 20 : -1; // any T1, cheapest first
           }
@@ -166,12 +146,6 @@ export function createMiningDenialBot(): ScriptedBot {
             if (!attacker) return -1;
             return attackKills(view, attacker, at.targetPosition) ? 800 : -1;
           }
-          case 'MINE': {
-            const unit = unitById(view, (a as Extract<AIAction, { type: 'MINE' }>).unitId);
-            if (!unit) return -1;
-            // mine enemy-side cells for value AND denial; home mining funds the runners
-            return 100 + miningYieldAt(view, unit) * 40;
-          }
           case 'MOVE': {
             const m = a as Extract<AIAction, { type: 'MOVE' }>;
             const unit = unitById(view, m.unitId);
@@ -186,14 +160,10 @@ export function createMiningDenialBot(): ScriptedBot {
             const rich = cell ? cell.resourceLayers : 0;
             return 30 + (cur - next) * 8 + rich * 5 + (next <= 4 ? 20 : 0);
           }
-          case 'PLACE_UNIT': {
-            const p = a as Extract<AIAction, { type: 'PLACE_UNIT' }>;
-            return 400 - manhattanDistance(p.position, target) * 5; // spawn as far forward as allowed
-          }
           case 'PROMOTE_UNIT':
             return -1;
-          case 'QUEUE_UNIT': {
-            const q = a as Extract<AIAction, { type: 'QUEUE_UNIT' }>;
+          case 'BUY_UNIT': {
+            const q = a as Extract<AIAction, { type: 'BUY_UNIT' }>;
             const def = getUnitDefinition(q.definitionId);
             // fast runners (lightning) + one source of income (plant)
             if (def.element === 'lightning' && def.tier <= 2) return 320 + def.speed * 10;
@@ -239,14 +209,6 @@ export function createAntiRushBot(): ScriptedBot {
             const allies = alliesNear(view, target.position, 1);
             return allies >= 2 ? 200 + target.damageTaken * 40 : 60;
           }
-          case 'MINE': {
-            const unit = unitById(view, (a as Extract<AIAction, { type: 'MINE' }>).unitId);
-            if (!unit) return -1;
-            // under heavy pressure, fighters stop mining; miners keep going
-            const def = getUnitDefinition(unit.definitionId);
-            if (pressure > 2 && def.attack >= 2) return 20;
-            return 150 + miningYieldAt(view, unit) * 40;
-          }
           case 'MOVE': {
             const m = a as Extract<AIAction, { type: 'MOVE' }>;
             const unit = unitById(view, m.unitId);
@@ -265,13 +227,6 @@ export function createAntiRushBot(): ScriptedBot {
             if (nearestNow <= 1 && nearestNext > 1 && manhattanDistance(m.to, home) <= 5) return 80;
             return -1;
           }
-          case 'PLACE_UNIT': {
-            const p = a as Extract<AIAction, { type: 'PLACE_UNIT' }>;
-            // body-block: fill squares between home and the intruders
-            const d = manhattanDistance(p.position, home);
-            const frontline = nearestEnemyDistance(view, p.position);
-            return 400 - d * 5 - frontline * 2;
-          }
           case 'PROMOTE_UNIT': {
             const unit = unitById(view, (a as Extract<AIAction, { type: 'PROMOTE_UNIT' }>).unitId);
             if (!unit) return -1;
@@ -279,8 +234,8 @@ export function createAntiRushBot(): ScriptedBot {
             // under pressure, promote defenders (more DEF per square); else economy
             return def.element === 'metal' || def.element === 'water' ? 360 : 200;
           }
-          case 'QUEUE_UNIT': {
-            const q = a as Extract<AIAction, { type: 'QUEUE_UNIT' }>;
+          case 'BUY_UNIT': {
+            const q = a as Extract<AIAction, { type: 'BUY_UNIT' }>;
             const def = getUnitDefinition(q.definitionId);
             if (pressure > 1) {
               // counter-build: water kills fire_1 through the element edge

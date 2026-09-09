@@ -21,10 +21,10 @@ for(const width of [390,834]) {
  });
  test(`inactivity draw reaches victory screen at ${width}px`,async({page},info)=>{
   await page.setViewportSize({width,height:width===390?844:1112});
-  const state=createInitialGameState();state.inactivityPlies=9;state.turn.phase='queue';state.board.units.find(u=>u.owner==='black')!.position={x:0,y:0};
+  const state=createInitialGameState(Array(100).fill(0));state.inactivityPlies=9;state.turn.phase='action';state.board.units.find(u=>u.owner==='black')!.position={x:0,y:0};
   await page.addInitScript(({state,schemaVersion})=>localStorage.setItem('elemental-tactics-save',JSON.stringify({schemaVersion,timestamp:Date.now(),state})),{state,schemaVersion:SCHEMA_VERSION});
   await page.goto('./');await page.getByRole('button',{name:'Pass & Play'}).click();await page.getByRole('button',{name:'Start Game'}).click();
-  await page.getByRole('button',{name:'End turn →',exact:true}).click();await expect(page.getByRole('heading',{name:'Draw by inactivity'})).toBeVisible();await expect(page.getByText('10 consecutive player turns passed without mining crystals or eliminating an enemy by attack.')).toBeVisible();
+  await page.getByRole('button',{name:'End turn →',exact:true}).click();await expect(page.getByRole('heading',{name:'Draw by inactivity'})).toBeVisible();await expect(page.getByText('10 consecutive player turns passed without collecting crystals or eliminating an enemy by attack.')).toBeVisible();
   await page.screenshot({path:info.outputPath('inactivity-draw.png')});
   const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('elemental-tactics-save')!));expect(saved.state.victoryReason).toBe('inactivity');
  });

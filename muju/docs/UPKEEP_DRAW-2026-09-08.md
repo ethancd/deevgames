@@ -1,3 +1,12 @@
+> **Historical baseline — superseded on the v2.1 feature branch (2026-09-09).**
+> The well, depth, mine action, build queue/times, hidden economy and three-phase
+> teaching below are historical. Current rules use passive 0/4/8/10 reserves
+> (520 total), public tier-1 purchase and later-turn promotion. See [SPEC](../SPEC.md),
+> [mining report](MINING_SIMPLIFICATION-2026-09-09.md) and
+> [placement report](PLACEMENT_SIMPLIFICATION-2026-09-09.md). Old measurements
+> remain labeled by their original versions; none establishes v2.1 balance.
+> This branch has not been deployed.
+
 > v1.9 correction: the draw now resolves immediately at the end of 10 consecutive quiet player turns, before the next home-win check. The 20-turn rule and win precedence below are historical.
 
 > v1.8 correction: T1 units must be kept during upkeep. The study below records historical v1.6 behavior; its voluntary T1 release rule is superseded.

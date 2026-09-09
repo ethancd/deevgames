@@ -92,7 +92,7 @@ async function runExperiment(config: ExperimentConfig): Promise<GameRecord[]> {
       const seed = deriveSeed(config.seed, gameIndex);
       gameIndex++;
 
-      // fresh bot instances per game (engine bots carry belief state)
+      // fresh bot instances per game (engine instances own search and debug state)
       const bots: Record<PlayerId, Bot> = {
         white: createBot(pairing.white),
         black: createBot(pairing.black),

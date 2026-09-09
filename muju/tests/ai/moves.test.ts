@@ -1,12 +1,8 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { createEmptyBoard, placeUnit, getPlayerUnits } from '../../src/game/board';
-import { getUnitDefinition } from '../../src/game/units';
-import { createInitialGameState } from '../../src/game/board';
+import { describe, it, expect } from 'vitest';
+import { createEmptyBoard } from '../../src/game/board';
 import {
   generateMoveActions,
   generateAttackActions,
-  generateMineActions,
-  generateQueueActions,
   generatePlaceActions,
   generatePromoteActions,
   generateAllActions,
@@ -29,7 +25,7 @@ function createTestUnit(
     position: { x, y },
     hasMoved: false,
     hasAttacked: false,
-    hasMined: false,
+
     canActThisTurn: true,
     damageTaken: 0,
     ...overrides,
@@ -44,18 +40,18 @@ function createTestState(board: BoardState, currentPlayer: PlayerId = 'black'): 
       white: {
         id: 'white',
         resources: 20,
-        buildQueue: [],
+
         startCorner: { x: 0, y: 0 },
         resourcesGained: 20,
-        resourcesSpent: 0,
+
       },
       black: {
         id: 'black',
         resources: 20,
-        buildQueue: [],
+
         startCorner: { x: 9, y: 9 },
         resourcesGained: 20,
-        resourcesSpent: 0,
+
       },
     },
     turn: {
@@ -161,131 +157,25 @@ describe('AI Move Generation', () => {
     });
   });
 
-  describe('generateMineActions', () => {
-    it('generates mine actions for units on resource cells', () => {
-      const board = createEmptyBoard();
-      // Place unit on a cell with resources
-      board.cells[5][5].resourceLayers = 3;
-      const unit = createTestUnit('ai-unit', 'fire_1', 'black', 5, 5);
-      board.units.push(unit);
-
-      const state = createTestState(board);
-      const mines = generateMineActions(state, 'black');
-
-      expect(mines.length).toBe(1);
-      expect(mines[0].type).toBe('MINE');
-      expect(mines[0].unitId).toBe('ai-unit');
-    });
-
-    it('generates mine actions even for units that have already mined (multiple mines per turn)', () => {
-      const board = createEmptyBoard();
-      board.cells[5][5].resourceLayers = 3;
-      const unit = createTestUnit('ai-unit', 'fire_1', 'black', 5, 5, { hasMined: true });
-      board.units.push(unit);
-
-      const state = createTestState(board);
-      const mines = generateMineActions(state, 'black');
-      // Units can mine multiple times per turn, hasMined is just tracking
-      expect(mines.length).toBeGreaterThan(0);
-    });
-
-    it('does not generate mine actions on depleted cells', () => {
-      const board = createEmptyBoard();
-      // Deplete the cell's resources
-      board.cells[5][5].resourceLayers = 0;
-      board.cells[5][5].minedDepth = 5;
-      const unit = createTestUnit('ai-unit', 'fire_1', 'black', 5, 5);
-      board.units.push(unit);
-
-      const state = createTestState(board);
-      const mines = generateMineActions(state, 'black');
-
-      expect(mines.length).toBe(0);
-    });
-  });
-
-  describe('generateQueueActions', () => {
-    it('generates queue actions when in queue phase with resources', () => {
-      const board = createEmptyBoard();
-      const state = createTestState(board);
-      state.turn.phase = 'queue';
-      state.players.black.resources = 5; // Enough for T1 units
-
-      const queues = generateQueueActions(state, 'black');
-
-      expect(queues.length).toBeGreaterThan(0);
-      expect(queues.every(q => q.type === 'QUEUE_UNIT')).toBe(true);
-    });
-
-    it('generateQueueActions is phase-agnostic (phase check in generateAllActions)', () => {
-      // Note: generateQueueActions doesn't check phase - that's done by generateAllActions
-      // This tests that it generates based on resources
-      const board = createEmptyBoard();
-      const state = createTestState(board);
-      state.turn.phase = 'action';
-      state.players.black.resources = 5;
-
-      const queues = generateQueueActions(state, 'black');
-
-      // It generates actions based on resources, not phase
-      expect(queues.length).toBeGreaterThan(0);
-    });
-
-    it('does not generate queue actions for units too expensive', () => {
-      const board = createEmptyBoard();
-      const state = createTestState(board);
-      state.turn.phase = 'queue';
-      state.players.black.resources = 0; // No resources
-
-      const queues = generateQueueActions(state, 'black');
-
-      expect(queues.length).toBe(0);
-    });
-  });
-
   describe('generatePlaceActions', () => {
-    it('generates place actions for ready units when spawn positions exist', () => {
+    it('generates all affordable tier-one purchases on empty spawn squares', () => {
       const board = createEmptyBoard();
-      // Place AI unit at corner to establish spawn zone
-      const aiUnit = createTestUnit('ai-unit', 'fire_1', 'black', 9, 9);
-      board.units.push(aiUnit);
-
+      board.units.push(createTestUnit('anchor', 'fire_1', 'black', 8, 8));
       const state = createTestState(board);
       state.turn.phase = 'place';
-      state.players.black.buildQueue = [{
-        id: 'queued-1',
-        definitionId: 'fire_1',
-        turnsRemaining: 0,
-        owner: 'black',
-      }];
-
-      const places = generatePlaceActions(state, 'black');
-
-      // Spawn positions depend on getAllSpawnPositions logic
-      // If there are valid spawn positions, actions should be generated
-      if (places.length > 0) {
-        expect(places.every(p => p.type === 'PLACE_UNIT')).toBe(true);
-        expect(places.every(p => p.queuedUnitId === 'queued-1')).toBe(true);
-      }
+      const purchases = generatePlaceActions(state, 'black');
+      expect(purchases).toHaveLength(18); // six definitions × three empty squares
+      expect(purchases.every(a => a.type === 'BUY_UNIT' && a.definitionId.endsWith('_1'))).toBe(true);
+      expect(purchases.every(a => a.type === 'BUY_UNIT' && a.position.x >= 8 && a.position.y >= 8)).toBe(true);
     });
 
-    it('does not generate place actions for units still building', () => {
+    it('generates no purchases when an invader blocks every rectangle', () => {
       const board = createEmptyBoard();
-      const aiUnit = createTestUnit('ai-unit', 'fire_1', 'black', 9, 9);
-      board.units.push(aiUnit);
-
+      board.units.push(createTestUnit('anchor', 'fire_1', 'black', 8, 8));
+      board.units.push(createTestUnit('invader', 'lightning_1', 'white', 9, 9));
       const state = createTestState(board);
       state.turn.phase = 'place';
-      state.players.black.buildQueue = [{
-        id: 'queued-1',
-        definitionId: 'fire_1',
-        turnsRemaining: 2, // Still building
-        owner: 'black',
-      }];
-
-      const places = generatePlaceActions(state, 'black');
-
-      expect(places.length).toBe(0);
+      expect(generatePlaceActions(state, 'black')).toEqual([]);
     });
   });
 
@@ -296,7 +186,7 @@ describe('AI Move Generation', () => {
       board.units.push(aiUnit);
 
       const state = createTestState(board);
-      state.turn.phase = 'queue';
+      state.turn.phase = 'place';
       state.players.black.resources = 10; // Enough for promotion
 
       const promotes = generatePromoteActions(state, 'black');
@@ -312,7 +202,7 @@ describe('AI Move Generation', () => {
       board.units.push(aiUnit);
 
       const state = createTestState(board);
-      state.turn.phase = 'queue';
+      state.turn.phase = 'place';
       state.players.black.resources = 10;
 
       const promotes = generatePromoteActions(state, 'black');
@@ -326,7 +216,7 @@ describe('AI Move Generation', () => {
       board.units.push(aiUnit);
 
       const state = createTestState(board);
-      state.turn.phase = 'queue';
+      state.turn.phase = 'place';
       state.players.black.resources = 0; // Not enough
 
       const promotes = generatePromoteActions(state, 'black');
@@ -336,22 +226,6 @@ describe('AI Move Generation', () => {
   });
 
   describe('generateAllActions', () => {
-    it('generates all types of actions in action phase', () => {
-      const board = createEmptyBoard();
-      board.cells[5][5].resourceLayers = 3;
-      const aiUnit = createTestUnit('ai-unit', 'fire_1', 'black', 5, 5);
-      const playerUnit = createTestUnit('player-unit', 'water_1', 'white', 5, 6);
-      board.units.push(aiUnit, playerUnit);
-
-      const state = createTestState(board);
-      const actions = generateAllActions(state, 'black');
-
-      const types = new Set(actions.map(a => a.type));
-      expect(types.has('MOVE')).toBe(true);
-      expect(types.has('ATTACK')).toBe(true);
-      expect(types.has('MINE')).toBe(true);
-      expect(types.has('END_ACTION_PHASE')).toBe(true);
-    });
 
     it('includes END_ACTION_PHASE in action phase', () => {
       const board = createEmptyBoard();
@@ -360,16 +234,6 @@ describe('AI Move Generation', () => {
 
       expect(actions.some(a => a.type === 'END_ACTION_PHASE')).toBe(true);
     });
-
-    it('includes END_TURN in queue phase', () => {
-      const board = createEmptyBoard();
-      const state = createTestState(board);
-      state.turn.phase = 'queue';
-
-      const actions = generateAllActions(state, 'black');
-
-      expect(actions.some(a => a.type === 'END_TURN')).toBe(true);
-    });
   });
 
   describe('getSortedActions', () => {
@@ -377,7 +241,7 @@ describe('AI Move Generation', () => {
       const actions = [
         { type: 'MOVE' as const, unitId: 'u1', to: { x: 0, y: 0 } },
         { type: 'ATTACK' as const, unitId: 'u1', targetPosition: { x: 1, y: 1 } },
-        { type: 'MINE' as const, unitId: 'u1' },
+        { type: 'END_ACTION_PHASE' as const },
       ];
 
       const sorted = getSortedActions(actions);
@@ -385,10 +249,10 @@ describe('AI Move Generation', () => {
       expect(sorted[0].type).toBe('ATTACK');
     });
 
-    it('prioritizes moves over mining for alpha-beta efficiency', () => {
-      // Moves have priority 1, mining has priority 2 (lower = higher priority)
+    it('prioritizes a move before ending the action phase', () => {
+      // Ending the phase remains a low-priority candidate.
       const actions = [
-        { type: 'MINE' as const, unitId: 'u1' },
+        { type: 'END_ACTION_PHASE' as const },
         { type: 'MOVE' as const, unitId: 'u1', to: { x: 0, y: 0 } },
       ];
 

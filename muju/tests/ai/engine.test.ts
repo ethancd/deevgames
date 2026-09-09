@@ -18,7 +18,7 @@ function createTestUnit(
     position: { x, y },
     hasMoved: false,
     hasAttacked: false,
-    hasMined: false,
+
     canActThisTurn: true,
     damageTaken: 0,
     ...overrides,
@@ -33,18 +33,18 @@ function createTestState(board: BoardState, currentPlayer: PlayerId = 'black'): 
       white: {
         id: 'white',
         resources: 10,
-        buildQueue: [],
+
         startCorner: { x: 0, y: 0 },
         resourcesGained: 10,
-        resourcesSpent: 0,
+
       },
       black: {
         id: 'black',
         resources: 10,
-        buildQueue: [],
+
         startCorner: { x: 9, y: 9 },
         resourcesGained: 10,
-        resourcesSpent: 0,
+
       },
     },
     turn: {

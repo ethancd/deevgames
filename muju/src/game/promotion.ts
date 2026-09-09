@@ -86,7 +86,7 @@ export function promoteUnit(
     return null;
   }
 
-  if (buildState.crystals < cost) {
+  if (!canPromote(unit, buildState)) {
     return null;
   }
 

@@ -25,7 +25,7 @@ function createUnit(
     position,
     hasMoved: false,
     hasAttacked: false,
-    hasMined: false,
+
     canActThisTurn: true,
   };
 }

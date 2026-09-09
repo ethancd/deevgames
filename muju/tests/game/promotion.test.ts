@@ -25,7 +25,7 @@ function createUnit(
     position,
     hasMoved: false,
     hasAttacked: false,
-    hasMined: false,
+
     canActThisTurn: true,
   };
 }
@@ -87,25 +87,25 @@ describe('Promotion System', () => {
   describe('canPromote', () => {
     it('returns true when player has enough crystals', () => {
       const unit = createUnit('p1', 'white', { x: 0, y: 0 }, 'fire_1');
-      const buildState: BuildState = { queue: [], crystals: 5 };
+      const buildState: BuildState = { crystals: 5 };
       expect(canPromote(unit, buildState)).toBe(true);
     });
 
     it('returns false when player lacks crystals', () => {
       const unit = createUnit('p1', 'white', { x: 0, y: 0 }, 'fire_1');
-      const buildState: BuildState = { queue: [], crystals: 1 };
+      const buildState: BuildState = { crystals: 1 };
       expect(canPromote(unit, buildState)).toBe(false);
     });
 
     it('returns false for T3 units regardless of crystals', () => {
       const unit = createUnit('p1', 'white', { x: 0, y: 0 }, 'fire_3');
-      const buildState: BuildState = { queue: [], crystals: 100 };
+      const buildState: BuildState = { crystals: 100 };
       expect(canPromote(unit, buildState)).toBe(false);
     });
 
     it('returns true for exact crystal match', () => {
       const unit = createUnit('p1', 'white', { x: 0, y: 0 }, 'fire_1');
-      const buildState: BuildState = { queue: [], crystals: 2 };
+      const buildState: BuildState = { crystals: 2 };
       expect(canPromote(unit, buildState)).toBe(true);
     });
 
@@ -115,7 +115,7 @@ describe('Promotion System', () => {
         promotedThisPlacement: true,
         damageTaken: 0,
       };
-      const buildState: BuildState = { queue: [], crystals: 100 };
+      const buildState: BuildState = { crystals: 100 };
       expect(canPromote(unit, buildState)).toBe(false);
     });
 
@@ -125,7 +125,7 @@ describe('Promotion System', () => {
         promotedThisPlacement: false,
         damageTaken: 0,
       };
-      const buildState: BuildState = { queue: [], crystals: 5 };
+      const buildState: BuildState = { crystals: 5 };
       expect(canPromote(unit, buildState)).toBe(true);
     });
   });
@@ -157,7 +157,7 @@ describe('Promotion System', () => {
       let board = createEmptyBoard();
       const unit = createUnit('p1', 'white', { x: 1, y: 1 }, 'fire_1');
       board = placeUnit(board, unit);
-      const buildState: BuildState = { queue: [], crystals: 5 };
+      const buildState: BuildState = { crystals: 5 };
 
       const result = promoteUnit(board, 'p1', buildState);
 
@@ -171,7 +171,7 @@ describe('Promotion System', () => {
       let board = createEmptyBoard();
       const unit = createUnit('p1', 'white', { x: 3, y: 4 }, 'fire_2');
       board = placeUnit(board, unit);
-      const buildState: BuildState = { queue: [], crystals: 5 }; // fire_2→fire_3 costs 3
+      const buildState: BuildState = { crystals: 5 }; // fire_2→fire_3 costs 3
 
       const result = promoteUnit(board, 'p1', buildState);
 
@@ -182,7 +182,7 @@ describe('Promotion System', () => {
 
     it('returns null when unit not found', () => {
       const board = createEmptyBoard();
-      const buildState: BuildState = { queue: [], crystals: 5 };
+      const buildState: BuildState = { crystals: 5 };
 
       const result = promoteUnit(board, 'nonexistent', buildState);
 
@@ -193,7 +193,7 @@ describe('Promotion System', () => {
       let board = createEmptyBoard();
       const unit = createUnit('p1', 'white', { x: 1, y: 1 }, 'fire_1');
       board = placeUnit(board, unit);
-      const buildState: BuildState = { queue: [], crystals: 1 };
+      const buildState: BuildState = { crystals: 1 };
 
       const result = promoteUnit(board, 'p1', buildState);
 
@@ -204,7 +204,7 @@ describe('Promotion System', () => {
       let board = createEmptyBoard();
       const unit = createUnit('p1', 'white', { x: 1, y: 1 }, 'fire_3');
       board = placeUnit(board, unit);
-      const buildState: BuildState = { queue: [], crystals: 100 };
+      const buildState: BuildState = { crystals: 100 };
 
       const result = promoteUnit(board, 'p1', buildState);
 
@@ -219,7 +219,7 @@ describe('Promotion System', () => {
         promotedThisPlacement: false,
       };
       board = placeUnit(board, unit);
-      const buildState: BuildState = { queue: [], crystals: 5 };
+      const buildState: BuildState = { crystals: 5 };
 
       const result = promoteUnit(board, 'p1', buildState);
 
@@ -236,7 +236,7 @@ describe('Promotion System', () => {
       const unit2 = createUnit('p2', 'white', { x: 2, y: 2 }, 'fire_2'); // costs 3
       board = placeUnit(board, unit1);
       board = placeUnit(board, unit2);
-      const buildState: BuildState = { queue: [], crystals: 3 };
+      const buildState: BuildState = { crystals: 3 };
 
       const promotable = getPromotableUnits(board, 'white', buildState);
 
@@ -249,7 +249,7 @@ describe('Promotion System', () => {
       const unit2 = createUnit('p2', 'white', { x: 2, y: 2 }, 'fire_3'); // needs 4 (10-6)
       board = placeUnit(board, unit1);
       board = placeUnit(board, unit2);
-      const buildState: BuildState = { queue: [], crystals: 2 };
+      const buildState: BuildState = { crystals: 2 };
 
       const promotable = getPromotableUnits(board, 'white', buildState);
 
@@ -261,7 +261,7 @@ describe('Promotion System', () => {
       let board = createEmptyBoard();
       const unit = createUnit('p1', 'white', { x: 1, y: 1 }, 'fire_3');
       board = placeUnit(board, unit);
-      const buildState: BuildState = { queue: [], crystals: 100 };
+      const buildState: BuildState = { crystals: 100 };
 
       const promotable = getPromotableUnits(board, 'white', buildState);
 
@@ -274,7 +274,7 @@ describe('Promotion System', () => {
       const aiUnit = createUnit('a1', 'black', { x: 8, y: 8 }, 'water_1');
       board = placeUnit(board, playerUnit);
       board = placeUnit(board, aiUnit);
-      const buildState: BuildState = { queue: [], crystals: 10 };
+      const buildState: BuildState = { crystals: 10 };
 
       const promotable = getPromotableUnits(board, 'white', buildState);
 

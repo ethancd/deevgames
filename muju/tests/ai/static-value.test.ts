@@ -2,9 +2,9 @@
 import { describe, it, expect } from 'vitest';
 import { UNIT_DEFINITIONS, getUnitDefinition } from '../../src/game/units';
 import { calculateAttackPower } from '../../src/game/combat';
-import { calculateMiningYield } from '../../src/game/mining';
+import { unitEndOfTurnTake } from '../../src/game/mining';
 import { createUnitFromDefinition } from '../../src/game/building';
-import { accessTimeline, canKill, killFrontier, miningCurve, power, solveRoles, staticDominators, strikeActions, validateCatalogue } from '../../lab/solver/model';
+import { accessTimeline, canKill, killFrontier, passiveCurve, power, solveRoles, staticDominators, strikeActions, validateCatalogue } from '../../lab/solver/model';
 import baseline from '../../lab/solver/baseline-v1.2.json';
 import type { UnitDefinition } from '../../src/game/types';
 const old = baseline as UnitDefinition[];
@@ -17,25 +17,6 @@ describe('static value model independent checks', () => {
       const defender = createUnitFromDefinition(b.id, 'black', { x: 1, y: 2 }, 'b');
       expect(power(a, b)).toBe(calculateAttackPower(attacker, defender));
     }
-  });
-  it('matches real mining yields at every remaining depth and never renews a well', () => {
-    for (const def of UNIT_DEFINITIONS) for (let depth = 0; depth <= 5; depth++) {
-      const unit = createUnitFromDefinition(def.id, 'white', { x: 0, y: 0 }, 'm');
-      const amount = calculateMiningYield(unit, { position: unit.position, minedDepth: depth, resourceLayers: 5 - depth });
-      expect(miningCurve(def, [depth], 3)).toEqual([0, amount, amount, amount]);
-    }
-  });
-  it('matches exhaustive movement/mining sequences on a short corridor', () => {
-    const depths = [0, 5, 2, 0], unit = { ...get('plant_1'), speed: 2 };
-    function brute(position: number, wells: number[], steps: number): number {
-      if (!steps) return 0;
-      let best = 0;
-      const yieldNow = Math.max(0, unit.mining - wells[position]);
-      if (yieldNow) { const next = [...wells]; next[position] = unit.mining; best = yieldNow + brute(position, next, steps - 1); }
-      for (let p = 0; p < wells.length; p++) if (p !== position && Math.abs(p - position) <= unit.speed) best = Math.max(best, brute(p, wells, steps - 1));
-      return best;
-    }
-    expect(miningCurve(unit, depths, 4)).toEqual([0, 1, 2, 3, 4].map(n => brute(0, depths, n)));
   });
   it('finds the same minimum kill price as exhaustive squad enumeration', () => {
     const pool = ['fire_1', 'fire_2', 'lightning_2'].map(get), target = get('metal_3');
@@ -71,14 +52,10 @@ describe('static value model independent checks', () => {
     expect(canKill({ ...radi, speed: 4 }, target, 8, 3)).toBe(false);
     expect(canKill({ ...radi, attack: 2, speed: 4 }, target, 8, 3)).toBe(true);
   });
-  it('models income phase, construction delay and no promotion on placement', () => {
-    expect(accessTimeline(old, old.find(d => d.id === 'fire_2')!, 3).activeTurn).toBe(2);
-    expect(accessTimeline(old, old.find(d => d.id === 'lightning_1')!, 9).activeTurn).toBe(2);
-    expect(accessTimeline(old, old.find(d => d.id === 'lightning_2')!, 9).activeTurn).toBe(3);
-    expect(accessTimeline(old, old.find(d => d.id === 'metal_1')!, 9).activeTurn).toBe(3);
-    expect(accessTimeline(old, old.find(d => d.id === 'metal_2')!, 9).activeTurn).toBe(4);
-    expect(accessTimeline(old, old.find(d => d.id === 'plant_4')!, 3).activeTurn).toBe(7);
-    expect(accessTimeline(old, old.find(d => d.id === 'plant_4')!, 0).activeTurn).toBeNull();
+  it('models turn-end income, public buying and the two-turn promotion climb', () => {
+    for(const element of ['lightning','metal','shadow'])expect([1,2,3].map(t=>accessTimeline(UNIT_DEFINITIONS,get(`${element}_${t}`),12).activeTurn)).toEqual([2,3,4]);
+    expect(accessTimeline(UNIT_DEFINITIONS,get('fire_2'),3).activeTurn).toBe(2);
+    expect(accessTimeline(UNIT_DEFINITIONS,get('plant_3'),0).activeTurn).toBeNull();
   });
   it('detects the historical Plant tier-2 dominance without calling the whole tree dominated', () => {
     expect(staticDominators(old.find(d => d.id === 'plant_2')!, old)).toEqual(['metal_2']);
@@ -105,10 +82,18 @@ describe('static value model independent checks', () => {
     expect(() => validateCatalogue([...UNIT_DEFINITIONS.slice(1), UNIT_DEFINITIONS[1]])).toThrow();
     expect(() => validateCatalogue(UNIT_DEFINITIONS.map(d => d.id === 'plant_3' ? { ...d, mining: 6 } : d))).toThrow();
   });
-  it('rejects impossible corridor descriptions and unsupported finance assumptions', () => {
-    expect(() => miningCurve(get('plant_1'), [6])).toThrow();
+  it('rejects invalid passive reserves and unsupported finance assumptions', () => {
+    expect(() => passiveCurve(get('plant_1'), -1)).toThrow();
     expect(() => accessTimeline(old, old[0], -1)).toThrow();
     const invalid = old.map(d => d.id === 'fire_2' ? { ...d, cost: 0 } : d);
     expect(() => accessTimeline(invalid, invalid[1], 5)).toThrow();
   });
+});
+
+it('finite-cell passive curves match repeated real income with no depth gate',()=>{
+ for(const def of UNIT_DEFINITIONS)for(const reserve of [0,4,8,10]) {
+  const u=createUnitFromDefinition(def.id,'white',{x:0,y:0},'m');let left=reserve,total=0;
+  const expected=[0];for(let i=0;i<6;i++){const take=unitEndOfTurnTake(u,{position:u.position,resourceLayers:left});left-=take;total+=take;expected.push(total);}
+  expect(passiveCurve(def,reserve)).toEqual(expected);
+ }
 });

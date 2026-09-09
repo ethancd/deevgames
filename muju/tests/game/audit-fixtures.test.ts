@@ -155,39 +155,8 @@ describe('audit fixtures: spawn rectangle edges', () => {
   });
 });
 
-describe('audit fixtures: mining well metaphor', () => {
-  it('cell is dry for a short rope once mined below its reach', () => {
-    const muju = placed('plant_1', 'white', 0, 0); // mining 3
-    const hi = placed('fire_1', 'white', 1, 0); // mining 1
-
-    // Fresh cell: Muju takes layers 1-3
-    const fresh = { position: { x: 0, y: 0 }, resourceLayers: 5, minedDepth: 0 };
-    expect(calculateMiningYield(muju, fresh)).toBe(3);
-
-    // After depth 3: top layer is depth 4 -> Hi (rope 1) gets nothing
-    const deep = { position: { x: 0, y: 0 }, resourceLayers: 2, minedDepth: 3 };
-    expect(calculateMiningYield(hi, deep)).toBe(0);
-    // And Muju (rope 3) also gets nothing at depth 4
-    expect(calculateMiningYield(muju, deep)).toBe(0);
-  });
-
-  it('rope longer than remaining layers takes only what exists', () => {
-    const cuauhtli = placed('plant_3', 'white', 0, 0); // mining 5
-    const nearlyDone = { position: { x: 0, y: 0 }, resourceLayers: 1, minedDepth: 4 };
-    expect(calculateMiningYield(cuauhtli, nearlyDone)).toBe(1);
-    const empty = { position: { x: 0, y: 0 }, resourceLayers: 0, minedDepth: 5 };
-    expect(calculateMiningYield(cuauhtli, empty)).toBe(0);
-  });
-
-  it('lightning tier 1-2 (mining 0) can never mine', () => {
-    const radi = placed('lightning_1', 'white', 0, 0);
-    const fresh = { position: { x: 0, y: 0 }, resourceLayers: 5, minedDepth: 0 };
-    expect(calculateMiningYield(radi, fresh)).toBe(0);
-  });
-});
-
 describe('audit fixtures: promotion timing rules', () => {
-  const richBuildState = { queue: [], crystals: 100 };
+  const richBuildState = { crystals: 100 };
 
   it('cannot promote a unit on the turn it was placed', () => {
     const unit = placed('fire_1', 'white', 0, 0, { placedThisTurn: true });
@@ -219,16 +188,6 @@ describe('audit fixtures: promotion timing rules', () => {
 });
 
 describe('audit fixtures: victory ruling', () => {
-  it('a player with zero units loses even with a non-empty build queue (no anchor to spawn)', () => {
-    // victory.ts ruling: units on board are the sole criterion; queued units
-    // cannot save you because spawning requires an anchor piece.
-    const board = boardWith(placed('fire_1', 'white', 0, 0));
-    const result = checkVictory(board);
-    expect(result.status).toBe('victory');
-    if (result.status === 'victory') {
-      expect(result.winner).toBe('white');
-    }
-  });
 
   it('both players having units means the game is ongoing regardless of material gap', () => {
     const board = boardWith(

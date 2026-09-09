@@ -1,3 +1,41 @@
+# Current branch status — v2.1, 2026-09-09
+
+The combined simplification branch uses the **real public GameState** in MCTS
+and worker protocol **2**. Observation/event masking, belief particles, queue
+reconciliation and re-determinization have been deleted. Both banks are public.
+Queue value is removed; evaluation uses projected end-of-turn income and
+highest on-board tier per element. Beam states settle income through the
+canonical transition. Bounded Place candidates include purchases by element,
+miners on ore, defensive Water/Metal purchases, anchor promotions and multiple
+Hi purchased beside a target then attacking in the same turn.
+
+The rebuilt kernel uses **ABI 4**. Tactical proofs retain current-turn movement,
+attacks/Cleave and home-blocked promotion subsets. **General placement and
+purchases remain outside the proof:** such queries return unknown. When an
+invader occupies home, every spawn rectangle is blocked, so the rescue proof
+can still enumerate legal promotion subsets without purchases. Income only
+arrives after Act and cannot finance a promotion in the preceding Place phase.
+This scope choice avoids claiming complete search over a potentially large
+purchase space. JS validates successful witnesses; differential tests and
+browser worker/fallback/rescue tests cover the retained scope.
+
+Existing search budgets, seeded fixed-work accounting, cancellation, watchdog,
+JS fallback and React acknowledgment behavior remain. No equal-budget win-rate
+improvement or Medium income calibration is claimed; both are registered
+future studies. The initial update validates operation, not strength. See the
+[placement report](PLACEMENT_SIMPLIFICATION-2026-09-09.md) for evidence and limits.
+
+## Historical implementation record
+
+> **Historical baseline — superseded on the v2.1 feature branch (2026-09-09).**
+> The well, depth, mine action, build queue/times, hidden economy and three-phase
+> teaching below are historical. Current rules use passive 0/4/8/10 reserves
+> (520 total), public tier-1 purchase and later-turn promotion. See [SPEC](../SPEC.md),
+> [mining report](MINING_SIMPLIFICATION-2026-09-09.md) and
+> [placement report](PLACEMENT_SIMPLIFICATION-2026-09-09.md). Old measurements
+> remain labeled by their original versions; none establishes v2.1 balance.
+> This branch has not been deployed.
+
 > v1.6 follow-up: [upkeep and inactivity draw](UPKEEP_DRAW-2026-09-08.md) supersede the no-upkeep game lengths, cap rates and carrying values below. Historical measurements are preserved.
 
 > Catalogue/visual-rank numbers superseded by v1.5: [tier-3 cap report](TIER3_CAP-2026-09-08.md). Historical measurements below remain unchanged.

@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { UNIT_DEFINITIONS, getNextTierDefinition, getUnitDefinition } from '../../src/game/units';
 import { createInitialGameState, createUnit } from '../../src/game/board';
-import { canBuildUnit, addToBuildQueue, getAvailableBuildOptions } from '../../src/game/building';
 import { canPromote, getPromotedDefinitionId } from '../../src/game/promotion';
 import { applyAction } from '../../src/ai/simulate';
 import { generateAllActions } from '../../src/ai/moves';
@@ -12,7 +11,7 @@ import baseline from '../../lab/solver/baseline-v1.3.json';
 
 describe('v1.5 catalogue boundary', () => {
   it('preserves the 18-unit ladder with the explicitly approved metal and Lightning changes', () => {
-    expect(UNIT_DEFINITIONS).toEqual(baseline.filter(d => d.tier <= 3).map(d => ({...d,...(d.element==='metal'?{name:['Inyan','Mazask','Tanka'][d.tier-1],speed:d.tier===3?2:d.speed}:{}),...({lightning_1:{attack:1},lightning_2:{attack:2},lightning_3:{mining:0},metal_3:{mining:4}} as Record<string,object>)[d.id]})));
+    expect(UNIT_DEFINITIONS).toEqual(baseline.filter(d => d.tier <= 3).map(({buildTime: _removed, ...d}) => ({...d,...(d.element==='metal'?{name:['Inyan','Mazask','Tanka'][d.tier-1],speed:d.tier===3?2:d.speed}:{}),...({lightning_1:{attack:1},lightning_2:{attack:2},lightning_3:{mining:0},metal_3:{mining:4}} as Record<string,object>)[d.id]})));
     expect(UNIT_DEFINITIONS).toHaveLength(18);
   });
   it('caps Cleave at exactly 1/2/3 for every catalogue entry', () => {
@@ -35,13 +34,10 @@ describe('v1.5 catalogue boundary', () => {
       expect(generateAllActions(s,'white').some(a=>a.type==='PROMOTE_UNIT'&&a.unitId===u.id)).toBe(false);
       const removed=`${element}_4`;
       expect(()=>getUnitDefinition(removed)).toThrow();
-      expect(canBuildUnit(removed,'white',s.board,funds)).toBe(false);
-      expect(()=>addToBuildQueue(funds,removed)).toThrow();
-      expect(getAvailableBuildOptions(funds,'white',s.board).every(id=>!id.endsWith('_4'))).toBe(true);
-      s.turn.phase='queue';
-      expect(isLegalAction(s,{type:'QUEUE_UNIT',definitionId:removed})).toBe(false);
-      expect(applyAction(s,{type:'QUEUE_UNIT',definitionId:removed})).toBe(s);
-      expect(generateAllActions(s,'white').filter(a=>a.type==='QUEUE_UNIT').every(a=>!a.definitionId.endsWith('_4'))).toBe(true);
+      s.turn.phase='place';
+      expect(isLegalAction(s,{type:'BUY_UNIT',definitionId:removed,position:{x:0,y:0}})).toBe(false);
+      expect(applyAction(s,{type:'BUY_UNIT',definitionId:removed,position:{x:0,y:0}})).toBe(s);
+      expect(generateAllActions(s,'white').filter(a=>a.type==='BUY_UNIT').every(a=>!a.definitionId.endsWith('_4'))).toBe(true);
     });
   }
   for(const location of ['board','queue']) it(`discards v2 saves with tier 4 in the ${location}`,()=>{
@@ -52,6 +48,6 @@ describe('v1.5 catalogue boundary', () => {
     expect(loadGameState()).toBeNull();expect(localStorage.getItem('elemental-tactics-save')).toBeNull();
   });
   it('round-trips the current schema',()=>{
-    expect(SCHEMA_VERSION).toBe(4);const s=createInitialGameState();saveGameState(s);expect(loadGameState()).toEqual(s);
+    expect(SCHEMA_VERSION).toBe(5);const s=createInitialGameState();saveGameState(s);expect(loadGameState()).toEqual(s);
   });
 });

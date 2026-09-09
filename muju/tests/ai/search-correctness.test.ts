@@ -6,7 +6,6 @@ import { beamSearchPlans } from '../../src/ai/planner/beam';
 import { tacticalSharpen } from '../../src/ai/eval/sharpener';
 import { selectChild } from '../../src/ai/search/uct';
 import { runMCTS } from '../../src/ai/search/mcts';
-import { extractPublicState, extractPrivateState } from '../../src/ai/state/observation';
 import type { MCTSChild } from '../../src/ai/search/types';
 
 it('does not collapse different destinations for the same moving piece',()=>{
@@ -27,27 +26,13 @@ it('opponent selection minimizes root payoff instead of cooperating',()=>{
  expect(selectChild(n,0,1,1)?.plan.id).toBe('good');expect(selectChild(n,0,1,-1)?.plan.id).toBe('bad');
 });
 it('expands alternative root choices rather than searching only its first child',()=>{
- const s=createInitialGameState();s.turn.phase='queue';s.players.white.resources=5;
- const knowledge={public:extractPublicState(s,'white'),own:extractPrivateState(s,'white'),opponentBelief:{particles:[],minResources:0,maxResources:0}};
- const gen=vi.fn((state:typeof s)=>state.turn.currentPlayer==='white'&&state.players.white.buildQueue.length===0 ? [
-  {id:'bad',actions:[{type:'END_TURN' as const}],score:0,tags:[]},
-  {id:'good',actions:[{type:'QUEUE_UNIT' as const,definitionId:'fire_1'}],score:0,tags:[]},
+ const s=createInitialGameState();s.turn.phase='place';s.players.white.resources=5;
+ const gen=vi.fn((state:typeof s)=>state.turn.currentPlayer==='white'&&state.board.units.length===6 ? [
+  {id:'bad',actions:[{type:'END_PLACE_PHASE' as const}],score:0,tags:[]},
+  {id:'good',actions:[{type:'BUY_UNIT' as const,definitionId:'fire_1',position:{x:0,y:0}}],score:0,tags:[]},
  ]:[]);
- const plan=runMCTS(knowledge,'white',{iterations:40,timeLimitMs:5000,progressiveWideningAlpha:0.5},gen,state=>state.players.white.buildQueue.length?100:-100);
+ const plan=runMCTS(s,'white',{iterations:40,timeLimitMs:5000,progressiveWideningAlpha:0.5},gen,state=>state.board.units.length>6?100:-100);
  expect(plan.id).toBe('good');
-});
-it('does not change AI decisions when only the opponents hidden spending changes',async()=>{
- const {AIEngineV2}=await import('../../src/ai/engine-v2');
- const a=createInitialGameState(),b=structuredClone(a);
- a.players.black.resourcesGained=10;b.players.black.resourcesGained=10;
- a.players.black.resources=10;b.players.black.resources=4;b.players.black.resourcesSpent=6;
- b.players.black.buildQueue=[{id:'secret',definitionId:'fire_3',turnsRemaining:2,owner:'black'}];
- const random=vi.spyOn(Math,'random').mockReturnValue(0.5);
- try {
-  const results=[];
-  for(const s of [a,b]){const e=new AIEngineV2('easy');e.setConfig({mctsIterations:0,beamWidth:3,outputPlans:3,tacticalDepth:0});results.push(await e.findBestAction(s));}
-  expect(results[0].plan).toEqual(results[1].plan);expect(results[0].debug?.topPlans).toEqual(results[1].debug?.topPlans);
- } finally {random.mockRestore();}
 });
 it('does not double-penalize promotion spending or resign with reserve assets',async()=>{
  const {scorePartialPlan}=await import('../../src/ai/planner/scoring');
@@ -60,6 +45,5 @@ it('does not double-penalize promotion spending or resign with reserve assets',a
  s.board.units=s.board.units.filter(u=>u.owner==='black'||u.id===unit.id);
  for(const u of s.board.units)if(u.owner==='black')u.definitionId='metal_3';
  expect(shouldResign(s,'white')).toBe(false);s.players.white.resources=0;
- s.players.white.buildQueue=[{id:'q',owner:'white',definitionId:'fire_3',turnsRemaining:0}];
- expect(shouldResign(s,'white')).toBe(false);
+
 });

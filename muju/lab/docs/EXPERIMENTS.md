@@ -1,3 +1,8 @@
+> **Historical lab plan/results:** current v2.1 removes the well and queue.
+> Reproduce old experiments at their recorded commits. The current harness is
+> public-state with passive income; see [SPEC](../../SPEC.md) and the
+> [registered new study](../../docs/PLACEMENT_SIMPLIFICATION-2026-09-09.md).
+
 # Balance Lab — Experiment Designs (Phase 3)
 
 All experiments are seeded configs in `lab/experiments/*.json`, run with

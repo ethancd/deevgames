@@ -1,3 +1,4 @@
+import {getAllSpawnPositions} from '../../src/game/spawning';
 import { it, expect, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { createInitialGameState } from '../../src/game/board';
@@ -11,12 +12,12 @@ vi.mock('../../src/ai/worker/client',()=>({AIWorkerClient:class {
 },SearchCancelled:class extends Error {}}));
 import { useAI } from '../../src/hooks/useAI';
 it('executes more than 20 legal dispatches and keeps reducer state synchronized',async()=>{
- let real=createInitialGameState();real.turn.phase='queue';real.players.white.resources=30;real.players.white.resourcesGained=30;
+ let real=createInitialGameState();real.turn.phase='place';real.board.units[1].position={x:7,y:7};real.players.white.resources=30;real.players.white.resourcesGained=30;
  const seen:AIAction[]=[];
- choose.mockImplementation((s:GameState)=>{expect(s).toEqual(real);return [{type:'QUEUE_UNIT',definitionId:'fire_1'}];});
+ choose.mockImplementation((s:GameState)=>{expect(s).toEqual(real);return s.turn.phase==='place'?[{type:'BUY_UNIT',definitionId:'fire_1',position:getAllSpawnPositions('white',s.board)[0]}]:[{type:'END_ACTION_PHASE'}];});
  const {result,unmount}=renderHook(()=>useAI({thinkingDelay:0}));
  await act(async()=>{await result.current.executeAITurn(real,a=>{seen.push(a);real=gameReducer(real,{type:'APPLY_AI_ACTION',aiAction:a});},'white');});
- expect(seen).toHaveLength(30);expect(real.players.white.buildQueue).toHaveLength(30);expect(real.turn.currentPlayer).toBe('black');expect(result.current.isThinking).toBe(false);unmount();
+ expect(seen).toHaveLength(31);expect(real.board.units.filter(u=>u.owner==='white')).toHaveLength(33);expect(real.turn.currentPlayer).toBe('black');expect(result.current.isThinking).toBe(false);unmount();
 });
 it('dispatches placement skip and exposes invalid proposals as a recoverable error',async()=>{
  let real=createInitialGameState();real.turn.phase='place';const seen:AIAction[]=[];

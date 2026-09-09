@@ -1,4 +1,4 @@
-import { CrystalWell, describeCrystals } from './CrystalWell';
+import { CellReserve, describeCrystals } from './CellReserve';
 import type { Cell as CellType, Position } from '../game/types';
 interface CellProps {
   cell: CellType; isValidMove: boolean; isValidAttack: boolean; isValidSpawn: boolean; isSelected: boolean;
@@ -11,12 +11,12 @@ export function Cell({ cell, isValidMove, isValidAttack, isValidSpawn, isSelecte
   const reach = movementRangeActions !== undefined;
   const coord = `${String.fromCharCode(65 + cell.position.x)}${cell.position.y + 1}`;
   const crystalDescription = describeCrystals(cell);
-  const label = `${coord}${home ? `, ${home} home corner` : ''}${unitLabel ? `, ${unitLabel}` : ''}, ${cell.resourceLayers} resource layers, ${cell.resourceLayers > 0 ? `next layer at depth ${cell.minedDepth + 1}, bottom depth ${cell.minedDepth + cell.resourceLayers}` : cell.minedDepth > 0 ? 'depleted' : 'no crystals, bedrock'}${reach ? `, move costs ${moveCost} actions` : ''}${isValidAttack ? ', attack target' : ''}${isValidSpawn ? ', available for placement' : ''}`;
+  const label = `${coord}${home ? `, ${home} home corner` : ''}${unitLabel ? `, ${unitLabel}` : ''}, ${crystalDescription}${reach ? `, move costs ${moveCost} actions` : ''}${isValidAttack ? ', attack target' : ''}${isValidSpawn ? ', available for placement' : ''}`;
   return <button type="button" tabIndex={unitLabel ? 0 : -1} aria-label={label} title={crystalDescription} aria-pressed={isSelected || isPreview}
-    className={`board-cell depth-${cell.resourceLayers} ${isSelected ? 'selected' : ''} ${isValidAttack ? 'attack-target' : ''} ${isValidSpawn ? 'spawn-target' : ''} ${isPendingMove ? 'path-cell' : ''} ${isPreview ? 'preview-cell' : ''}`}
+    className={`board-cell reserve-${cell.resourceLayers} ${isSelected ? 'selected' : ''} ${isValidAttack ? 'attack-target' : ''} ${isValidSpawn ? 'spawn-target' : ''} ${isPendingMove ? 'path-cell' : ''} ${isPreview ? 'preview-cell' : ''}`}
     onClick={() => onClick(cell.position)} data-testid={`cell-${cell.position.x}-${cell.position.y}`}>
     {home && <span className={`home-marker home-${home}`} aria-hidden="true">⌂</span>}
-    <CrystalWell cell={cell} showNumbers={showResources} />
+    <CellReserve cell={cell} showNumbers={showResources} />
     {(reach || isValidMove) && !unitLabel && !isPreview && <span aria-hidden="true" className={`range-marker ${isValidMove ? 'near' : 'far'}`} />}
     {isValidSpawn && !unitLabel && <span aria-hidden="true" className="spawn-marker">＋</span>}
     {isPreview && !unitLabel && <span className="destination-marker" aria-hidden="true">◎</span>}

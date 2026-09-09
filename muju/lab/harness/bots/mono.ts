@@ -5,11 +5,11 @@ import { createGreedyBot } from './greedy';
 import { unitById } from './bot-utils';
 
 /**
- * E4 mono-element bots: Greedy policy with the build queue (and promotions)
+ * E4 mono-element bots: Greedy policy with the purchases (and promotions)
  * restricted to a single element line.
  *
  * Harness ruling J-006: both sides keep the standard symmetric starting trio
- * (fire_1/water_1/plant_1); only the QUEUE is element-restricted. A literal
+ * (fire_1/water_1/plant_1); only purchases is element-restricted. A literal
  * "trio of the element's own T1s" start would make the lightning and shadow
  * rows degenerate by construction (their T1s have Mining 0 — zero economy,
  * every game lost on resources), measuring a known stat rather than the
@@ -22,7 +22,7 @@ export function createMonoElementBot(element: Element): ScriptedBot {
     name: `Mono-${element}`,
     chooseAction(ctx: BotContext) {
       const filtered = ctx.legal.filter((a) => {
-        if (a.type === 'QUEUE_UNIT') {
+        if (a.type === 'BUY_UNIT') {
           return getUnitDefinition(a.definitionId).element === element;
         }
         if (a.type === 'PROMOTE_UNIT') {

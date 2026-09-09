@@ -8,19 +8,25 @@ document and the code disagree, that is a bug in one of them: see
 of known divergences. The stat tables in §7 are transcriptions of
 `src/game/units.ts`, which is the canonical stat source.
 
-**Spec version:** v1.9 (2026-09-08) — Draw immediately at the end of the tenth consecutive quiet player turn. Includes mandatory T1 upkeep retention and the v1.7 stat adjustments.
-Tier 4 is removed. Metal names are Inyan/Mazask/Tanka. Tanka has Speed 2 and
-Mining 4. Lightning I/II have Attack 1/2, and Lightning III has Mining 0.
-Other T1–T3 stats, costs/build times, Cleave and Unequal routes remain unchanged.
-History: v1.0 (original design), v1.1 (`docs/v1.1-spec.md`, historical playtest
-balance pass), v1.2 (2026-06-09 canonical rules rewrite), v1.3 (role balance),
-v1.4 (Cleave), v1.5 (tier-3 cap), v1.6 (upkeep and inactivity draw), v1.7 (Lightning/Metal adjustments), v1.8 (mandatory T1 upkeep retention), v1.9 (ten-turn draw at turn end).
+**Spec version:** v2.1 (2026-09-09) — two-phase turn, tier-1 purchase,
+promotion climb, public economy. Includes v2.0 passive end-of-turn mining
+and reserves 4/8/10. All 18 v1.9 unit stats and costs are unchanged; build
+times are removed. This is the specification of the tested feature branch,
+not a claim that production has been deployed.
+
+History: v1.0 (original design), v1.1 (historical playtest balance pass),
+v1.2 (canonical rewrite), v1.3 (role balance), v1.4 (Cleave), v1.5 (tier-3 cap),
+v1.6 (upkeep and inactivity draw), v1.7 (Lightning/Metal adjustments),
+v1.8 (mandatory T1 upkeep retention), v1.9 (ten-turn draw at turn end),
+v2.0 (2026-09-09, passive mining and 4/8/10 reserves), v2.1 (2026-09-09,
+public tier-1 purchase and promotion climb). The v2.0/v2.1 changes are
+implemented together; v2.0 is not a separately deployed release.
 
 ---
 
 ## 1. Overview
 
-Muju Hono Tanka is a two-player perfect-position / hidden-economy strategy
+Muju Hono Tanka is a two-player perfect-information strategy
 board game combining territorial control (Go), tactical combat (Chess), and
 economic buildup (StarCraft). Players are **White** and **Black**; either seat
 may be a human or an AI (`vs-ai`, `pass-play`, and `ai-vs-ai` modes).
@@ -31,38 +37,42 @@ may be a human or an AI (`vs-ai`, `pass-play`, and `ai-vs-ai` modes).
   starts with 3 units adjacent to their corner and 0 resources.
   - White: Hi (fire_1) at (1,0), Sjor (water_1) at (1,1), Muju (plant_1) at (0,1).
   - Black: Hi at (8,9), Sjor at (8,8), Muju at (9,8).
-- **Resources:** **Unequal routes (map D)**: fixed 180°-rotational layout, 0, 3, 4, or 5 initial layers per cell, **308 total**. Deep home corners, four-layer shelves and sixteen blank approaches to deep expansion wells (walkable and spawn-eligible as usual). Exact layout: `src/game/resourceMap.ts`. Save schema 3 starts fresh for older unfinished games.
+- **Resources:** **Unequal routes (map D, passive revision)**: the same fixed
+  180°-rotational layout, with 0/4/8/10 crystals per cell and **520 total**.
+  Sixteen blank approaches remain walkable and spawn-eligible. Ordinary ground
+  holds 4, shelves 8, rich wells and homes 10. Exact layout:
+  `src/game/resourceMap.ts`. Save schema 5 discards older unfinished games
+  through the existing version-mismatch path; they start fresh.
 - **White moves first.** The first turn begins directly in the Action phase
   (there is nothing to place or promote at game start).
 
 ## 2. Turn structure
 
-A turn has three phases, in order:
+A turn has two phases:
 
-1. **Place phase** — place ready units from the build queue; promote units.
-   Placement and promotion cost **no actions** (only resources, for
-   promotion). The phase is skipped automatically when the player has nothing
-   to do in it (no placeable ready units and no affordable promotions).
-2. **Action phase** — spend up to **6 actions** (`MAX_ACTIONS_PER_TURN`).
-   Each action is one move-step, attack, or mine by one unit. Movement and
-   mining may repeat within the shared budget; attacks also obey Cleave (§4.2).
-3. **Queue phase** — pay resources to queue new units (hidden from the
-   opponent). The phase auto-ends (ending the turn) when the player cannot
-   afford anything further.
+1. **Place phase** — in any order, buy any number of affordable **tier-1**
+   units on legal empty spawn squares, and promote units that were on the
+   board at the start of this phase. Each unit can promote at most once this
+   turn, never on its purchase/placement turn. Both verbs cost crystals and
+   **no actions**. Placed and promoted units act immediately. This phase is
+   skipped automatically when no legal purchase or promotion exists.
+2. **Action phase** — spend up to **6 shared actions**
+   (`MAX_ACTIONS_PER_TURN`) on moves and attacks. Movement can repeat; attacks
+   obey Cleave (§4.2). The player may end early.
 
-At turn end, update the inactivity counter. If it reaches 10, draw immediately
-before advancing to the next player. Otherwise, begin the next turn.
+At the end of the Action phase, resolve passive mining for the mover (§5.1),
+then update the inactivity counter and check the ten-quiet-turn draw (§9).
+Income cannot be undone: undo is confined to the current turn. There is no
+queue phase, including when all six actions have been spent.
 
-Turn bookkeeping at the start of a player's turn, in order:
+If the game continues, start the next player's turn in this order:
 
-- Check home occupation and existing board elimination (§9).
-- Pay upkeep from the existing stockpile (§5.5). If a selection is required,
-  the place phase pauses here. Removal of the last unit loses by elimination.
-
-- Their build queue advances by one turn; entries reaching 0 become **ready**.
-- All their units' action flags reset (`hasMoved`/`hasAttacked`/`hasMined`,
-  `attackedThisTurn`, `lastAttackKilled`, `placedThisTurn`).
-- **All damage on their units heals** (`damageTaken` resets to 0) — see §4.3.
+- Check their home occupation and existing board elimination (§9).
+- Pay upkeep (§5.5). A required keep-set choice pauses here; removing the last
+  unit loses by elimination.
+- Heal all their units and reset their move, attack, Cleave, placement and
+  promotion flags.
+- Enter Place, or skip to Action when Place has no legal decisions.
 
 `turnNumber` increments when the turn passes back to White (a full round).
 
@@ -90,8 +100,8 @@ Turn bookkeeping at the start of a player's turn, in order:
 - Every unit begins its turn eligible to attack once.
 - **Killing the target** unlocks one further attack by that same unit, with a
   maximum of **tier attacks per turn** (I: 1, II: 2, III: 3).
-- Each attack still costs **one shared action**. Moving or mining between attacks
-  is allowed at the normal cost; neither restores or consumes attack eligibility.
+- Each attack still costs **one shared action**. Moving between attacks
+  is allowed at the normal cost; it neither restores nor consumes attack eligibility.
 - If a target survives, the attack chain ends for that unit this turn, including
   a zero-damage hit. A later kill by another unit does not reopen that chain.
 - A newly placed Tier I can attack immediately but cannot attack twice.
@@ -99,7 +109,7 @@ Turn bookkeeping at the start of a player's turn, in order:
 - History includes eliminated targets (`attackedThisTurn`); `lastAttackKilled`
   records the result of this unit's last attack. Both reset on its owner's turn.
   Completed human and AI actions, plus undo, save the board and attack allowance
-  together. v1.6 save schema 4 discards unfinished games from older releases;
+  together. Save schema 5 discards unfinished games from older releases;
   no legacy tier-4 catalogue is loaded.
 
 ### 4.3 Damage and elimination
@@ -117,31 +127,25 @@ Turn bookkeeping at the start of a player's turn, in order:
 
 ## 5. Economy
 
-### 5.1 Mining — the Well Metaphor
-- Each cell starts with 0, 3, 4, or 5 depth layers, numbered from 1 and worth 1 resource each. A unit's **Mining**
-  stat is its rope length: it can reach layers down to depth = Mining.
-- A mine action (1 action) extracts **all remaining layers from the current
-  top down to the unit's Mining depth**, i.e.
-  `yield = max(0, min(Mining − minedDepth, remainingLayers))`.
-- If the cell's top remaining layer is deeper than the unit's Mining stat, the
-  cell is **dry for that unit** (yield 0; the action is not consumable —
-  `canMine` is false). Mining 0 units (Radi, Umeme, Göl) can never mine.
-- Mined layers are gone forever; the board economy is finite (308 total on Unequal routes; 500 in legacy uniform games).
+### 5.1 Mining
 
-### 5.2 Build queue (hidden)
-- During the queue phase, the player pays a unit's **Cost** and adds it to
-  their **build queue** with `turnsRemaining = BuildTime`.
-- **Tech requirement:** a Tier-N unit (N ≥ 2) can be queued only if the player
-  has a unit of the **same element at tier ≥ N−1 on the board** at queue time;
-  the requirement is re-checked at placement. T1 units are always available.
-- The queue is **hidden** from the opponent (§8).
-- **Queue persistence:** queue entries are never auto-deleted. A ready unit
-  that cannot be placed (no valid spawn) stays ready in the queue indefinitely
-  and can be placed later; tech lost after queuing does not destroy the entry
-  (but placement re-checks tech).
+At the end of your turn, every one of your units takes crystals from the square it stands on: up to its Mining stat, up to what the square holds.
+The take is `min(Mining, reserve)`, reduces that square's reserve by the same amount, and enters your public bank and cumulative income.
+This applies unconditionally to moved, attacked, placed and promoted units; Mining 0 takes nothing, reserves never replenish, and there is no mine action or depth.
+
+### 5.2 Buying
+
+- During Place, pay a tier-1 unit's catalogue cost and immediately place it
+  on an empty square in an unblocked spawn rectangle (§5.3).
+- Buy any number, limited only by crystals and legal empty squares. Buying
+  costs no actions. Higher tiers cannot be bought.
+- There is no build queue, build time, readiness or separate tech requirement.
+  Every tier-2 unit was a tier-1 on the board, and every tier-3 was a tier-2:
+  this is structural, enforced by the promotion path, not another prerequisite.
+- The bank holds unspent purchasing power when spawns are blocked.
 
 ### 5.3 Placement (spawning)
-- Ready units are placed during the place phase at **no action cost**.
+- Newly bought tier-1 units are placed during Place at **no action cost**.
 - **Spawn rectangle:** choose any friendly unit as an *anchor*; the rectangle
   spans from the player's start corner to the anchor (inclusive, both
   corners). If **no enemy unit is inside the rectangle**, the new unit may be
@@ -153,16 +157,20 @@ Turn bookkeeping at the start of a player's turn, in order:
 - During the place phase, pay `cost(next tier) − cost(current tier)` to
   upgrade a unit to the next tier of its element, in place.
 - Restrictions: cannot skip tiers; T3 cannot promote; a unit may be promoted
-  **at most once per place phase**, and **not on a turn it was placed**.
+  **at most once per turn**, and **not on a turn it was placed**.
+  It must have been on the board at the start of Place. A purchased tier-1
+  can first become tier-2 on its next own turn and tier-3 one own turn later,
+  giving the opponent two turns to contest that climb.
 - Promoted units can act immediately. Promotion is public information.
 
 ### 5.5 Upkeep
 
 Each turn, before placement, pay 1 crystal for each of your tier-2 units and 2
-for each tier-3 (3 for tier4, if present). Any unit you do not pay for is lost.
+for each tier-3. Any unit you do not pay for is lost.
 Tier1 units are free and must always be kept during upkeep. Payment uses the existing stockpile and no actions.
-Queued units owe nothing until the next own turn after placement. A promotion
-pays its new tier's rent beginning next own turn, not retroactively.
+A promotion pays its new tier's rent beginning next own turn, not retroactively.
+Passive income arrives at the end of this turn and can fund rent at the start
+of the next own turn.
 
 When the stockpile covers the army, all units are kept and payment is automatic.
 Otherwise the place phase opens with a mandatory affordable keep-set choice.
@@ -172,7 +180,7 @@ be released. Every legal keep-set must include all owned tier1 units and be
 affordable. The empty set is legal only when there are no tier1 units; it loses
 if it removes the last on-board unit.
 Releases are not attacks: they add no combat history, trigger no Cleave, and
-never reset the inactivity clock. Healing and queue advancement follow payment.
+never reset the inactivity clock. Healing and flag reset follow payment.
 
 Design intent: binary DEF walls require continuing income to sustain their tier.
 An income lead can become a tier lead and then a broken wall. Invading armies
@@ -213,94 +221,77 @@ new stats.
 
 ## 7. Unit catalog (canonical: `src/game/units.ts`)
 
-Eighteen units, three per element. Stat columns: ATK / DEF / SPD / MINE / Cost / Build time.
+Eighteen units, three per element. Stat columns: ATK / DEF / SPD / MINE / Cost.
 
-Tier 4 was cut because its cost 10–20 and build time 2–3 bought the weakest
-stat-per-crystal profiles, while Map D reduced fifth-layer mining work from
-100 crystals to 20. Three tiers reduce the learning burden. Metal III’s DEF 6
-corner garrison falls to two Karanlık (3 effective damage each); the former
-DEF 8 Metal IV required stronger attackers. Losing Wakanwicasa’s invasion role
-and Gokamoka’s four-kill sweep is an accepted tradeoff, measured in
-`docs/TIER3_CAP-2026-09-08.md`. Tanka gains Speed 2 to reposition and invade
-more effectively while retaining the same defensive counterplay.
+The catalogue is exactly v1.9 with build times removed. Tier 3 is terminal.
+The historical tier-4 cut and its measured tradeoffs are recorded in
+`docs/TIER3_CAP-2026-09-08.md`; those well-economy measurements are not v2.1
+balance evidence. Tanka retains Speed 2, Mining 4 and DEF 6.
 
 ### Fire (Rush — ATK specialist) — Japanese
-| Tier | Name | ATK | DEF | SPD | MINE | Cost | Build |
-|---|---|---|---|---|---|---|---|
-| 1 | Hi | 2 | 1 | 2 | 1 | 1 | 1 |
-| 2 | Hono | 3 | 1 | 2 | 1 | 3 | 1 |
-| 3 | Kagari | 4 | 2 | 3 | 1 | 6 | 2 |
+| Tier | Name | ATK | DEF | SPD | MINE | Cost |
+|---|---|---|---|---|---|---|
+| 1 | Hi | 2 | 1 | 2 | 1 | 1 |
+| 2 | Hono | 3 | 1 | 2 | 1 | 3 |
+| 3 | Kagari | 4 | 2 | 3 | 1 | 6 |
 
 ### Lightning (Rush — SPD specialist) — Swahili
-| Tier | Name | ATK | DEF | SPD | MINE | Cost | Build |
-|---|---|---|---|---|---|---|---|
-| 1 | Radi | 1 | 1 | 3 | 0 | 1 | 1 |
-| 2 | Umeme | 2 | 1 | 4 | 0 | 3 | 1 |
-| 3 | Kimubunga | 3 | 1 | 5 | 0 | 6 | 2 |
+| Tier | Name | ATK | DEF | SPD | MINE | Cost |
+|---|---|---|---|---|---|---|
+| 1 | Radi | 1 | 1 | 3 | 0 | 1 |
+| 2 | Umeme | 2 | 1 | 4 | 0 | 3 |
+| 3 | Kimubunga | 3 | 1 | 5 | 0 | 6 |
 
 ### Water (Balanced — DEF-leaning) — Norse
-| Tier | Name | ATK | DEF | SPD | MINE | Cost | Build |
-|---|---|---|---|---|---|---|---|
-| 1 | Sjor | 2 | 2 | 1 | 2 | 2 | 1 |
-| 2 | Straumr | 2 | 3 | 1 | 2 | 4 | 2 |
-| 3 | Aegirinn | 3 | 4 | 2 | 3 | 10 | 2 |
+| Tier | Name | ATK | DEF | SPD | MINE | Cost |
+|---|---|---|---|---|---|---|
+| 1 | Sjor | 2 | 2 | 1 | 2 | 2 |
+| 2 | Straumr | 2 | 3 | 1 | 2 | 4 |
+| 3 | Aegirinn | 3 | 4 | 2 | 3 | 10 |
 
 ### Shadow (Balanced — ATK/SPD-leaning) — Turkish/Slavic
-| Tier | Name | ATK | DEF | SPD | MINE | Cost | Build |
-|---|---|---|---|---|---|---|---|
-| 1 | Göl | 2 | 2 | 2 | 0 | 2 | 1 |
-| 2 | Gölge | 3 | 2 | 2 | 1 | 4 | 2 |
-| 3 | Karanlık | 4 | 2 | 3 | 2 | 10 | 2 |
+| Tier | Name | ATK | DEF | SPD | MINE | Cost |
+|---|---|---|---|---|---|---|
+| 1 | Göl | 2 | 2 | 2 | 0 | 2 |
+| 2 | Gölge | 3 | 2 | 2 | 1 | 4 |
+| 3 | Karanlık | 4 | 2 | 3 | 2 | 10 |
 
 ### Plant (Expand — MINE specialist) — Quechua/Nahuatl
-| Tier | Name | ATK | DEF | SPD | MINE | Cost | Build |
-|---|---|---|---|---|---|---|---|
-| 1 | Muju | 0 | 2 | 1 | 3 | 3 | 2 |
-| 2 | Sachita | 1 | 3 | 1 | 4 | 6 | 2 |
-| 3 | Sachakuna | 2 | 4 | 1 | 5 | 12 | 3 |
+| Tier | Name | ATK | DEF | SPD | MINE | Cost |
+|---|---|---|---|---|---|---|
+| 1 | Muju | 0 | 2 | 1 | 3 | 3 |
+| 2 | Sachita | 1 | 3 | 1 | 4 | 6 |
+| 3 | Sachakuna | 2 | 4 | 1 | 5 | 12 |
 
 ### Metal (Expand — DEF specialist) — Lakota
-| Tier | Name | ATK | DEF | SPD | MINE | Cost | Build |
-|---|---|---|---|---|---|---|---|
-| 1 | Inyan | 1 | 3 | 1 | 2 | 3 | 2 |
-| 2 | Mazask | 2 | 4 | 1 | 3 | 6 | 2 |
-| 3 | Tanka | 2 | 6 | 2 | 4 | 12 | 3 |
+| Tier | Name | ATK | DEF | SPD | MINE | Cost |
+|---|---|---|---|---|---|---|
+| 1 | Inyan | 1 | 3 | 1 | 2 | 3 |
+| 2 | Mazask | 2 | 4 | 1 | 3 | 6 |
+| 3 | Tanka | 2 | 6 | 2 | 4 | 12 |
 
 The Metal ladder is **Inyan → Mazask → Tanka**. The title names a tier-1, tier-2,
 and tier-3 unit: Muju / Hono / Tanka.
 
 Starting units for both players: `fire_1`, `water_1`, `plant_1`.
 
-## 8. Hidden information
+## 8. Public information
 
-Visible to both players at all times:
+The game is perfect-information. Both players see every unit, position,
+tier, damage marker, cell reserve, current bank (`resources`) and cumulative
+income (`resourcesGained`). Purchases, promotions, upkeep, the inactivity
+counter, pending upkeep choice and settled income are public. The upkeep
+subtotal (`resourcesUpkeep`) is telemetry, not an additional charge.
 
-- The board (all units, positions, tiers, damage markers) and all cell
-  resource states.
-- Each player's `resourcesGained` (total ever mined).
-- Each player's public manifested spending (`resourcesManifested`), updated
-  when a unit is placed or promoted and whenever upkeep is paid. Internally,
-  `resourcesSpent` counts queue purchases, promotions and paid upkeep; it is private. The opponent
-  observation exposes the manifested total in its `resourcesSpent` slot,
-  so hidden queue purchases do not leak. `resourcesUpkeep` is the upkeep subtotal,
-  already included in both totals, not added twice. Conservation remains
-  `stockpile + hidden queue cost = gained − manifested`. Voluntary release does
-  not establish that the player was unable to afford the released unit.
-- The inactivity counter, pending upkeep step and last upkeep result are public.
-
-Hidden from the opponent:
-
-- Current resource stockpile (derivable only as
-  `gained − spent − hidden queue spending`).
-- The build queue: contents, count, and readiness.
-
-These rulings come from `AI_ENGINE_QUESTIONS.md` Q1–Q3; the AI must play
-through an observation/belief layer (`src/ai/state/observation.ts`) rather
-than reading hidden state.
+There is no hidden production or hidden spending ledger. In an ordinary game,
+`board reserves + White gained + Black gained = 520`; spending changes banks
+but never cumulative income. The AI receives the real state and searches it
+with ordinary MCTS. The former observation, belief, particle-filter and
+re-determinization rules in `AI_ENGINE_QUESTIONS.md` Q1–Q3 are superseded.
 
 ## 9. Victory
 
-- **Home occupation:** at the start of your turn, before healing, queue advancement,
+- **Home occupation:** at the start of your turn, before upkeep, healing,
   placement or promotion, if your unit occupies the opponent's home corner, you win.
   White targets (9,9); Black targets (0,0). Entering the corner does not immediately
   win: the opponent has one full turn to remove the invader. Any element or tier
@@ -310,17 +301,17 @@ than reading hidden state.
   In simultaneous invasion races, the first player's qualifying turn start wins.
   Loading a current-schema mid-turn position does not retroactively resolve an occupation.
 
-- **Elimination:** a player with **zero units on the board** loses, even if
-  their build queue is non-empty (no unit ⇒ no anchor ⇒ nothing can ever be
-  placed). Deliberate ruling; documented in `src/game/victory.ts`.
+- **Elimination:** a player with **zero units on the board** loses, regardless
+  of bank. No units means no spawn anchor. There is no queue exception.
 - **Inactivity draw:** after 10 consecutive complete player turns without progress, end the
   game as a draw. A ply means one player's turn, not one action or full round.
-  A mine yielding at least1 crystal or an enemy unit eliminated by attack resets
-  the counter immediately. That progress turn ends at0. Each other completed
-  turn adds1. Zero-yield mining is illegal. Chip attacks, movement, queueing,
-  placement, promotion and upkeep removal do not reset it. The draw resolves
+  An enemy kill by attack resets
+  the counter immediately; positive passive income resets it at turn end.
+  A turn with either form of progress ends at 0. Each completed turn with no
+  enemy attack kill and zero total income adds 1. Chip attacks, movement,
+  buying, placement, promotion and upkeep removal do not themselves reset it. The draw resolves
   immediately at the end of the tenth quiet turn. The next turn never begins:
-  no home-win check, upkeep, healing or queue advancement can override the draw.
+  no home-win check, upkeep or healing can override the draw.
   Eliminating the last enemy during a turn still wins immediately. Saved draws
   preserve reason `inactivity`. Existing unfinished saves already at 10 or more
   quiet turns load as a draw, preserving the board; completed results stay final.
@@ -332,39 +323,40 @@ than reading hidden state.
 
 ## 10. Architecture (orientation, not contract)
 
-- `src/game/` — pure rules engine, React-free: `board.ts` (state, constants,
-  heal/reset), `movement.ts` (BFS, multi-action move costs), `combat.ts`
-  (damage model, combined attacks), `mining.ts` (well metaphor), `spawning.ts`
-  (anchor rectangles), `building.ts` (costs, tech gating, queue), 
-  `promotion.ts`, `turn.ts` (phase machine), `victory.ts`, `units.ts`
-  (canonical catalog), `elements.ts` (Double-Thick Triangle).
-- `src/ai/` — `engine-v2.ts` (`AIEngineV2`): belief-state MCTS. Observation
-  layer (`state/`), public-economy-constrained hidden queue/stockpile samples
-  (`belief/`), beam-search plan generation (`planner/`), UCT MCTS over plans
-  (`search/`), and tactical sharpener (`eval/`). A dedicated browser worker
-  (`worker/`) owns computation. A single-threaded WASM kernel (`assembly/tactics.ts`)
-  uses ABI 3 with catalogue-length buffers supplied by the host (no fixed roster size),
-  and searches exact current-turn attack/movement/promotion combinations; the canonical
-  JS transition independently validates every successful witness. See
-  `docs/AI_IMPLEMENTATION_STATUS.md` for scope, difficulty budgets and evidence.
-  `src/game/legality.ts` validates actions; `src/ai/simulate.ts` is the
-  authoritative transition for human actions, AI actions and search.
-- `src/hooks/useGameState.ts` — React reducer delegates gameplay transitions
-  to the shared engine; `useAI.ts` drives AI turns with explicit phase ends,
-  waits for reducer acknowledgment, and cancels workers across lifecycle changes.
-- `tests/` — unit tests per module plus seeded-playout property tests and
-  adversarial audit fixtures (`tests/game/properties.test.ts`,
-  `tests/game/audit-fixtures.test.ts`).
-- `lab/` — balance lab: plan, audit, match harness, bots, experiments.
+- `src/game/` contains pure rules: orthogonal movement, combat/Cleave, anchor
+  rectangles, tier-1 buying, promotion, upkeep, turn boundaries and victory.
+  `mining.ts` owns the shared per-unit take and player income settlement;
+  reducer, AI simulations, planning and harness all use the same transition.
+  `units.ts` is the canonical 18-unit catalogue.
+- `src/game/legality.ts` validates every human and AI gameplay action before
+  `src/ai/simulate.ts` applies it. Invalid legacy mine/queue actions are rejected.
+- `src/ai/` contains public-state MCTS, beam and placement-template planning,
+  evaluation and a tactical sharpener. Worker protocol 2 receives the real
+  state. WASM ABI 4 covers bounded tactical movement/attacks and constrained
+  promotions; general purchasing/placement is outside its proof scope and
+  returns unknown. JS independently validates successful tactical witnesses.
+  See `docs/AI_IMPLEMENTATION_STATUS.md` for limits.
+- `lab/solver/` models passive finite-cell income, buy/promote financing and
+  tactical frontiers. Historical map studies stay frozen under `lab/maps/`.
+- UI and tutorial use the catalogue/map constants; saves use schema 5.
 
-## 11. Known divergences
+## 11. Design intent and evidence
 
-Engine/UI/AI divergences from this spec are tracked in
-`lab/docs/SPEC_AUDIT.md` (D1–D14) with historical dispositions. The
-2026-09-07 correctness repair resolves D1–D6 and D11–D14, retains intentional
-rules D7–D8, and documents the remaining planning limitation D10.
-The v1.4 release replaces D9 with Cleave. See
-`docs/AI_CORRECTNESS-2026-09-07.md` for changes and evidence. Design judgment
-calls are in `JUDGMENT_LOG.md`. The initial review in `docs/BALANCE_REVIEW-2026-09-07.md` is historical;
-`docs/BALANCE_IMPLEMENTATION-2026-09-07.md` records the subsequently authorized
-v1.3 catalogue changes and their validation.
+Passive mining makes income a consequence of position, alongside combat,
+spawn geometry and home defense. The 4/8/10 scale separates Mining thresholds
+across terrain: ordinary Mining 1/2/4 empties in 4/2/1 turns; shelf Mining
+2/3/4 in 4/3/2; rich Mining 3/4/5 in 4/3/2. Experts must relocate to sustain
+their tempo; foragers can collect while serving another positional purpose.
+Rent still applies, and a richer extraction stat is not proof of higher net
+strategic value.
+
+The queue's hidden information, build delay, blocked-spawn persistence and
+third phase are replaced by a public bank and a visible promotion climb.
+No promotion on the purchase turn is load-bearing: the tier-3 path remains
+contestable over two opponent turns. Haste, six actions, spawn rectangles,
+the exact map topology and all catalogue stats/costs remain unchanged.
+
+See `JUDGMENT_LOG.md` J-017/J-018 and the two September 9 simplification
+reports for decisions, verification and registered future studies. Existing
+opening/rush concerns remain hypotheses; implementation does not establish
+fairness or rule out a first-player advantage.

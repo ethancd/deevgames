@@ -15,7 +15,7 @@ export function makeBot(name:string):Bot {
   const reserve=wanted?getPromotionCost(leader)??0:0;
   const legal=ctx.legal.filter(a=>{
    if(a.type==='PROMOTE_UNIT'&&plants.some(u=>u.id===a.unitId))return !!wanted&&a.unitId===leader.id;
-   if(a.type==='QUEUE_UNIT')return getUnitDefinition(a.definitionId).cost<=ctx.view.me.resources-reserve;
+   if(a.type==='BUY_UNIT')return getUnitDefinition(a.definitionId).cost<=ctx.view.me.resources-reserve;
    return true;
   });
   return base.chooseAction({...ctx,legal});

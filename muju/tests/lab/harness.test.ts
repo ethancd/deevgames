@@ -46,6 +46,26 @@ describe('lab harness', () => {
     expect(a.materialCurve).toEqual(b.materialCurve);
   }, 30000);
 
+  it('records settled income, finite reserves and tier-one purchases without changing accounting', async () => {
+    const record = await run('Balanced', 'Rush', 260909);
+    expect(record.invariantViolation).toBeNull();
+    expect(record.players.white.illegalActions + record.players.black.illegalActions).toBe(0);
+    const totals = { white: 0, black: 0 };
+    for (const sample of record.incomeCurve) {
+      totals[sample.player] += sample.income;
+      expect(sample.remaining + totals.white + totals.black).toBe(520);
+      expect(Object.values(sample.byTier).reduce((a, b) => a + b, 0)).toBe(sample.income);
+      expect(Object.values(sample.byElement).reduce((a, b) => a + b, 0)).toBe(sample.income);
+      expect(sample.bank).toBeGreaterThanOrEqual(0);
+      expect(sample.tier1Share).toBeGreaterThanOrEqual(0);
+      expect(sample.tier1Share).toBeLessThanOrEqual(1);
+    }
+    expect(record.incomeCurve.length).toBeGreaterThan(2);
+    expect(record.purchases.length).toBeGreaterThan(0);
+    expect(record.purchases.every(p => p.definitionId.endsWith('_1'))).toBe(true);
+    expect(record.round90Exhaustion).toBe(record.incomeCurve.find(s => s.remaining <= 52)?.turn ?? null);
+  });
+
   it('varies across seeds', async () => {
     const a = await run('Random', 'Random', 1);
     const b = await run('Random', 'Random', 2);

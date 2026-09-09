@@ -1,3 +1,4 @@
+import './historical-experiment';
 /** Component screen after the static solver: node --import tsx lab/experiments/e9-static-balance.ts baseline 20
  * Paired seeds across seats/candidates. No candidate is imported by gameplay.
  */
@@ -35,11 +36,10 @@ function adaptive(name:string):ScriptedBot{
  const pressure=name==='AdaptivePressure',base=pressure?createRushBot():createExpandBot(),greedy=createGreedyBot();
  return {kind:'scripted',name,chooseAction(ctx){const {view}=ctx;
   if(!pressure){const danger=view.board.units.some(u=>u.owner!==view.player&&Math.abs(u.position.x-view.me.startCorner.x)+Math.abs(u.position.y-view.me.startCorner.y)<=5);return danger?greedy.chooseAction(ctx):base.chooseAction(ctx);}
-  if(view.phase==='place')return greedy.chooseAction(ctx);
-  if(view.phase==='queue'){
+  if(view.phase==='place'){
    const walls=view.board.units.filter(u=>u.owner!==view.player&&['water','shadow'].includes(u.definitionId.split('_')[0])).length;
    const counters=view.board.units.filter(u=>u.owner===view.player&&u.definitionId.startsWith('plant')).length;
-   if(walls>=2&&counters<walls){const legal=ctx.legal.filter(a=>a.type==='QUEUE_UNIT'&&a.definitionId.startsWith('plant'));if(legal.length)return greedy.chooseAction({...ctx,legal});}
+   if(walls>=2&&counters<walls){const legal=ctx.legal.filter(a=>a.type==='BUY_UNIT'&&a.definitionId.startsWith('plant'));if(legal.length)return greedy.chooseAction({...ctx,legal});}
   }return base.chooseAction(ctx);
  }};
 }

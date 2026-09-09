@@ -4,7 +4,7 @@ import type { TurnPlan } from './types';
 import { evaluatePosition, quickEvaluate } from '../evaluation';
 import { applyActions } from '../simulate';
 import { getPlayerUnits } from '../../game/board';
-import { calculateMiningYield } from '../../game/mining';
+import { unitEndOfTurnTake, projectedIncome } from '../../game/mining';
 import { getUnitDefinition } from '../../game/units';
 
 export function scorePartialPlan(plan: TurnPlan, state: GameState, forPlayer: PlayerId, simulated?: GameState): number {
@@ -29,7 +29,7 @@ export function scorePartialPlan(plan: TurnPlan, state: GameState, forPlayer: Pl
     staticScore +
     killCount * 20 +
     damageScore * 0.5 +
-    incomeDelta * 1.5 -
+    (incomeDelta + (simState.turn.currentPlayer === forPlayer ? projectedIncome(simState, forPlayer) : 0)) * 1.5 -
     plan.actions.length * 0.1
   );
 }
@@ -46,7 +46,7 @@ export function tagPlan(plan: TurnPlan, state: GameState, forPlayer: PlayerId, s
     tags.push('kill');
   }
 
-  if (plan.actions.some((action) => action.type === 'MINE')) {
+  if (simState.players[forPlayer].resourcesGained > state.players[forPlayer].resourcesGained) {
     tags.push('mining');
   }
 
@@ -64,7 +64,7 @@ export function tagPlan(plan: TurnPlan, state: GameState, forPlayer: PlayerId, s
     if (distance(unit.position, enemyHome) === 0 && !tags.includes('raid')) tags.push('raid');
     if (distance(unit.position, home) < distance(before.position, home) && !tags.includes('defensive')) tags.push('defensive');
     const cell = simState.board.cells[unit.position.y][unit.position.x];
-    if (calculateMiningYield(unit, cell) > 0 && !tags.includes('expansion')) tags.push('expansion');
+    if (unitEndOfTurnTake(unit, cell) > 0 && !tags.includes('expansion')) tags.push('expansion');
   }
   if (tags.length === 0) {
     tags.push('passive');

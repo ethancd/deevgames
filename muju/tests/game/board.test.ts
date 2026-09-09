@@ -30,8 +30,8 @@ describe('Board Module', () => {
       expect(BOARD_SIZE).toBe(10);
     });
 
-    it('cells start with 5 resource layers', () => {
-      expect(INITIAL_RESOURCE_LAYERS).toBe(5);
+    it('cells start with 10 crystals', () => {
+      expect(INITIAL_RESOURCE_LAYERS).toBe(10);
     });
   });
 
@@ -43,8 +43,8 @@ describe('Board Module', () => {
 
     it('starts with full resources', () => {
       const cell = createCell(0, 0);
-      expect(cell.resourceLayers).toBe(5);
-      expect(cell.minedDepth).toBe(0);
+      expect(cell.resourceLayers).toBe(10);
+
     });
   });
 
@@ -66,7 +66,7 @@ describe('Board Module', () => {
       const board = createEmptyBoard();
       for (const row of board.cells) {
         for (const cell of row) {
-          expect(cell.resourceLayers).toBe(5);
+          expect(cell.resourceLayers).toBe(10);
         }
       }
     });
@@ -119,7 +119,7 @@ describe('Board Module', () => {
       expect(unit.position).toEqual({ x: 1, y: 0 });
       expect(unit.hasMoved).toBe(false);
       expect(unit.hasAttacked).toBe(false);
-      expect(unit.hasMined).toBe(false);
+
       expect(unit.canActThisTurn).toBe(true);
     });
 
@@ -198,7 +198,7 @@ describe('Board Module', () => {
       const newBoard = updateCell(board, { x: 3, y: 5 }, { resourceLayers: 3 });
 
       expect(getCell(newBoard, { x: 3, y: 5 })?.resourceLayers).toBe(3);
-      expect(getCell(board, { x: 3, y: 5 })?.resourceLayers).toBe(5);
+      expect(getCell(board, { x: 3, y: 5 })?.resourceLayers).toBe(10);
     });
   });
 

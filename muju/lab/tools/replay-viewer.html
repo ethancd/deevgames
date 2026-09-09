@@ -315,7 +315,7 @@
   <div class="hint">
     <div class="big">Drop a replay JSON anywhere on this page</div>
     <div>or use the <b>Load replay…</b> button above</div>
-    <div style="margin-top:8px;font-size:12px">expects schema <code>muju-lab-replay-v1</code></div>
+    <div style="margin-top:8px;font-size:12px">accepts current <code>muju-lab-replay-v2</code> and historical v1</div>
   </div>
 </div>
 <div id="drop-overlay">Drop replay JSON to load</div>
@@ -390,13 +390,13 @@ function loadFile(file) {
 
 function validate(data) {
   if (!data || typeof data !== 'object') throw new Error('top-level value is not an object.');
-  if (data.schema !== 'muju-lab-replay-v1')
-    throw new Error('unexpected schema "' + data.schema + '" (expected "muju-lab-replay-v1").');
+  if (!['muju-lab-replay-v1', 'muju-lab-replay-v2'].includes(data.schema))
+    throw new Error('unexpected schema "' + data.schema + '" (expected muju-lab-replay-v1 or v2).');
   if (!Array.isArray(data.steps) || data.steps.length === 0)
     throw new Error('replay contains no steps.');
   if (!data.meta || typeof data.meta !== 'object') throw new Error('missing meta record.');
   for (const s of data.steps) {
-    if (!Array.isArray(s.units) || typeof s.cells !== 'string' || s.cells.length !== 100 || !s.res)
+    if (!Array.isArray(s.units) || !(data.schema === 'muju-lab-replay-v1' ? typeof s.cells === 'string' && /^[0-5]{100}$/.test(s.cells) : Array.isArray(s.cells) && s.cells.length === 100 && s.cells.every(n => Number.isInteger(n) && n >= 0 && n <= 10)) || !s.res)
       throw new Error('malformed step at ply ' + s.ply + '.');
   }
 }
@@ -470,10 +470,11 @@ function analyzeStep(i) {
       if (sq) anno.hl.push({ x: sq.x, y: sq.y, kind: 'mine' });
       break;
     }
+    case 'BUY_UNIT':
     case 'PLACE_UNIT': {
       const p = a.position;
       const placed = unitAt(cur, p.x, p.y);
-      anno.text = who + ' PLACE ' + nameOf(placed) + ' at ' + posStr(p);
+      anno.text = who + (a.type === 'BUY_UNIT' ? ' BUY ' : ' PLACE ') + nameOf(placed) + ' at ' + posStr(p);
       anno.hl.push({ x: p.x, y: p.y, kind: 'place' });
       break;
     }
@@ -497,7 +498,7 @@ function analyzeStep(i) {
       anno.text = who + ' QUEUE ' + d.name + ' (' + a.definitionId + ')';
       break;
     }
-    case 'END_ACTION_PHASE': anno.text = who + ' ends action phase'; break;
+    case 'END_ACTION_PHASE': anno.text = who + (replay.schema === 'muju-lab-replay-v2' ? ' ends turn · collected ' + (cur.res[who].g - (prev?.res[who].g ?? cur.res[who].g)) : ' ends action phase'); break;
     case 'END_TURN':         anno.text = who + ' ends turn';         break;
     case 'RESIGN':           anno.text = who + ' RESIGNS';           break;
     default:                 anno.text = who + ' ' + a.type;
@@ -539,6 +540,7 @@ function renderHeader() {
 
   const winner = m.winner ? m.winner + (m.winType ? ' · ' + m.winType : '') : 'draw / none';
   const parts = [
+    ['rules', replay.schema === 'muju-lab-replay-v2' ? 'v2.1 passive/public' : 'historical well/queue'],
     ['winner', winner],
     ['seed', m.seed],
     ['experiment', m.experiment],
@@ -561,8 +563,9 @@ function esc(s) {
 /* ============================== board rendering ============================== */
 
 function cellFill(layer) {
-  // 0 = pale/depleted, 5 = rich dark warm tint (subtle)
-  const t = Math.max(0, Math.min(5, layer)) / 5;
+  // Historical wells used 0–5; current reserves use 0–10.
+  const max = replay?.schema === 'muju-lab-replay-v2' ? 10 : 5;
+  const t = Math.max(0, Math.min(max, layer)) / max;
   const r = Math.round(50 + t * 32);   // 50 -> 82
   const g = Math.round(49 + t * 11);   // 49 -> 60
   const b = Math.round(52 - t * 24);   // 52 -> 28
@@ -738,7 +741,7 @@ function renderSidePanel() {
     const r = s.res[p] || { r: 0, g: 0, s: 0, q: 0 };
     $('res-' + p).innerHTML =
       'stock <b>' + r.r + '</b> &nbsp; gained <b>' + r.g + '</b> &nbsp; spent <b>' + r.s +
-      '</b> &nbsp; queue <b>' + r.q + '</b>';
+      '</b>' + (replay.schema === 'muju-lab-replay-v1' ? ' &nbsp; queue <b>' + r.q + '</b>' : '');
   }
 }
 

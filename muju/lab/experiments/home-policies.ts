@@ -2,7 +2,7 @@
 import type {Bot,ScriptedBot,BotView} from '../harness/types';
 import type {AIAction} from '../../src/ai/types';
 import {makeBot as oldBot} from './map-d-investment-policies';
-import {createInitialGameState,manhattanDistance as dist} from '../../src/game/board';
+import {manhattanDistance as dist} from '../../src/game/board';
 import {UNIT_DEFINITIONS,getUnitDefinition} from '../../src/game/units';
 import {getPromotionCost} from '../../src/game/promotion';
 import {getHomeOccupier} from '../../src/game/victory';
@@ -11,11 +11,7 @@ import {legalActions} from '../harness/legal';
 import {pickBest} from '../harness/rng';
 import type {GameState} from '../../src/game/types';
 
-export function publicSimulation(v:BotView):GameState {
- const s=createInitialGameState();s.board=v.board;s.turn={currentPlayer:v.player,phase:v.phase,actionsRemaining:v.actionsRemaining,turnNumber:v.turnNumber};
- s.players[v.player]={...s.players[v.player],...v.me,resourcesManifested:v.me.resourcesSpent};
- s.players[v.opponent]={...s.players[v.opponent],...v.enemy,resources:0,buildQueue:[],resourcesManifested:v.enemy.resourcesSpent};return s;
-}
+export function publicSimulation(v:BotView):GameState { return v.state; }
 /** Bounded search for a same-turn removal, including promotion and attacker rotation.
  * This is a probe, not a proof of impossibility when no line is found. */
 export function clearHomePlan(initial:GameState):AIAction[]|null {
@@ -65,10 +61,10 @@ export function makeHomeBot(name:string):Bot {
   if(siege){
    const metal=v.board.units.filter(u=>u.owner===v.player&&u.definitionId.startsWith('metal')).sort((a,b)=>getUnitDefinition(b.definitionId).tier-getUnitDefinition(a.definitionId).tier)[0];
    if(v.phase==='place'&&metal&&getUnitDefinition(metal.definitionId).tier<tier){const p=legal.find(a=>a.type==='PROMOTE_UNIT'&&a.unitId===metal.id);if(p)return p;}
-   if(v.phase==='queue'){
-    if(!metal&&!v.me.buildQueue.some(q=>q.definitionId.startsWith('metal'))){const q=legal.find(a=>a.type==='QUEUE_UNIT'&&a.definitionId==='metal_1');if(q)return q;}
+   if(v.phase==='place'){
+    if(!metal){const q=legal.find(a=>a.type==='BUY_UNIT'&&a.definitionId==='metal_1');if(q)return q;}
     const reserve=metal&&getUnitDefinition(metal.definitionId).tier<tier?(getPromotionCost(metal)??0):0;
-    legal=legal.filter(a=>a.type!=='QUEUE_UNIT'||getUnitDefinition(a.definitionId).cost<=v.me.resources-reserve);
+    legal=legal.filter(a=>a.type!=='BUY_UNIT'||getUnitDefinition(a.definitionId).cost<=v.me.resources-reserve);
    }
   }
   const held=getHomeOccupier(v.board,v.player);if(held)legal=legal.filter(a=>a.type!=='MOVE'||a.unitId!==held.id);
@@ -76,8 +72,8 @@ export function makeHomeBot(name:string):Bot {
    const target=v.enemy.startCorner;
    const candidates=legal.filter(a=>a.type==='MOVE'&&(!siege||v.board.units.find(u=>u.id===a.unitId)!.definitionId.startsWith('metal'))&&dist(a.to,target)<dist(v.board.units.find(u=>u.id===a.unitId)!.position,target));
    const arrive=candidates.find(a=>a.type==='MOVE'&&dist(a.to,target)===0);if(arrive)return arrive;
-   // Mine and immediate combat retain the base policy's priority. Otherwise advance toward home.
-   const chosen=base.chooseAction({...ctx,legal});if(chosen&&['ATTACK','MINE'].includes(chosen.type))return chosen;
+   // Immediate combat retain the base policy's priority. Otherwise advance toward home.
+   const chosen=base.chooseAction({...ctx,legal});if(chosen&&['ATTACK'].includes(chosen.type))return chosen;
    if(candidates.length)return pickBest(ctx.rng,candidates,a=>a.type==='MOVE'?-dist(a.to,target):-Infinity)!;
    return chosen;
   }

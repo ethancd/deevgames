@@ -1,3 +1,12 @@
+> **Historical baseline — superseded on the v2.1 feature branch (2026-09-09).**
+> The well, depth, mine action, build queue/times, hidden economy and three-phase
+> teaching below are historical. Current rules use passive 0/4/8/10 reserves
+> (520 total), public tier-1 purchase and later-turn promotion. See [SPEC](../SPEC.md),
+> [mining report](MINING_SIMPLIFICATION-2026-09-09.md) and
+> [placement report](PLACEMENT_SIMPLIFICATION-2026-09-09.md). Old measurements
+> remain labeled by their original versions; none establishes v2.1 balance.
+> This branch has not been deployed.
+
 # Empty approaches and clearer armies — 2026-09-07
 
 New games use the revised Unequal routes map: all sixteen starting two-crystal cells are now blank (zero crystals, zero mined depth). The remaining 84 cells are unchanged: 20 × five, 16 × four, and 48 × three crystals, for **308 total**. Rotation and starting homes are unchanged. Empty squares remain walkable and eligible for normal reinforcement placement.

@@ -24,8 +24,7 @@ export function tacticalFixtures(): TacticalFixture[] {
     {type:'ATTACK',unitId:'defender-3',targetPosition:{x:0,y:0}},
   ];
   const promo = fixture('promotion dependent rescue', [['shadow_2',1,0],['shadow_2',0,1]], 'metal_3', 6, 12, true);
-  const noMoney = fixture('hidden budget / no promotion money', [['shadow_2',1,0],['shadow_2',0,1]], 'metal_3', 6, 0, true); noMoney.expected = 'disproved';
-  const mining = fixture('mine loses the last saving action', [['fire_2',1,0]], 'water_1', 1);
+  const noMoney = fixture('public bank / no promotion money', [['shadow_2',1,0],['shadow_2',0,1]], 'metal_3', 6, 0, true); noMoney.expected = 'disproved';
   const blocked = fixture('clear an adjacent lane', [['plant_1',1,0],['fire_1',2,0]], 'plant_1', 3);
   const longMove = fixture('multi-action approach', [['fire_1',5,0],['fire_1',0,1]], 'metal_3', 4);
   const impossible = fixture('too few actions for rotation', [['water_3',1,0],['water_3',0,1],['water_3',2,0]], 'metal_3', 3); impossible.expected = 'disproved';
@@ -35,7 +34,7 @@ export function tacticalFixtures(): TacticalFixture[] {
   const placed = fixture('newly placed unit cannot promote', [['shadow_2',1,0],['shadow_2',0,1]], 'metal_3', 6, 12, true); placed.state.board.units.slice(1).forEach(u => u.placedThisTurn = true); placed.expected = 'disproved';
   const noAct = fixture('ineligible defender', [['fire_3',1,0]], 'plant_1', 1); noAct.state.board.units[1].canActThisTurn = false; noAct.expected = 'disproved';
   const already = fixture('at most one promotion', [['shadow_2',1,0],['shadow_2',0,1]], 'metal_3', 6, 12, true); already.state.board.units.slice(1).forEach(u => u.promotedThisPlacement = true); already.expected = 'disproved';
-  const list = [simple,two,rotation,promo,noMoney,mining,blocked,longMove,impossible,zero,attacked,chip,placed,noAct,already];
+  const list = [simple,two,rotation,promo,noMoney,blocked,longMove,impossible,zero,attacked,chip,placed,noAct,already];
   return list.flatMap(f => [f, rotate(f)]);
 }
 function rotate(f: TacticalFixture): TacticalFixture {

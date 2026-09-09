@@ -44,7 +44,7 @@ describe('Unit Definitions', () => {
         expect(unit.speed).toBeGreaterThan(0);
         expect(unit.mining).toBeGreaterThanOrEqual(0); // Some units can't mine
         expect(unit.cost).toBeGreaterThan(0);
-        expect(unit.buildTime).toBeGreaterThan(0);
+        expect(unit).not.toHaveProperty('buildTime');
       }
     });
   });

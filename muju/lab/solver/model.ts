@@ -1,4 +1,6 @@
 /** Deterministic local optimization, not a game-playing bot or a universal power rating. */
+import { reserveTake } from '../../src/game/mining';
+import { upkeepForTier } from '../../src/game/upkeep';
 import type { UnitDefinition } from '../../src/game/types';
 import { getAttackModifier } from '../../src/game/elements';
 
@@ -10,21 +12,30 @@ export function validateCatalogue(catalogue: Catalogue): void {
   for (const element of elements) for (let tier = 1; tier <= tiers; tier++) {
     const unit = catalogue.find(d => d.id === `${element}_${tier}`);
     if (!unit || unit.element !== element || unit.tier !== tier) throw new Error(`Missing/mismatched ${element}_${tier}`);
-    for (const key of ['attack', 'defense', 'speed', 'mining', 'cost', 'buildTime'] as const) {
+    for (const key of ['attack', 'defense', 'speed', 'mining', 'cost'] as const) {
       if (!Number.isInteger(unit[key]) || unit[key] < (key === 'attack' || key === 'mining' ? 0 : 1)) throw new Error(`Invalid ${unit.id}.${key}`);
     }
-    if (unit.mining > 5) throw new Error('Only five resource layers exist');
+    if (unit.mining > 5) throw new Error('Catalogue mining is capped at five');
   }
 }
 
 export const ACTIONS = 6;
 export const MAX_NEIGHBORS = 4;
 export const DISTANCES = Array.from({ length: 18 }, (_, i) => i + 1);
-export const WELLS = {
-  fresh: Array<number>(10).fill(0),
-  shallowStripped: Array<number>(10).fill(3),
-  scattered: [0, 5, 5, 5, 0, 5, 5, 5, 0, 5],
-};
+export const RESERVES = { ordinary: 4, shelf: 8, rich: 10 };
+
+export function passiveCurve(unit: UnitDefinition, reserve: number, turns = 6): number[] {
+  if(!Number.isInteger(reserve)||reserve<0||reserve>10||!Number.isInteger(turns)||turns<0)throw new Error('Valid reserve and horizon required');
+  const curve = [0]; let left = reserve;
+  for (let turn = 1; turn <= turns; turn++) {
+    const take = reserveTake(unit.mining, left); left -= take;
+    curve.push(curve[curve.length-1] + take);
+  }
+  return curve;
+}
+export function turnsToEmpty(unit: UnitDefinition, reserve: number): number|null {
+  return reserve === 0 ? 0 : unit.mining === 0 ? null : Math.ceil(reserve / unit.mining);
+}
 
 export function power(attacker: UnitDefinition, defender: UnitDefinition): number {
   return Math.max(0, attacker.attack + getAttackModifier(attacker.element, defender.element));
@@ -72,75 +83,31 @@ export function killFrontier(target: UnitDefinition, attackers: Catalogue, dista
     .sort((a, b) => a.cost - b.cost || a.actions - b.actions || a.bodies - b.bodies);
 }
 
-/** Exact best income for ONE unit on a finite 1-D, unblocked corridor.
- * Each cell has five layers and its given initial mined depth. A unit exhausts
- * all layers it can reach in one mine action; masks prevent repeated income.
- * Movement can pass through depleted cells and costs one action per speed.
- */
-export function miningCurve(unit: UnitDefinition, depths: readonly number[], budget = ACTIONS): number[] {
-  if (depths.length > 15 || depths.length < 1 || depths.some(d => !Number.isInteger(d) || d < 0 || d > 5)) {
-    throw new Error('Use 1–15 valid finite wells');
-  }
-  const yields = depths.map(d => Math.max(0, Math.min(5, unit.mining) - d));
-  let states = new Map<number, number>([[0, 0]]); // (mask * length + position) -> income
-  const best = [0], n = depths.length;
-  for (let step = 1; step <= budget; step++) {
-    const next = new Map(states); // optional stop: answers mean at most this many actions
-    const put = (key: number, value: number) => { if ((next.get(key) ?? -1) < value) next.set(key, value); };
-    for (const [key, value] of states) {
-      const position = key % n, mask = Math.floor(key / n), bit = 1 << position;
-      if (!(mask & bit) && yields[position] > 0) put((mask | bit) * n + position, value + yields[position]);
-      for (let destination = Math.max(0, position - unit.speed); destination <= Math.min(n - 1, position + unit.speed); destination++) {
-        if (destination !== position) put(mask * n + destination, value);
-      }
-    }
-    best.push(Math.max(...next.values()));
-    states = next;
-  }
-  return best;
-}
-
 export interface AccessPoint { turn: number; resources: number; event: string }
-/** Earliest exemplar along one promotion line, with stipulated outside income.
- * Starting F1/W1/P1 are free at turn 1. Income arrives in action phase, AFTER
- * placement/promotion. A fresh T1 must build and cannot promote on placement.
- * Promotions retain the piece and allow it to act immediately. With monotone
- * costs and build times >=1, promotion is no later/more costly than replacing
- * an existing prerequisite with a newly queued next-tier exemplar.
- * This is a financing lower bound, not an estimate of actual game turn access.
- */
+/** Individually financed promotion climb with stipulated external turn-end income.
+ * Starting F1/W1/P1 are free. Rent is paid before purchases/promotions. A line
+ * unable to pay rent is released, then must start again at tier 1. No combat. */
 export function accessTimeline(catalogue: Catalogue, target: UnitDefinition, income: number,
   horizon = 12): { activeTurn: number | null; investment: number; path: AccessPoint[] } {
   if (!Number.isFinite(income) || income < 0) throw new Error('Nonnegative income required');
-  const line = catalogue.filter(d => d.element === target.element).sort((a, b) => a.tier - b.tier);
-  if (line.some((d, i) => d.buildTime < 1 || (i > 0 && d.cost < line[i - 1].cost))) {
-    throw new Error('Timeline requires monotone prices and build times >=1');
+  const line = catalogue.filter(d => d.element === target.element).sort((a,b)=>a.tier-b.tier);
+  if(line.some((d,i)=>i>0 && d.cost<line[i-1].cost))throw new Error('Timeline requires monotone prices');
+  const starts=['fire','water','plant'].includes(target.element);
+  let tier=starts?1:0,cash=0;
+  const path:AccessPoint[]=[],investment=target.cost-(starts?line[0].cost:0);
+  for(let turn=1;turn<=horizon;turn++) {
+    const rent=upkeepForTier(tier);
+    if(cash<rent){tier=0;path.push({turn,resources:cash,event:'release unaffordable unit'});}
+    else cash-=rent;
+    if(tier===0 && cash>=line[0].cost){cash-=line[0].cost;tier=1;path.push({turn,resources:cash,event:`buy ${line[0].id}`});}
+    else if(turn>1 && tier>0 && tier<target.tier) {
+      const cost=line[tier].cost-line[tier-1].cost;
+      if(cash>=cost){cash-=cost;tier++;path.push({turn,resources:cash,event:`promote ${line[tier-1].id}`});}
+    }
+    if(tier>=target.tier)return {activeTurn:turn,investment,path};
+    cash+=income;
   }
-  const starts = ['fire', 'water', 'plant'].includes(target.element);
-  let tier = starts ? 1 : 0, cash = 0, readyAt: number | null = null;
-  const path: AccessPoint[] = [];
-  const investment = target.cost - (starts ? line[0].cost : 0);
-  for (let turn = 1; turn <= horizon; turn++) {
-    let placed = false;
-    if (readyAt === turn) {
-      tier = 1; placed = true; readyAt = null;
-      path.push({ turn, resources: cash, event: `place ${line[0].id}` });
-    }
-    if (!placed && turn > 1 && tier > 0 && tier < target.tier) {
-      const price = line[tier].cost - line[tier - 1].cost;
-      if (cash >= price) {
-        cash -= price; tier++;
-        path.push({ turn, resources: cash, event: `promote ${line[tier - 1].id}` });
-      }
-    }
-    if (tier >= target.tier) return { activeTurn: turn, investment, path };
-    cash += income;
-    if (tier === 0 && readyAt === null && cash >= line[0].cost) {
-      cash -= line[0].cost; readyAt = turn + line[0].buildTime;
-      path.push({ turn, resources: cash, event: `queue ${line[0].id}, ready turn ${readyAt}` });
-    }
-  }
-  return { activeTurn: null, investment, path };
+  return {activeTurn:null,investment,path};
 }
 
 export function staticDominators(unit: UnitDefinition, catalogue: Catalogue): string[] {
@@ -148,8 +115,8 @@ export function staticDominators(unit: UnitDefinition, catalogue: Catalogue): st
   return catalogue.filter(other => other.id !== unit.id && other.tier === unit.tier &&
     catalogue.every(t => getAttackModifier(other.element, t.element) === getAttackModifier(unit.element, t.element) &&
       getAttackModifier(t.element, other.element) === getAttackModifier(t.element, unit.element)) &&
-    other.cost <= unit.cost && other.buildTime <= unit.buildTime && positive.every(k => other[k] >= unit[k]) &&
-    (other.cost < unit.cost || other.buildTime < unit.buildTime || positive.some(k => other[k] > unit[k])))
+    other.cost <= unit.cost && positive.every(k => other[k] >= unit[k]) &&
+    (other.cost < unit.cost || positive.some(k => other[k] > unit[k])))
     .map(d => d.id);
 }
 
@@ -182,17 +149,16 @@ export function solveRoles(catalogue: Catalogue): Record<string, RoleEvidence> {
   }
   for (const target of catalogue) for (const distance of DISTANCES) for (const actions of [1, 2, 3, 4, 5, 6]) {
     for (const mine of [0, 1, 2, 3, 4, 5]) for (const guard of guards) {
-      mission(`strike ${target.id} at distance ${distance} within ${actions} actions; mine >=${mine} fresh layers first; survive ${guard?.id ?? 'no'} hit`,
-        u => (mine === 0 || u.mining >= mine) && strikeActions(u, distance) + Number(mine > 0) <= actions &&
+      mission(`strike ${target.id} at distance ${distance} within ${actions} actions; mine >=${mine} crystals at turn end on rich ground; survive ${guard?.id ?? 'no'} hit`,
+        u => (mine === 0 || u.mining >= mine) && strikeActions(u, distance) <= actions &&
           power(u, target) >= target.defense && (!guard || u.defense > power(guard, u)));
     }
   }
-  const curves = Object.fromEntries(catalogue.map(d => [d.id,
-    Object.fromEntries(Object.entries(WELLS).map(([name, depths]) => [name, miningCurve(d, depths)]))]));
-  for (const name of Object.keys(WELLS)) for (let actions = 1; actions <= ACTIONS; actions++) {
-    for (let amount = 1; amount <= 20; amount++) for (const guard of guards) {
-      mission(`mine >=${amount} in ${name} corridor within ${actions} actions; survive ${guard?.id ?? 'no'} hit`,
-        u => curves[u.id][name][actions] >= amount && (!guard || u.defense > power(guard, u)));
+  // Independent finite-cell income tests, with no action cost for collection.
+  for(const [name,reserve] of Object.entries(RESERVES))for(let turns=1;turns<=4;turns++) {
+    for(let amount=1;amount<=reserve;amount++)for(const guard of guards) {
+      mission(`collect >=${amount} on ${name} reserve ${reserve} within ${turns} turns; survive ${guard?.id??'no'} hit`,
+        u=>passiveCurve(u,reserve,turns)[turns]>=amount && (!guard||u.defense>power(guard,u)));
     }
   }
   // Anchor occupation need not involve an attack or income.
@@ -214,7 +180,8 @@ export function metrics(unit: UnitDefinition, opponents: Catalogue) {
   const defense = [1, 4, 7].map(distance => ({ distance, frontier: killFrontier(unit, opponents, distance) }));
   return { killCells: kills, cells, deliveredDamage: damageTotal / cells,
     meanStrikeActions: actionTotal / DISTANCES.length,
-    income: Object.fromEntries(Object.entries(WELLS).map(([name, depths]) => [name, miningCurve(unit, depths)])),
+    income: Object.fromEntries(Object.entries(RESERVES).map(([name, reserve]) => [name, passiveCurve(unit, reserve)])),
+    turnsToEmpty: Object.fromEntries(Object.entries(RESERVES).map(([name,reserve])=>[name,turnsToEmpty(unit,reserve)])),
     defense };
 }
 
@@ -240,7 +207,7 @@ export function marginalValues(unit: UnitDefinition, opponents: Catalogue) {
       squad: squadMarginal(unit, { ...unit, [stat]: unit[stat] + 1 }, opponents),
       strikeActionsSaved: base.meanStrikeActions - changed.meanStrikeActions,
       deliveredDamage: changed.deliveredDamage - base.deliveredDamage,
-      incomeAt6: Object.fromEntries(Object.keys(WELLS).map(name => [name, changed.income[name][6] - base.income[name][6]])),
+      incomeAt6: Object.fromEntries(Object.keys(RESERVES).map(name => [name, changed.income[name][6] - base.income[name][6]])),
       defenseKillCost: changed.defense.map((d, i) => ({ distance: d.distance,
         before: base.defense[i].frontier[0]?.cost ?? null, after: d.frontier[0]?.cost ?? null })) }];
   }));

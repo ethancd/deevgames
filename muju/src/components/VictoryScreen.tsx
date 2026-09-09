@@ -26,7 +26,7 @@ export function VictoryScreen({ winner, reason, onPlayAgain, playerNames }: Vict
         </h2>
 
         <p className="text-gray-400 mb-6">
-          {!winner ? `${INACTIVITY_LIMIT} consecutive player turns passed without mining crystals or eliminating an enemy by attack.` : reason === 'upkeep-elimination' ? 'All remaining forces were released during upkeep.' : reason === 'home-occupation' ? `${winnerName} held the enemy home corner until the start of their turn!`
+          {!winner ? `${INACTIVITY_LIMIT} consecutive player turns passed without collecting crystals or eliminating an enemy by attack.` : reason === 'upkeep-elimination' ? 'All remaining forces were released during upkeep.' : reason === 'home-occupation' ? `${winnerName} held the enemy home corner until the start of their turn!`
             : reason === 'resignation' ? 'The opponent resigned.' : playerNames
             ? `${winnerName} has eliminated all enemy forces!`
             : (isPlayerWinner

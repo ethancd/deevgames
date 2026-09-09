@@ -2,14 +2,13 @@ import { INACTIVITY_LIMIT, INACTIVITY_WARNING } from '../game/inactivity';
 import { UpkeepPanel } from './UpkeepPanel';
 import { upkeepDue } from '../game/upkeep';
 import { VisualKey } from './VisualKey';
-import { describeCrystals } from './CrystalWell';
+import { describeCrystals } from './CellReserve';
 import { getHomeOccupier } from '../game/victory';
 import { useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import { useGameState } from '../hooks/useGameState';
 import { useAI } from '../hooks/useAI';
 import { Board } from './Board';
 import { ActionBar } from './ActionBar';
-import { BuildQueue } from './BuildQueue';
 import { UnitInfo } from './UnitInfo';
 import { UnitShop } from './UnitShop';
 import { VictoryScreen } from './VictoryScreen';
@@ -20,10 +19,9 @@ import { PassDeviceOverlay } from './PassDeviceOverlay';
 import { InstructionsModal } from './InstructionsModal';
 import { getUnitAt, getUnitById, getCell, isOccupied, isValidPosition, MAX_ACTIONS_PER_TURN } from '../game/board';
 import { getUnitDefinition, UNIT_DEFINITIONS } from '../game/units';
-import { canMine, calculateMiningYield } from '../game/mining';
+import { projectedIncome, unitEndOfTurnTake } from '../game/mining';
 import { canPromote } from '../game/promotion';
 import { getAllSpawnPositions, getSpawnInvalidReason } from '../game/spawning';
-import { canBuildUnit } from '../game/building';
 import { findPath, getMovementRange, type MovementRangePosition } from '../game/movement';
 import { calculateAttackPower, calculateDefense } from '../game/combat';
 import { PlayDialog } from './PlayDialog';
@@ -46,13 +44,10 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
     deselect,
     moveUnit,
     attackWith,
-    mineWith,
     endPlacePhase,
     endActionPhase,
-    queueUnit,
-    placeUnit,
+    buyUnit,
     promoteUnit,
-    endTurn,
     applyAIAction,
     resetGame,
     undo,
@@ -60,7 +55,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
     selectedUnitData,
   } = useGameState();
 
-  const [selectedReadyUnitId, setSelectedReadyUnitId] = useState<string | null>(null);
+  const [selectedPurchaseId, setSelectedPurchaseId] = useState<string | null>(null);
   const [selectedPlaceUnitId, setSelectedPlaceUnitId] = useState<string | null>(null);
   const [spawnFeedback, setSpawnFeedback] = useState<SpawnFeedback>(null);
   const [viewedEnemyUnitId, setViewedEnemyUnitId] = useState<string | null>(null);
@@ -69,7 +64,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
   const [showInstructions, setShowInstructions] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [showInsights, setShowInsights] = useState(false);
-  const [showResources, setShowResources] = useState(false);
+  const [showResources, setShowResources] = useState(true);
   const [showVisualKey, setShowVisualKey] = useState(false);
   const [showEnemyRange, setShowEnemyRange] = useState(false);
   const [preview, setPreview] = useState<{ kind: 'move' | 'attack'; position: Position } | null>(null);
@@ -83,7 +78,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
   // Partial movement state: tracks pending move path before committing
   const [pendingMovePath, setPendingMovePath] = useState<Position[]>([]);
 
-  // Unit shop inspection mode (show shop outside of queue phase)
+  // Unit shop inspection mode (show shop for all catalogue tiers)
   const [showUnitShopInspection, setShowUnitShopInspection] = useState(false);
 
   // Helper: check if current player is human-controlled
@@ -93,7 +88,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
   // Clear place phase selections when phase changes or turn ends
   useEffect(() => {
     if (state.turn.phase !== 'place' || !isCurrentPlayerHuman) {
-      setSelectedReadyUnitId(null);
+      setSelectedPurchaseId(null);
       setSelectedPlaceUnitId(null);
       setSpawnFeedback(null);
     }
@@ -125,23 +120,15 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
     }
   }, [state.turn.currentPlayer, config.mode]);
 
-  // Compute valid spawn positions when a ready unit is selected
+  // Compute valid spawn positions when a purchase is selected
   const validSpawns = useMemo(() => {
-    if (state.turn.phase !== 'place' || !selectedReadyUnitId) {
+    if (state.turn.phase !== 'place' || !selectedPurchaseId) {
       return [];
     }
     return getAllSpawnPositions(state.turn.currentPlayer, state.board);
-  }, [state.turn.phase, selectedReadyUnitId, state.board, state.turn.currentPlayer]);
+  }, [state.turn.phase, selectedPurchaseId, state.board, state.turn.currentPlayer]);
 
-  // Get the definition ID for the selected ready unit (for preview)
-  const selectedReadyDefinitionId = useMemo(() => {
-    if (!selectedReadyUnitId) return null;
-    const currentPlayerState = state.players[state.turn.currentPlayer];
-    const queuedUnit = currentPlayerState.buildQueue.find(
-      (q) => q.id === selectedReadyUnitId
-    );
-    return queuedUnit?.definitionId ?? null;
-  }, [selectedReadyUnitId, state.players, state.turn.currentPlayer]);
+  const selectedPurchaseDefinitionId = selectedPurchaseId;
 
   // Get the unit data for unit selected during place phase (for promotion)
   const selectedPlaceUnitData = useMemo(() => {
@@ -271,14 +258,14 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
 
     const currentPlayer = state.turn.currentPlayer;
 
-    // Handle place phase - placing ready units
-    if (state.turn.phase === 'place' && selectedReadyUnitId) {
+    // Handle place phase - placing purchases
+    if (state.turn.phase === 'place' && selectedPurchaseId) {
       const isSpawnValid = validSpawns.some(
         (s) => s.x === position.x && s.y === position.y
       );
       if (isSpawnValid) {
-        placeUnit(selectedReadyUnitId, position);
-        setSelectedReadyUnitId(null);
+        buyUnit(selectedPurchaseId, position);
+        setSelectedPurchaseId(null);
         setSpawnFeedback(null);
       } else {
         // Check why it's invalid and show feedback
@@ -339,8 +326,8 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
     // Handle place phase - selecting units for promotion
     if (state.turn.phase === 'place') {
       if (isOwnUnit) {
-        // Clear ready unit selection if selecting a board unit
-        setSelectedReadyUnitId(null);
+        // Clear purchase selection if selecting a board unit
+        setSelectedPurchaseId(null);
         setViewedEnemyUnitId(null);
         // Toggle selection
         if (selectedPlaceUnitId === unitId) {
@@ -383,12 +370,6 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
     } else {
       // No selection - view enemy stats
       setViewedEnemyUnitId(viewedEnemyUnitId === unitId ? null : unitId);
-    }
-  };
-
-  const handleMine = () => {
-    if (state.selectedUnit && !isThinking) {
-      mineWith(state.selectedUnit);
     }
   };
 
@@ -446,7 +427,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
     }
 
     // === Enter: End current phase ===
-    if (key === 'enter' && state.turn.phase !== 'queue') {
+    if (key === 'enter') {
       e.preventDefault();
       // Commit any pending move first
       if (pendingMovePath.length > 0 && state.selectedUnit) {
@@ -490,73 +471,16 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
         selectUnit(nextUnit.id);
       } else if (state.turn.phase === 'place') {
         setSelectedPlaceUnitId(nextUnit.id);
-        setSelectedReadyUnitId(null);
+        setSelectedPurchaseId(null);
         setViewedEnemyUnitId(null);
       }
       return;
     }
 
-    // === Queue phase: Unit shop shortcuts ===
-    if (state.turn.phase === 'queue') {
-      // 1-6: Select tier 1 unit of that element
-      if (['1', '2', '3', '4', '5', '6'].includes(e.key)) {
-        e.preventDefault();
-        const elementIndex = parseInt(e.key) - 1;
-        const element = ELEMENT_ORDER[elementIndex];
-        const tier1Unit = UNIT_DEFINITIONS.find(d => d.element === element && d.tier === 1);
-        if (tier1Unit) {
-          setShopSelectedId(tier1Unit.id);
-        }
-        return;
-      }
-
-      // Arrow keys: Navigate unit shop
-      if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(key)) {
-        e.preventDefault();
-        // Build the unit grid structure for navigation
-        const unitsByTier: Record<number, typeof UNIT_DEFINITIONS> = Object.fromEntries(
-          [...new Set(UNIT_DEFINITIONS.map(d => d.tier))].map(tier => [tier,
-            UNIT_DEFINITIONS.filter(d => d.tier === tier).sort((a, b) => ELEMENT_ORDER.indexOf(a.element) - ELEMENT_ORDER.indexOf(b.element))])
-        );
-
-        // Find current position in grid
-        let currentTier = 1;
-        let currentCol = 0;
-        if (shopSelectedId) {
-          const selectedDef = UNIT_DEFINITIONS.find(d => d.id === shopSelectedId);
-          if (selectedDef) {
-            currentTier = selectedDef.tier;
-            currentCol = ELEMENT_ORDER.indexOf(selectedDef.element);
-          }
-        }
-
-        // Calculate new position
-        let newTier = currentTier;
-        let newCol = currentCol;
-
-        if (key === 'arrowup') newTier = Math.max(1, currentTier - 1);
-        if (key === 'arrowdown') newTier = Math.min(Math.max(...Object.keys(unitsByTier).map(Number)), currentTier + 1);
-        if (key === 'arrowleft') newCol = Math.max(0, currentCol - 1);
-        if (key === 'arrowright') newCol = Math.min(5, currentCol + 1);
-
-        // Find unit at new position
-        const newUnit = unitsByTier[newTier][newCol];
-        if (newUnit) {
-          setShopSelectedId(newUnit.id);
-        }
-        return;
-      }
-
-      // Enter/B: Build selected unit in shop
-      if ((key === 'enter' || key === 'b') && shopSelectedId) {
-        e.preventDefault();
-        const buildState = { queue: [], crystals: currentPlayerState.resources };
-        if (canBuildUnit(shopSelectedId, currentPlayer, state.board, buildState)) {
-          queueUnit(shopSelectedId);
-          setShopSelectedId(null);
-        }
-        return;
-      }
+    if (state.turn.phase === 'place' && ['1','2','3','4','5','6'].includes(key)) {
+      const def = UNIT_DEFINITIONS.find(d => d.element === ELEMENT_ORDER[Number(key)-1] && d.tier === 1)!;
+      if (def.cost <= currentPlayerState.resources) { setSelectedPurchaseId(def.id); setSelectedPlaceUnitId(null); }
+      e.preventDefault(); return;
     }
 
     // === Place phase shortcuts ===
@@ -566,7 +490,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
         e.preventDefault();
         const unit = getUnitById(state.board, selectedPlaceUnitId);
         if (unit) {
-          const buildState = { queue: [], crystals: currentPlayerState.resources };
+          const buildState = { crystals: currentPlayerState.resources };
           if (canPromote(unit, buildState)) {
             promoteUnit(selectedPlaceUnitId);
             setSelectedPlaceUnitId(null);
@@ -583,20 +507,6 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
 
       const unitDef = getUnitDefinition(unit.definitionId);
       const unitSpeed = unitDef.speed;
-
-      // M: Mine (commits pending move first)
-      if (key === 'm') {
-        e.preventDefault();
-        // Commit pending move first if any
-        if (pendingMovePath.length > 0) {
-          const finalPosition = pendingMovePath[pendingMovePath.length - 1];
-          moveUnit(state.selectedUnit, finalPosition);
-          setPendingMovePath([]);
-        } else if (canMine(unit, state.board)) {
-          mineWith(state.selectedUnit);
-        }
-        return;
-      }
 
       // Arrow keys: Partial movement (accumulate steps until full speed)
       if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(key)) {
@@ -646,7 +556,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
     }
   }, [
     isCurrentPlayerHuman, isThinking, showPassOverlay, state, playerOwnUnits,
-    selectUnit, selectedPlaceUnitId, promoteUnit, mineWith, moveUnit, queueUnit, shopSelectedId,
+    selectUnit, selectedPlaceUnitId, promoteUnit, moveUnit,
     canUndo, undo, endPlacePhase, endActionPhase, pendingMovePath, preview, showMenu, showInstructions, showUnitShopInspection, showInsights, showVisualKey
   ]);
 
@@ -656,13 +566,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown]);
 
-  // Check if selected unit can mine
-  const canMineHere = () => {
-    if (!selectedUnitData) return false;
-    return canMine(selectedUnitData, state.board);
-  };
-
-  // Get cell info for selected unit (for mining depth feedback)
+  // Current reserve for the selected piece.
   const selectedUnitCell = useMemo(() => {
     const unitToShow = selectedPlaceUnitData ?? selectedUnitData;
     if (!unitToShow) return null;
@@ -700,11 +604,11 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
     }
     // Clear place phase selections
     setSelectedPlaceUnitId(null);
-    setSelectedReadyUnitId(null);
+    setSelectedPurchaseId(null);
     setViewedEnemyUnitId(null);
   };
 
-  // Get the current player's state for resource/queue display
+  // Get the current player's state for public bank display
   const currentPlayerState = state.players[state.turn.currentPlayer];
   const viewerPlayer: PlayerId = config.mode === 'vs-ai' ? 'white' : state.turn.currentPlayer;
   const viewerState = state.players[viewerPlayer];
@@ -734,8 +638,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
     ? `Clear ${state.turn.currentPlayer === 'white' ? 'A1' : 'J10'} this turn or lose`
     : getHomeOccupier(state.board, state.turn.currentPlayer) ? `Hold ${state.turn.currentPlayer === 'white' ? 'J10' : 'A1'} until your next turn` : '';
   const phaseHint = !interactive ? (isPaused ? 'Paused' : 'Opponent’s turn')
-    : state.turn.phase === 'place' ? 'Place a ready unit, or select a unit to upgrade.'
-    : state.turn.phase === 'queue' ? 'Build reinforcements, or save crystals for later.'
+    : state.turn.phase === 'place' ? 'Buy tier 1, or select a piece to promote.'
     : 'Select a unit. Preview a destination, then confirm.';
 
   return (
@@ -756,21 +659,18 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
       </header>
       <section className="turn-strip" aria-label="Turn and phases">
         <strong>{isThinking ? 'Thinking…' : playerNames[state.turn.currentPlayer]} <span>· Turn {state.turn.turnNumber}</span></strong>
-        <div className="phase-steps">{(['place', 'action', 'queue'] as const).map((phase, i) =>
-          <span key={phase} aria-current={state.turn.phase === phase ? 'step' : undefined}>{i + 1} {phase === 'queue' ? 'Build' : phase === 'action' ? 'Act' : 'Place'}</span>
+        <div className="phase-steps">{(['place', 'action'] as const).map((phase, i) =>
+          <span key={phase} aria-current={state.turn.phase === phase ? 'step' : undefined}>{i + 1} {phase === 'action' ? 'Act' : 'Place'}</span>
         )}</div>
       </section>
       <section className="score-strip" aria-label="Player resources">
         <div><strong><i className={`player-dot ${viewerPlayer}`} />{playerNames[viewerPlayer]} <b>◆ {viewerState.resources}</b></strong>
-          <small>Gained {viewerState.resourcesGained} · Public {viewerState.resourcesManifested}</small><small className={upkeepDue(state,viewerPlayer)>viewerState.resources ? 'rent-warning' : ''}>Upkeep {upkeepDue(state,viewerPlayer)} / turn</small></div>
-        <div><strong><i className={`player-dot ${opponentPlayer}`} />{playerNames[opponentPlayer]} <b>◆ Hidden</b></strong>
-          <small>Gained {opponentState.resourcesGained} · Public {opponentState.resourcesManifested}</small><small>Upkeep {upkeepDue(state,opponentPlayer)} / turn</small></div>
+          <small>Gained {viewerState.resourcesGained}</small><small className={upkeepDue(state,viewerPlayer)>viewerState.resources ? 'rent-warning' : ''}>Upkeep {upkeepDue(state,viewerPlayer)} / turn</small></div>
+        <div><strong><i className={`player-dot ${opponentPlayer}`} />{playerNames[opponentPlayer]} <b>◆ {opponentState.resources}</b></strong>
+          <small>Gained {opponentState.resourcesGained}</small><small>Upkeep {upkeepDue(state,opponentPlayer)} / turn</small></div>
       </section>
       <div className="progress-clock"><span className={(state.inactivityPlies??0)>=INACTIVITY_WARNING ? 'rent-warning' : ''}>{state.inactivityPlies??0}/{INACTIVITY_LIMIT} quiet turns</span>{state.lastUpkeep && (state.lastUpkeep.paid>0 || state.lastUpkeep.released.length>0) && <span>{playerNames[state.lastUpkeep.player]} paid {state.lastUpkeep.paid} · released {state.lastUpkeep.released.length}</span>}</div>
-      {viewerState.buildQueue.length > 0 && <BuildQueue queue={viewerState.buildQueue} isOwner={true}
-        isPlacePhase={state.turn.phase === 'place' && interactive} board={state.board} player={state.turn.currentPlayer}
-        selectedReadyId={selectedReadyUnitId} onSelectReady={(id) => { setSelectedReadyUnitId(id); setSelectedPlaceUnitId(null); setViewedEnemyUnitId(null); }} />}
-      <div className={`play-area ${state.turn.phase === 'queue' && interactive ? 'is-building' : ''}`}>
+      <div className={`play-area ${state.turn.phase === 'place' && interactive ? 'is-placing' : ''}`}>
         <section className="board-stage" aria-label="Battlefield">
           <Board board={state.board} selectedUnit={shownUnit?.id ?? null}
             validMoves={state.validMoves} validAttacks={state.validAttacks} validSpawns={validSpawns}
@@ -779,21 +679,21 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
             onCellClick={handleCellClick} onUnitClick={handleUnitClick} />
         </section>
         <div className="board-key">
-          <span role="status">{homeNotice || (isEnemyView && showEnemyRange ? 'Enemy reach · current speed, 6 actions' : selectedReadyUnitId ? '＋ Safe placement' : '● 1 action · ○ farther · ⊗ attack')}</span>
+          <span role="status">{homeNotice || (isEnemyView && showEnemyRange ? 'Enemy reach · current speed, 6 actions' : selectedPurchaseId ? '＋ Safe placement' : '● 1 action · ○ farther · ⊗ attack')}</span>
           <button className="visual-key-trigger" onClick={() => setShowVisualKey(true)}>Key</button>
-          <button aria-pressed={showResources} onClick={() => setShowResources(!showResources)}>◆ Depths</button>
+          <button aria-pressed={showResources} onClick={() => setShowResources(!showResources)}>◆ Reserves</button>
         </div>
         <section className="decision-panel" aria-label="Current choice">
-          {state.turn.phase === 'queue' && interactive ? <UnitShop resources={currentPlayerState.resources} player={state.turn.currentPlayer} board={state.board}
-            onQueueUnit={queueUnit} selectedId={shopSelectedId} onSelectId={setShopSelectedId} />
+          {state.turn.phase === 'place' && interactive && !shownUnit ? <UnitShop resources={currentPlayerState.resources} player={state.turn.currentPlayer} board={state.board}
+            selectedId={selectedPurchaseId} onSelectId={id => { setSelectedPurchaseId(id); setSelectedPlaceUnitId(null); setViewedEnemyUnitId(null); }} />
           : preview && selectedUnitData ? <div className="action-preview">
               <div className="preview-heading"><strong>{preview.kind === 'move' ? 'Move' : 'Attack'} → {String.fromCharCode(65 + preview.position.x)}{preview.position.y + 1}</strong><span>{previewCost} action{previewCost !== 1 ? 's' : ''} · {state.turn.actionsRemaining - previewCost} left</span></div>
               <p>{preview.kind === 'attack' && previewTarget ? `${getUnitDefinition(previewTarget.definitionId).name}: ${attackPower} attack vs ${attackDefense} defense · ${attackPower >= attackDefense ? 'Eliminates target' : `${attackDefense - attackPower} defense remains`}`
-                : targetCell ? `Mining here: ${calculateMiningYield(selectedUnitData, targetCell)} crystals · ${describeCrystals(targetCell)}` : ''}</p>
+                : targetCell ? `Takes ${unitEndOfTurnTake(selectedUnitData, targetCell)} here at turn end · ${describeCrystals(targetCell)}` : ''}</p>
               <div className="preview-buttons"><button onClick={() => setPreview(null)}>Cancel</button><button className="primary" onClick={commitPreview}>Confirm {preview.kind}</button></div>
             </div>
-          : shownUnit || selectedReadyDefinitionId ? <UnitInfo unit={shownUnit} previewDefinitionId={selectedReadyDefinitionId}
-              onMine={handleMine} canMine={canMineHere()} cellInfo={selectedUnitCell}
+          : shownUnit || selectedPurchaseDefinitionId ? <UnitInfo unit={shownUnit} previewDefinitionId={selectedPurchaseDefinitionId}
+              cellInfo={selectedUnitCell}
               isPlacePhase={state.turn.phase === 'place' && interactive} isActionPhase={state.turn.phase === 'action' && interactive}
               resources={currentPlayerState.resources} onPromote={handlePromote} isEnemyView={isEnemyView}
               onClose={handleCloseUnitInfo} currentPlayer={state.turn.currentPlayer}
@@ -803,9 +703,14 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
         </section>
       </div>
       <footer className="play-footer">
+        <div className="income-status" role="status" data-testid="projected-income">Projected income this turn: +{projectedIncome(state, state.turn.currentPlayer)} ◆</div>
+        {state.lastIncome && <details className="income-recap"><summary>{playerNames[state.lastIncome.player]} collected {state.lastIncome.total} ◆ · turn {state.lastIncome.turnNumber}</summary>
+          <ul>{state.lastIncome.takes.map(t => <li key={t.unitId}>{getUnitDefinition(t.definitionId).name} at {String.fromCharCode(65+t.position.x)}{t.position.y+1}: {t.amount}</li>)}</ul>
+        </details>}
+
         <div className="context-status" role="status">{spawnFeedback ? spawnFeedback.reason === 'enemy_blocking' ? 'Enemies are blocking that square.' : 'Choose a square in your controlled area.' : phaseHint}</div>
         <ActionBar actionsRemaining={state.turn.actionsRemaining} phase={state.turn.phase}
-          onEndPlacePhase={endPlacePhase} onEndActionPhase={endActionPhase} onEndTurn={endTurn}
+          onEndPlacePhase={endPlacePhase} onEndActionPhase={endActionPhase}
           isPlayerTurn={interactive} onUndo={() => { setPreview(null); undo(); }} canUndo={canUndo && interactive} />
         <nav className="reference-bar" aria-label="Game references">
           <button onClick={() => setShowUnitShopInspection(true)}>Units</button>
@@ -816,7 +721,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
       </footer>
       {showVisualKey && <PlayDialog title="Read the board" onClose={() => setShowVisualKey(false)}><VisualKey /></PlayDialog>}
       {showMenu && <PlayDialog title="Game menu" onClose={() => setShowMenu(false)}>
-        <p>Your match is saved at phase changes on this device. New games use Unequal routes; existing saves keep their original board.</p>
+        <p>Your match is saved at phase changes on this device. Games use Unequal routes with 520 crystals. Saves from earlier rules start fresh.</p>
         {isCurrentPlayerHuman && <label><input type="checkbox" checked={!!state.reviewUpkeep?.[state.turn.currentPlayer]} onChange={e=>setUpkeepReview(state.turn.currentPlayer,e.target.checked)} /> Review upkeep each turn (allows T2/T3 release)</label>}
         <button onClick={() => { setShowMenu(false); handleBackToMenuClick(); }}>Choose game mode</button>
         <button onClick={() => { if (window.confirm('Start a new game? This replaces your saved match.')) { handlePlayAgain(); setShowMenu(false); } }}>New game</button>
@@ -829,7 +734,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
         <ElementLegend />
         <p>Advantage adds 1 attack; disadvantage subtracts 1. Attack previews include this bonus.</p>
         {state.lastUpkeep && <p>Last upkeep: {playerNames[state.lastUpkeep.player]} paid {state.lastUpkeep.paid}. Released: {state.lastUpkeep.released.map(u=>getUnitDefinition(u.definitionId).name).join(', ') || 'none'}.</p>}
-        <p>Public spending includes placed or upgraded units and paid upkeep. Opponent crystals and reinforcements stay hidden.</p>
+        <p>Both banks, reserves, purchases and promotions are public. Income arrives at turn end; upkeep is paid at the start of the next turn.</p>
         {showAIRecap && <AIRecap actions={blackAI.lastTurnActions} onDismiss={handleDismissRecap} />}
         {config.controls.white === 'ai' && <AIConsole title="AI 1 Console" debug={whiteAI.lastDebug} isThinking={whiteAI.isThinking} />}
         {config.controls.black === 'ai' && <AIConsole title="AI Console" debug={blackAI.lastDebug} isThinking={blackAI.isThinking} />}

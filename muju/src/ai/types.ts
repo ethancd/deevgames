@@ -3,7 +3,7 @@ import type { Position } from '../game/types';
 /**
  * AI difficulty levels
  * Shared rules and evaluation; presets scale tactical search, beam width,
- * belief sampling and turn CPU allowance. No intentional random blunders.
+ * turn CPU allowance. No intentional random blunders.
  */
 export type AIDifficulty = 'easy' | 'medium' | 'hard';
 
@@ -13,12 +13,9 @@ export type AIDifficulty = 'easy' | 'medium' | 'hard';
 export type AIAction =
   | { type: 'MOVE'; unitId: string; to: Position }
   | { type: 'ATTACK'; unitId: string; targetPosition: Position }
-  | { type: 'MINE'; unitId: string }
   | { type: 'END_PLACE_PHASE' }
   | { type: 'END_ACTION_PHASE' }
-  | { type: 'END_TURN' }
-  | { type: 'QUEUE_UNIT'; definitionId: string }
-  | { type: 'PLACE_UNIT'; queuedUnitId: string; position: Position }
+  | { type: 'BUY_UNIT'; definitionId: string; position: Position }
   | { type: 'PROMOTE_UNIT'; unitId: string }
   | { type: 'PAY_UPKEEP'; keepUnitIds: string[] }
   | { type: 'RESIGN' };
@@ -46,7 +43,6 @@ export interface AIDebugInfo {
     mctsTimeLimit: number;
     beamWidth: number;
     outputPlans: number;
-    particleCount: number;
     tacticalDepth: number;
   };
 }
@@ -58,7 +54,7 @@ export interface EvaluationWeights {
   unitValue: number;           // Value of units on board (based on cost)
   resourceAdvantage: number;   // Resource differential
   territoryControl: number;    // Squares in unblocked spawn zones
-  miningPotential: number;     // Accessible unmined squares
+  miningPotential: number;     // Projected end-of-turn income
   threatLevel: number;         // Units threatening enemy pieces
   mobility: number;            // Number of valid moves (optionality)
   centerControl: number;       // Control of central squares
@@ -67,7 +63,6 @@ export interface EvaluationWeights {
   combinedAttackPotential: number;
   spawnDenialPressure: number;
   spawnInfiltration: number;
-  queueValue: number;
   stepEfficiency: number;
   techTreeProgress: number;
 }
@@ -88,7 +83,6 @@ export const DEFAULT_WEIGHTS: EvaluationWeights = {
   combinedAttackPotential: 0.8,
   spawnDenialPressure: -1.5,
   spawnInfiltration: 1.0,
-  queueValue: 0.3,
   stepEfficiency: 0.2,
   techTreeProgress: 0.4,
 };

@@ -24,7 +24,7 @@ function createTestUnit(
     position: { x, y },
     hasMoved: false,
     hasAttacked: false,
-    hasMined: false,
+
     canActThisTurn: true,
     damageTaken: 0,
     ...overrides,
@@ -39,18 +39,18 @@ function createTestState(board: BoardState, currentPlayer: PlayerId = 'black'): 
       white: {
         id: 'white',
         resources: 10,
-        buildQueue: [],
+
         startCorner: { x: 0, y: 0 },
         resourcesGained: 10,
-        resourcesSpent: 0,
+
       },
       black: {
         id: 'black',
         resources: 10,
-        buildQueue: [],
+
         startCorner: { x: 9, y: 9 },
         resourcesGained: 10,
-        resourcesSpent: 0,
+
       },
     },
     turn: {
@@ -254,14 +254,12 @@ describe('AI Evaluation', () => {
         { type: 'ATTACK', unitId: 'ai-1', targetPosition: { x: 5, y: 5 } },
         state
       );
-      const mineScore = scoreAction({ type: 'MINE', unitId: 'ai-1' }, state);
       const moveScore = scoreAction(
         { type: 'MOVE', unitId: 'ai-1', targetPosition: { x: 3, y: 3 } },
         state
       );
 
-      expect(attackScore).toBeGreaterThan(mineScore);
-      expect(mineScore).toBeGreaterThan(moveScore);
+      expect(attackScore).toBeGreaterThan(moveScore);
     });
 
     it('scores attacks by target value', () => {

@@ -4,8 +4,6 @@ import type {
   GameState,
   PlayerId,
   TurnPhase,
-  QueuedUnit,
-  PlayerState,
 } from './types';
 import {
   resetUnitActions,
@@ -15,41 +13,11 @@ import {
 import { checkVictory, getHomeOccupier } from './victory';
 import { getPromotableUnits } from './promotion';
 import { getAllSpawnPositions } from './spawning';
-import { UNIT_DEFINITIONS } from './units';
-import { canBuildUnit, meetsTechRequirement } from './building';
+import { getAffordablePurchases } from './building';
+import { endOfTurnIncome } from './mining';
 
-/**
- * Advance build queues for a player, returning units ready to place
- */
-export function advanceBuildQueue(queue: QueuedUnit[]): {
-  updatedQueue: QueuedUnit[];
-  readyUnits: QueuedUnit[];
-} {
-  const readyUnits: QueuedUnit[] = [];
-  const updatedQueue: QueuedUnit[] = [];
-
-  for (const item of queue) {
-    if (item.turnsRemaining <= 1) {
-      readyUnits.push(item);
-    } else {
-      updatedQueue.push({
-        ...item,
-        turnsRemaining: item.turnsRemaining - 1,
-      });
-    }
-  }
-
-  return { updatedQueue, readyUnits };
-}
-
-/**
- * Start a new turn for the specified player
- * - Advance their build queue
- * - Reset their units' action flags
- * - Set phase to 'place' (or 'action' if nothing to do in place phase)
- */
 export function startTurn(state: GameState, player: PlayerId): GameState {
-  // Resolve before queue advancement, healing, placement or promotion. Entering
+  // Resolve before healing, placement or promotion. Entering
   // the corner during the previous turn was only a threat; the defender got a reply.
   if (state.phase === 'victory') return state;
   if (state.victoryRule !== 'elimination' && getHomeOccupier(state.board, player)) {
@@ -73,79 +41,15 @@ export function completeUpkeep(state: GameState, keepUnitIds: string[]): GameSta
 }
 
 function finishTurnStart(state: GameState, player: PlayerId): GameState {
-  const playerState = state.players[player];
-
-  // Advance build queue
-  const { updatedQueue, readyUnits } = advanceBuildQueue(playerState.buildQueue);
-
-  // Reset unit actions
-  const newBoard = resetUnitActions(state.board, player);
-
-  // Store ready units somewhere (they'll be placed in place phase)
-  // For now, we keep them in the queue with turnsRemaining = 0
-  const finalQueue = [
-    ...readyUnits.map((u) => ({ ...u, turnsRemaining: 0 })),
-    ...updatedQueue,
-  ];
-
-  // Create intermediate state to check if place phase is needed
-  const intermediateState: GameState = {
-    ...state,
-    board: newBoard,
-    players: {
-      ...state.players,
-      [player]: {
-        ...playerState,
-        buildQueue: finalQueue,
-      },
-    },
-    turn: {
-      ...state.turn,
-      currentPlayer: player,
-      phase: 'place',
-      actionsRemaining: MAX_ACTIONS_PER_TURN,
-    },
-    selectedUnit: null,
-    validMoves: [],
-    validAttacks: [],
-  };
-
-  // Skip place phase if player can't do anything in it
-  if (!canActInPlacePhase(intermediateState, player)) {
-    return startActionPhase(intermediateState);
-  }
-
-  return intermediateState;
+  const next: GameState = { ...state, board: resetUnitActions(state.board, player),
+    turn: { ...state.turn, currentPlayer: player, phase: 'place', actionsRemaining: MAX_ACTIONS_PER_TURN },
+    selectedUnit: null, validMoves: [], validAttacks: [] };
+  return canActInPlacePhase(next, player) ? next : startActionPhase(next);
 }
 
-/**
- * Get units ready to be placed (turnsRemaining === 0)
- */
-export function getReadyUnits(playerState: PlayerState): QueuedUnit[] {
-  return playerState.buildQueue.filter((u) => u.turnsRemaining === 0);
-}
-
-/**
- * Transition from place phase to action phase
- * Resets promotedThisPlacement flag on all units
- */
 export function startActionPhase(state: GameState): GameState {
-  if(state.upkeepPending)return state;
-  // Reset the promotedThisPlacement flag on all units
-  const newBoard = {
-    ...state.board,
-    units: state.board.units.map(u => ({ ...u, promotedThisPlacement: false })),
-  };
-
-  return {
-    ...state,
-    board: newBoard,
-    turn: {
-      ...state.turn,
-      phase: 'action',
-      actionsRemaining: MAX_ACTIONS_PER_TURN,
-    },
-  };
+  if (state.upkeepPending || state.turn.phase !== 'place') return state;
+  return { ...state, turn: { ...state.turn, phase: 'action', actionsRemaining: MAX_ACTIONS_PER_TURN } };
 }
 
 /**
@@ -168,69 +72,19 @@ export function hasActionsRemaining(state: GameState): boolean {
   return state.turn.actionsRemaining > 0;
 }
 
-/**
- * Transition from action phase to queue phase
- * Auto-ends turn if nothing can be done in queue phase
- */
-export function startQueuePhase(state: GameState): GameState {
-  const queueState: GameState = {
-    ...state,
-    turn: {
-      ...state.turn,
-      phase: 'queue',
-    },
-    selectedUnit: null,
-    validMoves: [],
-    validAttacks: [],
-  };
-
-  // Auto-end if player can't do anything in queue phase
-  if (!canActInQueuePhase(queueState, state.turn.currentPlayer)) {
-    return endTurn(queueState);
-  }
-
-  return queueState;
-}
-
-/**
- * Check if a player can do anything in queue phase
- * (can afford a tech-legal queued unit; promotion is only in place phase)
- */
-export function canActInQueuePhase(state: GameState, player: PlayerId): boolean {
-  const playerState = state.players[player];
-
-  return UNIT_DEFINITIONS.some(d => canBuildUnit(d.id, player, state.board,
-    { queue: [], crystals: playerState.resources }));
-}
-
-/**
- * End the current player's turn and start the opponent's
- */
+/** Income precedes the quiet-turn clock, then the opponent's home/upkeep checks. */
 export function endTurn(state: GameState): GameState {
-  if(state.phase === 'victory' || state.upkeepPending)return state;
-  const currentPlayer = state.turn.currentPlayer;
-  const nextPlayer: PlayerId = currentPlayer === 'white' ? 'black' : 'white';
-
-  const isNewRound = nextPlayer === 'white';
-
-  const completed = resolveInactivityDraw({ ...state,
-    inactivityPlies: state.progressThisTurn ? 0 : (state.inactivityPlies ?? 0) + 1,
+  if (state.phase !== 'playing' || state.upkeepPending) return state;
+  const player = state.turn.currentPlayer;
+  const income = endOfTurnIncome(state, player);
+  const completed = resolveInactivityDraw({ ...income.state,
+    inactivityPlies: state.progressThisTurn || income.total > 0 ? 0 : (state.inactivityPlies ?? 0) + 1,
     progressThisTurn: false,
   });
   if (completed.phase === 'victory') return completed;
-
-  // Keep all units in queue - ready units persist until actually placed
-  // (build queue persistence: units are never auto-deleted)
-  const stateWithCleanedQueue: GameState = {
-    ...completed,
-    turn: {
-      ...state.turn,
-      turnNumber: isNewRound ? state.turn.turnNumber + 1 : state.turn.turnNumber,
-    },
-  };
-
-  // Start the next player's turn
-  return startTurn(stateWithCleanedQueue, nextPlayer);
+  const next = getOpponent(player);
+  return startTurn({ ...completed, turn: { ...completed.turn,
+    turnNumber: state.turn.turnNumber + (next === 'white' ? 1 : 0) } }, next);
 }
 
 /**
@@ -267,47 +121,11 @@ export function canCurrentPlayerAct(state: GameState): boolean {
   return playerUnits.some((u) => u.canActThisTurn);
 }
 
-/**
- * Skip directly to the end of action phase (forfeit remaining actions)
- */
-export function skipToQueuePhase(state: GameState): GameState {
-  return startQueuePhase({
-    ...state,
-    turn: {
-      ...state.turn,
-      actionsRemaining: 0,
-    },
-  });
-}
-
-/**
- * Check if a player can do anything in place phase
- * (has placeable units OR can promote any units)
- */
+/** Purchases and promotions share the place phase, in either order. */
 export function canActInPlacePhase(state: GameState, player: PlayerId): boolean {
-  if(state.upkeepPending)return true;
-  const playerState = state.players[player];
-
-  // Check for ready units to place
-  const readyUnits = getReadyUnits(playerState).filter(q => meetsTechRequirement(q.definitionId, player, state.board));
-  if (readyUnits.length > 0) {
-    // Check if there are valid spawn positions
-    const spawnPositions = getAllSpawnPositions(player, state.board);
-    if (spawnPositions.length > 0) {
-      return true;
-    }
-  }
-
-  // Check for promotable units
-  const buildState = { queue: [], crystals: playerState.resources };
-  const promotableUnits = getPromotableUnits(state.board, player, buildState);
-
-  return promotableUnits.length > 0;
+  if (state.upkeepPending) return true;
+  return (getAffordablePurchases(state.players[player].resources).length > 0 && getAllSpawnPositions(player, state.board).length > 0)
+    || getPromotableUnits(state.board, player, { crystals: state.players[player].resources }).length > 0;
 }
 
-/**
- * Skip place phase and go directly to action phase
- */
-export function skipPlacePhase(state: GameState): GameState {
-  return startActionPhase(state);
-}
+export const skipPlacePhase = startActionPhase;

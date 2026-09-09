@@ -9,10 +9,7 @@ export function createSearchHandler(solver?: TacticalSolver, warning?: string) {
     const { version, gameId, requestId, revision, player } = request;
     const identity = { version, gameId, requestId, revision, player };
     try {
-      if (version !== AI_PROTOCOL || request.own.playerId !== player || request.observation.turn.currentPlayer !== player) throw new Error('Invalid AI request identity');
-      const opponent = player === 'white' ? 'black' : 'white';
-      const enemy = request.observation.players[opponent];
-      if (enemy.resources !== 0 || enemy.buildQueue.length !== 0 || enemy.resourcesSpent !== (enemy.resourcesManifested ?? 0)) throw new Error('Unmasked opponent state in worker request');
+      if (version !== AI_PROTOCOL || request.state.turn.currentPlayer !== player) throw new Error('Invalid AI request identity');
       const key = `${gameId}:${player}`;
       let engine = contexts.get(key);
       if (!engine) {
@@ -23,9 +20,7 @@ export function createSearchHandler(solver?: TacticalSolver, warning?: string) {
       }
       engine.setDifficulty(request.difficulty);
       if (request.fixedWork) engine.setConfig({ fixedWork: request.fixedWork });
-      const state = { ...request.observation, players: { ...request.observation.players,
-        [player]: { ...request.observation.players[player], resources: request.own.resources, buildQueue: request.own.buildQueue } } };
-      return { ...identity, type: 'result', result: await engine.findBestAction(state, request.decisionMs), warning };
+      return { ...identity, type: 'result', result: await engine.findBestAction(request.state, request.decisionMs), warning };
     } catch (error) { return { ...identity, type: 'error', message: error instanceof Error ? error.message : String(error) }; }
   };
 }

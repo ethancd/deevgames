@@ -38,11 +38,11 @@ describe('Cleave', () => {
   it('actually places a Tier I and prevents it sweeping three adjacent enemies',()=>{
     let s=createInitialGameState();s.turn.phase='place';
     s.board.units=[createUnit('plant_1','white',{x:4,y:4}),...[[5,4],[6,5],[5,6]].map(([x,y])=>createUnit('fire_1','black',{x,y}))];
-    s.players.white.buildQueue=[{id:'fresh',definitionId:'fire_1',owner:'white',turnsRemaining:0}];
-    const place={type:'PLACE_UNIT' as const,queuedUnitId:'fresh',position:{x:4,y:3}};
+    s.players.white.resources=1;s.players.white.resourcesGained=1;
+    const place={type:'BUY_UNIT' as const,definitionId:'fire_1',position:{x:4,y:3}};
     expect(isLegalAction(s,place)).toBe(true);s=applyAction(s,place);
     // Move the placed unit to a square beside all three enemies.
-    const fresh=s.board.units.find(u=>u.id==='unit-fresh')!;
+    const fresh=s.board.units.at(-1)!;
     expect(fresh.placedThisTurn).toBe(true);
     s=applyAction(s,{type:'MOVE',unitId:fresh.id,to:{x:5,y:5}});
     const victims=s.board.units.filter(u=>u.owner==='black');
@@ -67,14 +67,13 @@ describe('Cleave', () => {
     expect(canAttack(current(after,attacker))).toBe(false);
     expect(current(after,s.board.units[1]).damageTaken).toBe(0);
   });
-  it('paid movement and mining preserve a live chain; exhausted actions still block it',()=>{
+  it('paid movement preserves a live chain; exhausted actions still block it',()=>{
     let {s,attacker}=arena(2);const first=s.board.units[1], next=s.board.units[2];
     s=attack(s,attacker,first);
     s=applyAction(s,{type:'MOVE',unitId:attacker.id,to:first.position});
-    s=applyAction(s,{type:'MINE',unitId:attacker.id});
-    expect(s.turn.actionsRemaining).toBe(3);expect(canAttack(current(s,attacker))).toBe(true);
+    expect(s.turn.actionsRemaining).toBe(4);expect(canAttack(current(s,attacker))).toBe(true);
     s=applyAction(s,{type:'MOVE',unitId:attacker.id,to:{x:6,y:4}});
-    s=attack(s,attacker,next);expect(s.turn.actionsRemaining).toBe(1);
+    s=attack(s,attacker,next);expect(s.turn.actionsRemaining).toBe(2);
     expect(canAttack(current(s,attacker))).toBe(false);
     const zero={...s,turn:{...s.turn,actionsRemaining:0}};
     expect(isLegalAction(zero,{type:'ATTACK',unitId:attacker.id,targetPosition:s.board.units[1].position})).toBe(false);

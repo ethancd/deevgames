@@ -1,3 +1,10 @@
+> **Superseded rules/architecture, 2026-09-09:** v2.1 is perfect-information.
+> Q1–Q3's hidden-information rulings and the observation/belief/re-determinization
+> plan below no longer apply. The worker receives the real state; MCTS uses
+> public banks, tier-1 purchases and visible promotions. See [SPEC](SPEC.md)
+> and [current implementation status](docs/AI_IMPLEMENTATION_STATUS.md).
+> The historical questions, answers and plan are preserved for provenance.
+
 # AI Engine Design Questions
 
 These questions need answers before proceeding with implementation. I've organized them by category and urgency.

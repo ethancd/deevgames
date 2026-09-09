@@ -4,7 +4,7 @@ import type { BotView } from '../types';
 import { getUnitDefinition } from '../../../src/game/units';
 import { getUnitAt, manhattanDistance, getCell } from '../../../src/game/board';
 import { calculateAttackPower, calculateDefense } from '../../../src/game/combat';
-import { calculateMiningYield } from '../../../src/game/mining';
+import { unitEndOfTurnTake } from '../../../src/game/mining';
 
 export function myUnits(view: BotView): Unit[] {
   return view.board.units.filter((u) => u.owner === view.player);
@@ -53,7 +53,7 @@ export function unitCost(u: Unit): number {
 export function miningYieldAt(view: BotView, unit: Unit): number {
   const cell = getCell(view.board, unit.position);
   if (!cell) return 0;
-  return calculateMiningYield(unit, cell);
+  return unitEndOfTurnTake(unit, cell);
 }
 
 /** Count enemy units matching a predicate within `radius` of `pos`. */
@@ -90,4 +90,21 @@ export function byType<T extends AIAction['type']>(
   type: T
 ): Extract<AIAction, { type: T }>[] {
   return legal.filter((a) => a.type === type) as Extract<AIAction, { type: T }>[];
+}
+
+/** Passive economy is a position choice. Prefer take gained over take abandoned. */
+export function withPassiveEconomy(view: BotView, action: AIAction, score: number): number {
+  if(action.type==='MOVE') {
+    const u=unitById(view,action.unitId);
+    if(!u)return score;
+    const delta=unitEndOfTurnTake(u,view.board.cells[action.to.y][action.to.x])-miningYieldAt(view,u);
+    return score+delta*45;
+  }
+  if(action.type==='BUY_UNIT' && score>0) {
+    const def=getUnitDefinition(action.definitionId);
+    const reserve=view.board.cells[action.position.y][action.position.x].resourceLayers;
+    const target=def.mining>=2?view.me.startCorner:enemyCorner(view);
+    return score+Math.min(def.mining,reserve)*15-manhattanDistance(action.position,target)*3;
+  }
+  return score;
 }

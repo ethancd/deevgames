@@ -17,25 +17,21 @@ export function makeBot(name:string):Bot {
   const allowed=ctx.legal.filter(a=>a.type!=='PROMOTE_UNIT'||tech||!unitById(view,a.unitId)?.definitionId.startsWith('plant'));
   if(view.phase==='place') {
    const plant=allowed.find(a=>a.type==='PROMOTE_UNIT'&&unitById(view,a.unitId)?.definitionId.startsWith('plant'));
-   return plant??greedy.chooseAction({...ctx,legal:allowed});
-  }
-  if(view.phase==='queue') {
-   // Two miners per six own units, counting the hidden OWN queue only.
-   const miners=own.filter(u=>u.definitionId.startsWith('plant')).length+view.me.buildQueue.filter(u=>u.definitionId.startsWith('plant')).length;
-   const wantPlant=miners<Math.max(2,Math.ceil((own.length+view.me.buildQueue.length)/3));
-   const queue=allowed.filter(a=>a.type!=='QUEUE_UNIT'||(wantPlant?a.definitionId==='plant_1':['water_1','fire_1','lightning_1','metal_1'].includes(a.definitionId)));
-   return greedy.chooseAction({...ctx,legal:queue});
+   if(plant)return plant;
+   const miners=own.filter(u=>u.definitionId.startsWith('plant')).length;
+   const wantPlant=miners<Math.max(2,Math.ceil(own.length/3));
+   const purchases=allowed.filter(a=>a.type!=='BUY_UNIT'||(wantPlant?a.definitionId==='plant_1':['water_1','fire_1','lightning_1','metal_1'].includes(a.definitionId)));
+   return greedy.chooseAction({...ctx,legal:purchases});
   }
   const scores=new Map<object,number>();
   for(const a of allowed){let score=-1;
    if(a.type==='ATTACK') {const u=unitById(view,a.unitId)!,t=defenderAt(view,a.targetPosition)!;score=attackKills(view,u,a.targetPosition)?1000+unitCost(t)*10:100+attackPowerAt(view,u,a.targetPosition)*10;}
-   if(a.type==='MINE'){const u=unitById(view,a.unitId)!;score=150+miningYieldAt(view,u)*40;}
    if(a.type==='MOVE') {
     const u=unitById(view,a.unitId)!,d=getUnitDefinition(u.definitionId),cost=Math.ceil(distance(u.position,a.to)/d.speed);
-    if(d.mining>=2&&miningYieldAt(view,u)===0&&(!homeOnly||distance(a.to,view.me.startCorner)<=6)) {
-     const cell=view.board.cells[a.to.y][a.to.x],yieldHere=Math.max(0,Math.min(cell.resourceLayers,d.mining-cell.minedDepth));
-     // Prefer actual attainable yield per move+mine action; all destinations are legal.
-     if(yieldHere>0)score=60+100*yieldHere/(cost+1);
+    if(d.mining>=2&&(!homeOnly||distance(a.to,view.me.startCorner)<=6)) {
+     const cell=view.board.cells[a.to.y][a.to.x],yieldHere=Math.min(cell.resourceLayers,d.mining)-miningYieldAt(view,u);
+     // Compare destination take to income abandoned, per movement action.
+     if(yieldHere>0)score=60+100*yieldHere/cost;
     }
     if(d.attack>=2) {
      const enemies=view.board.units.filter(e=>e.owner!==view.player);

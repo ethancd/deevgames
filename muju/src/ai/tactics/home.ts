@@ -13,15 +13,15 @@ export function homeInvader(state: GameState, player: PlayerId) {
   return state.board.units.find(u => u.owner !== player && u.position.x === home.x && u.position.y === home.y);
 }
 
-/** Authoritative-JS reference and bounded fallback. Omitting mining is complete:
- * mined money cannot fund promotions until a later turn; reinforcements cannot
- * spawn while home is occupied. Ending the turn cannot remove a target.
+/** Authoritative-JS reference and bounded fallback. Passive income comes after
+ * combat; purchases cannot happen while home is occupied. General purchase
+ * search is outside this proof scope and returns unknown.
  */
 export const referenceTactics: TacticalSolver = (state, targetId, maxNodes, budget) => {
   let nodes = 0, cutoff = false;
   const rootPlayer = state.turn.currentPlayer;
   const result = (status: TacticalResult['status'], actions: AIAction[] = []): TacticalResult => ({ status, actions, nodes, scope: 'current-turn target removal; all moves/attacks; home-blocked promotions' });
-  if (state.upkeepPending || state.phase !== 'playing' || state.turn.phase === 'queue' ||
+  if (state.upkeepPending || state.phase !== 'playing' ||
     (state.turn.phase === 'place' && homeInvader(state, rootPlayer)?.id !== targetId)) return result('unknown');
   const visit = (s: GameState, path: AIAction[], limit: number): AIAction[] | null => {
     if (!s.board.units.some(u => u.id === targetId)) return path;

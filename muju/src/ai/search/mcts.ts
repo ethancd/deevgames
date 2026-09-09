@@ -1,11 +1,9 @@
 import { isLegalAction } from '../../game/legality';
 import type { RNG, SearchBudget } from '../runtime';
 import type { GameState, PlayerId } from '../../game/types';
-import type { FullKnowledge } from '../state/types';
 import type { TurnPlan } from '../planner/types';
 import type { MCTSNode, MCTSChild } from './types';
 import { selectChild } from './uct';
-import { redeterminize } from './redeterminize';
 import { isTerminal, applyAction } from '../simulate';
 
 interface MCTSConfig {
@@ -26,7 +24,7 @@ interface Evaluator {
 }
 
 export function runMCTS(
-  knowledge: FullKnowledge,
+  state: GameState,
   player: PlayerId,
   config: MCTSConfig,
   planGenerator: PlanGenerator,
@@ -50,7 +48,7 @@ export function runMCTS(
   for (let i = 0; i < config.iterations; i++) {
     if (config.budget?.exhausted() || Date.now() - startTime > config.timeLimitMs) break;
 
-    let simState = redeterminize(knowledge, player, config.rng);
+    let simState = state;
     const path: MCTSNode[] = [root];
 
     // Widen at the current node before descending. Previously the root got
@@ -69,7 +67,7 @@ export function runMCTS(
         path.push(node);
         break;
       }
-      // A resampled state can invalidate a branch from an earlier iteration.
+      // Candidate generation may be bounded differently at each visit.
       const available = new Set(plans.map(p => p.id));
       const legalNode = { ...node, children: new Map([...node.children].filter(([id]) => available.has(id))) };
       const selected = selectChild(legalNode, 1.4, config.progressiveWideningAlpha,
@@ -102,7 +100,7 @@ export function runMCTS(
     }
   }
 
-  return bestPlanFromRoot(root, knowledge, player, planGenerator, config);
+  return bestPlanFromRoot(root, state, player, planGenerator, config);
 }
 
 function createNode(): MCTSNode {
@@ -111,14 +109,14 @@ function createNode(): MCTSNode {
 
 function bestPlanFromRoot(
   root: MCTSNode,
-  knowledge: FullKnowledge,
+  state: GameState,
   player: PlayerId,
   planGenerator: PlanGenerator,
   config: MCTSConfig
 ): TurnPlan {
   if (root.children.size === 0) {
     if (config.rootPlans) return config.rootPlans[0] ?? { id: 'pass', actions: [], score: 0, tags: ['passive'] };
-    const simState = redeterminize(knowledge, player, config.rng);
+    const simState = state;
     const plans = planGenerator(simState, player);
     return plans[0] ?? { id: 'pass', actions: [], score: 0, tags: ['passive'] };
   }

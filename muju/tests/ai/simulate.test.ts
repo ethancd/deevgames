@@ -24,7 +24,7 @@ function createTestUnit(
     position: { x, y },
     hasMoved: false,
     hasAttacked: false,
-    hasMined: false,
+
     canActThisTurn: true,
     damageTaken: 0,
     ...overrides,
@@ -39,20 +39,20 @@ function createTestState(board: BoardState, currentPlayer: PlayerId = 'black'): 
       white: {
         id: 'white',
         resources: 20,
-        buildQueue: [],
+
         startCorner: { x: 0, y: 0 },
         resourcesGained: 20,
-        resourcesSpent: 0,
-        resourcesManifested: 0,
+
+
       },
       black: {
         id: 'black',
         resources: 20,
-        buildQueue: [],
+
         startCorner: { x: 9, y: 9 },
         resourcesGained: 20,
-        resourcesSpent: 0,
-        resourcesManifested: 0,
+
+
       },
     },
     turn: {
@@ -154,144 +154,6 @@ describe('AI State Simulation', () => {
     });
   });
 
-  describe('applyAction - MINE', () => {
-    it('increases resources and marks unit as mined', () => {
-      const board = createEmptyBoard();
-      board.cells[5][5].resourceLayers = 3;
-      const unit = createTestUnit('ai-unit', 'fire_1', 'black', 5, 5);
-      board.units.push(unit);
-
-      const state = createTestState(board);
-      const initialResources = state.players.black.resources;
-      const action: AIAction = { type: 'MINE', unitId: 'ai-unit' };
-
-      const newState = applyAction(state, action);
-
-      expect(newState.players.black.resources).toBeGreaterThan(initialResources);
-      expect(newState.players.black.resourcesGained).toBeGreaterThan(
-        state.players.black.resourcesGained
-      );
-      const minedUnit = newState.board.units.find(u => u.id === 'ai-unit');
-      expect(minedUnit?.hasMined).toBe(true);
-    });
-
-    it('depletes resource layers', () => {
-      const board = createEmptyBoard();
-      board.cells[5][5].resourceLayers = 3;
-      const unit = createTestUnit('ai-unit', 'fire_1', 'black', 5, 5);
-      board.units.push(unit);
-
-      const state = createTestState(board);
-      const action: AIAction = { type: 'MINE', unitId: 'ai-unit' };
-
-      const newState = applyAction(state, action);
-
-      expect(newState.board.cells[5][5].resourceLayers).toBeLessThan(3);
-    });
-  });
-
-  describe('applyAction - END_ACTION_PHASE', () => {
-    it('transitions to queue phase', () => {
-      const board = createEmptyBoard();
-      const state = createTestState(board);
-      state.turn.phase = 'action';
-      const action: AIAction = { type: 'END_ACTION_PHASE' };
-
-      const newState = applyAction(state, action);
-
-      expect(newState.turn.phase).toBe('queue');
-    });
-  });
-
-  describe('applyAction - END_TURN', () => {
-    it('switches current player', () => {
-      const board = createEmptyBoard();
-      const aiUnit = createTestUnit('ai-unit', 'fire_1', 'black', 5, 5);
-      const playerUnit = createTestUnit('player-unit', 'water_1', 'white', 0, 0);
-      board.units.push(aiUnit, playerUnit);
-
-      const state = createTestState(board, 'black');
-      state.turn.phase = 'queue';
-      const action: AIAction = { type: 'END_TURN' };
-
-      const newState = applyAction(state, action);
-
-      expect(newState.turn.currentPlayer).toBe('white');
-    });
-  });
-
-  describe('applyAction - QUEUE_UNIT', () => {
-    it('adds unit to build queue and deducts resources', () => {
-      const board = createEmptyBoard();
-      const state = createTestState(board);
-      state.turn.phase = 'queue';
-      const initialResources = state.players.black.resources;
-      const action: AIAction = { type: 'QUEUE_UNIT', definitionId: 'fire_1' };
-
-      const newState = applyAction(state, action);
-
-      expect(newState.players.black.buildQueue.length).toBe(1);
-      expect(newState.players.black.buildQueue[0].definitionId).toBe('fire_1');
-      expect(newState.players.black.resources).toBeLessThan(initialResources);
-    });
-  });
-
-  describe('applyAction - PLACE_UNIT', () => {
-    it('places unit on board from queue', () => {
-      const board = createEmptyBoard();
-      const existingUnit = createTestUnit('ai-existing', 'fire_1', 'black', 8, 8);
-      board.units.push(existingUnit);
-
-      const state = createTestState(board);
-      state.turn.phase = 'place';
-      state.players.black.buildQueue = [{
-        id: 'queued-1',
-        definitionId: 'fire_1',
-        turnsRemaining: 0,
-        owner: 'black',
-      }];
-
-      const action: AIAction = {
-        type: 'PLACE_UNIT',
-        queuedUnitId: 'queued-1',
-        position: { x: 8, y: 9 },
-      };
-
-      const newState = applyAction(state, action);
-
-      expect(newState.players.black.buildQueue.length).toBe(0);
-      const newUnits = newState.board.units.filter(u => u.owner === 'black');
-      expect(newUnits.length).toBe(2);
-    });
-
-    it('reveals manifested spend without double-charging committed spend', () => {
-      const board = createEmptyBoard();
-      const existingUnit = createTestUnit('ai-existing', 'fire_1', 'black', 8, 8);
-      board.units.push(existingUnit);
-
-      const state = createTestState(board);
-      state.turn.phase = 'place';
-      state.players.black.buildQueue = [{
-        id: 'queued-1',
-        definitionId: 'fire_1',
-        turnsRemaining: 0,
-        owner: 'black',
-      }];
-      state.players.black.resourcesSpent = 1;
-
-      const action: AIAction = {
-        type: 'PLACE_UNIT',
-        queuedUnitId: 'queued-1',
-        position: { x: 8, y: 9 },
-      };
-
-      const newState = applyAction(state, action);
-
-      expect(newState.players.black.resourcesSpent).toBe(1);
-      expect(newState.players.black.resourcesManifested).toBe(1);
-    });
-  });
-
   describe('applyAction - PROMOTE_UNIT', () => {
     it('upgrades unit tier', () => {
       const board = createEmptyBoard();
@@ -325,27 +187,7 @@ describe('AI State Simulation', () => {
     });
   });
 
-  describe('applyActions', () => {
-    it('applies sequence of actions', () => {
-      const board = createEmptyBoard();
-      board.cells[5][5].resourceLayers = 3;
-      const unit = createTestUnit('ai-unit', 'fire_1', 'black', 5, 5);
-      board.units.push(unit);
 
-      const state = createTestState(board);
-      const actions: AIAction[] = [
-        { type: 'MINE', unitId: 'ai-unit' },
-        { type: 'MOVE', unitId: 'ai-unit', to: { x: 6, y: 5 } },
-      ];
-
-      const newState = applyActions(state, actions);
-
-      const movedUnit = newState.board.units.find(u => u.id === 'ai-unit');
-      expect(movedUnit?.position).toEqual({ x: 6, y: 5 });
-      expect(movedUnit?.hasMined).toBe(true);
-      expect(movedUnit?.hasMoved).toBe(true);
-    });
-  });
 
   describe('isTerminal', () => {
     it('returns true when game is in victory phase', () => {

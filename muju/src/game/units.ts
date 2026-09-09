@@ -15,7 +15,6 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     speed: 2,
     mining: 1,
     cost: 1,
-    buildTime: 1,
   },
   {
     id: 'fire_2',
@@ -28,7 +27,6 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     speed: 2,
     mining: 1,
     cost: 3,
-    buildTime: 1,
   },
   {
     id: 'fire_3',
@@ -41,7 +39,6 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     speed: 3,
     mining: 1,
     cost: 6,
-    buildTime: 2,
   },
 
   // Lightning (Rush) - Swahili
@@ -56,7 +53,6 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     speed: 3,
     mining: 0,
     cost: 1,
-    buildTime: 1,
   },
   {
     id: 'lightning_2',
@@ -69,7 +65,6 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     speed: 4,
     mining: 0,
     cost: 3,
-    buildTime: 1,
   },
   {
     id: 'lightning_3',
@@ -82,7 +77,6 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     speed: 5,
     mining: 0,
     cost: 6,
-    buildTime: 2,
   },
 
   // Water (Balanced) - Norse
@@ -97,7 +91,6 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     speed: 1,
     mining: 2,
     cost: 2,
-    buildTime: 1,
   },
   {
     id: 'water_2',
@@ -110,7 +103,6 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     speed: 1,
     mining: 2,
     cost: 4,
-    buildTime: 2,
   },
   {
     id: 'water_3',
@@ -123,7 +115,6 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     speed: 2,
     mining: 3,
     cost: 10,
-    buildTime: 2,
   },
 
   // Shadow (Balanced) - Turkish/Slavic (formerly Wind)
@@ -138,7 +129,6 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     speed: 2,
     mining: 0,
     cost: 2,
-    buildTime: 1,
   },
   {
     id: 'shadow_2',
@@ -151,7 +141,6 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     speed: 2,
     mining: 1,
     cost: 4,
-    buildTime: 2,
   },
   {
     id: 'shadow_3',
@@ -164,7 +153,6 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     speed: 3,
     mining: 2,
     cost: 10,
-    buildTime: 2,
   },
 
   // Plant (Expand) - Quechua/Nahuatl
@@ -179,7 +167,6 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     speed: 1,
     mining: 3,
     cost: 3,
-    buildTime: 2,
   },
   {
     id: 'plant_2',
@@ -192,7 +179,6 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     speed: 1,
     mining: 4,
     cost: 6,
-    buildTime: 2,
   },
   {
     id: 'plant_3',
@@ -205,7 +191,6 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     speed: 1,
     mining: 5,
     cost: 12,
-    buildTime: 3,
   },
 
   // Metal (Expand) - Lakota
@@ -220,7 +205,6 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     speed: 1,
     mining: 2,
     cost: 3,
-    buildTime: 2,
   },
   {
     id: 'metal_2',
@@ -233,7 +217,6 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     speed: 1,
     mining: 3,
     cost: 6,
-    buildTime: 2,
   },
   {
     id: 'metal_3',
@@ -246,7 +229,6 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     speed: 2,
     mining: 4,
     cost: 12,
-    buildTime: 3,
   },
 ];
 

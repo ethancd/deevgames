@@ -1,28 +1,19 @@
-import { CrystalWell } from './CrystalWell';
+import { CellReserve } from './CellReserve';
 import { UnitArtwork } from './UnitArtwork';
 import { ElementIcon } from './ElementGlyph';
 import type { Element, Tier } from '../game/types';
 
-const examples = [
-  { left: 5, dug: 0, label: 'Full', detail: '5 left · next 1' },
-  { left: 3, dug: 0, label: 'Thin seam', detail: '3 left · next 1' },
-  { left: 3, dug: 2, label: 'Dug down', detail: '3 left · next 3' },
-  { left: 1, dug: 4, label: 'Deep', detail: '1 left · next 5' },
-  { left: 0, dug: 0, label: 'Blank', detail: 'No crystals' },
-  { left: 0, dug: 5, label: 'Empty', detail: '0 left' },
-];
+const examples = [0, 4, 8, 10];
 const elements: Element[] = ['fire', 'lightning', 'water', 'shadow', 'plant', 'metal'];
 
 export function VisualKey() {
   return <div className="visual-key">
-    <section><h3>Crystals are little wells</h3>
-      <p>Brighter squares hold more crystals. Dark inset walls show how far down you have dug. Read the five slots on the right from shallow to deep.</p>
-      <div className="well-examples">{examples.map(example => <figure key={example.label}>
-        <div className={`well-example board-cell depth-${example.left}`}><CrystalWell cell={{ position: { x: 0, y: 0 }, resourceLayers: example.left, minedDepth: example.dug }} /></div>
-        <figcaption><strong>{example.label}</strong><small>{example.detail}</small></figcaption>
-      </figure>)}</div>
-      <div className="gauge-key"><span><i className="crystal" /> Crystal left</span><span><i className="mined" /> Already mined</span><span><i className="bedrock" /> Bedrock</span></div>
-      <p>The first lit slot is the <strong>Mining</strong> needed to reach the next crystal. A square with three crystals can still be too deep for a weak miner. Turn on <strong>Depths</strong> for reserve counts and next-depth numbers.</p>
+    <section><h3>One reserve per square</h3>
+      <p>The numeral is the crystals remaining. Brighter squares hold more. At your turn end, each piece takes up to its Mining stat, up to the square’s reserve. Mining 0 takes nothing.</p>
+      <div className="reserve-examples">{examples.map(reserve => <figure key={reserve}>
+        <div className={`reserve-example board-cell reserve-${reserve}`}><CellReserve cell={{position:{x:0,y:0},resourceLayers:reserve}} /></div>
+        <figcaption>{reserve} crystals</figcaption></figure>)}</div>
+      <p>Tap a piece to see its Mining number and how much it takes here. The Reserves toggle shows or hides board numerals.</p>
     </section>
     <section><h3>Two armies, six element symbols</h3><p><strong>Ivory / White:</strong> round, pale stone. <strong>Obsidian / Black:</strong> angular, dark stone. The same symbols identify elements on either army, even without color.</p>
       <div className="army-examples">{elements.map(element => <figure key={element}><div>

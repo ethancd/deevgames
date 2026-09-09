@@ -8,13 +8,13 @@ import { shouldResign } from '../../../src/ai/evaluation';
 import type { EngineBot } from '../types';
 
 /**
- * L3 — the real AI (AIEngineV2: belief-state MCTS over beam-searched plans).
+ * L3 — the real AI (AIEngineV2: perfect-information MCTS over beam-searched plans).
  *
  * Semantics mirror the shipped useAI loop: resign check at turn start,
  * re-plan after every applied action and take plan.actions[0]. The default
  * has no arbitrary dispatch cap, matching the corrected useAI loop. The
  * historical cap remains opt-in for old-experiment reproduction. The engine
- * masks hidden information internally; the runner counts illegal emissions.
+ * searches the public state; the runner counts illegal emissions.
  */
 
 export interface EngineBotOptions {
@@ -40,7 +40,6 @@ const FAST_OVERRIDES = {
   // keep search behavior shaped like the preset but bounded for throughput
   mctsTimeLimit: 120,
   mctsIterations: 60,
-  particleCount: 10,
 };
 
 export function createEngineBot(opts: Partial<EngineBotOptions> = {}): EngineBot {

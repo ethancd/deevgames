@@ -27,7 +27,7 @@ export function settleUpkeep(state: GameState, ids: string[]): GameState {
   return {...state,upkeepPending:false,
     lastUpkeep:{player,paid,released:released.map(u=>({id:u.id,definitionId:u.definitionId,tier:getUnitDefinition(u.definitionId).tier})),turnNumber:state.turn.turnNumber},
     board:{...state.board,units:state.board.units.filter(u=>!released.some(r=>r.id===u.id))},
-    players:{...state.players,[player]:{...me,resources:me.resources-paid,resourcesSpent:me.resourcesSpent+paid,resourcesManifested:me.resourcesManifested+paid,resourcesUpkeep:(me.resourcesUpkeep??0)+paid}}};
+    players:{...state.players,[player]:{...me,resources:me.resources-paid,resourcesUpkeep:(me.resourcesUpkeep??0)+paid}}};
 }
 /** Deterministic affordable keep-set search. Exact up to 12 rent-bearing units;
  * larger armies retain deterministic cost/defense-priority candidate sets. */

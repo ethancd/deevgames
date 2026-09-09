@@ -7,7 +7,6 @@ import { getUnitDefinition } from '../../src/game/units';
 import { getNextTierDefinition } from '../../src/game/units';
 import { checkVictory } from '../../src/game/victory';
 import { applyAction } from '../../src/ai/simulate';
-import { extractPublicState, extractPrivateState } from '../../src/ai/state/observation';
 import type {
   Bot,
   BotView,
@@ -30,35 +29,10 @@ function otherPlayer(p: PlayerId): PlayerId {
   return p === 'white' ? 'black' : 'white';
 }
 
-/**
- * Bot view over the engine's observation layer: opponent stockpile/queue are
- * masked by extractPublicState, own private state comes from
- * extractPrivateState. Scripted bots can only see what a human opponent sees.
- */
-function buildView(state: GameState, player: PlayerId): BotView {
-  const pub = extractPublicState(state, player);
-  const own = extractPrivateState(state, player);
-  const opp = otherPlayer(player);
-  return {
-    player,
-    opponent: opp,
-    phase: pub.turn.phase,
-    actionsRemaining: pub.turn.actionsRemaining,
-    turnNumber: pub.turn.turnNumber,
-    board: pub.board,
-    me: {
-      resources: own.resources,
-      buildQueue: own.buildQueue,
-      resourcesGained: pub.players[player].resourcesGained,
-      resourcesSpent: pub.players[player].resourcesSpent,
-      startCorner: pub.players[player].startCorner,
-    },
-    enemy: {
-      resourcesGained: pub.players[opp].resourcesGained,
-      resourcesSpent: pub.players[opp].resourcesSpent,
-      startCorner: pub.players[opp].startCorner,
-    },
-  };
+export function buildView(state: GameState, player: PlayerId): BotView {
+  const opponent = otherPlayer(player);
+  return { state, player, opponent, phase:state.turn.phase, actionsRemaining:state.turn.actionsRemaining,
+    turnNumber:state.turn.turnNumber, board:state.board, me:state.players[player], enemy:state.players[opponent] };
 }
 
 function onBoardMaterial(state: GameState, player: PlayerId): number {
@@ -67,26 +41,16 @@ function onBoardMaterial(state: GameState, player: PlayerId): number {
     .reduce((sum, u) => sum + getUnitDefinition(u.definitionId).cost, 0);
 }
 
-function queueValue(state: GameState, player: PlayerId): number {
-  return state.players[player].buildQueue.reduce(
-    (sum, q) => sum + getUnitDefinition(q.definitionId).cost,
-    0
-  );
-}
-
 function unitCount(state: GameState, player: PlayerId): number {
   return state.board.units.filter((u) => u.owner === player).length;
 }
 
 function snapshotStep(state: GameState, ply: number, actor: PlayerId, action: AIAction | null): ReplayStep {
-  let cells = '';
-  for (const row of state.board.cells) {
-    for (const cell of row) cells += String(cell.resourceLayers);
-  }
+  const cells = state.board.cells.flat().map(cell => cell.resourceLayers);
   const res = {} as ReplayStep['res'];
   for (const p of ['white', 'black'] as PlayerId[]) {
     const ps = state.players[p];
-    res[p] = { r: ps.resources, g: ps.resourcesGained, s: ps.resourcesSpent, q: ps.buildQueue.length };
+    res[p] = { r: ps.resources, g: ps.resourcesGained, s: ps.resourcesGained - ps.resources };
   }
   return {
     ply,
@@ -159,6 +123,8 @@ async function playGameInner(args: PlayGameArgs, options: MatchOptions): Promise
     black: emptyStats(bots.black.name),
   };
   const anomalies: string[] = [];
+  const incomeCurve: GameRecord['incomeCurve'] = [], purchases: GameRecord['purchases'] = [], promotionEvents: GameRecord['promotionEvents'] = [];
+  let round90Exhaustion: number|null = null, placedAndAttackedKills = 0;
   const materialCurve: MaterialSample[] = [];
   const steps: ReplayStep[] = [];
 
@@ -203,8 +169,8 @@ async function playGameInner(args: PlayGameArgs, options: MatchOptions): Promise
     // Caps → adjudication
     if (state.turn.turnNumber > options.maxTurns || ply >= options.maxPlies) {
       if (ply >= options.maxPlies) anomalies.push(`ply-cap ${options.maxPlies} hit`);
-      const scoreW = onBoardMaterial(state, 'white') + state.players.white.resources + queueValue(state, 'white');
-      const scoreB = onBoardMaterial(state, 'black') + state.players.black.resources + queueValue(state, 'black');
+      const scoreW = onBoardMaterial(state, 'white') + state.players.white.resources;
+      const scoreB = onBoardMaterial(state, 'black') + state.players.black.resources;
       if (scoreW === scoreB) {
         winner = null;
         winType = 'draw';
@@ -283,13 +249,28 @@ async function playGameInner(args: PlayGameArgs, options: MatchOptions): Promise
         state =
           state.turn.phase === 'place'
             ? applyAction(state, { type: 'END_PLACE_PHASE' })
-            : applyAction(state, state.turn.phase === 'action' ? { type: 'END_ACTION_PHASE' } : { type: 'END_TURN' });
+            : applyAction(state, { type: 'END_ACTION_PHASE' });
         consecutiveNoops = 0;
       }
     } else {
       consecutiveNoops = 0;
     }
 
+    if (state.lastIncome && state.lastIncome !== before.lastIncome) {
+      const {player: p,turnNumber:turn,total:income,takes} = state.lastIncome;
+      const remaining=state.board.cells.flat().reduce((n,c)=>n+c.resourceLayers,0);
+      const initial=state.board.initialResourceLayers!.reduce((n,c)=>n+c,0);
+      if(round90Exhaustion===null && remaining<=initial*.1)round90Exhaustion=turn;
+      const byTier:Record<string,number>={},byElement:Record<string,number>={};
+      for(const t of takes){const d=getUnitDefinition(t.definitionId);byTier[d.tier]=(byTier[d.tier]??0)+t.amount;byElement[d.element]=(byElement[d.element]??0)+t.amount;}
+      const own=before.board.units.filter(u=>u.owner===p);
+      incomeCurve.push({player:p,turn,income,remaining,byTier,byElement,bank:before.players[p].resources,
+        zeroReserveUnits:own.filter(u=>state.board.cells[u.position.y][u.position.x].resourceLayers===0).length,
+        tier1Share:own.length?own.filter(u=>getUnitDefinition(u.definitionId).tier===1).length/own.length:0});
+    }
+    if(applied && action.type==='BUY_UNIT')purchases.push({player,turn:before.turn.turnNumber,definitionId:action.definitionId});
+    if(applied && action.type==='PROMOTE_UNIT')promotionEvents.push({player,turn:before.turn.turnNumber,unitId:action.unitId,definitionId:state.board.units.find(u=>u.id===action.unitId)!.definitionId});
+    if(applied && action.type==='ATTACK' && before.board.units.find(u=>u.id===action.unitId)?.placedThisTurn && state.board.units.length<before.board.units.length)placedAndAttackedKills++;
     args.onAction?.(before, state, action, player);
 
     maxInactivityPlies=Math.max(maxInactivityPlies,state.inactivityPlies??0);
@@ -315,7 +296,7 @@ async function playGameInner(args: PlayGameArgs, options: MatchOptions): Promise
         if (!firstBlood) firstBlood = { by: player, turn: state.turn.turnNumber };
       }
     }
-    if (action.type === 'PLACE_UNIT' && applied) {
+    if (action.type === 'BUY_UNIT' && applied) {
       stats[player].unitsPlaced++;
       const placed = state.board.units[state.board.units.length - 1];
       if (placed && placed.owner === player) {
@@ -330,9 +311,9 @@ async function playGameInner(args: PlayGameArgs, options: MatchOptions): Promise
         stats[player].tierUsage[getUnitDefinition(promoted.definitionId).tier]++;
       }
     }
-    if (action.type === 'QUEUE_UNIT' && applied) {
+    if (action.type === 'BUY_UNIT' && applied) {
       const el = getUnitDefinition(action.definitionId).element;
-      stats[player].elementQueued[el] = (stats[player].elementQueued[el] ?? 0) + 1;
+      stats[player].elementPurchased[el] = (stats[player].elementPurchased[el] ?? 0) + 1;
     }
 
     if (options.recordReplay) {
@@ -357,13 +338,13 @@ async function playGameInner(args: PlayGameArgs, options: MatchOptions): Promise
   for (const p of ['white', 'black'] as PlayerId[]) {
     stats[p].finalResources = state.players[p].resources;
     stats[p].resourcesGained = state.players[p].resourcesGained;
-    stats[p].resourcesSpent = state.players[p].resourcesSpent;
+    stats[p].resourcesSpent = state.players[p].resourcesGained - state.players[p].resources;
     stats[p].finalMaterial = onBoardMaterial(state, p);
-    stats[p].finalQueueValue = queueValue(state, p);
   }
 
   const record: GameRecord = {
-    schema: 'muju-lab-game-v1',
+    incomeCurve,round90Exhaustion,purchases,promotionEvents,placedAndAttackedKills,
+    schema: 'muju-lab-game-v2',
     maxInactivityPlies,inactivityDraw:state.victoryReason==='inactivity',upkeepElimination:state.victoryReason==='upkeep-elimination',
     engineHash: args.engineHash,
     runId: args.runId,
@@ -385,7 +366,7 @@ async function playGameInner(args: PlayGameArgs, options: MatchOptions): Promise
 
   return {
     record,
-    replay: options.recordReplay ? { schema: 'muju-lab-replay-v1', meta: record, steps } : null,
+    replay: options.recordReplay ? { schema: 'muju-lab-replay-v2', meta: record, steps } : null,
   };
 }
 
@@ -397,11 +378,10 @@ function emptyStats(botName: string): PlayerGameStats {
     resourcesGained: 0,
     resourcesSpent: 0,
     finalMaterial: 0,
-    finalQueueValue: 0,
     unitsPlaced: 0,
     promotions: 0,
     tierUsage: { 1: 0, 2: 0, 3: 0, 4: 0 },
-    elementQueued: {},
+    elementPurchased: {},
     unitsLost: 0,
     unitsKilled: 0,
     illegalActions: 0,

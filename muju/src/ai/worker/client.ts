@@ -1,6 +1,5 @@
 import type { GameState } from '../../game/types';
 import type { AIDifficulty, AIResult } from '../types';
-import { observeState, extractPrivateState } from '../state/observation';
 import { AI_PROTOCOL, sameRequest, type SearchRequest, type SearchResponse } from './protocol';
 
 export class SearchCancelled extends Error { constructor() { super('AI search cancelled'); this.name = 'SearchCancelled'; } }
@@ -15,24 +14,20 @@ export class AIWorkerClient {
   private worker: WorkerLike | null = null;
   private rejectPending: ((error: Error) => void) | null = null;
   private nextRequest = 0;
-  private history: GameState | null = null;
   private timer: ReturnType<typeof setTimeout> | undefined;
   warning: string | undefined;
   constructor(private readonly factory = createWorker, private gameId = crypto.randomUUID(), private seed = 1) {}
   cancel(): void {
     this.worker?.terminate(); this.worker = null;
     clearTimeout(this.timer); this.rejectPending?.(new SearchCancelled()); this.rejectPending = null;
-    this.history = null;
   }
   restart(): void { this.cancel(); this.gameId = crypto.randomUUID(); }
   async findBestAction(state: GameState, difficulty: AIDifficulty, decisionMs: number, revision: number): Promise<AIResult> {
     if (this.rejectPending) this.cancel();
     this.worker ??= this.factory();
-    const observation = observeState(this.history, state, state.turn.currentPlayer);
-    this.history = observation;
     const request: SearchRequest = { version: AI_PROTOCOL, type: 'search', gameId: this.gameId,
-      requestId: ++this.nextRequest, revision, player: state.turn.currentPlayer, observation,
-      own: extractPrivateState(state, state.turn.currentPlayer), difficulty, decisionMs, seed: this.seed };
+      requestId: ++this.nextRequest, revision, player: state.turn.currentPlayer, state,
+      difficulty, decisionMs, seed: this.seed };
     return new Promise((resolve, reject) => {
       this.rejectPending = reject;
       const finish = () => { clearTimeout(this.timer); this.rejectPending = null; };

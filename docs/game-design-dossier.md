@@ -1,3 +1,7 @@
+> **Muju update, 2026-09-09:** §2.3 reflects the v2.1 feature branch. Other
+> Muju measurements and planning discussion below retain their historical
+> baseline; well, queue, hidden-economy and build-time claims are superseded.
+
 # DeevGames — Game Design Dossier
 
 *A synthesis of every game designed or built across two bodies of work — this repo and prior Ethan × Claude conversations — compiled to inform the design of the next game. Repo sources: specs, balance analyses, git history, the napkins (`.claude/napkin.md` and per-project napkins), and the project skills in `.claude/skills/`. Conversation sources are noted by date so they can be retrieved.*
@@ -87,33 +91,35 @@ Two players build tableaus by bidding astrological symbols (♂♀☿☽, 4 of e
 
 ### 2.3 Muju Hono Tanka: Elemental Tactics
 
-The most complete wave-1 project. Two players (white/black) from opposite corners of a 10×10 grid; genre fusion of **Go (territory), Chess (tactics), StarCraft (economy/production)**. Modes: vs AI, pass-and-play, AI-vs-AI.
+Two players occupy opposite corners of a 10×10 grid, combining territorial
+control, tactical combat and an economy. Modes are vs AI, pass-and-play and
+AI-vs-AI. The v2.1 source branch has two phases: **Place** (public tier-1
+purchase and later-turn promotion), then **Act** (six shared move/attack actions).
+Every owned unit collects up to its Mining stat from its square at turn end.
+The unchanged Unequal routes layout now holds 0/4/8/10 reserves, 520 total.
 
-**The three-phase turn loop** — the cleanest structural idea in the repo:
-1. **Place** — deploy finished units into your spawn zone; promote existing units (pay tier-cost difference; no tier-skipping, once per phase, not on placement turn).
-2. **Action** — 6 action steps; each step is one move/attack/mine; no per-type caps, no summoning sickness.
-3. **Queue** — secretly spend mined resources on units with 1–3 turn build times. The queue is hidden; **mining yields are public**.
+Anchor rectangles, blocked entirely by any enemy inside, connect positioning
+to spawning and home defense. Units act immediately after purchase or
+promotion, but a newly bought unit cannot promote that turn. Each existing
+unit may climb one tier per own turn, paying the cost difference. The exact
+18-unit v1.9 stats and costs, elemental triangle, Cleave, owner-turn healing,
+upkeep and ten-quiet-turn draw remain. No lake or first-player compensation
+has been added. First-player rush strength under the combined rules remains
+an open design question.
 
-**Signature mechanics**
-- **Anchor-rectangle spawning with binary enemy-blocking**: your spawn zone spans from your corner to any unit you pick as anchor; *any* enemy unit inside blocks the whole rectangle. Board presence is an economic weapon (spawn denial) — the Go-like territory layer emerges from one rule.
-- **The "well/rope" mining model**: every cell has 5 stacked resource layers; a unit's Mining stat is its rope length; cells go "dry" *per unit* once remaining layers are deeper than that unit's reach. Natural tech-gating: only high-mining units can exploit deep resources, giving Expand elements a late-game niche.
-- **Damage as defense erosion**: attack ≥ effective defense kills; non-lethal hits reduce effective defense until the defender's next turn starts. Enables combined attacks (chip then kill) with a "convert damage to a kill this turn or it's wasted" tension — simpler than HP pools, tactically rich.
-- **Six culturally-themed elements** (Fire/Japanese, Lightning/Swahili, Water/Norse, Shadow/Turkish, Plant/Quechua-Nahuatl, Metal/Lakota) in three archetypes (Rush/Balanced/Expand), 3 tiers each, 18 units total (v1.5). Current combat chart is the **"double-thick triangle"**: Fire & Lightning → Plant & Metal → Water & Shadow → back. Modifier is ±1 attack only; defense never modified.
+Both banks are public. The AI uses public-state MCTS and beam/placement plans;
+its observation/belief/re-determinization layer is removed. A cancellable
+browser worker runs bounded tactical WASM with a JS fallback. General purchases
+are planning candidates, outside the exact tactical proof. The static solver
+finds distinct profiles and sole-cheapest local task witnesses for all 18 units;
+this does not establish whole-game balance.
 
-**The AI engine** — one of the repo's deepest technical assets:
-- Honest imperfect-information play: a **public/private observation split**, a **particle-filter belief model** over the opponent's hidden resources/queue (tractable because mining yields are public, so income is deterministic), **beam-search turn planning** with tactical templates, **re-determinized ISMCTS** search, and a quiescence-style **tactical sharpener** on hot leaf positions.
-- Static eval is a ~15-factor weighted sum where **optionality/mobility is a first-class term**, queued units are discounted by `0.9^turnsRemaining`, and spawn-related pressure carries the biggest weights.
-- Difficulty scales **search budget, not rules** (100→1200 MCTS iterations). An AI Console exposes candidate plans/scores for debugging; an AI Recap explains the AI's turn to the human.
-
-**The balance lab** (new on master — the largest recent change): a dedicated `muju/lab/` toolchain that industrializes balance work. A headless seeded match runner with invariant checks, Wilson confidence intervals, engine-hash stamping, and replay sampling; a bot ladder (Random → Greedy → archetype bots → AIv2) plus adversarial probe bots (Turtle, Tier1Spam, MiningDenial, AntiRush); experiment configs E1–E7; a rewritten canonical SPEC (rules v1.2); and `JUDGMENT_LOG.md` recording every autonomous ruling with rationale, blast radius, and reversal cost. Headline findings (Phase 3 of 5, 479/479 tests green):
-- **Rush is over-nerfed against prepared defense but dominant against greed**: mass-Fire_1 wins only 14.2% vs the AntiRush bot (target band 35–55%) yet 97.2% vs pure-economy Expand — the game is currently "answer-or-die."
-- **The element graph is load-bearing**: removing one back-edge (Water/Shadow → Fire/Lightning) collapses AntiRush from 88% to 2–4%. Ruling: keep the double-thick triangle; fix rush via **cost/build-time levers, not stats or the graph** (a global ±1 ATK swings mirrors ~45 points — too coarse an instrument).
-- No first-player advantage (48–53%); Lightning is a trap line in mono matchups.
-- **The measurement tool found real product bugs**: D13 (same-millisecond ID collisions teleporting units — fixed with regression tests) and D14 (AI belief-determinized plans emit illegal "ghost attacks" that `ai/simulate` applies unvalidated — still open).
-
-Also new: honest hidden-information UI — the opponent's true resources display as "???" while their *visible* spending (placed/promoted units, not the hidden queue) is shown via a `resourcesManifested` counter.
-
-**Open problems**: rush rebalance (via cost/build-time), the D14 ghost-attack bug, victory-condition drift between code and spec, AI_ENGINE_QUESTIONS Q4–Q12.
+The balance lab supplies seeded playouts, invariants, replays and income/
+purchase/promotion telemetry. Earlier win rates in this dossier describe
+historical well/queue rules and do not transfer to the simplification. See
+`muju/SPEC.md` and the September 9 mining/placement reports for the current
+branch, verification and registered future comparisons. Source change only;
+no production deployment is implied.
 
 ### 2.4 Oracle of Delve
 

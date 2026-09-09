@@ -12,7 +12,7 @@ import { UNEQUAL_ROUTES_MAP } from './resourceMap';
 import { STARTING_UNITS } from './units';
 
 export const BOARD_SIZE = 10;
-export const INITIAL_RESOURCE_LAYERS = 5;
+export const INITIAL_RESOURCE_LAYERS = 10;
 export const MAX_ACTIONS_PER_TURN = 6;
 
 /**
@@ -22,7 +22,6 @@ export function createCell(x: number, y: number): Cell {
   return {
     position: { x, y },
     resourceLayers: INITIAL_RESOURCE_LAYERS,
-    minedDepth: 0,
   };
 }
 
@@ -106,7 +105,6 @@ export function createUnit(
     hasMoved: false,
     hasAttacked: false,
     lastAttackKilled: false,
-    hasMined: false,
     canActThisTurn: canAct,
     damageTaken: 0,
     promotedThisPlacement: false,
@@ -219,22 +217,16 @@ export function createInitialGameState(resourceLayout: readonly number[] = UNEQU
   const whiteState: PlayerState = {
     id: 'white',
     resources: 0,
-    buildQueue: [],
     startCorner: getStartCorner('white'),
     resourcesGained: 0,
-    resourcesSpent: 0,
-    resourcesManifested: 0,
     resourcesUpkeep: 0,
   };
 
   const blackState: PlayerState = {
     id: 'black',
     resources: 0,
-    buildQueue: [],
     startCorner: getStartCorner('black'),
     resourcesGained: 0,
-    resourcesSpent: 0,
-    resourcesManifested: 0,
     resourcesUpkeep: 0,
   };
 
@@ -282,9 +274,9 @@ export function resetUnitActions(
           hasMoved: false,
           hasAttacked: false,
           lastAttackKilled: false,
-          hasMined: false,
           canActThisTurn: true,
           placedThisTurn: false,
+          promotedThisPlacement: false,
           damageTaken: 0,
           attackedThisTurn: [],
         };

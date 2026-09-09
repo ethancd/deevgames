@@ -1,8 +1,8 @@
 import { resolveInactivityDraw } from '../game/inactivity';
 import type { GameState } from '../game/types';
 
-// v3: v1.5 removes tier 4. Unfinished games from earlier releases are discarded.
-export const SCHEMA_VERSION = 4;
+// v5: passive reserves, public banks, no queues or depth. Older saves start fresh.
+export const SCHEMA_VERSION = 5;
 
 const STORAGE_KEY = 'elemental-tactics-save';
 
@@ -54,8 +54,7 @@ export function loadGameState(): GameState | null {
       return null;
     }
 
-    // Old saves may already exceed the shorter v1.9 limit. Preserve their board
-    // and completed results; an unfinished expired game resumes as a draw.
+    // Resolve an expired unfinished clock, preserving completed results.
     return resolveInactivityDraw(persisted.state);
   } catch (e) {
     console.warn('Failed to load game state:', e);

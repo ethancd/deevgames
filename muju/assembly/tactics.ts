@@ -30,7 +30,7 @@ let length: i32 = 0;
 
 @external('env', 'shouldStop')
 declare function shouldStop(): i32;
-export function abiVersion(): i32 { return 3; }
+export function abiVersion(): i32 { return 4; }
 export function inputPtr(): usize { return input.dataStart; }
 export function cataloguePtr(): usize { return catalogue.dataStart; }
 export function powersPtr(): usize { return powers.dataStart; }
@@ -160,7 +160,7 @@ function promotions(first: i32, actions: i32, depth: i32): bool {
 // Caller only enables placement-phase search with home occupied, otherwise queues
 // and newly placed units would make this scope incomplete.
 export function solve(targetIndex: i32, nodeLimit: i32): i32 {
-  if (input[0] != 3 || input[1] > MAX_UNITS || input[1] < 1 || targetIndex < 0 || targetIndex >= input[1]) return -1;
+  if (input[0] != 4 || input[1] > MAX_UNITS || input[1] < 1 || targetIndex < 0 || targetIndex >= input[1]) return -1;
   count = input[1]; player = input[2]; target = targetIndex; resources = input[5];
   visited = 0; maxNodes = max(0, nodeLimit); cutoff = false; length = 0;
   occupied.fill(-1);

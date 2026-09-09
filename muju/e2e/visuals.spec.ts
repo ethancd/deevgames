@@ -4,37 +4,18 @@ import { UNIT_DEFINITIONS } from '../src/game/units';
 import type { GameState } from '../src/game/types';
 
 async function start(page: Page, state: GameState) {
-  await page.addInitScript(saved => localStorage.setItem('elemental-tactics-save', JSON.stringify({ schemaVersion: 4, timestamp: Date.now(), state: saved })), state);
+  await page.addInitScript(saved => localStorage.setItem('elemental-tactics-save', JSON.stringify({ schemaVersion: 5, timestamp: Date.now(), state: saved })), state);
   await page.goto('./');
   await page.getByRole('button', { name: 'Pass & Play' }).click();
   await page.getByRole('button', { name: 'Start Game' }).click();
 }
 
-test('equal reserve counts keep different mining depths visible, including after selection', async ({ page }) => {
-  const state = createInitialGameState();
-  state.board.cells[2][2] = { position: { x: 2, y: 2 }, resourceLayers: 3, minedDepth: 0 };
-  state.board.cells[2][3] = { position: { x: 3, y: 2 }, resourceLayers: 3, minedDepth: 2 };
-  state.board.cells[2][4] = { position: { x: 4, y: 2 }, resourceLayers: 0, minedDepth: 5 };
-  await start(page, state);
-  const shallow = page.getByTestId('cell-2-2');
-  const deep = page.getByTestId('cell-3-2');
-  await expect(shallow.locator('.crystal')).toHaveCount(3);
-  await expect(deep.locator('.crystal')).toHaveCount(3);
-  await expect(shallow.locator('.next-crystal')).toHaveAttribute('data-depth', '1');
-  await expect(deep.locator('.next-crystal')).toHaveAttribute('data-depth', '3');
-  await expect(shallow.locator('.bedrock')).toHaveCount(2);
-  await expect(deep.locator('.mined')).toHaveCount(2);
-  await expect(page.getByTestId('cell-4-2')).toHaveAttribute('aria-label', /depleted/);
-  await expect(page.getByTestId('cell-4-2')).not.toHaveAttribute('aria-label', /next layer/);
-  const before = await deep.evaluate(el => getComputedStyle(el).backgroundColor);
-  await page.getByTestId('cell-1-1').click();
-  await deep.click();
-  await expect(page.getByRole('button', { name: 'Confirm move' })).toBeVisible();
-  expect(await deep.evaluate(el => getComputedStyle(el).backgroundColor)).toBe(before);
-  await expect(deep.locator('.next-crystal')).toHaveAttribute('data-depth', '3');
-  await page.getByRole('button', { name: 'Depths' }).click();
-  await expect(deep.locator('.resource-readout')).toHaveText('3↓3');
-  await expect(shallow.locator('.resource-readout')).toHaveText('3↓1');
+test('one reserve numeral, unchanged by selection and legible in grayscale',async({page},info)=>{
+ await page.setViewportSize({width:390,height:664});const s=createInitialGameState();await start(page,s);
+ await expect(page.locator('.resource-number')).toHaveCount(100);await expect(page.locator('.crystal-gauge,.well-shading')).toHaveCount(0);
+ const shades=[];for(const [x,y] of [[3,0],[2,0],[0,3],[0,0]])shades.push(await page.getByTestId(`cell-${x}-${y}`).evaluate(e=>getComputedStyle(e).backgroundColor));expect(new Set(shades).size).toBe(4);
+ await page.locator('.battle-board').evaluate(e=>(e as HTMLElement).style.filter='grayscale(1)');await page.screenshot({path:info.outputPath('reserve-grayscale.png')});
+ await page.getByRole('button',{name:'Reserves'}).click();await expect(page.locator('.resource-number')).toHaveCount(0);await page.getByRole('button',{name:'Reserves'}).click();await expect(page.locator('.resource-number')).toHaveCount(100);
 });
 
 test('both armies retain 18 distinct labelled pieces, exact ranks and damage on a crowded board', async ({ page }, info) => {
@@ -67,7 +48,7 @@ test('visual key explains both encodings and does not consume game keyboard acti
   await page.getByTestId('cell-1-1').click();
   await page.getByRole('button', { name: 'Key', exact: true }).click();
   const dialog = page.getByRole('dialog', { name: 'Read the board' });
-  await expect(dialog).toContainText('Bedrock');
+  await expect(dialog).toContainText('One reserve per square');
   await expect(dialog).toContainText('Ivory / White');
   await expect(dialog.locator('.army-examples .unit-art')).toHaveCount(12);
   await page.keyboard.press('m');

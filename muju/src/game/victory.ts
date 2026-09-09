@@ -4,8 +4,7 @@ import { getPlayerUnits } from './board';
 /**
  * Elimination can be checked on a board at any time. Home occupation is checked
  * only by startTurn, before placement, never when entering the corner.
- * Without pieces, the opponent has no anchor for spawning, so even with a build queue
- * they cannot deploy new units.
+ * Without pieces, a player has no anchor for spawning, regardless of their bank.
  */
 
 export type GameResult =

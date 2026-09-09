@@ -43,19 +43,17 @@ const screenshots = process.env.QA_SCREENSHOTS;
         if (i) assert(cells[i-1].right <= cell.x + 1, 'Board cells overlap');
       });
       await fits(); await picture('muju');
-      // Earn crystals so the reinforcements phase has a legal purchase and is not skipped.
-      await page.getByTestId('cell-1-1').click();
-      await page.getByRole('button', {name: /Mine \+2/}).click();
-      await page.locator('.action-budget strong').filter({hasText: /^5 actions$/}).waitFor();
-      await page.getByRole('button', {name: /Finish actions/}).click();
-      await page.locator('.action-budget strong').filter({hasText: /^Reinforcements$/}).waitFor();
+      // End-turn income is public and persists across a reload.
+      await page.getByRole('button', {name: /End turn/}).click();
+      await page.getByText('Tap anywhere to continue').click();
+      assert.equal(await page.locator('.income-recap summary').innerText(), 'Player 1 collected 6 ◆ · turn 1');
       const saved = await page.evaluate(() => localStorage.getItem('elemental-tactics-save'));
-      assert(saved, 'Muju must save on a phase transition');
+      assert(saved, 'Muju must save after end-turn income');
       await page.reload();
       await page.getByRole('button', {name: 'Pass & Play Two players, one device', exact: true}).click();
       await page.getByRole('button', {name: 'Start Game', exact: true}).click();
       assert.equal(await page.evaluate(() => localStorage.getItem('elemental-tactics-save')), saved);
-      assert.equal(await page.locator('.action-budget strong').innerText(), 'Reinforcements');
+      assert.equal(await page.locator('.action-budget strong').innerText(), '6 actions');
       await page.getByRole('link', {name: 'Back to Deev Games', exact: true}).click();
       await page.getByRole('link', {name: /FORGE/}).click();
       await fits(); await picture('forge');

@@ -1,3 +1,4 @@
+import { withPassiveEconomy } from './bot-utils';
 import type { ScriptedBot, BotContext } from '../types';
 import type { AIAction } from '../../../src/ai/types';
 import { getUnitDefinition } from '../../../src/game/units';
@@ -37,10 +38,10 @@ function scoreAttack(ctx: BotContext, a: Extract<AIAction, { type: 'ATTACK' }>):
 }
 
 function chooseFrom(ctx: BotContext, scorer: (a: AIAction) => number): AIAction | null {
-  const best = pickBest(ctx.rng, ctx.legal, scorer);
+  const best = pickBest(ctx.rng, ctx.legal, a => withPassiveEconomy(ctx.view, a, scorer(a)));
   if (!best) return null;
-  if (scorer(best) <= 0) {
-    return ctx.legal.find((a) => a.type === 'END_ACTION_PHASE' || a.type === 'END_TURN') ?? null;
+  if (withPassiveEconomy(ctx.view, best, scorer(best)) <= 0) {
+    return ctx.legal.find((a) => a.type === 'END_ACTION_PHASE' || a.type === 'END_PLACE_PHASE') ?? null;
   }
   return best;
 }
@@ -57,14 +58,6 @@ export function createRushBot(rushUnit = 'fire_1'): ScriptedBot {
         switch (a.type) {
           case 'ATTACK':
             return scoreAttack(ctx, a as Extract<AIAction, { type: 'ATTACK' }>);
-          case 'MINE': {
-            const unit = unitById(view, (a as Extract<AIAction, { type: 'MINE' }>).unitId);
-            if (!unit) return -1;
-            const def = getUnitDefinition(unit.definitionId);
-            // Only the economy tail (mining >= 2: Sjor, Muju) stays home to fund the flood.
-            if (def.mining < 2) return -1;
-            return 150 + miningYieldAt(view, unit) * 40;
-          }
           case 'MOVE': {
             const m = a as Extract<AIAction, { type: 'MOVE' }>;
             const unit = unitById(view, m.unitId);
@@ -79,14 +72,10 @@ export function createRushBot(rushUnit = 'fire_1'): ScriptedBot {
             const nextC = manhattanDistance(m.to, enemyCorner(view));
             return nextC < curC ? 10 + (curC - nextC) : -1;
           }
-          case 'PLACE_UNIT': {
-            const p = a as Extract<AIAction, { type: 'PLACE_UNIT' }>;
-            return 500 - manhattanDistance(p.position, enemyCorner(view)) * 5;
-          }
           case 'PROMOTE_UNIT':
             return -1; // every crystal goes to more fire_1
-          case 'QUEUE_UNIT': {
-            const q = a as Extract<AIAction, { type: 'QUEUE_UNIT' }>;
+          case 'BUY_UNIT': {
+            const q = a as Extract<AIAction, { type: 'BUY_UNIT' }>;
             return q.definitionId === rushUnit ? 500 : -1; // one-unit rush probe
           }
           default:
@@ -114,11 +103,6 @@ export function createExpandBot(): ScriptedBot {
             if (!attacker) return -1;
             return attackKills(view, attacker, at.targetPosition) ? 800 : -1;
           }
-          case 'MINE': {
-            const unit = unitById(view, (a as Extract<AIAction, { type: 'MINE' }>).unitId);
-            if (!unit) return -1;
-            return 200 + miningYieldAt(view, unit) * 50;
-          }
           case 'MOVE': {
             const m = a as Extract<AIAction, { type: 'MOVE' }>;
             const unit = unitById(view, m.unitId);
@@ -130,21 +114,15 @@ export function createExpandBot(): ScriptedBot {
             const homeDist = manhattanDistance(m.to, view.me.startCorner);
             return 50 + yieldAt * 10 - homeDist; // prefer close, rich cells
           }
-          case 'PLACE_UNIT': {
-            const p = a as Extract<AIAction, { type: 'PLACE_UNIT' }>;
-            // Place in the back, on fresh cells.
-            const d = manhattanDistance(p.position, view.me.startCorner);
-            return 400 - d * 5;
-          }
           case 'PROMOTE_UNIT': {
-            // Deeper rope: promoting the plant line unlocks deeper layers.
+            // Faster collection: promote the Plant line for higher end-of-turn income.
             const unit = unitById(view, (a as Extract<AIAction, { type: 'PROMOTE_UNIT' }>).unitId);
             if (!unit) return -1;
             const def = getUnitDefinition(unit.definitionId);
             return def.element === 'plant' ? 450 : -1;
           }
-          case 'QUEUE_UNIT': {
-            const q = a as Extract<AIAction, { type: 'QUEUE_UNIT' }>;
+          case 'BUY_UNIT': {
+            const q = a as Extract<AIAction, { type: 'BUY_UNIT' }>;
             const def = getUnitDefinition(q.definitionId);
             if (def.element !== 'plant') return -1;
             return 300 + def.mining * 20; // pure economy: plant miners only
@@ -161,9 +139,7 @@ function wouldYieldAt(ctx: BotContext, definitionId: string, pos: { x: number; y
   const def = getUnitDefinition(definitionId);
   const cell = ctx.view.board.cells[pos.y]?.[pos.x];
   if (!cell || cell.resourceLayers === 0) return 0;
-  const topDepth = cell.minedDepth + 1;
-  if (topDepth > def.mining) return 0;
-  return Math.min(def.mining - cell.minedDepth, cell.resourceLayers);
+  return Math.min(def.mining, cell.resourceLayers);
 }
 
 // ---------- Balanced ----------
@@ -184,11 +160,6 @@ export function createBalancedBot(): ScriptedBot {
         switch (a.type) {
           case 'ATTACK':
             return scoreAttack(ctx, a as Extract<AIAction, { type: 'ATTACK' }>);
-          case 'MINE': {
-            const unit = unitById(view, (a as Extract<AIAction, { type: 'MINE' }>).unitId);
-            if (!unit) return -1;
-            return 150 + miningYieldAt(view, unit) * 40;
-          }
           case 'MOVE': {
             const m = a as Extract<AIAction, { type: 'MOVE' }>;
             const unit = unitById(view, m.unitId);
@@ -205,15 +176,10 @@ export function createBalancedBot(): ScriptedBot {
             // fighters advance only with company (avoid feeding units 1 by 1)
             return next < cur && fighters >= 3 ? 20 + (cur - next) * 8 : -1;
           }
-          case 'PLACE_UNIT': {
-            const p = a as Extract<AIAction, { type: 'PLACE_UNIT' }>;
-            const d = manhattanDistance(p.position, view.me.startCorner);
-            return 400 - d * 3;
-          }
           case 'PROMOTE_UNIT':
             return 350;
-          case 'QUEUE_UNIT': {
-            const q = a as Extract<AIAction, { type: 'QUEUE_UNIT' }>;
+          case 'BUY_UNIT': {
+            const q = a as Extract<AIAction, { type: 'BUY_UNIT' }>;
             const def = getUnitDefinition(q.definitionId);
             if (def.element !== 'water' && def.element !== 'shadow' && def.element !== 'plant') return -1;
             // keep a rough 1:1 fighter/miner split

@@ -1,3 +1,4 @@
+import './historical-experiment';
 import {mkdirSync,writeFileSync} from 'node:fs';
 import {createEngineBot} from '../harness/bots/engine';
 import {createBot} from '../harness/bots';

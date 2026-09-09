@@ -1,10 +1,10 @@
-import type { PublicState, PrivateState } from '../state/types';
+import type { GameState } from '../../game/types';
 import type { AIDifficulty, AIResult } from '../types';
 import type { PlayerId } from '../../game/types';
-export const AI_PROTOCOL = 1;
-export interface Identity { version: 1; gameId: string; requestId: number; revision: number; player: PlayerId }
+export const AI_PROTOCOL = 2;
+export interface Identity { version: 2; gameId: string; requestId: number; revision: number; player: PlayerId }
 export interface SearchRequest extends Identity {
-  type: 'search'; observation: PublicState; own: PrivateState; difficulty: AIDifficulty;
+  type: 'search'; state: GameState; difficulty: AIDifficulty;
   seed: number; decisionMs: number; fixedWork?: number;
 }
 export type SearchResponse = Identity & (

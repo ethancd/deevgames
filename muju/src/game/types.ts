@@ -46,7 +46,6 @@ export interface UnitDefinition {
   speed: number;
   mining: number;
   cost: number;
-  buildTime: number;
 }
 
 export interface Unit {
@@ -57,7 +56,6 @@ export interface Unit {
   // Turn action tracking
   hasMoved: boolean;
   hasAttacked: boolean;
-  hasMined: boolean;
   // State flags
   canActThisTurn: boolean; // Action eligibility; placement and promotion do not impose summoning sickness
   // Damage state (resets at end of attacker's turn)
@@ -75,29 +73,19 @@ export interface Unit {
 
 export interface Cell {
   position: Position;
-  resourceLayers: number; // 0-5, remaining extractable resources
-  minedDepth: number; // 0-5, how deep mining has gone (initial capacity - resourceLayers)
+  resourceLayers: number; // 0-10, remaining crystals
 }
 
 export interface BoardState {
-  /** Original per-cell capacities. Absent in legacy saves, whose wells all began at five. */
+  /** Initial reserves for conservation checks and lab layouts. */
   initialResourceLayers?: readonly number[];
   cells: Cell[][]; // 10x10 grid, indexed as cells[y][x]
   units: Unit[];
 }
 
-// === Building ===
-
-export interface QueuedUnit {
-  id: string; // Unique queue entry ID
-  definitionId: string;
-  turnsRemaining: number;
-  owner: PlayerId;
-}
-
 // === Turn & Phase ===
 
-export type TurnPhase = 'place' | 'action' | 'queue';
+export type TurnPhase = 'place' | 'action';
 
 export interface TurnState {
   currentPlayer: PlayerId;
@@ -113,18 +101,18 @@ export type GamePhase = 'setup' | 'playing' | 'victory';
 export interface PlayerState {
   id: PlayerId;
   resources: number;
-  buildQueue: QueuedUnit[];
   startCorner: Position; // (0,0) or (9,9)
   // Visible stats for opponent tracking
-  resourcesGained: number; // Total resources ever mined
-  resourcesSpent: number; // Total cost of all committed spending (includes queued units)
-  resourcesUpkeep?: number; // Public upkeep included in both spent and manifested totals
-  resourcesManifested: number; // Public spending: placed units + promotions + upkeep (not hidden queues)
+  resourcesGained: number; // Total crystals collected at turn end
+  resourcesUpkeep?: number; // Cumulative upkeep paid (telemetry)
 }
 
 export type VictoryReason = 'elimination' | 'home-occupation' | 'resignation' | 'inactivity' | 'upkeep-elimination';
 
+export interface IncomeTake { unitId: string; definitionId: string; position: Position; amount: number }
+
 export interface GameState {
+  lastIncome?: { player: PlayerId; turnNumber: number; total: number; takes: IncomeTake[] };
   /** Omitted means current rules; explicit elimination is for historical lab comparisons. */
   victoryRule?: 'elimination' | 'home-or-elimination';
   victoryReason?: VictoryReason;
@@ -155,13 +143,10 @@ export type GameAction =
   | { type: 'DESELECT' }
   | { type: 'MOVE'; unitId: string; to: Position }
   | { type: 'ATTACK'; unitId: string; targetPosition: Position }
-  | { type: 'MINE'; unitId: string }
   | { type: 'END_PLACE_PHASE' }
   | { type: 'END_ACTION_PHASE' }
-  | { type: 'QUEUE_UNIT'; definitionId: string }
   | { type: 'PROMOTE_UNIT'; unitId: string }
-  | { type: 'PLACE_UNIT'; queuedUnitId: string; position: Position }
-  | { type: 'END_TURN' }
+  | { type: 'BUY_UNIT'; definitionId: string; position: Position }
   | { type: 'PAY_UPKEEP'; keepUnitIds: string[] }
   | { type: 'SET_UPKEEP_REVIEW'; player: PlayerId; enabled: boolean }
   | { type: 'RESIGN' }
