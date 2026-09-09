@@ -37,8 +37,20 @@ describe('upkeep boundary',()=>{
   const s=startTurn(arena(1),'white');for(const keepUnitIds of [['missing'],[s.board.units[3].id],[s.board.units[0].id,s.board.units[0].id],[s.board.units[1].id]]){const a={type:'PAY_UPKEEP' as const,keepUnitIds};expect(isLegalAction(s,a)).toBe(false);expect(applyAction(s,a)).toBe(s);}
   expect(isLegalAction(arena(9),{type:'PAY_UPKEEP',keepUnitIds:[]})).toBe(false);
  });
- it('allows voluntary release even of a free unit, and names elimination by upkeep',()=>{
-  const base=arena(10);base.reviewUpkeep={white:true};const s=startTurn(base,'white');expect(s.upkeepPending).toBe(true);const next=applyAction(s,{type:'PAY_UPKEEP',keepUnitIds:[]});expect(next.winner).toBe('black');expect(next.victoryReason).toBe('upkeep-elimination');expect(next.players.white.resources).toBe(10);expect(next.lastUpkeep?.released).toHaveLength(3);
+ it('names elimination by upkeep when an all-higher-tier army is released',()=>{
+  const base=arena(10);base.board.units=base.board.units.filter(u=>u.definitionId!=='plant_1');base.reviewUpkeep={white:true};const s=startTurn(base,'white');expect(s.upkeepPending).toBe(true);const next=applyAction(s,{type:'PAY_UPKEEP',keepUnitIds:[]});expect(next.winner).toBe('black');expect(next.victoryReason).toBe('upkeep-elimination');expect(next.players.white.resources).toBe(10);expect(next.lastUpkeep?.released).toHaveLength(2);
+ });
+ it('requires every T1 unit in forced and voluntary upkeep choices',()=>{
+  for(const cash of [0,1,10]){
+   const base=arena(cash);base.reviewUpkeep={white:true};const s=startTurn(base,'white');
+   const free=s.board.units[2];
+   for(const keepUnitIds of [[],[s.board.units[0].id]]){
+    const action={type:'PAY_UPKEEP' as const,keepUnitIds};expect(isLegalAction(s,action)).toBe(false);expect(applyAction(s,action)).toBe(s);
+   }
+   const next=applyAction(s,{type:'PAY_UPKEEP',keepUnitIds:[free.id]});
+   expect(next.board.units.filter(u=>u.owner==='white')).toEqual([expect.objectContaining({id:free.id})]);
+   expect(next.lastUpkeep?.released).toHaveLength(2);expect(next.winner).toBeNull();expect(next.players.white.resources).toBe(cash);
+  }
  });
  it('preserves public bank plus hidden-queue conservation after payment',()=>{
   const base=arena(10);base.players.white.resourcesGained=16;base.players.white.resourcesSpent=6;base.players.white.buildQueue=[{id:'q',definitionId:'fire_3',owner:'white',turnsRemaining:2}];

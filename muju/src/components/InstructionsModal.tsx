@@ -290,9 +290,9 @@ const instructionPages: InstructionPage[] = [
     title: 'Paying upkeep',
     content: <div className="space-y-4 text-sm text-gray-300">
       <p>At the start of your turn, after checking home occupation, pay upkeep before your units heal or reinforcements become ready.</p>
-      <p>Tier 1 costs {UPKEEP_BY_TIER[1]}, tier 2 costs {UPKEEP_BY_TIER[2]}, and tier 3 costs {UPKEEP_BY_TIER[3]} crystals per unit. Queued units pay nothing.</p>
+      <p>Tier 1 costs {UPKEEP_BY_TIER[1]}, tier 2 costs {UPKEEP_BY_TIER[2]}, and tier 3 costs {UPKEEP_BY_TIER[3]} crystals per unit. Tier 1 units always stay and cannot be released during upkeep. Queued units pay nothing.</p>
       <p>Affordable upkeep is automatic. Otherwise, choose which units to keep. Unpaid units are lost. Losing your last unit loses the game. Upkeep uses none of your six actions.</p>
-      <p>Enable “Review upkeep each turn” in the game menu to voluntarily release units. Keep enough income to sustain your defenders.</p>
+      <p>Enable “Review upkeep each turn” in the game menu to voluntarily release tier 2 or tier 3 units. Keep enough income to sustain your defenders.</p>
     </div>,
   },
   {

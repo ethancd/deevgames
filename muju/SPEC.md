@@ -8,13 +8,13 @@ document and the code disagree, that is a bug in one of them: see
 of known divergences. The stat tables in §7 are transcriptions of
 `src/game/units.ts`, which is the canonical stat source.
 
-**Spec version:** v1.7 (2026-09-08) — Lightning attack/mining and Tanka mining adjustments, with upkeep and the inactivity draw.
+**Spec version:** v1.8 (2026-09-08) — Tier-1 units cannot be released during upkeep. Includes the v1.7 Lightning/Metal adjustments.
 Tier 4 is removed. Metal names are Inyan/Mazask/Tanka. Tanka has Speed 2 and
 Mining 4. Lightning I/II have Attack 1/2, and Lightning III has Mining 0.
 Other T1–T3 stats, costs/build times, Cleave and Unequal routes remain unchanged.
 History: v1.0 (original design), v1.1 (`docs/v1.1-spec.md`, historical playtest
 balance pass), v1.2 (2026-06-09 canonical rules rewrite), v1.3 (role balance),
-v1.4 (Cleave), v1.5 (tier-3 cap), v1.6 (upkeep and inactivity draw), v1.7 (Lightning/Metal adjustments).
+v1.4 (Cleave), v1.5 (tier-3 cap), v1.6 (upkeep and inactivity draw), v1.7 (Lightning/Metal adjustments), v1.8 (mandatory T1 upkeep retention).
 
 ---
 
@@ -158,15 +158,17 @@ Turn bookkeeping at the start of a player's turn, in order:
 
 Each turn, before placement, pay 1 crystal for each of your tier-2 units and 2
 for each tier-3 (3 for tier4, if present). Any unit you do not pay for is lost.
-Tier1 units are free. Payment uses the existing stockpile and no actions.
+Tier1 units are free and must always be kept during upkeep. Payment uses the existing stockpile and no actions.
 Queued units owe nothing until the next own turn after placement. A promotion
 pays its new tier's rent beginning next own turn, not retroactively.
 
 When the stockpile covers the army, all units are kept and payment is automatic.
 Otherwise the place phase opens with a mandatory affordable keep-set choice.
-The optional **Review upkeep each turn** menu setting allows voluntary release,
-including a free tier1 unit, even when all rent is affordable. Any affordable
-subset is legal. The empty set loses if it removes the last on-board unit.
+The optional **Review upkeep each turn** menu setting allows voluntary release
+of tier2 and tier3 units even when all rent is affordable. Tier1 units cannot
+be released. Every legal keep-set must include all owned tier1 units and be
+affordable. The empty set is legal only when there are no tier1 units; it loses
+if it removes the last on-board unit.
 Releases are not attacks: they add no combat history, trigger no Cleave, and
 never reset the inactivity clock. Healing and queue advancement follow payment.
 

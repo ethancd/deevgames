@@ -181,3 +181,12 @@ Do not install a static power score in the playing AI or claim that a stat has o
 - **Decision:** Radi ATK1, Umeme ATK2, Kimubunga MINE0, Tanka MINE4. Preserve every other stat, price, build time and rule, including Tanka Speed2.
 - **Scope:** shared catalogue propagates into gameplay, AI, WASM catalogue configuration, shop, previews and tutorial. Update reference exports and communicate exact values to the video process.
 - **Evidence:** [balance follow-up](docs/BALANCE_FOLLOWUP-2026-09-08.md). Historical studies remain pinned to their actual catalogues; no old sample is relabeled.
+
+
+## J-015: Tier-1 units cannot be released during upkeep (v1.8)
+
+- **Date:** 2026-09-08, explicit user correction.
+- **Decision:** all owned tier-1 units must appear in every legal upkeep keep-set. They cost zero and cannot be voluntarily released, including when reviewing affordable upkeep.
+- **Supersedes:** J-012's permission to release free tier-1 units. T2/T3 voluntary release and elimination of an all-higher-tier army remain legal.
+- **Implementation:** shared action legality rejects omitted T1 units; settlement preserves them defensively; upkeep checkboxes are disabled and explain mandatory retention. AI keep-sets already retain free units.
+- **Verification:** 669 unit tests, production build, and four mobile/tablet upkeep/draw browser checks pass. Academy episode 5 narration and visuals corrected for video version 2.

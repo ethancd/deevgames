@@ -12,10 +12,10 @@ export function UpkeepPanel({state,onConfirm}:{state:GameState;onConfirm:(ids:st
   const cash=state.players[state.turn.currentPlayer].resources;
   return <dialog ref={dialog} className="play-dialog upkeep-dialog" aria-label="Choose upkeep" onCancel={e=>e.preventDefault()}>
     <div className="dialog-content"><h2>Choose units to keep</h2>
-      <p>Pay upkeep before healing and placement. Unchecked units leave the board. This costs no actions.</p>
+      <p>Pay upkeep before healing and placement. Tier 1 units always stay and cannot be released. Unchecked higher-tier units leave the board. This costs no actions.</p>
       <div className="upkeep-list">{units.map(u=>{const d=getUnitDefinition(u.definitionId);return <label key={u.id}>
-        <input type="checkbox" checked={kept.includes(u.id)} onChange={e=>setKept(e.target.checked?[...kept,u.id]:kept.filter(id=>id!==u.id))}/>
-        <span>{d.name} <small>T{d.tier} · {String.fromCharCode(65+u.position.x)}{u.position.y+1}</small></span><b>◆ {unitUpkeep(u)}</b>
+        <input type="checkbox" disabled={d.tier===1} checked={kept.includes(u.id)} onChange={e=>setKept(e.target.checked?[...kept,u.id]:kept.filter(id=>id!==u.id))}/>
+        <span>{d.name} <small>T{d.tier} · {String.fromCharCode(65+u.position.x)}{u.position.y+1}{d.tier===1 ? ' · Always kept' : ''}</small></span><b>◆ {unitUpkeep(u)}</b>
       </label>;})}</div>
       <p role="status" className={cost>cash?'rent-warning':''}>Upkeep {cost} / {cash} crystals · {units.length-kept.length} released</p>
       <button className="primary" disabled={cost>cash} onClick={()=>onConfirm(kept)}>Pay upkeep & continue</button>

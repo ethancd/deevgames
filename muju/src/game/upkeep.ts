@@ -17,12 +17,12 @@ export function upkeepDue(state: GameState, player: PlayerId): number {
 export function isUpkeepSelectionLegal(state: GameState, ids: string[]): boolean {
   if(!state.upkeepPending || state.turn.phase!=='place' || new Set(ids).size!==ids.length)return false;
   const owned=state.board.units.filter(u=>u.owner===state.turn.currentPlayer);
-  return ids.every(id=>owned.some(u=>u.id===id)) && owned.filter(u=>ids.includes(u.id)).reduce((n,u)=>n+unitUpkeep(u),0)<=state.players[state.turn.currentPlayer].resources;
+  return owned.every(u=>getUnitDefinition(u.definitionId).tier!==1 || ids.includes(u.id)) && ids.every(id=>owned.some(u=>u.id===id)) && owned.filter(u=>ids.includes(u.id)).reduce((n,u)=>n+unitUpkeep(u),0)<=state.players[state.turn.currentPlayer].resources;
 }
-/** Keep-set is explicit: even a free unit may be voluntarily released. */
+/** Tier-1 units always stay; only higher tiers may be released. */
 export function settleUpkeep(state: GameState, ids: string[]): GameState {
   const player=state.turn.currentPlayer, kept=new Set(ids), owned=state.board.units.filter(u=>u.owner===player);
-  const released=owned.filter(u=>!kept.has(u.id));
+  const released=owned.filter(u=>getUnitDefinition(u.definitionId).tier!==1&&!kept.has(u.id));
   const paid=owned.filter(u=>kept.has(u.id)).reduce((n,u)=>n+unitUpkeep(u),0), me=state.players[player];
   return {...state,upkeepPending:false,
     lastUpkeep:{player,paid,released:released.map(u=>({id:u.id,definitionId:u.definitionId,tier:getUnitDefinition(u.definitionId).tier})),turnNumber:state.turn.turnNumber},
