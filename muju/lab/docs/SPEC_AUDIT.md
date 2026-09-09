@@ -1,4 +1,4 @@
-> v1.6: upkeep and the 20-ply draw are implemented by the shared transition; see [study](../../docs/UPKEEP_DRAW-2026-09-08.md).
+> v1.6: upkeep and the 10-ply turn-end draw are implemented by the shared transition; see [study](../../docs/UPKEEP_DRAW-2026-09-08.md).
 
 | Current clause | Implementation | Verification |
 |---|---|---|

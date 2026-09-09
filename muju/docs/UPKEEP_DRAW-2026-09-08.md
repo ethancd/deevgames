@@ -1,3 +1,5 @@
+> v1.9 correction: the draw now resolves immediately at the end of 10 consecutive quiet player turns, before the next home-win check. The 20-turn rule and win precedence below are historical.
+
 > v1.8 correction: T1 units must be kept during upkeep. The study below records historical v1.6 behavior; its voluntary T1 release rule is superseded.
 
 > v1.7 follow-up: Lightning I/II ATK is now1/2, Lightning III mining0, Metal III mining4. Measurements below preserve the earlier catalogue; see [balance follow-up](BALANCE_FOLLOWUP-2026-09-08.md).

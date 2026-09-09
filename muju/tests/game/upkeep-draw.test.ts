@@ -59,31 +59,49 @@ describe('upkeep boundary',()=>{
  it('enumerates every affordable paid keep-set and retains free units by default',()=>{
   const s=startTurn(arena(2),'white'),choices=upkeepActions(s);expect(choices).toHaveLength(3);expect(choices.every(a=>isLegalAction(s,a))).toBe(true);for(const a of choices)if(a.type==='PAY_UPKEEP')expect(a.keepUnitIds).toContain(s.board.units[2].id);
  });
- it('saves a pending choice and its public clock',()=>{const s=startTurn({...arena(1),inactivityPlies:17},'white');saveGameState(s);expect(loadGameState()).toEqual(s);});
+ it('saves a pending choice and its public clock',()=>{const s=startTurn({...arena(1),inactivityPlies:7},'white');saveGameState(s);expect(loadGameState()).toEqual(s);});
  it('makes a deterministic AI upkeep decision and preserves affordable army value',async()=>{
   const s=startTurn(arena(2),'white');const a=await new AIEngineV2('medium').findBestAction(s),b=await new AIEngineV2('medium').findBestAction(s);expect(a.plan.actions).toEqual(b.plan.actions);expect(a.plan.actions[0].type).toBe('PAY_UPKEEP');expect(isLegalAction(s,a.plan.actions[0])).toBe(true);expect(applyAction(s,a.plan.actions[0]).lastUpkeep?.paid).toBeGreaterThan(0);
  });
 });
-describe('20 completed quiet turns',()=>{
- it('draws exactly at 20 and evaluates the saved terminal result as zero both ways',()=>{
-  let s=createInitialGameState();for(let i=1;i<=20;i++){s=endTurn(s);expect(s.inactivityPlies).toBe(i);expect(s.phase).toBe(i===20?'victory':'playing');}expect(s.winner).toBeNull();expect(getGameResult(s)).toEqual({status:'draw',reason:'inactivity'});for(const p of ['white','black'] as const){expect(evaluatePosition(s,p)).toBe(0);expect(quickEvaluate(s,p)).toBe(0);}saveGameState(s);expect(loadGameState()?.victoryReason).toBe('inactivity');
+describe('10 completed quiet turns',()=>{
+ it('draws exactly at 10 and evaluates the saved terminal result as zero both ways',()=>{
+  let s=createInitialGameState();for(let i=1;i<=10;i++){s=endTurn(s);expect(s.inactivityPlies).toBe(i);expect(s.phase).toBe(i===10?'victory':'playing');}expect(s.winner).toBeNull();expect(getGameResult(s)).toEqual({status:'draw',reason:'inactivity'});for(const p of ['white','black'] as const){expect(evaluatePosition(s,p)).toBe(0);expect(quickEvaluate(s,p)).toBe(0);}saveGameState(s);expect(loadGameState()?.victoryReason).toBe('inactivity');
  });
- it('gives an already-won home or elimination priority over draw and unpaid rent',()=>{
-  const s=arena(0);s.inactivityPlies=19;s.turn.currentPlayer='black';s.board.units[0].position={x:9,y:9};const home=endTurn(s);expect(home.winner).toBe('white');expect(home.victoryReason).toBe('home-occupation');expect(home.lastUpkeep).toBeUndefined();
-  s.board.units=s.board.units.filter(u=>u.owner==='white');s.board.units[0].position={x:3,y:3};expect(endTurn(s).victoryReason).toBe('elimination');
+ it('draws before the next home win, healing, queue advancement or upkeep',()=>{
+  const s=arena(0);s.inactivityPlies=9;s.turn.currentPlayer='black';s.board.units[0].position={x:9,y:9};
+  s.board.units[0].damageTaken=1;s.players.white.buildQueue=[{id:'waiting',definitionId:'fire_2',owner:'white',turnsRemaining:1}];
+  const draw=endTurn(s);expect(draw.winner).toBeNull();expect(draw.victoryReason).toBe('inactivity');expect(draw.lastUpkeep).toBeUndefined();
+  expect(draw.turn).toEqual(s.turn);expect(draw.board).toEqual(s.board);expect(draw.players).toEqual(s.players);
+  expect(startTurn(draw,'white')).toBe(draw);
+  s.inactivityPlies=8;expect(endTurn(s).victoryReason).toBe('home-occupation');
+ });
+ it('an attack eliminating the last enemy still wins during the last allowed turn',()=>{
+  const s=arena(0);s.inactivityPlies=9;s.board.units[3].definitionId='fire_1';
+  const win=applyAction(s,{type:'ATTACK',unitId:s.board.units[0].id,targetPosition:s.board.units[3].position});
+  expect(win.winner).toBe('white');expect(win.victoryReason).toBe('elimination');expect(endTurn(win)).toBe(win);
+ });
+ it('keeps the clock optional for lab games',()=>{
+  let s=createInitialGameState();s.inactivityRule='off';for(let i=0;i<12;i++)s=endTurn(s);
+  expect(s.phase).toBe('playing');expect(s.inactivityPlies).toBe(12);
+ });
+ it('migrates expired unfinished saves without losing the board or changing completed wins',()=>{
+  const s=arena(1);s.inactivityPlies=12;saveGameState(s);const loaded=loadGameState()!;
+  expect(loaded.victoryReason).toBe('inactivity');expect(loaded.board).toEqual(s.board);expect(loaded.players).toEqual(s.players);
+  s.phase='victory';s.winner='white';s.victoryReason='home-occupation';saveGameState(s);expect(loadGameState()).toEqual(s);
  });
  it('positive mining resets now and leaves the completed turn at zero; zero-yield mining is illegal',()=>{
-  const s=createInitialGameState();s.inactivityPlies=19;const u=s.board.units.find(u=>u.owner==='white'&&u.definitionId==='plant_1')!;s.board.cells[u.position.y][u.position.x].resourceLayers=5;const next=applyAction(s,{type:'MINE',unitId:u.id});expect(next.inactivityPlies).toBe(0);expect(endTurn(next).inactivityPlies).toBe(0);
+  const s=createInitialGameState();s.inactivityPlies=9;const u=s.board.units.find(u=>u.owner==='white'&&u.definitionId==='plant_1')!;s.board.cells[u.position.y][u.position.x].resourceLayers=5;const next=applyAction(s,{type:'MINE',unitId:u.id});expect(next.inactivityPlies).toBe(0);expect(endTurn(next).inactivityPlies).toBe(0);
   s.board.cells[u.position.y][u.position.x].resourceLayers=0;expect(applyAction(s,{type:'MINE',unitId:u.id})).toBe(s);
  });
  it('chip damage does not reset; a lethal enemy attack does',()=>{
-  const s=arena(0);s.inactivityPlies=15;const chip=applyAction(s,{type:'ATTACK',unitId:s.board.units[0].id,targetPosition:s.board.units[3].position});expect(chip.inactivityPlies).toBe(15);expect(chip.progressThisTurn).not.toBe(true);
+  const s=arena(0);s.inactivityPlies=7;const chip=applyAction(s,{type:'ATTACK',unitId:s.board.units[0].id,targetPosition:s.board.units[3].position});expect(chip.inactivityPlies).toBe(7);expect(chip.progressThisTurn).not.toBe(true);
   s.board.units[3].definitionId='fire_1';const kill=applyAction(s,{type:'ATTACK',unitId:s.board.units[0].id,targetPosition:s.board.units[3].position});expect(kill.inactivityPlies).toBe(0);expect(kill.progressThisTurn).toBe(true);
  });
  it('upkeep removal, promotion and placement do not reset progress',()=>{
-  let s=startTurn({...arena(1),inactivityPlies:15},'white');s=applyAction(s,{type:'PAY_UPKEEP',keepUnitIds:[s.board.units[2].id]});expect(s.inactivityPlies).toBe(15);expect(s.progressThisTurn).not.toBe(true);
-  s.turn.phase='place';s.players.white.resources=30;const u=s.board.units.find(u=>u.owner==='white')!;s=applyAction(s,{type:'PROMOTE_UNIT',unitId:u.id});expect(s.inactivityPlies).toBe(15);
-  s.turn.phase='place';s.players.white.buildQueue=[{id:'ready',definitionId:'plant_1',owner:'white',turnsRemaining:0}];const placed=applyAction(s,{type:'PLACE_UNIT',queuedUnitId:'ready',position:{x:2,y:4}});expect(placed).not.toBe(s);expect(placed.inactivityPlies).toBe(15);expect(placed.progressThisTurn).not.toBe(true);
+  let s=startTurn({...arena(1),inactivityPlies:7},'white');s=applyAction(s,{type:'PAY_UPKEEP',keepUnitIds:[s.board.units[2].id]});expect(s.inactivityPlies).toBe(7);expect(s.progressThisTurn).not.toBe(true);
+  s.turn.phase='place';s.players.white.resources=30;const u=s.board.units.find(u=>u.owner==='white')!;s=applyAction(s,{type:'PROMOTE_UNIT',unitId:u.id});expect(s.inactivityPlies).toBe(7);
+  s.turn.phase='place';s.players.white.buildQueue=[{id:'ready',definitionId:'plant_1',owner:'white',turnsRemaining:0}];const placed=applyAction(s,{type:'PLACE_UNIT',queuedUnitId:'ready',position:{x:2,y:4}});expect(placed).not.toBe(s);expect(placed.inactivityPlies).toBe(7);expect(placed.progressThisTurn).not.toBe(true);
  });
  it('newly placed units first pay at their next own turn',()=>{
   const s=arena(20);s.turn.phase='place';s.players.white.buildQueue=[{id:'ready',definitionId:'fire_2',owner:'white',turnsRemaining:0}];const p=applyAction(s,{type:'PLACE_UNIT',queuedUnitId:'ready',position:{x:3,y:3}});expect(p.players.white.resources).toBe(20);expect(upkeepDue(p,'white')).toBe(4);expect(startTurn(p,'white').players.white.resources).toBe(16);

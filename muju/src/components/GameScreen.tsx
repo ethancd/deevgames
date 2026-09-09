@@ -1,3 +1,4 @@
+import { INACTIVITY_LIMIT, INACTIVITY_WARNING } from '../game/inactivity';
 import { UpkeepPanel } from './UpkeepPanel';
 import { upkeepDue } from '../game/upkeep';
 import { VisualKey } from './VisualKey';
@@ -765,7 +766,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
         <div><strong><i className={`player-dot ${opponentPlayer}`} />{playerNames[opponentPlayer]} <b>◆ Hidden</b></strong>
           <small>Gained {opponentState.resourcesGained} · Public {opponentState.resourcesManifested}</small><small>Upkeep {upkeepDue(state,opponentPlayer)} / turn</small></div>
       </section>
-      <div className="progress-clock"><span className={(state.inactivityPlies??0)>14 ? 'rent-warning' : ''}>{state.inactivityPlies??0}/20 ply since progress</span>{state.lastUpkeep && (state.lastUpkeep.paid>0 || state.lastUpkeep.released.length>0) && <span>{playerNames[state.lastUpkeep.player]} paid {state.lastUpkeep.paid} · released {state.lastUpkeep.released.length}</span>}</div>
+      <div className="progress-clock"><span className={(state.inactivityPlies??0)>=INACTIVITY_WARNING ? 'rent-warning' : ''}>{state.inactivityPlies??0}/{INACTIVITY_LIMIT} quiet turns</span>{state.lastUpkeep && (state.lastUpkeep.paid>0 || state.lastUpkeep.released.length>0) && <span>{playerNames[state.lastUpkeep.player]} paid {state.lastUpkeep.paid} · released {state.lastUpkeep.released.length}</span>}</div>
       {viewerState.buildQueue.length > 0 && <BuildQueue queue={viewerState.buildQueue} isOwner={true}
         isPlacePhase={state.turn.phase === 'place' && interactive} board={state.board} player={state.turn.currentPlayer}
         selectedReadyId={selectedReadyUnitId} onSelectReady={(id) => { setSelectedReadyUnitId(id); setSelectedPlaceUnitId(null); setViewedEnemyUnitId(null); }} />}

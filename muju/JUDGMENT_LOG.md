@@ -190,3 +190,11 @@ Do not install a static power score in the playing AI or claim that a stat has o
 - **Supersedes:** J-012's permission to release free tier-1 units. T2/T3 voluntary release and elimination of an all-higher-tier army remain legal.
 - **Implementation:** shared action legality rejects omitted T1 units; settlement preserves them defensively; upkeep checkboxes are disabled and explain mandatory retention. AI keep-sets already retain free units.
 - **Verification:** 669 unit tests, production build, and four mobile/tablet upkeep/draw browser checks pass. Academy episode 5 narration and visuals corrected for video version 2.
+
+
+## J-016: Ten quiet turns draw immediately at turn end (v1.9)
+
+- **Date:** 2026-09-08, explicit user request after episode 8.
+- **Decision:** ten consecutive quiet player turns, resolved at the ending turn before the next home-win check. Supersedes J-013's twenty-turn threshold and home-win precedence.
+- **Reason:** simpler timing and faster resolution; the historical upkeep sample had zero of 805 natural wins reaching ten quiet turns. Purposeful maneuvering can still be quiet, so this is a pace choice rather than a universal dead-position claim.
+- **Details and evidence:** [ten-turn decision](docs/DRAW_TEN-2026-09-08.md). T1 upkeep retention remains unchanged.

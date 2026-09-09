@@ -1,0 +1,50 @@
+{
+  "caveat": "Retrospective screen of v1.6 bots and catalogue, not a rerun or human-play balance proof. Maximum streak telemetry cannot count how many separate streaks a game contained.",
+  "suites": {
+    "off": {
+      "games": 960,
+      "naturalWins": 700,
+      "naturalWinsReachingTenQuietTurns": 4,
+      "longGames": [
+        {
+          "a": "Siege:4",
+          "b": "Aware:InvestT3",
+          "seed": 3646992659,
+          "swapped": true,
+          "winType": "home-occupation",
+          "maxInactivityPlies": 11
+        },
+        {
+          "a": "Invade:Balanced",
+          "b": "Aware:Balanced",
+          "seed": 1086999682,
+          "swapped": false,
+          "winType": "elimination",
+          "maxInactivityPlies": 12
+        },
+        {
+          "a": "Invade:Balanced",
+          "b": "Invade:Balanced",
+          "seed": 2298459914,
+          "swapped": false,
+          "winType": "home-occupation",
+          "maxInactivityPlies": 21
+        },
+        {
+          "a": "Invade:Balanced",
+          "b": "Invade:Balanced",
+          "seed": 2298459914,
+          "swapped": true,
+          "winType": "home-occupation",
+          "maxInactivityPlies": 21
+        }
+      ]
+    },
+    "shipped": {
+      "games": 960,
+      "naturalWins": 805,
+      "naturalWinsReachingTenQuietTurns": 0,
+      "longGames": []
+    }
+  }
+}

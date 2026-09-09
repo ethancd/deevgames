@@ -1,3 +1,4 @@
+import { resolveInactivityDraw } from './inactivity';
 import { upkeepDue, settleUpkeep } from './upkeep';
 import type {
   GameState,
@@ -58,7 +59,6 @@ export function startTurn(state: GameState, player: PlayerId): GameState {
   }
   const elimination = checkVictory(state.board);
   if(elimination.status !== 'ongoing') return {...state,phase:'victory',winner:elimination.status==='victory'?elimination.winner:null,victoryReason:'elimination'};
-  if(state.inactivityRule !== 'off' && (state.inactivityPlies ?? 0) >= 20) return {...state,phase:'victory',winner:null,victoryReason:'inactivity'};
   const pending: GameState = {...state,upkeepPending:true,turn:{...state.turn,currentPlayer:player,phase:'place',actionsRemaining:MAX_ACTIONS_PER_TURN},selectedUnit:null,validMoves:[],validAttacks:[]};
   const due=upkeepDue(pending,player);
   if(due>state.players[player].resources || state.reviewUpkeep?.[player])return pending;
@@ -213,12 +213,16 @@ export function endTurn(state: GameState): GameState {
 
   const isNewRound = nextPlayer === 'white';
 
+  const completed = resolveInactivityDraw({ ...state,
+    inactivityPlies: state.progressThisTurn ? 0 : (state.inactivityPlies ?? 0) + 1,
+    progressThisTurn: false,
+  });
+  if (completed.phase === 'victory') return completed;
+
   // Keep all units in queue - ready units persist until actually placed
   // (build queue persistence: units are never auto-deleted)
   const stateWithCleanedQueue: GameState = {
-    ...state,
-    inactivityPlies: state.progressThisTurn ? 0 : (state.inactivityPlies ?? 0) + 1,
-    progressThisTurn: false,
+    ...completed,
     turn: {
       ...state.turn,
       turnNumber: isNewRound ? state.turn.turnNumber + 1 : state.turn.turnNumber,

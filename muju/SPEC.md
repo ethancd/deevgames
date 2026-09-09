@@ -8,13 +8,13 @@ document and the code disagree, that is a bug in one of them: see
 of known divergences. The stat tables in §7 are transcriptions of
 `src/game/units.ts`, which is the canonical stat source.
 
-**Spec version:** v1.8 (2026-09-08) — Tier-1 units cannot be released during upkeep. Includes the v1.7 Lightning/Metal adjustments.
+**Spec version:** v1.9 (2026-09-08) — Draw immediately at the end of the tenth consecutive quiet player turn. Includes mandatory T1 upkeep retention and the v1.7 stat adjustments.
 Tier 4 is removed. Metal names are Inyan/Mazask/Tanka. Tanka has Speed 2 and
 Mining 4. Lightning I/II have Attack 1/2, and Lightning III has Mining 0.
 Other T1–T3 stats, costs/build times, Cleave and Unequal routes remain unchanged.
 History: v1.0 (original design), v1.1 (`docs/v1.1-spec.md`, historical playtest
 balance pass), v1.2 (2026-06-09 canonical rules rewrite), v1.3 (role balance),
-v1.4 (Cleave), v1.5 (tier-3 cap), v1.6 (upkeep and inactivity draw), v1.7 (Lightning/Metal adjustments), v1.8 (mandatory T1 upkeep retention).
+v1.4 (Cleave), v1.5 (tier-3 cap), v1.6 (upkeep and inactivity draw), v1.7 (Lightning/Metal adjustments), v1.8 (mandatory T1 upkeep retention), v1.9 (ten-turn draw at turn end).
 
 ---
 
@@ -50,10 +50,12 @@ A turn has three phases, in order:
    opponent). The phase auto-ends (ending the turn) when the player cannot
    afford anything further.
 
+At turn end, update the inactivity counter. If it reaches 10, draw immediately
+before advancing to the next player. Otherwise, begin the next turn.
+
 Turn bookkeeping at the start of a player's turn, in order:
 
 - Check home occupation and existing board elimination (§9).
-- If no win resolved and the public inactivity counter is20, draw (§9).
 - Pay upkeep from the existing stockpile (§5.5). If a selection is required,
   the place phase pauses here. Removal of the last unit loses by elimination.
 
@@ -311,15 +313,18 @@ than reading hidden state.
 - **Elimination:** a player with **zero units on the board** loses, even if
   their build queue is non-empty (no unit ⇒ no anchor ⇒ nothing can ever be
   placed). Deliberate ruling; documented in `src/game/victory.ts`.
-- **Inactivity draw:** after20 complete player turns without progress, end the
+- **Inactivity draw:** after 10 consecutive complete player turns without progress, end the
   game as a draw. A ply means one player's turn, not one action or full round.
   A mine yielding at least1 crystal or an enemy unit eliminated by attack resets
   the counter immediately. That progress turn ends at0. Each other completed
   turn adds1. Zero-yield mining is illegal. Chip attacks, movement, queueing,
-  placement, promotion and upkeep removal do not reset it. At the next turn
-  boundary, home occupation and existing board elimination take precedence;
-  the draw then resolves before upkeep. Saved draws preserve reason `inactivity`.
-  The public counter turns amber above14. Both players at zero units is also a
+  placement, promotion and upkeep removal do not reset it. The draw resolves
+  immediately at the end of the tenth quiet turn. The next turn never begins:
+  no home-win check, upkeep, healing or queue advancement can override the draw.
+  Eliminating the last enemy during a turn still wins immediately. Saved draws
+  preserve reason `inactivity`. Existing unfinished saves already at 10 or more
+  quiet turns load as a draw, preserving the board; completed results stay final.
+  The public counter turns amber at 7 quiet turns. Both players at zero units is also a
   draw, though normal play cannot reach that position.
 - **Resignation:** the current player may resign; opponent wins. The AI plays out current-rule games: material deficits alone do not establish
   defeat when home occupation can win. Historical elimination-only lab games retain

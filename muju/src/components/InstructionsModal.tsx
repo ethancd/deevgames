@@ -1,3 +1,4 @@
+import { INACTIVITY_LIMIT, INACTIVITY_WARNING } from '../game/inactivity';
 import { UPKEEP_BY_TIER } from '../game/upkeep';
 import { useState, useCallback } from 'react';
 import { PlayDialog } from './PlayDialog';
@@ -298,9 +299,9 @@ const instructionPages: InstructionPage[] = [
   {
     title: 'The inactivity clock',
     content: <div className="space-y-4 text-sm text-gray-300">
-      <p>Twenty complete player turns without progress end the game in a draw. One player’s turn is one ply.</p>
+      <p>{INACTIVITY_LIMIT} consecutive complete player turns without progress end the game in a draw, immediately when the last turn ends. One player’s turn is one ply.</p>
       <p>Mining at least one crystal or eliminating an enemy with an attack resets the clock. Moving, building, placing, upgrading, chip damage and upkeep losses do not.</p>
-      <p>The public counter turns amber after 14 plies. A home-occupation or elimination win at the turn boundary takes priority over the draw.</p>
+      <p>The public counter turns amber at {INACTIVITY_WARNING} quiet turns. The draw ends the game before the next turn begins, so a home win on that next turn cannot override it. Eliminating the last enemy during your turn still wins immediately.</p>
     </div>,
   },
   {
