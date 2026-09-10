@@ -7,6 +7,12 @@ DNS CNAME to `deevgames.pages.dev` before the home-page link can switch to it.
 The current release hosts Muju Hono Tanka, FORGE, and Oracle of Delve plus the
 design portfolio. These are browser games; Oracle is a short combat prototype.
 
+Muju Hono Tanka also has a persistent multiplayer host and an MCP interface for
+LLM players. Humans and agents can share rooms across computers. See
+[Muju multiplayer and MCP setup](muju/ONLINE.md) for local hosting, Docker,
+internet hosting, invitation links and agent configuration. The Node host runs
+separately from the static Cloudflare Pages release.
+
 ## Build and publish the browser games
 
 Keep this checkout on current `master`, or start a feature branch from current

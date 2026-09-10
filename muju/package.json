@@ -23,7 +23,12 @@
     "pretest": "npm run ai:wasm",
     "predev": "python3 ../.githooks/check-freshness.py pre-dev && npm run ai:wasm",
     "ai:tactics": "node --import tsx lab/ai/run.ts tactics",
-    "ai:league": "node --import tsx lab/ai/run.ts league"
+    "ai:league": "node --import tsx lab/ai/run.ts league",
+    "serve": "node --import tsx server/index.ts",
+    "mcp": "node --import tsx server/stdio.ts",
+    "server:types": "tsc -p server/tsconfig.json",
+    "test:online": "vitest run tests/server",
+    "test:online:e2e": "playwright test --config playwright.online.config.ts"
   },
   "devDependencies": {
     "@playwright/test": "^1.57.0",
@@ -31,6 +36,7 @@
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.1",
     "@testing-library/user-event": "^14.6.1",
+    "@types/express": "^5.0.6",
     "@types/node": "^22.16.0",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
@@ -41,13 +47,16 @@
     "playwright": "^1.57.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.18",
-    "tsx": "^4.22.4",
     "typescript": "^5.9.3",
     "vite": "^7.3.0",
     "vitest": "^4.0.16"
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "express": "^5.2.1",
     "react": "^19.2.3",
-    "react-dom": "^19.2.3"
+    "react-dom": "^19.2.3",
+    "tsx": "^4.23.13",
+    "zod": "^3.25.76"
   }
 }

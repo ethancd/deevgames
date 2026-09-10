@@ -34,9 +34,19 @@ jobs:
           done
       - name: Build and verify public files
         run: bash build-all.sh
+      - name: Verify Muju rules, multiplayer and MCP
+        working-directory: muju
+        run: |
+          npm run server:types
+          npm test
       - name: Install browser for smoke checks
         working-directory: oracle
         run: npx playwright install --with-deps chromium
+      - name: Check Muju online and local browser play
+        working-directory: muju
+        run: |
+          npx playwright install --with-deps chromium
+          npm run test:online:e2e
       - name: Check phone and tablet gameplay
         run: |
           python3 -m http.server 8941 --bind 127.0.0.1 --directory _site > /tmp/deevgames-qa.log 2>&1 &

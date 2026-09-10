@@ -1,0 +1,5 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": { "lib": ["ES2022", "DOM"], "types": ["node"] },
+  "include": ["./**/*.ts", "../src/game/**/*.ts", "../src/online/types.ts", "../src/ai/moves.ts", "../src/ai/simulate.ts"]
+}

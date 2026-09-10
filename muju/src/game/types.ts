@@ -9,9 +9,9 @@ export type PlayerId = 'white' | 'black';
 
 // === Game Modes ===
 
-export type GameMode = 'vs-ai' | 'pass-play' | 'ai-vs-ai';
+export type GameMode = 'vs-ai' | 'pass-play' | 'ai-vs-ai' | 'online';
 
-export type ControlType = 'human' | 'ai';
+export type ControlType = 'human' | 'ai' | 'remote';
 
 export interface GameConfig {
   mode: GameMode;

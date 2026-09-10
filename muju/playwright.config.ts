@@ -1,6 +1,7 @@
 import { defineConfig } from '@playwright/test';
 export default defineConfig({
   testDir: './e2e',
+  testIgnore: 'online.spec.ts',
   fullyParallel: true,
   workers: 2,
   use: {

@@ -1,0 +1,74 @@
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { z } from 'zod';
+import type { RoomAdmission, RoomSnapshot } from '../src/online/types';
+import { actionSchema, createSchema, joinSchema, roomIdSchema, tokenSchema } from './schema';
+import { describeAction, legalActions, observe, rules } from './observation';
+
+type MaybePromise<T> = T | Promise<T>;
+export interface RoomBackend {
+  create(input: unknown): MaybePromise<RoomAdmission>;
+  join(id: string, input: unknown): MaybePromise<RoomAdmission>;
+  get(id: string, token?: string): MaybePromise<RoomSnapshot>;
+  act(id: string, token: string, input: unknown, preview?: boolean): MaybePromise<RoomSnapshot>;
+}
+const squareSchema = z.string().regex(/^[A-Ja-j](10|[1-9])$/).transform(s => ({ x: s.toUpperCase().charCodeAt(0) - 65, y: Number(s.slice(1)) - 1 }));
+const agentPosition = z.union([squareSchema, z.object({ x: z.number().int().min(0).max(9), y: z.number().int().min(0).max(9) }).strict()]);
+// Same actions as the engine, with convenient A1–J10 notation at the MCP boundary.
+const agentAction = z.union([
+  z.object({ type: z.literal('MOVE'), unitId: z.string().max(100), to: agentPosition }).strict(),
+  z.object({ type: z.literal('ATTACK'), unitId: z.string().max(100), targetPosition: agentPosition }).strict(),
+  z.object({ type: z.literal('BUY_UNIT'), definitionId: z.string().max(40), position: agentPosition }).strict(),
+  actionSchema,
+]);
+const credentials = { roomId: roomIdSchema, token: tokenSchema.describe('Your private seat token, returned by create or join.') };
+const playInput = { ...credentials, expectedRevision: z.number().int().nonnegative(),
+  requestId: z.string().min(8).max(100).describe('Unique per command; retry the identical command with the same ID after a network failure.'),
+  actions: z.array(agentAction).min(1).max(32) };
+
+export function createMcpServer(backend: RoomBackend, publicUrl: string) {
+  const server = new McpServer({ name: 'deevgames-muju', version: '1.0.0' }, { instructions:
+    'Play Muju Hono Tanka using the authoritative shared room. Start with muju_rules. Never share your seat token. Pass the invitation to your opponent. Use muju_legal_actions and muju_preview to plan, then muju_play. Use muju_wait_for_change between turns. Square notation is A1–J10.' });
+  const output = (value: object) => ({ content: [{ type: 'text' as const, text: JSON.stringify(value) }], structuredContent: { ...value } });
+  const safely = async (operation: () => Promise<object> | object) => {
+    try { return output(await operation()); }
+    catch (error) { return { content: [{ type: 'text' as const, text: error instanceof Error ? error.message : 'Request failed.' }], isError: true as const }; }
+  };
+  const admission = (result: RoomAdmission) => ({ credentials: result.credentials,
+    ...(result.inviteCode ? { invitation: { roomId: result.room.id, inviteCode: result.inviteCode,
+      serverUrl: publicUrl, url: `${publicUrl}/muju/?room=${result.room.id}#invite=${result.inviteCode}` } } : {}),
+    room: observe(result.room) });
+  const readOnly = { readOnlyHint: true, destructiveHint: false, openWorldHint: false };
+  server.registerResource('muju-rules', 'muju://rules', { mimeType: 'application/json', description: 'Rules and unit catalogue' },
+    async uri => ({ contents: [{ uri: uri.href, mimeType: 'application/json', text: JSON.stringify(rules) }] }));
+  server.registerTool('muju_rules', { description: 'Read the rules, unit stats, coordinates, and agent workflow before playing.', annotations: readOnly },
+    async () => output(rules));
+  server.registerTool('muju_create_room', { description: 'Host a new two-player game. Returns your private seat credential and a separate invitation to share.', inputSchema: createSchema.shape,
+    annotations: { destructiveHint: false, openWorldHint: false } }, input => safely(async () => admission(await backend.create(input))));
+  server.registerTool('muju_join_room', { description: 'Claim the remaining seat using an invitation. Save the returned credential; each invitation works once.',
+    inputSchema: { roomId: roomIdSchema, ...joinSchema.shape }, annotations: { destructiveHint: false, openWorldHint: false } },
+    ({ roomId, ...input }) => safely(async () => admission(await backend.join(roomId, input))));
+  server.registerTool('muju_observe', { description: 'Get a compact board, unit IDs/stats, resources, turn, result, and revision. Room IDs also allow spectating.',
+    inputSchema: { roomId: roomIdSchema }, annotations: readOnly }, ({ roomId }) => safely(async () => observe(await backend.get(roomId))));
+  server.registerTool('muju_legal_actions', { description: 'List legal actions for the current player with move costs and attack outcomes. Includes multi-action moves. Filter by unit/type and paginate. Upkeep shows one valid selection; custom affordable selections are accepted.',
+    inputSchema: { roomId: roomIdSchema, unitId: z.string().max(100).optional(), type: z.enum(['MOVE', 'ATTACK', 'BUY_UNIT', 'PROMOTE_UNIT', 'PAY_UPKEEP', 'END_PLACE_PHASE', 'END_ACTION_PHASE', 'RESIGN']).optional(),
+      offset: z.number().int().min(0).default(0), limit: z.number().int().min(1).max(200).default(60) }, annotations: readOnly },
+    ({ roomId, ...options }) => safely(async () => legalActions(await backend.get(roomId), options)));
+  server.registerTool('muju_preview', { description: 'Simulate an atomic sequence of actions without changing the game. Returns the hypothetical board. Use A1–J10 positions. Cannot cross into the opponent’s turn.',
+    inputSchema: playInput, annotations: readOnly }, ({ roomId, token, ...request }) => safely(async () => ({ preview: true,
+      actions: request.actions.map(describeAction), room: observe(await backend.act(roomId, token, request, true)) })));
+  server.registerTool('muju_play', { description: 'Commit one action or an atomic sequence to your shared game. Uses current revision and unique requestId. Invalid batches change nothing. Ending action phase hands control to the opponent. RESIGN concedes the game.',
+    inputSchema: playInput, annotations: { destructiveHint: true, idempotentHint: true, openWorldHint: false } },
+    ({ roomId, token, ...request }) => safely(async () => observe(await backend.act(roomId, token, request))));
+  server.registerTool('muju_wait_for_change', { description: 'Wait up to 25 seconds for a room revision to change (opponent joins or plays). Returns changed=false on timeout. Call again while waiting for your turn.',
+    inputSchema: { roomId: roomIdSchema, afterRevision: z.number().int().nonnegative(), timeoutMs: z.number().int().min(0).max(25000).default(25000) }, annotations: readOnly },
+    ({ roomId, afterRevision, timeoutMs }, extra) => safely(async () => {
+      const deadline = Date.now() + timeoutMs;
+      let room = await backend.get(roomId);
+      while (room.revision === afterRevision && room.state.phase !== 'victory' && Date.now() < deadline && !extra.signal.aborted) {
+        await new Promise(resolve => setTimeout(resolve, Math.min(500, deadline - Date.now())));
+        room = await backend.get(roomId);
+      }
+      return { changed: room.revision !== afterRevision, room: observe(room) };
+    }));
+  return server;
+}

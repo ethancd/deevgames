@@ -1,0 +1,13 @@
+services:
+  muju:
+    build: .
+    ports:
+      - "3003:3003"
+    environment:
+      PUBLIC_URL: ${MUJU_PUBLIC_URL:-http://localhost:3003}
+      MUJU_ALLOWED_ORIGINS: ${MUJU_ALLOWED_ORIGINS:-}
+    volumes:
+      - muju-data:/app/data
+    restart: unless-stopped
+volumes:
+  muju-data:

@@ -26,6 +26,7 @@ import { findPath, getMovementRange, type MovementRangePosition } from '../game/
 import { calculateAttackPower, calculateDefense } from '../game/combat';
 import { PlayDialog } from './PlayDialog';
 import type { Position, GameConfig, PlayerId, Element } from '../game/types';
+import type { ReactNode } from 'react';
 
 type SpawnFeedback = {
   position: Position;
@@ -38,6 +39,14 @@ interface GameScreenProps {
 }
 
 export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
+  const game = useGameState();
+  return <GameView config={config} onBackToMenu={onBackToMenu} game={game} />;
+}
+
+export function GameView({ config, onBackToMenu, game, online }: GameScreenProps & {
+  game: ReturnType<typeof useGameState>;
+  online?: { player: PlayerId; ready: boolean; busy: boolean; names: Record<PlayerId, string>; banner: ReactNode };
+}) {
   const {
     state, payUpkeep, setUpkeepReview,
     selectUnit,
@@ -53,7 +62,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
     undo,
     canUndo,
     selectedUnitData,
-  } = useGameState();
+  } = game;
 
   const [selectedPurchaseId, setSelectedPurchaseId] = useState<string | null>(null);
   const [selectedPlaceUnitId, setSelectedPlaceUnitId] = useState<string | null>(null);
@@ -81,12 +90,13 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
   // Unit shop inspection mode (show shop for all catalogue tiers)
   const [showUnitShopInspection, setShowUnitShopInspection] = useState(false);
 
-  const humanPlayer: PlayerId | null = config.mode === 'vs-ai'
+  const humanPlayer: PlayerId | null = online ? online.player : config.mode === 'vs-ai'
     ? config.controls.white === 'human' ? 'white' : 'black'
     : null;
 
   // Human controls follow the configured side, including Black against the AI.
-  const isCurrentPlayerHuman = config.controls[state.turn.currentPlayer] === 'human';
+  const isCurrentPlayerHuman = config.controls[state.turn.currentPlayer] === 'human' &&
+    (!online || (state.turn.currentPlayer === online.player && online.ready && !online.busy));
 
   // Clear place phase selections when phase changes or turn ends
   useEffect(() => {
@@ -576,6 +586,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
   }, [selectedPlaceUnitData, selectedUnitData, state.board]);
 
   const handlePlayAgain = () => {
+    if (online) { onBackToMenu(); return; }
     whiteAI.cancel(); blackAI.cancel();
     whiteAI.clearLastTurnActions(); blackAI.clearLastTurnActions();
     setShowAIRecap(false);
@@ -620,7 +631,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
   const opponentState = state.players[opponentPlayer];
 
   const interactive = isCurrentPlayerHuman && !isThinking && !showPassOverlay && state.phase === 'playing' && !state.upkeepPending;
-  const playerNames = config.mode === 'pass-play' ? { white: 'Player 1', black: 'Player 2' }
+  const playerNames = online ? online.names : config.mode === 'pass-play' ? { white: 'Player 1', black: 'Player 2' }
     : config.mode === 'ai-vs-ai' ? { white: 'AI 1', black: 'AI 2' }
     : { white: humanPlayer === 'white' ? 'You' : 'AI', black: humanPlayer === 'black' ? 'You' : 'AI' };
   const shownUnit = selectedPlaceUnitData ?? selectedUnitData ?? viewedEnemyUnitData;
@@ -642,17 +653,20 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
   const homeNotice = getHomeOccupier(state.board, state.turn.currentPlayer === 'white' ? 'black' : 'white')
     ? `Clear ${state.turn.currentPlayer === 'white' ? 'A1' : 'J10'} this turn or lose`
     : getHomeOccupier(state.board, state.turn.currentPlayer) ? `Hold ${state.turn.currentPlayer === 'white' ? 'J10' : 'A1'} until your next turn` : '';
-  const phaseHint = !interactive ? (isPaused ? 'Paused' : 'Opponent’s turn')
+  const phaseHint = online && !online.ready ? 'Share your invitation to bring in the other player.'
+    : online?.busy ? 'Confirming your move…'
+    : !interactive ? (isPaused ? 'Paused' : 'Opponent’s turn')
     : state.turn.phase === 'place' ? 'Buy tier 1, or select a piece to promote.'
     : 'Select a unit. Preview a destination, then confirm.';
 
   return (
-    <main className="game-shell">
+    <main className={`game-shell${online ? ' game-shell-online' : ''}`}>
       {state.phase === 'victory' && <VictoryScreen winner={state.winner} reason={state.victoryReason} onPlayAgain={handlePlayAgain} playerNames={playerNames} perspectivePlayer={humanPlayer ?? 'white'} />}
       {showPassOverlay && <PassDeviceOverlay nextPlayer={state.turn.currentPlayer} onContinue={handleContinueFromPass} />}
       {state.upkeepPending && isCurrentPlayerHuman && !showPassOverlay && <UpkeepPanel state={state} onConfirm={payUpkeep} />}
       <InstructionsModal isOpen={showInstructions} onClose={() => setShowInstructions(false)} />
       <aside className="game-overview" aria-label="Match overview">
+        {online?.banner}
         {(whiteAI.error || blackAI.error) && <div role="alert">
           The AI stopped thinking. Try again to keep playing.
           <button onClick={() => { whiteAI.clearError(); blackAI.clearError(); whiteAI.cancel(); blackAI.cancel(); setPlayerAiExecutedTurn(null); setAiAiExecutedTurn(null); }}>Retry AI</button>
@@ -728,10 +742,11 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
       </footer>
       {showVisualKey && <PlayDialog title="Read the board" onClose={() => setShowVisualKey(false)}><VisualKey /></PlayDialog>}
       {showMenu && <PlayDialog title="Game menu" onClose={() => setShowMenu(false)}>
-        <p>Your match is saved at phase changes on this device. Games use Unequal routes with 520 crystals. Saves from earlier rules start fresh.</p>
+        <p>{online ? 'This match is saved on the server. Keep this browser’s seat credential to reconnect. Shared moves are final.' : 'Your match is saved at phase changes on this device. Games use Unequal routes with 520 crystals. Saves from earlier rules start fresh.'}</p>
         {isCurrentPlayerHuman && <label><input type="checkbox" checked={!!state.reviewUpkeep?.[state.turn.currentPlayer]} onChange={e=>setUpkeepReview(state.turn.currentPlayer,e.target.checked)} /> Review upkeep each turn (allows T2/T3 release)</label>}
         <button onClick={() => { setShowMenu(false); handleBackToMenuClick(); }}>Choose game mode</button>
-        <button onClick={() => { if (window.confirm('Start a new game? This replaces your saved match.')) { handlePlayAgain(); setShowMenu(false); } }}>New game</button>
+        {!online && <button onClick={() => { if (window.confirm('Start a new game? This replaces your saved match.')) { handlePlayAgain(); setShowMenu(false); } }}>New game</button>}
+        {online && isCurrentPlayerHuman && <button onClick={() => { if (window.confirm('Resign this game? Your opponent will win.')) { game.resign(); setShowMenu(false); } }}>Resign</button>}
         <a href="https://ashkie.com/">Visit Ashkie.com ↗</a>
       </PlayDialog>}
       {showUnitShopInspection && <PlayDialog title="Unit guide" onClose={() => setShowUnitShopInspection(false)}>

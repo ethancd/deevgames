@@ -315,3 +315,29 @@ button:focus-visible, a:focus-visible { outline: 3px solid #67e8f9; outline-offs
   .game-shell .reference-bar .counter-key { grid-column: 1 / -1; grid-row: 2; font-size: 11px; letter-spacing: -.5px; }
   .game-overview > [role=alert], .game-overview > [role=status] { flex: none; padding: 8px; border-radius: 8px; background: #253448; }
 }
+
+/* Shared-room controls follow the game’s existing dark palette. */
+.online-lobby { max-width: 640px; margin: 0 auto; padding: 32px 20px 64px; color: #e2e8f0; }
+.online-lobby h1 { font-size: 1.8rem; margin-top: 24px; font-weight: 700; }
+.online-lobby h2 { font-size: 1.4rem; margin: 8px 0; }
+.online-lobby h3 { font-size: 1.15rem; font-weight: 650; }
+.online-lobby p { margin: 12px 0; line-height: 1.6; }
+.online-lobby section { border: 1px solid #334155; border-radius: 12px; padding: 20px; margin-top: 24px; background: #0f172a; }
+.online-lobby label, .online-banner label { display: flex; flex-direction: column; gap: 6px; margin: 14px 0; }
+.online-lobby input, .online-lobby select, .online-banner input, .online-banner textarea { width: 100%; min-width: 0; background: #172033; color: #f1f5f9; border: 1px solid #475569; border-radius: 6px; padding: 10px; }
+.online-lobby button, .online-banner button { background: #1e3a5f; border: 1px solid #475569; border-radius: 6px; padding: 9px 14px; cursor: pointer; }
+.online-lobby button.primary { background: #0e7490; }
+.online-lobby button:disabled { opacity: .5; cursor: default; }
+.online-help, .online-banner details { font-size: .82rem; color: #94a3b8; }
+.online-banner { border: 1px solid #28576c; background: #0d2230; padding: 12px; border-radius: 10px; margin-bottom: 10px; overflow-wrap: anywhere; }
+.online-banner > strong, .online-banner > span { display: block; }
+.online-banner > span { font-size: .85rem; margin: 4px 0; color: #a5d9e9; }
+.online-banner details { margin-top: 10px; }
+.online-banner textarea { min-height: 150px; font-size: .7rem; }
+.online-banner [role=alert], .online-lobby [role=alert] { color: #fda4af; }
+@media (min-width: 960px) and (min-height: 601px) and (orientation: landscape) {
+  .game-shell-online .game-overview { grid-row: 1 / -1; height: calc(100% - 90px); align-self: start; gap: 10px; }
+  .game-shell-online .online-banner { flex: none; margin-bottom: 0; }
+  .game-shell-online .game-header { gap: 4px; }
+  .game-shell-online .score-strip > div { padding: 8px; }
+}

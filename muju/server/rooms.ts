@@ -1,0 +1,124 @@
+import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
+import { DatabaseSync } from 'node:sqlite';
+import { createInitialGameState } from '../src/game/board';
+import { isLegalAction } from '../src/game/legality';
+import { applyAction } from '../src/ai/simulate';
+import type { GameState, PlayerId } from '../src/game/types';
+import type { ActionRequest, RoomAction, RoomAdmission, RoomSnapshot } from '../src/online/types';
+import { RoomError, actionRequestSchema, createSchema, joinSchema, roomIdSchema } from './schema';
+
+const RULES_VERSION = 'muju-online-1';
+const digest = (value: string) => createHash('sha256').update(value).digest('hex');
+const secret = () => randomBytes(32).toString('hex');
+function matches(value: string, hash: string) {
+  return timingSafeEqual(Buffer.from(digest(value)), Buffer.from(hash));
+}
+interface StoredRoom extends RoomSnapshot {
+  rulesVersion: string;
+  inviteHash: string | null;
+  tokenHashes: Partial<Record<PlayerId, string>>;
+  receipts: { id: string; player: PlayerId; fingerprint: string }[];
+}
+
+/** SQLite transactions serialize mutations even if more than one process opens the file. */
+export class RoomStore {
+  private db: DatabaseSync;
+  constructor(path: string = ':memory:', private maxRooms = 10000) {
+    this.db = new DatabaseSync(path);
+    this.db.exec('PRAGMA journal_mode=WAL; PRAGMA busy_timeout=5000; CREATE TABLE IF NOT EXISTS rooms (id TEXT PRIMARY KEY, data TEXT NOT NULL)');
+  }
+  close() { this.db.close(); }
+  private transaction<T>(operation: () => T): T {
+    this.db.exec('BEGIN IMMEDIATE');
+    try { const result = operation(); this.db.exec('COMMIT'); return result; }
+    catch (error) { this.db.exec('ROLLBACK'); throw error; }
+  }
+  private read(id: string): StoredRoom {
+    roomIdSchema.parse(id);
+    const row = this.db.prepare('SELECT data FROM rooms WHERE id = ?').get(id);
+    if (!row) throw new RoomError(404, 'ROOM_NOT_FOUND', 'Room not found. Check the invitation or room ID.');
+    const room = JSON.parse(row.data as string) as StoredRoom;
+    if (room.rulesVersion !== RULES_VERSION) throw new RoomError(409, 'RULES_CHANGED', 'This room uses older rules. Create a new room.');
+    return room;
+  }
+  private save(room: StoredRoom) {
+    this.db.prepare('INSERT OR REPLACE INTO rooms (id, data) VALUES (?, ?)').run(room.id, JSON.stringify(room));
+  }
+  private snapshot(room: StoredRoom): RoomSnapshot {
+    return structuredClone({ id: room.id, revision: room.revision, ready: room.ready, seats: room.seats,
+      state: room.state, updatedAt: room.updatedAt, history: room.history });
+  }
+  private authenticate(room: StoredRoom, token: string): PlayerId {
+    for (const side of ['white', 'black'] as const) {
+      const hash = room.tokenHashes[side];
+      if (hash && matches(token, hash)) return side;
+    }
+    throw new RoomError(403, 'INVALID_SEAT', 'This seat credential is invalid. Reconnect with the credential from create or join.');
+  }
+  get(id: string, token?: string) {
+    const room = this.read(id);
+    if (token !== undefined) this.authenticate(room, token);
+    return this.snapshot(room);
+  }
+  create(input: unknown): RoomAdmission {
+    const { name, side } = createSchema.parse(input);
+    return this.transaction(() => {
+      const count = this.db.prepare('SELECT COUNT(*) AS count FROM rooms').get()!.count as number;
+      if (count >= this.maxRooms) throw new RoomError(503, 'ROOM_LIMIT', 'This host is at its room limit.');
+      const id = randomBytes(16).toString('hex'), token = secret(), inviteCode = secret();
+      const room: StoredRoom = { id, revision: 0, ready: false, seats: { white: null, black: null },
+        state: createInitialGameState(), updatedAt: new Date().toISOString(), history: [],
+        rulesVersion: RULES_VERSION, inviteHash: digest(inviteCode), tokenHashes: { [side]: digest(token) }, receipts: [] };
+      room.seats[side] = name;
+      this.save(room);
+      return { credentials: { roomId: id, player: side, token }, inviteCode, room: this.snapshot(room) };
+    });
+  }
+  join(id: string, input: unknown): RoomAdmission {
+    const { name, inviteCode } = joinSchema.parse(input);
+    return this.transaction(() => {
+      const room = this.read(id);
+      if (!room.inviteHash || !matches(inviteCode, room.inviteHash)) throw new RoomError(403, 'INVALID_INVITE', 'Invitation is invalid or has already been used.');
+      const player = room.seats.white === null ? 'white' : 'black', token = secret();
+      room.seats[player] = name; room.tokenHashes[player] = digest(token);
+      room.ready = true; room.inviteHash = null; room.revision++; room.updatedAt = new Date().toISOString();
+      this.save(room);
+      return { credentials: { roomId: id, player, token }, room: this.snapshot(room) };
+    });
+  }
+  private simulate(room: StoredRoom, player: PlayerId, actions: RoomAction[]): GameState {
+    let state = room.state;
+    for (const [index, action] of actions.entries()) {
+      if (action.type === 'SET_UPKEEP_REVIEW') {
+        if (actions.length !== 1 || state.phase !== 'playing') throw new RoomError(422, 'ILLEGAL_ACTION', 'Send upkeep preference changes alone during an active game.');
+        state = { ...state, reviewUpkeep: { ...state.reviewUpkeep, [player]: action.enabled } };
+        continue;
+      }
+      if (!room.ready) throw new RoomError(409, 'WAITING_FOR_OPPONENT', 'Share the invitation and wait for the other player to join.');
+      if (!isLegalAction(state, action, player)) throw new RoomError(422, 'ILLEGAL_ACTION',
+        `Action ${index + 1} (${action.type}) is illegal. No actions were applied. Read the current room and legal actions before retrying.`);
+      state = applyAction(state, action);
+    }
+    return state;
+  }
+  act(id: string, token: string, input: unknown, preview = false): RoomSnapshot {
+    const request: ActionRequest = actionRequestSchema.parse(input);
+    return this.transaction(() => {
+      const room = this.read(id), player = this.authenticate(room, token);
+      const fingerprint = digest(JSON.stringify({ revision: request.expectedRevision, actions: request.actions }));
+      const receipt = room.receipts.find(r => r.id === request.requestId && r.player === player);
+      if (receipt && !preview) {
+        if (receipt.fingerprint !== fingerprint) throw new RoomError(409, 'REQUEST_ID_REUSED', 'Use a new requestId for a different action.');
+        return this.snapshot(room);
+      }
+      if (room.revision !== request.expectedRevision) throw new RoomError(409, 'STALE_REVISION', `Room is at revision ${room.revision}. Read it again before playing.`);
+      const state = this.simulate(room, player, request.actions);
+      if (preview) return { ...this.snapshot(room), state };
+      room.state = state; room.revision++; room.updatedAt = new Date().toISOString();
+      room.history = [...room.history, { revision: room.revision, player, actions: request.actions }].slice(-100);
+      room.receipts = [...room.receipts, { id: request.requestId, player, fingerprint }].slice(-256);
+      this.save(room);
+      return this.snapshot(room);
+    });
+  }
+}
