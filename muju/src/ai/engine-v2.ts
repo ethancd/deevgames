@@ -17,6 +17,9 @@ import { homeInvader, referenceTactics } from './tactics/home';
 import type { TacticalSolver } from './wasm/kernel';
 import type { TurnPlan } from './planner/types';
 import { endTurn } from '../game/turn';
+import { getUnitAt, getUnitById } from '../game/board';
+import { canBeEliminated } from '../game/combat';
+import { getUnitDefinition } from '../game/units';
 
 interface AIEngineConfig {
   mctsIterations: number; mctsTimeLimit: number; beamWidth: number; outputPlans: number;
@@ -79,7 +82,9 @@ export class AIEngineV2 {
     const observed = state;
     let bestPlan: TurnPlan | undefined;
     const rootPlans: TurnPlan[] = placementPlans(observed, player, budget);
-    const win = generateAttackActions(observed, player).find(a => isLegalAction(observed, a) && applyAction(observed, a).winner === player);
+    const attacks = generateAttackActions(observed, player)
+      .filter(a => a.type === 'ATTACK').filter(a => isLegalAction(observed, a));
+    const win = attacks.find(a => applyAction(observed, a).winner === player);
     if (win) bestPlan = { id: 'immediate-victory', actions: [win], score: 1000000, tags: ['kill'] };
     const invader = observed.victoryRule !== 'elimination' ? homeInvader(observed, player) : undefined;
     if (!bestPlan && invader && !budget.exhausted()) {
@@ -152,7 +157,24 @@ export class AIEngineV2 {
         budget, rng: this.rng, rootPlans: candidates }, generator,
         (sim, p) => { return tacticalSharpen(sim, p, this.config.tacticalDepth, this.weights, budget) + strategicValue(sim, p); });
     }
-    bestPlan ??= candidates[0] ?? { id: 'budget-fallback', actions: [phaseEndAction(observed)], score: 0, tags: ['passive'] };
+    bestPlan ??= candidates[0];
+    if (!bestPlan) {
+      // A deadline is not a reason to discard an immediate capture. This small,
+      // fresh legality check also completes move-and-kill lines when the caller
+      // has no search time left; it never replays a cached plan suffix.
+      const capture = attacks.map(action => {
+        const target = getUnitAt(observed.board, action.targetPosition)!;
+        const attacker = getUnitById(observed.board, action.unitId)!;
+        return {
+          action,
+          lethal: canBeEliminated(target, attacker),
+          value: getUnitDefinition(target.definitionId).cost + (target.id === invader?.id ? 100000 : 0),
+        };
+      }).filter(candidate => candidate.lethal).sort((a, b) => b.value - a.value)[0];
+      bestPlan = capture
+        ? { id: 'budget-capture', actions: [capture.action], score: capture.value, tags: ['kill'] }
+        : { id: 'budget-fallback', actions: [phaseEndAction(observed)], score: 0, tags: ['passive'] };
+    }
     const actions: AIResult['plan']['actions'] = []; let current: GameState = observed;
     for (const action of bestPlan.actions) {
       if (current.turn.currentPlayer !== player || !isLegalAction(current, action)) break;

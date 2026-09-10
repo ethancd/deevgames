@@ -1,6 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
 import { createInitialGameState, createUnit } from '../src/game/board';
 import { tacticalFixtures } from '../lab/ai/fixtures';
+import { applyActions } from '../src/ai/simulate';
 import type { GameState } from '../src/game/types';
 async function start(page: Page, state: GameState, watch = false) {
   await page.addInitScript(saved => localStorage.setItem('elemental-tactics-save', JSON.stringify({schemaVersion:5,timestamp:Date.now(),state:saved})),state);
@@ -77,4 +78,44 @@ test('Hard worker executes kill, paid move, Cleave to clear home',async({page})=
   const unit=saved.board.units.find((u:{id:string})=>u.id===attacker.id);
   expect(unit.attackedThisTurn).toHaveLength(2);expect(unit.lastAttackKilled).toBe(true);expect(unit.position).toEqual({x:8,y:9});
   expect(errors).toEqual([]);await expect(page.getByText('AI is using its backup engine.',{exact:true})).toHaveCount(0);
+});
+
+test('Hard worker finishes its opening capture before handing the turn back', async ({page}, info) => {
+  const initial = createInitialGameState();
+  const whiteHi = initial.board.units.find(unit => unit.owner === 'white' && unit.definitionId === 'fire_1')!;
+  const whiteSjor = initial.board.units.find(unit => unit.owner === 'white' && unit.definitionId === 'water_1')!;
+  const blackHi = initial.board.units.find(unit => unit.owner === 'black' && unit.definitionId === 'fire_1')!;
+  // The reported tablet opening: White spends three actions reaching H1
+  // and three reaching C4, then Black can reach H2 and capture with action six.
+  const state = applyActions(initial, [
+    {type: 'MOVE', unitId: whiteHi.id, to: {x: 7, y: 0}},
+    {type: 'MOVE', unitId: whiteSjor.id, to: {x: 2, y: 3}},
+    {type: 'END_ACTION_PHASE'},
+  ]);
+  expect(state.turn.currentPlayer).toBe('black');
+  expect(state.turn.actionsRemaining).toBe(6);
+  expect(state.players.white.resources).toBe(6);
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  const workerPromise = page.waitForEvent('worker');
+  await start(page, state);
+  const worker = await workerPromise;
+  expect(worker.url()).toMatch(/\/muju\/assets\/entry-[^/]+\.js$/);
+
+  await expect.poll(async () => page.evaluate(({whiteId, blackId}) => {
+    const saved = JSON.parse(localStorage.getItem('elemental-tactics-save')!).state as GameState;
+    return {
+      player: saved.turn.currentPlayer,
+      turn: saved.turn.turnNumber,
+      whiteHiAlive: saved.board.units.some(unit => unit.id === whiteId),
+      blackHiAlive: saved.board.units.some(unit => unit.id === blackId),
+    };
+  }, {whiteId: whiteHi.id, blackId: blackHi.id}), {timeout: 20_000}).toEqual({
+    player: 'white', turn: 2, whiteHiAlive: false, blackHiAlive: true,
+  });
+  await expect(page.getByTestId('cell-7-0')).not.toHaveAttribute('aria-label', /white Hi/);
+  expect(errors).toEqual([]);
+  await expect(page.getByRole('alert')).toHaveCount(0);
+  await expect(page.getByText('AI is using its backup engine.', {exact: true})).toHaveCount(0);
+  await page.screenshot({path: info.outputPath('hard-opening-capture.png')});
 });

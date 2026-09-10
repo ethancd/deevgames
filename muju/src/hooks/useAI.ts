@@ -5,7 +5,6 @@ import { AIWorkerClient, SearchCancelled } from '../ai/worker/client';
 import { TURN_BUDGET_MS } from '../ai/engine-v2';
 import { applyAction } from '../ai/simulate';
 import { isLegalAction, phaseEndAction } from '../game/legality';
-import { homeInvader } from '../ai/tactics/home';
 
 interface UseAIOptions {
   difficulty?: AIDifficulty; thinkingDelay?: number; enabled?: boolean;
@@ -49,8 +48,10 @@ export function useAI(options: UseAIOptions = {}) {
     };
     try {
       while (currentState.phase === 'playing' && currentState.turn.currentPlayer === playerId && token === generation.current) {
-        const fraction = homeInvader(currentState, playerId) ? 1 : currentState.turn.phase === 'action' ? 1 / Math.max(1, currentState.turn.actionsRemaining / 2) : 0.25;
-        const allowance = Math.max(0, Math.min(remainingCPU, Math.max(80, remainingCPU * fraction)));
+        // Every action is searched again, including the last attack in a
+        // combination or home rescue. Reserve time for all remaining actions.
+        const decisionsRemaining = currentState.turn.phase === 'action' ? Math.max(1, currentState.turn.actionsRemaining) : 4;
+        const allowance = remainingCPU / decisionsRemaining;
         const result = await client.current.findBestAction(currentState, difficulty, allowance, turnActions.length);
         remainingCPU = Math.max(0, remainingCPU - result.timeMs);
         if (!valid()) break;
