@@ -38,7 +38,7 @@ describe('Cleave', () => {
   it('actually places a Tier I and prevents it sweeping three adjacent enemies',()=>{
     let s=createInitialGameState();s.turn.phase='place';
     s.board.units=[createUnit('plant_1','white',{x:4,y:4}),...[[5,4],[6,5],[5,6]].map(([x,y])=>createUnit('fire_1','black',{x,y}))];
-    s.players.white.resources=1;s.players.white.resourcesGained=1;
+    s.players.white.resources=2;s.players.white.resourcesGained=2;
     const place={type:'BUY_UNIT' as const,definitionId:'fire_1',position:{x:4,y:3}};
     expect(isLegalAction(s,place)).toBe(true);s=applyAction(s,place);
     // Move the placed unit to a square beside all three enemies.

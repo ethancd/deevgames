@@ -8,11 +8,10 @@ document and the code disagree, that is a bug in one of them: see
 of known divergences. The stat tables in §7 are transcriptions of
 `src/game/units.ts`, which is the canonical stat source.
 
-**Spec version:** v2.1 (2026-09-09) — two-phase turn, tier-1 purchase,
-promotion climb, public economy. Includes v2.0 passive end-of-turn mining
-and reserves 4/8/10. All 18 v1.9 unit stats and costs are unchanged; build
-times are removed. Production publishing is tracked by the repository’s
-release workflow; the designer authorized release on 2026-09-09.
+**Spec version:** v2.2 (2026-09-10) — every catalogue cost is twice v2.1,
+so tier-1 purchases and all promotion steps cost twice as much. Passive mining,
+reserves, upkeep, starting units, action budget and other rules are unchanged.
+See `docs/DOUBLE_COSTS-2026-09-10.md` for the opening-pacing rationale.
 
 History: v1.0 (original design), v1.1 (historical playtest balance pass),
 v1.2 (canonical rewrite), v1.3 (role balance), v1.4 (Cleave), v1.5 (tier-3 cap),
@@ -20,7 +19,8 @@ v1.6 (upkeep and inactivity draw), v1.7 (Lightning/Metal adjustments),
 v1.8 (mandatory T1 upkeep retention), v1.9 (ten-turn draw at turn end),
 v2.0 (2026-09-09, passive mining and 4/8/10 reserves), v2.1 (2026-09-09,
 public tier-1 purchase and promotion climb). The v2.0/v2.1 changes are
-implemented together; v2.0 is not a separately deployed release.
+implemented together; v2.0 is not a separately deployed release. v2.2 (2026-09-10) doubles
+purchase and promotion prices.
 
 ---
 
@@ -223,52 +223,53 @@ new stats.
 
 Eighteen units, three per element. Stat columns: ATK / DEF / SPD / MINE / Cost.
 
-The catalogue is exactly v1.9 with build times removed. Tier 3 is terminal.
+The catalogue retains v1.9 combat, movement and mining stats with build times
+removed; v2.2 doubles every catalogue cost. Tier 3 is terminal.
 The historical tier-4 cut and its measured tradeoffs are recorded in
-`docs/TIER3_CAP-2026-09-08.md`; those well-economy measurements are not v2.1
+`docs/TIER3_CAP-2026-09-08.md`; those well-economy measurements are not current
 balance evidence. Tanka retains Speed 2, Mining 4 and DEF 6.
 
 ### Fire (Rush — ATK specialist) — Japanese
 | Tier | Name | ATK | DEF | SPD | MINE | Cost |
 |---|---|---|---|---|---|---|
-| 1 | Hi | 2 | 1 | 2 | 1 | 1 |
-| 2 | Hono | 3 | 1 | 2 | 1 | 3 |
-| 3 | Kagari | 4 | 2 | 3 | 1 | 6 |
+| 1 | Hi | 2 | 1 | 2 | 1 | 2 |
+| 2 | Hono | 3 | 1 | 2 | 1 | 6 |
+| 3 | Kagari | 4 | 2 | 3 | 1 | 12 |
 
 ### Lightning (Rush — SPD specialist) — Swahili
 | Tier | Name | ATK | DEF | SPD | MINE | Cost |
 |---|---|---|---|---|---|---|
-| 1 | Radi | 1 | 1 | 3 | 0 | 1 |
-| 2 | Umeme | 2 | 1 | 4 | 0 | 3 |
-| 3 | Kimubunga | 3 | 1 | 5 | 0 | 6 |
+| 1 | Radi | 1 | 1 | 3 | 0 | 2 |
+| 2 | Umeme | 2 | 1 | 4 | 0 | 6 |
+| 3 | Kimubunga | 3 | 1 | 5 | 0 | 12 |
 
 ### Water (Balanced — DEF-leaning) — Norse
 | Tier | Name | ATK | DEF | SPD | MINE | Cost |
 |---|---|---|---|---|---|---|
-| 1 | Sjor | 2 | 2 | 1 | 2 | 2 |
-| 2 | Straumr | 2 | 3 | 1 | 2 | 4 |
-| 3 | Aegirinn | 3 | 4 | 2 | 3 | 10 |
+| 1 | Sjor | 2 | 2 | 1 | 2 | 4 |
+| 2 | Straumr | 2 | 3 | 1 | 2 | 8 |
+| 3 | Aegirinn | 3 | 4 | 2 | 3 | 20 |
 
 ### Shadow (Balanced — ATK/SPD-leaning) — Turkish/Slavic
 | Tier | Name | ATK | DEF | SPD | MINE | Cost |
 |---|---|---|---|---|---|---|
-| 1 | Göl | 2 | 2 | 2 | 0 | 2 |
-| 2 | Gölge | 3 | 2 | 2 | 1 | 4 |
-| 3 | Karanlık | 4 | 2 | 3 | 2 | 10 |
+| 1 | Göl | 2 | 2 | 2 | 0 | 4 |
+| 2 | Gölge | 3 | 2 | 2 | 1 | 8 |
+| 3 | Karanlık | 4 | 2 | 3 | 2 | 20 |
 
 ### Plant (Expand — MINE specialist) — Quechua/Nahuatl
 | Tier | Name | ATK | DEF | SPD | MINE | Cost |
 |---|---|---|---|---|---|---|
-| 1 | Muju | 0 | 2 | 1 | 3 | 3 |
-| 2 | Sachita | 1 | 3 | 1 | 4 | 6 |
-| 3 | Sachakuna | 2 | 4 | 1 | 5 | 12 |
+| 1 | Muju | 0 | 2 | 1 | 3 | 6 |
+| 2 | Sachita | 1 | 3 | 1 | 4 | 12 |
+| 3 | Sachakuna | 2 | 4 | 1 | 5 | 24 |
 
 ### Metal (Expand — DEF specialist) — Lakota
 | Tier | Name | ATK | DEF | SPD | MINE | Cost |
 |---|---|---|---|---|---|---|
-| 1 | Inyan | 1 | 3 | 1 | 2 | 3 |
-| 2 | Mazask | 2 | 4 | 1 | 3 | 6 |
-| 3 | Tanka | 2 | 6 | 2 | 4 | 12 |
+| 1 | Inyan | 1 | 3 | 1 | 2 | 6 |
+| 2 | Mazask | 2 | 4 | 1 | 3 | 12 |
+| 3 | Tanka | 2 | 6 | 2 | 4 | 24 |
 
 The Metal ladder is **Inyan → Mazask → Tanka**. The title names a tier-1, tier-2,
 and tier-3 unit: Muju / Hono / Tanka.

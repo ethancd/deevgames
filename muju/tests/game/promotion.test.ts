@@ -32,19 +32,19 @@ function createUnit(
 
 describe('Promotion System', () => {
   describe('getPromotionCost', () => {
-    it('T1 → T2 costs 2 crystals', () => {
+    it('Fire T1 → T2 costs 4 crystals', () => {
       const unit = createUnit('p1', 'white', { x: 0, y: 0 }, 'fire_1');
-      expect(getPromotionCost(unit)).toBe(2);
+      expect(getPromotionCost(unit)).toBe(4);
     });
 
-    it('T2 → T3 costs 3 crystals', () => {
+    it('Fire T2 → T3 costs 6 crystals', () => {
       const unit = createUnit('p1', 'white', { x: 0, y: 0 }, 'fire_2');
-      expect(getPromotionCost(unit)).toBe(3);
+      expect(getPromotionCost(unit)).toBe(6);
     });
 
-    it('Plant T2 → T3 costs 6 crystals', () => {
+    it('Plant T2 → T3 costs 12 crystals', () => {
       const unit = createUnit('p1', 'white', { x: 0, y: 0 }, 'plant_2');
-      expect(getPromotionCost(unit)).toBe(6);
+      expect(getPromotionCost(unit)).toBe(12);
     });
 
     it('T3 cannot be promoted (returns null)', () => {
@@ -93,7 +93,7 @@ describe('Promotion System', () => {
 
     it('returns false when player lacks crystals', () => {
       const unit = createUnit('p1', 'white', { x: 0, y: 0 }, 'fire_1');
-      const buildState: BuildState = { crystals: 1 };
+      const buildState: BuildState = { crystals: 3 };
       expect(canPromote(unit, buildState)).toBe(false);
     });
 
@@ -105,7 +105,7 @@ describe('Promotion System', () => {
 
     it('returns true for exact crystal match', () => {
       const unit = createUnit('p1', 'white', { x: 0, y: 0 }, 'fire_1');
-      const buildState: BuildState = { crystals: 2 };
+      const buildState: BuildState = { crystals: 4 };
       expect(canPromote(unit, buildState)).toBe(true);
     });
 
@@ -162,7 +162,7 @@ describe('Promotion System', () => {
       const result = promoteUnit(board, 'p1', buildState);
 
       expect(result).not.toBeNull();
-      expect(result!.buildState.crystals).toBe(3); // 5 - 2
+      expect(result!.buildState.crystals).toBe(1); // 5 - 4
       const promotedUnit = result!.board.units.find((u) => u.id === 'p1');
       expect(promotedUnit?.definitionId).toBe('fire_2');
     });
@@ -171,7 +171,7 @@ describe('Promotion System', () => {
       let board = createEmptyBoard();
       const unit = createUnit('p1', 'white', { x: 3, y: 4 }, 'fire_2');
       board = placeUnit(board, unit);
-      const buildState: BuildState = { crystals: 5 }; // fire_2→fire_3 costs 3
+      const buildState: BuildState = { crystals: 6 }; // fire_2→fire_3 costs 6
 
       const result = promoteUnit(board, 'p1', buildState);
 
@@ -193,7 +193,7 @@ describe('Promotion System', () => {
       let board = createEmptyBoard();
       const unit = createUnit('p1', 'white', { x: 1, y: 1 }, 'fire_1');
       board = placeUnit(board, unit);
-      const buildState: BuildState = { crystals: 1 };
+      const buildState: BuildState = { crystals: 3 };
 
       const result = promoteUnit(board, 'p1', buildState);
 
@@ -232,11 +232,11 @@ describe('Promotion System', () => {
   describe('getPromotableUnits', () => {
     it('returns units that can be promoted', () => {
       let board = createEmptyBoard();
-      const unit1 = createUnit('p1', 'white', { x: 1, y: 1 }, 'fire_1'); // costs 2
-      const unit2 = createUnit('p2', 'white', { x: 2, y: 2 }, 'fire_2'); // costs 3
+      const unit1 = createUnit('p1', 'white', { x: 1, y: 1 }, 'fire_1'); // costs 4
+      const unit2 = createUnit('p2', 'white', { x: 2, y: 2 }, 'fire_2'); // costs 6
       board = placeUnit(board, unit1);
       board = placeUnit(board, unit2);
-      const buildState: BuildState = { crystals: 3 };
+      const buildState: BuildState = { crystals: 6 };
 
       const promotable = getPromotableUnits(board, 'white', buildState);
 
@@ -245,11 +245,11 @@ describe('Promotion System', () => {
 
     it('excludes units player cannot afford to promote', () => {
       let board = createEmptyBoard();
-      const unit1 = createUnit('p1', 'white', { x: 1, y: 1 }, 'fire_1'); // needs 2 (3-1)
-      const unit2 = createUnit('p2', 'white', { x: 2, y: 2 }, 'fire_3'); // needs 4 (10-6)
+      const unit1 = createUnit('p1', 'white', { x: 1, y: 1 }, 'fire_1'); // needs 4 (6-2)
+      const unit2 = createUnit('p2', 'white', { x: 2, y: 2 }, 'fire_2'); // needs 6 (12-6)
       board = placeUnit(board, unit1);
       board = placeUnit(board, unit2);
-      const buildState: BuildState = { crystals: 2 };
+      const buildState: BuildState = { crystals: 4 };
 
       const promotable = getPromotableUnits(board, 'white', buildState);
 
@@ -290,7 +290,7 @@ describe('Promotion System', () => {
 
       expect(info.currentTier).toBe(1);
       expect(info.nextTier).toBe(2);
-      expect(info.cost).toBe(2);
+      expect(info.cost).toBe(4);
       expect(info.currentName).toBeTruthy();
       expect(info.promotedName).toBeTruthy();
     });

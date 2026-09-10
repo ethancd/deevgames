@@ -15,8 +15,8 @@ it('undo stays within the turn; passive income is irreversible even on the draw 
  const draw=createInitialGameState(Array(100).fill(0));draw.inactivityPlies=9;saveGameState(draw);
  const h=renderHook(()=>useGameState());act(()=>h.result.current.endActionPhase());expect(h.result.current.state.phase).toBe('victory');expect(h.result.current.canUndo).toBe(false);h.unmount();
 });
-it('spending the last crystal finishes placement, permits haste and is undoable until turn end',()=>{
- const s=createInitialGameState();s.turn.phase='place';s.players.white.resources=1;s.players.white.resourcesGained=1;saveGameState(s);
+it('spending the last two crystals finishes placement, permits haste and is undoable until turn end',()=>{
+ const s=createInitialGameState();s.turn.phase='place';s.players.white.resources=2;s.players.white.resourcesGained=2;saveGameState(s);
  const {result,unmount}=renderHook(()=>useGameState());act(()=>result.current.buyUnit('fire_1',{x:0,y:0}));
  expect(result.current.state.turn).toMatchObject({phase:'action',currentPlayer:'white',actionsRemaining:6});expect(result.current.canUndo).toBe(true);
  act(()=>result.current.undo());expect(result.current.state).toEqual(s);unmount();

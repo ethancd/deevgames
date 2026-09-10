@@ -54,7 +54,7 @@ describe('static value model independent checks', () => {
   });
   it('models turn-end income, public buying and the two-turn promotion climb', () => {
     for(const element of ['lightning','metal','shadow'])expect([1,2,3].map(t=>accessTimeline(UNIT_DEFINITIONS,get(`${element}_${t}`),12).activeTurn)).toEqual([2,3,4]);
-    expect(accessTimeline(UNIT_DEFINITIONS,get('fire_2'),3).activeTurn).toBe(2);
+    expect(accessTimeline(UNIT_DEFINITIONS,get('fire_2'),3).activeTurn).toBe(3);
     expect(accessTimeline(UNIT_DEFINITIONS,get('plant_3'),0).activeTurn).toBeNull();
   });
   it('detects the historical Plant tier-2 dominance without calling the whole tree dominated', () => {

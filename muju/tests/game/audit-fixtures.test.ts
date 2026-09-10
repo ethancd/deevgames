@@ -176,10 +176,10 @@ describe('audit fixtures: promotion timing rules', () => {
 
   it('promotion cost is the cost difference to the next tier', () => {
     for (const [defId, expected] of [
-      ['fire_1', 2], // 3 - 1
-      ['fire_2', 3], // 6 - 3
-      ['water_2', 6], // 10 - 4
-      ['plant_2', 6], // 12 - 6
+      ['fire_1', 4], // 6 - 2
+      ['fire_2', 6], // 12 - 6
+      ['water_2', 12], // 20 - 8
+      ['plant_2', 12], // 24 - 12
     ] as const) {
       const unit = placed(defId, 'white', 0, 0);
       expect(getPromotionCost(unit), defId).toBe(expected);
