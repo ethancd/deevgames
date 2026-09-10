@@ -34,7 +34,7 @@ future studies. The initial update validates operation, not strength. See the
 > [mining report](MINING_SIMPLIFICATION-2026-09-09.md) and
 > [placement report](PLACEMENT_SIMPLIFICATION-2026-09-09.md). Old measurements
 > remain labeled by their original versions; none establishes v2.1 balance.
-> This branch has not been deployed.
+> Production release status is tracked by the repository’s deployment workflow.
 
 > v1.6 follow-up: [upkeep and inactivity draw](UPKEEP_DRAW-2026-09-08.md) supersede the no-upkeep game lengths, cap rates and carrying values below. Historical measurements are preserved.
 

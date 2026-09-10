@@ -118,8 +118,7 @@ The balance lab supplies seeded playouts, invariants, replays and income/
 purchase/promotion telemetry. Earlier win rates in this dossier describe
 historical well/queue rules and do not transfer to the simplification. See
 `muju/SPEC.md` and the September 9 mining/placement reports for the current
-branch, verification and registered future comparisons. Source change only;
-no production deployment is implied.
+branch, verification and registered future comparisons. Production release status is recorded by the repository’s publishing workflow.
 
 ### 2.4 Oracle of Delve
 

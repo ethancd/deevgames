@@ -1,3 +1,9 @@
+> **Production release follow-up — 2026-09-09:** the designer subsequently
+> authorized pushing this branch and deploying v2.1. The implementation-only
+> status below records the earlier verification phase. Production publishing
+> and its checks are recorded in the [release workflow](https://github.com/ethancd/deevgames/actions/workflows/deploy.yml).
+> The large comparative balance studies remain deferred.
+
 # Mining simplification — 2026-09-09
 
 Status: implementation and bounded verification complete. Comparative balance study deferred. **Tested branch, not a production deployment.**

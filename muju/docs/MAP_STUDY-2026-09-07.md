@@ -5,7 +5,7 @@
 > [mining report](MINING_SIMPLIFICATION-2026-09-09.md) and
 > [placement report](PLACEMENT_SIMPLIFICATION-2026-09-09.md). Old measurements
 > remain labeled by their original versions; none establishes v2.1 balance.
-> This branch has not been deployed.
+> Production release status is tracked by the repository’s deployment workflow.
 
 > Catalogue/visual-rank numbers superseded by v1.5: [tier-3 cap report](TIER3_CAP-2026-09-08.md). Historical measurements below remain unchanged.
 

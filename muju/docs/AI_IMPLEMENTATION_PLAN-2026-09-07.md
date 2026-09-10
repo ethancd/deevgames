@@ -5,7 +5,7 @@
 > [mining report](MINING_SIMPLIFICATION-2026-09-09.md) and
 > [placement report](PLACEMENT_SIMPLIFICATION-2026-09-09.md). Old measurements
 > remain labeled by their original versions; none establishes v2.1 balance.
-> This branch has not been deployed.
+> Production release status is tracked by the repository’s deployment workflow.
 
 # Muju AI: stronger play and faster local execution
 

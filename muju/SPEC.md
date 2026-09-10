@@ -11,8 +11,8 @@ of known divergences. The stat tables in §7 are transcriptions of
 **Spec version:** v2.1 (2026-09-09) — two-phase turn, tier-1 purchase,
 promotion climb, public economy. Includes v2.0 passive end-of-turn mining
 and reserves 4/8/10. All 18 v1.9 unit stats and costs are unchanged; build
-times are removed. This is the specification of the tested feature branch,
-not a claim that production has been deployed.
+times are removed. Production publishing is tracked by the repository’s
+release workflow; the designer authorized release on 2026-09-09.
 
 History: v1.0 (original design), v1.1 (historical playtest balance pass),
 v1.2 (canonical rewrite), v1.3 (role balance), v1.4 (Cleave), v1.5 (tier-3 cap),
