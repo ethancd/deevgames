@@ -1,7 +1,7 @@
 import express from 'express';
 import type { ErrorRequestHandler } from 'express';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
-import { ZodError } from 'zod';
+import { z, ZodError } from 'zod';
 import { RoomStore } from './rooms';
 import { RoomError } from './schema';
 import { createMcpServer } from './mcp';
@@ -37,6 +37,19 @@ export function createApp(store: RoomStore, options: { publicUrl: string; distPa
   app.get('/api/muju/health', (_req, res) => res.json({ ok: true, game: 'Muju Hono Tanka', protocol: 1 }));
   app.post('/api/muju/rooms', (req, res) => res.status(201).json(store.create(req.body)));
   app.get('/api/muju/rooms/:id', (req, res) => res.json(store.get(req.params.id, req.headers.authorization?.replace(/^Bearer /, ''))));
+  app.get('/api/muju/rooms/:id/changes', async (req, res, next) => {
+    const controller = new AbortController();
+    const cancel = () => controller.abort();
+    res.on('close', cancel);
+    try {
+      const query = z.object({ afterRevision: z.coerce.number().int().nonnegative(),
+        timeoutMs: z.coerce.number().int().min(0).max(25000).default(25000) }).strict().parse(req.query);
+      const change = await store.wait(req.params.id, query.afterRevision, query.timeoutMs, controller.signal,
+        req.headers.authorization?.replace(/^Bearer /, ''));
+      if (!controller.signal.aborted) res.json(change);
+    } catch (error) { if (!controller.signal.aborted) next(error); }
+    finally { res.off('close', cancel); }
+  });
   app.post('/api/muju/rooms/:id/join', (req, res) => res.json(store.join(req.params.id, req.body)));
   for (const operation of ['actions', 'preview'] as const) {
     app.post(`/api/muju/rooms/:id/${operation}`, (req, res) => {

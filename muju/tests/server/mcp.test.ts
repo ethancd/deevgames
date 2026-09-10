@@ -16,8 +16,10 @@ async function setup(rateLimit = 600) {
   await new Promise<void>((resolve, reject) => { listener = app.listen(0, '127.0.0.1', error => error ? reject(error) : resolve()); });
   const address = listener!.address() as { port: number };
   const url = `http://127.0.0.1:${address.port}`;
+  const requests: string[] = [];
+  listener!.on('request', req => requests.push(`${req.method} ${req.url}`));
   cleanups.push(async () => { listener.closeAllConnections(); await new Promise<void>(r => listener.close(() => r())); store.close(); });
-  return { store, url };
+  return { store, url, requests };
 }
 async function clientFor(url: string, stdio = false) {
   const client = new Client({ name: 'muju-test-agent', version: '1' });
@@ -34,6 +36,45 @@ async function call(client: Client, name: string, args: Record<string, unknown> 
 }
 
 describe('MCP and HTTP interoperability', () => {
+  it.each([false, true])('returns tiny idle results without repeated snapshot downloads (stdio=%s)', async stdio => {
+    const { store, url, requests } = await setup();
+    const host = store.create({ name: 'Host' });
+    const client = await clientFor(url, stdio);
+    requests.length = 0;
+    const result = await call(client, 'muju_wait_for_change', { roomId: host.room.id, afterRevision: 0, timeoutMs: 1100 });
+    expect(result).toEqual({ changed: false, revision: 0, phase: 'playing' });
+    expect(JSON.stringify(result).length).toBeLessThan(100);
+    // The SDK also probes GET /mcp for an optional event stream after connecting.
+    expect(requests.filter(r => r !== 'GET /mcp')).toEqual([stdio
+      ? `GET /api/muju/rooms/${host.room.id}/changes?afterRevision=0&timeoutMs=1100` : 'POST /mcp']);
+  }, 10000);
+  it('long polls joins and final moves, validates input and cancels abandoned waits', async () => {
+    const { store, url } = await setup();
+    const host = store.create({ name: 'Host', side: 'white' });
+    const endpoint = `${url}/api/muju/rooms/${host.room.id}/changes`;
+    const started = Date.now();
+    const unchanged = await (await fetch(`${endpoint}?afterRevision=0&timeoutMs=100`)).json();
+    expect(Date.now() - started).toBeGreaterThanOrEqual(90);
+    expect(unchanged).toEqual({ changed: false, revision: 0, phase: 'playing' });
+    const waiting = fetch(`${endpoint}?afterRevision=0&timeoutMs=2000`);
+    const nativeWait = store.wait(host.room.id, 0, 2000);
+    store.join(host.room.id, { name: 'Guest', inviteCode: host.inviteCode });
+    expect(await nativeWait).toMatchObject({ changed: true, revision: 1, room: { ready: true } });
+    expect(await (await waiting).json()).toMatchObject({ changed: true, revision: 1, room: { ready: true } });
+    for (const query of ['afterRevision=-1', 'afterRevision=no', 'afterRevision=0&timeoutMs=25001', 'timeoutMs=0']) {
+      expect((await fetch(`${endpoint}?${query}`)).status).toBe(400);
+    }
+    expect((await fetch(`${endpoint}?afterRevision=1&timeoutMs=0`, { headers: { Authorization: 'Bearer wrong' } })).status).toBe(403);
+    const controller = new AbortController();
+    const cancelled = store.wait(host.room.id, 1, 25000, controller.signal);
+    controller.abort();
+    await expect(cancelled).rejects.toMatchObject({ name: 'AbortError' });
+    store.act(host.room.id, host.credentials.token, { expectedRevision: 1, requestId: 'traffic-resign', actions: [{ type: 'RESIGN' }] });
+    expect(await (await fetch(`${endpoint}?afterRevision=1&timeoutMs=25000`)).json())
+      .toMatchObject({ changed: true, revision: 2, phase: 'victory', room: { state: { winner: 'black' } } });
+    expect(await (await fetch(`${endpoint}?afterRevision=2&timeoutMs=25000`)).json())
+      .toEqual({ changed: false, revision: 2, phase: 'victory' });
+  });
   it('plays one room through a real HTTP MCP client and a separate stdio agent', async () => {
     const { url } = await setup();
     const white = await clientFor(url), black = await clientFor(url, true);

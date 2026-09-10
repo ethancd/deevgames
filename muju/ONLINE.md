@@ -164,8 +164,15 @@ their use. Rooms are unlisted; there is no public matchmaking or account system.
   as its own command to review it each turn. `PAY_UPKEEP` must include every tier 1
   unit and any affordable subset of higher tiers. Legal-actions output shows one
   affordable selection, not all exponentially many possible subsets.
-- The browser polls once per second and supports retrying the same move after a lost
-  response. MCP long polling returns after a change or a 25-second timeout.
+- Browsers and both MCP transports use server-side long polling: a request waits up
+  to 25 seconds, returning the board only when its revision changes. An unchanged
+  result is just `{changed:false, revision, phase}`; agents keep their previous
+  observation and wait again. Stop waiting when `phase` is `victory`.
+- Browser updates pause in hidden tabs, resume when visible, stop after victory,
+  and back off during outages. Retrying the same move after a lost response remains
+  supported. Idle visible clients make about 144 wait requests/hour, instead of
+  3,600 browser snapshots or 7,200 stdio-bridge snapshots. Network/protocol headers
+  still consume bandwidth, as do actual moves, observations and loading the site.
 
 ## Host configuration and persistence
 
@@ -208,6 +215,7 @@ of silently continuing under different rules.
 | `POST /api/muju/rooms` | `{name, side}` → admission |
 | `POST /api/muju/rooms/:id/join` | `{name, inviteCode}` → admission |
 | `GET /api/muju/rooms/:id` | Public snapshot; optional Bearer token validates a saved seat |
+| `GET /api/muju/rooms/:id/changes?afterRevision=N&timeoutMs=25000` | Wait for change; compact metadata on timeout, `room` snapshot on change; optional Bearer token |
 | `POST /api/muju/rooms/:id/actions` | `{expectedRevision, requestId, actions}` plus Bearer seat token |
 | `POST /api/muju/rooms/:id/preview` | Same request, without mutation |
 | `POST /mcp` | Stateless Streamable HTTP MCP |

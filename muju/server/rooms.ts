@@ -1,13 +1,14 @@
 import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
 import { DatabaseSync } from 'node:sqlite';
+import { setTimeout as delay } from 'node:timers/promises';
 import { createInitialGameState } from '../src/game/board';
 import { isLegalAction } from '../src/game/legality';
 import { applyAction } from '../src/ai/simulate';
 import type { GameState, PlayerId } from '../src/game/types';
-import type { ActionRequest, RoomAction, RoomAdmission, RoomSnapshot } from '../src/online/types';
+import type { ActionRequest, RoomAction, RoomAdmission, RoomChange, RoomSnapshot } from '../src/online/types';
 import { RoomError, actionRequestSchema, createSchema, joinSchema, roomIdSchema } from './schema';
 
-const RULES_VERSION = 'muju-online-1';
+const RULES_VERSION = 'muju-online-2';
 const digest = (value: string) => createHash('sha256').update(value).digest('hex');
 const secret = () => randomBytes(32).toString('hex');
 function matches(value: string, hash: string) {
@@ -23,11 +24,12 @@ interface StoredRoom extends RoomSnapshot {
 /** SQLite transactions serialize mutations even if more than one process opens the file. */
 export class RoomStore {
   private db: DatabaseSync;
+  private shutdown = new AbortController();
   constructor(path: string = ':memory:', private maxRooms = 10000) {
     this.db = new DatabaseSync(path);
     this.db.exec('PRAGMA journal_mode=WAL; PRAGMA busy_timeout=5000; CREATE TABLE IF NOT EXISTS rooms (id TEXT PRIMARY KEY, data TEXT NOT NULL)');
   }
-  close() { this.db.close(); }
+  close() { this.shutdown.abort(); this.db.close(); }
   private transaction<T>(operation: () => T): T {
     this.db.exec('BEGIN IMMEDIATE');
     try { const result = operation(); this.db.exec('COMMIT'); return result; }
@@ -59,6 +61,21 @@ export class RoomStore {
     const room = this.read(id);
     if (token !== undefined) this.authenticate(room, token);
     return this.snapshot(room);
+  }
+  async wait(id: string, afterRevision: number, timeoutMs: number, signal?: AbortSignal, token?: string): Promise<RoomChange> {
+    const cancellation = signal ? AbortSignal.any([signal, this.shutdown.signal]) : this.shutdown.signal;
+    cancellation.throwIfAborted();
+    const deadline = Date.now() + timeoutMs;
+    let room = this.get(id, token);
+    // Check only the revision locally while idle. This also sees writes from another
+    // process sharing the SQLite file, without sending full snapshots over the network.
+    while (room.revision === afterRevision && room.state.phase !== 'victory' && Date.now() < deadline) {
+      await delay(Math.min(500, deadline - Date.now()), undefined, { signal: cancellation });
+      const row = this.db.prepare("SELECT json_extract(data, '$.revision') AS revision FROM rooms WHERE id = ?").get(id);
+      if (row?.revision !== afterRevision) room = this.get(id, token);
+    }
+    const metadata = { revision: room.revision, phase: room.state.phase };
+    return room.revision === afterRevision ? { changed: false, ...metadata } : { changed: true, ...metadata, room };
   }
   create(input: unknown): RoomAdmission {
     const { name, side } = createSchema.parse(input);

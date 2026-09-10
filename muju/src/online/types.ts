@@ -11,6 +11,8 @@ export interface RoomSnapshot {
   updatedAt: string;
   history: { revision: number; player: PlayerId; actions: RoomAction[] }[];
 }
+export type RoomChange = { changed: false; revision: number; phase: GameState['phase'] }
+  | { changed: true; revision: number; phase: GameState['phase']; room: RoomSnapshot };
 export interface SeatCredentials { roomId: string; player: PlayerId; token: string }
 export interface RoomConnection extends SeatCredentials { serverUrl: string }
 export interface RoomAdmission {

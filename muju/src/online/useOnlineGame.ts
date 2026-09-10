@@ -4,7 +4,7 @@ import type { AIAction } from '../ai/types';
 import { getUnitById } from '../game/board';
 import { getValidMoves } from '../game/movement';
 import { getValidAttacks } from '../game/combat';
-import { OnlineError, playRoom, readRoom } from './client';
+import { OnlineError, playRoom, readRoom, waitRoom } from './client';
 import type { ActionRequest, RoomAction, RoomConnection, RoomSnapshot } from './types';
 
 export function useOnlineGame(connection: RoomConnection, initial: RoomSnapshot, onLeave: () => void) {
@@ -21,15 +21,32 @@ export function useOnlineGame(connection: RoomConnection, initial: RoomSnapshot,
     roomRef.current = next; setRoom(next); setSelected(null);
   }, []);
   useEffect(() => {
-    const controller = new AbortController();
+    let controller = new AbortController();
     let timer: ReturnType<typeof setTimeout>;
-    async function poll() {
-      try { accept(await readRoom(connection, controller.signal)); if (!controller.signal.aborted) setConnectionError(null); }
-      catch (error) { if (!controller.signal.aborted) setConnectionError(error instanceof Error ? error.message : 'Connection interrupted. Reconnecting…'); }
-      if (!controller.signal.aborted) timer = setTimeout(poll, 1000);
+    let failures = 0;
+    async function poll(signal: AbortSignal) {
+      if (signal.aborted || document.visibilityState === 'hidden' || roomRef.current.state.phase === 'victory') return;
+      try {
+        const change = await waitRoom(connection, roomRef.current.revision, signal);
+        if (signal.aborted) return;
+        if (change.changed) accept(change.room);
+        failures = 0; setConnectionError(null);
+      } catch (error) {
+        if (signal.aborted) return;
+        failures++;
+        setConnectionError(error instanceof Error ? error.message : 'Connection interrupted. Reconnecting…');
+      }
+      // Back off through outages instead of multiplying traffic while disconnected.
+      if (!signal.aborted) timer = setTimeout(() => void poll(signal), failures ? Math.min(60000, 1000 * 2 ** Math.min(failures, 6)) : 0);
     }
-    void poll();
-    return () => { controller.abort(); clearTimeout(timer); };
+    function resume() {
+      controller.abort(); clearTimeout(timer);
+      controller = new AbortController();
+      void poll(controller.signal);
+    }
+    document.addEventListener('visibilitychange', resume);
+    void poll(controller.signal);
+    return () => { controller.abort(); clearTimeout(timer); document.removeEventListener('visibilitychange', resume); };
   }, [connection, accept]);
 
   const send = useCallback(async (request: ActionRequest) => {

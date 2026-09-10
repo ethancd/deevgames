@@ -1,6 +1,6 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
-import type { RoomAdmission, RoomSnapshot } from '../src/online/types';
+import type { RoomAdmission, RoomChange, RoomSnapshot } from '../src/online/types';
 import { actionSchema, createSchema, joinSchema, roomIdSchema, tokenSchema } from './schema';
 import { describeAction, legalActions, observe, rules } from './observation';
 
@@ -9,6 +9,7 @@ export interface RoomBackend {
   create(input: unknown): MaybePromise<RoomAdmission>;
   join(id: string, input: unknown): MaybePromise<RoomAdmission>;
   get(id: string, token?: string): MaybePromise<RoomSnapshot>;
+  wait(id: string, afterRevision: number, timeoutMs: number, signal?: AbortSignal): Promise<RoomChange>;
   act(id: string, token: string, input: unknown, preview?: boolean): MaybePromise<RoomSnapshot>;
 }
 const squareSchema = z.string().regex(/^[A-Ja-j](10|[1-9])$/).transform(s => ({ x: s.toUpperCase().charCodeAt(0) - 65, y: Number(s.slice(1)) - 1 }));
@@ -59,16 +60,11 @@ export function createMcpServer(backend: RoomBackend, publicUrl: string) {
   server.registerTool('muju_play', { description: 'Commit one action or an atomic sequence to your shared game. Uses current revision and unique requestId. Invalid batches change nothing. Ending action phase hands control to the opponent. RESIGN concedes the game.',
     inputSchema: playInput, annotations: { destructiveHint: true, idempotentHint: true, openWorldHint: false } },
     ({ roomId, token, ...request }) => safely(async () => observe(await backend.act(roomId, token, request))));
-  server.registerTool('muju_wait_for_change', { description: 'Wait up to 25 seconds for a room revision to change (opponent joins or plays). Returns changed=false on timeout. Call again while waiting for your turn.',
+  server.registerTool('muju_wait_for_change', { description: 'Wait up to 25 seconds for a room revision to change (opponent joins or plays). A changed result includes the new room. An unchanged result contains only changed=false, revision and phase; keep your previous board and wait again. Stop waiting when phase is victory.',
     inputSchema: { roomId: roomIdSchema, afterRevision: z.number().int().nonnegative(), timeoutMs: z.number().int().min(0).max(25000).default(25000) }, annotations: readOnly },
     ({ roomId, afterRevision, timeoutMs }, extra) => safely(async () => {
-      const deadline = Date.now() + timeoutMs;
-      let room = await backend.get(roomId);
-      while (room.revision === afterRevision && room.state.phase !== 'victory' && Date.now() < deadline && !extra.signal.aborted) {
-        await new Promise(resolve => setTimeout(resolve, Math.min(500, deadline - Date.now())));
-        room = await backend.get(roomId);
-      }
-      return { changed: room.revision !== afterRevision, room: observe(room) };
+      const change = await backend.wait(roomId, afterRevision, timeoutMs, extra.signal);
+      return change.changed ? { ...change, room: observe(change.room) } : change;
     }));
   return server;
 }
