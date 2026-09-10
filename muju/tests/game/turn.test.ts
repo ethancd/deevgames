@@ -18,7 +18,7 @@ describe('two-phase boundary order',()=>{
   expect(next.board.units.filter(u=>u.owner==='black')).toEqual(s.board.units.filter(u=>u.owner==='black'));
  });
  it('pays new promotion rent next own turn, after income and before healing',()=>{
-  let s=createInitialGameState();s.turn.phase='place';s.players.white.resources=2;s.players.white.resourcesGained=2;
+  let s=createInitialGameState();s.turn.phase='place';s.players.white.resources=4;s.players.white.resourcesGained=4;
   const hi=s.board.units[0];s=applyAction(s,{type:'PROMOTE_UNIT',unitId:hi.id});expect(s.players.white.resources).toBe(0);
   s=applyAction(s,{type:'END_PLACE_PHASE'});s=endTurn(s);expect(s.players.white.resources).toBe(6);
   s=endTurn(s);expect(s.lastUpkeep).toMatchObject({player:'white',paid:1});expect(s.players.white.resources).toBe(5);

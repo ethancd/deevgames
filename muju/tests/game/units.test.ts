@@ -99,15 +99,15 @@ describe('Unit Definitions', () => {
 
   describe('getPromotionCost', () => {
     it('calculates correct cost for Hi → Hono', () => {
-      // Hi costs 1, Hono costs 3, so promotion is 2
+      // Hi costs 2, Hono costs 6, so promotion is 4
       const cost = getPromotionCost('fire_1');
-      expect(cost).toBe(2);
+      expect(cost).toBe(4);
     });
 
     it('calculates correct cost for Muju → Sachita', () => {
-      // Muju costs 3, Sachita costs 6, so promotion is 3
+      // Muju costs 6, Sachita costs 12, so promotion is 6
       const cost = getPromotionCost('plant_1');
-      expect(cost).toBe(3);
+      expect(cost).toBe(6);
     });
 
     it('returns 0 for tier 3 units', () => {

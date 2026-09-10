@@ -1,4 +1,4 @@
-# Specification audit — current v2.1 branch (2026-09-09)
+# Specification audit — current v2.2 (2026-09-10)
 
 The canonical rules are [SPEC](../../SPEC.md). All current human, worker and
 lab actions share `game/legality.ts` and `ai/simulate.ts`; illegal inputs are
@@ -25,7 +25,7 @@ planning choice: exact movement is legal even when a planner emits short steps.
 | §5.3 placed units act immediately | `building.ts`, `combat.ts` | summon-and-strike and mobile purchase tests |
 | §5.4 next tier, cost difference, once per turn, existed at Place start | `promotion.ts`, `board.ts` flags | promotion/building/property tests; same-turn refusal/next-turn browser |
 | §5.5 T1 retained/free, T2 1/T3 2, affordable keep-set, promo rent next turn | `upkeep.ts`, `turn.ts` | upkeep/turn tests; upkeep browser |
-| §6/§7 original graph and exact 18-unit v1.9 stats/costs | `elements.ts`, `units.ts` | catalogue pinned-source comparison; static witnesses |
+| §6/§7 original graph, 18-unit v1.9 stats and doubled catalogue costs | `elements.ts`, `units.ts` | catalogue pinned-source comparison; static witnesses |
 | §8 public bank/gained, perfect-information worker/MCTS | `types.ts`, `worker/protocol.ts`, `search/mcts.ts` | worker real-state tests; public-bank browser |
 | §9 zero-board elimination regardless of bank; delayed home win; resignation | `victory.ts`, `turn.ts`, `simulate.ts` | victory/home/resign fixtures and tactical rescue |
 | §9 ten quiet completed turns, income/kill resets, draw before next home | `inactivity.ts`, `turn.ts` | clock-order tests; draw browser |

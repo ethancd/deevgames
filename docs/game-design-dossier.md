@@ -1,4 +1,4 @@
-> **Muju update, 2026-09-09:** §2.3 reflects the v2.1 feature branch. Other
+> **Muju update, 2026-09-10:** §2.3 reflects v2.2 with doubled prices. Other
 > Muju measurements and planning discussion below retain their historical
 > baseline; well, queue, hidden-economy and build-time claims are superseded.
 
@@ -93,7 +93,8 @@ Two players build tableaus by bidding astrological symbols (♂♀☿☽, 4 of e
 
 Two players occupy opposite corners of a 10×10 grid, combining territorial
 control, tactical combat and an economy. Modes are vs AI, pass-and-play and
-AI-vs-AI. The v2.1 source branch has two phases: **Place** (public tier-1
+AI-vs-AI. The v2.2 cost ladder doubles all tier-1 purchases and promotion steps to slow
+early army growth; income and upkeep are unchanged. Muju has two phases: **Place** (public tier-1
 purchase and later-turn promotion), then **Act** (six shared move/attack actions).
 Every owned unit collects up to its Mining stat from its square at turn end.
 The unchanged Unequal routes layout now holds 0/4/8/10 reserves, 520 total.
@@ -102,7 +103,7 @@ Anchor rectangles, blocked entirely by any enemy inside, connect positioning
 to spawning and home defense. Units act immediately after purchase or
 promotion, but a newly bought unit cannot promote that turn. Each existing
 unit may climb one tier per own turn, paying the cost difference. The exact
-18-unit v1.9 stats and costs, elemental triangle, Cleave, owner-turn healing,
+18-unit v1.9 combat/movement/mining stats, elemental triangle, Cleave, owner-turn healing,
 upkeep and ten-quiet-turn draw remain. No lake or first-player compensation
 has been added. First-player rush strength under the combined rules remains
 an open design question.

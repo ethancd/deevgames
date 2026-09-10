@@ -1,7 +1,7 @@
 import type { UnitDefinition, Element } from './types';
 
-// All 18 unit definitions — v1.5 tier-3 cap (2026-09-08); Tanka gains Speed 2; other T1–T3 stats unchanged.
-// Evidence and static-value model: docs/BALANCE_IMPLEMENTATION-2026-09-07.md.
+// All 18 unit definitions — v2.2 (2026-09-10): double catalogue and promotion costs.
+// Combat/movement/mining stats unchanged. See docs/DOUBLE_COSTS-2026-09-10.md.
 export const UNIT_DEFINITIONS: UnitDefinition[] = [
   // Fire (Rush) - Japanese
   {
@@ -14,7 +14,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     defense: 1,
     speed: 2,
     mining: 1,
-    cost: 1,
+    cost: 2,
   },
   {
     id: 'fire_2',
@@ -26,7 +26,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     defense: 1,
     speed: 2,
     mining: 1,
-    cost: 3,
+    cost: 6,
   },
   {
     id: 'fire_3',
@@ -38,7 +38,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     defense: 2,
     speed: 3,
     mining: 1,
-    cost: 6,
+    cost: 12,
   },
 
   // Lightning (Rush) - Swahili
@@ -52,7 +52,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     defense: 1,
     speed: 3,
     mining: 0,
-    cost: 1,
+    cost: 2,
   },
   {
     id: 'lightning_2',
@@ -64,7 +64,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     defense: 1,
     speed: 4,
     mining: 0,
-    cost: 3,
+    cost: 6,
   },
   {
     id: 'lightning_3',
@@ -76,7 +76,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     defense: 1,
     speed: 5,
     mining: 0,
-    cost: 6,
+    cost: 12,
   },
 
   // Water (Balanced) - Norse
@@ -90,7 +90,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     defense: 2,
     speed: 1,
     mining: 2,
-    cost: 2,
+    cost: 4,
   },
   {
     id: 'water_2',
@@ -102,7 +102,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     defense: 3,
     speed: 1,
     mining: 2,
-    cost: 4,
+    cost: 8,
   },
   {
     id: 'water_3',
@@ -114,7 +114,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     defense: 4,
     speed: 2,
     mining: 3,
-    cost: 10,
+    cost: 20,
   },
 
   // Shadow (Balanced) - Turkish/Slavic (formerly Wind)
@@ -128,7 +128,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     defense: 2,
     speed: 2,
     mining: 0,
-    cost: 2,
+    cost: 4,
   },
   {
     id: 'shadow_2',
@@ -140,7 +140,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     defense: 2,
     speed: 2,
     mining: 1,
-    cost: 4,
+    cost: 8,
   },
   {
     id: 'shadow_3',
@@ -152,7 +152,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     defense: 2,
     speed: 3,
     mining: 2,
-    cost: 10,
+    cost: 20,
   },
 
   // Plant (Expand) - Quechua/Nahuatl
@@ -166,7 +166,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     defense: 2,
     speed: 1,
     mining: 3,
-    cost: 3,
+    cost: 6,
   },
   {
     id: 'plant_2',
@@ -178,7 +178,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     defense: 3,
     speed: 1,
     mining: 4,
-    cost: 6,
+    cost: 12,
   },
   {
     id: 'plant_3',
@@ -190,7 +190,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     defense: 4,
     speed: 1,
     mining: 5,
-    cost: 12,
+    cost: 24,
   },
 
   // Metal (Expand) - Lakota
@@ -204,7 +204,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     defense: 3,
     speed: 1,
     mining: 2,
-    cost: 3,
+    cost: 6,
   },
   {
     id: 'metal_2',
@@ -216,7 +216,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     defense: 4,
     speed: 1,
     mining: 3,
-    cost: 6,
+    cost: 12,
   },
   {
     id: 'metal_3',
@@ -228,7 +228,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     defense: 6,
     speed: 2,
     mining: 4,
-    cost: 12,
+    cost: 24,
   },
 ];
 
