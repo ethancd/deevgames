@@ -643,33 +643,35 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
 
   return (
     <main className="game-shell">
-      {(whiteAI.error || blackAI.error) && <div role="alert">
-        The AI stopped thinking. Try again to keep playing.
-        <button onClick={() => { whiteAI.clearError(); blackAI.clearError(); whiteAI.cancel(); blackAI.cancel(); setPlayerAiExecutedTurn(null); setAiAiExecutedTurn(null); }}>Retry AI</button>
-      </div>}
-      {(whiteAI.warning || blackAI.warning) && <small role="status">AI is using its backup engine.</small>}
       {state.phase === 'victory' && <VictoryScreen winner={state.winner} reason={state.victoryReason} onPlayAgain={handlePlayAgain} playerNames={playerNames} />}
       {showPassOverlay && <PassDeviceOverlay nextPlayer={state.turn.currentPlayer} onContinue={handleContinueFromPass} />}
       {state.upkeepPending && isCurrentPlayerHuman && !showPassOverlay && <UpkeepPanel state={state} onConfirm={payUpkeep} />}
       <InstructionsModal isOpen={showInstructions} onClose={() => setShowInstructions(false)} />
-      <header className="game-header">
-        <a href="../" aria-label="Back to Deev Games">← Games</a>
-        <h1>Muju Hono Tanka</h1>
-        <button onClick={() => setShowMenu(true)} aria-label="Game menu">•••</button>
-      </header>
-      <section className="turn-strip" aria-label="Turn and phases">
-        <strong>{isThinking ? 'Thinking…' : playerNames[state.turn.currentPlayer]} <span>· Turn {state.turn.turnNumber}</span></strong>
-        <div className="phase-steps">{(['place', 'action'] as const).map((phase, i) =>
-          <span key={phase} aria-current={state.turn.phase === phase ? 'step' : undefined}>{i + 1} {phase === 'action' ? 'Act' : 'Place'}</span>
-        )}</div>
-      </section>
-      <section className="score-strip" aria-label="Player resources">
-        <div><strong><i className={`player-dot ${viewerPlayer}`} />{playerNames[viewerPlayer]} <b>◆ {viewerState.resources}</b></strong>
-          <small>Gained {viewerState.resourcesGained}</small><small className={upkeepDue(state,viewerPlayer)>viewerState.resources ? 'rent-warning' : ''}>Upkeep {upkeepDue(state,viewerPlayer)} / turn</small></div>
-        <div><strong><i className={`player-dot ${opponentPlayer}`} />{playerNames[opponentPlayer]} <b>◆ {opponentState.resources}</b></strong>
-          <small>Gained {opponentState.resourcesGained}</small><small>Upkeep {upkeepDue(state,opponentPlayer)} / turn</small></div>
-      </section>
-      <div className="progress-clock"><span className={(state.inactivityPlies??0)>=INACTIVITY_WARNING ? 'rent-warning' : ''}>{state.inactivityPlies??0}/{INACTIVITY_LIMIT} quiet turns</span>{state.lastUpkeep && (state.lastUpkeep.paid>0 || state.lastUpkeep.released.length>0) && <span>{playerNames[state.lastUpkeep.player]} paid {state.lastUpkeep.paid} · released {state.lastUpkeep.released.length}</span>}</div>
+      <aside className="game-overview" aria-label="Match overview">
+        {(whiteAI.error || blackAI.error) && <div role="alert">
+          The AI stopped thinking. Try again to keep playing.
+          <button onClick={() => { whiteAI.clearError(); blackAI.clearError(); whiteAI.cancel(); blackAI.cancel(); setPlayerAiExecutedTurn(null); setAiAiExecutedTurn(null); }}>Retry AI</button>
+        </div>}
+        {(whiteAI.warning || blackAI.warning) && <small role="status">AI is using its backup engine.</small>}
+        <header className="game-header">
+          <a href="../" aria-label="Back to Deev Games">← Games</a>
+          <h1>Muju Hono Tanka</h1>
+          <button onClick={() => setShowMenu(true)} aria-label="Game menu">•••</button>
+        </header>
+        <section className="turn-strip" aria-label="Turn and phases">
+          <strong>{isThinking ? 'Thinking…' : playerNames[state.turn.currentPlayer]} <span>· Turn {state.turn.turnNumber}</span></strong>
+          <div className="phase-steps">{(['place', 'action'] as const).map((phase, i) =>
+            <span key={phase} aria-current={state.turn.phase === phase ? 'step' : undefined}>{i + 1} {phase === 'action' ? 'Act' : 'Place'}</span>
+          )}</div>
+        </section>
+        <section className="score-strip" aria-label="Player resources">
+          <div><strong><i className={`player-dot ${viewerPlayer}`} />{playerNames[viewerPlayer]} <b>◆ {viewerState.resources}</b></strong>
+            <small>Gained {viewerState.resourcesGained}</small><small className={upkeepDue(state,viewerPlayer)>viewerState.resources ? 'rent-warning' : ''}>Upkeep {upkeepDue(state,viewerPlayer)} / turn</small></div>
+          <div><strong><i className={`player-dot ${opponentPlayer}`} />{playerNames[opponentPlayer]} <b>◆ {opponentState.resources}</b></strong>
+            <small>Gained {opponentState.resourcesGained}</small><small>Upkeep {upkeepDue(state,opponentPlayer)} / turn</small></div>
+        </section>
+        <div className="progress-clock"><span className={(state.inactivityPlies??0)>=INACTIVITY_WARNING ? 'rent-warning' : ''}>{state.inactivityPlies??0}/{INACTIVITY_LIMIT} quiet turns</span>{state.lastUpkeep && (state.lastUpkeep.paid>0 || state.lastUpkeep.released.length>0) && <span>{playerNames[state.lastUpkeep.player]} paid {state.lastUpkeep.paid} · released {state.lastUpkeep.released.length}</span>}</div>
+      </aside>
       <div className={`play-area ${state.turn.phase === 'place' && interactive ? 'is-placing' : ''}`}>
         <section className="board-stage" aria-label="Battlefield">
           <Board board={state.board} selectedUnit={shownUnit?.id ?? null}

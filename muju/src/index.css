@@ -15,6 +15,7 @@ button:focus-visible, a:focus-visible { outline: 3px solid #67e8f9; outline-offs
 .game-header a { color: #a9bccf; font-size: 12px; padding: 12px 0; }
 .game-header h1 { font-size: 16px; font-weight: 750; letter-spacing: -.5px; }
 .game-header button { width: 44px; letter-spacing: 2px; }
+.game-overview { display: contents; }
 .turn-strip { display: flex; justify-content: space-between; align-items: center; min-height: 30px; gap: 4px; flex: none; }
 .turn-strip strong { font-size: 12px; }
 .turn-strip strong span { font-weight: 400; color: #a9bacb; }
@@ -234,3 +235,83 @@ button:focus-visible, a:focus-visible { outline: 3px solid #67e8f9; outline-offs
 .score-strip small { display: inline-block; }
 .score-strip small + small { margin-left: 8px; }
 .tutorial-copy { display: flex; flex-direction: column; gap: 14px; line-height: 1.55; }
+
+/* Landscape tablets: give the square battlefield the full center height.
+   Equal side columns keep it centered, including when width limits its size. */
+@media (min-width: 960px) and (min-height: 601px) and (orientation: landscape) {
+  .game-shell {
+    --sidebar-width: clamp(144px, calc((100vw - 100dvh - 40px) / 2), 224px);
+    max-width: calc(100dvh + 480px);
+    padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+    display: grid;
+    grid-template-columns: var(--sidebar-width) minmax(0, 1fr) var(--sidebar-width);
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: 12px 8px;
+  }
+  .game-overview {
+    grid-column: 1;
+    grid-row: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
+  .game-header { display: grid; grid-template-columns: minmax(0, 1fr) 44px; gap: 12px 4px; }
+  .game-header h1 { grid-column: 1 / -1; grid-row: 2; font-size: 21px; line-height: 1.15; text-wrap: balance; }
+  .game-header a { font-size: 12px; padding-block: 12px; }
+  .game-shell .game-header button { min-height: 44px; }
+  .turn-strip { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .turn-strip strong { font-size: 13px; }
+  .phase-steps { width: 100%; gap: 6px; }
+  .phase-steps span { flex: 1; padding: 8px; text-align: center; }
+  .score-strip { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .score-strip > div { padding: 12px 10px; border: 1px solid #2d3f50; }
+  .score-strip strong { font-size: 13px; }
+  .score-strip b { font-size: 16px; }
+  .score-strip small { display: block; font-size: 11px; }
+  .score-strip small + small { margin-left: 0; }
+  .progress-clock { flex-direction: column; gap: 4px; padding: 0 4px; font-size: 11px; }
+  .play-area { display: contents; }
+  .board-stage { grid-column: 2; grid-row: 1 / -1; padding: 0; }
+  .battle-board { width: min(100cqw, 100cqh); padding: 5px; border-radius: 12px; }
+  .board-key { grid-column: 1; grid-row: 2; align-self: end; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 11px; line-height: 1.5; }
+  .board-key > span { grid-column: 1 / -1; margin: 0 0 4px; }
+  .game-shell .board-key button { min-height: 44px; padding: 6px 4px; background: #1a2737; font-size: 11px; }
+  .decision-panel, .is-placing .decision-panel { grid-column: 3; grid-row: 1; height: auto; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+  .decision-panel .unit-shop, .decision-panel .unit-detail, .decision-panel .action-preview, .decision-panel .selection-hint { height: auto; min-height: 100%; padding: 12px; gap: 16px; justify-content: flex-start; }
+  .decision-panel .selection-hint { justify-content: center; }
+  .decision-panel .purchase-shop { flex: 1; }
+  .decision-panel .element-picker { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+  .game-shell .decision-panel .element-picker button { min-height: 66px; font-size: 11px; }
+  .decision-panel .purchase-shop p, .decision-panel .unit-action-row p, .decision-panel .action-preview p { font-size: 12px; line-height: 1.5; }
+  .decision-panel .unit-heading { align-items: flex-start; gap: 4px; }
+  .decision-panel .unit-heading strong { flex-wrap: wrap; font-size: 16px; }
+  .decision-panel .unit-heading small { flex-basis: 100%; margin: 4px 0 0; line-height: 1.5; }
+  .game-shell .decision-panel .unit-heading button { min-width: 36px; min-height: 44px; }
+  .decision-panel .unit-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; font-size: 11px; }
+  .decision-panel .unit-stats span { background: #152332; border-radius: 6px; padding: 8px; }
+  .decision-panel .unit-stats b { display: block; margin: 2px 0 0; font-size: 17px; }
+  .decision-panel .unit-action-row { display: flex; flex-direction: column; align-items: stretch; gap: 12px; }
+  .game-shell .decision-panel .unit-action-row button { min-height: 44px; white-space: normal; }
+  .decision-panel .unit-income { font-size: 11px !important; }
+  .decision-panel .cleave-status { font-size: 11px; line-height: 1.5; }
+  .preview-heading { flex-direction: column; align-items: flex-start; gap: 6px; }
+  .preview-heading span { font-size: 11px; }
+  .preview-buttons { grid-template-columns: minmax(0, 1fr); margin-top: auto; }
+  .game-shell .preview-buttons button { min-height: 44px; }
+  .play-footer { grid-column: 3; grid-row: 2; position: relative; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+  .income-status, .income-recap { text-align: left; font-size: 11px; }
+  .income-recap[open] { left: auto; right: 0; bottom: 0; width: 100%; max-height: 55dvh; }
+  .action-bar { display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; }
+  .action-budget { margin: 0 0 4px; }
+  .action-budget strong { font-size: 13px; }
+  .action-budget > span { gap: 6px; margin-top: 6px; }
+  .game-shell .action-bar button { width: 100%; font-size: 13px; }
+  .reference-bar { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+  .game-shell .reference-bar button { min-height: 44px; font-size: 11px; padding: 4px 0; }
+  .game-shell .reference-bar .counter-key { grid-column: 1 / -1; grid-row: 2; font-size: 11px; letter-spacing: -.5px; }
+  .game-overview > [role=alert], .game-overview > [role=status] { flex: none; padding: 8px; border-radius: 8px; background: #253448; }
+}
