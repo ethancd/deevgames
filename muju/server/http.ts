@@ -1,4 +1,5 @@
 import express from 'express';
+import { resolve } from 'node:path';
 import type { ErrorRequestHandler } from 'express';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { z, ZodError } from 'zod';
@@ -68,6 +69,7 @@ export function createApp(store: RoomStore, options: { publicUrl: string; distPa
   app.all('/mcp', (_req, res) => res.status(405).json({ error: 'This stateless MCP endpoint accepts POST requests.' }));
   if (options.distPath) {
     app.get('/', (_req, res) => res.redirect('/muju/'));
+    app.get('/SKILL.md', (_req, res) => res.type('text/markdown').sendFile(resolve(options.distPath!, 'skills/muju-hono-tanka/SKILL.md')));
     app.use('/muju', express.static(options.distPath));
   }
   const onError: ErrorRequestHandler = (error, _req, res, _next) => {

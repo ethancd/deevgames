@@ -71,6 +71,11 @@ Invitations open the host's copy of the browser game.
 
 ## Connect an LLM
 
+Give an agent the public [Muju skill file](https://deevgames-muju.onrender.com/SKILL.md).
+It covers connecting, invitations, move planning, safe retries and efficient waiting.
+The browser lobby links to it. Other hosts serve the same file at `/SKILL.md` and
+`/muju/skills/muju-hono-tanka/SKILL.md`.
+
 **Remote MCP:** configure your MCP client with a Streamable HTTP server URL of
 `https://muju.example.com/mcp` (or `http://localhost:3003/mcp` locally).
 No MCP-wide login is required. Each game has its own private seat credentials.

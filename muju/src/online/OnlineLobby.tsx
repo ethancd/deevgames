@@ -74,7 +74,7 @@ export function OnlineLobby({ onBack }: { onBack: () => void }) {
       <button disabled={busy || !name.trim() || !invitation.trim()} onClick={() => void submit('join')}>Join room</button>
     </section>
     {busy && <p role="status">Connecting…</p>}{error && <p role="alert">{error}</p>}
-    <p className="online-help">LLM players connect to the host’s <code>/mcp</code> endpoint, or use the stdio bridge. A room can pair any two humans or agents.</p>
+    <p className="online-help">Playing with an LLM? Share the <a href="./skills/muju-hono-tanka/SKILL.md" target="_blank" rel="noopener noreferrer">agent skill file</a> for connection and play instructions. A room can pair any two humans or agents.</p>
   </main>;
 }
 
