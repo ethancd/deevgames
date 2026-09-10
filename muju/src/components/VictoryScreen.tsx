@@ -6,10 +6,11 @@ interface VictoryScreenProps {
   reason?: VictoryReason;
   onPlayAgain: () => void;
   playerNames?: { white: string; black: string };
+  perspectivePlayer?: PlayerId;
 }
 
-export function VictoryScreen({ winner, reason, onPlayAgain, playerNames }: VictoryScreenProps) {
-  const isPlayerWinner = winner === 'white';
+export function VictoryScreen({ winner, reason, onPlayAgain, playerNames, perspectivePlayer = 'white' }: VictoryScreenProps) {
+  const isPlayerWinner = winner === perspectivePlayer;
   const winnerName = !winner ? 'Draw' : playerNames
     ? playerNames[winner]
     : (isPlayerWinner ? 'You' : 'AI');

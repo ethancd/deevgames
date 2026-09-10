@@ -81,9 +81,12 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
   // Unit shop inspection mode (show shop for all catalogue tiers)
   const [showUnitShopInspection, setShowUnitShopInspection] = useState(false);
 
-  // Helper: check if current player is human-controlled
+  const humanPlayer: PlayerId | null = config.mode === 'vs-ai'
+    ? config.controls.white === 'human' ? 'white' : 'black'
+    : null;
+
+  // Human controls follow the configured side, including Black against the AI.
   const isCurrentPlayerHuman = config.controls[state.turn.currentPlayer] === 'human';
-  const isPlayerTurn = state.turn.currentPlayer === 'white';
 
   // Clear place phase selections when phase changes or turn ends
   useEffect(() => {
@@ -168,7 +171,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
   const latestState = useRef(state); latestState.current = state;
   const getCurrentState = useCallback(() => latestState.current, []);
 
-  // AI for "white" side (used in AI vs AI mode)
+  // Either side can be AI-controlled in vs-ai and ai-vs-ai modes.
   const whiteAI = useAI({
     difficulty: config.aiDifficulty.white,
     thinkingDelay: 400,
@@ -176,13 +179,13 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
     getCurrentState, state,
   });
 
-  // AI for "black" side (used in vs-ai and ai-vs-ai modes)
   const blackAI = useAI({
     difficulty: config.aiDifficulty.black,
     thinkingDelay: 400,
     enabled: config.controls.black === 'ai' && !isPaused && state.phase === 'playing',
     getCurrentState, state,
   });
+  const opponentAI = humanPlayer === 'black' ? whiteAI : blackAI;
 
   const [showAIRecap, setShowAIRecap] = useState(false);
 
@@ -199,7 +202,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
   // Combined isThinking state
   const isThinking = whiteAI.isThinking || blackAI.isThinking;
 
-  // Trigger AI turn for 'white' side (AI vs AI mode)
+  // Trigger AI turn for 'white' side.
   useEffect(() => {
     if (
       state.turn.currentPlayer === 'white' &&
@@ -233,18 +236,17 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
   useEffect(() => {
     if (
       config.mode === 'vs-ai' &&
-      isPlayerTurn &&
+      isCurrentPlayerHuman &&
       !isThinking &&
-      blackAI.lastTurnActions.length > 0 &&
-      state.turn.turnNumber > 1
+      opponentAI.lastTurnActions.length > 0
     ) {
       setShowAIRecap(true);
     }
-  }, [config.mode, isPlayerTurn, isThinking, blackAI.lastTurnActions.length, state.turn.turnNumber]);
+  }, [config.mode, isCurrentPlayerHuman, isThinking, opponentAI.lastTurnActions.length, state.turn.turnNumber]);
 
   const handleDismissRecap = () => {
     setShowAIRecap(false);
-    blackAI.clearLastTurnActions();
+    opponentAI.clearLastTurnActions();
   };
 
   const handleContinueFromPass = () => {
@@ -575,6 +577,8 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
 
   const handlePlayAgain = () => {
     whiteAI.cancel(); blackAI.cancel();
+    whiteAI.clearLastTurnActions(); blackAI.clearLastTurnActions();
+    setShowAIRecap(false);
     setPlayerAiExecutedTurn(null);
     setAiAiExecutedTurn(null);
     lastTurnPlayer.current = null;
@@ -610,14 +614,15 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
 
   // Get the current player's state for public bank display
   const currentPlayerState = state.players[state.turn.currentPlayer];
-  const viewerPlayer: PlayerId = config.mode === 'vs-ai' ? 'white' : state.turn.currentPlayer;
+  const viewerPlayer: PlayerId = humanPlayer ?? state.turn.currentPlayer;
   const viewerState = state.players[viewerPlayer];
   const opponentPlayer: PlayerId = viewerPlayer === 'white' ? 'black' : 'white';
   const opponentState = state.players[opponentPlayer];
 
   const interactive = isCurrentPlayerHuman && !isThinking && !showPassOverlay && state.phase === 'playing' && !state.upkeepPending;
   const playerNames = config.mode === 'pass-play' ? { white: 'Player 1', black: 'Player 2' }
-    : config.mode === 'ai-vs-ai' ? { white: 'AI 1', black: 'AI 2' } : { white: 'You', black: 'AI' };
+    : config.mode === 'ai-vs-ai' ? { white: 'AI 1', black: 'AI 2' }
+    : { white: humanPlayer === 'white' ? 'You' : 'AI', black: humanPlayer === 'black' ? 'You' : 'AI' };
   const shownUnit = selectedPlaceUnitData ?? selectedUnitData ?? viewedEnemyUnitData;
   const isEnemyView = !!shownUnit && shownUnit.owner !== state.turn.currentPlayer;
   const previewRange = preview?.kind === 'move' ? movementRange.find(r => r.position.x === preview.position.x && r.position.y === preview.position.y) : null;
@@ -643,7 +648,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
 
   return (
     <main className="game-shell">
-      {state.phase === 'victory' && <VictoryScreen winner={state.winner} reason={state.victoryReason} onPlayAgain={handlePlayAgain} playerNames={playerNames} />}
+      {state.phase === 'victory' && <VictoryScreen winner={state.winner} reason={state.victoryReason} onPlayAgain={handlePlayAgain} playerNames={playerNames} perspectivePlayer={humanPlayer ?? 'white'} />}
       {showPassOverlay && <PassDeviceOverlay nextPlayer={state.turn.currentPlayer} onContinue={handleContinueFromPass} />}
       {state.upkeepPending && isCurrentPlayerHuman && !showPassOverlay && <UpkeepPanel state={state} onConfirm={payUpkeep} />}
       <InstructionsModal isOpen={showInstructions} onClose={() => setShowInstructions(false)} />
@@ -737,8 +742,8 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
         <p>Advantage adds 1 attack; disadvantage subtracts 1. Attack previews include this bonus.</p>
         {state.lastUpkeep && <p>Last upkeep: {playerNames[state.lastUpkeep.player]} paid {state.lastUpkeep.paid}. Released: {state.lastUpkeep.released.map(u=>getUnitDefinition(u.definitionId).name).join(', ') || 'none'}.</p>}
         <p>Both banks, reserves, purchases and promotions are public. Income arrives at turn end; upkeep is paid at the start of the next turn.</p>
-        {showAIRecap && <AIRecap actions={blackAI.lastTurnActions} onDismiss={handleDismissRecap} />}
-        {config.controls.white === 'ai' && <AIConsole title="AI 1 Console" debug={whiteAI.lastDebug} isThinking={whiteAI.isThinking} />}
+        {showAIRecap && <AIRecap actions={opponentAI.lastTurnActions} onDismiss={handleDismissRecap} />}
+        {config.controls.white === 'ai' && <AIConsole title={config.mode === 'vs-ai' ? 'AI Console' : 'AI 1 Console'} debug={whiteAI.lastDebug} isThinking={whiteAI.isThinking} />}
         {config.controls.black === 'ai' && <AIConsole title="AI Console" debug={blackAI.lastDebug} isThinking={blackAI.isThinking} />}
       </PlayDialog>}
     </main>

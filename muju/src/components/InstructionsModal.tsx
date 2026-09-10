@@ -14,6 +14,7 @@ const miner = getUnitDefinition('plant_2');
 const reserves = [...new Set(UNEQUAL_ROUTES_MAP)].sort((a,b)=>a-b);
 const pages = [
   {title:'Playing on a phone', content:<>
+    <p>In vs AI setup, choose White or Black under Play as. White moves first; when you choose Black, the AI opens the game.</p>
     <p>Tap one of your pieces, then a destination. Check the action cost and its end-of-turn income, then confirm. Cancel keeps the piece where it is.</p>
     <p>In Place, tap a tier-1 unit in the shop, then a highlighted empty square to buy it. Tap a piece already on the board to promote it.</p>
     <p>Tap an enemy to inspect its stats and movement reach. Key explains the board; Units opens the full catalogue.</p>

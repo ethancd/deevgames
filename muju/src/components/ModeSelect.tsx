@@ -1,6 +1,16 @@
 import { useState } from 'react';
-import type { GameMode, GameConfig } from '../game/types';
+import type { GameMode, GameConfig, PlayerId } from '../game/types';
 import type { AIDifficulty } from '../ai/types';
+
+const PREFERRED_SIDE_KEY = 'muju:preferred-player-side';
+
+function loadPreferredSide(): PlayerId {
+  try {
+    return localStorage.getItem(PREFERRED_SIDE_KEY) === 'black' ? 'black' : 'white';
+  } catch {
+    return 'white';
+  }
+}
 
 interface ModeSelectProps {
   onStartGame: (config: GameConfig) => void;
@@ -8,8 +18,18 @@ interface ModeSelectProps {
 
 export function ModeSelect({ onStartGame }: ModeSelectProps) {
   const [selectedMode, setSelectedMode] = useState<GameMode | null>(null);
+  const [playerSide, setPlayerSide] = useState<PlayerId>(loadPreferredSide);
   const [playerDifficulty, setPlayerDifficulty] = useState<AIDifficulty>('medium');
   const [aiDifficulty, setAiDifficulty] = useState<AIDifficulty>('medium');
+
+  const handleSideChange = (side: PlayerId) => {
+    setPlayerSide(side);
+    try {
+      localStorage.setItem(PREFERRED_SIDE_KEY, side);
+    } catch {
+      // Keep the current selection usable when browser storage is unavailable.
+    }
+  };
 
   const handleStart = () => {
     if (!selectedMode) return;
@@ -20,8 +40,14 @@ export function ModeSelect({ onStartGame }: ModeSelectProps) {
       case 'vs-ai':
         config = {
           mode: 'vs-ai',
-          controls: { white: 'human', black: 'ai' },
-          aiDifficulty: { white: 'medium', black: aiDifficulty },
+          controls: {
+            white: playerSide === 'white' ? 'human' : 'ai',
+            black: playerSide === 'black' ? 'human' : 'ai',
+          },
+          aiDifficulty: {
+            white: playerSide === 'black' ? aiDifficulty : 'medium',
+            black: playerSide === 'white' ? aiDifficulty : 'medium',
+          },
         };
         break;
       case 'pass-play':
@@ -89,19 +115,52 @@ export function ModeSelect({ onStartGame }: ModeSelectProps) {
           </button>
         </div>
 
-        {/* Difficulty selectors */}
+        {/* Side and difficulty selectors */}
         {selectedMode === 'vs-ai' && (
-          <div className="space-y-2">
-            <label className="block text-sm text-gray-400">AI Difficulty</label>
-            <select
-              value={aiDifficulty}
-              onChange={(e) => setAiDifficulty(e.target.value as AIDifficulty)}
-              className="w-full bg-gray-800 border border-gray-700 rounded p-2"
-            >
-              <option value="easy">Easy</option>
-              <option value="medium">Medium</option>
-              <option value="hard">Hard</option>
-            </select>
+          <div className="space-y-4">
+            <fieldset aria-describedby="player-side-hint">
+              <legend className="mb-2 text-sm text-gray-400">Play as</legend>
+              <div className="grid grid-cols-2 gap-3">
+                {(['white', 'black'] as const).map((side) => (
+                  <label
+                    key={side}
+                    className={`flex cursor-pointer items-center gap-3 rounded-lg border-2 px-3 py-2.5 focus-within:ring-2 focus-within:ring-blue-300 ${
+                      playerSide === side
+                        ? 'border-blue-500 bg-blue-500/20'
+                        : 'border-gray-700 hover:border-gray-500'
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="player-side"
+                      value={side}
+                      checked={playerSide === side}
+                      onChange={() => handleSideChange(side)}
+                      className="h-4 w-4 accent-blue-500"
+                    />
+                    <span>{side === 'white' ? 'White' : 'Black'}</span>
+                  </label>
+                ))}
+              </div>
+              <p id="player-side-hint" className="mt-2 text-sm text-gray-400">
+                {playerSide === 'white'
+                  ? 'White moves first. You start.'
+                  : 'White moves first, so the AI starts.'}
+              </p>
+            </fieldset>
+            <div className="space-y-2">
+              <label htmlFor="vs-ai-difficulty" className="block text-sm text-gray-400">AI Difficulty</label>
+              <select
+                id="vs-ai-difficulty"
+                value={aiDifficulty}
+                onChange={(e) => setAiDifficulty(e.target.value as AIDifficulty)}
+                className="w-full bg-gray-800 border border-gray-700 rounded p-2"
+              >
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+              </select>
+            </div>
           </div>
         )}
 
