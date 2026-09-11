@@ -7,16 +7,19 @@ import { getValidAttacks } from '../game/combat';
 import { applyAction as applyAIAction } from '../ai/simulate';
 import { loadGameState, saveGameState, clearGameState } from '../utils/persistence';
 
+type LocalAction = GameAction | { type: 'MOVE_AND_ATTACK'; unitId: string; to: Position; targetPosition: Position };
+
 // Actions that can be undone during player's turn
 const UNDOABLE_ACTIONS = new Set([
   'PAY_UPKEEP',
   'MOVE',
+  'MOVE_AND_ATTACK',
   'ATTACK',
   'BUY_UNIT',
   'PROMOTE_UNIT',
 ]);
 
-export function gameReducer(state: GameState, action: GameAction): GameState {
+export function gameReducer(state: GameState, action: LocalAction): GameState {
   switch (action.type) {
     case 'SELECT_UNIT': {
       const unit = getUnitById(state.board, action.unitId);
@@ -52,8 +55,17 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
     }
 
     case 'SET_UPKEEP_REVIEW': return {...state,reviewUpkeep:{...state.reviewUpkeep,[action.player]:action.enabled}};
+    case 'MOVE': {
+      const next = applyAIAction(state, action);
+      return next === state ? state : gameReducer(next, { type: 'SELECT_UNIT', unitId: action.unitId });
+    }
+    case 'MOVE_AND_ATTACK': {
+      const moved = applyAIAction(state, { type: 'MOVE', unitId: action.unitId, to: action.to });
+      if (moved === state) return state;
+      const attacked = applyAIAction(moved, { type: 'ATTACK', unitId: action.unitId, targetPosition: action.targetPosition });
+      return attacked === moved ? state : attacked;
+    }
     case 'PAY_UPKEEP':
-    case 'MOVE':
     case 'ATTACK':
     case 'END_PLACE_PHASE':
     case 'BUY_UNIT':
@@ -93,7 +105,7 @@ const SAVE_ACTIONS = new Set([
   'RESIGN',
 ]);
 
-function gameReducerWithSave(state: GameState, action: GameAction): GameState {
+function gameReducerWithSave(state: GameState, action: LocalAction): GameState {
   const newState = gameReducer(state, action);
 
   // Save committed gameplay transitions (only if state actually changed)
@@ -136,7 +148,7 @@ export function useGameState() {
   }, [state.turn.currentPlayer, state.turn.turnNumber]);
 
   // Wrap dispatch to track undo history for undoable actions
-  const dispatchWithUndo = useCallback((action: GameAction) => {
+  const dispatchWithUndo = useCallback((action: LocalAction) => {
     // Save current state before undoable player actions (for any player's turn)
     if (UNDOABLE_ACTIONS.has(action.type)) {
       setUndoHistory((prev) => [...prev, state]);
@@ -173,6 +185,10 @@ export function useGameState() {
 
   const moveUnit = useCallback((unitId: string, to: Position) => {
     dispatchWithUndo({ type: 'MOVE', unitId, to });
+  }, [dispatchWithUndo]);
+
+  const moveAndAttack = useCallback((unitId: string, to: Position, targetPosition: Position) => {
+    dispatchWithUndo({ type: 'MOVE_AND_ATTACK', unitId, to, targetPosition });
   }, [dispatchWithUndo]);
 
   const attackWith = useCallback((unitId: string, targetPosition: Position) => {
@@ -223,6 +239,7 @@ export function useGameState() {
     selectUnit,
     deselect,
     moveUnit,
+    moveAndAttack,
     attackWith,
     endPlacePhase,
     endActionPhase,

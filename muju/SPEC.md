@@ -67,6 +67,17 @@ then update the inactivity counter and check the ten-quiet-turn draw (§9).
 Income cannot be undone: undo is confined to the current turn. There is no
 queue phase, including when all six actions have been spent.
 
+Tapping an empty reachable square moves immediately and keeps the piece selected.
+Local undo restores the move and its action cost; shared online moves remain final.
+Tapping an enemy with an own piece selected previews the shortest unblocked path
+to an adjacent square, reserving one action for a legal attack (including Cleave
+limits). A ghost marks the landing square. Confirm attack commits the movement
+and attack together; Cancel spends nothing. Equal-length routes use stable
+orthogonal neighbor order. Tapping a different empty square moves there immediately
+and keeps the target selected if an adjacent attack is still legal. The combined
+action is one local undo step and
+one atomic online request.
+
 Enemy inspection's **Show reach** retains the six-action movement preview and
 adds red dots on the perimeter of the potential attack area: up to five movement
 actions at current Speed, then one adjacent attack. The outline follows current

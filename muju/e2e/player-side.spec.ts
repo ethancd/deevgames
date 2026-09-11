@@ -69,7 +69,7 @@ test('Black lets the real White AI open at the chosen difficulty and shows its f
 
   await page.getByTestId('cell-8-8').click();
   await page.getByTestId('cell-6-8').click();
-  await page.getByRole('button', { name: 'Confirm move', exact: true }).click();
+
   await expect(page.getByTestId('cell-6-8')).toHaveAttribute('aria-label', /black Sjor/);
   await page.getByRole('button', { name: '↶ Undo', exact: true }).click();
   await expect(page.getByTestId('cell-8-8')).toHaveAttribute('aria-label', /black Sjor/);
@@ -106,7 +106,7 @@ test('Black preference survives the mode menu and reload while resuming the save
   await page.getByRole('button', { name: 'Start Game', exact: true }).click();
   await page.getByTestId('cell-8-8').click();
   await page.getByTestId('cell-6-8').click();
-  await page.getByRole('button', { name: 'Confirm move', exact: true }).click();
+
   await expect(page.getByTestId('cell-6-8')).toHaveAttribute('aria-label', /black Sjor/);
 
   await page.reload();

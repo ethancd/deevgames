@@ -3,7 +3,6 @@ import { INACTIVITY_LIMIT, INACTIVITY_WARNING } from '../game/inactivity';
 import { UpkeepPanel } from './UpkeepPanel';
 import { upkeepDue } from '../game/upkeep';
 import { VisualKey } from './VisualKey';
-import { describeCrystals } from './CellReserve';
 import { getHomeOccupier } from '../game/victory';
 import { useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import { useGameState } from '../hooks/useGameState';
@@ -20,10 +19,10 @@ import { PassDeviceOverlay } from './PassDeviceOverlay';
 import { InstructionsModal } from './InstructionsModal';
 import { getUnitAt, getUnitById, getCell, isOccupied, isValidPosition, MAX_ACTIONS_PER_TURN } from '../game/board';
 import { getUnitDefinition, UNIT_DEFINITIONS } from '../game/units';
-import { projectedIncome, unitEndOfTurnTake } from '../game/mining';
+import { projectedIncome } from '../game/mining';
 import { canPromote } from '../game/promotion';
 import { getAllSpawnPositions, getSpawnInvalidReason } from '../game/spawning';
-import { findPath, getMovementRange, getAttackFrontier, type MovementRangePosition } from '../game/movement';
+import { findAttackApproach, getMovementRange, getAttackFrontier, type MovementRangePosition } from '../game/movement';
 import { calculateAttackPower, calculateDefense } from '../game/combat';
 import { PlayDialog } from './PlayDialog';
 import type { Position, GameConfig, PlayerId, Element } from '../game/types';
@@ -53,6 +52,7 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
     selectUnit,
     deselect,
     moveUnit,
+    moveAndAttack,
     attackWith,
     endPlacePhase,
     endActionPhase,
@@ -77,8 +77,19 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
   const [showResources, setShowResources] = useState(true);
   const [showVisualKey, setShowVisualKey] = useState(false);
   const [showEnemyRange, setShowEnemyRange] = useState(false);
-  const [preview, setPreview] = useState<{ kind: 'move' | 'attack'; position: Position } | null>(null);
-  useEffect(() => { setPreview(null); setPendingMovePath([]); }, [state.board, state.selectedUnit, state.turn.phase, state.turn.currentPlayer]);
+  const [preview, setPreview] = useState<{ position: Position; path: Position[] } | null>(null);
+  useEffect(() => { setPreview(null); setPendingMovePath([]); }, [state.selectedUnit, state.turn.phase, state.turn.currentPlayer]);
+  useEffect(() => {
+    setPendingMovePath([]);
+    // A manually chosen landing square keeps the attack selected when it is
+    // still legal from there. Other board changes invalidate the route.
+    setPreview(current => {
+      const target = current ? getUnitAt(state.board, current.position) : null;
+      const path = selectedUnitData && target
+        ? findAttackApproach(selectedUnitData, target, state.board, state.turn.actionsRemaining) : null;
+      return current && path?.length === 0 ? { position: current.position, path: [] } : null;
+    });
+  }, [state.board]);
   useEffect(() => { setViewedEnemyUnitId(null); setShowEnemyRange(false); }, [state.turn.currentPlayer]);
   const lastTurnPlayer = useRef<PlayerId | null>(null);
 
@@ -321,12 +332,12 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
     );
 
     if (isValidMove && state.selectedUnit) {
-      setPreview({ kind: 'move', position });
+      moveUnit(state.selectedUnit, position);
     } else if (isValidAttack && state.selectedUnit) {
-      setPreview({ kind: 'attack', position });
+      setPreview({ position, path: [] });
     } else if (movementRangePos && state.selectedUnit && selectedUnitData?.owner === state.turn.currentPlayer) {
       // Multi-action move to a position in movement range
-      setPreview({ kind: 'move', position });
+      moveUnit(state.selectedUnit, position);
     } else {
       deselect();
     }
@@ -376,14 +387,13 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
         selectUnit(unitId);
       }
     } else if (state.selectedUnit) {
-      // Clicking enemy while having selection - check for attack
-      const isValidAttack = state.validAttacks.some(
-        (a) => a.x === unit.position.x && a.y === unit.position.y
-      );
-      if (isValidAttack) {
-        setPreview({ kind: 'attack', position: unit.position });
+      const path = selectedUnitData
+        ? findAttackApproach(selectedUnitData, unit, state.board, state.turn.actionsRemaining)
+        : null;
+      if (path !== null) {
+        setPendingMovePath([]);
+        setPreview({ position: unit.position, path });
       } else {
-        // Not a valid attack - just view enemy stats
         deselect();
         setViewedEnemyUnitId(unitId);
       }
@@ -421,6 +431,12 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
     if (!isCurrentPlayerHuman || isThinking || showPassOverlay || showMenu || showInstructions || showUnitShopInspection || showInsights || showVisualKey) return;
     const control = e.target instanceof HTMLElement ? e.target.closest('button, select, a, input, textarea') : null;
     if (control?.matches('select, input, textarea')) return;
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') {
+      e.preventDefault();
+      setPreview(null); setPendingMovePath([]);
+      if (canUndo) undo();
+      return;
+    }
     if (preview) {
       if (e.key === 'Escape') { e.preventDefault(); setPreview(null); }
       if (e.key === 'Enter' && (!control || control.matches('.board-cell'))) { e.preventDefault(); commitPreview(); }
@@ -434,17 +450,6 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
     if (control && (key === 'enter' || key === ' ' || (key.startsWith('arrow') && !control.matches('.board-cell')))) return;
     const currentPlayer = state.turn.currentPlayer;
     const currentPlayerState = state.players[currentPlayer];
-
-    // === Cmd+Z / Ctrl+Z: Undo ===
-    if ((e.metaKey || e.ctrlKey) && key === 'z') {
-      e.preventDefault();
-      if (canUndo) {
-        // Clear pending move before undo
-        setPendingMovePath([]);
-        undo();
-      }
-      return;
-    }
 
     // === Enter: End current phase ===
     if (key === 'enter') {
@@ -576,7 +581,7 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
     }
   }, [
     isCurrentPlayerHuman, isThinking, showPassOverlay, state, playerOwnUnits,
-    selectUnit, selectedPlaceUnitId, promoteUnit, moveUnit,
+    selectUnit, selectedPlaceUnitId, promoteUnit, moveUnit, moveAndAttack, attackWith,
     canUndo, undo, endPlacePhase, endActionPhase, pendingMovePath, preview, showMenu, showInstructions, showUnitShopInspection, showInsights, showVisualKey
   ]);
 
@@ -644,17 +649,17 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
     : { white: humanPlayer === 'white' ? 'You' : 'AI', black: humanPlayer === 'black' ? 'You' : 'AI' };
   const shownUnit = selectedPlaceUnitData ?? selectedUnitData ?? viewedEnemyUnitData;
   const isEnemyView = !!shownUnit && shownUnit.owner !== state.turn.currentPlayer;
-  const previewRange = preview?.kind === 'move' ? movementRange.find(r => r.position.x === preview.position.x && r.position.y === preview.position.y) : null;
-  const previewTarget = preview?.kind === 'attack' ? getUnitAt(state.board, preview.position) : null;
-  const previewCost = preview?.kind === 'attack' ? 1 : previewRange ? state.turn.actionsRemaining - previewRange.actionsRemaining : 0;
-  const previewPath = preview?.kind === 'move' && selectedUnitData
-    ? findPath(selectedUnitData.position, preview.position, state.board, 100) ?? [] : pendingMovePath;
-  const targetCell = preview ? getCell(state.board, preview.position) : null;
+  const previewTarget = preview ? getUnitAt(state.board, preview.position) : null;
+  const previewMoveCost = preview && selectedUnitData
+    ? Math.ceil(preview.path.length / getUnitDefinition(selectedUnitData.definitionId).speed) : 0;
+  const previewCost = previewMoveCost + 1;
+  const previewPath = preview?.path ?? pendingMovePath;
+  const previewLanding = preview?.path.at(-1);
   const attackPower = selectedUnitData && previewTarget ? calculateAttackPower(selectedUnitData, previewTarget) : 0;
   const attackDefense = previewTarget ? calculateDefense(previewTarget) : 0;
   function commitPreview() {
     if (!preview || !state.selectedUnit || !interactive) return;
-    if (preview.kind === 'move') moveUnit(state.selectedUnit, preview.position);
+    if (previewLanding) moveAndAttack(state.selectedUnit, previewLanding, preview.position);
     else attackWith(state.selectedUnit, preview.position);
     setPreview(null);
   }
@@ -665,7 +670,7 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
     : online?.busy ? 'Confirming your move…'
     : !interactive ? (isPaused ? 'Paused' : 'Opponent’s turn')
     : state.turn.phase === 'place' ? 'Buy tier 1, or select a piece to promote.'
-    : 'Select a unit. Preview a destination, then confirm.';
+    : 'Select a unit. Tap a square to move, or an enemy to preview an attack.';
 
   return (
     <main className={`game-shell${online ? ' game-shell-online' : ''}`}>
@@ -702,9 +707,9 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
       <div className={`play-area ${state.turn.phase === 'place' && interactive ? 'is-placing' : ''}`}>
         <section className="board-stage" aria-label="Battlefield">
           <Board board={state.board} selectedUnit={shownUnit?.id ?? null}
-            validMoves={state.validMoves} validAttacks={state.validAttacks} validSpawns={validSpawns}
+            validMoves={state.validMoves} validAttacks={preview ? [preview.position] : state.validAttacks} validSpawns={validSpawns}
             invalidSpawnPosition={spawnFeedback?.position ?? null} pendingMovePath={previewPath} movementRange={movementRange} attackFrontier={attackFrontier}
-            previewPosition={preview?.position} showResources={showResources} actionsRemaining={isEnemyView ? MAX_ACTIONS_PER_TURN : state.turn.actionsRemaining}
+            previewPosition={preview?.position} previewUnitPosition={previewLanding} showResources={showResources} actionsRemaining={isEnemyView ? MAX_ACTIONS_PER_TURN : state.turn.actionsRemaining}
             onCellClick={handleCellClick} onUnitClick={handleUnitClick} />
         </section>
         <div className="board-key">
@@ -716,10 +721,9 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
           {state.turn.phase === 'place' && interactive && !shownUnit ? <UnitShop resources={currentPlayerState.resources} player={state.turn.currentPlayer} board={state.board}
             selectedId={selectedPurchaseId} onSelectId={id => { setSelectedPurchaseId(id); setSelectedPlaceUnitId(null); setViewedEnemyUnitId(null); }} />
           : preview && selectedUnitData ? <div className="action-preview">
-              <div className="preview-heading"><strong>{preview.kind === 'move' ? 'Move' : 'Attack'} → {String.fromCharCode(65 + preview.position.x)}{preview.position.y + 1}</strong><span>{previewCost} action{previewCost !== 1 ? 's' : ''} · {state.turn.actionsRemaining - previewCost} left</span></div>
-              <p>{preview.kind === 'attack' && previewTarget ? `${getUnitDefinition(previewTarget.definitionId).name}: ${attackPower} attack vs ${attackDefense} defense · ${attackPower >= attackDefense ? 'Eliminates target' : `${attackDefense - attackPower} defense remains`}`
-                : targetCell ? `Takes ${unitEndOfTurnTake(selectedUnitData, targetCell)} here at turn end · ${describeCrystals(targetCell)}` : ''}</p>
-              <div className="preview-buttons"><button onClick={() => setPreview(null)}>Cancel</button><button className="primary" onClick={commitPreview}>Confirm {preview.kind}</button></div>
+              <div className="preview-heading"><strong>Attack → {String.fromCharCode(65 + preview.position.x)}{preview.position.y + 1}</strong><span>{previewCost} action{previewCost !== 1 ? 's' : ''} · {state.turn.actionsRemaining - previewCost} left</span></div>
+              <p>{previewLanding && `Via ${String.fromCharCode(65 + previewLanding.x)}${previewLanding.y + 1} · `}{previewTarget ? `${getUnitDefinition(previewTarget.definitionId).name}: ${attackPower} attack vs ${attackDefense} defense · ${attackPower >= attackDefense ? 'Eliminates target' : `${attackDefense - attackPower} defense remains`}` : ''}</p>
+              <div className="preview-buttons"><button onClick={() => setPreview(null)}>Cancel</button><button className="primary" onClick={commitPreview}>Confirm attack</button></div>
             </div>
           : shownUnit || selectedPurchaseDefinitionId ? <UnitInfo unit={shownUnit} previewDefinitionId={selectedPurchaseDefinitionId}
               cellInfo={selectedUnitCell}

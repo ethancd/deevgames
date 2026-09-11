@@ -16,6 +16,7 @@ interface BoardProps {
   movementRange?: MovementRangePosition[]; // For showing movement range preview with actions remaining
   attackFrontier?: Position[];
   previewPosition?: Position;
+  previewUnitPosition?: Position;
   showResources?: boolean;
   actionsRemaining?: number;
   onCellClick: (position: Position) => void;
@@ -34,7 +35,7 @@ export function Board({
   attackFrontier = [],
   onCellClick,
   onUnitClick,
-  previewPosition, showResources = false, actionsRemaining = 6,
+  previewPosition, previewUnitPosition, showResources = false, actionsRemaining = 6,
 }: BoardProps) {
   const isValidMove = (pos: Position) =>
     validMoves.some((m) => m.x === pos.x && m.y === pos.y);
@@ -61,6 +62,8 @@ export function Board({
     return rangePos?.actionsRemaining;
   };
 
+  const previewUnit = previewUnitPosition ? board.units.find(u => u.id === selectedUnit) : undefined;
+
   return (
     <div className="battle-board">
       <div className="battle-grid">
@@ -82,20 +85,26 @@ export function Board({
                   isPendingMove={isPendingMove(pos)}
                   movementRangeActions={getMovementRangeActions(pos)}
                   isAttackFrontier={attackFrontier.some(p => p.x === x && p.y === y)}
-                  isPreview={previewPosition?.x === x && previewPosition?.y === y}
+                  isPreview={(previewPosition?.x === x && previewPosition?.y === y) || (previewUnitPosition?.x === x && previewUnitPosition?.y === y)}
                   showResources={showResources}
                   moveCost={getMovementRangeActions(pos) !== undefined ? actionsRemaining - getMovementRangeActions(pos)! : undefined}
+                  previewLabel={previewUnit && previewUnitPosition?.x === x && previewUnitPosition?.y === y ? `${getUnitDefinition(previewUnit.definitionId).name} attack approach` : undefined}
                   unitLabel={unit ? `${unit.owner} ${getUnitDefinition(unit.definitionId).name}, ${getUnitDefinition(unit.definitionId).element}, tier ${getUnitDefinition(unit.definitionId).tier}` : undefined}
                   onClick={unit ? () => onUnitClick(unit.id) : onCellClick}
                 />
                 {unit && (
                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div className="unit-wrap">
+                    <div className={`unit-wrap${isSelected && previewUnit ? ' preview-origin' : ''}`}>
                       <Unit
                         unit={unit}
                         isSelected={isSelected}
                       />
                     </div>
+                  </div>
+                )}
+                {previewUnit && previewUnitPosition?.x === x && previewUnitPosition?.y === y && (
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none" aria-hidden="true">
+                    <div className="unit-wrap preview-ghost"><Unit unit={previewUnit} isSelected={false} /></div>
                   </div>
                 )}
                 {attackFrontier.some(p => p.x === x && p.y === y) && (

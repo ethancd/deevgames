@@ -24,7 +24,7 @@ test('handoff clears undo and Player 2 can play and undo only their own move', a
   await expect(page.getByRole('button', { name: 'Undo' })).toBeDisabled();
   await page.getByTestId('cell-8-8').click();
   await page.getByTestId('cell-6-8').click();
-  await page.getByRole('button', { name: 'Confirm move' }).click();
+
   await expect(page.getByTestId('cell-6-8')).toHaveAttribute('aria-label', /black Sjor/);
   await page.getByRole('button', { name: 'Undo' }).click();
   await expect(page.getByTestId('cell-8-8')).toHaveAttribute('aria-label', /black Sjor/);

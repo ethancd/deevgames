@@ -343,3 +343,6 @@ button:focus-visible, a:focus-visible { outline: 3px solid #67e8f9; outline-offs
   .game-shell-online .game-header { gap: 4px; }
   .game-shell-online .score-strip > div { padding: 8px; }
 }
+
+.unit-wrap.preview-origin { opacity: .35; }
+.unit-wrap.preview-ghost { opacity: .75; filter: drop-shadow(0 0 3px #f5d780); }

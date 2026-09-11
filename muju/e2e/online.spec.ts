@@ -21,14 +21,14 @@ test('two independent browsers join, move, hand off and reconnect without a loca
     await expect(guest.getByRole('button', { name: 'End turn' })).toBeDisabled();
     await page.getByTestId('cell-1-0').click();
     await page.getByTestId('cell-2-0').click();
-    await page.getByRole('button', { name: 'Confirm move' }).click();
+
     await expect(guest.getByTestId('cell-2-0')).toHaveAttribute('aria-label', /white Hi/);
     await page.getByRole('button', { name: 'End turn' }).click();
     await expect(guest.getByRole('button', { name: 'End turn' })).toBeEnabled();
     await expect(guest.getByText('Pass device to')).toHaveCount(0);
     await guest.getByTestId('cell-8-8').click();
     await guest.getByTestId('cell-6-8').click();
-    await guest.getByRole('button', { name: 'Confirm move' }).click();
+
     await expect(page.getByTestId('cell-6-8')).toHaveAttribute('aria-label', /black Sjor/);
     await guest.reload();
     await expect(guest.getByText('Online · You are black')).toBeVisible();
@@ -67,7 +67,7 @@ test('a browser and MCP agent share moves, including retry after a lost response
     });
     await page.getByTestId('cell-1-0').click();
     await page.getByTestId('cell-2-0').click();
-    await page.getByRole('button', { name: 'Confirm move' }).click();
+
     await page.getByRole('button', { name: 'Retry same move' }).click();
     await expect(page.getByRole('button', { name: 'End turn' })).toBeEnabled();
     const moved = await call('muju_observe', { roomId: hosted.credentials.roomId });

@@ -18,7 +18,9 @@ export function useOnlineGame(connection: RoomConnection, initial: RoomSnapshot,
   const [uncertain, setUncertain] = useState<ActionRequest | null>(null);
   const accept = useCallback((next: RoomSnapshot) => {
     if (next.revision <= roomRef.current.revision) return;
-    roomRef.current = next; setRoom(next); setSelected(null);
+    roomRef.current = next; setRoom(next);
+    setSelected(id => id && next.state.turn.phase === 'action' && next.state.phase === 'playing'
+      && getUnitById(next.state.board, id)?.owner === next.state.turn.currentPlayer ? id : null);
   }, []);
   useEffect(() => {
     let controller = new AbortController();
@@ -61,11 +63,11 @@ export function useOnlineGame(connection: RoomConnection, initial: RoomSnapshot,
       } else setUncertain(request);
     } finally { locked.current = false; setBusy(false); }
   }, [connection, accept]);
-  const dispatch = useCallback((action: RoomAction) => {
+  const dispatch = useCallback((action: RoomAction | RoomAction[]) => {
     if (locked.current || uncertain) return;
     // getRandomValues also works on HTTP LAN origins where randomUUID is unavailable.
     const requestId = Array.from(crypto.getRandomValues(new Uint8Array(16)), byte => byte.toString(16).padStart(2, '0')).join('');
-    void send({ expectedRevision: roomRef.current.revision, requestId, actions: [action] });
+    void send({ expectedRevision: roomRef.current.revision, requestId, actions: Array.isArray(action) ? action : [action] });
   }, [send, uncertain]);
   const state = useMemo(() => {
     const s = room.state;
@@ -81,6 +83,9 @@ export function useOnlineGame(connection: RoomConnection, initial: RoomSnapshot,
   const game = {
     state, selectUnit, deselect: () => setSelected(null),
     moveUnit: (unitId: string, to: Position) => dispatch({ type: 'MOVE', unitId, to }),
+    moveAndAttack: (unitId: string, to: Position, targetPosition: Position) => dispatch([
+      { type: 'MOVE', unitId, to }, { type: 'ATTACK', unitId, targetPosition },
+    ]),
     attackWith: (unitId: string, targetPosition: Position) => dispatch({ type: 'ATTACK', unitId, targetPosition }),
     endPlacePhase: () => dispatch({ type: 'END_PLACE_PHASE' }), endActionPhase: () => dispatch({ type: 'END_ACTION_PHASE' }),
     buyUnit: (definitionId: string, position: Position) => dispatch({ type: 'BUY_UNIT', definitionId, position }),

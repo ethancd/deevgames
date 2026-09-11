@@ -33,7 +33,7 @@ for(const [width,height] of [[320,568],[375,667],[390,664],[390,844],[430,932],[
  await page.getByRole('button',{name:'Buy Hi · 3 crystals',exact:true}).click();await page.getByTestId('cell-0-0').click();await page.getByTestId('cell-0-0').click();
  await expect(page.locator('.unit-detail')).toContainText('Placed this turn');await expect(page.getByRole('button',{name:/Promote ·/})).toBeDisabled();await fits(page);await page.screenshot({path:info.outputPath('place.png')});
  await page.getByRole('button',{name:'Start actions →'}).click();await page.getByTestId('cell-1-1').click();await fits(page);
- await page.getByTestId('cell-3-1').click();await expect(page.locator('.action-preview')).toContainText('Takes 0 here at turn end');await fits(page);await page.screenshot({path:info.outputPath('move-preview.png')});
+ await page.getByTestId('cell-3-1').click();await expect(page.getByTestId('cell-3-1')).toHaveAttribute('aria-pressed','true');await expect(page.locator('.unit-detail')).toContainText('Takes 0 here at turn end');await fits(page);await page.screenshot({path:info.outputPath('moved.png')});
 });
 test('tablet rotation preserves selection and side controls remain usable',async({page})=>{
  await page.setViewportSize({width:1180,height:820});await start(page);
@@ -43,8 +43,8 @@ test('tablet rotation preserves selection and side controls remain usable',async
  await page.getByRole('button',{name:'Key',exact:true}).click();await expect(page.getByRole('dialog',{name:'Read the board'})).toBeVisible();await page.keyboard.press('Escape');await expect(page.getByRole('dialog')).toHaveCount(0);
  await page.getByRole('button',{name:'Reserves'}).click();await expect(page.locator('.resource-number')).toHaveCount(0);
  await page.getByRole('button',{name:'Reserves'}).click();await expect(page.locator('.resource-number')).toHaveCount(100);
- await page.getByTestId('cell-3-1').click();await expect(page.locator('.action-preview')).toContainText('Takes 0 here at turn end');await fits(page);
- await page.getByRole('button',{name:'Confirm move'}).click();await expect(page.getByTestId('projected-income')).toContainText('+4 ◆');
+ await page.getByTestId('cell-3-1').click();await expect(page.getByTestId('cell-3-1')).toHaveAttribute('aria-pressed','true');await expect(page.locator('.unit-detail')).toContainText('Takes 0 here at turn end');await fits(page);
+ await expect(page.getByTestId('projected-income')).toContainText('+4 ◆');
  await page.getByRole('button',{name:'Undo'}).click();await expect(page.getByTestId('projected-income')).toContainText('+6 ◆');await fits(page);
 });
 test('passive reserves, public banks, live projection, recap and irreversible income',async({page})=>{
@@ -54,7 +54,7 @@ test('passive reserves, public banks, live projection, recap and irreversible in
  await expect(page.getByTestId('projected-income')).toHaveText('Projected income this turn: +6 ◆');
  await page.getByTestId('cell-1-1').click();await expect(page.locator('.unit-detail')).toContainText('Takes 2 here at turn end');
  await page.keyboard.press('m');await expect(page.locator('.action-budget strong')).toHaveText('6 actions');
- await page.getByTestId('cell-3-1').click();await page.getByRole('button',{name:'Confirm move'}).click();await expect(page.getByTestId('projected-income')).toContainText('+4 ◆');
+ await page.getByTestId('cell-3-1').click();await expect(page.getByTestId('projected-income')).toContainText('+4 ◆');
  await page.getByRole('button',{name:'Undo'}).click();await expect(page.getByTestId('projected-income')).toContainText('+6 ◆');
  await page.getByRole('button',{name:'End turn →'}).click();await page.getByText('Tap anywhere to continue').click();
  await expect(page.locator('.income-recap')).toContainText('Player 1 collected 6');await expect(page.locator('.score-strip')).toContainText('◆ 6');

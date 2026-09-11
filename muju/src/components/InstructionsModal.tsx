@@ -15,7 +15,8 @@ const reserves = [...new Set(UNEQUAL_ROUTES_MAP)].sort((a,b)=>a-b);
 const pages = [
   {title:'Playing on a phone', content:<>
     <p>In vs AI setup, choose White or Black under Play as. White moves first; when you choose Black, the AI opens the game.</p>
-    <p>Tap one of your pieces, then a destination. Check the action cost and its end-of-turn income, then confirm. Cancel keeps the piece where it is.</p>
+    <p>Tap one of your pieces, then an empty reachable square to move immediately. Undo can reverse moves within your turn in local games. Shared online moves are final.</p>
+    <p>Tap a reachable enemy to preview the shortest route to an adjacent square and the attack together. Confirm attack commits both; Cancel spends nothing. To choose your landing square, tap it to move there; the attack stays selected if it is still legal.</p>
     <p>In Place, tap a tier-1 unit in the shop, then a highlighted empty square to buy it. Tap a piece already on the board to promote it.</p>
     <p>Tap an enemy, then Show reach to inspect movement and the red attack frontier: up to 5 move actions plus 1 attack at its current speed. Blockers and board edges limit the frontier; dots show attack reach, not guaranteed kills. Key explains the board; Units opens the full catalogue.</p>
   </>},

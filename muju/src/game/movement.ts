@@ -7,6 +7,7 @@ import {
   manhattanDistance,
 } from './board';
 import { getUnitDefinition } from './units';
+import { canAttack } from './combat';
 
 /**
  * Check if a unit can move (can act this turn)
@@ -59,6 +60,22 @@ export function executeMove(
       u.id === unitId ? { ...u, position: destination, hasMoved: true } : u
     ),
   };
+}
+
+/** Shortest legal approach to an enemy, leaving one action for the attack.
+ * Equal-length routes use the board's stable orthogonal neighbor order.
+ */
+export function findAttackApproach(unit: Unit, target: Unit, board: BoardState, actions: number): Position[] | null {
+  if (actions < 1 || !canAttack(unit) || target.owner === unit.owner || unit.attackedThisTurn?.includes(target.id)) return null;
+  const speed = getUnitDefinition(unit.definitionId).speed;
+  let shortest: Position[] | null = null;
+  for (const destination of getAdjacentPositions(target.position)) {
+    if (destination.x === unit.position.x && destination.y === unit.position.y) return [];
+    if (isOccupied(board, destination)) continue;
+    const path = findPath(unit.position, destination, board, (actions - 1) * speed);
+    if (path && (shortest === null || path.length < shortest.length)) shortest = path;
+  }
+  return shortest;
 }
 
 /**
