@@ -18,7 +18,7 @@ const pages = [
     <p>Tap one of your pieces, then an empty reachable square to move immediately. Undo can reverse moves within your turn in local games. Shared online moves are final.</p>
     <p>Tap a reachable enemy to preview the shortest route to an adjacent square and the attack together. Confirm attack commits both; Cancel spends nothing. To choose your landing square, tap it to move there; the attack stays selected if it is still legal.</p>
     <p>In Place, tap a tier-1 unit in the shop, then a highlighted empty square to buy it. Tap a piece already on the board to promote it.</p>
-    <p>Tap an enemy, then Show reach to inspect movement and the red attack frontier: up to 5 move actions plus 1 attack at its current speed. Blockers and board edges limit the frontier; dots show attack reach, not guaranteed kills. Key explains the board; Units opens the full catalogue.</p>
+    <p>Tap an enemy you cannot attack to inspect it with reach already on. Hide reach toggles off its movement range and red attack frontier: up to 5 move actions plus 1 attack at its current speed. Blockers and board edges limit the frontier; dots show attack reach, not guaranteed kills. Key explains the board; Units opens the full catalogue.</p>
   </>},
   {title:'Win the game', content:<>
     <p>Hold the enemy home corner until the start of your next turn, or eliminate every enemy piece. The defender gets one turn to clear an invader. An empty army loses even with crystals in the bank.</p>

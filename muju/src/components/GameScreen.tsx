@@ -126,6 +126,11 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
     }
   }, [state.selectedUnit]);
 
+  // Every newly inspected enemy starts with its reach visible.
+  useEffect(() => {
+    if (viewedEnemyUnitId) setShowEnemyRange(true);
+  }, [viewedEnemyUnitId]);
+
   // Clear spawn feedback after 2 seconds
   useEffect(() => {
     if (spawnFeedback) {

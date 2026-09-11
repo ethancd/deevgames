@@ -78,7 +78,9 @@ and keeps the target selected if an adjacent attack is still legal. The combined
 action is one local undo step and
 one atomic online request.
 
-Enemy inspection's **Show reach** retains the six-action movement preview and
+Enemy inspection defaults **Show reach** on whenever an enemy is opened for
+inspection (including tapping an enemy the selected piece cannot attack). It can
+be toggled off while inspecting that piece. **Show reach** retains the six-action movement preview and
 adds red dots on the perimeter of the potential attack area: up to five movement
 actions at current Speed, then one adjacent attack. The outline follows current
 blockers and clips to board edges. It includes occupied opposing targets but
