@@ -13,7 +13,7 @@ export function VisualKey() {
       <div className="reserve-examples">{examples.map(reserve => <figure key={reserve}>
         <div className={`reserve-example board-cell reserve-${reserve}`}><CellReserve cell={{position:{x:0,y:0},resourceLayers:reserve}} /></div>
         <figcaption>{reserve} crystals</figcaption></figure>)}</div>
-      <p>Tap a piece to see its Mining number and how much it takes here. The Reserves toggle shows or hides the brick stacks. With stacks hidden, brighter squares hold more.</p>
+      <p>Tap a piece to see its Mining number and how much it takes here. Reserves starts off. The Reserves toggle shows or hides the brick stacks. With stacks hidden, brighter squares hold more.</p>
     </section>
     <section><h3>Two armies, six element symbols</h3><p><strong>Ivory / White:</strong> round, pale stone. <strong>Obsidian / Black:</strong> angular, dark stone. The same symbols identify elements on either army, even without color.</p>
       <div className="army-examples">{elements.map(element => <figure key={element}><div>

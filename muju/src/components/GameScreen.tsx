@@ -74,7 +74,7 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
   const [showInstructions, setShowInstructions] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [showInsights, setShowInsights] = useState(false);
-  const [showResources, setShowResources] = useState(true);
+  const [showResources, setShowResources] = useState(false);
   const [showVisualKey, setShowVisualKey] = useState(false);
   const [showEnemyRange, setShowEnemyRange] = useState(false);
   const [preview, setPreview] = useState<{ position: Position; path: Position[] } | null>(null);

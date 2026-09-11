@@ -15,6 +15,15 @@ test('reserve bricks show 0–10 in equal bottom-aligned slots and toggle back t
  const state=createInitialGameState();
  for(let count=0;count<=10;count++) state.board.cells[Math.floor(count/10)][count%10].resourceLayers=count;
  await start(page,state);
+ await expect(page.getByRole('button',{name:'Reserves'})).toHaveAttribute('aria-pressed','false');
+ await expect(page.locator('.reserve-bricks')).toHaveCount(0);
+ const outlines=await page.locator('.board-square').evaluateAll(squares=>squares.map(square=>{
+   const style=getComputedStyle(square,'::after');
+   return {color:style.borderTopColor,width:style.borderTopWidth,events:style.pointerEvents};
+ }));
+ expect(outlines).toHaveLength(100);
+ for(const outline of outlines) expect(outline).toEqual({color:'rgb(181, 229, 228)',width:'1px',events:'none'});
+ await page.getByRole('button',{name:'Reserves'}).click();
  await expect(page.locator('.reserve-bricks')).toHaveCount(100);
  await expect(page.locator('.resource-number')).toHaveCount(0);
  let brickSize: {width:number;height:number}|undefined;

@@ -41,15 +41,16 @@ test('tablet rotation preserves selection and side controls remain usable',async
  await page.setViewportSize({width:820,height:1180});await expect(selected).toHaveAttribute('aria-pressed','true');await expect(page.locator('.unit-detail')).toContainText('Takes 2 here at turn end');await fits(page);
  await page.setViewportSize({width:1180,height:820});await expect(selected).toHaveAttribute('aria-pressed','true');await fits(page);
  await page.getByRole('button',{name:'Key',exact:true}).click();await expect(page.getByRole('dialog',{name:'Read the board'})).toBeVisible();await page.keyboard.press('Escape');await expect(page.getByRole('dialog')).toHaveCount(0);
- await page.getByRole('button',{name:'Reserves'}).click();await expect(page.locator('.reserve-bricks')).toHaveCount(0);
+ await expect(page.locator('.reserve-bricks')).toHaveCount(0);
  await page.getByRole('button',{name:'Reserves'}).click();await expect(page.locator('.reserve-bricks')).toHaveCount(100);
+ await page.getByRole('button',{name:'Reserves'}).click();await expect(page.locator('.reserve-bricks')).toHaveCount(0);
  await page.getByTestId('cell-3-1').click();await expect(page.getByTestId('cell-3-1')).toHaveAttribute('aria-pressed','true');await expect(page.locator('.unit-detail')).toContainText('Takes 0 here at turn end');await fits(page);
  await expect(page.getByTestId('projected-income')).toContainText('+4 ◆');
  await page.getByRole('button',{name:'Undo'}).click();await expect(page.getByTestId('projected-income')).toContainText('+6 ◆');await fits(page);
 });
 test('passive reserves, public banks, live projection, recap and irreversible income',async({page})=>{
  await page.setViewportSize({width:390,height:664});await start(page);
- await expect(page.locator('.reserve-bricks')).toHaveCount(100);await expect(page.getByTestId('cell-0-0').locator('.reserve-brick')).toHaveCount(10);
+ await page.getByRole('button',{name:'Reserves'}).click();await expect(page.locator('.reserve-bricks')).toHaveCount(100);await expect(page.getByTestId('cell-0-0').locator('.reserve-brick')).toHaveCount(10);
  await expect(page.getByRole('button',{name:/Mine/})).toHaveCount(0);await expect(page.locator('.score-strip')).not.toContainText('Hidden');
  await expect(page.getByTestId('projected-income')).toHaveText('Projected income this turn: +6 ◆');
  await page.getByTestId('cell-1-1').click();await expect(page.locator('.unit-detail')).toContainText('Takes 2 here at turn end');

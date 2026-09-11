@@ -79,7 +79,8 @@ and keeps the target selected if an adjacent attack is still legal. The combined
 action is one local undo step and
 one atomic online request.
 
-The Reserves toggle replaces square shading with two bottom-aligned stacks of
+Every board square has a thin outline in the bright ten-crystal color.
+Reserves are off by default. The Reserves toggle replaces square shading with two bottom-aligned stacks of
 crystal bricks on dark ground. Each crystal occupies one fixed-size slot in a
 2-column × 5-row grid, filling left then right at each level (3 = 2 left + 1 right).
 Every brick uses the original ten-crystal color with a slight outline. Zero is
