@@ -67,6 +67,13 @@ then update the inactivity counter and check the ten-quiet-turn draw (§9).
 Income cannot be undone: undo is confined to the current turn. There is no
 queue phase, including when all six actions have been spent.
 
+Enemy inspection's **Show reach** retains the six-action movement preview and
+adds red dots on the perimeter of the potential attack area: up to five movement
+actions at current Speed, then one adjacent attack. The outline follows current
+blockers and clips to board edges. It includes occupied opposing targets but
+does not indicate a guaranteed kill, promotions, or paths opened by earlier
+attacks. It previews a fresh enemy turn, independently of spent turn flags.
+
 If the game continues, start the next player's turn in this order:
 
 - Check their home occupation and existing board elimination (§9).

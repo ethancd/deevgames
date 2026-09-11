@@ -17,7 +17,7 @@ const pages = [
     <p>In vs AI setup, choose White or Black under Play as. White moves first; when you choose Black, the AI opens the game.</p>
     <p>Tap one of your pieces, then a destination. Check the action cost and its end-of-turn income, then confirm. Cancel keeps the piece where it is.</p>
     <p>In Place, tap a tier-1 unit in the shop, then a highlighted empty square to buy it. Tap a piece already on the board to promote it.</p>
-    <p>Tap an enemy to inspect its stats and movement reach. Key explains the board; Units opens the full catalogue.</p>
+    <p>Tap an enemy, then Show reach to inspect movement and the red attack frontier: up to 5 move actions plus 1 attack at its current speed. Blockers and board edges limit the frontier; dots show attack reach, not guaranteed kills. Key explains the board; Units opens the full catalogue.</p>
   </>},
   {title:'Win the game', content:<>
     <p>Hold the enemy home corner until the start of your next turn, or eliminate every enemy piece. The defender gets one turn to clear an invader. An empty army loses even with crystals in the bank.</p>

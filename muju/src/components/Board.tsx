@@ -14,6 +14,7 @@ interface BoardProps {
   invalidSpawnPosition?: Position | null; // For showing red X on invalid spawn click
   pendingMovePath?: Position[]; // For showing partial movement path
   movementRange?: MovementRangePosition[]; // For showing movement range preview with actions remaining
+  attackFrontier?: Position[];
   previewPosition?: Position;
   showResources?: boolean;
   actionsRemaining?: number;
@@ -30,6 +31,7 @@ export function Board({
   invalidSpawnPosition,
   pendingMovePath = [],
   movementRange = [],
+  attackFrontier = [],
   onCellClick,
   onUnitClick,
   previewPosition, showResources = false, actionsRemaining = 6,
@@ -79,6 +81,7 @@ export function Board({
                   isInvalidSpawn={isInvalidSpawn(pos)}
                   isPendingMove={isPendingMove(pos)}
                   movementRangeActions={getMovementRangeActions(pos)}
+                  isAttackFrontier={attackFrontier.some(p => p.x === x && p.y === y)}
                   isPreview={previewPosition?.x === x && previewPosition?.y === y}
                   showResources={showResources}
                   moveCost={getMovementRangeActions(pos) !== undefined ? actionsRemaining - getMovementRangeActions(pos)! : undefined}
@@ -94,6 +97,9 @@ export function Board({
                       />
                     </div>
                   </div>
+                )}
+                {attackFrontier.some(p => p.x === x && p.y === y) && (
+                  <span aria-hidden="true" className={`attack-frontier-marker${unit ? ' on-unit' : ''}`} />
                 )}
               </div>
             );

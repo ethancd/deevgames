@@ -144,6 +144,8 @@ button:focus-visible, a:focus-visible { outline: 3px solid #67e8f9; outline-offs
 .range-marker { height: 6px; width: 6px; pointer-events: none; border-radius: 50%; z-index: 2; margin-right: 8%; }
 .range-marker.near { background: #fff5cd; box-shadow: 0 0 0 1px #183549; }
 .range-marker.far { height: 6px; width: 6px; border: 1px solid #fff5cd; opacity: .7; box-shadow: 0 0 0 .5px #183549aa; }
+.attack-frontier-marker { position: absolute; top: 50%; left: 46%; transform: translate(-50%, -50%); width: 8px; height: 8px; border-radius: 50%; background: #ff4659; box-shadow: 0 0 0 1px #211321, 0 0 0 2px #ffd1d666; pointer-events: none; z-index: 7; }
+.attack-frontier-marker.on-unit { top: 14%; left: 86%; }
 .resource-readout { position: absolute; bottom: 1px; left: 1px; min-width: 10px; border-radius: 2px; padding: 0 2px; font-size: 9px; line-height: 11px; background: #071722de; color: #edfff5; font-variant-numeric: tabular-nums; z-index: 5; pointer-events: none; }
 .resource-readout small { font-size: 7px; color: #b9cedb; margin-left: 2px; }
 .spawn-marker { color: #fff2b4; font-size: 20px; font-weight: 650; text-shadow: 0 1px 2px #092035; z-index: 2; }

@@ -25,7 +25,7 @@ export function UnitInfo({ unit, previewDefinitionId, cellInfo, isPlacePhase, is
     <div className="unit-stats"><span>Attack <b>{def.attack}</b></span><span>Defense <b>{Math.max(0, def.defense - (unit?.damageTaken ?? 0))}{unit?.damageTaken ? `/${def.defense}` : ''}</b></span><span>Speed <b>{def.speed}</b></span><span>Mining <b>{def.mining}</b></span></div>
     <div className="unit-action-row">
       {!unit ? <p>Tap a highlighted square to place.</p>
-      : isEnemyView ? <><p>Inspect current movement reach.</p><button aria-pressed={showEnemyRange} onClick={onToggleEnemyRange}>{showEnemyRange ? 'Hide reach' : 'Show reach'}</button></>
+      : isEnemyView ? <><p>{showEnemyRange ? 'Red dots: up to 5 move actions + 1 attack.' : 'Inspect movement and attack reach.'}</p><button aria-pressed={showEnemyRange} onClick={onToggleEnemyRange}>{showEnemyRange ? 'Hide reach' : 'Show reach'}</button></>
       : isPlacePhase && unit.owner === currentPlayer ? <>
         <p>{!next ? 'Maximum tier · terminal' : unit.placedThisTurn ? 'Placed this turn · promote next turn' : unit.promotedThisPlacement ? 'Already upgraded this placement' : next ? `${next.name}: ATK ${next.attack} · DEF ${next.defense} · SPD ${next.speed} · MINE ${next.mining}` : 'Maximum tier'}</p>
         {next && <button onClick={onPromote} disabled={!upgrade}>Promote · ◆ {cost} · rent {upkeepForTier(next.tier)}</button>}

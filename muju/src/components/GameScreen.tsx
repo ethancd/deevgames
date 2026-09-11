@@ -23,7 +23,7 @@ import { getUnitDefinition, UNIT_DEFINITIONS } from '../game/units';
 import { projectedIncome, unitEndOfTurnTake } from '../game/mining';
 import { canPromote } from '../game/promotion';
 import { getAllSpawnPositions, getSpawnInvalidReason } from '../game/spawning';
-import { findPath, getMovementRange, type MovementRangePosition } from '../game/movement';
+import { findPath, getMovementRange, getAttackFrontier, type MovementRangePosition } from '../game/movement';
 import { calculateAttackPower, calculateDefense } from '../game/combat';
 import { PlayDialog } from './PlayDialog';
 import type { Position, GameConfig, PlayerId, Element } from '../game/types';
@@ -178,6 +178,13 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
 
     return getMovementRange(unit.position, speed, totalActions, state.board);
   }, [selectedUnitData, viewedEnemyUnitData, selectedPlaceUnitData, state.turn.currentPlayer, state.turn.phase, state.turn.actionsRemaining, state.board, isCurrentPlayerHuman, showEnemyRange]);
+
+  const attackFrontier = useMemo(() => {
+    const unit = selectedUnitData ?? viewedEnemyUnitData ?? selectedPlaceUnitData;
+    return showEnemyRange && unit && unit.owner !== state.turn.currentPlayer
+      ? getAttackFrontier(unit, state.board, MAX_ACTIONS_PER_TURN - 1)
+      : [];
+  }, [selectedUnitData, viewedEnemyUnitData, selectedPlaceUnitData, showEnemyRange, state.turn.currentPlayer, state.board]);
 
   const latestState = useRef(state); latestState.current = state;
   const getCurrentState = useCallback(() => latestState.current, []);
@@ -696,12 +703,12 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
         <section className="board-stage" aria-label="Battlefield">
           <Board board={state.board} selectedUnit={shownUnit?.id ?? null}
             validMoves={state.validMoves} validAttacks={state.validAttacks} validSpawns={validSpawns}
-            invalidSpawnPosition={spawnFeedback?.position ?? null} pendingMovePath={previewPath} movementRange={movementRange}
+            invalidSpawnPosition={spawnFeedback?.position ?? null} pendingMovePath={previewPath} movementRange={movementRange} attackFrontier={attackFrontier}
             previewPosition={preview?.position} showResources={showResources} actionsRemaining={isEnemyView ? MAX_ACTIONS_PER_TURN : state.turn.actionsRemaining}
             onCellClick={handleCellClick} onUnitClick={handleUnitClick} />
         </section>
         <div className="board-key">
-          <span role="status">{homeNotice || (isEnemyView && showEnemyRange ? 'Enemy reach · current speed, 6 actions' : selectedPurchaseId ? '＋ Safe placement' : '● 1 action · ○ farther · ⊗ attack')}</span>
+          <span role="status">{homeNotice || (isEnemyView && showEnemyRange ? 'Red dots: attack frontier' : selectedPurchaseId ? '＋ Safe placement' : '● 1 action · ○ farther · ⊗ attack')}</span>
           <button className="visual-key-trigger" onClick={() => setShowVisualKey(true)}>Key</button>
           <button aria-pressed={showResources} onClick={() => setShowResources(!showResources)}>◆ Reserves</button>
         </div>

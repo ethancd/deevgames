@@ -1,5 +1,7 @@
 import type { BoardState, Position, Unit } from './types';
 import {
+  BOARD_SIZE,
+  getAdjacentPositions,
   isValidPosition,
   isOccupied,
   manhattanDistance,
@@ -171,6 +173,27 @@ export function getMovementRange(
   return reachable(startPosition, speed * totalActions, board).map(p => ({
     position: p.position, actionsRemaining: totalActions - Math.ceil(p.distance / speed),
   }));
+}
+
+/** Outer edge of a unit's potential attack area after up to five move actions.
+ * Uses the current board and speed, without promotions or clearing blockers.
+ * Empty squares describe potential targets; friendly pieces cannot be targets.
+ * Turn flags are ignored because enemy inspection previews a fresh turn.
+ */
+export function getAttackFrontier(unit: Unit, board: BoardState, moveActions = 5): Position[] {
+  const key = (p: Position) => p.y * BOARD_SIZE + p.x;
+  const origins = [unit.position, ...getMovementRange(
+    unit.position, getUnitDefinition(unit.definitionId).speed, moveActions, board
+  ).map(p => p.position)];
+  const area = new Map<number, Position>([[key(unit.position), unit.position]]);
+  for (const origin of origins) {
+    for (const target of getAdjacentPositions(origin)) area.set(key(target), target);
+  }
+  const friendly = new Set(board.units.filter(u => u.owner === unit.owner).map(u => key(u.position)));
+  return [...area.values()].filter(p => !friendly.has(key(p)) && (
+    p.x === 0 || p.y === 0 || p.x === BOARD_SIZE - 1 || p.y === BOARD_SIZE - 1 ||
+    getAdjacentPositions(p).some(neighbor => !area.has(key(neighbor)))
+  ));
 }
 
 /**
