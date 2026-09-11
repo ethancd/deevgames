@@ -8,9 +8,9 @@ document and the code disagree, that is a bug in one of them: see
 of known divergences. The stat tables in §7 are transcriptions of
 `src/game/units.ts`, which is the canonical stat source.
 
-**Spec version:** v2.3 (2026-09-11) — tier-1 purchases cost 3/4/5 by pair;
+**Spec version:** v2.4 (2026-09-11) — tier-1 purchases cost 3/4/5 by pair;
 all promotions cost 4 to tier 2 and 8 to tier 3. Muju has DEF 3, Tanka DEF 5,
-and C4/C5/H6/H7 hold 4 crystals each (504 total). See
+C4/C5/H6/H7 hold 4 crystals each, and F3/E8 hold 0 (496 total). See
 `docs/BALANCE-2026-09-11.md` for rationale and compatibility.
 
 History: v1.0 (original design), v1.1 (historical playtest balance pass),
@@ -21,6 +21,7 @@ v2.0 (2026-09-09, passive mining and 4/8/10 reserves), v2.1 (2026-09-09,
 public tier-1 purchase and promotion climb). The v2.0/v2.1 changes are
 implemented together; v2.0 is not a separately deployed release. v2.2 (2026-09-10) doubles
 purchase and promotion prices. v2.3 revises prices, two defenses and four reserves.
+v2.4 (2026-09-11) clears F3/E8 to make both empty approaches 3×3 squares.
 
 ---
 
@@ -38,9 +39,9 @@ may be a human or an AI (`vs-ai`, `pass-play`, and `ai-vs-ai` modes).
   - White: Hi (fire_1) at (1,0), Sjor (water_1) at (1,1), Muju (plant_1) at (0,1).
   - Black: Hi at (8,9), Sjor at (8,8), Muju at (9,8).
 - **Resources:** **Unequal routes (map D, passive revision)**: the fixed
-  180°-rotational layout with C4/C5/H6/H7 reduced to 4. Cells hold
-  0/4/8/10 crystals, with **504 total** in new games.
-  Sixteen blank approaches remain walkable and spawn-eligible. Ordinary ground
+  180°-rotational layout with C4/C5/H6/H7 reduced to 4 and F3/E8 to 0. Cells hold
+  0/4/8/10 crystals, with **496 total** in new games.
+  Eighteen blank squares form D1–F3 and E8–G10; they remain walkable and spawn-eligible. Ordinary ground
   holds 4, shelves 8, rich wells and homes 10. Exact layout:
   `src/game/resourceMap.ts`. Save schema 5 discards older unfinished games
   through the existing version-mismatch path; they start fresh. Existing schema-5
@@ -315,7 +316,7 @@ counter, pending upkeep choice and settled income are public. The upkeep
 subtotal (`resourcesUpkeep`) is telemetry, not an additional charge.
 
 There is no hidden production or hidden spending ledger. In a new v2.3 game,
-`board reserves + White gained + Black gained = 504`; spending changes banks
+`board reserves + White gained + Black gained = 496`; spending changes banks
 but never cumulative income. The AI receives the real state and searches it
 with ordinary MCTS. The former observation, belief, particle-filter and
 re-determinization rules in `AI_ENGINE_QUESTIONS.md` Q1–Q3 are superseded.

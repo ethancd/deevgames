@@ -6,12 +6,13 @@ import {saveGameState,loadGameState,SCHEMA_VERSION} from '../../src/utils/persis
 import {checkInvariants} from '../../lab/harness/invariants';
 import {endTurn} from '../../src/game/turn';
 describe('Unequal routes passive reserves',()=>{
- it('changes only C4/C5/H6/H7 and preserves rotation, with 504 total',()=>{
+ it('changes only the four shelves and F3/E8, preserving rotation with 496 total',()=>{
   const expected=MAPS.find(m=>m.id==='D')!.cells.map(n=>({2:0,3:4,4:8,5:10}[n]!));
   for(const index of [32,42,57,67])expected[index]=4;
+  for(const index of [25,74])expected[index]=0;
   expect(UNEQUAL_ROUTES_MAP).toEqual(expected);
-  expect([...UNEQUAL_ROUTES_MAP].reverse()).toEqual(UNEQUAL_ROUTES_MAP);expect(INITIAL_MAP_RESOURCES).toBe(504);
-  expect([0,4,8,10].map(n=>UNEQUAL_ROUTES_MAP.filter(x=>x===n).length)).toEqual([16,52,12,20]);
+  expect([...UNEQUAL_ROUTES_MAP].reverse()).toEqual(UNEQUAL_ROUTES_MAP);expect(INITIAL_MAP_RESOURCES).toBe(496);
+  expect([0,4,8,10].map(n=>UNEQUAL_ROUTES_MAP.filter(x=>x===n).length)).toEqual([18,50,12,20]);
   checkInvariants(createInitialGameState(),'initial');
  });
  it('round-trips reserves, public banks, turn flags and the income recap',()=>{
