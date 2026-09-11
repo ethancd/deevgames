@@ -51,11 +51,11 @@ test('Tier II keeps Cleave through reload, pays for its second attack, then stop
   await expect(page.getByRole('button',{name:'Confirm attack'})).toHaveCount(0);
 });
 test('a surviving target closes even a Tier III chain',async({page})=>{
-  const s=arena(3);s.board.units[1].definitionId='metal_3';
+  const s=arena(3);s.board.units[1].definitionId='water_3';
   await start(page,s);await attack(page,5,4);
   await page.getByTestId('cell-5-5').click();
   await expect(page.locator('.cleave-status')).toHaveText('Attacks 1/3 · Attacks finished');
-  await expect(page.getByTestId('cell-5-4')).toHaveAttribute('aria-label',/black Tanka/);
+  await expect(page.getByTestId('cell-5-4')).toHaveAttribute('aria-label',/black Aegirinn/);
   await page.getByTestId('cell-6-5').click();
   await expect(page.getByRole('button',{name:'Confirm attack'})).toHaveCount(0);
 });

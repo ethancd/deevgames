@@ -29,7 +29,7 @@ describe('passive income',()=>{
   expect(income.state.board.cells[1][1].resourceLayers).toBe(10);
   expect(income.state.board.cells[1][2].resourceLayers).toBe(2);
   expect(income.state.players.black.resources).toBe(0);
-  expect(getTotalBoardResources(income.state.board)+income.total).toBe(520);
+  expect(getTotalBoardResources(income.state.board)+income.total).toBe(504);
  });
  it('never permits or generates an active mine operation',()=>{
   const state=createInitialGameState();

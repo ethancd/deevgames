@@ -13,7 +13,7 @@ vi.mock('../../src/ai/worker/client',()=>({AIWorkerClient:class {
 import { useAI } from '../../src/hooks/useAI';
 beforeEach(()=>{choose.mockReset();timeSpent.mockReset();timeSpent.mockReturnValue(0);});
 it('executes more than 20 legal dispatches and keeps reducer state synchronized',async()=>{
- let real=createInitialGameState();real.turn.phase='place';real.board.units[1].position={x:7,y:7};real.players.white.resources=60;real.players.white.resourcesGained=60;
+ let real=createInitialGameState();real.turn.phase='place';real.board.units[1].position={x:7,y:7};real.players.white.resources=90;real.players.white.resourcesGained=90;
  const seen:AIAction[]=[];
  choose.mockImplementation((s:GameState)=>{expect(s).toEqual(real);return s.turn.phase==='place'?[{type:'BUY_UNIT',definitionId:'fire_1',position:getAllSpawnPositions('white',s.board)[0]}]:[{type:'END_ACTION_PHASE'}];});
  const {result,unmount}=renderHook(()=>useAI({thinkingDelay:0}));

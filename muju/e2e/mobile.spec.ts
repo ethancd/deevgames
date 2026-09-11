@@ -30,7 +30,7 @@ async function fits(page:Page) {
 for(const [width,height] of [[320,568],[375,667],[390,664],[390,844],[430,932],[834,1112],[844,390],[1024,768],[1180,820],[1280,900],[1366,1024]])test(`two phases fit ${width}×${height}`,async({page},info)=>{
  await page.setViewportSize({width,height});const s=createInitialGameState();s.turn.phase='place';s.players.white.resources=20;s.players.white.resourcesGained=20;await start(page,s);
  await expect(page.locator('.phase-steps span')).toHaveCount(2);await fits(page);
- await page.getByRole('button',{name:'Buy Hi · 2 crystals',exact:true}).click();await page.getByTestId('cell-0-0').click();await page.getByTestId('cell-0-0').click();
+ await page.getByRole('button',{name:'Buy Hi · 3 crystals',exact:true}).click();await page.getByTestId('cell-0-0').click();await page.getByTestId('cell-0-0').click();
  await expect(page.locator('.unit-detail')).toContainText('Placed this turn');await expect(page.getByRole('button',{name:/Promote ·/})).toBeDisabled();await fits(page);await page.screenshot({path:info.outputPath('place.png')});
  await page.getByRole('button',{name:'Start actions →'}).click();await page.getByTestId('cell-1-1').click();await fits(page);
  await page.getByTestId('cell-3-1').click();await expect(page.locator('.action-preview')).toContainText('Takes 0 here at turn end');await fits(page);await page.screenshot({path:info.outputPath('move-preview.png')});
@@ -62,7 +62,7 @@ test('passive reserves, public banks, live projection, recap and irreversible in
 });
 test('buy now, refuse promotion now, allow it next turn; haste and save persistence',async({page})=>{
  const s=createInitialGameState();s.turn.phase='place';s.players.white.resources=s.players.white.resourcesGained=10;await start(page,s);
- await page.getByRole('button',{name:'Buy Hi · 2 crystals',exact:true}).click();await page.getByTestId('cell-0-0').click();await page.getByTestId('cell-0-0').click();
+ await page.getByRole('button',{name:'Buy Hi · 3 crystals',exact:true}).click();await page.getByTestId('cell-0-0').click();await page.getByTestId('cell-0-0').click();
  await expect(page.getByRole('button',{name:/Promote ·/})).toBeDisabled();await page.getByRole('button',{name:'Start actions →'}).click();
  await page.getByRole('button',{name:'End turn →'}).click();await page.getByText('Tap anywhere to continue').click();await page.getByRole('button',{name:'End turn →'}).click();await page.getByText('Tap anywhere to continue').click();
  await page.getByTestId('cell-0-0').click();await expect(page.getByRole('button',{name:'Promote · ◆ 4 · rent 1',exact:true})).toBeEnabled();await page.getByRole('button',{name:'Promote · ◆ 4 · rent 1',exact:true}).click();await expect(page.getByTestId('cell-0-0')).toHaveAttribute('aria-label',/Hono/);
@@ -71,7 +71,7 @@ test('buy now, refuse promotion now, allow it next turn; haste and save persiste
 test('tutorial explains the same reserves, phase order, buying and promotion restrictions',async({page})=>{
  await start(page);await page.getByRole('button',{name:'How to play',exact:true}).click();const dialog=page.getByRole('dialog');
  const texts:string[]=[];for(let i=0;i<12;i++){texts.push(await dialog.innerText());if(i<11)await dialog.getByRole('button',{name:'Next →'}).click();}
- const text=texts.join('\n');expect(text).toContain('520 crystals');expect(text).toContain('0 / 4 / 8 / 10');expect(text).toContain('cannot promote this turn');expect(text).toContain('Both banks');expect(text).toContain('Hi (2)');expect(text).toContain('Muju (6)');expect(text).toContain('Buy Hi for 2; on a later turn promote to Hono for 4; on another turn promote to Kagari for 6.');expect(text).not.toMatch(/rope|Queue phase|hidden production|build time/i);
+ const text=texts.join('\n');expect(text).toContain('504 crystals');expect(text).toContain('0 / 4 / 8 / 10');expect(text).toContain('cannot promote this turn');expect(text).toContain('Both banks');expect(text).toContain('Hi (3)');expect(text).toContain('Muju (5)');expect(text).toContain('Buy Hi for 3; on a later turn promote to Hono for 4; on another turn promote to Kagari for 8.');expect(text).not.toMatch(/rope|Queue phase|hidden production|build time/i);
 });
 test('attack previews and cancellation preserve combat and undo',async({page})=>{
  const s=createInitialGameState();s.board.units.push(createUnit('plant_1','black',{x:2,y:0}));await start(page,s);

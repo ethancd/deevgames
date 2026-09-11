@@ -55,7 +55,7 @@ const pages = [
     <p>An invader on your home corner blocks every rectangle. Clear it during Act to restore buying on a later turn. Pieces bought in Place can move and attack immediately.</p>
   </>},
   {title:'Promotion climb', content:<>
-    <p>Tier 2 and tier 3 come only from promoting a tier-1 piece on the board. During Place, promote to the next tier of the same element, paying the cost difference.</p>
+    <p>Tier 2 and tier 3 come only from promoting a tier-1 piece on the board. During Place, promote to the next tier of the same element: 4 crystals to tier 2, then 8 crystals to tier 3.</p>
     <p>Each piece can promote at most once per turn. A piece bought this turn cannot promote this turn. Tier 3 is terminal. Other pieces of the same element are not required.</p>
     <p>Buy {hi.name} for {hi.cost}; on a later turn promote to {hono.name} for {hono.cost-hi.cost}; on another turn promote to {kagari.name} for {kagari.cost-hono.cost}. Promoted pieces act immediately and use their new Mining stat at turn end.</p>
   </>},

@@ -53,7 +53,7 @@ describe('lab harness', () => {
     const totals = { white: 0, black: 0 };
     for (const sample of record.incomeCurve) {
       totals[sample.player] += sample.income;
-      expect(sample.remaining + totals.white + totals.black).toBe(520);
+      expect(sample.remaining + totals.white + totals.black).toBe(504);
       expect(Object.values(sample.byTier).reduce((a, b) => a + b, 0)).toBe(sample.income);
       expect(Object.values(sample.byElement).reduce((a, b) => a + b, 0)).toBe(sample.income);
       expect(sample.bank).toBeGreaterThanOrEqual(0);

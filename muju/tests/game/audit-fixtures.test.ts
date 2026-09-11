@@ -80,7 +80,7 @@ describe('audit fixtures: mixed-element combined attacks', () => {
 
   it('forbids the same attacker hitting the same target twice in one turn', () => {
     const attacker = placed('fire_2', 'white', 3, 3);
-    const defender = placed('metal_3', 'black', 3, 4); // DEF 6, survives one hit
+    const defender = placed('metal_3', 'black', 3, 4); // DEF 5, survives one hit
     let board = boardWith(attacker, defender);
 
     const first = resolveCombat(board, attacker.id, defender.position);
@@ -92,22 +92,22 @@ describe('audit fixtures: mixed-element combined attacks', () => {
     expect(targets).toHaveLength(0); // same enemy not attackable again
   });
 
-  it('within-turn damage accumulates across different attackers (M1+M2 kill P2)', () => {
+  it('within-turn damage accumulates across different attackers (M1+M2 kill P1)', () => {
     // v1.1 spec section 6.1 regression: metal_1 (ATK 1+1 adv vs plant... wait,
     // metal attacks plant: same pair (plant-metal) -> neutral. ATK 1.
-    // Use the spec's exact scenario: M1 then M2 vs plant_1 (DEF 2).
+    // Use the spec's exact scenario: M1 then M2 vs plant_1 (DEF 3).
     const m1 = placed('metal_1', 'white', 4, 5); // ATK 1, neutral vs plant
     const m2 = placed('metal_2', 'white', 6, 5); // ATK 2, neutral vs plant
-    const p1 = placed('plant_1', 'black', 5, 5); // DEF 2
+    const p1 = placed('plant_1', 'black', 5, 5); // DEF 3
     let board = boardWith(m1, m2, p1);
 
     const first = resolveCombat(board, m1.id, p1.position);
-    expect(first.eliminated).toBe(false); // 1 < 2
+    expect(first.eliminated).toBe(false); // 1 < 3
     board = first.board;
     expect(board.units.find((u) => u.id === p1.id)!.damageTaken).toBe(1);
 
     const second = resolveCombat(board, m2.id, p1.position);
-    expect(second.eliminated).toBe(true); // 2 >= effective DEF 1
+    expect(second.eliminated).toBe(true); // 2 >= effective DEF 2
   });
 });
 
@@ -176,10 +176,10 @@ describe('audit fixtures: promotion timing rules', () => {
 
   it('promotion cost is the cost difference to the next tier', () => {
     for (const [defId, expected] of [
-      ['fire_1', 4], // 6 - 2
-      ['fire_2', 6], // 12 - 6
-      ['water_2', 12], // 20 - 8
-      ['plant_2', 12], // 24 - 12
+      ['fire_1', 4], // 7 - 3
+      ['fire_2', 8], // 15 - 7
+      ['water_2', 8], // 16 - 8
+      ['plant_2', 8], // 17 - 9
     ] as const) {
       const unit = placed(defId, 'white', 0, 0);
       expect(getPromotionCost(unit), defId).toBe(expected);

@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { UNIT_DEFINITIONS } from '../../src/game/units';
 import {
   canAttack,
   getValidAttacks,
@@ -166,7 +167,7 @@ describe('Combat Module', () => {
 
     it('returns high defense for metal units', () => {
       const defender = createUnit('metal_3', 'black', { x: 0, y: 0 }); // Defense: 6
-      expect(calculateDefense(defender)).toBe(6);
+      expect(calculateDefense(defender)).toBe(5);
     });
   });
 
@@ -354,7 +355,7 @@ describe('Combat Module', () => {
       expect(result.eliminated).toBe(false);
     });
 
-    it('Muju (Plant, 1 atk) cannot kill Inyan (Metal, 3 def)', () => {
+    it('Muju (Plant, 0 atk) cannot kill Inyan (Metal, 3 def)', () => {
       let board = createEmptyBoard();
       const attacker = createUnit('plant_1', 'white', { x: 0, y: 0 });
       const defender = createUnit('metal_1', 'black', { x: 0, y: 1 });
@@ -485,5 +486,34 @@ describe('Combat Module', () => {
       const totalAttack = firePower + waterPower + lightningPower;
       expect(totalAttack).toBe(6);
     });
+  });
+});
+
+
+describe('v2.3 counterplay thresholds', () => {
+  it.each([['lightning_1', false], ['fire_1', true]] as const)('%s versus a full-health Muju: lethal=%s', (definitionId, lethal) => {
+    const attacker = createUnit(definitionId, 'white', {x: 0, y: 0});
+    const defender = createUnit('plant_1', 'black', {x: 0, y: 1});
+    const board = addUnit(addUnit(createEmptyBoard(), attacker), defender);
+    const result = resolveCombat(board, attacker.id, defender.position);
+    expect(result.eliminated).toBe(lethal);
+    if (!lethal) expect(result.board.units.find(u => u.id === defender.id)?.damageTaken).toBe(2);
+  });
+  it('Kagari alone among all 18 units one-shots a full-health Tanka', () => {
+    const defender = createUnit('metal_3', 'black', {x: 0, y: 1});
+    const killers = UNIT_DEFINITIONS.filter(d => {
+      const attacker = createUnit(d.id, 'white', {x: 0, y: 0});
+      return resolveCombat(addUnit(addUnit(createEmptyBoard(), attacker), defender), attacker.id, defender.position).eliminated;
+    }).map(d => d.id);
+    expect(killers).toEqual(['fire_3']);
+  });
+  it('Hi followed by Radi can finish Tanka during one exposure window', () => {
+    const hi = createUnit('fire_1', 'white', {x: 0, y: 0});
+    const radi = createUnit('lightning_1', 'white', {x: 1, y: 1});
+    const tanka = createUnit('metal_3', 'black', {x: 0, y: 1});
+    const board = [hi, radi, tanka].reduce((b,u) => addUnit(b,u), createEmptyBoard());
+    const first = resolveCombat(board, hi.id, tanka.position);
+    expect(first.eliminated).toBe(false);
+    expect(resolveCombat(first.board, radi.id, tanka.position).eliminated).toBe(true);
   });
 });

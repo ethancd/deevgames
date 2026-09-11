@@ -38,7 +38,7 @@ describe('Cleave', () => {
   it('actually places a Tier I and prevents it sweeping three adjacent enemies',()=>{
     let s=createInitialGameState();s.turn.phase='place';
     s.board.units=[createUnit('plant_1','white',{x:4,y:4}),...[[5,4],[6,5],[5,6]].map(([x,y])=>createUnit('fire_1','black',{x,y}))];
-    s.players.white.resources=2;s.players.white.resourcesGained=2;
+    s.players.white.resources=3;s.players.white.resourcesGained=3;
     const place={type:'BUY_UNIT' as const,definitionId:'fire_1',position:{x:4,y:3}};
     expect(isLegalAction(s,place)).toBe(true);s=applyAction(s,place);
     // Move the placed unit to a square beside all three enemies.
@@ -52,7 +52,7 @@ describe('Cleave', () => {
   });
   it('a nonlethal second hit closes a Tier III chain, even if another unit finishes that target',()=>{
     let {s,attacker}=arena(3);const first=s.board.units[1], tough=s.board.units[2], third=s.board.units[3];
-    tough.definitionId='metal_3';const helper=createUnit('fire_2','white',{x:6,y:4});s.board.units.push(helper);
+    tough.definitionId='water_3';const helper=createUnit('fire_2','white',{x:6,y:4});s.board.units.push(helper);
     s=attack(s,attacker,first);s=attack(s,attacker,tough);
     expect(current(s,attacker).lastAttackKilled).toBe(false);
     expect(attack(s,attacker,tough)).toBe(s);expect(attack(s,attacker,third)).toBe(s);

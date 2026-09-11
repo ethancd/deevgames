@@ -1,7 +1,7 @@
 import type { UnitDefinition, Element } from './types';
 
-// All 18 unit definitions — v2.2 (2026-09-10): double catalogue and promotion costs.
-// Combat/movement/mining stats unchanged. See docs/DOUBLE_COSTS-2026-09-10.md.
+// All 18 unit definitions — v2.3: 3/4/5 purchases and universal 4/8 promotions.
+// See docs/BALANCE-2026-09-11.md for the approved stats and map adjustments.
 export const UNIT_DEFINITIONS: UnitDefinition[] = [
   // Fire (Rush) - Japanese
   {
@@ -14,7 +14,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     defense: 1,
     speed: 2,
     mining: 1,
-    cost: 2,
+    cost: 3,
   },
   {
     id: 'fire_2',
@@ -26,7 +26,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     defense: 1,
     speed: 2,
     mining: 1,
-    cost: 6,
+    cost: 7,
   },
   {
     id: 'fire_3',
@@ -38,7 +38,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     defense: 2,
     speed: 3,
     mining: 1,
-    cost: 12,
+    cost: 15,
   },
 
   // Lightning (Rush) - Swahili
@@ -52,7 +52,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     defense: 1,
     speed: 3,
     mining: 0,
-    cost: 2,
+    cost: 3,
   },
   {
     id: 'lightning_2',
@@ -64,7 +64,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     defense: 1,
     speed: 4,
     mining: 0,
-    cost: 6,
+    cost: 7,
   },
   {
     id: 'lightning_3',
@@ -76,7 +76,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     defense: 1,
     speed: 5,
     mining: 0,
-    cost: 12,
+    cost: 15,
   },
 
   // Water (Balanced) - Norse
@@ -114,7 +114,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     defense: 4,
     speed: 2,
     mining: 3,
-    cost: 20,
+    cost: 16,
   },
 
   // Shadow (Balanced) - Turkish/Slavic (formerly Wind)
@@ -152,7 +152,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     defense: 2,
     speed: 3,
     mining: 2,
-    cost: 20,
+    cost: 16,
   },
 
   // Plant (Expand) - Quechua/Nahuatl
@@ -163,10 +163,10 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     tier: 1,
     archetype: 'expand',
     attack: 0,
-    defense: 2,
+    defense: 3,
     speed: 1,
     mining: 3,
-    cost: 6,
+    cost: 5,
   },
   {
     id: 'plant_2',
@@ -178,7 +178,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     defense: 3,
     speed: 1,
     mining: 4,
-    cost: 12,
+    cost: 9,
   },
   {
     id: 'plant_3',
@@ -190,7 +190,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     defense: 4,
     speed: 1,
     mining: 5,
-    cost: 24,
+    cost: 17,
   },
 
   // Metal (Expand) - Lakota
@@ -204,7 +204,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     defense: 3,
     speed: 1,
     mining: 2,
-    cost: 6,
+    cost: 5,
   },
   {
     id: 'metal_2',
@@ -216,7 +216,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     defense: 4,
     speed: 1,
     mining: 3,
-    cost: 12,
+    cost: 9,
   },
   {
     id: 'metal_3',
@@ -225,10 +225,10 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     tier: 3,
     archetype: 'expand',
     attack: 2,
-    defense: 6,
+    defense: 5,
     speed: 2,
     mining: 4,
-    cost: 24,
+    cost: 17,
   },
 ];
 

@@ -37,14 +37,14 @@ describe('Promotion System', () => {
       expect(getPromotionCost(unit)).toBe(4);
     });
 
-    it('Fire T2 → T3 costs 6 crystals', () => {
+    it('Fire T2 → T3 costs 8 crystals', () => {
       const unit = createUnit('p1', 'white', { x: 0, y: 0 }, 'fire_2');
-      expect(getPromotionCost(unit)).toBe(6);
+      expect(getPromotionCost(unit)).toBe(8);
     });
 
-    it('Plant T2 → T3 costs 12 crystals', () => {
+    it('Plant T2 → T3 costs 8 crystals', () => {
       const unit = createUnit('p1', 'white', { x: 0, y: 0 }, 'plant_2');
-      expect(getPromotionCost(unit)).toBe(12);
+      expect(getPromotionCost(unit)).toBe(8);
     });
 
     it('T3 cannot be promoted (returns null)', () => {
@@ -171,7 +171,7 @@ describe('Promotion System', () => {
       let board = createEmptyBoard();
       const unit = createUnit('p1', 'white', { x: 3, y: 4 }, 'fire_2');
       board = placeUnit(board, unit);
-      const buildState: BuildState = { crystals: 6 }; // fire_2→fire_3 costs 6
+      const buildState: BuildState = { crystals: 8 }; // fire_2→fire_3 costs 8
 
       const result = promoteUnit(board, 'p1', buildState);
 
@@ -233,10 +233,10 @@ describe('Promotion System', () => {
     it('returns units that can be promoted', () => {
       let board = createEmptyBoard();
       const unit1 = createUnit('p1', 'white', { x: 1, y: 1 }, 'fire_1'); // costs 4
-      const unit2 = createUnit('p2', 'white', { x: 2, y: 2 }, 'fire_2'); // costs 6
+      const unit2 = createUnit('p2', 'white', { x: 2, y: 2 }, 'fire_2'); // costs 8
       board = placeUnit(board, unit1);
       board = placeUnit(board, unit2);
-      const buildState: BuildState = { crystals: 6 };
+      const buildState: BuildState = { crystals: 8 };
 
       const promotable = getPromotableUnits(board, 'white', buildState);
 
@@ -245,8 +245,8 @@ describe('Promotion System', () => {
 
     it('excludes units player cannot afford to promote', () => {
       let board = createEmptyBoard();
-      const unit1 = createUnit('p1', 'white', { x: 1, y: 1 }, 'fire_1'); // needs 4 (6-2)
-      const unit2 = createUnit('p2', 'white', { x: 2, y: 2 }, 'fire_2'); // needs 6 (12-6)
+      const unit1 = createUnit('p1', 'white', { x: 1, y: 1 }, 'fire_1'); // needs 4 (7-3)
+      const unit2 = createUnit('p2', 'white', { x: 2, y: 2 }, 'fire_2'); // needs 8 (15-7)
       board = placeUnit(board, unit1);
       board = placeUnit(board, unit2);
       const buildState: BuildState = { crystals: 4 };

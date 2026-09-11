@@ -99,15 +99,15 @@ describe('Unit Definitions', () => {
 
   describe('getPromotionCost', () => {
     it('calculates correct cost for Hi → Hono', () => {
-      // Hi costs 2, Hono costs 6, so promotion is 4
+      // Hi costs 3, Hono costs 7, so promotion is 4
       const cost = getPromotionCost('fire_1');
       expect(cost).toBe(4);
     });
 
     it('calculates correct cost for Muju → Sachita', () => {
-      // Muju costs 6, Sachita costs 12, so promotion is 6
+      // Muju costs 5, Sachita costs 9, so promotion is 4
       const cost = getPromotionCost('plant_1');
-      expect(cost).toBe(6);
+      expect(cost).toBe(4);
     });
 
     it('returns 0 for tier 3 units', () => {
@@ -161,7 +161,7 @@ describe('Unit Definitions', () => {
 
     it('metal units have highest defense', () => {
       const metal3 = getUnitDefinition('metal_3');
-      expect(metal3.defense).toBe(6); // Highest in game
+      expect(metal3.defense).toBe(5); // Highest in game
     });
   });
 });

@@ -1,3 +1,4 @@
+import { INITIAL_MAP_RESOURCES } from '../game/resourceMap';
 import { INACTIVITY_LIMIT, INACTIVITY_WARNING } from '../game/inactivity';
 import { UpkeepPanel } from './UpkeepPanel';
 import { upkeepDue } from '../game/upkeep';
@@ -742,7 +743,7 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
       </footer>
       {showVisualKey && <PlayDialog title="Read the board" onClose={() => setShowVisualKey(false)}><VisualKey /></PlayDialog>}
       {showMenu && <PlayDialog title="Game menu" onClose={() => setShowMenu(false)}>
-        <p>{online ? 'This match is saved on the server. Keep this browser’s seat credential to reconnect. Shared moves are final.' : 'Your match is saved at phase changes on this device. Games use Unequal routes with 520 crystals. Saves from earlier rules start fresh.'}</p>
+        <p>{online ? 'This match is saved on the server. Keep this browser’s seat credential to reconnect. Shared moves are final.' : `Your match is saved at phase changes on this device. New games use Unequal routes with ${INITIAL_MAP_RESOURCES} crystals.`}</p>
         {isCurrentPlayerHuman && <label><input type="checkbox" checked={!!state.reviewUpkeep?.[state.turn.currentPlayer]} onChange={e=>setUpkeepReview(state.turn.currentPlayer,e.target.checked)} /> Review upkeep each turn (allows T2/T3 release)</label>}
         <button onClick={() => { setShowMenu(false); handleBackToMenuClick(); }}>Choose game mode</button>
         {!online && <button onClick={() => { if (window.confirm('Start a new game? This replaces your saved match.')) { handlePlayAgain(); setShowMenu(false); } }}>New game</button>}

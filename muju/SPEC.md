@@ -8,10 +8,10 @@ document and the code disagree, that is a bug in one of them: see
 of known divergences. The stat tables in §7 are transcriptions of
 `src/game/units.ts`, which is the canonical stat source.
 
-**Spec version:** v2.2 (2026-09-10) — every catalogue cost is twice v2.1,
-so tier-1 purchases and all promotion steps cost twice as much. Passive mining,
-reserves, upkeep, starting units, action budget and other rules are unchanged.
-See `docs/DOUBLE_COSTS-2026-09-10.md` for the opening-pacing rationale.
+**Spec version:** v2.3 (2026-09-11) — tier-1 purchases cost 3/4/5 by pair;
+all promotions cost 4 to tier 2 and 8 to tier 3. Muju has DEF 3, Tanka DEF 5,
+and C4/C5/H6/H7 hold 4 crystals each (504 total). See
+`docs/BALANCE-2026-09-11.md` for rationale and compatibility.
 
 History: v1.0 (original design), v1.1 (historical playtest balance pass),
 v1.2 (canonical rewrite), v1.3 (role balance), v1.4 (Cleave), v1.5 (tier-3 cap),
@@ -20,7 +20,7 @@ v1.8 (mandatory T1 upkeep retention), v1.9 (ten-turn draw at turn end),
 v2.0 (2026-09-09, passive mining and 4/8/10 reserves), v2.1 (2026-09-09,
 public tier-1 purchase and promotion climb). The v2.0/v2.1 changes are
 implemented together; v2.0 is not a separately deployed release. v2.2 (2026-09-10) doubles
-purchase and promotion prices.
+purchase and promotion prices. v2.3 revises prices, two defenses and four reserves.
 
 ---
 
@@ -37,12 +37,14 @@ may be a human or an AI (`vs-ai`, `pass-play`, and `ai-vs-ai` modes).
   starts with 3 units adjacent to their corner and 0 resources.
   - White: Hi (fire_1) at (1,0), Sjor (water_1) at (1,1), Muju (plant_1) at (0,1).
   - Black: Hi at (8,9), Sjor at (8,8), Muju at (9,8).
-- **Resources:** **Unequal routes (map D, passive revision)**: the same fixed
-  180°-rotational layout, with 0/4/8/10 crystals per cell and **520 total**.
+- **Resources:** **Unequal routes (map D, passive revision)**: the fixed
+  180°-rotational layout with C4/C5/H6/H7 reduced to 4. Cells hold
+  0/4/8/10 crystals, with **504 total** in new games.
   Sixteen blank approaches remain walkable and spawn-eligible. Ordinary ground
   holds 4, shelves 8, rich wells and homes 10. Exact layout:
   `src/game/resourceMap.ts`. Save schema 5 discards older unfinished games
-  through the existing version-mismatch path; they start fresh.
+  through the existing version-mismatch path; they start fresh. Existing schema-5
+  games retain their stored map reserves and capacities.
 - **White moves first.** The first turn begins directly in the Action phase
   (there is nothing to place or promote at game start).
 
@@ -155,7 +157,8 @@ This applies unconditionally to moved, attacked, placed and promoted units; Mini
 
 ### 5.4 Promotion
 - During the place phase, pay `cost(next tier) − cost(current tier)` to
-  upgrade a unit to the next tier of its element, in place.
+  upgrade a unit to the next tier of its element, in place. This is always
+  4 crystals for T1 → T2 and 8 crystals for T2 → T3.
 - Restrictions: cannot skip tiers; T3 cannot promote; a unit may be promoted
   **at most once per turn**, and **not on a turn it was placed**.
   It must have been on the board at the start of Place. A purchased tier-1
@@ -223,53 +226,53 @@ new stats.
 
 Eighteen units, three per element. Stat columns: ATK / DEF / SPD / MINE / Cost.
 
-The catalogue retains v1.9 combat, movement and mining stats with build times
-removed; v2.2 doubles every catalogue cost. Tier 3 is terminal.
+The catalogue has no build times. Tier-1 costs are 3/4/5 by pair, with
+universal 4/8 promotion steps; Muju has DEF 3 and Tanka DEF 5. Tier 3 is terminal.
 The historical tier-4 cut and its measured tradeoffs are recorded in
 `docs/TIER3_CAP-2026-09-08.md`; those well-economy measurements are not current
-balance evidence. Tanka retains Speed 2, Mining 4 and DEF 6.
+balance evidence. Tanka has Speed 2, Mining 4 and DEF 5.
 
 ### Fire (Rush — ATK specialist) — Japanese
 | Tier | Name | ATK | DEF | SPD | MINE | Cost |
 |---|---|---|---|---|---|---|
-| 1 | Hi | 2 | 1 | 2 | 1 | 2 |
-| 2 | Hono | 3 | 1 | 2 | 1 | 6 |
-| 3 | Kagari | 4 | 2 | 3 | 1 | 12 |
+| 1 | Hi | 2 | 1 | 2 | 1 | 3 |
+| 2 | Hono | 3 | 1 | 2 | 1 | 7 |
+| 3 | Kagari | 4 | 2 | 3 | 1 | 15 |
 
 ### Lightning (Rush — SPD specialist) — Swahili
 | Tier | Name | ATK | DEF | SPD | MINE | Cost |
 |---|---|---|---|---|---|---|
-| 1 | Radi | 1 | 1 | 3 | 0 | 2 |
-| 2 | Umeme | 2 | 1 | 4 | 0 | 6 |
-| 3 | Kimubunga | 3 | 1 | 5 | 0 | 12 |
+| 1 | Radi | 1 | 1 | 3 | 0 | 3 |
+| 2 | Umeme | 2 | 1 | 4 | 0 | 7 |
+| 3 | Kimubunga | 3 | 1 | 5 | 0 | 15 |
 
 ### Water (Balanced — DEF-leaning) — Norse
 | Tier | Name | ATK | DEF | SPD | MINE | Cost |
 |---|---|---|---|---|---|---|
 | 1 | Sjor | 2 | 2 | 1 | 2 | 4 |
 | 2 | Straumr | 2 | 3 | 1 | 2 | 8 |
-| 3 | Aegirinn | 3 | 4 | 2 | 3 | 20 |
+| 3 | Aegirinn | 3 | 4 | 2 | 3 | 16 |
 
 ### Shadow (Balanced — ATK/SPD-leaning) — Turkish/Slavic
 | Tier | Name | ATK | DEF | SPD | MINE | Cost |
 |---|---|---|---|---|---|---|
 | 1 | Göl | 2 | 2 | 2 | 0 | 4 |
 | 2 | Gölge | 3 | 2 | 2 | 1 | 8 |
-| 3 | Karanlık | 4 | 2 | 3 | 2 | 20 |
+| 3 | Karanlık | 4 | 2 | 3 | 2 | 16 |
 
 ### Plant (Expand — MINE specialist) — Quechua/Nahuatl
 | Tier | Name | ATK | DEF | SPD | MINE | Cost |
 |---|---|---|---|---|---|---|
-| 1 | Muju | 0 | 2 | 1 | 3 | 6 |
-| 2 | Sachita | 1 | 3 | 1 | 4 | 12 |
-| 3 | Sachakuna | 2 | 4 | 1 | 5 | 24 |
+| 1 | Muju | 0 | 3 | 1 | 3 | 5 |
+| 2 | Sachita | 1 | 3 | 1 | 4 | 9 |
+| 3 | Sachakuna | 2 | 4 | 1 | 5 | 17 |
 
 ### Metal (Expand — DEF specialist) — Lakota
 | Tier | Name | ATK | DEF | SPD | MINE | Cost |
 |---|---|---|---|---|---|---|
-| 1 | Inyan | 1 | 3 | 1 | 2 | 6 |
-| 2 | Mazask | 2 | 4 | 1 | 3 | 12 |
-| 3 | Tanka | 2 | 6 | 2 | 4 | 24 |
+| 1 | Inyan | 1 | 3 | 1 | 2 | 5 |
+| 2 | Mazask | 2 | 4 | 1 | 3 | 9 |
+| 3 | Tanka | 2 | 5 | 2 | 4 | 17 |
 
 The Metal ladder is **Inyan → Mazask → Tanka**. The title names a tier-1, tier-2,
 and tier-3 unit: Muju / Hono / Tanka.
@@ -284,8 +287,8 @@ income (`resourcesGained`). Purchases, promotions, upkeep, the inactivity
 counter, pending upkeep choice and settled income are public. The upkeep
 subtotal (`resourcesUpkeep`) is telemetry, not an additional charge.
 
-There is no hidden production or hidden spending ledger. In an ordinary game,
-`board reserves + White gained + Black gained = 520`; spending changes banks
+There is no hidden production or hidden spending ledger. In a new v2.3 game,
+`board reserves + White gained + Black gained = 504`; spending changes banks
 but never cumulative income. The AI receives the real state and searches it
 with ordinary MCTS. The former observation, belief, particle-filter and
 re-determinization rules in `AI_ENGINE_QUESTIONS.md` Q1–Q3 are superseded.
