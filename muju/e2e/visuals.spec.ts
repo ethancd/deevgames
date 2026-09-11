@@ -10,12 +10,39 @@ async function start(page: Page, state: GameState) {
   await page.getByRole('button', { name: 'Start Game' }).click();
 }
 
-test('one reserve numeral, unchanged by selection and legible in grayscale',async({page},info)=>{
- await page.setViewportSize({width:390,height:664});const s=createInitialGameState();await start(page,s);
- await expect(page.locator('.resource-number')).toHaveCount(100);await expect(page.locator('.crystal-gauge,.well-shading')).toHaveCount(0);
- const shades=[];for(const [x,y] of [[3,0],[2,0],[0,3],[0,0]])shades.push(await page.getByTestId(`cell-${x}-${y}`).evaluate(e=>getComputedStyle(e).backgroundColor));expect(new Set(shades).size).toBe(4);
- await page.locator('.battle-board').evaluate(e=>(e as HTMLElement).style.filter='grayscale(1)');await page.screenshot({path:info.outputPath('reserve-grayscale.png')});
- await page.getByRole('button',{name:'Reserves'}).click();await expect(page.locator('.resource-number')).toHaveCount(0);await page.getByRole('button',{name:'Reserves'}).click();await expect(page.locator('.resource-number')).toHaveCount(100);
+test('reserve bricks show 0–10 in equal bottom-aligned slots and toggle back to shading', async ({page}) => {
+ await page.setViewportSize({width:390,height:664});
+ const state=createInitialGameState();
+ for(let count=0;count<=10;count++) state.board.cells[Math.floor(count/10)][count%10].resourceLayers=count;
+ await start(page,state);
+ await expect(page.locator('.reserve-bricks')).toHaveCount(100);
+ await expect(page.locator('.resource-number')).toHaveCount(0);
+ let brickSize: {width:number;height:number}|undefined;
+ for(let count=0;count<=10;count++) {
+   const square=page.getByTestId(`cell-${count%10}-${Math.floor(count/10)}`);
+   await expect(square).toHaveAccessibleName(new RegExp(`${count} crystals? remaining`));
+   const bricks=square.locator('.reserve-brick');
+   await expect(bricks).toHaveCount(count);
+   const slots=await bricks.evaluateAll(nodes=>nodes.map(node=>{
+     const style=getComputedStyle(node), rect=node.getBoundingClientRect();
+     return {column:Number(style.gridColumnStart),row:Number(style.gridRowStart),color:style.backgroundColor,width:rect.width,height:rect.height};
+   }));
+   expect(slots.filter(s=>s.column===1)).toHaveLength(Math.ceil(count/2));
+   expect(slots.filter(s=>s.column===2)).toHaveLength(Math.floor(count/2));
+   for(const [index,slot] of slots.entries()) {
+     expect(slot.row).toBe(5-Math.floor(index/2)); expect(slot.color).toBe('rgb(181, 229, 228)');
+     brickSize ??= slot;
+     expect(Math.abs(slot.width-brickSize.width)).toBeLessThan(.1);
+     expect(Math.abs(slot.height-brickSize.height)).toBeLessThan(.1);
+   }
+ }
+ await page.getByRole('button',{name:'Reserves'}).click();
+ await expect(page.locator('.reserve-bricks')).toHaveCount(0);
+ const shades=[];
+ for(const count of [0,4,8,10]) shades.push(await page.getByTestId(`cell-${count%10}-${Math.floor(count/10)}`).evaluate(e=>getComputedStyle(e).backgroundColor));
+ expect(new Set(shades).size).toBe(4);
+ await page.getByRole('button',{name:'Reserves'}).click();
+ await expect(page.locator('.reserve-bricks')).toHaveCount(100);
 });
 
 test('both armies retain 18 distinct labelled pieces, exact ranks and damage on a crowded board', async ({ page }, info) => {

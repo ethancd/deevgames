@@ -122,7 +122,7 @@ button:focus-visible, a:focus-visible { outline: 3px solid #67e8f9; outline-offs
 .home-white { color: #fff; text-shadow: 0 1px 2px #000; }
 .home-black { color: #101827; text-shadow: 0 1px 2px #fff; }
 
-/* Sequential reserve luminance; exact numerals remain readable in grayscale. */
+/* Reserve luminance remains the compact view when brick stacks are hidden. */
 .reserve-0 { --seam-color: #192a38; }
 .reserve-1 { --seam-color: #263b4b; }
 .reserve-2 { --seam-color: #334d5d; }
@@ -146,8 +146,10 @@ button:focus-visible, a:focus-visible { outline: 3px solid #67e8f9; outline-offs
 .range-marker.far { height: 6px; width: 6px; border: 1px solid #fff5cd; opacity: .7; box-shadow: 0 0 0 .5px #183549aa; }
 .attack-frontier-marker { position: absolute; top: 50%; left: 46%; transform: translate(-50%, -50%); width: 8px; height: 8px; border-radius: 50%; background: #ff4659; box-shadow: 0 0 0 1px #211321, 0 0 0 2px #ffd1d666; pointer-events: none; z-index: 7; }
 .attack-frontier-marker.on-unit { top: 14%; left: 86%; }
-.resource-readout { position: absolute; bottom: 1px; left: 1px; min-width: 10px; border-radius: 2px; padding: 0 2px; font-size: 9px; line-height: 11px; background: #071722de; color: #edfff5; font-variant-numeric: tabular-nums; z-index: 5; pointer-events: none; }
-.resource-readout small { font-size: 7px; color: #b9cedb; margin-left: 2px; }
+/* Two columns, five fixed slots each. Empty slots stay dark; each brick is
+   the original brightest ten-crystal square color, independent of the count. */
+.reserve-bricks { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(5, minmax(0, 1fr)); gap: 1px 2px; padding: 2px; background: #192a38; pointer-events: none; z-index: 0; }
+.reserve-brick { min-width: 0; min-height: 0; background: #b5e5e4; box-shadow: inset 0 0 0 .5px #658c95; }
 .spawn-marker { color: #fff2b4; font-size: 20px; font-weight: 650; text-shadow: 0 1px 2px #092035; z-index: 2; }
 .destination-marker { color: #fff1b4; text-shadow: 0 1px 2px #092035; font-size: 24px; line-height: 1; z-index: 2; margin-right: 8%; }
 .invalid-marker { position: absolute; color: #ffb7b2; text-shadow: 0 1px 2px #092035; font-size: 24px; z-index: 5; }
@@ -197,9 +199,6 @@ button:focus-visible, a:focus-visible { outline: 3px solid #67e8f9; outline-offs
 .rank-examples { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; text-align: center; font-size: 11px; margin-block: 12px; }
 .rank-examples .unit-art { width: 45px; height: 50px; margin: auto; }
 
-/* Numeric inspection leaves a clear floor below occupied pieces. */
-.board-square:has(.resource-readout) .unit-wrap { height: 64%; width: 76%; transform: translate(-4%, -23%); }
-
 /* Turn rent and public inactivity clock. */
 .rent-warning { color: #f59e0b !important; }
 .score-strip .rent-warning { color: #f87171 !important; }
@@ -232,7 +231,6 @@ button:focus-visible, a:focus-visible { outline: 3px solid #67e8f9; outline-offs
 .unit-action-row p { font-size: 10px; line-height: 1.2; }
 .unit-action-row .unit-income { grid-column: 1 / -1; }
 .unit-income { font-size: 10px !important; color: #bfe9ca !important; }
-.resource-readout { font-size: 10px; line-height: 12px; }
 @media (orientation: landscape) and (max-height: 600px) { .is-placing .decision-panel { height: 116px; } }
 .score-strip small { display: inline-block; }
 .score-strip small + small { margin-left: 8px; }

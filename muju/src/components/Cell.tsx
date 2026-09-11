@@ -16,7 +16,7 @@ export function Cell({ cell, isValidMove, isValidAttack, isValidSpawn, isSelecte
     className={`board-cell reserve-${cell.resourceLayers} ${isSelected ? 'selected' : ''} ${isValidAttack ? 'attack-target' : ''} ${isValidSpawn ? 'spawn-target' : ''} ${isPendingMove ? 'path-cell' : ''} ${isPreview ? 'preview-cell' : ''}`}
     onClick={() => onClick(cell.position)} data-testid={`cell-${cell.position.x}-${cell.position.y}`}>
     {home && <span className={`home-marker home-${home}`} aria-hidden="true">⌂</span>}
-    <CellReserve cell={cell} showNumbers={showResources} />
+    <CellReserve cell={cell} visible={showResources} />
     {(reach || isValidMove) && !unitLabel && !isPreview && !isAttackFrontier && <span aria-hidden="true" className={`range-marker ${isValidMove ? 'near' : 'far'}`} />}
     {isValidSpawn && !unitLabel && <span aria-hidden="true" className="spawn-marker">＋</span>}
     {isPreview && !unitLabel && <span className="destination-marker" aria-hidden="true">◎</span>}
