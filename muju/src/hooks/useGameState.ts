@@ -17,6 +17,7 @@ const UNDOABLE_ACTIONS = new Set([
   'ATTACK',
   'BUY_UNIT',
   'PROMOTE_UNIT',
+  'END_PLACE_PHASE',
 ]);
 
 export function gameReducer(state: GameState, action: LocalAction): GameState {
@@ -30,10 +31,10 @@ export function gameReducer(state: GameState, action: LocalAction): GameState {
         return state;
       }
 
-      const validMoves = unit.canActThisTurn
+      const validMoves = unit.canActThisTurn && state.turn.actionsRemaining > 0
         ? getValidMoves(unit, state.board)
         : [];
-      const validAttacks = unit.canActThisTurn
+      const validAttacks = unit.canActThisTurn && state.turn.actionsRemaining > 0
         ? getValidAttacks(unit, state.board)
         : [];
 
@@ -151,10 +152,6 @@ export function useGameState() {
   const dispatchWithUndo = useCallback((action: LocalAction) => {
     // Save current state before undoable player actions (for any player's turn)
     if (UNDOABLE_ACTIONS.has(action.type)) {
-      setUndoHistory((prev) => [...prev, state]);
-    }
-    // Also save state before phase transitions so player can undo back through phases
-    if (action.type === 'END_PLACE_PHASE') {
       setUndoHistory((prev) => [...prev, state]);
     }
     // Clear undo history only on turn end or game reset (not phase transitions)

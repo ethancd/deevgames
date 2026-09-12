@@ -21,3 +21,15 @@ it('spending the last three crystals finishes placement, permits haste and is un
  expect(result.current.state.turn).toMatchObject({phase:'action',currentPlayer:'white',actionsRemaining:6});expect(result.current.canUndo).toBe(true);
  act(()=>result.current.undo());expect(result.current.state).toEqual(s);unmount();
 });
+
+it('undo walks back through starting actions and promoting without losing resources or unit flags',()=>{
+ const s=createInitialGameState();s.turn.phase='place';s.players.white.resources=20;saveGameState(s);
+ const unit=s.board.units.find(u=>u.owner==='white'&&u.definitionId==='fire_1')!;
+ const {result,unmount}=renderHook(()=>useGameState());
+ act(()=>result.current.promoteUnit(unit.id));const promoted=result.current.state;
+ expect(promoted.board.units.find(u=>u.id===unit.id)?.definitionId).toBe('fire_2');
+ act(()=>result.current.endPlacePhase());expect(result.current.state.turn.phase).toBe('action');
+ act(()=>result.current.undo());expect(result.current.state).toEqual(promoted);
+ act(()=>result.current.undo());expect(result.current.state).toEqual(s);expect(result.current.canUndo).toBe(false);
+ unmount();localStorage.clear();
+});

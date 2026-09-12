@@ -18,7 +18,7 @@ npm run serve
 Open <http://localhost:3003/muju/> and choose **Play online → Create room**. Copy
 the invitation to your opponent. The game starts when they claim the other seat.
 Choose Black when you want the invited player to move first. Both players use the
-existing board, previews, shop and upkeep controls. Online moves are final.
+existing board, previews, shop and upkeep controls. Undo is available within your turn.
 
 For two computers on the same network, start the host with its actual LAN address:
 
@@ -226,7 +226,7 @@ of silently continuing under different rules.
 | `POST /mcp` | Stateless Streamable HTTP MCP |
 
 Only engine actions plus the seat-local upkeep preference are accepted. Client
-state replacement, resets, undo, and selecting units never reach the server.
+state replacement, resets, and selecting units never reach the server. `UNDO` is a server-validated command that restores the current player’s previous command within this turn.
 
 ```sh
 npm run build
@@ -240,3 +240,23 @@ two independent browser profiles, mobile play, reload, browser/MCP play and lost
 response retries, plus the existing pass-and-play and side-selection flows.
 Server tests exercise real HTTP/stdio MCP clients, persistence, stale revisions,
 seat authorization, atomic batches, origin validation, malformed requests and draws.
+
+### Undo and detecting human moves
+
+The browser Undo button and MCP `muju_play` with `actions: [{"type":"UNDO"}]`
+reverse the current player’s latest command. An atomic batch is one undo step.
+Undo covers purchases, promotions, upkeep choices, movement, attacks, and ending
+placement. It persists across reconnects, but stops at turn end or game completion.
+`canUndo` reports availability; revision and request-ID checks apply to undo too.
+
+Use `muju_wait_for_change({roomId, afterRevision, timeoutMs:25000})` as the
+supported move notification mechanism for either MCP transport. Set `afterRevision`
+to the last revision you received. It returns immediately for an already committed
+change, so moves made between calls are not missed. A changed result includes
+`events` with revision, player and actions (including UNDO), `eventsComplete`, and
+the latest `room`. If event history was truncated, `eventsComplete` is false; the
+room is still authoritative. Joining can change the revision without an action event.
+Check `room.activePlayer` against your seat before playing: a human moving or
+undoing does not end their turn. Retain the latest revision and wait again until
+it is your turn. An unchanged result stays compact; stop on `phase:"victory"`.
+These are bounded tool calls, not unsolicited notifications to an idle LLM client.

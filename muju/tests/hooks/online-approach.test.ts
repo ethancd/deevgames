@@ -45,3 +45,28 @@ it('preserves selection after a shared move, and clears it at the turn handoff',
   await act(async () => result.current.game.endActionPhase());
   expect(result.current.game.selectedUnitData).toBeNull();
 });
+
+it('removes move dots when the selected online unit spends its last action', async () => {
+  const {unit, result} = start();
+  act(() => result.current.game.selectUnit(unit.id));
+  await act(async () => result.current.game.moveUnit(unit.id,{x:3,y:0}));
+  await act(async () => result.current.game.moveUnit(unit.id,{x:0,y:0}));
+  await act(async () => result.current.game.moveUnit(unit.id,{x:3,y:0}));
+  expect(result.current.game.state.turn.actionsRemaining).toBe(0);
+  expect(result.current.game.selectedUnitData?.id).toBe(unit.id);
+  expect(result.current.game.state.validMoves).toEqual([]);
+  expect(result.current.game.state.validAttacks).toEqual([]);
+});
+
+it('enables online undo from server history and sends it with the current revision', async () => {
+  const state = createInitialGameState();
+  const room: RoomSnapshot = {id:'test-room', revision:7, ready:true, canUndo:true,
+    seats:{white:'W',black:'B'}, state, updatedAt:'now', history:[]};
+  vi.mocked(playRoom).mockResolvedValue({...room, revision:8, canUndo:false});
+  const connection = {serverUrl:'',roomId:room.id,player:'white' as const,token:'test-token'};
+  const {result} = renderHook(() => useOnlineGame(connection, room, vi.fn()));
+  expect(result.current.game.canUndo).toBe(true);
+  await act(async () => result.current.game.undo());
+  expect(playRoom).toHaveBeenCalledWith(connection, expect.objectContaining({expectedRevision:7, actions:[{type:'UNDO'}]}));
+  expect(result.current.game.canUndo).toBe(false);
+});

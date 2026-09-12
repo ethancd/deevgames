@@ -73,8 +73,8 @@ export function useOnlineGame(connection: RoomConnection, initial: RoomSnapshot,
     const s = room.state;
     const u = selected ? getUnitById(s.board, selected) : null;
     return { ...s, selectedUnit: u?.id ?? null,
-      validMoves: u && s.turn.phase === 'action' ? getValidMoves(u, s.board) : [],
-      validAttacks: u && s.turn.phase === 'action' ? getValidAttacks(u, s.board) : [] };
+      validMoves: u && s.turn.phase === 'action' && u.canActThisTurn && s.turn.actionsRemaining > 0 ? getValidMoves(u, s.board) : [],
+      validAttacks: u && s.turn.phase === 'action' && u.canActThisTurn && s.turn.actionsRemaining > 0 ? getValidAttacks(u, s.board) : [] };
   }, [room, selected]);
   const selectUnit = useCallback((id: string) => {
     const s = roomRef.current.state, u = getUnitById(s.board, id);
@@ -93,7 +93,8 @@ export function useOnlineGame(connection: RoomConnection, initial: RoomSnapshot,
     payUpkeep: (keepUnitIds: string[]) => dispatch({ type: 'PAY_UPKEEP', keepUnitIds }),
     setUpkeepReview: (_player: PlayerId, enabled: boolean) => dispatch({ type: 'SET_UPKEEP_REVIEW', enabled }),
     resign: () => dispatch({ type: 'RESIGN' }), applyAIAction: useCallback((action: AIAction) => dispatch(action), [dispatch]),
-    resetGame: onLeave, undo: () => {}, canUndo: false,
+    resetGame: onLeave, undo: () => dispatch({ type: 'UNDO' }),
+    canUndo: !!room.canUndo && state.turn.currentPlayer === connection.player && !busy && !uncertain,
     selectedUnitData: selected ? getUnitById(state.board, selected) : null,
     isPlayerTurn: state.turn.currentPlayer === connection.player, canEndTurn: state.turn.phase === 'action',
   };

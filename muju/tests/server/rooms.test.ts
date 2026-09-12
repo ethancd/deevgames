@@ -133,3 +133,63 @@ describe('authoritative shared rooms', () => {
     expect(() => store.get(id)).toThrow('older rules');
   });
 });
+
+it('undo restores placement, promotion and phase changes, survives reconnects and cannot cross turns', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'muju-undo-')); directories.push(dir);
+  const path = join(dir, 'rooms.sqlite');
+  const { store, host, guest, id } = setup(path);
+  let room = store.get(id), serial = 0;
+  const play = (actions: RoomAction[], token = host.credentials.token) => {
+    room = store.act(id, token, request(room.revision, actions, `undo-step-${serial++}`));
+    return room;
+  };
+  play([{ type: 'END_ACTION_PHASE' }]);
+  play([{ type: 'END_ACTION_PHASE' }], guest.credentials.token);
+  const fixture = new DatabaseSync(path);
+  fixture.prepare("UPDATE rooms SET data = json_set(data, '$.state.players.white.resources', 20) WHERE id = ?").run(id);
+  fixture.close();
+  room = store.get(id);
+  const before = room.state;
+  const unit = before.board.units.find(u => u.owner === 'white' && u.definitionId === 'fire_1')!;
+  play([{ type: 'PROMOTE_UNIT', unitId: unit.id }]);
+  expect(room.canUndo).toBe(true);
+  const promoted = room.state;
+  play([{ type: 'END_PLACE_PHASE' }]);
+  expect(() => play([{ type: 'UNDO' }], guest.credentials.token)).toThrow('current player');
+  const reconnect = new RoomStore(path); stores.push(reconnect);
+  expect(reconnect.get(id).canUndo).toBe(true);
+  const undo = request(room.revision, [{ type: 'UNDO' }], 'reconnect-undo');
+  expect(reconnect.act(id, host.credentials.token, undo, true).state).toEqual(promoted);
+  expect(reconnect.get(id)).toEqual(room);
+  room = reconnect.act(id, host.credentials.token, undo);
+  expect(room.state).toEqual(promoted);
+  expect(reconnect.act(id, host.credentials.token, undo)).toEqual(room);
+  play([{ type: 'UNDO' }]);
+  expect(room.state).toEqual(before);
+  expect(room.canUndo).toBe(false);
+  play([{ type: 'BUY_UNIT', definitionId: 'fire_1', position: { x: 0, y: 0 } }]);
+  play([{ type: 'UNDO' }]);
+  expect(room.state).toEqual(before);
+  play([{ type: 'END_PLACE_PHASE' }]);
+  play([{ type: 'END_ACTION_PHASE' }]);
+  expect(room.canUndo).toBe(false);
+  expect(() => play([{ type: 'UNDO' }], guest.credentials.token)).toThrow('undo history');
+});
+
+it('undo reverses atomic combat commands and preserves independent upkeep preferences', () => {
+  const { store, host, guest, id } = setup();
+  const before = store.get(id);
+  const unit = before.state.board.units.find(u => u.owner === 'white' && u.definitionId === 'fire_1')!;
+  const moved = store.act(id, host.credentials.token, request(1, [
+    { type: 'MOVE', unitId: unit.id, to: { x: 2, y: 0 } },
+    { type: 'MOVE', unitId: unit.id, to: { x: 3, y: 0 } },
+  ]));
+  expect(moved.canUndo).toBe(true);
+  store.act(id, guest.credentials.token, request(2, [{ type: 'SET_UPKEEP_REVIEW', enabled: true }], 'review-black'));
+  expect(() => store.act(id, host.credentials.token, request(2, [{ type: 'UNDO' }], 'stale-undo'))).toThrow('revision 3');
+  expect(() => store.act(id, host.credentials.token, request(3, [{ type: 'UNDO' }, { type: 'END_ACTION_PHASE' }], 'batch-undo'))).toThrow('alone');
+  const restored = store.act(id, host.credentials.token, request(3, [{ type: 'UNDO' }], 'restore-moves'));
+  expect(restored.state).toEqual({ ...before.state, reviewUpkeep: { ...before.state.reviewUpkeep, black: true } });
+  expect(restored.canUndo).toBe(false);
+  expect(restored.history.at(-1)?.actions).toEqual([{ type: 'UNDO' }]);
+});

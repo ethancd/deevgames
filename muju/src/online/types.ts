@@ -1,11 +1,12 @@
 import type { AIAction } from '../ai/types';
 import type { GameState, PlayerId } from '../game/types';
 
-export type RoomAction = AIAction | { type: 'SET_UPKEEP_REVIEW'; enabled: boolean };
+export type RoomAction = AIAction | { type: 'SET_UPKEEP_REVIEW'; enabled: boolean } | { type: 'UNDO' };
 export interface RoomSnapshot {
   id: string;
   revision: number;
   ready: boolean;
+  canUndo?: boolean;
   seats: Record<PlayerId, string | null>;
   state: GameState;
   updatedAt: string;

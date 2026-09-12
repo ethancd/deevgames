@@ -125,3 +125,30 @@ describe('MCP and HTTP interoperability', () => {
     expect((await fetch(`${url}/api/muju/health`)).status).toBe(429);
   });
 });
+
+it.each([false, true])('notifies MCP about human moves, undo and handoff without missing changes between waits (stdio=%s)', async stdio => {
+  const { store, url } = await setup();
+  const host = store.create({ name: 'Human' });
+  store.join(host.room.id, { name: 'Agent', inviteCode: host.inviteCode });
+  const client = await clientFor(url, stdio), roomId = host.room.id;
+  const unitId = store.get(roomId).state.board.units[0].id;
+  const humanPlay = async (revision: number, actions: object[]) => {
+    const response = await fetch(`${url}/api/muju/rooms/${roomId}/actions`, { method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${host.credentials.token}` },
+      body: JSON.stringify({ expectedRevision: revision, requestId: `human-move-${revision}`, actions }) });
+    expect(response.status).toBe(200);
+  };
+  const waiting = call(client, 'muju_wait_for_change', { roomId, afterRevision: 1, timeoutMs: 2000 });
+  await humanPlay(1, [{ type: 'MOVE', unitId, to: { x: 2, y: 0 } }]);
+  const move = await waiting;
+  expect(move).toMatchObject({ changed: true, eventsComplete: true,
+    events: [{ revision: 2, player: 'white', actions: [{ type: 'MOVE', to: 'C1' }] }],
+    room: { activePlayer: 'white', canUndo: true } });
+  expect((await call(client, 'muju_legal_actions', { roomId, type: 'UNDO' })).total).toBe(1);
+  await call(client, 'muju_play', { roomId, token: host.credentials.token, expectedRevision: 2,
+    requestId: 'mcp-human-undo', actions: [{ type: 'UNDO' }] });
+  await humanPlay(3, [{ type: 'END_ACTION_PHASE' }]);
+  const change = await call(client, 'muju_wait_for_change', { roomId, afterRevision: 2, timeoutMs: 0 });
+  expect(change.events.map((e: any) => e.actions[0].type)).toEqual(['UNDO', 'END_ACTION_PHASE']);
+  expect(change.room).toMatchObject({ activePlayer: 'black', canUndo: false });
+}, 10000);

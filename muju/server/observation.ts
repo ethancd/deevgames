@@ -1,4 +1,3 @@
-import type { AIAction } from '../src/ai/types';
 import type { GameState, PlayerId, Position } from '../src/game/types';
 import type { RoomAction, RoomSnapshot } from '../src/online/types';
 import { getUnitAt } from '../src/game/board';
@@ -23,6 +22,8 @@ export function observe(room: RoomSnapshot) {
   const s = room.state;
   return {
     roomId: room.id, revision: room.revision, ready: room.ready, seats: room.seats,
+    canUndo: !!room.canUndo,
+    activePlayer: room.ready && s.phase === 'playing' ? s.turn.currentPlayer : null,
     status: s.phase, turn: s.turn, upkeepPending: !!s.upkeepPending,
     winner: s.winner, victoryReason: s.victoryReason ?? null,
     nextStep: !room.ready ? 'Invite the opponent, then wait for them to join.' : s.phase === 'victory' ? 'Game finished.'
@@ -54,7 +55,7 @@ export function observe(room: RoomSnapshot) {
 
 export function legalActions(room: RoomSnapshot, options: { unitId?: string; type?: string; offset?: number; limit?: number } = {}) {
   const s: GameState = room.state, player: PlayerId = s.turn.currentPlayer;
-  let actions: AIAction[] = [];
+  let actions: RoomAction[] = [];
   if (room.ready && s.phase === 'playing') {
     if (s.upkeepPending) actions = [defaultUpkeepAction(s)];
     else if (s.turn.phase === 'place') actions = generatePlacePhaseActions(s, player);
@@ -67,8 +68,9 @@ export function legalActions(room: RoomSnapshot, options: { unitId?: string; typ
       actions.push({ type: 'END_ACTION_PHASE' });
     }
     actions.push({ type: 'RESIGN' });
+    if (room.canUndo) actions.push({ type: 'UNDO' });
   }
-  actions = actions.filter(a => isLegalAction(s, a) && (!options.type || a.type === options.type)
+  actions = actions.filter(a => (a.type === 'UNDO' || (a.type !== 'SET_UPKEEP_REVIEW' && isLegalAction(s, a))) && (!options.type || a.type === options.type)
     && (!options.unitId || ('unitId' in a && a.unitId === options.unitId)));
   const offset = options.offset ?? 0, limit = options.limit ?? 60;
   return { roomId: room.id, revision: room.revision, currentPlayer: player, total: actions.length,
@@ -94,7 +96,8 @@ export const rules = {
   combat: 'Attack ≥ remaining defense eliminates. Otherwise damage lasts until the defender’s turn starts. A unit gets one attack; its own killing blow unlocks another, up to its tier. Moving can repeat while actions remain.',
   elements: 'Fire/Lightning beats Plant/Metal beats Water/Shadow beats Fire/Lightning. Advantage +1 attack; disadvantage −1, minimum 0.',
   victory: 'Eliminate every enemy, or occupy the enemy home until your next turn starts. Opponent gets a full turn to clear it. Resignation loses. 10 consecutive player turns without income or attack kills draw.',
-  workflow: 'Create a room and share only the invitation with the opponent, or join using their roomId and inviteCode. Keep your seat token private. Read the room and legal actions; preview a sequence; play with expectedRevision and a unique requestId. Reuse the exact requestId/body after an uncertain network outcome. Batches are atomic and cannot play the opponent’s turn. Use wait_for_change between turns.',
+  workflow: 'Create a room and share only the invitation with the opponent, or join using their roomId and inviteCode. Keep your seat token private. Read the room and legal actions; preview a sequence; play with expectedRevision and a unique requestId. Reuse the exact requestId/body after an uncertain network outcome. Batches are atomic and cannot play the opponent’s turn. Call muju_wait_for_change with afterRevision set to the latest revision between turns. On changed=true, inspect events for who acted and what they did, then use room.activePlayer to determine who can play. A move or undo within the opponent’s turn does not hand over control. On changed=false, retain the board and wait again. Stop on phase=victory.',
+  undo: 'Send UNDO alone via muju_play to reverse your latest committed command (an atomic batch is one command). Repeat while canUndo is true. Purchases, promotions, upkeep choices and ending placement are reversible until turn end. Ending the turn or finishing the game clears undo history.',
   upkeep: 'Affordable upkeep is paid automatically unless review is enabled. SET_UPKEEP_REVIEW changes only your own preference and must be sent alone.',
   catalogue: UNIT_DEFINITIONS,
 };

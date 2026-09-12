@@ -15,6 +15,7 @@ export const actionSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('END_PLACE_PHASE') }).strict(),
   z.object({ type: z.literal('END_ACTION_PHASE') }).strict(),
   z.object({ type: z.literal('RESIGN') }).strict(),
+  z.object({ type: z.literal('UNDO') }).strict(),
 ]);
 export const actionRequestSchema = z.object({
   expectedRevision: z.number().int().nonnegative(),

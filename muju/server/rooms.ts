@@ -15,6 +15,7 @@ function matches(value: string, hash: string) {
   return timingSafeEqual(Buffer.from(digest(value)), Buffer.from(hash));
 }
 interface StoredRoom extends RoomSnapshot {
+  undoHistory?: GameState[];
   rulesVersion: string;
   inviteHash: string | null;
   tokenHashes: Partial<Record<PlayerId, string>>;
@@ -48,7 +49,13 @@ export class RoomStore {
   }
   private snapshot(room: StoredRoom): RoomSnapshot {
     return structuredClone({ id: room.id, revision: room.revision, ready: room.ready, seats: room.seats,
-      state: room.state, updatedAt: room.updatedAt, history: room.history });
+      canUndo: this.canUndo(room), state: room.state, updatedAt: room.updatedAt, history: room.history });
+  }
+  private canUndo(room: StoredRoom): boolean {
+    const previous = room.undoHistory?.at(-1);
+    return room.ready && room.state.phase === 'playing' && !!previous &&
+      previous.turn.currentPlayer === room.state.turn.currentPlayer &&
+      previous.turn.turnNumber === room.state.turn.turnNumber;
   }
   private authenticate(room: StoredRoom, token: string): PlayerId {
     for (const side of ['white', 'black'] as const) {
@@ -84,7 +91,7 @@ export class RoomStore {
       if (count >= this.maxRooms) throw new RoomError(503, 'ROOM_LIMIT', 'This host is at its room limit.');
       const id = randomBytes(16).toString('hex'), token = secret(), inviteCode = secret();
       const room: StoredRoom = { id, revision: 0, ready: false, seats: { white: null, black: null },
-        state: createInitialGameState(), updatedAt: new Date().toISOString(), history: [],
+        state: createInitialGameState(), canUndo: false, undoHistory: [], updatedAt: new Date().toISOString(), history: [],
         rulesVersion: RULES_VERSION, inviteHash: digest(inviteCode), tokenHashes: { [side]: digest(token) }, receipts: [] };
       room.seats[side] = name;
       this.save(room);
@@ -106,6 +113,14 @@ export class RoomStore {
   private simulate(room: StoredRoom, player: PlayerId, actions: RoomAction[]): GameState {
     let state = room.state;
     for (const [index, action] of actions.entries()) {
+      if (action.type === 'UNDO') {
+        if (actions.length !== 1 || player !== state.turn.currentPlayer || !this.canUndo(room)) {
+          throw new RoomError(422, 'ILLEGAL_ACTION', 'UNDO must be sent alone by the current player with undo history. It cannot cross a turn boundary or undo a finished game.');
+        }
+        // Preferences can change independently, including while the other player acts.
+        state = { ...room.undoHistory!.at(-1)!, reviewUpkeep: state.reviewUpkeep };
+        continue;
+      }
       if (action.type === 'SET_UPKEEP_REVIEW') {
         if (actions.length !== 1 || state.phase !== 'playing') throw new RoomError(422, 'ILLEGAL_ACTION', 'Send upkeep preference changes alone during an active game.');
         state = { ...state, reviewUpkeep: { ...state.reviewUpkeep, [player]: action.enabled } };
@@ -130,8 +145,15 @@ export class RoomStore {
       }
       if (room.revision !== request.expectedRevision) throw new RoomError(409, 'STALE_REVISION', `Room is at revision ${room.revision}. Read it again before playing.`);
       const state = this.simulate(room, player, request.actions);
-      if (preview) return { ...this.snapshot(room), state };
-      room.state = state; room.revision++; room.updatedAt = new Date().toISOString();
+      if (request.actions[0].type === 'UNDO') room.undoHistory!.pop();
+      else if (state.phase !== 'playing' || state.turn.currentPlayer !== room.state.turn.currentPlayer ||
+        state.turn.turnNumber !== room.state.turn.turnNumber) room.undoHistory = [];
+      else if (request.actions[0].type !== 'SET_UPKEEP_REVIEW' && state !== room.state) {
+        room.undoHistory = [...(room.undoHistory ?? []), room.state];
+      }
+      room.state = state;
+      if (preview) return this.snapshot(room);
+      room.revision++; room.updatedAt = new Date().toISOString();
       room.history = [...room.history, { revision: room.revision, player, actions: request.actions }].slice(-100);
       room.receipts = [...room.receipts, { id: request.requestId, player, fingerprint }].slice(-256);
       this.save(room);

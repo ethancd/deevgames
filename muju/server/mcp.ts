@@ -51,20 +51,26 @@ export function createMcpServer(backend: RoomBackend, publicUrl: string) {
   server.registerTool('muju_observe', { description: 'Get a compact board, unit IDs/stats, resources, turn, result, and revision. Room IDs also allow spectating.',
     inputSchema: { roomId: roomIdSchema }, annotations: readOnly }, ({ roomId }) => safely(async () => observe(await backend.get(roomId))));
   server.registerTool('muju_legal_actions', { description: 'List legal actions for the current player with move costs and attack outcomes. Includes multi-action moves. Filter by unit/type and paginate. Upkeep shows one valid selection; custom affordable selections are accepted.',
-    inputSchema: { roomId: roomIdSchema, unitId: z.string().max(100).optional(), type: z.enum(['MOVE', 'ATTACK', 'BUY_UNIT', 'PROMOTE_UNIT', 'PAY_UPKEEP', 'END_PLACE_PHASE', 'END_ACTION_PHASE', 'RESIGN']).optional(),
+    inputSchema: { roomId: roomIdSchema, unitId: z.string().max(100).optional(), type: z.enum(['MOVE', 'ATTACK', 'BUY_UNIT', 'PROMOTE_UNIT', 'PAY_UPKEEP', 'END_PLACE_PHASE', 'END_ACTION_PHASE', 'RESIGN', 'UNDO']).optional(),
       offset: z.number().int().min(0).default(0), limit: z.number().int().min(1).max(200).default(60) }, annotations: readOnly },
     ({ roomId, ...options }) => safely(async () => legalActions(await backend.get(roomId), options)));
   server.registerTool('muju_preview', { description: 'Simulate an atomic sequence of actions without changing the game. Returns the hypothetical board. Use A1–J10 positions. Cannot cross into the opponent’s turn.',
     inputSchema: playInput, annotations: readOnly }, ({ roomId, token, ...request }) => safely(async () => ({ preview: true,
       actions: request.actions.map(describeAction), room: observe(await backend.act(roomId, token, request, true)) })));
-  server.registerTool('muju_play', { description: 'Commit one action or an atomic sequence to your shared game. Uses current revision and unique requestId. Invalid batches change nothing. Ending action phase hands control to the opponent. RESIGN concedes the game.',
+  server.registerTool('muju_play', { description: 'Commit one action or an atomic sequence to your shared game. Uses current revision and unique requestId. Invalid batches change nothing. Ending action phase hands control to the opponent. RESIGN concedes the game. UNDO, sent alone, reverses your latest command within this turn when canUndo is true.',
     inputSchema: playInput, annotations: { destructiveHint: true, idempotentHint: true, openWorldHint: false } },
     ({ roomId, token, ...request }) => safely(async () => observe(await backend.act(roomId, token, request))));
-  server.registerTool('muju_wait_for_change', { description: 'Wait up to 25 seconds for a room revision to change (opponent joins or plays). A changed result includes the new room. An unchanged result contains only changed=false, revision and phase; keep your previous board and wait again. Stop waiting when phase is victory.',
+  server.registerTool('muju_wait_for_change', { description: 'Wait up to 25 seconds for a room revision to change (opponent joins or plays). A changed result includes events (revision, player, actions), eventsComplete, and the new room. Moves and UNDO can occur within the opponent’s turn: act only when room.activePlayer is your seat. An unchanged result contains only changed=false, revision and phase; keep your previous board and wait again. Stop waiting when phase is victory.',
     inputSchema: { roomId: roomIdSchema, afterRevision: z.number().int().nonnegative(), timeoutMs: z.number().int().min(0).max(25000).default(25000) }, annotations: readOnly },
     ({ roomId, afterRevision, timeoutMs }, extra) => safely(async () => {
       const change = await backend.wait(roomId, afterRevision, timeoutMs, extra.signal);
-      return change.changed ? { ...change, room: observe(change.room) } : change;
+      if (!change.changed) return change;
+      const events = change.room.history.filter(event => event.revision > afterRevision);
+      return { ...change,
+        events: events.map(event => ({ ...event, actions: event.actions.map(describeAction) })),
+        eventsComplete: change.room.history.length < 100 || afterRevision >= change.room.history[0].revision - 1,
+        room: observe(change.room),
+      };
     }));
   return server;
 }

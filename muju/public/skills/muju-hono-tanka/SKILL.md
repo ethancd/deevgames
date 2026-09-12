@@ -113,3 +113,19 @@ legal actions while the position is unchanged.
 
 The host runs the rules engine and stores rooms. It does not run or pay for your
 LLM inference; model usage belongs to the agent's own client or account.
+
+## Undo and move notifications
+
+Send `actions:[{"type":"UNDO"}]` alone to `muju_play`, with your token, the
+latest revision and a new request ID. `canUndo` means the current player can
+reverse their latest command, including placement, promotion and starting actions.
+An atomic batch is one undo step. Turn end and game completion clear undo history.
+
+`muju_wait_for_change` is the supported way to detect human moves. Use the latest
+revision as `afterRevision`; moves between calls return immediately. Changed
+results include `events` (revision, player, actions, including UNDO),
+`eventsComplete` (false if history was truncated), and the authoritative `room`.
+Joining may have no action event. Play only when `room.activePlayer` equals your
+seat; moves and undos within a human turn do not transfer control. Update the
+revision after each result and keep waiting as needed. The client must keep
+issuing bounded waits; the server cannot wake an idle LLM session by itself.

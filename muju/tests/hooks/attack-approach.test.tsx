@@ -60,3 +60,13 @@ it('does not offer a move-and-attack when movement would exhaust the action budg
   expect(screen.queryByRole('button', {name: 'Confirm attack'})).toBeNull();
   expect(loadGameState()?.board).toEqual(state.board);
 });
+
+it('shows no move dots or attack targets when selecting a unit with zero actions', () => {
+  const state = createInitialGameState(); state.turn.actionsRemaining = 0;
+  state.board.units = [createUnit('fire_1', 'white', {x:0,y:0}), createUnit('plant_1', 'black', {x:1,y:0})];
+  saveGameState(state);
+  const {container} = render(<GameScreen config={config} onBackToMenu={vi.fn()} />);
+  click(0,0);
+  expect(screen.getByTestId('cell-0-0')).toHaveAttribute('aria-pressed', 'true');
+  expect(container.querySelectorAll('.range-marker, .attack-target')).toHaveLength(0);
+});
