@@ -1,6 +1,6 @@
 import type { BoardState, Position } from '../game/types';
 import type { MovementRangePosition } from '../game/movement';
-import { getUnitAt } from '../game/board';
+import { BOARD_SIZE, getUnitAt } from '../game/board';
 import { getUnitDefinition } from '../game/units';
 import { Cell } from './Cell';
 import { Unit } from './Unit';
@@ -65,7 +65,13 @@ export function Board({
   const previewUnit = previewUnitPosition ? board.units.find(u => u.id === selectedUnit) : undefined;
 
   return (
-    <div className="battle-board">
+    <div className="battle-board coordinate-board">
+      <div className="board-column-labels" aria-hidden="true">
+        {Array.from({ length: BOARD_SIZE }, (_, x) => <span key={x}>{String.fromCharCode(65 + x)}</span>)}
+      </div>
+      <div className="board-row-labels" aria-hidden="true">
+        {Array.from({ length: BOARD_SIZE }, (_, y) => <span key={y}>{y + 1}</span>)}
+      </div>
       <div className="battle-grid">
         {board.cells.map((row, y) =>
           row.map((cell, x) => {
