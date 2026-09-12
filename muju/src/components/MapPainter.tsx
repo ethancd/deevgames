@@ -6,7 +6,7 @@ import './MapPainter.css';
 const STORAGE_KEY = 'muju:painter:v1';
 const SIZE = 10;
 const HISTORY_LIMIT = 200;
-const paintAmount = (event: { shiftKey: boolean; metaKey: boolean }) => event.shiftKey ? event.metaKey ? 10 : 2 : 1;
+const paintAmount = (event: { shiftKey: boolean; metaKey: boolean }) => event.metaKey ? 10 : event.shiftKey ? 2 : 1;
 
 function loadDraft(): number[] {
   try {
@@ -28,6 +28,7 @@ export function MapPainter() {
   const [notice, setNotice] = useState('');
   const [showCopy, setShowCopy] = useState(false);
   const [showResources, setShowResources] = useState(false);
+  const [lockSymmetry, setLockSymmetry] = useState(false);
   const [activeCell, setActiveCell] = useState(0);
   const cells = useRef<(HTMLButtonElement | null)[]>([]);
   const copyField = useRef<HTMLTextAreaElement>(null);
@@ -56,8 +57,11 @@ export function MapPainter() {
       return { past: [...current.past, current.map].slice(-HISTORY_LIMIT), map: next, future: [] };
     });
   };
-  const paint = (index: number, amount: number) => change(current => current.map((value, i) =>
-    i === index ? Math.max(0, Math.min(10, value + amount)) : value));
+  const paint = (index: number, amount: number) => change(current => {
+    const next = Math.max(0, Math.min(10, current[index] + amount));
+    const opposite = SIZE * SIZE - 1 - index;
+    return current.map((value, i) => i === index || (lockSymmetry && i === opposite) ? next : value);
+  });
   const undo = () => {
     setNotice('');
     setHistory(current => current.past.length ? {
@@ -106,7 +110,11 @@ export function MapPainter() {
         </div>
         <output className="painter-total" aria-label="Total crystals"><strong>{map.reduce((sum, value) => sum + value, 0)}</strong> crystals</output>
       </div>
-      <p className="painter-instructions" id="painter-instructions">Click <b>+1</b> <span>·</span> Right-click <b>−1</b> <span>·</span> Shift <b>±2</b> <span>·</span> ⌘ Shift <b>±10</b></p>
+      <p className="painter-instructions" id="painter-instructions">Click <b>+1</b> <span>·</span> Right-click <b>−1</b> <span>·</span> Shift <b>±2</b> <span>·</span> ⌘ <b>±10</b></p>
+      <label className="painter-symmetry" title="Edits set the opposite square to the same crystal count (A1 ↔ J10).">
+        <input type="checkbox" checked={lockSymmetry} onChange={event => setLockSymmetry(event.target.checked)} />
+        Lock 180° rotational symmetry
+      </label>
       <div className="painter-board-frame">
         <div className="painter-column-labels" aria-hidden="true">{'ABCDEFGHIJ'.split('').map(letter => <span key={letter}>{letter}</span>)}</div>
         <div className="painter-row-labels" aria-hidden="true">{Array.from({ length: SIZE }, (_, y) => <span key={y}>{y + 1}</span>)}</div>

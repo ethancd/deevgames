@@ -17,6 +17,8 @@
 .painter-instructions { margin: 16px 0 12px; font-size: 12px; color: #a3bac9; text-align: center; }
 .painter-instructions b { color: #e8edf5; font-weight: 600; }
 .painter-instructions > span { margin: 0 7px; }
+.painter-symmetry { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 0 0 12px; color: #c1d4df; font-size: 12px; cursor: pointer; }
+.painter-symmetry input { width: 16px; height: 16px; margin: 0; accent-color: #b5e5e4; }
 .painter-board-frame { display: grid; grid-template-columns: 18px minmax(0, 1fr); grid-template-rows: 18px auto; padding-right: 18px; }
 .painter-column-labels { grid-column: 2; display: grid; grid-template-columns: repeat(10, 1fr); padding: 0 4px; text-align: center; }
 .painter-row-labels { grid-column: 1; grid-row: 2; display: grid; grid-template-rows: repeat(10, 1fr); padding: 4px 0; align-items: center; }
