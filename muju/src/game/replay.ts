@@ -1,5 +1,6 @@
 import type { AIAction } from '../ai/types';
 import type { BoardState, GameState, PlayerId, Position } from './types';
+import { calculateDefense } from './combat';
 import { getUnitDefinition } from './units';
 
 export interface ReplayFrame {
@@ -36,9 +37,15 @@ export function recordAction(recording: ReplayRecording, before: GameState, acti
       label = `Placed ${getUnitDefinition(action.definitionId).name} at ${square(position)}`; break;
     case 'PROMOTE_UNIT':
       position = unit?.position;
-      label = `Promoted ${name}${position ? ` at ${square(position)}` : ''}`; break;
-    case 'MOVE': position = action.to; label = `${name} moved to ${square(position)}`; break;
-    case 'ATTACK': position = action.targetPosition; label = `${name} attacked ${square(position)}`; break;
+      const promoted = after.board.units.find(u => u.id === unitId);
+      label = `Promoted ${name} to ${promoted ? getUnitDefinition(promoted.definitionId).name : 'next tier'}${position ? ` at ${square(position)}` : ''}`; break;
+    case 'MOVE': position = action.to; label = `${name}: ${unit ? `${square(unit.position)} → ` : ''}${square(position)}`; break;
+    case 'ATTACK': {
+      position = action.targetPosition;
+      const target = before.board.units.find(u => u.position.x === position!.x && u.position.y === position!.y);
+      const survivor = target && after.board.units.find(u => u.id === target.id);
+      label = `${name} attacked ${target ? getUnitDefinition(target.definitionId).name : square(position)} at ${square(position)} · ${survivor ? `${calculateDefense(survivor)} defense left` : 'eliminated'}`; break;
+    }
     case 'PAY_UPKEEP': label = 'Paid upkeep and released unkept units'; break;
   }
   if (label) current = { ...current, frames: [...current.frames, { board: after.board, action, label, position, unitId }] };

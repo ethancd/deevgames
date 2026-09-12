@@ -15,7 +15,7 @@ export function ActionBar({ actionsRemaining, actionsPerTurn = DEFAULT_ACTIONS_P
   return <div className="action-bar">
     <div className="action-budget" aria-label={`${actionsRemaining} actions remaining`}>
       <strong>{phase === 'action' ? `${actionsRemaining} actions` : 'Buy & promote'}</strong>
-      {phase === 'action' && <span aria-hidden="true">{Array.from({ length: actionsPerTurn }, (_, i) => <i key={i} className={i < actionsRemaining ? 'available' : ''} />)}</span>}
+      <span aria-hidden="true" data-active={phase === 'action'}>{Array.from({ length: actionsPerTurn }, (_, i) => <i key={i} className={i < actionsRemaining ? 'available' : ''} />)}</span>
     </div>
     <button onClick={onUndo} disabled={!canUndo || !isPlayerTurn} title="Undo (⌘Z)">↶ Undo</button>
     <button className="primary" disabled={!isPlayerTurn} onClick={phase === 'place' ? onEndPlacePhase : onEndActionPhase}>

@@ -67,10 +67,9 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
     selectedUnitData,
   } = game;
   const actionsPerTurn = getActionsPerTurn(state);
-  const { playback, startReplay, closeReplay } = useReplayPlayback();
+  const { playback, startReplay, closeReplay, toggleReplay, stepReplay } = useReplayPlayback(`${state.phase}:${state.turn.currentPlayer}:${state.turn.turnNumber}`);
   const showReplay = !!playback;
   const replayFrame = playback && playback.step > 0 ? playback.replay.frames[playback.step - 1] : null;
-  useEffect(closeReplay, [state.turn.currentPlayer, state.turn.turnNumber, state.phase, closeReplay]);
 
   const [selectedPurchaseId, setSelectedPurchaseId] = useState<string | null>(null);
   const [selectedPlaceUnitId, setSelectedPlaceUnitId] = useState<string | null>(null);
@@ -442,7 +441,11 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
   // Keyboard handler
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     // Don't handle if AI is thinking, overlay is shown, or it's not human's turn
-    if (showReplay || !isCurrentPlayerHuman || isThinking || showPassOverlay || showMenu || showInstructions || showUnitShopInspection || showInsights || showVisualKey) return;
+    if (showReplay) {
+      if (e.key === 'Escape') { e.preventDefault(); closeReplay(); }
+      return;
+    }
+    if (!isCurrentPlayerHuman || isThinking || showPassOverlay || showMenu || showInstructions || showUnitShopInspection || showInsights || showVisualKey) return;
     const control = e.target instanceof HTMLElement ? e.target.closest('button, select, a, input, textarea') : null;
     if (control?.matches('select, input, textarea')) return;
     if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') {
@@ -596,7 +599,7 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
   }, [
     isCurrentPlayerHuman, isThinking, showPassOverlay, state, playerOwnUnits,
     selectUnit, selectedPlaceUnitId, promoteUnit, moveUnit, moveAndAttack, attackWith,
-    showReplay, canUndo, undo, endPlacePhase, endActionPhase, pendingMovePath, preview, showMenu, showInstructions, showUnitShopInspection, showInsights, showVisualKey
+    showReplay, closeReplay, canUndo, undo, endPlacePhase, endActionPhase, pendingMovePath, preview, showMenu, showInstructions, showUnitShopInspection, showInsights, showVisualKey
   ]);
 
   // Attach keyboard listener
@@ -680,6 +683,14 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
   const homeNotice = getHomeOccupier(state.board, state.turn.currentPlayer === 'white' ? 'black' : 'white')
     ? `Clear ${state.turn.currentPlayer === 'white' ? 'A1' : 'J10'} this turn or lose`
     : getHomeOccupier(state.board, state.turn.currentPlayer) ? `Hold ${state.turn.currentPlayer === 'white' ? 'J10' : 'A1'} until your next turn` : '';
+  const canReplay = isCurrentPlayerHuman && !isThinking && state.phase === 'playing' && !showPassOverlay &&
+    !showReplay && !!game.lastTurnReplay && game.lastTurnReplay.player !== state.turn.currentPlayer;
+  const replayUnavailable = !game.lastTurnReplay ? 'Available after your opponent completes a turn.'
+    : online?.busy ? 'Waiting for your move to be confirmed.' : !isCurrentPlayerHuman ? 'Available during your turn.' : 'Watch your opponent’s last turn.';
+  const shownPhase = playback
+    ? !replayFrame ? null : ['BUY_UNIT', 'PROMOTE_UNIT'].includes(replayFrame.action.type) ? 'place'
+      : ['MOVE', 'ATTACK'].includes(replayFrame.action.type) ? 'action' : null
+    : state.turn.phase;
   const phaseHint = showReplay ? 'Replaying your opponent’s last turn…' : online && !online.ready ? 'Share your invitation to bring in the other player.'
     : online?.busy ? 'Confirming your move…'
     : !interactive ? (isPaused ? 'Paused' : 'Opponent’s turn')
@@ -705,9 +716,9 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
           <button disabled={showReplay} onClick={() => setShowMenu(true)} aria-label="Game menu">•••</button>
         </header>
         <section className="turn-strip" aria-label="Turn and phases">
-          <strong>{isThinking ? 'Thinking…' : playerNames[state.turn.currentPlayer]} <span>· Turn {state.turn.turnNumber}</span></strong>
+          <strong>{playback ? `Replay · ${playerNames[playback.replay.player]}` : isThinking ? 'Thinking…' : playerNames[state.turn.currentPlayer]} <span>· Turn {playback?.replay.turnNumber ?? state.turn.turnNumber}</span></strong>
           <div className="phase-steps">{(['place', 'action'] as const).map((phase, i) =>
-            <span key={phase} aria-current={state.turn.phase === phase ? 'step' : undefined}>{i + 1} {phase === 'action' ? 'Act' : 'Place'}</span>
+            <span key={phase} aria-current={shownPhase === phase ? 'step' : undefined}>{i + 1} {phase === 'action' ? 'Act' : 'Place'}</span>
           )}</div>
         </section>
         <section className="score-strip" aria-label="Player resources">
@@ -732,12 +743,12 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
             onCellClick={handleCellClick} onUnitClick={handleUnitClick} />
         </section>
         <div className="board-key">
-          <span role="status">{showReplay ? 'Instant replay · 1 action per second' : homeNotice || (isEnemyView && showEnemyRange ? 'Red dots: attack frontier' : selectedPurchaseId ? '＋ Safe placement' : '● 1 action · ○ farther · ⊗ attack')}</span>
-          <button className="visual-key-trigger" onClick={() => setShowVisualKey(true)}>Key</button>
+          <span role="status">{showReplay ? playback.paused ? 'Replay paused' : 'Instant replay · 1 action per second' : homeNotice || (isEnemyView && showEnemyRange ? 'Red dots: attack frontier' : selectedPurchaseId ? '＋ Safe placement' : '● 1 action · ○ farther · ⊗ attack')}</span>
+          <button disabled={showReplay} className="visual-key-trigger" onClick={() => setShowVisualKey(true)}>Key</button>
           <button aria-pressed={showResources} onClick={() => setShowResources(!showResources)}>◆ Reserves</button>
         </div>
         <section className="decision-panel" aria-label="Current choice">
-          {playback ? <TurnReplay replay={playback.replay} step={playback.step} playerName={playerNames[playback.replay.player]} onClose={closeReplay} />
+          {playback ? <TurnReplay replay={playback.replay} step={playback.step} paused={playback.paused} playerName={playerNames[playback.replay.player]} onClose={closeReplay} onToggle={toggleReplay} onStep={stepReplay} />
           : state.turn.phase === 'place' && interactive && !shownUnit ? <UnitShop resources={currentPlayerState.resources} player={state.turn.currentPlayer} board={state.board}
             selectedId={selectedPurchaseId} onSelectId={id => { setSelectedPurchaseId(id); setSelectedPlaceUnitId(null); setViewedEnemyUnitId(null); }} />
           : preview && selectedUnitData ? <div className="action-preview">
@@ -757,17 +768,16 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
       </div>
       <footer className="play-footer">
         <div className="income-status" role="status" data-testid="projected-income">Projected income this turn: +{projectedIncome(state, state.turn.currentPlayer)} ◆</div>
-        {state.lastIncome && <details className="income-recap"><summary>{playerNames[state.lastIncome.player]} collected {state.lastIncome.total} ◆ · turn {state.lastIncome.turnNumber}</summary>
+        <div className="income-recap-slot">{state.lastIncome && <details className="income-recap"><summary>{playerNames[state.lastIncome.player]} collected {state.lastIncome.total} ◆ · turn {state.lastIncome.turnNumber}</summary>
           <ul>{state.lastIncome.takes.map(t => <li key={t.unitId}>{getUnitDefinition(t.definitionId).name} at {String.fromCharCode(65+t.position.x)}{t.position.y+1}: {t.amount}</li>)}</ul>
-        </details>}
+        </details>}</div>
 
         <div className="context-status" role="status">{spawnFeedback ? spawnFeedback.reason === 'enemy_blocking' ? 'Enemies are blocking that square.' : 'Choose a square in your controlled area.' : phaseHint}</div>
         <ActionBar actionsRemaining={state.turn.actionsRemaining} actionsPerTurn={actionsPerTurn} phase={state.turn.phase}
           onEndPlacePhase={endPlacePhase} onEndActionPhase={endActionPhase}
           isPlayerTurn={interactive} onUndo={() => { setPreview(null); undo(); }} canUndo={canUndo && interactive} />
-        {isCurrentPlayerHuman && state.phase === 'playing' && !showPassOverlay && game.lastTurnReplay?.player !== state.turn.currentPlayer &&
-          <button className="instant-replay-button" disabled={!game.lastTurnReplay || showReplay}
-            onClick={() => game.lastTurnReplay && startReplay(game.lastTurnReplay)}>↶ Instant replay · Opponent’s last turn</button>}
+        <button className="instant-replay-button" disabled={!canReplay} title={replayUnavailable}
+          onClick={() => canReplay && game.lastTurnReplay && startReplay(game.lastTurnReplay)}>↶ Instant replay</button>
         <nav className="reference-bar" aria-label="Game references" inert={showReplay}>
           <button onClick={() => setShowUnitShopInspection(true)}>Units</button>
           <button className="counter-key" aria-label="Element advantages and match stats" title="Each pair beats the next: +1 attack" onClick={() => setShowInsights(true)}>🔥⚡ → 🌿⚙ → 💧🌑 ↻ <span>+1</span>{showAIRecap ? ' •' : ''}</button>
@@ -777,7 +787,7 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
       </footer>
       {showVisualKey && <PlayDialog title="Read the board" onClose={() => setShowVisualKey(false)}><VisualKey /></PlayDialog>}
       {showMenu && <PlayDialog title="Game menu" onClose={() => setShowMenu(false)}>
-        <p>{online ? 'This match is saved on the server. Keep this browser’s seat credential to reconnect. Shared moves are final.' : `Your match is saved at phase changes on this device. New games use Unequal routes with ${INITIAL_MAP_RESOURCES} crystals.`}</p>
+        <p>{online ? 'This match is saved on the server. Keep this browser’s seat credential to reconnect. You can undo moves until you end your turn.' : `Your match is saved at phase changes on this device. New games use Unequal routes with ${INITIAL_MAP_RESOURCES} crystals.`}</p>
         {isCurrentPlayerHuman && <label><input type="checkbox" checked={!!state.reviewUpkeep?.[state.turn.currentPlayer]} onChange={e=>setUpkeepReview(state.turn.currentPlayer,e.target.checked)} /> Review upkeep each turn (allows T2/T3 release)</label>}
         <button onClick={() => { setShowMenu(false); handleBackToMenuClick(); }}>Choose game mode</button>
         {!online && <button onClick={() => { if (window.confirm('Start a new game? This replaces your saved match.')) { handlePlayAgain(); setShowMenu(false); } }}>New game</button>}

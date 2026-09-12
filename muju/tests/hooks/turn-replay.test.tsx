@@ -1,5 +1,6 @@
 import { afterEach, expect, it, vi } from 'vitest';
 import { act, cleanup, fireEvent, render, renderHook, screen } from '@testing-library/react';
+import { useReplayPlayback } from '../../src/components/TurnReplay';
 import { GameScreen } from '../../src/components/GameScreen';
 import { useGameState } from '../../src/hooks/useGameState';
 import { createInitialGameState, createUnit } from '../../src/game/board';
@@ -86,4 +87,43 @@ it('records placement and promotion results, omitting phase transitions', () => 
   expect(replay.frames[0].unitId).toBe(purchased.id);
   expect(replay.frames[0].board.units.find(u=>u.id===id)?.definitionId).toBe('fire_1');
   expect(replay.frames[1].board.units.find(u=>u.id===id)?.definitionId).toBe('fire_2');
+});
+
+it('can pause, step backward and forward, and does not skip actions in a hidden tab', () => {
+  vi.useFakeTimers();
+  const board=fixture().board;
+  const replay={player:'white' as const,turnNumber:1,initialBoard:board,frames:[
+    {board,action:{type:'END_PLACE_PHASE' as const},label:'First'},
+    {board,action:{type:'END_PLACE_PHASE' as const},label:'Second'},
+  ]};
+  const visibility=vi.spyOn(document,'hidden','get').mockReturnValue(false);
+  const {result,rerender}=renderHook(({turn})=>useReplayPlayback(turn),{initialProps:{turn:'black:1'}});
+  act(()=>result.current.startReplay(replay));
+  act(()=>vi.advanceTimersByTime(1000));expect(result.current.playback?.step).toBe(1);
+  act(()=>result.current.toggleReplay());act(()=>vi.advanceTimersByTime(3000));expect(result.current.playback?.step).toBe(1);
+  act(()=>result.current.stepReplay(-1));expect(result.current.playback).toMatchObject({step:0,paused:true});
+  act(()=>result.current.stepReplay(1));expect(result.current.playback?.step).toBe(1);
+  act(()=>result.current.toggleReplay());
+  act(()=>{visibility.mockReturnValue(true);document.dispatchEvent(new Event('visibilitychange'));});
+  act(()=>vi.advanceTimersByTime(5000));expect(result.current.playback).toMatchObject({step:1,paused:true});
+  act(()=>{visibility.mockReturnValue(false);document.dispatchEvent(new Event('visibilitychange'));});
+  act(()=>vi.advanceTimersByTime(2000));expect(result.current.playback?.step).toBe(1);
+  rerender({turn:'white:2'});expect(result.current.playback).toBeNull();
+  // Starting a fresh game with a repeated turn number must not revive an old replay.
+  rerender({turn:'black:1'});expect(result.current.playback).toBeNull();
+});
+
+it('keeps the replay launcher mounted across turns and restores keyboard focus on Escape', () => {
+  vi.useFakeTimers();const state=fixture();saveGameState(state);
+  render(<GameScreen config={{mode:'pass-play',controls:{white:'human',black:'human'},aiDifficulty:{white:'medium',black:'medium'}}} onBackToMenu={()=>{}} />);
+  const launcher=screen.getByRole('button',{name:/Instant replay/});expect(launcher).toBeDisabled();
+  fireEvent.click(screen.getByTestId('cell-0-0'));fireEvent.click(screen.getByTestId('cell-2-0'));
+  fireEvent.click(screen.getByRole('button',{name:/End turn/}));
+  expect(screen.getByRole('button',{name:/Instant replay/})).toBe(launcher);
+  fireEvent.click(screen.getByText('Tap anywhere to continue'));
+  launcher.focus();fireEvent.click(launcher);
+  expect(screen.getByRole('button',{name:'Pause replay'})).toHaveFocus();
+  fireEvent.keyDown(window,{key:'Escape'});
+  expect(screen.queryByRole('button',{name:'Pause replay'})).toBeNull();
+  expect(launcher).toHaveFocus();
 });
