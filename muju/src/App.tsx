@@ -9,7 +9,10 @@ import { MusicProvider } from './music/MusicPlayer';
 
 function GameApp() {
   const [gameConfig, setGameConfig] = useState<GameConfig | null>(null);
-  const [online, setOnline] = useState(() => new URLSearchParams(window.location.search).has('room'));
+  const [online, setOnline] = useState(() => {
+    const query = new URLSearchParams(window.location.search);
+    return query.has('room') || query.get('online') === '1';
+  });
 
   const handleStartGame = (config: GameConfig) => {
     setGameConfig(config);
@@ -23,7 +26,12 @@ function GameApp() {
   if (/^\/muju\/analysis\/?$/.test(window.location.pathname)) return <AnalysisScreen />;
   if (online) return <OnlineLobby onBack={() => { window.history.replaceState(null, '', window.location.pathname); setOnline(false); }} />;
   if (!gameConfig) {
-    return <ModeSelect onStartGame={handleStartGame} onOnline={() => setOnline(true)} />;
+    return <ModeSelect onStartGame={handleStartGame} onOnline={() => {
+      const url = new URL(window.location.href);
+      url.searchParams.set('online', '1');
+      window.history.replaceState(null, '', url);
+      setOnline(true);
+    }} />;
   }
 
   return <GameScreen config={gameConfig} onBackToMenu={handleBackToMenu} />;

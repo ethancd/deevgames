@@ -4,6 +4,15 @@ import type { GameState, PlayerId } from '../game/types';
 import type { ClockSnapshot, TimeControl } from './timeControl';
 
 export type RoomAction = AIAction | { type: 'SET_UPKEEP_REVIEW'; enabled: boolean } | { type: 'UNDO' };
+/** Public lobby metadata, without board snapshots or seat credentials. */
+export interface ActiveRoom {
+  id: string;
+  ready: boolean;
+  seats: Record<PlayerId, string | null>;
+  turnNumber: number;
+  currentPlayer: PlayerId;
+  updatedAt: string;
+}
 export interface RoomSnapshot {
   id: string;
   revision: number;

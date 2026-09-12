@@ -8,6 +8,7 @@ import { useOnlineGame } from './useOnlineGame';
 import { RoomHistory } from './RoomHistory';
 import { RoomClocks } from './RoomClocks';
 import { TIME_CONTROL_PRESETS, type TimeControlPreset } from './timeControl';
+import { ActiveGames } from './ActiveGames';
 
 const defaultServer = () => new URLSearchParams(window.location.search).get('server') || import.meta.env.VITE_MUJU_SERVER_URL || window.location.origin;
 interface Session { connection: OnlineConnection; room: RoomSnapshot; inviteCode?: string }
@@ -32,6 +33,7 @@ export function OnlineLobby({ onBack }: { onBack: () => void }) {
     catch { setNotice('This browser could not save your seat. Copy the private reconnect details before leaving.'); }
     window.history.replaceState(null, '', `${window.location.pathname}?room=${room.id}&server=${encodeURIComponent(connection.serverUrl)}${connection.player ? '' : '&watch=1'}`);
     setCredentials('');
+    setServer(connection.serverUrl);
     setSession({ connection, room, inviteCode });
   }
   useEffect(() => {
@@ -48,7 +50,7 @@ export function OnlineLobby({ onBack }: { onBack: () => void }) {
       .catch(error => { if (!cancelled) setError(error.message); }).finally(() => { if (!cancelled) setBusy(false); });
     return () => { cancelled = true; };
   }, []);
-  async function submit(kind: 'create' | 'join' | 'restore' | 'watch') {
+  async function submit(kind: 'create' | 'join' | 'restore' | 'watch' | 'browse', roomId?: string) {
     if (busy) return;
     setBusy(true); setError(null); setNotice(null); setFlow(kind);
     try {
@@ -57,8 +59,8 @@ export function OnlineLobby({ onBack }: { onBack: () => void }) {
         enter(connection, await restoreSeat(connection), connection.inviteCode);
         return;
       }
-      if (kind === 'watch') {
-        const connection = parseObserverConnection(watchLink, server);
+      if (kind === 'watch' || kind === 'browse') {
+        const connection = parseObserverConnection(roomId ?? watchLink, server);
         enter(connection, await readRoom(connection));
         return;
       }
@@ -87,17 +89,24 @@ export function OnlineLobby({ onBack }: { onBack: () => void }) {
     finally { setBusy(false); }
   }
   if (session) return <OnlineMatch session={session} notice={notice} onLeave={() => {
-    window.history.replaceState(null, '', window.location.pathname); setSession(null); setNotice(null);
+    window.history.replaceState(null, '', `${window.location.pathname}?online=1&server=${encodeURIComponent(session.connection.serverUrl)}`);
+    setSession(null); setNotice(null); setError(null);
   }} />;
   const feedback = (kind: string) => flow === kind && <>{busy && <p role="status">Connecting…</p>}{error && <p role="alert">{error}</p>}</>;
   return <main className="online-lobby">
     <div className="music-lobby-nav"><button onClick={onBack}>← Game modes</button><MusicButton /></div>
-    <h1>Muju Hono Tanka</h1><h2>Play together, anywhere</h2>
-    <p>Host a room and invite a friend or an LLM. Both players use the same board, on their own devices.</p>
+    <h1>Muju Hono Tanka</h1><h2>Play or watch together</h2>
+    <section aria-label="Active games">
+      <ActiveGames key={server} server={server} busy={busy} onWatch={id => void submit('browse', id)} />
+      {feedback('browse')}
+    </section>
+    <details><summary>Multiplayer server settings</summary>
+      <label>Multiplayer server<input type="url" value={server} onChange={e => setServer(e.target.value)} placeholder="https://your-muju-server.example" /></label>
+      <p className="online-help">Browse and host games on this server.</p>
+    </details>
+    <p>Host a room and invite a friend or an LLM. Active rooms are listed above for anyone to watch.</p>
     <label>Your name<input value={name} maxLength={40} onChange={e => setName(e.target.value)} /></label>
     <section aria-label="Host a game"><h3>Host a game</h3>
-      <label>Multiplayer server<input type="url" value={server} onChange={e => setServer(e.target.value)} placeholder="https://your-muju-server.example" /></label>
-      <p className="online-help">Use the address shared by the person running your game server.</p>
       <label>Your side<select value={side} onChange={e => setSide(e.target.value as PlayerId)}><option value="white">White · first turn</option><option value="black">Black · second turn</option></select></label>
       <p className="online-help">4 shared actions per turn · Draw after 10 consecutive turns without a kill.</p>
       <label>Time control<select value={timeChoice} onChange={e => setTimeChoice(e.target.value as typeof timeChoice)}>

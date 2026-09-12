@@ -38,6 +38,7 @@ export function createApp(store: RoomStore, options: { publicUrl: string; distPa
   app.use(express.json({ limit: '64kb' }));
   app.get('/api/muju/health', (_req, res) => res.json({ ok: true, game: 'Muju Hono Tanka', protocol: 1 }));
   app.post('/api/muju/rooms', (req, res) => res.status(201).json(store.create(req.body)));
+  app.get('/api/muju/rooms', (_req, res) => res.json({ rooms: store.listActive() }));
   app.get('/api/muju/rooms/:id', (req, res) => res.json(store.get(req.params.id, req.headers.authorization?.replace(/^Bearer /, ''))));
   app.get('/api/muju/rooms/:id/history', (req, res) => res.json(store.moveHistory(req.params.id, historyQuerySchema.parse(req.query))));
   app.get('/api/muju/rooms/:id/positions/:sequence', (req, res) => {

@@ -167,11 +167,12 @@ Coordinates are A1–J10, with A1 at top left. MCP accepts square names or `{x,y
 objects (zero indexed); the HTTP API uses `{x,y}`. Unit IDs come from observations;
 do not confuse instance IDs with catalogue IDs such as `fire_1`.
 
-All inventory is public. Anyone with the unguessable room ID can observe it;
+All inventory is public. Anyone can browse active rooms in the lobby and observe them;
 only seat tokens authorize actions. Share the **invitation**, never your own token.
 For human-to-agent handoff, the browser exposes your credential under **Private
 reconnect details**. Two clients using one token control the same seat, so coordinate
-their use. Rooms are unlisted; there is no public matchmaking or account system.
+their use. The public lobby grants observation only; playing still requires an
+invitation or an existing seat token. There is no account system.
 
 ## Optional time controls
 
@@ -259,6 +260,18 @@ the bearer token against the supplied `{player}` before the browser stores it.
 Restoration works with a full room or a used invitation, preserves revision,
 undo, and replay, and leaves the original device's credential valid.
 
+On your phone, choose **Play online → Active games → Watch**. The lobby lists
+unfinished games on the selected multiplayer server, including rooms waiting for
+an opponent. Games with both players appear first, with the most recently updated
+games first in each group. Finished games, including clock timeouts, disappear;
+unsupported older rules are excluded. Untimed games stay listed until they finish,
+even if their players disconnect. Player names, whose turn it is, and the last
+update time help you choose a game. The list refreshes every ten seconds while
+visible and when you return to the tab, with a manual **Refresh games** button.
+Bookmark `/muju/?online=1` to open the lobby directly; add `&server=HOST_URL` when
+using a separate frontend. Watching and then leaving returns to the same server's
+lobby. No invitation, login, or seat credentials are needed to watch.
+
 **Share watch link** in any online room provides a URL ending in `&watch=1`.
 Create/join and `muju_observe` also return `watchUrl`. Any number of observers
 can watch both seats live, inspect units, and replay the last completed turn.
@@ -338,6 +351,7 @@ and clears old undo/replay history. Reconnects receive an updated revision.
 
 | Method and path | Body / behavior |
 | --- | --- |
+| `GET /api/muju/rooms` | Public `{rooms}` list of unfinished room summaries: ID, player names, readiness, turn number, current player, updated time; no boards or credentials |
 | `POST /api/muju/rooms` | `{name, side, actionsPerTurn?: 4, timeControl?}` → admission (only 4 actions supported) |
 | `POST /api/muju/rooms/:id/join` | `{name, inviteCode}` → admission |
 | `GET /api/muju/rooms/:id` | Public snapshot; optional Bearer token validates a saved seat |

@@ -68,7 +68,10 @@ the original device. Coordinate use when two clients share a seat.
 
 To let people watch two LLMs, share the `watchUrl` returned by create, join, or
 `muju_observe`. They enter as read-only observers, including on browsers with a
-saved seat. Any number of observers can follow along, inspect units, and replay
+saved seat. People can also open **Play online → Active games** and tap **Watch**
+on any listed game without a link. Active rooms and player names are public; seat
+credentials still control who can play. Bookmark `/muju/?online=1` for the lobby.
+Any number of observers can follow along, inspect units, and replay
 the last completed turn. No token or invitation is required. MCP observers use
 `muju_observe` followed by `muju_wait_for_change` with just the room ID.
 

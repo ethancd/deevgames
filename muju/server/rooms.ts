@@ -11,7 +11,7 @@ import { migrateLegacyGame, type LegacyGameState } from '../src/game/migrate';
 import { isLegalAction } from '../src/game/legality';
 import { applyAction } from '../src/ai/simulate';
 import type { GameState, PlayerId } from '../src/game/types';
-import type { ActionRequest, RoomAction, RoomAdmission, RoomChange, RoomSnapshot } from '../src/online/types';
+import type { ActionRequest, ActiveRoom, RoomAction, RoomAdmission, RoomChange, RoomSnapshot } from '../src/online/types';
 import { projectClock, type ClockSnapshot } from '../src/online/timeControl';
 import { RoomError, actionRequestSchema, createSchema, joinSchema, roomIdSchema, historyQuerySchema } from './schema';
 
@@ -148,6 +148,25 @@ export class RoomStore {
       this.expire(room, Date.now());
       return this.snapshot(room);
     });
+  }
+  listActive(): ActiveRoom[] {
+    this.expireDue();
+    // Extract only public summaries in SQLite: boards, undo histories, and hashes
+    // never need to be loaded into the lobby or sent over a phone connection.
+    const rows = this.db.prepare(`SELECT id,
+      json_extract(data, '$.ready') AS ready,
+      json_extract(data, '$.seats') AS seats,
+      json_extract(data, '$.state.turn.turnNumber') AS turnNumber,
+      json_extract(data, '$.state.turn.currentPlayer') AS currentPlayer,
+      json_extract(data, '$.updatedAt') AS updatedAt
+      FROM rooms WHERE json_extract(data, '$.state.phase') = 'playing'
+      AND ((json_extract(data, '$.rulesVersion') = ? AND COALESCE(json_extract(data, '$.state.actionsPerTurn'), 4) = 4)
+        OR (json_extract(data, '$.rulesVersion') IN ('muju-online-2', 'muju-online-3')
+          AND COALESCE(json_extract(data, '$.state.actionsPerTurn'), 4) IN (4, 6)))
+      ORDER BY ready DESC, updatedAt DESC, id`).all(RULES_VERSION);
+    return rows.map(row => ({ id: row.id as string, ready: row.ready === 1,
+      seats: JSON.parse(row.seats as string), turnNumber: row.turnNumber as number,
+      currentPlayer: row.currentPlayer as PlayerId, updatedAt: row.updatedAt as string }));
   }
   moveHistory(id: string, input: HistoryQuery = {}): RoomMoveHistory {
     const { before, after, limit, includeUndone } = historyQuerySchema.parse(input);

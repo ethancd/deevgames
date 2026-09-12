@@ -86,7 +86,7 @@ export function ModeSelect({ onStartGame, onOnline }: ModeSelectProps) {
         <div className="space-y-3">
           {onOnline && <button onClick={onOnline} className="w-full p-4 rounded-lg border-2 border-cyan-700 hover:border-cyan-400 text-left">
             <div className="font-semibold">Play online</div>
-            <div className="text-sm text-gray-400">Invite a person or an LLM · two devices, one game</div>
+            <div className="text-sm text-gray-400">Host, join, or watch a live game</div>
           </button>}
           <button
             onClick={() => setSelectedMode('vs-ai')}
