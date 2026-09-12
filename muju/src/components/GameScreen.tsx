@@ -187,7 +187,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
     const unit = selectedUnitData ?? viewedEnemyUnitData ?? selectedPlaceUnitData;
     if (!unit) return [];
 
-    const isOwnUnit = unit.owner === state.turn.currentPlayer;
+    const isOwnUnit = !observing && unit.owner === state.turn.currentPlayer;
     const unitDef = getUnitDefinition(unit.definitionId);
 
     const speed = unitDef.speed;
@@ -202,14 +202,14 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
     }
 
     return getMovementRange(unit.position, speed, totalActions, state.board);
-  }, [selectedUnitData, viewedEnemyUnitData, selectedPlaceUnitData, state.turn.currentPlayer, state.turn.phase, state.turn.actionsRemaining, state.board, isCurrentPlayerHuman, showEnemyRange, actionsPerTurn]);
+  }, [selectedUnitData, viewedEnemyUnitData, selectedPlaceUnitData, state.turn.currentPlayer, state.turn.phase, state.turn.actionsRemaining, state.board, observing, showEnemyRange, actionsPerTurn]);
 
   const attackFrontier = useMemo(() => {
     const unit = selectedUnitData ?? viewedEnemyUnitData ?? selectedPlaceUnitData;
-    return showEnemyRange && unit && unit.owner !== state.turn.currentPlayer
+    return showEnemyRange && unit && (observing || unit.owner !== state.turn.currentPlayer)
       ? getAttackFrontier(unit, state.board, actionsPerTurn - 1)
       : [];
-  }, [selectedUnitData, viewedEnemyUnitData, selectedPlaceUnitData, showEnemyRange, state.turn.currentPlayer, state.board, actionsPerTurn]);
+  }, [selectedUnitData, viewedEnemyUnitData, selectedPlaceUnitData, showEnemyRange, observing, state.turn.currentPlayer, state.board, actionsPerTurn]);
 
   const latestState = useRef(state); latestState.current = state;
   const getCurrentState = useCallback(() => latestState.current, []);
@@ -672,7 +672,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
     : config.mode === 'ai-vs-ai' ? { white: 'AI 1', black: 'AI 2' }
     : { white: humanPlayer === 'white' ? 'You' : 'AI', black: humanPlayer === 'black' ? 'You' : 'AI' };
   const shownUnit = selectedPlaceUnitData ?? selectedUnitData ?? viewedEnemyUnitData;
-  const isEnemyView = !!shownUnit && shownUnit.owner !== state.turn.currentPlayer;
+  const isEnemyView = !!shownUnit && (observing || shownUnit.owner !== state.turn.currentPlayer);
   const previewTarget = preview ? getUnitAt(state.board, preview.position) : null;
   const previewMoveCost = preview && selectedUnitData
     ? Math.ceil(preview.path.length / getUnitDefinition(selectedUnitData.definitionId).speed) : 0;
@@ -734,9 +734,9 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
         </section>
         <section className="score-strip" aria-label="Player resources">
           <div><strong><i className={`player-dot ${viewerPlayer}`} />{playerNames[viewerPlayer]} <b>◆ {viewerState.resources}</b></strong>
-            <small>Gained {viewerState.resourcesGained}</small><small className={upkeepDue(state,viewerPlayer)>viewerState.resources ? 'rent-warning' : ''}>Upkeep {upkeepDue(state,viewerPlayer)} / turn</small></div>
+            <small>Gained {viewerState.resourcesGained}</small><small aria-label={`Projected mining for ${playerNames[viewerPlayer]}`} title="Projected mining at turn end from the current position">Mining +{projectedIncome(state, viewerPlayer)}</small><small className={upkeepDue(state,viewerPlayer)>viewerState.resources ? 'rent-warning' : ''}>Upkeep {upkeepDue(state,viewerPlayer)} / turn</small></div>
           <div><strong><i className={`player-dot ${opponentPlayer}`} />{playerNames[opponentPlayer]} <b>◆ {opponentState.resources}</b></strong>
-            <small>Gained {opponentState.resourcesGained}</small><small>Upkeep {upkeepDue(state,opponentPlayer)} / turn</small></div>
+            <small>Gained {opponentState.resourcesGained}</small><small aria-label={`Projected mining for ${playerNames[opponentPlayer]}`} title="Projected mining at turn end from the current position">Mining +{projectedIncome(state, opponentPlayer)}</small><small>Upkeep {upkeepDue(state,opponentPlayer)} / turn</small></div>
         </section>
         <div className="progress-clock"><span>{actionsPerTurn} actions / turn</span><span className={(state.inactivityPlies??0)>=INACTIVITY_WARNING ? 'rent-warning' : ''}>{state.inactivityPlies??0}/{INACTIVITY_LIMIT} turns without a kill</span>{state.lastUpkeep && (state.lastUpkeep.paid>0 || state.lastUpkeep.released.length>0) && <span>{playerNames[state.lastUpkeep.player]} paid {state.lastUpkeep.paid} · released {state.lastUpkeep.released.length}</span>}</div>
       </aside>
