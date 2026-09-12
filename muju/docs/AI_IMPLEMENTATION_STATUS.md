@@ -1,4 +1,4 @@
-# Current branch status — v2.1, 2026-09-09
+# Current branch status — v2.6, 2026-09-12
 
 The combined simplification branch uses the **real public GameState** in MCTS
 and worker protocol **2**. Observation/event masking, belief particles, queue
@@ -9,7 +9,12 @@ canonical transition. Bounded Place candidates include purchases by element,
 miners on ore, defensive Water/Metal purchases, anchor promotions and multiple
 Hi purchased beside a target then attacking in the same turn.
 
-The rebuilt kernel uses **ABI 4**. Tactical proofs retain current-turn movement,
+All live games use **four actions per turn**. JavaScript and WASM tactics,
+full-turn beam planning, raid proximity and enemy reach use that budget. Only
+an attack kill resets the ten-turn clock; search uses the same canonical draw
+transition as human and online play.
+
+The rebuilt kernel uses **ABI 6**. Tactical proofs retain current-turn movement,
 attacks/Cleave and home-blocked promotion subsets. **General placement and
 purchases remain outside the proof:** such queries return unknown. When an
 invader occupies home, every spawn rectangle is blocked, so the rescue proof

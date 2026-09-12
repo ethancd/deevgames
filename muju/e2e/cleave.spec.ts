@@ -2,7 +2,7 @@ import { test, expect, type Page } from '@playwright/test';
 import { createInitialGameState, createUnit } from '../src/game/board';
 import type { GameState } from '../src/game/types';
 async function start(page: Page, state: GameState) {
-  await page.addInitScript(saved => { if(!localStorage.getItem('elemental-tactics-save')) localStorage.setItem('elemental-tactics-save',JSON.stringify({schemaVersion:5,timestamp:Date.now(),state:saved})); },state);
+  await page.addInitScript(saved => { if(!localStorage.getItem('elemental-tactics-save')) localStorage.setItem('elemental-tactics-save',JSON.stringify({schemaVersion:6,timestamp:Date.now(),state:saved})); },state);
   await page.goto('./');
   await page.getByRole('button',{name:'Pass & Play'}).click();
   await page.getByRole('button',{name:/Continue saved game/}).click();
@@ -23,7 +23,7 @@ test('new Tier I kills once; the attack cap survives reload and undo restores it
   await start(page,s);await attack(page,5,4);
   await page.getByTestId('cell-5-5').click();
   await expect(page.locator('.cleave-status')).toHaveText('Attacks 1/1 · Attacks finished');
-  await expect(page.locator('.action-budget strong')).toHaveText('5 actions');
+  await expect(page.locator('.action-budget strong')).toHaveText('3 actions');
   await page.screenshot({path:info.outputPath('tier-one-spent.png')});
   await page.getByTestId('cell-6-5').click();
   await expect(page.getByRole('button',{name:'Confirm attack'})).toHaveCount(0);
@@ -46,7 +46,7 @@ test('Tier II keeps Cleave through reload, pays for its second attack, then stop
   await attack(page,6,5);
   await page.getByTestId('cell-5-5').click();
   await expect(page.locator('.cleave-status')).toHaveText('Attacks 2/2 · Attacks finished');
-  await expect(page.locator('.action-budget strong')).toHaveText('4 actions');
+  await expect(page.locator('.action-budget strong')).toHaveText('2 actions');
   await page.getByTestId('cell-5-6').click();
   await expect(page.getByRole('button',{name:'Confirm attack'})).toHaveCount(0);
 });

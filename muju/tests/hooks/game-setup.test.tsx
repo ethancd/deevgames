@@ -10,8 +10,7 @@ it('starts a new four-action game, undoes, resumes its rules and can start a sta
   const old=createInitialGameState();old.turn.turnNumber=9;saveGameState(old);
   let view=render(<App />);
   fireEvent.click(screen.getByRole('button',{name:/^Pass & Play/}));
-  expect(screen.getByRole('combobox',{name:'Actions per turn'})).toHaveValue('6');
-  fireEvent.change(screen.getByRole('combobox',{name:'Actions per turn'}),{target:{value:'4'}});
+  expect(screen.queryByRole('combobox',{name:'Actions per turn'})).toBeNull();
   fireEvent.click(screen.getByRole('button',{name:'Start Game'}));
   expect(loadGameState()).toMatchObject({actionsPerTurn:4,turn:{turnNumber:1,actionsRemaining:4}});
   expect(view.container.querySelectorAll('.action-budget i')).toHaveLength(4);
@@ -29,6 +28,6 @@ it('starts a new four-action game, undoes, resumes its rules and can start a sta
   view.unmount();view=render(<App />);
   fireEvent.click(screen.getByRole('button',{name:/^Pass & Play/}));
   fireEvent.click(screen.getByRole('button',{name:'Start Game'}));
-  expect(loadGameState()).toMatchObject({actionsPerTurn:6,turn:{currentPlayer:'white',actionsRemaining:6}});
-  expect(view.container.querySelectorAll('.action-budget i')).toHaveLength(6);
+  expect(loadGameState()).toMatchObject({actionsPerTurn:4,turn:{currentPlayer:'white',actionsRemaining:4}});
+  expect(view.container.querySelectorAll('.action-budget i')).toHaveLength(4);
 });

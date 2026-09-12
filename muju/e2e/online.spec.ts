@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 
-for (const actionsPerTurn of [6,4]) test(`${actionsPerTurn}-action independent browsers join, move, hand off and reconnect without a local save`, async ({ page, browser }) => {
+for (const actionsPerTurn of [4]) test(`${actionsPerTurn}-action independent browsers join, move, hand off and reconnect without a local save`, async ({ page, browser }) => {
   const other = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const guest = await other.newPage();
   try {
@@ -10,7 +10,6 @@ for (const actionsPerTurn of [6,4]) test(`${actionsPerTurn}-action independent b
     await page.evaluate(() => localStorage.setItem('elemental-tactics-save', 'local-match-marker'));
     await page.getByRole('button', { name: 'Play online' }).click();
     await page.getByLabel('Your name', { exact: true }).fill('Alice');
-    await page.getByRole('combobox',{name:'Actions per turn'}).selectOption(String(actionsPerTurn));
     await page.getByRole('button', { name: 'Create room' }).click();
     await expect(page.getByRole('button', { name: 'End turn' })).toBeDisabled();
     const invite = await page.getByLabel('Invite your opponent').inputValue();
@@ -75,7 +74,7 @@ test('a browser and MCP agent share moves, including retry after a lost response
     await page.getByRole('button', { name: 'Retry same move' }).click();
     await expect(page.getByRole('button', { name: 'End turn' })).toBeEnabled();
     const moved = await call('muju_observe', { roomId: hosted.credentials.roomId });
-    expect(moved.revision).toBe(2); expect(moved.turn.actionsRemaining).toBe(5);
+    expect(moved.revision).toBe(2); expect(moved.turn.actionsRemaining).toBe(3);
     await page.getByRole('button', { name: 'End turn' }).click();
     await expect(page.getByRole('button', { name: 'End turn' })).toBeDisabled();
     const observed = await call('muju_observe', { roomId: hosted.credentials.roomId });

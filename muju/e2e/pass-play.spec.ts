@@ -11,7 +11,7 @@ test('pass and play alternates both human turns', async ({ page }) => {
     await expect(overlay).toContainText(`Player ${player}`);
     await overlay.click();
     await expect(page.locator('.turn-strip')).toContainText(`Player ${player}`);
-    await expect(page.locator('.action-budget strong')).toHaveText(/6 actions|Buy & promote/);
+    await expect(page.locator('.action-budget strong')).toHaveText(/4 actions|Buy & promote/);
   }
 });
 

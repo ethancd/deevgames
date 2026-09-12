@@ -177,7 +177,7 @@ export interface MovementRangePosition {
  *
  * @param startPosition - Starting position of the unit
  * @param speed - Movement speed per action
- * @param totalActions - Total actions available (e.g., 6)
+ * @param totalActions - Total actions available (four at the start of a turn)
  * @param board - Current board state for obstacle checking
  * @returns Array of positions with their remaining actions cost
  */
@@ -192,12 +192,12 @@ export function getMovementRange(
   }));
 }
 
-/** Outer edge of a unit's potential attack area after up to five move actions.
+/** Outer edge of a unit's potential attack area after up to three move actions.
  * Uses the current board and speed, without promotions or clearing blockers.
  * Empty squares describe potential targets; friendly pieces cannot be targets.
  * Turn flags are ignored because enemy inspection previews a fresh turn.
  */
-export function getAttackFrontier(unit: Unit, board: BoardState, moveActions = 5): Position[] {
+export function getAttackFrontier(unit: Unit, board: BoardState, moveActions = 3): Position[] {
   const key = (p: Position) => p.y * BOARD_SIZE + p.x;
   const origins = [unit.position, ...getMovementRange(
     unit.position, getUnitDefinition(unit.definitionId).speed, moveActions, board

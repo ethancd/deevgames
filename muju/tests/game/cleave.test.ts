@@ -26,7 +26,7 @@ describe('Cleave', () => {
       s=attack(s,attacker,victims[i]);
       expect(s.board.units.some(u=>u.id===victims[i].id)).toBe(false);
       expect(getAttackCount(current(s,attacker))).toBe(i+1);
-      expect(s.turn.actionsRemaining).toBe(5-i);
+      expect(s.turn.actionsRemaining).toBe(3-i);
     }
     expect(canAttack(current(s,attacker))).toBe(false);
     expect(attack(s,attacker,victims[tier])).toBe(s);
@@ -63,7 +63,7 @@ describe('Cleave', () => {
   it('a zero-damage attack closes the chain',()=>{
     const {s,attacker}=arena(2);attacker.definitionId='plant_2';
     const after=attack(s,attacker,s.board.units[1]);
-    expect(after.turn.actionsRemaining).toBe(5);
+    expect(after.turn.actionsRemaining).toBe(3);
     expect(canAttack(current(after,attacker))).toBe(false);
     expect(current(after,s.board.units[1]).damageTaken).toBe(0);
   });
@@ -71,9 +71,9 @@ describe('Cleave', () => {
     let {s,attacker}=arena(2);const first=s.board.units[1], next=s.board.units[2];
     s=attack(s,attacker,first);
     s=applyAction(s,{type:'MOVE',unitId:attacker.id,to:first.position});
-    expect(s.turn.actionsRemaining).toBe(4);expect(canAttack(current(s,attacker))).toBe(true);
+    expect(s.turn.actionsRemaining).toBe(2);expect(canAttack(current(s,attacker))).toBe(true);
     s=applyAction(s,{type:'MOVE',unitId:attacker.id,to:{x:6,y:4}});
-    s=attack(s,attacker,next);expect(s.turn.actionsRemaining).toBe(2);
+    s=attack(s,attacker,next);expect(s.turn.actionsRemaining).toBe(0);
     expect(canAttack(current(s,attacker))).toBe(false);
     const zero={...s,turn:{...s.turn,actionsRemaining:0}};
     expect(isLegalAction(zero,{type:'ATTACK',unitId:attacker.id,targetPosition:s.board.units[1].position})).toBe(false);

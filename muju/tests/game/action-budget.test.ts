@@ -8,7 +8,7 @@ import { loadGameState, saveGameState } from '../../src/utils/persistence';
 
 afterEach(() => localStorage.clear());
 
-for (const budget of [4,6] as const) {
+for (const budget of [4] as const) {
   it(`${budget} actions persist through exhaustion, both players, placement and rematch`, () => {
     let s = createInitialGameState(undefined,budget);
     const hi = s.board.units.find(u=>u.owner==='white'&&u.definitionId==='fire_1')!;
@@ -40,23 +40,36 @@ for (const budget of [4,6] as const) {
   });
 }
 
-it('treats legacy games as six and isolates simultaneously simulated variants', () => {
-  const legacy=createInitialGameState(); delete legacy.actionsPerTurn;
-  saveGameState(legacy);
-  expect(loadGameState()?.actionsPerTurn).toBe(6);
-  expect(getActionsPerTurn(legacy)).toBe(6);
-  const four=createInitialGameState(undefined,4), six=createInitialGameState();
-  expect(applyAction(four,{type:'END_ACTION_PHASE'}).turn.actionsRemaining).toBe(4);
-  expect(applyAction(six,{type:'END_ACTION_PHASE'}).turn.actionsRemaining).toBe(6);
-  expect(applyAction(structuredClone(four),{type:'END_ACTION_PHASE'}).actionsPerTurn).toBe(4);
+it('upgrades old saves once, preserves the board, subtracts already-spent actions and starts a new clock', () => {
+  for (const oldBudget of [undefined,6,4]) for (const remaining of [0,2,4]) {
+    const state={...createInitialGameState(),actionsPerTurn:oldBudget,inactivityPlies:9};
+    state.turn.actionsRemaining=remaining;
+    localStorage.setItem('elemental-tactics-save',JSON.stringify({schemaVersion:5,state}));
+    const loaded=loadGameState()!;
+    expect(loaded.board).toEqual(state.board);expect(loaded.actionsPerTurn).toBe(4);
+    expect(loaded.turn.actionsRemaining).toBe(Math.max(0,4-((oldBudget??6)-remaining)));
+    expect(loaded.inactivityPlies).toBe(0);
+    expect(JSON.parse(localStorage.getItem('elemental-tactics-save')!).schemaVersion).toBe(6);
+    const next=applyAction(loaded,{type:'END_ACTION_PHASE'});saveGameState(next);
+    expect(loadGameState()?.inactivityPlies).toBe(1);
+  }
 });
 
-it('rejects unsupported or inconsistent saved action budgets', () => {
-  for(const bad of [5,0,'4',null]) {
+it('migrates placement and completed results without reviving a game', () => {
+  const state={...createInitialGameState(),actionsPerTurn:6,phase:'victory',winner:'white',victoryReason:'elimination'};
+  state.turn.phase='place';state.turn.actionsRemaining=6;
+  localStorage.setItem('elemental-tactics-save',JSON.stringify({schemaVersion:5,state}));
+  expect(loadGameState()).toMatchObject({actionsPerTurn:4,phase:'victory',winner:'white',turn:{actionsRemaining:4}});
+});
+
+it('rejects six actions and inconsistent current saves', () => {
+  for(const bad of [6,5,0,'4',null]) {
     const state={...createInitialGameState(),actionsPerTurn:bad};
-    localStorage.setItem('elemental-tactics-save',JSON.stringify({schemaVersion:5,state}));
+    localStorage.setItem('elemental-tactics-save',JSON.stringify({schemaVersion:6,state}));
     expect(loadGameState()).toBeNull();
   }
-  const state=createInitialGameState(undefined,4);state.turn.actionsRemaining=6;
+  const state=createInitialGameState();state.turn.actionsRemaining=6;
   saveGameState(state);expect(loadGameState()).toBeNull();
+  expect(getActionsPerTurn(createInitialGameState())).toBe(4);
+  expect(()=>createInitialGameState(undefined,6 as never)).toThrow();
 });

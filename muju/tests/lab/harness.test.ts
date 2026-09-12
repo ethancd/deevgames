@@ -79,7 +79,7 @@ describe('lab harness', () => {
       seed: 99,
       engineHash: 'test',
       runId: 'test',
-      options: { maxTurns: 5, recordReplay: false },
+      options: { maxTurns: 4, recordReplay: false },
     });
     expect(['adjudication', 'draw']).toContain(record.winType);
     expect(record.turns).toBeLessThanOrEqual(6);

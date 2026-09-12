@@ -29,12 +29,12 @@ describe('authoritative rule enforcement',()=>{
   });
   it('charges full multi-action movement cost on both paths',()=>{
     const s=fixture(), a:AIAction={type:'MOVE',unitId:'w',to:{x:7,y:2}};
-    expect(applyAction(s,a).turn.actionsRemaining).toBe(3); expect(gameReducer(gameReducer(s,a),{type:'DESELECT'})).toEqual(applyAction(s,a));
+    expect(applyAction(s,a).turn.actionsRemaining).toBe(1); expect(gameReducer(gameReducer(s,a),{type:'DESELECT'})).toEqual(applyAction(s,a));
     s.turn.actionsRemaining=2; expect(applyAction(s,a)).toBe(s);
   });
   it('rejects repeat attacks and attacks without actions',()=>{
     const s=fixture(),a:AIAction={type:'ATTACK',unitId:'w',targetPosition:{x:2,y:3}};
-    const hit=applyAction(s,a); expect(hit.turn.actionsRemaining).toBe(5); expect(applyAction(hit,a)).toBe(hit);
+    const hit=applyAction(s,a); expect(hit.turn.actionsRemaining).toBe(3); expect(applyAction(hit,a)).toBe(hit);
     s.turn.actionsRemaining=0; expect(applyAction(s,a)).toBe(s);
   });
   it('preserves promotion ownership and timing',()=>{

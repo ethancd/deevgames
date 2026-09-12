@@ -1,4 +1,4 @@
-// ABI 5. Header slot 6 supplies the match's full action budget for placement.
+// ABI 6. Header slot 6 supplies the match's full action budget for placement.
 // A complete current-turn target-removal search. No hidden state is read.
 // The host supplies the canonical catalogue and elemental attack matrix.
 // Buffers stay rooted for the instance lifetime; DFS mutates/undoes in place.
@@ -31,7 +31,7 @@ let length: i32 = 0;
 
 @external('env', 'shouldStop')
 declare function shouldStop(): i32;
-export function abiVersion(): i32 { return 5; }
+export function abiVersion(): i32 { return 6; }
 export function inputPtr(): usize { return input.dataStart; }
 export function cataloguePtr(): usize { return catalogue.dataStart; }
 export function powersPtr(): usize { return powers.dataStart; }
@@ -161,7 +161,7 @@ function promotions(first: i32, actions: i32, depth: i32): bool {
 // Caller only enables placement-phase search with home occupied, otherwise queues
 // and newly placed units would make this scope incomplete.
 export function solve(targetIndex: i32, nodeLimit: i32): i32 {
-  if (input[0] != 5 || input[1] > MAX_UNITS || input[1] < 1 || targetIndex < 0 || targetIndex >= input[1] || (input[6] != 4 && input[6] != 6)) return -1;
+  if (input[0] != 6 || input[1] > MAX_UNITS || input[1] < 1 || targetIndex < 0 || targetIndex >= input[1] || input[6] != 4) return -1;
   count = input[1]; player = input[2]; target = targetIndex; resources = input[5];
   visited = 0; maxNodes = max(0, nodeLimit); cutoff = false; length = 0;
   occupied.fill(-1);

@@ -56,7 +56,7 @@ const screenshots = process.env.QA_SCREENSHOTS;
       await page.getByRole('button', {name: 'Pass & Play Two players, one device', exact: true}).click();
       await page.getByRole('button', {name: /Continue saved game/}).click();
       assert.equal(await page.evaluate(() => localStorage.getItem('elemental-tactics-save')), saved);
-      assert.equal(await page.locator('.action-budget strong').innerText(), '6 actions');
+      assert.equal(await page.locator('.action-budget strong').innerText(), '4 actions');
       await page.getByRole('link', {name: 'Back to Deev Games', exact: true}).click();
       await page.getByRole('link', {name: /FORGE/}).click();
       await fits(); await picture('forge');

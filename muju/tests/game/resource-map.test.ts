@@ -2,7 +2,7 @@ import {describe,it,expect} from 'vitest';
 import {createInitialGameState} from '../../src/game/board';
 import {UNEQUAL_ROUTES_MAP,INITIAL_MAP_RESOURCES} from '../../src/game/resourceMap';
 import {MAPS} from '../../lab/maps/maps';
-import {saveGameState,loadGameState,SCHEMA_VERSION} from '../../src/utils/persistence';
+import {saveGameState,loadGameState} from '../../src/utils/persistence';
 import {checkInvariants} from '../../lab/harness/invariants';
 import {endTurn} from '../../src/game/turn';
 describe('Unequal routes passive reserves',()=>{
@@ -18,8 +18,8 @@ describe('Unequal routes passive reserves',()=>{
  it('round-trips reserves, public banks, turn flags and the income recap',()=>{
   const s=endTurn(createInitialGameState());saveGameState(s);expect(loadGameState()).toEqual(s);checkInvariants(s,'roundtrip');
  });
- it('rejects every earlier schema rather than trying to migrate an unfinished game',()=>{
-  for(let schemaVersion=1;schemaVersion<SCHEMA_VERSION;schemaVersion++){
+ it('rejects pre-passive-mining schemas without replacing their obsolete rules',()=>{
+  for(let schemaVersion=1;schemaVersion<5;schemaVersion++){
    localStorage.setItem('elemental-tactics-save',JSON.stringify({schemaVersion,state:createInitialGameState()}));
    expect(loadGameState()).toBeNull();expect(localStorage.getItem('elemental-tactics-save')).toBeNull();
   }

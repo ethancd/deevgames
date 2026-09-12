@@ -47,9 +47,9 @@ it('the AI does not resign a material deficit under the invasion rule',()=>{
  const s=createInitialGameState();s.board.units=s.board.units.filter(u=>u.owner==='black'||u.definitionId==='fire_1');
  expect(shouldResign(s,'white')).toBe(false);s.victoryRule='elimination';expect(shouldResign(s,'white')).toBe(true);
 });
-it('a coordinated three-attacker reply can remove a tier-3 Metal corner occupier',async()=>{
+it('a five-action three-attacker rotation cannot clear a corner in four actions',async()=>{
  const {clearHomePlan}=await import('../../lab/experiments/home-policies');
  let s=createInitialGameState();s.turn.currentPlayer='black';s.board.units=[createUnit('metal_3','white',{x:9,y:9}),createUnit('water_3','black',{x:9,y:8}),createUnit('water_3','black',{x:8,y:9}),createUnit('water_3','black',{x:8,y:8})];
- const plan=clearHomePlan(s);expect(plan).not.toBeNull();for(const a of plan!)s=applyAction(s,a);
- expect(getHomeOccupier(s.board,'white')).toBeUndefined();expect(s.winner).toBe('black');
+ const plan=clearHomePlan(s);expect(plan).toBeNull();
+ expect(getHomeOccupier(s.board,'white')).toBeDefined();
 });

@@ -43,7 +43,7 @@ describe('MCP and HTTP interoperability', () => {
     const observed=await call(client,'muju_observe',{roomId:hosted.credentials.roomId});
     expect(observed.turn.actionsRemaining).toBe(4);
     expect(observed.actionsPerTurn).toBe(4);
-    const rules=await call(client,'muju_rules');expect(rules.actionsPerTurn.options).toEqual([6,4]);
+    const rules=await call(client,'muju_rules');expect(rules.actionsPerTurn.options).toEqual([4]);
   });
   it.each([false, true])('returns tiny idle results without repeated snapshot downloads (stdio=%s)', async stdio => {
     const { store, url, requests } = await setup();

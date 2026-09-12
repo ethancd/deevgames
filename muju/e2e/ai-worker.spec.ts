@@ -4,7 +4,7 @@ import { tacticalFixtures } from '../lab/ai/fixtures';
 import { applyActions } from '../src/ai/simulate';
 import type { GameState } from '../src/game/types';
 async function start(page: Page, state: GameState, watch = false) {
-  await page.addInitScript(saved => localStorage.setItem('elemental-tactics-save', JSON.stringify({schemaVersion:5,timestamp:Date.now(),state:saved})),state);
+  await page.addInitScript(saved => localStorage.setItem('elemental-tactics-save', JSON.stringify({schemaVersion:6,timestamp:Date.now(),state:saved})),state);
   await page.goto('./');
   await page.getByRole('button',{name:watch?'Watch AI Spectate AI vs AI match':'vs AI Play against the computer',exact:true}).click();
   for (const select of await page.locator('select').filter({has:page.locator('option[value="hard"]')}).all()) await select.selectOption('hard');
@@ -45,7 +45,7 @@ test('restart during search cannot dispatch an old result into the new game',asy
   const workerPromise=page.waitForEvent('worker');await start(page,s);const worker=await workerPromise;
   const closed=worker.waitForEvent('close');page.on('dialog',d=>d.accept());
   await page.getByRole('button',{name:'Game menu',exact:true}).click();await page.getByRole('button',{name:'New game',exact:true}).click();await closed;
-  await expect(page.locator('.action-budget strong')).toHaveText('6 actions');
+  await expect(page.locator('.action-budget strong')).toHaveText('4 actions');
   await expect(page.getByTestId('cell-8-9')).toHaveAttribute('aria-label',/black Hi/);
   await page.waitForTimeout(700);
   await expect(page.getByTestId('cell-8-9')).toHaveAttribute('aria-label',/black Hi/);
@@ -80,20 +80,16 @@ test('Hard worker executes kill, paid move, Cleave to clear home',async({page})=
   expect(errors).toEqual([]);await expect(page.getByText('AI is using its backup engine.',{exact:true})).toHaveCount(0);
 });
 
-test('Hard worker finishes its opening capture before handing the turn back', async ({page}, info) => {
+test('Hard worker spends its fourth action on a capture before handing the turn back', async ({page}, info) => {
   const initial = createInitialGameState();
   const whiteHi = initial.board.units.find(unit => unit.owner === 'white' && unit.definitionId === 'fire_1')!;
   const whiteSjor = initial.board.units.find(unit => unit.owner === 'white' && unit.definitionId === 'water_1')!;
   const blackHi = initial.board.units.find(unit => unit.owner === 'black' && unit.definitionId === 'fire_1')!;
-  // The reported tablet opening: White spends three actions reaching H1
-  // and three reaching C4, then Black can reach H2 and capture with action six.
-  const state = applyActions(initial, [
-    {type: 'MOVE', unitId: whiteHi.id, to: {x: 7, y: 0}},
-    {type: 'MOVE', unitId: whiteSjor.id, to: {x: 2, y: 3}},
-    {type: 'END_ACTION_PHASE'},
-  ]);
+  // Black needs three movement actions to reach H6, then its fourth action kills H5.
+  whiteHi.position={x:7,y:4};whiteSjor.position={x:2,y:3};
+  const state=applyActions(initial,[{type:'END_ACTION_PHASE'}]);
   expect(state.turn.currentPlayer).toBe('black');
-  expect(state.turn.actionsRemaining).toBe(6);
+  expect(state.turn.actionsRemaining).toBe(4);
   expect(state.players.white.resources).toBe(6);
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
@@ -113,7 +109,7 @@ test('Hard worker finishes its opening capture before handing the turn back', as
   }, {whiteId: whiteHi.id, blackId: blackHi.id}), {timeout: 20_000}).toEqual({
     player: 'white', turn: 2, whiteHiAlive: false, blackHiAlive: true,
   });
-  await expect(page.getByTestId('cell-7-0')).not.toHaveAttribute('aria-label', /white Hi/);
+  await expect(page.getByTestId('cell-7-4')).not.toHaveAttribute('aria-label', /white Hi/);
   expect(errors).toEqual([]);
   await expect(page.getByRole('alert')).toHaveCount(0);
   await expect(page.getByText('AI is using its backup engine.', {exact: true})).toHaveCount(0);

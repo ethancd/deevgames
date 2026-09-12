@@ -1,3 +1,4 @@
+import { getActionsPerTurn } from '../../game/rules';
 import type { GameState, PlayerId } from '../../game/types';
 import type { TurnPlan } from './types';
 import { getUnitDefinition } from '../../game/units';
@@ -11,6 +12,7 @@ export function strategicValue(state: GameState, player: PlayerId): number {
   if (state.phase === 'victory') return 0;
   const enemy = player === 'white' ? 'black' : 'white';
   let score = 0;
+  const actions = getActionsPerTurn(state);
   for (const owner of [player, enemy]) {
     const sign = owner === player ? 1 : -1, other = owner === player ? enemy : player;
     const target = state.players[other].startCorner;
@@ -22,13 +24,13 @@ export function strategicValue(state: GameState, player: PlayerId): number {
       const route = getMoveCost(u.position, target, d.speed, state.board);
       if (route !== null) closest = Math.min(closest, route);
       // A modest raiding prior breaks aimless wandering once local ore is dry.
-      if (d.attack > 0) score += sign * Math.max(0, 7 - Math.ceil(distance / d.speed)) * 1.2;
+      if (d.attack > 0) score += sign * Math.max(0, actions + 1 - Math.ceil(distance / d.speed)) * 1.2;
     }
-    if (state.victoryRule !== 'elimination' && closest <= 6) {
+    if (state.victoryRule !== 'elimination' && closest <= actions) {
       const home = state.players[other].startCorner;
       const defenders = state.board.units.filter(u => u.owner === other &&
         Math.abs(u.position.x - home.x) + Math.abs(u.position.y - home.y) <= 2 && getUnitDefinition(u.definitionId).attack > 0);
-      score += sign * Math.max(0, 6 - closest) * (defenders.length ? 0.4 : 2);
+      score += sign * Math.max(0, actions - closest) * (defenders.length ? 0.4 : 2);
     }
   }
   if (state.victoryRule !== 'elimination' && homeInvader(state, player)) score -= 200;

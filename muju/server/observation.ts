@@ -89,15 +89,15 @@ export function legalActions(room: RoomSnapshot, options: { unitId?: string; typ
 }
 
 export const rules = {
-  actionsPerTurn: { default: 6, options: [6, 4], setting: 'Chosen when creating a room; fixed for both players. Read actionsPerTurn in the room observation.' },
+  actionsPerTurn: { default: 4, options: [4], setting: 'Every game uses four shared actions per player turn.' },
   game: 'Muju Hono Tanka', board: '10×10, White home A1, Black home J10. All game information is public.',
   turn: ['Pay tier 2/3 upkeep at turn start (1/2 crystals per unit). Tier 1 stays free; release higher tiers if needed.',
     'Place: buy tier 1 units in controlled empty squares, or promote existing units by one tier, paying the cost difference. Newly placed units cannot promote this turn.',
-    'Act: spend up to the room action budget: 6 shared actions by default, or the 4-action variant. Movement is orthogonal through empty cells; cost is ceil(path length / speed). Attacks target orthogonally adjacent enemies and cost 1.',
+    'Act: spend up to 4 shared actions per turn. Movement is orthogonal through empty cells; cost is ceil(path length / speed). Attacks target orthogonally adjacent enemies and cost 1.',
     'End the action phase to collect finite crystals beneath each unit, then hand play to the other player.'],
   combat: 'Attack ≥ remaining defense eliminates. Otherwise damage lasts until the defender’s turn starts. A unit gets one attack; its own killing blow unlocks another, up to its tier. Moving can repeat while actions remain.',
   elements: 'Fire/Lightning beats Plant/Metal beats Water/Shadow beats Fire/Lightning. Advantage +1 attack; disadvantage −1, minimum 0.',
-  victory: 'Eliminate every enemy, or occupy the enemy home until your next turn starts. Opponent gets a full turn to clear it. Resignation loses. 10 consecutive player turns without income or attack kills draw.',
+  victory: 'Eliminate every enemy, or occupy the enemy home until your next turn starts. Opponent gets a full turn to clear it. Resignation loses. 10 consecutive player turns without an enemy kill by attack draw. Only an attack kill resets the clock; income, movement, purchases, promotions and upkeep losses do not.',
   workflow: 'Create a room and share only the invitation with the opponent, or join using their roomId and inviteCode. Keep your seat token private. Read the room and legal actions; preview a sequence; play with expectedRevision and a unique requestId. Reuse the exact requestId/body after an uncertain network outcome. Batches are atomic and cannot play the opponent’s turn. Call muju_wait_for_change with afterRevision set to the latest revision between turns. On changed=true, inspect events for who acted and what they did, then use room.activePlayer to determine who can play. A move or undo within the opponent’s turn does not hand over control. On changed=false, retain the board and wait again. Stop on phase=victory.',
   undo: 'Send UNDO alone via muju_play to reverse your latest committed command (an atomic batch is one command). Repeat while canUndo is true. Purchases, promotions, upkeep choices and ending placement are reversible until turn end. Ending the turn or finishing the game clears undo history.',
   upkeep: 'Affordable upkeep is paid automatically unless review is enabled. SET_UPKEEP_REVIEW changes only your own preference and must be sent alone.',

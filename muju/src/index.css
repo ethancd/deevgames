@@ -61,9 +61,6 @@ button:focus-visible, a:focus-visible { outline: 3px solid #67e8f9; outline-offs
 .context-status { min-height: 18px; font-size: 10px; color: #aebfcd; text-align: center; }
 .action-bar { display: flex; align-items: center; gap: 6px; }
 .action-budget { margin-right: auto; min-width: 85px; }
-.action-budget-select { display: flex; flex-direction: column; gap: 8px; color: #e2e8f0; }
-.action-budget-select select { width: 100%; border: 1px solid #475569; border-radius: 6px; background: #172033; color: #f1f5f9; padding: 10px; min-height: 44px; }
-.action-budget-select small { color: #94a3b8; font-size: 12px; }
 .action-budget strong { font-size: 12px; }
 .action-budget>span { display: flex; gap: 4px; margin-top: 3px; }
 .action-budget i { width: 8px; height: 8px; border-radius: 50%; background: #405266; }
@@ -381,7 +378,7 @@ button:focus-visible, a:focus-visible { outline: 3px solid #67e8f9; outline-offs
 }
 @media (max-height: 620px) and (orientation: portrait) {
   .game-shell { height: auto; min-height: 100dvh; }
-  .play-area, .play-area.is-placing { flex: none; grid-template-rows: min(calc(100vw - 20px), 280px) 24px 106px; }
+  .play-area, .play-area.is-placing { flex: none; grid-template-rows: min(calc(100vw - 20px), 280px) 24px 116px; }
   .turn-replay { grid-template-rows: 16px minmax(24px,1fr) 36px; gap: 3px; padding-block: 4px; }
 }
 @media (max-height: 600px) and (orientation: landscape) {

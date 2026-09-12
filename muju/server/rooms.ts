@@ -4,13 +4,14 @@ import { DatabaseSync } from 'node:sqlite';
 import { setTimeout as delay } from 'node:timers/promises';
 import { createInitialGameState } from '../src/game/board';
 import { getActionsPerTurn, isActionsPerTurn } from '../src/game/rules';
+import { migrateLegacyGame, type LegacyGameState } from '../src/game/migrate';
 import { isLegalAction } from '../src/game/legality';
 import { applyAction } from '../src/ai/simulate';
 import type { GameState, PlayerId } from '../src/game/types';
 import type { ActionRequest, RoomAction, RoomAdmission, RoomChange, RoomSnapshot } from '../src/online/types';
 import { RoomError, actionRequestSchema, createSchema, joinSchema, roomIdSchema } from './schema';
 
-const RULES_VERSION = 'muju-online-3';
+const RULES_VERSION = 'muju-online-4';
 const digest = (value: string) => createHash('sha256').update(value).digest('hex');
 const secret = () => randomBytes(32).toString('hex');
 function matches(value: string, hash: string) {
@@ -45,11 +46,19 @@ export class RoomStore {
     const row = this.db.prepare('SELECT data FROM rooms WHERE id = ?').get(id);
     if (!row) throw new RoomError(404, 'ROOM_NOT_FOUND', 'Room not found. Check the invitation or room ID.');
     const room = JSON.parse(row.data as string) as StoredRoom;
-    const legacy = room.rulesVersion === 'muju-online-2' && getActionsPerTurn(room.state) === 6;
-    if ((!legacy && room.rulesVersion !== RULES_VERSION) || !isActionsPerTurn(getActionsPerTurn(room.state))) {
+    const legacy = ['muju-online-2', 'muju-online-3'].includes(room.rulesVersion);
+    const oldState = room.state as LegacyGameState;
+    const validBudget = legacy ? oldState.actionsPerTurn === undefined || [4, 6].includes(oldState.actionsPerTurn) : isActionsPerTurn(getActionsPerTurn(room.state));
+    if ((!legacy && room.rulesVersion !== RULES_VERSION) || !validBudget) {
       throw new RoomError(409, 'RULES_CHANGED', 'This room uses older rules. Create a new room.');
     }
-    room.state.actionsPerTurn = getActionsPerTurn(room.state);
+    if (legacy) {
+      room.state = migrateLegacyGame(oldState);
+      room.rulesVersion = RULES_VERSION;
+      // Reconnects see a changed revision. No undo or replay may restore the old rules.
+      room.revision++;
+      room.undoHistory = []; room.undoReplayLengths = []; room.replayRecording = emptyRecording();
+    } else room.state.actionsPerTurn = getActionsPerTurn(room.state);
     return room;
   }
   private save(room: StoredRoom) {

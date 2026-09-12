@@ -35,7 +35,7 @@ export function Board({
   attackFrontier = [],
   onCellClick,
   onUnitClick,
-  previewPosition, previewUnitPosition, showResources = false, actionsRemaining = 6,
+  previewPosition, previewUnitPosition, showResources = false, actionsRemaining = 4,
 }: BoardProps) {
   const isValidMove = (pos: Position) =>
     validMoves.some((m) => m.x === pos.x && m.y === pos.y);

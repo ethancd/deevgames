@@ -4,10 +4,10 @@ import { getAttackFrontier } from '../../src/game/movement';
 
 describe('enemy attack frontier', () => {
   it.each([
-    ['water_1', {x: 3, y: 3}, {x: 4, y: 3}],
-    ['fire_1', {x: 9, y: 2}, {x: 9, y: 3}],
-    ['lightning_1', {x: 9, y: 7}, {x: 9, y: 8}],
-  ] as const)('%s reserves the sixth action for attacking', (id, last, beyond) => {
+    ['water_1', {x: 2, y: 2}, {x: 3, y: 2}],
+    ['fire_1', {x: 5, y: 2}, {x: 6, y: 2}],
+    ['lightning_1', {x: 8, y: 2}, {x: 9, y: 2}],
+  ] as const)('%s reserves the fourth action for attacking', (id, last, beyond) => {
     const enemy = createUnit(id, 'black', {x: 0, y: 0});
     const frontier = getAttackFrontier(enemy, addUnit(createEmptyBoard(), enemy));
     expect(frontier).toContainEqual(last);
@@ -26,12 +26,12 @@ describe('enemy attack frontier', () => {
   it('uses paths around blockers rather than an unobstructed distance diamond', () => {
     const enemy = createUnit('water_1', 'black', {x: 0, y: 0});
     let board = addUnit(createEmptyBoard(), enemy);
-    for (let y = 0; y < 4; y++) board = addUnit(board, createUnit('metal_1', 'black', {x: 2, y}));
+    for (let y = 0; y < 2; y++) board = addUnit(board, createUnit('metal_1', 'black', {x: 2, y}));
     const frontier = getAttackFrontier(enemy, board);
     expect(frontier).not.toContainEqual({x: 3, y: 0});
-    expect(frontier).toContainEqual({x: 2, y: 4});
-    expect(frontier).not.toContainEqual({x: 3, y: 4});
-    expect(frontier.some(p => p.x === 2 && p.y < 4)).toBe(false);
+    expect(frontier).toContainEqual({x: 2, y: 2});
+    expect(frontier).not.toContainEqual({x: 3, y: 2});
+    expect(frontier.some(p => p.x === 2 && p.y < 2)).toBe(false);
   });
 
   it('includes occupied targets regardless of lethality and never moves through them', () => {
@@ -51,6 +51,6 @@ describe('enemy attack frontier', () => {
     const board = blockers.reduce((b, u) => addUnit(b, u), addUnit(createEmptyBoard(), enemy));
     expect(getAttackFrontier(enemy, board)).toEqual([]);
     const opened = {...board, units: board.units.filter(u => u.id !== blockers[0].id)};
-    expect(getAttackFrontier(enemy, opened)).toContainEqual({x: 0, y: 6});
+    expect(getAttackFrontier(enemy, opened)).toContainEqual({x: 0, y: 4});
   });
 });

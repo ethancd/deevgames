@@ -46,11 +46,11 @@ for (const player of ['white', 'black'] as const) for (const homeUnderAttack of 
   real.turn.currentPlayer = player;
   const opponent: PlayerId = player === 'white' ? 'black' : 'white';
   const orient = ({x, y}: Position): Position => player === 'white' ? {x, y} : {x: 9 - x, y: 9 - y};
-  const mover = createUnit('fire_1', player, orient({x: 1, y: 5}));
+  const mover = createUnit('fire_1', player, orient({x: 1, y: 3}));
   const target = createUnit('fire_1', opponent, orient({x: homeUnderAttack ? 0 : 2, y: 0}));
   real.board.units = [mover, target, createUnit('water_1', opponent, orient({x: 9, y: 9}))];
   const planned: AIAction[] = [
-   ...[4, 3, 2, 1, 0].map(y => ({type: 'MOVE' as const, unitId: mover.id, to: orient({x: 1, y})})),
+   ...[2, 1, 0].map(y => ({type: 'MOVE' as const, unitId: mover.id, to: orient({x: 1, y})})),
    {type: 'ATTACK', unitId: mover.id, targetPosition: target.position},
   ];
   const seen: AIAction[] = [], allowances: number[] = [];
@@ -61,7 +61,7 @@ for (const player of ['white', 'black'] as const) for (const homeUnderAttack of 
    expect(s).toEqual(real);
    if (s.turn.actionsRemaining > 0) {
     allowances.push(allowance);
-    if (allowance > 0) return planned.slice(6 - s.turn.actionsRemaining);
+    if (allowance > 0) return planned.slice(4 - s.turn.actionsRemaining);
    }
    return [{type: 'END_ACTION_PHASE'}];
   });
@@ -73,7 +73,7 @@ for (const player of ['white', 'black'] as const) for (const homeUnderAttack of 
    }, player);
   });
   expect(result.current.error).toBeNull();
-  expect(allowances).toHaveLength(6);
+  expect(allowances).toHaveLength(4);
   expect(allowances.every(allowance => allowance > 0)).toBe(true);
   expect(seen).toEqual([...planned, {type: 'END_ACTION_PHASE'}]);
   expect(real.board.units.some(unit => unit.id === target.id)).toBe(false);

@@ -7,7 +7,7 @@ import {applyAction} from '../../src/ai/simulate';
 import {gameReducer} from '../../src/hooks/useGameState';
 import {checkInvariants} from '../../lab/harness/invariants';
 import {seededRandom} from '../../src/ai/runtime';
-for(const budget of [4,6] as const) for(let seed=1;seed<=20;seed++)it(`${budget}-action full-state invariants and reducer/search equality, seed ${seed}`,()=>{
+for(const budget of [4] as const) for(let seed=1;seed<=20;seed++)it(`${budget}-action full-state invariants and reducer/search equality, seed ${seed}`,()=>{
  let state=createInitialGameState(undefined,budget);const rng=seededRandom(seed);
  for(let ply=0;ply<500&&state.phase==='playing';ply++){
   const legal=generateAllActions(state,state.turn.currentPlayer);expect(legal.length).toBeGreaterThan(0);

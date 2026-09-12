@@ -273,3 +273,21 @@ Do not install a static power score in the playing AI or claim that a stat has o
   remains outside the tactical proof; bounded purchase templates are planning
   candidates. Save schema 5 starts older unfinished games fresh. Tested branch,
   not production deployment.
+
+## J-019: Four actions only; quiet means no kills (v2.6, 2026-09-12)
+
+- **Designer decision:** make four shared actions the sole game version and
+  define a quiet player turn as one without an enemy kill by attack.
+- **Resolution:** remove the six-action setup option. Only a combat kill resets
+  the clock, immediately and through the end of that turn. Income, chip damage,
+  movement, purchases, promotions and upkeep releases do not reset it. Ten
+  consecutive completed player turns (five full rounds) draw, before the next
+  home-occupation, upkeep or healing checks.
+- **AI and teaching:** use four actions in turn transitions, previews, reference
+  text, beam planning, raid proximity and JavaScript/WASM tactical proofs (ABI 6).
+  A five-action rotation is now an impossible rescue in the regression fixtures.
+- **Compatibility:** schema-5 saves and online version-2/3 rooms retain their
+  boards and seats while upgrading. Deduct already-spent actions from four,
+  floored at zero; reset the changed clock to zero. Keep completed results final.
+  Discard online undo/replay history from the old rules. New saves use schema 6;
+  new rooms use online rules version 4.

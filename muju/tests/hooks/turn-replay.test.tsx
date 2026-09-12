@@ -8,7 +8,7 @@ import { loadGameState, saveGameState } from '../../src/utils/persistence';
 
 afterEach(() => { cleanup(); localStorage.clear(); vi.useRealTimers(); vi.restoreAllMocks(); });
 function fixture() {
-  const state = createInitialGameState(undefined, 6);
+  const state = createInitialGameState(undefined, 4);
   state.board.units = [createUnit('fire_1', 'white', {x:0,y:0}), createUnit('plant_1', 'black', {x:4,y:0}), createUnit('water_1', 'black', {x:9,y:9})];
   return state;
 }

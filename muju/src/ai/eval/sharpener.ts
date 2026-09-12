@@ -26,7 +26,7 @@ export function tacticalSharpen(
     return evaluatePosition(state, forPlayer, weights);
   }
 
-  // Actions do not alternate players: six actions belong to the same turn.
+  // Actions do not alternate players: four actions belong to the same turn.
   const maximize = currentPlayer === forPlayer;
   let bestValue = evaluatePosition(state, forPlayer, weights);
   for (const action of tacticalPlans) {

@@ -11,7 +11,7 @@ describe('public purchases and promotion climb',()=>{
   let s=createInitialGameState();
   if(player==='black')s=applyAction(s,{type:'END_ACTION_PHASE'});
   const anchor=s.board.units.find(u=>u.owner===player&&u.definitionId==='water_1')!;
-  const target=player==='white'?{x:4,y:4}:{x:5,y:5};
+  const target=player==='white'?{x:3,y:3}:{x:6,y:6};
   s=applyAction(s,{type:'MOVE',unitId:anchor.id,to:target});
   s=applyAction(s,{type:'END_ACTION_PHASE'});
   if(s.turn.phase==='place')s=applyAction(s,{type:'END_PLACE_PHASE'});
@@ -25,7 +25,7 @@ describe('public purchases and promotion climb',()=>{
   }
   expect(s.players[player].resources).toBe(0);
   expect(s.board.units.filter(u=>u.owner===player)).toHaveLength(5);
-  expect(s.turn.actionsRemaining).toBe(6);
+  expect(s.turn.actionsRemaining).toBe(4);
   const third={type:'BUY_UNIT' as const,definitionId:'fire_1',position:getAllSpawnPositions(player,s.board)[0]};
   // Check the budget boundary even if the engine automatically ends Place.
   const place={...s,turn:{...s.turn,phase:'place' as const}};
@@ -38,7 +38,7 @@ describe('public purchases and promotion climb',()=>{
   expect(s.players.white.resources).toBe(3);
   expect(s.board.units.find(u=>u.id===hi.id)?.definitionId).toBe('fire_2');
   s=applyAction(s,{type:'BUY_UNIT',definitionId:'fire_1',position:{x:0,y:0}});
-  expect(s.players.white.resources).toBe(0);expect(s.turn.actionsRemaining).toBe(6);
+  expect(s.players.white.resources).toBe(0);expect(s.turn.actionsRemaining).toBe(4);
   expect(s.board.units.filter(u=>u.owner==='white')).toHaveLength(4);
  });
  it.each(UNIT_DEFINITIONS.map(d=>[d.id,d.tier,d.cost] as const))('buys %s only if tier 1 and charges its exact cost',(definitionId,tier,cost)=>{
@@ -47,7 +47,7 @@ describe('public purchases and promotion climb',()=>{
   if(tier!==1){expect(next).toBe(s);return;}
   expect(next.players.white.resources).toBe(40-cost);expect(next.players.white.resourcesGained).toBe(40);
   const u=next.board.units.at(-1)!;expect(u.placedThisTurn).toBe(true);expect(u.canActThisTurn).toBe(true);
-  expect(next.turn.actionsRemaining).toBe(6);expect(next.players.black.resources).toBe(0);
+  expect(next.turn.actionsRemaining).toBe(4);expect(next.players.black.resources).toBe(0);
  });
  it('rejects wrong phase, occupied, outside, noninteger, unknown, unaffordable and blocked purchases',()=>{
   const base=position();
@@ -76,14 +76,13 @@ describe('public purchases and promotion climb',()=>{
   s=applyAction(s,{type:'BUY_UNIT',definitionId:'fire_1',position:{x:4,y:3}});const u=s.board.units.at(-1)!;
   s=applyAction(s,{type:'END_PLACE_PHASE'});s=applyAction(s,{type:'MOVE',unitId:u.id,to:{x:5,y:3}});
   s=applyAction(s,{type:'ATTACK',unitId:u.id,targetPosition:{x:5,y:4}});
-  expect(s.board.units.find(x=>x.owner==='black'&&x.position.x===5)).toBeUndefined();expect(s.turn.actionsRemaining).toBe(4);
+  expect(s.board.units.find(x=>x.owner==='black'&&x.position.x===5)).toBeUndefined();expect(s.turn.actionsRemaining).toBe(2);
  });
- it('tests the E5 opening and D5 infiltration: blocking cannot be cleared before purchases',()=>{
-  let s=createInitialGameState();const w=s.board.units.find(u=>u.owner==='white'&&u.definitionId==='water_1')!;
-  s=applyAction(s,{type:'MOVE',unitId:w.id,to:{x:4,y:4}});expect(s.turn.actionsRemaining).toBe(0);
-  s=applyAction(s,{type:'END_ACTION_PHASE'});const b=s.board.units.find(u=>u.owner==='black'&&u.definitionId==='fire_1')!;
-  s=applyAction(s,{type:'MOVE',unitId:b.id,to:{x:3,y:4}});expect(s.turn.actionsRemaining).toBe(1);
-  s=applyAction(s,{type:'END_ACTION_PHASE'});expect(s.players.white.resources).toBe(6);
+ it('infiltration blocking cannot be cleared before purchases',()=>{
+  let s=createInitialGameState();s.turn.phase='place';s.players.white.resources=6;
+  const w=s.board.units.find(u=>u.owner==='white'&&u.definitionId==='water_1')!;
+  const b=s.board.units.find(u=>u.owner==='black'&&u.definitionId==='fire_1')!;
+  w.position={x:4,y:4};b.position={x:3,y:4};
   for(const pos of [{x:4,y:3},{x:3,y:3},{x:3,y:4}])expect(isLegalAction(s,{type:'BUY_UNIT',definitionId:'fire_1',position:pos})).toBe(false);
   s=applyAction(s,{type:'END_PLACE_PHASE'});s=applyAction(s,{type:'ATTACK',unitId:w.id,targetPosition:{x:3,y:4}});
   expect(s.board.units.some(u=>u.id===b.id)).toBe(false);

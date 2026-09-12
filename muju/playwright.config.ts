@@ -1,7 +1,8 @@
 import { defineConfig } from '@playwright/test';
 export default defineConfig({
   testDir: './e2e',
-  testIgnore: 'online.spec.ts',
+  // These need the authoritative server started by playwright.online.config.ts.
+  testIgnore: ['online.spec.ts', 'replay.spec.ts'],
   fullyParallel: true,
   workers: 2,
   use: {

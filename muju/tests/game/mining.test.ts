@@ -26,7 +26,7 @@ describe('passive income',()=>{
   const state=createInitialGameState(),u=state.board.units.find(u=>u.owner==='white'&&u.definitionId==='water_1')!;
   const moved=applyAction(state,{type:'MOVE',unitId:u.id,to:{x:2,y:1}});
   const income=endOfTurnIncome(moved,'white');
-  expect(income.total).toBe(6);expect(income.state.turn.actionsRemaining).toBe(5);
+  expect(income.total).toBe(6);expect(income.state.turn.actionsRemaining).toBe(3);
   expect(income.state.board.cells[1][1].resourceLayers).toBe(10);
   expect(income.state.board.cells[1][2].resourceLayers).toBe(2);
   expect(income.state.players.black.resources).toBe(0);

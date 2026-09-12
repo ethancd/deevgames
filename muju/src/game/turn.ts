@@ -78,7 +78,7 @@ export function endTurn(state: GameState): GameState {
   const player = state.turn.currentPlayer;
   const income = endOfTurnIncome(state, player);
   const completed = resolveInactivityDraw({ ...income.state,
-    inactivityPlies: state.progressThisTurn || income.total > 0 ? 0 : (state.inactivityPlies ?? 0) + 1,
+    inactivityPlies: state.progressThisTurn ? 0 : (state.inactivityPlies ?? 0) + 1,
     progressThisTurn: false,
   });
   if (completed.phase === 'victory') return completed;

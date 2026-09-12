@@ -7,9 +7,9 @@ import {SearchBudget} from '../../src/ai/runtime';
 import {startTurn} from '../../src/game/turn';
 import {playGame} from '../../lab/harness/runner';
 import type {ScriptedBot} from '../../lab/harness/types';
-it('Medium resets an imminent draw with passive income while ahead',async()=>{
+it('Medium takes a kill to reset an imminent draw despite passive income',async()=>{
  let s=createInitialGameState();s.inactivityPlies=9;s.players.white.resources=12;s.players.white.resourcesGained=12;
- s.board.units=[createUnit('plant_3','white',{x:4,y:4}),createUnit('metal_3','white',{x:3,y:4}),createUnit('plant_1','black',{x:8,y:8})];
+ s.board.units=[createUnit('plant_3','white',{x:4,y:4}),createUnit('metal_3','white',{x:3,y:4}),createUnit('plant_1','black',{x:4,y:5}),createUnit('plant_1','black',{x:8,y:8})];
  const engine=new AIEngineV2('medium');let remaining=4000;
  for(let i=0;i<8&&s.turn.currentPlayer==='white'&&s.phase==='playing';i++){
   const r=await engine.findBestAction(s,remaining);remaining=Math.max(0,remaining-r.timeMs);s=applyAction(s,r.plan.actions[0]);
@@ -22,5 +22,5 @@ it('pending rent has no tactical proof; the paid board can prove the rescue',()=
 });
 it('harness records a real inactivity draw separately from its safety cap',async()=>{
  const pass:ScriptedBot={kind:'scripted',name:'Pass',chooseAction:()=>null};const {record}=await playGame({bots:{white:pass,black:pass},seed:1,engineHash:'test',runId:'clock',options:{maxTurns:120}});
- expect(record.winType).toBe('inactivity');expect(record.inactivityDraw).toBe(true);expect(record.maxInactivityPlies).toBe(10);expect(record.turns).toBe(15);expect(record.invariantViolation).toBeNull();expect(record.anomalies).toEqual([]);expect(record.players.white.upkeepPaid).toBe(0);
+ expect(record.winType).toBe('inactivity');expect(record.inactivityDraw).toBe(true);expect(record.maxInactivityPlies).toBe(10);expect(record.turns).toBe(5);expect(record.invariantViolation).toBeNull();expect(record.anomalies).toEqual([]);expect(record.players.white.upkeepPaid).toBe(0);
 });

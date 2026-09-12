@@ -4,7 +4,7 @@ import { UNIT_DEFINITIONS } from '../src/game/units';
 import type { GameState } from '../src/game/types';
 
 async function start(page: Page, state: GameState) {
-  await page.addInitScript(saved => localStorage.setItem('elemental-tactics-save', JSON.stringify({ schemaVersion: 5, timestamp: Date.now(), state: saved })), state);
+  await page.addInitScript(saved => localStorage.setItem('elemental-tactics-save', JSON.stringify({ schemaVersion: 6, timestamp: Date.now(), state: saved })), state);
   await page.goto('./');
   await page.getByRole('button', { name: 'Pass & Play' }).click();
   await page.getByRole('button', { name: /Continue saved game/ }).click();
@@ -90,5 +90,5 @@ test('visual key explains both encodings and does not consume game keyboard acti
   await page.keyboard.press('m');
   await page.keyboard.press('Escape');
   await expect(dialog).toHaveCount(0);
-  await expect(page.locator('.action-budget strong')).toHaveText('6 actions');
+  await expect(page.locator('.action-budget strong')).toHaveText('4 actions');
 });

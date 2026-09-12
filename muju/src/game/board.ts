@@ -15,7 +15,7 @@ import { STARTING_UNITS } from './units';
 
 export const BOARD_SIZE = 10;
 export const INITIAL_RESOURCE_LAYERS = 10;
-export const MAX_ACTIONS_PER_TURN = 6;
+export const MAX_ACTIONS_PER_TURN = DEFAULT_ACTIONS_PER_TURN;
 
 /**
  * Create a fresh cell at a position with full resources
@@ -200,7 +200,7 @@ export function getStartingPositions(player: PlayerId): Position[] {
  * Create the initial game state
  */
 export function createInitialGameState(resourceLayout: readonly number[] = UNEQUAL_ROUTES_MAP, actionsPerTurn: ActionsPerTurn = DEFAULT_ACTIONS_PER_TURN): GameState {
-  if (!isActionsPerTurn(actionsPerTurn)) throw new Error('Actions per turn must be 4 or 6');
+  if (!isActionsPerTurn(actionsPerTurn)) throw new Error('Actions per turn must be 4');
   if (resourceLayout.length !== BOARD_SIZE * BOARD_SIZE || resourceLayout.some(n => !Number.isInteger(n) || n < 0 || n > INITIAL_RESOURCE_LAYERS)) throw new Error('Invalid starting resource layout');
   let board = createEmptyBoard();
   board.initialResourceLayers = [...resourceLayout];

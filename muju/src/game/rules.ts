@@ -1,9 +1,9 @@
 import type { ActionsPerTurn, GameState } from './types';
 
-export const DEFAULT_ACTIONS_PER_TURN: ActionsPerTurn = 6;
+export const DEFAULT_ACTIONS_PER_TURN: ActionsPerTurn = 4;
 
 export function isActionsPerTurn(value: unknown): value is ActionsPerTurn {
-  return value === 4 || value === 6;
+  return value === 4;
 }
 
 /** The budget belongs to the match, including cloned AI and undo states. */

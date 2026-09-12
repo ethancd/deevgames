@@ -1,9 +1,10 @@
 import { resolveInactivityDraw } from '../game/inactivity';
 import type { GameState } from '../game/types';
 import { getActionsPerTurn, isActionsPerTurn } from '../game/rules';
+import { migrateLegacyGame } from '../game/migrate';
 
-// v5: passive reserves, public banks, no queues or depth. Older saves start fresh.
-export const SCHEMA_VERSION = 5;
+// v6: four actions only, and kills alone reset the quiet-turn clock.
+export const SCHEMA_VERSION = 6;
 
 const STORAGE_KEY = 'elemental-tactics-save';
 
@@ -42,21 +43,24 @@ export function loadGameState(): GameState | null {
     const persisted: PersistedState = JSON.parse(raw);
 
     // Version mismatch - start fresh
-    if (persisted.schemaVersion !== SCHEMA_VERSION) {
+    const legacy = persisted.schemaVersion === 5;
+    if (!legacy && persisted.schemaVersion !== SCHEMA_VERSION) {
       console.log('Schema version mismatch, starting fresh game');
       clearGameState();
       return null;
     }
 
     // Basic validation - check required fields exist
-    if (!validateGameState(persisted.state)) {
+    if (!validateGameState(persisted.state, legacy)) {
       console.log('Invalid saved state, starting fresh game');
       clearGameState();
       return null;
     }
 
-    // Resolve an expired unfinished clock, preserving completed results.
-    return resolveInactivityDraw({ ...persisted.state, actionsPerTurn: getActionsPerTurn(persisted.state) });
+    const state = legacy ? migrateLegacyGame(persisted.state) :
+      resolveInactivityDraw({ ...persisted.state, actionsPerTurn: getActionsPerTurn(persisted.state) });
+    if (legacy) saveGameState(state);
+    return state;
   } catch (e) {
     console.warn('Failed to load game state:', e);
     clearGameState();
@@ -78,14 +82,14 @@ export function clearGameState(): void {
 /**
  * Basic validation of game state structure
  */
-function validateGameState(state: unknown): state is GameState {
+function validateGameState(state: unknown, legacy = false): state is GameState {
   if (!state || typeof state !== 'object') return false;
 
   const s = state as Record<string, unknown>;
 
   // Check top-level required fields
   if (!s.phase || !s.board || !s.players || !s.turn) return false;
-  if (s.actionsPerTurn !== undefined && !isActionsPerTurn(s.actionsPerTurn)) return false;
+  if (s.actionsPerTurn !== undefined && !(isActionsPerTurn(s.actionsPerTurn) || (legacy && s.actionsPerTurn === 6))) return false;
 
   // Check board has cells and units
   const board = s.board as Record<string, unknown>;
@@ -99,7 +103,7 @@ function validateGameState(state: unknown): state is GameState {
   const turn = s.turn as Record<string, unknown>;
   if (typeof turn.currentPlayer !== 'string' || typeof turn.phase !== 'string') return false;
   if (!Number.isInteger(turn.actionsRemaining) || (turn.actionsRemaining as number) < 0 ||
-    (turn.actionsRemaining as number) > getActionsPerTurn(s as unknown as GameState)) return false;
+    (turn.actionsRemaining as number) > (legacy ? (s.actionsPerTurn as number ?? 6) : 4)) return false;
 
   return true;
 }

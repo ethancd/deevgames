@@ -22,6 +22,19 @@ function setup(path?: string) {
 const request = (revision: number, actions: RoomAction[], requestId = 'test-request-1'): ActionRequest => ({ expectedRevision: revision, actions, requestId });
 
 describe('authoritative shared rooms', () => {
+  it('draws after ten ordinary income-earning turns without kills', () => {
+    const {store,id,host,guest}=setup();let room=store.get(id);
+    for(let ply=1;ply<=10;ply++) {
+      const token=room.state.turn.currentPlayer==='white'?host.credentials.token:guest.credentials.token;
+      if(room.state.turn.phase==='place') room=store.act(id,token,request(room.revision,[{type:'END_PLACE_PHASE'}],`place-${ply}-clock`));
+      room=store.act(id,token,request(room.revision,[{type:'END_ACTION_PHASE'}],`end-${ply}-clock`));
+      expect(room.state.inactivityPlies).toBe(ply);
+      expect(room.state.phase).toBe(ply===10?'victory':'playing');
+    }
+    expect(room.state.victoryReason).toBe('inactivity');
+    expect(room.state.players.white.resourcesGained).toBeGreaterThan(0);
+    expect(room.state.players.black.resourcesGained).toBeGreaterThan(0);
+  });
   it('persists a four-action room, rejects overspending and preserves its budget through undo and handoff', () => {
     const dir=mkdtempSync(join(tmpdir(),'muju-four-'));directories.push(dir);
     const path=join(dir,'rooms.sqlite'),store=new RoomStore(path);stores.push(store);
@@ -41,16 +54,21 @@ describe('authoritative shared rooms', () => {
     const next=store.act(id,host.credentials.token,request(3,[{type:'END_ACTION_PHASE'}],'handoff-four'));
     expect(next.state.turn).toMatchObject({currentPlayer:'black',actionsRemaining:4});
     expect(next.state.actionsPerTurn).toBe(4);
-    expect(store.create({name:'Standard'}).room.state.actionsPerTurn).toBe(6);
-    for(const actionsPerTurn of [0,5,7,'4',null]) expect(()=>store.create({name:'Invalid',actionsPerTurn})).toThrow();
+    expect(store.create({name:'Standard'}).room.state.actionsPerTurn).toBe(4);
+    for(const actionsPerTurn of [0,5,6,7,'4',null]) expect(()=>store.create({name:'Invalid',actionsPerTurn})).toThrow();
   });
-  it('continues version-two rooms with six actions without replacing their board', () => {
+  it.each(['muju-online-2','muju-online-3'])('upgrades %s rooms while preserving board and credentials', version => {
     const dir=mkdtempSync(join(tmpdir(),'muju-legacy-'));directories.push(dir);
     const path=join(dir,'rooms.sqlite'),{store,id,host}=setup(path);
     const before=store.get(id),db=new DatabaseSync(path);
-    db.prepare("UPDATE rooms SET data = json_remove(json_set(data, '$.rulesVersion', 'muju-online-2'), '$.state.actionsPerTurn') WHERE id = ?").run(id);db.close();
-    expect(store.get(id).state.board).toEqual(before.state.board);
-    expect(store.act(id,host.credentials.token,request(1,[{type:'END_ACTION_PHASE'}])).state.turn.actionsRemaining).toBe(6);
+    db.prepare("UPDATE rooms SET data = json_set(data, '$.rulesVersion', ?, '$.state.actionsPerTurn', 6, '$.state.turn.actionsRemaining', 5, '$.state.inactivityPlies', 8) WHERE id = ?").run(version,id);db.close();
+    const migrated=store.get(id,host.credentials.token);
+    expect(migrated.state.board).toEqual(before.state.board);
+    expect(migrated.state).toMatchObject({actionsPerTurn:4,inactivityPlies:0,turn:{actionsRemaining:3}});
+    expect(migrated.revision).toBe(before.revision+1);expect(migrated.canUndo).toBe(false);
+    const next=store.act(id,host.credentials.token,request(migrated.revision,[{type:'END_ACTION_PHASE'}]));
+    expect(next.state.turn.actionsRemaining).toBe(4);expect(next.state.inactivityPlies).toBe(1);
+    expect(store.get(id).state.inactivityPlies).toBe(1);
   });
   it('uses a one-use invitation and never exposes private credentials in snapshots', () => {
     const { store, host, guest, id } = setup();

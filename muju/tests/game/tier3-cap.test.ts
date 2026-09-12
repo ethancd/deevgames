@@ -48,6 +48,6 @@ describe('current catalogue boundary', () => {
     expect(loadGameState()).toBeNull();expect(localStorage.getItem('elemental-tactics-save')).toBeNull();
   });
   it('round-trips the current schema',()=>{
-    expect(SCHEMA_VERSION).toBe(5);const s=createInitialGameState();saveGameState(s);expect(loadGameState()).toEqual(s);
+    expect(SCHEMA_VERSION).toBe(6);const s=createInitialGameState();saveGameState(s);expect(loadGameState()).toEqual(s);
   });
 });

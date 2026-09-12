@@ -23,13 +23,13 @@ describe('upkeep boundary',()=>{
  it('starting free units need no upkeep or choice',()=>{const s=startTurn(createInitialGameState(),'white');expect(s.upkeepPending).toBe(false);expect(s.lastUpkeep?.paid).toBe(0);expect(s.board.units).toHaveLength(6);});
  it('pays before healing, without action cost',()=>{
   const s=arena(3);s.board.units[0].damageTaken=1;
-  const paid=startTurn(s,'white');expect(paid.players.white.resources).toBe(0);expect(paid.players.white.resourcesUpkeep).toBe(3);expect(paid.turn.actionsRemaining).toBe(6);expect(paid.board.units[0].damageTaken).toBe(0);
+  const paid=startTurn(s,'white');expect(paid.players.white.resources).toBe(0);expect(paid.players.white.resourcesUpkeep).toBe(3);expect(paid.turn.actionsRemaining).toBe(4);expect(paid.board.units[0].damageTaken).toBe(0);
  });
  it('pauses healing and flags until an affordable choice is confirmed',()=>{
   const s=arena(1);s.board.units[0].damageTaken=1;s.board.units[0].attackedThisTurn=['target'];
   const pending=startTurn(s,'white');expect(pending.upkeepPending).toBe(true);expect(pending.board.units[0].damageTaken).toBe(1);
   for(const a of [{type:'END_PLACE_PHASE'},{type:'PROMOTE_UNIT',unitId:s.board.units[0].id},{type:'END_ACTION_PHASE'}] as const)expect(applyAction(pending,a)).toBe(pending);
-  const keep=[s.board.units[0].id,s.board.units[2].id];const done=applyAction(pending,{type:'PAY_UPKEEP',keepUnitIds:keep});expect(done.board.units.some(u=>u.id===s.board.units[1].id)).toBe(false);expect(done.board.units[0].damageTaken).toBe(0);expect(getAttackCount(done.board.units[0])).toBe(0);expect(done.turn.actionsRemaining).toBe(6);
+  const keep=[s.board.units[0].id,s.board.units[2].id];const done=applyAction(pending,{type:'PAY_UPKEEP',keepUnitIds:keep});expect(done.board.units.some(u=>u.id===s.board.units[1].id)).toBe(false);expect(done.board.units[0].damageTaken).toBe(0);expect(getAttackCount(done.board.units[0])).toBe(0);expect(done.turn.actionsRemaining).toBe(4);
  });
  it('rejects foreign, missing, duplicated and unaffordable keep IDs',()=>{
   const s=startTurn(arena(1),'white');for(const keepUnitIds of [['missing'],[s.board.units[3].id],[s.board.units[0].id,s.board.units[0].id],[s.board.units[1].id]]){const a={type:'PAY_UPKEEP' as const,keepUnitIds};expect(isLegalAction(s,a)).toBe(false);expect(applyAction(s,a)).toBe(s);}
@@ -59,6 +59,20 @@ describe('upkeep boundary',()=>{
  });
 });
 describe('10 completed quiet turns',()=>{
+ it('only a kill resets the clock through income settlement, save/resume and undo',()=>{
+  const s=createInitialGameState();s.inactivityPlies=9;
+  const attacker=createUnit('fire_1','white',{x:3,y:3});
+  s.board.units=[attacker,createUnit('plant_1','black',{x:4,y:3}),createUnit('plant_1','black',{x:8,y:8})];
+  const killed=applyAction(s,{type:'ATTACK',unitId:attacker.id,targetPosition:{x:4,y:3}});
+  expect(killed).toMatchObject({inactivityPlies:0,progressThisTurn:true});
+  saveGameState(killed);const resumed=loadGameState()!;
+  const next=endTurn(resumed);
+  expect(next.inactivityPlies).toBe(0);expect(next.lastIncome!.total).toBeGreaterThan(0);
+  expect(endTurn(next).inactivityPlies).toBe(1);
+  // Restoring the pre-attack state (undo) restores its clock as well.
+  const undone=endTurn(s);expect(undone.victoryReason).toBe('inactivity');
+  expect(undone.lastIncome!.total).toBeGreaterThan(0);
+ });
  it('draws exactly at 10 and evaluates the saved terminal result as zero both ways',()=>{
   let s=createInitialGameState(Array(100).fill(0));for(let i=1;i<=10;i++){s=endTurn(s);expect(s.inactivityPlies).toBe(i);expect(s.phase).toBe(i===10?'victory':'playing');}expect(s.winner).toBeNull();expect(getGameResult(s)).toEqual({status:'draw',reason:'inactivity'});for(const p of ['white','black'] as const){expect(evaluatePosition(s,p)).toBe(0);expect(quickEvaluate(s,p)).toBe(0);}saveGameState(s);expect(loadGameState()?.victoryReason).toBe('inactivity');
  });

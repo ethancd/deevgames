@@ -13,7 +13,7 @@ planning choice: exact movement is legal even when a planner emits short steps.
 | Spec clause | Current implementation | Verification |
 |---|---|---|
 | §1 10×10, original positions/rotation, 0/4/8/10 and 520 | `board.ts`, `resourceMap.ts` | board/resource-map tests; conservation properties |
-| §2 Place → Act, six actions | `turn.ts`, `legality.ts`, `simulate.ts` | turn/building/worker tests; mobile browser |
+| §2 Place → Act, four actions | `turn.ts`, `legality.ts`, `simulate.ts` | turn/building/worker tests; mobile browser |
 | §2 income → clock/draw → home/elimination → upkeep → heal/reset → Place | `turn.ts`, `inactivity.ts`, `upkeep.ts` | turn/upkeep-clock/home-victory tests |
 | §3 orthogonal path and ceil(distance/speed) cost | `movement.ts` | movement/combat properties and move previews |
 | §4 ±1 ATK, chip DEF, own-start healing | `elements.ts`, `combat.ts`, `board.ts` | combat/element/audit fixtures |
@@ -28,7 +28,7 @@ planning choice: exact movement is legal even when a planner emits short steps.
 | §6/§7 original graph, 18-unit v1.9 stats and doubled catalogue costs | `elements.ts`, `units.ts` | catalogue pinned-source comparison; static witnesses |
 | §8 public bank/gained, perfect-information worker/MCTS | `types.ts`, `worker/protocol.ts`, `search/mcts.ts` | worker real-state tests; public-bank browser |
 | §9 zero-board elimination regardless of bank; delayed home win; resignation | `victory.ts`, `turn.ts`, `simulate.ts` | victory/home/resign fixtures and tactical rescue |
-| §9 ten quiet completed turns, income/kill resets, draw before next home | `inactivity.ts`, `turn.ts` | clock-order tests; draw browser |
+| §9 ten quiet completed turns, only attack kills reset, draw before next home | `inactivity.ts`, `turn.ts` | clock-order tests; draw browser |
 | Save 5 round-trip, old unfinished save rejection, no undo across income | `persistence.ts`, `useGameState.ts` | resource-map persistence, hook undo, mobile reload |
 | Telemetry and same rules in the lab | `lab/harness/runner.ts`, `invariants.ts` | harness, seeded playout invariants |
 

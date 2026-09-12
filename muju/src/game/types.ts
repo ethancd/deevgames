@@ -12,7 +12,7 @@ export type PlayerId = 'white' | 'black';
 export type GameMode = 'vs-ai' | 'pass-play' | 'ai-vs-ai' | 'online';
 
 export type ControlType = 'human' | 'ai' | 'remote';
-export type ActionsPerTurn = 4 | 6;
+export type ActionsPerTurn = 4;
 
 export interface GameConfig {
   actionsPerTurn?: ActionsPerTurn;
@@ -116,7 +116,7 @@ export type VictoryReason = 'elimination' | 'home-occupation' | 'resignation' | 
 export interface IncomeTake { unitId: string; definitionId: string; position: Position; amount: number }
 
 export interface GameState {
-  /** Fixed for this match. Older saves without a value use six actions. */
+  /** Four shared actions for every current-rule match. */
   actionsPerTurn?: ActionsPerTurn;
   lastIncome?: { player: PlayerId; turnNumber: number; total: number; takes: IncomeTake[] };
   /** Omitted means current rules; explicit elimination is for historical lab comparisons. */
@@ -126,6 +126,7 @@ export interface GameState {
   reviewUpkeep?: Partial<Record<PlayerId, boolean>>;
   lastUpkeep?: {player: PlayerId; paid: number; released: {id: string; definitionId: string; tier: number}[]; turnNumber: number};
   inactivityPlies?: number;
+  /** True only after an enemy was killed by an attack this turn. */
   progressThisTurn?: boolean;
   /** Lab control only; absent enables current draw rule. */
   inactivityRule?: 'on' | 'off';

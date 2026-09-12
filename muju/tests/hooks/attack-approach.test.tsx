@@ -22,19 +22,19 @@ it('previews the shortest approach without spending actions, cancels, then commi
   expect(screen.getByTestId('cell-3-0')).toHaveAccessibleName(/preview: Hi attack approach/);
   expect(screen.getByTestId('cell-4-0')).toHaveAttribute('aria-pressed', 'true');
   expect(container.querySelectorAll('.preview-ghost')).toHaveLength(1);
-  expect(container.querySelector('.action-preview')).toHaveTextContent('3 actions · 3 left');
+  expect(container.querySelector('.action-preview')).toHaveTextContent('3 actions · 1 left');
   expect(loadGameState()?.board).toEqual(state.board);
   fireEvent.click(screen.getByRole('button', {name: 'Cancel'}));
   expect(container.querySelector('.preview-ghost')).toBeNull();
-  expect(loadGameState()?.turn.actionsRemaining).toBe(6);
+  expect(loadGameState()?.turn.actionsRemaining).toBe(4);
   click(4, 0);
   fireEvent.click(screen.getByRole('button', {name: 'Confirm attack'}));
   expect(screen.getByTestId('cell-3-0')).toHaveAccessibleName(/white Hi/);
   expect(screen.getByTestId('cell-4-0')).not.toHaveAccessibleName(/black Muju/);
-  expect(loadGameState()?.turn.actionsRemaining).toBe(3);
+  expect(loadGameState()?.turn.actionsRemaining).toBe(1);
   fireEvent.click(screen.getByRole('button', {name: /Undo/}));
   expect(loadGameState()?.board).toEqual(state.board);
-  expect(loadGameState()?.turn.actionsRemaining).toBe(6);
+  expect(loadGameState()?.turn.actionsRemaining).toBe(4);
 });
 
 it('moves immediately to a manually chosen square, keeps selection, and previews the adjacent attack', () => {
@@ -43,13 +43,13 @@ it('moves immediately to a manually chosen square, keeps selection, and previews
   expect(screen.getByRole('button', {name: 'Confirm attack'})).toBeInTheDocument();
   expect(screen.getByTestId('cell-4-1')).toHaveAccessibleName(/white Hi/);
   expect(screen.getByTestId('cell-4-1')).toHaveAttribute('aria-pressed', 'true');
-  expect(loadGameState()?.turn.actionsRemaining).toBe(3);
-  expect(screen.getByText('1 action · 2 left')).toBeInTheDocument();
+  expect(loadGameState()?.turn.actionsRemaining).toBe(1);
+  expect(screen.getByText('1 action · 0 left')).toBeInTheDocument();
   // Undo still works with the attack preview open.
   fireEvent.keyDown(window, {key: 'z', ctrlKey: true});
   expect(screen.queryByRole('button', {name: 'Confirm attack'})).toBeNull();
   expect(screen.getByTestId('cell-0-0')).toHaveAccessibleName(/white Hi/);
-  expect(loadGameState()?.turn.actionsRemaining).toBe(6);
+  expect(loadGameState()?.turn.actionsRemaining).toBe(4);
 });
 
 it('does not offer a move-and-attack when movement would exhaust the action budget', () => {

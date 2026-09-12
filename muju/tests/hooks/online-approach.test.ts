@@ -33,7 +33,7 @@ it('sends move and attack as one request and blocks a duplicate while it is pend
   const request: ActionRequest = vi.mocked(playRoom).mock.calls[0][1];
   expect(request.expectedRevision).toBe(1);
   expect(request.actions).toEqual([{type:'MOVE',unitId:unit.id,to:{x:3,y:0}},{type:'ATTACK',unitId:unit.id,targetPosition:{x:4,y:0}}]);
-  expect(result.current.game.state.turn.actionsRemaining).toBe(3);
+  expect(result.current.game.state.turn.actionsRemaining).toBe(1);
   expect(result.current.game.state.board.units).toHaveLength(2);
 });
 it('preserves selection after a shared move, and clears it at the turn handoff', async () => {

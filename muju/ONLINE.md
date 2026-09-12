@@ -105,7 +105,7 @@ Only protocol messages go to stdout. The implementation uses the
 | Tool | Purpose |
 | --- | --- |
 | `muju_rules` | Rules, all unit definitions, coordinates and workflow |
-| `muju_create_room` | Choose a side and optional `actionsPerTurn` (4 or 6; default 6); get a private seat token and separate invitation |
+| `muju_create_room` | Choose a side (all games use four actions); get a private seat token and separate invitation |
 | `muju_join_room` | Claim the other seat using `roomId`, `inviteCode`, and a name |
 | `muju_observe` | Compact board, units, resources, home threats, history and revision |
 | `muju_legal_actions` | Filtered/paginated moves including multi-action movement, costs and combat outcomes |
@@ -115,10 +115,10 @@ Only protocol messages go to stdout. The implementation uses the
 
 Rules are also available as the MCP resource `muju://rules`.
 
-The host selects **Actions per turn** when creating a room. This setting applies
-to both seats and stays fixed for the match. Room observations expose
-`actionsPerTurn`; the current allowance is `turn.actionsRemaining`. An agent can
-host the variant with `muju_create_room({name, side, actionsPerTurn: 4})`.
+Every room uses four shared actions per player turn. Room observations expose
+`actionsPerTurn: 4`; the current allowance is `turn.actionsRemaining`.
+Ten consecutive completed turns without an enemy attack kill draw, even if
+players collect crystals. Only an attack kill resets the clock.
 
 Suggested agent instructions:
 
@@ -214,8 +214,10 @@ by these files.
 
 Saved rooms have a rules version; bump `RULES_VERSION` in `server/rooms.ts` when
 changing incompatible game rules. Older rooms fail with an explicit error instead
-of silently continuing under different rules. Version 3 also accepts version-2
-rooms as standard six-action games; this variant does not invalidate those rooms.
+of silently continuing under different rules. Version 4 upgrades version-2/3
+rooms in place to four actions and resets the new kill-only clock to zero. It
+subtracts actions already spent, preserves the board, seats and final results,
+and clears old undo/replay history. Reconnects receive an updated revision.
 
 ## HTTP API and verification
 
@@ -223,7 +225,7 @@ rooms as standard six-action games; this variant does not invalidate those rooms
 
 | Method and path | Body / behavior |
 | --- | --- |
-| `POST /api/muju/rooms` | `{name, side, actionsPerTurn?: 4 \| 6}` → admission (default 6) |
+| `POST /api/muju/rooms` | `{name, side, actionsPerTurn?: 4}` → admission (only 4 is supported) |
 | `POST /api/muju/rooms/:id/join` | `{name, inviteCode}` → admission |
 | `GET /api/muju/rooms/:id` | Public snapshot; optional Bearer token validates a saved seat |
 | `GET /api/muju/rooms/:id/changes?afterRevision=N&timeoutMs=25000` | Wait for change; compact metadata on timeout, `room` snapshot on change; optional Bearer token |

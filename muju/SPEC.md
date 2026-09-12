@@ -8,8 +8,8 @@ document and the code disagree, that is a bug in one of them: see
 of known divergences. The stat tables in §7 are transcriptions of
 `src/game/units.ts`, which is the canonical stat source.
 
-**Spec version:** v2.5 (2026-09-12) — new games can select 4 shared actions per
-turn; 6 remains the default. All other rules are unchanged. Tier-1 purchases cost 3/4/5 by pair;
+**Spec version:** v2.6 (2026-09-12) — every game uses 4 shared actions per
+turn. Only an enemy kill by attack resets the ten-turn draw clock. Tier-1 purchases cost 3/4/5 by pair;
 all promotions cost 4 to tier 2 and 8 to tier 3. Muju has DEF 3, Tanka DEF 5,
 C4/C5/H6/H7 hold 4 crystals each, and F3/E8 hold 0 (496 total). See
 `docs/BALANCE-2026-09-11.md` for rationale and compatibility.
@@ -24,6 +24,7 @@ implemented together; v2.0 is not a separately deployed release. v2.2 (2026-09-1
 purchase and promotion prices. v2.3 revises prices, two defenses and four reserves.
 v2.4 (2026-09-11) clears F3/E8 to make both empty approaches 3×3 squares.
 v2.5 adds a four-action variant for local games and online rooms.
+v2.6 makes four actions the sole ruleset and defines a quiet turn as no attack kills.
 
 ---
 
@@ -45,14 +46,16 @@ may be a human or an AI (`vs-ai`, `pass-play`, and `ai-vs-ai` modes).
   0/4/8/10 crystals, with **496 total** in new games.
   Eighteen blank squares form D1–F3 and E8–G10; they remain walkable and spawn-eligible. Ordinary ground
   holds 4, shelves 8, rich wells and homes 10. Exact layout:
-  `src/game/resourceMap.ts`. Save schema 5 discards older unfinished games
-  through the existing version-mismatch path; they start fresh. Existing schema-5
-  games retain their stored map reserves and capacities.
-- **Actions per turn:** choose **6 · Standard** or **4 · Variant** at game
-  creation. Both players share the selected rule for the whole match. Local
-  saves, rematches, online rooms and AI planning retain that budget; older saves
-  and rooms without a budget use 6. **Start Game** starts a fresh game with the
-  selected settings; **Continue saved game** keeps the saved board and budget.
+  `src/game/resourceMap.ts`. Save schema 6 discards pre-schema-5 unfinished games
+  through the version-mismatch path; they start fresh. Schema-5 games upgrade
+  while retaining their stored map reserves and capacities.
+- **Actions per turn:** **4 shared actions** in every game, for either player.
+  Local saves, online rooms, AI planning and rematches use the same rules.
+  **Start Game** starts fresh; **Continue saved game** resumes the saved board.
+  Schema-5 saves and version-2/3 rooms upgrade in place: subtract actions already
+  spent from the four-action allowance (minimum zero); Place receives all four.
+  Start the new kill-only clock at zero. Completed results remain final, and
+  online undo/replay history from the old rules is cleared at the upgrade.
 - **White moves first.** The first turn begins directly in the Action phase
   (there is nothing to place or promote at game start).
 
@@ -66,7 +69,7 @@ A turn has two phases:
    turn, never on its purchase/placement turn. Both verbs cost crystals and
    **no actions**. Placed and promoted units act immediately. This phase is
    skipped automatically when no legal purchase or promotion exists.
-2. **Action phase** — spend up to **6 shared actions**, or **4 in the variant**
+2. **Action phase** — spend up to **4 shared actions**
    (`getActionsPerTurn(state)`), on moves and attacks. Movement can repeat; attacks
    obey Cleave (§4.2). The player may end early.
 
@@ -98,7 +101,7 @@ Enemy inspection defaults **Show reach** on whenever an enemy is opened for
 inspection (including tapping an enemy the selected piece cannot attack). It can
 be toggled off while inspecting that piece. **Show reach** uses the match's full
 action budget for movement and adds red dots on the perimeter of the potential
-attack area: up to five movement actions (three in the four-action variant)
+attack area: up to three movement actions
 at current Speed, then one adjacent attack. The outline follows current
 blockers and clips to board edges. It includes occupied opposing targets but
 does not indicate a guaranteed kill, promotions, or paths opened by earlier
@@ -225,7 +228,7 @@ never reset the inactivity clock. Healing and flag reset follow payment.
 Design intent: binary DEF walls require continuing income to sustain their tier.
 An income lead can become a tier lead and then a broken wall. Invading armies
 and corner garrisons pay the same rent. Tier1 swarms remain free; the shared
-six-action pool and Cleave are their counterweights.
+four-action pool and Cleave are their counterweights.
 
 ## 6. Elements — the Double-Thick Triangle
 
@@ -344,17 +347,16 @@ re-determinization rules in `AI_ENGINE_QUESTIONS.md` Q1–Q3 are superseded.
 
 - **Elimination:** a player with **zero units on the board** loses, regardless
   of bank. No units means no spawn anchor. There is no queue exception.
-- **Inactivity draw:** after 10 consecutive complete player turns without progress, end the
-  game as a draw. A ply means one player's turn, not one action or full round.
-  An enemy kill by attack resets
-  the counter immediately; positive passive income resets it at turn end.
-  A turn with either form of progress ends at 0. Each completed turn with no
-  enemy attack kill and zero total income adds 1. Chip attacks, movement,
-  buying, placement, promotion and upkeep removal do not themselves reset it. The draw resolves
+- **Inactivity draw:** after 10 consecutive complete player turns without an
+  enemy kill by attack, end the game as a draw. A ply means one player's turn,
+  not one action or full round (ten plies are five rounds). An attack kill resets
+  the counter immediately and that turn ends at 0. Each completed turn without
+  a kill adds 1, even when it earns crystals. Chip attacks, movement, buying,
+  placement, promotion and upkeep removal do not reset it. The draw resolves
   immediately at the end of the tenth quiet turn. The next turn never begins:
   no home-win check, upkeep or healing can override the draw.
   Eliminating the last enemy during a turn still wins immediately. Saved draws
-  preserve reason `inactivity`. Existing unfinished saves already at 10 or more
+  preserve reason `inactivity`. Current-schema unfinished saves already at 10 or more
   quiet turns load as a draw, preserving the board; completed results stay final.
   The public counter turns amber at 7 quiet turns. Both players at zero units is also a
   draw, though normal play cannot reach that position.
@@ -394,7 +396,7 @@ strategic value.
 The queue's hidden information, build delay, blocked-spawn persistence and
 third phase are replaced by a public bank and a visible promotion climb.
 No promotion on the purchase turn is load-bearing: the tier-3 path remains
-contestable over two opponent turns. Haste, six actions, spawn rectangles,
+contestable over two opponent turns. Haste, four actions, spawn rectangles,
 the exact map topology and all catalogue stats/costs remain unchanged.
 
 See `JUDGMENT_LOG.md` J-017/J-018 and the two September 9 simplification
