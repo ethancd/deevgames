@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { MusicButton } from '../music/MusicPlayer';
 import type { GameConfig, PlayerId } from '../game/types';
 import { GameView } from '../components/GameScreen';
 import { createRoom, invitationUrl, joinRoom, loadConnection, normalizeServer, observerUrl, parseObserverConnection, parseSeatCredentials, readRoom, restoreSeat, saveConnection } from './client';
@@ -78,7 +79,7 @@ export function OnlineLobby({ onBack }: { onBack: () => void }) {
   }} />;
   const feedback = (kind: string) => flow === kind && <>{busy && <p role="status">Connecting…</p>}{error && <p role="alert">{error}</p>}</>;
   return <main className="online-lobby">
-    <button onClick={onBack}>← Game modes</button>
+    <div className="music-lobby-nav"><button onClick={onBack}>← Game modes</button><MusicButton /></div>
     <h1>Muju Hono Tanka</h1><h2>Play together, anywhere</h2>
     <p>Host a room and invite a friend or an LLM. Both players use the same board, on their own devices.</p>
     <label>Your name<input value={name} maxLength={40} onChange={e => setName(e.target.value)} /></label>

@@ -5,8 +5,9 @@ import type { GameConfig } from './game/types';
 import { OnlineLobby } from './online/OnlineLobby';
 import { MapPainter } from './components/MapPainter';
 import { AnalysisScreen } from './components/AnalysisScreen';
+import { MusicProvider } from './music/MusicPlayer';
 
-function App() {
+function GameApp() {
   const [gameConfig, setGameConfig] = useState<GameConfig | null>(null);
   const [online, setOnline] = useState(() => new URLSearchParams(window.location.search).has('room'));
 
@@ -26,6 +27,10 @@ function App() {
   }
 
   return <GameScreen config={gameConfig} onBackToMenu={handleBackToMenu} />;
+}
+
+function App() {
+  return <MusicProvider><GameApp /></MusicProvider>;
 }
 
 export default App;
