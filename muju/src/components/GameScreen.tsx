@@ -13,7 +13,7 @@ import { UnitInfo } from './UnitInfo';
 import { UnitShop } from './UnitShop';
 import { VictoryScreen } from './VictoryScreen';
 import { ElementLegend } from './ElementLegend';
-import { TurnReplay, useReplayPlayback } from './TurnReplay';
+import { ReplayLauncher, TurnReplay, useReplayPlayback } from './TurnReplay';
 import { AIRecap } from './AIRecap';
 import { AIConsole } from './AIConsole';
 import { PassDeviceOverlay } from './PassDeviceOverlay';
@@ -67,7 +67,7 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
     selectedUnitData,
   } = game;
   const actionsPerTurn = getActionsPerTurn(state);
-  const { playback, startReplay, closeReplay, toggleReplay, stepReplay } = useReplayPlayback(`${state.phase}:${state.turn.currentPlayer}:${state.turn.turnNumber}`);
+  const { playback, mode: replayMode, setReplayMode, startReplay, closeReplay, toggleReplay, stepReplay } = useReplayPlayback(`${state.phase}:${state.turn.currentPlayer}:${state.turn.turnNumber}`);
   const showReplay = !!playback;
   const replayFrame = playback && playback.step > 0 ? playback.replay.frames[playback.step - 1] : null;
 
@@ -743,12 +743,12 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
             onCellClick={handleCellClick} onUnitClick={handleUnitClick} />
         </section>
         <div className="board-key">
-          <span role="status">{showReplay ? playback.paused ? 'Replay paused' : 'Instant replay · 1 action per second' : homeNotice || (isEnemyView && showEnemyRange ? 'Red dots: attack frontier' : selectedPurchaseId ? '＋ Safe placement' : '● 1 action · ○ farther · ⊗ attack')}</span>
+          <span role="status">{showReplay ? replayMode === 'step' ? 'Instant replay · Step through' : playback.paused ? 'Replay paused' : `Instant replay · ${replayMode === 'fast' ? '0.3s' : '1s'} per action` : homeNotice || (isEnemyView && showEnemyRange ? 'Red dots: attack frontier' : selectedPurchaseId ? '＋ Safe placement' : '● 1 action · ○ farther · ⊗ attack')}</span>
           <button disabled={showReplay} className="visual-key-trigger" onClick={() => setShowVisualKey(true)}>Key</button>
           <button aria-pressed={showResources} onClick={() => setShowResources(!showResources)}>◆ Reserves</button>
         </div>
         <section className="decision-panel" aria-label="Current choice">
-          {playback ? <TurnReplay replay={playback.replay} step={playback.step} paused={playback.paused} playerName={playerNames[playback.replay.player]} onClose={closeReplay} onToggle={toggleReplay} onStep={stepReplay} />
+          {playback ? <TurnReplay replay={playback.replay} step={playback.step} paused={playback.paused} mode={replayMode} playerName={playerNames[playback.replay.player]} onClose={closeReplay} onToggle={toggleReplay} onStep={stepReplay} />
           : state.turn.phase === 'place' && interactive && !shownUnit ? <UnitShop resources={currentPlayerState.resources} player={state.turn.currentPlayer} board={state.board}
             selectedId={selectedPurchaseId} onSelectId={id => { setSelectedPurchaseId(id); setSelectedPlaceUnitId(null); setViewedEnemyUnitId(null); }} />
           : preview && selectedUnitData ? <div className="action-preview">
@@ -776,8 +776,8 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
         <ActionBar actionsRemaining={state.turn.actionsRemaining} actionsPerTurn={actionsPerTurn} phase={state.turn.phase}
           onEndPlacePhase={endPlacePhase} onEndActionPhase={endActionPhase}
           isPlayerTurn={interactive} onUndo={() => { setPreview(null); undo(); }} canUndo={canUndo && interactive} />
-        <button className="instant-replay-button" disabled={!canReplay} title={replayUnavailable}
-          onClick={() => canReplay && game.lastTurnReplay && startReplay(game.lastTurnReplay)}>↶ Instant replay</button>
+        <ReplayLauncher mode={replayMode} onModeChange={setReplayMode} disabled={!canReplay} title={replayUnavailable}
+          onStart={() => canReplay && game.lastTurnReplay && startReplay(game.lastTurnReplay)} />
         <nav className="reference-bar" aria-label="Game references" inert={showReplay}>
           <button onClick={() => setShowUnitShopInspection(true)}>Units</button>
           <button className="counter-key" aria-label="Element advantages and match stats" title="Each pair beats the next: +1 attack" onClick={() => setShowInsights(true)}>🔥⚡ → 🌿⚙ → 💧🌑 ↻ <span>+1</span>{showAIRecap ? ' •' : ''}</button>

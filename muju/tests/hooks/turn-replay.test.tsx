@@ -39,13 +39,15 @@ it('replays on the same board once per second and restores the live board withou
   expect(container.querySelector('.battle-board')).toBe(board);
   expect(screen.getByTestId('cell-0-0')).toHaveAccessibleName(/white Hi/);
   act(()=>vi.advanceTimersByTime(999)); expect(screen.getByText('Start of turn')).toBeInTheDocument();
-  act(()=>vi.advanceTimersByTime(1)); expect(screen.getByTestId('cell-3-0')).toHaveAccessibleName(/white Hi/);
+  act(()=>vi.advanceTimersByTime(1)); expect(screen.getByTestId('cell-2-0')).toHaveAccessibleName(/white Hi/);
   expect(screen.getByTestId('cell-4-0')).toHaveAccessibleName(/black Muju/);
   // Board clicks and shortcuts cannot play or select pieces during playback.
   fireEvent.click(screen.getByTestId('cell-9-9'));
   fireEvent.click(screen.getByTestId('cell-8-9'));
   fireEvent.keyDown(window,{key:'Enter'});
   expect(screen.getByRole('button',{name:/End turn/})).toBeDisabled();
+  act(()=>vi.advanceTimersByTime(1000)); expect(screen.getByTestId('cell-3-0')).toHaveAccessibleName(/white Hi/);
+  expect(screen.getByTestId('cell-4-0')).toHaveAccessibleName(/black Muju/);
   act(()=>vi.advanceTimersByTime(1000)); expect(screen.getByTestId('cell-4-0')).not.toHaveAccessibleName(/black Muju/);
   act(()=>vi.advanceTimersByTime(1000)); expect(screen.queryByRole('button',{name:/Stop replay/})).toBeNull();
   expect(container.querySelector('.battle-board')).toBe(board);
@@ -126,4 +128,55 @@ it('keeps the replay launcher mounted across turns and restores keyboard focus o
   fireEvent.keyDown(window,{key:'Escape'});
   expect(screen.queryByRole('button',{name:'Pause replay'})).toBeNull();
   expect(launcher).toHaveFocus();
+});
+
+const timedReplay = () => {
+  const board = fixture().board;
+  return { player: 'white' as const, turnNumber: 1, initialBoard: board, frames: [
+    { board, action: { type: 'END_PLACE_PHASE' as const }, label: 'First' },
+    { board, action: { type: 'END_PLACE_PHASE' as const }, label: 'Second' },
+  ] };
+};
+
+it.each([['fast', 300], ['slow', 1000]] as const)('plays %s at %i milliseconds per action', (mode, delay) => {
+  vi.useFakeTimers();
+  const { result } = renderHook(() => useReplayPlayback('black:1'));
+  act(() => result.current.setReplayMode(mode));
+  act(() => result.current.startReplay(timedReplay()));
+  act(() => vi.advanceTimersByTime(delay - 1)); expect(result.current.playback?.step).toBe(0);
+  act(() => vi.advanceTimersByTime(1)); expect(result.current.playback?.step).toBe(1);
+  act(() => vi.advanceTimersByTime(delay)); expect(result.current.playback?.step).toBe(2);
+  act(() => vi.advanceTimersByTime(delay)); expect(result.current.playback).toBeNull();
+});
+
+it('remembers step-through mode and never autoplays or closes its final frame', () => {
+  vi.useFakeTimers();
+  const first = renderHook(() => useReplayPlayback('black:1'));
+  act(() => first.result.current.setReplayMode('step'));
+  first.unmount();
+  const { result } = renderHook(() => useReplayPlayback('black:1'));
+  expect(result.current.mode).toBe('step');
+  act(() => result.current.startReplay(timedReplay()));
+  act(() => vi.advanceTimersByTime(5000)); expect(result.current.playback?.step).toBe(0);
+  act(() => result.current.stepReplay(1));
+  act(() => result.current.stepReplay(1));
+  act(() => vi.advanceTimersByTime(5000)); expect(result.current.playback).toMatchObject({step:2,paused:true});
+  act(() => result.current.stepReplay(-1)); expect(result.current.playback?.step).toBe(1);
+  act(() => result.current.setReplayMode('fast'));
+  act(() => vi.advanceTimersByTime(300)); expect(result.current.playback?.step).toBe(2);
+  act(() => result.current.closeReplay());
+});
+
+it('cancels a pending autoplay tick when switching to step-through', () => {
+  vi.useFakeTimers();
+  const { result } = renderHook(() => useReplayPlayback('black:1'));
+  act(() => result.current.startReplay(timedReplay()));
+  act(() => vi.advanceTimersByTime(900));
+  act(() => result.current.setReplayMode('step'));
+  act(() => vi.advanceTimersByTime(5000)); expect(result.current.playback?.step).toBe(0);
+  act(() => result.current.toggleReplay());
+  act(() => vi.advanceTimersByTime(5000)); expect(result.current.playback?.step).toBe(0);
+  act(() => result.current.setReplayMode('slow'));
+  act(() => vi.advanceTimersByTime(999)); expect(result.current.playback?.step).toBe(0);
+  act(() => vi.advanceTimersByTime(1)); expect(result.current.playback?.step).toBe(1);
 });

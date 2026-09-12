@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 
-const regions = ['.battle-board', '.board-stage', '.decision-panel', '.play-footer', '.instant-replay-button'];
+const regions = ['.battle-board', '.board-stage', '.decision-panel', '.play-footer', '.instant-replay-launcher'];
 async function geometry(page: Page) {
   return page.evaluate(selectors => selectors.map(selector => {
     const { x, y, width, height } = document.querySelector(selector)!.getBoundingClientRect();
@@ -42,12 +42,16 @@ for (const viewport of [{width:900,height:1000},{width:390,height:844},{width:12
     sameGeometry(await geometry(page),initial);
     const room=await (await request.get(`/api/muju/rooms/${roomId}`)).json();
     const unit=room.state.board.units.find((u:any)=>u.owner==='black'&&u.definitionId==='fire_1');
-    const actions=[{type:'MOVE',unitId:unit.id,to:{x:7,y:9}},{type:'MOVE',unitId:unit.id,to:{x:6,y:9}},{type:'END_ACTION_PHASE'}];
+    const actions=[{type:'MOVE',unitId:unit.id,to:{x:3,y:9}},{type:'END_ACTION_PHASE'}];
     expect((await request.post(`/api/muju/rooms/${roomId}/actions`,{headers:{Authorization:`Bearer ${host.credentials.token}`},data:{expectedRevision:room.revision,requestId:'opponent-turn',actions}})).ok()).toBe(true);
     await expect(launcher).toBeEnabled();
     sameGeometry(await geometry(page),initial);
+    const mode = page.getByRole('combobox', {name:'Replay mode'});
+    await mode.selectOption('step');
+    sameGeometry(await geometry(page),initial);
     await launcher.click();
-    await page.getByRole('button',{name:'Pause replay',exact:true}).click();
+    await expect(page.getByRole('button',{name:'Next replay action'})).toBeFocused();
+    await expect(page.getByRole('button',{name:/Pause replay|Resume replay/})).toHaveCount(0);
     sameGeometry(await geometry(page),initial);
     await expect(page.locator('.battle-board')).toHaveCount(1);
     await expect(page.getByRole('dialog')).toHaveCount(0);
@@ -60,12 +64,25 @@ for (const viewport of [{width:900,height:1000},{width:390,height:844},{width:12
     await page.screenshot({path:testInfo.outputPath('replay.png'),fullPage:true});
     await page.getByRole('button',{name:'Next replay action'}).click();
     sameGeometry(await geometry(page),initial);
-    await expect(page.getByTestId('cell-7-9')).toHaveAttribute('aria-label',/black Hi/);
+    await expect(page.getByTestId('cell-6-9')).toHaveAttribute('aria-label',/black Hi/);
     await page.getByRole('button',{name:'Previous replay action'}).click();
     await expect(page.getByTestId('cell-8-9')).toHaveAttribute('aria-label',/black Hi/);
+    await mode.selectOption('fast');
+    await expect(page.getByRole('button',{name:'Pause replay'})).toBeVisible();
+    sameGeometry(await geometry(page),initial);
+    await mode.selectOption('step');
+    await page.getByRole('button',{name:'Next replay action'}).click();
+    await page.getByRole('button',{name:'Next replay action'}).click();
+    await expect(page.getByTestId('cell-4-9')).toHaveAttribute('aria-label',/black Hi/);
+    await page.getByRole('button',{name:'Next replay action'}).click();
+    await expect(page.getByTestId('cell-3-9')).toHaveAttribute('aria-label',/black Hi/);
+    await expect(page.getByRole('button',{name:'Next replay action'})).toBeDisabled();
     await page.keyboard.press('Escape');
     await expect(launcher).toBeFocused();
-    await expect(page.getByTestId('cell-6-9')).toHaveAttribute('aria-label',/black Hi/);
+    await expect(page.getByTestId('cell-3-9')).toHaveAttribute('aria-label',/black Hi/);
     sameGeometry(await geometry(page),initial);
+    await page.reload();
+    await expect(launcher).toBeEnabled();
+    await expect(mode).toHaveValue('step');
   });
 }

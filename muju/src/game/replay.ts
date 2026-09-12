@@ -1,6 +1,8 @@
 import type { AIAction } from '../ai/types';
 import type { BoardState, GameState, PlayerId, Position } from './types';
 import { calculateDefense } from './combat';
+import { BOARD_SIZE } from './board';
+import { executeMove, findPath } from './movement';
 import { getUnitDefinition } from './units';
 
 export interface ReplayFrame {
@@ -19,6 +21,38 @@ export interface TurnReplay {
 export interface ReplayRecording { current: TurnReplay | null; last: TurnReplay | null }
 export const emptyRecording = (): ReplayRecording => ({ current: null, last: null });
 const square = (p: Position) => `${String.fromCharCode(65 + p.x)}${p.y + 1}`;
+
+/** A movement command can spend several actions. Show each speed-sized hop. */
+function splitMoveFrame(before: BoardState, frame: ReplayFrame): ReplayFrame[] {
+  const action = frame.action;
+  if (action.type !== 'MOVE') return [frame];
+  const unit = before.units.find(u => u.id === action.unitId);
+  if (!unit) return [frame];
+  const { speed, name } = getUnitDefinition(unit.definitionId);
+  const path = findPath(unit.position, action.to, before, BOARD_SIZE * BOARD_SIZE);
+  if (!path || path.length <= speed) return [frame];
+  const frames: ReplayFrame[] = [];
+  let from = unit.position;
+  for (let offset = 0; offset < path.length; offset += speed) {
+    const position = path[Math.min(offset + speed, path.length) - 1];
+    frames.push({ ...frame, action: { ...action, to: position }, position, unitId: unit.id,
+      board: offset + speed >= path.length ? frame.board : executeMove(before, unit.id, position),
+      label: `${name}: ${square(from)} → ${square(position)}` });
+    from = position;
+  }
+  return frames;
+}
+
+/** Also expand replays saved by older servers, without changing their snapshots. */
+export function expandReplayMoves(replay: TurnReplay): TurnReplay {
+  let before = replay.initialBoard;
+  const frames = replay.frames.flatMap(frame => {
+    const expanded = splitMoveFrame(before, frame);
+    before = frame.board;
+    return expanded;
+  });
+  return { ...replay, frames };
+}
 
 /** Record actual engine results; playback never runs actions against the live game. */
 export function recordAction(recording: ReplayRecording, before: GameState, action: AIAction, after: GameState): ReplayRecording {
@@ -48,7 +82,8 @@ export function recordAction(recording: ReplayRecording, before: GameState, acti
     }
     case 'PAY_UPKEEP': label = 'Paid upkeep and released unkept units'; break;
   }
-  if (label) current = { ...current, frames: [...current.frames, { board: after.board, action, label, position, unitId }] };
+  if (label) current = { ...current, frames: [...current.frames,
+    ...splitMoveFrame(before.board, { board: after.board, action, label, position, unitId })] };
   if (action.type === 'END_ACTION_PHASE' || before.turn.currentPlayer !== after.turn.currentPlayer || before.turn.turnNumber !== after.turn.turnNumber) {
     return { current: null, last: current };
   }

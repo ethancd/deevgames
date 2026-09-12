@@ -270,13 +270,18 @@ These are bounded tool calls, not unsolicited notifications to an idle LLM clien
 ### Instant replay
 
 During your turn, **Instant replay** plays the previous
-turn's placements, promotions, moves and attacks on the existing battlefield, one at
-a time, once per second. The button keeps its place while unavailable, and playback
+turn's placements, promotions, moves and attacks on the existing battlefield. Each
+action spent moving gets its own frame, following a legal route in hops up to the
+unit's speed. The selector on the replay button remembers **Fast** (0.3 seconds),
+**Slow** (1 second, the default), or **Step through** (manual back/forward controls,
+with no autoplay or automatic exit). You can switch modes during playback.
+The button keeps its place while unavailable, and playback
 controls fit in the decision panel without resizing the board. Pause or resume,
 step backward or forward, or select **Done** (or press Escape) to return to your
 unchanged live turn. Automatic playback returns after the final action. Switching
 tabs pauses playback until you resume, so actions are not missed in the background.
 Undone commands are excluded; atomic MCP batches are split into individual actions.
+Previously saved replays with long movement commands are expanded on playback too.
 Online room snapshots carry `lastTurnReplay`, so the replay is also available after
 reconnecting. Recording begins with this version; past turns from older releases
 cannot be reconstructed. Local AI and pass-and-play replays last for the current
