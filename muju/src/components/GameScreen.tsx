@@ -13,7 +13,7 @@ import { UnitInfo } from './UnitInfo';
 import { UnitShop } from './UnitShop';
 import { VictoryScreen } from './VictoryScreen';
 import { ElementLegend } from './ElementLegend';
-import { TurnReplay } from './TurnReplay';
+import { TurnReplay, useReplayPlayback } from './TurnReplay';
 import { AIRecap } from './AIRecap';
 import { AIConsole } from './AIConsole';
 import { PassDeviceOverlay } from './PassDeviceOverlay';
@@ -67,9 +67,10 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
     selectedUnitData,
   } = game;
   const actionsPerTurn = getActionsPerTurn(state);
-  const [showReplay, setShowReplay] = useState(false);
-  const closeReplay = useCallback(() => setShowReplay(false), []);
-  useEffect(() => setShowReplay(false), [state.turn.currentPlayer, state.turn.turnNumber, state.phase]);
+  const { playback, startReplay, closeReplay } = useReplayPlayback();
+  const showReplay = !!playback;
+  const replayFrame = playback && playback.step > 0 ? playback.replay.frames[playback.step - 1] : null;
+  useEffect(closeReplay, [state.turn.currentPlayer, state.turn.turnNumber, state.phase, closeReplay]);
 
   const [selectedPurchaseId, setSelectedPurchaseId] = useState<string | null>(null);
   const [selectedPlaceUnitId, setSelectedPlaceUnitId] = useState<string | null>(null);
@@ -294,6 +295,7 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
   };
 
   const handleCellClick = (position: Position) => {
+    if (showReplay) return;
     if (!isCurrentPlayerHuman || isThinking || showPassOverlay) {
       return;
     }
@@ -355,6 +357,7 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
   };
 
   const handleUnitClick = (unitId: string) => {
+    if (showReplay) return;
     if (!isCurrentPlayerHuman || isThinking || showPassOverlay) {
       return;
     }
@@ -677,7 +680,7 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
   const homeNotice = getHomeOccupier(state.board, state.turn.currentPlayer === 'white' ? 'black' : 'white')
     ? `Clear ${state.turn.currentPlayer === 'white' ? 'A1' : 'J10'} this turn or lose`
     : getHomeOccupier(state.board, state.turn.currentPlayer) ? `Hold ${state.turn.currentPlayer === 'white' ? 'J10' : 'A1'} until your next turn` : '';
-  const phaseHint = online && !online.ready ? 'Share your invitation to bring in the other player.'
+  const phaseHint = showReplay ? 'Replaying your opponent’s last turn…' : online && !online.ready ? 'Share your invitation to bring in the other player.'
     : online?.busy ? 'Confirming your move…'
     : !interactive ? (isPaused ? 'Paused' : 'Opponent’s turn')
     : state.turn.phase === 'place' ? 'Buy tier 1, or select a piece to promote.'
@@ -699,7 +702,7 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
         <header className="game-header">
           <a href="../" aria-label="Back to Deev Games">← Games</a>
           <h1>Muju Hono Tanka</h1>
-          <button onClick={() => setShowMenu(true)} aria-label="Game menu">•••</button>
+          <button disabled={showReplay} onClick={() => setShowMenu(true)} aria-label="Game menu">•••</button>
         </header>
         <section className="turn-strip" aria-label="Turn and phases">
           <strong>{isThinking ? 'Thinking…' : playerNames[state.turn.currentPlayer]} <span>· Turn {state.turn.turnNumber}</span></strong>
@@ -715,21 +718,27 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
         </section>
         <div className="progress-clock"><span>{actionsPerTurn} actions / turn</span><span className={(state.inactivityPlies??0)>=INACTIVITY_WARNING ? 'rent-warning' : ''}>{state.inactivityPlies??0}/{INACTIVITY_LIMIT} quiet turns</span>{state.lastUpkeep && (state.lastUpkeep.paid>0 || state.lastUpkeep.released.length>0) && <span>{playerNames[state.lastUpkeep.player]} paid {state.lastUpkeep.paid} · released {state.lastUpkeep.released.length}</span>}</div>
       </aside>
-      <div className={`play-area ${state.turn.phase === 'place' && interactive ? 'is-placing' : ''}`}>
+      <div className={`play-area ${state.turn.phase === 'place' && (interactive || showReplay) ? 'is-placing' : ''}`}>
         <section className="board-stage" aria-label="Battlefield">
-          <Board board={state.board} selectedUnit={shownUnit?.id ?? null}
-            validMoves={state.validMoves} validAttacks={preview ? [preview.position] : state.validAttacks} validSpawns={validSpawns}
-            invalidSpawnPosition={spawnFeedback?.position ?? null} pendingMovePath={previewPath} movementRange={movementRange} attackFrontier={attackFrontier}
-            previewPosition={preview?.position} previewUnitPosition={previewLanding} showResources={showResources} actionsRemaining={isEnemyView ? actionsPerTurn : state.turn.actionsRemaining}
+          <Board board={playback ? replayFrame?.board ?? playback.replay.initialBoard : state.board}
+            selectedUnit={showReplay ? replayFrame?.unitId ?? null : shownUnit?.id ?? null}
+            validMoves={showReplay ? [] : state.validMoves}
+            validAttacks={showReplay ? replayFrame?.action.type === 'ATTACK' && replayFrame.position ? [replayFrame.position] : [] : preview ? [preview.position] : state.validAttacks}
+            validSpawns={showReplay ? [] : validSpawns}
+            invalidSpawnPosition={showReplay ? null : spawnFeedback?.position ?? null}
+            pendingMovePath={showReplay ? [] : previewPath} movementRange={showReplay ? [] : movementRange} attackFrontier={showReplay ? [] : attackFrontier}
+            previewPosition={showReplay ? replayFrame?.position : preview?.position} previewUnitPosition={showReplay ? undefined : previewLanding}
+            showResources={showResources} actionsRemaining={isEnemyView ? actionsPerTurn : state.turn.actionsRemaining}
             onCellClick={handleCellClick} onUnitClick={handleUnitClick} />
         </section>
         <div className="board-key">
-          <span role="status">{homeNotice || (isEnemyView && showEnemyRange ? 'Red dots: attack frontier' : selectedPurchaseId ? '＋ Safe placement' : '● 1 action · ○ farther · ⊗ attack')}</span>
+          <span role="status">{showReplay ? 'Instant replay · 1 action per second' : homeNotice || (isEnemyView && showEnemyRange ? 'Red dots: attack frontier' : selectedPurchaseId ? '＋ Safe placement' : '● 1 action · ○ farther · ⊗ attack')}</span>
           <button className="visual-key-trigger" onClick={() => setShowVisualKey(true)}>Key</button>
           <button aria-pressed={showResources} onClick={() => setShowResources(!showResources)}>◆ Reserves</button>
         </div>
         <section className="decision-panel" aria-label="Current choice">
-          {state.turn.phase === 'place' && interactive && !shownUnit ? <UnitShop resources={currentPlayerState.resources} player={state.turn.currentPlayer} board={state.board}
+          {playback ? <TurnReplay replay={playback.replay} step={playback.step} playerName={playerNames[playback.replay.player]} onClose={closeReplay} />
+          : state.turn.phase === 'place' && interactive && !shownUnit ? <UnitShop resources={currentPlayerState.resources} player={state.turn.currentPlayer} board={state.board}
             selectedId={selectedPurchaseId} onSelectId={id => { setSelectedPurchaseId(id); setSelectedPlaceUnitId(null); setViewedEnemyUnitId(null); }} />
           : preview && selectedUnitData ? <div className="action-preview">
               <div className="preview-heading"><strong>Attack → {String.fromCharCode(65 + preview.position.x)}{preview.position.y + 1}</strong><span>{previewCost} action{previewCost !== 1 ? 's' : ''} · {state.turn.actionsRemaining - previewCost} left</span></div>
@@ -758,16 +767,14 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
           isPlayerTurn={interactive} onUndo={() => { setPreview(null); undo(); }} canUndo={canUndo && interactive} />
         {isCurrentPlayerHuman && state.phase === 'playing' && !showPassOverlay && game.lastTurnReplay?.player !== state.turn.currentPlayer &&
           <button className="instant-replay-button" disabled={!game.lastTurnReplay || showReplay}
-            onClick={() => setShowReplay(true)}>↶ Instant replay · Opponent’s last turn</button>}
-        <nav className="reference-bar" aria-label="Game references">
+            onClick={() => game.lastTurnReplay && startReplay(game.lastTurnReplay)}>↶ Instant replay · Opponent’s last turn</button>}
+        <nav className="reference-bar" aria-label="Game references" inert={showReplay}>
           <button onClick={() => setShowUnitShopInspection(true)}>Units</button>
           <button className="counter-key" aria-label="Element advantages and match stats" title="Each pair beats the next: +1 attack" onClick={() => setShowInsights(true)}>🔥⚡ → 🌿⚙ → 💧🌑 ↻ <span>+1</span>{showAIRecap ? ' •' : ''}</button>
           <button onClick={() => setShowInstructions(true)}>How to play</button>
           {config.mode === 'ai-vs-ai' && <button onClick={togglePause}>{isPaused ? 'Resume' : 'Pause'}</button>}
         </nav>
       </footer>
-      {showReplay && game.lastTurnReplay && <TurnReplay replay={game.lastTurnReplay}
-        playerName={playerNames[game.lastTurnReplay.player]} onClose={closeReplay} />}
       {showVisualKey && <PlayDialog title="Read the board" onClose={() => setShowVisualKey(false)}><VisualKey /></PlayDialog>}
       {showMenu && <PlayDialog title="Game menu" onClose={() => setShowMenu(false)}>
         <p>{online ? 'This match is saved on the server. Keep this browser’s seat credential to reconnect. Shared moves are final.' : `Your match is saved at phase changes on this device. New games use Unequal routes with ${INITIAL_MAP_RESOURCES} crystals.`}</p>

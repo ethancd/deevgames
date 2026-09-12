@@ -270,7 +270,8 @@ These are bounded tool calls, not unsolicited notifications to an idle LLM clien
 ### Instant replay
 
 During your turn, **Instant replay · Opponent’s last turn** plays the previous
-turn's placements, promotions, moves and attacks one at a time, once per second.
+turn's placements, promotions, moves and attacks on the existing battlefield, one at
+a time, once per second. Playback controls appear in the decision panel.
 Stop it early or let it return automatically to your unchanged live turn.
 Undone commands are excluded; atomic MCP batches are split into individual actions.
 Online room snapshots carry `lastTurnReplay`, so the replay is also available after

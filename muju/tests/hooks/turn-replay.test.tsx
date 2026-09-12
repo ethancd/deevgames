@@ -1,23 +1,15 @@
 import { afterEach, expect, it, vi } from 'vitest';
-import { act, cleanup, fireEvent, render, renderHook, screen, within } from '@testing-library/react';
-import { TurnReplay } from '../../src/components/TurnReplay';
+import { act, cleanup, fireEvent, render, renderHook, screen } from '@testing-library/react';
 import { GameScreen } from '../../src/components/GameScreen';
 import { useGameState } from '../../src/hooks/useGameState';
 import { createInitialGameState, createUnit } from '../../src/game/board';
-import { emptyRecording, recordAction } from '../../src/game/replay';
-import { applyAction } from '../../src/ai/simulate';
 import { loadGameState, saveGameState } from '../../src/utils/persistence';
-import type { AIAction } from '../../src/ai/types';
 
 afterEach(() => { cleanup(); localStorage.clear(); vi.useRealTimers(); vi.restoreAllMocks(); });
 function fixture() {
   const state = createInitialGameState(undefined, 6);
   state.board.units = [createUnit('fire_1', 'white', {x:0,y:0}), createUnit('plant_1', 'black', {x:4,y:0}), createUnit('water_1', 'black', {x:9,y:9})];
   return state;
-}
-function dialogSupport() {
-  Object.defineProperty(HTMLDialogElement.prototype, 'showModal', { configurable:true, value:function(this: HTMLDialogElement) { this.open = true; } });
-  Object.defineProperty(HTMLDialogElement.prototype, 'close', { configurable:true, value:function(this: HTMLDialogElement) { this.open = false; } });
 }
 it('records individual AI actions and excludes commands undone before handoff', () => {
   const state = fixture(); saveGameState(state);
@@ -31,25 +23,37 @@ it('records individual AI actions and excludes commands undone before handoff', 
   expect(result.current.lastTurnReplay?.initialBoard).toEqual(state.board);
   expect(result.current.lastTurnReplay?.frames[0].board.units).toHaveLength(3);
 });
-it('plays one move or attack per second and leaves the saved game untouched', () => {
-  vi.useFakeTimers(); dialogSupport();
-  let state = fixture(), recording = emptyRecording(); const id=state.board.units[0].id;
-  const actions: AIAction[] = [{type:'MOVE',unitId:id,to:{x:3,y:0}}, {type:'ATTACK',unitId:id,targetPosition:{x:4,y:0}}, {type:'END_ACTION_PHASE'}];
-  for (const action of actions) { const next=applyAction(state,action); recording=recordAction(recording,state,action,next); state=next; }
-  saveGameState(state); const saved=loadGameState(); const close=vi.fn();
-  render(<TurnReplay replay={recording.last!} playerName="Opponent" onClose={close} />);
-  const replay=within(screen.getByRole('dialog'));
-  expect(replay.getByTestId('cell-0-0')).toHaveAccessibleName(/white Hi/);
+it('replays on the same board once per second and restores the live board without a modal', () => {
+  vi.useFakeTimers(); const state=fixture(); saveGameState(state);
+  const {container}=render(<GameScreen config={{mode:'pass-play',controls:{white:'human',black:'human'},aiDifficulty:{white:'medium',black:'medium'}}} onBackToMenu={()=>{}} />);
+  fireEvent.click(screen.getByTestId('cell-0-0'));
+  fireEvent.click(screen.getByTestId('cell-4-0'));
+  fireEvent.click(screen.getByRole('button',{name:'Confirm attack'}));
+  fireEvent.click(screen.getByRole('button',{name:/End turn/}));
+  fireEvent.click(screen.getByText('Tap anywhere to continue'));
+  const saved=loadGameState(), board=container.querySelector('.battle-board');
+  fireEvent.click(screen.getByRole('button',{name:/Instant replay/}));
+  expect(screen.queryByRole('dialog')).toBeNull();
+  expect(container.querySelectorAll('.battle-board')).toHaveLength(1);
+  expect(container.querySelector('.battle-board')).toBe(board);
+  expect(screen.getByTestId('cell-0-0')).toHaveAccessibleName(/white Hi/);
   act(()=>vi.advanceTimersByTime(999)); expect(screen.getByText('Start of turn')).toBeInTheDocument();
-  act(()=>vi.advanceTimersByTime(1)); expect(replay.getByTestId('cell-3-0')).toHaveAccessibleName(/white Hi/);
-  expect(replay.getByTestId('cell-4-0')).toHaveAccessibleName(/black Muju/);
-  act(()=>vi.advanceTimersByTime(1000)); expect(replay.getByTestId('cell-4-0')).not.toHaveAccessibleName(/black Muju/);
-  expect(close).not.toHaveBeenCalled();
-  act(()=>vi.advanceTimersByTime(1000)); expect(close).toHaveBeenCalledOnce();
+  act(()=>vi.advanceTimersByTime(1)); expect(screen.getByTestId('cell-3-0')).toHaveAccessibleName(/white Hi/);
+  expect(screen.getByTestId('cell-4-0')).toHaveAccessibleName(/black Muju/);
+  // Board clicks and shortcuts cannot play or select pieces during playback.
+  fireEvent.click(screen.getByTestId('cell-9-9'));
+  fireEvent.click(screen.getByTestId('cell-8-9'));
+  fireEvent.keyDown(window,{key:'Enter'});
+  expect(screen.getByRole('button',{name:/End turn/})).toBeDisabled();
+  act(()=>vi.advanceTimersByTime(1000)); expect(screen.getByTestId('cell-4-0')).not.toHaveAccessibleName(/black Muju/);
+  act(()=>vi.advanceTimersByTime(1000)); expect(screen.queryByRole('button',{name:/Stop replay/})).toBeNull();
+  expect(container.querySelector('.battle-board')).toBe(board);
+  expect(screen.getByTestId('cell-3-0')).toHaveAccessibleName(/white Hi/);
+  expect(screen.getByRole('button',{name:/End turn/})).toBeEnabled();
   expect(loadGameState()).toEqual(saved);
 });
 it('opens from your turn, blocks gameplay shortcuts, stops early and can replay again', () => {
-  vi.useFakeTimers(); dialogSupport(); const state=fixture(); saveGameState(state);
+  vi.useFakeTimers(); const state=fixture(); saveGameState(state);
   render(<GameScreen config={{mode:'pass-play',controls:{white:'human',black:'human'},aiDifficulty:{white:'medium',black:'medium'}}} onBackToMenu={()=>{}} />);
   fireEvent.click(screen.getByTestId('cell-0-0'));
   fireEvent.click(screen.getByTestId('cell-2-0'));
@@ -62,6 +66,7 @@ it('opens from your turn, blocks gameplay shortcuts, stops early and can replay 
   expect(loadGameState()).toEqual(before);
   fireEvent.click(screen.getByRole('button',{name:/Stop replay/}));
   expect(screen.queryByRole('dialog')).toBeNull();
+  expect(screen.getByTestId('cell-2-0')).toHaveAccessibleName(/white Hi/);
   act(()=>vi.advanceTimersByTime(2000)); expect(loadGameState()).toEqual(before);
   fireEvent.click(screen.getByRole('button',{name:/Instant replay/}));
   expect(screen.getByText('Start of turn')).toBeInTheDocument();

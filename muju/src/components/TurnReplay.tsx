@@ -1,28 +1,24 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import type { TurnReplay as Replay } from '../game/replay';
-import { Board } from './Board';
-import { PlayDialog } from './PlayDialog';
 
-export function TurnReplay({ replay, playerName, onClose }: { replay: Replay; playerName: string; onClose: () => void }) {
-  const [step, setStep] = useState(0);
+export function useReplayPlayback() {
+  const [playback, setPlayback] = useState<{ replay: Replay; step: number } | null>(null);
+  const closeReplay = useCallback(() => setPlayback(null), []);
+  const startReplay = useCallback((replay: Replay) => setPlayback({ replay, step: 0 }), []);
   useEffect(() => {
-    const timer = setTimeout(() => {
-      if (step >= replay.frames.length) onClose();
-      else setStep(step + 1);
-    }, 1000);
+    if (!playback) return;
+    const timer = setTimeout(() => setPlayback(current => current && current.step < current.replay.frames.length
+      ? { ...current, step: current.step + 1 } : null), 1000);
     return () => clearTimeout(timer);
-  }, [step, replay, onClose]);
+  }, [playback]);
+  return { playback, startReplay, closeReplay };
+}
+
+export function TurnReplay({ replay, step, playerName, onClose }: { replay: Replay; step: number; playerName: string; onClose: () => void }) {
   const frame = step ? replay.frames[step - 1] : null;
-  return <PlayDialog title="Instant replay" onClose={onClose}>
-    <div className="turn-replay">
-      <p>{playerName} · Turn {replay.turnNumber} · {step}/{replay.frames.length}</p>
-      <p className="replay-caption" role="status">{frame?.label ?? (replay.frames.length ? 'Start of turn' : 'No placements, promotions, moves or attacks this turn.')}</p>
-      <div className="replay-board" aria-label="Replay board">
-        <Board board={frame?.board ?? replay.initialBoard} selectedUnit={frame?.unitId ?? null}
-          validMoves={[]} validAttacks={frame?.action.type === 'ATTACK' && frame.position ? [frame.position] : []}
-          validSpawns={[]} previewPosition={frame?.position} onCellClick={() => {}} onUnitClick={() => {}} />
-      </div>
-      <button className="primary" onClick={onClose}>Stop replay · Back to my turn</button>
-    </div>
-  </PlayDialog>;
+  return <section className="turn-replay" aria-label="Instant replay">
+    <strong>Instant replay · {playerName} · Turn {replay.turnNumber} · {step}/{replay.frames.length}</strong>
+    <p className="replay-caption" role="status">{frame?.label ?? (replay.frames.length ? 'Start of turn' : 'No placements, promotions, moves or attacks this turn.')}</p>
+    <button className="primary" onClick={onClose}>Stop replay · Back to my turn</button>
+  </section>;
 }
