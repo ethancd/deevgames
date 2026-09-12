@@ -126,7 +126,8 @@ Only protocol messages go to stdout. The implementation uses the
 | `muju_rules` | Rules, all unit definitions, coordinates and workflow |
 | `muju_create_room` | Choose a side (all games use four actions); get a private seat token and separate invitation |
 | `muju_join_room` | Claim the other seat using `roomId`, `inviteCode`, and a name |
-| `muju_observe` | Compact board, units, resources, home threats, history and revision |
+| `muju_observe` | Compact board, units, resources, home threats, history, revision and clocks |
+| `muju_clock` | Small public read of both clocks, revision, turn owner and result |
 | `muju_history` | Persistent game score with notation, costs/AP, upkeep, combat and mining outcomes; paginated, public |
 | `muju_legal_actions` | Filtered/paginated moves including multi-action movement, costs and combat outcomes |
 | `muju_preview` | Simulate a sequence without committing it |
@@ -171,6 +172,66 @@ only seat tokens authorize actions. Share the **invitation**, never your own tok
 For human-to-agent handoff, the browser exposes your credential under **Private
 reconnect details**. Two clients using one token control the same seat, so coordinate
 their use. Rooms are unlisted; there is no public matchmaking or account system.
+
+## Optional time controls
+
+Choose **Time control** when hosting a room in the browser, or pass `timeControl`
+to `muju_create_room`. Omitted or `null` means untimed; existing rooms stay untimed.
+The setting is fixed at creation, including while waiting for the opponent.
+
+These are delay clocks: **each player has their own bank, shared across their own
+turns**. A full turn gets a fresh free allowance; after it runs out, only the active
+player’s bank counts down. Unused allowance does not accumulate. Running out loses.
+The allowance covers upkeep, placement and all four actions together. Moves,
+starting the action phase, undo, previews, reads and retries never reset it.
+
+| Preset | Free delay / personal bank | Approximate pace |
+| --- | --- | --- |
+| `blitz` | 10 seconds / 2 minutes | 10 minutes at 36 player turns |
+| `rapid` | 30 seconds / 10 minutes | 45 minutes at 50 player turns |
+| `classical` | 60 seconds / 30 minutes | 2 hours at 60 player turns |
+
+These are suggested pacing budgets, not guaranteed durations. If players use most
+of their time, the allowance is `2 × bank + total player turns × delay`; faster
+moves and earlier wins shorten a game. Custom settings accept 0–600 whole seconds
+of delay and 1–14,400 whole seconds of bank. The browser accepts bank minutes and
+rounds to the nearest second.
+
+```json
+{"name":"White LLM","side":"white","timeControl":"rapid"}
+```
+
+The equivalent custom setting is
+`"timeControl":{"delaySeconds":30,"bankSeconds":600}`.
+
+White’s clock starts as soon as the second player joins. Have both agents read the
+rules and prepare before joining. There is no pause for disconnects, hidden tabs,
+replay, thinking, tool calls or host downtime. The server persists absolute deadlines,
+checks them before accepting moves, and adjudicates unattended rooms automatically.
+At the deadline, the active player loses with `victoryReason:"timeout"`. On restart,
+overdue rooms finish immediately, with the result timestamp set to the deadline.
+
+Observations, legal-action responses, play results and timed idle waits include
+`clock`: `serverNowMs`, `runningPlayer`, `turnStartedAtMs`, `deadlineAtMs`,
+`delayRemainingMs`, and separate `bankRemainingMs.white` / `.black`. Timestamps
+are Unix milliseconds from the server. At the observation time, remaining time to
+loss is `deadlineAtMs - serverNowMs`; subtract elapsed time locally and allow for
+network latency. `muju_clock({roomId})` reads just clocks, revision, turn owner and
+result without downloading the board. Untimed rooms return `clock:null`.
+
+Do not wait on your own turn. Finish with `END_ACTION_PHASE` before the deadline;
+spending the last AP alone does not stop the clock. Limit speculative tool calls
+when time is short and prefer a legal atomic turn batch. Preview returns its real
+clock separately as `liveClock`; the returned board is hypothetical. Late play or
+preview calls return `isError:true`, `code:"TIME_EXPIRED"` and the actual terminal
+`room` (HTTP uses status 409). No requested actions run. Identical retries of a
+previously successful command still return the current room without applying twice.
+
+Ticks do not change revision or generate network updates. A timeout advances the
+revision once, wakes `muju_wait_for_change`, records a persistent result/position,
+and sends an event with `actions:[]` and `result:{winner,reason:"timeout"}`. The
+browser shows both banks, the running delay, and the final timeout result. Ordinary
+victories and resignation stop both clocks. Undo cannot refund time or reverse a loss.
 
 ## Reconnect and action semantics
 
@@ -228,7 +289,7 @@ Their connections contain no token, and the UI and dispatch layer prohibit moves
   affordable selection, not all exponentially many possible subsets.
 - Browsers and both MCP transports use server-side long polling: a request waits up
   to 25 seconds, returning the board only when its revision changes. An unchanged
-  result is just `{changed:false, revision, phase}`; agents keep their previous
+  result is `{changed:false, revision, phase}` with a fresh `clock` for timed rooms; agents keep their previous
   observation and wait again. Stop waiting when `phase` is `victory`.
 - Browser updates pause in hidden tabs, resume when visible, stop after victory,
   and back off during outages. Retrying the same move after a lost response remains
@@ -277,7 +338,7 @@ and clears old undo/replay history. Reconnects receive an updated revision.
 
 | Method and path | Body / behavior |
 | --- | --- |
-| `POST /api/muju/rooms` | `{name, side, actionsPerTurn?: 4}` → admission (only 4 is supported) |
+| `POST /api/muju/rooms` | `{name, side, actionsPerTurn?: 4, timeControl?}` → admission (only 4 actions supported) |
 | `POST /api/muju/rooms/:id/join` | `{name, inviteCode}` → admission |
 | `GET /api/muju/rooms/:id` | Public snapshot; optional Bearer token validates a saved seat |
 | `GET /api/muju/rooms/:id/history` | Public score; `limit` (1–200, default 50), `before` or `after` sequence cursor, optional `includeUndone=true` |

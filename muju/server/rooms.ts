@@ -12,6 +12,7 @@ import { isLegalAction } from '../src/game/legality';
 import { applyAction } from '../src/ai/simulate';
 import type { GameState, PlayerId } from '../src/game/types';
 import type { ActionRequest, RoomAction, RoomAdmission, RoomChange, RoomSnapshot } from '../src/online/types';
+import { projectClock, type ClockSnapshot } from '../src/online/timeControl';
 import { RoomError, actionRequestSchema, createSchema, joinSchema, roomIdSchema, historyQuerySchema } from './schema';
 
 const RULES_VERSION = 'muju-online-4';
@@ -24,6 +25,7 @@ function matches(value: string, hash: string) {
   return timingSafeEqual(Buffer.from(digest(value)), Buffer.from(hash));
 }
 interface StoredRoom extends RoomSnapshot {
+  clockBase?: ClockSnapshot;
   undoHistory?: GameState[];
   replayRecording?: ReplayRecording;
   undoReplayLengths?: number[];
@@ -39,6 +41,7 @@ interface StoredRoom extends RoomSnapshot {
 export class RoomStore {
   private db: DatabaseSync;
   private shutdown = new AbortController();
+  private clockTimer: ReturnType<typeof setInterval>;
   constructor(path: string = ':memory:', private maxRooms = 10000) {
     this.db = new DatabaseSync(path);
     this.db.exec('PRAGMA journal_mode=WAL; PRAGMA busy_timeout=5000; CREATE TABLE IF NOT EXISTS rooms (id TEXT PRIMARY KEY, data TEXT NOT NULL)');
@@ -48,8 +51,50 @@ export class RoomStore {
       undone_revision INTEGER, before_state BLOB, after_state BLOB NOT NULL, PRIMARY KEY (room_id, sequence)
     )`);
     this.db.exec('CREATE TABLE IF NOT EXISTS room_history_roots (room_id TEXT PRIMARY KEY, state BLOB NOT NULL)');
+    this.transaction(() => {
+      if (!this.db.prepare('PRAGMA table_info(rooms)').all().some(column => column.name === 'deadline_at')) {
+        this.db.exec('ALTER TABLE rooms ADD COLUMN deadline_at REAL');
+      }
+      this.db.exec('CREATE INDEX IF NOT EXISTS rooms_deadline ON rooms(deadline_at) WHERE deadline_at IS NOT NULL');
+    });
+    this.expireDue();
+    this.clockTimer = setInterval(() => this.expireDue(), 250);
+    this.clockTimer.unref();
   }
-  close() { this.shutdown.abort(); this.db.close(); }
+  close() { clearInterval(this.clockTimer); this.shutdown.abort(); this.db.close(); }
+  /** Indexed sweep also adjudicates rooms with no connected clients, including after restart. */
+  private expireDue() {
+    try {
+      const due = this.db.prepare('SELECT id FROM rooms WHERE deadline_at <= ?').all(Date.now());
+      for (const row of due) this.transaction(() => this.expire(this.read(row.id as string), Date.now()));
+    } catch (error) { console.error('Muju clock adjudication failed:', error instanceof Error ? error.message : error); }
+  }
+  private expire(room: StoredRoom, now: number) {
+    const clock = room.clockBase;
+    if (!clock?.runningPlayer || clock.deadlineAtMs === null || now < clock.deadlineAtMs || room.state.phase !== 'playing') return;
+    const player = clock.runningPlayer, winner: PlayerId = player === 'white' ? 'black' : 'white';
+    const before = room.state;
+    room.state = { ...before, phase: 'victory', winner, victoryReason: 'timeout', selectedUnit: null, validMoves: [], validAttacks: [] };
+    room.clockBase = { ...projectClock(clock, clock.deadlineAtMs), runningPlayer: null, deadlineAtMs: null };
+    room.revision++; room.updatedAt = new Date(clock.deadlineAtMs).toISOString();
+    room.undoHistory = []; room.undoReplayLengths = []; room.undoMoveSequences = [];
+    const event: MoveEvent = { kind: 'result', player, turnNumber: before.turn.turnNumber, winner, reason: 'timeout',
+      notation: `${winner === 'white' ? 'White' : 'Black'} wins on time`, description: `${player === 'white' ? 'White' : 'Black'} ran out of time.` };
+    room.moveHistoryStart ??= { revision: room.revision - 1, turnNumber: before.turn.turnNumber, player, complete: false };
+    this.db.prepare('INSERT OR IGNORE INTO room_history_roots (room_id, state) VALUES (?, ?)').run(room.id, packState(before));
+    this.db.prepare('INSERT INTO room_moves (room_id, sequence, revision, player, turn_number, data, after_state) VALUES (?, ?, ?, ?, ?, ?, ?)')
+      .run(room.id, this.latestMoveSequence(room.id) + 1, room.revision, player, before.turn.turnNumber,
+        JSON.stringify({ ...event, timestamp: room.updatedAt, positionTurn: { player, turnNumber: before.turn.turnNumber } }), packState(room.state));
+    room.history = [...room.history, { revision: room.revision, player, actions: [], result: { winner, reason: 'timeout' as const } }].slice(-100);
+    this.save(room);
+  }
+  private startClock(room: StoredRoom, now: number) {
+    if (!room.clockBase || !room.timeControl) return;
+    const player = room.state.turn.currentPlayer;
+    room.clockBase = { ...room.clockBase, serverNowMs: now, runningPlayer: player, turnStartedAtMs: now,
+      delayRemainingMs: room.timeControl.delaySeconds * 1000,
+      deadlineAtMs: now + room.timeControl.delaySeconds * 1000 + room.clockBase.bankRemainingMs[player] };
+  }
   private transaction<T>(operation: () => T): T {
     this.db.exec('BEGIN IMMEDIATE');
     try { const result = operation(); this.db.exec('COMMIT'); return result; }
@@ -76,10 +121,11 @@ export class RoomStore {
     return room;
   }
   private save(room: StoredRoom) {
-    this.db.prepare('INSERT OR REPLACE INTO rooms (id, data) VALUES (?, ?)').run(room.id, JSON.stringify(room));
+    this.db.prepare('INSERT OR REPLACE INTO rooms (id, data, deadline_at) VALUES (?, ?, ?)').run(room.id, JSON.stringify(room), room.clockBase?.deadlineAtMs ?? null);
   }
   private snapshot(room: StoredRoom): RoomSnapshot {
     return structuredClone({ id: room.id, revision: room.revision, ready: room.ready, seats: room.seats,
+      timeControl: room.timeControl ?? null, clock: room.clockBase ? projectClock(room.clockBase, Date.now()) : null,
       lastTurnReplay: room.replayRecording?.last ?? null, canUndo: this.canUndo(room), state: room.state, updatedAt: room.updatedAt, history: room.history });
   }
   private canUndo(room: StoredRoom): boolean {
@@ -96,15 +142,19 @@ export class RoomStore {
     throw new RoomError(403, 'INVALID_SEAT', 'This seat credential is invalid. Reconnect with the credential from create or join.');
   }
   get(id: string, token?: string) {
-    const room = this.read(id);
-    if (token !== undefined) this.authenticate(room, token);
-    return this.snapshot(room);
+    return this.transaction(() => {
+      const room = this.read(id);
+      if (token !== undefined) this.authenticate(room, token);
+      this.expire(room, Date.now());
+      return this.snapshot(room);
+    });
   }
   moveHistory(id: string, input: HistoryQuery = {}): RoomMoveHistory {
     const { before, after, limit, includeUndone } = historyQuerySchema.parse(input);
     if (before !== undefined && after !== undefined) throw new RoomError(400, 'INVALID_HISTORY_CURSOR', 'Use before or after, not both.');
     return this.transaction(() => {
       const room = this.read(id);
+      this.expire(room, Date.now());
       const visible = includeUndone ? '' : ' AND undone_revision IS NULL';
       const cursor = before !== undefined ? ' AND sequence < ?' : after !== undefined ? ' AND sequence > ?' : '';
       const rows = this.db.prepare(`SELECT sequence, revision, data, undone_revision FROM room_moves WHERE room_id = ?${visible}${cursor}
@@ -124,7 +174,7 @@ export class RoomStore {
     return Number(this.db.prepare('SELECT COALESCE(MAX(sequence), 0) AS sequence FROM room_moves WHERE room_id = ?').get(id)!.sequence);
   }
   position(id: string, sequence: number, step?: number): { roomId: string; revision: number; state: GameState } {
-    const room = this.read(id);
+    const room = this.get(id);
     if (!Number.isInteger(sequence) || sequence < 0 || (step !== undefined && (!Number.isInteger(step) || step < 1))) {
       throw new RoomError(400, 'INVALID_POSITION', 'Use a nonnegative sequence and a positive step.');
     }
@@ -142,11 +192,14 @@ export class RoomStore {
       ? movementStep(unpackState(row.before_state as Uint8Array), after, event, step) : after };
   }
   restore(id: string, token: string, player: PlayerId): RoomSnapshot {
-    const room = this.read(id);
-    if (this.authenticate(room, token) !== player) {
-      throw new RoomError(403, 'SEAT_MISMATCH', 'The token belongs to the other side. Copy the complete original credentials.');
-    }
-    return this.snapshot(room);
+    return this.transaction(() => {
+      const room = this.read(id);
+      if (this.authenticate(room, token) !== player) {
+        throw new RoomError(403, 'SEAT_MISMATCH', 'The token belongs to the other side. Copy the complete original credentials.');
+      }
+      this.expire(room, Date.now());
+      return this.snapshot(room);
+    });
   }
   async wait(id: string, afterRevision: number, timeoutMs: number, signal?: AbortSignal, token?: string): Promise<RoomChange> {
     const cancellation = signal ? AbortSignal.any([signal, this.shutdown.signal]) : this.shutdown.signal;
@@ -156,15 +209,16 @@ export class RoomStore {
     // Check only the revision locally while idle. This also sees writes from another
     // process sharing the SQLite file, without sending full snapshots over the network.
     while (room.revision === afterRevision && room.state.phase !== 'victory' && Date.now() < deadline) {
-      await delay(Math.min(500, deadline - Date.now()), undefined, { signal: cancellation });
+      await delay(Math.max(1, Math.min(500, deadline - Date.now(), room.clock?.deadlineAtMs ? room.clock.deadlineAtMs - Date.now() : Infinity)), undefined, { signal: cancellation });
       const row = this.db.prepare("SELECT json_extract(data, '$.revision') AS revision FROM rooms WHERE id = ?").get(id);
-      if (row?.revision !== afterRevision) room = this.get(id, token);
+      if (row?.revision !== afterRevision || (room.clock?.deadlineAtMs !== null && room.clock?.deadlineAtMs !== undefined && Date.now() >= room.clock.deadlineAtMs)) room = this.get(id, token);
     }
     const metadata = { revision: room.revision, phase: room.state.phase };
-    return room.revision === afterRevision ? { changed: false, ...metadata } : { changed: true, ...metadata, room };
+    return room.revision === afterRevision ? { changed: false, ...metadata,
+      ...(room.clock ? { clock: projectClock(room.clock, Date.now()) } : {}) } : { changed: true, ...metadata, room };
   }
   create(input: unknown): RoomAdmission {
-    const { name, side, actionsPerTurn } = createSchema.parse(input);
+    const { name, side, actionsPerTurn, timeControl } = createSchema.parse(input);
     return this.transaction(() => {
       const count = this.db.prepare('SELECT COUNT(*) AS count FROM rooms').get()!.count as number;
       if (count >= this.maxRooms) throw new RoomError(503, 'ROOM_LIMIT', 'This host is at its room limit.');
@@ -174,6 +228,10 @@ export class RoomStore {
         moveHistoryStart: { revision: 0, turnNumber: 1, player: 'white', complete: true },
         rulesVersion: RULES_VERSION, inviteHash: digest(inviteCode), tokenHashes: { [side]: digest(token) }, receipts: [] };
       room.seats[side] = name;
+      room.timeControl = timeControl ?? null;
+      if (timeControl) room.clockBase = { serverNowMs: Date.now(), runningPlayer: null, turnStartedAtMs: null, deadlineAtMs: null,
+        delayRemainingMs: timeControl.delaySeconds * 1000,
+        bankRemainingMs: { white: timeControl.bankSeconds * 1000, black: timeControl.bankSeconds * 1000 } };
       this.db.prepare('INSERT INTO room_history_roots (room_id, state) VALUES (?, ?)').run(id, packState(room.state));
       this.save(room);
       return { credentials: { roomId: id, player: side, token }, inviteCode, room: this.snapshot(room) };
@@ -187,6 +245,7 @@ export class RoomStore {
       const player = room.seats.white === null ? 'white' : 'black', token = secret();
       room.seats[player] = name; room.tokenHashes[player] = digest(token);
       room.ready = true; room.inviteHash = null; room.revision++; room.updatedAt = new Date().toISOString();
+      this.startClock(room, Date.now());
       this.save(room);
       return { credentials: { roomId: id, player, token }, room: this.snapshot(room) };
     });
@@ -231,10 +290,16 @@ export class RoomStore {
   }
   act(id: string, token: string, input: unknown, preview = false): RoomSnapshot {
     const request: ActionRequest = actionRequestSchema.parse(input);
-    return this.transaction(() => {
+    const result = this.transaction(() => {
       const room = this.read(id), player = this.authenticate(room, token);
+      const receivedAt = Date.now();
+      this.expire(room, receivedAt);
       const fingerprint = digest(JSON.stringify({ revision: request.expectedRevision, actions: request.actions }));
       const receipt = room.receipts.find(r => r.id === request.requestId && r.player === player);
+      // Return errors after committing adjudication: an overdue command must never roll back a timeout.
+      if (room.state.victoryReason === 'timeout' && (!receipt || preview || receipt.fingerprint !== fingerprint)) {
+        return new RoomError(409, 'TIME_EXPIRED', 'The game ended on time. No requested actions were applied.', this.snapshot(room));
+      }
       if (receipt && !preview) {
         if (receipt.fingerprint !== fingerprint) throw new RoomError(409, 'REQUEST_ID_REUSED', 'Use a new requestId for a different action.');
         return this.snapshot(room);
@@ -266,6 +331,11 @@ export class RoomStore {
       const initialState = room.state;
       room.state = state;
       if (preview) return this.snapshot(room);
+      if (room.clockBase && (state.phase !== 'playing' || state.turn.currentPlayer !== initialState.turn.currentPlayer || state.turn.turnNumber !== initialState.turn.turnNumber)) {
+        room.clockBase = { ...projectClock(room.clockBase, receivedAt), runningPlayer: null, deadlineAtMs: null };
+        // Start the opponent after engine processing, so they do not pay for this command's computation.
+        if (state.phase === 'playing') this.startClock(room, Date.now());
+      }
       room.revision++; room.updatedAt = new Date().toISOString();
       if (request.actions[0].type === 'UNDO') {
         this.db.prepare(`UPDATE room_moves SET undone_revision = ? WHERE room_id = ? AND sequence > ?
@@ -281,5 +351,7 @@ export class RoomStore {
       this.save(room);
       return this.snapshot(room);
     });
+    if (result instanceof RoomError) throw result;
+    return result;
   }
 }

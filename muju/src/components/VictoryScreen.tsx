@@ -29,6 +29,7 @@ export function VictoryScreen({ winner, reason, onPlayAgain, onViewHistory, play
 
         <p className="text-gray-400 mb-6">
           {!winner ? `${INACTIVITY_LIMIT} consecutive player turns passed without a kill. Crystal income does not reset the clock.` : reason === 'home-checkmate' ? 'Checkmate! The enemy home is occupied, and no legal reply can remove the invading unit.' : reason === 'upkeep-elimination' ? 'All remaining forces were released during upkeep.' : reason === 'home-occupation' ? `${winnerName} held the enemy home corner until the start of their turn!`
+            : reason === 'timeout' ? `${playerNames ? playerNames[winner === 'white' ? 'black' : 'white'] : winner === 'white' ? 'Black' : 'White'} ran out of time.`
             : reason === 'resignation' ? 'The opponent resigned.' : playerNames
             ? `${winnerName} has eliminated all enemy forces!`
             : (isPlayerWinner

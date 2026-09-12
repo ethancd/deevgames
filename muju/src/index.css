@@ -343,6 +343,27 @@ button:focus-visible, a:focus-visible { outline: 3px solid #67e8f9; outline-offs
 .online-banner > span { font-size: .85rem; margin: 4px 0; color: #a5d9e9; }
 .online-banner details { margin-top: 10px; }
 .online-banner textarea { min-height: 150px; font-size: .7rem; }
+.clock-summary { margin: 8px 0; font-size: .82rem; color: #cbd5e1; }
+.clock-seats, .clock-custom { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.clock-seat { display: flex; flex-direction: column; gap: 4px; padding: 10px; border: 1px solid #3c5062; border-radius: 8px; background: #102131; }
+.clock-seat strong { font-size: 1.8rem; line-height: 1.2; font-variant-numeric: tabular-nums; }
+.clock-seat span { font-size: .72rem; color: #b8c5d5; }
+.clock-seat .clock-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.clock-active { border-color: #67e8f9; background: #123d4b; }
+.clock-low { border-color: #fbbf24; }
+.clock-low strong { color: #fcd34d; }
+.clock-help { font-size: .72rem; line-height: 1.4; margin-top: 8px; color: #94a3b8; }
+/* A clock must not shrink the phone battlefield into untappable cells. */
+@media (orientation: portrait), (max-width: 959px) {
+  .game-shell-online:has(.room-clocks) { height: auto; min-height: 100dvh; }
+  .game-shell-online:has(.room-clocks) .play-area,
+  .game-shell-online:has(.room-clocks) .play-area.is-placing {
+    flex: none; grid-template-rows: min(calc(100vw - 20px), 650px) 24px var(--decision-height, 116px);
+  }
+  .clock-seat { padding: 6px 8px; gap: 2px; }
+  .clock-seat strong { font-size: 1.5rem; }
+  .clock-seats { gap: 8px; }
+}
 .game-shell-online .income-status { display: none; }
 .online-banner [role=alert], .online-lobby [role=alert] { color: #fda4af; }
 @media (min-width: 960px) and (min-height: 601px) and (orientation: landscape) {

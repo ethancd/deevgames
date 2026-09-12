@@ -1,4 +1,6 @@
 import { z } from 'zod';
+import { TIME_CONTROL_PRESETS } from '../src/online/timeControl';
+import type { RoomSnapshot } from '../src/online/types';
 
 export const roomIdSchema = z.string().regex(/^[a-f0-9]{32}$/);
 export const tokenSchema = z.string().min(32).max(128);
@@ -24,6 +26,16 @@ export const actionRequestSchema = z.object({
 }).strict();
 export const createSchema = z.object({ name: nameSchema, side: z.enum(['white', 'black']).default('white'),
   actionsPerTurn: z.literal(4).default(4),
+  timeControl: z.union([
+    z.enum(['blitz', 'rapid', 'classical']).transform(key => {
+      const { delaySeconds, bankSeconds } = TIME_CONTROL_PRESETS[key];
+      return { delaySeconds, bankSeconds };
+    }),
+    z.object({
+      delaySeconds: z.number().int().min(0).max(600).describe('Free seconds per full player turn (0–600). Unused delay never accumulates.'),
+      bankSeconds: z.number().int().min(1).max(14400).describe('Personal bank in seconds per player (1–14400); used only after the turn delay.'),
+    }).strict(),
+  ]).nullable().optional().describe('Creation only. Omit/null for untimed, select blitz (10s/2min), rapid (30s/10min), classical (60s/30min), or supply custom delaySeconds/bankSeconds. Starts on join; running out loses.'),
 }).strict();
 export const joinSchema = z.object({ name: nameSchema, inviteCode: tokenSchema }).strict();
 export const historyQuerySchema = z.object({
@@ -34,5 +46,5 @@ export const historyQuerySchema = z.object({
 }).strict();
 
 export class RoomError extends Error {
-  constructor(public status: number, public code: string, message: string) { super(message); }
+  constructor(public status: number, public code: string, message: string, public room?: RoomSnapshot) { super(message); }
 }

@@ -49,7 +49,7 @@ consume one copy. Check `isError` before using a result.
 
 1. Read `muju_rules` for the current rules and unit catalogue. Costs and balance
    can change; use the live catalogue. Rules are also the resource `muju://rules`.
-2. Host with `muju_create_room({name, side})` (four shared actions per turn), or join with
+2. Host with `muju_create_room({name, side, timeControl?})` (four shared actions per turn), or join with
    `muju_join_room({roomId, inviteCode, name})`. An invitation URL contains the
    `room` query parameter and the `invite` fragment. Use its host for your MCP
    connection. Invitations claim the remaining seat once.
@@ -71,6 +71,37 @@ To let people watch two LLMs, share the `watchUrl` returned by create, join, or
 saved seat. Any number of observers can follow along, inspect units, and replay
 the last completed turn. No token or invitation is required. MCP observers use
 `muju_observe` followed by `muju_wait_for_change` with just the room ID.
+
+## Play on the clock
+
+Time control is optional and fixed at room creation. Use `timeControl:"blitz"`
+(10s delay / 2min bank), `"rapid"` (30s / 10min), `"classical"` (60s / 30min), or
+`{delaySeconds:30,bankSeconds:600}`. Omit or use null for untimed. Presets target
+roughly 10 minutes, 45 minutes and 2 hours; actual duration depends on turn count
+and time used. Custom limits: 0–600 seconds of delay, 1–14,400 seconds of bank.
+
+Each player has a separate bank carried across their own turns. Each full turn
+gets a fresh free delay, then that player's bank drains; unused delay is discarded.
+Upkeep, placement and all actions share one delay. Partial plays, undo, previews,
+reads and retries never reset it. Running out loses with `victoryReason:"timeout"`.
+
+Read the rules and prepare **before joining**: White's clock starts when the second
+player joins. It keeps running through thinking, waiting, disconnects, replay and
+host downtime. Observations, legal actions and play results include `clock` with
+`serverNowMs`, `runningPlayer`, `deadlineAtMs`, `delayRemainingMs` and separate
+`bankRemainingMs.white` / `.black`. Timestamps are server Unix milliseconds.
+`deadlineAtMs - serverNowMs` is time left at the snapshot; subtract local elapsed
+time and leave a network margin. `muju_clock({roomId})` provides a small fresh read
+without the board. Clock ticks do not change revision. Untimed clocks are null.
+
+Do not wait on your own running turn. End with `END_ACTION_PHASE` before the
+deadline, even when no AP remain. Reduce previews when short on time; prefer a
+legal atomic turn batch. Preview has a separate `liveClock` for the real game,
+while its `room` is hypothetical. Late play/preview returns `isError:true`,
+`code:"TIME_EXPIRED"` and the actual final `room`; no requested actions run.
+Timeouts finish unattended games and wake waits with a new revision and an event
+whose `actions:[]` and `result:{winner,reason:"timeout"}` explain the change.
+Report the winner and stop. Clocks stop on any game result; undo never refunds time.
 
 ## Take a turn
 
@@ -129,7 +160,7 @@ legal actions while the position is unchanged.
 
 - `changed:true`: `room` contains the new observation. Save its revision and
   reevaluate whose turn it is; a revision change does not always hand over the turn.
-- `changed:false`: the result contains only `revision` and `phase`. Keep the
+- `changed:false`: the result contains `revision`, `phase` and a fresh `clock` for timed games. Keep the
   previous board and wait again if play is still active and the user wants to continue.
 - Stop when the observation's `status` or the wait result's `phase` is `victory`.
   Report the winner or draw. Also stop if the user ends the session.

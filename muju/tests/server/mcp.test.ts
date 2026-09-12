@@ -36,6 +36,45 @@ async function call(client: Client, name: string, args: Record<string, unknown> 
 }
 
 describe('MCP and HTTP interoperability', () => {
+  it.each([false, true])('exposes live delay clocks, separates preview clocks, and wakes on timeout (stdio=%s)', async stdio => {
+    const { url } = await setup(), client = await clientFor(url, stdio);
+    const preset = await call(client, 'muju_create_room', { name: 'Preset', timeControl: 'rapid' });
+    expect(preset.room.timeControl).toEqual({ delaySeconds: 30, bankSeconds: 600 });
+    const hosted = await call(client, 'muju_create_room', { name: 'Timed White', timeControl: { delaySeconds: 1, bankSeconds: 3 } });
+    const roomId = hosted.credentials.roomId;
+    expect(hosted.room.clock.runningPlayer).toBeNull();
+    const joined = await call(client, 'muju_join_room', { roomId, inviteCode: hosted.invitation.inviteCode, name: 'Timed Black' });
+    const initial = joined.room.clock;
+    expect(initial).toMatchObject({ runningPlayer: 'white', bankRemainingMs: { white: 3000, black: 3000 } });
+    expect(initial.deadlineAtMs - initial.turnStartedAtMs).toBe(4000);
+    const clock = await call(client, 'muju_clock', { roomId });
+    expect(clock.clock.deadlineAtMs).toBe(initial.deadlineAtMs);
+    expect(clock.board).toBeUndefined();
+    expect(JSON.stringify(clock).length).toBeLessThan(700);
+    const legal = await call(client, 'muju_legal_actions', { roomId, limit: 1 });
+    expect(legal.clock.runningPlayer).toBe('white');
+    const command = { roomId, token: hosted.credentials.token, expectedRevision: 1, requestId: 'timed-preview-turn', actions: [{ type: 'END_ACTION_PHASE' }] };
+    const preview = await call(client, 'muju_preview', command);
+    expect(preview.room.activePlayer).toBe('black');
+    expect(preview.room.clock).toBeUndefined();
+    expect(preview.liveClock).toMatchObject({ runningPlayer: 'white', deadlineAtMs: initial.deadlineAtMs });
+    const idle = await call(client, 'muju_wait_for_change', { roomId, afterRevision: 1, timeoutMs: 0 });
+    expect(idle).toMatchObject({ changed: false, revision: 1, clock: { runningPlayer: 'white', deadlineAtMs: initial.deadlineAtMs } });
+    const changed = await call(client, 'muju_wait_for_change', { roomId, afterRevision: 1, timeoutMs: 5000 });
+    expect(changed).toMatchObject({ changed: true, revision: 2, phase: 'victory', eventsComplete: true,
+      room: { activePlayer: null, winner: 'black', victoryReason: 'timeout', clock: { runningPlayer: null, bankRemainingMs: { white: 0, black: 3000 } } } });
+    expect(changed.events).toEqual([{ revision: 2, player: 'white', actions: [], result: { winner: 'black', reason: 'timeout' } }]);
+    const late = await client.callTool({ name: 'muju_play', arguments: command });
+    expect(late.isError).toBe(true);
+    expect(late.structuredContent).toMatchObject({ code: 'TIME_EXPIRED', room: { winner: 'black', victoryReason: 'timeout' } });
+    const response = await fetch(`${url}/api/muju/rooms/${roomId}/actions`, { method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${hosted.credentials.token}` },
+      body: JSON.stringify({ expectedRevision: 1, requestId: 'late-http-request', actions: [{ type: 'END_ACTION_PHASE' }] }) });
+    expect(response.status).toBe(409);
+    expect(await response.json()).toMatchObject({ code: 'TIME_EXPIRED', room: { state: { victoryReason: 'timeout' } } });
+    const history = await call(client, 'muju_history', { roomId });
+    expect(history.entries).toMatchObject([{ kind: 'result', reason: 'timeout', winner: 'black' }]);
+  }, 15000);
   it.each([false, true])('queries the same persistent score over MCP and HTTP (stdio=%s)', async stdio => {
     const { url, store } = await setup(), client = await clientFor(url, stdio);
     const host = store.create({ name: 'White' }), id = host.room.id;

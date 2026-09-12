@@ -94,7 +94,7 @@ export function createApp(store: RoomStore, options: { publicUrl: string; distPa
   }
   const onError: ErrorRequestHandler = (error, _req, res, _next) => {
     if (res.headersSent) return;
-    if (error instanceof RoomError) res.status(error.status).json({ code: error.code, error: error.message });
+    if (error instanceof RoomError) res.status(error.status).json({ code: error.code, error: error.message, ...(error.room ? { room: error.room } : {}) });
     else if (error instanceof ZodError) res.status(400).json({ code: 'INVALID_REQUEST', error: 'Invalid request.', issues: error.issues });
     else if (error.status === 413 || error instanceof SyntaxError) res.status(error.status ?? 400).json({ error: 'Invalid or oversized JSON request.' });
     else { console.error('Muju server error:', error instanceof Error ? error.message : 'Unknown error'); res.status(500).json({ error: 'Server could not complete the request.' }); }

@@ -11,6 +11,7 @@ import { defaultUpkeepAction, unitUpkeep, upkeepDue } from '../src/game/upkeep';
 import { projectedIncome } from '../src/game/mining';
 import { getHomeOccupier } from '../src/game/victory';
 import { INACTIVITY_LIMIT } from '../src/game/inactivity';
+import { TIME_CONTROL_PRESETS } from '../src/online/timeControl';
 
 export const square = (p: Position) => `${String.fromCharCode(65 + p.x)}${p.y + 1}`;
 export function describeAction(action: RoomAction) {
@@ -24,6 +25,7 @@ export function observe(room: RoomSnapshot) {
   return {
     roomId: room.id, revision: room.revision, ready: room.ready, seats: room.seats,
     canUndo: !!room.canUndo,
+    timeControl: room.timeControl ?? null, clock: room.clock ?? null,
     historyTool: 'muju_history',
     activePlayer: room.ready && s.phase === 'playing' ? s.turn.currentPlayer : null,
     status: s.phase, turn: s.turn, actionsPerTurn: getActionsPerTurn(s), upkeepPending: !!s.upkeepPending,
@@ -76,6 +78,7 @@ export function legalActions(room: RoomSnapshot, options: { unitId?: string; typ
     && (!options.unitId || ('unitId' in a && a.unitId === options.unitId)));
   const offset = options.offset ?? 0, limit = options.limit ?? 60;
   return { roomId: room.id, revision: room.revision, currentPlayer: player, total: actions.length,
+    timeControl: room.timeControl ?? null, clock: room.clock ?? null,
     nextOffset: offset + limit < actions.length ? offset + limit : null,
     upkeepNote: s.upkeepPending ? 'One affordable keep-set is shown. You may submit any affordable keepUnitIds containing every tier 1 unit.' : undefined,
     actions: actions.slice(offset, offset + limit).map(action => {
@@ -90,6 +93,14 @@ export function legalActions(room: RoomSnapshot, options: { unitId?: string; typ
 }
 
 export const rules = {
+  timeControl: {
+    presets: TIME_CONTROL_PRESETS,
+    configuration: 'Optional at muju_create_room only: timeControl is blitz, rapid, classical, {delaySeconds,bankSeconds}, or null/omitted for untimed. Delay 0–600 seconds, bank 1–14400 seconds per player. Cannot change after creation.',
+    timing: 'Each player has a separate bank shared across their own turns. Each full player turn starts with a fresh free delay; only after that delay does their bank drain. Unused delay is discarded, never added to the bank. Upkeep, placement and all four actions share one delay. Partial commands, phase changes, undo, previews, reads and retries never reset it.',
+    enforcement: 'White’s clock starts immediately when the second player joins. No pause for disconnection, thinking, waiting, replay or server downtime. At deadlineAtMs the active player loses with victoryReason=timeout, even with no connected clients. The server checks deadlines before accepting commands; a late play/preview returns TIME_EXPIRED and the terminal room. Successful identical retries remain idempotent.',
+    agentWorkflow: 'Read rules and prepare before joining. Inspect clock in observations, legal actions and play responses, or use muju_clock for a small fresh read. All timestamps are server Unix milliseconds. Time left at observation = deadlineAtMs − serverNowMs; subtract your locally elapsed time and allow for network latency. Do not wait on your own running turn. Submit END_ACTION_PHASE before the deadline; merely spending all AP does not hand off. Prefer a legal atomic turn batch and limit previews when short on time. A preview’s liveClock describes the real game, not its hypothetical board. Ordinary ticks do not change revision; timed unchanged waits include clock. A timeout advances revision and wakes waits with a result event.',
+    estimates: 'Approximate wall time if most time is used: 2 × bankSeconds + total player turns × delaySeconds. Blitz ≈10 minutes at 36 turns, rapid ≈45 minutes at 50 turns, classical ≈2 hours at 60 turns. These are pacing suggestions, not duration guarantees.',
+  },
   actionsPerTurn: { default: 4, options: [4], setting: 'Every game uses four shared actions per player turn.' },
   game: 'Muju Hono Tanka', board: '10×10, White home A1, Black home J10. All game information is public.',
   observers: 'Create, join and muju_observe return a watchUrl. Share it with any number of human observers to watch both seats live in a read-only browser. Observers need no invitation or token and never claim a seat. MCP observers use muju_observe and muju_wait_for_change with just roomId.',

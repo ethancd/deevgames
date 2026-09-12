@@ -6,6 +6,8 @@ import { createRoom, invitationUrl, joinRoom, loadConnection, normalizeServer, o
 import type { OnlineConnection, RoomAdmission, RoomSnapshot } from './types';
 import { useOnlineGame } from './useOnlineGame';
 import { RoomHistory } from './RoomHistory';
+import { RoomClocks } from './RoomClocks';
+import { TIME_CONTROL_PRESETS, type TimeControlPreset } from './timeControl';
 
 const defaultServer = () => new URLSearchParams(window.location.search).get('server') || import.meta.env.VITE_MUJU_SERVER_URL || window.location.origin;
 interface Session { connection: OnlineConnection; room: RoomSnapshot; inviteCode?: string }
@@ -14,6 +16,9 @@ export function OnlineLobby({ onBack }: { onBack: () => void }) {
   const [server, setServer] = useState(defaultServer);
   const [name, setName] = useState('Player');
   const [side, setSide] = useState<PlayerId>('white');
+  const [timeChoice, setTimeChoice] = useState<TimeControlPreset | 'untimed' | 'custom'>('untimed');
+  const [delaySeconds, setDelaySeconds] = useState('30');
+  const [bankMinutes, setBankMinutes] = useState('10');
   const [invitation, setInvitation] = useState(() => new URLSearchParams(window.location.search).has('room') ? window.location.href : '');
   const [credentials, setCredentials] = useState('');
   const [watchLink, setWatchLink] = useState(() => new URLSearchParams(window.location.search).has('room') ? window.location.href : '');
@@ -58,7 +63,14 @@ export function OnlineLobby({ onBack }: { onBack: () => void }) {
         return;
       }
       let url = normalizeServer(server), result: RoomAdmission;
-      if (kind === 'create') result = await createRoom(url, name, side);
+      if (kind === 'create') {
+        const custom = { delaySeconds: Number(delaySeconds), bankSeconds: Math.round(Number(bankMinutes) * 60) };
+        if (timeChoice === 'custom' && (!delaySeconds.trim() || !bankMinutes.trim() || !Number.isInteger(custom.delaySeconds)
+          || custom.delaySeconds < 0 || custom.delaySeconds > 600 || !Number.isFinite(custom.bankSeconds) || custom.bankSeconds < 1 || custom.bankSeconds > 14400)) {
+          throw new Error('Use 0–600 whole seconds per turn and a bank of 1 second to 240 minutes per player.');
+        }
+        result = await createRoom(url, name, side, 4, timeChoice === 'untimed' ? null : timeChoice === 'custom' ? custom : timeChoice);
+      }
       else {
         const invite = new URL(invitation.trim());
         url = normalizeServer(invite.origin);
@@ -88,6 +100,16 @@ export function OnlineLobby({ onBack }: { onBack: () => void }) {
       <p className="online-help">Use the address shared by the person running your game server.</p>
       <label>Your side<select value={side} onChange={e => setSide(e.target.value as PlayerId)}><option value="white">White · first turn</option><option value="black">Black · second turn</option></select></label>
       <p className="online-help">4 shared actions per turn · Draw after 10 consecutive turns without a kill.</p>
+      <label>Time control<select value={timeChoice} onChange={e => setTimeChoice(e.target.value as typeof timeChoice)}>
+        <option value="untimed">Untimed</option>
+        {Object.entries(TIME_CONTROL_PRESETS).map(([key, preset]) => <option key={key} value={key}>{preset.label} · {preset.delaySeconds}s / {preset.bankSeconds / 60}min · {preset.duration}</option>)}
+        <option value="custom">Custom</option>
+      </select></label>
+      {timeChoice === 'custom' && <div className="clock-custom">
+        <label>Free seconds per turn<input type="number" min="0" max="600" step="1" value={delaySeconds} onChange={e => setDelaySeconds(e.target.value)} /></label>
+        <label>Bank per player (minutes)<input type="number" min={1 / 60} max="240" step="any" value={bankMinutes} onChange={e => setBankMinutes(e.target.value)} /></label>
+      </div>}
+      {timeChoice !== 'untimed' && <p className="online-help">Each player has their own bank. A fresh free allowance covers the whole turn, then their bank counts down. Unused allowance does not accumulate. Running out loses. Starts when your opponent joins; fixed once created. Preset durations are approximate.</p>}
       <button className="primary" disabled={busy || !name.trim()} onClick={() => void submit('create')}>Create room</button>
       {feedback('create')}
     </section>
@@ -132,6 +154,7 @@ function OnlineMatch({ session, notice, onLeave }: { session: Session; notice: s
   const banner = <section className="online-banner" aria-label="Online room">
     <strong>{connection.player ? `Online · You are ${connection.player}` : 'Online · Observer'}</strong>
     <span role="status">{!connected ? 'Reconnecting…' : !room.ready ? 'Waiting for opponent' : busy ? 'Confirming move…' : connection.player ? 'Room connected' : 'Watching live · Read only'}</span>
+    <RoomClocks room={room} />
     {!room.ready && link && <><label>Invite your opponent<input readOnly value={link} onFocus={e => e.target.select()} /></label>
       <button onClick={() => { void navigator.clipboard?.writeText(link).then(() => setCopied(true)).catch(() => setCopied(false)); }}>{copied ? 'Copied' : 'Copy invitation'}</button></>}
     {error && <p role="alert">{error}{retry && <button onClick={retry}>Retry same move</button>}</p>}
