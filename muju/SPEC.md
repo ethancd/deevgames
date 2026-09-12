@@ -8,10 +8,12 @@ document and the code disagree, that is a bug in one of them: see
 of known divergences. The stat tables in §7 are transcriptions of
 `src/game/units.ts`, which is the canonical stat source.
 
-**Spec version:** v2.6 (2026-09-12) — every game uses 4 shared actions per
+**Spec version:** v2.7 (2026-09-12) — new games use the central-reserve map
+with 480 crystals; saved and in-progress games retain their stored maps.
+Every game uses 4 shared actions per
 turn. Only an enemy kill by attack resets the ten-turn draw clock. Tier-1 purchases cost 3/4/5 by pair;
 all promotions cost 4 to tier 2 and 8 to tier 3. Muju has DEF 3, Tanka DEF 5,
-C4/C5/H6/H7 hold 4 crystals each, and F3/E8 hold 0 (496 total). See
+C4/C5/H6/H7 hold 4 crystals each, and F3/E8 hold 0. See
 `docs/BALANCE-2026-09-11.md` for rationale and compatibility.
 
 History: v1.0 (original design), v1.1 (historical playtest balance pass),
@@ -25,6 +27,8 @@ purchase and promotion prices. v2.3 revises prices, two defenses and four reserv
 v2.4 (2026-09-11) clears F3/E8 to make both empty approaches 3×3 squares.
 v2.5 adds a four-action variant for local games and online rooms.
 v2.6 makes four actions the sole ruleset and defines a quiet turn as no attack kills.
+v2.7 adopts larger home reserves, smaller distant rich patches and a central
+eight-cell reserve cluster for new games, without changing existing boards.
 
 ---
 
@@ -41,14 +45,16 @@ may be a human or an AI (`vs-ai`, `pass-play`, and `ai-vs-ai` modes).
   starts with 3 units adjacent to their corner and 0 resources.
   - White: Hi (fire_1) at (1,0), Sjor (water_1) at (1,1), Muju (plant_1) at (0,1).
   - Black: Hi at (8,9), Sjor at (8,8), Muju at (9,8).
-- **Resources:** **Unequal routes (map D, passive revision)**: the fixed
-  180°-rotational layout with C4/C5/H6/H7 reduced to 4 and F3/E8 to 0. Cells hold
-  0/4/8/10 crystals, with **496 total** in new games.
+- **Resources:** **Unequal routes (central-reserve revision)**: the fixed
+  180°-rotational layout. Cells hold 0/4/8/10 crystals, with **480 total** in new games.
   Eighteen blank squares form D1–F3 and E8–G10; they remain walkable and spawn-eligible. Ordinary ground
-  holds 4, shelves 8, rich wells and homes 10. Exact layout:
+  holds 4; F4/D5/E5/F5/E6/F6/G6/E7 hold 8. Six home cells per side and
+  four cells in each distant rich patch hold 10. Exact layout:
   `src/game/resourceMap.ts`. Save schema 6 discards pre-schema-5 unfinished games
   through the version-mismatch path; they start fresh. Schema-5 games upgrade
-  while retaining their stored map reserves and capacities.
+  while retaining their stored map reserves and capacities. The map revision
+  does not bump the save schema or online rules version: all existing supported
+  saves and rooms retain their exact board, depletion and original capacities.
 - **Actions per turn:** **4 shared actions** in every game, for either player.
   Local saves, online rooms, AI planning and rematches use the same rules.
   **Start Game** starts fresh; **Continue saved game** resumes the saved board.
@@ -327,8 +333,9 @@ income (`resourcesGained`). Purchases, promotions, upkeep, the inactivity
 counter, pending upkeep choice and settled income are public. The upkeep
 subtotal (`resourcesUpkeep`) is telemetry, not an additional charge.
 
-There is no hidden production or hidden spending ledger. In a new v2.3 game,
-`board reserves + White gained + Black gained = 496`; spending changes banks
+There is no hidden production or hidden spending ledger. For each game,
+`board reserves + White gained + Black gained = initial map total`
+(480 for new games; the stored original total for existing games); spending changes banks
 but never cumulative income. The AI receives the real state and searches it
 with ordinary MCTS. The former observation, belief, particle-filter and
 re-determinization rules in `AI_ENGINE_QUESTIONS.md` Q1–Q3 are superseded.

@@ -74,7 +74,7 @@ test('buy now, refuse promotion now, allow it next turn; haste and save persiste
 test('tutorial explains the same reserves, phase order, buying and promotion restrictions',async({page})=>{
  await start(page);await page.getByRole('button',{name:'How to play',exact:true}).click();const dialog=page.getByRole('dialog');
  const texts:string[]=[];for(let i=0;i<12;i++){texts.push(await dialog.innerText());if(i<11)await dialog.getByRole('button',{name:'Next →'}).click();}
- const text=texts.join('\n');expect(text).toContain('496 crystals');expect(text).toContain('0 / 4 / 8 / 10');expect(text).toContain('cannot promote this turn');expect(text).toContain('Both banks');expect(text).toContain('Hi (3)');expect(text).toContain('Muju (5)');expect(text).toContain('Buy Hi for 3; on a later turn promote to Hono for 4; on another turn promote to Kagari for 8.');expect(text).not.toMatch(/rope|Queue phase|hidden production|build time/i);
+ const text=texts.join('\n');expect(text).toContain('480 crystals');expect(text).toContain('0 / 4 / 8 / 10');expect(text).toContain('cannot promote this turn');expect(text).toContain('Both banks');expect(text).toContain('Hi (3)');expect(text).toContain('Muju (5)');expect(text).toContain('Buy Hi for 3; on a later turn promote to Hono for 4; on another turn promote to Kagari for 8.');expect(text).not.toMatch(/rope|Queue phase|hidden production|build time/i);
 });
 test('attack previews and cancellation preserve combat and undo',async({page})=>{
  const s=createInitialGameState();s.board.units.push(createUnit('plant_1','black',{x:2,y:0}));await start(page,s);

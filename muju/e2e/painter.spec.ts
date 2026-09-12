@@ -13,7 +13,7 @@ test('painter handles clicks, Shift, bounds, keyboard and history on its direct 
   const square = (coord: string) => board.getByRole('button', { name: new RegExp(`^${coord},`) });
   const value = async (coord: string, count: number) => expect(square(coord)).toHaveAccessibleName(new RegExp(`^${coord}, ${count} crystals?`));
   await expect(board.getByRole('button')).toHaveCount(100);
-  await expect(page.getByLabel('Total crystals')).toHaveText('496 crystals');
+  await expect(page.getByLabel('Total crystals')).toHaveText('480 crystals');
   await square('D1').click(); await value('D1', 1);
   await square('D1').click({ modifiers: ['Shift'] }); await value('D1', 3);
   await square('D1').click({ button: 'right' }); await value('D1', 2);
@@ -38,11 +38,11 @@ test('painter handles clicks, Shift, bounds, keyboard and history on its direct 
   await page.getByRole('button', { name: 'Clear map', exact: true }).click();
   await expect(page.getByLabel('Total crystals')).toHaveText('0 crystals');
   await page.getByRole('button', { name: '↶ Undo', exact: true }).click();
-  await expect(page.getByLabel('Total crystals')).toHaveText('496 crystals');
+  await expect(page.getByLabel('Total crystals')).toHaveText('480 crystals');
   await square('D1').click();
   await expect(page.getByRole('button', { name: '↷ Redo', exact: true })).toBeDisabled();
   await page.getByRole('button', { name: 'Reset to default', exact: true }).click();
-  await expect(page.getByLabel('Total crystals')).toHaveText('496 crystals');
+  await expect(page.getByLabel('Total crystals')).toHaveText('480 crystals');
   await page.screenshot({ path: testInfo.outputPath('painter-desktop.png'), fullPage: true });
   expect(errors).toEqual([]);
 });
@@ -55,7 +55,7 @@ test('painter keeps its draft after refresh, exports it, and leaves game saves a
     localStorage.setItem('muju:painter:v1', '[99]');
   });
   await page.goto('painter/');
-  await expect(page.getByLabel('Total crystals')).toHaveText('496 crystals');
+  await expect(page.getByLabel('Total crystals')).toHaveText('480 crystals');
   await page.getByRole('button', { name: /^D1,/ }).tap();
   await page.reload();
   await expect(page.getByRole('button', { name: /^D1, 1 crystal$/ })).toBeVisible();
