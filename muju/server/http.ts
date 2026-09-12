@@ -52,6 +52,12 @@ export function createApp(store: RoomStore, options: { publicUrl: string; distPa
     finally { res.off('close', cancel); }
   });
   app.post('/api/muju/rooms/:id/join', (req, res) => res.json(store.join(req.params.id, req.body)));
+  app.post('/api/muju/rooms/:id/restore', (req, res) => {
+    const auth = req.headers.authorization;
+    if (!auth?.startsWith('Bearer ')) throw new RoomError(401, 'SEAT_REQUIRED', 'Paste your private seat credentials to restore this seat.');
+    const { player } = z.object({ player: z.enum(['white', 'black']) }).strict().parse(req.body);
+    res.json(store.restore(req.params.id, auth.slice(7), player));
+  });
   for (const operation of ['actions', 'preview'] as const) {
     app.post(`/api/muju/rooms/:id/${operation}`, (req, res) => {
       const auth = req.headers.authorization;

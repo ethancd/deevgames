@@ -6,11 +6,11 @@ interface VictoryScreenProps {
   reason?: VictoryReason;
   onPlayAgain: () => void;
   playerNames?: { white: string; black: string };
-  perspectivePlayer?: PlayerId;
+  perspectivePlayer?: PlayerId | null;
 }
 
 export function VictoryScreen({ winner, reason, onPlayAgain, playerNames, perspectivePlayer = 'white' }: VictoryScreenProps) {
-  const isPlayerWinner = winner === perspectivePlayer;
+  const isPlayerWinner = !!winner && (perspectivePlayer === null || winner === perspectivePlayer);
   const winnerName = !winner ? 'Draw' : playerNames
     ? playerNames[winner]
     : (isPlayerWinner ? 'You' : 'AI');
@@ -39,7 +39,7 @@ export function VictoryScreen({ winner, reason, onPlayAgain, playerNames, perspe
           onClick={onPlayAgain}
           className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
         >
-          Play Again
+          {perspectivePlayer === null ? 'Leave game' : 'Play Again'}
         </button>
       </div>
     </div>

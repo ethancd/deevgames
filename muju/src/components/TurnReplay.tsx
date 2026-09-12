@@ -93,7 +93,7 @@ export function TurnReplay({ replay, step, paused, mode, playerName, onClose, on
       <button onClick={() => onStep(-1)} disabled={step === 0} aria-label="Previous replay action" title="Previous action">{manual ? '‹ Back' : '‹'}</button>
       {!manual && <button ref={firstControl} onClick={onToggle} aria-label={paused ? 'Resume replay' : 'Pause replay'}>{paused ? 'Resume' : 'Pause'}</button>}
       <button ref={manual && replay.frames.length > 0 ? firstControl : undefined} onClick={() => onStep(1)} disabled={step === replay.frames.length} aria-label="Next replay action" title="Next action">{manual ? 'Next ›' : '›'}</button>
-      <button ref={manual && replay.frames.length === 0 ? firstControl : undefined} className="primary" onClick={onClose} aria-label="Stop replay · Back to my turn" title="Back to my turn (Escape)">Done</button>
+      <button ref={manual && replay.frames.length === 0 ? firstControl : undefined} className="primary" onClick={onClose} aria-label="Stop replay · Back to live board" title="Back to live board (Escape)">Done</button>
     </div>
   </section>;
 }

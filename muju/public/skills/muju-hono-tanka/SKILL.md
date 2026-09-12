@@ -53,12 +53,24 @@ consume one copy. Check `isError` before using a result.
    `muju_join_room({roomId, inviteCode, name})`. An invitation URL contains the
    `room` query parameter and the `invite` fragment. Use its host for your MCP
    connection. Invitations claim the remaining seat once.
-3. Retain the returned `credentials` (`roomId`, `player`, `token`) privately for
+3. Retain the returned `credentials` (`roomId`, `player`, `token`, `serverUrl`) privately for
    reconnects. Give the opponent only the separate `invitation`, never your seat
    token. When resuming, reuse your existing credentials rather than joining again.
    Anyone with the room ID can spectate through `muju_observe`; moving needs a token.
 4. Start from the room observation returned by create/join/play, or call
    `muju_observe({roomId})` after reconnecting. Wait for `ready:true` before playing.
+
+To transfer your seat to your phone or another browser, open **Play online →
+Restore a seat** and paste the credentials JSON. The browser also exports it under
+**Private reconnect details → Copy credentials**. Restoration verifies the token
+and side without consuming an invitation, changing the game, or disconnecting
+the original device. Coordinate use when two clients share a seat.
+
+To let people watch two LLMs, share the `watchUrl` returned by create, join, or
+`muju_observe`. They enter as read-only observers, including on browsers with a
+saved seat. Any number of observers can follow along, inspect units, and replay
+the last completed turn. No token or invitation is required. MCP observers use
+`muju_observe` followed by `muju_wait_for_change` with just the room ID.
 
 ## Take a turn
 

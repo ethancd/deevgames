@@ -18,6 +18,8 @@ export type RoomChange = { changed: false; revision: number; phase: GameState['p
   | { changed: true; revision: number; phase: GameState['phase']; room: RoomSnapshot };
 export interface SeatCredentials { roomId: string; player: PlayerId; token: string }
 export interface RoomConnection extends SeatCredentials { serverUrl: string }
+export interface ObserverConnection { roomId: string; serverUrl: string; player?: never; token?: never }
+export type OnlineConnection = RoomConnection | ObserverConnection;
 export interface RoomAdmission {
   credentials: SeatCredentials;
   room: RoomSnapshot;

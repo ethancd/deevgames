@@ -34,7 +34,8 @@ export function createMcpServer(backend: RoomBackend, publicUrl: string) {
     try { return output(await operation()); }
     catch (error) { return { content: [{ type: 'text' as const, text: error instanceof Error ? error.message : 'Request failed.' }], isError: true as const }; }
   };
-  const admission = (result: RoomAdmission) => ({ credentials: result.credentials,
+  const watchUrl = (roomId: string) => `${publicUrl}/muju/?room=${roomId}&watch=1`;
+  const admission = (result: RoomAdmission) => ({ credentials: { ...result.credentials, serverUrl: publicUrl }, watchUrl: watchUrl(result.room.id),
     ...(result.inviteCode ? { invitation: { roomId: result.room.id, inviteCode: result.inviteCode,
       serverUrl: publicUrl, url: `${publicUrl}/muju/?room=${result.room.id}#invite=${result.inviteCode}` } } : {}),
     room: observe(result.room) });
@@ -48,8 +49,8 @@ export function createMcpServer(backend: RoomBackend, publicUrl: string) {
   server.registerTool('muju_join_room', { description: 'Claim the remaining seat using an invitation. Save the returned credential; each invitation works once.',
     inputSchema: { roomId: roomIdSchema, ...joinSchema.shape }, annotations: { destructiveHint: false, openWorldHint: false } },
     ({ roomId, ...input }) => safely(async () => admission(await backend.join(roomId, input))));
-  server.registerTool('muju_observe', { description: 'Get a compact board, unit IDs/stats, resources, turn, result, and revision. Room IDs also allow spectating.',
-    inputSchema: { roomId: roomIdSchema }, annotations: readOnly }, ({ roomId }) => safely(async () => observe(await backend.get(roomId))));
+  server.registerTool('muju_observe', { description: 'Get a compact board, unit IDs/stats, resources, turn, result, revision, and a watchUrl for human observers. Any number of observers can follow a room without a seat token; use muju_wait_for_change for live updates.',
+    inputSchema: { roomId: roomIdSchema }, annotations: readOnly }, ({ roomId }) => safely(async () => ({ ...observe(await backend.get(roomId)), watchUrl: watchUrl(roomId) })));
   server.registerTool('muju_legal_actions', { description: 'List legal actions for the current player with move costs and attack outcomes. Includes multi-action moves. Filter by unit/type and paginate. Upkeep shows one valid selection; custom affordable selections are accepted.',
     inputSchema: { roomId: roomIdSchema, unitId: z.string().max(100).optional(), type: z.enum(['MOVE', 'ATTACK', 'BUY_UNIT', 'PROMOTE_UNIT', 'PAY_UPKEEP', 'END_PLACE_PHASE', 'END_ACTION_PHASE', 'RESIGN', 'UNDO']).optional(),
       offset: z.number().int().min(0).default(0), limit: z.number().int().min(1).max(200).default(60) }, annotations: readOnly },

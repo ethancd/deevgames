@@ -47,8 +47,9 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
 
 export function GameView({ config, onBackToMenu, game, online }: GameScreenProps & {
   game: ReturnType<typeof useGameState>;
-  online?: { player: PlayerId; ready: boolean; busy: boolean; names: Record<PlayerId, string>; banner: ReactNode };
+  online?: { player: PlayerId | null; ready: boolean; busy: boolean; names: Record<PlayerId, string>; banner: ReactNode };
 }) {
+  const observing = online?.player === null;
   const {
     state, payUpkeep, setUpkeepReview,
     selectUnit,
@@ -357,6 +358,10 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
 
   const handleUnitClick = (unitId: string) => {
     if (showReplay) return;
+    if (observing) {
+      setViewedEnemyUnitId(viewedEnemyUnitId === unitId ? null : unitId);
+      return;
+    }
     if (!isCurrentPlayerHuman || isThinking || showPassOverlay) {
       return;
     }
@@ -655,7 +660,7 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
 
   // Get the current player's state for public bank display
   const currentPlayerState = state.players[state.turn.currentPlayer];
-  const viewerPlayer: PlayerId = humanPlayer ?? state.turn.currentPlayer;
+  const viewerPlayer: PlayerId = humanPlayer ?? (observing ? 'white' : state.turn.currentPlayer);
   const viewerState = state.players[viewerPlayer];
   const opponentPlayer: PlayerId = viewerPlayer === 'white' ? 'black' : 'white';
   const opponentState = state.players[opponentPlayer];
@@ -683,15 +688,17 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
   const homeNotice = getHomeOccupier(state.board, state.turn.currentPlayer === 'white' ? 'black' : 'white')
     ? `Clear ${state.turn.currentPlayer === 'white' ? 'A1' : 'J10'} this turn or lose`
     : getHomeOccupier(state.board, state.turn.currentPlayer) ? `Hold ${state.turn.currentPlayer === 'white' ? 'J10' : 'A1'} until your next turn` : '';
-  const canReplay = isCurrentPlayerHuman && !isThinking && state.phase === 'playing' && !showPassOverlay &&
+  const canReplay = (isCurrentPlayerHuman || observing) && !isThinking && state.phase === 'playing' && !showPassOverlay &&
     !showReplay && !!game.lastTurnReplay && game.lastTurnReplay.player !== state.turn.currentPlayer;
-  const replayUnavailable = !game.lastTurnReplay ? 'Available after your opponent completes a turn.'
+  const replayUnavailable = observing ? 'Watch the last completed turn.' : !game.lastTurnReplay ? 'Available after your opponent completes a turn.'
     : online?.busy ? 'Waiting for your move to be confirmed.' : !isCurrentPlayerHuman ? 'Available during your turn.' : 'Watch your opponent’s last turn.';
   const shownPhase = playback
     ? !replayFrame ? null : ['BUY_UNIT', 'PROMOTE_UNIT'].includes(replayFrame.action.type) ? 'place'
       : ['MOVE', 'ATTACK'].includes(replayFrame.action.type) ? 'action' : null
     : state.turn.phase;
-  const phaseHint = showReplay ? 'Replaying your opponent’s last turn…' : online && !online.ready ? 'Share your invitation to bring in the other player.'
+  const phaseHint = showReplay ? 'Replaying the last completed turn…'
+    : observing ? !online.ready ? 'Waiting for both players to join.' : `${playerNames[state.turn.currentPlayer]} is ${state.upkeepPending ? 'choosing upkeep' : state.turn.phase === 'place' ? 'placing and promoting' : 'taking actions'}. Tap a unit to inspect it.`
+    : online && !online.ready ? 'Share your invitation to bring in the other player.'
     : online?.busy ? 'Confirming your move…'
     : !interactive ? (isPaused ? 'Paused' : 'Opponent’s turn')
     : state.turn.phase === 'place' ? 'Buy tier 1, or select a piece to promote.'
@@ -699,7 +706,7 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
 
   return (
     <main className={`game-shell${online ? ' game-shell-online' : ''}`}>
-      {state.phase === 'victory' && <VictoryScreen winner={state.winner} reason={state.victoryReason} onPlayAgain={handlePlayAgain} playerNames={playerNames} perspectivePlayer={humanPlayer ?? 'white'} />}
+      {state.phase === 'victory' && <VictoryScreen winner={state.winner} reason={state.victoryReason} onPlayAgain={handlePlayAgain} playerNames={playerNames} perspectivePlayer={observing ? null : humanPlayer ?? 'white'} />}
       {showPassOverlay && <PassDeviceOverlay nextPlayer={state.turn.currentPlayer} onContinue={handleContinueFromPass} />}
       {state.upkeepPending && config.controls[state.turn.currentPlayer] === 'human' &&
         (!online || (online.player === state.turn.currentPlayer && online.ready)) && !showPassOverlay && !showReplay &&
@@ -764,7 +771,7 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
               resources={currentPlayerState.resources} onPromote={handlePromote} isEnemyView={isEnemyView}
               onClose={handleCloseUnitInfo} currentPlayer={state.turn.currentPlayer}
               showEnemyRange={showEnemyRange} onToggleEnemyRange={() => setShowEnemyRange(!showEnemyRange)} />
-          : <div className="selection-hint"><strong>{isThinking ? 'Your opponent is thinking…' : state.turn.phase === 'place' ? 'Place & upgrade' : 'Your next move'}</strong><p>{phaseHint}</p>
+          : <div className="selection-hint"><strong>{observing ? 'Watching live' : isThinking ? 'Your opponent is thinking…' : state.turn.phase === 'place' ? 'Place & upgrade' : 'Your next move'}</strong><p>{phaseHint}</p>
               <small>Hold the enemy home until your next turn, or eliminate every enemy unit.</small></div>}
         </section>
       </div>
@@ -776,6 +783,7 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
 
         <div className="context-status" role="status">{spawnFeedback ? spawnFeedback.reason === 'enemy_blocking' ? 'Enemies are blocking that square.' : 'Choose a square in your controlled area.' : phaseHint}</div>
         <ActionBar actionsRemaining={state.turn.actionsRemaining} actionsPerTurn={actionsPerTurn} phase={state.turn.phase}
+          readOnly={observing}
           onEndPlacePhase={endPlacePhase} onEndActionPhase={endActionPhase}
           isPlayerTurn={interactive} onUndo={() => { setPreview(null); undo(); }} canUndo={canUndo && interactive} />
         <ReplayLauncher mode={replayMode} onModeChange={setReplayMode} disabled={!canReplay} title={replayUnavailable}
@@ -789,7 +797,7 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
       </footer>
       {showVisualKey && <PlayDialog title="Read the board" onClose={() => setShowVisualKey(false)}><VisualKey /></PlayDialog>}
       {showMenu && <PlayDialog title="Game menu" onClose={() => setShowMenu(false)}>
-        <p>{online ? 'This match is saved on the server. Keep this browser’s seat credential to reconnect. You can undo moves until you end your turn.' : `Your match is saved at phase changes on this device. New games use Unequal routes with ${INITIAL_MAP_RESOURCES} crystals.`}</p>
+        <p>{observing ? 'You are observing this match. Reopen the watch link to follow it on any device.' : online ? 'This match is saved on the server. Keep this browser’s seat credential to reconnect. You can undo moves until you end your turn.' : `Your match is saved at phase changes on this device. New games use Unequal routes with ${INITIAL_MAP_RESOURCES} crystals.`}</p>
         <p>Affordable upkeep is paid automatically. Undo back through your actions to refund it and choose which units to keep.</p>
         {isCurrentPlayerHuman && <label><input type="checkbox" checked={!!state.reviewUpkeep?.[state.turn.currentPlayer]} onChange={e=>setUpkeepReview(state.turn.currentPlayer,e.target.checked)} /> Always ask before paying upkeep (optional)</label>}
         <button onClick={() => { setShowMenu(false); handleBackToMenuClick(); }}>Choose game mode</button>

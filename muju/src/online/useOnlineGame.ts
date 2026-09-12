@@ -5,9 +5,9 @@ import { getUnitById } from '../game/board';
 import { getValidMoves } from '../game/movement';
 import { getValidAttacks } from '../game/combat';
 import { OnlineError, playRoom, readRoom, waitRoom } from './client';
-import type { ActionRequest, RoomAction, RoomConnection, RoomSnapshot } from './types';
+import type { ActionRequest, OnlineConnection, RoomAction, RoomSnapshot } from './types';
 
-export function useOnlineGame(connection: RoomConnection, initial: RoomSnapshot, onLeave: () => void) {
+export function useOnlineGame(connection: OnlineConnection, initial: RoomSnapshot, onLeave: () => void) {
   const [room, setRoom] = useState(initial);
   const roomRef = useRef(room);
   const [selected, setSelected] = useState<string | null>(null);
@@ -52,7 +52,7 @@ export function useOnlineGame(connection: RoomConnection, initial: RoomSnapshot,
   }, [connection, accept]);
 
   const send = useCallback(async (request: ActionRequest) => {
-    if (locked.current) return;
+    if (!connection.player || locked.current) return;
     locked.current = true; setBusy(true); setError(null);
     try { accept(await playRoom(connection, request)); setUncertain(null); }
     catch (error) {
@@ -64,11 +64,11 @@ export function useOnlineGame(connection: RoomConnection, initial: RoomSnapshot,
     } finally { locked.current = false; setBusy(false); }
   }, [connection, accept]);
   const dispatch = useCallback((action: RoomAction | RoomAction[]) => {
-    if (locked.current || uncertain) return;
+    if (!connection.player || locked.current || uncertain) return;
     // getRandomValues also works on HTTP LAN origins where randomUUID is unavailable.
     const requestId = Array.from(crypto.getRandomValues(new Uint8Array(16)), byte => byte.toString(16).padStart(2, '0')).join('');
     void send({ expectedRevision: roomRef.current.revision, requestId, actions: Array.isArray(action) ? action : [action] });
-  }, [send, uncertain]);
+  }, [connection.player, send, uncertain]);
   const state = useMemo(() => {
     const s = room.state;
     const u = selected ? getUnitById(s.board, selected) : null;

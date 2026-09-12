@@ -87,6 +87,13 @@ export class RoomStore {
     if (token !== undefined) this.authenticate(room, token);
     return this.snapshot(room);
   }
+  restore(id: string, token: string, player: PlayerId): RoomSnapshot {
+    const room = this.read(id);
+    if (this.authenticate(room, token) !== player) {
+      throw new RoomError(403, 'SEAT_MISMATCH', 'The token belongs to the other side. Copy the complete original credentials.');
+    }
+    return this.snapshot(room);
+  }
   async wait(id: string, afterRevision: number, timeoutMs: number, signal?: AbortSignal, token?: string): Promise<RoomChange> {
     const cancellation = signal ? AbortSignal.any([signal, this.shutdown.signal]) : this.shutdown.signal;
     cancellation.throwIfAborted();

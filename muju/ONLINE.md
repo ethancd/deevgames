@@ -154,6 +154,23 @@ their use. Rooms are unlisted; there is no public matchmaking or account system.
 
 ## Reconnect and action semantics
 
+On a new device, choose **Play online → Restore a seat** and paste the private
+credentials JSON from the original browser's **Private reconnect details → Copy
+credentials**, or the MCP `credentials` object. Include `roomId`, `player`,
+`token`, and `serverUrl`; `inviteCode` is optional. Markdown-wrapped server URLs
+and JSON code fences are accepted. `POST /api/muju/rooms/:id/restore` verifies
+the bearer token against the supplied `{player}` before the browser stores it.
+Restoration works with a full room or a used invitation, preserves revision,
+undo, and replay, and leaves the original device's credential valid.
+
+**Share watch link** in any online room provides a URL ending in `&watch=1`.
+Create/join and `muju_observe` also return `watchUrl`. Any number of observers
+can watch both seats live, inspect units, and replay the last completed turn.
+The lobby's **Watch a game** accepts a room link or room ID. An explicit watch
+link stays read-only even if the browser has a saved seat; it does not overwrite
+that seat. Observers use the existing unauthenticated room read/change endpoints.
+Their connections contain no token, and the UI and dispatch layer prohibit moves.
+
 - Each invitation can claim the free seat once. Browsers store their own credential
   separately from local-game saves. Reopen the same room URL on the same browser
   origin/profile to resume. Agents must retain the credentials returned by create/join.
