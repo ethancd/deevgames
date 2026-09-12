@@ -6,6 +6,7 @@ import './MapPainter.css';
 const STORAGE_KEY = 'muju:painter:v1';
 const SIZE = 10;
 const HISTORY_LIMIT = 200;
+const paintAmount = (event: { shiftKey: boolean; metaKey: boolean }) => event.shiftKey ? event.metaKey ? 10 : 2 : 1;
 
 function loadDraft(): number[] {
   try {
@@ -105,7 +106,7 @@ export function MapPainter() {
         </div>
         <output className="painter-total" aria-label="Total crystals"><strong>{map.reduce((sum, value) => sum + value, 0)}</strong> crystals</output>
       </div>
-      <p className="painter-instructions" id="painter-instructions">Click <b>+1</b> <span>·</span> Right-click <b>−1</b> <span>·</span> Hold Shift for <b>2</b></p>
+      <p className="painter-instructions" id="painter-instructions">Click <b>+1</b> <span>·</span> Right-click <b>−1</b> <span>·</span> Shift <b>±2</b> <span>·</span> ⌘ Shift <b>±10</b></p>
       <div className="painter-board-frame">
         <div className="painter-column-labels" aria-hidden="true">{'ABCDEFGHIJ'.split('').map(letter => <span key={letter}>{letter}</span>)}</div>
         <div className="painter-row-labels" aria-hidden="true">{Array.from({ length: SIZE }, (_, y) => <span key={y}>{y + 1}</span>)}</div>
@@ -122,8 +123,8 @@ export function MapPainter() {
                   aria-label={`${coordinate}, ${value} crystal${value === 1 ? '' : 's'}${home ? `, ${home} home` : ''}`}
                   title={`${coordinate}: ${value} / 10 crystals`}
                   onFocus={() => setActiveCell(index)}
-                  onClick={event => paint(index, event.shiftKey ? 2 : 1)}
-                  onContextMenu={event => { event.preventDefault(); paint(index, event.shiftKey ? -2 : -1); }}
+                  onClick={event => paint(index, paintAmount(event))}
+                  onContextMenu={event => { event.preventDefault(); paint(index, -paintAmount(event)); }}
                   onKeyDown={event => {
                     if (event.metaKey || event.ctrlKey || event.altKey) return;
                     if (['Enter', ' ', 'Backspace', 'Delete', '-', '+', '='].includes(event.key)) {
