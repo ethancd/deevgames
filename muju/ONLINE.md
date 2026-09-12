@@ -108,6 +108,7 @@ Only protocol messages go to stdout. The implementation uses the
 | `muju_create_room` | Choose a side (all games use four actions); get a private seat token and separate invitation |
 | `muju_join_room` | Claim the other seat using `roomId`, `inviteCode`, and a name |
 | `muju_observe` | Compact board, units, resources, home threats, history and revision |
+| `muju_history` | Persistent game score with notation, costs/AP, upkeep, combat and mining outcomes; paginated, public |
 | `muju_legal_actions` | Filtered/paginated moves including multi-action movement, costs and combat outcomes |
 | `muju_preview` | Simulate a sequence without committing it |
 | `muju_play` | Commit one action or an atomic sequence, using your seat token |
@@ -260,6 +261,8 @@ and clears old undo/replay history. Reconnects receive an updated revision.
 | `POST /api/muju/rooms` | `{name, side, actionsPerTurn?: 4}` → admission (only 4 is supported) |
 | `POST /api/muju/rooms/:id/join` | `{name, inviteCode}` → admission |
 | `GET /api/muju/rooms/:id` | Public snapshot; optional Bearer token validates a saved seat |
+| `GET /api/muju/rooms/:id/history` | Public score; `limit` (1–200, default 50), `before` or `after` sequence cursor, optional `includeUndone=true` |
+| `GET /api/muju/rooms/:id/positions/:sequence?step=N` | Exact recorded state, or an individual AP step within a move; sequence 0 is the first recorded position |
 | `GET /api/muju/rooms/:id/changes?afterRevision=N&timeoutMs=25000` | Wait for change; compact metadata on timeout, `room` snapshot on change; optional Bearer token |
 | `POST /api/muju/rooms/:id/actions` | `{expectedRevision, requestId, actions}` plus Bearer seat token |
 | `POST /api/muju/rooms/:id/preview` | Same request, without mutation |
@@ -306,6 +309,45 @@ Check `room.activePlayer` against your seat before playing: a human moving or
 undoing does not end their turn. Retain the latest revision and wait again until
 it is your turn. An unchanged result stays compact; stop on `phase:"victory"`.
 These are bounded tool calls, not unsolicited notifications to an idle LLM client.
+
+### Persistent move history
+
+The room's **History** button opens a live sidebar for players and observers;
+**View history** remains available after victory. It records committed moves,
+purchases, promotions, attacks (including surviving defense or capture), upkeep
+payments/releases, per-piece mining and depleted reserves, and the final result.
+Records use the same notation returned by `muju_history` and the HTTP history API.
+
+The score is stored in the SQLite `room_moves` table, separate from the rolling
+notification log. It survives restarts and is paginated instead of attaching
+every past turn to live board snapshots. The default page contains the latest 50
+events in chronological order. Use `after=0` and then the last returned sequence
+to read forward, or `before` the first returned sequence to read older pages.
+
+Undo removes the whole undone command from the default score. Optional
+`includeUndone=true` returns those records with `undoneAtRevision`; automatic
+upkeep is independently reversible without erasing the other player's income.
+Preview, failed batches and identical retries add no committed records. Scores
+omit routine phase-ending commands and speculative annotations. Existing rooms
+report `recordingStart.complete=false` and the revision where detailed recording
+began; missing older moves are not invented.
+
+### Analysis board and recorded positions
+
+Open **Analysis board** from game modes to control both sides locally. In a room,
+open **History → Analyze game**, or click any notation entry to jump directly to
+that position on the board. Navigate by individual AP steps, whole player turns,
+first/last position, or the position selector. **Explore from here** starts a
+private variation; **Return to game score** restores the recorded line. Branches
+run in page memory and never write to a room or replace a saved local game.
+
+Each recorded event has a compressed state snapshot in SQLite. The original
+state is available at sequence 0. Movement also retains its prior state, route
+and speed so intermediate AP positions have the correct location and remaining
+actions. A turn-end position precedes positive automatic upkeep, allowing that
+payment to be undone without losing the outgoing player's mining outcome.
+Historical positions are fetched on demand; normal room updates stay compact.
+The public positions endpoint rejects undone events and out-of-range steps.
 
 ### Instant replay
 

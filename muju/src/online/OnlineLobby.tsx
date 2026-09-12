@@ -4,6 +4,7 @@ import { GameView } from '../components/GameScreen';
 import { createRoom, invitationUrl, joinRoom, loadConnection, normalizeServer, observerUrl, parseObserverConnection, parseSeatCredentials, readRoom, restoreSeat, saveConnection } from './client';
 import type { OnlineConnection, RoomAdmission, RoomSnapshot } from './types';
 import { useOnlineGame } from './useOnlineGame';
+import { RoomHistory } from './RoomHistory';
 
 const defaultServer = () => new URLSearchParams(window.location.search).get('server') || import.meta.env.VITE_MUJU_SERVER_URL || window.location.origin;
 interface Session { connection: OnlineConnection; room: RoomSnapshot; inviteCode?: string }
@@ -115,6 +116,7 @@ function OnlineMatch({ session, notice, onLeave }: { session: Session; notice: s
   const { connection, room: initial, inviteCode } = session;
   const { game, room, busy, connected, error, retry } = useOnlineGame(connection, initial, onLeave);
   const [copied, setCopied] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
   const config = useMemo<GameConfig>(() => ({ mode: 'online', controls: {
     white: connection.player === 'white' ? 'human' : 'remote', black: connection.player === 'black' ? 'human' : 'remote',
   }, aiDifficulty: { white: 'medium', black: 'medium' } }), [connection.player]);
@@ -145,6 +147,8 @@ function OnlineMatch({ session, notice, onLeave }: { session: Session; notice: s
     </details>}
     {copyStatus && <p role="status">{copyStatus}</p>}
   </section>;
-  return <GameView game={game} config={config} onBackToMenu={onLeave} online={{ player: connection.player ?? null, ready: room.ready, busy,
-    names: { white: room.seats.white ?? 'Waiting for White', black: room.seats.black ?? 'Waiting for Black' }, banner }} />;
+  const names = { white: room.seats.white ?? 'Waiting for White', black: room.seats.black ?? 'Waiting for Black' };
+  return <><GameView game={game} config={config} onBackToMenu={onLeave} online={{ player: connection.player ?? null, ready: room.ready, busy,
+    names, banner, historyOpen: showHistory, onToggleHistory: () => setShowHistory(value => !value) }} />
+    {showHistory && <RoomHistory connection={connection} revision={room.revision} names={names} onClose={() => setShowHistory(false)} />}</>;
 }

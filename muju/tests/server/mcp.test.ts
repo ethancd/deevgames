@@ -36,6 +36,26 @@ async function call(client: Client, name: string, args: Record<string, unknown> 
 }
 
 describe('MCP and HTTP interoperability', () => {
+  it.each([false, true])('queries the same persistent score over MCP and HTTP (stdio=%s)', async stdio => {
+    const { url, store } = await setup(), client = await clientFor(url, stdio);
+    const host = store.create({ name: 'White' }), id = host.room.id;
+    store.join(id, { name: 'Black', inviteCode: host.inviteCode });
+    const hi = store.get(id).state.board.units.find(u => u.owner === 'white' && u.definitionId === 'fire_1')!;
+    store.act(id, host.credentials.token, { expectedRevision: 1, requestId: 'history-mcp-opening', actions: [
+      { type: 'MOVE', unitId: hi.id, to: { x: 2, y: 0 } }, { type: 'END_ACTION_PHASE' },
+    ] });
+    const latest = await call(client, 'muju_history', { roomId: id, limit: 2 });
+    expect(latest.entries.map((entry: any) => entry.kind)).toEqual(['mining', 'upkeep']);
+    expect(latest).toMatchObject({ total: 3, hasEarlier: true, hasLater: false });
+    const opening = await call(client, 'muju_history', { roomId: id, before: latest.entries[0].sequence });
+    expect(opening.entries[0].notation).toBe('🔥1 B1→C1');
+    const all = await call(client, 'muju_history', { roomId: id, after: 0 });
+    const http = await (await fetch(`${url}/api/muju/rooms/${id}/history?after=0&includeUndone=false`)).json();
+    expect(all.entries).toEqual(http.entries);
+    expect(all.notation.actions).toContain('attacker stays put');
+    expect((await fetch(`${url}/api/muju/rooms/${id}/history?limit=0`)).status).toBe(400);
+    expect((await fetch(`${url}/api/muju/rooms/${id}/history?before=2&after=1`)).status).toBe(400);
+  });
   it.each([false,true])('creates and observes a four-action room through MCP (stdio=%s)', async stdio => {
     const {url}=await setup(),client=await clientFor(url,stdio);
     const hosted=await call(client,'muju_create_room',{name:'Variant host',actionsPerTurn:4});

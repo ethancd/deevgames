@@ -158,3 +158,34 @@ Joining may have no action event. Play only when `room.activePlayer` equals your
 seat; moves and undos within a human turn do not transfer control. Update the
 revision after each result and keep waiting as needed. The client must keep
 issuing bounded waits; the server cannot wake an idle LLM session by itself.
+
+## Read the full game score
+
+Call `muju_history({roomId, limit:50})` for the latest recorded events, oldest
+first. No seat token is needed. The same score is available under **History** in
+the room, including to observers and after the game ends. Records persist across
+server restarts and are separate from the rolling 100-command notification log.
+
+- Use `after:0` to start at the beginning, then `after` the last returned
+  `sequence` while `hasLater` is true. To go backward, use `before` the first
+  returned sequence while `hasEarlier` is true. Do not combine both cursors.
+- Each entry identifies its player, turn, revision, timestamp, notation, and
+  structured outcome. Purchases/promotions include cost and resulting bank;
+  moves include route and AP; attacks include damage/defense and capture;
+  upkeep includes automatic/chosen payment, kept units and releases; mining
+  includes every piece's take, reserve change and resulting bank.
+- Notation: `🔥1 B1→C1`, `🔥1 C1×C2`, `+🌱1@B3`, `↑🔥2@C1`.
+  Attacks do not move the attacker. `#` means the server adjudicated home
+  checkmate. There are no coaching judgments or invented moves.
+- Undone commands are omitted by default. `includeUndone:true` exposes them
+  with `undoneAtRevision`. After an UNDO notification, refresh the score for
+  the affected turn; do not just append entries after your previous cursor.
+- `recordingStart.complete:false` means this room predates detailed history.
+  Earlier missing moves cannot be reconstructed. Preserve that qualification
+  when writing a game review. Routine phase-ending commands are omitted.
+
+Human review: **History → Analyze game** opens the recorded positions on the
+board. Clicking a notation entry jumps to that event. Review can step within a
+multi-AP move or across full player turns. **Explore from here** lets the human
+control both sides in a private variation; it never submits actions to the room.
+The game modes page also has a standalone **Analysis board**.

@@ -26,6 +26,12 @@ export const createSchema = z.object({ name: nameSchema, side: z.enum(['white', 
   actionsPerTurn: z.literal(4).default(4),
 }).strict();
 export const joinSchema = z.object({ name: nameSchema, inviteCode: tokenSchema }).strict();
+export const historyQuerySchema = z.object({
+  before: z.coerce.number().int().positive().optional(),
+  after: z.coerce.number().int().nonnegative().optional(),
+  limit: z.coerce.number().int().min(1).max(200).default(50),
+  includeUndone: z.union([z.boolean(), z.enum(['true', 'false']).transform(value => value === 'true')]).default(false),
+}).strict();
 
 export class RoomError extends Error {
   constructor(public status: number, public code: string, message: string) { super(message); }

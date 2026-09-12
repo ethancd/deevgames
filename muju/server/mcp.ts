@@ -1,7 +1,8 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import type { RoomAdmission, RoomChange, RoomSnapshot } from '../src/online/types';
-import { actionSchema, createSchema, joinSchema, roomIdSchema, tokenSchema } from './schema';
+import { actionSchema, createSchema, joinSchema, roomIdSchema, tokenSchema, historyQuerySchema } from './schema';
+import { HISTORY_NOTATION, type HistoryQuery, type RoomMoveHistory } from '../src/game/moveHistory';
 import { describeAction, legalActions, observe, rules } from './observation';
 
 type MaybePromise<T> = T | Promise<T>;
@@ -9,6 +10,7 @@ export interface RoomBackend {
   create(input: unknown): MaybePromise<RoomAdmission>;
   join(id: string, input: unknown): MaybePromise<RoomAdmission>;
   get(id: string, token?: string): MaybePromise<RoomSnapshot>;
+  moveHistory(id: string, query?: HistoryQuery): MaybePromise<RoomMoveHistory>;
   wait(id: string, afterRevision: number, timeoutMs: number, signal?: AbortSignal): Promise<RoomChange>;
   act(id: string, token: string, input: unknown, preview?: boolean): MaybePromise<RoomSnapshot>;
 }
@@ -51,6 +53,9 @@ export function createMcpServer(backend: RoomBackend, publicUrl: string) {
     ({ roomId, ...input }) => safely(async () => admission(await backend.join(roomId, input))));
   server.registerTool('muju_observe', { description: 'Get a compact board, unit IDs/stats, resources, turn, result, revision, and a watchUrl for human observers. Any number of observers can follow a room without a seat token; use muju_wait_for_change for live updates.',
     inputSchema: { roomId: roomIdSchema }, annotations: readOnly }, ({ roomId }) => safely(async () => ({ ...observe(await backend.get(roomId)), watchUrl: watchUrl(roomId) })));
+  server.registerTool('muju_history', { description: 'Read the persistent room score: moves with paths/AP, purchases, promotions, attack damage/captures, automatic or chosen upkeep and releases, per-unit mining/reserves, and result. Public; no token needed. Default returns the latest 50 entries in chronological order. Use before=first sequence for older pages, or after=last sequence for newer pages (after=0 reads from the start). Undone entries are omitted unless includeUndone=true. On an UNDO notification, refresh the affected turn rather than only appending. recordingStart.complete=false marks older rooms whose earlier moves are unavailable. Phase-ending commands and coaching judgments are omitted.',
+    inputSchema: { roomId: roomIdSchema, ...historyQuerySchema.shape }, annotations: readOnly },
+    ({ roomId, ...query }) => safely(async () => ({ ...await backend.moveHistory(roomId, query), notation: HISTORY_NOTATION })));
   server.registerTool('muju_legal_actions', { description: 'List legal actions for the current player with move costs and attack outcomes. Includes multi-action moves. Filter by unit/type and paginate. Upkeep shows one valid selection; custom affordable selections are accepted.',
     inputSchema: { roomId: roomIdSchema, unitId: z.string().max(100).optional(), type: z.enum(['MOVE', 'ATTACK', 'BUY_UNIT', 'PROMOTE_UNIT', 'PAY_UPKEEP', 'END_PLACE_PHASE', 'END_ACTION_PHASE', 'RESIGN', 'UNDO']).optional(),
       offset: z.number().int().min(0).default(0), limit: z.number().int().min(1).max(200).default(60) }, annotations: readOnly },

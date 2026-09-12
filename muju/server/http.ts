@@ -6,6 +6,7 @@ import { z, ZodError } from 'zod';
 import { RoomStore } from './rooms';
 import { RoomError } from './schema';
 import { createMcpServer } from './mcp';
+import { historyQuerySchema } from './schema';
 
 export function createApp(store: RoomStore, options: { publicUrl: string; distPath?: string; allowedOrigins?: string[]; rateLimit?: number }) {
   const app = express();
@@ -38,6 +39,12 @@ export function createApp(store: RoomStore, options: { publicUrl: string; distPa
   app.get('/api/muju/health', (_req, res) => res.json({ ok: true, game: 'Muju Hono Tanka', protocol: 1 }));
   app.post('/api/muju/rooms', (req, res) => res.status(201).json(store.create(req.body)));
   app.get('/api/muju/rooms/:id', (req, res) => res.json(store.get(req.params.id, req.headers.authorization?.replace(/^Bearer /, ''))));
+  app.get('/api/muju/rooms/:id/history', (req, res) => res.json(store.moveHistory(req.params.id, historyQuerySchema.parse(req.query))));
+  app.get('/api/muju/rooms/:id/positions/:sequence', (req, res) => {
+    const sequence = z.coerce.number().int().nonnegative().parse(req.params.sequence);
+    const { step } = z.object({ step: z.coerce.number().int().positive().optional() }).strict().parse(req.query);
+    res.json(store.position(req.params.id, sequence, step));
+  });
   app.get('/api/muju/rooms/:id/changes', async (req, res, next) => {
     const controller = new AbortController();
     const cancel = () => controller.abort();
@@ -77,6 +84,7 @@ export function createApp(store: RoomStore, options: { publicUrl: string; distPa
     app.get('/', (_req, res) => res.redirect('/muju/'));
     app.get('/SKILL.md', (_req, res) => res.type('text/markdown').sendFile(resolve(options.distPath!, 'skills/muju-hono-tanka/SKILL.md')));
     app.get('/muju/painter', (_req, res) => res.set('X-Robots-Tag', 'noindex, nofollow').sendFile(resolve(options.distPath!, 'index.html')));
+    app.get('/muju/analysis', (_req, res) => res.sendFile(resolve(options.distPath!, 'index.html')));
     app.use('/muju', express.static(options.distPath));
   }
   const onError: ErrorRequestHandler = (error, _req, res, _next) => {

@@ -1,6 +1,7 @@
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { createMcpServer, type RoomBackend } from './mcp';
 import type { RoomAdmission, RoomChange, RoomSnapshot } from '../src/online/types';
+import type { RoomMoveHistory } from '../src/game/moveHistory';
 
 const serverUrl = (process.env.MUJU_SERVER_URL ?? 'http://localhost:3003').replace(/\/$/, '');
 async function request<T>(path: string, body?: unknown, token?: string, signal?: AbortSignal, timeoutMs = 10000): Promise<T> {
@@ -16,6 +17,7 @@ const backend: RoomBackend = {
   create: input => request<RoomAdmission>('', input),
   join: (id, input) => request<RoomAdmission>(`/${id}/join`, input),
   get: (id, token) => request<RoomSnapshot>(`/${id}`, undefined, token),
+  moveHistory: (id, query = {}) => request<RoomMoveHistory>(`/${id}/history?${new URLSearchParams(Object.entries(query).filter(([, value]) => value !== undefined).map(([key, value]) => [key, String(value)]))}`),
   wait: (id, afterRevision, timeoutMs, signal) => request<RoomChange>(`/${id}/changes?afterRevision=${afterRevision}&timeoutMs=${timeoutMs}`, undefined, undefined, signal, 30000),
   act: (id, token, input, preview) => request<RoomSnapshot>(`/${id}/${preview ? 'preview' : 'actions'}`, input, token),
 };

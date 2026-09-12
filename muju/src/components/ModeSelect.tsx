@@ -122,6 +122,10 @@ export function ModeSelect({ onStartGame, onOnline }: ModeSelectProps) {
             <div className="font-semibold">Watch AI</div>
             <div className="text-sm text-gray-400">Spectate AI vs AI match</div>
           </button>
+          <a href="/muju/analysis" className="block w-full p-4 rounded-lg border-2 border-gray-700 hover:border-cyan-400 text-left">
+            <div className="font-semibold">Analysis board</div>
+            <div className="text-sm text-gray-400">Control both sides, explore moves, or review a room</div>
+          </a>
         </div>
 
         {/* Side and difficulty selectors */}

@@ -1,0 +1,25 @@
+.analysis-controls { border: 1px solid #3b5366; background: #192d3d; border-radius: 9px; padding: 9px; font-size: 12px; margin: 6px 0; }
+.analysis-heading { display: flex; justify-content: space-between; gap: 10px; align-items: center; }
+.analysis-heading a { color: #b5e5e4; font-size: 11px; }
+.analysis-position { min-height: 32px; line-height: 1.5; padding-top: 5px; overflow-wrap: anywhere; }
+.analysis-navigation { display: grid; grid-template-columns: .7fr 1.4fr 1fr 1fr 1.4fr .7fr; gap: 4px; }
+.game-shell.game-shell-analysis .analysis-navigation button { min-width: 0; padding: 5px 3px; font-size: 12px; min-height: 36px; }
+.analysis-position-picker { display: flex; align-items: center; gap: 7px; margin-top: 7px; }
+.analysis-position-picker select { min-width: 0; flex: 1; background: #223b4e; border: 1px solid #466078; border-radius: 5px; padding: 5px; font-size: 11px; }
+.analysis-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; margin-top: 7px; }
+.game-shell .analysis-actions button { min-height: 32px; padding: 5px 7px; font-size: 11px; }
+.analysis-actions > span, .analysis-actions > small { color: #b0c8d4; font-size: 11px; }
+.analysis-controls details { margin-top: 5px; font-size: 11px; }
+.analysis-controls summary { cursor: pointer; }
+.analysis-controls form { display: flex; gap: 6px; margin-top: 5px; }
+.analysis-controls input { width: 0; flex: 1; min-width: 0; background: #223b4e; padding: 6px; border-radius: 5px; }
+.game-shell-analysis .income-recap-slot, .game-shell-analysis .income-status, .game-shell-analysis .context-status { display: none; }
+.game-shell-analysis.is-reviewing .decision-panel { display: none; }
+.game-shell-analysis .decision-panel { overflow-y: auto; }
+.game-shell-analysis.is-reviewing .play-area { grid-template-rows: minmax(0,1fr) 26px; }
+@media (min-width: 960px) and (min-height: 601px) and (orientation: landscape) {
+  .game-shell.game-shell-analysis { --sidebar-width: clamp(190px, calc((100vw - 100dvh - 40px) / 2), 280px); }
+  .game-shell-analysis .analysis-navigation { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .game-shell-analysis .game-overview { grid-row: 1 / -1; height: calc(100% - 130px); align-self: start; }
+  .game-shell-analysis.is-reviewing .play-footer { grid-row: 1 / -1; justify-content: center; }
+}

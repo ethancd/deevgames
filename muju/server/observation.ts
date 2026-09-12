@@ -24,6 +24,7 @@ export function observe(room: RoomSnapshot) {
   return {
     roomId: room.id, revision: room.revision, ready: room.ready, seats: room.seats,
     canUndo: !!room.canUndo,
+    historyTool: 'muju_history',
     activePlayer: room.ready && s.phase === 'playing' ? s.turn.currentPlayer : null,
     status: s.phase, turn: s.turn, actionsPerTurn: getActionsPerTurn(s), upkeepPending: !!s.upkeepPending,
     winner: s.winner, victoryReason: s.victoryReason ?? null,
@@ -93,6 +94,7 @@ export const rules = {
   game: 'Muju Hono Tanka', board: '10×10, White home A1, Black home J10. All game information is public.',
   observers: 'Create, join and muju_observe return a watchUrl. Share it with any number of human observers to watch both seats live in a read-only browser. Observers need no invitation or token and never claim a seat. MCP observers use muju_observe and muju_wait_for_change with just roomId.',
   restoreSeat: 'To continue an existing seat on another device, open Play online → Restore a seat and paste the private credentials JSON (roomId, player, token, serverUrl). No new invitation is needed. Both devices retain control of the same seat; coordinate who plays.',
+  history: 'muju_history reads the persistent room score, including upkeep, purchases, promotions, move paths/AP, combat outcomes and per-unit mining. Use before/after sequence cursors to page; default omits undone commands. History is public and available in the browser room sidebar. Older rooms mark where detailed recording began.',
   turn: ['Pay tier 2/3 upkeep at turn start (1/2 crystals per unit). Tier 1 stays free; release higher tiers if needed.',
     'Place: buy tier 1 units in controlled empty squares, or promote existing units by one tier, paying the cost difference. Newly placed units cannot promote this turn.',
     'Act: spend up to 4 shared actions per turn. Movement is orthogonal through empty cells; cost is ceil(path length / speed). Attacks target orthogonally adjacent enemies and cost 1.',

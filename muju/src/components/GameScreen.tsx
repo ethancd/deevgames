@@ -45,9 +45,11 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
   return <GameView config={config} onBackToMenu={onBackToMenu} game={game} />;
 }
 
-export function GameView({ config, onBackToMenu, game, online }: GameScreenProps & {
+export function GameView({ config, onBackToMenu, game, online, analysis }: GameScreenProps & {
   game: ReturnType<typeof useGameState>;
-  online?: { player: PlayerId | null; ready: boolean; busy: boolean; names: Record<PlayerId, string>; banner: ReactNode };
+  analysis?: { bar: ReactNode; reviewing: boolean; result?: string };
+  online?: { player: PlayerId | null; ready: boolean; busy: boolean; names: Record<PlayerId, string>; banner: ReactNode;
+    historyOpen?: boolean; onToggleHistory?: () => void };
 }) {
   const observing = online?.player === null;
   const {
@@ -114,7 +116,7 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
     : null;
 
   // Human controls follow the configured side, including Black against the AI.
-  const isCurrentPlayerHuman = config.controls[state.turn.currentPlayer] === 'human' &&
+  const isCurrentPlayerHuman = !analysis?.reviewing && config.controls[state.turn.currentPlayer] === 'human' &&
     (!online || (state.turn.currentPlayer === online.player && online.ready && !online.busy));
 
   // Clear place phase selections when phase changes or turn ends
@@ -148,7 +150,7 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
 
   // Show pass device overlay when turn changes in pass-play mode
   useEffect(() => {
-    if (config.mode === 'pass-play') {
+    if (config.mode === 'pass-play' && !analysis) {
       const currentPlayer = state.turn.currentPlayer;
       if (lastTurnPlayer.current !== null && lastTurnPlayer.current !== currentPlayer) {
         setShowPassOverlay(true);
@@ -666,7 +668,7 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
   const opponentState = state.players[opponentPlayer];
 
   const interactive = !showReplay && isCurrentPlayerHuman && !isThinking && !showPassOverlay && state.phase === 'playing' && !state.upkeepPending;
-  const playerNames = online ? online.names : config.mode === 'pass-play' ? { white: 'Player 1', black: 'Player 2' }
+  const playerNames = analysis ? { white: 'White', black: 'Black' } : online ? online.names : config.mode === 'pass-play' ? { white: 'Player 1', black: 'Player 2' }
     : config.mode === 'ai-vs-ai' ? { white: 'AI 1', black: 'AI 2' }
     : { white: humanPlayer === 'white' ? 'You' : 'AI', black: humanPlayer === 'black' ? 'You' : 'AI' };
   const shownUnit = selectedPlaceUnitData ?? selectedUnitData ?? viewedEnemyUnitData;
@@ -696,7 +698,7 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
     ? !replayFrame ? null : ['BUY_UNIT', 'PROMOTE_UNIT'].includes(replayFrame.action.type) ? 'place'
       : ['MOVE', 'ATTACK'].includes(replayFrame.action.type) ? 'action' : null
     : state.turn.phase;
-  const phaseHint = showReplay ? 'Replaying the last completed turn…'
+  const phaseHint = analysis?.reviewing ? 'Reviewing a saved position. Explore from here to try a private variation.' : analysis?.result ? analysis.result : showReplay ? 'Replaying the last completed turn…'
     : observing ? !online.ready ? 'Waiting for both players to join.' : `${playerNames[state.turn.currentPlayer]} is ${state.upkeepPending ? 'choosing upkeep' : state.turn.phase === 'place' ? 'placing and promoting' : 'taking actions'}. Tap a unit to inspect it.`
     : online && !online.ready ? 'Share your invitation to bring in the other player.'
     : online?.busy ? 'Confirming your move…'
@@ -705,10 +707,10 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
     : 'Select a unit. Tap a square to move, or an enemy to preview an attack.';
 
   return (
-    <main className={`game-shell${online ? ' game-shell-online' : ''}`}>
-      {state.phase === 'victory' && <VictoryScreen winner={state.winner} reason={state.victoryReason} onPlayAgain={handlePlayAgain} playerNames={playerNames} perspectivePlayer={observing ? null : humanPlayer ?? 'white'} />}
+    <main className={`game-shell${online ? ' game-shell-online' : ''}${analysis ? ` game-shell-analysis${analysis.reviewing ? ' is-reviewing' : ''}` : ''}`}>
+      {state.phase === 'victory' && !analysis && <VictoryScreen winner={state.winner} reason={state.victoryReason} onPlayAgain={handlePlayAgain} playerNames={playerNames} perspectivePlayer={observing ? null : humanPlayer ?? 'white'} onViewHistory={online?.onToggleHistory} />}
       {showPassOverlay && <PassDeviceOverlay nextPlayer={state.turn.currentPlayer} onContinue={handleContinueFromPass} />}
-      {state.upkeepPending && config.controls[state.turn.currentPlayer] === 'human' &&
+      {state.upkeepPending && !analysis && config.controls[state.turn.currentPlayer] === 'human' &&
         (!online || (online.player === state.turn.currentPlayer && online.ready)) && !showPassOverlay && !showReplay &&
         <UpkeepPanel state={state} onConfirm={payUpkeep} disabled={online?.busy} />}
       <InstructionsModal isOpen={showInstructions} onClose={() => setShowInstructions(false)} actionsPerTurn={actionsPerTurn} />
@@ -757,7 +759,7 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
           <button aria-pressed={showResources} onClick={() => setShowResources(!showResources)}>◆ Reserves</button>
         </div>
         <section className="decision-panel" aria-label="Current choice">
-          {playback ? <TurnReplay replay={playback.replay} step={playback.step} paused={playback.paused} mode={replayMode} playerName={playerNames[playback.replay.player]} onClose={closeReplay} onToggle={toggleReplay} onStep={stepReplay} />
+          {analysis && state.upkeepPending && !analysis.reviewing ? <UpkeepPanel key={`${state.turn.turnNumber}-${state.turn.currentPlayer}`} state={state} onConfirm={payUpkeep} inline /> : playback ? <TurnReplay replay={playback.replay} step={playback.step} paused={playback.paused} mode={replayMode} playerName={playerNames[playback.replay.player]} onClose={closeReplay} onToggle={toggleReplay} onStep={stepReplay} />
           : state.turn.phase === 'place' && interactive && !shownUnit ? <UnitShop resources={currentPlayerState.resources} player={state.turn.currentPlayer} board={state.board}
             selectedId={selectedPurchaseId} onSelectId={id => { setSelectedPurchaseId(id); setSelectedPlaceUnitId(null); setViewedEnemyUnitId(null); }} />
           : preview && selectedUnitData ? <div className="action-preview">
@@ -782,26 +784,28 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
         </details>}</div>
 
         <div className="context-status" role="status">{spawnFeedback ? spawnFeedback.reason === 'enemy_blocking' ? 'Enemies are blocking that square.' : 'Choose a square in your controlled area.' : phaseHint}</div>
-        <ActionBar actionsRemaining={state.turn.actionsRemaining} actionsPerTurn={actionsPerTurn} phase={state.turn.phase}
+        {!analysis?.reviewing && <ActionBar actionsRemaining={state.turn.actionsRemaining} actionsPerTurn={actionsPerTurn} phase={state.turn.phase}
           readOnly={observing}
           onEndPlacePhase={endPlacePhase} onEndActionPhase={endActionPhase}
-          isPlayerTurn={interactive} onUndo={() => { setPreview(null); undo(); }} canUndo={canUndo && interactive} />
-        <ReplayLauncher mode={replayMode} onModeChange={setReplayMode} disabled={!canReplay} title={replayUnavailable}
-          onStart={() => canReplay && game.lastTurnReplay && startReplay(game.lastTurnReplay)} />
+          isPlayerTurn={interactive} onUndo={() => { setPreview(null); undo(); }} canUndo={canUndo && interactive} />}
+        {analysis ? analysis.bar : <ReplayLauncher mode={replayMode} onModeChange={setReplayMode} disabled={!canReplay} title={replayUnavailable}
+          onStart={() => canReplay && game.lastTurnReplay && startReplay(game.lastTurnReplay)} />}
         <nav className="reference-bar" aria-label="Game references" inert={showReplay}>
           <button onClick={() => setShowUnitShopInspection(true)}>Units</button>
           <button className="counter-key" aria-label="Element advantages and match stats" title="Each pair beats the next: +1 attack" onClick={() => setShowInsights(true)}>🔥⚡ → 🌿⚙ → 💧🌑 ↻ <span>+1</span>{showAIRecap ? ' •' : ''}</button>
           <button onClick={() => setShowInstructions(true)}>How to play</button>
+          {online?.onToggleHistory && <button aria-label="Move history" aria-expanded={!!online.historyOpen} aria-controls="room-move-history" onClick={online.onToggleHistory}>History</button>}
           {config.mode === 'ai-vs-ai' && <button onClick={togglePause}>{isPaused ? 'Resume' : 'Pause'}</button>}
         </nav>
       </footer>
       {showVisualKey && <PlayDialog title="Read the board" onClose={() => setShowVisualKey(false)}><VisualKey /></PlayDialog>}
       {showMenu && <PlayDialog title="Game menu" onClose={() => setShowMenu(false)}>
-        <p>{observing ? 'You are observing this match. Reopen the watch link to follow it on any device.' : online ? 'This match is saved on the server. Keep this browser’s seat credential to reconnect. You can undo moves until you end your turn.' : `Your match is saved at phase changes on this device. New games use Unequal routes with ${INITIAL_MAP_RESOURCES} crystals.`}</p>
+        <p>{analysis ? 'Analysis runs locally. You control both sides, and can go backward or forward through the timeline.' : observing ? 'You are observing this match. Reopen the watch link to follow it on any device.' : online ? 'This match is saved on the server. Keep this browser’s seat credential to reconnect. You can undo moves until you end your turn.' : `Your match is saved at phase changes on this device. New games use Unequal routes with ${INITIAL_MAP_RESOURCES} crystals.`}</p>
         <p>Affordable upkeep is paid automatically. Undo back through your actions to refund it and choose which units to keep.</p>
         {isCurrentPlayerHuman && <label><input type="checkbox" checked={!!state.reviewUpkeep?.[state.turn.currentPlayer]} onChange={e=>setUpkeepReview(state.turn.currentPlayer,e.target.checked)} /> Always ask before paying upkeep (optional)</label>}
         <button onClick={() => { setShowMenu(false); handleBackToMenuClick(); }}>Choose game mode</button>
-        {!online && <button onClick={() => { if (window.confirm('Start a new game? This replaces your saved match.')) { handlePlayAgain(); setShowMenu(false); } }}>New game</button>}
+        {analysis && <button onClick={() => { resetGame(); setShowMenu(false); }}>Reset analysis</button>}
+        {!online && !analysis && <button onClick={() => { if (window.confirm('Start a new game? This replaces your saved match.')) { handlePlayAgain(); setShowMenu(false); } }}>New game</button>}
         {online && isCurrentPlayerHuman && <button onClick={() => { if (window.confirm('Resign this game? Your opponent will win.')) { game.resign(); setShowMenu(false); } }}>Resign</button>}
         <a href="https://ashkie.com/">Visit Ashkie.com ↗</a>
       </PlayDialog>}

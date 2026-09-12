@@ -1,4 +1,6 @@
 import { emptyRecording, recordAction, rewindRecording, type ReplayRecording } from '../src/game/replay';
+import { describeTransition, movementStep, type HistoryQuery, type HistoryStart, type MoveEvent, type MoveHistoryEntry, type RoomMoveHistory } from '../src/game/moveHistory';
+import { deflateSync, inflateSync } from 'node:zlib';
 import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
 import { DatabaseSync } from 'node:sqlite';
 import { setTimeout as delay } from 'node:timers/promises';
@@ -10,11 +12,14 @@ import { isLegalAction } from '../src/game/legality';
 import { applyAction } from '../src/ai/simulate';
 import type { GameState, PlayerId } from '../src/game/types';
 import type { ActionRequest, RoomAction, RoomAdmission, RoomChange, RoomSnapshot } from '../src/online/types';
-import { RoomError, actionRequestSchema, createSchema, joinSchema, roomIdSchema } from './schema';
+import { RoomError, actionRequestSchema, createSchema, joinSchema, roomIdSchema, historyQuerySchema } from './schema';
 
 const RULES_VERSION = 'muju-online-4';
 const digest = (value: string) => createHash('sha256').update(value).digest('hex');
 const secret = () => randomBytes(32).toString('hex');
+const packState = (state: GameState) => deflateSync(JSON.stringify(state));
+const unpackState = (data: Uint8Array) => JSON.parse(inflateSync(data).toString()) as GameState;
+interface CapturedMove { event: MoveEvent; before: GameState; after: GameState }
 function matches(value: string, hash: string) {
   return timingSafeEqual(Buffer.from(digest(value)), Buffer.from(hash));
 }
@@ -22,6 +27,8 @@ interface StoredRoom extends RoomSnapshot {
   undoHistory?: GameState[];
   replayRecording?: ReplayRecording;
   undoReplayLengths?: number[];
+  undoMoveSequences?: number[];
+  moveHistoryStart?: HistoryStart;
   rulesVersion: string;
   inviteHash: string | null;
   tokenHashes: Partial<Record<PlayerId, string>>;
@@ -35,6 +42,12 @@ export class RoomStore {
   constructor(path: string = ':memory:', private maxRooms = 10000) {
     this.db = new DatabaseSync(path);
     this.db.exec('PRAGMA journal_mode=WAL; PRAGMA busy_timeout=5000; CREATE TABLE IF NOT EXISTS rooms (id TEXT PRIMARY KEY, data TEXT NOT NULL)');
+    this.db.exec(`CREATE TABLE IF NOT EXISTS room_moves (
+      room_id TEXT NOT NULL, sequence INTEGER NOT NULL, revision INTEGER NOT NULL,
+      player TEXT NOT NULL, turn_number INTEGER NOT NULL, data TEXT NOT NULL,
+      undone_revision INTEGER, before_state BLOB, after_state BLOB NOT NULL, PRIMARY KEY (room_id, sequence)
+    )`);
+    this.db.exec('CREATE TABLE IF NOT EXISTS room_history_roots (room_id TEXT PRIMARY KEY, state BLOB NOT NULL)');
   }
   close() { this.shutdown.abort(); this.db.close(); }
   private transaction<T>(operation: () => T): T {
@@ -58,7 +71,7 @@ export class RoomStore {
       room.rulesVersion = RULES_VERSION;
       // Reconnects see a changed revision. No undo or replay may restore the old rules.
       room.revision++;
-      room.undoHistory = []; room.undoReplayLengths = []; room.replayRecording = emptyRecording();
+      room.undoHistory = []; room.undoReplayLengths = []; room.undoMoveSequences = []; room.replayRecording = emptyRecording();
     } else room.state.actionsPerTurn = getActionsPerTurn(room.state);
     return room;
   }
@@ -86,6 +99,47 @@ export class RoomStore {
     const room = this.read(id);
     if (token !== undefined) this.authenticate(room, token);
     return this.snapshot(room);
+  }
+  moveHistory(id: string, input: HistoryQuery = {}): RoomMoveHistory {
+    const { before, after, limit, includeUndone } = historyQuerySchema.parse(input);
+    if (before !== undefined && after !== undefined) throw new RoomError(400, 'INVALID_HISTORY_CURSOR', 'Use before or after, not both.');
+    return this.transaction(() => {
+      const room = this.read(id);
+      const visible = includeUndone ? '' : ' AND undone_revision IS NULL';
+      const cursor = before !== undefined ? ' AND sequence < ?' : after !== undefined ? ' AND sequence > ?' : '';
+      const rows = this.db.prepare(`SELECT sequence, revision, data, undone_revision FROM room_moves WHERE room_id = ?${visible}${cursor}
+        ORDER BY sequence ${after !== undefined ? 'ASC' : 'DESC'} LIMIT ?`).all(id, ...((before ?? after) !== undefined ? [before ?? after!] : []), limit);
+      const entries = rows.map(row => ({ ...JSON.parse(row.data as string), sequence: row.sequence,
+        revision: row.revision, undoneAtRevision: row.undone_revision })) as MoveHistoryEntry[];
+      entries.sort((a, b) => a.sequence - b.sequence);
+      const count = (condition = '', sequence?: number) => Number(this.db.prepare(`SELECT COUNT(*) AS count FROM room_moves WHERE room_id = ?${visible}${condition}`)
+        .get(id, ...(sequence === undefined ? [] : [sequence]))!.count);
+      const first = entries[0]?.sequence ?? before ?? after ?? 0, last = entries.at(-1)?.sequence ?? after ?? before ?? 0;
+      return { roomId: id, revision: room.revision, recordingStart: room.moveHistoryStart ?? {
+        revision: room.revision, turnNumber: room.state.turn.turnNumber, player: room.state.turn.currentPlayer, complete: false,
+      }, entries, total: count(), hasEarlier: count(' AND sequence < ?', first) > 0, hasLater: count(' AND sequence > ?', last) > 0 };
+    });
+  }
+  private latestMoveSequence(id: string): number {
+    return Number(this.db.prepare('SELECT COALESCE(MAX(sequence), 0) AS sequence FROM room_moves WHERE room_id = ?').get(id)!.sequence);
+  }
+  position(id: string, sequence: number, step?: number): { roomId: string; revision: number; state: GameState } {
+    const room = this.read(id);
+    if (!Number.isInteger(sequence) || sequence < 0 || (step !== undefined && (!Number.isInteger(step) || step < 1))) {
+      throw new RoomError(400, 'INVALID_POSITION', 'Use a nonnegative sequence and a positive step.');
+    }
+    if (sequence === 0) {
+      const root = this.db.prepare('SELECT state FROM room_history_roots WHERE room_id = ?').get(id);
+      // Existing rooms can be explored from their present position before their first recorded action.
+      return { roomId: id, revision: room.revision, state: root ? unpackState(root.state as Uint8Array) : room.state };
+    }
+    const row = this.db.prepare('SELECT data, before_state, after_state FROM room_moves WHERE room_id = ? AND sequence = ? AND undone_revision IS NULL').get(id, sequence);
+    if (!row) throw new RoomError(404, 'POSITION_NOT_FOUND', 'This move is unavailable or was undone. Refresh the game score.');
+    const event = JSON.parse(row.data as string) as MoveEvent;
+    const after = unpackState(row.after_state as Uint8Array), steps = event.kind === 'move' ? event.ap : 1;
+    if (step !== undefined && step > steps) throw new RoomError(400, 'INVALID_POSITION', 'This move has fewer steps.');
+    return { roomId: id, revision: room.revision, state: event.kind === 'move' && step !== undefined && step < steps
+      ? movementStep(unpackState(row.before_state as Uint8Array), after, event, step) : after };
   }
   restore(id: string, token: string, player: PlayerId): RoomSnapshot {
     const room = this.read(id);
@@ -117,8 +171,10 @@ export class RoomStore {
       const id = randomBytes(16).toString('hex'), token = secret(), inviteCode = secret();
       const room: StoredRoom = { id, revision: 0, ready: false, seats: { white: null, black: null },
         state: createInitialGameState(undefined, actionsPerTurn), canUndo: false, undoHistory: [], updatedAt: new Date().toISOString(), history: [],
+        moveHistoryStart: { revision: 0, turnNumber: 1, player: 'white', complete: true },
         rulesVersion: RULES_VERSION, inviteHash: digest(inviteCode), tokenHashes: { [side]: digest(token) }, receipts: [] };
       room.seats[side] = name;
+      this.db.prepare('INSERT INTO room_history_roots (room_id, state) VALUES (?, ?)').run(id, packState(room.state));
       this.save(room);
       return { credentials: { roomId: id, player: side, token }, inviteCode, room: this.snapshot(room) };
     });
@@ -135,10 +191,11 @@ export class RoomStore {
       return { credentials: { roomId: id, player, token }, room: this.snapshot(room) };
     });
   }
-  private simulate(room: StoredRoom, player: PlayerId, actions: RoomAction[]): { state: GameState; turnStartUndo: GameState | null; appliedActions: RoomAction[] } {
+  private simulate(room: StoredRoom, player: PlayerId, actions: RoomAction[]): { state: GameState; turnStartUndo: GameState | null; appliedActions: RoomAction[]; moves: CapturedMove[] } {
     let state = room.state;
     let appliedActions = actions;
     let turnStartUndo: GameState | null = null;
+    const moves: CapturedMove[] = [];
     for (const [index, action] of actions.entries()) {
       if (action.type === 'UNDO') {
         if (actions.length !== 1 || player !== state.turn.currentPlayer || !this.canUndo(room)) {
@@ -158,6 +215,9 @@ export class RoomStore {
         `Action ${index + 1} (${action.type}) is illegal. No actions were applied. Read the current room and legal actions before retrying.`);
       const before = state;
       state = applyAction(state, action);
+      const upkeepUndo = automaticUpkeepUndo(before, state);
+      moves.push(...describeTransition(before, action, state).map(event => ({ event, before,
+        after: event.kind === 'mining' && upkeepUndo ? upkeepUndo : state })));
       turnStartUndo = automaticUpkeepUndo(before, state) ?? turnStartUndo;
       room.replayRecording = recordAction(room.replayRecording ?? emptyRecording(), before, action, state);
       // A newly proven home checkmate cancels queued commands, including an LLM's
@@ -167,7 +227,7 @@ export class RoomStore {
         break;
       }
     }
-    return { state, turnStartUndo, appliedActions };
+    return { state, turnStartUndo, appliedActions, moves };
   }
   act(id: string, token: string, input: unknown, preview = false): RoomSnapshot {
     const request: ActionRequest = actionRequestSchema.parse(input);
@@ -181,23 +241,41 @@ export class RoomStore {
       }
       if (room.revision !== request.expectedRevision) throw new RoomError(409, 'STALE_REVISION', `Room is at revision ${room.revision}. Read it again before playing.`);
       const replayLength = room.replayRecording?.current?.frames.length ?? 0;
-      const { state, turnStartUndo, appliedActions } = this.simulate(room, player, request.actions);
+      const sequence = this.latestMoveSequence(id);
+      const { state, turnStartUndo, appliedActions, moves } = this.simulate(room, player, request.actions);
+      const undoSequence = room.undoMoveSequences?.at(-1) ?? 0;
+      room.moveHistoryStart ??= { revision: room.revision, turnNumber: room.state.turn.turnNumber,
+        player: room.state.turn.currentPlayer, complete: false };
       if (request.actions[0].type === 'UNDO') {
         room.undoHistory!.pop();
+        room.undoMoveSequences?.pop();
         room.replayRecording = rewindRecording(room.replayRecording ?? emptyRecording(), room.undoReplayLengths?.pop() ?? 0);
       }
       else if (state.phase !== 'playing' || state.turn.currentPlayer !== room.state.turn.currentPlayer ||
         state.turn.turnNumber !== room.state.turn.turnNumber) {
         room.undoHistory = turnStartUndo ? [turnStartUndo] : [];
         room.undoReplayLengths = turnStartUndo ? [0] : [];
+        const upkeepIndex = moves.findIndex(({ event }) => event.kind === 'upkeep' && event.player === state.turn.currentPlayer && event.turnNumber === state.turn.turnNumber);
+        room.undoMoveSequences = turnStartUndo ? [sequence + Math.max(0, upkeepIndex)] : [];
       }
       else if (request.actions[0].type !== 'SET_UPKEEP_REVIEW' && state !== room.state) {
         room.undoHistory = [...(room.undoHistory ?? []), room.state];
         room.undoReplayLengths = [...(room.undoReplayLengths ?? []), replayLength];
+        room.undoMoveSequences = [...(room.undoMoveSequences ?? []), sequence];
       }
+      const initialState = room.state;
       room.state = state;
       if (preview) return this.snapshot(room);
       room.revision++; room.updatedAt = new Date().toISOString();
+      if (request.actions[0].type === 'UNDO') {
+        this.db.prepare(`UPDATE room_moves SET undone_revision = ? WHERE room_id = ? AND sequence > ?
+          AND player = ? AND turn_number = ? AND undone_revision IS NULL`).run(room.revision, id, undoSequence, state.turn.currentPlayer, state.turn.turnNumber);
+      }
+      this.db.prepare('INSERT OR IGNORE INTO room_history_roots (room_id, state) VALUES (?, ?)').run(id, packState(initialState));
+      const insert = this.db.prepare('INSERT INTO room_moves (room_id, sequence, revision, player, turn_number, data, before_state, after_state) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
+      moves.forEach(({ event, before, after }, index) => insert.run(id, sequence + index + 1, room.revision, event.player, event.turnNumber,
+        JSON.stringify({ ...event, timestamp: room.updatedAt, positionTurn: { player: after.turn.currentPlayer, turnNumber: after.turn.turnNumber } }),
+        event.kind === 'move' ? packState(before) : null, packState(after)));
       room.history = [...room.history, { revision: room.revision, player, actions: appliedActions }].slice(-100);
       room.receipts = [...room.receipts, { id: request.requestId, player, fingerprint }].slice(-256);
       this.save(room);
