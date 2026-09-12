@@ -11,7 +11,7 @@ export function RoomClocks({ room }: { room: RoomSnapshot }) {
     const timer = setInterval(() => setNow(performance.now()), 100);
     return () => clearInterval(timer);
   }, [clock?.runningPlayer]);
-  if (!clock || !timeControl) return <p className="clock-summary">Untimed game</p>;
+  if (!clock || !timeControl) return null;
   // Use a monotonic local elapsed duration against the server sample, not the device's wall clock.
   const current = projectClock(clock, clock.serverNowMs + Math.max(0, now - anchor.receivedAt));
   const expired = current.runningPlayer && current.delayRemainingMs + current.bankRemainingMs[current.runningPlayer] <= 0;
