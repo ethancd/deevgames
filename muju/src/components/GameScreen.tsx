@@ -445,7 +445,7 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
       if (e.key === 'Escape') { e.preventDefault(); closeReplay(); }
       return;
     }
-    if (!isCurrentPlayerHuman || isThinking || showPassOverlay || showMenu || showInstructions || showUnitShopInspection || showInsights || showVisualKey) return;
+    if (!isCurrentPlayerHuman || isThinking || state.upkeepPending || showPassOverlay || showMenu || showInstructions || showUnitShopInspection || showInsights || showVisualKey) return;
     const control = e.target instanceof HTMLElement ? e.target.closest('button, select, a, input, textarea') : null;
     if (control?.matches('select, input, textarea')) return;
     if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') {
@@ -701,7 +701,9 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
     <main className={`game-shell${online ? ' game-shell-online' : ''}`}>
       {state.phase === 'victory' && <VictoryScreen winner={state.winner} reason={state.victoryReason} onPlayAgain={handlePlayAgain} playerNames={playerNames} perspectivePlayer={humanPlayer ?? 'white'} />}
       {showPassOverlay && <PassDeviceOverlay nextPlayer={state.turn.currentPlayer} onContinue={handleContinueFromPass} />}
-      {state.upkeepPending && isCurrentPlayerHuman && !showPassOverlay && !showReplay && <UpkeepPanel state={state} onConfirm={payUpkeep} />}
+      {state.upkeepPending && config.controls[state.turn.currentPlayer] === 'human' &&
+        (!online || (online.player === state.turn.currentPlayer && online.ready)) && !showPassOverlay && !showReplay &&
+        <UpkeepPanel state={state} onConfirm={payUpkeep} disabled={online?.busy} />}
       <InstructionsModal isOpen={showInstructions} onClose={() => setShowInstructions(false)} actionsPerTurn={actionsPerTurn} />
       <aside className="game-overview" aria-label="Match overview">
         {online?.banner}
@@ -788,7 +790,8 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
       {showVisualKey && <PlayDialog title="Read the board" onClose={() => setShowVisualKey(false)}><VisualKey /></PlayDialog>}
       {showMenu && <PlayDialog title="Game menu" onClose={() => setShowMenu(false)}>
         <p>{online ? 'This match is saved on the server. Keep this browser’s seat credential to reconnect. You can undo moves until you end your turn.' : `Your match is saved at phase changes on this device. New games use Unequal routes with ${INITIAL_MAP_RESOURCES} crystals.`}</p>
-        {isCurrentPlayerHuman && <label><input type="checkbox" checked={!!state.reviewUpkeep?.[state.turn.currentPlayer]} onChange={e=>setUpkeepReview(state.turn.currentPlayer,e.target.checked)} /> Review upkeep each turn (allows T2/T3 release)</label>}
+        <p>Affordable upkeep is paid automatically. Undo back through your actions to refund it and choose which units to keep.</p>
+        {isCurrentPlayerHuman && <label><input type="checkbox" checked={!!state.reviewUpkeep?.[state.turn.currentPlayer]} onChange={e=>setUpkeepReview(state.turn.currentPlayer,e.target.checked)} /> Always ask before paying upkeep (optional)</label>}
         <button onClick={() => { setShowMenu(false); handleBackToMenuClick(); }}>Choose game mode</button>
         {!online && <button onClick={() => { if (window.confirm('Start a new game? This replaces your saved match.')) { handlePlayAgain(); setShowMenu(false); } }}>New game</button>}
         {online && isCurrentPlayerHuman && <button onClick={() => { if (window.confirm('Resign this game? Your opponent will win.')) { game.resign(); setShowMenu(false); } }}>Resign</button>}

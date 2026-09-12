@@ -33,6 +33,22 @@ export function startTurn(state: GameState, player: PlayerId): GameState {
   return completeUpkeep(pending,pending.board.units.filter(u=>u.owner===player).map(u=>u.id));
 }
 
+/** The incoming player's first undo step, after income and handoff but before
+ * automatic upkeep and healing. Call with the states around the actual turn end. */
+export function automaticUpkeepUndo(before: GameState, after: GameState): GameState | null {
+  const player = after.turn.currentPlayer, payment = after.lastUpkeep;
+  if (after.phase !== 'playing' || after.upkeepPending ||
+    (before.turn.currentPlayer === player && before.turn.turnNumber === after.turn.turnNumber) ||
+    !payment || payment.player !== player || payment.turnNumber !== after.turn.turnNumber ||
+    payment.paid <= 0 || payment.released.length > 0) return null;
+  return { ...after, upkeepPending: true, lastUpkeep: before.lastUpkeep,
+    turn: { ...after.turn, phase: 'place' },
+    board: { ...after.board, units: before.board.units },
+    players: { ...after.players, [player]: before.players[player] },
+    selectedUnit: null, validMoves: [], validAttacks: [],
+  };
+}
+
 /** Called only after a validated selection, or automatic affordable payment. */
 export function completeUpkeep(state: GameState, keepUnitIds: string[]): GameState {
   const paid=settleUpkeep(state,keepUnitIds),result=checkVictory(paid.board);

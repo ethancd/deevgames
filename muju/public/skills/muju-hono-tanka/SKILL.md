@@ -125,6 +125,10 @@ Send `actions:[{"type":"UNDO"}]` alone to `muju_play`, with your token, the
 latest revision and a new request ID. `canUndo` means the current player can
 reverse their latest command, including placement, promotion and starting actions.
 An atomic batch is one undo step. Turn end and game completion clear undo history.
+The incoming player's positive automatic upkeep payment creates a new first undo
+step. Undo later commands first, then undo upkeep to refund it and reopen
+`PAY_UPKEEP` before healing. Choose a new affordable keep-set containing every tier
+1 unit. This does not reverse the opponent's completed turn or income.
 
 `muju_wait_for_change` is the supported way to detect human moves. Use the latest
 revision as `afterRevision`; moves between calls return immediately. Changed

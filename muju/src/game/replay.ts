@@ -4,6 +4,7 @@ import { calculateDefense } from './combat';
 import { BOARD_SIZE } from './board';
 import { executeMove, findPath } from './movement';
 import { getUnitDefinition } from './units';
+import { automaticUpkeepUndo } from './turn';
 
 export interface ReplayFrame {
   board: BoardState;
@@ -80,12 +81,17 @@ export function recordAction(recording: ReplayRecording, before: GameState, acti
       const survivor = target && after.board.units.find(u => u.id === target.id);
       label = `${name} attacked ${target ? getUnitDefinition(target.definitionId).name : square(position)} at ${square(position)} · ${survivor ? `${calculateDefense(survivor)} defense left` : 'eliminated'}`; break;
     }
-    case 'PAY_UPKEEP': label = 'Paid upkeep and released unkept units'; break;
+    case 'PAY_UPKEEP': {
+      const payment = after.lastUpkeep, released = payment?.released.length ?? 0;
+      label = `Paid ${payment?.paid ?? 0} crystals upkeep${released ? ` · released ${released} unit${released === 1 ? '' : 's'}` : ''}`; break;
+    }
   }
   if (label) current = { ...current, frames: [...current.frames,
     ...splitMoveFrame(before.board, { board: after.board, action, label, position, unitId })] };
   if (action.type === 'END_ACTION_PHASE' || before.turn.currentPlayer !== after.turn.currentPlayer || before.turn.turnNumber !== after.turn.turnNumber) {
-    return { current: null, last: current };
+    const finished = { current: null, last: current }, pending = automaticUpkeepUndo(before, after);
+    return pending ? recordAction(finished, pending, { type: 'PAY_UPKEEP',
+      keepUnitIds: pending.board.units.filter(u => u.owner === pending.turn.currentPlayer).map(u => u.id) }, after) : finished;
   }
   return { ...recording, current };
 }

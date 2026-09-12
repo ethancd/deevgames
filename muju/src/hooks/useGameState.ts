@@ -2,6 +2,7 @@ import { emptyRecording, recordAction, rewindRecording, type ReplayRecording } f
 import { useReducer, useCallback, useMemo, useState, useEffect } from 'react';
 import type { GameState, GameAction, GameConfig, Position } from '../game/types';
 import { getActionsPerTurn } from '../game/rules';
+import { automaticUpkeepUndo } from '../game/turn';
 import type { AIAction } from '../ai/types';
 import { createInitialGameState, getUnitById } from '../game/board';
 import { getValidMoves } from '../game/movement';
@@ -146,7 +147,7 @@ function getInitialState(options: InitialGameOptions): GameState {
   return state;
 }
 
-interface ReplaySession { state: GameState; recording: ReplayRecording; undoLengths: number[] }
+interface ReplaySession { state: GameState; recording: ReplayRecording; undoLengths: number[]; turnStartUndo: GameState | null }
 function sessionReducer(session: ReplaySession, action: LocalAction): ReplaySession {
   const state = gameReducerWithSave(session.state, action);
   if (state === session.state && action.type !== 'RESTORE_STATE') {
@@ -154,8 +155,8 @@ function sessionReducer(session: ReplaySession, action: LocalAction): ReplaySess
       ? { ...session, undoLengths: [...session.undoLengths, session.recording.current?.frames.length ?? 0] }
       : session;
   }
-  let recording = session.recording, undoLengths = session.undoLengths;
-  if (action.type === 'RESET_GAME') return { state, recording: emptyRecording(), undoLengths: [] };
+  let recording = session.recording, undoLengths = session.undoLengths, turnStartUndo = session.turnStartUndo;
+  if (action.type === 'RESET_GAME') return { state, recording: emptyRecording(), undoLengths: [], turnStartUndo: null };
   if (action.type === 'RESTORE_STATE') {
     recording = rewindRecording(recording, undoLengths.at(-1) ?? 0);
     undoLengths = undoLengths.slice(0, -1);
@@ -171,19 +172,22 @@ function sessionReducer(session: ReplaySession, action: LocalAction): ReplaySess
       recording = recordAction(recording, session.state, actual, state);
     }
   }
-  if (state.turn.currentPlayer !== session.state.turn.currentPlayer || state.turn.turnNumber !== session.state.turn.turnNumber) undoLengths = [];
-  return { state, recording, undoLengths };
+  if (state.turn.currentPlayer !== session.state.turn.currentPlayer || state.turn.turnNumber !== session.state.turn.turnNumber) {
+    turnStartUndo = automaticUpkeepUndo(session.state, state);
+    undoLengths = turnStartUndo ? [0] : [];
+  }
+  return { state, recording, undoLengths, turnStartUndo };
 }
 
 export function useGameState(options: InitialGameOptions = {}) {
-  const [session, dispatch] = useReducer(sessionReducer, options, options => ({ state: getInitialState(options), recording: emptyRecording(), undoLengths: [] }));
+  const [session, dispatch] = useReducer(sessionReducer, options, options => ({ state: getInitialState(options), recording: emptyRecording(), undoLengths: [], turnStartUndo: null }));
   const state = session.state;
   const [undoHistory, setUndoHistory] = useState<GameState[]>([]);
 
-  // Undo never crosses the income settlement or player handoff.
+  // The new turn can undo its automatic upkeep, but never the opponent's turn.
   useEffect(() => {
-    setUndoHistory([]);
-  }, [state.turn.currentPlayer, state.turn.turnNumber]);
+    setUndoHistory(session.turnStartUndo ? [session.turnStartUndo] : []);
+  }, [state.turn.currentPlayer, state.turn.turnNumber, session.turnStartUndo]);
 
   // Wrap dispatch to track undo history for undoable actions
   const dispatchWithUndo = useCallback((action: LocalAction) => {
@@ -199,7 +203,7 @@ export function useGameState(options: InitialGameOptions = {}) {
   }, [state]);
 
   const previousState = undoHistory[undoHistory.length - 1];
-  const canUndo = !!previousState &&
+  const canUndo = state.phase === 'playing' && !!previousState &&
     previousState.turn.currentPlayer === state.turn.currentPlayer &&
     previousState.turn.turnNumber === state.turn.turnNumber;
 

@@ -256,6 +256,12 @@ reverse the current player’s latest command. An atomic batch is one undo step.
 Undo covers purchases, promotions, upkeep choices, movement, attacks, and ending
 placement. It persists across reconnects, but stops at turn end or game completion.
 `canUndo` reports availability; revision and request-ID checks apply to undo too.
+When your turn starts with a positive automatic upkeep payment, that payment is
+your first undo step. Undo later actions first, then undo upkeep to refund the
+crystals and reopen the keep/release selector, before healing. The opponent's
+completed turn, income and turn handoff remain committed. Confirming the selector
+pays only the new keep-set and can itself be undone. Unaffordable upkeep still
+opens the selector immediately; zero-cost automatic upkeep adds no undo step.
 
 Use `muju_wait_for_change({roomId, afterRevision, timeoutMs:25000})` as the
 supported move notification mechanism for either MCP transport. Set `afterRevision`

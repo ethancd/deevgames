@@ -4,6 +4,7 @@ import { DatabaseSync } from 'node:sqlite';
 import { setTimeout as delay } from 'node:timers/promises';
 import { createInitialGameState } from '../src/game/board';
 import { getActionsPerTurn, isActionsPerTurn } from '../src/game/rules';
+import { automaticUpkeepUndo } from '../src/game/turn';
 import { migrateLegacyGame, type LegacyGameState } from '../src/game/migrate';
 import { isLegalAction } from '../src/game/legality';
 import { applyAction } from '../src/ai/simulate';
@@ -127,8 +128,9 @@ export class RoomStore {
       return { credentials: { roomId: id, player, token }, room: this.snapshot(room) };
     });
   }
-  private simulate(room: StoredRoom, player: PlayerId, actions: RoomAction[]): GameState {
+  private simulate(room: StoredRoom, player: PlayerId, actions: RoomAction[]): { state: GameState; turnStartUndo: GameState | null } {
     let state = room.state;
+    let turnStartUndo: GameState | null = null;
     for (const [index, action] of actions.entries()) {
       if (action.type === 'UNDO') {
         if (actions.length !== 1 || player !== state.turn.currentPlayer || !this.canUndo(room)) {
@@ -148,9 +150,10 @@ export class RoomStore {
         `Action ${index + 1} (${action.type}) is illegal. No actions were applied. Read the current room and legal actions before retrying.`);
       const before = state;
       state = applyAction(state, action);
+      turnStartUndo = automaticUpkeepUndo(before, state) ?? turnStartUndo;
       room.replayRecording = recordAction(room.replayRecording ?? emptyRecording(), before, action, state);
     }
-    return state;
+    return { state, turnStartUndo };
   }
   act(id: string, token: string, input: unknown, preview = false): RoomSnapshot {
     const request: ActionRequest = actionRequestSchema.parse(input);
@@ -164,13 +167,16 @@ export class RoomStore {
       }
       if (room.revision !== request.expectedRevision) throw new RoomError(409, 'STALE_REVISION', `Room is at revision ${room.revision}. Read it again before playing.`);
       const replayLength = room.replayRecording?.current?.frames.length ?? 0;
-      const state = this.simulate(room, player, request.actions);
+      const { state, turnStartUndo } = this.simulate(room, player, request.actions);
       if (request.actions[0].type === 'UNDO') {
         room.undoHistory!.pop();
         room.replayRecording = rewindRecording(room.replayRecording ?? emptyRecording(), room.undoReplayLengths?.pop() ?? 0);
       }
       else if (state.phase !== 'playing' || state.turn.currentPlayer !== room.state.turn.currentPlayer ||
-        state.turn.turnNumber !== room.state.turn.turnNumber) { room.undoHistory = []; room.undoReplayLengths = []; }
+        state.turn.turnNumber !== room.state.turn.turnNumber) {
+        room.undoHistory = turnStartUndo ? [turnStartUndo] : [];
+        room.undoReplayLengths = turnStartUndo ? [0] : [];
+      }
       else if (request.actions[0].type !== 'SET_UPKEEP_REVIEW' && state !== room.state) {
         room.undoHistory = [...(room.undoHistory ?? []), room.state];
         room.undoReplayLengths = [...(room.undoReplayLengths ?? []), replayLength];
