@@ -108,6 +108,7 @@ export class AIEngineV2 {
       for (const raid of raidPlans(observed, player)) {
         if (budget.exhausted()) break;
         const next = applyActions(observed, raid.actions);
+        if (next.winner === player) { bestPlan = { ...raid, score: 1000000 }; break; }
         // Test the defender's actual public bank and current position.
         const reply = endTurn(next);
         if (reply.phase === 'victory') continue; // opponent wins a home race first

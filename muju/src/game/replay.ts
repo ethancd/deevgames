@@ -88,7 +88,7 @@ export function recordAction(recording: ReplayRecording, before: GameState, acti
   }
   if (label) current = { ...current, frames: [...current.frames,
     ...splitMoveFrame(before.board, { board: after.board, action, label, position, unitId })] };
-  if (action.type === 'END_ACTION_PHASE' || before.turn.currentPlayer !== after.turn.currentPlayer || before.turn.turnNumber !== after.turn.turnNumber) {
+  if (after.phase === 'victory' || action.type === 'END_ACTION_PHASE' || before.turn.currentPlayer !== after.turn.currentPlayer || before.turn.turnNumber !== after.turn.turnNumber) {
     const finished = { current: null, last: current }, pending = automaticUpkeepUndo(before, after);
     return pending ? recordAction(finished, pending, { type: 'PAY_UPKEEP',
       keepUnitIds: pending.board.units.filter(u => u.owner === pending.turn.currentPlayer).map(u => u.id) }, after) : finished;

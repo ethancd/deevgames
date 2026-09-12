@@ -26,6 +26,7 @@ const UNDOABLE_ACTIONS = new Set([
 export function gameReducer(state: GameState, action: LocalAction): GameState {
   switch (action.type) {
     case 'SELECT_UNIT': {
+      if (state.phase !== 'playing') return state;
       const unit = getUnitById(state.board, action.unitId);
       if (!unit || unit.owner !== state.turn.currentPlayer) {
         return state;
@@ -66,6 +67,7 @@ export function gameReducer(state: GameState, action: LocalAction): GameState {
     case 'MOVE_AND_ATTACK': {
       const moved = applyAIAction(state, { type: 'MOVE', unitId: action.unitId, to: action.to });
       if (moved === state) return state;
+      if (moved.phase === 'victory') return moved;
       const attacked = applyAIAction(moved, { type: 'ATTACK', unitId: action.unitId, targetPosition: action.targetPosition });
       return attacked === moved ? state : attacked;
     }

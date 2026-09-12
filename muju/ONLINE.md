@@ -154,6 +154,21 @@ their use. Rooms are unlisted; there is no public matchmaking or account system.
 
 ## Reconnect and action semantics
 
+An unanswerable home occupation resolves immediately as `home-checkmate`, without
+waiting for the defender to take a turn. The shared engine checks every affordable
+upkeep keep/release set, one promotion per unit, movement, blocker clearing, and
+combined attacks within four actions. A corner has only two adjacent squares;
+three attacks against its occupier need at least five actions (three attacks,
+one exit move, and one entry move). A prior opposing home occupation keeps its
+turn-start priority. Elimination-only lab games retain their historical rule.
+
+The proof uses optimistic pruning and a deterministic 20,000-node work limit;
+an inconclusive search keeps the normal reply turn and never awards a guessed
+win. Checkmate cancels any remaining commands in an MCP/HTTP batch, including a
+queued end-turn command. History and replay contain only executed actions, while
+idempotent retries still use the original complete request. Preview applies the
+same resolution, and live observers receive the terminal revision immediately.
+
 On a new device, choose **Play online → Restore a seat** and paste the private
 credentials JSON from the original browser's **Private reconnect details → Copy
 credentials**, or the MCP `credentials` object. Include `roomId`, `player`,

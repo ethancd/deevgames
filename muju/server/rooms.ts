@@ -135,8 +135,9 @@ export class RoomStore {
       return { credentials: { roomId: id, player, token }, room: this.snapshot(room) };
     });
   }
-  private simulate(room: StoredRoom, player: PlayerId, actions: RoomAction[]): { state: GameState; turnStartUndo: GameState | null } {
+  private simulate(room: StoredRoom, player: PlayerId, actions: RoomAction[]): { state: GameState; turnStartUndo: GameState | null; appliedActions: RoomAction[] } {
     let state = room.state;
+    let appliedActions = actions;
     let turnStartUndo: GameState | null = null;
     for (const [index, action] of actions.entries()) {
       if (action.type === 'UNDO') {
@@ -159,8 +160,14 @@ export class RoomStore {
       state = applyAction(state, action);
       turnStartUndo = automaticUpkeepUndo(before, state) ?? turnStartUndo;
       room.replayRecording = recordAction(room.replayRecording ?? emptyRecording(), before, action, state);
+      // A newly proven home checkmate cancels queued commands, including an LLM's
+      // customary END_ACTION_PHASE. Record only the actions that actually ran.
+      if (state.phase === 'victory' && state.victoryReason === 'home-checkmate') {
+        appliedActions = actions.slice(0, index + 1);
+        break;
+      }
     }
-    return { state, turnStartUndo };
+    return { state, turnStartUndo, appliedActions };
   }
   act(id: string, token: string, input: unknown, preview = false): RoomSnapshot {
     const request: ActionRequest = actionRequestSchema.parse(input);
@@ -174,7 +181,7 @@ export class RoomStore {
       }
       if (room.revision !== request.expectedRevision) throw new RoomError(409, 'STALE_REVISION', `Room is at revision ${room.revision}. Read it again before playing.`);
       const replayLength = room.replayRecording?.current?.frames.length ?? 0;
-      const { state, turnStartUndo } = this.simulate(room, player, request.actions);
+      const { state, turnStartUndo, appliedActions } = this.simulate(room, player, request.actions);
       if (request.actions[0].type === 'UNDO') {
         room.undoHistory!.pop();
         room.replayRecording = rewindRecording(room.replayRecording ?? emptyRecording(), room.undoReplayLengths?.pop() ?? 0);
@@ -191,7 +198,7 @@ export class RoomStore {
       room.state = state;
       if (preview) return this.snapshot(room);
       room.revision++; room.updatedAt = new Date().toISOString();
-      room.history = [...room.history, { revision: room.revision, player, actions: request.actions }].slice(-100);
+      room.history = [...room.history, { revision: room.revision, player, actions: appliedActions }].slice(-100);
       room.receipts = [...room.receipts, { id: request.requestId, player, fingerprint }].slice(-256);
       this.save(room);
       return this.snapshot(room);

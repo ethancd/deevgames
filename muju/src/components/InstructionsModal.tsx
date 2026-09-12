@@ -23,7 +23,7 @@ const getPages = (actionsPerTurn: ActionsPerTurn) => [
     <p>Tap an enemy you cannot attack to inspect it with reach already on. Hide reach toggles off its movement range and red attack frontier: up to {actionsPerTurn - 1} move actions plus 1 attack at its current speed. Blockers and board edges limit the frontier; dots show attack reach, not guaranteed kills. Key explains the board; Units opens the full catalogue.</p>
   </>},
   {title:'Win the game', content:<>
-    <p>Hold the enemy home corner until the start of your next turn, or eliminate every enemy piece. The defender gets one turn to clear an invader. An empty army loses even with crystals in the bank.</p>
+    <p>Hold the enemy home corner until the start of your next turn, or eliminate every enemy piece. If no legal reply can remove the invader, checkmate wins immediately. Otherwise the defender gets one turn to clear it. An empty army loses even with crystals in the bank.</p>
     <p>The {BOARD_SIZE}×{BOARD_SIZE} board starts with {INITIAL_MAP_RESOURCES} crystals. Each side begins with Hi, Sjor and Muju, and no crystals in the bank. White moves first.</p>
     <p>After {INACTIVITY_LIMIT} consecutive completed player turns without an enemy kill by attack, the game is a draw. Only an attack kill resets the clock; income, movement, purchases, promotions and upkeep losses do not. The draw is checked at turn end, before the next home check.</p>
   </>},

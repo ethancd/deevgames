@@ -8,6 +8,7 @@ import { completeUpkeep, useAction, endTurn, startActionPhase, canActInPlacePhas
 import { isLegalAction } from '../game/legality';
 import { getMoveCost } from '../game/movement';
 import { checkVictory } from '../game/victory';
+import { resolveHomeCheckmate } from '../game/homeCheckmate';
 
 /** Deterministic IDs agree in the reducer, worker, and every simulated state. */
 function nextUnitId(state: GameState): string {
@@ -22,6 +23,19 @@ function nextUnitId(state: GameState): string {
  * Rejected actions return the original object without charging an action/resource.
  */
 export function applyAction(state: GameState, action: AIAction): GameState {
+  if (!isLegalAction(state, action)) return state;
+  // Also adjudicate an existing occupation before a player hands off a saved game.
+  if (action.type === 'END_ACTION_PHASE') {
+    const resolved = resolveHomeCheckmate(state, transitionWithoutCheckmate);
+    if (resolved !== state) return resolved;
+  }
+  const next = transitionWithoutCheckmate(state, action);
+  return next === state ? state : resolveHomeCheckmate(next, transitionWithoutCheckmate);
+}
+
+/** Internal combat-proof transition. Target-removal solvers must finish their
+ * hypothetical witness; real play and game search always use applyAction. */
+export function transitionWithoutCheckmate(state: GameState, action: AIAction): GameState {
   if (!isLegalAction(state, action)) return state;
   const next = applyLegalAction(state, action);
   return next === state ? state : { ...next, selectedUnit: null, validMoves: [], validAttacks: [] };

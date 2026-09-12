@@ -134,7 +134,7 @@ for (const winner of ['black', 'white'] as const) {
     await page.getByRole('button', { name: /Continue saved game/ }).click();
 
     const humanWon = winner === 'black';
-    await expect(page.getByRole('heading', { name: humanWon ? 'You Wins!' : 'AI Wins!', exact: true })).toBeVisible();
+    await expect(page.getByRole('heading', { name: humanWon ? 'You Win!' : 'AI Wins!', exact: true })).toBeVisible();
     await expect(page.getByText(humanWon ? '🎉' : '💀', { exact: true })).toBeVisible();
     await expect(page.getByText(humanWon ? '💀' : '🎉', { exact: true })).toHaveCount(0);
   });

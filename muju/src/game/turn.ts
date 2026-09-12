@@ -17,8 +17,8 @@ import { getAffordablePurchases } from './building';
 import { endOfTurnIncome } from './mining';
 
 export function startTurn(state: GameState, player: PlayerId): GameState {
-  // Resolve before healing, placement or promotion. Entering
-  // the corner during the previous turn was only a threat; the defender got a reply.
+  // Resolve before healing, placement or promotion. An occupation that did not
+  // already resolve as checkmate gave the defender a reply.
   if (state.phase === 'victory') return state;
   if (state.victoryRule !== 'elimination' && getHomeOccupier(state.board, player)) {
     return { ...state, phase: 'victory', winner: player, victoryReason: 'home-occupation',

@@ -2,7 +2,7 @@ import type { GameState } from '../../game/types';
 import { getActionsPerTurn } from '../../game/rules';
 import { UNIT_DEFINITIONS, getUnitDefinition } from '../../game/units';
 import { calculateAttackPower, canAttack, getAttackCount } from '../../game/combat';
-import { applyAction } from '../simulate';
+import { transitionWithoutCheckmate as applyAction } from '../simulate';
 import { isLegalAction } from '../../game/legality';
 import type { AIAction } from '../types';
 import type { SearchBudget } from '../runtime';

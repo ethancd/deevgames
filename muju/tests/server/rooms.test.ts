@@ -8,6 +8,7 @@ import { RoomStore } from '../../server/rooms';
 import { legalActions, observe } from '../../server/observation';
 import { phaseEndAction } from '../../src/game/legality';
 import { applyAction } from '../../src/ai/simulate';
+import { createUnit } from '../../src/game/board';
 import type { ActionRequest, RoomAction } from '../../src/online/types';
 
 const stores: RoomStore[] = [];
@@ -20,6 +21,36 @@ function setup(path?: string) {
   return { store, host, guest, id: host.room.id };
 }
 const request = (revision: number, actions: RoomAction[], requestId = 'test-request-1'): ActionRequest => ({ expectedRevision: revision, actions, requestId });
+
+it('previews, commits, notifies and persists immediate checkmate without playing queued commands', async () => {
+  const dir = mkdtempSync(join(tmpdir(), 'muju-checkmate-')); directories.push(dir);
+  const path = join(dir, 'rooms.sqlite');
+  const { store, host, guest, id } = setup(path);
+  const invader = createUnit('fire_1', 'white', { x: 9, y: 8 });
+  const db = new DatabaseSync(path);
+  const saved = JSON.parse(db.prepare('SELECT data FROM rooms WHERE id = ?').get(id)!.data as string);
+  saved.state.board.units = [invader, createUnit('fire_1', 'black', { x: 4, y: 4 })];
+  db.prepare('UPDATE rooms SET data = ? WHERE id = ?').run(JSON.stringify(saved), id); db.close();
+  const move: RoomAction = { type: 'MOVE', unitId: invader.id, to: { x: 9, y: 9 } };
+  const command = request(1, [move, { type: 'END_ACTION_PHASE' }], 'mate-and-queued-end');
+  const before = store.get(id), preview = store.act(id, host.credentials.token, command, true);
+  expect(preview.state).toMatchObject({ phase: 'victory', winner: 'white', victoryReason: 'home-checkmate' });
+  expect(store.get(id)).toEqual(before);
+  const waiting = store.wait(id, 1, 2000);
+  const won = store.act(id, host.credentials.token, command);
+  expect(won.state).toEqual(preview.state);
+  expect(won.state.turn.currentPlayer).toBe('white');
+  expect(won.state.lastIncome).toBeUndefined();
+  expect(won.canUndo).toBe(false);
+  expect(won.history.at(-1)?.actions).toEqual([move]);
+  expect(won.lastTurnReplay?.frames.map(frame => frame.action)).toEqual([move]);
+  expect(legalActions(won).total).toBe(0);
+  expect(await waiting).toMatchObject({ changed: true, phase: 'victory', room: { state: { victoryReason: 'home-checkmate' } } });
+  expect(store.act(id, host.credentials.token, command)).toEqual(won);
+  expect(() => store.act(id, guest.credentials.token, request(2, [{ type: 'END_ACTION_PHASE' }], 'mate-no-reply'))).toThrow('illegal');
+  const reconnect = new RoomStore(path); stores.push(reconnect);
+  expect(reconnect.restore(id, guest.credentials.token, 'black')).toEqual(won);
+});
 
 describe('authoritative shared rooms', () => {
   it('draws after ten ordinary income-earning turns without kills', () => {

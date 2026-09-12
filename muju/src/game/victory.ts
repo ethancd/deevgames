@@ -2,8 +2,8 @@ import type { BoardState, PlayerId, GameState } from './types';
 import { getPlayerUnits } from './board';
 
 /**
- * Elimination can be checked on a board at any time. Home occupation is checked
- * only by startTurn, before placement, never when entering the corner.
+ * Elimination can be checked on a board at any time. Unanswerable home occupation
+ * wins immediately via homeCheckmate; other occupations resolve at startTurn.
  * Without pieces, a player has no anchor for spawning, regardless of their bank.
  */
 
@@ -99,7 +99,7 @@ export function getGameSummary(board: BoardState): {
   };
 }
 
-/** A unit threatening victory on its owner's NEXT turn. Presence alone is not a win. */
+/** A home threat: wins next turn, or immediately when no legal rescue exists. */
 export function getHomeOccupier(board: BoardState, invader: PlayerId) {
   const corner = invader === 'white' ? board.cells.length - 1 : 0;
   return board.units.find(u => u.owner === invader && u.position.x === corner && u.position.y === corner);

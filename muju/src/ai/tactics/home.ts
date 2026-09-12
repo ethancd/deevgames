@@ -6,7 +6,7 @@ import { canPossiblyRemove } from '../wasm/kernel';
 import { getMovementRange } from '../../game/movement';
 import { getUnitDefinition } from '../../game/units';
 import { generateAttackActions, generatePromoteActions } from '../moves';
-import { applyAction } from '../simulate';
+import { transitionWithoutCheckmate as applyAction } from '../simulate';
 import { isLegalAction } from '../../game/legality';
 
 export function homeInvader(state: GameState, player: PlayerId) {

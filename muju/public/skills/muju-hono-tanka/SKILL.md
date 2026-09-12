@@ -74,6 +74,14 @@ the last completed turn. No token or invitation is required. MCP observers use
 
 ## Take a turn
 
+- An invader that cannot be removed by any legal next-turn reply wins immediately
+  as `home-checkmate`. Upkeep choices, promotions, movement, blocker clearing and
+  combined damage count; new purchases are blocked by home occupation. Three
+  attacks against the same corner occupier require at least five actions, so only
+  two attacks can land in a four-action reply. An inconclusive proof preserves the
+  ordinary reply turn. Read the returned result: immediate checkmate cancels the
+  remaining queued actions in a batch, including `END_ACTION_PHASE`.
+
 - Read the room's `actionsPerTurn` (always 4) and `turn.actionsRemaining`; use that
   budget for planning and enemy reach. Both seats use four actions.
   Ten consecutive completed player turns without an enemy attack kill draw;

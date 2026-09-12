@@ -13,6 +13,28 @@ import { generateAllActions } from '../../src/ai/moves';
 import { AIEngineV2 } from '../../src/ai/engine-v2';
 let solver: TacticalSolver;
 beforeAll(async () => { solver = await instantiateTactics(readFileSync('src/ai/wasm/tactics.wasm')); });
+it('a combat witness can end early in real play because its approach move delivers checkmate', async () => {
+  const state = createInitialGameState();
+  const invader = createUnit('metal_3', 'white', { x: 8, y: 9 });
+  const target = createUnit('plant_1', 'black', { x: 9, y: 8 }); target.damageTaken = 1;
+  state.board.units = [invader, target, createUnit('plant_1', 'white', { x: 8, y: 8 })];
+  for (const solve of [referenceTactics, solver]) {
+    const witness = solve(state, target.id, 10000, new SearchBudget());
+    expect(witness.status).toBe('proved');
+    expect(applyActions(state, witness.actions)).toMatchObject({ phase: 'victory', winner: 'white', victoryReason: 'home-checkmate' });
+  }
+  const engine = new AIEngineV2('medium'); engine.setTacticalSolver(solver); engine.setConfig({ fixedWork: 1000 });
+  const result = await engine.findBestAction(state);
+  expect(applyActions(state, result.plan.actions).winner).toBe('white');
+});
+it('the AI chooses an immediate checkmate raid instead of handing off', async () => {
+  const state = createInitialGameState();
+  state.board.units = [createUnit('fire_1', 'white', { x: 9, y: 8 }), createUnit('fire_1', 'black', { x: 4, y: 4 })];
+  const engine = new AIEngineV2('medium'); engine.setTacticalSolver(solver); engine.setConfig({ fixedWork: 1000 });
+  const result = await engine.findBestAction(state);
+  expect(result.plan.actions[0]).toMatchObject({ type: 'MOVE', to: { x: 9, y: 9 } });
+  expect(applyActions(state, result.plan.actions).victoryReason).toBe('home-checkmate');
+});
 for (const actionsPerTurn of [4] as const) for (const phase of ['action','place'] as const) {
   it(`${actionsPerTurn}-action ${phase} rescue uses the match budget in JS and WASM`, () => {
     const s=createInitialGameState(undefined,actionsPerTurn);s.turn.phase=phase;
