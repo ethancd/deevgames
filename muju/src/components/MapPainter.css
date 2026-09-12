@@ -7,10 +7,11 @@
 .painter-header p { margin: 0; color: #a3bac9; font-size: 14px; }
 .map-painter button { cursor: pointer; }
 .map-painter button:disabled { cursor: default; }
-.painter-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.painter-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
 .painter-history, .painter-export { display: flex; gap: 8px; }
 .painter-history button, .painter-export button, .painter-copy-fallback button { border: 1px solid #39515f; border-radius: 7px; padding: 9px 13px; background: #1b2b38; color: #e8edf5; font-size: 13px; line-height: 20px; }
 .painter-history button:hover:enabled, .painter-export button:hover, .painter-copy-fallback button:hover { border-color: #8fbabf; }
+.painter-history button[aria-pressed=true] { background: #334e63; border-color: #a2d5e5; }
 .painter-total { color: #a3bac9; font-size: 12px; white-space: nowrap; }
 .painter-total strong { color: #d1eeee; font-size: 19px; font-variant-numeric: tabular-nums; }
 .painter-instructions { margin: 16px 0 12px; font-size: 12px; color: #a3bac9; text-align: center; }
@@ -25,6 +26,8 @@
 .painter-cell:hover { box-shadow: inset 0 0 0 2px #fff; z-index: 9; }
 .painter-cell:focus-visible { z-index: 9; }
 .painter-count { position: relative; z-index: 1; display: inline-flex; justify-content: center; align-items: center; min-width: 23px; height: 23px; border-radius: 5px; background: #102330ed; color: #eefafa; font-size: 12px; font-weight: 650; font-variant-numeric: tabular-nums; pointer-events: none; }
+.painter-board:not(.painter-reserves) .painter-count { opacity: 0; }
+.painter-board:not(.painter-reserves) .painter-cell:is(:hover, :focus-visible) .painter-count { opacity: 1; }
 .painter-map-actions { display: flex; align-items: center; gap: 18px; min-height: 42px; font-size: 12px; }
 .painter-map-actions button { background: none; border: none; color: #a3bac9; padding: 10px 0; }
 .painter-map-actions button:hover { color: #eefafa; }
@@ -39,6 +42,7 @@
 @media (max-width: 480px) {
   .map-painter { padding: 20px 12px 24px; }
   .painter-header { margin-bottom: 18px; }
+  .painter-history button { padding-inline: 8px; }
   .painter-instructions { font-size: 11px; }
   .painter-instructions > span { margin: 0 4px; }
   .painter-count { min-width: 18px; height: 18px; font-size: 10px; border-radius: 4px; }

@@ -26,6 +26,7 @@ export function MapPainter() {
   const [saved, setSaved] = useState(true);
   const [notice, setNotice] = useState('');
   const [showCopy, setShowCopy] = useState(false);
+  const [showResources, setShowResources] = useState(false);
   const [activeCell, setActiveCell] = useState(0);
   const cells = useRef<(HTMLButtonElement | null)[]>([]);
   const copyField = useRef<HTMLTextAreaElement>(null);
@@ -100,6 +101,7 @@ export function MapPainter() {
         <div className="painter-history">
           <button type="button" onClick={undo} disabled={!past.length} title="Undo (⌘/Ctrl Z)">↶ Undo</button>
           <button type="button" onClick={redo} disabled={!future.length} title="Redo (⌘/Ctrl Shift Z)">↷ Redo</button>
+          <button type="button" aria-pressed={showResources} onClick={() => setShowResources(value => !value)}>◆ Reserves</button>
         </div>
         <output className="painter-total" aria-label="Total crystals"><strong>{map.reduce((sum, value) => sum + value, 0)}</strong> crystals</output>
       </div>
@@ -107,7 +109,7 @@ export function MapPainter() {
       <div className="painter-board-frame">
         <div className="painter-column-labels" aria-hidden="true">{'ABCDEFGHIJ'.split('').map(letter => <span key={letter}>{letter}</span>)}</div>
         <div className="painter-row-labels" aria-hidden="true">{Array.from({ length: SIZE }, (_, y) => <span key={y}>{y + 1}</span>)}</div>
-        <div className="battle-board painter-board" role="group" aria-label="Starting crystals" aria-describedby="painter-instructions painter-keyboard">
+        <div className={`battle-board painter-board${showResources ? ' painter-reserves' : ''}`} role="group" aria-label="Starting crystals" aria-describedby="painter-instructions painter-keyboard">
           <div className="battle-grid">
             {map.map((value, index) => {
               const x = index % SIZE, y = Math.floor(index / SIZE);
@@ -135,7 +137,7 @@ export function MapPainter() {
                       event.key === 'ArrowDown' ? Math.min(SIZE - 1, y + 1) * SIZE + x : null;
                     if (destination !== null) { event.preventDefault(); cells.current[destination]?.focus(); }
                   }}>
-                  <CellReserve cell={{ position: { x, y }, resourceLayers: value }} />
+                  <CellReserve cell={{ position: { x, y }, resourceLayers: value }} visible={showResources} />
                   {home && <span className={`home-marker home-${home}`} aria-hidden="true">⌂</span>}
                   <span className="painter-count" aria-hidden="true">{value}</span>
                 </button>
