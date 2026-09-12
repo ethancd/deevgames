@@ -11,12 +11,13 @@ interface UnitInfoProps {
   cellInfo?: Cell | null;
   isPlacePhase?: boolean; isActionPhase?: boolean; resources?: number;
   onPromote?: () => void; isEnemyView?: boolean; onClose?: () => void;
-  currentPlayer?: PlayerId; showEnemyRange?: boolean; onToggleEnemyRange?: () => void;
+  currentPlayer?: PlayerId; showEnemyRange?: boolean; onToggleEnemyRange?: () => void; showNextTier?: boolean;
 }
-export function UnitInfo({ unit, previewDefinitionId, cellInfo, isPlacePhase, isActionPhase, resources = 0, onPromote, isEnemyView, onClose, currentPlayer, showEnemyRange, onToggleEnemyRange }: UnitInfoProps) {
+export function UnitInfo({ unit, previewDefinitionId, cellInfo, isPlacePhase, isActionPhase, resources = 0, onPromote, isEnemyView, onClose, currentPlayer, showEnemyRange, onToggleEnemyRange, showNextTier }: UnitInfoProps) {
   const def = unit ? getUnitDefinition(unit.definitionId) : previewDefinitionId ? getUnitDefinition(previewDefinitionId) : null;
   if (!def) return null;
   const next = getNextTierDefinition(def.id);
+  const nextStats = next ? `${next.name}: ATK ${next.attack} · DEF ${next.defense} · SPD ${next.speed} · MINE ${next.mining}` : 'Maximum tier · terminal';
   const cost = unit ? getPromotionCost(unit) : null;
   const upgrade = !!unit && canPromote(unit, { crystals: resources });
   const income = unit && cellInfo ? unitEndOfTurnTake(unit, cellInfo) : 0;
@@ -25,9 +26,10 @@ export function UnitInfo({ unit, previewDefinitionId, cellInfo, isPlacePhase, is
     <div className="unit-stats"><span>Attack <b>{def.attack}</b></span><span>Defense <b>{Math.max(0, def.defense - (unit?.damageTaken ?? 0))}{unit?.damageTaken ? `/${def.defense}` : ''}</b></span><span>Speed <b>{def.speed}</b></span><span>Mining <b>{def.mining}</b></span></div>
     <div className="unit-action-row">
       {!unit ? <p>Tap a highlighted square to place.</p>
-      : isEnemyView ? <><p>{showEnemyRange ? 'Red dots: movement followed by an attack.' : 'Inspect movement and attack reach.'}</p><button aria-pressed={showEnemyRange} onClick={onToggleEnemyRange}>{showEnemyRange ? 'Hide reach' : 'Show reach'}</button></>
+      : isEnemyView ? <><p>{showEnemyRange ? 'Red dots: up to 3 move actions + 1 attack.' : 'Inspect movement and attack reach.'}</p><button aria-pressed={showEnemyRange} onClick={onToggleEnemyRange}>{showEnemyRange ? 'Hide reach' : 'Show reach'}</button>
+        {showNextTier && <p className="unit-upgrade">{next ? `Next: ${nextStats}` : nextStats}</p>}</>
       : isPlacePhase && unit.owner === currentPlayer ? <>
-        <p>{!next ? 'Maximum tier · terminal' : unit.placedThisTurn ? 'Placed this turn · promote next turn' : unit.promotedThisPlacement ? 'Already upgraded this placement' : next ? `${next.name}: ATK ${next.attack} · DEF ${next.defense} · SPD ${next.speed} · MINE ${next.mining}` : 'Maximum tier'}</p>
+        <p>{!next ? nextStats : unit.placedThisTurn ? 'Placed this turn · promote next turn' : unit.promotedThisPlacement ? 'Already upgraded this placement' : nextStats}</p>
         {next && <button onClick={onPromote} disabled={!upgrade}>Promote · ◆ {cost} · rent {upkeepForTier(next.tier)}</button>}
       </> : isActionPhase ? <p><span className="cleave-status" role="status">Attacks {getAttackCount(unit)}/{def.tier} · {!canAttack(unit) ? 'Attacks finished' : getAttackCount(unit) > 0 ? 'Cleave ready · 1 action' : def.tier > 1 ? 'Kill to continue' : 'One attack this turn'}</span></p> : null}
       {unit && cellInfo && <p className="unit-income">Takes {income} here at turn end</p>}

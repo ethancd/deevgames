@@ -617,10 +617,10 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
 
   // Current reserve for the selected piece.
   const selectedUnitCell = useMemo(() => {
-    const unitToShow = selectedPlaceUnitData ?? selectedUnitData;
+    const unitToShow = selectedPlaceUnitData ?? selectedUnitData ?? viewedEnemyUnitData;
     if (!unitToShow) return null;
     return getCell(state.board, unitToShow.position);
-  }, [selectedPlaceUnitData, selectedUnitData, state.board]);
+  }, [selectedPlaceUnitData, selectedUnitData, viewedEnemyUnitData, state.board]);
 
   const handlePlayAgain = () => {
     if (online) { onBackToMenu(); return; }
@@ -707,7 +707,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
     : 'Select a unit. Tap a square to move, or an enemy to preview an attack.';
 
   return (
-    <main className={`game-shell${online ? ' game-shell-online' : ''}${analysis ? ` game-shell-analysis${analysis.reviewing ? ' is-reviewing' : ''}` : ''}`}>
+    <main className={`game-shell${online ? ' game-shell-online' : ''}${observing ? ' game-shell-observer' : ''}${analysis ? ` game-shell-analysis${analysis.reviewing ? ' is-reviewing' : ''}` : ''}`}>
       {state.phase === 'victory' && !analysis && <VictoryScreen winner={state.winner} reason={state.victoryReason} onPlayAgain={handlePlayAgain} playerNames={playerNames} perspectivePlayer={observing ? null : humanPlayer ?? 'white'} onViewHistory={online?.onToggleHistory} />}
       {showPassOverlay && <PassDeviceOverlay nextPlayer={state.turn.currentPlayer} onContinue={handleContinueFromPass} />}
       {state.upkeepPending && !analysis && config.controls[state.turn.currentPlayer] === 'human' &&
@@ -770,7 +770,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
           : shownUnit || selectedPurchaseDefinitionId ? <UnitInfo unit={shownUnit} previewDefinitionId={selectedPurchaseDefinitionId}
               cellInfo={selectedUnitCell}
               isPlacePhase={state.turn.phase === 'place' && interactive} isActionPhase={state.turn.phase === 'action' && interactive}
-              resources={currentPlayerState.resources} onPromote={handlePromote} isEnemyView={isEnemyView}
+              resources={currentPlayerState.resources} onPromote={handlePromote} isEnemyView={isEnemyView} showNextTier={observing}
               onClose={handleCloseUnitInfo} currentPlayer={state.turn.currentPlayer}
               showEnemyRange={showEnemyRange} onToggleEnemyRange={() => setShowEnemyRange(!showEnemyRange)} />
           : <div className="selection-hint"><strong>{observing ? 'Watching live' : isThinking ? 'Your opponent is thinking…' : state.turn.phase === 'place' ? 'Place & upgrade' : 'Your next move'}</strong><p>{phaseHint}</p>

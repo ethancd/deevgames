@@ -11,7 +11,7 @@ export function Cell({ cell, isValidMove, isValidAttack, isValidSpawn, isSelecte
   const reach = movementRangeActions !== undefined;
   const coord = `${String.fromCharCode(65 + cell.position.x)}${cell.position.y + 1}`;
   const crystalDescription = describeCrystals(cell);
-  const label = `${coord}${home ? `, ${home} home corner` : ''}${unitLabel ? `, ${unitLabel}` : ''}, ${crystalDescription}${previewLabel ? `, preview: ${previewLabel}` : ''}${reach ? `, move costs ${moveCost} actions` : ''}${isAttackFrontier ? ', enemy attack frontier: movement followed by an attack' : ''}${isValidAttack ? ', attack target' : ''}${isValidSpawn ? ', available for placement' : ''}`;
+  const label = `${coord}${home ? `, ${home} home corner` : ''}${unitLabel ? `, ${unitLabel}` : ''}, ${crystalDescription}${previewLabel ? `, preview: ${previewLabel}` : ''}${reach ? `, move costs ${moveCost} actions` : ''}${isAttackFrontier ? ', enemy attack frontier: up to 3 move actions and 1 attack' : ''}${isValidAttack ? ', attack target' : ''}${isValidSpawn ? ', available for placement' : ''}`;
   return <button type="button" tabIndex={unitLabel ? 0 : -1} aria-label={label} title={crystalDescription} aria-pressed={isSelected || isPreview}
     className={`board-cell reserve-${cell.resourceLayers} ${isSelected ? 'selected' : ''} ${isValidAttack ? 'attack-target' : ''} ${isValidSpawn ? 'spawn-target' : ''} ${isPendingMove ? 'path-cell' : ''} ${isPreview ? 'preview-cell' : ''}`}
     onClick={() => onClick(cell.position)} data-testid={`cell-${cell.position.x}-${cell.position.y}`}>
