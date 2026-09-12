@@ -348,3 +348,12 @@ button:focus-visible, a:focus-visible { outline: 3px solid #67e8f9; outline-offs
 
 .unit-wrap.preview-origin { opacity: .35; }
 .unit-wrap.preview-ghost { opacity: .75; filter: drop-shadow(0 0 3px #f5d780); }
+
+/* A separate playback board keeps the live turn and its selection intact. */
+.play-dialog:has(.turn-replay) { width: min(94vw, 680px); max-width: 680px; }
+.turn-replay { display: grid; gap: 12px; }
+.turn-replay p { margin: 0; }
+.replay-caption { min-height: 2.5em; }
+.replay-board { width: min(100%, 58dvh); margin: 0 auto; pointer-events: none; }
+.instant-replay-button { width: 100%; margin-top: 8px; }
+.replay-board .battle-board { width: 100%; }

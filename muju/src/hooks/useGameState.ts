@@ -1,3 +1,4 @@
+import { emptyRecording, recordAction, rewindRecording, type ReplayRecording } from '../game/replay';
 import { useReducer, useCallback, useMemo, useState, useEffect } from 'react';
 import type { GameState, GameAction, GameConfig, Position } from '../game/types';
 import { getActionsPerTurn } from '../game/rules';
@@ -145,8 +146,38 @@ function getInitialState(options: InitialGameOptions): GameState {
   return state;
 }
 
+interface ReplaySession { state: GameState; recording: ReplayRecording; undoLengths: number[] }
+function sessionReducer(session: ReplaySession, action: LocalAction): ReplaySession {
+  const state = gameReducerWithSave(session.state, action);
+  if (state === session.state && action.type !== 'RESTORE_STATE') {
+    return UNDOABLE_ACTIONS.has(action.type)
+      ? { ...session, undoLengths: [...session.undoLengths, session.recording.current?.frames.length ?? 0] }
+      : session;
+  }
+  let recording = session.recording, undoLengths = session.undoLengths;
+  if (action.type === 'RESET_GAME') return { state, recording: emptyRecording(), undoLengths: [] };
+  if (action.type === 'RESTORE_STATE') {
+    recording = rewindRecording(recording, undoLengths.at(-1) ?? 0);
+    undoLengths = undoLengths.slice(0, -1);
+  } else {
+    if (UNDOABLE_ACTIONS.has(action.type)) undoLengths = [...undoLengths, recording.current?.frames.length ?? 0];
+    const actual = action.type === 'APPLY_AI_ACTION' ? action.aiAction : action;
+    if (actual.type === 'MOVE_AND_ATTACK') {
+      const move = { type: 'MOVE' as const, unitId: actual.unitId, to: actual.to };
+      const moved = applyAIAction(session.state, move);
+      recording = recordAction(recording, session.state, move, moved);
+      recording = recordAction(recording, moved, { type: 'ATTACK', unitId: actual.unitId, targetPosition: actual.targetPosition }, state);
+    } else if (actual.type !== 'SELECT_UNIT' && actual.type !== 'DESELECT' && actual.type !== 'SET_UPKEEP_REVIEW') {
+      recording = recordAction(recording, session.state, actual, state);
+    }
+  }
+  if (state.turn.currentPlayer !== session.state.turn.currentPlayer || state.turn.turnNumber !== session.state.turn.turnNumber) undoLengths = [];
+  return { state, recording, undoLengths };
+}
+
 export function useGameState(options: InitialGameOptions = {}) {
-  const [state, dispatch] = useReducer(gameReducerWithSave, options, getInitialState);
+  const [session, dispatch] = useReducer(sessionReducer, options, options => ({ state: getInitialState(options), recording: emptyRecording(), undoLengths: [] }));
+  const state = session.state;
   const [undoHistory, setUndoHistory] = useState<GameState[]>([]);
 
   // Undo never crosses the income settlement or player handoff.
@@ -236,6 +267,7 @@ export function useGameState(options: InitialGameOptions = {}) {
   const canEndTurn = state.turn.phase === 'action';
 
   return {
+    lastTurnReplay: session.recording.last,
     payUpkeep: (keepUnitIds: string[]) => dispatchWithUndo({type:'PAY_UPKEEP',keepUnitIds}),
     setUpkeepReview: (player: import('../game/types').PlayerId, enabled: boolean) => dispatchWithUndo({type:'SET_UPKEEP_REVIEW',player,enabled}),
     state,

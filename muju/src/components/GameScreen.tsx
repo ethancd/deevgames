@@ -13,6 +13,7 @@ import { UnitInfo } from './UnitInfo';
 import { UnitShop } from './UnitShop';
 import { VictoryScreen } from './VictoryScreen';
 import { ElementLegend } from './ElementLegend';
+import { TurnReplay } from './TurnReplay';
 import { AIRecap } from './AIRecap';
 import { AIConsole } from './AIConsole';
 import { PassDeviceOverlay } from './PassDeviceOverlay';
@@ -66,6 +67,9 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
     selectedUnitData,
   } = game;
   const actionsPerTurn = getActionsPerTurn(state);
+  const [showReplay, setShowReplay] = useState(false);
+  const closeReplay = useCallback(() => setShowReplay(false), []);
+  useEffect(() => setShowReplay(false), [state.turn.currentPlayer, state.turn.turnNumber, state.phase]);
 
   const [selectedPurchaseId, setSelectedPurchaseId] = useState<string | null>(null);
   const [selectedPlaceUnitId, setSelectedPlaceUnitId] = useState<string | null>(null);
@@ -435,7 +439,7 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
   // Keyboard handler
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     // Don't handle if AI is thinking, overlay is shown, or it's not human's turn
-    if (!isCurrentPlayerHuman || isThinking || showPassOverlay || showMenu || showInstructions || showUnitShopInspection || showInsights || showVisualKey) return;
+    if (showReplay || !isCurrentPlayerHuman || isThinking || showPassOverlay || showMenu || showInstructions || showUnitShopInspection || showInsights || showVisualKey) return;
     const control = e.target instanceof HTMLElement ? e.target.closest('button, select, a, input, textarea') : null;
     if (control?.matches('select, input, textarea')) return;
     if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') {
@@ -589,7 +593,7 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
   }, [
     isCurrentPlayerHuman, isThinking, showPassOverlay, state, playerOwnUnits,
     selectUnit, selectedPlaceUnitId, promoteUnit, moveUnit, moveAndAttack, attackWith,
-    canUndo, undo, endPlacePhase, endActionPhase, pendingMovePath, preview, showMenu, showInstructions, showUnitShopInspection, showInsights, showVisualKey
+    showReplay, canUndo, undo, endPlacePhase, endActionPhase, pendingMovePath, preview, showMenu, showInstructions, showUnitShopInspection, showInsights, showVisualKey
   ]);
 
   // Attach keyboard listener
@@ -650,7 +654,7 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
   const opponentPlayer: PlayerId = viewerPlayer === 'white' ? 'black' : 'white';
   const opponentState = state.players[opponentPlayer];
 
-  const interactive = isCurrentPlayerHuman && !isThinking && !showPassOverlay && state.phase === 'playing' && !state.upkeepPending;
+  const interactive = !showReplay && isCurrentPlayerHuman && !isThinking && !showPassOverlay && state.phase === 'playing' && !state.upkeepPending;
   const playerNames = online ? online.names : config.mode === 'pass-play' ? { white: 'Player 1', black: 'Player 2' }
     : config.mode === 'ai-vs-ai' ? { white: 'AI 1', black: 'AI 2' }
     : { white: humanPlayer === 'white' ? 'You' : 'AI', black: humanPlayer === 'black' ? 'You' : 'AI' };
@@ -683,7 +687,7 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
     <main className={`game-shell${online ? ' game-shell-online' : ''}`}>
       {state.phase === 'victory' && <VictoryScreen winner={state.winner} reason={state.victoryReason} onPlayAgain={handlePlayAgain} playerNames={playerNames} perspectivePlayer={humanPlayer ?? 'white'} />}
       {showPassOverlay && <PassDeviceOverlay nextPlayer={state.turn.currentPlayer} onContinue={handleContinueFromPass} />}
-      {state.upkeepPending && isCurrentPlayerHuman && !showPassOverlay && <UpkeepPanel state={state} onConfirm={payUpkeep} />}
+      {state.upkeepPending && isCurrentPlayerHuman && !showPassOverlay && !showReplay && <UpkeepPanel state={state} onConfirm={payUpkeep} />}
       <InstructionsModal isOpen={showInstructions} onClose={() => setShowInstructions(false)} actionsPerTurn={actionsPerTurn} />
       <aside className="game-overview" aria-label="Match overview">
         {online?.banner}
@@ -752,6 +756,9 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
         <ActionBar actionsRemaining={state.turn.actionsRemaining} actionsPerTurn={actionsPerTurn} phase={state.turn.phase}
           onEndPlacePhase={endPlacePhase} onEndActionPhase={endActionPhase}
           isPlayerTurn={interactive} onUndo={() => { setPreview(null); undo(); }} canUndo={canUndo && interactive} />
+        {isCurrentPlayerHuman && state.phase === 'playing' && !showPassOverlay && game.lastTurnReplay?.player !== state.turn.currentPlayer &&
+          <button className="instant-replay-button" disabled={!game.lastTurnReplay || showReplay}
+            onClick={() => setShowReplay(true)}>↶ Instant replay · Opponent’s last turn</button>}
         <nav className="reference-bar" aria-label="Game references">
           <button onClick={() => setShowUnitShopInspection(true)}>Units</button>
           <button className="counter-key" aria-label="Element advantages and match stats" title="Each pair beats the next: +1 attack" onClick={() => setShowInsights(true)}>🔥⚡ → 🌿⚙ → 💧🌑 ↻ <span>+1</span>{showAIRecap ? ' •' : ''}</button>
@@ -759,6 +766,8 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
           {config.mode === 'ai-vs-ai' && <button onClick={togglePause}>{isPaused ? 'Resume' : 'Pause'}</button>}
         </nav>
       </footer>
+      {showReplay && game.lastTurnReplay && <TurnReplay replay={game.lastTurnReplay}
+        playerName={playerNames[game.lastTurnReplay.player]} onClose={closeReplay} />}
       {showVisualKey && <PlayDialog title="Read the board" onClose={() => setShowVisualKey(false)}><VisualKey /></PlayDialog>}
       {showMenu && <PlayDialog title="Game menu" onClose={() => setShowMenu(false)}>
         <p>{online ? 'This match is saved on the server. Keep this browser’s seat credential to reconnect. Shared moves are final.' : `Your match is saved at phase changes on this device. New games use Unequal routes with ${INITIAL_MAP_RESOURCES} crystals.`}</p>

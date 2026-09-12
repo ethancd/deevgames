@@ -223,3 +223,23 @@ it('undo reverses atomic combat commands and preserves independent upkeep prefer
   expect(restored.canUndo).toBe(false);
   expect(restored.history.at(-1)?.actions).toEqual([{ type: 'UNDO' }]);
 });
+
+it('persists per-action replays across reconnects, removes undone batches, and ignores preview', () => {
+  const dir=mkdtempSync(join(tmpdir(),'muju-replay-')); directories.push(dir);
+  const path=join(dir,'rooms.sqlite'); const {store,host,guest,id}=setup(path);
+  const before=store.get(id); const unit=before.state.board.units.find(u=>u.owner==='white'&&u.definitionId==='fire_1')!;
+  const batch:RoomAction[]=[{type:'MOVE',unitId:unit.id,to:{x:2,y:0}},{type:'MOVE',unitId:unit.id,to:{x:3,y:0}}];
+  store.act(id,host.credentials.token,request(1,batch,'replay-batch'));
+  store.act(id,host.credentials.token,request(2,[{type:'UNDO'}],'undo-replay'));
+  store.act(id,host.credentials.token,request(3,[...batch,{type:'END_ACTION_PHASE'}],'preview-turn'),true);
+  expect(store.get(id).lastTurnReplay).toBeNull();
+  const ended=store.act(id,host.credentials.token,request(3,[...batch,{type:'END_ACTION_PHASE'}],'commit-turn'));
+  expect(ended.lastTurnReplay?.frames.map(f=>f.action.type)).toEqual(['MOVE','MOVE']);
+  expect(ended.lastTurnReplay?.initialBoard).toEqual(before.state.board);
+  expect(ended.lastTurnReplay?.frames[0].board.units.find(u=>u.id===unit.id)?.position).toEqual({x:2,y:0});
+  expect(ended.lastTurnReplay?.frames[1].board.units.find(u=>u.id===unit.id)?.position).toEqual({x:3,y:0});
+  const reopened=new RoomStore(path);stores.push(reopened);
+  expect(reopened.get(id).lastTurnReplay).toEqual(ended.lastTurnReplay);
+  const next=reopened.act(id,guest.credentials.token,request(4,[{type:'END_ACTION_PHASE'}],'black-pass'));
+  expect(next.lastTurnReplay).toMatchObject({player:'black',frames:[]});
+});

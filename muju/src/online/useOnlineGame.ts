@@ -81,6 +81,7 @@ export function useOnlineGame(connection: RoomConnection, initial: RoomSnapshot,
     if (u?.owner === connection.player && s.turn.currentPlayer === connection.player && s.turn.phase === 'action') setSelected(id);
   }, [connection.player]);
   const game = {
+    lastTurnReplay: room.lastTurnReplay ?? null,
     state, selectUnit, deselect: () => setSelected(null),
     moveUnit: (unitId: string, to: Position) => dispatch({ type: 'MOVE', unitId, to }),
     moveAndAttack: (unitId: string, to: Position, targetPosition: Position) => dispatch([

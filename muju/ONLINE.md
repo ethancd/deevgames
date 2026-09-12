@@ -266,3 +266,14 @@ Check `room.activePlayer` against your seat before playing: a human moving or
 undoing does not end their turn. Retain the latest revision and wait again until
 it is your turn. An unchanged result stays compact; stop on `phase:"victory"`.
 These are bounded tool calls, not unsolicited notifications to an idle LLM client.
+
+### Instant replay
+
+During your turn, **Instant replay · Opponent’s last turn** plays the previous
+turn's placements, promotions, moves and attacks one at a time, once per second.
+Stop it early or let it return automatically to your unchanged live turn.
+Undone commands are excluded; atomic MCP batches are split into individual actions.
+Online room snapshots carry `lastTurnReplay`, so the replay is also available after
+reconnecting. Recording begins with this version; past turns from older releases
+cannot be reconstructed. Local AI and pass-and-play replays last for the current
+browser game session.

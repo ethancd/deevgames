@@ -1,3 +1,4 @@
+import type { TurnReplay } from '../game/replay';
 import type { AIAction } from '../ai/types';
 import type { GameState, PlayerId } from '../game/types';
 
@@ -7,6 +8,7 @@ export interface RoomSnapshot {
   revision: number;
   ready: boolean;
   canUndo?: boolean;
+  lastTurnReplay?: TurnReplay | null;
   seats: Record<PlayerId, string | null>;
   state: GameState;
   updatedAt: string;

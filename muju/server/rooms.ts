@@ -1,3 +1,4 @@
+import { emptyRecording, recordAction, rewindRecording, type ReplayRecording } from '../src/game/replay';
 import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
 import { DatabaseSync } from 'node:sqlite';
 import { setTimeout as delay } from 'node:timers/promises';
@@ -17,6 +18,8 @@ function matches(value: string, hash: string) {
 }
 interface StoredRoom extends RoomSnapshot {
   undoHistory?: GameState[];
+  replayRecording?: ReplayRecording;
+  undoReplayLengths?: number[];
   rulesVersion: string;
   inviteHash: string | null;
   tokenHashes: Partial<Record<PlayerId, string>>;
@@ -54,7 +57,7 @@ export class RoomStore {
   }
   private snapshot(room: StoredRoom): RoomSnapshot {
     return structuredClone({ id: room.id, revision: room.revision, ready: room.ready, seats: room.seats,
-      canUndo: this.canUndo(room), state: room.state, updatedAt: room.updatedAt, history: room.history });
+      lastTurnReplay: room.replayRecording?.last ?? null, canUndo: this.canUndo(room), state: room.state, updatedAt: room.updatedAt, history: room.history });
   }
   private canUndo(room: StoredRoom): boolean {
     const previous = room.undoHistory?.at(-1);
@@ -134,7 +137,9 @@ export class RoomStore {
       if (!room.ready) throw new RoomError(409, 'WAITING_FOR_OPPONENT', 'Share the invitation and wait for the other player to join.');
       if (!isLegalAction(state, action, player)) throw new RoomError(422, 'ILLEGAL_ACTION',
         `Action ${index + 1} (${action.type}) is illegal. No actions were applied. Read the current room and legal actions before retrying.`);
+      const before = state;
       state = applyAction(state, action);
+      room.replayRecording = recordAction(room.replayRecording ?? emptyRecording(), before, action, state);
     }
     return state;
   }
@@ -149,12 +154,17 @@ export class RoomStore {
         return this.snapshot(room);
       }
       if (room.revision !== request.expectedRevision) throw new RoomError(409, 'STALE_REVISION', `Room is at revision ${room.revision}. Read it again before playing.`);
+      const replayLength = room.replayRecording?.current?.frames.length ?? 0;
       const state = this.simulate(room, player, request.actions);
-      if (request.actions[0].type === 'UNDO') room.undoHistory!.pop();
+      if (request.actions[0].type === 'UNDO') {
+        room.undoHistory!.pop();
+        room.replayRecording = rewindRecording(room.replayRecording ?? emptyRecording(), room.undoReplayLengths?.pop() ?? 0);
+      }
       else if (state.phase !== 'playing' || state.turn.currentPlayer !== room.state.turn.currentPlayer ||
-        state.turn.turnNumber !== room.state.turn.turnNumber) room.undoHistory = [];
+        state.turn.turnNumber !== room.state.turn.turnNumber) { room.undoHistory = []; room.undoReplayLengths = []; }
       else if (request.actions[0].type !== 'SET_UPKEEP_REVIEW' && state !== room.state) {
         room.undoHistory = [...(room.undoHistory ?? []), room.state];
+        room.undoReplayLengths = [...(room.undoReplayLengths ?? []), replayLength];
       }
       room.state = state;
       if (preview) return this.snapshot(room);
