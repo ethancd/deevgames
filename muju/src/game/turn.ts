@@ -1,4 +1,5 @@
 import { resolveInactivityDraw } from './inactivity';
+import { getActionsPerTurn } from './rules';
 import { upkeepDue, settleUpkeep } from './upkeep';
 import type {
   GameState,
@@ -7,7 +8,6 @@ import type {
 } from './types';
 import {
   resetUnitActions,
-  MAX_ACTIONS_PER_TURN,
   getPlayerUnits,
 } from './board';
 import { checkVictory, getHomeOccupier } from './victory';
@@ -22,12 +22,12 @@ export function startTurn(state: GameState, player: PlayerId): GameState {
   if (state.phase === 'victory') return state;
   if (state.victoryRule !== 'elimination' && getHomeOccupier(state.board, player)) {
     return { ...state, phase: 'victory', winner: player, victoryReason: 'home-occupation',
-      turn: { ...state.turn, currentPlayer: player, phase: 'place', actionsRemaining: MAX_ACTIONS_PER_TURN },
+      turn: { ...state.turn, currentPlayer: player, phase: 'place', actionsRemaining: getActionsPerTurn(state) },
       selectedUnit: null, validMoves: [], validAttacks: [] };
   }
   const elimination = checkVictory(state.board);
   if(elimination.status !== 'ongoing') return {...state,phase:'victory',winner:elimination.status==='victory'?elimination.winner:null,victoryReason:'elimination'};
-  const pending: GameState = {...state,upkeepPending:true,turn:{...state.turn,currentPlayer:player,phase:'place',actionsRemaining:MAX_ACTIONS_PER_TURN},selectedUnit:null,validMoves:[],validAttacks:[]};
+  const pending: GameState = {...state,upkeepPending:true,turn:{...state.turn,currentPlayer:player,phase:'place',actionsRemaining:getActionsPerTurn(state)},selectedUnit:null,validMoves:[],validAttacks:[]};
   const due=upkeepDue(pending,player);
   if(due>state.players[player].resources || state.reviewUpkeep?.[player])return pending;
   return completeUpkeep(pending,pending.board.units.filter(u=>u.owner===player).map(u=>u.id));
@@ -42,14 +42,14 @@ export function completeUpkeep(state: GameState, keepUnitIds: string[]): GameSta
 
 function finishTurnStart(state: GameState, player: PlayerId): GameState {
   const next: GameState = { ...state, board: resetUnitActions(state.board, player),
-    turn: { ...state.turn, currentPlayer: player, phase: 'place', actionsRemaining: MAX_ACTIONS_PER_TURN },
+    turn: { ...state.turn, currentPlayer: player, phase: 'place', actionsRemaining: getActionsPerTurn(state) },
     selectedUnit: null, validMoves: [], validAttacks: [] };
   return canActInPlacePhase(next, player) ? next : startActionPhase(next);
 }
 
 export function startActionPhase(state: GameState): GameState {
   if (state.upkeepPending || state.turn.phase !== 'place') return state;
-  return { ...state, turn: { ...state.turn, phase: 'action', actionsRemaining: MAX_ACTIONS_PER_TURN } };
+  return { ...state, turn: { ...state.turn, phase: 'action', actionsRemaining: getActionsPerTurn(state) } };
 }
 
 /**

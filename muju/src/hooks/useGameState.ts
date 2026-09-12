@@ -1,5 +1,6 @@
 import { useReducer, useCallback, useMemo, useState, useEffect } from 'react';
-import type { GameState, GameAction, Position } from '../game/types';
+import type { GameState, GameAction, GameConfig, Position } from '../game/types';
+import { getActionsPerTurn } from '../game/rules';
 import type { AIAction } from '../ai/types';
 import { createInitialGameState, getUnitById } from '../game/board';
 import { getValidMoves } from '../game/movement';
@@ -81,7 +82,7 @@ export function gameReducer(state: GameState, action: LocalAction): GameState {
     }
 
     case 'RESET_GAME': {
-      return createInitialGameState();
+      return createInitialGameState(undefined, getActionsPerTurn(state));
     }
 
     case 'RESTORE_STATE': {
@@ -97,6 +98,7 @@ export function gameReducer(state: GameState, action: LocalAction): GameState {
 // Save each completed action, including AI actions and undo, so reloading resumes
 // the board and its Cleave allowance together. Selection/preview do not save.
 const SAVE_ACTIONS = new Set([
+  'RESET_GAME',
   ...UNDOABLE_ACTIONS,
   'SET_UPKEEP_REVIEW',
   'APPLY_AI_ACTION',
@@ -131,16 +133,20 @@ function gameReducerWithSave(state: GameState, action: LocalAction): GameState {
   return newState;
 }
 
-function getInitialState(): GameState {
-  const saved = loadGameState();
+type InitialGameOptions = Pick<GameConfig, 'actionsPerTurn' | 'newGame'>;
+
+function getInitialState(options: InitialGameOptions): GameState {
+  const saved = options.newGame ? null : loadGameState();
   if (saved) {
     return saved;
   }
-  return createInitialGameState();
+  const state = createInitialGameState(undefined, options.actionsPerTurn);
+  saveGameState(state);
+  return state;
 }
 
-export function useGameState() {
-  const [state, dispatch] = useReducer(gameReducerWithSave, undefined, getInitialState);
+export function useGameState(options: InitialGameOptions = {}) {
+  const [state, dispatch] = useReducer(gameReducerWithSave, options, getInitialState);
   const [undoHistory, setUndoHistory] = useState<GameState[]>([]);
 
   // Undo never crosses the income settlement or player handoff.

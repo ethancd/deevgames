@@ -1,5 +1,6 @@
 import { resolveInactivityDraw } from '../game/inactivity';
 import type { GameState } from '../game/types';
+import { getActionsPerTurn, isActionsPerTurn } from '../game/rules';
 
 // v5: passive reserves, public banks, no queues or depth. Older saves start fresh.
 export const SCHEMA_VERSION = 5;
@@ -55,7 +56,7 @@ export function loadGameState(): GameState | null {
     }
 
     // Resolve an expired unfinished clock, preserving completed results.
-    return resolveInactivityDraw(persisted.state);
+    return resolveInactivityDraw({ ...persisted.state, actionsPerTurn: getActionsPerTurn(persisted.state) });
   } catch (e) {
     console.warn('Failed to load game state:', e);
     clearGameState();
@@ -84,6 +85,7 @@ function validateGameState(state: unknown): state is GameState {
 
   // Check top-level required fields
   if (!s.phase || !s.board || !s.players || !s.turn) return false;
+  if (s.actionsPerTurn !== undefined && !isActionsPerTurn(s.actionsPerTurn)) return false;
 
   // Check board has cells and units
   const board = s.board as Record<string, unknown>;
@@ -96,6 +98,8 @@ function validateGameState(state: unknown): state is GameState {
   // Check turn structure
   const turn = s.turn as Record<string, unknown>;
   if (typeof turn.currentPlayer !== 'string' || typeof turn.phase !== 'string') return false;
+  if (!Number.isInteger(turn.actionsRemaining) || (turn.actionsRemaining as number) < 0 ||
+    (turn.actionsRemaining as number) > getActionsPerTurn(s as unknown as GameState)) return false;
 
   return true;
 }

@@ -1,5 +1,6 @@
 import type { GameState, PlayerId } from '../../src/game/types';
-import { BOARD_SIZE, INITIAL_RESOURCE_LAYERS, MAX_ACTIONS_PER_TURN } from '../../src/game/board';
+import { BOARD_SIZE, INITIAL_RESOURCE_LAYERS } from '../../src/game/board';
+import { getActionsPerTurn } from '../../src/game/rules';
 
 
 
@@ -67,7 +68,7 @@ export function checkInvariants(state: GameState, context: string): void {
     }
   }
 
-  if (state.turn.actionsRemaining < 0 || state.turn.actionsRemaining > MAX_ACTIONS_PER_TURN) {
+  if (state.turn.actionsRemaining < 0 || state.turn.actionsRemaining > getActionsPerTurn(state)) {
     throw new InvariantViolation(`${context}: actionsRemaining ${state.turn.actionsRemaining} out of range`);
   }
 }

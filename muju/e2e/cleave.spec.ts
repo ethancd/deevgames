@@ -5,7 +5,7 @@ async function start(page: Page, state: GameState) {
   await page.addInitScript(saved => { if(!localStorage.getItem('elemental-tactics-save')) localStorage.setItem('elemental-tactics-save',JSON.stringify({schemaVersion:5,timestamp:Date.now(),state:saved})); },state);
   await page.goto('./');
   await page.getByRole('button',{name:'Pass & Play'}).click();
-  await page.getByRole('button',{name:'Start Game'}).click();
+  await page.getByRole('button',{name:/Continue saved game/}).click();
 }
 function arena(tier: number) {
   const s=createInitialGameState();
@@ -31,7 +31,7 @@ test('new Tier I kills once; the attack cap survives reload and undo restores it
   await expect(page.locator('.cleave-status')).toContainText('Attacks 0/1');
   await page.getByTestId('cell-5-4').click();
   await page.getByRole('button',{name:'Confirm attack'}).click();
-  await page.reload();await page.getByRole('button',{name:'Pass & Play'}).click();await page.getByRole('button',{name:'Start Game'}).click();
+  await page.reload();await page.getByRole('button',{name:'Pass & Play'}).click();await page.getByRole('button',{name:/Continue saved game/}).click();
   await page.getByTestId('cell-5-5').click();
   await expect(page.locator('.cleave-status')).toHaveText('Attacks 1/1 · Attacks finished');
   await expect(page.getByTestId('cell-6-5')).toHaveAttribute('aria-label',/black Hi/);
@@ -42,7 +42,7 @@ test('Tier II keeps Cleave through reload, pays for its second attack, then stop
   await page.getByTestId('cell-5-5').click();
   await expect(page.locator('.cleave-status')).toHaveText('Attacks 1/2 · Cleave ready · 1 action');
   await page.screenshot({path:info.outputPath('tier-two-cleave-ready.png')});
-  await page.reload();await page.getByRole('button',{name:'Pass & Play'}).click();await page.getByRole('button',{name:'Start Game'}).click();
+  await page.reload();await page.getByRole('button',{name:'Pass & Play'}).click();await page.getByRole('button',{name:/Continue saved game/}).click();
   await attack(page,6,5);
   await page.getByTestId('cell-5-5').click();
   await expect(page.locator('.cleave-status')).toHaveText('Attacks 2/2 · Attacks finished');

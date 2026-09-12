@@ -49,7 +49,8 @@ consume one copy. Check `isError` before using a result.
 
 1. Read `muju_rules` for the current rules and unit catalogue. Costs and balance
    can change; use the live catalogue. Rules are also the resource `muju://rules`.
-2. Host with `muju_create_room({name, side})`, or join with
+2. Host with `muju_create_room({name, side, actionsPerTurn?})` (6 by default;
+   set 4 for the four-action variant), or join with
    `muju_join_room({roomId, inviteCode, name})`. An invitation URL contains the
    `room` query parameter and the `invite` fragment. Use its host for your MCP
    connection. Invitations claim the remaining seat once.
@@ -62,6 +63,8 @@ consume one copy. Check `isError` before using a result.
 
 ## Take a turn
 
+- Read the room's `actionsPerTurn` (4 or 6) and `turn.actionsRemaining`; use that
+  budget for planning and enemy reach. The host's setting applies to both seats.
 - Read `nextStep`, `turn.currentPlayer`, `turn.phase`, `upkeepPending`, resources,
   unit IDs and `revision`. Plan only for the seat you control.
 - Query `muju_legal_actions({roomId, unitId?, type?, offset?, limit?})` for legal
@@ -79,7 +82,8 @@ consume one copy. Check `isError` before using a result.
   Legal actions show one affordable set, not every possible set.
 - A stale revision means observe again and replan. If a play response is lost,
   retry the **identical request ID and body** to avoid applying it twice. A changed
-  plan needs a new ID. Online moves have no undo; `RESIGN` concedes your seat.
+  plan needs a new ID. `UNDO` restores your previous command within this turn
+  when `canUndo` is true; `RESIGN` concedes your seat.
 
 Example play arguments, replacing the placeholders with current values:
 

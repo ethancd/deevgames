@@ -6,7 +6,7 @@ for(const width of [390,834]) test(`tier-three shop and terminal promotion at ${
   const state=createInitialGameState();state.turn.phase='place';state.players.white.resources=100;
   state.board.units[0].definitionId='fire_2';state.board.units[0].placedThisTurn=false;
   await page.addInitScript(({state,schemaVersion})=>localStorage.setItem('elemental-tactics-save',JSON.stringify({schemaVersion,timestamp:Date.now(),state})),{state,schemaVersion:SCHEMA_VERSION});
-  await page.goto('./');await page.getByRole('button',{name:'Pass & Play'}).click();await page.getByRole('button',{name:'Start Game'}).click();
+  await page.goto('./');await page.getByRole('button',{name:'Pass & Play'}).click();await page.getByRole('button',{name:/Continue saved game/}).click();
   await page.getByTestId('cell-1-0').click();await page.getByRole('button',{name:/Promote/}).click();
   await expect(page.getByTestId('cell-1-0')).toHaveAttribute('aria-label',/Kagari/);
   await page.getByTestId('cell-1-0').click();

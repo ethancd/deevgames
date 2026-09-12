@@ -7,7 +7,9 @@ import type {
   GameState,
   PlayerState,
   TurnState,
+  ActionsPerTurn,
 } from './types';
+import { DEFAULT_ACTIONS_PER_TURN, isActionsPerTurn } from './rules';
 import { UNEQUAL_ROUTES_MAP } from './resourceMap';
 import { STARTING_UNITS } from './units';
 
@@ -197,7 +199,8 @@ export function getStartingPositions(player: PlayerId): Position[] {
 /**
  * Create the initial game state
  */
-export function createInitialGameState(resourceLayout: readonly number[] = UNEQUAL_ROUTES_MAP): GameState {
+export function createInitialGameState(resourceLayout: readonly number[] = UNEQUAL_ROUTES_MAP, actionsPerTurn: ActionsPerTurn = DEFAULT_ACTIONS_PER_TURN): GameState {
+  if (!isActionsPerTurn(actionsPerTurn)) throw new Error('Actions per turn must be 4 or 6');
   if (resourceLayout.length !== BOARD_SIZE * BOARD_SIZE || resourceLayout.some(n => !Number.isInteger(n) || n < 0 || n > INITIAL_RESOURCE_LAYERS)) throw new Error('Invalid starting resource layout');
   let board = createEmptyBoard();
   board.initialResourceLayers = [...resourceLayout];
@@ -233,11 +236,12 @@ export function createInitialGameState(resourceLayout: readonly number[] = UNEQU
   const turnState: TurnState = {
     currentPlayer: 'white',
     phase: 'action', // Start in action phase since nothing to do in place phase at game start
-    actionsRemaining: MAX_ACTIONS_PER_TURN,
+    actionsRemaining: actionsPerTurn,
     turnNumber: 1,
   };
 
   return {
+    actionsPerTurn,
     phase: 'playing',
     inactivityPlies: 0, progressThisTurn: false,
     board,

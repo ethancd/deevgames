@@ -54,7 +54,7 @@ const screenshots = process.env.QA_SCREENSHOTS;
       assert(saved, 'Muju must save after end-turn income');
       await page.reload();
       await page.getByRole('button', {name: 'Pass & Play Two players, one device', exact: true}).click();
-      await page.getByRole('button', {name: 'Start Game', exact: true}).click();
+      await page.getByRole('button', {name: /Continue saved game/}).click();
       assert.equal(await page.evaluate(() => localStorage.getItem('elemental-tactics-save')), saved);
       assert.equal(await page.locator('.action-budget strong').innerText(), '6 actions');
       await page.getByRole('link', {name: 'Back to Deev Games', exact: true}).click();

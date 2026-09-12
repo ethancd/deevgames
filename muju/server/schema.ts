@@ -22,7 +22,9 @@ export const actionRequestSchema = z.object({
   requestId: z.string().min(8).max(100),
   actions: z.array(actionSchema).min(1).max(32),
 }).strict();
-export const createSchema = z.object({ name: nameSchema, side: z.enum(['white', 'black']).default('white') }).strict();
+export const createSchema = z.object({ name: nameSchema, side: z.enum(['white', 'black']).default('white'),
+  actionsPerTurn: z.union([z.literal(4), z.literal(6)]).default(6),
+}).strict();
 export const joinSchema = z.object({ name: nameSchema, inviteCode: tokenSchema }).strict();
 
 export class RoomError extends Error {

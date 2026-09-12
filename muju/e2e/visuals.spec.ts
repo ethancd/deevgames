@@ -7,7 +7,7 @@ async function start(page: Page, state: GameState) {
   await page.addInitScript(saved => localStorage.setItem('elemental-tactics-save', JSON.stringify({ schemaVersion: 5, timestamp: Date.now(), state: saved })), state);
   await page.goto('./');
   await page.getByRole('button', { name: 'Pass & Play' }).click();
-  await page.getByRole('button', { name: 'Start Game' }).click();
+  await page.getByRole('button', { name: /Continue saved game/ }).click();
 }
 
 test('reserve bricks show 0–10 in equal bottom-aligned slots and toggle back to shading', async ({page}) => {

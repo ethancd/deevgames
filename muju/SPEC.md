@@ -8,7 +8,8 @@ document and the code disagree, that is a bug in one of them: see
 of known divergences. The stat tables in §7 are transcriptions of
 `src/game/units.ts`, which is the canonical stat source.
 
-**Spec version:** v2.4 (2026-09-11) — tier-1 purchases cost 3/4/5 by pair;
+**Spec version:** v2.5 (2026-09-12) — new games can select 4 shared actions per
+turn; 6 remains the default. All other rules are unchanged. Tier-1 purchases cost 3/4/5 by pair;
 all promotions cost 4 to tier 2 and 8 to tier 3. Muju has DEF 3, Tanka DEF 5,
 C4/C5/H6/H7 hold 4 crystals each, and F3/E8 hold 0 (496 total). See
 `docs/BALANCE-2026-09-11.md` for rationale and compatibility.
@@ -22,6 +23,7 @@ public tier-1 purchase and promotion climb). The v2.0/v2.1 changes are
 implemented together; v2.0 is not a separately deployed release. v2.2 (2026-09-10) doubles
 purchase and promotion prices. v2.3 revises prices, two defenses and four reserves.
 v2.4 (2026-09-11) clears F3/E8 to make both empty approaches 3×3 squares.
+v2.5 adds a four-action variant for local games and online rooms.
 
 ---
 
@@ -46,6 +48,11 @@ may be a human or an AI (`vs-ai`, `pass-play`, and `ai-vs-ai` modes).
   `src/game/resourceMap.ts`. Save schema 5 discards older unfinished games
   through the existing version-mismatch path; they start fresh. Existing schema-5
   games retain their stored map reserves and capacities.
+- **Actions per turn:** choose **6 · Standard** or **4 · Variant** at game
+  creation. Both players share the selected rule for the whole match. Local
+  saves, rematches, online rooms and AI planning retain that budget; older saves
+  and rooms without a budget use 6. **Start Game** starts a fresh game with the
+  selected settings; **Continue saved game** keeps the saved board and budget.
 - **White moves first.** The first turn begins directly in the Action phase
   (there is nothing to place or promote at game start).
 
@@ -59,17 +66,17 @@ A turn has two phases:
    turn, never on its purchase/placement turn. Both verbs cost crystals and
    **no actions**. Placed and promoted units act immediately. This phase is
    skipped automatically when no legal purchase or promotion exists.
-2. **Action phase** — spend up to **6 shared actions**
-   (`MAX_ACTIONS_PER_TURN`) on moves and attacks. Movement can repeat; attacks
+2. **Action phase** — spend up to **6 shared actions**, or **4 in the variant**
+   (`getActionsPerTurn(state)`), on moves and attacks. Movement can repeat; attacks
    obey Cleave (§4.2). The player may end early.
 
 At the end of the Action phase, resolve passive mining for the mover (§5.1),
 then update the inactivity counter and check the ten-quiet-turn draw (§9).
 Income cannot be undone: undo is confined to the current turn. There is no
-queue phase, including when all six actions have been spent.
+queue phase, including when all actions have been spent.
 
 Tapping an empty reachable square moves immediately and keeps the piece selected.
-Local undo restores the move and its action cost; shared online moves remain final.
+Undo restores the move and its action cost within the current turn, including online.
 Tapping an enemy with an own piece selected previews the shortest unblocked path
 to an adjacent square, reserving one action for a legal attack (including Cleave
 limits). A ghost marks the landing square. Confirm attack commits the movement
@@ -89,9 +96,10 @@ hiding the stacks restores the reserve shading.
 
 Enemy inspection defaults **Show reach** on whenever an enemy is opened for
 inspection (including tapping an enemy the selected piece cannot attack). It can
-be toggled off while inspecting that piece. **Show reach** retains the six-action movement preview and
-adds red dots on the perimeter of the potential attack area: up to five movement
-actions at current Speed, then one adjacent attack. The outline follows current
+be toggled off while inspecting that piece. **Show reach** uses the match's full
+action budget for movement and adds red dots on the perimeter of the potential
+attack area: up to five movement actions (three in the four-action variant)
+at current Speed, then one adjacent attack. The outline follows current
 blockers and clips to board edges. It includes occupied opposing targets but
 does not indicate a guaranteed kill, promotions, or paths opened by earlier
 attacks. It previews a fresh enemy turn, independently of spent turn flags.

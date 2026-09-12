@@ -17,7 +17,8 @@ import { AIRecap } from './AIRecap';
 import { AIConsole } from './AIConsole';
 import { PassDeviceOverlay } from './PassDeviceOverlay';
 import { InstructionsModal } from './InstructionsModal';
-import { getUnitAt, getUnitById, getCell, isOccupied, isValidPosition, MAX_ACTIONS_PER_TURN } from '../game/board';
+import { getUnitAt, getUnitById, getCell, isOccupied, isValidPosition } from '../game/board';
+import { getActionsPerTurn } from '../game/rules';
 import { getUnitDefinition, UNIT_DEFINITIONS } from '../game/units';
 import { projectedIncome } from '../game/mining';
 import { canPromote } from '../game/promotion';
@@ -39,7 +40,7 @@ interface GameScreenProps {
 }
 
 export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
-  const game = useGameState();
+  const game = useGameState(config);
   return <GameView config={config} onBackToMenu={onBackToMenu} game={game} />;
 }
 
@@ -64,6 +65,7 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
     canUndo,
     selectedUnitData,
   } = game;
+  const actionsPerTurn = getActionsPerTurn(state);
 
   const [selectedPurchaseId, setSelectedPurchaseId] = useState<string | null>(null);
   const [selectedPlaceUnitId, setSelectedPlaceUnitId] = useState<string | null>(null);
@@ -182,7 +184,7 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
     const unitDef = getUnitDefinition(unit.definitionId);
 
     const speed = unitDef.speed;
-    let totalActions = MAX_ACTIONS_PER_TURN;
+    let totalActions: number = actionsPerTurn;
 
     if (!isOwnUnit && !showEnemyRange) return [];
     if (isOwnUnit && (state.turn.phase !== 'action' || !unit.canActThisTurn)) return [];
@@ -193,14 +195,14 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
     }
 
     return getMovementRange(unit.position, speed, totalActions, state.board);
-  }, [selectedUnitData, viewedEnemyUnitData, selectedPlaceUnitData, state.turn.currentPlayer, state.turn.phase, state.turn.actionsRemaining, state.board, isCurrentPlayerHuman, showEnemyRange]);
+  }, [selectedUnitData, viewedEnemyUnitData, selectedPlaceUnitData, state.turn.currentPlayer, state.turn.phase, state.turn.actionsRemaining, state.board, isCurrentPlayerHuman, showEnemyRange, actionsPerTurn]);
 
   const attackFrontier = useMemo(() => {
     const unit = selectedUnitData ?? viewedEnemyUnitData ?? selectedPlaceUnitData;
     return showEnemyRange && unit && unit.owner !== state.turn.currentPlayer
-      ? getAttackFrontier(unit, state.board, MAX_ACTIONS_PER_TURN - 1)
+      ? getAttackFrontier(unit, state.board, actionsPerTurn - 1)
       : [];
-  }, [selectedUnitData, viewedEnemyUnitData, selectedPlaceUnitData, showEnemyRange, state.turn.currentPlayer, state.board]);
+  }, [selectedUnitData, viewedEnemyUnitData, selectedPlaceUnitData, showEnemyRange, state.turn.currentPlayer, state.board, actionsPerTurn]);
 
   const latestState = useRef(state); latestState.current = state;
   const getCurrentState = useCallback(() => latestState.current, []);
@@ -682,7 +684,7 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
       {state.phase === 'victory' && <VictoryScreen winner={state.winner} reason={state.victoryReason} onPlayAgain={handlePlayAgain} playerNames={playerNames} perspectivePlayer={humanPlayer ?? 'white'} />}
       {showPassOverlay && <PassDeviceOverlay nextPlayer={state.turn.currentPlayer} onContinue={handleContinueFromPass} />}
       {state.upkeepPending && isCurrentPlayerHuman && !showPassOverlay && <UpkeepPanel state={state} onConfirm={payUpkeep} />}
-      <InstructionsModal isOpen={showInstructions} onClose={() => setShowInstructions(false)} />
+      <InstructionsModal isOpen={showInstructions} onClose={() => setShowInstructions(false)} actionsPerTurn={actionsPerTurn} />
       <aside className="game-overview" aria-label="Match overview">
         {online?.banner}
         {(whiteAI.error || blackAI.error) && <div role="alert">
@@ -707,14 +709,14 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
           <div><strong><i className={`player-dot ${opponentPlayer}`} />{playerNames[opponentPlayer]} <b>◆ {opponentState.resources}</b></strong>
             <small>Gained {opponentState.resourcesGained}</small><small>Upkeep {upkeepDue(state,opponentPlayer)} / turn</small></div>
         </section>
-        <div className="progress-clock"><span className={(state.inactivityPlies??0)>=INACTIVITY_WARNING ? 'rent-warning' : ''}>{state.inactivityPlies??0}/{INACTIVITY_LIMIT} quiet turns</span>{state.lastUpkeep && (state.lastUpkeep.paid>0 || state.lastUpkeep.released.length>0) && <span>{playerNames[state.lastUpkeep.player]} paid {state.lastUpkeep.paid} · released {state.lastUpkeep.released.length}</span>}</div>
+        <div className="progress-clock"><span>{actionsPerTurn} actions / turn</span><span className={(state.inactivityPlies??0)>=INACTIVITY_WARNING ? 'rent-warning' : ''}>{state.inactivityPlies??0}/{INACTIVITY_LIMIT} quiet turns</span>{state.lastUpkeep && (state.lastUpkeep.paid>0 || state.lastUpkeep.released.length>0) && <span>{playerNames[state.lastUpkeep.player]} paid {state.lastUpkeep.paid} · released {state.lastUpkeep.released.length}</span>}</div>
       </aside>
       <div className={`play-area ${state.turn.phase === 'place' && interactive ? 'is-placing' : ''}`}>
         <section className="board-stage" aria-label="Battlefield">
           <Board board={state.board} selectedUnit={shownUnit?.id ?? null}
             validMoves={state.validMoves} validAttacks={preview ? [preview.position] : state.validAttacks} validSpawns={validSpawns}
             invalidSpawnPosition={spawnFeedback?.position ?? null} pendingMovePath={previewPath} movementRange={movementRange} attackFrontier={attackFrontier}
-            previewPosition={preview?.position} previewUnitPosition={previewLanding} showResources={showResources} actionsRemaining={isEnemyView ? MAX_ACTIONS_PER_TURN : state.turn.actionsRemaining}
+            previewPosition={preview?.position} previewUnitPosition={previewLanding} showResources={showResources} actionsRemaining={isEnemyView ? actionsPerTurn : state.turn.actionsRemaining}
             onCellClick={handleCellClick} onUnitClick={handleUnitClick} />
         </section>
         <div className="board-key">
@@ -747,7 +749,7 @@ export function GameView({ config, onBackToMenu, game, online }: GameScreenProps
         </details>}
 
         <div className="context-status" role="status">{spawnFeedback ? spawnFeedback.reason === 'enemy_blocking' ? 'Enemies are blocking that square.' : 'Choose a square in your controlled area.' : phaseHint}</div>
-        <ActionBar actionsRemaining={state.turn.actionsRemaining} phase={state.turn.phase}
+        <ActionBar actionsRemaining={state.turn.actionsRemaining} actionsPerTurn={actionsPerTurn} phase={state.turn.phase}
           onEndPlacePhase={endPlacePhase} onEndActionPhase={endActionPhase}
           isPlayerTurn={interactive} onUndo={() => { setPreview(null); undo(); }} canUndo={canUndo && interactive} />
         <nav className="reference-bar" aria-label="Game references">

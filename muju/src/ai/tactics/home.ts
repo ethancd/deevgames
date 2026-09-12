@@ -1,4 +1,5 @@
 import type { GameState, PlayerId } from '../../game/types';
+import { getActionsPerTurn } from '../../game/rules';
 import type { AIAction } from '../types';
 import type { TacticalSolver, TacticalResult } from '../wasm/kernel';
 import { canPossiblyRemove } from '../wasm/kernel';
@@ -47,7 +48,7 @@ export const referenceTactics: TacticalSolver = (state, targetId, maxNodes, budg
     }
     return null;
   };
-  const available = state.turn.phase === 'place' ? 6 : state.turn.actionsRemaining;
+  const available = state.turn.phase === 'place' ? getActionsPerTurn(state) : state.turn.actionsRemaining;
   for (let cost = 1; cost <= available; cost++) {
     const witness = visit(state, [], cost);
     if (witness) { budget.stats.tacticalNodes += nodes; return result('proved', witness); }

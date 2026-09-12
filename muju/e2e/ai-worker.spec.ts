@@ -7,8 +7,8 @@ async function start(page: Page, state: GameState, watch = false) {
   await page.addInitScript(saved => localStorage.setItem('elemental-tactics-save', JSON.stringify({schemaVersion:5,timestamp:Date.now(),state:saved})),state);
   await page.goto('./');
   await page.getByRole('button',{name:watch?'Watch AI Spectate AI vs AI match':'vs AI Play against the computer',exact:true}).click();
-  for (const select of await page.locator('select').all()) await select.selectOption('hard');
-  await page.getByRole('button',{name:'Start Game',exact:true}).click();
+  for (const select of await page.locator('select').filter({has:page.locator('option[value="hard"]')}).all()) await select.selectOption('hard');
+  await page.getByRole('button',{name:/Continue saved game/}).click();
 }
 test('built worker loads hashed WASM and performs a coordinated home rescue',async({page,context},info)=>{
   const fixture=tacticalFixtures().find(f=>f.name==='Metal III / two Shadow III / rotated black')!;

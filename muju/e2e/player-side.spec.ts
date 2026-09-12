@@ -93,7 +93,7 @@ test('Black preference survives the mode menu and reload while resuming the save
   await chooseAI(page);
   await page.getByRole('radio', { name: 'Black', exact: true }).check();
   await page.screenshot({ path: test.info().outputPath('black-selected-mobile.png'), fullPage: true });
-  await page.getByRole('button', { name: 'Start Game', exact: true }).click();
+  await page.getByRole('button', { name: /Continue saved game/ }).click();
   await expect(page.locator('.turn-strip')).toContainText('You · Turn 4');
   const resources = page.locator('.score-strip > div');
   await expect(resources.first()).toContainText('You ◆ 11');
@@ -103,7 +103,7 @@ test('Black preference survives the mode menu and reload while resuming the save
   await page.getByRole('button', { name: 'Choose game mode', exact: true }).click();
   await chooseAI(page);
   await expect(page.getByRole('radio', { name: 'Black', exact: true })).toBeChecked();
-  await page.getByRole('button', { name: 'Start Game', exact: true }).click();
+  await page.getByRole('button', { name: /Continue saved game/ }).click();
   await page.getByTestId('cell-8-8').click();
   await page.getByTestId('cell-6-8').click();
 
@@ -112,7 +112,7 @@ test('Black preference survives the mode menu and reload while resuming the save
   await page.reload();
   await chooseAI(page);
   await expect(page.getByRole('radio', { name: 'Black', exact: true })).toBeChecked();
-  await page.getByRole('button', { name: 'Start Game', exact: true }).click();
+  await page.getByRole('button', { name: /Continue saved game/ }).click();
   await expect(page.locator('.turn-strip')).toContainText('You · Turn 4');
   await expect(page.getByTestId('cell-6-8')).toHaveAttribute('aria-label', /black Sjor/);
   await expect(page.getByRole('button', { name: '↶ Undo', exact: true })).toBeDisabled();
@@ -131,7 +131,7 @@ for (const winner of ['black', 'white'] as const) {
     await page.goto('./');
     await chooseAI(page);
     await page.getByRole('radio', { name: 'Black', exact: true }).check();
-    await page.getByRole('button', { name: 'Start Game', exact: true }).click();
+    await page.getByRole('button', { name: /Continue saved game/ }).click();
 
     const humanWon = winner === 'black';
     await expect(page.getByRole('heading', { name: humanWon ? 'You Wins!' : 'AI Wins!', exact: true })).toBeVisible();

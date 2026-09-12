@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
-import type { GameConfig, PlayerId } from '../game/types';
+import type { GameConfig, PlayerId, ActionsPerTurn } from '../game/types';
+import { DEFAULT_ACTIONS_PER_TURN } from '../game/rules';
+import { ActionBudgetSelect } from '../components/ActionBudgetSelect';
 import { GameView } from '../components/GameScreen';
 import { createRoom, invitationUrl, joinRoom, loadConnection, normalizeServer, readRoom, saveConnection } from './client';
 import type { RoomAdmission, RoomConnection, RoomSnapshot } from './types';
@@ -12,6 +14,7 @@ export function OnlineLobby({ onBack }: { onBack: () => void }) {
   const [server, setServer] = useState(defaultServer);
   const [name, setName] = useState('Player');
   const [side, setSide] = useState<PlayerId>('white');
+  const [actionsPerTurn, setActionsPerTurn] = useState<ActionsPerTurn>(DEFAULT_ACTIONS_PER_TURN);
   const [invitation, setInvitation] = useState(() => new URLSearchParams(window.location.search).has('room') ? window.location.href : '');
   const [session, setSession] = useState<Session | null>(null);
   const [busy, setBusy] = useState(false);
@@ -39,7 +42,7 @@ export function OnlineLobby({ onBack }: { onBack: () => void }) {
     setBusy(true); setError(null);
     try {
       let url = normalizeServer(server), result: RoomAdmission;
-      if (kind === 'create') result = await createRoom(url, name, side);
+      if (kind === 'create') result = await createRoom(url, name, side, actionsPerTurn);
       else {
         const invite = new URL(invitation.trim());
         url = normalizeServer(invite.origin);
@@ -67,6 +70,7 @@ export function OnlineLobby({ onBack }: { onBack: () => void }) {
       <label>Multiplayer server<input type="url" value={server} onChange={e => setServer(e.target.value)} placeholder="https://your-muju-server.example" /></label>
       <p className="online-help">Use the address shared by the person running your game server.</p>
       <label>Your side<select value={side} onChange={e => setSide(e.target.value as PlayerId)}><option value="white">White · first turn</option><option value="black">Black · second turn</option></select></label>
+      <ActionBudgetSelect value={actionsPerTurn} onChange={setActionsPerTurn} />
       <button className="primary" disabled={busy || !name.trim()} onClick={() => void submit('create')}>Create room</button>
     </section>
     <section aria-label="Join a game"><h3>Join a game</h3>

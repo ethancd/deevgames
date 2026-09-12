@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 
-test('two independent browsers join, move, hand off and reconnect without a local save', async ({ page, browser }) => {
+for (const actionsPerTurn of [6,4]) test(`${actionsPerTurn}-action independent browsers join, move, hand off and reconnect without a local save`, async ({ page, browser }) => {
   const other = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const guest = await other.newPage();
   try {
@@ -10,6 +10,7 @@ test('two independent browsers join, move, hand off and reconnect without a loca
     await page.evaluate(() => localStorage.setItem('elemental-tactics-save', 'local-match-marker'));
     await page.getByRole('button', { name: 'Play online' }).click();
     await page.getByLabel('Your name', { exact: true }).fill('Alice');
+    await page.getByRole('combobox',{name:'Actions per turn'}).selectOption(String(actionsPerTurn));
     await page.getByRole('button', { name: 'Create room' }).click();
     await expect(page.getByRole('button', { name: 'End turn' })).toBeDisabled();
     const invite = await page.getByLabel('Invite your opponent').inputValue();
@@ -18,6 +19,8 @@ test('two independent browsers join, move, hand off and reconnect without a loca
     await guest.getByRole('button', { name: 'Join room' }).click();
     await expect(guest.getByText('Online · You are black')).toBeVisible();
     await expect(page.getByRole('button', { name: 'End turn' })).toBeEnabled();
+    await expect(page.locator('.action-budget strong')).toHaveText(`${actionsPerTurn} actions`);
+    await expect(guest.locator('.action-budget i')).toHaveCount(actionsPerTurn);
     await expect(guest.getByRole('button', { name: 'End turn' })).toBeDisabled();
     await page.getByTestId('cell-1-0').click();
     await page.getByTestId('cell-2-0').click();
@@ -33,10 +36,11 @@ test('two independent browsers join, move, hand off and reconnect without a loca
     await guest.reload();
     await expect(guest.getByText('Online · You are black')).toBeVisible();
     await expect(guest.getByTestId('cell-6-8')).toHaveAttribute('aria-label', /black Sjor/);
-    await expect(guest.getByRole('button', { name: 'Undo' })).toBeDisabled();
+    await expect(guest.getByRole('button', { name: 'Undo' })).toBeEnabled();
+    await expect(guest.locator('.action-budget strong')).toHaveText(`${actionsPerTurn-2} actions`);
     expect(await guest.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-    await guest.screenshot({ path: 'test-results/online-mobile.png', fullPage: true });
-    await page.screenshot({ path: 'test-results/online-desktop.png', fullPage: true });
+    await guest.screenshot({ path: `test-results/online-mobile-${actionsPerTurn}.png`, fullPage: true });
+    await page.screenshot({ path: `test-results/online-desktop-${actionsPerTurn}.png`, fullPage: true });
     await guest.getByRole('button', { name: 'End turn' }).click();
     await expect(page.locator('.turn-strip')).toContainText('Alice');
     await page.reload();

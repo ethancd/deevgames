@@ -6,6 +6,16 @@ import { saveGameState } from '../../src/utils/persistence';
 
 afterEach(() => { cleanup(); localStorage.clear(); });
 
+it('uses four actions for enemy reach even with a partially spent current turn', () => {
+  const state=createInitialGameState(undefined,4);state.turn.actionsRemaining=1;
+  state.board.units=[createUnit('water_1','black',{x:3,y:3}),createUnit('plant_1','white',{x:9,y:3})];
+  saveGameState(state);
+  render(<GameScreen config={{mode:'pass-play',controls:{white:'human',black:'human'},aiDifficulty:{white:'medium',black:'medium'}}} onBackToMenu={vi.fn()} />);
+  fireEvent.click(screen.getByTestId('cell-3-3'));
+  expect(screen.getByTestId('cell-7-3')).toHaveAccessibleName(/enemy attack frontier/);
+  expect(screen.getByTestId('cell-9-3')).not.toHaveAccessibleName(/enemy attack frontier/);
+});
+
 it('enemy inspection defaults reach on, permits hiding it, and resets on inspecting an unreachable enemy', () => {
   const state = createInitialGameState();
   state.turn.actionsRemaining = 2;

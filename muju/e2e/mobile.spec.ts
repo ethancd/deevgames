@@ -3,7 +3,7 @@ import {createInitialGameState,createUnit} from '../src/game/board';
 import type {GameState} from '../src/game/types';
 async function start(page:Page,state=createInitialGameState()) {
  await page.addInitScript(saved=>{if(!localStorage.getItem('elemental-tactics-save'))localStorage.setItem('elemental-tactics-save',JSON.stringify({schemaVersion:5,timestamp:Date.now(),state:saved}));},state);
- await page.goto('./');await page.getByRole('button',{name:'Pass & Play'}).click();await page.getByRole('button',{name:'Start Game'}).click();
+ await page.goto('./');await page.getByRole('button',{name:'Pass & Play'}).click();await page.getByRole('button',{name:/Continue saved game/}).click();
 }
 async function fits(page:Page) {
  const d=await page.evaluate(()=>({w:innerWidth,h:innerHeight,sw:document.documentElement.scrollWidth,sh:document.documentElement.scrollHeight}));
@@ -67,7 +67,7 @@ test('buy now, refuse promotion now, allow it next turn; haste and save persiste
  await expect(page.getByRole('button',{name:/Promote ·/})).toBeDisabled();await page.getByRole('button',{name:'Start actions →'}).click();
  await page.getByRole('button',{name:'End turn →'}).click();await page.getByText('Tap anywhere to continue').click();await page.getByRole('button',{name:'End turn →'}).click();await page.getByText('Tap anywhere to continue').click();
  await page.getByTestId('cell-0-0').click();await expect(page.getByRole('button',{name:'Promote · ◆ 4 · rent 1',exact:true})).toBeEnabled();await page.getByRole('button',{name:'Promote · ◆ 4 · rent 1',exact:true}).click();await expect(page.getByTestId('cell-0-0')).toHaveAttribute('aria-label',/Hono/);
- await page.reload();await page.getByRole('button',{name:'Pass & Play'}).click();await page.getByRole('button',{name:'Start Game'}).click();await expect(page.getByTestId('cell-0-0')).toHaveAttribute('aria-label',/Hono/);
+ await page.reload();await page.getByRole('button',{name:'Pass & Play'}).click();await page.getByRole('button',{name:/Continue saved game/}).click();await expect(page.getByTestId('cell-0-0')).toHaveAttribute('aria-label',/Hono/);
 });
 test('tutorial explains the same reserves, phase order, buying and promotion restrictions',async({page})=>{
  await start(page);await page.getByRole('button',{name:'How to play',exact:true}).click();const dialog=page.getByRole('dialog');

@@ -1,6 +1,9 @@
 import { useState } from 'react';
-import type { GameMode, GameConfig, PlayerId } from '../game/types';
+import type { GameMode, GameConfig, PlayerId, ActionsPerTurn } from '../game/types';
 import type { AIDifficulty } from '../ai/types';
+import { DEFAULT_ACTIONS_PER_TURN, getActionsPerTurn } from '../game/rules';
+import { loadGameState } from '../utils/persistence';
+import { ActionBudgetSelect } from './ActionBudgetSelect';
 
 const PREFERRED_SIDE_KEY = 'muju:preferred-player-side';
 
@@ -22,6 +25,8 @@ export function ModeSelect({ onStartGame, onOnline }: ModeSelectProps) {
   const [playerSide, setPlayerSide] = useState<PlayerId>(loadPreferredSide);
   const [playerDifficulty, setPlayerDifficulty] = useState<AIDifficulty>('medium');
   const [aiDifficulty, setAiDifficulty] = useState<AIDifficulty>('medium');
+  const [actionsPerTurn, setActionsPerTurn] = useState<ActionsPerTurn>(DEFAULT_ACTIONS_PER_TURN);
+  const [savedGame] = useState(loadGameState);
 
   const handleSideChange = (side: PlayerId) => {
     setPlayerSide(side);
@@ -32,7 +37,7 @@ export function ModeSelect({ onStartGame, onOnline }: ModeSelectProps) {
     }
   };
 
-  const handleStart = () => {
+  const handleStart = (newGame = true) => {
     if (!selectedMode) return;
 
     let config: GameConfig;
@@ -68,7 +73,7 @@ export function ModeSelect({ onStartGame, onOnline }: ModeSelectProps) {
         break;
     }
 
-    onStartGame(config);
+    onStartGame({ ...config, actionsPerTurn: newGame || !savedGame ? actionsPerTurn : getActionsPerTurn(savedGame), newGame });
   };
 
   return (
@@ -200,8 +205,9 @@ export function ModeSelect({ onStartGame, onOnline }: ModeSelectProps) {
         )}
 
         {/* Start button */}
+        {selectedMode && <ActionBudgetSelect value={actionsPerTurn} onChange={setActionsPerTurn} />}
         <button
-          onClick={handleStart}
+          onClick={() => handleStart()}
           disabled={!selectedMode}
           className={`w-full p-3 rounded-lg font-semibold transition-all ${
             selectedMode
@@ -211,6 +217,10 @@ export function ModeSelect({ onStartGame, onOnline }: ModeSelectProps) {
         >
           Start Game
         </button>
+        {savedGame && <button disabled={!selectedMode} onClick={() => handleStart(false)}
+          className="w-full p-3 rounded-lg border border-gray-600 disabled:text-gray-500">
+          Continue saved game · {getActionsPerTurn(savedGame)} actions
+        </button>}
       </div>
     </div>
   );

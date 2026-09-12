@@ -105,7 +105,7 @@ Only protocol messages go to stdout. The implementation uses the
 | Tool | Purpose |
 | --- | --- |
 | `muju_rules` | Rules, all unit definitions, coordinates and workflow |
-| `muju_create_room` | Choose a side; get a private seat token and separate invitation |
+| `muju_create_room` | Choose a side and optional `actionsPerTurn` (4 or 6; default 6); get a private seat token and separate invitation |
 | `muju_join_room` | Claim the other seat using `roomId`, `inviteCode`, and a name |
 | `muju_observe` | Compact board, units, resources, home threats, history and revision |
 | `muju_legal_actions` | Filtered/paginated moves including multi-action movement, costs and combat outcomes |
@@ -114,6 +114,11 @@ Only protocol messages go to stdout. The implementation uses the
 | `muju_wait_for_change` | Wait up to 25 seconds for the opponent to join/play |
 
 Rules are also available as the MCP resource `muju://rules`.
+
+The host selects **Actions per turn** when creating a room. This setting applies
+to both seats and stays fixed for the match. Room observations expose
+`actionsPerTurn`; the current allowance is `turn.actionsRemaining`. An agent can
+host the variant with `muju_create_room({name, side, actionsPerTurn: 4})`.
 
 Suggested agent instructions:
 
@@ -209,7 +214,8 @@ by these files.
 
 Saved rooms have a rules version; bump `RULES_VERSION` in `server/rooms.ts` when
 changing incompatible game rules. Older rooms fail with an explicit error instead
-of silently continuing under different rules.
+of silently continuing under different rules. Version 3 also accepts version-2
+rooms as standard six-action games; this variant does not invalidate those rooms.
 
 ## HTTP API and verification
 
@@ -217,7 +223,7 @@ of silently continuing under different rules.
 
 | Method and path | Body / behavior |
 | --- | --- |
-| `POST /api/muju/rooms` | `{name, side}` → admission |
+| `POST /api/muju/rooms` | `{name, side, actionsPerTurn?: 4 \| 6}` → admission (default 6) |
 | `POST /api/muju/rooms/:id/join` | `{name, inviteCode}` → admission |
 | `GET /api/muju/rooms/:id` | Public snapshot; optional Bearer token validates a saved seat |
 | `GET /api/muju/rooms/:id/changes?afterRevision=N&timeoutMs=25000` | Wait for change; compact metadata on timeout, `room` snapshot on change; optional Bearer token |

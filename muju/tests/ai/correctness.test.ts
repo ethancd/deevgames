@@ -29,7 +29,7 @@ describe('authoritative rule enforcement',()=>{
   });
   it('charges full multi-action movement cost on both paths',()=>{
     const s=fixture(), a:AIAction={type:'MOVE',unitId:'w',to:{x:7,y:2}};
-    expect(applyAction(s,a).turn.actionsRemaining).toBe(3); expect(gameReducer(s,a)).toEqual(applyAction(s,a));
+    expect(applyAction(s,a).turn.actionsRemaining).toBe(3); expect(gameReducer(gameReducer(s,a),{type:'DESELECT'})).toEqual(applyAction(s,a));
     s.turn.actionsRemaining=2; expect(applyAction(s,a)).toBe(s);
   });
   it('rejects repeat attacks and attacks without actions',()=>{

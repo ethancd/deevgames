@@ -22,7 +22,7 @@ export async function roomRequest<T>(serverUrl: string, path: string, body?: unk
   if (!response.ok) throw new OnlineError(result.error ?? 'Request failed.', result.code ?? 'REQUEST_FAILED', response.status);
   return result as T;
 }
-export const createRoom = (serverUrl: string, name: string, side: PlayerId) => roomRequest<RoomAdmission>(serverUrl, '', { name, side });
+export const createRoom = (serverUrl: string, name: string, side: PlayerId, actionsPerTurn: import('../game/types').ActionsPerTurn = 6) => roomRequest<RoomAdmission>(serverUrl, '', { name, side, actionsPerTurn });
 export const joinRoom = (serverUrl: string, roomId: string, name: string, inviteCode: string) => roomRequest<RoomAdmission>(serverUrl, `/${roomId}/join`, { name, inviteCode });
 export const readRoom = (c: RoomConnection, signal?: AbortSignal) => roomRequest<RoomSnapshot>(c.serverUrl, `/${c.roomId}`, undefined, c.token, signal);
 export const waitRoom = (c: RoomConnection, afterRevision: number, signal?: AbortSignal) =>

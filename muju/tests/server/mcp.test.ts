@@ -36,6 +36,15 @@ async function call(client: Client, name: string, args: Record<string, unknown> 
 }
 
 describe('MCP and HTTP interoperability', () => {
+  it.each([false,true])('creates and observes a four-action room through MCP (stdio=%s)', async stdio => {
+    const {url}=await setup(),client=await clientFor(url,stdio);
+    const hosted=await call(client,'muju_create_room',{name:'Variant host',actionsPerTurn:4});
+    expect(hosted.room.actionsPerTurn).toBe(4);
+    const observed=await call(client,'muju_observe',{roomId:hosted.credentials.roomId});
+    expect(observed.turn.actionsRemaining).toBe(4);
+    expect(observed.actionsPerTurn).toBe(4);
+    const rules=await call(client,'muju_rules');expect(rules.actionsPerTurn.options).toEqual([6,4]);
+  });
   it.each([false, true])('returns tiny idle results without repeated snapshot downloads (stdio=%s)', async stdio => {
     const { store, url, requests } = await setup();
     const host = store.create({ name: 'Host' });

@@ -2,13 +2,14 @@ import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
 import { DatabaseSync } from 'node:sqlite';
 import { setTimeout as delay } from 'node:timers/promises';
 import { createInitialGameState } from '../src/game/board';
+import { getActionsPerTurn, isActionsPerTurn } from '../src/game/rules';
 import { isLegalAction } from '../src/game/legality';
 import { applyAction } from '../src/ai/simulate';
 import type { GameState, PlayerId } from '../src/game/types';
 import type { ActionRequest, RoomAction, RoomAdmission, RoomChange, RoomSnapshot } from '../src/online/types';
 import { RoomError, actionRequestSchema, createSchema, joinSchema, roomIdSchema } from './schema';
 
-const RULES_VERSION = 'muju-online-2';
+const RULES_VERSION = 'muju-online-3';
 const digest = (value: string) => createHash('sha256').update(value).digest('hex');
 const secret = () => randomBytes(32).toString('hex');
 function matches(value: string, hash: string) {
@@ -41,7 +42,11 @@ export class RoomStore {
     const row = this.db.prepare('SELECT data FROM rooms WHERE id = ?').get(id);
     if (!row) throw new RoomError(404, 'ROOM_NOT_FOUND', 'Room not found. Check the invitation or room ID.');
     const room = JSON.parse(row.data as string) as StoredRoom;
-    if (room.rulesVersion !== RULES_VERSION) throw new RoomError(409, 'RULES_CHANGED', 'This room uses older rules. Create a new room.');
+    const legacy = room.rulesVersion === 'muju-online-2' && getActionsPerTurn(room.state) === 6;
+    if ((!legacy && room.rulesVersion !== RULES_VERSION) || !isActionsPerTurn(getActionsPerTurn(room.state))) {
+      throw new RoomError(409, 'RULES_CHANGED', 'This room uses older rules. Create a new room.');
+    }
+    room.state.actionsPerTurn = getActionsPerTurn(room.state);
     return room;
   }
   private save(room: StoredRoom) {
@@ -85,13 +90,13 @@ export class RoomStore {
     return room.revision === afterRevision ? { changed: false, ...metadata } : { changed: true, ...metadata, room };
   }
   create(input: unknown): RoomAdmission {
-    const { name, side } = createSchema.parse(input);
+    const { name, side, actionsPerTurn } = createSchema.parse(input);
     return this.transaction(() => {
       const count = this.db.prepare('SELECT COUNT(*) AS count FROM rooms').get()!.count as number;
       if (count >= this.maxRooms) throw new RoomError(503, 'ROOM_LIMIT', 'This host is at its room limit.');
       const id = randomBytes(16).toString('hex'), token = secret(), inviteCode = secret();
       const room: StoredRoom = { id, revision: 0, ready: false, seats: { white: null, black: null },
-        state: createInitialGameState(), canUndo: false, undoHistory: [], updatedAt: new Date().toISOString(), history: [],
+        state: createInitialGameState(undefined, actionsPerTurn), canUndo: false, undoHistory: [], updatedAt: new Date().toISOString(), history: [],
         rulesVersion: RULES_VERSION, inviteHash: digest(inviteCode), tokenHashes: { [side]: digest(token) }, receipts: [] };
       room.seats[side] = name;
       this.save(room);

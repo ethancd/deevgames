@@ -1,6 +1,7 @@
 import type { GameState, PlayerId, Position } from '../src/game/types';
 import type { RoomAction, RoomSnapshot } from '../src/online/types';
 import { getUnitAt } from '../src/game/board';
+import { getActionsPerTurn } from '../src/game/rules';
 import { getMovementRange, getMoveCost } from '../src/game/movement';
 import { calculateAttackPower, calculateDefense, getAttackCount, getValidAttacks } from '../src/game/combat';
 import { generatePlacePhaseActions } from '../src/ai/moves';
@@ -24,7 +25,7 @@ export function observe(room: RoomSnapshot) {
     roomId: room.id, revision: room.revision, ready: room.ready, seats: room.seats,
     canUndo: !!room.canUndo,
     activePlayer: room.ready && s.phase === 'playing' ? s.turn.currentPlayer : null,
-    status: s.phase, turn: s.turn, upkeepPending: !!s.upkeepPending,
+    status: s.phase, turn: s.turn, actionsPerTurn: getActionsPerTurn(s), upkeepPending: !!s.upkeepPending,
     winner: s.winner, victoryReason: s.victoryReason ?? null,
     nextStep: !room.ready ? 'Invite the opponent, then wait for them to join.' : s.phase === 'victory' ? 'Game finished.'
       : s.upkeepPending ? 'Choose PAY_UPKEEP keepUnitIds; all tier 1 units must stay. Higher tiers omitted are released.'
@@ -88,10 +89,11 @@ export function legalActions(room: RoomSnapshot, options: { unitId?: string; typ
 }
 
 export const rules = {
+  actionsPerTurn: { default: 6, options: [6, 4], setting: 'Chosen when creating a room; fixed for both players. Read actionsPerTurn in the room observation.' },
   game: 'Muju Hono Tanka', board: '10×10, White home A1, Black home J10. All game information is public.',
   turn: ['Pay tier 2/3 upkeep at turn start (1/2 crystals per unit). Tier 1 stays free; release higher tiers if needed.',
     'Place: buy tier 1 units in controlled empty squares, or promote existing units by one tier, paying the cost difference. Newly placed units cannot promote this turn.',
-    'Act: spend up to 6 shared actions. Movement is orthogonal through empty cells; cost is ceil(path length / speed). Attacks target orthogonally adjacent enemies and cost 1.',
+    'Act: spend up to the room action budget: 6 shared actions by default, or the 4-action variant. Movement is orthogonal through empty cells; cost is ceil(path length / speed). Attacks target orthogonally adjacent enemies and cost 1.',
     'End the action phase to collect finite crystals beneath each unit, then hand play to the other player.'],
   combat: 'Attack ≥ remaining defense eliminates. Otherwise damage lasts until the defender’s turn starts. A unit gets one attack; its own killing blow unlocks another, up to its tier. Moving can repeat while actions remain.',
   elements: 'Fire/Lightning beats Plant/Metal beats Water/Shadow beats Fire/Lightning. Advantage +1 attack; disadvantage −1, minimum 0.',

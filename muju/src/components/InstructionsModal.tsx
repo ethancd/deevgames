@@ -1,8 +1,10 @@
 import { useState } from 'react';
+import type { ActionsPerTurn } from '../game/types';
+import { DEFAULT_ACTIONS_PER_TURN } from '../game/rules';
 import { PlayDialog } from './PlayDialog';
 import { VisualKey } from './VisualKey';
 import { UNIT_DEFINITIONS, getUnitDefinition } from '../game/units';
-import { BOARD_SIZE, MAX_ACTIONS_PER_TURN } from '../game/board';
+import { BOARD_SIZE } from '../game/board';
 import { INITIAL_MAP_RESOURCES, UNEQUAL_ROUTES_MAP } from '../game/resourceMap';
 import { INACTIVITY_LIMIT } from '../game/inactivity';
 import { UPKEEP_BY_TIER } from '../game/upkeep';
@@ -12,13 +14,13 @@ const hono = getUnitDefinition('fire_2');
 const kagari = getUnitDefinition('fire_3');
 const miner = getUnitDefinition('plant_2');
 const reserves = [...new Set(UNEQUAL_ROUTES_MAP)].sort((a,b)=>a-b);
-const pages = [
+const getPages = (actionsPerTurn: ActionsPerTurn) => [
   {title:'Playing on a phone', content:<>
     <p>In vs AI setup, choose White or Black under Play as. White moves first; when you choose Black, the AI opens the game.</p>
     <p>Tap one of your pieces, then an empty reachable square to move immediately. Undo can reverse moves within your turn in local games. Shared online moves are final.</p>
     <p>Tap a reachable enemy to preview the shortest route to an adjacent square and the attack together. Confirm attack commits both; Cancel spends nothing. To choose your landing square, tap it to move there; the attack stays selected if it is still legal.</p>
     <p>In Place, tap a tier-1 unit in the shop, then a highlighted empty square to buy it. Tap a piece already on the board to promote it.</p>
-    <p>Tap an enemy you cannot attack to inspect it with reach already on. Hide reach toggles off its movement range and red attack frontier: up to 5 move actions plus 1 attack at its current speed. Blockers and board edges limit the frontier; dots show attack reach, not guaranteed kills. Key explains the board; Units opens the full catalogue.</p>
+    <p>Tap an enemy you cannot attack to inspect it with reach already on. Hide reach toggles off its movement range and red attack frontier: up to {actionsPerTurn - 1} move actions plus 1 attack at its current speed. Blockers and board edges limit the frontier; dots show attack reach, not guaranteed kills. Key explains the board; Units opens the full catalogue.</p>
   </>},
   {title:'Win the game', content:<>
     <p>Hold the enemy home corner until the start of your next turn, or eliminate every enemy piece. The defender gets one turn to clear an invader. An empty army loses even with crystals in the bank.</p>
@@ -28,7 +30,7 @@ const pages = [
   {title:'Two phases: Place · Act', content:<>
     <p>At turn start, resolve home occupation and elimination, pay upkeep, then heal your pieces and reset their turn flags.</p>
     <p><strong>Place:</strong> buy tier-1 pieces and promote existing pieces, in any order. Buying and promoting cost crystals, with no action cost. Skip an empty Place phase automatically.</p>
-    <p><strong>Act:</strong> spend up to {MAX_ACTIONS_PER_TURN} shared actions on movement and attacks. You can finish early.</p>
+    <p><strong>Act:</strong> spend up to {actionsPerTurn} shared actions on movement and attacks. You can finish early.</p>
     <p>At turn end, every friendly piece collects crystals from its square. Then update the quiet-turn clock and hand over to the opponent. Undo stays within the turn; collected turn-end income cannot be undone.</p>
   </>},
   {title:'Movement', content:<>
@@ -72,8 +74,9 @@ const pages = [
   </>},
 ];
 
-export function InstructionsModal({isOpen,onClose}: {isOpen:boolean;onClose:()=>void}) {
+export function InstructionsModal({isOpen,onClose,actionsPerTurn=DEFAULT_ACTIONS_PER_TURN}: {isOpen:boolean;onClose:()=>void;actionsPerTurn?:ActionsPerTurn}) {
   const [page,setPage]=useState(0);
+  const pages=getPages(actionsPerTurn);
   if(!isOpen)return null;
   return <PlayDialog title="How to play" onClose={onClose}>
     <div className="help-body"><h3>{pages[page].title}</h3><div className="tutorial-copy">{pages[page].content}</div></div>

@@ -8,7 +8,7 @@ for(const width of [390,834]) {
   const base=createInitialGameState();base.board.units[0].definitionId='fire_2';base.board.units[1].definitionId='water_3';base.players.white.resources=1;base.players.white.resourcesGained=1;base.inactivityPlies=7;
   const state=startTurn(base,'white');
   await page.addInitScript(({state,schemaVersion})=>localStorage.setItem('elemental-tactics-save',JSON.stringify({schemaVersion,timestamp:Date.now(),state})),{state,schemaVersion:SCHEMA_VERSION});
-  await page.goto('./');await page.getByRole('button',{name:'Pass & Play'}).click();await page.getByRole('button',{name:'Start Game'}).click();
+  await page.goto('./');await page.getByRole('button',{name:'Pass & Play'}).click();await page.getByRole('button',{name:/Continue saved game/}).click();
   const panel=page.getByRole('dialog',{name:'Choose upkeep'});
   await expect(panel).toBeVisible();await expect(panel).toContainText('Upkeep 3 / 1');await expect(panel.getByRole('button',{name:'Pay upkeep & continue'})).toBeDisabled();
   const free=panel.getByRole('checkbox',{name:/T1/});await expect(free).toBeChecked();await expect(free).toBeDisabled();
@@ -23,7 +23,7 @@ for(const width of [390,834]) {
   await page.setViewportSize({width,height:width===390?844:1112});
   const state=createInitialGameState(Array(100).fill(0));state.inactivityPlies=9;state.turn.phase='action';state.board.units.find(u=>u.owner==='black')!.position={x:0,y:0};
   await page.addInitScript(({state,schemaVersion})=>localStorage.setItem('elemental-tactics-save',JSON.stringify({schemaVersion,timestamp:Date.now(),state})),{state,schemaVersion:SCHEMA_VERSION});
-  await page.goto('./');await page.getByRole('button',{name:'Pass & Play'}).click();await page.getByRole('button',{name:'Start Game'}).click();
+  await page.goto('./');await page.getByRole('button',{name:'Pass & Play'}).click();await page.getByRole('button',{name:/Continue saved game/}).click();
   await page.getByRole('button',{name:'End turn →',exact:true}).click();await expect(page.getByRole('heading',{name:'Draw by inactivity'})).toBeVisible();await expect(page.getByText('10 consecutive player turns passed without collecting crystals or eliminating an enemy by attack.')).toBeVisible();
   await page.screenshot({path:info.outputPath('inactivity-draw.png')});
   const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('elemental-tactics-save')!));expect(saved.state.victoryReason).toBe('inactivity');
