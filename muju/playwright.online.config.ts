@@ -2,7 +2,7 @@ import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
   testDir: './e2e',
-  testMatch: ['online.spec.ts', 'pass-play.spec.ts', 'player-side.spec.ts', 'action-budget.spec.ts', 'replay.spec.ts', 'upkeep.spec.ts', 'home-checkmate.spec.ts'],
+  testMatch: ['online.spec.ts', 'pass-play.spec.ts', 'player-side.spec.ts', 'action-budget.spec.ts', 'replay.spec.ts', 'upkeep.spec.ts', 'home-checkmate.spec.ts', 'painter.spec.ts'],
   workers: 2,
   use: {
     baseURL: 'http://127.0.0.1:8928/muju/',

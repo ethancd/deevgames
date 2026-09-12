@@ -76,6 +76,7 @@ export function createApp(store: RoomStore, options: { publicUrl: string; distPa
   if (options.distPath) {
     app.get('/', (_req, res) => res.redirect('/muju/'));
     app.get('/SKILL.md', (_req, res) => res.type('text/markdown').sendFile(resolve(options.distPath!, 'skills/muju-hono-tanka/SKILL.md')));
+    app.get('/muju/painter', (_req, res) => res.set('X-Robots-Tag', 'noindex, nofollow').sendFile(resolve(options.distPath!, 'index.html')));
     app.use('/muju', express.static(options.distPath));
   }
   const onError: ErrorRequestHandler = (error, _req, res, _next) => {

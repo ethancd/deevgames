@@ -3,6 +3,7 @@ import { GameScreen } from './components/GameScreen';
 import { ModeSelect } from './components/ModeSelect';
 import type { GameConfig } from './game/types';
 import { OnlineLobby } from './online/OnlineLobby';
+import { MapPainter } from './components/MapPainter';
 
 function App() {
   const [gameConfig, setGameConfig] = useState<GameConfig | null>(null);
@@ -16,6 +17,7 @@ function App() {
     setGameConfig(null);
   };
 
+  if (/^\/muju\/painter\/?$/.test(window.location.pathname)) return <MapPainter />;
   if (online) return <OnlineLobby onBack={() => { window.history.replaceState(null, '', window.location.pathname); setOnline(false); }} />;
   if (!gameConfig) {
     return <ModeSelect onStartGame={handleStartGame} onOnline={() => setOnline(true)} />;
