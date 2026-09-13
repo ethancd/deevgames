@@ -1,6 +1,6 @@
 # Mythgarden release testing — 13 September 2026
 
-Release candidate for the fresh [Render preview](https://deevgames-mythgarden-preview.onrender.com/). This report records measured coverage; it is not a claim that every possible game path is bug-free.
+Release application commit `6143366ffa429c2066f0740acc0902550aa41bdd` for the fresh [Render preview](https://deevgames-mythgarden-preview.onrender.com/). This report records measured coverage; it is not a claim that every possible game path is bug-free.
 
 ## Repeatable release gate
 
@@ -32,10 +32,24 @@ Local production Gunicorn + PostgreSQL, Chromium via the in-app browser:
 - Name edit followed immediately by closing settings survives reload.
 - Rapid gather double-click produces one item and one 30-minute advance.
 - A second tab with old progress refreshes after HTTP 409 without another item; its next deliberate action succeeds.
-- Deliberately stopping the local server produces a visible connection error and clears the busy state.
-- Phone viewport 390×844: document width equals viewport width; the settings modal fits at x=10 through x=380 and scrolls to its controls.
+- Deliberately stopping the local server produces a visible connection error and clears the busy state. Restart/reload preserves the exact 8:30am save, and the next gather succeeds at 9:00am.
+- Phone viewports 390×844 and 320×740: document width equals viewport width, settings fit within 10-pixel side margins, and controls remain reachable by scrolling.
+- Completed Monday through Sunday via browser controls (desktop Monday–Wednesday, phone width Thursday–Sunday), with daily reloads, crops, shopping, talking, and drag-to-gift. Next Monday retained Release Farmer and a 10,640 high score, emptied weekly inventory, and applied all four queued settings (225%). Switching building hours off before any next-week action immediately changed the active setting and multiplier (200%).
+- The phone week exposed a title intercepting the farmhouse click. The final CSS makes this decorative heading ignore pointer events; the same click and the remaining week then passed. Desktop clock bounds no longer overlap settings.
 
-Hosted full-week and deployment evidence is recorded below after the candidate is deployed.
+Render deploy `dep-daj44hh594qs73ap7uu0` went Live at 06:28:18 UTC on September 13. Migration 0080 completed; bootstrap explicitly preserved existing saves/content. The pre-existing Preview Farmer save still had Monday 7:30am, Darklight Forest, one Huckleberry, and the same name after reload.
+
+[CI run 34742154882](https://github.com/ethancd/deevgames/actions/runs/34742154882) passed all 29 tests in 782.8 seconds, production assets, migration drift, actual Docker build, and repeated bootstrap. This ran on `0a90c8b`; subsequent changes only adjust CSS. The final one-line title fix deliberately skips repeating the backend matrix and is covered by the production build, Render's actual image build, and the phone browser playthrough.
+
+## Hosted week result
+
+**Passed on the deployed `6143366` build.** A fresh Chrome player completed 181 gameplay actions from Monday 6:00am to the next Monday 6:00am on the public HTTPS Render URL. The route used actual clicks and gift dragging, with no debug endpoints, direct database edits, or scripted HTTP shortcuts. Monday–Wednesday ran at desktop width; Thursday–Sunday ran at 390×844. Every day was followed by a page reload.
+
+- Completed gathering, selling, buying seeds, planting, watering, harvesting, talking, giving a gift, traveling, and seven sleeps.
+- Monday's fixed shop visibly stocked Parsnip Seed and Lovely Postcard. The broader catalog/loved-gift invariant is covered across every day and settings combination by the HTTP matrix.
+- Week Tester persisted with **high score 4,880**, a weekly result of 244 fleurs × two hearts × ten, a new speed boost, and a clean Monday start. Inventory and wallet reset to zero.
+- No in-game errors were observed in the route. Browser warning/error logs were empty, and the final page had no broken loaded images. Final `/healthz` returned HTTP 200 with `{"status":"ok"}`.
+- [CI run 34742407064](https://github.com/ethancd/deevgames/actions/runs/34742407064) also passed the combined 29-test gate and actual container checks on `53ba025`, which includes the desktop clock fix. Only the one-line decorative-heading CSS change follows that tested commit; its production build and actual Render deployment passed, followed by the hosted phone week.
 
 ## Limits and remaining gates
 

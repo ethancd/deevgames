@@ -2,7 +2,9 @@
 
 Examined September 12, 2026. Source baseline: `1ac8026`, plus the Mythgarden changes described here. The first implementation and fresh Render preview milestones are complete. The live preview is https://deevgames-mythgarden-preview.onrender.com/.
 
-**Preview preparation update:** the deployment package now includes Django 5.2.17, Python 3.12, Node 24, PostgreSQL 16, one-time world bootstrapping, production static assets, secure Render host configuration, and `/healthz`. All 18 release tests pass on SQLite and PostgreSQL, including both full-week routes. A production Gunicorn browser check verifies immediate changes before an action and deferred changes afterward. The preview and its fresh PostgreSQL database are live alongside Muju in Ohio at a quoted $13.30/month. A full redeploy preserved the browser save. See [the deployment runbook](RENDER_PREVIEW.md).
+**Initial preview milestone (September 12):** the deployment package now includes Django 5.2.17, Python 3.12, Node 24, PostgreSQL 16, one-time world bootstrapping, production static assets, secure Render host configuration, and `/healthz`. All 18 release tests pass on SQLite and PostgreSQL, including both full-week routes. A production Gunicorn browser check verifies immediate changes before an action and deferred changes afterward. The preview and its fresh PostgreSQL database are live alongside Muju in Ohio at a quoted $13.30/month. A full redeploy preserved the browser save. See [the deployment runbook](RENDER_PREVIEW.md).
+
+**Release testing update (September 13):** the maintained release suite now covers 29 tests and 32 complete weeks across all 16 settings combinations (5,824 actions). The first cloud run passed, including the actual Docker image. A complete local browser week preserved the farmer and high score, applied queued settings at rollover, and accepted immediate changes before the next action. Reproduced retry, midnight-event, sparse-gathering, profile-save, reset, and phone-layout defects are repaired. See [the current release report](RELEASE_TESTING.md) for hosted verification and remaining limits. The measurements below describe the original audit unless updated explicitly.
 
 **Decisions:** launch a fresh world; use a separate Mythgarden service alongside Muju; settings apply immediately before the first successful gameplay action of a week, then defer to the next week. Existing Fly resources and player data have not been changed.
 
@@ -79,15 +81,12 @@ Render supports database migrations through a pre-deploy command and supports se
 
 **The remaining playability work**
 
-There are additional risks visible in the code that were not reproduced as failures in the passing routes:
+The September 13 release pass repaired the original retry, GET-reset, malformed-profile, midnight-event, and sparse-gathering risks, with regression witnesses. All 221 shipped dialogue conditions are checked. Remaining work includes:
 
-- Action read, validation, mutation, rollover, and response construction now share a transaction and per-session lock with settings changes. Idempotency identifiers and disabling repeat submission in the UI remain needed to prevent a repeated valid action from being deliberately executed twice after a lost response.
-- `/kys` resets a run through GET, and malformed profile JSON lacks consistent validation (action JSON is now validated). Move reset to a CSRF-protected POST and verify that wrong/stale requests leave state intact.
-- Scheduled-event handling combines yesterday and today and orders by time alone. Today's lower bound also uses yesterday's last-triggered minute before the midnight reset. Exercise actions that cross midnight by nonzero amounts, interrupted sleep, and the rainbow bonus period; change the queue to explicit chronological intervals if those witnesses fail.
-- Gathering chooses an item type before checking whether its selected rarity has any items. An empty rarity pool can reach `random.choice([])`. Add a forced sparse-pool test and safe fallback. Also consolidate Python and database randomness so a reported failure can be replayed from a seed.
-- All-character dialogue uses `.get()` for exactly one `(speaker, trigger, affinity_tier)` row. Missing or duplicate future content can produce a server error. Add content validation and guaranteed fallback before adding dialogue variants.
-- Score/knowledge/mythegg paths, high boost/luck, abandoned session growth, and long message logs need separate coverage and profiling. The browser's achievement total is hard-coded to 114.
-- Anonymous saves need a documented retention policy: Django's default session lifetime is finite, and clearing cookies loses access. Decide whether a lightweight recovery code is desirable before claiming durable cross-device progress.
+- Add deterministic dialogue fallback/selection before introducing multiple conditional lines for one trigger.
+- Exercise every achievement and rare mythegg power/acquisition combination, higher boosts/luck, long message logs, and abandoned-session growth. The achievement total remains hard-coded to 114.
+- Test on physical touch devices and Safari/Firefox, run a concurrent-player load test, and restore a Render backup into a separate database.
+- Define anonymous-save retention and recovery. Clearing browser cookies loses access; cross-device saves need a separate design.
 
 For a release candidate, use this sequence:
 
@@ -110,11 +109,11 @@ These are engineering estimates, not measured delivery commitments. Later steps 
 | --- | --- | --- |
 | 1. Establish the game again | This audit, repaired settings, reproduced/fixed restock blocker, repeatable builds, and passing basic week tests on SQLite and PostgreSQL. **Implemented locally in this milestone.** | Completed first pass |
 | 2. Fresh Render preview | **Complete.** Supported runtime, bootstrap, health endpoint, fresh web/database services, HTTPS browser checks, and save preservation across a full redeploy. | Completed |
-| 3. Make a week reliable | Repair/replace obsolete tests, add the gameplay/browser/adverse-request matrix, fix discovered defects, and promote a verified release. | 3–6 focused engineering days, depending on failures |
+| 3. Make a week reliable | **Preview release pass implemented.** 29 tests, 32 full weeks, browser playthroughs, adverse requests, and discovered defects repaired. Legacy-suite repair and broad-launch checks remain documented. | Release pass complete; broader certification remains |
 | 4. Upgrade farmer portraits | A consistent art direction, an approved small sample, replacement set, optimized assets, and working selection/persistence on desktop and phone. | 1–3 days plus art review |
 | 5. Give the cast deeper dialogue | Conditional dialogue selection, content validation/fallbacks, two-character pilot, then rollout to all 17 characters. | 3–6 engineering days plus writing/review |
 
-The next leap is the broader week-reliability matrix. The Render preview is live and available for playtesting; it is not yet a fully certified release. See the runbook for resource IDs, costs, deployed commit, and observed checks.
+The preview now has a repeatable week-reliability gate. The next creative leap is farmer portraits, followed by the conditional-dialogue pilot; physical-device coverage and backup restoration remain gates for a wider public launch. See the current release report for evidence and the runbook for resources and rollback.
 
 **Portraits and dialogue**
 

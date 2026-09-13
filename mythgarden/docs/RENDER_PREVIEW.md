@@ -46,18 +46,23 @@ The legacy test suite remains broken, as detailed in [the roadmap](REHOST_ROADMA
 - Web service: `srv-daj2lv0ae00c738d49vg`.
 - Database: `dpg-daj2lm0ae00c738d3ceg-a`.
 - Blueprint: `exs-daj2lep594qs73akcksg`.
-- Deployed application commit: `296b8e2dca45440653b9dc7703ce9d76e2a9be66` (runtime/game code from `65862d1`; follow-up only changed Ohio region and documentation).
+- Current deployed application commit: `6143366ffa429c2066f0740acc0902550aa41bdd`, deploy `dep-daj44hh594qs73ap7uu0`. Migration 0080 completed and existing saves were preserved. A fresh hosted browser week passed with 181 actions. See [the release report](RELEASE_TESTING.md).
+- Previous deployment: `296b8e2dca45440653b9dc7703ce9d76e2a9be66` (initial fresh preview). The remaining first-deploy notes below are historical.
 - [Cloud release checks](https://github.com/ethancd/deevgames/actions/runs/34738507682) passed: PostgreSQL release suite, production bundle/static collection, schema drift check, actual Docker build, and repeated bootstrap inside the image.
 - First Render deploy completed in 1m19s, with log confirmation that a fresh world was initialized. The live `/healthz` returns HTTP 200.
 - Live browser: all three settings immediately switch active values and multiplier before play; after travel a movement change stays pending for next week. Name editing, travel, gathering, reload, and loaded images work. The test save is Preview Farmer, Monday 7:30am, Darklight Forest, one Huckleberry, 0 fleurs.
 - Both new resources are grouped with Muju under My project → Production. Muju remains deployed.
 - Full redeploy/save-persistence verification passed on `dep-daj2r4p5efls73fct0eg`: the replacement container is Live, migrations report no pending work, and bootstrap reports existing saves/content preserved. Reload returned the exact same farmer, clock, location, and inventory.
 
-## Next release work
+## Release testing and remaining work
 
-The fresh preview milestone is complete. Before a wider release, finish the full 16-mode/multiple-seed gameplay matrix, complete real browser weeks on desktop and touch devices, test retries and concurrent tabs, and prove database backup restoration. The current full-week routes run through Django's real HTTP endpoint in tests; they are not full-week browser recordings.
+The September 13 release pass expands the gate to 29 tests and all 16 settings combinations at two random seeds: 32 weeks, 224 days, and 5,824 actions. It repairs the reproduced request-retry, midnight-event, sparse-gathering, profile, reset, and phone-layout defects. The favicon and lost name edit listed in the first smoke test are fixed. See [the current release report](RELEASE_TESTING.md) for browser evidence, CI versions, and remaining launch gates.
 
-Minor follow-ups observed during browser smoke testing: `/favicon.ico` is missing; changing away from the Hero tab before the existing two-second name debounce finishes can drop that pending name edit. Waiting for the save or editing the always-visible name works. These do not block the preview's week progression, but belong in the next interface pass.
+The 18-test results above describe the initial deployment milestone. Physical touch devices, Safari/Firefox, every achievement/mythegg path, a multiuser load test, and backup restoration are not covered by that initial gate or implied by the expanded one.
+
+## Rollback
+
+The prior running commit was `296b8e2`. In Render, use Manual Deploy → Deploy a specific commit if application rollback is necessary. Keep the database; do not reinitialize the world. Migration 0080 only adds a nonunique version column, so the older application can ignore it, but rolling back also removes duplicate-request protection. Re-test a saved player after any rollback. Database restore has not yet been certified.
 
 ## Local commands
 
