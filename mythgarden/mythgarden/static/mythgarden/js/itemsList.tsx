@@ -48,7 +48,7 @@ interface ItemsListProps {
   placements?: Record<number, number>
   touchUi?: boolean
   selectedItemId?: number | null
-  destination?: 'soil' | 'storage'
+  destination?: 'soil' | 'storage' | 'bag'
   destinationLabel?: string
   destinationAvailable?: boolean
   items: ItemData[]

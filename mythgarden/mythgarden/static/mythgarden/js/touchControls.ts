@@ -2,6 +2,30 @@ import type { ActionData } from './action'
 
 export const TOUCH_UI_STORAGE_KEY = 'mythgarden.touch-ui.v1'
 export const SLOT_STORAGE_KEY = 'mythgarden.destination-slots.v1'
+export const BAG_SLOT_STORAGE_KEY = 'mythgarden.bag-slots.v1'
+
+type SlottedItem = {id: number, placementId?: number}
+
+export function readBagSlots(storage?: Pick<Storage, 'getItem'>): Record<number, number> {
+  try {
+    const stored = JSON.parse(storage?.getItem(BAG_SLOT_STORAGE_KEY) ?? '{}')
+    return stored && typeof stored === 'object' && !Array.isArray(stored) ? stored : {}
+  } catch { return {} }
+}
+
+// Pin every current item, including newly acquired items. Removing one leaves
+// a hole; new items use free slots without shifting the remaining inventory.
+export function rememberBagSlots(items: SlottedItem[], placements: Record<number, number>): Record<number, number> {
+  const next: Record<number, number> = {}
+  arrangeSlots(items, placements).forEach((item, slot) => { if (item) next[item.placementId ?? item.id] = slot })
+  return next
+}
+
+export function moveBagItem(items: SlottedItem[], placements: Record<number, number>, itemId: number, slot: number): Record<number, number> | null {
+  const item = items.find(item => item.id === itemId)
+  if (!item || !Number.isInteger(slot) || slot < 0 || slot >= 6 || arrangeSlots(items, placements)[slot] != null) return null
+  return {...rememberBagSlots(items, placements), [item.placementId ?? item.id]: slot}
+}
 
 export function arrangeSlots<T extends {id: number, placementId?: number}>(items: T[], placements: Record<number, number> = {}): Array<T | null> {
   const slots: Array<T | null> = Array(6).fill(null)

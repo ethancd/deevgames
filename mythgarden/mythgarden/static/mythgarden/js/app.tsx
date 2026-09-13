@@ -33,7 +33,7 @@ import Gallery from "./gallery";
 import SettingsMenu from "./settingsMenu";
 import DeployInfo from "./deployInfo";
 import {postAction} from "./ajax";
-import {actionCost, destinationAction, readTouchPreference, TOUCH_UI_STORAGE_KEY, SLOT_STORAGE_KEY, arrangeSlots} from './touchControls'
+import {actionCost, destinationAction, readTouchPreference, TOUCH_UI_STORAGE_KEY, SLOT_STORAGE_KEY, arrangeSlots, BAG_SLOT_STORAGE_KEY, readBagSlots, rememberBagSlots, moveBagItem} from './touchControls'
 import TouchPanel from './touchPanel'
 import SceneVillagers from './sceneVillagers'
 
@@ -69,6 +69,7 @@ class App extends React.Component<Partial<AppProps>, AppState> {
       phoneViewport: window.matchMedia('(max-width: 760px) and (orientation: portrait)').matches,
       selectedItemId: null,
       slotPlacements: this.loadSlotPlacements(),
+      bagPlacements: rememberBagSlots(props.inventory ?? [], this.loadBagPlacements()),
       touchPanel: null,
       detailVillager: null,
       dismissedError: null
@@ -87,11 +88,13 @@ class App extends React.Component<Partial<AppProps>, AppState> {
     this.scrollToMessageBottom()
 
     if (!isDeepEqual(combinedProps, this.state.combinedProps)) {
-      this.setState({ combinedProps, selectedItemId: combinedProps.stateVersion !== this.state.combinedProps.stateVersion ? null : this.state.selectedItemId })
+      this.setState({ combinedProps, bagPlacements: rememberBagSlots(combinedProps.inventory, this.state.bagPlacements), selectedItemId: combinedProps.stateVersion !== this.state.combinedProps.stateVersion ? null : this.state.selectedItemId })
     }
+    if (!isDeepEqual(prevState.bagPlacements, this.state.bagPlacements)) this.persistBagPlacements()
   }
 
   componentDidMount (): void {
+    this.persistBagPlacements()
     this.scrollToMessageBottom()
     this.updateViewport()
     window.addEventListener('resize', this.updateViewport)
@@ -107,6 +110,14 @@ class App extends React.Component<Partial<AppProps>, AppState> {
 
   loadTouchPreference(): boolean {
     try { return readTouchPreference(window.localStorage) } catch { return true }
+  }
+
+  loadBagPlacements(): Record<number, number> {
+    try { return readBagSlots(window.localStorage) } catch { return {} }
+  }
+
+  persistBagPlacements(): void {
+    try { window.localStorage.setItem(BAG_SLOT_STORAGE_KEY, JSON.stringify(this.state.bagPlacements)) } catch { /* Rearranging still works in this tab. */ }
   }
 
   loadSlotPlacements(): Record<number, Record<number, number>> {
@@ -266,6 +277,20 @@ class App extends React.Component<Partial<AppProps>, AppState> {
         return
       }
       const selectedItemId = this.state.selectedItemId
+      const bagSlot = clicked.closest('#inventory [data-destination="bag"]') as HTMLElement | null
+      if (bagSlot) {
+        if (selectedItemId == null) {
+          this.setState({ephemerealMessage: 'Select an item in your bag, then tap an empty bag slot to move it.'})
+        } else {
+          const slot = Number(bagSlot.dataset.slotIndex)
+          const bagPlacements = moveBagItem(this.state.combinedProps.inventory, this.state.bagPlacements, selectedItemId, slot)
+          if (bagPlacements) {
+            this.clearActiveUX()
+            this.setState({bagPlacements, selectedItemId: null, ephemerealMessage: `Moved item to bag slot ${slot + 1}.`})
+          }
+        }
+        return
+      }
       if (selectedItemId != null) {
         const villager = clicked.closest('.villager') as HTMLElement | null
         const destination = clicked.closest('[data-destination]') as HTMLElement | null
@@ -481,6 +506,10 @@ class App extends React.Component<Partial<AppProps>, AppState> {
                 giftable={true}
                 touchUi={touchUi}
                 selectedItemId={selectedItemId}
+                placements={touchUi ? this.state.bagPlacements : undefined}
+                destination={touchUi ? 'bag' : undefined}
+                destinationAvailable={touchUi && selectedItem != null}
+                destinationLabel={selectedItem ? 'Move here' : 'Empty'}
               ></ItemsList>
               <GiftPreview></GiftPreview>
               <Wallet value={wallet}></Wallet>
@@ -581,6 +610,7 @@ interface AppState {
   phoneViewport: boolean
   selectedItemId: number | null
   slotPlacements: Record<number, Record<number, number>>
+  bagPlacements: Record<number, number>
   touchPanel: 'profile' | 'people' | 'journal' | 'villager' | null
   detailVillager: VillagerData | null
   dismissedError: string | null

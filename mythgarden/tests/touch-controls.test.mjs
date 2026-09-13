@@ -5,7 +5,7 @@ import ts from 'typescript'
 
 const source = readFileSync(new URL('../mythgarden/static/mythgarden/js/touchControls.ts', import.meta.url), 'utf8')
 const compiled = ts.transpileModule(source, {compilerOptions: {module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2020}}).outputText
-const {destinationAction, actionCost, readTouchPreference, arrangeSlots} = await import(`data:text/javascript;base64,${Buffer.from(compiled).toString('base64')}`)
+const {destinationAction, actionCost, readTouchPreference, arrangeSlots, readBagSlots, rememberBagSlots, moveBagItem} = await import(`data:text/javascript;base64,${Buffer.from(compiled).toString('base64')}`)
 const action = (uniqueDigest, extra = {}) => ({uniqueDigest, ...extra})
 
 test('a selected item can only use its own server-offered destination', () => {
@@ -103,4 +103,39 @@ test('crowded landscapes fall back to People instead of covering a control', () 
   const positions = placeScenePeople(308,356,[],8,true,'FARM')
   assert.equal(positions.length,2)
   assert.deepEqual(placeScenePeople(308,356,[],8,true,'FARM'),positions, 'positions must not randomly shuffle')
+})
+
+
+test('moving a bag item pins its neighbors and survives reload and server reordering', () => {
+  const items = [{id:1},{id:2},{id:3}]
+  const moved = moveBagItem(items, {}, 2, 5)
+  assert.deepEqual(moved, {1:0,2:5,3:2})
+  const reloaded = readBagSlots({getItem: () => JSON.stringify(moved)})
+  const slots = arrangeSlots([...items].reverse(), reloaded)
+  assert.deepEqual(slots.map(item=>item?.id ?? null), [1,null,3,null,null,2])
+})
+
+test('using an item leaves a bag hole and a new item fills it without shifting others', () => {
+  const pinned = rememberBagSlots([{id:1},{id:2},{id:3}], {})
+  const afterUse = rememberBagSlots([{id:3},{id:1}], pinned)
+  assert.deepEqual(afterUse, {1:0,3:2})
+  const acquired = rememberBagSlots([{id:4},{id:3},{id:1}], afterUse)
+  assert.deepEqual(acquired, {1:0,3:2,4:1})
+  assert.deepEqual(rememberBagSlots([], acquired), {}, 'new weeks discard stale item positions')
+})
+
+test('bag moves cannot overwrite occupied slots or move missing items', () => {
+  const items = [{id:12,placementId:7},{id:13}]
+  const pinned = rememberBagSlots(items, {})
+  for (const slot of [0,1,-1,6,1.5,NaN]) assert.equal(moveBagItem(items,pinned,12,slot),null)
+  assert.equal(moveBagItem(items,pinned,99,4),null)
+  assert.equal(moveBagItem(items,pinned,12,4)[7],4, 'use stable placement identity')
+  assert.deepEqual(items,[{id:12,placementId:7},{id:13}], 'cosmetic moves do not change inventory')
+})
+
+test('malformed or blocked bag storage is repaired without losing items', () => {
+  for (const raw of ['nope','null','[]','true']) assert.deepEqual(readBagSlots({getItem:()=>raw}),{})
+  assert.deepEqual(readBagSlots({getItem:()=>{throw new Error('blocked')}}),{})
+  const pinned = rememberBagSlots([{id:1},{id:2},{id:3}],readBagSlots({getItem:()=>'{"1":4,"2":4,"3":99,"77":1}'}))
+  assert.deepEqual(pinned,{1:4,2:0,3:1})
 })
