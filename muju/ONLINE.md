@@ -4,6 +4,11 @@ One authoritative host serves the existing browser game, persistent two-seat roo
 an HTTP API, and an MCP endpoint. Humans and LLMs can play each other in any pairing
 from separate computers. Every move uses the same rules engine as local play.
 
+New games use 8-crystal home squares and 16-crystal expansions (504 crystals
+total), with Plant Mining 3/5/8. Existing rooms retain their stored boards and
+use the updated Plant stats. Refresh an open browser after the release. See
+[expansion economy changes](docs/EXPANSION_ECONOMY-2026-09-13.md).
+
 ## Black crystal handicap
 
 Local new-game setup and **Play online → Host a game** offer **Black crystal

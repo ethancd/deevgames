@@ -8,8 +8,10 @@ document and the code disagree, that is a bug in one of them: see
 of known divergences. The stat tables in §7 are transcriptions of
 `src/game/units.ts`, which is the canonical stat source.
 
-**Spec version:** v2.7 (2026-09-12) — new games use the central-reserve map
-with 480 crystals; saved and in-progress games retain their stored maps.
+**Spec version:** v2.8 (2026-09-13) — new games use 8-crystal home squares and
+16-crystal expansions, with 504 crystals total. Plant Mining is 3/5/8. Saved and
+in-progress games retain their stored maps and use the updated unit catalogue.
+See `docs/EXPANSION_ECONOMY-2026-09-13.md`.
 Every game uses 4 shared actions per
 turn. Only an enemy kill by attack resets the ten-turn draw clock. Tier-1 purchases cost 3/4/5 by pair;
 all promotions cost 4 to tier 2 and 8 to tier 3. Muju has DEF 3, Tanka DEF 5,
@@ -28,7 +30,8 @@ v2.4 (2026-09-11) clears F3/E8 to make both empty approaches 3×3 squares.
 v2.5 adds a four-action variant for local games and online rooms.
 v2.6 makes four actions the sole ruleset and defines a quiet turn as no attack kills.
 v2.7 adopts larger home reserves, smaller distant rich patches and a central
-eight-cell reserve cluster for new games, without changing existing boards.
+eight-cell reserve cluster for new games, without changing existing boards. v2.8 reduces home reserves to 8, increases
+expansions to 16, and raises Plant tier-2/tier-3 Mining to 5/8.
 
 ---
 
@@ -46,10 +49,10 @@ may be a human or an AI (`vs-ai`, `pass-play`, and `ai-vs-ai` modes).
   - White: Hi (fire_1) at (1,0), Sjor (water_1) at (1,1), Muju (plant_1) at (0,1).
   - Black: Hi at (8,9), Sjor at (8,8), Muju at (9,8).
 - **Resources:** **Unequal routes (central-reserve revision)**: the fixed
-  180°-rotational layout. Cells hold 0/4/8/10 crystals, with **480 total** in new games.
+  180°-rotational layout. Cells hold 0/4/8/16 crystals, with **504 total** in new games.
   Eighteen blank squares form D1–F3 and E8–G10; they remain walkable and spawn-eligible. Ordinary ground
-  holds 4; F4/D5/E5/F5/E6/F6/G6/E7 hold 8. Six home cells per side and
-  four cells in each distant rich patch hold 10. Exact layout:
+  holds 4; F4/D5/E5/F5/E6/F6/G6/E7 hold 8. Six home cells per side hold 8 (48 per home cluster);
+  four cells in each distant rich patch hold 16 (64 per expansion). Exact layout:
   `src/game/resourceMap.ts`. Save schema 6 discards pre-schema-5 unfinished games
   through the version-mismatch path; they start fresh. Schema-5 games upgrade
   while retaining their stored map reserves and capacities. The map revision
@@ -104,10 +107,11 @@ one atomic online request.
 Every board square has a thin outline in the bright ten-crystal color.
 Reserves are off by default. The Reserves toggle replaces square shading with two bottom-aligned stacks of
 crystal bricks on dark ground. Each crystal occupies one fixed-size slot in a
-2-column × 5-row grid, filling left then right at each level (3 = 2 left + 1 right).
+2-column × 8-row grid, filling left then right at each level (3 = 2 left + 1 right).
 Every brick uses the original ten-crystal color with a slight outline. Zero is
 fully dark. Counts remain in accessible square labels and inspection text;
-hiding the stacks restores the reserve shading.
+hiding the stacks restores the reserve shading. Colors 0–10 are unchanged;
+11–16 blend from the ten-crystal pale teal toward neutral white at 16.
 
 Enemy inspection defaults **Show reach** on whenever an enemy is opened for
 inspection (including tapping an enemy the selected piece cannot attack). It can
@@ -316,8 +320,8 @@ balance evidence. Tanka has Speed 2, Mining 4 and DEF 5.
 | Tier | Name | ATK | DEF | SPD | MINE | Cost |
 |---|---|---|---|---|---|---|
 | 1 | Muju | 0 | 3 | 1 | 3 | 5 |
-| 2 | Sachita | 1 | 3 | 1 | 4 | 9 |
-| 3 | Sachakuna | 2 | 4 | 1 | 5 | 17 |
+| 2 | Sachita | 1 | 3 | 1 | 5 | 9 |
+| 3 | Sachakuna | 2 | 4 | 1 | 8 | 17 |
 
 ### Metal (Expand — DEF specialist) — Lakota
 | Tier | Name | ATK | DEF | SPD | MINE | Cost |
@@ -341,7 +345,7 @@ subtotal (`resourcesUpkeep`) is telemetry, not an additional charge.
 
 There is no hidden production or hidden spending ledger. For each game,
 `board reserves + White gained + Black gained = initial map total`
-(480 for new games; the stored original total for existing games); spending changes banks
+(504 for new games; the stored original total for existing games); spending changes banks
 but never cumulative income. The AI receives the real state and searches it
 with ordinary MCTS. The former observation, belief, particle-filter and
 re-determinization rules in `AI_ENGINE_QUESTIONS.md` Q1–Q3 are superseded.
@@ -394,15 +398,17 @@ re-determinization rules in `AI_ENGINE_QUESTIONS.md` Q1–Q3 are superseded.
   See `docs/AI_IMPLEMENTATION_STATUS.md` for limits.
 - `lab/solver/` models passive finite-cell income, buy/promote financing and
   tactical frontiers. Historical map studies stay frozen under `lab/maps/`.
-- UI and tutorial use the catalogue/map constants; saves use schema 5.
+- UI and tutorial use the catalogue/map constants; saves use schema 6.
 
 ## 11. Design intent and evidence
 
 Passive mining makes income a consequence of position, alongside combat,
-spawn geometry and home defense. The 4/8/10 scale separates Mining thresholds
-across terrain: ordinary Mining 1/2/4 empties in 4/2/1 turns; shelf Mining
-2/3/4 in 4/3/2; rich Mining 3/4/5 in 4/3/2. Experts must relocate to sustain
-their tempo; foragers can collect while serving another positional purpose.
+spawn geometry and home defense. The 4/8/16 scale gives home clusters a shorter
+runway and makes expansions more valuable. Plant Mining 3/5/8 empties a fresh
+16-square in 6/4/2 collections; a newly placed Plant promoted on each following
+own turn collects 3 + 5 + 8 from that square, with external financing for its
+climb. Full-rate income after ongoing upkeep is 3/4/6. Experts must relocate to
+sustain their tempo; foragers can collect while serving another positional purpose.
 Rent still applies, and a richer extraction stat is not proof of higher net
 strategic value.
 

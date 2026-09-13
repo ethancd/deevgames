@@ -216,6 +216,8 @@ describe('MCP and HTTP interoperability', () => {
     expect(observed.actionsPerTurn).toBe(4);
     expect(observed.watchUrl).toBe(hosted.watchUrl);
     const rules=await call(client,'muju_rules');expect(rules.actionsPerTurn.options).toEqual([4]);
+    expect(rules.resourceMap).toMatchObject({total:504,maximumReserve:16,startingReserves:[0,4,8,16]});
+    expect(rules.catalogue.filter((unit: {element:string})=>unit.element==='plant').map((unit: {mining:number})=>unit.mining)).toEqual([3,5,8]);
   });
   it.each([false, true])('returns tiny idle results without repeated snapshot downloads (stdio=%s)', async stdio => {
     const { store, url, requests } = await setup();

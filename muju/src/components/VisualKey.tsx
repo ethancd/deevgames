@@ -3,17 +3,17 @@ import { UnitArtwork } from './UnitArtwork';
 import { ElementIcon } from './ElementGlyph';
 import type { Element, Tier } from '../game/types';
 
-const examples = [0, 4, 8, 10];
+const examples = [0, 4, 8, 10, 12, 16];
 const elements: Element[] = ['fire', 'lightning', 'water', 'shadow', 'plant', 'metal'];
 
 export function VisualKey() {
   return <div className="visual-key">
     <section><h3>One reserve per square</h3>
-      <p>Each pale brick is one crystal remaining. Two stacks grow from the bottom, up to five bricks each; odd totals put the extra brick on the left. At your turn end, each piece takes up to its Mining stat, up to the square’s reserve. Mining 0 takes nothing.</p>
+      <p>Each pale brick is one crystal remaining. Two stacks grow from the bottom, up to eight bricks each; odd totals put the extra brick on the left. At your turn end, each piece takes up to its Mining stat, up to the square’s reserve. Mining 0 takes nothing.</p>
       <div className="reserve-examples">{examples.map(reserve => <figure key={reserve}>
         <div className={`reserve-example board-cell reserve-${reserve}`}><CellReserve cell={{position:{x:0,y:0},resourceLayers:reserve}} /></div>
         <figcaption>{reserve} crystals</figcaption></figure>)}</div>
-      <p>Tap a piece to see its Mining number and how much it takes here. Reserves starts off. The Reserves toggle shows or hides the brick stacks. With stacks hidden, brighter squares hold more.</p>
+      <p>Tap a piece to see its Mining number and how much it takes here. Reserves starts off. The Reserves toggle shows or hides the brick stacks. With stacks hidden, brighter squares hold more: 10 is pale teal, and 11–16 brighten toward white.</p>
     </section>
     <section><h3>Two armies, six element symbols</h3><p><strong>Ivory / White:</strong> round, pale stone. <strong>Obsidian / Black:</strong> angular, dark stone. The same symbols identify elements on either army, even without color.</p>
       <div className="army-examples">{elements.map(element => <figure key={element}><div>

@@ -10,10 +10,10 @@ async function start(page: Page, state: GameState) {
   await page.getByRole('button', { name: /Continue saved game/ }).click();
 }
 
-test('reserve bricks show 0–10 in equal bottom-aligned slots and toggle back to shading', async ({page}) => {
+test('reserve bricks show 0–16 in equal bottom-aligned slots and toggle back to shading', async ({page}, info) => {
  await page.setViewportSize({width:390,height:664});
  const state=createInitialGameState();
- for(let count=0;count<=10;count++) state.board.cells[Math.floor(count/10)][count%10].resourceLayers=count;
+ for(let count=0;count<=16;count++) state.board.cells[Math.floor(count/10)][count%10].resourceLayers=count;
  await start(page,state);
  await expect(page.getByRole('button',{name:'Reserves'})).toHaveAttribute('aria-pressed','false');
  await expect(page.locator('.reserve-bricks')).toHaveCount(0);
@@ -27,7 +27,7 @@ test('reserve bricks show 0–10 in equal bottom-aligned slots and toggle back t
  await expect(page.locator('.reserve-bricks')).toHaveCount(100);
  await expect(page.locator('.resource-number')).toHaveCount(0);
  let brickSize: {width:number;height:number}|undefined;
- for(let count=0;count<=10;count++) {
+ for(let count=0;count<=16;count++) {
    const square=page.getByTestId(`cell-${count%10}-${Math.floor(count/10)}`);
    await expect(square).toHaveAccessibleName(new RegExp(`${count} crystals? remaining`));
    const bricks=square.locator('.reserve-brick');
@@ -39,17 +39,22 @@ test('reserve bricks show 0–10 in equal bottom-aligned slots and toggle back t
    expect(slots.filter(s=>s.column===1)).toHaveLength(Math.ceil(count/2));
    expect(slots.filter(s=>s.column===2)).toHaveLength(Math.floor(count/2));
    for(const [index,slot] of slots.entries()) {
-     expect(slot.row).toBe(5-Math.floor(index/2)); expect(slot.color).toBe('rgb(181, 229, 228)');
+     expect(slot.row).toBe(8-Math.floor(index/2)); expect(slot.color).toBe('rgb(181, 229, 228)');
      brickSize ??= slot;
      expect(Math.abs(slot.width-brickSize.width)).toBeLessThan(.1);
      expect(Math.abs(slot.height-brickSize.height)).toBeLessThan(.1);
    }
  }
+ await page.screenshot({path:info.outputPath('reserves-0-16-bricks.png')});
  await page.getByRole('button',{name:'Reserves'}).click();
  await expect(page.locator('.reserve-bricks')).toHaveCount(0);
- const shades=[];
- for(const count of [0,4,8,10]) shades.push(await page.getByTestId(`cell-${count%10}-${Math.floor(count/10)}`).evaluate(e=>getComputedStyle(e).backgroundColor));
- expect(new Set(shades).size).toBe(4);
+ const expected=['#192a38','#263b4b','#334d5d','#405f6f','#4e7181','#5d8393','#6d96a4','#7eabb6','#90bec7','#a2d1d6','#b5e5e4','#c1e9e9','#ceeeed','#daf2f2','#e6f6f6','#f3fbfb','#ffffff'];
+ for(let count=0;count<=16;count++) {
+   const shade=await page.getByTestId(`cell-${count%10}-${Math.floor(count/10)}`).evaluate(e=>getComputedStyle(e).backgroundColor);
+   const rgb=[1,3,5].map(i=>parseInt(expected[count].slice(i,i+2),16));
+   expect(shade).toBe(`rgb(${rgb.join(', ')})`);
+ }
+ await page.screenshot({path:info.outputPath('reserves-0-16-shading.png')});
  await page.getByRole('button',{name:'Reserves'}).click();
  await expect(page.locator('.reserve-bricks')).toHaveCount(100);
 });

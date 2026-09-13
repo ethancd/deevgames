@@ -11,7 +11,7 @@
         "plant_1"
       ],
       "maxAttack": 2,
-      "maxDefense": 2,
+      "maxDefense": 3,
       "maxSpeed": 2,
       "maxMining": 3,
       "canKillFrom7With3Actions": []
@@ -19,6 +19,27 @@
     {
       "income": 3,
       "turn": 2,
+      "units": [
+        "fire_1",
+        "lightning_1",
+        "water_1",
+        "plant_1"
+      ],
+      "maxAttack": 2,
+      "maxDefense": 3,
+      "maxSpeed": 3,
+      "maxMining": 3,
+      "canKillFrom7With3Actions": [
+        "fire_1",
+        "fire_2",
+        "lightning_1",
+        "lightning_2",
+        "lightning_3"
+      ]
+    },
+    {
+      "income": 3,
+      "turn": 3,
       "units": [
         "fire_1",
         "fire_2",
@@ -33,55 +54,13 @@
       "maxAttack": 3,
       "maxDefense": 3,
       "maxSpeed": 3,
-      "maxMining": 4,
+      "maxMining": 5,
       "canKillFrom7With3Actions": [
         "fire_1",
         "fire_2",
         "lightning_1",
         "lightning_2",
-        "lightning_3",
-        "plant_1"
-      ]
-    },
-    {
-      "income": 3,
-      "turn": 3,
-      "units": [
-        "fire_1",
-        "fire_2",
-        "fire_3",
-        "lightning_1",
-        "lightning_2",
-        "water_1",
-        "water_2",
-        "shadow_1",
-        "shadow_2",
-        "plant_1",
-        "plant_2",
-        "metal_1",
-        "metal_2"
-      ],
-      "maxAttack": 4,
-      "maxDefense": 4,
-      "maxSpeed": 4,
-      "maxMining": 4,
-      "canKillFrom7With3Actions": [
-        "fire_1",
-        "fire_2",
-        "fire_3",
-        "lightning_1",
-        "lightning_2",
-        "lightning_3",
-        "water_1",
-        "water_2",
-        "shadow_1",
-        "shadow_2",
-        "shadow_3",
-        "plant_1",
-        "plant_2",
-        "plant_3",
-        "metal_1",
-        "metal_2"
+        "lightning_3"
       ]
     },
     {
@@ -90,10 +69,8 @@
       "units": [
         "fire_1",
         "fire_2",
-        "fire_3",
         "lightning_1",
         "lightning_2",
-        "lightning_3",
         "water_1",
         "water_2",
         "shadow_1",
@@ -103,54 +80,9 @@
         "metal_1",
         "metal_2"
       ],
-      "maxAttack": 4,
+      "maxAttack": 3,
       "maxDefense": 4,
-      "maxSpeed": 5,
-      "maxMining": 4,
-      "canKillFrom7With3Actions": [
-        "fire_1",
-        "fire_2",
-        "fire_3",
-        "lightning_1",
-        "lightning_2",
-        "lightning_3",
-        "water_1",
-        "water_2",
-        "shadow_1",
-        "shadow_2",
-        "shadow_3",
-        "plant_1",
-        "plant_2",
-        "plant_3",
-        "metal_1",
-        "metal_2"
-      ]
-    },
-    {
-      "income": 3,
-      "turn": 5,
-      "units": [
-        "fire_1",
-        "fire_2",
-        "fire_3",
-        "lightning_1",
-        "lightning_2",
-        "lightning_3",
-        "water_1",
-        "water_2",
-        "water_3",
-        "shadow_1",
-        "shadow_2",
-        "shadow_3",
-        "plant_1",
-        "plant_2",
-        "plant_3",
-        "metal_1",
-        "metal_2"
-      ],
-      "maxAttack": 4,
-      "maxDefense": 4,
-      "maxSpeed": 5,
+      "maxSpeed": 4,
       "maxMining": 5,
       "canKillFrom7With3Actions": [
         "fire_1",
@@ -159,17 +91,42 @@
         "lightning_1",
         "lightning_2",
         "lightning_3",
-        "water_1",
-        "water_2",
-        "water_3",
-        "shadow_1",
-        "shadow_2",
-        "shadow_3",
         "plant_1",
         "plant_2",
-        "plant_3",
+        "metal_1"
+      ]
+    },
+    {
+      "income": 3,
+      "turn": 5,
+      "units": [
+        "fire_1",
+        "fire_2",
+        "lightning_1",
+        "lightning_2",
+        "water_1",
+        "water_2",
+        "shadow_1",
+        "shadow_2",
+        "plant_1",
+        "plant_2",
         "metal_1",
         "metal_2"
+      ],
+      "maxAttack": 3,
+      "maxDefense": 4,
+      "maxSpeed": 4,
+      "maxMining": 5,
+      "canKillFrom7With3Actions": [
+        "fire_1",
+        "fire_2",
+        "fire_3",
+        "lightning_1",
+        "lightning_2",
+        "lightning_3",
+        "plant_1",
+        "plant_2",
+        "metal_1"
       ]
     },
     {
@@ -181,24 +138,21 @@
         "fire_3",
         "lightning_1",
         "lightning_2",
-        "lightning_3",
         "water_1",
         "water_2",
         "water_3",
         "shadow_1",
         "shadow_2",
-        "shadow_3",
         "plant_1",
         "plant_2",
         "plant_3",
         "metal_1",
-        "metal_2",
-        "metal_3"
+        "metal_2"
       ],
       "maxAttack": 4,
-      "maxDefense": 6,
-      "maxSpeed": 5,
-      "maxMining": 5,
+      "maxDefense": 4,
+      "maxSpeed": 4,
+      "maxMining": 8,
       "canKillFrom7With3Actions": [
         "fire_1",
         "fire_2",
@@ -208,7 +162,6 @@
         "lightning_3",
         "water_1",
         "water_2",
-        "water_3",
         "shadow_1",
         "shadow_2",
         "shadow_3",
@@ -216,7 +169,8 @@
         "plant_2",
         "plant_3",
         "metal_1",
-        "metal_2"
+        "metal_2",
+        "metal_3"
       ]
     },
     {
@@ -234,18 +188,16 @@
         "water_3",
         "shadow_1",
         "shadow_2",
-        "shadow_3",
         "plant_1",
         "plant_2",
         "plant_3",
         "metal_1",
-        "metal_2",
-        "metal_3"
+        "metal_2"
       ],
       "maxAttack": 4,
-      "maxDefense": 6,
+      "maxDefense": 4,
       "maxSpeed": 5,
-      "maxMining": 5,
+      "maxMining": 8,
       "canKillFrom7With3Actions": [
         "fire_1",
         "fire_2",
@@ -255,7 +207,6 @@
         "lightning_3",
         "water_1",
         "water_2",
-        "water_3",
         "shadow_1",
         "shadow_2",
         "shadow_3",
@@ -263,7 +214,8 @@
         "plant_2",
         "plant_3",
         "metal_1",
-        "metal_2"
+        "metal_2",
+        "metal_3"
       ]
     },
     {
@@ -290,9 +242,9 @@
         "metal_3"
       ],
       "maxAttack": 4,
-      "maxDefense": 6,
+      "maxDefense": 5,
       "maxSpeed": 5,
-      "maxMining": 5,
+      "maxMining": 8,
       "canKillFrom7With3Actions": [
         "fire_1",
         "fire_2",
@@ -310,7 +262,8 @@
         "plant_2",
         "plant_3",
         "metal_1",
-        "metal_2"
+        "metal_2",
+        "metal_3"
       ]
     },
     {
@@ -322,7 +275,7 @@
         "plant_1"
       ],
       "maxAttack": 2,
-      "maxDefense": 2,
+      "maxDefense": 3,
       "maxSpeed": 2,
       "maxMining": 3,
       "canKillFrom7With3Actions": []
@@ -344,14 +297,13 @@
       "maxAttack": 3,
       "maxDefense": 3,
       "maxSpeed": 3,
-      "maxMining": 4,
+      "maxMining": 5,
       "canKillFrom7With3Actions": [
         "fire_1",
         "fire_2",
         "lightning_1",
         "lightning_2",
-        "lightning_3",
-        "plant_1"
+        "lightning_3"
       ]
     },
     {
@@ -360,21 +312,18 @@
       "units": [
         "fire_1",
         "fire_2",
-        "fire_3",
         "lightning_1",
         "lightning_2",
         "water_1",
         "water_2",
-        "water_3",
         "shadow_1",
         "shadow_2",
         "plant_1",
         "plant_2",
-        "plant_3",
         "metal_1",
         "metal_2"
       ],
-      "maxAttack": 4,
+      "maxAttack": 3,
       "maxDefense": 4,
       "maxSpeed": 4,
       "maxMining": 5,
@@ -385,16 +334,9 @@
         "lightning_1",
         "lightning_2",
         "lightning_3",
-        "water_1",
-        "water_2",
-        "shadow_1",
-        "shadow_2",
-        "shadow_3",
         "plant_1",
         "plant_2",
-        "plant_3",
-        "metal_1",
-        "metal_2"
+        "metal_1"
       ]
     },
     {
@@ -421,9 +363,9 @@
         "metal_3"
       ],
       "maxAttack": 4,
-      "maxDefense": 6,
+      "maxDefense": 5,
       "maxSpeed": 5,
-      "maxMining": 5,
+      "maxMining": 8,
       "canKillFrom7With3Actions": [
         "fire_1",
         "fire_2",
@@ -441,7 +383,8 @@
         "plant_2",
         "plant_3",
         "metal_1",
-        "metal_2"
+        "metal_2",
+        "metal_3"
       ]
     },
     {
@@ -468,9 +411,9 @@
         "metal_3"
       ],
       "maxAttack": 4,
-      "maxDefense": 6,
+      "maxDefense": 5,
       "maxSpeed": 5,
-      "maxMining": 5,
+      "maxMining": 8,
       "canKillFrom7With3Actions": [
         "fire_1",
         "fire_2",
@@ -488,7 +431,8 @@
         "plant_2",
         "plant_3",
         "metal_1",
-        "metal_2"
+        "metal_2",
+        "metal_3"
       ]
     },
     {
@@ -515,9 +459,9 @@
         "metal_3"
       ],
       "maxAttack": 4,
-      "maxDefense": 6,
+      "maxDefense": 5,
       "maxSpeed": 5,
-      "maxMining": 5,
+      "maxMining": 8,
       "canKillFrom7With3Actions": [
         "fire_1",
         "fire_2",
@@ -535,7 +479,8 @@
         "plant_2",
         "plant_3",
         "metal_1",
-        "metal_2"
+        "metal_2",
+        "metal_3"
       ]
     },
     {
@@ -562,9 +507,9 @@
         "metal_3"
       ],
       "maxAttack": 4,
-      "maxDefense": 6,
+      "maxDefense": 5,
       "maxSpeed": 5,
-      "maxMining": 5,
+      "maxMining": 8,
       "canKillFrom7With3Actions": [
         "fire_1",
         "fire_2",
@@ -582,7 +527,8 @@
         "plant_2",
         "plant_3",
         "metal_1",
-        "metal_2"
+        "metal_2",
+        "metal_3"
       ]
     },
     {
@@ -609,9 +555,9 @@
         "metal_3"
       ],
       "maxAttack": 4,
-      "maxDefense": 6,
+      "maxDefense": 5,
       "maxSpeed": 5,
-      "maxMining": 5,
+      "maxMining": 8,
       "canKillFrom7With3Actions": [
         "fire_1",
         "fire_2",
@@ -629,7 +575,8 @@
         "plant_2",
         "plant_3",
         "metal_1",
-        "metal_2"
+        "metal_2",
+        "metal_3"
       ]
     },
     {
@@ -641,7 +588,7 @@
         "plant_1"
       ],
       "maxAttack": 2,
-      "maxDefense": 2,
+      "maxDefense": 3,
       "maxSpeed": 2,
       "maxMining": 3,
       "canKillFrom7With3Actions": []
@@ -663,14 +610,13 @@
       "maxAttack": 3,
       "maxDefense": 3,
       "maxSpeed": 3,
-      "maxMining": 4,
+      "maxMining": 5,
       "canKillFrom7With3Actions": [
         "fire_1",
         "fire_2",
         "lightning_1",
         "lightning_2",
-        "lightning_3",
-        "plant_1"
+        "lightning_3"
       ]
     },
     {
@@ -696,7 +642,7 @@
       "maxAttack": 4,
       "maxDefense": 4,
       "maxSpeed": 4,
-      "maxMining": 5,
+      "maxMining": 8,
       "canKillFrom7With3Actions": [
         "fire_1",
         "fire_2",
@@ -713,7 +659,8 @@
         "plant_2",
         "plant_3",
         "metal_1",
-        "metal_2"
+        "metal_2",
+        "metal_3"
       ]
     },
     {
@@ -740,9 +687,9 @@
         "metal_3"
       ],
       "maxAttack": 4,
-      "maxDefense": 6,
+      "maxDefense": 5,
       "maxSpeed": 5,
-      "maxMining": 5,
+      "maxMining": 8,
       "canKillFrom7With3Actions": [
         "fire_1",
         "fire_2",
@@ -760,7 +707,8 @@
         "plant_2",
         "plant_3",
         "metal_1",
-        "metal_2"
+        "metal_2",
+        "metal_3"
       ]
     },
     {
@@ -787,9 +735,9 @@
         "metal_3"
       ],
       "maxAttack": 4,
-      "maxDefense": 6,
+      "maxDefense": 5,
       "maxSpeed": 5,
-      "maxMining": 5,
+      "maxMining": 8,
       "canKillFrom7With3Actions": [
         "fire_1",
         "fire_2",
@@ -807,7 +755,8 @@
         "plant_2",
         "plant_3",
         "metal_1",
-        "metal_2"
+        "metal_2",
+        "metal_3"
       ]
     },
     {
@@ -834,9 +783,9 @@
         "metal_3"
       ],
       "maxAttack": 4,
-      "maxDefense": 6,
+      "maxDefense": 5,
       "maxSpeed": 5,
-      "maxMining": 5,
+      "maxMining": 8,
       "canKillFrom7With3Actions": [
         "fire_1",
         "fire_2",
@@ -854,7 +803,8 @@
         "plant_2",
         "plant_3",
         "metal_1",
-        "metal_2"
+        "metal_2",
+        "metal_3"
       ]
     },
     {
@@ -881,9 +831,9 @@
         "metal_3"
       ],
       "maxAttack": 4,
-      "maxDefense": 6,
+      "maxDefense": 5,
       "maxSpeed": 5,
-      "maxMining": 5,
+      "maxMining": 8,
       "canKillFrom7With3Actions": [
         "fire_1",
         "fire_2",
@@ -901,7 +851,8 @@
         "plant_2",
         "plant_3",
         "metal_1",
-        "metal_2"
+        "metal_2",
+        "metal_3"
       ]
     },
     {
@@ -928,9 +879,9 @@
         "metal_3"
       ],
       "maxAttack": 4,
-      "maxDefense": 6,
+      "maxDefense": 5,
       "maxSpeed": 5,
-      "maxMining": 5,
+      "maxMining": 8,
       "canKillFrom7With3Actions": [
         "fire_1",
         "fire_2",
@@ -948,18 +899,19 @@
         "plant_2",
         "plant_3",
         "metal_1",
-        "metal_2"
+        "metal_2",
+        "metal_3"
       ]
     }
   ],
-  "catalogueHash": "fd7244d37e2cc313e6b67219747f8acf54da2fdd996aec39f94ede204f7abbe3",
-  "modelHash": "2ac32c09748a2662ed4ed4658aaac1ae4f9f5f46a810e8da50aecde8c2b876f4",
-  "elapsedSeconds": 0.118,
+  "catalogueHash": "a140fd0f0dffae7f7b2800f15b9a933b8e73f574bfbb193706855de3a3a21c0c",
+  "modelHash": "a5090b226e70bff60850ae2c09860b893380e7c83188c4f43a00487e62dc876b",
+  "elapsedSeconds": 0.124,
   "assumptions": [
     "Open shortest-path distances, no traffic or enemy moves.",
     "Strike grid: 18 targets, all 18 open-board distances, action budgets 1/2/3; cells are not matchup probabilities.",
     "Kill frontiers: at most four distinct bodies in independent approach lanes, six shared actions; no tech gates.",
-    "Mining: passive collection on one finite cell of 4/8/10 for up to six turns; no protection or other miners.",
+    "Mining: passive collection on one finite cell of 4/8/16 for up to six turns; no protection or other miners.",
     "Roles: least-cost SINGLE qualifying piece in declared strike/mining/occupation tasks; neither army optimality nor frequency.",
     "Access: maintained starting F1/W1/P1 and external income paid at turn end, upkeep before next placement; earliest single-line exemplar, not expected match timing."
   ],
@@ -980,30 +932,30 @@
       "defense": 1,
       "speed": 2,
       "mining": 1,
-      "cost": 1,
+      "cost": 3,
       "dominatedBy": [],
       "role": {
         "feasible": 2760,
         "cheapest": 2760,
-        "soleCheapest": 1848,
+        "soleCheapest": 1992,
         "witnesses": [
           {
             "mission": "strike fire_1 at distance 1 within 1 actions; mine >=1 crystals at turn end on rich ground; survive no hit",
             "tiedWith": [],
-            "cost": 1,
-            "nextBestPrice": 2
+            "cost": 3,
+            "nextBestPrice": 4
           },
           {
             "mission": "strike fire_1 at distance 1 within 1 actions; mine >=1 crystals at turn end on rich ground; survive plant_1 hit",
             "tiedWith": [],
-            "cost": 1,
-            "nextBestPrice": 2
+            "cost": 3,
+            "nextBestPrice": 4
           },
           {
             "mission": "strike fire_1 at distance 1 within 1 actions; mine >=1 crystals at turn end on rich ground; survive plant_2 hit",
             "tiedWith": [],
-            "cost": 1,
-            "nextBestPrice": 3
+            "cost": 3,
+            "nextBestPrice": 7
           }
         ]
       },
@@ -1028,7 +980,7 @@
         "base": {
           "killCells": 81,
           "cells": 972,
-          "deliveredDamage": 0.2777777777777778,
+          "deliveredDamage": 0.28703703703703703,
           "meanStrikeActions": 5.5,
           "income": {
             "ordinary": [
@@ -1062,14 +1014,14 @@
           "turnsToEmpty": {
             "ordinary": 4,
             "shelf": 8,
-            "rich": 10
+            "rich": 16
           },
           "defense": [
             {
               "distance": 1,
               "frontier": [
                 {
-                  "cost": 1,
+                  "cost": 3,
                   "actions": 1,
                   "bodies": 1,
                   "units": [
@@ -1083,7 +1035,7 @@
               "distance": 4,
               "frontier": [
                 {
-                  "cost": 1,
+                  "cost": 3,
                   "actions": 2,
                   "bodies": 1,
                   "units": [
@@ -1097,7 +1049,7 @@
               "distance": 7,
               "frontier": [
                 {
-                  "cost": 1,
+                  "cost": 3,
                   "actions": 3,
                   "bodies": 1,
                   "units": [
@@ -1116,26 +1068,26 @@
               "cases": 54,
               "newlyFeasible": 8,
               "jointlyFeasible": 43,
-              "meanCrystalsSaved": 0.3488372093023256,
+              "meanCrystalsSaved": 1.0465116279069768,
               "meanActionsSaved": 0.627906976744186,
               "examples": [
                 {
                   "target": "water_1",
                   "distance": 1,
-                  "beforeCost": 2,
-                  "afterCost": 1
+                  "beforeCost": 6,
+                  "afterCost": 3
                 },
                 {
                   "target": "water_1",
                   "distance": 4,
-                  "beforeCost": 2,
-                  "afterCost": 1
+                  "beforeCost": 6,
+                  "afterCost": 3
                 },
                 {
                   "target": "water_1",
                   "distance": 7,
                   "beforeCost": null,
-                  "afterCost": 1
+                  "afterCost": 3
                 }
               ]
             },
@@ -1149,18 +1101,18 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 4,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 7,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               }
             ]
           },
@@ -1184,18 +1136,18 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 4,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 7,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               }
             ]
           },
@@ -1212,24 +1164,24 @@
                   "target": "water_1",
                   "distance": 7,
                   "beforeCost": null,
-                  "afterCost": 2
+                  "afterCost": 6
                 },
                 {
                   "target": "water_2",
                   "distance": 4,
                   "beforeCost": null,
-                  "afterCost": 3
+                  "afterCost": 9
                 },
                 {
                   "target": "shadow_1",
                   "distance": 7,
                   "beforeCost": null,
-                  "afterCost": 2
+                  "afterCost": 6
                 }
               ]
             },
             "strikeActionsSaved": 1.333333333333333,
-            "deliveredDamage": 0.09259259259259256,
+            "deliveredDamage": 0.095679012345679,
             "incomeAt6": {
               "ordinary": 0,
               "shelf": 0,
@@ -1238,18 +1190,18 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 4,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 7,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               }
             ]
           },
@@ -1268,23 +1220,23 @@
             "incomeAt6": {
               "ordinary": 0,
               "shelf": 2,
-              "rich": 4
+              "rich": 6
             },
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 4,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 7,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               }
             ]
           }
@@ -1309,63 +1261,63 @@
       "defense": 1,
       "speed": 2,
       "mining": 1,
-      "cost": 3,
+      "cost": 7,
       "dominatedBy": [],
       "role": {
         "feasible": 4488,
-        "cheapest": 1272,
+        "cheapest": 936,
         "soleCheapest": 936,
         "witnesses": [
           {
             "mission": "strike water_1 at distance 3 within 2 actions; mine >=0 crystals at turn end on rich ground; survive plant_2 hit",
             "tiedWith": [],
-            "cost": 3,
-            "nextBestPrice": 6
+            "cost": 7,
+            "nextBestPrice": 15
           },
           {
             "mission": "strike water_1 at distance 3 within 2 actions; mine >=0 crystals at turn end on rich ground; survive metal_1 hit",
             "tiedWith": [],
-            "cost": 3,
-            "nextBestPrice": 6
+            "cost": 7,
+            "nextBestPrice": 15
           },
           {
             "mission": "strike water_1 at distance 3 within 2 actions; mine >=1 crystals at turn end on rich ground; survive no hit",
             "tiedWith": [],
-            "cost": 3,
-            "nextBestPrice": 4
+            "cost": 7,
+            "nextBestPrice": 8
           }
         ]
       },
       "access": {
         "3": {
-          "activeTurn": 2,
-          "investment": 2,
+          "activeTurn": 3,
+          "investment": 4,
           "path": [
             {
-              "turn": 2,
-              "resources": 1,
+              "turn": 3,
+              "resources": 2,
               "event": "promote fire_2"
             }
           ]
         },
         "6": {
           "activeTurn": 2,
-          "investment": 2,
+          "investment": 4,
           "path": [
             {
               "turn": 2,
-              "resources": 4,
+              "resources": 2,
               "event": "promote fire_2"
             }
           ]
         },
         "9": {
           "activeTurn": 2,
-          "investment": 2,
+          "investment": 4,
           "path": [
             {
               "turn": 2,
-              "resources": 7,
+              "resources": 5,
               "event": "promote fire_2"
             }
           ]
@@ -1375,7 +1327,7 @@
         "base": {
           "killCells": 135,
           "cells": 972,
-          "deliveredDamage": 0.3611111111111111,
+          "deliveredDamage": 0.37037037037037035,
           "meanStrikeActions": 5.5,
           "income": {
             "ordinary": [
@@ -1409,14 +1361,14 @@
           "turnsToEmpty": {
             "ordinary": 4,
             "shelf": 8,
-            "rich": 10
+            "rich": 16
           },
           "defense": [
             {
               "distance": 1,
               "frontier": [
                 {
-                  "cost": 1,
+                  "cost": 3,
                   "actions": 1,
                   "bodies": 1,
                   "units": [
@@ -1430,7 +1382,7 @@
               "distance": 4,
               "frontier": [
                 {
-                  "cost": 1,
+                  "cost": 3,
                   "actions": 2,
                   "bodies": 1,
                   "units": [
@@ -1444,7 +1396,7 @@
               "distance": 7,
               "frontier": [
                 {
-                  "cost": 1,
+                  "cost": 3,
                   "actions": 3,
                   "bodies": 1,
                   "units": [
@@ -1458,31 +1410,31 @@
         },
         "changes": {
           "attack": {
-            "killCells": 9,
+            "killCells": 18,
             "squad": {
               "cases": 54,
-              "newlyFeasible": 1,
+              "newlyFeasible": 2,
               "jointlyFeasible": 51,
-              "meanCrystalsSaved": 0.11764705882352941,
-              "meanActionsSaved": 0.0784313725490196,
+              "meanCrystalsSaved": 0.5490196078431373,
+              "meanActionsSaved": 0.1568627450980392,
               "examples": [
                 {
                   "target": "water_2",
                   "distance": 1,
-                  "beforeCost": 6,
-                  "afterCost": 3
+                  "beforeCost": 14,
+                  "afterCost": 7
                 },
                 {
                   "target": "water_2",
                   "distance": 4,
-                  "beforeCost": 6,
-                  "afterCost": 3
+                  "beforeCost": 14,
+                  "afterCost": 7
                 },
                 {
                   "target": "water_2",
                   "distance": 7,
                   "beforeCost": null,
-                  "afterCost": 3
+                  "afterCost": 7
                 }
               ]
             },
@@ -1496,18 +1448,18 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 4,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 7,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               }
             ]
           },
@@ -1531,18 +1483,18 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 4,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 7,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               }
             ]
           },
@@ -1559,24 +1511,24 @@
                   "target": "water_2",
                   "distance": 7,
                   "beforeCost": null,
-                  "afterCost": 6
+                  "afterCost": 14
                 },
                 {
                   "target": "water_3",
                   "distance": 7,
                   "beforeCost": null,
-                  "afterCost": 6
+                  "afterCost": 14
                 },
                 {
                   "target": "metal_3",
                   "distance": 7,
                   "beforeCost": null,
-                  "afterCost": 6
+                  "afterCost": 14
                 }
               ]
             },
             "strikeActionsSaved": 1.333333333333333,
-            "deliveredDamage": 0.12037037037037035,
+            "deliveredDamage": 0.12345679012345678,
             "incomeAt6": {
               "ordinary": 0,
               "shelf": 0,
@@ -1585,18 +1537,18 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 4,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 7,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               }
             ]
           },
@@ -1615,29 +1567,29 @@
             "incomeAt6": {
               "ordinary": 0,
               "shelf": 2,
-              "rich": 4
+              "rich": 6
             },
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 4,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 7,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               }
             ]
           }
         },
         "attackSpeedSynergy": {
-          "extraKillCellsBeyondAdditive": 3,
+          "extraKillCellsBeyondAdditive": 6,
           "witness": {
             "target": "water_2",
             "distance": 4,
@@ -1656,78 +1608,78 @@
       "defense": 2,
       "speed": 3,
       "mining": 1,
-      "cost": 6,
+      "cost": 15,
       "dominatedBy": [],
       "role": {
-        "feasible": 13440,
-        "cheapest": 6726,
-        "soleCheapest": 5400,
+        "feasible": 14256,
+        "cheapest": 6774,
+        "soleCheapest": 6414,
         "witnesses": [
           {
             "mission": "strike fire_1 at distance 3 within 2 actions; mine >=0 crystals at turn end on rich ground; survive plant_3 hit",
             "tiedWith": [],
-            "cost": 6,
-            "nextBestPrice": 10
+            "cost": 15,
+            "nextBestPrice": 16
           },
           {
             "mission": "strike fire_1 at distance 3 within 2 actions; mine >=0 crystals at turn end on rich ground; survive metal_2 hit",
             "tiedWith": [],
-            "cost": 6,
-            "nextBestPrice": 10
+            "cost": 15,
+            "nextBestPrice": 16
           },
           {
             "mission": "strike fire_1 at distance 3 within 2 actions; mine >=0 crystals at turn end on rich ground; survive metal_3 hit",
             "tiedWith": [],
-            "cost": 6,
-            "nextBestPrice": 10
+            "cost": 15,
+            "nextBestPrice": 16
           }
         ]
       },
       "access": {
         "3": {
-          "activeTurn": 3,
-          "investment": 5,
+          "activeTurn": 6,
+          "investment": 12,
           "path": [
             {
-              "turn": 2,
-              "resources": 1,
+              "turn": 3,
+              "resources": 2,
               "event": "promote fire_2"
             },
             {
-              "turn": 3,
+              "turn": 6,
               "resources": 0,
               "event": "promote fire_3"
             }
           ]
         },
         "6": {
-          "activeTurn": 3,
-          "investment": 5,
+          "activeTurn": 4,
+          "investment": 12,
           "path": [
             {
               "turn": 2,
-              "resources": 4,
+              "resources": 2,
               "event": "promote fire_2"
             },
             {
-              "turn": 3,
-              "resources": 6,
+              "turn": 4,
+              "resources": 4,
               "event": "promote fire_3"
             }
           ]
         },
         "9": {
           "activeTurn": 3,
-          "investment": 5,
+          "investment": 12,
           "path": [
             {
               "turn": 2,
-              "resources": 7,
+              "resources": 5,
               "event": "promote fire_2"
             },
             {
               "turn": 3,
-              "resources": 12,
+              "resources": 5,
               "event": "promote fire_3"
             }
           ]
@@ -1735,9 +1687,9 @@
       },
       "value": {
         "base": {
-          "killCells": 192,
+          "killCells": 204,
           "cells": 972,
-          "deliveredDamage": 0.5185185185185185,
+          "deliveredDamage": 0.5308641975308642,
           "meanStrikeActions": 4.166666666666667,
           "income": {
             "ordinary": [
@@ -1771,14 +1723,14 @@
           "turnsToEmpty": {
             "ordinary": 4,
             "shelf": 8,
-            "rich": 10
+            "rich": 16
           },
           "defense": [
             {
               "distance": 1,
               "frontier": [
                 {
-                  "cost": 1,
+                  "cost": 3,
                   "actions": 1,
                   "bodies": 1,
                   "units": [
@@ -1792,7 +1744,7 @@
               "distance": 4,
               "frontier": [
                 {
-                  "cost": 1,
+                  "cost": 3,
                   "actions": 3,
                   "bodies": 1,
                   "units": [
@@ -1801,7 +1753,7 @@
                   "damage": 2
                 },
                 {
-                  "cost": 3,
+                  "cost": 7,
                   "actions": 2,
                   "bodies": 1,
                   "units": [
@@ -1815,7 +1767,7 @@
               "distance": 7,
               "frontier": [
                 {
-                  "cost": 1,
+                  "cost": 3,
                   "actions": 4,
                   "bodies": 1,
                   "units": [
@@ -1824,7 +1776,7 @@
                   "damage": 2
                 },
                 {
-                  "cost": 3,
+                  "cost": 7,
                   "actions": 3,
                   "bodies": 1,
                   "units": [
@@ -1838,36 +1790,36 @@
         },
         "changes": {
           "attack": {
-            "killCells": 24,
+            "killCells": 12,
             "squad": {
               "cases": 54,
               "newlyFeasible": 0,
               "jointlyFeasible": 54,
-              "meanCrystalsSaved": 0.6666666666666666,
-              "meanActionsSaved": 0.2222222222222222,
+              "meanCrystalsSaved": 0.8333333333333334,
+              "meanActionsSaved": 0.1111111111111111,
               "examples": [
                 {
                   "target": "water_3",
                   "distance": 1,
-                  "beforeCost": 12,
-                  "afterCost": 6
+                  "beforeCost": 30,
+                  "afterCost": 15
                 },
                 {
                   "target": "water_3",
                   "distance": 4,
-                  "beforeCost": 12,
-                  "afterCost": 6
+                  "beforeCost": 30,
+                  "afterCost": 15
                 },
                 {
                   "target": "water_3",
                   "distance": 7,
-                  "beforeCost": 12,
-                  "afterCost": 6
+                  "beforeCost": 30,
+                  "afterCost": 15
                 }
               ]
             },
             "strikeActionsSaved": 0,
-            "deliveredDamage": 0.024691358024691357,
+            "deliveredDamage": 0.012345679012345623,
             "incomeAt6": {
               "ordinary": 0,
               "shelf": 0,
@@ -1876,18 +1828,18 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 4,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 7,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               }
             ]
           },
@@ -1911,23 +1863,23 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 1,
-                "after": 2
+                "before": 3,
+                "after": 4
               },
               {
                 "distance": 4,
-                "before": 1,
-                "after": 2
+                "before": 3,
+                "after": 4
               },
               {
                 "distance": 7,
-                "before": 1,
-                "after": 2
+                "before": 3,
+                "after": 4
               }
             ]
           },
           "speed": {
-            "killCells": 48,
+            "killCells": 51,
             "squad": {
               "cases": 54,
               "newlyFeasible": 0,
@@ -1937,7 +1889,7 @@
               "examples": []
             },
             "strikeActionsSaved": 0.666666666666667,
-            "deliveredDamage": 0.12962962962962965,
+            "deliveredDamage": 0.13271604938271597,
             "incomeAt6": {
               "ordinary": 0,
               "shelf": 0,
@@ -1946,18 +1898,18 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 4,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 7,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               }
             ]
           },
@@ -1976,29 +1928,29 @@
             "incomeAt6": {
               "ordinary": 0,
               "shelf": 2,
-              "rich": 4
+              "rich": 6
             },
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 4,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 7,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               }
             ]
           }
         },
         "attackSpeedSynergy": {
-          "extraKillCellsBeyondAdditive": 6,
+          "extraKillCellsBeyondAdditive": 3,
           "witness": {
             "target": "water_3",
             "distance": 5,
@@ -2017,63 +1969,63 @@
       "defense": 1,
       "speed": 3,
       "mining": 0,
-      "cost": 1,
+      "cost": 3,
       "dominatedBy": [],
       "role": {
-        "feasible": 1296,
-        "cheapest": 1296,
-        "soleCheapest": 384,
+        "feasible": 1092,
+        "cheapest": 1092,
+        "soleCheapest": 324,
         "witnesses": [
           {
             "mission": "strike fire_1 at distance 4 within 2 actions; mine >=0 crystals at turn end on rich ground; survive no hit",
             "tiedWith": [],
-            "cost": 1,
-            "nextBestPrice": 3
+            "cost": 3,
+            "nextBestPrice": 7
           },
           {
             "mission": "strike fire_1 at distance 4 within 2 actions; mine >=0 crystals at turn end on rich ground; survive plant_1 hit",
             "tiedWith": [],
-            "cost": 1,
-            "nextBestPrice": 3
+            "cost": 3,
+            "nextBestPrice": 7
           },
           {
             "mission": "strike fire_1 at distance 4 within 2 actions; mine >=0 crystals at turn end on rich ground; survive plant_2 hit",
             "tiedWith": [],
-            "cost": 1,
-            "nextBestPrice": 3
+            "cost": 3,
+            "nextBestPrice": 7
           }
         ]
       },
       "access": {
         "3": {
           "activeTurn": 2,
-          "investment": 1,
+          "investment": 3,
           "path": [
             {
               "turn": 2,
-              "resources": 2,
+              "resources": 0,
               "event": "buy lightning_1"
             }
           ]
         },
         "6": {
           "activeTurn": 2,
-          "investment": 1,
+          "investment": 3,
           "path": [
             {
               "turn": 2,
-              "resources": 5,
+              "resources": 3,
               "event": "buy lightning_1"
             }
           ]
         },
         "9": {
           "activeTurn": 2,
-          "investment": 1,
+          "investment": 3,
           "path": [
             {
               "turn": 2,
-              "resources": 8,
+              "resources": 6,
               "event": "buy lightning_1"
             }
           ]
@@ -2081,7 +2033,7 @@
       },
       "value": {
         "base": {
-          "killCells": 72,
+          "killCells": 60,
           "cells": 972,
           "deliveredDamage": 0.2222222222222222,
           "meanStrikeActions": 4.166666666666667,
@@ -2124,7 +2076,7 @@
               "distance": 1,
               "frontier": [
                 {
-                  "cost": 1,
+                  "cost": 3,
                   "actions": 1,
                   "bodies": 1,
                   "units": [
@@ -2138,7 +2090,7 @@
               "distance": 4,
               "frontier": [
                 {
-                  "cost": 1,
+                  "cost": 3,
                   "actions": 2,
                   "bodies": 1,
                   "units": [
@@ -2152,7 +2104,7 @@
               "distance": 7,
               "frontier": [
                 {
-                  "cost": 1,
+                  "cost": 3,
                   "actions": 3,
                   "bodies": 1,
                   "units": [
@@ -2166,36 +2118,36 @@
         },
         "changes": {
           "attack": {
-            "killCells": 36,
+            "killCells": 48,
             "squad": {
               "cases": 54,
               "newlyFeasible": 16,
               "jointlyFeasible": 35,
-              "meanCrystalsSaved": 0.3142857142857143,
-              "meanActionsSaved": 0.6,
+              "meanCrystalsSaved": 1.2,
+              "meanActionsSaved": 0.7714285714285715,
               "examples": [
                 {
                   "target": "fire_3",
                   "distance": 1,
-                  "beforeCost": 2,
-                  "afterCost": 1
+                  "beforeCost": 6,
+                  "afterCost": 3
                 },
                 {
                   "target": "fire_3",
                   "distance": 4,
-                  "beforeCost": 2,
-                  "afterCost": 1
+                  "beforeCost": 6,
+                  "afterCost": 3
                 },
                 {
                   "target": "fire_3",
                   "distance": 7,
-                  "beforeCost": 2,
-                  "afterCost": 1
+                  "beforeCost": 6,
+                  "afterCost": 3
                 }
               ]
             },
             "strikeActionsSaved": 0,
-            "deliveredDamage": 0.14814814814814814,
+            "deliveredDamage": 0.16049382716049382,
             "incomeAt6": {
               "ordinary": 0,
               "shelf": 0,
@@ -2204,18 +2156,18 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 4,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 7,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               }
             ]
           },
@@ -2239,23 +2191,23 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 4,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 7,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               }
             ]
           },
           "speed": {
-            "killCells": 18,
+            "killCells": 15,
             "squad": {
               "cases": 54,
               "newlyFeasible": 0,
@@ -2274,18 +2226,18 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 4,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 7,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               }
             ]
           },
@@ -2309,24 +2261,24 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 4,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 7,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               }
             ]
           }
         },
         "attackSpeedSynergy": {
-          "extraKillCellsBeyondAdditive": 9,
+          "extraKillCellsBeyondAdditive": 12,
           "witness": {
             "target": "fire_3",
             "distance": 5,
@@ -2345,78 +2297,78 @@
       "defense": 1,
       "speed": 4,
       "mining": 0,
-      "cost": 3,
+      "cost": 7,
       "dominatedBy": [],
       "role": {
         "feasible": 2364,
-        "cheapest": 636,
-        "soleCheapest": 636,
+        "cheapest": 696,
+        "soleCheapest": 696,
         "witnesses": [
           {
             "mission": "strike fire_1 at distance 5 within 2 actions; mine >=0 crystals at turn end on rich ground; survive no hit",
             "tiedWith": [],
-            "cost": 3,
-            "nextBestPrice": 6
+            "cost": 7,
+            "nextBestPrice": 15
           },
           {
             "mission": "strike fire_1 at distance 5 within 2 actions; mine >=0 crystals at turn end on rich ground; survive plant_1 hit",
             "tiedWith": [],
-            "cost": 3,
-            "nextBestPrice": 6
+            "cost": 7,
+            "nextBestPrice": 15
           },
           {
             "mission": "strike fire_1 at distance 5 within 2 actions; mine >=0 crystals at turn end on rich ground; survive plant_2 hit",
             "tiedWith": [],
-            "cost": 3,
-            "nextBestPrice": 6
+            "cost": 7,
+            "nextBestPrice": 15
           }
         ]
       },
       "access": {
         "3": {
-          "activeTurn": 3,
-          "investment": 3,
+          "activeTurn": 4,
+          "investment": 7,
           "path": [
             {
               "turn": 2,
-              "resources": 2,
+              "resources": 0,
               "event": "buy lightning_1"
             },
             {
-              "turn": 3,
-              "resources": 3,
+              "turn": 4,
+              "resources": 2,
               "event": "promote lightning_2"
             }
           ]
         },
         "6": {
           "activeTurn": 3,
-          "investment": 3,
+          "investment": 7,
           "path": [
             {
               "turn": 2,
-              "resources": 5,
+              "resources": 3,
               "event": "buy lightning_1"
             },
             {
               "turn": 3,
-              "resources": 9,
+              "resources": 5,
               "event": "promote lightning_2"
             }
           ]
         },
         "9": {
           "activeTurn": 3,
-          "investment": 3,
+          "investment": 7,
           "path": [
             {
               "turn": 2,
-              "resources": 8,
+              "resources": 6,
               "event": "buy lightning_1"
             },
             {
               "turn": 3,
-              "resources": 15,
+              "resources": 11,
               "event": "promote lightning_2"
             }
           ]
@@ -2426,7 +2378,7 @@
         "base": {
           "killCells": 135,
           "cells": 972,
-          "deliveredDamage": 0.46296296296296297,
+          "deliveredDamage": 0.4783950617283951,
           "meanStrikeActions": 3.5,
           "income": {
             "ordinary": [
@@ -2467,7 +2419,7 @@
               "distance": 1,
               "frontier": [
                 {
-                  "cost": 1,
+                  "cost": 3,
                   "actions": 1,
                   "bodies": 1,
                   "units": [
@@ -2481,7 +2433,7 @@
               "distance": 4,
               "frontier": [
                 {
-                  "cost": 1,
+                  "cost": 3,
                   "actions": 2,
                   "bodies": 1,
                   "units": [
@@ -2495,7 +2447,7 @@
               "distance": 7,
               "frontier": [
                 {
-                  "cost": 1,
+                  "cost": 3,
                   "actions": 3,
                   "bodies": 1,
                   "units": [
@@ -2514,31 +2466,31 @@
               "cases": 54,
               "newlyFeasible": 3,
               "jointlyFeasible": 51,
-              "meanCrystalsSaved": 1.2941176470588236,
+              "meanCrystalsSaved": 3.019607843137255,
               "meanActionsSaved": 0.803921568627451,
               "examples": [
                 {
                   "target": "water_1",
                   "distance": 1,
-                  "beforeCost": 6,
-                  "afterCost": 3
+                  "beforeCost": 14,
+                  "afterCost": 7
                 },
                 {
                   "target": "water_1",
                   "distance": 4,
-                  "beforeCost": 6,
-                  "afterCost": 3
+                  "beforeCost": 14,
+                  "afterCost": 7
                 },
                 {
                   "target": "water_1",
                   "distance": 7,
-                  "beforeCost": 6,
-                  "afterCost": 3
+                  "beforeCost": 14,
+                  "afterCost": 7
                 }
               ]
             },
             "strikeActionsSaved": 0,
-            "deliveredDamage": 0.1388888888888889,
+            "deliveredDamage": 0.13888888888888884,
             "incomeAt6": {
               "ordinary": 0,
               "shelf": 0,
@@ -2547,18 +2499,18 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 4,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 7,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               }
             ]
           },
@@ -2582,18 +2534,18 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 4,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 7,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               }
             ]
           },
@@ -2608,7 +2560,7 @@
               "examples": []
             },
             "strikeActionsSaved": 0.38888888888888884,
-            "deliveredDamage": 0.09259259259259262,
+            "deliveredDamage": 0.095679012345679,
             "incomeAt6": {
               "ordinary": 0,
               "shelf": 0,
@@ -2617,18 +2569,18 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 4,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 7,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               }
             ]
           },
@@ -2652,18 +2604,18 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 4,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 7,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               }
             ]
           }
@@ -2688,7 +2640,7 @@
       "defense": 1,
       "speed": 5,
       "mining": 0,
-      "cost": 6,
+      "cost": 15,
       "dominatedBy": [],
       "role": {
         "feasible": 4320,
@@ -2698,83 +2650,83 @@
           {
             "mission": "strike fire_1 at distance 6 within 2 actions; mine >=0 crystals at turn end on rich ground; survive no hit",
             "tiedWith": [],
-            "cost": 6,
+            "cost": 15,
             "nextBestPrice": null
           },
           {
             "mission": "strike fire_1 at distance 6 within 2 actions; mine >=0 crystals at turn end on rich ground; survive plant_1 hit",
             "tiedWith": [],
-            "cost": 6,
+            "cost": 15,
             "nextBestPrice": null
           },
           {
             "mission": "strike fire_1 at distance 6 within 2 actions; mine >=0 crystals at turn end on rich ground; survive plant_2 hit",
             "tiedWith": [],
-            "cost": 6,
+            "cost": 15,
             "nextBestPrice": null
           }
         ]
       },
       "access": {
         "3": {
-          "activeTurn": 4,
-          "investment": 6,
+          "activeTurn": 7,
+          "investment": 15,
           "path": [
             {
               "turn": 2,
-              "resources": 2,
+              "resources": 0,
               "event": "buy lightning_1"
-            },
-            {
-              "turn": 3,
-              "resources": 3,
-              "event": "promote lightning_2"
             },
             {
               "turn": 4,
               "resources": 2,
+              "event": "promote lightning_2"
+            },
+            {
+              "turn": 7,
+              "resources": 0,
               "event": "promote lightning_3"
             }
           ]
         },
         "6": {
           "activeTurn": 4,
-          "investment": 6,
+          "investment": 15,
           "path": [
             {
               "turn": 2,
-              "resources": 5,
+              "resources": 3,
               "event": "buy lightning_1"
             },
             {
               "turn": 3,
-              "resources": 9,
+              "resources": 5,
               "event": "promote lightning_2"
             },
             {
               "turn": 4,
-              "resources": 11,
+              "resources": 2,
               "event": "promote lightning_3"
             }
           ]
         },
         "9": {
           "activeTurn": 4,
-          "investment": 6,
+          "investment": 15,
           "path": [
             {
               "turn": 2,
-              "resources": 8,
+              "resources": 6,
               "event": "buy lightning_1"
             },
             {
               "turn": 3,
-              "resources": 15,
+              "resources": 11,
               "event": "promote lightning_2"
             },
             {
               "turn": 4,
-              "resources": 20,
+              "resources": 11,
               "event": "promote lightning_3"
             }
           ]
@@ -2784,7 +2736,7 @@
         "base": {
           "killCells": 270,
           "cells": 972,
-          "deliveredDamage": 0.7222222222222222,
+          "deliveredDamage": 0.7407407407407407,
           "meanStrikeActions": 3.111111111111111,
           "income": {
             "ordinary": [
@@ -2825,7 +2777,7 @@
               "distance": 1,
               "frontier": [
                 {
-                  "cost": 1,
+                  "cost": 3,
                   "actions": 1,
                   "bodies": 1,
                   "units": [
@@ -2839,7 +2791,7 @@
               "distance": 4,
               "frontier": [
                 {
-                  "cost": 1,
+                  "cost": 3,
                   "actions": 2,
                   "bodies": 1,
                   "units": [
@@ -2853,7 +2805,7 @@
               "distance": 7,
               "frontier": [
                 {
-                  "cost": 1,
+                  "cost": 3,
                   "actions": 3,
                   "bodies": 1,
                   "units": [
@@ -2867,31 +2819,31 @@
         },
         "changes": {
           "attack": {
-            "killCells": 18,
+            "killCells": 36,
             "squad": {
               "cases": 54,
               "newlyFeasible": 0,
               "jointlyFeasible": 54,
-              "meanCrystalsSaved": 0.3333333333333333,
-              "meanActionsSaved": 0.1111111111111111,
+              "meanCrystalsSaved": 1.6666666666666667,
+              "meanActionsSaved": 0.2222222222222222,
               "examples": [
                 {
                   "target": "water_2",
                   "distance": 1,
-                  "beforeCost": 12,
-                  "afterCost": 6
+                  "beforeCost": 30,
+                  "afterCost": 15
                 },
                 {
                   "target": "water_2",
                   "distance": 4,
-                  "beforeCost": 12,
-                  "afterCost": 6
+                  "beforeCost": 30,
+                  "afterCost": 15
                 },
                 {
                   "target": "water_2",
                   "distance": 7,
-                  "beforeCost": 12,
-                  "afterCost": 6
+                  "beforeCost": 30,
+                  "afterCost": 15
                 }
               ]
             },
@@ -2905,18 +2857,18 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 4,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 7,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               }
             ]
           },
@@ -2940,18 +2892,18 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 4,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 7,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               }
             ]
           },
@@ -2966,7 +2918,7 @@
               "examples": []
             },
             "strikeActionsSaved": 0.2777777777777777,
-            "deliveredDamage": 0.12037037037037035,
+            "deliveredDamage": 0.12345679012345678,
             "incomeAt6": {
               "ordinary": 0,
               "shelf": 0,
@@ -2975,18 +2927,18 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 4,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 7,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               }
             ]
           },
@@ -3010,24 +2962,24 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 4,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 7,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               }
             ]
           }
         },
         "attackSpeedSynergy": {
-          "extraKillCellsBeyondAdditive": 3,
+          "extraKillCellsBeyondAdditive": 6,
           "witness": {
             "target": "water_2",
             "distance": 7,
@@ -3046,7 +2998,7 @@
       "defense": 2,
       "speed": 1,
       "mining": 2,
-      "cost": 2,
+      "cost": 4,
       "dominatedBy": [],
       "role": {
         "feasible": 3450,
@@ -3056,20 +3008,20 @@
           {
             "mission": "strike fire_1 at distance 1 within 1 actions; mine >=1 crystals at turn end on rich ground; survive fire_1 hit",
             "tiedWith": [],
-            "cost": 2,
-            "nextBestPrice": 4
+            "cost": 4,
+            "nextBestPrice": 8
           },
           {
             "mission": "strike fire_1 at distance 1 within 1 actions; mine >=1 crystals at turn end on rich ground; survive lightning_1 hit",
             "tiedWith": [],
-            "cost": 2,
-            "nextBestPrice": 4
+            "cost": 4,
+            "nextBestPrice": 8
           },
           {
             "mission": "strike fire_1 at distance 1 within 1 actions; mine >=1 crystals at turn end on rich ground; survive lightning_2 hit",
             "tiedWith": [],
-            "cost": 2,
-            "nextBestPrice": 4
+            "cost": 4,
+            "nextBestPrice": 8
           }
         ]
       },
@@ -3122,20 +3074,20 @@
               6,
               8,
               10,
-              10
+              12
             ]
           },
           "turnsToEmpty": {
             "ordinary": 2,
             "shelf": 4,
-            "rich": 5
+            "rich": 8
           },
           "defense": [
             {
               "distance": 1,
               "frontier": [
                 {
-                  "cost": 2,
+                  "cost": 4,
                   "actions": 1,
                   "bodies": 1,
                   "units": [
@@ -3149,7 +3101,7 @@
               "distance": 4,
               "frontier": [
                 {
-                  "cost": 2,
+                  "cost": 4,
                   "actions": 3,
                   "bodies": 1,
                   "units": [
@@ -3158,7 +3110,7 @@
                   "damage": 2
                 },
                 {
-                  "cost": 6,
+                  "cost": 15,
                   "actions": 2,
                   "bodies": 1,
                   "units": [
@@ -3172,7 +3124,7 @@
               "distance": 7,
               "frontier": [
                 {
-                  "cost": 2,
+                  "cost": 4,
                   "actions": 4,
                   "bodies": 1,
                   "units": [
@@ -3181,7 +3133,7 @@
                   "damage": 2
                 },
                 {
-                  "cost": 6,
+                  "cost": 15,
                   "actions": 3,
                   "bodies": 1,
                   "units": [
@@ -3195,395 +3147,10 @@
         },
         "changes": {
           "attack": {
-            "killCells": 12,
+            "killCells": 6,
             "squad": {
               "cases": 54,
-              "newlyFeasible": 3,
-              "jointlyFeasible": 27,
-              "meanCrystalsSaved": 0.5925925925925926,
-              "meanActionsSaved": 0.2962962962962963,
-              "examples": [
-                {
-                  "target": "water_2",
-                  "distance": 1,
-                  "beforeCost": 4,
-                  "afterCost": 2
-                },
-                {
-                  "target": "water_2",
-                  "distance": 4,
-                  "beforeCost": null,
-                  "afterCost": 2
-                },
-                {
-                  "target": "plant_1",
-                  "distance": 1,
-                  "beforeCost": 4,
-                  "afterCost": 2
-                }
-              ]
-            },
-            "strikeActionsSaved": 0,
-            "deliveredDamage": 0.04938271604938271,
-            "incomeAt6": {
-              "ordinary": 0,
-              "shelf": 0,
-              "rich": 0
-            },
-            "defenseKillCost": [
-              {
-                "distance": 1,
-                "before": 2,
-                "after": 2
-              },
-              {
-                "distance": 4,
-                "before": 2,
-                "after": 2
-              },
-              {
-                "distance": 7,
-                "before": 2,
-                "after": 2
-              }
-            ]
-          },
-          "defense": {
-            "killCells": 0,
-            "squad": {
-              "cases": 54,
-              "newlyFeasible": 0,
-              "jointlyFeasible": 27,
-              "meanCrystalsSaved": 0,
-              "meanActionsSaved": 0,
-              "examples": []
-            },
-            "strikeActionsSaved": 0,
-            "deliveredDamage": 0,
-            "incomeAt6": {
-              "ordinary": 0,
-              "shelf": 0,
-              "rich": 0
-            },
-            "defenseKillCost": [
-              {
-                "distance": 1,
-                "before": 2,
-                "after": 3
-              },
-              {
-                "distance": 4,
-                "before": 2,
-                "after": 3
-              },
-              {
-                "distance": 7,
-                "before": 2,
-                "after": 4
-              }
-            ]
-          },
-          "speed": {
-            "killCells": 30,
-            "squad": {
-              "cases": 54,
-              "newlyFeasible": 13,
-              "jointlyFeasible": 27,
-              "meanCrystalsSaved": 0,
-              "meanActionsSaved": 0.37037037037037035,
-              "examples": [
-                {
-                  "target": "fire_1",
-                  "distance": 7,
-                  "beforeCost": null,
-                  "afterCost": 2
-                },
-                {
-                  "target": "fire_2",
-                  "distance": 7,
-                  "beforeCost": null,
-                  "afterCost": 2
-                },
-                {
-                  "target": "fire_3",
-                  "distance": 7,
-                  "beforeCost": null,
-                  "afterCost": 2
-                }
-              ]
-            },
-            "strikeActionsSaved": 4,
-            "deliveredDamage": 0.0771604938271605,
-            "incomeAt6": {
-              "ordinary": 0,
-              "shelf": 0,
-              "rich": 0
-            },
-            "defenseKillCost": [
-              {
-                "distance": 1,
-                "before": 2,
-                "after": 2
-              },
-              {
-                "distance": 4,
-                "before": 2,
-                "after": 2
-              },
-              {
-                "distance": 7,
-                "before": 2,
-                "after": 2
-              }
-            ]
-          },
-          "mining": {
-            "killCells": 0,
-            "squad": {
-              "cases": 54,
-              "newlyFeasible": 0,
-              "jointlyFeasible": 27,
-              "meanCrystalsSaved": 0,
-              "meanActionsSaved": 0,
-              "examples": []
-            },
-            "strikeActionsSaved": 0,
-            "deliveredDamage": 0,
-            "incomeAt6": {
-              "ordinary": 0,
-              "shelf": 0,
-              "rich": 0
-            },
-            "defenseKillCost": [
-              {
-                "distance": 1,
-                "before": 2,
-                "after": 2
-              },
-              {
-                "distance": 4,
-                "before": 2,
-                "after": 2
-              },
-              {
-                "distance": 7,
-                "before": 2,
-                "after": 2
-              }
-            ]
-          }
-        },
-        "attackSpeedSynergy": {
-          "extraKillCellsBeyondAdditive": 6,
-          "witness": {
-            "target": "water_2",
-            "distance": 3,
-            "actions": 2
-          }
-        }
-      }
-    },
-    {
-      "id": "water_2",
-      "name": "Straumr",
-      "element": "water",
-      "tier": 2,
-      "archetype": "balanced",
-      "attack": 2,
-      "defense": 3,
-      "speed": 1,
-      "mining": 2,
-      "cost": 4,
-      "dominatedBy": [],
-      "role": {
-        "feasible": 8280,
-        "cheapest": 2766,
-        "soleCheapest": 2766,
-        "witnesses": [
-          {
-            "mission": "strike fire_1 at distance 1 within 1 actions; mine >=0 crystals at turn end on rich ground; survive fire_2 hit",
-            "tiedWith": [],
-            "cost": 4,
-            "nextBestPrice": 10
-          },
-          {
-            "mission": "strike fire_1 at distance 1 within 1 actions; mine >=0 crystals at turn end on rich ground; survive lightning_3 hit",
-            "tiedWith": [],
-            "cost": 4,
-            "nextBestPrice": 10
-          },
-          {
-            "mission": "strike fire_1 at distance 1 within 1 actions; mine >=0 crystals at turn end on rich ground; survive water_1 hit",
-            "tiedWith": [],
-            "cost": 4,
-            "nextBestPrice": 6
-          }
-        ]
-      },
-      "access": {
-        "3": {
-          "activeTurn": 2,
-          "investment": 2,
-          "path": [
-            {
-              "turn": 2,
-              "resources": 1,
-              "event": "promote water_2"
-            }
-          ]
-        },
-        "6": {
-          "activeTurn": 2,
-          "investment": 2,
-          "path": [
-            {
-              "turn": 2,
-              "resources": 4,
-              "event": "promote water_2"
-            }
-          ]
-        },
-        "9": {
-          "activeTurn": 2,
-          "investment": 2,
-          "path": [
-            {
-              "turn": 2,
-              "resources": 7,
-              "event": "promote water_2"
-            }
-          ]
-        }
-      },
-      "value": {
-        "base": {
-          "killCells": 60,
-          "cells": 972,
-          "deliveredDamage": 0.15432098765432098,
-          "meanStrikeActions": 9.5,
-          "income": {
-            "ordinary": [
-              0,
-              2,
-              4,
-              4,
-              4,
-              4,
-              4
-            ],
-            "shelf": [
-              0,
-              2,
-              4,
-              6,
-              8,
-              8,
-              8
-            ],
-            "rich": [
-              0,
-              2,
-              4,
-              6,
-              8,
-              10,
-              10
-            ]
-          },
-          "turnsToEmpty": {
-            "ordinary": 2,
-            "shelf": 4,
-            "rich": 5
-          },
-          "defense": [
-            {
-              "distance": 1,
-              "frontier": [
-                {
-                  "cost": 3,
-                  "actions": 2,
-                  "bodies": 2,
-                  "units": [
-                    "water_1",
-                    "fire_1"
-                  ],
-                  "damage": 3
-                },
-                {
-                  "cost": 4,
-                  "actions": 1,
-                  "bodies": 1,
-                  "units": [
-                    "shadow_2"
-                  ],
-                  "damage": 3
-                }
-              ]
-            },
-            {
-              "distance": 4,
-              "frontier": [
-                {
-                  "cost": 3,
-                  "actions": 6,
-                  "bodies": 2,
-                  "units": [
-                    "shadow_1",
-                    "fire_1"
-                  ],
-                  "damage": 3
-                },
-                {
-                  "cost": 4,
-                  "actions": 3,
-                  "bodies": 1,
-                  "units": [
-                    "shadow_2"
-                  ],
-                  "damage": 3
-                },
-                {
-                  "cost": 6,
-                  "actions": 2,
-                  "bodies": 1,
-                  "units": [
-                    "fire_3"
-                  ],
-                  "damage": 3
-                }
-              ]
-            },
-            {
-              "distance": 7,
-              "frontier": [
-                {
-                  "cost": 4,
-                  "actions": 4,
-                  "bodies": 1,
-                  "units": [
-                    "shadow_2"
-                  ],
-                  "damage": 3
-                },
-                {
-                  "cost": 6,
-                  "actions": 3,
-                  "bodies": 1,
-                  "units": [
-                    "fire_3"
-                  ],
-                  "damage": 3
-                }
-              ]
-            }
-          ]
-        },
-        "changes": {
-          "attack": {
-            "killCells": 12,
-            "squad": {
-              "cases": 54,
-              "newlyFeasible": 3,
+              "newlyFeasible": 2,
               "jointlyFeasible": 27,
               "meanCrystalsSaved": 1.1851851851851851,
               "meanActionsSaved": 0.2962962962962963,
@@ -3603,8 +3170,8 @@
                 {
                   "target": "plant_1",
                   "distance": 1,
-                  "beforeCost": 8,
-                  "afterCost": 4
+                  "beforeCost": 12,
+                  "afterCost": 8
                 }
               ]
             },
@@ -3618,13 +3185,13 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 3,
-                "after": 3
+                "before": 4,
+                "after": 4
               },
               {
                 "distance": 4,
-                "before": 3,
-                "after": 3
+                "before": 4,
+                "after": 4
               },
               {
                 "distance": 7,
@@ -3653,18 +3220,18 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 3,
-                "after": 4
+                "before": 4,
+                "after": 7
               },
               {
                 "distance": 4,
-                "before": 3,
-                "after": 4
+                "before": 4,
+                "after": 7
               },
               {
                 "distance": 7,
                 "before": 4,
-                "after": 9
+                "after": 8
               }
             ]
           },
@@ -3672,7 +3239,7 @@
             "killCells": 30,
             "squad": {
               "cases": 54,
-              "newlyFeasible": 13,
+              "newlyFeasible": 12,
               "jointlyFeasible": 27,
               "meanCrystalsSaved": 0,
               "meanActionsSaved": 0.37037037037037035,
@@ -3707,13 +3274,13 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 3,
-                "after": 3
+                "before": 4,
+                "after": 4
               },
               {
                 "distance": 4,
-                "before": 3,
-                "after": 3
+                "before": 4,
+                "after": 4
               },
               {
                 "distance": 7,
@@ -3737,18 +3304,18 @@
             "incomeAt6": {
               "ordinary": 0,
               "shelf": 0,
-              "rich": 0
+              "rich": 4
             },
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 3,
-                "after": 3
+                "before": 4,
+                "after": 4
               },
               {
                 "distance": 4,
-                "before": 3,
-                "after": 3
+                "before": 4,
+                "after": 4
               },
               {
                 "distance": 7,
@@ -3759,7 +3326,392 @@
           }
         },
         "attackSpeedSynergy": {
-          "extraKillCellsBeyondAdditive": 6,
+          "extraKillCellsBeyondAdditive": 3,
+          "witness": {
+            "target": "water_2",
+            "distance": 3,
+            "actions": 2
+          }
+        }
+      }
+    },
+    {
+      "id": "water_2",
+      "name": "Straumr",
+      "element": "water",
+      "tier": 2,
+      "archetype": "balanced",
+      "attack": 2,
+      "defense": 3,
+      "speed": 1,
+      "mining": 2,
+      "cost": 8,
+      "dominatedBy": [],
+      "role": {
+        "feasible": 8280,
+        "cheapest": 2766,
+        "soleCheapest": 2766,
+        "witnesses": [
+          {
+            "mission": "strike fire_1 at distance 1 within 1 actions; mine >=0 crystals at turn end on rich ground; survive fire_2 hit",
+            "tiedWith": [],
+            "cost": 8,
+            "nextBestPrice": 16
+          },
+          {
+            "mission": "strike fire_1 at distance 1 within 1 actions; mine >=0 crystals at turn end on rich ground; survive lightning_3 hit",
+            "tiedWith": [],
+            "cost": 8,
+            "nextBestPrice": 16
+          },
+          {
+            "mission": "strike fire_1 at distance 1 within 1 actions; mine >=0 crystals at turn end on rich ground; survive water_1 hit",
+            "tiedWith": [],
+            "cost": 8,
+            "nextBestPrice": 9
+          }
+        ]
+      },
+      "access": {
+        "3": {
+          "activeTurn": 3,
+          "investment": 4,
+          "path": [
+            {
+              "turn": 3,
+              "resources": 2,
+              "event": "promote water_2"
+            }
+          ]
+        },
+        "6": {
+          "activeTurn": 2,
+          "investment": 4,
+          "path": [
+            {
+              "turn": 2,
+              "resources": 2,
+              "event": "promote water_2"
+            }
+          ]
+        },
+        "9": {
+          "activeTurn": 2,
+          "investment": 4,
+          "path": [
+            {
+              "turn": 2,
+              "resources": 5,
+              "event": "promote water_2"
+            }
+          ]
+        }
+      },
+      "value": {
+        "base": {
+          "killCells": 60,
+          "cells": 972,
+          "deliveredDamage": 0.15432098765432098,
+          "meanStrikeActions": 9.5,
+          "income": {
+            "ordinary": [
+              0,
+              2,
+              4,
+              4,
+              4,
+              4,
+              4
+            ],
+            "shelf": [
+              0,
+              2,
+              4,
+              6,
+              8,
+              8,
+              8
+            ],
+            "rich": [
+              0,
+              2,
+              4,
+              6,
+              8,
+              10,
+              12
+            ]
+          },
+          "turnsToEmpty": {
+            "ordinary": 2,
+            "shelf": 4,
+            "rich": 8
+          },
+          "defense": [
+            {
+              "distance": 1,
+              "frontier": [
+                {
+                  "cost": 7,
+                  "actions": 2,
+                  "bodies": 2,
+                  "units": [
+                    "water_1",
+                    "fire_1"
+                  ],
+                  "damage": 3
+                },
+                {
+                  "cost": 8,
+                  "actions": 1,
+                  "bodies": 1,
+                  "units": [
+                    "shadow_2"
+                  ],
+                  "damage": 3
+                }
+              ]
+            },
+            {
+              "distance": 4,
+              "frontier": [
+                {
+                  "cost": 7,
+                  "actions": 6,
+                  "bodies": 2,
+                  "units": [
+                    "shadow_1",
+                    "fire_1"
+                  ],
+                  "damage": 3
+                },
+                {
+                  "cost": 8,
+                  "actions": 3,
+                  "bodies": 1,
+                  "units": [
+                    "shadow_2"
+                  ],
+                  "damage": 3
+                },
+                {
+                  "cost": 15,
+                  "actions": 2,
+                  "bodies": 1,
+                  "units": [
+                    "fire_3"
+                  ],
+                  "damage": 3
+                }
+              ]
+            },
+            {
+              "distance": 7,
+              "frontier": [
+                {
+                  "cost": 8,
+                  "actions": 4,
+                  "bodies": 1,
+                  "units": [
+                    "shadow_2"
+                  ],
+                  "damage": 3
+                },
+                {
+                  "cost": 15,
+                  "actions": 3,
+                  "bodies": 1,
+                  "units": [
+                    "fire_3"
+                  ],
+                  "damage": 3
+                }
+              ]
+            }
+          ]
+        },
+        "changes": {
+          "attack": {
+            "killCells": 6,
+            "squad": {
+              "cases": 54,
+              "newlyFeasible": 2,
+              "jointlyFeasible": 27,
+              "meanCrystalsSaved": 2.3703703703703702,
+              "meanActionsSaved": 0.2962962962962963,
+              "examples": [
+                {
+                  "target": "water_2",
+                  "distance": 1,
+                  "beforeCost": 16,
+                  "afterCost": 8
+                },
+                {
+                  "target": "water_2",
+                  "distance": 4,
+                  "beforeCost": null,
+                  "afterCost": 8
+                },
+                {
+                  "target": "plant_1",
+                  "distance": 1,
+                  "beforeCost": 24,
+                  "afterCost": 16
+                }
+              ]
+            },
+            "strikeActionsSaved": 0,
+            "deliveredDamage": 0.04938271604938271,
+            "incomeAt6": {
+              "ordinary": 0,
+              "shelf": 0,
+              "rich": 0
+            },
+            "defenseKillCost": [
+              {
+                "distance": 1,
+                "before": 7,
+                "after": 7
+              },
+              {
+                "distance": 4,
+                "before": 7,
+                "after": 7
+              },
+              {
+                "distance": 7,
+                "before": 8,
+                "after": 8
+              }
+            ]
+          },
+          "defense": {
+            "killCells": 0,
+            "squad": {
+              "cases": 54,
+              "newlyFeasible": 0,
+              "jointlyFeasible": 27,
+              "meanCrystalsSaved": 0,
+              "meanActionsSaved": 0,
+              "examples": []
+            },
+            "strikeActionsSaved": 0,
+            "deliveredDamage": 0,
+            "incomeAt6": {
+              "ordinary": 0,
+              "shelf": 0,
+              "rich": 0
+            },
+            "defenseKillCost": [
+              {
+                "distance": 1,
+                "before": 7,
+                "after": 8
+              },
+              {
+                "distance": 4,
+                "before": 7,
+                "after": 8
+              },
+              {
+                "distance": 7,
+                "before": 8,
+                "after": 16
+              }
+            ]
+          },
+          "speed": {
+            "killCells": 30,
+            "squad": {
+              "cases": 54,
+              "newlyFeasible": 12,
+              "jointlyFeasible": 27,
+              "meanCrystalsSaved": 0,
+              "meanActionsSaved": 0.37037037037037035,
+              "examples": [
+                {
+                  "target": "fire_1",
+                  "distance": 7,
+                  "beforeCost": null,
+                  "afterCost": 8
+                },
+                {
+                  "target": "fire_2",
+                  "distance": 7,
+                  "beforeCost": null,
+                  "afterCost": 8
+                },
+                {
+                  "target": "fire_3",
+                  "distance": 7,
+                  "beforeCost": null,
+                  "afterCost": 8
+                }
+              ]
+            },
+            "strikeActionsSaved": 4,
+            "deliveredDamage": 0.0771604938271605,
+            "incomeAt6": {
+              "ordinary": 0,
+              "shelf": 0,
+              "rich": 0
+            },
+            "defenseKillCost": [
+              {
+                "distance": 1,
+                "before": 7,
+                "after": 7
+              },
+              {
+                "distance": 4,
+                "before": 7,
+                "after": 7
+              },
+              {
+                "distance": 7,
+                "before": 8,
+                "after": 8
+              }
+            ]
+          },
+          "mining": {
+            "killCells": 0,
+            "squad": {
+              "cases": 54,
+              "newlyFeasible": 0,
+              "jointlyFeasible": 27,
+              "meanCrystalsSaved": 0,
+              "meanActionsSaved": 0,
+              "examples": []
+            },
+            "strikeActionsSaved": 0,
+            "deliveredDamage": 0,
+            "incomeAt6": {
+              "ordinary": 0,
+              "shelf": 0,
+              "rich": 4
+            },
+            "defenseKillCost": [
+              {
+                "distance": 1,
+                "before": 7,
+                "after": 7
+              },
+              {
+                "distance": 4,
+                "before": 7,
+                "after": 7
+              },
+              {
+                "distance": 7,
+                "before": 8,
+                "after": 8
+              }
+            ]
+          }
+        },
+        "attackSpeedSynergy": {
+          "extraKillCellsBeyondAdditive": 3,
           "witness": {
             "target": "water_2",
             "distance": 3,
@@ -3778,78 +3730,78 @@
       "defense": 4,
       "speed": 2,
       "mining": 3,
-      "cost": 10,
+      "cost": 16,
       "dominatedBy": [],
       "role": {
-        "feasible": 32544,
-        "cheapest": 11778,
-        "soleCheapest": 10878,
+        "feasible": 29988,
+        "cheapest": 10752,
+        "soleCheapest": 9927,
         "witnesses": [
           {
             "mission": "strike fire_1 at distance 1 within 1 actions; mine >=0 crystals at turn end on rich ground; survive fire_3 hit",
             "tiedWith": [],
-            "cost": 10,
-            "nextBestPrice": 12
+            "cost": 16,
+            "nextBestPrice": null
           },
           {
             "mission": "strike fire_1 at distance 1 within 1 actions; mine >=1 crystals at turn end on rich ground; survive fire_3 hit",
             "tiedWith": [],
-            "cost": 10,
-            "nextBestPrice": 12
+            "cost": 16,
+            "nextBestPrice": null
           },
           {
             "mission": "strike fire_1 at distance 1 within 1 actions; mine >=2 crystals at turn end on rich ground; survive fire_3 hit",
             "tiedWith": [],
-            "cost": 10,
-            "nextBestPrice": 12
+            "cost": 16,
+            "nextBestPrice": null
           }
         ]
       },
       "access": {
         "3": {
-          "activeTurn": 5,
-          "investment": 8,
+          "activeTurn": 6,
+          "investment": 12,
           "path": [
             {
-              "turn": 2,
-              "resources": 1,
+              "turn": 3,
+              "resources": 2,
               "event": "promote water_2"
             },
             {
-              "turn": 5,
-              "resources": 1,
+              "turn": 6,
+              "resources": 0,
               "event": "promote water_3"
             }
           ]
         },
         "6": {
-          "activeTurn": 3,
-          "investment": 8,
+          "activeTurn": 4,
+          "investment": 12,
           "path": [
             {
               "turn": 2,
-              "resources": 4,
+              "resources": 2,
               "event": "promote water_2"
             },
             {
-              "turn": 3,
-              "resources": 3,
+              "turn": 4,
+              "resources": 4,
               "event": "promote water_3"
             }
           ]
         },
         "9": {
           "activeTurn": 3,
-          "investment": 8,
+          "investment": 12,
           "path": [
             {
               "turn": 2,
-              "resources": 7,
+              "resources": 5,
               "event": "promote water_2"
             },
             {
               "turn": 3,
-              "resources": 9,
+              "resources": 5,
               "event": "promote water_3"
             }
           ]
@@ -3857,7 +3809,7 @@
       },
       "value": {
         "base": {
-          "killCells": 108,
+          "killCells": 99,
           "cells": 972,
           "deliveredDamage": 0.3055555555555556,
           "meanStrikeActions": 5.5,
@@ -3885,22 +3837,22 @@
               3,
               6,
               9,
-              10,
-              10,
-              10
+              12,
+              15,
+              16
             ]
           },
           "turnsToEmpty": {
             "ordinary": 2,
             "shelf": 3,
-            "rich": 4
+            "rich": 6
           },
           "defense": [
             {
               "distance": 1,
               "frontier": [
                 {
-                  "cost": 4,
+                  "cost": 8,
                   "actions": 2,
                   "bodies": 2,
                   "units": [
@@ -3910,7 +3862,7 @@
                   "damage": 4
                 },
                 {
-                  "cost": 10,
+                  "cost": 16,
                   "actions": 1,
                   "bodies": 1,
                   "units": [
@@ -3924,7 +3876,7 @@
               "distance": 4,
               "frontier": [
                 {
-                  "cost": 4,
+                  "cost": 8,
                   "actions": 6,
                   "bodies": 2,
                   "units": [
@@ -3934,7 +3886,7 @@
                   "damage": 4
                 },
                 {
-                  "cost": 7,
+                  "cost": 15,
                   "actions": 5,
                   "bodies": 2,
                   "units": [
@@ -3944,17 +3896,7 @@
                   "damage": 4
                 },
                 {
-                  "cost": 9,
-                  "actions": 4,
-                  "bodies": 2,
-                  "units": [
-                    "lightning_2",
-                    "fire_3"
-                  ],
-                  "damage": 4
-                },
-                {
-                  "cost": 10,
+                  "cost": 16,
                   "actions": 2,
                   "bodies": 1,
                   "units": [
@@ -3968,17 +3910,7 @@
               "distance": 7,
               "frontier": [
                 {
-                  "cost": 9,
-                  "actions": 6,
-                  "bodies": 2,
-                  "units": [
-                    "lightning_2",
-                    "fire_3"
-                  ],
-                  "damage": 4
-                },
-                {
-                  "cost": 10,
+                  "cost": 16,
                   "actions": 3,
                   "bodies": 1,
                   "units": [
@@ -3992,36 +3924,36 @@
         },
         "changes": {
           "attack": {
-            "killCells": 27,
+            "killCells": 36,
             "squad": {
               "cases": 54,
-              "newlyFeasible": 4,
-              "jointlyFeasible": 47,
-              "meanCrystalsSaved": 1.4893617021276595,
-              "meanActionsSaved": 0.2765957446808511,
+              "newlyFeasible": 5,
+              "jointlyFeasible": 46,
+              "meanCrystalsSaved": 3.130434782608696,
+              "meanActionsSaved": 0.3695652173913043,
               "examples": [
                 {
                   "target": "water_3",
                   "distance": 1,
-                  "beforeCost": 20,
-                  "afterCost": 10
+                  "beforeCost": 32,
+                  "afterCost": 16
                 },
                 {
                   "target": "water_3",
                   "distance": 4,
-                  "beforeCost": 20,
-                  "afterCost": 10
+                  "beforeCost": 32,
+                  "afterCost": 16
                 },
                 {
                   "target": "water_3",
                   "distance": 7,
                   "beforeCost": null,
-                  "afterCost": 10
+                  "afterCost": 16
                 }
               ]
             },
             "strikeActionsSaved": 0,
-            "deliveredDamage": 0.055555555555555525,
+            "deliveredDamage": 0.06481481481481477,
             "incomeAt6": {
               "ordinary": 0,
               "shelf": 0,
@@ -4030,18 +3962,18 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 4,
-                "after": 4
+                "before": 8,
+                "after": 8
               },
               {
                 "distance": 4,
-                "before": 4,
-                "after": 4
+                "before": 8,
+                "after": 8
               },
               {
                 "distance": 7,
-                "before": 9,
-                "after": 9
+                "before": 16,
+                "after": 16
               }
             ]
           },
@@ -4050,7 +3982,7 @@
             "squad": {
               "cases": 54,
               "newlyFeasible": 0,
-              "jointlyFeasible": 47,
+              "jointlyFeasible": 46,
               "meanCrystalsSaved": 0,
               "meanActionsSaved": 0,
               "examples": []
@@ -4065,47 +3997,47 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 4,
-                "after": 5
+                "before": 8,
+                "after": 11
               },
               {
                 "distance": 4,
-                "before": 4,
-                "after": 6
+                "before": 8,
+                "after": 12
               },
               {
                 "distance": 7,
-                "before": 9,
-                "after": 12
+                "before": 16,
+                "after": 23
               }
             ]
           },
           "speed": {
-            "killCells": 36,
+            "killCells": 33,
             "squad": {
               "cases": 54,
-              "newlyFeasible": 6,
-              "jointlyFeasible": 47,
+              "newlyFeasible": 7,
+              "jointlyFeasible": 46,
               "meanCrystalsSaved": 0,
-              "meanActionsSaved": 0.723404255319149,
+              "meanActionsSaved": 0.7391304347826086,
               "examples": [
                 {
                   "target": "water_3",
                   "distance": 7,
                   "beforeCost": null,
-                  "afterCost": 20
+                  "afterCost": 32
+                },
+                {
+                  "target": "plant_1",
+                  "distance": 7,
+                  "beforeCost": null,
+                  "afterCost": 32
                 },
                 {
                   "target": "plant_2",
                   "distance": 7,
                   "beforeCost": null,
-                  "afterCost": 20
-                },
-                {
-                  "target": "plant_3",
-                  "distance": 7,
-                  "beforeCost": null,
-                  "afterCost": 20
+                  "afterCost": 32
                 }
               ]
             },
@@ -4119,18 +4051,18 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 4,
-                "after": 4
+                "before": 8,
+                "after": 8
               },
               {
                 "distance": 4,
-                "before": 4,
-                "after": 4
+                "before": 8,
+                "after": 8
               },
               {
                 "distance": 7,
-                "before": 9,
-                "after": 9
+                "before": 16,
+                "after": 16
               }
             ]
           },
@@ -4139,7 +4071,7 @@
             "squad": {
               "cases": 54,
               "newlyFeasible": 0,
-              "jointlyFeasible": 47,
+              "jointlyFeasible": 46,
               "meanCrystalsSaved": 0,
               "meanActionsSaved": 0,
               "examples": []
@@ -4154,24 +4086,24 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 4,
-                "after": 4
+                "before": 8,
+                "after": 8
               },
               {
                 "distance": 4,
-                "before": 4,
-                "after": 4
+                "before": 8,
+                "after": 8
               },
               {
                 "distance": 7,
-                "before": 9,
-                "after": 9
+                "before": 16,
+                "after": 16
               }
             ]
           }
         },
         "attackSpeedSynergy": {
-          "extraKillCellsBeyondAdditive": 9,
+          "extraKillCellsBeyondAdditive": 12,
           "witness": {
             "target": "water_3",
             "distance": 4,
@@ -4190,7 +4122,7 @@
       "defense": 2,
       "speed": 2,
       "mining": 0,
-      "cost": 2,
+      "cost": 4,
       "dominatedBy": [],
       "role": {
         "feasible": 1860,
@@ -4200,53 +4132,53 @@
           {
             "mission": "strike fire_1 at distance 3 within 2 actions; mine >=0 crystals at turn end on rich ground; survive fire_1 hit",
             "tiedWith": [],
-            "cost": 2,
-            "nextBestPrice": 4
+            "cost": 4,
+            "nextBestPrice": 8
           },
           {
             "mission": "strike fire_1 at distance 3 within 2 actions; mine >=0 crystals at turn end on rich ground; survive lightning_1 hit",
             "tiedWith": [],
-            "cost": 2,
-            "nextBestPrice": 4
+            "cost": 4,
+            "nextBestPrice": 8
           },
           {
             "mission": "strike fire_1 at distance 3 within 2 actions; mine >=0 crystals at turn end on rich ground; survive lightning_2 hit",
             "tiedWith": [],
-            "cost": 2,
-            "nextBestPrice": 4
+            "cost": 4,
+            "nextBestPrice": 8
           }
         ]
       },
       "access": {
         "3": {
-          "activeTurn": 2,
-          "investment": 2,
+          "activeTurn": 3,
+          "investment": 4,
           "path": [
             {
-              "turn": 2,
-              "resources": 1,
+              "turn": 3,
+              "resources": 2,
               "event": "buy shadow_1"
             }
           ]
         },
         "6": {
           "activeTurn": 2,
-          "investment": 2,
+          "investment": 4,
           "path": [
             {
               "turn": 2,
-              "resources": 4,
+              "resources": 2,
               "event": "buy shadow_1"
             }
           ]
         },
         "9": {
           "activeTurn": 2,
-          "investment": 2,
+          "investment": 4,
           "path": [
             {
               "turn": 2,
-              "resources": 7,
+              "resources": 5,
               "event": "buy shadow_1"
             }
           ]
@@ -4297,7 +4229,7 @@
               "distance": 1,
               "frontier": [
                 {
-                  "cost": 2,
+                  "cost": 4,
                   "actions": 1,
                   "bodies": 1,
                   "units": [
@@ -4311,7 +4243,7 @@
               "distance": 4,
               "frontier": [
                 {
-                  "cost": 2,
+                  "cost": 4,
                   "actions": 3,
                   "bodies": 1,
                   "units": [
@@ -4320,7 +4252,7 @@
                   "damage": 2
                 },
                 {
-                  "cost": 6,
+                  "cost": 15,
                   "actions": 2,
                   "bodies": 1,
                   "units": [
@@ -4334,7 +4266,7 @@
               "distance": 7,
               "frontier": [
                 {
-                  "cost": 2,
+                  "cost": 4,
                   "actions": 4,
                   "bodies": 1,
                   "units": [
@@ -4343,7 +4275,7 @@
                   "damage": 2
                 },
                 {
-                  "cost": 6,
+                  "cost": 15,
                   "actions": 3,
                   "bodies": 1,
                   "units": [
@@ -4357,31 +4289,31 @@
         },
         "changes": {
           "attack": {
-            "killCells": 18,
+            "killCells": 9,
             "squad": {
               "cases": 54,
               "newlyFeasible": 7,
-              "jointlyFeasible": 40,
-              "meanCrystalsSaved": 0.5,
-              "meanActionsSaved": 0.35,
+              "jointlyFeasible": 39,
+              "meanCrystalsSaved": 0.9230769230769231,
+              "meanActionsSaved": 0.28205128205128205,
               "examples": [
                 {
                   "target": "water_2",
                   "distance": 1,
-                  "beforeCost": 4,
-                  "afterCost": 2
+                  "beforeCost": 8,
+                  "afterCost": 4
                 },
                 {
                   "target": "water_2",
                   "distance": 4,
-                  "beforeCost": 4,
-                  "afterCost": 2
+                  "beforeCost": 8,
+                  "afterCost": 4
                 },
                 {
                   "target": "water_2",
                   "distance": 7,
                   "beforeCost": null,
-                  "afterCost": 2
+                  "afterCost": 4
                 }
               ]
             },
@@ -4395,18 +4327,18 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 2,
-                "after": 2
+                "before": 4,
+                "after": 4
               },
               {
                 "distance": 4,
-                "before": 2,
-                "after": 2
+                "before": 4,
+                "after": 4
               },
               {
                 "distance": 7,
-                "before": 2,
-                "after": 2
+                "before": 4,
+                "after": 4
               }
             ]
           },
@@ -4415,7 +4347,7 @@
             "squad": {
               "cases": 54,
               "newlyFeasible": 0,
-              "jointlyFeasible": 40,
+              "jointlyFeasible": 39,
               "meanCrystalsSaved": 0,
               "meanActionsSaved": 0,
               "examples": []
@@ -4430,18 +4362,18 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 2,
-                "after": 3
+                "before": 4,
+                "after": 7
               },
               {
                 "distance": 4,
-                "before": 2,
-                "after": 3
+                "before": 4,
+                "after": 7
               },
               {
                 "distance": 7,
-                "before": 2,
-                "after": 4
+                "before": 4,
+                "after": 8
               }
             ]
           },
@@ -4450,27 +4382,27 @@
             "squad": {
               "cases": 54,
               "newlyFeasible": 5,
-              "jointlyFeasible": 40,
+              "jointlyFeasible": 39,
               "meanCrystalsSaved": 0,
-              "meanActionsSaved": 0.65,
+              "meanActionsSaved": 0.6153846153846154,
               "examples": [
                 {
                   "target": "water_2",
                   "distance": 7,
                   "beforeCost": null,
-                  "afterCost": 4
+                  "afterCost": 8
                 },
                 {
                   "target": "water_3",
                   "distance": 7,
                   "beforeCost": null,
-                  "afterCost": 4
+                  "afterCost": 8
                 },
                 {
                   "target": "plant_1",
-                  "distance": 7,
+                  "distance": 4,
                   "beforeCost": null,
-                  "afterCost": 4
+                  "afterCost": 12
                 }
               ]
             },
@@ -4484,18 +4416,18 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 2,
-                "after": 2
+                "before": 4,
+                "after": 4
               },
               {
                 "distance": 4,
-                "before": 2,
-                "after": 2
+                "before": 4,
+                "after": 4
               },
               {
                 "distance": 7,
-                "before": 2,
-                "after": 2
+                "before": 4,
+                "after": 4
               }
             ]
           },
@@ -4504,7 +4436,7 @@
             "squad": {
               "cases": 54,
               "newlyFeasible": 0,
-              "jointlyFeasible": 40,
+              "jointlyFeasible": 39,
               "meanCrystalsSaved": 0,
               "meanActionsSaved": 0,
               "examples": []
@@ -4519,24 +4451,24 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 2,
-                "after": 2
+                "before": 4,
+                "after": 4
               },
               {
                 "distance": 4,
-                "before": 2,
-                "after": 2
+                "before": 4,
+                "after": 4
               },
               {
                 "distance": 7,
-                "before": 2,
-                "after": 2
+                "before": 4,
+                "after": 4
               }
             ]
           }
         },
         "attackSpeedSynergy": {
-          "extraKillCellsBeyondAdditive": 6,
+          "extraKillCellsBeyondAdditive": 3,
           "witness": {
             "target": "water_2",
             "distance": 4,
@@ -4555,78 +4487,78 @@
       "defense": 2,
       "speed": 2,
       "mining": 1,
-      "cost": 4,
+      "cost": 8,
       "dominatedBy": [],
       "role": {
-        "feasible": 4530,
-        "cheapest": 1026,
-        "soleCheapest": 1026,
+        "feasible": 4170,
+        "cheapest": 810,
+        "soleCheapest": 810,
         "witnesses": [
           {
             "mission": "strike fire_1 at distance 3 within 2 actions; mine >=1 crystals at turn end on rich ground; survive fire_1 hit",
             "tiedWith": [],
-            "cost": 4,
-            "nextBestPrice": 10
+            "cost": 8,
+            "nextBestPrice": 16
           },
           {
             "mission": "strike fire_1 at distance 3 within 2 actions; mine >=1 crystals at turn end on rich ground; survive lightning_1 hit",
             "tiedWith": [],
-            "cost": 4,
-            "nextBestPrice": 6
+            "cost": 8,
+            "nextBestPrice": 15
           },
           {
             "mission": "strike fire_1 at distance 3 within 2 actions; mine >=1 crystals at turn end on rich ground; survive lightning_2 hit",
             "tiedWith": [],
-            "cost": 4,
-            "nextBestPrice": 10
+            "cost": 8,
+            "nextBestPrice": 16
           }
         ]
       },
       "access": {
         "3": {
-          "activeTurn": 3,
-          "investment": 4,
+          "activeTurn": 4,
+          "investment": 8,
           "path": [
-            {
-              "turn": 2,
-              "resources": 1,
-              "event": "buy shadow_1"
-            },
             {
               "turn": 3,
               "resources": 2,
+              "event": "buy shadow_1"
+            },
+            {
+              "turn": 4,
+              "resources": 1,
               "event": "promote shadow_2"
             }
           ]
         },
         "6": {
           "activeTurn": 3,
-          "investment": 4,
+          "investment": 8,
           "path": [
             {
               "turn": 2,
-              "resources": 4,
+              "resources": 2,
               "event": "buy shadow_1"
             },
             {
               "turn": 3,
-              "resources": 8,
+              "resources": 4,
               "event": "promote shadow_2"
             }
           ]
         },
         "9": {
           "activeTurn": 3,
-          "investment": 4,
+          "investment": 8,
           "path": [
             {
               "turn": 2,
-              "resources": 7,
+              "resources": 5,
               "event": "buy shadow_1"
             },
             {
               "turn": 3,
-              "resources": 14,
+              "resources": 10,
               "event": "promote shadow_2"
             }
           ]
@@ -4634,7 +4566,7 @@
       },
       "value": {
         "base": {
-          "killCells": 108,
+          "killCells": 99,
           "cells": 972,
           "deliveredDamage": 0.3055555555555556,
           "meanStrikeActions": 5.5,
@@ -4670,14 +4602,14 @@
           "turnsToEmpty": {
             "ordinary": 4,
             "shelf": 8,
-            "rich": 10
+            "rich": 16
           },
           "defense": [
             {
               "distance": 1,
               "frontier": [
                 {
-                  "cost": 2,
+                  "cost": 4,
                   "actions": 1,
                   "bodies": 1,
                   "units": [
@@ -4691,7 +4623,7 @@
               "distance": 4,
               "frontier": [
                 {
-                  "cost": 2,
+                  "cost": 4,
                   "actions": 3,
                   "bodies": 1,
                   "units": [
@@ -4700,7 +4632,7 @@
                   "damage": 2
                 },
                 {
-                  "cost": 6,
+                  "cost": 15,
                   "actions": 2,
                   "bodies": 1,
                   "units": [
@@ -4714,7 +4646,7 @@
               "distance": 7,
               "frontier": [
                 {
-                  "cost": 2,
+                  "cost": 4,
                   "actions": 4,
                   "bodies": 1,
                   "units": [
@@ -4723,7 +4655,7 @@
                   "damage": 2
                 },
                 {
-                  "cost": 6,
+                  "cost": 15,
                   "actions": 3,
                   "bodies": 1,
                   "units": [
@@ -4737,36 +4669,36 @@
         },
         "changes": {
           "attack": {
-            "killCells": 27,
+            "killCells": 36,
             "squad": {
               "cases": 54,
-              "newlyFeasible": 4,
-              "jointlyFeasible": 47,
-              "meanCrystalsSaved": 0.5957446808510638,
-              "meanActionsSaved": 0.2765957446808511,
+              "newlyFeasible": 5,
+              "jointlyFeasible": 46,
+              "meanCrystalsSaved": 1.565217391304348,
+              "meanActionsSaved": 0.3695652173913043,
               "examples": [
                 {
                   "target": "water_3",
                   "distance": 1,
-                  "beforeCost": 8,
-                  "afterCost": 4
+                  "beforeCost": 16,
+                  "afterCost": 8
                 },
                 {
                   "target": "water_3",
                   "distance": 4,
-                  "beforeCost": 8,
-                  "afterCost": 4
+                  "beforeCost": 16,
+                  "afterCost": 8
                 },
                 {
                   "target": "water_3",
                   "distance": 7,
                   "beforeCost": null,
-                  "afterCost": 4
+                  "afterCost": 8
                 }
               ]
             },
             "strikeActionsSaved": 0,
-            "deliveredDamage": 0.055555555555555525,
+            "deliveredDamage": 0.06481481481481477,
             "incomeAt6": {
               "ordinary": 0,
               "shelf": 0,
@@ -4775,18 +4707,18 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 2,
-                "after": 2
+                "before": 4,
+                "after": 4
               },
               {
                 "distance": 4,
-                "before": 2,
-                "after": 2
+                "before": 4,
+                "after": 4
               },
               {
                 "distance": 7,
-                "before": 2,
-                "after": 2
+                "before": 4,
+                "after": 4
               }
             ]
           },
@@ -4795,7 +4727,7 @@
             "squad": {
               "cases": 54,
               "newlyFeasible": 0,
-              "jointlyFeasible": 47,
+              "jointlyFeasible": 46,
               "meanCrystalsSaved": 0,
               "meanActionsSaved": 0,
               "examples": []
@@ -4810,47 +4742,47 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 2,
-                "after": 3
+                "before": 4,
+                "after": 7
               },
               {
                 "distance": 4,
-                "before": 2,
-                "after": 3
+                "before": 4,
+                "after": 7
               },
               {
                 "distance": 7,
-                "before": 2,
-                "after": 4
+                "before": 4,
+                "after": 8
               }
             ]
           },
           "speed": {
-            "killCells": 36,
+            "killCells": 33,
             "squad": {
               "cases": 54,
-              "newlyFeasible": 6,
-              "jointlyFeasible": 47,
+              "newlyFeasible": 7,
+              "jointlyFeasible": 46,
               "meanCrystalsSaved": 0,
-              "meanActionsSaved": 0.723404255319149,
+              "meanActionsSaved": 0.7391304347826086,
               "examples": [
                 {
                   "target": "water_3",
                   "distance": 7,
                   "beforeCost": null,
-                  "afterCost": 8
+                  "afterCost": 16
+                },
+                {
+                  "target": "plant_1",
+                  "distance": 7,
+                  "beforeCost": null,
+                  "afterCost": 16
                 },
                 {
                   "target": "plant_2",
                   "distance": 7,
                   "beforeCost": null,
-                  "afterCost": 8
-                },
-                {
-                  "target": "plant_3",
-                  "distance": 7,
-                  "beforeCost": null,
-                  "afterCost": 8
+                  "afterCost": 16
                 }
               ]
             },
@@ -4864,18 +4796,18 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 2,
-                "after": 2
+                "before": 4,
+                "after": 4
               },
               {
                 "distance": 4,
-                "before": 2,
-                "after": 2
+                "before": 4,
+                "after": 4
               },
               {
                 "distance": 7,
-                "before": 2,
-                "after": 2
+                "before": 4,
+                "after": 4
               }
             ]
           },
@@ -4884,7 +4816,7 @@
             "squad": {
               "cases": 54,
               "newlyFeasible": 0,
-              "jointlyFeasible": 47,
+              "jointlyFeasible": 46,
               "meanCrystalsSaved": 0,
               "meanActionsSaved": 0,
               "examples": []
@@ -4894,29 +4826,29 @@
             "incomeAt6": {
               "ordinary": 0,
               "shelf": 2,
-              "rich": 4
+              "rich": 6
             },
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 2,
-                "after": 2
+                "before": 4,
+                "after": 4
               },
               {
                 "distance": 4,
-                "before": 2,
-                "after": 2
+                "before": 4,
+                "after": 4
               },
               {
                 "distance": 7,
-                "before": 2,
-                "after": 2
+                "before": 4,
+                "after": 4
               }
             ]
           }
         },
         "attackSpeedSynergy": {
-          "extraKillCellsBeyondAdditive": 9,
+          "extraKillCellsBeyondAdditive": 12,
           "witness": {
             "target": "water_3",
             "distance": 4,
@@ -4935,93 +4867,93 @@
       "defense": 2,
       "speed": 3,
       "mining": 2,
-      "cost": 10,
+      "cost": 16,
       "dominatedBy": [],
       "role": {
         "feasible": 11835,
-        "cheapest": 4215,
-        "soleCheapest": 3315,
+        "cheapest": 4464,
+        "soleCheapest": 3639,
         "witnesses": [
           {
             "mission": "strike fire_1 at distance 4 within 2 actions; mine >=0 crystals at turn end on rich ground; survive fire_1 hit",
             "tiedWith": [],
-            "cost": 10,
+            "cost": 16,
             "nextBestPrice": null
           },
           {
             "mission": "strike fire_1 at distance 4 within 2 actions; mine >=0 crystals at turn end on rich ground; survive lightning_2 hit",
             "tiedWith": [],
-            "cost": 10,
+            "cost": 16,
             "nextBestPrice": null
           },
           {
             "mission": "strike fire_1 at distance 4 within 2 actions; mine >=1 crystals at turn end on rich ground; survive fire_1 hit",
             "tiedWith": [],
-            "cost": 10,
+            "cost": 16,
             "nextBestPrice": null
           }
         ]
       },
       "access": {
         "3": {
-          "activeTurn": 5,
-          "investment": 10,
+          "activeTurn": 8,
+          "investment": 16,
           "path": [
-            {
-              "turn": 2,
-              "resources": 1,
-              "event": "buy shadow_1"
-            },
             {
               "turn": 3,
               "resources": 2,
+              "event": "buy shadow_1"
+            },
+            {
+              "turn": 4,
+              "resources": 1,
               "event": "promote shadow_2"
             },
             {
-              "turn": 5,
-              "resources": 0,
+              "turn": 8,
+              "resources": 1,
               "event": "promote shadow_3"
             }
           ]
         },
         "6": {
           "activeTurn": 4,
-          "investment": 10,
+          "investment": 16,
           "path": [
             {
               "turn": 2,
-              "resources": 4,
+              "resources": 2,
               "event": "buy shadow_1"
             },
             {
               "turn": 3,
-              "resources": 8,
+              "resources": 4,
               "event": "promote shadow_2"
             },
             {
               "turn": 4,
-              "resources": 7,
+              "resources": 1,
               "event": "promote shadow_3"
             }
           ]
         },
         "9": {
           "activeTurn": 4,
-          "investment": 10,
+          "investment": 16,
           "path": [
             {
               "turn": 2,
-              "resources": 7,
+              "resources": 5,
               "event": "buy shadow_1"
             },
             {
               "turn": 3,
-              "resources": 14,
+              "resources": 10,
               "event": "promote shadow_2"
             },
             {
               "turn": 4,
-              "resources": 16,
+              "resources": 10,
               "event": "promote shadow_3"
             }
           ]
@@ -5031,7 +4963,7 @@
         "base": {
           "killCells": 180,
           "cells": 972,
-          "deliveredDamage": 0.48148148148148145,
+          "deliveredDamage": 0.49382716049382713,
           "meanStrikeActions": 4.166666666666667,
           "income": {
             "ordinary": [
@@ -5059,20 +4991,20 @@
               6,
               8,
               10,
-              10
+              12
             ]
           },
           "turnsToEmpty": {
             "ordinary": 2,
             "shelf": 4,
-            "rich": 5
+            "rich": 8
           },
           "defense": [
             {
               "distance": 1,
               "frontier": [
                 {
-                  "cost": 2,
+                  "cost": 4,
                   "actions": 1,
                   "bodies": 1,
                   "units": [
@@ -5086,7 +5018,7 @@
               "distance": 4,
               "frontier": [
                 {
-                  "cost": 2,
+                  "cost": 4,
                   "actions": 3,
                   "bodies": 1,
                   "units": [
@@ -5095,7 +5027,7 @@
                   "damage": 2
                 },
                 {
-                  "cost": 6,
+                  "cost": 15,
                   "actions": 2,
                   "bodies": 1,
                   "units": [
@@ -5109,7 +5041,7 @@
               "distance": 7,
               "frontier": [
                 {
-                  "cost": 2,
+                  "cost": 4,
                   "actions": 4,
                   "bodies": 1,
                   "units": [
@@ -5118,7 +5050,7 @@
                   "damage": 2
                 },
                 {
-                  "cost": 6,
+                  "cost": 15,
                   "actions": 3,
                   "bodies": 1,
                   "units": [
@@ -5137,31 +5069,31 @@
               "cases": 54,
               "newlyFeasible": 0,
               "jointlyFeasible": 54,
-              "meanCrystalsSaved": 1.1111111111111112,
+              "meanCrystalsSaved": 1.7777777777777777,
               "meanActionsSaved": 0.2222222222222222,
               "examples": [
                 {
                   "target": "plant_3",
                   "distance": 1,
-                  "beforeCost": 20,
-                  "afterCost": 10
+                  "beforeCost": 32,
+                  "afterCost": 16
                 },
                 {
                   "target": "plant_3",
                   "distance": 4,
-                  "beforeCost": 20,
-                  "afterCost": 10
+                  "beforeCost": 32,
+                  "afterCost": 16
                 },
                 {
                   "target": "plant_3",
                   "distance": 7,
-                  "beforeCost": 20,
-                  "afterCost": 10
+                  "beforeCost": 32,
+                  "afterCost": 16
                 }
               ]
             },
             "strikeActionsSaved": 0,
-            "deliveredDamage": 0.037037037037037035,
+            "deliveredDamage": 0.03703703703703709,
             "incomeAt6": {
               "ordinary": 0,
               "shelf": 0,
@@ -5170,18 +5102,18 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 2,
-                "after": 2
+                "before": 4,
+                "after": 4
               },
               {
                 "distance": 4,
-                "before": 2,
-                "after": 2
+                "before": 4,
+                "after": 4
               },
               {
                 "distance": 7,
-                "before": 2,
-                "after": 2
+                "before": 4,
+                "after": 4
               }
             ]
           },
@@ -5205,18 +5137,18 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 2,
-                "after": 3
+                "before": 4,
+                "after": 7
               },
               {
                 "distance": 4,
-                "before": 2,
-                "after": 3
+                "before": 4,
+                "after": 7
               },
               {
                 "distance": 7,
-                "before": 2,
-                "after": 4
+                "before": 4,
+                "after": 8
               }
             ]
           },
@@ -5231,7 +5163,7 @@
               "examples": []
             },
             "strikeActionsSaved": 0.666666666666667,
-            "deliveredDamage": 0.1203703703703704,
+            "deliveredDamage": 0.12345679012345678,
             "incomeAt6": {
               "ordinary": 0,
               "shelf": 0,
@@ -5240,18 +5172,18 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 2,
-                "after": 2
+                "before": 4,
+                "after": 4
               },
               {
                 "distance": 4,
-                "before": 2,
-                "after": 2
+                "before": 4,
+                "after": 4
               },
               {
                 "distance": 7,
-                "before": 2,
-                "after": 2
+                "before": 4,
+                "after": 4
               }
             ]
           },
@@ -5270,23 +5202,23 @@
             "incomeAt6": {
               "ordinary": 0,
               "shelf": 0,
-              "rich": 0
+              "rich": 4
             },
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 2,
-                "after": 2
+                "before": 4,
+                "after": 4
               },
               {
                 "distance": 4,
-                "before": 2,
-                "after": 2
+                "before": 4,
+                "after": 4
               },
               {
                 "distance": 7,
-                "before": 2,
-                "after": 2
+                "before": 4,
+                "after": 4
               }
             ]
           }
@@ -5308,33 +5240,33 @@
       "tier": 1,
       "archetype": "expand",
       "attack": 0,
-      "defense": 2,
+      "defense": 3,
       "speed": 1,
       "mining": 3,
-      "cost": 3,
+      "cost": 5,
       "dominatedBy": [],
       "role": {
-        "feasible": 518,
-        "cheapest": 326,
-        "soleCheapest": 98,
+        "feasible": 988,
+        "cheapest": 736,
+        "soleCheapest": 208,
         "witnesses": [
           {
             "mission": "collect >=3 on ordinary reserve 4 within 1 turns; survive no hit",
             "tiedWith": [],
-            "cost": 3,
-            "nextBestPrice": 6
+            "cost": 5,
+            "nextBestPrice": 9
+          },
+          {
+            "mission": "collect >=3 on ordinary reserve 4 within 1 turns; survive lightning_1 hit",
+            "tiedWith": [],
+            "cost": 5,
+            "nextBestPrice": 9
           },
           {
             "mission": "collect >=3 on ordinary reserve 4 within 1 turns; survive water_1 hit",
             "tiedWith": [],
-            "cost": 3,
-            "nextBestPrice": 6
-          },
-          {
-            "mission": "collect >=3 on ordinary reserve 4 within 1 turns; survive water_2 hit",
-            "tiedWith": [],
-            "cost": 3,
-            "nextBestPrice": 6
+            "cost": 5,
+            "nextBestPrice": 9
           }
         ]
       },
@@ -5385,28 +5317,28 @@
               3,
               6,
               9,
-              10,
-              10,
-              10
+              12,
+              15,
+              16
             ]
           },
           "turnsToEmpty": {
             "ordinary": 2,
             "shelf": 3,
-            "rich": 4
+            "rich": 6
           },
           "defense": [
             {
               "distance": 1,
               "frontier": [
                 {
-                  "cost": 1,
+                  "cost": 3,
                   "actions": 1,
                   "bodies": 1,
                   "units": [
-                    "lightning_1"
+                    "fire_1"
                   ],
-                  "damage": 2
+                  "damage": 3
                 }
               ]
             },
@@ -5414,13 +5346,22 @@
               "distance": 4,
               "frontier": [
                 {
-                  "cost": 1,
+                  "cost": 3,
+                  "actions": 3,
+                  "bodies": 1,
+                  "units": [
+                    "fire_1"
+                  ],
+                  "damage": 3
+                },
+                {
+                  "cost": 7,
                   "actions": 2,
                   "bodies": 1,
                   "units": [
-                    "lightning_1"
+                    "lightning_2"
                   ],
-                  "damage": 2
+                  "damage": 3
                 }
               ]
             },
@@ -5428,13 +5369,22 @@
               "distance": 7,
               "frontier": [
                 {
-                  "cost": 1,
+                  "cost": 3,
+                  "actions": 4,
+                  "bodies": 1,
+                  "units": [
+                    "fire_1"
+                  ],
+                  "damage": 3
+                },
+                {
+                  "cost": 7,
                   "actions": 3,
                   "bodies": 1,
                   "units": [
-                    "lightning_1"
+                    "lightning_2"
                   ],
-                  "damage": 2
+                  "damage": 3
                 }
               ]
             }
@@ -5447,26 +5397,26 @@
               "cases": 54,
               "newlyFeasible": 9,
               "jointlyFeasible": 6,
-              "meanCrystalsSaved": 3.5,
+              "meanCrystalsSaved": 5.833333333333333,
               "meanActionsSaved": 1.1666666666666667,
               "examples": [
                 {
                   "target": "water_1",
                   "distance": 1,
-                  "beforeCost": 6,
-                  "afterCost": 3
+                  "beforeCost": 10,
+                  "afterCost": 5
                 },
                 {
                   "target": "water_1",
                   "distance": 4,
                   "beforeCost": null,
-                  "afterCost": 3
+                  "afterCost": 5
                 },
                 {
                   "target": "water_2",
                   "distance": 1,
-                  "beforeCost": 9,
-                  "afterCost": 6
+                  "beforeCost": 15,
+                  "afterCost": 10
                 }
               ]
             },
@@ -5480,18 +5430,18 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 4,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 7,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               }
             ]
           },
@@ -5515,18 +5465,18 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 6
               },
               {
                 "distance": 4,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 6
               },
               {
                 "distance": 7,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 6
               }
             ]
           },
@@ -5543,19 +5493,19 @@
                   "target": "water_1",
                   "distance": 4,
                   "beforeCost": null,
-                  "afterCost": 6
+                  "afterCost": 10
                 },
                 {
                   "target": "shadow_1",
                   "distance": 4,
                   "beforeCost": null,
-                  "afterCost": 6
+                  "afterCost": 10
                 },
                 {
                   "target": "shadow_2",
                   "distance": 4,
                   "beforeCost": null,
-                  "afterCost": 6
+                  "afterCost": 10
                 }
               ]
             },
@@ -5569,18 +5519,18 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 4,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 7,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               }
             ]
           },
@@ -5604,18 +5554,18 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 4,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 7,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               }
             ]
           }
@@ -5639,64 +5589,64 @@
       "attack": 1,
       "defense": 3,
       "speed": 1,
-      "mining": 4,
-      "cost": 6,
+      "mining": 5,
+      "cost": 9,
       "dominatedBy": [],
       "role": {
-        "feasible": 6526,
-        "cheapest": 2372,
-        "soleCheapest": 1196,
+        "feasible": 7813,
+        "cheapest": 3549,
+        "soleCheapest": 2457,
         "witnesses": [
           {
             "mission": "strike water_1 at distance 1 within 1 actions; mine >=4 crystals at turn end on rich ground; survive no hit",
             "tiedWith": [],
-            "cost": 6,
-            "nextBestPrice": 12
+            "cost": 9,
+            "nextBestPrice": 17
           },
           {
             "mission": "strike water_1 at distance 1 within 1 actions; mine >=4 crystals at turn end on rich ground; survive lightning_1 hit",
             "tiedWith": [],
-            "cost": 6,
-            "nextBestPrice": 12
+            "cost": 9,
+            "nextBestPrice": 17
           },
           {
             "mission": "strike water_1 at distance 1 within 1 actions; mine >=4 crystals at turn end on rich ground; survive water_1 hit",
             "tiedWith": [],
-            "cost": 6,
-            "nextBestPrice": 12
+            "cost": 9,
+            "nextBestPrice": 17
           }
         ]
       },
       "access": {
         "3": {
-          "activeTurn": 2,
-          "investment": 3,
+          "activeTurn": 3,
+          "investment": 4,
           "path": [
             {
-              "turn": 2,
-              "resources": 0,
+              "turn": 3,
+              "resources": 2,
               "event": "promote plant_2"
             }
           ]
         },
         "6": {
           "activeTurn": 2,
-          "investment": 3,
+          "investment": 4,
           "path": [
             {
               "turn": 2,
-              "resources": 3,
+              "resources": 2,
               "event": "promote plant_2"
             }
           ]
         },
         "9": {
           "activeTurn": 2,
-          "investment": 3,
+          "investment": 4,
           "path": [
             {
               "turn": 2,
-              "resources": 6,
+              "resources": 5,
               "event": "promote plant_2"
             }
           ]
@@ -5720,7 +5670,7 @@
             ],
             "shelf": [
               0,
-              4,
+              5,
               8,
               8,
               8,
@@ -5729,25 +5679,25 @@
             ],
             "rich": [
               0,
-              4,
-              8,
+              5,
               10,
-              10,
-              10,
-              10
+              15,
+              16,
+              16,
+              16
             ]
           },
           "turnsToEmpty": {
             "ordinary": 1,
             "shelf": 2,
-            "rich": 3
+            "rich": 4
           },
           "defense": [
             {
               "distance": 1,
               "frontier": [
                 {
-                  "cost": 1,
+                  "cost": 3,
                   "actions": 1,
                   "bodies": 1,
                   "units": [
@@ -5761,7 +5711,7 @@
               "distance": 4,
               "frontier": [
                 {
-                  "cost": 1,
+                  "cost": 3,
                   "actions": 3,
                   "bodies": 1,
                   "units": [
@@ -5770,7 +5720,7 @@
                   "damage": 3
                 },
                 {
-                  "cost": 3,
+                  "cost": 7,
                   "actions": 2,
                   "bodies": 1,
                   "units": [
@@ -5784,7 +5734,7 @@
               "distance": 7,
               "frontier": [
                 {
-                  "cost": 1,
+                  "cost": 3,
                   "actions": 4,
                   "bodies": 1,
                   "units": [
@@ -5793,7 +5743,7 @@
                   "damage": 3
                 },
                 {
-                  "cost": 3,
+                  "cost": 7,
                   "actions": 3,
                   "bodies": 1,
                   "units": [
@@ -5807,31 +5757,31 @@
         },
         "changes": {
           "attack": {
-            "killCells": 42,
+            "killCells": 36,
             "squad": {
               "cases": 54,
-              "newlyFeasible": 14,
+              "newlyFeasible": 13,
               "jointlyFeasible": 15,
-              "meanCrystalsSaved": 3.2,
+              "meanCrystalsSaved": 4.8,
               "meanActionsSaved": 0.5333333333333333,
               "examples": [
                 {
                   "target": "fire_1",
                   "distance": 1,
                   "beforeCost": null,
-                  "afterCost": 6
+                  "afterCost": 9
                 },
                 {
                   "target": "fire_1",
                   "distance": 4,
                   "beforeCost": null,
-                  "afterCost": 6
+                  "afterCost": 9
                 },
                 {
                   "target": "fire_2",
                   "distance": 1,
                   "beforeCost": null,
-                  "afterCost": 6
+                  "afterCost": 9
                 }
               ]
             },
@@ -5845,18 +5795,18 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 4,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 7,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               }
             ]
           },
@@ -5880,18 +5830,18 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 1,
-                "after": 2
+                "before": 3,
+                "after": 6
               },
               {
                 "distance": 4,
-                "before": 1,
-                "after": 2
+                "before": 3,
+                "after": 6
               },
               {
                 "distance": 7,
-                "before": 1,
-                "after": 2
+                "before": 3,
+                "after": 6
               }
             ]
           },
@@ -5899,7 +5849,7 @@
             "killCells": 12,
             "squad": {
               "cases": 54,
-              "newlyFeasible": 7,
+              "newlyFeasible": 6,
               "jointlyFeasible": 15,
               "meanCrystalsSaved": 0,
               "meanActionsSaved": 0.26666666666666666,
@@ -5908,19 +5858,19 @@
                   "target": "water_1",
                   "distance": 7,
                   "beforeCost": null,
-                  "afterCost": 6
+                  "afterCost": 9
                 },
                 {
                   "target": "water_2",
                   "distance": 4,
                   "beforeCost": null,
-                  "afterCost": 12
+                  "afterCost": 18
                 },
                 {
                   "target": "water_3",
                   "distance": 4,
                   "beforeCost": null,
-                  "afterCost": 12
+                  "afterCost": 18
                 }
               ]
             },
@@ -5934,18 +5884,18 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 4,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 7,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               }
             ]
           },
@@ -5969,24 +5919,24 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 4,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 7,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               }
             ]
           }
         },
         "attackSpeedSynergy": {
-          "extraKillCellsBeyondAdditive": 21,
+          "extraKillCellsBeyondAdditive": 18,
           "witness": {
             "target": "fire_1",
             "distance": 3,
@@ -6004,79 +5954,79 @@
       "attack": 2,
       "defense": 4,
       "speed": 1,
-      "mining": 5,
-      "cost": 12,
+      "mining": 8,
+      "cost": 17,
       "dominatedBy": [],
       "role": {
-        "feasible": 23552,
-        "cheapest": 6388,
-        "soleCheapest": 3760,
+        "feasible": 32000,
+        "cheapest": 14887,
+        "soleCheapest": 12577,
         "witnesses": [
           {
             "mission": "strike fire_1 at distance 1 within 1 actions; mine >=5 crystals at turn end on rich ground; survive no hit",
             "tiedWith": [],
-            "cost": 12,
+            "cost": 17,
             "nextBestPrice": null
           },
           {
             "mission": "strike fire_1 at distance 1 within 1 actions; mine >=5 crystals at turn end on rich ground; survive fire_1 hit",
             "tiedWith": [],
-            "cost": 12,
+            "cost": 17,
             "nextBestPrice": null
           },
           {
             "mission": "strike fire_1 at distance 1 within 1 actions; mine >=5 crystals at turn end on rich ground; survive lightning_1 hit",
             "tiedWith": [],
-            "cost": 12,
+            "cost": 17,
             "nextBestPrice": null
           }
         ]
       },
       "access": {
         "3": {
-          "activeTurn": 5,
-          "investment": 9,
+          "activeTurn": 6,
+          "investment": 12,
           "path": [
             {
-              "turn": 2,
-              "resources": 0,
+              "turn": 3,
+              "resources": 2,
               "event": "promote plant_2"
             },
             {
-              "turn": 5,
+              "turn": 6,
               "resources": 0,
               "event": "promote plant_3"
             }
           ]
         },
         "6": {
-          "activeTurn": 3,
-          "investment": 9,
+          "activeTurn": 4,
+          "investment": 12,
           "path": [
             {
               "turn": 2,
-              "resources": 3,
+              "resources": 2,
               "event": "promote plant_2"
             },
             {
-              "turn": 3,
-              "resources": 2,
+              "turn": 4,
+              "resources": 4,
               "event": "promote plant_3"
             }
           ]
         },
         "9": {
           "activeTurn": 3,
-          "investment": 9,
+          "investment": 12,
           "path": [
             {
               "turn": 2,
-              "resources": 6,
+              "resources": 5,
               "event": "promote plant_2"
             },
             {
               "turn": 3,
-              "resources": 8,
+              "resources": 5,
               "event": "promote plant_3"
             }
           ]
@@ -6084,7 +6034,7 @@
       },
       "value": {
         "base": {
-          "killCells": 66,
+          "killCells": 60,
           "cells": 972,
           "deliveredDamage": 0.19753086419753085,
           "meanStrikeActions": 9.5,
@@ -6100,7 +6050,7 @@
             ],
             "shelf": [
               0,
-              5,
+              8,
               8,
               8,
               8,
@@ -6109,17 +6059,17 @@
             ],
             "rich": [
               0,
-              5,
-              10,
-              10,
-              10,
-              10,
-              10
+              8,
+              16,
+              16,
+              16,
+              16,
+              16
             ]
           },
           "turnsToEmpty": {
             "ordinary": 1,
-            "shelf": 2,
+            "shelf": 1,
             "rich": 2
           },
           "defense": [
@@ -6127,7 +6077,7 @@
               "distance": 1,
               "frontier": [
                 {
-                  "cost": 2,
+                  "cost": 6,
                   "actions": 2,
                   "bodies": 2,
                   "units": [
@@ -6137,7 +6087,7 @@
                   "damage": 4
                 },
                 {
-                  "cost": 3,
+                  "cost": 7,
                   "actions": 1,
                   "bodies": 1,
                   "units": [
@@ -6151,7 +6101,7 @@
               "distance": 4,
               "frontier": [
                 {
-                  "cost": 2,
+                  "cost": 6,
                   "actions": 4,
                   "bodies": 2,
                   "units": [
@@ -6161,7 +6111,7 @@
                   "damage": 4
                 },
                 {
-                  "cost": 3,
+                  "cost": 7,
                   "actions": 3,
                   "bodies": 1,
                   "units": [
@@ -6170,7 +6120,7 @@
                   "damage": 4
                 },
                 {
-                  "cost": 6,
+                  "cost": 15,
                   "actions": 2,
                   "bodies": 1,
                   "units": [
@@ -6184,7 +6134,7 @@
               "distance": 7,
               "frontier": [
                 {
-                  "cost": 2,
+                  "cost": 6,
                   "actions": 6,
                   "bodies": 2,
                   "units": [
@@ -6194,7 +6144,7 @@
                   "damage": 4
                 },
                 {
-                  "cost": 3,
+                  "cost": 7,
                   "actions": 4,
                   "bodies": 1,
                   "units": [
@@ -6203,7 +6153,7 @@
                   "damage": 4
                 },
                 {
-                  "cost": 6,
+                  "cost": 15,
                   "actions": 3,
                   "bodies": 1,
                   "units": [
@@ -6217,36 +6167,36 @@
         },
         "changes": {
           "attack": {
-            "killCells": 24,
+            "killCells": 30,
             "squad": {
               "cases": 54,
-              "newlyFeasible": 4,
-              "jointlyFeasible": 29,
-              "meanCrystalsSaved": 2.0689655172413794,
-              "meanActionsSaved": 0.1724137931034483,
+              "newlyFeasible": 5,
+              "jointlyFeasible": 28,
+              "meanCrystalsSaved": 3.642857142857143,
+              "meanActionsSaved": 0.21428571428571427,
               "examples": [
                 {
                   "target": "fire_3",
                   "distance": 1,
-                  "beforeCost": 24,
-                  "afterCost": 12
+                  "beforeCost": 34,
+                  "afterCost": 17
                 },
                 {
                   "target": "fire_3",
                   "distance": 4,
                   "beforeCost": null,
-                  "afterCost": 12
+                  "afterCost": 17
                 },
                 {
                   "target": "water_3",
                   "distance": 1,
-                  "beforeCost": 24,
-                  "afterCost": 12
+                  "beforeCost": 34,
+                  "afterCost": 17
                 }
               ]
             },
             "strikeActionsSaved": 0,
-            "deliveredDamage": 0.043209876543209874,
+            "deliveredDamage": 0.04938271604938271,
             "incomeAt6": {
               "ordinary": 0,
               "shelf": 0,
@@ -6255,18 +6205,18 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 2,
-                "after": 2
+                "before": 6,
+                "after": 6
               },
               {
                 "distance": 4,
-                "before": 2,
-                "after": 2
+                "before": 6,
+                "after": 6
               },
               {
                 "distance": 7,
-                "before": 2,
-                "after": 2
+                "before": 6,
+                "after": 6
               }
             ]
           },
@@ -6275,7 +6225,7 @@
             "squad": {
               "cases": 54,
               "newlyFeasible": 0,
-              "jointlyFeasible": 29,
+              "jointlyFeasible": 28,
               "meanCrystalsSaved": 0,
               "meanActionsSaved": 0,
               "examples": []
@@ -6290,47 +6240,47 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 2,
-                "after": 2
+                "before": 6,
+                "after": 6
               },
               {
                 "distance": 4,
-                "before": 2,
-                "after": 2
+                "before": 6,
+                "after": 6
               },
               {
                 "distance": 7,
-                "before": 2,
-                "after": 4
+                "before": 6,
+                "after": 10
               }
             ]
           },
           "speed": {
-            "killCells": 33,
+            "killCells": 30,
             "squad": {
               "cases": 54,
               "newlyFeasible": 17,
-              "jointlyFeasible": 29,
+              "jointlyFeasible": 28,
               "meanCrystalsSaved": 0,
-              "meanActionsSaved": 0.3793103448275862,
+              "meanActionsSaved": 0.35714285714285715,
               "examples": [
                 {
                   "target": "fire_1",
                   "distance": 7,
                   "beforeCost": null,
-                  "afterCost": 12
+                  "afterCost": 17
                 },
                 {
                   "target": "fire_2",
                   "distance": 7,
                   "beforeCost": null,
-                  "afterCost": 12
+                  "afterCost": 17
                 },
                 {
                   "target": "fire_3",
                   "distance": 4,
                   "beforeCost": null,
-                  "afterCost": 24
+                  "afterCost": 34
                 }
               ]
             },
@@ -6344,18 +6294,18 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 2,
-                "after": 2
+                "before": 6,
+                "after": 6
               },
               {
                 "distance": 4,
-                "before": 2,
-                "after": 2
+                "before": 6,
+                "after": 6
               },
               {
                 "distance": 7,
-                "before": 2,
-                "after": 2
+                "before": 6,
+                "after": 6
               }
             ]
           },
@@ -6364,7 +6314,7 @@
             "squad": {
               "cases": 54,
               "newlyFeasible": 0,
-              "jointlyFeasible": 29,
+              "jointlyFeasible": 28,
               "meanCrystalsSaved": 0,
               "meanActionsSaved": 0,
               "examples": []
@@ -6379,24 +6329,24 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 2,
-                "after": 2
+                "before": 6,
+                "after": 6
               },
               {
                 "distance": 4,
-                "before": 2,
-                "after": 2
+                "before": 6,
+                "after": 6
               },
               {
                 "distance": 7,
-                "before": 2,
-                "after": 2
+                "before": 6,
+                "after": 6
               }
             ]
           }
         },
         "attackSpeedSynergy": {
-          "extraKillCellsBeyondAdditive": 12,
+          "extraKillCellsBeyondAdditive": 15,
           "witness": {
             "target": "fire_3",
             "distance": 3,
@@ -6415,63 +6365,63 @@
       "defense": 3,
       "speed": 1,
       "mining": 2,
-      "cost": 3,
+      "cost": 5,
       "dominatedBy": [],
       "role": {
         "feasible": 4056,
         "cheapest": 3048,
-        "soleCheapest": 2484,
+        "soleCheapest": 2520,
         "witnesses": [
           {
             "mission": "strike water_1 at distance 1 within 1 actions; mine >=0 crystals at turn end on rich ground; survive water_1 hit",
             "tiedWith": [],
-            "cost": 3,
-            "nextBestPrice": 4
+            "cost": 5,
+            "nextBestPrice": 8
           },
           {
             "mission": "strike water_1 at distance 1 within 1 actions; mine >=0 crystals at turn end on rich ground; survive water_2 hit",
             "tiedWith": [],
-            "cost": 3,
-            "nextBestPrice": 4
+            "cost": 5,
+            "nextBestPrice": 8
           },
           {
             "mission": "strike water_1 at distance 1 within 1 actions; mine >=0 crystals at turn end on rich ground; survive water_3 hit",
             "tiedWith": [],
-            "cost": 3,
-            "nextBestPrice": 6
+            "cost": 5,
+            "nextBestPrice": 9
           }
         ]
       },
       "access": {
         "3": {
-          "activeTurn": 2,
-          "investment": 3,
+          "activeTurn": 3,
+          "investment": 5,
           "path": [
             {
-              "turn": 2,
-              "resources": 0,
+              "turn": 3,
+              "resources": 1,
               "event": "buy metal_1"
             }
           ]
         },
         "6": {
           "activeTurn": 2,
-          "investment": 3,
+          "investment": 5,
           "path": [
             {
               "turn": 2,
-              "resources": 3,
+              "resources": 1,
               "event": "buy metal_1"
             }
           ]
         },
         "9": {
           "activeTurn": 2,
-          "investment": 3,
+          "investment": 5,
           "path": [
             {
               "turn": 2,
-              "resources": 6,
+              "resources": 4,
               "event": "buy metal_1"
             }
           ]
@@ -6509,20 +6459,20 @@
               6,
               8,
               10,
-              10
+              12
             ]
           },
           "turnsToEmpty": {
             "ordinary": 2,
             "shelf": 4,
-            "rich": 5
+            "rich": 8
           },
           "defense": [
             {
               "distance": 1,
               "frontier": [
                 {
-                  "cost": 1,
+                  "cost": 3,
                   "actions": 1,
                   "bodies": 1,
                   "units": [
@@ -6536,7 +6486,7 @@
               "distance": 4,
               "frontier": [
                 {
-                  "cost": 1,
+                  "cost": 3,
                   "actions": 3,
                   "bodies": 1,
                   "units": [
@@ -6545,7 +6495,7 @@
                   "damage": 3
                 },
                 {
-                  "cost": 3,
+                  "cost": 7,
                   "actions": 2,
                   "bodies": 1,
                   "units": [
@@ -6559,7 +6509,7 @@
               "distance": 7,
               "frontier": [
                 {
-                  "cost": 1,
+                  "cost": 3,
                   "actions": 4,
                   "bodies": 1,
                   "units": [
@@ -6568,7 +6518,7 @@
                   "damage": 3
                 },
                 {
-                  "cost": 3,
+                  "cost": 7,
                   "actions": 3,
                   "bodies": 1,
                   "units": [
@@ -6582,31 +6532,31 @@
         },
         "changes": {
           "attack": {
-            "killCells": 42,
+            "killCells": 36,
             "squad": {
               "cases": 54,
-              "newlyFeasible": 14,
+              "newlyFeasible": 13,
               "jointlyFeasible": 15,
-              "meanCrystalsSaved": 1.6,
+              "meanCrystalsSaved": 2.6666666666666665,
               "meanActionsSaved": 0.5333333333333333,
               "examples": [
                 {
                   "target": "fire_1",
                   "distance": 1,
                   "beforeCost": null,
-                  "afterCost": 3
+                  "afterCost": 5
                 },
                 {
                   "target": "fire_1",
                   "distance": 4,
                   "beforeCost": null,
-                  "afterCost": 3
+                  "afterCost": 5
                 },
                 {
                   "target": "fire_2",
                   "distance": 1,
                   "beforeCost": null,
-                  "afterCost": 3
+                  "afterCost": 5
                 }
               ]
             },
@@ -6620,18 +6570,18 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 4,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 7,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               }
             ]
           },
@@ -6655,18 +6605,18 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 1,
-                "after": 2
+                "before": 3,
+                "after": 6
               },
               {
                 "distance": 4,
-                "before": 1,
-                "after": 2
+                "before": 3,
+                "after": 6
               },
               {
                 "distance": 7,
-                "before": 1,
-                "after": 2
+                "before": 3,
+                "after": 6
               }
             ]
           },
@@ -6674,7 +6624,7 @@
             "killCells": 12,
             "squad": {
               "cases": 54,
-              "newlyFeasible": 7,
+              "newlyFeasible": 6,
               "jointlyFeasible": 15,
               "meanCrystalsSaved": 0,
               "meanActionsSaved": 0.26666666666666666,
@@ -6683,19 +6633,19 @@
                   "target": "water_1",
                   "distance": 7,
                   "beforeCost": null,
-                  "afterCost": 3
+                  "afterCost": 5
                 },
                 {
                   "target": "water_2",
                   "distance": 4,
                   "beforeCost": null,
-                  "afterCost": 6
+                  "afterCost": 10
                 },
                 {
                   "target": "water_3",
                   "distance": 4,
                   "beforeCost": null,
-                  "afterCost": 6
+                  "afterCost": 10
                 }
               ]
             },
@@ -6709,18 +6659,18 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 4,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 7,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               }
             ]
           },
@@ -6739,29 +6689,29 @@
             "incomeAt6": {
               "ordinary": 0,
               "shelf": 0,
-              "rich": 0
+              "rich": 4
             },
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 4,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               },
               {
                 "distance": 7,
-                "before": 1,
-                "after": 1
+                "before": 3,
+                "after": 3
               }
             ]
           }
         },
         "attackSpeedSynergy": {
-          "extraKillCellsBeyondAdditive": 21,
+          "extraKillCellsBeyondAdditive": 18,
           "witness": {
             "target": "fire_1",
             "distance": 3,
@@ -6780,45 +6730,45 @@
       "defense": 4,
       "speed": 1,
       "mining": 3,
-      "cost": 6,
+      "cost": 9,
       "dominatedBy": [],
       "role": {
-        "feasible": 15968,
-        "cheapest": 7536,
-        "soleCheapest": 5394,
+        "feasible": 14656,
+        "cheapest": 6408,
+        "soleCheapest": 5316,
         "witnesses": [
           {
             "mission": "strike fire_1 at distance 1 within 1 actions; mine >=0 crystals at turn end on rich ground; survive water_3 hit",
             "tiedWith": [],
-            "cost": 6,
-            "nextBestPrice": 10
+            "cost": 9,
+            "nextBestPrice": 16
           },
           {
             "mission": "strike fire_1 at distance 1 within 1 actions; mine >=0 crystals at turn end on rich ground; survive shadow_2 hit",
             "tiedWith": [],
-            "cost": 6,
-            "nextBestPrice": 10
+            "cost": 9,
+            "nextBestPrice": 16
           },
           {
             "mission": "strike fire_1 at distance 1 within 1 actions; mine >=0 crystals at turn end on rich ground; survive shadow_3 hit",
             "tiedWith": [],
-            "cost": 6,
-            "nextBestPrice": 12
+            "cost": 9,
+            "nextBestPrice": 17
           }
         ]
       },
       "access": {
         "3": {
-          "activeTurn": 3,
-          "investment": 6,
+          "activeTurn": 4,
+          "investment": 9,
           "path": [
             {
-              "turn": 2,
-              "resources": 0,
+              "turn": 3,
+              "resources": 1,
               "event": "buy metal_1"
             },
             {
-              "turn": 3,
+              "turn": 4,
               "resources": 0,
               "event": "promote metal_2"
             }
@@ -6826,32 +6776,32 @@
         },
         "6": {
           "activeTurn": 3,
-          "investment": 6,
+          "investment": 9,
           "path": [
             {
               "turn": 2,
-              "resources": 3,
+              "resources": 1,
               "event": "buy metal_1"
             },
             {
               "turn": 3,
-              "resources": 6,
+              "resources": 3,
               "event": "promote metal_2"
             }
           ]
         },
         "9": {
           "activeTurn": 3,
-          "investment": 6,
+          "investment": 9,
           "path": [
             {
               "turn": 2,
-              "resources": 6,
+              "resources": 4,
               "event": "buy metal_1"
             },
             {
               "turn": 3,
-              "resources": 12,
+              "resources": 9,
               "event": "promote metal_2"
             }
           ]
@@ -6859,7 +6809,7 @@
       },
       "value": {
         "base": {
-          "killCells": 66,
+          "killCells": 60,
           "cells": 972,
           "deliveredDamage": 0.19753086419753085,
           "meanStrikeActions": 9.5,
@@ -6887,22 +6837,22 @@
               3,
               6,
               9,
-              10,
-              10,
-              10
+              12,
+              15,
+              16
             ]
           },
           "turnsToEmpty": {
             "ordinary": 2,
             "shelf": 3,
-            "rich": 4
+            "rich": 6
           },
           "defense": [
             {
               "distance": 1,
               "frontier": [
                 {
-                  "cost": 2,
+                  "cost": 6,
                   "actions": 2,
                   "bodies": 2,
                   "units": [
@@ -6912,7 +6862,7 @@
                   "damage": 4
                 },
                 {
-                  "cost": 3,
+                  "cost": 7,
                   "actions": 1,
                   "bodies": 1,
                   "units": [
@@ -6926,7 +6876,7 @@
               "distance": 4,
               "frontier": [
                 {
-                  "cost": 2,
+                  "cost": 6,
                   "actions": 4,
                   "bodies": 2,
                   "units": [
@@ -6936,7 +6886,7 @@
                   "damage": 4
                 },
                 {
-                  "cost": 3,
+                  "cost": 7,
                   "actions": 3,
                   "bodies": 1,
                   "units": [
@@ -6945,7 +6895,7 @@
                   "damage": 4
                 },
                 {
-                  "cost": 6,
+                  "cost": 15,
                   "actions": 2,
                   "bodies": 1,
                   "units": [
@@ -6959,7 +6909,7 @@
               "distance": 7,
               "frontier": [
                 {
-                  "cost": 2,
+                  "cost": 6,
                   "actions": 6,
                   "bodies": 2,
                   "units": [
@@ -6969,7 +6919,7 @@
                   "damage": 4
                 },
                 {
-                  "cost": 3,
+                  "cost": 7,
                   "actions": 4,
                   "bodies": 1,
                   "units": [
@@ -6978,7 +6928,7 @@
                   "damage": 4
                 },
                 {
-                  "cost": 6,
+                  "cost": 15,
                   "actions": 3,
                   "bodies": 1,
                   "units": [
@@ -6992,36 +6942,36 @@
         },
         "changes": {
           "attack": {
-            "killCells": 24,
+            "killCells": 30,
             "squad": {
               "cases": 54,
-              "newlyFeasible": 4,
-              "jointlyFeasible": 29,
-              "meanCrystalsSaved": 1.0344827586206897,
-              "meanActionsSaved": 0.1724137931034483,
+              "newlyFeasible": 5,
+              "jointlyFeasible": 28,
+              "meanCrystalsSaved": 1.9285714285714286,
+              "meanActionsSaved": 0.21428571428571427,
               "examples": [
                 {
                   "target": "fire_3",
                   "distance": 1,
-                  "beforeCost": 12,
-                  "afterCost": 6
+                  "beforeCost": 18,
+                  "afterCost": 9
                 },
                 {
                   "target": "fire_3",
                   "distance": 4,
                   "beforeCost": null,
-                  "afterCost": 6
+                  "afterCost": 9
                 },
                 {
                   "target": "water_3",
                   "distance": 1,
-                  "beforeCost": 12,
-                  "afterCost": 6
+                  "beforeCost": 18,
+                  "afterCost": 9
                 }
               ]
             },
             "strikeActionsSaved": 0,
-            "deliveredDamage": 0.043209876543209874,
+            "deliveredDamage": 0.04938271604938271,
             "incomeAt6": {
               "ordinary": 0,
               "shelf": 0,
@@ -7030,18 +6980,18 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 2,
-                "after": 2
+                "before": 6,
+                "after": 6
               },
               {
                 "distance": 4,
-                "before": 2,
-                "after": 2
+                "before": 6,
+                "after": 6
               },
               {
                 "distance": 7,
-                "before": 2,
-                "after": 2
+                "before": 6,
+                "after": 6
               }
             ]
           },
@@ -7050,7 +7000,7 @@
             "squad": {
               "cases": 54,
               "newlyFeasible": 0,
-              "jointlyFeasible": 29,
+              "jointlyFeasible": 28,
               "meanCrystalsSaved": 0,
               "meanActionsSaved": 0,
               "examples": []
@@ -7065,47 +7015,47 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 2,
-                "after": 2
+                "before": 6,
+                "after": 6
               },
               {
                 "distance": 4,
-                "before": 2,
-                "after": 2
+                "before": 6,
+                "after": 6
               },
               {
                 "distance": 7,
-                "before": 2,
-                "after": 4
+                "before": 6,
+                "after": 10
               }
             ]
           },
           "speed": {
-            "killCells": 33,
+            "killCells": 30,
             "squad": {
               "cases": 54,
               "newlyFeasible": 17,
-              "jointlyFeasible": 29,
+              "jointlyFeasible": 28,
               "meanCrystalsSaved": 0,
-              "meanActionsSaved": 0.3793103448275862,
+              "meanActionsSaved": 0.35714285714285715,
               "examples": [
                 {
                   "target": "fire_1",
                   "distance": 7,
                   "beforeCost": null,
-                  "afterCost": 6
+                  "afterCost": 9
                 },
                 {
                   "target": "fire_2",
                   "distance": 7,
                   "beforeCost": null,
-                  "afterCost": 6
+                  "afterCost": 9
                 },
                 {
                   "target": "fire_3",
                   "distance": 4,
                   "beforeCost": null,
-                  "afterCost": 12
+                  "afterCost": 18
                 }
               ]
             },
@@ -7119,18 +7069,18 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 2,
-                "after": 2
+                "before": 6,
+                "after": 6
               },
               {
                 "distance": 4,
-                "before": 2,
-                "after": 2
+                "before": 6,
+                "after": 6
               },
               {
                 "distance": 7,
-                "before": 2,
-                "after": 2
+                "before": 6,
+                "after": 6
               }
             ]
           },
@@ -7139,7 +7089,7 @@
             "squad": {
               "cases": 54,
               "newlyFeasible": 0,
-              "jointlyFeasible": 29,
+              "jointlyFeasible": 28,
               "meanCrystalsSaved": 0,
               "meanActionsSaved": 0,
               "examples": []
@@ -7154,24 +7104,24 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 2,
-                "after": 2
+                "before": 6,
+                "after": 6
               },
               {
                 "distance": 4,
-                "before": 2,
-                "after": 2
+                "before": 6,
+                "after": 6
               },
               {
                 "distance": 7,
-                "before": 2,
-                "after": 2
+                "before": 6,
+                "after": 6
               }
             ]
           }
         },
         "attackSpeedSynergy": {
-          "extraKillCellsBeyondAdditive": 12,
+          "extraKillCellsBeyondAdditive": 15,
           "witness": {
             "target": "fire_3",
             "distance": 3,
@@ -7187,53 +7137,53 @@
       "tier": 3,
       "archetype": "expand",
       "attack": 2,
-      "defense": 6,
+      "defense": 5,
       "speed": 2,
       "mining": 4,
-      "cost": 12,
+      "cost": 17,
       "dominatedBy": [],
       "role": {
-        "feasible": 39292,
-        "cheapest": 7146,
-        "soleCheapest": 4518,
+        "feasible": 34128,
+        "cheapest": 6064,
+        "soleCheapest": 3754,
         "witnesses": [
           {
             "mission": "strike fire_1 at distance 1 within 1 actions; mine >=4 crystals at turn end on rich ground; survive fire_2 hit",
             "tiedWith": [],
-            "cost": 12,
-            "nextBestPrice": null
-          },
-          {
-            "mission": "strike fire_1 at distance 1 within 1 actions; mine >=4 crystals at turn end on rich ground; survive fire_3 hit",
-            "tiedWith": [],
-            "cost": 12,
+            "cost": 17,
             "nextBestPrice": null
           },
           {
             "mission": "strike fire_1 at distance 1 within 1 actions; mine >=4 crystals at turn end on rich ground; survive lightning_3 hit",
             "tiedWith": [],
-            "cost": 12,
+            "cost": 17,
+            "nextBestPrice": null
+          },
+          {
+            "mission": "strike fire_1 at distance 1 within 2 actions; mine >=4 crystals at turn end on rich ground; survive fire_2 hit",
+            "tiedWith": [],
+            "cost": 17,
             "nextBestPrice": null
           }
         ]
       },
       "access": {
         "3": {
-          "activeTurn": 6,
-          "investment": 12,
+          "activeTurn": 8,
+          "investment": 17,
           "path": [
             {
-              "turn": 2,
-              "resources": 0,
+              "turn": 3,
+              "resources": 1,
               "event": "buy metal_1"
             },
             {
-              "turn": 3,
+              "turn": 4,
               "resources": 0,
               "event": "promote metal_2"
             },
             {
-              "turn": 6,
+              "turn": 8,
               "resources": 0,
               "event": "promote metal_3"
             }
@@ -7241,42 +7191,42 @@
         },
         "6": {
           "activeTurn": 4,
-          "investment": 12,
+          "investment": 17,
           "path": [
             {
               "turn": 2,
-              "resources": 3,
+              "resources": 1,
               "event": "buy metal_1"
             },
             {
               "turn": 3,
-              "resources": 6,
+              "resources": 3,
               "event": "promote metal_2"
             },
             {
               "turn": 4,
-              "resources": 5,
+              "resources": 0,
               "event": "promote metal_3"
             }
           ]
         },
         "9": {
           "activeTurn": 4,
-          "investment": 12,
+          "investment": 17,
           "path": [
             {
               "turn": 2,
-              "resources": 6,
+              "resources": 4,
               "event": "buy metal_1"
             },
             {
               "turn": 3,
-              "resources": 12,
+              "resources": 9,
               "event": "promote metal_2"
             },
             {
               "turn": 4,
-              "resources": 14,
+              "resources": 9,
               "event": "promote metal_3"
             }
           ]
@@ -7284,7 +7234,7 @@
       },
       "value": {
         "base": {
-          "killCells": 99,
+          "killCells": 90,
           "cells": 972,
           "deliveredDamage": 0.2962962962962963,
           "meanStrikeActions": 5.5,
@@ -7311,30 +7261,39 @@
               0,
               4,
               8,
-              10,
-              10,
-              10,
-              10
+              12,
+              16,
+              16,
+              16
             ]
           },
           "turnsToEmpty": {
             "ordinary": 1,
             "shelf": 2,
-            "rich": 3
+            "rich": 4
           },
           "defense": [
             {
               "distance": 1,
               "frontier": [
                 {
-                  "cost": 2,
+                  "cost": 6,
                   "actions": 2,
                   "bodies": 2,
                   "units": [
-                    "fire_1",
+                    "lightning_1",
                     "fire_1"
                   ],
-                  "damage": 6
+                  "damage": 5
+                },
+                {
+                  "cost": 15,
+                  "actions": 1,
+                  "bodies": 1,
+                  "units": [
+                    "fire_3"
+                  ],
+                  "damage": 5
                 }
               ]
             },
@@ -7342,34 +7301,33 @@
               "distance": 4,
               "frontier": [
                 {
-                  "cost": 2,
-                  "actions": 6,
-                  "bodies": 2,
-                  "units": [
-                    "fire_1",
-                    "fire_1"
-                  ],
-                  "damage": 6
-                },
-                {
-                  "cost": 4,
+                  "cost": 6,
                   "actions": 5,
                   "bodies": 2,
                   "units": [
-                    "lightning_2",
+                    "lightning_1",
                     "fire_1"
                   ],
-                  "damage": 6
+                  "damage": 5
                 },
                 {
-                  "cost": 6,
+                  "cost": 10,
                   "actions": 4,
                   "bodies": 2,
                   "units": [
                     "lightning_2",
-                    "lightning_2"
+                    "lightning_1"
                   ],
-                  "damage": 6
+                  "damage": 5
+                },
+                {
+                  "cost": 15,
+                  "actions": 2,
+                  "bodies": 1,
+                  "units": [
+                    "fire_3"
+                  ],
+                  "damage": 5
                 }
               ]
             },
@@ -7377,14 +7335,23 @@
               "distance": 7,
               "frontier": [
                 {
-                  "cost": 6,
+                  "cost": 10,
                   "actions": 6,
                   "bodies": 2,
                   "units": [
                     "lightning_2",
-                    "lightning_2"
+                    "lightning_1"
                   ],
-                  "damage": 6
+                  "damage": 5
+                },
+                {
+                  "cost": 15,
+                  "actions": 3,
+                  "bodies": 1,
+                  "units": [
+                    "fire_3"
+                  ],
+                  "damage": 5
                 }
               ]
             }
@@ -7392,36 +7359,36 @@
         },
         "changes": {
           "attack": {
-            "killCells": 36,
+            "killCells": 45,
             "squad": {
               "cases": 54,
-              "newlyFeasible": 5,
-              "jointlyFeasible": 46,
-              "meanCrystalsSaved": 2.347826086956522,
-              "meanActionsSaved": 0.3695652173913043,
+              "newlyFeasible": 6,
+              "jointlyFeasible": 45,
+              "meanCrystalsSaved": 4.155555555555556,
+              "meanActionsSaved": 0.4666666666666667,
               "examples": [
                 {
                   "target": "fire_3",
                   "distance": 1,
-                  "beforeCost": 24,
-                  "afterCost": 12
+                  "beforeCost": 34,
+                  "afterCost": 17
                 },
                 {
                   "target": "fire_3",
                   "distance": 4,
-                  "beforeCost": 24,
-                  "afterCost": 12
+                  "beforeCost": 34,
+                  "afterCost": 17
                 },
                 {
                   "target": "fire_3",
                   "distance": 7,
                   "beforeCost": null,
-                  "afterCost": 12
+                  "afterCost": 17
                 }
               ]
             },
             "strikeActionsSaved": 0,
-            "deliveredDamage": 0.06481481481481483,
+            "deliveredDamage": 0.07407407407407407,
             "incomeAt6": {
               "ordinary": 0,
               "shelf": 0,
@@ -7430,18 +7397,18 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 2,
-                "after": 2
+                "before": 6,
+                "after": 6
               },
               {
                 "distance": 4,
-                "before": 2,
-                "after": 2
+                "before": 6,
+                "after": 6
               },
               {
                 "distance": 7,
-                "before": 6,
-                "after": 6
+                "before": 10,
+                "after": 10
               }
             ]
           },
@@ -7450,7 +7417,7 @@
             "squad": {
               "cases": 54,
               "newlyFeasible": 0,
-              "jointlyFeasible": 46,
+              "jointlyFeasible": 45,
               "meanCrystalsSaved": 0,
               "meanActionsSaved": 0,
               "examples": []
@@ -7465,47 +7432,47 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 2,
-                "after": 3
+                "before": 6,
+                "after": 6
               },
               {
                 "distance": 4,
-                "before": 2,
-                "after": 4
+                "before": 6,
+                "after": 6
               },
               {
                 "distance": 7,
-                "before": 6,
-                "after": 7
+                "before": 10,
+                "after": 14
               }
             ]
           },
           "speed": {
-            "killCells": 33,
+            "killCells": 30,
             "squad": {
               "cases": 54,
-              "newlyFeasible": 7,
-              "jointlyFeasible": 46,
+              "newlyFeasible": 8,
+              "jointlyFeasible": 45,
               "meanCrystalsSaved": 0,
-              "meanActionsSaved": 0.7391304347826086,
+              "meanActionsSaved": 0.7555555555555555,
               "examples": [
                 {
                   "target": "fire_3",
                   "distance": 7,
                   "beforeCost": null,
-                  "afterCost": 24
+                  "afterCost": 34
                 },
                 {
                   "target": "water_3",
                   "distance": 7,
                   "beforeCost": null,
-                  "afterCost": 24
+                  "afterCost": 34
                 },
                 {
-                  "target": "plant_2",
+                  "target": "plant_1",
                   "distance": 7,
                   "beforeCost": null,
-                  "afterCost": 24
+                  "afterCost": 34
                 }
               ]
             },
@@ -7519,18 +7486,18 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 2,
-                "after": 2
+                "before": 6,
+                "after": 6
               },
               {
                 "distance": 4,
-                "before": 2,
-                "after": 2
+                "before": 6,
+                "after": 6
               },
               {
                 "distance": 7,
-                "before": 6,
-                "after": 6
+                "before": 10,
+                "after": 10
               }
             ]
           },
@@ -7539,7 +7506,7 @@
             "squad": {
               "cases": 54,
               "newlyFeasible": 0,
-              "jointlyFeasible": 46,
+              "jointlyFeasible": 45,
               "meanCrystalsSaved": 0,
               "meanActionsSaved": 0,
               "examples": []
@@ -7554,24 +7521,24 @@
             "defenseKillCost": [
               {
                 "distance": 1,
-                "before": 2,
-                "after": 2
+                "before": 6,
+                "after": 6
               },
               {
                 "distance": 4,
-                "before": 2,
-                "after": 2
+                "before": 6,
+                "after": 6
               },
               {
                 "distance": 7,
-                "before": 6,
-                "after": 6
+                "before": 10,
+                "after": 10
               }
             ]
           }
         },
         "attackSpeedSynergy": {
-          "extraKillCellsBeyondAdditive": 12,
+          "extraKillCellsBeyondAdditive": 15,
           "witness": {
             "target": "fire_3",
             "distance": 4,
@@ -7587,7 +7554,7 @@
       "distance": 1,
       "solutions": [
         {
-          "cost": 4,
+          "cost": 8,
           "actions": 2,
           "bodies": 2,
           "units": [
@@ -7597,7 +7564,7 @@
           "damage": 4
         },
         {
-          "cost": 10,
+          "cost": 16,
           "actions": 1,
           "bodies": 1,
           "units": [
@@ -7612,7 +7579,7 @@
       "distance": 4,
       "solutions": [
         {
-          "cost": 4,
+          "cost": 8,
           "actions": 6,
           "bodies": 2,
           "units": [
@@ -7622,7 +7589,7 @@
           "damage": 4
         },
         {
-          "cost": 7,
+          "cost": 15,
           "actions": 5,
           "bodies": 2,
           "units": [
@@ -7632,17 +7599,7 @@
           "damage": 4
         },
         {
-          "cost": 9,
-          "actions": 4,
-          "bodies": 2,
-          "units": [
-            "lightning_2",
-            "fire_3"
-          ],
-          "damage": 4
-        },
-        {
-          "cost": 10,
+          "cost": 16,
           "actions": 2,
           "bodies": 1,
           "units": [
@@ -7657,17 +7614,7 @@
       "distance": 7,
       "solutions": [
         {
-          "cost": 9,
-          "actions": 6,
-          "bodies": 2,
-          "units": [
-            "lightning_2",
-            "fire_3"
-          ],
-          "damage": 4
-        },
-        {
-          "cost": 10,
+          "cost": 16,
           "actions": 3,
           "bodies": 1,
           "units": [
@@ -7682,7 +7629,7 @@
       "distance": 1,
       "solutions": [
         {
-          "cost": 1,
+          "cost": 3,
           "actions": 1,
           "bodies": 1,
           "units": [
@@ -7697,7 +7644,7 @@
       "distance": 4,
       "solutions": [
         {
-          "cost": 1,
+          "cost": 3,
           "actions": 3,
           "bodies": 1,
           "units": [
@@ -7706,7 +7653,7 @@
           "damage": 3
         },
         {
-          "cost": 3,
+          "cost": 7,
           "actions": 2,
           "bodies": 1,
           "units": [
@@ -7721,7 +7668,7 @@
       "distance": 7,
       "solutions": [
         {
-          "cost": 1,
+          "cost": 3,
           "actions": 4,
           "bodies": 1,
           "units": [
@@ -7730,7 +7677,7 @@
           "damage": 3
         },
         {
-          "cost": 3,
+          "cost": 7,
           "actions": 3,
           "bodies": 1,
           "units": [
@@ -7745,14 +7692,23 @@
       "distance": 1,
       "solutions": [
         {
-          "cost": 2,
+          "cost": 6,
           "actions": 2,
           "bodies": 2,
           "units": [
-            "fire_1",
+            "lightning_1",
             "fire_1"
           ],
-          "damage": 6
+          "damage": 5
+        },
+        {
+          "cost": 15,
+          "actions": 1,
+          "bodies": 1,
+          "units": [
+            "fire_3"
+          ],
+          "damage": 5
         }
       ]
     },
@@ -7761,34 +7717,33 @@
       "distance": 4,
       "solutions": [
         {
-          "cost": 2,
-          "actions": 6,
-          "bodies": 2,
-          "units": [
-            "fire_1",
-            "fire_1"
-          ],
-          "damage": 6
-        },
-        {
-          "cost": 4,
+          "cost": 6,
           "actions": 5,
           "bodies": 2,
           "units": [
-            "lightning_2",
+            "lightning_1",
             "fire_1"
           ],
-          "damage": 6
+          "damage": 5
         },
         {
-          "cost": 6,
+          "cost": 10,
           "actions": 4,
           "bodies": 2,
           "units": [
             "lightning_2",
-            "lightning_2"
+            "lightning_1"
           ],
-          "damage": 6
+          "damage": 5
+        },
+        {
+          "cost": 15,
+          "actions": 2,
+          "bodies": 1,
+          "units": [
+            "fire_3"
+          ],
+          "damage": 5
         }
       ]
     },
@@ -7797,14 +7752,23 @@
       "distance": 7,
       "solutions": [
         {
-          "cost": 6,
+          "cost": 10,
           "actions": 6,
           "bodies": 2,
           "units": [
             "lightning_2",
-            "lightning_2"
+            "lightning_1"
           ],
-          "damage": 6
+          "damage": 5
+        },
+        {
+          "cost": 15,
+          "actions": 3,
+          "bodies": 1,
+          "units": [
+            "fire_3"
+          ],
+          "damage": 5
         }
       ]
     }

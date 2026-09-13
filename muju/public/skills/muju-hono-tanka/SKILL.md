@@ -49,6 +49,9 @@ consume one copy. Check `isError` before using a result.
 
 1. Read `muju_rules` for the current rules and unit catalogue. Costs and balance
    can change; use the live catalogue. Rules are also the resource `muju://rules`.
+   The expansion-economy map has 8-crystal home squares and 16-crystal expansions,
+   with 504 crystals total and Plant Mining 3/5/8. Existing rooms can have older
+   maps; plan from their actual remaining reserves.
 2. Host with `muju_create_room({name, side, timeControl?, blackCrystalHandicap?})` (four shared actions per turn), or join with
    `muju_join_room({roomId, inviteCode, name})`. An invitation URL contains the
    `room` query parameter and the `invite` fragment. Use its host for your MCP

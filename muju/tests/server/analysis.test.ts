@@ -24,12 +24,12 @@ describe('financial checkpoints', () => {
     const s = position([piece('miner', 'plant_3', 'white', 2, 2), piece('other', 'plant_1', 'black', 9, 9)], 0);
     s.board.cells[2][2].resourceLayers = 6;
     const before = structuredClone(s), f = economyForecast(s);
-    expect(f.checkpoints.filter(c => c.player === 'white' && c.kind === 'harvest').map(c => c.amount)).toEqual([5, 1, 0, 0]);
+    expect(f.checkpoints.filter(c => c.player === 'white' && c.kind === 'harvest').map(c => c.amount)).toEqual([6, 0, 0, 0]);
     expect(f.failure).toMatchObject({ player: 'white', afterOwnHarvests: 4, treasury: 0, due: 2, shortfall: 2 });
     expect(f.stop).toBe('upkeep_shortfall');
     expect(s).toEqual(before);
     const detail = economy(s, inputFor(s));
-    expect(detail.units[0]).toMatchObject({ next: 5, harvestsLeft: 2, reserve: 6 });
+    expect(detail.units[0]).toMatchObject({ next: 6, harvestsLeft: 1, reserve: 6 });
   });
   it('does not credit an incoming attacker with its end-turn income or heal the other side', () => {
     const s = position([piece('w', 'water_2', 'white', 2, 2), piece('b', 'fire_2', 'black', 5, 5)], 1);

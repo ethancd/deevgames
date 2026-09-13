@@ -11,7 +11,7 @@ import baseline from '../../lab/solver/baseline-v1.3.json';
 
 describe('current catalogue boundary', () => {
   it('preserves the 18-unit ladder with approved stats and 3/4/5 purchases plus 4/8 promotions', () => {
-    expect(UNIT_DEFINITIONS).toEqual(baseline.filter(d => d.tier <= 3).map(({buildTime: _removed, ...d}) => ({...d,cost:({fire:3,lightning:3,water:4,shadow:4,plant:5,metal:5}[d.element]!+[0,4,12][d.tier-1]),...(d.element==='metal'?{name:['Inyan','Mazask','Tanka'][d.tier-1],speed:d.tier===3?2:d.speed}:{}),...({lightning_1:{attack:1},lightning_2:{attack:2},lightning_3:{mining:0},plant_1:{defense:3},metal_3:{mining:4,defense:5}} as Record<string,object>)[d.id]})));
+    expect(UNIT_DEFINITIONS).toEqual(baseline.filter(d => d.tier <= 3).map(({buildTime: _removed, ...d}) => ({...d,cost:({fire:3,lightning:3,water:4,shadow:4,plant:5,metal:5}[d.element]!+[0,4,12][d.tier-1]),...(d.element==='metal'?{name:['Inyan','Mazask','Tanka'][d.tier-1],speed:d.tier===3?2:d.speed}:{}),...({lightning_1:{attack:1},lightning_2:{attack:2},lightning_3:{mining:0},plant_1:{defense:3},plant_2:{mining:5},plant_3:{mining:8},metal_3:{mining:4,defense:5}} as Record<string,object>)[d.id]})));
     expect(UNIT_DEFINITIONS).toHaveLength(18);
   });
   it('caps Cleave at exactly 1/2/3 for every catalogue entry', () => {

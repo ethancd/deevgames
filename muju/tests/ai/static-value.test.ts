@@ -80,7 +80,7 @@ describe('static value model independent checks', () => {
   it('rejects malformed catalogues instead of inventing value for impossible stats', () => {
     expect(() => validateCatalogue(UNIT_DEFINITIONS)).not.toThrow();
     expect(() => validateCatalogue([...UNIT_DEFINITIONS.slice(1), UNIT_DEFINITIONS[1]])).toThrow();
-    expect(() => validateCatalogue(UNIT_DEFINITIONS.map(d => d.id === 'plant_3' ? { ...d, mining: 6 } : d))).toThrow();
+    expect(() => validateCatalogue(UNIT_DEFINITIONS.map(d => d.id === 'plant_3' ? { ...d, mining: 9 } : d))).toThrow();
   });
   it('rejects invalid passive reserves and unsupported finance assumptions', () => {
     expect(() => passiveCurve(get('plant_1'), -1)).toThrow();
@@ -91,7 +91,7 @@ describe('static value model independent checks', () => {
 });
 
 it('finite-cell passive curves match repeated real income with no depth gate',()=>{
- for(const def of UNIT_DEFINITIONS)for(const reserve of [0,4,8,10]) {
+ for(const def of UNIT_DEFINITIONS)for(const reserve of [0,4,8,10,12,16]) {
   const u=createUnitFromDefinition(def.id,'white',{x:0,y:0},'m');let left=reserve,total=0;
   const expected=[0];for(let i=0;i<6;i++){const take=unitEndOfTurnTake(u,{position:u.position,resourceLayers:left});left-=take;total+=take;expected.push(total);}
   expect(passiveCurve(def,reserve)).toEqual(expected);

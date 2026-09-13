@@ -79,7 +79,7 @@ export interface Unit {
 
 export interface Cell {
   position: Position;
-  resourceLayers: number; // 0-10, remaining crystals
+  resourceLayers: number; // 0-16, remaining crystals
 }
 
 export interface BoardState {

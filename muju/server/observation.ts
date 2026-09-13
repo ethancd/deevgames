@@ -2,6 +2,7 @@ import type { GameState, PlayerId } from '../src/game/types';
 import type { RoomAction, RoomSnapshot } from '../src/online/types';
 import { getUnitAt } from '../src/game/board';
 import { getActionsPerTurn } from '../src/game/rules';
+import { INITIAL_MAP_RESOURCES, MAX_RESOURCE_RESERVE, RESOURCE_MAP_NAME, UNEQUAL_ROUTES_MAP } from '../src/game/resourceMap';
 import { getMovementRange, getMoveCost } from '../src/game/movement';
 import { calculateAttackPower, calculateDefense, getAttackCount, getValidAttacks } from '../src/game/combat';
 import { generatePlacePhaseActions } from '../src/ai/moves';
@@ -91,6 +92,10 @@ export function legalActions(room: RoomSnapshot, options: { unitId?: string; typ
 }
 
 export const rules = {
+  resourceMap: { name: RESOURCE_MAP_NAME, total: INITIAL_MAP_RESOURCES, maximumReserve: MAX_RESOURCE_RESERVE,
+    startingReserves: [...new Set(UNEQUAL_ROUTES_MAP)].sort((a, b) => a - b),
+    layout: Array.from({ length: 10 }, (_, row) => UNEQUAL_ROUTES_MAP.slice(row * 10, row * 10 + 10)),
+    compatibility: 'This map applies to new games and restarts. Existing games retain their stored reserves; use the room observation for its actual map. The current unit catalogue applies to all games.' },
   blackCrystalHandicap: {
     default: 0, min: 1, max: 20,
     setup: 'Optional creation-only starting crystals for Black. Omit or use 0 for the standard start. White starts with 0 and moves first. This grant is separate from mined income and is not repeated on later turns.',
