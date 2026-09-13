@@ -1,6 +1,6 @@
 # Fresh Render preview
 
-Prepared September 12, 2026. **Provisioning in progress:** the user authorized the personal Google account; Muju is in Ethan's workspace, My project, Production environment, Ohio region. The configured hostname is a target until service creation confirms it.
+Deployed September 12–13, 2026. **Live:** https://deevgames-mythgarden-preview.onrender.com/ — created in Ethan's workspace, My project, Production environment, Ohio region, alongside Muju. Launched with a fresh database.
 
 ## Deployment configuration
 
@@ -11,7 +11,7 @@ Use repository `ethancd/deevgames`, branch `codex/mythgarden-render-preview`, Bl
 | Web service | `deevgames-mythgarden-preview`, Docker, root `mythgarden`, 0.5 CPU / 512 MB |
 | Database | `deevgames-mythgarden-preview-db`, PostgreSQL 16, 0.1 CPU / 256 MB, 1 GB disk |
 | Region | Ohio for both, matching Muju (verified in the dashboard) |
-| Target hostname | `deevgames-mythgarden-preview.onrender.com`; Render confirms availability during creation |
+| Live hostname | `deevgames-mythgarden-preview.onrender.com` |
 | Pre-deploy | `bash predeploy.sh`: migrations, then `bootstrap_world` |
 | Startup | `bash start.sh`: Gunicorn on Render's `$PORT`, two workers |
 | Health | `/healthz`: database reachable and world content available; does not create a player |
@@ -19,7 +19,7 @@ Use repository `ethancd/deevgames`, branch `codex/mythgarden-render-preview`, Bl
 | Database access | Render internal network only; external IP allowlist empty |
 | Auto deploy | Off, so preview releases are deliberate |
 
-The proposed small web/database compute pair is approximately $13/month plus 1 GB storage and usage. Verify the dashboard quote at creation. This adds resources to the workspace; it does not replace Muju. A free database's expiration makes it unsuitable for persistent preview saves.
+Render's confirmed estimate at creation is **$13.30/month** for the web service, database, and 1 GB storage, plus any usage charges. This adds resources to the workspace; it does not replace Muju. A free database's expiration makes it unsuitable for persistent preview saves.
 
 ## Save and settings behavior
 
@@ -41,14 +41,23 @@ Bootstrap is atomic and protected by a PostgreSQL advisory lock. An empty world 
 
 The legacy test suite remains broken, as detailed in [the roadmap](REHOST_ROADMAP.md). These release checks are explicitly targeted and do not claim the entire legacy suite passes.
 
-## Before calling the preview live
+## Deployed resources
 
-1. Verify the account/workspace, region, hostname, and exact recurring price; create the blueprint.
-2. Watch build and pre-deploy logs, including all migrations and the first fixture load.
-3. Check the HTTPS home, `/healthz`, hashed bundle, portraits, and scenery.
-4. Exercise settings before and after an action and reload the live browser save.
-5. Restart/redeploy the web service and confirm that same browser returns to the same name, location, time, and inventory; bootstrap must report existing world preserved.
-6. Record the confirmed URL, service/database IDs, deployed commit, and observed billing quote here. Broader browser journeys, backup restoration, and the full release matrix remain the next milestone.
+- Web service: `srv-daj2lv0ae00c738d49vg`.
+- Database: `dpg-daj2lm0ae00c738d3ceg-a`.
+- Blueprint: `exs-daj2lep594qs73akcksg`.
+- Deployed application commit: `296b8e2dca45440653b9dc7703ce9d76e2a9be66` (runtime/game code from `65862d1`; follow-up only changed Ohio region and documentation).
+- [Cloud release checks](https://github.com/ethancd/deevgames/actions/runs/34738507682) passed: PostgreSQL release suite, production bundle/static collection, schema drift check, actual Docker build, and repeated bootstrap inside the image.
+- First Render deploy completed in 1m19s, with log confirmation that a fresh world was initialized. The live `/healthz` returns HTTP 200.
+- Live browser: all three settings immediately switch active values and multiplier before play; after travel a movement change stays pending for next week. Name editing, travel, gathering, reload, and loaded images work. The test save is Preview Farmer, Monday 7:30am, Darklight Forest, one Huckleberry, 0 fleurs.
+- Both new resources are grouped with Muju under My project → Production. Muju remains deployed.
+- Full redeploy/save-persistence verification passed on `dep-daj2r4p5efls73fct0eg`: the replacement container is Live, migrations report no pending work, and bootstrap reports existing saves/content preserved. Reload returned the exact same farmer, clock, location, and inventory.
+
+## Next release work
+
+The fresh preview milestone is complete. Before a wider release, finish the full 16-mode/multiple-seed gameplay matrix, complete real browser weeks on desktop and touch devices, test retries and concurrent tabs, and prove database backup restoration. The current full-week routes run through Django's real HTTP endpoint in tests; they are not full-week browser recordings.
+
+Minor follow-ups observed during browser smoke testing: `/favicon.ico` is missing; changing away from the Hero tab before the existing two-second name debounce finishes can drop that pending name edit. Waiting for the save or editing the always-visible name works. These do not block the preview's week progression, but belong in the next interface pass.
 
 ## Local commands
 

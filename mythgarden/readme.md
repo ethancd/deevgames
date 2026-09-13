@@ -1,7 +1,7 @@
 # Mythgarden
 Mythgarden is a time-loop farming-sim RPG that you can play in your browser. Think Stardew Valley + Groundhog Day, with a quirky vibe and an arcade feel.
 
-The current relaunch plan, verified fixes, and testing instructions are in [the Render roadmap](docs/REHOST_ROADMAP.md). The first milestone is implemented locally; the Render service has not yet been created.
+The current relaunch plan, verified fixes, and testing instructions are in [the Render roadmap](docs/REHOST_ROADMAP.md). **Fresh preview:** https://deevgames-mythgarden-preview.onrender.com/ — deployed with its own PostgreSQL database; saves verified across a full redeploy.
 ## Gallery
 <div style="display:flex;">
 <img width="500" alt="Screen Shot 2023-04-02 at 2 08 44 PM" src="https://user-images.githubusercontent.com/1863479/229380272-5368126f-9fbd-4f68-88c9-704769423ccb.png">

@@ -1,12 +1,12 @@
 # Mythgarden: Render relaunch and a playable week
 
-Examined September 12, 2026. Source baseline: `1ac8026`, plus the Mythgarden changes described here. This is a local audit and first implementation milestone; nothing has been deployed to Render.
+Examined September 12, 2026. Source baseline: `1ac8026`, plus the Mythgarden changes described here. The first implementation and fresh Render preview milestones are complete. The live preview is https://deevgames-mythgarden-preview.onrender.com/.
 
-**Preview preparation update:** the deployment package now includes Django 5.2.17, Python 3.12, Node 24, PostgreSQL 16, one-time world bootstrapping, production static assets, secure Render host configuration, and `/healthz`. All 18 release tests pass on SQLite and PostgreSQL, including both full-week routes. A production Gunicorn browser check verifies immediate changes before an action and deferred changes afterward. Render account selection is confirmed; the preview is being provisioned in Muju's Ohio region. See [the deployment runbook](RENDER_PREVIEW.md).
+**Preview preparation update:** the deployment package now includes Django 5.2.17, Python 3.12, Node 24, PostgreSQL 16, one-time world bootstrapping, production static assets, secure Render host configuration, and `/healthz`. All 18 release tests pass on SQLite and PostgreSQL, including both full-week routes. A production Gunicorn browser check verifies immediate changes before an action and deferred changes afterward. The preview and its fresh PostgreSQL database are live alongside Muju in Ohio at a quoted $13.30/month. A full redeploy preserved the browser save. See [the deployment runbook](RENDER_PREVIEW.md).
 
 **Decisions:** launch a fresh world; use a separate Mythgarden service alongside Muju; settings apply immediately before the first successful gameplay action of a week, then defer to the next week. Existing Fly resources and player data have not been changed.
 
-Mythgarden is recoverable without a rewrite. A fresh database loads successfully, and the game now completes a scripted week in both relaxed and challenge modes on SQLite and PostgreSQL. The runtime and deployment package are now modernized; the remaining work is to provision the preview, expand behavioral coverage, and verify the actual hosted browser experience. A passing route establishes a useful baseline; it cannot establish that every possible play style is free of bugs.
+Mythgarden is recoverable without a rewrite. A fresh database loads successfully, and the game now completes a scripted week in both relaxed and challenge modes on SQLite and PostgreSQL. The runtime and deployment package are now modernized; the remaining work is to expand behavioral coverage and complete the full browser release matrix. A passing route establishes a useful baseline; it cannot establish that every possible play style is free of bugs.
 
 **What is here**
 
@@ -50,11 +50,11 @@ The fixed shop preserves the authored daily progression instead of freezing one 
 
 The browser spot checks are not a complete week in a browser. The complete week routes use Django's HTTP test client and the real action endpoint. Mobile touch, multiple tabs, retries, service restarts during play, all achievements, and all mythegg powers remain unverified.
 
-The local server also logged a missing `/favicon.ico` (a cosmetic 404); include that in the release asset cleanup.
+The local and hosted server logged a missing `/favicon.ico` (a cosmetic 404); include that in the release asset cleanup. The Hero tab also drops a pending name change if it is closed before its two-second debounce finishes; the always-visible name field saves correctly.
 
 **The Render move**
 
-Use a separate web service named `deevgames-mythgarden-preview`, targeting `https://deevgames-mythgarden-preview.onrender.com/` if that name is available. Render assigns the final hostname; it is not reserved yet. Put it in Muju's existing workspace/project, but give it its own service and database. Serve the game at `/`, which matches its current absolute API paths. Muju's game server is a different application and does not need to absorb Django.
+Use a separate web service named `deevgames-mythgarden-preview`, targeting `https://deevgames-mythgarden-preview.onrender.com/` if that name is available. Render confirmed this hostname and the service is live. Put it in Muju's existing workspace/project, but give it its own service and database. Serve the game at `/`, which matches its current absolute API paths. Muju's game server is a different application and does not need to absorb Django.
 
 My recommendation is one small paid web service plus managed PostgreSQL in the same region. Django already understands `DATABASE_URL`, and WhiteNoise already serves bundled assets. No Redis, background worker, separate frontend host, or uploaded-media disk is needed for the current game. This matches Render's [Django deployment guidance](https://render.com/docs/deploy-django).
 
@@ -109,12 +109,12 @@ These are engineering estimates, not measured delivery commitments. Later steps 
 | Leap | Deliverable and completion gate | Rough effort |
 | --- | --- | --- |
 | 1. Establish the game again | This audit, repaired settings, reproduced/fixed restock blocker, repeatable builds, and passing basic week tests on SQLite and PostgreSQL. **Implemented locally in this milestone.** | Completed first pass |
-| 2. Fresh Render preview | Supported runtime, validated bootstrap, health endpoint, service/database configuration, deployment, HTTPS and persistence smoke checks at the assigned Mythgarden URL. | 1–3 focused engineering days |
+| 2. Fresh Render preview | **Complete.** Supported runtime, bootstrap, health endpoint, fresh web/database services, HTTPS browser checks, and save preservation across a full redeploy. | Completed |
 | 3. Make a week reliable | Repair/replace obsolete tests, add the gameplay/browser/adverse-request matrix, fix discovered defects, and promote a verified release. | 3–6 focused engineering days, depending on failures |
 | 4. Upgrade farmer portraits | A consistent art direction, an approved small sample, replacement set, optimized assets, and working selection/persistence on desktop and phone. | 1–3 days plus art review |
 | 5. Give the cast deeper dialogue | Conditional dialogue selection, content validation/fallbacks, two-character pilot, then rollout to all 17 characters. | 3–6 engineering days plus writing/review |
 
-For the next leap, prioritize the Render preview. It can be a controlled preview while the wider test matrix is built; avoid presenting it as a fully certified public release before Leap 3 passes. No paid services or deployment resources have been created as part of this audit.
+The next leap is the broader week-reliability matrix. The Render preview is live and available for playtesting; it is not yet a fully certified release. See the runbook for resource IDs, costs, deployed commit, and observed checks.
 
 **Portraits and dialogue**
 
