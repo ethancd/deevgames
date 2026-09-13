@@ -3,6 +3,8 @@ Mythgarden is a time-loop farming-sim RPG that you can play in your browser. Thi
 
 The [September 13 release report](docs/RELEASE_TESTING.md) records 32 complete weeks, browser checks, and repaired release blockers.
 
+The optional [phone and tablet interface](docs/MOBILE_UI.md) keeps actions on the scene and adds tap-item-then-destination controls. Disable it immediately in Settings → Touch-friendly interface, or host-wide with `MYTHGARDEN_TOUCH_UI_ENABLED=False`.
+
 The current relaunch plan, verified fixes, and testing instructions are in [the Render roadmap](docs/REHOST_ROADMAP.md). **Fresh preview:** https://deevgames-mythgarden-preview.onrender.com/ — deployed with its own PostgreSQL database; saves verified across a full redeploy.
 ## Gallery
 <div style="display:flex;">

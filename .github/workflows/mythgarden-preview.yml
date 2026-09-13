@@ -45,6 +45,8 @@ jobs:
       - run: pip install -r requirements.txt
       - run: npm ci
       - run: npm run build:production
+      - run: npm run typecheck
+      - run: npm run test:ui
       - run: python manage.py collectstatic --noinput
       - run: python manage.py makemigrations --check --dry-run
       - run: npm run test:release

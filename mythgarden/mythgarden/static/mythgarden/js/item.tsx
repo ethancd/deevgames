@@ -5,10 +5,11 @@ import React, {useContext} from 'react'
 import ActionPill, {ActionPillProps} from "./action";
 import {ImageFilterContext} from "./lightColorLogic";
 import RainbowText from "./rainbowText";
+import {activateOnKey, actionCost} from './touchControls'
 
 const RAINBOW = 'RAINBOW'
 
-export default function Item ({ name, emoji, id, rarity, price, hasBeenWatered, mythlingType, quantity, actionPill, style}: ItemProps): JSX.Element {
+export default function Item ({ name, emoji, id, rarity, price, hasBeenWatered, mythlingType, quantity, actionPill, style, selected, selectable = false}: ItemProps): JSX.Element {
   const { backgroundColor, opacity } = useContext(ImageFilterContext)
 
   const getNameLength = (string: string) => {
@@ -24,7 +25,12 @@ export default function Item ({ name, emoji, id, rarity, price, hasBeenWatered, 
 
   return (
         <li
-            className={`item ${rarity}${hasBeenWatered ? ' watered' : ''}`}
+            className={`item ${rarity}${hasBeenWatered ? ' watered' : ''}${selected ? ' selected-item' : ''}`}
+            role="button"
+            tabIndex={0}
+            onKeyDown={activateOnKey}
+            aria-label={`${!selectable && actionPill?.description ? actionPill.description : name}${selectable ? ', select item' : actionPill ? `, ${actionCost(actionPill)}` : ''}`}
+            aria-pressed={selectable ? selected === true : undefined}
             key={id}
             data-entity-id={id}
             style={style}
@@ -48,6 +54,7 @@ export default function Item ({ name, emoji, id, rarity, price, hasBeenWatered, 
 type ItemProps = ItemData & ItemExtras
 
 interface ItemData {
+  placementId?: number
   name: string
   emoji: string
   id: number
@@ -59,6 +66,8 @@ interface ItemData {
 }
 
 interface ItemExtras {
+  selected?: boolean
+  selectable?: boolean
   actionPill?: ActionPillProps
   style?: React.CSSProperties
 }

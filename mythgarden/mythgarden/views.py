@@ -39,6 +39,7 @@ def home(request):
     # Add environment info for deploy badge and production styling
     environment = os.environ.get('ENVIRONMENT', 'development')
     context['ctx']['environment'] = environment
+    context['ctx']['touchUiEnabled'] = settings.MYTHGARDEN_TOUCH_UI_ENABLED
 
     # Only add deploy info for non-production
     if environment != 'production':

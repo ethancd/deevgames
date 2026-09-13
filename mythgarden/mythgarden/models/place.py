@@ -44,6 +44,8 @@ class Place(models.Model):
             'imageUrl': self.image_url,
             'id': self.id,
             'hasInventory': self.has_inventory,
+            'placeType': self.place_type,
+            'isFarmhouse': self.is_farmhouse,
             'arrows': self.get_arrows(),
             'activities': self.get_activities()
         }

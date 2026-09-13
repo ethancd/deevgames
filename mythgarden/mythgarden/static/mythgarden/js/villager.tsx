@@ -7,10 +7,11 @@ import { useDrop } from "react-dnd";
 import {DraggableGiftProps} from "./draggableGift";
 import {postAction} from "./ajax";
 import {ImageFilterContext} from "./lightColorLogic";
+import {activateOnKey, actionCost} from './touchControls'
 
 const GIFT_DIGEST_TEMPLATE = `GIVE-giftId-villagerId`
 
-export default function Villager ({ name, imageUrl, affinity, description, preferences, id, actionPill, isGiftReceiver}: VillagerProps): JSX.Element {
+export default function Villager ({ name, imageUrl, affinity, description, preferences, id, actionPill, isGiftReceiver, giftSelected = false, giftAction, onDetails}: VillagerProps): JSX.Element {
   const { backgroundColor, opacity } = useContext(ImageFilterContext)
   const [{isDragging}, dropRef] = useDrop(() => ({
     accept: 'GIFT',
@@ -25,21 +26,24 @@ export default function Villager ({ name, imageUrl, affinity, description, prefe
     })
   }), [isGiftReceiver])
 
-  const highlight = isDragging && isGiftReceiver
-  const grayOut = isDragging && !isGiftReceiver
-  const ignore = (!isDragging && actionPill == null)
+  const highlight = (isDragging && isGiftReceiver) || (giftSelected && giftAction != null)
+  const grayOut = (isDragging && !isGiftReceiver) || (giftSelected && giftAction == null)
+  const ignore = (!isDragging && !giftSelected && actionPill == null)
+  const displayedAction = giftSelected ? giftAction : actionPill
 
   return (
     <li
-      className={`villager ${highlight ? 'highlighted' : ''} ${grayOut ? 'inactive' : ''} ${ignore ? 'gray-on-hover': ''}`}
+      className={`villager ${highlight ? 'highlighted valid-destination' : ''} ${grayOut ? 'inactive' : ''} ${ignore ? 'gray-on-hover': ''}`}
+      role="button" tabIndex={0} onKeyDown={activateOnKey}
+      aria-label={`${giftSelected ? 'Give selected item to' : 'Talk to'} ${name}${displayedAction ? `, ${actionCost(displayedAction)}` : ', unavailable'}`}
       key={id}
       data-entity-id={id}
       ref={dropRef}>
       <div className="row">
         <div className="portrait">
-          <img src={imageUrl}></img>
-          { actionPill != null
-            ? <ActionPill {...{...actionPill, backgroundColor, opacity}}></ActionPill>
+          <img src={imageUrl} alt=""></img>
+          { displayedAction != null
+            ? <ActionPill {...{...displayedAction, backgroundColor, opacity}}></ActionPill>
             : null
           }
           <div className='portrait-filter' style={{ backgroundColor, opacity }}></div>
@@ -58,6 +62,7 @@ export default function Villager ({ name, imageUrl, affinity, description, prefe
           : null}
       </div>
       <span className="description">{description}</span>
+      {onDetails && <button className="villager-details" type="button" aria-label={`About ${name}`} onClick={event => {event.stopPropagation(); onDetails()}}>ⓘ</button>}
     </li>
   )
 }
@@ -77,6 +82,9 @@ interface VillagerData {
 }
 
 interface VillagerExtras {
+  giftSelected?: boolean
+  giftAction?: ActionPillProps
+  onDetails?: () => void
   actionPill: ActionPillProps
   isGiftReceiver: boolean
 }

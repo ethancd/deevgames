@@ -30,6 +30,7 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # False if not in os.environ because of casting above
 DEBUG = env('DEBUG')
+MYTHGARDEN_TOUCH_UI_ENABLED = env.bool('MYTHGARDEN_TOUCH_UI_ENABLED', default=True)
 
 # Raises Django's ImproperlyConfigured
 # exception if SECRET_KEY not in os.environ

@@ -10,6 +10,9 @@ interface SettingsMenuProps {
   portraitUrls: string[]
   heroName: string
   isDefaultName: boolean
+  touchUi: boolean
+  touchUiAvailable: boolean
+  onTouchUiChange: (enabled: boolean) => void
 }
 
 interface SettingOption {
@@ -46,7 +49,7 @@ const SETTING_OPTIONS: SettingOption[] = [
   },
 ]
 
-export default function SettingsMenu({ show, onClose, currentPortraitUrl, portraitUrls, heroName, isDefaultName }: SettingsMenuProps): JSX.Element {
+export default function SettingsMenu({ show, onClose, currentPortraitUrl, portraitUrls, heroName, isDefaultName, touchUi, touchUiAvailable, onTouchUiChange }: SettingsMenuProps): JSX.Element {
   const [activeTab, setActiveTab] = useState<'hero' | 'settings'>('hero')
   const [settings, setSettings] = useState<GameSettings | null>(null)
   const [loadError, setLoadError] = useState('')
@@ -96,6 +99,10 @@ export default function SettingsMenu({ show, onClose, currentPortraitUrl, portra
         </div>
 
         <div className="tab-content">
+          <div className="interface-setting">
+            <label><input type="checkbox" checked={touchUi} disabled={!touchUiAvailable} onChange={event => onTouchUiChange(event.target.checked)} /> Touch-friendly interface</label>
+            <p>{touchUiAvailable ? 'Compact phone layout and tap-to-use items on phone and tablet. Applies now on this browser; turn off to restore the previous interface.' : 'The new interface is currently disabled for this host.'}</p>
+          </div>
           {activeTab === 'hero' ? (
             <HeroTab
               currentPortraitUrl={currentPortraitUrl}

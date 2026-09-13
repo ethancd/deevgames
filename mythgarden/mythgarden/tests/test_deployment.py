@@ -10,6 +10,19 @@ from mythgarden.models import Hero, Item, Place, Session, Villager
 
 @override_settings(SECURE_SSL_REDIRECT=False)
 class DeploymentTests(TestCase):
+    def test_touch_ui_host_flag_and_place_destinations_do_not_change_a_save(self):
+        call_command('bootstrap_world', stdout=StringIO())
+        with override_settings(MYTHGARDEN_TOUCH_UI_ENABLED=True):
+            before = self.client.get('/').context['ctx']
+        self.assertTrue(before['touchUiEnabled'])
+        self.assertEqual(before['place']['placeType'], 'FARM')
+        self.assertFalse(before['place']['isFarmhouse'])
+        with override_settings(MYTHGARDEN_TOUCH_UI_ENABLED=False):
+            after = self.client.get('/').context['ctx']
+        self.assertFalse(after['touchUiEnabled'])
+        for key in ['stateVersion', 'inventory', 'clock', 'wallet', 'hero']:
+            self.assertEqual(before[key], after[key], key)
+
     def test_empty_world_bootstraps_once_and_preserves_player(self):
         call_command('bootstrap_world', stdout=StringIO())
         self.assertEqual((Item.objects.count(), Place.objects.count(), Villager.objects.count()), (201, 16, 17))

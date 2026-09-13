@@ -40,6 +40,26 @@ class SettingsAndWeekTests(TestCase):
     def game(self):
         return load_session_with_related_data(self.session_key)
 
+    def test_crop_visual_identity_survives_growth_in_both_variants(self):
+        for advanced, seed_name in [(False, 'Parsnip Seed'), (True, 'Weedbulb Seed')]:
+            self.configure(advanced_crops=advanced)
+            session = self.game()
+            farm_state = session.place_states.get(place__place_type=FARM)
+            seed = ItemToken.objects.create(session=session, item=Item.objects.get(name=seed_name), days_growing=1, has_been_watered=True)
+            farm_state.item_tokens.set([seed])
+            origin = seed.serialize()['placementId']
+            for day in range(2):
+                farm_state.item_tokens.update(has_been_watered=True)
+                session = self.game()
+                EventOperator().grow_crops(session.place_states.all(), session)
+                grown = farm_state.item_tokens.get()
+                self.assertEqual(grown.serialize()['placementId'], origin)
+                self.assertNotEqual(grown.pk, seed.pk)
+            # Copies (e.g. a shop purchase) are new items, not the same plant.
+            copied = grown.make_copy()
+            copied.save()
+            self.assertEqual(copied.serialize()['placementId'], copied.pk)
+
     def configure(self, **options):
         response = self.client.post('/settings/update', {f'draft_{k}': v for k, v in options.items()}, content_type='application/json')
         self.assertEqual(response.status_code, 200, response.content[:200])

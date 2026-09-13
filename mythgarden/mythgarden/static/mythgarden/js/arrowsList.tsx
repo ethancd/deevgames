@@ -1,5 +1,6 @@
 import React from 'react'
 import ActionPill, {ActionPillProps} from "./action";
+import {activateOnKey, actionCost} from './touchControls'
 
 function ArrowsList ({ arrows, actionDictionary }: ArrowsListProps): JSX.Element {
   return (
@@ -18,6 +19,7 @@ function Arrow({id, direction, actionPill }: ArrowProps): JSX.Element {
   return (
       <li
       className={`arrow ${direction.toLowerCase()}`}
+      role="button" tabIndex={0} onKeyDown={activateOnKey} aria-label={`Travel ${direction.toLowerCase()}, ${actionCost(actionPill)}`}
       data-entity-id={id}>
         <div
           className='inner-triangle'

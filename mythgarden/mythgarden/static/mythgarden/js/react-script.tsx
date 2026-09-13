@@ -4,6 +4,7 @@ import { App, type AppProps } from './app'
 import { acceptStateVersion } from './ajax'
 import '../style.scss'
 import '../mobile.scss'
+import '../touch.scss'
 
 const root = ReactDOM.createRoot(document.getElementById('app-root') as Element)
 const appDataElement = document.getElementById('app-data') as Element

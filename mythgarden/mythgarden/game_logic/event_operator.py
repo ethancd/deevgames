@@ -279,7 +279,8 @@ class EventOperator:
                 new_item = token.item.get_next_growth_stage(token.days_growing, golden_mythegg_active)
 
             new_item_token = ItemToken.objects.create(
-                session=session, item=new_item, days_growing=token.days_growing + 1
+                session=session, item=new_item, days_growing=token.days_growing + 1,
+                growth_origin_id=token.growth_origin_id or token.pk,
             )
             new_contents.append(new_item_token)
 

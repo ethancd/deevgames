@@ -2,13 +2,15 @@
 
 import React from 'react'
 import ActionPill, {ActionPillProps} from "./action";
+import {activateOnKey, actionCost} from './touchControls'
 
-export default function Building ({ id, imageUrl, coords, actionPill, isOpen}: BuildingProps): JSX.Element {
+export default function Building ({ id, name, imageUrl, coords, actionPill, isOpen}: BuildingProps): JSX.Element {
   return (
         <li
           className={`building over-${coords.over} down-${coords.down} ${!isOpen ? 'inactive' : ''}`}
           key={id}
           data-entity-id={id}
+          role="button" tabIndex={0} onKeyDown={activateOnKey} aria-label={`${name}, ${isOpen ? `enter ${actionCost(actionPill)}` : 'closed'}`}
         >
           <img src={imageUrl}></img>
           { actionPill
@@ -19,7 +21,7 @@ export default function Building ({ id, imageUrl, coords, actionPill, isOpen}: B
   )
 }
 
-type BuildingProps = Omit<BuildingData, 'name'|'openingTime'|'closingTime'|'openingTimeDisplay'|'closingTimeDisplay'>
+type BuildingProps = Omit<BuildingData, 'openingTime'|'closingTime'|'openingTimeDisplay'|'closingTimeDisplay'>
                       & BuildingExtras;
 
 interface BuildingData {

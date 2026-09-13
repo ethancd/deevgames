@@ -101,6 +101,9 @@ class ItemToken(models.Model):
 
     has_been_watered = models.BooleanField(default=False)  # only defined for plants (seeds/sprouts/crops)
     days_growing = models.IntegerField(null=True, blank=True)  # only defined for plants (seeds/sprouts/crops)
+    # Growing creates a new token. Keep its visual identity so a planted crop
+    # stays in the same phone/tablet soil slot across those replacements.
+    growth_origin_id = models.PositiveBigIntegerField(null=True, blank=True)
 
     def __str__(self):
         return self.item.name + ' ' + self.session.abbr_key_tag()
@@ -112,6 +115,7 @@ class ItemToken(models.Model):
             'emoji': self.emoji,
             'hasBeenWatered': self.has_been_watered,
             'id': self.id,
+            'placementId': self.growth_origin_id or self.pk,
             'quantity': self.quantity,
             'price': self.get_display_price_if_known(),
             'mythlingType': self.get_mythling_type_if_applicable()

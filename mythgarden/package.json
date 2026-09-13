@@ -50,6 +50,8 @@
   },
   "scripts": {
     "test": "mocha",
+    "test:ui": "node --test tests/touch-controls.test.mjs",
+    "typecheck": "node node_modules/typescript/bin/tsc --noEmit",
     "test:release": "python manage.py test mythgarden.tests.test_settings_and_week mythgarden.tests.test_release_edges mythgarden.tests.test_deployment --testrunner django.test.runner.DiscoverRunner",
     "dev": "webpack serve",
     "build": "webpack",

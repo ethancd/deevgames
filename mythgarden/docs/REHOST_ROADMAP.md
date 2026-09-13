@@ -8,6 +8,8 @@ Examined September 12, 2026. Source baseline: `1ac8026`, plus the Mythgarden cha
 
 **Decisions:** launch a fresh world; use a separate Mythgarden service alongside Muju; settings apply immediately before the first successful gameplay action of a week, then defer to the next week. Existing Fly resources and player data have not been changed.
 
+**Phone/tablet implementation (September 13):** an optional portrait layout now keeps the scene overlays, nearby villagers, six-slot bag, and latest event in one main view. Item actions use tap-item-then-destination; tablet shares these controls, readable costs, and detail panels. The interface flag applies immediately and can restore the previous interface without changing the week. See [the mobile interface runbook](MOBILE_UI.md) for rollback, the additive crop-identity migration, and testing boundaries.
+
 Mythgarden is recoverable without a rewrite. A fresh database loads successfully, and the game now completes a scripted week in both relaxed and challenge modes on SQLite and PostgreSQL. The runtime and deployment package are now modernized; the remaining work is to expand behavioral coverage and complete the full browser release matrix. A passing route establishes a useful baseline; it cannot establish that every possible play style is free of bugs.
 
 **What is here**
