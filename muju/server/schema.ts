@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { MAX_BLACK_CRYSTAL_HANDICAP } from '../src/game/rules';
 import { TIME_CONTROL_PRESETS } from '../src/online/timeControl';
 import type { RoomSnapshot } from '../src/online/types';
 
@@ -39,6 +40,8 @@ export const stageRequestSchema = z.object({
 export const cancelStageSchema = stageRequestSchema.pick({ requestId: true, expectedTurnNumber: true, expectedStageVersion: true });
 export const createSchema = z.object({ name: nameSchema, side: z.enum(['white', 'black']).default('white'),
   actionsPerTurn: z.literal(4).default(4),
+  blackCrystalHandicap: z.number().int().min(0).max(MAX_BLACK_CRYSTAL_HANDICAP).default(0)
+    .describe('Creation only. Grant Black 1–20 starting crystals. Black skips its first Place & Promote phase with 1–2 crystals; with 3–20 it can place/promote. Omit or use 0 for no handicap. White still moves first.'),
   timeControl: z.union([
     z.enum(['blitz', 'rapid', 'classical']).transform(key => {
       const { delaySeconds, bankSeconds } = TIME_CONTROL_PRESETS[key];

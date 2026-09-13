@@ -1,6 +1,6 @@
 import { resolveInactivityDraw } from '../game/inactivity';
 import type { GameState } from '../game/types';
-import { getActionsPerTurn, isActionsPerTurn } from '../game/rules';
+import { getActionsPerTurn, isActionsPerTurn, isBlackCrystalHandicap } from '../game/rules';
 import { migrateLegacyGame } from '../game/migrate';
 
 // v6: four actions only, and kills alone reset the quiet-turn clock.
@@ -90,6 +90,8 @@ function validateGameState(state: unknown, legacy = false): state is GameState {
   // Check top-level required fields
   if (!s.phase || !s.board || !s.players || !s.turn) return false;
   if (s.actionsPerTurn !== undefined && !(isActionsPerTurn(s.actionsPerTurn) || (legacy && s.actionsPerTurn === 6))) return false;
+
+  if (s.blackCrystalHandicap !== undefined && !isBlackCrystalHandicap(s.blackCrystalHandicap)) return false;
 
   // Check board has cells and units
   const board = s.board as Record<string, unknown>;

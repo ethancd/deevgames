@@ -4,6 +4,21 @@ One authoritative host serves the existing browser game, persistent two-seat roo
 an HTTP API, and an MCP endpoint. Humans and LLMs can play each other in any pairing
 from separate computers. Every move uses the same rules engine as local play.
 
+## Black crystal handicap
+
+Local new-game setup and **Play online → Host a game** offer **Black crystal
+handicap**: Off (standard), or any whole number from 1 to 20. Black starts with
+exactly that many crystals; White starts with 0 and moves first. With 1 or 2,
+Black skips its opening Place & Promote phase. With 3–20, it enters that phase
+and uses normal purchase/promotion costs. Both sides retain four actions.
+
+HTTP room creation and `muju_create_room` accept `blackCrystalHandicap`, for
+example `{ "name": "Host", "side": "white", "blackCrystalHandicap": 8 }`.
+Omit it or use 0 to disable; fractions and values outside 0–20 are rejected.
+The setting belongs to Black regardless of the host's seat, is fixed at creation,
+and appears in room state, MCP observations and `muju_rules`. Saves and room
+restarts retain it; the starting grant is separate from mined income.
+
 ## Start a host
 
 Requires **Node 24** (uses built-in SQLite).

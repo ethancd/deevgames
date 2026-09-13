@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { BlackCrystalHandicap } from './BlackCrystalHandicap';
 import { MusicButton } from '../music/MusicPlayer';
 import type { GameMode, GameConfig, PlayerId } from '../game/types';
 import type { AIDifficulty } from '../ai/types';
@@ -26,6 +27,7 @@ export function ModeSelect({ onStartGame, onOnline }: ModeSelectProps) {
   const [playerDifficulty, setPlayerDifficulty] = useState<AIDifficulty>('medium');
   const [aiDifficulty, setAiDifficulty] = useState<AIDifficulty>('medium');
   const [savedGame] = useState(loadGameState);
+  const [blackCrystalHandicap, setBlackCrystalHandicap] = useState(0);
 
   const handleSideChange = (side: PlayerId) => {
     setPlayerSide(side);
@@ -72,7 +74,7 @@ export function ModeSelect({ onStartGame, onOnline }: ModeSelectProps) {
         break;
     }
 
-    onStartGame({ ...config, newGame });
+    onStartGame({ ...config, blackCrystalHandicap, newGame });
   };
 
   return (
@@ -206,6 +208,8 @@ export function ModeSelect({ onStartGame, onOnline }: ModeSelectProps) {
             </div>
           </div>
         )}
+
+        {selectedMode && <BlackCrystalHandicap value={blackCrystalHandicap} onChange={setBlackCrystalHandicap} />}
 
         {/* Start button */}
         {selectedMode && <p className="text-sm text-gray-400">4 shared actions per turn · Draw after 10 consecutive turns without a kill.</p>}

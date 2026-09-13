@@ -9,6 +9,7 @@ import { RoomHistory } from './RoomHistory';
 import { RoomClocks } from './RoomClocks';
 import { TIME_CONTROL_PRESETS, type TimeControlPreset } from './timeControl';
 import { ActiveGames } from './ActiveGames';
+import { BlackCrystalHandicap } from '../components/BlackCrystalHandicap';
 
 const defaultServer = () => new URLSearchParams(window.location.search).get('server') || import.meta.env.VITE_MUJU_SERVER_URL || window.location.origin;
 interface Session { connection: OnlineConnection; room: RoomSnapshot; inviteCode?: string }
@@ -17,6 +18,7 @@ export function OnlineLobby({ onBack }: { onBack: () => void }) {
   const [server, setServer] = useState(defaultServer);
   const [name, setName] = useState('Player');
   const [side, setSide] = useState<PlayerId>('white');
+  const [blackCrystalHandicap, setBlackCrystalHandicap] = useState(0);
   const [timeChoice, setTimeChoice] = useState<TimeControlPreset | 'untimed' | 'custom'>('untimed');
   const [delaySeconds, setDelaySeconds] = useState('30');
   const [bankMinutes, setBankMinutes] = useState('10');
@@ -71,7 +73,7 @@ export function OnlineLobby({ onBack }: { onBack: () => void }) {
           || custom.delaySeconds < 0 || custom.delaySeconds > 600 || !Number.isFinite(custom.bankSeconds) || custom.bankSeconds < 1 || custom.bankSeconds > 14400)) {
           throw new Error('Use 0–600 whole seconds per turn and a bank of 1 second to 240 minutes per player.');
         }
-        result = await createRoom(url, name, side, 4, timeChoice === 'untimed' ? null : timeChoice === 'custom' ? custom : timeChoice);
+        result = await createRoom(url, name, side, 4, timeChoice === 'untimed' ? null : timeChoice === 'custom' ? custom : timeChoice, blackCrystalHandicap);
       }
       else {
         const invite = new URL(invitation.trim());
@@ -109,6 +111,7 @@ export function OnlineLobby({ onBack }: { onBack: () => void }) {
     <section aria-label="Host a game"><h3>Host a game</h3>
       <label>Your side<select value={side} onChange={e => setSide(e.target.value as PlayerId)}><option value="white">White · first turn</option><option value="black">Black · second turn</option></select></label>
       <p className="online-help">4 shared actions per turn · Draw after 10 consecutive turns without a kill.</p>
+      <BlackCrystalHandicap value={blackCrystalHandicap} onChange={setBlackCrystalHandicap} />
       <label>Time control<select value={timeChoice} onChange={e => setTimeChoice(e.target.value as typeof timeChoice)}>
         <option value="untimed">Untimed</option>
         {Object.entries(TIME_CONTROL_PRESETS).map(([key, preset]) => <option key={key} value={key}>{preset.label} · {preset.delaySeconds}s / {preset.bankSeconds / 60}min · {preset.duration}</option>)}
@@ -163,6 +166,7 @@ function OnlineMatch({ session, notice, onLeave }: { session: Session; notice: s
   const banner = <section className="online-banner" aria-label="Online room">
     <strong>{connection.player ? `Online · You are ${connection.player}` : 'Online · Observer'}</strong>
     <span role="status">{!connected ? 'Reconnecting…' : !room.ready ? 'Waiting for opponent' : busy ? 'Confirming move…' : connection.player ? 'Room connected' : 'Watching live · Read only'}</span>
+    {(room.state.blackCrystalHandicap ?? 0) > 0 && <span>Black crystal handicap · {room.state.blackCrystalHandicap} starting crystals</span>}
     <RoomClocks room={room} />
     {!room.ready && link && <><label>Invite your opponent<input readOnly value={link} onFocus={e => e.target.select()} /></label>
       <button onClick={() => { void navigator.clipboard?.writeText(link).then(() => setCopied(true)).catch(() => setCopied(false)); }}>{copied ? 'Copied' : 'Copy invitation'}</button></>}

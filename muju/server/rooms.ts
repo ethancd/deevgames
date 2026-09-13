@@ -298,13 +298,13 @@ export class RoomStore {
       : { changed: true, ...metadata, room };
   }
   create(input: unknown): RoomAdmission {
-    const { name, side, actionsPerTurn, timeControl } = createSchema.parse(input);
+    const { name, side, actionsPerTurn, timeControl, blackCrystalHandicap } = createSchema.parse(input);
     return this.transaction(() => {
       const count = this.db.prepare('SELECT COUNT(*) AS count FROM rooms').get()!.count as number;
       if (count >= this.maxRooms) throw new RoomError(503, 'ROOM_LIMIT', 'This host is at its room limit.');
       const id = randomBytes(16).toString('hex'), token = secret(), inviteCode = secret();
       const room: StoredRoom = { id, revision: 0, ready: false, seats: { white: null, black: null },
-        state: createInitialGameState(undefined, actionsPerTurn), canUndo: false, undoHistory: [], updatedAt: new Date().toISOString(), history: [],
+        state: createInitialGameState(undefined, actionsPerTurn, blackCrystalHandicap), canUndo: false, undoHistory: [], updatedAt: new Date().toISOString(), history: [],
         moveHistoryStart: { revision: 0, turnNumber: 1, player: 'white', complete: true },
         rulesVersion: RULES_VERSION, inviteHash: digest(inviteCode), tokenHashes: { [side]: digest(token) }, receipts: [] };
       room.seats[side] = name;

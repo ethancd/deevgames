@@ -62,8 +62,14 @@ may be a human or an AI (`vs-ai`, `pass-play`, and `ai-vs-ai` modes).
   spent from the four-action allowance (minimum zero); Place receives all four.
   Start the new kill-only clock at zero. Completed results remain final, and
   online undo/replay history from the old rules is cleared at the upgrade.
+- **Optional Black crystal handicap:** New games may grant Black any whole
+  number from 1 to 20 starting crystals (off/0 by default). White still starts
+  with 0. Black skips Place & Promote on turn 1 with 1–2 crystals; with 3–20,
+  Black enters that phase and pays normal purchase/promotion costs. The grant
+  is separate from mined income, is awarded only at game creation, and persists
+  in saves, online rooms and rematches. Both sides retain four actions.
 - **White moves first.** The first turn begins directly in the Action phase
-  (there is nothing to place or promote at game start).
+  (White has no starting crystals to place or promote).
 
 ## 2. Turn structure
 

@@ -86,7 +86,7 @@ export function gameReducer(state: GameState, action: LocalAction): GameState {
     }
 
     case 'RESET_GAME': {
-      return createInitialGameState(undefined, getActionsPerTurn(state));
+      return createInitialGameState(undefined, getActionsPerTurn(state), state.blackCrystalHandicap);
     }
 
     case 'RESTORE_STATE': {
@@ -137,14 +137,14 @@ function gameReducerWithSave(state: GameState, action: LocalAction): GameState {
   return newState;
 }
 
-type InitialGameOptions = Pick<GameConfig, 'actionsPerTurn' | 'newGame'>;
+type InitialGameOptions = Pick<GameConfig, 'actionsPerTurn' | 'blackCrystalHandicap' | 'newGame'>;
 
 function getInitialState(options: InitialGameOptions): GameState {
   const saved = options.newGame ? null : loadGameState();
   if (saved) {
     return saved;
   }
-  const state = createInitialGameState(undefined, options.actionsPerTurn);
+  const state = createInitialGameState(undefined, options.actionsPerTurn, options.blackCrystalHandicap);
   saveGameState(state);
   return state;
 }

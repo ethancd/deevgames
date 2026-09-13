@@ -16,6 +16,8 @@ export type ActionsPerTurn = 4;
 
 export interface GameConfig {
   actionsPerTurn?: ActionsPerTurn;
+  /** Starting crystals granted to Black; omitted or 0 means no handicap. */
+  blackCrystalHandicap?: number;
   /** Explicit new-game setup; omitted preserves legacy resume behavior. */
   newGame?: boolean;
   mode: GameMode;
@@ -118,6 +120,8 @@ export interface IncomeTake { unitId: string; definitionId: string; position: Po
 export interface GameState {
   /** Four shared actions for every current-rule match. */
   actionsPerTurn?: ActionsPerTurn;
+  /** Starting crystals granted to Black; omitted or 0 means no handicap. */
+  blackCrystalHandicap?: number;
   lastIncome?: { player: PlayerId; turnNumber: number; total: number; takes: IncomeTake[] };
   /** Omitted means current rules; explicit elimination is for historical lab comparisons. */
   victoryRule?: 'elimination' | 'home-or-elimination';

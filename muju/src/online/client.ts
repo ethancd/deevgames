@@ -54,7 +54,7 @@ export async function roomRequest<T>(serverUrl: string, path: string, body?: unk
   if (!response.ok) throw new OnlineError(result.error ?? 'Request failed.', result.code ?? 'REQUEST_FAILED', response.status);
   return result as T;
 }
-export const createRoom = (serverUrl: string, name: string, side: PlayerId, actionsPerTurn: import('../game/types').ActionsPerTurn = 4, timeControl?: TimeControl | TimeControlPreset | null) => roomRequest<RoomAdmission>(serverUrl, '', { name, side, actionsPerTurn, timeControl });
+export const createRoom = (serverUrl: string, name: string, side: PlayerId, actionsPerTurn: import('../game/types').ActionsPerTurn = 4, timeControl?: TimeControl | TimeControlPreset | null, blackCrystalHandicap = 0) => roomRequest<RoomAdmission>(serverUrl, '', { name, side, actionsPerTurn, timeControl, ...(blackCrystalHandicap > 0 ? { blackCrystalHandicap } : {}) });
 export const listActiveRooms = (serverUrl: string, signal?: AbortSignal) => roomRequest<{ rooms: ActiveRoom[] }>(serverUrl, '', undefined, undefined, signal);
 export const joinRoom = (serverUrl: string, roomId: string, name: string, inviteCode: string) => roomRequest<RoomAdmission>(serverUrl, `/${roomId}/join`, { name, inviteCode });
 export const restoreSeat = (c: RoomConnection) => roomRequest<RoomSnapshot>(c.serverUrl, `/${c.roomId}/restore`, { player: c.player }, c.token);

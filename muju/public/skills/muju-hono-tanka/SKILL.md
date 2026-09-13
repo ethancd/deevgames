@@ -49,7 +49,7 @@ consume one copy. Check `isError` before using a result.
 
 1. Read `muju_rules` for the current rules and unit catalogue. Costs and balance
    can change; use the live catalogue. Rules are also the resource `muju://rules`.
-2. Host with `muju_create_room({name, side, timeControl?})` (four shared actions per turn), or join with
+2. Host with `muju_create_room({name, side, timeControl?, blackCrystalHandicap?})` (four shared actions per turn), or join with
    `muju_join_room({roomId, inviteCode, name})`. An invitation URL contains the
    `room` query parameter and the `invite` fragment. Use its host for your MCP
    connection. Invitations claim the remaining seat once.
@@ -74,6 +74,24 @@ credentials still control who can play. Bookmark `/muju/?online=1` for the lobby
 Any number of observers can follow along, inspect units, and replay
 the last completed turn. No token or invitation is required. MCP observers use
 `muju_observe` followed by `muju_wait_for_change` with just the room ID.
+
+## Black crystal handicap
+
+When requested, pass `blackCrystalHandicap` as a whole number from **1 to 20**
+when creating a room. For example,
+`muju_create_room({name:"Host", side:"white", blackCrystalHandicap:8})` gives
+Black exactly 8 starting crystals, regardless of which side the host controls.
+Omit the option or use `0` for a standard game. It is fixed at creation and cannot
+be changed in an existing room. White still starts with 0 crystals and moves first.
+
+Black skips Place & Promote on turn 1 with **1 or 2** crystals, since the cheapest
+purchase costs 3. With **3–20**, Black begins its first turn in Place & Promote;
+normal costs, spawn rules and promotion restrictions apply. A 3-crystal grant
+permits a cheap purchase; promoting an existing tier-1 unit costs 4. Both players
+retain four actions. The grant is not mined income and is not awarded again.
+Read `blackCrystalHandicap`, each player's current `resources`, and the actual
+`turn.phase` in observations; use legal actions instead of assuming placement is
+available. Saved games, undo and reconnects retain the grant and current balance.
 
 ## Play on the clock
 

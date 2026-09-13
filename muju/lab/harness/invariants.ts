@@ -63,8 +63,9 @@ export function checkInvariants(state: GameState, context: string): void {
     if (p.resources < 0) {
       throw new InvariantViolation(`${context}: ${player} negative resources`);
     }
-    if (p.resources > p.resourcesGained) {
-      throw new InvariantViolation(`${context}: ${player} holds more than ever mined`);
+    const grant = player === 'black' ? state.blackCrystalHandicap ?? 0 : 0;
+    if (p.resources > p.resourcesGained + grant) {
+      throw new InvariantViolation(`${context}: ${player} holds more than ever mined or granted`);
     }
   }
 

@@ -26,7 +26,7 @@ export function observe(room: RoomSnapshot, perspective = room.state.turn.curren
     analysis: analysisService.headline(room, perspective),
     historyTool: 'muju_history',
     activePlayer: room.ready && s.phase === 'playing' ? s.turn.currentPlayer : null,
-    status: s.phase, turn: s.turn, actionsPerTurn: getActionsPerTurn(s), upkeepPending: !!s.upkeepPending,
+    status: s.phase, turn: s.turn, actionsPerTurn: getActionsPerTurn(s), blackCrystalHandicap: s.blackCrystalHandicap ?? 0, upkeepPending: !!s.upkeepPending,
     winner: s.winner, victoryReason: s.victoryReason ?? null,
     nextStep: !room.ready ? 'Invite the opponent, then wait for them to join.' : s.phase === 'victory' ? 'Game finished.'
       : s.upkeepPending ? 'Choose PAY_UPKEEP keepUnitIds; all tier 1 units must stay. Higher tiers omitted are released.'
@@ -91,6 +91,11 @@ export function legalActions(room: RoomSnapshot, options: { unitId?: string; typ
 }
 
 export const rules = {
+  blackCrystalHandicap: {
+    default: 0, min: 1, max: 20,
+    setup: 'Optional creation-only starting crystals for Black. Omit or use 0 for the standard start. White starts with 0 and moves first. This grant is separate from mined income and is not repeated on later turns.',
+    opening: 'Black skips Place & Promote on turn 1 with 0–2 crystals; with 3–20 it enters Place & Promote. Normal purchase and promotion costs apply; both sides still have four actions.',
+  },
   analysis: {
     workflow: 'Observe with briefing:true and player for one turn-start call. muju_analyze batches topics and targets at expectedRevision; use hypotheticalActions for complete proposed turns. Focus threats before exposure, exchange/reply for trades, and checkmate before home attempts. sinceRevision returns changed sections when a compatible process-local baseline is cached, otherwise a labeled full result.',
     proof: 'proven_possible requires an engine witness. proven_impossible applies only to the declared complete search scope. unknown never means safe. Best-found costs are not proven minima. Replies are one-ply objectives, not minimax. Structural defenders and survival profiles are conditional, not executed purchases.',
