@@ -434,7 +434,7 @@ class App extends React.Component<Partial<AppProps>, AppState> {
     return (
       <FilterizeColorContext.Provider value={ filterFn }>
         <ImageFilterContext.Provider value={imageFilter}>
-        <DndProvider backend={TouchBackend} options={{enableMouseEvents: true, delayTouchStart: 180, touchSlop: 8}}>
+        <DndProvider backend={TouchBackend} options={{enableMouseEvents: true, touchSlop: 8}}>
         <Section id="page" className={pageClassName} baseColor={colors.whiteYellow} handleClick={this.handleClick.bind(this)}>
 
           {phoneUi && <Section id="compact-hud" baseColor={colors.skyBlue}>

@@ -15,7 +15,7 @@ The touch interface keeps actions on the scene. There is no permanent or context
 2. Tap a highlighted destination: empty soil to plant seeds, the shop's sell target to sell, an empty chest slot to store, or a villager to give a gift.
 3. Only a matching, currently offered server action can execute. Invalid destinations and unrelated actions cannot fall through into talking, buying, watering, or traveling.
 4. Tap the selected item again, empty scenery, or Escape to cancel; tap another bag item to switch.
-5. With nothing selected, existing scene actions work normally: buy shop stock, water/harvest a crop, retrieve a stored item, enter buildings, travel, gather, sleep, or talk. Drag-to-give remains available with a short touch delay to distinguish a tap from a drag.
+5. With nothing selected, existing scene actions work normally: buy shop stock, water/harvest a crop, retrieve a stored item, enter buildings, travel, gather, sleep, or talk. Drag-to-give remains available with a small movement threshold to distinguish a tap from a drag.
 6. The existing request lock and state-version check remain authoritative. Selection clears when updated server state arrives. Request errors stay visible in a dismissible alert and the journal.
 
 The sell target sits above the shop's six stock slots, so it does not consume stock capacity. Destination highlights also respect full field/chest capacity.
