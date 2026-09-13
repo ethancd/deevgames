@@ -1086,6 +1086,7 @@ $icon-dark-mode-drop-shadow-expression: drop-shadow(0 0 $fine-shadow-distance #f
   width: 100%;
 
   h2.name {
+    pointer-events: none;
     font-size: $med-large-text;
     font-weight: bold;
     display: inline-block;
