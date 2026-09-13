@@ -5,12 +5,13 @@ interface VictoryScreenProps {
   winner: PlayerId | null;
   reason?: VictoryReason;
   onPlayAgain: () => void;
+  analysisUrl: string;
   onViewHistory?: () => void;
   playerNames?: { white: string; black: string };
   perspectivePlayer?: PlayerId | null;
 }
 
-export function VictoryScreen({ winner, reason, onPlayAgain, onViewHistory, playerNames, perspectivePlayer = 'white' }: VictoryScreenProps) {
+export function VictoryScreen({ winner, reason, onPlayAgain, analysisUrl, onViewHistory, playerNames, perspectivePlayer = 'white' }: VictoryScreenProps) {
   const isPlayerWinner = !!winner && (perspectivePlayer === null || winner === perspectivePlayer);
   const winnerName = !winner ? 'Draw' : playerNames
     ? playerNames[winner]
@@ -37,6 +38,9 @@ export function VictoryScreen({ winner, reason, onPlayAgain, onViewHistory, play
                 : 'Your forces have been eliminated.')}
         </p>
 
+        <a href={analysisUrl} className="block mb-4 px-6 py-3 bg-cyan-700 hover:bg-cyan-800 text-white font-medium rounded-lg transition-colors">
+          Analyze this game
+        </a>
         <button
           onClick={onPlayAgain}
           className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"

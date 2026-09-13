@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { MusicButton } from '../music/MusicPlayer';
 import type { GameConfig, PlayerId } from '../game/types';
 import { GameView } from '../components/GameScreen';
-import { createRoom, invitationUrl, joinRoom, loadConnection, normalizeServer, observerUrl, parseObserverConnection, parseSeatCredentials, readRoom, restoreSeat, saveConnection } from './client';
+import { analysisUrl, createRoom, invitationUrl, joinRoom, loadConnection, normalizeServer, observerUrl, parseObserverConnection, parseSeatCredentials, readRoom, restoreSeat, saveConnection } from './client';
 import type { OnlineConnection, RoomAdmission, RoomSnapshot } from './types';
 import { useOnlineGame } from './useOnlineGame';
 import { RoomHistory } from './RoomHistory';
@@ -186,6 +186,6 @@ function OnlineMatch({ session, notice, onLeave }: { session: Session; notice: s
   </section>;
   const names = { white: room.seats.white ?? 'Waiting for White', black: room.seats.black ?? 'Waiting for Black' };
   return <><GameView game={game} config={config} onBackToMenu={onLeave} online={{ player: connection.player ?? null, ready: room.ready, busy,
-    names, banner, historyOpen: showHistory, onToggleHistory: () => setShowHistory(value => !value) }} />
+    names, banner, analysisUrl: analysisUrl(connection), historyOpen: showHistory, onToggleHistory: () => setShowHistory(value => !value) }} />
     {showHistory && <RoomHistory connection={connection} revision={room.revision} names={names} onClose={() => setShowHistory(false)} />}</>;
 }

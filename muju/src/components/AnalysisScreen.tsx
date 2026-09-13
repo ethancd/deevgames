@@ -3,18 +3,16 @@ import { GameView } from './GameScreen';
 import { createInitialGameState, getUnitById } from '../game/board';
 import { gameReducer } from '../hooks/useGameState';
 import { applyAction } from '../ai/simulate';
-import { automaticUpkeepUndo } from '../game/turn';
-import { describeTransition, movementStep, type MoveHistoryEntry, type RoomMoveHistory } from '../game/moveHistory';
+import { type MoveHistoryEntry, type RoomMoveHistory } from '../game/moveHistory';
+import { analysisFrames, localFrame, turnKey, type AnalysisFrame as LocalFrame } from '../game/analysis';
+import { loadGameHistory } from '../utils/persistence';
 import type { AIAction } from '../ai/types';
 import type { GameConfig, GameState, PlayerId, Position } from '../game/types';
 import { parseObserverConnection, roomRequest } from '../online/client';
 import './AnalysisScreen.css';
 
 interface Frame { sequence: number; step: number; label: string; turn: string }
-interface LocalFrame { state: GameState; label: string; turn: string }
 interface Variation { frames: LocalFrame[]; cursor: number }
-const turnKey = (state: GameState) => `${state.turn.turnNumber}.${state.turn.currentPlayer}`;
-const localFrame = (state: GameState, label = 'Starting position'): LocalFrame => ({ state, label, turn: turnKey(state) });
 const config: GameConfig = { mode: 'pass-play', controls: { white: 'human', black: 'human' }, aiDifficulty: { white: 'medium', black: 'medium' } };
 function entryFrames(entry: MoveHistoryEntry): Frame[] {
   const count = entry.kind === 'move' ? entry.ap : 1;
@@ -26,15 +24,18 @@ function entryFrames(entry: MoveHistoryEntry): Frame[] {
 export function AnalysisScreen() {
   const [query] = useState(() => new URLSearchParams(window.location.search));
   const roomId = query.get('room'), server = query.get('server') || window.location.origin;
+  const local = !roomId && query.get('local') === '1';
+  const [localHistory] = useState(() => local ? loadGameHistory() : null);
+  const hasScore = !!roomId || local;
   const [initial] = useState(createInitialGameState);
-  const [frames, setFrames] = useState<Frame[]>([]), [cursor, setCursor] = useState(0);
+  const [frames, setFrames] = useState<Frame[]>([]), [cursor, setCursor] = useState(() => Math.max(0, (localHistory?.frames.length ?? 1) - 1));
   const [position, setPosition] = useState<GameState>(initial);
-  const [variation, setVariation] = useState<Variation | null>(roomId ? null : { frames: [localFrame(initial)], cursor: 0 });
+  const [variation, setVariation] = useState<Variation | null>(hasScore ? null : { frames: [localFrame(initial)], cursor: 0 });
   const [selected, setSelected] = useState<string | null>(null);
-  const [loading, setLoading] = useState(!!roomId), [error, setError] = useState('');
-  const [refresh, setRefresh] = useState(0), [partial, setPartial] = useState(false), [roomInput, setRoomInput] = useState('');
+  const [loading, setLoading] = useState(!!roomId), [error, setError] = useState(local && !localHistory ? 'No saved game is available on this device.' : '');
+  const [refresh, setRefresh] = useState(0), [partial, setPartial] = useState(!!localHistory && !localHistory.complete), [roomInput, setRoomInput] = useState('');
   const cache = useRef(new Map<string, GameState>());
-  const reviewing = !!roomId && !variation;
+  const reviewing = hasScore && !variation;
 
   useEffect(() => {
     if (!roomId) return;
@@ -64,7 +65,7 @@ export function AnalysisScreen() {
   }, [roomId, server, refresh, query]);
   useEffect(() => {
     const frame = frames[cursor];
-    if (!reviewing || !frame) return;
+    if (!roomId || !reviewing || !frame) return;
     const key = `${frame.sequence}:${frame.step}`, saved = cache.current.get(key);
     if (saved) { setPosition(saved); setLoading(false); setError(''); return; }
     const controller = new AbortController();
@@ -75,8 +76,8 @@ export function AnalysisScreen() {
     return () => controller.abort();
   }, [cursor, frames, reviewing, roomId, server]);
 
-  const rawState = variation ? variation.frames[variation.cursor].state : position;
-  const timeline = variation?.frames ?? frames, index = variation?.cursor ?? cursor;
+  const rawState = variation ? variation.frames[variation.cursor].state : localHistory?.frames[cursor]?.state ?? position;
+  const timeline = variation?.frames ?? localHistory?.frames ?? frames, index = variation?.cursor ?? cursor;
   useEffect(() => { setSelected(null); }, [rawState]);
   const state = useMemo(() => selected ? gameReducer(rawState, { type: 'SELECT_UNIT', unitId: selected }) : rawState, [rawState, selected]);
   const go = (next: number) => {
@@ -103,15 +104,7 @@ export function AnalysisScreen() {
       for (const action of actions) {
         const after = applyAction(before, action);
         if (before === after) return current;
-        const events = describeTransition(before, action, after);
-        for (const event of events) {
-          const steps = event.kind === 'move' ? event.ap : 1;
-          for (let step = 1; step <= steps; step++) {
-            const snapshot = event.kind === 'mining' ? automaticUpkeepUndo(before, after) ?? after : movementStep(before, after, event, step);
-            added.push(localFrame(snapshot, `${event.notation}${steps > 1 ? ` · step ${step}/${steps}` : ''}`));
-          }
-        }
-        if (!events.length) added.push(localFrame(after, action.type === 'END_PLACE_PHASE' ? 'Start actions' : action.type));
+        added.push(...analysisFrames(before, action, after));
         before = after;
         if (after.phase === 'victory') break;
       }
@@ -139,7 +132,7 @@ export function AnalysisScreen() {
   };
   const back = roomId ? `/muju/?room=${roomId}&server=${encodeURIComponent(server)}${query.get('watch') === '1' ? '&watch=1' : ''}` : '/muju/';
   const bar = <section className="analysis-controls" aria-label="Analysis controls" onKeyDown={event => event.stopPropagation()}>
-    <div className="analysis-heading"><strong>{reviewing ? 'Game analysis' : roomId ? 'Private variation' : 'Analysis board'}</strong><a href={back}>{roomId ? 'Back to room' : 'Game modes'}</a></div>
+    <div className="analysis-heading"><strong>{reviewing ? 'Game analysis' : hasScore ? 'Private variation' : 'Analysis board'}</strong><a href={back}>{roomId ? 'Back to room' : 'Game modes'}</a></div>
     <p className="analysis-position" role="status">{loading && reviewing ? 'Loading position…' : timeline[index]?.label ?? 'Starting position'}</p>
     <div className="analysis-navigation">
       <button disabled={!index || loading} aria-label="First position" onClick={() => go(0)}>⏮</button>
@@ -154,11 +147,11 @@ export function AnalysisScreen() {
     </select></label>
     <div className="analysis-actions">
       {reviewing ? <button disabled={loading || !!error || rawState.phase !== 'playing'} onClick={() => setVariation({ frames: [localFrame(rawState, 'Variation starts here')], cursor: 0 })}>Explore from here</button> : <span>You control both players</span>}
-      {roomId && <button onClick={() => { setVariation(null); setRefresh(value => value + 1); }}>Return to game score</button>}
+      {hasScore && <button onClick={() => { setVariation(null); setRefresh(value => value + 1); }}>Return to game score</button>}
       {partial && <small>Earlier positions were not recorded.</small>}
     </div>
-    {error && <p role="alert">{error} <button onClick={() => setRefresh(value => value + 1)}>Reload score</button></p>}
-    {!roomId && <details><summary>Analyze an online room</summary><form onSubmit={event => {
+    {error && <p role="alert">{error} <button onClick={() => local ? window.location.reload() : setRefresh(value => value + 1)}>Reload score</button></p>}
+    {!hasScore && <details><summary>Analyze an online room</summary><form onSubmit={event => {
       event.preventDefault();
       try { const connection = parseObserverConnection(roomInput, window.location.origin);
         window.location.href = `/muju/analysis?room=${connection.roomId}&server=${encodeURIComponent(connection.serverUrl)}&watch=1`;

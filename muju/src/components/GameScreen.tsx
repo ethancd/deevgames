@@ -50,7 +50,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
   game: ReturnType<typeof useGameState>;
   analysis?: { bar: ReactNode; reviewing: boolean; result?: string };
   online?: { player: PlayerId | null; ready: boolean; busy: boolean; names: Record<PlayerId, string>; banner: ReactNode;
-    historyOpen?: boolean; onToggleHistory?: () => void };
+    analysisUrl: string; historyOpen?: boolean; onToggleHistory?: () => void };
 }) {
   const observing = online?.player === null;
   const {
@@ -709,8 +709,8 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
 
   return (
     <main className={`game-shell${online ? ' game-shell-online' : ''}${observing ? ' game-shell-observer' : ''}${analysis ? ` game-shell-analysis${analysis.reviewing ? ' is-reviewing' : ''}` : ''}`}>
-      {state.phase === 'victory' && !analysis && <VictoryScreen winner={state.winner} reason={state.victoryReason} onPlayAgain={handlePlayAgain} playerNames={playerNames} perspectivePlayer={observing ? null : humanPlayer ?? 'white'} onViewHistory={online?.onToggleHistory} />}
-      {showPassOverlay && <PassDeviceOverlay nextPlayer={state.turn.currentPlayer} onContinue={handleContinueFromPass} />}
+      {state.phase === 'victory' && !analysis && <VictoryScreen winner={state.winner} reason={state.victoryReason} onPlayAgain={handlePlayAgain} analysisUrl={online?.analysisUrl ?? '/muju/analysis?local=1'} playerNames={playerNames} perspectivePlayer={observing ? null : humanPlayer ?? 'white'} onViewHistory={online?.onToggleHistory} />}
+      {showPassOverlay && state.phase === 'playing' && <PassDeviceOverlay nextPlayer={state.turn.currentPlayer} onContinue={handleContinueFromPass} />}
       {state.upkeepPending && !analysis && config.controls[state.turn.currentPlayer] === 'human' &&
         (!online || (online.player === state.turn.currentPlayer && online.ready)) && !showPassOverlay && !showReplay &&
         <UpkeepPanel state={state} onConfirm={payUpkeep} disabled={online?.busy} />}

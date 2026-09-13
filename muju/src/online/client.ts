@@ -78,6 +78,9 @@ export function loadConnection(server: string, room: string): (RoomConnection & 
 export function observerUrl(serverUrl: string, roomId: string) {
   return `${normalizeServer(serverUrl)}/muju/?room=${roomId}&watch=1`;
 }
+export function analysisUrl(connection: OnlineConnection, sequence?: number) {
+  return `/muju/analysis?room=${connection.roomId}&server=${encodeURIComponent(connection.serverUrl)}${connection.player ? '' : '&watch=1'}${sequence === undefined ? '' : `&event=${sequence}`}`;
+}
 export function invitationUrl(serverUrl: string, roomId: string, inviteCode: string) {
   return `${normalizeServer(serverUrl)}/muju/?room=${roomId}#invite=${inviteCode}`;
 }

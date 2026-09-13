@@ -532,6 +532,14 @@ first/last position, or the position selector. **Explore from here** starts a
 private variation; **Return to game score** restores the recorded line. Branches
 run in page memory and never write to a room or replace a saved local game.
 
+Every game-end screen offers **Analyze this game**, including online players and
+observers, vs AI, AI vs AI, and pass-and-play games, for wins, losses and draws.
+Local games save their recorded positions alongside the current match on this
+device, including AI actions and undo corrections. Reloading retains the score;
+starting a new game replaces it. Older saves begin at the first available
+position. If browser storage fills, the newest positions are kept and analysis
+indicates that earlier positions were not recorded.
+
 Each recorded event has a compressed state snapshot in SQLite. The original
 state is available at sequence 0. Movement also retains its prior state, route
 and speed so intermediate AP positions have the correct location and remaining
