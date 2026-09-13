@@ -1,16 +1,16 @@
 # Fresh Render preview
 
-Prepared September 12, 2026. **Not provisioned yet:** Render sign-in is waiting for the user to identify their Google account. The configured hostname is a target, not a live link or reservation.
+Prepared September 12, 2026. **Provisioning in progress:** the user authorized the personal Google account; Muju is in Ethan's workspace, My project, Production environment, Ohio region. The configured hostname is a target until service creation confirms it.
 
 ## Deployment configuration
 
-Use repository `ethancd/deevgames`, branch `codex/mythgarden-render-preview`, Blueprint Path `mythgarden/render.yaml`. Create it in Muju's existing Render workspace. This blueprint defines only a new Mythgarden web service and a new database; it does not import Muju or Fly resources.
+Use repository `ethancd/deevgames`, branch `codex/mythgarden-render-preview`, Blueprint Path `mythgarden/render.yaml`. Create it in Muju's existing Render workspace, Ethan's workspace (`tea-dahbfnijnfac7394cs80`), My project (`prj-dahbp4eq1p3s73bf4jeg`). This blueprint defines only a new Mythgarden web service and a new database; it does not import Muju or Fly resources.
 
 | Resource | Configuration |
 | --- | --- |
 | Web service | `deevgames-mythgarden-preview`, Docker, root `mythgarden`, 0.5 CPU / 512 MB |
 | Database | `deevgames-mythgarden-preview-db`, PostgreSQL 16, 0.1 CPU / 256 MB, 1 GB disk |
-| Region | Oregon for both; verify Muju's region before provisioning and change both together if needed |
+| Region | Ohio for both, matching Muju (verified in the dashboard) |
 | Target hostname | `deevgames-mythgarden-preview.onrender.com`; Render confirms availability during creation |
 | Pre-deploy | `bash predeploy.sh`: migrations, then `bootstrap_world` |
 | Startup | `bash start.sh`: Gunicorn on Render's `$PORT`, two workers |

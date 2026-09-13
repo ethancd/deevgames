@@ -2,7 +2,7 @@
 
 Examined September 12, 2026. Source baseline: `1ac8026`, plus the Mythgarden changes described here. This is a local audit and first implementation milestone; nothing has been deployed to Render.
 
-**Preview preparation update:** the deployment package now includes Django 5.2.17, Python 3.12, Node 24, PostgreSQL 16, one-time world bootstrapping, production static assets, secure Render host configuration, and `/healthz`. All 18 release tests pass on SQLite and PostgreSQL, including both full-week routes. A production Gunicorn browser check verifies immediate changes before an action and deferred changes afterward. Render account selection is pending; no host or database has been provisioned yet. See [the deployment runbook](RENDER_PREVIEW.md).
+**Preview preparation update:** the deployment package now includes Django 5.2.17, Python 3.12, Node 24, PostgreSQL 16, one-time world bootstrapping, production static assets, secure Render host configuration, and `/healthz`. All 18 release tests pass on SQLite and PostgreSQL, including both full-week routes. A production Gunicorn browser check verifies immediate changes before an action and deferred changes afterward. Render account selection is confirmed; the preview is being provisioned in Muju's Ohio region. See [the deployment runbook](RENDER_PREVIEW.md).
 
 **Decisions:** launch a fresh world; use a separate Mythgarden service alongside Muju; settings apply immediately before the first successful gameplay action of a week, then defer to the next week. Existing Fly resources and player data have not been changed.
 

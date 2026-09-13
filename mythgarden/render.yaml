@@ -5,7 +5,7 @@ services:
     name: deevgames-mythgarden-preview
     runtime: docker
     plan: 0.5c-512mb
-    region: oregon
+    region: ohio
     branch: codex/mythgarden-render-preview
     rootDir: mythgarden
     dockerfilePath: ./Dockerfile
@@ -33,7 +33,7 @@ services:
 databases:
   - name: deevgames-mythgarden-preview-db
     plan: 0.1c-256mb
-    region: oregon
+    region: ohio
     postgresMajorVersion: "16"
     databaseName: mythgarden_preview
     user: mythgarden
