@@ -1,5 +1,6 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
+import { readTimeAwarenessSkill } from './skills';
 import type { RoomAdmission, RoomChange, RoomSnapshot } from '../src/online/types';
 import { actionSchema, createSchema, joinSchema, roomIdSchema, tokenSchema, historyQuerySchema, RoomError } from './schema';
 import { HISTORY_NOTATION, type HistoryQuery, type RoomMoveHistory } from '../src/game/moveHistory';
@@ -30,7 +31,7 @@ const playInput = { ...credentials, expectedRevision: z.number().int().nonnegati
 
 export function createMcpServer(backend: RoomBackend, publicUrl: string) {
   const server = new McpServer({ name: 'deevgames-muju', version: '1.0.0' }, { instructions:
-    'Play Muju Hono Tanka using the authoritative shared room. Start with muju_rules before joining: timed games start on join. Never share your seat token. Pass the invitation to your opponent. Use muju_legal_actions and muju_preview to plan, then muju_play. Watch clock.deadlineAtMs and finish your entire turn with END_ACTION_PHASE before time expires. Delay is per full turn, followed by your personal bank; previews and undo do not stop or reset it. Use muju_wait_for_change only between turns. Square notation is A1–J10.' });
+    'Play Muju Hono Tanka using the authoritative shared room. Start with muju_rules before joining: timed games start on join. For timed play, read muju_time_awareness (also resource muju://skills/muju-time-awareness) before joining. Never share your seat token. Pass the invitation to your opponent. Use muju_legal_actions and muju_preview to plan, then muju_play. Watch clock.deadlineAtMs and finish your entire turn with END_ACTION_PHASE before time expires. Delay is per full turn, followed by your personal bank; previews and undo do not stop or reset it. Use muju_wait_for_change only between turns. Square notation is A1–J10.' });
   const output = (value: object) => ({ content: [{ type: 'text' as const, text: JSON.stringify(value) }], structuredContent: { ...value } });
   const safely = async (operation: () => Promise<object> | object) => {
     try { return output(await operation()); }
@@ -46,6 +47,16 @@ export function createMcpServer(backend: RoomBackend, publicUrl: string) {
       serverUrl: publicUrl, url: `${publicUrl}/muju/?room=${result.room.id}#invite=${result.inviteCode}` } } : {}),
     room: observe(result.room) });
   const readOnly = { readOnlyHint: true, destructiveHint: false, openWorldHint: false };
+  server.registerResource('muju-time-awareness', 'muju://skills/muju-time-awareness',
+    { mimeType: 'text/markdown', description: 'Skill for managing thinking and submission during timed Muju play; read before joining.' },
+    async uri => ({ contents: [{ uri: uri.href, mimeType: 'text/markdown', text: await readTimeAwarenessSkill() }] }));
+  server.registerResource('muju-staged-play-proposal', 'muju://skills/muju-time-awareness/staged-play',
+    { mimeType: 'text/markdown', description: 'Unimplemented design proposal for player-authored staged commits and historical pace statistics.' },
+    async uri => ({ contents: [{ uri: uri.href, mimeType: 'text/markdown', text: await readTimeAwarenessSkill(true) }] }));
+  server.registerTool('muju_time_awareness', {
+    description: 'Read the timed-play skill before joining: budget thinking, choose a candidate early, manage bank time and submit before flag-fall. Advice only; does not change model effort or schedule moves. Staged commits are not implemented.',
+    annotations: readOnly,
+  }, async () => ({ content: [{ type: 'text' as const, text: await readTimeAwarenessSkill() }] }));
   server.registerResource('muju-rules', 'muju://rules', { mimeType: 'application/json', description: 'Rules and unit catalogue' },
     async uri => ({ contents: [{ uri: uri.href, mimeType: 'application/json', text: JSON.stringify(rules) }] }));
   server.registerTool('muju_rules', { description: 'Read the rules, unit stats, coordinates, and agent workflow before playing.', annotations: readOnly },

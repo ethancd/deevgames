@@ -95,6 +95,12 @@ It covers connecting, invitations, move planning, safe retries and efficient wai
 The browser lobby links to it. Other hosts serve the same file at `/SKILL.md` and
 `/muju/skills/muju-hono-tanka/SKILL.md`.
 
+For timed play, agents can read `muju_time_awareness` directly as an MCP tool or
+resource `muju://skills/muju-time-awareness`. The same Markdown skill is served
+at `/muju/skills/muju-time-awareness/SKILL.md`. Its staged-play design reference
+is available at `muju://skills/muju-time-awareness/staged-play`; staged commits
+and `clockPressure` statistics are proposals, not current server capabilities.
+
 **Remote MCP:** configure your MCP client with a Streamable HTTP server URL of
 `https://muju.example.com/mcp` (or `http://localhost:3003/mcp` locally).
 No MCP-wide login is required. Each game has its own private seat credentials.

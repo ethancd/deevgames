@@ -4,6 +4,7 @@ import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
 import type { Server } from 'node:http';
+import { readFileSync } from 'node:fs';
 import { RoomStore } from '../../server/rooms';
 import { createApp } from '../../server/http';
 
@@ -153,6 +154,19 @@ describe('MCP and HTTP interoperability', () => {
     expect(tools.tools.map(t => t.name)).toContain('muju_wait_for_change');
     const resources = await white.readResource({ uri: 'muju://rules' });
     expect(resources.contents.length).toBe(1);
+    const skill = readFileSync(new URL('../../public/skills/muju-time-awareness/SKILL.md', import.meta.url), 'utf8');
+    const proposal = readFileSync(new URL('../../public/skills/muju-time-awareness/references/staged-play.md', import.meta.url), 'utf8');
+    for (const client of [white, black]) {
+      const listed = await client.listResources();
+      expect(listed.resources.map(resource => resource.uri)).toContain('muju://skills/muju-time-awareness');
+      const skillResource = await client.readResource({ uri: 'muju://skills/muju-time-awareness' });
+      expect(skillResource.contents).toEqual([{ uri: 'muju://skills/muju-time-awareness', mimeType: 'text/markdown', text: skill }]);
+      const skillTool = await client.callTool({ name: 'muju_time_awareness', arguments: {} });
+      expect(skillTool.isError).not.toBe(true);
+      expect(skillTool.content).toEqual([{ type: 'text', text: skill }]);
+      const design = await client.readResource({ uri: 'muju://skills/muju-time-awareness/staged-play' });
+      expect(design.contents[0]).toMatchObject({ mimeType: 'text/markdown', text: proposal });
+    }
     const host = await call(white, 'muju_create_room', { name: 'White agent', side: 'white' });
     const roomId = host.credentials.roomId;
     const guest = await call(black, 'muju_join_room', { roomId, inviteCode: host.invitation.inviteCode, name: 'Black agent' });

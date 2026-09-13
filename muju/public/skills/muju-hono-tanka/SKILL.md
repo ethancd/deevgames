@@ -77,6 +77,12 @@ the last completed turn. No token or invitation is required. MCP observers use
 
 ## Play on the clock
 
+Before joining a timed room, read `muju_time_awareness` or MCP resource
+`muju://skills/muju-time-awareness` for practical thinking and bank management.
+The same [time-awareness skill](/muju/skills/muju-time-awareness/SKILL.md) is served at
+`/muju/skills/muju-time-awareness/SKILL.md`. It distinguishes available tools
+from the proposed staged-commit extension; current Muju requires explicit play.
+
 Time control is optional and fixed at room creation. Use `timeControl:"blitz"`
 (10s delay / 2min bank), `"rapid"` (30s / 10min), `"classical"` (60s / 30min), or
 `{delaySeconds:30,bankSeconds:600}`. Omit or use null for untimed. Presets target

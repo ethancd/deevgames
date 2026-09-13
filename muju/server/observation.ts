@@ -94,6 +94,8 @@ export function legalActions(room: RoomSnapshot, options: { unitId?: string; typ
 
 export const rules = {
   timeControl: {
+    skill: { tool: 'muju_time_awareness', resource: 'muju://skills/muju-time-awareness',
+      scope: 'Optional player advice on thinking and bank management. Staged commits and clockPressure statistics are not implemented.' },
     presets: TIME_CONTROL_PRESETS,
     configuration: 'Optional at muju_create_room only: timeControl is blitz, rapid, classical, {delaySeconds,bankSeconds}, or null/omitted for untimed. Delay 0–600 seconds, bank 1–14400 seconds per player. Cannot change after creation.',
     timing: 'Each player has a separate bank shared across their own turns. Each full player turn starts with a fresh free delay; only after that delay does their bank drain. Unused delay is discarded, never added to the bank. Upkeep, placement and all four actions share one delay. Partial commands, phase changes, undo, previews, reads and retries never reset it.',
