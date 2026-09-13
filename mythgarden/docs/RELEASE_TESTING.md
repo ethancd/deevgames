@@ -1,5 +1,17 @@
 # Mythgarden release testing — 13 September 2026
 
+## Villagers inside the landscape
+
+Application `9699a53` moves the touch interface's villagers into the landscape and removes the separate villager strip/sidebar. Existing portraits, dialogue, gift actions, schedules, saves and the interface rollback flag remain in use.
+
+Render deploy `dep-daj9chgae00c7392tc5g` went live at **12:26:28 UTC, September 13, 2026**. The actual image built successfully; pre-deploy found no migrations and preserved the initialized world. Read-only hosted verification confirmed the new scene People control, absent legacy sidebar, 390×700 page containment, intact images, empty browser error/warning logs and the unchanged Monday 11:10am farm with its planted Parsnip Seed. Automatic approval review rejected a hosted gift route because it would mutate an existing save; it was not executed. Action coverage for this iteration comes from the isolated local test save below.
+
+- TypeScript, **11 UI tests**, and the production build passed. Two new geometry tests cover control/character overlap, viewport containment, stable positions and the crowded-scene fallback. This frontend-only iteration does not rerun the unchanged backend week matrix; those earlier results are recorded below.
+- Local production-browser checks covered tap-to-give to Angie, drag-to-give to Dev, normal conversation, dialogue → About → Escape, and talking to Joss through People when he was not one of the visible markers.
+- Checked the shop, four-person Victorian house, tree duplex and travel between town, farm and forest. At 320×568, 390×560, 390×700, 834×1112 and 1024×768, observed portrait bounds did not overlap scene controls and the page fit the viewport. At 320×520, shop stock remained fully visible; the crowded scene used People for its occupants instead of drawing markers over controls.
+- Turning the interface off and reloading restored the two original sidebar villagers, removed scene markers and preserved Monday 1:08pm. Re-enabling restored the new layout. Browser warning/error logs were empty during these checks.
+- Physical iPhone Safari remains outside this coverage. This pass uses the existing art; bespoke transparent character artwork is a later visual upgrade.
+
 ## Phone and tablet redesign release
 
 Application commit `5dc5a88b075711c0117eba1f2c48bda5a66699ee` is live on the existing [Render preview](https://deevgames-mythgarden-preview.onrender.com/). Deploy `dep-daj8o495efls738043a0` completed at **11:43:11 UTC on September 13, 2026**. Migration 0081 completed successfully and bootstrap preserved existing saves/content.
