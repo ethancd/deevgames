@@ -21,6 +21,9 @@ class Session(models.Model):
     game_over = models.BooleanField(default=False)
     # Buying/selling can take no time, so the clock cannot identify an untouched week.
     has_taken_action = models.BooleanField(default=False)
+    # A new version for every committed action and every new week. A retry or
+    # an older tab must never execute against a different state than it saw.
+    state_version = models.CharField(max_length=32, default=generate_uuid)
 
     fresh = models.JSONField(default=dict, blank=True)
 
@@ -100,8 +103,7 @@ class Session(models.Model):
         key = self.key
         hero = self.hero
 
-        delete_response = self.delete()
-        print(delete_response)
+        self.delete()
 
         return Session.objects.create(key=key, hero=hero, initial_message_text=end_of_game_message)
 

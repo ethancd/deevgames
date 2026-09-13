@@ -57,13 +57,12 @@ class EventOperator:
         yesterday_events_to_trigger = self.get_yesterday_events_to_trigger(clock)
         today_events_to_trigger = self.get_today_events_to_trigger(clock)
 
-        events_to_trigger_queue = yesterday_events_to_trigger | today_events_to_trigger
-
-        events_to_trigger_queue = events_to_trigger_queue.order_by('time', '-is_daily', 'pk')  # orders by time, then is_daily=True, then is_daily=False
-
-        events_to_trigger_queue = events_to_trigger_queue.select_related('villagerappearsevent__villager', 'villagerappearsevent__place')
-
-        return events_to_trigger_queue
+        # Keep day order as well as time order. A SQL union would collapse a
+        # daily event that fires on both days, and sort morning before night.
+        def ordered(events):
+            return list(events.order_by('time', '-is_daily', 'pk').select_related(
+                'villagerappearsevent__villager', 'villagerappearsevent__place'))
+        return ordered(yesterday_events_to_trigger) + ordered(today_events_to_trigger)
 
     def get_yesterday_events_to_trigger(self, clock):
         # If we haven't triggered any events yet today, then we want to trigger any lingering events from yesterday.
@@ -86,7 +85,8 @@ class EventOperator:
         events_of_valid_day = ScheduledEvent.objects.filter(day=clock.day) | \
                               ScheduledEvent.objects.filter(is_daily=True)
 
-        events_of_valid_day_and_time = events_of_valid_day.filter(time__gt=clock.last_triggered_time, time__lte=clock.time)
+        lower_bound = clock.last_triggered_time if clock.last_triggered_day == clock.day else -1
+        events_of_valid_day_and_time = events_of_valid_day.filter(time__gt=lower_bound, time__lte=clock.time)
 
         return events_of_valid_day_and_time
 

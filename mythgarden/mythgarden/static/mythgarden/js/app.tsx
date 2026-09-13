@@ -342,7 +342,8 @@ class App extends React.Component<Partial<AppProps>, AppState> {
             <Sky time={clock.time} dayNumber={clock.dayNumber}></Sky>
           </Section>
 
-          <div id="main-area">
+          <div id="main-area" aria-busy={this.state.combinedProps.actionPending === true}>
+            {this.state.combinedProps.actionPending && <div role="status" className="action-saving">Saving…</div>}
             <section id="sidebar">
               <ItemsList
                 id='inventory'
@@ -407,6 +408,8 @@ class App extends React.Component<Partial<AppProps>, AppState> {
 type ActionRecord = Record<string, ActionPillProps>
 
 interface AppProps {
+  stateVersion: string
+  actionPending?: boolean
   achievements: AchievementData[]
   actions: ActionData[]
   buildings: BuildingData[]

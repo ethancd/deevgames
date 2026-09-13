@@ -8,6 +8,7 @@ from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.decorators.http import require_POST
 from django.conf import settings
 
 from .view_helpers import retrieve_session, ensure_state_objects_created, get_home_models, get_fresh_models, get_requested_action, get_serialized_messages, \
@@ -16,6 +17,7 @@ from .game_logic import ActionExecutor, EventOperator
 from .models import Session
 from .models import Item, Place
 from .models import GameSettings
+from .static_helpers import generate_uuid
 
 
 def health(request):
@@ -70,20 +72,27 @@ def action(request):
             # the state after any concurrent request has finished committing.
             Session.objects.select_for_update().get(pk=session_key)
             session = load_session_with_related_data(session_key)
+            if request.headers.get('X-Game-Version') != session.state_version:
+                result = {name: custom_serialize(data) for name, data in get_home_models(session).items()}
+                message = 'Your progress has been refreshed. Please try again. If this repeats, reload the page.'
+                result['error'] = message
+                result['messages'].append({'id': -1, 'text': message, 'isError': True})
+                return JsonResponse(result, status=409)
             requested_action = get_requested_action(request, session)
             validate_action(session, requested_action)
             ActionExecutor().execute(requested_action, session)
             if session.is_fresh('clock'):
                 EventOperator().react_to_time_passing(session.clock, session)
             session.has_taken_action = True
-            session.save(update_fields=['has_taken_action'])
+            session.state_version = generate_uuid()
+            session.save(update_fields=['has_taken_action', 'state_version'])
 
             if session.game_over:
                 session = EventOperator().trigger_game_over(session)
                 session = ensure_state_objects_created(session)
                 updated_models = get_home_models(session)
             else:
-                session.mark_fresh('actions')
+                session.mark_fresh('actions', 'stateVersion')
                 updated_models = get_fresh_models(session)
             results = {name: custom_serialize(data) for name, data in updated_models.items()}
     except Session.DoesNotExist:
@@ -96,6 +105,7 @@ def action(request):
     return JsonResponse(results)
 
 
+@require_POST
 def kys(request):
     """A shortcut to "kill your session" -- ie reset the game state to the start of the week.
     A staple for timeloop games everywhere."""
@@ -103,9 +113,9 @@ def kys(request):
     if not session_key:
         return HttpResponseRedirect(reverse('mythgarden:home'))
 
-    session = get_object_or_404(Session, pk=session_key)
-
-    EventOperator().trigger_kys(session)
+    with transaction.atomic():
+        session = get_object_or_404(Session.objects.select_for_update(), pk=session_key)
+        EventOperator().trigger_kys(session)
     return HttpResponseRedirect(reverse('mythgarden:home'))
 
 
@@ -121,16 +131,21 @@ def user_data(request):
     session = get_object_or_404(Session, pk=session_key)
 
     try:
-        hero = session.hero
-        new_data = json.loads(request.body)['userData']
+        body = json.loads(request.body)
+        if not isinstance(body, dict) or set(body) != {'userData'}:
+            raise ValidationError('Send profile changes in a userData object.')
+        new_data = body['userData']
 
         with transaction.atomic():
+            session = get_object_or_404(Session.objects.select_for_update(), pk=session_key)
+            hero = session.hero
             success_message = set_user_data(hero, new_data)
             if success_message:
                 session.messages.create(text=success_message)
-    except ValidationError as e:
-        session.messages.create(text=e.message, is_error=True)
-        return JsonResponse({'error': e.message, 'messages': get_serialized_messages(session)})
+    except (ValidationError, ValueError, UnicodeDecodeError) as e:
+        message = ' '.join(e.messages) if isinstance(e, ValidationError) else 'The profile request is invalid. Please try again.'
+        session.messages.create(text=message, is_error=True)
+        return JsonResponse({'error': message, 'messages': get_serialized_messages(session)}, status=400)
 
     return JsonResponse({'hero': custom_serialize(session.hero_state), 'messages': get_serialized_messages(session)})
 
@@ -200,6 +215,8 @@ def update_settings(request):
                 session.hero.settings = game_settings
                 session.villager_states.all().delete()
                 session.populate_villager_states(session.place_states.all())
+                session.state_version = generate_uuid()
+                session.save(update_fields=['state_version'])
             result = {**game_settings.serialize(), 'can_apply_immediately': can_apply_immediately}
             if new_settings and can_apply_immediately:
                 session = load_session_with_related_data(session_key)

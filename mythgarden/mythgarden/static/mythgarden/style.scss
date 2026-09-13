@@ -839,6 +839,17 @@ $icon-dark-mode-drop-shadow-expression: drop-shadow(0 0 $fine-shadow-distance #f
 /* main-area */
 
 #main-area {
+  .action-saving {
+    position: fixed;
+    bottom: 12px;
+    right: 12px;
+    padding: 8px 14px;
+    background: #fff6d8;
+    color: #393124;
+    border-radius: 8px;
+    pointer-events: none;
+    z-index: 100;
+  }
   display: flex;
   gap: $small-gutter;
   height: 80%;

@@ -20,6 +20,7 @@ from mythgarden.models._constants import (
     DAYS_OF_WEEK, FARM, FOREST, GIFT, LOVE, MAX_ITEMS, SEED, SHOP, SUNSET,
 )
 from mythgarden.view_helpers import load_session_with_related_data
+from .release_client import GameClient
 
 
 @override_settings(SECURE_SSL_REDIRECT=False, STORAGES={
@@ -31,6 +32,7 @@ class SettingsAndWeekTests(TestCase):
 
     def setUp(self):
         random.seed(20260912)
+        self.client = GameClient()
         self.assertEqual(self.client.get('/').status_code, 200)
         self.session_key = self.client.session['session_key']
         self.executed = Counter()
@@ -42,6 +44,7 @@ class SettingsAndWeekTests(TestCase):
         response = self.client.post('/settings/update', {f'draft_{k}': v for k, v in options.items()}, content_type='application/json')
         self.assertEqual(response.status_code, 200, response.content[:200])
         self.game().reset_session_state('Test run')
+        self.client.get('/')
 
     def actions(self):
         return ActionGenerator().get_actions_for_session(self.game())
@@ -264,16 +267,16 @@ class SettingsAndWeekTests(TestCase):
         self.assertEqual(self.game().clock.time, 360)
         self.assertFalse(self.game().has_taken_action)
 
-    def test_complete_week_through_http_in_relaxed_and_challenge_modes(self):
-        for challenge in (False, True):
-            with self.subTest(challenge=challenge):
+    def test_complete_weeks_through_http_in_all_16_settings_combinations(self):
+        for seed, options in product((20260912, 42), product((False, True), repeat=4)):
+            with self.subTest(seed=seed, options=options):
                 # Each route starts as a new player, without speed boosts or
                 # knowledge earned by the previous scenario.
-                random.seed(20260912)
-                self.client = Client()
+                random.seed(seed)
+                self.client = GameClient()
                 self.client.get('/')
                 self.session_key = self.client.session['session_key']
-                self.configure(villagers_move=challenge, building_hours=challenge, dynamic_shop=challenge, advanced_crops=challenge)
+                self.configure(**dict(zip(('villagers_move', 'building_hours', 'dynamic_shop', 'advanced_crops'), options)))
                 self.executed.clear()
                 hero_id = self.game().hero_id
                 farm = Place.objects.get(place_type=FARM)
@@ -334,3 +337,4 @@ class SettingsAndWeekTests(TestCase):
                 for action_type in (Action.BUY, Action.SELL, Action.PLANT, Action.WATER, Action.HARVEST, Action.GATHER, Action.TALK, Action.GIVE, Action.SLEEP, Action.TRAVEL):
                     self.assertGreater(self.executed[action_type], 0, action_type)
                 self.assertEqual(self.executed[Action.SLEEP], 7)
+                print(f'RELEASE_WEEK seed={seed} settings={options} actions={dict(self.executed)}', flush=True)

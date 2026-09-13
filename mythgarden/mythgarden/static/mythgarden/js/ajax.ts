@@ -4,6 +4,13 @@ import renderApp from './react-script'
 import { type MessageProps } from './message'
 import {HeroData} from "./hero";
 
+let stateVersion: string | undefined
+let actionPending = false
+
+export function acceptStateVersion (version?: string): void {
+  if (version != null) stateVersion = version
+}
+
 async function requestJson<T> (method: 'GET' | 'POST', url: string, data?: object): Promise<T> {
   const csrfToken = Cookies.get('csrftoken') as string
 
@@ -13,6 +20,7 @@ async function requestJson<T> (method: 'GET' | 'POST', url: string, data?: objec
     xhr.timeout = 20000
     xhr.setRequestHeader('Content-Type', 'application/json')
     xhr.setRequestHeader('X-CSRFToken', csrfToken)
+    if (url === '/action' && stateVersion != null) xhr.setRequestHeader('X-Game-Version', stateVersion)
     xhr.onload = () => {
       try {
         const response = JSON.parse(xhr.responseText)
@@ -36,8 +44,8 @@ async function post<T = any> (url: string, data: object): Promise<T> {
   return await requestJson<T>('POST', url, data)
 }
 
-function displayRequestError (response: any): void {
-  renderApp({ messages: response?.messages ?? [{
+function displayRequestError (response: any, extra: object = {}): void {
+  renderApp({ ...response, ...extra, messages: response?.messages ?? [{
     id: -1,
     isError: true,
     text: response?.error ?? response?.message ?? 'Unable to save. Please reload and try again.',
@@ -45,27 +53,33 @@ function displayRequestError (response: any): void {
 }
 
 async function postAction (uniqueDigest: string): Promise<void> {
+  if (actionPending) return
+  actionPending = true
+  renderApp({ actionPending: true })
   await post('/action', { uniqueDigest })
     .then((response: any) => {
       if (response.error != null) {
         throw response
       }
 
-      renderApp(response)
+      renderApp({ ...response, actionPending: false })
     }).catch((response: any) => {
-      displayRequestError(response)
+      displayRequestError(response, { actionPending: false })
     })
+  actionPending = false
 }
 
-async function postUserData (userData: UserData): Promise<void> {
-  await post('/user_data', { userData })
+async function postUserData (userData: UserData): Promise<boolean> {
+  return await post('/user_data', { userData })
     .then((response: any) => {
       if (response.error != null) {
         throw response
       }
       renderApp({ hero: response.hero as HeroData, messages: response.messages as MessageProps[] })
+      return true
     }).catch((response: any) => {
       displayRequestError(response)
+      return false
     })
 }
 

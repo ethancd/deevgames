@@ -7,6 +7,7 @@ from .models import Session, FarmerPortrait
 
 
 MODEL_LAMBDAS = {
+    'stateVersion': lambda session: session.state_version,
     'achievements': lambda session: session.hero.achievements.all(),
     'actions': lambda session: ActionGenerator().get_actions_for_session(session),
     'buildings': lambda session: session.location.buildings.all(),
@@ -80,6 +81,7 @@ def get_home_models(session):
     """Returns a dictionary of models that are needed to render the home page."""
 
     home_model_keys = [
+        'stateVersion',
         'achievements',
         'actions',
         'buildings',
@@ -146,18 +148,32 @@ def custom_serialize(obj):
 
 
 def set_user_data(hero, data):
+    if not isinstance(data, dict) or set(data) - {'name', 'portraitPath'}:
+        raise ValidationError('Send only a farmer name and portrait choice.')
+    if 'name' in data and (not isinstance(data['name'], str) or len(data['name']) > 16):
+        raise ValidationError('Your farmer name must be text with at most 16 characters.')
+    new_portrait = None
+    if 'portraitPath' in data:
+        if not isinstance(data['portraitPath'], str):
+            raise ValidationError('Please choose a portrait from the gallery.')
+        new_portrait = FarmerPortrait.objects.filter(image_path=data['portraitPath']).first()
+        if new_portrait is None:
+            raise ValidationError('Please choose a portrait from the gallery.')
     updated_fields = []
+    model_fields = []
 
     if data.get('name') and hero.name != data['name']:
         hero.name = data['name']
         updated_fields.append('farmer name')
+        model_fields.append('name')
 
     if data.get('portraitPath') and hero.portrait.image_path != data['portraitPath']:
-        new_portrait = FarmerPortrait.objects.get(image_path=data['portraitPath'])
         hero.portrait = new_portrait
         updated_fields.append('portrait')
+        model_fields.append('portrait')
 
-    hero.save()
+    if model_fields:
+        hero.save(update_fields=model_fields)
 
     if len(updated_fields) > 0:
         return f"Saved new {' & '.join(updated_fields)}!"

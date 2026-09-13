@@ -1,0 +1,77 @@
+/* Keep every game control reachable on a phone without shrinking the desktop map. */
+@media (max-width: 760px) {
+  #page { height: auto; min-height: 100dvh; overflow: visible; }
+  #top-bar {
+    display: grid; grid-template-columns: minmax(0, 1fr) auto;
+    height: auto; min-height: 158px; padding: 54px 10px 12px;
+    gap: 8px; box-sizing: border-box; margin-bottom: 10px;
+  }
+  #logo { top: 6px; left: 10px; transform: none; font-size: 28px; }
+  .hamburger-button { top: 6px; right: 8px; width: 44px; height: 44px; padding: 0; font-size: 26px; }
+  #hero {
+    max-width: none; min-width: 0; gap: 8px;
+    .portrait { width: 66px; height: 82px; flex-shrink: 0; }
+    .portrait img { width: 100%; height: 100%; object-fit: cover; }
+    .column { min-width: 0; }
+    .name, .name textarea { font-size: 16px; width: 100%; }
+    .achievements-pill { font-size: 10px; white-space: nowrap; }
+    .achievements-pill *:first-child { font-size: 14px; }
+  }
+  #score { font-size: 11px; .total-score { font-size: 20px; } }
+  #high-score { position: static; font-size: 11px; }
+  #top-bar > .column { align-self: end; }
+  #clock { flex-direction: column; font-size: 16px; gap: 2px; margin: 0; }
+  #boost, #luck-percent { font-size: 12px; position: static; }
+  #sky-container { width: 100%; height: 100%; top: 0; overflow: hidden; pointer-events: none; }
+  #main-area { display: grid; grid-template-columns: minmax(0, 1fr); height: auto; gap: 10px; }
+  #center-col { grid-row: 1; width: 100%; height: auto; min-width: 0; }
+  #location {
+    height: 390px;
+    h2.name { top: 6px; transform: translateX(-50%); font-size: 24px; max-width: 90%; white-space: normal; padding: 3px 8px; }
+  }
+  #page.dark-mode #location h2.name { font-size: 24px; }
+  #local-items {
+    width: 68%; height: 52%; top: 59%; row-gap: 12px;
+    .item .name { font-size: 11px; }
+    .item .type { font-size: 22px; }
+    .quantity { font-size: 11px; }
+    .action-pill { font-size: 16px; min-width: 42px; height: 26px; gap: 3px; }
+  }
+  #message-log { height: 88px; box-sizing: border-box; padding: 4px 8px; .message { font-size: 14px; } }
+  #sidebar { grid-row: 2; width: 100%; height: auto; }
+  #wallet { order: -1; width: 100%; height: auto; font-size: 26px; }
+  #inventory {
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+    height: auto; padding: 8px; gap: 6px; box-sizing: border-box;
+    .item { min-height: 70px; padding: 4px 4px 24px; }
+    .item .name { font-size: 13px; max-width: calc(100% - 32px); }
+    .item .type { font-size: 22px; }
+    .action-pill, .price-pill { font-size: 16px; }
+    .action-pill { height: 26px; }
+  }
+  #far-sidebar { grid-row: 3; width: 100%; height: auto; }
+  #villagers { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); height: auto; gap: 10px; padding: 8px; box-sizing: border-box; }
+  #villagers .villager .name { font-size: 16px; }
+  #dialogue { position: relative; height: auto; padding: 12px; box-sizing: border-box; gap: 12px; }
+  #dialogue .speaker .portrait { width: 90px; }
+  .settings-modal {
+    min-width: 0; width: calc(100% - 20px); max-height: calc(100dvh - 20px);
+    box-sizing: border-box; padding: 16px;
+    .tabs { margin: 0 30px 16px 0; }
+    .tabs button { padding: 10px; font-size: 19px; }
+    .tab-content { min-height: 0; }
+    .close-button { top: 10px; right: 10px; }
+  }
+  .hero-tab .hero-name-section .name textarea { box-sizing: border-box; font-size: 20px; }
+  .hero-tab .portrait-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .settings-tab {
+    h3 { font-size: 24px; }
+    .setting-row { padding: 10px; }
+    .setting-row .setting-checkbox { font-size: 16px; gap: 10px; }
+    .setting-row .setting-checkbox input { flex-shrink: 0; }
+    .setting-row .setting-description { margin-left: 0; font-size: 14px; }
+    .score-multiplier { padding: 12px; }
+  }
+  #gallery, #achievements { width: calc(100% - 20px); position: fixed; max-height: 90dvh; overflow-y: auto; }
+  .deploy-info { display: none; }
+}
