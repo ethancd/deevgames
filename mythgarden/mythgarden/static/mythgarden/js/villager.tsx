@@ -8,10 +8,11 @@ import {DraggableGiftProps} from "./draggableGift";
 import {postAction} from "./ajax";
 import {ImageFilterContext} from "./lightColorLogic";
 import {activateOnKey, actionCost} from './touchControls'
+import {SceneRect} from './sceneLayout'
 
 const GIFT_DIGEST_TEMPLATE = `GIVE-giftId-villagerId`
 
-export default function Villager ({ name, imageUrl, affinity, description, preferences, id, actionPill, isGiftReceiver, giftSelected = false, giftAction, onDetails}: VillagerProps): JSX.Element {
+export default function Villager ({ name, imageUrl, affinity, description, preferences, id, actionPill, isGiftReceiver, giftSelected = false, giftAction, onDetails, scenePosition}: VillagerProps): JSX.Element {
   const { backgroundColor, opacity } = useContext(ImageFilterContext)
   const [{isDragging}, dropRef] = useDrop(() => ({
     accept: 'GIFT',
@@ -38,6 +39,7 @@ export default function Villager ({ name, imageUrl, affinity, description, prefe
       aria-label={`${giftSelected ? 'Give selected item to' : 'Talk to'} ${name}${displayedAction ? `, ${actionCost(displayedAction)}` : ', unavailable'}`}
       key={id}
       data-entity-id={id}
+      style={scenePosition ? {left: scenePosition.x, top: scenePosition.y, width: scenePosition.width, height: scenePosition.height} : undefined}
       ref={dropRef}>
       <div className="row">
         <div className="portrait">
@@ -82,6 +84,7 @@ interface VillagerData {
 }
 
 interface VillagerExtras {
+  scenePosition?: SceneRect
   giftSelected?: boolean
   giftAction?: ActionPillProps
   onDetails?: () => void

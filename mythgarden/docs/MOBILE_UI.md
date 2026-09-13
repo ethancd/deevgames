@@ -7,7 +7,7 @@ The touch interface keeps actions on the scene. There is no permanent or context
 - Enabled by default. In **Settings → Touch-friendly interface**, turn it off to restore the previous layout and direct item actions. This is a browser preference and takes effect immediately, including during a week. It does not change challenge settings, score multipliers, saves, or the clock.
 - For a host-wide rollback, set **`MYTHGARDEN_TOUCH_UI_ENABLED=False`** in Render and redeploy/restart the service. Reload open game tabs. The server flag overrides browser preferences and disables the setting while off.
 - The preference uses local storage key `mythgarden.touch-ui.v1`. If browser storage is unavailable, it still works for the current tab.
-- The compact layout applies at widths up to 760px in portrait orientation. Larger screens share destination selection, readable action costs, accessible controls, character details, dialogue panels, and the expandable journal. Tablet widths 761–1180px retain side inventories with smaller overlays and a compact header.
+- The compact layout applies at widths up to 760px in portrait orientation. Larger screens share destination selection, readable action costs, accessible controls, character details, dialogue panels, and the expandable journal. Tablet widths 761–1180px retain the bag beside a wider landscape, with smaller overlays and a compact header.
 
 ## Interaction contract
 
@@ -18,6 +18,8 @@ The touch interface keeps actions on the scene. There is no permanent or context
 5. With nothing selected, existing scene actions work normally: buy shop stock, water/harvest a crop, retrieve a stored item, enter buildings, travel, gather, sleep, or talk. Drag-to-give remains available with a small movement threshold to distinguish a tap from a drag.
 6. The existing request lock and state-version check remain authoritative. Selection clears when updated server state arrives. Request errors stay visible in a dismissible alert and the journal.
 
+Character placement measures buildings, crops/stock, sell targets, travel/activity controls, the title and People button, then chooses non-overlapping positions. It rechecks after resizing, image/font loads and occupant changes. If no safe position fits, the character remains available through People. Appearance order is stable by character ID; existing schedules and stationary-mode rules still determine who is present. The marker presentation uses the existing portraits and can later accept replacement artwork.
+
 The sell target sits above the shop's six stock slots, so it does not consume stock capacity. Destination highlights also respect full field/chest capacity.
 
 Plot and chest positions are cosmetic browser preferences (`mythgarden.destination-slots.v1`). Migration **0081** adds nullable `ItemToken.growth_origin_id`; a growing plant keeps the same `placementId` even though the engine replaces its item token. Copies, including shop purchases, get distinct identities. No player data is reset, and old clients can ignore the additional serialized fields. Clearing browser storage resets visual placement, not game progress.
@@ -26,7 +28,7 @@ Plot and chest positions are cosmetic browser preferences (`mythgarden.destinati
 
 - Compact portrait header: farmer/profile button, day and time, wallet, earned hearts, time boost, settings.
 - Flexible scene with the original building, travel, activity, and crop overlays. Lighting remains on the artwork while controls retain readable surfaces.
-- Up to three nearby villagers, plus **People** for all occupants, preferences, and biographies.
+- Villagers appear as portrait markers with nameplates inside the landscape. Up to two fit on phones and three on wider screens; **People** opens every current occupant, including anyone who does not fit. Talk and gifts use the same controls and server actions as before. **About** in dialogue opens a biography and known preferences.
 - All six bag slots in one row, with the selected item's name above them.
 - Latest event and **Log**, opening the full journal. Dialogue and detailed progress open in dismissible panels with keyboard focus handling.
 

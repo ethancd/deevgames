@@ -35,6 +35,7 @@ import DeployInfo from "./deployInfo";
 import {postAction} from "./ajax";
 import {actionCost, destinationAction, readTouchPreference, TOUCH_UI_STORAGE_KEY, SLOT_STORAGE_KEY, arrangeSlots} from './touchControls'
 import TouchPanel from './touchPanel'
+import SceneVillagers from './sceneVillagers'
 
 
 const TALK_ACTION = 'TALK'
@@ -517,6 +518,9 @@ class App extends React.Component<Partial<AppProps>, AppState> {
                   </ItemsList>
                   : null
                 }
+                {touchUi && <SceneVillagers key={place.id} villagers={villagerStates} {...villagerProps}
+                  compact={phoneUi} placeId={place.id} placeType={place.placeType}
+                  onPeople={() => this.setState({touchPanel: 'people', showDialogue: false})} />}
               </Location>
 
               {!touchUi && <List id='message-log' baseColor={colors.whiteYellow}>
@@ -525,16 +529,14 @@ class App extends React.Component<Partial<AppProps>, AppState> {
               </List>}
               {touchUi && !phoneUi && journal}
             </section>
-            <section id='far-sidebar'>
-              <VillagersList villagers={phoneUi ? villagerStates.slice(0, 3) : villagerStates} {...villagerProps} />
-              {phoneUi && <button className="all-people" aria-label={`People nearby, ${villagerStates.length}`} onClick={event => {event.stopPropagation(); this.setState({touchPanel: 'people'})}}>People<br />{villagerStates.length}</button>}
-              {phoneUi && villagerStates.length === 0 && <span className="nobody-here">Nobody here right now.</span>}
+            {!touchUi && <section id='far-sidebar'>
+              <VillagersList villagers={villagerStates} {...villagerProps} />
               {(!touchUi && showDialogue && dialogue != null) ? <Dialogue {...dialogue} affinity={speaker?.affinity} key={dialogue.id}></Dialogue> : null}
-            </section>
+            </section>}
             {phoneUi && journal}
           </div>
           {touchUi && errorKey && errorKey !== this.state.dismissedError && <div className="touch-error" role="alert"><span>{latestMessage.text}</span><button aria-label="Dismiss error" onClick={event => {event.stopPropagation(); this.setState({dismissedError: errorKey})}}>×</button></div>}
-          {touchUi && showDialogue && dialogue && <TouchPanel title={dialogue.name} onClose={() => this.setState({showDialogue: false})}><Dialogue {...dialogue} affinity={speaker?.affinity} /></TouchPanel>}
+          {touchUi && showDialogue && dialogue && <TouchPanel title={dialogue.name} onClose={() => this.setState({showDialogue: false})}><Dialogue {...dialogue} affinity={speaker?.affinity} />{speaker && <button type="button" onClick={() => this.setState({showDialogue: false, detailVillager: speaker, touchPanel: 'villager'})}>About {speaker.name}</button>}</TouchPanel>}
           {touchUi && touchPanel && <TouchPanel title={{profile: 'Your farmer', people: 'People nearby', journal: 'Journal', villager: detailVillager?.name ?? 'Villager'}[touchPanel]} onClose={() => this.setState({touchPanel: null, detailVillager: null})}>
             {touchPanel === 'profile' && <div className="touch-profile"><img src={hero.imageUrl} alt="" /><h3>{hero.name}</h3><p>Score: {hero.score.toLocaleString()} · Best: {hero.highScore.toLocaleString()}</p><p>Earned ⚜️ {hero.koinEarned} × {hero.heartsEarned} hearts{hero.mytheggsFound > 0 ? ` · ${hero.mytheggsFound} mytheggs` : ''}</p><p>Time boost: {hero.boostLevel} · Luck: {hero.luckPercent || '0%'}</p><button onClick={() => {this.setState({touchPanel: null}); this.showSettingsMenu()}}>Edit farmer & settings</button><button onClick={() => {this.setState({touchPanel: null}); this.showAchievementsList()}}>Achievements · {achievements.length}/{TOTAL_ACHIEVEMENTS}</button></div>}
             {touchPanel === 'journal' && <div id="journal-history">{messages?.map(message => <Message {...message} key={message.id} />)}{ephemerealMessage && <p>{ephemerealMessage}</p>}</div>}

@@ -75,3 +75,32 @@ test('old or malformed slot preferences never lose or duplicate items', () => {
   assert.deepEqual(slots.filter(Boolean).map(item=>item.id).sort(),[1,2,3,4])
   assert.equal(arrangeSlots(items, null).filter(Boolean).length,4)
 })
+
+const sceneSource = readFileSync(new URL('../mythgarden/static/mythgarden/js/sceneLayout.ts', import.meta.url), 'utf8')
+const sceneCompiled = ts.transpileModule(sceneSource, {compilerOptions: {module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2020}}).outputText
+const {placeScenePeople, overlaps} = await import(`data:text/javascript;base64,${Buffer.from(sceneCompiled).toString('base64')}`)
+
+test('landscape markers avoid crops, sell targets, travel and each other at phone/tablet sizes', () => {
+  for (const [width, height, compact] of [[308,356,true], [378,488,true], [660,640,false]]) {
+    const obstacles = [
+      {x:0,y:0,width,height:48},
+      {x:width*.16,y:height-10-Math.max(height*.38,144),width:width*.68,height:Math.max(height*.38,144)},
+      {x:width*.16,y:height-10-Math.max(height*.38,144)-49,width:width*.68,height:44},
+      {x:width/2-35,y:height-44,width:70,height:44},
+    ]
+    const positions = placeScenePeople(width,height,obstacles,8,compact,'SHOP')
+    assert.ok(positions.length > 0, 'shop must have at least one visible inhabitant')
+    positions.forEach((rect,i) => {
+      assert.ok(rect.x >= 0 && rect.y >= 0 && rect.x+rect.width<=width && rect.y+rect.height<=height)
+      assert.ok(![...obstacles,...positions.slice(0,i)].some(other=>overlaps(rect,other)))
+    })
+  }
+})
+
+test('crowded landscapes fall back to People instead of covering a control', () => {
+  assert.deepEqual(placeScenePeople(308,356,[{x:0,y:0,width:308,height:356}],5,true),[])
+  assert.deepEqual(placeScenePeople(308,356,[],0,true),[])
+  const positions = placeScenePeople(308,356,[],8,true,'FARM')
+  assert.equal(positions.length,2)
+  assert.deepEqual(placeScenePeople(308,356,[],8,true,'FARM'),positions, 'positions must not randomly shuffle')
+})

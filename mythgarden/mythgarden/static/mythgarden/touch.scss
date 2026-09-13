@@ -83,7 +83,7 @@
   #main-area .action-saving { bottom: max(10px, env(safe-area-inset-bottom)); z-index: 1250; }
 }
 
-/* Tablet keeps the scene overlays and side inventories, with more room for taps. */
+/* Tablet keeps the bag beside a wider landscape. */
 @media (min-width: 761px) and (max-width: 1180px) {
   #page.touch-ui {
     height: var(--game-viewport-height, 100dvh);
@@ -93,7 +93,7 @@
     #clock { font-size: 22px; }
     #score { font-size: 13px; .total-score { font-size: 22px; } }
     #boost, #luck-percent { font-size: 14px; top: 0; }
-    #main-area { height: calc(100% - 120px); display: grid; grid-template-columns: 150px minmax(0, 1fr) 150px; gap: 8px; }
+    #main-area { height: calc(100% - 120px); display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 8px; }
     #sidebar, #center-col, #far-sidebar { width: 100%; min-width: 0; }
     #inventory { flex: 1; min-height: 0; .item .name { font-size: 14px; } .item .type { font-size: 25px; } }
     #wallet { height: 44px; font-size: 27px; }
@@ -117,7 +117,7 @@
   #page.touch-ui { min-height: 560px; height: auto; overflow: visible; #main-area { height: 440px; } }
 }
 
-/* Portrait phone: scene, nearby people, six-slot bag, one-line journal. */
+/* Portrait phone: inhabited scene, six-slot bag, one-line journal. */
 #page.phone-ui {
   height: var(--game-viewport-height, 100dvh); min-height: 520px; overflow: hidden;
   padding: max(6px, env(safe-area-inset-top)) max(6px, env(safe-area-inset-right)) max(6px, env(safe-area-inset-bottom)) max(6px, env(safe-area-inset-left));
@@ -130,7 +130,7 @@
   .compact-stats { display: flex; align-items: center; gap: 15px; font-size: 14px; font-variant-numeric: tabular-nums; }
   #top-bar { display: contents; }
   #top-bar > #hero, #top-bar > #logo, #top-bar > .column, #top-bar > #sky-container, #top-bar > .hamburger-button, #top-bar > .deploy-info { display: none; }
-  #main-area { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) 72px 78px 44px; gap: 6px; height: 100%; min-height: 0; }
+  #main-area { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) 78px 44px; gap: 6px; height: 100%; min-height: 0; }
   #center-col { display: contents; }
   #location { grid-row: 1; width: 100%; min-height: 0; height: 100%; overflow: hidden; border-radius: 14px;
     h2.name { font-size: 19px; line-height: 1.15; top: 4px; max-width: calc(100% - 16px); transform: translateX(-50%); padding: 3px 8px; background: var(--touch-paper); }
@@ -171,19 +171,7 @@
     &.sleep .action-pill { top: 0; right: 0; }
     &.travel .action-pill { bottom: 0; left: 0; right: auto; }
   }
-  #far-sidebar { grid-row: 2; display: flex; gap: 5px; align-items: stretch; width: 100%; height: 72px; min-width: 0; }
-  #villagers { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); flex: 1; min-width: 0; gap: 5px; padding: 0; height: 72px; overflow: visible;
-    .villager { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 0; padding: 2px; border-radius: 9px; border: 1px solid var(--touch-border); box-sizing: border-box; }
-    .villager > .row { height: 44px; width: 100%; }
-    .villager .portrait { width: 40px; height: 42px; border-radius: 8px; flex-shrink: 0; img { height: 100%; object-fit: cover; border-radius: 8px; } }
-    .villager .affinity-container { width: 8px; gap: 1px; .heart, .partial-container { height: 7px; } .heart img { height: 7px; } .partial { width: 9px; } }
-    .villager .name { font-size: 13px; line-height: 18px; white-space: nowrap; }
-    .villager .emoji, .villager .description, .villager-details { display: none; }
-    .villager .action-pill { min-width: 40px; height: 18px; font-size: 12px; bottom: 0; right: -1px; .touch-cost { font-size: 11px; } }
-  }
-  .all-people { min-width: 48px; width: 48px; border: 1px solid var(--touch-border); border-radius: 9px; padding: 2px; background: var(--touch-paper); color: var(--touch-ink); font: 12px/1.5 Montserrat, sans-serif; cursor: pointer; }
-  .nobody-here { position: absolute; top: 20px; left: 8px; font-size: 14px; }
-  #sidebar { grid-row: 3; width: 100%; height: 78px; min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: 24px 50px; gap: 4px; }
+  #sidebar { grid-row: 2; width: 100%; height: 78px; min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: 24px 50px; gap: 4px; }
   .inventory-caption { padding: 0 2px; min-height: 0; align-items: center; font-size: 12px; line-height: 12px; }
   #inventory { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 4px; padding: 0; width: 100%; height: 50px; }
   #inventory .draggable-gift { height: 50px; min-width: 0; }
@@ -193,7 +181,7 @@
     .quantity { position: absolute; top: 1px; right: 1px; font-size: 10px; }
   }
   #wallet { display: none; }
-  .compact-journal { grid-row: 4; display: flex; gap: 6px; align-items: center; min-width: 0; font-size: 12px; line-height: 1.4;
+  .compact-journal { grid-row: 3; display: flex; gap: 6px; align-items: center; min-width: 0; font-size: 12px; line-height: 1.4;
     > span { flex: 1; min-width: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
     button { min-width: 44px; height: 44px; flex-shrink: 0; border: 1px solid var(--touch-border); border-radius: 9px; background: var(--touch-paper); color: var(--touch-ink); cursor: pointer; font: inherit; }
   }
@@ -202,4 +190,34 @@
 }
 @media (prefers-reduced-motion: reduce) {
   #page.touch-ui *, #page.touch-ui *::after { animation: none !important; transition: none !important; }
+}
+
+/* Character markers share the landscape; their measured positions avoid controls. */
+#page.touch-ui {
+  #center-col { flex: 1; min-width: 0; }
+  #location { overflow: hidden; border-radius: 14px; }
+  #location h2.name { left: 8px; top: 8px; transform: none; margin: 0; max-width: calc(100% - 112px); white-space: normal; font-size: 21px; line-height: 1.15; padding: 5px 8px; background: var(--touch-paper); }
+  .scene-people { position: absolute; top: 8px; right: 8px; z-index: 12; min-height: 44px; padding: 6px 9px; border: 1px solid var(--touch-border); border-radius: 12px; background: var(--touch-paper); color: var(--touch-ink); font: 600 12px/1.2 Montserrat, sans-serif; cursor: pointer; }
+  #scene-villagers { position: absolute; inset: 0; pointer-events: none; margin: 0; padding: 0; list-style: none; z-index: 8; }
+  #scene-villagers .villager {
+    position: absolute; pointer-events: auto; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 0;
+    padding: 0; margin: 0; box-sizing: border-box; border: 0; border-radius: 18px; cursor: pointer;
+    background: transparent; filter: drop-shadow(0 4px 3px #0008);
+    > .row { width: 100%; height: calc(100% - 24px); display: flex; justify-content: center; }
+    .portrait { position: relative; width: 66px; height: 100%; border-radius: 48% 48% 12px 12px; background: var(--touch-paper); border: 2px solid var(--touch-paper); box-sizing: border-box;
+      img { width: 100%; height: 100%; object-fit: cover; border-radius: inherit; }
+    }
+    .portrait-filter, .affinity-container, .description, .emoji { display: none; }
+    > .column { width: 100%; }
+    .name { display: block; max-width: 100%; height: 24px; padding: 3px 5px; box-sizing: border-box; border-radius: 8px; background: var(--touch-paper); color: var(--touch-ink); font: 600 12px/18px Montserrat, sans-serif; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .action-pill { bottom: 0; right: 50%; top: auto; transform: translateX(50%); min-width: 52px; height: 22px; font-size: 13px; gap: 3px; .touch-cost { font-size: 12px; } }
+    &.valid-destination { outline: 3px solid #b27700; background: #ffdf8d55; }
+    &.inactive { opacity: .65; }
+    &.gray-on-hover { cursor: pointer; }
+  }
+  &.phone-ui {
+    #location h2.name { font-size: 18px; }
+    #scene-villagers .villager .portrait { width: 54px; }
+    #local-items { height: max(38%, 144px); top: 67%; &:has(.sell-destination-slot) { top: auto; bottom: 10px; transform: translateX(-50%); } }
+  }
 }
