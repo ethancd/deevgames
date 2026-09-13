@@ -1,5 +1,17 @@
 # Mythgarden release testing — 13 September 2026
 
+## Persistent, rearrangeable bag
+
+Application `e0edbfc` adds remembered bag positions and tap-item → empty-bag-slot rearranging within the existing touch interface flag. Positions are cosmetic browser preferences; no server action, save schema or game rules changed.
+
+Render deploy `dep-daj9gjvqj5pc73co4p80` went live at **12:35:15 UTC, September 13, 2026**, with the actual image build successful, no migrations and existing saves preserved. Read-only hosted verification found all six new empty-bag controls, intact images, empty browser error/warning logs and the unchanged Monday 11:10am state at 390×700.
+
+- TypeScript, **15 UI tests**, and the production build passed. Four added tests cover moving with stable neighbors, reload/server reorder, removal holes/new acquisitions, occupied or invalid targets, stable item identity, malformed/blocked storage and clearing obsolete week positions.
+- On the isolated local PostgreSQL/browser save at 390×700, Garlic moved from slot 2 to slot 6 and survived reload. The clock remained Monday 6:28pm; the local access log contained six gameplay POSTs both before and after rearranging/reloading, confirming no gameplay request for the move.
+- Gathering Huckleberry filled slot 2 without moving Kingsfoil, Thyme or Garlic. Gifting Kingsfoil left slot 1 empty through reload; the other items retained slots 2, 3 and 6.
+- At 834×1112, keyboard Enter moved Garlic to empty slot 4 without changing Monday 7:04pm. Disabling/re-enabling the interface and reloading preserved that arrangement. Browser warning/error logs were empty.
+- This frontend-only pass uses focused UI verification; it does not repeat the unchanged backend week matrix below. Browser-local persistence has the same cross-device/storage limitations as crop positions.
+
 ## Villagers inside the landscape
 
 Application `9699a53` moves the touch interface's villagers into the landscape and removes the separate villager strip/sidebar. Existing portraits, dialogue, gift actions, schedules, saves and the interface rollback flag remain in use.
