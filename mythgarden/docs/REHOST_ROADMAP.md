@@ -112,8 +112,9 @@ These are engineering estimates, not measured delivery commitments. Later steps 
 | 1. Establish the game again | This audit, repaired settings, reproduced/fixed restock blocker, repeatable builds, and passing basic week tests on SQLite and PostgreSQL. **Implemented locally in this milestone.** | Completed first pass |
 | 2. Fresh Render preview | **Complete.** Supported runtime, bootstrap, health endpoint, fresh web/database services, HTTPS browser checks, and save preservation across a full redeploy. | Completed |
 | 3. Make a week reliable | **Preview release pass implemented.** 29 tests, 32 full weeks, browser playthroughs, adverse requests, and discovered defects repaired. Legacy-suite repair and broad-launch checks remain documented. | Release pass complete; broader certification remains |
-| 4. Upgrade farmer portraits | A consistent art direction, an approved small sample, replacement set, optimized assets, and working selection/persistence on desktop and phone. | 1–3 days plus art review |
-| 5. Give the cast deeper dialogue | Conditional dialogue selection, content validation/fallbacks, two-character pilot, then rollout to all 17 characters. | 3–6 engineering days plus writing/review |
+| 4. Phone and tablet interface | **Live in the preview.** Optional compact portrait layout, destination-based items, shared tablet affordances, and complete classic/fantasy browser weeks. 31 backend and nine UI tests pass. Physical iPhone Safari remains a separate check. See [MOBILE_UI.md](MOBILE_UI.md). | Preview implementation complete |
+| 5. Upgrade farmer portraits | A consistent art direction, an approved small sample, replacement set, optimized assets, and working selection/persistence on desktop and phone. | 1–3 days plus art review |
+| 6. Give the cast deeper dialogue | Conditional dialogue selection, content validation/fallbacks, two-character pilot, then rollout to all 17 characters. | 3–6 engineering days plus writing/review |
 
 The preview now has a repeatable week-reliability gate. The next creative leap is farmer portraits, followed by the conditional-dialogue pilot; physical-device coverage and backup restoration remain gates for a wider public launch. See the current release report for evidence and the runbook for resources and rollback.
 

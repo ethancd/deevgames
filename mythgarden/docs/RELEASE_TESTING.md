@@ -1,5 +1,20 @@
 # Mythgarden release testing — 13 September 2026
 
+## Phone and tablet redesign release
+
+Application commit `5dc5a88b075711c0117eba1f2c48bda5a66699ee` is live on the existing [Render preview](https://deevgames-mythgarden-preview.onrender.com/). Deploy `dep-daj8o495efls738043a0` completed at **11:43:11 UTC on September 13, 2026**. Migration 0081 completed successfully and bootstrap preserved existing saves/content.
+
+- [CI run 34754339141](https://github.com/ethancd/deevgames/actions/runs/34754339141) passed **31 backend release tests in 793.246 seconds**, including the 32-week settings/crop matrix and stable crop-position identity across growth in both catalogs. TypeScript, nine UI tests, production assets, migration drift, the actual Docker image, and repeated fresh-world bootstrap also passed.
+- CI ran on `b095263`; the final four-file refinement only changed tablet image containment, the drag gesture threshold, panel focus, and documentation. Its TypeScript check, all nine UI tests, production build, actual Render image build, and browser checks passed. It did not repeat the unchanged backend matrix.
+- Two complete local browser weeks passed through real controls on production Gunicorn/PostgreSQL, with daily reloads: **classic crops → high score 10,140**, then **fantasy crops → high score 10,688**. The farmer name, achievement and speed boosts persisted across week resets. The queued fantasy setting stayed inactive during the classic week and applied on the next Monday.
+- Browser routes covered gathering, shopping, selling selected items, planting into chosen soil, watering, growth, harvesting, talking, tap-to-give, drag-to-give, chest storage/retrieval, traveling, and all seven daily sleeps in each week. Invalid selected-item targets did not buy, talk, travel, or spend time. The selected soil position survived growth and reload.
+- Main play surfaces fit **320×568, 390×560, 390×700, 834×1112, and 1024×768** Chromium viewports without document overflow. Dialogue, people, character details, profile, journal, and settings remained reachable. Panel focus, Tab wrapping, biography transitions and Escape dismissal were checked.
+- Hosted smoke testing preserved the existing Preview Farmer save at Monday 7:30am in Darklight Forest with its Huckleberry before further play. Travel, sale, seed purchase, planting, watering and reload then passed on the deployed build. The resulting Monday 11:10am save survived toggling the interface off, reloading, and turning it back on without advancing time. The hosted 390×700 page fit exactly; browser warning/error logs were empty and loaded images were intact.
+
+This work repaired stale competing CSS, narrow bag/tile sizing, crop placement changing when tokens grow, an oversized tablet bed image intercepting the exit, a gesture delay interfering with dragging, and focus loss when opening a biography from the People panel.
+
+The feature flag is **Settings → Touch-friendly interface** (immediate, per browser). `MYTHGARDEN_TOUCH_UI_ENABLED=False` provides a host-wide override. See [MOBILE_UI.md](MOBILE_UI.md) for the interaction contract and fallback. The compact surface needs at least 520px of usable height; shorter windows may scroll. **Physical iPhone Safari, browser toolbar/keyboard transitions, larger system text and home-screen mode remain untested.** The historical release results below describe the previous application build.
+
 Release application commit `6143366ffa429c2066f0740acc0902550aa41bdd` for the fresh [Render preview](https://deevgames-mythgarden-preview.onrender.com/). This report records measured coverage; it is not a claim that every possible game path is bug-free.
 
 ## Repeatable release gate
