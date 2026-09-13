@@ -1,5 +1,7 @@
 # Settings Menu
 
+> Historical design, superseded by the September 12, 2026 implementation and [Render roadmap](../docs/REHOST_ROADMAP.md). Current behavior has no Trix exception: everyone stays put when movement is off. Fixed stock supplies seeds and universally loved gifts every day, with no random shop mytheggs. Changes apply immediately until the first successful gameplay action of a week; afterward they apply next week. The older examples below describe the original plan, not the current implementation contract.
+
 ## Goal
 
 Consolidate hero customization and add difficulty settings in a unified hamburger menu. Allow players to opt into additional complexity for score bonuses.

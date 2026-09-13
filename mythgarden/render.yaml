@@ -1,0 +1,42 @@
+# Select this file as the Blueprint Path: mythgarden/render.yaml.
+# A standalone preview with its own database; no existing service is imported.
+services:
+  - type: web
+    name: deevgames-mythgarden-preview
+    runtime: docker
+    plan: 0.5c-512mb
+    region: oregon
+    branch: codex/mythgarden-render-preview
+    rootDir: mythgarden
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    preDeployCommand: bash predeploy.sh
+    healthCheckPath: /healthz
+    autoDeployTrigger: "off"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: deevgames-mythgarden-preview-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: SECURE_SSL_REDIRECT
+        value: "True"
+      - key: ENVIRONMENT
+        value: preview
+      - key: BRANCH_NAME
+        value: codex/mythgarden-render-preview
+      - key: WEB_CONCURRENCY
+        value: "2"
+databases:
+  - name: deevgames-mythgarden-preview-db
+    plan: 0.1c-256mb
+    region: oregon
+    postgresMajorVersion: "16"
+    databaseName: mythgarden_preview
+    user: mythgarden
+    diskSizeGB: 1
+    storageAutoscalingEnabled: false
+    ipAllowList: []

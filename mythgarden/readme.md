@@ -1,5 +1,7 @@
 # Mythgarden
 Mythgarden is a time-loop farming-sim RPG that you can play in your browser. Think Stardew Valley + Groundhog Day, with a quirky vibe and an arcade feel.
+
+The current relaunch plan, verified fixes, and testing instructions are in [the Render roadmap](docs/REHOST_ROADMAP.md). The first milestone is implemented locally; the Render service has not yet been created.
 ## Gallery
 <div style="display:flex;">
 <img width="500" alt="Screen Shot 2023-04-02 at 2 08 44 PM" src="https://user-images.githubusercontent.com/1863479/229380272-5368126f-9fbd-4f68-88c9-704769423ccb.png">
@@ -26,25 +28,8 @@ Mythgarden was built using a Django backend and a React frontend with Typescript
 
 ## Deployment
 
-### Production
-The production app is deployed to Fly.io at `django-mythgarden-fly`. Deployments happen automatically when changes are merged to the `main` or `master` branch via GitHub Actions.
+Use the [Render preview runbook](docs/RENDER_PREVIEW.md) and [`render.yaml`](render.yaml). The service uses a fresh PostgreSQL database, Django 5.2 LTS, a production frontend bundle, and WhiteNoise static assets.
 
-### Staging / PR Previews
-A staging environment (`django-mythgarden-staging`) is available for preview deployments. When you open or update a pull request, GitHub Actions will automatically deploy the PR changes to the staging server and post a comment with the staging URL.
-
-**Note:** The staging environment is shared across all PRs, so only the most recently updated PR will be deployed to staging at any given time.
-
-#### First-time Setup
-Before the staging deployment workflow can run, you need to set up GitHub secrets:
-
-1. Ensure the `FLY_API_TOKEN` secret is set in your GitHub repository settings (should already be configured for production deployments).
-
-2. Add a `STAGING_SECRET_KEY` secret to your GitHub repository:
-   - Go to your repository settings → Secrets and variables → Actions
-   - Click "New repository secret"
-   - Name: `STAGING_SECRET_KEY`
-   - Value: Generate a secure random string (e.g., run `python -c "import secrets; print(secrets.token_urlsafe(50))"`)
-
-The workflow will automatically create the staging app and configure it on the first PR deployment.
+The legacy Fly configuration and nested workflows remain as historical references. Nested `.github/workflows` files do not run as monorepo workflows. The container startup now only runs Gunicorn; migrations and safe initial seeding are a separate pre-deploy step.
 
 [ashkie]: https://mythgarden.ashkie.com

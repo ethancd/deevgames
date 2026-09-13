@@ -6,7 +6,7 @@ from .hero import Hero
 from .place import Place, PlaceState
 from ..static_helpers import generate_uuid
 
-from ._constants import WELCOME_MESSAGE
+from ._constants import WELCOME_MESSAGE, FIRST_DAY
 
 
 class Session(models.Model):
@@ -19,6 +19,8 @@ class Session(models.Model):
     skip_post_save_signal = models.BooleanField(default=False)
     initial_message_text = models.CharField(max_length=255, default=WELCOME_MESSAGE)
     game_over = models.BooleanField(default=False)
+    # Buying/selling can take no time, so the clock cannot identify an untouched week.
+    has_taken_action = models.BooleanField(default=False)
 
     fresh = models.JSONField(default=dict, blank=True)
 
@@ -118,11 +120,19 @@ class Session(models.Model):
         place_to_state_dict = {state.place.pk: state for state in place_states}
 
         for villager in list(Villager.objects.all()):
-            if villager.home:
-                location_state = place_to_state_dict.get(villager.home.pk, None)
-                villager_state = VillagerState(session=self, villager=villager, location_state=location_state)
-            else:
-                villager_state = VillagerState(session=self, villager=villager)
+            place_id = villager.home_id
+            if place_id is None and not self.hero.settings.villagers_move:
+                # Roaming villagers also need a permanent, reachable spot in
+                # stationary mode. Use their first Monday/daily appearance.
+                from .event import VillagerAppearsEvent
+                appearance = VillagerAppearsEvent.objects.filter(
+                    models.Q(day=FIRST_DAY) | models.Q(is_daily=True),
+                    villager=villager, place__isnull=False,
+                ).order_by('time', 'pk').first()
+                place_id = appearance.place_id if appearance else self.location.pk
+
+            location_state = place_to_state_dict.get(place_id)
+            villager_state = VillagerState(session=self, villager=villager, location_state=location_state)
 
             villager_states.append(villager_state)
 

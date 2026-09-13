@@ -112,7 +112,12 @@ def get_models(model_keys, session):
 
 
 def get_requested_action(request, session):
-    action_digest = json.loads(request.body)['uniqueDigest']
+    try:
+        action_digest = json.loads(request.body)['uniqueDigest']
+        if not isinstance(action_digest, str):
+            raise ValueError()
+    except (ValueError, KeyError, TypeError, UnicodeDecodeError):
+        raise ValidationError('That action request is invalid. Please reload and try again.')
     available_actions = ActionGenerator().get_actions_for_session(session)
 
     try:

@@ -4,6 +4,7 @@ from . import views
 
 app_name = 'mythgarden'
 urlpatterns = [
+    path('healthz', views.health, name='health'),
     path('', views.home, name='home'),
     path('action', views.action, name='action'),
     path('user_data', views.user_data, name='user_data'),

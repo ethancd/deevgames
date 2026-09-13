@@ -1,9 +1,8 @@
-from sqlite3 import IntegrityError
 import json
 import os
 
 from django.core.validators import ValidationError
-from django.db import transaction
+from django.db import DatabaseError, IntegrityError, transaction
 from django.http import HttpResponseRedirect, HttpResponseNotFound
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
@@ -15,8 +14,17 @@ from .view_helpers import retrieve_session, ensure_state_objects_created, get_ho
     validate_action, custom_serialize, set_user_data, load_session_with_related_data
 from .game_logic import ActionExecutor, EventOperator
 from .models import Session
-from .models import Achievement
+from .models import Item, Place
 from .models import GameSettings
+
+
+def health(request):
+    """Readiness check: database reachable and world bootstrapped; no player cookie."""
+    try:
+        ready = Item.objects.exists() and Place.objects.exists()
+    except DatabaseError:
+        ready = False
+    return JsonResponse({'status': 'ok' if ready else 'unavailable'}, status=200 if ready else 503)
 
 @ensure_csrf_cookie
 def home(request):
@@ -35,7 +43,6 @@ def home(request):
         context['ctx']['branchName'] = os.environ.get('BRANCH_NAME', '')
         context['ctx']['deployTime'] = os.environ.get('DEPLOY_TIME', '')
 
-    print(Achievement.objects.all().count())
     template_name = 'mythgarden/home.html'
     return render(request, template_name, context)
 
@@ -54,41 +61,38 @@ def action(request):
     if not session_key:
         return HttpResponseRedirect(reverse('mythgarden:home'))
 
-    try:
-        session = load_session_with_related_data(session_key)
-    except Session.DoesNotExist:
-        return HttpResponseNotFound()
-
     # find requested action in currently available actions,
     # validate it, execute it, react to time passing as needed
     # if action is unavailable, invalid, or database errors out, return an error message
     try:
-        requested_action = get_requested_action(request, session)
-        validate_action(session, requested_action)
         with transaction.atomic():
+            # Settings updates and gameplay share this lock. Validate against
+            # the state after any concurrent request has finished committing.
+            Session.objects.select_for_update().get(pk=session_key)
+            session = load_session_with_related_data(session_key)
+            requested_action = get_requested_action(request, session)
+            validate_action(session, requested_action)
             ActionExecutor().execute(requested_action, session)
             if session.is_fresh('clock'):
                 EventOperator().react_to_time_passing(session.clock, session)
+            session.has_taken_action = True
+            session.save(update_fields=['has_taken_action'])
+
+            if session.game_over:
+                session = EventOperator().trigger_game_over(session)
+                session = ensure_state_objects_created(session)
+                updated_models = get_home_models(session)
+            else:
+                session.mark_fresh('actions')
+                updated_models = get_fresh_models(session)
+            results = {name: custom_serialize(data) for name, data in updated_models.items()}
+    except Session.DoesNotExist:
+        return HttpResponseNotFound()
     except (ValidationError, IntegrityError) as e:
-        session.messages.create(text=e.message, is_error=True)
-        return JsonResponse({'error': e.message, 'messages': get_serialized_messages(session)})
+        error_message = ' '.join(e.messages) if isinstance(e, ValidationError) else 'Unable to save that action. Please reload and try again.'
+        session.messages.create(text=error_message, is_error=True)
+        return JsonResponse({'error': error_message, 'messages': get_serialized_messages(session)})
 
-    # if game_over flag is true, then reset the session
-    # and return a new set of starting objects
-    if session.game_over:
-        with transaction.atomic():
-            session = EventOperator().trigger_game_over(session)
-
-        session = ensure_state_objects_created(session)
-        home_models = get_home_models(session)
-        results = {model_name: custom_serialize(data) for model_name, data in home_models.items()}
-        return JsonResponse(results)
-
-    # get models that have been modified (including actions every time)
-    # and return them as JSON
-    session.mark_fresh('actions')
-    updated_models = get_fresh_models(session)
-    results = {model_name: custom_serialize(data) for model_name, data in updated_models.items()}
     return JsonResponse(results)
 
 
@@ -160,11 +164,11 @@ def get_settings(request):
     # Ensure settings exist for the hero
     game_settings, created = GameSettings.objects.get_or_create(hero=session.hero)
 
-    return JsonResponse(game_settings.serialize())
+    return JsonResponse({**game_settings.serialize(), 'can_apply_immediately': not session.has_taken_action})
 
 
 def update_settings(request):
-    """Endpoint for updating draft game settings."""
+    """Apply choices to an untouched week, otherwise save them for the next week."""
     if not request.method == 'POST':
         return HttpResponseRedirect(reverse('mythgarden:home'))
 
@@ -172,28 +176,35 @@ def update_settings(request):
     if not session_key:
         return HttpResponseRedirect(reverse('mythgarden:home'))
 
-    session = get_object_or_404(Session, pk=session_key)
-
     try:
-        # Ensure settings exist for the hero
-        game_settings, created = GameSettings.objects.get_or_create(hero=session.hero)
-
         new_settings = json.loads(request.body)
+        allowed_fields = {f'draft_{key}' for key in GameSettings.SCORE_BONUSES}
+        if not isinstance(new_settings, dict) or set(new_settings) - allowed_fields:
+            raise ValueError('Send only draft challenge options as a JSON object.')
+        if any(type(value) is not bool for value in new_settings.values()):
+            raise ValueError('Each challenge option must be true or false.')
 
         with transaction.atomic():
-            # Only allow updating draft settings
-            if 'draft_villagers_move' in new_settings:
-                game_settings.draft_villagers_move = new_settings['draft_villagers_move']
-            if 'draft_building_hours' in new_settings:
-                game_settings.draft_building_hours = new_settings['draft_building_hours']
-            if 'draft_advanced_crops' in new_settings:
-                game_settings.draft_advanced_crops = new_settings['draft_advanced_crops']
-            if 'draft_dynamic_shop' in new_settings:
-                game_settings.draft_dynamic_shop = new_settings['draft_dynamic_shop']
+            session = get_object_or_404(Session.objects.select_for_update(), pk=session_key)
+            game_settings, _ = GameSettings.objects.get_or_create(hero=session.hero)
+            # Update only submitted columns, so separate requests cannot
+            # overwrite each other's unrelated draft choices.
+            if new_settings:
+                GameSettings.objects.filter(pk=game_settings.pk).update(**new_settings)
+                game_settings.refresh_from_db()
+            can_apply_immediately = not session.has_taken_action
+            if new_settings and can_apply_immediately:
+                game_settings.apply_draft()
+                # No gameplay has happened, so villagers still have only their
+                # initial positions. Recreate these for the new movement rule.
+                session.hero.settings = game_settings
+                session.villager_states.all().delete()
+                session.populate_villager_states(session.place_states.all())
+            result = {**game_settings.serialize(), 'can_apply_immediately': can_apply_immediately}
+            if new_settings and can_apply_immediately:
+                session = load_session_with_related_data(session_key)
+                result['gameState'] = {name: custom_serialize(data) for name, data in get_home_models(session).items()}
+    except (ValidationError, ValueError, UnicodeDecodeError) as e:
+        return JsonResponse({'error': str(e)}, status=400)
 
-            game_settings.save()
-    except (ValidationError, ValueError) as e:
-        error_message = str(e) if hasattr(e, 'message') else str(e)
-        return JsonResponse({'error': error_message})
-
-    return JsonResponse(game_settings.serialize())
+    return JsonResponse(result)

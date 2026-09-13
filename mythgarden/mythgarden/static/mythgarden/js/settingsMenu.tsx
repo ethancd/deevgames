@@ -23,13 +23,13 @@ const SETTING_OPTIONS: SettingOption[] = [
   {
     key: 'villagers_move',
     label: 'Villagers move around',
-    description: 'Villagers travel between locations on a schedule. (Trix always roams!)',
+    description: 'On: villagers follow their schedules. Off: everyone stays in one place, including Trix at the beach.',
     bonus: 50,
   },
   {
     key: 'building_hours',
     label: 'Building hours',
-    description: 'Shops and buildings have opening and closing times.',
+    description: 'On: buildings follow opening and closing times. Off: every building is always open.',
     bonus: 25,
   },
   {
@@ -40,8 +40,8 @@ const SETTING_OPTIONS: SettingOption[] = [
   },
   {
     key: 'dynamic_shop',
-    label: 'Dynamic shop inventory',
-    description: 'Random merchandise items appear daily (fish, fossils, tech, magic, etc.). Disabled: only fixed items (seeds and gifts).',
+    label: 'Random shop inventory',
+    description: 'On: random merchandise and mytheggs can appear. Off: a predictable daily selection of seeds and universally loved gifts, with both available every day.',
     bonus: 25,
   },
 ]
@@ -49,12 +49,21 @@ const SETTING_OPTIONS: SettingOption[] = [
 export default function SettingsMenu({ show, onClose, currentPortraitUrl, portraitUrls, heroName, isDefaultName }: SettingsMenuProps): JSX.Element {
   const [activeTab, setActiveTab] = useState<'hero' | 'settings'>('hero')
   const [settings, setSettings] = useState<GameSettings | null>(null)
+  const [loadError, setLoadError] = useState('')
+  const [loadAttempt, setLoadAttempt] = useState(0)
 
   useEffect(() => {
-    if (show && !settings) {
-      getSettings().then(setSettings).catch(console.error)
-    }
-  }, [show])
+    if (!show) return
+    let cancelled = false
+    setSettings(null)
+    setLoadError('')
+    getSettings().then(value => {
+      if (!cancelled) setSettings(value)
+    }).catch(() => {
+      if (!cancelled) setLoadError('Could not load settings. Please try again.')
+    })
+    return () => { cancelled = true }
+  }, [show, loadAttempt])
 
   if (!show) {
     return <div style={{ display: 'none' }}></div>
@@ -68,8 +77,8 @@ export default function SettingsMenu({ show, onClose, currentPortraitUrl, portra
 
   return (
     <div className="settings-modal-overlay" onClick={handleClose}>
-      <div className="settings-modal" onClick={e => e.stopPropagation()}>
-        <button className="close-button" onClick={onClose}>×</button>
+      <div className="settings-modal" role="dialog" aria-modal="true" aria-label="Game settings" onClick={e => e.stopPropagation()}>
+        <button className="close-button" aria-label="Close settings" onClick={onClose}>×</button>
 
         <div className="tabs">
           <button
@@ -95,7 +104,12 @@ export default function SettingsMenu({ show, onClose, currentPortraitUrl, portra
               isDefaultName={isDefaultName}
             />
           ) : (
-            <SettingsTab settings={settings} setSettings={setSettings} />
+            loadError ? (
+              <div role="alert">
+                <p>{loadError}</p>
+                <button onClick={() => setLoadAttempt(value => value + 1)}>Try again</button>
+              </div>
+            ) : <SettingsTab settings={settings} setSettings={setSettings} />
           )}
         </div>
       </div>
@@ -158,25 +172,37 @@ function HeroTab({ currentPortraitUrl, portraitUrls, heroName, isDefaultName }: 
 }
 
 function SettingsTab({ settings, setSettings }: { settings: GameSettings | null, setSettings: (settings: GameSettings) => void }): JSX.Element {
+  const [saving, setSaving] = useState(false)
+  const [saveError, setSaveError] = useState('')
+
   if (!settings) {
     return <div className="settings-tab">Loading...</div>
   }
 
   const toggleSetting = async (key: string) => {
+    if (saving) return
     const draftKey = `draft_${key}` as keyof GameSettings
     const newValue = !settings[draftKey]
 
     try {
+      setSaving(true)
+      setSaveError('')
       const updatedSettings = await postSettings({ [draftKey]: newValue })
       setSettings(updatedSettings)
     } catch (error) {
-      console.error('Failed to update settings:', error)
+      setSaveError('Your change was not saved. Please try again.')
+    } finally {
+      setSaving(false)
     }
   }
 
   return (
     <div className="settings-tab">
       <h3>Challenge Options</h3>
+      <p>Uncheck an option to simplify the game. Changes apply immediately before your first action of the week. Once you start playing, changes apply next week.</p>
+      <p role="status">{settings.can_apply_immediately ? 'You haven’t taken an action yet. Changes apply to this week.' : 'Your week has started. Changes are saved for next week.'}</p>
+      {saveError && <p role="alert">{saveError}</p>}
+      {saving && <p role="status">Saving…</p>}
 
       <div className="settings-list">
         {SETTING_OPTIONS.map(option => {
@@ -192,12 +218,14 @@ function SettingsTab({ settings, setSettings }: { settings: GameSettings | null,
                 <input
                   type="checkbox"
                   checked={isDraft}
+                  disabled={saving}
                   onChange={() => toggleSetting(option.key)}
                 />
                 <span className="setting-label">{option.label}</span>
                 <span className="setting-bonus">+{option.bonus}%</span>
               </label>
               <p className="setting-description">{option.description}</p>
+              <p className="setting-description">This week: {isActive ? 'On' : 'Off'}</p>
               {hasPendingChange && (
                 <p className="pending-notice">
                   ⓘ This change will be applied when you start your next run

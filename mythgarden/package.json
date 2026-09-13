@@ -50,8 +50,10 @@
   },
   "scripts": {
     "test": "mocha",
+    "test:release": "python manage.py test mythgarden.tests.test_settings_and_week mythgarden.tests.test_deployment --testrunner django.test.runner.DiscoverRunner",
     "dev": "webpack serve",
     "build": "webpack",
+    "build:production": "webpack --mode production",
     "lint": "eslint mythgarden/static/mythgarden/js --fix"
   }
 }

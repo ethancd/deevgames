@@ -1,0 +1,54 @@
+name: Mythgarden preview checks
+on:
+  workflow_dispatch:
+  push:
+    branches: [codex/mythgarden-render-preview]
+    paths: [mythgarden/**, .github/workflows/mythgarden-preview.yml]
+  pull_request:
+    paths: [mythgarden/**, .github/workflows/mythgarden-preview.yml]
+permissions:
+  contents: read
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mythgarden
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: mythgarden
+          POSTGRES_PASSWORD: test-only-password
+          POSTGRES_DB: mythgarden_test
+        ports: [5432:5432]
+        options: >-
+          --health-cmd "pg_isready -U mythgarden -d mythgarden_test"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      SECRET_KEY: test-only-ci-key-that-is-never-used-by-the-live-service
+      DEBUG: "False"
+      SECURE_SSL_REDIRECT: "False"
+      DATABASE_URL: postgresql://mythgarden:test-only-password@localhost:5432/mythgarden_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: mythgarden/requirements.txt
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: mythgarden/package-lock.json
+      - run: pip install -r requirements.txt
+      - run: npm ci
+      - run: npm run build:production
+      - run: python manage.py collectstatic --noinput
+      - run: python manage.py makemigrations --check --dry-run
+      - run: npm run test:release
+      - name: Build actual Render image
+        run: docker build -t mythgarden-preview .
+      - name: Bootstrap a disposable world inside the image
+        run: docker run --rm -e SECRET_KEY -e DEBUG -e SECURE_SSL_REDIRECT mythgarden-preview bash -c 'bash predeploy.sh && python manage.py bootstrap_world && python manage.py check'

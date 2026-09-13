@@ -3,8 +3,8 @@ import random
 
 from .mythegg_finder import MytheggFinder
 from .mythegg_powers import MytheggPowers
-from ..models import ScheduledEvent, VillagerState, PlaceState, Item, MerchSlot, ItemToken
-from ..models._constants import SHOP, FARM, SEED, SPROUT, CROP, DAWN, DAY_TO_INDEX, KYS_MESSAGE, FIRST_DAY, MAX_ITEMS, \
+from ..models import ScheduledEvent, Villager, VillagerState, PlaceState, Item, MerchSlot, ItemToken
+from ..models._constants import SHOP, FARM, SEED, GIFT, LOVE, SPROUT, CROP, DAWN, DAY_TO_INDEX, KYS_MESSAGE, FIRST_DAY, MAX_ITEMS, \
     RAINBOW_BONUS_TIME
 
 
@@ -113,9 +113,8 @@ class EventOperator:
             return self.populate_shop(event.populateshopevent, session, place_states)  # django forces PopulateShopEvent into populateshopevent
 
         if event.event_type == ScheduledEvent.VILLAGER_APPEARS:
-            # Skip villager movement events if villagers_move is disabled, except for Trix
-            villager_name = event.villagerappearsevent.villager.name
-            if settings and not settings.villagers_move and villager_name != 'Trix':
+            # This applies to every villager, including Trix.
+            if settings and not settings.villagers_move:
                 return
             return self.villager_appears(event.villagerappearsevent, villager_states, place_states)
 
@@ -142,7 +141,10 @@ class EventOperator:
             'Mythfruit Seed': 'Mythfruit Seed',
         }
 
-        content_configs = json.loads(event.content_config_list)
+        content_configs = event.content_config_list
+        if isinstance(content_configs, str):
+            content_configs = json.loads(content_configs)
+        villagers = list(Villager.objects.prefetch_related('item_type_preferences')) if not use_dynamic_shop else []
 
         for content_config in content_configs:
             item_name = content_config.get('item_name', None)
@@ -155,13 +157,20 @@ class EventOperator:
                     item_name = SEED_MAPPING[item_name]
 
                 item = Item.objects.get_by_natural_key(item_name)
+                if not use_dynamic_shop:
+                    if item.item_type not in (SEED, GIFT):
+                        continue
+                    if item.item_type == GIFT and not all(v.gift_valence(item) == LOVE for v in villagers):
+                        continue
             elif merch_type:
                 # For fixed shop mode, skip random merchandise items entirely
                 if not use_dynamic_shop:
                     continue
 
                 merch_slot = MerchSlot(merch_slot_type=merch_type)
-                item = self.__pick_item_given_merch_slot(merch_slot, blocked_item_types, use_basic_crops, use_dynamic_shop, event.day)
+                item = self.__pick_item_given_merch_slot(merch_slot, blocked_item_types, use_basic_crops)
+                if item is None:
+                    continue
                 blocked_item_types.append(item.item_type)
             else:
                 raise ValueError('Content config should have item_name or merch_type')
@@ -169,68 +178,62 @@ class EventOperator:
             item_token = ItemToken(session=session, item=item, quantity=quantity)
             item_tokens.append(item_token)
 
-        # draw for shop populate
-        mythegg, mythling_state = self.mythegg_finder.draw_for_shop_populate_mythegg(session) or (None, None)
+        if not use_dynamic_shop:
+            # Keep the authored daily progression, with seeds AND universally
+            # loved gifts available even on Monday and the weekend.
+            if not any(token.item_type == SEED for token in item_tokens):
+                seed_name = 'Parsnip Seed' if use_basic_crops else 'Weedbulb Seed'
+                item_tokens.insert(0, ItemToken(session=session, item=Item.objects.get(name=seed_name)))
+            if not any(token.item_type == GIFT for token in item_tokens):
+                gift = Item.objects.get(name='Lovely Postcard')
+                if not all(v.gift_valence(gift) == LOVE for v in villagers):
+                    raise ValueError('Fixed shop requires a universally loved Lovely Postcard.')
+                item_tokens.append(ItemToken(session=session, item=gift, quantity=3))
+
+        # Fixed inventory has no random shop draws, including golden mytheggs.
+        mythegg, mythling_state = (None, None)
+        if use_dynamic_shop:
+            mythegg, mythling_state = self.mythegg_finder.draw_for_shop_populate_mythegg(session) or (None, None)
 
         if mythegg:
-            mythling_state.mark_deferred()
+            mythling_state.mark_deferred().save()
             mythegg_token = ItemToken(session=session, item=mythegg, quantity=1)
 
             if len(item_tokens) == MAX_ITEMS:
                 # replace the first non-seed item
-                seed_count = len([item_token for item_token in item_tokens if item_token.item_type == SEED])
-                item_tokens[seed_count] = mythegg_token
+                replacement = next((i for i, token in enumerate(item_tokens) if token.item_type != SEED), -1)
+                item_tokens[replacement] = mythegg_token
             else:
                 item_tokens.insert(0, mythegg_token)
 
-        # Get item PKs before bulk_create for re-fetching
-        item_pks = [token.item_id for token in item_tokens]
-        ItemToken.objects.bulk_create(item_tokens)
-        # Re-fetch to get objects with PKs (bulk_create doesn't return PKs on older SQLite)
-        created_tokens = ItemToken.objects.filter(session=session, item_id__in=item_pks)
+        # At most six rows: save these exact tokens. Re-querying by item_id also
+        # selects yesterday's stock and the player's bought/planted copies.
+        for token in item_tokens:
+            token.save()
 
         place_state = place_states.filter(place=event.shop).first()
         # Clear existing items before adding new ones to avoid MAX_ITEMS validation error
         place_state.item_tokens.clear()
-        place_state.item_tokens.set(created_tokens)
+        place_state.item_tokens.set(item_tokens)
 
         if session.location.place_type == SHOP:
             session.mark_fresh('localItemTokens')
 
-    def __pick_item_given_merch_slot(self, merch_slot, blocked_item_types, use_basic_crops=False, use_dynamic_shop=True, day_of_week=None):
-        allowed_item_types = list(set(merch_slot.potential_item_types) - set(blocked_item_types))
-
-        # For fixed shop, use day-seeded random; for dynamic shop, use true random
-        if use_dynamic_shop:
-            item_type = random.choice(allowed_item_types)
-        else:
-            # Use day of week to seed the random generator for consistent results
-            day_seed = DAY_TO_INDEX.get(day_of_week, 0) if day_of_week else 0
-            rng = random.Random(day_seed + hash(merch_slot.merch_slot_type))
-            item_type = rng.choice(allowed_item_types)
-
-        rarity = merch_slot.get_rarity(item_type)
-
-        # If picking a seed and using basic crops mode, filter to basic seeds
-        if item_type == SEED and use_basic_crops:
-            basic_seed_names = [
-                'Parsnip Seed', 'Potato Seed', 'Rhubarb Seed', 'Cauliflower Seed',
-                'Melon Seed', 'Pumpkin Seed', 'Mythfruit Seed'
-            ]
-            items = list(Item.objects.filter(name__in=basic_seed_names, rarity=rarity).order_by('name'))
-        else:
-            items = list(Item.objects.filter(item_type=item_type, rarity=rarity).order_by('name'))
-
-        # For fixed shop, use day-seeded random; for dynamic shop, use random ordering
-        if use_dynamic_shop:
-            item = random.choice(items) if items else None
-        else:
-            # Use day of week to seed for consistent item selection
-            day_seed = DAY_TO_INDEX.get(day_of_week, 0) if day_of_week else 0
-            rng = random.Random(day_seed + hash(f"{item_type}_{rarity}"))
-            item = rng.choice(items) if items else None
-
-        return item
+    def __pick_item_given_merch_slot(self, merch_slot, blocked_item_types, use_basic_crops=False):
+        allowed_item_types = sorted(set(merch_slot.potential_item_types) - set(blocked_item_types))
+        pools = []
+        for item_type in allowed_item_types:
+            items = Item.objects.filter(item_type=item_type, rarity=merch_slot.get_rarity(item_type))
+            if item_type == SEED and use_basic_crops:
+                items = items.filter(name__in=[
+                    'Parsnip Seed', 'Potato Seed', 'Rhubarb Seed', 'Cauliflower Seed',
+                    'Melon Seed', 'Pumpkin Seed', 'Mythfruit Seed',
+                ])
+            pool = list(items.order_by('name'))
+            if pool:
+                pools.append(pool)
+        # Sparse content must not produce a None.item_type error at dawn.
+        return random.choice(random.choice(pools)) if pools else None
 
     def villager_appears(self, event, villager_states, place_states):
         villager_state = villager_states.filter(villager=event.villager).first()

@@ -15,6 +15,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 import environ
 import os
 from pathlib import Path
+from django.core.exceptions import ImproperlyConfigured
 
 env = environ.Env(
     DEBUG=(bool, False),
@@ -36,6 +37,12 @@ SECRET_KEY = env('SECRET_KEY')
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'django-mythgarden-fly.fly.dev', 'django-mythgarden-staging.fly.dev', 'mythgarden.ashkie.com']
 CSRF_TRUSTED_ORIGINS = ['https://django-mythgarden-fly.fly.dev', 'https://django-mythgarden-staging.fly.dev', 'https://mythgarden.ashkie.com']
+RENDER_EXTERNAL_HOSTNAME = env('RENDER_EXTERNAL_HOSTNAME', default='')
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+    CSRF_TRUSTED_ORIGINS.append(f'https://{RENDER_EXTERNAL_HOSTNAME}')
+ALLOWED_HOSTS += env.list('EXTRA_ALLOWED_HOSTS', default=[])
+CSRF_TRUSTED_ORIGINS += env.list('EXTRA_CSRF_TRUSTED_ORIGINS', default=[])
 STATIC_ROOT = BASE_DIR / 'static'
 
 # Application definition
@@ -47,25 +54,25 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    "debug_toolbar",
-    'django_browser_reload',
     'mythgarden.apps.MythgardenConfig',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    "debug_toolbar.middleware.DebugToolbarMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    "django_browser_reload.middleware.BrowserReloadMiddleware",
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
 ROOT_URLCONF = 'mythsite.urls'
+
+if DEBUG:
+    INSTALLED_APPS += ['debug_toolbar', 'django_browser_reload']
+    MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware', 'django_browser_reload.middleware.BrowserReloadMiddleware']
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
@@ -81,7 +88,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'django_settings_export.settings_export',
             ],
         },
     },
@@ -90,22 +96,26 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'mythsite.wsgi.application'
 
-if DEBUG:
-    STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
-else:
-    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STORAGES = {
+    'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
+    'staticfiles': {'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage' if DEBUG else 'whitenoise.storage.CompressedManifestStaticFilesStorage'},
+}
 
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
 SECURE_SSL_REDIRECT = env('SECURE_SSL_REDIRECT')
+SECURE_REDIRECT_EXEMPT = [r'^healthz$']
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_HSTS_SECONDS = 3600 if not DEBUG else 0
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-DATABASES = {
-    'default': env.db('DATABASE_URL', default='sqlite:///db.sqlite3'),
-}
+if env.bool('RENDER', default=False) and not env('DATABASE_URL', default=''):
+    raise ImproperlyConfigured('Render requires DATABASE_URL; ephemeral SQLite would lose player saves.')
+DATABASES = {'default': env.db('DATABASE_URL', default='sqlite:///db.sqlite3')}
+DATABASES['default']['CONN_MAX_AGE'] = 60
+DATABASES['default']['CONN_HEALTH_CHECKS'] = True
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -139,14 +149,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-TEST_RUNNER = "redgreenunittest.django.runner.RedGreenDiscoverRunner"
+TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
 INTERNAL_IPS = [
     "127.0.0.1",

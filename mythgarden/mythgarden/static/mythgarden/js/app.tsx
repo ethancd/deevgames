@@ -324,7 +324,7 @@ class App extends React.Component<Partial<AppProps>, AppState> {
             <Hero {...hero} achievementsCount={achievements.length} totalAchievements={TOTAL_ACHIEVEMENTS}></Hero>
             <Gallery {...{show: showGallery, currentPortraitUrl: hero.imageUrl, portraitUrls} }></Gallery>
             <AchievementsList show={showAchievementsList} achievements={achievements} totalAchievements={TOTAL_ACHIEVEMENTS}></AchievementsList>
-            <button className="hamburger-button" onClick={() => this.showSettingsMenu()}>☰</button>
+            <button className="hamburger-button" aria-label="Open settings" onClick={e => { e.stopPropagation(); this.showSettingsMenu() }}>☰</button>
             <DeployInfo branchName={branchName} deployTime={deployTime} />
             <SettingsMenu
               show={showSettingsMenu}

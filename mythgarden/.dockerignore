@@ -3,3 +3,12 @@ fly.toml
 *.sqlite3
 node_modules/
 venv/
+.venv/
+.env
+.env.*
+static/
+**/__pycache__/
+**/*.pyc
+docs/
+specs/
+mythgarden/static/mythgarden/dist/
