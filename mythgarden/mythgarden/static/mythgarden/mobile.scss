@@ -19,7 +19,7 @@
   }
   #score { font-size: 11px; .total-score { font-size: 20px; } }
   #high-score { position: static; font-size: 11px; }
-  #top-bar > .column { align-self: end; }
+  #top-bar > .column { align-self: end; padding-right: 0; }
   #clock { flex-direction: column; font-size: 16px; gap: 2px; margin: 0; }
   #boost, #luck-percent { font-size: 12px; position: static; }
   #sky-container { width: 100%; height: 100%; top: 0; overflow: hidden; pointer-events: none; }

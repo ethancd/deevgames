@@ -487,6 +487,8 @@ $icon-dark-mode-drop-shadow-expression: drop-shadow(0 0 $fine-shadow-distance #f
   margin-bottom: 1vh;
   position: relative;
   width: 100%;
+
+  > .column { padding-right: 92px; }
 }
 
 #hero {
