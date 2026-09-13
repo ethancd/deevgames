@@ -1,0 +1,777 @@
+{
+  "fixture": "Codex–Claude, 2026-09-12",
+  "recordingStart": {
+    "revision": 5,
+    "turnNumber": 3,
+    "player": "white",
+    "complete": false
+  },
+  "runtime": "v24.11.1",
+  "note": "Cold service calls, same process; tokenizer-independent token estimate = UTF-8 bytes / 4. Wall time includes serialization-independent engine work. Timing cutoffs can vary by host.",
+  "measurements": [
+    {
+      "revision": 13,
+      "layer": "headline",
+      "units": 21,
+      "elapsedMs": 2.36,
+      "bytes": 1259,
+      "estimatedTokens": 315,
+      "search": {
+        "completeness": "bounded",
+        "nodes": 3,
+        "maxNodes": 160,
+        "maxMs": 15,
+        "elapsedMs": 2.1,
+        "cutoffReason": null,
+        "subsearchCutoffs": [],
+        "omittedCaseClasses": [
+          "combinations",
+          "spending",
+          "nondefault upkeep",
+          "unlisted threats"
+        ],
+        "collapsed": 0
+      }
+    },
+    {
+      "revision": 13,
+      "layer": "briefing",
+      "units": 21,
+      "elapsedMs": 45.26,
+      "bytes": 4247,
+      "estimatedTokens": 1062,
+      "search": {
+        "completeness": "bounded",
+        "nodes": 207,
+        "maxNodes": 900,
+        "maxMs": 65,
+        "elapsedMs": 44.9,
+        "cutoffReason": null,
+        "subsearchCutoffs": [
+          "time_limit"
+        ],
+        "omittedCaseClasses": [
+          "multi-attacker combinations",
+          "unlisted units and lines",
+          "alternate upkeep",
+          "searched recaptures",
+          "sealed-region details"
+        ],
+        "collapsed": 88
+      },
+      "output": {
+        "targetBytes": 6000,
+        "omittedSections": [],
+        "overBudget": false
+      }
+    },
+    {
+      "revision": 13,
+      "layer": "focused",
+      "units": 21,
+      "elapsedMs": 22.34,
+      "bytes": 10886,
+      "estimatedTokens": 2722,
+      "search": {
+        "completeness": "bounded",
+        "nodes": 298,
+        "maxNodes": 2000,
+        "maxMs": 150,
+        "elapsedMs": 21.7,
+        "cutoffReason": null,
+        "subsearchCutoffs": [],
+        "omittedCaseClasses": [
+          "See per-target scope and search metadata; absence of a witness is not safety."
+        ],
+        "collapsed": 142
+      },
+      "output": {
+        "targetBytes": 24000,
+        "omittedSections": [],
+        "overBudget": false
+      }
+    },
+    {
+      "revision": 13,
+      "layer": "deep",
+      "units": 21,
+      "elapsedMs": 21.98,
+      "bytes": 15888,
+      "estimatedTokens": 3972,
+      "search": {
+        "completeness": "bounded",
+        "nodes": 304,
+        "maxNodes": 2000,
+        "maxMs": 150,
+        "elapsedMs": 21.5,
+        "cutoffReason": null,
+        "subsearchCutoffs": [],
+        "omittedCaseClasses": [
+          "See per-target scope and search metadata; absence of a witness is not safety."
+        ],
+        "collapsed": 142
+      },
+      "output": {
+        "targetBytes": 120000,
+        "omittedSections": [],
+        "overBudget": false
+      }
+    },
+    {
+      "revision": 19,
+      "layer": "headline",
+      "units": 33,
+      "elapsedMs": 1.07,
+      "bytes": 1257,
+      "estimatedTokens": 315,
+      "search": {
+        "completeness": "bounded",
+        "nodes": 3,
+        "maxNodes": 160,
+        "maxMs": 15,
+        "elapsedMs": 1,
+        "cutoffReason": null,
+        "subsearchCutoffs": [],
+        "omittedCaseClasses": [
+          "combinations",
+          "spending",
+          "nondefault upkeep",
+          "unlisted threats"
+        ],
+        "collapsed": 0
+      }
+    },
+    {
+      "revision": 19,
+      "layer": "briefing",
+      "units": 33,
+      "elapsedMs": 66.99,
+      "bytes": 5489,
+      "estimatedTokens": 1373,
+      "search": {
+        "completeness": "bounded",
+        "nodes": 254,
+        "maxNodes": 900,
+        "maxMs": 65,
+        "elapsedMs": 66.7,
+        "cutoffReason": "time_limit",
+        "subsearchCutoffs": [
+          "time_limit"
+        ],
+        "omittedCaseClasses": [
+          "multi-attacker combinations",
+          "unlisted units and lines",
+          "alternate upkeep",
+          "searched recaptures",
+          "sealed-region details"
+        ],
+        "collapsed": 96
+      },
+      "output": {
+        "targetBytes": 6000,
+        "omittedSections": [
+          "mobility",
+          "matchups"
+        ],
+        "overBudget": false
+      }
+    },
+    {
+      "revision": 19,
+      "layer": "focused",
+      "units": 33,
+      "elapsedMs": 46.95,
+      "bytes": 11521,
+      "estimatedTokens": 2881,
+      "search": {
+        "completeness": "bounded",
+        "nodes": 382,
+        "maxNodes": 2000,
+        "maxMs": 150,
+        "elapsedMs": 46.5,
+        "cutoffReason": null,
+        "subsearchCutoffs": [],
+        "omittedCaseClasses": [
+          "See per-target scope and search metadata; absence of a witness is not safety."
+        ],
+        "collapsed": 224
+      },
+      "output": {
+        "targetBytes": 24000,
+        "omittedSections": [],
+        "overBudget": false
+      }
+    },
+    {
+      "revision": 19,
+      "layer": "deep",
+      "units": 33,
+      "elapsedMs": 53.11,
+      "bytes": 18981,
+      "estimatedTokens": 4746,
+      "search": {
+        "completeness": "bounded",
+        "nodes": 403,
+        "maxNodes": 2000,
+        "maxMs": 150,
+        "elapsedMs": 52.6,
+        "cutoffReason": null,
+        "subsearchCutoffs": [],
+        "omittedCaseClasses": [
+          "See per-target scope and search metadata; absence of a witness is not safety."
+        ],
+        "collapsed": 224
+      },
+      "output": {
+        "targetBytes": 120000,
+        "omittedSections": [],
+        "overBudget": false
+      }
+    },
+    {
+      "revision": 23,
+      "layer": "headline",
+      "units": 35,
+      "elapsedMs": 1.06,
+      "bytes": 1271,
+      "estimatedTokens": 318,
+      "search": {
+        "completeness": "bounded",
+        "nodes": 2,
+        "maxNodes": 160,
+        "maxMs": 15,
+        "elapsedMs": 1,
+        "cutoffReason": null,
+        "subsearchCutoffs": [],
+        "omittedCaseClasses": [
+          "combinations",
+          "spending",
+          "nondefault upkeep",
+          "unlisted threats"
+        ],
+        "collapsed": 0
+      }
+    },
+    {
+      "revision": 23,
+      "layer": "briefing",
+      "units": 35,
+      "elapsedMs": 66.58,
+      "bytes": 5309,
+      "estimatedTokens": 1328,
+      "search": {
+        "completeness": "bounded",
+        "nodes": 260,
+        "maxNodes": 900,
+        "maxMs": 65,
+        "elapsedMs": 66.4,
+        "cutoffReason": "time_limit",
+        "subsearchCutoffs": [
+          "time_limit"
+        ],
+        "omittedCaseClasses": [
+          "multi-attacker combinations",
+          "unlisted units and lines",
+          "alternate upkeep",
+          "searched recaptures",
+          "sealed-region details"
+        ],
+        "collapsed": 85
+      },
+      "output": {
+        "targetBytes": 6000,
+        "omittedSections": [
+          "mobility",
+          "matchups"
+        ],
+        "overBudget": false
+      }
+    },
+    {
+      "revision": 23,
+      "layer": "focused",
+      "units": 35,
+      "elapsedMs": 29.95,
+      "bytes": 11168,
+      "estimatedTokens": 2792,
+      "search": {
+        "completeness": "bounded",
+        "nodes": 191,
+        "maxNodes": 2000,
+        "maxMs": 150,
+        "elapsedMs": 29.6,
+        "cutoffReason": null,
+        "subsearchCutoffs": [],
+        "omittedCaseClasses": [
+          "See per-target scope and search metadata; absence of a witness is not safety."
+        ],
+        "collapsed": 105
+      },
+      "output": {
+        "targetBytes": 24000,
+        "omittedSections": [],
+        "overBudget": false
+      }
+    },
+    {
+      "revision": 23,
+      "layer": "deep",
+      "units": 35,
+      "elapsedMs": 30.99,
+      "bytes": 15938,
+      "estimatedTokens": 3985,
+      "search": {
+        "completeness": "bounded",
+        "nodes": 206,
+        "maxNodes": 2000,
+        "maxMs": 150,
+        "elapsedMs": 30.5,
+        "cutoffReason": null,
+        "subsearchCutoffs": [],
+        "omittedCaseClasses": [
+          "See per-target scope and search metadata; absence of a witness is not safety."
+        ],
+        "collapsed": 115
+      },
+      "output": {
+        "targetBytes": 120000,
+        "omittedSections": [],
+        "overBudget": false
+      }
+    },
+    {
+      "revision": 29,
+      "layer": "headline",
+      "units": 32,
+      "elapsedMs": 1.14,
+      "bytes": 1250,
+      "estimatedTokens": 313,
+      "search": {
+        "completeness": "bounded",
+        "nodes": 4,
+        "maxNodes": 160,
+        "maxMs": 15,
+        "elapsedMs": 1.1,
+        "cutoffReason": null,
+        "subsearchCutoffs": [],
+        "omittedCaseClasses": [
+          "combinations",
+          "spending",
+          "nondefault upkeep",
+          "unlisted threats"
+        ],
+        "collapsed": 0
+      }
+    },
+    {
+      "revision": 29,
+      "layer": "briefing",
+      "units": 32,
+      "elapsedMs": 60.77,
+      "bytes": 5211,
+      "estimatedTokens": 1303,
+      "search": {
+        "completeness": "bounded",
+        "nodes": 215,
+        "maxNodes": 900,
+        "maxMs": 65,
+        "elapsedMs": 60.6,
+        "cutoffReason": null,
+        "subsearchCutoffs": [
+          "time_limit"
+        ],
+        "omittedCaseClasses": [
+          "multi-attacker combinations",
+          "unlisted units and lines",
+          "alternate upkeep",
+          "searched recaptures",
+          "sealed-region details"
+        ],
+        "collapsed": 74
+      },
+      "output": {
+        "targetBytes": 6000,
+        "omittedSections": [],
+        "overBudget": false
+      }
+    },
+    {
+      "revision": 29,
+      "layer": "focused",
+      "units": 32,
+      "elapsedMs": 6.27,
+      "bytes": 5972,
+      "estimatedTokens": 1493,
+      "search": {
+        "completeness": "bounded",
+        "nodes": 44,
+        "maxNodes": 2000,
+        "maxMs": 150,
+        "elapsedMs": 5.9,
+        "cutoffReason": null,
+        "subsearchCutoffs": [],
+        "omittedCaseClasses": [
+          "See per-target scope and search metadata; absence of a witness is not safety."
+        ],
+        "collapsed": 12
+      },
+      "output": {
+        "targetBytes": 24000,
+        "omittedSections": [],
+        "overBudget": false
+      }
+    },
+    {
+      "revision": 29,
+      "layer": "deep",
+      "units": 32,
+      "elapsedMs": 23.91,
+      "bytes": 11440,
+      "estimatedTokens": 2860,
+      "search": {
+        "completeness": "bounded",
+        "nodes": 94,
+        "maxNodes": 2000,
+        "maxMs": 150,
+        "elapsedMs": 23.4,
+        "cutoffReason": null,
+        "subsearchCutoffs": [],
+        "omittedCaseClasses": [
+          "See per-target scope and search metadata; absence of a witness is not safety."
+        ],
+        "collapsed": 16
+      },
+      "output": {
+        "targetBytes": 120000,
+        "omittedSections": [],
+        "overBudget": false
+      }
+    },
+    {
+      "revision": 31,
+      "layer": "headline",
+      "units": 31,
+      "elapsedMs": 0.87,
+      "bytes": 1250,
+      "estimatedTokens": 313,
+      "search": {
+        "completeness": "bounded",
+        "nodes": 2,
+        "maxNodes": 160,
+        "maxMs": 15,
+        "elapsedMs": 0.8,
+        "cutoffReason": null,
+        "subsearchCutoffs": [],
+        "omittedCaseClasses": [
+          "combinations",
+          "spending",
+          "nondefault upkeep",
+          "unlisted threats"
+        ],
+        "collapsed": 0
+      }
+    },
+    {
+      "revision": 31,
+      "layer": "briefing",
+      "units": 31,
+      "elapsedMs": 55.5,
+      "bytes": 5341,
+      "estimatedTokens": 1336,
+      "search": {
+        "completeness": "bounded",
+        "nodes": 262,
+        "maxNodes": 900,
+        "maxMs": 65,
+        "elapsedMs": 55.3,
+        "cutoffReason": null,
+        "subsearchCutoffs": [
+          "time_limit"
+        ],
+        "omittedCaseClasses": [
+          "multi-attacker combinations",
+          "unlisted units and lines",
+          "alternate upkeep",
+          "searched recaptures",
+          "sealed-region details"
+        ],
+        "collapsed": 107
+      },
+      "output": {
+        "targetBytes": 6000,
+        "omittedSections": [],
+        "overBudget": false
+      }
+    },
+    {
+      "revision": 31,
+      "layer": "focused",
+      "units": 31,
+      "elapsedMs": 7.27,
+      "bytes": 5446,
+      "estimatedTokens": 1362,
+      "search": {
+        "completeness": "bounded",
+        "nodes": 50,
+        "maxNodes": 2000,
+        "maxMs": 150,
+        "elapsedMs": 7,
+        "cutoffReason": null,
+        "subsearchCutoffs": [],
+        "omittedCaseClasses": [
+          "See per-target scope and search metadata; absence of a witness is not safety."
+        ],
+        "collapsed": 29
+      },
+      "output": {
+        "targetBytes": 24000,
+        "omittedSections": [],
+        "overBudget": false
+      }
+    },
+    {
+      "revision": 31,
+      "layer": "deep",
+      "units": 31,
+      "elapsedMs": 150.62,
+      "bytes": 12919,
+      "estimatedTokens": 3230,
+      "search": {
+        "completeness": "bounded",
+        "nodes": 248,
+        "maxNodes": 2000,
+        "maxMs": 150,
+        "elapsedMs": 150.3,
+        "cutoffReason": null,
+        "subsearchCutoffs": [
+          "time_limit"
+        ],
+        "omittedCaseClasses": [
+          "See per-target scope and search metadata; absence of a witness is not safety."
+        ],
+        "collapsed": 29
+      },
+      "output": {
+        "targetBytes": 120000,
+        "omittedSections": [],
+        "overBudget": false
+      }
+    },
+    {
+      "revision": 32,
+      "layer": "headline",
+      "units": 31,
+      "elapsedMs": 0.76,
+      "bytes": 1253,
+      "estimatedTokens": 314,
+      "search": {
+        "completeness": "bounded",
+        "nodes": 1,
+        "maxNodes": 160,
+        "maxMs": 15,
+        "elapsedMs": 0.7,
+        "cutoffReason": null,
+        "subsearchCutoffs": [],
+        "omittedCaseClasses": [
+          "combinations",
+          "spending",
+          "nondefault upkeep",
+          "unlisted threats"
+        ],
+        "collapsed": 0
+      }
+    },
+    {
+      "revision": 32,
+      "layer": "briefing",
+      "units": 31,
+      "elapsedMs": 66.46,
+      "bytes": 5122,
+      "estimatedTokens": 1281,
+      "search": {
+        "completeness": "bounded",
+        "nodes": 278,
+        "maxNodes": 900,
+        "maxMs": 65,
+        "elapsedMs": 66.3,
+        "cutoffReason": "time_limit",
+        "subsearchCutoffs": [
+          "time_limit"
+        ],
+        "omittedCaseClasses": [
+          "multi-attacker combinations",
+          "unlisted units and lines",
+          "alternate upkeep",
+          "searched recaptures",
+          "sealed-region details"
+        ],
+        "collapsed": 121
+      },
+      "output": {
+        "targetBytes": 6000,
+        "omittedSections": [],
+        "overBudget": false
+      }
+    },
+    {
+      "revision": 32,
+      "layer": "focused",
+      "units": 31,
+      "elapsedMs": 5.3,
+      "bytes": 4857,
+      "estimatedTokens": 1215,
+      "search": {
+        "completeness": "bounded",
+        "nodes": 12,
+        "maxNodes": 2000,
+        "maxMs": 150,
+        "elapsedMs": 5.1,
+        "cutoffReason": null,
+        "subsearchCutoffs": [],
+        "omittedCaseClasses": [
+          "See per-target scope and search metadata; absence of a witness is not safety."
+        ],
+        "collapsed": 7
+      },
+      "output": {
+        "targetBytes": 24000,
+        "omittedSections": [],
+        "overBudget": false
+      }
+    },
+    {
+      "revision": 32,
+      "layer": "deep",
+      "units": 31,
+      "elapsedMs": 150.68,
+      "bytes": 10350,
+      "estimatedTokens": 2588,
+      "search": {
+        "completeness": "bounded",
+        "nodes": 289,
+        "maxNodes": 2000,
+        "maxMs": 150,
+        "elapsedMs": 150.3,
+        "cutoffReason": null,
+        "subsearchCutoffs": [
+          "time_limit"
+        ],
+        "omittedCaseClasses": [
+          "See per-target scope and search metadata; absence of a witness is not safety."
+        ],
+        "collapsed": 7
+      },
+      "output": {
+        "targetBytes": 120000,
+        "omittedSections": [],
+        "overBudget": false
+      }
+    },
+    {
+      "revision": 33,
+      "layer": "headline",
+      "units": 31,
+      "elapsedMs": 0.83,
+      "bytes": 1246,
+      "estimatedTokens": 312,
+      "search": {
+        "completeness": "bounded",
+        "nodes": 4,
+        "maxNodes": 160,
+        "maxMs": 15,
+        "elapsedMs": 0.7,
+        "cutoffReason": null,
+        "subsearchCutoffs": [],
+        "omittedCaseClasses": [
+          "combinations",
+          "spending",
+          "nondefault upkeep",
+          "unlisted threats"
+        ],
+        "collapsed": 0
+      }
+    },
+    {
+      "revision": 33,
+      "layer": "briefing",
+      "units": 31,
+      "elapsedMs": 55.63,
+      "bytes": 5237,
+      "estimatedTokens": 1310,
+      "search": {
+        "completeness": "bounded",
+        "nodes": 421,
+        "maxNodes": 900,
+        "maxMs": 65,
+        "elapsedMs": 55.5,
+        "cutoffReason": null,
+        "subsearchCutoffs": [],
+        "omittedCaseClasses": [
+          "multi-attacker combinations",
+          "unlisted units and lines",
+          "alternate upkeep",
+          "searched recaptures",
+          "sealed-region details"
+        ],
+        "collapsed": 236
+      },
+      "output": {
+        "targetBytes": 6000,
+        "omittedSections": [],
+        "overBudget": false
+      }
+    },
+    {
+      "revision": 33,
+      "layer": "focused",
+      "units": 31,
+      "elapsedMs": 2.69,
+      "bytes": 5146,
+      "estimatedTokens": 1287,
+      "search": {
+        "completeness": "bounded",
+        "nodes": 23,
+        "maxNodes": 2000,
+        "maxMs": 150,
+        "elapsedMs": 2.4,
+        "cutoffReason": null,
+        "subsearchCutoffs": [],
+        "omittedCaseClasses": [
+          "See per-target scope and search metadata; absence of a witness is not safety."
+        ],
+        "collapsed": 13
+      },
+      "output": {
+        "targetBytes": 24000,
+        "omittedSections": [],
+        "overBudget": false
+      }
+    },
+    {
+      "revision": 33,
+      "layer": "deep",
+      "units": 31,
+      "elapsedMs": 4.51,
+      "bytes": 13085,
+      "estimatedTokens": 3272,
+      "search": {
+        "completeness": "bounded",
+        "nodes": 24,
+        "maxNodes": 2000,
+        "maxMs": 150,
+        "elapsedMs": 4.2,
+        "cutoffReason": null,
+        "subsearchCutoffs": [],
+        "omittedCaseClasses": [
+          "See per-target scope and search metadata; absence of a witness is not safety."
+        ],
+        "collapsed": 13
+      },
+      "output": {
+        "targetBytes": 120000,
+        "omittedSections": [],
+        "overBudget": false
+      }
+    }
+  ]
+}

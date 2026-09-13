@@ -1,0 +1,288 @@
+{
+  "roomId": "0a56f850c8050113da84aefac5007810",
+  "revision": 19,
+  "perspective": "white",
+  "turn": {
+    "currentPlayer": "white",
+    "phase": "place",
+    "actionsRemaining": 4,
+    "turnNumber": 10
+  },
+  "phase": "place",
+  "stateKind": "current",
+  "hypothetical": {
+    "actions": [],
+    "assumptions": [
+      "Stay-in-place economy; next-turn threats use engine handoff; no opponent future harvest."
+    ]
+  },
+  "sections": {
+    "economy": {
+      "white": {
+        "treasury": 40,
+        "harvest": 16,
+        "upkeep": 0,
+        "harvestTrend": [
+          16,
+          14,
+          6
+        ],
+        "next": "harvest:56",
+        "nextUpkeepShortfall": 0,
+        "shortfallIn": null
+      },
+      "black": {
+        "treasury": 23,
+        "harvest": 4,
+        "upkeep": 6,
+        "harvestTrend": [
+          4,
+          3,
+          0
+        ],
+        "next": "upkeep:17",
+        "nextUpkeepShortfall": 0,
+        "shortfallIn": null
+      }
+    },
+    "forecastStop": "terminal:inactivity",
+    "miners": [
+      "white_water_1_1789244664000_chhc5@B6 take2/left6/harvests3/upkeep0",
+      "white_plant_1_1789244664000_9gop2@A1 take0/left0/harvests0/upkeep0",
+      "unit-white-3-0@G3 take0/left0/harvests0/upkeep0",
+      "unit-white-4-0@B2 take0/left0/harvests0/upkeep0",
+      "unit-white-5-1@E3 take0/left0/harvests0/upkeep0",
+      "unit-white-5-2@A3 take0/left0/harvests0/upkeep0",
+      "unit-white-5-3@C1 take0/left0/harvests0/upkeep0",
+      "unit-white-6-0@A4 take0/left0/harvests0/upkeep0",
+      "unit-white-6-1@F1 take0/left0/harvests0/upkeep0",
+      "unit-white-6-2@C3 take1/left1/harvests1/upkeep0",
+      "unit-white-7-0@A5 take0/left0/harvests0/upkeep0",
+      "unit-white-7-1@C4 take1/left1/harvests1/upkeep0",
+      "unit-white-7-2@C2 take0/left0/harvests0/upkeep0",
+      "unit-white-8-0@F3 take0/left0/harvests0/upkeep0",
+      "unit-white-9-0@B8 take3/left7/harvests3/upkeep0",
+      "unit-white-9-1@C8 take3/left7/harvests3/upkeep0",
+      "unit-white-9-2@B9 take3/left7/harvests3/upkeep0",
+      "unit-white-9-3@C9 take3/left7/harvests3/upkeep0"
+    ],
+    "spawn": [
+      {
+        "player": "white",
+        "count": 21,
+        "squares": "B1,A2,B3,B4,B5,A6,D1,E1,G1,D2,E2,F2,G2,D3,A7,B7,A8,C5,C6,C7,A9",
+        "blocked": []
+      },
+      {
+        "player": "black",
+        "count": 15,
+        "squares": "J3,I4,J4,I9,J9,I10,H6,G7,H7,G8,G9,G10,F9,E10,F10",
+        "blocked": []
+      }
+    ],
+    "threats": [
+      {
+        "target": "white_water_1_1789244664000_chhc5",
+        "kill": "proven_possible",
+        "lines": [
+          "unit-black-7-3 → B7, 3+1 AP/0 crystals, dmg 3 vs def 2, kill, retreat 0"
+        ]
+      },
+      {
+        "target": "unit-white-3-0",
+        "kill": "proven_possible",
+        "lines": [
+          "+fire_1@J3 → G2, 2+1 AP/3 crystals, dmg 3 vs def 3, kill, retreat 9"
+        ]
+      },
+      {
+        "target": "unit-white-4-0",
+        "kill": "unknown",
+        "lines": [
+          "+lightning_1@H6 → B3, 3+1 AP/3 crystals, dmg 2 vs def 3, damage, retreat 0"
+        ]
+      },
+      {
+        "target": "unit-white-5-1",
+        "kill": "proven_possible",
+        "lines": [
+          "black_water_1_1789244664000_dv6x2 → E2, 3+1 AP/0 crystals, dmg 3 vs def 2, kill, retreat 0"
+        ]
+      },
+      {
+        "target": "unit-white-5-2",
+        "kill": "unknown",
+        "lines": [
+          "+lightning_1@H6 → B3, 3+1 AP/3 crystals, dmg 2 vs def 3, damage, retreat 0"
+        ]
+      },
+      {
+        "target": "unit-white-5-3",
+        "kill": "unknown",
+        "lines": [
+          "+lightning_1@J3 → D1, 3+1 AP/3 crystals, dmg 2 vs def 3, damage, retreat 0"
+        ]
+      },
+      {
+        "target": "unit-white-6-0",
+        "kill": "unknown",
+        "lines": [
+          "+lightning_1@I4 → B4, 3+1 AP/3 crystals, dmg 2 vs def 3, damage, retreat 0"
+        ]
+      },
+      {
+        "target": "unit-white-6-1",
+        "kill": "proven_possible",
+        "lines": [
+          "+fire_1@J3 → F2, 3+1 AP/3 crystals, dmg 3 vs def 3, kill, retreat 0"
+        ]
+      },
+      {
+        "target": "unit-white-6-2",
+        "kill": "proven_possible",
+        "lines": [
+          "+fire_1@I4 → D3, 3+1 AP/3 crystals, dmg 3 vs def 3, kill, retreat 0"
+        ]
+      },
+      {
+        "target": "unit-white-7-0",
+        "kill": "unknown",
+        "lines": [
+          "+lightning_1@H6 → A6, 3+1 AP/3 crystals, dmg 2 vs def 3, damage, retreat 0"
+        ]
+      },
+      {
+        "target": "unit-white-7-1",
+        "kill": "proven_possible",
+        "lines": [
+          "+fire_1@I4 → D4, 3+1 AP/3 crystals, dmg 3 vs def 3, kill, retreat 0"
+        ]
+      },
+      {
+        "target": "unit-white-7-2",
+        "kill": "unknown",
+        "lines": [
+          "black_water_1_1789244664000_dv6x2 → D2, 3+1 AP/0 crystals, dmg 2 vs def 3, damage, retreat 0"
+        ]
+      },
+      {
+        "target": "unit-white-8-0",
+        "kill": "proven_possible",
+        "lines": [
+          "+fire_1@I4 → F4, 2+1 AP/3 crystals, dmg 3 vs def 3, kill, retreat 10"
+        ]
+      },
+      {
+        "target": "unit-white-9-0",
+        "kill": "proven_possible",
+        "lines": [
+          "+fire_1@G8 → B7, 3+1 AP/3 crystals, dmg 3 vs def 3, kill, retreat 0"
+        ]
+      },
+      {
+        "target": "unit-white-9-1",
+        "kill": "proven_possible",
+        "lines": [
+          "+fire_1@G8 → D8, 2+1 AP/3 crystals, dmg 3 vs def 3, kill, retreat 9"
+        ]
+      },
+      {
+        "target": "unit-white-9-2",
+        "kill": "proven_possible",
+        "lines": [
+          "+fire_1@E10 → B10, 2+1 AP/3 crystals, dmg 3 vs def 3, kill, retreat 5"
+        ]
+      },
+      {
+        "target": "unit-white-9-3",
+        "kill": "proven_possible",
+        "lines": [
+          "+fire_1@E10 → C10, 1+1 AP/3 crystals, dmg 3 vs def 3, kill, retreat 14"
+        ]
+      }
+    ],
+    "opportunities": [
+      "unit-white-5-1 → H6, 3+1 AP/0 crystals, dmg 2 vs def 2, kill, retreat 0",
+      "+fire_1@G2 → I4, 2+1 AP/3 crystals, dmg 3 vs def 3, kill, retreat 7"
+    ],
+    "urgent": [
+      "threatNextTurn:white_water_1_1789244664000_chhc5",
+      "captureNow:unit-black-4-1"
+    ]
+  },
+  "search": {
+    "completeness": "bounded",
+    "nodes": 254,
+    "maxNodes": 900,
+    "maxMs": 65,
+    "elapsedMs": 66.7,
+    "cutoffReason": "time_limit",
+    "subsearchCutoffs": [
+      "time_limit"
+    ],
+    "omittedCaseClasses": [
+      "multi-attacker combinations",
+      "unlisted units and lines",
+      "alternate upkeep",
+      "searched recaptures",
+      "sealed-region details"
+    ],
+    "collapsed": 96
+  },
+  "next": [
+    {
+      "tool": "muju_analyze",
+      "arguments": {
+        "roomId": "0a56f850c8050113da84aefac5007810",
+        "expectedRevision": 19,
+        "player": "white",
+        "topics": [
+          "threats"
+        ],
+        "targets": {
+          "unitIds": [
+            "white_water_1_1789244664000_chhc5",
+            "unit-white-3-0"
+          ]
+        },
+        "deep": true,
+        "detail": "full"
+      }
+    },
+    {
+      "tool": "muju_analyze",
+      "arguments": {
+        "roomId": "0a56f850c8050113da84aefac5007810",
+        "expectedRevision": 19,
+        "player": "white",
+        "topics": [
+          "economy",
+          "mobility"
+        ],
+        "detail": "full"
+      }
+    },
+    {
+      "tool": "muju_analyze",
+      "arguments": {
+        "roomId": "0a56f850c8050113da84aefac5007810",
+        "expectedRevision": 19,
+        "player": "white",
+        "topics": [
+          "mobility",
+          "matchups"
+        ],
+        "detail": "full",
+        "limit": 1
+      }
+    }
+  ],
+  "output": {
+    "targetBytes": 6000,
+    "omittedSections": [
+      "mobility",
+      "matchups"
+    ],
+    "overBudget": false
+  }
+}

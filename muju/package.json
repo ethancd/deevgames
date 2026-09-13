@@ -27,6 +27,7 @@
     "serve": "node --import tsx server/index.ts",
     "mcp": "node --import tsx server/stdio.ts",
     "server:types": "tsc -p server/tsconfig.json",
+    "analysis:bench": "node --import tsx tools/benchmark-analysis.ts docs/analysis-benchmark",
     "test:online": "vitest run tests/server",
     "test:online:e2e": "playwright test --config playwright.online.config.ts"
   },

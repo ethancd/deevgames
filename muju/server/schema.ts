@@ -24,6 +24,19 @@ export const actionRequestSchema = z.object({
   requestId: z.string().min(8).max(100),
   actions: z.array(actionSchema).min(1).max(32),
 }).strict();
+export const stageVersionSchema = z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER);
+export const stageIdSchema = z.string().regex(/^[a-f0-9]{32}$/);
+export const stageRequestSchema = z.object({
+  requestId: actionRequestSchema.shape.requestId,
+  expectedTurnNumber: z.number().int().positive(),
+  expectedStageVersion: stageVersionSchema,
+  commitWhenRemainingMs: z.number().int().positive().max(15000000)
+    .describe('Total milliseconds until flag-fall (delay plus bank). Positive, no greater than this turn’s starting allowance. Already due fires now; 5000 can spend almost your entire bank.'),
+  actions: actionRequestSchema.shape.actions,
+  fallbacks: z.array(actionRequestSchema.shape.actions).max(3).default([])
+    .describe('Up to three complete fallback batches, tried in exactly this order after the primary batch.'),
+}).strict();
+export const cancelStageSchema = stageRequestSchema.pick({ requestId: true, expectedTurnNumber: true, expectedStageVersion: true });
 export const createSchema = z.object({ name: nameSchema, side: z.enum(['white', 'black']).default('white'),
   actionsPerTurn: z.literal(4).default(4),
   timeControl: z.union([

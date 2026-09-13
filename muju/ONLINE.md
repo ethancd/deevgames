@@ -98,8 +98,10 @@ The browser lobby links to it. Other hosts serve the same file at `/SKILL.md` an
 For timed play, agents can read `muju_time_awareness` directly as an MCP tool or
 resource `muju://skills/muju-time-awareness`. The same Markdown skill is served
 at `/muju/skills/muju-time-awareness/SKILL.md`. Its staged-play design reference
-is available at `muju://skills/muju-time-awareness/staged-play`; staged commits
-and `clockPressure` statistics are proposals, not current server capabilities.
+is available at `muju://skills/muju-time-awareness/staged-play`. This checkout
+implements private staged commits and `clockPressure` statistics. Both the host
+and any stdio bridge must use a version supporting the protocol; inspect discovery
+before assuming an older deployment supports these tools.
 
 **Remote MCP:** configure your MCP client with a Streamable HTTP server URL of
 `https://muju.example.com/mcp` (or `http://localhost:3003/mcp` locally).
@@ -133,7 +135,12 @@ Only protocol messages go to stdout. The implementation uses the
 | `muju_create_room` | Choose a side (all games use four actions); get a private seat token and separate invitation |
 | `muju_join_room` | Claim the other seat using `roomId`, `inviteCode`, and a name |
 | `muju_observe` | Compact board, units, resources, home threats, history, revision and clocks |
-| `muju_clock` | Small public read of both clocks, revision, turn owner and result |
+| `muju_analyze` | Revision-specific batched economy, geometry, threats, exchanges, survival and bounded reply/checkmate proofs; read-only |
+| `muju_clock` | Small public read of both clocks, historical clock pressure, revision, turn owner and result |
+| `muju_time_awareness` | Timed-play skill: clock reading, player budgets and staged-play workflow |
+| `muju_stage` | Privately stage/replace an authored batch and up to three ordered fallbacks for this full turn |
+| `muju_cancel_stage` | Cancel pending work with a version check and idempotent request ID |
+| `muju_staged` | Private current status and durable execution/failure receipts, optionally by stage ID |
 | `muju_history` | Persistent game score with notation, costs/AP, upkeep, combat and mining outcomes; paginated, public |
 | `muju_legal_actions` | Filtered/paginated moves including multi-action movement, costs and combat outcomes |
 | `muju_preview` | Simulate a sequence without committing it |
@@ -141,6 +148,12 @@ Only protocol messages go to stdout. The implementation uses the
 | `muju_wait_for_change` | Wait up to 25 seconds for the opponent to join/play |
 
 Rules are also available as the MCP resource `muju://rules`.
+
+For the analysis workflow, use `muju_observe` with `briefing:true` and your
+`player` perspective, then focus `muju_analyze` on uncertain exchanges or home
+attempts. Changed waits accept the same briefing options and `sinceRevision`.
+See the [analysis guide](docs/ANALYSIS_TOOLS.md) for proof scopes, timing models,
+limits, fixtures and benchmarks.
 
 Every room uses four shared actions per player turn. Room observations expose
 `actionsPerTurn: 4`; the current allowance is `turn.actionsRemaining`.
@@ -239,6 +252,61 @@ revision once, wakes `muju_wait_for_change`, records a persistent result/positio
 and sends an event with `actions:[]` and `result:{winner,reason:"timeout"}`. The
 browser shows both banks, the running delay, and the final timeout result. Ordinary
 victories and resignation stop both clocks. Undo cannot refund time or reverse a loss.
+
+### Player-authored staged commits
+
+Read the clock and briefing, stage a satisfactory candidate early, choose a
+sustainable thinking budget, improve/replace, commit earlier or let it fire, and
+check private results. Use `muju_staged({roomId,token})` for the current seat
+`version`, then `muju_stage` with `requestId`, `expectedTurnNumber`,
+`expectedStageVersion`, `commitWhenRemainingMs`, `actions` and optional `fallbacks`.
+There is no `expectedRevision` for staging: live play and undo may intervene.
+The shared play schema allows 1–32 actions per batch and up to three fallbacks.
+`muju_cancel_stage` takes the same turn/version/request ID fields without actions
+or a threshold. Versions advance on every transition, including execution/failure,
+and never reset at handoff. Identical retries return their original acknowledgement
+plus fresh status; `muju_staged` with `stageId` retrieves older receipts.
+
+Remaining time includes **delay plus bank until flag-fall**. The threshold must be
+a positive integer at most this turn's starting allowance. A valid already-due
+trigger executes now if time remains. Five seconds remaining can spend nearly the
+whole bank: choose a larger threshold to fire earlier. On an initial rapid turn,
+`commitWhenRemainingMs:610000` fires about 20 seconds after turn start.
+
+SQLite transactions settle expiry, then due stages, then incoming operations.
+The first legal whole batch in your order executes through normal engine,
+history, replay and undo handling. Invalid candidates have no partial effects;
+all-illegal consumes the stage with a private failure and leaves the clock running.
+The server never repairs moves or appends `END_ACTION_PHASE`. A partial batch can
+still flag. Live handoff or any result clears pending stages. Stale replacement or
+cancellation cannot undo executed moves.
+
+An indexed 250 ms sweep runs independently of MCP connections, also settling due
+work on restart and room operations. This is not a real-time guarantee. Expiry wins
+at the actual deadline, even during validation; moves are never backdated after
+downtime. Plans/thresholds/fallback order and receipts are private. Public revision
+and waits change only for committed actions or results. Authenticated timed
+play/undo, restore and room reads include the caller's `staging`. MCP preview
+separates `liveStaging` and `liveClockPressure` alongside `liveClock`. Use
+`muju_staged` to check private failures. Model effort remains a client concern.
+
+### Historical clock pressure
+
+`clockPressure` accompanies clocks, including briefings and unchanged timed waits.
+It reports per-seat completed-turn counts, elapsed/bank-spend totals and means,
+remaining bank, first/last sample timestamps and the cumulative sampling window.
+For each completed turn, bank spend is `max(0, elapsedMs - delayMs)`; average these
+values, not elapsed time minus delay. Partial commands and undo consume time but
+are not samples. Active turns and turns ending the game are excluded. Old rooms
+without aggregates mark incomplete coverage and begin samples with the next newly
+started full turn; earlier timing is not reconstructed. Reads project current bank
+outside revision caches.
+
+`projection.turnsCovered = remainingBankMs / meanBankSpentMs` means **if historical
+pace continues**, not turns left in the game. `no_samples` and `no_observed_drain`
+return null. This is a factual projection for the player to interpret.
+See the [full protocol and examples](public/skills/muju-time-awareness/references/staged-play.md)
+for request/receipt fields, exact race/retry semantics and limitations.
 
 ## Reconnect and action semantics
 
@@ -360,12 +428,15 @@ and clears old undo/replay history. Reconnects receive an updated revision.
 | `GET /api/muju/rooms` | Public `{rooms}` list of unfinished room summaries: ID, player names, readiness, turn number, current player, updated time; no boards or credentials |
 | `POST /api/muju/rooms` | `{name, side, actionsPerTurn?: 4, timeControl?}` → admission (only 4 actions supported) |
 | `POST /api/muju/rooms/:id/join` | `{name, inviteCode}` → admission |
-| `GET /api/muju/rooms/:id` | Public snapshot; optional Bearer token validates a saved seat |
+| `GET /api/muju/rooms/:id` | Public snapshot; optional Bearer token validates a saved seat and adds only that seat's private staging status in timed rooms |
 | `GET /api/muju/rooms/:id/history` | Public score; `limit` (1–200, default 50), `before` or `after` sequence cursor, optional `includeUndone=true` |
 | `GET /api/muju/rooms/:id/positions/:sequence?step=N` | Exact recorded state, or an individual AP step within a move; sequence 0 is the first recorded position |
 | `GET /api/muju/rooms/:id/changes?afterRevision=N&timeoutMs=25000` | Wait for change; compact metadata on timeout, `room` snapshot on change; optional Bearer token |
 | `POST /api/muju/rooms/:id/actions` | `{expectedRevision, requestId, actions}` plus Bearer seat token |
 | `POST /api/muju/rooms/:id/preview` | Same request, without mutation |
+| `POST /api/muju/rooms/:id/stage` | `{requestId, expectedTurnNumber, expectedStageVersion, commitWhenRemainingMs, actions, fallbacks?}` plus Bearer token; HTTP uses `{x,y}` coordinates |
+| `POST /api/muju/rooms/:id/stage/cancel` | `{requestId, expectedTurnNumber, expectedStageVersion}` plus Bearer token |
+| `GET /api/muju/rooms/:id/stage?stageId=ID` | Private current stage/status; optional stage ID selects a durable receipt; Bearer token required |
 | `POST /mcp` | Stateless Streamable HTTP MCP |
 
 Only engine actions plus the seat-local upkeep preference are accepted. Client

@@ -1,4 +1,4 @@
-import type { GameState, PlayerId, Position } from '../src/game/types';
+import type { GameState, PlayerId } from '../src/game/types';
 import type { RoomAction, RoomSnapshot } from '../src/online/types';
 import { getUnitAt } from '../src/game/board';
 import { getActionsPerTurn } from '../src/game/rules';
@@ -12,20 +12,18 @@ import { projectedIncome } from '../src/game/mining';
 import { getHomeOccupier } from '../src/game/victory';
 import { INACTIVITY_LIMIT } from '../src/game/inactivity';
 import { TIME_CONTROL_PRESETS } from '../src/online/timeControl';
+import { square, describeAction } from './notation';
+import { analysisService } from './analysis';
+export { square, describeAction } from './notation';
 
-export const square = (p: Position) => `${String.fromCharCode(65 + p.x)}${p.y + 1}`;
-export function describeAction(action: RoomAction) {
-  if (action.type === 'MOVE') return { ...action, to: square(action.to) };
-  if (action.type === 'ATTACK') return { ...action, targetPosition: square(action.targetPosition) };
-  if (action.type === 'BUY_UNIT') return { ...action, position: square(action.position) };
-  return action;
-}
-export function observe(room: RoomSnapshot) {
+export function observe(room: RoomSnapshot, perspective = room.state.turn.currentPlayer) {
   const s = room.state;
   return {
     roomId: room.id, revision: room.revision, ready: room.ready, seats: room.seats,
     canUndo: !!room.canUndo,
-    timeControl: room.timeControl ?? null, clock: room.clock ?? null,
+    timeControl: room.timeControl ?? null, clock: room.clock ?? null, clockPressure: room.clockPressure ?? null,
+    ...(room.staging ? { staging: room.staging } : {}),
+    analysis: analysisService.headline(room, perspective),
     historyTool: 'muju_history',
     activePlayer: room.ready && s.phase === 'playing' ? s.turn.currentPlayer : null,
     status: s.phase, turn: s.turn, actionsPerTurn: getActionsPerTurn(s), upkeepPending: !!s.upkeepPending,
@@ -78,7 +76,7 @@ export function legalActions(room: RoomSnapshot, options: { unitId?: string; typ
     && (!options.unitId || ('unitId' in a && a.unitId === options.unitId)));
   const offset = options.offset ?? 0, limit = options.limit ?? 60;
   return { roomId: room.id, revision: room.revision, currentPlayer: player, total: actions.length,
-    timeControl: room.timeControl ?? null, clock: room.clock ?? null,
+    timeControl: room.timeControl ?? null, clock: room.clock ?? null, clockPressure: room.clockPressure ?? null,
     nextOffset: offset + limit < actions.length ? offset + limit : null,
     upkeepNote: s.upkeepPending ? 'One affordable keep-set is shown. You may submit any affordable keepUnitIds containing every tier 1 unit.' : undefined,
     actions: actions.slice(offset, offset + limit).map(action => {
@@ -93,18 +91,33 @@ export function legalActions(room: RoomSnapshot, options: { unitId?: string; typ
 }
 
 export const rules = {
+  analysis: {
+    workflow: 'Observe with briefing:true and player for one turn-start call. muju_analyze batches topics and targets at expectedRevision; use hypotheticalActions for complete proposed turns. Focus threats before exposure, exchange/reply for trades, and checkmate before home attempts. sinceRevision returns changed sections when a compatible process-local baseline is cached, otherwise a labeled full result.',
+    proof: 'proven_possible requires an engine witness. proven_impossible applies only to the declared complete search scope. unknown never means safe. Best-found costs are not proven minima. Replies are one-ply objectives, not minimax. Structural defenders and survival profiles are conditional, not executed purchases.',
+    limits: 'Headlines use existing single-hit flags; briefings are bounded summaries. Focused deep:true searches legal combinations within shared AP, treasury, occupancy and attack flags. Read every search cutoff and omission. Analysis never commits actions or reserves clock time; play uses the authoritative revision and seat token.',
+  },
   timeControl: {
     skill: { tool: 'muju_time_awareness', resource: 'muju://skills/muju-time-awareness',
-      scope: 'Optional player advice on thinking and bank management. Staged commits and clockPressure statistics are not implemented.' },
+      scope: 'Player advice and implemented staged-play/clockPressure protocol. The player chooses moves and time expenditure; model effort remains a client concern.' },
     presets: TIME_CONTROL_PRESETS,
     configuration: 'Optional at muju_create_room only: timeControl is blitz, rapid, classical, {delaySeconds,bankSeconds}, or null/omitted for untimed. Delay 0–600 seconds, bank 1–14400 seconds per player. Cannot change after creation.',
     timing: 'Each player has a separate bank shared across their own turns. Each full player turn starts with a fresh free delay; only after that delay does their bank drain. Unused delay is discarded, never added to the bank. Upkeep, placement and all four actions share one delay. Partial commands, phase changes, undo, previews, reads and retries never reset it.',
     enforcement: 'White’s clock starts immediately when the second player joins. No pause for disconnection, thinking, waiting, replay or server downtime. At deadlineAtMs the active player loses with victoryReason=timeout, even with no connected clients. The server checks deadlines before accepting commands; a late play/preview returns TIME_EXPIRED and the terminal room. Successful identical retries remain idempotent.',
     agentWorkflow: 'Read rules and prepare before joining. Inspect clock in observations, legal actions and play responses, or use muju_clock for a small fresh read. All timestamps are server Unix milliseconds. Time left at observation = deadlineAtMs − serverNowMs; subtract your locally elapsed time and allow for network latency. Do not wait on your own running turn. Submit END_ACTION_PHASE before the deadline; merely spending all AP does not hand off. Prefer a legal atomic turn batch and limit previews when short on time. A preview’s liveClock describes the real game, not its hypothetical board. Ordinary ticks do not change revision; timed unchanged waits include clock. A timeout advances revision and wakes waits with a result event.',
     estimates: 'Approximate wall time if most time is used: 2 × bankSeconds + total player turns × delaySeconds. Blitz ≈10 minutes at 36 turns, rapid ≈45 minutes at 50 turns, classical ≈2 hours at 60 turns. These are pacing suggestions, not duration guarantees.',
+    staging: {
+      tools: ['muju_stage', 'muju_cancel_stage', 'muju_staged'], resource: 'muju://skills/muju-time-awareness/staged-play',
+      workflow: 'Read clock/clockPressure and briefing; stage an early player-authored candidate, choose a sustainable thinking budget, improve/replace, commit earlier or let it fire, then check private status. No automatic moves, repairs, appended end-turn or model-effort control.',
+      request: 'Stage with token, requestId, expectedTurnNumber, expectedStageVersion (outer private status version, initially 0), commitWhenRemainingMs, actions (1–32), and optional fallbacks (up to three complete batches). Use new IDs for replacements; retry identical normalized requests with the same ID. Cancel uses token, requestId, expectedTurnNumber and expectedStageVersion. Inspect optionally by stageId. No expectedRevision: live play/undo may intervene.',
+      trigger: 'Remaining means total delay plus bank until flag-fall. A positive integer no greater than this turn’s starting allowance; already-due triggers fire immediately if time remains. Five seconds remaining can spend almost the entire bank. Choose larger thresholds or commit earlier to conserve time.',
+      execution: 'SQLite serializes all operations. Expiry resolves first, then due stage, then incoming operation. Fire validates whole batches atomically against the real board and executes the first legal player-authored batch in order. All illegal consumes the stage, records private failure and keeps the clock running. END_ACTION_PHASE is optional. Ordinary undo and immediate home-checkmate tail cancellation apply.',
+      persistence: 'One pending plan per seat/current full turn. Every staging transition advances a persistent seat version; stale replace/cancel fails. Handoff or result clears plans. Pending work and receipts survive restart without an MCP connection. The 250ms sweep is not a real-time guarantee; late wakeups use actual time, expiry always wins at the deadline, and moves are never backdated. Scheduling reduces flag risk without guaranteeing against it.',
+      privacy: 'Plans, fallback order, thresholds and receipts are seat-private. Only executed moves enter public history/replay/waits. Private changes/failures do not advance board revision or wake public waits. Timed authenticated play/undo returns staging; use muju_staged for outcomes. Preview exposes liveStaging separately.',
+    },
+    clockPressure: 'Per-seat cumulative completed-turn counts, elapsed and bank-spend totals/means, remaining bank and declared sampling window. Average max(0, elapsedMs-delayMs) for each turn, never subtract delay from the mean elapsed time. Partial commands/undo count as time, not extra samples. Active and terminal turns are excluded. Old rooms skip earlier history and their already-running turn. Projection remainingBankMs/meanBankSpentMs means if historical pace continues, not turns left in the game; no_samples and no_observed_drain use null. Fresh clockPressure accompanies clock-bearing responses and briefings outside revision caches; preview uses liveClockPressure.',
   },
   actionsPerTurn: { default: 4, options: [4], setting: 'Every game uses four shared actions per player turn.' },
-  game: 'Muju Hono Tanka', board: '10×10, White home A1, Black home J10. All game information is public.',
+  game: 'Muju Hono Tanka', board: '10×10, White home A1, Black home J10. All board information is public; pending staged plans are private to their seat.',
   observers: 'Create, join and muju_observe return a watchUrl. Share it with any number of human observers to watch both seats live in a read-only browser. Observers need no invitation or token and never claim a seat. MCP observers use muju_observe and muju_wait_for_change with just roomId.',
   restoreSeat: 'To continue an existing seat on another device, open Play online → Restore a seat and paste the private credentials JSON (roomId, player, token, serverUrl). No new invitation is needed. Both devices retain control of the same seat; coordinate who plays.',
   history: 'muju_history reads the persistent room score, including upkeep, purchases, promotions, move paths/AP, combat outcomes and per-unit mining. Use before/after sequence cursors to page; default omits undone commands. History is public and available in the browser room sidebar. Older rooms mark where detailed recording began.',

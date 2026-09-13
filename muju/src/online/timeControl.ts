@@ -17,6 +17,30 @@ export interface ClockSnapshot {
   bankRemainingMs: Record<PlayerId, number>;
 }
 
+export interface ClockPaceTotals {
+  completedTurns: number;
+  totalElapsedMs: number;
+  totalBankSpentMs: number;
+  firstTurnStartedAtMs: number | null;
+  lastTurnCompletedAtMs: number | null;
+}
+export interface ClockPressure {
+  sampling: {
+    window: 'all_tracked_completed_turns';
+    startedAtMs: number;
+    startedRevision: number;
+    completeFromGameStart: boolean;
+    terminalTurns: 'excluded';
+  };
+  projectionBasis: 'if historical pace continues; not turns left in the game';
+  players: Record<PlayerId, ClockPaceTotals & {
+    meanElapsedMs: number | null;
+    meanBankSpentMs: number | null;
+    remainingBankMs: number;
+    projection: { status: 'no_samples' | 'no_observed_drain' | 'estimated'; turnsCovered: number | null };
+  }>;
+}
+
 /** Project a server observation without ticking the game revision or trusting a client clock. */
 export function projectClock(clock: ClockSnapshot, nowMs: number): ClockSnapshot {
   const elapsed = clock.runningPlayer ? Math.max(0, nowMs - clock.serverNowMs) : 0;

@@ -4,7 +4,7 @@ import type { ErrorRequestHandler } from 'express';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { z, ZodError } from 'zod';
 import { RoomStore } from './rooms';
-import { RoomError } from './schema';
+import { RoomError, stageIdSchema } from './schema';
 import { createMcpServer } from './mcp';
 import { historyQuerySchema } from './schema';
 
@@ -66,6 +66,20 @@ export function createApp(store: RoomStore, options: { publicUrl: string; distPa
     const { player } = z.object({ player: z.enum(['white', 'black']) }).strict().parse(req.body);
     res.json(store.restore(req.params.id, auth.slice(7), player));
   });
+  app.get('/api/muju/rooms/:id/stage', (req, res) => {
+    const auth = req.headers.authorization;
+    if (!auth?.startsWith('Bearer ')) throw new RoomError(401, 'SEAT_REQUIRED', 'Send your seat token as Authorization: Bearer <token>.');
+    const { stageId } = z.object({ stageId: stageIdSchema.optional() }).strict().parse(req.query);
+    res.json(store.staged(req.params.id, auth.slice(7), stageId));
+  });
+  for (const operation of ['stage', 'stage/cancel'] as const) {
+    app.post(`/api/muju/rooms/:id/${operation}`, (req, res) => {
+      const auth = req.headers.authorization;
+      if (!auth?.startsWith('Bearer ')) throw new RoomError(401, 'SEAT_REQUIRED', 'Send your seat token as Authorization: Bearer <token>.');
+      res.json(operation === 'stage' ? store.stage(req.params.id, auth.slice(7), req.body)
+        : store.cancelStage(req.params.id, auth.slice(7), req.body));
+    });
+  }
   for (const operation of ['actions', 'preview'] as const) {
     app.post(`/api/muju/rooms/:id/${operation}`, (req, res) => {
       const auth = req.headers.authorization;

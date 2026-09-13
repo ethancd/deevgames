@@ -1,17 +1,21 @@
 // @vitest-environment node
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
 import type { Server } from 'node:http';
-import { readFileSync } from 'node:fs';
 import { RoomStore } from '../../server/rooms';
 import { createApp } from '../../server/http';
+import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { DatabaseSync } from 'node:sqlite';
+import { piece, position } from '../fixtures/analysis';
 
 const cleanups: (() => Promise<void> | void)[] = [];
 afterEach(async () => { for (const close of cleanups.splice(0).reverse()) await close(); });
-async function setup(rateLimit = 600) {
-  const store = new RoomStore();
+async function setup(rateLimit = 600, path?: string) {
+  const store = new RoomStore(path);
   let listener: Server;
   const app = createApp(store, { publicUrl: 'http://localhost:3003', rateLimit });
   await new Promise<void>((resolve, reject) => { listener = app.listen(0, '127.0.0.1', error => error ? reject(error) : resolve()); });
@@ -36,7 +40,112 @@ async function call(client: Client, name: string, args: Record<string, unknown> 
   return result.structuredContent as any;
 }
 
+it.each([false, true])('batches read-only analysis and replays its witness through room preview (stdio=%s)', async stdio => {
+  const directory = mkdtempSync(join(tmpdir(), 'muju-analysis-'));
+  cleanups.push(() => rmSync(directory, { recursive: true, force: true }));
+  const path = join(directory, 'rooms.sqlite'), { store, url } = await setup(600, path);
+  const host = store.create({ name: 'Analyst' }), roomId = host.room.id;
+  store.join(roomId, { name: 'Opponent', inviteCode: host.inviteCode });
+  const db = new DatabaseSync(path);
+  const saved = JSON.parse(db.prepare('SELECT data FROM rooms WHERE id = ?').get(roomId)!.data as string);
+  saved.state = position([piece('hi', 'fire_1', 'white', 4, 4), piece('target', 'plant_1', 'black', 4, 5), piece('anchor', 'plant_1', 'black', 8, 8)], 4);
+  db.prepare('UPDATE rooms SET data = ? WHERE id = ?').run(JSON.stringify(saved), roomId); db.close();
+  const client = await clientFor(url, stdio), before = store.get(roomId);
+  const observed = await call(client, 'muju_observe', { roomId, player: 'white', briefing: true });
+  expect(observed.analysis).toMatchObject({ revision: 1, perspective: 'white', stateKind: 'current' });
+  expect(observed.briefing.sections.economy).toBeDefined();
+  const result = await call(client, 'muju_analyze', { roomId, expectedRevision: 1, player: 'white',
+    topics: ['economy', 'opportunities', 'spawn'], targets: { unitIds: ['target'] }, detail: 'full', replies: false });
+  const witness = result.sections.opportunities.lines[0].witness;
+  expect(witness).toBeDefined();
+  const command = { roomId, token: host.credentials.token, expectedRevision: 1, requestId: 'analysis-preview-witness', actions: witness };
+  const preview = await call(client, 'muju_preview', command);
+  expect(preview.room.units.some((u: { id: string }) => u.id === 'target')).toBe(false);
+  expect(preview.room.analysis.stateKind).toBe('afterHypothetical');
+  expect(store.get(roomId)).toEqual(before);
+  const exchange = await call(client, 'muju_analyze', { roomId, expectedRevision: 1, player: 'white',
+    topics: ['exchange', 'spawn'], hypotheticalActions: witness });
+  expect(exchange.stateKind).toBe('afterHypothetical');
+  expect(exchange.sections.exchange.captured).toMatchObject([{ id: 'target', catalogueValue: 5 }]);
+  const stale = await client.callTool({ name: 'muju_analyze', arguments: { roomId, expectedRevision: 0, player: 'white', topics: ['economy'] } });
+  expect(stale.isError).toBe(true);
+  expect(stale.structuredContent).toMatchObject({ code: 'STALE_REVISION' });
+  await call(client, 'muju_play', command);
+  const changed = await call(client, 'muju_wait_for_change', { roomId, afterRevision: 1, timeoutMs: 0, briefing: true, player: 'white', sinceRevision: 1 });
+  expect(changed.room.briefing.diff.mode).toBe('changed_sections');
+  const idle = await call(client, 'muju_wait_for_change', { roomId, afterRevision: 2, timeoutMs: 0, briefing: true });
+  expect(idle).toEqual({ changed: false, revision: 2, phase: 'playing' });
+}, 10000);
+
 describe('MCP and HTTP interoperability', () => {
+  it.each([false, true])('stages, races replacements, cancels and retrieves private receipts across MCP and HTTP (stdio=%s)', async stdio => {
+    const now = 1800000000000, clock = vi.spyOn(Date, 'now').mockReturnValue(now);
+    cleanups.push(() => clock.mockRestore());
+    const { url, requests } = await setup(), client = await clientFor(url, stdio);
+    const tools = await client.listTools();
+    expect(tools.tools.map(tool => tool.name)).toEqual(expect.arrayContaining(['muju_stage', 'muju_cancel_stage', 'muju_staged']));
+    const host = await call(client, 'muju_create_room', { name: 'Staging White', timeControl: { delaySeconds: 2, bankSeconds: 3 } });
+    const roomId = host.credentials.roomId, token = host.credentials.token;
+    const guest = await call(client, 'muju_join_room', { roomId, name: 'Staging Black', inviteCode: host.invitation.inviteCode });
+    const auth = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
+    const endpoint = `${url}/api/muju/rooms/${roomId}/stage`;
+    const initial = await call(client, 'muju_staged', { roomId, token });
+    expect(initial).toMatchObject({ version: 0, pending: null, clockPressure: { players: { white: { completedTurns: 0 } } } });
+    const observed = await call(client, 'muju_observe', { roomId, player: 'white', briefing: true });
+    expect(observed.briefing.clockPressure).toEqual(observed.clockPressure);
+    const unitId = observed.units.find((unit: any) => unit.owner === 'white' && unit.definitionId === 'fire_1').id;
+    const move = { type: 'MOVE', unitId, to: 'C1' }, end = { type: 'END_ACTION_PHASE' };
+    const body = { requestId: 'mcp-stage-primary', expectedTurnNumber: 1, expectedStageVersion: 0,
+      commitWhenRemainingMs: 1000, actions: [move, end] };
+    const accepted = await call(client, 'muju_stage', { roomId, token, ...body });
+    expect(accepted.pending.actions[0].to).toEqual({ x: 2, y: 0 });
+    expect(await (await fetch(endpoint, { headers: auth })).json()).toMatchObject({ version: 1, pending: accepted.pending });
+    expect((await fetch(endpoint)).status).toBe(401);
+    expect((await fetch(endpoint, { headers: { Authorization: 'Bearer wrong' } })).status).toBe(403);
+    expect((await fetch(`${endpoint}?stageId=${accepted.pending.id}`, { headers: { Authorization: `Bearer ${guest.credentials.token}` } })).status).toBe(404);
+    expect((await fetch(endpoint, { method: 'POST', headers: auth, body: JSON.stringify({ ...body, actions: [] }) })).status).toBe(400);
+    expect((await fetch(endpoint, { method: 'POST', headers: auth, body: JSON.stringify({ ...body, commitWhenRemainingMs: 0 }) })).status).toBe(400);
+    const publicRoom = await call(client, 'muju_observe', { roomId });
+    expect(publicRoom.staging).toBeUndefined();
+    expect(JSON.stringify(publicRoom)).not.toContain('commitWhenRemainingMs');
+    const idleBefore = await call(client, 'muju_wait_for_change', { roomId, afterRevision: 1, timeoutMs: 0 });
+    expect(idleBefore.changed).toBe(false);
+    expect(idleBefore.staging).toBeUndefined();
+    const race = await Promise.all(['first', 'second'].map(suffix => fetch(endpoint, { method: 'POST', headers: auth,
+      body: JSON.stringify({ ...body, requestId: `http-race-${suffix}`, expectedStageVersion: 1, actions: [end] }) })));
+    expect(race.map(response => response.status).sort()).toEqual([200, 409]);
+    const cancelled = await call(client, 'muju_cancel_stage', { roomId, token, requestId: 'mcp-cancel-stage', expectedTurnNumber: 1, expectedStageVersion: 2 });
+    expect(cancelled).toMatchObject({ version: 3, pending: null, latestReceipt: { status: 'cancelled' } });
+    const finalBody = { ...body, expectedStageVersion: 3, requestId: 'mcp-final-stage',
+      actions: [{ type: 'MOVE', unitId: 'private-illegal-primary', to: 'H8' }], fallbacks: [[move, end], [{ type: 'RESIGN' }]] };
+    const finalStage = await call(client, 'muju_stage', { roomId, token, ...finalBody });
+    clock.mockReturnValue(now + 4000);
+    const racingPlay = await client.callTool({ name: 'muju_play', arguments: { roomId, token, expectedRevision: 1,
+      requestId: 'late-for-stage-play', actions: [end] } });
+    expect(racingPlay.isError).toBe(true);
+    expect(racingPlay.structuredContent).toMatchObject({ code: 'STALE_REVISION' });
+    const fired = await call(client, 'muju_staged', { roomId, token, stageId: finalStage.acknowledgement.stageId });
+    expect(fired).toMatchObject({ version: 5, pending: null, requestedStage: { status: 'executed', candidateIndex: 1, revision: 2 } });
+    expect((await call(client, 'muju_stage', { roomId, token, ...finalBody })).acknowledgement).toEqual(finalStage.acknowledgement);
+    const changed = await call(client, 'muju_wait_for_change', { roomId, afterRevision: 1, timeoutMs: 0, briefing: true, player: 'black' });
+    expect(changed).toMatchObject({ changed: true, revision: 2, room: { activePlayer: 'black',
+      clockPressure: { players: { white: { completedTurns: 1, meanElapsedMs: 4000, meanBankSpentMs: 2000 } } } } });
+    expect(changed.events[0].actions).toEqual([move, end]);
+    expect(changed.room.staging).toBeUndefined();
+    expect(JSON.stringify(changed)).not.toContain('private-illegal-primary');
+    expect(JSON.stringify(await call(client, 'muju_history', { roomId }))).not.toContain('candidateIndex');
+    const smallClock = await call(client, 'muju_clock', { roomId });
+    expect(smallClock.clockPressure).toEqual(changed.room.clockPressure);
+    const preview = await call(client, 'muju_preview', { roomId, token: guest.credentials.token, expectedRevision: 2,
+      requestId: 'staged-black-preview', actions: [end] });
+    expect(preview.liveClockPressure).toEqual(smallClock.clockPressure);
+    expect(preview.room.clockPressure).toBeUndefined();
+    expect(preview.room.staging).toBeUndefined();
+    const blackPlay = await call(client, 'muju_play', { roomId, token: guest.credentials.token, expectedRevision: 2,
+      requestId: 'staged-black-play', actions: [end] });
+    expect(blackPlay.staging).toMatchObject({ version: 0, pending: null });
+    if (stdio) expect(requests).toEqual(expect.arrayContaining([`POST /api/muju/rooms/${roomId}/stage/cancel`, `GET /api/muju/rooms/${roomId}/stage`]));
+  }, 15000);
   it.each([false, true])('exposes live delay clocks, separates preview clocks, and wakes on timeout (stdio=%s)', async stdio => {
     const { url } = await setup(), client = await clientFor(url, stdio);
     const preset = await call(client, 'muju_create_room', { name: 'Preset', timeControl: 'rapid' });
@@ -51,7 +160,7 @@ describe('MCP and HTTP interoperability', () => {
     const clock = await call(client, 'muju_clock', { roomId });
     expect(clock.clock.deadlineAtMs).toBe(initial.deadlineAtMs);
     expect(clock.board).toBeUndefined();
-    expect(JSON.stringify(clock).length).toBeLessThan(700);
+    expect(JSON.stringify(clock).length).toBeLessThan(2200);
     const legal = await call(client, 'muju_legal_actions', { roomId, limit: 1 });
     expect(legal.clock.runningPlayer).toBe('white');
     const command = { roomId, token: hosted.credentials.token, expectedRevision: 1, requestId: 'timed-preview-turn', actions: [{ type: 'END_ACTION_PHASE' }] };

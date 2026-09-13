@@ -3,6 +3,7 @@ import { createMcpServer, type RoomBackend } from './mcp';
 import type { RoomAdmission, RoomChange, RoomSnapshot } from '../src/online/types';
 import type { RoomMoveHistory } from '../src/game/moveHistory';
 import { RoomError } from './schema';
+import type { StagingResult, StagingStatus } from '../src/online/staging';
 
 const serverUrl = (process.env.MUJU_SERVER_URL ?? 'http://localhost:3003').replace(/\/$/, '');
 async function request<T>(path: string, body?: unknown, token?: string, signal?: AbortSignal, timeoutMs = 10000): Promise<T> {
@@ -21,5 +22,8 @@ const backend: RoomBackend = {
   moveHistory: (id, query = {}) => request<RoomMoveHistory>(`/${id}/history?${new URLSearchParams(Object.entries(query).filter(([, value]) => value !== undefined).map(([key, value]) => [key, String(value)]))}`),
   wait: (id, afterRevision, timeoutMs, signal) => request<RoomChange>(`/${id}/changes?afterRevision=${afterRevision}&timeoutMs=${timeoutMs}`, undefined, undefined, signal, 30000),
   act: (id, token, input, preview) => request<RoomSnapshot>(`/${id}/${preview ? 'preview' : 'actions'}`, input, token),
+  stage: (id, token, input) => request<StagingResult>(`/${id}/stage`, input, token),
+  cancelStage: (id, token, input) => request<StagingResult>(`/${id}/stage/cancel`, input, token),
+  staged: (id, token, stageId) => request<StagingStatus>(`/${id}/stage${stageId ? `?stageId=${encodeURIComponent(stageId)}` : ''}`, undefined, token),
 };
 await createMcpServer(backend, serverUrl).connect(new StdioServerTransport());
