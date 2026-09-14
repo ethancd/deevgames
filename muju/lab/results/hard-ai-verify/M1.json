@@ -1,0 +1,13 @@
+{
+  "perftActions_initial_4": 14959,
+  "perftMidStates_initial": 1053,
+  "perftTurns_initial": 797,
+  "fixturesChecked": 11,
+  "fixturesMismatch": 0,
+  "mismatches": [],
+  "openings": 797,
+  "engine": "canonical",
+  "git": "f865174994dd70b884ca802110f9d5783e2aa586",
+  "node": "v24.11.1",
+  "at": "2026-09-14T18:27:32.526Z"
+}
