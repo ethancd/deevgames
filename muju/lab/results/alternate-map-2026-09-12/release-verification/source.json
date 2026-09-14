@@ -1,0 +1,15 @@
+{
+  "releaseCommit": "acd71ed289798826408c821e12181be20c9b35a1",
+  "deployedBranch": "codex/muju-online-deploy",
+  "sourceCheckout": "/private/tmp/muju-central-map-release",
+  "unitAndIntegrationTests": 684,
+  "testFiles": 54,
+  "browserTests": 8,
+  "mobileHelpTests": 1,
+  "localSaveSchemasPreserved": [
+    5,
+    6
+  ],
+  "onlineRulesVersionUnchanged": "muju-online-4",
+  "target": "https://deevgames-muju.onrender.com/muju/"
+}

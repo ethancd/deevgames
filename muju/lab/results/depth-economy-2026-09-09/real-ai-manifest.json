@@ -1,0 +1,25 @@
+{
+  "opponents": [
+    "Plant3",
+    "Metal3",
+    "MiningDenial",
+    "Invade:LightningRush"
+  ],
+  "seats": [
+    "white",
+    "black"
+  ],
+  "economies": [
+    "A",
+    "B",
+    "C"
+  ],
+  "seed": 9092644,
+  "difficulty": "medium",
+  "speed": "ui",
+  "resign": true,
+  "maxTurns": 120,
+  "maxPlies": 8000,
+  "sourceHash": "35439512052f177d2de6b32caef4eeea610f9b593a3117a2b99ff4f87ce6b26c",
+  "notes": "Production search/WASM/timing presets; actual-yield mining-potential adapter for all study economies. Extra two unadapted A controls. Timing means exact actions are not guaranteed by a seed alone."
+}

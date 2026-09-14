@@ -1,0 +1,3148 @@
+{
+  "cases": 293,
+  "masks": 586,
+  "lines": 6878,
+  "method": "Seed 14092026. Production replay, turn settlement, conservation, spawn and exhaustive singleThreats cross-check.",
+  "examples": [
+    {
+      "w": 1,
+      "b": 1,
+      "seat": "white",
+      "mask": 0,
+      "witnesses": []
+    },
+    {
+      "w": 1,
+      "b": 1,
+      "seat": "black",
+      "mask": 0,
+      "witnesses": []
+    },
+    {
+      "w": 1,
+      "b": 8,
+      "seat": "white",
+      "mask": 0,
+      "witnesses": []
+    },
+    {
+      "w": 1,
+      "b": 8,
+      "seat": "black",
+      "mask": 0,
+      "witnesses": []
+    },
+    {
+      "w": 1,
+      "b": 721,
+      "seat": "white",
+      "mask": 0,
+      "witnesses": []
+    },
+    {
+      "w": 1,
+      "b": 721,
+      "seat": "black",
+      "mask": 0,
+      "witnesses": []
+    },
+    {
+      "w": 1,
+      "b": 791,
+      "seat": "white",
+      "mask": 0,
+      "witnesses": []
+    },
+    {
+      "w": 1,
+      "b": 791,
+      "seat": "black",
+      "mask": 0,
+      "witnesses": []
+    },
+    {
+      "w": 1,
+      "b": 792,
+      "seat": "white",
+      "mask": 0,
+      "witnesses": []
+    },
+    {
+      "w": 1,
+      "b": 792,
+      "seat": "black",
+      "mask": 0,
+      "witnesses": []
+    },
+    {
+      "w": 1,
+      "b": 796,
+      "seat": "white",
+      "mask": 0,
+      "witnesses": []
+    },
+    {
+      "w": 1,
+      "b": 796,
+      "seat": "black",
+      "mask": 0,
+      "witnesses": []
+    },
+    {
+      "w": 8,
+      "b": 1,
+      "seat": "white",
+      "mask": 0,
+      "witnesses": []
+    },
+    {
+      "w": 8,
+      "b": 1,
+      "seat": "black",
+      "mask": 0,
+      "witnesses": []
+    },
+    {
+      "w": 8,
+      "b": 8,
+      "seat": "white",
+      "mask": 0,
+      "witnesses": []
+    },
+    {
+      "w": 8,
+      "b": 8,
+      "seat": "black",
+      "mask": 0,
+      "witnesses": []
+    },
+    {
+      "w": 8,
+      "b": 721,
+      "seat": "white",
+      "mask": 0,
+      "witnesses": []
+    },
+    {
+      "w": 8,
+      "b": 721,
+      "seat": "black",
+      "mask": 0,
+      "witnesses": []
+    },
+    {
+      "w": 8,
+      "b": 791,
+      "seat": "white",
+      "mask": 1,
+      "witnesses": [
+        {
+          "target": "Hi",
+          "actions": [
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "lightning_1",
+              "position": "A2"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "unit-white-2-0",
+              "to": "G4"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "unit-white-2-0",
+              "targetPosition": "G5"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "lightning_1",
+              "position": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "unit-white-2-0",
+              "to": {
+                "x": 6,
+                "y": 3
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "unit-white-2-0",
+              "targetPosition": {
+                "x": 6,
+                "y": 4
+              }
+            }
+          ],
+          "ap": 4,
+          "crystals": 3
+        }
+      ]
+    },
+    {
+      "w": 8,
+      "b": 791,
+      "seat": "black",
+      "mask": 0,
+      "witnesses": []
+    },
+    {
+      "w": 8,
+      "b": 792,
+      "seat": "white",
+      "mask": 1,
+      "witnesses": [
+        {
+          "target": "Hi",
+          "actions": [
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "lightning_1",
+              "position": "A2"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "unit-white-2-0",
+              "to": "F4"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "unit-white-2-0",
+              "targetPosition": "F5"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "lightning_1",
+              "position": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "unit-white-2-0",
+              "to": {
+                "x": 5,
+                "y": 3
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "unit-white-2-0",
+              "targetPosition": {
+                "x": 5,
+                "y": 4
+              }
+            }
+          ],
+          "ap": 4,
+          "crystals": 3
+        }
+      ]
+    },
+    {
+      "w": 8,
+      "b": 792,
+      "seat": "black",
+      "mask": 7,
+      "witnesses": [
+        {
+          "target": "Hi",
+          "actions": [
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "lightning_1",
+              "position": "G5"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "unit-black-2-0",
+              "to": "A2"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "unit-black-2-0",
+              "targetPosition": "A1"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "lightning_1",
+              "position": {
+                "x": 6,
+                "y": 4
+              }
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "unit-black-2-0",
+              "to": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "unit-black-2-0",
+              "targetPosition": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "ap": 4,
+          "crystals": 3
+        },
+        {
+          "target": "Sjor",
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "black_fire_1_1789393357270_zmlzb"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "black_fire_1_1789393357270_zmlzb",
+              "to": "C2"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "black_fire_1_1789393357270_zmlzb",
+              "targetPosition": "C1"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "black_fire_1_1789393357270_zmlzb"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "black_fire_1_1789393357270_zmlzb",
+              "to": {
+                "x": 2,
+                "y": 1
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "black_fire_1_1789393357270_zmlzb",
+              "targetPosition": {
+                "x": 2,
+                "y": 0
+              }
+            }
+          ],
+          "ap": 4,
+          "crystals": 4
+        },
+        {
+          "target": "Muju",
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "black_fire_1_1789393357270_zmlzb",
+              "to": "B3"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "black_fire_1_1789393357270_zmlzb",
+              "targetPosition": "B2"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "black_fire_1_1789393357270_zmlzb",
+              "to": {
+                "x": 1,
+                "y": 2
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "black_fire_1_1789393357270_zmlzb",
+              "targetPosition": {
+                "x": 1,
+                "y": 1
+              }
+            }
+          ],
+          "ap": 4,
+          "crystals": 0
+        }
+      ]
+    },
+    {
+      "w": 8,
+      "b": 796,
+      "seat": "white",
+      "mask": 1,
+      "witnesses": [
+        {
+          "target": "Hi",
+          "actions": [
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "lightning_1",
+              "position": "A2"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "unit-white-2-0",
+              "to": "G3"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "unit-white-2-0",
+              "targetPosition": "G4"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "lightning_1",
+              "position": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "unit-white-2-0",
+              "to": {
+                "x": 6,
+                "y": 2
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "unit-white-2-0",
+              "targetPosition": {
+                "x": 6,
+                "y": 3
+              }
+            }
+          ],
+          "ap": 4,
+          "crystals": 3
+        }
+      ]
+    },
+    {
+      "w": 8,
+      "b": 796,
+      "seat": "black",
+      "mask": 7,
+      "witnesses": [
+        {
+          "target": "Hi",
+          "actions": [
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "lightning_1",
+              "position": "H4"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "unit-black-2-0",
+              "to": "A2"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "unit-black-2-0",
+              "targetPosition": "A1"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "lightning_1",
+              "position": {
+                "x": 7,
+                "y": 3
+              }
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "unit-black-2-0",
+              "to": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "unit-black-2-0",
+              "targetPosition": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "ap": 4,
+          "crystals": 3
+        },
+        {
+          "target": "Sjor",
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "black_fire_1_1789393357272_nt34n"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "black_fire_1_1789393357272_nt34n",
+              "to": "C2"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "black_fire_1_1789393357272_nt34n",
+              "targetPosition": "C1"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "black_fire_1_1789393357272_nt34n"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "black_fire_1_1789393357272_nt34n",
+              "to": {
+                "x": 2,
+                "y": 1
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "black_fire_1_1789393357272_nt34n",
+              "targetPosition": {
+                "x": 2,
+                "y": 0
+              }
+            }
+          ],
+          "ap": 4,
+          "crystals": 4
+        },
+        {
+          "target": "Muju",
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "black_fire_1_1789393357272_nt34n",
+              "to": "B3"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "black_fire_1_1789393357272_nt34n",
+              "targetPosition": "B2"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "black_fire_1_1789393357272_nt34n",
+              "to": {
+                "x": 1,
+                "y": 2
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "black_fire_1_1789393357272_nt34n",
+              "targetPosition": {
+                "x": 1,
+                "y": 1
+              }
+            }
+          ],
+          "ap": 4,
+          "crystals": 0
+        }
+      ]
+    },
+    {
+      "w": 675,
+      "b": 1,
+      "seat": "white",
+      "mask": 0,
+      "witnesses": []
+    },
+    {
+      "w": 675,
+      "b": 1,
+      "seat": "black",
+      "mask": 0,
+      "witnesses": []
+    },
+    {
+      "w": 675,
+      "b": 8,
+      "seat": "white",
+      "mask": 7,
+      "witnesses": [
+        {
+          "target": "Hi",
+          "actions": [
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "lightning_1",
+              "position": "H2"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "unit-white-2-0",
+              "to": "J9"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "unit-white-2-0",
+              "targetPosition": "J10"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "lightning_1",
+              "position": {
+                "x": 7,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "unit-white-2-0",
+              "to": {
+                "x": 9,
+                "y": 8
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "unit-white-2-0",
+              "targetPosition": {
+                "x": 9,
+                "y": 9
+              }
+            }
+          ],
+          "ap": 4,
+          "crystals": 3
+        },
+        {
+          "target": "Sjor",
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "white_fire_1_1789393357382_z6u22"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393357382_z6u22",
+              "to": "H9"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393357382_z6u22",
+              "targetPosition": "H10"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "white_fire_1_1789393357382_z6u22"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393357382_z6u22",
+              "to": {
+                "x": 7,
+                "y": 8
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393357382_z6u22",
+              "targetPosition": {
+                "x": 7,
+                "y": 9
+              }
+            }
+          ],
+          "ap": 4,
+          "crystals": 4
+        },
+        {
+          "target": "Muju",
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393357382_z6u22",
+              "to": "I8"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393357382_z6u22",
+              "targetPosition": "I9"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393357382_z6u22",
+              "to": {
+                "x": 8,
+                "y": 7
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393357382_z6u22",
+              "targetPosition": {
+                "x": 8,
+                "y": 8
+              }
+            }
+          ],
+          "ap": 4,
+          "crystals": 0
+        }
+      ]
+    },
+    {
+      "w": 675,
+      "b": 8,
+      "seat": "black",
+      "mask": 1,
+      "witnesses": [
+        {
+          "target": "Hi",
+          "actions": [
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "lightning_1",
+              "position": "J9"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "unit-black-2-0",
+              "to": "H2"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "unit-black-2-0",
+              "targetPosition": "H3"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "lightning_1",
+              "position": {
+                "x": 9,
+                "y": 8
+              }
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "unit-black-2-0",
+              "to": {
+                "x": 7,
+                "y": 1
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "unit-black-2-0",
+              "targetPosition": {
+                "x": 7,
+                "y": 2
+              }
+            }
+          ],
+          "ap": 4,
+          "crystals": 3
+        }
+      ]
+    },
+    {
+      "w": 675,
+      "b": 721,
+      "seat": "white",
+      "mask": 7,
+      "witnesses": [
+        {
+          "target": "Hi",
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393357397_u6tw9",
+              "to": "H6"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393357397_u6tw9",
+              "targetPosition": "H7"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393357397_u6tw9",
+              "to": {
+                "x": 7,
+                "y": 5
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393357397_u6tw9",
+              "targetPosition": {
+                "x": 7,
+                "y": 6
+              }
+            }
+          ],
+          "ap": 3,
+          "crystals": 0
+        },
+        {
+          "target": "Sjor",
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "white_fire_1_1789393357397_u6tw9"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393357397_u6tw9",
+              "to": "I8"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393357397_u6tw9",
+              "targetPosition": "I9"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "white_fire_1_1789393357397_u6tw9"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393357397_u6tw9",
+              "to": {
+                "x": 8,
+                "y": 7
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393357397_u6tw9",
+              "targetPosition": {
+                "x": 8,
+                "y": 8
+              }
+            }
+          ],
+          "ap": 4,
+          "crystals": 4
+        },
+        {
+          "target": "Muju",
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393357397_u6tw9",
+              "to": "J7"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393357397_u6tw9",
+              "targetPosition": "J8"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393357397_u6tw9",
+              "to": {
+                "x": 9,
+                "y": 6
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393357397_u6tw9",
+              "targetPosition": {
+                "x": 9,
+                "y": 7
+              }
+            }
+          ],
+          "ap": 4,
+          "crystals": 0
+        }
+      ]
+    },
+    {
+      "w": 675,
+      "b": 721,
+      "seat": "black",
+      "mask": 1,
+      "witnesses": [
+        {
+          "target": "Hi",
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "black_fire_1_1789393357397_s4rsk",
+              "to": "H4"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "black_fire_1_1789393357397_s4rsk",
+              "targetPosition": "H3"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "black_fire_1_1789393357397_s4rsk",
+              "to": {
+                "x": 7,
+                "y": 3
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "black_fire_1_1789393357397_s4rsk",
+              "targetPosition": {
+                "x": 7,
+                "y": 2
+              }
+            }
+          ],
+          "ap": 3,
+          "crystals": 0
+        }
+      ]
+    },
+    {
+      "w": 675,
+      "b": 791,
+      "seat": "white",
+      "mask": 3,
+      "witnesses": [
+        {
+          "target": "Hi",
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393357458_m5060",
+              "to": "G4"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393357458_m5060",
+              "targetPosition": "G5"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393357458_m5060",
+              "to": {
+                "x": 6,
+                "y": 3
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393357458_m5060",
+              "targetPosition": {
+                "x": 6,
+                "y": 4
+              }
+            }
+          ],
+          "ap": 2,
+          "crystals": 0
+        },
+        {
+          "target": "Sjor",
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "white_fire_1_1789393357458_m5060"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393357458_m5060",
+              "to": "I8"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393357458_m5060",
+              "targetPosition": "I9"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "white_fire_1_1789393357458_m5060"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393357458_m5060",
+              "to": {
+                "x": 8,
+                "y": 7
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393357458_m5060",
+              "targetPosition": {
+                "x": 8,
+                "y": 8
+              }
+            }
+          ],
+          "ap": 4,
+          "crystals": 4
+        }
+      ]
+    },
+    {
+      "w": 675,
+      "b": 791,
+      "seat": "black",
+      "mask": 1,
+      "witnesses": [
+        {
+          "target": "Hi",
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "black_fire_1_1789393357458_5f4ul",
+              "to": "H4"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "black_fire_1_1789393357458_5f4ul",
+              "targetPosition": "H3"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "black_fire_1_1789393357458_5f4ul",
+              "to": {
+                "x": 7,
+                "y": 3
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "black_fire_1_1789393357458_5f4ul",
+              "targetPosition": {
+                "x": 7,
+                "y": 2
+              }
+            }
+          ],
+          "ap": 2,
+          "crystals": 0
+        }
+      ]
+    },
+    {
+      "w": 675,
+      "b": 792,
+      "seat": "white",
+      "mask": 3,
+      "witnesses": [
+        {
+          "target": "Hi",
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393357473_lnvw1",
+              "to": "F4"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393357473_lnvw1",
+              "targetPosition": "F5"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393357473_lnvw1",
+              "to": {
+                "x": 5,
+                "y": 3
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393357473_lnvw1",
+              "targetPosition": {
+                "x": 5,
+                "y": 4
+              }
+            }
+          ],
+          "ap": 3,
+          "crystals": 0
+        },
+        {
+          "target": "Sjor",
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "white_fire_1_1789393357473_lnvw1"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393357473_lnvw1",
+              "to": "I8"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393357473_lnvw1",
+              "targetPosition": "I9"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "white_fire_1_1789393357473_lnvw1"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393357473_lnvw1",
+              "to": {
+                "x": 8,
+                "y": 7
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393357473_lnvw1",
+              "targetPosition": {
+                "x": 8,
+                "y": 8
+              }
+            }
+          ],
+          "ap": 4,
+          "crystals": 4
+        }
+      ]
+    },
+    {
+      "w": 675,
+      "b": 792,
+      "seat": "black",
+      "mask": 3,
+      "witnesses": [
+        {
+          "target": "Hi",
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "black_fire_1_1789393357473_lq1as",
+              "to": "H4"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "black_fire_1_1789393357473_lq1as",
+              "targetPosition": "H3"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "black_fire_1_1789393357473_lq1as",
+              "to": {
+                "x": 7,
+                "y": 3
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "black_fire_1_1789393357473_lq1as",
+              "targetPosition": {
+                "x": 7,
+                "y": 2
+              }
+            }
+          ],
+          "ap": 3,
+          "crystals": 0
+        },
+        {
+          "target": "Sjor",
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "black_fire_1_1789393357473_lq1as"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "black_fire_1_1789393357473_lq1as",
+              "to": "B3"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "black_fire_1_1789393357473_lq1as",
+              "targetPosition": "B2"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "black_fire_1_1789393357473_lq1as"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "black_fire_1_1789393357473_lq1as",
+              "to": {
+                "x": 1,
+                "y": 2
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "black_fire_1_1789393357473_lq1as",
+              "targetPosition": {
+                "x": 1,
+                "y": 1
+              }
+            }
+          ],
+          "ap": 4,
+          "crystals": 4
+        }
+      ]
+    },
+    {
+      "w": 675,
+      "b": 796,
+      "seat": "white",
+      "mask": 3,
+      "witnesses": [
+        {
+          "target": "Hi",
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393357491_1r3pn",
+              "to": "G3"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393357491_1r3pn",
+              "targetPosition": "G4"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393357491_1r3pn",
+              "to": {
+                "x": 6,
+                "y": 2
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393357491_1r3pn",
+              "targetPosition": {
+                "x": 6,
+                "y": 3
+              }
+            }
+          ],
+          "ap": 2,
+          "crystals": 0
+        },
+        {
+          "target": "Sjor",
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "white_fire_1_1789393357491_1r3pn"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393357491_1r3pn",
+              "to": "I8"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393357491_1r3pn",
+              "targetPosition": "I9"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "white_fire_1_1789393357491_1r3pn"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393357491_1r3pn",
+              "to": {
+                "x": 8,
+                "y": 7
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393357491_1r3pn",
+              "targetPosition": {
+                "x": 8,
+                "y": 8
+              }
+            }
+          ],
+          "ap": 4,
+          "crystals": 4
+        }
+      ]
+    },
+    {
+      "w": 675,
+      "b": 796,
+      "seat": "black",
+      "mask": 3,
+      "witnesses": [
+        {
+          "target": "Hi",
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "black_fire_1_1789393357491_8agrc",
+              "to": "H4"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "black_fire_1_1789393357491_8agrc",
+              "targetPosition": "H3"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "black_fire_1_1789393357491_8agrc",
+              "to": {
+                "x": 7,
+                "y": 3
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "black_fire_1_1789393357491_8agrc",
+              "targetPosition": {
+                "x": 7,
+                "y": 2
+              }
+            }
+          ],
+          "ap": 2,
+          "crystals": 0
+        },
+        {
+          "target": "Sjor",
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "black_fire_1_1789393357491_8agrc"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "black_fire_1_1789393357491_8agrc",
+              "to": "B3"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "black_fire_1_1789393357491_8agrc",
+              "targetPosition": "B2"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "black_fire_1_1789393357491_8agrc"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "black_fire_1_1789393357491_8agrc",
+              "to": {
+                "x": 1,
+                "y": 2
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "black_fire_1_1789393357491_8agrc",
+              "targetPosition": {
+                "x": 1,
+                "y": 1
+              }
+            }
+          ],
+          "ap": 4,
+          "crystals": 4
+        }
+      ]
+    },
+    {
+      "w": 780,
+      "b": 1,
+      "seat": "white",
+      "mask": 0,
+      "witnesses": []
+    },
+    {
+      "w": 780,
+      "b": 1,
+      "seat": "black",
+      "mask": 0,
+      "witnesses": []
+    },
+    {
+      "w": 780,
+      "b": 8,
+      "seat": "white",
+      "mask": 7,
+      "witnesses": [
+        {
+          "target": "Hi",
+          "actions": [
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "lightning_1",
+              "position": "F4"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "unit-white-2-0",
+              "to": "J9"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "unit-white-2-0",
+              "targetPosition": "J10"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "lightning_1",
+              "position": {
+                "x": 5,
+                "y": 3
+              }
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "unit-white-2-0",
+              "to": {
+                "x": 9,
+                "y": 8
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "unit-white-2-0",
+              "targetPosition": {
+                "x": 9,
+                "y": 9
+              }
+            }
+          ],
+          "ap": 4,
+          "crystals": 3
+        },
+        {
+          "target": "Sjor",
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "white_fire_1_1789393357795_fmwrx"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393357795_fmwrx",
+              "to": "H9"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393357795_fmwrx",
+              "targetPosition": "H10"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "white_fire_1_1789393357795_fmwrx"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393357795_fmwrx",
+              "to": {
+                "x": 7,
+                "y": 8
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393357795_fmwrx",
+              "targetPosition": {
+                "x": 7,
+                "y": 9
+              }
+            }
+          ],
+          "ap": 4,
+          "crystals": 4
+        },
+        {
+          "target": "Muju",
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393357795_fmwrx",
+              "to": "I8"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393357795_fmwrx",
+              "targetPosition": "I9"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393357795_fmwrx",
+              "to": {
+                "x": 8,
+                "y": 7
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393357795_fmwrx",
+              "targetPosition": {
+                "x": 8,
+                "y": 8
+              }
+            }
+          ],
+          "ap": 4,
+          "crystals": 0
+        }
+      ]
+    },
+    {
+      "w": 780,
+      "b": 8,
+      "seat": "black",
+      "mask": 1,
+      "witnesses": [
+        {
+          "target": "Hi",
+          "actions": [
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "lightning_1",
+              "position": "J9"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "unit-black-2-0",
+              "to": "F4"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "unit-black-2-0",
+              "targetPosition": "F5"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "lightning_1",
+              "position": {
+                "x": 9,
+                "y": 8
+              }
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "unit-black-2-0",
+              "to": {
+                "x": 5,
+                "y": 3
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "unit-black-2-0",
+              "targetPosition": {
+                "x": 5,
+                "y": 4
+              }
+            }
+          ],
+          "ap": 4,
+          "crystals": 3
+        }
+      ]
+    },
+    {
+      "w": 780,
+      "b": 721,
+      "seat": "white",
+      "mask": 7,
+      "witnesses": [
+        {
+          "target": "Hi",
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393357815_gwl2s",
+              "to": "H6"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393357815_gwl2s",
+              "targetPosition": "H7"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393357815_gwl2s",
+              "to": {
+                "x": 7,
+                "y": 5
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393357815_gwl2s",
+              "targetPosition": {
+                "x": 7,
+                "y": 6
+              }
+            }
+          ],
+          "ap": 3,
+          "crystals": 0
+        },
+        {
+          "target": "Sjor",
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "white_fire_1_1789393357815_gwl2s"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393357815_gwl2s",
+              "to": "I8"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393357815_gwl2s",
+              "targetPosition": "I9"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "white_fire_1_1789393357815_gwl2s"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393357815_gwl2s",
+              "to": {
+                "x": 8,
+                "y": 7
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393357815_gwl2s",
+              "targetPosition": {
+                "x": 8,
+                "y": 8
+              }
+            }
+          ],
+          "ap": 4,
+          "crystals": 4
+        },
+        {
+          "target": "Muju",
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393357815_gwl2s",
+              "to": "J7"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393357815_gwl2s",
+              "targetPosition": "J8"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393357815_gwl2s",
+              "to": {
+                "x": 9,
+                "y": 6
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393357815_gwl2s",
+              "targetPosition": {
+                "x": 9,
+                "y": 7
+              }
+            }
+          ],
+          "ap": 4,
+          "crystals": 0
+        }
+      ]
+    },
+    {
+      "w": 780,
+      "b": 721,
+      "seat": "black",
+      "mask": 1,
+      "witnesses": [
+        {
+          "target": "Hi",
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "black_fire_1_1789393357815_3kauk",
+              "to": "F6"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "black_fire_1_1789393357815_3kauk",
+              "targetPosition": "F5"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "black_fire_1_1789393357815_3kauk",
+              "to": {
+                "x": 5,
+                "y": 5
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "black_fire_1_1789393357815_3kauk",
+              "targetPosition": {
+                "x": 5,
+                "y": 4
+              }
+            }
+          ],
+          "ap": 3,
+          "crystals": 0
+        }
+      ]
+    },
+    {
+      "w": 780,
+      "b": 791,
+      "seat": "white",
+      "mask": 3,
+      "witnesses": [
+        {
+          "target": "Hi",
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393357882_tf0pu",
+              "targetPosition": "G5"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393357882_tf0pu",
+              "targetPosition": {
+                "x": 6,
+                "y": 4
+              }
+            }
+          ],
+          "ap": 1,
+          "crystals": 0
+        },
+        {
+          "target": "Sjor",
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "white_fire_1_1789393357882_tf0pu"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393357882_tf0pu",
+              "to": "I8"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393357882_tf0pu",
+              "targetPosition": "I9"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "white_fire_1_1789393357882_tf0pu"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393357882_tf0pu",
+              "to": {
+                "x": 8,
+                "y": 7
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393357882_tf0pu",
+              "targetPosition": {
+                "x": 8,
+                "y": 8
+              }
+            }
+          ],
+          "ap": 4,
+          "crystals": 4
+        }
+      ]
+    },
+    {
+      "w": 780,
+      "b": 791,
+      "seat": "black",
+      "mask": 1,
+      "witnesses": [
+        {
+          "target": "Hi",
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "black_fire_1_1789393357882_hw9ql",
+              "targetPosition": "F5"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "black_fire_1_1789393357882_hw9ql",
+              "targetPosition": {
+                "x": 5,
+                "y": 4
+              }
+            }
+          ],
+          "ap": 1,
+          "crystals": 0
+        }
+      ]
+    },
+    {
+      "w": 780,
+      "b": 796,
+      "seat": "white",
+      "mask": 3,
+      "witnesses": [
+        {
+          "target": "Hi",
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393357897_ykuxm",
+              "to": "G5"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393357897_ykuxm",
+              "targetPosition": "G4"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393357897_ykuxm",
+              "to": {
+                "x": 6,
+                "y": 4
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393357897_ykuxm",
+              "targetPosition": {
+                "x": 6,
+                "y": 3
+              }
+            }
+          ],
+          "ap": 2,
+          "crystals": 0
+        },
+        {
+          "target": "Sjor",
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "white_fire_1_1789393357897_ykuxm"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393357897_ykuxm",
+              "to": "I8"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393357897_ykuxm",
+              "targetPosition": "I9"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "white_fire_1_1789393357897_ykuxm"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393357897_ykuxm",
+              "to": {
+                "x": 8,
+                "y": 7
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393357897_ykuxm",
+              "targetPosition": {
+                "x": 8,
+                "y": 8
+              }
+            }
+          ],
+          "ap": 4,
+          "crystals": 4
+        }
+      ]
+    },
+    {
+      "w": 780,
+      "b": 796,
+      "seat": "black",
+      "mask": 3,
+      "witnesses": [
+        {
+          "target": "Hi",
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "black_fire_1_1789393357897_ebzdt",
+              "to": "F4"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "black_fire_1_1789393357897_ebzdt",
+              "targetPosition": "F5"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "black_fire_1_1789393357897_ebzdt",
+              "to": {
+                "x": 5,
+                "y": 3
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "black_fire_1_1789393357897_ebzdt",
+              "targetPosition": {
+                "x": 5,
+                "y": 4
+              }
+            }
+          ],
+          "ap": 2,
+          "crystals": 0
+        },
+        {
+          "target": "Sjor",
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "black_fire_1_1789393357897_ebzdt"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "black_fire_1_1789393357897_ebzdt",
+              "to": "B3"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "black_fire_1_1789393357897_ebzdt",
+              "targetPosition": "B2"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "black_fire_1_1789393357897_ebzdt"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "black_fire_1_1789393357897_ebzdt",
+              "to": {
+                "x": 1,
+                "y": 2
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "black_fire_1_1789393357897_ebzdt",
+              "targetPosition": {
+                "x": 1,
+                "y": 1
+              }
+            }
+          ],
+          "ap": 4,
+          "crystals": 4
+        }
+      ]
+    },
+    {
+      "w": 792,
+      "b": 1,
+      "seat": "white",
+      "mask": 0,
+      "witnesses": []
+    },
+    {
+      "w": 792,
+      "b": 1,
+      "seat": "black",
+      "mask": 0,
+      "witnesses": []
+    },
+    {
+      "w": 792,
+      "b": 8,
+      "seat": "white",
+      "mask": 7,
+      "witnesses": [
+        {
+          "target": "Hi",
+          "actions": [
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "lightning_1",
+              "position": "E5"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "unit-white-2-0",
+              "to": "J9"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "unit-white-2-0",
+              "targetPosition": "J10"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "lightning_1",
+              "position": {
+                "x": 4,
+                "y": 4
+              }
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "unit-white-2-0",
+              "to": {
+                "x": 9,
+                "y": 8
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "unit-white-2-0",
+              "targetPosition": {
+                "x": 9,
+                "y": 9
+              }
+            }
+          ],
+          "ap": 4,
+          "crystals": 3
+        },
+        {
+          "target": "Sjor",
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "white_fire_1_1789393358076_lahae"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393358076_lahae",
+              "to": "H9"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393358076_lahae",
+              "targetPosition": "H10"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "white_fire_1_1789393358076_lahae"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393358076_lahae",
+              "to": {
+                "x": 7,
+                "y": 8
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393358076_lahae",
+              "targetPosition": {
+                "x": 7,
+                "y": 9
+              }
+            }
+          ],
+          "ap": 4,
+          "crystals": 4
+        },
+        {
+          "target": "Muju",
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393358076_lahae",
+              "to": "I8"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393358076_lahae",
+              "targetPosition": "I9"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393358076_lahae",
+              "to": {
+                "x": 8,
+                "y": 7
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393358076_lahae",
+              "targetPosition": {
+                "x": 8,
+                "y": 8
+              }
+            }
+          ],
+          "ap": 4,
+          "crystals": 0
+        }
+      ]
+    },
+    {
+      "w": 792,
+      "b": 8,
+      "seat": "black",
+      "mask": 1,
+      "witnesses": [
+        {
+          "target": "Hi",
+          "actions": [
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "lightning_1",
+              "position": "J9"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "unit-black-2-0",
+              "to": "E5"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "unit-black-2-0",
+              "targetPosition": "E6"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "lightning_1",
+              "position": {
+                "x": 9,
+                "y": 8
+              }
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "unit-black-2-0",
+              "to": {
+                "x": 4,
+                "y": 4
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "unit-black-2-0",
+              "targetPosition": {
+                "x": 4,
+                "y": 5
+              }
+            }
+          ],
+          "ap": 4,
+          "crystals": 3
+        }
+      ]
+    },
+    {
+      "w": 792,
+      "b": 721,
+      "seat": "white",
+      "mask": 7,
+      "witnesses": [
+        {
+          "target": "Hi",
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393358096_gzgcc",
+              "to": "H6"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393358096_gzgcc",
+              "targetPosition": "H7"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393358096_gzgcc",
+              "to": {
+                "x": 7,
+                "y": 5
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393358096_gzgcc",
+              "targetPosition": {
+                "x": 7,
+                "y": 6
+              }
+            }
+          ],
+          "ap": 3,
+          "crystals": 0
+        },
+        {
+          "target": "Sjor",
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "white_fire_1_1789393358096_gzgcc"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393358096_gzgcc",
+              "to": "I8"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393358096_gzgcc",
+              "targetPosition": "I9"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "white_fire_1_1789393358096_gzgcc"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393358096_gzgcc",
+              "to": {
+                "x": 8,
+                "y": 7
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393358096_gzgcc",
+              "targetPosition": {
+                "x": 8,
+                "y": 8
+              }
+            }
+          ],
+          "ap": 4,
+          "crystals": 4
+        },
+        {
+          "target": "Muju",
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393358096_gzgcc",
+              "to": "J7"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393358096_gzgcc",
+              "targetPosition": "J8"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393358096_gzgcc",
+              "to": {
+                "x": 9,
+                "y": 6
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393358096_gzgcc",
+              "targetPosition": {
+                "x": 9,
+                "y": 7
+              }
+            }
+          ],
+          "ap": 4,
+          "crystals": 0
+        }
+      ]
+    },
+    {
+      "w": 792,
+      "b": 721,
+      "seat": "black",
+      "mask": 1,
+      "witnesses": [
+        {
+          "target": "Hi",
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "black_fire_1_1789393358096_2dodp",
+              "to": "E7"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "black_fire_1_1789393358096_2dodp",
+              "targetPosition": "E6"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "black_fire_1_1789393358096_2dodp",
+              "to": {
+                "x": 4,
+                "y": 6
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "black_fire_1_1789393358096_2dodp",
+              "targetPosition": {
+                "x": 4,
+                "y": 5
+              }
+            }
+          ],
+          "ap": 3,
+          "crystals": 0
+        }
+      ]
+    },
+    {
+      "w": 792,
+      "b": 791,
+      "seat": "white",
+      "mask": 3,
+      "witnesses": [
+        {
+          "target": "Hi",
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393358142_q13w9",
+              "to": "G6"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393358142_q13w9",
+              "targetPosition": "G5"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393358142_q13w9",
+              "to": {
+                "x": 6,
+                "y": 5
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393358142_q13w9",
+              "targetPosition": {
+                "x": 6,
+                "y": 4
+              }
+            }
+          ],
+          "ap": 2,
+          "crystals": 0
+        },
+        {
+          "target": "Sjor",
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "white_fire_1_1789393358142_q13w9"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393358142_q13w9",
+              "to": "I8"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393358142_q13w9",
+              "targetPosition": "I9"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "white_fire_1_1789393358142_q13w9"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393358142_q13w9",
+              "to": {
+                "x": 8,
+                "y": 7
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393358142_q13w9",
+              "targetPosition": {
+                "x": 8,
+                "y": 8
+              }
+            }
+          ],
+          "ap": 4,
+          "crystals": 4
+        }
+      ]
+    },
+    {
+      "w": 792,
+      "b": 791,
+      "seat": "black",
+      "mask": 1,
+      "witnesses": [
+        {
+          "target": "Hi",
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "black_fire_1_1789393358142_quxo7",
+              "to": "E5"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "black_fire_1_1789393358142_quxo7",
+              "targetPosition": "E6"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "black_fire_1_1789393358142_quxo7",
+              "to": {
+                "x": 4,
+                "y": 4
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "black_fire_1_1789393358142_quxo7",
+              "targetPosition": {
+                "x": 4,
+                "y": 5
+              }
+            }
+          ],
+          "ap": 2,
+          "crystals": 0
+        }
+      ]
+    },
+    {
+      "w": 792,
+      "b": 792,
+      "seat": "white",
+      "mask": 3,
+      "witnesses": [
+        {
+          "target": "Hi",
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393358161_w39ww",
+              "to": "F6"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393358161_w39ww",
+              "targetPosition": "F5"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393358161_w39ww",
+              "to": {
+                "x": 5,
+                "y": 5
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393358161_w39ww",
+              "targetPosition": {
+                "x": 5,
+                "y": 4
+              }
+            }
+          ],
+          "ap": 2,
+          "crystals": 0
+        },
+        {
+          "target": "Sjor",
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "white_fire_1_1789393358161_w39ww"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393358161_w39ww",
+              "to": "I8"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393358161_w39ww",
+              "targetPosition": "I9"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "white_fire_1_1789393358161_w39ww"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393358161_w39ww",
+              "to": {
+                "x": 8,
+                "y": 7
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393358161_w39ww",
+              "targetPosition": {
+                "x": 8,
+                "y": 8
+              }
+            }
+          ],
+          "ap": 4,
+          "crystals": 4
+        }
+      ]
+    },
+    {
+      "w": 792,
+      "b": 792,
+      "seat": "black",
+      "mask": 3,
+      "witnesses": [
+        {
+          "target": "Hi",
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "black_fire_1_1789393358161_kym2v",
+              "to": "E5"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "black_fire_1_1789393358161_kym2v",
+              "targetPosition": "E6"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "black_fire_1_1789393358161_kym2v",
+              "to": {
+                "x": 4,
+                "y": 4
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "black_fire_1_1789393358161_kym2v",
+              "targetPosition": {
+                "x": 4,
+                "y": 5
+              }
+            }
+          ],
+          "ap": 2,
+          "crystals": 0
+        },
+        {
+          "target": "Sjor",
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "black_fire_1_1789393358161_kym2v"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "black_fire_1_1789393358161_kym2v",
+              "to": "B3"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "black_fire_1_1789393358161_kym2v",
+              "targetPosition": "B2"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "black_fire_1_1789393358161_kym2v"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "black_fire_1_1789393358161_kym2v",
+              "to": {
+                "x": 1,
+                "y": 2
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "black_fire_1_1789393358161_kym2v",
+              "targetPosition": {
+                "x": 1,
+                "y": 1
+              }
+            }
+          ],
+          "ap": 4,
+          "crystals": 4
+        }
+      ]
+    },
+    {
+      "w": 792,
+      "b": 796,
+      "seat": "white",
+      "mask": 3,
+      "witnesses": [
+        {
+          "target": "Hi",
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393358183_a0597",
+              "to": "G5"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393358183_a0597",
+              "targetPosition": "G4"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393358183_a0597",
+              "to": {
+                "x": 6,
+                "y": 4
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393358183_a0597",
+              "targetPosition": {
+                "x": 6,
+                "y": 3
+              }
+            }
+          ],
+          "ap": 3,
+          "crystals": 0
+        },
+        {
+          "target": "Sjor",
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "white_fire_1_1789393358183_a0597"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393358183_a0597",
+              "to": "I8"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393358183_a0597",
+              "targetPosition": "I9"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "white_fire_1_1789393358183_a0597"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "white_fire_1_1789393358183_a0597",
+              "to": {
+                "x": 8,
+                "y": 7
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "white_fire_1_1789393358183_a0597",
+              "targetPosition": {
+                "x": 8,
+                "y": 8
+              }
+            }
+          ],
+          "ap": 4,
+          "crystals": 4
+        }
+      ]
+    },
+    {
+      "w": 792,
+      "b": 796,
+      "seat": "black",
+      "mask": 3,
+      "witnesses": [
+        {
+          "target": "Hi",
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "black_fire_1_1789393358183_kz92x",
+              "to": "E5"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "black_fire_1_1789393358183_kz92x",
+              "targetPosition": "E6"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "black_fire_1_1789393358183_kz92x",
+              "to": {
+                "x": 4,
+                "y": 4
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "black_fire_1_1789393358183_kz92x",
+              "targetPosition": {
+                "x": 4,
+                "y": 5
+              }
+            }
+          ],
+          "ap": 3,
+          "crystals": 0
+        },
+        {
+          "target": "Sjor",
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "black_fire_1_1789393358183_kz92x"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "black_fire_1_1789393358183_kz92x",
+              "to": "B3"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "black_fire_1_1789393358183_kz92x",
+              "targetPosition": "B2"
+            }
+          ],
+          "rawActions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "black_fire_1_1789393358183_kz92x"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "black_fire_1_1789393358183_kz92x",
+              "to": {
+                "x": 1,
+                "y": 2
+              }
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "black_fire_1_1789393358183_kz92x",
+              "targetPosition": {
+                "x": 1,
+                "y": 1
+              }
+            }
+          ],
+          "ap": 4,
+          "crystals": 4
+        }
+      ]
+    }
+  ]
+}

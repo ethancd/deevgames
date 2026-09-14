@@ -1,0 +1,2668 @@
+{
+  "actions": 4,
+  "stationaryOpeningIncome": 6,
+  "homeClear": {
+    "initial": {
+      "phase": "playing",
+      "inactivityPlies": 0,
+      "progressThisTurn": false,
+      "board": {
+        "cells": [
+          [
+            {
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 1,
+                "y": 0
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 2,
+                "y": 0
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 3,
+                "y": 0
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 4,
+                "y": 0
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 5,
+                "y": 0
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 6,
+                "y": 0
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 7,
+                "y": 0
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 8,
+                "y": 0
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 9,
+                "y": 0
+              },
+              "resourceLayers": 10
+            }
+          ],
+          [
+            {
+              "position": {
+                "x": 0,
+                "y": 1
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 1,
+                "y": 1
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 2,
+                "y": 1
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 3,
+                "y": 1
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 4,
+                "y": 1
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 5,
+                "y": 1
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 6,
+                "y": 1
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 7,
+                "y": 1
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 8,
+                "y": 1
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 9,
+                "y": 1
+              },
+              "resourceLayers": 10
+            }
+          ],
+          [
+            {
+              "position": {
+                "x": 0,
+                "y": 2
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 1,
+                "y": 2
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 2,
+                "y": 2
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 3,
+                "y": 2
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 4,
+                "y": 2
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 5,
+                "y": 2
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 6,
+                "y": 2
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 7,
+                "y": 2
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 8,
+                "y": 2
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 9,
+                "y": 2
+              },
+              "resourceLayers": 10
+            }
+          ],
+          [
+            {
+              "position": {
+                "x": 0,
+                "y": 3
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 1,
+                "y": 3
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 2,
+                "y": 3
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 3,
+                "y": 3
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 4,
+                "y": 3
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 5,
+                "y": 3
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 6,
+                "y": 3
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 7,
+                "y": 3
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 8,
+                "y": 3
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 9,
+                "y": 3
+              },
+              "resourceLayers": 10
+            }
+          ],
+          [
+            {
+              "position": {
+                "x": 0,
+                "y": 4
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 1,
+                "y": 4
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 2,
+                "y": 4
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 3,
+                "y": 4
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 4,
+                "y": 4
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 5,
+                "y": 4
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 6,
+                "y": 4
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 7,
+                "y": 4
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 8,
+                "y": 4
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 9,
+                "y": 4
+              },
+              "resourceLayers": 10
+            }
+          ],
+          [
+            {
+              "position": {
+                "x": 0,
+                "y": 5
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 1,
+                "y": 5
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 2,
+                "y": 5
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 3,
+                "y": 5
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 4,
+                "y": 5
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 5,
+                "y": 5
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 6,
+                "y": 5
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 7,
+                "y": 5
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 8,
+                "y": 5
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 9,
+                "y": 5
+              },
+              "resourceLayers": 10
+            }
+          ],
+          [
+            {
+              "position": {
+                "x": 0,
+                "y": 6
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 1,
+                "y": 6
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 2,
+                "y": 6
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 3,
+                "y": 6
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 4,
+                "y": 6
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 5,
+                "y": 6
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 6,
+                "y": 6
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 7,
+                "y": 6
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 8,
+                "y": 6
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 9,
+                "y": 6
+              },
+              "resourceLayers": 10
+            }
+          ],
+          [
+            {
+              "position": {
+                "x": 0,
+                "y": 7
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 1,
+                "y": 7
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 2,
+                "y": 7
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 3,
+                "y": 7
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 4,
+                "y": 7
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 5,
+                "y": 7
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 6,
+                "y": 7
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 7,
+                "y": 7
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 8,
+                "y": 7
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 9,
+                "y": 7
+              },
+              "resourceLayers": 10
+            }
+          ],
+          [
+            {
+              "position": {
+                "x": 0,
+                "y": 8
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 1,
+                "y": 8
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 2,
+                "y": 8
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 3,
+                "y": 8
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 4,
+                "y": 8
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 5,
+                "y": 8
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 6,
+                "y": 8
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 7,
+                "y": 8
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 8,
+                "y": 8
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 9,
+                "y": 8
+              },
+              "resourceLayers": 10
+            }
+          ],
+          [
+            {
+              "position": {
+                "x": 0,
+                "y": 9
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 1,
+                "y": 9
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 2,
+                "y": 9
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 3,
+                "y": 9
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 4,
+                "y": 9
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 5,
+                "y": 9
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 6,
+                "y": 9
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 7,
+                "y": 9
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 8,
+                "y": 9
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 9,
+                "y": 9
+              },
+              "resourceLayers": 10
+            }
+          ]
+        ],
+        "units": [
+          {
+            "id": "tanka",
+            "definitionId": "metal_3",
+            "owner": "black",
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "hasMoved": false,
+            "hasAttacked": false,
+            "lastAttackKilled": false,
+            "canActThisTurn": true,
+            "damageTaken": 0,
+            "promotedThisPlacement": false
+          },
+          {
+            "id": "hi",
+            "definitionId": "fire_1",
+            "owner": "white",
+            "position": {
+              "x": 4,
+              "y": 0
+            },
+            "hasMoved": false,
+            "hasAttacked": false,
+            "lastAttackKilled": false,
+            "canActThisTurn": true,
+            "damageTaken": 0,
+            "promotedThisPlacement": false
+          },
+          {
+            "id": "radi",
+            "definitionId": "lightning_1",
+            "owner": "white",
+            "position": {
+              "x": 0,
+              "y": 3
+            },
+            "hasMoved": false,
+            "hasAttacked": false,
+            "lastAttackKilled": false,
+            "canActThisTurn": true,
+            "damageTaken": 0,
+            "promotedThisPlacement": false
+          }
+        ]
+      },
+      "players": {
+        "white": {
+          "id": "white",
+          "resources": 0,
+          "startCorner": {
+            "x": 0,
+            "y": 0
+          },
+          "resourcesGained": 0,
+          "resourcesUpkeep": 0
+        },
+        "black": {
+          "id": "black",
+          "resources": 0,
+          "startCorner": {
+            "x": 9,
+            "y": 9
+          },
+          "resourcesGained": 0,
+          "resourcesUpkeep": 0
+        }
+      },
+      "turn": {
+        "currentPlayer": "white",
+        "phase": "action",
+        "turnNumber": 8,
+        "actionsRemaining": 4
+      },
+      "winner": null,
+      "selectedUnit": null,
+      "validMoves": [],
+      "validAttacks": []
+    },
+    "minimumAP": 5,
+    "result": {
+      "status": "disproved",
+      "actions": [],
+      "nodes": 2573,
+      "scope": "current-turn target removal; all moves/attacks; home-blocked promotions"
+    },
+    "closeResult": {
+      "status": "proved",
+      "actions": [
+        {
+          "type": "MOVE",
+          "unitId": "hi",
+          "to": {
+            "x": 1,
+            "y": 0
+          }
+        },
+        {
+          "type": "ATTACK",
+          "unitId": "hi",
+          "targetPosition": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        {
+          "type": "MOVE",
+          "unitId": "radi",
+          "to": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        {
+          "type": "ATTACK",
+          "unitId": "radi",
+          "targetPosition": {
+            "x": 0,
+            "y": 0
+          }
+        }
+      ],
+      "nodes": 643,
+      "scope": "current-turn target removal; all moves/attacks; home-blocked promotions"
+    }
+  },
+  "spacedCleave": {
+    "initial": {
+      "phase": "playing",
+      "inactivityPlies": 0,
+      "progressThisTurn": false,
+      "board": {
+        "cells": [
+          [
+            {
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 1,
+                "y": 0
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 2,
+                "y": 0
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 3,
+                "y": 0
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 4,
+                "y": 0
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 5,
+                "y": 0
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 6,
+                "y": 0
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 7,
+                "y": 0
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 8,
+                "y": 0
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 9,
+                "y": 0
+              },
+              "resourceLayers": 10
+            }
+          ],
+          [
+            {
+              "position": {
+                "x": 0,
+                "y": 1
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 1,
+                "y": 1
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 2,
+                "y": 1
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 3,
+                "y": 1
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 4,
+                "y": 1
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 5,
+                "y": 1
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 6,
+                "y": 1
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 7,
+                "y": 1
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 8,
+                "y": 1
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 9,
+                "y": 1
+              },
+              "resourceLayers": 10
+            }
+          ],
+          [
+            {
+              "position": {
+                "x": 0,
+                "y": 2
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 1,
+                "y": 2
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 2,
+                "y": 2
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 3,
+                "y": 2
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 4,
+                "y": 2
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 5,
+                "y": 2
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 6,
+                "y": 2
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 7,
+                "y": 2
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 8,
+                "y": 2
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 9,
+                "y": 2
+              },
+              "resourceLayers": 10
+            }
+          ],
+          [
+            {
+              "position": {
+                "x": 0,
+                "y": 3
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 1,
+                "y": 3
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 2,
+                "y": 3
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 3,
+                "y": 3
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 4,
+                "y": 3
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 5,
+                "y": 3
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 6,
+                "y": 3
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 7,
+                "y": 3
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 8,
+                "y": 3
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 9,
+                "y": 3
+              },
+              "resourceLayers": 10
+            }
+          ],
+          [
+            {
+              "position": {
+                "x": 0,
+                "y": 4
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 1,
+                "y": 4
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 2,
+                "y": 4
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 3,
+                "y": 4
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 4,
+                "y": 4
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 5,
+                "y": 4
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 6,
+                "y": 4
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 7,
+                "y": 4
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 8,
+                "y": 4
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 9,
+                "y": 4
+              },
+              "resourceLayers": 10
+            }
+          ],
+          [
+            {
+              "position": {
+                "x": 0,
+                "y": 5
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 1,
+                "y": 5
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 2,
+                "y": 5
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 3,
+                "y": 5
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 4,
+                "y": 5
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 5,
+                "y": 5
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 6,
+                "y": 5
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 7,
+                "y": 5
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 8,
+                "y": 5
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 9,
+                "y": 5
+              },
+              "resourceLayers": 10
+            }
+          ],
+          [
+            {
+              "position": {
+                "x": 0,
+                "y": 6
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 1,
+                "y": 6
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 2,
+                "y": 6
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 3,
+                "y": 6
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 4,
+                "y": 6
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 5,
+                "y": 6
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 6,
+                "y": 6
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 7,
+                "y": 6
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 8,
+                "y": 6
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 9,
+                "y": 6
+              },
+              "resourceLayers": 10
+            }
+          ],
+          [
+            {
+              "position": {
+                "x": 0,
+                "y": 7
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 1,
+                "y": 7
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 2,
+                "y": 7
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 3,
+                "y": 7
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 4,
+                "y": 7
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 5,
+                "y": 7
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 6,
+                "y": 7
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 7,
+                "y": 7
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 8,
+                "y": 7
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 9,
+                "y": 7
+              },
+              "resourceLayers": 10
+            }
+          ],
+          [
+            {
+              "position": {
+                "x": 0,
+                "y": 8
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 1,
+                "y": 8
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 2,
+                "y": 8
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 3,
+                "y": 8
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 4,
+                "y": 8
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 5,
+                "y": 8
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 6,
+                "y": 8
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 7,
+                "y": 8
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 8,
+                "y": 8
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 9,
+                "y": 8
+              },
+              "resourceLayers": 10
+            }
+          ],
+          [
+            {
+              "position": {
+                "x": 0,
+                "y": 9
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 1,
+                "y": 9
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 2,
+                "y": 9
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 3,
+                "y": 9
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 4,
+                "y": 9
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 5,
+                "y": 9
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 6,
+                "y": 9
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 7,
+                "y": 9
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 8,
+                "y": 9
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 9,
+                "y": 9
+              },
+              "resourceLayers": 10
+            }
+          ]
+        ],
+        "units": [
+          {
+            "id": "kagari",
+            "definitionId": "fire_3",
+            "owner": "white",
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "hasMoved": false,
+            "hasAttacked": false,
+            "lastAttackKilled": false,
+            "canActThisTurn": true,
+            "damageTaken": 0,
+            "promotedThisPlacement": false
+          },
+          {
+            "id": "p1",
+            "definitionId": "plant_1",
+            "owner": "black",
+            "position": {
+              "x": 2,
+              "y": 0
+            },
+            "hasMoved": false,
+            "hasAttacked": false,
+            "lastAttackKilled": false,
+            "canActThisTurn": true,
+            "damageTaken": 0,
+            "promotedThisPlacement": false
+          },
+          {
+            "id": "p2",
+            "definitionId": "plant_1",
+            "owner": "black",
+            "position": {
+              "x": 4,
+              "y": 0
+            },
+            "hasMoved": false,
+            "hasAttacked": false,
+            "lastAttackKilled": false,
+            "canActThisTurn": true,
+            "damageTaken": 0,
+            "promotedThisPlacement": false
+          },
+          {
+            "id": "p3",
+            "definitionId": "plant_1",
+            "owner": "black",
+            "position": {
+              "x": 6,
+              "y": 0
+            },
+            "hasMoved": false,
+            "hasAttacked": false,
+            "lastAttackKilled": false,
+            "canActThisTurn": true,
+            "damageTaken": 0,
+            "promotedThisPlacement": false
+          }
+        ]
+      },
+      "players": {
+        "white": {
+          "id": "white",
+          "resources": 0,
+          "startCorner": {
+            "x": 0,
+            "y": 0
+          },
+          "resourcesGained": 0,
+          "resourcesUpkeep": 0
+        },
+        "black": {
+          "id": "black",
+          "resources": 0,
+          "startCorner": {
+            "x": 9,
+            "y": 9
+          },
+          "resourcesGained": 0,
+          "resourcesUpkeep": 0
+        }
+      },
+      "turn": {
+        "currentPlayer": "white",
+        "phase": "action",
+        "turnNumber": 8,
+        "actionsRemaining": 4
+      },
+      "winner": null,
+      "selectedUnit": null,
+      "validMoves": [],
+      "validAttacks": []
+    },
+    "maxKills": 2,
+    "minimumAPForMaxKills": 4,
+    "actions": [
+      {
+        "type": "MOVE",
+        "unitId": "kagari",
+        "to": {
+          "x": 1,
+          "y": 0
+        }
+      },
+      {
+        "type": "ATTACK",
+        "unitId": "kagari",
+        "targetPosition": {
+          "x": 2,
+          "y": 0
+        }
+      },
+      {
+        "type": "MOVE",
+        "unitId": "kagari",
+        "to": {
+          "x": 3,
+          "y": 0
+        }
+      },
+      {
+        "type": "ATTACK",
+        "unitId": "kagari",
+        "targetPosition": {
+          "x": 4,
+          "y": 0
+        }
+      }
+    ],
+    "nodes": 147
+  },
+  "clusteredCleave": {
+    "initial": {
+      "phase": "playing",
+      "inactivityPlies": 0,
+      "progressThisTurn": false,
+      "board": {
+        "cells": [
+          [
+            {
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 1,
+                "y": 0
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 2,
+                "y": 0
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 3,
+                "y": 0
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 4,
+                "y": 0
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 5,
+                "y": 0
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 6,
+                "y": 0
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 7,
+                "y": 0
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 8,
+                "y": 0
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 9,
+                "y": 0
+              },
+              "resourceLayers": 10
+            }
+          ],
+          [
+            {
+              "position": {
+                "x": 0,
+                "y": 1
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 1,
+                "y": 1
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 2,
+                "y": 1
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 3,
+                "y": 1
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 4,
+                "y": 1
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 5,
+                "y": 1
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 6,
+                "y": 1
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 7,
+                "y": 1
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 8,
+                "y": 1
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 9,
+                "y": 1
+              },
+              "resourceLayers": 10
+            }
+          ],
+          [
+            {
+              "position": {
+                "x": 0,
+                "y": 2
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 1,
+                "y": 2
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 2,
+                "y": 2
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 3,
+                "y": 2
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 4,
+                "y": 2
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 5,
+                "y": 2
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 6,
+                "y": 2
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 7,
+                "y": 2
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 8,
+                "y": 2
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 9,
+                "y": 2
+              },
+              "resourceLayers": 10
+            }
+          ],
+          [
+            {
+              "position": {
+                "x": 0,
+                "y": 3
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 1,
+                "y": 3
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 2,
+                "y": 3
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 3,
+                "y": 3
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 4,
+                "y": 3
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 5,
+                "y": 3
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 6,
+                "y": 3
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 7,
+                "y": 3
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 8,
+                "y": 3
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 9,
+                "y": 3
+              },
+              "resourceLayers": 10
+            }
+          ],
+          [
+            {
+              "position": {
+                "x": 0,
+                "y": 4
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 1,
+                "y": 4
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 2,
+                "y": 4
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 3,
+                "y": 4
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 4,
+                "y": 4
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 5,
+                "y": 4
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 6,
+                "y": 4
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 7,
+                "y": 4
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 8,
+                "y": 4
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 9,
+                "y": 4
+              },
+              "resourceLayers": 10
+            }
+          ],
+          [
+            {
+              "position": {
+                "x": 0,
+                "y": 5
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 1,
+                "y": 5
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 2,
+                "y": 5
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 3,
+                "y": 5
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 4,
+                "y": 5
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 5,
+                "y": 5
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 6,
+                "y": 5
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 7,
+                "y": 5
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 8,
+                "y": 5
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 9,
+                "y": 5
+              },
+              "resourceLayers": 10
+            }
+          ],
+          [
+            {
+              "position": {
+                "x": 0,
+                "y": 6
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 1,
+                "y": 6
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 2,
+                "y": 6
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 3,
+                "y": 6
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 4,
+                "y": 6
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 5,
+                "y": 6
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 6,
+                "y": 6
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 7,
+                "y": 6
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 8,
+                "y": 6
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 9,
+                "y": 6
+              },
+              "resourceLayers": 10
+            }
+          ],
+          [
+            {
+              "position": {
+                "x": 0,
+                "y": 7
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 1,
+                "y": 7
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 2,
+                "y": 7
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 3,
+                "y": 7
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 4,
+                "y": 7
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 5,
+                "y": 7
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 6,
+                "y": 7
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 7,
+                "y": 7
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 8,
+                "y": 7
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 9,
+                "y": 7
+              },
+              "resourceLayers": 10
+            }
+          ],
+          [
+            {
+              "position": {
+                "x": 0,
+                "y": 8
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 1,
+                "y": 8
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 2,
+                "y": 8
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 3,
+                "y": 8
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 4,
+                "y": 8
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 5,
+                "y": 8
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 6,
+                "y": 8
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 7,
+                "y": 8
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 8,
+                "y": 8
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 9,
+                "y": 8
+              },
+              "resourceLayers": 10
+            }
+          ],
+          [
+            {
+              "position": {
+                "x": 0,
+                "y": 9
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 1,
+                "y": 9
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 2,
+                "y": 9
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 3,
+                "y": 9
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 4,
+                "y": 9
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 5,
+                "y": 9
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 6,
+                "y": 9
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 7,
+                "y": 9
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 8,
+                "y": 9
+              },
+              "resourceLayers": 10
+            },
+            {
+              "position": {
+                "x": 9,
+                "y": 9
+              },
+              "resourceLayers": 10
+            }
+          ]
+        ],
+        "units": [
+          {
+            "id": "kagari",
+            "definitionId": "fire_3",
+            "owner": "white",
+            "position": {
+              "x": 4,
+              "y": 4
+            },
+            "hasMoved": false,
+            "hasAttacked": false,
+            "lastAttackKilled": false,
+            "canActThisTurn": true,
+            "damageTaken": 0,
+            "promotedThisPlacement": false
+          },
+          {
+            "id": "p1",
+            "definitionId": "plant_1",
+            "owner": "black",
+            "position": {
+              "x": 5,
+              "y": 4
+            },
+            "hasMoved": false,
+            "hasAttacked": false,
+            "lastAttackKilled": false,
+            "canActThisTurn": true,
+            "damageTaken": 0,
+            "promotedThisPlacement": false
+          },
+          {
+            "id": "p2",
+            "definitionId": "plant_1",
+            "owner": "black",
+            "position": {
+              "x": 4,
+              "y": 5
+            },
+            "hasMoved": false,
+            "hasAttacked": false,
+            "lastAttackKilled": false,
+            "canActThisTurn": true,
+            "damageTaken": 0,
+            "promotedThisPlacement": false
+          },
+          {
+            "id": "p3",
+            "definitionId": "plant_1",
+            "owner": "black",
+            "position": {
+              "x": 3,
+              "y": 4
+            },
+            "hasMoved": false,
+            "hasAttacked": false,
+            "lastAttackKilled": false,
+            "canActThisTurn": true,
+            "damageTaken": 0,
+            "promotedThisPlacement": false
+          }
+        ]
+      },
+      "players": {
+        "white": {
+          "id": "white",
+          "resources": 0,
+          "startCorner": {
+            "x": 0,
+            "y": 0
+          },
+          "resourcesGained": 0,
+          "resourcesUpkeep": 0
+        },
+        "black": {
+          "id": "black",
+          "resources": 0,
+          "startCorner": {
+            "x": 9,
+            "y": 9
+          },
+          "resourcesGained": 0,
+          "resourcesUpkeep": 0
+        }
+      },
+      "turn": {
+        "currentPlayer": "white",
+        "phase": "action",
+        "turnNumber": 8,
+        "actionsRemaining": 4
+      },
+      "winner": null,
+      "selectedUnit": null,
+      "validMoves": [],
+      "validAttacks": []
+    },
+    "maxKills": 3,
+    "minimumAPForMaxKills": 3,
+    "actions": [
+      {
+        "type": "ATTACK",
+        "unitId": "kagari",
+        "targetPosition": {
+          "x": 4,
+          "y": 5
+        }
+      },
+      {
+        "type": "ATTACK",
+        "unitId": "kagari",
+        "targetPosition": {
+          "x": 3,
+          "y": 4
+        }
+      },
+      {
+        "type": "ATTACK",
+        "unitId": "kagari",
+        "targetPosition": {
+          "x": 5,
+          "y": 4
+        }
+      }
+    ],
+    "nodes": 839
+  },
+  "unopposedOpening": {
+    "pathLength": 15,
+    "totalRequiredAP": 9,
+    "firstKillOwnTurn": 3,
+    "log": [
+      {
+        "round": 1,
+        "player": "white",
+        "action": {
+          "type": "MOVE",
+          "unitId": "white_fire_1_1789191176426_njfkr",
+          "to": {
+            "x": 2,
+            "y": 7
+          }
+        }
+      },
+      {
+        "round": 1,
+        "player": "white",
+        "action": {
+          "type": "END_ACTION_PHASE"
+        }
+      },
+      {
+        "round": 1,
+        "player": "black",
+        "action": {
+          "type": "END_ACTION_PHASE"
+        }
+      },
+      {
+        "round": 2,
+        "player": "white",
+        "action": {
+          "type": "END_PLACE_PHASE"
+        }
+      },
+      {
+        "round": 2,
+        "player": "white",
+        "action": {
+          "type": "MOVE",
+          "unitId": "white_fire_1_1789191176426_njfkr",
+          "to": {
+            "x": 9,
+            "y": 7
+          }
+        }
+      },
+      {
+        "round": 2,
+        "player": "white",
+        "action": {
+          "type": "END_ACTION_PHASE"
+        }
+      },
+      {
+        "round": 2,
+        "player": "black",
+        "action": {
+          "type": "END_PLACE_PHASE"
+        }
+      },
+      {
+        "round": 2,
+        "player": "black",
+        "action": {
+          "type": "END_ACTION_PHASE"
+        }
+      },
+      {
+        "round": 3,
+        "player": "white",
+        "action": {
+          "type": "END_PLACE_PHASE"
+        }
+      },
+      {
+        "round": 3,
+        "player": "white",
+        "action": {
+          "type": "ATTACK",
+          "unitId": "white_fire_1_1789191176426_njfkr",
+          "targetPosition": {
+            "x": 9,
+            "y": 8
+          }
+        }
+      }
+    ]
+  }
+}

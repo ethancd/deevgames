@@ -3,6 +3,7 @@ import { reserveTake } from '../../src/game/mining';
 import { upkeepForTier } from '../../src/game/upkeep';
 import type { UnitDefinition } from '../../src/game/types';
 import { getAttackModifier } from '../../src/game/elements';
+import { MAX_RESOURCE_RESERVE } from '../../src/game/resourceMap';
 
 export type Catalogue = readonly UnitDefinition[];
 export function validateCatalogue(catalogue: Catalogue): void {
@@ -15,17 +16,17 @@ export function validateCatalogue(catalogue: Catalogue): void {
     for (const key of ['attack', 'defense', 'speed', 'mining', 'cost'] as const) {
       if (!Number.isInteger(unit[key]) || unit[key] < (key === 'attack' || key === 'mining' ? 0 : 1)) throw new Error(`Invalid ${unit.id}.${key}`);
     }
-    if (unit.mining > 5) throw new Error('Catalogue mining is capped at five');
+    if (unit.mining > 8) throw new Error('Catalogue mining is capped at eight');
   }
 }
 
 export const ACTIONS = 6;
 export const MAX_NEIGHBORS = 4;
 export const DISTANCES = Array.from({ length: 18 }, (_, i) => i + 1);
-export const RESERVES = { ordinary: 4, shelf: 8, rich: 10 };
+export const RESERVES = { ordinary: 4, shelf: 8, rich: 16 };
 
 export function passiveCurve(unit: UnitDefinition, reserve: number, turns = 6): number[] {
-  if(!Number.isInteger(reserve)||reserve<0||reserve>10||!Number.isInteger(turns)||turns<0)throw new Error('Valid reserve and horizon required');
+  if(!Number.isInteger(reserve)||reserve<0||reserve>MAX_RESOURCE_RESERVE||!Number.isInteger(turns)||turns<0)throw new Error('Valid reserve and horizon required');
   const curve = [0]; let left = reserve;
   for (let turn = 1; turn <= turns; turn++) {
     const take = reserveTake(unit.mining, left); left -= take;
@@ -148,7 +149,7 @@ export function solveRoles(catalogue: Catalogue): Record<string, RoleEvidence> {
     }
   }
   for (const target of catalogue) for (const distance of DISTANCES) for (const actions of [1, 2, 3, 4, 5, 6]) {
-    for (const mine of [0, 1, 2, 3, 4, 5]) for (const guard of guards) {
+    for (const mine of [0, 1, 2, 3, 4, 5, 6, 7, 8]) for (const guard of guards) {
       mission(`strike ${target.id} at distance ${distance} within ${actions} actions; mine >=${mine} crystals at turn end on rich ground; survive ${guard?.id ?? 'no'} hit`,
         u => (mine === 0 || u.mining >= mine) && strikeActions(u, distance) <= actions &&
           power(u, target) >= target.defense && (!guard || u.defense > power(guard, u)));

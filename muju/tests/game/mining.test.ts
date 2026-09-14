@@ -10,7 +10,7 @@ import {checkInvariants} from '../../lab/harness/invariants';
 describe('passive income',()=>{
  it.each(UNIT_DEFINITIONS.map(d=>[d.id,d.mining] as const))('%s takes min(Mining, reserve), including zero', (id,mining)=>{
   const unit=createUnit(id,'white',{x:0,y:0});
-  for(let reserve=0;reserve<=10;reserve++)expect(unitEndOfTurnTake(unit,{position:unit.position,resourceLayers:reserve})).toBe(Math.min(mining,reserve));
+  for(let reserve=0;reserve<=16;reserve++)expect(unitEndOfTurnTake(unit,{position:unit.position,resourceLayers:reserve})).toBe(Math.min(mining,reserve));
  });
  it('collects unconditionally from moved, attacked, bought, promoted and inactive pieces',()=>{
   const state=createInitialGameState();
@@ -27,7 +27,7 @@ describe('passive income',()=>{
   const moved=applyAction(state,{type:'MOVE',unitId:u.id,to:{x:2,y:1}});
   const income=endOfTurnIncome(moved,'white');
   expect(income.total).toBe(6);expect(income.state.turn.actionsRemaining).toBe(3);
-  expect(income.state.board.cells[1][1].resourceLayers).toBe(10);
+  expect(income.state.board.cells[1][1].resourceLayers).toBe(8);
   expect(income.state.board.cells[1][2].resourceLayers).toBe(2);
   expect(income.state.players.black.resources).toBe(0);
   expect(getTotalBoardResources(income.state.board)+income.total).toBe(INITIAL_MAP_RESOURCES);

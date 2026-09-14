@@ -5,12 +5,13 @@ interface VictoryScreenProps {
   winner: PlayerId | null;
   reason?: VictoryReason;
   onPlayAgain: () => void;
+  analysisUrl: string;
   onViewHistory?: () => void;
   playerNames?: { white: string; black: string };
   perspectivePlayer?: PlayerId | null;
 }
 
-export function VictoryScreen({ winner, reason, onPlayAgain, onViewHistory, playerNames, perspectivePlayer = 'white' }: VictoryScreenProps) {
+export function VictoryScreen({ winner, reason, onPlayAgain, analysisUrl, onViewHistory, playerNames, perspectivePlayer = 'white' }: VictoryScreenProps) {
   const isPlayerWinner = !!winner && (perspectivePlayer === null || winner === perspectivePlayer);
   const winnerName = !winner ? 'Draw' : playerNames
     ? playerNames[winner]
@@ -29,6 +30,7 @@ export function VictoryScreen({ winner, reason, onPlayAgain, onViewHistory, play
 
         <p className="text-gray-400 mb-6">
           {!winner ? `${INACTIVITY_LIMIT} consecutive player turns passed without a kill. Crystal income does not reset the clock.` : reason === 'home-checkmate' ? 'Checkmate! The enemy home is occupied, and no legal reply can remove the invading unit.' : reason === 'upkeep-elimination' ? 'All remaining forces were released during upkeep.' : reason === 'home-occupation' ? `${winnerName} held the enemy home corner until the start of their turn!`
+            : reason === 'timeout' ? `${playerNames ? playerNames[winner === 'white' ? 'black' : 'white'] : winner === 'white' ? 'Black' : 'White'} ran out of time.`
             : reason === 'resignation' ? 'The opponent resigned.' : playerNames
             ? `${winnerName} has eliminated all enemy forces!`
             : (isPlayerWinner
@@ -36,6 +38,9 @@ export function VictoryScreen({ winner, reason, onPlayAgain, onViewHistory, play
                 : 'Your forces have been eliminated.')}
         </p>
 
+        <a href={analysisUrl} className="block mb-4 px-6 py-3 bg-cyan-700 hover:bg-cyan-800 text-white font-medium rounded-lg transition-colors">
+          Analyze this game
+        </a>
         <button
           onClick={onPlayAgain}
           className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { HISTORY_NOTATION, type MoveHistoryEntry, type RoomMoveHistory } from '../game/moveHistory';
 import type { PlayerId } from '../game/types';
 import type { OnlineConnection } from './types';
-import { roomRequest } from './client';
+import { analysisUrl, roomRequest } from './client';
 import './RoomHistory.css';
 
 function Outcome({ entry }: { entry: MoveHistoryEntry }) {
@@ -28,7 +28,6 @@ export function RoomHistory({ connection, revision, names, onClose }: {
   const closeButton = useRef<HTMLButtonElement>(null);
   const scroll = useRef<HTMLDivElement>(null);
   const followLatest = useRef(true);
-  const analysisUrl = (sequence?: number) => `/muju/analysis?room=${connection.roomId}&server=${encodeURIComponent(connection.serverUrl)}${connection.player ? '' : '&watch=1'}${sequence === undefined ? '' : `&event=${sequence}`}`;
 
   useEffect(() => {
     const opener = document.activeElement;
@@ -70,7 +69,7 @@ export function RoomHistory({ connection, revision, names, onClose }: {
       <button type="button" disabled={loading || before === undefined} onClick={() => { followLatest.current = true; setBefore(undefined); }}>Latest →</button>
     </nav>
     <div className="history-update" role="status">{loading ? 'Updating history…' : error ? 'History unavailable' : `Up to date · revision ${data?.revision ?? revision}`}</div>
-    <a className="history-analysis-link" href={analysisUrl()}>Analyze game →</a>
+    <a className="history-analysis-link" href={analysisUrl(connection)}>Analyze game →</a>
     {error && <p className="history-error" role="alert">{error} <button onClick={() => setRetry(value => value + 1)}>Retry</button></p>}
     <div className="history-scroll" ref={scroll} onScroll={event => {
       const node = event.currentTarget;
@@ -81,7 +80,7 @@ export function RoomHistory({ connection, revision, names, onClose }: {
       {groups.map(group => <section className="history-turn" key={group.key} aria-label={`Turn ${group.turnNumber} ${group.player}`}>
         <h3><i className={`player-dot ${group.player}`} />{group.turnNumber}.{group.player === 'white' ? 'White' : 'Black'} <span>{names[group.player]}</span></h3>
         <ol>{group.entries.map(entry => <li key={entry.sequence} className={`history-event history-${entry.kind}`}>
-          <a href={analysisUrl(entry.sequence)} title="Analyze this position"><code>{entry.notation}</code></a><p>{entry.description}</p><Outcome entry={entry} />
+          <a href={analysisUrl(connection, entry.sequence)} title="Analyze this position"><code>{entry.notation}</code></a><p>{entry.description}</p><Outcome entry={entry} />
         </li>)}</ol>
       </section>)}
     </div>

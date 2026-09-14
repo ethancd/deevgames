@@ -1,0 +1,14 @@
+.active-games-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.active-games-count { margin-left: 8px; padding: 2px 8px; border-radius: 20px; background: #1e3a5f; font-size: .8rem; }
+.active-games-list { display: grid; gap: 12px; padding: 0; margin: 16px 0 0; list-style: none; }
+.active-game { display: flex; align-items: center; gap: 16px; padding: 16px; border: 1px solid #334155; border-radius: 10px; background: #172033; }
+.active-game-info { display: flex; flex: 1; flex-direction: column; gap: 5px; min-width: 0; overflow-wrap: anywhere; font-size: .85rem; color: #cbd5e1; }
+.active-game-info strong { color: #f1f5f9; font-size: 1rem; }
+.active-game-versus, .active-game-info small { color: #94a3b8; }
+.active-game-status { font-size: .75rem; color: #cbd5e1; }
+.active-game-playing { color: #67e8f9; }
+.active-game button { flex: none; min-height: 44px; }
+.active-games-heading button { min-height: 44px; }
+@media (max-width: 440px) {
+  .active-game { align-items: stretch; flex-direction: column; gap: 12px; padding: 12px; }
+}

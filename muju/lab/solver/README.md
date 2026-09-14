@@ -23,7 +23,7 @@ The model measures:
   compares identical elemental relationships. It excludes build times, which
   are no longer a rule.
 - **Role witnesses:** cheapest qualifying units across strike, collect and
-  anchor tasks. Passive collection tasks span reserve 4/8/10, finite horizons
+  anchor tasks. Passive collection tasks span reserve 4/8/16, finite horizons
   and quotas; there is no action charged for mining. A strike can require
   income at the ending position, with movement/attack costs unchanged. Each
   current unit has a sole-cheapest witness in this declared grid. Counts depend

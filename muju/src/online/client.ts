@@ -1,5 +1,6 @@
-import type { ActionRequest, ObserverConnection, OnlineConnection, RoomAdmission, RoomChange, RoomConnection, RoomSnapshot } from './types';
+import type { ActionRequest, ActiveRoom, ObserverConnection, OnlineConnection, RoomAdmission, RoomChange, RoomConnection, RoomSnapshot } from './types';
 import type { PlayerId } from '../game/types';
+import type { TimeControl, TimeControlPreset } from './timeControl';
 
 export function normalizeServer(value: string) {
   const url = new URL(value);
@@ -53,7 +54,8 @@ export async function roomRequest<T>(serverUrl: string, path: string, body?: unk
   if (!response.ok) throw new OnlineError(result.error ?? 'Request failed.', result.code ?? 'REQUEST_FAILED', response.status);
   return result as T;
 }
-export const createRoom = (serverUrl: string, name: string, side: PlayerId, actionsPerTurn: import('../game/types').ActionsPerTurn = 4) => roomRequest<RoomAdmission>(serverUrl, '', { name, side, actionsPerTurn });
+export const createRoom = (serverUrl: string, name: string, side: PlayerId, actionsPerTurn: import('../game/types').ActionsPerTurn = 4, timeControl?: TimeControl | TimeControlPreset | null, blackCrystalHandicap = 0) => roomRequest<RoomAdmission>(serverUrl, '', { name, side, actionsPerTurn, timeControl, ...(blackCrystalHandicap > 0 ? { blackCrystalHandicap } : {}) });
+export const listActiveRooms = (serverUrl: string, signal?: AbortSignal) => roomRequest<{ rooms: ActiveRoom[] }>(serverUrl, '', undefined, undefined, signal);
 export const joinRoom = (serverUrl: string, roomId: string, name: string, inviteCode: string) => roomRequest<RoomAdmission>(serverUrl, `/${roomId}/join`, { name, inviteCode });
 export const restoreSeat = (c: RoomConnection) => roomRequest<RoomSnapshot>(c.serverUrl, `/${c.roomId}/restore`, { player: c.player }, c.token);
 export const readRoom = (c: OnlineConnection, signal?: AbortSignal) => roomRequest<RoomSnapshot>(c.serverUrl, `/${c.roomId}`, undefined, c.token, signal);
@@ -75,6 +77,9 @@ export function loadConnection(server: string, room: string): (RoomConnection & 
 }
 export function observerUrl(serverUrl: string, roomId: string) {
   return `${normalizeServer(serverUrl)}/muju/?room=${roomId}&watch=1`;
+}
+export function analysisUrl(connection: OnlineConnection, sequence?: number) {
+  return `/muju/analysis?room=${connection.roomId}&server=${encodeURIComponent(connection.serverUrl)}${connection.player ? '' : '&watch=1'}${sequence === undefined ? '' : `&event=${sequence}`}`;
 }
 export function invitationUrl(serverUrl: string, roomId: string, inviteCode: string) {
   return `${normalizeServer(serverUrl)}/muju/?room=${roomId}#invite=${inviteCode}`;

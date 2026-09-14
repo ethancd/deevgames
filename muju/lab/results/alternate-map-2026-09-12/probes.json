@@ -1,0 +1,6984 @@
+{
+  "geometry": {
+    "current": {
+      "total": 496,
+      "histogram": {
+        "0": 18,
+        "4": 50,
+        "8": 12,
+        "10": 20
+      },
+      "homeRadii": {
+        "2": 48,
+        "3": 64,
+        "4": 84,
+        "5": 104,
+        "6": 128
+      },
+      "centerPatch": 32,
+      "deltas": []
+    },
+    "alternate": {
+      "total": 480,
+      "histogram": {
+        "0": 18,
+        "4": 54,
+        "8": 8,
+        "10": 20
+      },
+      "homeRadii": {
+        "2": 60,
+        "3": 72,
+        "4": 84,
+        "5": 96,
+        "6": 116
+      },
+      "centerPatch": 64,
+      "deltas": [
+        {
+          "cell": "C1",
+          "from": 4,
+          "to": 10
+        },
+        {
+          "cell": "G2",
+          "from": 10,
+          "to": 4
+        },
+        {
+          "cell": "A3",
+          "from": 4,
+          "to": 10
+        },
+        {
+          "cell": "G3",
+          "from": 10,
+          "to": 4
+        },
+        {
+          "cell": "A4",
+          "from": 8,
+          "to": 4
+        },
+        {
+          "cell": "B4",
+          "from": 8,
+          "to": 4
+        },
+        {
+          "cell": "F4",
+          "from": 4,
+          "to": 8
+        },
+        {
+          "cell": "A5",
+          "from": 8,
+          "to": 4
+        },
+        {
+          "cell": "B5",
+          "from": 8,
+          "to": 4
+        },
+        {
+          "cell": "D5",
+          "from": 4,
+          "to": 8
+        },
+        {
+          "cell": "E5",
+          "from": 4,
+          "to": 8
+        },
+        {
+          "cell": "F5",
+          "from": 4,
+          "to": 8
+        },
+        {
+          "cell": "I5",
+          "from": 8,
+          "to": 4
+        },
+        {
+          "cell": "J5",
+          "from": 8,
+          "to": 4
+        },
+        {
+          "cell": "A6",
+          "from": 8,
+          "to": 4
+        },
+        {
+          "cell": "B6",
+          "from": 8,
+          "to": 4
+        },
+        {
+          "cell": "E6",
+          "from": 4,
+          "to": 8
+        },
+        {
+          "cell": "F6",
+          "from": 4,
+          "to": 8
+        },
+        {
+          "cell": "G6",
+          "from": 4,
+          "to": 8
+        },
+        {
+          "cell": "I6",
+          "from": 8,
+          "to": 4
+        },
+        {
+          "cell": "J6",
+          "from": 8,
+          "to": 4
+        },
+        {
+          "cell": "E7",
+          "from": 4,
+          "to": 8
+        },
+        {
+          "cell": "I7",
+          "from": 8,
+          "to": 4
+        },
+        {
+          "cell": "J7",
+          "from": 8,
+          "to": 4
+        },
+        {
+          "cell": "D8",
+          "from": 10,
+          "to": 4
+        },
+        {
+          "cell": "J8",
+          "from": 4,
+          "to": 10
+        },
+        {
+          "cell": "D9",
+          "from": 10,
+          "to": 4
+        },
+        {
+          "cell": "H10",
+          "from": 4,
+          "to": 10
+        }
+      ]
+    },
+    "homeExpansionOnly": {
+      "total": 496,
+      "histogram": {
+        "0": 18,
+        "4": 50,
+        "8": 12,
+        "10": 20
+      },
+      "homeRadii": {
+        "2": 60,
+        "3": 76,
+        "4": 96,
+        "5": 116,
+        "6": 140
+      },
+      "centerPatch": 32,
+      "deltas": [
+        {
+          "cell": "C1",
+          "from": 4,
+          "to": 10
+        },
+        {
+          "cell": "G2",
+          "from": 10,
+          "to": 4
+        },
+        {
+          "cell": "A3",
+          "from": 4,
+          "to": 10
+        },
+        {
+          "cell": "G3",
+          "from": 10,
+          "to": 4
+        },
+        {
+          "cell": "D8",
+          "from": 10,
+          "to": 4
+        },
+        {
+          "cell": "J8",
+          "from": 4,
+          "to": 10
+        },
+        {
+          "cell": "D9",
+          "from": 10,
+          "to": 4
+        },
+        {
+          "cell": "H10",
+          "from": 4,
+          "to": 10
+        }
+      ]
+    },
+    "centerOnly": {
+      "total": 480,
+      "histogram": {
+        "0": 18,
+        "4": 54,
+        "8": 8,
+        "10": 20
+      },
+      "homeRadii": {
+        "2": 48,
+        "3": 60,
+        "4": 72,
+        "5": 84,
+        "6": 104
+      },
+      "centerPatch": 64,
+      "deltas": [
+        {
+          "cell": "A4",
+          "from": 8,
+          "to": 4
+        },
+        {
+          "cell": "B4",
+          "from": 8,
+          "to": 4
+        },
+        {
+          "cell": "F4",
+          "from": 4,
+          "to": 8
+        },
+        {
+          "cell": "A5",
+          "from": 8,
+          "to": 4
+        },
+        {
+          "cell": "B5",
+          "from": 8,
+          "to": 4
+        },
+        {
+          "cell": "D5",
+          "from": 4,
+          "to": 8
+        },
+        {
+          "cell": "E5",
+          "from": 4,
+          "to": 8
+        },
+        {
+          "cell": "F5",
+          "from": 4,
+          "to": 8
+        },
+        {
+          "cell": "I5",
+          "from": 8,
+          "to": 4
+        },
+        {
+          "cell": "J5",
+          "from": 8,
+          "to": 4
+        },
+        {
+          "cell": "A6",
+          "from": 8,
+          "to": 4
+        },
+        {
+          "cell": "B6",
+          "from": 8,
+          "to": 4
+        },
+        {
+          "cell": "E6",
+          "from": 4,
+          "to": 8
+        },
+        {
+          "cell": "F6",
+          "from": 4,
+          "to": 8
+        },
+        {
+          "cell": "G6",
+          "from": 4,
+          "to": 8
+        },
+        {
+          "cell": "I6",
+          "from": 8,
+          "to": 4
+        },
+        {
+          "cell": "J6",
+          "from": 8,
+          "to": 4
+        },
+        {
+          "cell": "E7",
+          "from": 4,
+          "to": 8
+        },
+        {
+          "cell": "I7",
+          "from": 8,
+          "to": 4
+        },
+        {
+          "cell": "J7",
+          "from": 8,
+          "to": 4
+        }
+      ]
+    }
+  },
+  "residence": [
+    {
+      "mining": 2,
+      "reserve": 4,
+      "fullTurns": 2,
+      "totalVisits": 2,
+      "takes": [
+        2,
+        2,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mining": 2,
+      "reserve": 8,
+      "fullTurns": 4,
+      "totalVisits": 4,
+      "takes": [
+        2,
+        2,
+        2,
+        2,
+        0
+      ]
+    },
+    {
+      "mining": 2,
+      "reserve": 10,
+      "fullTurns": 5,
+      "totalVisits": 5,
+      "takes": [
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "mining": 3,
+      "reserve": 4,
+      "fullTurns": 1,
+      "totalVisits": 2,
+      "takes": [
+        3,
+        1,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mining": 3,
+      "reserve": 8,
+      "fullTurns": 2,
+      "totalVisits": 3,
+      "takes": [
+        3,
+        3,
+        2,
+        0,
+        0
+      ]
+    },
+    {
+      "mining": 3,
+      "reserve": 10,
+      "fullTurns": 3,
+      "totalVisits": 4,
+      "takes": [
+        3,
+        3,
+        3,
+        1,
+        0
+      ]
+    },
+    {
+      "mining": 4,
+      "reserve": 4,
+      "fullTurns": 1,
+      "totalVisits": 1,
+      "takes": [
+        4,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mining": 4,
+      "reserve": 8,
+      "fullTurns": 2,
+      "totalVisits": 2,
+      "takes": [
+        4,
+        4,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mining": 4,
+      "reserve": 10,
+      "fullTurns": 2,
+      "totalVisits": 3,
+      "takes": [
+        4,
+        4,
+        2,
+        0,
+        0
+      ]
+    },
+    {
+      "mining": 5,
+      "reserve": 4,
+      "fullTurns": 0,
+      "totalVisits": 1,
+      "takes": [
+        4,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mining": 5,
+      "reserve": 8,
+      "fullTurns": 1,
+      "totalVisits": 2,
+      "takes": [
+        5,
+        3,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mining": 5,
+      "reserve": 10,
+      "fullTurns": 2,
+      "totalVisits": 2,
+      "takes": [
+        5,
+        5,
+        0,
+        0,
+        0
+      ]
+    }
+  ],
+  "anchors": [
+    {
+      "label": "C3",
+      "costs": {
+        "hi": 2,
+        "muju": 3
+      },
+      "spawnSquares": 6,
+      "spawnSquaresWithEnemyC3": null,
+      "emptyCentralRich": [],
+      "richStock": {
+        "current": 36,
+        "alternate": 48,
+        "homeExpansionOnly": 48,
+        "centerOnly": 36
+      }
+    },
+    {
+      "label": "B4",
+      "costs": {
+        "hi": 3,
+        "muju": 3
+      },
+      "spawnSquares": 5,
+      "spawnSquaresWithEnemyC3": 5,
+      "emptyCentralRich": [],
+      "richStock": {
+        "current": 36,
+        "alternate": 38,
+        "homeExpansionOnly": 42,
+        "centerOnly": 32
+      }
+    },
+    {
+      "label": "D5",
+      "costs": {
+        "hi": 3,
+        "muju": 6
+      },
+      "spawnSquares": 17,
+      "spawnSquaresWithEnemyC3": 2,
+      "emptyCentralRich": [],
+      "richStock": {
+        "current": 84,
+        "alternate": 80,
+        "homeExpansionOnly": 96,
+        "centerOnly": 68
+      }
+    },
+    {
+      "label": "E5",
+      "costs": {
+        "hi": 4,
+        "muju": 7
+      },
+      "spawnSquares": 22,
+      "spawnSquaresWithEnemyC3": 2,
+      "emptyCentralRich": [
+        "D5"
+      ],
+      "richStock": {
+        "current": 92,
+        "alternate": 92,
+        "homeExpansionOnly": 104,
+        "centerOnly": 80
+      }
+    },
+    {
+      "label": "F5",
+      "costs": {
+        "hi": 4,
+        "muju": 8
+      },
+      "spawnSquares": 27,
+      "spawnSquaresWithEnemyC3": 2,
+      "emptyCentralRich": [
+        "F4",
+        "D5",
+        "E5"
+      ],
+      "richStock": {
+        "current": 100,
+        "alternate": 108,
+        "homeExpansionOnly": 112,
+        "centerOnly": 96
+      }
+    },
+    {
+      "label": "H2",
+      "costs": {
+        "hi": 4,
+        "muju": 9
+      },
+      "spawnSquares": 13,
+      "spawnSquaresWithEnemyC3": 13,
+      "emptyCentralRich": [],
+      "richStock": {
+        "current": 46,
+        "alternate": 46,
+        "homeExpansionOnly": 46,
+        "centerOnly": 46
+      }
+    }
+  ],
+  "identicalInitialMovement": true,
+  "probes": [
+    {
+      "map": "current",
+      "radius": 2,
+      "width": 64,
+      "horizons": [
+        {
+          "turn": 1,
+          "total": 6,
+          "bank": 6,
+          "income": [
+            6
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "B1"
+            },
+            {
+              "unit": "start-1",
+              "square": "B2"
+            },
+            {
+              "unit": "start-2",
+              "square": "A2"
+            }
+          ],
+          "path": [
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        },
+        {
+          "turn": 2,
+          "total": 15,
+          "bank": 10,
+          "income": [
+            6,
+            9
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "B1"
+            },
+            {
+              "unit": "start-1",
+              "square": "B2"
+            },
+            {
+              "unit": "start-2",
+              "square": "A2"
+            },
+            {
+              "unit": "extra-2",
+              "square": "A1"
+            }
+          ],
+          "path": [
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        },
+        {
+          "turn": 3,
+          "total": 27,
+          "bank": 17,
+          "income": [
+            6,
+            9,
+            12
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "C1"
+            },
+            {
+              "unit": "start-1",
+              "square": "B2"
+            },
+            {
+              "unit": "start-2",
+              "square": "A2"
+            },
+            {
+              "unit": "extra-2",
+              "square": "A1"
+            },
+            {
+              "unit": "extra-3",
+              "square": "B1"
+            }
+          ],
+          "path": [
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        },
+        {
+          "turn": 4,
+          "total": 39,
+          "bank": 29,
+          "income": [
+            6,
+            9,
+            12,
+            12
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "C1"
+            },
+            {
+              "unit": "start-1",
+              "square": "B2"
+            },
+            {
+              "unit": "start-2",
+              "square": "A2"
+            },
+            {
+              "unit": "extra-2",
+              "square": "A1"
+            },
+            {
+              "unit": "extra-3",
+              "square": "B1"
+            }
+          ],
+          "path": [
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        },
+        {
+          "turn": 5,
+          "total": 47,
+          "bank": 37,
+          "income": [
+            6,
+            9,
+            12,
+            12,
+            8
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "A3"
+            },
+            {
+              "unit": "start-1",
+              "square": "B1"
+            },
+            {
+              "unit": "start-2",
+              "square": "B2"
+            },
+            {
+              "unit": "extra-2",
+              "square": "A1"
+            },
+            {
+              "unit": "extra-3",
+              "square": "A2"
+            }
+          ],
+          "path": [
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-1",
+              "to": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 1,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 1,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-1",
+              "to": {
+                "x": 2,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 1,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-1",
+              "to": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "map": "current",
+      "radius": 2,
+      "width": 256,
+      "horizons": [
+        {
+          "turn": 1,
+          "total": 6,
+          "bank": 6,
+          "income": [
+            6
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "B1"
+            },
+            {
+              "unit": "start-1",
+              "square": "B2"
+            },
+            {
+              "unit": "start-2",
+              "square": "A2"
+            }
+          ],
+          "path": [
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        },
+        {
+          "turn": 2,
+          "total": 15,
+          "bank": 10,
+          "income": [
+            6,
+            9
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "B1"
+            },
+            {
+              "unit": "start-1",
+              "square": "B2"
+            },
+            {
+              "unit": "start-2",
+              "square": "A2"
+            },
+            {
+              "unit": "extra-2",
+              "square": "A1"
+            }
+          ],
+          "path": [
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        },
+        {
+          "turn": 3,
+          "total": 27,
+          "bank": 17,
+          "income": [
+            6,
+            9,
+            12
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "C1"
+            },
+            {
+              "unit": "start-1",
+              "square": "B2"
+            },
+            {
+              "unit": "start-2",
+              "square": "A2"
+            },
+            {
+              "unit": "extra-2",
+              "square": "A1"
+            },
+            {
+              "unit": "extra-3",
+              "square": "B1"
+            }
+          ],
+          "path": [
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        },
+        {
+          "turn": 4,
+          "total": 39,
+          "bank": 29,
+          "income": [
+            6,
+            9,
+            12,
+            12
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "C1"
+            },
+            {
+              "unit": "start-1",
+              "square": "A2"
+            },
+            {
+              "unit": "start-2",
+              "square": "B2"
+            },
+            {
+              "unit": "extra-2",
+              "square": "A1"
+            },
+            {
+              "unit": "extra-3",
+              "square": "B1"
+            }
+          ],
+          "path": [
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-1",
+              "to": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-1",
+              "to": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 1,
+                "y": 1
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-1",
+              "to": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-1",
+              "to": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-1",
+              "to": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        },
+        {
+          "turn": 5,
+          "total": 48,
+          "bank": 38,
+          "income": [
+            6,
+            9,
+            12,
+            12,
+            9
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "C1"
+            },
+            {
+              "unit": "start-1",
+              "square": "A2"
+            },
+            {
+              "unit": "start-2",
+              "square": "B2"
+            },
+            {
+              "unit": "extra-2",
+              "square": "B1"
+            },
+            {
+              "unit": "extra-3",
+              "square": "A1"
+            }
+          ],
+          "path": [
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-1",
+              "to": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-1",
+              "to": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 1,
+                "y": 1
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-1",
+              "to": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-1",
+              "to": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 1,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 1,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-1",
+              "to": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "map": "current",
+      "radius": 3,
+      "width": 64,
+      "horizons": [
+        {
+          "turn": 1,
+          "total": 6,
+          "bank": 6,
+          "income": [
+            6
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "B1"
+            },
+            {
+              "unit": "start-1",
+              "square": "B2"
+            },
+            {
+              "unit": "start-2",
+              "square": "A2"
+            }
+          ],
+          "path": [
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        },
+        {
+          "turn": 2,
+          "total": 15,
+          "bank": 10,
+          "income": [
+            6,
+            9
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "A4"
+            },
+            {
+              "unit": "start-1",
+              "square": "B2"
+            },
+            {
+              "unit": "start-2",
+              "square": "A1"
+            },
+            {
+              "unit": "extra-2",
+              "square": "B1"
+            }
+          ],
+          "path": [
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 1
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 1,
+                "y": 2
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 0,
+                "y": 3
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        },
+        {
+          "turn": 3,
+          "total": 27,
+          "bank": 17,
+          "income": [
+            6,
+            9,
+            12
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "A3"
+            },
+            {
+              "unit": "start-1",
+              "square": "A2"
+            },
+            {
+              "unit": "start-2",
+              "square": "A1"
+            },
+            {
+              "unit": "extra-2",
+              "square": "B1"
+            },
+            {
+              "unit": "extra-3",
+              "square": "A4"
+            }
+          ],
+          "path": [
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 1,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "extra-3",
+              "to": {
+                "x": 0,
+                "y": 3
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-1",
+              "to": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        },
+        {
+          "turn": 4,
+          "total": 39,
+          "bank": 29,
+          "income": [
+            6,
+            9,
+            12,
+            12
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "C1"
+            },
+            {
+              "unit": "start-1",
+              "square": "A2"
+            },
+            {
+              "unit": "start-2",
+              "square": "A1"
+            },
+            {
+              "unit": "extra-2",
+              "square": "B1"
+            },
+            {
+              "unit": "extra-3",
+              "square": "A4"
+            }
+          ],
+          "path": [
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 1,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "extra-3",
+              "to": {
+                "x": 0,
+                "y": 3
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-1",
+              "to": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "extra-2",
+              "to": {
+                "x": 1,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "extra-2",
+              "to": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 1,
+                "y": 1
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        },
+        {
+          "turn": 5,
+          "total": 51,
+          "bank": 41,
+          "income": [
+            6,
+            9,
+            12,
+            12,
+            12
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "C2"
+            },
+            {
+              "unit": "start-1",
+              "square": "B3"
+            },
+            {
+              "unit": "start-2",
+              "square": "A2"
+            },
+            {
+              "unit": "extra-2",
+              "square": "A1"
+            },
+            {
+              "unit": "extra-3",
+              "square": "A3"
+            }
+          ],
+          "path": [
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 1,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "extra-3",
+              "to": {
+                "x": 0,
+                "y": 3
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 1
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "extra-2",
+              "to": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "extra-3",
+              "to": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 1
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-1",
+              "to": {
+                "x": 1,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "map": "current",
+      "radius": 3,
+      "width": 256,
+      "horizons": [
+        {
+          "turn": 1,
+          "total": 6,
+          "bank": 6,
+          "income": [
+            6
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "B1"
+            },
+            {
+              "unit": "start-1",
+              "square": "B2"
+            },
+            {
+              "unit": "start-2",
+              "square": "A2"
+            }
+          ],
+          "path": [
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        },
+        {
+          "turn": 2,
+          "total": 15,
+          "bank": 10,
+          "income": [
+            6,
+            9
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "A4"
+            },
+            {
+              "unit": "start-1",
+              "square": "B2"
+            },
+            {
+              "unit": "start-2",
+              "square": "A1"
+            },
+            {
+              "unit": "extra-2",
+              "square": "B1"
+            }
+          ],
+          "path": [
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 1
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 1,
+                "y": 2
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 0,
+                "y": 3
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        },
+        {
+          "turn": 3,
+          "total": 27,
+          "bank": 17,
+          "income": [
+            6,
+            9,
+            12
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "A3"
+            },
+            {
+              "unit": "start-1",
+              "square": "A2"
+            },
+            {
+              "unit": "start-2",
+              "square": "A1"
+            },
+            {
+              "unit": "extra-2",
+              "square": "B1"
+            },
+            {
+              "unit": "extra-3",
+              "square": "A4"
+            }
+          ],
+          "path": [
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 1,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "extra-3",
+              "to": {
+                "x": 0,
+                "y": 3
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-1",
+              "to": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        },
+        {
+          "turn": 4,
+          "total": 39,
+          "bank": 29,
+          "income": [
+            6,
+            9,
+            12,
+            12
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "C1"
+            },
+            {
+              "unit": "start-1",
+              "square": "A2"
+            },
+            {
+              "unit": "start-2",
+              "square": "A1"
+            },
+            {
+              "unit": "extra-2",
+              "square": "B1"
+            },
+            {
+              "unit": "extra-3",
+              "square": "A4"
+            }
+          ],
+          "path": [
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 1,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "extra-3",
+              "to": {
+                "x": 0,
+                "y": 3
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-1",
+              "to": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "extra-2",
+              "to": {
+                "x": 1,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "extra-2",
+              "to": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 1,
+                "y": 1
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        },
+        {
+          "turn": 5,
+          "total": 51,
+          "bank": 41,
+          "income": [
+            6,
+            9,
+            12,
+            12,
+            12
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "C1"
+            },
+            {
+              "unit": "start-1",
+              "square": "B3"
+            },
+            {
+              "unit": "start-2",
+              "square": "A2"
+            },
+            {
+              "unit": "extra-2",
+              "square": "A1"
+            },
+            {
+              "unit": "extra-3",
+              "square": "A3"
+            }
+          ],
+          "path": [
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 1
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 1,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "extra-3",
+              "to": {
+                "x": 0,
+                "y": 3
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "extra-2",
+              "to": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "extra-3",
+              "to": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-1",
+              "to": {
+                "x": 1,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "map": "current",
+      "radius": 6,
+      "width": 64,
+      "horizons": [
+        {
+          "turn": 1,
+          "total": 6,
+          "bank": 6,
+          "income": [
+            6
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "B1"
+            },
+            {
+              "unit": "start-1",
+              "square": "B2"
+            },
+            {
+              "unit": "start-2",
+              "square": "A2"
+            }
+          ],
+          "path": [
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        },
+        {
+          "turn": 2,
+          "total": 15,
+          "bank": 10,
+          "income": [
+            6,
+            9
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "B4"
+            },
+            {
+              "unit": "start-1",
+              "square": "B2"
+            },
+            {
+              "unit": "start-2",
+              "square": "A1"
+            },
+            {
+              "unit": "extra-2",
+              "square": "B1"
+            }
+          ],
+          "path": [
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 2
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 1,
+                "y": 3
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        },
+        {
+          "turn": 3,
+          "total": 27,
+          "bank": 17,
+          "income": [
+            6,
+            9,
+            12
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "B4"
+            },
+            {
+              "unit": "start-1",
+              "square": "A2"
+            },
+            {
+              "unit": "start-2",
+              "square": "A1"
+            },
+            {
+              "unit": "extra-2",
+              "square": "B1"
+            },
+            {
+              "unit": "extra-3",
+              "square": "A4"
+            }
+          ],
+          "path": [
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 2
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 1,
+                "y": 3
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 0,
+                "y": 3
+              }
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-1",
+              "to": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        },
+        {
+          "turn": 4,
+          "total": 39,
+          "bank": 29,
+          "income": [
+            6,
+            9,
+            12,
+            12
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "B4"
+            },
+            {
+              "unit": "start-1",
+              "square": "A2"
+            },
+            {
+              "unit": "start-2",
+              "square": "A1"
+            },
+            {
+              "unit": "extra-2",
+              "square": "B2"
+            },
+            {
+              "unit": "extra-3",
+              "square": "A5"
+            }
+          ],
+          "path": [
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 2
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 1,
+                "y": 3
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 0,
+                "y": 3
+              }
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-1",
+              "to": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "extra-3",
+              "to": {
+                "x": 0,
+                "y": 4
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "extra-2",
+              "to": {
+                "x": 1,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        },
+        {
+          "turn": 5,
+          "total": 51,
+          "bank": 41,
+          "income": [
+            6,
+            9,
+            12,
+            12,
+            12
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "B5"
+            },
+            {
+              "unit": "start-1",
+              "square": "A2"
+            },
+            {
+              "unit": "start-2",
+              "square": "B1"
+            },
+            {
+              "unit": "extra-2",
+              "square": "B4"
+            },
+            {
+              "unit": "extra-3",
+              "square": "A6"
+            }
+          ],
+          "path": [
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 1
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 3
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 1,
+                "y": 4
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 0,
+                "y": 3
+              }
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-1",
+              "to": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "extra-3",
+              "to": {
+                "x": 0,
+                "y": 4
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "extra-2",
+              "to": {
+                "x": 1,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "extra-3",
+              "to": {
+                "x": 0,
+                "y": 5
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "extra-2",
+              "to": {
+                "x": 1,
+                "y": 2
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "extra-2",
+              "to": {
+                "x": 1,
+                "y": 3
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "map": "current",
+      "radius": 6,
+      "width": 256,
+      "horizons": [
+        {
+          "turn": 1,
+          "total": 6,
+          "bank": 6,
+          "income": [
+            6
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "B1"
+            },
+            {
+              "unit": "start-1",
+              "square": "B2"
+            },
+            {
+              "unit": "start-2",
+              "square": "A2"
+            }
+          ],
+          "path": [
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        },
+        {
+          "turn": 2,
+          "total": 15,
+          "bank": 10,
+          "income": [
+            6,
+            9
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "B4"
+            },
+            {
+              "unit": "start-1",
+              "square": "B2"
+            },
+            {
+              "unit": "start-2",
+              "square": "A1"
+            },
+            {
+              "unit": "extra-2",
+              "square": "B1"
+            }
+          ],
+          "path": [
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 2
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 1,
+                "y": 3
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        },
+        {
+          "turn": 3,
+          "total": 27,
+          "bank": 17,
+          "income": [
+            6,
+            9,
+            12
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "B4"
+            },
+            {
+              "unit": "start-1",
+              "square": "A2"
+            },
+            {
+              "unit": "start-2",
+              "square": "A1"
+            },
+            {
+              "unit": "extra-2",
+              "square": "B1"
+            },
+            {
+              "unit": "extra-3",
+              "square": "A4"
+            }
+          ],
+          "path": [
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 2
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 1,
+                "y": 3
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 0,
+                "y": 3
+              }
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-1",
+              "to": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        },
+        {
+          "turn": 4,
+          "total": 39,
+          "bank": 29,
+          "income": [
+            6,
+            9,
+            12,
+            12
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "B4"
+            },
+            {
+              "unit": "start-1",
+              "square": "A2"
+            },
+            {
+              "unit": "start-2",
+              "square": "A1"
+            },
+            {
+              "unit": "extra-2",
+              "square": "B2"
+            },
+            {
+              "unit": "extra-3",
+              "square": "A5"
+            }
+          ],
+          "path": [
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 2
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 1,
+                "y": 3
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 0,
+                "y": 3
+              }
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-1",
+              "to": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "extra-3",
+              "to": {
+                "x": 0,
+                "y": 4
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "extra-2",
+              "to": {
+                "x": 1,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        },
+        {
+          "turn": 5,
+          "total": 51,
+          "bank": 41,
+          "income": [
+            6,
+            9,
+            12,
+            12,
+            12
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "B5"
+            },
+            {
+              "unit": "start-1",
+              "square": "A2"
+            },
+            {
+              "unit": "start-2",
+              "square": "B1"
+            },
+            {
+              "unit": "extra-2",
+              "square": "B4"
+            },
+            {
+              "unit": "extra-3",
+              "square": "A6"
+            }
+          ],
+          "path": [
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 1
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 3
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 1,
+                "y": 4
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 0,
+                "y": 3
+              }
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-1",
+              "to": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "extra-3",
+              "to": {
+                "x": 0,
+                "y": 4
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "extra-2",
+              "to": {
+                "x": 1,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "extra-2",
+              "to": {
+                "x": 1,
+                "y": 2
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "extra-2",
+              "to": {
+                "x": 1,
+                "y": 3
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "extra-3",
+              "to": {
+                "x": 0,
+                "y": 5
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "map": "alternate",
+      "radius": 2,
+      "width": 64,
+      "horizons": [
+        {
+          "turn": 1,
+          "total": 6,
+          "bank": 6,
+          "income": [
+            6
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "B1"
+            },
+            {
+              "unit": "start-1",
+              "square": "B2"
+            },
+            {
+              "unit": "start-2",
+              "square": "A2"
+            }
+          ],
+          "path": [
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        },
+        {
+          "turn": 2,
+          "total": 15,
+          "bank": 10,
+          "income": [
+            6,
+            9
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "B1"
+            },
+            {
+              "unit": "start-1",
+              "square": "B2"
+            },
+            {
+              "unit": "start-2",
+              "square": "A3"
+            },
+            {
+              "unit": "extra-2",
+              "square": "A1"
+            }
+          ],
+          "path": [
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        },
+        {
+          "turn": 3,
+          "total": 27,
+          "bank": 17,
+          "income": [
+            6,
+            9,
+            12
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "A2"
+            },
+            {
+              "unit": "start-1",
+              "square": "B1"
+            },
+            {
+              "unit": "start-2",
+              "square": "A3"
+            },
+            {
+              "unit": "extra-2",
+              "square": "C1"
+            },
+            {
+              "unit": "extra-3",
+              "square": "A1"
+            }
+          ],
+          "path": [
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "extra-2",
+              "to": {
+                "x": 2,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-1",
+              "to": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        },
+        {
+          "turn": 4,
+          "total": 39,
+          "bank": 29,
+          "income": [
+            6,
+            9,
+            12,
+            12
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "B2"
+            },
+            {
+              "unit": "start-1",
+              "square": "B1"
+            },
+            {
+              "unit": "start-2",
+              "square": "A3"
+            },
+            {
+              "unit": "extra-2",
+              "square": "C1"
+            },
+            {
+              "unit": "extra-3",
+              "square": "A1"
+            }
+          ],
+          "path": [
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "extra-2",
+              "to": {
+                "x": 2,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-1",
+              "to": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 1,
+                "y": 1
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        },
+        {
+          "turn": 5,
+          "total": 51,
+          "bank": 41,
+          "income": [
+            6,
+            9,
+            12,
+            12,
+            12
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "B2"
+            },
+            {
+              "unit": "start-1",
+              "square": "B1"
+            },
+            {
+              "unit": "start-2",
+              "square": "A2"
+            },
+            {
+              "unit": "extra-2",
+              "square": "C1"
+            },
+            {
+              "unit": "extra-3",
+              "square": "A1"
+            }
+          ],
+          "path": [
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "extra-2",
+              "to": {
+                "x": 2,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-1",
+              "to": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 1,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "map": "alternate",
+      "radius": 2,
+      "width": 256,
+      "horizons": [
+        {
+          "turn": 1,
+          "total": 6,
+          "bank": 6,
+          "income": [
+            6
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "B1"
+            },
+            {
+              "unit": "start-1",
+              "square": "B2"
+            },
+            {
+              "unit": "start-2",
+              "square": "A2"
+            }
+          ],
+          "path": [
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        },
+        {
+          "turn": 2,
+          "total": 15,
+          "bank": 10,
+          "income": [
+            6,
+            9
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "B1"
+            },
+            {
+              "unit": "start-1",
+              "square": "B2"
+            },
+            {
+              "unit": "start-2",
+              "square": "A3"
+            },
+            {
+              "unit": "extra-2",
+              "square": "A1"
+            }
+          ],
+          "path": [
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        },
+        {
+          "turn": 3,
+          "total": 27,
+          "bank": 17,
+          "income": [
+            6,
+            9,
+            12
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "A2"
+            },
+            {
+              "unit": "start-1",
+              "square": "B1"
+            },
+            {
+              "unit": "start-2",
+              "square": "A3"
+            },
+            {
+              "unit": "extra-2",
+              "square": "C1"
+            },
+            {
+              "unit": "extra-3",
+              "square": "A1"
+            }
+          ],
+          "path": [
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "extra-2",
+              "to": {
+                "x": 2,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-1",
+              "to": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        },
+        {
+          "turn": 4,
+          "total": 39,
+          "bank": 29,
+          "income": [
+            6,
+            9,
+            12,
+            12
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "B2"
+            },
+            {
+              "unit": "start-1",
+              "square": "B1"
+            },
+            {
+              "unit": "start-2",
+              "square": "A3"
+            },
+            {
+              "unit": "extra-2",
+              "square": "C1"
+            },
+            {
+              "unit": "extra-3",
+              "square": "A1"
+            }
+          ],
+          "path": [
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "extra-2",
+              "to": {
+                "x": 2,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-1",
+              "to": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 1,
+                "y": 1
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        },
+        {
+          "turn": 5,
+          "total": 51,
+          "bank": 41,
+          "income": [
+            6,
+            9,
+            12,
+            12,
+            12
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "A1"
+            },
+            {
+              "unit": "start-1",
+              "square": "B2"
+            },
+            {
+              "unit": "start-2",
+              "square": "A2"
+            },
+            {
+              "unit": "extra-2",
+              "square": "B1"
+            },
+            {
+              "unit": "extra-3",
+              "square": "C1"
+            }
+          ],
+          "path": [
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-1",
+              "to": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 1,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-1",
+              "to": {
+                "x": 1,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "extra-3",
+              "to": {
+                "x": 2,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "extra-2",
+              "to": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "map": "alternate",
+      "radius": 3,
+      "width": 64,
+      "horizons": [
+        {
+          "turn": 1,
+          "total": 6,
+          "bank": 6,
+          "income": [
+            6
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "B1"
+            },
+            {
+              "unit": "start-1",
+              "square": "B2"
+            },
+            {
+              "unit": "start-2",
+              "square": "A2"
+            }
+          ],
+          "path": [
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        },
+        {
+          "turn": 2,
+          "total": 15,
+          "bank": 10,
+          "income": [
+            6,
+            9
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "B1"
+            },
+            {
+              "unit": "start-1",
+              "square": "B2"
+            },
+            {
+              "unit": "start-2",
+              "square": "A3"
+            },
+            {
+              "unit": "extra-2",
+              "square": "A1"
+            }
+          ],
+          "path": [
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        },
+        {
+          "turn": 3,
+          "total": 27,
+          "bank": 17,
+          "income": [
+            6,
+            9,
+            12
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "A4"
+            },
+            {
+              "unit": "start-1",
+              "square": "B1"
+            },
+            {
+              "unit": "start-2",
+              "square": "A1"
+            },
+            {
+              "unit": "extra-2",
+              "square": "C1"
+            },
+            {
+              "unit": "extra-3",
+              "square": "A3"
+            }
+          ],
+          "path": [
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 1,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "extra-2",
+              "to": {
+                "x": 2,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 0,
+                "y": 3
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-1",
+              "to": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        },
+        {
+          "turn": 4,
+          "total": 39,
+          "bank": 29,
+          "income": [
+            6,
+            9,
+            12,
+            12
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "A3"
+            },
+            {
+              "unit": "start-1",
+              "square": "B1"
+            },
+            {
+              "unit": "start-2",
+              "square": "A2"
+            },
+            {
+              "unit": "extra-2",
+              "square": "C1"
+            },
+            {
+              "unit": "extra-3",
+              "square": "A1"
+            }
+          ],
+          "path": [
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 1,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "extra-2",
+              "to": {
+                "x": 2,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 0,
+                "y": 3
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-1",
+              "to": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        },
+        {
+          "turn": 5,
+          "total": 51,
+          "bank": 41,
+          "income": [
+            6,
+            9,
+            12,
+            12,
+            12
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "A4"
+            },
+            {
+              "unit": "start-1",
+              "square": "B2"
+            },
+            {
+              "unit": "start-2",
+              "square": "A2"
+            },
+            {
+              "unit": "extra-2",
+              "square": "C1"
+            },
+            {
+              "unit": "extra-3",
+              "square": "A1"
+            }
+          ],
+          "path": [
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 1,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "extra-2",
+              "to": {
+                "x": 2,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-1",
+              "to": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-1",
+              "to": {
+                "x": 1,
+                "y": 1
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 0,
+                "y": 3
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "map": "alternate",
+      "radius": 3,
+      "width": 256,
+      "horizons": [
+        {
+          "turn": 1,
+          "total": 6,
+          "bank": 6,
+          "income": [
+            6
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "B1"
+            },
+            {
+              "unit": "start-1",
+              "square": "B2"
+            },
+            {
+              "unit": "start-2",
+              "square": "A2"
+            }
+          ],
+          "path": [
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        },
+        {
+          "turn": 2,
+          "total": 15,
+          "bank": 10,
+          "income": [
+            6,
+            9
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "B1"
+            },
+            {
+              "unit": "start-1",
+              "square": "B2"
+            },
+            {
+              "unit": "start-2",
+              "square": "A3"
+            },
+            {
+              "unit": "extra-2",
+              "square": "A1"
+            }
+          ],
+          "path": [
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        },
+        {
+          "turn": 3,
+          "total": 27,
+          "bank": 17,
+          "income": [
+            6,
+            9,
+            12
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "A3"
+            },
+            {
+              "unit": "start-1",
+              "square": "B1"
+            },
+            {
+              "unit": "start-2",
+              "square": "A2"
+            },
+            {
+              "unit": "extra-2",
+              "square": "C1"
+            },
+            {
+              "unit": "extra-3",
+              "square": "A1"
+            }
+          ],
+          "path": [
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 1
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 1,
+                "y": 2
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "extra-2",
+              "to": {
+                "x": 2,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-1",
+              "to": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        },
+        {
+          "turn": 4,
+          "total": 39,
+          "bank": 29,
+          "income": [
+            6,
+            9,
+            12,
+            12
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "A3"
+            },
+            {
+              "unit": "start-1",
+              "square": "B1"
+            },
+            {
+              "unit": "start-2",
+              "square": "A2"
+            },
+            {
+              "unit": "extra-2",
+              "square": "C1"
+            },
+            {
+              "unit": "extra-3",
+              "square": "A1"
+            }
+          ],
+          "path": [
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 1,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "extra-2",
+              "to": {
+                "x": 2,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 0,
+                "y": 3
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-1",
+              "to": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        },
+        {
+          "turn": 5,
+          "total": 51,
+          "bank": 41,
+          "income": [
+            6,
+            9,
+            12,
+            12,
+            12
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "A4"
+            },
+            {
+              "unit": "start-1",
+              "square": "B2"
+            },
+            {
+              "unit": "start-2",
+              "square": "A2"
+            },
+            {
+              "unit": "extra-2",
+              "square": "C1"
+            },
+            {
+              "unit": "extra-3",
+              "square": "A1"
+            }
+          ],
+          "path": [
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 1,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "extra-2",
+              "to": {
+                "x": 2,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-1",
+              "to": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-1",
+              "to": {
+                "x": 1,
+                "y": 1
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 0,
+                "y": 3
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "map": "alternate",
+      "radius": 6,
+      "width": 64,
+      "horizons": [
+        {
+          "turn": 1,
+          "total": 6,
+          "bank": 6,
+          "income": [
+            6
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "B1"
+            },
+            {
+              "unit": "start-1",
+              "square": "B2"
+            },
+            {
+              "unit": "start-2",
+              "square": "A2"
+            }
+          ],
+          "path": [
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        },
+        {
+          "turn": 2,
+          "total": 15,
+          "bank": 10,
+          "income": [
+            6,
+            9
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "B1"
+            },
+            {
+              "unit": "start-1",
+              "square": "B2"
+            },
+            {
+              "unit": "start-2",
+              "square": "A3"
+            },
+            {
+              "unit": "extra-2",
+              "square": "A1"
+            }
+          ],
+          "path": [
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        },
+        {
+          "turn": 3,
+          "total": 27,
+          "bank": 17,
+          "income": [
+            6,
+            9,
+            12
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "A2"
+            },
+            {
+              "unit": "start-1",
+              "square": "B1"
+            },
+            {
+              "unit": "start-2",
+              "square": "A3"
+            },
+            {
+              "unit": "extra-2",
+              "square": "C1"
+            },
+            {
+              "unit": "extra-3",
+              "square": "A1"
+            }
+          ],
+          "path": [
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "extra-2",
+              "to": {
+                "x": 2,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-1",
+              "to": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        },
+        {
+          "turn": 4,
+          "total": 39,
+          "bank": 29,
+          "income": [
+            6,
+            9,
+            12,
+            12
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "C4"
+            },
+            {
+              "unit": "start-1",
+              "square": "B1"
+            },
+            {
+              "unit": "start-2",
+              "square": "A2"
+            },
+            {
+              "unit": "extra-2",
+              "square": "C1"
+            },
+            {
+              "unit": "extra-3",
+              "square": "A3"
+            }
+          ],
+          "path": [
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "extra-2",
+              "to": {
+                "x": 2,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-1",
+              "to": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 3
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        },
+        {
+          "turn": 5,
+          "total": 51,
+          "bank": 41,
+          "income": [
+            6,
+            9,
+            12,
+            12,
+            12
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "C5"
+            },
+            {
+              "unit": "start-1",
+              "square": "B1"
+            },
+            {
+              "unit": "start-2",
+              "square": "A2"
+            },
+            {
+              "unit": "extra-2",
+              "square": "C1"
+            },
+            {
+              "unit": "extra-3",
+              "square": "A3"
+            }
+          ],
+          "path": [
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "extra-2",
+              "to": {
+                "x": 2,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-1",
+              "to": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 3
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 4
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "map": "alternate",
+      "radius": 6,
+      "width": 256,
+      "horizons": [
+        {
+          "turn": 1,
+          "total": 6,
+          "bank": 6,
+          "income": [
+            6
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "B1"
+            },
+            {
+              "unit": "start-1",
+              "square": "B2"
+            },
+            {
+              "unit": "start-2",
+              "square": "A2"
+            }
+          ],
+          "path": [
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        },
+        {
+          "turn": 2,
+          "total": 15,
+          "bank": 10,
+          "income": [
+            6,
+            9
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "B1"
+            },
+            {
+              "unit": "start-1",
+              "square": "B2"
+            },
+            {
+              "unit": "start-2",
+              "square": "A3"
+            },
+            {
+              "unit": "extra-2",
+              "square": "A1"
+            }
+          ],
+          "path": [
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        },
+        {
+          "turn": 3,
+          "total": 27,
+          "bank": 17,
+          "income": [
+            6,
+            9,
+            12
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "C4"
+            },
+            {
+              "unit": "start-1",
+              "square": "A2"
+            },
+            {
+              "unit": "start-2",
+              "square": "A3"
+            },
+            {
+              "unit": "extra-2",
+              "square": "B1"
+            },
+            {
+              "unit": "extra-3",
+              "square": "C1"
+            }
+          ],
+          "path": [
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 2,
+                "y": 0
+              }
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "extra-2",
+              "to": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 3
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-1",
+              "to": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        },
+        {
+          "turn": 4,
+          "total": 39,
+          "bank": 29,
+          "income": [
+            6,
+            9,
+            12,
+            12
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "C5"
+            },
+            {
+              "unit": "start-1",
+              "square": "B1"
+            },
+            {
+              "unit": "start-2",
+              "square": "A2"
+            },
+            {
+              "unit": "extra-2",
+              "square": "C1"
+            },
+            {
+              "unit": "extra-3",
+              "square": "A3"
+            }
+          ],
+          "path": [
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "extra-2",
+              "to": {
+                "x": 2,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 3
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-1",
+              "to": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 4
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        },
+        {
+          "turn": 5,
+          "total": 51,
+          "bank": 41,
+          "income": [
+            6,
+            9,
+            12,
+            12,
+            12
+          ],
+          "positions": [
+            {
+              "unit": "start-0",
+              "square": "B5"
+            },
+            {
+              "unit": "start-1",
+              "square": "B1"
+            },
+            {
+              "unit": "start-2",
+              "square": "A2"
+            },
+            {
+              "unit": "extra-2",
+              "square": "C1"
+            },
+            {
+              "unit": "extra-3",
+              "square": "A3"
+            }
+          ],
+          "path": [
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 1
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 0,
+                "y": 2
+              }
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "extra-2",
+              "to": {
+                "x": 2,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 3
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-2",
+              "to": {
+                "x": 0,
+                "y": 1
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-1",
+              "to": {
+                "x": 1,
+                "y": 0
+              }
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 2,
+                "y": 4
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "start-0",
+              "to": {
+                "x": 1,
+                "y": 4
+              }
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

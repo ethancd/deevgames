@@ -291,3 +291,11 @@ Do not install a static power score in the playing AI or claim that a stat has o
   floored at zero; reset the changed clock to zero. Keep completed results final.
   Discard online undo/replay history from the old rules. New saves use schema 6;
   new rooms use online rules version 4.
+
+## J-020: Expansion economy and Plant Mining 3/5/8 (v2.8, 2026-09-13)
+
+- **Designer decision:** six home squares per player hold 8; each four-square expansion holds 16 per square; Plant tiers 2 and 3 gain Mining 5 and 8.
+- **Resolution:** new maps total 504 crystals. All other reserves, combat stats, prices, upkeep, speed and action rules stay the same. Preserve colors 0–10 and blend 11–16 toward neutral white. Extend the painter and reserve stacks through 16.
+- **Compatibility:** existing boards and painter drafts retain their reserves; the current Plant catalogue applies when games resume. No save/room reset.
+- **Intent and limits:** encourage earlier expansion and meaningful economic promotions. These incentives are not a playtested claim about win rates or turtling. See `docs/EXPANSION_ECONOMY-2026-09-13.md`.
+- **Release authorization:** the designer reviewed the color mockup and instructed, “Pull the trigger on the map and plant changes!”

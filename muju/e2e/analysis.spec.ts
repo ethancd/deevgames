@@ -1,4 +1,90 @@
 import { test, expect } from '@playwright/test';
+import { createInitialGameState } from '../src/game/board';
+import { SCHEMA_VERSION } from '../src/utils/persistence';
+
+for (const scenario of [
+  { mode: 'Pass & Play', width: 1280 }, { mode: 'Pass & Play', width: 390 },
+  { mode: 'vs AI', width: 390 }, { mode: 'Watch AI', width: 1280 },
+]) {
+  test(`${scenario.mode} can analyze a completed game and explore without changing its saved score at ${scenario.width}px`, async ({ page }, info) => {
+    await page.setViewportSize({ width: scenario.width, height: 844 });
+    const state = createInitialGameState(Array(100).fill(0)); state.inactivityPlies = 9;
+    await page.addInitScript(({ state, schemaVersion }) => {
+      if (sessionStorage.getItem('analysis:seeded')) return;
+      localStorage.setItem('elemental-tactics-save', JSON.stringify({ state, schemaVersion, timestamp: Date.now() }));
+      sessionStorage.setItem('analysis:seeded', '1');
+    }, { state, schemaVersion: SCHEMA_VERSION });
+    await page.goto('./');
+    await page.getByRole('button', { name: new RegExp(`^${scenario.mode}`) }).click();
+    if (scenario.mode === 'Watch AI') {
+      await page.getByRole('combobox').nth(0).selectOption('easy');
+      await page.getByRole('combobox').nth(1).selectOption('easy');
+    }
+    await page.getByRole('button', { name: /Continue saved game/ }).click();
+    if (scenario.mode !== 'Watch AI') {
+      await page.getByTestId('cell-1-0').click(); await page.getByTestId('cell-5-0').click();
+      await page.getByRole('button', { name: 'End turn →', exact: true }).click();
+    }
+    await expect(page.getByRole('heading', { name: 'Draw by inactivity' })).toBeVisible({ timeout: 15000 });
+    await expect(page.getByRole('link', { name: 'Analyze this game', exact: true })).toBeVisible();
+    await page.screenshot({ path: info.outputPath('analyze-game-end.png') });
+    const saved = await page.evaluate(() => localStorage.getItem('elemental-tactics-save'));
+    await page.getByRole('link', { name: 'Analyze this game', exact: true }).click();
+    await expect(page).toHaveURL(/analysis\?local=1/);
+    const controls = page.getByRole('region', { name: 'Analysis controls' });
+    await expect(controls.getByRole('status')).toHaveText('Draw');
+    await expect(controls.getByRole('button', { name: 'Explore from here' })).toBeDisabled();
+    await page.reload();
+    await expect(controls.getByRole('status')).toHaveText('Draw');
+    await controls.getByRole('button', { name: 'First position' }).click();
+    await expect(page.getByTestId('cell-1-0')).toHaveAttribute('aria-label', /white Hi/);
+    if (scenario.mode !== 'Watch AI') {
+      await controls.getByRole('button', { name: 'Next step', exact: true }).click();
+      await expect(page.getByTestId('cell-3-0')).toHaveAttribute('aria-label', /white Hi/);
+      await controls.getByRole('button', { name: 'First position' }).click();
+    }
+    await controls.getByRole('button', { name: 'Explore from here' }).click();
+    await page.getByTestId('cell-1-0').click(); await page.getByTestId('cell-3-0').click();
+    await expect(page.getByTestId('cell-3-0')).toHaveAttribute('aria-label', /white Hi/);
+    await controls.getByRole('button', { name: 'Return to game score' }).click();
+    await expect(page.getByTestId('cell-1-0')).toHaveAttribute('aria-label', /white Hi/);
+    await controls.getByRole('button', { name: 'Last position' }).click();
+    await expect(controls.getByRole('status')).toHaveText('Draw');
+    expect(await page.evaluate(() => localStorage.getItem('elemental-tactics-save'))).toBe(saved);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  });
+}
+
+for (const role of ['white', 'black', 'observer'] as const) {
+  test(`online ${role} can analyze directly from the result and return to the same seat or observer view`, async ({ page, request }) => {
+    const host = await (await request.post('/api/muju/rooms', { data: { name: 'White' } })).json();
+    const id = host.room.id;
+    const guest = await (await request.post(`/api/muju/rooms/${id}/join`, { data: { name: 'Black', inviteCode: host.inviteCode } })).json();
+    const opening = await request.post(`/api/muju/rooms/${id}/actions`, { headers: { Authorization: `Bearer ${host.credentials.token}` },
+      data: { expectedRevision: 1, requestId: 'analysis-pass', actions: [{ type: 'END_ACTION_PHASE' }] } });
+    expect(opening.ok(), await opening.text()).toBe(true);
+    const ended = await request.post(`/api/muju/rooms/${id}/actions`, { headers: { Authorization: `Bearer ${guest.credentials.token}` },
+      data: { expectedRevision: 2, requestId: 'analysis-resign', actions: [{ type: 'RESIGN' }] } });
+    expect(ended.ok(), await ended.text()).toBe(true);
+    if (role !== 'observer') {
+      await page.addInitScript(credentials => {
+        const connection = { ...credentials, serverUrl: window.location.origin };
+        localStorage.setItem(`muju:online:${connection.serverUrl}:${connection.roomId}`, JSON.stringify(connection));
+      }, role === 'white' ? host.credentials : guest.credentials);
+    }
+    await page.goto(`?room=${id}${role === 'observer' ? '&watch=1' : ''}`);
+    await expect(page.getByRole('heading', { name: 'White Wins!' })).toBeVisible();
+    await page.getByRole('link', { name: 'Analyze this game', exact: true }).click();
+    const controls = page.getByRole('region', { name: 'Analysis controls' });
+    await expect(controls.getByRole('status')).toHaveText('White wins');
+    await controls.getByRole('button', { name: 'First position' }).click();
+    await expect(controls.getByRole('button', { name: 'Explore from here' })).toBeEnabled();
+    await controls.getByRole('link', { name: 'Back to room' }).click();
+    await expect(page.getByRole('region', { name: 'Online room' })).toContainText(role === 'observer' ? 'Online · Observer' : `Online · You are ${role}`);
+    const actual = await (await request.get(`/api/muju/rooms/${id}`)).json();
+    expect(actual.revision).toBe(3);
+  });
+}
 
 test('an upkeep position can be reviewed and varied while timeline navigation remains available', async ({ page, request }) => {
   const host = await (await request.post('/api/muju/rooms', { data: { name: 'White' } })).json();

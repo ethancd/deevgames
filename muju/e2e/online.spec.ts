@@ -2,6 +2,51 @@ import { test, expect } from '@playwright/test';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 
+test('configures clocks only when hosting and shows a live timeout to players and mobile observers', async ({ page, browser, request }, testInfo) => {
+  const mobile = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  const phone = await mobile.newPage();
+  try {
+    await page.goto('./');
+    await page.getByRole('button', { name: 'Play online' }).click();
+    await expect(page.getByRole('combobox', { name: 'Time control', exact: true })).toHaveValue('untimed');
+    for (const name of ['Blitz', 'Rapid', 'Classical']) await expect(page.getByRole('option', { name: new RegExp(name) })).toBeAttached();
+    await page.getByRole('combobox', { name: 'Time control', exact: true }).selectOption('custom');
+    await page.getByLabel('Free seconds per turn').fill('-1');
+    await page.getByRole('button', { name: 'Create room' }).click();
+    await expect(page.getByRole('alert')).toContainText('0–600');
+    await page.getByLabel('Free seconds per turn').fill('1');
+    await page.getByLabel('Bank per player (minutes)').fill('0.1333333333');
+    await page.screenshot({ path: testInfo.outputPath('clock-setup.png'), fullPage: true });
+    await page.getByRole('button', { name: 'Create room' }).click();
+    await expect(page.getByRole('region', { name: 'Game clocks' })).toContainText('1s per turn / 0:08 bank per player');
+    await expect(page.getByRole('combobox', { name: 'Time control', exact: true })).toHaveCount(0);
+    await page.getByText('Private reconnect details', { exact: true }).click();
+    const credentials = JSON.parse(await page.getByLabel('Private seat credentials').inputValue());
+    await page.getByText('Private reconnect details', { exact: true }).click();
+    await phone.goto(`./?room=${credentials.roomId}&watch=1`);
+    await expect(phone.getByRole('region', { name: 'Game clocks' })).toBeVisible();
+    await expect(phone.getByRole('timer', { name: 'white bank' })).toHaveText('0:08');
+    const joined = await request.post(`/api/muju/rooms/${credentials.roomId}/join`, { data: { name: 'Black LLM', inviteCode: credentials.inviteCode } });
+    expect(joined.ok()).toBe(true);
+    for (const viewer of [page, phone]) {
+      await expect(viewer.locator('.clock-active')).toContainText('White');
+      await expect(viewer.getByRole('timer', { name: 'white bank' })).not.toHaveText('0:08');
+      await expect(viewer.getByRole('timer', { name: 'black bank' })).toHaveText('0:08');
+    }
+    await page.screenshot({ path: testInfo.outputPath('clock-desktop.png'), fullPage: true });
+    await phone.screenshot({ path: testInfo.outputPath('clock-phone.png'), fullPage: true });
+    expect(await phone.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+    expect((await phone.locator('.battle-board').boundingBox())!.width).toBeGreaterThanOrEqual(360);
+    await page.reload();
+    await expect(page.getByRole('region', { name: 'Game clocks' })).toContainText('1s per turn / 0:08 bank per player');
+    for (const viewer of [page, phone]) {
+      await expect(viewer.getByRole('heading', { name: 'Black LLM Wins!' })).toBeVisible({ timeout: 12000 });
+      await expect(viewer.getByText('Player ran out of time.', { exact: true })).toBeVisible();
+      await expect(viewer.getByRole('timer', { name: 'white bank' })).toHaveText('0:00');
+    }
+  } finally { await mobile.close(); }
+});
+
 test('restores a full room on a fresh phone from pasted private credentials', async ({ page, browser, request }, testInfo) => {
   const mobile = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
   const phone = await mobile.newPage();

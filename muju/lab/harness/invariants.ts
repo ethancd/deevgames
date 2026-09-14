@@ -1,6 +1,7 @@
 import type { GameState, PlayerId } from '../../src/game/types';
 import { BOARD_SIZE, INITIAL_RESOURCE_LAYERS } from '../../src/game/board';
 import { getActionsPerTurn } from '../../src/game/rules';
+import { MAX_RESOURCE_RESERVE } from '../../src/game/resourceMap';
 
 
 
@@ -37,7 +38,7 @@ export function checkInvariants(state: GameState, context: string): void {
 
   // Cells + resource conservation
   const capacities = state.board.initialResourceLayers ?? Array(BOARD_SIZE * BOARD_SIZE).fill(INITIAL_RESOURCE_LAYERS);
-  if (capacities.length !== BOARD_SIZE * BOARD_SIZE || capacities.some(n => !Number.isInteger(n) || n < 0 || n > INITIAL_RESOURCE_LAYERS)) throw new InvariantViolation(`${context}: invalid initial capacities`);
+  if (capacities.length !== BOARD_SIZE * BOARD_SIZE || capacities.some(n => !Number.isInteger(n) || n < 0 || n > MAX_RESOURCE_RESERVE)) throw new InvariantViolation(`${context}: invalid initial capacities`);
   const total = capacities.reduce((sum,n)=>sum+n,0);
   let remaining = 0;
   for (const row of state.board.cells) {
@@ -63,8 +64,9 @@ export function checkInvariants(state: GameState, context: string): void {
     if (p.resources < 0) {
       throw new InvariantViolation(`${context}: ${player} negative resources`);
     }
-    if (p.resources > p.resourcesGained) {
-      throw new InvariantViolation(`${context}: ${player} holds more than ever mined`);
+    const grant = player === 'black' ? state.blackCrystalHandicap ?? 0 : 0;
+    if (p.resources > p.resourcesGained + grant) {
+      throw new InvariantViolation(`${context}: ${player} holds more than ever mined or granted`);
     }
   }
 

@@ -1,0 +1,770 @@
+{
+  "roomId": "0a56f850c8050113da84aefac5007810",
+  "revision": 19,
+  "perspective": "white",
+  "turn": {
+    "currentPlayer": "white",
+    "phase": "place",
+    "actionsRemaining": 4,
+    "turnNumber": 10
+  },
+  "phase": "place",
+  "stateKind": "current",
+  "hypothetical": {
+    "actions": [],
+    "assumptions": [
+      "current state after the supplied legal sequence",
+      "categories: existing,promotion,purchase,combined; pending upkeep choices are reported per search"
+    ]
+  },
+  "sections": {
+    "threats": [
+      {
+        "target": "unit-white-3-0",
+        "square": "G3",
+        "assumption": "Existing instance in the analyzed state.",
+        "model": {
+          "stateKind": "opponentNextTurn",
+          "actor": "black",
+          "turn": 10,
+          "phase": "place",
+          "status": "playing",
+          "treasury": 17,
+          "setupActions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "END_ACTION_PHASE"
+            }
+          ],
+          "assumptions": [
+            "current player ends now; pending upkeep uses the engine default keep-set",
+            "outgoing harvest credited; incoming upkeep/healing/AP reset follow engine; incoming harvest not credited",
+            "automatic upkeep is retained; voluntary undo of that payment is not searched"
+          ]
+        },
+        "targetPresentAfterSetup": true,
+        "kill": "proven_possible",
+        "scope": [
+          "existing",
+          "promotion",
+          "purchase",
+          "combined"
+        ],
+        "singleScanComplete": true,
+        "maxSingleHitFound": 3,
+        "bestKillFound": {
+          "cheapest": {
+            "ap": 2,
+            "crystalsSpent": 3,
+            "upkeepPaid": 0
+          },
+          "fewestActions": {
+            "ap": 2,
+            "crystalsSpent": 3,
+            "upkeepPaid": 0
+          },
+          "optimality": "best_found"
+        },
+        "lines": [
+          {
+            "proof": "proven_possible",
+            "category": "purchase",
+            "attacker": "unit-black-10-0",
+            "line": "+fire_1@I4 → G4, 1+1 AP/3 crystals, dmg 3 vs def 3, kill, retreat 27",
+            "actionsSpent": 2,
+            "crystalsSpent": 3,
+            "upkeepPaid": 0,
+            "damage": 3,
+            "lethal": true,
+            "finalSquare": "G4",
+            "actionsRemaining": 2,
+            "result": null,
+            "captured": [
+              {
+                "id": "unit-white-3-0",
+                "value": 5
+              }
+            ],
+            "steps": [
+              {
+                "unitId": "unit-black-10-0",
+                "from": "I4",
+                "to": "G4",
+                "path": "H4,G4",
+                "ap": 1
+              },
+              {
+                "attacker": "unit-black-10-0",
+                "attackSquare": "G4",
+                "target": "unit-white-3-0",
+                "element": "fire",
+                "tier": 1,
+                "damage": 3,
+                "defense": 3,
+                "ap": 1
+              }
+            ],
+            "witness": [
+              {
+                "type": "BUY_UNIT",
+                "definitionId": "fire_1",
+                "position": "I4"
+              },
+              {
+                "type": "END_PLACE_PHASE"
+              },
+              {
+                "type": "MOVE",
+                "unitId": "unit-black-10-0",
+                "to": "G4"
+              },
+              {
+                "type": "ATTACK",
+                "unitId": "unit-black-10-0",
+                "targetPosition": "G3"
+              }
+            ],
+            "retreat": {
+              "count": 27,
+              "squares": "G3,G5,F4,H4,G2,H3,F5,H5,E4,I4,G1,F2,H2,F6,E5,H6,D4,J4,H1,E2,I2,F7,E6,D5,H7,D3,J3",
+              "safety": "not checked",
+              "witness": [
+                {
+                  "type": "BUY_UNIT",
+                  "definitionId": "fire_1",
+                  "position": "I4"
+                },
+                {
+                  "type": "END_PLACE_PHASE"
+                },
+                {
+                  "type": "MOVE",
+                  "unitId": "unit-black-10-0",
+                  "to": "G4"
+                },
+                {
+                  "type": "ATTACK",
+                  "unitId": "unit-black-10-0",
+                  "targetPosition": "G3"
+                },
+                {
+                  "type": "MOVE",
+                  "unitId": "unit-black-10-0",
+                  "to": "F7"
+                }
+              ]
+            },
+            "exposure": {
+              "replies": [
+                {
+                  "attacker": "unit-black-10-0",
+                  "proof": "proven_possible",
+                  "optimality": "best_found",
+                  "assumption": "Attacker ends now on the attack square, without withdrawing. Reply witness starts after setupActions.",
+                  "model": {
+                    "stateKind": "opponentNextTurn",
+                    "actor": "white",
+                    "turn": 11,
+                    "phase": "place",
+                    "status": "playing",
+                    "treasury": 56,
+                    "setupActions": [
+                      {
+                        "type": "END_ACTION_PHASE"
+                      }
+                    ],
+                    "assumptions": [
+                      "current player ends now; pending upkeep uses the engine default keep-set",
+                      "outgoing harvest credited; incoming upkeep/healing/AP reset follow engine; incoming harvest not credited",
+                      "automatic upkeep is retained; voluntary undo of that payment is not searched"
+                    ]
+                  },
+                  "capture": {
+                    "proof": "proven_possible",
+                    "category": "existing",
+                    "attacker": "unit-white-5-1",
+                    "line": "unit-white-5-1 → F4, 1+1 AP/0 crystals, dmg 3 vs def 1, kill, retreat 31",
+                    "actionsSpent": 2,
+                    "crystalsSpent": 0,
+                    "upkeepPaid": 0,
+                    "damage": 3,
+                    "lethal": true,
+                    "finalSquare": "F4",
+                    "actionsRemaining": 2,
+                    "result": null,
+                    "captured": [
+                      {
+                        "id": "unit-black-10-0",
+                        "value": 3
+                      }
+                    ],
+                    "steps": [
+                      {
+                        "unitId": "unit-white-5-1",
+                        "from": "E3",
+                        "to": "F4",
+                        "path": "E4,F4",
+                        "ap": 1
+                      },
+                      {
+                        "attacker": "unit-white-5-1",
+                        "attackSquare": "F4",
+                        "target": "unit-black-10-0",
+                        "element": "shadow",
+                        "tier": 1,
+                        "damage": 3,
+                        "defense": 1,
+                        "ap": 1
+                      }
+                    ],
+                    "witness": [
+                      {
+                        "type": "END_PLACE_PHASE"
+                      },
+                      {
+                        "type": "MOVE",
+                        "unitId": "unit-white-5-1",
+                        "to": "F4"
+                      },
+                      {
+                        "type": "ATTACK",
+                        "unitId": "unit-white-5-1",
+                        "targetPosition": "G4"
+                      }
+                    ],
+                    "retreat": {
+                      "count": 31,
+                      "squares": "F5,E4,G4,F6,E5,G5,E3,D4,G3,H4,F7,E6,D5,H5,E2,D3,G2,H3,I4,F8,E7,G7,D6,C5,H6,E1,D2,F2,G1,H2,J4",
+                      "safety": "not checked",
+                      "witness": [
+                        {
+                          "type": "END_PLACE_PHASE"
+                        },
+                        {
+                          "type": "MOVE",
+                          "unitId": "unit-white-5-1",
+                          "to": "F4"
+                        },
+                        {
+                          "type": "ATTACK",
+                          "unitId": "unit-white-5-1",
+                          "targetPosition": "G4"
+                        },
+                        {
+                          "type": "MOVE",
+                          "unitId": "unit-white-5-1",
+                          "to": "F8"
+                        }
+                      ]
+                    }
+                  },
+                  "search": {
+                    "completeness": "bounded",
+                    "omittedCaseClasses": [
+                      "combined attacks",
+                      "blocker clearing",
+                      "purchase chains expanding control"
+                    ],
+                    "cutoffReason": null
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "proof": "proven_possible",
+            "category": "purchase",
+            "attacker": "unit-black-10-0",
+            "line": "+fire_1@I4 → H3, 1+1 AP/3 crystals, dmg 3 vs def 3, kill, retreat 23",
+            "actionsSpent": 2,
+            "crystalsSpent": 3,
+            "upkeepPaid": 0,
+            "damage": 3,
+            "lethal": true,
+            "finalSquare": "H3",
+            "actionsRemaining": 2,
+            "result": null,
+            "captured": [
+              {
+                "id": "unit-white-3-0",
+                "value": 5
+              }
+            ],
+            "steps": [
+              {
+                "unitId": "unit-black-10-0",
+                "from": "I4",
+                "to": "H3",
+                "path": "H4,H3",
+                "ap": 1
+              },
+              {
+                "attacker": "unit-black-10-0",
+                "attackSquare": "H3",
+                "target": "unit-white-3-0",
+                "element": "fire",
+                "tier": 1,
+                "damage": 3,
+                "defense": 3,
+                "ap": 1
+              }
+            ],
+            "witness": [
+              {
+                "type": "BUY_UNIT",
+                "definitionId": "fire_1",
+                "position": "I4"
+              },
+              {
+                "type": "END_PLACE_PHASE"
+              },
+              {
+                "type": "MOVE",
+                "unitId": "unit-black-10-0",
+                "to": "H3"
+              },
+              {
+                "type": "ATTACK",
+                "unitId": "unit-black-10-0",
+                "targetPosition": "G3"
+              }
+            ],
+            "retreat": {
+              "count": 23,
+              "squares": "H2,H4,G3,H1,G2,I2,H5,G4,I4,G1,I1,F2,J2,H6,G5,F4,J4,J1,E2,J3,H7,F5,E4",
+              "safety": "not checked",
+              "witness": [
+                {
+                  "type": "BUY_UNIT",
+                  "definitionId": "fire_1",
+                  "position": "I4"
+                },
+                {
+                  "type": "END_PLACE_PHASE"
+                },
+                {
+                  "type": "MOVE",
+                  "unitId": "unit-black-10-0",
+                  "to": "H3"
+                },
+                {
+                  "type": "ATTACK",
+                  "unitId": "unit-black-10-0",
+                  "targetPosition": "G3"
+                },
+                {
+                  "type": "MOVE",
+                  "unitId": "unit-black-10-0",
+                  "to": "J1"
+                }
+              ]
+            },
+            "exposure": {
+              "replies": [
+                {
+                  "attacker": "unit-black-10-0",
+                  "proof": "proven_possible",
+                  "optimality": "best_found",
+                  "assumption": "Attacker ends now on the attack square, without withdrawing. Reply witness starts after setupActions.",
+                  "model": {
+                    "stateKind": "opponentNextTurn",
+                    "actor": "white",
+                    "turn": 11,
+                    "phase": "place",
+                    "status": "playing",
+                    "treasury": 56,
+                    "setupActions": [
+                      {
+                        "type": "END_ACTION_PHASE"
+                      }
+                    ],
+                    "assumptions": [
+                      "current player ends now; pending upkeep uses the engine default keep-set",
+                      "outgoing harvest credited; incoming upkeep/healing/AP reset follow engine; incoming harvest not credited",
+                      "automatic upkeep is retained; voluntary undo of that payment is not searched"
+                    ]
+                  },
+                  "capture": {
+                    "proof": "proven_possible",
+                    "category": "existing",
+                    "attacker": "unit-white-5-1",
+                    "line": "unit-white-5-1 → H2, 2+1 AP/0 crystals, dmg 3 vs def 1, kill, retreat 10",
+                    "actionsSpent": 3,
+                    "crystalsSpent": 0,
+                    "upkeepPaid": 0,
+                    "damage": 3,
+                    "lethal": true,
+                    "finalSquare": "H2",
+                    "actionsRemaining": 1,
+                    "result": null,
+                    "captured": [
+                      {
+                        "id": "unit-black-10-0",
+                        "value": 3
+                      }
+                    ],
+                    "steps": [
+                      {
+                        "unitId": "unit-white-5-1",
+                        "from": "E3",
+                        "to": "H2",
+                        "path": "E2,F2,G2,H2",
+                        "ap": 2
+                      },
+                      {
+                        "attacker": "unit-white-5-1",
+                        "attackSquare": "H2",
+                        "target": "unit-black-10-0",
+                        "element": "shadow",
+                        "tier": 1,
+                        "damage": 3,
+                        "defense": 1,
+                        "ap": 1
+                      }
+                    ],
+                    "witness": [
+                      {
+                        "type": "END_PLACE_PHASE"
+                      },
+                      {
+                        "type": "MOVE",
+                        "unitId": "unit-white-5-1",
+                        "to": "H2"
+                      },
+                      {
+                        "type": "ATTACK",
+                        "unitId": "unit-white-5-1",
+                        "targetPosition": "H3"
+                      }
+                    ],
+                    "retreat": {
+                      "count": 10,
+                      "squares": "H1,H3,G2,I2,G1,I1,H4,G3,F2,J2",
+                      "safety": "not checked",
+                      "witness": [
+                        {
+                          "type": "END_PLACE_PHASE"
+                        },
+                        {
+                          "type": "MOVE",
+                          "unitId": "unit-white-5-1",
+                          "to": "H2"
+                        },
+                        {
+                          "type": "ATTACK",
+                          "unitId": "unit-white-5-1",
+                          "targetPosition": "H3"
+                        },
+                        {
+                          "type": "MOVE",
+                          "unitId": "unit-white-5-1",
+                          "to": "G1"
+                        }
+                      ]
+                    }
+                  },
+                  "search": {
+                    "completeness": "bounded",
+                    "omittedCaseClasses": [
+                      "combined attacks",
+                      "blocker clearing",
+                      "purchase chains expanding control"
+                    ],
+                    "cutoffReason": null
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "proof": "proven_possible",
+            "category": "purchase",
+            "attacker": "unit-black-10-0",
+            "line": "+fire_1@J3 → G2, 2+1 AP/3 crystals, dmg 3 vs def 3, kill, retreat 9",
+            "actionsSpent": 3,
+            "crystalsSpent": 3,
+            "upkeepPaid": 0,
+            "damage": 3,
+            "lethal": true,
+            "finalSquare": "G2",
+            "actionsRemaining": 1,
+            "result": null,
+            "captured": [
+              {
+                "id": "unit-white-3-0",
+                "value": 5
+              }
+            ],
+            "steps": [
+              {
+                "unitId": "unit-black-10-0",
+                "from": "J3",
+                "to": "G2",
+                "path": "J2,I2,H2,G2",
+                "ap": 2
+              },
+              {
+                "attacker": "unit-black-10-0",
+                "attackSquare": "G2",
+                "target": "unit-white-3-0",
+                "element": "fire",
+                "tier": 1,
+                "damage": 3,
+                "defense": 3,
+                "ap": 1
+              }
+            ],
+            "witness": [
+              {
+                "type": "BUY_UNIT",
+                "definitionId": "fire_1",
+                "position": "J3"
+              },
+              {
+                "type": "END_PLACE_PHASE"
+              },
+              {
+                "type": "MOVE",
+                "unitId": "unit-black-10-0",
+                "to": "G2"
+              },
+              {
+                "type": "ATTACK",
+                "unitId": "unit-black-10-0",
+                "targetPosition": "G3"
+              }
+            ],
+            "retreat": {
+              "count": 9,
+              "squares": "G1,G3,F2,H2,H1,G4,H3,E2,I2",
+              "safety": "not checked",
+              "witness": [
+                {
+                  "type": "BUY_UNIT",
+                  "definitionId": "fire_1",
+                  "position": "J3"
+                },
+                {
+                  "type": "END_PLACE_PHASE"
+                },
+                {
+                  "type": "MOVE",
+                  "unitId": "unit-black-10-0",
+                  "to": "G2"
+                },
+                {
+                  "type": "ATTACK",
+                  "unitId": "unit-black-10-0",
+                  "targetPosition": "G3"
+                },
+                {
+                  "type": "MOVE",
+                  "unitId": "unit-black-10-0",
+                  "to": "H1"
+                }
+              ]
+            },
+            "exposure": {
+              "replies": [
+                {
+                  "attacker": "unit-black-10-0",
+                  "proof": "proven_possible",
+                  "optimality": "best_found",
+                  "assumption": "Attacker ends now on the attack square, without withdrawing. Reply witness starts after setupActions.",
+                  "model": {
+                    "stateKind": "opponentNextTurn",
+                    "actor": "white",
+                    "turn": 11,
+                    "phase": "place",
+                    "status": "playing",
+                    "treasury": 56,
+                    "setupActions": [
+                      {
+                        "type": "END_ACTION_PHASE"
+                      }
+                    ],
+                    "assumptions": [
+                      "current player ends now; pending upkeep uses the engine default keep-set",
+                      "outgoing harvest credited; incoming upkeep/healing/AP reset follow engine; incoming harvest not credited",
+                      "automatic upkeep is retained; voluntary undo of that payment is not searched"
+                    ]
+                  },
+                  "capture": {
+                    "proof": "proven_possible",
+                    "category": "existing",
+                    "attacker": "unit-white-5-1",
+                    "line": "unit-white-5-1 → F2, 1+1 AP/0 crystals, dmg 3 vs def 1, kill, retreat 22",
+                    "actionsSpent": 2,
+                    "crystalsSpent": 0,
+                    "upkeepPaid": 0,
+                    "damage": 3,
+                    "lethal": true,
+                    "finalSquare": "F2",
+                    "actionsRemaining": 2,
+                    "result": null,
+                    "captured": [
+                      {
+                        "id": "unit-black-10-0",
+                        "value": 3
+                      }
+                    ],
+                    "steps": [
+                      {
+                        "unitId": "unit-white-5-1",
+                        "from": "E3",
+                        "to": "F2",
+                        "path": "E2,F2",
+                        "ap": 1
+                      },
+                      {
+                        "attacker": "unit-white-5-1",
+                        "attackSquare": "F2",
+                        "target": "unit-black-10-0",
+                        "element": "shadow",
+                        "tier": 1,
+                        "damage": 3,
+                        "defense": 1,
+                        "ap": 1
+                      }
+                    ],
+                    "witness": [
+                      {
+                        "type": "END_PLACE_PHASE"
+                      },
+                      {
+                        "type": "MOVE",
+                        "unitId": "unit-white-5-1",
+                        "to": "F2"
+                      },
+                      {
+                        "type": "ATTACK",
+                        "unitId": "unit-white-5-1",
+                        "targetPosition": "G2"
+                      }
+                    ],
+                    "retreat": {
+                      "count": 22,
+                      "squares": "E2,G2,E1,E3,D2,G1,G3,H2,D1,E4,D3,H1,G4,H3,I2,E5,D4,F4,I1,G5,H4,J2",
+                      "safety": "not checked",
+                      "witness": [
+                        {
+                          "type": "END_PLACE_PHASE"
+                        },
+                        {
+                          "type": "MOVE",
+                          "unitId": "unit-white-5-1",
+                          "to": "F2"
+                        },
+                        {
+                          "type": "ATTACK",
+                          "unitId": "unit-white-5-1",
+                          "targetPosition": "G2"
+                        },
+                        {
+                          "type": "MOVE",
+                          "unitId": "unit-white-5-1",
+                          "to": "E5"
+                        }
+                      ]
+                    }
+                  },
+                  "search": {
+                    "completeness": "bounded",
+                    "omittedCaseClasses": [
+                      "combined attacks",
+                      "blocker clearing",
+                      "purchase chains expanding control"
+                    ],
+                    "cutoffReason": null
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "omittedLines": 38,
+        "search": {
+          "completeness": "bounded",
+          "cutoffReason": null,
+          "omittedCaseClasses": [
+            "combined attacks",
+            "blocker clearing",
+            "purchase chains expanding control"
+          ]
+        }
+      }
+    ]
+  },
+  "search": {
+    "completeness": "bounded",
+    "nodes": 382,
+    "maxNodes": 2000,
+    "maxMs": 150,
+    "elapsedMs": 46.5,
+    "cutoffReason": null,
+    "subsearchCutoffs": [],
+    "omittedCaseClasses": [
+      "See per-target scope and search metadata; absence of a witness is not safety."
+    ],
+    "collapsed": 224
+  },
+  "next": [
+    {
+      "tool": "muju_analyze",
+      "arguments": {
+        "roomId": "0a56f850c8050113da84aefac5007810",
+        "expectedRevision": 19,
+        "player": "white",
+        "topics": [
+          "threats"
+        ],
+        "targets": {
+          "unitIds": [
+            "unit-white-3-0"
+          ]
+        },
+        "hypotheticalActions": [],
+        "stateKind": "current",
+        "categories": [
+          "existing",
+          "promotion",
+          "purchase",
+          "combined"
+        ],
+        "deep": true,
+        "detail": "full"
+      }
+    },
+    {
+      "tool": "muju_analyze",
+      "arguments": {
+        "roomId": "0a56f850c8050113da84aefac5007810",
+        "expectedRevision": 19,
+        "player": "white",
+        "topics": [
+          "checkmate"
+        ],
+        "targets": {
+          "unitIds": [
+            "unit-white-3-0"
+          ]
+        },
+        "hypotheticalActions": [],
+        "stateKind": "current",
+        "categories": [
+          "existing",
+          "promotion",
+          "purchase",
+          "combined"
+        ]
+      }
+    }
+  ],
+  "output": {
+    "targetBytes": 24000,
+    "omittedSections": [],
+    "overBudget": false
+  }
+}

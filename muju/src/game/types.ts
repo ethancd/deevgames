@@ -16,6 +16,8 @@ export type ActionsPerTurn = 4;
 
 export interface GameConfig {
   actionsPerTurn?: ActionsPerTurn;
+  /** Starting crystals granted to Black; omitted or 0 means no handicap. */
+  blackCrystalHandicap?: number;
   /** Explicit new-game setup; omitted preserves legacy resume behavior. */
   newGame?: boolean;
   mode: GameMode;
@@ -77,7 +79,7 @@ export interface Unit {
 
 export interface Cell {
   position: Position;
-  resourceLayers: number; // 0-10, remaining crystals
+  resourceLayers: number; // 0-16, remaining crystals
 }
 
 export interface BoardState {
@@ -111,13 +113,15 @@ export interface PlayerState {
   resourcesUpkeep?: number; // Cumulative upkeep paid (telemetry)
 }
 
-export type VictoryReason = 'elimination' | 'home-occupation' | 'home-checkmate' | 'resignation' | 'inactivity' | 'upkeep-elimination';
+export type VictoryReason = 'elimination' | 'home-occupation' | 'home-checkmate' | 'resignation' | 'inactivity' | 'upkeep-elimination' | 'timeout';
 
 export interface IncomeTake { unitId: string; definitionId: string; position: Position; amount: number }
 
 export interface GameState {
   /** Four shared actions for every current-rule match. */
   actionsPerTurn?: ActionsPerTurn;
+  /** Starting crystals granted to Black; omitted or 0 means no handicap. */
+  blackCrystalHandicap?: number;
   lastIncome?: { player: PlayerId; turnNumber: number; total: number; takes: IncomeTake[] };
   /** Omitted means current rules; explicit elimination is for historical lab comparisons. */
   victoryRule?: 'elimination' | 'home-or-elimination';

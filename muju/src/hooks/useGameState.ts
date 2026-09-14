@@ -8,7 +8,8 @@ import { createInitialGameState, getUnitById } from '../game/board';
 import { getValidMoves } from '../game/movement';
 import { getValidAttacks } from '../game/combat';
 import { applyAction as applyAIAction } from '../ai/simulate';
-import { loadGameState, saveGameState, clearGameState } from '../utils/persistence';
+import { loadGameState, loadGameHistory, saveGameState, clearGameState } from '../utils/persistence';
+import { analysisFrames, localFrame, startHistory, type LocalGameHistory } from '../game/analysis';
 
 type LocalAction = GameAction | { type: 'MOVE_AND_ATTACK'; unitId: string; to: Position; targetPosition: Position };
 
@@ -86,7 +87,7 @@ export function gameReducer(state: GameState, action: LocalAction): GameState {
     }
 
     case 'RESET_GAME': {
-      return createInitialGameState(undefined, getActionsPerTurn(state));
+      return createInitialGameState(undefined, getActionsPerTurn(state), state.blackCrystalHandicap);
     }
 
     case 'RESTORE_STATE': {
@@ -99,92 +100,74 @@ export function gameReducer(state: GameState, action: LocalAction): GameState {
   }
 }
 
-// Save each completed action, including AI actions and undo, so reloading resumes
-// the board and its Cleave allowance together. Selection/preview do not save.
-const SAVE_ACTIONS = new Set([
-  'RESET_GAME',
-  ...UNDOABLE_ACTIONS,
-  'SET_UPKEEP_REVIEW',
-  'APPLY_AI_ACTION',
-  'RESTORE_STATE',
-  'END_PLACE_PHASE',
-  'END_ACTION_PHASE',
-  'RESIGN',
-]);
+type InitialGameOptions = Pick<GameConfig, 'actionsPerTurn' | 'blackCrystalHandicap' | 'newGame'>;
 
-function gameReducerWithSave(state: GameState, action: LocalAction): GameState {
-  const newState = gameReducer(state, action);
-
-  // Save committed gameplay transitions (only if state actually changed)
-  if (SAVE_ACTIONS.has(action.type) && newState !== state) {
-    saveGameState(newState);
-  }
-
-  // Save when turn changes to player (catches AI turn ending via APPLY_AI_ACTION)
-  if (
-    newState.turn.currentPlayer === 'white' &&
-    state.turn.currentPlayer === 'black' &&
-    newState !== state
-  ) {
-    saveGameState(newState);
-  }
-
-  // Also save every newly resolved victory, including a home occupation at turn start.
-  if (newState.phase === 'victory' && state.phase !== 'victory') {
-    saveGameState(newState);
-  }
-
-  return newState;
+function getInitialSession(options: InitialGameOptions): ReplaySession {
+  const saved = options.newGame ? null : loadGameHistory();
+  const state = (saved && loadGameState()) ?? createInitialGameState(undefined, options.actionsPerTurn, options.blackCrystalHandicap);
+  return { state, history: saved ?? startHistory(state, true), historyUndoLengths: [],
+    recording: emptyRecording(), undoLengths: [], turnStartUndo: null };
 }
 
-type InitialGameOptions = Pick<GameConfig, 'actionsPerTurn' | 'newGame'>;
-
-function getInitialState(options: InitialGameOptions): GameState {
-  const saved = options.newGame ? null : loadGameState();
-  if (saved) {
-    return saved;
-  }
-  const state = createInitialGameState(undefined, options.actionsPerTurn);
-  saveGameState(state);
-  return state;
+interface ReplaySession {
+  state: GameState; recording: ReplayRecording; undoLengths: number[]; turnStartUndo: GameState | null;
+  history: LocalGameHistory; historyUndoLengths: number[];
 }
-
-interface ReplaySession { state: GameState; recording: ReplayRecording; undoLengths: number[]; turnStartUndo: GameState | null }
 function sessionReducer(session: ReplaySession, action: LocalAction): ReplaySession {
-  const state = gameReducerWithSave(session.state, action);
+  const state = gameReducer(session.state, action);
   if (state === session.state && action.type !== 'RESTORE_STATE') {
     return UNDOABLE_ACTIONS.has(action.type)
-      ? { ...session, undoLengths: [...session.undoLengths, session.recording.current?.frames.length ?? 0] }
+      ? { ...session, undoLengths: [...session.undoLengths, session.recording.current?.frames.length ?? 0],
+        historyUndoLengths: [...session.historyUndoLengths, session.history.frames.length] }
       : session;
   }
   let recording = session.recording, undoLengths = session.undoLengths, turnStartUndo = session.turnStartUndo;
-  if (action.type === 'RESET_GAME') return { state, recording: emptyRecording(), undoLengths: [], turnStartUndo: null };
+  let history = session.history, historyUndoLengths = session.historyUndoLengths;
+  if (action.type === 'RESET_GAME') return { state, recording: emptyRecording(), undoLengths: [], turnStartUndo: null,
+    history: startHistory(state, true), historyUndoLengths: [] };
   if (action.type === 'RESTORE_STATE') {
     recording = rewindRecording(recording, undoLengths.at(-1) ?? 0);
     undoLengths = undoLengths.slice(0, -1);
+    const frames = history.frames.slice(0, historyUndoLengths.at(-1) ?? 1);
+    frames[frames.length - 1] = localFrame(state, frames.at(-1)!.label);
+    history = { ...history, frames };
+    historyUndoLengths = historyUndoLengths.slice(0, -1);
   } else {
     if (UNDOABLE_ACTIONS.has(action.type)) undoLengths = [...undoLengths, recording.current?.frames.length ?? 0];
+    if (UNDOABLE_ACTIONS.has(action.type)) historyUndoLengths = [...historyUndoLengths, history.frames.length];
     const actual = action.type === 'APPLY_AI_ACTION' ? action.aiAction : action;
     if (actual.type === 'MOVE_AND_ATTACK') {
       const move = { type: 'MOVE' as const, unitId: actual.unitId, to: actual.to };
       const moved = applyAIAction(session.state, move);
       recording = recordAction(recording, session.state, move, moved);
       recording = recordAction(recording, moved, { type: 'ATTACK', unitId: actual.unitId, targetPosition: actual.targetPosition }, state);
+      history = { ...history, frames: [...history.frames, ...analysisFrames(session.state, move, moved),
+        ...analysisFrames(moved, { type: 'ATTACK', unitId: actual.unitId, targetPosition: actual.targetPosition }, state)] };
     } else if (actual.type !== 'SELECT_UNIT' && actual.type !== 'DESELECT' && actual.type !== 'SET_UPKEEP_REVIEW') {
       recording = recordAction(recording, session.state, actual, state);
+      history = { ...history, frames: [...history.frames, ...analysisFrames(session.state, actual, state)] };
+    } else if (actual.type === 'SET_UPKEEP_REVIEW') {
+      history = { ...history, frames: [...history.frames.slice(0, -1), localFrame(state, history.frames.at(-1)!.label)] };
     }
   }
   if (state.turn.currentPlayer !== session.state.turn.currentPlayer || state.turn.turnNumber !== session.state.turn.turnNumber) {
     turnStartUndo = automaticUpkeepUndo(session.state, state);
     undoLengths = turnStartUndo ? [0] : [];
+    // Mining is recorded before the incoming turn's automatic upkeep payment.
+    let upkeepIndex = history.frames.length - 1;
+    while (upkeepIndex > 0 && !history.frames[upkeepIndex].state.upkeepPending) upkeepIndex--;
+    historyUndoLengths = turnStartUndo ? [upkeepIndex + 1] : [];
   }
-  return { state, recording, undoLengths, turnStartUndo };
+  return { state, recording, undoLengths, turnStartUndo, history, historyUndoLengths };
 }
 
 export function useGameState(options: InitialGameOptions = {}) {
-  const [session, dispatch] = useReducer(sessionReducer, options, options => ({ state: getInitialState(options), recording: emptyRecording(), undoLengths: [], turnStartUndo: null }));
+  const [session, dispatch] = useReducer(sessionReducer, options, getInitialSession);
   const state = session.state;
   const [undoHistory, setUndoHistory] = useState<GameState[]>([]);
+
+  // Save the score and position together. Selection changes do not alter history.
+  useEffect(() => { saveGameState(session.state, session.history); }, [session.history]);
 
   // The new turn can undo its automatic upkeep, but never the opponent's turn.
   useEffect(() => {

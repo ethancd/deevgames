@@ -1,0 +1,2702 @@
+{
+  "cases": 341,
+  "masks": 682,
+  "lines": 2999,
+  "seed": 31415926,
+  "noB1Attacks": true,
+  "examples": [
+    {
+      "h": 3,
+      "w": 675,
+      "b": 792,
+      "seat": "white",
+      "mask": 5,
+      "evidence": [
+        {
+          "target": "Hi F5",
+          "ap": 3,
+          "crystals": 0,
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-0",
+              "to": "F4"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-0",
+              "targetPosition": "F5"
+            }
+          ]
+        },
+        {
+          "target": "Sjor I9",
+          "ap": 4,
+          "crystals": 4,
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "initial-0"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-0",
+              "to": "I8"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-0",
+              "targetPosition": "I9"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 3,
+      "w": 675,
+      "b": 792,
+      "seat": "black",
+      "mask": 3,
+      "evidence": [
+        {
+          "target": "Hi H3",
+          "ap": 3,
+          "crystals": 0,
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-3",
+              "to": "H4"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-3",
+              "targetPosition": "H3"
+            }
+          ]
+        },
+        {
+          "target": "Sjor B2",
+          "ap": 4,
+          "crystals": 4,
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "initial-3"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-3",
+              "to": "B3"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-3",
+              "targetPosition": "B2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 3,
+      "w": 779,
+      "b": 19,
+      "seat": "white",
+      "mask": 0,
+      "evidence": []
+    },
+    {
+      "h": 3,
+      "w": 779,
+      "b": 19,
+      "seat": "black",
+      "mask": 1,
+      "evidence": [
+        {
+          "target": "Hi E5",
+          "ap": 4,
+          "crystals": 3,
+          "actions": [
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "lightning_1",
+              "position": "J9"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "unit-black-2-0",
+              "to": "E6"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "unit-black-2-0",
+              "targetPosition": "E5"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 3,
+      "w": 792,
+      "b": 792,
+      "seat": "white",
+      "mask": 5,
+      "evidence": [
+        {
+          "target": "Hi F5",
+          "ap": 2,
+          "crystals": 0,
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-0",
+              "to": "F6"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-0",
+              "targetPosition": "F5"
+            }
+          ]
+        },
+        {
+          "target": "Sjor I9",
+          "ap": 4,
+          "crystals": 4,
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "initial-0"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-0",
+              "to": "I8"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-0",
+              "targetPosition": "I9"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 3,
+      "w": 792,
+      "b": 792,
+      "seat": "black",
+      "mask": 3,
+      "evidence": [
+        {
+          "target": "Hi E6",
+          "ap": 2,
+          "crystals": 0,
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-3",
+              "to": "E5"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-3",
+              "targetPosition": "E6"
+            }
+          ]
+        },
+        {
+          "target": "Sjor B2",
+          "ap": 4,
+          "crystals": 4,
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "initial-3"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-3",
+              "to": "B3"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-3",
+              "targetPosition": "B2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 3,
+      "w": 675,
+      "b": 1350,
+      "seat": "white",
+      "mask": 11,
+      "evidence": [
+        {
+          "target": "Hi J10",
+          "ap": 4,
+          "crystals": 3,
+          "actions": [
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "lightning_1",
+              "position": "G3"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "unit-white-2-0",
+              "to": "I10"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "unit-white-2-0",
+              "targetPosition": "J10"
+            }
+          ]
+        },
+        {
+          "target": "Hi F5",
+          "ap": 3,
+          "crystals": 0,
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-0",
+              "to": "F4"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-0",
+              "targetPosition": "F5"
+            }
+          ]
+        },
+        {
+          "target": "Sjor I9",
+          "ap": 4,
+          "crystals": 4,
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "initial-0"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-0",
+              "to": "I8"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-0",
+              "targetPosition": "I9"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 3,
+      "w": 675,
+      "b": 1350,
+      "seat": "black",
+      "mask": 3,
+      "evidence": [
+        {
+          "target": "Hi H3",
+          "ap": 3,
+          "crystals": 0,
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-3",
+              "to": "H4"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-3",
+              "targetPosition": "H3"
+            }
+          ]
+        },
+        {
+          "target": "Sjor B2",
+          "ap": 4,
+          "crystals": 4,
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "initial-3"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-3",
+              "to": "B3"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-3",
+              "targetPosition": "B2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 3,
+      "w": 779,
+      "b": 820,
+      "seat": "white",
+      "mask": 0,
+      "evidence": []
+    },
+    {
+      "h": 3,
+      "w": 779,
+      "b": 820,
+      "seat": "black",
+      "mask": 1,
+      "evidence": [
+        {
+          "target": "Hi E5",
+          "ap": 4,
+          "crystals": 3,
+          "actions": [
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "lightning_1",
+              "position": "J9"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "unit-black-2-0",
+              "to": "E6"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "unit-black-2-0",
+              "targetPosition": "E5"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 3,
+      "w": 792,
+      "b": 1350,
+      "seat": "white",
+      "mask": 11,
+      "evidence": [
+        {
+          "target": "Hi J10",
+          "ap": 4,
+          "crystals": 3,
+          "actions": [
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "lightning_1",
+              "position": "D6"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "unit-white-2-0",
+              "to": "I10"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "unit-white-2-0",
+              "targetPosition": "J10"
+            }
+          ]
+        },
+        {
+          "target": "Hi F5",
+          "ap": 2,
+          "crystals": 0,
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-0",
+              "to": "F6"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-0",
+              "targetPosition": "F5"
+            }
+          ]
+        },
+        {
+          "target": "Sjor I9",
+          "ap": 4,
+          "crystals": 4,
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "initial-0"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-0",
+              "to": "I8"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-0",
+              "targetPosition": "I9"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 3,
+      "w": 792,
+      "b": 1350,
+      "seat": "black",
+      "mask": 3,
+      "evidence": [
+        {
+          "target": "Hi E6",
+          "ap": 2,
+          "crystals": 0,
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-3",
+              "to": "E5"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-3",
+              "targetPosition": "E6"
+            }
+          ]
+        },
+        {
+          "target": "Sjor B2",
+          "ap": 4,
+          "crystals": 4,
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "initial-3"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-3",
+              "to": "B3"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-3",
+              "targetPosition": "B2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 3,
+      "w": 675,
+      "b": 3086,
+      "seat": "white",
+      "mask": 11,
+      "evidence": [
+        {
+          "target": "Hi H9",
+          "ap": 4,
+          "crystals": 0,
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-0",
+              "to": "H8"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-0",
+              "targetPosition": "H9"
+            }
+          ]
+        },
+        {
+          "target": "Radi F5",
+          "ap": 3,
+          "crystals": 0,
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-0",
+              "to": "F4"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-0",
+              "targetPosition": "F5"
+            }
+          ]
+        },
+        {
+          "target": "Sjor I9",
+          "ap": 4,
+          "crystals": 4,
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "initial-0"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-0",
+              "to": "I8"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-0",
+              "targetPosition": "I9"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 3,
+      "w": 675,
+      "b": 3086,
+      "seat": "black",
+      "mask": 5,
+      "evidence": [
+        {
+          "target": "Hi H3",
+          "ap": 2,
+          "crystals": 0,
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "unit-black-1-0",
+              "to": "H4"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "unit-black-1-0",
+              "targetPosition": "H3"
+            }
+          ]
+        },
+        {
+          "target": "Muju A2",
+          "ap": 3,
+          "crystals": 4,
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "unit-black-1-0"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "unit-black-1-0",
+              "to": "A3"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "unit-black-1-0",
+              "targetPosition": "A2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 3,
+      "w": 779,
+      "b": 1876,
+      "seat": "white",
+      "mask": 0,
+      "evidence": []
+    },
+    {
+      "h": 3,
+      "w": 779,
+      "b": 1876,
+      "seat": "black",
+      "mask": 1,
+      "evidence": [
+        {
+          "target": "Hi E5",
+          "ap": 4,
+          "crystals": 3,
+          "actions": [
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "lightning_1",
+              "position": "I10"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "unit-black-2-0",
+              "to": "E6"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "unit-black-2-0",
+              "targetPosition": "E5"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 3,
+      "w": 792,
+      "b": 3086,
+      "seat": "white",
+      "mask": 11,
+      "evidence": [
+        {
+          "target": "Hi H9",
+          "ap": 4,
+          "crystals": 0,
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-0",
+              "to": "H8"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-0",
+              "targetPosition": "H9"
+            }
+          ]
+        },
+        {
+          "target": "Radi F5",
+          "ap": 2,
+          "crystals": 0,
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-0",
+              "to": "F6"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-0",
+              "targetPosition": "F5"
+            }
+          ]
+        },
+        {
+          "target": "Sjor I9",
+          "ap": 4,
+          "crystals": 4,
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "initial-0"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-0",
+              "to": "I8"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-0",
+              "targetPosition": "I9"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 3,
+      "w": 792,
+      "b": 3086,
+      "seat": "black",
+      "mask": 5,
+      "evidence": [
+        {
+          "target": "Hi E6",
+          "ap": 2,
+          "crystals": 0,
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "unit-black-1-0",
+              "to": "E5"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "unit-black-1-0",
+              "targetPosition": "E6"
+            }
+          ]
+        },
+        {
+          "target": "Muju A2",
+          "ap": 3,
+          "crystals": 4,
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "unit-black-1-0"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "unit-black-1-0",
+              "to": "A3"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "unit-black-1-0",
+              "targetPosition": "A2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 4,
+      "w": 675,
+      "b": 792,
+      "seat": "white",
+      "mask": 5,
+      "evidence": [
+        {
+          "target": "Hi F5",
+          "ap": 3,
+          "crystals": 0,
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-0",
+              "to": "F4"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-0",
+              "targetPosition": "F5"
+            }
+          ]
+        },
+        {
+          "target": "Sjor I9",
+          "ap": 4,
+          "crystals": 4,
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "initial-0"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-0",
+              "to": "I8"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-0",
+              "targetPosition": "I9"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 4,
+      "w": 675,
+      "b": 792,
+      "seat": "black",
+      "mask": 3,
+      "evidence": [
+        {
+          "target": "Hi H3",
+          "ap": 3,
+          "crystals": 0,
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-3",
+              "to": "H4"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-3",
+              "targetPosition": "H3"
+            }
+          ]
+        },
+        {
+          "target": "Sjor B2",
+          "ap": 4,
+          "crystals": 4,
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "initial-3"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-3",
+              "to": "B3"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-3",
+              "targetPosition": "B2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 4,
+      "w": 779,
+      "b": 19,
+      "seat": "white",
+      "mask": 0,
+      "evidence": []
+    },
+    {
+      "h": 4,
+      "w": 779,
+      "b": 19,
+      "seat": "black",
+      "mask": 1,
+      "evidence": [
+        {
+          "target": "Hi E5",
+          "ap": 4,
+          "crystals": 3,
+          "actions": [
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "lightning_1",
+              "position": "J9"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "unit-black-2-0",
+              "to": "E6"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "unit-black-2-0",
+              "targetPosition": "E5"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 4,
+      "w": 792,
+      "b": 792,
+      "seat": "white",
+      "mask": 5,
+      "evidence": [
+        {
+          "target": "Hi F5",
+          "ap": 2,
+          "crystals": 0,
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-0",
+              "to": "F6"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-0",
+              "targetPosition": "F5"
+            }
+          ]
+        },
+        {
+          "target": "Sjor I9",
+          "ap": 4,
+          "crystals": 4,
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "initial-0"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-0",
+              "to": "I8"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-0",
+              "targetPosition": "I9"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 4,
+      "w": 792,
+      "b": 792,
+      "seat": "black",
+      "mask": 3,
+      "evidence": [
+        {
+          "target": "Hi E6",
+          "ap": 2,
+          "crystals": 0,
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-3",
+              "to": "E5"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-3",
+              "targetPosition": "E6"
+            }
+          ]
+        },
+        {
+          "target": "Sjor B2",
+          "ap": 4,
+          "crystals": 4,
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "initial-3"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-3",
+              "to": "B3"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-3",
+              "targetPosition": "B2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 4,
+      "w": 675,
+      "b": 1350,
+      "seat": "white",
+      "mask": 11,
+      "evidence": [
+        {
+          "target": "Hi J10",
+          "ap": 4,
+          "crystals": 3,
+          "actions": [
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "lightning_1",
+              "position": "G3"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "unit-white-2-0",
+              "to": "I10"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "unit-white-2-0",
+              "targetPosition": "J10"
+            }
+          ]
+        },
+        {
+          "target": "Hi F5",
+          "ap": 3,
+          "crystals": 0,
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-0",
+              "to": "F4"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-0",
+              "targetPosition": "F5"
+            }
+          ]
+        },
+        {
+          "target": "Sjor I9",
+          "ap": 4,
+          "crystals": 4,
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "initial-0"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-0",
+              "to": "I8"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-0",
+              "targetPosition": "I9"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 4,
+      "w": 675,
+      "b": 1350,
+      "seat": "black",
+      "mask": 3,
+      "evidence": [
+        {
+          "target": "Hi H3",
+          "ap": 3,
+          "crystals": 0,
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-3",
+              "to": "H4"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-3",
+              "targetPosition": "H3"
+            }
+          ]
+        },
+        {
+          "target": "Sjor B2",
+          "ap": 4,
+          "crystals": 4,
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "initial-3"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-3",
+              "to": "B3"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-3",
+              "targetPosition": "B2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 4,
+      "w": 779,
+      "b": 820,
+      "seat": "white",
+      "mask": 0,
+      "evidence": []
+    },
+    {
+      "h": 4,
+      "w": 779,
+      "b": 820,
+      "seat": "black",
+      "mask": 1,
+      "evidence": [
+        {
+          "target": "Hi E5",
+          "ap": 4,
+          "crystals": 3,
+          "actions": [
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "lightning_1",
+              "position": "J9"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "unit-black-2-0",
+              "to": "E6"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "unit-black-2-0",
+              "targetPosition": "E5"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 4,
+      "w": 792,
+      "b": 1350,
+      "seat": "white",
+      "mask": 11,
+      "evidence": [
+        {
+          "target": "Hi J10",
+          "ap": 4,
+          "crystals": 3,
+          "actions": [
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "lightning_1",
+              "position": "D6"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "unit-white-2-0",
+              "to": "I10"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "unit-white-2-0",
+              "targetPosition": "J10"
+            }
+          ]
+        },
+        {
+          "target": "Hi F5",
+          "ap": 2,
+          "crystals": 0,
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-0",
+              "to": "F6"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-0",
+              "targetPosition": "F5"
+            }
+          ]
+        },
+        {
+          "target": "Sjor I9",
+          "ap": 4,
+          "crystals": 4,
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "initial-0"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-0",
+              "to": "I8"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-0",
+              "targetPosition": "I9"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 4,
+      "w": 792,
+      "b": 1350,
+      "seat": "black",
+      "mask": 3,
+      "evidence": [
+        {
+          "target": "Hi E6",
+          "ap": 2,
+          "crystals": 0,
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-3",
+              "to": "E5"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-3",
+              "targetPosition": "E6"
+            }
+          ]
+        },
+        {
+          "target": "Sjor B2",
+          "ap": 4,
+          "crystals": 4,
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "initial-3"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-3",
+              "to": "B3"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-3",
+              "targetPosition": "B2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 4,
+      "w": 675,
+      "b": 3086,
+      "seat": "white",
+      "mask": 11,
+      "evidence": [
+        {
+          "target": "Hi H9",
+          "ap": 4,
+          "crystals": 0,
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-0",
+              "to": "H8"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-0",
+              "targetPosition": "H9"
+            }
+          ]
+        },
+        {
+          "target": "Radi F5",
+          "ap": 3,
+          "crystals": 0,
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-0",
+              "to": "F4"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-0",
+              "targetPosition": "F5"
+            }
+          ]
+        },
+        {
+          "target": "Sjor I9",
+          "ap": 4,
+          "crystals": 4,
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "initial-0"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-0",
+              "to": "I8"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-0",
+              "targetPosition": "I9"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 4,
+      "w": 675,
+      "b": 3086,
+      "seat": "black",
+      "mask": 5,
+      "evidence": [
+        {
+          "target": "Hi H3",
+          "ap": 2,
+          "crystals": 0,
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "unit-black-1-0",
+              "to": "H4"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "unit-black-1-0",
+              "targetPosition": "H3"
+            }
+          ]
+        },
+        {
+          "target": "Muju A2",
+          "ap": 3,
+          "crystals": 4,
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "unit-black-1-0"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "unit-black-1-0",
+              "to": "A3"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "unit-black-1-0",
+              "targetPosition": "A2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 4,
+      "w": 779,
+      "b": 1876,
+      "seat": "white",
+      "mask": 0,
+      "evidence": []
+    },
+    {
+      "h": 4,
+      "w": 779,
+      "b": 1876,
+      "seat": "black",
+      "mask": 1,
+      "evidence": [
+        {
+          "target": "Hi E5",
+          "ap": 4,
+          "crystals": 3,
+          "actions": [
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "lightning_1",
+              "position": "I10"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "unit-black-2-0",
+              "to": "E6"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "unit-black-2-0",
+              "targetPosition": "E5"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 4,
+      "w": 792,
+      "b": 3086,
+      "seat": "white",
+      "mask": 11,
+      "evidence": [
+        {
+          "target": "Hi H9",
+          "ap": 4,
+          "crystals": 0,
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-0",
+              "to": "H8"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-0",
+              "targetPosition": "H9"
+            }
+          ]
+        },
+        {
+          "target": "Radi F5",
+          "ap": 2,
+          "crystals": 0,
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-0",
+              "to": "F6"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-0",
+              "targetPosition": "F5"
+            }
+          ]
+        },
+        {
+          "target": "Sjor I9",
+          "ap": 4,
+          "crystals": 4,
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "initial-0"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-0",
+              "to": "I8"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-0",
+              "targetPosition": "I9"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 4,
+      "w": 792,
+      "b": 3086,
+      "seat": "black",
+      "mask": 5,
+      "evidence": [
+        {
+          "target": "Hi E6",
+          "ap": 2,
+          "crystals": 0,
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "unit-black-1-0",
+              "to": "E5"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "unit-black-1-0",
+              "targetPosition": "E6"
+            }
+          ]
+        },
+        {
+          "target": "Muju A2",
+          "ap": 3,
+          "crystals": 4,
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "unit-black-1-0"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "unit-black-1-0",
+              "to": "A3"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "unit-black-1-0",
+              "targetPosition": "A2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 4,
+      "w": 675,
+      "b": 4459,
+      "seat": "white",
+      "mask": 9,
+      "evidence": [
+        {
+          "target": "Hi F5",
+          "ap": 3,
+          "crystals": 0,
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-0",
+              "to": "F4"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-0",
+              "targetPosition": "F5"
+            }
+          ]
+        },
+        {
+          "target": "Sjor I9",
+          "ap": 4,
+          "crystals": 4,
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "initial-0"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-0",
+              "to": "I8"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-0",
+              "targetPosition": "I9"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 4,
+      "w": 675,
+      "b": 4459,
+      "seat": "black",
+      "mask": 3,
+      "evidence": [
+        {
+          "target": "Hi H3",
+          "ap": 3,
+          "crystals": 0,
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-3",
+              "to": "H4"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-3",
+              "targetPosition": "H3"
+            }
+          ]
+        },
+        {
+          "target": "Sjor B2",
+          "ap": 4,
+          "crystals": 4,
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "initial-3"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-3",
+              "to": "B3"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-3",
+              "targetPosition": "B2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 4,
+      "w": 779,
+      "b": 3682,
+      "seat": "white",
+      "mask": 0,
+      "evidence": []
+    },
+    {
+      "h": 4,
+      "w": 779,
+      "b": 3682,
+      "seat": "black",
+      "mask": 1,
+      "evidence": [
+        {
+          "target": "Hi E5",
+          "ap": 4,
+          "crystals": 3,
+          "actions": [
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "lightning_1",
+              "position": "I10"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "unit-black-2-0",
+              "to": "E6"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "unit-black-2-0",
+              "targetPosition": "E5"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 4,
+      "w": 792,
+      "b": 4459,
+      "seat": "white",
+      "mask": 9,
+      "evidence": [
+        {
+          "target": "Hi F5",
+          "ap": 2,
+          "crystals": 0,
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-0",
+              "to": "F6"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-0",
+              "targetPosition": "F5"
+            }
+          ]
+        },
+        {
+          "target": "Sjor I9",
+          "ap": 4,
+          "crystals": 4,
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "initial-0"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-0",
+              "to": "I8"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-0",
+              "targetPosition": "I9"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 4,
+      "w": 792,
+      "b": 4459,
+      "seat": "black",
+      "mask": 3,
+      "evidence": [
+        {
+          "target": "Hi E6",
+          "ap": 2,
+          "crystals": 0,
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-3",
+              "to": "E5"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-3",
+              "targetPosition": "E6"
+            }
+          ]
+        },
+        {
+          "target": "Sjor B2",
+          "ap": 4,
+          "crystals": 4,
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "initial-3"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-3",
+              "to": "B3"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-3",
+              "targetPosition": "B2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 4,
+      "w": 675,
+      "b": 5616,
+      "seat": "white",
+      "mask": 9,
+      "evidence": [
+        {
+          "target": "Hi F5",
+          "ap": 3,
+          "crystals": 0,
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-0",
+              "to": "F4"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-0",
+              "targetPosition": "F5"
+            }
+          ]
+        },
+        {
+          "target": "Sjor I9",
+          "ap": 4,
+          "crystals": 4,
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "initial-0"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-0",
+              "to": "I8"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-0",
+              "targetPosition": "I9"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 4,
+      "w": 675,
+      "b": 5616,
+      "seat": "black",
+      "mask": 3,
+      "evidence": [
+        {
+          "target": "Hi H3",
+          "ap": 3,
+          "crystals": 0,
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-3",
+              "to": "H4"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-3",
+              "targetPosition": "H3"
+            }
+          ]
+        },
+        {
+          "target": "Sjor B2",
+          "ap": 4,
+          "crystals": 4,
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "initial-3"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-3",
+              "to": "B3"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-3",
+              "targetPosition": "B2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 4,
+      "w": 779,
+      "b": 4474,
+      "seat": "white",
+      "mask": 0,
+      "evidence": []
+    },
+    {
+      "h": 4,
+      "w": 779,
+      "b": 4474,
+      "seat": "black",
+      "mask": 1,
+      "evidence": [
+        {
+          "target": "Hi E5",
+          "ap": 4,
+          "crystals": 3,
+          "actions": [
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "lightning_1",
+              "position": "I10"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "unit-black-2-0",
+              "to": "E6"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "unit-black-2-0",
+              "targetPosition": "E5"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 4,
+      "w": 792,
+      "b": 5616,
+      "seat": "white",
+      "mask": 9,
+      "evidence": [
+        {
+          "target": "Hi F5",
+          "ap": 2,
+          "crystals": 0,
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-0",
+              "to": "F6"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-0",
+              "targetPosition": "F5"
+            }
+          ]
+        },
+        {
+          "target": "Sjor I9",
+          "ap": 4,
+          "crystals": 4,
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "initial-0"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-0",
+              "to": "I8"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-0",
+              "targetPosition": "I9"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 4,
+      "w": 792,
+      "b": 5616,
+      "seat": "black",
+      "mask": 3,
+      "evidence": [
+        {
+          "target": "Hi E6",
+          "ap": 2,
+          "crystals": 0,
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-3",
+              "to": "E5"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-3",
+              "targetPosition": "E6"
+            }
+          ]
+        },
+        {
+          "target": "Sjor B2",
+          "ap": 4,
+          "crystals": 4,
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "initial-3"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-3",
+              "to": "B3"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-3",
+              "targetPosition": "B2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 4,
+      "w": 675,
+      "b": 5624,
+      "seat": "white",
+      "mask": 0,
+      "evidence": []
+    },
+    {
+      "h": 4,
+      "w": 675,
+      "b": 5624,
+      "seat": "black",
+      "mask": 0,
+      "evidence": []
+    },
+    {
+      "h": 4,
+      "w": 779,
+      "b": 5640,
+      "seat": "white",
+      "mask": 0,
+      "evidence": []
+    },
+    {
+      "h": 4,
+      "w": 779,
+      "b": 5640,
+      "seat": "black",
+      "mask": 1,
+      "evidence": [
+        {
+          "target": "Hi E5",
+          "ap": 4,
+          "crystals": 3,
+          "actions": [
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "lightning_1",
+              "position": "J9"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "unit-black-2-0",
+              "to": "E6"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "unit-black-2-0",
+              "targetPosition": "E5"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 4,
+      "w": 792,
+      "b": 6075,
+      "seat": "white",
+      "mask": 5,
+      "evidence": [
+        {
+          "target": "Hono H9",
+          "ap": 4,
+          "crystals": 0,
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-0",
+              "to": "H8"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-0",
+              "targetPosition": "H9"
+            }
+          ]
+        },
+        {
+          "target": "Sjor H7",
+          "ap": 3,
+          "crystals": 4,
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "initial-0"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-0",
+              "to": "H6"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-0",
+              "targetPosition": "H7"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 4,
+      "w": 792,
+      "b": 6075,
+      "seat": "black",
+      "mask": 1,
+      "evidence": [
+        {
+          "target": "Hi E6",
+          "ap": 4,
+          "crystals": 0,
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-3",
+              "to": "E7"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-3",
+              "targetPosition": "E6"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 4,
+      "w": 675,
+      "b": 6503,
+      "seat": "white",
+      "mask": 1,
+      "evidence": [
+        {
+          "target": "Hi I10",
+          "ap": 4,
+          "crystals": 3,
+          "actions": [
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "lightning_1",
+              "position": "H2"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "unit-white-2-0",
+              "to": "I9"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "unit-white-2-0",
+              "targetPosition": "I10"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 4,
+      "w": 675,
+      "b": 6503,
+      "seat": "black",
+      "mask": 1,
+      "evidence": [
+        {
+          "target": "Hi H3",
+          "ap": 3,
+          "crystals": 0,
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-4",
+              "to": "H4"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-4",
+              "targetPosition": "H3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 4,
+      "w": 779,
+      "b": 6434,
+      "seat": "white",
+      "mask": 0,
+      "evidence": []
+    },
+    {
+      "h": 4,
+      "w": 779,
+      "b": 6434,
+      "seat": "black",
+      "mask": 1,
+      "evidence": [
+        {
+          "target": "Hi E5",
+          "ap": 3,
+          "crystals": 3,
+          "actions": [
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "lightning_1",
+              "position": "I7"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "unit-black-2-0",
+              "to": "E6"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "unit-black-2-0",
+              "targetPosition": "E5"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 4,
+      "w": 792,
+      "b": 6503,
+      "seat": "white",
+      "mask": 1,
+      "evidence": [
+        {
+          "target": "Hi I10",
+          "ap": 4,
+          "crystals": 3,
+          "actions": [
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "lightning_1",
+              "position": "E5"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "unit-white-2-0",
+              "to": "I9"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "unit-white-2-0",
+              "targetPosition": "I10"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 4,
+      "w": 792,
+      "b": 6503,
+      "seat": "black",
+      "mask": 1,
+      "evidence": [
+        {
+          "target": "Hi E6",
+          "ap": 3,
+          "crystals": 0,
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-4",
+              "to": "F6"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-4",
+              "targetPosition": "E6"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 4,
+      "w": 675,
+      "b": 8007,
+      "seat": "white",
+      "mask": 5,
+      "evidence": [
+        {
+          "target": "Hi F5",
+          "ap": 3,
+          "crystals": 0,
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-0",
+              "to": "F4"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-0",
+              "targetPosition": "F5"
+            }
+          ]
+        },
+        {
+          "target": "Sjor I9",
+          "ap": 4,
+          "crystals": 4,
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "initial-0"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-0",
+              "to": "I8"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-0",
+              "targetPosition": "I9"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 4,
+      "w": 675,
+      "b": 8007,
+      "seat": "black",
+      "mask": 3,
+      "evidence": [
+        {
+          "target": "Hi H3",
+          "ap": 3,
+          "crystals": 0,
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-3",
+              "to": "H4"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-3",
+              "targetPosition": "H3"
+            }
+          ]
+        },
+        {
+          "target": "Sjor B2",
+          "ap": 4,
+          "crystals": 4,
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "initial-3"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-3",
+              "to": "B3"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-3",
+              "targetPosition": "B2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 4,
+      "w": 779,
+      "b": 7234,
+      "seat": "white",
+      "mask": 0,
+      "evidence": []
+    },
+    {
+      "h": 4,
+      "w": 779,
+      "b": 7234,
+      "seat": "black",
+      "mask": 1,
+      "evidence": [
+        {
+          "target": "Hi E5",
+          "ap": 4,
+          "crystals": 3,
+          "actions": [
+            {
+              "type": "BUY_UNIT",
+              "definitionId": "lightning_1",
+              "position": "J9"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "unit-black-2-0",
+              "to": "E6"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "unit-black-2-0",
+              "targetPosition": "E5"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 4,
+      "w": 792,
+      "b": 8007,
+      "seat": "white",
+      "mask": 5,
+      "evidence": [
+        {
+          "target": "Hi F5",
+          "ap": 2,
+          "crystals": 0,
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-0",
+              "to": "F6"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-0",
+              "targetPosition": "F5"
+            }
+          ]
+        },
+        {
+          "target": "Sjor I9",
+          "ap": 4,
+          "crystals": 4,
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "initial-0"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-0",
+              "to": "I8"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-0",
+              "targetPosition": "I9"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "h": 4,
+      "w": 792,
+      "b": 8007,
+      "seat": "black",
+      "mask": 3,
+      "evidence": [
+        {
+          "target": "Hi E6",
+          "ap": 2,
+          "crystals": 0,
+          "actions": [
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-3",
+              "to": "E5"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-3",
+              "targetPosition": "E6"
+            }
+          ]
+        },
+        {
+          "target": "Sjor B2",
+          "ap": 4,
+          "crystals": 4,
+          "actions": [
+            {
+              "type": "PROMOTE_UNIT",
+              "unitId": "initial-3"
+            },
+            {
+              "type": "END_PLACE_PHASE"
+            },
+            {
+              "type": "MOVE",
+              "unitId": "initial-3",
+              "to": "B3"
+            },
+            {
+              "type": "ATTACK",
+              "unitId": "initial-3",
+              "targetPosition": "B2"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

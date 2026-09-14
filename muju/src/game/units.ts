@@ -1,7 +1,7 @@
 import type { UnitDefinition, Element } from './types';
 
-// All 18 unit definitions — v2.3: 3/4/5 purchases and universal 4/8 promotions.
-// See docs/BALANCE-2026-09-11.md for the approved stats and map adjustments.
+// All 18 unit definitions — v2.8: Plant Mining 3/5/8.
+// See docs/EXPANSION_ECONOMY-2026-09-13.md; prices and combat stats are unchanged.
 export const UNIT_DEFINITIONS: UnitDefinition[] = [
   // Fire (Rush) - Japanese
   {
@@ -177,7 +177,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     attack: 1,
     defense: 3,
     speed: 1,
-    mining: 4,
+    mining: 5,
     cost: 9,
   },
   {
@@ -189,7 +189,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     attack: 2,
     defense: 4,
     speed: 1,
-    mining: 5,
+    mining: 8,
     cost: 17,
   },
 

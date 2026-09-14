@@ -1,0 +1,16 @@
+
+ RUN  v4.1.11 /Users/ashkie/src/deevgames/muju
+
+·····························································································································································································································stdout | tests/game/tier3-cap.test.ts > v1.5 catalogue boundary > discards v2 saves with tier 4 in the board
+Schema version mismatch, starting fresh game
+
+stdout | tests/game/tier3-cap.test.ts > v1.5 catalogue boundary > discards v2 saves with tier 4 in the queue
+Schema version mismatch, starting fresh game
+
+···········································································································································································································································
+
+ Test Files  19 passed (19)
+      Tests  456 passed (456)
+   Start at  23:20:22
+   Duration  18.50s (transform 1.37s, setup 945ms, import 1.46s, tests 18.40s, environment 6.53s)
+

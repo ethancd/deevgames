@@ -1,0 +1,104 @@
+{
+  "exhaustiveUnitWellCombinations": 1134,
+  "aiFeatureChecks": [
+    {
+      "economy": "A",
+      "actualFifthPayout": 1,
+      "unadaptedNominalMiningFeature": 5
+    },
+    {
+      "economy": "B",
+      "actualFifthPayout": 3,
+      "unadaptedNominalMiningFeature": 5
+    },
+    {
+      "economy": "C",
+      "actualFifthPayout": 5,
+      "unadaptedNominalMiningFeature": 5
+    }
+  ],
+  "controls": [
+    {
+      "a": "InvestT3",
+      "b": "Rush",
+      "swapped": false,
+      "seed": 20260909,
+      "actions": 160,
+      "traceHash": "ea6eeef744fce3cdb45e9ed6b7fabab6992e82e4c4967ec56eeddf353d9bcef9",
+      "winType": "elimination",
+      "winner": "black"
+    },
+    {
+      "a": "InvestT3",
+      "b": "Rush",
+      "swapped": true,
+      "seed": 20260909,
+      "actions": 132,
+      "traceHash": "bec96752089dce4ba205faf173c8d6a8514f584c7c9386f42046b0276234ab7d",
+      "winType": "home-occupation",
+      "winner": "white"
+    },
+    {
+      "a": "InvestT3",
+      "b": "MiningDenial",
+      "swapped": false,
+      "seed": 20260909,
+      "actions": 279,
+      "traceHash": "33668cd57a2fe10d15e922949f881b4c483f02368eeaac05741025ed7a91e662",
+      "winType": "home-occupation",
+      "winner": "black"
+    },
+    {
+      "a": "InvestT3",
+      "b": "MiningDenial",
+      "swapped": true,
+      "seed": 20260909,
+      "actions": 350,
+      "traceHash": "2403f8d7a08807aef77c310f6c17ba7018370e4123224012a5cfc65360a87691",
+      "winType": "home-occupation",
+      "winner": "white"
+    },
+    {
+      "a": "Expand",
+      "b": "Turtle",
+      "swapped": false,
+      "seed": 20260909,
+      "actions": 332,
+      "traceHash": "4b319a3330992533f5383d92c83abb9aafd0017adce533a3ae1cc7dd68981a95",
+      "winType": "inactivity",
+      "winner": null
+    },
+    {
+      "a": "Expand",
+      "b": "Turtle",
+      "swapped": true,
+      "seed": 20260909,
+      "actions": 140,
+      "traceHash": "6b411f876b59d75099bb772bfcaebfb327a0edd2c0825f2cb3e63591fd274202",
+      "winType": "inactivity",
+      "winner": null
+    },
+    {
+      "a": "Aware:Balanced",
+      "b": "Mono-metal",
+      "swapped": false,
+      "seed": 20260909,
+      "actions": 161,
+      "traceHash": "4bc3c9ac986ccdaf8bdf387be96372f49ff2a5a8d19ac8108f1072f00d1543ad",
+      "winType": "elimination",
+      "winner": "black"
+    },
+    {
+      "a": "Aware:Balanced",
+      "b": "Mono-metal",
+      "swapped": true,
+      "seed": 20260909,
+      "actions": 244,
+      "traceHash": "5a62563e194c2a905df4d77d40a0d927c3e74bb86f2136e885eaeacf50ca9285",
+      "winType": "elimination",
+      "winner": "white"
+    }
+  ],
+  "baselinePhysicsAndScriptedActionsIdentical": true,
+  "notes": "AI potential term separately adapted to actual current-cell payout in all study arms; not covered by scripted equivalence."
+}

@@ -32,6 +32,11 @@ export function useOnlineGame(connection: OnlineConnection, initial: RoomSnapsho
         const change = await waitRoom(connection, roomRef.current.revision, signal);
         if (signal.aborted) return;
         if (change.changed) accept(change.room);
+        else if (change.clock && change.revision === roomRef.current.revision
+          && change.clock.serverNowMs > (roomRef.current.clock?.serverNowMs ?? 0)) {
+          const next = { ...roomRef.current, clock: change.clock };
+          roomRef.current = next; setRoom(next);
+        }
         failures = 0; setConnectionError(null);
       } catch (error) {
         if (signal.aborted) return;
