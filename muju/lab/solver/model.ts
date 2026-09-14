@@ -20,7 +20,7 @@ export function validateCatalogue(catalogue: Catalogue): void {
   }
 }
 
-export const ACTIONS = 6;
+export const ACTIONS = 4;
 export const MAX_NEIGHBORS = 4;
 export const DISTANCES = Array.from({ length: 18 }, (_, i) => i + 1);
 export const RESERVES = { ordinary: 4, shelf: 8, rich: 16 };
