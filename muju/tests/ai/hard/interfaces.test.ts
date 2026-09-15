@@ -209,6 +209,23 @@ import {
   type KillPlan,
   type KillTable,
 } from '../../../src/ai/hard/tables/kill';
+import {
+  TACTICAL_FLAGS,
+  TurnFlag,
+  TurnPool,
+  decodeTurn,
+  turnSignature,
+  type Turn,
+} from '../../../src/ai/hard/gen/turn';
+import {
+  ActionSearch,
+  TurnTT,
+  UNLIMITED_WORK,
+  isIndependent,
+  type ActionSearchTables,
+  type WithinTurnScorer,
+  type WorkSink,
+} from '../../../src/ai/hard/gen/actionsearch';
 import { newSpawnGeometry, spawnGeometry, type SpawnGeometry } from '../../../src/ai/hard/tables/geometry';
 import {
   HOME_NEVER,
@@ -368,10 +385,6 @@ const _profileFor: (unitsPerMs: number, deviceMemoryGb: number | undefined) => H
 // Each alias reproduces the module DESIGN §4 names; the suppression below it
 // goes away (and is replaced by real declaration tests) at that milestone.
 
-// @ts-expect-error until M11: gen/turn.ts (TurnFlag, Turn, TurnPool, turnSignature, decodeTurn).
-export type M11_Turn = typeof import('../../../src/ai/hard/gen/turn');
-// @ts-expect-error until M11: gen/actionsearch.ts (ActionSearchConfig, WithinTurnScorer, TurnTT, ActionSearch, isIndependent).
-export type M11_ActionSearch = typeof import('../../../src/ai/hard/gen/actionsearch');
 // @ts-expect-error until M12: eval/features.ts (FEATURE_COUNT, F, FEATURE_NAMES, STAGE_OF, extract, boundStage2).
 export type M12_Features = typeof import('../../../src/ai/hard/eval/features');
 // @ts-expect-error until M12: eval/weights.ts (Weights, DEFAULT_WEIGHTS, loadWeights, serializeWeights, weightsHash).
@@ -614,6 +627,54 @@ describe('DESIGN §4 declaration tests', () => {
     expect(declared.every(d => d !== undefined && d !== null)).toBe(true);
     expect(declared).toHaveLength(11);
     expect([KILL_IMPOSSIBLE, KILL_MAX_LANES, KILL_NO_ATTACKER]).toEqual([255, 4, -128]);
+  });
+
+  it('every §4.13 gen/turn.ts, gen/actionsearch.ts signature is exported with the frozen shape (M11)', () => {
+    const _turnShape: (t: Turn) => [Int32Array, number, number, number, number, number, Centi, number, Centi] = t => [
+      t.actions, t.count, t.endLo, t.endHi, t.sig, t.flags, t.gainCc, t.place, t.hangCc,
+    ];
+    const _turnPool: (capacity: number) => TurnPool = capacity => new TurnPool(capacity);
+    const _poolShape: (p: TurnPool) => [() => void, () => Turn, number] = p => [
+      () => p.reset(), () => p.alloc(), p.used,
+    ];
+    const _turnSignature: (p: PackedState, t: Turn) => number = turnSignature;
+    const _decodeTurn: (p: PackedState, t: Turn, keep: KeepSetTable) => AIAction[] = decodeTurn;
+
+    const _actionSearchTables: (t: ActionSearchTables) => [readonly [BB, BB], Int8Array] = t => [t.exposure, t.killActions];
+    const _scorer: WithinTurnScorer = (p, sc, ply) => p.materialCc[p.side] + sc.bbPerPly + ply;
+    const _turnTT: (bits: number) => TurnTT = bits => new TurnTT(bits);
+    const _ttShape: (t: TurnTT) => [boolean, void, void] = t => [t.probe(0, 0, 0), t.store(0, 0, 0), t.bump()];
+    // DESIGN §4.13 types the meter as `search/time.ts WorkMeter`, which M14
+    // builds; `gen` may not import `search` (§2), so the parameter is the
+    // structural `WorkSink` the module actually calls. See DEVIATIONS under M11.
+    const _run: (
+      s: ActionSearch,
+      p: PackedState, t: ActionSearchTables, prefix: Int32Array, prefixLen: number, placeIndex: number,
+      score: WithinTurnScorer, meter: WorkSink, ply: number, out: Turn[],
+    ) => number = (s, p, t, prefix, prefixLen, placeIndex, score, meter, ply, out) =>
+      s.run(p, t, prefix, prefixLen, placeIndex, score, meter, ply, out);
+    const _enumerateAll: (
+      s: ActionSearch, p: PackedState, prefix: Int32Array, prefixLen: number, onEnd: (lo: number, hi: number) => void,
+    ) => number = (s, p, prefix, prefixLen, onEnd) => s.enumerateAll(p, prefix, prefixLen, onEnd);
+    const _isIndependent: (p: PackedState, dist: DistanceCache, prev: PA, prevBallLo: BB, cur: PA) => boolean = isIndependent;
+
+    const declared: unknown[] = [
+      _turnShape, _turnPool, _poolShape, _turnSignature, _decodeTurn,
+      _actionSearchTables, _scorer, _turnTT, _ttShape, _run, _enumerateAll, _isIndependent,
+      UNLIMITED_WORK,
+    ];
+    expect(declared.every(d => d !== undefined && d !== null)).toBe(true);
+    expect(declared).toHaveLength(13);
+    // DESIGN §4.13's flag table, verbatim, and the tactical subset quiescence reads.
+    expect([
+      TurnFlag.KILL, TurnFlag.CLEAVE_CHAIN, TurnFlag.HOME_ENTRY, TurnFlag.HOME_RESCUE, TurnFlag.SPAWN_DENY,
+      TurnFlag.PURCHASE, TurnFlag.PROMOTION, TurnFlag.RETREAT, TurnFlag.QUIET, TurnFlag.FORCED,
+      TurnFlag.BOOK, TurnFlag.HOME_RACE, TurnFlag.SUMMON_STRIKE,
+    ]).toEqual([1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096]);
+    expect(TACTICAL_FLAGS).toBe(
+      TurnFlag.KILL | TurnFlag.CLEAVE_CHAIN | TurnFlag.HOME_ENTRY | TurnFlag.HOME_RESCUE |
+        TurnFlag.HOME_RACE | TurnFlag.SUMMON_STRIKE,
+    );
   });
 
   it('every §4.8-§4.10 tables signature is exported with the frozen shape (M6)', () => {
