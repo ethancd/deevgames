@@ -187,6 +187,71 @@ value should not assume the two engines spent comparable effort — only
 `wall:<ms>` is a fair cross-family axis, consistent with the axis-rule
 deviation above.
 
+## M3
+
+### 2026-09-15: `HardSearchStats`/`RootResult['source']` declared locally in `protocol.ts`
+
+DESIGN §6.1's `TurnResult` (`src/ai/worker/protocol.ts`, this milestone) types
+`stats: HardSearchStats` and `source: RootResult['source']`. Both live in
+`src/ai/hard/search/{pvs,root}.ts` per DESIGN §4.16, which do not exist until
+M14 — M3 only depends on M2. Follows the precedent `src/ai/hard/config.ts`
+(M4) already set for exactly this situation (see that file's top-of-file
+comment and the M4 deviation above): the shape is declared once, here, with a
+comment naming the real owner; `HardSearchStats` is copied verbatim from
+DESIGN §4.16 and `RootSource` is `RootResult['source']`'s literal union.
+TypeScript's structural typing means M14's real `search/pvs.ts`/`search/root.ts`
+exports are assignable to these without protocol.ts needing to import them —
+no cycle, since `search/*` is free to import from `worker/*` if it ever needs
+to, but does not need to for this to type-check. **Binding on M14:** keep
+`HardSearchStats`'s field set and `RootResult['source']`'s union exactly in
+sync with `protocol.ts`'s copies (or, cleaner, have `protocol.ts` import them
+from `search/pvs.ts`/`search/root.ts` once those modules exist and delete the
+local declarations — either is fine since the shapes are frozen by DESIGN §4.16
+already).
+
+### 2026-09-15: `lab/hard-ai/verify/run.ts` gains Playwright JSON-reporter parsing
+
+Not in M3's file list, but the M3 gate row's pass criterion needs an
+`e2eFailures` metric from its `npx playwright test ...` step, and `run.ts`
+(M1) only knew how to derive metrics from `npm run hard:deps`, `npx vitest
+run`, and `npx tsc`/`npm run hard:types` steps. Minimal additive change,
+mirroring the existing vitest handling exactly: a step matching `npx
+playwright test` gets `--reporter=json` appended transparently (the
+human-readable `command` string recorded in the gate artifact is unchanged),
+and its last top-level JSON stdout line's `stats.unexpected` becomes
+`metrics.e2eFailures`. No existing gate uses a playwright step, so this is
+purely additive — every prior gate's parsing is untouched. Per the worktree
+rule ("a shared file genuinely needs a change outside your list, make the
+minimal additive change and report it").
+
+### 2026-09-15: `playwright.hard.config.ts`'s `webServer.command` builds before it previews, with `npx vite build` — not `npm run build`
+
+MILESTONES.md's prose gives the `webServer` as "`vite preview --port 8927`".
+Taken literally, that fails on a clean checkout / a worktree whose `dist/`
+predates this change — `vite preview` serves whatever was last built, it does
+not build. `webServer.command` is `npx vite build && npm run preview --
+--port 8927` instead, so `npx playwright test --config playwright.hard.config.ts
+...` is a single self-sufficient command exactly as `hard:verify`'s gate
+contract requires (DESIGN §7.1: "every gate command is itself a single npm
+script invocation or a `&&` chain"). `baseURL`/the served origin are
+unchanged (`http://127.0.0.1:8927/muju/`, the same port `playwright.config.ts`'s
+default `MUJU_BASE_URL` already assumes for this project's other,
+externally-served e2e suites).
+
+Specifically `npx vite build`, not `npm run build` (`tsc && vite build`,
+`prebuild: npm run ai:wasm`): this worktree is shared with other milestone
+agents editing concurrently, and `npm run build`'s `prebuild` hook recompiles
+the shared `src/ai/wasm/tactics.wasm` via `asc` — exactly the WASM-recompile
+race the worktree's own binding rules ban `npm test` for ("its pretest
+recompiles the shared WASM kernel and races with other agents"). Observed
+directly: the gate's first attempt failed with `webServer` exit code 2 from
+exactly this race. `npx vite build` bundles the app against whatever
+`tactics.wasm` already exists on disk without writing to it, and — since Vite
+does not typecheck — also skips the whole-project `tsc` pass, which is both
+redundant with this milestone's own separate `npx tsc --noEmit -p
+tsconfig.json` check and itself exposed to transient errors from other
+agents' concurrent edits elsewhere under `src/`.
+
 ## M4
 
 ### 2026-09-15: `PackedState` and its slot/flag constants are declared in `types.ts`
@@ -461,3 +526,212 @@ DESIGN §4.4's constructor is `constructor(cat?: Catalog)`, which it still is.
 that cache behind `core/movement.ts createDistanceCache`; the replica builds one
 in its constructor and exposes it as `readonly dist` so `tables/*` (M6+) can
 share the same cache rather than recomputing the same maps.
+
+## M6
+
+### 2026-09-15: `strikeIfBought` keeps the spawn squares themselves
+
+DESIGN §5.2 writes the pre-dilate set as `{q : 0 < minDist[q] <= 3s}`, which
+drops the spawn squares (`minDist = 0`). `tables/threat.ts strikeIfBoughtArea`
+uses `0 <= minDist[q]` instead, i.e. it KEEPS them. A unit bought on `q` and
+never moved still attacks `q`'s four neighbours, so excluding `q` would make
+the map miss real threats — and the M6 oracle MILESTONES.md names is the brute
+force over `getAllSpawnPositions x getAffordablePurchases` of
+`dilate(getMovementRange(q, spd, 3) ∪ {q})`, whose `∪ {q}` is exactly this
+convention (DESIGN F22 applies it to existing units; a purchase is the same
+case). The two readings differ only on `L` itself, and the strict reading
+fails the gate: `tests/ai/hard/threat.test.ts` pins a position whose only
+spawn square has both neighbours occupied, where the strict set is empty and
+the true attack area is `{A1, B1, A2}`.
+
+### 2026-09-15: `classifyApproach`'s `d` is in ACTIONS, and the class is decided by a real retreat square
+
+DESIGN §5.8 writes the classification as `d = dist(a, cheapest empty square
+adjacent to v)`, `cls = d <= 2s ? RETREAT : d <= 3s ? STRAND : NONE`, on a raw
+BFS distance. `tables/approach.ts` reports `d = ceil(dist/speed)` — move
+ACTIONS, which is what the canonical oracle
+(`server/analysis/tactics.ts:272 approachTable`) calls `moveActions` and what
+the M6 gate compares. The thresholds are unchanged by the rewrite
+(`ceil(dist/s) <= 2` and `dist <= 2s` are the same predicate), so this is a
+change of unit, not of meaning.
+
+The class, however, is decided by whether a retreat square actually EXISTS on
+the post-attack board, not by the cost threshold alone — again matching the
+canonical table, which simulates the move-and-hit and reports `stranded` when
+`getMovementRange(attackSquare, speed, actionsLeft)` comes back empty. The two
+rules agree on an open board (cost <= 2 leaves an action, cost 3 does not) and
+disagree exactly where the attacker boxes itself in, or where the hit ends the
+game: §5.8's thresholds would promise an escape the canonical engine does not
+grant. `approachMismatch === 0` on 9,150 (attacker, target) pairs is the
+evidence that the actions-and-real-retreat reading is the canonical one.
+
+### 2026-09-15: the approach gate excludes lines the home prover would adjudicate
+
+`applyAction` re-runs `resolveHomeCheckmate` after every transition
+(`src/ai/simulate.ts:33`), so a canonical approach line can end the game —
+`line.after.phase !== 'playing'`, hence `stranded` — for a reason that has
+nothing to do with the approach: the mover was already standing on the enemy
+home corner, or the approach move itself lands there. Deciding that needs
+`tactics/prover.ts homeVerdict`, which arrives at M10 in a layer `tables/**`
+may not import (DESIGN §2 layering, enforced by `hard:deps`). Rather than
+have `tables/approach.ts` guess, `lab/hard-ai/oracles/threat.ts` excludes
+those cases from the differential and COUNTS them in the artifact:
+
+- `positionsSkippedProof` — `Replica.needsProof(p)`, the exact condition of
+  the canonical short-circuit (`homeCheckmate.ts:173-176`). 0 on the shipped
+  corpus; the unit test's random states do hit it.
+- `pairsSkippedCorner` — the defender's home corner is one of the target's
+  attack squares AND is empty, so an attacker could end its approach on it.
+  808 of 9,958 pairs. An OCCUPIED corner is never a candidate square for
+  either implementation, so those pairs stay in the comparison.
+- `pairsSkippedRepeat` — the attacker has already hit this particular target
+  this turn. `PackedState` carries an attack COUNT, not the target identities
+  (DESIGN §3.1), so the replica cannot see the canonical table's
+  `!u.attackedThisTurn?.includes(target.id)` clause. 0 on the corpus.
+
+The oracle also packs the position the canonical table actually sees — the
+`actionReady(source)` normalisation (`server/analysis/core.ts:86`: pay a
+pending upkeep, leave the place phase) — rather than the stored state, so the
+two sides of the comparison are the same position.
+
+### 2026-09-15: exports beyond the literal §4.8-§4.10 lists
+
+Same precedent as M4's `core/spawn.ts newSpawnInfo` and M5's allocators: DESIGN
+§4 hands callers an `out`, never an allocator or the constants the caller needs
+to size one.
+
+- `tables/threat.ts`: `refreshExposure(t)` (the level-1 step that derives
+  `exposure` from the two strike maps — §4.8 specifies the field but §4.9
+  lists no function that fills it), `STRIKE_MOVE_ACTIONS = 3`, `UNREACHABLE`
+  (`nearestOwner`'s sentinel), `unitSpeeds`, `maskSquares`.
+- `tables/approach.ts`: `newApproachResult()`, `classifyApproachInto` (the
+  allocation-free form — §4.10's `classifyApproach` RETURNS an
+  `ApproachResult`, so the signature as written must allocate; `approachTable`
+  uses the `Into` form and allocates nothing per node),
+  `APPROACH_SCRATCH_BB`/`APPROACH_SCRATCH_I8` (the `Scratch` dimensions a
+  caller must reserve), and an optional trailing `defId` on `classifyApproach`
+  so a purchase — which has no unit on the board to read a definition from —
+  can be classified through the same entry point.
+- `tables/context.ts`: `KILL_NEVER = 127` (§4.8 states the sentinel in prose
+  only).
+
+### 2026-09-15: `tables/context.ts` re-declares the level-2 result shapes structurally
+
+`NodeTables` (DESIGN §4.8) has fields typed `KillTable`, `HomeSafety`,
+`SpawnGeometry` and `EconResult` — interfaces DESIGN §4.11/§4.12 place in
+`tables/kill.ts`, `tables/home.ts`, `tables/geometry.ts` and
+`tables/economy.ts`, built by M7, M8 and M9 CONCURRENTLY with M6 in parallel
+group E. `context.ts` therefore re-declares them field for field exactly as
+§4.11/§4.12 print them, rather than importing modules that did not exist when
+M6 was written; TypeScript's structural typing makes the two spellings
+interchangeable, and `tables/geometry.ts` and `tables/economy.ts` already
+import `NodeTables` back from `context.ts` (`tables/kill.ts` declares a
+narrower `KillContext` to avoid the same cycle) and typecheck against it.
+`ECON_HORIZON`'s value is restated as a private `ECON_H = 6` for the same
+reason — `allocTables` must size `EconResult.income`/`upkeep`. M12, which
+owns `buildTables`'s body, may replace these with `import type` once every
+lane of group E has landed.
+
+`buildTables` itself throws `Error('buildTables: body lands at M12')`: M6 owns
+the SHAPE plus `threat.ts` and `approach.ts`; `spawn`, `home`, `geom`, `kill`
+and `econ` arrive with M7-M9, and wiring a partial `buildTables` would hand
+M12's evaluator a table that silently reports zeros for half its fields.
+`tests/ai/hard/threat.test.ts` pins the throw so the stub cannot outlive M12
+unnoticed.
+
+### 2026-09-15: the M6 gate row asserts coverage as well as agreement
+
+MILESTONES.md's M6 pass criterion is `strikeMismatch === 0 &&
+strikeIfBoughtMismatch === 0 && approachMismatch === 0 && vitestFailures === 0`.
+All three counters are vacuously zero on an empty comparison, so the row in
+`lab/hard-ai/verify/gates.ts` additionally asserts `strikeChecked === 10000`
+(5,000 positions x 2 sides, the size MILESTONES.md names) and that the approach
+sample produced at least 2,000 pairs covering all three classes
+(`approachRetreats`, `approachStrands`, `approachNones` all > 0). The corpus is
+ordered `authored ++ openings ++ fuzz`, so the first 500 positions of it are
+almost all openings — armies still on their own sides, every approach `NONE`;
+`oracles/threat.ts` strides across the whole corpus for the approach sample
+instead, which is what turns 6 RETREAT / 2 STRAND verdicts into 1,874 / 1,272.
+
+## M8
+
+### 2026-09-15: `newEconResult` — an exports-beyond-the-literal-list allocator
+
+DESIGN §4.12 gives `economyDP`/`economyStayInPlace` a caller-supplied `out:
+EconResult`, the same "hand callers an allocator, not a constructor" pattern
+`core/spawn.ts newSpawnInfo` and `tables/context.ts allocTables` already
+establish (M4/M6's precedent in the M5 §"exports beyond the literal §4 lists"
+entry above), but never actually names an allocator for `EconResult` itself.
+`tables/economy.ts` exports `newEconResult()` for the same reason `spawn.ts`
+needed `newSpawnInfo`: every call site (`tests/ai/hard/economy.test.ts`,
+`lab/hard-ai/oracles/economy.ts`, and `tables/context.ts`'s own
+`allocTables`) needs a correctly-shaped zeroed `EconResult` and DESIGN gives
+no other way to produce one. No listed §4.12 signature changes.
+
+### 2026-09-15: a dry miner with no positive-value relocation target does not move
+
+DESIGN §5.8 defines the relocation target as `argmax PST_MINE[def][reserve[c]]
+>> (actionCost/2)` over every square reachable within
+`RELOCATION_MAX_ACTIONS`, but does not say what happens when every reachable
+candidate scores 0 (every reachable cell is itself already dry, or none are
+reachable at all — e.g. a lone miner surrounded by depleted cells). Relocating
+onto another 0-reserve cell can only ever mine 0 for the rest of the horizon,
+so `economyDP` leaves such a miner in place rather than charging
+`relocationDebt` for a move with no possible benefit. This is also *why*
+`economyDP.stream >= economyStayInPlace.stream` holds structurally rather than
+merely empirically on the M8 oracle's 2,000-position `relocationMonotone`
+check: every miner's contribution to `stream` over the remainder of the
+horizon is `>= 0` whether it stays (a dry cell mines 0 forever, matching what
+`economyStayInPlace` already does) or relocates (either it finds no positive
+candidate and behaves identically to staying, or it does and only ever adds
+non-negative income). `tables/economy.ts bestRelocationTarget` returns
+`square: -1` in this case; `tests/ai/hard/economy.test.ts` pins it directly
+("a dry miner with no reachable positive-value candidate does not relocate at
+all").
+
+### 2026-09-15: the M8 oracle's "literal 6-turn simulation" does not route through `endTurn`/`startTurn`
+
+MILESTONES.md's M8 gate row describes the oracle as "literal 6-turn simulation
+through canonical `endTurn` with units held" and DESIGN §5.8 says the
+relocation-off stream "equals a literal 6-turn simulation through canonical
+`endTurn`". `lab/hard-ai/oracles/economy.ts`'s `literalProjection` instead
+applies the canonical `mining.ts endOfTurnIncome` and `upkeep.ts upkeepDue`
+directly, `ECON_HORIZON` times, with the units held motionless and the bank
+allowed to go hypothetically negative. Routing through the real
+`endTurn`/`startTurn` pair also runs victory and inactivity-draw checks that
+have nothing to do with the economy projection DESIGN §5.8 defines: a sampled
+corpus position that happens to be one draw-clock tick, one elimination, or
+one home-checkmate away from a real game-ending transition would make the
+literal-projection comparison fail (or the canonical side stop projecting
+income altogether) for a reason unrelated to `tables/economy.ts`'s formula at
+all — and DESIGN §5.8's `turnsToInsolvency` is itself explicitly a
+hypothetical running-balance projection ("first k with `bank + Σ(...) < 0`"),
+never a claim that the side actually plays six real, legal turns. Calling the
+two named primitives directly is the literal, narrow reading of "through
+canonical `endTurn`" that reproduces §5.8's formula without also asserting
+something DESIGN never claims (that six turns of real play are always
+possible from an arbitrary sampled position). `income_t`/`upkeep_t`/`stream`
+are still compared exactly, every sampled position, both sides — the M8 gate
+criterion (`streamMismatch === 0`) is unaffected by this reading.
+
+### 2026-09-15: `lab/hard-ai/suites/economy.suite.json` cases are single decisive actions, not full turns
+
+DESIGN §7.5's `muju-suite-v1` schema records `best`/`avoid` as full-turn end
+positions ("end positions, never sequences"), scored by a turn generator that
+does not exist until M11 (`gen/turn.ts`) paired with the evaluator that does
+not exist until M12 (`eval/*`). The 30 `economy.suite.json` cases MILESTONES.md
+asks M8 to create record the position right after the ONE action each case is
+actually testing instead — a relocation `MOVE`, or `PROMOTE_UNIT` vs
+`END_PLACE_PHASE` for a promote-vs-bank choice — applied through the real
+canonical `applyAction` (`src/ai/simulate.ts`) and packed with the real
+`Replica.pack` (`src/ai/hard/core/state.ts`) for a real `Kpos`, never
+hand-typed. This is the smallest well-formed choice that is still genuinely
+"economy" content per DESIGN §7.5's own description ("`PST_MINE` gaps > 400
+cc: relocation, Muju-onto-4, promote-vs-bank" — `plant_1`'s display name is
+literally "Muju", `units.ts:161`); the suite's own `notes` field documents the
+convention so whichever milestone first scores it (M14+) does not mistake a
+one-action case for an incomplete four-action turn. No M8 gate criterion reads
+this file (the M8 gate row runs only `economy.test.ts` and
+`oracles/economy.ts`), so nothing here is checked by `npm run hard:verify --
+gate M8`; it exists to satisfy MILESTONES.md's M8 "Files (create)" list ahead
+of the milestone that actually scores it.

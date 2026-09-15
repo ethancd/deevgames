@@ -173,6 +173,58 @@ import {
 } from '../../../src/ai/hard/core/income';
 import type { AIAction } from '../../../src/ai/types';
 import type { GameState } from '../../../src/game/types';
+import {
+  ACTION_VALUE_CC,
+  ECON_HORIZON,
+  RELOCATION_MAX_ACTIONS,
+  economyDP,
+  economyStayInPlace,
+  type EconResult,
+} from '../../../src/ai/hard/tables/economy';
+import {
+  allocTables,
+  buildTables,
+  KILL_NEVER,
+  type NodeTables,
+} from '../../../src/ai/hard/tables/context';
+import {
+  exposedValueCc,
+  nearestOwner,
+  strikeArea,
+  strikeIfBoughtArea,
+} from '../../../src/ai/hard/tables/threat';
+import {
+  KILL_IMPOSSIBLE,
+  KILL_MAX_LANES,
+  KILL_NO_ATTACKER,
+  cleaveChain,
+  cleavePlan,
+  killTable,
+  minActionsToKill,
+  newCleavePlan,
+  newKillPlan,
+  newKillTable,
+  type KillEntry,
+  type KillOpts,
+  type KillPlan,
+  type KillTable,
+} from '../../../src/ai/hard/tables/kill';
+import { newSpawnGeometry, spawnGeometry, type SpawnGeometry } from '../../../src/ai/hard/tables/geometry';
+import {
+  HOME_NEVER,
+  HOME_RACE_LINE_LEN,
+  homeRaceAvailable,
+  homeSafety,
+  minTurnsToCorner,
+  newHomeSafety,
+  type HomeSafety,
+} from '../../../src/ai/hard/tables/home';
+import {
+  Approach,
+  approachTable,
+  classifyApproach,
+  type ApproachResult,
+} from '../../../src/ai/hard/tables/approach';
 
 // --- DESIGN §3.1: types.ts ---------------------------------------------------
 
@@ -316,20 +368,6 @@ const _profileFor: (unitsPerMs: number, deviceMemoryGb: number | undefined) => H
 // Each alias reproduces the module DESIGN §4 names; the suppression below it
 // goes away (and is replaced by real declaration tests) at that milestone.
 
-// @ts-expect-error until M6: tables/threat.ts (strikeArea, strikeIfBoughtArea, nearestOwner, exposedValueCc).
-export type M6_Threat = typeof import('../../../src/ai/hard/tables/threat');
-// @ts-expect-error until M6: tables/approach.ts (Approach, ApproachResult, classifyApproach, approachTable).
-export type M6_Approach = typeof import('../../../src/ai/hard/tables/approach');
-// @ts-expect-error until M6: tables/context.ts (NodeTables, allocTables, buildTables).
-export type M6_Context = typeof import('../../../src/ai/hard/tables/context');
-// @ts-expect-error until M7: tables/kill.ts (KillOpts, KillPlan, KillEntry, KillTable, minActionsToKill, killTable, cleaveChain).
-export type M7_Kill = typeof import('../../../src/ai/hard/tables/kill');
-// @ts-expect-error until M8: tables/economy.ts (ECON_HORIZON, ACTION_VALUE_CC, RELOCATION_MAX_ACTIONS, EconResult, economyDP, economyStayInPlace).
-export type M8_Economy = typeof import('../../../src/ai/hard/tables/economy');
-// @ts-expect-error until M9: tables/geometry.ts (SpawnGeometry, spawnGeometry).
-export type M9_Geometry = typeof import('../../../src/ai/hard/tables/geometry');
-// @ts-expect-error until M9: tables/home.ts (HomeSafety, homeSafety, minTurnsToCorner, homeRaceAvailable).
-export type M9_Home = typeof import('../../../src/ai/hard/tables/home');
 // @ts-expect-error until M10: tactics/prover.ts (HomeVerdict, PROOF_NODES, needsProof, damageBound, homeVerdict, homeWitness).
 export type M10_Prover = typeof import('../../../src/ai/hard/tactics/prover');
 // @ts-expect-error until M11: gen/turn.ts (TurnFlag, Turn, TurnPool, turnSignature, decodeTurn).
@@ -454,6 +492,147 @@ describe('DESIGN §4 declaration tests', () => {
     ];
     expect(declared.every(d => d !== undefined && d !== null)).toBe(true);
     expect(declared).toHaveLength(28);
+  });
+
+  it('every §4.12 tables/geometry.ts, tables/home.ts signature is exported with the frozen shape (M9)', () => {
+    const _spawnGeometryShape: (g: SpawnGeometry) => number[] = g => [
+      g.area, g.reserveSum, g.anchorDepth, g.fragility, g.blocking,
+      g.infiltrationAnchors, g.convertible, g.zeroCliff, g.cornerNeighboursHeld,
+    ];
+    const _newSpawnGeometry: () => SpawnGeometry = newSpawnGeometry;
+    const _spawnGeometry: (p: PackedState, t: NodeTables, side: Side, sc: Scratch, ply: number, out: SpawnGeometry) => SpawnGeometry =
+      spawnGeometry;
+
+    const _homeSafetyShape: (h: HomeSafety) => [number, number, 0 | 1, number, 0 | 1, 0 | 1] = h => [
+      h.actionsToCorner, h.turnsToCorner, h.buyThreat, h.rescuers, h.plug, h.occupied,
+    ];
+    const _newHomeSafety: () => HomeSafety = newHomeSafety;
+    const _homeSafety: (p: PackedState, t: NodeTables, side: Side, out: HomeSafety) => HomeSafety = homeSafety;
+    const _minTurnsToCorner: (p: PackedState, t: NodeTables, attacker: Side) => number = minTurnsToCorner;
+    const _homeRaceAvailable: (p: PackedState, t: NodeTables, side: Side, out: Int32Array) => number = homeRaceAvailable;
+
+    const declared: unknown[] = [
+      _spawnGeometryShape, _newSpawnGeometry, _spawnGeometry,
+      _homeSafetyShape, _newHomeSafety, _homeSafety, _minTurnsToCorner, _homeRaceAvailable,
+      HOME_NEVER, HOME_RACE_LINE_LEN,
+    ];
+    expect(declared.every(d => d !== undefined && d !== null)).toBe(true);
+    expect(declared).toHaveLength(10);
+    expect(HOME_RACE_LINE_LEN).toBe(3);
+  });
+
+  it('every §4.12 tables/economy.ts signature is exported with the frozen shape (M8)', () => {
+    const _econResultShape: (e: EconResult) => [Centi, Int16Array, Int16Array, number, Centi, number] = e => [
+      e.stream,
+      e.income,
+      e.upkeep,
+      e.turnsToInsolvency,
+      e.relocationDebt,
+      e.waste,
+    ];
+    const _economyDP: (p: PackedState, t: NodeTables, side: Side, sc: Scratch, ply: number, out: EconResult) => EconResult = economyDP;
+    const _economyStayInPlace: (p: PackedState, side: Side, out: EconResult) => EconResult = economyStayInPlace;
+    const declared: unknown[] = [
+      ECON_HORIZON, ACTION_VALUE_CC, RELOCATION_MAX_ACTIONS,
+      _econResultShape, _economyDP, _economyStayInPlace,
+    ];
+    expect(declared.every(d => d !== undefined && d !== null)).toBe(true);
+    expect(declared).toHaveLength(6);
+    expect([ECON_HORIZON, ACTION_VALUE_CC, RELOCATION_MAX_ACTIONS]).toEqual([6, 60, 8]);
+  });
+
+  it('every §4.11 tables/kill.ts signature is exported with the frozen shape (M7)', () => {
+    const _killOptsShape: (o: KillOpts) => [number, number, boolean, boolean, number] = o => [
+      o.actionBudget,
+      o.crystalBudget,
+      o.allowBuys,
+      o.allowPromotes,
+      o.maxLanes,
+    ];
+    const _killPlanShape: (k: KillPlan) => [number, number, Int8Array, Int8Array, Int8Array, 0 | 1] = k => [
+      k.actions,
+      k.crystals,
+      k.attackers,
+      k.spawnAt,
+      k.lanes,
+      k.needsPromo,
+    ];
+    const _killEntryShape: (e: KillEntry) => [number, number, 0 | 1, 0 | 1, Centi] = e => [
+      e.minActions,
+      e.minCrystals,
+      e.needsBuy,
+      e.needsPromo,
+      e.valueCc,
+    ];
+    const _killTableShape: (t: KillTable) => [KillEntry[], BB, number, number] = t => [
+      t.entry,
+      t.killableNow,
+      t.bestValuePerAction,
+      t.count,
+    ];
+    // DESIGN §4.11 types `t` as `NodeTables`; `kill.ts` declares only the
+    // structural subset it reads (`KillContext`) so that `context.ts -> kill.ts`
+    // stays acyclic. These three assignments are what make the two spellings
+    // interchangeable for every caller — see DEVIATIONS under M7.
+    const _minActionsToKill: (
+      p: PackedState, t: NodeTables, attacker: Side, target: Slot, o: KillOpts, sc: Scratch, ply: number, out: KillPlan,
+    ) => boolean = minActionsToKill;
+    const _killTable: (
+      p: PackedState, t: NodeTables, attacker: Side, o: KillOpts, sc: Scratch, ply: number, out: KillTable,
+    ) => KillTable = killTable;
+    const _cleaveChain: (p: PackedState, t: NodeTables, enemySlot: Slot, sc: Scratch, ply: number) => Centi = cleaveChain;
+
+    const declared: unknown[] = [
+      _killOptsShape, _killPlanShape, _killEntryShape, _killTableShape,
+      _minActionsToKill, _killTable, _cleaveChain,
+      newKillPlan, newKillTable, newCleavePlan, cleavePlan,
+    ];
+    expect(declared.every(d => d !== undefined && d !== null)).toBe(true);
+    expect(declared).toHaveLength(11);
+    expect([KILL_IMPOSSIBLE, KILL_MAX_LANES, KILL_NO_ATTACKER]).toEqual([255, 4, -128]);
+  });
+
+  it('every §4.8-§4.10 tables signature is exported with the frozen shape (M6)', () => {
+    /** Pins the `NodeTables` field names and their types (DESIGN §4.8). */
+    const _nodeTablesShape: (t: NodeTables) => unknown[] = t => [
+      t.keyLo, t.keyHi, t.level, t.side,
+      t.dist, t.strike, t.strikeIfBought, t.exposure, t.spawn, t.cornerDist, t.home, t.geom,
+      t.killActions, t.killCrystals, t.killNeedsBuy, t.killNow, t.approach, t.retreats, t.chain, t.econ,
+    ];
+    const _allocTables: () => NodeTables = allocTables;
+    const _buildTables: (p: PackedState, sc: Scratch, ply: number, level: 1 | 2, out: NodeTables) => NodeTables =
+      buildTables;
+
+    const _strikeArea: (p: PackedState, side: Side, t: NodeTables, actions: number, out: BB) => BB = strikeArea;
+    const _strikeIfBoughtArea: (p: PackedState, side: Side, t: NodeTables, out: BB) => BB = strikeIfBoughtArea;
+    const _nearestOwner: (p: PackedState, side: Side, t: NodeTables, outSlot: Uint8Array, outCost: Uint8Array) => void =
+      nearestOwner;
+    const _exposedValueCc: (p: PackedState, side: Side, t: NodeTables, material: Int32Array) => Centi = exposedValueCc;
+
+    const _approachResultShape: (r: ApproachResult) => [Approach, number, number, number, 0 | 1] = r => [
+      r.cls,
+      r.d,
+      r.retreats,
+      r.attackerSlot,
+      r.buy,
+    ];
+    const _classifyApproach: (
+      p: PackedState, t: NodeTables, attackerSq: Square, speed: number, targetSlot: Slot, sc: Scratch, ply: number,
+    ) => ApproachResult = classifyApproach;
+    const _approachTable: (
+      p: PackedState, t: NodeTables, defender: Side, sc: Scratch, ply: number,
+      outClass: Uint8Array, outRetreats: Uint8Array,
+    ) => void = approachTable;
+
+    const declared: unknown[] = [
+      _nodeTablesShape, _allocTables, _buildTables, KILL_NEVER,
+      _strikeArea, _strikeIfBoughtArea, _nearestOwner, _exposedValueCc,
+      _approachResultShape, _classifyApproach, _approachTable,
+    ];
+    expect(declared.every(d => d !== undefined && d !== null)).toBe(true);
+    expect(declared).toHaveLength(11);
+    expect([Approach.NONE, Approach.STRAND, Approach.RETREAT]).toEqual([0, 1, 2]);
+    expect(KILL_NEVER).toBe(127);
   });
 
   it('every §3.1-§3.3 / §4.1-§4.3 / §4.17 signature is exported with the frozen shape', () => {

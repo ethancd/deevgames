@@ -93,14 +93,44 @@ export const GATES: Gate[] = [
     },
     timeoutMs: 9 * MIN,
   },
-  notImplemented(
-    'M3',
-    ['M2'],
-    'npx vitest run tests/ai && ' +
+  {
+    id: 'M3',
+    dependsOn: ['M2'],
+    description: 'Whole-turn worker path for AIEngineV2 (protocol 3 additive)',
+    command:
+      'npx vitest run tests/ai && ' +
       'npx playwright test --config playwright.hard.config.ts --project=desktop e2e/hard-ai.spec.ts && ' +
       'npm run hard:ladder -- --a aiv2-hard-turn --b aiv2-hard --work wall:1000 --handicaps 0 --pairs 12 --seed 3 --shards 12 --out lab/results/hard-ai-verify/M3.json',
-    8 * MIN,
-  ),
+    args: [],
+    // `hard:ladder`'s `--out` is always a directory (it writes `metrics.json`
+    // inside it regardless of the path's own extension) — the literal
+    // `.../M3.json` from MILESTONES.md's gate row is that directory's name,
+    // not a file `run.ts` can read directly. `vitestFailures`/`e2eFailures`
+    // come from the chain's own step output (vitest/playwright JSON
+    // reporters); `games`/`illegalActions`/`adjudicationRate`/`meanTurnMs`/
+    // `decision` are `hard:ladder`'s flat `metrics.json` fields, merged in
+    // from the real file inside that directory.
+    artifact: 'lab/results/hard-ai-verify/M3.json/metrics.json',
+    criterion: metrics => {
+      const meanTurnMs = metrics.meanTurnMs as { a: number; b: number } | undefined;
+      return (
+        metrics.vitestFailures === 0 &&
+        metrics.e2eFailures === 0 &&
+        metrics.games === 24 &&
+        metrics.illegalActions === 0 &&
+        typeof metrics.adjudicationRate === 'number' &&
+        (metrics.adjudicationRate as number) <= 0.01 &&
+        !!meanTurnMs &&
+        meanTurnMs.a <= meanTurnMs.b * 1.05 &&
+        // No `--sprt` in this row (it is a legality/latency smoke, not a
+        // strength claim — the turn path's SPRT is M19's first row per
+        // MILESTONES.md), so `decision` stays `null` here and the `!== 'H0'`
+        // check is trivially satisfied by design.
+        metrics.decision !== 'H0'
+      );
+    },
+    timeoutMs: 8 * MIN,
+  },
   {
     id: 'M4',
     dependsOn: ['M1'],
@@ -159,27 +189,93 @@ export const GATES: Gate[] = [
     },
     timeoutMs: 6 * MIN,
   },
-  notImplemented(
-    'M6',
-    ['M5'],
-    'npx vitest run tests/ai/hard/threat.test.ts && ' +
+  {
+    id: 'M6',
+    dependsOn: ['M5'],
+    description: 'Threat maps (strike, strikeIfBought, exposure) and the approach table',
+    command:
+      'npx vitest run tests/ai/hard/threat.test.ts && ' +
       'node --import tsx lab/hard-ai/oracles/threat.ts --positions 5000 --approach-positions 500 --out lab/results/hard-ai-verify/M6.json',
-    5 * MIN,
-  ),
-  notImplemented(
-    'M7',
-    ['M5'],
-    'npx vitest run tests/ai/hard/kill.test.ts && ' +
+    args: [],
+    // `oracles/threat.ts --out` writes exactly this artifact itself (the M8
+    // shape, not M2/M3/M5's sibling-merge indirection): `strikeMismatch`,
+    // `strikeIfBoughtMismatch` and `approachMismatch` are its own top-level
+    // fields; `vitestFailures` comes from the chain's vitest step.
+    artifact: 'lab/results/hard-ai-verify/M6.json',
+    criterion: metrics =>
+      metrics.strikeMismatch === 0 &&
+      metrics.strikeIfBoughtMismatch === 0 &&
+      metrics.approachMismatch === 0 &&
+      metrics.vitestFailures === 0 &&
+      // The three counters above are vacuously 0 on an empty comparison, so the
+      // row also asserts the comparison actually ran at the size MILESTONES.md
+      // names — 5,000 positions × 2 sides of strike maps — and that the
+      // approach sample reached every class rather than only quiet openings.
+      metrics.strikeChecked === 10_000 &&
+      (metrics.approachPairs as number) >= 2_000 &&
+      (metrics.approachRetreats as number) > 0 &&
+      (metrics.approachStrands as number) > 0 &&
+      (metrics.approachNones as number) > 0,
+    timeoutMs: 5 * MIN,
+  },
+  {
+    id: 'M7',
+    dependsOn: ['M5'],
+    description: 'Kill-combination DP and Cleave chains vs an exhaustive replica search',
+    command:
+      'npx vitest run tests/ai/hard/kill.test.ts && ' +
       'node --import tsx lab/hard-ai/oracles/kill.ts --positions 2000 --max-own-units 8 --shards 12 --out lab/results/hard-ai-verify/M7.json',
-    8 * MIN,
-  ),
-  notImplemented(
-    'M8',
-    ['M5'],
-    'npx vitest run tests/ai/hard/economy.test.ts && ' +
+    args: [],
+    // `oracles/kill.ts --out` writes every number below into this one file
+    // itself (the shards' partial files are merged and deleted first);
+    // `vitestFailures` comes from the chain's own vitest step, as in M1/M4/M5.
+    artifact: 'lab/results/hard-ai-verify/M7.json',
+    criterion: metrics =>
+      metrics.vitestFailures === 0 &&
+      // The DP's (minActions, minCrystals) equals the exhaustive replica
+      // search's on every (position, target, opts) triple it was run on, and
+      // no triple was skipped because the search ran out of nodes ...
+      metrics.suboptimal === 0 &&
+      metrics.truncated === 0 &&
+      // ... over a population that is not vacuous: all four opts combinations
+      // exercised, real kills found, and the purchase and promotion arms of
+      // the candidate builder actually taken by winning plans.
+      (metrics.minComparisonsPerCombo as number) > 0 &&
+      (metrics.killsFound as number) > 0 &&
+      (metrics.buyPlans as number) > 0 &&
+      (metrics.promoPlans as number) > 0 &&
+      // The corner case equals `homeCheckmate.ts:27-49 enoughPossibleDamage`
+      // on all 28 `lab/ai/fixtures.ts` cases, in both of its framings.
+      metrics.cornerChecked === 28 &&
+      metrics.cornerMismatch === 0 &&
+      (metrics.cornerPreparingChecked as number) > 0 &&
+      metrics.cornerPreparingMismatch === 0 &&
+      // LH §4.1: 3 adjacent Mujus in 3 actions; spaced C1/E1/G1 -> 2 in 4.
+      metrics.cleaveProbeOk === true,
+    timeoutMs: 8 * MIN,
+  },
+  {
+    id: 'M8',
+    dependsOn: ['M5'],
+    description: 'Economy DP and PST',
+    command:
+      'npx vitest run tests/ai/hard/economy.test.ts && ' +
       'node --import tsx lab/hard-ai/oracles/economy.ts --positions 2000 --out lab/results/hard-ai-verify/M8.json',
-    3 * MIN,
-  ),
+    args: [],
+    // `oracles/economy.ts --out` writes exactly this artifact itself (no
+    // sibling-merge indirection needed, unlike M2/M3/M5): `streamMismatch`,
+    // `relocationMonotone`, `insolvencyMismatch` and `pstMaxErr` are its own
+    // top-level fields; `vitestFailures` comes from the chain's vitest step.
+    artifact: 'lab/results/hard-ai-verify/M8.json',
+    criterion: metrics =>
+      metrics.streamMismatch === 0 &&
+      metrics.relocationMonotone === true &&
+      metrics.insolvencyMismatch === 0 &&
+      typeof metrics.pstMaxErr === 'number' &&
+      (metrics.pstMaxErr as number) <= 1 &&
+      metrics.vitestFailures === 0,
+    timeoutMs: 3 * MIN,
+  },
   notImplemented(
     'M9',
     ['M5'],
