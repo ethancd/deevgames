@@ -1,12 +1,14 @@
 # Mythgarden release testing — 13 September 2026
 
-## Portrait spacing — 15 September 2026 (local)
+## Portrait spacing — 15 September 2026
 
 Removed the two/three-person portrait limit, People button and panel, and idle Bag instruction. All occupants now use closer scene positions; smaller markers fit tighter spaces, with scrollable scene rows available for exceptional overflow.
 
 - TypeScript, all **16 UI tests**, and the production build passed. The build retains existing Sass deprecation and bundle-size warnings.
 - Local Chromium checks at **320×520, 320×568, 390×560, 390×700, 834×1112, 1024×768, and 1440×900** confirmed all four Victorian residents and both shopkeepers fit visibly within the scene, without overlapping each other or scene controls. Pages fit the viewport; the People button and Bag instruction were absent.
-- Each Victorian resident's portrait opened their dialogue directly in the disposable local save. Phone screenshots were visually inspected. This change has not been deployed; physical-device Safari was not tested.
+- Each Victorian resident's portrait opened their dialogue directly in the disposable local save. Phone screenshots were visually inspected. Physical-device Safari was not tested.
+
+Application `ac0abea5af8da444efbeee08e2ca281ad521fc86` went live on Render deploy `dep-dakjrgdg1s2s73civho0` at **12:45:44 UTC, September 15, 2026**. The actual container build and health check passed, no migrations were pending, and bootstrap preserved existing saves. Read-only hosted verification at 390×700 confirmed the People button and Bag instruction were absent and the existing Monday 11:10am farm save still contained its planted Parsnip Seed. Browser warning/error logs were empty. The unchanged backend matrix was not repeated for this frontend-only release.
 
 ## Persistent, rearrangeable bag
 

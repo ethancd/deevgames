@@ -46,7 +46,7 @@ The legacy test suite remains broken, as detailed in [the roadmap](REHOST_ROADMA
 - Web service: `srv-daj2lv0ae00c738d49vg`.
 - Database: `dpg-daj2lm0ae00c738d3ceg-a`.
 - Blueprint: `exs-daj2lep594qs73akcksg`.
-- Current deployed application commit: `6143366ffa429c2066f0740acc0902550aa41bdd`, deploy `dep-daj44hh594qs73ap7uu0`. Migration 0080 completed and existing saves were preserved. A fresh hosted browser week passed with 181 actions. See [the release report](RELEASE_TESTING.md).
+- Current deployed application commit: `ac0abea5af8da444efbeee08e2ca281ad521fc86`, deploy `dep-dakjrgdg1s2s73civho0`, live September 15, 2026 at 12:45:44 UTC. Every villager appears directly in the scene, with no People button or idle Bag instruction. No migrations were pending; existing saves were preserved. See [the release report](RELEASE_TESTING.md).
 - Previous deployment: `296b8e2dca45440653b9dc7703ce9d76e2a9be66` (initial fresh preview). The remaining first-deploy notes below are historical.
 - [Cloud release checks](https://github.com/ethancd/deevgames/actions/runs/34738507682) passed: PostgreSQL release suite, production bundle/static collection, schema drift check, actual Docker build, and repeated bootstrap inside the image.
 - First Render deploy completed in 1m19s, with log confirmation that a fresh world was initialized. The live `/healthz` returns HTTP 200.
