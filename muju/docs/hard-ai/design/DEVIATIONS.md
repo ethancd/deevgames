@@ -1353,3 +1353,98 @@ truth available before M11's within-turn search and M13's candidate generator ex
 optimal turn from a position; the suite's own runner (`lab/hard-ai/suites/run.ts`, `format.ts`) does not land
 until M14, so nothing scores these cases yet — M9's own gate does not execute this suite. Each case's
 `authoredFrom` field states this provenance plainly, mirroring M1's ruling for `home-race`/`promotion-kill`.
+
+### 2026-09-15 (verifier fix): `homeRaceAvailable` emits only lines the canonical replica accepts
+
+The independent M9 verifier replayed every line `homeRaceAvailable` emits through `core/state.ts`'s own
+`Replica.isLegal`/`make`/`unmake` over the whole position corpus (`authored` ++ `openings` ++ `fuzz-1000`,
+1,808 positions, side to move) and found 1,135 lines emitted of which only 96 were legal end to end. DESIGN
+§5.10 injects these lines FORCED and replays them through canonical `applyAction`, so an illegal line is not
+a conservative miss — it is a home-race WIN that is generated and then silently discarded, with no later gate
+attributing the loss to M9. The three failure modes, and the fixes (all in `homeRaceAvailable`, DESIGN's
+signature and the `[BUY, END_PLACE, MOVE]` line shape unchanged):
+
+- **637 lines died on the explicit `END_PLACE`.** `make`'s BUY handler ends with `finishPlacement`
+  (`core/state.ts:1285-1289`, canonical `simulate.ts:118-120`), which auto-advances to the action phase the
+  moment `canActInPlacePhase` goes false — typically because the BUY just spent the bank. `isLegal(END_PLACE)`
+  then requires `phase === 0` and refuses. The line's middle word is now `paMake(AKind.END_PLACE)` only when
+  `placePhaseSurvivesBuy` says the phase really survives, and `PA_NONE` otherwise — the same "no action here"
+  padding the array already uses for unwritten lines, so the §5.10 consumer's existing skip-`PA_NONE` replay
+  covers it. `placePhaseSurvivesBuy` is `canActInPlacePhase` evaluated against the post-buy state: the bank
+  charged `cat.cost[def]`, the spawn area taken from `core/spawn.ts spawnMaskWith(p, side, s)` (the same
+  "one more own anchor at `s`, one less empty square" the buy produces), and the promotion clause run over
+  `p`'s own slots unchanged — the bought unit is `F_PLACED`, so it can never be the promotion candidate.
+  This is an exact prediction, not a conservative one: getting it wrong in EITHER direction makes the line
+  illegal, since `MOVE` needs `phase === 1` just as much as `END_PLACE` needs `phase === 0`.
+- **388 lines died on the `BUY` itself**, every one of them at `p.upkeepPending === 1`, where `isLegal`
+  answers `true` only for `RESIGN`. `homeRaceAvailable` now returns 0 unless the position is ONGOING, in the
+  Place phase, with no pending upkeep — and unless `p.side === side`, since `make` applies a BUY to `p.side`
+  whatever `side` the caller asked about. That last guard narrows the exported contract: the function answers
+  "what home race can the MOVER start right now", and `minTurnsToCorner(attacker)` remains the way to ask the
+  same question about the side that is not to move. Every caller in this milestone (tests and the M9 oracle)
+  already passed the mover.
+- **14 lines died on the `MOVE`**, onto an enemy corner that was already occupied. `moveCost` read
+  `fillCornerDist`, and `bfsMulti` seeds its sources at distance 0 regardless of occupancy, so a plugged
+  corner looked enterable. `homeRaceAvailable` now returns 0 when `p.pieceAt[CORNER[1 - side]] !== NO_SLOT`.
+
+One further correction fell out of the same reading: the budget the `MOVE` is measured against was
+`p.actions`, but both `END_PLACE` and `finishPlacement`'s auto-advance call `setActions(p, ACTIONS_PER_TURN)`,
+so the actions the moved unit will actually have are always `ACTIONS_PER_TURN` — `p.actions` as read in the
+Place phase is a different number in artificial states and the same one in every reachable position.
+
+`tests/ai/hard/home.test.ts` now replays every line emitted over the whole corpus through
+`Replica.isLegal`/`make`/`unmake` and asserts zero illegal lines, and the M9 oracle
+(`lab/hard-ai/oracles/geometry.ts`) reports `homeRaceLinesEmitted` / `illegalHomeRaceLines` over its sampled
+positions. Measured after the fix: 990 lines emitted on the 2,000-position gate sample, 0 illegal — roughly
+nine times as many USABLE lines as the 96 that survived before, so this is a repair, not a suppression.
+
+### 2026-09-15 (verifier fix): `nearestThreat`'s purchase branch honours an occupied corner
+
+`homeSafety`'s two branches disagreed about a corner somebody is already standing on. The existing-unit
+branch inherits the right answer for free (`bfsFrom` writes -1 on every occupied square but its own origin,
+so `t.dist.get(p, unitSquare)` read at an occupied `CORNER[side]` yields `HOME_NEVER`); the purchase branch
+read `fillCornerDist`, and `bfsMulti` seeds its sources at distance 0 whatever is standing on them, so a
+plugged corner read as enterable. Corpus sweep: of 673 (position, side) pairs with an occupied corner, 113
+reported a finite `actionsToCorner`, all 113 from the purchase branch. Since a MOVE onto an occupied square is
+never legal whoever owns the occupant, `nearestThreat` now skips the multi-source BFS and the whole purchase
+loop when `p.pieceAt[CORNER[side]] !== NO_SLOT`; `plug` and `occupied` remain the fields that report somebody
+is standing there, so no information is lost. `minTurnsToCorner` inherits the fix (it is `nearestThreat` with
+the sides swapped). Pinned by `tests/ai/hard/home.test.ts`'s "a body standing on `CORNER[side]` makes both
+branches HOME_NEVER", which also keeps the unplugged control at `actionsToCorner === 1`.
+
+### 2026-09-15: `geometry.ts blocking` uses `t.exposure[side]` for DESIGN §5.8's "reach ∪ purchase reach"
+
+Recorded here at the verifier's request; the substitution itself was reasoned about in `tables/geometry.ts`'s
+module header from the start. DESIGN §5.8 specifies `blocking = blockingSet(side, candidate = squares the
+enemy can occupy this turn: reach ∪ purchase reach, cap 3)`. This milestone passes `t.exposure[side] =
+strike[enemy] | strikeIfBought[enemy]` (M6, already gated and computed at every node) instead.
+
+The bias this introduces is TWO-SIDED, not one-sided (corrected here after the verifier's M9 review; the
+module header's original wording claimed a strict superset). `tables/threat.ts` builds strike with
+`STRIKE_MOVE_ACTIONS = 3`, then dilates by one to cover the attack as well as the step, so a unit of speed
+`s` contributes `ball(3s + 1)`, while the squares it could actually STAND on in a four-action turn are
+`ball(4s)`. For `s === 1` (and for the purchase branch, whose spawn squares are themselves in the mask)
+`ball(4) ⊆ ball(4)` holds and exposure is indeed a superset, so the candidate set only grows and `blocking`
+only over-reports "the enemy CAN block me". For `s >= 2` — Hi and Goel at speed 2, Radi at speed 3 —
+`ball(4s)` is NOT contained in `ball(3s + 1)`, so beyond the strike radius the candidate set MISSES squares
+the enemy could occupy; there `blocking` can under-report the cover needed and `fragility` can read lower
+than the truth. In short: a superset within the 3-move strike radius, an undercount past it for fast units.
+The alternative is a second, movement-only BFS sweep per side per node purely for this one 0..3 feature,
+which the milestone judged not worth the node cost when a gated union is already in hand. The M9 gate does
+not constrain this either way: its `blockingMismatch` clause compares the `candidate = null` (whole board)
+path against `server/analysis/geometry.ts`, and the F5 fixture's answer is the same under either candidate
+set. If M12's evaluation tuning shows the bias matters, the true mask is the change to make: a `reachMask`
+over `t.dist` per speed bucket with `ACTIONS_PER_TURN` moves, unioned with the enemy's legal spawn mask.
+
+### 2026-09-15 (verifier fix): the M9 oracle's `f11Ok` fixture gained a second anchor, and the gate a sixth clause
+
+`checkF11` built a board with a single `plant_1` anchor at C7 and compared `spawnMaskWithout(sole anchor)`
+against `getAllSpawnPositions` on the board with that unit removed — but with the only anchor gone both sides
+are the EMPTY set, which a `spawnMaskWithout` that unconditionally returned nothing would also satisfy. The
+fixture now carries a second own anchor at (4,2), outside the C7 rectangle, so removing the deep anchor
+leaves a non-empty mask with something to compare, and the check asserts `expected.length > 0` instead of
+`=== 0`. Separately, `lab/hard-ai/verify/gates.ts`'s M9 row now ANDs `illegalHomeRaceLines === 0` onto
+MILESTONES.md's five named clauses — a strengthening, not a substitution: every clause the milestone names
+still has to hold, and `homeRaceOk`'s two archived fixtures both fall in the narrow slice of positions the
+blocker above did not affect, which is exactly why they could not see it. MILESTONES.md itself is left
+untouched (it is not an M9 file); a verifier applying its criterion by hand still gets the same verdict.

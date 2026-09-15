@@ -1,0 +1,347 @@
+{
+  "schema": "muju-suite-v1",
+  "name": "spawn-strike",
+  "version": 1,
+  "cases": [
+    {
+      "id": "spawn-strike-purchase-1",
+      "position": "spawn-strike.positions.jsonl#spawn-strike-purchase-1",
+      "best": [
+        "9e53a5279f30983a"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "purchase-summon-strike"
+      ],
+      "rationale": "SU §2.5 / NK:10-style bought-unit threat: BUY fire_1, MOVE adjacent, ATTACK the same turn — a threat the candidate generator must see even though the attacker does not exist at the start of the turn.",
+      "authoredFrom": "constructed and legality-verified end to end through core/state.ts Replica (M9); see DEVIATIONS.md under M9"
+    },
+    {
+      "id": "spawn-strike-purchase-2",
+      "position": "spawn-strike.positions.jsonl#spawn-strike-purchase-2",
+      "best": [
+        "4c7525dcd873804d"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "purchase-summon-strike"
+      ],
+      "rationale": "SU §2.5 / NK:10-style bought-unit threat: BUY fire_1, MOVE adjacent, ATTACK the same turn — a threat the candidate generator must see even though the attacker does not exist at the start of the turn.",
+      "authoredFrom": "constructed and legality-verified end to end through core/state.ts Replica (M9); see DEVIATIONS.md under M9"
+    },
+    {
+      "id": "spawn-strike-purchase-3",
+      "position": "spawn-strike.positions.jsonl#spawn-strike-purchase-3",
+      "best": [
+        "65c9b51488224975"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "purchase-summon-strike"
+      ],
+      "rationale": "SU §2.5 / NK:10-style bought-unit threat: BUY fire_1, MOVE adjacent, ATTACK the same turn — a threat the candidate generator must see even though the attacker does not exist at the start of the turn.",
+      "authoredFrom": "constructed and legality-verified end to end through core/state.ts Replica (M9); see DEVIATIONS.md under M9"
+    },
+    {
+      "id": "spawn-strike-purchase-4",
+      "position": "spawn-strike.positions.jsonl#spawn-strike-purchase-4",
+      "best": [
+        "5f02824f26f2a233"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "purchase-summon-strike"
+      ],
+      "rationale": "SU §2.5 / NK:10-style bought-unit threat: BUY fire_1, MOVE adjacent, ATTACK the same turn — a threat the candidate generator must see even though the attacker does not exist at the start of the turn.",
+      "authoredFrom": "constructed and legality-verified end to end through core/state.ts Replica (M9); see DEVIATIONS.md under M9"
+    },
+    {
+      "id": "spawn-strike-purchase-5",
+      "position": "spawn-strike.positions.jsonl#spawn-strike-purchase-5",
+      "best": [
+        "8349b35297f32542"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "purchase-summon-strike"
+      ],
+      "rationale": "SU §2.5 / NK:10-style bought-unit threat: BUY fire_1, MOVE adjacent, ATTACK the same turn — a threat the candidate generator must see even though the attacker does not exist at the start of the turn.",
+      "authoredFrom": "constructed and legality-verified end to end through core/state.ts Replica (M9); see DEVIATIONS.md under M9"
+    },
+    {
+      "id": "spawn-strike-purchase-6",
+      "position": "spawn-strike.positions.jsonl#spawn-strike-purchase-6",
+      "best": [
+        "eeb602e0ec1d9aac"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "purchase-summon-strike"
+      ],
+      "rationale": "SU §2.5 / NK:10-style bought-unit threat: BUY fire_1, MOVE adjacent, ATTACK the same turn — a threat the candidate generator must see even though the attacker does not exist at the start of the turn.",
+      "authoredFrom": "constructed and legality-verified end to end through core/state.ts Replica (M9); see DEVIATIONS.md under M9"
+    },
+    {
+      "id": "spawn-strike-purchase-7",
+      "position": "spawn-strike.positions.jsonl#spawn-strike-purchase-7",
+      "best": [
+        "b34bac5ec9cb405b"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "purchase-summon-strike"
+      ],
+      "rationale": "SU §2.5 / NK:10-style bought-unit threat: BUY fire_1, MOVE adjacent, ATTACK the same turn — a threat the candidate generator must see even though the attacker does not exist at the start of the turn.",
+      "authoredFrom": "constructed and legality-verified end to end through core/state.ts Replica (M9); see DEVIATIONS.md under M9"
+    },
+    {
+      "id": "spawn-strike-retreat-1",
+      "position": "spawn-strike.positions.jsonl#spawn-strike-retreat-1",
+      "best": [
+        "27ded0582b0b99a4"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "purchase-strike-retreat"
+      ],
+      "rationale": "Archived turn-3 shape (DESIGN §7.5): BUY fire_1 next to the target, ATTACK immediately, then MOVE off the now-exposed square, mirroring the cited \"BUY fire_1@I6 -> I2 -> ATK H2 -> I4\" line.",
+      "authoredFrom": "constructed and legality-verified end to end through core/state.ts Replica (M9); see DEVIATIONS.md under M9"
+    },
+    {
+      "id": "spawn-strike-retreat-2",
+      "position": "spawn-strike.positions.jsonl#spawn-strike-retreat-2",
+      "best": [
+        "acb47611ece73ec1"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "purchase-strike-retreat"
+      ],
+      "rationale": "Archived turn-3 shape (DESIGN §7.5): BUY fire_1 next to the target, ATTACK immediately, then MOVE off the now-exposed square, mirroring the cited \"BUY fire_1@I6 -> I2 -> ATK H2 -> I4\" line.",
+      "authoredFrom": "constructed and legality-verified end to end through core/state.ts Replica (M9); see DEVIATIONS.md under M9"
+    },
+    {
+      "id": "spawn-strike-retreat-3",
+      "position": "spawn-strike.positions.jsonl#spawn-strike-retreat-3",
+      "best": [
+        "d59a53793a8948f3"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "purchase-strike-retreat"
+      ],
+      "rationale": "Archived turn-3 shape (DESIGN §7.5): BUY fire_1 next to the target, ATTACK immediately, then MOVE off the now-exposed square, mirroring the cited \"BUY fire_1@I6 -> I2 -> ATK H2 -> I4\" line.",
+      "authoredFrom": "constructed and legality-verified end to end through core/state.ts Replica (M9); see DEVIATIONS.md under M9"
+    },
+    {
+      "id": "spawn-strike-retreat-4",
+      "position": "spawn-strike.positions.jsonl#spawn-strike-retreat-4",
+      "best": [
+        "205caa42defaf59b"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "purchase-strike-retreat"
+      ],
+      "rationale": "Archived turn-3 shape (DESIGN §7.5): BUY fire_1 next to the target, ATTACK immediately, then MOVE off the now-exposed square, mirroring the cited \"BUY fire_1@I6 -> I2 -> ATK H2 -> I4\" line.",
+      "authoredFrom": "constructed and legality-verified end to end through core/state.ts Replica (M9); see DEVIATIONS.md under M9"
+    },
+    {
+      "id": "spawn-strike-fresh-hi-raid-1",
+      "position": "spawn-strike.positions.jsonl#spawn-strike-fresh-hi-raid-1",
+      "best": [
+        "eeb602e0ec1d9aac"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "fresh-hi-raid"
+      ],
+      "rationale": "NK:13: a per-turn fresh Hi bought and thrown at the nearest target immediately, never held back — the generator must weigh this against banking the crystals.",
+      "authoredFrom": "constructed and legality-verified end to end through core/state.ts Replica (M9); see DEVIATIONS.md under M9"
+    },
+    {
+      "id": "spawn-strike-fresh-hi-raid-2",
+      "position": "spawn-strike.positions.jsonl#spawn-strike-fresh-hi-raid-2",
+      "best": [
+        "b34bac5ec9cb405b"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "fresh-hi-raid"
+      ],
+      "rationale": "NK:13: a per-turn fresh Hi bought and thrown at the nearest target immediately, never held back — the generator must weigh this against banking the crystals.",
+      "authoredFrom": "constructed and legality-verified end to end through core/state.ts Replica (M9); see DEVIATIONS.md under M9"
+    },
+    {
+      "id": "spawn-strike-fresh-hi-raid-3",
+      "position": "spawn-strike.positions.jsonl#spawn-strike-fresh-hi-raid-3",
+      "best": [
+        "1d02ea24f06ad4cb"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "fresh-hi-raid"
+      ],
+      "rationale": "NK:13: a per-turn fresh Hi bought and thrown at the nearest target immediately, never held back — the generator must weigh this against banking the crystals.",
+      "authoredFrom": "constructed and legality-verified end to end through core/state.ts Replica (M9); see DEVIATIONS.md under M9"
+    },
+    {
+      "id": "spawn-strike-fresh-hi-raid-4",
+      "position": "spawn-strike.positions.jsonl#spawn-strike-fresh-hi-raid-4",
+      "best": [
+        "09f7ee2035cf734c"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "fresh-hi-raid"
+      ],
+      "rationale": "NK:13: a per-turn fresh Hi bought and thrown at the nearest target immediately, never held back — the generator must weigh this against banking the crystals.",
+      "authoredFrom": "constructed and legality-verified end to end through core/state.ts Replica (M9); see DEVIATIONS.md under M9"
+    },
+    {
+      "id": "spawn-strike-d9-pivot-1",
+      "position": "spawn-strike.positions.jsonl#spawn-strike-d9-pivot-1",
+      "best": [
+        "7ad8c097626221b1"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "multi-buy-pivot"
+      ],
+      "rationale": "The archived D9 pivot (turn 9): a single deep anchor opens enough area for several purchases in one Place phase, a step-change in income the generator must recognise as a plan, not four independent buys.",
+      "authoredFrom": "constructed and legality-verified end to end through core/state.ts Replica (M9); see DEVIATIONS.md under M9"
+    },
+    {
+      "id": "spawn-strike-d9-pivot-2",
+      "position": "spawn-strike.positions.jsonl#spawn-strike-d9-pivot-2",
+      "best": [
+        "96b4a03d76d17993"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "multi-buy-pivot"
+      ],
+      "rationale": "The archived D9 pivot (turn 9): a single deep anchor opens enough area for several purchases in one Place phase, a step-change in income the generator must recognise as a plan, not four independent buys.",
+      "authoredFrom": "constructed and legality-verified end to end through core/state.ts Replica (M9); see DEVIATIONS.md under M9"
+    },
+    {
+      "id": "spawn-strike-d9-pivot-3",
+      "position": "spawn-strike.positions.jsonl#spawn-strike-d9-pivot-3",
+      "best": [
+        "7d52dce8c8d007f9"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "multi-buy-pivot"
+      ],
+      "rationale": "The archived D9 pivot (turn 9): a single deep anchor opens enough area for several purchases in one Place phase, a step-change in income the generator must recognise as a plan, not four independent buys.",
+      "authoredFrom": "constructed and legality-verified end to end through core/state.ts Replica (M9); see DEVIATIONS.md under M9"
+    },
+    {
+      "id": "spawn-strike-d9-pivot-4",
+      "position": "spawn-strike.positions.jsonl#spawn-strike-d9-pivot-4",
+      "best": [
+        "47e1dea9c36361cc"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "multi-buy-pivot"
+      ],
+      "rationale": "The archived D9 pivot (turn 9): a single deep anchor opens enough area for several purchases in one Place phase, a step-change in income the generator must recognise as a plan, not four independent buys.",
+      "authoredFrom": "constructed and legality-verified end to end through core/state.ts Replica (M9); see DEVIATIONS.md under M9"
+    },
+    {
+      "id": "spawn-strike-f16-punisher",
+      "position": "spawn-strike.positions.jsonl#spawn-strike-f16-punisher",
+      "best": [
+        "139a04819a9386cb"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "f16-punisher"
+      ],
+      "rationale": "DESIGN §5.5 F16: BUY water_1@C1, MOVE the existing Hi off C2 to vacate it, MOVE the new Sjor C1->C2, ATTACK the enemy on C3 — the purchase fills the last spawn square (C1) immediately after the BUY, but C1 is legal again by the end of the turn, so a generator that rejects on the immediate post-BUY spawn count would wrongly discard the only punishing line.",
+      "authoredFrom": "constructed and legality-verified end to end through core/state.ts Replica (M9); see DEVIATIONS.md under M9"
+    }
+  ]
+}

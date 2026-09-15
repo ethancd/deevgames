@@ -290,6 +290,11 @@ export const GATES: Gate[] = [
       metrics.f5Ok === true &&
       metrics.f11Ok === true &&
       metrics.homeRaceOk === true &&
+      // Strengthening beyond MILESTONES.md's five named clauses: every
+      // `homeRaceAvailable` line on the sampled corpus must survive a
+      // canonical `Replica.isLegal`/`make`/`unmake` replay, not just the two
+      // archived fixtures `homeRaceOk` inspects (DEVIATIONS.md under M9).
+      metrics.illegalHomeRaceLines === 0 &&
       metrics.anchorsVoidedCornerOk === true &&
       metrics.vitestFailures === 0,
     timeoutMs: 3 * MIN,
