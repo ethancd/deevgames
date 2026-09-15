@@ -1,0 +1,50 @@
+{
+  "gate": "M3",
+  "pass": true,
+  "command": "npx vitest run tests/ai && npx playwright test --config playwright.hard.config.ts --project=desktop e2e/hard-ai.spec.ts && npm run hard:ladder -- --a aiv2-hard-turn --b aiv2-hard --work wall:1000 --handicaps 0 --pairs 12 --seed 3 --shards 12 --out lab/results/hard-ai-verify/M3.json",
+  "criterion": "Whole-turn worker path for AIEngineV2 (protocol 3 additive)",
+  "metrics": {
+    "vitestFailures": 0,
+    "e2eFailures": 0,
+    "a": "aiv2-hard-turn",
+    "b": "aiv2-hard",
+    "work": "wall:1000",
+    "handicaps": [
+      0
+    ],
+    "pairs": 12,
+    "games": 24,
+    "seed": 3,
+    "shards": 12,
+    "adjudicationRate": 0,
+    "illegalActions": 0,
+    "bothSeatsPlayed": true,
+    "voided": false,
+    "meanTurnMs": {
+      "a": 995.90800681431,
+      "b": 993.274275979557
+    },
+    "elo": 0,
+    "eloLo": -57.25961087026753,
+    "eloHi": 57.25961087026753,
+    "los": 0.5000000005,
+    "eloDetail": {
+      "n": 24,
+      "mu": 0.5,
+      "variance": 0.041666666666666664,
+      "elo": 0,
+      "eloLo": -57.25961087026753,
+      "eloHi": 57.25961087026753,
+      "los": 0.5000000005
+    },
+    "sprt": null,
+    "decision": null,
+    "artifactAt": "2026-09-15T13:11:29.015Z"
+  },
+  "git": "113ed095680af7398bb702aedcfdb6be4751b2d7",
+  "wasmSha256": "da9b1cdf25e4bcd6a4674fd697095e35c2606c29817e3d18043faf4799d828bf",
+  "node": "v24.11.1",
+  "device": "Apple M2 Max x12 (darwin/arm64)",
+  "elapsedMs": 186406,
+  "at": "2026-09-15T13:11:29.038Z"
+}

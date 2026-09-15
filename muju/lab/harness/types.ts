@@ -122,6 +122,14 @@ export interface PlayerGameStats {
   unitsKilled: number;
   illegalActions: number; // engine-bot emissions not in the legal set
   plies: number; // actions taken by this player
+  /** v3 (DESIGN §7.7): wall-clock ms this seat's bot spent inside `nextAction`
+   * / `chooseAction` over the whole game. Per-SEAT, unlike `GameRecord.durationMs`,
+   * so a ladder row can report each engine's own latency instead of the game's.
+   * Optional so `muju-lab-game-v2` records still satisfy the type. */
+  decisionMs?: number;
+  /** v3: distinct game turns this seat was on move for — the denominator that
+   * turns `decisionMs` into the per-turn latency §7.7's `meanTurnMs` reports. */
+  turnsTaken?: number;
 }
 
 export interface MaterialSample {

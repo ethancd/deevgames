@@ -22,6 +22,7 @@ import { execFileSync } from 'node:child_process';
 import crypto from 'node:crypto';
 import os from 'node:os';
 import type { GameRecord } from '../../harness/types';
+import type { PlayerId } from '../../../src/game/types';
 import { buildPairs, expandGames, type GameSpec } from './pairing';
 import type { PairRow } from './worker';
 import { resolveEngine, parseWorkSpec, workKey, engineHasWork, type WorkSpec } from './engines';
@@ -142,7 +143,14 @@ function computeMetrics(args: CliArgs, games: GameRecord[], pairs: PairRow[]): R
     specsByPair.set(p.pairIndex, [gA, gB]);
   }
   let aWhiteGames = 0, bWhiteGames = 0;
-  const durationsByEngine: { a: number[]; b: number[] } = { a: [], b: [] };
+  // Per-ENGINE latency: `GameRecord.durationMs` is the whole game's wall clock
+  // and is identical for both seats, so attributing it to A and B (as this did
+  // before) made `meanTurnMs.a === meanTurnMs.b` by construction and any
+  // criterion comparing the two vacuous. `PlayerGameStats.decisionMs` /
+  // `.turnsTaken` (harness v3) are per-seat, so each engine's ms-per-turn is
+  // read off the seat it actually played.
+  const latencyByEngine: { a: { ms: number; turns: number }; b: { ms: number; turns: number } } =
+    { a: { ms: 0, turns: 0 }, b: { ms: 0, turns: 0 } };
   let adjudicated = 0;
   let illegalActions = 0;
   for (let i = 0; i < games.length; i++) {
@@ -151,8 +159,17 @@ function computeMetrics(args: CliArgs, games: GameRecord[], pairs: PairRow[]): R
     if (rec.winType === 'adjudication') adjudicated++;
     illegalActions += rec.players.white.illegalActions + rec.players.black.illegalActions;
     if (spec) {
-      if (spec.white === 'A') { aWhiteGames++; durationsByEngine.a.push(rec.durationMs / Math.max(1, rec.plies)); durationsByEngine.b.push(rec.durationMs / Math.max(1, rec.plies)); }
-      else { bWhiteGames++; durationsByEngine.b.push(rec.durationMs / Math.max(1, rec.plies)); durationsByEngine.a.push(rec.durationMs / Math.max(1, rec.plies)); }
+      if (spec.white === 'A') aWhiteGames++; else bWhiteGames++;
+      const seatOfA: PlayerId = spec.white === 'A' ? 'white' : 'black';
+      const seatOfB: PlayerId = seatOfA === 'white' ? 'black' : 'white';
+      // Pre-v3 records (no per-seat timing) fall back to the game clock split
+      // evenly, which is the best this metric can say about them.
+      const fallbackMs = rec.durationMs / 2;
+      const fallbackTurns = Math.max(1, Math.ceil(rec.turns / 2));
+      latencyByEngine.a.ms += rec.players[seatOfA].decisionMs ?? fallbackMs;
+      latencyByEngine.a.turns += rec.players[seatOfA].turnsTaken ?? fallbackTurns;
+      latencyByEngine.b.ms += rec.players[seatOfB].decisionMs ?? fallbackMs;
+      latencyByEngine.b.turns += rec.players[seatOfB].turnsTaken ?? fallbackTurns;
     }
   }
   const pairScores = pairs.map(p => p.scoreA);
@@ -164,7 +181,7 @@ function computeMetrics(args: CliArgs, games: GameRecord[], pairs: PairRow[]): R
     const raw = sprt(pairScores, args.sprt);
     sprtResult = { ...raw, decision: voided ? 'void' : raw.decision };
   }
-  const mean = (xs: number[]): number => (xs.length === 0 ? 0 : xs.reduce((s, x) => s + x, 0) / xs.length);
+  const msPerTurn = (l: { ms: number; turns: number }): number => (l.turns === 0 ? 0 : l.ms / l.turns);
   return {
     a: args.a,
     b: args.b,
@@ -178,7 +195,7 @@ function computeMetrics(args: CliArgs, games: GameRecord[], pairs: PairRow[]): R
     illegalActions,
     bothSeatsPlayed: aWhiteGames > 0 && bWhiteGames > 0,
     voided,
-    meanTurnMs: { a: mean(durationsByEngine.a), b: mean(durationsByEngine.b) },
+    meanTurnMs: { a: msPerTurn(latencyByEngine.a), b: msPerTurn(latencyByEngine.b) },
     elo: eloDetail?.elo ?? NaN,
     eloLo: eloDetail?.eloLo ?? NaN,
     eloHi: eloDetail?.eloHi ?? NaN,

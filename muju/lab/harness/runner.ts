@@ -122,6 +122,9 @@ async function playGameInner(args: PlayGameArgs, options: MatchOptions): Promise
     white: emptyStats(bots.white.name),
     black: emptyStats(bots.black.name),
   };
+  /** Last `turnNumber` each seat was seen on move for, so `turnsTaken` counts
+   * turns rather than the several decisions each turn contains. */
+  const lastTurnKey: Record<PlayerId, string> = { white: '', black: '' };
   const anomalies: string[] = [];
   const incomeCurve: GameRecord['incomeCurve'] = [], purchases: GameRecord['purchases'] = [], promotionEvents: GameRecord['promotionEvents'] = [];
   let round90Exhaustion: number|null = null, placedAndAttackedKills = 0;
@@ -199,6 +202,13 @@ async function playGameInner(args: PlayGameArgs, options: MatchOptions): Promise
     const bot = bots[player];
     const before = state;
 
+    // Per-seat latency (v3, DESIGN §7.7): `durationMs` below is the whole
+    // game's wall clock and cannot tell the two engines apart, so each seat's
+    // own decision time and turn count are accumulated here.
+    const turnKey = `${state.turn.turnNumber}`;
+    if (lastTurnKey[player] !== turnKey) { lastTurnKey[player] = turnKey; stats[player].turnsTaken!++; }
+    const decisionStartedAt = Date.now();
+
     // Choose an action
     let action: AIAction | null = null;
     if(state.upkeepPending && bot.kind==='scripted') {
@@ -226,6 +236,8 @@ async function playGameInner(args: PlayGameArgs, options: MatchOptions): Promise
         // does in the real game (divergences D1/D2). Counted for calibration.
       }
     }
+
+    stats[player].decisionMs! += Date.now() - decisionStartedAt;
 
     // Fallback when the bot passes (or strict mode rejected): end the phase.
     if (!action) action=phaseEndAction(state);
@@ -390,6 +402,8 @@ function emptyStats(botName: string): PlayerGameStats {
     unitsKilled: 0,
     illegalActions: 0,
     plies: 0,
+    decisionMs: 0,
+    turnsTaken: 0,
   };
 }
 

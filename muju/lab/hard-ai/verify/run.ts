@@ -73,10 +73,12 @@ interface StepOutcome {
 }
 
 function runStep(step: string): StepOutcome {
-  // vitest steps: request the JSON reporter so results are parseable, without
-  // changing the human-readable command string recorded in the artifact.
+  // vitest/playwright steps: request the JSON reporter so results are
+  // parseable, without changing the human-readable command string recorded
+  // in the artifact.
   const isVitest = /(^|\s)npx vitest run\b/.test(step);
-  const shellCommand = isVitest ? `${step} --reporter=json` : step;
+  const isPlaywright = /(^|\s)npx playwright test\b/.test(step);
+  const shellCommand = isVitest || isPlaywright ? `${step} --reporter=json` : step;
   try {
     const stdout = execFileSync('/bin/sh', ['-c', shellCommand], { cwd: REPO_ROOT, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
     return { step, exitCode: 0, stdout, stderr: '' };
@@ -108,23 +110,74 @@ function countTscErrors(outcome: StepOutcome): number {
   return parsed;
 }
 
-function extractVitestMetrics(stdout: string): Record<string, unknown> {
-  try {
-    // vitest's JSON reporter can print non-JSON progress lines before the
-    // report; the report itself is the last top-level JSON object.
-    const lines = stdout.split('\n');
-    for (let i = lines.length - 1; i >= 0; i--) {
-      const line = lines[i].trim();
-      if (!line.startsWith('{')) continue;
-      const parsed = JSON.parse(line) as { numFailedTests?: number; numFailedTestSuites?: number };
-      if (typeof parsed.numFailedTests === 'number') {
-        return { vitestFailures: parsed.numFailedTests + (parsed.numFailedTestSuites ?? 0) };
+/**
+ * Finds a test runner's JSON report in a step's stdout and reads one metric
+ * off it. Both shapes a runner can emit are handled, because the two runners
+ * this file parses disagree:
+ *   - the whole report on ONE line (vitest's JSON reporter), possibly after
+ *     non-JSON progress lines;
+ *   - a PRETTY-PRINTED report (Playwright's JSON reporter indents by 2), whose
+ *     opening `{` sits alone at column 0 and whose body runs to the end of the
+ *     stream. A line-at-a-time scan can never parse this one — every candidate
+ *     line is an unbalanced fragment — which is why `e2eFailures` was silently
+ *     absent from M3's envelope even on a fully green Playwright run, failing
+ *     the criterion's `e2eFailures === 0` clause on a passing suite.
+ * Candidates are tried last-to-first, so trailing output wins, and `pick`
+ * rejects anything that parses but is not the report (a nested fragment that
+ * happens to be valid JSON), letting the scan continue.
+ */
+function readReport<T>(stdout: string, pick: (report: Record<string, unknown>) => T | undefined): T | undefined {
+  const lines = stdout.split('\n');
+  const attempt = (text: string): T | undefined => {
+    try {
+      const parsed = JSON.parse(text) as unknown;
+      if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) return undefined;
+      return pick(parsed as Record<string, unknown>);
+    } catch {
+      return undefined;
+    }
+  };
+  for (let i = lines.length - 1; i >= 0; i--) {
+    const raw = lines[i];
+    const line = raw.trim();
+    if (!line.startsWith('{')) continue;
+    if (line.endsWith('}')) {
+      const found = attempt(line);
+      if (found !== undefined) return found;
+    }
+    // A pretty-printed report opens at column 0 and closes on the matching
+    // `}` at column 0 — usually the end of the stream, but a server the runner
+    // shut down afterwards can still print past it, so every column-0 `}` from
+    // the last one backwards is tried as the closing brace.
+    if (raw.startsWith('{')) {
+      for (let j = lines.length - 1; j > i; j--) {
+        if (!lines[j].startsWith('}')) continue;
+        const found = attempt(lines.slice(i, j + 1).join('\n'));
+        if (found !== undefined) return found;
       }
     }
-  } catch {
-    // fall through
   }
-  return {};
+  return undefined;
+}
+
+function extractVitestMetrics(stdout: string): Record<string, unknown> {
+  const failures = readReport(stdout, report => {
+    const { numFailedTests, numFailedTestSuites } = report as { numFailedTests?: number; numFailedTestSuites?: number };
+    if (typeof numFailedTests !== 'number') return undefined;
+    return numFailedTests + (numFailedTestSuites ?? 0);
+  });
+  return failures === undefined ? {} : { vitestFailures: failures };
+}
+
+/** M3+: a step matching `npx playwright test` (any config/args) gets
+ * `metrics.e2eFailures` from `stats.unexpected` of Playwright's JSON reporter
+ * report. */
+function extractPlaywrightMetrics(stdout: string): Record<string, unknown> {
+  const unexpected = readReport(stdout, report => {
+    const stats = (report as { stats?: { unexpected?: number } }).stats;
+    return typeof stats?.unexpected === 'number' ? stats.unexpected : undefined;
+  });
+  return unexpected === undefined ? {} : { e2eFailures: unexpected };
 }
 
 function runGate(gate: Gate): { pass: boolean; metrics: Record<string, unknown>; steps: StepOutcome[] } {
@@ -141,6 +194,7 @@ function runGate(gate: Gate): { pass: boolean; metrics: Record<string, unknown>;
     if (outcome.stderr) process.stderr.write(outcome.stderr);
     if (/(^|\s)npm run hard:deps\b/.test(step)) Object.assign(metrics, extractDepsMetrics(outcome.stdout));
     if (/(^|\s)npx vitest run\b/.test(step)) Object.assign(metrics, extractVitestMetrics(outcome.stdout));
+    if (/(^|\s)npx playwright test\b/.test(step)) Object.assign(metrics, extractPlaywrightMetrics(outcome.stdout));
     // Both `npx tsc --noEmit -p ...` and `npm run hard:types` (which is a tsc
     // invocation) contribute to a single accumulated `tscErrors`.
     if (/(^|\s)npx tsc\b/.test(step) || /(^|\s)npm run hard:types\b/.test(step)) {
@@ -149,10 +203,20 @@ function runGate(gate: Gate): { pass: boolean; metrics: Record<string, unknown>;
     if (outcome.exitCode !== 0) failed = true;
   }
 
+  // The artifact is merged ONLY when the whole chain ran. A chain that
+  // short-circuited never reached its artifact-producing step, so any file
+  // still at that path belongs to a PREVIOUS run: merging it stamps a red
+  // gate's envelope with numbers that were never measured for it (M3's first
+  // red envelope carried a five-hour-old ladder's `games`/`elo`/`meanTurnMs`
+  // and read as though it had fresh evidence). `pass` was never at risk — it
+  // is guarded by `!failed` below — but the record must not mislead either.
+  // When the merge does happen, `artifactAt` carries the file's own mtime so
+  // any staleness is visible next to the envelope's `at`.
   const artifactPath = gate.artifact ? path.resolve(REPO_ROOT, gate.artifact) : null;
-  if (artifactPath && fs.existsSync(artifactPath)) {
+  if (!failed && artifactPath && fs.existsSync(artifactPath)) {
     try {
       Object.assign(metrics, JSON.parse(fs.readFileSync(artifactPath, 'utf8')));
+      metrics.artifactAt = fs.statSync(artifactPath).mtime.toISOString();
     } catch {
       // leave metrics as gathered from stdout
     }
