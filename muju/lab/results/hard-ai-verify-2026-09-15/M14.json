@@ -1,0 +1,465 @@
+{
+  "gate": "M14",
+  "pass": true,
+  "command": "npx vitest run tests/ai/hard && npm run hard:determinism -- --engine hard@lab --positions 40 --work 25000,400000 --seeds 1,7 --out lab/results/hard-ai-verify/M14-det.json && npm run hard:bench -- --calibrate --tt-check --positions 200 --depth 3 --rung 3200000 --shards 12 --out lab/results/hard-ai-verify/M14-bench.json && npm run hard:suite -- --suites tactics,spawn-strike,home-mate,invariants --engine hard@lab --work 400000 --shards 12 --out lab/results/hard-ai-verify/M14-suite.json && npm run hard:ladder -- --a hard@lab-400k --b Rush --work wall:500 --handicaps 0 --pairs 8 --seed 9 --shards 12 --out lab/results/hard-ai-verify/M14-smoke",
+  "criterion": "Search core: TT, ordering, quiescence, PVS, work meter, root, engine, replay, lab bot",
+  "metrics": {
+    "vitestFailures": 0,
+    "determinism": {
+      "engine": "hard@lab",
+      "workUnits": [
+        25000,
+        400000
+      ],
+      "positions": 40,
+      "seeds": [
+        1,
+        7
+      ],
+      "shards": 12,
+      "decisions": 160,
+      "runs": 4,
+      "wasmAbsent": true,
+      "identical": true,
+      "mismatches": [],
+      "at": "2026-09-15T23:27:35.527Z",
+      "determinism": {
+        "engine": "hard@lab",
+        "workUnits": [
+          25000,
+          400000
+        ],
+        "positions": 40,
+        "seeds": [
+          1,
+          7
+        ],
+        "shards": 12,
+        "decisions": 160,
+        "runs": 4,
+        "wasmAbsent": true,
+        "identical": true,
+        "mismatches": [],
+        "at": "2026-09-15T23:27:35.527Z"
+      }
+    },
+    "artifactAt": "2026-09-15T23:42:29.025Z",
+    "bench": {
+      "mode": "calibrate",
+      "positions": 200,
+      "provenPositions": 4,
+      "rung": 3200000,
+      "depth": 3,
+      "shards": 12,
+      "depthGe4Share": 1,
+      "meanDepth": 4.663265306122449,
+      "quiesceShareMax": 0.316,
+      "quiesceShareUncappedMax": 0.316,
+      "quiesceUncappedRung": 400000,
+      "quiesceCapTripped": 0,
+      "quiesceCapNum": 34,
+      "quiesceCapDen": 100,
+      "proverCallsPer1000Macro": 0.175410215662578,
+      "ttOnOffScoreMismatch": 0,
+      "ttChecked": 200,
+      "ttMismatchIds": [],
+      "shallowPositions": [],
+      "nodesPerSec": 392.81002687835763,
+      "unitsPerMs": 66.49446421958815,
+      "usPerUnit": 15.039,
+      "workCost": [
+        4,
+        4,
+        1,
+        4,
+        8,
+        2,
+        2,
+        12,
+        40
+      ],
+      "measuredUs": {
+        "EVAL1": 28.477,
+        "EVAL2": 23.983,
+        "KILLTABLE": 35.57
+      },
+      "git": "f2906f6353107ee319f51a32329dc27bc3c851b8",
+      "at": "2026-09-15T23:41:26.102Z"
+    },
+    "suite": {
+      "engine": "hard@lab",
+      "work": 400000,
+      "shards": 12,
+      "cases": 175,
+      "illegalTurns": 0,
+      "replicaDivergences": 0,
+      "failures": [
+        {
+          "suite": "invariants",
+          "id": "inv12-cleave-line",
+          "endKey": "eval correct-violating -2464 cc; searched violating-correct -100 cc",
+          "source": "pair",
+          "reason": "prefers-violating"
+        },
+        {
+          "suite": "invariants",
+          "id": "inv15-unknown-as-safe",
+          "endKey": "eval correct-violating 0 cc; searched violating-correct 0 cc",
+          "source": "pair",
+          "reason": "prefers-violating"
+        },
+        {
+          "suite": "invariants",
+          "id": "inv18-wasted-end-place",
+          "endKey": "eval correct-violating 0 cc; searched violating-correct 0 cc",
+          "source": "pair",
+          "reason": "prefers-violating"
+        },
+        {
+          "suite": "invariants",
+          "id": "inv19-soft-miner-exposed",
+          "endKey": "eval correct-violating -3662 cc; searched violating-correct 1100 cc",
+          "source": "pair",
+          "reason": "prefers-violating"
+        },
+        {
+          "suite": "invariants",
+          "id": "inv20-strand-no-retreat",
+          "endKey": "eval correct-violating -2318 cc; searched violating-correct -997100 cc",
+          "source": "pair",
+          "reason": "prefers-violating"
+        },
+        {
+          "suite": "invariants",
+          "id": "inv3-retreat-square",
+          "endKey": "eval correct-violating -3462 cc; searched violating-correct -500 cc",
+          "source": "pair",
+          "reason": "prefers-violating"
+        },
+        {
+          "suite": "invariants",
+          "id": "inv4-strand-unpunished",
+          "endKey": "eval correct-violating -2016 cc; searched violating-correct 200 cc",
+          "source": "pair",
+          "reason": "prefers-violating"
+        },
+        {
+          "suite": "invariants",
+          "id": "inv6-fragile-anchor",
+          "endKey": "eval correct-violating -2358 cc; searched violating-correct -900 cc",
+          "source": "pair",
+          "reason": "prefers-violating"
+        },
+        {
+          "suite": "spawn-strike",
+          "id": "spawn-strike-f16-punisher",
+          "endKey": "84f82955fc18be91",
+          "source": "search",
+          "reason": "not-in-best"
+        },
+        {
+          "suite": "tactics",
+          "id": "tactics-plugged-fire_1-vs-fire_3",
+          "endKey": "5a581626c1450dfc",
+          "source": "search",
+          "reason": "not-in-best"
+        },
+        {
+          "suite": "tactics",
+          "id": "tactics-plugged-fire_2-vs-fire_3",
+          "endKey": "dcf89dd140201364",
+          "source": "search",
+          "reason": "not-in-best"
+        },
+        {
+          "suite": "tactics",
+          "id": "tactics-plugged-shadow_1-vs-fire_3",
+          "endKey": "30152bb1ccd9a19e",
+          "source": "search",
+          "reason": "not-in-best"
+        },
+        {
+          "suite": "tactics",
+          "id": "tactics-plugged-water_1-vs-fire_3",
+          "endKey": "053758f164195953",
+          "source": "search",
+          "reason": "not-in-best"
+        },
+        {
+          "suite": "tactics",
+          "id": "tactics-plugged-water_2-vs-fire_3",
+          "endKey": "79981bbf655c0891",
+          "source": "search",
+          "reason": "not-in-best"
+        },
+        {
+          "suite": "tactics",
+          "id": "tactics-plugged-water_3-vs-fire_3",
+          "endKey": "c0328f1ce2b4d4fa",
+          "source": "search",
+          "reason": "not-in-best"
+        }
+      ],
+      "wonOutright": [
+        "home-mate#cheap-invasion-one-attack-mate",
+        "home-mate#damage-remains-during-defender-reply-rotated-black-mate",
+        "spawn-strike#spawn-strike-d9-pivot-1",
+        "spawn-strike#spawn-strike-d9-pivot-2",
+        "spawn-strike#spawn-strike-d9-pivot-3",
+        "spawn-strike#spawn-strike-d9-pivot-4",
+        "tactics#tactics-plugged-fire_3-vs-fire_3",
+        "tactics#tactics-plugged-lightning_2-vs-fire_3"
+      ],
+      "deadPositions": [
+        "home-mate#clear-an-adjacent-lane-mate",
+        "home-mate#clear-an-adjacent-lane-rotated-black-mate",
+        "home-mate#zero-attack-occupier-mate",
+        "home-mate#zero-attack-occupier-rotated-black-mate",
+        "tactics#tactics-promote-metal_1-vs-lightning_3",
+        "tactics#tactics-promote-metal_1-vs-water_2",
+        "tactics#tactics-promote-plant_2-vs-lightning_3",
+        "tactics#tactics-promote-plant_2-vs-water_2",
+        "tactics#tactics-promote-shadow_1-vs-water_2",
+        "tactics#tactics-promote-water_2-vs-water_2"
+      ],
+      "deadBudgetExceeded": [],
+      "suites": {
+        "tactics": {
+          "cases": 79,
+          "passed": 73,
+          "points": 73,
+          "pointsWon": 67
+        },
+        "spawn-strike": {
+          "cases": 20,
+          "passed": 19,
+          "points": 20,
+          "pointsWon": 19
+        },
+        "home-mate": {
+          "cases": 56,
+          "passed": 56,
+          "points": 38,
+          "pointsWon": 38
+        },
+        "invariants": {
+          "cases": 20,
+          "passed": 12,
+          "points": 20,
+          "pointsWon": 12
+        }
+      },
+      "tactics": 0.9178082191780822,
+      "spawnStrike": 0.95,
+      "homeMate": 56,
+      "passedCases": 160,
+      "invariantPairs": 20,
+      "invariantsEval": 0.6,
+      "invariantsSearched": 0.25,
+      "invariantDetail": [
+        {
+          "id": "inv1-spawn-zero",
+          "invariant": 1,
+          "evalGapCc": 3446,
+          "evalPass": true,
+          "searchGapCc": 1400,
+          "searchPass": true
+        },
+        {
+          "id": "inv2-corner-seal",
+          "invariant": 2,
+          "evalGapCc": 30,
+          "evalPass": true,
+          "searchGapCc": 0,
+          "searchPass": false
+        },
+        {
+          "id": "inv3-retreat-square",
+          "invariant": 3,
+          "evalGapCc": -3462,
+          "evalPass": false,
+          "searchGapCc": -500,
+          "searchPass": false
+        },
+        {
+          "id": "inv4-strand-unpunished",
+          "invariant": 4,
+          "evalGapCc": -2016,
+          "evalPass": false,
+          "searchGapCc": 200,
+          "searchPass": true
+        },
+        {
+          "id": "inv5-poor-miner-square",
+          "invariant": 5,
+          "evalGapCc": 2165,
+          "evalPass": true,
+          "searchGapCc": 0,
+          "searchPass": false
+        },
+        {
+          "id": "inv6-fragile-anchor",
+          "invariant": 6,
+          "evalGapCc": -2358,
+          "evalPass": false,
+          "searchGapCc": -900,
+          "searchPass": false
+        },
+        {
+          "id": "inv7-promote-no-runway",
+          "invariant": 7,
+          "evalGapCc": 600,
+          "evalPass": true,
+          "searchGapCc": 0,
+          "searchPass": false
+        },
+        {
+          "id": "inv8-no-pre-adjacency",
+          "invariant": 8,
+          "evalGapCc": 335,
+          "evalPass": true,
+          "searchGapCc": 0,
+          "searchPass": false
+        },
+        {
+          "id": "inv9-chip-across-turn",
+          "invariant": 9,
+          "evalGapCc": 150,
+          "evalPass": true,
+          "searchGapCc": 0,
+          "searchPass": false
+        },
+        {
+          "id": "inv10-home-reachable",
+          "invariant": 10,
+          "evalGapCc": 2557,
+          "evalPass": true,
+          "searchGapCc": -1000,
+          "searchPass": false
+        },
+        {
+          "id": "inv11-home-bare",
+          "invariant": 11,
+          "evalGapCc": 884,
+          "evalPass": true,
+          "searchGapCc": -200,
+          "searchPass": false
+        },
+        {
+          "id": "inv12-cleave-line",
+          "invariant": 12,
+          "evalGapCc": -2464,
+          "evalPass": false,
+          "searchGapCc": -100,
+          "searchPass": false
+        },
+        {
+          "id": "inv13-turtle",
+          "invariant": 13,
+          "evalGapCc": 301,
+          "evalPass": true,
+          "searchGapCc": -500,
+          "searchPass": false
+        },
+        {
+          "id": "inv14-liquidity-floor",
+          "invariant": 14,
+          "evalGapCc": 750,
+          "evalPass": true,
+          "searchGapCc": 700,
+          "searchPass": true
+        },
+        {
+          "id": "inv15-unknown-as-safe",
+          "invariant": 15,
+          "evalGapCc": 0,
+          "evalPass": false,
+          "searchGapCc": 0,
+          "searchPass": false
+        },
+        {
+          "id": "inv16-clock-discipline",
+          "invariant": 16,
+          "evalGapCc": 560,
+          "evalPass": true,
+          "searchGapCc": 1600,
+          "searchPass": true
+        },
+        {
+          "id": "inv17-self-block",
+          "invariant": 17,
+          "evalGapCc": 290,
+          "evalPass": true,
+          "searchGapCc": 0,
+          "searchPass": false
+        },
+        {
+          "id": "inv18-wasted-end-place",
+          "invariant": 18,
+          "evalGapCc": 0,
+          "evalPass": false,
+          "searchGapCc": 0,
+          "searchPass": false
+        },
+        {
+          "id": "inv19-soft-miner-exposed",
+          "invariant": 19,
+          "evalGapCc": -3662,
+          "evalPass": false,
+          "searchGapCc": 1100,
+          "searchPass": true
+        },
+        {
+          "id": "inv20-strand-no-retreat",
+          "invariant": 20,
+          "evalGapCc": -2318,
+          "evalPass": false,
+          "searchGapCc": -997100,
+          "searchPass": false
+        }
+      ]
+    },
+    "smoke": {
+      "a": "hard@lab-400k",
+      "b": "Rush",
+      "work": "wall:500",
+      "handicaps": [
+        0
+      ],
+      "pairs": 8,
+      "games": 16,
+      "seed": 9,
+      "shards": 12,
+      "adjudicationRate": 0,
+      "illegalActions": 0,
+      "replicaDivergences": 0,
+      "bothSeatsPlayed": true,
+      "voided": false,
+      "meanTurnMs": {
+        "a": 525.124203821656,
+        "b": 5.697819314641745
+      },
+      "elo": -254.72883903486974,
+      "eloLo": -452.3323314366343,
+      "eloHi": -142.16693298599915,
+      "los": 1.2110142461052575e-7,
+      "eloDetail": {
+        "n": 16,
+        "mu": 0.1875,
+        "variance": 0.05859375,
+        "elo": -254.72883903486974,
+        "eloLo": -452.3323314366343,
+        "eloHi": -142.16693298599915,
+        "los": 1.2110142461052575e-7
+      },
+      "sprt": null,
+      "decision": null
+    }
+  },
+  "git": "f2906f6353107ee319f51a32329dc27bc3c851b8",
+  "wasmSha256": "da9b1cdf25e4bcd6a4674fd697095e35c2606c29817e3d18043faf4799d828bf",
+  "node": "v24.11.1",
+  "device": "Apple M2 Max x12 (darwin/arm64)",
+  "elapsedMs": 1135947,
+  "at": "2026-09-15T23:42:29.048Z"
+}

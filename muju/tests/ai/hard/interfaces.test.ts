@@ -421,32 +421,148 @@ const _phone: HardConfig = PHONE;
 const _lab: HardConfig = LAB;
 const _profileFor: (unitsPerMs: number, deviceMemoryGb: number | undefined) => HardConfig = profileFor;
 
-// --- Modules not yet built: type-only imports the later milestone removes ----
-// Each alias reproduces the module DESIGN §4 names; the suppression below it
-// goes away (and is replaced by real declaration tests) at that milestone.
+// --- DESIGN §4.14 (dfpn), §4.16 (search/*), §4.17 (book/*, verify/replay,
+// --- engine.ts): the M14 half. `tactics/dfpn.ts` and `book/probe.ts` carry
+// --- M14 stubs whose BODIES M16/M18 replace; their signatures are frozen here.
 
-// @ts-expect-error until M14: search/tt.ts (Bound, TTEntry, TranspositionTable, ProofCache, scoreToTT, scoreFromTT).
-export type M14_TT = typeof import('../../../src/ai/hard/search/tt');
-// @ts-expect-error until M14: search/order.ts (OrderTables, newOrderTables, scoreTurns, onCutoff).
-export type M14_Order = typeof import('../../../src/ai/hard/search/order');
-// @ts-expect-error until M14: search/quiesce.ts (QuiesceConfig, quiesce, isTacticalTurn).
-export type M14_Quiesce = typeof import('../../../src/ai/hard/search/quiesce');
-// @ts-expect-error until M14: search/pvs.ts (SearchConfig, HardSearchStats, SearchContext, SearchResult, pvs, iterativeDeepening).
-export type M14_Pvs = typeof import('../../../src/ai/hard/search/pvs');
-// @ts-expect-error until M14: search/time.ts (WorkClass, WORK_COST, WORK_LADDER, WorkMeter, DeviceProfile, TimeConfig, chooseWork, updateProfile, targetMs).
-export type M14_Time = typeof import('../../../src/ai/hard/search/time');
-// @ts-expect-error until M14: search/root.ts (RootOptions, RootResult, searchRoot).
-export type M14_Root = typeof import('../../../src/ai/hard/search/root');
-// @ts-expect-error until M14: verify/replay.ts (ReplayCheck, verifyTurn).
-export type M14_Replay = typeof import('../../../src/ai/hard/verify/replay');
-// @ts-expect-error until M14: engine.ts (HardEngine).
-export type M14_Engine = typeof import('../../../src/ai/hard/engine');
-// @ts-expect-error until M16: tactics/dfpn.ts (DfpnConfig, Proof, DfpnResult, forceHome).
-export type M16_Dfpn = typeof import('../../../src/ai/hard/tactics/dfpn');
-// @ts-expect-error until M18: book/format.ts (BookEntry, Book, parseBook, packBook, EMPTY_BOOK).
-export type M18_BookFormat = typeof import('../../../src/ai/hard/book/format');
-// @ts-expect-error until M18: book/probe.ts (canonicalKey, probeBook).
-export type M18_BookProbe = typeof import('../../../src/ai/hard/book/probe');
+const _bound: readonly [number, number, number] = [Bound.EXACT, Bound.LOWER, Bound.UPPER];
+const _ttEntry: (e: TTEntry) => number[] = e => [e.keyHi, e.scoreCc, e.depth, e.bound, e.bestEndLo, e.age];
+const _tt: (t: TranspositionTable) => unknown[] = t => [
+  t.probe(0, 0, {} as TTEntry),
+  t.store(0, 0, 0, 0, 0, 0, 0),
+  t.newSearch(),
+  t.clear(),
+  t.hits,
+  t.probes,
+];
+const _newTT: (bits: number) => TranspositionTable = bits => new TranspositionTable(bits);
+const _proofCache: (c: ProofCache) => unknown[] = c => [c.get(0, 0), c.put(0, 0, 0)];
+const _newProofCache: (bits: number) => ProofCache = bits => new ProofCache(bits);
+const _scoreToTT: (score: Centi, ply: number) => Centi = scoreToTT;
+const _scoreFromTT: (score: Centi, ply: number) => Centi = scoreFromTT;
+
+const _orderTables: (o: OrderTables) => Int32Array[] = o => [o.killers, o.counter, o.histMove, o.histBuy];
+const _newOrderTables: (maxPly: number) => OrderTables = newOrderTables;
+const _scoreTurns: (
+  p: PackedState,
+  t: NodeTables,
+  turns: Turn[],
+  n: number,
+  tt: TTEntry | null,
+  ord: OrderTables,
+  ply: number,
+  prevSig: number,
+  s: SearchContext,
+) => void = scoreTurns;
+const _onCutoff: (ord: OrderTables, t: Turn, ply: number, prevSig: number, depth: number) => void = onCutoff;
+
+const _quiesceCfg: (c: QuiesceConfig) => number[] = c => [c.maxPly, c.deltaMarginCc, c.maxCandidates];
+const _quiesce: (s: SearchContext, p: PackedState, alpha: Centi, beta: Centi, ply: number, qply: number) => Centi =
+  quiesce;
+const _isTacticalTurn: (p: PackedState, t: Turn) => boolean = isTacticalTurn;
+
+const _searchStats: (s: HardSearchStats) => unknown[] = s => [
+  s.nodes, s.qnodes, s.turnNodes, s.evals, s.ttHits, s.ttProbes, s.depth, s.seldepth,
+  s.byClass, s.proverCalls, s.dfpnCalls, s.catalogRebuilds, s.replicaDivergences, s.work,
+  s.elapsedMs, s.stopReason,
+];
+const _searchContext: (s: SearchContext) => unknown[] = s => [
+  s.rep, s.cat, s.gen, s.tt, s.proof, s.ord, s.eval, s.meter, s.cfg, s.root, s.sc,
+  s.tables, s.keep, s.undo, s.pool, s.stats, s.stop(),
+];
+const _searchResult: (r: SearchResult) => unknown[] = r => [r.best, r.scoreCc, r.depth, r.pv, r.stats];
+const _pvs: (
+  s: SearchContext,
+  p: PackedState,
+  depth: number,
+  alpha: Centi,
+  beta: Centi,
+  ply: number,
+  prevSig: number,
+) => Centi = pvs;
+const _iterativeDeepening: (s: SearchContext, p: PackedState, onDepth?: (r: SearchResult) => void) => SearchResult =
+  iterativeDeepening;
+
+const _workClass: number[] = [
+  WorkClass.MACRO, WorkClass.QUIESCE, WorkClass.TURN, WorkClass.GEN, WorkClass.KILLTABLE,
+  WorkClass.DFPN, WorkClass.EVAL1, WorkClass.EVAL2, WorkClass.PROVER,
+];
+const _workCost: readonly number[] = WORK_COST;
+const _workLadder: readonly number[] = WORK_LADDER;
+const _workMeter: (m: WorkMeter) => unknown[] = m => [m.spend(0), m.spend(0, 2), m.exhausted(), m.used, m.limit, m.byClass];
+const _newWorkMeter: (limit: number) => WorkMeter = limit => new WorkMeter(limit);
+const _chooseWork: (profile: DeviceProfile, targetMsValue: number) => number = chooseWork;
+const _updateProfile: (profile: DeviceProfile, work: number, elapsedMs: number) => DeviceProfile = updateProfile;
+const _targetMs: (p: PackedState, t: NodeTables, cfg: TimeConfig, bookHit: boolean, candidates: number) => number =
+  targetMs;
+
+const _rootOptions: (o: RootOptions) => unknown[] = o => [o.work, o.config, o.canonical, o.onProgress];
+const _rootResult: (r: RootResult) => unknown[] = r => [
+  r.actions, r.scoreCc, r.depth, r.work, r.stats, r.source, r.endKey, r.fallback,
+];
+const _searchRoot: (engine: HardEngine, state: GameState, opts: RootOptions) => RootResult = searchRoot;
+
+const _dfpnConfigM16: (c: DfpnConfig) => number[] = c => [c.maxTurns, c.nodeBudget, c.epsilonQ2, c.ttBits];
+const _dfpnProof: number[] = [DfpnProof.UNKNOWN, DfpnProof.PROVEN, DfpnProof.DISPROVEN];
+const _dfpnResult: (r: DfpnResult) => unknown[] = r => [r.proof, r.turn, r.nodes, r.depth];
+const _forceHome: (s: SearchContext, p: PackedState, side: Side, cfg: DfpnConfig, out: DfpnResult) => DfpnResult =
+  forceHome;
+
+const _bookEntryM18: (e: BookEntry) => number[] = e => [e.keyLo, e.keyHi, e.turnLo, e.turnHi, e.flags, e.score, e.count];
+const _parseBook: (bytes: ArrayBuffer) => Book = parseBook;
+const _packBook: (entries: BookEntry[], meta: { handicap: number; mapHash: number; weightsVersion: number }) => Uint8Array =
+  packBook;
+const _emptyBook: Book = EMPTY_BOOK;
+const _canonicalKey: (p: PackedState) => { lo: number; hi: number; negated: boolean } = canonicalKey;
+const _probeBook: (book: Book, p: PackedState, turns: Turn[], n: number) => number = probeBook;
+
+const _replayCheck: (c: ReplayCheck) => unknown[] = c => [c.actions, c.verified, c.divergedAt, c.reason, c.endState];
+const _verifyTurn: (rep: Replica, state: GameState, p: PackedState, t: Turn, keep: KeepSetTable) => ReplayCheck =
+  verifyTurn;
+
+const _hardEngine: (e: HardEngine) => unknown[] = e => [
+  e.setSeed(0),
+  e.setWeights({} as Weights),
+  e.setBook(null),
+  e.searchTurn({} as GameState),
+  e.searchTurn({} as GameState, { work: 1 }),
+  e.findBestAction({} as GameState),
+  e.findBestAction({} as GameState, 1),
+  e.calibrate(),
+  e.profile,
+  e.config,
+];
+const _newHardEngine: (cfg?: Partial<HardConfig>) => HardEngine = cfg => new HardEngine(cfg);
+
+import { Bound, ProofCache, TranspositionTable, scoreFromTT, scoreToTT, type TTEntry } from '../../../src/ai/hard/search/tt';
+import { newOrderTables, onCutoff, scoreTurns, type OrderTables } from '../../../src/ai/hard/search/order';
+import { isTacticalTurn, quiesce } from '../../../src/ai/hard/search/quiesce';
+import {
+  iterativeDeepening,
+  pvs,
+  type HardSearchStats,
+  type SearchContext,
+  type SearchResult,
+} from '../../../src/ai/hard/search/pvs';
+import {
+  WORK_COST,
+  WORK_LADDER,
+  WorkClass,
+  WorkMeter,
+  chooseWork,
+  targetMs,
+  updateProfile,
+} from '../../../src/ai/hard/search/time';
+import { searchRoot, type RootOptions, type RootResult } from '../../../src/ai/hard/search/root';
+import {
+  Proof as DfpnProof,
+  forceHome,
+  type DfpnResult,
+} from '../../../src/ai/hard/tactics/dfpn';
+import { EMPTY_BOOK, packBook, parseBook } from '../../../src/ai/hard/book/format';
+import { canonicalKey, probeBook } from '../../../src/ai/hard/book/probe';
+import { verifyTurn, type ReplayCheck } from '../../../src/ai/hard/verify/replay';
+import { HardEngine } from '../../../src/ai/hard/engine';
 
 const _perftActions: (state: GameState, maxActions: number) => number = perftActions;
 const _perftTurns: (state: GameState) => number = perftTurns;
@@ -879,6 +995,32 @@ describe('DESIGN §4 declaration tests', () => {
     ];
     expect(declared.every(d => d !== undefined && d !== null)).toBe(true);
     expect(declared).toHaveLength(92);
+  });
+
+  it('every §4.14 / §4.16 / §4.17 search, book, replay and engine signature is exported with the frozen shape', () => {
+    const declared: unknown[] = [
+      _bound, _ttEntry, _tt, _newTT, _proofCache, _newProofCache, _scoreToTT, _scoreFromTT,
+      _orderTables, _newOrderTables, _scoreTurns, _onCutoff,
+      _quiesceCfg, _quiesce, _isTacticalTurn,
+      _searchStats, _searchContext, _searchResult, _pvs, _iterativeDeepening,
+      _workClass, _workCost, _workLadder, _workMeter, _newWorkMeter, _chooseWork, _updateProfile, _targetMs,
+      _rootOptions, _rootResult, _searchRoot,
+      _dfpnConfigM16, _dfpnProof, _dfpnResult, _forceHome,
+      _bookEntryM18, _parseBook, _packBook, _emptyBook, _canonicalKey, _probeBook,
+      _replayCheck, _verifyTurn, _hardEngine, _newHardEngine,
+    ];
+    expect(declared.every(d => d !== undefined && d !== null)).toBe(true);
+    expect(declared).toHaveLength(45);
+  });
+
+  it('DESIGN §8 freezes WORK_COST and WORK_LADDER', () => {
+    expect(Array.from(WORK_COST)).toEqual([4, 4, 1, 4, 8, 2, 2, 12, 40]);
+    expect(Array.from(WORK_LADDER)).toEqual([25e3, 50e3, 100e3, 200e3, 400e3, 800e3, 1.6e6, 3.2e6]);
+    expect(WorkClass).toEqual({
+      MACRO: 0, QUIESCE: 1, TURN: 2, GEN: 3, KILLTABLE: 4, DFPN: 5, EVAL1: 6, EVAL2: 7, PROVER: 8,
+    });
+    expect(Bound).toEqual({ EXACT: 0, LOWER: 1, UPPER: 2 });
+    expect(DfpnProof).toEqual({ UNKNOWN: 0, PROVEN: 1, DISPROVEN: 2 });
   });
 
   it('DESIGN §3.1 constants hold their frozen values', () => {

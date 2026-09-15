@@ -26,6 +26,13 @@
  * run as given and is expected to merge its own numbers into `gate.artifact`
  * itself; after the whole chain finishes, that file (if present) is merged
  * into `metrics` too, so its fields overlay/complete the picture.
+ *
+ * `gate.artifact` may name SEVERAL files, comma-separated, and each may carry a
+ * `key=` prefix that nests it (`determinism=lab/results/.../M14-det.json`). A
+ * chain whose steps each write their own artifact — M14 runs four of them — is
+ * then read into one envelope with no gate-specific code here, and its
+ * criterion reads `metrics.determinism.identical`, `metrics.bench.*` and so on.
+ * A bare path still merges flat, which is what every M1-M13 row does.
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -212,13 +219,20 @@ function runGate(gate: Gate): { pass: boolean; metrics: Record<string, unknown>;
   // is guarded by `!failed` below — but the record must not mislead either.
   // When the merge does happen, `artifactAt` carries the file's own mtime so
   // any staleness is visible next to the envelope's `at`.
-  const artifactPath = gate.artifact ? path.resolve(REPO_ROOT, gate.artifact) : null;
-  if (!failed && artifactPath && fs.existsSync(artifactPath)) {
-    try {
-      Object.assign(metrics, JSON.parse(fs.readFileSync(artifactPath, 'utf8')));
-      metrics.artifactAt = fs.statSync(artifactPath).mtime.toISOString();
-    } catch {
-      // leave metrics as gathered from stdout
+  if (!failed && gate.artifact) {
+    for (const spec of gate.artifact.split(',').map(s => s.trim()).filter(Boolean)) {
+      const eq = spec.indexOf('=');
+      const key = eq < 0 ? null : spec.slice(0, eq);
+      const artifactPath = path.resolve(REPO_ROOT, eq < 0 ? spec : spec.slice(eq + 1));
+      if (!fs.existsSync(artifactPath)) continue;
+      try {
+        const parsed = JSON.parse(fs.readFileSync(artifactPath, 'utf8')) as Record<string, unknown>;
+        if (key === null) Object.assign(metrics, parsed);
+        else metrics[key] = parsed;
+        metrics.artifactAt = fs.statSync(artifactPath).mtime.toISOString();
+      } catch {
+        // malformed artifact; leave metrics as gathered from stdout
+      }
     }
   }
 

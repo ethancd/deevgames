@@ -17,6 +17,7 @@ import { playGame } from '../../harness/runner';
 import type { GameRecord } from '../../harness/types';
 import { buildPairs, expandPair, shardRange, gameScoreFor, pairScore, type GameSpec } from './pairing';
 import { resolveEngine, parseWorkSpec, workKey, type WorkSpec } from './engines';
+import { HARD_DIVERGENCE_ANOMALY, hardBotDivergences } from '../bots/hard';
 
 interface WorkerArgs {
   a: string;
@@ -61,6 +62,7 @@ export interface PairRow {
 }
 
 async function playOneGame(args: WorkerArgs, spec: GameSpec, runId: string): Promise<GameRecord> {
+  const divergencesBefore = hardBotDivergences();
   const engineA = resolveEngine(args.a);
   const engineB = resolveEngine(args.b);
   const whiteEngine = spec.white === 'A' ? engineA : engineB;
@@ -82,6 +84,13 @@ async function playOneGame(args: WorkerArgs, spec: GameSpec, runId: string): Pro
   record.fixedWork = args.work.mode === 'fixed' ? args.work.units : undefined;
   record.decisionMs = args.work.mode === 'wall' ? args.work.ms : undefined;
   record.engineConfigHash = `white=${whiteEngine.configHash(args.work)}|black=${blackEngine.configHash(args.work)}`;
+  // A `hard@*` seat that proposed an action the canonical engine refused counts
+  // as a REPLICA DIVERGENCE (DESIGN §7.7's bot adapter). The count is
+  // process-wide and games run sequentially inside a shard, so the delta over
+  // one game belongs to that game; `ladder/run.ts` sums these anomalies into
+  // `metrics.replicaDivergences`.
+  const divergences = hardBotDivergences() - divergencesBefore;
+  for (let i = 0; i < divergences; i++) record.anomalies.push(HARD_DIVERGENCE_ANOMALY);
   return record;
 }
 

@@ -25,6 +25,7 @@ import type { GameRecord } from '../../harness/types';
 import type { PlayerId } from '../../../src/game/types';
 import { buildPairs, expandGames, type GameSpec } from './pairing';
 import type { PairRow } from './worker';
+import { HARD_DIVERGENCE_ANOMALY } from '../bots/hard';
 import { resolveEngine, parseWorkSpec, workKey, engineHasWork, type WorkSpec } from './engines';
 import { runSharded } from './shard';
 import { sprt, type SprtParams, type SprtResult } from './sprt';
@@ -123,6 +124,9 @@ interface RunMetrics {
   shards: number;
   adjudicationRate: number;
   illegalActions: number;
+  /** `hard@*` seats whose plan the canonical engine refused mid-turn
+   * (M14; `lab/hard-ai/bots/hard.ts`, recorded per game by `worker.ts`). */
+  replicaDivergences: number;
   bothSeatsPlayed: boolean;
   voided: boolean;
   meanTurnMs: { a: number; b: number };
@@ -153,11 +157,13 @@ function computeMetrics(args: CliArgs, games: GameRecord[], pairs: PairRow[]): R
     { a: { ms: 0, turns: 0 }, b: { ms: 0, turns: 0 } };
   let adjudicated = 0;
   let illegalActions = 0;
+  let replicaDivergences = 0;
   for (let i = 0; i < games.length; i++) {
     const rec = games[i];
     const spec = specsByPair.get(i >> 1)?.[i % 2]; // shard files interleave A-white, B-white per pair in pair-index order
     if (rec.winType === 'adjudication') adjudicated++;
     illegalActions += rec.players.white.illegalActions + rec.players.black.illegalActions;
+    for (const anomaly of rec.anomalies) if (anomaly === HARD_DIVERGENCE_ANOMALY) replicaDivergences++;
     if (spec) {
       if (spec.white === 'A') aWhiteGames++; else bWhiteGames++;
       const seatOfA: PlayerId = spec.white === 'A' ? 'white' : 'black';
@@ -193,6 +199,7 @@ function computeMetrics(args: CliArgs, games: GameRecord[], pairs: PairRow[]): R
     shards: args.shards,
     adjudicationRate,
     illegalActions,
+    replicaDivergences,
     bothSeatsPlayed: aWhiteGames > 0 && bWhiteGames > 0,
     voided,
     meanTurnMs: { a: msPerTurn(latencyByEngine.a), b: msPerTurn(latencyByEngine.b) },

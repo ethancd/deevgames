@@ -1,0 +1,42 @@
+{
+  "mode": "calibrate",
+  "positions": 200,
+  "provenPositions": 4,
+  "rung": 3200000,
+  "depth": 3,
+  "shards": 12,
+  "depthGe4Share": 1,
+  "meanDepth": 4.663265306122449,
+  "quiesceShareMax": 0.316,
+  "quiesceShareUncappedMax": 0.316,
+  "quiesceUncappedRung": 400000,
+  "quiesceCapTripped": 0,
+  "quiesceCapNum": 34,
+  "quiesceCapDen": 100,
+  "proverCallsPer1000Macro": 0.175410215662578,
+  "ttOnOffScoreMismatch": 0,
+  "ttChecked": 200,
+  "ttMismatchIds": [],
+  "shallowPositions": [],
+  "nodesPerSec": 392.81002687835763,
+  "unitsPerMs": 66.49446421958815,
+  "usPerUnit": 15.039,
+  "workCost": [
+    4,
+    4,
+    1,
+    4,
+    8,
+    2,
+    2,
+    12,
+    40
+  ],
+  "measuredUs": {
+    "EVAL1": 28.477,
+    "EVAL2": 23.983,
+    "KILLTABLE": 35.57
+  },
+  "git": "f2906f6353107ee319f51a32329dc27bc3c851b8",
+  "at": "2026-09-15T23:41:26.102Z"
+}

@@ -80,7 +80,15 @@ const LAYER_ALLOWS: Record<Layer, Layer[]> = {
   gen: ['core', 'tables', 'types', 'config'],
   tactics: ['core', 'tables', 'types', 'config'],
   eval: ['core', 'tables', 'types', 'config'],
-  search: ['core', 'tables', 'gen', 'tactics', 'eval', 'types', 'config'],
+  // DESIGN §2's table stops `search` at `eval`, but §4.16 puts `searchRoot`
+  // — the must-answer layer — in `search/root.ts`, and §5.10 requires it to
+  // replay its FORCED lines through the CANONICAL engine and to probe the
+  // book before it searches. Those are `verify/replay.ts`, `book/probe.ts`
+  // and `src/game/*`. The two rules cannot both hold, so the narrower one
+  // wins: `search` may reach `verify` and `book` (neither of which imports
+  // `search`, so no cycle) and, like them, `src/game` and `src/ai/simulate`.
+  // See DEVIATIONS.md under M14.
+  search: ['core', 'tables', 'gen', 'tactics', 'eval', 'verify', 'book', 'types', 'config'],
   book: ['core', 'gen', 'types', 'config'],
   verify: ['core', 'gen', 'types', 'config'],
   engine: ['core', 'tables', 'gen', 'tactics', 'eval', 'search', 'book', 'verify', 'types', 'config'],
@@ -105,6 +113,9 @@ const EXTERNAL_ALLOWS: Partial<Record<Layer, string[]>> = {
   // replaces that call with the packed `tactics/prover.ts homeVerdict` and
   // this allowance goes away with it. See DEVIATIONS.md under M5.
   core: ['src/game', 'src/ai/simulate'],
+  // `search/root.ts` replays its must-answer lines canonically (see the
+  // `search` row of LAYER_ALLOWS).
+  search: ['src/game', 'src/ai/simulate'],
   verify: ['src/game', 'src/ai/simulate', 'src/ai/moves'],
   engine: ['src/game', 'src/ai/simulate', 'src/ai/moves'],
 };

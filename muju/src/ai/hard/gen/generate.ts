@@ -103,8 +103,15 @@ export function newGenStats(): GenStats {
  * The rescue witness DESIGN §5.6 injection 4 needs, taken structurally so `gen`
  * need not import `tactics` (DESIGN §2 layering). A bound
  * `tactics/prover.ts homeWitness` satisfies it.
+ *
+ * `keep` is this node's keep-set table. The prover's witness line opens with
+ * its OWN `PAY_UPKEEP` indexing the prover's private keep-set table
+ * (DESIGN §4.14), so the installer has to copy that set into the node's table
+ * and re-index the action — or drop it when no upkeep is pending. It cannot do
+ * either without the table, which is why it is a parameter. Added by M14; see
+ * DEVIATIONS.
  */
-export type RescueWitness = (p: PackedState, invader: Side, out: Int32Array) => number;
+export type RescueWitness = (p: PackedState, invader: Side, out: Int32Array, keep: KeepSetTable) => number;
 
 /** §5.10's interior-node keep-set cap; the root takes all of them. */
 export const INTERIOR_KEEP_SETS = 4;
@@ -635,6 +642,16 @@ export class TurnGenerator {
         this.line[0] = paMake(AKind.PAY_UPKEEP, 0, 0, 0);
         this.injectLine(ctx, 1, TurnFlag.QUIET);
       }
+      // ...with ONE exception. The rescue witness is the only injection that
+      // does not read `t`: the prover runs on `p`, models the defender's upkeep
+      // itself, and hands back a line that OPENS with its own `PAY_UPKEEP`
+      // (DESIGN §4.14, §5.10 item 3). An answerable occupation arrives with the
+      // upkeep review more often than not — the defender is being asked to pay
+      // for the units it needs to clear its own corner — so skipping it here
+      // loses exactly the positions §5.10 built it for. Measured on
+      // `home-mate`: four `*-rescue` cases went from a lost corner to the
+      // witness line. Added by M14; see DEVIATIONS.
+      this.injectRescue(ctx, side);
       return;
     }
 
@@ -778,10 +795,24 @@ export class TurnGenerator {
     const { p } = ctx;
     const occupant = p.pieceAt[CORNER[side]];
     if (occupant === NO_SLOT || p.owner[occupant] === side) return;
-    const n = source(p, (1 - side) as Side, this.witnessLine);
+    const n = source(p, (1 - side) as Side, this.witnessLine, ctx.keep);
     if (n <= 0) return;
+    // The witness carries its own place-phase structure — promotions, then
+    // `END_PLACE` when the phase will not auto-advance (DESIGN §4.14) — so
+    // prepending one here would end the place phase BEFORE those promotions and
+    // `injectLine` would drop the line at the first illegal action. Prepend only
+    // when the witness brought no place-phase actions of its own; an `END_PLACE`
+    // the replica refuses is skipped either way. (Added by M14; see DEVIATIONS.)
+    let carriesPlace = false;
+    for (let i = 0; i < n; i++) {
+      const kind = paKind(this.witnessLine[i]);
+      if (kind === AKind.END_PLACE || kind === AKind.PROMOTE || kind === AKind.BUY) {
+        carriesPlace = true;
+        break;
+      }
+    }
     let len = 0;
-    if (p.phase === 0) this.line[len++] = paMake(AKind.END_PLACE, 0, 0, 0);
+    if (p.phase === 0 && !carriesPlace) this.line[len++] = paMake(AKind.END_PLACE, 0, 0, 0);
     for (let i = 0; i < n && len < LINE_CAPACITY; i++) this.line[len++] = this.witnessLine[i];
     this.injectLine(ctx, len, TurnFlag.HOME_RESCUE);
   }

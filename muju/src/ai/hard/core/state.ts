@@ -419,6 +419,16 @@ export class Replica {
    * itself, so one ply is enough.
    */
   private readonly proverScratch: Scratch = new Scratch(1, 0, 0, 1);
+  /**
+   * How many times `make` has run the FULL prover (`homeVerdict` at
+   * `proverMode = 2`). DESIGN §5.11.6 prices work at "PROVER 40 per full-prover
+   * call" and M14's gate reports `proverCallsPer1000Macro`, so the search needs
+   * the real count — the turns that COULD trigger one are a different (larger)
+   * number. Additive to DESIGN §4.4; monotone, never reset by `unmake`, and a
+   * pure function of the positions the caller applied, so it costs nothing in
+   * determinism. Added by M14; see DEVIATIONS.
+   */
+  fullProverCalls = 0;
 
   constructor(cat: Catalog = activeCatalog()) {
     this.cat = cat;
@@ -1335,6 +1345,7 @@ export class Replica {
     // mate, and because the bound is optimistic this can only ever UNDER-claim
     // one. `proverMode = 2` runs the full packed replica of the prover.
     if (p.proverMode === 1) return !damageBound(p, p.side, this.proverScratch, 0);
+    this.fullProverCalls++;
     return homeVerdict(p, p.side, PROOF_NODES, this.proverScratch, 0) === HomeVerdict.MATE;
   }
 

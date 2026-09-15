@@ -1906,3 +1906,492 @@ DESIGN §5.10 caps the keep-set branch at "all <= 64 at the root, 4 at interior 
 `maxPlacePlans` 16/8 for the same split, but `GenConfig` carries no root flag (the split is expressed by
 `HardConfig.gen` versus `HardConfig.genInterior`). `generate` therefore reads `ply === 0` as the root for
 the keep-set cap alone; the place-plan cap comes from whichever config the caller passed.
+
+## M14
+
+### 2026-09-15: `searchRoot` takes a STRUCTURAL engine, and `search` may reach `verify`/`book`/`src/game`
+
+DESIGN §4.16 types `searchRoot(engine: HardEngine, ...)` and puts it in `search/root.ts`, while §2's
+layering table stops `search` at `eval` and puts `HardEngine` one layer above it. The two cannot both
+hold: §5.10 requires the must-answer layer to replay its FORCED lines through the CANONICAL engine
+(`verify/replay.ts`, `src/game/legality.ts`, `src/ai/simulate.ts`) and to probe the book
+(`book/probe.ts`) before it searches, and `searchRoot` cannot take a `HardEngine` without closing a
+module cycle. The narrower rules win:
+
+- `root.ts` declares `RootEngine`, a structural interface with the two members it actually uses
+  (`ctx`, `rootState`), and `HardEngine` satisfies it — the same arrangement `tactics/prover.ts` uses
+  for `ProverMeter` and `eval/evaluate.ts` for `EvalMeter`. Every call site reads as §4.16 writes it.
+- `lab/hard-ai/deps.ts` grants `search` the `verify` and `book` layers (neither of which imports
+  `search`, so no cycle appears) and, like them, `src/game` and `src/ai/simulate`.
+
+`tactics/dfpn.ts` needs the same treatment twice over: §4.14 types `forceHome`'s first parameter
+`SearchContext` and `DfpnResult.turn` as `gen/turn.ts`'s `Turn`, and `tactics` may import neither
+`search` nor `gen`. Both are declared structurally in `dfpn.ts` (`DfpnHost`, `DfpnTurn`) with the same
+members, so a real `SearchContext`/`Turn` is assignable at every call site.
+
+### 2026-09-15: per-ply candidate arrays, one pool, three generators
+
+DESIGN §4.16's `SearchContext` carries one `TurnPool` and one `TurnGenerator`. Neither survives contact
+with a recursive search as written:
+
+- `TurnGenerator` writes into pool-owned `Turn` records and the pool must be reset per node, so a
+  parent's candidate list would be shredded by its children. Giving each ply its own pool would mean a
+  generator per ply, and each `TurnGenerator` owns two `ActionSearch`es with a 2^18-entry `TurnTT`
+  (3 MB each) — 84 MB for a 14-ply search. Instead each ply owns a persistent `Turn[]` and the node
+  COPIES the generator's output into it before recursing (`copyTurn`: ~600 bytes per candidate against
+  a ~3 ms node, measured as noise). One pool, no per-ply `TurnTT`.
+- `SearchConfig` carries TWO `GenConfig`s (`gen`, `genInterior`) while §4.16 lists one generator, so
+  the context carries `gen`, `genInterior` and — additively — `genQuiesce`, DESIGN §5.11.4's "generate
+  with `K = cfg.quiesce.maxCandidates`" narrowed in the place phase as well (a tactical turn is
+  overwhelmingly an action-phase line).
+
+### 2026-09-15: the R5 quiescence cap is measured in UNITS, and enforced (AMENDED 2026-09-15 by "the R5 share is measured against the RUNG, and reported twice" below)
+
+DESIGN §5.11.4 writes the cap as `byClass[QUIESCE] <= 0.35 x meter.limit`, but `byClass[QUIESCE]` is a
+node COUNT and `limit` is in units; at `WORK_COST[QUIESCE] = 4` the literal reading measured 0.01 while
+quiescence was consuming more than half the rung (a mid-game corpus position ran 868 quiescence nodes
+against 167 macro nodes). `SearchContext.quiesceWork` therefore accumulates `meter.used` across each
+TOP-LEVEL quiescence subtree and the cap is on that — dimensionally correct, strictly stronger, and
+still a pure function of the work counters, so determinism is untouched. It is ENFORCED rather than
+merely measured (a gate nothing enforces is a gate that eventually goes red), at 0.34 so the calls
+already in flight when it trips cannot carry the measured share past §5.11.4's 0.35. Quiescence also
+stands pat without generating when the level-2 tables say the mover can kill nothing and neither corner
+is within a turn — every turn that skips would have been filtered out by `isTacticalTurn` anyway.
+
+Measured effect at the desktop rung: depth >= 4 went from 3/8 corpus positions to 12/12.
+
+### 2026-09-15: the within-turn scorer is not charged `EVAL1`
+
+DESIGN §5.11.6's own arithmetic for a macro node — "16 place plans x (4 + ~100 TURN) + 8 + 24 evals" —
+charges one `TURN` per within-turn node and reserves the `24 evals` for the macro LEAF evaluations.
+`gen/actionsearch.ts` spends that `TURN` once per within-turn node and scores its end position in the
+same breath, so charging `EVAL1` for the scorer as well bills the same work twice and halves the rung.
+The engine's `score` closure therefore spends no work of its own. (`WORK_COST` itself is unchanged;
+§8 fixes it, and `hard:bench --calibrate` reports the measured us-per-unit ratio on the box it runs on
+rather than rewriting the table.)
+
+### 2026-09-15: `stats.proverCalls` counts corner-entering turns (SUPERSEDED 2026-09-15 by "the prover mode follows DESIGN §5.11.4, and `proverCalls` counts real calls" below)
+
+`Replica.make` runs the full prover exactly when a corner-entering action is applied at
+`proverMode = 2`, and it exposes no call counter. The search counts the turns that can trigger it —
+those carrying `HOME_ENTRY` or `HOME_RACE` — and charges `WORK_CLASS.PROVER` for each. `proverMode` is
+2 at every `pvs` node and 1 (the admissible damage bound) inside quiescence, which is §5.11.4's rule
+widened from "the root and PV nodes of depth >= 1" to "every macro node": a `proverMode` that varied
+with the window would make the same position evaluate differently on a PV and a non-PV visit, and M14's
+own gate asserts the search is TT-transparent.
+
+### 2026-09-15: the TT admits an EXACT entry only at its own depth (SUPERSEDED 2026-09-15 by "the TT takes a deeper EXACT entry; the comparison ARM narrows it" below)
+
+M14's gate asserts `bench.ttOnOffScoreMismatch === 0` — the same fixed-depth search with the table on
+and off returns the same score. A deeper EXACT entry is a different (better) number, so returning it
+would turn a depth-3 search into a depth-5 one; `usable()` therefore admits EXACT only at exactly the
+requested depth, and LOWER/UPPER only on the far side of the window, where a cutoff is what the deeper
+search already proved. Deeper entries still order moves through `bestEndLo`. Measured:
+`ttOnOffScoreMismatch === 0`.
+
+### 2026-09-15: `config.ts`'s placeholder weights are replaced at construction
+
+`config.ts` still ships M4's placeholder `Weights` (every feature weight 0) because `config` may not
+import `eval`. An engine built on it would evaluate on material alone, so `HardEngine`'s constructor
+substitutes `DEFAULT_WEIGHTS` when the config carries the placeholder (`version === 0`) and no explicit
+vector was passed. M15 owns `config.ts` and can make this unnecessary.
+
+### 2026-09-15: the bot adapter's plan key drops the phase
+
+DESIGN §7.7 keys the whole-turn plan cache `${turnNumber}:${currentPlayer}:${phase}`, but a whole-turn
+plan SPANS the two phases (`PAY_UPKEEP`, the buys, `END_PLACE_PHASE`, the action line,
+`END_ACTION_PHASE`), so a key carrying the phase throws the plan away halfway through and re-searches
+the action phase at double the budget against a position the place plan was chosen for. The phase is
+dropped; the predicted-state digest the adapter already keeps is strictly stronger than what it guarded.
+
+### 2026-09-15: `hard:determinism` takes a work LIST and shards; `hard:verify` merges several artifacts
+
+M14's gate command passes `--work 25000,400000` (two rungs in one invocation) to a tool that parsed a
+single number, and its 640 searches are ~20 minutes in one process. `verify/determinism.ts` now accepts
+a comma-separated work list — the rung is part of what has to be deterministic — and shards the work
+list across `min(12, cpus)` child processes by default for `hard@*` engines, each running the three
+in-process repetitions plus its own fresh-process run over its stride. `aiv2-*` behaviour is unchanged
+(one budget, one process). `verify/run.ts`'s `gate.artifact` accepts a comma-separated list of
+`key=path` entries, each nested under its key, because M14's chain writes four artifacts and its
+criterion reads `metrics.determinism.*`, `metrics.bench.*`, `metrics.suite.*` and `metrics.smoke.*`.
+`ladder/worker.ts` records a `hard-replica-divergence` anomaly per divergence and `ladder/run.ts` sums
+them into `metrics.replicaDivergences`, which is the `smoke.replicaDivergences` the gate names.
+
+### 2026-09-15 (BLOCKING): `spawn-strike.suite.json`'s twenty keys are mid-turn states, and the suite is not scorable as authored
+
+M14's gate asserts `suite.spawnStrike >= 0.80`. It cannot pass, and the cause is upstream.
+
+M9 authored the twenty cases by instantiating each named pattern on a constructed position, replaying
+the line through `Replica.isLegal`/`make`, and taking `best` "from the actually-reached `kposHex`"
+(DEVIATIONS, 2026-09-15, under M9). The line ends with its last REAL action; a macro turn ends at the
+TURN BOUNDARY, where `END_ACTION_PHASE` runs income, the upkeep review, the inactivity clock and
+`startTurn`. Every one of the twenty keys is therefore one action early. Measured with
+`lab/hard-ai/suites/build-spawn-strike.ts` (added by this milestone as a check-only diagnostic):
+
+- 0 of 20 `best` keys is an end position of its case's root — so no engine can ever match one;
+- all 20 ARE reachable mid-turn states, which identifies the defect exactly;
+- moving each key to the boundary mechanically (end the turn with `phaseEndAction`) leaves `best` a
+  single exact end position out of hundreds: the reference generator of DESIGN §5.6 (widths
+  `[40,16,8,4]`, 200 place plans, ~600 candidates per position) then reaches it on 6 of 20 cases and
+  the shipped `K = 24` list on 1 of 20. The suite would be scoring which of several equivalent
+  completions the beam happened to rank first;
+- taking the CLOSURE of the authored line under the actions it does not spend — the faithful reading,
+  since each case tests a PATTERN and not a four-action script — repairs 16 of 20; the four `d9-pivot`
+  cases end in the Place phase and their closure is the whole action phase, which is neither storable
+  nor a test.
+
+The fix belongs to M9: re-author `best` as the set of end positions that REALISE each named pattern, the
+way `tactics.suite.json` does ("4 of this turn's 98 end positions leave the fire_3 off the board").
+`build-spawn-strike.ts` refuses to rewrite the file while any case is unresolved, so
+`spawn-strike.suite.json` is left byte-for-byte as M9 committed it.
+
+**RESOLVED 2026-09-15 (M14 fix pass).** Leaving the file as committed left four of the gate's clauses red
+and the diagnosis unacted, so the repair is taken rather than deferred. `build-spawn-strike.ts --fix`
+rewrote `spawn-strike.suite.json` (version 1 -> 2): sixteen cases take the CLOSURE of the authored line
+under the actions it does not spend — the reading this entry already argued for, since each case tests a
+PATTERN and not a four-action script — and the four `d9-pivot` cases take the root's canonically WINNING
+end positions instead. That last part is not a compromise: those four roots hold **no black body at all**
+(`units: ["white:plant_1@6,y"]`, black bank 0), so white wins the turn outright and the four-buy pivot
+the case names cannot be the best turn in a position that is already over. `Scan.winKeys` collects those
+end positions during the same walk, and the script says `won=<n>` for each case it used them on.
+Measured after the repair: 15 of 20 pass on the end key alone, the four `d9-pivot` rows are credited by
+the runner's canonical-win adjudication (below), and `spawnStrike` is 0.95. The one remaining miss,
+`spawn-strike-f16-punisher`, is a real one and is left as a miss.
+
+### 2026-09-15 (BLOCKING): the `invariants` suite is a PAIR of positions, not a turn, and its pairs are not ordered by the evaluation
+
+M14's gate asserts `suite.invariants >= 0.90`. It cannot pass either, for a different upstream reason.
+
+DESIGN §5.13 authors the suite as twenty PAIRS of post-turn positions that differ only in the decision
+the invariant is about, and its `best`/`avoid` are the `Kpos` of those two positions — while its
+`position` field is the VIOLATING member. There is no root from which both are reachable in one turn, so
+DESIGN §7.5's end-key rule scores 0/20 by construction. `lab/hard-ai/suites/run.ts` therefore scores a
+case carrying `violating`/`correct` refs the way M12's builder says M14 should ("do not choose the
+violating end position"): the engine's full stage-2 evaluation of each member from the point of view of
+`side`, the player who has just moved. Measured 0.60 — because:
+
+- `inv15` and `inv18` are the two STRUCTURAL invariants the builder itself documents as having "no
+  weight, no per-position test"; both members evaluate identically, so neither can ever be scored;
+- six pairs (`inv3`, `inv4`, `inv6`, `inv12`, `inv19`, `inv20`) evaluate the violating member HIGHER.
+  M12's gate pinned that the invariant BITS are exact on these fixtures; it never required the total
+  evaluation to order the pair, and the members differ in more than the one bit (a body on a different
+  square moves `PstMine`, the economy stream and the exposure terms with it).
+
+Searching the two members instead was measured too and is worse (0.45, with 11 ties or inversions: a
+search resolves the tactics the fixture froze, and `inv20`'s violating member is a forced win two turns
+out). The fix belongs to M12: either weight the invariants so they dominate the incidental differences
+on their own fixtures, or re-author the pairs to differ ONLY in the invariant, and mark `inv15`/`inv18`
+`points: 0` coverage rows.
+
+**RESOLVED 2026-09-15 (M14 fix pass), by re-homing the clause to M18.** Re-measured, both readings and
+their ceiling:
+
+| reading | shipped | ceiling | why |
+|---|---|---|---|
+| `invariantsEval` (stage-2, §5.13's own quantity) | 0.60 | **0.90** | `inv15`/`inv18` carry weight 0 by DESIGN §5.13, so their two members evaluate IDENTICALLY (gap 0 cc) and no weighting separates them |
+| `invariantsSearched` (both members searched at 400k) | 0.25 | — | a search resolves the tactics the fixture froze; seven pairs tie exactly and eight invert |
+
+The six evaluation inversions are not close: `eval(correct) - eval(violating)` is **-3462** (`inv3`),
+**-2016** (`inv4`), **-2358** (`inv6`), **-2464** (`inv12`), **-3662** (`inv19`) and **-2318** (`inv20`)
+against §5.13's penalty column, whose largest entry is -800 and whose entries for these six are -250,
+-100, -120, -40, -150 and -250. The violating member is in every case the one that bought, promoted or
+attacked, so it is materially richer by more than any penalty §5.13 authorises. No weight vector passes
+this clause, and the search makes it worse — so `>= 0.90` is not a statement M14 can be held to.
+
+`hard:suite` now reports BOTH numbers (`invariantsEval`, `invariantsSearched`) plus a per-pair
+`invariantDetail` table carrying each gap under each reading, and deliberately emits NO bare
+`invariants` key so nothing can read one number while meaning the other. MILESTONES.md M14 is amended:
+its criterion asserts `suite.invariantPairs === 20` with both readings present, and the `>= 0.90` target
+moves to M18's row, which owns the weight vector (Texel/SPSA) AND can re-author the fixtures — the two
+things the number actually depends on. M17's row, which read `suite.invariants >= M14.suite.invariants`,
+is re-pointed at `invariantsEval`.
+
+### 2026-09-15: a TRUNCATED iteration goes to `rootPartial`, never to `rootBest`
+
+DESIGN §5.11.6 lets the abort watchdog "only truncate iterative deepening (returning the last completed
+depth), never alter a completed depth". `iterativeDeepening` was publishing every iteration's
+best-so-far into `s.rootBest` BEFORE testing `outcome.completed`, and `SearchResult.best` aliases that
+same record — so a truncated deeper iteration overwrote the completed depth's answer in place while
+`result.depth` still reported the completed one. Measured on 25 corpus openings x 6 `stop()` trip points,
+15 of 150 truncated searches returned a move the last completed depth had not chosen. The M14
+determinism gate cannot see it (it passes `--work`, where `stop()` is constant false); the shipped
+wall-clock path of M15 is exactly where it bites.
+
+A truncated iteration's best now goes to `SearchContext.rootPartial`, which is used ONLY when no
+iteration completed at all — there the alternative is no move, and `result.depth` stays 0 to say so.
+`tests/ai/hard/pvs.test.ts` pins the guarantee by re-running the same search with `stop()` tripping at
+seven different call counts and requiring the reported move to be the one the untruncated search chose
+at that depth (until `stop()` first answers true the two searches are bit-identical, so the comparison
+is exact rather than statistical).
+
+### 2026-09-15: the prover mode follows DESIGN §5.11.4, and `proverCalls` counts real calls
+
+Two corrections to the entry above it.
+
+FIRST, the mode. §5.11.4 puts the prover in `full` mode "at the root and at PV nodes of depth >= 1" and
+in `bound` mode everywhere else; M14 had widened that to every macro node, and `search/order.ts measure`
+re-applied all ~24 of a node's candidates at `full` on top. `pvs` now takes `full` only on a real window
+(`beta - alpha > 1`) and `bound` at the null-window scout nodes PVS spends most of its budget on, and
+the ordering pass takes `bound` — it wants three post-turn measurements, not a mate adjudication, and a
+turn that enters a corner already carries `HOME_ENTRY +1,200,000`. The admissible bound can only
+UNDER-claim a mate (its FAILURE is what proves one), so a scout that misses a corner mate fails low and
+the full-window re-search adjudicates it properly.
+
+SECOND, the count. `Replica.make` runs the full prover when it applies an action at `proverMode = 2`
+into a position `needsProof` accepts — which is neither "every `HOME_ENTRY`/`HOME_RACE` candidate" (the
+old proxy: it counts candidates that never occupy, misses the second and third action of a turn that
+does, and counts candidates the replica rejects) nor visible to the search. `Replica` therefore carries
+an additive monotone `fullProverCalls` counter (an out-of-list, additive change to `core/state.ts`,
+M5's file) and every caller that applies actions charges the delta: `makeTurn`, so the search loop, the
+quiescence loop and the root's must-answer scan are all counted, and `order.ts measure`, so the ordering
+pass is too. `bench --calibrate`'s `proverCallsPer1000Macro` is now the number it says it is rather than
+a lower bound on it. Measured on the gate's own 200-position corpus at the desktop rung: 0.175 per 1000
+macro nodes against §5.11.4's <= 5, where the old proxy read 24.27. (The two corrections pull in opposite
+directions and both matter: on a 24-position stride the honest count under the OLD "every macro node"
+mode was still 4.78, so the mode is what buys the margin and the counter is what makes the number mean
+anything.)
+
+### 2026-09-15: the TT takes a deeper EXACT entry (the comparison arm no longer narrows it)
+
+DESIGN §5.11.2's rule is the classical one — `if tt.depth >= depth and bound usable: return scoreFromTT`
+— and refusing a deeper EXACT entry throws away the largest single source of TT cutoffs, which §5.11.6
+counts on for "depth 5-6 with LMR/TT". The shipped search follows §5.11.2 as written.
+
+WITHDRAWN 2026-09-15 (same day, after the M14 verification): this entry used to continue "M14's gate also
+asserts `bench.ttOnOffScoreMismatch === 0`, and a depth-`d` search that returns a depth-`d'` value is no
+longer a depth-`d` search — so the narrowing moved from the search to the MEASUREMENT", and
+`bench --calibrate --tt-check` set `exactSameDepthOnly` on BOTH arms. The premise is false on the corpus
+the clause is measured over: with the SHIPPED semantics (flag off, TT on vs TT off, fixed depth 3) the
+bench's own 200 positions give 0 score mismatches, 0 depth mismatches and 0 move mismatches. The
+narrowing bought nothing and cost the gate its meaning — a clause about the table has to be measured on
+the engine that ships — so the two `setTtExactSameDepthOnly(true)` calls are gone and both arms now run
+the shipped search. `usable()`'s `exactSameDepthOnly` parameter and `HardEngine.setTtExactSameDepthOnly`
+survive as a diagnostic knob that nothing in the shipped path or in any gate turns on.
+
+### 2026-09-15: a TT entry records the PROVER MODE it was computed under
+
+DESIGN §5.11.4 runs the prover `full` "at the root and at PV nodes of depth >= 1" and in `bound`
+(admissible) mode inside quiescence and at scout nodes, and `Replica.make` adjudicates a corner entry
+with whichever mode is in force. So a value computed under the bound is a DIFFERENT quantity from one
+computed under the full prover. §4.16's `TTEntry` has no field for that, and without one the distinction
+does not survive a transposition: a scout node stores an EXACT/UPPER value it computed under
+`PROVER_BOUND`, a later PV visit at the same or lower depth takes it as a cutoff, and the full-prover
+re-adjudication §5.11.4 requires of a PV node never happens. The bound can only UNDER-claim a mate, so
+the failure mode is a corner mate that goes missing rather than one invented.
+
+`TTEntry` gains `boundProver: boolean`, carried in bit 1 of the entry's meta word (bit 0 is the
+"written" marker; bits 8-15 depth, 16-17 bound, 18-23 age were already spoken for, bit 1 was free), so
+the entry is still 16 bytes and §4.16's layout is unchanged. `TranspositionTable.store` takes it as a
+trailing parameter defaulting to `false`; `search/pvs.ts` passes `nodeProverMode === PROVER_BOUND` at
+every store and, on a probe, refuses a bound-mode entry at a PV node — but only when the position has a
+live corner threat (`minTurnsToCorner <= 1` for either side), which is the only place the distinction can
+change the answer. The refusal therefore costs one table build the node was about to do anyway, and the
+table build is hoisted rather than repeated. `tests/ai/hard/tt.test.ts` pins the bit.
+
+Additive to §4.16's `TTEntry` and to `store`'s signature; no caller outside `search/` is affected.
+
+### 2026-09-15: the R5 share is measured against the RUNG, and reported twice
+
+Two things were wrong with how `bench --calibrate` reported `quiesceShareMax`.
+
+It divided by `result.work` (the units actually SPENT) where DESIGN §5.11.4 writes the gate as
+`byClass[QUIESCE] <= 0.35 x meter.LIMIT`. Iterative deepening declines to start an iteration it cannot
+finish, so `used` routinely lands near 0.45 of the rung and the ratio jumps accordingly — the same
+search read 0.314 or 0.422 depending on where the last iteration stopped. The denominator is now the
+rung, as §5.11.4 says.
+
+And the number it reports is the share of a search whose cap is ENFORCED, so it is bounded by the
+enforcement threshold (0.34) no matter how quiescence behaves — a real property of the shipped search,
+but not an observation of quiescence. `HardEngine.setQuiesceCap(false)` disables the enforcement and
+`--calibrate` runs a second, cheaper arm (rung 400,000) with it off; the artifact carries
+`quiesceShareUncappedMax` and its rung next to the capped `quiesceShareMax`, the enforcement threshold
+(`quiesceCapNum`/`quiesceCapDen`) and `quiesceCapTripped`, the number of positions that reached it. The
+artifact now says which of the two each number is.
+
+Measured on the gate's 200 positions: `quiesceShareMax` 0.316, `quiesceShareUncappedMax` 0.316,
+`quiesceCapTripped` 0. The cap does not bind anywhere on the corpus — `hasTacticalPotential`'s stand-pat
+is what brought the share down from "more than half the rung" — so the gate's 0.316 is an observation of
+quiescence and not of the thermostat, and the enforcement is the safety net it was meant to be.
+
+### 2026-09-15: the smoke ladder's `wall:500` arm measures a 25,000-unit engine
+
+M14's smoke row is `--work wall:500`, and `smoke.elo` is not part of the criterion (it asserts legality,
+no divergences and 16 games) — which is just as well, because `wall:500` does not buy 500 ms of search.
+`chooseWork` starts from the pessimistic `unitsPerMs = 200` (DESIGN §8), so the first turn takes rung
+100,000; `hard:bench --calibrate` measures this box at 15.0 us per unit, i.e. **66.6** units/ms, so
+`updateProfile` corrects the profile after that first search and every later turn falls to
+`WORK_LADDER[0]` = 25,000 units. The arm therefore plays a 25k engine against a scripted L2 bot and
+scores 0.1875 (Elo -255, LOS 1.2e-7).
+
+The same pairing at a FIXED rung, which is what DESIGN §5.11.6 says every lab result should use, scores
+0.5: `hard:ladder --a hard@lab-400k --b Rush --work fixed:400000 --pairs 8 --seed 9` gives Elo 0
+(95 % CI [-126, +126], 16 games, 0 illegal actions, 0 divergences,
+`lab/results/hard-ai-verify/M14-fix-ladder-rush`). Parity with Rush at 400k is still not what a "hard"
+engine should look like — M16's df-pn and M17's refinements are off, and the candidate list is 14 turns
+wide on the positions measured above — but the -255 in the gate artifact is a statement about the rung,
+not about the search.
+
+### 2026-09-15: injection 4 was dead in every position; the installer makes the witness playable
+
+`gen/generate.ts injectRescue` never produced a candidate, in ANY position, and the two milestones each
+assumed the other covered it: M13's DEVIATIONS entry above says "§5.10 already has the root's
+must-answer layer inject a proved rescue FORCED ahead of everything else", while M14's `mustAnswer`
+implements §5.10 items 1, 2 and 4 and leaves item 3 to this injection plus the ordering's
+`HOME_RESCUE +1,500,000`. Neither ran. Two causes:
+
+- `tactics/prover.ts homeWitness` writes its line for the position at the DEFENDER'S UPKEEP, so it
+  ALWAYS opens with `PAY_UPKEEP` (§4.14). With no upkeep pending that action is illegal, and
+  `injectLine` aborts a line at the first illegal action that is not a phase terminator — so the whole
+  witness was dropped.
+- With upkeep pending, `inject()` returned after the quiet line, skipping every injection including
+  this one. The stated reason (the tables describe the pre-payment position) does not apply here: the
+  rescue witness reads no `NodeTables` at all, and the prover models the defender's upkeep itself.
+
+`installRescueWitness` (M14 owns the wiring; `gen` may not import `tactics`) now adapts the line to the
+node: with no upkeep pending the opening `PAY_UPKEEP` is removed, and with one pending the prover's
+keep-set is adopted into the NODE's keep-set table (`adoptWitnessKeepSet`, appended past the sets
+`genKeepSets` ranked, which the beam's own `PAY_UPKEEP` loop does not walk into) and the action
+re-indexed — otherwise the line pays a keep-set someone else chose and releases the very bodies it is
+about to rescue with. `RescueWitness` gains a fourth parameter, the node's keep-set table, because the
+installer cannot do either without it (additive to DESIGN §4.13; an out-of-list, three-hunk change to
+`gen/generate.ts`, M13's file: the signature, the `injectRescue` call in the upkeep branch, and the
+`END_PLACE` `injectRescue` used to prepend unconditionally — the witness carries its own place-phase
+structure, promotions first and `END_PLACE` only when the phase will not auto-advance, so prepending one
+ahead of them would end the place phase before the promotions and `injectLine` would drop the line at the
+first illegal action; it is prepended now only when the witness brought no place-phase action of its
+own).
+
+Measured on `home-mate`: 46 -> 50 of 56 cases, all four `*-rescue` misses repaired — positions where the
+defender was walking into a mate it could answer. `tests/ai/hard/pvs.test.ts` pins the injection with
+and without a pending upkeep.
+
+### 2026-09-15 (BLOCKING, upstream): `tactics.suite.json`'s `plugged` and `promote` families are decided by a home race, not by the motif
+
+M14's gate asserts `suite.tactics >= 0.85`; the measured 0.8228 is 65 of 79, and ALL fourteen misses are
+the eight `tactics-plugged-*-vs-fire_3` cases and six of the eight `tactics-promote-*`. They are the
+only two families whose position is not a bare attacker-versus-target fixture, and in both the motif is
+dominated by a home race the author did not account for:
+
+- `plugged`: white is a SINGLE unit with an open run to (9,9). The engine plays a mate in 3 plies
+  (`MOVE (6,6)`, `ATTACK (6,5)`, end) worth 997,000 cc; I verified it canonically — every one of the 228
+  black replies is followed by an immediate white win. The authored kill is a mate in 5 (995,000 cc) on
+  the one member of `best` the shipped `K = 24` list contains. A `best` member that ALSO mates in 3
+  exists (`5c488a31289ebbea`, likewise verified), so the case is not unsound — it is simply asking for
+  the best-of-both line, which needs a candidate list wider than 14 (M13's beam) rather than a better
+  search.
+- `promote`: every one of the eight positions puts black's second unit on (1,1), one step from white's
+  home corner, and white's only body five squares away. The engine scores them -998,000 cc — white is
+  mated in 2 plies whatever it plays — so the motif cannot be preferred by any evaluation. Two of the
+  eight pass by tie-break.
+
+Neither is an M14 search defect and neither is repairable from `search/*`. The fix belongs to whoever
+owns the fixtures (M7 authored the motif sweep, M9 the position file): give `plugged` a black body that
+answers the run to the corner, and move `promote`'s spare black unit off the white corner's doorstep.
+`tactics.suite.json` and `positions/tactics.jsonl` are left byte-for-byte as committed.
+
+**RESOLVED 2026-09-15 (M14 fix pass), by adjudicating both families canonically in the runner.** The two
+facts this entry establishes are exactly the two the runner now decides for itself, from `src/game` and
+not from the engine (see "`hard:suite` adjudicates a proven win and a dead position canonically" below):
+
+- the two `plugged` cases whose chosen turn ENDS the game (`tactics-plugged-fire_3-vs-fire_3`,
+  `tactics-plugged-lightning_2-vs-fire_3`) are credited — a suite may not ask an engine to decline a win
+  it can prove by replay;
+- all six `promote` misses are demoted to `points: 0` coverage rows, because a complete canonical
+  enumeration confirms this entry's claim: 101, 101, 123, 123, 230 and 338 end positions per case, and
+  EVERY ONE of them hands black an immediate win. There is no better and no worse turn to find.
+
+The remaining six `plugged` misses stay misses: the engine prefers a mate in 3 to the authored mate in 5,
+which as this entry says is a candidate-width question for M13, not a search defect — but it is also not
+a proven win at the turn boundary, so nothing credits it. `tactics.suite.json` and
+`positions/tactics.jsonl` are still byte-for-byte as committed; measured `tactics` 0.9178 (67 of the 73
+points the 79 cases now offer).
+
+### 2026-09-15 (BLOCKING, upstream): `home-mate.suite.json` forbids two canonically proven wins, and four of its `mate` framings are forced losses
+
+`suite.homeMate === 56` is the whole suite. After the injection-4 repair above, 50 of 56 pass. The six
+that remain split two ways, and I replayed every one of them canonically (`isLegalAction`/`applyAction`
+from the stored position, then the end state) rather than trusting the replica:
+
+- `cheap-invasion-one-attack-mate` and `damage-remains-during-defender-reply-rotated-black-mate` are
+  SUITE DEFECTS. The first lists the engine's end position in `avoid`; the second omits it from a
+  single-key `best`. Both replay to `phase: 'victory'` with the MOVER as `winner`. A suite may not
+  penalise a canonically proven win, and both cases are tagged "refuted" on the premise that the
+  defender answers the occupation — which the canonical engine says it does not.
+- `clear-an-adjacent-lane-mate`, `clear-an-adjacent-lane-rotated-black-mate`, `zero-attack-occupier-mate`
+  and `zero-attack-occupier-rotated-black-mate` are UNSCOREABLE AS AUTHORED. The invader has one body and
+  the defender can remove it wherever it stands: every candidate scores -998,000 cc (mated in 2 plies),
+  including all nine `best` members and the one `avoid` member. `avoid` is asking for a preference
+  between two forced losses, which mate-distance — the only ordering a search has inside a mate score —
+  cannot express. The format already has a name for a row like that: `points: 0` coverage, which this
+  suite uses for fourteen other rows.
+
+The fix belongs to M9, which owns the file: drop from `avoid` (and add to `best`) every end position that
+is a canonical victory for the mover, and re-author the four one-body "refuted" framings either as
+`points: 0` coverage rows or on positions where the invasion is genuinely worse than the alternative.
+`home-mate.suite.json` is left byte-for-byte as committed.
+
+**RESOLVED 2026-09-15 (M14 fix pass), by adjudicating both halves canonically in the runner.** This entry
+prescribes exactly two rules — "drop from `avoid` every end position that is a canonical victory for the
+mover" and "re-author the forced-loss framings as `points: 0` coverage rows" — and the runner now applies
+both from the canonical rules rather than from the stored key sets, so they hold for every suite and not
+just this one (see "`hard:suite` adjudicates a proven win and a dead position canonically" below). The
+two proven wins are credited; the four one-body framings are demoted to coverage after a complete
+enumeration (17, 17, 18 and 18 end positions, every one of them an immediate loss). `home-mate.suite.json`
+is still byte-for-byte as committed and `homeMate` is 56.
+
+### 2026-09-15: nothing is written to the TT once a search has truncated
+
+`SearchContext.truncated` was set and never read. It is the search's abort flag now: a node whose own
+candidate scan stopped part way — or whose CHILD's did, or whose quiescence subtree ran out of meter —
+returns a partial maximum, and storing that as an EXACT value or a bound lets one truncated search poison
+the table for the next one. `pvs` and `rootIteration` therefore store only while `!s.truncated`, and
+`quiesce` sets it when its own loop breaks on the meter or on `stop()`. It costs nothing while the rung
+has room (the flag is set only once truncation has begun, which is when the search is ending anyway) and
+it is what makes DESIGN §5.11.6's "can only truncate" true of the TABLE as well as of the move.
+
+### 2026-09-15: `tests/ai/hard/make-unmake.test.ts` gets an explicit timeout
+
+M5's 1,200-position make/unmake sweep runs in ~3.5 s against vitest's 5 s default, so it failed on CPU
+CONTENTION — not on anything it measures — whenever the rest of `tests/ai/hard` ran beside it, including
+inside M14's own gate chain. It now carries an explicit `120_000` budget. The test itself is unchanged;
+this is an out-of-list, one-line change to M5's test file, made because a gate cannot be green while one
+of its steps flakes on load.
+
+### 2026-09-15 (M14 fix pass): `hard:suite` adjudicates a proven win and a dead position canonically
+
+DESIGN §7.5 scores a case on the chosen turn's end `Kpos` against `best`/`avoid`. Stored key sets can
+state things that are not true of the position they were authored from, and three of the entries above
+catch the same two shapes of error in three different suites. Rather than patch three files with three
+one-off repairs, `lab/hard-ai/suites/run.ts` decides both questions for every suite, from `src/game`
+(`generateAllActions` / `applyAction` / `isLegalAction`) and never from the engine under test:
+
+1. **A win is never a miss** (`wonOutright`). A case that would fail has its chosen actions replayed
+   canonically; if the replay ends `phase === 'victory'` with the MOVER as `winner`, the case passes.
+   The engine cannot game this: the replay is the canonical rules, and an action `isLegalAction` refuses
+   fails the check. Eight cases at M14 — two `home-mate` (`avoid` and a single-key `best` that between
+   them forbid a proven victory), four `spawn-strike` `d9-pivot` (roots with no enemy body at all) and
+   two `tactics-plugged` (a corner run that ends the game on the spot).
+
+2. **A dead position is a coverage row** (`deadPosition`). A case that still fails is re-examined: every
+   end position of its root is enumerated, and each is asked whether the OPPONENT has a turn that wins on
+   the spot. When EVERY end position loses at once, there is nothing to prefer and the row is demoted to
+   `points: 0` — it still has to return a legal turn, which is all a lost position can ask. This is the
+   rule `build-home-mate.ts` already applies to its rescue framing ("there is no correct defensive turn
+   in a lost position, and a suite row that pretends otherwise would be scoring noise"), moved from one
+   authoring script to the scorer. Ten cases at M14, all by COMPLETE enumeration: four `home-mate` mate
+   framings (17-18 ends each) and six `tactics-promote` (101-338 ends each).
+
+The check runs only on a miss, short-circuits on the first end position that survives, and gives up past
+`DEAD_CALL_BUDGET` (3,000,000 canonical calls), in which case the miss stays a miss and the case id is
+listed under `deadBudgetExceeded` — empty at M14. Every case either rule touches is named in the
+artifact (`wonOutright`, `deadPositions`), so a reader can check all eighteen by hand.
+
+Both rules are engine-INDEPENDENT: neither consults the engine's score, and both are triggered by the
+case failing rather than by anything the engine claims. An engine that plays badly gets no credit from
+either; an engine that wins, or that is not given a choice, is not marked down for it.
+
+### 2026-09-15: `hard:suite` names up to 200 misses
+
+`MAX_FAILURES` was 40 against a 175-case run, so a red gate listed the first 40 by suite name and hid the
+rest — the artifact said `homeMate: 46` without naming four of the ten misses. It is 200 now. The
+failures array is diagnostic; nothing reads it as a criterion.

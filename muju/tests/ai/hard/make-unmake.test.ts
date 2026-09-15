@@ -93,7 +93,11 @@ describe('make / unmake', () => {
     for (const kind of [AKind.MOVE, AKind.ATTACK, AKind.BUY, AKind.PROMOTE, AKind.END_PLACE, AKind.END_ACTION, AKind.PAY_UPKEEP]) {
       expect(kinds[kind]).toBeGreaterThan(0);
     }
-  });
+    // 1,200 positions x every legal action is ~3.5 s alone and the vitest
+    // default is 5 s, so this test failed on CPU CONTENTION rather than on
+    // anything it measured whenever the rest of `tests/ai/hard` ran beside it.
+    // An explicit budget, not a faster test. (Touched by M14; see DEVIATIONS.)
+  }, 120_000);
 
   it('a whole turn made and unmade action by action restores the root exactly', () => {
     const rng = seededRandom(0x5455524e);

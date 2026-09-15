@@ -1,7 +1,29 @@
 /**
  * `npm run hard:bench -- --eval --positions <n> [--out <path>]` (DESIGN §5.12,
- * MILESTONES.md M12). Throughput and correctness measurements for the
- * evaluator; M14 extends the same runner with `--calibrate` and `--tt-check`.
+ * MILESTONES.md M12) and `npm run hard:bench -- --calibrate [--tt-check]
+ * --positions <n> --depth <d> --rung <units> [--shards <n>] [--out <path>]`
+ * (DESIGN §5.11.6, MILESTONES.md M14). The two modes share the corpus loader
+ * and the artifact shape and nothing else.
+ *
+ * `--calibrate` answers the three questions M14's gate asks of the SEARCH:
+ *
+ *   1. WORK CALIBRATION (DESIGN §8: `WORK_COST` is "≈ µs; calibrated at M14").
+ *      Each work class is micro-benchmarked on this box and the measured µs is
+ *      reported next to the shipped cost, together with the ratio `usPerUnit`
+ *      that converts a rung into wall-clock here. The costs themselves are NOT
+ *      rewritten from the measurement — they are the budget's shape, and DESIGN
+ *      §8 fixes them — but a box where the ratio has moved is visible in the
+ *      artifact rather than invisible in the depth numbers.
+ *   2. DEPTH PER RUNG. Every position is searched at `--rung` and
+ *      `depthGe4Share` is the share that completed depth 4 or better. A position
+ *      the must-answer layer PROVES (`source !== 'search'`: a home race, a
+ *      mate-in-1, a book hit) counts as satisfied and is reported separately as
+ *      `provenPositions`: it was answered, not searched, and has no depth to
+ *      measure. `quiesceShareMax` is the R5 cap's measurement and
+ *      `proverCallsPer1000Macro` the full-prover rate.
+ *   3. TT TRANSPARENCY (`--tt-check`). The same fixed-depth search with the
+ *      transposition table on and off must return the same root score on every
+ *      position; `ttOnOffScoreMismatch` counts the disagreements.
  *
  * `--eval` runs five measurements and writes them to `--out` as one flat JSON
  * object the M12 gate row reads:
@@ -35,7 +57,7 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawn } from 'node:child_process';
 import type { GameState } from '../../../src/game/types';
 import { Replica, allocState, copyState, newUndo } from '../../../src/ai/hard/core/state';
 import { Scratch } from '../../../src/ai/hard/core/bits';
@@ -47,6 +69,13 @@ import { F, FEATURE_COUNT, FEATURE_NAMES } from '../../../src/ai/hard/eval/featu
 import { DEFAULT_WEIGHTS } from '../../../src/ai/hard/eval/weights';
 import { INVARIANT_COUNT, invariantBits } from '../../../src/ai/hard/eval/invariants';
 import { mirror180, readPositions, type StoredPosition } from '../positions/corpus';
+import { setCombatHandicap } from '../../../src/game/combat';
+import { setElementGraph } from '../../../src/game/elements';
+import { setUpkeepVariant } from '../../../src/game/upkeep';
+import { HardEngine } from '../../../src/ai/hard/engine';
+import { WORK_COST } from '../../../src/ai/hard/search/time';
+import { QUIESCE_SHARE_DEN, QUIESCE_SHARE_NUM } from '../../../src/ai/hard/search/quiesce';
+import type { HardConfig } from '../../../src/ai/hard/config';
 
 const REPO_ROOT = path.resolve(import.meta.dirname, '../../..');
 const POSITIONS_DIR = path.resolve(import.meta.dirname, '../positions');
@@ -444,4 +473,321 @@ function gitRevision(): string | null {
   }
 }
 
-main();
+// --- M14: `--calibrate` -------------------------------------------------------
+
+interface CalibrateArgs {
+  positions: number;
+  depth: number;
+  rung: number;
+  shards: number;
+  shardIndex: number;
+  shardCount: number;
+  ttCheck: boolean;
+  out: string;
+}
+
+function parseCalibrateArgs(argv: string[]): CalibrateArgs {
+  const args: CalibrateArgs = {
+    positions: 200,
+    depth: 3,
+    rung: 3_200_000,
+    shards: 1,
+    shardIndex: -1,
+    shardCount: 1,
+    ttCheck: false,
+    out: DEFAULT_OUT,
+  };
+  for (let i = 0; i < argv.length; i++) {
+    const a = argv[i];
+    if (a === '--calibrate') continue;
+    else if (a === '--tt-check') args.ttCheck = true;
+    else if (a === '--positions') args.positions = Number(argv[++i]);
+    else if (a === '--depth') args.depth = Number(argv[++i]);
+    else if (a === '--rung') args.rung = Number(argv[++i]);
+    else if (a === '--shards') args.shards = Number(argv[++i]);
+    else if (a === '--shard-index') args.shardIndex = Number(argv[++i]);
+    else if (a === '--shard-count') args.shardCount = Number(argv[++i]);
+    else if (a === '--out') args.out = path.resolve(REPO_ROOT, argv[++i]);
+    else throw new Error(`bench --calibrate: unrecognised argument "${a}"`);
+  }
+  return args;
+}
+
+interface CalibratePartial {
+  positions: number;
+  proven: number;
+  depthGe4: number;
+  depthSum: number;
+  quiesceShareMax: number;
+  quiesceShareUncappedMax: number;
+  quiesceCapTripped: number;
+  macroNodes: number;
+  proverCalls: number;
+  workSum: number;
+  elapsedMsSum: number;
+  ttChecked: number;
+  ttMismatch: number;
+  ttMismatchIds: string[];
+  shallow: string[];
+}
+
+function emptyCalibratePartial(): CalibratePartial {
+  return {
+    positions: 0, proven: 0, depthGe4: 0, depthSum: 0, quiesceShareMax: 0,
+    quiesceShareUncappedMax: 0, quiesceCapTripped: 0,
+    macroNodes: 0, proverCalls: 0, workSum: 0, elapsedMsSum: 0,
+    ttChecked: 0, ttMismatch: 0, ttMismatchIds: [], shallow: [],
+  };
+}
+
+/** Measured µs per unit of each `WorkClass`, on this box. */
+function measureWorkCost(ev: Evaluator, sample: readonly Packed[]): Record<string, number> {
+  const sc = new Scratch(2, TABLE_SCRATCH_BB, TABLE_SCRATCH_I8, 2);
+  const tables = allocTables();
+  const stage1Us = time(3, ev, sample, p => { ev.stage0(p, WHITE); ev.stage1(p, WHITE, sc, 0); });
+  const fullUs = time(3, ev, sample, p => { ev.full(p, WHITE, sc, 0); });
+  const tablesUs = time(3, ev, sample, p => {
+    tables.keyLo = -1 >>> 0;
+    tables.keyHi = -1 >>> 0;
+    buildTables(p, sc, 0, 2, tables);
+  });
+  return {
+    EVAL1: round3(stage1Us),
+    EVAL2: round3(fullUs - stage1Us),
+    KILLTABLE: round3(tablesUs),
+  };
+}
+
+async function calibrateMain(argv: string[]): Promise<void> {
+  const args = parseCalibrateArgs(argv);
+  const corpus = loadCorpus();
+  const bench = corpus.slice(0, Math.min(args.positions, corpus.length));
+
+  if (args.shardIndex >= 0) {
+    const mine = bench.filter((_, i) => i % args.shardCount === args.shardIndex);
+    const partial = await runCalibrateShard(args, mine);
+    fs.mkdirSync(path.dirname(args.out), { recursive: true });
+    fs.writeFileSync(args.out, JSON.stringify(partial) + '\n');
+    return;
+  }
+
+  const shards = Math.max(1, Math.min(args.shards, bench.length));
+  let merged: CalibratePartial;
+  if (shards <= 1) {
+    merged = await runCalibrateShard(args, bench);
+  } else {
+    const dir = path.join(path.dirname(args.out), `.bench-shards-${process.pid}`);
+    fs.mkdirSync(dir, { recursive: true });
+    const runs: Promise<CalibratePartial>[] = [];
+    for (let i = 0; i < shards; i++) runs.push(spawnCalibrateShard(args, i, shards, path.join(dir, `shard-${i}.json`)));
+    const parts = await Promise.all(runs);
+    merged = emptyCalibratePartial();
+    for (const part of parts) {
+      merged.positions += part.positions;
+      merged.proven += part.proven;
+      merged.depthGe4 += part.depthGe4;
+      merged.depthSum += part.depthSum;
+      merged.macroNodes += part.macroNodes;
+      merged.proverCalls += part.proverCalls;
+      merged.workSum += part.workSum;
+      merged.elapsedMsSum += part.elapsedMsSum;
+      merged.ttChecked += part.ttChecked;
+      merged.ttMismatch += part.ttMismatch;
+      merged.quiesceCapTripped += part.quiesceCapTripped;
+      if (part.quiesceShareMax > merged.quiesceShareMax) merged.quiesceShareMax = part.quiesceShareMax;
+      if (part.quiesceShareUncappedMax > merged.quiesceShareUncappedMax) {
+        merged.quiesceShareUncappedMax = part.quiesceShareUncappedMax;
+      }
+      for (const id of part.ttMismatchIds) if (merged.ttMismatchIds.length < 20) merged.ttMismatchIds.push(id);
+      for (const id of part.shallow) if (merged.shallow.length < 40) merged.shallow.push(id);
+    }
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+
+  const rep = new Replica();
+  const ev = new Evaluator(rep, DEFAULT_WEIGHTS);
+  const sample = packAll(corpus.slice(0, 64), rep);
+  const measuredUs = measureWorkCost(ev, sample);
+  const usPerUnit = merged.workSum === 0 ? 0 : (merged.elapsedMsSum * 1000) / merged.workSum;
+
+  const metrics = {
+    mode: 'calibrate',
+    positions: merged.positions,
+    provenPositions: merged.proven,
+    rung: args.rung,
+    depth: args.depth,
+    shards,
+    depthGe4Share: merged.positions === 0 ? 0 : (merged.depthGe4 + merged.proven) / merged.positions,
+    meanDepth: merged.positions === merged.proven ? 0 : merged.depthSum / Math.max(1, merged.positions - merged.proven),
+    quiesceShareMax: round3(merged.quiesceShareMax),
+    quiesceShareUncappedMax: round3(merged.quiesceShareUncappedMax),
+    quiesceUncappedRung: UNCAPPED_RUNG,
+    quiesceCapTripped: merged.quiesceCapTripped,
+    quiesceCapNum: QUIESCE_SHARE_NUM,
+    quiesceCapDen: QUIESCE_SHARE_DEN,
+    proverCallsPer1000Macro: merged.macroNodes === 0 ? 0 : (merged.proverCalls * 1000) / merged.macroNodes,
+    ttOnOffScoreMismatch: merged.ttMismatch,
+    ttChecked: merged.ttChecked,
+    ttMismatchIds: merged.ttMismatchIds,
+    shallowPositions: merged.shallow,
+    nodesPerSec: merged.elapsedMsSum === 0 ? 0 : (merged.macroNodes * 1000) / merged.elapsedMsSum,
+    unitsPerMs: merged.elapsedMsSum === 0 ? 0 : merged.workSum / merged.elapsedMsSum,
+    usPerUnit: round3(usPerUnit),
+    workCost: Array.from(WORK_COST),
+    measuredUs,
+    git: gitRevision(),
+    at: new Date().toISOString(),
+  };
+  fs.mkdirSync(path.dirname(args.out), { recursive: true });
+  fs.writeFileSync(args.out, JSON.stringify(metrics, null, 2) + '\n');
+  console.log(`hard:bench --calibrate: wrote ${args.out}`);
+  console.log(JSON.stringify({
+    depthGe4Share: metrics.depthGe4Share,
+    quiesceShareMax: metrics.quiesceShareMax,
+    quiesceShareUncappedMax: metrics.quiesceShareUncappedMax,
+    quiesceCapTripped: metrics.quiesceCapTripped,
+    proverCallsPer1000Macro: metrics.proverCallsPer1000Macro,
+    ttOnOffScoreMismatch: metrics.ttOnOffScoreMismatch,
+    usPerUnit: metrics.usPerUnit,
+  }));
+}
+
+function spawnCalibrateShard(args: CalibrateArgs, index: number, count: number, tmp: string): Promise<CalibratePartial> {
+  const cliArgs = [
+    '--import', 'tsx', SELF_PATH, '--calibrate',
+    ...(args.ttCheck ? ['--tt-check'] : []),
+    '--positions', String(args.positions),
+    '--depth', String(args.depth),
+    '--rung', String(args.rung),
+    '--shard-index', String(index),
+    '--shard-count', String(count),
+    '--out', tmp,
+  ];
+  return new Promise((resolve, reject) => {
+    const child = spawn(process.execPath, cliArgs, { cwd: REPO_ROOT, stdio: ['ignore', 'pipe', 'pipe'] });
+    let stderr = '';
+    child.stderr.on('data', d => { stderr += String(d); });
+    child.on('error', reject);
+    child.on('exit', code => {
+      if (code !== 0) {
+        reject(new Error(`hard:bench shard ${index}/${count} exited ${code}:\n${stderr.slice(-4000)}`));
+        return;
+      }
+      try {
+        resolve(JSON.parse(fs.readFileSync(tmp, 'utf8')) as CalibratePartial);
+      } catch (err) {
+        reject(new Error(`hard:bench shard ${index}/${count}: unreadable partial ${tmp}: ${String(err)}`));
+      }
+    });
+  });
+}
+
+async function runCalibrateShard(args: CalibrateArgs, items: readonly StoredPosition[]): Promise<CalibratePartial> {
+  const partial = emptyCalibratePartial();
+  for (const sp of items) {
+    setElementGraph(sp.rules.elementGraph);
+    setUpkeepVariant(sp.rules.upkeep);
+    setCombatHandicap('white', sp.rules.combatHandicap.white);
+    setCombatHandicap('black', sp.rules.combatHandicap.black);
+
+    const engine = new HardEngine();
+    const started = Date.now();
+    const result = await engine.searchTurn(sp.state, { work: args.rung });
+    const elapsedMs = Date.now() - started;
+    partial.positions++;
+    partial.workSum += result.work;
+    partial.elapsedMsSum += elapsedMs;
+    partial.macroNodes += result.stats.nodes;
+    partial.proverCalls += result.stats.proverCalls;
+    if (result.source !== 'search') {
+      partial.proven++;
+    } else {
+      partial.depthSum += result.depth;
+      if (result.depth >= 4) partial.depthGe4++;
+      else if (partial.shallow.length < 40) partial.shallow.push(`${sp.id}:d${result.depth}`);
+      // DESIGN §5.11.4 writes the R5 gate as `byClass[QUIESCE] <= 0.35 x
+      // meter.LIMIT`, so the rung is the denominator. Dividing by the units
+      // actually SPENT (which is below the rung whenever iterative deepening
+      // declines to start an iteration it cannot finish) measures a different,
+      // much jumpier quantity.
+      const share = result.stats.quiesceWork / args.rung;
+      if (share > partial.quiesceShareMax) partial.quiesceShareMax = share;
+      if (share * QUIESCE_SHARE_DEN >= QUIESCE_SHARE_NUM) partial.quiesceCapTripped++;
+    }
+
+    // THE UNCAPPED ARM. `search/quiesce.ts` ENFORCES the R5 share, so the
+    // number above is bounded by the enforcement threshold and says nothing
+    // about how much quiescence WANTED. This arm switches the enforcement off
+    // and measures that, at a cheaper rung so the honest number costs a
+    // fraction of the run rather than doubling it. Reported next to the capped
+    // one so the artifact says which of the two each number is.
+    {
+      const uncapped = new HardEngine();
+      uncapped.setQuiesceCap(false);
+      const r = await uncapped.searchTurn(sp.state, { work: UNCAPPED_RUNG });
+      if (r.source === 'search') {
+        const share = r.stats.quiesceWork / UNCAPPED_RUNG;
+        if (share > partial.quiesceShareUncappedMax) partial.quiesceShareUncappedMax = share;
+      }
+    }
+
+    if (args.ttCheck) {
+      // BOTH ARMS RUN THE SHIPPED SEARCH. The clause MILESTONES.md M14 writes
+      // is "TT on vs off, fixed depth 3, same score on 200 positions", and the
+      // only thing that makes it worth measuring is that the arm on the left is
+      // the engine that ships. An earlier revision narrowed EXACT hits to
+      // `e.depth === depth` on both arms on the theory that a deeper EXACT
+      // entry breaks the identity; measured over this corpus it does not
+      // (`shippedScoreMismatch 0`, `shippedDepthMismatch 0` on all 200), so the
+      // narrowing bought nothing and cost the gate its meaning. It is gone.
+      const withTT = new HardEngine(ttCheckConfig(args.depth));
+      const withoutTT = new HardEngine(ttCheckConfig(args.depth));
+      withoutTT.setUseTT(false);
+      const a = await withTT.searchTurn(sp.state, { work: TT_CHECK_WORK });
+      const b = await withoutTT.searchTurn(sp.state, { work: TT_CHECK_WORK });
+      partial.ttChecked++;
+      if (a.scoreCc !== b.scoreCc || a.depth !== b.depth) {
+        partial.ttMismatch++;
+        if (partial.ttMismatchIds.length < 20) {
+          partial.ttMismatchIds.push(`${sp.id}: tt=${a.scoreCc}@d${a.depth} noTt=${b.scoreCc}@d${b.depth}`);
+        }
+      }
+    }
+  }
+  return partial;
+}
+
+/**
+ * The TT comparison's search shape.
+ *
+ * `--depth` and not the meter must decide when the search stops, or the two
+ * arms could differ by TRUNCATION rather than by the table — so the budget is
+ * far above what a depth-`d` search needs. That in turn switches off the R5 cap
+ * (0.34 of an enormous limit is not a limit), and an uncapped quiescence at
+ * every depth-0 leaf is what the measurement then spends its time on. Since
+ * quiescence never touches the macro transposition table, it has nothing to
+ * contribute to a test of that table: `quiesce.maxPly = 0` turns every leaf
+ * into a stand-pat on BOTH arms, and the comparison is exactly the macro search
+ * with the table on and off.
+ */
+function ttCheckConfig(depth: number): Partial<HardConfig> {
+  return { maxDepth: depth, quiesce: { maxPly: 0, deltaMarginCc: 300, maxCandidates: 8 } };
+}
+
+const TT_CHECK_WORK = 40_000_000;
+
+/** The uncapped quiescence arm's rung (see `runCalibrateShard`). A share is a
+ * ratio, so it does not need the full desktop rung to be representative, and an
+ * eighth of it keeps the honest number cheap. */
+const UNCAPPED_RUNG = 400_000;
+const SELF_PATH = path.resolve(import.meta.dirname, 'run.ts');
+
+const ARGV = process.argv.slice(2);
+if (ARGV.includes('--calibrate')) {
+  calibrateMain(ARGV).catch(err => {
+    console.error(`hard:bench: ${err instanceof Error ? (err.stack ?? err.message) : String(err)}`);
+    process.exitCode = 1;
+  });
+} else {
+  main();
+}

@@ -4,10 +4,11 @@
  * M2: `aiv2-hard`, `aiv2-medium`, `aiv2-easy`, and their `-fast` throughput
  * variants, plus every scripted bot from `lab/harness/bots/index.ts`.
  * `aiv2-hard-turn`/`aiv2-medium-turn`/`aiv2-easy-turn` (M3's whole-turn path,
- * below) are registered here; `hard@<label>` (M14's replica search) is still
- * a reserved name that throws a clear "not registered until M14" error rather
- * than an opaque lookup failure — that milestone extends `resolveEngine`
- * additively.
+ * below) are registered here, and M14 adds `hard@<label>` — the replica search,
+ * adapted through `lab/hard-ai/bots/hard.ts`. `hard@*` is a WHOLE-TURN shape
+ * like `aiv2-*-turn`, so `wall:<ms>` funds one search per turn and `fixed:<n>`
+ * is its work rung (the only mode §7.7's axis rule allows between `hard@*`
+ * entries, and the one `hard:determinism` relies on).
  *
  * WorkSpec → engine budget (aiv2-*): `fixed:<units>` sets `AIEngineConfig.fixedWork`
  * to `units`, which forces `SearchBudget`'s deadline to `Infinity` and its
@@ -47,6 +48,7 @@ import type { GameState, PlayerId } from '../../../src/game/types';
 import type { AIAction, AIDifficulty, AIResult } from '../../../src/ai/types';
 import type { Bot, EngineBot } from '../../harness/types';
 import { createBot as createScriptedRegistryBot, botNames } from '../../harness/bots/index';
+import { createHardBot, hardConfigFor, hardConfigHash } from '../bots/hard';
 
 export type WorkSpec = { mode: 'fixed'; units: number } | { mode: 'wall'; ms: number };
 
@@ -249,6 +251,22 @@ function aiv2TurnEngine(difficulty: AIDifficulty): LadderEngine {
   };
 }
 
+/** `hard@<label>` (DESIGN §7.7). The label resolves to a `HardConfig` patch
+ * through `lab/hard-ai/bots/hard.ts`, which also owns the whole-turn plan cache
+ * and the `isLegalAction` revalidation. */
+function hardEngine(label: string): LadderEngine {
+  hardConfigFor(label); // fail fast on an unknown label, with the list of known ones
+  return {
+    name: `hard@${label}`,
+    createBot(work: WorkSpec): Bot {
+      return createHardBot({ work, profile: label, name: `hard@${label}` });
+    },
+    configHash(work: WorkSpec): string {
+      return hardConfigHash(label, work);
+    },
+  };
+}
+
 const AIV2_REGISTRY: LadderEngine[] = (['easy', 'medium', 'hard'] as AIDifficulty[]).flatMap(d => [
   aiv2Engine(d, false),
   aiv2Engine(d, true),
@@ -269,7 +287,7 @@ export function resolveEngine(name: string): LadderEngine {
     return aiv2TurnEngine(aiv2TurnMatch[1] as AIDifficulty);
   }
   if (HARD_NAME_RE.test(name)) {
-    throw new Error(`hard:ladder: engine "${name}" is not registered until M14 (src/ai/hard/engine.ts — replica search)`);
+    return hardEngine(name.slice('hard@'.length));
   }
   const aiv2Match = AIV2_NAME_RE.exec(name);
   if (aiv2Match) {
