@@ -58,15 +58,41 @@ export const GATES: Gate[] = [
       metrics.openings === 797,
     timeoutMs: 3 * MIN,
   },
-  notImplemented(
-    'M2',
-    ['M1'],
-    'npx vitest run tests/lab/hard-ladder.test.ts tests/lab/harness.test.ts && ' +
+  {
+    id: 'M2',
+    dependsOn: ['M1'],
+    description: 'Ladder: sharded runner, pairing, SPRT, Elo, harness v3, determinism tool',
+    command:
+      'npx vitest run tests/lab/hard-ladder.test.ts tests/lab/harness.test.ts && ' +
       'npm run hard:ladder -- --a aiv2-medium-fast --b Rush --work fixed:1200 --handicaps 0 --pairs 24 --seed 1 --shards 12 --out lab/results/hard-ai-verify/M2-calib && ' +
       'npm run hard:ladder -- --a aiv2-medium-fast --b aiv2-medium-fast --work fixed:1200 --handicaps 0 --pairs 12 --seed 2 --shards 12 --sprt 0,100,0.05,0.05 --out lab/results/hard-ai-verify/M2-self && ' +
       'npm run hard:determinism -- --engine aiv2-medium-fast --work 5000 --positions 10 --out lab/results/hard-ai-verify/M2.json',
-    9 * MIN,
-  ),
+    args: [],
+    // `hard:determinism`'s `--out` is lab/results/hard-ai-verify/M2.json; it
+    // auto-merges the sibling M2-calib/M2-self run directories' metrics.json
+    // under `calib`/`self` (see determinism.ts's `siblingMerges`), plus its
+    // own fields nested under `determinism` — DESIGN §7.7: "artifact merges
+    // the three outputs".
+    artifact: 'lab/results/hard-ai-verify/M2.json',
+    criterion: metrics => {
+      const calib = metrics.calib as Record<string, unknown> | undefined;
+      const self = metrics.self as Record<string, unknown> | undefined;
+      const determinism = metrics.determinism as Record<string, unknown> | undefined;
+      return (
+        metrics.vitestFailures === 0 &&
+        calib?.games === 48 &&
+        calib?.adjudicationRate === 0 &&
+        calib?.illegalActions === 0 &&
+        calib?.bothSeatsPlayed === true &&
+        self?.games === 24 &&
+        self?.decision !== 'H1' &&
+        typeof self?.elo === 'number' &&
+        Math.abs(self.elo as number) < 100 &&
+        determinism?.identical === true
+      );
+    },
+    timeoutMs: 9 * MIN,
+  },
   notImplemented(
     'M3',
     ['M2'],

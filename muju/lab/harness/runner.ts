@@ -110,7 +110,7 @@ async function playGameInner(args: PlayGameArgs, options: MatchOptions): Promise
   const startedAt = new Date().toISOString();
   const t0 = Date.now();
 
-  let state = createInitialGameState(options.resourceLayout);
+  let state = createInitialGameState(options.resourceLayout, options.actionsPerTurn, options.blackCrystalHandicap);
   state.victoryRule = options.victoryRule;
   state.inactivityRule = options.inactivityRule;
   const rngs: Record<PlayerId, () => number> = {
@@ -342,9 +342,10 @@ async function playGameInner(args: PlayGameArgs, options: MatchOptions): Promise
     stats[p].finalMaterial = onBoardMaterial(state, p);
   }
 
+  const finalWinType = winType ?? 'draw';
   const record: GameRecord = {
     incomeCurve,round90Exhaustion,purchases,promotionEvents,placedAndAttackedKills,
-    schema: 'muju-lab-game-v2',
+    schema: 'muju-lab-game-v3',
     maxInactivityPlies,inactivityDraw:state.victoryReason==='inactivity',upkeepElimination:state.victoryReason==='upkeep-elimination',
     engineHash: args.engineHash,
     runId: args.runId,
@@ -354,7 +355,7 @@ async function playGameInner(args: PlayGameArgs, options: MatchOptions): Promise
     durationMs: Date.now() - t0,
     options,
     winner,
-    winType: winType ?? 'draw',
+    winType: finalWinType,
     turns: state.turn.turnNumber,
     plies: ply,
     firstBlood,
@@ -362,6 +363,9 @@ async function playGameInner(args: PlayGameArgs, options: MatchOptions): Promise
     materialCurve,
     invariantViolation,
     anomalies,
+    adjudicated: finalWinType === 'adjudication',
+    handicap: options.blackCrystalHandicap ?? 0,
+    ...(finalWinType === 'adjudication' ? { adjudicationFormula: 'material+bank' as const } : {}),
   };
 
   return {

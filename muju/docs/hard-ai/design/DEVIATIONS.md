@@ -129,6 +129,64 @@ into `metrics` afterward. This keeps the gate table's `command` field exactly
 the string MILESTONES.md specifies while still letting the criterion read
 `depsViolations`/`vitestFailures` alongside the perft fields.
 
+## M2
+
+### 2026-09-14: the §7.7 "axis rule" is not enforced as a runtime rejection
+
+DESIGN §7.7 states: "Axis rule: `wall:` for any pairing involving `aiv2-*` or
+a scripted bot; `fixed:` only between `hard@*` entries." Taken literally as a
+validation rule, `hard:ladder` would have to reject the M2 gate row's own
+calibration/self-play commands, which pair `aiv2-medium-fast` against `Rush`
+and against itself using `--work fixed:1200`. Read structurally instead
+(`src/ai/runtime.ts`: "Search work is deterministic when maxWork is used
+without a deadline"), `fixed:` is the mode that makes a decision
+bit-reproducible (no wall-clock deadline anywhere in the decision pipeline,
+only a pure work-unit counter) — which is exactly what M2's calibration rows
+need (infra correctness: pairing/legality/adjudication mechanics, not a
+strength claim) and what `hard:determinism` (§7.4) requires to get identical
+results across processes. `wall:` is the mode for a real strength SPRT
+against an engine of a different shape, where a raw work-unit count would not
+be comparable. `lab/hard-ai/ladder/engines.ts` implements `fixed:`/`wall:`
+exactly this way (`fixedWork` config vs. `mctsTimeLimit` + real decision-ms)
+for every `aiv2-*` entry, and `hard:ladder`/`hard:determinism` do not reject
+any `--a`/`--b`/`--work` combination on the axis-rule text — the rule is
+documentation of which mode is meaningful for which purpose, not a runtime
+gate. M14's `hard@*` engines, once real, are expected to honor the same
+`fixed:`/`wall:` semantics the ladder already defines.
+
+### 2026-09-14: M2's gate artifact is assembled by sibling-directory convention, not by `hard:verify`
+
+The M2 gate row chains three `--out`-writing commands to three different
+paths (`M2-calib/`, `M2-self/` — directories; `M2.json` — a file) and DESIGN
+§7.7's note "artifact merges the three outputs" doesn't say which tool does
+the merging. `lab/hard-ai/verify/run.ts` (M1, not owned by this milestone)
+only reads one `gate.artifact` path per gate. Rather than touch that file,
+`lab/hard-ai/verify/determinism.ts`'s `--out` writer generically scans its
+own output directory for sibling directories named `<stem>-<label>` (matching
+its own `--out`'s basename without `.json`) containing a `metrics.json`, and
+folds each one in under `{[label]: ...}` — plus its own fields nested under
+`determinism`, so gates that use `hard:determinism` standalone can still read
+its fields at the top level. Because the M2 gate row's three `--out` values
+are literally `.../M2-calib`, `.../M2-self`, `.../M2.json`, this generic
+convention happens to produce exactly the `{calib, self, determinism}` shape
+`gates.ts`'s M2 criterion reads, with no gate-specific code in `determinism.ts`
+and no change to `verify/run.ts`. `lab/hard-ai/ladder/run.ts` writes a
+`metrics.json` inside every `--out` directory specifically so this convention
+has something to find.
+
+### 2026-09-14: `hard:ladder`'s `--work` axis is engine-family-specific, not a literal node count everywhere
+
+`fixed:<units>` is documented in `engines.ts` as "sets `AIEngineConfig.fixedWork`
+to `units`" for `aiv2-*` names — there is no cross-engine-family "work unit"
+yet (that only becomes meaningful once `hard@*`'s replica search, with its
+own `WORK_COST`/`WORK_LADDER` constants from DESIGN §8, exists at M14).
+Scripted bots ignore `--work` entirely (`engines.ts#scriptedEngine`) since
+they have no internal search budget. This is flagged here because a future
+milestone comparing `hard@*` against `aiv2-*` at the *same* `fixed:<units>`
+value should not assume the two engines spent comparable effort — only
+`wall:<ms>` is a fair cross-family axis, consistent with the axis-rule
+deviation above.
+
 ## M4
 
 ### 2026-09-15: `PackedState` and its slot/flag constants are declared in `types.ts`

@@ -67,6 +67,15 @@ export interface MatchOptions {
   elementGraph: 'double-thick' | 'dual-triangle' | 'rush-edge-only' | 'none';
   /** Global ATK handicap per player (instrument sensitivity gate). */
   handicap: { white: number; black: number };
+  /**
+   * Starting-crystal handicap applied to Black by `createInitialGameState`
+   * (DESIGN §7.7; distinct from the combat `handicap` above). 0..
+   * `MAX_BLACK_CRYSTAL_HANDICAP` (20, `src/game/rules.ts`). Omitted means 0
+   * (production default).
+   */
+  blackCrystalHandicap?: number;
+  /** Actions-per-turn override threaded into `createInitialGameState`. Omitted means the game default (4). */
+  actionsPerTurn?: GameState['actionsPerTurn'];
 }
 
 export const DEFAULT_MATCH_OPTIONS: MatchOptions = {
@@ -83,9 +92,11 @@ export type WinType =
   | 'inactivity'
   | 'upkeep-elimination'
   | 'home-occupation'
+  | 'home-checkmate' // canonical `homeCheckmate.ts` forced-mate verdict (DESIGN §7.7)
   | 'elimination'
   | 'resignation'
   | 'adjudication' // turn/ply cap hit; material+stockpile decides
+  | 'timeout' // engine failed to move inside its allotted decision time (ladder)
   | 'draw' // adjudication tie or mutual elimination
   | 'invariant-violation'; // game aborted; no winner
 
@@ -125,7 +136,7 @@ export interface MaterialSample {
 
 /** One JSONL row per game. */
 export interface GameRecord {
-  schema: 'muju-lab-game-v2';
+  schema: 'muju-lab-game-v2' | 'muju-lab-game-v3';
   maxInactivityPlies?: number;
   inactivityDraw?: boolean;
   upkeepElimination?: boolean;
@@ -142,6 +153,20 @@ export interface GameRecord {
   plies: number;
   firstBlood: { by: PlayerId; turn: number } | null;
   players: Record<PlayerId, PlayerGameStats>;
+  /** v3 (DESIGN §7.7, ladder): present when either seat ran at a fixed work budget. */
+  fixedWork?: number;
+  /** v3: present when either seat ran at a wall-clock decision budget (ms). */
+  decisionMs?: number;
+  /** v3: hash identifying the exact engine config (difficulty/speed/HardConfig) driving each seat, joined `white|black`. */
+  engineConfigHash?: string;
+  /** v3: hash of the evaluation weights file in play, when applicable (`hard@<label>` engines only). */
+  weightsHash?: string;
+  /** v3: true when `winType === 'adjudication'` (turn/ply cap decided the game by score, not play). */
+  adjudicated?: boolean;
+  /** v3: starting black-crystal handicap for this game (`MatchOptions.blackCrystalHandicap`, default 0). */
+  handicap?: number;
+  /** v3: the formula used to break adjudicated games. Always `'material+bank'` today (SU addendum 2). */
+  adjudicationFormula?: 'material+bank';
   incomeCurve: {player:PlayerId;turn:number;income:number;remaining:number;zeroReserveUnits:number;byTier:Record<string,number>;byElement:Record<string,number>;bank:number;tier1Share:number}[];
   round90Exhaustion: number|null;
   purchases: {player:PlayerId;turn:number;definitionId:string}[];
