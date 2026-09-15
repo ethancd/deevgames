@@ -128,3 +128,163 @@ artifact); any other step's artifact file (if the step wrote one) is merged
 into `metrics` afterward. This keeps the gate table's `command` field exactly
 the string MILESTONES.md specifies while still letting the criterion read
 `depsViolations`/`vitestFailures` alongside the perft fields.
+
+## M4
+
+### 2026-09-15: `PackedState` and its slot/flag constants are declared in `types.ts`
+
+DESIGN §3.1 prints `MAX_SLOTS`/`NO_SLOT`/`DEAD`/`MAX_TURN_ACTIONS`/`F_*` and the
+`PackedState` interface under a `// src/ai/hard/core/state.ts` header, but
+`core/action.ts` (§3.2, this milestone) takes `PackedState` in four of its six
+signatures — `toAIAction`, `fromAIAction`, `keepSetIds` and the exported
+`unitIdFor`/`slotForId` helpers — and `core/zobrist.ts` (§3.3) takes it in all
+three `recompute*`. `core/state.ts` does not land until M5. The declarations
+therefore live in `src/ai/hard/types.ts` (DESIGN §2's "shared vocabulary"
+layer, which everything may import and which imports nothing).
+
+**Binding on M5:** `core/state.ts` must RE-EXPORT rather than redefine
+(`export { MAX_SLOTS, NO_SLOT, DEAD, MAX_TURN_ACTIONS, F_CAN_ACT,
+F_LAST_KILLED, F_PLACED, F_PROMOTED } from '../types'` and
+`export type { PackedState } from '../types'`), so DESIGN §3.1's stated export
+site stays exact and there is exactly one definition of the layout.
+`types.ts` additionally exports `UFLAGS_MASK` (= 15), the upper bound of the
+Zobrist `uflags` plane's index.
+
+### 2026-09-15: the component config interfaces are declared in `config.ts`
+
+DESIGN §4.17 defines `HardConfig extends SearchConfig` with fields typed
+`QuiesceConfig`, `GenConfig`, `ActionSearchConfig`, `PurchaseConfig`,
+`PurchaseWeights`, `DfpnConfig`, `TimeConfig`, `DeviceProfile`, `Weights` and
+`Book` — which §4.13/§4.14/§4.15/§4.16 export from `gen/*`, `tactics/dfpn.ts`,
+`eval/weights.ts`, `book/format.ts` and `search/*`. DESIGN §2's layering allows
+`config.ts` to import `types.ts` and nothing else, and those layers all import
+`config`, so importing them from `config.ts` would be both a layering violation
+and a module cycle. All of those shapes (plus `BookEntry`, `SearchConfig`) are
+therefore declared once, in `config.ts`.
+
+**Binding on M11/M12/M13/M14/M16/M18:** the module DESIGN names as the export
+site re-exports from `config.ts` (`export type { SearchConfig } from '../config'`
+and so on) rather than redeclaring. Every one of those layers is already
+permitted to import `config` by `lab/hard-ai/deps.ts`.
+
+### 2026-09-15: values this milestone could only supply provisionally
+
+- `PurchaseWeights` — DESIGN §5.5 names the eight terms of `squareScoreCc` but
+  gives no coefficients. `config.ts` ships plainly-marked PROVISIONAL values
+  (`mineCc 1, safeCc 100, blockCc 200, strikeCc 300, anchorCc 20,
+  zeroSpawnCc 400, liquidityCc 50, homeRaceCc 5000`). **M13 owns them**; M18's
+  SPSA tunes them.
+- `HardConfig.weights` — `DEFAULT_WEIGHTS` is `eval/weights.ts` (M12).
+  `config.ts` ships `placeholderWeights()`: 58 zeroed feature weights and the
+  real `cost × 100` material priors of DESIGN F9 (`DEFAULT_MATERIAL_CC`, pinned
+  against `catalog.cost` in `tests/ai/hard/catalog.test.ts`). **M12 replaces the
+  `weights` field with `DEFAULT_WEIGHTS`.**
+- `useLmr`/`useAspiration`/`useFutility`/`useExtensions`/`useDfpn` all default
+  to `false`: DESIGN §5.11.5 requires each refinement to ship behind its own
+  flag and be SPRT-gated separately at M20, and M16/M17 build them.
+- `dfpn.nodeBudget` is the absolute `4000` of DESIGN §8; the `min(4000,
+  limit/16)` clamp is a runtime decision for `search/root.ts` (M14), not a
+  static config value.
+
+MILESTONES.md says M4's `config.ts` is "types + default constants; profiles
+filled at M15". DESIGN §6.3's profile table gives every number for all four
+profiles, so `DESKTOP`/`MIDRANGE`/`PHONE`/`LAB` and `profileFor` are filled in
+now and pinned by `tests/ai/hard/interfaces.test.ts`; M15 measures them
+(depth-1 ≤ 150 ms on PHONE, p95 turn wall clock) rather than inventing them.
+
+### 2026-09-15: `Scratch` takes an optional fourth constructor parameter
+
+DESIGN §4.1 gives `constructor(maxPly, bbPerPly, i8PerPly)` but three
+accessors, `bb`/`i8`/`i32`. `i32PerPly` is an optional fourth parameter
+defaulting to `i8PerPly`, so the three-argument form in DESIGN remains valid.
+Out-of-range `(ply, i)` throws `RangeError` rather than returning `undefined`.
+Buffers are zeroed once at construction and are stable thereafter (the same
+`(ply, i)` always returns the same object); they are NOT re-zeroed per access,
+so callers that need a clean slate call `bbZero` themselves.
+
+### 2026-09-15: `lab/hard-ai/deps.ts` gains a universal external allow-list
+
+`src/ai/types.ts` (`AIAction`) appears in DESIGN §3.2 (`toAIAction`,
+`fromAIAction`), §4.13 (`decodeTurn`), §4.16 (`RootOptions`/`RootResult`) and
+§4.17 (`verifyTurn`), across the `core`, `gen`, `search` and `verify` layers;
+`src/ai/runtime.ts` (`seededRandom`) is named by DESIGN §3.3 as the PRNG behind
+`buildZobrist`. Neither was in §2's per-layer external allow-list.
+`UNIVERSAL_EXTERNAL_ALLOWS = ['src/ai/types', 'src/ai/runtime']` adds both for
+every layer — they are pure vocabulary/pure-function modules and neither
+reaches the banned `engine-v2`/`planner`/`search`/`evaluation`/`lab/solver`
+surfaces, which stay banned everywhere. This is the same shape of minimal
+addition M1 made for `src/ai/moves`.
+
+Note also that the `BigInt` ban is a text grep over whole lines, comments
+included, so prose under `src/ai/hard/**` must say "64-bit integer types"
+rather than naming the builtin.
+
+### 2026-09-15: `hard:types` now typechecks `tests/ai/hard/**`
+
+DESIGN §4 requires `tests/ai/hard/interfaces.test.ts` to reproduce every §4
+signature "so drift fails `tsc`". Neither typecheck in M4's gate command
+covered it: the root `tsconfig.json` has `include: ["src"]`, and
+`lab/hard-ai/tsconfig.json` included `lab/hard-ai/**`, `src/**` and
+`lab/harness/**` only — so the declaration tests and the `@ts-expect-error
+until M<n>` markers were inert. `lab/hard-ai/tsconfig.json`'s `include` gains
+`"../../tests/ai/hard/**/*.ts"`. Verified both ways: mistyping a declaration
+test raises `TS2322`, and deleting a `@ts-expect-error` marker raises `TS2307`.
+Later milestones adding files under `tests/ai/hard/` must keep them
+`tsc --strict --noUnusedLocals` clean.
+
+### 2026-09-15: `verify/run.ts` derives `tscErrors`
+
+M4's pass criterion reads `tscErrors`, and MILESTONES.md notes the artifact is
+"written by a tiny reporter wrapper in `verify/run.ts`". The gate row has no
+artifact file; instead `run.ts` accumulates `metrics.tscErrors` over every
+`npx tsc` / `npm run hard:types` step in the chain by counting `error TSxxxx`
+diagnostics (a non-zero exit with no parseable diagnostic counts as 1), exactly
+as it already derives `depsViolations` and `vitestFailures` from their steps'
+output.
+
+### 2026-09-15: R13 (§7.8) catalog/CORNER checks landed; `PST_MINE` still deferred
+
+M1's own deviation note asked M4 to add the `catalog.power`, `PST_MINE`,
+`CORNER` and `CORNER_NEIGHBOURS` halves of the constants-agreement test. Three
+of the four are now covered — `CORNER === [0, 99]` and
+`CORNER_NEIGHBOURS === [[1,10],[89,98]]` in `tests/ai/hard/tables.test.ts`, and
+`catalog.power`/`killsInOne`/`hitsToKill` against `calculateAttackPower` for all
+18x18x2 pairs under each of the four element graphs crossed with combat
+handicaps {0,+1} in `tests/ai/hard/catalog.test.ts`. `PST_MINE` lives in
+`core/income.ts`, which lands at **M5**; its 21 check values (DESIGN §4.7) are
+M5/M8's to pin. `tests/ai/hard/constants.test.ts` is left untouched.
+
+### 2026-09-15: unit ids for units bought during the search
+
+`toAIAction`/`fromAIAction`/`keepSetIds` need a canonical unit id per slot, but
+`PackedState.originIds` is cold data `make` does not extend (DESIGN §3.1), so a
+slot created by a BUY inside the search has no entry. `core/action.ts`
+reproduces `nextUnitId` (simulate.ts:14-20) from slot order: the k-th live
+id-less slot of an owner takes the (k+1)-th index of
+`unit-<player>-<turnNumber>-` that no `originIds` entry already occupies.
+`slotForId` inverts it exactly, so `fromAIAction(p, toAIAction(p, a, k), k)`
+restores `a` for every kind (the `paC` move-cost cache is encoder-side and is
+not carried by the canonical action, so it comes back 0).
+
+Residual limitation, documented in the module: the derivation matches the
+canonical ids exactly as long as no unit bought during the same turn has since
+died — once one has, the canonical engine frees its index for the next buy
+while slot order does not record the swap. This is unfixable from
+`PackedState` alone without writing a string per BUY in the hot path.
+`verify/replay.ts` (M14) is the authority: it replays each decoded line through
+`applyAction` and truncates at the first divergence (DESIGN §6.4 layer 3).
+
+### 2026-09-15: exports beyond the literal §4 lists
+
+DESIGN §4 freezes the listed signatures; these additive exports were needed by
+the milestone's own tests or by the modules that will consume them, and none
+changes a listed signature:
+`types.ts` `UFLAGS_MASK`; `core/catalog.ts` `NEVER_KILLS` (the 255 sentinel
+§4.3 describes in prose) and `powerIndex`; `core/zobrist.ts` the `z*` index
+helpers (`zPiece`, `zReserve`, `zDamage`, `zAtkCount`, `zUflags`, `zActions`,
+`zClock`, `zBankLo`, `zBankHi`, `zRule`, `zHandicap`) so M5's incremental
+`make`/`unmake` XORs the same words `recompute*` does; `core/action.ts`
+`PA_NONE`, `PaDecodeError`, `KEEP_SET_CAPACITY`, `newKeepSetTable`,
+`keepSetReset`, `keepSetAdd`, `keepSetHas`, `findKeepSet`, `unitIdFor`,
+`slotForId`; `config.ts` `DEFAULT_MATERIAL_CC`, `placeholderWeights`,
+`INITIAL_UNITS_PER_MS`.

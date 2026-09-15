@@ -75,12 +75,27 @@ export const GATES: Gate[] = [
       'npm run hard:ladder -- --a aiv2-hard-turn --b aiv2-hard --work wall:1000 --handicaps 0 --pairs 12 --seed 3 --shards 12 --out lab/results/hard-ai-verify/M3.json',
     8 * MIN,
   ),
-  notImplemented(
-    'M4',
-    ['M1'],
-    'npx vitest run tests/ai/hard && npm run hard:deps && npx tsc --noEmit -p tsconfig.json && npm run hard:types',
-    2 * MIN,
-  ),
+  {
+    id: 'M4',
+    dependsOn: ['M1'],
+    description: 'Packed primitives: bits, tables, catalog, zobrist, action, config, interface tests',
+    command:
+      'npx vitest run tests/ai/hard && ' +
+      'npm run hard:deps && ' +
+      'npx tsc --noEmit -p tsconfig.json && ' +
+      'npm run hard:types',
+    args: [],
+    // No artifact file: every metric this criterion reads is derived by
+    // `verify/run.ts` from the steps' own output (`vitestFailures` from the
+    // vitest JSON reporter, `depsViolations` from `hard:deps`'s JSON line,
+    // `tscErrors` accumulated across both typecheck steps).
+    artifact: '',
+    criterion: metrics =>
+      metrics.vitestFailures === 0 &&
+      metrics.depsViolations === 0 &&
+      metrics.tscErrors === 0,
+    timeoutMs: 2 * MIN,
+  },
   notImplemented(
     'M5',
     ['M4'],

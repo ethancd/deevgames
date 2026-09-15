@@ -3,7 +3,10 @@
  *
  * 1. Layering: each module may only import the modules DESIGN §2 lists for
  *    its layer, plus a couple of named exceptions from outside `src/ai/hard/`
- *    (`src/game/*`, `src/ai/simulate.ts`). `src/ai/moves.ts` is also allowed
+ *    (`src/game/*`, `src/ai/simulate.ts`), plus the two pure-vocabulary
+ *    modules every layer may use (`src/ai/types.ts` for `AIAction`,
+ *    `src/ai/runtime.ts` for `seededRandom`; see DEVIATIONS under M4).
+ *    `src/ai/moves.ts` is also allowed
  *    from `verify/**` — a deviation from the literal §2 text, needed because
  *    the canonical perft enumerator (`src/ai/hard/verify/perft.ts`, M1) has
  *    no way to generate legal actions otherwise; see
@@ -85,6 +88,15 @@ const LAYER_ALLOWS: Record<Layer, Layer[]> = {
 
 /** Named exceptions outside src/ai/hard/, per layer. Keyed by the module's
  * repo-relative posix path (no extension). */
+/** Pure-vocabulary modules outside `src/ai/hard/` that any layer may import.
+ * `src/ai/types.ts` carries `AIAction`, which DESIGN §3.2/§4.13/§4.17 puts in
+ * the signatures of `core/action.ts`, `gen/turn.ts`, `verify/replay.ts` and
+ * `search/root.ts`; `src/ai/runtime.ts` carries `seededRandom`, the PRNG
+ * DESIGN §3.3 names as the source of the Zobrist tables. Both are imported
+ * type-only or as a pure function; neither reaches the banned engines. See
+ * `docs/hard-ai/design/DEVIATIONS.md` under M4. */
+const UNIVERSAL_EXTERNAL_ALLOWS = ['src/ai/types', 'src/ai/runtime'];
+
 const EXTERNAL_ALLOWS: Partial<Record<Layer, string[]>> = {
   core: ['src/game'],
   verify: ['src/game', 'src/ai/simulate', 'src/ai/moves'],
@@ -162,7 +174,7 @@ function checkLayering(files: string[]): Violation[] {
 
       // External (outside src/ai/hard/) relative import: must be in this layer's allow-list.
       if (layer === null) continue;
-      const externalAllows = EXTERNAL_ALLOWS[layer] ?? [];
+      const externalAllows = [...UNIVERSAL_EXTERNAL_ALLOWS, ...(EXTERNAL_ALLOWS[layer] ?? [])];
       const ok = externalAllows.some(prefix => targetPosix === prefix || targetPosix.startsWith(prefix + '/'));
       if (!ok) {
         violations.push({

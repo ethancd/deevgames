@@ -19,6 +19,9 @@
  *     — the recorded `command` in the artifact stays the literal, readable
  *     string) so `metrics.vitestFailures` can be read from the JSON report's
  *     `numFailedTests`.
+ *   - `npx tsc --noEmit ...` / `npm run hard:types`: `metrics.tscErrors`
+ *     accumulates the `error TSxxxx` diagnostics across every typecheck step
+ *     in the chain (a non-zero exit with no parseable diagnostic counts as 1).
  * Every other piece (e.g. `npm run hard:perft -- --check --out <path>`) is
  * run as given and is expected to merge its own numbers into `gate.artifact`
  * itself; after the whole chain finishes, that file (if present) is merged
@@ -94,6 +97,17 @@ function extractDepsMetrics(stdout: string): Record<string, unknown> {
   }
 }
 
+/** Counts `error TSxxxx` diagnostics a `tsc --noEmit` step printed. A step that
+ * exited non-zero without a parseable diagnostic still counts as one error, so
+ * a criterion of `tscErrors === 0` can never pass on a broken typecheck. */
+function countTscErrors(outcome: StepOutcome): number {
+  const text = `${outcome.stdout}\n${outcome.stderr}`;
+  const matches = text.match(/error TS\d+/g);
+  const parsed = matches === null ? 0 : matches.length;
+  if (parsed === 0 && outcome.exitCode !== 0) return 1;
+  return parsed;
+}
+
 function extractVitestMetrics(stdout: string): Record<string, unknown> {
   try {
     // vitest's JSON reporter can print non-JSON progress lines before the
@@ -127,6 +141,11 @@ function runGate(gate: Gate): { pass: boolean; metrics: Record<string, unknown>;
     if (outcome.stderr) process.stderr.write(outcome.stderr);
     if (/(^|\s)npm run hard:deps\b/.test(step)) Object.assign(metrics, extractDepsMetrics(outcome.stdout));
     if (/(^|\s)npx vitest run\b/.test(step)) Object.assign(metrics, extractVitestMetrics(outcome.stdout));
+    // Both `npx tsc --noEmit -p ...` and `npm run hard:types` (which is a tsc
+    // invocation) contribute to a single accumulated `tscErrors`.
+    if (/(^|\s)npx tsc\b/.test(step) || /(^|\s)npm run hard:types\b/.test(step)) {
+      metrics.tscErrors = ((metrics.tscErrors as number | undefined) ?? 0) + countTscErrors(outcome);
+    }
     if (outcome.exitCode !== 0) failed = true;
   }
 

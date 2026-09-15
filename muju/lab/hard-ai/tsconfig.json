@@ -3,5 +3,5 @@
   "compilerOptions": {
     "types": ["node"]
   },
-  "include": ["**/*.ts", "../../src/**/*.ts", "../harness/**/*.ts"]
+  "include": ["**/*.ts", "../../src/**/*.ts", "../harness/**/*.ts", "../../tests/ai/hard/**/*.ts"]
 }
