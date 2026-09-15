@@ -1,4 +1,4 @@
-# Muju Hard AI — handoff (paused 2026-09-14)
+# Muju Hard AI — handoff (paused 2026-09-14; resumed and paused again 2026-09-14, see §10)
 
 This document is written so that a different Claude account (or a person) can take the project over
 with no access to the original session. Everything needed is in this branch. Read this file first,
@@ -34,7 +34,7 @@ The work was run as three multi-agent workflow phases:
 | Worktree | `/Users/ashkie/src/deevgames-muju-hardai` (git worktree of `/Users/ashkie/src/deevgames`) |
 | Branch | `claude/muju-hard-ai` |
 | Base | `codex/muju-online-deploy` at `1ac8026` plus commit `44c41c4`, a snapshot of the main checkout's uncommitted v2.8 work (SPEC v2.8, 504-crystal map, expansion economy, analysis tools, time controls). The main checkout is Codex's live tree and is still dirty; do not commit there. |
-| Commits on this branch | `44c41c4` snapshot · `9b7b023` phase 1 docs · `f865174` phase 2 design · `e700f01` **M1** · then this handoff |
+| Commits on this branch | `44c41c4` snapshot · `9b7b023` phase 1 docs · `f865174` phase 2 design · `e700f01` **M1** · `bd35df1` handoff · `07f43f1` **M4** · `faedd9d` **M2** · `7f51d33` **M5** · then this handoff update |
 | Game code | `muju/` inside the worktree; run every `npm`/`npx` command from there |
 | `node_modules` | symlinks to the main checkout's `muju/node_modules` and root `node_modules` (excluded from git via `.git/info/exclude`) |
 | Project docs | `muju/docs/hard-ai/` (this file, `STRATEGIC_UNDERSTANDING.md`, `ENGINE_GAPS.md`, `DESIGN.md`, `MILESTONES.md`, `understand/`, `design/`, `workflows/`) |
@@ -104,11 +104,11 @@ equal wall clock (seat-mirrored paired seeds, handicaps 0 and 3, adjudication ra
 | id | title | group | status |
 |---|---|---|---|
 | M1 | Verify runner, perft fixtures, position corpus, deps lint, constants test | A | **green, committed `e700f01`** |
-| M2 | Ladder: sharded runner, pairing, SPRT, Elo, harness v3, determinism tool | B | not started (agent was reading when paused) |
-| M4 | Packed primitives: bits, tables, catalog, zobrist, action, config, interface tests | B | not started (same) |
-| M3 | Whole-turn worker path for AIEngineV2 | C | blocked on M2 |
-| M5 | Replica: state, movement, spawn, income, make/unmake, generators, fuzzer | C | blocked on M4 |
-| M6–M11 | Tables (threat, kill, economy, geometry), home-prover replica, within-turn search | E | blocked on M5 |
+| M2 | Ladder: sharded runner, pairing, SPRT, Elo, harness v3, determinism tool | B | **green, committed `faedd9d`** |
+| M4 | Packed primitives: bits, tables, catalog, zobrist, action, config, interface tests | B | **green, committed `07f43f1`** |
+| M3 | Whole-turn worker path for AIEngineV2 | C | **in flight at second pause**: implementer wrote all files; gate ran vitest green, then playwright/ladder step failed (artifact `lab/results/hard-ai-verify-2026-09-15/M3.json`, pass=false); uncommitted |
+| M5 | Replica: state, movement, spawn, income, make/unmake, generators, fuzzer | C | **green, committed `7f51d33`** (1,000,000-action differential fuzz, 0 divergences) |
+| M6–M11 | Tables (threat, kill, economy, geometry), home-prover replica, within-turn search | E | **in flight at second pause**: all six implementers had written partial files (uncommitted, unverified; see §10) |
 | M12 | Evaluation v0, invariants, NodeTables builder | F | blocked on M6–M9 |
 | M13 | Candidate generator, keep-sets, recall instrument | G | blocked on M11, M12 |
 | M14 | Search core, root, engine, replay, lab bot | H | blocked on M13, M10 |
@@ -230,3 +230,46 @@ Original session: https://claude.ai/code/session_01PkrS9DRcQ7gWhR1LbovT5D (Claud
 2026-09-14). Phase 1 used 11 agents, phase 2 used 7, phase 3 had run 2 agents (M1 implementer and
 verifier) plus the two group-B implementers that were stopped before writing. The three workflow
 scripts are preserved verbatim under `workflows/`.
+
+## 10. Second pause (2026-09-14, later the same day)
+
+The DAG was resumed with `workflows/phase3-resume.js` (the phase-3 script plus `args.done` to skip
+green milestones and `args.partial` to tell an implementer that interrupted files exist). Ethan asked
+for a safe pause while group E was running. **M4, M2 and M5 are green and committed** (in that order).
+Everything below is on disk, uncommitted and unverified; nothing was committed that did not pass a gate.
+
+### 10.1 Uncommitted files by milestone
+
+| Milestone | State | Files (relative to `muju/`) |
+|---|---|---|
+| M3 | complete draft, gate red at the playwright/ladder step | `src/ai/worker/{protocol,handler,client}.ts`, `src/ai/types.ts`, `src/hooks/useAI.ts`, `lab/hard-ai/ladder/engines.ts`, `tests/ai/turn-execution.test.ts` (modified); `tests/ai/worker-turn.test.ts`, `e2e/hard-ai.spec.ts`, `playwright.hard.config.ts` (new); partial ladder shards under `lab/results/hard-ai-verify/M3.json/` (a directory, misnamed — the `--out` path was treated as a directory) |
+| M6 | partial | `src/ai/hard/tables/threat.ts`, `src/ai/hard/tables/approach.ts`, `src/ai/hard/tables/context.ts`, `tests/ai/hard/threat.test.ts` (19 of its tests fail) |
+| M7 | partial | `src/ai/hard/tables/kill.ts`, `tests/ai/hard/kill.test.ts` |
+| M8 | partial | `src/ai/hard/tables/economy.ts`, `lab/hard-ai/oracles/economy.ts`, `tests/ai/hard/economy.test.ts` |
+| M9 | partial | `src/ai/hard/tables/geometry.ts` |
+| M10 | partial | `src/ai/hard/tactics/prover.ts` (two `tsc` errors: unused `PA` import, `Scratch` used as a value) |
+| M11 | partial | `src/ai/hard/gen/actionsearch.ts`, `src/ai/hard/gen/turn.ts` |
+| shared | | `lab/hard-ai/verify/gates.ts`, `lab/hard-ai/verify/run.ts` (gate rows/reporters added by the in-flight milestones), `docs/hard-ai/design/DEVIATIONS.md` (entries appended by in-flight milestones after the committed M5 section) |
+
+`context.ts` is a shared file by design (interface at M6, body at M12).
+
+### 10.2 State of the tree at the pause
+
+- `npx tsc --noEmit -p tsconfig.json`: 2 errors, both in `src/ai/hard/tactics/prover.ts` (M10).
+- `npx vitest run`: 20 failures, 19 in `tests/ai/hard/threat.test.ts` (M6) and one elsewhere; every
+  committed milestone's tests were green at its commit.
+- The committed state (`7f51d33`) is expected to be fully green; verify by checking out that commit in
+  a scratch worktree rather than stashing here.
+
+### 10.3 How to resume from here
+
+```bash
+cd /Users/ashkie/src/deevgames-muju-hardai/muju
+git status --short | grep -v states-h     # expect exactly the §10.1 files
+```
+
+Then run `workflows/phase3-resume.js` with the Workflow tool and
+`args: { done: ["M1","M2","M4","M5"], partial: ["M3","M6","M7","M8","M9","M10","M11"] }`. Each
+`partial` implementer is told its predecessor's files exist on disk and to continue from them; the
+verifier protocol is unchanged. If you would rather start those milestones clean, delete the §10.1
+files first (never `git stash`; the stash stack is shared with other worktrees).
