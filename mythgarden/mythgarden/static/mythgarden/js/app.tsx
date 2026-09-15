@@ -497,7 +497,7 @@ class App extends React.Component<Partial<AppProps>, AppState> {
           <div id="main-area" aria-busy={this.state.combinedProps.actionPending === true}>
             {this.state.combinedProps.actionPending && <div role="status" className="action-saving">Saving…</div>}
             <section id="sidebar">
-              {touchUi && <div className="inventory-caption" aria-live="polite"><span>{selectedItem ? `${selectedItem.emoji} ${selectedItem.name}` : 'Bag · tap an item, then its destination'}</span><span>{inventory.length}/6</span></div>}
+              {touchUi && <div className="inventory-caption" aria-live="polite"><span>{selectedItem ? `${selectedItem.emoji} ${selectedItem.name}` : ''}</span><span>{inventory.length}/6</span></div>}
               <ItemsList
                 id='inventory'
                 baseColor={colors.whiteYellow}
@@ -548,8 +548,7 @@ class App extends React.Component<Partial<AppProps>, AppState> {
                   : null
                 }
                 {touchUi && <SceneVillagers key={place.id} villagers={villagerStates} {...villagerProps}
-                  compact={phoneUi} placeId={place.id} placeType={place.placeType}
-                  onPeople={() => this.setState({touchPanel: 'people', showDialogue: false})} />}
+                  compact={phoneUi} placeId={place.id} placeType={place.placeType} />}
               </Location>
 
               {!touchUi && <List id='message-log' baseColor={colors.whiteYellow}>
@@ -566,10 +565,9 @@ class App extends React.Component<Partial<AppProps>, AppState> {
           </div>
           {touchUi && errorKey && errorKey !== this.state.dismissedError && <div className="touch-error" role="alert"><span>{latestMessage.text}</span><button aria-label="Dismiss error" onClick={event => {event.stopPropagation(); this.setState({dismissedError: errorKey})}}>×</button></div>}
           {touchUi && showDialogue && dialogue && <TouchPanel title={dialogue.name} onClose={() => this.setState({showDialogue: false})}><Dialogue {...dialogue} affinity={speaker?.affinity} />{speaker && <button type="button" onClick={() => this.setState({showDialogue: false, detailVillager: speaker, touchPanel: 'villager'})}>About {speaker.name}</button>}</TouchPanel>}
-          {touchUi && touchPanel && <TouchPanel title={{profile: 'Your farmer', people: 'People nearby', journal: 'Journal', villager: detailVillager?.name ?? 'Villager'}[touchPanel]} onClose={() => this.setState({touchPanel: null, detailVillager: null})}>
+          {touchUi && touchPanel && <TouchPanel title={{profile: 'Your farmer', journal: 'Journal', villager: detailVillager?.name ?? 'Villager'}[touchPanel]} onClose={() => this.setState({touchPanel: null, detailVillager: null})}>
             {touchPanel === 'profile' && <div className="touch-profile"><img src={hero.imageUrl} alt="" /><h3>{hero.name}</h3><p>Score: {hero.score.toLocaleString()} · Best: {hero.highScore.toLocaleString()}</p><p>Earned ⚜️ {hero.koinEarned} × {hero.heartsEarned} hearts{hero.mytheggsFound > 0 ? ` · ${hero.mytheggsFound} mytheggs` : ''}</p><p>Time boost: {hero.boostLevel} · Luck: {hero.luckPercent || '0%'}</p><button onClick={() => {this.setState({touchPanel: null}); this.showSettingsMenu()}}>Edit farmer & settings</button><button onClick={() => {this.setState({touchPanel: null}); this.showAchievementsList()}}>Achievements · {achievements.length}/{TOTAL_ACHIEVEMENTS}</button></div>}
             {touchPanel === 'journal' && <div id="journal-history">{messages?.map(message => <Message {...message} key={message.id} />)}{ephemerealMessage && <p>{ephemerealMessage}</p>}</div>}
-            {touchPanel === 'people' && <div onClick={this.handleClick.bind(this)}><VillagersList id="people-list" villagers={villagerStates} {...villagerProps} />{villagerStates.length === 0 && <p>Nobody is here right now.</p>}</div>}
             {touchPanel === 'villager' && detailVillager && <div className="villager-biography"><img src={detailVillager.imageUrl} alt="" /><p>{detailVillager.description}</p><p>♥ {detailVillager.affinity.wholeHearts} / {detailVillager.affinity.maxHearts}</p><p>Loves: {detailVillager.preferences?.lovedGifts?.join(' ') || 'Discover by giving gifts.'}</p><p>Likes: {detailVillager.preferences?.likedGifts?.join(' ') || 'Discover by giving gifts.'}</p></div>}
           </TouchPanel>}
         </Section>
@@ -611,7 +609,7 @@ interface AppState {
   selectedItemId: number | null
   slotPlacements: Record<number, Record<number, number>>
   bagPlacements: Record<number, number>
-  touchPanel: 'profile' | 'people' | 'journal' | 'villager' | null
+  touchPanel: 'profile' | 'journal' | 'villager' | null
   detailVillager: VillagerData | null
   dismissedError: string | null
   combinedProps: AppProps

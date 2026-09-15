@@ -61,16 +61,6 @@
     #dialogue .dialogue-text { font-size: 17px; line-height: 1.6; white-space: pre-line; user-select: text; }
   }
   .touch-profile, .villager-biography { img { width: 84px; border-radius: 18px; } button { margin: 4px; } }
-  #people-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; background: transparent !important;
-    .villager { padding: 10px 10px 46px; position: relative; border: 1px solid var(--touch-border); border-radius: 12px; min-width: 0; cursor: pointer; }
-    .portrait { position: relative; width: 70px; img { width: 100%; border-radius: 12px; } }
-    .portrait-filter { display: none; }
-    .action-pill { font-size: 14px; min-width: 48px; height: 24px; gap: 4px; }
-    .row { justify-content: space-between; }
-    .description { font-size: 13px; }
-    .name { font-size: 17px; }
-    .emoji { font-size: 16px; }
-  }
   #journal-history { .message { padding: 9px 0; border-bottom: 1px solid var(--touch-border); font-size: 15px; line-height: 1.5; user-select: text; } }
   .compact-journal { display: flex; height: 48px; gap: 8px; align-items: center; min-width: 0; font-size: 14px; line-height: 1.4;
     > span { flex: 1; min-width: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
@@ -195,16 +185,15 @@
 /* Character markers share the landscape; their measured positions avoid controls. */
 #page.touch-ui {
   #center-col { flex: 1; min-width: 0; }
-  #location { overflow: hidden; border-radius: 14px; }
-  #location h2.name { left: 8px; top: 8px; transform: none; margin: 0; max-width: calc(100% - 112px); white-space: normal; font-size: 21px; line-height: 1.15; padding: 5px 8px; background: var(--touch-paper); }
-  .scene-people { position: absolute; top: 8px; right: 8px; z-index: 12; min-height: 44px; padding: 6px 9px; border: 1px solid var(--touch-border); border-radius: 12px; background: var(--touch-paper); color: var(--touch-ink); font: 600 12px/1.2 Montserrat, sans-serif; cursor: pointer; }
+  #location { overflow: hidden auto; border-radius: 14px; }
+  #location h2.name { left: 8px; top: 8px; transform: none; margin: 0; max-width: calc(100% - 16px); box-sizing: border-box; white-space: normal; font-size: 21px; line-height: 1.15; padding: 5px 8px; background: var(--touch-paper); }
   #scene-villagers { position: absolute; inset: 0; pointer-events: none; margin: 0; padding: 0; list-style: none; z-index: 8; }
   #scene-villagers .villager {
     position: absolute; pointer-events: auto; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 0;
     padding: 0; margin: 0; box-sizing: border-box; border: 0; border-radius: 18px; cursor: pointer;
     background: transparent; filter: drop-shadow(0 4px 3px #0008);
     > .row { width: 100%; height: calc(100% - 24px); display: flex; justify-content: center; }
-    .portrait { position: relative; width: 66px; height: 100%; border-radius: 48% 48% 12px 12px; background: var(--touch-paper); border: 2px solid var(--touch-paper); box-sizing: border-box;
+    .portrait { position: relative; width: 66px; max-width: 100%; height: 100%; border-radius: 48% 48% 12px 12px; background: var(--touch-paper); border: 2px solid var(--touch-paper); box-sizing: border-box;
       img { width: 100%; height: 100%; object-fit: cover; border-radius: inherit; }
     }
     .portrait-filter, .affinity-container, .description, .emoji { display: none; }

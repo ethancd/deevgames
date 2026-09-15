@@ -13,10 +13,9 @@ interface Props {
   compact: boolean
   placeId: number
   placeType?: string
-  onPeople: () => void
 }
 
-export default function SceneVillagers({villagers, actionDictionary, giftReceiverIds, selectedItemId, actions, compact, placeId, placeType, onPeople}: Props): JSX.Element {
+export default function SceneVillagers({villagers, actionDictionary, giftReceiverIds, selectedItemId, actions, compact, placeId, placeType}: Props): JSX.Element {
   const list = useRef<HTMLUListElement>(null)
   const [positions, setPositions] = useState<SceneRect[]>([])
   const occupants = [...villagers].sort((a, b) => a.id - b.id)
@@ -24,12 +23,12 @@ export default function SceneVillagers({villagers, actionDictionary, giftReceive
   useLayoutEffect(() => {
     const scene = list.current?.closest('#location') as HTMLElement | null
     if (!scene) return
-    const targets = Array.from(scene.querySelectorAll<HTMLElement>('.building, .arrow, .local-activity, #local-items, .sell-destination, h2.name, .scene-people, #activities .action-pill, #directions .action-pill, #buildings .action-pill'))
+    const targets = Array.from(scene.querySelectorAll<HTMLElement>('.building, .arrow, .local-activity, #local-items, .sell-destination, h2.name, #activities .action-pill, #directions .action-pill, #buildings .action-pill'))
     const measure = () => {
       const origin = scene.getBoundingClientRect()
       const obstacles = targets.filter(el => el.getClientRects().length).map(el => {
         const rect = el.getBoundingClientRect()
-        return {x: rect.left - origin.left - scene.clientLeft, y: rect.top - origin.top - scene.clientTop, width: rect.width, height: rect.height}
+        return {x: rect.left - origin.left - scene.clientLeft + scene.scrollLeft, y: rect.top - origin.top - scene.clientTop + scene.scrollTop, width: rect.width, height: rect.height}
       })
       const next = placeScenePeople(scene.clientWidth, scene.clientHeight, obstacles, occupants.length, compact, placeType)
       setPositions(previous => JSON.stringify(previous) === JSON.stringify(next) ? previous : next)
@@ -45,13 +44,10 @@ export default function SceneVillagers({villagers, actionDictionary, giftReceive
     return () => { active = false; observer.disconnect(); window.removeEventListener('resize', measure); scene.removeEventListener('load', measure, true) }
   }, [placeId, placeType, compact, occupantIds])
 
-  return <>
-    <button className="scene-people" type="button" aria-label={`People nearby, ${villagers.length}`} onClick={event => {event.stopPropagation(); onPeople()}}>People · {villagers.length}</button>
-    <ul id="scene-villagers" ref={list} aria-label="People in the landscape">
-      {occupants.slice(0, positions.length).map((villager, index) => <Villager {...villager} key={villager.id}
-        scenePosition={positions[index]}
-        actionPill={actionDictionary[`villager-${villager.id}`]} isGiftReceiver={giftReceiverIds.has(villager.id)}
-        giftSelected={selectedItemId != null} giftAction={destinationAction(actions, selectedItemId, 'villager', villager.id)} />)}
-    </ul>
-  </>
+  return <ul id="scene-villagers" ref={list} aria-label="People in the landscape">
+    {occupants.slice(0, positions.length).map((villager, index) => <Villager {...villager} key={villager.id}
+      scenePosition={positions[index]}
+      actionPill={actionDictionary[`villager-${villager.id}`]} isGiftReceiver={giftReceiverIds.has(villager.id)}
+      giftSelected={selectedItemId != null} giftAction={destinationAction(actions, selectedItemId, 'villager', villager.id)} />)}
+  </ul>
 }

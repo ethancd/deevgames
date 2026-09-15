@@ -88,20 +88,37 @@ test('landscape markers avoid crops, sell targets, travel and each other at phon
       {x:width*.16,y:height-10-Math.max(height*.38,144)-49,width:width*.68,height:44},
       {x:width/2-35,y:height-44,width:70,height:44},
     ]
-    const positions = placeScenePeople(width,height,obstacles,8,compact,'SHOP')
-    assert.ok(positions.length > 0, 'shop must have at least one visible inhabitant')
+    const positions = placeScenePeople(width,height,obstacles,2,compact,'SHOP')
+    assert.equal(positions.length, 2, 'both shopkeepers must be visible')
     positions.forEach((rect,i) => {
       assert.ok(rect.x >= 0 && rect.y >= 0 && rect.x+rect.width<=width && rect.y+rect.height<=height)
-      assert.ok(![...obstacles,...positions.slice(0,i)].some(other=>overlaps(rect,other)))
+      assert.ok(![...obstacles,...positions.slice(0,i)].some(other=>overlaps(rect,other,4)))
     })
   }
 })
 
-test('crowded landscapes fall back to People instead of covering a control', () => {
-  assert.deepEqual(placeScenePeople(308,356,[{x:0,y:0,width:308,height:356}],5,true),[])
+test('all four Victorian residents fit directly in the scene, including short phones', () => {
+  for (const [width,height,compact] of [[308,308,true],[308,356,true],[378,488,true],[660,640,false]]) {
+    const obstacles = [{x:8,y:8,width:200,height:34},{x:width-60,y:height-72,width:52,height:64}]
+    const positions = placeScenePeople(width,height,obstacles,4,compact,'HOME')
+    assert.equal(positions.length,4)
+    positions.forEach((rect,i) => {
+      assert.ok(rect.x >= 8 && rect.y >= 8 && rect.x+rect.width <= width-8 && rect.y+rect.height <= height-8)
+      assert.ok(![...obstacles,...positions.slice(0,i)].some(other => overlaps(rect,other,4)))
+    })
+    assert.deepEqual(placeScenePeople(width,height,obstacles,4,compact,'HOME'),positions)
+  }
+})
+
+test('larger groups are not capped and crowded scenes keep every portrait reachable', () => {
+  const obstacles = [{x:0,y:0,width:308,height:356}]
+  const crowded = placeScenePeople(308,356,obstacles,5,true)
+  assert.equal(crowded.length,5)
+  crowded.forEach((rect,i) => assert.ok(![...obstacles,...crowded.slice(0,i)].some(other => overlaps(rect,other,4))))
   assert.deepEqual(placeScenePeople(308,356,[],0,true),[])
   const positions = placeScenePeople(308,356,[],8,true,'FARM')
-  assert.equal(positions.length,2)
+  assert.equal(positions.length,8)
+  assert.ok(positions.every(rect => rect.y+rect.height <= 356))
   assert.deepEqual(placeScenePeople(308,356,[],8,true,'FARM'),positions, 'positions must not randomly shuffle')
 })
 

@@ -21,7 +21,7 @@ The touch interface keeps actions on the scene. There is no permanent or context
 
 Bag positions persist in this browser (`mythgarden.bag-slots.v1`) through reloads and server actions. Using, selling or giving away an item leaves a hole; newly acquired items fill the first available hole without shifting the others. Only current inventory identities are retained, so week resets discard stale placements. If storage is blocked, rearranging still works within the tab but cannot survive reload. Like crop positions, this is a cosmetic browser preference, not a cross-device save feature. Turning the interface off uses the legacy inventory order; turning it on restores the remembered positions.
 
-Character placement measures buildings, crops/stock, sell targets, travel/activity controls, the title and People button, then chooses non-overlapping positions. It rechecks after resizing, image/font loads and occupant changes. If no safe position fits, the character remains available through People. Appearance order is stable by character ID; existing schedules and stationary-mode rules still determine who is present. The marker presentation uses the existing portraits and can later accept replacement artwork.
+Character placement measures buildings, crops/stock, sell targets, travel/activity controls and the title, then chooses non-overlapping positions for every occupant. Portraits form closer groups with 4px gaps, using smaller markers if needed. It rechecks after resizing, image/font loads and occupant changes. Exceptionally crowded scenes scroll to additional portrait rows instead of hiding anyone behind a People button. Appearance order is stable by character ID; existing schedules and stationary-mode rules still determine who is present. The marker presentation uses the existing portraits and can later accept replacement artwork.
 
 The sell target sits above the shop's six stock slots, so it does not consume stock capacity. Destination highlights also respect full field/chest capacity.
 
@@ -31,7 +31,7 @@ Plot and chest positions are cosmetic browser preferences (`mythgarden.destinati
 
 - Compact portrait header: farmer/profile button, day and time, wallet, earned hearts, time boost, settings.
 - Flexible scene with the original building, travel, activity, and crop overlays. Lighting remains on the artwork while controls retain readable surfaces.
-- Villagers appear as portrait markers with nameplates inside the landscape. Up to two fit on phones and three on wider screens; **People** opens every current occupant, including anyone who does not fit. Talk and gifts use the same controls and server actions as before. **About** in dialogue opens a biography and known preferences.
+- Every current villager appears as a portrait marker with a nameplate inside the landscape, including all four residents of the charming Victorian. There is no People button. Talk and gifts use the same controls and server actions as before. **About** in dialogue opens a biography and known preferences.
 - All six bag slots in one row, with the selected item's name above them.
 - Latest event and **Log**, opening the full journal. Dialogue and detailed progress open in dismissible panels with keyboard focus handling.
 
