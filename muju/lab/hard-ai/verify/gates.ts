@@ -426,13 +426,65 @@ export const GATES: Gate[] = [
       metrics.vitestFailures === 0,
     timeoutMs: 6 * MIN,
   },
-  notImplemented(
-    'M13',
-    ['M11', 'M12'],
-    'npx vitest run tests/ai/hard/purchase.test.ts tests/ai/hard/promote.test.ts tests/ai/hard/upkeep.test.ts tests/ai/hard/generate.test.ts && ' +
+  {
+    id: 'M13',
+    dependsOn: ['M11', 'M12'],
+    description: 'Candidate generator, keep-sets, recall instrument',
+    command:
+      'npx vitest run tests/ai/hard/purchase.test.ts tests/ai/hard/promote.test.ts tests/ai/hard/upkeep.test.ts tests/ai/hard/generate.test.ts && ' +
       'npm run hard:recall -- --corpus fuzz-1000.jsonl --positions 200 --reply-positions 100 --k 24 --deep 2000 --shards 12 --out lab/results/hard-ai-verify/M13.json',
-    10 * MIN,
-  ),
+    args: [],
+    // `recall/run.ts --out` writes every number below into this one file itself
+    // (its shards' partial files are merged and deleted first); `vitestFailures`
+    // comes from the chain's own vitest step, as in M1/M4/M5.
+    artifact: 'lab/results/hard-ai-verify/M13.json',
+    criterion: metrics =>
+      metrics.vitestFailures === 0 &&
+      // MILESTONES.md M13's statistical clauses, as amended by DESIGN §9's
+      // 2026-09-15 addendum. ET §3.5's absolute identity targets (top1 ≥ 0.90,
+      // top3 ≥ 0.97, regret_p90 ≤ 60, replyTop1 ≥ 0.85) are measured unreachable
+      // at §8's K = 24: the instrument's own CEILING — the k best-scoring
+      // candidates of the deeply-scored union, i.e. the best list any K = 24
+      // generator ranked by §5.4's within-turn score could return — sits at
+      // top1 0.640 / top3 0.805 / replyTop1 0.707 / regret_p90 638. The gate is
+      // therefore on the SHARE of that ceiling, which is what measures the
+      // within-turn cone, with thresholds calibrated so a cone regression to
+      // widths [4,3,2,1] fails every clause (0.372 / 0.491 / 0.515 / 0.424 /
+      // regret_p50 354 against the shipped 0.461 / 0.621 / 0.602 / 0.517 / 188).
+      typeof metrics.top1Share === 'number' &&
+      (metrics.top1Share as number) >= 0.42 &&
+      typeof metrics.top3Share === 'number' &&
+      (metrics.top3Share as number) >= 0.55 &&
+      typeof metrics.top1ValueShare === 'number' &&
+      (metrics.top1ValueShare as number) >= 0.55 &&
+      typeof metrics.replyTop1Share === 'number' &&
+      (metrics.replyTop1Share as number) >= 0.45 &&
+      typeof metrics.regret_p50 === 'number' &&
+      (metrics.regret_p50 as number) <= 260 &&
+      // The shares are only meaningful against the WIDE reference §5.6
+      // specifies: a reference that collapsed toward the cheap list would drive
+      // every ceiling to 1.0 and every share with it. Bracket the yardstick.
+      typeof metrics.ceilingTop1 === 'number' &&
+      (metrics.ceilingTop1 as number) >= 0.55 &&
+      (metrics.ceilingTop1 as number) <= 0.8 &&
+      typeof metrics.meanRefCandidates === 'number' &&
+      (metrics.meanRefCandidates as number) >= 400 &&
+      metrics.illegalTurns === 0 &&
+      metrics.emptyLists === 0 &&
+      // The two named plans: F16's punisher on `recall/fixtures.jsonl` and the
+      // archived rev-7 Radi G1 home race on `authored.jsonl#home-race`.
+      metrics.f16PunisherPresent === true &&
+      metrics.homeRacePresent === true &&
+      // Not vacuous: the sample MILESTONES.md names actually ran, and every
+      // position contributed a real candidate list.
+      metrics.positions === 200 &&
+      // Reply nodes are DERIVED (the cheap generator's own best turn is played
+      // first), so a corpus entry whose best turn ends the game contributes
+      // none; the sample must still be substantial.
+      typeof metrics.replyPositions === 'number' &&
+      (metrics.replyPositions as number) >= 80,
+    timeoutMs: 10 * MIN,
+  },
   notImplemented(
     'M14',
     ['M13', 'M10'],

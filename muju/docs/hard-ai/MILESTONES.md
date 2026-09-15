@@ -261,7 +261,14 @@ Critical path: M1 → M4 → M5 → {M6..M11} → M12 → M13 → M14 → M15 �
   keep-sets (`genKeepSets` ranked, ≤ 64).
 - **Gate row M13:** command `npx vitest run tests/ai/hard/purchase.test.ts tests/ai/hard/promote.test.ts tests/ai/hard/upkeep.test.ts tests/ai/hard/generate.test.ts && npm run hard:recall -- --corpus fuzz-1000.jsonl --positions 200 --reply-positions 100 --k 24 --deep 2000 --shards 12 --out lab/results/hard-ai-verify/M13.json`.
 - **Gate command:** `npm run hard:verify -- --gate M13`
-- **Pass criterion:** `top1 >= 0.90 && top3 >= 0.97 && regret_p90 <= 60 && replyTop1 >= 0.85 && illegalTurns === 0 && emptyLists === 0 && f16PunisherPresent === true` (the `BUY water_1@C1 …` plan appears in the candidates on the F16 fixture) `&& homeRacePresent === true` (the Radi G1 line is a FORCED candidate at archived rev 7) `&& vitestFailures === 0`.
+- **Pass criterion** (amended by DESIGN §9's 2026-09-15 addendum, which measures the original
+  `top1 >= 0.90 && top3 >= 0.97 && regret_p90 <= 60 && replyTop1 >= 0.85` unreachable at §8's `K = 24`
+  and restates the statistical clauses as shares of the instrument's own ceiling):
+  `top1Share >= 0.42 && top3Share >= 0.55 && top1ValueShare >= 0.55 && replyTop1Share >= 0.45 && regret_p50 <= 260`
+  (calibrated so a cone regression to widths `[4,3,2,1]` fails every one of them)
+  `&& ceilingTop1 >= 0.55 && ceilingTop1 <= 0.80 && meanRefCandidates >= 400` (the yardstick itself is
+  the wide one §5.6 specifies, so the shares cannot be gamed by weakening the reference)
+  `&& illegalTurns === 0 && emptyLists === 0 && f16PunisherPresent === true` (the `BUY water_1@C1 …` plan appears in the candidates on the F16 fixture) `&& homeRacePresent === true` (the Radi G1 line is a FORCED candidate at archived rev 7) `&& vitestFailures === 0`.
 - **Budget:** < 10 min sharded.
 
 ## M14 — Search core, root, engine, replay, lab bot

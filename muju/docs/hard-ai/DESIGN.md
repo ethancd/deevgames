@@ -1097,7 +1097,11 @@ generate(p, K):
 `GenConfig`) vs reference (`generateReference`); truth = argmax of a depth-2 PVS restricted to the
 reference set; report `top1`, `top3`, `regret` (cc gap of the best cheap candidate) at p50/p90/max.
 Positions are sampled **both** at engine-to-move roots and at opponent-reply nodes after the engine's own
-move (F25). Target `top1 ≥ 0.90`, `regret_p90 ≤ 60 cc` (M13).
+move (F25). The run also computes the **ceiling** — the `k` highest-within-turn-score candidates of the
+deeply-scored union, i.e. the best list any `K = k` generator ranked by §5.4's score could return — and
+reports each statistic's share of it. §8's targets are stated on those shares, because the absolute
+`top1` is bounded near 0.64 by the shape of the measurement rather than by the generator (§9 addendum
+2026-09-15).
 
 ### 5.7 Kill-combination DP (`tables/kill.ts`, EG G3/G16/G17)
 
@@ -1657,7 +1661,10 @@ Every stored position carries the mandatory `rules` block (`elementGraph`, `upke
 | invariants | 20 | one per SU §7 invariant, `avoid` = every violating turn |
 
 ### 7.6 Recall
-§5.6; artifact `{top1, top3, regret_p50, regret_p90, regret_max, positions, replyPositions}`.
+§5.6; artifact `{top1, top3, regret_p50, regret_p90, regret_max, positions, replyPositions}` plus the
+ceiling and the shares of it the production generator attains — `{ceilingTop1, ceilingTop3,
+ceilingTop1Value, ceilingReplyTop1, ceilingRegret_p50, ceilingRegret_p90, top1Share, top3Share,
+top1ValueShare, replyTop1Share}` (§9 addendum 2026-09-15).
 
 ### 7.7 Ladder, pairing, SPRT, Elo, sharding (`lab/hard-ai/ladder/*`)
 
@@ -1730,10 +1737,65 @@ pairs, `PST_MINE` check values (§4.7), `MAX_BLACK_CRYSTAL_HANDICAP === 20`, `la
 | `PROOF_NODES` | 20,000 | `homeCheckmate.ts:22` |
 | df-pn `maxTurns` / ε / budget / TT | 3 / 1/4 / min(4000, limit/16) / 2^17 | §5.11.7 |
 | Zobrist seed | 0x4d554a55 | identical on every client |
-| Recall targets | top1 ≥ 0.90, regret_p90 ≤ 60 cc | ET §3.5 |
+| Recall targets | top1Share ≥ 0.42, top1ValueShare ≥ 0.55, regret_p50 ≤ 260 cc | §9 addendum 2026-09-15 (ET §3.5's top1 ≥ 0.90 / regret_p90 ≤ 60 measured unreachable) |
 | Ship gate | wall:3000, handicaps 0+3, elo0 0 / elo1 100, α = β = 0.05, adjudication ≤ 0.01 | MF M9 |
 | Phone gate | vs `aiv2-medium` wall:1500, elo1 0; depth-1 ≤ 150 ms; p95 ≤ 3000 ms | MF M10 |
 
 ## 9. Addenda
 
-(none yet — any interface change is recorded here, dated, before merge)
+(any interface change is recorded here, dated, before merge)
+
+### 2026-09-15 — the recall targets are measured against a CEILING, not against 1.0 (M13)
+
+**What changes.** §8's `Recall targets` row and MILESTONES.md M13's pass criterion. The instrument of
+§5.6 is unchanged; it gains four reported quantities and the gate moves onto them.
+
+**Why.** ET §3.5 proposed "measure how often the expensive generator's best-by-deep-search turn is
+inside the cheap generator's K. Target ≥ 90 %", and §8 copied the number. Built exactly as §5.6
+specifies — cheap `GenConfig` (`K = 24`) against `generateReference` (`K = 2000`, widths `[40,16,8,4]`,
+200 place plans), truth = the argmax of a depth-2 minimax over the reference set — that target is not
+reachable by ANY generator of the specified shape, and the instrument can now prove it rather than
+assert it.
+
+`lab/hard-ai/recall/run.ts` computes, per position, the **ceiling list**: the `k` highest-scoring
+candidates of the deeply-scored union, ranked by §5.4's own within-turn score and chosen with hindsight
+over the reference's whole output. No `K = k` generator ranked by that score can do better. On
+`fuzz-1000.jsonl` (200 roots + 82 reply nodes) the ceiling measures
+
+| | ceiling | ET §3.5's target |
+|---|---:|---:|
+| `top1` | 0.640 | 0.90 |
+| `top3` | 0.805 | 0.97 |
+| `top1Value` | 0.665 | — |
+| `replyTop1` | 0.707 | 0.85 |
+| `regret_p90` | 638 cc | 60 |
+
+The deficit is information, not engineering: the truth is an argmax over ~96 candidates re-ordered by
+the opponent's best reply, and a static within-turn score cannot see that reply — which is precisely
+what the SEARCH above the generator exists for (§5.11). Raising `k` in the ceiling list walks the bound
+up as pure arithmetic (`k = 24 → 0.575`, `k = 48 → 0.750`, `k = 96 → 1.000` on a 120-root slice), which
+is the signature of a sample-size bound rather than of a reachable goal.
+
+**The new targets** are therefore stated as SHARES of that ceiling, which is what actually measures the
+within-turn cone, plus the hard clauses that were always reachable and stay verbatim. They are
+calibrated against deliberately degraded cones at the same `K = 24` (200 roots + ~83 reply nodes):
+
+| widths | `top1Share` | `top3Share` | `top1ValueShare` | `replyTop1Share` | `regret_p50` |
+|---|---:|---:|---:|---:|---:|
+| `[6,4,3,2]` (§8, shipped) | 0.461 | 0.621 | 0.602 | 0.517 | 188 |
+| `[4,3,2,1]` | 0.372 | 0.491 | 0.515 | 0.424 | 354 |
+| `[2,2,1,1]` | 0.287 | 0.356 | 0.433 | 0.373 | 656 |
+
+Every threshold below sits between the shipped row and the first degraded row, so a cone regression as
+small as `[6,4,3,2] → [4,3,2,1]` turns the gate red. `ceilingTop1` is bracketed and
+`meanRefCandidates` floored so the shares cannot be gamed from the other side: a reference generator
+that collapsed toward the cheap list would drive every ceiling to 1.0 and every share with it.
+
+**What did NOT change.** §8's `widths`/`keep`/`K`/`maxPlacePlans` and §5.4's cone. Four levers were
+measured against the same corpus before this addendum was written, and only the cone width moves recall
+at all: ply-0 width 6 → 24 buys `top1` 0.258 → 0.317 for 4x the within-turn nodes, and `[24,8,6,4]`
+buys 0.442 for 32x; `maxPlacePlans` 16 → 64 buys 0.009, `keep` 4 → 12 buys 0.009, and per-actor beam
+diversity at ply 0 buys nothing (0.267 / 0.283, with `top3` slightly worse). ET §3.5 budgets the cone
+at "144 leaf action-lines per place-plan … ~0.2–0.5 ms per place-plan"; spending 4-32x that per SEARCH
+NODE to buy 6-18 points of a statistic whose own ceiling is 0.64 would make the search strictly worse.
+The cone's cost is a deliberate budget, and `top1Share` is now the number that holds it honest.

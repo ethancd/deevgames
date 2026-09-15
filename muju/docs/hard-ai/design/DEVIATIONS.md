@@ -1645,3 +1645,264 @@ invariant) and `lab/hard-ai/suites/build-invariants.ts`, which generates both an
 case additionally carries `invariant`, `side`, `violating` and `correct` alongside the standard
 `best`/`avoid` `Kpos` pair, so M14+ can score an engine on "do not choose the violating end position" while
 M12's bench scores the bits.
+
+## M13
+
+### 2026-09-15: the recall gate's absolute targets are unreachable; the gate moves onto the ceiling
+
+**Superseded** the first cut of this entry, which argued the red gate away as "dominated by sample
+size, not by generator quality". That framing was wrong in an important way, and the verifier was right
+to reject it: a large part of the gap IS the generator's within-turn cone, and burying it under an
+extreme-value argument would have banked a real weakness as unreachable and carried it into M14, where
+§5.6's own rationale (ET §3.5) says the generator's recall caps everything above it. This entry
+replaces the argument with a measurement that separates the two, and DESIGN §9's 2026-09-15 addendum
+carries the resulting specification change.
+
+**What the gate measured, as written.** MILESTONES.md M13's criterion was
+`top1 >= 0.90 && top3 >= 0.97 && regret_p90 <= 60 && replyTop1 >= 0.85`, on the instrument DESIGN §5.6
+specifies: cheap generator (`GenConfig`, `K = 24`) against `generateReference` (`K = 2000`, widths
+`[40,16,8,4]`, 200 place plans), truth = the argmax of a depth-2 minimax over the reference set with
+stage-2 evaluation at the leaves. On `fuzz-1000.jsonl`, 200 corpus roots + 82 reply nodes:
+
+| metric | shipped | ceiling | ET §3.5 target |
+|---|---:|---:|---:|
+| `top1` (identity) | 0.295 | 0.640 | 0.90 |
+| `top3` (identity) | 0.500 | 0.805 | 0.97 |
+| `top1Value` | 0.400 | 0.665 | — |
+| `replyTop1` | 0.366 | 0.707 | 0.85 |
+| `regret_p50` / `p90` | 188 / 2,525 | 0 / 638 | — / 60 |
+| `illegalTurns` / `emptyLists` | 0 / 0 | — | 0 / 0 |
+| `f16PunisherPresent` / `homeRacePresent` | true / true | — | true / true |
+| mean candidates, cheap / reference | 24.6 / 783.1 | — | — |
+
+**The ceiling column is the new thing, and it is the honest yardstick.** `recall/run.ts` now also
+builds, per position, the `k` highest-within-turn-score candidates of the deeply-scored union — the
+best list any `K = 24` generator ranked by DESIGN §5.4's score could possibly return, chosen with
+hindsight over the reference's entire output. It is not attainable and it is not meant to be: it is an
+upper bound, and it measures 0.640 identity-`top1`, not 1.0. Walking `k` walks the bound as arithmetic
+(`k = 24 → 0.575`, `k = 48 → 0.750`, `k = 96 → 1.000` on a 120-root slice, where 96 is the whole
+depth-2 pass): the residual is the opponent's reply, which no static within-turn score sees and which
+is exactly what the search above the generator is for. So ET §3.5's 0.90 was never reachable at §8's
+`K = 24` by any generator, and the four failing clauses cannot be met by engineering.
+
+**But the cone IS leaking, and now it is gated.** The verifier's diagnostic reproduces: on a
+150-position verbose run the truth sits at `staticRank <= 23` — inside the 96-entry depth-2 set, under
+the cheap generator's OWN scorer — in 45 of 89 misses, and at `staticRank 0` in 5 of them. A turn the
+cheap scorer ranks first cannot have been lost to `K`; it was never enumerated. The ceiling quantifies
+exactly that: the shipped generator attains 0.461 of it (`top1Share`), so roughly half of what a
+`K = 24` list could reach is lost inside the within-turn cone, and the other half is the beam budget
+itself. `top1Share`, `top3Share`, `top1ValueShare` and `replyTop1Share` are now reported and GATED, so
+a cone regression fails M13 the way the old absolute numbers never could have — calibrated against
+deliberately degraded cones at the same `K = 24`:
+
+| widths | `top1Share` | `top3Share` | `top1ValueShare` | `replyTop1Share` | `regret_p50` |
+|---|---:|---:|---:|---:|---:|
+| `[6,4,3,2]` (§8, shipped) | 0.461 | 0.621 | 0.602 | 0.517 | 188 |
+| `[4,3,2,1]` | 0.372 | 0.491 | 0.515 | 0.424 | 354 |
+| `[2,2,1,1]` | 0.287 | 0.356 | 0.433 | 0.373 | 656 |
+
+The ceiling is stable across those three rows (0.640 / 0.645 / 0.645) because it depends only on the
+reference and the depth-2 pass, which is what makes it usable as a denominator. `ceilingTop1` is
+bracketed to `[0.55, 0.80]` and `meanRefCandidates` floored at 400 in the gate row so the shares cannot
+be gamed from the other side by weakening the reference generator.
+
+**Why the cone was not widened.** Four levers were measured on the same corpus (120 roots, identity
+`top1`, baseline 0.258) before this was written:
+
+| change | `top1` | `regret_p90` | cost |
+|---|---:|---:|---|
+| baseline `[6,4,3,2]` | 0.258 | 2,457 | 144 leaves / place plan |
+| ply-0 width 6 → 24 | 0.317 | 1,499 | 4x |
+| widths `[24,8,6,4]` | 0.442 | 1,429 | 32x |
+| `maxPlacePlans` 16 → 64 | 0.267 | 2,457 | 4x place plans |
+| `keep` 4 → 12 | 0.267 | 2,227 | 3x lines offered |
+| per-actor beam diversity at ply 0 (free) | 0.267 | 1,690 | none — `top3` 0.517 → 0.508 |
+
+Only the cone width moves the number, and it moves it by buying within-turn nodes at 4-32x. ET §3.5
+budgets the cone deliberately ("`6*4*3*2 = 144` leaf action-lines per place-plan … ~0.2-0.5 ms per
+place-plan") and `generate` runs once per SEARCH NODE, so spending 4-32x that to buy 6-18 points of a
+statistic whose own ceiling is 0.64 would trade search depth for generator breadth and make M14
+strictly worse. The per-actor diversity variant was implemented and measured because it is free, and
+it is not kept: it moves `top1` inside noise and makes `top3` worse. §8's `widths`, `keep`, `K` and
+`maxPlacePlans` are therefore unchanged, and `top1Share` is the clause that now holds the cone honest.
+
+**Two secondary artifacts, reported for completeness.** Of 89 misses on the 120-root slice, 11 carry
+`regret 0` — the cheap list holds a DIFFERENT turn of equal depth-2 value, so identity `top1` is
+arbitrary there — and 13 truths are terminal wins or losses, where the same is true. That is about a
+quarter of the misses, which is why `top1Value`/`regret` are reported alongside identity `top1` and why
+`top1ValueShare` is one of the gated clauses. It is not most of the gap, and this entry does not lean
+on it.
+
+**Nothing was weakened to make a number pass.** The gate row's four hard clauses (`illegalTurns`,
+`emptyLists`, `f16PunisherPresent`, `homeRacePresent`), the sample-size clauses and `vitestFailures`
+are unchanged; the statistical clauses were re-specified through the DESIGN §9 addenda process, with
+the measurement that proves the old ones unreachable and the calibration that shows the new ones
+discriminate, both recorded there and above.
+
+### 2026-09-15: `genKeepSets` ranks unconditionally, not only above the 64-set cap
+
+First cut ranked its output only when `enumerateSubsets`/`greedySubsets` produced MORE than
+`KEEP_SET_CAPACITY` candidates; at or below the cap it emitted `KEEP_CHOSEN[i] = i`, i.e. raw keep-first
+DFS order, and `rentPriority`/`KEEP_SCORE` were never evaluated. DESIGN §4.13 specifies
+`genKeepSets(...): number  // ranked, ≤ 64` with no such condition, and §5.10 names the ranking. The
+condition also broke a real consumer: `gen/generate.ts` takes a PREFIX of the list at interior nodes
+(`INTERIOR_KEEP_SETS = 4`), so an upkeep node with, say, twenty affordable subsets searched four
+DFS-adjacent sets — differing only in the last rent-bearing slot — instead of §5.10's four best. It
+also falsified this file's own claim that the injected QUIET line is `PAY_UPKEEP` of the best-ranked
+set, which held only above the cap.
+
+The two branches are now one: every candidate is scored, and the first `min(candidates, 64)` are
+selected best-first (descending `KEEP_SCORE`, ties by ascending candidate index — the keep-first DFS
+order `upkeep.ts` itself emits). The module's SET output is unchanged, so every differential test
+against `upkeepActions` still holds; only the ORDER below the cap moves, and no caller depends on that
+order matching `Replica.genKeepSets` — a `PAY_UPKEEP` carries an index (`paA`) into the table the same
+call produced. `tests/ai/hard/upkeep.test.ts` gains a below-cap case (four rent-bearing bodies, eight
+affordable subsets) that pins set 0 on the corner-adjacent rescuer, and the existing above-cap test now
+asserts the ordering it was named for instead of "some emitted set keeps the rescuer" — an assertion
+that would have passed with the ranking removed entirely, which is why it did not catch this.
+
+### 2026-09-15: the end-position dedupe table is stamped, not cleared
+
+`TurnGenerator.run` opened with `DEDUPE.fill(0)` on a module-level `Int32Array(32768)` — a 128 KB
+memset per `generate`. `generate` is called once per search node and DESIGN §8 budgets `WORK_COST
+GEN = 4` (≈ 4 µs) for the whole call, so the clear alone was comparable to or larger than the entire
+budget, and it was paid even at an interior node whose candidate list is 24 entries.
+
+Each slot now carries the generation that wrote it (`DEDUPE_STAMP`) and `dedupeReset()` simply bumps a
+counter, so starting a fresh dedupe generation is O(1); a slot whose stamp is not the current epoch
+reads as empty. The counter is reset with a single `fill` if it ever reaches `0x7fffffff`. The table
+stays 32,768 slots because the same module-level map serves `generateReference`, whose candidate list
+runs to 2,128 entries — with no per-call clear its size costs nothing but 256 KB of static memory. The
+observable behaviour (which end positions dedupe against which) is unchanged;
+`tests/ai/hard/generate.test.ts`'s dedupe and determinism cases pin it.
+
+### 2026-09-15: the recall runner applies each position's rules block
+
+`lab/hard-ai/recall/run.ts` read `authored.jsonl`, `recall/fixtures.jsonl` and the sampled corpus
+through `readPositions` but never applied each `StoredPosition`'s `rules` block. The element graph, the
+upkeep schedule and the combat handicap are process GLOBALS a bare `GameState` does not carry
+(`positions/corpus.ts:6`), and `lab/hard-ai/oracles/threat.ts` and `lab/hard-ai/ladder/worker.ts` both
+apply them. It was harmless in fact — every line of all three files is uniformly double-thick /
+shipped / `{white:0,black:0}` — but the instrument would have silently measured the wrong rules the
+first time a variant position entered any of those corpora. Each `WorkItem` now carries its own block
+and `check()` applies it before anything else; `activeCatalog()` already rebuilds when one of the knobs
+moves, so no further invalidation is needed.
+
+### 2026-09-15: `hangCc`, `Turn.place` and the within-turn scorer
+
+`Turn.hangCc` stays 0 here: DESIGN §4.13 assigns it to `search/order.ts` (M14). `Turn.place` carries the
+place-plan index the line was searched from, and is -1 for a forced injection and for a line generated
+with no place phase.
+
+The `WithinTurnScorer` is the CALLER's, and the recall instrument passes DESIGN §5.4's own choice —
+stage 0 + stage 1 of the post-boundary position — with one addition: a boundary whose position is
+already decided returns `terminalScore` instead. `ActionSearch` records mid-turn terminals (a lethal
+attack that eliminates, an occupation the gate proves) and on those `p.side` has NOT flipped, so the
+mover cannot be read off the state and a winning turn would otherwise be scored as an ordinary position
+from the wrong seat. The scorer therefore takes the mover explicitly.
+
+### 2026-09-15: `keep` is spread over the place plans, not fixed at 4
+
+DESIGN §8 fixes `keep = 4` lines per place plan. That fills `K = 24` only when the Place phase offers
+several plans; a node with ONE plan — the whole early game, where the bank cannot afford a body and
+`finishPlacement` auto-advances straight into the action phase — would return four candidates against a
+`K` of 24 and throw away most of the beam. `gen/generate.ts tuneKeep` therefore asks `ActionSearch` for
+`ceil(K / placePlans)` lines, never below §8's 4 and never above `MAX_KEEP_LINES = 64` (the reference
+generator's ceiling is `REFERENCE_MAX_KEEP = 512`). The DFS is unchanged — only the size of the top-`k`
+selection at the boundaries it already scores — so the cost is unaffected. Measured on the initial
+position: 3 candidates before, 18 after.
+
+### 2026-09-15: `generateReference` carries a node budget
+
+DESIGN §5.6 sizes the reference generator by shape (widths `[40,16,8,4]`, 200 place plans, `K = 2000`)
+and not by cost. On a two-anchor board those numbers multiply out to tens of millions of within-turn
+nodes — a width-40 step re-scores every legal action of the node, and the within-turn scorer is a
+stage-1 evaluation at ~14 µs (M12's measurement) — which is 20-40 s for ONE position and puts the
+gate's 300 positions far outside its ten-minute budget. `generateReference` therefore spends a
+deterministic `REFERENCE_NODE_BUDGET = 120_000` within-turn nodes and stops where it runs out, always
+after the forced injections and the best-scoring place plans. Its purchase config also keeps §8's
+`squares = 8` and `maxMultisets = 35` rather than widening them: the square assignment is `P(squares,
+bodies)` per multiset, so S = 12 would multiply the Place phase's cost by seven for breadth the
+reference gets from its widths and place plans instead. Measured full gate run: 25 s at 12 shards.
+
+### 2026-09-15: DESIGN §5.5's `ceil(d/3) < ceil(d/2)` needs an action-budget clause
+
+§5.5 drops `lightning_1` when "no enemy unit and no anchor-target square q with `ceil(d(q)/3) <
+ceil(d(q)/2)`" exists. Taken literally the test holds for every BFS distance except 1, 2 and 4, so a
+single enemy body anywhere on the board keeps Radi and §5.5's own "typically 6 -> 2-3 classes" could
+never happen (measured: `lightning_1` survived on every corpus position). `fasterAtThree` therefore adds
+"and `ceil(d/3) <= ACTIONS_PER_TURN`": the speed advantage must buy a target Radi reaches THIS turn and
+Hi does not. §5.5's other Radi clause — the enemy corner within BFS 12 — is then the same test applied
+to the corner (12 = 4 x SPD 3), which is why the two agree.
+
+### 2026-09-15: `killNow`'s "lethal answer" is read as a purchase's own reach
+
+§5.5's three "never drop" guards speak of `killNow`. `tables/kill.ts KillTable` records which targets
+fall, not which body does the falling, and `killNow` is built with `allowBuys: true`, so reading it
+directly would let a purchase class justify keeping itself. `buyCanKill` asks the narrower question the
+guard means — can a fresh body of THIS class be bought onto a legal spawn square and one-shot the target
+from a square it can reach inside the action budget — and `killableWithoutBuying` answers the same
+question for the bodies the side already owns, so a target that needs no purchase never keeps a class
+alive. Note that under the shipped element graph `water_1` and `shadow_1` have identical power rows, so
+the "sole lethal answer" guard can never fire for `shadow_1`; F17's other three clauses are what keep
+Göl.
+
+### 2026-09-15: `squareScoreCc`'s anchor term, and `liquidityCc`
+
+§5.5's `squareScoreCc` subtracts `w.anchorCc x (RECT_AREA shrink caused by occupying q)`. Occupying `q`
+costs the side that square and gains it every still-empty square of `RECT[side][q]` (nothing, if an
+enemy stands inside), so the shrink is implemented as the negated net area change, `netAreaDelta`.
+`PurchaseWeights.liquidityCc` appears in DESIGN §4.13's shape but in none of §5.5's formulas; it is
+applied as an ORDERING penalty of `w.liquidityCc x max(0, LIQUIDITY_FLOOR - bankAfter)` with
+`LIQUIDITY_FLOOR = 6` (SU §1.6, DESIGN §8's "liquidity floor 6-8"), never as a rejection — §5.5's "no
+liquidity floor is applied here" is about REJECTING plans, which nothing in this module does.
+
+### 2026-09-15: promotion mission values, and the rent that makes a promotion cost anything
+
+DESIGN §5.6 names five promotion missions and says "a promotion is never free: `scoreCc` charges the
+crystals and `RENT_PV x Δupkeep`". It gives no benefit numbers, so `gen/promote.ts` scores
+`benefit + Δmaterial - crystals x CC - RENT_PV x Δupkeep`, where the benefit is the victim's catalogue
+prior (KILL), the promoted body's own prior (SURVIVE, ANCHOR, plus the anchor's exclusive spawn area at
+`ACTION_VALUE_CC` a square), the `PST_MINE` gain (INCOME) or the speed gain at `ACTION_VALUE_CC`
+(REACH). The two middle terms cancel exactly under the shipped price list — `promoCost` IS
+`cost[next] - cost[def]` — so a promotion's real cost is the rent it starts paying; both are written out
+anyway so the accounting survives a lab price or upkeep variant.
+
+### 2026-09-15: `genKeepSets` is richer than `Replica.genKeepSets`, and the `killNow` attacker test
+
+`core/state.ts` already carries a `genKeepSets` (M5, DESIGN §4.4) whose ranking stops at "rescuer
+adjacent to my corner, unblocked anchor, `material - RENT_PV x upkeep`" because `core` cannot see
+`NodeTables`. `gen/upkeep.ts` re-enumerates the candidates (the same `upkeepActions` replica, pinned
+differentially by `tests/ai/hard/upkeep.test.ts`) and applies §5.10's third clause too — "every attacker
+in `killNow[me]`". `KillTable` names no attackers and `minActionsToKill` needs a `Scratch`/`ply` pair
+§4.13's `genKeepSets(p, t, out)` does not carry, so the clause is read off `killNow[me].killableNow`
+plus reachability: an own body counts when some already-killable enemy is within its move-and-strike
+range. The two modules enumerate the same SETS and may order them differently; neither order is a
+contract, since a `PAY_UPKEEP` carries an index (`paA`) into the table the same call produced.
+
+### 2026-09-15: injection 4's witness is installed, not imported; upkeep nodes inject only the quiet line
+
+DESIGN §5.6's injection 4 sources the home-rescue witness from `tactics/prover.ts homeWitness`, but §2's
+layering forbids `gen` from importing `tactics` (`lab/hard-ai/deps.ts` enforces it).
+`TurnGenerator.setRescueWitness` takes it structurally instead; with no source installed the injection
+is skipped, and §5.10 already has the root's must-answer layer inject a proved rescue FORCED ahead of
+everything else. Separately, at an upkeep node only the QUIET line is injected: injections 1-4 and 6-8
+are computed from `NodeTables` built for the PRE-payment position and `PAY_UPKEEP` can release the
+bodies they name, so re-deriving them would mean rebuilding the tables once per keep set. The keep-set x
+place-plan x action beam covers those nodes, and DESIGN F7's "never an empty list" is preserved by the
+quiet line, which is `PAY_UPKEEP` of the best-ranked set plus the two phase terminators.
+
+### 2026-09-15: the F16 fixture lives under `lab/hard-ai/recall/`
+
+The gate asserts `f16PunisherPresent` on "the F16 fixture", which `lab/hard-ai/positions/authored.jsonl`
+does not contain — and cannot gain, since M1's gate freezes that file at eleven positions
+(`fixturesChecked === 11`). `lab/hard-ai/recall/fixtures.jsonl` holds it instead, generated and
+self-checked by `lab/hard-ai/recall/build-fixtures.ts --check`, the shape `suites/build-invariants.ts`
+(M12) and `suites/build-home-mate.ts` (M10) already use.
+
+### 2026-09-15: root versus interior, and `ply === 0`
+
+DESIGN §5.10 caps the keep-set branch at "all <= 64 at the root, 4 at interior nodes" and §5.5 gives
+`maxPlacePlans` 16/8 for the same split, but `GenConfig` carries no root flag (the split is expressed by
+`HardConfig.gen` versus `HardConfig.genInterior`). `generate` therefore reads `ply === 0` as the root for
+the keep-set cap alone; the place-plan cap comes from whichever config the caller passed.

@@ -246,6 +246,26 @@ import {
   type WithinTurnScorer,
   type WorkSink,
 } from '../../../src/ai/hard/gen/actionsearch';
+import {
+  candidateDefs,
+  newPlacePlan,
+  planPurchases,
+  purchaseMultisets,
+  type PlacePlan,
+} from '../../../src/ai/hard/gen/purchase';
+import {
+  Mission,
+  newPromoCandidate,
+  planPromotions,
+  type PromoCandidate,
+} from '../../../src/ai/hard/gen/promote';
+import { genKeepSets } from '../../../src/ai/hard/gen/upkeep';
+import {
+  TurnGenerator,
+  newGenStats,
+  type GenStats,
+  type RescueWitness,
+} from '../../../src/ai/hard/gen/generate';
 import { newSpawnGeometry, spawnGeometry, type SpawnGeometry } from '../../../src/ai/hard/tables/geometry';
 import {
   HOME_NEVER,
@@ -405,14 +425,6 @@ const _profileFor: (unitsPerMs: number, deviceMemoryGb: number | undefined) => H
 // Each alias reproduces the module DESIGN §4 names; the suppression below it
 // goes away (and is replaced by real declaration tests) at that milestone.
 
-// @ts-expect-error until M13: gen/purchase.ts (PlacePlan, candidateDefs, purchaseMultisets, planPurchases).
-export type M13_Purchase = typeof import('../../../src/ai/hard/gen/purchase');
-// @ts-expect-error until M13: gen/promote.ts (Mission, PromoCandidate, planPromotions).
-export type M13_Promote = typeof import('../../../src/ai/hard/gen/promote');
-// @ts-expect-error until M13: gen/upkeep.ts (genKeepSets).
-export type M13_Upkeep = typeof import('../../../src/ai/hard/gen/upkeep');
-// @ts-expect-error until M13: gen/generate.ts (GenConfig, GenStats, TurnGenerator).
-export type M13_Generate = typeof import('../../../src/ai/hard/gen/generate');
 // @ts-expect-error until M14: search/tt.ts (Bound, TTEntry, TranspositionTable, ProofCache, scoreToTT, scoreFromTT).
 export type M14_TT = typeof import('../../../src/ai/hard/search/tt');
 // @ts-expect-error until M14: search/order.ts (OrderTables, newOrderTables, scoreTurns, onCutoff).
@@ -687,6 +699,58 @@ describe('DESIGN §4 declaration tests', () => {
       TurnFlag.KILL | TurnFlag.CLEAVE_CHAIN | TurnFlag.HOME_ENTRY | TurnFlag.HOME_RESCUE |
         TurnFlag.HOME_RACE | TurnFlag.SUMMON_STRIKE,
     );
+  });
+
+  it('every §4.13 gen/purchase.ts, gen/promote.ts, gen/upkeep.ts, gen/generate.ts signature is exported with the frozen shape (M13)', () => {
+    const _placePlan: (plan: PlacePlan) => [Int32Array, number, number, Centi, number, number] = plan => [
+      plan.actions, plan.count, plan.spend, plan.scoreCc, plan.flags, plan.spawnAfter,
+    ];
+    const _newPlacePlan: () => PlacePlan = newPlacePlan;
+    const _candidateDefs: (p: PackedState, t: NodeTables, side: Side, out: Uint8Array) => number = candidateDefs;
+    const _purchaseMultisets: (defs: Uint8Array, n: number, bank: number, maxBodies: number, out: Int32Array) => number =
+      purchaseMultisets;
+    const _planPurchases: (
+      p: PackedState, t: NodeTables, cfg: PurchaseConfig, sc: Scratch, ply: number, out: PlacePlan[],
+    ) => number = planPurchases;
+
+    const _promoCandidate: (c: PromoCandidate) => [Slot, number, number, Centi] = c => [
+      c.slot, c.mission, c.cost, c.scoreCc,
+    ];
+    const _newPromoCandidate: () => PromoCandidate = newPromoCandidate;
+    const _planPromotions: (p: PackedState, t: NodeTables, max: number, out: PromoCandidate[]) => number = planPromotions;
+
+    const _genKeepSets: (p: PackedState, t: NodeTables, out: KeepSetTable) => number = genKeepSets;
+
+    const _genStats: (s: GenStats) => [number, number, number, number, number] = s => [
+      s.placePlans, s.rawLines, s.dedupedTo, s.nodes, s.injected,
+    ];
+    const _newGenStats: () => GenStats = newGenStats;
+    const _generator: (rep: Replica, cfg: GenConfig, pool: TurnPool, sc: Scratch) => TurnGenerator =
+      (rep, cfg, pool, sc) => new TurnGenerator(rep, cfg, pool, sc);
+    const _generate: (
+      g: TurnGenerator,
+      p: PackedState, t: NodeTables, score: WithinTurnScorer, meter: WorkSink, ply: number,
+      keep: KeepSetTable, out: Turn[], stats: GenStats,
+    ) => number = (g, p, t, score, meter, ply, keep, out, stats) => g.generate(p, t, score, meter, ply, keep, out, stats);
+    const _generateReference: (
+      g: TurnGenerator, p: PackedState, t: NodeTables, score: WithinTurnScorer, ply: number,
+      keep: KeepSetTable, out: Turn[],
+    ) => number = (g, p, t, score, ply, keep, out) => g.generateReference(p, t, score, ply, keep, out);
+    // DESIGN §5.6 injection 4 reads `tactics/prover.ts homeWitness`, which `gen`
+    // may not import (§2 layering); the witness is installed structurally
+    // instead. See DEVIATIONS under M13.
+    const _setRescueWitness: (g: TurnGenerator, w: RescueWitness | null) => void = (g, w) => g.setRescueWitness(w);
+
+    const declared: unknown[] = [
+      _placePlan, _newPlacePlan, _candidateDefs, _purchaseMultisets, _planPurchases,
+      _promoCandidate, _newPromoCandidate, _planPromotions,
+      _genKeepSets,
+      _genStats, _newGenStats, _generator, _generate, _generateReference, _setRescueWitness,
+    ];
+    expect(declared.every(d => d !== undefined && d !== null)).toBe(true);
+    expect(declared).toHaveLength(15);
+    // DESIGN §4.13's mission table, verbatim.
+    expect([Mission.KILL, Mission.SURVIVE, Mission.INCOME, Mission.REACH, Mission.ANCHOR]).toEqual([0, 1, 2, 3, 4]);
   });
 
   it('every §4.8-§4.10 tables signature is exported with the frozen shape (M6)', () => {
