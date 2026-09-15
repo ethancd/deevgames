@@ -32,6 +32,7 @@ import {
   exposedValueCc,
   nearestOwner,
   refreshExposure,
+  STRIKE_MOVE_ACTIONS,
   strikeArea,
   strikeIfBoughtArea,
   UNREACHABLE,
@@ -772,10 +773,40 @@ describe('tables/context.ts', () => {
     expect(a.killNow[0].entry[0]).not.toBe(a.killNow[1].entry[0]);
   });
 
-  it('buildTables is declared but unimplemented until M12', () => {
+  // M6 asserted here that `buildTables` throws "until M12"; M12 supplied the
+  // body, so the assertion is now that the level-1 half this module owns is
+  // actually filled — and memoised on the position, which is what lets the
+  // lazy evaluator upgrade level 1 to level 2 without rebuilding (DESIGN §4.8).
+  it('buildTables fills the level-1 half this module owns, once per position (M12)', () => {
     const t = allocTables();
-    const state = buildState({ units: [{ def: 'plant_1', owner: 'white', x: 0, y: 0 }] });
+    const state = buildState({
+      units: [
+        { def: 'plant_1', owner: 'white', x: 2, y: 2 },
+        { def: 'shadow_1', owner: 'black', x: 7, y: 7 },
+      ],
+      current: 'black',
+      phase: 'place',
+    });
     const p = replica.pack(state);
-    expect(() => buildTables(p, scratch, 0, 1, t)).toThrow(/M12/);
+    expect(buildTables(p, scratch, 0, 1, t)).toBe(t);
+    expect(t.level).toBe(1);
+    expect(t.side).toBe(p.side);
+
+    const expected = bbNew();
+    strikeArea(p, 0, t, STRIKE_MOVE_ACTIONS, expected);
+    expect(bbCount(t.strike[0])).toBe(bbCount(expected));
+    expect(t.spawn[0].area).toBe(getAllSpawnPositions('white', state.board).length);
+    // The level-2 half is untouched at level 1.
+    expect(t.killActions[0]).toBe(KILL_NEVER);
+
+    // A second call at the same level on the same position is a no-op: the
+    // memo key is `Kturn`, so a hand-poked field survives it and a genuinely
+    // different position does not hit.
+    t.spawn[0].area = -1;
+    buildTables(p, scratch, 0, 1, t);
+    expect(t.spawn[0].area).toBe(-1);
+    buildTables(p, scratch, 0, 2, t);
+    expect(t.level).toBe(2);
+    expect(t.spawn[0].area).toBe(-1);
   });
 });

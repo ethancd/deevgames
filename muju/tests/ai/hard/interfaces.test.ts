@@ -188,6 +188,26 @@ import {
   type NodeTables,
 } from '../../../src/ai/hard/tables/context';
 import {
+  F,
+  FEATURE_COUNT,
+  FEATURE_NAMES,
+  INV_BASE,
+  STAGE_OF,
+  boundStage2,
+  extract,
+} from '../../../src/ai/hard/eval/features';
+import {
+  DEFAULT_WEIGHTS,
+  WEIGHTS_VERSION,
+  cloneWeights,
+  loadWeights,
+  serializeWeights,
+  weightsHash,
+} from '../../../src/ai/hard/eval/weights';
+import { TUNED_WEIGHTS } from '../../../src/ai/hard/eval/weights.generated';
+import { INVARIANT_COUNT, invariantBits } from '../../../src/ai/hard/eval/invariants';
+import { Evaluator, terminalScore, type EvalMeter } from '../../../src/ai/hard/eval/evaluate';
+import {
   exposedValueCc,
   nearestOwner,
   strikeArea,
@@ -385,14 +405,6 @@ const _profileFor: (unitsPerMs: number, deviceMemoryGb: number | undefined) => H
 // Each alias reproduces the module DESIGN §4 names; the suppression below it
 // goes away (and is replaced by real declaration tests) at that milestone.
 
-// @ts-expect-error until M12: eval/features.ts (FEATURE_COUNT, F, FEATURE_NAMES, STAGE_OF, extract, boundStage2).
-export type M12_Features = typeof import('../../../src/ai/hard/eval/features');
-// @ts-expect-error until M12: eval/weights.ts (Weights, DEFAULT_WEIGHTS, loadWeights, serializeWeights, weightsHash).
-export type M12_Weights = typeof import('../../../src/ai/hard/eval/weights');
-// @ts-expect-error until M12: eval/invariants.ts (invariantBits).
-export type M12_Invariants = typeof import('../../../src/ai/hard/eval/invariants');
-// @ts-expect-error until M12: eval/evaluate.ts (Evaluator, terminalScore).
-export type M12_Evaluate = typeof import('../../../src/ai/hard/eval/evaluate');
 // @ts-expect-error until M13: gen/purchase.ts (PlacePlan, candidateDefs, purchaseMultisets, planPurchases).
 export type M13_Purchase = typeof import('../../../src/ai/hard/gen/purchase');
 // @ts-expect-error until M13: gen/promote.ts (Mission, PromoCandidate, planPromotions).
@@ -718,6 +730,71 @@ describe('DESIGN §4 declaration tests', () => {
     expect(declared).toHaveLength(11);
     expect([Approach.NONE, Approach.STRAND, Approach.RETREAT]).toEqual([0, 1, 2]);
     expect(KILL_NEVER).toBe(127);
+  });
+
+  it('every §4.15 eval signature is exported with the frozen shape (M12)', () => {
+    const _featureCount: number = FEATURE_COUNT;
+    const _featureNames: readonly string[] = FEATURE_NAMES;
+    const _stageOf: Uint8Array = STAGE_OF;
+    const _extract: (
+      p: PackedState, t: NodeTables | null, side: Side, stage: 0 | 1 | 2, sc: Scratch, ply: number, out: Int32Array,
+    ) => void = extract;
+    const _boundStage2: (p: PackedState, t: NodeTables, w: Weights) => Centi = boundStage2;
+
+    const _defaultWeights: Weights = DEFAULT_WEIGHTS;
+    const _tunedWeights: Weights = TUNED_WEIGHTS;
+    const _loadWeights: (json: unknown) => Weights = loadWeights;
+    const _serializeWeights: (w: Weights) => string = serializeWeights;
+    const _weightsHash: (w: Weights) => string = weightsHash;
+    const _cloneWeights: (w: Weights) => Weights = cloneWeights;
+
+    const _invariantBits: (p: PackedState, t: NodeTables, side: Side, sc: Scratch, ply: number) => number =
+      invariantBits;
+
+    const _evaluator: (e: Evaluator) => unknown[] = e => [
+      e.setWeights,
+      e.stage0,
+      e.stage1,
+      e.stage2,
+      e.evaluate,
+      e.full,
+    ];
+    const _newEvaluator: (rep: Replica, w?: Weights) => Evaluator = (rep, w) => new Evaluator(rep, w);
+    const _stage0: (p: PackedState, root: Side) => Centi = (p, root) => new Evaluator(_newReplica).stage0(p, root);
+    const _stage1: (p: PackedState, root: Side, sc: Scratch, ply: number) => Centi = (p, root, sc, ply) =>
+      new Evaluator(_newReplica).stage1(p, root, sc, ply);
+    const _stage2: (p: PackedState, root: Side, sc: Scratch, ply: number) => Centi = (p, root, sc, ply) =>
+      new Evaluator(_newReplica).stage2(p, root, sc, ply);
+    const _evaluate: (
+      p: PackedState, root: Side, alpha: Centi, beta: Centi, sc: Scratch, ply: number, meter: EvalMeter,
+    ) => Centi = (p, root, alpha, beta, sc, ply, meter) =>
+      new Evaluator(_newReplica).evaluate(p, root, alpha, beta, sc, ply, meter);
+    const _full: (p: PackedState, root: Side, sc: Scratch, ply: number, outFeatures?: Int32Array) => Centi = (
+      p, root, sc, ply, outFeatures,
+    ) => new Evaluator(_newReplica).full(p, root, sc, ply, outFeatures);
+    const _terminalScore: (p: PackedState, root: Side, ply: number) => Centi | null = terminalScore;
+
+    const declared: unknown[] = [
+      _featureCount, _featureNames, _stageOf, _extract, _boundStage2,
+      _defaultWeights, _tunedWeights, _loadWeights, _serializeWeights, _weightsHash, _cloneWeights,
+      _invariantBits, _evaluator, _newEvaluator, _stage0, _stage1, _stage2, _evaluate, _full, _terminalScore,
+    ];
+    expect(declared.every(d => d !== undefined && d !== null)).toBe(true);
+    expect(declared).toHaveLength(20);
+
+    // DESIGN §4.15's feature table, verbatim at both ends and at every stage boundary.
+    expect(FEATURE_COUNT).toBe(58);
+    expect(FEATURE_NAMES).toHaveLength(58);
+    expect([F.Material, F.HomeInvaded, F.PstMine, F.ElementCoverage, F.EconDelta, F.Inv20StrandNoRetreat]).toEqual([
+      0, 4, 5, 22, 23, 57,
+    ]);
+    expect(INV_BASE).toBe(38);
+    expect(INVARIANT_COUNT).toBe(20);
+    expect([STAGE_OF[F.Material], STAGE_OF[F.PstMine], STAGE_OF[F.EconDelta], STAGE_OF[F.Inv20StrandNoRetreat]])
+      .toEqual([0, 1, 2, 2]);
+    expect(DEFAULT_WEIGHTS.w).toHaveLength(FEATURE_COUNT);
+    expect(DEFAULT_WEIGHTS.material).toHaveLength(NDEF);
+    expect(DEFAULT_WEIGHTS.version).toBe(WEIGHTS_VERSION);
   });
 
   it('every §3.1-§3.3 / §4.1-§4.3 / §4.17 signature is exported with the frozen shape', () => {

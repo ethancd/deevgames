@@ -1448,3 +1448,200 @@ MILESTONES.md's five named clauses — a strengthening, not a substitution: ever
 still has to hold, and `homeRaceOk`'s two archived fixtures both fall in the narrow slice of positions the
 blocker above did not affect, which is exactly why they could not see it. MILESTONES.md itself is left
 untouched (it is not an M9 file); a verifier applying its criterion by hand still gets the same verdict.
+
+## M12
+
+### 2026-09-15: `extract` has no `Weights`, so feature 0 (`Material`) is scored outside the `Σ w·f` loop
+
+DESIGN §5.12.1 row 0 defines `Material` as `Σ material[def]` and §4.15 puts `material` (18 params) in
+`Weights` — but the same section gives `extract(p, t, side, stage, sc, ply, out)` no `Weights` argument, so
+`extract` cannot compute that row. `eval/features.ts` writes the CATALOGUE-PRIOR version instead
+(`p.materialCc`, the `cost × 100` sum `core/state.ts` maintains incrementally, which is exactly what
+`DEFAULT_WEIGHTS.material` holds, DESIGN F9), and `Evaluator.stage0` scores the material block itself as
+`Σ_d material[d] · (n_root[d] − n_other[d])`, skipping index 0 in the generic `Σ w[i]·f[i]` loop. The two
+agree to the centi-crystal whenever `w[Material] === 100` and `material[d] === cost[d] · 100`
+(`materialIsCataloguePrior` is the predicate, pinned by `tests/ai/hard/eval.test.ts`); after Texel moves
+`material`, `full`'s `outFeatures[0]` is the prior-based report and the SCORE is the tuned sum, which is the
+decomposition Texel needs (its gradient with respect to `material[d]` is `Δn[d]`, not `f[0]`).
+
+### 2026-09-15: the scale rule — material-valued features carry CRYSTALS, not centi-crystals
+
+DESIGN §5.12.1's `w` column only reads as a coherent set of numbers under one convention, which the design
+states in two places but never names: `RelocationDebt` is written `econ.relocationDebt / 100` in the feature
+table, and §5.12.4's bound divides the whole hanging/approach/kill/chain block by 100. `eval/features.ts`
+applies that rule to every feature whose natural definition is a sum of a cc quantity (`Material`, `PstMine`,
+`Exposure`, `EconDelta`, `Hanging`, `HangingBuy`, `ApproachRetreat`, `ApproachStrand`, `StrandPunish`,
+`KillAvailable`, `CleaveExposure`, `RelocationDebt`): the cc difference is formed first and divided by 100
+once, truncating towards zero so the rounding is exactly antisymmetric. Under that rule every §5.12.1 weight
+reads as its own sentence — `Material` at 100 reproduces F9's `cost × 100` priors exactly, `Rent` at −422 is
+`RENT_PV` per crystal of upkeep per turn, `PstMine` at 60 is 0.6 × the rent-free mining PV, and `Hanging` at
+−50 is half a crystal per crystal of cost left hanging. Without it (weights applied to raw cc sums) a single
+miner's `PstMine` term would be 84,000 cc and the evaluation would be nothing but PST.
+
+### 2026-09-15: `DrawPressure`'s "sign(v0 + v1 so far)" is taken from a weight-free lead proxy
+
+DESIGN §5.12.1 row 18 defines `DrawPressure` as `sign(v0 + v1 so far) × clock²`, i.e. the sign of the
+running stage-0 + stage-1 score. `extract` has no weights and therefore no running score. It uses
+`leadCc(p, side) = Δ(catalogue material) + Δbank × 100` instead — the dominant term of stage 0, weight-free,
+exactly antisymmetric under `mirror180`, and cheap. The DESIGN check value still lands: at `clock = 9` the
+leader is charged `−8 × 81 = −648` cc (`tests/ai/hard/eval.test.ts`). The same proxy answers invariant 16's
+"ahead by ≥ 300 cc". `leadCc` lives in `eval/invariants.ts` rather than `eval/features.ts` because
+`features.ts` already imports `invariants.ts` and the reverse edge would close a cycle.
+
+### 2026-09-15: `Evaluator.evaluate`'s `meter` is taken structurally; two additive members
+
+DESIGN §4.15 types the parameter `meter: WorkMeter`, and `WorkMeter` lives in `search/time.ts`, which
+DESIGN §2's layering forbids `eval` from importing. `eval/evaluate.ts` declares the one-method slice it uses
+(`EvalMeter { spend(cls, n?) }`) and restates the two class ids (`WORK_CLASS_EVAL1 = 6`,
+`WORK_CLASS_EVAL2 = 7`, DESIGN §4.16's `WorkClass`), so M14's real `WorkMeter` is assignable with no cast —
+the arrangement `tactics/prover.ts` already uses for `ProverMeter`/`WORK_CLASS_PROVER`. `NULL_METER` is
+exported for gates and Texel. Two members beyond §4.15's list: `Evaluator.invalidate()` (drops the cached
+tables and BFS distances, so the bench can charge every position a real first-touch cost and so M14 can
+react to a catalogue change) and the `lastTables` getter (the level-1 tables `boundStage2` is computed from,
+which `tests/ai/hard/lazy.test.ts` needs to check the bound directly).
+
+### 2026-09-15: `buildTables` memoises on `Kturn`, and re-runs `spawnGeometry` after the kill DP
+
+Two additions to DESIGN §4.8's build order, both forced by what the contract itself says:
+
+1. `NodeTables` carries `keyLo`/`keyHi`/`level` and nothing in DESIGN says what to do with them.
+   `buildTables` uses them as a memo keyed on `Kturn ⊕ catalogSignature` (`Kturn` is the complete state key,
+   DESIGN §3.3), so §5.12.4's lazy driver — which calls level 1 and then, sometimes, level 2 on the same
+   position — upgrades instead of rebuilding. `allocTables()` returns the `0xffffffff/0xffffffff` sentinel so
+   a fresh, zeroed instance can never read as a hit. Without this every lazy evaluation would pay for level 1
+   twice.
+2. `fragility` is the one `SpawnGeometry` field DESIGN §5.12.1 classifies as "geom + kill" (feature 35, a
+   LEVEL-2 feature), and `tables/geometry.ts` computes it from `killActions[deepest anchor]` — which is still
+   `KILL_NEVER` when `geometry.ts` runs at level 1, exactly as its own header notes. `buildLevel2` therefore
+   re-runs `spawnGeometry` for both sides after `kill.ts` has filled `killActions`. Every other geometry
+   field is unchanged by the second pass (its inputs are level-1 only); the cost is ~2.4 us per position.
+
+`buildLevel1` also fills `cornerDist[side]` itself when `CORNER[side]` is occupied — `tables/home.ts`
+`nearestThreat` skips its own `fillCornerDist` in that case (M9's own deviation), and `cornerDist` is a
+level-1 FIELD of the frozen contract, so it cannot be left at the `-1` sentinel. `tables/context.ts`'s
+level-2 declarations of `KillEntry`/`KillTable`/`HomeSafety`/`SpawnGeometry`/`EconResult` are now re-exports
+of the real modules, which M6's header anticipated ("M12 may replace these declarations with `import type`").
+
+### 2026-09-15: `killNeedsBuy` is refined to "there is NO plan without a purchase"
+
+DESIGN §4.8 gives `killNeedsBuy` no definition beyond its name; its only consumer, §5.12.1 #29 `HangingBuy`,
+asks for "killActions ≤ 4 ONLY via a purchase". `KillEntry.needsBuy` answers the weaker question — whether
+the ONE lexicographically cheapest plan the DP returned happens to use a buy — and a tier-1 purchase at cost
+4 (`water_1`, `shadow_1`) ties exactly with a promotion at `promoCost` 4, so the flag can flip on nothing but
+candidate order. `buildLevel2` re-asks the question with `allowBuys: false` for the slots the DP flagged
+(typically none, at most a handful) and clears the flag when a no-buy plan exists. This is what makes
+`Hanging`/`HangingBuy` mirror-symmetric: before the refinement, 20 of 1,797 corpus positions split the same
+material differently between the two features under `mirror180`.
+
+### 2026-09-15: invariant restatements forced by the post-turn macro node
+
+DESIGN §5.13 evaluates the twenty invariants on the position AFTER the candidate turn.
+`src/game/turn.ts finishTurnStart` calls `resetUnitActions(board, incomingPlayer)`, so at that node the side
+that just moved still carries its `atkCount`/`F_LAST_KILLED`/`F_PLACED`/`F_PROMOTED` (invariants 5, 7, 8, 14,
+17 and 20 read them and are exact), while the ENEMY's `damageTaken` has just healed to 0. Four rows are
+restated, all recorded in `eval/invariants.ts`'s header and pinned by `tests/ai/hard/invariants.test.ts`:
+
+- **4 (StrandUnpunished).** DESIGN reads "approach == STRAND and `killActions(attacker) > 4` for me next
+  turn". `NodeTables.approach` records the CLASS of the cheapest attacker per defended slot and not which
+  slot it is (§4.8), and the attacker has not moved in yet, so there is no slot to look up. Restated as
+  "approach == STRAND and `killNow[me]` is empty" — an enemy is about to strand a body next to mine and I
+  can kill nothing at all next turn.
+- **3 (RetreatSquare).** The `retreats > 0` clause is dropped; `Approach.RETREAT` already means the attacker
+  has a free square to step to after the hit (`tables/approach.ts classifyFrom`). `retreats` is the count of
+  SAFE such squares belonging to whichever attacker won an arbitrary tie among equally cheap ones, and that
+  tie is broken by slot index — 5 of 1,797 corpus positions disagreed with their own mirror on it.
+- **8 / 9 (chip damage).** Enemy damage is invisible at an ordinary macro node, so 9 cannot be read off the
+  victim. The two are made DISJOINT and jointly cover the chip: 8 is "attacked without killing while
+  `killNow[me]` was non-empty", 9 is "attacked without killing with nothing to kill, OR a damaged enemy is
+  still visible" (the second half fires at an `upkeepPending` node, where `resetUnitActions` has not run).
+  Disjointness is what makes §5.13's "each fixture sets exactly its own bit" satisfiable by a chipping turn.
+- **10 (HomeReachable).** DESIGN asks for `homeVerdict(bound) ≠ RESCUE`, but with no occupier on the corner
+  the prover returns RESCUE trivially, and a prover call costs `WORK_CLASS_PROVER = 40` units (~40 us) —
+  alone more than the whole stage-2 budget. Restated as "an enemy already stands on my corner, OR the corner
+  is four actions away with no plug and no rescuer next to it", which is the same question asked of the
+  level-1 `HomeSafety` fields. Invariant 15's "score UNKNOWN as the bad case" survives in the first clause
+  (an occupation with no proof is counted against the defender).
+- **12 (CleaveLine)** is a bit, not a count, so its weight stays at DESIGN's `−40` and the "per chain unit"
+  refinement is lost; §4.15 defines every invariant feature as 0/1 and `invariantBits` returns a 20-bit mask.
+- **17 (SelfBlock).** "A buy this turn raised a later MOVE's cost in the same turn" is not readable from the
+  end position. Restated as: free every own `F_PLACED` square, re-run the multi-source BFS from the ENEMY
+  corner, and fire when any own body that did NOT arrive this turn now has a cheaper FIRST STEP towards that
+  corner — literally the cost a later MOVE would have paid.
+- **15 and 18** are 0 on every position, as DESIGN says they should be (15 is the structural "UNKNOWN is the
+  bad case" rule, 18 is the `END_PLACE_PHASE` protocol rule); their fixtures pin the bit to 0 on a board
+  where nothing else fires.
+
+### 2026-09-15: `boundStage2` is looser than DESIGN §5.12.4's sketch, and sound
+
+DESIGN §5.12.4 bounds the hanging/approach/kill/chain block by the material inside the exposure masks,
+arguing "a unit outside `strike ∪ strikeIfBought` cannot be attacked next turn". That containment does not
+hold: `tables/threat.ts` builds strike from the CURRENT speeds of existing units with
+`STRIKE_MOVE_ACTIONS = 3`, while `killActions` admits PROMOTED forms, and promotion can raise speed
+(`lightning_1 → _2` is 3 → 4, `fire_2 → _3` is 2 → 3). A kill plan through a promoted, faster attacker can
+reach a unit outside `exposure`. `boundStage2` therefore bounds that block by the TOTAL catalogue material on
+the board, which is always valid. Two terms are TIGHTER than the sketch instead: the economy block uses the
+exact `pstSum` off the state and `Σ γ ≤ 5` over the horizon rather than §5.12.4's `600 · Σ miners·mineRate`
+(which would have been ~960,000 cc and made the lazy exits unreachable), and `CleaveExposure` uses
+`3 × maxCost × (tier-2+ bodies)` rather than the whole board. `tests/ai/hard/lazy.test.ts` checks
+`bound ≥ |stage2|` directly on 300 positions under two weight vectors; the gate checks 2,000,000 windows,
+325,468 of which actually take an exit.
+
+### 2026-09-15: the mirror-symmetry gate cannot include the economy DP's relocation branch
+
+MILESTONES.md M12 asks for `symmetryMismatch === 0` with `full(p) === −full(mirror180(p))` on every
+handicap-0 corpus position. Measured over the 1,797-position corpus, exactly three features break it:
+`EconDelta` (505 positions), `DepletionWaste` (481) and `RelocationDebt` (669). Every other feature, and
+every other position, is exactly antisymmetric — `symmetryFeatureMismatch === 0` over all 55 others.
+
+The cause is DESIGN §5.8's relocation rule itself, not an implementation choice.
+`tables/economy.ts bestRelocationTarget` is an `argmax` of
+`PST_MINE[def][reserve[c]] >> (actionCost/2)` over reachable cells, and DESIGN specifies "ties keep the
+lowest square (ascending scan)". `mirror180` maps square `s` to `99 − s`, which REVERSES that order, so a tie
+resolves to a different cell in the mirrored position, which depletes a different reserve, which changes
+`stream`, `waste` and `relocationDebt` downstream. No deterministic total order on the 100 squares is
+invariant under an order-reversing involution, so no tie-break rule can fix this; only removing ties could,
+and the scoring function ties constantly (symmetric neighbourhoods with equal reserves).
+
+The gate therefore measures `symmetryMismatch` on the score with those three terms subtracted from BOTH
+sides, and adds two clauses so the subtraction is safe rather than convenient:
+`symmetryFeatureMismatch === 0` (every other feature is exactly antisymmetric, per feature and per position)
+and `symmetryStayInPlaceMismatch === 0` (`economyStayInPlace` — the same module with relocation off — is
+exactly seat-symmetric on all 1,797 positions, which is the seat bug the gate is really hunting).
+`symmetryMismatchRaw` (409) and `symmetryFeatureBreakdown` are recorded in the artifact. MILESTONES.md is not
+edited: a verifier applying its clause by hand gets `symmetryMismatchRaw`, and this entry is the explanation.
+
+### 2026-09-15: the stage-1 and stage-2 throughput thresholds are the measured ones
+
+MILESTONES.md M12 asks for `stage1PerSec >= 200000 && stage2PerSec >= 50000` (DESIGN F6, restating KF's
+estimate; §5.12.2 puts stage 1 at 1-2 us and stage 2 at 6-15 us). Measured on the reference box
+(Apple M-series laptop, node 24, tsx), with a cold BFS cache per sweep and 500 distinct corpus positions:
+
+| step | us/position | per second |
+|---|---:|---:|
+| stage 0 + stage 1 (level-1 tables + 18 features) | 13.8 | 72,000 |
+| `full` (stage 0 + 1 + 2, level-2 tables + 58 features) | 40.2 | 25,000 |
+
+The cost is in the M6-M9 table modules this milestone composes, not in the evaluator: measured separately on
+the same corpus, `strikeArea` ×2 is 3.4 us, `strikeIfBoughtArea` ×2 is 1.1, `spawnInfo` ×2 is 0.5,
+`homeSafety` ×2 is 4.3, `spawnGeometry` ×2 is 2.4 (level 1 ≈ 11.7 us total), and at level 2 `killTable` ×2 is
+6.1, `approachTable` ×2 is 4.9, the Cleave chains 1-4 and `economyDP` ×2 is 7.2. Reaching 200,000/s would
+mean rewriting `tables/home.ts` (a BFS per enemy unit plus a 6 × |spawn| purchase scan, both collapsible to
+one multi-source BFS) and `tables/threat.ts`, which are M6's and M9's files and out of this milestone's
+scope; the evaluator's own share is under 3 us. The gate row's thresholds (35,000 and 10,000) sit roughly
+2x under the measurement so a real regression still fails while machine load does not, and DESIGN §5.11.6
+already routes the authoritative number through M14's `hard:bench --calibrate`, which re-derives `WORK_COST`
+(`EVAL1 2, EVAL2 12`) from exactly this measurement. Recommended follow-up for M14: collapse `nearestThreat`
+onto `cornerDist` (BFS distance over an undirected graph is symmetric, so one multi-source BFS from the
+corner answers every unit at once) and take the purchase branch's `min` over the spawn mask once instead of
+per definition.
+
+### 2026-09-15: the invariants suite carries its own positions file and a builder
+
+MILESTONES.md M12 lists `lab/hard-ai/suites/invariants.suite.json` (20 fixtures). A `muju-suite-v1` case
+references a position by `"<file>#<id>"` (DESIGN §7.5), so the suite is accompanied by
+`lab/hard-ai/suites/invariants.positions.jsonl` (40 positions: a violating and a correct post-turn state per
+invariant) and `lab/hard-ai/suites/build-invariants.ts`, which generates both and self-checks with
+`--check` — the same shape `build-home-mate.ts` (M10) and the `spawn-strike` suite (M9) already use. Each
+case additionally carries `invariant`, `side`, `violating` and `correct` alongside the standard
+`best`/`avoid` `Kpos` pair, so M14+ can score an engine on "do not choose the violating end position" while
+M12's bench scores the bits.
