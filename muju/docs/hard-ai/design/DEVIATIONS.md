@@ -346,3 +346,118 @@ helpers (`zPiece`, `zReserve`, `zDamage`, `zAtkCount`, `zUflags`, `zActions`,
 `keepSetReset`, `keepSetAdd`, `keepSetHas`, `findKeepSet`, `unitIdFor`,
 `slotForId`; `config.ts` `DEFAULT_MATERIAL_CC`, `placeholderWeights`,
 `INITIAL_UNITS_PER_MS`.
+
+## M5
+
+### 2026-09-15: `core` imports `src/ai/simulate.ts` for the `proverMode = 2` gate
+
+DESIGN §2 says `core` imports only `src/game/*` and `types.ts`, while §3.4
+requires `make` to call the canonical `analyzeHomeDefense` at `proverMode = 2`
+**at this milestone**. `analyzeHomeDefense(state, invader, transition)`
+(`homeCheckmate.ts:57`) takes the transition as a parameter, and the only
+implementation of it is `src/ai/simulate.ts transitionWithoutCheckmate` —
+reproducing it inside `core` would mean re-implementing `applyLegalAction`
+against the very engine the replica is differentially tested against.
+`lab/hard-ai/deps.ts` therefore allows `src/ai/simulate` from `core` alongside
+`src/game`, with a comment pointing here. The allowance is temporary: M10's
+`tactics/prover.ts homeVerdict` replaces the call and the import goes with it.
+Every other §2 restriction is enforced as written.
+
+### 2026-09-15: `proverMode = 1` claims no mate until M10
+
+DESIGN §3.4 defines `proverMode = 1` as "only the admissible damage bound
+(`homeCheckmate.ts:27-49`), which can only under-claim mates". That bound is
+`enoughPossibleDamage`, which the canonical module does not export; the packed
+replica of it is M10's `tactics/prover.ts damageBound`. Until then
+`proverMode = 1` returns "no mate", which is the extreme of the same
+under-claim and therefore never wrong in the unsafe direction.
+`tests/ai/hard/terminal-order.test.ts` pins all three modes so the M10 change
+is visible. `proverMode = 2` (the canonical call) is what `pack` sets, so the
+replica's default behaviour is exact.
+
+### 2026-09-15: undo records carry a trailing length word
+
+DESIGN §3.4 tabulates each undo record with `KIND` first and lists its payload.
+Two records are variable-length (`PAY_UPKEEP` carries a release list and a
+flag-restore list; `END_ACTION` carries an income-take list and a flag-restore
+list), so `unmake(p, u)` — which is handed only the stack pointer — cannot find
+a record's base without knowing its size. Every record is therefore written as
+`[KIND, oldResult, oldReason, ...payload..., LENGTH]`: the tabulated payload,
+preceded by the two terminal fields every kind can change (the home-checkmate
+gate can turn any action into a win) and followed by its own word count.
+
+### 2026-09-15: the `BUY` undo restores the displaced slot's unit fields
+
+DESIGN §3.4's `BUY` row is `[KIND, slot, cost, phaseBefore, actionsBefore]`.
+That is not invertible when the BUY reuses a dead slot (F20: "dead slots reused
+on BUY, lowest dead index"): the slot still holds the `defId`/`owner`/`damage`/
+`atkCount`/`uflags` of whatever was killed or released there, and the `unmake`
+of that EARLIER `ATTACK`/`PAY_UPKEEP` resurrects the unit by writing `sq` back
+and calling `linkSquare`, which reads those fields straight out of the slot. The
+record therefore also carries `slotCountBefore` and the five displaced unit
+fields. Found by `tests/ai/hard/make-unmake.test.ts` ("a whole turn made and
+unmade action by action restores the root exactly"), which is why that test
+plays sequences that span the turn boundary rather than single actions.
+
+### 2026-09-15: `clock` is clamped at 10
+
+`PackedState.clock` is documented as `inactivityPlies 0..10` and the Zobrist
+`clock` plane has exactly eleven entries. With `inactivityRule: 'off'`,
+`resolveInactivityDraw` never fires and `inactivityPlies` grows without bound
+(`turn.ts:96-99`), which would index past that plane. `pack` and `make` both
+clamp the stored clock at 10. Nothing reads the clock above the limit — the
+draw rule is off in exactly the states where the clamp can bite — and both
+sides of the differential clamp identically, so the fuzzer's digest comparison
+still covers the case (`drawRuleOffGames` counts those games).
+
+### 2026-09-15: `perftReplica` restricts MOVEs to one action
+
+DESIGN §7.2 requires `perftReplica` to match the frozen canonical numbers on
+every fixture. §4.4 requires `genActions` to emit every legal MOVE *including*
+multi-action ones, while the canonical enumerator's `generateAllActions` emits
+only single-action ones (`getValidMoves` caps at `speed`). The two sets reach
+the same END POSITIONS (every multi-action move is a chain of legal one-action
+hops along its own BFS path) but not the same SEQUENCE count, so `perftReplica`
+skips MOVEs of cost > 1 in order to measure the same thing the frozen fixtures
+measure. Multi-action MOVEs are covered instead by the fuzzer's legality
+surface (which compares against `generateAllActions` *plus* the
+`getMovementRange` expansion, as §7.3 specifies) and by
+`tests/ai/hard/state.test.ts`. `perftReplica` likewise reproduces the canonical
+`midStateKey`/`endStateKey` partitions rather than keying on `Kpos`, which is a
+strictly finer partition and would report different counts for reasons
+unrelated to the replica's correctness.
+
+### 2026-09-15: the keep-set legality surface is set-equal only when untruncated
+
+`upkeepActions` (`upkeep.ts:34-55`) enumerates EVERY affordable subset of up to
+twelve rent-bearing units — up to 4,096 of them — while DESIGN §3.2's
+`KeepSetTable` holds 64 and §5.10 caps the root at 64. `Replica.genKeepSets`
+reproduces the canonical enumeration exactly (the keep-first DFS for ≤ 12 rent
+units; the empty set plus the four greedy orderings above that) and only when
+more than 64 subsets survive does it rank them by §5.10's criteria and keep the
+best 64. The fuzzer's legality surface therefore requires soundness always
+(every emitted keep-set is accepted by `isUpkeepSelectionLegal`) and set
+equality only where it is defined — when the replica did not truncate. Truncated
+nodes are reported as `fuzz.legalityKeepSetTruncations`.
+
+### 2026-09-15: exports beyond the literal §4 lists
+
+None of these changes a listed signature. `core/state.ts` also exports
+`MAX_CLOCK`, `INACTIVITY_LIMIT`, `ACTIONS_PER_TURN`, `UNDO_WORDS` and
+`Replica.needsProof`/`Replica.resetUndoScratch` (the last drops the BUY
+id-displacement stack, which only a forward-only driver such as the fuzzer
+needs); `core/movement.ts` also exports `bfsMulti` and `DISTANCE_CACHE_BITS`;
+`core/spawn.ts` also exports `newSpawnInfo` (DESIGN §4.6's `spawnInfo` takes a
+caller-supplied `out`, so callers need a way to build one); `core/income.ts`
+also exports `PST_HORIZON`, `RESERVE_VALUES`, `pstSumOf` and `materialSumOf`
+(the `pstSumCc`/`materialCc` invariants, used by `rehash` and the tests);
+`verify/perft.ts` also exports `kposHex` and `endKeysReplica` (M11's other
+side of the `endKeysCanonical` comparison).
+
+### 2026-09-15: `Replica` owns a `DistanceCache`
+
+DESIGN §4.4's constructor is `constructor(cat?: Catalog)`, which it still is.
+`isLegal`, `genActions` and `make` all need BFS distances, and DESIGN §5.1 puts
+that cache behind `core/movement.ts createDistanceCache`; the replica builds one
+in its constructor and exposes it as `readonly dist` so `tables/*` (M6+) can
+share the same cache rather than recomputing the same maps.

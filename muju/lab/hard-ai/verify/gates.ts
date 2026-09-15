@@ -122,15 +122,43 @@ export const GATES: Gate[] = [
       metrics.tscErrors === 0,
     timeoutMs: 2 * MIN,
   },
-  notImplemented(
-    'M5',
-    ['M4'],
-    'npx vitest run tests/ai/hard && ' +
+  {
+    id: 'M5',
+    dependsOn: ['M4'],
+    description: 'Replica: state, movement, spawn, income, make/unmake, generators, fuzzer',
+    command:
+      'npx vitest run tests/ai/hard && ' +
       'npm run hard:fuzz -- --actions 1000000 --seed 20260914 --surfaces transition,legality --legality-every 8 --out lab/results/hard-ai-verify/M5-fuzz.json && ' +
       'npm run hard:perft -- --check --engine replica --out lab/results/hard-ai-verify/M5-perft.json && ' +
       'npm run hard:deps',
-    6 * MIN,
-  ),
+    args: [],
+    // `hard:perft --check --out <dir>/M5-perft.json` nests its own numbers under
+    // `perft` and folds the sibling `<dir>/M5-fuzz.json` in under `fuzz` (see
+    // `siblingMerges` in `lab/hard-ai/perft/run.ts`), so this single artifact
+    // carries both halves; `vitestFailures` and `depsViolations` come from the
+    // chain's own output the way they do for M1/M4.
+    artifact: 'lab/results/hard-ai-verify/M5-perft.json',
+    criterion: metrics => {
+      const fuzz = metrics.fuzz as Record<string, unknown> | undefined;
+      const perft = metrics.perft as Record<string, unknown> | undefined;
+      return (
+        metrics.vitestFailures === 0 &&
+        fuzz?.actions === 1_000_000 &&
+        fuzz?.divergences === 0 &&
+        fuzz?.legalitySetMismatches === 0 &&
+        fuzz?.unmakeMismatches === 0 &&
+        fuzz?.rehashMismatches === 0 &&
+        fuzz?.invariantViolations === 0 &&
+        (fuzz?.canActClearedGames as number) > 0 &&
+        (fuzz?.reviewUpkeepGames as number) > 0 &&
+        (fuzz?.eliminationRuleGames as number) > 0 &&
+        perft?.fixturesMismatch === 0 &&
+        perft?.engine === 'replica' &&
+        metrics.depsViolations === 0
+      );
+    },
+    timeoutMs: 6 * MIN,
+  },
   notImplemented(
     'M6',
     ['M5'],

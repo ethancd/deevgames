@@ -137,7 +137,40 @@ import {
   type Weights,
 } from '../../../src/ai/hard/config';
 
-import { perftActions, perftMidStates, perftTurns } from '../../../src/ai/hard/verify/perft';
+import { endKeysCanonical, perftActions, perftMidStates, perftReplica, perftTurns } from '../../../src/ai/hard/verify/perft';
+import {
+  PackError,
+  Replica,
+  allocState,
+  copyState,
+  newUndo,
+  type Undo,
+} from '../../../src/ai/hard/core/state';
+import {
+  bfsFrom,
+  createDistanceCache,
+  moveCost,
+  reachMask,
+  type DistanceCache,
+} from '../../../src/ai/hard/core/movement';
+import {
+  anchorsVoidedBy,
+  blockingSet,
+  isLegalSpawn,
+  spawnInfo,
+  spawnMaskWith,
+  spawnMaskWithout,
+  type SpawnInfo,
+} from '../../../src/ai/hard/core/spawn';
+import {
+  GAMMA_Q16,
+  PST_MINE,
+  RENT_PV,
+  projectedIncome,
+  pstMine,
+  rentCc,
+  upkeepDue,
+} from '../../../src/ai/hard/core/income';
 import type { AIAction } from '../../../src/ai/types';
 import type { GameState } from '../../../src/game/types';
 
@@ -283,14 +316,6 @@ const _profileFor: (unitsPerMs: number, deviceMemoryGb: number | undefined) => H
 // Each alias reproduces the module DESIGN §4 names; the suppression below it
 // goes away (and is replaced by real declaration tests) at that milestone.
 
-// @ts-expect-error until M5: core/state.ts (PackError, Undo, newUndo, allocState, copyState, Replica).
-export type M5_State = typeof import('../../../src/ai/hard/core/state');
-// @ts-expect-error until M5: core/movement.ts (DistanceCache, createDistanceCache, moveCost, reachMask, bfsFrom).
-export type M5_Movement = typeof import('../../../src/ai/hard/core/movement');
-// @ts-expect-error until M5: core/spawn.ts (SpawnInfo, spawnInfo, isLegalSpawn, spawnMaskWithout/With, anchorsVoidedBy, blockingSet).
-export type M5_Spawn = typeof import('../../../src/ai/hard/core/spawn');
-// @ts-expect-error until M5: core/income.ts (GAMMA_Q16, PST_MINE, RENT_PV, projectedIncome, upkeepDue, pstMine, rentCc).
-export type M5_Income = typeof import('../../../src/ai/hard/core/income');
 // @ts-expect-error until M6: tables/threat.ts (strikeArea, strikeIfBoughtArea, nearestOwner, exposedValueCc).
 export type M6_Threat = typeof import('../../../src/ai/hard/tables/threat');
 // @ts-expect-error until M6: tables/approach.ts (Approach, ApproachResult, classifyApproach, approachTable).
@@ -350,12 +375,87 @@ export type M18_BookFormat = typeof import('../../../src/ai/hard/book/format');
 // @ts-expect-error until M18: book/probe.ts (canonicalKey, probeBook).
 export type M18_BookProbe = typeof import('../../../src/ai/hard/book/probe');
 
-/** `verify/perft.ts` exists (M1's canonical half); `perftReplica`/`endKeysCanonical` land at M5. */
 const _perftActions: (state: GameState, maxActions: number) => number = perftActions;
 const _perftTurns: (state: GameState) => number = perftTurns;
 const _perftMidStates: (state: GameState) => number = perftMidStates;
 
+// --- DESIGN §4.4-§4.7 + §7.2 replica half: core/{state,movement,spawn,income}, verify/perft (M5) ---
+
+const _packError: (e: PackError) => string = e => e.message;
+const _undo: (u: Undo) => [Int32Array, number] = u => [u.w, u.top];
+const _newUndo: () => Undo = newUndo;
+const _allocState: () => PackedState = allocState;
+const _copyState: (dst: PackedState, src: PackedState) => void = copyState;
+const _replica: (r: Replica) => unknown[] = r => [
+  r.cat,
+  r.pack({} as GameState),
+  r.unpack({} as PackedState),
+  r.isLegal({} as PackedState, 0),
+  r.isLegal({} as PackedState, 0, {} as KeepSetTable),
+  r.make({} as PackedState, 0, {} as Undo),
+  r.make({} as PackedState, 0, {} as Undo, {} as KeepSetTable),
+  r.unmake({} as PackedState, {} as Undo),
+  r.genActions({} as PackedState, new Int32Array(1)),
+  r.genPlace({} as PackedState, new Int32Array(1)),
+  r.genKeepSets({} as PackedState, {} as KeepSetTable),
+  r.rehash({} as PackedState),
+  r.check({} as PackedState),
+  r.digest({} as PackedState),
+];
+const _newReplica: Replica = new Replica();
+
+const _distanceCache: (d: DistanceCache) => unknown[] = d => [
+  d.get({} as PackedState, 0),
+  d.multi({} as PackedState, bbNew(), new Int8Array(100)),
+  d.invalidate(),
+  d.hits,
+  d.misses,
+];
+const _createDistanceCache: (bits?: number) => DistanceCache = createDistanceCache;
+const _moveCost: (dist: Int8Array, to: Square, speed: number) => number = moveCost;
+const _reachMask: (dist: Int8Array, speed: number, actions: number, out: BB) => BB = reachMask;
+const _bfsFrom: (occ: BB, origin: Square, out: Int8Array) => void = bfsFrom;
+
+const _spawnInfoShape: (s: SpawnInfo) => [BB, number, BB, number, number] = s => [
+  s.legal,
+  s.area,
+  s.anchors,
+  s.depth,
+  s.reserveSum,
+];
+const _spawnInfo: (p: PackedState, side: Side, out: SpawnInfo) => SpawnInfo = spawnInfo;
+const _isLegalSpawn: (p: PackedState, side: Side, s: Square) => boolean = isLegalSpawn;
+const _spawnMaskWithout: (p: PackedState, side: Side, slot: Slot, out: BB) => BB = spawnMaskWithout;
+const _spawnMaskWith: (p: PackedState, side: Side, extra: Square, out: BB) => BB = spawnMaskWith;
+const _anchorsVoidedBy: (p: PackedState, victimSide: Side, s: Square) => number = anchorsVoidedBy;
+const _blockingSet: (p: PackedState, side: Side, candidate: BB | null, cap: number, out: BB) => number = blockingSet;
+
+const _gammaQ16: Int32Array = GAMMA_Q16;
+const _pstMineTable: Int32Array = PST_MINE;
+const _rentPv: number = RENT_PV;
+const _projectedIncome: (p: PackedState, side: Side) => number = projectedIncome;
+const _upkeepDue: (p: PackedState, side: Side) => number = upkeepDue;
+const _pstMine: (def: DefId, reserve: number) => Centi = pstMine;
+const _rentCc: (p: PackedState, side: Side) => Centi = rentCc;
+
+const _perftReplica: (state: GameState, maxActions: number) => { sequences: number; midStates: number; endPositions: number; calls: number } =
+  perftReplica;
+const _endKeysCanonical: (state: GameState, maxActions?: number) => Set<string> = endKeysCanonical;
+
 describe('DESIGN §4 declaration tests', () => {
+  it('every §4.4-§4.7 and §7.2 replica signature is exported with the frozen shape', () => {
+    const declared: unknown[] = [
+      _packError, _undo, _newUndo, _allocState, _copyState, _replica, _newReplica,
+      _distanceCache, _createDistanceCache, _moveCost, _reachMask, _bfsFrom,
+      _spawnInfoShape, _spawnInfo, _isLegalSpawn, _spawnMaskWithout, _spawnMaskWith,
+      _anchorsVoidedBy, _blockingSet,
+      _gammaQ16, _pstMineTable, _rentPv, _projectedIncome, _upkeepDue, _pstMine, _rentCc,
+      _perftReplica, _endKeysCanonical,
+    ];
+    expect(declared.every(d => d !== undefined && d !== null)).toBe(true);
+    expect(declared).toHaveLength(28);
+  });
+
   it('every §3.1-§3.3 / §4.1-§4.3 / §4.17 signature is exported with the frozen shape', () => {
     const declared: unknown[] = [
       _side, _square, _defId, _slot, _centi, _key, _result, _reason, _packedShape,

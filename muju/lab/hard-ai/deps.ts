@@ -98,7 +98,13 @@ const LAYER_ALLOWS: Record<Layer, Layer[]> = {
 const UNIVERSAL_EXTERNAL_ALLOWS = ['src/ai/types', 'src/ai/runtime'];
 
 const EXTERNAL_ALLOWS: Partial<Record<Layer, string[]>> = {
-  core: ['src/game'],
+  // `src/ai/simulate` is allowed from `core` only for DESIGN §3.4's
+  // home-checkmate gate: at `proverMode = 2` `core/state.ts make` calls the
+  // canonical `analyzeHomeDefense`, whose third parameter is a `Transition`
+  // that only `src/ai/simulate.ts transitionWithoutCheckmate` provides. M10
+  // replaces that call with the packed `tactics/prover.ts homeVerdict` and
+  // this allowance goes away with it. See DEVIATIONS.md under M5.
+  core: ['src/game', 'src/ai/simulate'],
   verify: ['src/game', 'src/ai/simulate', 'src/ai/moves'],
   engine: ['src/game', 'src/ai/simulate', 'src/ai/moves'],
 };
