@@ -252,6 +252,89 @@ redundant with this milestone's own separate `npx tsc --noEmit -p
 tsconfig.json` check and itself exposed to transient errors from other
 agents' concurrent edits elsewhere under `src/`.
 
+### 2026-09-15: `wall:<ms>` is funded per TURN on both shapes, so `aiv2-*` splits it across its decisions
+
+DESIGN F3 states the axis as "wall-clock (`wall:<ms>` per turn)" and §7.7's
+`hard@*` bot adapter searches once per turn, but `ladder/engines.ts` as first
+written handed `work.ms` to every `findBestAction` **call**. Since the
+per-action names decide ~`ACTIONS + 1` times a turn and the `-turn` names
+once, `--work wall:1000` was funding `aiv2-hard` about five times the thinking
+time of `aiv2-hard-turn` — the M3 calibration row measured the turn path at
+−190.8 Elo (µ 0.25, LOS 2e-12) where EG G12 predicts +30…60, purely from the
+axis. M3's own criterion excludes Elo, so this never failed the gate; it would
+have made M19's first SPRT row meaningless.
+
+`createAiv2Bot` now carries a per-turn `remainingMs` (reset when
+`turnNumber`/player changes) and asks for `remainingMs / decisionsRemaining`,
+debited by what the search actually spent — the identical split the shipped UI
+uses on `useAI.ts`'s per-action fallback, so the ladder's `aiv2-*` is now the
+same bot the player faces. `createAiv2TurnBot` draws its one search from the
+same per-turn remainder, so a plan that runs out mid-turn re-searches on what
+is left instead of restarting the clock. `fixed:<units>` is deliberately
+untouched and stays per-decision: it exists for `hard:determinism` (§7.4) and
+the axis rule confines it to `hard@*`-vs-`hard@*`, which is same-shape on both
+seats. M2's three gate rows are all `fixed:1200` and are unaffected.
+
+### 2026-09-15: per-seat latency in the harness (`PlayerGameStats.decisionMs`/`.turnsTaken`)
+
+`ladder/run.ts` derived both `meanTurnMs.a` and `meanTurnMs.b` from
+`GameRecord.durationMs` — one number per GAME — so the two were equal to the
+last digit by construction (M3's artifact: a = b = 702.4585769986757; M2's
+calibration row, where the engines genuinely differ: a = b = 415.0). M3's
+criterion clause `meanTurnMs.a <= meanTurnMs.b * 1.05` was therefore vacuous
+and the latency half of the gate proved nothing.
+
+Fixed at the source rather than by relaxing the clause: `PlayerGameStats`
+(DESIGN §7.7's v3 harness block) gains two optional additive fields,
+`decisionMs` (wall-clock ms this seat's bot spent inside `nextAction` /
+`chooseAction`) and `turnsTaken` (distinct turns this seat was on move for),
+both accumulated in `lab/harness/runner.ts` around the existing decision site.
+`computeMetrics` attributes them by seat via the pair spec it already resolves
+(`spec.white === 'A'`), so each engine reports its own ms-per-turn. Both fields
+are optional, so `muju-lab-game-v2` records still satisfy the type; `run.ts`
+falls back to an even split of `durationMs` for records that lack them. Beyond
+M3's listed files, and beyond §7.7's literal v3 field list, but the clause
+cannot be made to mean anything without per-seat timing; per the worktree rule,
+the change is minimal and additive.
+
+### 2026-09-15: `verify/run.ts` reads a PRETTY-PRINTED runner report, not only a one-line one
+
+The Playwright metric extractor added above copied `extractVitestMetrics`'s
+"last stdout line that parses as JSON" scan. That works for vitest, which
+prints its whole JSON report on one line, but Playwright's JSON reporter
+indents by 2: its opening `{` sits alone at column 0 and the body runs to the
+end of the stream, so every individual line is an unbalanced fragment and the
+scan could never parse it. The consequence was silent and exactly backwards —
+`metrics.e2eFailures` stayed ABSENT on a fully green Playwright run, so the
+criterion's `e2eFailures === 0` clause failed the gate on a passing suite
+(observed: `stats.unexpected: 0`, `2 passed`, gate FAIL). Both extractors now
+share `readReport()`, which tries a one-line report first and then the column-0
+`{ … }` block — each column-0 `}` from the last backwards as the closing brace,
+so output printed after the report (a `webServer` shutting down) does not
+defeat it — with a `pick` callback that rejects anything parsing to something
+other than the report so the scan continues past nested fragments.
+
+### 2026-09-15: `verify/run.ts` merges a gate's artifact only when the chain completed
+
+`runGate()` merged `gate.artifact` into `metrics` unconditionally. A chain that
+short-circuits never reaches its artifact-producing step, so the file still at
+that path is a previous run's: M3's first red envelope carried `games: 24`,
+`adjudicationRate: 0`, `meanTurnMs` and `elo: -190.85` from a ladder that had
+finished five hours earlier, reading as if the red gate had fresh evidence.
+`pass` was never at risk (it is guarded by `!failed`), but the record was
+misleading. The merge is now conditional on `!failed`, and when it does happen
+`metrics.artifactAt` carries the artifact's mtime next to the envelope's `at`.
+
+### 2026-09-15: `thinkingDelay` restored to BEFORE each dispatch
+
+M3's `dispatchOne()` moved the cosmetic delay after `onAction(action)`, so the
+AI played its first action the instant the search returned and paused
+afterwards — a user-visible pacing change, and on the per-action loop DESIGN
+§6.4 keeps as the *unchanged* fallback. The delay is now awaited before the
+dispatch on both paths, matching the pre-M3 ordering and DESIGN §6.2 ("stays
+per dispatched action, outside the budget"), with `valid()` re-checked
+afterwards because an undo/reload/restart can land inside the await.
+
 ## M4
 
 ### 2026-09-15: `PackedState` and its slot/flag constants are declared in `types.ts`
@@ -653,6 +736,224 @@ almost all openings — armies still on their own sides, every approach `NONE`;
 `oracles/threat.ts` strides across the whole corpus for the approach sample
 instead, which is what turns 6 RETREAT / 2 STRAND verdicts into 1,874 / 1,272.
 
+## M7
+
+### 2026-09-15: `tables/kill.ts` declares `KillContext`, not `NodeTables`, as its `t` parameter
+
+DESIGN §4.11 types the second parameter of `minActionsToKill` / `killTable` /
+`cleaveChain` as `NodeTables`. `tables/context.ts` (§4.8) declares `NodeTables`
+with a `killNow: [KillTable, KillTable]` field, i.e. `context` imports `kill`;
+importing `NodeTables` back from `kill.ts` would close that cycle. `kill.ts`
+therefore exports `KillContext` — the structural subset it actually reads
+(`dist: DistanceCache`, `spawn: readonly [SpawnInfo, SpawnInfo]`) — and takes
+that. `NodeTables` is structurally assignable to `KillContext`, so every §4.11
+signature reads exactly as DESIGN writes it for a caller that passes a
+`NodeTables`; `tests/ai/hard/interfaces.test.ts` pins that by declaring all
+three functions with `NodeTables` in the parameter position and assigning the
+real exports to them. The same reasoning is what `tables/context.ts`'s own M6
+entry records for its structural copies of the level-2 result shapes.
+
+### 2026-09-15: the kill DP carries the set of lanes used, not just the hit count
+
+DESIGN §5.7's pseudocode indexes the DP by `power[h][a]` — hits and actions —
+and gives each candidate a single cost `d = min over lanes l of dist(u, l)`.
+Read literally that is only a LOWER BOUND: two attackers whose cheapest lane is
+the same neighbour square are both charged that lane, and a real turn cannot put
+two units on one square. The M7 gate criterion (MILESTONES.md) is not satisfied
+by a lower bound — it asks for `minActions` **equal** to an exhaustive replica
+search — and the first 2,000-position run of `lab/hard-ai/oracles/kill.ts`
+against the literal reading found exactly that disagreement (a purchase and an
+existing Hi both charged square 21 on `fuzz-5150-341-467`: the DP said 3
+actions, the real minimum is 4).
+
+The implementation therefore indexes the DP by `(laneMask, actions, damage)`:
+`laneMask` is a 4-bit set over the lanes `collectLanes` found, the hit count is
+its popcount, and every candidate carries the specific lane it strikes from
+(so a unit contributes one candidate per REACHABLE lane, not one candidate at
+its nearest lane). `maxLanes` still caps the popcount, so the corner's two-lane
+rule is unchanged. Each attacker still contributes at most one hit; that is
+enforced without a per-group snapshot by filling destination cells in
+descending popcount order, so a group's writes at popcount `k` only ever read
+cells of popcount `k-1` that the same group has not yet touched. The DP is 16 ×
+5 × 9 = 720 cells, still module-level and allocation-free.
+
+With this reading `suboptimal === 0` on 8,306 comparisons over 1,531 corpus
+positions (3,265 of which are real kills, 472 with a purchase and 131 with a
+promotion in the winning plan).
+
+### 2026-09-15: purchases are one entry per definition PER LANE
+
+§5.7 says "for each affordable tier-1 `d`: `q = argmin over legal spawn squares
+of dist(q, nearest lane)` — one entry per definition". With the lane-exact DP
+above, a single entry per definition would re-introduce the same overstatement
+in the purchase arm (a bought unit charged the globally cheapest lane while the
+plan actually needs it on another). Each affordable definition therefore gets
+one candidate per empty lane, priced from that lane's own cheapest legal spawn
+square, and all of a definition's lane candidates share one group — so a plan
+still buys each definition at most once, which is what "one entry per
+definition" is there to enforce.
+
+Known residual: two purchases of DIFFERENT definitions whose per-lane cheapest
+spawn squares coincide would both be placed on that square, which is illegal.
+Tracking spawn-square occupancy would need a second 4-bit mask (11,520 cells)
+for a case no corpus position produced — `lab/hard-ai/oracles/kill.ts`'s replica
+search allows up to two purchases per line and reported no disagreement. If a
+future corpus surfaces one it will show up as `suboptimal > 0` on the M7 gate.
+
+### 2026-09-15: the promoted approach cost uses the promoted definition's speed
+
+§5.7's pseudocode reuses the base form's `cost` for the promoted entry
+(`entry (cost, promoCost, POWER[side][nextDef][...])`). The canonical analysis
+twin re-derives it from the promoted definition
+(`server/analysis/tactics.ts:46-49` computes `cost` inside the `variants` loop,
+from `getUnitDefinition(v.definitionId).speed`), and speed changes across tiers
+(fire_2 speed 2 → fire_3 speed 3). `kill.ts` follows the canonical arithmetic;
+`tests/ai/hard/kill.test.ts` "uses the promoted definition's speed for the
+approach" pins it.
+
+### 2026-09-15: exports beyond the literal §4.11 list
+
+`tables/kill.ts` also exports `KILL_IMPOSSIBLE` (255), `KILL_NO_ATTACKER`
+(-128), `KILL_MAX_LANES` (4), `KILL_SCRATCH_BB` (0) / `KILL_SCRATCH_I8` (1),
+`newKillPlan` / `newKillTable` (the caller-supplied-buffer allocators every
+§4 module needs — same reasoning as M4's "exports beyond the literal §4 lists"
+and M8's `newEconResult`), and `CleavePlan` / `newCleavePlan` / `cleavePlan`.
+`cleaveChain` returns a single `Centi` as §4.11 freezes it; `cleavePlan` is the
+same computation with its witness (square, kills, actions) exposed, which is
+what the LH §4.1 probe and the M7 gate assert the ACTION COUNT of — "3 kills in
+3 actions" is not checkable from the cc value alone. `cleaveChain` is
+implemented as `cleavePlan(...).valueCc` against a module-level scratch plan,
+so the hot path allocates nothing.
+
+### 2026-09-15: the M7 corner check uses `enoughPossibleDamage`'s `preparing = false` framing
+
+MILESTONES.md's M7 criterion is `cornerMismatch === 0` — "equals
+`enoughPossibleDamage` on the 28 `lab/ai/fixtures.ts` cases". That canonical
+function has two framings. With `preparing = true` (the single call at
+`homeCheckmate.ts:76`, on the defender's freshly reset reply position) it also
+applies an upkeep filter: `const rent = preparing ? unitUpkeep(unit) : 0; if
+(rent > cash) continue` — a tier-2/3 defender whose rent exceeds the bank is
+dropped, because the reply turn begins with an upkeep settlement it could not
+pay. `tables/kill.ts` has no rent concept and §5.7 names none; rent at the home
+corner is the home prover's subject (§5.9, M10), not the kill table's.
+
+`lab/hard-ai/oracles/kill.ts` therefore scores `cornerMismatch` on the
+`preparing = false` framing — the one `searchHomeDefense`'s own `act()` uses at
+every live mid-turn node, and the one §5.7 says it generalises — evaluated on
+the 28 fixtures exactly as authored, so the fixtures' `canActThisTurn`,
+`attackedThisTurn`, `atkCount` and `damageTaken` flags are all live in the
+comparison. All 28 agree. A second metric, `cornerPreparingMismatch`, runs the
+`preparing = true` framing on the `ready` reply position with promotions
+enabled, restricted to the fixtures where the rent filter cannot fire (every
+defender's rent is affordable) so the two functions are comparing the same
+candidate set; 14 of the 28 qualify and all 14 agree. Both are asserted at 0 by
+the M7 gate row.
+
+`enoughPossibleDamage` is module-private, so `oracles/kill.ts` carries a
+transcription of `homeCheckmate.ts:27-49` with a comment requiring it to be
+kept in step with the canonical body.
+
+### 2026-09-15: the M7 oracle's "exhaustive replica search" is exhaustive over kill-relevant actions
+
+DESIGN F23 and MILESTONES.md size this gate as "kill DP vs exhaustive replica
+search on 2,000 positions with ≤ 8 own units and ≤ 4 actions". A literally
+unrestricted DFS over `Replica.genActions`/`genPlace` is not affordable at that
+size: eight units with multi-action MOVEs generate several hundred actions per
+node, and the Place phase (six definitions × every legal spawn square) is
+unbounded in depth because place actions cost no game actions.
+
+`bruteForceKill` is exhaustive over the actions that can shorten a
+minimum-action kill of ONE target, and nothing else:
+
+- `ATTACK` on the target; `ATTACK` on a unit standing on one of its lanes (the
+  only way to open a plugged lane);
+- `MOVE` onto one of its lanes (the replica emits multi-action MOVEs as single
+  entries and `ceil(d1/s) + ceil(d2/s) >= ceil((d1+d2)/s)`, so an approach never
+  gains by stopping short); `MOVE` of a unit that currently stands on a lane, to
+  any destination (vacating it for a stronger attacker, possibly having to route
+  around its own army);
+- `BUY` of an affordable definition on a per-lane-cheapest legal spawn square —
+  a strictly RICHER set than the single square §5.7 charges the DP, which is
+  what gives the purchase arm its discriminating power — capped at two
+  purchases and two promotions per line (each bought or promoted attacker still
+  has to spend an action out of a budget of at most four);
+- `PROMOTE` of an own unit; `END_PLACE`. `END_ACTION` ends the turn and can
+  never kill, so it is never explored.
+
+Purchases and promotions are enumerated in a canonical order ((defId, square)
+ascending, then slot ascending) because they commute, which removes permutation
+duplicates without removing multisets. The search is iterative-deepening on the
+action count, so the first depth that succeeds is the minimum and the crystal
+figure inside that depth is a true minimum. A position whose search exceeds
+`BRUTE_NODE_LIMIT` (400,000 nodes) is reported as `truncated` and excluded
+rather than scored on a truncated search; the gate requires `truncated === 0`,
+and the 2,000-position run reports 0.
+
+### 2026-09-15: `allowBuys` / `allowPromotes` are compared only where the Place phase is open
+
+A purchase or a promotion is legal only while `turn.phase === 'place'`
+(`legality.ts:22-23`). On an action-phase node the DP's `allowBuys` /
+`allowPromotes` describe a hypothesis the position itself cannot realise, so
+there is no replica line for the search to match and the comparison would be
+measuring the phase rule rather than the DP. `oracles/kill.ts` runs the
+`(false, false)` combination on every sampled position and the other three on
+place-phase positions only, and reports `comparisonsByCombo` /
+`minComparisonsPerCombo` so the gate can assert that all four combinations were
+genuinely exercised (6,128 / 726 / 726 / 726 on the 2,000-position run).
+
+### 2026-09-15: `lab/hard-ai/positions/tactics.jsonl` accompanies the suite, and `best` is exhaustive
+
+MILESTONES.md M7 lists `lab/hard-ai/suites/tactics.suite.json` (≥ 60 cases,
+authored) but no position file; DESIGN §7.5's schema addresses every case as
+`position: "<file>#<id>"`, so the cases need stored positions to point at. This
+milestone adds `lab/hard-ai/positions/tactics.jsonl` alongside the suite, the
+same way M8 added `lab/hard-ai/positions/economy.jsonl` alongside
+`economy.suite.json`.
+
+§7.5 describes the tactics suite as "kill table over self-play positions, kills
+≥ 800 cc, hand-checked". Only 40 positions in the whole committed corpus
+(`authored` + `openings` + `fuzz-1000`, 1,808 positions) offer a killable enemy
+worth ≥ 800 cc at all, and 36 of those are Place-phase-heavy enough that their
+macro turn cannot be enumerated exhaustively — not enough for 60 cases. The 79
+cases are therefore authored: a sweep of ten kill motifs (adjacent one-shot,
+multi-action approach, two-lane and three-lane splits, chipped target, three
+lanes plugged by the target's own miners, the home corner's two lanes, a
+two-lane approach, promotion-enabled, purchase-enabled) across every
+(attacker, target) definition pair the LIVE catalogue makes lethal, keeping
+only targets costing ≥ 800 cc and only positions where
+`tables/kill.ts minActionsToKill` reports a kill.
+
+`best` is the COMPLETE set of end-position `Kpos` in which the target is off
+the board, enumerated exhaustively with the M5 replica over one-action MOVEs
+(which reach every square a multi-action MOVE reaches, so the END-POSITION set
+is unchanged — the same argument M5's `perftReplica` entry records), and every
+case was cross-checked against the canonical engine's own end-position set
+(`verify/perft.ts endKeysCanonical`, depth 10) before being written. Because
+`best` is complete, `avoid` is deliberately empty: every end position outside
+`best` already fails §7.5's rule. Cases whose `best` is the whole end-position
+set are dropped — a case with nothing to get wrong scores nothing. `Kpos`
+values are `"0x"` + `verify/perft.ts kposHex`, matching `economy.suite.json`.
+No M7 gate criterion reads this file; it is scored from M14.
+
+### 2026-09-15: the M7 gate row asserts coverage as well as agreement
+
+MILESTONES.md's criterion is `suboptimal === 0 && cornerMismatch === 0 &&
+cleaveProbeOk === true && vitestFailures === 0`. Every one of those passes
+vacuously on an empty comparison population, so the gate row also requires
+`truncated === 0`, `minComparisonsPerCombo > 0`, `killsFound > 0`,
+`buyPlans > 0`, `promoPlans > 0`, `cornerChecked === 28` and
+`cornerPreparingChecked > 0`, plus `cornerPreparingMismatch === 0`. Same
+reasoning as the M6 row's coverage assertions.
+
+### 2026-09-15: `tests/ai/hard/interfaces.test.ts` (shared, M4) lost its M7 suppression
+
+`interfaces.test.ts`'s own doc comment says the `@ts-expect-error until M<n>`
+type-only imports at the bottom are replaced with real declaration tests by the
+milestone that builds the module — and until that happens the now-unused
+directive fails `npm run hard:types`. This milestone removed the
+`until M7: tables/kill.ts` line and added the §4.11 declaration block described
+in the first entry above. No other part of that file changed.
+
 ## M8
 
 ### 2026-09-15: `newEconResult` — an exports-beyond-the-literal-list allocator
@@ -735,3 +1036,320 @@ this file (the M8 gate row runs only `economy.test.ts` and
 `oracles/economy.ts`), so nothing here is checked by `npm run hard:verify --
 gate M8`; it exists to satisfy MILESTONES.md's M8 "Files (create)" list ahead
 of the milestone that actually scores it.
+
+## M11
+
+### 2026-09-15: C1 prunes a child's SUBTREE, never a child that ends the game
+
+DESIGN §5.3 states C1 as "child `cur` is pruned iff `isIndependent(prev, cur)`
+and `key(prev) > key(cur)`", justified by the claim that the swapped order
+`cur, prev` reaches the same end position. That argument holds for costs and
+legality — for an independent pair, applying `cur` at `S0` can only be cheaper
+than at `S1`, and `prev`'s own path avoids every square `cur` touches — but it
+silently assumes both actions are still playable after the swap. An action
+that ENDS THE GAME breaks the assumption: `cur` applied first terminates the
+turn, so `prev` never happens and the end position `prev, cur` reaches is
+reachable in no other order.
+
+The counterexample is not hypothetical; the M11 oracle found three of them in
+the first forty corpus positions it checked. In
+`fuzz-1000.jsonl#fuzz-5150-119-64`: White moves the unit on C4 to C3, then the
+Hi on D4 kills the last Black unit on D5. `key(MOVE) > key(ATTACK)` (ATTACK
+ranks 0, MOVE ranks 1) and the footprints are disjoint, so
+literal C1 prunes the pair in favour of "kill, then move" — which cannot exist,
+because the kill wins the game on the spot. Ten of that position's 187 end
+positions vanished; two other positions in the first forty lost 2 and 34.
+
+`ActionSearch.dfs` therefore applies **every** child and prunes only its
+SUBTREE: a pruned child whose `make` leaves the game over (`isDone`) is still
+recorded as a turn boundary. The cost is one `make`/`unmake` per pruned child,
+which is negligible against the subtree it still skips — the initial position's
+canonical+TT node count is unchanged at 1,053, and the C1-only count is
+unchanged at 19,790. `lab/hard-ai/positions/canonical-fixtures.jsonl#canonical-move-then-kill`
+is the authored regression, and `tests/ai/hard/canonical.test.ts` asserts both
+halves of it (the pair IS independent and IS key-ordered for the prune; its end
+position IS still produced).
+
+### 2026-09-15: `enumerateAll` takes an optional `maxCalls` and returns `-1` when it is spent
+
+DESIGN §4.13 gives `enumerateAll(p, prefix, prefixLen, onEnd): number`. The
+naive tree it walks is not enumerable at four actions on a real mid-game
+position: root branching over `fuzz-1000.jsonl` runs to 837 (median 258)
+because `genActions` emits every multi-action MOVE, so a four-action tree is
+~10^11 nodes. The M11 gate has to check 200 corpus positions inside eight
+minutes, which means it has to *discover* how deep it can afford to go. A fifth
+optional parameter bounds the walk: on exceeding it, the DFS aborts and returns
+`-1` (with `onEnd` having fired an arbitrary prefix the caller must discard)
+instead of throwing. Four-argument callers are unaffected — the default is the
+previous hard bound, `MAX_NAIVE_CALLS = 40,000,000` — and the parameter is
+additive, so the §4.13 signature still typechecks against this one.
+
+### 2026-09-15: the M11 oracle lowers each position's action budget to fit the node bound
+
+Following from the above: `lab/hard-ai/oracles/canonical-check.ts` checks every
+position at the LARGEST action budget whose naive tree fits `--node-budget`
+(500,000 nodes by default), found by lowering `p.actions` and re-deriving the
+derived fields with `Replica.rehash`. A state with fewer actions remaining is an
+ordinary, legal mid-turn state, not a synthetic one, and C1 is a rule about
+ADJACENT pairs in the DFS — a two-action budget already exercises every pair
+exhaustively. The initial position and the fixtures are small and are checked at
+their full depth (`depth` from the `muju-position-v1` record, as `hard:perft`
+uses it); over the 200 corpus positions the realised budgets are ~3/4 at two
+actions and ~1/4 at three. The artifact reports the histogram as
+`budgetHistogram` so a future run cannot quietly degrade to "everything at one
+action" without it showing.
+
+### 2026-09-15: the initial-position mid-state count is measured at 20 TT bits
+
+`TurnTT` is direct-mapped on `keyLo`, so at the shipped `ttBitsTurn = 18` two
+index collisions re-expand a state that was already searched: the initial
+position reports 1,054 expanded nodes instead of DESIGN §5.3's 1,053, with an
+identical result set. The gate's `initialMidStates` is therefore measured at 20
+bits, where the raw node count reproduces 1,053 exactly; the 18-bit number is
+reported alongside it as `initialMidStatesShippedTt`, and the count of DISTINCT
+`(Kturn, actionsRemaining)` keys expanded — 1,053 at both sizes — as
+`initialDistinctMidStates`. Nothing about the shipped configuration changes.
+
+### 2026-09-15: `gen/` declares a structural `WorkSink` rather than importing `search/time.ts`
+
+DESIGN §5.4's pseudocode calls `meter.spend(TURN)` and `meter.exhausted()`, and
+§4.13 types the parameter as `WorkMeter` — which lives in `search/time.ts`
+(§4.16) and lands at M14. DESIGN §2's layering forbids `gen` importing
+`search`, so `actionsearch.ts` declares the two-method structural interface it
+actually calls (`WorkSink`) and exports `UNLIMITED_WORK` for the gate runner,
+the oracles and the tests. The real `WorkMeter` satisfies it structurally, so
+M14 passes one unchanged. `WorkClass.TURN`'s value (2) is spelled as a local
+constant for the same reason; `tests/ai/hard/constants.test.ts` is the place to
+cross-check it once `search/time.ts` exists.
+
+### 2026-09-15: `actionPriority`'s MVV term is normalised by `CC`
+
+DESIGN §5.4 lists the MVV-LVA analogue as `1_000 · victimValueCc / actionCost`.
+`victimValueCc` is the `cost × 100` material prior in CENTI-crystals (DESIGN
+§4.11, F9), so the unnormalised term runs 300,000–1,700,000 and swamps both the
+100,000 corner-kill bonus and the 50,000 threat-removal bonus that DESIGN's own
+list prints above it — inverting the descending order it states. The term is
+divided by `CC`, which keeps every coefficient in the list's stated relative
+order while preserving MVV's intent (a Kagari is worth five Hi).
+
+### 2026-09-15: "kills a unit whose `killActions` against me ≤ 4" reads MY units
+
+`NodeTables.killActions` (§4.11) is indexed by the DEFENDER: the minimum number
+of actions a slot's OWNER'S ENEMY needs to kill it. Read literally, "kills a
+unit whose `killActions` against me ≤ 4" would index the victim — but the
+victim's `killActions` is what *I* need to kill *it*, which the MVV term
+already prices, and says nothing about the threat it poses. The bonus is
+therefore paid when the victim stands next to one of MY units the enemy can
+kill within a turn (`t.killActions[myAdjacentSlot] <= 4`), which is the
+"remove the threat" reading of §5.4's own comment. Until M6/M12 fill the table
+in, `neutralTables()` reports 127 everywhere and the term is never paid.
+
+### 2026-09-15: the priority sort is skipped when the width does not bind
+
+DESIGN §5.4 scores and stable-sorts every child before slicing `widths[step]`.
+When the width does not bind (`widths[step] >= n`, which is the case throughout
+the gate's unbounded-width runs) the slice is the whole list, so the sort can
+only change the order in which equally-ranked kept turns are discovered — never
+which end positions are reached, and never which turns survive `cfg.keep`
+except among exact score ties. `orderTop` is therefore skipped in that case,
+which is what makes the 200-position gate affordable. When the width does bind,
+the selection is a stable partial selection sort (rotation, not swapping), so
+ties keep generation order exactly as §5.4 asks.
+
+### 2026-09-15: exports beyond the literal §4.13 lists
+
+`gen/actionsearch.ts` additionally exports `footprint`, `actionKey`,
+`actionPriority`, `neutralTables`, `ActionSearchTables`, `WorkSink`,
+`UNLIMITED_WORK`, `MAX_NAIVE_CALLS`, `EndObserver`/`NodeObserver` and the
+`nodes`/`visits`/`ends`/`turnTT` accessors on `ActionSearch`; `gen/turn.ts`
+additionally exports `TACTICAL_FLAGS` and `TurnPool.free`. The observers and
+counters are what the M11 gate measures with; `ActionSearchTables` is the
+narrow slice of `NodeTables` the ordering reads, so M6/M12's real tables are
+structurally assignable to it and `neutralTables()` is the stub DESIGN §5.4
+calls for. `ActionSearchConfig` is re-exported from `config.ts` per M4's
+declaration convention. Nothing in §4.13's stated list is missing or renamed.
+
+### 2026-09-15: the M11 gate row adds three conjuncts
+
+MILESTONES.md's criterion is `endSetMismatch === 0 && initialEndPositions ===
+797 && initialMidStates <= 1053 && ttReduction >= 10 && vitestFailures === 0`.
+The row also asserts `ttEndSetMismatch === 0` (the turn TT loses no end
+position the C1-only search found — C2 is half of what this milestone ships and
+the stated criterion never looks at it) and `fixturesChecked === 14 &&
+corpusChecked === 200`, so the gate cannot pass vacuously if the fixture files
+or the corpus go missing. 14, not 15: `authored.jsonl#upkeep-pending` pays an
+upkeep that eliminates the side to move, so that turn has no action phase to
+enumerate and the oracle reports it under `positionsSkipped` with its reason.
+
+## M10
+
+### 2026-09-15: `core/state.ts` may import `tactics/prover.ts`
+
+DESIGN §2's layer table says `core` imports only `types.ts` and `src/game/*`.
+DESIGN §3.4 says `core/state.ts make` calls the packed home-checkmate prover,
+which §2 itself places in `tactics/`. The two cannot both hold. The narrower,
+more specific rule wins: `make` calls `tactics/prover.ts`, and
+`lab/hard-ai/deps.ts` grows a `FILE_LAYER_ALLOWS` map with exactly one entry,
+`'core/state.ts': ['tactics']`. Every other `core` file is still held to the §2
+table, and there is no module cycle — `tactics/prover.ts` imports `core/types`,
+`core/bits`, `core/tables`, `core/catalog`, `core/action` and `core/spawn`, and
+no symbol of `core/state.ts`.
+
+The M5 allowance for `core` to import `src/ai/simulate` is now unused (`make`
+no longer unpacks, so `transitionWithoutCheckmate` and `analyzeHomeDefense` are
+gone from `core/state.ts`). It is left in `deps.ts` rather than removed: an
+unused allowance can only fail to forbid something, while removing one could
+break a milestone still in flight.
+
+### 2026-09-15: `homeVerdict`'s `meter` parameter is `ProverMeter`, not `WorkMeter`
+
+DESIGN §4.14 types the optional last parameter of `homeVerdict` as
+`WorkMeter`, which lands at M14 in `search/time.ts` — a layer `tactics` may not
+import (DESIGN §2). `prover.ts` therefore declares the structural interface it
+actually needs, `ProverMeter { spend(cls: number, n?: number): void }`, which
+the real `WorkMeter` satisfies, so M14 can pass one with no change on either
+side. `WORK_CLASS_PROVER = 8` is exported alongside it (`WorkClass.PROVER`,
+DESIGN §4.16).
+
+### 2026-09-15: `homeWitness`'s keep-set lives in an exported table
+
+DESIGN §4.14 freezes `homeWitness(p, invader, maxNodes, out)` with no
+`KeepSetTable` parameter, but a `PAY_UPKEEP` PA carries only a keep-set INDEX
+in `paA` (DESIGN §3.2), and the prover's keep-set is an arbitrary affordable
+subset that no node-local table is guaranteed to hold. `prover.ts` therefore
+exports `WITNESS_KEEP`, a module-level `KeepSetTable` the line's `PAY_UPKEEP`
+always indexes at 0; a caller decodes the line with
+`toAIAction(p, pa, WITNESS_KEEP)`. Like the rest of the module it is
+single-threaded scratch: the table is rewritten by the next `homeWitness` call.
+
+`prover.ts` also exports `proverStats()` (the last call's `nodes`, `cutoff` and
+`method`, which is what the gate's node-for-node comparison against
+`analyzeHomeDefenseEvidence` reads) and `HomeVerdict`/`ProverStats` types.
+
+### 2026-09-15: the fuzzer's `prover` and `gate-preservation` surfaces have their own driver
+
+DESIGN §7.3 lists `prover` as the fuzzer's third surface, and DESIGN §5.9 (c)
+adds the gate-preservation proof; MILESTONES' M10 gate row invokes them as
+`--surfaces prover --cases 20000` and `--surfaces gate-preservation --actions
+100000`. Neither compares what `fuzz/differential.ts` compares — one compares a
+VERDICT on synthesised occupier positions, the other only the adjudicated
+`result`/`reason` over played games — so both live in
+`lab/hard-ai/fuzz/prover-surface.ts` and `fuzz/run.ts` dispatches to them when
+either is named alone. Naming one alongside `transition`/`legality` is rejected
+rather than silently mixing two populations into one metrics object.
+`--cases` is new (the prover surface counts positions, not actions).
+
+Two departures from the literal gate text, both strengthening it:
+
+- **Node counts, not just verdicts.** The surface compares
+  `analyzeHomeDefenseEvidence`'s `nodes` and `method` as well as its verdict
+  (`nodeMismatch`), because two provers that agree on every uncapped position
+  can still disagree the moment `PROOF_NODES` bites. A third of the fuzz cases
+  run at a cap of 1..48 nodes so the exhaustion regime is common
+  (`cappedCases`, `cutoffCases`) instead of vanishing — at the full cap only
+  ~0 % of random positions exhaust, and a gate that never exhausts never tests
+  the ordering the cap exposes. This is what caught the one real defect in the
+  replica: the `failed` set stored its Zobrist halves in an `Int32Array`, so
+  every key with the high bit set was written negative and never matched again,
+  and the replica silently re-expanded transpositions the canonical prover
+  folded together.
+- **`proofsCompared` is a pass condition.** A gate-preservation run in which no
+  corner is ever occupied proves nothing, so the driver biases play towards the
+  enemy corner and the criterion requires the gate to have fired.
+
+`hard:fuzz` also grew `perft/run.ts`'s sibling-artifact merge, so the chain's
+two outputs (`M10-prover.json`, `M10-gate.json`) reach the criterion as one
+artifact; the merge strips group labels out of what it reads back so repeated
+runs cannot nest a group inside itself.
+
+### 2026-09-15: the `home-mate` suite's 56 cases, and what a "mate framing" is
+
+DESIGN §7.5 sizes the suite at "56 — `lab/ai/fixtures.ts` 28 x {rescue, mate}
+framings" without saying what the two framings are, and §7.5's scoring rule
+(`best`/`avoid` over end-position `Kpos`) cannot express "there is no correct
+move". `lab/hard-ai/suites/build-home-mate.ts` generates the suite and its
+positions file from the fixtures, reading the canonical prover's own verdict
+for each rather than assuming one:
+
+- **rescue framing** — root: the defender's reply position (upkeep pending,
+  place phase, four actions), which is exactly the position
+  `analyzeHomeDefense` adjudicates. When a rescue exists, `best` is every end
+  position with the corner cleared. When none exists there is no correct
+  defensive turn, so the row is kept at `points: 0` with `best` = every end
+  position: a coverage row asserting the engine still returns a legal turn in a
+  lost position, never a strength claim.
+- **mate framing** — root: the invader to move, backed off onto the nearest
+  square it can still reach the corner from (a BFS over unoccupied squares).
+  When the occupation is a proven mate, `best` is every end position that wins
+  on the spot. When it is answerable, `avoid` is every end position that steps
+  into the refutation. When the corner is walled off by defenders on both of
+  its neighbours the invader cannot be backed off at all; the fixture then
+  keeps the standing occupation and the case becomes the other half of the same
+  judgement — `best` is every end position that HOLDS the corner, because an
+  occupation surviving to the invader's next `startTurn` wins (turn.ts:23-27).
+
+That yields exactly 56 cases (42 scored, 14 coverage) over 56 stored positions
+in `lab/hard-ai/suites/home-mate.positions.jsonl`.
+
+## M9
+
+### 2026-09-15: `geometry.ts infiltrationAnchors` rewritten — the inherited `anchorsVoidedBy` call always returned 0
+
+The uncommitted, unverified partial `tables/geometry.ts` this milestone started from (`docs/hard-ai/HANDOFF.md`
+§10.1) computed `infiltrationAnchors` as `Σ over own slots inside an enemy rectangle of
+anchorsVoidedBy(p, enemy, s)`, calling `core/spawn.ts anchorsVoidedBy(p, victimSide, s)` with `s` set to
+each of `side`'s own, already-placed unit squares. `anchorsVoidedBy` answers a different, HYPOTHETICAL
+question — "if an intruder stood on the EMPTY square `s`, how many of `victimSide`'s currently-unblocked
+anchors would it void" — and explicitly skips any anchor whose rectangle already intersects `victimSide`'s
+enemy occupancy (`core/spawn.ts:173-185`). When `s` is one of `side`'s own units that is ALREADY on the
+board, that same square is itself part of the "already blocks it" occupancy the function checks, so every
+anchor whose rectangle contains `s` is reported pre-blocked and skipped — the call returns 0 for every
+contributing slot, on every position, unconditionally. `tests/ai/hard/geometry.test.ts`'s
+`infiltrationAnchors` case caught this (asserted a hand-verified count of 3 on a two-anchor fixture, got 0).
+
+Fixed by computing the field directly, per DESIGN §5.8's literal wording ("Σ over own slots inside an enemy
+rectangle of the anchors voided; a body on the enemy corner voids ALL of them"): for each of `side`'s own
+unit squares, count how many of `enemy`'s own units have that square inside their `RECT[enemy][...]`
+rectangle, with NO "already blocked by someone else" exclusion — a rectangle infiltrated by two of `side`'s
+units is counted twice (redundant infiltration pressure is real signal, not double-counting), and a unit on
+the enemy corner counts once per enemy anchor (every rectangle contains the corner). This needs only
+`RECT` (`core/tables.ts`, already an allowed `tables` import) and drops the `anchorsVoidedBy` import
+entirely; `core/spawn.ts` itself is untouched.
+
+### 2026-09-15: `home.ts nearestThreat`'s existing-unit branch needed the BFS run the other way round
+
+The same handoff draft's `tables/home.ts` (created this milestone from scratch, since only `geometry.ts`
+existed on disk) was designed around a single multi-source BFS from `CORNER[side]` (`fillCornerDist`,
+`DistanceCache.multi`), read at each candidate square — correct for the PURCHASE branch (every candidate is
+a legal spawn square, guaranteed EMPTY at query time) but wrong for the EXISTING-UNIT branch: `bfsFrom`/
+`bfsMulti` treat every occupied square other than the BFS's own source(s) as impassable
+(`core/movement.ts:1-20`), and an existing enemy unit's own square is necessarily occupied — by itself.
+`fillCornerDist`'s BFS therefore can never assign a distance to a live unit's square (it is never a source),
+so `nearestThreat`'s existing-unit branch always read `moveCost(dist, unitSquare, spd) === -1` and reported
+`HOME_NEVER`, even for a unit standing three squares from the corner on an empty board.
+`tests/ai/hard/home.test.ts`'s first case caught this (expected `actionsToCorner === 3`, got `127`).
+
+Fixed by computing the existing-unit branch with the BFS run FROM each enemy unit's own square
+(`t.dist.get(p, unitSquare)`, cached, where that unit's own occupancy is the one the cache's `bfsFrom`
+contract explicitly ignores — `core/movement.ts`'s documented "the origin's own occupancy is irrelevant"),
+read at `CORNER[side]`; distance is symmetric so this is the same number `fillCornerDist` would have given
+had it been legal to compute. The purchase branch is unchanged (one shared multi-source BFS, since every
+candidate square really is empty). Both `nearestThreat` and the `homeRaceAvailable` purchase-only function
+remain self-sufficient rather than depending on `buildTables`'s not-yet-written (M12) body to have pre-filled
+`NodeTables.cornerDist` — see the module's own header comment for the tradeoff.
+
+### 2026-09-15: `lab/hard-ai/suites/spawn-strike.suite.json`'s 20 cases are constructed and legality-verified, not reverse-engineered from citations
+
+DESIGN §7.5 cites specific provenance for the spawn-strike suite ("NK:10 bought Radi; archived t3 `BUY
+fire_1@I6 → I2 → ATK H2 → I4`; NK:13 per-turn fresh-Hi raid; the D9 pivot; the F16 punisher position") but,
+as with M1's `home-race`/`promotion-kill` fixtures, the underlying archived-game and napkin citations do not
+carry exact coordinates or unit rosters recoverable from the repo. Each of the 20 cases instead instantiates
+the NAMED PATTERN on a small constructed position (a purchase-then-move-then-attack summon strike; a
+purchase-then-attack-then-retreat line; a multi-buy Place-phase pivot; the F16 punisher's exact cited line,
+`BUY water_1@C1 → Hi C2→D2 → Sjor C1→C2 → ATTACK C3`, reproduced literally), with every action sequence
+applied end to end through `core/state.ts`'s `Replica.isLegal`/`make` (asserted legal at each step, not
+assumed) and the resulting `best` entry taken from the actually-reached `kposHex`. This is the only ground
+truth available before M11's within-turn search and M13's candidate generator exist to determine a genuinely
+optimal turn from a position; the suite's own runner (`lab/hard-ai/suites/run.ts`, `format.ts`) does not land
+until M14, so nothing scores these cases yet — M9's own gate does not execute this suite. Each case's
+`authoredFrom` field states this provenance plainly, mirroring M1's ruling for `home-race`/`promotion-kill`.

@@ -368,8 +368,6 @@ const _profileFor: (unitsPerMs: number, deviceMemoryGb: number | undefined) => H
 // Each alias reproduces the module DESIGN §4 names; the suppression below it
 // goes away (and is replaced by real declaration tests) at that milestone.
 
-// @ts-expect-error until M10: tactics/prover.ts (HomeVerdict, PROOF_NODES, needsProof, damageBound, homeVerdict, homeWitness).
-export type M10_Prover = typeof import('../../../src/ai/hard/tactics/prover');
 // @ts-expect-error until M11: gen/turn.ts (TurnFlag, Turn, TurnPool, turnSignature, decodeTurn).
 export type M11_Turn = typeof import('../../../src/ai/hard/gen/turn');
 // @ts-expect-error until M11: gen/actionsearch.ts (ActionSearchConfig, WithinTurnScorer, TurnTT, ActionSearch, isIndependent).
@@ -480,7 +478,33 @@ const _perftReplica: (state: GameState, maxActions: number) => { sequences: numb
   perftReplica;
 const _endKeysCanonical: (state: GameState, maxActions?: number) => Set<string> = endKeysCanonical;
 
+import {
+  HomeVerdict,
+  PROOF_NODES,
+  damageBound,
+  homeVerdict,
+  homeWitness,
+  needsProof,
+  type ProverMeter,
+} from '../../../src/ai/hard/tactics/prover';
+
 describe('DESIGN §4 declaration tests', () => {
+  it('every §4.14 tactics/prover.ts signature is exported with the frozen shape (M10)', () => {
+    const _homeVerdictEnum: { RESCUE: 0; MATE: 1; UNKNOWN: 2 } = HomeVerdict;
+    const _proofNodes: number = PROOF_NODES;
+    const _needsProof: (p: PackedState) => boolean = needsProof;
+    const _damageBound: (p: PackedState, invader: Side, sc: Scratch, ply: number) => boolean = damageBound;
+    // DESIGN §4.14's last parameter is `meter?: WorkMeter`, which does not
+    // exist until M14 and which `tactics` may not import; `ProverMeter` is the
+    // structural stand-in the real `WorkMeter` satisfies (DEVIATIONS, M10).
+    const _homeVerdict: (p: PackedState, invader: Side, maxNodes: number, sc: Scratch, ply: number, meter?: ProverMeter) => number =
+      homeVerdict;
+    const _homeWitness: (p: PackedState, invader: Side, maxNodes: number, out: Int32Array) => number = homeWitness;
+    const declared: unknown[] = [_homeVerdictEnum, _proofNodes, _needsProof, _damageBound, _homeVerdict, _homeWitness];
+    expect(declared.every(d => d !== undefined && d !== null)).toBe(true);
+    expect(declared).toHaveLength(6);
+  });
+
   it('every §4.4-§4.7 and §7.2 replica signature is exported with the frozen shape', () => {
     const declared: unknown[] = [
       _packError, _undo, _newUndo, _allocState, _copyState, _replica, _newReplica,

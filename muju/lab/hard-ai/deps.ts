@@ -109,6 +109,20 @@ const EXTERNAL_ALLOWS: Partial<Record<Layer, string[]>> = {
   engine: ['src/game', 'src/ai/simulate', 'src/ai/moves'],
 };
 
+/**
+ * Per-FILE additions to `LAYER_ALLOWS`, keyed by the path relative to
+ * `src/ai/hard/`. DESIGN §2's layer table says `core` imports only `types.ts`
+ * and `src/game/*`, while DESIGN §3.4 requires `core/state.ts make` to call
+ * the packed home-checkmate prover, which §2 itself places in `tactics/`. The
+ * two cannot both hold, so the narrower rule wins: exactly `core/state.ts`
+ * may reach `tactics` (and does so only for `tactics/prover.ts`, which imports
+ * no `core/state.ts` symbol, so there is no module cycle). Every other `core`
+ * file is still held to the §2 table. See DEVIATIONS.md under M10.
+ */
+const FILE_LAYER_ALLOWS: Record<string, Layer[]> = {
+  'core/state.ts': ['tactics'],
+};
+
 const BANNED_EXTERNAL_PREFIXES = ['src/ai/engine-v2', 'src/ai/planner/', 'src/ai/search/', 'src/ai/evaluation', 'lab/solver/'];
 
 const NONDETERMINISM_PATTERN = /Date\.now|performance\.now|Math\.random|crypto\./;
@@ -167,7 +181,7 @@ function checkLayering(files: string[]): Violation[] {
         const targetLayer = layerOf(targetRelToHard);
         if (layer === null || targetLayer === null) continue; // stray/unclassified file; not this check's concern
         if (targetLayer === layer) continue; // same-layer imports are always fine
-        const allowed = LAYER_ALLOWS[layer] ?? [];
+        const allowed = [...(LAYER_ALLOWS[layer] ?? []), ...(FILE_LAYER_ALLOWS[toPosix(rel)] ?? [])];
         if (!allowed.includes(targetLayer)) {
           violations.push({
             kind: 'layering',

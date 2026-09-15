@@ -1,0 +1,52 @@
+{
+  "prover": {
+    "seed": 5,
+    "cases": 20000,
+    "fixtureCases": 28,
+    "fixtureMismatch": 0,
+    "fuzzCases": 20000,
+    "fuzzVerdictMismatch": 0,
+    "nodeMismatch": 0,
+    "witnessChecked": 12858,
+    "witnessIllegal": 0,
+    "witnessNotRemoved": 0,
+    "verdicts": {
+      "rescue": 12844,
+      "mate": 6001,
+      "unknown": 1155
+    },
+    "cappedCases": 6708,
+    "cutoffCases": 1155,
+    "boundCases": 5528,
+    "clockFixtureOk": true,
+    "elapsedMs": 39513,
+    "git": "cc106765c6bcae26c3787532b974c401e15c25cf",
+    "node": "v24.11.1",
+    "at": "2026-09-15T12:54:50.854Z"
+  },
+  "gatePreservation": {
+    "seed": 6,
+    "actions": 100000,
+    "games": 1721,
+    "mismatches": 0,
+    "proofsCompared": 1703,
+    "proofsSuppressed": 9946,
+    "homeCheckmates": 365,
+    "terminals": {
+      "upkeep-elimination:white": 122,
+      "home-occupation:black": 329,
+      "home-checkmate:white": 184,
+      "upkeep-elimination:black": 108,
+      "home-occupation:white": 305,
+      "inactivity:draw": 436,
+      "home-checkmate:black": 181,
+      "elimination:white": 39,
+      "elimination:black": 15,
+      "unfinished": 2
+    },
+    "elapsedMs": 1120
+  },
+  "git": "cc106765c6bcae26c3787532b974c401e15c25cf",
+  "node": "v24.11.1",
+  "at": "2026-09-15T12:54:52.209Z"
+}

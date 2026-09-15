@@ -18,12 +18,12 @@
  * handle: buy-order permutations transpose, and `digest` — the fuzzer's
  * comparison surface — is slot-order independent by construction.
  *
- * The one place the replica still calls the canonical engine is the
- * home-checkmate gate: at `proverMode = 2` `make` unpacks and calls
- * `analyzeHomeDefense` (`homeCheckmate.ts:57`) directly. DESIGN §3.4 mandates
- * exactly that for this milestone; M10 replaces it with the packed
- * `tactics/prover.ts homeVerdict` and keeps the canonical call only as that
- * milestone's gate. See `docs/hard-ai/design/DEVIATIONS.md` under M5.
+ * The home-checkmate gate is fully packed as of M10: `make` calls
+ * `tactics/prover.ts` — `homeVerdict` at `proverMode = 2`, the admissible
+ * `damageBound` alone at `proverMode = 1` (DESIGN §3.4). The canonical
+ * `analyzeHomeDefense` survives only as M10's differential gate, so `make`
+ * no longer unpacks anything. See `docs/hard-ai/design/DEVIATIONS.md` under
+ * M5 and M10.
  */
 import {
   CC,
@@ -46,9 +46,8 @@ import type { GameState, PlayerId, Unit, Cell } from '../../../game/types';
 import { INITIAL_RESOURCE_LAYERS } from '../../../game/board';
 import { MAX_RESOURCE_RESERVE } from '../../../game/resourceMap';
 import { getAttackCount } from '../../../game/combat';
-import { analyzeHomeDefense } from '../../../game/homeCheckmate';
-import { transitionWithoutCheckmate } from '../../simulate';
-import { bbCount, bbNew, bbNext } from './bits';
+import { HomeVerdict, PROOF_NODES, damageBound, homeVerdict, needsProof } from '../tactics/prover';
+import { Scratch, bbCount, bbNew, bbNext } from './bits';
 import { ADJ_LIST, BOARD, CORNER } from './tables';
 import { DEF_ID, DEF_INDEX, activeCatalog, powerIndex, type Catalog } from './catalog';
 import {
@@ -413,6 +412,13 @@ export class Replica {
    * LIFO-paired on one `Replica`, exactly like the undo stack itself.
    */
   private readonly idStack: string[] = [];
+  /**
+   * The one-ply pool `tactics/prover.ts` takes its knapsack buffer from
+   * (DESIGN §4.14 types `damageBound`/`homeVerdict` with a `Scratch` + `ply`).
+   * The prover is called from `make` at a single depth and never recurses into
+   * itself, so one ply is enough.
+   */
+  private readonly proverScratch: Scratch = new Scratch(1, 0, 0, 1);
 
   constructor(cat: Catalog = activeCatalog()) {
     this.cat = cat;
@@ -1312,10 +1318,7 @@ export class Replica {
 
   /** The `resolveHomeCheckmate` short-circuit (homeCheckmate.ts:173-176), DESIGN §3.4. */
   needsProof(p: PackedState): boolean {
-    if (p.result !== Result.ONGOING) return false;
-    if (p.victoryHome !== 1 || p.upkeepPending === 1) return false;
-    if (!this.occupiesEnemyCorner(p, p.side)) return false;
-    return !this.occupiesEnemyCorner(p, (1 - p.side) as Side);
+    return needsProof(p);
   }
 
   /** `true` when the mover's occupation is an unanswerable checkmate. */
@@ -1326,12 +1329,13 @@ export class Replica {
       }
       return false;
     }
-    if (!this.needsProof(p)) return false;
-    // proverMode 1 is the admissible damage bound, which can only UNDER-claim
-    // mates; until M10 supplies `tactics/prover.ts damageBound` the safe
-    // under-claim is "no mate". proverMode 2 runs the canonical prover.
-    if (p.proverMode === 1) return false;
-    return analyzeHomeDefense(this.unpack(p), PLAYER_OF_SIDE[p.side], transitionWithoutCheckmate) === 'mate';
+    if (!needsProof(p)) return false;
+    // `proverMode = 1` runs only the admissible damage bound
+    // (`enoughPossibleDamage`, homeCheckmate.ts:27-49): its FAILURE proves the
+    // mate, and because the bound is optimistic this can only ever UNDER-claim
+    // one. `proverMode = 2` runs the full packed replica of the prover.
+    if (p.proverMode === 1) return !damageBound(p, p.side, this.proverScratch, 0);
+    return homeVerdict(p, p.side, PROOF_NODES, this.proverScratch, 0) === HomeVerdict.MATE;
   }
 
   private resolveHomeCheckmate(p: PackedState): void {

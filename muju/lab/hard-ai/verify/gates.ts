@@ -276,28 +276,103 @@ export const GATES: Gate[] = [
       metrics.vitestFailures === 0,
     timeoutMs: 3 * MIN,
   },
-  notImplemented(
-    'M9',
-    ['M5'],
-    'npx vitest run tests/ai/hard/geometry.test.ts tests/ai/hard/home.test.ts && ' +
+  {
+    id: 'M9',
+    dependsOn: ['M5'],
+    description: 'Spawn geometry and home tables',
+    command:
+      'npx vitest run tests/ai/hard/geometry.test.ts tests/ai/hard/home.test.ts && ' +
       'node --import tsx lab/hard-ai/oracles/geometry.ts --positions 2000 --out lab/results/hard-ai-verify/M9.json',
-    3 * MIN,
-  ),
-  notImplemented(
-    'M10',
-    ['M5'],
-    'npx vitest run tests/ai/hard/prover.test.ts && ' +
+    args: [],
+    artifact: 'lab/results/hard-ai-verify/M9.json',
+    criterion: metrics =>
+      metrics.blockingMismatch === 0 &&
+      metrics.f5Ok === true &&
+      metrics.f11Ok === true &&
+      metrics.homeRaceOk === true &&
+      metrics.anchorsVoidedCornerOk === true &&
+      metrics.vitestFailures === 0,
+    timeoutMs: 3 * MIN,
+  },
+  {
+    id: 'M10',
+    dependsOn: ['M5'],
+    description: 'Home-prover replica (homeVerdict/homeWitness) and the checkmate gating proof',
+    command:
+      'npx vitest run tests/ai/hard/prover.test.ts && ' +
       'npm run hard:fuzz -- --surfaces prover --cases 20000 --seed 5 --out lab/results/hard-ai-verify/M10-prover.json && ' +
       'npm run hard:fuzz -- --surfaces gate-preservation --actions 100000 --seed 6 --out lab/results/hard-ai-verify/M10-gate.json',
-    10 * MIN,
-  ),
-  notImplemented(
-    'M11',
-    ['M5'],
-    'npx vitest run tests/ai/hard/canonical.test.ts tests/ai/hard/turnpool.test.ts && ' +
+    args: [],
+    // The chain writes two artifacts. `hard:fuzz` folds a sibling
+    // `<group>-<label>.json` in under `<label>` (the same naming-convention
+    // merge `perft/run.ts` and `verify/determinism.ts` use), so the LAST file
+    // written — `M10-gate.json` — carries the prover surface under `prover`
+    // alongside its own `gatePreservation` block, and `vitestFailures` comes
+    // from the chain's own vitest step.
+    artifact: 'lab/results/hard-ai-verify/M10-gate.json',
+    criterion: metrics => {
+      const prover = metrics.prover as Record<string, unknown> | undefined;
+      const gate = metrics.gatePreservation as Record<string, unknown> | undefined;
+      return (
+        metrics.vitestFailures === 0 &&
+        // (a) 28/28 authored fixtures and 20,000 fuzz positions agree with
+        // `analyzeHomeDefense` — on the verdict AND on the node count, which
+        // is what makes the replica exact rather than merely equivalent.
+        prover?.fixtureCases === 28 &&
+        prover?.fixtureMismatch === 0 &&
+        prover?.fuzzCases === 20_000 &&
+        prover?.fuzzVerdictMismatch === 0 &&
+        prover?.nodeMismatch === 0 &&
+        // The node-count claim is only meaningful if the cap actually bit.
+        (prover?.cutoffCases as number) > 0 &&
+        // (b) every witness replays legally and removes the occupier.
+        prover?.witnessIllegal === 0 &&
+        prover?.witnessNotRemoved === 0 &&
+        (prover?.witnessChecked as number) > 0 &&
+        // (d) SU §8.1: a proven mate beats the draw clock, an unproven
+        // occupation does not.
+        prover?.clockFixtureOk === true &&
+        // (c) the gate-preservation proof over 100,000 played actions.
+        gate?.actions === 100_000 &&
+        gate?.mismatches === 0 &&
+        (gate?.proofsCompared as number) > 0
+      );
+    },
+    timeoutMs: 10 * MIN,
+  },
+  {
+    id: 'M11',
+    dependsOn: ['M5'],
+    description: 'Within-turn action search: canonical ordering, turn TT, TurnPool',
+    command:
+      'npx vitest run tests/ai/hard/canonical.test.ts tests/ai/hard/turnpool.test.ts && ' +
       'node --import tsx lab/hard-ai/oracles/canonical-check.ts --fixtures authored,canonical --corpus fuzz-1000.jsonl --corpus-positions 200 --max-own-units 10 --shards 12 --out lab/results/hard-ai-verify/M11.json',
-    8 * MIN,
-  ),
+    args: [],
+    // `oracles/canonical-check.ts --out` writes every number below into this
+    // one file itself (its shards' partial files are merged and deleted
+    // first); `vitestFailures` comes from the chain's own vitest step, as in
+    // M1/M4/M5.
+    artifact: 'lab/results/hard-ai-verify/M11.json',
+    criterion: metrics =>
+      metrics.vitestFailures === 0 &&
+      // SET equality of end-position `Kpos` between `enumerateAll` and the
+      // canonical `run` with unbounded widths and the TT off (DESIGN F1) ...
+      metrics.endSetMismatch === 0 &&
+      // ... and the turn TT never loses an end position that search found.
+      metrics.ttEndSetMismatch === 0 &&
+      // ET §1.4's collapse on the initial position, reproduced exactly.
+      metrics.initialEndPositions === 797 &&
+      typeof metrics.initialMidStates === 'number' &&
+      (metrics.initialMidStates as number) <= 1053 &&
+      typeof metrics.ttReduction === 'number' &&
+      (metrics.ttReduction as number) >= 10 &&
+      // Not vacuous: the 11 authored fixtures (one of which pays an upkeep
+      // that ends the game, so it has no action phase to enumerate), the 4
+      // canonical fixtures, and 200 corpus positions.
+      metrics.fixturesChecked === 14 &&
+      metrics.corpusChecked === 200,
+    timeoutMs: 8 * MIN,
+  },
   notImplemented(
     'M12',
     ['M6', 'M7', 'M8', 'M9'],

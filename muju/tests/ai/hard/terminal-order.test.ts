@@ -277,12 +277,25 @@ describe('terminal order (SU §8.1)', () => {
     replica.make(full, paMake(AKind.MOVE, 0, 0), undo);
     expect(full.result).toBe(Result.BLACK_WIN);
 
-    // Mode 1 is the admissible damage bound, which may only UNDER-claim mates;
-    // at M5 it claims none (M10 fills in `tactics/prover.ts damageBound`).
+    // Mode 1 is the admissible damage bound alone (`enoughPossibleDamage`,
+    // homeCheckmate.ts:27-49, wired up at M10): its FAILURE proves the mate, so
+    // it may only ever UNDER-claim one. Here the bound is already decisive — a
+    // lone Muju ten squares away at speed 1 cannot reach A1 in four actions —
+    // so modes 1 and 2 agree.
     const bound = replica.pack(state, allocState());
     bound.proverMode = 1;
     replica.make(bound, paMake(AKind.MOVE, 0, 0), newUndo());
-    expect(bound.result).toBe(Result.ONGOING);
+    expect(bound.result).toBe(Result.BLACK_WIN);
+
+    // With a rescuer beside the corner the bound is satisfied, so mode 1
+    // claims nothing; the full prover searches and finds the rescue, so
+    // mode 2 claims nothing either.
+    for (const mode of [1, 2] as const) {
+      const answerable = replica.pack(clock9('rescuer'), allocState());
+      answerable.proverMode = mode;
+      replica.make(answerable, paMake(AKind.MOVE, 0, 0), newUndo());
+      expect(answerable.result, `proverMode ${mode}`).toBe(Result.ONGOING);
+    }
 
     // Mode 0 is only legal while no enemy corner is held; entering one asserts.
     const off = replica.pack(state, allocState());
