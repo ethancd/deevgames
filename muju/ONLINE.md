@@ -24,6 +24,27 @@ The setting belongs to Black regardless of the host's seat, is fixed at creation
 and appears in room state, MCP observations and `muju_rules`. Saves and room
 restarts retain it; the starting grant is separate from mined income.
 
+## Production source
+
+`master` is the canonical release branch (this repository has no `main` branch).
+The Render service `deevgames-muju` builds `muju/Dockerfile` from `master`, with
+root directory `muju` and Docker context `.`. The former
+`codex/muju-online-deploy` branch is retained as a release-history pointer;
+do not use it for independent production changes.
+
+Before a release, run `npm run build`, `npm run server:types`, `npm test`, and
+`npm run test:online:e2e` in a clean checkout. After publishing, check Render's
+**Last successfully deployed commit** against `origin/master`, then check
+`https://deevgames-muju.onrender.com/api/muju/health` and browser gameplay.
+A successful Git push or HTTP 200 alone does not verify the deployed revision.
+
+The separate Cloudflare Pages workflow also follows `master`. Its publishing
+step requires configured Cloudflare credentials; a green build without that
+step is not evidence of a new Pages deployment.
+
+Hard-AI research stays on a development branch until strength and device
+gates pass. See [the recovery plan](docs/hard-ai/RECOVERY-PLAN-2026-09-16.md).
+
 ## Start a host
 
 Requires **Node 24** (uses built-in SQLite).
