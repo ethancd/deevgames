@@ -1,0 +1,60 @@
+{
+  "provider": "ElevenLabs",
+  "selected_at": "2026-09-12",
+  "tracks": [
+    {
+      "file": "open-room-dddd8b6ca2bb.mp3",
+      "sha256": "dddd8b6ca2bbfe869424f59b7d26673f5f09e72533b68cfcad60fc3042a9fa42",
+      "selected_mix": "open-room-full-v1.mp3",
+      "selection": "From your pick 03C"
+    },
+    {
+      "file": "hono-koto-8681f8c0f31e.mp3",
+      "sha256": "8681f8c0f31e8147e72ec99ed68d245d7e533124bb8ddf44406a70d65c7f7651",
+      "selected_mix": "hono-koto-full-v2-blended.mp3",
+      "selection": "From your pick 14A · blended mix"
+    },
+    {
+      "file": "umeme-held-charge-ce2a37c87e38.mp3",
+      "sha256": "ce2a37c87e38f5b8af6b40a0666f3a42ad03079838d5939cb39713961050773e",
+      "selected_mix": "umeme-held-charge-full-v1.mp3",
+      "selection": "From your pick 19D"
+    },
+    {
+      "file": "muju-charango-8c25a1b64577.mp3",
+      "sha256": "8c25a1b64577b2bc755093f33c92bbf74cbb12a9c17a6a96eb752c80416825e5",
+      "selected_mix": "muju-charango-full-v2-blended.mp3",
+      "selection": "From your pick 15A · blended mix"
+    },
+    {
+      "file": "tanka-flute-94b0c4739e3f.mp3",
+      "sha256": "94b0c4739e3f301ef7ac06d55505819fdf521c8f052cfd61d30336383799f8b6",
+      "selected_mix": "tanka-flute-full-v3-low-mid.mp3",
+      "selection": "From your pick 17A · low-mid passage revision"
+    },
+    {
+      "file": "straumr-hardanger-878d93e0b947.mp3",
+      "sha256": "878d93e0b9474694a566ae3110225c1e78a565ca672e8fdeb074d67af24e5f0b",
+      "selected_mix": "straumr-hardanger-full-v2-blended.mp3",
+      "selection": "From your pick 18A · blended mix"
+    },
+    {
+      "file": "golge-baglama-2c4e05bc362d.mp3",
+      "sha256": "2c4e05bc362d1abf7014321d8f86e5f34756ff908c960b24bceb553f9c7c48dc",
+      "selected_mix": "golge-baglama-full-v2-blended.mp3",
+      "selection": "From your pick 16A · blended mix"
+    },
+    {
+      "file": "unequal-routes-2354f06bdb98.mp3",
+      "sha256": "2354f06bdb9863f9ebc13bd3620a202ba27c4e07d91e84c900564247f80a96e7",
+      "selected_mix": "unequal-routes-full-v1.mp3",
+      "selection": "From your pick 04C"
+    },
+    {
+      "file": "before-dawn-40803953d9ee.mp3",
+      "sha256": "40803953d9ee66df69974e92f842d2914972938c626acdbf17594b1c4406d709",
+      "selected_mix": "before-dawn-full-v1.mp3",
+      "selection": "From your pick 05B"
+    }
+  ]
+}

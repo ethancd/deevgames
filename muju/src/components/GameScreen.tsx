@@ -1,4 +1,5 @@
 import { INITIAL_MAP_RESOURCES } from '../game/resourceMap';
+import { MusicButton } from '../music/MusicPlayer';
 import { INACTIVITY_LIMIT, INACTIVITY_WARNING } from '../game/inactivity';
 import { UpkeepPanel } from './UpkeepPanel';
 import { upkeepDue } from '../game/upkeep';
@@ -724,7 +725,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
         <header className="game-header">
           <a href="../" aria-label="Back to Deev Games">← Games</a>
           <h1>Muju Hono Tanka</h1>
-          <button disabled={showReplay} onClick={() => setShowMenu(true)} aria-label="Game menu">•••</button>
+          <div className="game-header-actions"><MusicButton /><button disabled={showReplay} onClick={() => setShowMenu(true)} aria-label="Game menu">•••</button></div>
         </header>
         <section className="turn-strip" aria-label="Turn and phases">
           <strong>{playback ? `Replay · ${playerNames[playback.replay.player]}` : isThinking ? 'Thinking…' : playerNames[state.turn.currentPlayer]} <span>· Turn {playback?.replay.turnNumber ?? state.turn.turnNumber}</span></strong>

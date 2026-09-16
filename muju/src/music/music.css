@@ -1,0 +1,27 @@
+.music-trigger { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 40px; padding: 6px 12px; border: 1px solid #42576c; border-radius: 9px; background: #253448; color: #d5e4ef; font: inherit; }
+.music-trigger>span:first-child { font-size: 19px; line-height: 1; }
+.music-trigger.is-playing { color: #bfe9ca; }
+.music-playing-dot { position: absolute; right: 5px; top: 5px; width: 5px; height: 5px; border-radius: 50%; background: #bfe9ca; }
+.game-header-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.game-header .music-trigger { width: 44px; letter-spacing: normal; }
+.game-header .music-trigger-label { display: none; }
+.music-lobby-nav { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.music-panel { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.play-dialog:has(.music-panel) .dialog-content>header>button { min-width: 44px; min-height: 44px; border-radius: 9px; background: #253448; font-size: 22px; }
+.music-panel .music-caption { color: #bfe9ca; font-size: 12px; }
+.music-panel label { display: flex; flex-direction: column; gap: 8px; font-size: 12px; color: #b6c9d7; }
+.music-panel select { width: 100%; min-width: 0; min-height: 44px; padding: 8px; border: 1px solid #4c6578; border-radius: 8px; background: #111f2d; color: #edf4f7; font: inherit; font-size: 14px; }
+.music-panel input[type=range] { display: block; width: 100%; min-width: 0; height: 26px; accent-color: #bfe9ca; cursor: pointer; }
+.music-panel button { min-height: 44px; padding: 8px 12px; border: 1px solid #42576c; border-radius: 9px; color: #e8edf5; background: #253448; font-size: 13px; }
+.music-panel .music-play { background: #bfe9ca; color: #153525; font-weight: 700; }
+.music-transport { display: grid; grid-template-columns: 1fr 1.4fr 1fr; gap: 8px; }
+.music-time { display: flex; justify-content: space-between; margin-top: -15px; color: #a1b7c6; font-size: 11px; font-variant-numeric: tabular-nums; }
+.music-volume { display: flex; align-items: center; gap: 14px; }
+.music-volume label { flex: 1; }
+.music-repeat { display: flex; gap: 8px; }
+.music-repeat button { flex: 1; }
+.music-panel button[aria-pressed=true] { border-color: #bfe9ca; color: #bfe9ca; background: #243e3c; }
+.music-panel .music-help { font-size: 12px; line-height: 1.5; color: #99aebf; }
+.music-panel input:focus-visible, .music-panel select:focus-visible { outline: 2px solid #67e8f9; outline-offset: 2px; }
+@media (max-width: 380px) { .game-header .music-trigger-label { display: none; } .game-header .music-trigger { width: 40px; } .music-transport { gap: 5px; } .music-panel button { padding-inline: 7px; } }
+@media (min-width: 960px) and (min-height: 601px) and (orientation: landscape) { .game-shell .game-header { grid-template-columns: minmax(0, 1fr) auto; } }

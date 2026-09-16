@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { BlackCrystalHandicap } from './BlackCrystalHandicap';
+import { MusicButton } from '../music/MusicPlayer';
 import type { GameMode, GameConfig, PlayerId } from '../game/types';
 import type { AIDifficulty } from '../ai/types';
 import { getActionsPerTurn } from '../game/rules';
@@ -79,7 +80,7 @@ export function ModeSelect({ onStartGame, onOnline }: ModeSelectProps) {
   return (
     <div className="mode-select min-h-screen bg-gray-900 text-white flex items-center justify-center p-4">
       <div className="max-w-md w-full space-y-6">
-        <a href="../" className="text-sm text-cyan-300">← Deev Games</a>
+        <div className="music-lobby-nav"><a href="../" className="text-sm text-cyan-300">← Deev Games</a><MusicButton /></div>
         <h1 className="text-3xl font-bold text-center">Muju Hono Tanka</h1>
         <p className="text-gray-400 text-center">Select Game Mode</p>
 

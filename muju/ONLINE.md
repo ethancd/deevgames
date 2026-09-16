@@ -24,6 +24,27 @@ The setting belongs to Black regardless of the host's seat, is fixed at creation
 and appears in room state, MCP observations and `muju_rules`. Saves and room
 restarts retain it; the starting grant is separate from mined income.
 
+## Production source
+
+`master` is the canonical release branch (this repository has no `main` branch).
+The Render service `deevgames-muju` builds `muju/Dockerfile` from `master`, with
+root directory `muju` and Docker context `.`. The former
+`codex/muju-online-deploy` branch is retained as a release-history pointer;
+do not use it for independent production changes.
+
+Before a release, run `npm run build`, `npm run server:types`, `npm test`, and
+`npm run test:online:e2e` in a clean checkout. After publishing, check Render's
+**Last successfully deployed commit** against `origin/master`, then check
+`https://deevgames-muju.onrender.com/api/muju/health` and browser gameplay.
+A successful Git push or HTTP 200 alone does not verify the deployed revision.
+
+The separate Cloudflare Pages workflow also follows `master`. Its publishing
+step requires configured Cloudflare credentials; a green build without that
+step is not evidence of a new Pages deployment.
+
+Hard-AI research stays on a development branch until strength and device
+gates pass. See [the recovery plan](docs/hard-ai/RECOVERY-PLAN-2026-09-16.md).
+
 ## Start a host
 
 Requires **Node 24** (uses built-in SQLite).
@@ -88,6 +109,25 @@ npm run serve
 Optionally build that frontend with `VITE_MUJU_SERVER_URL=https://muju.example.com`
 to prefill the host. Without a separate host, existing local game modes still work.
 Invitations open the host's copy of the browser game.
+
+## Background music
+
+Open **♫ Music** in the game-room header (or **Music** in game modes/the lobby).
+Press **Play music** to start the nine-track soundtrack. Close the panel to keep
+playing while you take turns, inspect history, or return to the lobby. Each
+browser controls its own soundtrack independently of the other players.
+
+The panel includes track choice, previous/next, a seek bar, mute, volume, and
+mutually exclusive **Repeat track** / **Repeat disc** options. Repeat disc starts
+enabled. Volume, chosen track, mute and repeat preferences persist on the device;
+page reloads wait for another press of Play. Track levels are balanced and audio
+is not prefetched before the listener starts it.
+
+Finished MP3s are packaged under `public/music/`, with provenance in
+`public/music/sources.json`. Vite copies them into the production artifact; no
+music-provider credentials or generation requests are needed at runtime. The
+host serves range requests for scrubbing and caches the versioned MP3 filenames.
+The selected full mixes total about 60 MB; playback requests one track at a time.
 
 ## Connect an LLM
 
