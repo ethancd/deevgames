@@ -27,7 +27,7 @@ export function AnalysisScreen() {
   const local = !roomId && query.get('local') === '1';
   const [localHistory] = useState(() => local ? loadGameHistory() : null);
   const hasScore = !!roomId || local;
-  const [initial] = useState(createInitialGameState);
+  const [initial] = useState(() => createInitialGameState(undefined, undefined, 0, query.get('ruleset') === 'phasing' ? 'phasing' : 'standard'));
   const [frames, setFrames] = useState<Frame[]>([]), [cursor, setCursor] = useState(() => Math.max(0, (localHistory?.frames.length ?? 1) - 1));
   const [position, setPosition] = useState<GameState>(initial);
   const [variation, setVariation] = useState<Variation | null>(hasScore ? null : { frames: [localFrame(initial)], cursor: 0 });
@@ -125,7 +125,7 @@ export function AnalysisScreen() {
     setUpkeepReview: (player: PlayerId, enabled: boolean) => setVariation(current => current ? { ...current,
       frames: current.frames.map((frame, i) => i === current.cursor ? { ...frame, state: gameReducer(frame.state, { type: 'SET_UPKEEP_REVIEW', player, enabled }) } : frame) } : null),
     resign: () => dispatch([{ type: 'RESIGN' }]), applyAIAction: useCallback((action: AIAction) => dispatch([action]), [dispatch]),
-    resetGame: () => setVariation({ frames: [localFrame(initial)], cursor: 0 }),
+    resetGame: () => setVariation({ frames: [localFrame(createInitialGameState(undefined, undefined, state.blackCrystalHandicap, state.ruleset))], cursor: 0 }),
     undo: () => go(index - 1), canUndo: !!variation && index > 0,
     selectedUnitData: state.selectedUnit ? getUnitById(state.board, state.selectedUnit) : null,
     isPlayerTurn: true, canEndTurn: state.turn.phase === 'action',
@@ -151,6 +151,7 @@ export function AnalysisScreen() {
       {partial && <small>Earlier positions were not recorded.</small>}
     </div>
     {error && <p role="alert">{error} <button onClick={() => local ? window.location.reload() : setRefresh(value => value + 1)}>Reload score</button></p>}
+    {!hasScore && <a href={`/muju/analysis?ruleset=${state.ruleset === 'phasing' ? 'standard' : 'phasing'}`}>New {state.ruleset === 'phasing' ? 'Standard' : 'Phasing'} analysis board</a>}
     {!hasScore && <details><summary>Analyze an online room</summary><form onSubmit={event => {
       event.preventDefault();
       try { const connection = parseObserverConnection(roomInput, window.location.origin);

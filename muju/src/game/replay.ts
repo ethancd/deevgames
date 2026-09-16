@@ -1,5 +1,6 @@
 import type { AIAction } from '../ai/types';
-import type { BoardState, GameState, PlayerId, Position } from './types';
+import type { BoardState, GameState, PlayerId, Position, PendingSummon } from './types';
+import { isPhasing } from './rules';
 import { calculateDefense } from './combat';
 import { BOARD_SIZE } from './board';
 import { executeMove, findPath } from './movement';
@@ -7,6 +8,7 @@ import { getUnitDefinition } from './units';
 import { automaticUpkeepUndo } from './turn';
 
 export interface ReplayFrame {
+  pendingSummons?: PendingSummon[];
   board: BoardState;
   action: AIAction;
   label: string;
@@ -14,6 +16,7 @@ export interface ReplayFrame {
   unitId?: string;
 }
 export interface TurnReplay {
+  initialPendingSummons?: PendingSummon[];
   player: PlayerId;
   turnNumber: number;
   initialBoard: BoardState;
@@ -60,16 +63,19 @@ export function recordAction(recording: ReplayRecording, before: GameState, acti
   if (before === after) return recording;
   let current = recording.current;
   if (!current || current.player !== before.turn.currentPlayer || current.turnNumber !== before.turn.turnNumber) {
-    current = { player: before.turn.currentPlayer, turnNumber: before.turn.turnNumber, initialBoard: before.board, frames: [] };
+    current = { player: before.turn.currentPlayer, turnNumber: before.turn.turnNumber, initialBoard: before.board, initialPendingSummons: before.pendingSummons, frames: [] };
   }
   const unit = 'unitId' in action ? before.board.units.find(u => u.id === action.unitId) : undefined;
   const name = unit ? getUnitDefinition(unit.definitionId).name : 'Unit';
   let label = '', position: Position | undefined, unitId = unit?.id;
   switch (action.type) {
+    case 'END_ACTION_PHASE':
+      if (isPhasing(before)) label = `Mined ${after.lastIncome?.total ?? 0} crystals${after.upkeepPending ? ' · upkeep choice pending' : ` · paid ${after.lastUpkeep?.paid ?? 0} upkeep`}`;
+      break;
     case 'BUY_UNIT':
       position = action.position;
       unitId = after.board.units.find(u => u.position.x === position!.x && u.position.y === position!.y)?.id;
-      label = `Placed ${getUnitDefinition(action.definitionId).name} at ${square(position)}`; break;
+      label = `${isPhasing(before) ? 'Started phasing' : 'Placed'} ${getUnitDefinition(action.definitionId).name} at ${square(position)}`; break;
     case 'PROMOTE_UNIT':
       position = unit?.position;
       const promoted = after.board.units.find(u => u.id === unitId);
@@ -87,8 +93,8 @@ export function recordAction(recording: ReplayRecording, before: GameState, acti
     }
   }
   if (label) current = { ...current, frames: [...current.frames,
-    ...splitMoveFrame(before.board, { board: after.board, action, label, position, unitId })] };
-  if (after.phase === 'victory' || action.type === 'END_ACTION_PHASE' || before.turn.currentPlayer !== after.turn.currentPlayer || before.turn.turnNumber !== after.turn.turnNumber) {
+    ...splitMoveFrame(before.board, { board: after.board, pendingSummons: after.pendingSummons, action, label, position, unitId })] };
+  if (after.phase === 'victory' || (!isPhasing(before) && action.type === 'END_ACTION_PHASE') || before.turn.currentPlayer !== after.turn.currentPlayer || before.turn.turnNumber !== after.turn.turnNumber) {
     const finished = { current: null, last: current }, pending = automaticUpkeepUndo(before, after);
     return pending ? recordAction(finished, pending, { type: 'PAY_UPKEEP',
       keepUnitIds: pending.board.units.filter(u => u.owner === pending.turn.currentPlayer).map(u => u.id) }, after) : finished;

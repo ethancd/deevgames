@@ -1,11 +1,11 @@
 import { resolveInactivityDraw } from '../game/inactivity';
 import type { GameState } from '../game/types';
-import { getActionsPerTurn, isActionsPerTurn, isBlackCrystalHandicap } from '../game/rules';
+import { getActionsPerTurn, isActionsPerTurn, isBlackCrystalHandicap, isRuleset } from '../game/rules';
 import { migrateLegacyGame } from '../game/migrate';
 import { startHistory, type LocalGameHistory } from '../game/analysis';
 
-// v6: four actions only, and kills alone reset the quiet-turn clock.
-export const SCHEMA_VERSION = 6;
+// v7: explicit ruleset and public pending summons. v5/v6 saves remain readable as Standard.
+export const SCHEMA_VERSION = 7;
 
 const STORAGE_KEY = 'elemental-tactics-save';
 
@@ -66,7 +66,7 @@ export function loadGameState(): GameState | null {
 
     // Version mismatch - start fresh
     const legacy = persisted.schemaVersion === 5;
-    if (!legacy && persisted.schemaVersion !== SCHEMA_VERSION) {
+    if (!legacy && persisted.schemaVersion !== 6 && persisted.schemaVersion !== SCHEMA_VERSION) {
       console.log('Schema version mismatch, starting fresh game');
       clearGameState();
       return null;
@@ -112,6 +112,13 @@ function validateGameState(state: unknown, legacy = false): state is GameState {
   // Check top-level required fields
   if (!s.phase || !s.board || !s.players || !s.turn) return false;
   if (s.actionsPerTurn !== undefined && !(isActionsPerTurn(s.actionsPerTurn) || (legacy && s.actionsPerTurn === 6))) return false;
+
+  if (s.ruleset !== undefined && !isRuleset(s.ruleset)) return false;
+  if (s.pendingSummons !== undefined && (!Array.isArray(s.pendingSummons) || s.pendingSummons.some((p: any) =>
+    !p || typeof p.id !== 'string' || !['white', 'black'].includes(p.owner) ||
+    !['fire_1','lightning_1','water_1','shadow_1','plant_1','metal_1'].includes(p.definitionId) ||
+    !Number.isInteger(p.cost) || p.cost < 0 || !p.position || !Number.isInteger(p.position.x) || !Number.isInteger(p.position.y) ||
+    p.position.x < 0 || p.position.x > 9 || p.position.y < 0 || p.position.y > 9))) return false;
 
   if (s.blackCrystalHandicap !== undefined && !isBlackCrystalHandicap(s.blackCrystalHandicap)) return false;
 

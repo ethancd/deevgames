@@ -1,4 +1,9 @@
 Deev Games
+
+Muju includes an opt-in **Phasing** ruleset for human local/online play:
+commit public summons at turn end; they arrive next own turn or refund if disrupted.
+Standard remains the default and AI benchmark. [Variant rules](muju/docs/PHASING-2026-09-16.md).
+
 ===
 
 Play at **https://deevgames.pages.dev**, also linked from **https://ashkie.com**.

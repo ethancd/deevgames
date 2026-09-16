@@ -1,5 +1,6 @@
 import { resolveInactivityDraw } from './inactivity';
-import { getActionsPerTurn } from './rules';
+import { getActionsPerTurn, isPhasing } from './rules';
+import { resolveSummons, getPurchasePositions } from './summoning';
 import { upkeepDue, settleUpkeep } from './upkeep';
 import type {
   GameState,
@@ -12,7 +13,6 @@ import {
 } from './board';
 import { checkVictory, getHomeOccupier } from './victory';
 import { getPromotableUnits } from './promotion';
-import { getAllSpawnPositions } from './spawning';
 import { getAffordablePurchases } from './building';
 import { endOfTurnIncome } from './mining';
 
@@ -27,6 +27,12 @@ export function startTurn(state: GameState, player: PlayerId): GameState {
   }
   const elimination = checkVictory(state.board);
   if(elimination.status !== 'ongoing') return {...state,phase:'victory',winner:elimination.status==='victory'?elimination.winner:null,victoryReason:'elimination'};
+  if (isPhasing(state)) {
+    const ready = resolveSummons(state, player);
+    return { ...ready, upkeepPending: false, board: resetUnitActions(ready.board, player),
+      turn: { ...ready.turn, currentPlayer: player, phase: 'action', actionsRemaining: getActionsPerTurn(state) },
+      selectedUnit: null, validMoves: [], validAttacks: [] };
+  }
   const pending: GameState = {...state,upkeepPending:true,turn:{...state.turn,currentPlayer:player,phase:'place',actionsRemaining:getActionsPerTurn(state)},selectedUnit:null,validMoves:[],validAttacks:[]};
   const due=upkeepDue(pending,player);
   if(due>state.players[player].resources || state.reviewUpkeep?.[player])return pending;
@@ -36,6 +42,8 @@ export function startTurn(state: GameState, player: PlayerId): GameState {
 /** The incoming player's first undo step, after income and handoff but before
  * automatic upkeep and healing. Call with the states around the actual turn end. */
 export function automaticUpkeepUndo(before: GameState, after: GameState): GameState | null {
+  // Phasing's entire mine/upkeep transition is the mover's ordinary undo step.
+  if (isPhasing(before)) return null;
   const player = after.turn.currentPlayer, payment = after.lastUpkeep;
   if (after.phase !== 'playing' || after.upkeepPending ||
     (before.turn.currentPlayer === player && before.turn.turnNumber === after.turn.turnNumber) ||
@@ -53,6 +61,7 @@ export function automaticUpkeepUndo(before: GameState, after: GameState): GameSt
 export function completeUpkeep(state: GameState, keepUnitIds: string[]): GameState {
   const paid=settleUpkeep(state,keepUnitIds),result=checkVictory(paid.board);
   if(result.status!=='ongoing')return {...paid,phase:'victory',winner:result.status==='victory'?result.winner:null,victoryReason:'upkeep-elimination'};
+  if (isPhasing(state)) return { ...paid, turn: { ...paid.turn, phase: 'place' } };
   return finishTurnStart(paid,paid.turn.currentPlayer);
 }
 
@@ -65,6 +74,7 @@ function finishTurnStart(state: GameState, player: PlayerId): GameState {
 
 export function startActionPhase(state: GameState): GameState {
   if (state.upkeepPending || state.turn.phase !== 'place') return state;
+  if (isPhasing(state)) return handOffTurn(state);
   return { ...state, turn: { ...state.turn, phase: 'action', actionsRemaining: getActionsPerTurn(state) } };
 }
 
@@ -91,9 +101,25 @@ export function hasActionsRemaining(state: GameState): boolean {
 /** Income precedes the quiet-turn clock, then the opponent's home/upkeep checks. */
 export function endTurn(state: GameState): GameState {
   if (state.phase !== 'playing' || state.upkeepPending) return state;
+  if (isPhasing(state) && state.turn.phase !== 'action') return state;
   const player = state.turn.currentPlayer;
   const income = endOfTurnIncome(state, player);
-  const completed = resolveInactivityDraw({ ...income.state,
+  if (isPhasing(state)) {
+    const pending: GameState = { ...income.state, upkeepPending: true,
+      turn: { ...income.state.turn, phase: 'place', actionsRemaining: 0 },
+      selectedUnit: null, validMoves: [], validAttacks: [] };
+    if (upkeepDue(pending, player) > pending.players[player].resources || pending.reviewUpkeep?.[player]) return pending;
+    return completeUpkeep(pending, pending.board.units.filter(u => u.owner === player).map(u => u.id));
+  }
+  return handOffTurn(income.state);
+}
+
+/** Complete one full player turn. Phasing income was already collected before
+ * preparation; never mine twice, reset the clock twice, or reset a chess clock
+ * merely because the action phase ended. */
+function handOffTurn(state: GameState): GameState {
+  const player = state.turn.currentPlayer;
+  const completed = resolveInactivityDraw({ ...state,
     inactivityPlies: state.progressThisTurn ? 0 : (state.inactivityPlies ?? 0) + 1,
     progressThisTurn: false,
   });
@@ -140,7 +166,7 @@ export function canCurrentPlayerAct(state: GameState): boolean {
 /** Purchases and promotions share the place phase, in either order. */
 export function canActInPlacePhase(state: GameState, player: PlayerId): boolean {
   if (state.upkeepPending) return true;
-  return (getAffordablePurchases(state.players[player].resources).length > 0 && getAllSpawnPositions(player, state.board).length > 0)
+  return (getAffordablePurchases(state.players[player].resources).length > 0 && getPurchasePositions(state, player).length > 0)
     || getPromotableUnits(state.board, player, { crystals: state.players[player].resources }).length > 0;
 }
 

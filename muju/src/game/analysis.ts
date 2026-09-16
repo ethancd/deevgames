@@ -17,7 +17,7 @@ export const startHistory = (state: GameState, complete: boolean): LocalGameHist
 export function analysisFrames(before: GameState, action: AIAction, after: GameState): AnalysisFrame[] {
   if (before === after) return [];
   const events = describeTransition(before, action, after);
-  if (!events.length) return [localFrame(after, action.type === 'END_PLACE_PHASE' ? 'Start actions' : action.type)];
+  if (!events.length) return [localFrame(after, action.type === 'END_PLACE_PHASE' ? before.ruleset === 'phasing' ? 'End turn' : 'Start actions' : action.type)];
   return events.flatMap(event => {
     const steps = event.kind === 'move' ? event.ap : 1;
     return Array.from({ length: steps }, (_, i) => {

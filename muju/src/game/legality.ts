@@ -7,6 +7,7 @@ import { isValidSpawnPosition } from './spawning';
 import { canPromote } from './promotion';
 import { getMoveCost } from './movement';
 import { getValidAttacks } from './combat';
+import { hasPendingSummon } from './summoning';
 
 const validPosition = (p: Position) => Number.isInteger(p.x) && Number.isInteger(p.y) && isValidPosition(p);
 
@@ -26,7 +27,8 @@ export function isLegalAction(state: GameState, action: AIAction, player: Player
     case 'BUY_UNIT': {
       const def = UNIT_DEFINITIONS.find(d => d.id === action.definitionId);
       return phase === 'place' && !!def && def.tier === 1 && me.resources >= def.cost &&
-        validPosition(action.position) && isValidSpawnPosition(action.position, player, state.board);
+        validPosition(action.position) && isValidSpawnPosition(action.position, player, state.board) &&
+        !hasPendingSummon(state, player, action.position);
     }
     case 'PROMOTE_UNIT': {
       const unit = getUnitById(state.board, action.unitId);

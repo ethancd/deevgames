@@ -425,3 +425,39 @@ button:focus-visible, a:focus-visible { outline: 3px solid #67e8f9; outline-offs
 }
 
 .action-budget > span[data-active=false] { visibility: hidden; }
+
+/* Phasing is a public promise of a unit. The dashed silhouette never captures
+   pointer events and stays visible beneath an actual occupant. */
+.ruleset-select { border: 0; padding: 0; min-width: 0; margin: 1rem 0; }
+.ruleset-select legend { font-weight: 650; margin-bottom: .55rem; }
+.ruleset-select > div { display: grid; gap: .5rem; }
+.ruleset-select label { display: flex; align-items: center; gap: .65rem; padding: .8rem; border: 1px solid #526174; border-radius: .65rem; cursor: pointer; }
+.ruleset-select label[data-selected="true"] { border-color: #8acdd8; background: #17333e; }
+.ruleset-select label > span, .ruleset-select label > span > span { display: block; }
+.ruleset-select label > span > span, .ruleset-select p { font-size: .8rem; color: #b7c7d6; line-height: 1.5; }
+.ruleset-select small { font-size: .65rem; margin-left: .5rem; color: #bfe5ed; font-weight: 400; }
+.ruleset-select p { margin: .5rem 0 0; }
+.ruleset-badge { font-size: .65rem; font-weight: 500; color: #bfe5ed; display: inline-block; }
+.summon-ghost { position: absolute; inset: 9%; border: 2px dashed #c5f5ff; border-radius: 50%; pointer-events: none; display: grid; place-items: center; background: #12253290; }
+.summon-ghost.black { border-color: #d8b9f2; background: #271b3690; }
+.summon-ghost > svg, .summon-ghost > img { width: 82%; height: 82%; opacity: .58; }
+.summon-ghost > span { position: absolute; right: -3px; bottom: -3px; border-radius: 50%; background: #122532; color: #e3f6ff; font-size: clamp(10px, 1.4vw, 16px); line-height: 1; }
+.summon-ghost.occupied { inset: 2%; background: transparent; }
+.summon-ghost.occupied > svg, .summon-ghost.occupied > img { opacity: .15; }
+.summoning-status { width: 100%; color: #c7d9e7; font-size: .8rem; }
+.summoning-status:empty { display: none; }
+.summoning-status > p { border-left: 2px solid #8acdd8; padding: .5rem .75rem; margin: .35rem 0; background: #17333e; }
+.summoning-status summary { cursor: pointer; color: #cfecf3; padding: .4rem 0; }
+.summoning-status details > p { font-size: .75rem; margin: .2rem 0 .5rem; }
+.summoning-status ul { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: .5rem; }
+.summoning-status li { display: flex; align-items: center; gap: .5rem; padding: .45rem .65rem; background: #15202e; border: 1px dashed #637f93; border-radius: .4rem; }
+.summoning-status li > svg { width: 24px; height: 24px; flex-shrink: 0; }
+.summoning-status small { display: block; font-size: .7rem; }
+@media (max-width: 420px) { .ruleset-badge { display: block; } .summoning-status ul { grid-template-columns: 1fr; } }
+
+@media (max-width: 699px) and (orientation: portrait) {
+  .game-shell-phasing { height: auto; min-height: 100dvh; }
+  .game-shell-phasing .play-area, .game-shell-phasing .play-area.is-placing {
+    flex: none; grid-template-rows: calc(100vw - 20px) 24px var(--decision-height, 116px);
+  }
+}

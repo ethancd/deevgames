@@ -1,7 +1,7 @@
 import type { GameState, PlayerId } from '../src/game/types';
 import type { RoomAction, RoomSnapshot } from '../src/online/types';
 import { getUnitAt } from '../src/game/board';
-import { getActionsPerTurn } from '../src/game/rules';
+import { getActionsPerTurn, isPhasing } from '../src/game/rules';
 import { INITIAL_MAP_RESOURCES, MAX_RESOURCE_RESERVE, RESOURCE_MAP_NAME, UNEQUAL_ROUTES_MAP } from '../src/game/resourceMap';
 import { getMovementRange, getMoveCost } from '../src/game/movement';
 import { calculateAttackPower, calculateDefense, getAttackCount, getValidAttacks } from '../src/game/combat';
@@ -27,10 +27,12 @@ export function observe(room: RoomSnapshot, perspective = room.state.turn.curren
     analysis: analysisService.headline(room, perspective),
     historyTool: 'muju_history',
     activePlayer: room.ready && s.phase === 'playing' ? s.turn.currentPlayer : null,
+    ruleset: s.ruleset ?? 'standard', pendingSummons: s.pendingSummons ?? [], lastSummoning: s.lastSummoning,
     status: s.phase, turn: s.turn, actionsPerTurn: getActionsPerTurn(s), blackCrystalHandicap: s.blackCrystalHandicap ?? 0, upkeepPending: !!s.upkeepPending,
     winner: s.winner, victoryReason: s.victoryReason ?? null,
     nextStep: !room.ready ? 'Invite the opponent, then wait for them to join.' : s.phase === 'victory' ? 'Game finished.'
       : s.upkeepPending ? 'Choose PAY_UPKEEP keepUnitIds; all tier 1 units must stay. Higher tiers omitted are released.'
+      : isPhasing(s) ? s.turn.phase === 'action' ? 'Take actions, then END_ACTION_PHASE to mine and pay upkeep. This does not end your turn.' : 'Promote actual units or BUY_UNIT to commit public summons. END_PLACE_PHASE hands over the turn and clock.'
       : `${s.turn.currentPlayer} may act. Read legal actions, optionally preview, then play using this revision.`,
     players: Object.fromEntries((['white', 'black'] as const).map(player => [player, {
       ...s.players[player], home: square(s.players[player].startCorner), projectedIncome: projectedIncome(s, player),
@@ -92,6 +94,19 @@ export function legalActions(room: RoomSnapshot, options: { unitId?: string; typ
 }
 
 export const rules = {
+  rulesets: {
+    default: 'standard', options: ['standard', 'phasing'], immutable: true,
+    standard: 'The existing rules below remain the AI benchmark.',
+    phasing: {
+      turn: ['Start: existing victory checks, then resolve all own pending summons simultaneously, heal/reset units, and Act. Both players start in Act even with handicap.',
+        'END_ACTION_PHASE collects mining once, then pays upkeep from the resulting bank. It does not hand off. If upkeepPending, submit PAY_UPKEEP.',
+        'Prepare (turn.phase=place): PROMOTE_UNIT once per actual piece, including arrivals this turn; BUY_UNIT pays now and commits type and empty legal square. END_PLACE_PHASE ends the full turn and hands over the clock.'],
+      summons: 'Public, immutable commitments. Not board units: no occupancy, movement blocking, attacks, mining, upkeep, promotion, spawn anchoring or prevention of elimination. One own pending summon per square. At next own turn start, any legal supporting rectangle suffices and the square must be empty. Validate all against the same board. Invalid summons disappear with their original cost fully refunded; temporary blocking during the reply does not count.',
+      promotion: 'After mining/upkeep, new stats immediately apply. No more actions or mining that turn. Arrivals can promote at that turn end. The new upkeep rate is first due next own turn after mining.',
+      compatibility: 'Human/local/online play and manual analysis board supported. Built-in AI and strategic analysis tools are Standard-only until separately adapted. Pending summons are public; private staged action batches are a different feature.',
+      undo: 'Mining and automatic upkeep form one reversible command. Undo never crosses the full-turn handoff. Quiet clock advances only at END_PLACE_PHASE.',
+    },
+  },
   resourceMap: { name: RESOURCE_MAP_NAME, total: INITIAL_MAP_RESOURCES, maximumReserve: MAX_RESOURCE_RESERVE,
     startingReserves: [...new Set(UNEQUAL_ROUTES_MAP)].sort((a, b) => a - b),
     layout: Array.from({ length: 10 }, (_, row) => UNEQUAL_ROUTES_MAP.slice(row * 10, row * 10 + 10)),
@@ -113,7 +128,7 @@ export const rules = {
     configuration: 'Optional at muju_create_room only: timeControl is blitz, rapid, classical, {delaySeconds,bankSeconds}, or null/omitted for untimed. Delay 0–600 seconds, bank 1–14400 seconds per player. Cannot change after creation.',
     timing: 'Each player has a separate bank shared across their own turns. Each full player turn starts with a fresh free delay; only after that delay does their bank drain. Unused delay is discarded, never added to the bank. Upkeep, placement and all four actions share one delay. Partial commands, phase changes, undo, previews, reads and retries never reset it.',
     enforcement: 'White’s clock starts immediately when the second player joins. No pause for disconnection, thinking, waiting, replay or server downtime. At deadlineAtMs the active player loses with victoryReason=timeout, even with no connected clients. The server checks deadlines before accepting commands; a late play/preview returns TIME_EXPIRED and the terminal room. Successful identical retries remain idempotent.',
-    agentWorkflow: 'Read rules and prepare before joining. Inspect clock in observations, legal actions and play responses, or use muju_clock for a small fresh read. All timestamps are server Unix milliseconds. Time left at observation = deadlineAtMs − serverNowMs; subtract your locally elapsed time and allow for network latency. Do not wait on your own running turn. Submit END_ACTION_PHASE before the deadline; merely spending all AP does not hand off. Prefer a legal atomic turn batch and limit previews when short on time. A preview’s liveClock describes the real game, not its hypothetical board. Ordinary ticks do not change revision; timed unchanged waits include clock. A timeout advances revision and wakes waits with a result event.',
+    agentWorkflow: 'Read rules and prepare before joining. Inspect clock in observations, legal actions and play responses, or use muju_clock for a small fresh read. All timestamps are server Unix milliseconds. Time left at observation = deadlineAtMs − serverNowMs; subtract your locally elapsed time and allow for network latency. Do not wait on your own running turn. Submit the full-turn ending command before the deadline (END_ACTION_PHASE in Standard; END_PLACE_PHASE after preparation in Phasing); merely spending all AP does not hand off. Prefer a legal atomic turn batch and limit previews when short on time. A preview’s liveClock describes the real game, not its hypothetical board. Ordinary ticks do not change revision; timed unchanged waits include clock. A timeout advances revision and wakes waits with a result event.',
     estimates: 'Approximate wall time if most time is used: 2 × bankSeconds + total player turns × delaySeconds. Blitz ≈10 minutes at 36 turns, rapid ≈45 minutes at 50 turns, classical ≈2 hours at 60 turns. These are pacing suggestions, not duration guarantees.',
     staging: {
       tools: ['muju_stage', 'muju_cancel_stage', 'muju_staged'], resource: 'muju://skills/muju-time-awareness/staged-play',

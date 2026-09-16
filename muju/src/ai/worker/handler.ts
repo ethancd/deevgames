@@ -9,6 +9,7 @@ export function createSearchHandler(solver?: TacticalSolver, warning?: string) {
     const { version, gameId, requestId, revision, player } = request;
     const identity = { version, gameId, requestId, revision, player };
     try {
+      if (request.state.ruleset === 'phasing') throw new Error('AI supports Standard rules only. Phasing is available for human play.');
       if (version !== AI_PROTOCOL || request.state.turn.currentPlayer !== player) throw new Error('Invalid AI request identity');
       const key = `${gameId}:${player}`;
       let engine = contexts.get(key);

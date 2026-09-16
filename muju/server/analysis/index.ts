@@ -230,7 +230,13 @@ export class AnalysisService {
       const key = this.cache.keys().next().value!; this.bytes -= this.cache.get(key)!.bytes; this.cache.delete(key);
     }
   }
+  private phasingUnavailable(room: RoomSnapshot): Result {
+    return { roomId: room.id, revision: room.revision, ruleset: 'phasing', stateKind: 'current',
+      supported: false, reason: 'Strategic analysis is calibrated for Standard only. Use observations, legal actions, previews and the manual analysis board for Phasing.',
+      sections: {}, next: [] };
+  }
   headline(room: RoomSnapshot, player = room.state.turn.currentPlayer) {
+    if (room.state.ruleset === 'phasing') return this.phasingUnavailable(room);
     const key = `headline:${room.id}:${room.revision}:${player}:${hash([room.state, room.ready])}`;
     const cached = this.get(key); if (cached) return cached;
     const budget = new WorkBudget(160, 15), s = room.state, forecast = economyForecast(s);
@@ -247,6 +253,7 @@ export class AnalysisService {
     if (input.roomId !== room.id || input.expectedRevision !== room.revision) throw new RoomError(409, 'STALE_REVISION', `Analysis requires revision ${room.revision}. Read the room again.`);
     if (input.sinceRevision !== undefined && input.sinceRevision > room.revision) throw new RoomError(422, 'INVALID_BASELINE', 'sinceRevision cannot be newer than the analyzed revision.');
     if (!room.ready && (input.hypotheticalActions.length || input.stateKind !== 'current')) throw new RoomError(409, 'WAITING_FOR_OPPONENT', 'Hypothetical play requires a ready room.');
+    if (room.state.ruleset === 'phasing') return this.phasingUnavailable(room);
     const { sinceRevision: _since, ...parameters } = input;
     const key = `analysis:${room.id}:${room.revision}:${hash([room.state, room.ready, parameters])}`;
     let result = this.get(key);
@@ -306,6 +313,7 @@ export class AnalysisService {
     return this.diff(result, baselineKey, room.revision, input.sinceRevision);
   }
   briefing(room: RoomSnapshot, player: PlayerId, sinceRevision?: number): Result {
+    if (room.state.ruleset === 'phasing') return this.phasingUnavailable(room);
     const key = `briefing:${room.id}:${room.revision}:${player}:${hash([room.state, room.ready])}`;
     let result = this.get(key);
     if (!result) {

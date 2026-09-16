@@ -42,7 +42,7 @@ it('public HTTP lobby lists lightweight unfinished rooms, sorts activity, and ke
   const { rooms } = await (await fetch(url)).json();
   expect(rooms.map((room: { id: string }) => room.id)).toEqual([second.room.id, first.room.id, waiting.room.id]);
   expect(rooms[0]).toEqual({ id: second.room.id, ready: true, seats: { white: 'Second', black: 'Second opponent' },
-    turnNumber: 1, currentPlayer: 'white', updatedAt: '2026-09-12T12:01:00.000Z' });
+    ruleset: 'standard', turnNumber: 1, currentPlayer: 'white', updatedAt: '2026-09-12T12:01:00.000Z' });
   expect(JSON.stringify(rooms[0]).length).toBeLessThan(300);
   expect(rooms[2].ready).toBe(false);
   expect((await fetch(`${url}/${first.room.id}/actions`, { method: 'POST', headers: { 'Content-Type': 'application/json' },

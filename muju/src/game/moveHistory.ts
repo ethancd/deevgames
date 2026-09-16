@@ -5,6 +5,8 @@ import { calculateAttackPower, calculateDefense } from './combat';
 import { findPath } from './movement';
 import { getUnitDefinition } from './units';
 import { unitUpkeep } from './upkeep';
+import { createUnitFromDefinition } from './building';
+import { isPhasing } from './rules';
 
 export const HISTORY_NOTATION = {
   pieces: '🔥 fire · ⚡ lightning · 💧 water · 🌑 shadow · 🌱 plant · 🪨 metal; number = tier',
@@ -28,6 +30,7 @@ interface EventBase { player: PlayerId; turnNumber: number; notation: string; de
 export type MoveEvent = EventBase & (
   | { kind: 'move'; unit: HistoryUnit; from: string; to: string; path: string[]; ap: number; speed: number }
   | { kind: 'purchase'; unit: HistoryUnit; cost: number; bankBefore: number; bankAfter: number }
+  | { kind: 'summoning'; summoned: string[]; disrupted: string[]; refunded: number }
   | { kind: 'promotion'; unit: HistoryUnit; previousDefinitionId: string; cost: number; bankBefore: number; bankAfter: number }
   | { kind: 'attack'; unit: HistoryUnit; target: HistoryUnit; ap: number; attackPower: number; defenseBefore: number; defenseAfter: number; killed: boolean }
   | { kind: 'upkeep'; automatic: boolean; paid: number; bankBefore: number; bankAfter: number; kept: (HistoryUnit & { cost: number })[]; released: HistoryUnit[] }
@@ -60,10 +63,11 @@ export function describeTransition(before: GameState, action: AIAction, after: G
       description: `${getUnitDefinition(unit.definitionId).name} · ${ap} AP` });
   }
   if (action.type === 'BUY_UNIT') {
-    const placed = getUnitAt(after.board, action.position)!;
+    const pending = after.pendingSummons?.find(s => s.owner === player && s.position.x === action.position.x && s.position.y === action.position.y);
+    const placed = pending ? createUnitFromDefinition(pending.definitionId, pending.owner, pending.position, pending.id) : getUnitAt(after.board, action.position)!;
     events.push({ ...base, kind: 'purchase', unit: historyUnit(placed), cost: bankBefore - bankAfter, bankBefore, bankAfter,
-      notation: `+${pieceSymbol(placed.definitionId)}@${historySquare(action.position)}`,
-      description: `${getUnitDefinition(placed.definitionId).name} · −${bankBefore - bankAfter} ◆ · bank ${bankAfter}` });
+      notation: `${isPhasing(before) ? '◌' : '+'}${pieceSymbol(placed.definitionId)}@${historySquare(action.position)}`,
+      description: `${getUnitDefinition(placed.definitionId).name}${pending ? ' phasing in' : ''} · −${bankBefore - bankAfter} ◆ · bank ${bankAfter}` });
   }
   if (action.type === 'PROMOTE_UNIT' && unit) {
     const promoted = after.board.units.find(u => u.id === unit.id)!;
@@ -103,6 +107,16 @@ export function describeTransition(before: GameState, action: AIAction, after: G
       automatic: action.type !== 'PAY_UPKEEP', bankBefore: bank + payment.paid, bankAfter: bank, kept, released,
       notation: `Upkeep −${payment.paid} ◆${released.length ? `; release ${released.map(u => `${u.symbol}@${u.square}`).join(', ')}` : ''}`,
       description: `${action.type !== 'PAY_UPKEEP' ? 'Automatic' : 'Chosen'} · bank ${bank + payment.paid} → ${bank}${released.length ? ` · ${released.length} released` : ''}` });
+  }
+  if (after.lastSummoning && after.lastSummoning !== before.lastSummoning) {
+    const result = after.lastSummoning;
+    const summoned = result.summoned.map(s => `${pieceSymbol(s.definitionId)}@${historySquare(s.position)}`);
+    const disrupted = result.disrupted.map(s => `${pieceSymbol(s.definitionId)}@${historySquare(s.position)}`);
+    const refunded = result.disrupted.reduce((n, s) => n + s.cost, 0);
+    if (summoned.length || disrupted.length) events.push({ player: result.player, turnNumber: result.turnNumber,
+      kind: 'summoning', summoned, disrupted, refunded,
+      notation: `Arrival: ${summoned.join(', ') || 'none'}${refunded ? ` · refund ${refunded} ◆` : ''}`,
+      description: disrupted.length ? `Disrupted: ${disrupted.join(', ')} · full refund` : 'Summons materialized; ready to act' });
   }
   if (after.phase === 'victory' && before.phase !== 'victory') {
     const reason = after.victoryReason ?? 'elimination';

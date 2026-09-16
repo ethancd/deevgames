@@ -7,15 +7,15 @@ export const ELEMENT_SYMBOLS: Record<Element, string> = { fire: '🔥', lightnin
 interface UnitShopProps {
   resources: number; player: PlayerId; board: BoardState;
   selectedId: string | null; onSelectId: (id: string | null) => void;
-  inspectOnly?: boolean;
+  inspectOnly?: boolean; phasing?: boolean;
 }
-export function UnitShop({ resources, player, selectedId, onSelectId, inspectOnly = false }: UnitShopProps) {
+export function UnitShop({ resources, player, selectedId, onSelectId, inspectOnly = false, phasing = false }: UnitShopProps) {
   const def = selectedId ? getUnitDefinition(selectedId) : getUnitDefinition('fire_1');
   const tier = inspectOnly ? def.tier : 1;
   return <div className={`unit-shop ${inspectOnly ? '' : 'purchase-shop'}`}>
     <div className="element-picker" role="group" aria-label={inspectOnly ? 'Unit element' : 'Buy tier 1'}>
       {UNIT_DEFINITIONS.filter(d => d.tier === tier).map(d => <button key={d.id}
-        aria-label={`${inspectOnly ? 'Inspect' : 'Buy'} ${d.name}${inspectOnly ? '' : ` · ${d.cost} crystals`}`}
+        aria-label={`${inspectOnly ? 'Inspect' : phasing ? 'Summon' : 'Buy'} ${d.name}${inspectOnly ? '' : ` · ${d.cost} crystals`}`}
         disabled={!inspectOnly && resources < d.cost} aria-pressed={selectedId === d.id} onClick={() => onSelectId(d.id)}>
         <ElementIcon element={d.element} />{d.name}{!inspectOnly && <small>◆ {d.cost}</small>}
       </button>)}
@@ -25,6 +25,6 @@ export function UnitShop({ resources, player, selectedId, onSelectId, inspectOnl
       <div className="shop-detail"><strong><span className="shop-piece-name"><UnitArtwork element={def.element} owner={player} tier={def.tier} />{def.name}</span><small>◆ {def.cost} total · rent {upkeepForTier(def.tier)}</small></strong>
         <div className="unit-stats"><span>Attack <b>{def.attack}</b></span><span>Defense <b>{def.defense}</b></span><span>Speed <b>{def.speed}</b></span><span>Mining <b>{def.mining}</b></span></div>
       </div><p>Buy tier 1. Promote in place on later turns; pay the cost difference.</p>
-    </> : <p role="status">{selectedId ? `${def.name} · ATK ${def.attack} / DEF ${def.defense} / SPD ${def.speed} / Mining ${def.mining}. Tap a highlighted square to buy.` : 'Tap a unit to buy, then an empty square. Or select a piece to promote.'}</p>}
+    </> : <p role="status">{selectedId ? `${def.name} · ATK ${def.attack} / DEF ${def.defense} / SPD ${def.speed} / Mining ${def.mining}. ${phasing ? 'Choose a square: pay now, arrive next turn if still legal; otherwise full refund.' : 'Tap a highlighted square to buy.'}` : phasing ? 'Choose a tier-1 piece and commit its square. Or select a materialized piece to promote.' : 'Tap a unit to buy, then an empty square. Or select a piece to promote.'}</p>}
   </div>;
 }

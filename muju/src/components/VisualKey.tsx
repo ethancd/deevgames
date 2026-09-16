@@ -8,6 +8,7 @@ const elements: Element[] = ['fire', 'lightning', 'water', 'shadow', 'plant', 'm
 
 export function VisualKey() {
   return <div className="visual-key">
+    <section><h3>Phasing summons</h3><p>In Phasing games, dashed silhouettes show public pending summons. They are not occupants and do not block movement or take damage. They materialize at their owner’s next turn if still legal; otherwise their cost is refunded.</p></section>
     <section><h3>One reserve per square</h3>
       <p>Each pale brick is one crystal remaining. Two stacks grow from the bottom, up to eight bricks each; odd totals put the extra brick on the left. At your turn end, each piece takes up to its Mining stat, up to the square’s reserve. Mining 0 takes nothing.</p>
       <div className="reserve-examples">{examples.map(reserve => <figure key={reserve}>

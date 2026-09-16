@@ -13,8 +13,19 @@ export type GameMode = 'vs-ai' | 'pass-play' | 'ai-vs-ai' | 'online';
 
 export type ControlType = 'human' | 'ai' | 'remote';
 export type ActionsPerTurn = 4;
+export type Ruleset = 'standard' | 'phasing';
+
+/** Public commitments, deliberately separate from board units and occupancy. */
+export interface PendingSummon {
+  id: string;
+  owner: PlayerId;
+  definitionId: string;
+  position: Position;
+  cost: number;
+}
 
 export interface GameConfig {
+  ruleset?: Ruleset;
   actionsPerTurn?: ActionsPerTurn;
   /** Starting crystals granted to Black; omitted or 0 means no handicap. */
   blackCrystalHandicap?: number;
@@ -118,6 +129,10 @@ export type VictoryReason = 'elimination' | 'home-occupation' | 'home-checkmate'
 export interface IncomeTake { unitId: string; definitionId: string; position: Position; amount: number }
 
 export interface GameState {
+  /** Missing in historical saves means Standard. Immutable for a match. */
+  ruleset?: Ruleset;
+  pendingSummons?: PendingSummon[];
+  lastSummoning?: { player: PlayerId; turnNumber: number; summoned: PendingSummon[]; disrupted: PendingSummon[] };
   /** Four shared actions for every current-rule match. */
   actionsPerTurn?: ActionsPerTurn;
   /** Starting crystals granted to Black; omitted or 0 means no handicap. */

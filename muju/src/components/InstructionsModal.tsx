@@ -74,9 +74,49 @@ const getPages = (actionsPerTurn: ActionsPerTurn) => [
   </>},
 ];
 
-export function InstructionsModal({isOpen,onClose,actionsPerTurn=DEFAULT_ACTIONS_PER_TURN}: {isOpen:boolean;onClose:()=>void;actionsPerTurn?:ActionsPerTurn}) {
+export function InstructionsModal({isOpen,onClose,actionsPerTurn=DEFAULT_ACTIONS_PER_TURN,phasing=false}: {isOpen:boolean;onClose:()=>void;actionsPerTurn?:ActionsPerTurn;phasing?:boolean}) {
   const [page,setPage]=useState(0);
-  const pages=getPages(actionsPerTurn);
+  const standard=getPages(actionsPerTurn);
+  const pages=phasing ? [
+    {title:'Phasing · experimental rules', content:<>
+      <p>All pieces, pending summons, and both banks are public. Play with another person locally or online. AI uses Standard rules.</p>
+      <p>Start each turn by resolving your pending summons, then heal your units and take up to {actionsPerTurn} actions. Both players begin the game in Act, even with a Black crystal handicap.</p>
+      <p>Choose Mine & prepare to collect mining and pay upkeep. Then promote pieces and commit new summons. Choose End turn to hand over. Mining is collected only once.</p>
+    </>},
+    standard[1],
+    {title:'Commit a summon', content:<>
+      <p>In Prepare, choose a tier-1 piece and an empty square in a legal spawn rectangle. Pay its full price now. You can commit several summons, but only one of yours per square.</p>
+      <p>Each actual friendly piece anchors a rectangle from your home corner to its square. Any enemy inside blocks that rectangle. Pending summons cannot anchor or block rectangles.</p>
+      <p>The dashed piece shows its owner, element and type. It cannot act, mine, promote, be attacked, occupy home, or keep an otherwise eliminated army alive. Anyone may move through or onto its square.</p>
+    </>},
+    {title:'Arrival or full refund', content:<>
+      <p>At the start of your next turn, check every pending summon against the board as it stands. If its square is empty and in any legal friendly spawn rectangle, it materializes. Otherwise it is removed and its entire original price is refunded.</p>
+      <p>Check all summons together. New arrivals cannot support one another. Walking through a square or temporarily blocking a rectangle does not disrupt a summon if the position is legal at arrival.</p>
+      <p>Arrivals can move and attack that turn, and promote during its Prepare phase. Existing home-occupation and elimination wins resolve before arrivals.</p>
+    </>},
+    standard[3],
+    {title:'Combat & Cleave',content:<>
+      <p>Attack an orthogonally adjacent enemy for one action. Damage accumulates until that enemy’s next turn; reaching zero defense eliminates it. There is no retaliation. Pending summons cannot be attacked.</p>
+      <p>A killing blow unlocks another attack, up to the attacker’s tier: 1 / 2 / 3 attacks. A surviving target ends the chain. A piece cannot attack the same target twice in one turn.</p>
+      <p>Move between attacks if actions remain. Units arriving at turn start can act immediately. End-of-turn promotions cannot attack until their next turn.</p>
+    </>},
+    standard[5],
+    {title:'Mine, then pay upkeep',content:<>
+      <p>After actions, every actual friendly piece takes up to its Mining stat from its square’s remaining reserve. Pending summons take nothing. Deposits never replenish.</p>
+      <p>Then pay upkeep: tier 1 is free, tier 2 costs 1, tier 3 costs 2. This turn’s income can fund the payment. If unaffordable, choose higher-tier pieces to release; tier 1 always stays.</p>
+      <p>Upkeep review can be enabled in the menu. Affordable payments otherwise happen automatically. Newly promoted pieces pay their new rate after mining on their next turn.</p>
+    </>},
+    {title:'End-of-turn promotions',content:<>
+      <p>After mining and upkeep, promote any materialized piece once: 4 crystals to tier 2, or 8 to tier 3. A piece that arrived this turn is eligible. Pending summons are not.</p>
+      <p>New stats apply immediately during the opponent’s reply. Mining and actions have already finished, so there is no extra mining or attack. Promotions and new summons can be chosen in either order.</p>
+    </>},
+    {title:'Controls & undo',content:<>
+      <p>Tap a piece and a reachable square to move. Tap a reachable enemy to preview an attack, then confirm. In Prepare, select a shop piece and its highlighted square to summon, or tap an existing piece to promote.</p>
+      <p>Enter completes the current phase; Command/Ctrl+Z undoes within your turn. Mine & prepare is reversible until handoff. Undo never reverses your opponent’s turn.</p>
+      <p>The ten-turn quiet clock and the online time delay advance only at End turn, after preparation. Summoning, refunds and promotions do not reset the quiet clock.</p>
+    </>},
+    standard[10],
+  ] : standard;
   if(!isOpen)return null;
   return <PlayDialog title="How to play" onClose={onClose}>
     <div className="help-body"><h3>{pages[page].title}</h3><div className="tutorial-copy">{pages[page].content}</div></div>

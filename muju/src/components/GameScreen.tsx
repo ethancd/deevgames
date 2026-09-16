@@ -20,11 +20,13 @@ import { AIConsole } from './AIConsole';
 import { PassDeviceOverlay } from './PassDeviceOverlay';
 import { InstructionsModal } from './InstructionsModal';
 import { getUnitAt, getUnitById, getCell, isOccupied, isValidPosition } from '../game/board';
-import { getActionsPerTurn } from '../game/rules';
+import { getActionsPerTurn, isPhasing, rulesetLabel } from '../game/rules';
 import { getUnitDefinition, UNIT_DEFINITIONS } from '../game/units';
 import { projectedIncome } from '../game/mining';
 import { canPromote } from '../game/promotion';
-import { getAllSpawnPositions, getSpawnInvalidReason } from '../game/spawning';
+import { getPurchasePositions, hasPendingSummon } from '../game/summoning';
+import { SummoningStatus } from './SummoningStatus';
+import { getSpawnInvalidReason } from '../game/spawning';
 import { findAttackApproach, getMovementRange, getAttackFrontier, type MovementRangePosition } from '../game/movement';
 import { calculateAttackPower, calculateDefense } from '../game/combat';
 import { PlayDialog } from './PlayDialog';
@@ -33,7 +35,7 @@ import type { ReactNode } from 'react';
 
 type SpawnFeedback = {
   position: Position;
-  reason: 'enemy_blocking' | 'outside_control';
+  reason: 'enemy_blocking' | 'outside_control' | 'already_pending';
 } | null;
 
 interface GameScreenProps {
@@ -71,6 +73,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
     selectedUnitData,
   } = game;
   const actionsPerTurn = getActionsPerTurn(state);
+  const phasing = isPhasing(state);
   const { playback, mode: replayMode, setReplayMode, startReplay, closeReplay, toggleReplay, stepReplay } = useReplayPlayback(`${state.phase}:${state.turn.currentPlayer}:${state.turn.turnNumber}`);
   const showReplay = !!playback;
   const replayFrame = playback && playback.step > 0 ? playback.replay.frames[playback.step - 1] : null;
@@ -165,8 +168,8 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
     if (state.turn.phase !== 'place' || !selectedPurchaseId) {
       return [];
     }
-    return getAllSpawnPositions(state.turn.currentPlayer, state.board);
-  }, [state.turn.phase, selectedPurchaseId, state.board, state.turn.currentPlayer]);
+    return getPurchasePositions(state, state.turn.currentPlayer);
+  }, [state.turn.phase, selectedPurchaseId, state.board, state.turn.currentPlayer, state.pendingSummons]);
 
   const selectedPurchaseDefinitionId = selectedPurchaseId;
 
@@ -219,14 +222,14 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
   const whiteAI = useAI({
     difficulty: config.aiDifficulty.white,
     thinkingDelay: 400,
-    enabled: config.controls.white === 'ai' && !isPaused && state.phase === 'playing',
+    enabled: !phasing && config.controls.white === 'ai' && !isPaused && state.phase === 'playing',
     getCurrentState, state,
   });
 
   const blackAI = useAI({
     difficulty: config.aiDifficulty.black,
     thinkingDelay: 400,
-    enabled: config.controls.black === 'ai' && !isPaused && state.phase === 'playing',
+    enabled: !phasing && config.controls.black === 'ai' && !isPaused && state.phase === 'playing',
     getCurrentState, state,
   });
   const opponentAI = humanPlayer === 'black' ? whiteAI : blackAI;
@@ -249,7 +252,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
   // Trigger AI turn for 'white' side.
   useEffect(() => {
     if (
-      state.turn.currentPlayer === 'white' &&
+      !phasing && state.turn.currentPlayer === 'white' &&
       config.controls.white === 'ai' &&
       state.phase === 'playing' &&
       !whiteAI.isThinking &&
@@ -264,7 +267,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
   // Trigger AI turn for 'black' side
   useEffect(() => {
     if (
-      state.turn.currentPlayer === 'black' &&
+      !phasing && state.turn.currentPlayer === 'black' &&
       config.controls.black === 'ai' &&
       state.phase === 'playing' &&
       !blackAI.isThinking &&
@@ -316,8 +319,8 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
         setSpawnFeedback(null);
       } else {
         // Check why it's invalid and show feedback
-        const reason = getSpawnInvalidReason(position, currentPlayer, state.board);
-        if (reason === 'enemy_blocking' || reason === 'outside_control') {
+        const reason = hasPendingSummon(state, currentPlayer, position) ? 'already_pending' : getSpawnInvalidReason(position, currentPlayer, state.board);
+        if (reason === 'enemy_blocking' || reason === 'outside_control' || reason === 'already_pending') {
           setSpawnFeedback({ position, reason });
         } else {
           // Occupied cell - just clear feedback
@@ -704,17 +707,17 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
     : online && !online.ready ? 'Share your invitation to bring in the other player.'
     : online?.busy ? 'Confirming your move…'
     : !interactive ? (isPaused ? 'Paused' : 'Opponent’s turn')
-    : state.turn.phase === 'place' ? 'Buy tier 1, or select a piece to promote.'
+    : state.turn.phase === 'place' ? phasing ? 'Commit a summon for next turn, or select a piece to promote. End turn when ready.' : 'Buy tier 1, or select a piece to promote.'
     : 'Select a unit. Tap a square to move, or an enemy to preview an attack.';
 
   return (
-    <main className={`game-shell${online ? ' game-shell-online' : ''}${observing ? ' game-shell-observer' : ''}${analysis ? ` game-shell-analysis${analysis.reviewing ? ' is-reviewing' : ''}` : ''}`}>
+    <main className={`game-shell${phasing ? ' game-shell-phasing' : ''}${online ? ' game-shell-online' : ''}${observing ? ' game-shell-observer' : ''}${analysis ? ` game-shell-analysis${analysis.reviewing ? ' is-reviewing' : ''}` : ''}`}>
       {state.phase === 'victory' && !analysis && <VictoryScreen winner={state.winner} reason={state.victoryReason} onPlayAgain={handlePlayAgain} analysisUrl={online?.analysisUrl ?? '/muju/analysis?local=1'} playerNames={playerNames} perspectivePlayer={observing ? null : humanPlayer ?? 'white'} onViewHistory={online?.onToggleHistory} />}
       {showPassOverlay && state.phase === 'playing' && <PassDeviceOverlay nextPlayer={state.turn.currentPlayer} onContinue={handleContinueFromPass} />}
       {state.upkeepPending && !analysis && config.controls[state.turn.currentPlayer] === 'human' &&
         (!online || (online.player === state.turn.currentPlayer && online.ready)) && !showPassOverlay && !showReplay &&
         <UpkeepPanel state={state} onConfirm={payUpkeep} disabled={online?.busy} />}
-      <InstructionsModal isOpen={showInstructions} onClose={() => setShowInstructions(false)} actionsPerTurn={actionsPerTurn} />
+      <InstructionsModal isOpen={showInstructions} onClose={() => setShowInstructions(false)} actionsPerTurn={actionsPerTurn} phasing={phasing} />
       <aside className="game-overview" aria-label="Match overview">
         {online?.banner}
         {(whiteAI.error || blackAI.error) && <div role="alert">
@@ -724,13 +727,13 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
         {(whiteAI.warning || blackAI.warning) && <small role="status">AI is using its backup engine.</small>}
         <header className="game-header">
           <a href="../" aria-label="Back to Deev Games">← Games</a>
-          <h1>Muju Hono Tanka</h1>
+          <h1>Muju Hono Tanka <small className="ruleset-badge">{rulesetLabel(state)}</small></h1>
           <div className="game-header-actions"><MusicButton /><button disabled={showReplay} onClick={() => setShowMenu(true)} aria-label="Game menu">•••</button></div>
         </header>
         <section className="turn-strip" aria-label="Turn and phases">
           <strong>{playback ? `Replay · ${playerNames[playback.replay.player]}` : isThinking ? 'Thinking…' : playerNames[state.turn.currentPlayer]} <span>· Turn {playback?.replay.turnNumber ?? state.turn.turnNumber}</span></strong>
-          <div className="phase-steps">{(['place', 'action'] as const).map((phase, i) =>
-            <span key={phase} aria-current={shownPhase === phase ? 'step' : undefined}>{i + 1} {phase === 'action' ? 'Act' : 'Place'}</span>
+          <div className="phase-steps">{(phasing ? ['action', 'place'] as const : ['place', 'action'] as const).map((phase, i) =>
+            <span key={phase} aria-current={shownPhase === phase ? 'step' : undefined}>{i + 1} {phase === 'action' ? 'Act' : phasing ? 'Prepare' : 'Place'}</span>
           )}</div>
         </section>
         <section className="score-strip" aria-label="Player resources">
@@ -743,7 +746,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
       </aside>
       <div className={`play-area ${state.turn.phase === 'place' && (interactive || showReplay) ? 'is-placing' : ''}`}>
         <section className="board-stage" aria-label="Battlefield">
-          <Board board={playback ? replayFrame?.board ?? playback.replay.initialBoard : state.board}
+          <Board pendingSummons={playback ? replayFrame?.pendingSummons ?? playback.replay.initialPendingSummons ?? [] : state.pendingSummons} board={playback ? replayFrame?.board ?? playback.replay.initialBoard : state.board}
             selectedUnit={showReplay ? replayFrame?.unitId ?? null : shownUnit?.id ?? null}
             validMoves={showReplay ? [] : state.validMoves}
             validAttacks={showReplay ? replayFrame?.action.type === 'ATTACK' && replayFrame.position ? [replayFrame.position] : [] : preview ? [preview.position] : state.validAttacks}
@@ -761,7 +764,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
         </div>
         <section className="decision-panel" aria-label="Current choice">
           {analysis && state.upkeepPending && !analysis.reviewing ? <UpkeepPanel key={`${state.turn.turnNumber}-${state.turn.currentPlayer}`} state={state} onConfirm={payUpkeep} inline /> : playback ? <TurnReplay replay={playback.replay} step={playback.step} paused={playback.paused} mode={replayMode} playerName={playerNames[playback.replay.player]} onClose={closeReplay} onToggle={toggleReplay} onStep={stepReplay} />
-          : state.turn.phase === 'place' && interactive && !shownUnit ? <UnitShop resources={currentPlayerState.resources} player={state.turn.currentPlayer} board={state.board}
+          : state.turn.phase === 'place' && interactive && !shownUnit ? <UnitShop phasing={phasing} resources={currentPlayerState.resources} player={state.turn.currentPlayer} board={state.board}
             selectedId={selectedPurchaseId} onSelectId={id => { setSelectedPurchaseId(id); setSelectedPlaceUnitId(null); setViewedEnemyUnitId(null); }} />
           : preview && selectedUnitData ? <div className="action-preview">
               <div className="preview-heading"><strong>Attack → {String.fromCharCode(65 + preview.position.x)}{preview.position.y + 1}</strong><span>{previewCost} action{previewCost !== 1 ? 's' : ''} · {state.turn.actionsRemaining - previewCost} left</span></div>
@@ -779,13 +782,14 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
         </section>
       </div>
       <footer className="play-footer">
-        <div className="income-status" role="status" data-testid="projected-income">Projected income this turn: +{projectedIncome(state, state.turn.currentPlayer)} ◆</div>
+        {phasing && !showReplay && <SummoningStatus state={state} />}
+        <div className="income-status" role="status" data-testid="projected-income">{phasing && state.turn.phase === 'place' ? 'Mining collected. Upkeep precedes these promotions and summons.' : `Projected income this turn: +${projectedIncome(state, state.turn.currentPlayer)} ◆`}</div>
         <div className="income-recap-slot">{state.lastIncome && <details className="income-recap"><summary>{playerNames[state.lastIncome.player]} collected {state.lastIncome.total} ◆ · turn {state.lastIncome.turnNumber}</summary>
           <ul>{state.lastIncome.takes.map(t => <li key={t.unitId}>{getUnitDefinition(t.definitionId).name} at {String.fromCharCode(65+t.position.x)}{t.position.y+1}: {t.amount}</li>)}</ul>
         </details>}</div>
 
-        <div className="context-status" role="status">{spawnFeedback ? spawnFeedback.reason === 'enemy_blocking' ? 'Enemies are blocking that square.' : 'Choose a square in your controlled area.' : phaseHint}</div>
-        {!analysis?.reviewing && <ActionBar actionsRemaining={state.turn.actionsRemaining} actionsPerTurn={actionsPerTurn} phase={state.turn.phase}
+        <div className="context-status" role="status">{spawnFeedback ? spawnFeedback.reason === 'already_pending' ? 'You already have a summon committed to that square.' : spawnFeedback.reason === 'enemy_blocking' ? 'Enemies are blocking that square.' : 'Choose a square in your controlled area.' : phaseHint}</div>
+        {!analysis?.reviewing && <ActionBar phasing={phasing} actionsRemaining={state.turn.actionsRemaining} actionsPerTurn={actionsPerTurn} phase={state.turn.phase}
           readOnly={observing}
           onEndPlacePhase={endPlacePhase} onEndActionPhase={endActionPhase}
           isPlayerTurn={interactive} onUndo={() => { setPreview(null); undo(); }} canUndo={canUndo && interactive} />}
@@ -802,7 +806,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
       {showVisualKey && <PlayDialog title="Read the board" onClose={() => setShowVisualKey(false)}><VisualKey /></PlayDialog>}
       {showMenu && <PlayDialog title="Game menu" onClose={() => setShowMenu(false)}>
         <p>{analysis ? 'Analysis runs locally. You control both sides, and can go backward or forward through the timeline.' : observing ? 'You are observing this match. Reopen the watch link to follow it on any device.' : online ? 'This match is saved on the server. Keep this browser’s seat credential to reconnect. You can undo moves until you end your turn.' : `Your match is saved at phase changes on this device. New games use Unequal routes with ${INITIAL_MAP_RESOURCES} crystals.`}</p>
-        <p>Affordable upkeep is paid automatically. Undo back through your actions to refund it and choose which units to keep.</p>
+        <p>{phasing ? 'After actions, mining and affordable upkeep settle together. Undo Mine & prepare to revisit the action phase. Enable upkeep review to choose releases.' : 'Affordable upkeep is paid automatically. Undo back through your actions to refund it and choose which units to keep.'}</p>
         {isCurrentPlayerHuman && <label><input type="checkbox" checked={!!state.reviewUpkeep?.[state.turn.currentPlayer]} onChange={e=>setUpkeepReview(state.turn.currentPlayer,e.target.checked)} /> Always ask before paying upkeep (optional)</label>}
         <button onClick={() => { setShowMenu(false); handleBackToMenuClick(); }}>Choose game mode</button>
         {analysis && <button onClick={() => { resetGame(); setShowMenu(false); }}>Reset analysis</button>}
@@ -811,13 +815,13 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
         <a href="https://ashkie.com/">Visit Ashkie.com ↗</a>
       </PlayDialog>}
       {showUnitShopInspection && <PlayDialog title="Unit guide" onClose={() => setShowUnitShopInspection(false)}>
-        <UnitShop resources={currentPlayerState.resources} player={state.turn.currentPlayer} board={state.board} selectedId={shopSelectedId} onSelectId={setShopSelectedId} inspectOnly />
+        <UnitShop phasing={phasing} resources={currentPlayerState.resources} player={state.turn.currentPlayer} board={state.board} selectedId={shopSelectedId} onSelectId={setShopSelectedId} inspectOnly />
       </PlayDialog>}
       {showInsights && <PlayDialog title="Elements & match stats" onClose={() => { setShowInsights(false); handleDismissRecap(); }}>
         <ElementLegend />
         <p>Advantage adds 1 attack; disadvantage subtracts 1. Attack previews include this bonus.</p>
         {state.lastUpkeep && <p>Last upkeep: {playerNames[state.lastUpkeep.player]} paid {state.lastUpkeep.paid}. Released: {state.lastUpkeep.released.map(u=>getUnitDefinition(u.definitionId).name).join(', ') || 'none'}.</p>}
-        <p>Both banks, reserves, purchases and promotions are public. Income arrives at turn end; upkeep is paid at the start of the next turn.</p>
+        <p>Both banks, reserves, purchases and promotions are public. {phasing ? 'After actions: mine, pay upkeep, then promote and commit summons. Arrivals resolve at your next turn start.' : 'Income arrives at turn end; upkeep is paid at the start of the next turn.'}</p>
         {showAIRecap && <AIRecap actions={opponentAI.lastTurnActions} onDismiss={handleDismissRecap} />}
         {config.controls.white === 'ai' && <AIConsole title={config.mode === 'vs-ai' ? 'AI Console' : 'AI 1 Console'} debug={whiteAI.lastDebug} isThinking={whiteAI.isThinking} />}
         {config.controls.black === 'ai' && <AIConsole title="AI Console" debug={blackAI.lastDebug} isThinking={blackAI.isThinking} />}

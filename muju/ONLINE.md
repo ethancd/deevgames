@@ -1,5 +1,20 @@
 # Muju Hono Tanka: multiplayer and MCP
 
+## Optional Phasing games
+
+Choose **Phasing** while hosting, or pass `ruleset: "phasing"` to room creation.
+The default is `standard`; the choice is immutable and visible to both seats and
+observers. Existing rooms remain Standard. Phasing starts in Act, then collects
+mining and pays upkeep with `END_ACTION_PHASE`; promote and commit summons in
+Prepare (`phase: "place"`), then hand over with `END_PLACE_PHASE`. Both phases
+share the full-turn clock. Black's handicap never adds an opening Place phase in
+Phasing. Public commitments, arrivals and refunds persist in history and saved
+positions. Strategic analysis tools explicitly report unsupported for Phasing;
+manual analysis, observations, legal actions and previews work normally.
+See [complete Phasing rules](docs/PHASING-2026-09-16.md). Sections below describing
+pre-action upkeep and instant purchases refer to Standard.
+
+
 One authoritative host serves the existing browser game, persistent two-seat rooms,
 an HTTP API, and an MCP endpoint. Humans and LLMs can play each other in any pairing
 from separate computers. Every move uses the same rules engine as local play.

@@ -5,7 +5,7 @@ import { manhattanDistance, resetUnitActions } from './board';
 import { calculateAttackPower, calculateDefense, canAttack, getAttackCount, getValidAttacks } from './combat';
 import { getValidMoves } from './movement';
 import { getNextTierDefinition, getUnitDefinition } from './units';
-import { getActionsPerTurn } from './rules';
+import { getActionsPerTurn, isPhasing } from './rules';
 import { unitUpkeep } from './upkeep';
 
 type Transition = (state: GameState, action: AIAction) => GameState;
@@ -72,7 +72,9 @@ function searchHomeDefense(state: GameState, invader: PlayerId, transition: Tran
   const defender = getOpponent(invader), actions = getActionsPerTurn(state);
   const ready: GameState = { ...state, board: resetUnitActions(state.board, defender), upkeepPending: false,
     turn: { ...state.turn, currentPlayer: defender, phase: 'action', actionsRemaining: actions } };
-  if (!enoughPossibleDamage(ready, target, true)) return { result: 'mate', nodes: 0, cutoffReason: null, method: 'damage_bound' };
+  // An occupied home invalidates every pending summon. In Phasing the defender
+  // acts before upkeep/promotion, so its present army is the entire rescue set.
+  if (!enoughPossibleDamage(ready, target, !isPhasing(state))) return { result: 'mate', nodes: 0, cutoffReason: null, method: 'damage_bound' };
 
   let nodes = 0, exhausted = false;
   let cutoffReason: HomeDefenseEvidence['cutoffReason'] = null;
@@ -154,7 +156,7 @@ function searchHomeDefense(state: GameState, invader: PlayerId, transition: Tran
     // Tier 1 is mandatory, even when it blocks a rescuing attacker.
     return definition.tier > 1 && prepare(index + 1, cash, kept, promotions);
   };
-  const rescued = prepare(0, ready.players[defender].resources, [], []);
+  const rescued = isPhasing(state) ? act(ready, []) : prepare(0, ready.players[defender].resources, [], []);
   const categories = new Set<string>();
   if (witness) {
     categories.add('existing');
@@ -171,6 +173,9 @@ function searchHomeDefense(state: GameState, invader: PlayerId, transition: Tran
 export function resolveHomeCheckmate(state: GameState, transition: Transition): GameState {
   const invader = state.turn.currentPlayer;
   if (state.phase !== 'playing' || state.upkeepPending || state.victoryRule === 'elimination' || !getHomeOccupier(state.board, invader)) return state;
+  // In Phasing an invader must survive its own end-of-action upkeep before it
+  // can force the defender's reply. Do not award mate to a piece about to be released.
+  if (isPhasing(state) && state.turn.phase !== 'place') return state;
   // An earlier invasion wins when the defender's turn starts, before any rescue
   // would be required. A counter-invasion cannot steal that established win.
   if (getHomeOccupier(state.board, getOpponent(invader))) return state;

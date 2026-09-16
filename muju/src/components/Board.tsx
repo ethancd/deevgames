@@ -1,4 +1,5 @@
-import type { BoardState, Position } from '../game/types';
+import type { BoardState, Position, PendingSummon } from '../game/types';
+import { UnitArtwork } from './UnitArtwork';
 import type { MovementRangePosition } from '../game/movement';
 import { BOARD_SIZE, getUnitAt } from '../game/board';
 import { getUnitDefinition } from '../game/units';
@@ -6,6 +7,7 @@ import { Cell } from './Cell';
 import { Unit } from './Unit';
 
 interface BoardProps {
+  pendingSummons?: PendingSummon[];
   board: BoardState;
   selectedUnit: string | null;
   validMoves: Position[];
@@ -24,6 +26,7 @@ interface BoardProps {
 }
 
 export function Board({
+  pendingSummons = [],
   board,
   selectedUnit,
   validMoves,
@@ -78,6 +81,8 @@ export function Board({
             const unit = getUnitAt(board, { x, y });
             const isSelected = unit?.id === selectedUnit;
             const pos = { x, y };
+            const pending = pendingSummons.filter(s => s.position.x === x && s.position.y === y);
+            const pendingLabel = pending.map(s => `${s.owner} ${getUnitDefinition(s.definitionId).name} phasing in, not an occupant`).join('; ');
 
             return (
               <div key={`${x}-${y}`} className="board-square">
@@ -96,8 +101,13 @@ export function Board({
                   moveCost={getMovementRangeActions(pos) !== undefined ? actionsRemaining - getMovementRangeActions(pos)! : undefined}
                   previewLabel={previewUnit && previewUnitPosition?.x === x && previewUnitPosition?.y === y ? `${getUnitDefinition(previewUnit.definitionId).name} attack approach` : undefined}
                   unitLabel={unit ? `${unit.owner} ${getUnitDefinition(unit.definitionId).name}, ${getUnitDefinition(unit.definitionId).element}, tier ${getUnitDefinition(unit.definitionId).tier}` : undefined}
+                  pendingLabel={pendingLabel}
                   onClick={unit ? () => onUnitClick(unit.id) : onCellClick}
                 />
+                {pending.map(s => <div key={s.id} className={`summon-ghost ${s.owner}${unit ? ' occupied' : ''}`} aria-hidden="true" data-testid={`summon-${x}-${y}`}>
+                  <UnitArtwork element={getUnitDefinition(s.definitionId).element} owner={s.owner} tier={1} />
+                  <span>◌</span>
+                </div>)}
                 {unit && (
                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <div className={`unit-wrap${isSelected && previewUnit ? ' preview-origin' : ''}`}>

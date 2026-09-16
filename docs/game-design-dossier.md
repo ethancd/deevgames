@@ -1,4 +1,10 @@
 > **Muju update, 2026-09-10:** §2.3 reflects v2.2 with doubled prices. Other
+
+**Muju update, September 16, 2026:** Standard remains the default. The optional
+[Phasing ruleset](https://github.com/ethancd/deevgames/blob/master/muju/docs/PHASING-2026-09-16.md) changes turn timing to actions,
+mining, upkeep, then promotions and public committed summons. Arrivals resolve
+next own turn or refund. Current AI/balance claims apply to Standard only.
+
 > Muju measurements and planning discussion below retain their historical
 > baseline; well, queue, hidden-economy and build-time claims are superseded.
 

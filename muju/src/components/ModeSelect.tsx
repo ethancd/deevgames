@@ -1,3 +1,6 @@
+import { RulesetSelect } from './RulesetSelect';
+import type { Ruleset } from '../game/types';
+import { rulesetLabel } from '../game/rules';
 import { useState } from 'react';
 import { BlackCrystalHandicap } from './BlackCrystalHandicap';
 import { MusicButton } from '../music/MusicPlayer';
@@ -28,6 +31,7 @@ export function ModeSelect({ onStartGame, onOnline }: ModeSelectProps) {
   const [aiDifficulty, setAiDifficulty] = useState<AIDifficulty>('medium');
   const [savedGame] = useState(loadGameState);
   const [blackCrystalHandicap, setBlackCrystalHandicap] = useState(0);
+  const [ruleset, setRuleset] = useState<Ruleset>('standard');
 
   const handleSideChange = (side: PlayerId) => {
     setPlayerSide(side);
@@ -74,7 +78,9 @@ export function ModeSelect({ onStartGame, onOnline }: ModeSelectProps) {
         break;
     }
 
-    onStartGame({ ...config, blackCrystalHandicap, newGame });
+    const chosenRules = newGame ? (selectedMode === 'pass-play' ? ruleset : 'standard') : savedGame?.ruleset ?? 'standard';
+    if (chosenRules === 'phasing' && selectedMode !== 'pass-play') return;
+    onStartGame({ ...config, ruleset: chosenRules, blackCrystalHandicap, newGame });
   };
 
   return (
@@ -209,7 +215,9 @@ export function ModeSelect({ onStartGame, onOnline }: ModeSelectProps) {
           </div>
         )}
 
-        {selectedMode && <BlackCrystalHandicap value={blackCrystalHandicap} onChange={setBlackCrystalHandicap} />}
+        {selectedMode === 'pass-play' && <RulesetSelect value={ruleset} onChange={setRuleset} />}
+        {(selectedMode === 'vs-ai' || selectedMode === 'ai-vs-ai') && <p className="text-sm text-gray-400">AI plays Standard rules. Try Phasing in Pass & Play or online.</p>}
+        {selectedMode && <BlackCrystalHandicap phasing={selectedMode === 'pass-play' && ruleset === 'phasing'} value={blackCrystalHandicap} onChange={setBlackCrystalHandicap} />}
 
         {/* Start button */}
         {selectedMode && <p className="text-sm text-gray-400">4 shared actions per turn · Draw after 10 consecutive turns without a kill.</p>}
@@ -224,9 +232,9 @@ export function ModeSelect({ onStartGame, onOnline }: ModeSelectProps) {
         >
           Start Game
         </button>
-        {savedGame && <button disabled={!selectedMode} onClick={() => handleStart(false)}
+        {savedGame && <button disabled={!selectedMode || (savedGame.ruleset === 'phasing' && selectedMode !== 'pass-play')} onClick={() => handleStart(false)}
           className="w-full p-3 rounded-lg border border-gray-600 disabled:text-gray-500">
-          Continue saved game · {getActionsPerTurn(savedGame)} actions
+          Continue saved game · {rulesetLabel(savedGame)} · {getActionsPerTurn(savedGame)} actions
         </button>}
       </div>
     </div>

@@ -8,8 +8,9 @@ import type {
   PlayerState,
   TurnState,
   ActionsPerTurn,
+  Ruleset,
 } from './types';
-import { DEFAULT_ACTIONS_PER_TURN, isActionsPerTurn, isBlackCrystalHandicap } from './rules';
+import { DEFAULT_ACTIONS_PER_TURN, isActionsPerTurn, isBlackCrystalHandicap, isRuleset } from './rules';
 import { MAX_RESOURCE_RESERVE, UNEQUAL_ROUTES_MAP } from './resourceMap';
 import { STARTING_UNITS } from './units';
 
@@ -200,7 +201,8 @@ export function getStartingPositions(player: PlayerId): Position[] {
 /**
  * Create the initial game state
  */
-export function createInitialGameState(resourceLayout: readonly number[] = UNEQUAL_ROUTES_MAP, actionsPerTurn: ActionsPerTurn = DEFAULT_ACTIONS_PER_TURN, blackCrystalHandicap = 0): GameState {
+export function createInitialGameState(resourceLayout: readonly number[] = UNEQUAL_ROUTES_MAP, actionsPerTurn: ActionsPerTurn = DEFAULT_ACTIONS_PER_TURN, blackCrystalHandicap = 0, ruleset: Ruleset = 'standard'): GameState {
+  if (!isRuleset(ruleset)) throw new Error('Unknown ruleset');
   if (!isBlackCrystalHandicap(blackCrystalHandicap)) throw new Error('Black crystal handicap must be a whole number from 0 to 20');
   if (!isActionsPerTurn(actionsPerTurn)) throw new Error('Actions per turn must be 4');
   if (resourceLayout.length !== BOARD_SIZE * BOARD_SIZE || resourceLayout.some(n => !Number.isInteger(n) || n < 0 || n > MAX_RESOURCE_RESERVE)) throw new Error('Invalid starting resource layout');
@@ -244,6 +246,8 @@ export function createInitialGameState(resourceLayout: readonly number[] = UNEQU
 
   return {
     actionsPerTurn,
+    ruleset,
+    ...(ruleset === 'phasing' ? { pendingSummons: [] } : {}),
     blackCrystalHandicap,
     phase: 'playing',
     inactivityPlies: 0, progressThisTurn: false,

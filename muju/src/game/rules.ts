@@ -1,4 +1,8 @@
-import type { ActionsPerTurn, GameState } from './types';
+import type { ActionsPerTurn, GameState, Ruleset } from './types';
+
+export const isRuleset = (value: unknown): value is Ruleset => value === 'standard' || value === 'phasing';
+export const isPhasing = (state: Pick<GameState, 'ruleset'>): boolean => state.ruleset === 'phasing';
+export const rulesetLabel = (state: Pick<GameState, 'ruleset'>): string => isPhasing(state) ? 'Phasing' : 'Standard';
 
 export const MAX_BLACK_CRYSTAL_HANDICAP = 20;
 

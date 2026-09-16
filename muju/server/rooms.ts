@@ -160,7 +160,7 @@ export class RoomStore {
     const legacy = ['muju-online-2', 'muju-online-3'].includes(room.rulesVersion);
     const oldState = room.state as LegacyGameState;
     const validBudget = legacy ? oldState.actionsPerTurn === undefined || [4, 6].includes(oldState.actionsPerTurn) : isActionsPerTurn(getActionsPerTurn(room.state));
-    if ((!legacy && room.rulesVersion !== RULES_VERSION) || !validBudget) {
+    if ((!legacy && room.rulesVersion !== RULES_VERSION && room.rulesVersion !== 'muju-phasing-1') || !validBudget) {
       throw new RoomError(409, 'RULES_CHANGED', 'This room uses older rules. Create a new room.');
     }
     if (legacy) {
@@ -215,15 +215,16 @@ export class RoomStore {
       json_extract(data, '$.seats') AS seats,
       json_extract(data, '$.state.turn.turnNumber') AS turnNumber,
       json_extract(data, '$.state.turn.currentPlayer') AS currentPlayer,
+      COALESCE(json_extract(data, '$.state.ruleset'), 'standard') AS ruleset,
       json_extract(data, '$.updatedAt') AS updatedAt
       FROM rooms WHERE json_extract(data, '$.state.phase') = 'playing'
-      AND ((json_extract(data, '$.rulesVersion') = ? AND COALESCE(json_extract(data, '$.state.actionsPerTurn'), 4) = 4)
+      AND ((json_extract(data, '$.rulesVersion') IN (?, 'muju-phasing-1') AND COALESCE(json_extract(data, '$.state.actionsPerTurn'), 4) = 4)
         OR (json_extract(data, '$.rulesVersion') IN ('muju-online-2', 'muju-online-3')
           AND COALESCE(json_extract(data, '$.state.actionsPerTurn'), 4) IN (4, 6)))
       ORDER BY ready DESC, updatedAt DESC, id`).all(RULES_VERSION);
     return rows.map(row => ({ id: row.id as string, ready: row.ready === 1,
       seats: JSON.parse(row.seats as string), turnNumber: row.turnNumber as number,
-      currentPlayer: row.currentPlayer as PlayerId, updatedAt: row.updatedAt as string }));
+      ruleset: row.ruleset as 'standard' | 'phasing', currentPlayer: row.currentPlayer as PlayerId, updatedAt: row.updatedAt as string }));
   }
   moveHistory(id: string, input: HistoryQuery = {}): RoomMoveHistory {
     const { before, after, limit, includeUndone } = historyQuerySchema.parse(input);
@@ -298,15 +299,15 @@ export class RoomStore {
       : { changed: true, ...metadata, room };
   }
   create(input: unknown): RoomAdmission {
-    const { name, side, actionsPerTurn, timeControl, blackCrystalHandicap } = createSchema.parse(input);
+    const { name, side, actionsPerTurn, timeControl, blackCrystalHandicap, ruleset } = createSchema.parse(input);
     return this.transaction(() => {
       const count = this.db.prepare('SELECT COUNT(*) AS count FROM rooms').get()!.count as number;
       if (count >= this.maxRooms) throw new RoomError(503, 'ROOM_LIMIT', 'This host is at its room limit.');
       const id = randomBytes(16).toString('hex'), token = secret(), inviteCode = secret();
       const room: StoredRoom = { id, revision: 0, ready: false, seats: { white: null, black: null },
-        state: createInitialGameState(undefined, actionsPerTurn, blackCrystalHandicap), canUndo: false, undoHistory: [], updatedAt: new Date().toISOString(), history: [],
+        state: createInitialGameState(undefined, actionsPerTurn, blackCrystalHandicap, ruleset), canUndo: false, undoHistory: [], updatedAt: new Date().toISOString(), history: [],
         moveHistoryStart: { revision: 0, turnNumber: 1, player: 'white', complete: true },
-        rulesVersion: RULES_VERSION, inviteHash: digest(inviteCode), tokenHashes: { [side]: digest(token) }, receipts: [] };
+        rulesVersion: ruleset === 'phasing' ? 'muju-phasing-1' : RULES_VERSION, inviteHash: digest(inviteCode), tokenHashes: { [side]: digest(token) }, receipts: [] };
       room.seats[side] = name;
       room.timeControl = timeControl ?? null;
       if (timeControl) room.clockBase = { serverNowMs: Date.now(), runningPlayer: null, turnStartedAtMs: null, deadlineAtMs: null,

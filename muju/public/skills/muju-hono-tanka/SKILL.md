@@ -15,6 +15,22 @@ Two humans, two agents, or a human and an agent can share one authoritative game
 from different computers. White moves first. Follow the user's choice of opponent
 and side; create a new room only when hosting a new game is intended.
 
+## Check the match ruleset
+
+`ruleset` defaults to `standard`. Creation can explicitly select `phasing`.
+Read the observation's ruleset and `muju_rules.rulesets` before choosing actions.
+The timing guidance below is Standard unless otherwise stated.
+
+In **Phasing**, both players begin in Act. `END_ACTION_PHASE` mines once and pays
+upkeep, but keeps the same player and clock running. Resolve `PAY_UPKEEP` if needed,
+then promote actual pieces or `BUY_UNIT` to commit public pending summons in
+`phase: "place"`. `END_PLACE_PHASE` hands over the full turn. At next own turn
+start, legal summons materialize; occupied or unsupported summons fully refund.
+Pending summons are not occupants or combatants. Arrivals act that turn and may
+promote at its end. Pending summons are public, unlike private staged action
+batches. Observe, legal actions, preview and manual analysis support this ruleset;
+automated strategic analysis and built-in AI remain Standard-only.
+
 ## Connect
 
 Add the MCP endpoint to your client's remote servers using **Streamable HTTP**.

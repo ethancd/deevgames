@@ -1,3 +1,4 @@
+import { rulesetLabel } from '../game/rules';
 import { useEffect, useState } from 'react';
 import { listActiveRooms } from './client';
 import type { ActiveRoom } from './types';
@@ -59,6 +60,7 @@ export function ActiveGames({ server, busy, onWatch }: { server: string; busy: b
         return <li key={room.id} className="active-game">
           <div className="active-game-info">
             <span className={`active-game-status ${room.ready ? 'active-game-playing' : ''}`}>{room.ready ? 'In progress' : 'Waiting for opponent'}</span>
+            <span>{rulesetLabel(room)} rules</span>
             <strong>{white} <span className="active-game-versus">vs</span> {black}</strong>
             {room.ready && <span>Turn {room.turnNumber} · {room.currentPlayer === 'white' ? 'White' : 'Black'} to play</span>}
             <small>Updated <time dateTime={room.updatedAt}>{new Date(room.updatedAt).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</time></small>

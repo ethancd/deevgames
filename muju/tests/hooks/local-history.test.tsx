@@ -90,3 +90,28 @@ it('labels older saves as partial and keeps the final position when score storag
   expect(loadGameHistory()!.frames).toHaveLength(1);
   expect(loadGameHistory()!.frames[0].state.phase).toBe('victory');
 });
+
+it('Phasing saves pending summons, undoes mining without duplication, and preserves rules on resume/restart', () => {
+  let hook = renderHook(() => useGameState({ newGame: true, ruleset: 'phasing' }));
+  const initial = hook.result.current.state;
+  act(() => hook.result.current.endActionPhase());
+  expect(hook.result.current.state.turn).toMatchObject({ phase: 'place', currentPlayer: 'white' });
+  act(() => hook.result.current.undo());
+  expect(hook.result.current.state).toEqual(initial);
+  act(() => hook.result.current.endActionPhase());
+  act(() => hook.result.current.buyUnit('fire_1', { x: 0, y: 0 }));
+  expect(loadGameHistory()!.frames.at(-1)!.state.pendingSummons).toHaveLength(1);
+  hook.unmount();
+  hook = renderHook(() => useGameState({ ruleset: 'standard' }));
+  expect(hook.result.current.state.ruleset).toBe('phasing');
+  expect(hook.result.current.state.pendingSummons).toHaveLength(1);
+  act(() => hook.result.current.endPlacePhase());
+  expect(hook.result.current.canUndo).toBe(false);
+  act(() => hook.result.current.endActionPhase());
+  act(() => hook.result.current.endPlacePhase());
+  expect(hook.result.current.state.lastSummoning!.summoned).toHaveLength(1);
+  expect(loadGameHistory()!.frames.at(-1)!.label).toContain('Arrival');
+  act(() => hook.result.current.resetGame());
+  expect(hook.result.current.state.ruleset).toBe('phasing');
+  expect(hook.result.current.state.pendingSummons).toEqual([]);
+});

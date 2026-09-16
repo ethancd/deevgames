@@ -1,5 +1,16 @@
 # Muju Hono Tanka — Game Specification (Current Rules)
 
+## Optional Phasing ruleset (September 16, 2026)
+
+**Standard remains the default and the baseline specified below.** New human
+matches may instead choose **Phasing**: actions → mining → upkeep → promotions
+and public committed tier-1 summons. At next own turn start, legal commitments
+materialize; disrupted commitments refund their full original cost. Arrivals act
+immediately and may promote at that turn's end. The complete variant, including
+victory, undo and compatibility details, is specified in
+[Phasing](docs/PHASING-2026-09-16.md). Built-in AI remains Standard-only.
+
+
 This is the canonical rules specification for Muju Hono Tanka as implemented.
 It supersedes the original v1.0 implementation spec (this file's previous
 content) and incorporates all v1.1 changes (`docs/v1.1-spec.md`). Where this

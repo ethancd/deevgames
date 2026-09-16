@@ -7,6 +7,7 @@ import type { SeatStaging } from './staging';
 export type RoomAction = AIAction | { type: 'SET_UPKEEP_REVIEW'; enabled: boolean } | { type: 'UNDO' };
 /** Public lobby metadata, without board snapshots or seat credentials. */
 export interface ActiveRoom {
+  ruleset?: import('../game/types').Ruleset;
   id: string;
   ready: boolean;
   seats: Record<PlayerId, string | null>;

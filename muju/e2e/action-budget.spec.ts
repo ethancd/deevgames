@@ -34,7 +34,7 @@ test('four-action setup, undo, both turns, resume and a fresh standard game', as
   await page.getByText('Tap anywhere to continue').click();
   await expect(page.locator('.action-budget strong')).toHaveText('4 actions');
   await page.reload();await page.getByRole('button',{name:/^Pass & Play/}).click();
-  await page.getByRole('button',{name:/Continue saved game · 4 actions/}).click();
+  await page.getByRole('button',{name:/Continue saved game · Standard · 4 actions/}).click();
   await expect(page.locator('.turn-strip')).toContainText('Player 2');
   await expect(page.locator('.action-budget strong')).toHaveText('4 actions');
   await expect(page.locator('.progress-clock')).toContainText('4 actions / turn');

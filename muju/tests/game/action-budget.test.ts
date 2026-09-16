@@ -49,7 +49,7 @@ it('upgrades old saves once, preserves the board, subtracts already-spent action
     expect(loaded.board).toEqual(state.board);expect(loaded.actionsPerTurn).toBe(4);
     expect(loaded.turn.actionsRemaining).toBe(Math.max(0,4-((oldBudget??6)-remaining)));
     expect(loaded.inactivityPlies).toBe(0);
-    expect(JSON.parse(localStorage.getItem('elemental-tactics-save')!).schemaVersion).toBe(6);
+    expect(JSON.parse(localStorage.getItem('elemental-tactics-save')!).schemaVersion).toBe(7);
     const next=applyAction(loaded,{type:'END_ACTION_PHASE'});saveGameState(next);
     expect(loadGameState()?.inactivityPlies).toBe(1);
   }

@@ -9,10 +9,11 @@ import { isLegalAction } from '../game/legality';
 import { getMoveCost } from '../game/movement';
 import { checkVictory } from '../game/victory';
 import { resolveHomeCheckmate } from '../game/homeCheckmate';
+import { isPhasing } from '../game/rules';
 
 /** Deterministic IDs agree in the reducer, worker, and every simulated state. */
 function nextUnitId(state: GameState): string {
-  const ids = new Set(state.board.units.map(u => u.id));
+  const ids = new Set([...state.board.units, ...(state.pendingSummons ?? [])].map(u => u.id));
   const prefix = `unit-${state.turn.currentPlayer}-${state.turn.turnNumber}-`;
   let n = 0;
   while (ids.has(prefix + n)) n++;
@@ -116,6 +117,8 @@ function applyAttack(state: GameState, unitId: string, targetPosition: Position)
 }
 
 function finishPlacement(state: GameState): GameState {
+  // Explicit End turn keeps preparation reviewable, including a final purchase.
+  if (isPhasing(state)) return state;
   return canActInPlacePhase(state, state.turn.currentPlayer) ? state : startActionPhase(state);
 }
 
@@ -123,6 +126,12 @@ function applyBuyUnit(state: GameState, definitionId: string, position: Position
   const player = state.turn.currentPlayer;
   const me = state.players[player];
   const unit = createUnitFromDefinition(definitionId, player, position, nextUnitId(state));
+  if (isPhasing(state)) {
+    const cost = getUnitDefinition(definitionId).cost;
+    return { ...state, pendingSummons: [...(state.pendingSummons ?? []),
+      { id: unit.id, owner: player, definitionId, position: { ...position }, cost }],
+      players: { ...state.players, [player]: { ...me, resources: me.resources - cost } } };
+  }
   return { ...state, board: placeUnit(state.board, unit),
     players: { ...state.players, [player]: { ...me, resources: me.resources - getUnitDefinition(definitionId).cost } } };
 }

@@ -22,6 +22,7 @@ const UNDOABLE_ACTIONS = new Set([
   'BUY_UNIT',
   'PROMOTE_UNIT',
   'END_PLACE_PHASE',
+  'END_ACTION_PHASE',
 ]);
 
 export function gameReducer(state: GameState, action: LocalAction): GameState {
@@ -87,7 +88,7 @@ export function gameReducer(state: GameState, action: LocalAction): GameState {
     }
 
     case 'RESET_GAME': {
-      return createInitialGameState(undefined, getActionsPerTurn(state), state.blackCrystalHandicap);
+      return createInitialGameState(undefined, getActionsPerTurn(state), state.blackCrystalHandicap, state.ruleset);
     }
 
     case 'RESTORE_STATE': {
@@ -100,11 +101,11 @@ export function gameReducer(state: GameState, action: LocalAction): GameState {
   }
 }
 
-type InitialGameOptions = Pick<GameConfig, 'actionsPerTurn' | 'blackCrystalHandicap' | 'newGame'>;
+type InitialGameOptions = Pick<GameConfig, 'actionsPerTurn' | 'blackCrystalHandicap' | 'newGame' | 'ruleset'>;
 
 function getInitialSession(options: InitialGameOptions): ReplaySession {
   const saved = options.newGame ? null : loadGameHistory();
-  const state = (saved && loadGameState()) ?? createInitialGameState(undefined, options.actionsPerTurn, options.blackCrystalHandicap);
+  const state = (saved && loadGameState()) ?? createInitialGameState(undefined, options.actionsPerTurn, options.blackCrystalHandicap, options.ruleset);
   return { state, history: saved ?? startHistory(state, true), historyUndoLengths: [],
     recording: emptyRecording(), undoLengths: [], turnStartUndo: null };
 }
@@ -181,7 +182,7 @@ export function useGameState(options: InitialGameOptions = {}) {
       setUndoHistory((prev) => [...prev, state]);
     }
     // Clear undo history only on turn end or game reset (not phase transitions)
-    if (action.type === 'END_ACTION_PHASE' || action.type === 'RESET_GAME') {
+    if ((action.type === 'END_ACTION_PHASE' && state.ruleset !== 'phasing') || action.type === 'RESET_GAME') {
       setUndoHistory([]);
     }
     dispatch(action);

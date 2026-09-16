@@ -21,7 +21,7 @@ it('starts a new four-action game, undoes, resumes its rules and can start a sta
   expect(loadGameState()?.turn.actionsRemaining).toBe(4);
   view.unmount();view=render(<App />);
   fireEvent.click(screen.getByRole('button',{name:/^Pass & Play/}));
-  fireEvent.click(screen.getByRole('button',{name:/Continue saved game · 4 actions/}));
+  fireEvent.click(screen.getByRole('button',{name:/Continue saved game · Standard · 4 actions/}));
   expect(view.container.querySelectorAll('.action-budget i')).toHaveLength(4);
   fireEvent.click(screen.getByRole('button',{name:/End turn/}));
   expect(loadGameState()).toMatchObject({actionsPerTurn:4,turn:{currentPlayer:'black',actionsRemaining:4}});
