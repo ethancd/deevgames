@@ -50,12 +50,20 @@ const screenshots = process.env.QA_SCREENSHOTS;
       await page.getByRole('button', {name: /End turn/}).click();
       await page.getByText('Tap anywhere to continue').click();
       assert.equal(await page.locator('.income-recap summary').innerText(), 'Player 1 collected 6 ◆ · turn 1');
-      const saved = await page.evaluate(() => localStorage.getItem('elemental-tactics-save'));
+      await page.waitForFunction(() => {
+        const saved = JSON.parse(localStorage.getItem('elemental-tactics-save') || 'null');
+        return saved?.state.turn.currentPlayer === 'black' && saved.state.players.white.resources === 6;
+      });
+      const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('elemental-tactics-save')));
       assert(saved, 'Muju must save after end-turn income');
       await page.reload();
       await page.getByRole('button', {name: 'Pass & Play Two players, one device', exact: true}).click();
       await page.getByRole('button', {name: /Continue saved game/}).click();
-      assert.equal(await page.evaluate(() => localStorage.getItem('elemental-tactics-save')), saved);
+      const resumed = await page.evaluate(() => JSON.parse(localStorage.getItem('elemental-tactics-save')));
+      // Mounting the resumed game refreshes the save timestamp, not its position or score.
+      assert.equal(resumed.schemaVersion, saved.schemaVersion);
+      assert.deepEqual(resumed.state, saved.state);
+      assert.deepEqual(resumed.history, saved.history);
       assert.equal(await page.locator('.action-budget strong').innerText(), '4 actions');
       await page.getByRole('link', {name: 'Back to Deev Games', exact: true}).click();
       await page.getByRole('link', {name: /FORGE/}).click();
