@@ -22,7 +22,7 @@ afterEach(() => { cleanup(); vi.restoreAllMocks(); });
 
 function setup() {
   const view = render(<MusicProvider><MusicButton /><p>Room turn 1</p></MusicProvider>);
-  fireEvent.click(screen.getByRole('button', { name: 'Music player' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Sound and music' }));
   const audio = view.container.querySelector('audio')!;
   return { ...view, audio };
 }
@@ -43,7 +43,7 @@ it('starts only on request and keeps the audio and position through panel and ro
   expect(view.audio.currentTime).toBe(119);
   fireEvent.click(screen.getByRole('button', { name: 'Close dialog' }));
   view.rerender(<MusicProvider><MusicButton /><p>Room turn 2</p></MusicProvider>);
-  fireEvent.click(screen.getByRole('button', { name: 'Music player' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Sound and music' }));
   expect(view.container.querySelector('audio')).toBe(view.audio);
   expect(view.audio.currentTime).toBe(119);
   expect(play).toHaveBeenCalledTimes(1);

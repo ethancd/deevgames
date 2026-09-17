@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { PlayDialog } from '../components/PlayDialog';
 import { MUSIC_TRACKS } from './tracks';
+import { SoundControls } from '../sound/SoundProvider';
 import './music.css';
 
 type Repeat = 'disc' | 'track' | 'off';
@@ -28,8 +29,8 @@ export function MusicButton() {
   const music = useContext(MusicContext);
   if (!music) return null;
   return <button type="button" className={`music-trigger${music.playing ? ' is-playing' : ''}`}
-    aria-label="Music player" title={music.playing ? `Playing: ${music.title}` : 'Background music'} onClick={music.open}>
-    <span aria-hidden="true">♫</span><span className="music-trigger-label">Music</span>
+    aria-label="Sound and music" title={music.playing ? `Playing: ${music.title}` : 'Sound and music'} onClick={music.open}>
+    <span aria-hidden="true">♫</span><span className="music-trigger-label">Audio</span>
     {music.playing && <span className="music-playing-dot" aria-hidden="true" />}
   </button>;
 }
@@ -131,8 +132,9 @@ export function MusicProvider({ children }: { children: ReactNode }) {
       }}
       onTimeUpdate={() => setPosition(audio.current?.currentTime ?? 0)}
       onError={() => { wantsPlayback.current = false; playRequest.current++; setPlaying(false); setError('This track could not load. Press Play to retry, or choose another track.'); }} />
-    {open && <PlayDialog title="Background music" onClose={() => setOpen(false)}>
+    {open && <PlayDialog title="Sound & music" onClose={() => setOpen(false)}>
       <div className="music-panel">
+        <SoundControls />
         <p className="music-caption">Nine full tracks · Muju Hono Tanka</p>
         <label className="music-track-label">Track
           <select value={index} onChange={event => selectTrack(Number(event.target.value))}>

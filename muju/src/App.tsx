@@ -6,6 +6,7 @@ import { OnlineLobby } from './online/OnlineLobby';
 import { MapPainter } from './components/MapPainter';
 import { AnalysisScreen } from './components/AnalysisScreen';
 import { MusicProvider } from './music/MusicPlayer';
+import { SoundProvider } from './sound/SoundProvider';
 
 function GameApp() {
   const [gameConfig, setGameConfig] = useState<GameConfig | null>(null);
@@ -38,7 +39,7 @@ function GameApp() {
 }
 
 function App() {
-  return <MusicProvider><GameApp /></MusicProvider>;
+  return <SoundProvider><MusicProvider><GameApp /></MusicProvider></SoundProvider>;
 }
 
 export default App;

@@ -33,7 +33,7 @@ for (const ruleset of ['standard', 'phasing']) test(`${ruleset}: inspect either 
     await expect(page.locator('.unit-detail')).toContainText('Attack');
     if(owner==='white') await expect(page.locator('.unit-detail')).toContainText('Enemy');
     else await expect(page.locator('.unit-detail')).not.toContainText('Enemy');
-    expect(await page.locator('.attack-frontier-marker').count()).toBeGreaterThan(0);
+    await expect(page.locator('.attack-frontier-marker').first()).toBeVisible();
     await page.getByRole('button',{name:'Hide reach'}).click();
     await expect(page.locator('.attack-frontier-marker')).toHaveCount(0);
     await page.getByRole('button',{name:'Show reach'}).click();

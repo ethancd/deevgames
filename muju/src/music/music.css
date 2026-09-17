@@ -7,6 +7,10 @@
 .game-header .music-trigger-label { display: none; }
 .music-lobby-nav { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 .music-panel { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.sound-settings { display: grid; gap: 8px; padding-bottom: 16px; border-bottom: 1px solid #42576c; }
+.sound-settings-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.sound-settings-heading strong { font-size: 14px; }
+.sound-settings-heading button { min-width: 56px; }
 .play-dialog:has(.music-panel) .dialog-content>header>button { min-width: 44px; min-height: 44px; border-radius: 9px; background: #253448; font-size: 22px; }
 .music-panel .music-caption { color: #bfe9ca; font-size: 12px; }
 .music-panel label { display: flex; flex-direction: column; gap: 8px; font-size: 12px; color: #b6c9d7; }

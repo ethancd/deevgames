@@ -127,7 +127,7 @@ Invitations open the host's copy of the browser game.
 
 ## Background music
 
-Open **♫ Music** in the game-room header (or **Music** in game modes/the lobby).
+Open **♫ Sound and music** in the game-room header (or **Audio** in game modes/the lobby).
 Press **Play music** to start the nine-track soundtrack. Close the panel to keep
 playing while you take turns, inspect history, or return to the lobby. Each
 browser controls its own soundtrack independently of the other players.
@@ -143,6 +143,20 @@ Finished MP3s are packaged under `public/music/`, with provenance in
 music-provider credentials or generation requests are needed at runtime. The
 host serves range requests for scrubbing and caches the versioned MP3 filenames.
 The selected full mixes total about 60 MB; playback requests one track at a time.
+
+## Sound effects
+
+The same **Sound and music** panel has a separate effects toggle, level, and
+**Test sound** button. Effects start enabled at a quiet level; the setting stays
+on this device independently of music. Moves use a dry piece tap, captures a
+slightly fuller clack, and phasing, arrival, promotion, and turn changes each
+have a short cue. Hits that leave a defender alive have a lighter tap.
+
+Effects last 75–140 ms and follow the visible board, including each incoming
+online or instant-replay movement hop. Inspecting pieces, undoing, loading a
+saved position, and rewinding a replay stay silent. Sounds require an initial
+tap/key press and stop while the tab is hidden. The effects are synthesized
+locally and require no audio downloads.
 
 ## Connect an LLM
 

@@ -1,5 +1,6 @@
 import { INITIAL_MAP_RESOURCES } from '../game/resourceMap';
 import { MusicButton } from '../music/MusicPlayer';
+import { useGameSounds } from '../sound/useGameSounds';
 import { INACTIVITY_LIMIT, INACTIVITY_WARNING } from '../game/inactivity';
 import { UpkeepPanel } from './UpkeepPanel';
 import { upkeepDue } from '../game/upkeep';
@@ -81,6 +82,8 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
   useEffect(() => { if (online?.playingIncoming) closeReplay(); }, [online?.playingIncoming, closeReplay]);
   const showReplay = !!playback;
   const replayFrame = playback && playback.step > 0 ? playback.replay.frames[playback.step - 1] : null;
+  useGameSounds({ state, replay: playback, quiet: !!analysis?.reviewing,
+    viewer: online ? online.player : config.mode === 'vs-ai' ? config.controls.white === 'human' ? 'white' : 'black' : null });
 
   const [viewedSummonId, setViewedSummonId] = useState<string | null>(null);
   const viewedSummon = state.pendingSummons?.find(s => s.id === viewedSummonId);
