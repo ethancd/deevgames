@@ -32,6 +32,7 @@ for (const amount of [2, 20]) test(`online ${amount}-crystal handicap reaches th
     });
     expect(handedOff.ok()).toBe(true);
     await expect(page.locator('.action-budget strong')).toHaveText(amount < 3 ? '4 actions' : 'Buy & promote');
+    await page.getByRole('button', { name: 'Room details', exact: true }).click();
     await expect(page.getByText(`Black crystal handicap · ${amount} starting crystals`, { exact: true })).toBeVisible();
     await page.reload();
     await expect(page.locator('.action-budget strong')).toHaveText(amount < 3 ? '4 actions' : 'Buy & promote');

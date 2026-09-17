@@ -44,9 +44,10 @@ test('Phasing online room, public observer, arrivals and analysis retain rules',
   await page.getByRole('button', { name: 'Play online' }).click();
   await page.getByRole('radio', { name: /Phasing/ }).check();
   await page.getByRole('button', { name: 'Create room' }).click();
-  await page.getByText('Private reconnect details', { exact: true }).click();
+  await page.getByRole('button', { name: 'Room details', exact: true }).click();
+    await page.getByText('Private reconnect details', { exact: true }).click();
   const credentials = JSON.parse(await page.getByLabel('Private seat credentials').inputValue());
-  await page.getByText('Private reconnect details', { exact: true }).click();
+  await page.getByRole('button', { name: 'Close dialog' }).click();
   const joined = await request.post(`/api/muju/rooms/${credentials.roomId}/join`, { data: { name: 'Black test', inviteCode: credentials.inviteCode } });
   const guest = await joined.json();
   await page.getByRole('button', { name: 'Mine & prepare' }).click();

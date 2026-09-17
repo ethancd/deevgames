@@ -26,7 +26,7 @@ for (const viewport of [{width:900,height:1000},{width:390,height:844},{width:12
     await expect(launcher).toBeDisabled();
     await page.getByTestId('cell-1-0').click();
     const initial=await geometry(page);
-    expect(initial[0].height).toBeGreaterThan(240);
+    expect(initial[0].height).toBeGreaterThan(viewport.height <= 620 && viewport.height > viewport.width ? 180 : 240);
     let release!:()=>void, received!:()=>void;
     const gate=new Promise<void>(resolve=>{release=resolve;});
     const arrived=new Promise<void>(resolve=>{received=resolve;});
@@ -44,7 +44,7 @@ for (const viewport of [{width:900,height:1000},{width:390,height:844},{width:12
     const unit=room.state.board.units.find((u:any)=>u.owner==='black'&&u.definitionId==='fire_1');
     const actions=[{type:'MOVE',unitId:unit.id,to:{x:3,y:9}},{type:'END_ACTION_PHASE'}];
     expect((await request.post(`/api/muju/rooms/${roomId}/actions`,{headers:{Authorization:`Bearer ${host.credentials.token}`},data:{expectedRevision:room.revision,requestId:'opponent-turn',actions}})).ok()).toBe(true);
-    await expect(launcher).toBeEnabled();
+    await expect(launcher).toBeEnabled({ timeout: 12000 });
     sameGeometry(await geometry(page),initial);
     const mode = page.getByRole('combobox', {name:'Replay mode'});
     await mode.selectOption('step');
@@ -82,7 +82,7 @@ for (const viewport of [{width:900,height:1000},{width:390,height:844},{width:12
     await expect(page.getByTestId('cell-3-9')).toHaveAttribute('aria-label',/black Hi/);
     sameGeometry(await geometry(page),initial);
     await page.reload();
-    await expect(launcher).toBeEnabled();
+    await expect(launcher).toBeEnabled({ timeout: 12000 });
     await expect(mode).toHaveValue('step');
   });
 }

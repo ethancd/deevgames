@@ -8,6 +8,9 @@ const MODES: Record<ReplayMode, { name: string; description: string; delay: numb
   slow: { name: 'Slow', description: 'Slow · 1 second', delay: 1000 },
   step: { name: 'Step', description: 'Step through · Manual', delay: 0 },
 };
+/** Incoming moves autoplay at Slow when instant replay is set to manual Step. */
+export const replayDelay = (mode: ReplayMode) => MODES[mode === 'step' ? 'slow' : mode].delay;
+
 function loadReplayMode(): ReplayMode {
   try {
     const saved = localStorage.getItem(MODE_KEY);
@@ -16,9 +19,25 @@ function loadReplayMode(): ReplayMode {
   return 'slow';
 }
 
+/** Shared by instant replay and incoming online moves in this tab. */
+export function useReplayPreference() {
+  const [mode, setMode] = useState<ReplayMode>(loadReplayMode);
+  useEffect(() => {
+    const receive = (event: Event) => setMode((event as CustomEvent<ReplayMode>).detail);
+    window.addEventListener('muju-replay-mode-change', receive);
+    return () => window.removeEventListener('muju-replay-mode-change', receive);
+  }, []);
+  const update = useCallback((next: ReplayMode) => {
+    setMode(next);
+    try { localStorage.setItem(MODE_KEY, next); } catch { /* Keep the in-memory preference. */ }
+    window.dispatchEvent(new CustomEvent('muju-replay-mode-change', { detail: next }));
+  }, []);
+  return [mode, update] as const;
+}
+
 interface Playback { replay: Replay; step: number; paused: boolean; turnKey: string }
 export function useReplayPlayback(turnKey: string) {
-  const [mode, setMode] = useState<ReplayMode>(loadReplayMode);
+  const [mode, setMode] = useReplayPreference();
   const [stored, setPlayback] = useState<Playback | null>(null);
   // An incoming turn change must never paint a stale replay before an effect runs.
   const playback = stored?.turnKey === turnKey ? stored : null;
@@ -32,7 +51,6 @@ export function useReplayPlayback(turnKey: string) {
   }, [turnKey, mode]);
   const setReplayMode = useCallback((next: ReplayMode) => {
     setMode(next);
-    try { localStorage.setItem(MODE_KEY, next); } catch { /* Keep the in-memory preference. */ }
     setPlayback(current => current ? { ...current, paused: next === 'step' || document.hidden } : null);
   }, []);
   const toggleReplay = useCallback(() => {
@@ -49,7 +67,7 @@ export function useReplayPlayback(turnKey: string) {
       if (!current || current.turnKey !== turnKey) return null;
       if (document.hidden) return { ...current, paused: true };
       return current.step < current.replay.frames.length ? { ...current, step: current.step + 1 } : null;
-    }), MODES[mode].delay);
+    }), replayDelay(mode));
     return () => clearTimeout(timer);
   }, [playback, turnKey, mode]);
   useEffect(() => {

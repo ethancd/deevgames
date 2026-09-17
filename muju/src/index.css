@@ -360,17 +360,6 @@ button:focus-visible, a:focus-visible { outline: 3px solid #67e8f9; outline-offs
 .clock-low { border-color: #fbbf24; }
 .clock-low strong { color: #fcd34d; }
 .clock-help { font-size: .72rem; line-height: 1.4; margin-top: 8px; color: #94a3b8; }
-/* A clock must not shrink the phone battlefield into untappable cells. */
-@media (orientation: portrait), (max-width: 959px) {
-  .game-shell-online:has(.room-clocks) { height: auto; min-height: 100dvh; }
-  .game-shell-online:has(.room-clocks) .play-area,
-  .game-shell-online:has(.room-clocks) .play-area.is-placing {
-    flex: none; grid-template-rows: min(calc(100vw - 20px), 650px) 24px var(--decision-height, 116px);
-  }
-  .clock-seat { padding: 6px 8px; gap: 2px; }
-  .clock-seat strong { font-size: 1.5rem; }
-  .clock-seats { gap: 8px; }
-}
 .game-shell-online .income-status { display: none; }
 .online-banner [role=alert], .online-lobby [role=alert] { color: #fda4af; }
 @media (min-width: 960px) and (min-height: 601px) and (orientation: landscape) {
@@ -392,7 +381,7 @@ button:focus-visible, a:focus-visible { outline: 3px solid #67e8f9; outline-offs
 .board-key > span { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .play-area, .play-area.is-placing { grid-template-rows: minmax(0,1fr) 24px var(--decision-height, 116px); }
 .instant-replay-launcher { display: grid; grid-template-columns: minmax(0,1fr) 62px; height: 40px; flex: none; margin-top: 8px; }
-.game-shell .instant-replay-button { width: 100%; height: 40px; border-radius: 9px 0 0 9px; padding: 4px 6px; font-size: 12px; line-height: 14px; }
+.game-shell button.instant-replay-button { width: 100%; height: 40px; border-radius: 9px 0 0 9px; padding: 4px 6px; font-size: 12px; line-height: 14px; }
 .replay-mode { position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #253448; border-left: 1px solid #546478; border-radius: 0 9px 9px 0; font-size: 12px; font-weight: 650; }
 .replay-mode select { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
 .replay-mode:focus-within { outline: 3px solid #67e8f9; outline-offset: -3px; }
@@ -414,8 +403,6 @@ button:focus-visible, a:focus-visible { outline: 3px solid #67e8f9; outline-offs
   .game-shell .replay-controls button { min-height: 40px; }
 }
 @media (max-height: 620px) and (orientation: portrait) {
-  .game-shell { height: auto; min-height: 100dvh; }
-  .play-area, .play-area.is-placing { flex: none; grid-template-rows: min(calc(100vw - 20px), 280px) 24px var(--decision-height, 116px); }
   .turn-replay { grid-template-rows: 16px minmax(24px,1fr) 36px; gap: 3px; padding-block: 4px; }
 }
 @media (max-height: 600px) and (orientation: landscape) {
@@ -455,9 +442,113 @@ button:focus-visible, a:focus-visible { outline: 3px solid #67e8f9; outline-offs
 .summoning-status small { display: block; font-size: .7rem; }
 @media (max-width: 420px) { .ruleset-badge { display: block; } .summoning-status ul { grid-template-columns: 1fr; } }
 
-@media (max-width: 699px) and (orientation: portrait) {
-  .game-shell-phasing { height: auto; min-height: 100dvh; }
-  .game-shell-phasing .play-area, .game-shell-phasing .play-area.is-placing {
-    flex: none; grid-template-rows: calc(100vw - 20px) 24px var(--decision-height, 116px);
-  }
+/* Room logistics open separately; clocks stay live beside the battlefield. */
+.compact-online-banner { flex: none; margin: 0; padding: 3px 6px; }
+.online-summary { display: flex; align-items: center; gap: 6px; min-width: 0; font-size: 10px; }
+.online-summary strong, .online-summary > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.online-summary > span { margin-left: auto; color: #a5d9e9; }
+.game-shell .online-summary button { min-height: 26px; padding: 2px 6px; font-size: 10px; }
+.compact-clocks .clock-summary, .compact-clocks .clock-help { display: none; }
+.compact-clocks .clock-seats { gap: 6px; }
+.compact-clocks .clock-seat { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0 4px; padding: 2px 5px; }
+.compact-clocks .clock-seat strong { grid-column: 2; grid-row: 1 / 3; align-self: center; font-size: 18px; }
+.compact-clocks .clock-seat span { font-size: 9px; line-height: 12px; white-space: nowrap; }
+.room-details { margin: 0; }
+.play-footer { position: relative; }
+.summoning-status { display: flex; gap: 6px; align-items: center; height: 22px; font-size: 10px; }
+.summoning-status > p { flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; padding: 2px 4px; margin: 0; }
+.summoning-status details { flex: none; margin-left: auto; }
+.summoning-status summary { padding: 2px 0; }
+.summoning-status details[open] { position: absolute; bottom: 100%; right: 0; width: min(100%, 420px); max-height: 45dvh; overflow: auto; padding: 10px; border: 1px solid #546478; border-radius: 9px; background: #192636; z-index: 20; }
+.summoning-status > p { cursor: help; }
+@media (orientation: portrait), (min-height: 601px) and (max-width: 959px) {
+  .game-shell { gap: 2px; }
+  .game-header h1 { font-size: 15px; }
+  .ruleset-badge { display: inline-block; margin-left: 3px; }
+  .score-strip small { font-size: 9px; margin-top: 1px; }
+  .score-strip small + small { margin-left: 5px; }
+  .progress-clock { font-size: 9px; padding-block: 0; white-space: nowrap; overflow: hidden; }
+  .progress-clock > span { overflow: hidden; text-overflow: ellipsis; }
+  .play-area, .play-area.is-placing { grid-template-rows: minmax(0,1fr) 20px var(--decision-height, 100px); }
+  .game-shell-observer { --decision-height: 116px; }
+  .game-shell .board-key button { min-height: 20px; }
+  .selection-hint { gap: 3px; }
+  .selection-hint small { font-size: 10px; }
+  .unit-heading strong { font-size: 13px; }
+  .unit-heading small { font-size: 10px; }
+  .instant-replay-launcher { margin-top: 3px; height: 32px; }
+  .game-shell button.instant-replay-button { height: 32px; min-height: 32px; }
+  .reference-bar { gap: 8px; }
+  .game-shell .reference-bar button { min-height: 28px; font-size: 10px; }
+  .game-shell .reference-bar .counter-key { font-size: 10px; }
+  .income-recap-slot { height: 14px; }
+}
+@media (max-height: 620px) and (orientation: portrait) {
+  .game-shell { gap: 1px; }
+  .turn-strip { min-height: 20px; }
+  .score-strip > div { padding: 2px 5px; }
+  .score-strip strong { font-size: 11px; }
+  .selection-hint small { display: none; }
+}
+
+.summoning-slot { height: 22px; }
+.game-shell .summon-inspect { position: absolute; right: -2px; bottom: -2px; z-index: 9; pointer-events: auto; width: 18px; height: 18px; min-height: 18px; padding: 0; border-radius: 50%; background: #17333e; color: #e3f6ff; line-height: 18px; }
+.summoning-status li button { text-align: left; font-size: 11px; }
+@media (orientation: portrait), (min-height: 601px) and (max-width: 959px) {
+  .score-strip > div { line-height: 1.2; }
+  .score-strip strong { line-height: 18px; }
+  .score-strip small { line-height: 12px; }
+  .score-strip small:first-of-type { display: none; }
+  .score-strip small + small { margin-left: 0; margin-right: 5px; }
+  .game-shell-phasing .income-status { display: none; }
+}
+/* Keep the summaries on one line and reserve the remaining height for play. */
+@media (orientation: portrait), (max-height: 600px) {
+  .game-shell .play-footer { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0 6px; }
+  .play-footer > .summoning-slot { grid-column: 2; grid-row: 1; }
+  .play-footer > .income-recap-slot { grid-column: 1; grid-row: 1; }
+  .play-footer > .action-bar, .play-footer > .instant-replay-launcher, .play-footer > .reference-bar { grid-column: 1 / -1; }
+  .summoning-slot, .income-recap-slot, .summoning-status { height: 18px; }
+  .income-recap { text-align: left; }
+  .summoning-status > p { display: none; }
+  .play-footer > .income-status { display: none; }
+  .game-shell .action-bar button { min-height: 40px; }
+  .game-shell .reference-bar button { min-height: 26px; }
+  .instant-replay-launcher { margin-top: 2px; height: 30px; }
+  .game-shell button.instant-replay-button { height: 30px; min-height: 30px; }
+  .game-header { min-height: 32px; }
+  .game-shell .game-header button { min-height: 32px; height: 32px; padding-block: 2px; }
+  .turn-strip { min-height: 20px; }
+  .phase-steps span { padding-block: 2px; }
+  .compact-online-banner { padding-block: 2px; }
+  .game-shell .online-summary button { min-height: 22px; }
+}
+@media (orientation: landscape) and (max-height: 600px) {
+  .game-shell { height: 100dvh; min-height: 0; grid-template-rows: minmax(0,1fr) 116px auto; gap: 2px 10px; }
+  .game-overview { display: flex; flex-direction: column; gap: 2px; grid-column: 2; grid-row: 1; min-height: 0; }
+  .game-header, .turn-strip, .score-strip, .progress-clock { flex: none; }
+  .score-strip > div { padding-block: 2px; line-height: 1.2; }
+  .score-strip small { font-size: 9px; margin-top: 1px; }
+  .score-strip small:first-of-type { display: none; }
+  .progress-clock { font-size: 9px; padding-block: 0; }
+  .board-stage { grid-column: 1; grid-row: 1 / -1; align-items: center; }
+  .board-key { grid-column: 1; grid-row: 3; }
+  .decision-panel, .is-placing .decision-panel { grid-column: 2; grid-row: 2; height: 100%; }
+  .play-footer { grid-column: 2; grid-row: 3; }
+}
+
+@media (orientation: landscape) and (max-height: 600px) {
+  .game-header a { padding-block: 4px; }
+  .selection-hint { gap: 4px; }
+  .selection-hint small { font-size: 10px; }
+}
+@media (orientation: portrait), (min-height: 601px) and (max-width: 959px) {
+  .unit-detail { padding-block: 4px; }
+  .game-shell .unit-action-row button { min-height: 32px; padding-block: 3px; }
+}
+@media (orientation: landscape) and (max-height: 600px) {
+  .board-stage { align-items: flex-start; }
+}
+@media (orientation: landscape) and (max-height: 600px) {
+  .battle-board { height: min(100cqw, 100cqh, calc(100dvh - 32px)); flex: none; }
 }

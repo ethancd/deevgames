@@ -9,6 +9,7 @@ import { useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import { useGameState } from '../hooks/useGameState';
 import { useAI } from '../hooks/useAI';
 import { Board } from './Board';
+import { createUnitFromDefinition } from '../game/building';
 import { ActionBar } from './ActionBar';
 import { UnitInfo } from './UnitInfo';
 import { UnitShop } from './UnitShop';
@@ -32,6 +33,7 @@ import { calculateAttackPower, calculateDefense } from '../game/combat';
 import { PlayDialog } from './PlayDialog';
 import type { Position, GameConfig, PlayerId, Element } from '../game/types';
 import type { ReactNode } from 'react';
+import type { IncomingFrame } from '../online/incomingPlayback';
 
 type SpawnFeedback = {
   position: Position;
@@ -51,7 +53,7 @@ export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
 export function GameView({ config, onBackToMenu, game, online, analysis }: GameScreenProps & {
   game: ReturnType<typeof useGameState>;
   analysis?: { bar: ReactNode; reviewing: boolean; result?: string };
-  online?: { player: PlayerId | null; ready: boolean; busy: boolean; names: Record<PlayerId, string>; banner: ReactNode;
+  online?: { playingIncoming?: boolean; incomingFrame?: IncomingFrame; player: PlayerId | null; ready: boolean; busy: boolean; names: Record<PlayerId, string>; banner: ReactNode;
     analysisUrl: string; historyOpen?: boolean; onToggleHistory?: () => void };
 }) {
   const observing = online?.player === null;
@@ -74,10 +76,15 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
   } = game;
   const actionsPerTurn = getActionsPerTurn(state);
   const phasing = isPhasing(state);
-  const { playback, mode: replayMode, setReplayMode, startReplay, closeReplay, toggleReplay, stepReplay } = useReplayPlayback(`${state.phase}:${state.turn.currentPlayer}:${state.turn.turnNumber}`);
+  const { playback: savedPlayback, mode: replayMode, setReplayMode, startReplay, closeReplay, toggleReplay, stepReplay } = useReplayPlayback(`${state.phase}:${state.turn.currentPlayer}:${state.turn.turnNumber}`);
+  const playback = online?.playingIncoming ? null : savedPlayback;
+  useEffect(() => { if (online?.playingIncoming) closeReplay(); }, [online?.playingIncoming, closeReplay]);
   const showReplay = !!playback;
   const replayFrame = playback && playback.step > 0 ? playback.replay.frames[playback.step - 1] : null;
 
+  const [viewedSummonId, setViewedSummonId] = useState<string | null>(null);
+  const viewedSummon = state.pendingSummons?.find(s => s.id === viewedSummonId);
+  const summonPreview = useMemo(() => viewedSummon ? createUnitFromDefinition(viewedSummon.definitionId, viewedSummon.owner, viewedSummon.position, viewedSummon.id) : null, [viewedSummon]);
   const [selectedPurchaseId, setSelectedPurchaseId] = useState<string | null>(null);
   const [selectedPlaceUnitId, setSelectedPlaceUnitId] = useState<string | null>(null);
   const [spawnFeedback, setSpawnFeedback] = useState<SpawnFeedback>(null);
@@ -103,7 +110,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
       return current && path?.length === 0 ? { position: current.position, path: [] } : null;
     });
   }, [state.board]);
-  useEffect(() => { setViewedEnemyUnitId(null); setShowEnemyRange(false); }, [state.turn.currentPlayer]);
+  useEffect(() => { setViewedEnemyUnitId(null); setViewedSummonId(null); setShowEnemyRange(false); }, [state.turn.currentPlayer]);
   const lastTurnPlayer = useRef<PlayerId | null>(null);
 
   // Unit shop keyboard navigation state
@@ -134,10 +141,11 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
 
   // Clear enemy view when selecting own units or turn changes
   useEffect(() => {
-    if (state.selectedUnit) {
+    if (state.selectedUnit || selectedPlaceUnitId || selectedPurchaseId) {
+      setViewedSummonId(null);
       setViewedEnemyUnitId(null);
     }
-  }, [state.selectedUnit]);
+  }, [state.selectedUnit, selectedPlaceUnitId, selectedPurchaseId]);
 
   // Every newly inspected enemy starts with its reach visible.
   useEffect(() => {
@@ -188,10 +196,10 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
   // Calculate movement range for any viewed/selected unit
   const movementRange = useMemo((): MovementRangePosition[] => {
     // Determine which unit to show movement range for
-    const unit = selectedUnitData ?? viewedEnemyUnitData ?? selectedPlaceUnitData;
+    const unit = summonPreview ?? selectedUnitData ?? viewedEnemyUnitData ?? selectedPlaceUnitData;
     if (!unit) return [];
 
-    const isOwnUnit = !observing && unit.owner === state.turn.currentPlayer;
+    const isOwnUnit = !summonPreview && !observing && unit.owner === state.turn.currentPlayer;
     const unitDef = getUnitDefinition(unit.definitionId);
 
     const speed = unitDef.speed;
@@ -206,14 +214,14 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
     }
 
     return getMovementRange(unit.position, speed, totalActions, state.board);
-  }, [selectedUnitData, viewedEnemyUnitData, selectedPlaceUnitData, state.turn.currentPlayer, state.turn.phase, state.turn.actionsRemaining, state.board, observing, showEnemyRange, actionsPerTurn]);
+  }, [summonPreview, selectedUnitData, viewedEnemyUnitData, selectedPlaceUnitData, state.turn.currentPlayer, state.turn.phase, state.turn.actionsRemaining, state.board, observing, showEnemyRange, actionsPerTurn]);
 
   const attackFrontier = useMemo(() => {
-    const unit = selectedUnitData ?? viewedEnemyUnitData ?? selectedPlaceUnitData;
-    return showEnemyRange && unit && (observing || unit.owner !== state.turn.currentPlayer)
+    const unit = summonPreview ?? selectedUnitData ?? viewedEnemyUnitData ?? selectedPlaceUnitData;
+    return showEnemyRange && unit && (summonPreview || observing || unit.owner !== state.turn.currentPlayer)
       ? getAttackFrontier(unit, state.board, actionsPerTurn - 1)
       : [];
-  }, [selectedUnitData, viewedEnemyUnitData, selectedPlaceUnitData, showEnemyRange, observing, state.turn.currentPlayer, state.board, actionsPerTurn]);
+  }, [summonPreview, selectedUnitData, viewedEnemyUnitData, selectedPlaceUnitData, showEnemyRange, observing, state.turn.currentPlayer, state.board, actionsPerTurn]);
 
   const latestState = useRef(state); latestState.current = state;
   const getCurrentState = useCallback(() => latestState.current, []);
@@ -300,8 +308,16 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
     setShowPassOverlay(false);
   };
 
+  const handleSummonClick = (id: string) => {
+    if (showReplay || online?.playingIncoming || showPassOverlay) return;
+    deselect(); setSelectedPlaceUnitId(null); setSelectedPurchaseId(null); setViewedEnemyUnitId(null);
+    setPreview(null); setPendingMovePath([]);
+    setViewedSummonId(viewedSummonId === id ? null : id); setShowEnemyRange(true);
+  };
+
   const handleCellClick = (position: Position) => {
-    if (showReplay) return;
+    if (showReplay || online?.playingIncoming) return;
+    setViewedSummonId(null);
     if (!isCurrentPlayerHuman || isThinking || showPassOverlay) {
       return;
     }
@@ -363,7 +379,8 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
   };
 
   const handleUnitClick = (unitId: string) => {
-    if (showReplay) return;
+    if (showReplay || online?.playingIncoming) return;
+    setViewedSummonId(null);
     if (observing) {
       setViewedEnemyUnitId(viewedEnemyUnitId === unitId ? null : unitId);
       return;
@@ -651,6 +668,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
 
   // Handler to close unit info / deselect unit
   const handleCloseUnitInfo = () => {
+    setViewedSummonId(null);
     // Clear pending move if any
     setPendingMovePath([]);
     setPreview(null);
@@ -675,7 +693,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
   const playerNames = analysis ? { white: 'White', black: 'Black' } : online ? online.names : config.mode === 'pass-play' ? { white: 'Player 1', black: 'Player 2' }
     : config.mode === 'ai-vs-ai' ? { white: 'AI 1', black: 'AI 2' }
     : { white: humanPlayer === 'white' ? 'You' : 'AI', black: humanPlayer === 'black' ? 'You' : 'AI' };
-  const shownUnit = selectedPlaceUnitData ?? selectedUnitData ?? viewedEnemyUnitData;
+  const shownUnit = summonPreview ?? selectedPlaceUnitData ?? selectedUnitData ?? viewedEnemyUnitData;
   const isEnemyView = !!shownUnit && (observing || shownUnit.owner !== state.turn.currentPlayer);
   const previewTarget = preview ? getUnitAt(state.board, preview.position) : null;
   const previewMoveCost = preview && selectedUnitData
@@ -694,7 +712,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
   const homeNotice = getHomeOccupier(state.board, state.turn.currentPlayer === 'white' ? 'black' : 'white')
     ? `Clear ${state.turn.currentPlayer === 'white' ? 'A1' : 'J10'} this turn or lose`
     : getHomeOccupier(state.board, state.turn.currentPlayer) ? `Hold ${state.turn.currentPlayer === 'white' ? 'J10' : 'A1'} until your next turn` : '';
-  const canReplay = (isCurrentPlayerHuman || observing) && !isThinking && state.phase === 'playing' && !showPassOverlay &&
+  const canReplay = !online?.playingIncoming && (isCurrentPlayerHuman || observing) && !isThinking && state.phase === 'playing' && !showPassOverlay &&
     !showReplay && !!game.lastTurnReplay && game.lastTurnReplay.player !== state.turn.currentPlayer;
   const replayUnavailable = observing ? 'Watch the last completed turn.' : !game.lastTurnReplay ? 'Available after your opponent completes a turn.'
     : online?.busy ? 'Waiting for your move to be confirmed.' : !isCurrentPlayerHuman ? 'Available during your turn.' : 'Watch your opponent’s last turn.';
@@ -712,10 +730,10 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
 
   return (
     <main className={`game-shell${phasing ? ' game-shell-phasing' : ''}${online ? ' game-shell-online' : ''}${observing ? ' game-shell-observer' : ''}${analysis ? ` game-shell-analysis${analysis.reviewing ? ' is-reviewing' : ''}` : ''}`}>
-      {state.phase === 'victory' && !analysis && <VictoryScreen winner={state.winner} reason={state.victoryReason} onPlayAgain={handlePlayAgain} analysisUrl={online?.analysisUrl ?? '/muju/analysis?local=1'} playerNames={playerNames} perspectivePlayer={observing ? null : humanPlayer ?? 'white'} onViewHistory={online?.onToggleHistory} />}
+      {state.phase === 'victory' && !analysis && !online?.playingIncoming && <VictoryScreen winner={state.winner} reason={state.victoryReason} onPlayAgain={handlePlayAgain} analysisUrl={online?.analysisUrl ?? '/muju/analysis?local=1'} playerNames={playerNames} perspectivePlayer={observing ? null : humanPlayer ?? 'white'} onViewHistory={online?.onToggleHistory} />}
       {showPassOverlay && state.phase === 'playing' && <PassDeviceOverlay nextPlayer={state.turn.currentPlayer} onContinue={handleContinueFromPass} />}
       {state.upkeepPending && !analysis && config.controls[state.turn.currentPlayer] === 'human' &&
-        (!online || (online.player === state.turn.currentPlayer && online.ready)) && !showPassOverlay && !showReplay &&
+        (!online || (online.player === state.turn.currentPlayer && online.ready)) && !showPassOverlay && !showReplay && !online?.playingIncoming &&
         <UpkeepPanel state={state} onConfirm={payUpkeep} disabled={online?.busy} />}
       <InstructionsModal isOpen={showInstructions} onClose={() => setShowInstructions(false)} actionsPerTurn={actionsPerTurn} phasing={phasing} />
       <aside className="game-overview" aria-label="Match overview">
@@ -747,23 +765,24 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
       <div className={`play-area ${state.turn.phase === 'place' && (interactive || showReplay) ? 'is-placing' : ''}`}>
         <section className="board-stage" aria-label="Battlefield">
           <Board pendingSummons={playback ? replayFrame?.pendingSummons ?? playback.replay.initialPendingSummons ?? [] : state.pendingSummons} board={playback ? replayFrame?.board ?? playback.replay.initialBoard : state.board}
-            selectedUnit={showReplay ? replayFrame?.unitId ?? null : shownUnit?.id ?? null}
+            selectedUnit={showReplay ? replayFrame?.unitId ?? null : online?.playingIncoming ? online.incomingFrame?.unitId ?? null : shownUnit?.id ?? null}
             validMoves={showReplay ? [] : state.validMoves}
             validAttacks={showReplay ? replayFrame?.action.type === 'ATTACK' && replayFrame.position ? [replayFrame.position] : [] : preview ? [preview.position] : state.validAttacks}
             validSpawns={showReplay ? [] : validSpawns}
             invalidSpawnPosition={showReplay ? null : spawnFeedback?.position ?? null}
             pendingMovePath={showReplay ? [] : previewPath} movementRange={showReplay ? [] : movementRange} attackFrontier={showReplay ? [] : attackFrontier}
-            previewPosition={showReplay ? replayFrame?.position : preview?.position} previewUnitPosition={showReplay ? undefined : previewLanding}
+            previewPosition={showReplay ? replayFrame?.position : online?.playingIncoming ? online.incomingFrame?.position : preview?.position} previewUnitPosition={showReplay ? undefined : previewLanding}
             showResources={showResources} actionsRemaining={isEnemyView ? actionsPerTurn : state.turn.actionsRemaining}
-            onCellClick={handleCellClick} onUnitClick={handleUnitClick} />
+            selectedSummon={viewedSummon?.id} onSummonClick={handleSummonClick} onCellClick={handleCellClick} onUnitClick={handleUnitClick} />
         </section>
         <div className="board-key">
-          <span role="status">{showReplay ? replayMode === 'step' ? 'Instant replay · Step through' : playback.paused ? 'Replay paused' : `Instant replay · ${replayMode === 'fast' ? '0.3s' : '1s'} per action` : homeNotice || (isEnemyView && showEnemyRange ? 'Red dots: attack frontier' : selectedPurchaseId ? '＋ Safe placement' : '● 1 action · ○ farther · ⊗ attack')}</span>
+          <span role="status">{showReplay ? replayMode === 'step' ? 'Instant replay · Step through' : playback.paused ? 'Replay paused' : `Instant replay · ${replayMode === 'fast' ? '0.3s' : '1s'} per action` : homeNotice || ((isEnemyView || summonPreview) && showEnemyRange ? 'Red dots: attack frontier' : selectedPurchaseId ? '＋ Safe placement' : '● 1 action · ○ farther · ⊗ attack')}</span>
           <button disabled={showReplay} className="visual-key-trigger" onClick={() => setShowVisualKey(true)}>Key</button>
           <button aria-pressed={showResources} onClick={() => setShowResources(!showResources)}>◆ Reserves</button>
         </div>
         <section className="decision-panel" aria-label="Current choice">
           {analysis && state.upkeepPending && !analysis.reviewing ? <UpkeepPanel key={`${state.turn.turnNumber}-${state.turn.currentPlayer}`} state={state} onConfirm={payUpkeep} inline /> : playback ? <TurnReplay replay={playback.replay} step={playback.step} paused={playback.paused} mode={replayMode} playerName={playerNames[playback.replay.player]} onClose={closeReplay} onToggle={toggleReplay} onStep={stepReplay} />
+          : online?.playingIncoming ? <div className="selection-hint"><strong>Opponent’s move</strong><p role="status">{online.incomingFrame?.label}</p><small>{replayMode === 'fast' ? 'Fast · 0.3s' : 'Slow · 1s'} per action</small></div>
           : state.turn.phase === 'place' && interactive && !shownUnit ? <UnitShop phasing={phasing} resources={currentPlayerState.resources} player={state.turn.currentPlayer} board={state.board}
             selectedId={selectedPurchaseId} onSelectId={id => { setSelectedPurchaseId(id); setSelectedPlaceUnitId(null); setViewedEnemyUnitId(null); }} />
           : preview && selectedUnitData ? <div className="action-preview">
@@ -771,7 +790,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
               <p>{previewLanding && `Via ${String.fromCharCode(65 + previewLanding.x)}${previewLanding.y + 1} · `}{previewTarget ? `${getUnitDefinition(previewTarget.definitionId).name}: ${attackPower} attack vs ${attackDefense} defense · ${attackPower >= attackDefense ? 'Eliminates target' : `${attackDefense - attackPower} defense remains`}` : ''}</p>
               <div className="preview-buttons"><button onClick={() => setPreview(null)}>Cancel</button><button className="primary" onClick={commitPreview}>Confirm attack</button></div>
             </div>
-          : shownUnit || selectedPurchaseDefinitionId ? <UnitInfo unit={shownUnit} previewDefinitionId={selectedPurchaseDefinitionId}
+          : shownUnit || selectedPurchaseDefinitionId ? <UnitInfo phasingIn={!!summonPreview} unit={shownUnit} previewDefinitionId={selectedPurchaseDefinitionId}
               cellInfo={selectedUnitCell}
               isPlacePhase={state.turn.phase === 'place' && interactive} isActionPhase={state.turn.phase === 'action' && interactive}
               resources={currentPlayerState.resources} onPromote={handlePromote} isEnemyView={isEnemyView} showNextTier={observing}
@@ -782,7 +801,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
         </section>
       </div>
       <footer className="play-footer">
-        {phasing && !showReplay && <SummoningStatus state={state} />}
+        {phasing && <div className="summoning-slot" style={{ visibility: showReplay ? 'hidden' : undefined }}><SummoningStatus state={state} onInspect={handleSummonClick} /></div>}
         <div className="income-status" role="status" data-testid="projected-income">{phasing && state.turn.phase === 'place' ? 'Mining collected. Upkeep precedes these promotions and summons.' : `Projected income this turn: +${projectedIncome(state, state.turn.currentPlayer)} ◆`}</div>
         <div className="income-recap-slot">{state.lastIncome && <details className="income-recap"><summary>{playerNames[state.lastIncome.player]} collected {state.lastIncome.total} ◆ · turn {state.lastIncome.turnNumber}</summary>
           <ul>{state.lastIncome.takes.map(t => <li key={t.unitId}>{getUnitDefinition(t.definitionId).name} at {String.fromCharCode(65+t.position.x)}{t.position.y+1}: {t.amount}</li>)}</ul>

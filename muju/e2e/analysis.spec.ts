@@ -1,6 +1,72 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 import { createInitialGameState } from '../src/game/board';
 import { SCHEMA_VERSION } from '../src/utils/persistence';
+
+async function expectAnalysisFits(page: Page, reviewing: boolean) {
+  const viewport = page.viewportSize()!;
+  expect(await page.evaluate(() => ({
+    width: document.documentElement.scrollWidth <= innerWidth,
+    height: document.documentElement.scrollHeight <= innerHeight + 1,
+  }))).toEqual({ width: true, height: true });
+  const board = (await page.locator('.battle-board').boundingBox())!;
+  // A rendered grid with 100 cells can still have collapsed to a tiny sliver.
+  expect(board.width).toBeGreaterThanOrEqual(Math.min(reviewing ? 260 : 180, viewport.width - 24, viewport.height * (reviewing ? .35 : .25)));
+  expect(Math.abs(board.width - board.height)).toBeLessThanOrEqual(1);
+  for (const selector of ['.battle-board', '.analysis-controls', '.reference-bar']) {
+    const box = (await page.locator(selector).boundingBox())!;
+    expect(box.y).toBeGreaterThanOrEqual(0);
+    expect(box.y + box.height).toBeLessThanOrEqual(viewport.height + 1);
+    expect(box.x + box.width).toBeLessThanOrEqual(viewport.width + 1);
+  }
+}
+
+for (const [width, height] of [[320, 568], [390, 664], [390, 844], [844, 390], [1280, 800]]) {
+  test(`Phasing analysis keeps the board usable after an online timeout at ${width}x${height}`, async ({ page, request }, info) => {
+    await page.setViewportSize({ width, height });
+    const host = await (await request.post('/api/muju/rooms', { data: {
+      name: 'White', ruleset: 'phasing', timeControl: { delaySeconds: 0, bankSeconds: 3 },
+    } })).json();
+    const id = host.room.id;
+    await request.post(`/api/muju/rooms/${id}/join`, { data: { name: 'Black', inviteCode: host.inviteCode } });
+    const prepared = await request.post(`/api/muju/rooms/${id}/actions`, {
+      headers: { Authorization: `Bearer ${host.credentials.token}` },
+      data: { expectedRevision: 1, requestId: 'analysis-summon', actions: [
+        { type: 'END_ACTION_PHASE' }, { type: 'BUY_UNIT', definitionId: 'fire_1', position: { x: 0, y: 0 } },
+      ] },
+    });
+    expect(prepared.ok(), await prepared.text()).toBe(true);
+    await page.goto(`?room=${id}&watch=1`);
+    await expect(page.getByRole('link', { name: 'Analyze this game', exact: true })).toBeVisible({ timeout: 10000 });
+    await page.getByRole('link', { name: 'Analyze this game', exact: true }).click();
+    const controls = page.getByRole('region', { name: 'Analysis controls' });
+    await expect(controls.getByRole('status')).toHaveText('Black wins on time');
+    await expect(page.getByTestId('cell-0-0')).toHaveAttribute('aria-label', /phasing in/);
+    await expectAnalysisFits(page, true);
+    await page.screenshot({ path: info.outputPath('phasing-timeout-analysis.png'), fullPage: true });
+    await page.getByTestId('cell-0-0').click();
+    expect(await page.locator('.attack-frontier-marker').count()).toBeGreaterThan(0);
+    await expectAnalysisFits(page, true);
+    await page.reload();
+    await expect(controls.getByRole('status')).toHaveText('Black wins on time');
+    await expectAnalysisFits(page, true);
+    await controls.getByRole('button', { name: 'First position' }).click();
+    await expect(controls.getByRole('button', { name: 'Explore from here' })).toBeEnabled();
+    await expectAnalysisFits(page, true);
+    await controls.getByRole('button', { name: 'Explore from here' }).click();
+    await expect(controls).toContainText('Private variation');
+    await page.getByTestId('cell-1-0').click();
+    await page.getByTestId('cell-3-0').click();
+    await expect(page.getByTestId('cell-3-0')).toHaveAttribute('aria-label', /white Hi/);
+    await expectAnalysisFits(page, false);
+    await controls.getByRole('button', { name: 'Return to game score' }).click();
+    await expect(controls.getByRole('status')).toHaveText('Black wins on time');
+    await expectAnalysisFits(page, true);
+    const actual = await (await request.get(`/api/muju/rooms/${id}`)).json();
+    expect(actual.revision).toBe(3);
+    expect(actual.state.victoryReason).toBe('timeout');
+    expect(actual.state.pendingSummons).toHaveLength(1);
+  });
+}
 
 for (const scenario of [
   { mode: 'Pass & Play', width: 1280 }, { mode: 'Pass & Play', width: 390 },

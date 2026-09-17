@@ -4,11 +4,14 @@ import type { AIAction } from '../ai/types';
 import { getUnitById } from '../game/board';
 import { getValidMoves } from '../game/movement';
 import { getValidAttacks } from '../game/combat';
+import { useIncomingPlayback } from './incomingPlayback';
 import { OnlineError, playRoom, readRoom, waitRoom } from './client';
 import type { ActionRequest, OnlineConnection, RoomAction, RoomSnapshot } from './types';
 
 export function useOnlineGame(connection: OnlineConnection, initial: RoomSnapshot, onLeave: () => void) {
   const [room, setRoom] = useState(initial);
+  const incoming = useIncomingPlayback();
+  const playingRef = useRef(false); playingRef.current = incoming.playing;
   const roomRef = useRef(room);
   const [selected, setSelected] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -18,10 +21,11 @@ export function useOnlineGame(connection: OnlineConnection, initial: RoomSnapsho
   const [uncertain, setUncertain] = useState<ActionRequest | null>(null);
   const accept = useCallback((next: RoomSnapshot) => {
     if (next.revision <= roomRef.current.revision) return;
+    incoming.present(roomRef.current, next, connection.player);
     roomRef.current = next; setRoom(next);
     setSelected(id => id && next.state.turn.phase === 'action' && next.state.phase === 'playing'
       && getUnitById(next.state.board, id)?.owner === next.state.turn.currentPlayer ? id : null);
-  }, []);
+  }, [incoming.present, connection.player]);
   useEffect(() => {
     let controller = new AbortController();
     let timer: ReturnType<typeof setTimeout>;
@@ -69,18 +73,18 @@ export function useOnlineGame(connection: OnlineConnection, initial: RoomSnapsho
     } finally { locked.current = false; setBusy(false); }
   }, [connection, accept]);
   const dispatch = useCallback((action: RoomAction | RoomAction[]) => {
-    if (!connection.player || locked.current || uncertain) return;
+    if (!connection.player || locked.current || uncertain || playingRef.current) return;
     // getRandomValues also works on HTTP LAN origins where randomUUID is unavailable.
     const requestId = Array.from(crypto.getRandomValues(new Uint8Array(16)), byte => byte.toString(16).padStart(2, '0')).join('');
     void send({ expectedRevision: roomRef.current.revision, requestId, actions: Array.isArray(action) ? action : [action] });
   }, [connection.player, send, uncertain]);
   const state = useMemo(() => {
-    const s = room.state;
+    const s = incoming.frame?.state ?? room.state;
     const u = selected ? getUnitById(s.board, selected) : null;
     return { ...s, selectedUnit: u?.id ?? null,
       validMoves: u && s.turn.phase === 'action' && u.canActThisTurn && s.turn.actionsRemaining > 0 ? getValidMoves(u, s.board) : [],
       validAttacks: u && s.turn.phase === 'action' && u.canActThisTurn && s.turn.actionsRemaining > 0 ? getValidAttacks(u, s.board) : [] };
-  }, [room, selected]);
+  }, [room, selected, incoming.frame]);
   const selectUnit = useCallback((id: string) => {
     const s = roomRef.current.state, u = getUnitById(s.board, id);
     if (u?.owner === connection.player && s.turn.currentPlayer === connection.player && s.turn.phase === 'action') setSelected(id);
@@ -104,5 +108,5 @@ export function useOnlineGame(connection: OnlineConnection, initial: RoomSnapsho
     selectedUnitData: selected ? getUnitById(state.board, selected) : null,
     isPlayerTurn: state.turn.currentPlayer === connection.player, canEndTurn: state.turn.phase === 'action',
   };
-  return { game, room, busy: busy || !!uncertain, connected: !connectionError, error: error ?? connectionError, retry: uncertain ? () => void send(uncertain) : undefined };
+  return { game, room, incoming, busy: busy || !!uncertain || incoming.playing, connected: !connectionError, error: error ?? connectionError, retry: uncertain ? () => void send(uncertain) : undefined };
 }

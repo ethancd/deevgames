@@ -8,8 +8,8 @@ async function start(page:Page,state=createInitialGameState()) {
 async function fits(page:Page) {
  const d=await page.evaluate(()=>({w:innerWidth,h:innerHeight,sw:document.documentElement.scrollWidth,sh:document.documentElement.scrollHeight,sy:scrollY}));
  expect(d.sw).toBeLessThanOrEqual(d.w);
- // Compact layouts intentionally scroll to preserve tappable board cells and replay controls.
- if(d.h>620) expect(d.sh).toBeLessThanOrEqual(d.h);
+ // Portrait games use the available dynamic viewport, including short phones.
+ if(d.h>d.w || d.h>620) expect(d.sh).toBeLessThanOrEqual(d.h);
  for(const selector of ['.battle-board','.decision-panel','.action-bar','.reference-bar']){const b=await page.locator(selector).boundingBox();expect(b!.y+d.sy).toBeGreaterThanOrEqual(0);expect(b!.y+d.sy+b!.height).toBeLessThanOrEqual(d.sh+1);}
  const panel=await page.locator('.decision-panel').evaluate(e=>({h:e.clientHeight,sh:e.scrollHeight,w:e.clientWidth,sw:e.scrollWidth}));expect(panel.sh).toBeLessThanOrEqual(panel.h+1);expect(panel.sw).toBeLessThanOrEqual(panel.w+1);
  if(d.w>=960&&d.h>=601&&d.w>d.h){

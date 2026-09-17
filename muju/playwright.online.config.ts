@@ -2,12 +2,12 @@ import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
   testDir: './e2e',
-  testMatch: ['phasing.spec.ts', 'crystal-handicap.spec.ts', 'online.spec.ts', 'lobby.spec.ts', 'pass-play.spec.ts', 'player-side.spec.ts', 'action-budget.spec.ts', 'replay.spec.ts', 'upkeep.spec.ts', 'home-checkmate.spec.ts', 'painter.spec.ts', 'history.spec.ts', 'analysis.spec.ts'],
+  testMatch: ['phone-playback.spec.ts', 'phasing.spec.ts', 'crystal-handicap.spec.ts', 'online.spec.ts', 'lobby.spec.ts', 'pass-play.spec.ts', 'player-side.spec.ts', 'action-budget.spec.ts', 'replay.spec.ts', 'upkeep.spec.ts', 'home-checkmate.spec.ts', 'painter.spec.ts', 'history.spec.ts', 'analysis.spec.ts'],
   workers: 2,
   use: {
     baseURL: 'http://127.0.0.1:8928/muju/',
-    browserName: 'chromium',
-    channel: process.env.CI ? undefined : 'chrome',
+    browserName: process.env.PLAYWRIGHT_BROWSER === 'webkit' ? 'webkit' : 'chromium',
+    channel: process.env.PLAYWRIGHT_BROWSER === 'webkit' || process.env.CI ? undefined : 'chrome',
     screenshot: 'only-on-failure', trace: 'retain-on-failure',
   },
   webServer: {

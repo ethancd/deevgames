@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import type { RoomSnapshot } from './types';
 import { formatClock, projectClock } from './timeControl';
 
-export function RoomClocks({ room }: { room: RoomSnapshot }) {
+export function RoomClocks({ room, compact = false }: { room: RoomSnapshot; compact?: boolean }) {
   const { clock, timeControl } = room;
   const anchor = useMemo(() => ({ clock, receivedAt: performance.now() }), [clock]);
   const [now, setNow] = useState(() => performance.now());
@@ -15,7 +15,7 @@ export function RoomClocks({ room }: { room: RoomSnapshot }) {
   // Use a monotonic local elapsed duration against the server sample, not the device's wall clock.
   const current = projectClock(clock, clock.serverNowMs + Math.max(0, now - anchor.receivedAt));
   const expired = current.runningPlayer && current.delayRemainingMs + current.bankRemainingMs[current.runningPlayer] <= 0;
-  return <section className="room-clocks" aria-label="Game clocks">
+  return <section className={`room-clocks${compact ? " compact-clocks" : ""}`} aria-label="Game clocks">
     <p className="clock-summary">{timeControl.delaySeconds}s per turn / {formatClock(timeControl.bankSeconds * 1000)} bank per player</p>
     <div className="clock-seats">
       {(['white', 'black'] as const).map(player => {

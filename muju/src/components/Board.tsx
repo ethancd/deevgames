@@ -23,6 +23,8 @@ interface BoardProps {
   actionsRemaining?: number;
   onCellClick: (position: Position) => void;
   onUnitClick: (unitId: string) => void;
+  onSummonClick?: (summonId: string) => void;
+  selectedSummon?: string | null;
 }
 
 export function Board({
@@ -37,7 +39,7 @@ export function Board({
   movementRange = [],
   attackFrontier = [],
   onCellClick,
-  onUnitClick,
+  onUnitClick, onSummonClick, selectedSummon,
   previewPosition, previewUnitPosition, showResources = false, actionsRemaining = 4,
 }: BoardProps) {
   const isValidMove = (pos: Position) =>
@@ -91,7 +93,7 @@ export function Board({
                   isValidMove={isValidMove(pos)}
                   isValidAttack={isValidAttack(pos)}
                   isValidSpawn={isValidSpawn(pos)}
-                  isSelected={isSelected}
+                  isSelected={isSelected || pending.some(s => s.id === selectedSummon)}
                   isInvalidSpawn={isInvalidSpawn(pos)}
                   isPendingMove={isPendingMove(pos)}
                   movementRangeActions={getMovementRangeActions(pos)}
@@ -102,11 +104,12 @@ export function Board({
                   previewLabel={previewUnit && previewUnitPosition?.x === x && previewUnitPosition?.y === y ? `${getUnitDefinition(previewUnit.definitionId).name} attack approach` : undefined}
                   unitLabel={unit ? `${unit.owner} ${getUnitDefinition(unit.definitionId).name}, ${getUnitDefinition(unit.definitionId).element}, tier ${getUnitDefinition(unit.definitionId).tier}` : undefined}
                   pendingLabel={pendingLabel}
-                  onClick={unit ? () => onUnitClick(unit.id) : onCellClick}
+                  onClick={unit ? () => onUnitClick(unit.id) : pending.length && onSummonClick && !isValidMove(pos) && !isValidSpawn(pos) && !board.units.some(u => u.id === selectedUnit) ? () => onSummonClick(pending.find(s => s.id !== selectedSummon)?.id ?? pending[0].id) : onCellClick}
                 />
-                {pending.map(s => <div key={s.id} className={`summon-ghost ${s.owner}${unit ? ' occupied' : ''}`} aria-hidden="true" data-testid={`summon-${x}-${y}`}>
+                {pending.map(s => <div key={s.id} className={`summon-ghost ${s.owner}${unit ? ' occupied' : ''}`} data-testid={`summon-${x}-${y}`}>
                   <UnitArtwork element={getUnitDefinition(s.definitionId).element} owner={s.owner} tier={1} />
                   <span>◌</span>
+                  {unit && onSummonClick && <button className="summon-inspect" aria-label={`Inspect ${s.owner} ${getUnitDefinition(s.definitionId).name} phasing in at ${String.fromCharCode(65+x)}${y+1}`} onClick={() => onSummonClick(s.id)}>◌</button>}
                 </div>)}
                 {unit && (
                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none">

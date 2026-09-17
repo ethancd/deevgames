@@ -7,6 +7,7 @@ import type { OnlineConnection, RoomAdmission, RoomSnapshot } from './types';
 import { useOnlineGame } from './useOnlineGame';
 import { RoomHistory } from './RoomHistory';
 import { RoomClocks } from './RoomClocks';
+import { PlayDialog } from '../components/PlayDialog';
 import { TIME_CONTROL_PRESETS, type TimeControlPreset } from './timeControl';
 import { ActiveGames } from './ActiveGames';
 import { RulesetSelect } from '../components/RulesetSelect';
@@ -99,9 +100,19 @@ export function OnlineLobby({ onBack }: { onBack: () => void }) {
     setSession(null); setNotice(null); setError(null);
   }} />;
   const feedback = (kind: string) => flow === kind && <>{busy && <p role="status">Connecting…</p>}{error && <p role="alert">{error}</p>}</>;
+  const query = new URLSearchParams(window.location.search);
+  const showJoinFirst = !!query.get('room') && query.get('watch') !== '1' && !!new URLSearchParams(window.location.hash.slice(1)).get('invite');
+  const nameField = <label>Your name<input value={name} maxLength={40} onChange={e => setName(e.target.value)} /></label>;
+  const joinSection = <section aria-label="Join a game"><h3>Join a game</h3>
+    {showJoinFirst && nameField}
+    <label>Invitation link<input type="url" value={invitation} onChange={e => setInvitation(e.target.value)} placeholder="Paste your opponent’s invitation" /></label>
+    <button disabled={busy || !name.trim() || !invitation.trim()} onClick={() => void submit('join')}>Join room</button>
+    {feedback('join')}
+  </section>;
   return <main className="online-lobby">
     <div className="music-lobby-nav"><button onClick={onBack}>← Game modes</button><MusicButton /></div>
     <h1>Muju Hono Tanka</h1><h2>Play or watch together</h2>
+    {showJoinFirst && joinSection}
     <section aria-label="Active games">
       <ActiveGames key={server} server={server} busy={busy} onWatch={id => void submit('browse', id)} />
       {feedback('browse')}
@@ -111,7 +122,7 @@ export function OnlineLobby({ onBack }: { onBack: () => void }) {
       <p className="online-help">Browse and host games on this server.</p>
     </details>
     <p>Host a room and invite a friend or an LLM. Active rooms are listed above for anyone to watch.</p>
-    <label>Your name<input value={name} maxLength={40} onChange={e => setName(e.target.value)} /></label>
+    {!showJoinFirst && nameField}
     <section aria-label="Host a game"><h3>Host a game</h3>
       <label>Your side<select value={side} onChange={e => setSide(e.target.value as PlayerId)}><option value="white">White · first turn</option><option value="black">Black · second turn</option></select></label>
       <p className="online-help">4 shared actions per turn · Draw after 10 consecutive turns without a kill.</p>
@@ -130,11 +141,7 @@ export function OnlineLobby({ onBack }: { onBack: () => void }) {
       <button className="primary" disabled={busy || !name.trim()} onClick={() => void submit('create')}>Create room</button>
       {feedback('create')}
     </section>
-    <section aria-label="Join a game"><h3>Join a game</h3>
-      <label>Invitation link<input type="url" value={invitation} onChange={e => setInvitation(e.target.value)} placeholder="Paste your opponent’s invitation" /></label>
-      <button disabled={busy || !name.trim() || !invitation.trim()} onClick={() => void submit('join')}>Join room</button>
-      {feedback('join')}
-    </section>
+    {!showJoinFirst && joinSection}
     <section aria-label="Restore a seat"><h3>Restore a seat</h3>
       <p>Continue your computer’s game on this device. Paste the private credentials from your room’s reconnect details or your MCP agent.</p>
       <label>Seat credentials<textarea aria-label="Seat credentials" value={credentials} onChange={e => setCredentials(e.target.value)} spellCheck={false} autoCapitalize="none" autoComplete="off" placeholder="Paste credentials JSON" /></label>
@@ -154,9 +161,10 @@ export function OnlineLobby({ onBack }: { onBack: () => void }) {
 
 function OnlineMatch({ session, notice, onLeave }: { session: Session; notice: string | null; onLeave: () => void }) {
   const { connection, room: initial, inviteCode } = session;
-  const { game, room, busy, connected, error, retry } = useOnlineGame(connection, initial, onLeave);
+  const { game, room, incoming, busy, connected, error, retry } = useOnlineGame(connection, initial, onLeave);
   const [copied, setCopied] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [showRoomDetails, setShowRoomDetails] = useState(false);
   const config = useMemo<GameConfig>(() => ({ mode: 'online', controls: {
     white: connection.player === 'white' ? 'human' : 'remote', black: connection.player === 'black' ? 'human' : 'remote',
   }, aiDifficulty: { white: 'medium', black: 'medium' } }), [connection.player]);
@@ -168,7 +176,7 @@ function OnlineMatch({ session, notice, onLeave }: { session: Session; notice: s
     catch { setCopyStatus('Select and copy the text above.'); }
   }
   const privateCredentials = connection.player ? JSON.stringify({ ...connection, ...(inviteCode ? { inviteCode } : {}) }, null, 2) : '';
-  const banner = <section className="online-banner" aria-label="Online room">
+  const roomDetails = <div className="online-banner room-details">
     <strong>{connection.player ? `Online · You are ${connection.player}` : 'Online · Observer'}</strong>
     <span role="status">{!connected ? 'Reconnecting…' : !room.ready ? 'Waiting for opponent' : busy ? 'Confirming move…' : connection.player ? 'Room connected' : 'Watching live · Read only'}</span>
     {!room.ready && <span>{rulesetLabel(room.state)} rules</span>}
@@ -189,9 +197,19 @@ function OnlineMatch({ session, notice, onLeave }: { session: Session; notice: s
       <p>On another device, open Play online → Restore a seat and paste these credentials. This browser can still use the same seat.</p>
     </details>}
     {copyStatus && <p role="status">{copyStatus}</p>}
+  </div>;
+  const banner = <section className="online-banner compact-online-banner" aria-label="Online room">
+    <div className="online-summary"><strong>{connection.player ? `Online · You are ${connection.player}` : 'Online · Observer'}</strong>
+      <span role="status">{!connected ? 'Reconnecting…' : !room.ready ? 'Waiting for opponent' : incoming.playing ? 'Playing move…' : busy ? 'Confirming move…' : connection.player ? 'Connected' : 'Watching live · Read only'}</span>
+      <button onClick={() => setShowRoomDetails(true)} aria-label="Room details">Room</button>
+    </div>
+    <RoomClocks room={room} compact />
+    {error && <p role="alert">{error}{retry && <button onClick={retry}>Retry same move</button>}</p>}
+    {!room.ready && <button onClick={() => setShowRoomDetails(true)}>Invite opponent</button>}
   </section>;
   const names = { white: room.seats.white ?? 'Waiting for White', black: room.seats.black ?? 'Waiting for Black' };
-  return <><GameView game={game} config={config} onBackToMenu={onLeave} online={{ player: connection.player ?? null, ready: room.ready, busy,
+  return <><GameView game={game} config={config} onBackToMenu={onLeave} online={{ player: connection.player ?? null, ready: room.ready, busy, playingIncoming: incoming.playing, incomingFrame: incoming.frame,
     names, banner, analysisUrl: analysisUrl(connection), historyOpen: showHistory, onToggleHistory: () => setShowHistory(value => !value) }} />
+    {showRoomDetails && <PlayDialog title="Room details" onClose={() => setShowRoomDetails(false)}>{roomDetails}</PlayDialog>}
     {showHistory && <RoomHistory connection={connection} revision={room.revision} names={names} onClose={() => setShowHistory(false)} />}</>;
 }

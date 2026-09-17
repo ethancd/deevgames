@@ -20,9 +20,10 @@ test('configures clocks only when hosting and shows a live timeout to players an
     await page.getByRole('button', { name: 'Create room' }).click();
     await expect(page.getByRole('region', { name: 'Game clocks' })).toContainText('1s per turn / 0:08 bank per player');
     await expect(page.getByRole('combobox', { name: 'Time control', exact: true })).toHaveCount(0);
+    await page.getByRole('button', { name: 'Room details', exact: true }).click();
     await page.getByText('Private reconnect details', { exact: true }).click();
     const credentials = JSON.parse(await page.getByLabel('Private seat credentials').inputValue());
-    await page.getByText('Private reconnect details', { exact: true }).click();
+    await page.getByRole('button', { name: 'Close dialog' }).click();
     await phone.goto(`./?room=${credentials.roomId}&watch=1`);
     await expect(phone.getByRole('region', { name: 'Game clocks' })).toBeVisible();
     await expect(phone.getByRole('timer', { name: 'white bank' })).toHaveText('0:08');
@@ -54,8 +55,10 @@ test('restores a full room on a fresh phone from pasted private credentials', as
     await page.goto('./');
     await page.getByRole('button', { name: 'Play online' }).click();
     await page.getByRole('button', { name: 'Create room' }).click();
+    await page.getByRole('button', { name: 'Room details', exact: true }).click();
     await page.getByText('Private reconnect details', { exact: true }).click();
     const credentials = JSON.parse(await page.getByLabel('Private seat credentials').inputValue());
+    await page.getByRole('button', { name: 'Close dialog' }).click();
     await request.post(`/api/muju/rooms/${credentials.roomId}/join`, { data: { name: 'Opponent', inviteCode: credentials.inviteCode } });
     await expect(page.getByRole('button', { name: 'End turn' })).toBeEnabled();
     await phone.goto('./');
@@ -168,7 +171,9 @@ for (const actionsPerTurn of [4]) test(`${actionsPerTurn}-action independent bro
     await page.getByLabel('Your name', { exact: true }).fill('Alice');
     await page.getByRole('button', { name: 'Create room' }).click();
     await expect(page.getByRole('button', { name: 'End turn' })).toBeDisabled();
+    await page.getByRole('button', { name: 'Room details', exact: true }).click();
     const invite = await page.getByLabel('Invite your opponent').inputValue();
+    await page.getByRole('button', { name: 'Close dialog' }).click();
     await guest.goto(invite);
     await guest.getByLabel('Your name', { exact: true }).fill('Bob');
     await guest.getByRole('button', { name: 'Join room' }).click();
