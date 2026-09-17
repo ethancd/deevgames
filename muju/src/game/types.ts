@@ -124,7 +124,7 @@ export interface PlayerState {
   resourcesUpkeep?: number; // Cumulative upkeep paid (telemetry)
 }
 
-export type VictoryReason = 'elimination' | 'home-occupation' | 'home-checkmate' | 'resignation' | 'inactivity' | 'upkeep-elimination' | 'timeout';
+export type VictoryReason = 'elimination' | 'home-occupation' | 'home-checkmate' | 'resignation' | 'inactivity' | 'upkeep-elimination' | 'timeout' | 'abandoned';
 
 export interface IncomeTake { unitId: string; definitionId: string; position: Position; amount: number }
 

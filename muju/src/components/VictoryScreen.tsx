@@ -25,11 +25,11 @@ export function VictoryScreen({ winner, reason, onPlayAgain, analysisUrl, onView
         </div>
 
         <h2 className={`text-3xl font-bold mb-2 ${isPlayerWinner ? 'text-green-400' : 'text-red-400'}`}>
-          {!winner ? 'Draw by inactivity' : playerNames ? `${winnerName} ${winnerName === 'You' ? 'Win' : 'Wins'}!` : (isPlayerWinner ? 'Victory!' : 'Defeat')}
+          {reason === 'abandoned' ? 'Room archived' : !winner ? 'Draw by inactivity' : playerNames ? `${winnerName} ${winnerName === 'You' ? 'Win' : 'Wins'}!` : (isPlayerWinner ? 'Victory!' : 'Defeat')}
         </h2>
 
         <p className="text-gray-400 mb-6">
-          {!winner ? `${INACTIVITY_LIMIT} consecutive player turns passed without a kill. Crystal income does not reset the clock.` : reason === 'home-checkmate' ? 'Checkmate! The enemy home is occupied, and no legal reply can remove the invading unit.' : reason === 'upkeep-elimination' ? 'All remaining forces were released during upkeep.' : reason === 'home-occupation' ? `${winnerName} held the enemy home corner until the start of their turn!`
+          {reason === 'abandoned' ? 'No moves for 24 hours. The game is saved for review.' : !winner ? `${INACTIVITY_LIMIT} consecutive player turns passed without a kill. Crystal income does not reset the clock.` : reason === 'home-checkmate' ? 'Checkmate! The enemy home is occupied, and no legal reply can remove the invading unit.' : reason === 'upkeep-elimination' ? 'All remaining forces were released during upkeep.' : reason === 'home-occupation' ? `${winnerName} held the enemy home corner until the start of their turn!`
             : reason === 'timeout' ? `${playerNames ? playerNames[winner === 'white' ? 'black' : 'white'] : winner === 'white' ? 'Black' : 'White'} ran out of time.`
             : reason === 'resignation' ? 'The opponent resigned.' : playerNames
             ? `${winnerName} has eliminated all enemy forces!`

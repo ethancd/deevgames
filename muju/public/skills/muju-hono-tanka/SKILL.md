@@ -71,7 +71,9 @@ consume one copy. Check `isError` before using a result.
 2. Host with `muju_create_room({name, side, timeControl?, blackCrystalHandicap?})` (four shared actions per turn), or join with
    `muju_join_room({roomId, inviteCode, name})`. An invitation URL contains the
    `room` query parameter and the `invite` fragment. Use its host for your MCP
-   connection. Invitations claim the remaining seat once.
+   connection. Invitations remain reusable for the invited seat. Rejoining takes over that
+   seat, revokes its previous credential and cancels its pending staged play; it
+   preserves the board, history, host seat and running clock. Keep the link private.
 3. Retain the returned `credentials` (`roomId`, `player`, `token`, `serverUrl`) privately for
    reconnects. Give the opponent only the separate `invitation`, never your seat
    token. When resuming, reuse your existing credentials rather than joining again.
@@ -391,3 +393,8 @@ board. Clicking a notation entry jumps to that event. Review can step within a
 multi-AP move or across full player turns. **Explore from here** lets the human
 control both sides in a private variation; it never submits actions to the room.
 The game modes page also has a standalone **Analysis board**.
+
+Rooms close and archive after 24 hours without a successful game action (creation
+starts the deadline). Joins, takeovers, reads, previews and staging edits do not
+reset it. Archived rooms are read-only; history and positions remain available
+for analysis. New commands return `ROOM_ARCHIVED`.

@@ -2,13 +2,14 @@ import { useEffect, useMemo, useState } from 'react';
 import { MusicButton } from '../music/MusicPlayer';
 import type { GameConfig, PlayerId } from '../game/types';
 import { GameView } from '../components/GameScreen';
-import { analysisUrl, createRoom, invitationUrl, joinRoom, loadConnection, normalizeServer, observerUrl, parseObserverConnection, parseSeatCredentials, readRoom, restoreSeat, saveConnection } from './client';
+import { OnlineError, analysisUrl, createRoom, invitationUrl, joinRoom, loadConnection, normalizeServer, observerUrl, parseObserverConnection, parseSeatCredentials, readRoom, restoreSeat, saveConnection } from './client';
 import type { OnlineConnection, RoomAdmission, RoomSnapshot } from './types';
 import { useOnlineGame } from './useOnlineGame';
 import { RoomHistory } from './RoomHistory';
 import { RoomClocks } from './RoomClocks';
 import { PlayDialog } from '../components/PlayDialog';
 import { TIME_CONTROL_PRESETS, type TimeControlPreset } from './timeControl';
+import { ArchivedGames } from './ArchivedGames';
 import { ActiveGames } from './ActiveGames';
 import { RulesetSelect } from '../components/RulesetSelect';
 import type { Ruleset } from '../game/types';
@@ -54,7 +55,16 @@ export function OnlineLobby({ onBack }: { onBack: () => void }) {
     setBusy(true); setFlow(watching ? 'watch' : 'join');
     const request = Promise.resolve().then(() => stored.player ? restoreSeat(stored) : readRoom(parseObserverConnection(window.location.href, defaultServer())));
     request.then(room => { if (!cancelled) enter({ ...stored, serverUrl: normalizeServer(stored.serverUrl) }, room, stored.inviteCode); })
-      .catch(error => { if (!cancelled) setError(error.message); }).finally(() => { if (!cancelled) setBusy(false); });
+      .catch(async error => {
+        if (cancelled) return;
+        if (error instanceof OnlineError && error.code === 'INVALID_SEAT' && !new URLSearchParams(window.location.hash.slice(1)).has('invite')) {
+          const observer = { roomId: id, serverUrl: stored.serverUrl };
+          try {
+            const room = await readRoom(observer);
+            if (!cancelled) { setNotice('This seat moved to another browser. You are watching. Use the invitation link to take it back.'); enter(observer, room); }
+          } catch (failure) { if (!cancelled) setError(failure instanceof Error ? failure.message : 'Could not open the room.'); }
+        } else setError(error.message);
+      }).finally(() => { if (!cancelled) setBusy(false); });
     return () => { cancelled = true; };
   }, []);
   async function submit(kind: 'create' | 'join' | 'restore' | 'watch' | 'browse', roomId?: string) {
@@ -87,9 +97,17 @@ export function OnlineLobby({ onBack }: { onBack: () => void }) {
         const inviteCode = new URLSearchParams(invite.hash.slice(1)).get('invite');
         if (!roomId || !/^[a-f0-9]{32}$/.test(roomId)) throw new Error('Paste the complete invitation link.');
         const stored = loadConnection(url, roomId);
-        if (stored) { enter(stored, await restoreSeat(stored), stored.inviteCode); return; }
+        if (stored) {
+          try { enter(stored, await restoreSeat(stored), stored.inviteCode); return; }
+          catch (error) { if (!(error instanceof OnlineError) || error.code !== 'INVALID_SEAT' || !inviteCode) throw error; }
+        }
         if (!inviteCode) throw new Error('This link has no invitation. Ask the host for their invitation link, or use this browser’s saved seat.');
-        result = await joinRoom(url, roomId, name, inviteCode);
+        try { result = await joinRoom(url, roomId, name, inviteCode); }
+        catch (error) {
+          if (!(error instanceof OnlineError) || error.code !== 'ROOM_ARCHIVED') throw error;
+          const observer = { roomId, serverUrl: url };
+          enter(observer, await readRoom(observer)); return;
+        }
       }
       enter({ ...result.credentials, serverUrl: url }, result.room, result.inviteCode);
     } catch (error) { setError(error instanceof Error ? error.message : 'Could not connect to the game.'); }
@@ -107,6 +125,7 @@ export function OnlineLobby({ onBack }: { onBack: () => void }) {
     {showJoinFirst && nameField}
     <label>Invitation link<input type="url" value={invitation} onChange={e => setInvitation(e.target.value)} placeholder="Paste your opponent’s invitation" /></label>
     <button disabled={busy || !name.trim() || !invitation.trim()} onClick={() => void submit('join')}>Join room</button>
+    <p className="online-help">Reuse this private link in another browser to take over the invited seat. The previous browser becomes a spectator.</p>
     {feedback('join')}
   </section>;
   return <main className="online-lobby">
@@ -117,6 +136,7 @@ export function OnlineLobby({ onBack }: { onBack: () => void }) {
       <ActiveGames key={server} server={server} busy={busy} onWatch={id => void submit('browse', id)} />
       {feedback('browse')}
     </section>
+    <ArchivedGames key={`archive-${server}`} server={server} />
     <details><summary>Multiplayer server settings</summary>
       <label>Multiplayer server<input type="url" value={server} onChange={e => setServer(e.target.value)} placeholder="https://your-muju-server.example" /></label>
       <p className="online-help">Browse and host games on this server.</p>
@@ -160,8 +180,8 @@ export function OnlineLobby({ onBack }: { onBack: () => void }) {
 }
 
 function OnlineMatch({ session, notice, onLeave }: { session: Session; notice: string | null; onLeave: () => void }) {
-  const { connection, room: initial, inviteCode } = session;
-  const { game, room, incoming, busy, connected, error, retry } = useOnlineGame(connection, initial, onLeave);
+  const { room: initial, inviteCode } = session;
+  const { game, room, incoming, busy, connected, error, retry, seatLost, connection } = useOnlineGame(session.connection, initial, onLeave);
   const [copied, setCopied] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [showRoomDetails, setShowRoomDetails] = useState(false);
@@ -182,8 +202,8 @@ function OnlineMatch({ session, notice, onLeave }: { session: Session; notice: s
     {!room.ready && <span>{rulesetLabel(room.state)} rules</span>}
     {(room.state.blackCrystalHandicap ?? 0) > 0 && <span>Black crystal handicap · {room.state.blackCrystalHandicap} starting crystals</span>}
     <RoomClocks room={room} />
-    {!room.ready && link && <><label>Invite your opponent<input readOnly value={link} onFocus={e => e.target.select()} /></label>
-      <button onClick={() => { void navigator.clipboard?.writeText(link).then(() => setCopied(true)).catch(() => setCopied(false)); }}>{copied ? 'Copied' : 'Copy invitation'}</button></>}
+    {!room.archivedAt && link && <details open={!room.ready}><summary>Private invitation · {room.invitedPlayer ?? 'opponent'} seat</summary><label>Invite your opponent<input readOnly value={link} onFocus={e => e.target.select()} /></label>
+      <button onClick={() => { void navigator.clipboard?.writeText(link).then(() => setCopied(true)).catch(() => setCopied(false)); }}>{copied ? 'Copied' : 'Copy invitation'}</button><p>Reuse this link to move control of the invited seat to another browser. Keep it private.</p></details>}
     {error && <p role="alert">{error}{retry && <button onClick={retry}>Retry same move</button>}</p>}
     {notice && <p role="alert">{notice}</p>}
     <details><summary>Share watch link</summary>
@@ -204,6 +224,7 @@ function OnlineMatch({ session, notice, onLeave }: { session: Session; notice: s
       <button onClick={() => setShowRoomDetails(true)} aria-label="Room details">Room</button>
     </div>
     <RoomClocks room={room} compact />
+    {(seatLost || notice) && <p role="status">{seatLost ? 'Seat moved to another browser · Watching only. Use your invitation link to take it back.' : notice}</p>}
     {error && <p role="alert">{error}{retry && <button onClick={retry}>Retry same move</button>}</p>}
     {!room.ready && <button onClick={() => setShowRoomDetails(true)}>Invite opponent</button>}
   </section>;

@@ -1,4 +1,4 @@
-import type { ActionRequest, ActiveRoom, ObserverConnection, OnlineConnection, RoomAdmission, RoomChange, RoomConnection, RoomSnapshot } from './types';
+import type { ActionRequest, ActiveRoom, RoomArchive, ObserverConnection, OnlineConnection, RoomAdmission, RoomChange, RoomConnection, RoomSnapshot } from './types';
 import type { PlayerId } from '../game/types';
 import type { TimeControl, TimeControlPreset } from './timeControl';
 
@@ -56,8 +56,9 @@ export async function roomRequest<T>(serverUrl: string, path: string, body?: unk
 }
 export const createRoom = (serverUrl: string, name: string, side: PlayerId, actionsPerTurn: import('../game/types').ActionsPerTurn = 4, timeControl?: TimeControl | TimeControlPreset | null, blackCrystalHandicap = 0, ruleset: import('../game/types').Ruleset = 'standard') => roomRequest<RoomAdmission>(serverUrl, '', { name, side, actionsPerTurn, timeControl, ruleset, ...(blackCrystalHandicap > 0 ? { blackCrystalHandicap } : {}) });
 export const listActiveRooms = (serverUrl: string, signal?: AbortSignal) => roomRequest<{ rooms: ActiveRoom[] }>(serverUrl, '', undefined, undefined, signal);
+export const listArchivedRooms = (serverUrl: string, before?: string, signal?: AbortSignal) => roomRequest<RoomArchive>(serverUrl, `/archived${before ? `?before=${before}` : ''}`, undefined, undefined, signal);
 export const joinRoom = (serverUrl: string, roomId: string, name: string, inviteCode: string) => roomRequest<RoomAdmission>(serverUrl, `/${roomId}/join`, { name, inviteCode });
-export const restoreSeat = (c: RoomConnection) => roomRequest<RoomSnapshot>(c.serverUrl, `/${c.roomId}/restore`, { player: c.player }, c.token);
+export const restoreSeat = (c: RoomConnection & { inviteCode?: string }) => roomRequest<RoomSnapshot>(c.serverUrl, `/${c.roomId}/restore`, { player: c.player, ...(c.inviteCode ? { inviteCode: c.inviteCode } : {}) }, c.token);
 export const readRoom = (c: OnlineConnection, signal?: AbortSignal) => roomRequest<RoomSnapshot>(c.serverUrl, `/${c.roomId}`, undefined, c.token, signal);
 export const waitRoom = (c: OnlineConnection, afterRevision: number, signal?: AbortSignal) =>
   roomRequest<RoomChange>(c.serverUrl, `/${c.roomId}/changes?afterRevision=${afterRevision}&timeoutMs=25000`, undefined, c.token, signal, 30000);

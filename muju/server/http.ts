@@ -39,6 +39,10 @@ export function createApp(store: RoomStore, options: { publicUrl: string; distPa
   app.get('/api/muju/health', (_req, res) => res.json({ ok: true, game: 'Muju Hono Tanka', protocol: 1 }));
   app.post('/api/muju/rooms', (req, res) => res.status(201).json(store.create(req.body)));
   app.get('/api/muju/rooms', (_req, res) => res.json({ rooms: store.listActive() }));
+  app.get('/api/muju/rooms/archived', (req, res) => {
+    const { before, limit } = z.object({ before: z.string().regex(/^[a-f0-9]{32}$/).optional(), limit: z.coerce.number().int().min(1).max(100).default(20) }).strict().parse(req.query);
+    res.json(store.listArchived(before, limit));
+  });
   app.get('/api/muju/rooms/:id', (req, res) => res.json(store.get(req.params.id, req.headers.authorization?.replace(/^Bearer /, ''))));
   app.get('/api/muju/rooms/:id/history', (req, res) => res.json(store.moveHistory(req.params.id, historyQuerySchema.parse(req.query))));
   app.get('/api/muju/rooms/:id/positions/:sequence', (req, res) => {
@@ -63,8 +67,8 @@ export function createApp(store: RoomStore, options: { publicUrl: string; distPa
   app.post('/api/muju/rooms/:id/restore', (req, res) => {
     const auth = req.headers.authorization;
     if (!auth?.startsWith('Bearer ')) throw new RoomError(401, 'SEAT_REQUIRED', 'Paste your private seat credentials to restore this seat.');
-    const { player } = z.object({ player: z.enum(['white', 'black']) }).strict().parse(req.body);
-    res.json(store.restore(req.params.id, auth.slice(7), player));
+    const { player, inviteCode } = z.object({ player: z.enum(['white', 'black']), inviteCode: z.string().regex(/^[a-f0-9]{64}$/).optional() }).strict().parse(req.body);
+    res.json(store.restore(req.params.id, auth.slice(7), player, inviteCode));
   });
   app.get('/api/muju/rooms/:id/stage', (req, res) => {
     const auth = req.headers.authorization;

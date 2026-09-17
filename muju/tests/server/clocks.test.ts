@@ -49,7 +49,7 @@ describe('authoritative per-player delay clocks', () => {
 
   it('does not charge the lobby; joining starts White even when Black hosted', () => {
     const store = open(), host = store.create({ name: 'Black host', side: 'black', timeControl: 'rapid' });
-    vi.setSystemTime(epoch + 86400000);
+    vi.setSystemTime(epoch + 3600000);
     expect(store.get(host.room.id).clock).toMatchObject({ runningPlayer: null, bankRemainingMs: { white: 600000, black: 600000 } });
     const joined = store.join(host.room.id, { name: 'White guest', inviteCode: host.inviteCode });
     expect(joined.room.clock).toMatchObject({ runningPlayer: 'white', turnStartedAtMs: Date.now(), deadlineAtMs: Date.now() + 630000, delayRemainingMs: 30000 });

@@ -1,6 +1,6 @@
 import type { TurnReplay } from '../game/replay';
 import type { AIAction } from '../ai/types';
-import type { GameState, PlayerId } from '../game/types';
+import type { GameState, PlayerId, VictoryReason } from '../game/types';
 import type { ClockPressure, ClockSnapshot, TimeControl } from './timeControl';
 import type { SeatStaging } from './staging';
 
@@ -15,7 +15,17 @@ export interface ActiveRoom {
   currentPlayer: PlayerId;
   updatedAt: string;
 }
+export interface ArchivedRoom extends ActiveRoom {
+  archivedAt: string;
+  winner: PlayerId | null;
+  reason?: VictoryReason;
+}
+export interface RoomArchive { rooms: ArchivedRoom[]; nextCursor: string | null }
 export interface RoomSnapshot {
+  createdAt?: string;
+  lastMoveAt?: string;
+  archivedAt?: string;
+  invitedPlayer?: PlayerId;
   id: string;
   revision: number;
   ready: boolean;
@@ -29,7 +39,7 @@ export interface RoomSnapshot {
   seats: Record<PlayerId, string | null>;
   state: GameState;
   updatedAt: string;
-  history: { revision: number; player: PlayerId; actions: RoomAction[]; result?: { winner: PlayerId; reason: 'timeout' } }[];
+  history: { revision: number; player: PlayerId; actions: RoomAction[]; result?: { winner: PlayerId | null; reason: VictoryReason } }[];
 }
 export type RoomChange = { changed: false; revision: number; phase: GameState['phase']; clock?: ClockSnapshot; clockPressure?: ClockPressure }
   | { changed: true; revision: number; phase: GameState['phase']; room: RoomSnapshot };

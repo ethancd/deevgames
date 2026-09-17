@@ -424,12 +424,18 @@ link stays read-only even if the browser has a saved seat; it does not overwrite
 that seat. Observers use the existing unauthenticated room read/change endpoints.
 Their connections contain no token, and the UI and dispatch layer prohibit moves.
 
-- Each invitation can claim the free seat once. Browsers store their own credential
+- Each private invitation stays tied to the invited seat. Reusing it in another
+  browser takes over that seat, rotates its credential, and cancels its pending
+  staged play. The host, board, history and running clock are unchanged; the old
+  browser becomes a spectator. Browsers store their own credential
   separately from local-game saves. Reopen the same room URL on the same browser
   origin/profile to resume. Agents must retain the credentials returned by create/join.
-- A lost seat token has no recovery mechanism. Browser storage clearing loses it;
-  copy private reconnect details if you need a backup. A create/join response lost
-  before the credential is saved may require a new room.
+- The invited player can recover access with the original invitation. The host
+  still needs their private reconnect credentials if browser storage is lost.
+  For old consumed invitations, the original host must reopen the room once in
+  the browser that saved the invitation; an authenticated restore reinstates its
+  hash. The former one-use server erased that hash, so an old link alone cannot
+  prove authority. New admissions retain and return the reusable invitation.
 - The server rejects actions from the wrong seat, before both players join, after
   victory, or against an old `expectedRevision`. Refresh and plan again after a
   `STALE_REVISION` error.
@@ -477,9 +483,24 @@ processes, but this release does not replicate state across multiple machines.
 Requests are JSON-only, limited to 64 KiB and 600 requests/minute per socket IP.
 Browser origins are restricted. Forwarded IP headers are deliberately not trusted;
 behind a proxy the limit is shared across clients. Put public abuse protection at
-your trusted proxy for larger deployments. Room creation is unauthenticated and
-rooms do not expire automatically; this host is intended for invited games, not
-an unrestricted high-volume matchmaking service. No paid infrastructure is provisioned
+your trusted proxy for larger deployments. Room creation is unauthenticated. Rooms close and archive after 24 hours without
+a successful game action, including rooms still waiting for an opponent. Games
+that already finished keep their result; unfinished games receive an abandoned
+result with no winner. Boards, move histories and analysis positions are retained.
+The lobby lists archived games separately with paginated analysis links;
+`GET /api/muju/rooms/archived?limit=20&before=<last-room-id>` exposes only public
+summaries. Archived rooms do not count toward the active room capacity.
+
+Creation starts the idle deadline; game commands (including undo and phase changes)
+reset it. Joins, takeovers, reads, previews, preference changes and private staging
+edits do not. A staged command resets it only when executed successfully. The
+indexed scheduler runs without clients and catches up on restart. Existing records
+use their last recorded updatedAt as a conservative initial activity timestamp.
+Archived rooms reject new commands and joins with `ROOM_ARCHIVED` while existing
+credentials and public links can still read/review them.
+
+This host is intended for invited games, not an unrestricted high-volume
+matchmaking service. No paid infrastructure is provisioned
 by these files.
 
 Saved rooms have a rules version; bump `RULES_VERSION` in `server/rooms.ts` when
@@ -496,8 +517,10 @@ and clears old undo/replay history. Reconnects receive an updated revision.
 | Method and path | Body / behavior |
 | --- | --- |
 | `GET /api/muju/rooms` | Public `{rooms}` list of unfinished room summaries: ID, player names, readiness, turn number, current player, updated time; no boards or credentials |
+| `GET /api/muju/rooms/archived` | Public archived summaries; `limit` 1–100 (default 20), optional `before` room-ID cursor; returns `{rooms, nextCursor}` |
 | `POST /api/muju/rooms` | `{name, side, actionsPerTurn?: 4, timeControl?}` → admission (only 4 actions supported) |
-| `POST /api/muju/rooms/:id/join` | `{name, inviteCode}` → admission |
+| `POST /api/muju/rooms/:id/join` | `{name, inviteCode}` → fresh invited-seat admission; revokes its previous token |
+| `POST /api/muju/rooms/:id/restore` | `{player, inviteCode?}` plus Bearer token; authenticated original hosts can restore a legacy consumed invitation hash |
 | `GET /api/muju/rooms/:id` | Public snapshot; optional Bearer token validates a saved seat and adds only that seat's private staging status in timed rooms |
 | `GET /api/muju/rooms/:id/history` | Public score; `limit` (1–200, default 50), `before` or `after` sequence cursor, optional `includeUndone=true` |
 | `GET /api/muju/rooms/:id/positions/:sequence?step=N` | Exact recorded state, or an individual AP step within a move; sequence 0 is the first recorded position |

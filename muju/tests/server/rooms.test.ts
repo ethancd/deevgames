@@ -101,7 +101,7 @@ describe('authoritative shared rooms', () => {
     expect(next.state.turn.actionsRemaining).toBe(4);expect(next.state.inactivityPlies).toBe(1);
     expect(store.get(id).state.inactivityPlies).toBe(1);
   });
-  it('uses a one-use invitation and never exposes private credentials in snapshots', () => {
+  it('keeps reusable invitations private and never exposes private credentials in snapshots', () => {
     const { store, host, guest, id } = setup();
     expect(guest.credentials.player).toBe('black');
     const serialized = JSON.stringify(store.get(id));
@@ -109,7 +109,9 @@ describe('authoritative shared rooms', () => {
     expect(serialized).not.toContain(guest.credentials.token);
     expect(serialized).not.toContain(host.inviteCode);
     expect(serialized).not.toContain('tokenHash');
-    expect(() => store.join(id, { name: 'Intruder', inviteCode: host.inviteCode })).toThrow('already been used');
+    const takeover = store.join(id, { name: 'New browser', inviteCode: host.inviteCode });
+    expect(takeover.credentials.player).toBe('black');
+    expect(() => store.get(id, guest.credentials.token)).toThrow('credential is invalid');
     expect(() => store.act(id, 'invalid', request(1, [{ type: 'END_ACTION_PHASE' }]))).toThrow('credential is invalid');
   });
   it('allows Black hosting and prevents play before the guest joins', () => {

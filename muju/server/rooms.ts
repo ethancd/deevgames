@@ -12,7 +12,7 @@ import { migrateLegacyGame, type LegacyGameState } from '../src/game/migrate';
 import { isLegalAction } from '../src/game/legality';
 import { applyAction } from '../src/ai/simulate';
 import type { GameState, PlayerId } from '../src/game/types';
-import type { ActionRequest, ActiveRoom, RoomAction, RoomAdmission, RoomChange, RoomSnapshot } from '../src/online/types';
+import type { ActionRequest, ActiveRoom, RoomArchive, RoomAction, RoomAdmission, RoomChange, RoomSnapshot } from '../src/online/types';
 import { projectClock, type ClockSnapshot } from '../src/online/timeControl';
 import { RoomError, actionRequestSchema, createSchema, joinSchema, roomIdSchema, historyQuerySchema,
   stageRequestSchema, cancelStageSchema, stageIdSchema } from './schema';
@@ -20,6 +20,7 @@ import type { PendingStage, SeatStaging, StageAcknowledgement, StageReceipt, Sta
 import { completeClockTurn, newClockHistory, projectClockPressure, type ClockHistory } from './clockPressure';
 
 const RULES_VERSION = 'muju-online-4';
+export const ROOM_IDLE_MS = 24 * 60 * 60 * 1000;
 const digest = (value: string) => createHash('sha256').update(value).digest('hex');
 const secret = () => randomBytes(32).toString('hex');
 const packState = (state: GameState) => deflateSync(JSON.stringify(state));
@@ -74,6 +75,20 @@ export class RoomStore {
         this.db.exec('ALTER TABLE rooms ADD COLUMN stage_at REAL');
       }
       this.db.exec('CREATE INDEX IF NOT EXISTS rooms_stage ON rooms(stage_at) WHERE stage_at IS NOT NULL');
+      for (const column of ['idle_at', 'archived_at']) {
+        if (!this.db.prepare('PRAGMA table_info(rooms)').all().some(info => info.name === column)) {
+          this.db.exec(`ALTER TABLE rooms ADD COLUMN ${column} REAL`);
+        }
+      }
+      this.db.exec('CREATE INDEX IF NOT EXISTS rooms_idle ON rooms(idle_at) WHERE idle_at IS NOT NULL');
+      this.db.exec('CREATE INDEX IF NOT EXISTS rooms_archive ON rooms(archived_at DESC, id DESC) WHERE archived_at IS NOT NULL');
+      // Older servers tracked only updatedAt. Use that last known activity once;
+      // subsequent joins, reads and preference edits cannot extend this deadline.
+      for (const row of this.db.prepare('SELECT data FROM rooms WHERE idle_at IS NULL AND archived_at IS NULL').all()) {
+        const room = JSON.parse(row.data as string) as StoredRoom;
+        this.initializeLifecycle(room);
+        this.save(room);
+      }
     });
     this.settleDue();
     this.clockTimer = setInterval(() => this.settleDue(), 250);
@@ -84,7 +99,7 @@ export class RoomStore {
   private settleDue() {
     try {
       const now = Date.now();
-      const due = this.db.prepare('SELECT id FROM rooms WHERE deadline_at <= ? UNION SELECT id FROM rooms WHERE stage_at <= ?').all(now, now);
+      const due = this.db.prepare('SELECT id FROM rooms WHERE deadline_at <= ? UNION SELECT id FROM rooms WHERE stage_at <= ? UNION SELECT id FROM rooms WHERE idle_at <= ?').all(now, now, now);
       for (const row of due) {
         try { this.transaction(() => this.settle(this.read(row.id as string), Date.now())); }
         catch { console.error('Muju room scheduler could not settle a room.'); }
@@ -99,7 +114,11 @@ export class RoomStore {
       room.clockHistory = newClockHistory(now, room.revision, !room.ready);
       this.save(room);
     }
-    this.expire(room, now);
+    if (room.archivedAt) return;
+    // If both deadlines elapsed while offline, honor whichever happened first.
+    const idleAt = Date.parse(room.lastMoveAt ?? room.createdAt!) + ROOM_IDLE_MS;
+    this.expire(room, Math.min(now, idleAt));
+    if (now >= idleAt) { this.archive(room, idleAt); return; }
     let cleared = false;
     for (const player of ['white', 'black'] as const) {
       const obsolete = room.stages?.[player]?.pending;
@@ -139,6 +158,38 @@ export class RoomStore {
     room.history = [...room.history, { revision: room.revision, player, actions: [], result: { winner, reason: 'timeout' as const } }].slice(-100);
     this.save(room);
   }
+  private archive(room: StoredRoom, at: number) {
+    if (room.archivedAt) return;
+    const before = room.state, player = before.turn.currentPlayer;
+    room.archivedAt = room.updatedAt = new Date(at).toISOString();
+    room.revision++;
+    if (before.phase === 'playing') {
+      room.state = { ...before, phase: 'victory', winner: null, victoryReason: 'abandoned', selectedUnit: null, validMoves: [], validAttacks: [] };
+      const event: MoveEvent = { kind: 'result', player, turnNumber: before.turn.turnNumber, winner: null, reason: 'abandoned',
+        notation: 'Room archived · no moves for 24 hours', description: 'Closed after 24 hours without a move. The game is saved for review.' };
+      room.moveHistoryStart ??= { revision: room.revision - 1, turnNumber: before.turn.turnNumber, player, complete: false };
+      this.db.prepare('INSERT OR IGNORE INTO room_history_roots (room_id, state) VALUES (?, ?)').run(room.id, packState(before));
+      this.db.prepare('INSERT INTO room_moves (room_id, sequence, revision, player, turn_number, data, after_state) VALUES (?, ?, ?, ?, ?, ?, ?)')
+        .run(room.id, this.latestMoveSequence(room.id) + 1, room.revision, player, before.turn.turnNumber,
+          JSON.stringify({ ...event, timestamp: room.archivedAt, positionTurn: { player, turnNumber: before.turn.turnNumber } }), packState(room.state));
+      room.history = [...room.history, { revision: room.revision, player, actions: [], result: { winner: null, reason: 'abandoned' as const } }].slice(-100);
+    }
+    room.undoHistory = []; room.undoReplayLengths = []; room.undoMoveSequences = [];
+    if (room.clockBase) room.clockBase = { ...projectClock(room.clockBase, at), runningPlayer: null, deadlineAtMs: null };
+    if (room.clockHistory) room.clockHistory.activeTurn = null;
+    this.clearStages(room, 'game_ended', at);
+    this.save(room);
+  }
+  private initializeLifecycle(room: StoredRoom) {
+    room.createdAt ??= room.updatedAt;
+    room.lastMoveAt ??= room.updatedAt;
+    // Historical create inserted the host first; join appended the invited seat.
+    const host = Object.keys(room.tokenHashes)[0] as PlayerId;
+    room.invitedPlayer ??= host === 'white' ? 'black' : 'white';
+  }
+  private assertOpen(room: StoredRoom) {
+    if (room.archivedAt) throw new RoomError(410, 'ROOM_ARCHIVED', 'This room was archived after 24 hours without a move. You can still review its game.', this.snapshot(room));
+  }
   private startClock(room: StoredRoom, now: number) {
     if (!room.clockBase || !room.timeControl) return;
     const player = room.state.turn.currentPlayer;
@@ -170,16 +221,20 @@ export class RoomStore {
       room.revision++;
       room.undoHistory = []; room.undoReplayLengths = []; room.undoMoveSequences = []; room.replayRecording = emptyRecording();
     } else room.state.actionsPerTurn = getActionsPerTurn(room.state);
+    this.initializeLifecycle(room);
     return room;
   }
   private save(room: StoredRoom) {
     const triggers = Object.values(room.stages ?? {}).flatMap(seat => seat.pending ? [seat.pending.triggerAtMs] : []);
-    this.db.prepare('INSERT OR REPLACE INTO rooms (id, data, deadline_at, stage_at) VALUES (?, ?, ?, ?)')
-      .run(room.id, JSON.stringify(room), room.clockBase?.deadlineAtMs ?? null, triggers.length ? Math.min(...triggers) : null);
+    this.db.prepare('INSERT OR REPLACE INTO rooms (id, data, deadline_at, stage_at, idle_at, archived_at) VALUES (?, ?, ?, ?, ?, ?)')
+      .run(room.id, JSON.stringify(room), room.archivedAt ? null : room.clockBase?.deadlineAtMs ?? null,
+        room.archivedAt ? null : triggers.length ? Math.min(...triggers) : null,
+        room.archivedAt ? null : Date.parse(room.lastMoveAt ?? room.createdAt!) + ROOM_IDLE_MS,
+        room.archivedAt ? Date.parse(room.archivedAt) : null);
   }
   private snapshot(room: StoredRoom, player?: PlayerId): RoomSnapshot {
     const clock = room.clockBase ? projectClock(room.clockBase, Date.now()) : null;
-    return structuredClone({ id: room.id, revision: room.revision, ready: room.ready, seats: room.seats,
+    return structuredClone({ createdAt: room.createdAt, lastMoveAt: room.lastMoveAt, archivedAt: room.archivedAt, invitedPlayer: room.invitedPlayer, id: room.id, revision: room.revision, ready: room.ready, seats: room.seats,
       timeControl: room.timeControl ?? null, clock,
       clockPressure: clock && room.clockHistory ? projectClockPressure(room.clockHistory, clock) : null,
       ...(player && room.clockBase ? { staging: this.seatStaging(room, player) } : {}),
@@ -217,7 +272,7 @@ export class RoomStore {
       json_extract(data, '$.state.turn.currentPlayer') AS currentPlayer,
       COALESCE(json_extract(data, '$.state.ruleset'), 'standard') AS ruleset,
       json_extract(data, '$.updatedAt') AS updatedAt
-      FROM rooms WHERE json_extract(data, '$.state.phase') = 'playing'
+      FROM rooms WHERE archived_at IS NULL AND json_extract(data, '$.state.phase') = 'playing'
       AND ((json_extract(data, '$.rulesVersion') IN (?, 'muju-phasing-1') AND COALESCE(json_extract(data, '$.state.actionsPerTurn'), 4) = 4)
         OR (json_extract(data, '$.rulesVersion') IN ('muju-online-2', 'muju-online-3')
           AND COALESCE(json_extract(data, '$.state.actionsPerTurn'), 4) IN (4, 6)))
@@ -225,6 +280,28 @@ export class RoomStore {
     return rows.map(row => ({ id: row.id as string, ready: row.ready === 1,
       seats: JSON.parse(row.seats as string), turnNumber: row.turnNumber as number,
       ruleset: row.ruleset as 'standard' | 'phasing', currentPlayer: row.currentPlayer as PlayerId, updatedAt: row.updatedAt as string }));
+  }
+  listArchived(before?: string, limit = 20): RoomArchive {
+    if (before !== undefined) roomIdSchema.parse(before);
+    if (!Number.isInteger(limit) || limit < 1 || limit > 100) throw new RoomError(400, 'INVALID_LIMIT', 'Use a page size from 1 to 100.');
+    this.settleDue();
+    const cursor = before ? this.db.prepare('SELECT archived_at FROM rooms WHERE id = ? AND archived_at IS NOT NULL').get(before) : null;
+    if (before && !cursor) throw new RoomError(400, 'INVALID_CURSOR', 'Refresh the archived games list.');
+    const rows = this.db.prepare(`SELECT id, archived_at,
+      json_extract(data, '$.ready') AS ready, json_extract(data, '$.seats') AS seats,
+      json_extract(data, '$.state.turn.turnNumber') AS turnNumber,
+      json_extract(data, '$.state.turn.currentPlayer') AS currentPlayer,
+      COALESCE(json_extract(data, '$.state.ruleset'), 'standard') AS ruleset,
+      json_extract(data, '$.updatedAt') AS updatedAt,
+      json_extract(data, '$.state.winner') AS winner, json_extract(data, '$.state.victoryReason') AS reason
+      FROM rooms WHERE archived_at IS NOT NULL ${cursor ? 'AND (archived_at, id) < (?, ?)' : ''}
+      ORDER BY archived_at DESC, id DESC LIMIT ?`).all(...(cursor ? [cursor.archived_at, before!] : []), limit + 1);
+    const page = rows.slice(0, limit);
+    return { rooms: page.map(row => ({ id: row.id as string, ready: row.ready === 1, seats: JSON.parse(row.seats as string),
+      turnNumber: row.turnNumber as number, currentPlayer: row.currentPlayer as PlayerId, ruleset: row.ruleset as 'standard' | 'phasing',
+      updatedAt: row.updatedAt as string, archivedAt: new Date(row.archived_at as number).toISOString(),
+      winner: row.winner as PlayerId | null, reason: row.reason as GameState['victoryReason'] })),
+      nextCursor: rows.length > limit ? page.at(-1)!.id as string : null };
   }
   moveHistory(id: string, input: HistoryQuery = {}): RoomMoveHistory {
     const { before, after, limit, includeUndone } = historyQuerySchema.parse(input);
@@ -268,13 +345,19 @@ export class RoomStore {
     return { roomId: id, revision: room.revision, state: event.kind === 'move' && step !== undefined && step < steps
       ? movementStep(unpackState(row.before_state as Uint8Array), after, event, step) : after };
   }
-  restore(id: string, token: string, player: PlayerId): RoomSnapshot {
+  restore(id: string, token: string, player: PlayerId, inviteCode?: string): RoomSnapshot {
     return this.transaction(() => {
       const room = this.read(id);
       if (this.authenticate(room, token) !== player) {
         throw new RoomError(403, 'SEAT_MISMATCH', 'The token belongs to the other side. Copy the complete original credentials.');
       }
       this.settle(room, Date.now());
+      // The old server erased consumed invitation hashes. Only the authenticated
+      // original host may restore its saved invitation; a bare old link is not proof.
+      if (!room.archivedAt && !room.inviteHash && player !== room.invitedPlayer && inviteCode && /^[a-f0-9]{64}$/.test(inviteCode)) {
+        room.inviteHash = digest(inviteCode);
+        this.save(room);
+      }
       return this.snapshot(room, player);
     });
   }
@@ -300,14 +383,17 @@ export class RoomStore {
   }
   create(input: unknown): RoomAdmission {
     const { name, side, actionsPerTurn, timeControl, blackCrystalHandicap, ruleset } = createSchema.parse(input);
+    this.settleDue();
     return this.transaction(() => {
-      const count = this.db.prepare('SELECT COUNT(*) AS count FROM rooms').get()!.count as number;
+      const count = this.db.prepare('SELECT COUNT(*) AS count FROM rooms WHERE archived_at IS NULL').get()!.count as number;
       if (count >= this.maxRooms) throw new RoomError(503, 'ROOM_LIMIT', 'This host is at its room limit.');
       const id = randomBytes(16).toString('hex'), token = secret(), inviteCode = secret();
       const room: StoredRoom = { id, revision: 0, ready: false, seats: { white: null, black: null },
-        state: createInitialGameState(undefined, actionsPerTurn, blackCrystalHandicap, ruleset), canUndo: false, undoHistory: [], updatedAt: new Date().toISOString(), history: [],
+        state: createInitialGameState(undefined, actionsPerTurn, blackCrystalHandicap, ruleset), canUndo: false, undoHistory: [], updatedAt: new Date(Date.now()).toISOString(), history: [],
         moveHistoryStart: { revision: 0, turnNumber: 1, player: 'white', complete: true },
         rulesVersion: ruleset === 'phasing' ? 'muju-phasing-1' : RULES_VERSION, inviteHash: digest(inviteCode), tokenHashes: { [side]: digest(token) }, receipts: [] };
+      room.createdAt = room.lastMoveAt = room.updatedAt;
+      room.invitedPlayer = side === 'white' ? 'black' : 'white';
       room.seats[side] = name;
       room.timeControl = timeControl ?? null;
       if (timeControl) room.clockBase = { serverNowMs: Date.now(), runningPlayer: null, turnStartedAtMs: null, deadlineAtMs: null,
@@ -321,16 +407,30 @@ export class RoomStore {
   }
   join(id: string, input: unknown): RoomAdmission {
     const { name, inviteCode } = joinSchema.parse(input);
-    return this.transaction(() => {
+    const result = this.transaction(() => {
       const room = this.read(id);
-      if (!room.inviteHash || !matches(inviteCode, room.inviteHash)) throw new RoomError(403, 'INVALID_INVITE', 'Invitation is invalid or has already been used.');
-      const player = room.seats.white === null ? 'white' : 'black', token = secret();
-      room.seats[player] = name; room.tokenHashes[player] = digest(token);
-      room.ready = true; room.inviteHash = null; room.revision++; room.updatedAt = new Date().toISOString();
-      this.startClock(room, Date.now());
-      this.save(room);
-      return { credentials: { roomId: id, player, token }, room: this.snapshot(room) };
+      this.settle(room, Date.now());
+      try {
+        this.assertOpen(room);
+        if (!room.inviteHash || !matches(inviteCode, room.inviteHash)) throw new RoomError(403, 'INVALID_INVITE', 'Invitation is invalid. For an older used link, ask the host to reopen the room once in their original browser.');
+        const player = room.invitedPlayer!, token = secret(), now = Date.now();
+        const firstJoin = !room.ready;
+        if (firstJoin) room.seats[player] = name;
+        room.tokenHashes[player] = digest(token);
+        const pending = room.stages?.[player]?.pending;
+        if (pending) this.finishStage(room, player, { id: pending.id, version: pending.version, turnNumber: pending.turnNumber,
+          status: 'cancelled', resolvedAtMs: now, revision: room.revision + 1 });
+        room.ready = true; room.revision++; room.updatedAt = new Date(now).toISOString();
+        if (firstJoin) this.startClock(room, now);
+        this.save(room);
+        return { credentials: { roomId: id, player, token }, inviteCode, room: this.snapshot(room, player) };
+      } catch (error) {
+        if (error instanceof RoomError) return error;
+        throw error;
+      }
     });
+    if (result instanceof Error) throw result;
+    return result;
   }
   private seatStaging(room: StoredRoom, player: PlayerId): SeatStaging {
     room.stages ??= {};
@@ -400,6 +500,7 @@ export class RoomStore {
       .run(room.id, player, acknowledgement.requestId, fingerprint, JSON.stringify(acknowledgement));
   }
   private checkStageTurn(room: StoredRoom, player: PlayerId, turn: number, version: number) {
+    this.assertOpen(room);
     if (room.state.victoryReason === 'timeout') throw new RoomError(409, 'TIME_EXPIRED', 'The game ended on time.', this.snapshot(room));
     if (this.seatStaging(room, player).version !== version) throw new RoomError(409, 'STAGE_VERSION_CONFLICT',
       'The staging state changed. Read your private staging status before replacing or cancelling it.');
@@ -543,6 +644,7 @@ export class RoomStore {
       const room = structuredClone(settled);
       const fingerprint = digest(JSON.stringify({ revision: request.expectedRevision, actions: request.actions }));
       const receipt = room.receipts.find(r => r.id === request.requestId && r.player === player);
+      if (!receipt || preview || receipt.fingerprint !== fingerprint) this.assertOpen(room);
       if (room.state.victoryReason === 'timeout' && (!receipt || preview || receipt.fingerprint !== fingerprint)) {
         throw new RoomError(409, 'TIME_EXPIRED', 'The game ended on time. No requested actions were applied.', this.snapshot(room));
       }
@@ -584,7 +686,8 @@ export class RoomStore {
     room.state = state;
     if (preview) return this.snapshot(room, player);
     const turnEnded = state.phase !== 'playing' || state.turn.currentPlayer !== initialState.turn.currentPlayer || state.turn.turnNumber !== initialState.turn.turnNumber;
-    room.revision++; room.updatedAt = new Date().toISOString();
+    room.revision++; room.updatedAt = new Date(Date.now()).toISOString();
+    if (appliedActions.some(action => action.type !== 'SET_UPKEEP_REVIEW')) room.lastMoveAt = new Date(receivedAt).toISOString();
     if (turnEnded) {
       this.clearStages(room, state.phase === 'playing' ? 'turn_ended' : 'game_ended', receivedAt);
       if (room.clockBase) {

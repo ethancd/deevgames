@@ -21,7 +21,7 @@ export function observe(room: RoomSnapshot, perspective = room.state.turn.curren
   const s = room.state;
   return {
     roomId: room.id, revision: room.revision, ready: room.ready, seats: room.seats,
-    canUndo: !!room.canUndo,
+    canUndo: !!room.canUndo, archivedAt: room.archivedAt ?? null, lastMoveAt: room.lastMoveAt ?? null,
     timeControl: room.timeControl ?? null, clock: room.clock ?? null, clockPressure: room.clockPressure ?? null,
     ...(room.staging ? { staging: room.staging } : {}),
     analysis: analysisService.headline(room, perspective),
@@ -30,7 +30,7 @@ export function observe(room: RoomSnapshot, perspective = room.state.turn.curren
     ruleset: s.ruleset ?? 'standard', pendingSummons: s.pendingSummons ?? [], lastSummoning: s.lastSummoning,
     status: s.phase, turn: s.turn, actionsPerTurn: getActionsPerTurn(s), blackCrystalHandicap: s.blackCrystalHandicap ?? 0, upkeepPending: !!s.upkeepPending,
     winner: s.winner, victoryReason: s.victoryReason ?? null,
-    nextStep: !room.ready ? 'Invite the opponent, then wait for them to join.' : s.phase === 'victory' ? 'Game finished.'
+    nextStep: room.archivedAt ? 'Room archived after 24 hours without a game action. Its history and positions remain available for review.' : !room.ready ? 'Invite the opponent, then wait for them to join.' : s.phase === 'victory' ? 'Game finished.'
       : s.upkeepPending ? 'Choose PAY_UPKEEP keepUnitIds; all tier 1 units must stay. Higher tiers omitted are released.'
       : isPhasing(s) ? s.turn.phase === 'action' ? 'Take actions, then END_ACTION_PHASE to mine and pay upkeep. This does not end your turn.' : 'Promote actual units or BUY_UNIT to commit public summons. END_PLACE_PHASE hands over the turn and clock.'
       : `${s.turn.currentPlayer} may act. Read legal actions, optionally preview, then play using this revision.`,

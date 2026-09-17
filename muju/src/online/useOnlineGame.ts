@@ -8,7 +8,10 @@ import { useIncomingPlayback } from './incomingPlayback';
 import { OnlineError, playRoom, readRoom, waitRoom } from './client';
 import type { ActionRequest, OnlineConnection, RoomAction, RoomSnapshot } from './types';
 
-export function useOnlineGame(connection: OnlineConnection, initial: RoomSnapshot, onLeave: () => void) {
+export function useOnlineGame(initialConnection: OnlineConnection, initial: RoomSnapshot, onLeave: () => void) {
+  const [seatLost, setSeatLost] = useState(false);
+  const connection = useMemo<OnlineConnection>(() => seatLost
+    ? { roomId: initialConnection.roomId, serverUrl: initialConnection.serverUrl } : initialConnection, [initialConnection, seatLost]);
   const [room, setRoom] = useState(initial);
   const incoming = useIncomingPlayback();
   const playingRef = useRef(false); playingRef.current = incoming.playing;
@@ -19,6 +22,9 @@ export function useOnlineGame(connection: OnlineConnection, initial: RoomSnapsho
   const [busy, setBusy] = useState(false);
   const locked = useRef(false);
   const [uncertain, setUncertain] = useState<ActionRequest | null>(null);
+  const loseSeat = useCallback(() => {
+    setSeatLost(true); setSelected(null); setUncertain(null); setError(null); setConnectionError(null);
+  }, []);
   const accept = useCallback((next: RoomSnapshot) => {
     if (next.revision <= roomRef.current.revision) return;
     incoming.present(roomRef.current, next, connection.player);
@@ -44,6 +50,7 @@ export function useOnlineGame(connection: OnlineConnection, initial: RoomSnapsho
         failures = 0; setConnectionError(null);
       } catch (error) {
         if (signal.aborted) return;
+        if (error instanceof OnlineError && error.code === 'INVALID_SEAT') { loseSeat(); return; }
         failures++;
         setConnectionError(error instanceof Error ? error.message : 'Connection interrupted. Reconnecting…');
       }
@@ -58,20 +65,21 @@ export function useOnlineGame(connection: OnlineConnection, initial: RoomSnapsho
     document.addEventListener('visibilitychange', resume);
     void poll(controller.signal);
     return () => { controller.abort(); clearTimeout(timer); document.removeEventListener('visibilitychange', resume); };
-  }, [connection, accept]);
+  }, [connection, accept, loseSeat]);
 
   const send = useCallback(async (request: ActionRequest) => {
     if (!connection.player || locked.current) return;
     locked.current = true; setBusy(true); setError(null);
     try { accept(await playRoom(connection, request)); setUncertain(null); }
     catch (error) {
+      if (error instanceof OnlineError && error.code === 'INVALID_SEAT') { loseSeat(); return; }
       setError(error instanceof Error ? error.message : 'Move could not be sent.');
       if (error instanceof OnlineError && error.status < 500) {
         setUncertain(null);
         try { accept(await readRoom(connection)); } catch { /* polling will reconnect */ }
       } else setUncertain(request);
     } finally { locked.current = false; setBusy(false); }
-  }, [connection, accept]);
+  }, [connection, accept, loseSeat]);
   const dispatch = useCallback((action: RoomAction | RoomAction[]) => {
     if (!connection.player || locked.current || uncertain || playingRef.current) return;
     // getRandomValues also works on HTTP LAN origins where randomUUID is unavailable.
@@ -108,5 +116,5 @@ export function useOnlineGame(connection: OnlineConnection, initial: RoomSnapsho
     selectedUnitData: selected ? getUnitById(state.board, selected) : null,
     isPlayerTurn: state.turn.currentPlayer === connection.player, canEndTurn: state.turn.phase === 'action',
   };
-  return { game, room, incoming, busy: busy || !!uncertain || incoming.playing, connected: !connectionError, error: error ?? connectionError, retry: uncertain ? () => void send(uncertain) : undefined };
+  return { game, room, incoming, seatLost, connection, busy: busy || !!uncertain || incoming.playing, connected: !connectionError, error: error ?? connectionError, retry: uncertain ? () => void send(uncertain) : undefined };
 }

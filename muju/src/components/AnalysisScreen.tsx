@@ -160,5 +160,5 @@ export function AnalysisScreen() {
     }}><input aria-label="Room link or ID" value={roomInput} onChange={event => setRoomInput(event.target.value)} placeholder="Room link or ID" /><button>Open</button></form></details>}
   </section>;
   return <GameView game={game} config={config} onBackToMenu={() => { window.location.href = '/muju/'; }} analysis={{ bar, reviewing: reviewing || loading,
-    result: rawState.phase === 'victory' ? `${rawState.winner ? `${rawState.winner} wins` : 'Draw'} · ${rawState.victoryReason?.replaceAll('-', ' ')}` : undefined }} />;
+    result: rawState.phase === 'victory' ? rawState.victoryReason === 'abandoned' ? 'Room archived · no moves for 24 hours' : `${rawState.winner ? `${rawState.winner} wins` : 'Draw'} · ${rawState.victoryReason?.replaceAll('-', ' ')}` : undefined }} />;
 }
