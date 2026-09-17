@@ -11,10 +11,10 @@ interface UnitInfoProps {
   unit: Unit | null; previewDefinitionId?: string | null;
   cellInfo?: Cell | null;
   isPlacePhase?: boolean; isActionPhase?: boolean; resources?: number;
-  onPromote?: () => void; isEnemyView?: boolean; onClose?: () => void;
+  onPromote?: () => void; isEnemyView?: boolean; inspectOnly?: boolean; onClose?: () => void;
   currentPlayer?: PlayerId; showEnemyRange?: boolean; onToggleEnemyRange?: () => void; showNextTier?: boolean;
 }
-export function UnitInfo({ phasingIn, unit, previewDefinitionId, cellInfo, isPlacePhase, isActionPhase, resources = 0, onPromote, isEnemyView, onClose, currentPlayer, showEnemyRange, onToggleEnemyRange, showNextTier }: UnitInfoProps) {
+export function UnitInfo({ phasingIn, unit, previewDefinitionId, cellInfo, isPlacePhase, isActionPhase, resources = 0, onPromote, isEnemyView, inspectOnly, onClose, currentPlayer, showEnemyRange, onToggleEnemyRange, showNextTier }: UnitInfoProps) {
   const def = unit ? getUnitDefinition(unit.definitionId) : previewDefinitionId ? getUnitDefinition(previewDefinitionId) : null;
   if (!def) return null;
   const next = getNextTierDefinition(def.id);
@@ -27,7 +27,7 @@ export function UnitInfo({ phasingIn, unit, previewDefinitionId, cellInfo, isPla
     <div className="unit-stats"><span>Attack <b>{def.attack}</b></span><span>Defense <b>{Math.max(0, def.defense - (unit?.damageTaken ?? 0))}{unit?.damageTaken ? `/${def.defense}` : ''}</b></span><span>Speed <b>{def.speed}</b></span><span>Mining <b>{def.mining}</b></span></div>
     <div className="unit-action-row">
       {!unit ? <p>Tap a highlighted square to place.</p>
-      : phasingIn || isEnemyView ? <><p>{phasingIn ? 'Reach after arrival · current board, if supported.' : showEnemyRange ? 'Red dots: up to 3 move actions + 1 attack.' : 'Inspect movement and attack reach.'}</p><button aria-pressed={showEnemyRange} onClick={onToggleEnemyRange}>{showEnemyRange ? 'Hide reach' : 'Show reach'}</button>
+      : phasingIn || isEnemyView || inspectOnly ? <><p>{phasingIn ? 'Reach after arrival · current board, if supported.' : showEnemyRange ? 'Red dots: up to 3 move actions + 1 attack.' : 'Inspect movement and attack reach.'}</p><button aria-pressed={showEnemyRange} onClick={onToggleEnemyRange}>{showEnemyRange ? 'Hide reach' : 'Show reach'}</button>
         {showNextTier && <p className="unit-upgrade">{next ? `Next: ${nextStats}` : nextStats}</p>}</>
       : isPlacePhase && unit.owner === currentPlayer ? <>
         <p>{!next ? nextStats : unit.placedThisTurn ? 'Placed this turn · promote next turn' : unit.promotedThisPlacement ? 'Already upgraded this placement' : nextStats}</p>

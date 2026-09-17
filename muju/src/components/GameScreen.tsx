@@ -129,6 +129,12 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
   // Human controls follow the configured side, including Black against the AI.
   const isCurrentPlayerHuman = !analysis?.reviewing && config.controls[state.turn.currentPlayer] === 'human' &&
     (!online || (state.turn.currentPlayer === online.player && online.ready && !online.busy));
+  const inspectOnly = !!online && (!isCurrentPlayerHuman || !!online.playingIncoming);
+  useEffect(() => {
+    if (!inspectOnly) {
+      setViewedEnemyUnitId(null); setViewedSummonId(null); setShowEnemyRange(false);
+    }
+  }, [inspectOnly]);
 
   // Clear place phase selections when phase changes or turn ends
   useEffect(() => {
@@ -199,7 +205,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
     const unit = summonPreview ?? selectedUnitData ?? viewedEnemyUnitData ?? selectedPlaceUnitData;
     if (!unit) return [];
 
-    const isOwnUnit = !summonPreview && !observing && unit.owner === state.turn.currentPlayer;
+    const isOwnUnit = !summonPreview && !inspectOnly && unit.owner === state.turn.currentPlayer;
     const unitDef = getUnitDefinition(unit.definitionId);
 
     const speed = unitDef.speed;
@@ -214,14 +220,14 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
     }
 
     return getMovementRange(unit.position, speed, totalActions, state.board);
-  }, [summonPreview, selectedUnitData, viewedEnemyUnitData, selectedPlaceUnitData, state.turn.currentPlayer, state.turn.phase, state.turn.actionsRemaining, state.board, observing, showEnemyRange, actionsPerTurn]);
+  }, [summonPreview, selectedUnitData, viewedEnemyUnitData, selectedPlaceUnitData, state.turn.currentPlayer, state.turn.phase, state.turn.actionsRemaining, state.board, inspectOnly, showEnemyRange, actionsPerTurn]);
 
   const attackFrontier = useMemo(() => {
     const unit = summonPreview ?? selectedUnitData ?? viewedEnemyUnitData ?? selectedPlaceUnitData;
-    return showEnemyRange && unit && (summonPreview || observing || unit.owner !== state.turn.currentPlayer)
+    return showEnemyRange && unit && (summonPreview || inspectOnly || unit.owner !== state.turn.currentPlayer)
       ? getAttackFrontier(unit, state.board, actionsPerTurn - 1)
       : [];
-  }, [summonPreview, selectedUnitData, viewedEnemyUnitData, selectedPlaceUnitData, showEnemyRange, observing, state.turn.currentPlayer, state.board, actionsPerTurn]);
+  }, [summonPreview, selectedUnitData, viewedEnemyUnitData, selectedPlaceUnitData, showEnemyRange, inspectOnly, state.turn.currentPlayer, state.board, actionsPerTurn]);
 
   const latestState = useRef(state); latestState.current = state;
   const getCurrentState = useCallback(() => latestState.current, []);
@@ -309,15 +315,19 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
   };
 
   const handleSummonClick = (id: string) => {
-    if (showReplay || online?.playingIncoming || showPassOverlay) return;
+    if (showReplay || showPassOverlay) return;
     deselect(); setSelectedPlaceUnitId(null); setSelectedPurchaseId(null); setViewedEnemyUnitId(null);
     setPreview(null); setPendingMovePath([]);
     setViewedSummonId(viewedSummonId === id ? null : id); setShowEnemyRange(true);
   };
 
   const handleCellClick = (position: Position) => {
-    if (showReplay || online?.playingIncoming) return;
+    if (showReplay || showPassOverlay) return;
     setViewedSummonId(null);
+    if (inspectOnly) {
+      deselect(); setViewedEnemyUnitId(null);
+      return;
+    }
     if (!isCurrentPlayerHuman || isThinking || showPassOverlay) {
       return;
     }
@@ -379,9 +389,11 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
   };
 
   const handleUnitClick = (unitId: string) => {
-    if (showReplay || online?.playingIncoming) return;
+    if (showReplay || showPassOverlay) return;
     setViewedSummonId(null);
-    if (observing) {
+    if (inspectOnly) {
+      deselect(); setSelectedPlaceUnitId(null); setSelectedPurchaseId(null);
+      setPreview(null); setPendingMovePath([]);
       setViewedEnemyUnitId(viewedEnemyUnitId === unitId ? null : unitId);
       return;
     }
@@ -473,7 +485,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
       if (e.key === 'Escape') { e.preventDefault(); closeReplay(); }
       return;
     }
-    if (!isCurrentPlayerHuman || isThinking || state.upkeepPending || showPassOverlay || showMenu || showInstructions || showUnitShopInspection || showInsights || showVisualKey) return;
+    if (inspectOnly || !isCurrentPlayerHuman || isThinking || state.upkeepPending || showPassOverlay || showMenu || showInstructions || showUnitShopInspection || showInsights || showVisualKey) return;
     const control = e.target instanceof HTMLElement ? e.target.closest('button, select, a, input, textarea') : null;
     if (control?.matches('select, input, textarea')) return;
     if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') {
@@ -625,7 +637,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
       }
     }
   }, [
-    isCurrentPlayerHuman, isThinking, showPassOverlay, state, playerOwnUnits,
+    inspectOnly, isCurrentPlayerHuman, isThinking, showPassOverlay, state, playerOwnUnits,
     selectUnit, selectedPlaceUnitId, promoteUnit, moveUnit, moveAndAttack, attackWith,
     showReplay, closeReplay, canUndo, undo, endPlacePhase, endActionPhase, pendingMovePath, preview, showMenu, showInstructions, showUnitShopInspection, showInsights, showVisualKey
   ]);
@@ -689,12 +701,13 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
   const opponentPlayer: PlayerId = viewerPlayer === 'white' ? 'black' : 'white';
   const opponentState = state.players[opponentPlayer];
 
-  const interactive = !showReplay && isCurrentPlayerHuman && !isThinking && !showPassOverlay && state.phase === 'playing' && !state.upkeepPending;
+  const interactive = !showReplay && !inspectOnly && isCurrentPlayerHuman && !isThinking && !showPassOverlay && state.phase === 'playing' && !state.upkeepPending;
   const playerNames = analysis ? { white: 'White', black: 'Black' } : online ? online.names : config.mode === 'pass-play' ? { white: 'Player 1', black: 'Player 2' }
     : config.mode === 'ai-vs-ai' ? { white: 'AI 1', black: 'AI 2' }
     : { white: humanPlayer === 'white' ? 'You' : 'AI', black: humanPlayer === 'black' ? 'You' : 'AI' };
   const shownUnit = summonPreview ?? selectedPlaceUnitData ?? selectedUnitData ?? viewedEnemyUnitData;
-  const isEnemyView = !!shownUnit && (observing || shownUnit.owner !== state.turn.currentPlayer);
+  const isEnemyView = !!shownUnit && (observing || shownUnit.owner !== (online?.player ?? state.turn.currentPlayer));
+  const showingReach = inspectOnly || isEnemyView || !!summonPreview;
   const previewTarget = preview ? getUnitAt(state.board, preview.position) : null;
   const previewMoveCost = preview && selectedUnitData
     ? Math.ceil(preview.path.length / getUnitDefinition(selectedUnitData.definitionId).speed) : 0;
@@ -765,24 +778,25 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
       <div className={`play-area ${state.turn.phase === 'place' && (interactive || showReplay) ? 'is-placing' : ''}`}>
         <section className="board-stage" aria-label="Battlefield">
           <Board pendingSummons={playback ? replayFrame?.pendingSummons ?? playback.replay.initialPendingSummons ?? [] : state.pendingSummons} board={playback ? replayFrame?.board ?? playback.replay.initialBoard : state.board}
-            selectedUnit={showReplay ? replayFrame?.unitId ?? null : online?.playingIncoming ? online.incomingFrame?.unitId ?? null : shownUnit?.id ?? null}
-            validMoves={showReplay ? [] : state.validMoves}
-            validAttacks={showReplay ? replayFrame?.action.type === 'ATTACK' && replayFrame.position ? [replayFrame.position] : [] : preview ? [preview.position] : state.validAttacks}
+            selectedUnit={showReplay ? replayFrame?.unitId ?? null : shownUnit?.id ?? (online?.playingIncoming ? online.incomingFrame?.unitId ?? null : null)}
+            inspectOnly={inspectOnly}
+            validMoves={showReplay || inspectOnly ? [] : state.validMoves}
+            validAttacks={showReplay ? replayFrame?.action.type === 'ATTACK' && replayFrame.position ? [replayFrame.position] : [] : inspectOnly ? [] : preview ? [preview.position] : state.validAttacks}
             validSpawns={showReplay ? [] : validSpawns}
             invalidSpawnPosition={showReplay ? null : spawnFeedback?.position ?? null}
             pendingMovePath={showReplay ? [] : previewPath} movementRange={showReplay ? [] : movementRange} attackFrontier={showReplay ? [] : attackFrontier}
             previewPosition={showReplay ? replayFrame?.position : online?.playingIncoming ? online.incomingFrame?.position : preview?.position} previewUnitPosition={showReplay ? undefined : previewLanding}
-            showResources={showResources} actionsRemaining={isEnemyView ? actionsPerTurn : state.turn.actionsRemaining}
+            showResources={showResources} actionsRemaining={showingReach ? actionsPerTurn : state.turn.actionsRemaining}
             selectedSummon={viewedSummon?.id} onSummonClick={handleSummonClick} onCellClick={handleCellClick} onUnitClick={handleUnitClick} />
         </section>
         <div className="board-key">
-          <span role="status">{showReplay ? replayMode === 'step' ? 'Instant replay · Step through' : playback.paused ? 'Replay paused' : `Instant replay · ${replayMode === 'fast' ? '0.3s' : '1s'} per action` : homeNotice || ((isEnemyView || summonPreview) && showEnemyRange ? 'Red dots: attack frontier' : selectedPurchaseId ? '＋ Safe placement' : '● 1 action · ○ farther · ⊗ attack')}</span>
+          <span role="status">{showReplay ? replayMode === 'step' ? 'Instant replay · Step through' : playback.paused ? 'Replay paused' : `Instant replay · ${replayMode === 'fast' ? '0.3s' : '1s'} per action` : homeNotice || (showingReach && showEnemyRange ? 'Red dots: attack frontier' : selectedPurchaseId ? '＋ Safe placement' : '● 1 action · ○ farther · ⊗ attack')}</span>
           <button disabled={showReplay} className="visual-key-trigger" onClick={() => setShowVisualKey(true)}>Key</button>
           <button aria-pressed={showResources} onClick={() => setShowResources(!showResources)}>◆ Reserves</button>
         </div>
         <section className="decision-panel" aria-label="Current choice">
           {analysis && state.upkeepPending && !analysis.reviewing ? <UpkeepPanel key={`${state.turn.turnNumber}-${state.turn.currentPlayer}`} state={state} onConfirm={payUpkeep} inline /> : playback ? <TurnReplay replay={playback.replay} step={playback.step} paused={playback.paused} mode={replayMode} playerName={playerNames[playback.replay.player]} onClose={closeReplay} onToggle={toggleReplay} onStep={stepReplay} />
-          : online?.playingIncoming ? <div className="selection-hint"><strong>Opponent’s move</strong><p role="status">{online.incomingFrame?.label}</p><small>{replayMode === 'fast' ? 'Fast · 0.3s' : 'Slow · 1s'} per action</small></div>
+          : online?.playingIncoming && !shownUnit ? <div className="selection-hint"><strong>Opponent’s move</strong><p role="status">{online.incomingFrame?.label}</p><small>{replayMode === 'fast' ? 'Fast · 0.3s' : 'Slow · 1s'} per action</small></div>
           : state.turn.phase === 'place' && interactive && !shownUnit ? <UnitShop phasing={phasing} resources={currentPlayerState.resources} player={state.turn.currentPlayer} board={state.board}
             selectedId={selectedPurchaseId} onSelectId={id => { setSelectedPurchaseId(id); setSelectedPlaceUnitId(null); setViewedEnemyUnitId(null); }} />
           : preview && selectedUnitData ? <div className="action-preview">
@@ -793,7 +807,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
           : shownUnit || selectedPurchaseDefinitionId ? <UnitInfo phasingIn={!!summonPreview} unit={shownUnit} previewDefinitionId={selectedPurchaseDefinitionId}
               cellInfo={selectedUnitCell}
               isPlacePhase={state.turn.phase === 'place' && interactive} isActionPhase={state.turn.phase === 'action' && interactive}
-              resources={currentPlayerState.resources} onPromote={handlePromote} isEnemyView={isEnemyView} showNextTier={observing}
+              resources={currentPlayerState.resources} onPromote={handlePromote} isEnemyView={isEnemyView} inspectOnly={inspectOnly} showNextTier={observing}
               onClose={handleCloseUnitInfo} currentPlayer={state.turn.currentPlayer}
               showEnemyRange={showEnemyRange} onToggleEnemyRange={() => setShowEnemyRange(!showEnemyRange)} />
           : <div className="selection-hint"><strong>{observing ? 'Watching live' : isThinking ? 'Your opponent is thinking…' : state.turn.phase === 'place' ? 'Place & upgrade' : 'Your next move'}</strong><p>{phaseHint}</p>

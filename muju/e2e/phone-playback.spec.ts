@@ -16,6 +16,38 @@ async function online(page: Page, request: APIRequestContext) {
   await expect(page.getByRole('button',{name:'Mine & prepare'})).toBeEnabled();
   return host;
 }
+for (const ruleset of ['standard', 'phasing']) test(`${ruleset}: inspect either army while waiting for the online opponent`, async ({page,request}) => {
+  await page.setViewportSize({width:390,height:664});
+  const host=await (await request.post('/api/muju/rooms',{data:{name:'Opponent',side:'white',ruleset}})).json();
+  await page.goto(`?room=${host.room.id}#invite=${host.inviteCode}`);
+  await page.getByRole('button',{name:'Join room',exact:true}).click();
+  await expect(page.locator('.turn-strip')).toContainText('Opponent');
+  const before=await (await request.get(`/api/muju/rooms/${host.room.id}`)).json();
+  const commands:string[]=[];
+  page.on('request',r=>{if(r.method()==='POST'&&r.url().endsWith('/actions')) commands.push(r.url());});
+  for(const owner of ['white','black']) {
+    const unit=before.state.board.units.find((u:any)=>u.owner===owner&&u.definitionId==='fire_1');
+    const cell=page.getByTestId(`cell-${unit.position.x}-${unit.position.y}`);
+    await cell.click();
+    await expect(cell).toHaveAttribute('aria-pressed','true');
+    await expect(page.locator('.unit-detail')).toContainText('Attack');
+    if(owner==='white') await expect(page.locator('.unit-detail')).toContainText('Enemy');
+    else await expect(page.locator('.unit-detail')).not.toContainText('Enemy');
+    expect(await page.locator('.attack-frontier-marker').count()).toBeGreaterThan(0);
+    await page.getByRole('button',{name:'Hide reach'}).click();
+    await expect(page.locator('.attack-frontier-marker')).toHaveCount(0);
+    await page.getByRole('button',{name:'Show reach'}).click();
+    await fits(page);
+    await page.getByTestId('cell-5-5').click();
+    await expect(page.locator('.unit-detail')).toHaveCount(0);
+  }
+  await page.keyboard.press('ArrowUp');
+  await page.keyboard.press('Enter');
+  expect(commands).toEqual([]);
+  const after=await (await request.get(`/api/muju/rooms/${host.room.id}`)).json();
+  expect(after.revision).toBe(before.revision);
+  expect(after.state).toEqual(before.state);
+});
 for (const [width,height] of [[320,568],[375,667],[390,664],[390,844],[430,932],[844,390]]) test(`timed Phasing fits ${width}x${height} through preparation, reach and arrivals`, async ({page,request},info)=>{
   await page.setViewportSize({width,height});
   const host=await online(page,request);

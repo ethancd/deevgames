@@ -10,6 +10,7 @@ interface BoardProps {
   pendingSummons?: PendingSummon[];
   board: BoardState;
   selectedUnit: string | null;
+  inspectOnly?: boolean;
   validMoves: Position[];
   validAttacks: Position[];
   validSpawns: Position[];
@@ -31,6 +32,7 @@ export function Board({
   pendingSummons = [],
   board,
   selectedUnit,
+  inspectOnly = false,
   validMoves,
   validAttacks,
   validSpawns,
@@ -104,7 +106,7 @@ export function Board({
                   previewLabel={previewUnit && previewUnitPosition?.x === x && previewUnitPosition?.y === y ? `${getUnitDefinition(previewUnit.definitionId).name} attack approach` : undefined}
                   unitLabel={unit ? `${unit.owner} ${getUnitDefinition(unit.definitionId).name}, ${getUnitDefinition(unit.definitionId).element}, tier ${getUnitDefinition(unit.definitionId).tier}` : undefined}
                   pendingLabel={pendingLabel}
-                  onClick={unit ? () => onUnitClick(unit.id) : pending.length && onSummonClick && !isValidMove(pos) && !isValidSpawn(pos) && !board.units.some(u => u.id === selectedUnit) ? () => onSummonClick(pending.find(s => s.id !== selectedSummon)?.id ?? pending[0].id) : onCellClick}
+                  onClick={unit ? () => onUnitClick(unit.id) : pending.length && onSummonClick && !isValidMove(pos) && !isValidSpawn(pos) && (inspectOnly || !board.units.some(u => u.id === selectedUnit)) ? () => onSummonClick(pending.find(s => s.id !== selectedSummon)?.id ?? pending[0].id) : onCellClick}
                 />
                 {pending.map(s => <div key={s.id} className={`summon-ghost ${s.owner}${unit ? ' occupied' : ''}`} data-testid={`summon-${x}-${y}`}>
                   <UnitArtwork element={getUnitDefinition(s.definitionId).element} owner={s.owner} tier={1} />
