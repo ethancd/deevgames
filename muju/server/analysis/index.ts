@@ -7,6 +7,7 @@ import { UNIT_DEFINITIONS } from '../../src/game/units';
 import { getHomeOccupier, getOpponent } from '../../src/game/victory';
 import { analyzeHomeDefenseEvidence } from '../../src/game/homeCheckmate';
 import { transitionWithoutCheckmate } from '../../src/ai/simulate';
+import { isPhasing } from '../../src/game/rules';
 import { RoomError } from '../schema';
 import { describeAction, square } from '../notation';
 import { analysisSchema, type AnalysisInput } from './schema';
@@ -25,7 +26,7 @@ function followUp(room: RoomSnapshot, player: PlayerId, topics: string[], extra:
   return { tool: 'muju_analyze', arguments: { roomId: room.id, expectedRevision: room.revision, player, topics, ...extra } };
 }
 function envelope(room: RoomSnapshot, s: GameState, player: PlayerId, applied: ReturnType<typeof describeAction>[], assumptions: string[], stateKind: string) {
-  return { roomId: room.id, revision: room.revision, perspective: player, turn: s.turn,
+  return { roomId: room.id, revision: room.revision, ruleset: s.ruleset ?? 'standard', supported: true, perspective: player, turn: s.turn,
     phase: s.phase === 'playing' ? s.upkeepPending ? 'upkeep' : s.turn.phase : s.phase,
     stateKind, hypothetical: { actions: applied, assumptions } };
 }
@@ -159,6 +160,9 @@ function checkmate(s: GameState, budget: WorkBudget) {
   }
   if (getHomeOccupier(s.board, getOpponent(invader))) return { result: 'not_applicable', reason: 'Earlier opposing home occupation has priority.' };
   if (s.victoryRule === 'elimination') return { result: 'not_applicable', reason: 'Elimination-only rules.' };
+  if (isPhasing(s) && (s.turn.phase !== 'place' || s.upkeepPending)) return {
+    occupier: occupier.id, result: 'unknown', reason: 'Phasing home checkmate is checked after the invader survives mining/upkeep. Preview END_ACTION_PHASE and any required PAY_UPKEEP first.',
+  };
   const proof = analyzeHomeDefenseEvidence(s, invader, transitionWithoutCheckmate, Math.max(0, budget.maxNodes - budget.nodes), () => !budget.available());
   budget.nodes += proof.nodes;
   return { occupier: occupier.id, result: proof.result === 'mate' ? 'proven_possible' : proof.result === 'rescue' ? 'proven_impossible' : 'unknown',
@@ -166,8 +170,8 @@ function checkmate(s: GameState, budget: WorkBudget) {
     method: proof.method, rescueCategories: proof.categories,
     ...(proof.witness ? { reply: { ...(proof.witness.length <= 32 ? { witness: proof.witness.map(describeAction) } : {
       witnessCommands: Array.from({ length: Math.ceil(proof.witness.length / 32) }, (_, i) => proof.witness!.slice(i * 32, (i + 1) * 32).map(describeAction)) }),
-      basis: 'Defender start before upkeep/healing, with upkeep review enabled. Purchases are forbidden by home occupation. No future defender income.',
-      setup: 'If upkeep was paid automatically, undo that payment alone before previewing this reply; otherwise enable upkeep review before handoff.' } } : {}),
+      basis: isPhasing(s) ? 'Defender Act after turn-start healing. Home occupation prevents all pending arrivals. No pre-action upkeep or promotions.' : 'Defender start before upkeep/healing, with upkeep review enabled. Purchases are forbidden by home occupation. No future defender income.',
+      setup: isPhasing(s) ? 'Use the defender turn after END_PLACE_PHASE; do not pay upkeep or promote before the rescue.' : 'If upkeep was paid automatically, undo that payment alone before previewing this reply; otherwise enable upkeep review before handoff.' } } : {}),
     cornerEntrances: getAdjacentPositions(getStartCorner(getOpponent(invader))).map(p => ({ square: square(p), unitId: getUnitAt(s.board, p)?.id ?? null })),
     cornerRule: 'Only two adjacent attack squares; three distinct hits need at least five AP.' };
 }
@@ -230,13 +234,7 @@ export class AnalysisService {
       const key = this.cache.keys().next().value!; this.bytes -= this.cache.get(key)!.bytes; this.cache.delete(key);
     }
   }
-  private phasingUnavailable(room: RoomSnapshot): Result {
-    return { roomId: room.id, revision: room.revision, ruleset: 'phasing', stateKind: 'current',
-      supported: false, reason: 'Strategic analysis is calibrated for Standard only. Use observations, legal actions, previews and the manual analysis board for Phasing.',
-      sections: {}, next: [] };
-  }
   headline(room: RoomSnapshot, player = room.state.turn.currentPlayer) {
-    if (room.state.ruleset === 'phasing') return this.phasingUnavailable(room);
     const key = `headline:${room.id}:${room.revision}:${player}:${hash([room.state, room.ready])}`;
     const cached = this.get(key); if (cached) return cached;
     const budget = new WorkBudget(160, 15), s = room.state, forecast = economyForecast(s);
@@ -253,7 +251,6 @@ export class AnalysisService {
     if (input.roomId !== room.id || input.expectedRevision !== room.revision) throw new RoomError(409, 'STALE_REVISION', `Analysis requires revision ${room.revision}. Read the room again.`);
     if (input.sinceRevision !== undefined && input.sinceRevision > room.revision) throw new RoomError(422, 'INVALID_BASELINE', 'sinceRevision cannot be newer than the analyzed revision.');
     if (!room.ready && (input.hypotheticalActions.length || input.stateKind !== 'current')) throw new RoomError(409, 'WAITING_FOR_OPPONENT', 'Hypothetical play requires a ready room.');
-    if (room.state.ruleset === 'phasing') return this.phasingUnavailable(room);
     const { sinceRevision: _since, ...parameters } = input;
     const key = `analysis:${room.id}:${room.revision}:${hash([room.state, room.ready, parameters])}`;
     let result = this.get(key);
@@ -313,7 +310,6 @@ export class AnalysisService {
     return this.diff(result, baselineKey, room.revision, input.sinceRevision);
   }
   briefing(room: RoomSnapshot, player: PlayerId, sinceRevision?: number): Result {
-    if (room.state.ruleset === 'phasing') return this.phasingUnavailable(room);
     const key = `briefing:${room.id}:${room.revision}:${player}:${hash([room.state, room.ready])}`;
     let result = this.get(key);
     if (!result) {

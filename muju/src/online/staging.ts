@@ -1,4 +1,4 @@
-import type { PlayerId } from '../game/types';
+import type { PlayerId, Ruleset, TurnPhase } from '../game/types';
 import type { RoomAction } from './types';
 import type { ClockPressure, ClockSnapshot } from './timeControl';
 
@@ -35,7 +35,9 @@ export interface StagingStatus extends SeatStaging {
   player: PlayerId;
   revision: number;
   serverNowMs: number;
-  currentTurn: { player: PlayerId; turnNumber: number };
+  ruleset?: Ruleset;
+  endTurnAction?: 'END_ACTION_PHASE' | 'END_PLACE_PHASE';
+  currentTurn: { player: PlayerId; turnNumber: number; phase?: TurnPhase; upkeepPending?: boolean };
   clock: ClockSnapshot | null;
   clockPressure: ClockPressure | null;
   /** Present when looking up a particular stage, including an acknowledged retry. */

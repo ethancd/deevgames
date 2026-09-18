@@ -9,7 +9,7 @@ mining and pays upkeep with `END_ACTION_PHASE`; promote and commit summons in
 Prepare (`phase: "place"`), then hand over with `END_PLACE_PHASE`. Both phases
 share the full-turn clock. Black's handicap never adds an opening Place phase in
 Phasing. Public commitments, arrivals and refunds persist in history and saved
-positions. Strategic analysis tools explicitly report unsupported for Phasing;
+positions. MCP strategic analysis models Phasing turn order, summons and upkeep;
 manual analysis, observations, legal actions and previews work normally.
 See [complete Phasing rules](docs/PHASING-2026-09-16.md). Sections below describing
 pre-action upkeep and instant purchases refer to Standard.

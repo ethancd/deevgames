@@ -149,6 +149,32 @@ Large inverse-survival searches can leave catalogue cases unknown; they do not
 manufacture a universal minimum defense. These limits are exposed in the API and
 skill rather than concealed behind a safety score.
 
+
+## Phasing analysis
+
+`muju_rules({ruleset:"phasing"})` selects variant-specific timing prose. Observations,
+legal actions and clocks expose `ruleset`, `turn`, `upkeepPending`, and
+`endTurnAction`. In Phasing the full-turn handoff is `END_PLACE_PHASE`.
+
+Analysis uses engine handoff: outgoing Act ends, mining occurs once, outgoing upkeep
+is settled, then preparation ends without further spending. Existing incoming
+commitments resolve or fully refund before healing and four AP. All arrival checks
+use the same board, and pending commitments are never combatants or anchors.
+
+Tactical searches cover the modeled action phase. Incoming arrivals may attack;
+new commitments and end-of-turn promotions cannot attack that turn. Prepare has no
+remaining attack or movement opportunity; it does not become another Act when ended.
+Reply analysis does not choose discretionary future preparation or search multiple
+turns. Include your intended preparation in `hypotheticalActions` to inspect its
+actual consequences. Home checkmate before outgoing upkeep is resolved reports
+`unknown`; preview mining/upkeep first. Phasing rescue witnesses begin in defender
+Act after healing, with no pre-action payment or promotion.
+
+Economy forecasts record harvest and upkeep as separate balances, include existing
+summon arrivals/refunds, and stop at the first unaffordable keep-all payment or game
+result. Current summon support is conditional, not a promise about the arrival board.
+Built-in AI remains Standard-only.
+
 ## See also
 
 - `docs/MCP_TOOL_TAPS.md`: trigger-action checklist for agent players on when to call each MCP tool, distilled from the 2026-09-12 live games.

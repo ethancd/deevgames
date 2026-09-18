@@ -10,7 +10,7 @@ import { isPhasing } from './rules';
 
 export const HISTORY_NOTATION = {
   pieces: '🔥 fire · ⚡ lightning · 💧 water · 🌑 shadow · 🌱 plant · 🪨 metal; number = tier',
-  actions: '→ move · × attack (attacker stays put) · + purchase · ↑ promotion · ◆ crystals · AP shared action points',
+  actions: '→ move · × attack (attacker stays put) · + immediate purchase · ◌ public summon commitment · Arrival: arrivals/full refunds · ↑ promotion · ◆ crystals · AP shared action points',
   result: '# = server-adjudicated home checkmate. No coaching judgments or speculative moves.',
   turns: 'Each round has White and Black turns. Coordinates A1–J10; White home A1, Black home J10.',
 };

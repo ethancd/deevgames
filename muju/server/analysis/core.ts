@@ -3,6 +3,7 @@ import { applyAction } from '../../src/ai/simulate';
 import { isLegalAction } from '../../src/game/legality';
 import type { GameState, PlayerId } from '../../src/game/types';
 import type { RoomAction } from '../../src/online/types';
+import { isPhasing } from '../../src/game/rules';
 import { defaultUpkeepAction } from '../../src/game/upkeep';
 import { describeAction } from '../notation';
 import { RoomError } from '../schema';
@@ -68,6 +69,16 @@ export function turnFor(source: GameState, player: PlayerId): TurnModel {
   let state = source;
   const setupActions: AIAction[] = [];
   const step = (action: AIAction) => { state = applyAction(state, action); setupActions.push(action); };
+  if (isPhasing(state)) {
+    if (state.turn.phase === 'action') step({ type: 'END_ACTION_PHASE' });
+    if (state.phase === 'playing' && state.upkeepPending) step(defaultUpkeepAction(state));
+    if (state.phase === 'playing') step({ type: 'END_PLACE_PHASE' });
+    return { state, setupActions, assumptions: [
+      'outgoing player ends actions, mines once and pays upkeep with the engine default keep-set; preparation ends without new spending',
+      'incoming public summons resolve or refund against the arrival board; incoming units heal/reset and receive four AP',
+      'incoming upkeep and harvest are not prepaid; promotions and new summons cannot attack during this reply',
+    ] };
+  }
   if (state.upkeepPending) step(defaultUpkeepAction(state));
   if (state.phase === 'playing' && state.turn.phase === 'place') step({ type: 'END_PLACE_PHASE' });
   if (state.phase === 'playing') step({ type: 'END_ACTION_PHASE' });
@@ -79,13 +90,15 @@ export function turnFor(source: GameState, player: PlayerId): TurnModel {
 }
 export function modelDescription(model: TurnModel) {
   const s = model.state;
-  return { stateKind: model.setupActions.length ? 'opponentNextTurn' : 'current', actor: s.turn.currentPlayer,
+  return { ruleset: s.ruleset ?? 'standard', stateKind: model.setupActions.length ? 'opponentNextTurn' : 'current', actor: s.turn.currentPlayer,
     turn: s.turn.turnNumber, phase: s.upkeepPending ? 'upkeep' : s.turn.phase, status: s.phase,
     treasury: s.players[s.turn.currentPlayer].resources, setupActions: model.setupActions.map(describeAction), assumptions: model.assumptions };
 }
 export function actionReady(source: GameState) {
   let state = source;
   const actions: AIAction[] = [];
+  // Preparation ends this player's Phasing turn; it never opens another Act.
+  if (isPhasing(state)) return { state, actions };
   if (state.phase === 'playing' && state.upkeepPending) {
     const action = defaultUpkeepAction(state); state = applyAction(state, action); actions.push(action);
   }
@@ -97,7 +110,7 @@ export function actionReady(source: GameState) {
 
 /** All fields that affect legal continuations. UI/history telemetry is excluded. */
 export function tacticalKey(s: GameState): string {
-  return createHash('sha256').update(JSON.stringify([s.phase, s.winner, s.turn, !!s.upkeepPending, s.players.white.resources, s.players.black.resources,
+  return createHash('sha256').update(JSON.stringify([s.ruleset ?? 'standard', s.pendingSummons ?? [], s.board.cells.map(row => row.map(c => c.resourceLayers)), s.phase, s.winner, s.turn, !!s.upkeepPending, s.players.white.resources, s.players.black.resources,
     s.progressThisTurn, s.inactivityPlies, s.board.units.map(u => [u.id, u.definitionId, u.owner, u.position.x, u.position.y,
       u.damageTaken, u.canActThisTurn, u.hasAttacked, u.placedThisTurn, u.promotedThisPlacement, u.lastAttackKilled, u.attackedThisTurn])])).digest('hex');
 }

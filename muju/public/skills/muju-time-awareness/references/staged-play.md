@@ -101,7 +101,10 @@ are illegal, the stage is consumed with `failed`, nothing is applied, the public
 revision stays unchanged, and your clock continues. No candidate is generated,
 reordered, repaired or extended.
 
-`END_ACTION_PHASE` is optional. Spending all AP or executing a partial batch does
+End-turn commands are optional, so partial batches are allowed. To hand over,
+Standard requires `END_ACTION_PHASE`; Phasing requires `END_PLACE_PHASE` after
+mining/upkeep and preparation. Phasing `END_ACTION_PHASE` alone keeps the same
+player, deadline and pending stage. Recheck batches after live phase changes. Spending all AP or executing a partial batch does
 not stop the clock. `UNDO` and upkeep preferences retain their ordinary send-alone
 restrictions. A full batch cannot enter the opponent's turn. An immediate home
 checkmate cancels its queued tail exactly as in live play; receipts and public
@@ -184,3 +187,7 @@ limited coverage. Earlier turns and the turn already running when tracking
 begins are skipped; samples start with the next newly started full turn. Current
 bank balances remain authoritative. Existing timing history survives restart.
 The window is cumulative, not a rolling trend or a prediction of game length.
+
+The single-action example above is Standard. A complete Phasing candidate can use
+`END_ACTION_PHASE`, any required `PAY_UPKEEP` and desired preparation, followed by
+`END_PLACE_PHASE`. Never assume a partial staged batch stops the clock.
