@@ -1,0 +1,39 @@
+name: E2E layout diagnostics (throwaway)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  diag:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: muju/package-lock.json
+      - name: Fonts on this runner
+        run: (fc-match sans-serif && fc-match system-ui && fc-list | wc -l) || true
+      - name: Install
+        working-directory: muju
+        run: npm ci --no-audit --no-fund
+      - name: Browser
+        working-directory: muju
+        run: npx playwright install --with-deps chromium
+      - name: Diagnostic and failing tests
+        working-directory: muju
+        env:
+          CI: '1'
+        continue-on-error: true
+        run: npx playwright test --config playwright.online.config.ts diag-layout.spec.ts analysis.spec.ts:24 replay.spec.ts:17 --reporter=line
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: diag-${{ matrix.os }}
+          path: muju/test-results
+          if-no-files-found: ignore
