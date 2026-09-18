@@ -21,6 +21,12 @@ async function dump(page: Page, label: string) {
     out.scoreSmalls = [...document.querySelectorAll('.score-strip small')].map(c => ({ text: c.textContent, ...rect(c), font: getComputedStyle(c).fontFamily, fs: getComputedStyle(c).fontSize, lh: getComputedStyle(c).lineHeight }));
     out.analysisControlsChildren = children('.analysis-controls');
     out.footerChildren = children('.play-footer');
+    out.headerChildren = children('.game-header');
+    out.decisionChildren = children('.decision-panel');
+    const probe = document.createElement('span'); probe.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap;font-size:16px;line-height:normal';
+    probe.textContent = 'Muju Hono Tanka Phasing'; document.body.appendChild(probe);
+    const pr = probe.getBoundingClientRect(); probe.style.fontSize = '12px'; const pr12 = probe.getBoundingClientRect(); probe.remove();
+    out.fontProbe = { w16: +pr.width.toFixed(2), h16: +pr.height.toFixed(2), w12: +pr12.width.toFixed(2), h12: +pr12.height.toFixed(2), interLoaded: document.fonts.check('16px Inter'), fontsSize: document.fonts.size };
     return out;
   }, SELECTORS);
   console.log(`DIAG ${label} ${JSON.stringify(data)}`);
@@ -41,7 +47,15 @@ test('diag: phasing analysis at 320x568', async ({ page, request }, info) => {
   await expect(controls.getByRole('status')).toHaveText('Black wins on time');
   await expect(page.getByTestId('cell-0-0')).toHaveAttribute('aria-label', /phasing in/);
   await dump(page, 'analysis-320x568-reviewing');
-  await page.screenshot({ path: info.outputPath('analysis-320x568.png'), fullPage: true });
+  await controls.getByRole('button', { name: 'First position' }).click();
+  await expect(controls.getByRole('button', { name: 'Explore from here' })).toBeEnabled();
+  await controls.getByRole('button', { name: 'Explore from here' }).click();
+  await expect(controls).toContainText('Private variation');
+  await page.getByTestId('cell-1-0').click();
+  await page.getByTestId('cell-3-0').click();
+  await expect(page.getByTestId('cell-3-0')).toHaveAttribute('aria-label', /white Hi/);
+  await dump(page, 'analysis-320x568-exploring');
+  await page.screenshot({ path: info.outputPath('analysis-320x568-exploring.png'), fullPage: true });
 });
 
 test('diag: replay at 844x390', async ({ page, request }, info) => {
