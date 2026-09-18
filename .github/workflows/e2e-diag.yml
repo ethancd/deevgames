@@ -35,7 +35,7 @@ jobs:
         env:
           CI: '1'
         continue-on-error: true
-        run: npx playwright test --config playwright.online.config.ts diag-layout.spec.ts analysis.spec.ts:24 replay.spec.ts:17 --reporter=line
+        run: npx playwright test --config playwright.online.config.ts --reporter=line
       - uses: actions/upload-artifact@v4
         if: always()
         with:
