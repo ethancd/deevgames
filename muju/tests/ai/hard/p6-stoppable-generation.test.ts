@@ -232,7 +232,12 @@ describe('P6: fixed work is byte-identical across the fix', () => {
     ]),
   };
 
-  it('returns the pre-fix turn, score and work on the P6 position', async () => {
+  // The pre-fix path prices nothing for the ~330 full-prover calls this
+  // position provokes (P6), so a 2,000-unit search runs for minutes: over the
+  // 300 s ceiling on GitHub's 2-core runner (deploy run 35346032064). The
+  // identity it pins is also held by `hard:cross-commit`'s 48-row golden at
+  // every merge, so CI skips it unless MUJU_SLOW_TESTS is set.
+  it.skipIf(process.env.CI && !process.env.MUJU_SLOW_TESTS)('returns the pre-fix turn, score and work on the P6 position', async () => {
     const r = await desktopEngine().searchTurn(G2_BLACK_T20, { work: 2000 });
     expect({
       endKey: r.endKey,
