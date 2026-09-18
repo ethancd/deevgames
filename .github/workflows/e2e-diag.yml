@@ -24,6 +24,9 @@ jobs:
       - name: Install
         working-directory: muju
         run: npm ci --no-audit --no-fund
+      - name: Build
+        working-directory: muju
+        run: npm run build
       - name: Browser
         working-directory: muju
         run: npx playwright install --with-deps chromium
