@@ -347,7 +347,7 @@ function dropsLightning(p: PackedState, t: NodeTables, side: Side): boolean {
 
 /**
  * `metal_1` loses to `plant_1` when every candidate square already mines well
- * (`reserve ≥ 3`, so Muju's MINE 3 dominates Inyan's 2) and Inyan's ATK 1
+ * (`reserve ≥ 3`, where Muju and Yan both mine 3) and Yan's ATK 1
  * completes no lethal answer Muju's ATK 0 cannot.
  */
 function dropsMetal(p: PackedState, t: NodeTables, cat: Catalog, side: Side, metal1: DefId, plant1: DefId): boolean {

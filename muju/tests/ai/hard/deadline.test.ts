@@ -195,7 +195,9 @@ describe('device profile under A11', () => {
     // (deploy run 35346032064, 2026-09-18), so it is asserted only with the
     // wall-clock flag; the structural claims below always run.
     if (process.env.MUJU_WALLCLOCK_TESTS) expect(result.work).toBeGreaterThanOrEqual(MIN_PROFILE_SAMPLE_WORK);
-    expect(engine.profile.samples).toBe(1);
+    // A slow runner may abort below A16's minimum useful sample. That must
+    // preserve the profile; reaching the floor must update it even on abort.
+    expect(engine.profile.samples).toBe(result.work >= MIN_PROFILE_SAMPLE_WORK ? 1 : 0);
     expect(engine.profile.unitsPerMs).toBeGreaterThan(0);
   });
 

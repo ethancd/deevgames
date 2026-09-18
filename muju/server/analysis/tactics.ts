@@ -1,3 +1,4 @@
+import { movementActionCost } from '../../src/game/movement';
 import type { AIAction } from '../../src/ai/types';
 import { applyAction } from '../../src/ai/simulate';
 import { generateAllActions } from '../../src/ai/moves';
@@ -49,7 +50,7 @@ export function damageUpperBound(s: GameState, target: Unit, categories: Categor
     const variants = [u], next = getNextTierDefinition(u.definitionId);
     if (preparing && next && (categories.includes('promotion') || categories.includes('combined')) &&
       next.cost - getUnitDefinition(u.definitionId).cost <= cash) variants.push({ ...u, definitionId: next.id });
-    choices.push(variants.map(v => ({ cost: Math.ceil(Math.max(0, manhattanDistance(v.position, target.position) - 1) / getUnitDefinition(v.definitionId).speed) + 1,
+    choices.push(variants.map(v => ({ cost: movementActionCost(Math.max(0, manhattanDistance(v.position, target.position) - 1), getUnitDefinition(v.definitionId).speed) + 1,
       damage: calculateAttackPower(v, target) })));
   }
   if (preparing && (categories.includes('purchase') || categories.includes('combined'))) {

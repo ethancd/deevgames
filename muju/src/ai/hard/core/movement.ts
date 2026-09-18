@@ -100,7 +100,7 @@ export function bfsMulti(occ: BB, sources: BB, out: Int8Array): void {
  */
 export function moveCost(dist: Int8Array, to: Square, speed: number): number {
   const d = dist[to];
-  if (d <= 0) return -1;
+  if (d <= 0 || speed <= 0) return -1;
   return ((d + speed - 1) / speed) | 0;
 }
 

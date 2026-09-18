@@ -46,22 +46,22 @@ describe('audit fixtures: mixed-element combined attacks', () => {
     const defender = placed('water_2', 'black', 5, 5);
     // fire_1 Hi: ATK 2, fire attacks water at DISadvantage -> 2 - 1 = 1
     const fireAtk = placed('fire_1', 'white', 5, 4);
-    // metal_2 Mazaska: ATK 2, metal attacks water with ADvantage -> 2 + 1 = 3
+    // metal_2 Mazask: ATK 1, metal attacks water with ADvantage -> 1 + 1 = 2
     const metalAtk = placed('metal_2', 'white', 5, 6);
 
     const board = boardWith(defender, fireAtk, metalAtk);
 
     expect(calculateAttackPower(fireAtk, defender)).toBe(1);
-    expect(calculateAttackPower(metalAtk, defender)).toBe(3);
-    expect(calculateCombinedAttackPower([fireAtk, metalAtk], defender)).toBe(4);
+    expect(calculateAttackPower(metalAtk, defender)).toBe(2);
+    expect(calculateCombinedAttackPower([fireAtk, metalAtk], defender)).toBe(3);
 
     const { eliminated, totalAttack } = resolveCombinedCombat(
       board,
       [fireAtk.id, metalAtk.id],
       defender.position
     );
-    expect(totalAttack).toBe(4);
-    expect(eliminated).toBe(true); // 4 >= DEF 3
+    expect(totalAttack).toBe(3);
+    expect(eliminated).toBe(true); // 3 >= DEF 3
   });
 
   it('attack power floors at 0 under disadvantage (plant_1 ATK 0 cannot go negative)', () => {
@@ -92,12 +92,12 @@ describe('audit fixtures: mixed-element combined attacks', () => {
     expect(targets).toHaveLength(0); // same enemy not attackable again
   });
 
-  it('within-turn damage accumulates across different attackers (M1+M2 kill P1)', () => {
+  it('within-turn damage accumulates across different attackers (M1+M2 leave P1 alive)', () => {
     // v1.1 spec section 6.1 regression: metal_1 (ATK 1+1 adv vs plant... wait,
     // metal attacks plant: same pair (plant-metal) -> neutral. ATK 1.
-    // Use the spec's exact scenario: M1 then M2 vs plant_1 (DEF 3).
+    // v2.9: M1 and M2 now each deal one; the defender survives.
     const m1 = placed('metal_1', 'white', 4, 5); // ATK 1, neutral vs plant
-    const m2 = placed('metal_2', 'white', 6, 5); // ATK 2, neutral vs plant
+    const m2 = placed('metal_2', 'white', 6, 5); // ATK 1, neutral vs plant
     const p1 = placed('plant_1', 'black', 5, 5); // DEF 3
     let board = boardWith(m1, m2, p1);
 
@@ -107,7 +107,8 @@ describe('audit fixtures: mixed-element combined attacks', () => {
     expect(board.units.find((u) => u.id === p1.id)!.damageTaken).toBe(1);
 
     const second = resolveCombat(board, m2.id, p1.position);
-    expect(second.eliminated).toBe(true); // 2 >= effective DEF 2
+    expect(second.eliminated).toBe(false); // 1 < effective DEF 2
+    expect(second.board.units.find(u => u.id === p1.id)!.damageTaken).toBe(2);
   });
 });
 

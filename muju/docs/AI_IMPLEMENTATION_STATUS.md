@@ -1,5 +1,13 @@
 # Current branch status — v2.6, 2026-09-12
 
+Current Metal v2.9 verification (2026-09-18): Speed 0 is supported by canonical
+movement, JS/WASM tactics and the Hard AI packed engine, threat/approach tables,
+kill/home bounds and promotion missions. Yan can attack adjacent enemies and
+promote for movement. Frozen Hard AI evaluations and replay witnesses retain
+explicit historical-catalogue tests; current differential tests use v2.9.
+This release makes no new playing-strength claim.
+
+
 The combined simplification branch uses the **real public GameState** in MCTS
 and worker protocol **2**. Observation/event masking, belief particles, queue
 reconciliation and re-determinization have been deleted. Both banks are public.

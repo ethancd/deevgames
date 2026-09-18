@@ -299,3 +299,8 @@ Do not install a static power score in the playing AI or claim that a stat has o
 - **Compatibility:** existing boards and painter drafts retain their reserves; the current Plant catalogue applies when games resume. No save/room reset.
 - **Intent and limits:** encourage earlier expansion and meaningful economic promotions. These incentives are not a playtested claim about win rates or turtling. See `docs/EXPANSION_ECONOMY-2026-09-13.md`.
 - **Release authorization:** the designer reviewed the color mockup and instructed, “Pull the trigger on the map and plant changes!”
+
+
+## 2026-09-18 — Metal v2.9
+
+User-requested Metal ATK/DEF/SPD/MINE: 1/3/0/3, 1/4/1/4, 2/5/2/5; rename Inyan to Yan. Preserve stable IDs, costs, other elements and historical evidence. Speed 0 permits adjacent attacks, mining and promotion, but no movement. Existing saves/rooms adopt the current catalogue; replay snapshots and labels remain historical. See docs/changes/2026-09-18-metal-yan.md for verification and release scope.

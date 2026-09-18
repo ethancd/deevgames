@@ -1,5 +1,7 @@
 # Muju Hono Tanka — A Strategy Guide From One Hard Game
 
+> Historical analysis: predates v2.9 (2026-09-18). Metal is now Yan/Mazask/Tanka with ATK/DEF/SPD/MINE 1/3/0/3, 1/4/1/4, 2/5/2/5. Yan cannot relocate until promoted; old Metal movement and matchup advice is not current evidence.
+
 *Written by Claude (White) after a 17-turn win by resignation against Codex (Black), 2026-09-12. Four shared actions per turn.*
 
 This is not a solved-game guide. It is a set of principles that held up under pressure, plus the mistakes that nearly lost the game. Costs and stats refer to the live catalogue at the time of writing; check `muju_rules` before relying on a number.

@@ -1,3 +1,4 @@
+import { movementActionCost } from '../../game/movement';
 import { getActionsPerTurn } from '../../game/rules';
 import type { GameState, PlayerId } from '../../game/types';
 import type { TurnPlan } from './types';
@@ -24,7 +25,7 @@ export function strategicValue(state: GameState, player: PlayerId): number {
       const route = getMoveCost(u.position, target, d.speed, state.board);
       if (route !== null) closest = Math.min(closest, route);
       // A modest raiding prior breaks aimless wandering once local ore is dry.
-      if (d.attack > 0) score += sign * Math.max(0, actions + 1 - Math.ceil(distance / d.speed)) * 1.2;
+      if (d.attack > 0) score += sign * Math.max(0, actions + 1 - movementActionCost(distance, d.speed)) * 1.2;
     }
     if (state.victoryRule !== 'elimination' && closest <= actions) {
       const home = state.players[other].startCorner;

@@ -229,7 +229,6 @@ export function approachTable(
         if (cat.power[powerIndex(attacker, def, targetDef)] < effDef) continue;
         if (attacker === p.side && !attackerReady(p, a, def, cat)) continue;
         const speed = cat.spd[def];
-        if (speed < 1) continue;
         if (MANHATTAN[from * 100 + targetSq] > speed * maxMoves + 1) continue;
         if (dist === null) dist = t.dist.get(p, from);
         classifyFrom(p, t, dist, from, speed, v, def, sc, ply, cat, defenderUnits, res);
@@ -243,7 +242,6 @@ export function approachTable(
         if (cat.cost[def] > bank) continue;
         if (cat.power[powerIndex(attacker, def, targetDef)] < effDef) continue;
         const speed = cat.spd[def];
-        if (speed < 1) continue;
         classifyFrom(p, t, buyDist, -1, speed, v, def, sc, ply, cat, defenderUnits, res);
         considerCandidate(res, 1, i);
       }
@@ -317,7 +315,7 @@ function classifyFrom(
   out.buy = originSq >= 0 && p.pieceAt[originSq] !== NO_SLOT ? 0 : 1;
 
   const targetSq = p.sq[targetSlot];
-  if (targetSq === DEAD || speed < 1) return out;
+  if (targetSq === DEAD) return out;
   const defender = p.owner[targetSlot] as Side;
   const attacker = (1 - defender) as Side;
   const budget = attacker === p.side ? p.actions : ACTIONS_PER_TURN;
@@ -362,14 +360,14 @@ function classifyFrom(
 
   for (let q = bbNext(candidates, -1); q >= 0; q = bbNext(candidates, q)) {
     const d = dist[q];
-    if (d < 0) continue;
+    if (d < 0 || (speed === 0 && d > 0)) continue;
     const cost = d === 0 ? 0 : ((d + speed - 1) / speed) | 0;
     if (cost + 1 > budget) continue;
     const left = budget - cost - 1;
 
     let cls: Approach = Approach.STRAND;
     let retreats = 0;
-    if (!decisive && left >= 1) {
+    if (speed > 0 && !decisive && left >= 1) {
       const after = sc.bb(ply, SC_AFTER);
       bbCopy(after, p.occ);
       if (originSq >= 0) clearSquare(after, originSq);

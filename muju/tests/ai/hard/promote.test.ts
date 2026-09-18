@@ -254,3 +254,13 @@ describe('gen/promote.ts planPromotions (DESIGN §5.6)', () => {
     expect(promotionsOf(p, t)).toHaveLength(0);
   });
 });
+
+// Metal v2.9: Yan must be eligible for a movement upgrade even on an empty mine.
+it('REACH: stationary Yan can promote for movement alone', () => {
+  const {p, t} = prepare(buildState({current:'white', phase:'place', white:20, black:0,
+    reserves:new Array<number>(100).fill(0), units:[
+      {def:'metal_1',owner:'white',x:2,y:2},
+      {def:'plant_1',owner:'black',x:8,y:8},
+    ]}));
+  expect(promotionsOf(p,t).some(c=>c.mission===Mission.REACH)).toBe(true);
+});

@@ -1,3 +1,4 @@
+import { movementActionCost } from './movement';
 import type { GameState, PlayerId, Unit } from './types';
 import type { AIAction } from '../ai/types';
 import { getHomeOccupier, getOpponent } from './victory';
@@ -38,7 +39,7 @@ function enoughPossibleDamage(state: GameState, target: Unit, preparing: boolean
     const updated = power.map(row => [...row]);
     for (const attacker of choices) {
       const distance = Math.max(0, manhattanDistance(attacker.position, target.position) - 1);
-      const cost = Math.ceil(distance / getUnitDefinition(attacker.definitionId).speed) + 1;
+      const cost = movementActionCost(distance, getUnitDefinition(attacker.definitionId).speed) + 1;
       for (let hits = 1; hits <= 2; hits++) for (let used = cost; used <= actions; used++) {
         updated[hits][used] = Math.max(updated[hits][used], power[hits - 1][used - cost] + calculateAttackPower(attacker, target));
       }

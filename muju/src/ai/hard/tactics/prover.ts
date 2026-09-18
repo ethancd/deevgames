@@ -425,7 +425,7 @@ function damageBoundCore(dp: Int32Array, preparing: boolean): boolean {
       const raw = MANHATTAN[s * BOARD + occupierSq] - 1;
       const distance = raw > 0 ? raw : 0;
       const speed = cat.spd[attackerDef];
-      const cost = (((distance + speed - 1) / speed) | 0) + 1;
+      const cost = distance === 0 ? 1 : speed > 0 ? (((distance + speed - 1) / speed) | 0) + 1 : Infinity;
       const power = cat.power[powerIndex(defenderSide, attackerDef, victimDef)];
       for (let hits = 1; hits <= 2; hits++) {
         for (let used = cost; used <= actions; used++) {

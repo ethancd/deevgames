@@ -234,7 +234,7 @@ describe('home proof evidence and replay fixtures', () => {
     for (const action of proof.witness!) { const next = applyAction(reply, action); expect(next).not.toBe(reply); reply = next as typeof reply; }
     expect(reply.board.units.some(u => u.id === 'occupier')).toBe(false);
   });
-  it('replays all archived commands from the recorded root through the engine and replay module', () => {
+  it('replays archived commands with their historical Metal catalogue and preserves recorded snapshots', () => {
     const match = matchPositions();
     expect(match.recordingStart.complete).toBe(false);
     expect(match.final).toEqual(match.expectedFinal);

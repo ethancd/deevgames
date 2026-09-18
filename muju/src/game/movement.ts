@@ -14,7 +14,7 @@ import { canAttack } from './combat';
  * Units can move multiple times per turn if they have actions remaining.
  */
 export function canMove(unit: Unit): boolean {
-  return unit.canActThisTurn;
+  return unit.canActThisTurn && getUnitDefinition(unit.definitionId).speed > 0;
 }
 
 /**
@@ -213,6 +213,11 @@ export function getAttackFrontier(unit: Unit, board: BoardState, moveActions = 3
   ));
 }
 
+/** Open-path action cost, including stationary pieces and already-adjacent attacks. */
+export function movementActionCost(distance: number, speed: number): number {
+  return distance === 0 ? 0 : speed > 0 ? Math.ceil(distance / speed) : Infinity;
+}
+
 /**
  * Calculate the number of actions required to move from one position to another.
  * Returns null if the position is not reachable.
@@ -229,6 +234,7 @@ export function getMoveCost(
   speed: number,
   board: BoardState
 ): number | null {
+  if (speed <= 0) return null;
   const distance = distancesFrom(startPosition, board).distances[targetPosition.y * 10 + targetPosition.x];
   return distance > 0 ? Math.ceil(distance / speed) : null;
 }

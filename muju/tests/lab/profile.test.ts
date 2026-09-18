@@ -1,4 +1,5 @@
 // @vitest-environment node
+import "../fixtures/metal-v28-catalogue";
 import { describe, it, expect, vi } from 'vitest';
 
 // Corpus builders touch real replay files under `lab/results/` and one of

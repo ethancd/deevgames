@@ -72,7 +72,7 @@ function possible(actions: i32): bool {
     if (!alive(u) || !own(u) || !canAttack(u) || attacked(u, target)) continue;
     const steps = max(0, md(pos(u), pos(target)) - 1);
     const speed = catalogue[def(u) * 6 + 2];
-    if ((steps + speed - 1) / speed + 1 <= actions) { damage += power(u, target); attackers++; }
+    if ((steps == 0 ? 1 : speed > 0 ? (steps + speed - 1) / speed + 1 : 2147483647) <= actions) { damage += power(u, target); attackers++; }
   }
   return attackers > 0 && damage >= remainingDefense(target);
 }
@@ -108,6 +108,7 @@ function dfs(actions: i32, depth: i32): bool {
   for (let u = 0; u < count; u++) {
     if (!alive(u) || !own(u) || !(input[at(u) + 4] & 1)) continue;
     const start = pos(u), speed = catalogue[def(u) * 6 + 2], base = depth * 100;
+    if (speed <= 0) continue;
     for (let k = 0; k < 100; k++) distances[base + k] = -1;
     let head = 0, tail = 1;
     queues[base] = start; distances[base + start] = 0;

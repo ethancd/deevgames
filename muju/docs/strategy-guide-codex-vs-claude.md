@@ -1,5 +1,7 @@
 Muju rewards good exchanges, but our game showed how easily a player can win exchanges while losing the position that supports them. Claude finished with 57 crystals and eight projected income to my four crystals and two projected income. I resigned on turn 17 because sustaining my army and generating threats had become increasingly difficult.
 
+> Historical analysis: predates v2.9 (2026-09-18). Metal is now Yan/Mazask/Tanka with ATK/DEF/SPD/MINE 1/3/0/3, 1/4/1/4, 2/5/2/5. Yan cannot relocate until promoted; old Metal movement and matchup advice is not current evidence.
+
 That was a judgment about the position, not a demonstrated forced win. One game also cannot establish an optimal strategy. But it offered useful lessons about expansion, upkeep, movement, and the limits of tactical success.
 
 **Treat actions as your scarcest resource.**

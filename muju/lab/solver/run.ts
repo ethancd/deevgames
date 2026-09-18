@@ -55,7 +55,7 @@ lines.push('', '## Marginal stat values (one extra point, holding opponents fixe
   '|---|---:|---:|---:|---|---:|');
 for (const d of rows) {
   const c = d.value.changes, defense = c.defense.defenseKillCost[0];
-  lines.push(`| ${d.id} | ${c.attack.killCells}/${d.value.base.cells} | ${c.speed.killCells}/${d.value.base.cells} / ${c.speed.strikeActionsSaved.toFixed(2)} | ${c.mining.incomeAt6.ordinary} / ${c.mining.incomeAt6.shelf} / ${c.mining.incomeAt6.rich} | ${defense.before ?? 'unbreakable'} → ${defense.after ?? 'unbreakable'} | ${d.value.attackSpeedSynergy.extraKillCellsBeyondAdditive} |`);
+  lines.push(`| ${d.id} | ${c.attack.killCells}/${d.value.base.cells} | ${c.speed.killCells}/${d.value.base.cells} / ${(c.speed.strikeActionsSaved?.toFixed(2) ?? 'unreachable before')} | ${c.mining.incomeAt6.ordinary} / ${c.mining.incomeAt6.shelf} / ${c.mining.incomeAt6.rich} | ${defense.before ?? 'unbreakable'} → ${defense.after ?? 'unbreakable'} | ${d.value.attackSpeedSynergy.extraKillCellsBeyondAdditive} |`);
 }
 lines.push('', '## Earliest financed exemplar (own turns)', '',
   'Income is external crystals per turn, paid AFTER placement/promotion. Starting units are free. No enemy or travel; tier rent is modeled here. Promotion permits immediate action; freshly placed pieces cannot promote again that turn.', '',

@@ -421,3 +421,7 @@ Rooms close and archive after 24 hours without a successful game action (creatio
 starts the deadline). Joins, takeovers, reads, previews and staging edits do not
 reset it. Archived rooms are read-only; history and positions remain available
 for analysis. New commands return `ROOM_ARCHIVED`.
+
+## Metal catalogue (v2.9)
+
+Yan (`metal_1`): ATK/DEF/SPD/MINE 1/3/0/3; Mazask: 1/4/1/4; Tanka: 2/5/2/5. Costs remain 5/9/17. Yan cannot move until promoted, but can attack adjacent enemies, mine and anchor purchases.

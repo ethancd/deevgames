@@ -714,6 +714,7 @@ export class Replica {
         if (s === DEAD || p.owner[slot] !== side) continue;
         if ((p.uflags[slot] & F_CAN_ACT) === 0) continue;
         const speed = this.cat.spd[p.defId[slot]];
+        if (speed <= 0) continue;
         const dist = this.dist.get(p, s);
         for (let to = 0; to < BOARD; to++) {
           const d = dist[to];

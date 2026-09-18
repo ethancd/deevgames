@@ -19,7 +19,11 @@ document and the code disagree, that is a bug in one of them: see
 of known divergences. The stat tables in §7 are transcriptions of
 `src/game/units.ts`, which is the canonical stat source.
 
-**Spec version:** v2.8 (2026-09-13) — new games use 8-crystal home squares and
+**Spec version:** v2.9 (2026-09-18) — Metal is Yan → Mazask → Tanka, with
+ATK/DEF/SPD/MINE 1/3/0/3, 1/4/1/4, 2/5/2/5. Yan cannot move but may attack
+adjacent enemies, mine, anchor purchases and promote normally. Prices and IDs
+are unchanged. Existing saves and rooms use this catalogue; recorded historical
+boards and move labels are preserved. The v2.8 economy remains: new games use 8-crystal home squares and
 16-crystal expansions, with 504 crystals total. Plant Mining is 3/5/8. Saved and
 in-progress games retain their stored maps and use the updated unit catalogue.
 See `docs/EXPANSION_ECONOMY-2026-09-13.md`.
@@ -297,7 +301,7 @@ The catalogue has no build times. Tier-1 costs are 3/4/5 by pair, with
 universal 4/8 promotion steps; Muju has DEF 3 and Tanka DEF 5. Tier 3 is terminal.
 The historical tier-4 cut and its measured tradeoffs are recorded in
 `docs/TIER3_CAP-2026-09-08.md`; those well-economy measurements are not current
-balance evidence. Tanka has Speed 2, Mining 4 and DEF 5.
+balance evidence. Tanka has Speed 2, Mining 5 and DEF 5.
 
 ### Fire (Rush — ATK specialist) — Japanese
 | Tier | Name | ATK | DEF | SPD | MINE | Cost |
@@ -337,11 +341,11 @@ balance evidence. Tanka has Speed 2, Mining 4 and DEF 5.
 ### Metal (Expand — DEF specialist) — Lakota
 | Tier | Name | ATK | DEF | SPD | MINE | Cost |
 |---|---|---|---|---|---|---|
-| 1 | Inyan | 1 | 3 | 1 | 2 | 5 |
-| 2 | Mazask | 2 | 4 | 1 | 3 | 9 |
-| 3 | Tanka | 2 | 5 | 2 | 4 | 17 |
+| 1 | Yan | 1 | 3 | 0 | 3 | 5 |
+| 2 | Mazask | 1 | 4 | 1 | 4 | 9 |
+| 3 | Tanka | 2 | 5 | 2 | 5 | 17 |
 
-The Metal ladder is **Inyan → Mazask → Tanka**. The title names a tier-1, tier-2,
+The Metal ladder is **Yan → Mazask → Tanka**. The title names a tier-1, tier-2,
 and tier-3 unit: Muju / Hono / Tanka.
 
 Starting units for both players: `fire_1`, `water_1`, `plant_1`.

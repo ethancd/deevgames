@@ -1,7 +1,7 @@
 import type { UnitDefinition, Element } from './types';
 
-// All 18 unit definitions — v2.8: Plant Mining 3/5/8.
-// See docs/EXPANSION_ECONOMY-2026-09-13.md; prices and combat stats are unchanged.
+// All 18 unit definitions — v2.9: Yan and Metal stats revised.
+// Stable IDs and prices are unchanged; see SPEC.md and docs/changes/2026-09-18-metal-yan.md.
 export const UNIT_DEFINITIONS: UnitDefinition[] = [
   // Fire (Rush) - Japanese
   {
@@ -196,14 +196,14 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
   // Metal (Expand) - Lakota
   {
     id: 'metal_1',
-    name: 'Inyan',
+    name: 'Yan',
     element: 'metal',
     tier: 1,
     archetype: 'expand',
     attack: 1,
     defense: 3,
-    speed: 1,
-    mining: 2,
+    speed: 0,
+    mining: 3,
     cost: 5,
   },
   {
@@ -212,10 +212,10 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     element: 'metal',
     tier: 2,
     archetype: 'expand',
-    attack: 2,
+    attack: 1,
     defense: 4,
     speed: 1,
-    mining: 3,
+    mining: 4,
     cost: 9,
   },
   {
@@ -227,7 +227,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     attack: 2,
     defense: 5,
     speed: 2,
-    mining: 4,
+    mining: 5,
     cost: 17,
   },
 ];

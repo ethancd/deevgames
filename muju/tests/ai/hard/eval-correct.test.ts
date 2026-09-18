@@ -1,4 +1,5 @@
 // @vitest-environment node
+import "../../fixtures/metal-v28-catalogue";
 /**
  * The E3.2 correctness flags, `HardConfig.evalFix` B1–B5
  * (`docs/hard-ai/e3/E3.1-SYNTHESIS.md` §5, `docs/hard-ai/e3/E3.2-CORRECTNESS-ARM.md`).

@@ -1,3 +1,4 @@
+import "../fixtures/metal-v28-catalogue";
 /**
  * `lab/hard-ai/suites/run.ts`'s engine, and nothing else.
  *

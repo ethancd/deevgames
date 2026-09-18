@@ -250,7 +250,7 @@ function canAttack(p: PackedState, cat: Catalog, slot: Slot): boolean {
 /** `ceil(distance / speed) + 1` — the approach plus the hit; 0 steps still
  * costs the single attack action (DESIGN §5.7 "0 → 1 when adjacent"). */
 function actionCost(distance: number, speed: number): number {
-  return (((distance + speed - 1) / speed) | 0) + 1;
+  return distance === 0 ? 1 : speed > 0 ? (((distance + speed - 1) / speed) | 0) + 1 : Infinity;
 }
 
 function pushCandidate(
@@ -696,7 +696,7 @@ export function cleavePlan(
     if (q !== origin) {
       const d = dist[q];
       if (d <= 0 || d > reach) continue;
-      approach = ((d + speed - 1) / speed) | 0;
+      approach = speed > 0 ? ((d + speed - 1) / speed) | 0 : Infinity;
     }
     const left = ACTIONS_PER_TURN - approach;
     if (left <= 0) continue;

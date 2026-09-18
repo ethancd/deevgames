@@ -1,4 +1,5 @@
 // @vitest-environment node
+import "../fixtures/metal-v28-catalogue";
 /**
  * `lab/hard-ai/exam/**` — the Muju examination set (EPIC-PLAN §4 E1.2).
  *

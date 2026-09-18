@@ -221,6 +221,11 @@ describe('MCP and HTTP interoperability', () => {
     const rules=await call(client,'muju_rules');expect(rules.actionsPerTurn.options).toEqual([4]);
     expect(rules.resourceMap).toMatchObject({total:504,maximumReserve:16,startingReserves:[0,4,8,16]});
     expect(rules.catalogue.filter((unit: {element:string})=>unit.element==='plant').map((unit: {mining:number})=>unit.mining)).toEqual([3,5,8]);
+    expect(rules.catalogue.filter((u: {element:string})=>u.element==='metal')).toMatchObject([
+      {id:'metal_1',name:'Yan',attack:1,defense:3,speed:0,mining:3,cost:5},
+      {id:'metal_2',name:'Mazask',attack:1,defense:4,speed:1,mining:4,cost:9},
+      {id:'metal_3',name:'Tanka',attack:2,defense:5,speed:2,mining:5,cost:17},
+    ]);
   });
   it.each([false, true])('returns tiny idle results without repeated snapshot downloads (stdio=%s)', async stdio => {
     const { store, url, requests } = await setup();

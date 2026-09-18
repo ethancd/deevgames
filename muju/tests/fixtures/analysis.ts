@@ -1,3 +1,4 @@
+import { getUnitDefinition } from '../../src/game/units';
 import match from './codex-claude-2026-09-12.json';
 import { createInitialGameState } from '../../src/game/board';
 import { createUnitFromDefinition } from '../../src/game/building';
@@ -21,7 +22,18 @@ export function snapshot(state: GameState, revision = 1): RoomSnapshot {
   return { id: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', revision, ready: true, state, seats: { white: 'White', black: 'Black' },
     history: [], updatedAt: '2026-09-12T00:00:00.000Z' };
 }
+/** Historical command playback must use its recorded Metal catalogue, not v2.9.
+ * Synchronous fixture only: restore shared definitions even on failure. */
 export function matchPositions() {
+  const definitions = [1, 2, 3].map(tier => getUnitDefinition(`metal_${tier}`));
+  const saved = definitions.map(def => ({ ...def }));
+  Object.assign(definitions[0], { name: 'Inyan', speed: 1, mining: 2 });
+  Object.assign(definitions[1], { attack: 2, mining: 3 });
+  Object.assign(definitions[2], { mining: 4 });
+  try { return historicalMatchPositions(); }
+  finally { definitions.forEach((def, index) => Object.assign(def, saved[index])); }
+}
+function historicalMatchPositions() {
   let state = structuredClone(match.initialState) as GameState, recording = emptyRecording();
   const positions = new Map<number, RoomSnapshot>([[match.recordingStart.revision, { ...snapshot(state, match.recordingStart.revision), id: match.roomId }]]);
   for (const command of match.commands.filter(c => c.revision > match.recordingStart.revision)) {

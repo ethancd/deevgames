@@ -49,12 +49,12 @@ describe('core/income.ts', () => {
     expect([...GAMMA_Q16]).toEqual([65536, 58982, 53084, 47776, 42998, 38698, 34829, 31346, 28211, 25390, 22851, 20566, 18509]);
   });
 
-  it('PST_MINE reproduces the JF §2.1 check values', () => {
+  it('PST_MINE reproduces current mining values (Metal v2.9)', () => {
     const row = (id: string, reserve: number): number => pstMine(defId(id), reserve);
     expect([row('fire_1', 16), row('water_1', 16), row('plant_1', 16), row('plant_2', 16), row('plant_3', 16), row('metal_3', 16)])
-      .toEqual([646, 1025, 1159, 1285, 1368, 1238]);
+      .toEqual([646, 1025, 1159, 1285, 1368, 1285]);
     expect([row('fire_1', 8), row('water_1', 8), row('plant_1', 8), row('plant_2', 8), row('plant_3', 8), row('metal_3', 8)])
-      .toEqual([513, 619, 659, 693, 720, 684]);
+      .toEqual([513, 619, 659, 693, 720, 693]);
     expect([row('fire_1', 4), row('water_1', 4), row('plant_1', 4), row('plant_2', 4), row('plant_3', 4), row('metal_3', 4)])
       .toEqual([310, 342, 351, 360, 360, 360]);
     for (let r = 0; r <= 16; r++) {
@@ -82,8 +82,8 @@ describe('core/income.ts', () => {
       for (let r = 1; r < RESERVE_VALUES; r++) expect(pstMine(def, r)).toBeGreaterThanOrEqual(pstMine(def, r - 1));
     }
     // metal_3 (tier 3, rent 2) still scores strictly positively at reserve 16:
-    // a rent-bearing PST would have subtracted 2 * RENT_PV = 844 from 1238.
-    expect(pstMine(defId('metal_3'), 16)).toBe(1238);
+    // a rent-bearing PST would have subtracted 2 * RENT_PV = 844 from 1285.
+    expect(pstMine(defId('metal_3'), 16)).toBe(1285);
     expect(RENT_PV).toBe(422);
   });
 

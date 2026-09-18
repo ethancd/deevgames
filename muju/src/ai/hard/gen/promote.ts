@@ -228,9 +228,9 @@ function bestMission(
     }
   }
 
-  // REACH — the two promotions that buy speed (`lightning_2→3`, `metal_2→3`).
+  // REACH — speed upgrades, including stationary Yan becoming mobile.
   const speedGain = cat.spd[next] - cat.spd[def];
-  if (speedGain > 0 && cat.tier[def] === 2) {
+  if (speedGain > 0) {
     outBenefit[0] = speedGain * ACTION_VALUE_CC;
     return Mission.REACH;
   }

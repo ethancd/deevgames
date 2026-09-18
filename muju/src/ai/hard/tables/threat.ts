@@ -12,8 +12,8 @@
  * BFS from a set returns `min` over the sources of the single-source distance
  * over the same `~occ` graph, and every source is seeded at 0 whether or not
  * its own square is occupied — so the multi-source ball is the union of the
- * per-unit balls, square for square. Three speeds exist (Sjor/Muju/Inyan 1,
- * Hi/Göl 2, Radi 3), so a side costs at most three BFS.
+ * per-unit balls, square for square. Four speeds exist (Yan 0, Sjor/Muju 1,
+ * Hi/Göl 2, Radi 3), so a side costs at most four BFS.
  *
  * `strikeIfBought` is the same construction with the side's legal spawn mask
  * as the source set and `3 · speed` as the radius, one BFS shared by every
@@ -161,11 +161,10 @@ export function nearestOwner(
     const from = p.sq[slot];
     if (from === DEAD || p.owner[slot] !== side) continue;
     const speed = cat.spd[p.defId[slot]];
-    if (speed <= 0) continue;
     const dist = t.dist.get(p, from);
     for (let q = 0; q < BOARD; q++) {
       const d = dist[q];
-      if (d < 0) continue;
+      if (d < 0 || (speed === 0 && d > 0)) continue;
       const cost = d === 0 ? 0 : ((d + speed - 1) / speed) | 0;
       if (cost < outCost[q]) {
         outCost[q] = cost;

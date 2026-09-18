@@ -300,9 +300,9 @@ describe('eval/invariants.ts — invariant 3 under EvalFix.inv3RetreatConjunct (
   /** Three white bodies that put every escape square of the attacker inside
    * White's own strike, so `t.retreats === 0`. */
   const WALL: UnitSpec[] = [
-    { def: 'metal_1', owner: 'white', x: 6, y: 2 },
-    { def: 'metal_1', owner: 'white', x: 6, y: 6 },
-    { def: 'metal_1', owner: 'white', x: 8, y: 4 },
+    { def: 'plant_1', owner: 'white', x: 6, y: 2 },
+    { def: 'plant_1', owner: 'white', x: 6, y: 6 },
+    { def: 'plant_1', owner: 'white', x: 8, y: 4 },
   ];
 
   function bitsWithFix(units: UnitSpec[], on: boolean): number {

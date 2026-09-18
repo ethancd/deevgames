@@ -103,7 +103,7 @@ describe('the turn boundary is the only sign flip', () => {
       units: [
         { def: 'fire_1', owner: 'white', x: 4, y: 4 },
         { def: 'plant_1', owner: 'black', x: 4, y: 5 },
-        { def: 'metal_1', owner: 'black', x: 9, y: 9 },
+        { def: 'plant_1', owner: 'black', x: 9, y: 9 },
       ],
     });
     const prepared = prepare(state, 800_000);
