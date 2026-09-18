@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { MAX_BLACK_CRYSTAL_HANDICAP } from '../src/game/rules';
 import { TIME_CONTROL_PRESETS } from '../src/online/timeControl';
 import type { RoomSnapshot } from '../src/online/types';
+import { invitePattern, shortInvitePattern } from '../src/online/invitations';
 
 export const roomIdSchema = z.string().regex(/^[a-f0-9]{32}$/);
 export const tokenSchema = z.string().min(32).max(128);
@@ -54,7 +55,8 @@ export const createSchema = z.object({ name: nameSchema, side: z.enum(['white', 
     }).strict(),
   ]).nullable().optional().describe('Creation only. Omit/null for untimed, select blitz (10s/2min), rapid (30s/10min), classical (60s/30min), or supply custom delaySeconds/bankSeconds. Starts on join; running out loses.'),
 }).strict();
-export const joinSchema = z.object({ name: nameSchema, inviteCode: tokenSchema }).strict();
+export const shortInviteSchema = z.string().regex(shortInvitePattern);
+export const joinSchema = z.object({ name: nameSchema, inviteCode: z.string().regex(invitePattern) }).strict();
 export const historyQuerySchema = z.object({
   before: z.coerce.number().int().positive().optional(),
   after: z.coerce.number().int().nonnegative().optional(),

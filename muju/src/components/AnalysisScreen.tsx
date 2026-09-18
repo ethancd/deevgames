@@ -8,7 +8,7 @@ import { analysisFrames, localFrame, turnKey, type AnalysisFrame as LocalFrame }
 import { loadGameHistory } from '../utils/persistence';
 import type { AIAction } from '../ai/types';
 import type { GameConfig, GameState, PlayerId, Position } from '../game/types';
-import { parseObserverConnection, roomRequest } from '../online/client';
+import { resolveObserverConnection, roomRequest } from '../online/client';
 import './AnalysisScreen.css';
 
 interface Frame { sequence: number; step: number; label: string; turn: string }
@@ -152,9 +152,9 @@ export function AnalysisScreen() {
     </div>
     {error && <p role="alert">{error} <button onClick={() => local ? window.location.reload() : setRefresh(value => value + 1)}>Reload score</button></p>}
     {!hasScore && <a href={`/muju/analysis?ruleset=${state.ruleset === 'phasing' ? 'standard' : 'phasing'}`}>New {state.ruleset === 'phasing' ? 'Standard' : 'Phasing'} analysis board</a>}
-    {!hasScore && <details><summary>Analyze an online room</summary><form onSubmit={event => {
+    {!hasScore && <details><summary>Analyze an online room</summary><form onSubmit={async event => {
       event.preventDefault();
-      try { const connection = parseObserverConnection(roomInput, window.location.origin);
+      try { const connection = await resolveObserverConnection(roomInput, window.location.origin);
         window.location.href = `/muju/analysis?room=${connection.roomId}&server=${encodeURIComponent(connection.serverUrl)}&watch=1`;
       } catch (error) { setError(error instanceof Error ? error.message : 'Invalid room link.'); }
     }}><input aria-label="Room link or ID" value={roomInput} onChange={event => setRoomInput(event.target.value)} placeholder="Room link or ID" /><button>Open</button></form></details>}

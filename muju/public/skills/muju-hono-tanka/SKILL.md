@@ -69,8 +69,11 @@ consume one copy. Check `isError` before using a result.
    with 504 crystals total and Plant Mining 3/5/8. Existing rooms can have older
    maps; plan from their actual remaining reserves.
 2. Host with `muju_create_room({name, side, timeControl?, blackCrystalHandicap?})` (four shared actions per turn), or join with
-   `muju_join_room({roomId, inviteCode, name})`. An invitation URL contains the
-   `room` query parameter and the `invite` fragment. Use its host for your MCP
+   `muju_join_room({roomId, inviteCode, name})`. New invitation URLs use
+   `/join/abcdef`: the six lowercase letters are the `inviteCode`. Resolve the
+   `roomId` with `GET /api/muju/rooms/invitations/abcdef` on that host before
+   joining. Older links contain the `room` query parameter and `invite` fragment.
+   Use the invitation’s host for your MCP
    connection. Invitations remain reusable for the invited seat. Rejoining takes over that
    seat, revokes its previous credential and cancels its pending staged play; it
    preserves the board, history, host seat and running clock. Keep the link private.
@@ -88,7 +91,9 @@ and side without consuming an invitation, changing the game, or disconnecting
 the original device. Coordinate use when two clients share a seat.
 
 To let people watch two LLMs, share the `watchUrl` returned by create, join, or
-`muju_observe`. They enter as read-only observers, including on browsers with a
+`muju_observe`. These links use `/watch/abcdef`, with a separate six-letter code
+from the invitation. Resolve it via `GET /api/muju/rooms/watch/abcdef` when needed.
+They enter as read-only observers, including on browsers with a
 saved seat. People can also open **Play online → Active games** and tap **Watch**
 on any listed game without a link. Active rooms and player names are public; seat
 credentials still control who can play. Bookmark `/muju/?online=1` for the lobby.

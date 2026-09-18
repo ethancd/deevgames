@@ -4,7 +4,7 @@ import type { ErrorRequestHandler } from 'express';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { z, ZodError } from 'zod';
 import { RoomStore } from './rooms';
-import { RoomError, stageIdSchema } from './schema';
+import { RoomError, stageIdSchema, shortInviteSchema, joinSchema } from './schema';
 import { createMcpServer } from './mcp';
 import { historyQuerySchema } from './schema';
 
@@ -39,6 +39,9 @@ export function createApp(store: RoomStore, options: { publicUrl: string; distPa
   app.get('/api/muju/health', (_req, res) => res.json({ ok: true, game: 'Muju Hono Tanka', protocol: 1 }));
   app.post('/api/muju/rooms', (req, res) => res.status(201).json(store.create(req.body)));
   app.get('/api/muju/rooms', (_req, res) => res.json({ rooms: store.listActive() }));
+  app.get('/api/muju/rooms/invitations/:code', (req, res) => res.json(store.resolveInvitation(req.params.code)));
+  app.get('/api/muju/rooms/watch/:code', (req, res) => res.json(store.resolveWatch(req.params.code)));
+
   app.get('/api/muju/rooms/archived', (req, res) => {
     const { before, limit } = z.object({ before: z.string().regex(/^[a-f0-9]{32}$/).optional(), limit: z.coerce.number().int().min(1).max(100).default(20) }).strict().parse(req.query);
     res.json(store.listArchived(before, limit));
@@ -67,7 +70,7 @@ export function createApp(store: RoomStore, options: { publicUrl: string; distPa
   app.post('/api/muju/rooms/:id/restore', (req, res) => {
     const auth = req.headers.authorization;
     if (!auth?.startsWith('Bearer ')) throw new RoomError(401, 'SEAT_REQUIRED', 'Paste your private seat credentials to restore this seat.');
-    const { player, inviteCode } = z.object({ player: z.enum(['white', 'black']), inviteCode: z.string().regex(/^[a-f0-9]{64}$/).optional() }).strict().parse(req.body);
+    const { player, inviteCode } = z.object({ player: z.enum(['white', 'black']), inviteCode: joinSchema.shape.inviteCode.optional() }).strict().parse(req.body);
     res.json(store.restore(req.params.id, auth.slice(7), player, inviteCode));
   });
   app.get('/api/muju/rooms/:id/stage', (req, res) => {
@@ -100,6 +103,10 @@ export function createApp(store: RoomStore, options: { publicUrl: string; distPa
   });
   app.all('/mcp', (_req, res) => res.status(405).json({ error: 'This stateless MCP endpoint accepts POST requests.' }));
   if (options.distPath) {
+    app.get(['/join/:code', '/watch/:code'], (req, res) => {
+      shortInviteSchema.parse(req.params.code);
+      res.set('Cache-Control', 'no-store').set('X-Robots-Tag', 'noindex, nofollow').sendFile(resolve(options.distPath!, 'index.html'));
+    });
     app.get('/', (_req, res) => res.redirect('/muju/'));
     app.get('/SKILL.md', (_req, res) => res.type('text/markdown').sendFile(resolve(options.distPath!, 'skills/muju-hono-tanka/SKILL.md')));
     app.get('/muju/painter', (_req, res) => res.set('X-Robots-Tag', 'noindex, nofollow').sendFile(resolve(options.distPath!, 'index.html')));

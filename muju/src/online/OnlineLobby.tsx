@@ -2,8 +2,9 @@ import { useEffect, useMemo, useState } from 'react';
 import { MusicButton } from '../music/MusicPlayer';
 import type { GameConfig, PlayerId } from '../game/types';
 import { GameView } from '../components/GameScreen';
-import { OnlineError, analysisUrl, createRoom, invitationUrl, joinRoom, loadConnection, normalizeServer, observerUrl, parseObserverConnection, parseSeatCredentials, readRoom, restoreSeat, saveConnection } from './client';
+import { OnlineError, analysisUrl, createRoom, invitationUrl, joinRoom, loadConnection, normalizeServer, observerUrl, parseSeatCredentials, readRoom, resolveInvitationLink, resolveObserverConnection, restoreSeat, saveConnection } from './client';
 import type { OnlineConnection, RoomAdmission, RoomSnapshot } from './types';
+import { invitationCodeFromPath, watchCodeFromPath } from './invitations';
 import { useOnlineGame } from './useOnlineGame';
 import { RoomHistory } from './RoomHistory';
 import { RoomClocks } from './RoomClocks';
@@ -16,7 +17,8 @@ import type { Ruleset } from '../game/types';
 import { rulesetLabel } from '../game/rules';
 import { BlackCrystalHandicap } from '../components/BlackCrystalHandicap';
 
-const defaultServer = () => new URLSearchParams(window.location.search).get('server') || import.meta.env.VITE_MUJU_SERVER_URL || window.location.origin;
+const defaultServer = () => invitationCodeFromPath(window.location.pathname) || watchCodeFromPath(window.location.pathname) ? window.location.origin
+  : new URLSearchParams(window.location.search).get('server') || import.meta.env.VITE_MUJU_SERVER_URL || window.location.origin;
 interface Session { connection: OnlineConnection; room: RoomSnapshot; inviteCode?: string }
 
 export function OnlineLobby({ onBack }: { onBack: () => void }) {
@@ -28,9 +30,9 @@ export function OnlineLobby({ onBack }: { onBack: () => void }) {
   const [timeChoice, setTimeChoice] = useState<TimeControlPreset | 'untimed' | 'custom'>('untimed');
   const [delaySeconds, setDelaySeconds] = useState('30');
   const [bankMinutes, setBankMinutes] = useState('10');
-  const [invitation, setInvitation] = useState(() => new URLSearchParams(window.location.search).has('room') ? window.location.href : '');
+  const [invitation, setInvitation] = useState(() => invitationCodeFromPath(window.location.pathname) || new URLSearchParams(window.location.search).has('room') ? window.location.href : '');
   const [credentials, setCredentials] = useState('');
-  const [watchLink, setWatchLink] = useState(() => new URLSearchParams(window.location.search).has('room') ? window.location.href : '');
+  const [watchLink, setWatchLink] = useState(() => watchCodeFromPath(window.location.pathname) || new URLSearchParams(window.location.search).has('room') ? window.location.href : '');
   const [flow, setFlow] = useState('');
   const [session, setSession] = useState<Session | null>(null);
   const [busy, setBusy] = useState(false);
@@ -39,7 +41,7 @@ export function OnlineLobby({ onBack }: { onBack: () => void }) {
   function enter(connection: OnlineConnection, room: RoomSnapshot, inviteCode?: string) {
     try { if (connection.player) saveConnection(connection, inviteCode); }
     catch { setNotice('This browser could not save your seat. Copy the private reconnect details before leaving.'); }
-    window.history.replaceState(null, '', `${window.location.pathname}?room=${room.id}&server=${encodeURIComponent(connection.serverUrl)}${connection.player ? '' : '&watch=1'}`);
+    window.history.replaceState(null, '', `/muju/?room=${room.id}&server=${encodeURIComponent(connection.serverUrl)}${connection.player ? '' : '&watch=1'}`);
     setCredentials('');
     setServer(connection.serverUrl);
     setSession({ connection, room, inviteCode });
@@ -47,17 +49,21 @@ export function OnlineLobby({ onBack }: { onBack: () => void }) {
   useEffect(() => {
     const query = new URLSearchParams(window.location.search);
     const id = query.get('room');
-    if (!id) return;
-    const watching = query.get('watch') === '1';
-    const stored: (OnlineConnection & { inviteCode?: string }) | null = watching ? { roomId: id, serverUrl: defaultServer() } : loadConnection(defaultServer(), id);
-    if (!stored) return;
+    const watching = !!watchCodeFromPath(window.location.pathname) || query.get('watch') === '1';
+    if (!id && !watching) return;
+    const stored = !watching && id ? loadConnection(defaultServer(), id) : null;
+    if (!watching && !stored) return;
     let cancelled = false;
     setBusy(true); setFlow(watching ? 'watch' : 'join');
-    const request = Promise.resolve().then(() => stored.player ? restoreSeat(stored) : readRoom(parseObserverConnection(window.location.href, defaultServer())));
-    request.then(room => { if (!cancelled) enter({ ...stored, serverUrl: normalizeServer(stored.serverUrl) }, room, stored.inviteCode); })
+    const request = async () => {
+      const connection = stored ?? await resolveObserverConnection(window.location.href, defaultServer());
+      const room = connection.player ? await restoreSeat(connection) : await readRoom(connection);
+      if (!cancelled) enter(connection, room, stored?.inviteCode);
+    };
+    request()
       .catch(async error => {
         if (cancelled) return;
-        if (error instanceof OnlineError && error.code === 'INVALID_SEAT' && !new URLSearchParams(window.location.hash.slice(1)).has('invite')) {
+        if (stored && id && error instanceof OnlineError && error.code === 'INVALID_SEAT' && !new URLSearchParams(window.location.hash.slice(1)).has('invite')) {
           const observer = { roomId: id, serverUrl: stored.serverUrl };
           try {
             const room = await readRoom(observer);
@@ -77,7 +83,7 @@ export function OnlineLobby({ onBack }: { onBack: () => void }) {
         return;
       }
       if (kind === 'watch' || kind === 'browse') {
-        const connection = parseObserverConnection(roomId ?? watchLink, server);
+        const connection = await resolveObserverConnection(roomId ?? watchLink, server);
         enter(connection, await readRoom(connection));
         return;
       }
@@ -91,11 +97,8 @@ export function OnlineLobby({ onBack }: { onBack: () => void }) {
         result = await createRoom(url, name, side, 4, timeChoice === 'untimed' ? null : timeChoice === 'custom' ? custom : timeChoice, blackCrystalHandicap, ruleset);
       }
       else {
-        const invite = new URL(invitation.trim());
-        url = normalizeServer(invite.origin);
-        const roomId = new URLSearchParams(invite.search).get('room');
-        const inviteCode = new URLSearchParams(invite.hash.slice(1)).get('invite');
-        if (!roomId || !/^[a-f0-9]{32}$/.test(roomId)) throw new Error('Paste the complete invitation link.');
+        const { serverUrl, roomId, inviteCode } = await resolveInvitationLink(invitation);
+        url = serverUrl;
         const stored = loadConnection(url, roomId);
         if (stored) {
           try { enter(stored, await restoreSeat(stored), stored.inviteCode); return; }
@@ -119,7 +122,7 @@ export function OnlineLobby({ onBack }: { onBack: () => void }) {
   }} />;
   const feedback = (kind: string) => flow === kind && <>{busy && <p role="status">Connecting…</p>}{error && <p role="alert">{error}</p>}</>;
   const query = new URLSearchParams(window.location.search);
-  const showJoinFirst = !!query.get('room') && query.get('watch') !== '1' && !!new URLSearchParams(window.location.hash.slice(1)).get('invite');
+  const showJoinFirst = !!invitationCodeFromPath(window.location.pathname) || !!query.get('room') && query.get('watch') !== '1' && !!new URLSearchParams(window.location.hash.slice(1)).get('invite');
   const nameField = <label>Your name<input value={name} maxLength={40} onChange={e => setName(e.target.value)} /></label>;
   const joinSection = <section aria-label="Join a game"><h3>Join a game</h3>
     {showJoinFirst && nameField}
@@ -189,7 +192,7 @@ function OnlineMatch({ session, notice, onLeave }: { session: Session; notice: s
     white: connection.player === 'white' ? 'human' : 'remote', black: connection.player === 'black' ? 'human' : 'remote',
   }, aiDifficulty: { white: 'medium', black: 'medium' } }), [connection.player]);
   const link = inviteCode ? invitationUrl(connection.serverUrl, room.id, inviteCode) : '';
-  const watchUrl = observerUrl(connection.serverUrl, room.id);
+  const watchUrl = observerUrl(connection.serverUrl, room.id, room.watchCode);
   const [copyStatus, setCopyStatus] = useState('');
   async function copy(value: string, label: string) {
     try { await navigator.clipboard.writeText(value); setCopyStatus(`${label} copied`); }

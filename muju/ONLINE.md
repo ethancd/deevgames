@@ -72,7 +72,9 @@ npm run serve
 ```
 
 Open <http://localhost:3003/muju/> and choose **Play online → Create room**. Copy
-the invitation to your opponent. The game starts when they claim the other seat.
+the invitation to your opponent. New links use `<host>/join/abcdef`, with six
+random lowercase letters. Codes survive restarts; older invitation links still
+work. The game starts when they claim the other seat.
 Choose Black when you want the invited player to move first. Both players use the
 existing board, previews, shop and upkeep controls. Undo is available within your turn.
 
@@ -90,7 +92,7 @@ are needed for gameplay on a plain HTTP LAN.
 
 For internet play, run the same service on a Node/Docker host with a persistent
 disk and an HTTPS reverse proxy. Set `PUBLIC_URL` to its externally reachable
-origin, for example `https://muju.example.com`. Forward `/muju/`, `/api/muju/`,
+origin, for example `https://muju.example.com`. Forward `/join/`, `/watch/`, `/muju/`, `/api/muju/`,
 and `/mcp` to this service, with a proxy timeout above 30 seconds. Use HTTPS for
 internet play because seat credentials authorize moves. You can also expose a
 local host through your own HTTPS tunnel; set `PUBLIC_URL` to the tunnel origin.
@@ -416,7 +418,9 @@ Bookmark `/muju/?online=1` to open the lobby directly; add `&server=HOST_URL` wh
 using a separate frontend. Watching and then leaving returns to the same server's
 lobby. No invitation, login, or seat credentials are needed to watch.
 
-**Share watch link** in any online room provides a URL ending in `&watch=1`.
+**Share watch link** provides `<host>/watch/abcdef`, with six lowercase letters.
+Watch codes are persistent and separate from invitation codes; existing rooms
+receive a watch code when opened. Older `&watch=1` links still work.
 Create/join and `muju_observe` also return `watchUrl`. Any number of observers
 can watch both seats live, inspect units, and replay the last completed turn.
 The lobby's **Watch a game** accepts a room link or room ID. An explicit watch
@@ -520,6 +524,8 @@ and clears old undo/replay history. Reconnects receive an updated revision.
 | `GET /api/muju/rooms/archived` | Public archived summaries; `limit` 1–100 (default 20), optional `before` room-ID cursor; returns `{rooms, nextCursor}` |
 | `POST /api/muju/rooms` | `{name, side, actionsPerTurn?: 4, timeControl?}` → admission (only 4 actions supported) |
 | `POST /api/muju/rooms/:id/join` | `{name, inviteCode}` → fresh invited-seat admission; revokes its previous token |
+| `GET /api/muju/rooms/invitations/:code` | Resolve a six-letter invitation to `{roomId}` without claiming a seat |
+| `GET /api/muju/rooms/watch/:code` | Resolve a six-letter watch code to `{roomId}`; no invitation or seat credentials |
 | `POST /api/muju/rooms/:id/restore` | `{player, inviteCode?}` plus Bearer token; authenticated original hosts can restore a legacy consumed invitation hash |
 | `GET /api/muju/rooms/:id` | Public snapshot; optional Bearer token validates a saved seat and adds only that seat's private staging status in timed rooms |
 | `GET /api/muju/rooms/:id/history` | Public score; `limit` (1–200, default 50), `before` or `after` sequence cursor, optional `includeUndone=true` |

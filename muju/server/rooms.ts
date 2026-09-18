@@ -1,7 +1,7 @@
 import { emptyRecording, recordAction, rewindRecording, type ReplayRecording } from '../src/game/replay';
 import { describeTransition, movementStep, type HistoryQuery, type HistoryStart, type MoveEvent, type MoveHistoryEntry, type RoomMoveHistory } from '../src/game/moveHistory';
 import { deflateSync, inflateSync } from 'node:zlib';
-import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
+import { createHash, randomBytes, randomInt, timingSafeEqual } from 'node:crypto';
 import { DatabaseSync } from 'node:sqlite';
 import { ZodError } from 'zod';
 import { setTimeout as delay } from 'node:timers/promises';
@@ -15,7 +15,7 @@ import type { GameState, PlayerId } from '../src/game/types';
 import type { ActionRequest, ActiveRoom, RoomArchive, RoomAction, RoomAdmission, RoomChange, RoomSnapshot } from '../src/online/types';
 import { projectClock, type ClockSnapshot } from '../src/online/timeControl';
 import { RoomError, actionRequestSchema, createSchema, joinSchema, roomIdSchema, historyQuerySchema,
-  stageRequestSchema, cancelStageSchema, stageIdSchema } from './schema';
+  stageRequestSchema, cancelStageSchema, stageIdSchema, shortInviteSchema } from './schema';
 import type { PendingStage, SeatStaging, StageAcknowledgement, StageReceipt, StagingResult, StagingStatus } from '../src/online/staging';
 import { completeClockTurn, newClockHistory, projectClockPressure, type ClockHistory } from './clockPressure';
 
@@ -23,6 +23,7 @@ const RULES_VERSION = 'muju-online-4';
 export const ROOM_IDLE_MS = 24 * 60 * 60 * 1000;
 const digest = (value: string) => createHash('sha256').update(value).digest('hex');
 const secret = () => randomBytes(32).toString('hex');
+const shortCode = () => Array.from({ length: 6 }, () => String.fromCharCode(97 + randomInt(26))).join('');
 const packState = (state: GameState) => deflateSync(JSON.stringify(state));
 const unpackState = (data: Uint8Array) => JSON.parse(inflateSync(data).toString()) as GameState;
 interface CapturedMove { event: MoveEvent; before: GameState; after: GameState }
@@ -58,6 +59,10 @@ export class RoomStore {
       undone_revision INTEGER, before_state BLOB, after_state BLOB NOT NULL, PRIMARY KEY (room_id, sequence)
     )`);
     this.db.exec('CREATE TABLE IF NOT EXISTS room_history_roots (room_id TEXT PRIMARY KEY, state BLOB NOT NULL)');
+    // Reserve codes permanently so an old invitation never points at a different game.
+    this.db.exec('CREATE TABLE IF NOT EXISTS room_invitations (code_hash TEXT PRIMARY KEY, room_id TEXT NOT NULL UNIQUE)');
+    this.db.exec('CREATE TABLE IF NOT EXISTS room_watch_links (code TEXT PRIMARY KEY, room_id TEXT NOT NULL UNIQUE)');
+
     // Plans live only in the private room record. Receipts and request acknowledgements
     // survive replacement, turn changes and restart; neither table is a public history.
     this.db.exec(`CREATE TABLE IF NOT EXISTS room_stage_receipts (
@@ -234,7 +239,7 @@ export class RoomStore {
   }
   private snapshot(room: StoredRoom, player?: PlayerId): RoomSnapshot {
     const clock = room.clockBase ? projectClock(room.clockBase, Date.now()) : null;
-    return structuredClone({ createdAt: room.createdAt, lastMoveAt: room.lastMoveAt, archivedAt: room.archivedAt, invitedPlayer: room.invitedPlayer, id: room.id, revision: room.revision, ready: room.ready, seats: room.seats,
+    return structuredClone({ createdAt: room.createdAt, lastMoveAt: room.lastMoveAt, archivedAt: room.archivedAt, invitedPlayer: room.invitedPlayer, id: room.id, watchCode: this.watchCode(room.id), revision: room.revision, ready: room.ready, seats: room.seats,
       timeControl: room.timeControl ?? null, clock,
       clockPressure: clock && room.clockHistory ? projectClockPressure(room.clockHistory, clock) : null,
       ...(player && room.clockBase ? { staging: this.seatStaging(room, player) } : {}),
@@ -354,7 +359,7 @@ export class RoomStore {
       this.settle(room, Date.now());
       // The old server erased consumed invitation hashes. Only the authenticated
       // original host may restore its saved invitation; a bare old link is not proof.
-      if (!room.archivedAt && !room.inviteHash && player !== room.invitedPlayer && inviteCode && /^[a-f0-9]{64}$/.test(inviteCode)) {
+      if (!room.archivedAt && !room.inviteHash && player !== room.invitedPlayer && inviteCode && joinSchema.shape.inviteCode.safeParse(inviteCode).success) {
         room.inviteHash = digest(inviteCode);
         this.save(room);
       }
@@ -387,7 +392,13 @@ export class RoomStore {
     return this.transaction(() => {
       const count = this.db.prepare('SELECT COUNT(*) AS count FROM rooms WHERE archived_at IS NULL').get()!.count as number;
       if (count >= this.maxRooms) throw new RoomError(503, 'ROOM_LIMIT', 'This host is at its room limit.');
-      const id = randomBytes(16).toString('hex'), token = secret(), inviteCode = secret();
+      const id = randomBytes(16).toString('hex'), token = secret();
+      let inviteCode: string;
+      do {
+        inviteCode = shortCode();
+      } while (this.db.prepare('SELECT 1 FROM room_invitations WHERE code_hash = ?').get(digest(inviteCode))
+        || this.db.prepare('SELECT 1 FROM room_watch_links WHERE code = ?').get(inviteCode));
+      this.db.prepare('INSERT INTO room_invitations (code_hash, room_id) VALUES (?, ?)').run(digest(inviteCode), id);
       const room: StoredRoom = { id, revision: 0, ready: false, seats: { white: null, black: null },
         state: createInitialGameState(undefined, actionsPerTurn, blackCrystalHandicap, ruleset), canUndo: false, undoHistory: [], updatedAt: new Date(Date.now()).toISOString(), history: [],
         moveHistoryStart: { revision: 0, turnNumber: 1, player: 'white', complete: true },
@@ -404,6 +415,28 @@ export class RoomStore {
       this.save(room);
       return { credentials: { roomId: id, player: side, token }, inviteCode, room: this.snapshot(room) };
     });
+  }
+  resolveInvitation(code: string): { roomId: string } {
+    shortInviteSchema.parse(code);
+    const row = this.db.prepare('SELECT room_id FROM room_invitations WHERE code_hash = ?').get(digest(code));
+    if (!row) throw new RoomError(404, 'INVALID_INVITE', 'Invitation was not found. Check the link with your host.');
+    return { roomId: row.room_id as string };
+  }
+  /** Allocate once, including for rooms created before short watch links existed. */
+  private watchCode(roomId: string): string {
+    for (;;) {
+      const saved = this.db.prepare('SELECT code FROM room_watch_links WHERE room_id = ?').get(roomId);
+      if (saved) return saved.code as string;
+      const code = shortCode();
+      if (this.db.prepare('SELECT 1 FROM room_invitations WHERE code_hash = ?').get(digest(code))) continue;
+      this.db.prepare('INSERT OR IGNORE INTO room_watch_links (code, room_id) VALUES (?, ?)').run(code, roomId);
+    }
+  }
+  resolveWatch(code: string): { roomId: string } {
+    shortInviteSchema.parse(code);
+    const row = this.db.prepare('SELECT room_id FROM room_watch_links WHERE code = ?').get(code);
+    if (!row) throw new RoomError(404, 'INVALID_WATCH_LINK', 'Watch link was not found. Check the link with your host.');
+    return { roomId: row.room_id as string };
   }
   join(id: string, input: unknown): RoomAdmission {
     const { name, inviteCode } = joinSchema.parse(input);

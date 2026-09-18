@@ -22,6 +22,8 @@ export interface ArchivedRoom extends ActiveRoom {
 }
 export interface RoomArchive { rooms: ArchivedRoom[]; nextCursor: string | null }
 export interface RoomSnapshot {
+  /** Public spectator code, separate from the invitation that claims a seat. */
+  watchCode?: string;
   createdAt?: string;
   lastMoveAt?: string;
   archivedAt?: string;

@@ -100,6 +100,7 @@ test('multiple observers watch two MCP agents, inspect, replay, and reload witho
   try {
     const host = await call(white, 'muju_create_room', { name: 'White LLM', side: 'white' });
     const { roomId } = host.credentials;
+    expect(new URL(host.watchUrl).pathname).toMatch(/^\/watch\/[a-z]{6}$/);
     await page.goto('./');
     await page.evaluate(c => localStorage.setItem(`muju:online:${c.serverUrl}:${c.roomId}`, JSON.stringify(c)), host.credentials);
     const mutations: string[] = [], auth: string[] = [];
@@ -112,12 +113,16 @@ test('multiple observers watch two MCP agents, inspect, replay, and reload witho
     await page.goto(host.watchUrl);
     await expect(page.getByText('Online · Observer', { exact: true })).toBeVisible();
     await expect(page.getByText('Waiting for both players to join.', { exact: true }).first()).toBeVisible();
-    // A room ID also enters explicitly as an observer from the lobby.
+    // A pasted short link also enters explicitly as an observer from the lobby.
     await phone.goto('./');
     await phone.getByRole('button', { name: 'Play online' }).click();
-    await phone.getByLabel('Watch link or room ID').fill(roomId);
+    await phone.getByLabel('Watch link or room ID').fill(host.watchUrl);
     await phone.getByRole('button', { name: 'Watch game', exact: true }).click();
     await expect(phone.getByText('Online · Observer', { exact: true })).toBeVisible();
+    await phone.getByRole('button', { name: 'Room details', exact: true }).click();
+    await phone.getByText('Share watch link', { exact: true }).click();
+    await expect(phone.getByLabel('Observer link')).toHaveValue(host.watchUrl);
+    await phone.getByRole('button', { name: 'Close dialog' }).click();
     const guest = await call(black, 'muju_join_room', { roomId, name: 'Black LLM', inviteCode: host.invitation.inviteCode });
     await expect(page.getByText('Watching live · Read only')).toBeVisible();
     for (const viewer of [page, phone]) {
@@ -173,6 +178,7 @@ for (const actionsPerTurn of [4]) test(`${actionsPerTurn}-action independent bro
     await expect(page.getByRole('button', { name: 'End turn' })).toBeDisabled();
     await page.getByRole('button', { name: 'Room details', exact: true }).click();
     const invite = await page.getByLabel('Invite your opponent').inputValue();
+    expect(new URL(invite).pathname).toMatch(/^\/join\/[a-z]{6}$/);
     await page.getByRole('button', { name: 'Close dialog' }).click();
     await guest.goto(invite);
     await guest.getByLabel('Your name', { exact: true }).fill('Bob');

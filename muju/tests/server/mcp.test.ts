@@ -210,7 +210,10 @@ describe('MCP and HTTP interoperability', () => {
     const hosted=await call(client,'muju_create_room',{name:'Variant host',actionsPerTurn:4});
     expect(hosted.room.actionsPerTurn).toBe(4);
     expect(hosted.credentials.serverUrl).toMatch(/^http:/);
-    expect(hosted.watchUrl).toBe(`${hosted.credentials.serverUrl}/muju/?room=${hosted.credentials.roomId}&watch=1`);
+    expect(hosted.invitation.inviteCode).toMatch(/^[a-z]{6}$/);
+    expect(hosted.invitation.url).toBe(`${hosted.credentials.serverUrl}/join/${hosted.invitation.inviteCode}`);
+    expect(new URL(hosted.watchUrl).pathname).toMatch(/^\/watch\/[a-z]{6}$/);
+    expect(hosted.watchUrl.split('/').at(-1)).not.toBe(hosted.invitation.inviteCode);
     const observed=await call(client,'muju_observe',{roomId:hosted.credentials.roomId});
     expect(observed.turn.actionsRemaining).toBe(4);
     expect(observed.actionsPerTurn).toBe(4);

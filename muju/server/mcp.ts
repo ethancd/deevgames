@@ -10,6 +10,7 @@ import { agentAction } from './agentSchema';
 import { analysisSchema } from './analysis/schema';
 import { analysisService } from './analysis';
 import { readTimeAwarenessSkill } from './skills';
+import { invitationUrl, observerUrl } from '../src/online/invitations';
 
 type MaybePromise<T> = T | Promise<T>;
 export interface RoomBackend {
@@ -42,10 +43,9 @@ export function createMcpServer(backend: RoomBackend, publicUrl: string) {
       return { content: [{ type: 'text' as const, text: error instanceof Error ? error.message : 'Request failed.' }], isError: true as const };
     }
   };
-  const watchUrl = (roomId: string) => `${publicUrl}/muju/?room=${roomId}&watch=1`;
-  const admission = (result: RoomAdmission) => ({ credentials: { ...result.credentials, serverUrl: publicUrl }, watchUrl: watchUrl(result.room.id),
+  const admission = (result: RoomAdmission) => ({ credentials: { ...result.credentials, serverUrl: publicUrl }, watchUrl: observerUrl(publicUrl, result.room.id, result.room.watchCode),
     ...(result.inviteCode ? { invitation: { roomId: result.room.id, inviteCode: result.inviteCode,
-      serverUrl: publicUrl, url: `${publicUrl}/muju/?room=${result.room.id}#invite=${result.inviteCode}` } } : {}),
+      serverUrl: publicUrl, url: invitationUrl(publicUrl, result.room.id, result.inviteCode) } } : {}),
     room: observe(result.room, result.credentials.player) });
   const readOnly = { readOnlyHint: true, destructiveHint: false, openWorldHint: false };
   server.registerResource('muju-time-awareness', 'muju://skills/muju-time-awareness',
@@ -70,7 +70,7 @@ export function createMcpServer(backend: RoomBackend, publicUrl: string) {
   server.registerTool('muju_observe', { description: 'Get the board, IDs, revision, clocks, fresh historical clockPressure and automatic economy/deployment/urgent analysis headline. Set briefing:true and player to include a compact turn briefing in this call; sinceRevision requests changed sections from a cached compatible briefing. Public; no token or private stage plans. Use muju_analyze for focused witnesses and bounded deep search.',
     inputSchema: { roomId: roomIdSchema, ...briefingInput }, annotations: readOnly }, ({ roomId, briefing, player, sinceRevision }) => safely(async () => {
       const room = await backend.get(roomId), perspective = player ?? room.state.turn.currentPlayer;
-      return { ...observe(room, perspective), watchUrl: watchUrl(roomId),
+      return { ...observe(room, perspective), watchUrl: observerUrl(publicUrl, roomId, room.watchCode),
         ...(briefing ? { briefing: analysisService.briefing(room, perspective, sinceRevision) } : {}) };
     }));
   server.registerTool('muju_analyze', { description: 'Read-only, revision-specific batched analysis: economy, units, matchups, spawn, reach, mobility, threats, opportunities, exchange, checkmate, survival, reply. Supply player as perspective, targets (unitIds/squares/regions/defenders), and optional hypotheticalActions in the play schema. Threats project the defender’s opponent through an engine handoff; no future attacker income. deep:true enables bounded legal combinations. Named targets/full detail return play-schema witnesses and post-attack exposure. No witness is not safety: read proof, scope, search cutoff and omitted cases. Survival on empty squares uses independent structural catalogue defenders. Replies optimize one declared objective; best-found is not minimax. Work is shared across topics/targets, at most 20,000 nodes/750ms; split large requests when truncated. Analysis does not pause clocks or commit moves.',
