@@ -5,7 +5,7 @@ recorded every ladder row's replays under `lab/results/hard-ai-*/…/replays/` a
 Those files (about 670 MB) are NOT in `master`: this release commit carries every document,
 script, `metrics.json`, `manifest.json`, `summary.md`, `elo.json`, `pairs.jsonl`, analysis
 artifact and the fixtures the tests read (`hard-ai-e0/pilot2-h0/replays`,
-`hard-ai-e3/ablate/eval-correct-v1/fixed100k`), and drops only the replay directories and game logs of the ladder rows under `hard-ai-e1/{baseline,diag-wall8000,ablate}`, `hard-ai-e2/{repin,ablate}`, `hard-ai-e3/ablate` and `hard-ai-release`; every analysis and diagnostic directory is kept whole.
+`hard-ai-e3/ablate/eval-correct-v1/fixed100k`, `hard-ai-e3/ablate/eval-fix-b*/fixed100k` — the P8 profile corpus), and drops only the replay directories and game logs of the ladder rows under `hard-ai-e1/{baseline,diag-wall8000,ablate}`, `hard-ai-e2/{repin,ablate}`, `hard-ai-e3/ablate` and `hard-ai-release`; every analysis and diagnostic directory is kept whole.
 
 The complete history with every replay is archived as a git bundle:
 `~/src/deevgames-hard-ai-campaign-2026-09-18.bundle` (on the box that ran the campaign), which

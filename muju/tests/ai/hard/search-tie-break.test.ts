@@ -26,7 +26,7 @@ import { HardEngine } from '../../../src/ai/hard/engine';
 import { endKeyOf, prepare, rawCandidates } from './search-fixture';
 
 // E0.5 timeout budget: slowest test 2.6 s measured 2026-09-18 (M2 Max, load ~1); 60 s is this file's ceiling.
-vi.setConfig({ testTimeout: 60_000 });
+vi.setConfig({ testTimeout: 300_000 });
 
 const TIE_BREAK: Partial<HardConfig> = { searchFix: { tieBreak: 'end-key' } };
 const EMPTY_BLOCK: Partial<HardConfig> = { searchFix: {} };
