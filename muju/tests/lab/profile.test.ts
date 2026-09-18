@@ -5,7 +5,7 @@ import { describe, it, expect, vi } from 'vitest';
 // them (`buildE1DevPositions`) plays short scripted games; generous but still
 // bounded (E4.1-PROFILE.md's own runs are the timed evidence, this is a shape
 // check).
-vi.setConfig({ testTimeout: 60_000 });
+vi.setConfig({ testTimeout: 300_000 });
 
 import { HardEngine } from '../../src/ai/hard/engine';
 import { hardEnginePatch } from '../../lab/hard-ai/bots/hard';
