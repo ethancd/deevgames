@@ -1,4 +1,5 @@
 // @vitest-environment node
+import "../../fixtures/metal-v28-catalogue";
 /**
  * P8 / E4.3 candidate A: the forced rescue injection must be BOUNDED
  * (`docs/hard-ai/e3/P8-SLOW-TURNS.md` §6, `docs/hard-ai/e4/E4.3-RESCUE-CAP.md`).
