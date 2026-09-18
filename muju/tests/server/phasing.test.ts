@@ -36,9 +36,9 @@ it('preserves full-turn clock, undo, public pending commitments, arrival history
   prepared = play('white', [{ type: 'END_ACTION_PHASE' }]);
   const bought = play('white', [{ type: 'BUY_UNIT', definitionId: 'fire_1', position: { x: 0, y: 0 } }]);
   expect(observe(bought)).toMatchObject({ ruleset: 'phasing', pendingSummons: [{ definitionId: 'fire_1', cost: 3 }] });
-  expect(observe(bought).analysis).toMatchObject({ supported: false, ruleset: 'phasing' });
+  expect(observe(bought).analysis).toMatchObject({ supported: true, ruleset: 'phasing' });
   expect(legalActions(bought, { type: 'BUY_UNIT', limit: 200 }).actions.some(a => JSON.stringify(a).includes('A1'))).toBe(false);
-  expect(analysisService.analyze(bought, { roomId: id, expectedRevision: bought.revision, player: 'white', topics: ['threats'] })).toMatchObject({ supported: false });
+  expect(analysisService.analyze(bought, { roomId: id, expectedRevision: bought.revision, player: 'white', topics: ['threats'] })).toMatchObject({ supported: true });
   expect(store.listActive().find(r => r.id === id)).toMatchObject({ ruleset: 'phasing' });
   const black = play('white', [{ type: 'END_PLACE_PHASE' }]);
   expect(black.clock!.runningPlayer).toBe('black'); expect(black.canUndo).toBe(false);

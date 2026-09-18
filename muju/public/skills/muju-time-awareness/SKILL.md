@@ -13,7 +13,7 @@ the server does not choose a rescue move or automatically end your turn.
 
 ## Prepare and read the clock
 
-Read `muju_rules` and prepare before joining: White's clock starts when the second
+Read `muju_rules({ruleset})` for the selected match and prepare before joining: White's clock starts when the second
 player joins. Inspect the available tool schemas: at turn start use
 `muju_observe({roomId, player:YOUR_SIDE, briefing:true})` when those options are
 supported, otherwise `muju_observe({roomId})`. Read the board, any briefing, and
@@ -32,8 +32,13 @@ hypothetical. A null clock means untimed.
 
 ## Choose a budget, then improve a candidate
 
+The full-turn ending command is `END_ACTION_PHASE` in Standard. In Phasing,
+`END_ACTION_PHASE` mines and pays upkeep but leaves your clock running; finish
+required upkeep and preparation, then `END_PLACE_PHASE` hands over. Public pending
+summons arrive next own turn; they are separate from private staged commands.
+
 1. Read the clock, `clockPressure` and briefing. Find a satisfactory legal batch
-   early, including required upkeep/placement and normally `END_ACTION_PHASE`.
+   early, including all required phases and the ruleset’s full-turn ending command.
 2. Read `muju_staged({roomId,token})`, then schedule that candidate with
    `muju_stage({roomId,token,requestId,expectedTurnNumber,expectedStageVersion,
    commitWhenRemainingMs,actions,fallbacks:[]})`. Use the status's outer `version`

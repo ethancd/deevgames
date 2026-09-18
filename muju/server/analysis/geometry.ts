@@ -2,6 +2,9 @@ import type { GameState, PlayerId, Position, Unit } from '../../src/game/types';
 import { getAdjacentPositions, getStartCorner, getUnitAt } from '../../src/game/board';
 import { getAllSpawnPositions, getSpawnRectangle, getSpawnZone } from '../../src/game/spawning';
 import { findPath, getMovementRange } from '../../src/game/movement';
+import { isPhasing } from '../../src/game/rules';
+import { getPurchasePositions } from '../../src/game/summoning';
+import { isValidSpawnPosition } from '../../src/game/spawning';
 import { getUnitDefinition } from '../../src/game/units';
 import { square, squares } from '../notation';
 import type { AnalysisInput } from './schema';
@@ -15,7 +18,11 @@ export function spawnGeometry(s: GameState, player: PlayerId) {
       blockedBy: s.board.units.filter(e => e.owner !== player && rectangle.some(p => equal(e.position, p))).map(e => e.id),
       spawn: getSpawnZone(u, player, s.board) };
   });
-  return { player, squares: squares(getAllSpawnPositions(player, s.board)), count: getAllSpawnPositions(player, s.board).length,
+  const pending = (s.pendingSummons ?? []).filter(p => p.owner === player);
+  return { player, purchaseSquares: squares(getPurchasePositions(s, player)),
+    pendingSummons: pending.map(p => ({ ...p, square: square(p.position), validOnCurrentBoard: isValidSpawnPosition(p.position, player, s.board) })),
+    timing: isPhasing(s) ? 'Commit during Prepare; arrivals validate simultaneously at next own turn start. Current support is not an arrival guarantee.' : 'Purchases enter immediately during Place.',
+    squares: squares(getAllSpawnPositions(player, s.board)), count: getAllSpawnPositions(player, s.board).length,
     homeBlocked: !!getUnitAt(s.board, getStartCorner(player)) && getUnitAt(s.board, getStartCorner(player))!.owner !== player,
     anchors: anchors.map(a => ({ id: a.id, square: a.square, blockedBy: a.blockedBy, count: a.spawn.length, squares: squares(a.spawn) })) };
 }
@@ -59,7 +66,7 @@ export function selectedUnits(s: GameState, input: AnalysisInput) {
 }
 export function reach(s: GameState, input: AnalysisInput) {
   return selectedUnits(s, input).map(u => {
-    const budget = u.owner === s.turn.currentPlayer && s.phase === 'playing' && !s.upkeepPending && u.canActThisTurn ? Math.min(input.actions, s.turn.actionsRemaining) : 0;
+    const budget = u.owner === s.turn.currentPlayer && s.phase === 'playing' && (!isPhasing(s) || s.turn.phase === 'action') && !s.upkeepPending && u.canActThisTurn ? Math.min(input.actions, s.turn.actionsRemaining) : 0;
     const destinations = getMovementRange(u.position, getUnitDefinition(u.definitionId).speed, budget, s.board).filter(p => inRegions(p.position, input));
     return { id: u.id, actions: budget, byCost: Object.fromEntries([1, 2, 3, 4].map(cost => [cost,
       squares(destinations.filter(p => budget - p.actionsRemaining === cost).map(p => p.position))])),

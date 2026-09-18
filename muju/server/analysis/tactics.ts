@@ -7,6 +7,7 @@ import { getAllSpawnPositions } from '../../src/game/spawning';
 import { getMovementRange, getMoveCost, findPath } from '../../src/game/movement';
 import { getAffordablePurchases } from '../../src/game/building';
 import { getNextTierDefinition, getUnitDefinition } from '../../src/game/units';
+import { isPhasing } from '../../src/game/rules';
 import { isLegalAction } from '../../src/game/legality';
 import { defaultUpkeepAction } from '../../src/game/upkeep';
 import type { GameState, Unit } from '../../src/game/types';
@@ -39,6 +40,7 @@ function category(actions: AIAction[]): Category {
  * Optimistic new purchases start adjacent. This may overestimate, never certify
  * a kill; it makes distant miners cheap to rule out in the actual search. */
 export function damageUpperBound(s: GameState, target: Unit, categories: Category[]): number {
+  if (isPhasing(s) && (s.turn.phase !== 'action' || s.upkeepPending)) return 0;
   const ap = s.turn.actionsRemaining, cash = s.players[s.turn.currentPlayer].resources;
   const preparing = s.turn.phase === 'place';
   const choices: { cost: number; damage: number }[][] = [];
@@ -110,7 +112,8 @@ export function singleThreats(source: GameState, targetId: string, categories: C
     if (budget.nodes - startNodes >= quota || !budget.spend()) { complete = false; return false; }
     return true;
   };
-  if (!target || target.owner === source.turn.currentPlayer || source.phase !== 'playing') return { lines, complete, omitted: [] as string[] };
+  if (!target || target.owner === source.turn.currentPlayer || source.phase !== 'playing'
+    || (isPhasing(source) && (source.turn.phase !== 'action' || source.upkeepPending))) return { lines, complete, omitted: [] as string[] };
   let paid = source;
   const prefix: AIAction[] = [];
   if (paid.upkeepPending) { const pay = defaultUpkeepAction(paid); paid = applyAction(paid, pay); prefix.push(pay); }
@@ -191,7 +194,7 @@ export function searchTurn(source: GameState, budget: WorkBudget, options: {
     const currentScore = score(s);
     if (currentScore > bestScore) { bestScore = currentScore; if (actions.length) best = evidence(source, actions, target?.id); }
     if (objective !== 'capturedValue' && currentScore >= (objective === 'killTarget' ? 1000 : 1)) { found = true; return true; }
-    if (s.phase !== 'playing' || s.turn.currentPlayer !== actor || (s.turn.phase === 'action' && s.turn.actionsRemaining === 0)) return false;
+    if (s.phase !== 'playing' || s.turn.currentPlayer !== actor || (isPhasing(s) && (s.turn.phase !== 'action' || s.upkeepPending)) || (s.turn.phase === 'action' && s.turn.actionsRemaining === 0)) return false;
     if (actions.length >= 32) { omitted.add('sequences longer than the 32-action play batch'); return false; }
     if (objective === 'killTarget' && target) {
       const defender = s.board.units.find(u => u.id === target.id)!;
@@ -273,6 +276,7 @@ export function approachTable(source: GameState, target: Unit) {
   // The explicit handoff may have released this defender during outgoing upkeep.
   // An empty square has no attack witness, even if an enemy can approach it.
   if (!source.board.units.some(u => u.id === target.id)) return [];
+  if (isPhasing(source) && (source.turn.phase !== 'action' || source.upkeepPending)) return [];
   const ready = actionReady(source).state;
   return ready.board.units.filter(u => u.owner === ready.turn.currentPlayer && u.owner !== target.owner).flatMap(u =>
     getAdjacentPositions(target.position).filter(p => !getUnitAt(ready.board, p) || getUnitAt(ready.board, p)!.id === u.id).map(p => {

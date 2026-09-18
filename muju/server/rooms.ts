@@ -6,7 +6,7 @@ import { DatabaseSync } from 'node:sqlite';
 import { ZodError } from 'zod';
 import { setTimeout as delay } from 'node:timers/promises';
 import { createInitialGameState } from '../src/game/board';
-import { getActionsPerTurn, isActionsPerTurn } from '../src/game/rules';
+import { getActionsPerTurn, isActionsPerTurn, isPhasing } from '../src/game/rules';
 import { automaticUpkeepUndo } from '../src/game/turn';
 import { migrateLegacyGame, type LegacyGameState } from '../src/game/migrate';
 import { isLegalAction } from '../src/game/legality';
@@ -498,7 +498,8 @@ export class RoomStore {
       }
     }
     return structuredClone({ roomId: room.id, player, revision: room.revision, serverNowMs: now,
-      currentTurn: { player: room.state.turn.currentPlayer, turnNumber: room.state.turn.turnNumber },
+      ruleset: room.state.ruleset ?? 'standard', endTurnAction: isPhasing(room.state) ? 'END_PLACE_PHASE' : 'END_ACTION_PHASE',
+      currentTurn: { player: room.state.turn.currentPlayer, turnNumber: room.state.turn.turnNumber, phase: room.state.turn.phase, upkeepPending: !!room.state.upkeepPending },
       clock, clockPressure: clock && room.clockHistory ? projectClockPressure(room.clockHistory, clock) : null, ...seat,
       ...(requestedStage ? { requestedStage } : {}) });
   }

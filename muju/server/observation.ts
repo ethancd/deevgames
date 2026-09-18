@@ -10,12 +10,18 @@ import { isLegalAction } from '../src/game/legality';
 import { UNIT_DEFINITIONS, getUnitDefinition } from '../src/game/units';
 import { defaultUpkeepAction, unitUpkeep, upkeepDue } from '../src/game/upkeep';
 import { projectedIncome } from '../src/game/mining';
+import { isValidSpawnPosition } from '../src/game/spawning';
 import { getHomeOccupier } from '../src/game/victory';
 import { INACTIVITY_LIMIT } from '../src/game/inactivity';
 import { TIME_CONTROL_PRESETS } from '../src/online/timeControl';
 import { square, describeAction } from './notation';
 import { analysisService } from './analysis';
 export { square, describeAction } from './notation';
+
+export function turnContext(s: GameState) {
+  return { ruleset: s.ruleset ?? 'standard', turn: s.turn, upkeepPending: !!s.upkeepPending,
+    endTurnAction: isPhasing(s) ? 'END_PLACE_PHASE' as const : 'END_ACTION_PHASE' as const };
+}
 
 export function observe(room: RoomSnapshot, perspective = room.state.turn.currentPlayer) {
   const s = room.state;
@@ -27,8 +33,9 @@ export function observe(room: RoomSnapshot, perspective = room.state.turn.curren
     analysis: analysisService.headline(room, perspective),
     historyTool: 'muju_history',
     activePlayer: room.ready && s.phase === 'playing' ? s.turn.currentPlayer : null,
-    ruleset: s.ruleset ?? 'standard', pendingSummons: s.pendingSummons ?? [], lastSummoning: s.lastSummoning,
-    status: s.phase, turn: s.turn, actionsPerTurn: getActionsPerTurn(s), blackCrystalHandicap: s.blackCrystalHandicap ?? 0, upkeepPending: !!s.upkeepPending,
+    ...turnContext(s), pendingSummons: (s.pendingSummons ?? []).map(p => ({ ...p, square: square(p.position),
+      validOnCurrentBoard: isValidSpawnPosition(p.position, p.owner, s.board) })), lastSummoning: s.lastSummoning,
+    status: s.phase, actionsPerTurn: getActionsPerTurn(s), blackCrystalHandicap: s.blackCrystalHandicap ?? 0,
     winner: s.winner, victoryReason: s.victoryReason ?? null,
     nextStep: room.archivedAt ? 'Room archived after 24 hours without a game action. Its history and positions remain available for review.' : !room.ready ? 'Invite the opponent, then wait for them to join.' : s.phase === 'victory' ? 'Game finished.'
       : s.upkeepPending ? 'Choose PAY_UPKEEP keepUnitIds; all tier 1 units must stay. Higher tiers omitted are released.'
@@ -78,7 +85,7 @@ export function legalActions(room: RoomSnapshot, options: { unitId?: string; typ
   actions = actions.filter(a => (a.type === 'UNDO' || (a.type !== 'SET_UPKEEP_REVIEW' && isLegalAction(s, a))) && (!options.type || a.type === options.type)
     && (!options.unitId || ('unitId' in a && a.unitId === options.unitId)));
   const offset = options.offset ?? 0, limit = options.limit ?? 60;
-  return { roomId: room.id, revision: room.revision, currentPlayer: player, total: actions.length,
+  return { roomId: room.id, revision: room.revision, ...turnContext(s), currentPlayer: player, total: actions.length,
     timeControl: room.timeControl ?? null, clock: room.clock ?? null, clockPressure: room.clockPressure ?? null,
     nextOffset: offset + limit < actions.length ? offset + limit : null,
     upkeepNote: s.upkeepPending ? 'One affordable keep-set is shown. You may submit any affordable keepUnitIds containing every tier 1 unit.' : undefined,
@@ -86,6 +93,10 @@ export function legalActions(room: RoomSnapshot, options: { unitId?: string; typ
       const u = 'unitId' in action ? s.board.units.find(u => u.id === action.unitId)! : null;
       const target = action.type === 'ATTACK' ? getUnitAt(s.board, action.targetPosition)! : null;
       return { action: describeAction(action),
+        ...(action.type === 'BUY_UNIT' ? { crystalCost: getUnitDefinition(action.definitionId).cost,
+          effect: isPhasing(s) ? 'Public commitment; arrives or fully refunds at next own turn start.' : 'Places a unit immediately.' } : {}),
+        ...(action.type === 'END_ACTION_PHASE' ? { effect: isPhasing(s) ? 'Mine once, pay upkeep, then Prepare; same player and running clock.' : 'Mine and hand over the turn and clock.' } : {}),
+        ...(action.type === 'END_PLACE_PHASE' ? { effect: isPhasing(s) ? 'Hand over the full turn and clock; resolve incoming summons.' : 'Begin Act; same player and running clock.' } : {}),
         ...(action.type === 'MOVE' && u ? { actionCost: getMoveCost(u.position, action.to, getUnitDefinition(u.definitionId).speed, s.board) } : {}),
         ...(u && target ? { actionCost: 1, targetUnitId: target.id, attack: calculateAttackPower(u, target),
           defense: calculateDefense(target), eliminates: calculateAttackPower(u, target) >= calculateDefense(target) } : {}),
@@ -96,14 +107,14 @@ export function legalActions(room: RoomSnapshot, options: { unitId?: string; typ
 export const rules = {
   rulesets: {
     default: 'standard', options: ['standard', 'phasing'], immutable: true,
-    standard: 'The existing rules below remain the AI benchmark.',
+    standard: 'Top-level turn/upkeep/checkmate/undo fields default to Standard; call muju_rules with ruleset: phasing for the selected rules. Built-in AI remains Standard-only.',
     phasing: {
       turn: ['Start: existing victory checks, then resolve all own pending summons simultaneously, heal/reset units, and Act. Both players start in Act even with handicap.',
         'END_ACTION_PHASE collects mining once, then pays upkeep from the resulting bank. It does not hand off. If upkeepPending, submit PAY_UPKEEP.',
         'Prepare (turn.phase=place): PROMOTE_UNIT once per actual piece, including arrivals this turn; BUY_UNIT pays now and commits type and empty legal square. END_PLACE_PHASE ends the full turn and hands over the clock.'],
       summons: 'Public, immutable commitments. Not board units: no occupancy, movement blocking, attacks, mining, upkeep, promotion, spawn anchoring or prevention of elimination. One own pending summon per square. At next own turn start, any legal supporting rectangle suffices and the square must be empty. Validate all against the same board. Invalid summons disappear with their original cost fully refunded; temporary blocking during the reply does not count.',
       promotion: 'After mining/upkeep, new stats immediately apply. No more actions or mining that turn. Arrivals can promote at that turn end. The new upkeep rate is first due next own turn after mining.',
-      compatibility: 'Human/local/online play and manual analysis board supported. Built-in AI and strategic analysis tools are Standard-only until separately adapted. Pending summons are public; private staged action batches are a different feature.',
+      compatibility: 'Human/local/online play and manual analysis board supported. Built-in AI remains Standard-only. MCP analysis uses Phasing turn transitions and existing armies/arrivals for action-phase tactics; preparation cannot create another action phase. Pending summons are public; private staged action batches are a different feature.',
       undo: 'Mining and automatic upkeep form one reversible command. Undo never crosses the full-turn handoff. Quiet clock advances only at END_PLACE_PHASE.',
     },
   },
@@ -114,7 +125,7 @@ export const rules = {
   blackCrystalHandicap: {
     default: 0, min: 1, max: 20,
     setup: 'Optional creation-only starting crystals for Black. Omit or use 0 for the standard start. White starts with 0 and moves first. This grant is separate from mined income and is not repeated on later turns.',
-    opening: 'Black skips Place & Promote on turn 1 with 0–2 crystals; with 3–20 it enters Place & Promote. Normal purchase and promotion costs apply; both sides still have four actions.',
+    opening: 'In Phasing both players start in Act regardless of handicap. In Standard Black skips Place & Promote on turn 1 with 0–2 crystals; with 3–20 it enters Place & Promote. Normal purchase and promotion costs apply; both sides still have four actions.',
   },
   analysis: {
     workflow: 'Observe with briefing:true and player for one turn-start call. muju_analyze batches topics and targets at expectedRevision; use hypotheticalActions for complete proposed turns. Focus threats before exposure, exchange/reply for trades, and checkmate before home attempts. sinceRevision returns changed sections when a compatible process-local baseline is cached, otherwise a labeled full result.',
@@ -135,7 +146,7 @@ export const rules = {
       workflow: 'Read clock/clockPressure and briefing; stage an early player-authored candidate, choose a sustainable thinking budget, improve/replace, commit earlier or let it fire, then check private status. No automatic moves, repairs, appended end-turn or model-effort control.',
       request: 'Stage with token, requestId, expectedTurnNumber, expectedStageVersion (outer private status version, initially 0), commitWhenRemainingMs, actions (1–32), and optional fallbacks (up to three complete batches). Use new IDs for replacements; retry identical normalized requests with the same ID. Cancel uses token, requestId, expectedTurnNumber and expectedStageVersion. Inspect optionally by stageId. No expectedRevision: live play/undo may intervene.',
       trigger: 'Remaining means total delay plus bank until flag-fall. A positive integer no greater than this turn’s starting allowance; already-due triggers fire immediately if time remains. Five seconds remaining can spend almost the entire bank. Choose larger thresholds or commit earlier to conserve time.',
-      execution: 'SQLite serializes all operations. Expiry resolves first, then due stage, then incoming operation. Fire validates whole batches atomically against the real board and executes the first legal player-authored batch in order. All illegal consumes the stage, records private failure and keeps the clock running. END_ACTION_PHASE is optional. Ordinary undo and immediate home-checkmate tail cancellation apply.',
+      execution: 'SQLite serializes all operations. Expiry resolves first, then due stage, then incoming operation. Fire validates whole batches atomically against the real board and executes the first legal player-authored batch in order. All illegal consumes the stage, records private failure and keeps the clock running. Partial batches are allowed but do not hand over. Include END_ACTION_PHASE for Standard or END_PLACE_PHASE after mining/upkeep/preparation for Phasing to stop your clock. Ordinary undo and immediate home-checkmate tail cancellation apply.',
       persistence: 'One pending plan per seat/current full turn. Every staging transition advances a persistent seat version; stale replace/cancel fails. Handoff or result clears plans. Pending work and receipts survive restart without an MCP connection. The 250ms sweep is not a real-time guarantee; late wakeups use actual time, expiry always wins at the deadline, and moves are never backdated. Scheduling reduces flag risk without guaranteeing against it.',
       privacy: 'Plans, fallback order, thresholds and receipts are seat-private. Only executed moves enter public history/replay/waits. Private changes/failures do not advance board revision or wake public waits. Timed authenticated play/undo returns staging; use muju_staged for outcomes. Preview exposes liveStaging separately.',
     },
@@ -145,7 +156,7 @@ export const rules = {
   game: 'Muju Hono Tanka', board: '10×10, White home A1, Black home J10. All board information is public; pending staged plans are private to their seat.',
   observers: 'Create, join and muju_observe return a watchUrl. Share it with any number of human observers to watch both seats live in a read-only browser. Observers need no invitation or token and never claim a seat. MCP observers use muju_observe and muju_wait_for_change with just roomId.',
   restoreSeat: 'To continue an existing seat on another device, open Play online → Restore a seat and paste the private credentials JSON (roomId, player, token, serverUrl). No new invitation is needed. Both devices retain control of the same seat; coordinate who plays.',
-  history: 'muju_history reads the persistent room score, including upkeep, purchases, promotions, move paths/AP, combat outcomes and per-unit mining. Use before/after sequence cursors to page; default omits undone commands. History is public and available in the browser room sidebar. Older rooms mark where detailed recording began.',
+  history: 'muju_history reads the persistent room score, including upkeep, purchases, public summon commitments/arrivals/refunds, promotions, move paths/AP, combat outcomes and per-unit mining. Use before/after sequence cursors to page; default omits undone commands. History is public and available in the browser room sidebar. Older rooms mark where detailed recording began.',
   turn: ['Pay tier 2/3 upkeep at turn start (1/2 crystals per unit). Tier 1 stays free; release higher tiers if needed.',
     'Place: buy tier 1 units in controlled empty squares, or promote existing units by one tier, paying the cost difference. Newly placed units cannot promote this turn.',
     'Act: spend up to 4 shared actions per turn. Movement is orthogonal through empty cells; cost is ceil(path length / speed). Attacks target orthogonally adjacent enemies and cost 1.',
@@ -159,3 +170,14 @@ export const rules = {
   upkeep: 'Affordable upkeep is paid automatically unless review is enabled. Undo later commands first, then undo the automatic payment to refund it and reopen PAY_UPKEEP before healing. Submit a new affordable keep-set containing all tier 1 units. Unaffordable upkeep opens the selector immediately. SET_UPKEEP_REVIEW changes only your own preference and must be sent alone.',
   catalogue: UNIT_DEFINITIONS,
 };
+
+/** Explicit selection prevents Standard timing prose from overriding a Phasing room. */
+export function rulesFor(ruleset: 'standard' | 'phasing' = 'standard') {
+  if (ruleset === 'standard') return { ...rules, ruleset, endTurnAction: 'END_ACTION_PHASE' };
+  return { ...rules, ruleset, endTurnAction: 'END_PLACE_PHASE', turn: rules.rulesets.phasing.turn,
+    checkmate: 'An invader must survive its own mining/upkeep before immediate home-checkmate is adjudicated. Defender rescue starts in Act with the actual army after healing; no pre-action promotions or upkeep releases. Home occupation prevents all pending arrivals. A proven result cancels the queued batch tail.',
+    victory: 'Eliminate every actual enemy unit (pending summons do not postpone elimination), or hold the enemy home until next own turn. Existing victory checks precede summons. Immediate home-checkmate requires surviving outgoing upkeep. Earlier opposing occupation has priority. Ten full player turns without an attack kill draw; the quiet clock advances only at END_PLACE_PHASE. Resignation or timeout loses.',
+    upkeep: 'END_ACTION_PHASE mines once, then pays outgoing upkeep. If upkeepPending, PAY_UPKEEP must keep every tier 1 plus an affordable subset of higher tiers. Payment does not heal/reset or hand off. Promotion happens afterward; its new upkeep rate first applies after mining next own turn.',
+    undo: 'UNDO alone reverses the latest command in this full turn. Mining and automatic upkeep belong to one reversible END_ACTION_PHASE command. There is no incoming automatic-upkeep undo. To choose upkeep, undo back before mining, enable SET_UPKEEP_REVIEW in its own command, end actions and submit PAY_UPKEEP. Undo never refunds time or crosses END_PLACE_PHASE.',
+  };
+}

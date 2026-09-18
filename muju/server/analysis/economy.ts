@@ -1,3 +1,5 @@
+import type { AIAction } from '../../src/ai/types';
+import { isPhasing } from '../../src/game/rules';
 import { applyAction } from '../../src/ai/simulate';
 import { getAdjacentPositions, getCell, getUnitAt } from '../../src/game/board';
 import { projectedIncome, getTotalBoardResources, unitEndOfTurnTake } from '../../src/game/mining';
@@ -10,60 +12,78 @@ import type { AnalysisInput } from './schema';
 import { selectedUnits } from './geometry';
 
 const players = ['white', 'black'] as const;
-export interface Checkpoint { player: PlayerId; turn: number; kind: 'harvest' | 'upkeep'; amount: number; treasury: number }
+interface ForecastFailure { player: PlayerId; afterOwnHarvests: number; treasury: number; due: number; shortfall: number }
+export interface Checkpoint { player: PlayerId; turn: number; kind: 'harvest' | 'upkeep' | 'summon_refund'; amount: number; treasury: number }
 /** A financial projection, stopped at the first impossible retention or terminal
  * result. No annualized harvest, fabricated future income, or insolvent army. */
 export function economyForecast(source: GameState, horizon = 12) {
   let state = source;
   const checkpoints: Checkpoint[] = [];
   const completed = { white: 0, black: 0 };
-  let failure: { player: PlayerId; afterOwnHarvests: number; treasury: number; due: number; shortfall: number } | null = null;
+  let failure: ForecastFailure | null = null;
   let stop = source.phase === 'playing' ? 'horizon' : `terminal:${source.victoryReason ?? source.phase}`;
-  for (let ply = 0; ply < horizon * 2 && state.phase === 'playing'; ply++) {
-    const player = state.turn.currentPlayer;
-    if (state.upkeepPending) {
-      const due = upkeepDue(state, player), treasury = state.players[player].resources;
-      if (due > treasury) {
-        failure = { player, afterOwnHarvests: completed[player], treasury, due, shortfall: due - treasury }; stop = 'upkeep_shortfall'; break;
-      }
-      state = applyAction(state, { type: 'PAY_UPKEEP', keepUnitIds: state.board.units.filter(u => u.owner === player).map(u => u.id) });
-      checkpoints.push({ player, turn: state.turn.turnNumber, kind: 'upkeep', amount: due, treasury: state.players[player].resources });
-    }
-    if (state.phase !== 'playing') break;
-    if (state.turn.phase === 'place') state = applyAction(state, { type: 'END_PLACE_PHASE' });
+  const step = (action: AIAction) => {
     const before = state;
-    state = applyAction(state, { type: 'END_ACTION_PHASE' });
-    if (state.lastIncome !== before.lastIncome && state.lastIncome?.player === player) {
-      completed[player]++;
-      checkpoints.push({ player, turn: before.turn.turnNumber, kind: 'harvest', amount: state.lastIncome.total, treasury: state.players[player].resources });
+    state = applyAction(state, action);
+    if (state.lastIncome && state.lastIncome !== before.lastIncome) {
+      const income = state.lastIncome;
+      completed[income.player]++;
+      checkpoints.push({ player: income.player, turn: income.turnNumber, kind: 'harvest', amount: income.total,
+        treasury: before.players[income.player].resources + income.total });
     }
-    if (state.lastUpkeep !== before.lastUpkeep && state.lastUpkeep) {
+    if (state.lastUpkeep && state.lastUpkeep !== before.lastUpkeep) {
       const payment = state.lastUpkeep;
       checkpoints.push({ player: payment.player, turn: payment.turnNumber, kind: 'upkeep', amount: payment.paid,
         treasury: state.players[payment.player].resources });
     }
+    if (state.lastSummoning && state.lastSummoning !== before.lastSummoning) {
+      const result = state.lastSummoning, refunded = result.disrupted.reduce((total, summon) => total + summon.cost, 0);
+      if (refunded) checkpoints.push({ player: result.player, turn: result.turnNumber, kind: 'summon_refund',
+        amount: refunded, treasury: state.players[result.player].resources });
+    }
     if (state.phase !== 'playing') stop = `terminal:${state.victoryReason ?? state.phase}`;
-    else if (state.upkeepPending) {
-      const incoming = state.turn.currentPlayer, due = upkeepDue(state, incoming), treasury = state.players[incoming].resources;
-      if (due > treasury) {
-        failure = { player: incoming, afterOwnHarvests: completed[incoming], treasury, due, shortfall: due - treasury };
-        stop = 'upkeep_shortfall'; break;
+  };
+  const payPending = () => {
+    if (state.phase !== 'playing' || !state.upkeepPending) return true;
+    const player = state.turn.currentPlayer, due = upkeepDue(state, player), treasury = state.players[player].resources;
+    if (due > treasury) {
+      failure = { player, afterOwnHarvests: completed[player], treasury, due, shortfall: due - treasury };
+      stop = 'upkeep_shortfall'; return false;
+    }
+    step({ type: 'PAY_UPKEEP', keepUnitIds: state.board.units.filter(u => u.owner === player).map(u => u.id) });
+    return true;
+  };
+  for (let ply = 0; ply < horizon * 2 && state.phase === 'playing'; ply++) {
+    if (isPhasing(state)) {
+      if (state.turn.phase === 'action') step({ type: 'END_ACTION_PHASE' });
+      if (!payPending()) break;
+      if (state.phase === 'playing') step({ type: 'END_PLACE_PHASE' });
+    } else {
+      if (!payPending()) break;
+      if (state.phase !== 'playing') break;
+      if (state.turn.phase === 'place') step({ type: 'END_PLACE_PHASE' });
+      if (state.phase === 'playing') step({ type: 'END_ACTION_PHASE' });
+      // Detect the incoming shortfall even at the horizon boundary.
+      if (state.phase === 'playing' && state.upkeepPending && upkeepDue(state, state.turn.currentPlayer) > state.players[state.turn.currentPlayer].resources) {
+        payPending(); break;
       }
     }
   }
-  return { assumptions: 'Stay in place; no spending, captures or releases; retain every unit while affordable. Stop both ledgers at the first shortfall, terminal result or horizon.',
-    horizon, stop, failure, completed, checkpoints };
+  return { assumptions: 'Stay in place; no new spending, captures or releases; existing public summons resolve/refund normally; retain every unit while affordable. Stop both ledgers at the first shortfall, terminal result or horizon.',
+    horizon, stop, failure: failure as ForecastFailure | null, completed, checkpoints };
 }
 
 export function economyHeadlines(s: GameState, forecast = economyForecast(s)) {
   return Object.fromEntries(players.map(player => {
     const next = forecast.checkpoints.find(c => c.player === player), due = upkeepDue(s, player);
-    const immediateUpkeep = s.turn.currentPlayer !== player || s.upkeepPending;
+    const immediateUpkeep = isPhasing(s) ? s.turn.currentPlayer === player && !!s.upkeepPending : s.turn.currentPlayer !== player || s.upkeepPending;
     const available = s.players[player].resources + (immediateUpkeep ? 0 : projectedIncome(s, player));
     return [player, { treasury: s.players[player].resources, harvest: projectedIncome(s, player), upkeep: due,
       harvestTrend: forecast.checkpoints.filter(c => c.player === player && c.kind === 'harvest').slice(0, 3).map(c => c.amount),
       next: next ? `${next.kind}:${next.treasury}` : forecast.stop,
-      nextUpkeepShortfall: Math.max(0, due - available),
+      nextUpkeepShortfall: isPhasing(s)
+        ? forecast.checkpoints.some(c => c.player === player && c.kind === 'upkeep') ? 0 : forecast.failure?.player === player ? forecast.failure.shortfall : null
+        : Math.max(0, due - available),
       shortfallIn: forecast.failure?.player === player ? forecast.failure.afterOwnHarvests : null }];
   }));
 }
