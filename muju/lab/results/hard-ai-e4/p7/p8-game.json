@@ -1,0 +1,42 @@
+{
+  "label": "p8-game",
+  "stamp": "2026-09-18T00:02:54.890Z",
+  "node": "v24.11.1",
+  "results": [
+    {
+      "game": "e1-g2-s40_3_3-A-white.json",
+      "plies": 276,
+      "turns": 50,
+      "winner": "white",
+      "applyTotalMs": 12946.462,
+      "verdictCalls": 4,
+      "verdictTotalMs": 12902.917,
+      "distinctKeys": 3,
+      "duplicateCalls": 1,
+      "repeatedKeys": 1,
+      "maxRepeat": 2,
+      "perTurn": [
+        {
+          "side": "white",
+          "seatTurnIndex": 24,
+          "gameTurn": 25,
+          "applyMs": 12942.607,
+          "verdictCalls": 4,
+          "verdictMs": 12902.917,
+          "verdicts": [
+            "unknown",
+            "unknown",
+            "unknown",
+            "unknown"
+          ],
+          "nodes": [
+            20000,
+            20000,
+            20000,
+            20000
+          ]
+        }
+      ]
+    }
+  ]
+}

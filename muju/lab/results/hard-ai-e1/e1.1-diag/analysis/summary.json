@@ -1,0 +1,292 @@
+{
+  "schema": "muju-hard-analyze-summary-v1",
+  "dir": "/Users/ashkie/src/deevgames-e1-run/muju/lab/results/hard-ai-e1/e1.1-diag",
+  "lossesOnly": true,
+  "analysed": 14,
+  "skipped": [
+    {
+      "file": "g2-s20_0_14-A-white.json",
+      "reason": "not a loss for the white hard@ seat (winner white)"
+    },
+    {
+      "file": "g2-s20_0_14-B-white.json",
+      "reason": "not a loss for the black hard@ seat (winner black)"
+    },
+    {
+      "file": "g2-s5_0_2-B-white.json",
+      "reason": "not a loss for the black hard@ seat (winner black)"
+    },
+    {
+      "file": "g2-s5_3_3-A-white.json",
+      "reason": "not a loss for the white hard@ seat (winner white)"
+    },
+    {
+      "file": "g2-s5_3_3-B-white.json",
+      "reason": "not a loss for the black hard@ seat (winner black)"
+    },
+    {
+      "file": "g4-s10_3_9-B-white.json",
+      "reason": "not a loss for the black hard@ seat (winner black)"
+    },
+    {
+      "file": "g4-s2_0_0-A-white.json",
+      "reason": "not a loss for the white hard@ seat (winner white)"
+    },
+    {
+      "file": "g4-s2_0_0-B-white.json",
+      "reason": "not a loss for the black hard@ seat (winner black)"
+    },
+    {
+      "file": "g4-s2_3_1-A-white.json",
+      "reason": "not a loss for the white hard@ seat (winner white)"
+    },
+    {
+      "file": "g4-s6_0_4-B-white.json",
+      "reason": "not a loss for the black hard@ seat (winner black)"
+    },
+    {
+      "file": "g5-s11_0_10-A-white.json",
+      "reason": "not a loss for the white hard@ seat (winner white)"
+    },
+    {
+      "file": "g5-s11_3_11-A-white.json",
+      "reason": "not a loss for the white hard@ seat (winner white)"
+    },
+    {
+      "file": "g5-s15_0_12-A-white.json",
+      "reason": "not a loss for the white hard@ seat (winner white)"
+    },
+    {
+      "file": "g5-s15_0_12-B-white.json",
+      "reason": "not a loss for the black hard@ seat (winner black)"
+    },
+    {
+      "file": "g5-s15_3_13-A-white.json",
+      "reason": "not a loss for the white hard@ seat (winner white)"
+    },
+    {
+      "file": "g5-s15_3_13-B-white.json",
+      "reason": "not a loss for the black hard@ seat (winner black)"
+    },
+    {
+      "file": "g5-s7_0_6-A-white.json",
+      "reason": "not a loss for the white hard@ seat (winner white)"
+    },
+    {
+      "file": "g5-s7_0_6-B-white.json",
+      "reason": "not a loss for the black hard@ seat (winner black)"
+    }
+  ],
+  "failed": [],
+  "adviserWork": 1600000,
+  "swingCc": 300,
+  "firstConsequentialHistogram": {
+    "strong-candidate-misjudged": 12,
+    "reply-missed": 2
+  },
+  "largestSwingHistogram": {
+    "clock-fallback": 1,
+    "strong-candidate-misjudged": 11,
+    "reply-missed": 2
+  },
+  "games": [
+    {
+      "fileId": "g2-s20_3_15-A-white",
+      "side": "white",
+      "result": "loss",
+      "firstConsequential": {
+        "turn": 3,
+        "klass": "strong-candidate-misjudged"
+      },
+      "largestSwing": {
+        "turn": 26,
+        "klass": "clock-fallback",
+        "swingCc": 991786
+      }
+    },
+    {
+      "fileId": "g2-s20_3_15-B-white",
+      "side": "black",
+      "result": "loss",
+      "firstConsequential": {
+        "turn": 7,
+        "klass": "strong-candidate-misjudged"
+      },
+      "largestSwing": {
+        "turn": 13,
+        "klass": "strong-candidate-misjudged",
+        "swingCc": 6104
+      }
+    },
+    {
+      "fileId": "g2-s5_0_2-A-white",
+      "side": "white",
+      "result": "loss",
+      "firstConsequential": {
+        "turn": 4,
+        "klass": "strong-candidate-misjudged"
+      },
+      "largestSwing": {
+        "turn": 22,
+        "klass": "strong-candidate-misjudged",
+        "swingCc": 3285
+      }
+    },
+    {
+      "fileId": "g4-s10_0_8-A-white",
+      "side": "white",
+      "result": "loss",
+      "firstConsequential": {
+        "turn": 3,
+        "klass": "strong-candidate-misjudged"
+      },
+      "largestSwing": {
+        "turn": 24,
+        "klass": "strong-candidate-misjudged",
+        "swingCc": 5660
+      }
+    },
+    {
+      "fileId": "g4-s10_0_8-B-white",
+      "side": "black",
+      "result": "loss",
+      "firstConsequential": {
+        "turn": 7,
+        "klass": "strong-candidate-misjudged"
+      },
+      "largestSwing": {
+        "turn": 31,
+        "klass": "strong-candidate-misjudged",
+        "swingCc": 996242
+      }
+    },
+    {
+      "fileId": "g4-s10_3_9-A-white",
+      "side": "white",
+      "result": "loss",
+      "firstConsequential": {
+        "turn": 2,
+        "klass": "strong-candidate-misjudged"
+      },
+      "largestSwing": {
+        "turn": 19,
+        "klass": "strong-candidate-misjudged",
+        "swingCc": 4840
+      }
+    },
+    {
+      "fileId": "g4-s2_3_1-B-white",
+      "side": "black",
+      "result": "loss",
+      "firstConsequential": {
+        "turn": 2,
+        "klass": "strong-candidate-misjudged"
+      },
+      "largestSwing": {
+        "turn": 24,
+        "klass": "strong-candidate-misjudged",
+        "swingCc": 987985
+      }
+    },
+    {
+      "fileId": "g4-s6_0_4-A-white",
+      "side": "white",
+      "result": "loss",
+      "firstConsequential": {
+        "turn": 4,
+        "klass": "strong-candidate-misjudged"
+      },
+      "largestSwing": {
+        "turn": 28,
+        "klass": "strong-candidate-misjudged",
+        "swingCc": 6819
+      }
+    },
+    {
+      "fileId": "g4-s6_3_5-A-white",
+      "side": "white",
+      "result": "loss",
+      "firstConsequential": {
+        "turn": 4,
+        "klass": "strong-candidate-misjudged"
+      },
+      "largestSwing": {
+        "turn": 14,
+        "klass": "strong-candidate-misjudged",
+        "swingCc": 4588
+      }
+    },
+    {
+      "fileId": "g4-s6_3_5-B-white",
+      "side": "black",
+      "result": "loss",
+      "firstConsequential": {
+        "turn": 1,
+        "klass": "reply-missed"
+      },
+      "largestSwing": {
+        "turn": 9,
+        "klass": "reply-missed",
+        "swingCc": 5174
+      }
+    },
+    {
+      "fileId": "g5-s11_0_10-B-white",
+      "side": "black",
+      "result": "loss",
+      "firstConsequential": {
+        "turn": 1,
+        "klass": "strong-candidate-misjudged"
+      },
+      "largestSwing": {
+        "turn": 7,
+        "klass": "strong-candidate-misjudged",
+        "swingCc": 2517
+      }
+    },
+    {
+      "fileId": "g5-s11_3_11-B-white",
+      "side": "black",
+      "result": "loss",
+      "firstConsequential": {
+        "turn": 2,
+        "klass": "strong-candidate-misjudged"
+      },
+      "largestSwing": {
+        "turn": 13,
+        "klass": "strong-candidate-misjudged",
+        "swingCc": 3777
+      }
+    },
+    {
+      "fileId": "g5-s7_3_7-A-white",
+      "side": "white",
+      "result": "loss",
+      "firstConsequential": {
+        "turn": 4,
+        "klass": "strong-candidate-misjudged"
+      },
+      "largestSwing": {
+        "turn": 14,
+        "klass": "strong-candidate-misjudged",
+        "swingCc": 4588
+      }
+    },
+    {
+      "fileId": "g5-s7_3_7-B-white",
+      "side": "black",
+      "result": "loss",
+      "firstConsequential": {
+        "turn": 1,
+        "klass": "reply-missed"
+      },
+      "largestSwing": {
+        "turn": 9,
+        "klass": "reply-missed",
+        "swingCc": 5174
+      }
+    }
+  ],
+  "wallMs": 20833999,
+  "at": "2026-09-16T18:48:57.117Z"
+}

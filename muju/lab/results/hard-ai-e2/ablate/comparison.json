@@ -1,0 +1,152 @@
+{
+  "schema": "muju-hard-ablate-v1",
+  "at": "2026-09-16T23:14:01.783Z",
+  "reference": "reference: SELECTIVE (generateReference K=2000 under a 120,000-node cap, widths [40,16,8,4], 200 place plans) — not exhaustive; shared blind spots are invisible (EPIC-PLAN §2)",
+  "corpus": {
+    "path": "/Users/ashkie/src/deevgames-e2-lane4/muju/lab/results/hard-ai-e2/ablate/corpus/ablate-corpus.jsonl",
+    "sources": [
+      {
+        "source": "positions/authored.jsonl",
+        "positions": 11,
+        "stratum": "root"
+      },
+      {
+        "source": "positions/tactics.jsonl",
+        "positions": 79,
+        "stratum": "root"
+      },
+      {
+        "source": "positions/economy.jsonl",
+        "positions": 30,
+        "stratum": "root"
+      },
+      {
+        "source": "lab/results/hard-ai-e1/e1.1-diag/analysis",
+        "positions": 14,
+        "stratum": "root",
+        "note": "first consequential decision of each E1.1 analysis, reconstructed from its replay"
+      },
+      {
+        "source": "positions/fuzz-1000.jsonl",
+        "positions": 60,
+        "stratum": "reply-tail",
+        "note": "reachable mid-game states; the authored/tactics/economy puzzles leave no playable reply node"
+      }
+    ],
+    "headCount": 134,
+    "tailCount": 60,
+    "sha256": "2c58898ab820df24a0d815d0ca6614fa085d7cfc695e157052a9256b0a99bee4",
+    "notes": [
+      "summary.json: schema muju-hard-analyze-summary-v1, not muju-hard-analyze-v1"
+    ]
+  },
+  "budget": {
+    "positions": 134,
+    "replyPositions": 60,
+    "deep": 2000,
+    "shards": 1,
+    "replyNodeGen": "interior"
+  },
+  "arms": [
+    {
+      "arm": "base",
+      "factor": "none",
+      "change": "DESKTOP unchanged",
+      "engine": "hard@ablate:base",
+      "configHash": "4e7afdf76b32fadfab2d11577cb610c8f9f1a491b5153e70b87b0774403600cd",
+      "wallMs": 92645,
+      "artifact": "lab/results/hard-ai-e2/ablate/base/recall.json"
+    },
+    {
+      "arm": "interior-action-wide",
+      "factor": "widths",
+      "change": "action widths [6,4,3,2] → [10,6,4,2] at the REPLY/interior node only (root gen unchanged). E2.2 arm: the trace attributes 20 of 21 missing reply targets to the interior action beam",
+      "engine": "hard@ablate:interior-action-wide",
+      "configHash": "28bdd61eeb84dcd741a380e0760674bd3141dca9beb8b685aad3526d5f861134",
+      "wallMs": 67640,
+      "artifact": "lab/results/hard-ai-e2/ablate/interior-action-wide/recall.json"
+    },
+    {
+      "arm": "interior-place-wide",
+      "factor": "placePlans",
+      "change": "place plans 16/8 → 16/12 (the REPLY/interior node only). E2.2 arm: 5 traced reply misses had a buy set inside planCount 12 but outside comboCount 8",
+      "engine": "hard@ablate:interior-place-wide",
+      "configHash": "37722e1f6a936114ea9f943cf5151872c88899f031bfc23341440ca4a45cefad",
+      "wallMs": 67187,
+      "artifact": "lab/results/hard-ai-e2/ablate/interior-place-wide/recall.json"
+    }
+  ],
+  "rows": [
+    {
+      "arm": "base",
+      "factor": "none",
+      "change": "DESKTOP unchanged",
+      "top1": 0.3881,
+      "top3": 0.6791,
+      "top1Share": 0.4643,
+      "regretP50": 0,
+      "regretP90": 251,
+      "ceilingTop1": 0.8358,
+      "replyTop1": 0.3636,
+      "illegalTurns": 0,
+      "emptyLists": 0,
+      "positions": 134,
+      "replyPositions": 55,
+      "wallMs": 92645,
+      "configHash": "4e7afdf76b32fadfab2d11577cb610c8f9f1a491b5153e70b87b0774403600cd"
+    },
+    {
+      "arm": "interior-action-wide",
+      "factor": "widths",
+      "change": "action widths [6,4,3,2] → [10,6,4,2] at the REPLY/interior node only (root gen unchanged). E2.2 arm: the trace attributes 20 of 21 missing reply targets to the interior action beam",
+      "top1": 0.3881,
+      "top3": 0.6791,
+      "top1Share": 0.4643,
+      "regretP50": 0,
+      "regretP90": 251,
+      "ceilingTop1": 0.8358,
+      "replyTop1": 0.4545,
+      "illegalTurns": 0,
+      "emptyLists": 0,
+      "positions": 134,
+      "replyPositions": 55,
+      "wallMs": 67640,
+      "configHash": "28bdd61eeb84dcd741a380e0760674bd3141dca9beb8b685aad3526d5f861134"
+    },
+    {
+      "arm": "interior-place-wide",
+      "factor": "placePlans",
+      "change": "place plans 16/8 → 16/12 (the REPLY/interior node only). E2.2 arm: 5 traced reply misses had a buy set inside planCount 12 but outside comboCount 8",
+      "top1": 0.3881,
+      "top3": 0.6791,
+      "top1Share": 0.4643,
+      "regretP50": 0,
+      "regretP90": 251,
+      "ceilingTop1": 0.8358,
+      "replyTop1": 0.3636,
+      "illegalTurns": 0,
+      "emptyLists": 0,
+      "positions": 134,
+      "replyPositions": 55,
+      "wallMs": 67187,
+      "configHash": "37722e1f6a936114ea9f943cf5151872c88899f031bfc23341440ca4a45cefad"
+    }
+  ],
+  "ladderPlan": [
+    {
+      "arm": "base",
+      "seed": 1366200,
+      "command": "node --import tsx lab/hard-ai/ladder/run.ts \\\n  --a hard@ablate:base --b hard@desktop \\\n  --work wall:3000 --handicaps 0,3 --pairs 32 \\\n  --seed 1366200 --shards 2 --legality strict \\\n  --openings lab/hard-ai/ladder/openings/e1-val.jsonl \\\n  --out lab/results/hard-ai-e2/ablate/base/ladder"
+    },
+    {
+      "arm": "interior-action-wide",
+      "seed": 1398602,
+      "command": "node --import tsx lab/hard-ai/ladder/run.ts \\\n  --a hard@ablate:interior-action-wide --b hard@desktop \\\n  --work wall:3000 --handicaps 0,3 --pairs 32 \\\n  --seed 1398602 --shards 2 --legality strict \\\n  --openings lab/hard-ai/ladder/openings/e1-val.jsonl \\\n  --out lab/results/hard-ai-e2/ablate/interior-action-wide/ladder"
+    },
+    {
+      "arm": "interior-place-wide",
+      "seed": 1362109,
+      "command": "node --import tsx lab/hard-ai/ladder/run.ts \\\n  --a hard@ablate:interior-place-wide --b hard@desktop \\\n  --work wall:3000 --handicaps 0,3 --pairs 32 \\\n  --seed 1362109 --shards 2 --legality strict \\\n  --openings lab/hard-ai/ladder/openings/e1-val.jsonl \\\n  --out lab/results/hard-ai-e2/ablate/interior-place-wide/ladder"
+    }
+  ]
+}

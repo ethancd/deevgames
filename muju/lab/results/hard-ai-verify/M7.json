@@ -1,0 +1,33 @@
+{
+  "positionsRequested": 2000,
+  "positionsSampled": 2000,
+  "maxOwnUnits": 8,
+  "shards": 12,
+  "corpusSize": 1808,
+  "positionsUsed": 1531,
+  "placePhasePositions": 150,
+  "comparisons": 8306,
+  "comparisonsByCombo": [
+    6128,
+    726,
+    726,
+    726
+  ],
+  "minComparisonsPerCombo": 726,
+  "killsFound": 3265,
+  "buyPlans": 472,
+  "promoPlans": 131,
+  "suboptimal": 0,
+  "optimistic": 0,
+  "truncated": 0,
+  "cornerChecked": 28,
+  "cornerMismatch": 0,
+  "cornerPreparingChecked": 14,
+  "cornerPreparingMismatch": 0,
+  "cleaveProbeOk": true,
+  "mismatches": [],
+  "elapsedMs": 1212,
+  "git": "554544767eaec51d5ae6c78a0cdfb97be1b7a22c",
+  "node": "v24.11.1",
+  "at": "2026-09-15T13:06:44.765Z"
+}

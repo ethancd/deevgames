@@ -1,0 +1,121 @@
+{
+  "gate": "M2",
+  "pass": true,
+  "command": "npx vitest run tests/lab/hard-ladder.test.ts tests/lab/harness.test.ts && npm run hard:ladder -- --a aiv2-medium-fast --b Rush --work fixed:1200 --handicaps 0 --pairs 24 --seed 1 --shards 12 --out lab/results/hard-ai-verify/M2-calib && npm run hard:ladder -- --a aiv2-medium-fast --b aiv2-medium-fast --work fixed:1200 --handicaps 0 --pairs 12 --seed 2 --shards 12 --sprt 0,100,0.05,0.05 --out lab/results/hard-ai-verify/M2-self && npm run hard:determinism -- --engine aiv2-medium-fast --work 5000 --positions 10 --out lab/results/hard-ai-verify/M2.json",
+  "criterion": "Ladder: sharded runner, pairing, SPRT, Elo, harness v3, determinism tool",
+  "metrics": {
+    "vitestFailures": 0,
+    "engine": "aiv2-medium-fast",
+    "workUnits": 5000,
+    "positions": 10,
+    "seeds": [
+      1
+    ],
+    "runs": 4,
+    "identical": true,
+    "mismatches": [],
+    "at": "2026-09-15T01:36:33.342Z",
+    "calib": {
+      "a": "aiv2-medium-fast",
+      "b": "Rush",
+      "work": "fixed:1200",
+      "handicaps": [
+        0
+      ],
+      "pairs": 24,
+      "games": 48,
+      "seed": 1,
+      "shards": 12,
+      "adjudicationRate": 0,
+      "illegalActions": 0,
+      "bothSeatsPlayed": true,
+      "voided": false,
+      "meanTurnMs": {
+        "a": 415.0340386731666,
+        "b": 415.0340386731666
+      },
+      "elo": -210.72361556350802,
+      "eloLo": -311.41479774374,
+      "eloHi": -134.48133402310128,
+      "los": 4.077801429858141e-10,
+      "eloDetail": {
+        "n": 48,
+        "mu": 0.22916666666666666,
+        "variance": 0.09331597222222222,
+        "elo": -210.72361556350802,
+        "eloLo": -311.41479774374,
+        "eloHi": -134.48133402310128,
+        "los": 4.077801429858141e-10
+      },
+      "sprt": null,
+      "decision": null
+    },
+    "self": {
+      "a": "aiv2-medium-fast",
+      "b": "aiv2-medium-fast",
+      "work": "fixed:1200",
+      "handicaps": [
+        0
+      ],
+      "pairs": 12,
+      "games": 24,
+      "seed": 2,
+      "shards": 12,
+      "adjudicationRate": 0,
+      "illegalActions": 0,
+      "bothSeatsPlayed": true,
+      "voided": false,
+      "meanTurnMs": {
+        "a": 432.62085635359114,
+        "b": 432.62085635359114
+      },
+      "elo": 0,
+      "eloLo": -0.008791171740335368,
+      "eloHi": 0.008791171740297634,
+      "los": 0.5000000005,
+      "eloDetail": {
+        "n": 24,
+        "mu": 0.5,
+        "variance": 0,
+        "elo": 0,
+        "eloLo": -0.008791171740335368,
+        "eloHi": 0.008791171740297634,
+        "los": 0.5000000005
+      },
+      "sprt": {
+        "elo0": 0,
+        "elo1": 100,
+        "alpha": 0.05,
+        "beta": 0.05,
+        "n": 12,
+        "t0": 0.5,
+        "t1": 0.6400649998028851,
+        "mu": 0.5,
+        "variance": 0,
+        "llr": -117709225.01869324,
+        "lowerBound": -2.9444389791664403,
+        "upperBound": 2.9444389791664403,
+        "decision": "H0"
+      },
+      "decision": "H0"
+    },
+    "determinism": {
+      "engine": "aiv2-medium-fast",
+      "workUnits": 5000,
+      "positions": 10,
+      "seeds": [
+        1
+      ],
+      "runs": 4,
+      "identical": true,
+      "mismatches": [],
+      "at": "2026-09-15T01:36:33.342Z"
+    }
+  },
+  "git": "07f43f12ee2032fad01dd3fdec391f3cae97bfba",
+  "wasmSha256": "da9b1cdf25e4bcd6a4674fd697095e35c2606c29817e3d18043faf4799d828bf",
+  "node": "v24.11.1",
+  "device": "Apple M2 Max x12 (darwin/arm64)",
+  "elapsedMs": 1124268,
+  "at": "2026-09-15T01:36:33.399Z"
+}

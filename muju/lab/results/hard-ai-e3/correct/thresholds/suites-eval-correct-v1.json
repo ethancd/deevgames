@@ -1,0 +1,391 @@
+{
+  "engine": "hard@ablate:eval-correct-v1",
+  "weightsLabel": "default-v1",
+  "evalFix": "b2+b3+b4+b5+b6",
+  "work": 0,
+  "shards": 1,
+  "cases": 205,
+  "illegalTurns": 0,
+  "replicaDivergences": 0,
+  "failures": [
+    {
+      "suite": "tactics",
+      "id": "tactics-plugged-fire_1-vs-fire_3",
+      "endKey": "3bc2e15dbb95cdf4",
+      "source": "search",
+      "reason": "not-in-best"
+    },
+    {
+      "suite": "tactics",
+      "id": "tactics-plugged-fire_2-vs-fire_3",
+      "endKey": "c0cbb0ad5cbc4ba6",
+      "source": "search",
+      "reason": "not-in-best"
+    },
+    {
+      "suite": "tactics",
+      "id": "tactics-plugged-water_1-vs-fire_3",
+      "endKey": "053758f164195953",
+      "source": "search",
+      "reason": "not-in-best"
+    },
+    {
+      "suite": "tactics",
+      "id": "tactics-plugged-water_2-vs-fire_3",
+      "endKey": "b8ddbe810c23ae8f",
+      "source": "search",
+      "reason": "not-in-best"
+    },
+    {
+      "suite": "tactics",
+      "id": "tactics-plugged-water_3-vs-fire_3",
+      "endKey": "af3ea4c8345eafd8",
+      "source": "search",
+      "reason": "not-in-best"
+    },
+    {
+      "suite": "tactics",
+      "id": "tactics-plugged-shadow_1-vs-fire_3",
+      "endKey": "85f0ff93a720a183",
+      "source": "search",
+      "reason": "not-in-best"
+    },
+    {
+      "suite": "spawn-strike",
+      "id": "spawn-strike-retreat-1",
+      "endKey": "db45d2c6fc39c489",
+      "source": "search",
+      "reason": "not-in-best"
+    },
+    {
+      "suite": "spawn-strike",
+      "id": "spawn-strike-retreat-2",
+      "endKey": "6d7589c1904d579d",
+      "source": "search",
+      "reason": "not-in-best"
+    },
+    {
+      "suite": "spawn-strike",
+      "id": "spawn-strike-retreat-3",
+      "endKey": "4e308f9fc551e132",
+      "source": "search",
+      "reason": "not-in-best"
+    },
+    {
+      "suite": "spawn-strike",
+      "id": "spawn-strike-f16-punisher",
+      "endKey": "c07cd2a07154878f",
+      "source": "search",
+      "reason": "not-in-best"
+    },
+    {
+      "suite": "invariants",
+      "id": "inv3-retreat-square",
+      "endKey": "eval correct-violating -3462 cc; searched violating-correct -620 cc",
+      "source": "pair",
+      "reason": "prefers-violating"
+    },
+    {
+      "suite": "invariants",
+      "id": "inv4-strand-unpunished",
+      "endKey": "eval correct-violating -1766 cc; searched violating-correct 1692 cc",
+      "source": "pair",
+      "reason": "prefers-violating"
+    },
+    {
+      "suite": "invariants",
+      "id": "inv6-fragile-anchor",
+      "endKey": "eval correct-violating -2358 cc; searched violating-correct 108 cc",
+      "source": "pair",
+      "reason": "prefers-violating"
+    },
+    {
+      "suite": "invariants",
+      "id": "inv12-cleave-line",
+      "endKey": "eval correct-violating -2404 cc; searched violating-correct -309 cc",
+      "source": "pair",
+      "reason": "prefers-violating"
+    },
+    {
+      "suite": "invariants",
+      "id": "inv15-unknown-as-safe",
+      "endKey": "eval correct-violating 0 cc; searched violating-correct 0 cc",
+      "source": "pair",
+      "reason": "prefers-violating"
+    },
+    {
+      "suite": "invariants",
+      "id": "inv18-wasted-end-place",
+      "endKey": "eval correct-violating 0 cc; searched violating-correct 0 cc",
+      "source": "pair",
+      "reason": "prefers-violating"
+    },
+    {
+      "suite": "invariants",
+      "id": "inv19-soft-miner-exposed",
+      "endKey": "eval correct-violating -3412 cc; searched violating-correct -2522 cc",
+      "source": "pair",
+      "reason": "prefers-violating"
+    },
+    {
+      "suite": "invariants",
+      "id": "inv20-strand-no-retreat",
+      "endKey": "eval correct-violating -2158 cc; searched violating-correct -995695 cc",
+      "source": "pair",
+      "reason": "prefers-violating"
+    }
+  ],
+  "wonOutright": [
+    "tactics#tactics-plugged-fire_3-vs-fire_3",
+    "tactics#tactics-plugged-lightning_2-vs-fire_3",
+    "spawn-strike#spawn-strike-d9-pivot-1",
+    "spawn-strike#spawn-strike-d9-pivot-2",
+    "spawn-strike#spawn-strike-d9-pivot-3",
+    "spawn-strike#spawn-strike-d9-pivot-4",
+    "home-mate#cheap-invasion-one-attack-mate",
+    "home-mate#damage-remains-during-defender-reply-rotated-black-mate",
+    "economy#relocate-fire_1-e",
+    "economy#relocate-fire_1-s",
+    "economy#relocate-water_1-e",
+    "economy#relocate-water_1-s",
+    "economy#relocate-plant_1-e",
+    "economy#relocate-plant_1-s",
+    "economy#relocate-plant_2-e",
+    "economy#relocate-plant_2-s",
+    "economy#relocate-plant_3-e",
+    "economy#relocate-plant_3-s",
+    "economy#relocate-metal_1-e",
+    "economy#relocate-metal_1-s",
+    "economy#relocate-metal_2-e",
+    "economy#relocate-metal_2-s",
+    "economy#muju-onto-4-0",
+    "economy#muju-onto-4-1",
+    "economy#muju-onto-4-2",
+    "economy#muju-onto-4-3",
+    "economy#muju-onto-4-4",
+    "economy#muju-onto-4-5",
+    "economy#muju-onto-4-6",
+    "economy#muju-onto-4-7",
+    "economy#promote-plant_1-16-0",
+    "economy#promote-plant_1-8-1",
+    "economy#promote-plant_2-16-2",
+    "economy#promote-metal_1-16-3",
+    "economy#promote-metal_2-16-4",
+    "economy#promote-shadow_1-16-5",
+    "economy#promote-shadow_2-16-6",
+    "economy#promote-water_2-16-7"
+  ],
+  "deadPositions": [
+    "tactics#tactics-promote-plant_2-vs-lightning_3",
+    "tactics#tactics-promote-metal_1-vs-lightning_3",
+    "tactics#tactics-promote-water_2-vs-water_2",
+    "tactics#tactics-promote-shadow_1-vs-water_2",
+    "tactics#tactics-promote-plant_2-vs-water_2",
+    "tactics#tactics-promote-metal_1-vs-water_2",
+    "home-mate#clear-an-adjacent-lane-mate",
+    "home-mate#clear-an-adjacent-lane-rotated-black-mate"
+  ],
+  "deadBudgetExceeded": [],
+  "suites": {
+    "tactics": {
+      "cases": 79,
+      "passed": 73,
+      "points": 73,
+      "pointsWon": 67
+    },
+    "spawn-strike": {
+      "cases": 20,
+      "passed": 16,
+      "points": 20,
+      "pointsWon": 16
+    },
+    "home-mate": {
+      "cases": 56,
+      "passed": 56,
+      "points": 40,
+      "pointsWon": 40
+    },
+    "invariants": {
+      "cases": 20,
+      "passed": 12,
+      "points": 20,
+      "pointsWon": 12
+    },
+    "economy": {
+      "cases": 30,
+      "passed": 30,
+      "points": 30,
+      "pointsWon": 30
+    }
+  },
+  "tactics": 0.9178082191780822,
+  "spawnStrike": 0.8,
+  "homeMate": 56,
+  "economy": 1,
+  "passedCases": 187,
+  "invariantPairs": 20,
+  "invariantsEval": 0.6,
+  "invariantsSearched": 0.4,
+  "invariantDetail": [
+    {
+      "id": "inv1-spawn-zero",
+      "invariant": 1,
+      "evalGapCc": 3446,
+      "evalPass": true,
+      "searchGapCc": 4621,
+      "searchPass": true
+    },
+    {
+      "id": "inv2-corner-seal",
+      "invariant": 2,
+      "evalGapCc": 30,
+      "evalPass": true,
+      "searchGapCc": -320,
+      "searchPass": false
+    },
+    {
+      "id": "inv3-retreat-square",
+      "invariant": 3,
+      "evalGapCc": -3462,
+      "evalPass": false,
+      "searchGapCc": -620,
+      "searchPass": false
+    },
+    {
+      "id": "inv4-strand-unpunished",
+      "invariant": 4,
+      "evalGapCc": -1766,
+      "evalPass": false,
+      "searchGapCc": 1692,
+      "searchPass": true
+    },
+    {
+      "id": "inv5-poor-miner-square",
+      "invariant": 5,
+      "evalGapCc": 2165,
+      "evalPass": true,
+      "searchGapCc": 498,
+      "searchPass": true
+    },
+    {
+      "id": "inv6-fragile-anchor",
+      "invariant": 6,
+      "evalGapCc": -2358,
+      "evalPass": false,
+      "searchGapCc": 108,
+      "searchPass": true
+    },
+    {
+      "id": "inv7-promote-no-runway",
+      "invariant": 7,
+      "evalGapCc": 600,
+      "evalPass": true,
+      "searchGapCc": 0,
+      "searchPass": false
+    },
+    {
+      "id": "inv8-no-pre-adjacency",
+      "invariant": 8,
+      "evalGapCc": 335,
+      "evalPass": true,
+      "searchGapCc": 0,
+      "searchPass": false
+    },
+    {
+      "id": "inv9-chip-across-turn",
+      "invariant": 9,
+      "evalGapCc": 150,
+      "evalPass": true,
+      "searchGapCc": 0,
+      "searchPass": false
+    },
+    {
+      "id": "inv10-home-reachable",
+      "invariant": 10,
+      "evalGapCc": 2557,
+      "evalPass": true,
+      "searchGapCc": 1491,
+      "searchPass": true
+    },
+    {
+      "id": "inv11-home-bare",
+      "invariant": 11,
+      "evalGapCc": 884,
+      "evalPass": true,
+      "searchGapCc": 1135,
+      "searchPass": true
+    },
+    {
+      "id": "inv12-cleave-line",
+      "invariant": 12,
+      "evalGapCc": -2404,
+      "evalPass": false,
+      "searchGapCc": -309,
+      "searchPass": false
+    },
+    {
+      "id": "inv13-turtle",
+      "invariant": 13,
+      "evalGapCc": 301,
+      "evalPass": true,
+      "searchGapCc": -580,
+      "searchPass": false
+    },
+    {
+      "id": "inv14-liquidity-floor",
+      "invariant": 14,
+      "evalGapCc": 750,
+      "evalPass": true,
+      "searchGapCc": 1115,
+      "searchPass": true
+    },
+    {
+      "id": "inv15-unknown-as-safe",
+      "invariant": 15,
+      "evalGapCc": 0,
+      "evalPass": false,
+      "searchGapCc": 0,
+      "searchPass": false
+    },
+    {
+      "id": "inv16-clock-discipline",
+      "invariant": 16,
+      "evalGapCc": 560,
+      "evalPass": true,
+      "searchGapCc": 3134,
+      "searchPass": true
+    },
+    {
+      "id": "inv17-self-block",
+      "invariant": 17,
+      "evalGapCc": 290,
+      "evalPass": true,
+      "searchGapCc": -60,
+      "searchPass": false
+    },
+    {
+      "id": "inv18-wasted-end-place",
+      "invariant": 18,
+      "evalGapCc": 0,
+      "evalPass": false,
+      "searchGapCc": 0,
+      "searchPass": false
+    },
+    {
+      "id": "inv19-soft-miner-exposed",
+      "invariant": 19,
+      "evalGapCc": -3412,
+      "evalPass": false,
+      "searchGapCc": -2522,
+      "searchPass": false
+    },
+    {
+      "id": "inv20-strand-no-retreat",
+      "invariant": 20,
+      "evalGapCc": -2158,
+      "evalPass": false,
+      "searchGapCc": -995695,
+      "searchPass": false
+    }
+  ]
+}

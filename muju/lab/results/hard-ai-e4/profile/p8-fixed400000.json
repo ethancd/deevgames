@@ -1,0 +1,82 @@
+{
+  "schema": "muju-hard-ai-e4-profile-v1",
+  "set": "p8",
+  "work": "fixed:400000",
+  "engine": "hard@desktop",
+  "engineConfigHash": "hard:desktop:fixed:400000#d474d5ea9f10e0de8ab711b04c5b83f81bd7e7fae9f3be2fe9890ff8982fb8f0",
+  "resolvedConfigHash": "d474d5ea9f10e0de8ab711b04c5b83f81bd7e7fae9f3be2fe9890ff8982fb8f0",
+  "positions": [],
+  "skipped": [
+    {
+      "id": "p8:b3-desktop-white-seatTurn22",
+      "set": "p8",
+      "reason": "not attempted at fixed:400000: no position in this set has been measured at more than fixed:100,000, the safest of them already spends most of a 5-minute batch there, and a fixed-work search cannot be preempted once started (P8-SLOW-TURNS.md §1: cost is dominated by unmetered per-node generation, not the rung). See docs/hard-ai/e4/E4.1-PROFILE.md."
+    },
+    {
+      "id": "p8:b3-arm-black-seatTurn22",
+      "set": "p8",
+      "reason": "not attempted at fixed:400000: no position in this set has been measured at more than fixed:100,000, the safest of them already spends most of a 5-minute batch there, and a fixed-work search cannot be preempted once started (P8-SLOW-TURNS.md §1: cost is dominated by unmetered per-node generation, not the rung). See docs/hard-ai/e4/E4.1-PROFILE.md."
+    },
+    {
+      "id": "p8:b3-arm-black-seatTurn21",
+      "set": "p8",
+      "reason": "not attempted at fixed:400000: no position in this set has been measured at more than fixed:100,000, the safest of them already spends most of a 5-minute batch there, and a fixed-work search cannot be preempted once started (P8-SLOW-TURNS.md §1: cost is dominated by unmetered per-node generation, not the rung). See docs/hard-ai/e4/E4.1-PROFILE.md."
+    },
+    {
+      "id": "p8:b3-desktop-white-seatTurn23",
+      "set": "p8",
+      "reason": "not attempted at fixed:400000: no position in this set has been measured at more than fixed:100,000, the safest of them already spends most of a 5-minute batch there, and a fixed-work search cannot be preempted once started (P8-SLOW-TURNS.md §1: cost is dominated by unmetered per-node generation, not the rung). See docs/hard-ai/e4/E4.1-PROFILE.md."
+    },
+    {
+      "id": "p8:b3-arm-black-seatTurn23",
+      "set": "p8",
+      "reason": "not attempted at fixed:400000: no position in this set has been measured at more than fixed:100,000, the safest of them already spends most of a 5-minute batch there, and a fixed-work search cannot be preempted once started (P8-SLOW-TURNS.md §1: cost is dominated by unmetered per-node generation, not the rung). See docs/hard-ai/e4/E4.1-PROFILE.md."
+    },
+    {
+      "id": "p8:b6-desktop-white-seatTurn16-Bwhite",
+      "set": "p8",
+      "reason": "not attempted at fixed:400000: no position in this set has been measured at more than fixed:100,000, the safest of them already spends most of a 5-minute batch there, and a fixed-work search cannot be preempted once started (P8-SLOW-TURNS.md §1: cost is dominated by unmetered per-node generation, not the rung). See docs/hard-ai/e4/E4.1-PROFILE.md."
+    },
+    {
+      "id": "p8:b6-arm-white-seatTurn16-Awhite",
+      "set": "p8",
+      "reason": "not attempted at fixed:400000: no position in this set has been measured at more than fixed:100,000, the safest of them already spends most of a 5-minute batch there, and a fixed-work search cannot be preempted once started (P8-SLOW-TURNS.md §1: cost is dominated by unmetered per-node generation, not the rung). See docs/hard-ai/e4/E4.1-PROFILE.md."
+    },
+    {
+      "id": "p8:correct-v1-arm-white-seatTurn25",
+      "set": "p8",
+      "reason": "not attempted at fixed:400000: no position in this set has been measured at more than fixed:100,000, the safest of them already spends most of a 5-minute batch there, and a fixed-work search cannot be preempted once started (P8-SLOW-TURNS.md §1: cost is dominated by unmetered per-node generation, not the rung). See docs/hard-ai/e4/E4.1-PROFILE.md."
+    },
+    {
+      "id": "p8:correct-v1-desktop-black-seatTurn24",
+      "set": "p8",
+      "reason": "not attempted at fixed:400000: no position in this set has been measured at more than fixed:100,000, the safest of them already spends most of a 5-minute batch there, and a fixed-work search cannot be preempted once started (P8-SLOW-TURNS.md §1: cost is dominated by unmetered per-node generation, not the rung). See docs/hard-ai/e4/E4.1-PROFILE.md."
+    },
+    {
+      "id": "p8:correct-v1-arm-white-seatTurn24",
+      "set": "p8",
+      "reason": "not attempted at fixed:400000: no position in this set has been measured at more than fixed:100,000, the safest of them already spends most of a 5-minute batch there, and a fixed-work search cannot be preempted once started (P8-SLOW-TURNS.md §1: cost is dominated by unmetered per-node generation, not the rung). See docs/hard-ai/e4/E4.1-PROFILE.md."
+    },
+    {
+      "id": "p8:correct-v1-desktop-black-seatTurn23",
+      "set": "p8",
+      "reason": "not attempted at fixed:400000: no position in this set has been measured at more than fixed:100,000, the safest of them already spends most of a 5-minute batch there, and a fixed-work search cannot be preempted once started (P8-SLOW-TURNS.md §1: cost is dominated by unmetered per-node generation, not the rung). See docs/hard-ai/e4/E4.1-PROFILE.md."
+    }
+  ],
+  "summary": {
+    "n": 0,
+    "abortShare": 0,
+    "meanCompletedIterations": 0,
+    "dominantBucket": null,
+    "meanBucketShare": {},
+    "top3Functions": []
+  },
+  "device": "Apple M2 Max x12 (darwin/arm64)",
+  "cpus": 12,
+  "node": "v24.11.1",
+  "git": "437ee40fd29f594f017e90f850762c6092864772",
+  "gitDirty": true,
+  "sampleIntervalUs": 100,
+  "at": "2026-09-18T00:21:29.332Z",
+  "note": "E4.1 cost-and-completion profile. One searchTurn per position, phase-attributed from an in-process CPU profile (self time by source file) plus the expose/ply1Trace instrument; see docs/hard-ai/e4/E4.1-PROFILE.md."
+}

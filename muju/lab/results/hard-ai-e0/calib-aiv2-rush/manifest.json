@@ -1,0 +1,167 @@
+{
+  "schema": "muju-ladder-manifest-v1",
+  "status": "complete",
+  "a": "aiv2-hard",
+  "b": "Rush",
+  "aConfigHash": "aiv2:hard:full:wall:500#b43d8aed911df04318d265ebfb28c65927ebccd8953178f96630ea0d6d24d14a",
+  "bConfigHash": "scripted:Rush",
+  "aResolvedConfig": {
+    "engine": "aiv2",
+    "difficulty": "hard",
+    "fast": false,
+    "search": {
+      "mctsIterations": 1200,
+      "mctsTimeLimit": 3000,
+      "beamWidth": 50,
+      "outputPlans": 20,
+      "progressiveWideningAlpha": 0.5,
+      "tacticalDepth": 2,
+      "tacticalNodes": 600000,
+      "fixedWork": 0
+    },
+    "budget": {
+      "mode": "wall",
+      "fixedWork": 0,
+      "turnMs": 500,
+      "allocation": "split-across-remaining-decisions",
+      "shippedTurnBudgetMs": 8000,
+      "overridesPresetTimeLimit": true
+    },
+    "lifecycle": {
+      "engine": "one-per-game-seat",
+      "seed": "once-at-construction",
+      "setDifficultyPerDecision": true,
+      "searchesPerTurn": "one-per-action"
+    },
+    "resign": false,
+    "tacticalSolver": "wasm-tactics-or-reference-fallback"
+  },
+  "bResolvedConfig": {
+    "engine": "scripted",
+    "bot": "Rush"
+  },
+  "work": "wall:500",
+  "seed": 91605,
+  "pairs": 8,
+  "shards": 2,
+  "handicaps": [
+    0
+  ],
+  "legality": "as-shipped",
+  "sprt": null,
+  "openings": {
+    "path": null,
+    "sha256": null,
+    "ids": [
+      "initial"
+    ],
+    "count": 1
+  },
+  "replays": true,
+  "resume": false,
+  "schedule": [
+    {
+      "pairId": "initial:0:0",
+      "pairIndex": 0,
+      "openingId": "initial",
+      "handicap": 0,
+      "seed": 460563073
+    },
+    {
+      "pairId": "initial:0:1",
+      "pairIndex": 1,
+      "openingId": "initial",
+      "handicap": 0,
+      "seed": 1731598350
+    },
+    {
+      "pairId": "initial:0:2",
+      "pairIndex": 2,
+      "openingId": "initial",
+      "handicap": 0,
+      "seed": 2037190018
+    },
+    {
+      "pairId": "initial:0:3",
+      "pairIndex": 3,
+      "openingId": "initial",
+      "handicap": 0,
+      "seed": 33143716
+    },
+    {
+      "pairId": "initial:0:4",
+      "pairIndex": 4,
+      "openingId": "initial",
+      "handicap": 0,
+      "seed": 1648047024
+    },
+    {
+      "pairId": "initial:0:5",
+      "pairIndex": 5,
+      "openingId": "initial",
+      "handicap": 0,
+      "seed": 1786381595
+    },
+    {
+      "pairId": "initial:0:6",
+      "pairIndex": 6,
+      "openingId": "initial",
+      "handicap": 0,
+      "seed": 3636370949
+    },
+    {
+      "pairId": "initial:0:7",
+      "pairIndex": 7,
+      "openingId": "initial",
+      "handicap": 0,
+      "seed": 70892542
+    }
+  ],
+  "resumedPairIds": [],
+  "sprtStop": null,
+  "rules": {
+    "elementGraph": "double-thick",
+    "upkeep": "shipped",
+    "inactivityRule": "on"
+  },
+  "argv": [
+    "--a",
+    "aiv2-hard",
+    "--b",
+    "Rush",
+    "--work",
+    "wall:500",
+    "--handicaps",
+    "0",
+    "--pairs",
+    "8",
+    "--seed",
+    "91605",
+    "--shards",
+    "2",
+    "--out",
+    "lab/results/hard-ai-e0/calib-aiv2-rush"
+  ],
+  "git": "b6cbce7734b6349c719f2d3907d27882e607fd12",
+  "gitDirty": true,
+  "wasmSha256": "da9b1cdf25e4bcd6a4674fd697095e35c2606c29817e3d18043faf4799d828bf",
+  "node": "v24.11.1",
+  "device": "Apple M2 Max x12 (darwin/arm64)",
+  "cpuCount": 12,
+  "loadavg": [
+    3.58056640625,
+    3.01806640625,
+    2.7236328125
+  ],
+  "at": "2026-09-16T05:12:13.907Z",
+  "finishedAt": "2026-09-16T05:14:06.358Z",
+  "wallMs": 112510,
+  "counts": {
+    "scheduledPairs": 8,
+    "completedPairs": 8,
+    "games": 16,
+    "failures": 0,
+    "resumedPairs": 0
+  },
+  "error": null
+}

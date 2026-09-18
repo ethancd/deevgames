@@ -1,0 +1,192 @@
+{
+  "corpus": "tactics",
+  "sideSwap": {
+    "checked": 79,
+    "positions": 0,
+    "byFeature": []
+  },
+  "rot180": {
+    "checked": 79,
+    "skipped": 0,
+    "positions": 11,
+    "byFeature": [
+      {
+        "index": 27,
+        "name": "RelocationDebt",
+        "group": "economy",
+        "positions": 10,
+        "examples": [
+          {
+            "id": "tactics-two-lanes-plant_3-vs-fire_3",
+            "side": 0,
+            "a": 6,
+            "b": 3
+          },
+          {
+            "id": "tactics-chipped-plant_3-vs-fire_3",
+            "side": 0,
+            "a": 3,
+            "b": 1
+          },
+          {
+            "id": "tactics-plugged-water_1-vs-fire_3",
+            "side": 0,
+            "a": -3,
+            "b": -2
+          },
+          {
+            "id": "tactics-plugged-water_2-vs-fire_3",
+            "side": 0,
+            "a": -3,
+            "b": -2
+          },
+          {
+            "id": "tactics-corner-plant_3-vs-fire_3",
+            "side": 0,
+            "a": 6,
+            "b": 7
+          },
+          {
+            "id": "tactics-buy-water_1-vs-shadow_2",
+            "side": 0,
+            "a": 0,
+            "b": -1
+          },
+          {
+            "id": "tactics-buy-metal_1-vs-shadow_2",
+            "side": 0,
+            "a": 0,
+            "b": -1
+          },
+          {
+            "id": "tactics-three-lanes-plant_2-vs-plant_2",
+            "side": 0,
+            "a": 5,
+            "b": 3
+          },
+          {
+            "id": "tactics-three-lanes-plant_3-vs-metal_3",
+            "side": 0,
+            "a": 10,
+            "b": 9
+          },
+          {
+            "id": "tactics-three-lanes-metal_2-vs-metal_3",
+            "side": 0,
+            "a": 6,
+            "b": 1
+          }
+        ]
+      },
+      {
+        "index": 23,
+        "name": "EconDelta",
+        "group": "economy",
+        "positions": 7,
+        "examples": [
+          {
+            "id": "tactics-two-lanes-plant_3-vs-fire_3",
+            "side": 0,
+            "a": 11,
+            "b": 6
+          },
+          {
+            "id": "tactics-plugged-water_1-vs-fire_3",
+            "side": 0,
+            "a": 9,
+            "b": 7
+          },
+          {
+            "id": "tactics-plugged-water_2-vs-fire_3",
+            "side": 0,
+            "a": 5,
+            "b": 3
+          },
+          {
+            "id": "tactics-three-lanes-plant_1-vs-water_2",
+            "side": 0,
+            "a": 9,
+            "b": 7
+          },
+          {
+            "id": "tactics-three-lanes-plant_2-vs-plant_2",
+            "side": 0,
+            "a": -2,
+            "b": 0
+          },
+          {
+            "id": "tactics-three-lanes-plant_3-vs-metal_3",
+            "side": 0,
+            "a": -1,
+            "b": -2
+          },
+          {
+            "id": "tactics-three-lanes-metal_2-vs-metal_3",
+            "side": 0,
+            "a": -7,
+            "b": -4
+          }
+        ]
+      },
+      {
+        "index": 24,
+        "name": "DepletionWaste",
+        "group": "economy",
+        "positions": 6,
+        "examples": [
+          {
+            "id": "tactics-two-lanes-plant_3-vs-fire_3",
+            "side": 0,
+            "a": 48,
+            "b": 56
+          },
+          {
+            "id": "tactics-plugged-water_1-vs-fire_3",
+            "side": 0,
+            "a": -24,
+            "b": -21
+          },
+          {
+            "id": "tactics-plugged-water_2-vs-fire_3",
+            "side": 0,
+            "a": -24,
+            "b": -21
+          },
+          {
+            "id": "tactics-three-lanes-plant_1-vs-water_2",
+            "side": 0,
+            "a": 12,
+            "b": 16
+          },
+          {
+            "id": "tactics-three-lanes-plant_3-vs-metal_3",
+            "side": 0,
+            "a": 60,
+            "b": 64
+          },
+          {
+            "id": "tactics-three-lanes-metal_2-vs-metal_3",
+            "side": 0,
+            "a": 18,
+            "b": 12
+          }
+        ]
+      }
+    ]
+  },
+  "scoreIdentity": {
+    "checked": 79,
+    "mismatches": 0,
+    "examples": []
+  },
+  "materialResidual": {
+    "checked": 79,
+    "nonzero": 0,
+    "examples": []
+  },
+  "stageIdentity": {
+    "checked": 79,
+    "mismatches": 0,
+    "examples": []
+  }
+}

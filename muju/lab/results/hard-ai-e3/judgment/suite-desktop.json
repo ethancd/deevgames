@@ -1,0 +1,281 @@
+{
+  "engine": "hard@desktop",
+  "work": 0,
+  "shards": 1,
+  "cases": 50,
+  "illegalTurns": 0,
+  "replicaDivergences": 0,
+  "failures": [
+    {
+      "suite": "invariants",
+      "id": "inv3-retreat-square",
+      "endKey": "eval correct-violating -3462 cc; searched violating-correct 500 cc",
+      "source": "pair",
+      "reason": "prefers-violating"
+    },
+    {
+      "suite": "invariants",
+      "id": "inv4-strand-unpunished",
+      "endKey": "eval correct-violating -2016 cc; searched violating-correct 500 cc",
+      "source": "pair",
+      "reason": "prefers-violating"
+    },
+    {
+      "suite": "invariants",
+      "id": "inv6-fragile-anchor",
+      "endKey": "eval correct-violating -2358 cc; searched violating-correct -600 cc",
+      "source": "pair",
+      "reason": "prefers-violating"
+    },
+    {
+      "suite": "invariants",
+      "id": "inv12-cleave-line",
+      "endKey": "eval correct-violating -2464 cc; searched violating-correct 0 cc",
+      "source": "pair",
+      "reason": "prefers-violating"
+    },
+    {
+      "suite": "invariants",
+      "id": "inv15-unknown-as-safe",
+      "endKey": "eval correct-violating 0 cc; searched violating-correct 0 cc",
+      "source": "pair",
+      "reason": "prefers-violating"
+    },
+    {
+      "suite": "invariants",
+      "id": "inv18-wasted-end-place",
+      "endKey": "eval correct-violating 0 cc; searched violating-correct 0 cc",
+      "source": "pair",
+      "reason": "prefers-violating"
+    },
+    {
+      "suite": "invariants",
+      "id": "inv19-soft-miner-exposed",
+      "endKey": "eval correct-violating -3662 cc; searched violating-correct 200 cc",
+      "source": "pair",
+      "reason": "prefers-violating"
+    },
+    {
+      "suite": "invariants",
+      "id": "inv20-strand-no-retreat",
+      "endKey": "eval correct-violating -2318 cc; searched violating-correct -997800 cc",
+      "source": "pair",
+      "reason": "prefers-violating"
+    }
+  ],
+  "wonOutright": [
+    "economy#relocate-fire_1-e",
+    "economy#relocate-fire_1-s",
+    "economy#relocate-water_1-e",
+    "economy#relocate-water_1-s",
+    "economy#relocate-plant_1-e",
+    "economy#relocate-plant_1-s",
+    "economy#relocate-plant_2-e",
+    "economy#relocate-plant_2-s",
+    "economy#relocate-plant_3-e",
+    "economy#relocate-plant_3-s",
+    "economy#relocate-metal_1-e",
+    "economy#relocate-metal_1-s",
+    "economy#relocate-metal_2-e",
+    "economy#relocate-metal_2-s",
+    "economy#muju-onto-4-0",
+    "economy#muju-onto-4-1",
+    "economy#muju-onto-4-2",
+    "economy#muju-onto-4-3",
+    "economy#muju-onto-4-4",
+    "economy#muju-onto-4-5",
+    "economy#muju-onto-4-6",
+    "economy#muju-onto-4-7",
+    "economy#promote-plant_1-16-0",
+    "economy#promote-plant_1-8-1",
+    "economy#promote-plant_2-16-2",
+    "economy#promote-metal_1-16-3",
+    "economy#promote-metal_2-16-4",
+    "economy#promote-shadow_1-16-5",
+    "economy#promote-shadow_2-16-6",
+    "economy#promote-water_2-16-7"
+  ],
+  "deadPositions": [],
+  "deadBudgetExceeded": [],
+  "suites": {
+    "economy": {
+      "cases": 30,
+      "passed": 30,
+      "points": 30,
+      "pointsWon": 30
+    },
+    "invariants": {
+      "cases": 20,
+      "passed": 12,
+      "points": 20,
+      "pointsWon": 12
+    }
+  },
+  "economy": 1,
+  "passedCases": 42,
+  "invariantPairs": 20,
+  "invariantsEval": 0.6,
+  "invariantsSearched": 0.45,
+  "invariantDetail": [
+    {
+      "id": "inv1-spawn-zero",
+      "invariant": 1,
+      "evalGapCc": 3446,
+      "evalPass": true,
+      "searchGapCc": 1200,
+      "searchPass": true
+    },
+    {
+      "id": "inv2-corner-seal",
+      "invariant": 2,
+      "evalGapCc": 30,
+      "evalPass": true,
+      "searchGapCc": 0,
+      "searchPass": false
+    },
+    {
+      "id": "inv3-retreat-square",
+      "invariant": 3,
+      "evalGapCc": -3462,
+      "evalPass": false,
+      "searchGapCc": 500,
+      "searchPass": true
+    },
+    {
+      "id": "inv4-strand-unpunished",
+      "invariant": 4,
+      "evalGapCc": -2016,
+      "evalPass": false,
+      "searchGapCc": 500,
+      "searchPass": true
+    },
+    {
+      "id": "inv5-poor-miner-square",
+      "invariant": 5,
+      "evalGapCc": 2165,
+      "evalPass": true,
+      "searchGapCc": 500,
+      "searchPass": true
+    },
+    {
+      "id": "inv6-fragile-anchor",
+      "invariant": 6,
+      "evalGapCc": -2358,
+      "evalPass": false,
+      "searchGapCc": -600,
+      "searchPass": false
+    },
+    {
+      "id": "inv7-promote-no-runway",
+      "invariant": 7,
+      "evalGapCc": 600,
+      "evalPass": true,
+      "searchGapCc": 0,
+      "searchPass": false
+    },
+    {
+      "id": "inv8-no-pre-adjacency",
+      "invariant": 8,
+      "evalGapCc": 335,
+      "evalPass": true,
+      "searchGapCc": 0,
+      "searchPass": false
+    },
+    {
+      "id": "inv9-chip-across-turn",
+      "invariant": 9,
+      "evalGapCc": 150,
+      "evalPass": true,
+      "searchGapCc": 0,
+      "searchPass": false
+    },
+    {
+      "id": "inv10-home-reachable",
+      "invariant": 10,
+      "evalGapCc": 2557,
+      "evalPass": true,
+      "searchGapCc": 500,
+      "searchPass": true
+    },
+    {
+      "id": "inv11-home-bare",
+      "invariant": 11,
+      "evalGapCc": 884,
+      "evalPass": true,
+      "searchGapCc": 700,
+      "searchPass": true
+    },
+    {
+      "id": "inv12-cleave-line",
+      "invariant": 12,
+      "evalGapCc": -2464,
+      "evalPass": false,
+      "searchGapCc": 0,
+      "searchPass": false
+    },
+    {
+      "id": "inv13-turtle",
+      "invariant": 13,
+      "evalGapCc": 301,
+      "evalPass": true,
+      "searchGapCc": 0,
+      "searchPass": false
+    },
+    {
+      "id": "inv14-liquidity-floor",
+      "invariant": 14,
+      "evalGapCc": 750,
+      "evalPass": true,
+      "searchGapCc": 400,
+      "searchPass": true
+    },
+    {
+      "id": "inv15-unknown-as-safe",
+      "invariant": 15,
+      "evalGapCc": 0,
+      "evalPass": false,
+      "searchGapCc": 0,
+      "searchPass": false
+    },
+    {
+      "id": "inv16-clock-discipline",
+      "invariant": 16,
+      "evalGapCc": 560,
+      "evalPass": true,
+      "searchGapCc": 700,
+      "searchPass": true
+    },
+    {
+      "id": "inv17-self-block",
+      "invariant": 17,
+      "evalGapCc": 290,
+      "evalPass": true,
+      "searchGapCc": -500,
+      "searchPass": false
+    },
+    {
+      "id": "inv18-wasted-end-place",
+      "invariant": 18,
+      "evalGapCc": 0,
+      "evalPass": false,
+      "searchGapCc": 0,
+      "searchPass": false
+    },
+    {
+      "id": "inv19-soft-miner-exposed",
+      "invariant": 19,
+      "evalGapCc": -3662,
+      "evalPass": false,
+      "searchGapCc": 200,
+      "searchPass": true
+    },
+    {
+      "id": "inv20-strand-no-retreat",
+      "invariant": 20,
+      "evalGapCc": -2318,
+      "evalPass": false,
+      "searchGapCc": -997800,
+      "searchPass": false
+    }
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "schema": "muju-hard-ai-probe-v1",
+  "engine": "hard@lab",
+  "opponent": "Rush",
+  "work": "wall:1000",
+  "budgetMs": 1000,
+  "seed": 1,
+  "requestedTurns": 3,
+  "measuredTurns": 3,
+  "coldTurnMs": 1669.2803749999998,
+  "warmMeanTurnMs": 1125.2417495,
+  "warmMaxTurnMs": 1223.4838750000001,
+  "coldOverWarm": 1.4834859937802192,
+  "botCreateMs": 0.18412500000000875,
+  "turns": [
+    {
+      "turn": 1,
+      "elapsedMs": 1669.2803749999998,
+      "decisions": 5,
+      "budgetRatio": 1.6692803749999998
+    },
+    {
+      "turn": 2,
+      "elapsedMs": 1223.4838750000001,
+      "decisions": 3,
+      "budgetRatio": 1.223483875
+    },
+    {
+      "turn": 3,
+      "elapsedMs": 1026.999624,
+      "decisions": 4,
+      "budgetRatio": 1.026999624
+    }
+  ],
+  "overrunTurns": 3,
+  "worstBudgetRatio": 1.6692803749999998,
+  "memory": {
+    "before": {
+      "rssBytes": 111165440,
+      "heapUsedBytes": 19772120
+    },
+    "after": {
+      "rssBytes": 250068992,
+      "heapUsedBytes": 46579424
+    },
+    "peak": {
+      "rssBytes": 250068992,
+      "heapUsedBytes": 46579424
+    },
+    "samples": 15,
+    "sampleIntervalMs": 250
+  },
+  "load": {
+    "before": [
+      3.47412109375,
+      4.53125,
+      5.1533203125
+    ],
+    "after": [
+      3.47412109375,
+      4.53125,
+      5.1533203125
+    ]
+  },
+  "device": "Apple M2 Max x12 (darwin/arm64)",
+  "cpus": 12,
+  "totalMemBytes": 103079215104,
+  "node": "v24.11.1",
+  "git": "b1f3d4ee7cd5e6dd88e3adb35a4f18d58eebd609",
+  "gameWallMs": 3943.4250420000003,
+  "gameTurns": 4,
+  "gameWinType": "adjudication",
+  "at": "2026-09-16T03:57:29.744Z",
+  "note": "First engineering probe (E0.5). One game, one seed, shared laptop under other load: use it to size budgets, not to calibrate work costs or claim strength."
+}

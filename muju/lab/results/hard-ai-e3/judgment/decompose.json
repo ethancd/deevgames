@@ -1,0 +1,7388 @@
+{
+ "schema": "muju-judgment-decompose-v1",
+ "at": "2026-09-17T04:15:18.082Z",
+ "engine": "hard@desktop",
+ "work": 25000,
+ "configHash": "517637c54a3b54d7dc9fa3a23c88ca97606e55ba1851094861d88ec54d7ce62f",
+ "weightsHash": "15b9b4e2",
+ "exam": [
+  {
+   "id": "authored-home-mate-cheap-invasion-one-attack-mate-preference",
+   "demand": "home-and-spawn",
+   "by": "author",
+   "sideToMove": "black",
+   "classification": null,
+   "swingCc": null,
+   "adviserWork": null,
+   "reason": "build-home-mate.ts's authored preference for a REFUTED invasion: step onto the corner only along a line the defender cannot answer. The canonical rules confirm the key set is reachable; which of the reachable turns is better is the authors' strategic reading, not a rules fact.",
+   "chosenKey": "ee6291a21d7ef452",
+   "expectedKeys": [
+    "05bef1259fdcd149",
+    "05f5f2e7ca383541",
+    "12293d86b57fe1c4",
+    "13973bc647fe4649",
+    "14a4fe060ceeda7f",
+    "156ab6559acce441",
+    "17de65fbea5a0c90",
+    "19e621157b37c5fe",
+    "1d617dd142ee58e4",
+    "219f5734054a0372",
+    "2438c0dd0c56ada8",
+    "26a201bb6da28a4c",
+    "27cd9bf50f480b66",
+    "282b5e967ac880cd",
+    "2bd21a4bb7ea35b6",
+    "2eded372d93ffd53",
+    "31c3e95bf2f4e74b",
+    "31e5ebe625324cec",
+    "37b0552b6d0b9ec0",
+    "3983cdc635b9b148",
+    "3a75016dff59b163",
+    "3c898c63616c8cea",
+    "3c9b7161301818db",
+    "3f17840898e6444a",
+    "3f608fced733d2c0",
+    "40991af0784bbec1",
+    "45cce735f8ce666a",
+    "48f497fb8889ef8a",
+    "496c0a1e6464a32c",
+    "4b384ac095dd41b6",
+    "4d18f1554faca040",
+    "4e6091979c689474",
+    "5e05d332c06516db",
+    "5f9f82c9684a7a1a",
+    "64fda313f271b0e6",
+    "66e92c1fc5ffb8c6",
+    "68fe4ab0a097b265",
+    "6b7feb46b1c974b7",
+    "6e18e9d6ee7f5b0c",
+    "74a304de6630dc93",
+    "79b0c63bf0df7c09",
+    "7c5e97234d1199a9",
+    "8147f96ae247fd6c",
+    "83c5c104ed23b3b6",
+    "871c5718cbc459c3",
+    "88540bf9a10da62e",
+    "89915a202efd95cd",
+    "8a179fe960f64bd4",
+    "8bd7378e7bacd72e",
+    "973b09fd26cee721",
+    "9a3a4a2837463b34",
+    "9c39447dadee7ae8",
+    "a088ac7346b51e2d",
+    "a2f7c8b70e113df3",
+    "a3bc829bd72e8319",
+    "a53f17d04bc4e0b6",
+    "a87188f6979f265b",
+    "aaa15603584e46f5",
+    "aeebfce023f2674f",
+    "b28edf42aed2936a",
+    "b3ea674ff7981da4",
+    "baacc44fd452816f",
+    "bab02f67fe8affcd",
+    "bb047e6167e20e2e",
+    "bc956e9e9497963e",
+    "be2dae3774fcafe1",
+    "beb345061396cc3f",
+    "c30c54122c542951",
+    "c65527815f653d25",
+    "d0ecaf93bb056542",
+    "d3125496cad0725d",
+    "d70cb75cb882944c",
+    "d8074352c3ba292d",
+    "d81ecb264c5b962d",
+    "d8d8f59c999ee612",
+    "db3d6bc03343db28",
+    "e1b025dc2423afa6",
+    "e617ec1c742d16a9",
+    "e7cf84612f5b7dfa",
+    "ea34b7e93049f8cb",
+    "ebea042bae87c845",
+    "f49cb7fd0f4f94c7",
+    "f5427c130139c881",
+    "f911072f49f07297",
+    "fc167b56028fb3b1"
+   ],
+   "avoidKeys": [
+    "d126b10c0bebbbe0",
+    "ee6291a21d7ef452"
+   ],
+   "expectedKeyUsed": "19e621157b37c5fe",
+   "expectedKeysReached": 85,
+   "matched": false,
+   "chosenWinsOutright": true,
+   "expectedWinsOutright": true,
+   "chosenInAvoid": true,
+   "deadPosition": false,
+   "enumComplete": true,
+   "enumEnds": 87,
+   "staticExpectedCc": 6254,
+   "staticChosenCc": 10232,
+   "staticGapCc": -3978,
+   "identicalFeatureVector": false,
+   "searchedExpectedCc": null,
+   "searchedChosenCc": null,
+   "expectedSearched": null,
+   "expectedInCandidateList": false,
+   "candidateSource": "generator-list",
+   "candidates": 21,
+   "depth": 1,
+   "work": 94,
+   "label": "contradictory-preference",
+   "labelWhy": "judge 4 (canonical fact): the champion's own turn, replayed through `src/game`, ends the game with black as winner, and the case lists that end key in `avoidKeys`. A case cannot ask an engine to decline winning; `exam/run.ts` applies exactly this adjudication to EXACT cases (`run.ts` `row.passed = (inWitness && !inAvoid) || won`) and not to judgment ones (`row.matched = preferred && !avoided`).",
+   "namedTerm": "HomeInvaded",
+   "topTerms": [
+    {
+     "index": 4,
+     "name": "HomeInvaded",
+     "group": "home",
+     "deltaCc": -4000,
+     "expectedCc": 0,
+     "chosenCc": 4000,
+     "expectedF": 0,
+     "chosenF": -1
+    },
+    {
+     "index": 7,
+     "name": "SpawnArea",
+     "group": "space",
+     "deltaCc": -570,
+     "expectedCc": 2400,
+     "chosenCc": 2970,
+     "expectedF": 80,
+     "chosenF": 99
+    },
+    {
+     "index": 14,
+     "name": "HomeCountdown",
+     "group": "home",
+     "deltaCc": 540,
+     "expectedCc": 540,
+     "chosenCc": 0,
+     "expectedF": -3,
+     "chosenF": 0
+    },
+    {
+     "index": 13,
+     "name": "HomeThreat",
+     "group": "home",
+     "deltaCc": 400,
+     "expectedCc": 400,
+     "chosenCc": 0,
+     "expectedF": -1,
+     "chosenF": 0
+    },
+    {
+     "index": 37,
+     "name": "CornerInfiltration",
+     "group": "home",
+     "deltaCc": -300,
+     "expectedCc": 0,
+     "chosenCc": 300,
+     "expectedF": 0,
+     "chosenF": 1
+    },
+    {
+     "index": 48,
+     "name": "Inv11HomeBare",
+     "group": "home",
+     "deltaCc": 250,
+     "expectedCc": 250,
+     "chosenCc": 0,
+     "expectedF": -1,
+     "chosenF": 0
+    },
+    {
+     "index": 8,
+     "name": "SpawnReserve",
+     "group": "space",
+     "deltaCc": -168,
+     "expectedCc": 824,
+     "chosenCc": 992,
+     "expectedF": 103,
+     "chosenF": 124
+    },
+    {
+     "index": 19,
+     "name": "ActionsLeft",
+     "group": "space",
+     "deltaCc": -80,
+     "expectedCc": 0,
+     "chosenCc": 80,
+     "expectedF": 0,
+     "chosenF": 2
+    },
+    {
+     "index": 10,
+     "name": "AnchorDepth",
+     "group": "space",
+     "deltaCc": -50,
+     "expectedCc": 400,
+     "chosenCc": 450,
+     "expectedF": 16,
+     "chosenF": 18
+    },
+    {
+     "index": 0,
+     "name": "Material",
+     "group": "material",
+     "deltaCc": 0,
+     "expectedCc": 300,
+     "chosenCc": 300,
+     "expectedF": 3,
+     "chosenF": 3
+    },
+    {
+     "index": 35,
+     "name": "AnchorFragility",
+     "group": "safety",
+     "deltaCc": 0,
+     "expectedCc": 240,
+     "chosenCc": 240,
+     "expectedF": -2,
+     "chosenF": -2
+    },
+    {
+     "index": 36,
+     "name": "BlockingDeficit",
+     "group": "safety",
+     "deltaCc": 0,
+     "expectedCc": 300,
+     "chosenCc": 300,
+     "expectedF": -2,
+     "chosenF": -2
+    }
+   ],
+   "groupDeltaCc": {
+    "material": 0,
+    "economy": 0,
+    "home": -3110,
+    "safety": 0,
+    "space": -868
+   }
+  },
+  {
+   "id": "authored-home-mate-cheap-invasion-one-attack-rotated-black-mate-preference",
+   "demand": "home-and-spawn",
+   "by": "author",
+   "sideToMove": "white",
+   "classification": null,
+   "swingCc": null,
+   "adviserWork": null,
+   "reason": "build-home-mate.ts's authored preference for a REFUTED invasion: step onto the corner only along a line the defender cannot answer. The canonical rules confirm the key set is reachable; which of the reachable turns is better is the authors' strategic reading, not a rules fact.",
+   "chosenKey": "cd810c4099f61916",
+   "expectedKeys": [
+    "0480a1b5be912f71",
+    "0e2309174bda26b9",
+    "0ecc9d9279060e94",
+    "11d5a3e7c3bea602",
+    "169e6441ab60a2fc",
+    "1810e34a980397d4",
+    "19adf4c4d70358ed",
+    "1a73e120a8516467",
+    "29647a4eab53994b",
+    "2a855e2bd8040d91",
+    "2efa9b35c8e2dbca",
+    "303f62d19dca91dd",
+    "3329be13ba596d74",
+    "337d5974e269327c",
+    "377b5c4eea864ce3",
+    "3afbfbef275decd6",
+    "3d9b16cacbb367ff",
+    "41e2f90ad1fe2e58",
+    "427bfeda43e7239d",
+    "48d68326e8dd9719",
+    "48f73208df2ad31e",
+    "527343287f1d026d",
+    "531072f0245c6a9c",
+    "54740c5030b1a4f9",
+    "5476ad4ebc79bdab",
+    "54de2f9e41ac29f1",
+    "65f3e8f16c94ba21",
+    "66b071354bf8652a",
+    "6891fe0c3ba741c3",
+    "696aa1a1874179a3",
+    "704acf8e24d97fcb",
+    "712ad294f72eb466",
+    "71ee3373f5b18d6a",
+    "7e081b8ab10d05f6",
+    "7e6004b2e5a063dd",
+    "83cd4bbba8c8fbe4",
+    "864a42789cfbe4f1",
+    "8724d0123abce500",
+    "8b3b255f33bf06cc",
+    "8c107effa536fe7f",
+    "8c63475dc33f2335",
+    "95d603b6e993d00c",
+    "95dd8a88a470b89d",
+    "9ad88b1d8236504e",
+    "9bab9ac4af5eecc1",
+    "9c6f57bd6a6d51dd",
+    "a292cea13db519bc",
+    "a6435c7e18d4348b",
+    "a6951839aaef09fc",
+    "a737c46f207def8b",
+    "aaa8d31e39540852",
+    "aad61e69fcca1d62",
+    "ac9df054dab41e34",
+    "af04fa340f2a0554",
+    "b19f99355bf0a45e",
+    "b39733ebe9f1b781",
+    "b444dfe98cfe7159",
+    "b4e443d0f63e9381",
+    "b7c305697f7d8b6b",
+    "b8adc9762c1f41d2",
+    "b96f6d7d9a67a140",
+    "bffa2c310c7be3d4",
+    "c3d6d0ffd0c05450",
+    "c807ec889b9a0f5d",
+    "cb7eea795b7ff3e0",
+    "ccf6f6ed3fcb442a",
+    "cd810c4099f61916",
+    "d12b18ccd416a34a",
+    "d1ac3e644ac72bc1",
+    "d69434f621e39e25",
+    "d8c1ced7bfdbf261",
+    "db24b2e134cd2efe",
+    "df57f05115a2c540",
+    "dfb24e6db17b150f",
+    "dfbe2d39712f4f0b",
+    "e04b2e3b9168bba5",
+    "e12e09d5be77de7f",
+    "e92ebc3e518ac4b5",
+    "e980cd13b035953d",
+    "eccbf9041ebfd1d2",
+    "f16570d65561bff3",
+    "f2ae349292aa64de",
+    "f4e5aa45e4cef295",
+    "f64bae2f1549741c",
+    "ffdf59e5dbfb31cf"
+   ],
+   "avoidKeys": [
+    "3b990b0e181610ac",
+    "e7cda4a9425eafb8"
+   ],
+   "expectedKeyUsed": "cd810c4099f61916",
+   "expectedKeysReached": 85,
+   "matched": true,
+   "chosenWinsOutright": true,
+   "expectedWinsOutright": true,
+   "chosenInAvoid": false,
+   "deadPosition": false,
+   "enumComplete": true,
+   "enumEnds": 87,
+   "staticExpectedCc": 6254,
+   "staticChosenCc": 6334,
+   "staticGapCc": -80,
+   "identicalFeatureVector": false,
+   "searchedExpectedCc": null,
+   "searchedChosenCc": null,
+   "expectedSearched": false,
+   "expectedInCandidateList": true,
+   "candidateSource": "generator-list",
+   "candidates": 13,
+   "depth": 1,
+   "work": 38,
+   "label": "matched",
+   "labelWhy": "the champion chose a preferred key",
+   "namedTerm": "ActionsLeft",
+   "topTerms": [
+    {
+     "index": 19,
+     "name": "ActionsLeft",
+     "group": "space",
+     "deltaCc": -80,
+     "expectedCc": 0,
+     "chosenCc": 80,
+     "expectedF": 0,
+     "chosenF": 2
+    },
+    {
+     "index": 0,
+     "name": "Material",
+     "group": "material",
+     "deltaCc": 0,
+     "expectedCc": 300,
+     "chosenCc": 300,
+     "expectedF": 3,
+     "chosenF": 3
+    },
+    {
+     "index": 7,
+     "name": "SpawnArea",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": 2400,
+     "chosenCc": 2400,
+     "expectedF": 80,
+     "chosenF": 80
+    },
+    {
+     "index": 8,
+     "name": "SpawnReserve",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": 824,
+     "chosenCc": 824,
+     "expectedF": 103,
+     "chosenF": 103
+    },
+    {
+     "index": 10,
+     "name": "AnchorDepth",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": 400,
+     "chosenCc": 400,
+     "expectedF": 16,
+     "chosenF": 16
+    },
+    {
+     "index": 13,
+     "name": "HomeThreat",
+     "group": "home",
+     "deltaCc": 0,
+     "expectedCc": 400,
+     "chosenCc": 400,
+     "expectedF": -1,
+     "chosenF": -1
+    },
+    {
+     "index": 14,
+     "name": "HomeCountdown",
+     "group": "home",
+     "deltaCc": 0,
+     "expectedCc": 540,
+     "chosenCc": 540,
+     "expectedF": -3,
+     "chosenF": -3
+    },
+    {
+     "index": 35,
+     "name": "AnchorFragility",
+     "group": "safety",
+     "deltaCc": 0,
+     "expectedCc": 240,
+     "chosenCc": 240,
+     "expectedF": -2,
+     "chosenF": -2
+    },
+    {
+     "index": 36,
+     "name": "BlockingDeficit",
+     "group": "safety",
+     "deltaCc": 0,
+     "expectedCc": 300,
+     "chosenCc": 300,
+     "expectedF": -2,
+     "chosenF": -2
+    },
+    {
+     "index": 47,
+     "name": "Inv10HomeReachable",
+     "group": "home",
+     "deltaCc": 0,
+     "expectedCc": 400,
+     "chosenCc": 400,
+     "expectedF": -1,
+     "chosenF": -1
+    },
+    {
+     "index": 48,
+     "name": "Inv11HomeBare",
+     "group": "home",
+     "deltaCc": 0,
+     "expectedCc": 250,
+     "chosenCc": 250,
+     "expectedF": -1,
+     "chosenF": -1
+    },
+    {
+     "index": 51,
+     "name": "Inv14LiquidityFloor",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": 200,
+     "chosenCc": 200,
+     "expectedF": -1,
+     "chosenF": -1
+    }
+   ],
+   "groupDeltaCc": {
+    "material": 0,
+    "economy": 0,
+    "home": 0,
+    "safety": 0,
+    "space": -80
+   }
+  },
+  {
+   "id": "authored-home-mate-clear-an-adjacent-lane-mate-preference",
+   "demand": "home-and-spawn",
+   "by": "author",
+   "sideToMove": "black",
+   "classification": null,
+   "swingCc": null,
+   "adviserWork": null,
+   "reason": "build-home-mate.ts's authored preference for a REFUTED invasion: step onto the corner only along a line the defender cannot answer. The canonical rules confirm the key set is reachable; which of the reachable turns is better is the authors' strategic reading, not a rules fact.",
+   "chosenKey": "5298f06107f61276",
+   "expectedKeys": [
+    "0b93236902eaa6bb",
+    "11a64bebfe861678",
+    "1ee7c48c42bd2f46",
+    "2c546b97d5c73288",
+    "3ccce73c4ca0f7b9",
+    "5ecd6fe8ee977bf3",
+    "611de263e54d25b7",
+    "6600db2631eb8999",
+    "68c99a646a3ead89",
+    "6a562f255b7093b2",
+    "83e331cf906284d5",
+    "8a9d5684309275a8",
+    "a229dfa0d4f3d36a",
+    "e5a4cceb1f40389e",
+    "e75041128ed8ee91",
+    "fa8bca20cfe50813"
+   ],
+   "avoidKeys": [
+    "5298f06107f61276"
+   ],
+   "expectedKeyUsed": "11a64bebfe861678",
+   "expectedKeysReached": 16,
+   "matched": false,
+   "chosenWinsOutright": false,
+   "expectedWinsOutright": false,
+   "chosenInAvoid": true,
+   "deadPosition": true,
+   "enumComplete": true,
+   "enumEnds": 17,
+   "staticExpectedCc": 4986,
+   "staticChosenCc": 1945,
+   "staticGapCc": 3041,
+   "identicalFeatureVector": false,
+   "searchedExpectedCc": -998000,
+   "searchedChosenCc": -998000,
+   "expectedSearched": true,
+   "expectedInCandidateList": true,
+   "candidateSource": "completed-depth",
+   "candidates": 11,
+   "depth": 6,
+   "work": 12301,
+   "label": "contradictory-preference",
+   "labelWhy": "judge 4 (canonical fact): `witness.ts deadPosition` proves every legal turn from this root hands the opponent a win on the spot, so no turn is better than another and the preference is scoring noise. `suites/run.ts` demotes such a suite row to a coverage row and `exam/seed.ts` drops such an EXACT candidate; neither rule reaches a judgment carry (`seed.ts:226`, before the dead check at `seed.ts:288`).",
+   "namedTerm": "HomeInvaded",
+   "topTerms": [
+    {
+     "index": 4,
+     "name": "HomeInvaded",
+     "group": "home",
+     "deltaCc": -4000,
+     "expectedCc": 0,
+     "chosenCc": 4000,
+     "expectedF": 0,
+     "chosenF": -1
+    },
+    {
+     "index": 7,
+     "name": "SpawnArea",
+     "group": "space",
+     "deltaCc": 2640,
+     "expectedCc": 2640,
+     "chosenCc": 0,
+     "expectedF": 88,
+     "chosenF": 0
+    },
+    {
+     "index": 8,
+     "name": "SpawnReserve",
+     "group": "space",
+     "deltaCc": 896,
+     "expectedCc": 896,
+     "chosenCc": 0,
+     "expectedF": 112,
+     "chosenF": 0
+    },
+    {
+     "index": 9,
+     "name": "SpawnZero",
+     "group": "space",
+     "deltaCc": 800,
+     "expectedCc": 0,
+     "chosenCc": -800,
+     "expectedF": 0,
+     "chosenF": 1
+    },
+    {
+     "index": 38,
+     "name": "Inv1SpawnZero",
+     "group": "space",
+     "deltaCc": 800,
+     "expectedCc": 0,
+     "chosenCc": -800,
+     "expectedF": 0,
+     "chosenF": 1
+    },
+    {
+     "index": 14,
+     "name": "HomeCountdown",
+     "group": "home",
+     "deltaCc": 540,
+     "expectedCc": 180,
+     "chosenCc": -360,
+     "expectedF": -1,
+     "chosenF": 2
+    },
+    {
+     "index": 13,
+     "name": "HomeThreat",
+     "group": "home",
+     "deltaCc": 400,
+     "expectedCc": 400,
+     "chosenCc": 0,
+     "expectedF": -1,
+     "chosenF": 0
+    },
+    {
+     "index": 10,
+     "name": "AnchorDepth",
+     "group": "space",
+     "deltaCc": 375,
+     "expectedCc": 375,
+     "chosenCc": 0,
+     "expectedF": 15,
+     "chosenF": 0
+    },
+    {
+     "index": 37,
+     "name": "CornerInfiltration",
+     "group": "home",
+     "deltaCc": -300,
+     "expectedCc": 0,
+     "chosenCc": 300,
+     "expectedF": 0,
+     "chosenF": 1
+    },
+    {
+     "index": 40,
+     "name": "Inv3RetreatSquare",
+     "group": "safety",
+     "deltaCc": 250,
+     "expectedCc": 250,
+     "chosenCc": 0,
+     "expectedF": -1,
+     "chosenF": 0
+    },
+    {
+     "index": 29,
+     "name": "HangingBuy",
+     "group": "safety",
+     "deltaCc": 240,
+     "expectedCc": 240,
+     "chosenCc": 0,
+     "expectedF": -8,
+     "chosenF": 0
+    },
+    {
+     "index": 33,
+     "name": "KillAvailable",
+     "group": "safety",
+     "deltaCc": 210,
+     "expectedCc": 175,
+     "chosenCc": -35,
+     "expectedF": 5,
+     "chosenF": -1
+    }
+   ],
+   "groupDeltaCc": {
+    "material": 0,
+    "economy": 60,
+    "home": -3360,
+    "safety": 630,
+    "space": 5711
+   }
+  },
+  {
+   "id": "authored-home-mate-clear-an-adjacent-lane-rotated-black-mate-preference",
+   "demand": "home-and-spawn",
+   "by": "author",
+   "sideToMove": "white",
+   "classification": null,
+   "swingCc": null,
+   "adviserWork": null,
+   "reason": "build-home-mate.ts's authored preference for a REFUTED invasion: step onto the corner only along a line the defender cannot answer. The canonical rules confirm the key set is reachable; which of the reachable turns is better is the authors' strategic reading, not a rules fact.",
+   "chosenKey": "f98e6fe9cb2fff4a",
+   "expectedKeys": [
+    "1674c49a97be6566",
+    "2723a6006606d3ee",
+    "2bce5bc45c44900f",
+    "3b8c43bc2a8373b6",
+    "3f5f4885a27e8ff5",
+    "7d249740a14db673",
+    "842b6c374f2a023a",
+    "8e6e8befa280d603",
+    "940ea94cd88bbd8e",
+    "a7e77c018117b9db",
+    "b0ac8e1e2b7c15b2",
+    "bfb192065becc64d",
+    "c01f0ec3dfd5f51a",
+    "c0a5b8900d00ff4c",
+    "e48917e24b7ad827",
+    "e92da6ffeb8d8ff9"
+   ],
+   "avoidKeys": [
+    "f98e6fe9cb2fff4a"
+   ],
+   "expectedKeyUsed": "c0a5b8900d00ff4c",
+   "expectedKeysReached": 16,
+   "matched": false,
+   "chosenWinsOutright": false,
+   "expectedWinsOutright": false,
+   "chosenInAvoid": true,
+   "deadPosition": true,
+   "enumComplete": true,
+   "enumEnds": 17,
+   "staticExpectedCc": 5136,
+   "staticChosenCc": 1945,
+   "staticGapCc": 3191,
+   "identicalFeatureVector": false,
+   "searchedExpectedCc": -998000,
+   "searchedChosenCc": -998000,
+   "expectedSearched": true,
+   "expectedInCandidateList": true,
+   "candidateSource": "completed-depth",
+   "candidates": 11,
+   "depth": 6,
+   "work": 12594,
+   "label": "contradictory-preference",
+   "labelWhy": "judge 4 (canonical fact): `witness.ts deadPosition` proves every legal turn from this root hands the opponent a win on the spot, so no turn is better than another and the preference is scoring noise. `suites/run.ts` demotes such a suite row to a coverage row and `exam/seed.ts` drops such an EXACT candidate; neither rule reaches a judgment carry (`seed.ts:226`, before the dead check at `seed.ts:288`).",
+   "namedTerm": "HomeInvaded",
+   "topTerms": [
+    {
+     "index": 4,
+     "name": "HomeInvaded",
+     "group": "home",
+     "deltaCc": -4000,
+     "expectedCc": 0,
+     "chosenCc": 4000,
+     "expectedF": 0,
+     "chosenF": -1
+    },
+    {
+     "index": 7,
+     "name": "SpawnArea",
+     "group": "space",
+     "deltaCc": 2640,
+     "expectedCc": 2640,
+     "chosenCc": 0,
+     "expectedF": 88,
+     "chosenF": 0
+    },
+    {
+     "index": 8,
+     "name": "SpawnReserve",
+     "group": "space",
+     "deltaCc": 896,
+     "expectedCc": 896,
+     "chosenCc": 0,
+     "expectedF": 112,
+     "chosenF": 0
+    },
+    {
+     "index": 9,
+     "name": "SpawnZero",
+     "group": "space",
+     "deltaCc": 800,
+     "expectedCc": 0,
+     "chosenCc": -800,
+     "expectedF": 0,
+     "chosenF": 1
+    },
+    {
+     "index": 38,
+     "name": "Inv1SpawnZero",
+     "group": "space",
+     "deltaCc": 800,
+     "expectedCc": 0,
+     "chosenCc": -800,
+     "expectedF": 0,
+     "chosenF": 1
+    },
+    {
+     "index": 14,
+     "name": "HomeCountdown",
+     "group": "home",
+     "deltaCc": 540,
+     "expectedCc": 180,
+     "chosenCc": -360,
+     "expectedF": -1,
+     "chosenF": 2
+    },
+    {
+     "index": 13,
+     "name": "HomeThreat",
+     "group": "home",
+     "deltaCc": 400,
+     "expectedCc": 400,
+     "chosenCc": 0,
+     "expectedF": -1,
+     "chosenF": 0
+    },
+    {
+     "index": 10,
+     "name": "AnchorDepth",
+     "group": "space",
+     "deltaCc": 375,
+     "expectedCc": 375,
+     "chosenCc": 0,
+     "expectedF": 15,
+     "chosenF": 0
+    },
+    {
+     "index": 37,
+     "name": "CornerInfiltration",
+     "group": "home",
+     "deltaCc": -300,
+     "expectedCc": 0,
+     "chosenCc": 300,
+     "expectedF": 0,
+     "chosenF": 1
+    },
+    {
+     "index": 40,
+     "name": "Inv3RetreatSquare",
+     "group": "safety",
+     "deltaCc": 250,
+     "expectedCc": 250,
+     "chosenCc": 0,
+     "expectedF": -1,
+     "chosenF": 0
+    },
+    {
+     "index": 29,
+     "name": "HangingBuy",
+     "group": "safety",
+     "deltaCc": 240,
+     "expectedCc": 240,
+     "chosenCc": 0,
+     "expectedF": -8,
+     "chosenF": 0
+    },
+    {
+     "index": 33,
+     "name": "KillAvailable",
+     "group": "safety",
+     "deltaCc": 210,
+     "expectedCc": 175,
+     "chosenCc": -35,
+     "expectedF": 5,
+     "chosenF": -1
+    }
+   ],
+   "groupDeltaCc": {
+    "material": 0,
+    "economy": 60,
+    "home": -3360,
+    "safety": 780,
+    "space": 5711
+   }
+  },
+  {
+   "id": "authored-home-mate-zero-attack-occupier-mate-preference",
+   "demand": "home-and-spawn",
+   "by": "author",
+   "sideToMove": "black",
+   "classification": null,
+   "swingCc": null,
+   "adviserWork": null,
+   "reason": "build-home-mate.ts's authored preference for a REFUTED invasion: step onto the corner only along a line the defender cannot answer. The canonical rules confirm the key set is reachable; which of the reachable turns is better is the authors' strategic reading, not a rules fact.",
+   "chosenKey": "d03348ef41e99079",
+   "expectedKeys": [
+    "095b633812095f5e",
+    "0bafeec183918951",
+    "167465f3c2ac6fd3",
+    "1fe6d5970e4c91fe",
+    "4ed67073d9bab4aa",
+    "6662f9573ddb1268",
+    "6f1c9e1c9d2be315",
+    "843635b76777ca49",
+    "86a980f65639f472",
+    "8aff74f53ca2ee59",
+    "8de24db0e8044277",
+    "b232c03be3de1c33",
+    "c0abc444d88e5548",
+    "d03348ef41e99079",
+    "e76c8cba0fa3c17b",
+    "f2186b5f4ff44886",
+    "fd59e438f3cf71b8"
+   ],
+   "avoidKeys": [
+    "be675fb20abf75b6"
+   ],
+   "expectedKeyUsed": "fd59e438f3cf71b8",
+   "expectedKeysReached": 17,
+   "matched": true,
+   "chosenWinsOutright": false,
+   "expectedWinsOutright": false,
+   "chosenInAvoid": false,
+   "deadPosition": true,
+   "enumComplete": true,
+   "enumEnds": 18,
+   "staticExpectedCc": 4778,
+   "staticChosenCc": 4250,
+   "staticGapCc": 528,
+   "identicalFeatureVector": false,
+   "searchedExpectedCc": -998000,
+   "searchedChosenCc": -998000,
+   "expectedSearched": true,
+   "expectedInCandidateList": true,
+   "candidateSource": "completed-depth",
+   "candidates": 10,
+   "depth": 5,
+   "work": 16657,
+   "label": "matched",
+   "labelWhy": "the champion chose a preferred key",
+   "namedTerm": "SpawnArea",
+   "topTerms": [
+    {
+     "index": 7,
+     "name": "SpawnArea",
+     "group": "space",
+     "deltaCc": 270,
+     "expectedCc": 2640,
+     "chosenCc": 2370,
+     "expectedF": 88,
+     "chosenF": 79
+    },
+    {
+     "index": 33,
+     "name": "KillAvailable",
+     "group": "safety",
+     "deltaCc": 105,
+     "expectedCc": 0,
+     "chosenCc": -105,
+     "expectedF": 0,
+     "chosenF": -3
+    },
+    {
+     "index": 8,
+     "name": "SpawnReserve",
+     "group": "space",
+     "deltaCc": 88,
+     "expectedCc": 896,
+     "chosenCc": 808,
+     "expectedF": 112,
+     "chosenF": 101
+    },
+    {
+     "index": 32,
+     "name": "StrandPunish",
+     "group": "safety",
+     "deltaCc": 40,
+     "expectedCc": 0,
+     "chosenCc": -40,
+     "expectedF": 0,
+     "chosenF": -2
+    },
+    {
+     "index": 10,
+     "name": "AnchorDepth",
+     "group": "space",
+     "deltaCc": 25,
+     "expectedCc": 400,
+     "chosenCc": 375,
+     "expectedF": 16,
+     "chosenF": 15
+    },
+    {
+     "index": 0,
+     "name": "Material",
+     "group": "material",
+     "deltaCc": 0,
+     "expectedCc": 200,
+     "chosenCc": 200,
+     "expectedF": 2,
+     "chosenF": 2
+    },
+    {
+     "index": 2,
+     "name": "BankLiquid",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": 270,
+     "chosenCc": 270,
+     "expectedF": 3,
+     "chosenF": 3
+    },
+    {
+     "index": 6,
+     "name": "BankConvertible",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": 60,
+     "chosenCc": 60,
+     "expectedF": 3,
+     "chosenF": 3
+    },
+    {
+     "index": 13,
+     "name": "HomeThreat",
+     "group": "home",
+     "deltaCc": 0,
+     "expectedCc": 400,
+     "chosenCc": 400,
+     "expectedF": -1,
+     "chosenF": -1
+    },
+    {
+     "index": 14,
+     "name": "HomeCountdown",
+     "group": "home",
+     "deltaCc": 0,
+     "expectedCc": 360,
+     "chosenCc": 360,
+     "expectedF": -2,
+     "chosenF": -2
+    },
+    {
+     "index": 16,
+     "name": "HomeRescuers",
+     "group": "home",
+     "deltaCc": 0,
+     "expectedCc": -90,
+     "chosenCc": -90,
+     "expectedF": -1,
+     "chosenF": -1
+    },
+    {
+     "index": 17,
+     "name": "Exposure",
+     "group": "safety",
+     "deltaCc": 0,
+     "expectedCc": -40,
+     "chosenCc": -40,
+     "expectedF": 2,
+     "chosenF": 2
+    }
+   ],
+   "groupDeltaCc": {
+    "material": 0,
+    "economy": 0,
+    "home": 0,
+    "safety": 145,
+    "space": 383
+   }
+  },
+  {
+   "id": "authored-home-mate-zero-attack-occupier-rotated-black-mate-preference",
+   "demand": "home-and-spawn",
+   "by": "author",
+   "sideToMove": "white",
+   "classification": null,
+   "swingCc": null,
+   "adviserWork": null,
+   "reason": "build-home-mate.ts's authored preference for a REFUTED invasion: step onto the corner only along a line the defender cannot answer. The canonical rules confirm the key set is reachable; which of the reachable turns is better is the authors' strategic reading, not a rules fact.",
+   "chosenKey": "ec2c24bc61f97053",
+   "expectedKeys": [
+    "136c62fa1c520abc",
+    "13d6d4a9ce8700ea",
+    "37fa7bdb88fd2781",
+    "3a5ecac6280a705f",
+    "477dc5751b0c4228",
+    "5758000e8cadfd9c",
+    "5d1de7d6610729a5",
+    "63dfe227e8fbea14",
+    "6cc2fe3f986b39eb",
+    "749410384290467d",
+    "ae57fb7962ca49d5",
+    "c507a8a354399ac0",
+    "d583790121d9ecde",
+    "e8ff2f85e9048c10",
+    "ec2c24bc61f97053",
+    "f450ca39a5812c48",
+    "f8bd37fd9fc36fa9"
+   ],
+   "avoidKeys": [
+    "2afd03d008a800ec"
+   ],
+   "expectedKeyUsed": "13d6d4a9ce8700ea",
+   "expectedKeysReached": 17,
+   "matched": true,
+   "chosenWinsOutright": false,
+   "expectedWinsOutright": false,
+   "chosenInAvoid": false,
+   "deadPosition": true,
+   "enumComplete": true,
+   "enumEnds": 18,
+   "staticExpectedCc": 4928,
+   "staticChosenCc": 4250,
+   "staticGapCc": 678,
+   "identicalFeatureVector": false,
+   "searchedExpectedCc": -998000,
+   "searchedChosenCc": -998000,
+   "expectedSearched": true,
+   "expectedInCandidateList": true,
+   "candidateSource": "completed-depth",
+   "candidates": 11,
+   "depth": 5,
+   "work": 13618,
+   "label": "matched",
+   "labelWhy": "the champion chose a preferred key",
+   "namedTerm": "SpawnArea",
+   "topTerms": [
+    {
+     "index": 7,
+     "name": "SpawnArea",
+     "group": "space",
+     "deltaCc": 270,
+     "expectedCc": 2640,
+     "chosenCc": 2370,
+     "expectedF": 88,
+     "chosenF": 79
+    },
+    {
+     "index": 45,
+     "name": "Inv8NoPreAdjacency",
+     "group": "safety",
+     "deltaCc": 150,
+     "expectedCc": 0,
+     "chosenCc": -150,
+     "expectedF": 0,
+     "chosenF": 1
+    },
+    {
+     "index": 33,
+     "name": "KillAvailable",
+     "group": "safety",
+     "deltaCc": 105,
+     "expectedCc": 0,
+     "chosenCc": -105,
+     "expectedF": 0,
+     "chosenF": -3
+    },
+    {
+     "index": 8,
+     "name": "SpawnReserve",
+     "group": "space",
+     "deltaCc": 88,
+     "expectedCc": 896,
+     "chosenCc": 808,
+     "expectedF": 112,
+     "chosenF": 101
+    },
+    {
+     "index": 32,
+     "name": "StrandPunish",
+     "group": "safety",
+     "deltaCc": 40,
+     "expectedCc": 0,
+     "chosenCc": -40,
+     "expectedF": 0,
+     "chosenF": -2
+    },
+    {
+     "index": 10,
+     "name": "AnchorDepth",
+     "group": "space",
+     "deltaCc": 25,
+     "expectedCc": 400,
+     "chosenCc": 375,
+     "expectedF": 16,
+     "chosenF": 15
+    },
+    {
+     "index": 0,
+     "name": "Material",
+     "group": "material",
+     "deltaCc": 0,
+     "expectedCc": 200,
+     "chosenCc": 200,
+     "expectedF": 2,
+     "chosenF": 2
+    },
+    {
+     "index": 2,
+     "name": "BankLiquid",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": 270,
+     "chosenCc": 270,
+     "expectedF": 3,
+     "chosenF": 3
+    },
+    {
+     "index": 6,
+     "name": "BankConvertible",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": 60,
+     "chosenCc": 60,
+     "expectedF": 3,
+     "chosenF": 3
+    },
+    {
+     "index": 13,
+     "name": "HomeThreat",
+     "group": "home",
+     "deltaCc": 0,
+     "expectedCc": 400,
+     "chosenCc": 400,
+     "expectedF": -1,
+     "chosenF": -1
+    },
+    {
+     "index": 14,
+     "name": "HomeCountdown",
+     "group": "home",
+     "deltaCc": 0,
+     "expectedCc": 360,
+     "chosenCc": 360,
+     "expectedF": -2,
+     "chosenF": -2
+    },
+    {
+     "index": 16,
+     "name": "HomeRescuers",
+     "group": "home",
+     "deltaCc": 0,
+     "expectedCc": -90,
+     "chosenCc": -90,
+     "expectedF": -1,
+     "chosenF": -1
+    }
+   ],
+   "groupDeltaCc": {
+    "material": 0,
+    "economy": 0,
+    "home": 0,
+    "safety": 295,
+    "space": 383
+   }
+  },
+  {
+   "id": "loss-g3-s1_0_1-B-white-t6",
+   "demand": "home-and-spawn",
+   "by": "adviser",
+   "sideToMove": "black",
+   "classification": "strong-candidate-misjudged",
+   "swingCc": 1567,
+   "adviserWork": 1421957,
+   "reason": "hard:analyze classified this turn \"strong-candidate-misjudged\": the adviser's best end key a163d1893b3a75cf IS among the 30 candidates at this root; the engine played 5cc37f6aacf6f863 instead, worth -1092 cc to the adviser against 475 cc. The preferred end key is the ADVISER's best at 1421957 units — an adviser, not an oracle (docs/hard-ai/e1/ANALYZE.md).",
+   "chosenKey": "d8f95e65c0d8cc76",
+   "expectedKeys": [
+    "a163d1893b3a75cf"
+   ],
+   "avoidKeys": [
+    "5cc37f6aacf6f863"
+   ],
+   "expectedKeyUsed": "a163d1893b3a75cf",
+   "expectedKeysReached": 1,
+   "matched": false,
+   "chosenWinsOutright": false,
+   "expectedWinsOutright": false,
+   "chosenInAvoid": false,
+   "deadPosition": null,
+   "enumComplete": true,
+   "enumEnds": 6076,
+   "staticExpectedCc": 2479,
+   "staticChosenCc": 1657,
+   "staticGapCc": 822,
+   "identicalFeatureVector": false,
+   "searchedExpectedCc": 1657,
+   "searchedChosenCc": 1657,
+   "expectedSearched": true,
+   "expectedInCandidateList": true,
+   "candidateSource": "completed-depth",
+   "candidates": 30,
+   "depth": 1,
+   "work": 25205,
+   "label": "search-not-eval",
+   "labelWhy": "the static stage-2 evaluation prefers the expected end position by 822 cc and the search still returned the other turn",
+   "namedTerm": "Material",
+   "topTerms": [
+    {
+     "index": 35,
+     "name": "AnchorFragility",
+     "group": "safety",
+     "deltaCc": 240,
+     "expectedCc": 360,
+     "chosenCc": 120,
+     "expectedF": -3,
+     "chosenF": -1
+    },
+    {
+     "index": 36,
+     "name": "BlockingDeficit",
+     "group": "safety",
+     "deltaCc": 150,
+     "expectedCc": 150,
+     "chosenCc": 0,
+     "expectedF": -1,
+     "chosenF": 0
+    },
+    {
+     "index": 7,
+     "name": "SpawnArea",
+     "group": "space",
+     "deltaCc": 120,
+     "expectedCc": -120,
+     "chosenCc": -240,
+     "expectedF": -4,
+     "chosenF": -8
+    },
+    {
+     "index": 24,
+     "name": "DepletionWaste",
+     "group": "economy",
+     "deltaCc": 120,
+     "expectedCc": 60,
+     "chosenCc": -60,
+     "expectedF": -2,
+     "chosenF": 2
+    },
+    {
+     "index": 43,
+     "name": "Inv6FragileAnchor",
+     "group": "safety",
+     "deltaCc": 120,
+     "expectedCc": 120,
+     "chosenCc": 0,
+     "expectedF": -1,
+     "chosenF": 0
+    },
+    {
+     "index": 0,
+     "name": "Material",
+     "group": "material",
+     "deltaCc": -100,
+     "expectedCc": 400,
+     "chosenCc": 500,
+     "expectedF": 4,
+     "chosenF": 5
+    },
+    {
+     "index": 41,
+     "name": "Inv4StrandUnpunished",
+     "group": "safety",
+     "deltaCc": 100,
+     "expectedCc": 100,
+     "chosenCc": 0,
+     "expectedF": -1,
+     "chosenF": 0
+    },
+    {
+     "index": 23,
+     "name": "EconDelta",
+     "group": "economy",
+     "deltaCc": 80,
+     "expectedCc": -160,
+     "chosenCc": -240,
+     "expectedF": -2,
+     "chosenF": -3
+    },
+    {
+     "index": 30,
+     "name": "ApproachRetreat",
+     "group": "safety",
+     "deltaCc": -75,
+     "expectedCc": 75,
+     "chosenCc": 150,
+     "expectedF": -3,
+     "chosenF": -6
+    },
+    {
+     "index": 5,
+     "name": "PstMine",
+     "group": "economy",
+     "deltaCc": -60,
+     "expectedCc": 480,
+     "chosenCc": 540,
+     "expectedF": 8,
+     "chosenF": 9
+    },
+    {
+     "index": 28,
+     "name": "Hanging",
+     "group": "safety",
+     "deltaCc": 50,
+     "expectedCc": 350,
+     "chosenCc": 300,
+     "expectedF": -7,
+     "chosenF": -6
+    },
+    {
+     "index": 31,
+     "name": "ApproachStrand",
+     "group": "safety",
+     "deltaCc": 40,
+     "expectedCc": 40,
+     "chosenCc": 0,
+     "expectedF": -4,
+     "chosenF": 0
+    }
+   ],
+   "groupDeltaCc": {
+    "material": -100,
+    "economy": 140,
+    "home": 0,
+    "safety": 645,
+    "space": 137
+   }
+  },
+  {
+   "id": "loss-g2-s20_3_15-A-white-t3",
+   "demand": "healing",
+   "by": "adviser",
+   "sideToMove": "white",
+   "classification": "strong-candidate-misjudged",
+   "swingCc": 551,
+   "adviserWork": 888106,
+   "reason": "hard:analyze classified this turn \"strong-candidate-misjudged\": the adviser's best end key 987d5cba3b0297a2 IS among the 28 candidates at this root; the engine played c5f8b28ed6e36696 instead, worth 952 cc to the adviser against 1503 cc. The preferred end key is the ADVISER's best at 888106 units — an adviser, not an oracle (docs/hard-ai/e1/ANALYZE.md).",
+   "chosenKey": "38eaf77291fd569a",
+   "expectedKeys": [
+    "987d5cba3b0297a2"
+   ],
+   "avoidKeys": [
+    "c5f8b28ed6e36696"
+   ],
+   "expectedKeyUsed": "987d5cba3b0297a2",
+   "expectedKeysReached": 1,
+   "matched": false,
+   "chosenWinsOutright": false,
+   "expectedWinsOutright": false,
+   "chosenInAvoid": false,
+   "deadPosition": null,
+   "enumComplete": true,
+   "enumEnds": 4306,
+   "staticExpectedCc": 2293,
+   "staticChosenCc": 2293,
+   "staticGapCc": 0,
+   "identicalFeatureVector": true,
+   "searchedExpectedCc": 2293,
+   "searchedChosenCc": 2293,
+   "expectedSearched": true,
+   "expectedInCandidateList": true,
+   "candidateSource": "completed-depth",
+   "candidates": 28,
+   "depth": 1,
+   "work": 25190,
+   "label": "eval-blind",
+   "labelWhy": "all 58 features take the same value in both end positions, so the static evaluation is identical (2293 cc) and no weight vector separates them; the champion's answer here is a move-ordering tie-break",
+   "namedTerm": "Material",
+   "topTerms": [
+    {
+     "index": 0,
+     "name": "Material",
+     "group": "material",
+     "deltaCc": 0,
+     "expectedCc": 600,
+     "chosenCc": 600,
+     "expectedF": 6,
+     "chosenF": 6
+    },
+    {
+     "index": 3,
+     "name": "BankExcess",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": -100,
+     "chosenCc": -100,
+     "expectedF": -4,
+     "chosenF": -4
+    },
+    {
+     "index": 5,
+     "name": "PstMine",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": 60,
+     "chosenCc": 60,
+     "expectedF": 1,
+     "chosenF": 1
+    },
+    {
+     "index": 6,
+     "name": "BankConvertible",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": 60,
+     "chosenCc": 60,
+     "expectedF": 3,
+     "chosenF": 3
+    },
+    {
+     "index": 7,
+     "name": "SpawnArea",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": 420,
+     "chosenCc": 420,
+     "expectedF": 14,
+     "chosenF": 14
+    },
+    {
+     "index": 8,
+     "name": "SpawnReserve",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": 88,
+     "chosenCc": 88,
+     "expectedF": 11,
+     "chosenF": 11
+    },
+    {
+     "index": 10,
+     "name": "AnchorDepth",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": 125,
+     "chosenCc": 125,
+     "expectedF": 5,
+     "chosenF": 5
+    },
+    {
+     "index": 12,
+     "name": "CornerSeal",
+     "group": "home",
+     "deltaCc": 0,
+     "expectedCc": 60,
+     "chosenCc": 60,
+     "expectedF": -1,
+     "chosenF": -1
+    },
+    {
+     "index": 15,
+     "name": "HomePlug",
+     "group": "home",
+     "deltaCc": 0,
+     "expectedCc": 220,
+     "chosenCc": 220,
+     "expectedF": 1,
+     "chosenF": 1
+    },
+    {
+     "index": 17,
+     "name": "Exposure",
+     "group": "safety",
+     "deltaCc": 0,
+     "expectedCc": 240,
+     "chosenCc": 240,
+     "expectedF": -12,
+     "chosenF": -12
+    },
+    {
+     "index": 23,
+     "name": "EconDelta",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": 80,
+     "chosenCc": 80,
+     "expectedF": 1,
+     "chosenF": 1
+    },
+    {
+     "index": 27,
+     "name": "RelocationDebt",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": 60,
+     "chosenCc": 60,
+     "expectedF": -1,
+     "chosenF": -1
+    }
+   ],
+   "groupDeltaCc": {
+    "material": 0,
+    "economy": 0,
+    "home": 0,
+    "safety": 0,
+    "space": 0
+   }
+  },
+  {
+   "id": "loss-g2-s20_3_15-B-white-t7",
+   "demand": "home-and-spawn",
+   "by": "adviser",
+   "sideToMove": "black",
+   "classification": "strong-candidate-misjudged",
+   "swingCc": 2295,
+   "adviserWork": 1401390,
+   "reason": "hard:analyze classified this turn \"strong-candidate-misjudged\": the adviser's best end key 59a93cb74e9604a4 IS among the 30 candidates at this root; the engine played 86d8f7edf1680293 instead, worth -3178 cc to the adviser against -883 cc. The preferred end key is the ADVISER's best at 1401390 units — an adviser, not an oracle (docs/hard-ai/e1/ANALYZE.md).",
+   "chosenKey": "70669e8ec263acf8",
+   "expectedKeys": [
+    "59a93cb74e9604a4"
+   ],
+   "avoidKeys": [
+    "86d8f7edf1680293"
+   ],
+   "expectedKeyUsed": "59a93cb74e9604a4",
+   "expectedKeysReached": 1,
+   "matched": false,
+   "chosenWinsOutright": false,
+   "expectedWinsOutright": false,
+   "chosenInAvoid": false,
+   "deadPosition": null,
+   "enumComplete": true,
+   "enumEnds": 40957,
+   "staticExpectedCc": 801,
+   "staticChosenCc": -739,
+   "staticGapCc": 1540,
+   "identicalFeatureVector": false,
+   "searchedExpectedCc": -2647,
+   "searchedChosenCc": -739,
+   "expectedSearched": true,
+   "expectedInCandidateList": true,
+   "candidateSource": "completed-depth",
+   "candidates": 30,
+   "depth": 1,
+   "work": 25296,
+   "label": "search-not-eval",
+   "labelWhy": "the static stage-2 evaluation prefers the expected end position by 1540 cc and the search still returned the other turn",
+   "namedTerm": "EconDelta",
+   "topTerms": [
+    {
+     "index": 28,
+     "name": "Hanging",
+     "group": "safety",
+     "deltaCc": 1400,
+     "expectedCc": 1150,
+     "chosenCc": -250,
+     "expectedF": -23,
+     "chosenF": 5
+    },
+    {
+     "index": 23,
+     "name": "EconDelta",
+     "group": "economy",
+     "deltaCc": -560,
+     "expectedCc": -1360,
+     "chosenCc": -800,
+     "expectedF": -17,
+     "chosenF": -10
+    },
+    {
+     "index": 5,
+     "name": "PstMine",
+     "group": "economy",
+     "deltaCc": 540,
+     "expectedCc": 120,
+     "chosenCc": -420,
+     "expectedF": 2,
+     "chosenF": -7
+    },
+    {
+     "index": 24,
+     "name": "DepletionWaste",
+     "group": "economy",
+     "deltaCc": -480,
+     "expectedCc": -30,
+     "chosenCc": 450,
+     "expectedF": 1,
+     "chosenF": -15
+    },
+    {
+     "index": 0,
+     "name": "Material",
+     "group": "material",
+     "deltaCc": 300,
+     "expectedCc": -500,
+     "chosenCc": -800,
+     "expectedF": -5,
+     "chosenF": -8
+    },
+    {
+     "index": 7,
+     "name": "SpawnArea",
+     "group": "space",
+     "deltaCc": 300,
+     "expectedCc": -360,
+     "chosenCc": -660,
+     "expectedF": -12,
+     "chosenF": -22
+    },
+    {
+     "index": 30,
+     "name": "ApproachRetreat",
+     "group": "safety",
+     "deltaCc": -250,
+     "expectedCc": 300,
+     "chosenCc": 550,
+     "expectedF": -12,
+     "chosenF": -22
+    },
+    {
+     "index": 57,
+     "name": "Inv20StrandNoRetreat",
+     "group": "safety",
+     "deltaCc": 250,
+     "expectedCc": 0,
+     "chosenCc": -250,
+     "expectedF": 0,
+     "chosenF": 1
+    },
+    {
+     "index": 33,
+     "name": "KillAvailable",
+     "group": "safety",
+     "deltaCc": 210,
+     "expectedCc": 210,
+     "chosenCc": 0,
+     "expectedF": 6,
+     "chosenF": 0
+    },
+    {
+     "index": 6,
+     "name": "BankConvertible",
+     "group": "economy",
+     "deltaCc": -180,
+     "expectedCc": -220,
+     "chosenCc": -40,
+     "expectedF": -11,
+     "chosenF": -2
+    },
+    {
+     "index": 27,
+     "name": "RelocationDebt",
+     "group": "economy",
+     "deltaCc": -180,
+     "expectedCc": 600,
+     "chosenCc": 780,
+     "expectedF": -10,
+     "chosenF": -13
+    },
+    {
+     "index": 31,
+     "name": "ApproachStrand",
+     "group": "safety",
+     "deltaCc": 150,
+     "expectedCc": 150,
+     "chosenCc": 0,
+     "expectedF": -15,
+     "chosenF": 0
+    }
+   ],
+   "groupDeltaCc": {
+    "material": 300,
+    "economy": -935,
+    "home": 0,
+    "safety": 1730,
+    "space": 445
+   }
+  },
+  {
+   "id": "loss-g2-s5_0_2-A-white-t4",
+   "demand": "recurring-upkeep",
+   "by": "adviser",
+   "sideToMove": "white",
+   "classification": "strong-candidate-misjudged",
+   "swingCc": 2748,
+   "adviserWork": 1087902,
+   "reason": "hard:analyze classified this turn \"strong-candidate-misjudged\": the adviser's best end key 518a7d4f454b00a1 IS among the 27 candidates at this root; the engine played 56420de6104ff562 instead, worth -1005 cc to the adviser against 1743 cc. The preferred end key is the ADVISER's best at 1087902 units — an adviser, not an oracle (docs/hard-ai/e1/ANALYZE.md).",
+   "chosenKey": "8bc33739b31a5688",
+   "expectedKeys": [
+    "518a7d4f454b00a1"
+   ],
+   "avoidKeys": [
+    "56420de6104ff562"
+   ],
+   "expectedKeyUsed": "518a7d4f454b00a1",
+   "expectedKeysReached": 1,
+   "matched": false,
+   "chosenWinsOutright": false,
+   "expectedWinsOutright": false,
+   "chosenInAvoid": false,
+   "deadPosition": null,
+   "enumComplete": true,
+   "enumEnds": 161075,
+   "staticExpectedCc": 2865,
+   "staticChosenCc": 3073,
+   "staticGapCc": -208,
+   "identicalFeatureVector": false,
+   "searchedExpectedCc": 1554,
+   "searchedChosenCc": 1554,
+   "expectedSearched": true,
+   "expectedInCandidateList": true,
+   "candidateSource": "completed-depth",
+   "candidates": 27,
+   "depth": 1,
+   "work": 25099,
+   "label": "weight-scale",
+   "labelWhy": "the static evaluation prefers the champion's end position by 208 cc; the largest term opposing the expected turn is `Material` (material) at -300 cc",
+   "namedTerm": "Material",
+   "topTerms": [
+    {
+     "index": 0,
+     "name": "Material",
+     "group": "material",
+     "deltaCc": -300,
+     "expectedCc": 200,
+     "chosenCc": 500,
+     "expectedF": 2,
+     "chosenF": 5
+    },
+    {
+     "index": 5,
+     "name": "PstMine",
+     "group": "economy",
+     "deltaCc": -180,
+     "expectedCc": 360,
+     "chosenCc": 540,
+     "expectedF": 6,
+     "chosenF": 9
+    },
+    {
+     "index": 28,
+     "name": "Hanging",
+     "group": "safety",
+     "deltaCc": -150,
+     "expectedCc": 550,
+     "chosenCc": 700,
+     "expectedF": -11,
+     "chosenF": -14
+    },
+    {
+     "index": 24,
+     "name": "DepletionWaste",
+     "group": "economy",
+     "deltaCc": 120,
+     "expectedCc": 540,
+     "chosenCc": 420,
+     "expectedF": -18,
+     "chosenF": -14
+    },
+    {
+     "index": 7,
+     "name": "SpawnArea",
+     "group": "space",
+     "deltaCc": 90,
+     "expectedCc": 330,
+     "chosenCc": 240,
+     "expectedF": 11,
+     "chosenF": 8
+    },
+    {
+     "index": 29,
+     "name": "HangingBuy",
+     "group": "safety",
+     "deltaCc": 90,
+     "expectedCc": 30,
+     "chosenCc": -60,
+     "expectedF": -1,
+     "chosenF": 2
+    },
+    {
+     "index": 23,
+     "name": "EconDelta",
+     "group": "economy",
+     "deltaCc": 80,
+     "expectedCc": -240,
+     "chosenCc": -320,
+     "expectedF": -3,
+     "chosenF": -4
+    },
+    {
+     "index": 3,
+     "name": "BankExcess",
+     "group": "economy",
+     "deltaCc": 50,
+     "expectedCc": 25,
+     "chosenCc": -25,
+     "expectedF": 1,
+     "chosenF": -1
+    },
+    {
+     "index": 8,
+     "name": "SpawnReserve",
+     "group": "space",
+     "deltaCc": -48,
+     "expectedCc": 40,
+     "chosenCc": 88,
+     "expectedF": 5,
+     "chosenF": 11
+    },
+    {
+     "index": 6,
+     "name": "BankConvertible",
+     "group": "economy",
+     "deltaCc": 40,
+     "expectedCc": 20,
+     "chosenCc": -20,
+     "expectedF": 1,
+     "chosenF": -1
+    },
+    {
+     "index": 1,
+     "name": "Rent",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": 422,
+     "chosenCc": 422,
+     "expectedF": -1,
+     "chosenF": -1
+    },
+    {
+     "index": 10,
+     "name": "AnchorDepth",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": 100,
+     "chosenCc": 100,
+     "expectedF": 4,
+     "chosenF": 4
+    }
+   ],
+   "groupDeltaCc": {
+    "material": -300,
+    "economy": 110,
+    "home": 0,
+    "safety": -60,
+    "space": 42
+   }
+  },
+  {
+   "id": "loss-g4-s10_0_8-A-white-t3",
+   "demand": "healing",
+   "by": "adviser",
+   "sideToMove": "white",
+   "classification": "strong-candidate-misjudged",
+   "swingCc": 1034,
+   "adviserWork": 822415,
+   "reason": "hard:analyze classified this turn \"strong-candidate-misjudged\": the adviser's best end key bd1579e6f2486e15 IS among the 27 candidates at this root; the engine played 4fa3d95989eb433c instead, worth 1381 cc to the adviser against 2415 cc. The preferred end key is the ADVISER's best at 822415 units — an adviser, not an oracle (docs/hard-ai/e1/ANALYZE.md).",
+   "chosenKey": "4fa3d95989eb433c",
+   "expectedKeys": [
+    "bd1579e6f2486e15"
+   ],
+   "avoidKeys": [
+    "4fa3d95989eb433c"
+   ],
+   "expectedKeyUsed": "bd1579e6f2486e15",
+   "expectedKeysReached": 1,
+   "matched": false,
+   "chosenWinsOutright": false,
+   "expectedWinsOutright": false,
+   "chosenInAvoid": true,
+   "deadPosition": null,
+   "enumComplete": true,
+   "enumEnds": 2802,
+   "staticExpectedCc": 2378,
+   "staticChosenCc": 2763,
+   "staticGapCc": -385,
+   "identicalFeatureVector": false,
+   "searchedExpectedCc": 1415,
+   "searchedChosenCc": 1415,
+   "expectedSearched": true,
+   "expectedInCandidateList": true,
+   "candidateSource": "completed-depth",
+   "candidates": 27,
+   "depth": 2,
+   "work": 17555,
+   "label": "weight-scale",
+   "labelWhy": "the static evaluation prefers the champion's end position by 385 cc; the largest term opposing the expected turn is `EconDelta` (economy) at -240 cc",
+   "namedTerm": "EconDelta",
+   "topTerms": [
+    {
+     "index": 5,
+     "name": "PstMine",
+     "group": "economy",
+     "deltaCc": 300,
+     "expectedCc": 420,
+     "chosenCc": 120,
+     "expectedF": 7,
+     "chosenF": 2
+    },
+    {
+     "index": 23,
+     "name": "EconDelta",
+     "group": "economy",
+     "deltaCc": -240,
+     "expectedCc": -320,
+     "chosenCc": -80,
+     "expectedF": -4,
+     "chosenF": -1
+    },
+    {
+     "index": 17,
+     "name": "Exposure",
+     "group": "safety",
+     "deltaCc": -200,
+     "expectedCc": 80,
+     "chosenCc": 280,
+     "expectedF": -4,
+     "chosenF": -14
+    },
+    {
+     "index": 31,
+     "name": "ApproachStrand",
+     "group": "safety",
+     "deltaCc": -100,
+     "expectedCc": 0,
+     "chosenCc": 100,
+     "expectedF": 0,
+     "chosenF": -10
+    },
+    {
+     "index": 41,
+     "name": "Inv4StrandUnpunished",
+     "group": "safety",
+     "deltaCc": -100,
+     "expectedCc": 0,
+     "chosenCc": 100,
+     "expectedF": 0,
+     "chosenF": -1
+    },
+    {
+     "index": 24,
+     "name": "DepletionWaste",
+     "group": "economy",
+     "deltaCc": -90,
+     "expectedCc": 180,
+     "chosenCc": 270,
+     "expectedF": -6,
+     "chosenF": -9
+    },
+    {
+     "index": 3,
+     "name": "BankExcess",
+     "group": "economy",
+     "deltaCc": 25,
+     "expectedCc": 25,
+     "chosenCc": 0,
+     "expectedF": 1,
+     "chosenF": 0
+    },
+    {
+     "index": 6,
+     "name": "BankConvertible",
+     "group": "economy",
+     "deltaCc": 20,
+     "expectedCc": 120,
+     "chosenCc": 100,
+     "expectedF": 6,
+     "chosenF": 5
+    },
+    {
+     "index": 0,
+     "name": "Material",
+     "group": "material",
+     "deltaCc": 0,
+     "expectedCc": 400,
+     "chosenCc": 400,
+     "expectedF": 4,
+     "chosenF": 4
+    },
+    {
+     "index": 7,
+     "name": "SpawnArea",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": 420,
+     "chosenCc": 420,
+     "expectedF": 14,
+     "chosenF": 14
+    },
+    {
+     "index": 8,
+     "name": "SpawnReserve",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": 88,
+     "chosenCc": 88,
+     "expectedF": 11,
+     "chosenF": 11
+    },
+    {
+     "index": 10,
+     "name": "AnchorDepth",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": 125,
+     "chosenCc": 125,
+     "expectedF": 5,
+     "chosenF": 5
+    }
+   ],
+   "groupDeltaCc": {
+    "material": 0,
+    "economy": 15,
+    "home": 0,
+    "safety": -400,
+    "space": 0
+   }
+  },
+  {
+   "id": "loss-g4-s10_0_8-B-white-t7",
+   "demand": "healing",
+   "by": "adviser",
+   "sideToMove": "black",
+   "classification": "strong-candidate-misjudged",
+   "swingCc": 1204,
+   "adviserWork": 820028,
+   "reason": "hard:analyze classified this turn \"strong-candidate-misjudged\": the adviser's best end key 35b6a6ff6efb0277 IS among the 27 candidates at this root; the engine played 3a68d3dfecf6326f instead, worth -951 cc to the adviser against 253 cc. The preferred end key is the ADVISER's best at 820028 units — an adviser, not an oracle (docs/hard-ai/e1/ANALYZE.md).",
+   "chosenKey": "3a68d3dfecf6326f",
+   "expectedKeys": [
+    "35b6a6ff6efb0277"
+   ],
+   "avoidKeys": [
+    "3a68d3dfecf6326f"
+   ],
+   "expectedKeyUsed": "35b6a6ff6efb0277",
+   "expectedKeysReached": 1,
+   "matched": false,
+   "chosenWinsOutright": false,
+   "expectedWinsOutright": false,
+   "chosenInAvoid": true,
+   "deadPosition": null,
+   "enumComplete": true,
+   "enumEnds": 433815,
+   "staticExpectedCc": 648,
+   "staticChosenCc": 2810,
+   "staticGapCc": -2162,
+   "identicalFeatureVector": false,
+   "searchedExpectedCc": -866,
+   "searchedChosenCc": -866,
+   "expectedSearched": true,
+   "expectedInCandidateList": true,
+   "candidateSource": "completed-depth",
+   "candidates": 27,
+   "depth": 2,
+   "work": 19726,
+   "label": "weight-scale",
+   "labelWhy": "the static evaluation prefers the champion's end position by 2162 cc; the largest term opposing the expected turn is `Material` (material) at -700 cc",
+   "namedTerm": "Material",
+   "topTerms": [
+    {
+     "index": 0,
+     "name": "Material",
+     "group": "material",
+     "deltaCc": -700,
+     "expectedCc": -1300,
+     "chosenCc": -600,
+     "expectedF": -13,
+     "chosenF": -6
+    },
+    {
+     "index": 1,
+     "name": "Rent",
+     "group": "economy",
+     "deltaCc": 422,
+     "expectedCc": 0,
+     "chosenCc": -422,
+     "expectedF": 0,
+     "chosenF": 1
+    },
+    {
+     "index": 42,
+     "name": "Inv5PoorMinerSquare",
+     "group": "economy",
+     "deltaCc": -400,
+     "expectedCc": -400,
+     "chosenCc": 0,
+     "expectedF": 1,
+     "chosenF": 0
+    },
+    {
+     "index": 7,
+     "name": "SpawnArea",
+     "group": "space",
+     "deltaCc": -360,
+     "expectedCc": -30,
+     "chosenCc": 330,
+     "expectedF": -1,
+     "chosenF": 11
+    },
+    {
+     "index": 29,
+     "name": "HangingBuy",
+     "group": "safety",
+     "deltaCc": -360,
+     "expectedCc": 0,
+     "chosenCc": 360,
+     "expectedF": 0,
+     "chosenF": -12
+    },
+    {
+     "index": 30,
+     "name": "ApproachRetreat",
+     "group": "safety",
+     "deltaCc": -300,
+     "expectedCc": -125,
+     "chosenCc": 175,
+     "expectedF": 5,
+     "chosenF": -7
+    },
+    {
+     "index": 28,
+     "name": "Hanging",
+     "group": "safety",
+     "deltaCc": 250,
+     "expectedCc": 250,
+     "chosenCc": 0,
+     "expectedF": -5,
+     "chosenF": 0
+    },
+    {
+     "index": 40,
+     "name": "Inv3RetreatSquare",
+     "group": "safety",
+     "deltaCc": -250,
+     "expectedCc": 0,
+     "chosenCc": 250,
+     "expectedF": 0,
+     "chosenF": -1
+    },
+    {
+     "index": 5,
+     "name": "PstMine",
+     "group": "economy",
+     "deltaCc": -180,
+     "expectedCc": 60,
+     "chosenCc": 240,
+     "expectedF": 1,
+     "chosenF": 4
+    },
+    {
+     "index": 3,
+     "name": "BankExcess",
+     "group": "economy",
+     "deltaCc": 175,
+     "expectedCc": 475,
+     "chosenCc": 300,
+     "expectedF": 19,
+     "chosenF": 12
+    },
+    {
+     "index": 6,
+     "name": "BankConvertible",
+     "group": "economy",
+     "deltaCc": -160,
+     "expectedCc": 80,
+     "chosenCc": 240,
+     "expectedF": 4,
+     "chosenF": 12
+    },
+    {
+     "index": 17,
+     "name": "Exposure",
+     "group": "safety",
+     "deltaCc": -160,
+     "expectedCc": 180,
+     "chosenCc": 340,
+     "expectedF": -9,
+     "chosenF": -17
+    }
+   ],
+   "groupDeltaCc": {
+    "material": -700,
+    "economy": -213,
+    "home": 0,
+    "safety": -750,
+    "space": -499
+   }
+  },
+  {
+   "id": "loss-g4-s10_3_9-A-white-t2",
+   "demand": "home-and-spawn",
+   "by": "adviser",
+   "sideToMove": "white",
+   "classification": "strong-candidate-misjudged",
+   "swingCc": 590,
+   "adviserWork": 1389704,
+   "reason": "hard:analyze classified this turn \"strong-candidate-misjudged\": the adviser's best end key 8626bdd387867854 IS among the 27 candidates at this root; the engine played dd78b9da58210a23 instead, worth 305 cc to the adviser against 895 cc. The preferred end key is the ADVISER's best at 1389704 units — an adviser, not an oracle (docs/hard-ai/e1/ANALYZE.md).",
+   "chosenKey": "ce0412ebd8432445",
+   "expectedKeys": [
+    "8626bdd387867854"
+   ],
+   "avoidKeys": [
+    "dd78b9da58210a23"
+   ],
+   "expectedKeyUsed": "8626bdd387867854",
+   "expectedKeysReached": 1,
+   "matched": false,
+   "chosenWinsOutright": false,
+   "expectedWinsOutright": false,
+   "chosenInAvoid": false,
+   "deadPosition": null,
+   "enumComplete": true,
+   "enumEnds": 21871,
+   "staticExpectedCc": 3220,
+   "staticChosenCc": 2799,
+   "staticGapCc": 421,
+   "identicalFeatureVector": false,
+   "searchedExpectedCc": -725,
+   "searchedChosenCc": 2799,
+   "expectedSearched": true,
+   "expectedInCandidateList": true,
+   "candidateSource": "completed-depth",
+   "candidates": 27,
+   "depth": 1,
+   "work": 25155,
+   "label": "search-not-eval",
+   "labelWhy": "the static stage-2 evaluation prefers the expected end position by 421 cc and the search still returned the other turn",
+   "namedTerm": "Hanging",
+   "topTerms": [
+    {
+     "index": 7,
+     "name": "SpawnArea",
+     "group": "space",
+     "deltaCc": 900,
+     "expectedCc": 870,
+     "chosenCc": -30,
+     "expectedF": 29,
+     "chosenF": -1
+    },
+    {
+     "index": 28,
+     "name": "Hanging",
+     "group": "safety",
+     "deltaCc": -500,
+     "expectedCc": -150,
+     "chosenCc": 350,
+     "expectedF": 3,
+     "chosenF": -7
+    },
+    {
+     "index": 5,
+     "name": "PstMine",
+     "group": "economy",
+     "deltaCc": -360,
+     "expectedCc": -60,
+     "chosenCc": 300,
+     "expectedF": -1,
+     "chosenF": 5
+    },
+    {
+     "index": 14,
+     "name": "HomeCountdown",
+     "group": "home",
+     "deltaCc": -360,
+     "expectedCc": 180,
+     "chosenCc": 540,
+     "expectedF": -1,
+     "chosenF": -3
+    },
+    {
+     "index": 57,
+     "name": "Inv20StrandNoRetreat",
+     "group": "safety",
+     "deltaCc": -250,
+     "expectedCc": -250,
+     "chosenCc": 0,
+     "expectedF": 1,
+     "chosenF": 0
+    },
+    {
+     "index": 8,
+     "name": "SpawnReserve",
+     "group": "space",
+     "deltaCc": 224,
+     "expectedCc": 200,
+     "chosenCc": -24,
+     "expectedF": 25,
+     "chosenF": -3
+    },
+    {
+     "index": 15,
+     "name": "HomePlug",
+     "group": "home",
+     "deltaCc": -220,
+     "expectedCc": 0,
+     "chosenCc": 220,
+     "expectedF": 0,
+     "chosenF": 1
+    },
+    {
+     "index": 29,
+     "name": "HangingBuy",
+     "group": "safety",
+     "deltaCc": 210,
+     "expectedCc": 210,
+     "chosenCc": 0,
+     "expectedF": -7,
+     "chosenF": 0
+    },
+    {
+     "index": 0,
+     "name": "Material",
+     "group": "material",
+     "deltaCc": 200,
+     "expectedCc": 300,
+     "chosenCc": 100,
+     "expectedF": 3,
+     "chosenF": 1
+    },
+    {
+     "index": 10,
+     "name": "AnchorDepth",
+     "group": "space",
+     "deltaCc": 200,
+     "expectedCc": 175,
+     "chosenCc": -25,
+     "expectedF": 7,
+     "chosenF": -1
+    },
+    {
+     "index": 17,
+     "name": "Exposure",
+     "group": "safety",
+     "deltaCc": 200,
+     "expectedCc": 180,
+     "chosenCc": -20,
+     "expectedF": -9,
+     "chosenF": 1
+    },
+    {
+     "index": 50,
+     "name": "Inv13Turtle",
+     "group": "space",
+     "deltaCc": 200,
+     "expectedCc": 200,
+     "chosenCc": 0,
+     "expectedF": -1,
+     "chosenF": 0
+    }
+   ],
+   "groupDeltaCc": {
+    "material": 200,
+    "economy": -265,
+    "home": -640,
+    "safety": -470,
+    "space": 1596
+   }
+  },
+  {
+   "id": "loss-g4-s2_3_1-B-white-t2",
+   "demand": "recurring-upkeep",
+   "by": "adviser",
+   "sideToMove": "black",
+   "classification": "strong-candidate-misjudged",
+   "swingCc": 1995,
+   "adviserWork": 921809,
+   "reason": "hard:analyze classified this turn \"strong-candidate-misjudged\": the adviser's best end key dd8b039153935d77 IS among the 28 candidates at this root; the engine played 82ee31872ff9ee0a instead, worth -2610 cc to the adviser against -615 cc. The preferred end key is the ADVISER's best at 921809 units — an adviser, not an oracle (docs/hard-ai/e1/ANALYZE.md).",
+   "chosenKey": "dd8b039153935d77",
+   "expectedKeys": [
+    "dd8b039153935d77"
+   ],
+   "avoidKeys": [
+    "82ee31872ff9ee0a"
+   ],
+   "expectedKeyUsed": "dd8b039153935d77",
+   "expectedKeysReached": 1,
+   "matched": true,
+   "chosenWinsOutright": false,
+   "expectedWinsOutright": false,
+   "chosenInAvoid": false,
+   "deadPosition": null,
+   "enumComplete": true,
+   "enumEnds": 16436,
+   "staticExpectedCc": 729,
+   "staticChosenCc": 729,
+   "staticGapCc": 0,
+   "identicalFeatureVector": true,
+   "searchedExpectedCc": 729,
+   "searchedChosenCc": 729,
+   "expectedSearched": true,
+   "expectedInCandidateList": true,
+   "candidateSource": "completed-depth",
+   "candidates": 28,
+   "depth": 1,
+   "work": 25123,
+   "label": "matched",
+   "labelWhy": "the champion chose a preferred key",
+   "namedTerm": "BankLiquid",
+   "topTerms": [
+    {
+     "index": 2,
+     "name": "BankLiquid",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": 270,
+     "chosenCc": 270,
+     "expectedF": 3,
+     "chosenF": 3
+    },
+    {
+     "index": 3,
+     "name": "BankExcess",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": 50,
+     "chosenCc": 50,
+     "expectedF": 2,
+     "chosenF": 2
+    },
+    {
+     "index": 5,
+     "name": "PstMine",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": 240,
+     "chosenCc": 240,
+     "expectedF": 4,
+     "chosenF": 4
+    },
+    {
+     "index": 7,
+     "name": "SpawnArea",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": -360,
+     "chosenCc": -360,
+     "expectedF": -12,
+     "chosenF": -12
+    },
+    {
+     "index": 8,
+     "name": "SpawnReserve",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": -96,
+     "chosenCc": -96,
+     "expectedF": -12,
+     "chosenF": -12
+    },
+    {
+     "index": 10,
+     "name": "AnchorDepth",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": -100,
+     "chosenCc": -100,
+     "expectedF": -4,
+     "chosenF": -4
+    },
+    {
+     "index": 12,
+     "name": "CornerSeal",
+     "group": "home",
+     "deltaCc": 0,
+     "expectedCc": 60,
+     "chosenCc": 60,
+     "expectedF": -1,
+     "chosenF": -1
+    },
+    {
+     "index": 13,
+     "name": "HomeThreat",
+     "group": "home",
+     "deltaCc": 0,
+     "expectedCc": 400,
+     "chosenCc": 400,
+     "expectedF": -1,
+     "chosenF": -1
+    },
+    {
+     "index": 14,
+     "name": "HomeCountdown",
+     "group": "home",
+     "deltaCc": 0,
+     "expectedCc": 540,
+     "chosenCc": 540,
+     "expectedF": -3,
+     "chosenF": -3
+    },
+    {
+     "index": 15,
+     "name": "HomePlug",
+     "group": "home",
+     "deltaCc": 0,
+     "expectedCc": 220,
+     "chosenCc": 220,
+     "expectedF": 1,
+     "chosenF": 1
+    },
+    {
+     "index": 23,
+     "name": "EconDelta",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": -320,
+     "chosenCc": -320,
+     "expectedF": -4,
+     "chosenF": -4
+    },
+    {
+     "index": 28,
+     "name": "Hanging",
+     "group": "safety",
+     "deltaCc": 0,
+     "expectedCc": -600,
+     "chosenCc": -600,
+     "expectedF": 12,
+     "chosenF": 12
+    }
+   ],
+   "groupDeltaCc": {
+    "material": 0,
+    "economy": 0,
+    "home": 0,
+    "safety": 0,
+    "space": 0
+   }
+  },
+  {
+   "id": "loss-g4-s6_0_4-A-white-t4",
+   "demand": "home-and-spawn",
+   "by": "adviser",
+   "sideToMove": "white",
+   "classification": "strong-candidate-misjudged",
+   "swingCc": 377,
+   "adviserWork": 1323279,
+   "reason": "hard:analyze classified this turn \"strong-candidate-misjudged\": the adviser's best end key f19ab20217e49e6f IS among the 30 candidates at this root; the engine played aee340870423b0a4 instead, worth 3774 cc to the adviser against 4151 cc. The preferred end key is the ADVISER's best at 1323279 units — an adviser, not an oracle (docs/hard-ai/e1/ANALYZE.md).",
+   "chosenKey": "b2d43b3d3fc26bb2",
+   "expectedKeys": [
+    "f19ab20217e49e6f"
+   ],
+   "avoidKeys": [
+    "aee340870423b0a4"
+   ],
+   "expectedKeyUsed": null,
+   "expectedKeysReached": 0,
+   "matched": false,
+   "chosenWinsOutright": false,
+   "expectedWinsOutright": null,
+   "chosenInAvoid": false,
+   "deadPosition": null,
+   "enumComplete": false,
+   "enumEnds": 374833,
+   "staticExpectedCc": null,
+   "staticChosenCc": 4458,
+   "staticGapCc": null,
+   "identicalFeatureVector": null,
+   "searchedExpectedCc": null,
+   "searchedChosenCc": 4458,
+   "expectedSearched": null,
+   "expectedInCandidateList": null,
+   "candidateSource": "completed-depth",
+   "candidates": 30,
+   "depth": 1,
+   "work": 25004,
+   "label": "unresolved",
+   "labelWhy": "the canonical enumeration reached 0/1 preferred keys in 3000000 calls (complete: false); nothing is claimed about this row",
+   "namedTerm": null,
+   "topTerms": [],
+   "groupDeltaCc": null
+  },
+  {
+   "id": "loss-g4-s6_3_5-A-white-t4",
+   "demand": "home-and-spawn",
+   "by": "adviser",
+   "sideToMove": "white",
+   "classification": "strong-candidate-misjudged",
+   "swingCc": 886,
+   "adviserWork": 1226323,
+   "reason": "hard:analyze classified this turn \"strong-candidate-misjudged\": the adviser's best end key 05b0c06e62f7726c IS among the 29 candidates at this root; the engine played ff62fc2285f6bed1 instead, worth 2911 cc to the adviser against 3797 cc. The preferred end key is the ADVISER's best at 1226323 units — an adviser, not an oracle (docs/hard-ai/e1/ANALYZE.md).",
+   "chosenKey": "7de4d5ea82ccec0f",
+   "expectedKeys": [
+    "05b0c06e62f7726c"
+   ],
+   "avoidKeys": [
+    "ff62fc2285f6bed1"
+   ],
+   "expectedKeyUsed": null,
+   "expectedKeysReached": 0,
+   "matched": false,
+   "chosenWinsOutright": false,
+   "expectedWinsOutright": null,
+   "chosenInAvoid": false,
+   "deadPosition": null,
+   "enumComplete": false,
+   "enumEnds": 337511,
+   "staticExpectedCc": null,
+   "staticChosenCc": 2873,
+   "staticGapCc": null,
+   "identicalFeatureVector": null,
+   "searchedExpectedCc": null,
+   "searchedChosenCc": 2873,
+   "expectedSearched": null,
+   "expectedInCandidateList": null,
+   "candidateSource": "completed-depth",
+   "candidates": 29,
+   "depth": 1,
+   "work": 12135,
+   "label": "unresolved",
+   "labelWhy": "the canonical enumeration reached 0/1 preferred keys in 3000000 calls (complete: false); nothing is claimed about this row",
+   "namedTerm": null,
+   "topTerms": [],
+   "groupDeltaCc": null
+  },
+  {
+   "id": "loss-g4-s6_3_5-B-white-t1",
+   "demand": "healing",
+   "by": "adviser",
+   "sideToMove": "black",
+   "classification": "strong-candidate-misjudged",
+   "swingCc": 676,
+   "adviserWork": 977998,
+   "reason": "hard:analyze classified this turn \"strong-candidate-misjudged\": the adviser's best end key 559e2d60610127d8 IS among the 18 candidates at this root; the engine played 4844d47f0e9b8049 instead, worth -2473 cc to the adviser against -1797 cc. The preferred end key is the ADVISER's best at 977998 units — an adviser, not an oracle (docs/hard-ai/e1/ANALYZE.md).",
+   "chosenKey": "4844d47f0e9b8049",
+   "expectedKeys": [
+    "559e2d60610127d8"
+   ],
+   "avoidKeys": [
+    "4844d47f0e9b8049"
+   ],
+   "expectedKeyUsed": "559e2d60610127d8",
+   "expectedKeysReached": 1,
+   "matched": false,
+   "chosenWinsOutright": false,
+   "expectedWinsOutright": false,
+   "chosenInAvoid": true,
+   "deadPosition": null,
+   "enumComplete": true,
+   "enumEnds": 387,
+   "staticExpectedCc": -1057,
+   "staticChosenCc": -782,
+   "staticGapCc": -275,
+   "identicalFeatureVector": false,
+   "searchedExpectedCc": -1739,
+   "searchedChosenCc": -1739,
+   "expectedSearched": true,
+   "expectedInCandidateList": true,
+   "candidateSource": "completed-depth",
+   "candidates": 18,
+   "depth": 2,
+   "work": 16523,
+   "label": "weight-scale",
+   "labelWhy": "the static evaluation prefers the champion's end position by 275 cc; the largest term opposing the expected turn is `Hanging` (safety) at -250 cc",
+   "namedTerm": "Hanging",
+   "topTerms": [
+    {
+     "index": 28,
+     "name": "Hanging",
+     "group": "safety",
+     "deltaCc": -250,
+     "expectedCc": -450,
+     "chosenCc": -200,
+     "expectedF": 9,
+     "chosenF": 4
+    },
+    {
+     "index": 27,
+     "name": "RelocationDebt",
+     "group": "economy",
+     "deltaCc": 60,
+     "expectedCc": 0,
+     "chosenCc": -60,
+     "expectedF": 0,
+     "chosenF": 1
+    },
+    {
+     "index": 31,
+     "name": "ApproachStrand",
+     "group": "safety",
+     "deltaCc": -50,
+     "expectedCc": -90,
+     "chosenCc": -40,
+     "expectedF": 9,
+     "chosenF": 4
+    },
+    {
+     "index": 33,
+     "name": "KillAvailable",
+     "group": "safety",
+     "deltaCc": -35,
+     "expectedCc": -70,
+     "chosenCc": -35,
+     "expectedF": -2,
+     "chosenF": -1
+    },
+    {
+     "index": 0,
+     "name": "Material",
+     "group": "material",
+     "deltaCc": 0,
+     "expectedCc": 300,
+     "chosenCc": 300,
+     "expectedF": 3,
+     "chosenF": 3
+    },
+    {
+     "index": 2,
+     "name": "BankLiquid",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": 90,
+     "chosenCc": 90,
+     "expectedF": 1,
+     "chosenF": 1
+    },
+    {
+     "index": 5,
+     "name": "PstMine",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": 240,
+     "chosenCc": 240,
+     "expectedF": 4,
+     "chosenF": 4
+    },
+    {
+     "index": 6,
+     "name": "BankConvertible",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": -20,
+     "chosenCc": -20,
+     "expectedF": -1,
+     "chosenF": -1
+    },
+    {
+     "index": 7,
+     "name": "SpawnArea",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": -780,
+     "chosenCc": -780,
+     "expectedF": -26,
+     "chosenF": -26
+    },
+    {
+     "index": 8,
+     "name": "SpawnReserve",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": -200,
+     "chosenCc": -200,
+     "expectedF": -25,
+     "chosenF": -25
+    },
+    {
+     "index": 10,
+     "name": "AnchorDepth",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": -175,
+     "chosenCc": -175,
+     "expectedF": -7,
+     "chosenF": -7
+    },
+    {
+     "index": 12,
+     "name": "CornerSeal",
+     "group": "home",
+     "deltaCc": 0,
+     "expectedCc": 60,
+     "chosenCc": 60,
+     "expectedF": -1,
+     "chosenF": -1
+    }
+   ],
+   "groupDeltaCc": {
+    "material": 0,
+    "economy": 60,
+    "home": 0,
+    "safety": -335,
+    "space": 0
+   }
+  },
+  {
+   "id": "loss-g5-s11_0_10-B-white-t1",
+   "demand": "home-and-spawn",
+   "by": "adviser",
+   "sideToMove": "black",
+   "classification": "strong-candidate-misjudged",
+   "swingCc": 547,
+   "adviserWork": 1051169,
+   "reason": "hard:analyze classified this turn \"strong-candidate-misjudged\": the adviser's best end key 9693d7fa61b4fb92 IS among the 19 candidates at this root; the engine played a932c749eddb7013 instead, worth -2069 cc to the adviser against -1522 cc. The preferred end key is the ADVISER's best at 1051169 units — an adviser, not an oracle (docs/hard-ai/e1/ANALYZE.md).",
+   "chosenKey": "a932c749eddb7013",
+   "expectedKeys": [
+    "9693d7fa61b4fb92"
+   ],
+   "avoidKeys": [
+    "a932c749eddb7013"
+   ],
+   "expectedKeyUsed": "9693d7fa61b4fb92",
+   "expectedKeysReached": 1,
+   "matched": false,
+   "chosenWinsOutright": false,
+   "expectedWinsOutright": false,
+   "chosenInAvoid": true,
+   "deadPosition": null,
+   "enumComplete": true,
+   "enumEnds": 597,
+   "staticExpectedCc": -1218,
+   "staticChosenCc": -809,
+   "staticGapCc": -409,
+   "identicalFeatureVector": false,
+   "searchedExpectedCc": -2309,
+   "searchedChosenCc": -2309,
+   "expectedSearched": true,
+   "expectedInCandidateList": true,
+   "candidateSource": "completed-depth",
+   "candidates": 19,
+   "depth": 2,
+   "work": 13185,
+   "label": "weight-scale",
+   "labelWhy": "the static evaluation prefers the champion's end position by 409 cc; the largest term opposing the expected turn is `Hanging` (safety) at -200 cc",
+   "namedTerm": "Hanging",
+   "topTerms": [
+    {
+     "index": 28,
+     "name": "Hanging",
+     "group": "safety",
+     "deltaCc": -200,
+     "expectedCc": -200,
+     "chosenCc": 0,
+     "expectedF": 4,
+     "chosenF": 0
+    },
+    {
+     "index": 24,
+     "name": "DepletionWaste",
+     "group": "economy",
+     "deltaCc": -120,
+     "expectedCc": -120,
+     "chosenCc": 0,
+     "expectedF": 4,
+     "chosenF": 0
+    },
+    {
+     "index": 23,
+     "name": "EconDelta",
+     "group": "economy",
+     "deltaCc": -80,
+     "expectedCc": -80,
+     "chosenCc": 0,
+     "expectedF": -1,
+     "chosenF": 0
+    },
+    {
+     "index": 12,
+     "name": "CornerSeal",
+     "group": "home",
+     "deltaCc": 60,
+     "expectedCc": 60,
+     "chosenCc": 0,
+     "expectedF": -1,
+     "chosenF": 0
+    },
+    {
+     "index": 27,
+     "name": "RelocationDebt",
+     "group": "economy",
+     "deltaCc": -60,
+     "expectedCc": -60,
+     "chosenCc": 0,
+     "expectedF": 1,
+     "chosenF": 0
+    },
+    {
+     "index": 31,
+     "name": "ApproachStrand",
+     "group": "safety",
+     "deltaCc": -40,
+     "expectedCc": -40,
+     "chosenCc": 0,
+     "expectedF": 4,
+     "chosenF": 0
+    },
+    {
+     "index": 33,
+     "name": "KillAvailable",
+     "group": "safety",
+     "deltaCc": -35,
+     "expectedCc": -35,
+     "chosenCc": 0,
+     "expectedF": -1,
+     "chosenF": 0
+    },
+    {
+     "index": 7,
+     "name": "SpawnArea",
+     "group": "space",
+     "deltaCc": 30,
+     "expectedCc": -750,
+     "chosenCc": -780,
+     "expectedF": -25,
+     "chosenF": -26
+    },
+    {
+     "index": 6,
+     "name": "BankConvertible",
+     "group": "economy",
+     "deltaCc": 20,
+     "expectedCc": 0,
+     "chosenCc": -20,
+     "expectedF": 0,
+     "chosenF": -1
+    },
+    {
+     "index": 8,
+     "name": "SpawnReserve",
+     "group": "space",
+     "deltaCc": 16,
+     "expectedCc": -168,
+     "chosenCc": -184,
+     "expectedF": -21,
+     "chosenF": -23
+    },
+    {
+     "index": 10,
+     "name": "AnchorDepth",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": -175,
+     "chosenCc": -175,
+     "expectedF": -7,
+     "chosenF": -7
+    },
+    {
+     "index": 14,
+     "name": "HomeCountdown",
+     "group": "home",
+     "deltaCc": 0,
+     "expectedCc": 360,
+     "chosenCc": 360,
+     "expectedF": -2,
+     "chosenF": -2
+    }
+   ],
+   "groupDeltaCc": {
+    "material": 0,
+    "economy": -240,
+    "home": 60,
+    "safety": -275,
+    "space": 46
+   }
+  },
+  {
+   "id": "loss-g5-s11_3_11-B-white-t2",
+   "demand": "healing",
+   "by": "adviser",
+   "sideToMove": "black",
+   "classification": "strong-candidate-misjudged",
+   "swingCc": 1265,
+   "adviserWork": 918865,
+   "reason": "hard:analyze classified this turn \"strong-candidate-misjudged\": the adviser's best end key a11c745a8590e61d IS among the 28 candidates at this root; the engine played b3e778cca6ace100 instead, worth -3572 cc to the adviser against -2307 cc. The preferred end key is the ADVISER's best at 918865 units — an adviser, not an oracle (docs/hard-ai/e1/ANALYZE.md).",
+   "chosenKey": "1a255f5302a1cb6e",
+   "expectedKeys": [
+    "a11c745a8590e61d"
+   ],
+   "avoidKeys": [
+    "b3e778cca6ace100"
+   ],
+   "expectedKeyUsed": "a11c745a8590e61d",
+   "expectedKeysReached": 1,
+   "matched": false,
+   "chosenWinsOutright": false,
+   "expectedWinsOutright": false,
+   "chosenInAvoid": false,
+   "deadPosition": null,
+   "enumComplete": true,
+   "enumEnds": 17197,
+   "staticExpectedCc": -605,
+   "staticChosenCc": 729,
+   "staticGapCc": -1334,
+   "identicalFeatureVector": false,
+   "searchedExpectedCc": -605,
+   "searchedChosenCc": 729,
+   "expectedSearched": true,
+   "expectedInCandidateList": true,
+   "candidateSource": "completed-depth",
+   "candidates": 28,
+   "depth": 1,
+   "work": 25119,
+   "label": "weight-scale",
+   "labelWhy": "the static evaluation prefers the champion's end position by 1334 cc; the largest term opposing the expected turn is `HomeThreat` (home) at -400 cc",
+   "namedTerm": "HomeThreat",
+   "topTerms": [
+    {
+     "index": 28,
+     "name": "Hanging",
+     "group": "safety",
+     "deltaCc": 450,
+     "expectedCc": -150,
+     "chosenCc": -600,
+     "expectedF": 3,
+     "chosenF": 12
+    },
+    {
+     "index": 13,
+     "name": "HomeThreat",
+     "group": "home",
+     "deltaCc": -400,
+     "expectedCc": 0,
+     "chosenCc": 400,
+     "expectedF": 0,
+     "chosenF": -1
+    },
+    {
+     "index": 47,
+     "name": "Inv10HomeReachable",
+     "group": "home",
+     "deltaCc": -400,
+     "expectedCc": 0,
+     "chosenCc": 400,
+     "expectedF": 0,
+     "chosenF": -1
+    },
+    {
+     "index": 5,
+     "name": "PstMine",
+     "group": "economy",
+     "deltaCc": 300,
+     "expectedCc": 540,
+     "chosenCc": 240,
+     "expectedF": 9,
+     "chosenF": 4
+    },
+    {
+     "index": 40,
+     "name": "Inv3RetreatSquare",
+     "group": "safety",
+     "deltaCc": -250,
+     "expectedCc": -250,
+     "chosenCc": 0,
+     "expectedF": 1,
+     "chosenF": 0
+    },
+    {
+     "index": 57,
+     "name": "Inv20StrandNoRetreat",
+     "group": "safety",
+     "deltaCc": 250,
+     "expectedCc": 0,
+     "chosenCc": -250,
+     "expectedF": 0,
+     "chosenF": 1
+    },
+    {
+     "index": 7,
+     "name": "SpawnArea",
+     "group": "space",
+     "deltaCc": -240,
+     "expectedCc": -600,
+     "chosenCc": -360,
+     "expectedF": -20,
+     "chosenF": -12
+    },
+    {
+     "index": 0,
+     "name": "Material",
+     "group": "material",
+     "deltaCc": -200,
+     "expectedCc": -200,
+     "chosenCc": 0,
+     "expectedF": -2,
+     "chosenF": 0
+    },
+    {
+     "index": 14,
+     "name": "HomeCountdown",
+     "group": "home",
+     "deltaCc": -180,
+     "expectedCc": 360,
+     "chosenCc": 540,
+     "expectedF": -2,
+     "chosenF": -3
+    },
+    {
+     "index": 36,
+     "name": "BlockingDeficit",
+     "group": "safety",
+     "deltaCc": -150,
+     "expectedCc": 0,
+     "chosenCc": 150,
+     "expectedF": 0,
+     "chosenF": -1
+    },
+    {
+     "index": 56,
+     "name": "Inv19SoftMinerExposed",
+     "group": "safety",
+     "deltaCc": -150,
+     "expectedCc": 0,
+     "chosenCc": 150,
+     "expectedF": 0,
+     "chosenF": -1
+    },
+    {
+     "index": 35,
+     "name": "AnchorFragility",
+     "group": "safety",
+     "deltaCc": -120,
+     "expectedCc": 0,
+     "chosenCc": 120,
+     "expectedF": 0,
+     "chosenF": -1
+    }
+   ],
+   "groupDeltaCc": {
+    "material": -200,
+    "economy": 255,
+    "home": -1040,
+    "safety": 5,
+    "space": -354
+   }
+  },
+  {
+   "id": "loss-g5-s7_3_7-A-white-t4",
+   "demand": "home-and-spawn",
+   "by": "adviser",
+   "sideToMove": "white",
+   "classification": "strong-candidate-misjudged",
+   "swingCc": 886,
+   "adviserWork": 1226323,
+   "reason": "hard:analyze classified this turn \"strong-candidate-misjudged\": the adviser's best end key 05b0c06e62f7726c IS among the 29 candidates at this root; the engine played ff62fc2285f6bed1 instead, worth 2911 cc to the adviser against 3797 cc. The preferred end key is the ADVISER's best at 1226323 units — an adviser, not an oracle (docs/hard-ai/e1/ANALYZE.md).",
+   "chosenKey": "7de4d5ea82ccec0f",
+   "expectedKeys": [
+    "05b0c06e62f7726c"
+   ],
+   "avoidKeys": [
+    "ff62fc2285f6bed1"
+   ],
+   "expectedKeyUsed": null,
+   "expectedKeysReached": 0,
+   "matched": false,
+   "chosenWinsOutright": false,
+   "expectedWinsOutright": null,
+   "chosenInAvoid": false,
+   "deadPosition": null,
+   "enumComplete": false,
+   "enumEnds": 337511,
+   "staticExpectedCc": null,
+   "staticChosenCc": 2873,
+   "staticGapCc": null,
+   "identicalFeatureVector": null,
+   "searchedExpectedCc": null,
+   "searchedChosenCc": 2873,
+   "expectedSearched": null,
+   "expectedInCandidateList": null,
+   "candidateSource": "completed-depth",
+   "candidates": 29,
+   "depth": 1,
+   "work": 12135,
+   "label": "unresolved",
+   "labelWhy": "the canonical enumeration reached 0/1 preferred keys in 3000000 calls (complete: false); nothing is claimed about this row",
+   "namedTerm": null,
+   "topTerms": [],
+   "groupDeltaCc": null
+  },
+  {
+   "id": "loss-g5-s7_3_7-B-white-t1",
+   "demand": "healing",
+   "by": "adviser",
+   "sideToMove": "black",
+   "classification": "strong-candidate-misjudged",
+   "swingCc": 676,
+   "adviserWork": 977998,
+   "reason": "hard:analyze classified this turn \"strong-candidate-misjudged\": the adviser's best end key 559e2d60610127d8 IS among the 18 candidates at this root; the engine played 4844d47f0e9b8049 instead, worth -2473 cc to the adviser against -1797 cc. The preferred end key is the ADVISER's best at 977998 units — an adviser, not an oracle (docs/hard-ai/e1/ANALYZE.md).",
+   "chosenKey": "4844d47f0e9b8049",
+   "expectedKeys": [
+    "559e2d60610127d8"
+   ],
+   "avoidKeys": [
+    "4844d47f0e9b8049"
+   ],
+   "expectedKeyUsed": "559e2d60610127d8",
+   "expectedKeysReached": 1,
+   "matched": false,
+   "chosenWinsOutright": false,
+   "expectedWinsOutright": false,
+   "chosenInAvoid": true,
+   "deadPosition": null,
+   "enumComplete": true,
+   "enumEnds": 387,
+   "staticExpectedCc": -1057,
+   "staticChosenCc": -782,
+   "staticGapCc": -275,
+   "identicalFeatureVector": false,
+   "searchedExpectedCc": -1739,
+   "searchedChosenCc": -1739,
+   "expectedSearched": true,
+   "expectedInCandidateList": true,
+   "candidateSource": "completed-depth",
+   "candidates": 18,
+   "depth": 2,
+   "work": 16523,
+   "label": "weight-scale",
+   "labelWhy": "the static evaluation prefers the champion's end position by 275 cc; the largest term opposing the expected turn is `Hanging` (safety) at -250 cc",
+   "namedTerm": "Hanging",
+   "topTerms": [
+    {
+     "index": 28,
+     "name": "Hanging",
+     "group": "safety",
+     "deltaCc": -250,
+     "expectedCc": -450,
+     "chosenCc": -200,
+     "expectedF": 9,
+     "chosenF": 4
+    },
+    {
+     "index": 27,
+     "name": "RelocationDebt",
+     "group": "economy",
+     "deltaCc": 60,
+     "expectedCc": 0,
+     "chosenCc": -60,
+     "expectedF": 0,
+     "chosenF": 1
+    },
+    {
+     "index": 31,
+     "name": "ApproachStrand",
+     "group": "safety",
+     "deltaCc": -50,
+     "expectedCc": -90,
+     "chosenCc": -40,
+     "expectedF": 9,
+     "chosenF": 4
+    },
+    {
+     "index": 33,
+     "name": "KillAvailable",
+     "group": "safety",
+     "deltaCc": -35,
+     "expectedCc": -70,
+     "chosenCc": -35,
+     "expectedF": -2,
+     "chosenF": -1
+    },
+    {
+     "index": 0,
+     "name": "Material",
+     "group": "material",
+     "deltaCc": 0,
+     "expectedCc": 300,
+     "chosenCc": 300,
+     "expectedF": 3,
+     "chosenF": 3
+    },
+    {
+     "index": 2,
+     "name": "BankLiquid",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": 90,
+     "chosenCc": 90,
+     "expectedF": 1,
+     "chosenF": 1
+    },
+    {
+     "index": 5,
+     "name": "PstMine",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": 240,
+     "chosenCc": 240,
+     "expectedF": 4,
+     "chosenF": 4
+    },
+    {
+     "index": 6,
+     "name": "BankConvertible",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": -20,
+     "chosenCc": -20,
+     "expectedF": -1,
+     "chosenF": -1
+    },
+    {
+     "index": 7,
+     "name": "SpawnArea",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": -780,
+     "chosenCc": -780,
+     "expectedF": -26,
+     "chosenF": -26
+    },
+    {
+     "index": 8,
+     "name": "SpawnReserve",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": -200,
+     "chosenCc": -200,
+     "expectedF": -25,
+     "chosenF": -25
+    },
+    {
+     "index": 10,
+     "name": "AnchorDepth",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": -175,
+     "chosenCc": -175,
+     "expectedF": -7,
+     "chosenF": -7
+    },
+    {
+     "index": 12,
+     "name": "CornerSeal",
+     "group": "home",
+     "deltaCc": 0,
+     "expectedCc": 60,
+     "chosenCc": 60,
+     "expectedF": -1,
+     "chosenF": -1
+    }
+   ],
+   "groupDeltaCc": {
+    "material": 0,
+    "economy": 60,
+    "home": 0,
+    "safety": -335,
+    "space": 0
+   }
+  },
+  {
+   "id": "e21-purchase-plus-promotion",
+   "demand": "immediate-action",
+   "by": "author",
+   "sideToMove": "white",
+   "classification": null,
+   "swingCc": null,
+   "adviserWork": null,
+   "reason": "A seeding-budget enumeration proved these end positions satisfy \"win\" and are reachable only through a purchase and a promotion in the same place phase, but the exam runner's 300000-call budget cannot re-verify that, so the case is carried as a judgment.",
+   "chosenKey": "c2eb8e48fcd82e18",
+   "expectedKeys": [
+    "04a080bcb197905c",
+    "0a8722b9c6556332",
+    "0b1d9f4f420e6e98",
+    "110fb6de0faadd4b",
+    "19f62247d7010d62",
+    "1c8e12da00f5e378",
+    "21ceba4c282b4a85",
+    "22031ecf5262d546"
+   ],
+   "avoidKeys": [],
+   "expectedKeyUsed": "0b1d9f4f420e6e98",
+   "expectedKeysReached": 8,
+   "matched": false,
+   "chosenWinsOutright": true,
+   "expectedWinsOutright": true,
+   "chosenInAvoid": false,
+   "deadPosition": null,
+   "enumComplete": true,
+   "enumEnds": 79196,
+   "staticExpectedCc": 2380,
+   "staticChosenCc": 2057,
+   "staticGapCc": 323,
+   "identicalFeatureVector": false,
+   "searchedExpectedCc": null,
+   "searchedChosenCc": null,
+   "expectedSearched": null,
+   "expectedInCandidateList": false,
+   "candidateSource": "generator-list",
+   "candidates": 29,
+   "depth": 1,
+   "work": 333,
+   "label": "contradictory-preference",
+   "labelWhy": "judge 4 (canonical fact): the champion's own turn, replayed through `src/game`, ends the game with white as winner, and the case does not list it among `preferredKeys`. A case cannot ask an engine to decline winning; `exam/run.ts` applies exactly this adjudication to EXACT cases (`run.ts` `row.passed = (inWitness && !inAvoid) || won`) and not to judgment ones (`row.matched = preferred && !avoided`).",
+   "namedTerm": "BankLiquid",
+   "topTerms": [
+    {
+     "index": 23,
+     "name": "EconDelta",
+     "group": "economy",
+     "deltaCc": 400,
+     "expectedCc": 0,
+     "chosenCc": -400,
+     "expectedF": 0,
+     "chosenF": -5
+    },
+    {
+     "index": 0,
+     "name": "Material",
+     "group": "material",
+     "deltaCc": 200,
+     "expectedCc": 1200,
+     "chosenCc": 1000,
+     "expectedF": 12,
+     "chosenF": 10
+    },
+    {
+     "index": 2,
+     "name": "BankLiquid",
+     "group": "economy",
+     "deltaCc": -180,
+     "expectedCc": 0,
+     "chosenCc": 180,
+     "expectedF": 0,
+     "chosenF": 2
+    },
+    {
+     "index": 46,
+     "name": "Inv9ChipAcrossTurn",
+     "group": "safety",
+     "deltaCc": 150,
+     "expectedCc": 0,
+     "chosenCc": -150,
+     "expectedF": 0,
+     "chosenF": 1
+    },
+    {
+     "index": 5,
+     "name": "PstMine",
+     "group": "economy",
+     "deltaCc": -120,
+     "expectedCc": 360,
+     "chosenCc": 480,
+     "expectedF": 6,
+     "chosenF": 8
+    },
+    {
+     "index": 7,
+     "name": "SpawnArea",
+     "group": "space",
+     "deltaCc": 60,
+     "expectedCc": 180,
+     "chosenCc": 120,
+     "expectedF": 6,
+     "chosenF": 4
+    },
+    {
+     "index": 12,
+     "name": "CornerSeal",
+     "group": "home",
+     "deltaCc": -60,
+     "expectedCc": -60,
+     "chosenCc": 0,
+     "expectedF": 1,
+     "chosenF": 0
+    },
+    {
+     "index": 24,
+     "name": "DepletionWaste",
+     "group": "economy",
+     "deltaCc": -60,
+     "expectedCc": -90,
+     "chosenCc": -30,
+     "expectedF": 3,
+     "chosenF": 1
+    },
+    {
+     "index": 27,
+     "name": "RelocationDebt",
+     "group": "economy",
+     "deltaCc": -60,
+     "expectedCc": -60,
+     "chosenCc": 0,
+     "expectedF": 1,
+     "chosenF": 0
+    },
+    {
+     "index": 6,
+     "name": "BankConvertible",
+     "group": "economy",
+     "deltaCc": -40,
+     "expectedCc": 0,
+     "chosenCc": 40,
+     "expectedF": 0,
+     "chosenF": 2
+    },
+    {
+     "index": 10,
+     "name": "AnchorDepth",
+     "group": "space",
+     "deltaCc": 25,
+     "expectedCc": 100,
+     "chosenCc": 75,
+     "expectedF": 4,
+     "chosenF": 3
+    },
+    {
+     "index": 8,
+     "name": "SpawnReserve",
+     "group": "space",
+     "deltaCc": 8,
+     "expectedCc": 72,
+     "chosenCc": 64,
+     "expectedF": 9,
+     "chosenF": 8
+    }
+   ],
+   "groupDeltaCc": {
+    "material": 200,
+    "economy": -60,
+    "home": -60,
+    "safety": 150,
+    "space": 93
+   }
+  }
+ ],
+ "invariants": [
+  {
+   "id": "inv1-spawn-zero",
+   "invariant": 1,
+   "side": "white",
+   "rationale": "SU #1 / NK:9: the only anchor is the home corner itself, so the rectangle is the one square it stands on and the spawn area is empty with 8 crystals in hand.",
+   "penaltyFeature": "Inv1SpawnZero",
+   "penaltyWeight": -800,
+   "searchWork": 50000,
+   "evalGapCc": 3446,
+   "evalPass": true,
+   "searchGapCcDefaultWeights": 4621,
+   "searchPassDefaultWeights": true,
+   "searchGapCcPlaceholderWeights": 1200,
+   "searchPassPlaceholderWeights": true,
+   "penaltyFiredViolating": 1,
+   "penaltyFiredCorrect": 0,
+   "penaltyDeltaCc": 800,
+   "penaltyNeverFires": false,
+   "bits": {
+    "violatingMover": [
+     1
+    ],
+    "violatingOpponent": [
+     14
+    ],
+    "correctMover": [],
+    "correctOpponent": [
+     13,
+     14
+    ]
+   },
+   "ownBitCancelled": false,
+   "label": "matched",
+   "labelWhy": "the moving side prefers the correct member",
+   "namedTerm": "DepletionWaste",
+   "topTerms": [
+    {
+     "index": 9,
+     "name": "SpawnZero",
+     "group": "space",
+     "deltaCc": 800,
+     "expectedCc": 0,
+     "chosenCc": -800,
+     "expectedF": 0,
+     "chosenF": 1
+    },
+    {
+     "index": 38,
+     "name": "Inv1SpawnZero",
+     "group": "space",
+     "deltaCc": 800,
+     "expectedCc": 0,
+     "chosenCc": -800,
+     "expectedF": 0,
+     "chosenF": 1
+    },
+    {
+     "index": 0,
+     "name": "Material",
+     "group": "material",
+     "deltaCc": 500,
+     "expectedCc": 0,
+     "chosenCc": -500,
+     "expectedF": 0,
+     "chosenF": -5
+    },
+    {
+     "index": 14,
+     "name": "HomeCountdown",
+     "group": "home",
+     "deltaCc": 360,
+     "expectedCc": 360,
+     "chosenCc": 0,
+     "expectedF": -2,
+     "chosenF": 0
+    },
+    {
+     "index": 5,
+     "name": "PstMine",
+     "group": "economy",
+     "deltaCc": 240,
+     "expectedCc": 360,
+     "chosenCc": 120,
+     "expectedF": 6,
+     "chosenF": 2
+    },
+    {
+     "index": 7,
+     "name": "SpawnArea",
+     "group": "space",
+     "deltaCc": 210,
+     "expectedCc": 90,
+     "chosenCc": -120,
+     "expectedF": 3,
+     "chosenF": -4
+    },
+    {
+     "index": 50,
+     "name": "Inv13Turtle",
+     "group": "space",
+     "deltaCc": 200,
+     "expectedCc": 200,
+     "chosenCc": 0,
+     "expectedF": -1,
+     "chosenF": 0
+    },
+    {
+     "index": 6,
+     "name": "BankConvertible",
+     "group": "economy",
+     "deltaCc": 160,
+     "expectedCc": 120,
+     "chosenCc": -40,
+     "expectedF": 6,
+     "chosenF": -2
+    },
+    {
+     "index": 23,
+     "name": "EconDelta",
+     "group": "economy",
+     "deltaCc": 160,
+     "expectedCc": -80,
+     "chosenCc": -240,
+     "expectedF": -1,
+     "chosenF": -3
+    },
+    {
+     "index": 24,
+     "name": "DepletionWaste",
+     "group": "economy",
+     "deltaCc": -120,
+     "expectedCc": 0,
+     "chosenCc": 120,
+     "expectedF": 0,
+     "chosenF": -4
+    },
+    {
+     "index": 10,
+     "name": "AnchorDepth",
+     "group": "space",
+     "deltaCc": 100,
+     "expectedCc": 25,
+     "chosenCc": -75,
+     "expectedF": 1,
+     "chosenF": -3
+    },
+    {
+     "index": 8,
+     "name": "SpawnReserve",
+     "group": "space",
+     "deltaCc": 96,
+     "expectedCc": 32,
+     "chosenCc": -64,
+     "expectedF": 4,
+     "chosenF": -8
+    }
+   ],
+   "groupDeltaCc": {
+    "material": 500,
+    "economy": 380,
+    "home": 360,
+    "safety": 0,
+    "space": 2206
+   }
+  },
+  {
+   "id": "inv2-corner-seal",
+   "invariant": 2,
+   "side": "white",
+   "rationale": "SU #2: both squares next to the home corner are held by own speed-1 miners, so no rescuer can ever get back in.",
+   "penaltyFeature": "Inv2CornerSeal",
+   "penaltyWeight": -300,
+   "searchWork": 50000,
+   "evalGapCc": 30,
+   "evalPass": true,
+   "searchGapCcDefaultWeights": -320,
+   "searchPassDefaultWeights": false,
+   "searchGapCcPlaceholderWeights": 0,
+   "searchPassPlaceholderWeights": false,
+   "penaltyFiredViolating": 1,
+   "penaltyFiredCorrect": 0,
+   "penaltyDeltaCc": 300,
+   "penaltyNeverFires": false,
+   "bits": {
+    "violatingMover": [
+     2
+    ],
+    "violatingOpponent": [
+     13,
+     14
+    ],
+    "correctMover": [],
+    "correctOpponent": [
+     13,
+     14
+    ]
+   },
+   "ownBitCancelled": false,
+   "label": "matched",
+   "labelWhy": "the moving side prefers the correct member",
+   "namedTerm": "HomeCountdown",
+   "topTerms": [
+    {
+     "index": 14,
+     "name": "HomeCountdown",
+     "group": "home",
+     "deltaCc": -360,
+     "expectedCc": 0,
+     "chosenCc": 360,
+     "expectedF": 0,
+     "chosenF": -2
+    },
+    {
+     "index": 39,
+     "name": "Inv2CornerSeal",
+     "group": "home",
+     "deltaCc": 300,
+     "expectedCc": 0,
+     "chosenCc": -300,
+     "expectedF": 0,
+     "chosenF": 1
+    },
+    {
+     "index": 16,
+     "name": "HomeRescuers",
+     "group": "home",
+     "deltaCc": 90,
+     "expectedCc": 90,
+     "chosenCc": 0,
+     "expectedF": 1,
+     "chosenF": 0
+    },
+    {
+     "index": 12,
+     "name": "CornerSeal",
+     "group": "home",
+     "deltaCc": 60,
+     "expectedCc": -60,
+     "chosenCc": -120,
+     "expectedF": 1,
+     "chosenF": 2
+    },
+    {
+     "index": 27,
+     "name": "RelocationDebt",
+     "group": "economy",
+     "deltaCc": -60,
+     "expectedCc": -180,
+     "chosenCc": -120,
+     "expectedF": 3,
+     "chosenF": 2
+    },
+    {
+     "index": 0,
+     "name": "Material",
+     "group": "material",
+     "deltaCc": 0,
+     "expectedCc": 500,
+     "chosenCc": 500,
+     "expectedF": 5,
+     "chosenF": 5
+    },
+    {
+     "index": 2,
+     "name": "BankLiquid",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": 540,
+     "chosenCc": 540,
+     "expectedF": 6,
+     "chosenF": 6
+    },
+    {
+     "index": 5,
+     "name": "PstMine",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": 780,
+     "chosenCc": 780,
+     "expectedF": 13,
+     "chosenF": 13
+    },
+    {
+     "index": 6,
+     "name": "BankConvertible",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": 120,
+     "chosenCc": 120,
+     "expectedF": 6,
+     "chosenF": 6
+    },
+    {
+     "index": 7,
+     "name": "SpawnArea",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": 60,
+     "chosenCc": 60,
+     "expectedF": 2,
+     "chosenF": 2
+    },
+    {
+     "index": 8,
+     "name": "SpawnReserve",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": 16,
+     "chosenCc": 16,
+     "expectedF": 2,
+     "chosenF": 2
+    },
+    {
+     "index": 10,
+     "name": "AnchorDepth",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": 25,
+     "chosenCc": 25,
+     "expectedF": 1,
+     "chosenF": 1
+    }
+   ],
+   "groupDeltaCc": {
+    "material": 0,
+    "economy": -60,
+    "home": 90,
+    "safety": 0,
+    "space": 0
+   }
+  },
+  {
+   "id": "inv3-retreat-square",
+   "invariant": 3,
+   "side": "white",
+   "rationale": "SU #3 / SD P6: a cost-5 body parked where a fire_1 can step in, one-shot it and step back out (approach class RETREAT).",
+   "penaltyFeature": "Inv3RetreatSquare",
+   "penaltyWeight": -250,
+   "searchWork": 50000,
+   "evalGapCc": -3462,
+   "evalPass": false,
+   "searchGapCcDefaultWeights": -620,
+   "searchPassDefaultWeights": false,
+   "searchGapCcPlaceholderWeights": 500,
+   "searchPassPlaceholderWeights": true,
+   "penaltyFiredViolating": 0,
+   "penaltyFiredCorrect": 0,
+   "penaltyDeltaCc": 0,
+   "penaltyNeverFires": true,
+   "bits": {
+    "violatingMover": [
+     3
+    ],
+    "violatingOpponent": [
+     3,
+     6,
+     10,
+     11,
+     14,
+     19
+    ],
+    "correctMover": [],
+    "correctOpponent": [
+     4,
+     14,
+     19
+    ]
+   },
+   "ownBitCancelled": true,
+   "label": "engine-bug",
+   "labelWhy": "judge 4 (canonical fact): `invariantBits` sets invariant 3 for the OPPONENT as well as for the mover on the violating member (mover [3], opponent [3,6,10,11,14,19]), and `extract` writes the me−them difference, so `Inv3RetreatSquare` contributes 0 cc and the pair cannot be decided by the invariant it exists to exercise. `build-invariants.ts`'s contract constrains only the mover's bits.",
+   "namedTerm": "SpawnArea",
+   "topTerms": [
+    {
+     "index": 7,
+     "name": "SpawnArea",
+     "group": "space",
+     "deltaCc": -1050,
+     "expectedCc": 30,
+     "chosenCc": 1080,
+     "expectedF": 1,
+     "chosenF": 36
+    },
+    {
+     "index": 13,
+     "name": "HomeThreat",
+     "group": "home",
+     "deltaCc": -400,
+     "expectedCc": 0,
+     "chosenCc": 400,
+     "expectedF": 0,
+     "chosenF": -1
+    },
+    {
+     "index": 47,
+     "name": "Inv10HomeReachable",
+     "group": "home",
+     "deltaCc": -400,
+     "expectedCc": 0,
+     "chosenCc": 400,
+     "expectedF": 0,
+     "chosenF": -1
+    },
+    {
+     "index": 8,
+     "name": "SpawnReserve",
+     "group": "space",
+     "deltaCc": -312,
+     "expectedCc": 16,
+     "chosenCc": 328,
+     "expectedF": 2,
+     "chosenF": 41
+    },
+    {
+     "index": 48,
+     "name": "Inv11HomeBare",
+     "group": "home",
+     "deltaCc": -250,
+     "expectedCc": 0,
+     "chosenCc": 250,
+     "expectedF": 0,
+     "chosenF": -1
+    },
+    {
+     "index": 14,
+     "name": "HomeCountdown",
+     "group": "home",
+     "deltaCc": -180,
+     "expectedCc": 0,
+     "chosenCc": 180,
+     "expectedF": 0,
+     "chosenF": -1
+    },
+    {
+     "index": 10,
+     "name": "AnchorDepth",
+     "group": "space",
+     "deltaCc": -175,
+     "expectedCc": -50,
+     "chosenCc": 125,
+     "expectedF": -2,
+     "chosenF": 5
+    },
+    {
+     "index": 30,
+     "name": "ApproachRetreat",
+     "group": "safety",
+     "deltaCc": -175,
+     "expectedCc": 0,
+     "chosenCc": 175,
+     "expectedF": 0,
+     "chosenF": -7
+    },
+    {
+     "index": 29,
+     "name": "HangingBuy",
+     "group": "safety",
+     "deltaCc": -150,
+     "expectedCc": 90,
+     "chosenCc": 240,
+     "expectedF": -3,
+     "chosenF": -8
+    },
+    {
+     "index": 36,
+     "name": "BlockingDeficit",
+     "group": "safety",
+     "deltaCc": -150,
+     "expectedCc": 0,
+     "chosenCc": 150,
+     "expectedF": 0,
+     "chosenF": -1
+    },
+    {
+     "index": 27,
+     "name": "RelocationDebt",
+     "group": "economy",
+     "deltaCc": -120,
+     "expectedCc": -180,
+     "chosenCc": -60,
+     "expectedF": 3,
+     "chosenF": 1
+    },
+    {
+     "index": 35,
+     "name": "AnchorFragility",
+     "group": "safety",
+     "deltaCc": -120,
+     "expectedCc": 120,
+     "chosenCc": 240,
+     "expectedF": -1,
+     "chosenF": -2
+    }
+   ],
+   "groupDeltaCc": {
+    "material": 0,
+    "economy": -10,
+    "home": -1230,
+    "safety": -685,
+    "space": -1537
+   }
+  },
+  {
+   "id": "inv4-strand-unpunished",
+   "invariant": 4,
+   "side": "white",
+   "rationale": "SU #4: a fire_1 three moves away can strand itself next to the forward plant_1 and white has nothing that kills anything next turn.",
+   "penaltyFeature": "Inv4StrandUnpunished",
+   "penaltyWeight": -100,
+   "searchWork": 50000,
+   "evalGapCc": -2016,
+   "evalPass": false,
+   "searchGapCcDefaultWeights": 1658,
+   "searchPassDefaultWeights": true,
+   "searchGapCcPlaceholderWeights": 500,
+   "searchPassPlaceholderWeights": true,
+   "penaltyFiredViolating": 1,
+   "penaltyFiredCorrect": 0,
+   "penaltyDeltaCc": 100,
+   "penaltyNeverFires": false,
+   "bits": {
+    "violatingMover": [
+     4
+    ],
+    "violatingOpponent": [
+     3,
+     13,
+     14
+    ],
+    "correctMover": [],
+    "correctOpponent": [
+     13,
+     14
+    ]
+   },
+   "ownBitCancelled": false,
+   "label": "weight-scale",
+   "labelWhy": "the penalty is -100 cc and the violating member wins the comparison by 2016 cc; the largest opposing term is `SpawnArea` (space) at -900 cc",
+   "namedTerm": "SpawnArea",
+   "topTerms": [
+    {
+     "index": 7,
+     "name": "SpawnArea",
+     "group": "space",
+     "deltaCc": -900,
+     "expectedCc": 300,
+     "chosenCc": 1200,
+     "expectedF": 10,
+     "chosenF": 40
+    },
+    {
+     "index": 30,
+     "name": "ApproachRetreat",
+     "group": "safety",
+     "deltaCc": -300,
+     "expectedCc": 0,
+     "chosenCc": 300,
+     "expectedF": 0,
+     "chosenF": -12
+    },
+    {
+     "index": 8,
+     "name": "SpawnReserve",
+     "group": "space",
+     "deltaCc": -296,
+     "expectedCc": 104,
+     "chosenCc": 400,
+     "expectedF": 13,
+     "chosenF": 50
+    },
+    {
+     "index": 40,
+     "name": "Inv3RetreatSquare",
+     "group": "safety",
+     "deltaCc": -250,
+     "expectedCc": 0,
+     "chosenCc": 250,
+     "expectedF": 0,
+     "chosenF": -1
+    },
+    {
+     "index": 29,
+     "name": "HangingBuy",
+     "group": "safety",
+     "deltaCc": -240,
+     "expectedCc": 0,
+     "chosenCc": 240,
+     "expectedF": 0,
+     "chosenF": -8
+    },
+    {
+     "index": 10,
+     "name": "AnchorDepth",
+     "group": "space",
+     "deltaCc": -150,
+     "expectedCc": 75,
+     "chosenCc": 225,
+     "expectedF": 3,
+     "chosenF": 9
+    },
+    {
+     "index": 41,
+     "name": "Inv4StrandUnpunished",
+     "group": "safety",
+     "deltaCc": 100,
+     "expectedCc": 0,
+     "chosenCc": -100,
+     "expectedF": 0,
+     "chosenF": 1
+    },
+    {
+     "index": 33,
+     "name": "KillAvailable",
+     "group": "safety",
+     "deltaCc": -70,
+     "expectedCc": 0,
+     "chosenCc": 70,
+     "expectedF": 0,
+     "chosenF": 2
+    },
+    {
+     "index": 27,
+     "name": "RelocationDebt",
+     "group": "economy",
+     "deltaCc": 60,
+     "expectedCc": -60,
+     "chosenCc": -120,
+     "expectedF": 1,
+     "chosenF": 2
+    },
+    {
+     "index": 28,
+     "name": "Hanging",
+     "group": "safety",
+     "deltaCc": 50,
+     "expectedCc": 0,
+     "chosenCc": -50,
+     "expectedF": 0,
+     "chosenF": 1
+    },
+    {
+     "index": 31,
+     "name": "ApproachStrand",
+     "group": "safety",
+     "deltaCc": 50,
+     "expectedCc": 0,
+     "chosenCc": -50,
+     "expectedF": 0,
+     "chosenF": 5
+    },
+    {
+     "index": 17,
+     "name": "Exposure",
+     "group": "safety",
+     "deltaCc": -40,
+     "expectedCc": 100,
+     "chosenCc": 140,
+     "expectedF": -5,
+     "chosenF": -7
+    }
+   ],
+   "groupDeltaCc": {
+    "material": 0,
+    "economy": 30,
+    "home": 0,
+    "safety": -700,
+    "space": -1346
+   }
+  },
+  {
+   "id": "inv5-poor-miner-square",
+   "invariant": 5,
+   "side": "white",
+   "rationale": "SU #5: a miner bought this turn onto a cell holding less than two turns of its own mine rate, with no anchor, block, plug or home-race job.",
+   "penaltyFeature": "Inv5PoorMinerSquare",
+   "penaltyWeight": -400,
+   "searchWork": 50000,
+   "evalGapCc": 2165,
+   "evalPass": true,
+   "searchGapCcDefaultWeights": 498,
+   "searchPassDefaultWeights": true,
+   "searchGapCcPlaceholderWeights": 500,
+   "searchPassPlaceholderWeights": true,
+   "penaltyFiredViolating": 1,
+   "penaltyFiredCorrect": 0,
+   "penaltyDeltaCc": 400,
+   "penaltyNeverFires": false,
+   "bits": {
+    "violatingMover": [
+     5
+    ],
+    "violatingOpponent": [
+     13,
+     14
+    ],
+    "correctMover": [],
+    "correctOpponent": [
+     10,
+     13,
+     14
+    ]
+   },
+   "ownBitCancelled": false,
+   "label": "matched",
+   "labelWhy": "the moving side prefers the correct member",
+   "namedTerm": "EconDelta",
+   "topTerms": [
+    {
+     "index": 13,
+     "name": "HomeThreat",
+     "group": "home",
+     "deltaCc": 400,
+     "expectedCc": 400,
+     "chosenCc": 0,
+     "expectedF": -1,
+     "chosenF": 0
+    },
+    {
+     "index": 42,
+     "name": "Inv5PoorMinerSquare",
+     "group": "economy",
+     "deltaCc": 400,
+     "expectedCc": 0,
+     "chosenCc": -400,
+     "expectedF": 0,
+     "chosenF": 1
+    },
+    {
+     "index": 47,
+     "name": "Inv10HomeReachable",
+     "group": "home",
+     "deltaCc": 400,
+     "expectedCc": 400,
+     "chosenCc": 0,
+     "expectedF": -1,
+     "chosenF": 0
+    },
+    {
+     "index": 5,
+     "name": "PstMine",
+     "group": "economy",
+     "deltaCc": 360,
+     "expectedCc": 540,
+     "chosenCc": 180,
+     "expectedF": 9,
+     "chosenF": 3
+    },
+    {
+     "index": 23,
+     "name": "EconDelta",
+     "group": "economy",
+     "deltaCc": -320,
+     "expectedCc": 160,
+     "chosenCc": 480,
+     "expectedF": 2,
+     "chosenF": 6
+    },
+    {
+     "index": 7,
+     "name": "SpawnArea",
+     "group": "space",
+     "deltaCc": 240,
+     "expectedCc": 390,
+     "chosenCc": 150,
+     "expectedF": 13,
+     "chosenF": 5
+    },
+    {
+     "index": 14,
+     "name": "HomeCountdown",
+     "group": "home",
+     "deltaCc": 180,
+     "expectedCc": 180,
+     "chosenCc": 0,
+     "expectedF": -1,
+     "chosenF": 0
+    },
+    {
+     "index": 17,
+     "name": "Exposure",
+     "group": "safety",
+     "deltaCc": 180,
+     "expectedCc": 180,
+     "chosenCc": 0,
+     "expectedF": -9,
+     "chosenF": 0
+    },
+    {
+     "index": 27,
+     "name": "RelocationDebt",
+     "group": "economy",
+     "deltaCc": 120,
+     "expectedCc": -120,
+     "chosenCc": -240,
+     "expectedF": 2,
+     "chosenF": 4
+    },
+    {
+     "index": 24,
+     "name": "DepletionWaste",
+     "group": "economy",
+     "deltaCc": 90,
+     "expectedCc": -180,
+     "chosenCc": -270,
+     "expectedF": 6,
+     "chosenF": 9
+    },
+    {
+     "index": 10,
+     "name": "AnchorDepth",
+     "group": "space",
+     "deltaCc": 75,
+     "expectedCc": 100,
+     "chosenCc": 25,
+     "expectedF": 4,
+     "chosenF": 1
+    },
+    {
+     "index": 8,
+     "name": "SpawnReserve",
+     "group": "space",
+     "deltaCc": 40,
+     "expectedCc": 96,
+     "chosenCc": 56,
+     "expectedF": 12,
+     "chosenF": 7
+    }
+   ],
+   "groupDeltaCc": {
+    "material": 0,
+    "economy": 650,
+    "home": 980,
+    "safety": 180,
+    "space": 355
+   }
+  },
+  {
+   "id": "inv6-fragile-anchor",
+   "invariant": 6,
+   "side": "white",
+   "rationale": "SU #6: a deep anchor (depth >= 6) that two enemy bodies can cover completely.",
+   "penaltyFeature": "Inv6FragileAnchor",
+   "penaltyWeight": -120,
+   "searchWork": 50000,
+   "evalGapCc": -2358,
+   "evalPass": false,
+   "searchGapCcDefaultWeights": -142,
+   "searchPassDefaultWeights": false,
+   "searchGapCcPlaceholderWeights": -600,
+   "searchPassPlaceholderWeights": false,
+   "penaltyFiredViolating": 0,
+   "penaltyFiredCorrect": 0,
+   "penaltyDeltaCc": 0,
+   "penaltyNeverFires": true,
+   "bits": {
+    "violatingMover": [
+     6
+    ],
+    "violatingOpponent": [
+     6,
+     10,
+     14,
+     19
+    ],
+    "correctMover": [],
+    "correctOpponent": [
+     14,
+     19
+    ]
+   },
+   "ownBitCancelled": true,
+   "label": "engine-bug",
+   "labelWhy": "judge 4 (canonical fact): `invariantBits` sets invariant 6 for the OPPONENT as well as for the mover on the violating member (mover [6], opponent [6,10,14,19]), and `extract` writes the me−them difference, so `Inv6FragileAnchor` contributes 0 cc and the pair cannot be decided by the invariant it exists to exercise. `build-invariants.ts`'s contract constrains only the mover's bits.",
+   "namedTerm": "SpawnArea",
+   "topTerms": [
+    {
+     "index": 7,
+     "name": "SpawnArea",
+     "group": "space",
+     "deltaCc": -480,
+     "expectedCc": -420,
+     "chosenCc": 60,
+     "expectedF": -14,
+     "chosenF": 2
+    },
+    {
+     "index": 13,
+     "name": "HomeThreat",
+     "group": "home",
+     "deltaCc": -400,
+     "expectedCc": 0,
+     "chosenCc": 400,
+     "expectedF": 0,
+     "chosenF": -1
+    },
+    {
+     "index": 47,
+     "name": "Inv10HomeReachable",
+     "group": "home",
+     "deltaCc": -400,
+     "expectedCc": 0,
+     "chosenCc": 400,
+     "expectedF": 0,
+     "chosenF": -1
+    },
+    {
+     "index": 35,
+     "name": "AnchorFragility",
+     "group": "safety",
+     "deltaCc": -240,
+     "expectedCc": -120,
+     "chosenCc": 120,
+     "expectedF": 1,
+     "chosenF": -1
+    },
+    {
+     "index": 5,
+     "name": "PstMine",
+     "group": "economy",
+     "deltaCc": -180,
+     "expectedCc": -300,
+     "chosenCc": -120,
+     "expectedF": -5,
+     "chosenF": -2
+    },
+    {
+     "index": 14,
+     "name": "HomeCountdown",
+     "group": "home",
+     "deltaCc": -180,
+     "expectedCc": 0,
+     "chosenCc": 180,
+     "expectedF": 0,
+     "chosenF": -1
+    },
+    {
+     "index": 17,
+     "name": "Exposure",
+     "group": "safety",
+     "deltaCc": -180,
+     "expectedCc": -20,
+     "chosenCc": 160,
+     "expectedF": 1,
+     "chosenF": -8
+    },
+    {
+     "index": 23,
+     "name": "EconDelta",
+     "group": "economy",
+     "deltaCc": 160,
+     "expectedCc": 0,
+     "chosenCc": -160,
+     "expectedF": 0,
+     "chosenF": -2
+    },
+    {
+     "index": 28,
+     "name": "Hanging",
+     "group": "safety",
+     "deltaCc": -150,
+     "expectedCc": 0,
+     "chosenCc": 150,
+     "expectedF": 0,
+     "chosenF": -3
+    },
+    {
+     "index": 36,
+     "name": "BlockingDeficit",
+     "group": "safety",
+     "deltaCc": -150,
+     "expectedCc": -150,
+     "chosenCc": 0,
+     "expectedF": 1,
+     "chosenF": 0
+    },
+    {
+     "index": 10,
+     "name": "AnchorDepth",
+     "group": "space",
+     "deltaCc": -100,
+     "expectedCc": -100,
+     "chosenCc": 0,
+     "expectedF": -4,
+     "chosenF": 0
+    },
+    {
+     "index": 29,
+     "name": "HangingBuy",
+     "group": "safety",
+     "deltaCc": 90,
+     "expectedCc": 90,
+     "chosenCc": 0,
+     "expectedF": -3,
+     "chosenF": 0
+    }
+   ],
+   "groupDeltaCc": {
+    "material": 0,
+    "economy": -80,
+    "home": -980,
+    "safety": -630,
+    "space": -668
+   }
+  },
+  {
+   "id": "inv7-promote-no-runway",
+   "invariant": 7,
+   "side": "white",
+   "rationale": "SU #7: promoted this turn into an upkeep bill the projected income cannot carry.",
+   "penaltyFeature": "Inv7PromoteNoRunway",
+   "penaltyWeight": -600,
+   "searchWork": 50000,
+   "evalGapCc": 600,
+   "evalPass": true,
+   "searchGapCcDefaultWeights": 0,
+   "searchPassDefaultWeights": false,
+   "searchGapCcPlaceholderWeights": 0,
+   "searchPassPlaceholderWeights": false,
+   "penaltyFiredViolating": 1,
+   "penaltyFiredCorrect": 0,
+   "penaltyDeltaCc": 600,
+   "penaltyNeverFires": false,
+   "bits": {
+    "violatingMover": [
+     7
+    ],
+    "violatingOpponent": [
+     3,
+     4,
+     10,
+     13,
+     14
+    ],
+    "correctMover": [],
+    "correctOpponent": [
+     3,
+     4,
+     10,
+     13,
+     14
+    ]
+   },
+   "ownBitCancelled": false,
+   "label": "matched",
+   "labelWhy": "the moving side prefers the correct member",
+   "namedTerm": "Inv7PromoteNoRunway",
+   "topTerms": [
+    {
+     "index": 44,
+     "name": "Inv7PromoteNoRunway",
+     "group": "economy",
+     "deltaCc": 600,
+     "expectedCc": 0,
+     "chosenCc": -600,
+     "expectedF": 0,
+     "chosenF": 1
+    },
+    {
+     "index": 0,
+     "name": "Material",
+     "group": "material",
+     "deltaCc": 0,
+     "expectedCc": 2100,
+     "chosenCc": 2100,
+     "expectedF": 21,
+     "chosenF": 21
+    },
+    {
+     "index": 1,
+     "name": "Rent",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": -1688,
+     "chosenCc": -1688,
+     "expectedF": 4,
+     "chosenF": 4
+    },
+    {
+     "index": 2,
+     "name": "BankLiquid",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": 360,
+     "chosenCc": 360,
+     "expectedF": 4,
+     "chosenF": 4
+    },
+    {
+     "index": 5,
+     "name": "PstMine",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": -180,
+     "chosenCc": -180,
+     "expectedF": -3,
+     "chosenF": -3
+    },
+    {
+     "index": 6,
+     "name": "BankConvertible",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": 80,
+     "chosenCc": 80,
+     "expectedF": 4,
+     "chosenF": 4
+    },
+    {
+     "index": 7,
+     "name": "SpawnArea",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": 150,
+     "chosenCc": 150,
+     "expectedF": 5,
+     "chosenF": 5
+    },
+    {
+     "index": 8,
+     "name": "SpawnReserve",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": 56,
+     "chosenCc": 56,
+     "expectedF": 7,
+     "chosenF": 7
+    },
+    {
+     "index": 10,
+     "name": "AnchorDepth",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": 25,
+     "chosenCc": 25,
+     "expectedF": 1,
+     "chosenF": 1
+    },
+    {
+     "index": 13,
+     "name": "HomeThreat",
+     "group": "home",
+     "deltaCc": 0,
+     "expectedCc": 400,
+     "chosenCc": 400,
+     "expectedF": -1,
+     "chosenF": -1
+    },
+    {
+     "index": 14,
+     "name": "HomeCountdown",
+     "group": "home",
+     "deltaCc": 0,
+     "expectedCc": 180,
+     "chosenCc": 180,
+     "expectedF": -1,
+     "chosenF": -1
+    },
+    {
+     "index": 17,
+     "name": "Exposure",
+     "group": "safety",
+     "deltaCc": 0,
+     "expectedCc": 180,
+     "chosenCc": 180,
+     "expectedF": -9,
+     "chosenF": -9
+    }
+   ],
+   "groupDeltaCc": {
+    "material": 0,
+    "economy": 600,
+    "home": 0,
+    "safety": 0,
+    "space": 0
+   }
+  },
+  {
+   "id": "inv8-no-pre-adjacency",
+   "invariant": 8,
+   "side": "white",
+   "rationale": "SU #8: the turn hit and failed to kill while a kill was on the table.",
+   "penaltyFeature": "Inv8NoPreAdjacency",
+   "penaltyWeight": -150,
+   "searchWork": 50000,
+   "evalGapCc": 335,
+   "evalPass": true,
+   "searchGapCcDefaultWeights": 0,
+   "searchPassDefaultWeights": false,
+   "searchGapCcPlaceholderWeights": 0,
+   "searchPassPlaceholderWeights": false,
+   "penaltyFiredViolating": 1,
+   "penaltyFiredCorrect": 0,
+   "penaltyDeltaCc": 150,
+   "penaltyNeverFires": false,
+   "bits": {
+    "violatingMover": [
+     8
+    ],
+    "violatingOpponent": [
+     3,
+     10,
+     11,
+     13,
+     14
+    ],
+    "correctMover": [],
+    "correctOpponent": [
+     3,
+     10,
+     11,
+     13,
+     14
+    ]
+   },
+   "ownBitCancelled": false,
+   "label": "matched",
+   "labelWhy": "the moving side prefers the correct member",
+   "namedTerm": "HangingBuy",
+   "topTerms": [
+    {
+     "index": 28,
+     "name": "Hanging",
+     "group": "safety",
+     "deltaCc": 200,
+     "expectedCc": 200,
+     "chosenCc": 0,
+     "expectedF": -4,
+     "chosenF": 0
+    },
+    {
+     "index": 45,
+     "name": "Inv8NoPreAdjacency",
+     "group": "safety",
+     "deltaCc": 150,
+     "expectedCc": 0,
+     "chosenCc": -150,
+     "expectedF": 0,
+     "chosenF": 1
+    },
+    {
+     "index": 29,
+     "name": "HangingBuy",
+     "group": "safety",
+     "deltaCc": -120,
+     "expectedCc": 150,
+     "chosenCc": 270,
+     "expectedF": -5,
+     "chosenF": -9
+    },
+    {
+     "index": 33,
+     "name": "KillAvailable",
+     "group": "safety",
+     "deltaCc": 105,
+     "expectedCc": 315,
+     "chosenCc": 210,
+     "expectedF": 9,
+     "chosenF": 6
+    },
+    {
+     "index": 0,
+     "name": "Material",
+     "group": "material",
+     "deltaCc": 0,
+     "expectedCc": 100,
+     "chosenCc": 100,
+     "expectedF": 1,
+     "chosenF": 1
+    },
+    {
+     "index": 2,
+     "name": "BankLiquid",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": 540,
+     "chosenCc": 540,
+     "expectedF": 6,
+     "chosenF": 6
+    },
+    {
+     "index": 5,
+     "name": "PstMine",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": 180,
+     "chosenCc": 180,
+     "expectedF": 3,
+     "chosenF": 3
+    },
+    {
+     "index": 6,
+     "name": "BankConvertible",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": 120,
+     "chosenCc": 120,
+     "expectedF": 6,
+     "chosenF": 6
+    },
+    {
+     "index": 7,
+     "name": "SpawnArea",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": 1980,
+     "chosenCc": 1980,
+     "expectedF": 66,
+     "chosenF": 66
+    },
+    {
+     "index": 8,
+     "name": "SpawnReserve",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": 656,
+     "chosenCc": 656,
+     "expectedF": 82,
+     "chosenF": 82
+    },
+    {
+     "index": 10,
+     "name": "AnchorDepth",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": 300,
+     "chosenCc": 300,
+     "expectedF": 12,
+     "chosenF": 12
+    },
+    {
+     "index": 13,
+     "name": "HomeThreat",
+     "group": "home",
+     "deltaCc": 0,
+     "expectedCc": 400,
+     "chosenCc": 400,
+     "expectedF": -1,
+     "chosenF": -1
+    }
+   ],
+   "groupDeltaCc": {
+    "material": 0,
+    "economy": 0,
+    "home": 0,
+    "safety": 335,
+    "space": 0
+   }
+  },
+  {
+   "id": "inv9-chip-across-turn",
+   "invariant": 9,
+   "side": "white",
+   "rationale": "SU #9: the turn chipped an enemy body it could not kill and had no kill available anywhere, so the damage heals for free.",
+   "penaltyFeature": "Inv9ChipAcrossTurn",
+   "penaltyWeight": -150,
+   "searchWork": 50000,
+   "evalGapCc": 150,
+   "evalPass": true,
+   "searchGapCcDefaultWeights": 0,
+   "searchPassDefaultWeights": false,
+   "searchGapCcPlaceholderWeights": 0,
+   "searchPassPlaceholderWeights": false,
+   "penaltyFiredViolating": 1,
+   "penaltyFiredCorrect": 0,
+   "penaltyDeltaCc": 150,
+   "penaltyNeverFires": false,
+   "bits": {
+    "violatingMover": [
+     9
+    ],
+    "violatingOpponent": [
+     13,
+     14
+    ],
+    "correctMover": [],
+    "correctOpponent": [
+     13,
+     14
+    ]
+   },
+   "ownBitCancelled": false,
+   "label": "matched",
+   "labelWhy": "the moving side prefers the correct member",
+   "namedTerm": "Inv9ChipAcrossTurn",
+   "topTerms": [
+    {
+     "index": 46,
+     "name": "Inv9ChipAcrossTurn",
+     "group": "safety",
+     "deltaCc": 150,
+     "expectedCc": 0,
+     "chosenCc": -150,
+     "expectedF": 0,
+     "chosenF": 1
+    },
+    {
+     "index": 0,
+     "name": "Material",
+     "group": "material",
+     "deltaCc": 0,
+     "expectedCc": 100,
+     "chosenCc": 100,
+     "expectedF": 1,
+     "chosenF": 1
+    },
+    {
+     "index": 2,
+     "name": "BankLiquid",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": 540,
+     "chosenCc": 540,
+     "expectedF": 6,
+     "chosenF": 6
+    },
+    {
+     "index": 5,
+     "name": "PstMine",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": 180,
+     "chosenCc": 180,
+     "expectedF": 3,
+     "chosenF": 3
+    },
+    {
+     "index": 6,
+     "name": "BankConvertible",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": 120,
+     "chosenCc": 120,
+     "expectedF": 6,
+     "chosenF": 6
+    },
+    {
+     "index": 7,
+     "name": "SpawnArea",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": 150,
+     "chosenCc": 150,
+     "expectedF": 5,
+     "chosenF": 5
+    },
+    {
+     "index": 8,
+     "name": "SpawnReserve",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": 56,
+     "chosenCc": 56,
+     "expectedF": 7,
+     "chosenF": 7
+    },
+    {
+     "index": 10,
+     "name": "AnchorDepth",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": 25,
+     "chosenCc": 25,
+     "expectedF": 1,
+     "chosenF": 1
+    },
+    {
+     "index": 22,
+     "name": "ElementCoverage",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": 150,
+     "chosenCc": 150,
+     "expectedF": 1,
+     "chosenF": 1
+    },
+    {
+     "index": 24,
+     "name": "DepletionWaste",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": -420,
+     "chosenCc": -420,
+     "expectedF": 14,
+     "chosenF": 14
+    },
+    {
+     "index": 27,
+     "name": "RelocationDebt",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": -60,
+     "chosenCc": -60,
+     "expectedF": 1,
+     "chosenF": 1
+    },
+    {
+     "index": 50,
+     "name": "Inv13Turtle",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": 200,
+     "chosenCc": 200,
+     "expectedF": -1,
+     "chosenF": -1
+    }
+   ],
+   "groupDeltaCc": {
+    "material": 0,
+    "economy": 0,
+    "home": 0,
+    "safety": 150,
+    "space": 0
+   }
+  },
+  {
+   "id": "inv10-home-reachable",
+   "invariant": 10,
+   "side": "white",
+   "rationale": "SU #10: a lightning_1 four actions from the home corner, with no plug and no rescuer next to it.",
+   "penaltyFeature": "Inv10HomeReachable",
+   "penaltyWeight": -400,
+   "searchWork": 50000,
+   "evalGapCc": 2557,
+   "evalPass": true,
+   "searchGapCcDefaultWeights": -841,
+   "searchPassDefaultWeights": false,
+   "searchGapCcPlaceholderWeights": 500,
+   "searchPassPlaceholderWeights": true,
+   "penaltyFiredViolating": 1,
+   "penaltyFiredCorrect": 0,
+   "penaltyDeltaCc": 400,
+   "penaltyNeverFires": false,
+   "bits": {
+    "violatingMover": [
+     10
+    ],
+    "violatingOpponent": [
+     14
+    ],
+    "correctMover": [],
+    "correctOpponent": [
+     13,
+     14
+    ]
+   },
+   "ownBitCancelled": false,
+   "label": "matched",
+   "labelWhy": "the moving side prefers the correct member",
+   "namedTerm": "Hanging",
+   "topTerms": [
+    {
+     "index": 7,
+     "name": "SpawnArea",
+     "group": "space",
+     "deltaCc": 840,
+     "expectedCc": 90,
+     "chosenCc": -750,
+     "expectedF": 3,
+     "chosenF": -25
+    },
+    {
+     "index": 13,
+     "name": "HomeThreat",
+     "group": "home",
+     "deltaCc": 400,
+     "expectedCc": 0,
+     "chosenCc": -400,
+     "expectedF": 0,
+     "chosenF": 1
+    },
+    {
+     "index": 47,
+     "name": "Inv10HomeReachable",
+     "group": "home",
+     "deltaCc": 400,
+     "expectedCc": 0,
+     "chosenCc": -400,
+     "expectedF": 0,
+     "chosenF": 1
+    },
+    {
+     "index": 17,
+     "name": "Exposure",
+     "group": "safety",
+     "deltaCc": 220,
+     "expectedCc": 0,
+     "chosenCc": -220,
+     "expectedF": 0,
+     "chosenF": 11
+    },
+    {
+     "index": 50,
+     "name": "Inv13Turtle",
+     "group": "space",
+     "deltaCc": 200,
+     "expectedCc": 200,
+     "chosenCc": 0,
+     "expectedF": -1,
+     "chosenF": 0
+    },
+    {
+     "index": 8,
+     "name": "SpawnReserve",
+     "group": "space",
+     "deltaCc": 192,
+     "expectedCc": 24,
+     "chosenCc": -168,
+     "expectedF": 3,
+     "chosenF": -21
+    },
+    {
+     "index": 14,
+     "name": "HomeCountdown",
+     "group": "home",
+     "deltaCc": 180,
+     "expectedCc": 0,
+     "chosenCc": -180,
+     "expectedF": 0,
+     "chosenF": 1
+    },
+    {
+     "index": 10,
+     "name": "AnchorDepth",
+     "group": "space",
+     "deltaCc": 175,
+     "expectedCc": 25,
+     "chosenCc": -150,
+     "expectedF": 1,
+     "chosenF": -6
+    },
+    {
+     "index": 28,
+     "name": "Hanging",
+     "group": "safety",
+     "deltaCc": -150,
+     "expectedCc": 0,
+     "chosenCc": 150,
+     "expectedF": 0,
+     "chosenF": -3
+    },
+    {
+     "index": 36,
+     "name": "BlockingDeficit",
+     "group": "safety",
+     "deltaCc": 150,
+     "expectedCc": 0,
+     "chosenCc": -150,
+     "expectedF": 0,
+     "chosenF": 1
+    },
+    {
+     "index": 35,
+     "name": "AnchorFragility",
+     "group": "safety",
+     "deltaCc": 120,
+     "expectedCc": 0,
+     "chosenCc": -120,
+     "expectedF": 0,
+     "chosenF": 1
+    },
+    {
+     "index": 30,
+     "name": "ApproachRetreat",
+     "group": "safety",
+     "deltaCc": -75,
+     "expectedCc": 0,
+     "chosenCc": 75,
+     "expectedF": 0,
+     "chosenF": -3
+    }
+   ],
+   "groupDeltaCc": {
+    "material": 0,
+    "economy": -60,
+    "home": 980,
+    "safety": 230,
+    "space": 1407
+   }
+  },
+  {
+   "id": "inv11-home-bare",
+   "invariant": 11,
+   "side": "white",
+   "rationale": "SU #11: home corner and both neighbours empty while black holds a speed-3 runner with a rectangle inside ten of that corner.",
+   "penaltyFeature": "Inv11HomeBare",
+   "penaltyWeight": -250,
+   "searchWork": 50000,
+   "evalGapCc": 884,
+   "evalPass": true,
+   "searchGapCcDefaultWeights": 424,
+   "searchPassDefaultWeights": true,
+   "searchGapCcPlaceholderWeights": 700,
+   "searchPassPlaceholderWeights": true,
+   "penaltyFiredViolating": 1,
+   "penaltyFiredCorrect": 0,
+   "penaltyDeltaCc": 250,
+   "penaltyNeverFires": false,
+   "bits": {
+    "violatingMover": [
+     11
+    ],
+    "violatingOpponent": [
+     3,
+     14
+    ],
+    "correctMover": [],
+    "correctOpponent": [
+     3,
+     14
+    ]
+   },
+   "ownBitCancelled": false,
+   "label": "matched",
+   "labelWhy": "the moving side prefers the correct member",
+   "namedTerm": "CornerSeal",
+   "topTerms": [
+    {
+     "index": 0,
+     "name": "Material",
+     "group": "material",
+     "deltaCc": 500,
+     "expectedCc": -300,
+     "chosenCc": -800,
+     "expectedF": -3,
+     "chosenF": -8
+    },
+    {
+     "index": 5,
+     "name": "PstMine",
+     "group": "economy",
+     "deltaCc": 300,
+     "expectedCc": 120,
+     "chosenCc": -180,
+     "expectedF": 2,
+     "chosenF": -3
+    },
+    {
+     "index": 48,
+     "name": "Inv11HomeBare",
+     "group": "home",
+     "deltaCc": 250,
+     "expectedCc": 0,
+     "chosenCc": -250,
+     "expectedF": 0,
+     "chosenF": 1
+    },
+    {
+     "index": 12,
+     "name": "CornerSeal",
+     "group": "home",
+     "deltaCc": -60,
+     "expectedCc": -60,
+     "chosenCc": 0,
+     "expectedF": 1,
+     "chosenF": 0
+    },
+    {
+     "index": 24,
+     "name": "DepletionWaste",
+     "group": "economy",
+     "deltaCc": -60,
+     "expectedCc": 0,
+     "chosenCc": 60,
+     "expectedF": 0,
+     "chosenF": -2
+    },
+    {
+     "index": 7,
+     "name": "SpawnArea",
+     "group": "space",
+     "deltaCc": -30,
+     "expectedCc": -720,
+     "chosenCc": -690,
+     "expectedF": -24,
+     "chosenF": -23
+    },
+    {
+     "index": 8,
+     "name": "SpawnReserve",
+     "group": "space",
+     "deltaCc": -16,
+     "expectedCc": -152,
+     "chosenCc": -136,
+     "expectedF": -19,
+     "chosenF": -17
+    },
+    {
+     "index": 2,
+     "name": "BankLiquid",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": 540,
+     "chosenCc": 540,
+     "expectedF": 6,
+     "chosenF": 6
+    },
+    {
+     "index": 6,
+     "name": "BankConvertible",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": 120,
+     "chosenCc": 120,
+     "expectedF": 6,
+     "chosenF": 6
+    },
+    {
+     "index": 10,
+     "name": "AnchorDepth",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": -150,
+     "chosenCc": -150,
+     "expectedF": -6,
+     "chosenF": -6
+    },
+    {
+     "index": 14,
+     "name": "HomeCountdown",
+     "group": "home",
+     "deltaCc": 0,
+     "expectedCc": -360,
+     "chosenCc": -360,
+     "expectedF": 2,
+     "chosenF": 2
+    },
+    {
+     "index": 15,
+     "name": "HomePlug",
+     "group": "home",
+     "deltaCc": 0,
+     "expectedCc": -220,
+     "chosenCc": -220,
+     "expectedF": -1,
+     "chosenF": -1
+    }
+   ],
+   "groupDeltaCc": {
+    "material": 500,
+    "economy": 240,
+    "home": 190,
+    "safety": 0,
+    "space": -46
+   }
+  },
+  {
+   "id": "inv12-cleave-line",
+   "invariant": 12,
+   "side": "white",
+   "rationale": "SU #12: two own bodies left on one Cleave line of an enemy tier-2 attacker.",
+   "penaltyFeature": "Inv12CleaveLine",
+   "penaltyWeight": -40,
+   "searchWork": 50000,
+   "evalGapCc": -2464,
+   "evalPass": false,
+   "searchGapCcDefaultWeights": -149,
+   "searchPassDefaultWeights": false,
+   "searchGapCcPlaceholderWeights": 0,
+   "searchPassPlaceholderWeights": false,
+   "penaltyFiredViolating": 1,
+   "penaltyFiredCorrect": 0,
+   "penaltyDeltaCc": 40,
+   "penaltyNeverFires": false,
+   "bits": {
+    "violatingMover": [
+     12
+    ],
+    "violatingOpponent": [
+     3,
+     4,
+     10,
+     11,
+     14,
+     19
+    ],
+    "correctMover": [],
+    "correctOpponent": [
+     3,
+     4,
+     14,
+     19
+    ]
+   },
+   "ownBitCancelled": false,
+   "label": "weight-scale",
+   "labelWhy": "the penalty is -40 cc and the violating member wins the comparison by 2464 cc; the largest opposing term is `SpawnArea` (space) at -930 cc",
+   "namedTerm": "SpawnArea",
+   "topTerms": [
+    {
+     "index": 7,
+     "name": "SpawnArea",
+     "group": "space",
+     "deltaCc": -930,
+     "expectedCc": 30,
+     "chosenCc": 960,
+     "expectedF": 1,
+     "chosenF": 32
+    },
+    {
+     "index": 13,
+     "name": "HomeThreat",
+     "group": "home",
+     "deltaCc": -400,
+     "expectedCc": 0,
+     "chosenCc": 400,
+     "expectedF": 0,
+     "chosenF": -1
+    },
+    {
+     "index": 47,
+     "name": "Inv10HomeReachable",
+     "group": "home",
+     "deltaCc": -400,
+     "expectedCc": 0,
+     "chosenCc": 400,
+     "expectedF": 0,
+     "chosenF": -1
+    },
+    {
+     "index": 28,
+     "name": "Hanging",
+     "group": "safety",
+     "deltaCc": 300,
+     "expectedCc": 600,
+     "chosenCc": 300,
+     "expectedF": -12,
+     "chosenF": -6
+    },
+    {
+     "index": 48,
+     "name": "Inv11HomeBare",
+     "group": "home",
+     "deltaCc": -250,
+     "expectedCc": 0,
+     "chosenCc": 250,
+     "expectedF": 0,
+     "chosenF": -1
+    },
+    {
+     "index": 34,
+     "name": "CleaveExposure",
+     "group": "safety",
+     "deltaCc": 240,
+     "expectedCc": 0,
+     "chosenCc": -240,
+     "expectedF": 0,
+     "chosenF": 6
+    },
+    {
+     "index": 8,
+     "name": "SpawnReserve",
+     "group": "space",
+     "deltaCc": -224,
+     "expectedCc": 40,
+     "chosenCc": 264,
+     "expectedF": 5,
+     "chosenF": 33
+    },
+    {
+     "index": 14,
+     "name": "HomeCountdown",
+     "group": "home",
+     "deltaCc": -180,
+     "expectedCc": 0,
+     "chosenCc": 180,
+     "expectedF": 0,
+     "chosenF": -1
+    },
+    {
+     "index": 10,
+     "name": "AnchorDepth",
+     "group": "space",
+     "deltaCc": -175,
+     "expectedCc": -25,
+     "chosenCc": 150,
+     "expectedF": -1,
+     "chosenF": 6
+    },
+    {
+     "index": 36,
+     "name": "BlockingDeficit",
+     "group": "safety",
+     "deltaCc": -150,
+     "expectedCc": 0,
+     "chosenCc": 150,
+     "expectedF": 0,
+     "chosenF": -1
+    },
+    {
+     "index": 29,
+     "name": "HangingBuy",
+     "group": "safety",
+     "deltaCc": -120,
+     "expectedCc": 0,
+     "chosenCc": 120,
+     "expectedF": 0,
+     "chosenF": -4
+    },
+    {
+     "index": 35,
+     "name": "AnchorFragility",
+     "group": "safety",
+     "deltaCc": -120,
+     "expectedCc": 120,
+     "chosenCc": 240,
+     "expectedF": -1,
+     "chosenF": -2
+    }
+   ],
+   "groupDeltaCc": {
+    "material": 0,
+    "economy": 0,
+    "home": -1230,
+    "safety": 95,
+    "space": -1329
+   }
+  },
+  {
+   "id": "inv13-turtle",
+   "invariant": 13,
+   "side": "white",
+   "rationale": "SU #13: every body within two of home, spawn depth under 4, while black has pushed its own anchor past 4.",
+   "penaltyFeature": "Inv13Turtle",
+   "penaltyWeight": -200,
+   "searchWork": 50000,
+   "evalGapCc": 301,
+   "evalPass": true,
+   "searchGapCcDefaultWeights": -580,
+   "searchPassDefaultWeights": false,
+   "searchGapCcPlaceholderWeights": 0,
+   "searchPassPlaceholderWeights": false,
+   "penaltyFiredViolating": 1,
+   "penaltyFiredCorrect": 0,
+   "penaltyDeltaCc": 200,
+   "penaltyNeverFires": false,
+   "bits": {
+    "violatingMover": [
+     13
+    ],
+    "violatingOpponent": [
+     14
+    ],
+    "correctMover": [],
+    "correctOpponent": [
+     14
+    ]
+   },
+   "ownBitCancelled": false,
+   "label": "matched",
+   "labelWhy": "the moving side prefers the correct member",
+   "namedTerm": "PstMine",
+   "topTerms": [
+    {
+     "index": 5,
+     "name": "PstMine",
+     "group": "economy",
+     "deltaCc": -360,
+     "expectedCc": 120,
+     "chosenCc": 480,
+     "expectedF": 2,
+     "chosenF": 8
+    },
+    {
+     "index": 23,
+     "name": "EconDelta",
+     "group": "economy",
+     "deltaCc": 320,
+     "expectedCc": 80,
+     "chosenCc": -240,
+     "expectedF": 1,
+     "chosenF": -3
+    },
+    {
+     "index": 7,
+     "name": "SpawnArea",
+     "group": "space",
+     "deltaCc": 210,
+     "expectedCc": -120,
+     "chosenCc": -330,
+     "expectedF": -4,
+     "chosenF": -11
+    },
+    {
+     "index": 50,
+     "name": "Inv13Turtle",
+     "group": "space",
+     "deltaCc": 200,
+     "expectedCc": 0,
+     "chosenCc": -200,
+     "expectedF": 0,
+     "chosenF": 1
+    },
+    {
+     "index": 27,
+     "name": "RelocationDebt",
+     "group": "economy",
+     "deltaCc": -120,
+     "expectedCc": -120,
+     "chosenCc": 0,
+     "expectedF": 2,
+     "chosenF": 0
+    },
+    {
+     "index": 10,
+     "name": "AnchorDepth",
+     "group": "space",
+     "deltaCc": 75,
+     "expectedCc": -25,
+     "chosenCc": -100,
+     "expectedF": -1,
+     "chosenF": -4
+    },
+    {
+     "index": 24,
+     "name": "DepletionWaste",
+     "group": "economy",
+     "deltaCc": -60,
+     "expectedCc": 0,
+     "chosenCc": 60,
+     "expectedF": 0,
+     "chosenF": -2
+    },
+    {
+     "index": 8,
+     "name": "SpawnReserve",
+     "group": "space",
+     "deltaCc": 56,
+     "expectedCc": -32,
+     "chosenCc": -88,
+     "expectedF": -4,
+     "chosenF": -11
+    },
+    {
+     "index": 17,
+     "name": "Exposure",
+     "group": "safety",
+     "deltaCc": -20,
+     "expectedCc": -20,
+     "chosenCc": 0,
+     "expectedF": 1,
+     "chosenF": 0
+    },
+    {
+     "index": 2,
+     "name": "BankLiquid",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": 540,
+     "chosenCc": 540,
+     "expectedF": 6,
+     "chosenF": 6
+    },
+    {
+     "index": 6,
+     "name": "BankConvertible",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": 120,
+     "chosenCc": 120,
+     "expectedF": 6,
+     "chosenF": 6
+    },
+    {
+     "index": 22,
+     "name": "ElementCoverage",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": 150,
+     "chosenCc": 150,
+     "expectedF": 1,
+     "chosenF": 1
+    }
+   ],
+   "groupDeltaCc": {
+    "material": 0,
+    "economy": -220,
+    "home": 0,
+    "safety": -20,
+    "space": 541
+   }
+  },
+  {
+   "id": "inv14-liquidity-floor",
+   "invariant": 14,
+   "side": "white",
+   "rationale": "SU #14 / P3: the turn won no material and left the bank under the six-crystal floor.",
+   "penaltyFeature": "Inv14LiquidityFloor",
+   "penaltyWeight": -200,
+   "searchWork": 50000,
+   "evalGapCc": 750,
+   "evalPass": true,
+   "searchGapCcDefaultWeights": 1115,
+   "searchPassDefaultWeights": true,
+   "searchGapCcPlaceholderWeights": 400,
+   "searchPassPlaceholderWeights": true,
+   "penaltyFiredViolating": 0,
+   "penaltyFiredCorrect": -1,
+   "penaltyDeltaCc": 200,
+   "penaltyNeverFires": false,
+   "bits": {
+    "violatingMover": [
+     14
+    ],
+    "violatingOpponent": [
+     13,
+     14
+    ],
+    "correctMover": [],
+    "correctOpponent": [
+     13,
+     14
+    ]
+   },
+   "ownBitCancelled": true,
+   "label": "matched",
+   "labelWhy": "the moving side prefers the correct member",
+   "namedTerm": "BankLiquid",
+   "topTerms": [
+    {
+     "index": 2,
+     "name": "BankLiquid",
+     "group": "economy",
+     "deltaCc": 450,
+     "expectedCc": 540,
+     "chosenCc": 90,
+     "expectedF": 6,
+     "chosenF": 1
+    },
+    {
+     "index": 51,
+     "name": "Inv14LiquidityFloor",
+     "group": "economy",
+     "deltaCc": 200,
+     "expectedCc": 200,
+     "chosenCc": 0,
+     "expectedF": -1,
+     "chosenF": 0
+    },
+    {
+     "index": 6,
+     "name": "BankConvertible",
+     "group": "economy",
+     "deltaCc": 100,
+     "expectedCc": 120,
+     "chosenCc": 20,
+     "expectedF": 6,
+     "chosenF": 1
+    },
+    {
+     "index": 5,
+     "name": "PstMine",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": 180,
+     "chosenCc": 180,
+     "expectedF": 3,
+     "chosenF": 3
+    },
+    {
+     "index": 7,
+     "name": "SpawnArea",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": 150,
+     "chosenCc": 150,
+     "expectedF": 5,
+     "chosenF": 5
+    },
+    {
+     "index": 8,
+     "name": "SpawnReserve",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": 56,
+     "chosenCc": 56,
+     "expectedF": 7,
+     "chosenF": 7
+    },
+    {
+     "index": 10,
+     "name": "AnchorDepth",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": 25,
+     "chosenCc": 25,
+     "expectedF": 1,
+     "chosenF": 1
+    },
+    {
+     "index": 22,
+     "name": "ElementCoverage",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": 150,
+     "chosenCc": 150,
+     "expectedF": 1,
+     "chosenF": 1
+    },
+    {
+     "index": 24,
+     "name": "DepletionWaste",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": -60,
+     "chosenCc": -60,
+     "expectedF": 2,
+     "chosenF": 2
+    },
+    {
+     "index": 27,
+     "name": "RelocationDebt",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": -60,
+     "chosenCc": -60,
+     "expectedF": 1,
+     "chosenF": 1
+    },
+    {
+     "index": 50,
+     "name": "Inv13Turtle",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": 200,
+     "chosenCc": 200,
+     "expectedF": -1,
+     "chosenF": -1
+    }
+   ],
+   "groupDeltaCc": {
+    "material": 0,
+    "economy": 750,
+    "home": 0,
+    "safety": 0,
+    "space": 0
+   }
+  },
+  {
+   "id": "inv15-unknown-as-safe",
+   "invariant": 15,
+   "side": "white",
+   "rationale": "SU #15 is structural (an UNKNOWN prover verdict is scored as the bad case, never as safety) and carries no weight and no per-position test; the fixture pins its bit to 0 on a board where every other invariant is quiet.",
+   "penaltyFeature": "Inv15UnknownAsSafe",
+   "penaltyWeight": 0,
+   "searchWork": 50000,
+   "evalGapCc": 0,
+   "evalPass": false,
+   "searchGapCcDefaultWeights": 0,
+   "searchPassDefaultWeights": false,
+   "searchGapCcPlaceholderWeights": 0,
+   "searchPassPlaceholderWeights": false,
+   "penaltyFiredViolating": 0,
+   "penaltyFiredCorrect": 0,
+   "penaltyDeltaCc": 0,
+   "penaltyNeverFires": true,
+   "bits": {
+    "violatingMover": [],
+    "violatingOpponent": [
+     13,
+     14
+    ],
+    "correctMover": [],
+    "correctOpponent": [
+     13,
+     14
+    ]
+   },
+   "ownBitCancelled": false,
+   "label": "contradictory-preference",
+   "labelWhy": "DESIGN gives `Inv15UnknownAsSafe` weight 0, so the two members cannot differ by this feature at any scale; the pair asks the weight vector for a preference the vector is authored not to have",
+   "namedTerm": "BankLiquid",
+   "topTerms": [
+    {
+     "index": 2,
+     "name": "BankLiquid",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": 540,
+     "chosenCc": 540,
+     "expectedF": 6,
+     "chosenF": 6
+    },
+    {
+     "index": 5,
+     "name": "PstMine",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": 180,
+     "chosenCc": 180,
+     "expectedF": 3,
+     "chosenF": 3
+    },
+    {
+     "index": 6,
+     "name": "BankConvertible",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": 120,
+     "chosenCc": 120,
+     "expectedF": 6,
+     "chosenF": 6
+    },
+    {
+     "index": 7,
+     "name": "SpawnArea",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": 150,
+     "chosenCc": 150,
+     "expectedF": 5,
+     "chosenF": 5
+    },
+    {
+     "index": 8,
+     "name": "SpawnReserve",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": 56,
+     "chosenCc": 56,
+     "expectedF": 7,
+     "chosenF": 7
+    },
+    {
+     "index": 10,
+     "name": "AnchorDepth",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": 25,
+     "chosenCc": 25,
+     "expectedF": 1,
+     "chosenF": 1
+    },
+    {
+     "index": 22,
+     "name": "ElementCoverage",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": 150,
+     "chosenCc": 150,
+     "expectedF": 1,
+     "chosenF": 1
+    },
+    {
+     "index": 24,
+     "name": "DepletionWaste",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": -60,
+     "chosenCc": -60,
+     "expectedF": 2,
+     "chosenF": 2
+    },
+    {
+     "index": 27,
+     "name": "RelocationDebt",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": -60,
+     "chosenCc": -60,
+     "expectedF": 1,
+     "chosenF": 1
+    },
+    {
+     "index": 50,
+     "name": "Inv13Turtle",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": 200,
+     "chosenCc": 200,
+     "expectedF": -1,
+     "chosenF": -1
+    },
+    {
+     "index": 51,
+     "name": "Inv14LiquidityFloor",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": 200,
+     "chosenCc": 200,
+     "expectedF": -1,
+     "chosenF": -1
+    }
+   ],
+   "groupDeltaCc": {
+    "material": 0,
+    "economy": 0,
+    "home": 0,
+    "safety": 0,
+    "space": 0
+   }
+  },
+  {
+   "id": "inv16-clock-discipline",
+   "invariant": 16,
+   "side": "white",
+   "rationale": "SU #16: clock at 7, a 300 cc lead, and nothing to kill — the draw is being handed away.",
+   "penaltyFeature": "Inv16ClockDiscipline",
+   "penaltyWeight": -200,
+   "searchWork": 50000,
+   "evalGapCc": 560,
+   "evalPass": true,
+   "searchGapCcDefaultWeights": 3134,
+   "searchPassDefaultWeights": true,
+   "searchGapCcPlaceholderWeights": 700,
+   "searchPassPlaceholderWeights": true,
+   "penaltyFiredViolating": 1,
+   "penaltyFiredCorrect": 0,
+   "penaltyDeltaCc": 200,
+   "penaltyNeverFires": false,
+   "bits": {
+    "violatingMover": [
+     16
+    ],
+    "violatingOpponent": [
+     13,
+     14
+    ],
+    "correctMover": [],
+    "correctOpponent": [
+     13,
+     14
+    ]
+   },
+   "ownBitCancelled": false,
+   "label": "matched",
+   "labelWhy": "the moving side prefers the correct member",
+   "namedTerm": "DrawPressure",
+   "topTerms": [
+    {
+     "index": 18,
+     "name": "DrawPressure",
+     "group": "space",
+     "deltaCc": 360,
+     "expectedCc": -32,
+     "chosenCc": -392,
+     "expectedF": 4,
+     "chosenF": 49
+    },
+    {
+     "index": 53,
+     "name": "Inv16ClockDiscipline",
+     "group": "space",
+     "deltaCc": 200,
+     "expectedCc": 0,
+     "chosenCc": -200,
+     "expectedF": 0,
+     "chosenF": 1
+    },
+    {
+     "index": 0,
+     "name": "Material",
+     "group": "material",
+     "deltaCc": 0,
+     "expectedCc": 500,
+     "chosenCc": 500,
+     "expectedF": 5,
+     "chosenF": 5
+    },
+    {
+     "index": 2,
+     "name": "BankLiquid",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": 540,
+     "chosenCc": 540,
+     "expectedF": 6,
+     "chosenF": 6
+    },
+    {
+     "index": 5,
+     "name": "PstMine",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": 360,
+     "chosenCc": 360,
+     "expectedF": 6,
+     "chosenF": 6
+    },
+    {
+     "index": 6,
+     "name": "BankConvertible",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": 120,
+     "chosenCc": 120,
+     "expectedF": 6,
+     "chosenF": 6
+    },
+    {
+     "index": 7,
+     "name": "SpawnArea",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": 180,
+     "chosenCc": 180,
+     "expectedF": 6,
+     "chosenF": 6
+    },
+    {
+     "index": 8,
+     "name": "SpawnReserve",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": 64,
+     "chosenCc": 64,
+     "expectedF": 8,
+     "chosenF": 8
+    },
+    {
+     "index": 10,
+     "name": "AnchorDepth",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": 50,
+     "chosenCc": 50,
+     "expectedF": 2,
+     "chosenF": 2
+    },
+    {
+     "index": 22,
+     "name": "ElementCoverage",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": 150,
+     "chosenCc": 150,
+     "expectedF": 1,
+     "chosenF": 1
+    },
+    {
+     "index": 23,
+     "name": "EconDelta",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": 320,
+     "chosenCc": 320,
+     "expectedF": 4,
+     "chosenF": 4
+    },
+    {
+     "index": 24,
+     "name": "DepletionWaste",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": -210,
+     "chosenCc": -210,
+     "expectedF": 7,
+     "chosenF": 7
+    }
+   ],
+   "groupDeltaCc": {
+    "material": 0,
+    "economy": 0,
+    "home": 0,
+    "safety": 0,
+    "space": 560
+   }
+  },
+  {
+   "id": "inv17-self-block",
+   "invariant": 17,
+   "side": "white",
+   "rationale": "SU #17: the body bought this turn sits in the one gap its own runner needed, lengthening that runner's route to the enemy corner.",
+   "penaltyFeature": "Inv17SelfBlock",
+   "penaltyWeight": -60,
+   "searchWork": 50000,
+   "evalGapCc": 290,
+   "evalPass": true,
+   "searchGapCcDefaultWeights": -60,
+   "searchPassDefaultWeights": false,
+   "searchGapCcPlaceholderWeights": -500,
+   "searchPassPlaceholderWeights": false,
+   "penaltyFiredViolating": 1,
+   "penaltyFiredCorrect": 0,
+   "penaltyDeltaCc": 60,
+   "penaltyNeverFires": false,
+   "bits": {
+    "violatingMover": [
+     17
+    ],
+    "violatingOpponent": [
+     13,
+     14
+    ],
+    "correctMover": [],
+    "correctOpponent": [
+     4,
+     13,
+     14
+    ]
+   },
+   "ownBitCancelled": false,
+   "label": "matched",
+   "labelWhy": "the moving side prefers the correct member",
+   "namedTerm": "RelocationDebt",
+   "topTerms": [
+    {
+     "index": 41,
+     "name": "Inv4StrandUnpunished",
+     "group": "safety",
+     "deltaCc": 100,
+     "expectedCc": 100,
+     "chosenCc": 0,
+     "expectedF": -1,
+     "chosenF": 0
+    },
+    {
+     "index": 23,
+     "name": "EconDelta",
+     "group": "economy",
+     "deltaCc": 80,
+     "expectedCc": 80,
+     "chosenCc": 0,
+     "expectedF": 1,
+     "chosenF": 0
+    },
+    {
+     "index": 24,
+     "name": "DepletionWaste",
+     "group": "economy",
+     "deltaCc": 60,
+     "expectedCc": 0,
+     "chosenCc": -60,
+     "expectedF": 0,
+     "chosenF": 2
+    },
+    {
+     "index": 27,
+     "name": "RelocationDebt",
+     "group": "economy",
+     "deltaCc": -60,
+     "expectedCc": -60,
+     "chosenCc": 0,
+     "expectedF": 1,
+     "chosenF": 0
+    },
+    {
+     "index": 54,
+     "name": "Inv17SelfBlock",
+     "group": "safety",
+     "deltaCc": 60,
+     "expectedCc": 0,
+     "chosenCc": -60,
+     "expectedF": 0,
+     "chosenF": 1
+    },
+    {
+     "index": 31,
+     "name": "ApproachStrand",
+     "group": "safety",
+     "deltaCc": 50,
+     "expectedCc": 50,
+     "chosenCc": 0,
+     "expectedF": -5,
+     "chosenF": 0
+    },
+    {
+     "index": 0,
+     "name": "Material",
+     "group": "material",
+     "deltaCc": 0,
+     "expectedCc": 600,
+     "chosenCc": 600,
+     "expectedF": 6,
+     "chosenF": 6
+    },
+    {
+     "index": 2,
+     "name": "BankLiquid",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": 540,
+     "chosenCc": 540,
+     "expectedF": 6,
+     "chosenF": 6
+    },
+    {
+     "index": 5,
+     "name": "PstMine",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": 120,
+     "chosenCc": 120,
+     "expectedF": 2,
+     "chosenF": 2
+    },
+    {
+     "index": 6,
+     "name": "BankConvertible",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": 120,
+     "chosenCc": 120,
+     "expectedF": 6,
+     "chosenF": 6
+    },
+    {
+     "index": 7,
+     "name": "SpawnArea",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": 120,
+     "chosenCc": 120,
+     "expectedF": 4,
+     "chosenF": 4
+    },
+    {
+     "index": 8,
+     "name": "SpawnReserve",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": 8,
+     "chosenCc": 8,
+     "expectedF": 1,
+     "chosenF": 1
+    }
+   ],
+   "groupDeltaCc": {
+    "material": 0,
+    "economy": 80,
+    "home": 0,
+    "safety": 210,
+    "space": 0
+   }
+  },
+  {
+   "id": "inv18-wasted-end-place",
+   "invariant": 18,
+   "side": "white",
+   "rationale": "SU #18 is a protocol rule, not a feature (DESIGN F7): END_PLACE_PHASE is emitted only when legal, so the bit is always 0; the fixture pins it on a quiet board.",
+   "penaltyFeature": "Inv18WastedEndPlace",
+   "penaltyWeight": 0,
+   "searchWork": 50000,
+   "evalGapCc": 0,
+   "evalPass": false,
+   "searchGapCcDefaultWeights": 0,
+   "searchPassDefaultWeights": false,
+   "searchGapCcPlaceholderWeights": 0,
+   "searchPassPlaceholderWeights": false,
+   "penaltyFiredViolating": 0,
+   "penaltyFiredCorrect": 0,
+   "penaltyDeltaCc": 0,
+   "penaltyNeverFires": true,
+   "bits": {
+    "violatingMover": [],
+    "violatingOpponent": [
+     13,
+     14
+    ],
+    "correctMover": [],
+    "correctOpponent": [
+     13,
+     14
+    ]
+   },
+   "ownBitCancelled": false,
+   "label": "contradictory-preference",
+   "labelWhy": "DESIGN gives `Inv18WastedEndPlace` weight 0, so the two members cannot differ by this feature at any scale; the pair asks the weight vector for a preference the vector is authored not to have",
+   "namedTerm": "BankLiquid",
+   "topTerms": [
+    {
+     "index": 2,
+     "name": "BankLiquid",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": 540,
+     "chosenCc": 540,
+     "expectedF": 6,
+     "chosenF": 6
+    },
+    {
+     "index": 5,
+     "name": "PstMine",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": 180,
+     "chosenCc": 180,
+     "expectedF": 3,
+     "chosenF": 3
+    },
+    {
+     "index": 6,
+     "name": "BankConvertible",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": 120,
+     "chosenCc": 120,
+     "expectedF": 6,
+     "chosenF": 6
+    },
+    {
+     "index": 7,
+     "name": "SpawnArea",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": 150,
+     "chosenCc": 150,
+     "expectedF": 5,
+     "chosenF": 5
+    },
+    {
+     "index": 8,
+     "name": "SpawnReserve",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": 56,
+     "chosenCc": 56,
+     "expectedF": 7,
+     "chosenF": 7
+    },
+    {
+     "index": 10,
+     "name": "AnchorDepth",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": 25,
+     "chosenCc": 25,
+     "expectedF": 1,
+     "chosenF": 1
+    },
+    {
+     "index": 22,
+     "name": "ElementCoverage",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": 150,
+     "chosenCc": 150,
+     "expectedF": 1,
+     "chosenF": 1
+    },
+    {
+     "index": 24,
+     "name": "DepletionWaste",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": -60,
+     "chosenCc": -60,
+     "expectedF": 2,
+     "chosenF": 2
+    },
+    {
+     "index": 27,
+     "name": "RelocationDebt",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": -60,
+     "chosenCc": -60,
+     "expectedF": 1,
+     "chosenF": 1
+    },
+    {
+     "index": 50,
+     "name": "Inv13Turtle",
+     "group": "space",
+     "deltaCc": 0,
+     "expectedCc": 200,
+     "chosenCc": 200,
+     "expectedF": -1,
+     "chosenF": -1
+    },
+    {
+     "index": 51,
+     "name": "Inv14LiquidityFloor",
+     "group": "economy",
+     "deltaCc": 0,
+     "expectedCc": 200,
+     "chosenCc": 200,
+     "expectedF": -1,
+     "chosenF": -1
+    }
+   ],
+   "groupDeltaCc": {
+    "material": 0,
+    "economy": 0,
+    "home": 0,
+    "safety": 0,
+    "space": 0
+   }
+  },
+  {
+   "id": "inv19-soft-miner-exposed",
+   "invariant": 19,
+   "side": "white",
+   "rationale": "SU #19: a DEF-1 miner parked forward inside the square set black could buy into, with black holding a tier-1 price.",
+   "penaltyFeature": "Inv19SoftMinerExposed",
+   "penaltyWeight": -150,
+   "searchWork": 50000,
+   "evalGapCc": -3662,
+   "evalPass": false,
+   "searchGapCcDefaultWeights": -2462,
+   "searchPassDefaultWeights": false,
+   "searchGapCcPlaceholderWeights": 200,
+   "searchPassPlaceholderWeights": true,
+   "penaltyFiredViolating": 1,
+   "penaltyFiredCorrect": 0,
+   "penaltyDeltaCc": 150,
+   "penaltyNeverFires": false,
+   "bits": {
+    "violatingMover": [
+     19
+    ],
+    "violatingOpponent": [
+     3,
+     10,
+     11,
+     13,
+     14
+    ],
+    "correctMover": [],
+    "correctOpponent": [
+     13,
+     14
+    ]
+   },
+   "ownBitCancelled": false,
+   "label": "weight-scale",
+   "labelWhy": "the penalty is -150 cc and the violating member wins the comparison by 3662 cc; the largest opposing term is `SpawnArea` (space) at -930 cc",
+   "namedTerm": "SpawnArea",
+   "topTerms": [
+    {
+     "index": 7,
+     "name": "SpawnArea",
+     "group": "space",
+     "deltaCc": -930,
+     "expectedCc": 120,
+     "chosenCc": 1050,
+     "expectedF": 4,
+     "chosenF": 35
+    },
+    {
+     "index": 13,
+     "name": "HomeThreat",
+     "group": "home",
+     "deltaCc": -400,
+     "expectedCc": 0,
+     "chosenCc": 400,
+     "expectedF": 0,
+     "chosenF": -1
+    },
+    {
+     "index": 47,
+     "name": "Inv10HomeReachable",
+     "group": "home",
+     "deltaCc": -400,
+     "expectedCc": 0,
+     "chosenCc": 400,
+     "expectedF": 0,
+     "chosenF": -1
+    },
+    {
+     "index": 28,
+     "name": "Hanging",
+     "group": "safety",
+     "deltaCc": -300,
+     "expectedCc": 0,
+     "chosenCc": 300,
+     "expectedF": 0,
+     "chosenF": -6
+    },
+    {
+     "index": 40,
+     "name": "Inv3RetreatSquare",
+     "group": "safety",
+     "deltaCc": -250,
+     "expectedCc": 0,
+     "chosenCc": 250,
+     "expectedF": 0,
+     "chosenF": -1
+    },
+    {
+     "index": 48,
+     "name": "Inv11HomeBare",
+     "group": "home",
+     "deltaCc": -250,
+     "expectedCc": 0,
+     "chosenCc": 250,
+     "expectedF": 0,
+     "chosenF": -1
+    },
+    {
+     "index": 35,
+     "name": "AnchorFragility",
+     "group": "safety",
+     "deltaCc": -240,
+     "expectedCc": 0,
+     "chosenCc": 240,
+     "expectedF": 0,
+     "chosenF": -2
+    },
+    {
+     "index": 8,
+     "name": "SpawnReserve",
+     "group": "space",
+     "deltaCc": -232,
+     "expectedCc": 40,
+     "chosenCc": 272,
+     "expectedF": 5,
+     "chosenF": 34
+    },
+    {
+     "index": 14,
+     "name": "HomeCountdown",
+     "group": "home",
+     "deltaCc": -180,
+     "expectedCc": 0,
+     "chosenCc": 180,
+     "expectedF": 0,
+     "chosenF": -1
+    },
+    {
+     "index": 10,
+     "name": "AnchorDepth",
+     "group": "space",
+     "deltaCc": -175,
+     "expectedCc": 25,
+     "chosenCc": 200,
+     "expectedF": 1,
+     "chosenF": 8
+    },
+    {
+     "index": 30,
+     "name": "ApproachRetreat",
+     "group": "safety",
+     "deltaCc": -150,
+     "expectedCc": 0,
+     "chosenCc": 150,
+     "expectedF": 0,
+     "chosenF": -6
+    },
+    {
+     "index": 36,
+     "name": "BlockingDeficit",
+     "group": "safety",
+     "deltaCc": -150,
+     "expectedCc": 0,
+     "chosenCc": 150,
+     "expectedF": 0,
+     "chosenF": -1
+    }
+   ],
+   "groupDeltaCc": {
+    "material": 0,
+    "economy": 0,
+    "home": -1230,
+    "safety": -1095,
+    "space": -1337
+   }
+  },
+  {
+   "id": "inv20-strand-no-retreat",
+   "invariant": 20,
+   "side": "white",
+   "rationale": "SU #20: the body that made the kill this turn has nowhere to step that black does not already cover.",
+   "penaltyFeature": "Inv20StrandNoRetreat",
+   "penaltyWeight": -250,
+   "searchWork": 50000,
+   "evalGapCc": -2318,
+   "evalPass": false,
+   "searchGapCcDefaultWeights": -995695,
+   "searchPassDefaultWeights": false,
+   "searchGapCcPlaceholderWeights": -997800,
+   "searchPassPlaceholderWeights": false,
+   "penaltyFiredViolating": 1,
+   "penaltyFiredCorrect": 0,
+   "penaltyDeltaCc": 250,
+   "penaltyNeverFires": false,
+   "bits": {
+    "violatingMover": [
+     20
+    ],
+    "violatingOpponent": [
+     3,
+     10,
+     13,
+     14
+    ],
+    "correctMover": [],
+    "correctOpponent": [
+     13,
+     14
+    ]
+   },
+   "ownBitCancelled": false,
+   "label": "weight-scale",
+   "labelWhy": "the penalty is -250 cc and the violating member wins the comparison by 2318 cc; the largest opposing term is `HomeThreat` (home) at -400 cc",
+   "namedTerm": "HomeThreat",
+   "topTerms": [
+    {
+     "index": 13,
+     "name": "HomeThreat",
+     "group": "home",
+     "deltaCc": -400,
+     "expectedCc": 0,
+     "chosenCc": 400,
+     "expectedF": 0,
+     "chosenF": -1
+    },
+    {
+     "index": 47,
+     "name": "Inv10HomeReachable",
+     "group": "home",
+     "deltaCc": -400,
+     "expectedCc": 0,
+     "chosenCc": 400,
+     "expectedF": 0,
+     "chosenF": -1
+    },
+    {
+     "index": 36,
+     "name": "BlockingDeficit",
+     "group": "safety",
+     "deltaCc": -300,
+     "expectedCc": 0,
+     "chosenCc": 300,
+     "expectedF": 0,
+     "chosenF": -2
+    },
+    {
+     "index": 40,
+     "name": "Inv3RetreatSquare",
+     "group": "safety",
+     "deltaCc": -250,
+     "expectedCc": 0,
+     "chosenCc": 250,
+     "expectedF": 0,
+     "chosenF": -1
+    },
+    {
+     "index": 57,
+     "name": "Inv20StrandNoRetreat",
+     "group": "safety",
+     "deltaCc": 250,
+     "expectedCc": 0,
+     "chosenCc": -250,
+     "expectedF": 0,
+     "chosenF": 1
+    },
+    {
+     "index": 35,
+     "name": "AnchorFragility",
+     "group": "safety",
+     "deltaCc": -240,
+     "expectedCc": 0,
+     "chosenCc": 240,
+     "expectedF": 0,
+     "chosenF": -2
+    },
+    {
+     "index": 5,
+     "name": "PstMine",
+     "group": "economy",
+     "deltaCc": -180,
+     "expectedCc": 180,
+     "chosenCc": 360,
+     "expectedF": 3,
+     "chosenF": 6
+    },
+    {
+     "index": 14,
+     "name": "HomeCountdown",
+     "group": "home",
+     "deltaCc": -180,
+     "expectedCc": 0,
+     "chosenCc": 180,
+     "expectedF": 0,
+     "chosenF": -1
+    },
+    {
+     "index": 24,
+     "name": "DepletionWaste",
+     "group": "economy",
+     "deltaCc": -180,
+     "expectedCc": -60,
+     "chosenCc": 120,
+     "expectedF": 2,
+     "chosenF": -4
+    },
+    {
+     "index": 30,
+     "name": "ApproachRetreat",
+     "group": "safety",
+     "deltaCc": -100,
+     "expectedCc": 0,
+     "chosenCc": 100,
+     "expectedF": 0,
+     "chosenF": -4
+    },
+    {
+     "index": 17,
+     "name": "Exposure",
+     "group": "safety",
+     "deltaCc": -80,
+     "expectedCc": 0,
+     "chosenCc": 80,
+     "expectedF": 0,
+     "chosenF": -4
+    },
+    {
+     "index": 7,
+     "name": "SpawnArea",
+     "group": "space",
+     "deltaCc": -60,
+     "expectedCc": 180,
+     "chosenCc": 240,
+     "expectedF": 6,
+     "chosenF": 8
+    }
+   ],
+   "groupDeltaCc": {
+    "material": 0,
+    "economy": -460,
+    "home": -980,
+    "safety": -720,
+    "space": -158
+   }
+  }
+ ],
+ "economy": [
+  {
+   "id": "relocate-fire_1-e",
+   "rationale": "fire_1 idle on a dry cell; east neighbour (reserve 16) beats west neighbour (reserve 4) by PST_MINE[fire_1][16] - PST_MINE[fire_1][4].",
+   "rootVictory": "victory",
+   "rootWinner": "white",
+   "whiteUnits": 1,
+   "blackUnits": 0,
+   "ends": 84,
+   "endsComplete": true,
+   "endsInVictory": 84,
+   "bestReachable": false,
+   "avoidReachable": false,
+   "label": "contradictory-preference",
+   "labelWhy": "judge 4 (canonical fact): `checkVictory` calls the ROOT victory for white, 84 of 84 legal turn ends are `phase: 'victory'`, and the row's `best` key is NOT an end position of any legal turn"
+  },
+  {
+   "id": "relocate-fire_1-s",
+   "rationale": "fire_1 idle on a dry cell; south neighbour (reserve 16) beats north neighbour (reserve 4) by the same PST_MINE gap, north/south geometry.",
+   "rootVictory": "victory",
+   "rootWinner": "white",
+   "whiteUnits": 1,
+   "blackUnits": 0,
+   "ends": 69,
+   "endsComplete": true,
+   "endsInVictory": 69,
+   "bestReachable": false,
+   "avoidReachable": false,
+   "label": "contradictory-preference",
+   "labelWhy": "judge 4 (canonical fact): `checkVictory` calls the ROOT victory for white, 69 of 69 legal turn ends are `phase: 'victory'`, and the row's `best` key is NOT an end position of any legal turn"
+  },
+  {
+   "id": "relocate-water_1-e",
+   "rationale": "water_1 idle on a dry cell; east neighbour (reserve 16) beats west neighbour (reserve 4) by PST_MINE[water_1][16] - PST_MINE[water_1][4].",
+   "rootVictory": "victory",
+   "rootWinner": "white",
+   "whiteUnits": 1,
+   "blackUnits": 0,
+   "ends": 40,
+   "endsComplete": true,
+   "endsInVictory": 40,
+   "bestReachable": false,
+   "avoidReachable": false,
+   "label": "contradictory-preference",
+   "labelWhy": "judge 4 (canonical fact): `checkVictory` calls the ROOT victory for white, 40 of 40 legal turn ends are `phase: 'victory'`, and the row's `best` key is NOT an end position of any legal turn"
+  },
+  {
+   "id": "relocate-water_1-s",
+   "rationale": "water_1 idle on a dry cell; south neighbour (reserve 16) beats north neighbour (reserve 4) by the same PST_MINE gap, north/south geometry.",
+   "rootVictory": "victory",
+   "rootWinner": "white",
+   "whiteUnits": 1,
+   "blackUnits": 0,
+   "ends": 36,
+   "endsComplete": true,
+   "endsInVictory": 36,
+   "bestReachable": false,
+   "avoidReachable": false,
+   "label": "contradictory-preference",
+   "labelWhy": "judge 4 (canonical fact): `checkVictory` calls the ROOT victory for white, 36 of 36 legal turn ends are `phase: 'victory'`, and the row's `best` key is NOT an end position of any legal turn"
+  },
+  {
+   "id": "relocate-plant_1-e",
+   "rationale": "plant_1 idle on a dry cell; east neighbour (reserve 16) beats west neighbour (reserve 4) by PST_MINE[plant_1][16] - PST_MINE[plant_1][4].",
+   "rootVictory": "victory",
+   "rootWinner": "white",
+   "whiteUnits": 1,
+   "blackUnits": 0,
+   "ends": 41,
+   "endsComplete": true,
+   "endsInVictory": 41,
+   "bestReachable": false,
+   "avoidReachable": false,
+   "label": "contradictory-preference",
+   "labelWhy": "judge 4 (canonical fact): `checkVictory` calls the ROOT victory for white, 41 of 41 legal turn ends are `phase: 'victory'`, and the row's `best` key is NOT an end position of any legal turn"
+  },
+  {
+   "id": "relocate-plant_1-s",
+   "rationale": "plant_1 idle on a dry cell; south neighbour (reserve 16) beats north neighbour (reserve 4) by the same PST_MINE gap, north/south geometry.",
+   "rootVictory": "victory",
+   "rootWinner": "white",
+   "whiteUnits": 1,
+   "blackUnits": 0,
+   "ends": 40,
+   "endsComplete": true,
+   "endsInVictory": 40,
+   "bestReachable": false,
+   "avoidReachable": false,
+   "label": "contradictory-preference",
+   "labelWhy": "judge 4 (canonical fact): `checkVictory` calls the ROOT victory for white, 40 of 40 legal turn ends are `phase: 'victory'`, and the row's `best` key is NOT an end position of any legal turn"
+  },
+  {
+   "id": "relocate-plant_2-e",
+   "rationale": "plant_2 idle on a dry cell; east neighbour (reserve 16) beats west neighbour (reserve 4) by PST_MINE[plant_2][16] - PST_MINE[plant_2][4].",
+   "rootVictory": "victory",
+   "rootWinner": "white",
+   "whiteUnits": 1,
+   "blackUnits": 0,
+   "ends": 41,
+   "endsComplete": true,
+   "endsInVictory": 41,
+   "bestReachable": false,
+   "avoidReachable": false,
+   "label": "contradictory-preference",
+   "labelWhy": "judge 4 (canonical fact): `checkVictory` calls the ROOT victory for white, 41 of 41 legal turn ends are `phase: 'victory'`, and the row's `best` key is NOT an end position of any legal turn"
+  },
+  {
+   "id": "relocate-plant_2-s",
+   "rationale": "plant_2 idle on a dry cell; south neighbour (reserve 16) beats north neighbour (reserve 4) by the same PST_MINE gap, north/south geometry.",
+   "rootVictory": "victory",
+   "rootWinner": "white",
+   "whiteUnits": 1,
+   "blackUnits": 0,
+   "ends": 41,
+   "endsComplete": true,
+   "endsInVictory": 41,
+   "bestReachable": false,
+   "avoidReachable": false,
+   "label": "contradictory-preference",
+   "labelWhy": "judge 4 (canonical fact): `checkVictory` calls the ROOT victory for white, 41 of 41 legal turn ends are `phase: 'victory'`, and the row's `best` key is NOT an end position of any legal turn"
+  },
+  {
+   "id": "relocate-plant_3-e",
+   "rationale": "plant_3 idle on a dry cell; east neighbour (reserve 16) beats west neighbour (reserve 4) by PST_MINE[plant_3][16] - PST_MINE[plant_3][4].",
+   "rootVictory": "victory",
+   "rootWinner": "white",
+   "whiteUnits": 1,
+   "blackUnits": 0,
+   "ends": 40,
+   "endsComplete": true,
+   "endsInVictory": 40,
+   "bestReachable": false,
+   "avoidReachable": false,
+   "label": "contradictory-preference",
+   "labelWhy": "judge 4 (canonical fact): `checkVictory` calls the ROOT victory for white, 40 of 40 legal turn ends are `phase: 'victory'`, and the row's `best` key is NOT an end position of any legal turn"
+  },
+  {
+   "id": "relocate-plant_3-s",
+   "rationale": "plant_3 idle on a dry cell; south neighbour (reserve 16) beats north neighbour (reserve 4) by the same PST_MINE gap, north/south geometry.",
+   "rootVictory": "victory",
+   "rootWinner": "white",
+   "whiteUnits": 1,
+   "blackUnits": 0,
+   "ends": 40,
+   "endsComplete": true,
+   "endsInVictory": 40,
+   "bestReachable": false,
+   "avoidReachable": false,
+   "label": "contradictory-preference",
+   "labelWhy": "judge 4 (canonical fact): `checkVictory` calls the ROOT victory for white, 40 of 40 legal turn ends are `phase: 'victory'`, and the row's `best` key is NOT an end position of any legal turn"
+  },
+  {
+   "id": "relocate-metal_1-e",
+   "rationale": "metal_1 idle on a dry cell; east neighbour (reserve 16) beats west neighbour (reserve 4) by PST_MINE[metal_1][16] - PST_MINE[metal_1][4].",
+   "rootVictory": "victory",
+   "rootWinner": "white",
+   "whiteUnits": 1,
+   "blackUnits": 0,
+   "ends": 37,
+   "endsComplete": true,
+   "endsInVictory": 37,
+   "bestReachable": false,
+   "avoidReachable": false,
+   "label": "contradictory-preference",
+   "labelWhy": "judge 4 (canonical fact): `checkVictory` calls the ROOT victory for white, 37 of 37 legal turn ends are `phase: 'victory'`, and the row's `best` key is NOT an end position of any legal turn"
+  },
+  {
+   "id": "relocate-metal_1-s",
+   "rationale": "metal_1 idle on a dry cell; south neighbour (reserve 16) beats north neighbour (reserve 4) by the same PST_MINE gap, north/south geometry.",
+   "rootVictory": "victory",
+   "rootWinner": "white",
+   "whiteUnits": 1,
+   "blackUnits": 0,
+   "ends": 36,
+   "endsComplete": true,
+   "endsInVictory": 36,
+   "bestReachable": false,
+   "avoidReachable": false,
+   "label": "contradictory-preference",
+   "labelWhy": "judge 4 (canonical fact): `checkVictory` calls the ROOT victory for white, 36 of 36 legal turn ends are `phase: 'victory'`, and the row's `best` key is NOT an end position of any legal turn"
+  },
+  {
+   "id": "relocate-metal_2-e",
+   "rationale": "metal_2 idle on a dry cell; east neighbour (reserve 16) beats west neighbour (reserve 4) by PST_MINE[metal_2][16] - PST_MINE[metal_2][4].",
+   "rootVictory": "victory",
+   "rootWinner": "white",
+   "whiteUnits": 1,
+   "blackUnits": 0,
+   "ends": 32,
+   "endsComplete": true,
+   "endsInVictory": 32,
+   "bestReachable": false,
+   "avoidReachable": false,
+   "label": "contradictory-preference",
+   "labelWhy": "judge 4 (canonical fact): `checkVictory` calls the ROOT victory for white, 32 of 32 legal turn ends are `phase: 'victory'`, and the row's `best` key is NOT an end position of any legal turn"
+  },
+  {
+   "id": "relocate-metal_2-s",
+   "rationale": "metal_2 idle on a dry cell; south neighbour (reserve 16) beats north neighbour (reserve 4) by the same PST_MINE gap, north/south geometry.",
+   "rootVictory": "victory",
+   "rootWinner": "white",
+   "whiteUnits": 1,
+   "blackUnits": 0,
+   "ends": 28,
+   "endsComplete": true,
+   "endsInVictory": 28,
+   "bestReachable": false,
+   "avoidReachable": false,
+   "label": "contradictory-preference",
+   "labelWhy": "judge 4 (canonical fact): `checkVictory` calls the ROOT victory for white, 28 of 28 legal turn ends are `phase: 'victory'`, and the row's `best` key is NOT an end position of any legal turn"
+  },
+  {
+   "id": "muju-onto-4-0",
+   "rationale": "Muju (plant_1) idle on a dry cell; a reserve-8 neighbour beats onto-4 by PST_MINE[plant_1][8] - PST_MINE[plant_1][4].",
+   "rootVictory": "victory",
+   "rootWinner": "white",
+   "whiteUnits": 1,
+   "blackUnits": 0,
+   "ends": 24,
+   "endsComplete": true,
+   "endsInVictory": 24,
+   "bestReachable": false,
+   "avoidReachable": false,
+   "label": "contradictory-preference",
+   "labelWhy": "judge 4 (canonical fact): `checkVictory` calls the ROOT victory for white, 24 of 24 legal turn ends are `phase: 'victory'`, and the row's `best` key is NOT an end position of any legal turn"
+  },
+  {
+   "id": "muju-onto-4-1",
+   "rationale": "Muju (plant_1) idle on a dry cell; a reserve-12 neighbour beats onto-4 by PST_MINE[plant_1][12] - PST_MINE[plant_1][4].",
+   "rootVictory": "victory",
+   "rootWinner": "white",
+   "whiteUnits": 1,
+   "blackUnits": 0,
+   "ends": 28,
+   "endsComplete": true,
+   "endsInVictory": 28,
+   "bestReachable": false,
+   "avoidReachable": false,
+   "label": "contradictory-preference",
+   "labelWhy": "judge 4 (canonical fact): `checkVictory` calls the ROOT victory for white, 28 of 28 legal turn ends are `phase: 'victory'`, and the row's `best` key is NOT an end position of any legal turn"
+  },
+  {
+   "id": "muju-onto-4-2",
+   "rationale": "Muju (plant_1) idle on a dry cell; a reserve-16 neighbour beats onto-4 by PST_MINE[plant_1][16] - PST_MINE[plant_1][4].",
+   "rootVictory": "victory",
+   "rootWinner": "white",
+   "whiteUnits": 1,
+   "blackUnits": 0,
+   "ends": 31,
+   "endsComplete": true,
+   "endsInVictory": 31,
+   "bestReachable": false,
+   "avoidReachable": false,
+   "label": "contradictory-preference",
+   "labelWhy": "judge 4 (canonical fact): `checkVictory` calls the ROOT victory for white, 31 of 31 legal turn ends are `phase: 'victory'`, and the row's `best` key is NOT an end position of any legal turn"
+  },
+  {
+   "id": "muju-onto-4-3",
+   "rationale": "Muju (plant_1) idle on a dry cell; a reserve-10 neighbour beats onto-4 by PST_MINE[plant_1][10] - PST_MINE[plant_1][4].",
+   "rootVictory": "victory",
+   "rootWinner": "white",
+   "whiteUnits": 1,
+   "blackUnits": 0,
+   "ends": 32,
+   "endsComplete": true,
+   "endsInVictory": 32,
+   "bestReachable": false,
+   "avoidReachable": false,
+   "label": "contradictory-preference",
+   "labelWhy": "judge 4 (canonical fact): `checkVictory` calls the ROOT victory for white, 32 of 32 legal turn ends are `phase: 'victory'`, and the row's `best` key is NOT an end position of any legal turn"
+  },
+  {
+   "id": "muju-onto-4-4",
+   "rationale": "Muju (plant_1) idle on a dry cell; a reserve-14 neighbour beats onto-4 by PST_MINE[plant_1][14] - PST_MINE[plant_1][4].",
+   "rootVictory": "victory",
+   "rootWinner": "white",
+   "whiteUnits": 1,
+   "blackUnits": 0,
+   "ends": 32,
+   "endsComplete": true,
+   "endsInVictory": 32,
+   "bestReachable": false,
+   "avoidReachable": false,
+   "label": "contradictory-preference",
+   "labelWhy": "judge 4 (canonical fact): `checkVictory` calls the ROOT victory for white, 32 of 32 legal turn ends are `phase: 'victory'`, and the row's `best` key is NOT an end position of any legal turn"
+  },
+  {
+   "id": "muju-onto-4-5",
+   "rationale": "Muju (plant_1) idle on a dry cell; a reserve-8 neighbour beats onto-4 by PST_MINE[plant_1][8] - PST_MINE[plant_1][4].",
+   "rootVictory": "victory",
+   "rootWinner": "white",
+   "whiteUnits": 1,
+   "blackUnits": 0,
+   "ends": 31,
+   "endsComplete": true,
+   "endsInVictory": 31,
+   "bestReachable": false,
+   "avoidReachable": false,
+   "label": "contradictory-preference",
+   "labelWhy": "judge 4 (canonical fact): `checkVictory` calls the ROOT victory for white, 31 of 31 legal turn ends are `phase: 'victory'`, and the row's `best` key is NOT an end position of any legal turn"
+  },
+  {
+   "id": "muju-onto-4-6",
+   "rationale": "Muju (plant_1) idle on a dry cell; a reserve-12 neighbour beats onto-4 by PST_MINE[plant_1][12] - PST_MINE[plant_1][4].",
+   "rootVictory": "victory",
+   "rootWinner": "white",
+   "whiteUnits": 1,
+   "blackUnits": 0,
+   "ends": 28,
+   "endsComplete": true,
+   "endsInVictory": 28,
+   "bestReachable": false,
+   "avoidReachable": false,
+   "label": "contradictory-preference",
+   "labelWhy": "judge 4 (canonical fact): `checkVictory` calls the ROOT victory for white, 28 of 28 legal turn ends are `phase: 'victory'`, and the row's `best` key is NOT an end position of any legal turn"
+  },
+  {
+   "id": "muju-onto-4-7",
+   "rationale": "Muju (plant_1) idle on a dry cell; a reserve-16 neighbour beats onto-4 by PST_MINE[plant_1][16] - PST_MINE[plant_1][4].",
+   "rootVictory": "victory",
+   "rootWinner": "white",
+   "whiteUnits": 1,
+   "blackUnits": 0,
+   "ends": 24,
+   "endsComplete": true,
+   "endsInVictory": 24,
+   "bestReachable": false,
+   "avoidReachable": false,
+   "label": "contradictory-preference",
+   "labelWhy": "judge 4 (canonical fact): `checkVictory` calls the ROOT victory for white, 24 of 24 legal turn ends are `phase: 'victory'`, and the row's `best` key is NOT an end position of any legal turn"
+  },
+  {
+   "id": "promote-plant_1-16-0",
+   "rationale": "plant_1 standing on reserve 16 with exactly promotionCost+3 banked: promoting raises mine[def] for the rest of ECON_HORIZON, which PST_MINE's increase at this reserve outweighs keeping the promotion cost banked.",
+   "rootVictory": "victory",
+   "rootWinner": "white",
+   "whiteUnits": 1,
+   "blackUnits": 0,
+   "ends": 198374,
+   "endsComplete": false,
+   "endsInVictory": 198374,
+   "bestReachable": false,
+   "avoidReachable": false,
+   "label": "contradictory-preference",
+   "labelWhy": "judge 4 (canonical fact): `checkVictory` calls the ROOT victory for white, 198374 of 198374 legal turn ends are `phase: 'victory'`, and the row's `best` key is NOT an end position of any legal turn"
+  },
+  {
+   "id": "promote-plant_1-8-1",
+   "rationale": "plant_1 standing on reserve 8 with exactly promotionCost+3 banked: promoting raises mine[def] for the rest of ECON_HORIZON, which PST_MINE's increase at this reserve outweighs keeping the promotion cost banked.",
+   "rootVictory": "victory",
+   "rootWinner": "white",
+   "whiteUnits": 1,
+   "blackUnits": 0,
+   "ends": 189454,
+   "endsComplete": false,
+   "endsInVictory": 189454,
+   "bestReachable": false,
+   "avoidReachable": false,
+   "label": "contradictory-preference",
+   "labelWhy": "judge 4 (canonical fact): `checkVictory` calls the ROOT victory for white, 189454 of 189454 legal turn ends are `phase: 'victory'`, and the row's `best` key is NOT an end position of any legal turn"
+  },
+  {
+   "id": "promote-plant_2-16-2",
+   "rationale": "plant_2 standing on reserve 16 with exactly promotionCost+3 banked: promoting raises mine[def] for the rest of ECON_HORIZON, which PST_MINE's increase at this reserve outweighs keeping the promotion cost banked.",
+   "rootVictory": "victory",
+   "rootWinner": "white",
+   "whiteUnits": 1,
+   "blackUnits": 0,
+   "ends": 294580,
+   "endsComplete": false,
+   "endsInVictory": 294580,
+   "bestReachable": false,
+   "avoidReachable": false,
+   "label": "contradictory-preference",
+   "labelWhy": "judge 4 (canonical fact): `checkVictory` calls the ROOT victory for white, 294580 of 294580 legal turn ends are `phase: 'victory'`, and the row's `best` key is NOT an end position of any legal turn"
+  },
+  {
+   "id": "promote-metal_1-16-3",
+   "rationale": "metal_1 standing on reserve 16 with exactly promotionCost+3 banked: promoting raises mine[def] for the rest of ECON_HORIZON, which PST_MINE's increase at this reserve outweighs keeping the promotion cost banked.",
+   "rootVictory": "victory",
+   "rootWinner": "white",
+   "whiteUnits": 1,
+   "blackUnits": 0,
+   "ends": 189317,
+   "endsComplete": false,
+   "endsInVictory": 189317,
+   "bestReachable": false,
+   "avoidReachable": false,
+   "label": "contradictory-preference",
+   "labelWhy": "judge 4 (canonical fact): `checkVictory` calls the ROOT victory for white, 189317 of 189317 legal turn ends are `phase: 'victory'`, and the row's `best` key is NOT an end position of any legal turn"
+  },
+  {
+   "id": "promote-metal_2-16-4",
+   "rationale": "metal_2 standing on reserve 16 with exactly promotionCost+3 banked: promoting raises mine[def] for the rest of ECON_HORIZON, which PST_MINE's increase at this reserve outweighs keeping the promotion cost banked.",
+   "rootVictory": "victory",
+   "rootWinner": "white",
+   "whiteUnits": 1,
+   "blackUnits": 0,
+   "ends": 298756,
+   "endsComplete": false,
+   "endsInVictory": 298756,
+   "bestReachable": false,
+   "avoidReachable": false,
+   "label": "contradictory-preference",
+   "labelWhy": "judge 4 (canonical fact): `checkVictory` calls the ROOT victory for white, 298756 of 298756 legal turn ends are `phase: 'victory'`, and the row's `best` key is NOT an end position of any legal turn"
+  },
+  {
+   "id": "promote-shadow_1-16-5",
+   "rationale": "shadow_1 standing on reserve 16 with exactly promotionCost+3 banked: promoting raises mine[def] for the rest of ECON_HORIZON, which PST_MINE's increase at this reserve outweighs keeping the promotion cost banked.",
+   "rootVictory": "victory",
+   "rootWinner": "white",
+   "whiteUnits": 1,
+   "blackUnits": 0,
+   "ends": 179942,
+   "endsComplete": false,
+   "endsInVictory": 179942,
+   "bestReachable": false,
+   "avoidReachable": false,
+   "label": "contradictory-preference",
+   "labelWhy": "judge 4 (canonical fact): `checkVictory` calls the ROOT victory for white, 179942 of 179942 legal turn ends are `phase: 'victory'`, and the row's `best` key is NOT an end position of any legal turn"
+  },
+  {
+   "id": "promote-shadow_2-16-6",
+   "rationale": "shadow_2 standing on reserve 16 with exactly promotionCost+3 banked: promoting raises mine[def] for the rest of ECON_HORIZON, which PST_MINE's increase at this reserve outweighs keeping the promotion cost banked.",
+   "rootVictory": "victory",
+   "rootWinner": "white",
+   "whiteUnits": 1,
+   "blackUnits": 0,
+   "ends": 269714,
+   "endsComplete": false,
+   "endsInVictory": 269714,
+   "bestReachable": false,
+   "avoidReachable": false,
+   "label": "contradictory-preference",
+   "labelWhy": "judge 4 (canonical fact): `checkVictory` calls the ROOT victory for white, 269714 of 269714 legal turn ends are `phase: 'victory'`, and the row's `best` key is NOT an end position of any legal turn"
+  },
+  {
+   "id": "promote-water_2-16-7",
+   "rationale": "water_2 standing on reserve 16 with exactly promotionCost+3 banked: promoting raises mine[def] for the rest of ECON_HORIZON, which PST_MINE's increase at this reserve outweighs keeping the promotion cost banked.",
+   "rootVictory": "victory",
+   "rootWinner": "white",
+   "whiteUnits": 1,
+   "blackUnits": 0,
+   "ends": 294990,
+   "endsComplete": false,
+   "endsInVictory": 294990,
+   "bestReachable": false,
+   "avoidReachable": false,
+   "label": "contradictory-preference",
+   "labelWhy": "judge 4 (canonical fact): `checkVictory` calls the ROOT victory for white, 294990 of 294990 legal turn ends are `phase: 'victory'`, and the row's `best` key is NOT an end position of any legal turn"
+  }
+ ],
+ "counts": {
+  "exam:contradictory-preference": 4,
+  "exam:matched": 4,
+  "exam:search-not-eval": 3,
+  "exam:eval-blind": 1,
+  "exam:weight-scale": 7,
+  "exam:unresolved": 3,
+  "invariants:matched": 12,
+  "invariants:engine-bug": 2,
+  "invariants:weight-scale": 4,
+  "invariants:contradictory-preference": 2,
+  "economy:contradictory-preference": 30
+ }
+}

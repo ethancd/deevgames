@@ -513,6 +513,12 @@ button:focus-visible, a:focus-visible { outline: 3px solid #67e8f9; outline-offs
   .summoning-status > p { display: none; }
   .play-footer > .income-status { display: none; }
   .game-shell .action-bar button { min-height: 40px; }
+  /* Wider fallback fonts (DejaVu Sans on Linux CI, some Android builds) must not
+     wrap the action row onto a second line: that height comes out of the board. */
+  .action-bar > * { min-width: 0; }
+  .action-budget { flex: 1 4 auto; }
+  .action-budget strong { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .game-shell .action-bar button { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .game-shell .reference-bar button { min-height: 26px; }
   .instant-replay-launcher { margin-top: 2px; height: 30px; }
   .game-shell button.instant-replay-button { height: 30px; min-height: 30px; }
@@ -527,6 +533,11 @@ button:focus-visible, a:focus-visible { outline: 3px solid #67e8f9; outline-offs
   .game-shell { height: 100dvh; min-height: 0; grid-template-rows: minmax(0,1fr) 116px auto; gap: 2px 10px; }
   .game-overview { display: flex; flex-direction: column; gap: 2px; grid-column: 2; grid-row: 1; min-height: 0; }
   .game-header, .turn-strip, .score-strip, .progress-clock { flex: none; }
+  /* The overview column is fixed-height; a wrapped title or back link pushes
+     the clock under the decision panel. Keep both on one line. */
+  .game-header a { white-space: nowrap; }
+  .game-header h1 { min-width: 0; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ruleset-badge { display: inline-block; margin-left: 3px; }
   .score-strip > div { padding-block: 2px; line-height: 1.2; }
   .score-strip small { font-size: 9px; margin-top: 1px; }
   .score-strip small:first-of-type { display: none; }

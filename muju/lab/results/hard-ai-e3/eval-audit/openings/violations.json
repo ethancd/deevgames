@@ -1,0 +1,504 @@
+{
+  "corpus": "openings",
+  "sideSwap": {
+    "checked": 797,
+    "positions": 0,
+    "byFeature": []
+  },
+  "rot180": {
+    "checked": 797,
+    "skipped": 0,
+    "positions": 194,
+    "byFeature": [
+      {
+        "index": 27,
+        "name": "RelocationDebt",
+        "group": "economy",
+        "positions": 168,
+        "examples": [
+          {
+            "id": "opening-013",
+            "side": 1,
+            "a": 0,
+            "b": -1
+          },
+          {
+            "id": "opening-014",
+            "side": 1,
+            "a": 0,
+            "b": -1
+          },
+          {
+            "id": "opening-017",
+            "side": 1,
+            "a": -1,
+            "b": 0
+          },
+          {
+            "id": "opening-021",
+            "side": 1,
+            "a": 0,
+            "b": -1
+          },
+          {
+            "id": "opening-023",
+            "side": 1,
+            "a": 0,
+            "b": -1
+          },
+          {
+            "id": "opening-026",
+            "side": 1,
+            "a": -1,
+            "b": 0
+          },
+          {
+            "id": "opening-027",
+            "side": 1,
+            "a": 0,
+            "b": -1
+          },
+          {
+            "id": "opening-028",
+            "side": 1,
+            "a": -2,
+            "b": -1
+          },
+          {
+            "id": "opening-029",
+            "side": 1,
+            "a": 0,
+            "b": -1
+          },
+          {
+            "id": "opening-031",
+            "side": 1,
+            "a": -1,
+            "b": 0
+          },
+          {
+            "id": "opening-034",
+            "side": 1,
+            "a": -2,
+            "b": -1
+          },
+          {
+            "id": "opening-044",
+            "side": 1,
+            "a": 0,
+            "b": -1
+          },
+          {
+            "id": "opening-070",
+            "side": 1,
+            "a": 0,
+            "b": -1
+          },
+          {
+            "id": "opening-075",
+            "side": 1,
+            "a": 0,
+            "b": -1
+          },
+          {
+            "id": "opening-076",
+            "side": 1,
+            "a": 0,
+            "b": -1
+          },
+          {
+            "id": "opening-078",
+            "side": 1,
+            "a": 0,
+            "b": -1
+          },
+          {
+            "id": "opening-080",
+            "side": 1,
+            "a": -1,
+            "b": 0
+          },
+          {
+            "id": "opening-084",
+            "side": 1,
+            "a": 0,
+            "b": -1
+          },
+          {
+            "id": "opening-086",
+            "side": 1,
+            "a": -1,
+            "b": 0
+          },
+          {
+            "id": "opening-090",
+            "side": 1,
+            "a": 0,
+            "b": -1
+          },
+          {
+            "id": "opening-091",
+            "side": 1,
+            "a": -1,
+            "b": 0
+          },
+          {
+            "id": "opening-114",
+            "side": 1,
+            "a": 0,
+            "b": -1
+          },
+          {
+            "id": "opening-116",
+            "side": 1,
+            "a": -1,
+            "b": 0
+          },
+          {
+            "id": "opening-120",
+            "side": 1,
+            "a": 0,
+            "b": -1
+          },
+          {
+            "id": "opening-123",
+            "side": 1,
+            "a": -1,
+            "b": -3
+          }
+        ]
+      },
+      {
+        "index": 23,
+        "name": "EconDelta",
+        "group": "economy",
+        "positions": 163,
+        "examples": [
+          {
+            "id": "opening-005",
+            "side": 1,
+            "a": -6,
+            "b": -7
+          },
+          {
+            "id": "opening-013",
+            "side": 1,
+            "a": -3,
+            "b": -1
+          },
+          {
+            "id": "opening-014",
+            "side": 1,
+            "a": -4,
+            "b": -3
+          },
+          {
+            "id": "opening-017",
+            "side": 1,
+            "a": -1,
+            "b": -3
+          },
+          {
+            "id": "opening-021",
+            "side": 1,
+            "a": -3,
+            "b": -1
+          },
+          {
+            "id": "opening-023",
+            "side": 1,
+            "a": -4,
+            "b": -3
+          },
+          {
+            "id": "opening-026",
+            "side": 1,
+            "a": -2,
+            "b": -4
+          },
+          {
+            "id": "opening-027",
+            "side": 1,
+            "a": -7,
+            "b": -6
+          },
+          {
+            "id": "opening-028",
+            "side": 1,
+            "a": -1,
+            "b": -2
+          },
+          {
+            "id": "opening-029",
+            "side": 1,
+            "a": -4,
+            "b": -2
+          },
+          {
+            "id": "opening-031",
+            "side": 1,
+            "a": -5,
+            "b": -7
+          },
+          {
+            "id": "opening-044",
+            "side": 1,
+            "a": -7,
+            "b": -6
+          },
+          {
+            "id": "opening-070",
+            "side": 1,
+            "a": -4,
+            "b": -3
+          },
+          {
+            "id": "opening-074",
+            "side": 1,
+            "a": -2,
+            "b": -3
+          },
+          {
+            "id": "opening-075",
+            "side": 1,
+            "a": -7,
+            "b": -6
+          },
+          {
+            "id": "opening-076",
+            "side": 1,
+            "a": -7,
+            "b": -6
+          },
+          {
+            "id": "opening-078",
+            "side": 1,
+            "a": -4,
+            "b": -2
+          },
+          {
+            "id": "opening-080",
+            "side": 1,
+            "a": -5,
+            "b": -7
+          },
+          {
+            "id": "opening-084",
+            "side": 1,
+            "a": -7,
+            "b": -5
+          },
+          {
+            "id": "opening-086",
+            "side": 1,
+            "a": -5,
+            "b": -7
+          },
+          {
+            "id": "opening-090",
+            "side": 1,
+            "a": -7,
+            "b": -5
+          },
+          {
+            "id": "opening-091",
+            "side": 1,
+            "a": -1,
+            "b": -3
+          },
+          {
+            "id": "opening-114",
+            "side": 1,
+            "a": -4,
+            "b": -3
+          },
+          {
+            "id": "opening-116",
+            "side": 1,
+            "a": -2,
+            "b": -4
+          },
+          {
+            "id": "opening-120",
+            "side": 1,
+            "a": -4,
+            "b": -2
+          }
+        ]
+      },
+      {
+        "index": 24,
+        "name": "DepletionWaste",
+        "group": "economy",
+        "positions": 163,
+        "examples": [
+          {
+            "id": "opening-005",
+            "side": 1,
+            "a": -3,
+            "b": -2
+          },
+          {
+            "id": "opening-013",
+            "side": 1,
+            "a": -1,
+            "b": -5
+          },
+          {
+            "id": "opening-014",
+            "side": 1,
+            "a": -2,
+            "b": -4
+          },
+          {
+            "id": "opening-017",
+            "side": 1,
+            "a": -5,
+            "b": -1
+          },
+          {
+            "id": "opening-021",
+            "side": 1,
+            "a": -1,
+            "b": -5
+          },
+          {
+            "id": "opening-023",
+            "side": 1,
+            "a": -2,
+            "b": -4
+          },
+          {
+            "id": "opening-026",
+            "side": 1,
+            "a": -6,
+            "b": -2
+          },
+          {
+            "id": "opening-027",
+            "side": 1,
+            "a": -2,
+            "b": -4
+          },
+          {
+            "id": "opening-028",
+            "side": 1,
+            "a": -8,
+            "b": -6
+          },
+          {
+            "id": "opening-029",
+            "side": 1,
+            "a": -2,
+            "b": -6
+          },
+          {
+            "id": "opening-031",
+            "side": 1,
+            "a": -6,
+            "b": -2
+          },
+          {
+            "id": "opening-044",
+            "side": 1,
+            "a": -2,
+            "b": -4
+          },
+          {
+            "id": "opening-070",
+            "side": 1,
+            "a": -2,
+            "b": -4
+          },
+          {
+            "id": "opening-074",
+            "side": 1,
+            "a": -6,
+            "b": -4
+          },
+          {
+            "id": "opening-075",
+            "side": 1,
+            "a": -2,
+            "b": -4
+          },
+          {
+            "id": "opening-076",
+            "side": 1,
+            "a": -2,
+            "b": -4
+          },
+          {
+            "id": "opening-078",
+            "side": 1,
+            "a": -2,
+            "b": -6
+          },
+          {
+            "id": "opening-080",
+            "side": 1,
+            "a": -6,
+            "b": -2
+          },
+          {
+            "id": "opening-084",
+            "side": 1,
+            "a": -2,
+            "b": -6
+          },
+          {
+            "id": "opening-086",
+            "side": 1,
+            "a": -6,
+            "b": -2
+          },
+          {
+            "id": "opening-090",
+            "side": 1,
+            "a": -2,
+            "b": -6
+          },
+          {
+            "id": "opening-091",
+            "side": 1,
+            "a": -5,
+            "b": -1
+          },
+          {
+            "id": "opening-114",
+            "side": 1,
+            "a": -2,
+            "b": -4
+          },
+          {
+            "id": "opening-116",
+            "side": 1,
+            "a": -6,
+            "b": -2
+          },
+          {
+            "id": "opening-120",
+            "side": 1,
+            "a": -2,
+            "b": -6
+          }
+        ]
+      }
+    ]
+  },
+  "scoreIdentity": {
+    "checked": 797,
+    "mismatches": 0,
+    "examples": []
+  },
+  "materialResidual": {
+    "checked": 797,
+    "nonzero": 0,
+    "examples": []
+  },
+  "stageIdentity": {
+    "checked": 797,
+    "mismatches": 0,
+    "examples": []
+  }
+}

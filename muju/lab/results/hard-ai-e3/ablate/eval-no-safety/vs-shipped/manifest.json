@@ -1,0 +1,1143 @@
+{
+  "schema": "muju-ladder-manifest-v1",
+  "status": "complete",
+  "a": "hard@ablate:eval-no-safety",
+  "b": "aiv2-hard",
+  "aConfigHash": "hard:ablate:eval-no-safety:wall:3000#66edf9cdf58f6b037186b25d05a939ed521e8a76e07051937dcbc611eb343aaf",
+  "bConfigHash": "aiv2:hard:full:wall:3000#dc7e4607ea81aad2967ce361b45e3bf3e8ff2a93e1e74db305b96b6c42a5918c",
+  "aResolvedConfig": {
+    "engine": "hard",
+    "config": {
+      "maxDepth": 12,
+      "aspirationCc": 200,
+      "lmrRank1": 6,
+      "lmrRank2": 12,
+      "futilityMarginCc": 200,
+      "useLmr": false,
+      "useAspiration": false,
+      "useFutility": false,
+      "useExtensions": false,
+      "quiesce": {
+        "maxPly": 4,
+        "deltaMarginCc": 300,
+        "maxCandidates": 8
+      },
+      "gen": {
+        "K": 24,
+        "maxPlacePlans": 16,
+        "action": {
+          "widths": {
+            "0": 6,
+            "1": 4,
+            "2": 3,
+            "3": 2
+          },
+          "keep": 4,
+          "ttBits": 18
+        },
+        "purchase": {
+          "maxBodies": 4,
+          "maxMultisets": 35,
+          "maxPlans": 12,
+          "squares": 8,
+          "keepPerMultiset": 3,
+          "weights": {
+            "mineCc": 1,
+            "safeCc": 100,
+            "blockCc": 200,
+            "strikeCc": 300,
+            "anchorCc": 20,
+            "zeroSpawnCc": 400,
+            "liquidityCc": 50,
+            "homeRaceCc": 5000
+          }
+        },
+        "maxPromotions": 8,
+        "reference": false
+      },
+      "genInterior": {
+        "K": 16,
+        "maxPlacePlans": 8,
+        "action": {
+          "widths": {
+            "0": 6,
+            "1": 4,
+            "2": 3,
+            "3": 2
+          },
+          "keep": 4,
+          "ttBits": 18
+        },
+        "purchase": {
+          "maxBodies": 4,
+          "maxMultisets": 35,
+          "maxPlans": 12,
+          "squares": 8,
+          "keepPerMultiset": 3,
+          "weights": {
+            "mineCc": 1,
+            "safeCc": 100,
+            "blockCc": 200,
+            "strikeCc": 300,
+            "anchorCc": 20,
+            "zeroSpawnCc": 400,
+            "liquidityCc": 50,
+            "homeRaceCc": 5000
+          }
+        },
+        "maxPromotions": 8,
+        "reference": false
+      },
+      "ttBits": 19,
+      "dfpn": {
+        "maxTurns": 3,
+        "nodeBudget": 4000,
+        "epsilonQ2": 5,
+        "ttBits": 17
+      },
+      "useDfpn": false,
+      "time": {
+        "minMs": 2000,
+        "maxMs": 6000,
+        "baseMs": 3000,
+        "abortFactor": 3
+      },
+      "profile": {
+        "unitsPerMs": 200,
+        "samples": 0
+      },
+      "ttBitsMacro": 19,
+      "ttBitsTurn": 18,
+      "K": 24,
+      "kInterior": 16,
+      "weights": {
+        "w": {
+          "0": 100,
+          "1": -422,
+          "2": 90,
+          "3": 25,
+          "4": -4000,
+          "5": 60,
+          "6": 20,
+          "7": 30,
+          "8": 8,
+          "9": -800,
+          "10": 25,
+          "11": 90,
+          "12": -60,
+          "13": -400,
+          "14": -180,
+          "15": 220,
+          "16": 90,
+          "17": 0,
+          "18": -8,
+          "19": 40,
+          "20": 0,
+          "21": 0,
+          "22": 150,
+          "23": 80,
+          "24": -30,
+          "25": -600,
+          "26": -150,
+          "27": -60,
+          "28": 0,
+          "29": 0,
+          "30": 0,
+          "31": 0,
+          "32": 0,
+          "33": 0,
+          "34": 0,
+          "35": 0,
+          "36": 0,
+          "37": 300,
+          "38": -800,
+          "39": -300,
+          "40": 0,
+          "41": 0,
+          "42": -400,
+          "43": 0,
+          "44": -600,
+          "45": 0,
+          "46": 0,
+          "47": -400,
+          "48": -250,
+          "49": 0,
+          "50": -200,
+          "51": -200,
+          "52": 0,
+          "53": -200,
+          "54": 0,
+          "55": 0,
+          "56": 0,
+          "57": 0
+        },
+        "material": {
+          "0": 300,
+          "1": 700,
+          "2": 1500,
+          "3": 300,
+          "4": 700,
+          "5": 1500,
+          "6": 400,
+          "7": 800,
+          "8": 1600,
+          "9": 400,
+          "10": 800,
+          "11": 1600,
+          "12": 500,
+          "13": 900,
+          "14": 1700,
+          "15": 500,
+          "16": 900,
+          "17": 1700
+        },
+        "version": 1,
+        "label": "default-v1-no-safety"
+      },
+      "book": {
+        "size": 0,
+        "handicap": 0,
+        "mapHash": 0,
+        "weightsVersion": 0
+      }
+    },
+    "budget": {
+      "mode": "wall",
+      "fixedWork": 0,
+      "turnMs": 3000,
+      "allocation": "whole-turn",
+      "shippedTurnBudgetMs": null,
+      "overridesPresetTimeLimit": false
+    },
+    "lifecycle": {
+      "engine": "one-per-game-seat",
+      "seed": "once-at-construction",
+      "setDifficultyPerDecision": false,
+      "searchesPerTurn": "one"
+    },
+    "resign": false
+  },
+  "bResolvedConfig": {
+    "engine": "aiv2",
+    "difficulty": "hard",
+    "fast": false,
+    "search": {
+      "mctsIterations": 1200,
+      "mctsTimeLimit": 3000,
+      "beamWidth": 50,
+      "outputPlans": 20,
+      "progressiveWideningAlpha": 0.5,
+      "tacticalDepth": 2,
+      "tacticalNodes": 600000,
+      "fixedWork": 0
+    },
+    "budget": {
+      "mode": "wall",
+      "fixedWork": 0,
+      "turnMs": 3000,
+      "allocation": "split-across-remaining-decisions",
+      "shippedTurnBudgetMs": 8000,
+      "overridesPresetTimeLimit": true
+    },
+    "lifecycle": {
+      "engine": "one-per-game-seat",
+      "seed": "once-at-construction",
+      "setDifficultyPerDecision": true,
+      "searchesPerTurn": "one-per-action"
+    },
+    "resign": false,
+    "tacticalSolver": "wasm-tactics-or-reference-fallback"
+  },
+  "work": "wall:3000",
+  "seed": 20260933,
+  "pairs": 100,
+  "shards": 4,
+  "handicaps": [
+    0,
+    3
+  ],
+  "legality": "strict",
+  "sprt": null,
+  "openings": {
+    "path": "lab/hard-ai/ladder/openings/e1-baseline.jsonl",
+    "sha256": "96f2944a18d3c3c487d4d97e73d9a57cd8f3be547276fc93c4adb3a3945e139f",
+    "ids": [
+      "g3-s25",
+      "g4-s30",
+      "g5-s31",
+      "g2-s40",
+      "g4-s42",
+      "g3-s45",
+      "e1-g3-s105",
+      "e1-g2-s40",
+      "e1-g4-s250",
+      "e1-g4-s750",
+      "e1-g4-s730",
+      "e1-g3-s745",
+      "e1-g4-s510",
+      "e1-g2-s155",
+      "e1-g3-s205",
+      "e1-g4-s550",
+      "e1-g5-s55",
+      "e1-g5-s1035",
+      "e1-g4-s430",
+      "e1-g3-s5",
+      "e1-g5-s415",
+      "e1-g3-s625",
+      "e1-g4-s110",
+      "e1-g5-s975",
+      "e1-g4-s470",
+      "e1-g3-s375",
+      "e1-g4-s830",
+      "e1-g5-s255",
+      "e1-g5-s935",
+      "e1-g4-s650",
+      "e1-g4-s1030",
+      "e1-g5-s295",
+      "e1-g2-s425",
+      "e1-g3-s165",
+      "e1-g4-s50",
+      "e1-g5-s755",
+      "e1-g4-s350",
+      "e1-g3-s465",
+      "e1-g5-s195",
+      "e1-g2-s680",
+      "e1-g4-s30",
+      "e1-g5-s655",
+      "e1-g3-s485",
+      "e1-g5-s315",
+      "e1-g4-s630",
+      "e1-g5-s955",
+      "e1-g2-s100",
+      "e1-g4-s850",
+      "e1-g5-s915",
+      "e1-g5-s555"
+    ],
+    "count": 50,
+    "skip": null,
+    "selectedIds": null,
+    "used": [
+      "g3-s25",
+      "g4-s30",
+      "g5-s31",
+      "g2-s40",
+      "g4-s42",
+      "g3-s45",
+      "e1-g3-s105",
+      "e1-g2-s40",
+      "e1-g4-s250",
+      "e1-g4-s750",
+      "e1-g4-s730",
+      "e1-g3-s745",
+      "e1-g4-s510",
+      "e1-g2-s155",
+      "e1-g3-s205",
+      "e1-g4-s550",
+      "e1-g5-s55",
+      "e1-g5-s1035",
+      "e1-g4-s430",
+      "e1-g3-s5",
+      "e1-g5-s415",
+      "e1-g3-s625",
+      "e1-g4-s110",
+      "e1-g5-s975",
+      "e1-g4-s470",
+      "e1-g3-s375",
+      "e1-g4-s830",
+      "e1-g5-s255",
+      "e1-g5-s935",
+      "e1-g4-s650",
+      "e1-g4-s1030",
+      "e1-g5-s295",
+      "e1-g2-s425",
+      "e1-g3-s165",
+      "e1-g4-s50",
+      "e1-g5-s755",
+      "e1-g4-s350",
+      "e1-g3-s465",
+      "e1-g5-s195",
+      "e1-g2-s680",
+      "e1-g4-s30",
+      "e1-g5-s655",
+      "e1-g3-s485",
+      "e1-g5-s315",
+      "e1-g4-s630",
+      "e1-g5-s955",
+      "e1-g2-s100",
+      "e1-g4-s850",
+      "e1-g5-s915",
+      "e1-g5-s555"
+    ]
+  },
+  "openingsIndependent": true,
+  "independenceWarning": null,
+  "overrunTolerance": {
+    "spec": "max(10ms,1%)",
+    "ms": 10,
+    "pct": 1,
+    "frozen": true
+  },
+  "replays": true,
+  "resume": false,
+  "schedule": [
+    {
+      "pairId": "g3-s25:0:0",
+      "pairIndex": 0,
+      "openingId": "g3-s25",
+      "handicap": 0,
+      "seed": 658955402
+    },
+    {
+      "pairId": "g3-s25:3:1",
+      "pairIndex": 1,
+      "openingId": "g3-s25",
+      "handicap": 3,
+      "seed": 2817990865
+    },
+    {
+      "pairId": "g4-s30:0:2",
+      "pairIndex": 2,
+      "openingId": "g4-s30",
+      "handicap": 0,
+      "seed": 3059934945
+    },
+    {
+      "pairId": "g4-s30:3:3",
+      "pairIndex": 3,
+      "openingId": "g4-s30",
+      "handicap": 3,
+      "seed": 4198390526
+    },
+    {
+      "pairId": "g5-s31:0:4",
+      "pairIndex": 4,
+      "openingId": "g5-s31",
+      "handicap": 0,
+      "seed": 536370680
+    },
+    {
+      "pairId": "g5-s31:3:5",
+      "pairIndex": 5,
+      "openingId": "g5-s31",
+      "handicap": 3,
+      "seed": 671505737
+    },
+    {
+      "pairId": "g2-s40:0:6",
+      "pairIndex": 6,
+      "openingId": "g2-s40",
+      "handicap": 0,
+      "seed": 168962265
+    },
+    {
+      "pairId": "g2-s40:3:7",
+      "pairIndex": 7,
+      "openingId": "g2-s40",
+      "handicap": 3,
+      "seed": 2785599370
+    },
+    {
+      "pairId": "g4-s42:0:8",
+      "pairIndex": 8,
+      "openingId": "g4-s42",
+      "handicap": 0,
+      "seed": 3068806098
+    },
+    {
+      "pairId": "g4-s42:3:9",
+      "pairIndex": 9,
+      "openingId": "g4-s42",
+      "handicap": 3,
+      "seed": 600010219
+    },
+    {
+      "pairId": "g3-s45:0:10",
+      "pairIndex": 10,
+      "openingId": "g3-s45",
+      "handicap": 0,
+      "seed": 3961205066
+    },
+    {
+      "pairId": "g3-s45:3:11",
+      "pairIndex": 11,
+      "openingId": "g3-s45",
+      "handicap": 3,
+      "seed": 3390394830
+    },
+    {
+      "pairId": "e1-g3-s105:0:12",
+      "pairIndex": 12,
+      "openingId": "e1-g3-s105",
+      "handicap": 0,
+      "seed": 856789218
+    },
+    {
+      "pairId": "e1-g3-s105:3:13",
+      "pairIndex": 13,
+      "openingId": "e1-g3-s105",
+      "handicap": 3,
+      "seed": 323406803
+    },
+    {
+      "pairId": "e1-g2-s40:0:14",
+      "pairIndex": 14,
+      "openingId": "e1-g2-s40",
+      "handicap": 0,
+      "seed": 3749989899
+    },
+    {
+      "pairId": "e1-g2-s40:3:15",
+      "pairIndex": 15,
+      "openingId": "e1-g2-s40",
+      "handicap": 3,
+      "seed": 3784450838
+    },
+    {
+      "pairId": "e1-g4-s250:0:16",
+      "pairIndex": 16,
+      "openingId": "e1-g4-s250",
+      "handicap": 0,
+      "seed": 3233021724
+    },
+    {
+      "pairId": "e1-g4-s250:3:17",
+      "pairIndex": 17,
+      "openingId": "e1-g4-s250",
+      "handicap": 3,
+      "seed": 998883370
+    },
+    {
+      "pairId": "e1-g4-s750:0:18",
+      "pairIndex": 18,
+      "openingId": "e1-g4-s750",
+      "handicap": 0,
+      "seed": 1007871116
+    },
+    {
+      "pairId": "e1-g4-s750:3:19",
+      "pairIndex": 19,
+      "openingId": "e1-g4-s750",
+      "handicap": 3,
+      "seed": 2770620061
+    },
+    {
+      "pairId": "e1-g4-s730:0:20",
+      "pairIndex": 20,
+      "openingId": "e1-g4-s730",
+      "handicap": 0,
+      "seed": 834308960
+    },
+    {
+      "pairId": "e1-g4-s730:3:21",
+      "pairIndex": 21,
+      "openingId": "e1-g4-s730",
+      "handicap": 3,
+      "seed": 209182202
+    },
+    {
+      "pairId": "e1-g3-s745:0:22",
+      "pairIndex": 22,
+      "openingId": "e1-g3-s745",
+      "handicap": 0,
+      "seed": 4091726193
+    },
+    {
+      "pairId": "e1-g3-s745:3:23",
+      "pairIndex": 23,
+      "openingId": "e1-g3-s745",
+      "handicap": 3,
+      "seed": 470744346
+    },
+    {
+      "pairId": "e1-g4-s510:0:24",
+      "pairIndex": 24,
+      "openingId": "e1-g4-s510",
+      "handicap": 0,
+      "seed": 4252397552
+    },
+    {
+      "pairId": "e1-g4-s510:3:25",
+      "pairIndex": 25,
+      "openingId": "e1-g4-s510",
+      "handicap": 3,
+      "seed": 923672181
+    },
+    {
+      "pairId": "e1-g2-s155:0:26",
+      "pairIndex": 26,
+      "openingId": "e1-g2-s155",
+      "handicap": 0,
+      "seed": 1209184580
+    },
+    {
+      "pairId": "e1-g2-s155:3:27",
+      "pairIndex": 27,
+      "openingId": "e1-g2-s155",
+      "handicap": 3,
+      "seed": 948155856
+    },
+    {
+      "pairId": "e1-g3-s205:0:28",
+      "pairIndex": 28,
+      "openingId": "e1-g3-s205",
+      "handicap": 0,
+      "seed": 3318578196
+    },
+    {
+      "pairId": "e1-g3-s205:3:29",
+      "pairIndex": 29,
+      "openingId": "e1-g3-s205",
+      "handicap": 3,
+      "seed": 3712351380
+    },
+    {
+      "pairId": "e1-g4-s550:0:30",
+      "pairIndex": 30,
+      "openingId": "e1-g4-s550",
+      "handicap": 0,
+      "seed": 2219487932
+    },
+    {
+      "pairId": "e1-g4-s550:3:31",
+      "pairIndex": 31,
+      "openingId": "e1-g4-s550",
+      "handicap": 3,
+      "seed": 1606421443
+    },
+    {
+      "pairId": "e1-g5-s55:0:32",
+      "pairIndex": 32,
+      "openingId": "e1-g5-s55",
+      "handicap": 0,
+      "seed": 2555108751
+    },
+    {
+      "pairId": "e1-g5-s55:3:33",
+      "pairIndex": 33,
+      "openingId": "e1-g5-s55",
+      "handicap": 3,
+      "seed": 659404992
+    },
+    {
+      "pairId": "e1-g5-s1035:0:34",
+      "pairIndex": 34,
+      "openingId": "e1-g5-s1035",
+      "handicap": 0,
+      "seed": 3518307222
+    },
+    {
+      "pairId": "e1-g5-s1035:3:35",
+      "pairIndex": 35,
+      "openingId": "e1-g5-s1035",
+      "handicap": 3,
+      "seed": 4141822495
+    },
+    {
+      "pairId": "e1-g4-s430:0:36",
+      "pairIndex": 36,
+      "openingId": "e1-g4-s430",
+      "handicap": 0,
+      "seed": 641776265
+    },
+    {
+      "pairId": "e1-g4-s430:3:37",
+      "pairIndex": 37,
+      "openingId": "e1-g4-s430",
+      "handicap": 3,
+      "seed": 3029357539
+    },
+    {
+      "pairId": "e1-g3-s5:0:38",
+      "pairIndex": 38,
+      "openingId": "e1-g3-s5",
+      "handicap": 0,
+      "seed": 987221742
+    },
+    {
+      "pairId": "e1-g3-s5:3:39",
+      "pairIndex": 39,
+      "openingId": "e1-g3-s5",
+      "handicap": 3,
+      "seed": 2258008686
+    },
+    {
+      "pairId": "e1-g5-s415:0:40",
+      "pairIndex": 40,
+      "openingId": "e1-g5-s415",
+      "handicap": 0,
+      "seed": 4137006691
+    },
+    {
+      "pairId": "e1-g5-s415:3:41",
+      "pairIndex": 41,
+      "openingId": "e1-g5-s415",
+      "handicap": 3,
+      "seed": 1952530322
+    },
+    {
+      "pairId": "e1-g3-s625:0:42",
+      "pairIndex": 42,
+      "openingId": "e1-g3-s625",
+      "handicap": 0,
+      "seed": 2134440557
+    },
+    {
+      "pairId": "e1-g3-s625:3:43",
+      "pairIndex": 43,
+      "openingId": "e1-g3-s625",
+      "handicap": 3,
+      "seed": 3498672530
+    },
+    {
+      "pairId": "e1-g4-s110:0:44",
+      "pairIndex": 44,
+      "openingId": "e1-g4-s110",
+      "handicap": 0,
+      "seed": 116844694
+    },
+    {
+      "pairId": "e1-g4-s110:3:45",
+      "pairIndex": 45,
+      "openingId": "e1-g4-s110",
+      "handicap": 3,
+      "seed": 232580622
+    },
+    {
+      "pairId": "e1-g5-s975:0:46",
+      "pairIndex": 46,
+      "openingId": "e1-g5-s975",
+      "handicap": 0,
+      "seed": 2757352081
+    },
+    {
+      "pairId": "e1-g5-s975:3:47",
+      "pairIndex": 47,
+      "openingId": "e1-g5-s975",
+      "handicap": 3,
+      "seed": 1806960464
+    },
+    {
+      "pairId": "e1-g4-s470:0:48",
+      "pairIndex": 48,
+      "openingId": "e1-g4-s470",
+      "handicap": 0,
+      "seed": 3648213890
+    },
+    {
+      "pairId": "e1-g4-s470:3:49",
+      "pairIndex": 49,
+      "openingId": "e1-g4-s470",
+      "handicap": 3,
+      "seed": 4092983455
+    },
+    {
+      "pairId": "e1-g3-s375:0:50",
+      "pairIndex": 50,
+      "openingId": "e1-g3-s375",
+      "handicap": 0,
+      "seed": 3293463787
+    },
+    {
+      "pairId": "e1-g3-s375:3:51",
+      "pairIndex": 51,
+      "openingId": "e1-g3-s375",
+      "handicap": 3,
+      "seed": 3446799703
+    },
+    {
+      "pairId": "e1-g4-s830:0:52",
+      "pairIndex": 52,
+      "openingId": "e1-g4-s830",
+      "handicap": 0,
+      "seed": 1053913984
+    },
+    {
+      "pairId": "e1-g4-s830:3:53",
+      "pairIndex": 53,
+      "openingId": "e1-g4-s830",
+      "handicap": 3,
+      "seed": 100915330
+    },
+    {
+      "pairId": "e1-g5-s255:0:54",
+      "pairIndex": 54,
+      "openingId": "e1-g5-s255",
+      "handicap": 0,
+      "seed": 2206261708
+    },
+    {
+      "pairId": "e1-g5-s255:3:55",
+      "pairIndex": 55,
+      "openingId": "e1-g5-s255",
+      "handicap": 3,
+      "seed": 1436501493
+    },
+    {
+      "pairId": "e1-g5-s935:0:56",
+      "pairIndex": 56,
+      "openingId": "e1-g5-s935",
+      "handicap": 0,
+      "seed": 196747906
+    },
+    {
+      "pairId": "e1-g5-s935:3:57",
+      "pairIndex": 57,
+      "openingId": "e1-g5-s935",
+      "handicap": 3,
+      "seed": 1070104064
+    },
+    {
+      "pairId": "e1-g4-s650:0:58",
+      "pairIndex": 58,
+      "openingId": "e1-g4-s650",
+      "handicap": 0,
+      "seed": 3629169993
+    },
+    {
+      "pairId": "e1-g4-s650:3:59",
+      "pairIndex": 59,
+      "openingId": "e1-g4-s650",
+      "handicap": 3,
+      "seed": 1090823642
+    },
+    {
+      "pairId": "e1-g4-s1030:0:60",
+      "pairIndex": 60,
+      "openingId": "e1-g4-s1030",
+      "handicap": 0,
+      "seed": 493561794
+    },
+    {
+      "pairId": "e1-g4-s1030:3:61",
+      "pairIndex": 61,
+      "openingId": "e1-g4-s1030",
+      "handicap": 3,
+      "seed": 1250396753
+    },
+    {
+      "pairId": "e1-g5-s295:0:62",
+      "pairIndex": 62,
+      "openingId": "e1-g5-s295",
+      "handicap": 0,
+      "seed": 3781664021
+    },
+    {
+      "pairId": "e1-g5-s295:3:63",
+      "pairIndex": 63,
+      "openingId": "e1-g5-s295",
+      "handicap": 3,
+      "seed": 3358851230
+    },
+    {
+      "pairId": "e1-g2-s425:0:64",
+      "pairIndex": 64,
+      "openingId": "e1-g2-s425",
+      "handicap": 0,
+      "seed": 3696227676
+    },
+    {
+      "pairId": "e1-g2-s425:3:65",
+      "pairIndex": 65,
+      "openingId": "e1-g2-s425",
+      "handicap": 3,
+      "seed": 1420786836
+    },
+    {
+      "pairId": "e1-g3-s165:0:66",
+      "pairIndex": 66,
+      "openingId": "e1-g3-s165",
+      "handicap": 0,
+      "seed": 517493699
+    },
+    {
+      "pairId": "e1-g3-s165:3:67",
+      "pairIndex": 67,
+      "openingId": "e1-g3-s165",
+      "handicap": 3,
+      "seed": 2971156021
+    },
+    {
+      "pairId": "e1-g4-s50:0:68",
+      "pairIndex": 68,
+      "openingId": "e1-g4-s50",
+      "handicap": 0,
+      "seed": 1708926908
+    },
+    {
+      "pairId": "e1-g4-s50:3:69",
+      "pairIndex": 69,
+      "openingId": "e1-g4-s50",
+      "handicap": 3,
+      "seed": 480656839
+    },
+    {
+      "pairId": "e1-g5-s755:0:70",
+      "pairIndex": 70,
+      "openingId": "e1-g5-s755",
+      "handicap": 0,
+      "seed": 2273017079
+    },
+    {
+      "pairId": "e1-g5-s755:3:71",
+      "pairIndex": 71,
+      "openingId": "e1-g5-s755",
+      "handicap": 3,
+      "seed": 1237908990
+    },
+    {
+      "pairId": "e1-g4-s350:0:72",
+      "pairIndex": 72,
+      "openingId": "e1-g4-s350",
+      "handicap": 0,
+      "seed": 674163783
+    },
+    {
+      "pairId": "e1-g4-s350:3:73",
+      "pairIndex": 73,
+      "openingId": "e1-g4-s350",
+      "handicap": 3,
+      "seed": 4119290774
+    },
+    {
+      "pairId": "e1-g3-s465:0:74",
+      "pairIndex": 74,
+      "openingId": "e1-g3-s465",
+      "handicap": 0,
+      "seed": 4245680527
+    },
+    {
+      "pairId": "e1-g3-s465:3:75",
+      "pairIndex": 75,
+      "openingId": "e1-g3-s465",
+      "handicap": 3,
+      "seed": 3526807923
+    },
+    {
+      "pairId": "e1-g5-s195:0:76",
+      "pairIndex": 76,
+      "openingId": "e1-g5-s195",
+      "handicap": 0,
+      "seed": 2717287570
+    },
+    {
+      "pairId": "e1-g5-s195:3:77",
+      "pairIndex": 77,
+      "openingId": "e1-g5-s195",
+      "handicap": 3,
+      "seed": 1565960461
+    },
+    {
+      "pairId": "e1-g2-s680:0:78",
+      "pairIndex": 78,
+      "openingId": "e1-g2-s680",
+      "handicap": 0,
+      "seed": 4281880025
+    },
+    {
+      "pairId": "e1-g2-s680:3:79",
+      "pairIndex": 79,
+      "openingId": "e1-g2-s680",
+      "handicap": 3,
+      "seed": 3632325547
+    },
+    {
+      "pairId": "e1-g4-s30:0:80",
+      "pairIndex": 80,
+      "openingId": "e1-g4-s30",
+      "handicap": 0,
+      "seed": 1506074441
+    },
+    {
+      "pairId": "e1-g4-s30:3:81",
+      "pairIndex": 81,
+      "openingId": "e1-g4-s30",
+      "handicap": 3,
+      "seed": 655579155
+    },
+    {
+      "pairId": "e1-g5-s655:0:82",
+      "pairIndex": 82,
+      "openingId": "e1-g5-s655",
+      "handicap": 0,
+      "seed": 3695510458
+    },
+    {
+      "pairId": "e1-g5-s655:3:83",
+      "pairIndex": 83,
+      "openingId": "e1-g5-s655",
+      "handicap": 3,
+      "seed": 3366642021
+    },
+    {
+      "pairId": "e1-g3-s485:0:84",
+      "pairIndex": 84,
+      "openingId": "e1-g3-s485",
+      "handicap": 0,
+      "seed": 1181880320
+    },
+    {
+      "pairId": "e1-g3-s485:3:85",
+      "pairIndex": 85,
+      "openingId": "e1-g3-s485",
+      "handicap": 3,
+      "seed": 4159910554
+    },
+    {
+      "pairId": "e1-g5-s315:0:86",
+      "pairIndex": 86,
+      "openingId": "e1-g5-s315",
+      "handicap": 0,
+      "seed": 1683546436
+    },
+    {
+      "pairId": "e1-g5-s315:3:87",
+      "pairIndex": 87,
+      "openingId": "e1-g5-s315",
+      "handicap": 3,
+      "seed": 3288943406
+    },
+    {
+      "pairId": "e1-g4-s630:0:88",
+      "pairIndex": 88,
+      "openingId": "e1-g4-s630",
+      "handicap": 0,
+      "seed": 1721563162
+    },
+    {
+      "pairId": "e1-g4-s630:3:89",
+      "pairIndex": 89,
+      "openingId": "e1-g4-s630",
+      "handicap": 3,
+      "seed": 2882570148
+    },
+    {
+      "pairId": "e1-g5-s955:0:90",
+      "pairIndex": 90,
+      "openingId": "e1-g5-s955",
+      "handicap": 0,
+      "seed": 2979842081
+    },
+    {
+      "pairId": "e1-g5-s955:3:91",
+      "pairIndex": 91,
+      "openingId": "e1-g5-s955",
+      "handicap": 3,
+      "seed": 956984992
+    },
+    {
+      "pairId": "e1-g2-s100:0:92",
+      "pairIndex": 92,
+      "openingId": "e1-g2-s100",
+      "handicap": 0,
+      "seed": 3916316486
+    },
+    {
+      "pairId": "e1-g2-s100:3:93",
+      "pairIndex": 93,
+      "openingId": "e1-g2-s100",
+      "handicap": 3,
+      "seed": 1396693959
+    },
+    {
+      "pairId": "e1-g4-s850:0:94",
+      "pairIndex": 94,
+      "openingId": "e1-g4-s850",
+      "handicap": 0,
+      "seed": 612530078
+    },
+    {
+      "pairId": "e1-g4-s850:3:95",
+      "pairIndex": 95,
+      "openingId": "e1-g4-s850",
+      "handicap": 3,
+      "seed": 4082146351
+    },
+    {
+      "pairId": "e1-g5-s915:0:96",
+      "pairIndex": 96,
+      "openingId": "e1-g5-s915",
+      "handicap": 0,
+      "seed": 1403099390
+    },
+    {
+      "pairId": "e1-g5-s915:3:97",
+      "pairIndex": 97,
+      "openingId": "e1-g5-s915",
+      "handicap": 3,
+      "seed": 668106690
+    },
+    {
+      "pairId": "e1-g5-s555:0:98",
+      "pairIndex": 98,
+      "openingId": "e1-g5-s555",
+      "handicap": 0,
+      "seed": 2781979952
+    },
+    {
+      "pairId": "e1-g5-s555:3:99",
+      "pairIndex": 99,
+      "openingId": "e1-g5-s555",
+      "handicap": 3,
+      "seed": 3680324762
+    }
+  ],
+  "resumedPairIds": [],
+  "sprtStop": null,
+  "rules": {
+    "elementGraph": "double-thick",
+    "upkeep": "shipped",
+    "inactivityRule": "on"
+  },
+  "argv": [
+    "--a",
+    "hard@ablate:eval-no-safety",
+    "--b",
+    "aiv2-hard",
+    "--work",
+    "wall:3000",
+    "--handicaps",
+    "0,3",
+    "--pairs",
+    "100",
+    "--openings",
+    "lab/hard-ai/ladder/openings/e1-baseline.jsonl",
+    "--seed",
+    "20260933",
+    "--legality",
+    "strict",
+    "--shards",
+    "4",
+    "--out",
+    "lab/results/hard-ai-e3/ablate/eval-no-safety/vs-shipped"
+  ],
+  "git": "55ae23d8ad60ea550648aebf56d8a8b93e976a03",
+  "gitDirty": true,
+  "baseline": {
+    "ai": "c4d360a22eb21b42cf15656169d66ad2c20028dc2de68a0e0af65a38eac83aa5",
+    "game": "442226339ec2dd2c81b9efca7070ad9c61c847cf16b20789d896e5d3d0e367c2",
+    "wasm": "da9b1cdf25e4bcd6a4674fd697095e35c2606c29817e3d18043faf4799d828bf",
+    "deps": "b17ce8cae69cdede37f74f14139e1afee7f9eb6e17676c391239a8ff985cbf45"
+  },
+  "wasmSha256": "da9b1cdf25e4bcd6a4674fd697095e35c2606c29817e3d18043faf4799d828bf",
+  "node": "v24.11.1",
+  "device": "Apple M2 Max x12 (darwin/arm64)",
+  "cpuCount": 12,
+  "loadavg": [
+    9.21240234375,
+    5.69677734375,
+    5.24853515625
+  ],
+  "at": "2026-09-17T13:00:08.812Z",
+  "finishedAt": "2026-09-17T14:25:13.418Z",
+  "wallMs": 5104736,
+  "counts": {
+    "scheduledPairs": 100,
+    "completedPairs": 100,
+    "games": 200,
+    "failures": 0,
+    "resumedPairs": 0
+  },
+  "voided": false,
+  "voidReason": null,
+  "error": null
+}

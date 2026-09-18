@@ -1,0 +1,135 @@
+{
+  "newEconomyModule": "// Isolated lab economy. Values index absolute physical depth, starting at one.\nexport const ECONOMIES = { A: [1,1,1,1,1], B: [1,1,1,2,3], C: [1,2,3,4,5] } as const;\nexport type Economy = keyof typeof ECONOMIES;\nlet current: Economy = 'A';\nexport function setEconomy(value: Economy): void { if (!(value in ECONOMIES)) throw Error('Invalid economy'); current=value; }\nexport function getEconomy(): Economy { return current; }\nexport function layerValue(depth: number): number { return ECONOMIES[current][depth-1] ?? 0; }\nexport function depthValue(minedDepth: number, layers: number): number {\n  let sum=0; for(let i=1;i<=layers;i++) sum+=layerValue(minedDepth+i); return sum;\n}\nexport function yieldForMining(mining: number, cell: {minedDepth:number;resourceLayers:number}): number {\n  return depthValue(cell.minedDepth, Math.max(0,Math.min(cell.resourceLayers,mining-cell.minedDepth)));\n}\n",
+  "replacements": [
+    {
+      "path": "src/game/mining.ts",
+      "old": "import type { BoardState",
+      "new": "import { depthValue } from './economy';\nimport type { BoardState"
+    },
+    {
+      "path": "src/game/mining.ts",
+      "old": "export function calculateMiningYield(unit: Unit, cell: Cell): number {",
+      "new": "export function calculateMiningYield(unit: Unit, cell: Cell): number {\n  return depthValue(cell.minedDepth, calculateMiningLayers(unit, cell));\n}\n/** Physical count, independent of payout. */\nexport function calculateMiningLayers(unit: Unit, cell: Cell): number {"
+    },
+    {
+      "path": "src/game/mining.ts",
+      "old": "const amountMined = calculateMiningYield(unit, cell);",
+      "new": "const layersMined = calculateMiningLayers(unit, cell);\n  const amountMined = calculateMiningYield(unit, cell);"
+    },
+    {
+      "path": "src/game/mining.ts",
+      "old": "resourceLayers: cell.resourceLayers - amountMined,",
+      "new": "resourceLayers: cell.resourceLayers - layersMined,"
+    },
+    {
+      "path": "src/game/mining.ts",
+      "old": "minedDepth: cell.minedDepth + amountMined,",
+      "new": "minedDepth: cell.minedDepth + layersMined,"
+    },
+    {
+      "path": "src/game/mining.ts",
+      "old": "total += cell.resourceLayers;",
+      "new": "total += depthValue(cell.minedDepth, cell.resourceLayers);"
+    },
+    {
+      "path": "src/game/mining.ts",
+      "old": "total += layers;",
+      "new": "total += depthValue(cell.minedDepth, layers);"
+    },
+    {
+      "path": "src/game/types.ts",
+      "old": "resourceLayers: number; // 0-5, remaining extractable resources",
+      "new": "resourceLayers: number; // 0-5 remaining physical layers; crystal value is separate"
+    },
+    {
+      "path": "src/game/resourceMap.ts",
+      "old": "export const RESOURCE_MAP_NAME",
+      "new": "import { depthValue } from './economy';\nexport function initialMapCrystalValue(): number { return UNEQUAL_ROUTES_MAP.reduce((sum,n)=>sum+depthValue(0,n),0); }\n// INITIAL_MAP_RESOURCES below is the historical PHYSICAL layer count.\nexport const RESOURCE_MAP_NAME"
+    },
+    {
+      "path": "lab/harness/invariants.ts",
+      "old": "import { getUnitDefinition",
+      "new": "import { depthValue } from '../../src/game/economy';\nimport { getUnitDefinition"
+    },
+    {
+      "path": "lab/harness/invariants.ts",
+      "old": "const total = capacities.reduce((sum,n)=>sum+n,0);",
+      "new": "const total = capacities.reduce((sum,n)=>sum+depthValue(0,n),0);"
+    },
+    {
+      "path": "lab/harness/invariants.ts",
+      "old": "remaining += cell.resourceLayers;",
+      "new": "remaining += depthValue(cell.minedDepth, cell.resourceLayers);"
+    },
+    {
+      "path": "src/ai/state/eventsLog.ts",
+      "old": "import type { GameState",
+      "new": "import { depthValue } from '../../game/economy';\nimport type { GameState"
+    },
+    {
+      "path": "src/ai/state/eventsLog.ts",
+      "old": "amount: nextCell.minedDepth - prevCell.minedDepth,",
+      "new": "amount: depthValue(prevCell.minedDepth, nextCell.minedDepth - prevCell.minedDepth),"
+    },
+    {
+      "path": "src/ai/evaluation.ts",
+      "old": "import { canMine }",
+      "new": "import { canMine, calculateMiningYield }"
+    },
+    {
+      "path": "src/ai/evaluation.ts",
+      "old": "      const def = getUnitDefinition(unit.definitionId);\n      potential += def.mining; // Mining power as potential",
+      "new": "      potential += calculateMiningYield(unit, state.board.cells[unit.position.y][unit.position.x]); // Actual variant-aware payout"
+    },
+    {
+      "path": "lab/harness/bots/archetypes.ts",
+      "old": "return Math.min(def.mining - cell.minedDepth, cell.resourceLayers);",
+      "new": "return yieldForMining(def.mining, cell);"
+    },
+    {
+      "path": "lab/harness/bots/archetypes.ts",
+      "old": "def.mining * 20",
+      "new": "depthValue(0, def.mining) * 20"
+    },
+    {
+      "path": "lab/harness/bots/probes.ts",
+      "old": "Math.min(def.mining - cell.minedDepth, cell.resourceLayers) * 10",
+      "new": "yieldForMining(def.mining, cell) * 10"
+    },
+    {
+      "path": "lab/harness/bots/probes.ts",
+      "old": "def.mining * 10",
+      "new": "depthValue(0, def.mining) * 10"
+    },
+    {
+      "path": "lab/harness/bots/probes.ts",
+      "old": "const rich = cell ? cell.resourceLayers : 0;",
+      "new": "const rich = cell ? depthValue(cell.minedDepth, cell.resourceLayers) : 0;"
+    },
+    {
+      "path": "lab/experiments/map-d-policies.ts",
+      "old": "import type { Bot",
+      "new": "import { yieldForMining } from '../../src/game/economy';\nimport type { Bot"
+    },
+    {
+      "path": "lab/experiments/map-d-policies.ts",
+      "old": "Math.max(0,Math.min(cell.resourceLayers,d.mining-cell.minedDepth))",
+      "new": "yieldForMining(d.mining,cell)"
+    },
+    {
+      "path": "lab/harness/runner.ts",
+      "old": "export interface PlayGameArgs {",
+      "new": "export interface PlayGameArgs {\n  initialState?: GameState;"
+    },
+    {
+      "path": "lab/harness/runner.ts",
+      "old": "let state = createInitialGameState(options.resourceLayout);",
+      "new": "let state = args.initialState ? structuredClone(args.initialState) : createInitialGameState(options.resourceLayout);"
+    },
+    {
+      "path": "src/game/board.ts",
+      "old": "  const whiteState: PlayerState = {",
+      "new": "  board = {...board, units:board.units.map(u=>({...u,id:`start-${u.owner}-${u.definitionId}`}))};\n  const whiteState: PlayerState = {"
+    }
+  ]
+}

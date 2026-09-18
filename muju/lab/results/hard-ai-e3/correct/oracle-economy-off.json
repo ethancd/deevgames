@@ -1,0 +1,144 @@
+{
+  "evalFix": null,
+  "positionsRequested": 2000,
+  "positionsSampled": 2000,
+  "corpusSize": 1808,
+  "checkedStream": 4000,
+  "streamMismatch": 0,
+  "checkedRelocation": 4000,
+  "relocationMonotone": true,
+  "relocationViolations": 0,
+  "checkedReserve": 13183,
+  "reserveMonotone": false,
+  "reserveViolations": 4102,
+  "fixturesChecked": 11,
+  "checkedInsolvency": 22,
+  "insolvencyMismatch": 0,
+  "pstChecked": 21,
+  "pstMaxErr": 0,
+  "mismatches": [
+    {
+      "kind": "reserve-monotone",
+      "id": "occupied-corner",
+      "side": 0,
+      "detail": "+1 crystal at square 11 lowered stream 1925 -> 1883"
+    },
+    {
+      "kind": "reserve-monotone",
+      "id": "occupied-corner",
+      "side": 1,
+      "detail": "+1 crystal at square 88 lowered stream 2304 -> 2262"
+    },
+    {
+      "kind": "reserve-monotone",
+      "id": "clock-9",
+      "side": 0,
+      "detail": "+1 crystal at square 11 lowered stream 1925 -> 1883"
+    },
+    {
+      "kind": "reserve-monotone",
+      "id": "clock-9",
+      "side": 1,
+      "detail": "+1 crystal at square 88 lowered stream 1925 -> 1883"
+    },
+    {
+      "kind": "reserve-monotone",
+      "id": "upkeep-pending",
+      "side": 0,
+      "detail": "+1 crystal at square 34 lowered stream 292 -> 240"
+    },
+    {
+      "kind": "reserve-monotone",
+      "id": "upkeep-pending",
+      "side": 0,
+      "detail": "+1 crystal at square 43 lowered stream 292 -> 249"
+    },
+    {
+      "kind": "reserve-monotone",
+      "id": "endgame-dry",
+      "side": 0,
+      "detail": "+1 crystal at square 10 lowered stream 1079 -> 1069"
+    },
+    {
+      "kind": "reserve-monotone",
+      "id": "endgame-dry",
+      "side": 1,
+      "detail": "+1 crystal at square 88 lowered stream 1172 -> 1140"
+    },
+    {
+      "kind": "reserve-monotone",
+      "id": "handicap-3",
+      "side": 0,
+      "detail": "+1 crystal at square 11 lowered stream 1925 -> 1883"
+    },
+    {
+      "kind": "reserve-monotone",
+      "id": "handicap-3",
+      "side": 1,
+      "detail": "+1 crystal at square 88 lowered stream 1925 -> 1883"
+    },
+    {
+      "kind": "reserve-monotone",
+      "id": "place-autoskip",
+      "side": 0,
+      "detail": "+1 crystal at square 11 lowered stream 1029 -> 986"
+    },
+    {
+      "kind": "reserve-monotone",
+      "id": "home-race",
+      "side": 0,
+      "detail": "+1 crystal at square 11 lowered stream 2264 -> 2216"
+    },
+    {
+      "kind": "reserve-monotone",
+      "id": "promotion-kill",
+      "side": 0,
+      "detail": "+1 crystal at square 11 lowered stream 3799 -> 3570"
+    },
+    {
+      "kind": "reserve-monotone",
+      "id": "promotion-kill",
+      "side": 0,
+      "detail": "+1 crystal at square 28 lowered stream 3799 -> 3756"
+    },
+    {
+      "kind": "reserve-monotone",
+      "id": "promotion-kill",
+      "side": 0,
+      "detail": "+1 crystal at square 6 lowered stream 3799 -> 3751"
+    },
+    {
+      "kind": "reserve-monotone",
+      "id": "promotion-kill",
+      "side": 1,
+      "detail": "+1 crystal at square 57 lowered stream 2419 -> 2366"
+    },
+    {
+      "kind": "reserve-monotone",
+      "id": "opening-001",
+      "side": 0,
+      "detail": "+1 crystal at square 11 lowered stream 1838 -> 1791"
+    },
+    {
+      "kind": "reserve-monotone",
+      "id": "opening-001",
+      "side": 1,
+      "detail": "+1 crystal at square 88 lowered stream 1925 -> 1883"
+    },
+    {
+      "kind": "reserve-monotone",
+      "id": "opening-002",
+      "side": 0,
+      "detail": "+1 crystal at square 11 lowered stream 1838 -> 1791"
+    },
+    {
+      "kind": "reserve-monotone",
+      "id": "opening-002",
+      "side": 1,
+      "detail": "+1 crystal at square 88 lowered stream 1925 -> 1883"
+    }
+  ],
+  "git": "81e4e30328ba94b3b557945a4a74a2212f12fcc5",
+  "node": "v24.11.1",
+  "at": "2026-09-17T07:10:00.501Z"
+}

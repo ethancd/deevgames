@@ -1,0 +1,92 @@
+# cpu profile, black seat turn 23 (recorded 83,023 ms), fixed:100000, hard@desktop
+
+--- inclusive ms by function ---
+    91175 ms  (root) @
+    90467 ms  evaluate @
+    90464 ms  run @node:internal/modules/esm/module_job
+    90462 ms  (anon) @node:internal/modules/cjs/loader
+    90462 ms  traceSync @node:diagnostics_channel
+    90462 ms  wrapModuleLoad @node:internal/modules/cjs/loader
+    90457 ms  (anon) @node_modules/tsx/dist/register-OY9cqBEN.cjs
+    90452 ms  loadCJSModuleWithModuleLoad @node:internal/modules/esm/translators
+    90452 ms  (anon) @node:internal/modules/esm/translators
+    90443 ms  (anon) @file:///private/tmp/claude-501/-Users-ashkie-src/cd40736e-60ca-490c-bc97-ac7331c3a88d/scratchpad/lane16/repro.ts
+    90340 ms  main @file:///private/tmp/claude-501/-Users-ashkie-src/cd40736e-60ca-490c-bc97-ac7331c3a88d/scratchpad/lane16/repro.ts
+    90339 ms  withMatchRules @lab/hard-ai/analyze/replay.ts
+    79078 ms  searchRootInner @src/ai/hard/search/root.ts
+    79078 ms  searchRoot @src/ai/hard/search/root.ts
+    79078 ms  searchTurn @src/ai/hard/engine.ts
+    79002 ms  rootIteration @src/ai/hard/search/pvs.ts
+    79002 ms  iterativeDeepening @src/ai/hard/search/pvs.ts
+    78940 ms  pvs @src/ai/hard/search/pvs.ts
+    76677 ms  prepare @src/ai/hard/tactics/prover.ts
+    76677 ms  runProver @src/ai/hard/tactics/prover.ts
+    76663 ms  act @src/ai/hard/tactics/prover.ts
+    70445 ms  generateAt @src/ai/hard/search/pvs.ts
+    70440 ms  run @src/ai/hard/gen/generate.ts
+    60740 ms  quiesceNode @src/ai/hard/search/quiesce.ts
+    60740 ms  quiesce @src/ai/hard/search/quiesce.ts
+    60684 ms  inject @src/ai/hard/gen/generate.ts
+    60412 ms  (anon) @src/ai/hard/search/root.ts
+    60410 ms  homeWitness @src/ai/hard/tactics/prover.ts
+    60410 ms  injectRescue @src/ai/hard/gen/generate.ts
+    55077 ms  damageBoundCore @src/ai/hard/tactics/prover.ts
+    41399 ms  generate @src/ai/hard/gen/generate.ts
+    16401 ms  make @src/ai/hard/core/state.ts
+    16287 ms  provesHomeCheckmate @src/ai/hard/core/state.ts
+    16267 ms  homeVerdict @src/ai/hard/tactics/prover.ts
+    14286 ms  reachableFrom @src/ai/hard/tactics/prover.ts
+    11264 ms  (anon) @lab/hard-ai/analyze/replay.ts
+    11255 ms  reconstruct @lab/hard-ai/analyze/replay.ts
+    11253 ms  reconstructInner @lab/hard-ai/analyze/replay.ts
+    11242 ms  applyAction @src/ai/simulate.ts
+    11237 ms  (anon) @src/game/homeCheckmate.ts
+    11234 ms  resolveHomeCheckmate @src/game/homeCheckmate.ts
+    11232 ms  searchHomeDefense @src/game/homeCheckmate.ts
+    11232 ms  analyzeHomeDefense @src/game/homeCheckmate.ts
+     9748 ms  expand @src/ai/hard/gen/generate.ts
+     9688 ms  runCombo @src/ai/hard/gen/generate.ts
+
+total sampled ms 91175
+--- by file ---
+    76743 ms  src/ai/hard/tactics/prover.ts
+     7734 ms  src/game/homeCheckmate.ts
+     1116 ms  src/ai/simulate.ts
+      815 ms  src/game/combat.ts
+      784 ms  src/game/movement.ts
+      614 ms  src/ai/hard/core/movement.ts
+      604 ms  src/game/units.ts
+      546 ms  
+      257 ms  src/ai/hard/tables/geometry.ts
+      253 ms  src/ai/hard/tables/kill.ts
+      204 ms  src/ai/hard/core/state.ts
+      189 ms  src/ai/hard/core/spawn.ts
+      161 ms  src/ai/hard/core/bits.ts
+      149 ms  src/game/legality.ts
+      141 ms  src/ai/hard/gen/actionsearch.ts
+--- by function (self) ---
+    55074 ms  damageBoundCore  src/ai/hard/tactics/prover.ts:2
+    14286 ms  reachableFrom  src/ai/hard/tactics/prover.ts:2
+     5258 ms  enoughPossibleDamage  src/game/homeCheckmate.ts:2
+     4888 ms  act  src/ai/hard/tactics/prover.ts:2
+     2475 ms  (anon)  src/game/homeCheckmate.ts:2
+     1392 ms  stableSort  src/ai/hard/tactics/prover.ts:2
+     1039 ms  computeKey  src/ai/hard/tactics/prover.ts:2
+      772 ms  calculateAttackPower  src/game/combat.ts:2
+      754 ms  distancesFrom  src/game/movement.ts:2
+      743 ms  transitionWithoutCheckmate  src/ai/simulate.ts:2
+      599 ms  getUnitDefinition  src/game/units.ts:2
+      459 ms  bfsFrom  src/ai/hard/core/movement.ts:2
+      335 ms  (program)  :0
+      257 ms  spawnGeometry  src/ai/hard/tables/geometry.ts:2
+      216 ms  applyLegalAction  src/ai/simulate.ts:2
+      191 ms  (garbage collector)  :0
+      150 ms  runKillDp  src/ai/hard/tables/kill.ts:2
+      149 ms  isLegalAction  src/game/legality.ts:2
+      118 ms  bbDilate  src/ai/hard/core/bits.ts:2
+      115 ms  bfsMulti  src/ai/hard/core/movement.ts:2
+      111 ms  spawnInfo  src/ai/hard/core/spawn.ts:2
+       90 ms  genActions  src/ai/hard/core/state.ts:2
+       78 ms  blockingSet  src/ai/hard/core/spawn.ts:2
+       76 ms  buildCandidates  src/ai/hard/tables/kill.ts:2
+       76 ms  nearestThreat  src/ai/hard/tables/home.ts:2

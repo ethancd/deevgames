@@ -1,0 +1,15 @@
+{
+ "what": "npm run hard:cross-commit at the E3 head after the origin/master merge (E3 close), hard@desktop at fixed work, flags off; compared against rows-head-108a1215.json on the search fields",
+ "baseRows": "rows-head-108a1215.json",
+ "headCommit": "c73204dd002412da2324f3f7d4c64ad617da81ba",
+ "rungs": [100000, 400000],
+ "positions": 24,
+ "rows": 48,
+ "identicalRowsOnSearchFields": 48,
+ "differingRowsOnSearchFields": 0,
+ "comparedFields": ["scoreCc", "depth", "work", "nodes", "endKey", "source"],
+ "rowsWhoseActionsJsonDiffers": 17,
+ "whyActionsDiffer": "positions reconstructed afresh (no --states-in); starting units carry Date.now() ids (HANDOFF-2026-09-17 gotcha); search fields are the identity evidence",
+ "srcAiHardDiffVs3a173c5c": "empty",
+ "at": "2026-09-17T17:41:13Z"
+}

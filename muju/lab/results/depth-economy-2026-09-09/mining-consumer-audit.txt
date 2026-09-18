@@ -1,0 +1,105 @@
+lab/experiments/e11-map-d-investment.ts:37:     t.fourthFifth+=Math.max(0,c.minedDepth+yieldNow-Math.max(3,c.minedDepth));
+src/components/UnitShop.tsx:24:    <div className="shop-detail"><strong><span className="shop-piece-name"><UnitArtwork element={def.element} owner={player} tier={def.tier} />{def.name}</span> <small>◆ {def.cost} · {def.buildTime} turn{def.buildTime !== 1 ? 's' : ''} · rent {upkeepForTier(def.tier)}</small></strong><div className="unit-stats"><span>Attack <b>{def.attack}</b></span><span>Defense <b>{def.defense}</b></span><span>Speed <b>{def.speed}</b></span><span>Mining <b>{def.mining}</b></span></div></div>
+lab/experiments/e10-map-d.ts:44:     t.fourthFifth+=Math.max(0,c.minedDepth+yieldNow-Math.max(3,c.minedDepth));
+lab/experiments/e12-map-d-topology.ts:42:     t.fourthFifth+=Math.max(0,c.minedDepth+yieldNow-Math.max(3,c.minedDepth));
+lab/experiments/map-d-policies.ts:35:    if(d.mining>=2&&miningYieldAt(view,u)===0&&(!homeOnly||distance(a.to,view.me.startCorner)<=6)) {
+lab/experiments/map-d-policies.ts:36:     const cell=view.board.cells[a.to.y][a.to.x],yieldHere=Math.max(0,Math.min(cell.resourceLayers,d.mining-cell.minedDepth));
+lab/harness/runner.ts:84:    for (const cell of row) cells += String(cell.resourceLayers);
+src/game/board.ts:24:    resourceLayers: INITIAL_RESOURCE_LAYERS,
+src/game/board.ts:25:    minedDepth: 0,
+src/game/board.ts:206:  for (const row of board.cells) for (const cell of row) cell.resourceLayers = resourceLayout[cell.position.y * BOARD_SIZE + cell.position.x];
+lab/maps/run.ts:47: 'Every cell starts at minedDepth 0. Capacity is total existing depth, never a mining-yield multiplier.',
+src/ai/planner/scoring.ts:7:import { calculateMiningYield } from '../../game/mining';
+src/ai/planner/scoring.ts:67:    if (calculateMiningYield(unit, cell) > 0 && !tags.includes('expansion')) tags.push('expansion');
+src/ai/state/eventsLog.ts:22:  // Mining detection: minedDepth increase with opponent unit present
+src/ai/state/eventsLog.ts:28:      if (nextCell.minedDepth > prevCell.minedDepth) {
+src/ai/state/eventsLog.ts:36:            amount: nextCell.minedDepth - prevCell.minedDepth,
+lab/harness/types.ts:187:  /** 100 chars, row-major (y*10+x), each char = remaining resourceLayers. */
+lab/harness/invariants.ts:46:      if (!Number.isInteger(cell.resourceLayers) || !Number.isInteger(cell.minedDepth) || cell.resourceLayers < 0 || cell.minedDepth < 0 || cell.resourceLayers + cell.minedDepth !== capacity) {
+lab/harness/invariants.ts:51:      remaining += cell.resourceLayers;
+src/game/types.ts:78:  resourceLayers: number; // 0-5, remaining extractable resources
+src/game/types.ts:79:  minedDepth: number; // 0-5, how deep mining has gone (initial capacity - resourceLayers)
+src/game/mining.ts:21: * - Fresh cell: layers 1,2,3,4,5 available (resourceLayers=5, minedDepth=0)
+src/game/mining.ts:22: * - Hi (Mining 1) can take layer 1 only → resourceLayers=4, minedDepth=1
+src/game/mining.ts:23: * - Sjor (Mining 2) on a fresh five-layer cell takes layers 1,2 → resourceLayers=3, minedDepth=2
+src/game/mining.ts:24: * - Sjor on that same cell later: minedDepth=2, so layer 3 is at "depth 3"
+src/game/mining.ts:33:export function calculateMiningYield(unit: Unit, cell: Cell): number {
+src/game/mining.ts:35:  const miningPower = def.mining;
+src/game/mining.ts:38:  const remainingLayers = cell.resourceLayers;
+src/game/mining.ts:42:  // If minedDepth=0, top layer is at depth 1
+src/game/mining.ts:43:  // If minedDepth=2, top layer is at depth 3
+src/game/mining.ts:44:  const topLayerDepth = cell.minedDepth + 1;
+src/game/mining.ts:58:    reachableDepth - cell.minedDepth,
+src/game/mining.ts:74:  return calculateMiningYield(unit, cell) > 0;
+src/game/mining.ts:96:  const amountMined = calculateMiningYield(unit, cell);
+src/game/mining.ts:103:    resourceLayers: cell.resourceLayers - amountMined,
+src/game/mining.ts:104:    minedDepth: cell.minedDepth + amountMined,
+src/game/mining.ts:127:export function getTotalBoardResources(board: BoardState): number {
+src/game/mining.ts:131:      total += cell.resourceLayers;
+src/game/mining.ts:141:export function getReachableResources(
+src/game/mining.ts:146:  const miningPower = def.mining;
+src/game/mining.ts:151:      if (cell.resourceLayers === 0) continue;
+src/game/mining.ts:153:      const topLayerDepth = cell.minedDepth + 1;
+src/game/mining.ts:156:        const layers = Math.min(miningPower - cell.minedDepth, cell.resourceLayers);
+src/game/mining.ts:169:  return cell.resourceLayers === 0;
+src/game/mining.ts:176:  return calculateMiningYield(unit, cell) === 0;
+lab/harness/bots/archetypes.ts:65:            if (def.mining < 2) return -1;
+lab/harness/bots/archetypes.ts:150:            return 300 + def.mining * 20; // pure economy: plant miners only
+lab/harness/bots/archetypes.ts:163:  if (!cell || cell.resourceLayers === 0) return 0;
+lab/harness/bots/archetypes.ts:164:  const topDepth = cell.minedDepth + 1;
+lab/harness/bots/archetypes.ts:165:  if (topDepth > def.mining) return 0;
+lab/harness/bots/archetypes.ts:166:  return Math.min(def.mining - cell.minedDepth, cell.resourceLayers);
+lab/harness/bots/archetypes.ts:181:        (u) => u.owner === view.player && getUnitDefinition(u.definitionId).mining >= 2
+lab/harness/bots/archetypes.ts:221:            const isMiner = def.mining >= 2;
+src/game/resourceMap.ts:16:export const INITIAL_MAP_RESOURCES = UNEQUAL_ROUTES_MAP.reduce((sum,n)=>sum+n,0);
+lab/maps/model.ts:30: return Array.from({length:budget+1},(_,a)=>mineRoute(map,unit.mining,unit.speed,start,wells,a,depths));
+lab/maps/model.ts:66: const powers=[1,2,getUnitDefinition(`plant_${n.tier}`).mining];
+lab/maps/model.ts:97:     const mined=Number(n.depths[p]),yieldHere=Math.max(0,Math.min(def.mining,map.cells[p])-mined);
+lab/maps/model.ts:139:  const key=[u.mining,u.speed,region.id,stripped,fromHome].join('/');if(!cache.has(key))cache.set(key,routeCurve(map,u,fromHome?11:region.start,region.cells,6,stripped?map.cells.map(v=>Math.min(3,v)):undefined));return cache.get(key)!;
+lab/maps/model.ts:143:  miningPlus:curve({...u,mining:Math.min(5,u.mining+1)},r)[6].income-curve(u,r)[6].income,
+lab/maps/model.ts:146:  strippedMiningPlus:curve({...u,mining:Math.min(5,u.mining+1)},r,true)[6].income-curve(u,r,true)[6].income,
+lab/maps/model.ts:148:  travelMiningPlus:curve({...u,mining:Math.min(5,u.mining+1)},r,false,true)[6].income-curve(u,r,false,true)[6].income,
+lab/maps/model.ts:150:  strippedTravelMiningPlus:curve({...u,mining:Math.min(5,u.mining+1)},r,true,true)[6].income-curve(u,r,true,true)[6].income}))}));
+lab/maps/model.ts:163:   Math.min(map.cells[r.start],u.mining)>=mine&&Math.ceil(distance(0,r.start)/u.speed)+Number(mine>0)+1<=budget&&power(u,target)>=target.defense));
+src/ai/evaluation.ts:64:  score += weights.miningPotential * (
+src/ai/evaluation.ts:167:      potential += def.mining; // Mining power as potential
+lab/maps/viewer.template.html:50:   const shown=view==='yield'?Math.max(0,Math.min(unit.mining,depth)-(stripped?Math.min(3,depth):0)):depth,x=p%10*24,y=Math.floor(p/10)*24;
+lab/maps/viewer.template.html:52:   return `<g class="cell" tabindex="0" role="button" data-map="${m.id}" data-cell="${p}" aria-label="${m.id}, column ${p%10+1}, row ${Math.floor(p/10)+1}: ${depth} layers, ${Math.max(0,Math.min(unit.mining,depth)-(stripped?Math.min(3,depth):0))} yield"><rect x="${x}" y="${y}" width="24" height="24" fill="${palette[shown]}" stroke="#102029" stroke-width=".5"/><text x="${x+12}" y="${y+16}" text-anchor="middle" fill="${shown>=3?'#14231d':'#f1f4eb'}" font-size="12">${shown}</text>${marker?`<rect x="${x+1}" y="${y+1}" width="9" height="9" rx="2" fill="${p<50?'#fff':'#172735'}"/><text x="${x+5.5}" y="${y+8}" font-size="7" font-weight="700" text-anchor="middle" fill="${p<50?'#172735':'#fff'}">${marker}</text>`:''}</g>`;
+lab/maps/viewer.template.html:59: byId('unit-note').textContent=`${unit.name}: attack ${unit.attack}, defense ${unit.defense}, speed ${unit.speed}, mining ${unit.mining}; price ${unit.cost}, build time ${unit.buildTime}. ${stripped?'The top three layers are removed everywhere for this regional counterfactual; opening-income tests still start fresh.':'Regional wells are fresh.'}`;
+lab/maps/viewer.template.html:62: byId('marginal').textContent=`${data.regions.find(r=>r.id===regionId).name}, six actions, all else fixed. ${marg.join(' · ')}${unit.mining===5?' Mining is capped at 5.':''}`;
+lab/maps/viewer.template.html:76: if(!selectedCell)return;const m=data.maps.find(m=>m.id===selectedCell.map),p=selectedCell.cell,u=currentUnit(),taken=byId('well-state').value==='stripped'?Math.min(3,m.cells[p]):0,yieldNow=Math.max(0,Math.min(m.cells[p],u.mining)-taken);
+lab/maps/replay.ts:11: state.board.cells.forEach((row,y)=>row.forEach((c,x)=>{c.resourceLayers=map.cells[y*10+x];}));
+lab/maps/README.md:28:The actual rules are in `maps.ts`, in board coordinates with row zero at the top. `cells[y*10+x]` is total initial capacity; `minedDepth=0`. A fresh two-layer square is not equivalent to a five-layer square whose first three layers have been removed.
+src/components/CrystalWell.tsx:5:  const total = cell.minedDepth + cell.resourceLayers;
+src/components/CrystalWell.tsx:6:  return cell.resourceLayers > 0
+src/components/CrystalWell.tsx:7:    ? `${cell.resourceLayers} crystal${cell.resourceLayers === 1 ? '' : 's'} left · next depth ${cell.minedDepth + 1} · bottom ${total}`
+src/components/CrystalWell.tsx:15:  const bottom = cell.minedDepth + cell.resourceLayers;
+src/components/CrystalWell.tsx:17:    <span className="well-shading" style={{ '--excavated': cell.minedDepth } as CSSProperties} aria-hidden="true" />
+src/components/CrystalWell.tsx:19:      const state = depth < cell.minedDepth ? 'mined' : depth < bottom ? 'crystal' : 'bedrock';
+src/components/CrystalWell.tsx:20:      return <i key={depth} className={`${state}${state === 'crystal' && depth === cell.minedDepth ? ' next-crystal' : ''}`} data-depth={depth + 1} />;
+src/components/CrystalWell.tsx:22:    {cell.resourceLayers === 0 && <span className="empty-seam" aria-hidden="true">·</span>}
+src/components/CrystalWell.tsx:23:    {showNumbers && <span className="resource-readout" aria-hidden="true"><b className="resource-number">{cell.resourceLayers}</b><small>{cell.resourceLayers > 0 ? `↓${cell.minedDepth + 1}` : '—'}</small></span>}
+src/components/Cell.tsx:14:  const label = `${coord}${home ? `, ${home} home corner` : ''}${unitLabel ? `, ${unitLabel}` : ''}, ${cell.resourceLayers} resource layers, ${cell.resourceLayers > 0 ? `next layer at depth ${cell.minedDepth + 1}, bottom depth ${cell.minedDepth + cell.resourceLayers}` : cell.minedDepth > 0 ? 'depleted' : 'no crystals, bedrock'}${reach ? `, move costs ${moveCost} actions` : ''}${isValidAttack ? ', attack target' : ''}${isValidSpawn ? ', available for placement' : ''}`;
+src/components/Cell.tsx:16:    className={`board-cell depth-${cell.resourceLayers} ${isSelected ? 'selected' : ''} ${isValidAttack ? 'attack-target' : ''} ${isValidSpawn ? 'spawn-target' : ''} ${isPendingMove ? 'path-cell' : ''} ${isPreview ? 'preview-cell' : ''}`}
+lab/harness/bots/bot-utils.ts:7:import { calculateMiningYield } from '../../../src/game/mining';
+lab/harness/bots/bot-utils.ts:56:  return calculateMiningYield(unit, cell);
+lab/harness/bots/probes.ts:72:            if (!cell || cell.resourceLayers === 0) return -1;
+lab/harness/bots/probes.ts:73:            const top = cell.minedDepth + 1;
+lab/harness/bots/probes.ts:74:            if (top > def.mining) return -1;
+lab/harness/bots/probes.ts:75:            return 50 + Math.min(def.mining - cell.minedDepth, cell.resourceLayers) * 10;
+lab/harness/bots/probes.ts:89:            if (def.element === 'plant') return 310 + def.mining * 10;
+lab/harness/bots/probes.ts:180:            if (def.mining >= 3) return -1; // dedicated home miners hold
+lab/harness/bots/probes.ts:186:            const rich = cell ? cell.resourceLayers : 0;
+src/components/VisualKey.tsx:21:        <div className={`well-example board-cell depth-${example.left}`}><CrystalWell cell={{ position: { x: 0, y: 0 }, resourceLayers: example.left, minedDepth: example.dug }} /></div>
+src/components/GameScreen.tsx:23:import { canMine, calculateMiningYield } from '../game/mining';
+src/components/GameScreen.tsx:792:                : targetCell ? `Mining here: ${calculateMiningYield(selectedUnitData, targetCell)} crystals · ${describeCrystals(targetCell)}` : ''}</p>
+src/components/InstructionsModal.tsx:66:      <CrystalWell cell={{position: {x: 0, y: 0}, resourceLayers: depth, minedDepth: 0}} />
+src/components/InstructionsModal.tsx:490:            <DemoCell depth={5 - demoMiner.mining}>
+src/components/InstructionsModal.tsx:497:          <DemoStatBox label="MINE" value={demoMiner.mining} color="text-amber-400" />
+src/components/InstructionsModal.tsx:499:          <DemoResourceDisplay resources={`+${demoMiner.mining}`} label="Gain" />
+src/components/InstructionsModal.tsx:504:            {getUnitDefinition('plant_1').name} reaches depth {getUnitDefinition('plant_1').mining}. Tiers 2 and 3 reach depths {demoMiner.mining} and {getUnitDefinition('plant_3').mining}; tier 3 is the highest tier.
+src/components/UnitInfo.tsx:5:import { calculateMiningYield } from '../game/mining';
+src/components/UnitInfo.tsx:23:  const mineYield = unit && cellInfo ? calculateMiningYield(unit, cellInfo) : 0;
+src/components/UnitInfo.tsx:26:    <div className="unit-stats"><span>Attack <b>{def.attack}</b></span><span>Defense <b>{Math.max(0, def.defense - (unit?.damageTaken ?? 0))}{unit?.damageTaken ? `/${def.defense}` : ''}</b></span><span>Speed <b>{def.speed}</b></span><span>Mining <b>{def.mining}</b></span></div>
+src/components/UnitInfo.tsx:31:        <p>{!next ? 'Maximum tier · terminal' : unit.placedThisTurn ? 'Newly placed · upgrade next turn' : unit.promotedThisPlacement ? 'Already upgraded this placement' : next ? `${next.name}: ATK ${next.attack} · DEF ${next.defense} · SPD ${next.speed} · MINE ${next.mining}` : 'Maximum tier'}</p>
+src/components/UnitInfo.tsx:33:      </> : isActionPhase ? <><p><span className="cleave-status" role="status">Attacks {getAttackCount(unit)}/{def.tier} · {!unit.canActThisTurn ? 'Ready next turn' : !canAttack(unit) ? 'Attacks finished' : getAttackCount(unit) > 0 ? 'Cleave ready · 1 action' : def.tier > 1 ? 'Kill to continue' : 'One attack this turn'}</span>{!unit.canActThisTurn ? 'Ready next turn' : mine ? `${cellInfo?.resourceLayers} left · next depth ${(cellInfo?.minedDepth ?? 0) + 1}` : cellInfo?.resourceLayers ? `Too deep · need Mining ${(cellInfo?.minedDepth ?? 0) + 1}` : 'This square is depleted'}</p><button onClick={onMine} disabled={!mine}>Mine +{mineYield} ◆</button></> : <p>Ready for the next action phase.</p>}

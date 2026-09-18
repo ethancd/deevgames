@@ -1,0 +1,36 @@
+{
+  "a": "hard@lab-400k",
+  "b": "Rush",
+  "work": "wall:500",
+  "handicaps": [
+    0
+  ],
+  "pairs": 8,
+  "games": 16,
+  "seed": 9,
+  "shards": 12,
+  "adjudicationRate": 0,
+  "illegalActions": 0,
+  "replicaDivergences": 0,
+  "bothSeatsPlayed": true,
+  "voided": false,
+  "meanTurnMs": {
+    "a": 525.124203821656,
+    "b": 5.697819314641745
+  },
+  "elo": -254.72883903486974,
+  "eloLo": -452.3323314366343,
+  "eloHi": -142.16693298599915,
+  "los": 1.2110142461052575e-7,
+  "eloDetail": {
+    "n": 16,
+    "mu": 0.1875,
+    "variance": 0.05859375,
+    "elo": -254.72883903486974,
+    "eloLo": -452.3323314366343,
+    "eloHi": -142.16693298599915,
+    "los": 1.2110142461052575e-7
+  },
+  "sprt": null,
+  "decision": null
+}

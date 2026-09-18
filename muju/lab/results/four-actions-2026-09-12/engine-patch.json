@@ -1,0 +1,5 @@
+{
+  "path": "src/game/board.ts",
+  "old": "export const MAX_ACTIONS_PER_TURN = 6;",
+  "new": "export const MAX_ACTIONS_PER_TURN = Number(process.env.MUJU_ACTIONS ?? 6);\nif (![4, 6].includes(MAX_ACTIONS_PER_TURN)) throw Error('Expected MUJU_ACTIONS=4 or 6');"
+}

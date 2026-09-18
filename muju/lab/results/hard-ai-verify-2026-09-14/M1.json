@@ -1,0 +1,27 @@
+{
+  "gate": "M1",
+  "pass": true,
+  "command": "npm run hard:perft -- --check --out lab/results/hard-ai-verify/M1.json && npm run hard:deps && npx vitest run tests/ai/hard/constants.test.ts tests/ai/hard/perft.test.ts",
+  "criterion": "Verify runner, perft fixtures, position corpus, deps lint, constants test",
+  "metrics": {
+    "depsViolations": 0,
+    "vitestFailures": 0,
+    "perftActions_initial_4": 14959,
+    "perftMidStates_initial": 1053,
+    "perftTurns_initial": 797,
+    "fixturesChecked": 11,
+    "fixturesMismatch": 0,
+    "mismatches": [],
+    "openings": 797,
+    "engine": "canonical",
+    "git": "f865174994dd70b884ca802110f9d5783e2aa586",
+    "node": "v24.11.1",
+    "at": "2026-09-14T18:27:32.526Z"
+  },
+  "git": "f865174994dd70b884ca802110f9d5783e2aa586",
+  "wasmSha256": "da9b1cdf25e4bcd6a4674fd697095e35c2606c29817e3d18043faf4799d828bf",
+  "node": "v24.11.1",
+  "device": "Apple M2 Max x12 (darwin/arm64)",
+  "elapsedMs": 8520,
+  "at": "2026-09-14T18:27:37.792Z"
+}

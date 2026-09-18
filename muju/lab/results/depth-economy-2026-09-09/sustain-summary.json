@@ -1,0 +1,2439 @@
+{
+  "A": {
+    "n": 960,
+    "valid": 960,
+    "invalid": 0,
+    "invalidIds": [],
+    "outcomes": {
+      "elimination": 250,
+      "home-occupation": 172,
+      "upkeep-elimination": 13,
+      "inactivity": 525
+    },
+    "rounds": {
+      "n": 960,
+      "mean": 26.467708333333334,
+      "median": 27.0,
+      "min": 5,
+      "max": 81
+    },
+    "firstAttack": {
+      "n": 955,
+      "mean": 6.636649214659686,
+      "median": 6,
+      "min": 2,
+      "max": 29
+    },
+    "firstKill": {
+      "n": 935,
+      "mean": 7.221390374331551,
+      "median": 6,
+      "min": 2,
+      "max": 31
+    },
+    "tier2Arrival": {
+      "n": 1473,
+      "mean": 3.351663272233537,
+      "median": 2,
+      "min": 2,
+      "max": 23
+    },
+    "tier3Arrival": {
+      "n": 739,
+      "mean": 4.197564276048714,
+      "median": 4,
+      "min": 3,
+      "max": 18
+    },
+    "incomePerPlayer": {
+      "n": 1920,
+      "mean": 95.64583333333333,
+      "median": 103.0,
+      "min": 5,
+      "max": 241
+    },
+    "finalCashPerPlayer": {
+      "n": 1920,
+      "mean": 0.571875,
+      "median": 0.0,
+      "min": 0,
+      "max": 10
+    },
+    "upkeepPerPlayer": {
+      "n": 1920,
+      "mean": 19.475520833333334,
+      "median": 16.0,
+      "min": 0,
+      "max": 129
+    },
+    "purchasesAndPromotionsPerPlayer": {
+      "n": 1920,
+      "mean": 75.5984375,
+      "median": 76.0,
+      "min": 5,
+      "max": 215
+    },
+    "incomeByDefinition": {
+      "plant_1": 78598,
+      "water_1": 28361,
+      "plant_2": 21123,
+      "plant_3": 15865,
+      "metal_1": 23966,
+      "fire_1": 3473,
+      "metal_3": 8823,
+      "metal_2": 1997,
+      "shadow_2": 134,
+      "water_2": 1193,
+      "fire_2": 74,
+      "fire_3": 33
+    },
+    "queueByDefinition": {
+      "plant_1": 13073,
+      "metal_1": 21815,
+      "water_1": 4999,
+      "fire_1": 4332,
+      "lightning_1": 6038,
+      "lightning_2": 195,
+      "plant_2": 513,
+      "water_2": 213,
+      "shadow_1": 815,
+      "shadow_2": 134,
+      "metal_2": 134
+    },
+    "promotionsByDefinition": {
+      "plant_1->plant_2": 1497,
+      "plant_2->plant_3": 524,
+      "metal_1->metal_2": 466,
+      "metal_2->metal_3": 270,
+      "water_1->water_2": 374,
+      "shadow_1->shadow_2": 205,
+      "fire_1->fire_2": 242,
+      "fire_2->fire_3": 75,
+      "lightning_1->lightning_2": 47,
+      "lightning_2->lightning_3": 6
+    },
+    "actionPoints": {
+      "MINE": 77456,
+      "MOVE": 102677,
+      "END_ACTION_PHASE": 0,
+      "QUEUE_UNIT": 0,
+      "END_TURN": 0,
+      "PROMOTE_UNIT": 0,
+      "PLACE_UNIT": 0,
+      "ATTACK": 57146,
+      "PAY_UPKEEP": 0,
+      "END_PLACE_PHASE": 0
+    },
+    "upgrades": {
+      "n": 524,
+      "estimatedNet": {
+        "n": 524,
+        "mean": -15.683206106870228,
+        "median": -15.0,
+        "min": -36,
+        "max": -4
+      },
+      "everEstimatedPayback": 0,
+      "finalEstimatedProfitable": 0,
+      "extraRent": {
+        "n": 524,
+        "mean": 12.5,
+        "median": 12.0,
+        "min": 0,
+        "max": 33
+      },
+      "fifthIncome": {
+        "n": 524,
+        "mean": 2.816793893129771,
+        "median": 3.0,
+        "min": 0,
+        "max": 15
+      },
+      "grossIncome": {
+        "n": 524,
+        "mean": 30.27671755725191,
+        "median": 22.0,
+        "min": 0,
+        "max": 201
+      },
+      "mineActions": {
+        "n": 524,
+        "mean": 9.024809160305344,
+        "median": 7.5,
+        "min": 0,
+        "max": 59
+      },
+      "moveActions": {
+        "n": 524,
+        "mean": 9.366412213740459,
+        "median": 8.0,
+        "min": 0,
+        "max": 60
+      },
+      "armyActions": {
+        "n": 524,
+        "mean": 1.5515267175572518,
+        "median": 0.0,
+        "min": 0,
+        "max": 20
+      }
+    },
+    "opportunities": {
+      "n": 524,
+      "oneTurnGrossAdvantageAtLeastSix": 0,
+      "outsideOptimisticEnemyReach": 318
+    },
+    "earlyLead": {
+      "n": 717,
+      "natural": 363,
+      "converted": 215,
+      "recovered": 217,
+      "laggerWon": 148
+    },
+    "lateMining": {
+      "events": 6,
+      "games": 6,
+      "fifthOnly": 0,
+      "examples": [
+        {
+          "game": "sustain-A-2-18-1",
+          "turn": 23,
+          "depth": 2,
+          "layers": 1,
+          "payout": 1,
+          "unit": "water_1",
+          "cap": false,
+          "outcome": "inactivity"
+        },
+        {
+          "game": "sustain-A-10-17-0",
+          "turn": 24,
+          "depth": 1,
+          "layers": 2,
+          "payout": 2,
+          "unit": "water_1",
+          "cap": false,
+          "outcome": "inactivity"
+        },
+        {
+          "game": "sustain-A-17-0-1",
+          "turn": 18,
+          "depth": 2,
+          "layers": 2,
+          "payout": 2,
+          "unit": "plant_1",
+          "cap": false,
+          "outcome": "inactivity"
+        },
+        {
+          "game": "sustain-A-19-5-1",
+          "turn": 37,
+          "depth": 3,
+          "layers": 1,
+          "payout": 1,
+          "unit": "plant_1",
+          "cap": false,
+          "outcome": "inactivity"
+        },
+        {
+          "game": "sustain-A-21-6-0",
+          "turn": 28,
+          "depth": 2,
+          "layers": 1,
+          "payout": 1,
+          "unit": "water_1",
+          "cap": false,
+          "outcome": "inactivity"
+        },
+        {
+          "game": "sustain-A-21-7-1",
+          "turn": 23,
+          "depth": 1,
+          "layers": 2,
+          "payout": 2,
+          "unit": "water_1",
+          "cap": false,
+          "outcome": "inactivity"
+        }
+      ]
+    },
+    "pairs": [
+      {
+        "cell": 0,
+        "a": "Plant3",
+        "b": "Rush",
+        "n": 40,
+        "outcomesA": {
+          "win": 18,
+          "loss": 21,
+          "draw": 1
+        },
+        "naturalTypes": {
+          "elimination": 24,
+          "home-occupation": 13,
+          "upkeep-elimination": 2
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 22.55,
+          "median": 23.5,
+          "min": 7,
+          "max": 44
+        },
+        "incomeA": 125.8,
+        "incomeB": 13.95
+      },
+      {
+        "cell": 1,
+        "a": "Plant3",
+        "b": "MiningDenial",
+        "n": 40,
+        "outcomesA": {
+          "win": 28,
+          "draw": 8,
+          "loss": 4
+        },
+        "naturalTypes": {
+          "home-occupation": 21,
+          "elimination": 11
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 27.45,
+          "median": 26.5,
+          "min": 13,
+          "max": 47
+        },
+        "incomeA": 151.825,
+        "incomeB": 24.675
+      },
+      {
+        "cell": 2,
+        "a": "Plant3",
+        "b": "Aware:AntiRush",
+        "n": 40,
+        "outcomesA": {
+          "win": 10,
+          "draw": 30
+        },
+        "naturalTypes": {
+          "home-occupation": 4,
+          "elimination": 6
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 34.525,
+          "median": 35.0,
+          "min": 17,
+          "max": 57
+        },
+        "incomeA": 179.95,
+        "incomeB": 52.5
+      },
+      {
+        "cell": 3,
+        "a": "Plant3",
+        "b": "Metal3",
+        "n": 40,
+        "outcomesA": {
+          "draw": 37,
+          "loss": 3
+        },
+        "naturalTypes": {
+          "elimination": 3
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 31.075,
+          "median": 30.5,
+          "min": 22,
+          "max": 41
+        },
+        "incomeA": 128.35,
+        "incomeB": 105.025
+      },
+      {
+        "cell": 4,
+        "a": "Plant3",
+        "b": "Plant2",
+        "n": 40,
+        "outcomesA": {
+          "draw": 38,
+          "loss": 1,
+          "win": 1
+        },
+        "naturalTypes": {
+          "elimination": 2
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 31.6,
+          "median": 30.0,
+          "min": 17,
+          "max": 54
+        },
+        "incomeA": 121.65,
+        "incomeB": 123.45
+      },
+      {
+        "cell": 5,
+        "a": "Plant3",
+        "b": "Aware:Balanced",
+        "n": 40,
+        "outcomesA": {
+          "draw": 30,
+          "win": 10
+        },
+        "naturalTypes": {
+          "elimination": 9,
+          "upkeep-elimination": 1
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 25.925,
+          "median": 26.0,
+          "min": 14,
+          "max": 33
+        },
+        "incomeA": 146.45,
+        "incomeB": 98.425
+      },
+      {
+        "cell": 6,
+        "a": "Plant3",
+        "b": "Invade:LightningRush",
+        "n": 40,
+        "outcomesA": {
+          "win": 24,
+          "loss": 12,
+          "draw": 4
+        },
+        "naturalTypes": {
+          "home-occupation": 17,
+          "elimination": 19
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 28.75,
+          "median": 31.0,
+          "min": 5,
+          "max": 49
+        },
+        "incomeA": 148.85,
+        "incomeB": 24.775
+      },
+      {
+        "cell": 7,
+        "a": "Plant3",
+        "b": "Guard:Turtle",
+        "n": 40,
+        "outcomesA": {
+          "draw": 38,
+          "win": 2
+        },
+        "naturalTypes": {
+          "elimination": 2
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 29.75,
+          "median": 29.0,
+          "min": 25,
+          "max": 40
+        },
+        "incomeA": 195.775,
+        "incomeB": 42.325
+      },
+      {
+        "cell": 8,
+        "a": "Plant2",
+        "b": "Rush",
+        "n": 40,
+        "outcomesA": {
+          "loss": 21,
+          "win": 16,
+          "draw": 3
+        },
+        "naturalTypes": {
+          "elimination": 18,
+          "home-occupation": 18,
+          "upkeep-elimination": 1
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 22.775,
+          "median": 20.0,
+          "min": 7,
+          "max": 49
+        },
+        "incomeA": 124.9,
+        "incomeB": 13.2
+      },
+      {
+        "cell": 9,
+        "a": "Plant2",
+        "b": "MiningDenial",
+        "n": 40,
+        "outcomesA": {
+          "win": 27,
+          "loss": 6,
+          "draw": 7
+        },
+        "naturalTypes": {
+          "home-occupation": 27,
+          "elimination": 6
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 28.45,
+          "median": 30.5,
+          "min": 5,
+          "max": 46
+        },
+        "incomeA": 148.65,
+        "incomeB": 25.475
+      },
+      {
+        "cell": 10,
+        "a": "Plant2",
+        "b": "Metal3",
+        "n": 40,
+        "outcomesA": {
+          "draw": 39,
+          "win": 1
+        },
+        "naturalTypes": {
+          "elimination": 1
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 31.375,
+          "median": 31.5,
+          "min": 20,
+          "max": 46
+        },
+        "incomeA": 120.9,
+        "incomeB": 107.675
+      },
+      {
+        "cell": 11,
+        "a": "Plant2",
+        "b": "Aware:Balanced",
+        "n": 40,
+        "outcomesA": {
+          "draw": 36,
+          "win": 4
+        },
+        "naturalTypes": {
+          "elimination": 4
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 25.975,
+          "median": 25.5,
+          "min": 19,
+          "max": 35
+        },
+        "incomeA": 158.05,
+        "incomeB": 81.975
+      },
+      {
+        "cell": 12,
+        "a": "Plant3",
+        "b": "Plant3",
+        "n": 40,
+        "outcomesA": {
+          "draw": 36,
+          "loss": 2,
+          "win": 2
+        },
+        "naturalTypes": {
+          "elimination": 4
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 31.85,
+          "median": 30.5,
+          "min": 19,
+          "max": 57
+        },
+        "incomeA": 125.7,
+        "incomeB": 125.7
+      },
+      {
+        "cell": 13,
+        "a": "Plant2",
+        "b": "Plant2",
+        "n": 40,
+        "outcomesA": {
+          "draw": 40
+        },
+        "naturalTypes": {},
+        "rounds": {
+          "n": 40,
+          "mean": 26.7,
+          "median": 24.5,
+          "min": 18,
+          "max": 43
+        },
+        "incomeA": 120.65,
+        "incomeB": 120.65
+      },
+      {
+        "cell": 14,
+        "a": "Metal3",
+        "b": "Metal3",
+        "n": 40,
+        "outcomesA": {
+          "draw": 38,
+          "win": 1,
+          "loss": 1
+        },
+        "naturalTypes": {
+          "elimination": 2
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 31,
+          "median": 30.5,
+          "min": 21,
+          "max": 45
+        },
+        "incomeA": 108.5,
+        "incomeB": 108.5
+      },
+      {
+        "cell": 15,
+        "a": "Metal3",
+        "b": "Rush",
+        "n": 40,
+        "outcomesA": {
+          "loss": 8,
+          "win": 32
+        },
+        "naturalTypes": {
+          "elimination": 38,
+          "home-occupation": 2
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 20.75,
+          "median": 20.5,
+          "min": 6,
+          "max": 35
+        },
+        "incomeA": 125.6,
+        "incomeB": 14.375
+      },
+      {
+        "cell": 16,
+        "a": "Metal3",
+        "b": "MiningDenial",
+        "n": 40,
+        "outcomesA": {
+          "win": 33,
+          "draw": 2,
+          "loss": 5
+        },
+        "naturalTypes": {
+          "home-occupation": 24,
+          "elimination": 14
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 24.3,
+          "median": 25.0,
+          "min": 6,
+          "max": 36
+        },
+        "incomeA": 145.475,
+        "incomeB": 24.325
+      },
+      {
+        "cell": 17,
+        "a": "Plant1",
+        "b": "Plant2",
+        "n": 40,
+        "outcomesA": {
+          "draw": 40
+        },
+        "naturalTypes": {},
+        "rounds": {
+          "n": 40,
+          "mean": 25.725,
+          "median": 25.5,
+          "min": 17,
+          "max": 45
+        },
+        "incomeA": 118.35,
+        "incomeB": 114.675
+      },
+      {
+        "cell": 18,
+        "a": "Plant1",
+        "b": "Plant3",
+        "n": 40,
+        "outcomesA": {
+          "draw": 40
+        },
+        "naturalTypes": {},
+        "rounds": {
+          "n": 40,
+          "mean": 29.925,
+          "median": 26.0,
+          "min": 19,
+          "max": 81
+        },
+        "incomeA": 111.5,
+        "incomeB": 123.95
+      },
+      {
+        "cell": 19,
+        "a": "Mono-plant",
+        "b": "Mono-metal",
+        "n": 40,
+        "outcomesA": {
+          "loss": 37,
+          "draw": 3
+        },
+        "naturalTypes": {
+          "elimination": 29,
+          "upkeep-elimination": 8
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 16.675,
+          "median": 15.0,
+          "min": 9,
+          "max": 44
+        },
+        "incomeA": 55.3,
+        "incomeB": 53.025
+      },
+      {
+        "cell": 20,
+        "a": "InvestT3",
+        "b": "HomeT3",
+        "n": 40,
+        "outcomesA": {
+          "draw": 25,
+          "win": 15
+        },
+        "naturalTypes": {
+          "elimination": 15
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 27.95,
+          "median": 28.0,
+          "min": 16,
+          "max": 38
+        },
+        "incomeA": 168.375,
+        "incomeB": 58.6
+      },
+      {
+        "cell": 21,
+        "a": "Invade:Balanced",
+        "b": "Aware:Balanced",
+        "n": 40,
+        "outcomesA": {
+          "loss": 7,
+          "win": 27,
+          "draw": 6
+        },
+        "naturalTypes": {
+          "elimination": 9,
+          "home-occupation": 24,
+          "upkeep-elimination": 1
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 23.2,
+          "median": 22.5,
+          "min": 5,
+          "max": 45
+        },
+        "incomeA": 64.2,
+        "incomeB": 99.775
+      },
+      {
+        "cell": 22,
+        "a": "Rush",
+        "b": "AntiRush",
+        "n": 40,
+        "outcomesA": {
+          "win": 18,
+          "draw": 22
+        },
+        "naturalTypes": {
+          "elimination": 17,
+          "home-occupation": 1
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 18.975,
+          "median": 24.0,
+          "min": 6,
+          "max": 35
+        },
+        "incomeA": 12.825,
+        "incomeB": 48.325
+      },
+      {
+        "cell": 23,
+        "a": "LightningRush",
+        "b": "Expand",
+        "n": 40,
+        "outcomesA": {
+          "win": 37,
+          "draw": 2,
+          "loss": 1
+        },
+        "naturalTypes": {
+          "home-occupation": 21,
+          "elimination": 17
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 17.975,
+          "median": 17.0,
+          "min": 7,
+          "max": 45
+        },
+        "incomeA": 15.8,
+        "incomeB": 62.225
+      }
+    ]
+  },
+  "B": {
+    "n": 960,
+    "valid": 960,
+    "invalid": 0,
+    "invalidIds": [],
+    "outcomes": {
+      "elimination": 232,
+      "home-occupation": 184,
+      "inactivity": 533,
+      "upkeep-elimination": 11
+    },
+    "rounds": {
+      "n": 960,
+      "mean": 26.227083333333333,
+      "median": 26.0,
+      "min": 5,
+      "max": 63
+    },
+    "firstAttack": {
+      "n": 956,
+      "mean": 6.643305439330544,
+      "median": 6.0,
+      "min": 2,
+      "max": 32
+    },
+    "firstKill": {
+      "n": 933,
+      "mean": 7.243301178992497,
+      "median": 6,
+      "min": 2,
+      "max": 32
+    },
+    "tier2Arrival": {
+      "n": 1485,
+      "mean": 3.529292929292929,
+      "median": 2,
+      "min": 2,
+      "max": 21
+    },
+    "tier3Arrival": {
+      "n": 765,
+      "mean": 4.300653594771242,
+      "median": 3,
+      "min": 3,
+      "max": 29
+    },
+    "incomePerPlayer": {
+      "n": 1920,
+      "mean": 103.41354166666666,
+      "median": 111.0,
+      "min": 5,
+      "max": 293
+    },
+    "finalCashPerPlayer": {
+      "n": 1920,
+      "mean": 0.5880208333333333,
+      "median": 0.0,
+      "min": 0,
+      "max": 12
+    },
+    "upkeepPerPlayer": {
+      "n": 1920,
+      "mean": 19.967708333333334,
+      "median": 16.0,
+      "min": 0,
+      "max": 137
+    },
+    "purchasesAndPromotionsPerPlayer": {
+      "n": 1920,
+      "mean": 82.8578125,
+      "median": 85.0,
+      "min": 5,
+      "max": 237
+    },
+    "incomeByDefinition": {
+      "plant_1": 78141,
+      "water_1": 26360,
+      "plant_2": 29964,
+      "plant_3": 21946,
+      "metal_1": 25157,
+      "fire_1": 3487,
+      "metal_3": 10635,
+      "metal_2": 1734,
+      "shadow_2": 128,
+      "water_2": 886,
+      "fire_2": 71,
+      "fire_3": 42,
+      "water_3": 3
+    },
+    "queueByDefinition": {
+      "plant_1": 14254,
+      "metal_1": 24502,
+      "water_1": 5102,
+      "fire_1": 4537,
+      "lightning_1": 6235,
+      "lightning_2": 197,
+      "plant_2": 662,
+      "water_2": 212,
+      "shadow_1": 939,
+      "shadow_2": 150,
+      "plant_3": 23,
+      "water_3": 4,
+      "metal_2": 110
+    },
+    "promotionsByDefinition": {
+      "plant_1->plant_2": 1548,
+      "plant_2->plant_3": 541,
+      "metal_1->metal_2": 453,
+      "metal_2->metal_3": 261,
+      "fire_1->fire_2": 231,
+      "water_1->water_2": 447,
+      "shadow_1->shadow_2": 249,
+      "fire_2->fire_3": 83,
+      "lightning_1->lightning_2": 27,
+      "lightning_2->lightning_3": 2
+    },
+    "actionPoints": {
+      "MINE": 77119,
+      "MOVE": 100301,
+      "END_ACTION_PHASE": 0,
+      "QUEUE_UNIT": 0,
+      "END_TURN": 0,
+      "PROMOTE_UNIT": 0,
+      "PLACE_UNIT": 0,
+      "END_PLACE_PHASE": 0,
+      "ATTACK": 62107,
+      "PAY_UPKEEP": 0
+    },
+    "upgrades": {
+      "n": 541,
+      "estimatedNet": {
+        "n": 541,
+        "mean": -8.828096118299445,
+        "median": -9,
+        "min": -31,
+        "max": 20
+      },
+      "everEstimatedPayback": 308,
+      "finalEstimatedProfitable": 93,
+      "extraRent": {
+        "n": 541,
+        "mean": 12.00554528650647,
+        "median": 12,
+        "min": 0,
+        "max": 35
+      },
+      "fifthIncome": {
+        "n": 541,
+        "mean": 9.177449168207024,
+        "median": 9,
+        "min": 0,
+        "max": 42
+      },
+      "grossIncome": {
+        "n": 541,
+        "mean": 40.288354898336415,
+        "median": 27,
+        "min": 0,
+        "max": 233
+      },
+      "mineActions": {
+        "n": 541,
+        "mean": 8.754158964879853,
+        "median": 7,
+        "min": 0,
+        "max": 49
+      },
+      "moveActions": {
+        "n": 541,
+        "mean": 8.946395563770794,
+        "median": 7,
+        "min": 0,
+        "max": 53
+      },
+      "armyActions": {
+        "n": 541,
+        "mean": 1.8706099815157116,
+        "median": 1,
+        "min": 0,
+        "max": 22
+      }
+    },
+    "opportunities": {
+      "n": 541,
+      "oneTurnGrossAdvantageAtLeastSix": 98,
+      "outsideOptimisticEnemyReach": 292
+    },
+    "earlyLead": {
+      "n": 780,
+      "natural": 370,
+      "converted": 231,
+      "recovered": 223,
+      "laggerWon": 139
+    },
+    "lateMining": {
+      "events": 14,
+      "games": 14,
+      "fifthOnly": 0,
+      "examples": [
+        {
+          "game": "sustain-B-1-15-0",
+          "turn": 41,
+          "depth": 2,
+          "layers": 1,
+          "payout": 1,
+          "unit": "water_1",
+          "cap": false,
+          "outcome": "inactivity"
+        },
+        {
+          "game": "sustain-B-2-7-0",
+          "turn": 30,
+          "depth": 2,
+          "layers": 1,
+          "payout": 1,
+          "unit": "metal_1",
+          "cap": false,
+          "outcome": "inactivity"
+        },
+        {
+          "game": "sustain-B-6-19-1",
+          "turn": 35,
+          "depth": 1,
+          "layers": 3,
+          "payout": 3,
+          "unit": "plant_1",
+          "cap": false,
+          "outcome": "elimination"
+        },
+        {
+          "game": "sustain-B-7-14-0",
+          "turn": 29,
+          "depth": 3,
+          "layers": 1,
+          "payout": 1,
+          "unit": "plant_1",
+          "cap": false,
+          "outcome": "inactivity"
+        },
+        {
+          "game": "sustain-B-10-9-1",
+          "turn": 17,
+          "depth": 2,
+          "layers": 1,
+          "payout": 1,
+          "unit": "metal_1",
+          "cap": false,
+          "outcome": "inactivity"
+        },
+        {
+          "game": "sustain-B-10-11-0",
+          "turn": 18,
+          "depth": 2,
+          "layers": 1,
+          "payout": 1,
+          "unit": "metal_1",
+          "cap": false,
+          "outcome": "inactivity"
+        },
+        {
+          "game": "sustain-B-10-17-1",
+          "turn": 22,
+          "depth": 2,
+          "layers": 2,
+          "payout": 2,
+          "unit": "plant_1",
+          "cap": false,
+          "outcome": "inactivity"
+        },
+        {
+          "game": "sustain-B-12-12-0",
+          "turn": 22,
+          "depth": 2,
+          "layers": 1,
+          "payout": 1,
+          "unit": "metal_1",
+          "cap": false,
+          "outcome": "inactivity"
+        },
+        {
+          "game": "sustain-B-12-12-1",
+          "turn": 22,
+          "depth": 2,
+          "layers": 1,
+          "payout": 1,
+          "unit": "metal_1",
+          "cap": false,
+          "outcome": "inactivity"
+        },
+        {
+          "game": "sustain-B-17-3-0",
+          "turn": 22,
+          "depth": 2,
+          "layers": 1,
+          "payout": 1,
+          "unit": "metal_1",
+          "cap": false,
+          "outcome": "inactivity"
+        },
+        {
+          "game": "sustain-B-17-7-1",
+          "turn": 19,
+          "depth": 2,
+          "layers": 2,
+          "payout": 2,
+          "unit": "plant_1",
+          "cap": false,
+          "outcome": "inactivity"
+        },
+        {
+          "game": "sustain-B-18-11-0",
+          "turn": 25,
+          "depth": 3,
+          "layers": 1,
+          "payout": 1,
+          "unit": "plant_1",
+          "cap": false,
+          "outcome": "inactivity"
+        }
+      ]
+    },
+    "pairs": [
+      {
+        "cell": 0,
+        "a": "Plant3",
+        "b": "Rush",
+        "n": 40,
+        "outcomesA": {
+          "win": 27,
+          "loss": 11,
+          "draw": 2
+        },
+        "naturalTypes": {
+          "elimination": 25,
+          "home-occupation": 13
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 25.2,
+          "median": 27.5,
+          "min": 6,
+          "max": 43
+        },
+        "incomeA": 167.95,
+        "incomeB": 14.875
+      },
+      {
+        "cell": 1,
+        "a": "Plant3",
+        "b": "MiningDenial",
+        "n": 40,
+        "outcomesA": {
+          "win": 30,
+          "draw": 9,
+          "loss": 1
+        },
+        "naturalTypes": {
+          "elimination": 8,
+          "home-occupation": 23
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 28.5,
+          "median": 28.0,
+          "min": 11,
+          "max": 49
+        },
+        "incomeA": 195.55,
+        "incomeB": 25.375
+      },
+      {
+        "cell": 2,
+        "a": "Plant3",
+        "b": "Aware:AntiRush",
+        "n": 40,
+        "outcomesA": {
+          "draw": 28,
+          "win": 12
+        },
+        "naturalTypes": {
+          "home-occupation": 3,
+          "elimination": 9
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 34.225,
+          "median": 33.0,
+          "min": 20,
+          "max": 52
+        },
+        "incomeA": 203.475,
+        "incomeB": 47.375
+      },
+      {
+        "cell": 3,
+        "a": "Plant3",
+        "b": "Metal3",
+        "n": 40,
+        "outcomesA": {
+          "draw": 40
+        },
+        "naturalTypes": {},
+        "rounds": {
+          "n": 40,
+          "mean": 29.825,
+          "median": 28.5,
+          "min": 20,
+          "max": 49
+        },
+        "incomeA": 145.475,
+        "incomeB": 107.15
+      },
+      {
+        "cell": 4,
+        "a": "Plant3",
+        "b": "Plant2",
+        "n": 40,
+        "outcomesA": {
+          "draw": 40
+        },
+        "naturalTypes": {},
+        "rounds": {
+          "n": 40,
+          "mean": 31.775,
+          "median": 29.0,
+          "min": 18,
+          "max": 56
+        },
+        "incomeA": 138.1,
+        "incomeB": 129.6
+      },
+      {
+        "cell": 5,
+        "a": "Plant3",
+        "b": "Aware:Balanced",
+        "n": 40,
+        "outcomesA": {
+          "draw": 28,
+          "win": 12
+        },
+        "naturalTypes": {
+          "elimination": 10,
+          "home-occupation": 1,
+          "upkeep-elimination": 1
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 25.05,
+          "median": 24.5,
+          "min": 16,
+          "max": 38
+        },
+        "incomeA": 168.55,
+        "incomeB": 106.85
+      },
+      {
+        "cell": 6,
+        "a": "Plant3",
+        "b": "Invade:LightningRush",
+        "n": 40,
+        "outcomesA": {
+          "win": 24,
+          "loss": 13,
+          "draw": 3
+        },
+        "naturalTypes": {
+          "elimination": 20,
+          "home-occupation": 17
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 28.3,
+          "median": 28.5,
+          "min": 5,
+          "max": 62
+        },
+        "incomeA": 155.225,
+        "incomeB": 24.55
+      },
+      {
+        "cell": 7,
+        "a": "Plant3",
+        "b": "Guard:Turtle",
+        "n": 40,
+        "outcomesA": {
+          "draw": 37,
+          "win": 3
+        },
+        "naturalTypes": {
+          "elimination": 3
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 28.575,
+          "median": 28.0,
+          "min": 23,
+          "max": 37
+        },
+        "incomeA": 205.95,
+        "incomeB": 50.9
+      },
+      {
+        "cell": 8,
+        "a": "Plant2",
+        "b": "Rush",
+        "n": 40,
+        "outcomesA": {
+          "loss": 22,
+          "win": 16,
+          "draw": 2
+        },
+        "naturalTypes": {
+          "elimination": 24,
+          "home-occupation": 14
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 21.25,
+          "median": 20.0,
+          "min": 6,
+          "max": 43
+        },
+        "incomeA": 123.425,
+        "incomeB": 12.925
+      },
+      {
+        "cell": 9,
+        "a": "Plant2",
+        "b": "MiningDenial",
+        "n": 40,
+        "outcomesA": {
+          "loss": 8,
+          "draw": 10,
+          "win": 22
+        },
+        "naturalTypes": {
+          "home-occupation": 26,
+          "elimination": 4
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 26.65,
+          "median": 26.0,
+          "min": 12,
+          "max": 45
+        },
+        "incomeA": 148.675,
+        "incomeB": 25.95
+      },
+      {
+        "cell": 10,
+        "a": "Plant2",
+        "b": "Metal3",
+        "n": 40,
+        "outcomesA": {
+          "draw": 40
+        },
+        "naturalTypes": {},
+        "rounds": {
+          "n": 40,
+          "mean": 29.675,
+          "median": 28.0,
+          "min": 17,
+          "max": 51
+        },
+        "incomeA": 131.15,
+        "incomeB": 112.125
+      },
+      {
+        "cell": 11,
+        "a": "Plant2",
+        "b": "Aware:Balanced",
+        "n": 40,
+        "outcomesA": {
+          "draw": 36,
+          "win": 4
+        },
+        "naturalTypes": {
+          "elimination": 3,
+          "home-occupation": 1
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 25.25,
+          "median": 25.0,
+          "min": 17,
+          "max": 35
+        },
+        "incomeA": 155.525,
+        "incomeB": 106.425
+      },
+      {
+        "cell": 12,
+        "a": "Plant3",
+        "b": "Plant3",
+        "n": 40,
+        "outcomesA": {
+          "draw": 40
+        },
+        "naturalTypes": {},
+        "rounds": {
+          "n": 40,
+          "mean": 29.45,
+          "median": 28.5,
+          "min": 19,
+          "max": 49
+        },
+        "incomeA": 137.25,
+        "incomeB": 137.25
+      },
+      {
+        "cell": 13,
+        "a": "Plant2",
+        "b": "Plant2",
+        "n": 40,
+        "outcomesA": {
+          "draw": 40
+        },
+        "naturalTypes": {},
+        "rounds": {
+          "n": 40,
+          "mean": 25.9,
+          "median": 23.0,
+          "min": 18,
+          "max": 63
+        },
+        "incomeA": 128.675,
+        "incomeB": 128.675
+      },
+      {
+        "cell": 14,
+        "a": "Metal3",
+        "b": "Metal3",
+        "n": 40,
+        "outcomesA": {
+          "draw": 38,
+          "win": 1,
+          "loss": 1
+        },
+        "naturalTypes": {
+          "elimination": 2
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 31.3,
+          "median": 30.0,
+          "min": 18,
+          "max": 48
+        },
+        "incomeA": 112.675,
+        "incomeB": 112.675
+      },
+      {
+        "cell": 15,
+        "a": "Metal3",
+        "b": "Rush",
+        "n": 40,
+        "outcomesA": {
+          "loss": 8,
+          "win": 32
+        },
+        "naturalTypes": {
+          "elimination": 34,
+          "home-occupation": 6
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 22.9,
+          "median": 23.0,
+          "min": 6,
+          "max": 42
+        },
+        "incomeA": 144.625,
+        "incomeB": 15.75
+      },
+      {
+        "cell": 16,
+        "a": "Metal3",
+        "b": "MiningDenial",
+        "n": 40,
+        "outcomesA": {
+          "win": 32,
+          "draw": 4,
+          "loss": 4
+        },
+        "naturalTypes": {
+          "home-occupation": 29,
+          "elimination": 7
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 24.725,
+          "median": 26.0,
+          "min": 5,
+          "max": 40
+        },
+        "incomeA": 160.35,
+        "incomeB": 22.875
+      },
+      {
+        "cell": 17,
+        "a": "Plant1",
+        "b": "Plant2",
+        "n": 40,
+        "outcomesA": {
+          "draw": 40
+        },
+        "naturalTypes": {},
+        "rounds": {
+          "n": 40,
+          "mean": 24.975,
+          "median": 23.0,
+          "min": 18,
+          "max": 46
+        },
+        "incomeA": 116.4,
+        "incomeB": 123.9
+      },
+      {
+        "cell": 18,
+        "a": "Plant1",
+        "b": "Plant3",
+        "n": 40,
+        "outcomesA": {
+          "draw": 40
+        },
+        "naturalTypes": {},
+        "rounds": {
+          "n": 40,
+          "mean": 28.8,
+          "median": 28.0,
+          "min": 18,
+          "max": 50
+        },
+        "incomeA": 114.6,
+        "incomeB": 131.975
+      },
+      {
+        "cell": 19,
+        "a": "Mono-plant",
+        "b": "Mono-metal",
+        "n": 40,
+        "outcomesA": {
+          "loss": 37,
+          "draw": 3
+        },
+        "naturalTypes": {
+          "elimination": 29,
+          "upkeep-elimination": 8
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 16.775,
+          "median": 15.0,
+          "min": 10,
+          "max": 44
+        },
+        "incomeA": 58.425,
+        "incomeB": 52.6
+      },
+      {
+        "cell": 20,
+        "a": "InvestT3",
+        "b": "HomeT3",
+        "n": 40,
+        "outcomesA": {
+          "win": 17,
+          "draw": 23
+        },
+        "naturalTypes": {
+          "elimination": 15,
+          "home-occupation": 2
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 29.4,
+          "median": 29.0,
+          "min": 18,
+          "max": 41
+        },
+        "incomeA": 185.05,
+        "incomeB": 64.025
+      },
+      {
+        "cell": 21,
+        "a": "Invade:Balanced",
+        "b": "Aware:Balanced",
+        "n": 40,
+        "outcomesA": {
+          "draw": 6,
+          "win": 24,
+          "loss": 10
+        },
+        "naturalTypes": {
+          "home-occupation": 19,
+          "elimination": 13,
+          "upkeep-elimination": 2
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 25.25,
+          "median": 25.0,
+          "min": 5,
+          "max": 55
+        },
+        "incomeA": 65.25,
+        "incomeB": 105.55
+      },
+      {
+        "cell": 22,
+        "a": "Rush",
+        "b": "AntiRush",
+        "n": 40,
+        "outcomesA": {
+          "win": 18,
+          "draw": 22
+        },
+        "naturalTypes": {
+          "elimination": 17,
+          "home-occupation": 1
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 18.975,
+          "median": 24.0,
+          "min": 6,
+          "max": 35
+        },
+        "incomeA": 12.825,
+        "incomeB": 48.325
+      },
+      {
+        "cell": 23,
+        "a": "LightningRush",
+        "b": "Expand",
+        "n": 40,
+        "outcomesA": {
+          "win": 38,
+          "draw": 2
+        },
+        "naturalTypes": {
+          "elimination": 9,
+          "home-occupation": 29
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 16.725,
+          "median": 15.0,
+          "min": 7,
+          "max": 36
+        },
+        "incomeA": 16.9,
+        "incomeB": 64.075
+      }
+    ]
+  },
+  "C": {
+    "n": 960,
+    "valid": 960,
+    "invalid": 0,
+    "invalidIds": [],
+    "outcomes": {
+      "elimination": 186,
+      "home-occupation": 150,
+      "inactivity": 596,
+      "upkeep-elimination": 28
+    },
+    "rounds": {
+      "n": 960,
+      "mean": 24.322916666666668,
+      "median": 23.0,
+      "min": 5,
+      "max": 84
+    },
+    "firstAttack": {
+      "n": 944,
+      "mean": 6.771186440677966,
+      "median": 6.0,
+      "min": 2,
+      "max": 21
+    },
+    "firstKill": {
+      "n": 860,
+      "mean": 6.8569767441860465,
+      "median": 6.0,
+      "min": 2,
+      "max": 21
+    },
+    "tier2Arrival": {
+      "n": 1506,
+      "mean": 3.2211155378486054,
+      "median": 2.0,
+      "min": 2,
+      "max": 18
+    },
+    "tier3Arrival": {
+      "n": 1020,
+      "mean": 4.3696078431372545,
+      "median": 4.0,
+      "min": 3,
+      "max": 20
+    },
+    "incomePerPlayer": {
+      "n": 1920,
+      "mean": 196.88385416666668,
+      "median": 202.0,
+      "min": 9,
+      "max": 530
+    },
+    "finalCashPerPlayer": {
+      "n": 1920,
+      "mean": 0.41041666666666665,
+      "median": 0.0,
+      "min": 0,
+      "max": 20
+    },
+    "upkeepPerPlayer": {
+      "n": 1920,
+      "mean": 25.194270833333334,
+      "median": 16.5,
+      "min": 0,
+      "max": 281
+    },
+    "purchasesAndPromotionsPerPlayer": {
+      "n": 1920,
+      "mean": 171.27916666666667,
+      "median": 165.0,
+      "min": 9,
+      "max": 478
+    },
+    "incomeByDefinition": {
+      "plant_1": 135363,
+      "water_1": 30043,
+      "plant_2": 82319,
+      "plant_3": 61056,
+      "metal_1": 44703,
+      "fire_1": 3157,
+      "metal_2": 3916,
+      "metal_3": 15565,
+      "shadow_2": 317,
+      "water_3": 389,
+      "water_2": 974,
+      "shadow_3": 59,
+      "fire_2": 68,
+      "fire_3": 88
+    },
+    "queueByDefinition": {
+      "plant_1": 29933,
+      "metal_1": 58514,
+      "fire_1": 5643,
+      "water_1": 5484,
+      "lightning_1": 7827,
+      "lightning_2": 337,
+      "plant_2": 1229,
+      "shadow_1": 1607,
+      "water_3": 75,
+      "plant_3": 506,
+      "shadow_2": 375,
+      "water_2": 159,
+      "shadow_3": 19,
+      "metal_2": 177,
+      "metal_3": 21
+    },
+    "promotionsByDefinition": {
+      "plant_1->plant_2": 1783,
+      "plant_2->plant_3": 722,
+      "metal_1->metal_2": 513,
+      "metal_2->metal_3": 283,
+      "fire_1->fire_2": 290,
+      "water_1->water_2": 552,
+      "shadow_1->shadow_2": 764,
+      "fire_2->fire_3": 176,
+      "shadow_2->shadow_3": 24,
+      "water_2->water_3": 30,
+      "lightning_1->lightning_2": 17
+    },
+    "actionPoints": {
+      "MINE": 73559,
+      "MOVE": 85487,
+      "END_ACTION_PHASE": 0,
+      "QUEUE_UNIT": 0,
+      "END_TURN": 0,
+      "PROMOTE_UNIT": 0,
+      "PLACE_UNIT": 0,
+      "ATTACK": 69009,
+      "END_PLACE_PHASE": 0,
+      "PAY_UPKEEP": 0
+    },
+    "upgrades": {
+      "n": 722,
+      "estimatedNet": {
+        "n": 722,
+        "mean": -2.8254847645429364,
+        "median": -4.0,
+        "min": -31,
+        "max": 40
+      },
+      "everEstimatedPayback": 324,
+      "finalEstimatedProfitable": 278,
+      "extraRent": {
+        "n": 722,
+        "mean": 9.096952908587257,
+        "median": 9.0,
+        "min": 0,
+        "max": 26
+      },
+      "fifthIncome": {
+        "n": 722,
+        "mean": 12.271468144044322,
+        "median": 5.0,
+        "min": 0,
+        "max": 70
+      },
+      "grossIncome": {
+        "n": 722,
+        "mean": 81.29501385041551,
+        "median": 70.0,
+        "min": 0,
+        "max": 447
+      },
+      "mineActions": {
+        "n": 722,
+        "mean": 8.817174515235457,
+        "median": 9.0,
+        "min": 0,
+        "max": 51
+      },
+      "moveActions": {
+        "n": 722,
+        "mean": 8.85595567867036,
+        "median": 8.0,
+        "min": 0,
+        "max": 55
+      },
+      "armyActions": {
+        "n": 722,
+        "mean": 2.275623268698061,
+        "median": 1.0,
+        "min": 0,
+        "max": 27
+      }
+    },
+    "opportunities": {
+      "n": 722,
+      "oneTurnGrossAdvantageAtLeastSix": 47,
+      "outsideOptimisticEnemyReach": 312
+    },
+    "earlyLead": {
+      "n": 884,
+      "natural": 348,
+      "converted": 166,
+      "recovered": 225,
+      "laggerWon": 182
+    },
+    "lateMining": {
+      "events": 4,
+      "games": 4,
+      "fifthOnly": 0,
+      "examples": [
+        {
+          "game": "sustain-C-14-2-0",
+          "turn": 19,
+          "depth": 2,
+          "layers": 1,
+          "payout": 2,
+          "unit": "metal_1",
+          "cap": false,
+          "outcome": "inactivity"
+        },
+        {
+          "game": "sustain-C-14-2-1",
+          "turn": 19,
+          "depth": 2,
+          "layers": 1,
+          "payout": 2,
+          "unit": "metal_1",
+          "cap": false,
+          "outcome": "inactivity"
+        },
+        {
+          "game": "sustain-C-21-5-0",
+          "turn": 37,
+          "depth": 1,
+          "layers": 3,
+          "payout": 6,
+          "unit": "plant_1",
+          "cap": false,
+          "outcome": "home-occupation"
+        },
+        {
+          "game": "sustain-C-22-3-0",
+          "turn": 10,
+          "depth": 1,
+          "layers": 2,
+          "payout": 3,
+          "unit": "water_1",
+          "cap": false,
+          "outcome": "elimination"
+        }
+      ]
+    },
+    "pairs": [
+      {
+        "cell": 0,
+        "a": "Plant3",
+        "b": "Rush",
+        "n": 40,
+        "outcomesA": {
+          "win": 15,
+          "loss": 20,
+          "draw": 5
+        },
+        "naturalTypes": {
+          "elimination": 29,
+          "home-occupation": 6
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 23.375,
+          "median": 25.0,
+          "min": 9,
+          "max": 47
+        },
+        "incomeA": 299.3,
+        "incomeB": 18.75
+      },
+      {
+        "cell": 1,
+        "a": "Plant3",
+        "b": "MiningDenial",
+        "n": 40,
+        "outcomesA": {
+          "draw": 21,
+          "win": 16,
+          "loss": 3
+        },
+        "naturalTypes": {
+          "elimination": 1,
+          "home-occupation": 18
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 29,
+          "median": 27.5,
+          "min": 15,
+          "max": 50
+        },
+        "incomeA": 366.575,
+        "incomeB": 36.9
+      },
+      {
+        "cell": 2,
+        "a": "Plant3",
+        "b": "Aware:AntiRush",
+        "n": 40,
+        "outcomesA": {
+          "draw": 36,
+          "win": 4
+        },
+        "naturalTypes": {
+          "elimination": 3,
+          "home-occupation": 1
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 29.2,
+          "median": 26.0,
+          "min": 21,
+          "max": 46
+        },
+        "incomeA": 383.95,
+        "incomeB": 99.25
+      },
+      {
+        "cell": 3,
+        "a": "Plant3",
+        "b": "Metal3",
+        "n": 40,
+        "outcomesA": {
+          "draw": 40
+        },
+        "naturalTypes": {},
+        "rounds": {
+          "n": 40,
+          "mean": 27.05,
+          "median": 22.5,
+          "min": 17,
+          "max": 63
+        },
+        "incomeA": 275.725,
+        "incomeB": 177.125
+      },
+      {
+        "cell": 4,
+        "a": "Plant3",
+        "b": "Plant2",
+        "n": 40,
+        "outcomesA": {
+          "draw": 40
+        },
+        "naturalTypes": {},
+        "rounds": {
+          "n": 40,
+          "mean": 22.8,
+          "median": 20.0,
+          "min": 16,
+          "max": 54
+        },
+        "incomeA": 260.2,
+        "incomeB": 251.55
+      },
+      {
+        "cell": 5,
+        "a": "Plant3",
+        "b": "Aware:Balanced",
+        "n": 40,
+        "outcomesA": {
+          "win": 13,
+          "draw": 27
+        },
+        "naturalTypes": {
+          "elimination": 8,
+          "upkeep-elimination": 4,
+          "home-occupation": 1
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 21.375,
+          "median": 22.0,
+          "min": 9,
+          "max": 37
+        },
+        "incomeA": 312.5,
+        "incomeB": 222.475
+      },
+      {
+        "cell": 6,
+        "a": "Plant3",
+        "b": "Invade:LightningRush",
+        "n": 40,
+        "outcomesA": {
+          "loss": 20,
+          "win": 11,
+          "draw": 9
+        },
+        "naturalTypes": {
+          "home-occupation": 20,
+          "elimination": 11
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 30.05,
+          "median": 28.5,
+          "min": 5,
+          "max": 62
+        },
+        "incomeA": 284.225,
+        "incomeB": 31.625
+      },
+      {
+        "cell": 7,
+        "a": "Plant3",
+        "b": "Guard:Turtle",
+        "n": 40,
+        "outcomesA": {
+          "draw": 25,
+          "win": 15
+        },
+        "naturalTypes": {
+          "elimination": 5,
+          "upkeep-elimination": 3,
+          "home-occupation": 7
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 22.075,
+          "median": 23.0,
+          "min": 7,
+          "max": 27
+        },
+        "incomeA": 372.7,
+        "incomeB": 139.125
+      },
+      {
+        "cell": 8,
+        "a": "Plant2",
+        "b": "Rush",
+        "n": 40,
+        "outcomesA": {
+          "win": 11,
+          "loss": 27,
+          "draw": 2
+        },
+        "naturalTypes": {
+          "home-occupation": 15,
+          "elimination": 23
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 21.05,
+          "median": 17.0,
+          "min": 10,
+          "max": 40
+        },
+        "incomeA": 221.125,
+        "incomeB": 15.525
+      },
+      {
+        "cell": 9,
+        "a": "Plant2",
+        "b": "MiningDenial",
+        "n": 40,
+        "outcomesA": {
+          "draw": 16,
+          "win": 20,
+          "loss": 4
+        },
+        "naturalTypes": {
+          "home-occupation": 24
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 30.175,
+          "median": 30.0,
+          "min": 15,
+          "max": 56
+        },
+        "incomeA": 314.2,
+        "incomeB": 38.225
+      },
+      {
+        "cell": 10,
+        "a": "Plant2",
+        "b": "Metal3",
+        "n": 40,
+        "outcomesA": {
+          "draw": 40
+        },
+        "naturalTypes": {},
+        "rounds": {
+          "n": 40,
+          "mean": 23.875,
+          "median": 20.0,
+          "min": 16,
+          "max": 59
+        },
+        "incomeA": 256.9,
+        "incomeB": 168.35
+      },
+      {
+        "cell": 11,
+        "a": "Plant2",
+        "b": "Aware:Balanced",
+        "n": 40,
+        "outcomesA": {
+          "win": 9,
+          "draw": 31
+        },
+        "naturalTypes": {
+          "upkeep-elimination": 1,
+          "elimination": 8
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 21.225,
+          "median": 22.0,
+          "min": 11,
+          "max": 27
+        },
+        "incomeA": 296.55,
+        "incomeB": 235.55
+      },
+      {
+        "cell": 12,
+        "a": "Plant3",
+        "b": "Plant3",
+        "n": 40,
+        "outcomesA": {
+          "draw": 40
+        },
+        "naturalTypes": {},
+        "rounds": {
+          "n": 40,
+          "mean": 27.15,
+          "median": 22.5,
+          "min": 17,
+          "max": 63
+        },
+        "incomeA": 266,
+        "incomeB": 266
+      },
+      {
+        "cell": 13,
+        "a": "Plant2",
+        "b": "Plant2",
+        "n": 40,
+        "outcomesA": {
+          "draw": 40
+        },
+        "naturalTypes": {},
+        "rounds": {
+          "n": 40,
+          "mean": 21.25,
+          "median": 18.0,
+          "min": 16,
+          "max": 54
+        },
+        "incomeA": 247.425,
+        "incomeB": 247.425
+      },
+      {
+        "cell": 14,
+        "a": "Metal3",
+        "b": "Metal3",
+        "n": 40,
+        "outcomesA": {
+          "draw": 40
+        },
+        "naturalTypes": {},
+        "rounds": {
+          "n": 40,
+          "mean": 25.2,
+          "median": 24.0,
+          "min": 17,
+          "max": 49
+        },
+        "incomeA": 172.15,
+        "incomeB": 172.15
+      },
+      {
+        "cell": 15,
+        "a": "Metal3",
+        "b": "Rush",
+        "n": 40,
+        "outcomesA": {
+          "loss": 13,
+          "win": 26,
+          "draw": 1
+        },
+        "naturalTypes": {
+          "elimination": 31,
+          "home-occupation": 8
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 22.125,
+          "median": 24.0,
+          "min": 10,
+          "max": 34
+        },
+        "incomeA": 244.7,
+        "incomeB": 18.35
+      },
+      {
+        "cell": 16,
+        "a": "Metal3",
+        "b": "MiningDenial",
+        "n": 40,
+        "outcomesA": {
+          "draw": 20,
+          "win": 16,
+          "loss": 4
+        },
+        "naturalTypes": {
+          "home-occupation": 16,
+          "elimination": 4
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 23.05,
+          "median": 21.5,
+          "min": 7,
+          "max": 50
+        },
+        "incomeA": 270.35,
+        "incomeB": 32.95
+      },
+      {
+        "cell": 17,
+        "a": "Plant1",
+        "b": "Plant2",
+        "n": 40,
+        "outcomesA": {
+          "draw": 40
+        },
+        "naturalTypes": {},
+        "rounds": {
+          "n": 40,
+          "mean": 18.6,
+          "median": 18.5,
+          "min": 16,
+          "max": 22
+        },
+        "incomeA": 209.7,
+        "incomeB": 245.625
+      },
+      {
+        "cell": 18,
+        "a": "Plant1",
+        "b": "Plant3",
+        "n": 40,
+        "outcomesA": {
+          "draw": 40
+        },
+        "naturalTypes": {},
+        "rounds": {
+          "n": 40,
+          "mean": 25.3,
+          "median": 18.0,
+          "min": 17,
+          "max": 84
+        },
+        "incomeA": 207.5,
+        "incomeB": 267.55
+      },
+      {
+        "cell": 19,
+        "a": "Mono-plant",
+        "b": "Mono-metal",
+        "n": 40,
+        "outcomesA": {
+          "loss": 39,
+          "draw": 1
+        },
+        "naturalTypes": {
+          "elimination": 24,
+          "upkeep-elimination": 15
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 16.875,
+          "median": 15.0,
+          "min": 10,
+          "max": 64
+        },
+        "incomeA": 136.775,
+        "incomeB": 111.175
+      },
+      {
+        "cell": 20,
+        "a": "InvestT3",
+        "b": "HomeT3",
+        "n": 40,
+        "outcomesA": {
+          "draw": 40
+        },
+        "naturalTypes": {},
+        "rounds": {
+          "n": 40,
+          "mean": 26.45,
+          "median": 25.5,
+          "min": 23,
+          "max": 53
+        },
+        "incomeA": 374.925,
+        "incomeB": 125.075
+      },
+      {
+        "cell": 21,
+        "a": "Invade:Balanced",
+        "b": "Aware:Balanced",
+        "n": 40,
+        "outcomesA": {
+          "loss": 5,
+          "win": 31,
+          "draw": 4
+        },
+        "naturalTypes": {
+          "upkeep-elimination": 5,
+          "home-occupation": 23,
+          "elimination": 8
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 23.3,
+          "median": 23.0,
+          "min": 8,
+          "max": 39
+        },
+        "incomeA": 120.05,
+        "incomeB": 260.8
+      },
+      {
+        "cell": 22,
+        "a": "Rush",
+        "b": "AntiRush",
+        "n": 40,
+        "outcomesA": {
+          "draw": 36,
+          "win": 4
+        },
+        "naturalTypes": {
+          "elimination": 4
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 24.8,
+          "median": 25.5,
+          "min": 7,
+          "max": 32
+        },
+        "incomeA": 24.375,
+        "incomeB": 139.425
+      },
+      {
+        "cell": 23,
+        "a": "LightningRush",
+        "b": "Expand",
+        "n": 40,
+        "outcomesA": {
+          "win": 37,
+          "draw": 2,
+          "loss": 1
+        },
+        "naturalTypes": {
+          "elimination": 27,
+          "home-occupation": 11
+        },
+        "rounds": {
+          "n": 40,
+          "mean": 28.4,
+          "median": 28.5,
+          "min": 13,
+          "max": 42
+        },
+        "incomeA": 30.375,
+        "incomeB": 181.175
+      }
+    ]
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "recommendedForHumanPlaytest": "B",
+  "productionAdoption": false,
+  "rejectAsNextCandidate": "C",
+  "productionChanged": false,
+  "mainScriptedGames": 5760,
+  "counterfactualContinuations": 288,
+  "realAIGamesIncludingControls": 26,
+  "diagnosticGamesExcluded": 2880,
+  "judgment": "B creates conditional fifth-layer payback without a starting-income subsidy; C inflates the wider economy and produces more inactivity draws. Neither is ready for adoption.",
+  "uncertainties": [
+    "Fixed weak policies and post-screen reserve repair",
+    "Production AI spending/upkeep weaknesses",
+    "Draw-heavy Plant-versus-Metal and T2 mirrors",
+    "Same-route attribution differs from measured policy counterfactuals",
+    "Wall-clock AI searches are not bit-exact reproducible",
+    "Human optimal release timing and deliberate draw-clock play untested"
+  ],
+  "data": [
+    "summary.json",
+    "sustain-summary.json",
+    "paired-comparison.json",
+    "sustain-paired-comparison.json",
+    "counterfactual-summary.json",
+    "sustain-counterfactual-summary.json",
+    "real-ai-summary.json",
+    "scenarios.json",
+    "legal-witnesses.json",
+    "route-persistence.json",
+    "production-manifest.json",
+    "SHA256SUMS"
+  ]
+}

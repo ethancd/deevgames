@@ -1,0 +1,60 @@
+{
+  "label": "p8-black22",
+  "stamp": "2026-09-17T23:59:22.324Z",
+  "node": "v24.11.1",
+  "results": [
+    {
+      "replay": "e1-g2-s40_3_3-A-white.json",
+      "side": "black",
+      "seatTurnIndex": 22,
+      "gameTurn": 23,
+      "phase": "place",
+      "bodies": 33,
+      "whiteBodies": 14,
+      "blackBodies": 19,
+      "bank": {
+        "white": 36,
+        "black": 37
+      },
+      "ruleset": "standard",
+      "recordedTurnMs": 83023,
+      "actions": [
+        "END_PLACE_PHASE",
+        "MOVE",
+        "ATTACK",
+        "END_ACTION_PHASE"
+      ],
+      "applyTotalMs": 0.089,
+      "perAction": [
+        {
+          "i": 0,
+          "type": "END_PLACE_PHASE",
+          "applyMs": 0.009,
+          "verdictCalls": 0
+        },
+        {
+          "i": 1,
+          "type": "MOVE",
+          "applyMs": 0.002,
+          "verdictCalls": 0
+        },
+        {
+          "i": 2,
+          "type": "ATTACK",
+          "applyMs": 0.006,
+          "verdictCalls": 0
+        },
+        {
+          "i": 3,
+          "type": "END_ACTION_PHASE",
+          "applyMs": 0.073,
+          "verdictCalls": 0
+        }
+      ],
+      "verdictCalls": 0,
+      "verdictTotalMs": 0,
+      "distinctKeys": 0,
+      "calls": []
+    }
+  ]
+}

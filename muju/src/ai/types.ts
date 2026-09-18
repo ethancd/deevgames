@@ -98,4 +98,16 @@ export interface AIResult {
   depth: number;
   debug?: AIDebugInfo;
   stats?: import('./runtime').SearchStats;
+  /**
+   * Whole-turn worker path (protocol 3, M3): the legal prefix of `plan.actions`
+   * as verified by `worker/handler.ts`, present only when the request used
+   * `mode: 'turn'`.
+   */
+  turnActions?: AIAction[];
+  /**
+   * Hard-engine replica end-state hash (protocol 3, M14+), used for
+   * determinism comparisons across processes/WASM presence. Absent on the
+   * `AIEngineV2` turn path (M3), which has no replica to hash.
+   */
+  endKey?: string;
 }

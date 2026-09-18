@@ -1,0 +1,789 @@
+{
+  "schema": "muju-ladder-manifest-v1",
+  "status": "complete",
+  "a": "hard@ablate:eval-correct-v1",
+  "b": "hard@desktop",
+  "aConfigHash": "hard:ablate:eval-correct-v1:wall:3000#49aa15dba67fbc95acd5d6c316210bb4946e8f8016831cf5dc9143afa3641498",
+  "bConfigHash": "hard:desktop:wall:3000#4e7afdf76b32fadfab2d11577cb610c8f9f1a491b5153e70b87b0774403600cd",
+  "aResolvedConfig": {
+    "engine": "hard",
+    "config": {
+      "maxDepth": 12,
+      "aspirationCc": 200,
+      "lmrRank1": 6,
+      "lmrRank2": 12,
+      "futilityMarginCc": 200,
+      "useLmr": false,
+      "useAspiration": false,
+      "useFutility": false,
+      "useExtensions": false,
+      "quiesce": {
+        "maxPly": 4,
+        "deltaMarginCc": 300,
+        "maxCandidates": 8
+      },
+      "gen": {
+        "K": 24,
+        "maxPlacePlans": 16,
+        "action": {
+          "widths": {
+            "0": 6,
+            "1": 4,
+            "2": 3,
+            "3": 2
+          },
+          "keep": 4,
+          "ttBits": 18
+        },
+        "purchase": {
+          "maxBodies": 4,
+          "maxMultisets": 35,
+          "maxPlans": 12,
+          "squares": 8,
+          "keepPerMultiset": 3,
+          "weights": {
+            "mineCc": 1,
+            "safeCc": 100,
+            "blockCc": 200,
+            "strikeCc": 300,
+            "anchorCc": 20,
+            "zeroSpawnCc": 400,
+            "liquidityCc": 50,
+            "homeRaceCc": 5000
+          }
+        },
+        "maxPromotions": 8,
+        "reference": false
+      },
+      "genInterior": {
+        "K": 16,
+        "maxPlacePlans": 8,
+        "action": {
+          "widths": {
+            "0": 6,
+            "1": 4,
+            "2": 3,
+            "3": 2
+          },
+          "keep": 4,
+          "ttBits": 18
+        },
+        "purchase": {
+          "maxBodies": 4,
+          "maxMultisets": 35,
+          "maxPlans": 12,
+          "squares": 8,
+          "keepPerMultiset": 3,
+          "weights": {
+            "mineCc": 1,
+            "safeCc": 100,
+            "blockCc": 200,
+            "strikeCc": 300,
+            "anchorCc": 20,
+            "zeroSpawnCc": 400,
+            "liquidityCc": 50,
+            "homeRaceCc": 5000
+          }
+        },
+        "maxPromotions": 8,
+        "reference": false
+      },
+      "ttBits": 19,
+      "dfpn": {
+        "maxTurns": 3,
+        "nodeBudget": 4000,
+        "epsilonQ2": 5,
+        "ttBits": 17
+      },
+      "useDfpn": false,
+      "time": {
+        "minMs": 2000,
+        "maxMs": 6000,
+        "baseMs": 3000,
+        "abortFactor": 3
+      },
+      "profile": {
+        "unitsPerMs": 200,
+        "samples": 0
+      },
+      "ttBitsMacro": 19,
+      "ttBitsTurn": 18,
+      "K": 24,
+      "kInterior": 16,
+      "weights": {
+        "w": {
+          "0": 100,
+          "1": -422,
+          "2": 90,
+          "3": 25,
+          "4": -4000,
+          "5": 60,
+          "6": 20,
+          "7": 30,
+          "8": 8,
+          "9": -800,
+          "10": 25,
+          "11": 90,
+          "12": -60,
+          "13": -400,
+          "14": -180,
+          "15": 220,
+          "16": 90,
+          "17": -20,
+          "18": -8,
+          "19": 40,
+          "20": 0,
+          "21": 0,
+          "22": 150,
+          "23": 80,
+          "24": -30,
+          "25": -600,
+          "26": -150,
+          "27": -60,
+          "28": -50,
+          "29": -30,
+          "30": -25,
+          "31": -10,
+          "32": 20,
+          "33": 35,
+          "34": -40,
+          "35": -120,
+          "36": -150,
+          "37": 300,
+          "38": -800,
+          "39": -300,
+          "40": -250,
+          "41": -100,
+          "42": -400,
+          "43": -120,
+          "44": -600,
+          "45": -150,
+          "46": -150,
+          "47": -400,
+          "48": -250,
+          "49": -40,
+          "50": -200,
+          "51": -200,
+          "52": 0,
+          "53": -200,
+          "54": -60,
+          "55": 0,
+          "56": -150,
+          "57": -250
+        },
+        "material": {
+          "0": 300,
+          "1": 700,
+          "2": 1500,
+          "3": 300,
+          "4": 700,
+          "5": 1500,
+          "6": 400,
+          "7": 800,
+          "8": 1600,
+          "9": 400,
+          "10": 800,
+          "11": 1600,
+          "12": 500,
+          "13": 900,
+          "14": 1700,
+          "15": 500,
+          "16": 900,
+          "17": 1700
+        },
+        "version": 1,
+        "label": "default-v1"
+      },
+      "book": {
+        "size": 0,
+        "handicap": 0,
+        "mapHash": 0,
+        "weightsVersion": 0
+      },
+      "evalFix": {
+        "rot180TieOrder": true,
+        "infiltrationPerAnchor": true,
+        "inv3RetreatConjunct": true,
+        "rentOnce": true,
+        "approachTieOrder": true
+      }
+    },
+    "budget": {
+      "mode": "wall",
+      "fixedWork": 0,
+      "turnMs": 3000,
+      "allocation": "whole-turn",
+      "shippedTurnBudgetMs": null,
+      "overridesPresetTimeLimit": false
+    },
+    "lifecycle": {
+      "engine": "one-per-game-seat",
+      "seed": "once-at-construction",
+      "setDifficultyPerDecision": false,
+      "searchesPerTurn": "one"
+    },
+    "resign": false
+  },
+  "bResolvedConfig": {
+    "engine": "hard",
+    "config": {
+      "maxDepth": 12,
+      "aspirationCc": 200,
+      "lmrRank1": 6,
+      "lmrRank2": 12,
+      "futilityMarginCc": 200,
+      "useLmr": false,
+      "useAspiration": false,
+      "useFutility": false,
+      "useExtensions": false,
+      "quiesce": {
+        "maxPly": 4,
+        "deltaMarginCc": 300,
+        "maxCandidates": 8
+      },
+      "gen": {
+        "K": 24,
+        "maxPlacePlans": 16,
+        "action": {
+          "widths": {
+            "0": 6,
+            "1": 4,
+            "2": 3,
+            "3": 2
+          },
+          "keep": 4,
+          "ttBits": 18
+        },
+        "purchase": {
+          "maxBodies": 4,
+          "maxMultisets": 35,
+          "maxPlans": 12,
+          "squares": 8,
+          "keepPerMultiset": 3,
+          "weights": {
+            "mineCc": 1,
+            "safeCc": 100,
+            "blockCc": 200,
+            "strikeCc": 300,
+            "anchorCc": 20,
+            "zeroSpawnCc": 400,
+            "liquidityCc": 50,
+            "homeRaceCc": 5000
+          }
+        },
+        "maxPromotions": 8,
+        "reference": false
+      },
+      "genInterior": {
+        "K": 16,
+        "maxPlacePlans": 8,
+        "action": {
+          "widths": {
+            "0": 6,
+            "1": 4,
+            "2": 3,
+            "3": 2
+          },
+          "keep": 4,
+          "ttBits": 18
+        },
+        "purchase": {
+          "maxBodies": 4,
+          "maxMultisets": 35,
+          "maxPlans": 12,
+          "squares": 8,
+          "keepPerMultiset": 3,
+          "weights": {
+            "mineCc": 1,
+            "safeCc": 100,
+            "blockCc": 200,
+            "strikeCc": 300,
+            "anchorCc": 20,
+            "zeroSpawnCc": 400,
+            "liquidityCc": 50,
+            "homeRaceCc": 5000
+          }
+        },
+        "maxPromotions": 8,
+        "reference": false
+      },
+      "ttBits": 19,
+      "dfpn": {
+        "maxTurns": 3,
+        "nodeBudget": 4000,
+        "epsilonQ2": 5,
+        "ttBits": 17
+      },
+      "useDfpn": false,
+      "time": {
+        "minMs": 2000,
+        "maxMs": 6000,
+        "baseMs": 3000,
+        "abortFactor": 3
+      },
+      "profile": {
+        "unitsPerMs": 200,
+        "samples": 0
+      },
+      "ttBitsMacro": 19,
+      "ttBitsTurn": 18,
+      "K": 24,
+      "kInterior": 16,
+      "weights": {
+        "w": {
+          "0": 100,
+          "1": -422,
+          "2": 90,
+          "3": 25,
+          "4": -4000,
+          "5": 60,
+          "6": 20,
+          "7": 30,
+          "8": 8,
+          "9": -800,
+          "10": 25,
+          "11": 90,
+          "12": -60,
+          "13": -400,
+          "14": -180,
+          "15": 220,
+          "16": 90,
+          "17": -20,
+          "18": -8,
+          "19": 40,
+          "20": 0,
+          "21": 0,
+          "22": 150,
+          "23": 80,
+          "24": -30,
+          "25": -600,
+          "26": -150,
+          "27": -60,
+          "28": -50,
+          "29": -30,
+          "30": -25,
+          "31": -10,
+          "32": 20,
+          "33": 35,
+          "34": -40,
+          "35": -120,
+          "36": -150,
+          "37": 300,
+          "38": -800,
+          "39": -300,
+          "40": -250,
+          "41": -100,
+          "42": -400,
+          "43": -120,
+          "44": -600,
+          "45": -150,
+          "46": -150,
+          "47": -400,
+          "48": -250,
+          "49": -40,
+          "50": -200,
+          "51": -200,
+          "52": 0,
+          "53": -200,
+          "54": -60,
+          "55": 0,
+          "56": -150,
+          "57": -250
+        },
+        "material": {
+          "0": 300,
+          "1": 700,
+          "2": 1500,
+          "3": 300,
+          "4": 700,
+          "5": 1500,
+          "6": 400,
+          "7": 800,
+          "8": 1600,
+          "9": 400,
+          "10": 800,
+          "11": 1600,
+          "12": 500,
+          "13": 900,
+          "14": 1700,
+          "15": 500,
+          "16": 900,
+          "17": 1700
+        },
+        "version": 1,
+        "label": "default-v1"
+      },
+      "book": {
+        "size": 0,
+        "handicap": 0,
+        "mapHash": 0,
+        "weightsVersion": 0
+      }
+    },
+    "budget": {
+      "mode": "wall",
+      "fixedWork": 0,
+      "turnMs": 3000,
+      "allocation": "whole-turn",
+      "shippedTurnBudgetMs": null,
+      "overridesPresetTimeLimit": false
+    },
+    "lifecycle": {
+      "engine": "one-per-game-seat",
+      "seed": "once-at-construction",
+      "setDifficultyPerDecision": false,
+      "searchesPerTurn": "one"
+    },
+    "resign": false
+  },
+  "work": "wall:3000",
+  "seed": 20260934,
+  "pairs": 32,
+  "shards": 6,
+  "handicaps": [
+    0,
+    3
+  ],
+  "legality": "strict",
+  "sprt": null,
+  "openings": {
+    "path": "lab/hard-ai/ladder/openings/e1-val2.jsonl",
+    "sha256": "fe3b9c98ad216773fc1766ef618f8aed7efa2e990f04ea409b6ed9bce49d2007",
+    "ids": [
+      "e1v2-g5-s255",
+      "e1v2-g3-s265",
+      "e1v2-g5-s275",
+      "e1v2-g3-s285",
+      "e1v2-g4-s290",
+      "e1v2-g4-s295",
+      "e1v2-g3-s305",
+      "e1v2-g4-s310",
+      "e1v2-g3-s325",
+      "e1v2-g4-s330",
+      "e1v2-g5-s335",
+      "e1v2-g4-s350",
+      "e1v2-g4-s370",
+      "e1v2-g5-s375",
+      "e1v2-g3-s385",
+      "e1v2-g4-s390"
+    ],
+    "count": 16,
+    "skip": 16,
+    "selectedIds": null,
+    "used": [
+      "e1v2-g5-s255",
+      "e1v2-g3-s265",
+      "e1v2-g5-s275",
+      "e1v2-g3-s285",
+      "e1v2-g4-s290",
+      "e1v2-g4-s295",
+      "e1v2-g3-s305",
+      "e1v2-g4-s310",
+      "e1v2-g3-s325",
+      "e1v2-g4-s330",
+      "e1v2-g5-s335",
+      "e1v2-g4-s350",
+      "e1v2-g4-s370",
+      "e1v2-g5-s375",
+      "e1v2-g3-s385",
+      "e1v2-g4-s390"
+    ]
+  },
+  "openingsIndependent": true,
+  "independenceWarning": null,
+  "overrunTolerance": {
+    "spec": "max(10ms,1%)",
+    "ms": 10,
+    "pct": 1,
+    "frozen": true
+  },
+  "replays": true,
+  "resume": false,
+  "schedule": [
+    {
+      "pairId": "e1v2-g5-s255:0:0",
+      "pairIndex": 0,
+      "openingId": "e1v2-g5-s255",
+      "handicap": 0,
+      "seed": 1919126731
+    },
+    {
+      "pairId": "e1v2-g5-s255:3:1",
+      "pairIndex": 1,
+      "openingId": "e1v2-g5-s255",
+      "handicap": 3,
+      "seed": 684513080
+    },
+    {
+      "pairId": "e1v2-g3-s265:0:2",
+      "pairIndex": 2,
+      "openingId": "e1v2-g3-s265",
+      "handicap": 0,
+      "seed": 938172829
+    },
+    {
+      "pairId": "e1v2-g3-s265:3:3",
+      "pairIndex": 3,
+      "openingId": "e1v2-g3-s265",
+      "handicap": 3,
+      "seed": 1393398193
+    },
+    {
+      "pairId": "e1v2-g5-s275:0:4",
+      "pairIndex": 4,
+      "openingId": "e1v2-g5-s275",
+      "handicap": 0,
+      "seed": 1310706150
+    },
+    {
+      "pairId": "e1v2-g5-s275:3:5",
+      "pairIndex": 5,
+      "openingId": "e1v2-g5-s275",
+      "handicap": 3,
+      "seed": 4226247206
+    },
+    {
+      "pairId": "e1v2-g3-s285:0:6",
+      "pairIndex": 6,
+      "openingId": "e1v2-g3-s285",
+      "handicap": 0,
+      "seed": 3812502544
+    },
+    {
+      "pairId": "e1v2-g3-s285:3:7",
+      "pairIndex": 7,
+      "openingId": "e1v2-g3-s285",
+      "handicap": 3,
+      "seed": 3692686655
+    },
+    {
+      "pairId": "e1v2-g4-s290:0:8",
+      "pairIndex": 8,
+      "openingId": "e1v2-g4-s290",
+      "handicap": 0,
+      "seed": 2517820582
+    },
+    {
+      "pairId": "e1v2-g4-s290:3:9",
+      "pairIndex": 9,
+      "openingId": "e1v2-g4-s290",
+      "handicap": 3,
+      "seed": 811366333
+    },
+    {
+      "pairId": "e1v2-g4-s295:0:10",
+      "pairIndex": 10,
+      "openingId": "e1v2-g4-s295",
+      "handicap": 0,
+      "seed": 3772635277
+    },
+    {
+      "pairId": "e1v2-g4-s295:3:11",
+      "pairIndex": 11,
+      "openingId": "e1v2-g4-s295",
+      "handicap": 3,
+      "seed": 4120363952
+    },
+    {
+      "pairId": "e1v2-g3-s305:0:12",
+      "pairIndex": 12,
+      "openingId": "e1v2-g3-s305",
+      "handicap": 0,
+      "seed": 727519291
+    },
+    {
+      "pairId": "e1v2-g3-s305:3:13",
+      "pairIndex": 13,
+      "openingId": "e1v2-g3-s305",
+      "handicap": 3,
+      "seed": 422689762
+    },
+    {
+      "pairId": "e1v2-g4-s310:0:14",
+      "pairIndex": 14,
+      "openingId": "e1v2-g4-s310",
+      "handicap": 0,
+      "seed": 4093154853
+    },
+    {
+      "pairId": "e1v2-g4-s310:3:15",
+      "pairIndex": 15,
+      "openingId": "e1v2-g4-s310",
+      "handicap": 3,
+      "seed": 2551583374
+    },
+    {
+      "pairId": "e1v2-g3-s325:0:16",
+      "pairIndex": 16,
+      "openingId": "e1v2-g3-s325",
+      "handicap": 0,
+      "seed": 2545836308
+    },
+    {
+      "pairId": "e1v2-g3-s325:3:17",
+      "pairIndex": 17,
+      "openingId": "e1v2-g3-s325",
+      "handicap": 3,
+      "seed": 1564772315
+    },
+    {
+      "pairId": "e1v2-g4-s330:0:18",
+      "pairIndex": 18,
+      "openingId": "e1v2-g4-s330",
+      "handicap": 0,
+      "seed": 2193953358
+    },
+    {
+      "pairId": "e1v2-g4-s330:3:19",
+      "pairIndex": 19,
+      "openingId": "e1v2-g4-s330",
+      "handicap": 3,
+      "seed": 864437803
+    },
+    {
+      "pairId": "e1v2-g5-s335:0:20",
+      "pairIndex": 20,
+      "openingId": "e1v2-g5-s335",
+      "handicap": 0,
+      "seed": 671284288
+    },
+    {
+      "pairId": "e1v2-g5-s335:3:21",
+      "pairIndex": 21,
+      "openingId": "e1v2-g5-s335",
+      "handicap": 3,
+      "seed": 1986504998
+    },
+    {
+      "pairId": "e1v2-g4-s350:0:22",
+      "pairIndex": 22,
+      "openingId": "e1v2-g4-s350",
+      "handicap": 0,
+      "seed": 2491697010
+    },
+    {
+      "pairId": "e1v2-g4-s350:3:23",
+      "pairIndex": 23,
+      "openingId": "e1v2-g4-s350",
+      "handicap": 3,
+      "seed": 4007348212
+    },
+    {
+      "pairId": "e1v2-g4-s370:0:24",
+      "pairIndex": 24,
+      "openingId": "e1v2-g4-s370",
+      "handicap": 0,
+      "seed": 2225015169
+    },
+    {
+      "pairId": "e1v2-g4-s370:3:25",
+      "pairIndex": 25,
+      "openingId": "e1v2-g4-s370",
+      "handicap": 3,
+      "seed": 1672867219
+    },
+    {
+      "pairId": "e1v2-g5-s375:0:26",
+      "pairIndex": 26,
+      "openingId": "e1v2-g5-s375",
+      "handicap": 0,
+      "seed": 1870678179
+    },
+    {
+      "pairId": "e1v2-g5-s375:3:27",
+      "pairIndex": 27,
+      "openingId": "e1v2-g5-s375",
+      "handicap": 3,
+      "seed": 3688134027
+    },
+    {
+      "pairId": "e1v2-g3-s385:0:28",
+      "pairIndex": 28,
+      "openingId": "e1v2-g3-s385",
+      "handicap": 0,
+      "seed": 716802241
+    },
+    {
+      "pairId": "e1v2-g3-s385:3:29",
+      "pairIndex": 29,
+      "openingId": "e1v2-g3-s385",
+      "handicap": 3,
+      "seed": 1102624055
+    },
+    {
+      "pairId": "e1v2-g4-s390:0:30",
+      "pairIndex": 30,
+      "openingId": "e1v2-g4-s390",
+      "handicap": 0,
+      "seed": 1465925550
+    },
+    {
+      "pairId": "e1v2-g4-s390:3:31",
+      "pairIndex": 31,
+      "openingId": "e1v2-g4-s390",
+      "handicap": 3,
+      "seed": 1839060257
+    }
+  ],
+  "resumedPairIds": [],
+  "sprtStop": null,
+  "rules": {
+    "elementGraph": "double-thick",
+    "upkeep": "shipped",
+    "inactivityRule": "on"
+  },
+  "argv": [
+    "--a",
+    "hard@ablate:eval-correct-v1",
+    "--b",
+    "hard@desktop",
+    "--work",
+    "wall:3000",
+    "--handicaps",
+    "0,3",
+    "--pairs",
+    "32",
+    "--openings",
+    "lab/hard-ai/ladder/openings/e1-val2.jsonl",
+    "--openings-skip",
+    "16",
+    "--seed",
+    "20260934",
+    "--legality",
+    "strict",
+    "--shards",
+    "6",
+    "--out",
+    "lab/results/hard-ai-e3/ablate/eval-correct-v1/screen"
+  ],
+  "git": "9c8d5f641e86d89872a89cb6fb320f3955717a17",
+  "gitDirty": true,
+  "baseline": {
+    "ai": "c4d360a22eb21b42cf15656169d66ad2c20028dc2de68a0e0af65a38eac83aa5",
+    "game": "442226339ec2dd2c81b9efca7070ad9c61c847cf16b20789d896e5d3d0e367c2",
+    "wasm": "da9b1cdf25e4bcd6a4674fd697095e35c2606c29817e3d18043faf4799d828bf",
+    "deps": "b17ce8cae69cdede37f74f14139e1afee7f9eb6e17676c391239a8ff985cbf45"
+  },
+  "wasmSha256": "da9b1cdf25e4bcd6a4674fd697095e35c2606c29817e3d18043faf4799d828bf",
+  "node": "v24.11.1",
+  "device": "Apple M2 Max x12 (darwin/arm64)",
+  "cpuCount": 12,
+  "loadavg": [
+    2.20556640625,
+    3.05126953125,
+    3.53662109375
+  ],
+  "at": "2026-09-17T23:00:01.245Z",
+  "finishedAt": "2026-09-17T23:21:09.926Z",
+  "wallMs": 1268818,
+  "counts": {
+    "scheduledPairs": 32,
+    "completedPairs": 32,
+    "games": 64,
+    "failures": 0,
+    "resumedPairs": 0
+  },
+  "voided": false,
+  "voidReason": null,
+  "error": null
+}

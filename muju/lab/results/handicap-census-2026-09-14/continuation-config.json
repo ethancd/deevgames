@@ -1,0 +1,21 @@
+{
+  "whiteIDs": [
+    74,
+    157,
+    675,
+    779,
+    792,
+    39
+  ],
+  "pairs": 83,
+  "config": {
+    "fixedWork": 25000,
+    "beamWidth": 16,
+    "outputPlans": 12,
+    "tacticalDepth": 2,
+    "mctsIterations": 180,
+    "tacticalNodes": 5000
+  },
+  "seed": 14092026,
+  "maxCallsPerTurn": 3
+}

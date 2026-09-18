@@ -1,0 +1,8 @@
+{"pairIndex":0,"pairId":"e1-g3-s105:0:0","opening":"e1-g3-s105","seed":3605948215,"handicap":0,"scoreA":1,"aWhiteWinType":"home-checkmate","bWhiteWinType":"elimination"}
+{"pairIndex":1,"pairId":"e1-g3-s105:3:1","opening":"e1-g3-s105","seed":3536215206,"handicap":3,"scoreA":1,"aWhiteWinType":"home-checkmate","bWhiteWinType":"home-checkmate"}
+{"pairIndex":2,"pairId":"e1-g2-s40:0:2","opening":"e1-g2-s40","seed":1859874818,"handicap":0,"scoreA":2,"aWhiteWinType":"home-checkmate","bWhiteWinType":"home-checkmate"}
+{"pairIndex":3,"pairId":"e1-g2-s40:3:3","opening":"e1-g2-s40","seed":2508889246,"handicap":3,"scoreA":1,"aWhiteWinType":"home-checkmate","bWhiteWinType":"home-checkmate"}
+{"pairIndex":4,"pairId":"e1-g4-s250:0:4","opening":"e1-g4-s250","seed":2966413439,"handicap":0,"scoreA":1,"aWhiteWinType":"home-checkmate","bWhiteWinType":"home-checkmate"}
+{"pairIndex":5,"pairId":"e1-g4-s250:3:5","opening":"e1-g4-s250","seed":1798661751,"handicap":3,"scoreA":1,"aWhiteWinType":"elimination","bWhiteWinType":"home-checkmate"}
+{"pairIndex":6,"pairId":"e1-g4-s750:0:6","opening":"e1-g4-s750","seed":3939744131,"handicap":0,"scoreA":1,"aWhiteWinType":"home-checkmate","bWhiteWinType":"home-checkmate"}
+{"pairIndex":7,"pairId":"e1-g4-s750:3:7","opening":"e1-g4-s750","seed":2526671363,"handicap":3,"scoreA":1,"aWhiteWinType":"home-checkmate","bWhiteWinType":"elimination"}

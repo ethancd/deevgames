@@ -1,0 +1,110 @@
+{
+  "label": "p8-white24-wall3000",
+  "stamp": "2026-09-18T00:07:07.500Z",
+  "node": "v24.11.1",
+  "results": [
+    {
+      "mode": "wall:3000",
+      "engine": "hard@desktop",
+      "replay": "e1-g2-s40_3_3-A-white.json",
+      "side": "white",
+      "seatTurnIndex": 24,
+      "gameTurn": 25,
+      "searchTurnMs": 26120.647,
+      "stopReason": "abort",
+      "depth": 0,
+      "nodes": 0,
+      "turnNodes": 5,
+      "work": 69,
+      "source": "search",
+      "plan": [
+        "END_PLACE_PHASE",
+        "ATTACK",
+        "MOVE",
+        "ATTACK",
+        "MOVE",
+        "END_ACTION_PHASE"
+      ],
+      "planApplyMs": 15018.557,
+      "verdictCalls": 4,
+      "distinctKeys": 3,
+      "verdictMs": 14610.168,
+      "calls": [
+        {
+          "actionIndex": 2,
+          "actionType": "MOVE",
+          "site": "post",
+          "verdict": "unknown",
+          "ms": 2934.404,
+          "nodes": 20000,
+          "key": "f3444c271511b727"
+        },
+        {
+          "actionIndex": 3,
+          "actionType": "ATTACK",
+          "site": "post",
+          "verdict": "unknown",
+          "ms": 3881.048,
+          "nodes": 20000,
+          "key": "3e8f4634d538c408"
+        },
+        {
+          "actionIndex": 4,
+          "actionType": "MOVE",
+          "site": "post",
+          "verdict": "unknown",
+          "ms": 3852.759,
+          "nodes": 20000,
+          "key": "96e7ebdaf2bc2c4a"
+        },
+        {
+          "actionIndex": 5,
+          "actionType": "END_ACTION_PHASE",
+          "site": "pre",
+          "verdict": "unknown",
+          "ms": 3941.956,
+          "nodes": 20000,
+          "key": "96e7ebdaf2bc2c4a"
+        }
+      ],
+      "perAction": [
+        {
+          "i": 0,
+          "type": "END_PLACE_PHASE",
+          "applyMs": 0.002,
+          "verdictCalls": 0
+        },
+        {
+          "i": 1,
+          "type": "ATTACK",
+          "applyMs": 0.003,
+          "verdictCalls": 0
+        },
+        {
+          "i": 2,
+          "type": "MOVE",
+          "applyMs": 3027.834,
+          "verdictCalls": 1
+        },
+        {
+          "i": 3,
+          "type": "ATTACK",
+          "applyMs": 3991.38,
+          "verdictCalls": 1
+        },
+        {
+          "i": 4,
+          "type": "MOVE",
+          "applyMs": 3869.232,
+          "verdictCalls": 1
+        },
+        {
+          "i": 5,
+          "type": "END_ACTION_PHASE",
+          "applyMs": 4130.106,
+          "verdictCalls": 1
+        }
+      ]
+    }
+  ]
+}

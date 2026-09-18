@@ -1,11 +1,14 @@
 // @vitest-environment node
 import { INITIAL_MAP_RESOURCES } from '../../src/game/resourceMap';
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { playGame } from '../../lab/harness/runner';
 import { createBot, botNames } from '../../lab/harness/bots/index';
 import { summarize } from '../../lab/harness/summary';
 import { wilson } from '../../lab/harness/stats';
 import type { GameRecord } from '../../lab/harness/types';
+
+// E0.5 timeout budget: slowest test 0.6 s in the 2026-09-15 survey (M2 Max, load ~5, maxWorkers 2); 10 s is this file's explicit ceiling.
+vi.setConfig({ testTimeout: 10_000 });
 
 /**
  * Harness regression tests: the lab's measurement instrument must stay
@@ -34,7 +37,7 @@ describe('lab harness', () => {
       expect(record.players.white.illegalActions, `${bot}: scripted bots cannot cheat`).toBe(0);
       expect(record.turns).toBeGreaterThan(0);
     }
-  }, 60000);
+  }, 60000); // explicit per-test budget; see the E0.5 timeout note at the top of this file
 
   it('is deterministic per seed for scripted pairings', async () => {
     const a = await run('Rush', 'AntiRush', 777);
@@ -45,7 +48,7 @@ describe('lab harness', () => {
     expect(a.plies).toBe(b.plies);
     expect(a.players.white.unitsKilled).toBe(b.players.white.unitsKilled);
     expect(a.materialCurve).toEqual(b.materialCurve);
-  }, 30000);
+  }, 30000); // explicit per-test budget; see the E0.5 timeout note at the top of this file
 
   it('records settled income, finite reserves and tier-one purchases without changing accounting', async () => {
     const record = await run('Balanced', 'Rush', 260909);
@@ -71,7 +74,7 @@ describe('lab harness', () => {
     const a = await run('Random', 'Random', 1);
     const b = await run('Random', 'Random', 2);
     expect(a.plies === b.plies && a.turns === b.turns && a.winner === b.winner).toBe(false);
-  }, 30000);
+  }, 30000); // explicit per-test budget; see the E0.5 timeout note at the top of this file
 
   it('adjudicates capped games by material+stockpile', async () => {
     const { record } = await playGame({
@@ -83,7 +86,7 @@ describe('lab harness', () => {
     });
     expect(['adjudication', 'draw']).toContain(record.winType);
     expect(record.turns).toBeLessThanOrEqual(6);
-  }, 30000);
+  }, 30000); // explicit per-test budget; see the E0.5 timeout note at the top of this file
 
   it('records replays with full snapshots', async () => {
     const { replay } = await playGame({
@@ -100,7 +103,7 @@ describe('lab harness', () => {
       expect(step.cells).toHaveLength(100);
       expect(step.res.white.r).toBeGreaterThanOrEqual(0);
     }
-  }, 30000);
+  }, 30000); // explicit per-test budget; see the E0.5 timeout note at the top of this file
 
   it('summarizes pairings with Wilson CIs', async () => {
     const records = [await run('Greedy', 'Random', 1), await run('Random', 'Greedy', 2)];
@@ -108,7 +111,7 @@ describe('lab harness', () => {
     expect(rows).toHaveLength(1);
     expect(rows[0].games).toBe(2);
     expect(rows[0].gamesAasWhite + rows[0].gamesAasBlack).toBe(2);
-  }, 30000);
+  }, 30000); // explicit per-test budget; see the E0.5 timeout note at the top of this file
 
   it('wilson interval behaves sanely', () => {
     const ci = wilson(50, 100);

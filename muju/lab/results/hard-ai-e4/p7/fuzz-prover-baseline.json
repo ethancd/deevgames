@@ -1,0 +1,25 @@
+{
+  "seed": 5,
+  "cases": 20000,
+  "fixtureCases": 28,
+  "fixtureMismatch": 0,
+  "fuzzCases": 20000,
+  "fuzzVerdictMismatch": 0,
+  "nodeMismatch": 0,
+  "witnessChecked": 12858,
+  "witnessIllegal": 0,
+  "witnessNotRemoved": 0,
+  "verdicts": {
+    "rescue": 12844,
+    "mate": 6001,
+    "unknown": 1155
+  },
+  "cappedCases": 6708,
+  "cutoffCases": 1155,
+  "boundCases": 5528,
+  "clockFixtureOk": true,
+  "elapsedMs": 34763,
+  "git": "437ee40fd29f594f017e90f850762c6092864772",
+  "node": "v24.11.1",
+  "at": "2026-09-18T00:12:45.926Z"
+}

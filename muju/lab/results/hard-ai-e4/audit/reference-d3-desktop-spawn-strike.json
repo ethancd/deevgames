@@ -1,0 +1,277 @@
+{
+  "stamp": "2026-09-18T00:17:48.685Z",
+  "engine": "hard@desktop",
+  "weightsLabel": "default-v1",
+  "weightsVersion": 1,
+  "evalFix": "absent",
+  "ttBitsMacro": 19,
+  "refDepth": 3,
+  "nodeLimit": 30000,
+  "ladder": [
+    3000,
+    6000,
+    12000,
+    25000,
+    50000,
+    100000,
+    200000,
+    400000
+  ],
+  "positions": 3,
+  "rows": [
+    {
+      "id": "ss-spawn-strike-purchase-1",
+      "set": "spawn-strike",
+      "source": "lab/hard-ai/suites/spawn-strike.positions.jsonl#spawn-strike-purchase-1",
+      "side": "white",
+      "turn": 5,
+      "phase": "place",
+      "upkeepPending": false,
+      "clock": 0,
+      "refDepth": 3,
+      "refStaticCc": 1060,
+      "refQuiesceCc": 1060,
+      "refNodes": 6588,
+      "refCandidates": 22,
+      "refOptimal": [
+        "32e6f7916fc319fd"
+      ],
+      "refOptimalCount": 1,
+      "intractable": false,
+      "prodWork": 50000,
+      "prodDepth": 3,
+      "prodScoreCc": 1060,
+      "prodEndKey": "32e6f7916fc319fd",
+      "prodSource": "search",
+      "prodStopReason": "work",
+      "prodTtHits": 62,
+      "prodIterations": 3,
+      "prodCompletedIterations": 3,
+      "prodTruncatedIterations": 0,
+      "prodCandidateSource": "completed-depth",
+      "prodDepthScores": [
+        {
+          "depth": 1,
+          "scoreCc": 818,
+          "work": 1392
+        },
+        {
+          "depth": 2,
+          "scoreCc": 852,
+          "work": 6907
+        },
+        {
+          "depth": 3,
+          "scoreCc": 1060,
+          "work": 46037
+        }
+      ],
+      "prodScoreAtRefDepthCc": 1060,
+      "turnAgrees": true,
+      "scoreInBounds": true,
+      "scoreEqualsQuiesce": true,
+      "classification": "agree",
+      "switches": null,
+      "note": ""
+    },
+    {
+      "id": "ss-spawn-strike-purchase-2",
+      "set": "spawn-strike",
+      "source": "lab/hard-ai/suites/spawn-strike.positions.jsonl#spawn-strike-purchase-2",
+      "side": "white",
+      "turn": 5,
+      "phase": "place",
+      "upkeepPending": false,
+      "clock": 0,
+      "refDepth": 3,
+      "refStaticCc": 933,
+      "refQuiesceCc": 933,
+      "refNodes": 7000,
+      "refCandidates": 23,
+      "refOptimal": [
+        "912b8bb1b024a35a"
+      ],
+      "refOptimalCount": 1,
+      "intractable": false,
+      "prodWork": 25000,
+      "prodDepth": 3,
+      "prodScoreCc": 933,
+      "prodEndKey": "912b8bb1b024a35a",
+      "prodSource": "search",
+      "prodStopReason": "work",
+      "prodTtHits": 25,
+      "prodIterations": 3,
+      "prodCompletedIterations": 3,
+      "prodTruncatedIterations": 0,
+      "prodCandidateSource": "completed-depth",
+      "prodDepthScores": [
+        {
+          "depth": 1,
+          "scoreCc": 945,
+          "work": 1292
+        },
+        {
+          "depth": 2,
+          "scoreCc": 1057,
+          "work": 6687
+        },
+        {
+          "depth": 3,
+          "scoreCc": 933,
+          "work": 24826
+        }
+      ],
+      "prodScoreAtRefDepthCc": 933,
+      "turnAgrees": true,
+      "scoreInBounds": true,
+      "scoreEqualsQuiesce": true,
+      "classification": "agree",
+      "switches": null,
+      "note": ""
+    },
+    {
+      "id": "ss-spawn-strike-purchase-3",
+      "set": "spawn-strike",
+      "source": "lab/hard-ai/suites/spawn-strike.positions.jsonl#spawn-strike-purchase-3",
+      "side": "white",
+      "turn": 5,
+      "phase": "place",
+      "upkeepPending": false,
+      "clock": 0,
+      "refDepth": 3,
+      "refStaticCc": 1295,
+      "refQuiesceCc": 1295,
+      "refNodes": 7046,
+      "refCandidates": 22,
+      "refOptimal": [
+        "c3ea42850d42bf30"
+      ],
+      "refOptimalCount": 1,
+      "intractable": false,
+      "prodWork": 50000,
+      "prodDepth": 3,
+      "prodScoreCc": 1295,
+      "prodEndKey": "c3ea42850d42bf30",
+      "prodSource": "search",
+      "prodStopReason": "work",
+      "prodTtHits": 49,
+      "prodIterations": 3,
+      "prodCompletedIterations": 3,
+      "prodTruncatedIterations": 0,
+      "prodCandidateSource": "completed-depth",
+      "prodDepthScores": [
+        {
+          "depth": 1,
+          "scoreCc": 1150,
+          "work": 1266
+        },
+        {
+          "depth": 2,
+          "scoreCc": 1262,
+          "work": 6362
+        },
+        {
+          "depth": 3,
+          "scoreCc": 1295,
+          "work": 34086
+        }
+      ],
+      "prodScoreAtRefDepthCc": 1295,
+      "turnAgrees": true,
+      "scoreInBounds": true,
+      "scoreEqualsQuiesce": true,
+      "classification": "agree",
+      "switches": null,
+      "note": ""
+    }
+  ],
+  "counts": {
+    "agree": 3
+  },
+  "summary": {
+    "positions": 3,
+    "searched": 3,
+    "mustAnswer": 0,
+    "mustAnswerAgree": 0,
+    "turnAgree": 3,
+    "turnDisagree": 0,
+    "scoreEqualsQuiesce": 3,
+    "scoreEqualsStatic": 3,
+    "scoreInBounds": 3,
+    "scoreOutOfBounds": 0,
+    "scoreUnavailable": 0,
+    "truncatedIterations": 0,
+    "storesWhileTruncated": 0,
+    "referenceNodes": 20634,
+    "intractable": 0
+  },
+  "ttFindings": [
+    {
+      "kind": "cross-prover-mode",
+      "key": "9f2460801a718b9b",
+      "detail": "ss-spawn-strike-purchase-1 (white t5): 9f2460801a718b9b|d1: full-prover -852 vs bound-prover -313"
+    },
+    {
+      "kind": "cross-prover-mode",
+      "key": "11738edfa09d2faa",
+      "detail": "ss-spawn-strike-purchase-1 (white t5): 11738edfa09d2faa|d1: full-prover 828 vs bound-prover 729"
+    },
+    {
+      "kind": "cross-prover-mode",
+      "key": "fe094a57a9c23f6d",
+      "detail": "ss-spawn-strike-purchase-1 (white t5): fe094a57a9c23f6d|d2: full-prover -828 vs bound-prover -729"
+    },
+    {
+      "kind": "cross-prover-mode",
+      "key": "7fd424a956ddc31f",
+      "detail": "ss-spawn-strike-purchase-1 (white t5): 7fd424a956ddc31f|d1: full-prover 833 vs bound-prover 829"
+    },
+    {
+      "kind": "cross-prover-mode",
+      "key": "90aee0215f82d3d8",
+      "detail": "ss-spawn-strike-purchase-1 (white t5): 90aee0215f82d3d8|d2: full-prover -833 vs bound-prover -829"
+    },
+    {
+      "kind": "cross-prover-mode",
+      "key": "61b1d30b5e96f3a0",
+      "detail": "ss-spawn-strike-purchase-1 (white t5): 61b1d30b5e96f3a0|d1: full-prover 1177 vs bound-prover 834"
+    },
+    {
+      "kind": "cross-prover-mode",
+      "key": "f7f8c0f088ec9286",
+      "detail": "ss-spawn-strike-purchase-1 (white t5): f7f8c0f088ec9286|d1: full-prover 1060 vs bound-prover 834"
+    },
+    {
+      "kind": "cross-prover-mode",
+      "key": "32e6f7916fc319fd",
+      "detail": "ss-spawn-strike-purchase-1 (white t5): 32e6f7916fc319fd|d2: full-prover -1060 vs bound-prover -834"
+    },
+    {
+      "kind": "cross-prover-mode",
+      "key": "0caebb4eaed0ff6a",
+      "detail": "ss-spawn-strike-purchase-3 (white t5): 0caebb4eaed0ff6a|d1: full-prover 1128 vs bound-prover 1069"
+    },
+    {
+      "kind": "cross-prover-mode",
+      "key": "e3d47fc6a78fefad",
+      "detail": "ss-spawn-strike-purchase-3 (white t5): e3d47fc6a78fefad|d2: full-prover -1128 vs bound-prover -1069"
+    },
+    {
+      "kind": "cross-prover-mode",
+      "key": "d60f93d22fb5651c",
+      "detail": "ss-spawn-strike-purchase-3 (white t5): d60f93d22fb5651c|d1: full-prover 1295 vs bound-prover 1129"
+    },
+    {
+      "kind": "cross-prover-mode",
+      "key": "c3ea42850d42bf30",
+      "detail": "ss-spawn-strike-purchase-3 (white t5): c3ea42850d42bf30|d2: full-prover -1295 vs bound-prover -1129"
+    }
+  ],
+  "ttFindingCounts": {
+    "cross-prover-mode": 12
+  },
+  "ttStores": 359,
+  "ttProbes": 359,
+  "kpos": [],
+  "collisions": []
+}

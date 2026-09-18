@@ -1,0 +1,7 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "types": ["node"]
+  },
+  "include": ["**/*.ts", "../../src/**/*.ts", "../harness/**/*.ts", "../../tests/ai/hard/**/*.ts", "../../tests/lab/**/*.ts"]
+}

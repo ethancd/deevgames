@@ -1,0 +1,24 @@
+{
+ "what": "npm run hard:cross-commit between the E3 head 50b6a94c and lane 12, both hard@desktop at fixed work, flags off",
+ "baseCommit": "50b6a94c",
+ "headCommit": "81e4e30328ba94b3b557945a4a74a2212f12fcc5",
+ "rungs": [
+  100000,
+  400000
+ ],
+ "positions": 24,
+ "rows": 48,
+ "identicalRows": 48,
+ "differingRows": 0,
+ "comparedFields": [
+  "actions",
+  "scoreCc",
+  "depth",
+  "work",
+  "nodes",
+  "endKey",
+  "source"
+ ],
+ "howBaseWasRun": "git archive 50b6a94c extracted to a scratch tree with muju/node_modules symlinked; run with --states-in the frozen 24 positions this head wrote",
+ "at": "2026-09-17T02:10:33.590490Z"
+}

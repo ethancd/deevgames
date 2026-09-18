@@ -1,0 +1,54 @@
+{
+  "checkpointOrder": "pairIndex: the sequential test checks the completed pairs one at a time in ascending pairIndex, the order fixed by --pairs and --seed before the run started, never the order the shards finished in",
+  "decision": "continue",
+  "sequential": {
+    "decision": "continue",
+    "decidedAtPair": null,
+    "finalLlr": 0.2672266788588293,
+    "trace": [
+      {
+        "n": 1,
+        "llr": 0.13383694622391246
+      },
+      {
+        "n": 2,
+        "llr": 0.2672266788588293
+      }
+    ],
+    "minPairs": 10,
+    "lowerBound": -2.9444389791664403,
+    "upperBound": 2.9444389791664403
+  },
+  "batch": {
+    "elo0": 0,
+    "elo1": 50,
+    "alpha": 0.05,
+    "beta": 0.05,
+    "n": 2,
+    "method": "pentanomial-gsprt",
+    "counts": [
+      0,
+      0,
+      0,
+      1,
+      1
+    ],
+    "t0": 0.5,
+    "t1": 0.5714631174083814,
+    "mu": 0.8740639041437843,
+    "variance": 0.016248187628691756,
+    "llr": 0.2672266788588293,
+    "lowerBound": -2.9444389791664403,
+    "upperBound": 2.9444389791664403,
+    "minPairs": 10,
+    "decision": "continue"
+  },
+  "stop": {
+    "decision": "continue",
+    "decidedAtPair": null,
+    "minPairs": 10,
+    "earlyStop": false,
+    "signalledAtPair": null,
+    "pairsPlayedBeyondDecision": 0
+  }
+}

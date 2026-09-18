@@ -1,0 +1,578 @@
+{
+  "schema": "muju-suite-v1",
+  "name": "economy",
+  "version": 1,
+  "notes": "DESIGN §7.5 economy suite (>= 30). Every case is a single decisive action (one MOVE for a relocation choice, or PROMOTE_UNIT vs END_PLACE_PHASE for a promote-vs-bank choice) rather than a full four-action turn: the M11 turn generator this suite is meant to be scored against (DESIGN §7.5, measurement-first.md) does not exist yet at M8, so \"end position\" here is the position right after the one action the case is actually testing. best/avoid Kpos values are computed by literally applying that action through the canonical engine (src/ai/simulate.ts applyAction) and packing the result (src/ai/hard/core/state.ts Replica.pack), not hand-copied.",
+  "cases": [
+    {
+      "id": "relocate-fire_1-e",
+      "position": "economy.jsonl#relocate-fire_1-e",
+      "best": [
+        "0x75a4f7fbba67e3d6"
+      ],
+      "avoid": [
+        "0x570d8e9b4019e2fe"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "economy",
+        "relocation"
+      ],
+      "rationale": "fire_1 idle on a dry cell; east neighbour (reserve 16) beats west neighbour (reserve 4) by PST_MINE[fire_1][16] - PST_MINE[fire_1][4]."
+    },
+    {
+      "id": "relocate-fire_1-s",
+      "position": "economy.jsonl#relocate-fire_1-s",
+      "best": [
+        "0xa829922527caace7"
+      ],
+      "avoid": [
+        "0x9d925091f6536a38"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "economy",
+        "relocation"
+      ],
+      "rationale": "fire_1 idle on a dry cell; south neighbour (reserve 16) beats north neighbour (reserve 4) by the same PST_MINE gap, north/south geometry."
+    },
+    {
+      "id": "relocate-water_1-e",
+      "position": "economy.jsonl#relocate-water_1-e",
+      "best": [
+        "0xfa4608e53221aeaa"
+      ],
+      "avoid": [
+        "0x5b12bea12dd8d98c"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "economy",
+        "relocation"
+      ],
+      "rationale": "water_1 idle on a dry cell; east neighbour (reserve 16) beats west neighbour (reserve 4) by PST_MINE[water_1][16] - PST_MINE[water_1][4]."
+    },
+    {
+      "id": "relocate-water_1-s",
+      "position": "economy.jsonl#relocate-water_1-s",
+      "best": [
+        "0xdb0376330593b0c6"
+      ],
+      "avoid": [
+        "0x537f04bc8f060b50"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "economy",
+        "relocation"
+      ],
+      "rationale": "water_1 idle on a dry cell; south neighbour (reserve 16) beats north neighbour (reserve 4) by the same PST_MINE gap, north/south geometry."
+    },
+    {
+      "id": "relocate-plant_1-e",
+      "position": "economy.jsonl#relocate-plant_1-e",
+      "best": [
+        "0x0ab13078b58a5736"
+      ],
+      "avoid": [
+        "0xca8dbd8ec93d1143"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "economy",
+        "muju-onto-4"
+      ],
+      "rationale": "plant_1 idle on a dry cell; east neighbour (reserve 16) beats west neighbour (reserve 4) by PST_MINE[plant_1][16] - PST_MINE[plant_1][4]."
+    },
+    {
+      "id": "relocate-plant_1-s",
+      "position": "economy.jsonl#relocate-plant_1-s",
+      "best": [
+        "0x125d9df6bd2046f0"
+      ],
+      "avoid": [
+        "0x1a5a38c21f27a99c"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "economy",
+        "muju-onto-4"
+      ],
+      "rationale": "plant_1 idle on a dry cell; south neighbour (reserve 16) beats north neighbour (reserve 4) by the same PST_MINE gap, north/south geometry."
+    },
+    {
+      "id": "relocate-plant_2-e",
+      "position": "economy.jsonl#relocate-plant_2-e",
+      "best": [
+        "0x132ca751d0e45420"
+      ],
+      "avoid": [
+        "0x56ecb971f95f9308"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "economy",
+        "relocation"
+      ],
+      "rationale": "plant_2 idle on a dry cell; east neighbour (reserve 16) beats west neighbour (reserve 4) by PST_MINE[plant_2][16] - PST_MINE[plant_2][4]."
+    },
+    {
+      "id": "relocate-plant_2-s",
+      "position": "economy.jsonl#relocate-plant_2-s",
+      "best": [
+        "0xa1eee9f545d1b48b"
+      ],
+      "avoid": [
+        "0x53b062b34871499c"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "economy",
+        "relocation"
+      ],
+      "rationale": "plant_2 idle on a dry cell; south neighbour (reserve 16) beats north neighbour (reserve 4) by the same PST_MINE gap, north/south geometry."
+    },
+    {
+      "id": "relocate-plant_3-e",
+      "position": "economy.jsonl#relocate-plant_3-e",
+      "best": [
+        "0x69ce525ef4e100a7"
+      ],
+      "avoid": [
+        "0x4a3a77dbab38f7a1"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "economy",
+        "relocation"
+      ],
+      "rationale": "plant_3 idle on a dry cell; east neighbour (reserve 16) beats west neighbour (reserve 4) by PST_MINE[plant_3][16] - PST_MINE[plant_3][4]."
+    },
+    {
+      "id": "relocate-plant_3-s",
+      "position": "economy.jsonl#relocate-plant_3-s",
+      "best": [
+        "0xcca8b47084fad8f3"
+      ],
+      "avoid": [
+        "0xf60f551a372db8a5"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "economy",
+        "relocation"
+      ],
+      "rationale": "plant_3 idle on a dry cell; south neighbour (reserve 16) beats north neighbour (reserve 4) by the same PST_MINE gap, north/south geometry."
+    },
+    {
+      "id": "relocate-metal_1-e",
+      "position": "economy.jsonl#relocate-metal_1-e",
+      "best": [
+        "0x1e47a308af5ce3d9"
+      ],
+      "avoid": [
+        "0x042de4158df3f8ef"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "economy",
+        "relocation"
+      ],
+      "rationale": "metal_1 idle on a dry cell; east neighbour (reserve 16) beats west neighbour (reserve 4) by PST_MINE[metal_1][16] - PST_MINE[metal_1][4]."
+    },
+    {
+      "id": "relocate-metal_1-s",
+      "position": "economy.jsonl#relocate-metal_1-s",
+      "best": [
+        "0x59283b713aa3ee13"
+      ],
+      "avoid": [
+        "0x492ceaf85a8a6370"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "economy",
+        "relocation"
+      ],
+      "rationale": "metal_1 idle on a dry cell; south neighbour (reserve 16) beats north neighbour (reserve 4) by the same PST_MINE gap, north/south geometry."
+    },
+    {
+      "id": "relocate-metal_2-e",
+      "position": "economy.jsonl#relocate-metal_2-e",
+      "best": [
+        "0xc6f6253a3c9d28ef"
+      ],
+      "avoid": [
+        "0x4a57709268e8c720"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "economy",
+        "relocation"
+      ],
+      "rationale": "metal_2 idle on a dry cell; east neighbour (reserve 16) beats west neighbour (reserve 4) by PST_MINE[metal_2][16] - PST_MINE[metal_2][4]."
+    },
+    {
+      "id": "relocate-metal_2-s",
+      "position": "economy.jsonl#relocate-metal_2-s",
+      "best": [
+        "0x584bb9d8943bb656"
+      ],
+      "avoid": [
+        "0xcb8d4096c80bd203"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "economy",
+        "relocation"
+      ],
+      "rationale": "metal_2 idle on a dry cell; south neighbour (reserve 16) beats north neighbour (reserve 4) by the same PST_MINE gap, north/south geometry."
+    },
+    {
+      "id": "muju-onto-4-0",
+      "position": "economy.jsonl#muju-onto-4-0",
+      "best": [
+        "0x4453b47e15195d00"
+      ],
+      "avoid": [
+        "0x0624e8f4b8725293"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "economy",
+        "muju-onto-4"
+      ],
+      "rationale": "Muju (plant_1) idle on a dry cell; a reserve-8 neighbour beats onto-4 by PST_MINE[plant_1][8] - PST_MINE[plant_1][4]."
+    },
+    {
+      "id": "muju-onto-4-1",
+      "position": "economy.jsonl#muju-onto-4-1",
+      "best": [
+        "0x08efb8d7858e0520"
+      ],
+      "avoid": [
+        "0x34362539c2d8c9bb"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "economy",
+        "muju-onto-4"
+      ],
+      "rationale": "Muju (plant_1) idle on a dry cell; a reserve-12 neighbour beats onto-4 by PST_MINE[plant_1][12] - PST_MINE[plant_1][4]."
+    },
+    {
+      "id": "muju-onto-4-2",
+      "position": "economy.jsonl#muju-onto-4-2",
+      "best": [
+        "0x196e760bd681679a"
+      ],
+      "avoid": [
+        "0x4f26ce5300b5216f"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "economy",
+        "muju-onto-4"
+      ],
+      "rationale": "Muju (plant_1) idle on a dry cell; a reserve-16 neighbour beats onto-4 by PST_MINE[plant_1][16] - PST_MINE[plant_1][4]."
+    },
+    {
+      "id": "muju-onto-4-3",
+      "position": "economy.jsonl#muju-onto-4-3",
+      "best": [
+        "0xf05425bb88db87f0"
+      ],
+      "avoid": [
+        "0xfb454ec81d53c70c"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "economy",
+        "muju-onto-4"
+      ],
+      "rationale": "Muju (plant_1) idle on a dry cell; a reserve-10 neighbour beats onto-4 by PST_MINE[plant_1][10] - PST_MINE[plant_1][4]."
+    },
+    {
+      "id": "muju-onto-4-4",
+      "position": "economy.jsonl#muju-onto-4-4",
+      "best": [
+        "0x8d86faa88d694d05"
+      ],
+      "avoid": [
+        "0xae4b5fd10bb27d05"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "economy",
+        "muju-onto-4"
+      ],
+      "rationale": "Muju (plant_1) idle on a dry cell; a reserve-14 neighbour beats onto-4 by PST_MINE[plant_1][14] - PST_MINE[plant_1][4]."
+    },
+    {
+      "id": "muju-onto-4-5",
+      "position": "economy.jsonl#muju-onto-4-5",
+      "best": [
+        "0x5446ab165511ab90"
+      ],
+      "avoid": [
+        "0xeb73f1903b2f7108"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "economy",
+        "muju-onto-4"
+      ],
+      "rationale": "Muju (plant_1) idle on a dry cell; a reserve-8 neighbour beats onto-4 by PST_MINE[plant_1][8] - PST_MINE[plant_1][4]."
+    },
+    {
+      "id": "muju-onto-4-6",
+      "position": "economy.jsonl#muju-onto-4-6",
+      "best": [
+        "0xa248f12b9bfc95da"
+      ],
+      "avoid": [
+        "0x92c9bb861e9bd690"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "economy",
+        "muju-onto-4"
+      ],
+      "rationale": "Muju (plant_1) idle on a dry cell; a reserve-12 neighbour beats onto-4 by PST_MINE[plant_1][12] - PST_MINE[plant_1][4]."
+    },
+    {
+      "id": "muju-onto-4-7",
+      "position": "economy.jsonl#muju-onto-4-7",
+      "best": [
+        "0x7c9166678be98e0f"
+      ],
+      "avoid": [
+        "0x1256c9e03dfabce4"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "economy",
+        "muju-onto-4"
+      ],
+      "rationale": "Muju (plant_1) idle on a dry cell; a reserve-16 neighbour beats onto-4 by PST_MINE[plant_1][16] - PST_MINE[plant_1][4]."
+    },
+    {
+      "id": "promote-plant_1-16-0",
+      "position": "economy.jsonl#promote-plant_1-16-0",
+      "best": [
+        "0x4d44d73ef875a090"
+      ],
+      "avoid": [
+        "0xeff8a841ab93581d"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "economy",
+        "promote-vs-bank"
+      ],
+      "rationale": "plant_1 standing on reserve 16 with exactly promotionCost+3 banked: promoting raises mine[def] for the rest of ECON_HORIZON, which PST_MINE's increase at this reserve outweighs keeping the promotion cost banked."
+    },
+    {
+      "id": "promote-plant_1-8-1",
+      "position": "economy.jsonl#promote-plant_1-8-1",
+      "best": [
+        "0x4d2af0308bf3aa9e"
+      ],
+      "avoid": [
+        "0x7714dd3f12330b5a"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "economy",
+        "promote-vs-bank"
+      ],
+      "rationale": "plant_1 standing on reserve 8 with exactly promotionCost+3 banked: promoting raises mine[def] for the rest of ECON_HORIZON, which PST_MINE's increase at this reserve outweighs keeping the promotion cost banked."
+    },
+    {
+      "id": "promote-plant_2-16-2",
+      "position": "economy.jsonl#promote-plant_2-16-2",
+      "best": [
+        "0xe908bcc078a82362"
+      ],
+      "avoid": [
+        "0x79582a34ced171f8"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "economy",
+        "promote-vs-bank"
+      ],
+      "rationale": "plant_2 standing on reserve 16 with exactly promotionCost+3 banked: promoting raises mine[def] for the rest of ECON_HORIZON, which PST_MINE's increase at this reserve outweighs keeping the promotion cost banked."
+    },
+    {
+      "id": "promote-metal_1-16-3",
+      "position": "economy.jsonl#promote-metal_1-16-3",
+      "best": [
+        "0x3b274f1e4f1abbaf"
+      ],
+      "avoid": [
+        "0xe7601127f83e2b03"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "economy",
+        "promote-vs-bank"
+      ],
+      "rationale": "metal_1 standing on reserve 16 with exactly promotionCost+3 banked: promoting raises mine[def] for the rest of ECON_HORIZON, which PST_MINE's increase at this reserve outweighs keeping the promotion cost banked."
+    },
+    {
+      "id": "promote-metal_2-16-4",
+      "position": "economy.jsonl#promote-metal_2-16-4",
+      "best": [
+        "0x0b5c1dc9f23c5835"
+      ],
+      "avoid": [
+        "0x4ad3a2d9644de166"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "economy",
+        "promote-vs-bank"
+      ],
+      "rationale": "metal_2 standing on reserve 16 with exactly promotionCost+3 banked: promoting raises mine[def] for the rest of ECON_HORIZON, which PST_MINE's increase at this reserve outweighs keeping the promotion cost banked."
+    },
+    {
+      "id": "promote-shadow_1-16-5",
+      "position": "economy.jsonl#promote-shadow_1-16-5",
+      "best": [
+        "0xa432e8d15dfdca47"
+      ],
+      "avoid": [
+        "0x8d16674c3e47375a"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "economy",
+        "promote-vs-bank"
+      ],
+      "rationale": "shadow_1 standing on reserve 16 with exactly promotionCost+3 banked: promoting raises mine[def] for the rest of ECON_HORIZON, which PST_MINE's increase at this reserve outweighs keeping the promotion cost banked."
+    },
+    {
+      "id": "promote-shadow_2-16-6",
+      "position": "economy.jsonl#promote-shadow_2-16-6",
+      "best": [
+        "0xe19741b401b4e6bb"
+      ],
+      "avoid": [
+        "0x73112942aa411ba4"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "economy",
+        "promote-vs-bank"
+      ],
+      "rationale": "shadow_2 standing on reserve 16 with exactly promotionCost+3 banked: promoting raises mine[def] for the rest of ECON_HORIZON, which PST_MINE's increase at this reserve outweighs keeping the promotion cost banked."
+    },
+    {
+      "id": "promote-water_2-16-7",
+      "position": "economy.jsonl#promote-water_2-16-7",
+      "best": [
+        "0xdc2174de5c6d670d"
+      ],
+      "avoid": [
+        "0x633c9339d1f5204f"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "economy",
+        "promote-vs-bank"
+      ],
+      "rationale": "water_2 standing on reserve 16 with exactly promotionCost+3 banked: promoting raises mine[def] for the rest of ECON_HORIZON, which PST_MINE's increase at this reserve outweighs keeping the promotion cost banked."
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "perftActions_initial_4": 14959,
+  "perftMidStates_initial": 1053,
+  "perftTurns_initial": 797,
+  "fixturesChecked": 11,
+  "fixturesMismatch": 0,
+  "mismatches": [],
+  "openings": 797,
+  "engine": "canonical",
+  "git": "437ee40fd29f594f017e90f850762c6092864772",
+  "node": "v24.11.1",
+  "at": "2026-09-18T00:12:07.452Z",
+  "perft": {
+    "perftActions_initial_4": 14959,
+    "perftMidStates_initial": 1053,
+    "perftTurns_initial": 797,
+    "fixturesChecked": 11,
+    "fixturesMismatch": 0,
+    "mismatches": [],
+    "openings": 797,
+    "engine": "canonical",
+    "git": "437ee40fd29f594f017e90f850762c6092864772",
+    "node": "v24.11.1",
+    "at": "2026-09-18T00:12:07.452Z"
+  }
+}

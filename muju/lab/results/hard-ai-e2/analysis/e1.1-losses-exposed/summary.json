@@ -1,0 +1,318 @@
+{
+  "schema": "muju-hard-reclassify-v1",
+  "source": "/Users/ashkie/src/deevgames-e2-lane2/muju/lab/results/hard-ai-e1/e1.1-diag/analysis-v2",
+  "out": "/Users/ashkie/src/deevgames-e2-lane2/muju/lab/results/hard-ai-e2/analysis/e1.1-losses-exposed",
+  "swingCc": 300,
+  "reclassified": 14,
+  "failed": [],
+  "beforeFirstHistogram": {
+    "strong-candidate-misjudged": 14
+  },
+  "afterFirstHistogram": {
+    "strong-candidate-misjudged": 5,
+    "fixed-work-divergence": 9
+  },
+  "beforeLargestHistogram": {
+    "clock-fallback": 1,
+    "strong-candidate-misjudged": 13
+  },
+  "afterLargestHistogram": {
+    "clock-fallback": 1,
+    "fixed-work-divergence": 6,
+    "strong-candidate-misjudged": 5,
+    "exposure-inconsistent": 2
+  },
+  "games": [
+    {
+      "fileId": "g2-s20_3_15-A-white",
+      "side": "white",
+      "result": "loss",
+      "before": {
+        "first": "strong-candidate-misjudged",
+        "largest": "clock-fallback",
+        "firstTurn": 3,
+        "largestTurn": 26
+      },
+      "after": {
+        "first": "strong-candidate-misjudged",
+        "largest": "clock-fallback",
+        "firstTurn": 3,
+        "largestTurn": 26
+      },
+      "replyFieldsChanged": 0
+    },
+    {
+      "fileId": "g2-s20_3_15-B-white",
+      "side": "black",
+      "result": "loss",
+      "before": {
+        "first": "strong-candidate-misjudged",
+        "largest": "strong-candidate-misjudged",
+        "firstTurn": 7,
+        "largestTurn": 13
+      },
+      "after": {
+        "first": "fixed-work-divergence",
+        "largest": "fixed-work-divergence",
+        "firstTurn": 7,
+        "largestTurn": 13
+      },
+      "replyFieldsChanged": 0
+    },
+    {
+      "fileId": "g2-s5_0_2-A-white",
+      "side": "white",
+      "result": "loss",
+      "before": {
+        "first": "strong-candidate-misjudged",
+        "largest": "strong-candidate-misjudged",
+        "firstTurn": 4,
+        "largestTurn": 22
+      },
+      "after": {
+        "first": "fixed-work-divergence",
+        "largest": "strong-candidate-misjudged",
+        "firstTurn": 4,
+        "largestTurn": 22
+      },
+      "replyFieldsChanged": 0
+    },
+    {
+      "fileId": "g4-s10_0_8-A-white",
+      "side": "white",
+      "result": "loss",
+      "before": {
+        "first": "strong-candidate-misjudged",
+        "largest": "strong-candidate-misjudged",
+        "firstTurn": 3,
+        "largestTurn": 24
+      },
+      "after": {
+        "first": "fixed-work-divergence",
+        "largest": "fixed-work-divergence",
+        "firstTurn": 3,
+        "largestTurn": 24
+      },
+      "replyFieldsChanged": 0
+    },
+    {
+      "fileId": "g4-s10_0_8-B-white",
+      "side": "black",
+      "result": "loss",
+      "before": {
+        "first": "strong-candidate-misjudged",
+        "largest": "strong-candidate-misjudged",
+        "firstTurn": 7,
+        "largestTurn": 31
+      },
+      "after": {
+        "first": "fixed-work-divergence",
+        "largest": "exposure-inconsistent",
+        "firstTurn": 7,
+        "largestTurn": 31
+      },
+      "replyFieldsChanged": 0
+    },
+    {
+      "fileId": "g4-s10_3_9-A-white",
+      "side": "white",
+      "result": "loss",
+      "before": {
+        "first": "strong-candidate-misjudged",
+        "largest": "strong-candidate-misjudged",
+        "firstTurn": 2,
+        "largestTurn": 19
+      },
+      "after": {
+        "first": "strong-candidate-misjudged",
+        "largest": "fixed-work-divergence",
+        "firstTurn": 2,
+        "largestTurn": 19
+      },
+      "replyFieldsChanged": 0
+    },
+    {
+      "fileId": "g4-s2_3_1-B-white",
+      "side": "black",
+      "result": "loss",
+      "before": {
+        "first": "strong-candidate-misjudged",
+        "largest": "strong-candidate-misjudged",
+        "firstTurn": 2,
+        "largestTurn": 24
+      },
+      "after": {
+        "first": "fixed-work-divergence",
+        "largest": "exposure-inconsistent",
+        "firstTurn": 2,
+        "largestTurn": 24
+      },
+      "replyFieldsChanged": 0
+    },
+    {
+      "fileId": "g4-s6_0_4-A-white",
+      "side": "white",
+      "result": "loss",
+      "before": {
+        "first": "strong-candidate-misjudged",
+        "largest": "strong-candidate-misjudged",
+        "firstTurn": 4,
+        "largestTurn": 28
+      },
+      "after": {
+        "first": "fixed-work-divergence",
+        "largest": "fixed-work-divergence",
+        "firstTurn": 4,
+        "largestTurn": 28
+      },
+      "replyFieldsChanged": 0
+    },
+    {
+      "fileId": "g4-s6_3_5-A-white",
+      "side": "white",
+      "result": "loss",
+      "before": {
+        "first": "strong-candidate-misjudged",
+        "largest": "strong-candidate-misjudged",
+        "firstTurn": 4,
+        "largestTurn": 14
+      },
+      "after": {
+        "first": "fixed-work-divergence",
+        "largest": "strong-candidate-misjudged",
+        "firstTurn": 4,
+        "largestTurn": 14
+      },
+      "replyFieldsChanged": 0
+    },
+    {
+      "fileId": "g4-s6_3_5-B-white",
+      "side": "black",
+      "result": "loss",
+      "before": {
+        "first": "strong-candidate-misjudged",
+        "largest": "strong-candidate-misjudged",
+        "firstTurn": 1,
+        "largestTurn": 9
+      },
+      "after": {
+        "first": "strong-candidate-misjudged",
+        "largest": "strong-candidate-misjudged",
+        "firstTurn": 1,
+        "largestTurn": 9
+      },
+      "replyFieldsChanged": 0
+    },
+    {
+      "fileId": "g5-s11_0_10-B-white",
+      "side": "black",
+      "result": "loss",
+      "before": {
+        "first": "strong-candidate-misjudged",
+        "largest": "strong-candidate-misjudged",
+        "firstTurn": 1,
+        "largestTurn": 7
+      },
+      "after": {
+        "first": "fixed-work-divergence",
+        "largest": "fixed-work-divergence",
+        "firstTurn": 1,
+        "largestTurn": 7
+      },
+      "replyFieldsChanged": 0
+    },
+    {
+      "fileId": "g5-s11_3_11-B-white",
+      "side": "black",
+      "result": "loss",
+      "before": {
+        "first": "strong-candidate-misjudged",
+        "largest": "strong-candidate-misjudged",
+        "firstTurn": 2,
+        "largestTurn": 13
+      },
+      "after": {
+        "first": "strong-candidate-misjudged",
+        "largest": "fixed-work-divergence",
+        "firstTurn": 2,
+        "largestTurn": 13
+      },
+      "replyFieldsChanged": 0
+    },
+    {
+      "fileId": "g5-s7_3_7-A-white",
+      "side": "white",
+      "result": "loss",
+      "before": {
+        "first": "strong-candidate-misjudged",
+        "largest": "strong-candidate-misjudged",
+        "firstTurn": 4,
+        "largestTurn": 14
+      },
+      "after": {
+        "first": "fixed-work-divergence",
+        "largest": "strong-candidate-misjudged",
+        "firstTurn": 4,
+        "largestTurn": 14
+      },
+      "replyFieldsChanged": 0
+    },
+    {
+      "fileId": "g5-s7_3_7-B-white",
+      "side": "black",
+      "result": "loss",
+      "before": {
+        "first": "strong-candidate-misjudged",
+        "largest": "strong-candidate-misjudged",
+        "firstTurn": 1,
+        "largestTurn": 9
+      },
+      "after": {
+        "first": "strong-candidate-misjudged",
+        "largest": "strong-candidate-misjudged",
+        "firstTurn": 1,
+        "largestTurn": 9
+      },
+      "replyFieldsChanged": 0
+    }
+  ],
+  "reconstruction": {
+    "replaysDir": "lab/results/hard-ai-e1/e1.1-diag/replays",
+    "total": 32,
+    "reconstructs": 32,
+    "fails": [],
+    "missingArtifact": [
+      "g2-s20_0_14-A-white.json",
+      "g2-s20_0_14-B-white.json",
+      "g2-s5_0_2-B-white.json",
+      "g2-s5_3_3-A-white.json",
+      "g2-s5_3_3-B-white.json",
+      "g4-s10_3_9-B-white.json",
+      "g4-s2_0_0-A-white.json",
+      "g4-s2_0_0-B-white.json",
+      "g4-s2_3_1-A-white.json",
+      "g4-s6_0_4-B-white.json",
+      "g5-s11_0_10-A-white.json",
+      "g5-s11_3_11-A-white.json",
+      "g5-s15_0_12-A-white.json",
+      "g5-s15_0_12-B-white.json",
+      "g5-s15_3_13-A-white.json",
+      "g5-s15_3_13-B-white.json",
+      "g5-s7_0_6-A-white.json",
+      "g5-s7_0_6-B-white.json"
+    ]
+  },
+  "rootSearches": 28,
+  "classRules": {
+    "clock-fallback": "the seat's own turn wall time exceeded its allowance (max(10ms, 1%) tolerance), or the turn dispatched nothing but phase ends, or the adviser itself returned a fallback (pack-error / engine-error / divergence). Per-turn wall time is real (players[side].turnMs); the run's overruns/budgetExhausted counters are per GAME, so a fallback on a specific turn can be suspected from them but not proved",
+    "candidate-absent": "the adviser's best end key is NOT in the production generator's K list at that root, so no search budget could have reached it",
+    "reply-outside-beam": "the adviser disagreed with the played turn, and its own answer TO the played turn — the refutation — is not in the candidate list the SAME generator configuration that produced it builds at the reply node. The engine had no way to answer this reply because the generator does not offer it there. This is a statement about the generator's cone at one node and NOTHING MORE: it is not a claim that the search examined the reply and mis-scored it, nor that the engine \"missed\" it, because RootResult reports neither",
+    "strong-candidate-discarded": "the adviser's best turn IS in the production generator's K list AND in the root's own candidate list, and the root never searched it (`searched: false` in `RootResult.candidates`, E2 lane 1's `expose`). No search budget reached it, so no evaluation of it was ever wrong: this is an ordering or a beam-width fault, not a scoring one",
+    "strong-candidate-misjudged": "the adviser's best turn IS in the root's candidate list, the root DID search it (`searched: true`), and did not prefer it — its score is at or below the played candidate's. The search saw the turn and chose another: this is an evaluation or a depth fault. Equality is the usual case and is a FAIL-LOW BOUND, not a tie: a candidate that does not beat the incumbent returns the incumbent's score, so the exposure says \"searched, not preferred\" and cannot say by how much. Before E2 lane 1 this class also swallowed \"in the list but never searched\", which is now `strong-candidate-discarded`",
+    "fixed-work-divergence": "the fixed-work re-run did not play what the seat played (`engine.reproducedPlayed` false) AND it scored the adviser's best turn strictly above the played candidate. The engine prefers the better turn when it is given this much work; the seat, under a wall clock at a coarser rung, did not. This is a statement about the WORK the seat had, not about its judgement, and it is not evidence that the seat would have found the turn in its allowance — `E2-LANE2-EXPOSED-LOSSES.md`'s work sweep is what tests that",
+    "exposure-inconsistent": "the root exposure and the rest of the analysis disagree, so no split is asserted. One of: the adviser's best turn is in the generator's list but absent from the root's published candidate list; the root searched it and scored it strictly ABOVE the played candidate while the re-run DID reproduce the played turn, which contradicts itself (when the re-run did not reproduce it, the class is `fixed-work-divergence`); it ties the played candidate while the played candidate is not the one the root chose; the played turn is absent from the candidate list, so there is nothing to compare against; or the root published a `generator-list` (the must-answer scan, the book probe, `pickUnsearched` or a fallback answered), where every candidate is unsearched by construction. The re-run is FIXED work while the seat played under a wall clock, which is the most likely cause of the first three",
+    "unclear": "none of the above separates, or no turn reached the swing threshold"
+  },
+  "wallMs": 123039,
+  "at": "2026-09-16T23:45:51.682Z"
+}

@@ -1,0 +1,44 @@
+[followon] chain-followon starting in /Users/ashkie/src/deevgames-e4-run/muju 2026-09-18T00:04:20Z
+[followon] waiting for an idle heavy queue (/Users/ashkie/.local/state/muju-heavy) 2026-09-18T00:04:20Z
+[followon] heavy queue idle, starting 2026-09-18T00:04:20Z
+[followon] phase 1: 19 spawn-strike suites (M14 gate, fixed 400k) 2026-09-18T00:04:20Z
+[followon] eval-no-safety-keep-17 (suite) start 2026-09-18T00:04:20Z
+[followon] eval-no-safety-keep-17 (suite) exit 0 2026-09-18T00:04:37Z
+[followon] eval-no-safety-keep-28 (suite) start 2026-09-18T00:04:37Z
+[followon] eval-no-safety-keep-28 (suite) exit 0 2026-09-18T00:04:56Z
+[followon] eval-no-safety-keep-29 (suite) start 2026-09-18T00:04:56Z
+[followon] eval-no-safety-keep-29 (suite) exit 0 2026-09-18T00:05:15Z
+[followon] eval-no-safety-keep-30 (suite) start 2026-09-18T00:05:15Z
+[followon] eval-no-safety-keep-30 (suite) exit 0 2026-09-18T00:05:33Z
+[followon] eval-no-safety-keep-31 (suite) start 2026-09-18T00:05:33Z
+[followon] eval-no-safety-keep-31 (suite) exit 0 2026-09-18T00:05:52Z
+[followon] eval-no-safety-keep-32 (suite) start 2026-09-18T00:05:52Z
+[followon] eval-no-safety-keep-32 (suite) exit 0 2026-09-18T00:06:10Z
+[followon] eval-no-safety-keep-33 (suite) start 2026-09-18T00:06:10Z
+[followon] eval-no-safety-keep-33 (suite) exit 0 2026-09-18T00:06:29Z
+[followon] eval-no-safety-keep-34 (suite) start 2026-09-18T00:06:29Z
+[followon] eval-no-safety-keep-34 (suite) exit 0 2026-09-18T00:06:48Z
+[followon] eval-no-safety-keep-35 (suite) start 2026-09-18T00:06:48Z
+[followon] eval-no-safety-keep-35 (suite) exit 0 2026-09-18T00:07:08Z
+[followon] eval-no-safety-keep-36 (suite) start 2026-09-18T00:07:08Z
+[followon] eval-no-safety-keep-36 (suite) exit 0 2026-09-18T00:07:27Z
+[followon] eval-no-safety-keep-40 (suite) start 2026-09-18T00:07:27Z
+[followon] eval-no-safety-keep-40 (suite) exit 0 2026-09-18T00:07:50Z
+[followon] eval-no-safety-keep-41 (suite) start 2026-09-18T00:07:50Z
+[followon] eval-no-safety-keep-41 (suite) exit 0 2026-09-18T00:08:16Z
+[followon] eval-no-safety-keep-43 (suite) start 2026-09-18T00:08:16Z
+[followon] eval-no-safety-keep-43 (suite) exit 0 2026-09-18T00:08:42Z
+[followon] eval-no-safety-keep-45 (suite) start 2026-09-18T00:08:42Z
+[followon] eval-no-safety-keep-45 (suite) exit 0 2026-09-18T00:09:01Z
+[followon] eval-no-safety-keep-46 (suite) start 2026-09-18T00:09:01Z
+[followon] eval-no-safety-keep-46 (suite) exit 0 2026-09-18T00:09:20Z
+[followon] eval-no-safety-keep-49 (suite) start 2026-09-18T00:09:20Z
+[followon] eval-no-safety-keep-49 (suite) exit 0 2026-09-18T00:09:39Z
+[followon] eval-no-safety-keep-54 (suite) start 2026-09-18T00:09:39Z
+[followon] eval-no-safety-keep-54 (suite) exit 0 2026-09-18T00:09:57Z
+[followon] eval-no-safety-keep-56 (suite) start 2026-09-18T00:09:57Z
+[followon] eval-no-safety-keep-56 (suite) exit 0 2026-09-18T00:10:15Z
+[followon] eval-no-safety-keep-57 (suite) start 2026-09-18T00:10:15Z
+[followon] eval-no-safety-keep-57 (suite) exit 0 2026-09-18T00:10:34Z
+[followon] phase 2: 19 fixed:100k descriptive ladder rows vs hard@desktop 2026-09-18T00:10:34Z
+[followon] eval-no-safety-keep-17 (row) start 2026-09-18T00:10:34Z

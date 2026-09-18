@@ -1,0 +1,128 @@
+{
+  "a": "Rush",
+  "b": "Rush",
+  "work": "fixed:1",
+  "handicaps": [
+    0
+  ],
+  "pairs": 1,
+  "pairsCompleted": 1,
+  "games": 2,
+  "gamesScheduled": 2,
+  "missingGames": 0,
+  "unattributedGames": 0,
+  "failures": 0,
+  "seed": 1,
+  "shards": 1,
+  "openings": [
+    "initial"
+  ],
+  "openingsSha256": null,
+  "replays": true,
+  "resumed": false,
+  "adjudicationRate": 0,
+  "illegalActions": 0,
+  "replicaDivergences": 0,
+  "timingAnomalies": 0,
+  "anomalyCounts": {},
+  "wins": 1,
+  "draws": 0,
+  "losses": 1,
+  "strata": [
+    {
+      "handicap": 0,
+      "pairsScheduled": 1,
+      "pairs": 1,
+      "games": 2,
+      "score": 0.5,
+      "wins": 1,
+      "draws": 0,
+      "losses": 1,
+      "elo": {
+        "n": 1,
+        "games": 2,
+        "counts": [
+          0,
+          0,
+          1,
+          0,
+          0
+        ],
+        "degenerate": true,
+        "regularized": true,
+        "mu": 0.5,
+        "muRaw": 0.5,
+        "muLo": 0,
+        "muHi": 1,
+        "variancePairs": 0.35714285714285715,
+        "variance": 0.17857142857142858,
+        "sePair": 0.5976143046671968,
+        "se": 0.2988071523335984,
+        "elo": 0,
+        "eloLo": -1199.826195290393,
+        "eloHi": 1199.8261952903777,
+        "elo95": 1199.8261952903854,
+        "los": 0.5000000005
+      }
+    }
+  ],
+  "bothSeatsPlayed": true,
+  "seatMirrored": true,
+  "voided": false,
+  "meanTurnMs": {
+    "a": 2.463768115942029,
+    "b": 2.072463768115942
+  },
+  "timing": {
+    "a": {
+      "turns": 69,
+      "p95TurnMs": 7,
+      "maxTurnMs": 10,
+      "overruns": 0,
+      "budgetExhausted": null,
+      "reSearches": null
+    },
+    "b": {
+      "turns": 69,
+      "p95TurnMs": 5,
+      "maxTurnMs": 9,
+      "overruns": 0,
+      "budgetExhausted": null,
+      "reSearches": null
+    }
+  },
+  "elo": 0,
+  "eloLo": -1199.826195290393,
+  "eloHi": 1199.8261952903777,
+  "los": 0.5000000005,
+  "eloDetail": {
+    "n": 1,
+    "games": 2,
+    "counts": [
+      0,
+      0,
+      1,
+      0,
+      0
+    ],
+    "degenerate": true,
+    "regularized": true,
+    "mu": 0.5,
+    "muRaw": 0.5,
+    "muLo": 0,
+    "muHi": 1,
+    "variancePairs": 0.35714285714285715,
+    "variance": 0.17857142857142858,
+    "sePair": 0.5976143046671968,
+    "se": 0.2988071523335984,
+    "elo": 0,
+    "eloLo": -1199.826195290393,
+    "eloHi": 1199.8261952903777,
+    "elo95": 1199.8261952903854,
+    "los": 0.5000000005
+  },
+  "sprt": null,
+  "sprtSequential": null,
+  "decision": null,
+  "status": "complete"
+}

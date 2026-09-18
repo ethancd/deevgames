@@ -1,0 +1,567 @@
+{
+ "what": "E3.2 correctness arm: B1-B5 reproduced on their canonical cases, flag off vs on",
+ "git": "81e4e30328ba94b3b557945a4a74a2212f12fcc5",
+ "weights": {
+  "label": "default-v1",
+  "version": 1
+ },
+ "b3": {
+  "canonicalCase": "fuzz-5150-4-377",
+  "rows": [
+   {
+    "side": 0,
+    "off": 0,
+    "on": 8,
+    "mirrorOff": 0,
+    "mirrorOn": 8,
+    "scoreOff": 3196,
+    "scoreOn": 3916
+   },
+   {
+    "side": 1,
+    "off": 0,
+    "on": -8,
+    "mirrorOff": 0,
+    "mirrorOn": -8,
+    "scoreOff": -3196,
+    "scoreOn": -3916
+   }
+  ],
+  "fuzz1000": {
+   "checked": 1000,
+   "nonZeroOff": 0,
+   "nonZeroOn": 294,
+   "medianCcWhenNonZero": 180,
+   "maxCc": 720
+  }
+ },
+ "b4": {
+  "canonicalCases": [
+   "fuzz-5150-1651-27",
+   "fuzz-5150-531-27",
+   "fuzz-5150-1044-37"
+  ],
+  "rows": [
+   {
+    "id": "fuzz-5150-1651-27",
+    "bits": [
+     {
+      "side": 0,
+      "bitOff": 1,
+      "bitOn": 0
+     },
+     {
+      "side": 1,
+      "bitOff": 1,
+      "bitOn": 0
+     }
+    ],
+    "featureOff": 0,
+    "featureOn": 0,
+    "scoreOff": 375,
+    "scoreOn": 375
+   },
+   {
+    "id": "fuzz-5150-531-27",
+    "bits": [
+     {
+      "side": 0,
+      "bitOff": 0,
+      "bitOn": 0
+     },
+     {
+      "side": 1,
+      "bitOff": 1,
+      "bitOn": 0
+     }
+    ],
+    "featureOff": -1,
+    "featureOn": 0,
+    "scoreOff": 2403,
+    "scoreOn": 2153
+   },
+   {
+    "id": "fuzz-5150-1044-37",
+    "bits": [
+     {
+      "side": 0,
+      "bitOff": 1,
+      "bitOn": 1
+     },
+     {
+      "side": 1,
+      "bitOff": 1,
+      "bitOn": 0
+     }
+    ],
+    "featureOff": 0,
+    "featureOn": 1,
+    "scoreOff": -2886,
+    "scoreOn": -3136
+   }
+  ],
+  "fuzz1000": {
+   "sidePositions": 2000,
+   "firedOff": 965,
+   "firedOn": 22,
+   "excluded": 943
+  }
+ },
+ "b2": {
+  "rows": [
+   {
+    "id": "fuzz-5150-1097-11",
+    "off": {
+     "econDelta": [
+      4,
+      4
+     ],
+     "depletionWaste": [
+      1,
+      1
+     ],
+     "relocationDebt": [
+      -1,
+      0
+     ],
+     "score": [
+      248,
+      188
+     ]
+    },
+    "b2": {
+     "econDelta": [
+      4,
+      4
+     ],
+     "depletionWaste": [
+      1,
+      1
+     ],
+     "relocationDebt": [
+      0,
+      0
+     ],
+     "score": [
+      188,
+      188
+     ]
+    }
+   },
+   {
+    "id": "fuzz-5150-1651-27",
+    "off": {
+     "econDelta": [
+      -3,
+      -4
+     ],
+     "depletionWaste": [
+      -7,
+      -7
+     ],
+     "relocationDebt": [
+      -10,
+      -9
+     ],
+     "score": [
+      375,
+      235
+     ]
+    },
+    "b2": {
+     "econDelta": [
+      -4,
+      -4
+     ],
+     "depletionWaste": [
+      -7,
+      -7
+     ],
+     "relocationDebt": [
+      -9,
+      -9
+     ],
+     "score": [
+      235,
+      235
+     ]
+    }
+   },
+   {
+    "id": "fuzz-5150-1044-37",
+    "off": {
+     "econDelta": [
+      5,
+      6
+     ],
+     "depletionWaste": [
+      7,
+      6
+     ],
+     "relocationDebt": [
+      0,
+      0
+     ],
+     "score": [
+      -2886,
+      -2776
+     ]
+    },
+    "b2": {
+     "econDelta": [
+      5,
+      5
+     ],
+     "depletionWaste": [
+      7,
+      7
+     ],
+     "relocationDebt": [
+      0,
+      0
+     ],
+     "score": [
+      -2886,
+      -2886
+     ]
+    }
+   }
+  ],
+  "scans": [
+   {
+    "arm": "off",
+    "checked": 1000,
+    "violations": 585,
+    "meanAbsScoreDeltaCc": 211.4,
+    "maxAbsScoreDeltaCc": 1440,
+    "byFeature": [
+     {
+      "name": "RelocationDebt",
+      "positions": 501
+     },
+     {
+      "name": "EconDelta",
+      "positions": 342
+     },
+     {
+      "name": "DepletionWaste",
+      "positions": 318
+     }
+    ]
+   },
+   {
+    "arm": "b1",
+    "checked": 1000,
+    "violations": 671,
+    "meanAbsScoreDeltaCc": 166.9,
+    "maxAbsScoreDeltaCc": 1370,
+    "byFeature": [
+     {
+      "name": "RelocationDebt",
+      "positions": 593
+     },
+     {
+      "name": "EconDelta",
+      "positions": 321
+     },
+     {
+      "name": "DepletionWaste",
+      "positions": 267
+     }
+    ]
+   },
+   {
+    "arm": "b2",
+    "checked": 1000,
+    "violations": 0,
+    "meanAbsScoreDeltaCc": 0,
+    "maxAbsScoreDeltaCc": 0,
+    "byFeature": []
+   },
+   {
+    "arm": "b3",
+    "checked": 1000,
+    "violations": 585,
+    "meanAbsScoreDeltaCc": 211.4,
+    "maxAbsScoreDeltaCc": 1440,
+    "byFeature": [
+     {
+      "name": "RelocationDebt",
+      "positions": 501
+     },
+     {
+      "name": "EconDelta",
+      "positions": 342
+     },
+     {
+      "name": "DepletionWaste",
+      "positions": 318
+     }
+    ]
+   },
+   {
+    "arm": "b4",
+    "checked": 1000,
+    "violations": 587,
+    "meanAbsScoreDeltaCc": 212.8,
+    "maxAbsScoreDeltaCc": 1440,
+    "byFeature": [
+     {
+      "name": "RelocationDebt",
+      "positions": 501
+     },
+     {
+      "name": "EconDelta",
+      "positions": 342
+     },
+     {
+      "name": "DepletionWaste",
+      "positions": 318
+     },
+     {
+      "name": "Inv3RetreatSquare",
+      "positions": 5
+     }
+    ]
+   },
+   {
+    "arm": "b5",
+    "checked": 1000,
+    "violations": 589,
+    "meanAbsScoreDeltaCc": 210.8,
+    "maxAbsScoreDeltaCc": 1440,
+    "byFeature": [
+     {
+      "name": "RelocationDebt",
+      "positions": 501
+     },
+     {
+      "name": "EconDelta",
+      "positions": 347
+     },
+     {
+      "name": "DepletionWaste",
+      "positions": 318
+     }
+    ]
+   },
+   {
+    "arm": "all",
+    "checked": 1000,
+    "violations": 5,
+    "meanAbsScoreDeltaCc": 250,
+    "maxAbsScoreDeltaCc": 250,
+    "byFeature": [
+     {
+      "name": "Inv3RetreatSquare",
+      "positions": 5
+     }
+    ]
+   }
+  ]
+ },
+ "lossRoot": {
+  "caseId": "loss-g2-s5_0_2-A-white-t4",
+  "sideToMove": "white",
+  "b5": {
+   "perturbation": "water_1 -> water_2 at (1,1), +1 crystal per turn of upkeep at an unchanged mining rate",
+   "off": {
+    "scoreDelta": -192,
+    "featureDeltas": [
+     {
+      "name": "Material",
+      "df": 4,
+      "ccDelta": 400
+     },
+     {
+      "name": "Rent",
+      "df": 1,
+      "ccDelta": -422
+     },
+     {
+      "name": "TierClimb",
+      "df": 1,
+      "ccDelta": 0
+     },
+     {
+      "name": "ElementCoverage",
+      "df": 1,
+      "ccDelta": 150
+     },
+     {
+      "name": "EconDelta",
+      "df": -4,
+      "ccDelta": -320
+     }
+    ],
+    "rentCharge": -742,
+    "base": {
+     "stream": 1655,
+     "turnsToInsolvency": 7,
+     "income": [
+      7,
+      4,
+      2,
+      7,
+      3,
+      2
+     ]
+    },
+    "after": {
+     "stream": 1275,
+     "turnsToInsolvency": 7,
+     "income": [
+      7,
+      4,
+      2,
+      7,
+      3,
+      2
+     ]
+    }
+   },
+   "on": {
+    "scoreDelta": 128,
+    "featureDeltas": [
+     {
+      "name": "Material",
+      "df": 4,
+      "ccDelta": 400
+     },
+     {
+      "name": "Rent",
+      "df": 1,
+      "ccDelta": -422
+     },
+     {
+      "name": "TierClimb",
+      "df": 1,
+      "ccDelta": 0
+     },
+     {
+      "name": "ElementCoverage",
+      "df": 1,
+      "ccDelta": 150
+     }
+    ],
+    "rentCharge": -422,
+    "base": {
+     "stream": 1655,
+     "turnsToInsolvency": 7,
+     "income": [
+      7,
+      4,
+      2,
+      7,
+      3,
+      2
+     ]
+    },
+    "after": {
+     "stream": 1655,
+     "turnsToInsolvency": 7,
+     "income": [
+      7,
+      4,
+      2,
+      7,
+      3,
+      2
+     ]
+    }
+   }
+  },
+  "b1": {
+   "perturbation": "+1 resource layer at (1,1), under White's water_1",
+   "off": {
+    "scoreDelta": -130,
+    "featureDeltas": [
+     {
+      "name": "PstMine",
+      "df": 1,
+      "ccDelta": 60
+     },
+     {
+      "name": "EconDelta",
+      "df": -2,
+      "ccDelta": -160
+     },
+     {
+      "name": "DepletionWaste",
+      "df": 1,
+      "ccDelta": -30
+     }
+    ],
+    "base": {
+     "stream": 1655,
+     "income": [
+      7,
+      4,
+      2,
+      7,
+      3,
+      2
+     ],
+     "relocationDebt": 420,
+     "waste": 17
+    },
+    "after": {
+     "stream": 1608,
+     "income": [
+      7,
+      5,
+      0,
+      7,
+      5,
+      0
+     ],
+     "relocationDebt": 420,
+     "waste": 18
+    }
+   },
+   "on": {
+    "scoreDelta": 60,
+    "featureDeltas": [
+     {
+      "name": "PstMine",
+      "df": 1,
+      "ccDelta": 60
+     }
+    ],
+    "base": {
+     "stream": 2500,
+     "income": [
+      7,
+      7,
+      7,
+      6,
+      7,
+      5
+     ],
+     "relocationDebt": 1260,
+     "waste": 3
+    },
+    "after": {
+     "stream": 2500,
+     "income": [
+      7,
+      7,
+      7,
+      6,
+      7,
+      5
+     ],
+     "relocationDebt": 1260,
+     "waste": 3
+    }
+   }
+  }
+ },
+ "b5Balance": {
+  "changedTurnsToInsolvency": 0,
+  "changedInsolvency": 0,
+  "changedRunwayCliff": 0,
+  "sidePositions": 2000
+ },
+ "at": "2026-09-17T07:01:54.086Z"
+}

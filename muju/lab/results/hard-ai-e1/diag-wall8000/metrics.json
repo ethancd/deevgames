@@ -1,0 +1,192 @@
+{
+  "a": "hard@desktop",
+  "b": "aiv2-hard",
+  "work": "wall:8000",
+  "handicaps": [
+    0,
+    3
+  ],
+  "pairs": 8,
+  "pairsCompleted": 8,
+  "games": 16,
+  "gamesScheduled": 16,
+  "missingGames": 0,
+  "unattributedGames": 0,
+  "failures": 0,
+  "seed": 91680,
+  "shards": 2,
+  "openings": [
+    "e1-g3-s325",
+    "e1-g3-s305",
+    "e1-g5-s695",
+    "e1-g2-s420"
+  ],
+  "openingsSha256": "bba8ea56b1bc2e0d5cdb58f6527e8bdec4382ef6a42906ba0674578ed02d5b55",
+  "openingsSkip": 44,
+  "openingsSelectedIds": null,
+  "openingsIndependent": true,
+  "independenceWarning": null,
+  "distinctGames": {
+    "A-white": 8,
+    "B-white": 8,
+    "ofPairs": 8,
+    "source": "replay",
+    "duplicates": false
+  },
+  "overrunTolerance": {
+    "spec": "max(10ms,1%)",
+    "ms": 10,
+    "pct": 1,
+    "frozen": true
+  },
+  "replays": true,
+  "resumed": false,
+  "adjudicationRate": 0,
+  "illegalActions": 0,
+  "replicaDivergences": 0,
+  "timingAnomalies": 0,
+  "anomalyCounts": {},
+  "wins": 12,
+  "draws": 0,
+  "losses": 4,
+  "strata": [
+    {
+      "handicap": 0,
+      "pairsScheduled": 4,
+      "pairs": 4,
+      "games": 8,
+      "score": 0.75,
+      "wins": 6,
+      "draws": 0,
+      "losses": 2,
+      "elo": {
+        "n": 4,
+        "games": 8,
+        "counts": [
+          0,
+          0,
+          2,
+          0,
+          2
+        ],
+        "degenerate": false,
+        "regularized": false,
+        "mu": 0.75,
+        "muRaw": 0.75,
+        "muLo": 0.505004501875,
+        "muHi": 0.994995498125,
+        "variancePairs": 0.25,
+        "variance": 0.125,
+        "sePair": 0.25,
+        "se": 0.125,
+        "elo": 190.848501887865,
+        "eloLo": 3.4776002103256305,
+        "eloHi": 919.3841037908413,
+        "elo95": 457.95325179025787,
+        "los": 0.9772499371127437
+      }
+    },
+    {
+      "handicap": 3,
+      "pairsScheduled": 4,
+      "pairs": 4,
+      "games": 8,
+      "score": 0.75,
+      "wins": 6,
+      "draws": 0,
+      "losses": 2,
+      "elo": {
+        "n": 4,
+        "games": 8,
+        "counts": [
+          0,
+          0,
+          2,
+          0,
+          2
+        ],
+        "degenerate": false,
+        "regularized": false,
+        "mu": 0.75,
+        "muRaw": 0.75,
+        "muLo": 0.505004501875,
+        "muHi": 0.994995498125,
+        "variancePairs": 0.25,
+        "variance": 0.125,
+        "sePair": 0.25,
+        "se": 0.125,
+        "elo": 190.848501887865,
+        "eloLo": 3.4776002103256305,
+        "eloHi": 919.3841037908413,
+        "elo95": 457.95325179025787,
+        "los": 0.9772499371127437
+      }
+    }
+  ],
+  "bothSeatsPlayed": true,
+  "seatMirrored": true,
+  "voided": false,
+  "voidReason": null,
+  "meanTurnMs": {
+    "a": 4921.44262295082,
+    "b": 7919.892561983471
+  },
+  "timing": {
+    "a": {
+      "turns": 244,
+      "p95TurnMs": 8009,
+      "maxTurnMs": 8035,
+      "overAllowance": 21,
+      "overruns": 0,
+      "toleranceMs": 80,
+      "overrunRate": 0,
+      "budgetExhausted": 0,
+      "reSearches": 0
+    },
+    "b": {
+      "turns": 242,
+      "p95TurnMs": 8008,
+      "maxTurnMs": 8013,
+      "overAllowance": 236,
+      "overruns": 0,
+      "toleranceMs": 80,
+      "overrunRate": 0,
+      "budgetExhausted": null,
+      "reSearches": null
+    }
+  },
+  "elo": 190.848501887865,
+  "eloLo": 53.764809861064656,
+  "eloHi": 432.06690226160333,
+  "los": 0.9976610697906094,
+  "eloDetail": {
+    "n": 8,
+    "games": 16,
+    "counts": [
+      0,
+      0,
+      4,
+      0,
+      4
+    ],
+    "degenerate": false,
+    "regularized": false,
+    "mu": 0.75,
+    "muRaw": 0.75,
+    "muLo": 0.5767620219156364,
+    "muHi": 0.9232379780843636,
+    "variancePairs": 0.25,
+    "variance": 0.125,
+    "sePair": 0.1767766952966369,
+    "se": 0.08838834764831845,
+    "elo": 190.848501887865,
+    "eloLo": 53.764809861064656,
+    "eloHi": 432.06690226160333,
+    "elo95": 189.15104620026935,
+    "los": 0.9976610697906094
+  },
+  "sprt": null,
+  "sprtSequential": null,
+  "decision": null,
+  "status": "complete"
+}

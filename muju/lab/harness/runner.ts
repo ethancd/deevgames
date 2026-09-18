@@ -78,6 +78,16 @@ export interface PlayGameArgs {
   runId: string;
   experiment?: string | null;
   options?: Partial<MatchOptions>;
+  /**
+   * Optional starting position (lab ladder openings, EPIC-PLAN E0.4). Omitted —
+   * the only case in gameplay — the game starts from `createInitialGameState`
+   * as before. When supplied it MUST be a position reached by replaying legal
+   * actions from that same canonical initial state (built with this game's
+   * `resourceLayout` / `actionsPerTurn` / `blackCrystalHandicap`); the caller
+   * owns that guarantee, `lab/hard-ai/ladder/openings.ts` enforces it, and the
+   * harness invariant check below is run against it before the first move.
+   */
+  initialState?: GameState;
   /** Read-only lab instrumentation; never supplied by gameplay. */
   onAction?: (before: GameState, after: GameState, action: AIAction, player: PlayerId) => void;
 }
@@ -110,7 +120,8 @@ async function playGameInner(args: PlayGameArgs, options: MatchOptions): Promise
   const startedAt = new Date().toISOString();
   const t0 = Date.now();
 
-  let state = createInitialGameState(options.resourceLayout);
+  let state = args.initialState ?? createInitialGameState(options.resourceLayout, options.actionsPerTurn, options.blackCrystalHandicap);
+  if (args.initialState && options.checkInvariants) checkInvariants(state, 'supplied opening position');
   state.victoryRule = options.victoryRule;
   state.inactivityRule = options.inactivityRule;
   const rngs: Record<PlayerId, () => number> = {
@@ -122,6 +133,9 @@ async function playGameInner(args: PlayGameArgs, options: MatchOptions): Promise
     white: emptyStats(bots.white.name),
     black: emptyStats(bots.black.name),
   };
+  /** Last `turnNumber` each seat was seen on move for, so `turnsTaken` counts
+   * turns rather than the several decisions each turn contains. */
+  const lastTurnKey: Record<PlayerId, string> = { white: '', black: '' };
   const anomalies: string[] = [];
   const incomeCurve: GameRecord['incomeCurve'] = [], purchases: GameRecord['purchases'] = [], promotionEvents: GameRecord['promotionEvents'] = [];
   let round90Exhaustion: number|null = null, placedAndAttackedKills = 0;
@@ -199,6 +213,17 @@ async function playGameInner(args: PlayGameArgs, options: MatchOptions): Promise
     const bot = bots[player];
     const before = state;
 
+    // Per-seat latency (v3, DESIGN §7.7): `durationMs` below is the whole
+    // game's wall clock and cannot tell the two engines apart, so each seat's
+    // own decision time and turn count are accumulated here.
+    const turnKey = `${state.turn.turnNumber}`;
+    // A new turn for this seat opens a new `turnMs` bucket; every decision made
+    // inside that turn adds to it, so the array holds one PER-TURN total in
+    // turn order and sums to `decisionMs` (AMENDMENTS-PENDING A4's p95 needs
+    // the samples, not the total).
+    if (lastTurnKey[player] !== turnKey) { lastTurnKey[player] = turnKey; stats[player].turnsTaken!++; stats[player].turnMs!.push(0); }
+    const decisionStartedAt = Date.now();
+
     // Choose an action
     let action: AIAction | null = null;
     if(state.upkeepPending && bot.kind==='scripted') {
@@ -226,6 +251,10 @@ async function playGameInner(args: PlayGameArgs, options: MatchOptions): Promise
         // does in the real game (divergences D1/D2). Counted for calibration.
       }
     }
+
+    const decisionMs = Date.now() - decisionStartedAt;
+    stats[player].decisionMs! += decisionMs;
+    stats[player].turnMs![stats[player].turnMs!.length - 1] += decisionMs;
 
     // Fallback when the bot passes (or strict mode rejected): end the phase.
     if (!action) action=phaseEndAction(state);
@@ -340,11 +369,19 @@ async function playGameInner(args: PlayGameArgs, options: MatchOptions): Promise
     stats[p].resourcesGained = state.players[p].resourcesGained;
     stats[p].resourcesSpent = state.players[p].resourcesGained - state.players[p].resources;
     stats[p].finalMaterial = onBoardMaterial(state, p);
+    // E1.5: a bot that keeps its own adapter counters (the hard engine's) hands
+    // them over per seat, so a row with two engines of the same family can
+    // attribute them per arm instead of reporting a process-wide total no one
+    // can split. Left absent when the bot keeps none.
+    const bot = bots[p];
+    const own = bot.kind === 'engine' ? bot.timing?.() : undefined;
+    if (own != null) stats[p].hardTiming = own;
   }
 
+  const finalWinType = winType ?? 'draw';
   const record: GameRecord = {
     incomeCurve,round90Exhaustion,purchases,promotionEvents,placedAndAttackedKills,
-    schema: 'muju-lab-game-v2',
+    schema: 'muju-lab-game-v3',
     maxInactivityPlies,inactivityDraw:state.victoryReason==='inactivity',upkeepElimination:state.victoryReason==='upkeep-elimination',
     engineHash: args.engineHash,
     runId: args.runId,
@@ -354,7 +391,7 @@ async function playGameInner(args: PlayGameArgs, options: MatchOptions): Promise
     durationMs: Date.now() - t0,
     options,
     winner,
-    winType: winType ?? 'draw',
+    winType: finalWinType,
     turns: state.turn.turnNumber,
     plies: ply,
     firstBlood,
@@ -362,6 +399,9 @@ async function playGameInner(args: PlayGameArgs, options: MatchOptions): Promise
     materialCurve,
     invariantViolation,
     anomalies,
+    adjudicated: finalWinType === 'adjudication',
+    handicap: options.blackCrystalHandicap ?? 0,
+    ...(finalWinType === 'adjudication' ? { adjudicationFormula: 'material+bank' as const } : {}),
   };
 
   return {
@@ -386,6 +426,9 @@ function emptyStats(botName: string): PlayerGameStats {
     unitsKilled: 0,
     illegalActions: 0,
     plies: 0,
+    decisionMs: 0,
+    turnsTaken: 0,
+    turnMs: [],
   };
 }
 
