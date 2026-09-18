@@ -1,0 +1,364 @@
+{
+  "schema": "muju-ladder-manifest-v1",
+  "status": "complete",
+  "a": "hard@lab",
+  "b": "aiv2-hard",
+  "aConfigHash": "hard:lab:wall:3000#4e7afdf76b32fadfab2d11577cb610c8f9f1a491b5153e70b87b0774403600cd",
+  "bConfigHash": "aiv2:hard:full:wall:3000#dc7e4607ea81aad2967ce361b45e3bf3e8ff2a93e1e74db305b96b6c42a5918c",
+  "aResolvedConfig": {
+    "engine": "hard",
+    "config": {
+      "maxDepth": 12,
+      "aspirationCc": 200,
+      "lmrRank1": 6,
+      "lmrRank2": 12,
+      "futilityMarginCc": 200,
+      "useLmr": false,
+      "useAspiration": false,
+      "useFutility": false,
+      "useExtensions": false,
+      "quiesce": {
+        "maxPly": 4,
+        "deltaMarginCc": 300,
+        "maxCandidates": 8
+      },
+      "gen": {
+        "K": 24,
+        "maxPlacePlans": 16,
+        "action": {
+          "widths": {
+            "0": 6,
+            "1": 4,
+            "2": 3,
+            "3": 2
+          },
+          "keep": 4,
+          "ttBits": 18
+        },
+        "purchase": {
+          "maxBodies": 4,
+          "maxMultisets": 35,
+          "maxPlans": 12,
+          "squares": 8,
+          "keepPerMultiset": 3,
+          "weights": {
+            "mineCc": 1,
+            "safeCc": 100,
+            "blockCc": 200,
+            "strikeCc": 300,
+            "anchorCc": 20,
+            "zeroSpawnCc": 400,
+            "liquidityCc": 50,
+            "homeRaceCc": 5000
+          }
+        },
+        "maxPromotions": 8,
+        "reference": false
+      },
+      "genInterior": {
+        "K": 16,
+        "maxPlacePlans": 8,
+        "action": {
+          "widths": {
+            "0": 6,
+            "1": 4,
+            "2": 3,
+            "3": 2
+          },
+          "keep": 4,
+          "ttBits": 18
+        },
+        "purchase": {
+          "maxBodies": 4,
+          "maxMultisets": 35,
+          "maxPlans": 12,
+          "squares": 8,
+          "keepPerMultiset": 3,
+          "weights": {
+            "mineCc": 1,
+            "safeCc": 100,
+            "blockCc": 200,
+            "strikeCc": 300,
+            "anchorCc": 20,
+            "zeroSpawnCc": 400,
+            "liquidityCc": 50,
+            "homeRaceCc": 5000
+          }
+        },
+        "maxPromotions": 8,
+        "reference": false
+      },
+      "ttBits": 19,
+      "dfpn": {
+        "maxTurns": 3,
+        "nodeBudget": 4000,
+        "epsilonQ2": 5,
+        "ttBits": 17
+      },
+      "useDfpn": false,
+      "time": {
+        "minMs": 2000,
+        "maxMs": 6000,
+        "baseMs": 3000,
+        "abortFactor": 3
+      },
+      "profile": {
+        "unitsPerMs": 200,
+        "samples": 0
+      },
+      "ttBitsMacro": 19,
+      "ttBitsTurn": 18,
+      "K": 24,
+      "kInterior": 16,
+      "weights": {
+        "w": {
+          "0": 100,
+          "1": -422,
+          "2": 90,
+          "3": 25,
+          "4": -4000,
+          "5": 60,
+          "6": 20,
+          "7": 30,
+          "8": 8,
+          "9": -800,
+          "10": 25,
+          "11": 90,
+          "12": -60,
+          "13": -400,
+          "14": -180,
+          "15": 220,
+          "16": 90,
+          "17": -20,
+          "18": -8,
+          "19": 40,
+          "20": 0,
+          "21": 0,
+          "22": 150,
+          "23": 80,
+          "24": -30,
+          "25": -600,
+          "26": -150,
+          "27": -60,
+          "28": -50,
+          "29": -30,
+          "30": -25,
+          "31": -10,
+          "32": 20,
+          "33": 35,
+          "34": -40,
+          "35": -120,
+          "36": -150,
+          "37": 300,
+          "38": -800,
+          "39": -300,
+          "40": -250,
+          "41": -100,
+          "42": -400,
+          "43": -120,
+          "44": -600,
+          "45": -150,
+          "46": -150,
+          "47": -400,
+          "48": -250,
+          "49": -40,
+          "50": -200,
+          "51": -200,
+          "52": 0,
+          "53": -200,
+          "54": -60,
+          "55": 0,
+          "56": -150,
+          "57": -250
+        },
+        "material": {
+          "0": 300,
+          "1": 700,
+          "2": 1500,
+          "3": 300,
+          "4": 700,
+          "5": 1500,
+          "6": 400,
+          "7": 800,
+          "8": 1600,
+          "9": 400,
+          "10": 800,
+          "11": 1600,
+          "12": 500,
+          "13": 900,
+          "14": 1700,
+          "15": 500,
+          "16": 900,
+          "17": 1700
+        },
+        "version": 1,
+        "label": "default-v1"
+      },
+      "book": {
+        "size": 0,
+        "handicap": 0,
+        "mapHash": 0,
+        "weightsVersion": 0
+      }
+    },
+    "budget": {
+      "mode": "wall",
+      "fixedWork": 0,
+      "turnMs": 3000,
+      "allocation": "whole-turn",
+      "shippedTurnBudgetMs": null,
+      "overridesPresetTimeLimit": false
+    },
+    "lifecycle": {
+      "engine": "one-per-game-seat",
+      "seed": "once-at-construction",
+      "setDifficultyPerDecision": false,
+      "searchesPerTurn": "one"
+    },
+    "resign": false
+  },
+  "bResolvedConfig": {
+    "engine": "aiv2",
+    "difficulty": "hard",
+    "fast": false,
+    "search": {
+      "mctsIterations": 1200,
+      "mctsTimeLimit": 3000,
+      "beamWidth": 50,
+      "outputPlans": 20,
+      "progressiveWideningAlpha": 0.5,
+      "tacticalDepth": 2,
+      "tacticalNodes": 600000,
+      "fixedWork": 0
+    },
+    "budget": {
+      "mode": "wall",
+      "fixedWork": 0,
+      "turnMs": 3000,
+      "allocation": "split-across-remaining-decisions",
+      "shippedTurnBudgetMs": 8000,
+      "overridesPresetTimeLimit": true
+    },
+    "lifecycle": {
+      "engine": "one-per-game-seat",
+      "seed": "once-at-construction",
+      "setDifficultyPerDecision": true,
+      "searchesPerTurn": "one-per-action"
+    },
+    "resign": false,
+    "tacticalSolver": "wasm-tactics-or-reference-fallback"
+  },
+  "work": "wall:3000",
+  "seed": 91601,
+  "pairs": 2,
+  "shards": 2,
+  "handicaps": [
+    0
+  ],
+  "legality": "as-shipped",
+  "sprt": null,
+  "openings": {
+    "path": "lab/hard-ai/ladder/openings/e0-openings.jsonl",
+    "sha256": "ea37cb3a1d9f1a05e6ee43d6aebe8dc18a59fba716c061945e4a543b862e0f44",
+    "ids": [
+      "g2-s0",
+      "g3-s1",
+      "g4-s2",
+      "g2-s5",
+      "g4-s6",
+      "g5-s7",
+      "g4-s10",
+      "g5-s11",
+      "g5-s15",
+      "g2-s20",
+      "g3-s25",
+      "g4-s30",
+      "g5-s31",
+      "g2-s40",
+      "g4-s42",
+      "g3-s45"
+    ],
+    "count": 16
+  },
+  "openingsIndependent": true,
+  "independenceWarning": null,
+  "overrunTolerance": {
+    "spec": "max(10ms,1%)",
+    "ms": 10,
+    "pct": 1,
+    "proposed": true
+  },
+  "replays": true,
+  "resume": false,
+  "schedule": [
+    {
+      "pairId": "g2-s0:0:0",
+      "pairIndex": 0,
+      "openingId": "g2-s0",
+      "handicap": 0,
+      "seed": 213810451
+    },
+    {
+      "pairId": "g3-s1:0:1",
+      "pairIndex": 1,
+      "openingId": "g3-s1",
+      "handicap": 0,
+      "seed": 473919198
+    }
+  ],
+  "resumedPairIds": [],
+  "sprtStop": null,
+  "rules": {
+    "elementGraph": "double-thick",
+    "upkeep": "shipped",
+    "inactivityRule": "on"
+  },
+  "argv": [
+    "--a",
+    "hard@lab",
+    "--b",
+    "aiv2-hard",
+    "--work",
+    "wall:3000",
+    "--handicaps",
+    "0",
+    "--pairs",
+    "2",
+    "--seed",
+    "91601",
+    "--shards",
+    "2",
+    "--openings",
+    "lab/hard-ai/ladder/openings/e0-openings.jsonl",
+    "--out",
+    "lab/results/hard-ai-e0/pilot2-h0"
+  ],
+  "git": "77b68d52cf85ac8eafeeb09c9ccab661436a928c",
+  "gitDirty": true,
+  "baseline": {
+    "ai": "5a4cd76ffe59a3d9df80ce444b860d76be3ff539e8a8d11322851f0be29f0a21",
+    "game": "7700abcf55f44f5b1bcb3819ca853cce11548782b86c58cd8c12e0d66a013014",
+    "wasm": "da9b1cdf25e4bcd6a4674fd697095e35c2606c29817e3d18043faf4799d828bf",
+    "deps": "b17ce8cae69cdede37f74f14139e1afee7f9eb6e17676c391239a8ff985cbf45"
+  },
+  "wasmSha256": "da9b1cdf25e4bcd6a4674fd697095e35c2606c29817e3d18043faf4799d828bf",
+  "node": "v24.11.1",
+  "device": "Apple M2 Max x12 (darwin/arm64)",
+  "cpuCount": 12,
+  "loadavg": [
+    2.49169921875,
+    2.005859375,
+    2.73876953125
+  ],
+  "at": "2026-09-16T06:30:40.304Z",
+  "finishedAt": "2026-09-16T06:36:02.479Z",
+  "wallMs": 322274,
+  "counts": {
+    "scheduledPairs": 2,
+    "completedPairs": 2,
+    "games": 4,
+    "failures": 0,
+    "resumedPairs": 0
+  },
+  "error": null
+}

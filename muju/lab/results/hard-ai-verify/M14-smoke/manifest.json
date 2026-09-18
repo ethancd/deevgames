@@ -1,0 +1,26 @@
+{
+  "a": "hard@lab-400k",
+  "b": "Rush",
+  "aConfigHash": "hard:lab-400k:wall:500",
+  "bConfigHash": "scripted:Rush",
+  "work": "wall:500",
+  "seed": 9,
+  "pairs": 8,
+  "shards": 12,
+  "handicaps": [
+    0
+  ],
+  "legality": "as-shipped",
+  "profile": null,
+  "sprt": null,
+  "rules": {
+    "elementGraph": "double-thick",
+    "upkeep": "shipped",
+    "inactivityRule": "on"
+  },
+  "git": "f2906f6353107ee319f51a32329dc27bc3c851b8",
+  "wasmSha256": "da9b1cdf25e4bcd6a4674fd697095e35c2606c29817e3d18043faf4799d828bf",
+  "node": "v24.11.1",
+  "device": "Apple M2 Max x12 (darwin/arm64)",
+  "at": "2026-09-15T23:42:29.024Z"
+}

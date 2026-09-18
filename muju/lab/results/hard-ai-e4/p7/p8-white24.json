@@ -1,0 +1,155 @@
+{
+  "label": "p8-white24",
+  "stamp": "2026-09-18T00:00:21.557Z",
+  "node": "v24.11.1",
+  "results": [
+    {
+      "replay": "e1-g2-s40_3_3-A-white.json",
+      "side": "white",
+      "seatTurnIndex": 24,
+      "gameTurn": 25,
+      "phase": "place",
+      "bodies": 32,
+      "whiteBodies": 14,
+      "blackBodies": 18,
+      "bank": {
+        "white": 30,
+        "black": 58
+      },
+      "ruleset": "standard",
+      "recordedTurnMs": 2641138,
+      "actions": [
+        "BUY_UNIT",
+        "END_PLACE_PHASE",
+        "MOVE",
+        "MOVE",
+        "ATTACK",
+        "END_ACTION_PHASE"
+      ],
+      "applyTotalMs": 12846.71,
+      "perAction": [
+        {
+          "i": 0,
+          "type": "BUY_UNIT",
+          "applyMs": 0.073,
+          "verdictCalls": 0
+        },
+        {
+          "i": 1,
+          "type": "END_PLACE_PHASE",
+          "applyMs": 0.001,
+          "verdictCalls": 0
+        },
+        {
+          "i": 2,
+          "type": "MOVE",
+          "applyMs": 3260.248,
+          "verdictCalls": 1
+        },
+        {
+          "i": 3,
+          "type": "MOVE",
+          "applyMs": 3398.345,
+          "verdictCalls": 1
+        },
+        {
+          "i": 4,
+          "type": "ATTACK",
+          "applyMs": 3106.022,
+          "verdictCalls": 1
+        },
+        {
+          "i": 5,
+          "type": "END_ACTION_PHASE",
+          "applyMs": 3082.021,
+          "verdictCalls": 1
+        }
+      ],
+      "verdictCalls": 4,
+      "verdictTotalMs": 13044.747,
+      "distinctKeys": 3,
+      "calls": [
+        {
+          "actionIndex": 2,
+          "actionType": "MOVE",
+          "site": "post",
+          "verdict": "unknown",
+          "ms": 3226.092,
+          "key": "c72e62597793fdbf",
+          "nodes": 20000,
+          "boundCallsAct": 646215,
+          "boundMsAct": 2521.157,
+          "boundMsTop": 0.176,
+          "failedHits": 0,
+          "transitions": 639552,
+          "transitionMs": 443.953,
+          "moveGenMs": 255.452,
+          "attackGenMs": 34.158,
+          "keyMs": 33.512,
+          "prepareNodes": 13338,
+          "keyLength": 391
+        },
+        {
+          "actionIndex": 3,
+          "actionType": "MOVE",
+          "site": "post",
+          "verdict": "unknown",
+          "ms": 3231.772,
+          "key": "a5f84015a2c7853b",
+          "nodes": 20000,
+          "boundCallsAct": 632891,
+          "boundMsAct": 2550.998,
+          "boundMsTop": 0.017,
+          "failedHits": 0,
+          "transitions": 626228,
+          "transitionMs": 481.276,
+          "moveGenMs": 286.593,
+          "attackGenMs": 38.728,
+          "keyMs": 34.276,
+          "prepareNodes": 13338,
+          "keyLength": 391
+        },
+        {
+          "actionIndex": 4,
+          "actionType": "ATTACK",
+          "site": "post",
+          "verdict": "unknown",
+          "ms": 3444.473,
+          "key": "1f4e4efb81e9cd6b",
+          "nodes": 20000,
+          "boundCallsAct": 619659,
+          "boundMsAct": 2353.366,
+          "boundMsTop": 0.015,
+          "failedHits": 0,
+          "transitions": 612996,
+          "transitionMs": 435.559,
+          "moveGenMs": 251.665,
+          "attackGenMs": 31.632,
+          "keyMs": 34.113,
+          "prepareNodes": 13337,
+          "keyLength": 381
+        },
+        {
+          "actionIndex": 5,
+          "actionType": "END_ACTION_PHASE",
+          "site": "pre",
+          "verdict": "unknown",
+          "ms": 3142.411,
+          "key": "1f4e4efb81e9cd6b",
+          "nodes": 20000,
+          "boundCallsAct": 619659,
+          "boundMsAct": 2369.448,
+          "boundMsTop": 0.014,
+          "failedHits": 0,
+          "transitions": 612996,
+          "transitionMs": 435.093,
+          "moveGenMs": 263.423,
+          "attackGenMs": 32.355,
+          "keyMs": 32.953,
+          "prepareNodes": 13337,
+          "keyLength": 381
+        }
+      ]
+    }
+  ]
+}

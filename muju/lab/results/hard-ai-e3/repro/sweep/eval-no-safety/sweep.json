@@ -1,0 +1,136 @@
+{
+  "schema": "muju-hard-work-sweep-v1",
+  "source": "/private/tmp/claude-501/-Users-ashkie-src/cd40736e-60ca-490c-bc97-ac7331c3a88d/scratchpad/lane10/sweep-src",
+  "engine": "hard@ablate:eval-no-safety",
+  "engineWeightsLabel": "default-v1-no-safety",
+  "mode": "fresh",
+  "warmWork": null,
+  "works": [
+    100000,
+    200000,
+    283000,
+    400000,
+    566000,
+    800000
+  ],
+  "toleranceCc": 300,
+  "unitsPerMs": 100,
+  "turns": [
+    {
+      "fileId": "g4-s6_3_5-B-white",
+      "side": "black",
+      "turnNumber": 1,
+      "role": "first",
+      "klass": "strong-candidate-misjudged",
+      "adviserEndKey": "559e2d60610127d8",
+      "playedEndKey": "4844d47f0e9b8049",
+      "adviserBestDeepCc": -1797,
+      "playedDeepCc": -2473,
+      "swingCc": 676,
+      "seatTurnMs": 2110,
+      "budgetMs": 3000,
+      "impliedWork": 211000,
+      "impliedWorkFresh": 422000,
+      "flipWork": 400000,
+      "reproducedAtAnyRung": true,
+      "rungs": [
+        {
+          "work": 100000,
+          "chosenEndKey": "4844d47f0e9b8049",
+          "chosenIsAdviserBest": false,
+          "chosenIsPlayed": true,
+          "chosenDeepCc": -2473,
+          "withinTolerance": false,
+          "candidateSource": "completed-depth",
+          "candidates": 19,
+          "searched": 19,
+          "depth": 2,
+          "wallMs": 1245,
+          "warmSearches": 0
+        },
+        {
+          "work": 200000,
+          "chosenEndKey": "4844d47f0e9b8049",
+          "chosenIsAdviserBest": false,
+          "chosenIsPlayed": true,
+          "chosenDeepCc": -2473,
+          "withinTolerance": false,
+          "candidateSource": "completed-depth",
+          "candidates": 19,
+          "searched": 19,
+          "depth": 2,
+          "wallMs": 2298,
+          "warmSearches": 0
+        },
+        {
+          "work": 283000,
+          "chosenEndKey": "4844d47f0e9b8049",
+          "chosenIsAdviserBest": false,
+          "chosenIsPlayed": true,
+          "chosenDeepCc": -2473,
+          "withinTolerance": false,
+          "candidateSource": "completed-depth",
+          "candidates": 19,
+          "searched": 19,
+          "depth": 2,
+          "wallMs": 3209,
+          "warmSearches": 0
+        },
+        {
+          "work": 400000,
+          "chosenEndKey": "7a4e0a31c5259add",
+          "chosenIsAdviserBest": false,
+          "chosenIsPlayed": false,
+          "chosenDeepCc": -2032,
+          "withinTolerance": true,
+          "candidateSource": "completed-depth",
+          "candidates": 19,
+          "searched": 19,
+          "depth": 3,
+          "wallMs": 15963,
+          "warmSearches": 0
+        },
+        {
+          "work": 566000,
+          "chosenEndKey": "7a4e0a31c5259add",
+          "chosenIsAdviserBest": false,
+          "chosenIsPlayed": false,
+          "chosenDeepCc": -2032,
+          "withinTolerance": true,
+          "candidateSource": "completed-depth",
+          "candidates": 19,
+          "searched": 19,
+          "depth": 3,
+          "wallMs": 4566,
+          "warmSearches": 0
+        },
+        {
+          "work": 800000,
+          "chosenEndKey": "7a4e0a31c5259add",
+          "chosenIsAdviserBest": false,
+          "chosenIsPlayed": false,
+          "chosenDeepCc": -2032,
+          "withinTolerance": true,
+          "candidateSource": "completed-depth",
+          "candidates": 19,
+          "searched": 19,
+          "depth": 3,
+          "wallMs": 4551,
+          "warmSearches": 0
+        }
+      ]
+    }
+  ],
+  "flipHistogram": [
+    {
+      "work": 400000,
+      "turns": 1
+    }
+  ],
+  "flippedAtOrBelow400k": 1,
+  "neverFlipped": 0,
+  "adviserSearches": 1,
+  "productionSearches": 6,
+  "wallMs": 31860,
+  "at": "2026-09-17T06:33:50.737Z"
+}

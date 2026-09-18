@@ -1,0 +1,27 @@
+{
+  "gatePreservation": {
+    "seed": 6,
+    "actions": 100000,
+    "games": 1721,
+    "mismatches": 0,
+    "proofsCompared": 1703,
+    "proofsSuppressed": 9946,
+    "homeCheckmates": 365,
+    "terminals": {
+      "upkeep-elimination:white": 122,
+      "home-occupation:black": 329,
+      "home-checkmate:white": 184,
+      "upkeep-elimination:black": 108,
+      "home-occupation:white": 305,
+      "inactivity:draw": 436,
+      "home-checkmate:black": 181,
+      "elimination:white": 39,
+      "elimination:black": 15,
+      "unfinished": 2
+    },
+    "elapsedMs": 1227
+  },
+  "git": "437ee40fd29f594f017e90f850762c6092864772",
+  "node": "v24.11.1",
+  "at": "2026-09-18T00:12:53.952Z"
+}

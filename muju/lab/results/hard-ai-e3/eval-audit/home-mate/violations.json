@@ -1,0 +1,198 @@
+{
+  "corpus": "home-mate",
+  "sideSwap": {
+    "checked": 56,
+    "positions": 0,
+    "byFeature": []
+  },
+  "rot180": {
+    "checked": 56,
+    "skipped": 0,
+    "positions": 8,
+    "byFeature": [
+      {
+        "index": 23,
+        "name": "EconDelta",
+        "group": "economy",
+        "positions": 8,
+        "examples": [
+          {
+            "id": "five-action-rotation-exceeds-the-turn-budget-rescue",
+            "side": 0,
+            "a": -12,
+            "b": -9
+          },
+          {
+            "id": "five-action-rotation-exceeds-the-turn-budget-mate",
+            "side": 1,
+            "a": 12,
+            "b": 9
+          },
+          {
+            "id": "five-action-rotation-exceeds-the-turn-budget-rotated-black-rescue",
+            "side": 1,
+            "a": -9,
+            "b": -12
+          },
+          {
+            "id": "five-action-rotation-exceeds-the-turn-budget-rotated-black-mate",
+            "side": 0,
+            "a": 9,
+            "b": 12
+          },
+          {
+            "id": "too-few-actions-for-rotation-rescue",
+            "side": 0,
+            "a": -12,
+            "b": -9
+          },
+          {
+            "id": "too-few-actions-for-rotation-mate",
+            "side": 1,
+            "a": 12,
+            "b": 9
+          },
+          {
+            "id": "too-few-actions-for-rotation-rotated-black-rescue",
+            "side": 1,
+            "a": -9,
+            "b": -12
+          },
+          {
+            "id": "too-few-actions-for-rotation-rotated-black-mate",
+            "side": 0,
+            "a": 9,
+            "b": 12
+          }
+        ]
+      },
+      {
+        "index": 24,
+        "name": "DepletionWaste",
+        "group": "economy",
+        "positions": 8,
+        "examples": [
+          {
+            "id": "five-action-rotation-exceeds-the-turn-budget-rescue",
+            "side": 0,
+            "a": 6,
+            "b": 0
+          },
+          {
+            "id": "five-action-rotation-exceeds-the-turn-budget-mate",
+            "side": 1,
+            "a": -6,
+            "b": 0
+          },
+          {
+            "id": "five-action-rotation-exceeds-the-turn-budget-rotated-black-rescue",
+            "side": 1,
+            "a": 0,
+            "b": 6
+          },
+          {
+            "id": "five-action-rotation-exceeds-the-turn-budget-rotated-black-mate",
+            "side": 0,
+            "a": 0,
+            "b": -6
+          },
+          {
+            "id": "too-few-actions-for-rotation-rescue",
+            "side": 0,
+            "a": 6,
+            "b": 0
+          },
+          {
+            "id": "too-few-actions-for-rotation-mate",
+            "side": 1,
+            "a": -6,
+            "b": 0
+          },
+          {
+            "id": "too-few-actions-for-rotation-rotated-black-rescue",
+            "side": 1,
+            "a": 0,
+            "b": 6
+          },
+          {
+            "id": "too-few-actions-for-rotation-rotated-black-mate",
+            "side": 0,
+            "a": 0,
+            "b": -6
+          }
+        ]
+      },
+      {
+        "index": 27,
+        "name": "RelocationDebt",
+        "group": "economy",
+        "positions": 8,
+        "examples": [
+          {
+            "id": "five-action-rotation-exceeds-the-turn-budget-rescue",
+            "side": 0,
+            "a": 4,
+            "b": 3
+          },
+          {
+            "id": "five-action-rotation-exceeds-the-turn-budget-mate",
+            "side": 1,
+            "a": -4,
+            "b": -3
+          },
+          {
+            "id": "five-action-rotation-exceeds-the-turn-budget-rotated-black-rescue",
+            "side": 1,
+            "a": 3,
+            "b": 4
+          },
+          {
+            "id": "five-action-rotation-exceeds-the-turn-budget-rotated-black-mate",
+            "side": 0,
+            "a": -3,
+            "b": -4
+          },
+          {
+            "id": "too-few-actions-for-rotation-rescue",
+            "side": 0,
+            "a": 4,
+            "b": 3
+          },
+          {
+            "id": "too-few-actions-for-rotation-mate",
+            "side": 1,
+            "a": -4,
+            "b": -3
+          },
+          {
+            "id": "too-few-actions-for-rotation-rotated-black-rescue",
+            "side": 1,
+            "a": 3,
+            "b": 4
+          },
+          {
+            "id": "too-few-actions-for-rotation-rotated-black-mate",
+            "side": 0,
+            "a": -3,
+            "b": -4
+          }
+        ]
+      }
+    ]
+  },
+  "scoreIdentity": {
+    "checked": 56,
+    "mismatches": 0,
+    "examples": []
+  },
+  "materialResidual": {
+    "checked": 56,
+    "nonzero": 0,
+    "examples": []
+  },
+  "stageIdentity": {
+    "checked": 56,
+    "mismatches": 0,
+    "examples": []
+  }
+}

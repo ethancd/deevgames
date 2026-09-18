@@ -1,0 +1,63 @@
+{
+ "what": "preregistered tactical thresholds for the correctness bundle (E3-PLAN row #4 preregistration: same thresholds as row #2), measured before row #5 is funded",
+ "engine": "hard@ablate:eval-correct-v1",
+ "evalFix": "b2+b3+b4+b5+b6",
+ "commit": "c73204dd",
+ "suites": {
+  "tactics": {
+   "passed": 73,
+   "cases": 79
+  },
+  "spawn-strike": {
+   "passed": 16,
+   "cases": 20
+  },
+  "home-mate": {
+   "passed": 56,
+   "cases": 56
+  },
+  "invariants": {
+   "passed": 12,
+   "cases": 20
+  },
+  "economy": {
+   "passed": 30,
+   "cases": 30
+  }
+ },
+ "thresholds": {
+  "tactics": {
+   "bar": ">= 73/79",
+   "value": "73/79",
+   "met": true
+  },
+  "homeMate": {
+   "bar": "56/56",
+   "value": "56/56",
+   "met": true
+  },
+  "spawnStrike": {
+   "bar": "within one case of 16/20",
+   "value": "16/20",
+   "met": true
+  },
+  "examExact200k": {
+   "bar": "within three of the champion 120/127",
+   "value": "120/127",
+   "met": true
+  }
+ },
+ "failuresVsChampion": {
+  "bundleOnly": [],
+  "championOnly": [],
+  "championArtifact": "followups/suites/all-suites-desktop-after-a9-1.json"
+ },
+ "reported": {
+  "invariantsEval": 0.6,
+  "invariantsSearched": 0.4,
+  "examJudgmentMatched": "2/22 (champion 0/22)"
+ },
+ "illegalTurns": 0,
+ "replicaDivergences": 0,
+ "at": "2026-09-17T17:44:35Z"
+}

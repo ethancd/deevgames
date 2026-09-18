@@ -1,0 +1,2442 @@
+{
+  "stamp": "2026-09-18T00:33:37.427Z",
+  "engine": "hard@desktop",
+  "weightsLabel": "default-v1",
+  "weightsVersion": 1,
+  "evalFix": "absent",
+  "ttBitsMacro": 19,
+  "refDepth": 2,
+  "nodeLimit": 40000,
+  "ladder": [
+    3000,
+    6000,
+    12000,
+    25000,
+    50000,
+    100000,
+    200000,
+    400000
+  ],
+  "positions": 36,
+  "rows": [
+    {
+      "id": "e1dev-e1-g3-s105",
+      "set": "e1dev",
+      "source": "lab/hard-ai/ladder/openings/e1-dev.jsonl#e1-g3-s105 (3 plies)",
+      "side": "white",
+      "turn": 1,
+      "phase": "action",
+      "upkeepPending": false,
+      "clock": 0,
+      "refDepth": 2,
+      "refStaticCc": 337,
+      "refQuiesceCc": 337,
+      "refNodes": 212,
+      "refCandidates": 7,
+      "refOptimal": [
+        "08238563e018ba0a"
+      ],
+      "refOptimalCount": 1,
+      "intractable": false,
+      "prodWork": 3000,
+      "prodDepth": 2,
+      "prodScoreCc": 337,
+      "prodEndKey": "08238563e018ba0a",
+      "prodSource": "search",
+      "prodStopReason": "work",
+      "prodTtHits": 1,
+      "prodIterations": 2,
+      "prodCompletedIterations": 2,
+      "prodTruncatedIterations": 0,
+      "prodCandidateSource": "completed-depth",
+      "prodDepthScores": [
+        {
+          "depth": 1,
+          "scoreCc": 1325,
+          "work": 260
+        },
+        {
+          "depth": 2,
+          "scoreCc": 337,
+          "work": 2682
+        }
+      ],
+      "prodScoreAtRefDepthCc": 337,
+      "turnAgrees": true,
+      "scoreInBounds": true,
+      "scoreEqualsQuiesce": true,
+      "classification": "agree",
+      "switches": {
+        "quiesceCapOffEndKey": "08238563e018ba0a",
+        "quiesceCapOffScoreCc": 337,
+        "quiesceCapOffDepth": 2,
+        "ttOffEndKey": "08238563e018ba0a",
+        "ttOffScoreCc": 337,
+        "ttOffDepth": 2
+      },
+      "note": ""
+    },
+    {
+      "id": "e1dev-e1-g2-s40",
+      "set": "e1dev",
+      "source": "lab/hard-ai/ladder/openings/e1-dev.jsonl#e1-g2-s40 (2 plies)",
+      "side": "white",
+      "turn": 1,
+      "phase": "action",
+      "upkeepPending": false,
+      "clock": 0,
+      "refDepth": 2,
+      "refStaticCc": 198,
+      "refQuiesceCc": 198,
+      "refNodes": 302,
+      "refCandidates": 10,
+      "refOptimal": [
+        "1c9952e10d575b62"
+      ],
+      "refOptimalCount": 1,
+      "intractable": false,
+      "prodWork": 6000,
+      "prodDepth": 2,
+      "prodScoreCc": 198,
+      "prodEndKey": "1c9952e10d575b62",
+      "prodSource": "search",
+      "prodStopReason": "work",
+      "prodTtHits": 1,
+      "prodIterations": 2,
+      "prodCompletedIterations": 2,
+      "prodTruncatedIterations": 0,
+      "prodCandidateSource": "completed-depth",
+      "prodDepthScores": [
+        {
+          "depth": 1,
+          "scoreCc": 1186,
+          "work": 374
+        },
+        {
+          "depth": 2,
+          "scoreCc": 198,
+          "work": 3691
+        }
+      ],
+      "prodScoreAtRefDepthCc": 198,
+      "turnAgrees": true,
+      "scoreInBounds": true,
+      "scoreEqualsQuiesce": true,
+      "classification": "agree",
+      "switches": {
+        "quiesceCapOffEndKey": "1c9952e10d575b62",
+        "quiesceCapOffScoreCc": 198,
+        "quiesceCapOffDepth": 2,
+        "ttOffEndKey": "1c9952e10d575b62",
+        "ttOffScoreCc": 198,
+        "ttOffDepth": 2
+      },
+      "note": ""
+    },
+    {
+      "id": "e1dev-e1-g4-s250",
+      "set": "e1dev",
+      "source": "lab/hard-ai/ladder/openings/e1-dev.jsonl#e1-g4-s250 (4 plies)",
+      "side": "black",
+      "turn": 1,
+      "phase": "action",
+      "upkeepPending": false,
+      "clock": 1,
+      "refDepth": 2,
+      "refStaticCc": -1845,
+      "refQuiesceCc": -1845,
+      "refNodes": 578,
+      "refCandidates": 16,
+      "refOptimal": [
+        "b5cfac1742ecde57",
+        "632aab65601eaa5d"
+      ],
+      "refOptimalCount": 2,
+      "intractable": false,
+      "prodWork": 12000,
+      "prodDepth": 2,
+      "prodScoreCc": -1845,
+      "prodEndKey": "b5cfac1742ecde57",
+      "prodSource": "search",
+      "prodStopReason": "work",
+      "prodTtHits": 1,
+      "prodIterations": 2,
+      "prodCompletedIterations": 2,
+      "prodTruncatedIterations": 0,
+      "prodCandidateSource": "completed-depth",
+      "prodDepthScores": [
+        {
+          "depth": 1,
+          "scoreCc": -97,
+          "work": 796
+        },
+        {
+          "depth": 2,
+          "scoreCc": -1845,
+          "work": 11377
+        }
+      ],
+      "prodScoreAtRefDepthCc": -1845,
+      "turnAgrees": true,
+      "scoreInBounds": true,
+      "scoreEqualsQuiesce": true,
+      "classification": "agree",
+      "switches": {
+        "quiesceCapOffEndKey": "b5cfac1742ecde57",
+        "quiesceCapOffScoreCc": -1845,
+        "quiesceCapOffDepth": 2,
+        "ttOffEndKey": "b5cfac1742ecde57",
+        "ttOffScoreCc": -97,
+        "ttOffDepth": 1
+      },
+      "note": ""
+    },
+    {
+      "id": "e1dev-e1-g4-s750",
+      "set": "e1dev",
+      "source": "lab/hard-ai/ladder/openings/e1-dev.jsonl#e1-g4-s750 (4 plies)",
+      "side": "white",
+      "turn": 1,
+      "phase": "action",
+      "upkeepPending": false,
+      "clock": 0,
+      "refDepth": 2,
+      "refStaticCc": -407,
+      "refQuiesceCc": -407,
+      "refNodes": 32,
+      "refCandidates": 1,
+      "refOptimal": [
+        "7989ba641f396220"
+      ],
+      "refOptimalCount": 1,
+      "intractable": false,
+      "prodWork": 3000,
+      "prodDepth": 3,
+      "prodScoreCc": 99,
+      "prodEndKey": "7989ba641f396220",
+      "prodSource": "search",
+      "prodStopReason": "work",
+      "prodTtHits": 3,
+      "prodIterations": 0,
+      "prodCompletedIterations": 0,
+      "prodTruncatedIterations": 0,
+      "prodCandidateSource": null,
+      "prodDepthScores": [
+        {
+          "depth": 1,
+          "scoreCc": 729,
+          "work": 68
+        },
+        {
+          "depth": 2,
+          "scoreCc": -407,
+          "work": 696
+        },
+        {
+          "depth": 3,
+          "scoreCc": 99,
+          "work": 3293
+        }
+      ],
+      "prodScoreAtRefDepthCc": -407,
+      "turnAgrees": true,
+      "scoreInBounds": true,
+      "scoreEqualsQuiesce": true,
+      "classification": "depth-mismatch",
+      "switches": {
+        "quiesceCapOffEndKey": "7989ba641f396220",
+        "quiesceCapOffScoreCc": -241,
+        "quiesceCapOffDepth": 3,
+        "ttOffEndKey": "7989ba641f396220",
+        "ttOffScoreCc": 99,
+        "ttOffDepth": 3
+      },
+      "note": "no rung completed depth 2; deepest completed depth 3"
+    },
+    {
+      "id": "e1dev-e1-g4-s730",
+      "set": "e1dev",
+      "source": "lab/hard-ai/ladder/openings/e1-dev.jsonl#e1-g4-s730 (4 plies)",
+      "side": "white",
+      "turn": 1,
+      "phase": "action",
+      "upkeepPending": false,
+      "clock": 0,
+      "refDepth": 2,
+      "refStaticCc": -280,
+      "refQuiesceCc": -280,
+      "refNodes": 32,
+      "refCandidates": 1,
+      "refOptimal": [
+        "13d63e4cc24a022f"
+      ],
+      "refOptimalCount": 1,
+      "intractable": false,
+      "prodWork": 3000,
+      "prodDepth": 3,
+      "prodScoreCc": 304,
+      "prodEndKey": "13d63e4cc24a022f",
+      "prodSource": "search",
+      "prodStopReason": "work",
+      "prodTtHits": 3,
+      "prodIterations": 0,
+      "prodCompletedIterations": 0,
+      "prodTruncatedIterations": 0,
+      "prodCandidateSource": null,
+      "prodDepthScores": [
+        {
+          "depth": 1,
+          "scoreCc": 708,
+          "work": 68
+        },
+        {
+          "depth": 2,
+          "scoreCc": -280,
+          "work": 696
+        },
+        {
+          "depth": 3,
+          "scoreCc": 304,
+          "work": 3261
+        }
+      ],
+      "prodScoreAtRefDepthCc": -280,
+      "turnAgrees": true,
+      "scoreInBounds": true,
+      "scoreEqualsQuiesce": true,
+      "classification": "depth-mismatch",
+      "switches": {
+        "quiesceCapOffEndKey": "13d63e4cc24a022f",
+        "quiesceCapOffScoreCc": -162,
+        "quiesceCapOffDepth": 3,
+        "ttOffEndKey": "13d63e4cc24a022f",
+        "ttOffScoreCc": 304,
+        "ttOffDepth": 3
+      },
+      "note": "no rung completed depth 2; deepest completed depth 3"
+    },
+    {
+      "id": "e1dev-e1-g3-s745",
+      "set": "e1dev",
+      "source": "lab/hard-ai/ladder/openings/e1-dev.jsonl#e1-g3-s745 (3 plies)",
+      "side": "white",
+      "turn": 1,
+      "phase": "action",
+      "upkeepPending": false,
+      "clock": 0,
+      "refDepth": 2,
+      "refStaticCc": -9,
+      "refQuiesceCc": -9,
+      "refNodes": 212,
+      "refCandidates": 7,
+      "refOptimal": [
+        "f6d339a48f92b109"
+      ],
+      "refOptimalCount": 1,
+      "intractable": false,
+      "prodWork": 3000,
+      "prodDepth": 2,
+      "prodScoreCc": -9,
+      "prodEndKey": "f6d339a48f92b109",
+      "prodSource": "search",
+      "prodStopReason": "work",
+      "prodTtHits": 1,
+      "prodIterations": 2,
+      "prodCompletedIterations": 2,
+      "prodTruncatedIterations": 0,
+      "prodCandidateSource": "completed-depth",
+      "prodDepthScores": [
+        {
+          "depth": 1,
+          "scoreCc": 979,
+          "work": 260
+        },
+        {
+          "depth": 2,
+          "scoreCc": -9,
+          "work": 2704
+        }
+      ],
+      "prodScoreAtRefDepthCc": -9,
+      "turnAgrees": true,
+      "scoreInBounds": true,
+      "scoreEqualsQuiesce": true,
+      "classification": "agree",
+      "switches": {
+        "quiesceCapOffEndKey": "f6d339a48f92b109",
+        "quiesceCapOffScoreCc": -9,
+        "quiesceCapOffDepth": 2,
+        "ttOffEndKey": "f6d339a48f92b109",
+        "ttOffScoreCc": -9,
+        "ttOffDepth": 2
+      },
+      "note": ""
+    },
+    {
+      "id": "hm-cheap-invasion-one-attack-rescue",
+      "set": "home-mate",
+      "source": "lab/hard-ai/suites/home-mate.positions.jsonl#cheap-invasion-one-attack-rescue",
+      "side": "white",
+      "turn": 1,
+      "phase": "place",
+      "upkeepPending": true,
+      "clock": 0,
+      "refDepth": 2,
+      "refStaticCc": 999000,
+      "refQuiesceCc": 999000,
+      "refNodes": 2,
+      "refCandidates": 8,
+      "refOptimal": [
+        "197e9e22f466b3ee",
+        "f5c6821b0c32e23b"
+      ],
+      "refOptimalCount": 2,
+      "intractable": false,
+      "prodWork": 3000,
+      "prodDepth": 1,
+      "prodScoreCc": 999000,
+      "prodEndKey": "f5c6821b0c32e23b",
+      "prodSource": "mate",
+      "prodStopReason": "complete",
+      "prodTtHits": 0,
+      "prodIterations": 0,
+      "prodCompletedIterations": 0,
+      "prodTruncatedIterations": 0,
+      "prodCandidateSource": null,
+      "prodDepthScores": [],
+      "prodScoreAtRefDepthCc": null,
+      "turnAgrees": true,
+      "scoreInBounds": true,
+      "scoreEqualsQuiesce": true,
+      "classification": "must-answer",
+      "switches": {
+        "quiesceCapOffEndKey": "f5c6821b0c32e23b",
+        "quiesceCapOffScoreCc": 999000,
+        "quiesceCapOffDepth": 1,
+        "ttOffEndKey": "f5c6821b0c32e23b",
+        "ttOffScoreCc": 999000,
+        "ttOffDepth": 1
+      },
+      "note": "no rung completed depth 2; deepest completed depth 1"
+    },
+    {
+      "id": "hm-cheap-invasion-one-attack-mate",
+      "set": "home-mate",
+      "source": "lab/hard-ai/suites/home-mate.positions.jsonl#cheap-invasion-one-attack-mate",
+      "side": "black",
+      "turn": 1,
+      "phase": "action",
+      "upkeepPending": false,
+      "clock": 0,
+      "refDepth": 2,
+      "refStaticCc": 999000,
+      "refQuiesceCc": 999000,
+      "refNodes": 408,
+      "refCandidates": 21,
+      "refOptimal": [
+        "ee6291a21d7ef452"
+      ],
+      "refOptimalCount": 1,
+      "intractable": false,
+      "prodWork": 3000,
+      "prodDepth": 1,
+      "prodScoreCc": 999000,
+      "prodEndKey": "ee6291a21d7ef452",
+      "prodSource": "mate",
+      "prodStopReason": "complete",
+      "prodTtHits": 0,
+      "prodIterations": 0,
+      "prodCompletedIterations": 0,
+      "prodTruncatedIterations": 0,
+      "prodCandidateSource": null,
+      "prodDepthScores": [],
+      "prodScoreAtRefDepthCc": null,
+      "turnAgrees": true,
+      "scoreInBounds": true,
+      "scoreEqualsQuiesce": true,
+      "classification": "must-answer",
+      "switches": {
+        "quiesceCapOffEndKey": "ee6291a21d7ef452",
+        "quiesceCapOffScoreCc": 999000,
+        "quiesceCapOffDepth": 1,
+        "ttOffEndKey": "ee6291a21d7ef452",
+        "ttOffScoreCc": 999000,
+        "ttOffDepth": 1
+      },
+      "note": "no rung completed depth 2; deepest completed depth 1"
+    },
+    {
+      "id": "hm-cheap-invasion-one-attack-rotated-black-rescue",
+      "set": "home-mate",
+      "source": "lab/hard-ai/suites/home-mate.positions.jsonl#cheap-invasion-one-attack-rotated-black-rescue",
+      "side": "black",
+      "turn": 1,
+      "phase": "place",
+      "upkeepPending": true,
+      "clock": 0,
+      "refDepth": 2,
+      "refStaticCc": 999000,
+      "refQuiesceCc": 999000,
+      "refNodes": 2,
+      "refCandidates": 7,
+      "refOptimal": [
+        "10e5116a8a9c5b83",
+        "e1693d3e2c78154f"
+      ],
+      "refOptimalCount": 2,
+      "intractable": false,
+      "prodWork": 3000,
+      "prodDepth": 1,
+      "prodScoreCc": 999000,
+      "prodEndKey": "e1693d3e2c78154f",
+      "prodSource": "mate",
+      "prodStopReason": "complete",
+      "prodTtHits": 0,
+      "prodIterations": 0,
+      "prodCompletedIterations": 0,
+      "prodTruncatedIterations": 0,
+      "prodCandidateSource": null,
+      "prodDepthScores": [],
+      "prodScoreAtRefDepthCc": null,
+      "turnAgrees": true,
+      "scoreInBounds": true,
+      "scoreEqualsQuiesce": true,
+      "classification": "must-answer",
+      "switches": {
+        "quiesceCapOffEndKey": "e1693d3e2c78154f",
+        "quiesceCapOffScoreCc": 999000,
+        "quiesceCapOffDepth": 1,
+        "ttOffEndKey": "e1693d3e2c78154f",
+        "ttOffScoreCc": 999000,
+        "ttOffDepth": 1
+      },
+      "note": "no rung completed depth 2; deepest completed depth 1"
+    },
+    {
+      "id": "hm-cheap-invasion-one-attack-rotated-black-mate",
+      "set": "home-mate",
+      "source": "lab/hard-ai/suites/home-mate.positions.jsonl#cheap-invasion-one-attack-rotated-black-mate",
+      "side": "white",
+      "turn": 1,
+      "phase": "action",
+      "upkeepPending": false,
+      "clock": 0,
+      "refDepth": 2,
+      "refStaticCc": 999000,
+      "refQuiesceCc": 999000,
+      "refNodes": 200,
+      "refCandidates": 13,
+      "refOptimal": [
+        "cd810c4099f61916",
+        "3b990b0e181610ac"
+      ],
+      "refOptimalCount": 2,
+      "intractable": false,
+      "prodWork": 3000,
+      "prodDepth": 1,
+      "prodScoreCc": 999000,
+      "prodEndKey": "cd810c4099f61916",
+      "prodSource": "mate",
+      "prodStopReason": "complete",
+      "prodTtHits": 0,
+      "prodIterations": 0,
+      "prodCompletedIterations": 0,
+      "prodTruncatedIterations": 0,
+      "prodCandidateSource": null,
+      "prodDepthScores": [],
+      "prodScoreAtRefDepthCc": null,
+      "turnAgrees": true,
+      "scoreInBounds": true,
+      "scoreEqualsQuiesce": true,
+      "classification": "must-answer",
+      "switches": {
+        "quiesceCapOffEndKey": "cd810c4099f61916",
+        "quiesceCapOffScoreCc": 999000,
+        "quiesceCapOffDepth": 1,
+        "ttOffEndKey": "cd810c4099f61916",
+        "ttOffScoreCc": 999000,
+        "ttOffDepth": 1
+      },
+      "note": "no rung completed depth 2; deepest completed depth 1"
+    },
+    {
+      "id": "hm-metal-iii-two-shadow-iii-rescue",
+      "set": "home-mate",
+      "source": "lab/hard-ai/suites/home-mate.positions.jsonl#metal-iii-two-shadow-iii-rescue",
+      "side": "white",
+      "turn": 1,
+      "phase": "place",
+      "upkeepPending": true,
+      "clock": 0,
+      "refDepth": 2,
+      "refStaticCc": -999000,
+      "refQuiesceCc": -999000,
+      "refNodes": 2,
+      "refCandidates": 1,
+      "refOptimal": [
+        "06824c2026a09a28"
+      ],
+      "refOptimalCount": 1,
+      "intractable": false,
+      "prodWork": 3000,
+      "prodDepth": 12,
+      "prodScoreCc": -999000,
+      "prodEndKey": "06824c2026a09a28",
+      "prodSource": "search",
+      "prodStopReason": "complete",
+      "prodTtHits": 11,
+      "prodIterations": 0,
+      "prodCompletedIterations": 0,
+      "prodTruncatedIterations": 0,
+      "prodCandidateSource": null,
+      "prodDepthScores": [
+        {
+          "depth": 1,
+          "scoreCc": -999000,
+          "work": 20
+        },
+        {
+          "depth": 2,
+          "scoreCc": -999000,
+          "work": 32
+        },
+        {
+          "depth": 3,
+          "scoreCc": -999000,
+          "work": 44
+        },
+        {
+          "depth": 4,
+          "scoreCc": -999000,
+          "work": 56
+        },
+        {
+          "depth": 5,
+          "scoreCc": -999000,
+          "work": 68
+        },
+        {
+          "depth": 6,
+          "scoreCc": -999000,
+          "work": 80
+        },
+        {
+          "depth": 7,
+          "scoreCc": -999000,
+          "work": 92
+        },
+        {
+          "depth": 8,
+          "scoreCc": -999000,
+          "work": 104
+        },
+        {
+          "depth": 9,
+          "scoreCc": -999000,
+          "work": 116
+        },
+        {
+          "depth": 10,
+          "scoreCc": -999000,
+          "work": 128
+        },
+        {
+          "depth": 11,
+          "scoreCc": -999000,
+          "work": 140
+        },
+        {
+          "depth": 12,
+          "scoreCc": -999000,
+          "work": 152
+        }
+      ],
+      "prodScoreAtRefDepthCc": -999000,
+      "turnAgrees": true,
+      "scoreInBounds": true,
+      "scoreEqualsQuiesce": true,
+      "classification": "depth-mismatch",
+      "switches": {
+        "quiesceCapOffEndKey": "06824c2026a09a28",
+        "quiesceCapOffScoreCc": -999000,
+        "quiesceCapOffDepth": 12,
+        "ttOffEndKey": "06824c2026a09a28",
+        "ttOffScoreCc": -999000,
+        "ttOffDepth": 12
+      },
+      "note": "no rung completed depth 2; deepest completed depth 12"
+    },
+    {
+      "id": "hm-metal-iii-two-shadow-iii-mate",
+      "set": "home-mate",
+      "source": "lab/hard-ai/suites/home-mate.positions.jsonl#metal-iii-two-shadow-iii-mate",
+      "side": "black",
+      "turn": 1,
+      "phase": "action",
+      "upkeepPending": false,
+      "clock": 0,
+      "refDepth": 2,
+      "refStaticCc": 999000,
+      "refQuiesceCc": 999000,
+      "refNodes": 2,
+      "refCandidates": 3,
+      "refOptimal": [
+        "27b6a21dd347442f",
+        "26013440517f7a62",
+        "edbeda3c96bfbcae"
+      ],
+      "refOptimalCount": 3,
+      "intractable": false,
+      "prodWork": 3000,
+      "prodDepth": 1,
+      "prodScoreCc": 999000,
+      "prodEndKey": "26013440517f7a62",
+      "prodSource": "mate",
+      "prodStopReason": "complete",
+      "prodTtHits": 0,
+      "prodIterations": 0,
+      "prodCompletedIterations": 0,
+      "prodTruncatedIterations": 0,
+      "prodCandidateSource": null,
+      "prodDepthScores": [],
+      "prodScoreAtRefDepthCc": null,
+      "turnAgrees": true,
+      "scoreInBounds": true,
+      "scoreEqualsQuiesce": true,
+      "classification": "must-answer",
+      "switches": {
+        "quiesceCapOffEndKey": "26013440517f7a62",
+        "quiesceCapOffScoreCc": 999000,
+        "quiesceCapOffDepth": 1,
+        "ttOffEndKey": "26013440517f7a62",
+        "ttOffScoreCc": 999000,
+        "ttOffDepth": 1
+      },
+      "note": "no rung completed depth 2; deepest completed depth 1"
+    },
+    {
+      "id": "ss-spawn-strike-purchase-1",
+      "set": "spawn-strike",
+      "source": "lab/hard-ai/suites/spawn-strike.positions.jsonl#spawn-strike-purchase-1",
+      "side": "white",
+      "turn": 5,
+      "phase": "place",
+      "upkeepPending": false,
+      "clock": 0,
+      "refDepth": 2,
+      "refStaticCc": 852,
+      "refQuiesceCc": 852,
+      "refNodes": 484,
+      "refCandidates": 22,
+      "refOptimal": [
+        "9f2460801a718b9b",
+        "e9853b28101785a5",
+        "fe094a57a9c23f6d",
+        "90aee0215f82d3d8"
+      ],
+      "refOptimalCount": 4,
+      "intractable": false,
+      "prodWork": 12000,
+      "prodDepth": 2,
+      "prodScoreCc": 852,
+      "prodEndKey": "9f2460801a718b9b",
+      "prodSource": "search",
+      "prodStopReason": "work",
+      "prodTtHits": 2,
+      "prodIterations": 2,
+      "prodCompletedIterations": 2,
+      "prodTruncatedIterations": 0,
+      "prodCandidateSource": "completed-depth",
+      "prodDepthScores": [
+        {
+          "depth": 1,
+          "scoreCc": 818,
+          "work": 1392
+        },
+        {
+          "depth": 2,
+          "scoreCc": 852,
+          "work": 6907
+        }
+      ],
+      "prodScoreAtRefDepthCc": 852,
+      "turnAgrees": true,
+      "scoreInBounds": true,
+      "scoreEqualsQuiesce": true,
+      "classification": "agree",
+      "switches": {
+        "quiesceCapOffEndKey": "9f2460801a718b9b",
+        "quiesceCapOffScoreCc": 852,
+        "quiesceCapOffDepth": 2,
+        "ttOffEndKey": "9f2460801a718b9b",
+        "ttOffScoreCc": 852,
+        "ttOffDepth": 2
+      },
+      "note": ""
+    },
+    {
+      "id": "ss-spawn-strike-purchase-2",
+      "set": "spawn-strike",
+      "source": "lab/hard-ai/suites/spawn-strike.positions.jsonl#spawn-strike-purchase-2",
+      "side": "white",
+      "turn": 5,
+      "phase": "place",
+      "upkeepPending": false,
+      "clock": 0,
+      "refDepth": 2,
+      "refStaticCc": 1057,
+      "refQuiesceCc": 1057,
+      "refNodes": 526,
+      "refCandidates": 23,
+      "refOptimal": [
+        "912b8bb1b024a35a"
+      ],
+      "refOptimalCount": 1,
+      "intractable": false,
+      "prodWork": 12000,
+      "prodDepth": 2,
+      "prodScoreCc": 1057,
+      "prodEndKey": "912b8bb1b024a35a",
+      "prodSource": "search",
+      "prodStopReason": "work",
+      "prodTtHits": 1,
+      "prodIterations": 2,
+      "prodCompletedIterations": 2,
+      "prodTruncatedIterations": 0,
+      "prodCandidateSource": "completed-depth",
+      "prodDepthScores": [
+        {
+          "depth": 1,
+          "scoreCc": 945,
+          "work": 1292
+        },
+        {
+          "depth": 2,
+          "scoreCc": 1057,
+          "work": 6687
+        }
+      ],
+      "prodScoreAtRefDepthCc": 1057,
+      "turnAgrees": true,
+      "scoreInBounds": true,
+      "scoreEqualsQuiesce": true,
+      "classification": "agree",
+      "switches": {
+        "quiesceCapOffEndKey": "912b8bb1b024a35a",
+        "quiesceCapOffScoreCc": 1057,
+        "quiesceCapOffDepth": 2,
+        "ttOffEndKey": "912b8bb1b024a35a",
+        "ttOffScoreCc": 1057,
+        "ttOffDepth": 2
+      },
+      "note": ""
+    },
+    {
+      "id": "ss-spawn-strike-purchase-3",
+      "set": "spawn-strike",
+      "source": "lab/hard-ai/suites/spawn-strike.positions.jsonl#spawn-strike-purchase-3",
+      "side": "white",
+      "turn": 5,
+      "phase": "place",
+      "upkeepPending": false,
+      "clock": 0,
+      "refDepth": 2,
+      "refStaticCc": 1262,
+      "refQuiesceCc": 1295,
+      "refNodes": 524,
+      "refCandidates": 22,
+      "refOptimal": [
+        "c3ea42850d42bf30"
+      ],
+      "refOptimalCount": 1,
+      "intractable": false,
+      "prodWork": 12000,
+      "prodDepth": 2,
+      "prodScoreCc": 1262,
+      "prodEndKey": "89bf01b6736d8cd2",
+      "prodSource": "search",
+      "prodStopReason": "work",
+      "prodTtHits": 1,
+      "prodIterations": 2,
+      "prodCompletedIterations": 2,
+      "prodTruncatedIterations": 0,
+      "prodCandidateSource": "completed-depth",
+      "prodDepthScores": [
+        {
+          "depth": 1,
+          "scoreCc": 1150,
+          "work": 1266
+        },
+        {
+          "depth": 2,
+          "scoreCc": 1262,
+          "work": 6362
+        }
+      ],
+      "prodScoreAtRefDepthCc": 1262,
+      "turnAgrees": false,
+      "scoreInBounds": true,
+      "scoreEqualsQuiesce": false,
+      "classification": "stand-pat",
+      "switches": {
+        "quiesceCapOffEndKey": "89bf01b6736d8cd2",
+        "quiesceCapOffScoreCc": 1262,
+        "quiesceCapOffDepth": 2,
+        "ttOffEndKey": "89bf01b6736d8cd2",
+        "ttOffScoreCc": 1262,
+        "ttOffDepth": 2
+      },
+      "note": ""
+    },
+    {
+      "id": "ss-spawn-strike-purchase-4",
+      "set": "spawn-strike",
+      "source": "lab/hard-ai/suites/spawn-strike.positions.jsonl#spawn-strike-purchase-4",
+      "side": "white",
+      "turn": 5,
+      "phase": "place",
+      "upkeepPending": false,
+      "clock": 0,
+      "refDepth": 2,
+      "refStaticCc": 1177,
+      "refQuiesceCc": 1530,
+      "refNodes": 558,
+      "refCandidates": 22,
+      "refOptimal": [
+        "ea4a40a08701dc50",
+        "7f5e755a2eed16cb"
+      ],
+      "refOptimalCount": 2,
+      "intractable": false,
+      "prodWork": 12000,
+      "prodDepth": 2,
+      "prodScoreCc": 1177,
+      "prodEndKey": "c54ae518973fc916",
+      "prodSource": "search",
+      "prodStopReason": "work",
+      "prodTtHits": 1,
+      "prodIterations": 2,
+      "prodCompletedIterations": 2,
+      "prodTruncatedIterations": 0,
+      "prodCandidateSource": "completed-depth",
+      "prodDepthScores": [
+        {
+          "depth": 1,
+          "scoreCc": 1065,
+          "work": 1398
+        },
+        {
+          "depth": 2,
+          "scoreCc": 1177,
+          "work": 6904
+        }
+      ],
+      "prodScoreAtRefDepthCc": 1177,
+      "turnAgrees": false,
+      "scoreInBounds": true,
+      "scoreEqualsQuiesce": false,
+      "classification": "stand-pat",
+      "switches": {
+        "quiesceCapOffEndKey": "c54ae518973fc916",
+        "quiesceCapOffScoreCc": 1177,
+        "quiesceCapOffDepth": 2,
+        "ttOffEndKey": "c54ae518973fc916",
+        "ttOffScoreCc": 1177,
+        "ttOffDepth": 2
+      },
+      "note": ""
+    },
+    {
+      "id": "ss-spawn-strike-purchase-5",
+      "set": "spawn-strike",
+      "source": "lab/hard-ai/suites/spawn-strike.positions.jsonl#spawn-strike-purchase-5",
+      "side": "white",
+      "turn": 5,
+      "phase": "place",
+      "upkeepPending": false,
+      "clock": 0,
+      "refDepth": 2,
+      "refStaticCc": 1672,
+      "refQuiesceCc": 1672,
+      "refNodes": 498,
+      "refCandidates": 21,
+      "refOptimal": [
+        "9e6c119fcea37449",
+        "fdd7b145a3ed3884",
+        "2b2e2bc8d90afca6",
+        "8abd51c03bc21d80"
+      ],
+      "refOptimalCount": 4,
+      "intractable": false,
+      "prodWork": 6000,
+      "prodDepth": 2,
+      "prodScoreCc": 1672,
+      "prodEndKey": "9e6c119fcea37449",
+      "prodSource": "search",
+      "prodStopReason": "work",
+      "prodTtHits": 1,
+      "prodIterations": 2,
+      "prodCompletedIterations": 2,
+      "prodTruncatedIterations": 0,
+      "prodCandidateSource": "completed-depth",
+      "prodDepthScores": [
+        {
+          "depth": 1,
+          "scoreCc": 1560,
+          "work": 1390
+        },
+        {
+          "depth": 2,
+          "scoreCc": 1672,
+          "work": 6097
+        }
+      ],
+      "prodScoreAtRefDepthCc": 1672,
+      "turnAgrees": true,
+      "scoreInBounds": true,
+      "scoreEqualsQuiesce": true,
+      "classification": "agree",
+      "switches": {
+        "quiesceCapOffEndKey": "9e6c119fcea37449",
+        "quiesceCapOffScoreCc": 1672,
+        "quiesceCapOffDepth": 2,
+        "ttOffEndKey": "9e6c119fcea37449",
+        "ttOffScoreCc": 1672,
+        "ttOffDepth": 2
+      },
+      "note": ""
+    },
+    {
+      "id": "ss-spawn-strike-purchase-6",
+      "set": "spawn-strike",
+      "source": "lab/hard-ai/suites/spawn-strike.positions.jsonl#spawn-strike-purchase-6",
+      "side": "white",
+      "turn": 5,
+      "phase": "place",
+      "upkeepPending": false,
+      "clock": 0,
+      "refDepth": 2,
+      "refStaticCc": 2532,
+      "refQuiesceCc": 997000,
+      "refNodes": 526,
+      "refCandidates": 21,
+      "refOptimal": [
+        "5bb24fec17cfb58e",
+        "f7a29da0868ad1c4",
+        "8d708088faf9ff0c",
+        "fd8b4631d60066ac"
+      ],
+      "refOptimalCount": 4,
+      "intractable": false,
+      "prodWork": 12000,
+      "prodDepth": 2,
+      "prodScoreCc": 997000,
+      "prodEndKey": "5bb24fec17cfb58e",
+      "prodSource": "search",
+      "prodStopReason": "work",
+      "prodTtHits": 1,
+      "prodIterations": 2,
+      "prodCompletedIterations": 2,
+      "prodTruncatedIterations": 0,
+      "prodCandidateSource": "completed-depth",
+      "prodDepthScores": [
+        {
+          "depth": 1,
+          "scoreCc": 2015,
+          "work": 1396
+        },
+        {
+          "depth": 2,
+          "scoreCc": 997000,
+          "work": 6624
+        }
+      ],
+      "prodScoreAtRefDepthCc": 997000,
+      "turnAgrees": true,
+      "scoreInBounds": true,
+      "scoreEqualsQuiesce": true,
+      "classification": "agree",
+      "switches": {
+        "quiesceCapOffEndKey": "5bb24fec17cfb58e",
+        "quiesceCapOffScoreCc": 997000,
+        "quiesceCapOffDepth": 2,
+        "ttOffEndKey": "5bb24fec17cfb58e",
+        "ttOffScoreCc": 997000,
+        "ttOffDepth": 2
+      },
+      "note": ""
+    },
+    {
+      "id": "upkeep-upkeep-pending",
+      "set": "upkeep",
+      "source": "lab/hard-ai/positions/authored.jsonl#upkeep-pending",
+      "side": "white",
+      "turn": 6,
+      "phase": "place",
+      "upkeepPending": true,
+      "clock": 0,
+      "refDepth": 2,
+      "refStaticCc": 0,
+      "refQuiesceCc": 0,
+      "refNodes": 2,
+      "refCandidates": 1,
+      "refOptimal": [
+        "c9407a04ebacec9b"
+      ],
+      "refOptimalCount": 1,
+      "intractable": false,
+      "prodWork": 3000,
+      "prodDepth": 12,
+      "prodScoreCc": 0,
+      "prodEndKey": "c9407a04ebacec9b",
+      "prodSource": "search",
+      "prodStopReason": "complete",
+      "prodTtHits": 11,
+      "prodIterations": 0,
+      "prodCompletedIterations": 0,
+      "prodTruncatedIterations": 0,
+      "prodCandidateSource": null,
+      "prodDepthScores": [
+        {
+          "depth": 1,
+          "scoreCc": 0,
+          "work": 20
+        },
+        {
+          "depth": 2,
+          "scoreCc": 0,
+          "work": 32
+        },
+        {
+          "depth": 3,
+          "scoreCc": 0,
+          "work": 44
+        },
+        {
+          "depth": 4,
+          "scoreCc": 0,
+          "work": 56
+        },
+        {
+          "depth": 5,
+          "scoreCc": 0,
+          "work": 68
+        },
+        {
+          "depth": 6,
+          "scoreCc": 0,
+          "work": 80
+        },
+        {
+          "depth": 7,
+          "scoreCc": 0,
+          "work": 92
+        },
+        {
+          "depth": 8,
+          "scoreCc": 0,
+          "work": 104
+        },
+        {
+          "depth": 9,
+          "scoreCc": 0,
+          "work": 116
+        },
+        {
+          "depth": 10,
+          "scoreCc": 0,
+          "work": 128
+        },
+        {
+          "depth": 11,
+          "scoreCc": 0,
+          "work": 140
+        },
+        {
+          "depth": 12,
+          "scoreCc": 0,
+          "work": 152
+        }
+      ],
+      "prodScoreAtRefDepthCc": 0,
+      "turnAgrees": true,
+      "scoreInBounds": true,
+      "scoreEqualsQuiesce": true,
+      "classification": "depth-mismatch",
+      "switches": {
+        "quiesceCapOffEndKey": "c9407a04ebacec9b",
+        "quiesceCapOffScoreCc": 0,
+        "quiesceCapOffDepth": 12,
+        "ttOffEndKey": "c9407a04ebacec9b",
+        "ttOffScoreCc": 0,
+        "ttOffDepth": 12
+      },
+      "note": "no rung completed depth 2; deepest completed depth 12"
+    },
+    {
+      "id": "upkeep-loss-g2-s5_0_2-A-white-t4",
+      "set": "upkeep",
+      "source": "lab/hard-ai/exam/cases/dev.jsonl#loss-g2-s5_0_2-A-white-t4 (recurring-upkeep, loss/upkeep-elimination/class:strong-candidate-misjudged/opening:g2-s5)",
+      "side": "white",
+      "turn": 4,
+      "phase": "place",
+      "upkeepPending": false,
+      "clock": 1,
+      "refDepth": 2,
+      "refStaticCc": 226,
+      "refQuiesceCc": 389,
+      "refNodes": 1032,
+      "refCandidates": 27,
+      "refOptimal": [
+        "518a7d4f454b00a1"
+      ],
+      "refOptimalCount": 1,
+      "intractable": false,
+      "prodWork": 50000,
+      "prodDepth": 2,
+      "prodScoreCc": 599,
+      "prodEndKey": "56420de6104ff562",
+      "prodSource": "search",
+      "prodStopReason": "work",
+      "prodTtHits": 3,
+      "prodIterations": 2,
+      "prodCompletedIterations": 2,
+      "prodTruncatedIterations": 0,
+      "prodCandidateSource": "completed-depth",
+      "prodDepthScores": [
+        {
+          "depth": 1,
+          "scoreCc": 1554,
+          "work": 8239
+        },
+        {
+          "depth": 2,
+          "scoreCc": 599,
+          "work": 33254
+        }
+      ],
+      "prodScoreAtRefDepthCc": 599,
+      "turnAgrees": false,
+      "scoreInBounds": false,
+      "scoreEqualsQuiesce": false,
+      "classification": "tt-identity",
+      "switches": {
+        "quiesceCapOffEndKey": "56420de6104ff562",
+        "quiesceCapOffScoreCc": 1522,
+        "quiesceCapOffDepth": 2,
+        "ttOffEndKey": "b85d890090f8c0a5",
+        "ttOffScoreCc": 1060,
+        "ttOffDepth": 2
+      },
+      "note": ""
+    },
+    {
+      "id": "upkeep-loss-g4-s2_3_1-B-white-t2",
+      "set": "upkeep",
+      "source": "lab/hard-ai/exam/cases/dev.jsonl#loss-g4-s2_3_1-B-white-t2 (recurring-upkeep, loss/upkeep-elimination/class:strong-candidate-misjudged/opening:g4-s2)",
+      "side": "black",
+      "turn": 2,
+      "phase": "place",
+      "upkeepPending": false,
+      "clock": 0,
+      "refDepth": 2,
+      "refStaticCc": -3629,
+      "refQuiesceCc": -2295,
+      "refNodes": 1258,
+      "refCandidates": 28,
+      "refOptimal": [
+        "187dc5a8404d0867"
+      ],
+      "refOptimalCount": 1,
+      "intractable": false,
+      "prodWork": 50000,
+      "prodDepth": 2,
+      "prodScoreCc": -2875,
+      "prodEndKey": "82ee31872ff9ee0a",
+      "prodSource": "search",
+      "prodStopReason": "work",
+      "prodTtHits": 1,
+      "prodIterations": 2,
+      "prodCompletedIterations": 2,
+      "prodTruncatedIterations": 0,
+      "prodCandidateSource": "completed-depth",
+      "prodDepthScores": [
+        {
+          "depth": 1,
+          "scoreCc": -1776,
+          "work": 11157
+        },
+        {
+          "depth": 2,
+          "scoreCc": -2875,
+          "work": 34022
+        }
+      ],
+      "prodScoreAtRefDepthCc": -2875,
+      "turnAgrees": false,
+      "scoreInBounds": true,
+      "scoreEqualsQuiesce": false,
+      "classification": "stand-pat",
+      "switches": {
+        "quiesceCapOffEndKey": "82ee31872ff9ee0a",
+        "quiesceCapOffScoreCc": -2875,
+        "quiesceCapOffDepth": 2,
+        "ttOffEndKey": "82ee31872ff9ee0a",
+        "ttOffScoreCc": -2875,
+        "ttOffDepth": 2
+      },
+      "note": ""
+    },
+    {
+      "id": "upkeep-cheap-invasion-one-attack-rescue",
+      "set": "upkeep",
+      "source": "lab/hard-ai/suites/home-mate.positions.jsonl#cheap-invasion-one-attack-rescue",
+      "side": "white",
+      "turn": 1,
+      "phase": "place",
+      "upkeepPending": true,
+      "clock": 0,
+      "refDepth": 2,
+      "refStaticCc": 999000,
+      "refQuiesceCc": 999000,
+      "refNodes": 2,
+      "refCandidates": 8,
+      "refOptimal": [
+        "197e9e22f466b3ee",
+        "f5c6821b0c32e23b"
+      ],
+      "refOptimalCount": 2,
+      "intractable": false,
+      "prodWork": 3000,
+      "prodDepth": 1,
+      "prodScoreCc": 999000,
+      "prodEndKey": "f5c6821b0c32e23b",
+      "prodSource": "mate",
+      "prodStopReason": "complete",
+      "prodTtHits": 0,
+      "prodIterations": 0,
+      "prodCompletedIterations": 0,
+      "prodTruncatedIterations": 0,
+      "prodCandidateSource": null,
+      "prodDepthScores": [],
+      "prodScoreAtRefDepthCc": null,
+      "turnAgrees": true,
+      "scoreInBounds": true,
+      "scoreEqualsQuiesce": true,
+      "classification": "must-answer",
+      "switches": {
+        "quiesceCapOffEndKey": "f5c6821b0c32e23b",
+        "quiesceCapOffScoreCc": 999000,
+        "quiesceCapOffDepth": 1,
+        "ttOffEndKey": "f5c6821b0c32e23b",
+        "ttOffScoreCc": 999000,
+        "ttOffDepth": 1
+      },
+      "note": "no rung completed depth 2; deepest completed depth 1"
+    },
+    {
+      "id": "upkeep-cheap-invasion-one-attack-rotated-black-rescue",
+      "set": "upkeep",
+      "source": "lab/hard-ai/suites/home-mate.positions.jsonl#cheap-invasion-one-attack-rotated-black-rescue",
+      "side": "black",
+      "turn": 1,
+      "phase": "place",
+      "upkeepPending": true,
+      "clock": 0,
+      "refDepth": 2,
+      "refStaticCc": 999000,
+      "refQuiesceCc": 999000,
+      "refNodes": 2,
+      "refCandidates": 7,
+      "refOptimal": [
+        "10e5116a8a9c5b83",
+        "e1693d3e2c78154f"
+      ],
+      "refOptimalCount": 2,
+      "intractable": false,
+      "prodWork": 3000,
+      "prodDepth": 1,
+      "prodScoreCc": 999000,
+      "prodEndKey": "e1693d3e2c78154f",
+      "prodSource": "mate",
+      "prodStopReason": "complete",
+      "prodTtHits": 0,
+      "prodIterations": 0,
+      "prodCompletedIterations": 0,
+      "prodTruncatedIterations": 0,
+      "prodCandidateSource": null,
+      "prodDepthScores": [],
+      "prodScoreAtRefDepthCc": null,
+      "turnAgrees": true,
+      "scoreInBounds": true,
+      "scoreEqualsQuiesce": true,
+      "classification": "must-answer",
+      "switches": {
+        "quiesceCapOffEndKey": "e1693d3e2c78154f",
+        "quiesceCapOffScoreCc": 999000,
+        "quiesceCapOffDepth": 1,
+        "ttOffEndKey": "e1693d3e2c78154f",
+        "ttOffScoreCc": 999000,
+        "ttOffDepth": 1
+      },
+      "note": "no rung completed depth 2; deepest completed depth 1"
+    },
+    {
+      "id": "upkeep-metal-iii-two-shadow-iii-rescue",
+      "set": "upkeep",
+      "source": "lab/hard-ai/suites/home-mate.positions.jsonl#metal-iii-two-shadow-iii-rescue",
+      "side": "white",
+      "turn": 1,
+      "phase": "place",
+      "upkeepPending": true,
+      "clock": 0,
+      "refDepth": 2,
+      "refStaticCc": -999000,
+      "refQuiesceCc": -999000,
+      "refNodes": 2,
+      "refCandidates": 1,
+      "refOptimal": [
+        "06824c2026a09a28"
+      ],
+      "refOptimalCount": 1,
+      "intractable": false,
+      "prodWork": 3000,
+      "prodDepth": 12,
+      "prodScoreCc": -999000,
+      "prodEndKey": "06824c2026a09a28",
+      "prodSource": "search",
+      "prodStopReason": "complete",
+      "prodTtHits": 11,
+      "prodIterations": 0,
+      "prodCompletedIterations": 0,
+      "prodTruncatedIterations": 0,
+      "prodCandidateSource": null,
+      "prodDepthScores": [
+        {
+          "depth": 1,
+          "scoreCc": -999000,
+          "work": 20
+        },
+        {
+          "depth": 2,
+          "scoreCc": -999000,
+          "work": 32
+        },
+        {
+          "depth": 3,
+          "scoreCc": -999000,
+          "work": 44
+        },
+        {
+          "depth": 4,
+          "scoreCc": -999000,
+          "work": 56
+        },
+        {
+          "depth": 5,
+          "scoreCc": -999000,
+          "work": 68
+        },
+        {
+          "depth": 6,
+          "scoreCc": -999000,
+          "work": 80
+        },
+        {
+          "depth": 7,
+          "scoreCc": -999000,
+          "work": 92
+        },
+        {
+          "depth": 8,
+          "scoreCc": -999000,
+          "work": 104
+        },
+        {
+          "depth": 9,
+          "scoreCc": -999000,
+          "work": 116
+        },
+        {
+          "depth": 10,
+          "scoreCc": -999000,
+          "work": 128
+        },
+        {
+          "depth": 11,
+          "scoreCc": -999000,
+          "work": 140
+        },
+        {
+          "depth": 12,
+          "scoreCc": -999000,
+          "work": 152
+        }
+      ],
+      "prodScoreAtRefDepthCc": -999000,
+      "turnAgrees": true,
+      "scoreInBounds": true,
+      "scoreEqualsQuiesce": true,
+      "classification": "depth-mismatch",
+      "switches": {
+        "quiesceCapOffEndKey": "06824c2026a09a28",
+        "quiesceCapOffScoreCc": -999000,
+        "quiesceCapOffDepth": 12,
+        "ttOffEndKey": "06824c2026a09a28",
+        "ttOffScoreCc": -999000,
+        "ttOffDepth": 12
+      },
+      "note": "no rung completed depth 2; deepest completed depth 12"
+    },
+    {
+      "id": "draw-clock-9",
+      "set": "draw",
+      "source": "lab/hard-ai/positions/authored.jsonl#clock-9",
+      "side": "white",
+      "turn": 21,
+      "phase": "action",
+      "upkeepPending": false,
+      "clock": 9,
+      "refDepth": 2,
+      "refStaticCc": 0,
+      "refQuiesceCc": 0,
+      "refNodes": 2,
+      "refCandidates": 17,
+      "refOptimal": [
+        "46ba8fd0eebd6c19",
+        "c08aedf4c9138b9f",
+        "587ccc081133441d",
+        "94d533bd7bf6d02a",
+        "507b5565f8cef663",
+        "c2128099c091c12e",
+        "ca63ac792d29e589",
+        "7db9b2cd123602f6"
+      ],
+      "refOptimalCount": 17,
+      "intractable": false,
+      "prodWork": 3000,
+      "prodDepth": 9,
+      "prodScoreCc": 0,
+      "prodEndKey": "46ba8fd0eebd6c19",
+      "prodSource": "search",
+      "prodStopReason": "work",
+      "prodTtHits": 8,
+      "prodIterations": 0,
+      "prodCompletedIterations": 0,
+      "prodTruncatedIterations": 0,
+      "prodCandidateSource": null,
+      "prodDepthScores": [
+        {
+          "depth": 1,
+          "scoreCc": 0,
+          "work": 280
+        },
+        {
+          "depth": 2,
+          "scoreCc": 0,
+          "work": 422
+        },
+        {
+          "depth": 3,
+          "scoreCc": 0,
+          "work": 564
+        },
+        {
+          "depth": 4,
+          "scoreCc": 0,
+          "work": 706
+        },
+        {
+          "depth": 5,
+          "scoreCc": 0,
+          "work": 848
+        },
+        {
+          "depth": 6,
+          "scoreCc": 0,
+          "work": 990
+        },
+        {
+          "depth": 7,
+          "scoreCc": 0,
+          "work": 1132
+        },
+        {
+          "depth": 8,
+          "scoreCc": 0,
+          "work": 1274
+        },
+        {
+          "depth": 9,
+          "scoreCc": 0,
+          "work": 1416
+        }
+      ],
+      "prodScoreAtRefDepthCc": 0,
+      "turnAgrees": true,
+      "scoreInBounds": true,
+      "scoreEqualsQuiesce": true,
+      "classification": "depth-mismatch",
+      "switches": {
+        "quiesceCapOffEndKey": "46ba8fd0eebd6c19",
+        "quiesceCapOffScoreCc": 0,
+        "quiesceCapOffDepth": 9,
+        "ttOffEndKey": "46ba8fd0eebd6c19",
+        "ttOffScoreCc": 0,
+        "ttOffDepth": 9
+      },
+      "note": "no rung completed depth 2; deepest completed depth 9"
+    },
+    {
+      "id": "draw-fuzz-5150-1726-60",
+      "set": "draw",
+      "source": "lab/hard-ai/positions/fuzz-1000.jsonl#fuzz-5150-1726-60 (clock 9)",
+      "side": "black",
+      "turn": 8,
+      "phase": "place",
+      "upkeepPending": true,
+      "clock": 9,
+      "refDepth": 2,
+      "refStaticCc": 999000,
+      "refQuiesceCc": 999000,
+      "refNodes": 2,
+      "refCandidates": 25,
+      "refOptimal": [
+        "3bd6586f5702edd9",
+        "75b68b7bd3da0ea6",
+        "92afe229bb30cf44",
+        "1ddf35d3192510d8",
+        "56b761c5b4e49665",
+        "be34c685f38cfc8e",
+        "18d7b2d1303c751a",
+        "f054159177541ff1"
+      ],
+      "refOptimalCount": 24,
+      "intractable": false,
+      "prodWork": 3000,
+      "prodDepth": 1,
+      "prodScoreCc": 999000,
+      "prodEndKey": "56b761c5b4e49665",
+      "prodSource": "mate",
+      "prodStopReason": "complete",
+      "prodTtHits": 0,
+      "prodIterations": 0,
+      "prodCompletedIterations": 0,
+      "prodTruncatedIterations": 0,
+      "prodCandidateSource": null,
+      "prodDepthScores": [],
+      "prodScoreAtRefDepthCc": null,
+      "turnAgrees": true,
+      "scoreInBounds": true,
+      "scoreEqualsQuiesce": true,
+      "classification": "must-answer",
+      "switches": {
+        "quiesceCapOffEndKey": "56b761c5b4e49665",
+        "quiesceCapOffScoreCc": 999000,
+        "quiesceCapOffDepth": 1,
+        "ttOffEndKey": "56b761c5b4e49665",
+        "ttOffScoreCc": 999000,
+        "ttOffDepth": 1
+      },
+      "note": "no rung completed depth 2; deepest completed depth 1"
+    },
+    {
+      "id": "draw-fuzz-5150-1563-72",
+      "set": "draw",
+      "source": "lab/hard-ai/positions/fuzz-1000.jsonl#fuzz-5150-1563-72 (clock 7)",
+      "side": "white",
+      "turn": 13,
+      "phase": "place",
+      "upkeepPending": false,
+      "clock": 7,
+      "refDepth": 2,
+      "refStaticCc": 183,
+      "refQuiesceCc": 378,
+      "refNodes": 1278,
+      "refCandidates": 35,
+      "refOptimal": [
+        "611d98b5ba88440d"
+      ],
+      "refOptimalCount": 1,
+      "intractable": false,
+      "prodWork": 25000,
+      "prodDepth": 2,
+      "prodScoreCc": 183,
+      "prodEndKey": "fe19cf10999f0ba0",
+      "prodSource": "search",
+      "prodStopReason": "work",
+      "prodTtHits": 1,
+      "prodIterations": 2,
+      "prodCompletedIterations": 2,
+      "prodTruncatedIterations": 0,
+      "prodCandidateSource": "completed-depth",
+      "prodDepthScores": [
+        {
+          "depth": 1,
+          "scoreCc": 4169,
+          "work": 11136
+        },
+        {
+          "depth": 2,
+          "scoreCc": 183,
+          "work": 19663
+        }
+      ],
+      "prodScoreAtRefDepthCc": 183,
+      "turnAgrees": false,
+      "scoreInBounds": true,
+      "scoreEqualsQuiesce": false,
+      "classification": "stand-pat",
+      "switches": {
+        "quiesceCapOffEndKey": "1755d63e176d1172",
+        "quiesceCapOffScoreCc": 3146,
+        "quiesceCapOffDepth": 1,
+        "ttOffEndKey": "fe19cf10999f0ba0",
+        "ttOffScoreCc": 4169,
+        "ttOffDepth": 1
+      },
+      "note": ""
+    },
+    {
+      "id": "draw-fuzz-5150-1394-24",
+      "set": "draw",
+      "source": "lab/hard-ai/positions/fuzz-1000.jsonl#fuzz-5150-1394-24 (clock 8)",
+      "side": "white",
+      "turn": 5,
+      "phase": "place",
+      "upkeepPending": false,
+      "clock": 8,
+      "refDepth": 2,
+      "refStaticCc": 67,
+      "refQuiesceCc": 474,
+      "refNodes": 764,
+      "refCandidates": 27,
+      "refOptimal": [
+        "22397c71ff0f883a"
+      ],
+      "refOptimalCount": 1,
+      "intractable": false,
+      "prodWork": 25000,
+      "prodDepth": 2,
+      "prodScoreCc": 67,
+      "prodEndKey": "921f330f8b026434",
+      "prodSource": "search",
+      "prodStopReason": "work",
+      "prodTtHits": 1,
+      "prodIterations": 2,
+      "prodCompletedIterations": 2,
+      "prodTruncatedIterations": 0,
+      "prodCandidateSource": "completed-depth",
+      "prodDepthScores": [
+        {
+          "depth": 1,
+          "scoreCc": 3411,
+          "work": 9660
+        },
+        {
+          "depth": 2,
+          "scoreCc": 67,
+          "work": 15219
+        }
+      ],
+      "prodScoreAtRefDepthCc": 67,
+      "turnAgrees": false,
+      "scoreInBounds": true,
+      "scoreEqualsQuiesce": false,
+      "classification": "stand-pat",
+      "switches": {
+        "quiesceCapOffEndKey": "921f330f8b026434",
+        "quiesceCapOffScoreCc": 744,
+        "quiesceCapOffDepth": 2,
+        "ttOffEndKey": "921f330f8b026434",
+        "ttOffScoreCc": 67,
+        "ttOffDepth": 2
+      },
+      "note": ""
+    },
+    {
+      "id": "draw-fuzz-5150-829-36",
+      "set": "draw",
+      "source": "lab/hard-ai/positions/fuzz-1000.jsonl#fuzz-5150-829-36 (clock 9)",
+      "side": "black",
+      "turn": 5,
+      "phase": "place",
+      "upkeepPending": true,
+      "clock": 9,
+      "refDepth": 2,
+      "refStaticCc": 0,
+      "refQuiesceCc": 0,
+      "refNodes": 730,
+      "refCandidates": 25,
+      "refOptimal": [
+        "db9e82ce04d78753",
+        "e59d26b739b5612a",
+        "e40f75e6c5b79460",
+        "03b72d2112577c64",
+        "831fd1fe22928c61",
+        "4aca643cd6f74e87",
+        "ad723cfb0117a683",
+        "2ddac02431d25686"
+      ],
+      "refOptimalCount": 11,
+      "intractable": false,
+      "prodWork": 25000,
+      "prodDepth": 2,
+      "prodScoreCc": 0,
+      "prodEndKey": "e59d26b739b5612a",
+      "prodSource": "search",
+      "prodStopReason": "work",
+      "prodTtHits": 1,
+      "prodIterations": 2,
+      "prodCompletedIterations": 2,
+      "prodTruncatedIterations": 0,
+      "prodCandidateSource": "completed-depth",
+      "prodDepthScores": [
+        {
+          "depth": 1,
+          "scoreCc": 1069,
+          "work": 6040
+        },
+        {
+          "depth": 2,
+          "scoreCc": 0,
+          "work": 18479
+        }
+      ],
+      "prodScoreAtRefDepthCc": 0,
+      "turnAgrees": true,
+      "scoreInBounds": true,
+      "scoreEqualsQuiesce": true,
+      "classification": "agree",
+      "switches": {
+        "quiesceCapOffEndKey": "e59d26b739b5612a",
+        "quiesceCapOffScoreCc": 0,
+        "quiesceCapOffDepth": 2,
+        "ttOffEndKey": "e59d26b739b5612a",
+        "ttOffScoreCc": 0,
+        "ttOffDepth": 2
+      },
+      "note": ""
+    },
+    {
+      "id": "draw-fuzz-5150-1043-66",
+      "set": "draw",
+      "source": "lab/hard-ai/positions/fuzz-1000.jsonl#fuzz-5150-1043-66 (clock 9)",
+      "side": "white",
+      "turn": 11,
+      "phase": "action",
+      "upkeepPending": false,
+      "clock": 9,
+      "refDepth": 2,
+      "refStaticCc": 0,
+      "refQuiesceCc": 0,
+      "refNodes": 180,
+      "refCandidates": 27,
+      "refOptimal": [
+        "54528b9e82ee7953",
+        "9ce8c5e79085c702",
+        "a6369e9c732af7f1",
+        "18cb6cc2f6d0cc20",
+        "7e6f0f03d3dcf597",
+        "ff3f49746e7d6c45",
+        "7ba24c5ca0509229",
+        "1d062f9d855cab9e"
+      ],
+      "refOptimalCount": 23,
+      "intractable": false,
+      "prodWork": 3000,
+      "prodDepth": 2,
+      "prodScoreCc": 0,
+      "prodEndKey": "54528b9e82ee7953",
+      "prodSource": "search",
+      "prodStopReason": "work",
+      "prodTtHits": 1,
+      "prodIterations": 2,
+      "prodCompletedIterations": 2,
+      "prodTruncatedIterations": 0,
+      "prodCandidateSource": "completed-depth",
+      "prodDepthScores": [
+        {
+          "depth": 1,
+          "scoreCc": 1955,
+          "work": 1255
+        },
+        {
+          "depth": 2,
+          "scoreCc": 0,
+          "work": 2853
+        }
+      ],
+      "prodScoreAtRefDepthCc": 0,
+      "turnAgrees": true,
+      "scoreInBounds": true,
+      "scoreEqualsQuiesce": true,
+      "classification": "agree",
+      "switches": {
+        "quiesceCapOffEndKey": "fedce91681e45650",
+        "quiesceCapOffScoreCc": 1955,
+        "quiesceCapOffDepth": 1,
+        "ttOffEndKey": "54528b9e82ee7953",
+        "ttOffScoreCc": 0,
+        "ttOffDepth": 2
+      },
+      "note": ""
+    },
+    {
+      "id": "tac-tactics-adjacent-fire_1-vs-fire_3",
+      "set": "tactics",
+      "source": "lab/hard-ai/positions/tactics.jsonl#tactics-adjacent-fire_1-vs-fire_3",
+      "side": "white",
+      "turn": 1,
+      "phase": "action",
+      "upkeepPending": false,
+      "clock": 0,
+      "refDepth": 2,
+      "refStaticCc": 999000,
+      "refQuiesceCc": 999000,
+      "refNodes": 28,
+      "refCandidates": 17,
+      "refOptimal": [
+        "89507d7618b4f472",
+        "dac3fb05073e612e",
+        "253523cffa34dc0e",
+        "d6df303bd141c39b"
+      ],
+      "refOptimalCount": 4,
+      "intractable": false,
+      "prodWork": 3000,
+      "prodDepth": 1,
+      "prodScoreCc": 999000,
+      "prodEndKey": "89507d7618b4f472",
+      "prodSource": "mate",
+      "prodStopReason": "complete",
+      "prodTtHits": 0,
+      "prodIterations": 0,
+      "prodCompletedIterations": 0,
+      "prodTruncatedIterations": 0,
+      "prodCandidateSource": null,
+      "prodDepthScores": [],
+      "prodScoreAtRefDepthCc": null,
+      "turnAgrees": true,
+      "scoreInBounds": true,
+      "scoreEqualsQuiesce": true,
+      "classification": "must-answer",
+      "switches": {
+        "quiesceCapOffEndKey": "89507d7618b4f472",
+        "quiesceCapOffScoreCc": 999000,
+        "quiesceCapOffDepth": 1,
+        "ttOffEndKey": "89507d7618b4f472",
+        "ttOffScoreCc": 999000,
+        "ttOffDepth": 1
+      },
+      "note": "no rung completed depth 2; deepest completed depth 1"
+    },
+    {
+      "id": "tac-tactics-adjacent-fire_2-vs-fire_3",
+      "set": "tactics",
+      "source": "lab/hard-ai/positions/tactics.jsonl#tactics-adjacent-fire_2-vs-fire_3",
+      "side": "white",
+      "turn": 1,
+      "phase": "action",
+      "upkeepPending": false,
+      "clock": 0,
+      "refDepth": 2,
+      "refStaticCc": 999000,
+      "refQuiesceCc": 999000,
+      "refNodes": 28,
+      "refCandidates": 17,
+      "refOptimal": [
+        "d4ff95930ccbce35",
+        "ba5caaaf736ddeac",
+        "eb695c396abf7977",
+        "a11610e240b557c4"
+      ],
+      "refOptimalCount": 4,
+      "intractable": false,
+      "prodWork": 3000,
+      "prodDepth": 1,
+      "prodScoreCc": 999000,
+      "prodEndKey": "d4ff95930ccbce35",
+      "prodSource": "mate",
+      "prodStopReason": "complete",
+      "prodTtHits": 0,
+      "prodIterations": 0,
+      "prodCompletedIterations": 0,
+      "prodTruncatedIterations": 0,
+      "prodCandidateSource": null,
+      "prodDepthScores": [],
+      "prodScoreAtRefDepthCc": null,
+      "turnAgrees": true,
+      "scoreInBounds": true,
+      "scoreEqualsQuiesce": true,
+      "classification": "must-answer",
+      "switches": {
+        "quiesceCapOffEndKey": "d4ff95930ccbce35",
+        "quiesceCapOffScoreCc": 999000,
+        "quiesceCapOffDepth": 1,
+        "ttOffEndKey": "d4ff95930ccbce35",
+        "ttOffScoreCc": 999000,
+        "ttOffDepth": 1
+      },
+      "note": "no rung completed depth 2; deepest completed depth 1"
+    },
+    {
+      "id": "tac-tactics-adjacent-fire_3-vs-fire_3",
+      "set": "tactics",
+      "source": "lab/hard-ai/positions/tactics.jsonl#tactics-adjacent-fire_3-vs-fire_3",
+      "side": "white",
+      "turn": 1,
+      "phase": "action",
+      "upkeepPending": false,
+      "clock": 0,
+      "refDepth": 2,
+      "refStaticCc": 999000,
+      "refQuiesceCc": 999000,
+      "refNodes": 24,
+      "refCandidates": 14,
+      "refOptimal": [
+        "d9891d14e9b9ca15",
+        "d9683ba02069038b",
+        "d92e1ecf695c0982"
+      ],
+      "refOptimalCount": 3,
+      "intractable": false,
+      "prodWork": 3000,
+      "prodDepth": 1,
+      "prodScoreCc": 999000,
+      "prodEndKey": "d9891d14e9b9ca15",
+      "prodSource": "mate",
+      "prodStopReason": "complete",
+      "prodTtHits": 0,
+      "prodIterations": 0,
+      "prodCompletedIterations": 0,
+      "prodTruncatedIterations": 0,
+      "prodCandidateSource": null,
+      "prodDepthScores": [],
+      "prodScoreAtRefDepthCc": null,
+      "turnAgrees": true,
+      "scoreInBounds": true,
+      "scoreEqualsQuiesce": true,
+      "classification": "must-answer",
+      "switches": {
+        "quiesceCapOffEndKey": "d9891d14e9b9ca15",
+        "quiesceCapOffScoreCc": 999000,
+        "quiesceCapOffDepth": 1,
+        "ttOffEndKey": "d9891d14e9b9ca15",
+        "ttOffScoreCc": 999000,
+        "ttOffDepth": 1
+      },
+      "note": "no rung completed depth 2; deepest completed depth 1"
+    },
+    {
+      "id": "tac-tactics-adjacent-lightning_2-vs-fire_3",
+      "set": "tactics",
+      "source": "lab/hard-ai/positions/tactics.jsonl#tactics-adjacent-lightning_2-vs-fire_3",
+      "side": "white",
+      "turn": 1,
+      "phase": "action",
+      "upkeepPending": false,
+      "clock": 0,
+      "refDepth": 2,
+      "refStaticCc": 999000,
+      "refQuiesceCc": 999000,
+      "refNodes": 20,
+      "refCandidates": 13,
+      "refOptimal": [
+        "a7ec289896e1ee7c",
+        "03c40d5cf0fa2d91",
+        "551ad05329d1f5af",
+        "f195f81599562315"
+      ],
+      "refOptimalCount": 4,
+      "intractable": false,
+      "prodWork": 3000,
+      "prodDepth": 1,
+      "prodScoreCc": 999000,
+      "prodEndKey": "a7ec289896e1ee7c",
+      "prodSource": "mate",
+      "prodStopReason": "complete",
+      "prodTtHits": 0,
+      "prodIterations": 0,
+      "prodCompletedIterations": 0,
+      "prodTruncatedIterations": 0,
+      "prodCandidateSource": null,
+      "prodDepthScores": [],
+      "prodScoreAtRefDepthCc": null,
+      "turnAgrees": true,
+      "scoreInBounds": true,
+      "scoreEqualsQuiesce": true,
+      "classification": "must-answer",
+      "switches": {
+        "quiesceCapOffEndKey": "a7ec289896e1ee7c",
+        "quiesceCapOffScoreCc": 999000,
+        "quiesceCapOffDepth": 1,
+        "ttOffEndKey": "a7ec289896e1ee7c",
+        "ttOffScoreCc": 999000,
+        "ttOffDepth": 1
+      },
+      "note": "no rung completed depth 2; deepest completed depth 1"
+    },
+    {
+      "id": "tac-tactics-adjacent-water_1-vs-fire_3",
+      "set": "tactics",
+      "source": "lab/hard-ai/positions/tactics.jsonl#tactics-adjacent-water_1-vs-fire_3",
+      "side": "white",
+      "turn": 1,
+      "phase": "action",
+      "upkeepPending": false,
+      "clock": 0,
+      "refDepth": 2,
+      "refStaticCc": 999000,
+      "refQuiesceCc": 999000,
+      "refNodes": 22,
+      "refCandidates": 13,
+      "refOptimal": [
+        "cf465f6d39bc998c",
+        "05eda6071f7576c2",
+        "3badc4b929c4d528"
+      ],
+      "refOptimalCount": 3,
+      "intractable": false,
+      "prodWork": 3000,
+      "prodDepth": 1,
+      "prodScoreCc": 999000,
+      "prodEndKey": "cf465f6d39bc998c",
+      "prodSource": "mate",
+      "prodStopReason": "complete",
+      "prodTtHits": 0,
+      "prodIterations": 0,
+      "prodCompletedIterations": 0,
+      "prodTruncatedIterations": 0,
+      "prodCandidateSource": null,
+      "prodDepthScores": [],
+      "prodScoreAtRefDepthCc": null,
+      "turnAgrees": true,
+      "scoreInBounds": true,
+      "scoreEqualsQuiesce": true,
+      "classification": "must-answer",
+      "switches": {
+        "quiesceCapOffEndKey": "cf465f6d39bc998c",
+        "quiesceCapOffScoreCc": 999000,
+        "quiesceCapOffDepth": 1,
+        "ttOffEndKey": "cf465f6d39bc998c",
+        "ttOffScoreCc": 999000,
+        "ttOffDepth": 1
+      },
+      "note": "no rung completed depth 2; deepest completed depth 1"
+    },
+    {
+      "id": "tac-tactics-adjacent-water_2-vs-fire_3",
+      "set": "tactics",
+      "source": "lab/hard-ai/positions/tactics.jsonl#tactics-adjacent-water_2-vs-fire_3",
+      "side": "white",
+      "turn": 1,
+      "phase": "action",
+      "upkeepPending": false,
+      "clock": 0,
+      "refDepth": 2,
+      "refStaticCc": 999000,
+      "refQuiesceCc": 999000,
+      "refNodes": 22,
+      "refCandidates": 13,
+      "refOptimal": [
+        "cb507cea84ee04f1",
+        "5ca89e27c9d75f08",
+        "70cdacf185597dea"
+      ],
+      "refOptimalCount": 3,
+      "intractable": false,
+      "prodWork": 3000,
+      "prodDepth": 1,
+      "prodScoreCc": 999000,
+      "prodEndKey": "cb507cea84ee04f1",
+      "prodSource": "mate",
+      "prodStopReason": "complete",
+      "prodTtHits": 0,
+      "prodIterations": 0,
+      "prodCompletedIterations": 0,
+      "prodTruncatedIterations": 0,
+      "prodCandidateSource": null,
+      "prodDepthScores": [],
+      "prodScoreAtRefDepthCc": null,
+      "turnAgrees": true,
+      "scoreInBounds": true,
+      "scoreEqualsQuiesce": true,
+      "classification": "must-answer",
+      "switches": {
+        "quiesceCapOffEndKey": "cb507cea84ee04f1",
+        "quiesceCapOffScoreCc": 999000,
+        "quiesceCapOffDepth": 1,
+        "ttOffEndKey": "cb507cea84ee04f1",
+        "ttOffScoreCc": 999000,
+        "ttOffDepth": 1
+      },
+      "note": "no rung completed depth 2; deepest completed depth 1"
+    }
+  ],
+  "counts": {
+    "agree": 10,
+    "depth-mismatch": 6,
+    "must-answer": 14,
+    "stand-pat": 5,
+    "tt-identity": 1
+  },
+  "summary": {
+    "positions": 36,
+    "searched": 22,
+    "mustAnswer": 14,
+    "mustAnswerAgree": 14,
+    "turnAgree": 30,
+    "turnDisagree": 6,
+    "scoreEqualsQuiesce": 16,
+    "scoreEqualsStatic": 19,
+    "scoreInBounds": 21,
+    "scoreOutOfBounds": 1,
+    "scoreUnavailable": 14,
+    "truncatedIterations": 0,
+    "storesWhileTruncated": 0,
+    "referenceNodes": 10498,
+    "intractable": 0
+  },
+  "ttFindings": [
+    {
+      "kind": "cross-prover-mode",
+      "key": "9f2460801a718b9b",
+      "detail": "ss-spawn-strike-purchase-1 (white t5): 9f2460801a718b9b|d1: full-prover -852 vs bound-prover -313"
+    },
+    {
+      "kind": "cross-prover-mode",
+      "key": "0b8697e4ff63f560",
+      "detail": "upkeep-loss-g2-s5_0_2-A-white-t4 (white t4): 0b8697e4ff63f560|d1: full-prover -141 vs bound-prover -142"
+    },
+    {
+      "kind": "cross-prover-mode",
+      "key": "56420de6104ff562",
+      "detail": "upkeep-loss-g2-s5_0_2-A-white-t4 (white t4): 56420de6104ff562|d1: full-prover -599 vs bound-prover -142"
+    }
+  ],
+  "ttFindingCounts": {
+    "cross-prover-mode": 3
+  },
+  "ttStores": 394,
+  "ttProbes": 402,
+  "kpos": [
+    {
+      "positionId": "e1dev-e1-g3-s105",
+      "rows": [
+        {
+          "mutation": "turn.phase place<->action",
+          "kposMoved": false,
+          "kturnMoved": true,
+          "digestMoved": true,
+          "note": "a Kturn extra by construction: the macro table cannot separate a place-phase node from an action-phase one"
+        },
+        {
+          "mutation": "turn.actionsRemaining -1",
+          "kposMoved": false,
+          "kturnMoved": true,
+          "digestMoved": true,
+          "note": "a Kturn extra by construction: a mid-turn root and a start-of-turn node share a macro key"
+        },
+        {
+          "mutation": "turn.currentPlayer swapped",
+          "kposMoved": true,
+          "kturnMoved": true,
+          "digestMoved": true,
+          "note": "side is a Kpos component"
+        },
+        {
+          "mutation": "upkeepPending toggled",
+          "kposMoved": true,
+          "kturnMoved": true,
+          "digestMoved": true,
+          "note": "upkeepPending is a Kpos component"
+        },
+        {
+          "mutation": "inactivityPlies +1",
+          "kposMoved": true,
+          "kturnMoved": true,
+          "digestMoved": true,
+          "note": "the clock is a Kpos component (SU §8.1 makes it part of the position)"
+        },
+        {
+          "mutation": "inactivityRule toggled",
+          "kposMoved": true,
+          "kturnMoved": true,
+          "digestMoved": true,
+          "note": "drawRuleOn is a Kpos rule flag"
+        },
+        {
+          "mutation": "progressThisTurn toggled",
+          "kposMoved": false,
+          "kturnMoved": false,
+          "digestMoved": true,
+          "note": "progress is packed but is not a Kpos component"
+        }
+      ]
+    },
+    {
+      "positionId": "e1dev-e1-g2-s40",
+      "rows": [
+        {
+          "mutation": "turn.phase place<->action",
+          "kposMoved": false,
+          "kturnMoved": true,
+          "digestMoved": true,
+          "note": "a Kturn extra by construction: the macro table cannot separate a place-phase node from an action-phase one"
+        },
+        {
+          "mutation": "turn.actionsRemaining -1",
+          "kposMoved": false,
+          "kturnMoved": true,
+          "digestMoved": true,
+          "note": "a Kturn extra by construction: a mid-turn root and a start-of-turn node share a macro key"
+        },
+        {
+          "mutation": "turn.currentPlayer swapped",
+          "kposMoved": true,
+          "kturnMoved": true,
+          "digestMoved": true,
+          "note": "side is a Kpos component"
+        },
+        {
+          "mutation": "upkeepPending toggled",
+          "kposMoved": true,
+          "kturnMoved": true,
+          "digestMoved": true,
+          "note": "upkeepPending is a Kpos component"
+        },
+        {
+          "mutation": "inactivityPlies +1",
+          "kposMoved": true,
+          "kturnMoved": true,
+          "digestMoved": true,
+          "note": "the clock is a Kpos component (SU §8.1 makes it part of the position)"
+        },
+        {
+          "mutation": "inactivityRule toggled",
+          "kposMoved": true,
+          "kturnMoved": true,
+          "digestMoved": true,
+          "note": "drawRuleOn is a Kpos rule flag"
+        },
+        {
+          "mutation": "progressThisTurn toggled",
+          "kposMoved": false,
+          "kturnMoved": false,
+          "digestMoved": true,
+          "note": "progress is packed but is not a Kpos component"
+        }
+      ]
+    },
+    {
+      "positionId": "e1dev-e1-g4-s250",
+      "rows": [
+        {
+          "mutation": "turn.phase place<->action",
+          "kposMoved": false,
+          "kturnMoved": true,
+          "digestMoved": true,
+          "note": "a Kturn extra by construction: the macro table cannot separate a place-phase node from an action-phase one"
+        },
+        {
+          "mutation": "turn.actionsRemaining -1",
+          "kposMoved": false,
+          "kturnMoved": true,
+          "digestMoved": true,
+          "note": "a Kturn extra by construction: a mid-turn root and a start-of-turn node share a macro key"
+        },
+        {
+          "mutation": "turn.currentPlayer swapped",
+          "kposMoved": true,
+          "kturnMoved": true,
+          "digestMoved": true,
+          "note": "side is a Kpos component"
+        },
+        {
+          "mutation": "upkeepPending toggled",
+          "kposMoved": true,
+          "kturnMoved": true,
+          "digestMoved": true,
+          "note": "upkeepPending is a Kpos component"
+        },
+        {
+          "mutation": "inactivityPlies +1",
+          "kposMoved": true,
+          "kturnMoved": true,
+          "digestMoved": true,
+          "note": "the clock is a Kpos component (SU §8.1 makes it part of the position)"
+        },
+        {
+          "mutation": "inactivityRule toggled",
+          "kposMoved": true,
+          "kturnMoved": true,
+          "digestMoved": true,
+          "note": "drawRuleOn is a Kpos rule flag"
+        },
+        {
+          "mutation": "progressThisTurn toggled",
+          "kposMoved": false,
+          "kturnMoved": false,
+          "digestMoved": true,
+          "note": "progress is packed but is not a Kpos component"
+        }
+      ]
+    },
+    {
+      "positionId": "e1dev-e1-g4-s750",
+      "rows": [
+        {
+          "mutation": "turn.phase place<->action",
+          "kposMoved": false,
+          "kturnMoved": true,
+          "digestMoved": true,
+          "note": "a Kturn extra by construction: the macro table cannot separate a place-phase node from an action-phase one"
+        },
+        {
+          "mutation": "turn.actionsRemaining -1",
+          "kposMoved": false,
+          "kturnMoved": false,
+          "digestMoved": false,
+          "note": "a Kturn extra by construction: a mid-turn root and a start-of-turn node share a macro key"
+        },
+        {
+          "mutation": "turn.currentPlayer swapped",
+          "kposMoved": true,
+          "kturnMoved": true,
+          "digestMoved": true,
+          "note": "side is a Kpos component"
+        },
+        {
+          "mutation": "upkeepPending toggled",
+          "kposMoved": true,
+          "kturnMoved": true,
+          "digestMoved": true,
+          "note": "upkeepPending is a Kpos component"
+        },
+        {
+          "mutation": "inactivityPlies +1",
+          "kposMoved": true,
+          "kturnMoved": true,
+          "digestMoved": true,
+          "note": "the clock is a Kpos component (SU §8.1 makes it part of the position)"
+        },
+        {
+          "mutation": "inactivityRule toggled",
+          "kposMoved": true,
+          "kturnMoved": true,
+          "digestMoved": true,
+          "note": "drawRuleOn is a Kpos rule flag"
+        },
+        {
+          "mutation": "progressThisTurn toggled",
+          "kposMoved": false,
+          "kturnMoved": false,
+          "digestMoved": true,
+          "note": "progress is packed but is not a Kpos component"
+        }
+      ]
+    }
+  ],
+  "collisions": []
+}

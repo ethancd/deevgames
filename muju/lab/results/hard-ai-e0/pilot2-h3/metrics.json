@@ -1,0 +1,162 @@
+{
+  "a": "hard@lab",
+  "b": "aiv2-hard",
+  "work": "wall:3000",
+  "handicaps": [
+    3
+  ],
+  "pairs": 2,
+  "pairsCompleted": 2,
+  "games": 4,
+  "gamesScheduled": 4,
+  "missingGames": 0,
+  "unattributedGames": 0,
+  "failures": 0,
+  "seed": 91603,
+  "shards": 2,
+  "openings": [
+    "g2-s0",
+    "g3-s1",
+    "g4-s2",
+    "g2-s5",
+    "g4-s6",
+    "g5-s7",
+    "g4-s10",
+    "g5-s11",
+    "g5-s15",
+    "g2-s20",
+    "g3-s25",
+    "g4-s30",
+    "g5-s31",
+    "g2-s40",
+    "g4-s42",
+    "g3-s45"
+  ],
+  "openingsSha256": "ea37cb3a1d9f1a05e6ee43d6aebe8dc18a59fba716c061945e4a543b862e0f44",
+  "openingsIndependent": true,
+  "independenceWarning": null,
+  "distinctGames": {
+    "A-white": 2,
+    "B-white": 2,
+    "ofPairs": 2,
+    "source": "replay",
+    "duplicates": false
+  },
+  "overrunTolerance": {
+    "spec": "max(10ms,1%)",
+    "ms": 10,
+    "pct": 1,
+    "proposed": true
+  },
+  "replays": true,
+  "resumed": false,
+  "adjudicationRate": 0,
+  "illegalActions": 0,
+  "replicaDivergences": 0,
+  "timingAnomalies": 0,
+  "anomalyCounts": {},
+  "wins": 2,
+  "draws": 0,
+  "losses": 2,
+  "strata": [
+    {
+      "handicap": 3,
+      "pairsScheduled": 2,
+      "pairs": 2,
+      "games": 4,
+      "score": 0.5,
+      "wins": 2,
+      "draws": 0,
+      "losses": 2,
+      "elo": {
+        "n": 2,
+        "games": 4,
+        "counts": [
+          0,
+          0,
+          2,
+          0,
+          0
+        ],
+        "degenerate": true,
+        "regularized": true,
+        "mu": 0.5,
+        "muRaw": 0.5,
+        "muLo": 0.13478227467405185,
+        "muHi": 0.8652177253259481,
+        "variancePairs": 0.2777777777777778,
+        "variance": 0.1388888888888889,
+        "sePair": 0.37267799624996495,
+        "se": 0.18633899812498247,
+        "elo": 0,
+        "eloLo": -322.99705060707487,
+        "eloHi": 322.9970506070748,
+        "elo95": 322.9970506070748,
+        "los": 0.5000000005
+      }
+    }
+  ],
+  "bothSeatsPlayed": true,
+  "seatMirrored": true,
+  "voided": false,
+  "meanTurnMs": {
+    "a": 2033.402985074627,
+    "b": 2932.955223880597
+  },
+  "timing": {
+    "a": {
+      "turns": 67,
+      "p95TurnMs": 3725,
+      "maxTurnMs": 4170,
+      "overAllowance": 12,
+      "overruns": 11,
+      "toleranceMs": 30,
+      "budgetExhausted": 0,
+      "reSearches": 0
+    },
+    "b": {
+      "turns": 67,
+      "p95TurnMs": 3007,
+      "maxTurnMs": 3009,
+      "overAllowance": 65,
+      "overruns": 0,
+      "toleranceMs": 30,
+      "budgetExhausted": null,
+      "reSearches": null
+    }
+  },
+  "elo": 0,
+  "eloLo": -322.99705060707487,
+  "eloHi": 322.9970506070748,
+  "los": 0.5000000005,
+  "eloDetail": {
+    "n": 2,
+    "games": 4,
+    "counts": [
+      0,
+      0,
+      2,
+      0,
+      0
+    ],
+    "degenerate": true,
+    "regularized": true,
+    "mu": 0.5,
+    "muRaw": 0.5,
+    "muLo": 0.13478227467405185,
+    "muHi": 0.8652177253259481,
+    "variancePairs": 0.2777777777777778,
+    "variance": 0.1388888888888889,
+    "sePair": 0.37267799624996495,
+    "se": 0.18633899812498247,
+    "elo": 0,
+    "eloLo": -322.99705060707487,
+    "eloHi": 322.9970506070748,
+    "elo95": 322.9970506070748,
+    "los": 0.5000000005
+  },
+  "sprt": null,
+  "sprtSequential": null,
+  "decision": null,
+  "status": "complete"
+}

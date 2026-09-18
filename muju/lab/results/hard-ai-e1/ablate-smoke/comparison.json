@@ -1,0 +1,120 @@
+{
+  "schema": "muju-hard-ablate-v1",
+  "at": "2026-09-16T13:20:32.644Z",
+  "reference": "reference: SELECTIVE (generateReference K=2000 under a 120,000-node cap, widths [40,16,8,4], 200 place plans) — not exhaustive; shared blind spots are invisible (EPIC-PLAN §2)",
+  "corpus": {
+    "path": "/Users/ashkie/src/deevgames-e1-lane7/muju/lab/results/hard-ai-e1/ablate-smoke/corpus/ablate-corpus.jsonl",
+    "sources": [
+      {
+        "source": "positions/authored.jsonl",
+        "positions": 11,
+        "stratum": "root"
+      },
+      {
+        "source": "positions/tactics.jsonl",
+        "positions": 79,
+        "stratum": "root"
+      },
+      {
+        "source": "positions/economy.jsonl",
+        "positions": 30,
+        "stratum": "root"
+      },
+      {
+        "source": "lab/results/hard-ai-e1/e1.1-diag/analysis",
+        "positions": 0,
+        "stratum": "root",
+        "note": "first consequential decision of each E1.1 analysis, reconstructed from its replay"
+      },
+      {
+        "source": "positions/fuzz-1000.jsonl",
+        "positions": 60,
+        "stratum": "reply-tail",
+        "note": "reachable mid-game states; the authored/tactics/economy puzzles leave no playable reply node"
+      }
+    ],
+    "headCount": 120,
+    "tailCount": 60,
+    "sha256": "3872cea7a252fc3d19fc33eca5d691c7d0a8a5a6415d971cfe0ca6efb20484fd",
+    "notes": [
+      "no E1.1 diagnostic analyses at lab/results/hard-ai-e1/e1.1-diag/analysis (first-consequential stratum empty)"
+    ]
+  },
+  "budget": {
+    "positions": 4,
+    "replyPositions": 2,
+    "deep": 300,
+    "shards": 1,
+    "replyNodeGen": "interior"
+  },
+  "arms": [
+    {
+      "arm": "base",
+      "factor": "none",
+      "change": "DESKTOP unchanged",
+      "engine": "hard@ablate:base",
+      "configHash": "4e7afdf76b32fadfab2d11577cb610c8f9f1a491b5153e70b87b0774403600cd",
+      "wallMs": 2236,
+      "artifact": "lab/results/hard-ai-e1/ablate-smoke/base/recall.json"
+    },
+    {
+      "arm": "k96",
+      "factor": "K",
+      "change": "K 24 → 96 (kInterior held at 16)",
+      "engine": "hard@ablate:k96",
+      "configHash": "533b227d1530889c94662622f1d3ad71b2700869f7f8036ae138bd1d49bf1ad9",
+      "wallMs": 2281,
+      "artifact": "lab/results/hard-ai-e1/ablate-smoke/k96/recall.json"
+    }
+  ],
+  "rows": [
+    {
+      "arm": "base",
+      "factor": "none",
+      "change": "DESKTOP unchanged",
+      "top1": 0.25,
+      "top3": 0.5,
+      "top1Share": 0.25,
+      "regretP50": 0,
+      "regretP90": 0,
+      "ceilingTop1": 1,
+      "replyTop1": 0.5,
+      "illegalTurns": 0,
+      "emptyLists": 0,
+      "positions": 4,
+      "replyPositions": 2,
+      "wallMs": 2236,
+      "configHash": "4e7afdf76b32fadfab2d11577cb610c8f9f1a491b5153e70b87b0774403600cd"
+    },
+    {
+      "arm": "k96",
+      "factor": "K",
+      "change": "K 24 → 96 (kInterior held at 16)",
+      "top1": 0.25,
+      "top3": 0.5,
+      "top1Share": 0.25,
+      "regretP50": 0,
+      "regretP90": 0,
+      "ceilingTop1": 1,
+      "replyTop1": 0.5,
+      "illegalTurns": 0,
+      "emptyLists": 0,
+      "positions": 4,
+      "replyPositions": 2,
+      "wallMs": 2281,
+      "configHash": "533b227d1530889c94662622f1d3ad71b2700869f7f8036ae138bd1d49bf1ad9"
+    }
+  ],
+  "ladderPlan": [
+    {
+      "arm": "base",
+      "seed": 1366200,
+      "command": "node --import tsx lab/hard-ai/ladder/run.ts \\\n  --a hard@ablate:base --b hard@desktop \\\n  --work wall:3000 --handicaps 0,3 --pairs 32 \\\n  --seed 1366200 --shards 2 --legality strict \\\n  --openings lab/hard-ai/ladder/openings/e1-val.jsonl \\\n  --out lab/results/hard-ai-e1/ablate-smoke/base/ladder"
+    },
+    {
+      "arm": "k96",
+      "seed": 1367885,
+      "command": "node --import tsx lab/hard-ai/ladder/run.ts \\\n  --a hard@ablate:k96 --b hard@desktop \\\n  --work wall:3000 --handicaps 0,3 --pairs 32 \\\n  --seed 1367885 --shards 2 --legality strict \\\n  --openings lab/hard-ai/ladder/openings/e1-val.jsonl \\\n  --out lab/results/hard-ai-e1/ablate-smoke/k96/ladder"
+    }
+  ]
+}

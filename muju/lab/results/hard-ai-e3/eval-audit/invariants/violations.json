@@ -1,0 +1,120 @@
+{
+  "corpus": "invariants",
+  "sideSwap": {
+    "checked": 40,
+    "positions": 0,
+    "byFeature": []
+  },
+  "rot180": {
+    "checked": 40,
+    "skipped": 0,
+    "positions": 7,
+    "byFeature": [
+      {
+        "index": 27,
+        "name": "RelocationDebt",
+        "group": "economy",
+        "positions": 6,
+        "examples": [
+          {
+            "id": "inv2-corner-seal-violating",
+            "side": 1,
+            "a": -2,
+            "b": -1
+          },
+          {
+            "id": "inv2-corner-seal-correct",
+            "side": 1,
+            "a": -3,
+            "b": -1
+          },
+          {
+            "id": "inv4-strand-unpunished-violating",
+            "side": 1,
+            "a": -2,
+            "b": -1
+          },
+          {
+            "id": "inv6-fragile-anchor-correct",
+            "side": 1,
+            "a": -1,
+            "b": 0
+          },
+          {
+            "id": "inv11-home-bare-violating",
+            "side": 1,
+            "a": -2,
+            "b": -1
+          },
+          {
+            "id": "inv12-cleave-line-violating",
+            "side": 1,
+            "a": 1,
+            "b": 0
+          }
+        ]
+      },
+      {
+        "index": 23,
+        "name": "EconDelta",
+        "group": "economy",
+        "positions": 3,
+        "examples": [
+          {
+            "id": "inv2-corner-seal-violating",
+            "side": 1,
+            "a": 0,
+            "b": -2
+          },
+          {
+            "id": "inv2-corner-seal-correct",
+            "side": 1,
+            "a": 0,
+            "b": -1
+          },
+          {
+            "id": "inv3-retreat-square-correct",
+            "side": 1,
+            "a": -4,
+            "b": -3
+          }
+        ]
+      },
+      {
+        "index": 24,
+        "name": "DepletionWaste",
+        "group": "economy",
+        "positions": 2,
+        "examples": [
+          {
+            "id": "inv2-corner-seal-violating",
+            "side": 1,
+            "a": -10,
+            "b": -6
+          },
+          {
+            "id": "inv2-corner-seal-correct",
+            "side": 1,
+            "a": -10,
+            "b": -8
+          }
+        ]
+      }
+    ]
+  },
+  "scoreIdentity": {
+    "checked": 40,
+    "mismatches": 0,
+    "examples": []
+  },
+  "materialResidual": {
+    "checked": 40,
+    "nonzero": 0,
+    "examples": []
+  },
+  "stageIdentity": {
+    "checked": 40,
+    "mismatches": 0,
+    "examples": []
+  }
+}

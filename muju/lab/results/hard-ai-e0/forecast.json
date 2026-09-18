@@ -1,0 +1,99 @@
+{
+  "schema": "muju-ladder-forecast-merged-v1",
+  "note": "EPIC-PLAN 2026-09-16 section 8 step 4, pilot 2 (openings set e0-openings.jsonl). Two forecast.ts runs (one per pilot handicap) merged; forecast.ts takes one --run at a time. Command per source is in sources[].command. Supersedes the pilot 1 merge, which booked zero overhead (overheadSource: unavailable).",
+  "generatedAt": "2026-09-16T06:41:19.278Z",
+  "git": "77b68d52cf85ac8eafeeb09c9ccab661436a928c",
+  "device": "Apple M2 Max x12 (darwin/arm64)",
+  "a": "hard@lab",
+  "b": "aiv2-hard",
+  "work": "wall:3000",
+  "pairsPerHandicap": 50,
+  "workers": 2,
+  "overheadSource": "measured",
+  "overheadSecondsPerGameByHandicap": {
+    "0": 16.584375,
+    "3": 6.219250000000002
+  },
+  "formula": "2 x pairs x meanGameSeconds / workers + overhead x games / workers (EPIC-PLAN 2026-09-16 section 6)",
+  "totals": {
+    "plannedGames": 200,
+    "typicalSeconds": 11693.71875,
+    "slowSeconds": 21812.481250000004,
+    "typicalHours": 3.248255208333333,
+    "slowHours": 6.059022569444446
+  },
+  "sources": [
+    {
+      "run": "lab/results/hard-ai-e0/pilot2-h0",
+      "command": "npm run hard:forecast -- --run lab/results/hard-ai-e0/pilot2-h0 --pairs 50 --workers 2",
+      "forecast": {
+        "run": "lab/results/hard-ai-e0/pilot2-h0",
+        "a": "hard@lab",
+        "b": "aiv2-hard",
+        "work": "wall:3000",
+        "device": "Apple M2 Max x12 (darwin/arm64)",
+        "git": "77b68d52cf85ac8eafeeb09c9ccab661436a928c",
+        "pilotShards": 2,
+        "pilotGames": 4,
+        "pairsPerHandicap": 50,
+        "workers": 2,
+        "overheadSecondsPerGame": 16.584375,
+        "overheadSource": "measured",
+        "handicaps": [
+          {
+            "handicap": 0,
+            "pilotGames": 4,
+            "meanGameSeconds": 127.86575,
+            "medianGameSeconds": 69.486,
+            "p90GameSeconds": 278.336,
+            "maxGameSeconds": 278.336,
+            "plannedGames": 100,
+            "typicalSeconds": 7222.50625,
+            "slowSeconds": 14746.018750000001
+          }
+        ],
+        "totalPlannedGames": 100,
+        "totalTypicalSeconds": 7222.50625,
+        "totalSlowSeconds": 14746.018750000001,
+        "formula": "2 x pairs x meanGameSeconds / workers + overhead x games / workers (EPIC-PLAN 2026-09-16 section 6)",
+        "at": "2026-09-16T06:39:26.218Z"
+      }
+    },
+    {
+      "run": "lab/results/hard-ai-e0/pilot2-h3",
+      "command": "npm run hard:forecast -- --run lab/results/hard-ai-e0/pilot2-h3 --pairs 50 --workers 2",
+      "forecast": {
+        "run": "lab/results/hard-ai-e0/pilot2-h3",
+        "a": "hard@lab",
+        "b": "aiv2-hard",
+        "work": "wall:3000",
+        "device": "Apple M2 Max x12 (darwin/arm64)",
+        "git": "77b68d52cf85ac8eafeeb09c9ccab661436a928c",
+        "pilotShards": 2,
+        "pilotGames": 4,
+        "pairsPerHandicap": 50,
+        "workers": 2,
+        "overheadSecondsPerGame": 6.219250000000002,
+        "overheadSource": "measured",
+        "handicaps": [
+          {
+            "handicap": 3,
+            "pilotGames": 4,
+            "meanGameSeconds": 83.205,
+            "medianGameSeconds": 59.975,
+            "p90GameSeconds": 135.11,
+            "maxGameSeconds": 135.11,
+            "plannedGames": 100,
+            "typicalSeconds": 4471.2125,
+            "slowSeconds": 7066.4625000000015
+          }
+        ],
+        "totalPlannedGames": 100,
+        "totalTypicalSeconds": 4471.2125,
+        "totalSlowSeconds": 7066.4625000000015,
+        "formula": "2 x pairs x meanGameSeconds / workers + overhead x games / workers (EPIC-PLAN 2026-09-16 section 6)",
+        "at": "2026-09-16T06:39:52.067Z"
+      }
+    }
+  ]
+}

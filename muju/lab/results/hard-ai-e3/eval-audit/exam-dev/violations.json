@@ -1,0 +1,288 @@
+{
+  "corpus": "exam-dev",
+  "sideSwap": {
+    "checked": 149,
+    "positions": 0,
+    "byFeature": []
+  },
+  "rot180": {
+    "checked": 149,
+    "skipped": 0,
+    "positions": 17,
+    "byFeature": [
+      {
+        "index": 27,
+        "name": "RelocationDebt",
+        "group": "economy",
+        "positions": 16,
+        "examples": [
+          {
+            "id": "authored-tactics-tactics-two-lanes-plant_3-vs-fire_3",
+            "side": 0,
+            "a": 6,
+            "b": 3
+          },
+          {
+            "id": "authored-tactics-tactics-chipped-plant_3-vs-fire_3",
+            "side": 0,
+            "a": 3,
+            "b": 1
+          },
+          {
+            "id": "authored-tactics-tactics-plugged-water_1-vs-fire_3",
+            "side": 0,
+            "a": -3,
+            "b": -2
+          },
+          {
+            "id": "authored-tactics-tactics-plugged-water_2-vs-fire_3",
+            "side": 0,
+            "a": -3,
+            "b": -2
+          },
+          {
+            "id": "authored-tactics-tactics-corner-plant_3-vs-fire_3",
+            "side": 0,
+            "a": 6,
+            "b": 7
+          },
+          {
+            "id": "authored-tactics-tactics-buy-water_1-vs-shadow_2",
+            "side": 0,
+            "a": 0,
+            "b": -1
+          },
+          {
+            "id": "authored-tactics-tactics-buy-metal_1-vs-shadow_2",
+            "side": 0,
+            "a": 0,
+            "b": -1
+          },
+          {
+            "id": "authored-tactics-tactics-three-lanes-plant_2-vs-plant_2",
+            "side": 0,
+            "a": 5,
+            "b": 3
+          },
+          {
+            "id": "authored-tactics-tactics-three-lanes-plant_3-vs-metal_3",
+            "side": 0,
+            "a": 10,
+            "b": 9
+          },
+          {
+            "id": "authored-tactics-tactics-three-lanes-metal_2-vs-metal_3",
+            "side": 0,
+            "a": 6,
+            "b": 1
+          },
+          {
+            "id": "loss-g2-s20_3_15-B-white-t7",
+            "side": 1,
+            "a": -10,
+            "b": -14
+          },
+          {
+            "id": "loss-g2-s5_0_2-A-white-t4",
+            "side": 0,
+            "a": -4,
+            "b": -7
+          },
+          {
+            "id": "loss-g4-s10_0_8-B-white-t7",
+            "side": 1,
+            "a": 3,
+            "b": 1
+          },
+          {
+            "id": "loss-g4-s6_0_4-A-white-t4",
+            "side": 0,
+            "a": 0,
+            "b": 1
+          },
+          {
+            "id": "loss-g4-s6_3_5-A-white-t4",
+            "side": 0,
+            "a": -1,
+            "b": 0
+          },
+          {
+            "id": "loss-g5-s7_3_7-A-white-t4",
+            "side": 0,
+            "a": -1,
+            "b": 0
+          }
+        ]
+      },
+      {
+        "index": 23,
+        "name": "EconDelta",
+        "group": "economy",
+        "positions": 12,
+        "examples": [
+          {
+            "id": "authored-tactics-tactics-two-lanes-plant_3-vs-fire_3",
+            "side": 0,
+            "a": 11,
+            "b": 6
+          },
+          {
+            "id": "authored-tactics-tactics-plugged-water_1-vs-fire_3",
+            "side": 0,
+            "a": 9,
+            "b": 7
+          },
+          {
+            "id": "authored-tactics-tactics-plugged-water_2-vs-fire_3",
+            "side": 0,
+            "a": 5,
+            "b": 3
+          },
+          {
+            "id": "authored-tactics-tactics-three-lanes-plant_1-vs-water_2",
+            "side": 0,
+            "a": 9,
+            "b": 7
+          },
+          {
+            "id": "authored-tactics-tactics-three-lanes-plant_2-vs-plant_2",
+            "side": 0,
+            "a": -2,
+            "b": 0
+          },
+          {
+            "id": "authored-tactics-tactics-three-lanes-plant_3-vs-metal_3",
+            "side": 0,
+            "a": -1,
+            "b": -2
+          },
+          {
+            "id": "authored-tactics-tactics-three-lanes-metal_2-vs-metal_3",
+            "side": 0,
+            "a": -7,
+            "b": -4
+          },
+          {
+            "id": "loss-g2-s20_3_15-B-white-t7",
+            "side": 1,
+            "a": -16,
+            "b": -15
+          },
+          {
+            "id": "loss-g2-s5_0_2-A-white-t4",
+            "side": 0,
+            "a": -2,
+            "b": 0
+          },
+          {
+            "id": "loss-g4-s10_0_8-B-white-t7",
+            "side": 1,
+            "a": -16,
+            "b": -15
+          },
+          {
+            "id": "loss-g4-s6_3_5-A-white-t4",
+            "side": 0,
+            "a": 8,
+            "b": 9
+          },
+          {
+            "id": "loss-g5-s7_3_7-A-white-t4",
+            "side": 0,
+            "a": 8,
+            "b": 9
+          }
+        ]
+      },
+      {
+        "index": 24,
+        "name": "DepletionWaste",
+        "group": "economy",
+        "positions": 11,
+        "examples": [
+          {
+            "id": "authored-tactics-tactics-two-lanes-plant_3-vs-fire_3",
+            "side": 0,
+            "a": 48,
+            "b": 56
+          },
+          {
+            "id": "authored-tactics-tactics-plugged-water_1-vs-fire_3",
+            "side": 0,
+            "a": -24,
+            "b": -21
+          },
+          {
+            "id": "authored-tactics-tactics-plugged-water_2-vs-fire_3",
+            "side": 0,
+            "a": -24,
+            "b": -21
+          },
+          {
+            "id": "authored-tactics-tactics-three-lanes-plant_1-vs-water_2",
+            "side": 0,
+            "a": 12,
+            "b": 16
+          },
+          {
+            "id": "authored-tactics-tactics-three-lanes-plant_3-vs-metal_3",
+            "side": 0,
+            "a": 60,
+            "b": 64
+          },
+          {
+            "id": "authored-tactics-tactics-three-lanes-metal_2-vs-metal_3",
+            "side": 0,
+            "a": 18,
+            "b": 12
+          },
+          {
+            "id": "loss-g2-s20_3_15-B-white-t7",
+            "side": 1,
+            "a": -11,
+            "b": -12
+          },
+          {
+            "id": "loss-g2-s5_0_2-A-white-t4",
+            "side": 0,
+            "a": -23,
+            "b": -27
+          },
+          {
+            "id": "loss-g4-s10_0_8-B-white-t7",
+            "side": 1,
+            "a": -55,
+            "b": -60
+          },
+          {
+            "id": "loss-g4-s6_3_5-A-white-t4",
+            "side": 0,
+            "a": -21,
+            "b": -22
+          },
+          {
+            "id": "loss-g5-s7_3_7-A-white-t4",
+            "side": 0,
+            "a": -21,
+            "b": -22
+          }
+        ]
+      }
+    ]
+  },
+  "scoreIdentity": {
+    "checked": 149,
+    "mismatches": 0,
+    "examples": []
+  },
+  "materialResidual": {
+    "checked": 149,
+    "nonzero": 0,
+    "examples": []
+  },
+  "stageIdentity": {
+    "checked": 149,
+    "mismatches": 0,
+    "examples": []
+  }
+}

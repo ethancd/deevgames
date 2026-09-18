@@ -1,0 +1,468 @@
+{
+  "schema": "muju-suite-v1",
+  "name": "invariants",
+  "version": 1,
+  "notes": "DESIGN §5.13: one fixture per SU §7 invariant, each a pair of post-turn macro positions. `invariantBits(violating, side)` sets exactly that invariant's own bit and `invariantBits(correct, side)` sets none; invariants 15 and 18 are structural (no weight, no per-position test) and both members pin their bit to 0. Regenerate with `node --import tsx lab/hard-ai/suites/build-invariants.ts`; verify with `--check`.",
+  "cases": [
+    {
+      "id": "inv1-spawn-zero",
+      "invariant": 1,
+      "side": "white",
+      "position": "lab/hard-ai/suites/invariants.positions.jsonl#inv1-spawn-zero-violating",
+      "violating": "lab/hard-ai/suites/invariants.positions.jsonl#inv1-spawn-zero-violating",
+      "correct": "lab/hard-ai/suites/invariants.positions.jsonl#inv1-spawn-zero-correct",
+      "best": [
+        "f81b46044347ca3e"
+      ],
+      "avoid": [
+        "57b0b4cb8207c21e"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "invariants",
+        "inv1"
+      ],
+      "rationale": "SU #1 / NK:9: the only anchor is the home corner itself, so the rectangle is the one square it stands on and the spawn area is empty with 8 crystals in hand."
+    },
+    {
+      "id": "inv2-corner-seal",
+      "invariant": 2,
+      "side": "white",
+      "position": "lab/hard-ai/suites/invariants.positions.jsonl#inv2-corner-seal-violating",
+      "violating": "lab/hard-ai/suites/invariants.positions.jsonl#inv2-corner-seal-violating",
+      "correct": "lab/hard-ai/suites/invariants.positions.jsonl#inv2-corner-seal-correct",
+      "best": [
+        "d4f03dfd0ded3216"
+      ],
+      "avoid": [
+        "a74111f24777225b"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "invariants",
+        "inv2"
+      ],
+      "rationale": "SU #2: both squares next to the home corner are held by own speed-1 miners, so no rescuer can ever get back in."
+    },
+    {
+      "id": "inv3-retreat-square",
+      "invariant": 3,
+      "side": "white",
+      "position": "lab/hard-ai/suites/invariants.positions.jsonl#inv3-retreat-square-violating",
+      "violating": "lab/hard-ai/suites/invariants.positions.jsonl#inv3-retreat-square-violating",
+      "correct": "lab/hard-ai/suites/invariants.positions.jsonl#inv3-retreat-square-correct",
+      "best": [
+        "49de8a2d7de79e41"
+      ],
+      "avoid": [
+        "4be90be7b96e784e"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "invariants",
+        "inv3"
+      ],
+      "rationale": "SU #3 / SD P6: a cost-5 body parked where a fire_1 can step in, one-shot it and step back out (approach class RETREAT)."
+    },
+    {
+      "id": "inv4-strand-unpunished",
+      "invariant": 4,
+      "side": "white",
+      "position": "lab/hard-ai/suites/invariants.positions.jsonl#inv4-strand-unpunished-violating",
+      "violating": "lab/hard-ai/suites/invariants.positions.jsonl#inv4-strand-unpunished-violating",
+      "correct": "lab/hard-ai/suites/invariants.positions.jsonl#inv4-strand-unpunished-correct",
+      "best": [
+        "ce2a6393d0d45a6c"
+      ],
+      "avoid": [
+        "8e4821503c8f1860"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "invariants",
+        "inv4"
+      ],
+      "rationale": "SU #4: a fire_1 three moves away can strand itself next to the forward plant_1 and white has nothing that kills anything next turn."
+    },
+    {
+      "id": "inv5-poor-miner-square",
+      "invariant": 5,
+      "side": "white",
+      "position": "lab/hard-ai/suites/invariants.positions.jsonl#inv5-poor-miner-square-violating",
+      "violating": "lab/hard-ai/suites/invariants.positions.jsonl#inv5-poor-miner-square-violating",
+      "correct": "lab/hard-ai/suites/invariants.positions.jsonl#inv5-poor-miner-square-correct",
+      "best": [
+        "5be14351b311b264"
+      ],
+      "avoid": [
+        "b548970ec6500884"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "invariants",
+        "inv5"
+      ],
+      "rationale": "SU #5: a miner bought this turn onto a cell holding less than two turns of its own mine rate, with no anchor, block, plug or home-race job."
+    },
+    {
+      "id": "inv6-fragile-anchor",
+      "invariant": 6,
+      "side": "white",
+      "position": "lab/hard-ai/suites/invariants.positions.jsonl#inv6-fragile-anchor-violating",
+      "violating": "lab/hard-ai/suites/invariants.positions.jsonl#inv6-fragile-anchor-violating",
+      "correct": "lab/hard-ai/suites/invariants.positions.jsonl#inv6-fragile-anchor-correct",
+      "best": [
+        "4262c041d2933533"
+      ],
+      "avoid": [
+        "a268b9f9efe39cab"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "invariants",
+        "inv6"
+      ],
+      "rationale": "SU #6: a deep anchor (depth >= 6) that two enemy bodies can cover completely."
+    },
+    {
+      "id": "inv7-promote-no-runway",
+      "invariant": 7,
+      "side": "white",
+      "position": "lab/hard-ai/suites/invariants.positions.jsonl#inv7-promote-no-runway-violating",
+      "violating": "lab/hard-ai/suites/invariants.positions.jsonl#inv7-promote-no-runway-violating",
+      "correct": "lab/hard-ai/suites/invariants.positions.jsonl#inv7-promote-no-runway-correct",
+      "best": [
+        "62fdb7cb475624e2"
+      ],
+      "avoid": [
+        "62fdb7cb475624e2"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "invariants",
+        "inv7"
+      ],
+      "rationale": "SU #7: promoted this turn into an upkeep bill the projected income cannot carry."
+    },
+    {
+      "id": "inv8-no-pre-adjacency",
+      "invariant": 8,
+      "side": "white",
+      "position": "lab/hard-ai/suites/invariants.positions.jsonl#inv8-no-pre-adjacency-violating",
+      "violating": "lab/hard-ai/suites/invariants.positions.jsonl#inv8-no-pre-adjacency-violating",
+      "correct": "lab/hard-ai/suites/invariants.positions.jsonl#inv8-no-pre-adjacency-correct",
+      "best": [
+        "ab1656a78f69805c"
+      ],
+      "avoid": [
+        "ab1656a78f69805c"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "invariants",
+        "inv8"
+      ],
+      "rationale": "SU #8: the turn hit and failed to kill while a kill was on the table."
+    },
+    {
+      "id": "inv9-chip-across-turn",
+      "invariant": 9,
+      "side": "white",
+      "position": "lab/hard-ai/suites/invariants.positions.jsonl#inv9-chip-across-turn-violating",
+      "violating": "lab/hard-ai/suites/invariants.positions.jsonl#inv9-chip-across-turn-violating",
+      "correct": "lab/hard-ai/suites/invariants.positions.jsonl#inv9-chip-across-turn-correct",
+      "best": [
+        "466827c5472f46cb"
+      ],
+      "avoid": [
+        "466827c5472f46cb"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "invariants",
+        "inv9"
+      ],
+      "rationale": "SU #9: the turn chipped an enemy body it could not kill and had no kill available anywhere, so the damage heals for free."
+    },
+    {
+      "id": "inv10-home-reachable",
+      "invariant": 10,
+      "side": "white",
+      "position": "lab/hard-ai/suites/invariants.positions.jsonl#inv10-home-reachable-violating",
+      "violating": "lab/hard-ai/suites/invariants.positions.jsonl#inv10-home-reachable-violating",
+      "correct": "lab/hard-ai/suites/invariants.positions.jsonl#inv10-home-reachable-correct",
+      "best": [
+        "001221af33cf936e"
+      ],
+      "avoid": [
+        "c71ebdd4659e7bbb"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "invariants",
+        "inv10"
+      ],
+      "rationale": "SU #10: a lightning_1 four actions from the home corner, with no plug and no rescuer next to it."
+    },
+    {
+      "id": "inv11-home-bare",
+      "invariant": 11,
+      "side": "white",
+      "position": "lab/hard-ai/suites/invariants.positions.jsonl#inv11-home-bare-violating",
+      "violating": "lab/hard-ai/suites/invariants.positions.jsonl#inv11-home-bare-violating",
+      "correct": "lab/hard-ai/suites/invariants.positions.jsonl#inv11-home-bare-correct",
+      "best": [
+        "ef50e6cc42f0051b"
+      ],
+      "avoid": [
+        "6cb99667859a5152"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "invariants",
+        "inv11"
+      ],
+      "rationale": "SU #11: home corner and both neighbours empty while black holds a speed-3 runner with a rectangle inside ten of that corner."
+    },
+    {
+      "id": "inv12-cleave-line",
+      "invariant": 12,
+      "side": "white",
+      "position": "lab/hard-ai/suites/invariants.positions.jsonl#inv12-cleave-line-violating",
+      "violating": "lab/hard-ai/suites/invariants.positions.jsonl#inv12-cleave-line-violating",
+      "correct": "lab/hard-ai/suites/invariants.positions.jsonl#inv12-cleave-line-correct",
+      "best": [
+        "18759304b7c4e8ed"
+      ],
+      "avoid": [
+        "db27057a1371c43f"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "invariants",
+        "inv12"
+      ],
+      "rationale": "SU #12: two own bodies left on one Cleave line of an enemy tier-2 attacker."
+    },
+    {
+      "id": "inv13-turtle",
+      "invariant": 13,
+      "side": "white",
+      "position": "lab/hard-ai/suites/invariants.positions.jsonl#inv13-turtle-violating",
+      "violating": "lab/hard-ai/suites/invariants.positions.jsonl#inv13-turtle-violating",
+      "correct": "lab/hard-ai/suites/invariants.positions.jsonl#inv13-turtle-correct",
+      "best": [
+        "f886948185fcf429"
+      ],
+      "avoid": [
+        "ee0033611ae6853f"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "invariants",
+        "inv13"
+      ],
+      "rationale": "SU #13: every body within two of home, spawn depth under 4, while black has pushed its own anchor past 4."
+    },
+    {
+      "id": "inv14-liquidity-floor",
+      "invariant": 14,
+      "side": "white",
+      "position": "lab/hard-ai/suites/invariants.positions.jsonl#inv14-liquidity-floor-violating",
+      "violating": "lab/hard-ai/suites/invariants.positions.jsonl#inv14-liquidity-floor-violating",
+      "correct": "lab/hard-ai/suites/invariants.positions.jsonl#inv14-liquidity-floor-correct",
+      "best": [
+        "9b74c38641bebd41"
+      ],
+      "avoid": [
+        "7d5ffe4ff5476288"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "invariants",
+        "inv14"
+      ],
+      "rationale": "SU #14 / P3: the turn won no material and left the bank under the six-crystal floor."
+    },
+    {
+      "id": "inv15-unknown-as-safe",
+      "invariant": 15,
+      "side": "white",
+      "position": "lab/hard-ai/suites/invariants.positions.jsonl#inv15-unknown-as-safe-violating",
+      "violating": "lab/hard-ai/suites/invariants.positions.jsonl#inv15-unknown-as-safe-violating",
+      "correct": "lab/hard-ai/suites/invariants.positions.jsonl#inv15-unknown-as-safe-correct",
+      "best": [
+        "9b74c38641bebd41"
+      ],
+      "avoid": [
+        "9b74c38641bebd41"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "invariants",
+        "inv15"
+      ],
+      "rationale": "SU #15 is structural (an UNKNOWN prover verdict is scored as the bad case, never as safety) and carries no weight and no per-position test; the fixture pins its bit to 0 on a board where every other invariant is quiet."
+    },
+    {
+      "id": "inv16-clock-discipline",
+      "invariant": 16,
+      "side": "white",
+      "position": "lab/hard-ai/suites/invariants.positions.jsonl#inv16-clock-discipline-violating",
+      "violating": "lab/hard-ai/suites/invariants.positions.jsonl#inv16-clock-discipline-violating",
+      "correct": "lab/hard-ai/suites/invariants.positions.jsonl#inv16-clock-discipline-correct",
+      "best": [
+        "ffc7e5f6337f76a9"
+      ],
+      "avoid": [
+        "903b00c88024468c"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "invariants",
+        "inv16"
+      ],
+      "rationale": "SU #16: clock at 7, a 300 cc lead, and nothing to kill — the draw is being handed away."
+    },
+    {
+      "id": "inv17-self-block",
+      "invariant": 17,
+      "side": "white",
+      "position": "lab/hard-ai/suites/invariants.positions.jsonl#inv17-self-block-violating",
+      "violating": "lab/hard-ai/suites/invariants.positions.jsonl#inv17-self-block-violating",
+      "correct": "lab/hard-ai/suites/invariants.positions.jsonl#inv17-self-block-correct",
+      "best": [
+        "b5f1a832c16cd841"
+      ],
+      "avoid": [
+        "eeafac3b1ecbaa36"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "invariants",
+        "inv17"
+      ],
+      "rationale": "SU #17: the body bought this turn sits in the one gap its own runner needed, lengthening that runner's route to the enemy corner."
+    },
+    {
+      "id": "inv18-wasted-end-place",
+      "invariant": 18,
+      "side": "white",
+      "position": "lab/hard-ai/suites/invariants.positions.jsonl#inv18-wasted-end-place-violating",
+      "violating": "lab/hard-ai/suites/invariants.positions.jsonl#inv18-wasted-end-place-violating",
+      "correct": "lab/hard-ai/suites/invariants.positions.jsonl#inv18-wasted-end-place-correct",
+      "best": [
+        "9b74c38641bebd41"
+      ],
+      "avoid": [
+        "9b74c38641bebd41"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "invariants",
+        "inv18"
+      ],
+      "rationale": "SU #18 is a protocol rule, not a feature (DESIGN F7): END_PLACE_PHASE is emitted only when legal, so the bit is always 0; the fixture pins it on a quiet board."
+    },
+    {
+      "id": "inv19-soft-miner-exposed",
+      "invariant": 19,
+      "side": "white",
+      "position": "lab/hard-ai/suites/invariants.positions.jsonl#inv19-soft-miner-exposed-violating",
+      "violating": "lab/hard-ai/suites/invariants.positions.jsonl#inv19-soft-miner-exposed-violating",
+      "correct": "lab/hard-ai/suites/invariants.positions.jsonl#inv19-soft-miner-exposed-correct",
+      "best": [
+        "5ea54e26eac9202b"
+      ],
+      "avoid": [
+        "e24190939d0bde6b"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "invariants",
+        "inv19"
+      ],
+      "rationale": "SU #19: a DEF-1 miner parked forward inside the square set black could buy into, with black holding a tier-1 price."
+    },
+    {
+      "id": "inv20-strand-no-retreat",
+      "invariant": 20,
+      "side": "white",
+      "position": "lab/hard-ai/suites/invariants.positions.jsonl#inv20-strand-no-retreat-violating",
+      "violating": "lab/hard-ai/suites/invariants.positions.jsonl#inv20-strand-no-retreat-violating",
+      "correct": "lab/hard-ai/suites/invariants.positions.jsonl#inv20-strand-no-retreat-correct",
+      "best": [
+        "f914a57724e766b8"
+      ],
+      "avoid": [
+        "c2fb928e5006204a"
+      ],
+      "budget": {
+        "work": 50000
+      },
+      "points": 1,
+      "tags": [
+        "invariants",
+        "inv20"
+      ],
+      "rationale": "SU #20: the body that made the kill this turn has nowhere to step that black does not already cover."
+    }
+  ]
+}

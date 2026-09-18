@@ -1,0 +1,2166 @@
+{
+ "schema": "muju-hard-leaf-tie-v1",
+ "fileId": "g2-s20_3_15-A-white",
+ "side": "white",
+ "turnNumber": 3,
+ "engine": "hard@ablate:search-tie-break",
+ "weightsLabel": "default-v1",
+ "weightsVersion": 1,
+ "searchFix": {
+  "tieBreak": "end-key"
+ },
+ "orderTtBonus": 2000000,
+ "playedEndKey": "c5f8b28ed6e36696",
+ "adviserEndKey": "987d5cba3b0297a2",
+ "rungs": [
+  {
+   "work": 12500,
+   "depth": 1,
+   "chosenEndKey": "11d5023ebc31a6fa",
+   "source": "search",
+   "candidateSource": "completed-depth",
+   "candidates": 28,
+   "searched": 28,
+   "scoreHistogram": [
+    {
+     "scoreCc": 2293,
+     "candidates": 28
+    }
+   ],
+   "bestScoreCc": 2293,
+   "tiedAtBest": 28,
+   "chosenRankInTie": 0,
+   "chosenGenRankCc": 580110,
+   "chosenHasTtBonus": false,
+   "firstTiedEndKey": "11d5023ebc31a6fa",
+   "firstFoundWins": true,
+   "lowestTiedEndKey": "041f1fd01bede6ae",
+   "trace": [
+    {
+     "depth": 1,
+     "n": 28,
+     "searched": 28,
+     "completed": true,
+     "cutoffAt": -1,
+     "truncated": false,
+     "work": 1754
+    },
+    {
+     "depth": 2,
+     "n": 28,
+     "searched": 6,
+     "completed": false,
+     "cutoffAt": -1,
+     "truncated": false,
+     "work": 9919
+    }
+   ],
+   "wallMs": 170,
+   "candidatesDetail": [
+    {
+     "index": 0,
+     "endKey": "11d5023ebc31a6fa",
+     "genRankCc": 580110,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": true
+    },
+    {
+     "index": 1,
+     "endKey": "38eaf77291fd569a",
+     "genRankCc": 580110,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 2,
+     "endKey": "987d5cba3b0297a2",
+     "genRankCc": 580110,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 3,
+     "endKey": "b142a9f616ce67c2",
+     "genRankCc": 580110,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 4,
+     "endKey": "420b843e91720124",
+     "genRankCc": 580109,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 5,
+     "endKey": "6b347172bcbef144",
+     "genRankCc": 580109,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 6,
+     "endKey": "e29c2ff63b8dc01c",
+     "genRankCc": 580109,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 7,
+     "endKey": "a2cbe9278a84e3f9",
+     "genRankCc": 580090,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 8,
+     "endKey": "c5f8b28ed6e36696",
+     "genRankCc": 580090,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 9,
+     "endKey": "6cf9ebd12116151b",
+     "genRankCc": 580088,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 10,
+     "endKey": "d82a9a6b8a0bb447",
+     "genRankCc": 580088,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 11,
+     "endKey": "5eb976ba3e9385b5",
+     "genRankCc": 580085,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 12,
+     "endKey": "778683f6135f75d5",
+     "genRankCc": 580085,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 13,
+     "endKey": "a296d6e38cf183b9",
+     "genRankCc": 580081,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 14,
+     "endKey": "d877a5af8c7ed407",
+     "genRankCc": 580079,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 15,
+     "endKey": "150a6a5025a09ee7",
+     "genRankCc": 580074,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 16,
+     "endKey": "254586ef4b8d4ea7",
+     "genRankCc": 580074,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 17,
+     "endKey": "4b6267d3954d9087",
+     "genRankCc": 580074,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 18,
+     "endKey": "625d929fb88160e7",
+     "genRankCc": 580074,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 19,
+     "endKey": "5fa4f5a34b021919",
+     "genRankCc": 580073,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 20,
+     "endKey": "128a786d94eb50b5",
+     "genRankCc": 299111,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 21,
+     "endKey": "6e244954377d13ad",
+     "genRankCc": 298948,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 22,
+     "endKey": "041f1fd01bede6ae",
+     "genRankCc": 298940,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 23,
+     "endKey": "2d20ea9c362116ce",
+     "genRankCc": 298940,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 24,
+     "endKey": "73e0c0d564bbb5b4",
+     "genRankCc": 298940,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 25,
+     "endKey": "9bf912d291261460",
+     "genRankCc": 30046,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 26,
+     "endKey": "8136ca448c4b229a",
+     "genRankCc": -1343,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 27,
+     "endKey": "a3ee6b6b28f28074",
+     "genRankCc": -1343,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    }
+   ]
+  },
+  {
+   "work": 25000,
+   "depth": 1,
+   "chosenEndKey": "11d5023ebc31a6fa",
+   "source": "search",
+   "candidateSource": "completed-depth",
+   "candidates": 28,
+   "searched": 28,
+   "scoreHistogram": [
+    {
+     "scoreCc": 2293,
+     "candidates": 28
+    }
+   ],
+   "bestScoreCc": 2293,
+   "tiedAtBest": 28,
+   "chosenRankInTie": 0,
+   "chosenGenRankCc": 580110,
+   "chosenHasTtBonus": false,
+   "firstTiedEndKey": "11d5023ebc31a6fa",
+   "firstFoundWins": true,
+   "lowestTiedEndKey": "041f1fd01bede6ae",
+   "trace": [
+    {
+     "depth": 1,
+     "n": 28,
+     "searched": 28,
+     "completed": true,
+     "cutoffAt": -1,
+     "truncated": false,
+     "work": 1754
+    },
+    {
+     "depth": 2,
+     "n": 28,
+     "searched": 22,
+     "completed": false,
+     "cutoffAt": -1,
+     "truncated": false,
+     "work": 22498
+    }
+   ],
+   "wallMs": 269,
+   "candidatesDetail": [
+    {
+     "index": 0,
+     "endKey": "11d5023ebc31a6fa",
+     "genRankCc": 580110,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": true
+    },
+    {
+     "index": 1,
+     "endKey": "38eaf77291fd569a",
+     "genRankCc": 580110,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 2,
+     "endKey": "987d5cba3b0297a2",
+     "genRankCc": 580110,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 3,
+     "endKey": "b142a9f616ce67c2",
+     "genRankCc": 580110,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 4,
+     "endKey": "420b843e91720124",
+     "genRankCc": 580109,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 5,
+     "endKey": "6b347172bcbef144",
+     "genRankCc": 580109,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 6,
+     "endKey": "e29c2ff63b8dc01c",
+     "genRankCc": 580109,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 7,
+     "endKey": "a2cbe9278a84e3f9",
+     "genRankCc": 580090,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 8,
+     "endKey": "c5f8b28ed6e36696",
+     "genRankCc": 580090,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 9,
+     "endKey": "6cf9ebd12116151b",
+     "genRankCc": 580088,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 10,
+     "endKey": "d82a9a6b8a0bb447",
+     "genRankCc": 580088,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 11,
+     "endKey": "5eb976ba3e9385b5",
+     "genRankCc": 580085,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 12,
+     "endKey": "778683f6135f75d5",
+     "genRankCc": 580085,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 13,
+     "endKey": "a296d6e38cf183b9",
+     "genRankCc": 580081,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 14,
+     "endKey": "d877a5af8c7ed407",
+     "genRankCc": 580079,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 15,
+     "endKey": "150a6a5025a09ee7",
+     "genRankCc": 580074,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 16,
+     "endKey": "254586ef4b8d4ea7",
+     "genRankCc": 580074,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 17,
+     "endKey": "4b6267d3954d9087",
+     "genRankCc": 580074,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 18,
+     "endKey": "625d929fb88160e7",
+     "genRankCc": 580074,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 19,
+     "endKey": "5fa4f5a34b021919",
+     "genRankCc": 580073,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 20,
+     "endKey": "128a786d94eb50b5",
+     "genRankCc": 299111,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 21,
+     "endKey": "6e244954377d13ad",
+     "genRankCc": 298948,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 22,
+     "endKey": "041f1fd01bede6ae",
+     "genRankCc": 298940,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 23,
+     "endKey": "2d20ea9c362116ce",
+     "genRankCc": 298940,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 24,
+     "endKey": "73e0c0d564bbb5b4",
+     "genRankCc": 298940,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 25,
+     "endKey": "9bf912d291261460",
+     "genRankCc": 30046,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 26,
+     "endKey": "8136ca448c4b229a",
+     "genRankCc": -1343,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    },
+    {
+     "index": 27,
+     "endKey": "a3ee6b6b28f28074",
+     "genRankCc": -1343,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2293,
+     "chosen": false
+    }
+   ]
+  },
+  {
+   "work": 50000,
+   "depth": 2,
+   "chosenEndKey": "c5f8b28ed6e36696",
+   "source": "search",
+   "candidateSource": "completed-depth",
+   "candidates": 28,
+   "searched": 28,
+   "scoreHistogram": [
+    {
+     "scoreCc": 1020,
+     "candidates": 20
+    },
+    {
+     "scoreCc": 1002,
+     "candidates": 8
+    }
+   ],
+   "bestScoreCc": 1020,
+   "tiedAtBest": 20,
+   "chosenRankInTie": 0,
+   "chosenGenRankCc": 580090,
+   "chosenHasTtBonus": false,
+   "firstTiedEndKey": "c5f8b28ed6e36696",
+   "firstFoundWins": true,
+   "lowestTiedEndKey": "041f1fd01bede6ae",
+   "trace": [
+    {
+     "depth": 1,
+     "n": 28,
+     "searched": 28,
+     "completed": true,
+     "cutoffAt": -1,
+     "truncated": false,
+     "work": 1754
+    },
+    {
+     "depth": 2,
+     "n": 28,
+     "searched": 28,
+     "completed": true,
+     "cutoffAt": -1,
+     "truncated": false,
+     "work": 29754
+    }
+   ],
+   "wallMs": 375,
+   "candidatesDetail": [
+    {
+     "index": 0,
+     "endKey": "11d5023ebc31a6fa",
+     "genRankCc": 580110,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1002,
+     "chosen": false
+    },
+    {
+     "index": 1,
+     "endKey": "38eaf77291fd569a",
+     "genRankCc": 580110,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1002,
+     "chosen": false
+    },
+    {
+     "index": 2,
+     "endKey": "987d5cba3b0297a2",
+     "genRankCc": 580110,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1002,
+     "chosen": false
+    },
+    {
+     "index": 3,
+     "endKey": "b142a9f616ce67c2",
+     "genRankCc": 580110,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1002,
+     "chosen": false
+    },
+    {
+     "index": 4,
+     "endKey": "420b843e91720124",
+     "genRankCc": 580109,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1002,
+     "chosen": false
+    },
+    {
+     "index": 5,
+     "endKey": "6b347172bcbef144",
+     "genRankCc": 580109,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1002,
+     "chosen": false
+    },
+    {
+     "index": 6,
+     "endKey": "e29c2ff63b8dc01c",
+     "genRankCc": 580109,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1002,
+     "chosen": false
+    },
+    {
+     "index": 7,
+     "endKey": "a2cbe9278a84e3f9",
+     "genRankCc": 580090,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1002,
+     "chosen": false
+    },
+    {
+     "index": 8,
+     "endKey": "c5f8b28ed6e36696",
+     "genRankCc": 580090,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": true
+    },
+    {
+     "index": 9,
+     "endKey": "6cf9ebd12116151b",
+     "genRankCc": 580088,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 10,
+     "endKey": "d82a9a6b8a0bb447",
+     "genRankCc": 580088,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 11,
+     "endKey": "5eb976ba3e9385b5",
+     "genRankCc": 580085,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 12,
+     "endKey": "778683f6135f75d5",
+     "genRankCc": 580085,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 13,
+     "endKey": "a296d6e38cf183b9",
+     "genRankCc": 580081,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 14,
+     "endKey": "d877a5af8c7ed407",
+     "genRankCc": 580079,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 15,
+     "endKey": "150a6a5025a09ee7",
+     "genRankCc": 580074,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 16,
+     "endKey": "254586ef4b8d4ea7",
+     "genRankCc": 580074,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 17,
+     "endKey": "4b6267d3954d9087",
+     "genRankCc": 580074,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 18,
+     "endKey": "625d929fb88160e7",
+     "genRankCc": 580074,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 19,
+     "endKey": "5fa4f5a34b021919",
+     "genRankCc": 580073,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 20,
+     "endKey": "128a786d94eb50b5",
+     "genRankCc": 299111,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 21,
+     "endKey": "6e244954377d13ad",
+     "genRankCc": 298948,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 22,
+     "endKey": "041f1fd01bede6ae",
+     "genRankCc": 298940,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 23,
+     "endKey": "2d20ea9c362116ce",
+     "genRankCc": 298940,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 24,
+     "endKey": "73e0c0d564bbb5b4",
+     "genRankCc": 298940,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 25,
+     "endKey": "9bf912d291261460",
+     "genRankCc": 30046,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 26,
+     "endKey": "8136ca448c4b229a",
+     "genRankCc": -1343,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 27,
+     "endKey": "a3ee6b6b28f28074",
+     "genRankCc": -1343,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    }
+   ]
+  },
+  {
+   "work": 100000,
+   "depth": 2,
+   "chosenEndKey": "c5f8b28ed6e36696",
+   "source": "search",
+   "candidateSource": "completed-depth",
+   "candidates": 28,
+   "searched": 28,
+   "scoreHistogram": [
+    {
+     "scoreCc": 1020,
+     "candidates": 20
+    },
+    {
+     "scoreCc": 1002,
+     "candidates": 8
+    }
+   ],
+   "bestScoreCc": 1020,
+   "tiedAtBest": 20,
+   "chosenRankInTie": 0,
+   "chosenGenRankCc": 580090,
+   "chosenHasTtBonus": false,
+   "firstTiedEndKey": "c5f8b28ed6e36696",
+   "firstFoundWins": true,
+   "lowestTiedEndKey": "041f1fd01bede6ae",
+   "trace": [
+    {
+     "depth": 1,
+     "n": 28,
+     "searched": 28,
+     "completed": true,
+     "cutoffAt": -1,
+     "truncated": false,
+     "work": 1754
+    },
+    {
+     "depth": 2,
+     "n": 28,
+     "searched": 28,
+     "completed": true,
+     "cutoffAt": -1,
+     "truncated": false,
+     "work": 29754
+    },
+    {
+     "depth": 3,
+     "n": 28,
+     "searched": 4,
+     "completed": false,
+     "cutoffAt": -1,
+     "truncated": true,
+     "work": 67893
+    }
+   ],
+   "wallMs": 1228,
+   "candidatesDetail": [
+    {
+     "index": 0,
+     "endKey": "11d5023ebc31a6fa",
+     "genRankCc": 580110,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1002,
+     "chosen": false
+    },
+    {
+     "index": 1,
+     "endKey": "38eaf77291fd569a",
+     "genRankCc": 580110,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1002,
+     "chosen": false
+    },
+    {
+     "index": 2,
+     "endKey": "987d5cba3b0297a2",
+     "genRankCc": 580110,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1002,
+     "chosen": false
+    },
+    {
+     "index": 3,
+     "endKey": "b142a9f616ce67c2",
+     "genRankCc": 580110,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1002,
+     "chosen": false
+    },
+    {
+     "index": 4,
+     "endKey": "420b843e91720124",
+     "genRankCc": 580109,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1002,
+     "chosen": false
+    },
+    {
+     "index": 5,
+     "endKey": "6b347172bcbef144",
+     "genRankCc": 580109,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1002,
+     "chosen": false
+    },
+    {
+     "index": 6,
+     "endKey": "e29c2ff63b8dc01c",
+     "genRankCc": 580109,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1002,
+     "chosen": false
+    },
+    {
+     "index": 7,
+     "endKey": "a2cbe9278a84e3f9",
+     "genRankCc": 580090,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1002,
+     "chosen": false
+    },
+    {
+     "index": 8,
+     "endKey": "c5f8b28ed6e36696",
+     "genRankCc": 580090,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": true
+    },
+    {
+     "index": 9,
+     "endKey": "6cf9ebd12116151b",
+     "genRankCc": 580088,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 10,
+     "endKey": "d82a9a6b8a0bb447",
+     "genRankCc": 580088,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 11,
+     "endKey": "5eb976ba3e9385b5",
+     "genRankCc": 580085,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 12,
+     "endKey": "778683f6135f75d5",
+     "genRankCc": 580085,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 13,
+     "endKey": "a296d6e38cf183b9",
+     "genRankCc": 580081,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 14,
+     "endKey": "d877a5af8c7ed407",
+     "genRankCc": 580079,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 15,
+     "endKey": "150a6a5025a09ee7",
+     "genRankCc": 580074,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 16,
+     "endKey": "254586ef4b8d4ea7",
+     "genRankCc": 580074,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 17,
+     "endKey": "4b6267d3954d9087",
+     "genRankCc": 580074,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 18,
+     "endKey": "625d929fb88160e7",
+     "genRankCc": 580074,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 19,
+     "endKey": "5fa4f5a34b021919",
+     "genRankCc": 580073,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 20,
+     "endKey": "128a786d94eb50b5",
+     "genRankCc": 299111,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 21,
+     "endKey": "6e244954377d13ad",
+     "genRankCc": 298948,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 22,
+     "endKey": "041f1fd01bede6ae",
+     "genRankCc": 298940,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 23,
+     "endKey": "2d20ea9c362116ce",
+     "genRankCc": 298940,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 24,
+     "endKey": "73e0c0d564bbb5b4",
+     "genRankCc": 298940,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 25,
+     "endKey": "9bf912d291261460",
+     "genRankCc": 30046,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 26,
+     "endKey": "8136ca448c4b229a",
+     "genRankCc": -1343,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 27,
+     "endKey": "a3ee6b6b28f28074",
+     "genRankCc": -1343,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    }
+   ]
+  },
+  {
+   "work": 200000,
+   "depth": 2,
+   "chosenEndKey": "c5f8b28ed6e36696",
+   "source": "search",
+   "candidateSource": "completed-depth",
+   "candidates": 28,
+   "searched": 28,
+   "scoreHistogram": [
+    {
+     "scoreCc": 1020,
+     "candidates": 20
+    },
+    {
+     "scoreCc": 1002,
+     "candidates": 8
+    }
+   ],
+   "bestScoreCc": 1020,
+   "tiedAtBest": 20,
+   "chosenRankInTie": 0,
+   "chosenGenRankCc": 580090,
+   "chosenHasTtBonus": false,
+   "firstTiedEndKey": "c5f8b28ed6e36696",
+   "firstFoundWins": true,
+   "lowestTiedEndKey": "041f1fd01bede6ae",
+   "trace": [
+    {
+     "depth": 1,
+     "n": 28,
+     "searched": 28,
+     "completed": true,
+     "cutoffAt": -1,
+     "truncated": false,
+     "work": 1754
+    },
+    {
+     "depth": 2,
+     "n": 28,
+     "searched": 28,
+     "completed": true,
+     "cutoffAt": -1,
+     "truncated": false,
+     "work": 29754
+    },
+    {
+     "depth": 3,
+     "n": 28,
+     "searched": 11,
+     "completed": false,
+     "cutoffAt": -1,
+     "truncated": true,
+     "work": 167910
+    }
+   ],
+   "wallMs": 2418,
+   "candidatesDetail": [
+    {
+     "index": 0,
+     "endKey": "11d5023ebc31a6fa",
+     "genRankCc": 580110,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1002,
+     "chosen": false
+    },
+    {
+     "index": 1,
+     "endKey": "38eaf77291fd569a",
+     "genRankCc": 580110,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1002,
+     "chosen": false
+    },
+    {
+     "index": 2,
+     "endKey": "987d5cba3b0297a2",
+     "genRankCc": 580110,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1002,
+     "chosen": false
+    },
+    {
+     "index": 3,
+     "endKey": "b142a9f616ce67c2",
+     "genRankCc": 580110,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1002,
+     "chosen": false
+    },
+    {
+     "index": 4,
+     "endKey": "420b843e91720124",
+     "genRankCc": 580109,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1002,
+     "chosen": false
+    },
+    {
+     "index": 5,
+     "endKey": "6b347172bcbef144",
+     "genRankCc": 580109,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1002,
+     "chosen": false
+    },
+    {
+     "index": 6,
+     "endKey": "e29c2ff63b8dc01c",
+     "genRankCc": 580109,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1002,
+     "chosen": false
+    },
+    {
+     "index": 7,
+     "endKey": "a2cbe9278a84e3f9",
+     "genRankCc": 580090,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1002,
+     "chosen": false
+    },
+    {
+     "index": 8,
+     "endKey": "c5f8b28ed6e36696",
+     "genRankCc": 580090,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": true
+    },
+    {
+     "index": 9,
+     "endKey": "6cf9ebd12116151b",
+     "genRankCc": 580088,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 10,
+     "endKey": "d82a9a6b8a0bb447",
+     "genRankCc": 580088,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 11,
+     "endKey": "5eb976ba3e9385b5",
+     "genRankCc": 580085,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 12,
+     "endKey": "778683f6135f75d5",
+     "genRankCc": 580085,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 13,
+     "endKey": "a296d6e38cf183b9",
+     "genRankCc": 580081,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 14,
+     "endKey": "d877a5af8c7ed407",
+     "genRankCc": 580079,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 15,
+     "endKey": "150a6a5025a09ee7",
+     "genRankCc": 580074,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 16,
+     "endKey": "254586ef4b8d4ea7",
+     "genRankCc": 580074,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 17,
+     "endKey": "4b6267d3954d9087",
+     "genRankCc": 580074,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 18,
+     "endKey": "625d929fb88160e7",
+     "genRankCc": 580074,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 19,
+     "endKey": "5fa4f5a34b021919",
+     "genRankCc": 580073,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 20,
+     "endKey": "128a786d94eb50b5",
+     "genRankCc": 299111,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 21,
+     "endKey": "6e244954377d13ad",
+     "genRankCc": 298948,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 22,
+     "endKey": "041f1fd01bede6ae",
+     "genRankCc": 298940,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 23,
+     "endKey": "2d20ea9c362116ce",
+     "genRankCc": 298940,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 24,
+     "endKey": "73e0c0d564bbb5b4",
+     "genRankCc": 298940,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 25,
+     "endKey": "9bf912d291261460",
+     "genRankCc": 30046,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 26,
+     "endKey": "8136ca448c4b229a",
+     "genRankCc": -1343,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    },
+    {
+     "index": 27,
+     "endKey": "a3ee6b6b28f28074",
+     "genRankCc": -1343,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1020,
+     "chosen": false
+    }
+   ]
+  },
+  {
+   "work": 400000,
+   "depth": 3,
+   "chosenEndKey": "c5f8b28ed6e36696",
+   "source": "search",
+   "candidateSource": "completed-depth",
+   "candidates": 28,
+   "searched": 28,
+   "scoreHistogram": [
+    {
+     "scoreCc": 2006,
+     "candidates": 19
+    },
+    {
+     "scoreCc": 1584,
+     "candidates": 9
+    }
+   ],
+   "bestScoreCc": 2006,
+   "tiedAtBest": 19,
+   "chosenRankInTie": 0,
+   "chosenGenRankCc": 580090,
+   "chosenHasTtBonus": false,
+   "firstTiedEndKey": "c5f8b28ed6e36696",
+   "firstFoundWins": true,
+   "lowestTiedEndKey": "041f1fd01bede6ae",
+   "trace": [
+    {
+     "depth": 1,
+     "n": 28,
+     "searched": 28,
+     "completed": true,
+     "cutoffAt": -1,
+     "truncated": false,
+     "work": 1754
+    },
+    {
+     "depth": 2,
+     "n": 28,
+     "searched": 28,
+     "completed": true,
+     "cutoffAt": -1,
+     "truncated": false,
+     "work": 29754
+    },
+    {
+     "depth": 3,
+     "n": 28,
+     "searched": 28,
+     "completed": true,
+     "cutoffAt": -1,
+     "truncated": false,
+     "work": 236907
+    }
+   ],
+   "wallMs": 3111,
+   "candidatesDetail": [
+    {
+     "index": 0,
+     "endKey": "11d5023ebc31a6fa",
+     "genRankCc": 580110,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1584,
+     "chosen": false
+    },
+    {
+     "index": 1,
+     "endKey": "38eaf77291fd569a",
+     "genRankCc": 580110,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1584,
+     "chosen": false
+    },
+    {
+     "index": 2,
+     "endKey": "987d5cba3b0297a2",
+     "genRankCc": 580110,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1584,
+     "chosen": false
+    },
+    {
+     "index": 3,
+     "endKey": "b142a9f616ce67c2",
+     "genRankCc": 580110,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1584,
+     "chosen": false
+    },
+    {
+     "index": 4,
+     "endKey": "420b843e91720124",
+     "genRankCc": 580109,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1584,
+     "chosen": false
+    },
+    {
+     "index": 5,
+     "endKey": "6b347172bcbef144",
+     "genRankCc": 580109,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1584,
+     "chosen": false
+    },
+    {
+     "index": 6,
+     "endKey": "e29c2ff63b8dc01c",
+     "genRankCc": 580109,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1584,
+     "chosen": false
+    },
+    {
+     "index": 7,
+     "endKey": "a2cbe9278a84e3f9",
+     "genRankCc": 580093,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1584,
+     "chosen": false
+    },
+    {
+     "index": 8,
+     "endKey": "d82a9a6b8a0bb447",
+     "genRankCc": 580091,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1584,
+     "chosen": false
+    },
+    {
+     "index": 9,
+     "endKey": "c5f8b28ed6e36696",
+     "genRankCc": 580090,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2006,
+     "chosen": true
+    },
+    {
+     "index": 10,
+     "endKey": "6cf9ebd12116151b",
+     "genRankCc": 580088,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2006,
+     "chosen": false
+    },
+    {
+     "index": 11,
+     "endKey": "5eb976ba3e9385b5",
+     "genRankCc": 580085,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2006,
+     "chosen": false
+    },
+    {
+     "index": 12,
+     "endKey": "778683f6135f75d5",
+     "genRankCc": 580085,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2006,
+     "chosen": false
+    },
+    {
+     "index": 13,
+     "endKey": "a296d6e38cf183b9",
+     "genRankCc": 580083,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2006,
+     "chosen": false
+    },
+    {
+     "index": 14,
+     "endKey": "d877a5af8c7ed407",
+     "genRankCc": 580081,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2006,
+     "chosen": false
+    },
+    {
+     "index": 15,
+     "endKey": "254586ef4b8d4ea7",
+     "genRankCc": 580077,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2006,
+     "chosen": false
+    },
+    {
+     "index": 16,
+     "endKey": "150a6a5025a09ee7",
+     "genRankCc": 580076,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2006,
+     "chosen": false
+    },
+    {
+     "index": 17,
+     "endKey": "5fa4f5a34b021919",
+     "genRankCc": 580076,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2006,
+     "chosen": false
+    },
+    {
+     "index": 18,
+     "endKey": "4b6267d3954d9087",
+     "genRankCc": 580074,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2006,
+     "chosen": false
+    },
+    {
+     "index": 19,
+     "endKey": "625d929fb88160e7",
+     "genRankCc": 580074,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2006,
+     "chosen": false
+    },
+    {
+     "index": 20,
+     "endKey": "128a786d94eb50b5",
+     "genRankCc": 299111,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2006,
+     "chosen": false
+    },
+    {
+     "index": 21,
+     "endKey": "6e244954377d13ad",
+     "genRankCc": 298948,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2006,
+     "chosen": false
+    },
+    {
+     "index": 22,
+     "endKey": "041f1fd01bede6ae",
+     "genRankCc": 298940,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2006,
+     "chosen": false
+    },
+    {
+     "index": 23,
+     "endKey": "2d20ea9c362116ce",
+     "genRankCc": 298940,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2006,
+     "chosen": false
+    },
+    {
+     "index": 24,
+     "endKey": "73e0c0d564bbb5b4",
+     "genRankCc": 298940,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2006,
+     "chosen": false
+    },
+    {
+     "index": 25,
+     "endKey": "9bf912d291261460",
+     "genRankCc": 30046,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2006,
+     "chosen": false
+    },
+    {
+     "index": 26,
+     "endKey": "a3ee6b6b28f28074",
+     "genRankCc": -1341,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2006,
+     "chosen": false
+    },
+    {
+     "index": 27,
+     "endKey": "8136ca448c4b229a",
+     "genRankCc": -1343,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 2006,
+     "chosen": false
+    }
+   ]
+  },
+  {
+   "work": 800000,
+   "depth": 4,
+   "chosenEndKey": "b142a9f616ce67c2",
+   "source": "search",
+   "candidateSource": "completed-depth",
+   "candidates": 28,
+   "searched": 28,
+   "scoreHistogram": [
+    {
+     "scoreCc": 1168,
+     "candidates": 28
+    }
+   ],
+   "bestScoreCc": 1168,
+   "tiedAtBest": 28,
+   "chosenRankInTie": 0,
+   "chosenGenRankCc": 580114,
+   "chosenHasTtBonus": false,
+   "firstTiedEndKey": "b142a9f616ce67c2",
+   "firstFoundWins": true,
+   "lowestTiedEndKey": "041f1fd01bede6ae",
+   "trace": [
+    {
+     "depth": 1,
+     "n": 28,
+     "searched": 28,
+     "completed": true,
+     "cutoffAt": -1,
+     "truncated": false,
+     "work": 1754
+    },
+    {
+     "depth": 2,
+     "n": 28,
+     "searched": 28,
+     "completed": true,
+     "cutoffAt": -1,
+     "truncated": false,
+     "work": 29754
+    },
+    {
+     "depth": 3,
+     "n": 28,
+     "searched": 28,
+     "completed": true,
+     "cutoffAt": -1,
+     "truncated": false,
+     "work": 236907
+    },
+    {
+     "depth": 4,
+     "n": 28,
+     "searched": 28,
+     "completed": true,
+     "cutoffAt": -1,
+     "truncated": false,
+     "work": 481235
+    }
+   ],
+   "wallMs": 8502,
+   "candidatesDetail": [
+    {
+     "index": 0,
+     "endKey": "b142a9f616ce67c2",
+     "genRankCc": 580114,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1168,
+     "chosen": true
+    },
+    {
+     "index": 1,
+     "endKey": "11d5023ebc31a6fa",
+     "genRankCc": 580110,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1168,
+     "chosen": false
+    },
+    {
+     "index": 2,
+     "endKey": "38eaf77291fd569a",
+     "genRankCc": 580110,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1168,
+     "chosen": false
+    },
+    {
+     "index": 3,
+     "endKey": "987d5cba3b0297a2",
+     "genRankCc": 580110,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1168,
+     "chosen": false
+    },
+    {
+     "index": 4,
+     "endKey": "420b843e91720124",
+     "genRankCc": 580109,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1168,
+     "chosen": false
+    },
+    {
+     "index": 5,
+     "endKey": "6b347172bcbef144",
+     "genRankCc": 580109,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1168,
+     "chosen": false
+    },
+    {
+     "index": 6,
+     "endKey": "e29c2ff63b8dc01c",
+     "genRankCc": 580109,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1168,
+     "chosen": false
+    },
+    {
+     "index": 7,
+     "endKey": "a2cbe9278a84e3f9",
+     "genRankCc": 580101,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1168,
+     "chosen": false
+    },
+    {
+     "index": 8,
+     "endKey": "d82a9a6b8a0bb447",
+     "genRankCc": 580099,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1168,
+     "chosen": false
+    },
+    {
+     "index": 9,
+     "endKey": "c5f8b28ed6e36696",
+     "genRankCc": 580090,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1168,
+     "chosen": false
+    },
+    {
+     "index": 10,
+     "endKey": "778683f6135f75d5",
+     "genRankCc": 580089,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1168,
+     "chosen": false
+    },
+    {
+     "index": 11,
+     "endKey": "6cf9ebd12116151b",
+     "genRankCc": 580088,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1168,
+     "chosen": false
+    },
+    {
+     "index": 12,
+     "endKey": "254586ef4b8d4ea7",
+     "genRankCc": 580085,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1168,
+     "chosen": false
+    },
+    {
+     "index": 13,
+     "endKey": "5eb976ba3e9385b5",
+     "genRankCc": 580085,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1168,
+     "chosen": false
+    },
+    {
+     "index": 14,
+     "endKey": "5fa4f5a34b021919",
+     "genRankCc": 580084,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1168,
+     "chosen": false
+    },
+    {
+     "index": 15,
+     "endKey": "a296d6e38cf183b9",
+     "genRankCc": 580083,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1168,
+     "chosen": false
+    },
+    {
+     "index": 16,
+     "endKey": "d877a5af8c7ed407",
+     "genRankCc": 580081,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1168,
+     "chosen": false
+    },
+    {
+     "index": 17,
+     "endKey": "625d929fb88160e7",
+     "genRankCc": 580078,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1168,
+     "chosen": false
+    },
+    {
+     "index": 18,
+     "endKey": "150a6a5025a09ee7",
+     "genRankCc": 580076,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1168,
+     "chosen": false
+    },
+    {
+     "index": 19,
+     "endKey": "4b6267d3954d9087",
+     "genRankCc": 580074,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1168,
+     "chosen": false
+    },
+    {
+     "index": 20,
+     "endKey": "128a786d94eb50b5",
+     "genRankCc": 299111,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1168,
+     "chosen": false
+    },
+    {
+     "index": 21,
+     "endKey": "6e244954377d13ad",
+     "genRankCc": 298952,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1168,
+     "chosen": false
+    },
+    {
+     "index": 22,
+     "endKey": "041f1fd01bede6ae",
+     "genRankCc": 298944,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1168,
+     "chosen": false
+    },
+    {
+     "index": 23,
+     "endKey": "2d20ea9c362116ce",
+     "genRankCc": 298940,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1168,
+     "chosen": false
+    },
+    {
+     "index": 24,
+     "endKey": "73e0c0d564bbb5b4",
+     "genRankCc": 298940,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1168,
+     "chosen": false
+    },
+    {
+     "index": 25,
+     "endKey": "9bf912d291261460",
+     "genRankCc": 30046,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1168,
+     "chosen": false
+    },
+    {
+     "index": 26,
+     "endKey": "a3ee6b6b28f28074",
+     "genRankCc": -1341,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1168,
+     "chosen": false
+    },
+    {
+     "index": 27,
+     "endKey": "8136ca448c4b229a",
+     "genRankCc": -1343,
+     "hasTtBonus": false,
+     "searched": true,
+     "scoreCc": 1168,
+     "chosen": false
+    }
+   ]
+  }
+ ],
+ "wallMs": 16140,
+ "at": "2026-09-18T00:03:36.468Z"
+}

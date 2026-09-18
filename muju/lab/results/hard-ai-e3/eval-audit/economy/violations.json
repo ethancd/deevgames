@@ -1,0 +1,29 @@
+{
+  "corpus": "economy",
+  "sideSwap": {
+    "checked": 30,
+    "positions": 0,
+    "byFeature": []
+  },
+  "rot180": {
+    "checked": 30,
+    "skipped": 0,
+    "positions": 0,
+    "byFeature": []
+  },
+  "scoreIdentity": {
+    "checked": 30,
+    "mismatches": 0,
+    "examples": []
+  },
+  "materialResidual": {
+    "checked": 30,
+    "nonzero": 0,
+    "examples": []
+  },
+  "stageIdentity": {
+    "checked": 30,
+    "mismatches": 0,
+    "examples": []
+  }
+}

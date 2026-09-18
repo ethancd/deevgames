@@ -1,0 +1,632 @@
+{
+  "schema": "muju-ladder-manifest-v1",
+  "status": "complete",
+  "a": "hard@ablate:eval-no-anchor",
+  "b": "hard@desktop",
+  "aConfigHash": "hard:ablate:eval-no-anchor:fixed:100000#5f1f63d28ea8ae07252e96ebc063eb49df7e96d67d691a58492c20dbf526123c",
+  "bConfigHash": "hard:desktop:fixed:100000#387244209047c03daa71ed9b2852fdf13d79fbc16f3d3e80fd7fcf7d5a9f8ffc",
+  "aResolvedConfig": {
+    "engine": "hard",
+    "config": {
+      "maxDepth": 12,
+      "aspirationCc": 200,
+      "lmrRank1": 6,
+      "lmrRank2": 12,
+      "futilityMarginCc": 200,
+      "useLmr": false,
+      "useAspiration": false,
+      "useFutility": false,
+      "useExtensions": false,
+      "quiesce": {
+        "maxPly": 4,
+        "deltaMarginCc": 300,
+        "maxCandidates": 8
+      },
+      "gen": {
+        "K": 24,
+        "maxPlacePlans": 16,
+        "action": {
+          "widths": {
+            "0": 6,
+            "1": 4,
+            "2": 3,
+            "3": 2
+          },
+          "keep": 4,
+          "ttBits": 18
+        },
+        "purchase": {
+          "maxBodies": 4,
+          "maxMultisets": 35,
+          "maxPlans": 12,
+          "squares": 8,
+          "keepPerMultiset": 3,
+          "weights": {
+            "mineCc": 1,
+            "safeCc": 100,
+            "blockCc": 200,
+            "strikeCc": 300,
+            "anchorCc": 20,
+            "zeroSpawnCc": 400,
+            "liquidityCc": 50,
+            "homeRaceCc": 5000
+          }
+        },
+        "maxPromotions": 8,
+        "reference": false
+      },
+      "genInterior": {
+        "K": 16,
+        "maxPlacePlans": 8,
+        "action": {
+          "widths": {
+            "0": 6,
+            "1": 4,
+            "2": 3,
+            "3": 2
+          },
+          "keep": 4,
+          "ttBits": 18
+        },
+        "purchase": {
+          "maxBodies": 4,
+          "maxMultisets": 35,
+          "maxPlans": 12,
+          "squares": 8,
+          "keepPerMultiset": 3,
+          "weights": {
+            "mineCc": 1,
+            "safeCc": 100,
+            "blockCc": 200,
+            "strikeCc": 300,
+            "anchorCc": 20,
+            "zeroSpawnCc": 400,
+            "liquidityCc": 50,
+            "homeRaceCc": 5000
+          }
+        },
+        "maxPromotions": 8,
+        "reference": false
+      },
+      "ttBits": 19,
+      "dfpn": {
+        "maxTurns": 3,
+        "nodeBudget": 4000,
+        "epsilonQ2": 5,
+        "ttBits": 17
+      },
+      "useDfpn": false,
+      "time": {
+        "minMs": 2000,
+        "maxMs": 6000,
+        "baseMs": 3000,
+        "abortFactor": 3
+      },
+      "profile": {
+        "unitsPerMs": 200,
+        "samples": 0
+      },
+      "ttBitsMacro": 19,
+      "ttBitsTurn": 18,
+      "K": 24,
+      "kInterior": 16,
+      "weights": {
+        "w": {
+          "0": 100,
+          "1": -422,
+          "2": 90,
+          "3": 25,
+          "4": -4000,
+          "5": 60,
+          "6": 20,
+          "7": 30,
+          "8": 8,
+          "9": -800,
+          "10": 25,
+          "11": 90,
+          "12": -60,
+          "13": -400,
+          "14": -180,
+          "15": 220,
+          "16": 90,
+          "17": -20,
+          "18": -8,
+          "19": 40,
+          "20": 0,
+          "21": 0,
+          "22": 150,
+          "23": 80,
+          "24": -30,
+          "25": -600,
+          "26": -150,
+          "27": -60,
+          "28": -50,
+          "29": -30,
+          "30": -25,
+          "31": -10,
+          "32": 20,
+          "33": 35,
+          "34": -40,
+          "35": 0,
+          "36": 0,
+          "37": 300,
+          "38": -800,
+          "39": -300,
+          "40": -250,
+          "41": -100,
+          "42": -400,
+          "43": 0,
+          "44": -600,
+          "45": -150,
+          "46": -150,
+          "47": -400,
+          "48": -250,
+          "49": -40,
+          "50": -200,
+          "51": -200,
+          "52": 0,
+          "53": -200,
+          "54": -60,
+          "55": 0,
+          "56": -150,
+          "57": -250
+        },
+        "material": {
+          "0": 300,
+          "1": 700,
+          "2": 1500,
+          "3": 300,
+          "4": 700,
+          "5": 1500,
+          "6": 400,
+          "7": 800,
+          "8": 1600,
+          "9": 400,
+          "10": 800,
+          "11": 1600,
+          "12": 500,
+          "13": 900,
+          "14": 1700,
+          "15": 500,
+          "16": 900,
+          "17": 1700
+        },
+        "version": 1,
+        "label": "default-v1-no-anchor"
+      },
+      "book": {
+        "size": 0,
+        "handicap": 0,
+        "mapHash": 0,
+        "weightsVersion": 0
+      }
+    },
+    "budget": {
+      "mode": "fixed",
+      "fixedWork": 100000,
+      "turnMs": null,
+      "allocation": "per-decision-work-units",
+      "shippedTurnBudgetMs": null,
+      "overridesPresetTimeLimit": false
+    },
+    "lifecycle": {
+      "engine": "one-per-game-seat",
+      "seed": "once-at-construction",
+      "setDifficultyPerDecision": false,
+      "searchesPerTurn": "one"
+    },
+    "resign": false
+  },
+  "bResolvedConfig": {
+    "engine": "hard",
+    "config": {
+      "maxDepth": 12,
+      "aspirationCc": 200,
+      "lmrRank1": 6,
+      "lmrRank2": 12,
+      "futilityMarginCc": 200,
+      "useLmr": false,
+      "useAspiration": false,
+      "useFutility": false,
+      "useExtensions": false,
+      "quiesce": {
+        "maxPly": 4,
+        "deltaMarginCc": 300,
+        "maxCandidates": 8
+      },
+      "gen": {
+        "K": 24,
+        "maxPlacePlans": 16,
+        "action": {
+          "widths": {
+            "0": 6,
+            "1": 4,
+            "2": 3,
+            "3": 2
+          },
+          "keep": 4,
+          "ttBits": 18
+        },
+        "purchase": {
+          "maxBodies": 4,
+          "maxMultisets": 35,
+          "maxPlans": 12,
+          "squares": 8,
+          "keepPerMultiset": 3,
+          "weights": {
+            "mineCc": 1,
+            "safeCc": 100,
+            "blockCc": 200,
+            "strikeCc": 300,
+            "anchorCc": 20,
+            "zeroSpawnCc": 400,
+            "liquidityCc": 50,
+            "homeRaceCc": 5000
+          }
+        },
+        "maxPromotions": 8,
+        "reference": false
+      },
+      "genInterior": {
+        "K": 16,
+        "maxPlacePlans": 8,
+        "action": {
+          "widths": {
+            "0": 6,
+            "1": 4,
+            "2": 3,
+            "3": 2
+          },
+          "keep": 4,
+          "ttBits": 18
+        },
+        "purchase": {
+          "maxBodies": 4,
+          "maxMultisets": 35,
+          "maxPlans": 12,
+          "squares": 8,
+          "keepPerMultiset": 3,
+          "weights": {
+            "mineCc": 1,
+            "safeCc": 100,
+            "blockCc": 200,
+            "strikeCc": 300,
+            "anchorCc": 20,
+            "zeroSpawnCc": 400,
+            "liquidityCc": 50,
+            "homeRaceCc": 5000
+          }
+        },
+        "maxPromotions": 8,
+        "reference": false
+      },
+      "ttBits": 19,
+      "dfpn": {
+        "maxTurns": 3,
+        "nodeBudget": 4000,
+        "epsilonQ2": 5,
+        "ttBits": 17
+      },
+      "useDfpn": false,
+      "time": {
+        "minMs": 2000,
+        "maxMs": 6000,
+        "baseMs": 3000,
+        "abortFactor": 3
+      },
+      "profile": {
+        "unitsPerMs": 200,
+        "samples": 0
+      },
+      "ttBitsMacro": 19,
+      "ttBitsTurn": 18,
+      "K": 24,
+      "kInterior": 16,
+      "weights": {
+        "w": {
+          "0": 100,
+          "1": -422,
+          "2": 90,
+          "3": 25,
+          "4": -4000,
+          "5": 60,
+          "6": 20,
+          "7": 30,
+          "8": 8,
+          "9": -800,
+          "10": 25,
+          "11": 90,
+          "12": -60,
+          "13": -400,
+          "14": -180,
+          "15": 220,
+          "16": 90,
+          "17": -20,
+          "18": -8,
+          "19": 40,
+          "20": 0,
+          "21": 0,
+          "22": 150,
+          "23": 80,
+          "24": -30,
+          "25": -600,
+          "26": -150,
+          "27": -60,
+          "28": -50,
+          "29": -30,
+          "30": -25,
+          "31": -10,
+          "32": 20,
+          "33": 35,
+          "34": -40,
+          "35": -120,
+          "36": -150,
+          "37": 300,
+          "38": -800,
+          "39": -300,
+          "40": -250,
+          "41": -100,
+          "42": -400,
+          "43": -120,
+          "44": -600,
+          "45": -150,
+          "46": -150,
+          "47": -400,
+          "48": -250,
+          "49": -40,
+          "50": -200,
+          "51": -200,
+          "52": 0,
+          "53": -200,
+          "54": -60,
+          "55": 0,
+          "56": -150,
+          "57": -250
+        },
+        "material": {
+          "0": 300,
+          "1": 700,
+          "2": 1500,
+          "3": 300,
+          "4": 700,
+          "5": 1500,
+          "6": 400,
+          "7": 800,
+          "8": 1600,
+          "9": 400,
+          "10": 800,
+          "11": 1600,
+          "12": 500,
+          "13": 900,
+          "14": 1700,
+          "15": 500,
+          "16": 900,
+          "17": 1700
+        },
+        "version": 1,
+        "label": "default-v1"
+      },
+      "book": {
+        "size": 0,
+        "handicap": 0,
+        "mapHash": 0,
+        "weightsVersion": 0
+      }
+    },
+    "budget": {
+      "mode": "fixed",
+      "fixedWork": 100000,
+      "turnMs": null,
+      "allocation": "per-decision-work-units",
+      "shippedTurnBudgetMs": null,
+      "overridesPresetTimeLimit": false
+    },
+    "lifecycle": {
+      "engine": "one-per-game-seat",
+      "seed": "once-at-construction",
+      "setDifficultyPerDecision": false,
+      "searchesPerTurn": "one"
+    },
+    "resign": false
+  },
+  "work": "fixed:100000",
+  "seed": 37,
+  "pairs": 8,
+  "shards": 1,
+  "handicaps": [
+    0,
+    3
+  ],
+  "legality": "strict",
+  "sprt": null,
+  "openings": {
+    "path": "lab/hard-ai/ladder/openings/e1-dev.jsonl",
+    "sha256": "bba8ea56b1bc2e0d5cdb58f6527e8bdec4382ef6a42906ba0674578ed02d5b55",
+    "ids": [
+      "e1-g3-s105",
+      "e1-g2-s40",
+      "e1-g4-s250",
+      "e1-g4-s750",
+      "e1-g4-s730",
+      "e1-g3-s745",
+      "e1-g4-s510",
+      "e1-g2-s155",
+      "e1-g3-s205",
+      "e1-g4-s550",
+      "e1-g5-s55",
+      "e1-g5-s1035",
+      "e1-g4-s430",
+      "e1-g3-s5",
+      "e1-g5-s415",
+      "e1-g3-s625",
+      "e1-g4-s110",
+      "e1-g5-s975",
+      "e1-g4-s470",
+      "e1-g3-s375",
+      "e1-g4-s830",
+      "e1-g5-s255",
+      "e1-g5-s935",
+      "e1-g4-s650",
+      "e1-g4-s1030",
+      "e1-g5-s295",
+      "e1-g2-s425",
+      "e1-g3-s165",
+      "e1-g4-s50",
+      "e1-g5-s755",
+      "e1-g4-s350",
+      "e1-g3-s465",
+      "e1-g5-s195",
+      "e1-g2-s680",
+      "e1-g4-s30",
+      "e1-g5-s655",
+      "e1-g3-s485",
+      "e1-g5-s315",
+      "e1-g4-s630",
+      "e1-g5-s955",
+      "e1-g2-s100",
+      "e1-g4-s850",
+      "e1-g5-s915",
+      "e1-g5-s555",
+      "e1-g3-s325",
+      "e1-g3-s305",
+      "e1-g5-s695",
+      "e1-g2-s420"
+    ],
+    "count": 48,
+    "skip": null,
+    "selectedIds": null,
+    "used": [
+      "e1-g3-s105",
+      "e1-g2-s40",
+      "e1-g4-s250",
+      "e1-g4-s750"
+    ]
+  },
+  "openingsIndependent": true,
+  "independenceWarning": null,
+  "overrunTolerance": {
+    "spec": "max(10ms,1%)",
+    "ms": 10,
+    "pct": 1,
+    "frozen": true
+  },
+  "replays": true,
+  "resume": false,
+  "schedule": [
+    {
+      "pairId": "e1-g3-s105:0:0",
+      "pairIndex": 0,
+      "openingId": "e1-g3-s105",
+      "handicap": 0,
+      "seed": 3605948215
+    },
+    {
+      "pairId": "e1-g3-s105:3:1",
+      "pairIndex": 1,
+      "openingId": "e1-g3-s105",
+      "handicap": 3,
+      "seed": 3536215206
+    },
+    {
+      "pairId": "e1-g2-s40:0:2",
+      "pairIndex": 2,
+      "openingId": "e1-g2-s40",
+      "handicap": 0,
+      "seed": 1859874818
+    },
+    {
+      "pairId": "e1-g2-s40:3:3",
+      "pairIndex": 3,
+      "openingId": "e1-g2-s40",
+      "handicap": 3,
+      "seed": 2508889246
+    },
+    {
+      "pairId": "e1-g4-s250:0:4",
+      "pairIndex": 4,
+      "openingId": "e1-g4-s250",
+      "handicap": 0,
+      "seed": 2966413439
+    },
+    {
+      "pairId": "e1-g4-s250:3:5",
+      "pairIndex": 5,
+      "openingId": "e1-g4-s250",
+      "handicap": 3,
+      "seed": 1798661751
+    },
+    {
+      "pairId": "e1-g4-s750:0:6",
+      "pairIndex": 6,
+      "openingId": "e1-g4-s750",
+      "handicap": 0,
+      "seed": 3939744131
+    },
+    {
+      "pairId": "e1-g4-s750:3:7",
+      "pairIndex": 7,
+      "openingId": "e1-g4-s750",
+      "handicap": 3,
+      "seed": 2526671363
+    }
+  ],
+  "resumedPairIds": [],
+  "sprtStop": null,
+  "rules": {
+    "elementGraph": "double-thick",
+    "upkeep": "shipped",
+    "inactivityRule": "on"
+  },
+  "argv": [
+    "--a",
+    "hard@ablate:eval-no-anchor",
+    "--b",
+    "hard@desktop",
+    "--work",
+    "fixed:100000",
+    "--handicaps",
+    "0,3",
+    "--pairs",
+    "8",
+    "--openings",
+    "lab/hard-ai/ladder/openings/e1-dev.jsonl",
+    "--seed",
+    "37",
+    "--legality",
+    "strict",
+    "--shards",
+    "1",
+    "--out",
+    "lab/results/hard-ai-e3/ablate/eval-no-anchor/fixed100k"
+  ],
+  "git": "8fc674f0e8b54d40daacafe35109dbd6812ff72f",
+  "gitDirty": true,
+  "baseline": {
+    "ai": "81d011ea20659c61db8194fce3e40f2ac16d44c15f8084684b671dba2d2d4f27",
+    "game": "442226339ec2dd2c81b9efca7070ad9c61c847cf16b20789d896e5d3d0e367c2",
+    "wasm": "da9b1cdf25e4bcd6a4674fd697095e35c2606c29817e3d18043faf4799d828bf",
+    "deps": "b17ce8cae69cdede37f74f14139e1afee7f9eb6e17676c391239a8ff985cbf45"
+  },
+  "wasmSha256": "da9b1cdf25e4bcd6a4674fd697095e35c2606c29817e3d18043faf4799d828bf",
+  "node": "v24.11.1",
+  "device": "Apple M2 Max x12 (darwin/arm64)",
+  "cpuCount": 12,
+  "loadavg": [
+    2.50830078125,
+    2.85888671875,
+    3.3330078125
+  ],
+  "at": "2026-09-17T09:01:15.850Z",
+  "finishedAt": "2026-09-17T09:39:36.495Z",
+  "wallMs": 2300761,
+  "counts": {
+    "scheduledPairs": 8,
+    "completedPairs": 8,
+    "games": 16,
+    "failures": 0,
+    "resumedPairs": 0
+  },
+  "voided": false,
+  "voidReason": null,
+  "error": null
+}

@@ -1,0 +1,162 @@
+{
+  "a": "hard@lab",
+  "b": "aiv2-hard",
+  "work": "wall:3000",
+  "handicaps": [
+    0
+  ],
+  "pairs": 2,
+  "pairsCompleted": 2,
+  "games": 4,
+  "gamesScheduled": 4,
+  "missingGames": 0,
+  "unattributedGames": 0,
+  "failures": 0,
+  "seed": 91601,
+  "shards": 2,
+  "openings": [
+    "g2-s0",
+    "g3-s1",
+    "g4-s2",
+    "g2-s5",
+    "g4-s6",
+    "g5-s7",
+    "g4-s10",
+    "g5-s11",
+    "g5-s15",
+    "g2-s20",
+    "g3-s25",
+    "g4-s30",
+    "g5-s31",
+    "g2-s40",
+    "g4-s42",
+    "g3-s45"
+  ],
+  "openingsSha256": "ea37cb3a1d9f1a05e6ee43d6aebe8dc18a59fba716c061945e4a543b862e0f44",
+  "openingsIndependent": true,
+  "independenceWarning": null,
+  "distinctGames": {
+    "A-white": 2,
+    "B-white": 2,
+    "ofPairs": 2,
+    "source": "replay",
+    "duplicates": false
+  },
+  "overrunTolerance": {
+    "spec": "max(10ms,1%)",
+    "ms": 10,
+    "pct": 1,
+    "proposed": true
+  },
+  "replays": true,
+  "resumed": false,
+  "adjudicationRate": 0,
+  "illegalActions": 0,
+  "replicaDivergences": 0,
+  "timingAnomalies": 0,
+  "anomalyCounts": {},
+  "wins": 3,
+  "draws": 0,
+  "losses": 1,
+  "strata": [
+    {
+      "handicap": 0,
+      "pairsScheduled": 2,
+      "pairs": 2,
+      "games": 4,
+      "score": 0.75,
+      "wins": 3,
+      "draws": 0,
+      "losses": 1,
+      "elo": {
+        "n": 2,
+        "games": 4,
+        "counts": [
+          0,
+          0,
+          1,
+          0,
+          1
+        ],
+        "degenerate": false,
+        "regularized": false,
+        "mu": 0.75,
+        "muRaw": 0.75,
+        "muLo": 0.4035240438312728,
+        "muHi": 1,
+        "variancePairs": 0.25,
+        "variance": 0.125,
+        "sePair": 0.3535533905932738,
+        "se": 0.1767766952966369,
+        "elo": 190.848501887865,
+        "eloLo": -67.88940997058792,
+        "eloHi": 1199.8261952903777,
+        "elo95": 633.8578026304828,
+        "los": 0.921350344873795
+      }
+    }
+  ],
+  "bothSeatsPlayed": true,
+  "seatMirrored": true,
+  "voided": false,
+  "meanTurnMs": {
+    "a": 2020.0582524271845,
+    "b": 2973.4607843137255
+  },
+  "timing": {
+    "a": {
+      "turns": 103,
+      "p95TurnMs": 3274,
+      "maxTurnMs": 4584,
+      "overAllowance": 13,
+      "overruns": 11,
+      "toleranceMs": 30,
+      "budgetExhausted": 0,
+      "reSearches": 0
+    },
+    "b": {
+      "turns": 102,
+      "p95TurnMs": 3005,
+      "maxTurnMs": 3006,
+      "overAllowance": 100,
+      "overruns": 0,
+      "toleranceMs": 30,
+      "budgetExhausted": null,
+      "reSearches": null
+    }
+  },
+  "elo": 190.848501887865,
+  "eloLo": -67.88940997058792,
+  "eloHi": 1199.8261952903777,
+  "los": 0.921350344873795,
+  "eloDetail": {
+    "n": 2,
+    "games": 4,
+    "counts": [
+      0,
+      0,
+      1,
+      0,
+      1
+    ],
+    "degenerate": false,
+    "regularized": false,
+    "mu": 0.75,
+    "muRaw": 0.75,
+    "muLo": 0.4035240438312728,
+    "muHi": 1,
+    "variancePairs": 0.25,
+    "variance": 0.125,
+    "sePair": 0.3535533905932738,
+    "se": 0.1767766952966369,
+    "elo": 190.848501887865,
+    "eloLo": -67.88940997058792,
+    "eloHi": 1199.8261952903777,
+    "elo95": 633.8578026304828,
+    "los": 0.921350344873795
+  },
+  "sprt": null,
+  "sprtSequential": null,
+  "decision": null,
+  "status": "complete"
+}

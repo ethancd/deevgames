@@ -1,0 +1,32 @@
+{
+  "gate": "M9",
+  "pass": true,
+  "command": "npx vitest run tests/ai/hard/geometry.test.ts tests/ai/hard/home.test.ts && node --import tsx lab/hard-ai/oracles/geometry.ts --positions 2000 --out lab/results/hard-ai-verify/M9.json",
+  "criterion": "Spawn geometry and home tables",
+  "metrics": {
+    "vitestFailures": 0,
+    "positionsRequested": 2000,
+    "positionsSampled": 2000,
+    "corpusSize": 1808,
+    "blockingChecked": 4000,
+    "blockingMismatch": 0,
+    "blockingSkipped": 0,
+    "f5Ok": true,
+    "f11Ok": true,
+    "homeRaceOk": true,
+    "homeRaceLinesEmitted": 990,
+    "illegalHomeRaceLines": 0,
+    "anchorsVoidedCornerOk": true,
+    "mismatches": [],
+    "git": "6e457774a94a449008845cc1695020c8f294d5dd",
+    "node": "v24.11.1",
+    "at": "2026-09-15T13:31:42.173Z",
+    "artifactAt": "2026-09-15T13:31:42.174Z"
+  },
+  "git": "6e457774a94a449008845cc1695020c8f294d5dd",
+  "wasmSha256": "da9b1cdf25e4bcd6a4674fd697095e35c2606c29817e3d18043faf4799d828bf",
+  "node": "v24.11.1",
+  "device": "Apple M2 Max x12 (darwin/arm64)",
+  "elapsedMs": 1191,
+  "at": "2026-09-15T13:31:42.198Z"
+}

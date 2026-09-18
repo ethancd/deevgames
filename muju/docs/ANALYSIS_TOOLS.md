@@ -148,3 +148,7 @@ requests can resolve participants left unknown by a large combined exchange.
 Large inverse-survival searches can leave catalogue cases unknown; they do not
 manufacture a universal minimum defense. These limits are exposed in the API and
 skill rather than concealed behind a safety score.
+
+## See also
+
+- `docs/MCP_TOOL_TAPS.md`: trigger-action checklist for agent players on when to call each MCP tool, distilled from the 2026-09-12 live games.

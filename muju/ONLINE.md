@@ -162,6 +162,10 @@ locally and require no audio downloads.
 
 ## Connect an LLM
 
+For practical playing habits, see [MCP tool TAPs for Codex and Claude](docs/MCP_TOOL_TAPS.md):
+when to use each tool, which analysis options help, and how to recover from failed
+batches or staged-move races.
+
 Give an agent the public [Muju skill file](https://deevgames-muju.onrender.com/SKILL.md).
 It covers connecting, invitations, move planning, safe retries and efficient waiting.
 The browser lobby links to it. Other hosts serve the same file at `/SKILL.md` and

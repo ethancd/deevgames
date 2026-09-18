@@ -1,0 +1,229 @@
+{
+  "schema": "muju-hard-analyze-v2",
+  "replay": "(fixture, trimmed from lab/results/hard-ai-e1/analyze/g3-s1_0_1-B-white.json)",
+  "fileId": "e1-g2-s100_0_92-B-white",
+  "side": "black",
+  "seatBot": "hard@lab",
+  "opponentBot": "aiv2-hard",
+  "opening": "e1-g2-s100",
+  "outcome": {
+    "winner": "black",
+    "winType": "home-checkmate",
+    "turns": 9,
+    "plies": 93,
+    "sideResult": "loss"
+  },
+  "config": {
+    "engineLabel": "hard@lab",
+    "adviserWork": 1600000,
+    "ladderWorkRung": 400000,
+    "productionWork": 400000,
+    "swingCc": 300,
+    "recordedEngineConfigHash": "white=aiv2:hard:full:wall:3000#dc7e4607ea81aad2967ce361b45e3bf3e8ff2a93e1e74db305b96b6c42a5918c|black=hard:lab:wall:3000#4e7afdf76b32fadfab2d11577cb610c8f9f1a491b5153e70b87b0774403600cd",
+    "analyserConfigHash": "hard:lab:fixed:1600000#43ea6a26a0a0e679300d0e1c8e9bfae56205e33e61c6c14f7660352fb511d90d",
+    "genK": 24,
+    "genInteriorK": 16
+  },
+  "reconstruction": {
+    "plies": 93,
+    "winner": "black",
+    "turnsAnalysed": 3,
+    "notes": []
+  },
+  "turns": [
+    {
+      "seatTurnIndex": 0,
+      "turnNumber": 4,
+      "side": "black",
+      "played": {
+        "actions": [
+          "MOVE 9,8\u21929,9",
+          "MOVE 8,8\u21929,8",
+          "MOVE 8,9\u21927,9",
+          "END_ACTION"
+        ],
+        "endKey": "5b834a72e7f10e85",
+        "inCheapList": true,
+        "endsGame": false
+      },
+      "cheap": {
+        "count": 19,
+        "containsPlayed": true,
+        "containsAdviserBest": true
+      },
+      "adviser": {
+        "endKey": "1bcb15b8ec4a47bc",
+        "actions": [
+          "MOVE 8,9\u21929,9",
+          "MOVE 9,9\u21927,9",
+          "MOVE 9,8\u21929,9",
+          "END_ACTION"
+        ],
+        "scoreCc": -2489,
+        "depth": 4,
+        "work": 1288909,
+        "source": "search",
+        "fallback": null,
+        "agreesWithPlayed": false
+      },
+      "playedDeepCc": -2136,
+      "adviserBestDeepCc": -2236,
+      "swingCc": -100,
+      "swingRootCc": -353,
+      "engine": {
+        "scoreCc": -1849,
+        "endKey": "5b834a72e7f10e85",
+        "reproducedPlayed": true
+      },
+      "reply": {
+        "refutationKey": "0aaabc99eeda3211",
+        "inCheapReplyList": false,
+        "cheapReplyCount": 20
+      },
+      "timing": {
+        "turnMs": 1200,
+        "budgetMs": 3000,
+        "overran": false,
+        "emptyPlan": false
+      },
+      "notes": []
+    },
+    {
+      "seatTurnIndex": 1,
+      "turnNumber": 5,
+      "side": "black",
+      "played": {
+        "actions": [
+          "PROMOTE 9,8",
+          "MOVE 9,8\u21929,7",
+          "END_ACTION"
+        ],
+        "endKey": "f644f893053e663f",
+        "inCheapList": true,
+        "endsGame": false
+      },
+      "cheap": {
+        "count": 17,
+        "containsPlayed": true,
+        "containsAdviserBest": true
+      },
+      "adviser": {
+        "endKey": "413dd1fd5cb9c0a1",
+        "actions": [
+          "PROMOTE 9,8",
+          "MOVE 9,9\u21928,9",
+          "END_ACTION"
+        ],
+        "scoreCc": -5040,
+        "depth": 4,
+        "work": 1600613,
+        "source": "search",
+        "fallback": null,
+        "agreesWithPlayed": false
+      },
+      "playedDeepCc": -3948,
+      "adviserBestDeepCc": -3882,
+      "swingCc": 66,
+      "swingRootCc": -1092,
+      "engine": {
+        "scoreCc": -3521,
+        "endKey": "f644f893053e663f",
+        "reproducedPlayed": true
+      },
+      "reply": {
+        "refutationKey": "35a7e65870760369",
+        "inCheapReplyList": true,
+        "cheapReplyCount": 19
+      },
+      "timing": {
+        "turnMs": 1800,
+        "budgetMs": 3000,
+        "overran": false,
+        "emptyPlan": false
+      },
+      "notes": []
+    },
+    {
+      "seatTurnIndex": 2,
+      "turnNumber": 6,
+      "side": "black",
+      "played": {
+        "actions": [
+          "MOVE 9,7\u21929,8",
+          "ATK 9,8\u21929,9",
+          "MOVE 9,8\u21928,8",
+          "ATK 8,8\u21927,8",
+          "END_ACTION"
+        ],
+        "endKey": "c17cb827427a9d3d",
+        "inCheapList": true,
+        "endsGame": false
+      },
+      "cheap": {
+        "count": 22,
+        "containsPlayed": true,
+        "containsAdviserBest": true
+      },
+      "adviser": {
+        "endKey": "c17cb827427a9d3d",
+        "actions": [
+          "MOVE 9,7\u21929,8",
+          "ATK 9,8\u21929,9",
+          "MOVE 9,8\u21928,8",
+          "ATK 8,8\u21927,8",
+          "END_ACTION"
+        ],
+        "scoreCc": -4360,
+        "depth": 5,
+        "work": 720314,
+        "source": "search",
+        "fallback": null,
+        "agreesWithPlayed": true
+      },
+      "playedDeepCc": -4360,
+      "adviserBestDeepCc": -4360,
+      "swingCc": 412,
+      "swingRootCc": 0,
+      "engine": {
+        "scoreCc": -8449,
+        "endKey": "c17cb827427a9d3d",
+        "reproducedPlayed": true
+      },
+      "reply": {
+        "refutationKey": "c67bea6f66605b0e",
+        "inCheapReplyList": true,
+        "cheapReplyCount": 22
+      },
+      "timing": {
+        "turnMs": 2400,
+        "budgetMs": 3000,
+        "overran": false,
+        "emptyPlan": false
+      },
+      "notes": []
+    }
+  ],
+  "firstConsequential": {
+    "turn": 6,
+    "seatTurnIndex": 5,
+    "klass": "reply-outside-beam",
+    "rule": "the adviser disagreed with the played turn, and its own answer TO the played turn \u2014 the refutation \u2014 is not in the candidate list the SAME generator configuration that produced it builds at the reply node. The engine had no way to answer this reply because the generator does not offer it there. This is a statement about the generator's cone at one node and NOTHING MORE: it is not a claim that the search examined the reply and mis-scored it, nor that the engine \"missed\" it, because RootResult reports neither",
+    "evidence": "fixture: refutation absent from the interior list"
+  },
+  "largestSwing": {
+    "turn": 6,
+    "seatTurnIndex": 5,
+    "klass": "reply-outside-beam",
+    "rule": "the adviser disagreed with the played turn, and its own answer TO the played turn \u2014 the refutation \u2014 is not in the candidate list the SAME generator configuration that produced it builds at the reply node. The engine had no way to answer this reply because the generator does not offer it there. This is a statement about the generator's cone at one node and NOTHING MORE: it is not a claim that the search examined the reply and mis-scored it, nor that the engine \"missed\" it, because RootResult reports neither",
+    "evidence": "fixture: refutation absent from the interior list"
+  },
+  "classRules": {
+    "clock-fallback": "the seat's own turn wall time exceeded its allowance (max(10ms, 1%) tolerance), or the turn dispatched nothing but phase ends, or the adviser itself returned a fallback (pack-error / engine-error / divergence). Per-turn wall time is real (players[side].turnMs); the run's overruns/budgetExhausted counters are per GAME, so a fallback on a specific turn can be suspected from them but not proved",
+    "candidate-absent": "the adviser's best end key is NOT in the production generator's K list at that root, so no search budget could have reached it",
+    "reply-outside-beam": "the adviser disagreed with the played turn, and its own answer TO the played turn \u2014 the refutation \u2014 is not in the candidate list the SAME generator configuration that produced it builds at the reply node. The engine had no way to answer this reply because the generator does not offer it there. This is a statement about the generator's cone at one node and NOTHING MORE: it is not a claim that the search examined the reply and mis-scored it, nor that the engine \"missed\" it, because RootResult reports neither",
+    "strong-candidate-misjudged": "the adviser's best turn IS in the production generator's K list, and the production engine preferred the played turn anyway. NOT separable from \"strong candidate discarded\": RootResult exposes neither per-candidate scores nor which candidates the root searched, so \"in the list but never searched\" and \"searched and mis-scored\" are one class here",
+    "unclear": "none of the above separates, or no turn reached the swing threshold"
+  },
+  "wallMs": 332444,
+  "at": "2026-09-16T13:00:46.803Z"
+}

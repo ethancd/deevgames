@@ -1,0 +1,73 @@
+PROGRESS ai-A-Plant3-white 5
+PROGRESS ai-A-Plant3-white 10
+DONE ai-A-Plant3-white upkeep-elimination black 10 36024
+PROGRESS ai-B-Plant3-white 5
+DONE ai-B-Plant3-white upkeep-elimination black 6 20012
+PROGRESS ai-C-Plant3-white 5
+PROGRESS ai-C-Plant3-white 10
+PROGRESS ai-C-Plant3-white 15
+PROGRESS ai-C-Plant3-white 20
+PROGRESS ai-C-Plant3-white 25
+DONE ai-C-Plant3-white inactivity null 29 116065
+DONE ai-A-Plant3-black home-occupation black 4 12008
+PROGRESS ai-B-Plant3-black 5
+DONE ai-B-Plant3-black upkeep-elimination white 7 24016
+PROGRESS ai-C-Plant3-black 5
+PROGRESS ai-C-Plant3-black 10
+PROGRESS ai-C-Plant3-black 15
+PROGRESS ai-C-Plant3-black 20
+DONE ai-C-Plant3-black elimination white 24 92051
+PROGRESS ai-A-Metal3-white 5
+PROGRESS ai-A-Metal3-white 10
+PROGRESS ai-A-Metal3-white 15
+PROGRESS ai-A-Metal3-white 20
+DONE ai-A-Metal3-white home-occupation black 24 96063
+PROGRESS ai-B-Metal3-white 5
+DONE ai-B-Metal3-white upkeep-elimination black 9 32015
+PROGRESS ai-C-Metal3-white 5
+PROGRESS ai-C-Metal3-white 10
+PROGRESS ai-C-Metal3-white 15
+PROGRESS ai-C-Metal3-white 20
+DONE ai-C-Metal3-white elimination black 21 82082
+PROGRESS ai-A-Metal3-black 5
+PROGRESS ai-A-Metal3-black 10
+DONE ai-A-Metal3-black upkeep-elimination white 12 44042
+PROGRESS ai-B-Metal3-black 5
+DONE ai-B-Metal3-black upkeep-elimination white 6 20012
+PROGRESS ai-C-Metal3-black 5
+PROGRESS ai-C-Metal3-black 10
+PROGRESS ai-C-Metal3-black 15
+PROGRESS ai-C-Metal3-black 20
+PROGRESS ai-C-Metal3-black 25
+DONE ai-C-Metal3-black home-occupation white 26 100077
+PROGRESS ai-A-MiningDenial-white 5
+DONE ai-A-MiningDenial-white home-occupation black 6 22177
+DONE ai-B-MiningDenial-white home-occupation white 4 12007
+PROGRESS ai-C-MiningDenial-white 5
+PROGRESS ai-C-MiningDenial-white 10
+DONE ai-C-MiningDenial-white home-occupation white 11 40016
+PROGRESS ai-A-MiningDenial-black 5
+PROGRESS ai-A-MiningDenial-black 10
+PROGRESS ai-A-MiningDenial-black 15
+DONE ai-A-MiningDenial-black upkeep-elimination white 17 64032
+PROGRESS ai-B-MiningDenial-black 5
+DONE ai-B-MiningDenial-black upkeep-elimination white 8 28016
+PROGRESS ai-C-MiningDenial-black 5
+PROGRESS ai-C-MiningDenial-black 10
+DONE ai-C-MiningDenial-black home-occupation black 10 36018
+DONE ai-A-Invade:LightningRush-white home-occupation white 4 12011
+DONE ai-B-Invade:LightningRush-white home-occupation white 4 12011
+PROGRESS ai-C-Invade:LightningRush-white 5
+PROGRESS ai-C-Invade:LightningRush-white 10
+DONE ai-C-Invade:LightningRush-white elimination white 12 47106
+PROGRESS ai-A-Invade:LightningRush-black 5
+PROGRESS ai-A-Invade:LightningRush-black 10
+DONE ai-A-Invade:LightningRush-black upkeep-elimination white 13 48026
+PROGRESS ai-B-Invade:LightningRush-black 5
+PROGRESS ai-B-Invade:LightningRush-black 10
+DONE ai-B-Invade:LightningRush-black upkeep-elimination white 13 48031
+PROGRESS ai-C-Invade:LightningRush-black 5
+PROGRESS ai-C-Invade:LightningRush-black 10
+DONE ai-C-Invade:LightningRush-black elimination black 14 55693
+DONE ai-original-A-Plant3-white inactivity null 33 130062
+DONE ai-original-A-Plant3-black home-occupation black 4 12010

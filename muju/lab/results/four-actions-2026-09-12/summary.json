@@ -1,0 +1,374 @@
+{
+  "method": "Current v2.4 map and catalogue; 20 seeded samples per cell, swapped colors for distinct policies, mirrors counted once. Scripted policies unchanged. Pilot games excluded.",
+  "overall": {
+    "6": {
+      "games": 280,
+      "meanEndRound": 22.360714285714284,
+      "medianEndRound": 21.0,
+      "medianFirstKillRound": 1.0,
+      "gamesWithAttackKills": 278,
+      "outcomes": {
+        "elimination": 94,
+        "upkeep-elimination": 92,
+        "home-occupation": 37,
+        "inactivity": 57
+      },
+      "inactivityDrawPct": 20.357142857142858,
+      "whiteWins": 113,
+      "caps": 0,
+      "invalid": 0
+    },
+    "4": {
+      "games": 280,
+      "meanEndRound": 27.085714285714285,
+      "medianEndRound": 22.0,
+      "medianFirstKillRound": 2,
+      "gamesWithAttackKills": 277,
+      "outcomes": {
+        "upkeep-elimination": 98,
+        "elimination": 82,
+        "inactivity": 66,
+        "home-occupation": 34
+      },
+      "inactivityDrawPct": 23.571428571428573,
+      "whiteWins": 133,
+      "caps": 0,
+      "invalid": 0
+    }
+  },
+  "pairedEndRoundChange": {
+    "mean": 4.725,
+    "median": 4.0,
+    "longer": 175,
+    "shorter": 92,
+    "equal": 13
+  },
+  "matchups": [
+    {
+      "cell": 0,
+      "a": "Aware:Rush",
+      "b": "Aware:Expand",
+      "6": {
+        "games": 40,
+        "meanEndRound": 6.8,
+        "medianEndRound": 6.0,
+        "medianFirstKillRound": 2.0,
+        "gamesWithAttackKills": 40,
+        "outcomes": {
+          "elimination": 36,
+          "upkeep-elimination": 3,
+          "home-occupation": 1
+        },
+        "inactivityDrawPct": 0.0,
+        "whiteWins": 20,
+        "caps": 0,
+        "invalid": 0,
+        "aWins": 40,
+        "bWins": 0
+      },
+      "4": {
+        "games": 40,
+        "meanEndRound": 13.375,
+        "medianEndRound": 13.0,
+        "medianFirstKillRound": 4.0,
+        "gamesWithAttackKills": 40,
+        "outcomes": {
+          "upkeep-elimination": 13,
+          "elimination": 27
+        },
+        "inactivityDrawPct": 0.0,
+        "whiteWins": 20,
+        "caps": 0,
+        "invalid": 0,
+        "aWins": 40,
+        "bWins": 0
+      }
+    },
+    {
+      "cell": 1,
+      "a": "Aware:Rush",
+      "b": "Aware:AntiRush",
+      "6": {
+        "games": 40,
+        "meanEndRound": 42.1,
+        "medianEndRound": 42.0,
+        "medianFirstKillRound": 1.0,
+        "gamesWithAttackKills": 40,
+        "outcomes": {
+          "inactivity": 36,
+          "elimination": 4
+        },
+        "inactivityDrawPct": 90.0,
+        "whiteWins": 1,
+        "caps": 0,
+        "invalid": 0,
+        "aWins": 4,
+        "bWins": 0
+      },
+      "4": {
+        "games": 40,
+        "meanEndRound": 59.125,
+        "medianEndRound": 65.5,
+        "medianFirstKillRound": 2.0,
+        "gamesWithAttackKills": 40,
+        "outcomes": {
+          "inactivity": 31,
+          "elimination": 9
+        },
+        "inactivityDrawPct": 77.5,
+        "whiteWins": 9,
+        "caps": 0,
+        "invalid": 0,
+        "aWins": 9,
+        "bWins": 0
+      }
+    },
+    {
+      "cell": 2,
+      "a": "Aware:Balanced",
+      "b": "Aware:Turtle",
+      "6": {
+        "games": 40,
+        "meanEndRound": 21.875,
+        "medianEndRound": 22.5,
+        "medianFirstKillRound": 6.0,
+        "gamesWithAttackKills": 38,
+        "outcomes": {
+          "upkeep-elimination": 28,
+          "elimination": 7,
+          "inactivity": 5
+        },
+        "inactivityDrawPct": 12.5,
+        "whiteWins": 17,
+        "caps": 0,
+        "invalid": 0,
+        "aWins": 21,
+        "bWins": 14
+      },
+      "4": {
+        "games": 40,
+        "meanEndRound": 25.6,
+        "medianEndRound": 26.5,
+        "medianFirstKillRound": 8,
+        "gamesWithAttackKills": 37,
+        "outcomes": {
+          "elimination": 3,
+          "upkeep-elimination": 23,
+          "inactivity": 13,
+          "home-occupation": 1
+        },
+        "inactivityDrawPct": 32.5,
+        "whiteWins": 12,
+        "caps": 0,
+        "invalid": 0,
+        "aWins": 16,
+        "bWins": 11
+      }
+    },
+    {
+      "cell": 3,
+      "a": "Invade:MiningDenial",
+      "b": "Guard:AntiRush",
+      "6": {
+        "games": 40,
+        "meanEndRound": 27.85,
+        "medianEndRound": 27.0,
+        "medianFirstKillRound": 2.0,
+        "gamesWithAttackKills": 40,
+        "outcomes": {
+          "home-occupation": 13,
+          "upkeep-elimination": 17,
+          "inactivity": 10
+        },
+        "inactivityDrawPct": 25.0,
+        "whiteWins": 18,
+        "caps": 0,
+        "invalid": 0,
+        "aWins": 30,
+        "bWins": 0
+      },
+      "4": {
+        "games": 40,
+        "meanEndRound": 28.2,
+        "medianEndRound": 24.0,
+        "medianFirstKillRound": 2.0,
+        "gamesWithAttackKills": 40,
+        "outcomes": {
+          "upkeep-elimination": 13,
+          "inactivity": 14,
+          "home-occupation": 13
+        },
+        "inactivityDrawPct": 35.0,
+        "whiteWins": 15,
+        "caps": 0,
+        "invalid": 0,
+        "aWins": 26,
+        "bWins": 0
+      }
+    },
+    {
+      "cell": 4,
+      "a": "Siege:3",
+      "b": "Guard:AntiRush",
+      "6": {
+        "games": 40,
+        "meanEndRound": 21.85,
+        "medianEndRound": 21.0,
+        "medianFirstKillRound": 1.0,
+        "gamesWithAttackKills": 40,
+        "outcomes": {
+          "upkeep-elimination": 21,
+          "elimination": 3,
+          "home-occupation": 14,
+          "inactivity": 2
+        },
+        "inactivityDrawPct": 5.0,
+        "whiteWins": 19,
+        "caps": 0,
+        "invalid": 0,
+        "aWins": 24,
+        "bWins": 14
+      },
+      "4": {
+        "games": 40,
+        "meanEndRound": 24.1,
+        "medianEndRound": 22.0,
+        "medianFirstKillRound": 2.0,
+        "gamesWithAttackKills": 40,
+        "outcomes": {
+          "upkeep-elimination": 26,
+          "elimination": 3,
+          "home-occupation": 6,
+          "inactivity": 5
+        },
+        "inactivityDrawPct": 12.5,
+        "whiteWins": 27,
+        "caps": 0,
+        "invalid": 0,
+        "aWins": 12,
+        "bWins": 23
+      }
+    },
+    {
+      "cell": 5,
+      "a": "Siege:3",
+      "b": "Aware:Rush",
+      "6": {
+        "games": 40,
+        "meanEndRound": 10.05,
+        "medianEndRound": 9.0,
+        "medianFirstKillRound": 1.0,
+        "gamesWithAttackKills": 40,
+        "outcomes": {
+          "elimination": 23,
+          "upkeep-elimination": 8,
+          "home-occupation": 9
+        },
+        "inactivityDrawPct": 0.0,
+        "whiteWins": 20,
+        "caps": 0,
+        "invalid": 0,
+        "aWins": 8,
+        "bWins": 32
+      },
+      "4": {
+        "games": 40,
+        "meanEndRound": 11.9,
+        "medianEndRound": 10.5,
+        "medianFirstKillRound": 2.0,
+        "gamesWithAttackKills": 40,
+        "outcomes": {
+          "home-occupation": 14,
+          "upkeep-elimination": 7,
+          "elimination": 19
+        },
+        "inactivityDrawPct": 0.0,
+        "whiteWins": 24,
+        "caps": 0,
+        "invalid": 0,
+        "aWins": 14,
+        "bWins": 26
+      }
+    },
+    {
+      "cell": 6,
+      "a": "Aware:Rush",
+      "b": "Aware:Rush",
+      "6": {
+        "games": 20,
+        "meanEndRound": 31.35,
+        "medianEndRound": 29.0,
+        "medianFirstKillRound": 1.0,
+        "gamesWithAttackKills": 20,
+        "outcomes": {
+          "elimination": 17,
+          "inactivity": 3
+        },
+        "inactivityDrawPct": 15.0,
+        "whiteWins": 7,
+        "caps": 0,
+        "invalid": 0,
+        "aWins": 7,
+        "bWins": 10
+      },
+      "4": {
+        "games": 20,
+        "meanEndRound": 34.15,
+        "medianEndRound": 34.0,
+        "medianFirstKillRound": 2.0,
+        "gamesWithAttackKills": 20,
+        "outcomes": {
+          "elimination": 18,
+          "inactivity": 2
+        },
+        "inactivityDrawPct": 10.0,
+        "whiteWins": 18,
+        "caps": 0,
+        "invalid": 0,
+        "aWins": 18,
+        "bWins": 0
+      }
+    },
+    {
+      "cell": 7,
+      "a": "Aware:Balanced",
+      "b": "Aware:Balanced",
+      "6": {
+        "games": 20,
+        "meanEndRound": 20.65,
+        "medianEndRound": 21.0,
+        "medianFirstKillRound": 6.0,
+        "gamesWithAttackKills": 20,
+        "outcomes": {
+          "upkeep-elimination": 15,
+          "elimination": 4,
+          "inactivity": 1
+        },
+        "inactivityDrawPct": 5.0,
+        "whiteWins": 11,
+        "caps": 0,
+        "invalid": 0,
+        "aWins": 11,
+        "bWins": 8
+      },
+      "4": {
+        "games": 20,
+        "meanEndRound": 20.45,
+        "medianEndRound": 20.0,
+        "medianFirstKillRound": 7.0,
+        "gamesWithAttackKills": 20,
+        "outcomes": {
+          "upkeep-elimination": 16,
+          "elimination": 3,
+          "inactivity": 1
+        },
+        "inactivityDrawPct": 5.0,
+        "whiteWins": 8,
+        "caps": 0,
+        "invalid": 0,
+        "aWins": 8,
+        "bWins": 11
+      }
+    }
+  ]
+}

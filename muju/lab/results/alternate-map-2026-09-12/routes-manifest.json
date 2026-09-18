@@ -1,0 +1,62 @@
+{
+  "n": 20,
+  "pairs": [
+    [
+      "Route:Center",
+      "Aware:Rush"
+    ],
+    [
+      "Route:Center",
+      "Aware:Balanced"
+    ],
+    [
+      "Route:Center",
+      "Invade:MiningDenial"
+    ],
+    [
+      "Route:Shelf",
+      "Aware:Rush"
+    ],
+    [
+      "Route:Shelf",
+      "Aware:Balanced"
+    ],
+    [
+      "Route:Shelf",
+      "Invade:MiningDenial"
+    ],
+    [
+      "Route:Wing",
+      "Aware:Rush"
+    ],
+    [
+      "Route:Wing",
+      "Aware:Balanced"
+    ],
+    [
+      "Route:Wing",
+      "Invade:MiningDenial"
+    ],
+    [
+      "Route:Home",
+      "Aware:Rush"
+    ],
+    [
+      "Route:Home",
+      "Aware:Balanced"
+    ],
+    [
+      "Route:Home",
+      "Invade:MiningDenial"
+    ]
+  ],
+  "maps": [
+    "current",
+    "alternate"
+  ],
+  "seedBase": 9121648,
+  "hash": "fff70dd25f4420cb03f65ebb6400a20a25f754373f86c230251ee92097512af2",
+  "actions": 4,
+  "cap": "unresolved",
+  "started": "2026-09-12T21:08:40.717Z"
+}

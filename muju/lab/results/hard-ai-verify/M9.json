@@ -1,0 +1,18 @@
+{
+  "positionsRequested": 2000,
+  "positionsSampled": 2000,
+  "corpusSize": 1808,
+  "blockingChecked": 4000,
+  "blockingMismatch": 0,
+  "blockingSkipped": 0,
+  "f5Ok": true,
+  "f11Ok": true,
+  "homeRaceOk": true,
+  "homeRaceLinesEmitted": 990,
+  "illegalHomeRaceLines": 0,
+  "anchorsVoidedCornerOk": true,
+  "mismatches": [],
+  "git": "6e457774a94a449008845cc1695020c8f294d5dd",
+  "node": "v24.11.1",
+  "at": "2026-09-15T13:31:42.173Z"
+}

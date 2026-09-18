@@ -5,6 +5,7 @@ import { AIWorkerClient, SearchCancelled } from '../ai/worker/client';
 import { TURN_BUDGET_MS } from '../ai/engine-v2';
 import { applyAction } from '../ai/simulate';
 import { isLegalAction, phaseEndAction } from '../game/legality';
+import { fallbackKindFor, noteHardBudgetExhausted, noteHardPlanReplayed, noteHardRequest, noteHardTurn, readHardTurnBudgetMs, recordHardFallback, resolveHardAiRoute } from '../ai/hardOptIn';
 
 interface UseAIOptions {
   difficulty?: AIDifficulty; thinkingDelay?: number; enabled?: boolean;
@@ -12,6 +13,23 @@ interface UseAIOptions {
   getCurrentState?: () => GameState;
   state?: GameState;
 }
+
+/** Gameplay-relevant digest, ignoring UI-only selection/highlight fields.
+ * Used both to detect a stale commit (pre-existing) and, in the turn path, to
+ * confirm the live state still matches what our own cached plan predicted. */
+const gameplayDigest = (s: GameState): string => JSON.stringify({
+  board: s.board, players: s.players, turn: s.turn, phase: s.phase, winner: s.winner,
+  victoryReason: s.victoryReason, upkeepPending: s.upkeepPending,
+  inactivityPlies: s.inactivityPlies, progressThisTurn: s.progressThisTurn,
+});
+
+/** Floor for a search once the turn's budget is spent: the whole-turn
+ * re-request has always used it, and E5.1 gives the per-action fallback the
+ * same floor on the hard path (an unfloored zero share comes back with an
+ * empty plan and silently passes the phase). Exported so the tests can name
+ * the constant rather than restate its value. */
+export const MIN_TURN_SEARCH_MS = 1;
+
 export function useAI(options: UseAIOptions = {}) {
   const { difficulty: initialDifficulty = 'medium', thinkingDelay = 500, enabled = true, getCurrentState } = options;
   const [difficulty, setDifficulty] = useState<AIDifficulty>(initialDifficulty);
@@ -25,8 +43,19 @@ export function useAI(options: UseAIOptions = {}) {
   const hasAuthoritativeState = options.state !== undefined;
   const client = useRef<AIWorkerClient | null>(null);
   const generation = useRef(0), busy = useRef(false);
+  /** Whether this game's Hard seat runs the real `HardEngine`, resolved ONCE
+   * PER GAME START: `null` means "not read yet", and `cancel` — which every
+   * new game, restart, load, undo and difficulty change already runs through —
+   * puts it back. A flag flipped mid-turn therefore cannot split one turn
+   * across two engines. */
+  const hardOptIn = useRef<boolean | null>(null);
+  /** `?hardMs`'s override of the Hard seat's whole-turn budget, read once per
+   * game the same way. `undefined` is "not read yet"; `null` is "no override",
+   * which is the ordinary case and must not trigger a re-read (and a second
+   * log line) every turn. */
+  const hardBudgetMs = useRef<number | null | undefined>(undefined);
   const currentGetter = useRef(getCurrentState); currentGetter.current = getCurrentState;
-  const cancel = useCallback(() => { pendingCommit.current?.(null); pendingCommit.current = null; generation.current++; busy.current = false; client.current?.restart(); setIsThinking(false); }, []);
+  const cancel = useCallback(() => { pendingCommit.current?.(null); pendingCommit.current = null; generation.current++; busy.current = false; hardOptIn.current = null; hardBudgetMs.current = undefined; client.current?.restart(); setIsThinking(false); }, []);
   const clearLastTurnActions = useCallback(() => { setLastTurnActions([]); setLastDebug(null); }, []);
   useEffect(() => { cancel(); }, [difficulty, enabled, cancel]);
   useEffect(() => { setDifficulty(initialDifficulty); }, [initialDifficulty]);
@@ -35,10 +64,35 @@ export function useAI(options: UseAIOptions = {}) {
   const executeAITurn = useCallback(async (state: GameState, onAction: (action: AIAction) => void, playerId: 'white' | 'black') => {
     if (!enabled || busy.current || state.phase !== 'playing' || state.turn.currentPlayer !== playerId) return;
     client.current ??= new AIWorkerClient();
+    hardOptIn.current ??= resolveHardAiRoute();
+    if (hardBudgetMs.current === undefined) hardBudgetMs.current = readHardTurnBudgetMs();
+    // THE ONLY GATE ON THE REAL ENGINE. DESIGN §6.4's release flag has landed
+    // (`hardEnabled`, true since the E6 release decision of 2026-09-18), so
+    // `resolveHardAiRoute()` resolves `optOut ? false : hardEnabled ||
+    // readHardAiOptIn()`: Hard runs the real engine by default, and a player
+    // who opts out (`?hardAi=0`, `localStorage['muju.hardAi']='0'`) gets
+    // byte-for-byte the request this hook sent before E5.1 — `engine` absent,
+    // the v2 whole-turn path, no `HardEngine` module loaded in the worker.
+    // Easy and medium are untouched either way.
+    const useHard = hardOptIn.current && difficulty === 'hard';
     const token = ++generation.current;
     busy.current = true; setIsThinking(true); setError(null);
     const turnActions: AIAction[] = [];
-    let currentState = state, remainingCPU = TURN_BUDGET_MS[difficulty];
+    // `?hardMs` funds the HARD SEAT only; easy and medium keep `TURN_BUDGET_MS`
+    // whatever the URL says. The release contract is the unchanged
+    // `TURN_BUDGET_MS.hard` of 8000 ms (measured at `wall:8000`).
+    const turnBudgetMs = difficulty === 'hard' && hardBudgetMs.current !== null && hardBudgetMs.current !== undefined
+      ? hardBudgetMs.current : TURN_BUDGET_MS[difficulty];
+    let currentState = state, remainingCPU = turnBudgetMs;
+    // The whole-turn path (DESIGN §6.2, M3) is the default for every
+    // difficulty on AIEngineV2. Any illegal proposal drops to the legacy
+    // per-action loop for the rest of this turn (§6.4's fallback layer 3,
+    // adapted for the v2/JS path: there is no replica to verify against, so
+    // "divergence" here means the dispatched prefix stopped matching legality).
+    let fellBack = false;
+    // Wall clock of the in-flight whole-turn request, so a REJECTED one can
+    // still be charged to the turn (see the `catch` below).
+    let requestStartedAt = 0;
     const valid = () => {
       if (token !== generation.current) return false;
       const real = currentGetter.current?.();
@@ -46,37 +100,145 @@ export function useAI(options: UseAIOptions = {}) {
       return !real || (real.board === currentState.board && real.players === currentState.players &&
         real.turn === currentState.turn && real.phase === currentState.phase);
     };
+    // Dispatches one action exactly as the pre-M3 per-action loop did:
+    // applies it locally, hands it to the caller, and (when an authoritative
+    // state getter is wired up) waits for the real commit to agree before
+    // continuing. Returns 'illegal' without any side effect when `action`
+    // does not replay against `currentState`.
+    //
+    // `valid()` is a REFERENCE-equality staleness guard against the state
+    // we are about to dispatch from (a cancelled/undone/reloaded game gets a
+    // brand new `board`/`players`/`turn` object graph) — it must run BEFORE
+    // `currentState` is reassigned to our own freshly-computed `expected`,
+    // never after, or it would always fail (a pure `applyAction` call never
+    // returns a reference `getCurrentState()` could ever equal). Agreement
+    // with the real post-dispatch state is instead a CONTENT check
+    // (`gameplayDigest`), once the real commit comes back.
+    const dispatchOne = async (action: AIAction): Promise<'ok' | 'illegal' | 'abort'> => {
+      if (!valid()) return 'abort';
+      if (!isLegalAction(currentState, action)) return 'illegal';
+      // The cosmetic `thinkingDelay` pauses BEFORE each dispatch, exactly as
+      // the pre-M3 per-action loop did (DESIGN §6.2: it "stays per dispatched
+      // action, outside the budget"). Pausing after the dispatch instead would
+      // make the AI play its first action the instant the search returns and
+      // then sit still — a stutter, not thinking. `valid()` runs again after
+      // the pause because it is an await: an undo/reload/restart can land in it.
+      if (thinkingDelay > 0) {
+        await new Promise(resolve => setTimeout(resolve, thinkingDelay));
+        if (!valid()) return 'abort';
+      }
+      const expected = applyAction(currentState, action);
+      // React may commit after the next timer tick. Await an explicit state
+      // update rather than assuming a zero-delay timeout acknowledges dispatch.
+      const committed = hasAuthoritativeState ? new Promise<GameState | null>(resolve => { pendingCommit.current = resolve; }) : null;
+      onAction(action); turnActions.push(action);
+      currentState = expected;
+      if (committed) {
+        const actual = await committed;
+        if (!actual || token !== generation.current) return 'abort';
+        if (gameplayDigest(actual) !== gameplayDigest(expected)) return 'abort';
+        currentState = actual;
+      } else if (token !== generation.current) {
+        return 'abort';
+      }
+      return 'ok';
+    };
     try {
       while (currentState.phase === 'playing' && currentState.turn.currentPlayer === playerId && token === generation.current) {
-        // Every action is searched again, including the last attack in a
-        // combination or home rescue. Reserve time for all remaining actions.
+        if (!fellBack) {
+          let turn;
+          try {
+            // ONE ALLOWANCE PER TURN. `TURN_BUDGET_MS` funds a TURN, not a
+            // search: a plan that runs out mid-turn (or an illegal proposal
+            // that drops to the per-action loop below) re-requests from
+            // `remainingCPU`, what measured search time has left of the turn,
+            // never the full budget again. Floored at `MIN_TURN_SEARCH_MS` so
+            // a spent budget still asks for a legal plan rather than a
+            // zero-budget search.
+            if (useHard) noteHardRequest();
+            requestStartedAt = performance.now();
+            turn = await client.current.findBestTurn(currentState, difficulty, Math.max(MIN_TURN_SEARCH_MS, remainingCPU), turnActions.length,
+              useHard ? { engine: 'hard' } : undefined);
+          } catch (e) {
+            if (e instanceof SearchCancelled) throw e;
+            // (c) worker failure or watchdog timeout. A THROW REPORTS NO
+            // `timeMs`, so the success-path debit below never runs and the
+            // turn would be re-funded IN FULL for the v2 loop — worst of all
+            // for the client watchdog, which by construction waits longer
+            // than the whole allowance before it rejects. Charge the measured
+            // wall time of the failed request here instead, so the per-action
+            // loop continues on what the turn has LEFT. Hard only: the v2
+            // default path keeps its pre-E5.1 behaviour exactly.
+            if (useHard) {
+              remainingCPU = Math.max(0, remainingCPU - (performance.now() - requestStartedAt));
+              recordHardFallback('workerError', e instanceof Error ? e.message : String(e));
+            }
+            fellBack = true;
+            setWarning(`Whole-turn search failed (${e instanceof Error ? e.message : String(e)}); falling back to step-by-step search.`);
+            continue;
+          }
+          if (!valid()) break;
+          remainingCPU = Math.max(0, remainingCPU - turn.timeMs);
+          setLastDebug(turn.debug ?? null);
+          setWarning(turn.fallback ? `AI engine fell back (${turn.fallback}).` : client.current.warning ?? null);
+          if (useHard) {
+            noteHardTurn(turn.engineUsed);
+            // (a) the engine reported its own failure — `PackError`, a throw
+            // inside `searchTurn`, or a replica divergence. It returns no plan
+            // in every one of those cases, so there is nothing to replay.
+            if (turn.fallback) { recordHardFallback(fallbackKindFor(turn.fallback), `engine reported ${turn.fallback}`); fellBack = true; continue; }
+            // (b)-like: Hard proposing nothing at all is a failure, not a
+            // considered pass. The v2 path decides what this turn should be
+            // (and will end the phase itself if that is the right answer).
+            if (turn.actions.length === 0) { recordHardFallback('emptyPlan'); fellBack = true; continue; }
+          }
+          // An empty plan explicitly finishes the phase, exactly like the
+          // per-action loop's `proposed ?? phaseEndAction(...)`.
+          const plan = turn.actions.length > 0 ? turn.actions : [phaseEndAction(currentState)];
+          let outcome: 'ok' | 'illegal' | 'abort' = 'ok';
+          for (const action of plan) {
+            if (token !== generation.current) return;
+            outcome = await dispatchOne(action);
+            if (outcome !== 'ok') break;
+            if (currentState.phase !== 'playing' || currentState.turn.currentPlayer !== playerId) break;
+          }
+          // (b) invalid suffix: an action inside the plan that the CANONICAL
+          // rules refuse. `dispatchOne` has already replayed every action
+          // before it through `isLegalAction`/`applyAction`, so the legal
+          // prefix stands and only the rest of the plan is dropped — the same
+          // policy `lab/hard-ai/bots/hard.ts` applies in the lab.
+          if (outcome === 'illegal') { if (useHard) recordHardFallback('invalidSuffix'); fellBack = true; continue; }
+          if (outcome === 'abort') break;
+          if (useHard) noteHardPlanReplayed();
+          // outcome === 'ok': either the turn is over (outer while exits) or
+          // the plan ran out mid-turn (budget/phase boundary) — re-request a
+          // fresh whole-turn search from the now-live state.
+          continue;
+        }
+
+        // Legacy per-action loop: unchanged fallback for the remainder of the turn.
         const decisionsRemaining = currentState.turn.phase === 'action' ? Math.max(1, currentState.turn.actionsRemaining) : 4;
-        const allowance = remainingCPU / decisionsRemaining;
+        // A spent turn must still ASK for a legal action. An unfloored share
+        // of an exhausted remainder is a zero-budget search, which comes back
+        // with an empty plan and silently passes the phase; the whole-turn
+        // path above has floored at `MIN_TURN_SEARCH_MS` for exactly this
+        // reason since M3. The floor binding means the turn overran its
+        // allowance, which is a fact worth counting rather than hiding. Hard
+        // only, so the v2 default path keeps its arithmetic byte for byte.
+        const share = remainingCPU / decisionsRemaining;
+        let allowance = share;
+        if (useHard && share < MIN_TURN_SEARCH_MS) { allowance = MIN_TURN_SEARCH_MS; noteHardBudgetExhausted(); }
         const result = await client.current.findBestAction(currentState, difficulty, allowance, turnActions.length);
         remainingCPU = Math.max(0, remainingCPU - result.timeMs);
-        if (!valid()) break;
-        if (thinkingDelay > 0) await new Promise(resolve => setTimeout(resolve, thinkingDelay));
         if (!valid()) break;
         setLastDebug(result.debug ?? null); setWarning(client.current.warning ?? null);
         const proposed = result.plan.actions[0];
         // Empty plans explicitly finish the phase. Invalid proposals are an
         // engine error, not a hidden pass/resignation.
         const action = proposed ?? phaseEndAction(currentState);
-        if (!isLegalAction(currentState, action)) throw new Error('AI proposed an invalid action. Please retry.');
-        const expected = applyAction(currentState, action);
-        // React may commit after the next timer tick. Await an explicit state
-        // update rather than assuming a zero-delay timeout acknowledges dispatch.
-        const committed = hasAuthoritativeState ? new Promise<GameState | null>(resolve => { pendingCommit.current = resolve; }) : null;
-        onAction(action); turnActions.push(action);
-        currentState = expected;
-        if (committed) {
-          const actual = await committed;
-          if (!actual || token !== generation.current) break;
-          const gameplay = (s: GameState) => JSON.stringify({ board: s.board, players: s.players, turn: s.turn, phase: s.phase, winner: s.winner, victoryReason: s.victoryReason, upkeepPending: s.upkeepPending, inactivityPlies: s.inactivityPlies, progressThisTurn: s.progressThisTurn });
-          if (gameplay(actual) !== gameplay(expected)) break;
-          currentState = actual;
-        }
-
+        const outcome = await dispatchOne(action);
+        if (outcome === 'illegal') throw new Error('AI proposed an invalid action. Please retry.');
+        if (outcome === 'abort') break;
       }
     } catch (e) {
       if (token === generation.current && !(e instanceof SearchCancelled)) setError(e instanceof Error ? e.message : String(e));

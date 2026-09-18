@@ -1,0 +1,257 @@
+{
+  "A": {
+    "n": 960,
+    "invalid": 0,
+    "outcomes": {
+      "elimination": 250,
+      "home-occupation": 172,
+      "upkeep-elimination": 13,
+      "inactivity": 525
+    },
+    "rounds": {
+      "n": 960,
+      "mean": 26.467708333333334,
+      "median": 27.0,
+      "min": 5,
+      "max": 81
+    },
+    "incomePerPlayer": {
+      "n": 1920,
+      "mean": 95.64583333333333,
+      "median": 103.0,
+      "min": 5,
+      "max": 241
+    },
+    "upgrades": {
+      "n": 524,
+      "estimatedNet": {
+        "n": 524,
+        "mean": -15.683206106870228,
+        "median": -15.0,
+        "min": -36,
+        "max": -4
+      },
+      "everEstimatedPayback": 0,
+      "finalEstimatedProfitable": 0,
+      "extraRent": {
+        "n": 524,
+        "mean": 12.5,
+        "median": 12.0,
+        "min": 0,
+        "max": 33
+      },
+      "fifthIncome": {
+        "n": 524,
+        "mean": 2.816793893129771,
+        "median": 3.0,
+        "min": 0,
+        "max": 15
+      },
+      "grossIncome": {
+        "n": 524,
+        "mean": 30.27671755725191,
+        "median": 22.0,
+        "min": 0,
+        "max": 201
+      },
+      "mineActions": {
+        "n": 524,
+        "mean": 9.024809160305344,
+        "median": 7.5,
+        "min": 0,
+        "max": 59
+      },
+      "moveActions": {
+        "n": 524,
+        "mean": 9.366412213740459,
+        "median": 8.0,
+        "min": 0,
+        "max": 60
+      },
+      "armyActions": {
+        "n": 524,
+        "mean": 1.5515267175572518,
+        "median": 0.0,
+        "min": 0,
+        "max": 20
+      }
+    },
+    "earlyLead": {
+      "n": 717,
+      "natural": 363,
+      "converted": 215,
+      "recovered": 217,
+      "laggerWon": 148
+    }
+  },
+  "B": {
+    "n": 960,
+    "invalid": 0,
+    "outcomes": {
+      "elimination": 232,
+      "home-occupation": 184,
+      "inactivity": 533,
+      "upkeep-elimination": 11
+    },
+    "rounds": {
+      "n": 960,
+      "mean": 26.227083333333333,
+      "median": 26.0,
+      "min": 5,
+      "max": 63
+    },
+    "incomePerPlayer": {
+      "n": 1920,
+      "mean": 103.41354166666666,
+      "median": 111.0,
+      "min": 5,
+      "max": 293
+    },
+    "upgrades": {
+      "n": 541,
+      "estimatedNet": {
+        "n": 541,
+        "mean": -8.828096118299445,
+        "median": -9,
+        "min": -31,
+        "max": 20
+      },
+      "everEstimatedPayback": 308,
+      "finalEstimatedProfitable": 93,
+      "extraRent": {
+        "n": 541,
+        "mean": 12.00554528650647,
+        "median": 12,
+        "min": 0,
+        "max": 35
+      },
+      "fifthIncome": {
+        "n": 541,
+        "mean": 9.177449168207024,
+        "median": 9,
+        "min": 0,
+        "max": 42
+      },
+      "grossIncome": {
+        "n": 541,
+        "mean": 40.288354898336415,
+        "median": 27,
+        "min": 0,
+        "max": 233
+      },
+      "mineActions": {
+        "n": 541,
+        "mean": 8.754158964879853,
+        "median": 7,
+        "min": 0,
+        "max": 49
+      },
+      "moveActions": {
+        "n": 541,
+        "mean": 8.946395563770794,
+        "median": 7,
+        "min": 0,
+        "max": 53
+      },
+      "armyActions": {
+        "n": 541,
+        "mean": 1.8706099815157116,
+        "median": 1,
+        "min": 0,
+        "max": 22
+      }
+    },
+    "earlyLead": {
+      "n": 780,
+      "natural": 370,
+      "converted": 231,
+      "recovered": 223,
+      "laggerWon": 139
+    }
+  },
+  "C": {
+    "n": 960,
+    "invalid": 0,
+    "outcomes": {
+      "elimination": 186,
+      "home-occupation": 150,
+      "inactivity": 596,
+      "upkeep-elimination": 28
+    },
+    "rounds": {
+      "n": 960,
+      "mean": 24.322916666666668,
+      "median": 23.0,
+      "min": 5,
+      "max": 84
+    },
+    "incomePerPlayer": {
+      "n": 1920,
+      "mean": 196.88385416666668,
+      "median": 202.0,
+      "min": 9,
+      "max": 530
+    },
+    "upgrades": {
+      "n": 722,
+      "estimatedNet": {
+        "n": 722,
+        "mean": -2.8254847645429364,
+        "median": -4.0,
+        "min": -31,
+        "max": 40
+      },
+      "everEstimatedPayback": 324,
+      "finalEstimatedProfitable": 278,
+      "extraRent": {
+        "n": 722,
+        "mean": 9.096952908587257,
+        "median": 9.0,
+        "min": 0,
+        "max": 26
+      },
+      "fifthIncome": {
+        "n": 722,
+        "mean": 12.271468144044322,
+        "median": 5.0,
+        "min": 0,
+        "max": 70
+      },
+      "grossIncome": {
+        "n": 722,
+        "mean": 81.29501385041551,
+        "median": 70.0,
+        "min": 0,
+        "max": 447
+      },
+      "mineActions": {
+        "n": 722,
+        "mean": 8.817174515235457,
+        "median": 9.0,
+        "min": 0,
+        "max": 51
+      },
+      "moveActions": {
+        "n": 722,
+        "mean": 8.85595567867036,
+        "median": 8.0,
+        "min": 0,
+        "max": 55
+      },
+      "armyActions": {
+        "n": 722,
+        "mean": 2.275623268698061,
+        "median": 1.0,
+        "min": 0,
+        "max": 27
+      }
+    },
+    "earlyLead": {
+      "n": 884,
+      "natural": 348,
+      "converted": 166,
+      "recovered": 225,
+      "laggerWon": 182
+    }
+  }
+}

@@ -1,0 +1,4664 @@
+{
+  "schema": "muju-hard-ai-e4-profile-v1",
+  "set": "p8",
+  "work": "wall:3000",
+  "engine": "hard@desktop",
+  "engineConfigHash": "hard:desktop:wall:3000#4e7afdf76b32fadfab2d11577cb610c8f9f1a491b5153e70b87b0774403600cd",
+  "resolvedConfigHash": "4e7afdf76b32fadfab2d11577cb610c8f9f1a491b5153e70b87b0774403600cd",
+  "positions": [
+    {
+      "id": "p8:b3-desktop-white-seatTurn22",
+      "set": "p8",
+      "label": "b3-desktop-white-seatTurn22",
+      "side": "white",
+      "turnNumber": 22,
+      "seatTurnIndex": 21,
+      "work": "wall:3000",
+      "searchMs": 3815.3032919999987,
+      "canonicalReplayMs": 0.11716700000033597,
+      "totalMs": 3826.0257919999985,
+      "attribution": {
+        "profiledMs": 3832.542,
+        "byBucket": {
+          "other": 8.599430857031367,
+          "replySearch": 3.364994683186186,
+          "prover": 3717.9452366226055,
+          "tables": 64.86961972586718,
+          "instrument": 0.9347207453294961,
+          "generation": 23.554962782303278,
+          "evaluation": 8.225542558899571,
+          "canonicalVerify": 3.9258271303838836,
+          "quiescence": 1.1216648943953953
+        },
+        "byFunction": [
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 203.58217833276424
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 195.5435799229306
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 195.1696916247988
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 193.4871942832057
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 125.81341232135019
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 123.75702668162529
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 123.57008253255938
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 122.82230593629578
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 113.10121018486903
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 108.80149475635335
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 108.05371816008976
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 99.26734315399248
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 95.9023484708063
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 93.4720745329496
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 89.17235910443392
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 88.98541495536803
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 82.25542558899566
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 82.06848143992976
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 61.878513340812646
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 61.31768089361495
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 60.75684844641724
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 58.88740695575825
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 58.13963035949466
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 57.20490961416516
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 56.64407716696746
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 55.70935642163797
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 54.400747378176675
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 53.09213833471538
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 52.90519418564948
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 52.71825003658358
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 49.540199502463295
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 49.353255353397394
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 37.201885664113945
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 32.52828193746647
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 29.537175552412076
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 26.733013316423587
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 25.798292571094095
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 25.050515974830496
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 23.7419069313692
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 21.31163299351251
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 16.82497341593093
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 16.638029266865033
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 16.638029266865033
+          },
+          {
+            "fn": "act",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 16.264140968733233
+          },
+          {
+            "fn": "act",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 14.020811179942442
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 13.646922881810642
+          },
+          {
+            "fn": "act",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 13.086090434612945
+          },
+          {
+            "fn": "act",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 12.15136968928345
+          },
+          {
+            "fn": "act",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 11.590537242085752
+          },
+          {
+            "fn": "act",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 11.403593093019852
+          }
+        ]
+      },
+      "stopReason": "abort",
+      "source": "search",
+      "completedIterations": 1,
+      "rung": 400000,
+      "workSpent": 3948,
+      "byClass": {
+        "MACRO": 32,
+        "QUIESCE": 77,
+        "TURN": 1290,
+        "GEN": 60,
+        "KILLTABLE": 103,
+        "DFPN": 0,
+        "EVAL1": 77,
+        "EVAL2": 77,
+        "PROVER": 14
+      },
+      "rootCoverage": {
+        "source": "completed-depth",
+        "listed": 28,
+        "searched": 28
+      },
+      "ply1": {
+        "nodes": 1,
+        "meanGenerated": 17,
+        "cutShare": 0,
+        "configuredK": 16
+      },
+      "rootTrace": [
+        {
+          "depth": 1,
+          "n": 28,
+          "searched": 28,
+          "completed": true,
+          "cutoffAt": -1,
+          "truncated": false,
+          "work": 2598
+        },
+        {
+          "depth": 2,
+          "n": 28,
+          "searched": 1,
+          "completed": false,
+          "cutoffAt": -1,
+          "truncated": true,
+          "work": 948
+        }
+      ]
+    },
+    {
+      "id": "p8:b3-arm-black-seatTurn22",
+      "set": "p8",
+      "label": "b3-arm-black-seatTurn22",
+      "side": "black",
+      "turnNumber": 22,
+      "seatTurnIndex": 21,
+      "work": "wall:3000",
+      "searchMs": 3153.269791999999,
+      "canonicalReplayMs": 38.9698750000025,
+      "totalMs": 3199.480958,
+      "attribution": {
+        "profiledMs": 3253.209,
+        "byBucket": {
+          "replySearch": 0.39382712910840745,
+          "prover": 3167.3546858543627,
+          "tables": 0.7876542582168149,
+          "canonicalVerify": 76.79629017613948,
+          "other": 7.876542582168149
+        },
+        "byFunction": [
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 180.766652260759
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 166.58887561285636
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 165.01356709642272
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 164.81665353186852
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 149.65430906119482
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 136.26418667150898
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 99.04752297076448
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 93.33702959869257
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 88.41419048483748
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 87.62653622662066
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 86.83888196840385
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 84.8697463228618
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 82.90061067731978
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 82.50678354821136
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 82.11295641910296
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 81.91604285454875
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 79.3561665153441
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 79.1592529507899
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 76.40246304703105
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 71.08579680406754
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 68.13209333575449
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 66.35987125476666
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 66.16295769021245
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 61.240118576357354
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 50.21295896132195
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 47.6530826221173
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 44.69937915380425
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 41.74567568549119
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 41.54876212093699
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 41.154934991828576
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 39.776540039949154
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 39.382712910840745
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 36.42900944252769
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 34.262960232431446
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 34.066046667877245
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 32.884565280552025
+          },
+          {
+            "fn": "enoughPossibleDamage",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 20.675924278191392
+          },
+          {
+            "fn": "enoughPossibleDamage",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 16.146912293444704
+          },
+          {
+            "fn": "act",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 15.162344470673688
+          },
+          {
+            "fn": "act",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 13.783949518794262
+          },
+          {
+            "fn": "act",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 13.390122389685853
+          },
+          {
+            "fn": "act",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 13.390122389685853
+          },
+          {
+            "fn": "act",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 13.193208825131649
+          },
+          {
+            "fn": "act",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 12.996295260577446
+          },
+          {
+            "fn": "act",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 9.058023969493371
+          },
+          {
+            "fn": "act",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 8.270369711276556
+          },
+          {
+            "fn": "act",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 7.679629017613946
+          },
+          {
+            "fn": "act",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 7.285801888505538
+          },
+          {
+            "fn": "act",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 7.088888323951334
+          },
+          {
+            "fn": "act",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 7.088888323951334
+          }
+        ]
+      },
+      "stopReason": "abort",
+      "source": "search",
+      "completedIterations": 0,
+      "rung": 400000,
+      "workSpent": 59,
+      "byClass": {
+        "MACRO": 0,
+        "QUIESCE": 0,
+        "TURN": 23,
+        "GEN": 7,
+        "KILLTABLE": 1,
+        "DFPN": 0,
+        "EVAL1": 0,
+        "EVAL2": 0,
+        "PROVER": 16
+      },
+      "rootCoverage": {
+        "source": "generator-list",
+        "listed": 16,
+        "searched": 0
+      },
+      "ply1": {
+        "nodes": 0,
+        "meanGenerated": 0,
+        "cutShare": 0,
+        "configuredK": 16
+      },
+      "rootTrace": []
+    },
+    {
+      "id": "p8:b3-arm-black-seatTurn21",
+      "set": "p8",
+      "label": "b3-arm-black-seatTurn21",
+      "side": "black",
+      "turnNumber": 21,
+      "seatTurnIndex": 20,
+      "work": "wall:3000",
+      "searchMs": 5144.111541999999,
+      "canonicalReplayMs": 0.05795800000123563,
+      "totalMs": 5163.546999999999,
+      "attribution": {
+        "profiledMs": 5196.791,
+        "byBucket": {
+          "other": 8.356648844221107,
+          "replySearch": 8.147732623115582,
+          "tables": 532.736363819097,
+          "prover": 4497.130575517591,
+          "generation": 91.50530484422093,
+          "evaluation": 45.54373620100493,
+          "quiescence": 0.8356648844221106,
+          "canonicalVerify": 11.699308381909544,
+          "instrument": 0.8356648844221106
+        },
+        "byFunction": [
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 245.05872735678392
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 217.89961861306531
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 217.6907023919598
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 212.25888064321606
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 146.24135477386935
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 138.72037081407035
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 133.49746528643217
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 127.85672731658292
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 124.93190022110554
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 122.63382178894473
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 121.79815690452261
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 118.03766492462313
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 116.15741893467336
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 107.59185386934674
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 105.92052410050252
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 104.87594299497489
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 95.47471304522614
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 83.35757222110554
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 82.52190733668341
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 76.88116936683417
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 76.67225314572865
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 72.70284494472362
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 71.86718006030151
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 71.65826383919598
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 64.9729447638191
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 64.13727987939698
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 63.71944743718593
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 62.67486633165829
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 62.46595011055277
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 59.958955457286436
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 59.958955457286436
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 57.66087702512563
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 44.91698753768844
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 38.85841712562814
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 37.8138360201005
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 36.978171135678394
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 34.053344040201004
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 33.00876293467336
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 30.919600723618093
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 30.08393583919598
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 25.6966951959799
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 25.06994653266332
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 21.936203216080404
+          },
+          {
+            "fn": "genActions",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 21.72728699497488
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 20.891622110552767
+          },
+          {
+            "fn": "act",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 19.42920856281407
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 17.757878793969848
+          },
+          {
+            "fn": "act",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 16.92221390954774
+          },
+          {
+            "fn": "act",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 16.295465246231156
+          },
+          {
+            "fn": "genActions",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 16.086549025125628
+          }
+        ]
+      },
+      "stopReason": "abort",
+      "source": "search",
+      "completedIterations": 2,
+      "rung": 400000,
+      "workSpent": 29985,
+      "byClass": {
+        "MACRO": 144,
+        "QUIESCE": 273,
+        "TURN": 13215,
+        "GEN": 506,
+        "KILLTABLE": 1147,
+        "DFPN": 0,
+        "EVAL1": 273,
+        "EVAL2": 273,
+        "PROVER": 14
+      },
+      "rootCoverage": {
+        "source": "completed-depth",
+        "listed": 39,
+        "searched": 39
+      },
+      "ply1": {
+        "nodes": 39,
+        "meanGenerated": 21.82051282051282,
+        "cutShare": 0,
+        "configuredK": 16
+      },
+      "rootTrace": [
+        {
+          "depth": 1,
+          "n": 39,
+          "searched": 39,
+          "completed": true,
+          "cutoffAt": -1,
+          "truncated": false,
+          "work": 4099
+        },
+        {
+          "depth": 2,
+          "n": 39,
+          "searched": 39,
+          "completed": true,
+          "cutoffAt": -1,
+          "truncated": false,
+          "work": 24408
+        },
+        {
+          "depth": 3,
+          "n": 39,
+          "searched": 1,
+          "completed": false,
+          "cutoffAt": -1,
+          "truncated": true,
+          "work": 1284
+        }
+      ]
+    },
+    {
+      "id": "p8:b3-desktop-white-seatTurn23",
+      "set": "p8",
+      "label": "b3-desktop-white-seatTurn23",
+      "side": "white",
+      "turnNumber": 23,
+      "seatTurnIndex": 22,
+      "work": "wall:3000",
+      "searchMs": 3316.5378340000025,
+      "canonicalReplayMs": 0.0328750000007858,
+      "totalMs": 3325.5401249999995,
+      "attribution": {
+        "profiledMs": 3363.041,
+        "byBucket": {
+          "other": 3.8478729977116704,
+          "prover": 3268.896373989327,
+          "tables": 66.69646529366914,
+          "evaluation": 6.926171395881011,
+          "canonicalVerify": 1.7956740655987795,
+          "generation": 13.595817925247902,
+          "replySearch": 0.7695745995423342,
+          "quiescence": 0.5130497330282228
+        },
+        "byFunction": [
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 475.0840527841343
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 375.03935484363086
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 346.30856979405036
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 262.93798817696415
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 207.5286170099161
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 183.1587546910755
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 95.94030007627765
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 90.2967530129672
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 89.27065354691075
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 65.4138409610984
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 55.152846300533945
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 51.56149816933639
+          },
+          {
+            "fn": "act",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 49.76582410373761
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 47.71362517162472
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 45.91795110602594
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 41.81355324180016
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 41.04397864225782
+          },
+          {
+            "fn": "act",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 40.27440404271549
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 38.222205110602594
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 35.14390671243326
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 33.8612823798627
+          },
+          {
+            "fn": "act",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 31.29603371472159
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 30.013409382151032
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 23.85681258581236
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 22.830713119755913
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 21.804613653699466
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 20.778514187643022
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 20.52198932112891
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 19.495889855072466
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 18.46979038901602
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 17.700215789473685
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 17.187166056445463
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 16.161066590389016
+          },
+          {
+            "fn": "computeKey",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 15.648016857360796
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 15.391491990846683
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 14.878442257818461
+          },
+          {
+            "fn": "stableSort",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 13.339293058733793
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 12.313193592677347
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 12.056668726163235
+          },
+          {
+            "fn": "computeKey",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 10.004469794050344
+          },
+          {
+            "fn": "computeKey",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 9.747944927536233
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 9.23489519450801
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 9.23489519450801
+          },
+          {
+            "fn": "stableSort",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 8.978370327993899
+          },
+          {
+            "fn": "stableSort",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 8.978370327993899
+          },
+          {
+            "fn": "act",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 8.978370327993899
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 8.978370327993899
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 8.465320594965675
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 8.208795728451564
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 8.208795728451564
+          }
+        ]
+      },
+      "stopReason": "abort",
+      "source": "search",
+      "completedIterations": 0,
+      "rung": 25000,
+      "workSpent": 6719,
+      "byClass": {
+        "MACRO": 11,
+        "QUIESCE": 178,
+        "TURN": 2075,
+        "GEN": 145,
+        "KILLTABLE": 102,
+        "DFPN": 0,
+        "EVAL1": 178,
+        "EVAL2": 178,
+        "PROVER": 0
+      },
+      "rootCoverage": {
+        "source": "partial-iteration",
+        "listed": 28,
+        "searched": 7
+      },
+      "ply1": {
+        "nodes": 7,
+        "meanGenerated": 13.142857142857142,
+        "cutShare": 0,
+        "configuredK": 16
+      },
+      "rootTrace": [
+        {
+          "depth": 1,
+          "n": 28,
+          "searched": 7,
+          "completed": false,
+          "cutoffAt": -1,
+          "truncated": true,
+          "work": 6242
+        }
+      ]
+    },
+    {
+      "id": "p8:b3-arm-black-seatTurn23",
+      "set": "p8",
+      "label": "b3-arm-black-seatTurn23",
+      "side": "black",
+      "turnNumber": 23,
+      "seatTurnIndex": 22,
+      "work": "wall:3000",
+      "searchMs": 6306.372625,
+      "canonicalReplayMs": 2755.4589169999963,
+      "totalMs": 9072.345666999998,
+      "attribution": {
+        "profiledMs": 9167.125,
+        "byBucket": {
+          "other": 225.6298342987575,
+          "evaluation": 0.39480285966536743,
+          "tables": 3.1584228773229404,
+          "replySearch": 0.39480285966536743,
+          "prover": 3526.379142531062,
+          "generation": 0.39480285966536743,
+          "canonicalVerify": 5410.773191713872
+        },
+        "byFunction": [
+          {
+            "fn": "enoughPossibleDamage",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 461.72194437864727
+          },
+          {
+            "fn": "enoughPossibleDamage",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 442.96880854454236
+          },
+          {
+            "fn": "enoughPossibleDamage",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 410.59497405198215
+          },
+          {
+            "fn": "enoughPossibleDamage",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 390.06522534938307
+          },
+          {
+            "fn": "enoughPossibleDamage",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 298.47096190701785
+          },
+          {
+            "fn": "enoughPossibleDamage",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 295.70734188936024
+          },
+          {
+            "fn": "(garbage collector)",
+            "url": "",
+            "line": -1,
+            "bucket": "other",
+            "selfMs": 148.44587523417815
+          },
+          {
+            "fn": "distancesFrom",
+            "url": "src/game/movement.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 115.47983645211998
+          },
+          {
+            "fn": "distancesFrom",
+            "url": "src/game/movement.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 111.72920928529899
+          },
+          {
+            "fn": "(anonymous)",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 110.5448007063029
+          },
+          {
+            "fn": "(anonymous)",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 110.14999784663753
+          },
+          {
+            "fn": "distancesFrom",
+            "url": "src/game/movement.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 108.57078640797606
+          },
+          {
+            "fn": "distancesFrom",
+            "url": "src/game/movement.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 106.39937067981654
+          },
+          {
+            "fn": "distancesFrom",
+            "url": "src/game/movement.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 103.43834923232627
+          },
+          {
+            "fn": "distancesFrom",
+            "url": "src/game/movement.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 102.64874351299554
+          },
+          {
+            "fn": "(anonymous)",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 97.71370776717845
+          },
+          {
+            "fn": "(anonymous)",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 91.39686201253257
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 90.40985486336915
+          },
+          {
+            "fn": "(anonymous)",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 90.40985486336915
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 89.22544628437305
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 87.84363627554426
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 83.30340338939254
+          },
+          {
+            "fn": "(anonymous)",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 83.10600195955985
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 80.93458623140033
+          },
+          {
+            "fn": "enoughPossibleDamage",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 78.17096621374276
+          },
+          {
+            "fn": "(program)",
+            "url": "",
+            "line": -1,
+            "bucket": "other",
+            "selfMs": 76.98655763474665
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 76.19695191541592
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 75.2099447662525
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 74.42033904692177
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 73.82813475742371
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 73.23593046792567
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 71.85412045909689
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 71.06451473976614
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 67.9060918624432
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 64.94507041495295
+          },
+          {
+            "fn": "(anonymous)",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 64.3528661254549
+          },
+          {
+            "fn": "(anonymous)",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 63.760661835956846
+          },
+          {
+            "fn": "(anonymous)",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 63.760661835956846
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 63.36585897629148
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 60.99704181829927
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 60.79964038846659
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 57.83861894097634
+          },
+          {
+            "fn": "calculateAttackPower",
+            "url": "src/game/combat.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 57.24641465147828
+          },
+          {
+            "fn": "(anonymous)",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 56.259407502314865
+          },
+          {
+            "fn": "(anonymous)",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 56.259407502314865
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 55.667203212816815
+          },
+          {
+            "fn": "(anonymous)",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 54.68019606365339
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 54.48279463382071
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 53.10098462499192
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 52.508780335493874
+          }
+        ]
+      },
+      "stopReason": "abort",
+      "source": "search",
+      "completedIterations": 0,
+      "rung": 25000,
+      "workSpent": 40,
+      "byClass": {
+        "MACRO": 0,
+        "QUIESCE": 0,
+        "TURN": 28,
+        "GEN": 1,
+        "KILLTABLE": 1,
+        "DFPN": 0,
+        "EVAL1": 0,
+        "EVAL2": 0,
+        "PROVER": 21
+      },
+      "rootCoverage": {
+        "source": "generator-list",
+        "listed": 30,
+        "searched": 0
+      },
+      "ply1": {
+        "nodes": 0,
+        "meanGenerated": 0,
+        "cutShare": 0,
+        "configuredK": 16
+      },
+      "rootTrace": []
+    },
+    {
+      "id": "p8:b6-desktop-white-seatTurn16-Bwhite",
+      "set": "p8",
+      "label": "b6-desktop-white-seatTurn16-Bwhite",
+      "side": "white",
+      "turnNumber": 16,
+      "seatTurnIndex": 15,
+      "work": "wall:3000",
+      "searchMs": 325.8092919999981,
+      "canonicalReplayMs": 0.07933399999456014,
+      "totalMs": 335.6758329999939,
+      "attribution": {
+        "profiledMs": 387.875,
+        "byBucket": {
+          "other": 5.024907464528069,
+          "prover": 62.691702652683674,
+          "tables": 246.69902837754398,
+          "replySearch": 3.8285009253547186,
+          "generation": 37.08860271437387,
+          "canonicalVerify": 8.135564466378778,
+          "evaluation": 23.449568167797647,
+          "instrument": 0.7178439235040099,
+          "quiescence": 0.23928130783466997
+        },
+        "byFunction": [
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 9.092689697717459
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 7.657001850709439
+          },
+          {
+            "fn": "genActions",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 7.1784392350400985
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.699876619370759
+          },
+          {
+            "fn": "bfsMulti",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.024907464528069
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 4.785626156693399
+          },
+          {
+            "fn": "actionPriority",
+            "url": "src/ai/hard/gen/actionsearch.ts",
+            "line": 0,
+            "bucket": "generation",
+            "selfMs": 4.5463448488587295
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.5463448488587295
+          },
+          {
+            "fn": "buildCandidates",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.30706354102406
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.30706354102406
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.06778223318939
+          },
+          {
+            "fn": "orderTop",
+            "url": "src/ai/hard/gen/actionsearch.ts",
+            "line": 0,
+            "bucket": "generation",
+            "selfMs": 3.8285009253547195
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.5892196175200493
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 3.5892196175200493
+          },
+          {
+            "fn": "actionPriority",
+            "url": "src/ai/hard/gen/actionsearch.ts",
+            "line": 0,
+            "bucket": "generation",
+            "selfMs": 3.3499383096853794
+          },
+          {
+            "fn": "bfsMulti",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.1106570018507096
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.1106570018507096
+          },
+          {
+            "fn": "runKillDp",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.1106570018507096
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.1106570018507096
+          },
+          {
+            "fn": "blockingSet",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.6320943861813695
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.3928130783466997
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.3928130783466997
+          },
+          {
+            "fn": "genActions",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 2.3928130783466997
+          },
+          {
+            "fn": "bfsMulti",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.15353177051203
+          },
+          {
+            "fn": "orderTop",
+            "url": "src/ai/hard/gen/actionsearch.ts",
+            "line": 0,
+            "bucket": "generation",
+            "selfMs": 2.15353177051203
+          },
+          {
+            "fn": "nearestThreat",
+            "url": "src/ai/hard/tables/home.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 1.9142504626773598
+          },
+          {
+            "fn": "nearestThreat",
+            "url": "src/ai/hard/tables/home.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 1.9142504626773598
+          },
+          {
+            "fn": "blockingSet",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 1.9142504626773598
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 1.9142504626773598
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 1.9142504626773598
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 1.9142504626773598
+          },
+          {
+            "fn": "orderTop",
+            "url": "src/ai/hard/gen/actionsearch.ts",
+            "line": 0,
+            "bucket": "generation",
+            "selfMs": 1.9142504626773598
+          },
+          {
+            "fn": "runEconomy",
+            "url": "src/ai/hard/tables/economy.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 1.9142504626773598
+          },
+          {
+            "fn": "bfsMulti",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 1.9142504626773598
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 1.6749691548426897
+          },
+          {
+            "fn": "genActions",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 1.6749691548426897
+          },
+          {
+            "fn": "approachTable",
+            "url": "src/ai/hard/tables/approach.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 1.6749691548426897
+          },
+          {
+            "fn": "runKillDp",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 1.6749691548426897
+          },
+          {
+            "fn": "runEconomy",
+            "url": "src/ai/hard/tables/economy.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 1.6749691548426897
+          },
+          {
+            "fn": "bbDilate",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "other",
+            "selfMs": 1.6749691548426897
+          },
+          {
+            "fn": "bbDilate",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 1.4356878470080197
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 1.4356878470080197
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 1.4356878470080197
+          },
+          {
+            "fn": "bfsMulti",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 1.4356878470080197
+          },
+          {
+            "fn": "makeEndAction",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 1.4356878470080197
+          },
+          {
+            "fn": "unmake",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 1.4356878470080197
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 1.4356878470080197
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 1.4356878470080197
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 1.4356878470080197
+          },
+          {
+            "fn": "adjacentAttackerKillable",
+            "url": "src/ai/hard/eval/invariants.ts",
+            "line": 0,
+            "bucket": "evaluation",
+            "selfMs": 1.4356878470080197
+          }
+        ]
+      },
+      "stopReason": "work",
+      "source": "search",
+      "completedIterations": 2,
+      "rung": 25000,
+      "workSpent": 17157,
+      "byClass": {
+        "MACRO": 146,
+        "QUIESCE": 233,
+        "TURN": 6487,
+        "GEN": 389,
+        "KILLTABLE": 542,
+        "DFPN": 0,
+        "EVAL1": 233,
+        "EVAL2": 233,
+        "PROVER": 0
+      },
+      "rootCoverage": {
+        "source": "completed-depth",
+        "listed": 19,
+        "searched": 19
+      },
+      "ply1": {
+        "nodes": 19,
+        "meanGenerated": 19.526315789473685,
+        "cutShare": 0,
+        "configuredK": 16
+      },
+      "rootTrace": [
+        {
+          "depth": 1,
+          "n": 19,
+          "searched": 19,
+          "completed": true,
+          "cutoffAt": -1,
+          "truncated": false,
+          "work": 1779
+        },
+        {
+          "depth": 2,
+          "n": 19,
+          "searched": 19,
+          "completed": true,
+          "cutoffAt": -1,
+          "truncated": false,
+          "work": 15241
+        }
+      ]
+    },
+    {
+      "id": "p8:b6-arm-white-seatTurn16-Awhite",
+      "set": "p8",
+      "label": "b6-arm-white-seatTurn16-Awhite",
+      "side": "white",
+      "turnNumber": 16,
+      "seatTurnIndex": 15,
+      "work": "wall:3000",
+      "searchMs": 906.4464999999982,
+      "canonicalReplayMs": 0.08345900000131223,
+      "totalMs": 920.1311249999999,
+      "attribution": {
+        "profiledMs": 973.208,
+        "byBucket": {
+          "other": 7.416683972374376,
+          "replySearch": 12.515654203381755,
+          "tables": 642.4702491069302,
+          "evaluation": 44.50010383424618,
+          "prover": 158.7633912836395,
+          "generation": 91.31792140985938,
+          "canonicalVerify": 15.992224815432236,
+          "instrument": 0.2317713741366992
+        },
+        "byFunction": [
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 17.614624434389142
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 15.992224815432246
+          },
+          {
+            "fn": "runKillDp",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 11.356797332698262
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 10.197940462014765
+          },
+          {
+            "fn": "bfsMulti",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 9.966169087878066
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 9.734397713741366
+          },
+          {
+            "fn": "genActions",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 8.34376946892117
+          },
+          {
+            "fn": "genActions",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 7.648455346511073
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 7.416683972374375
+          },
+          {
+            "fn": "nearestThreat",
+            "url": "src/ai/hard/tables/home.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 7.184912598237675
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 7.184912598237675
+          },
+          {
+            "fn": "actionPriority",
+            "url": "src/ai/hard/gen/actionsearch.ts",
+            "line": 0,
+            "bucket": "generation",
+            "selfMs": 6.9531412241009765
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.721369849964277
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.489598475827577
+          },
+          {
+            "fn": "buildCandidates",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.257827101690879
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.02605572755418
+          },
+          {
+            "fn": "blockingSet",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.7942843534174795
+          },
+          {
+            "fn": "genActions",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 5.562512979280781
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.330741605144082
+          },
+          {
+            "fn": "buildCandidates",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.330741605144082
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.098970231007383
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 5.098970231007383
+          },
+          {
+            "fn": "actionPriority",
+            "url": "src/ai/hard/gen/actionsearch.ts",
+            "line": 0,
+            "bucket": "generation",
+            "selfMs": 4.867198856870683
+          },
+          {
+            "fn": "runKillDp",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.635427482733984
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.635427482733984
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.635427482733984
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.403656108597286
+          },
+          {
+            "fn": "bfsMulti",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.403656108597286
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.171884734460585
+          },
+          {
+            "fn": "makeEndAction",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 4.171884734460585
+          },
+          {
+            "fn": "bfsMulti",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.171884734460585
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.171884734460585
+          },
+          {
+            "fn": "bfsMulti",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.171884734460585
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.9401133603238865
+          },
+          {
+            "fn": "orderTop",
+            "url": "src/ai/hard/gen/actionsearch.ts",
+            "line": 0,
+            "bucket": "generation",
+            "selfMs": 3.9401133603238865
+          },
+          {
+            "fn": "nearestThreat",
+            "url": "src/ai/hard/tables/home.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.9401133603238865
+          },
+          {
+            "fn": "orderTop",
+            "url": "src/ai/hard/gen/actionsearch.ts",
+            "line": 0,
+            "bucket": "generation",
+            "selfMs": 3.9401133603238865
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.7083419861871874
+          },
+          {
+            "fn": "runEconomy",
+            "url": "src/ai/hard/tables/economy.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.7083419861871874
+          },
+          {
+            "fn": "runKillDp",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.4765706120504882
+          },
+          {
+            "fn": "nearestThreat",
+            "url": "src/ai/hard/tables/home.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.4765706120504882
+          },
+          {
+            "fn": "genActions",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 3.4765706120504882
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.2447992379137887
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 3.2447992379137887
+          },
+          {
+            "fn": "genActions",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 3.2447992379137887
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.01302786377709
+          },
+          {
+            "fn": "blockingSet",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.01302786377709
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 3.01302786377709
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 3.01302786377709
+          },
+          {
+            "fn": "orderTop",
+            "url": "src/ai/hard/gen/actionsearch.ts",
+            "line": 0,
+            "bucket": "generation",
+            "selfMs": 2.7812564896403904
+          }
+        ]
+      },
+      "stopReason": "work",
+      "source": "search",
+      "completedIterations": 2,
+      "rung": 50000,
+      "workSpent": 50424,
+      "byClass": {
+        "MACRO": 519,
+        "QUIESCE": 564,
+        "TURN": 17296,
+        "GEN": 1085,
+        "KILLTABLE": 2070,
+        "DFPN": 0,
+        "EVAL1": 564,
+        "EVAL2": 564,
+        "PROVER": 0
+      },
+      "rootCoverage": {
+        "source": "completed-depth",
+        "listed": 19,
+        "searched": 19
+      },
+      "ply1": {
+        "nodes": 19,
+        "meanGenerated": 19.526315789473685,
+        "cutShare": 0,
+        "configuredK": 16
+      },
+      "rootTrace": [
+        {
+          "depth": 1,
+          "n": 19,
+          "searched": 19,
+          "completed": true,
+          "cutoffAt": -1,
+          "truncated": false,
+          "work": 1779
+        },
+        {
+          "depth": 2,
+          "n": 19,
+          "searched": 19,
+          "completed": true,
+          "cutoffAt": -1,
+          "truncated": false,
+          "work": 15241
+        },
+        {
+          "depth": 3,
+          "n": 19,
+          "searched": 4,
+          "completed": false,
+          "cutoffAt": -1,
+          "truncated": true,
+          "work": 33255
+        }
+      ]
+    },
+    {
+      "id": "p8:correct-v1-arm-white-seatTurn25",
+      "set": "p8",
+      "label": "correct-v1-arm-white-seatTurn25",
+      "side": "white",
+      "turnNumber": 25,
+      "seatTurnIndex": 24,
+      "work": "wall:3000",
+      "searchMs": 28251.355125000002,
+      "canonicalReplayMs": 16574.274584,
+      "totalMs": 44851.400542,
+      "attribution": {
+        "profiledMs": 44896.583,
+        "byBucket": {
+          "other": 1373.839652044216,
+          "replySearch": 0.3600208731772055,
+          "tables": 1.8001043658860278,
+          "prover": 12358.976544863692,
+          "canonicalVerify": 31160.70662567013,
+          "evaluation": 0.5400313097658083,
+          "generation": 0.3600208731772055
+        },
+        "byFunction": [
+          {
+            "fn": "enoughPossibleDamage",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 1780.8432491710469
+          },
+          {
+            "fn": "enoughPossibleDamage",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 1743.5810887972063
+          },
+          {
+            "fn": "enoughPossibleDamage",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 1597.9526455970265
+          },
+          {
+            "fn": "enoughPossibleDamage",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 1535.8490449739586
+          },
+          {
+            "fn": "enoughPossibleDamage",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 1365.0191406513745
+          },
+          {
+            "fn": "enoughPossibleDamage",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 1321.2766045603441
+          },
+          {
+            "fn": "enoughPossibleDamage",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 1310.2959679284393
+          },
+          {
+            "fn": "enoughPossibleDamage",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 1244.5921585735994
+          },
+          {
+            "fn": "(anonymous)",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 795.2861088484469
+          },
+          {
+            "fn": "(garbage collector)",
+            "url": "",
+            "line": -1,
+            "bucket": "other",
+            "selfMs": 767.9245224869793
+          },
+          {
+            "fn": "(anonymous)",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 765.4043763747388
+          },
+          {
+            "fn": "(anonymous)",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 656.1380413654571
+          },
+          {
+            "fn": "(anonymous)",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 642.6372586213118
+          },
+          {
+            "fn": "(program)",
+            "url": "",
+            "line": -1,
+            "bucket": "other",
+            "selfMs": 605.375098247471
+          },
+          {
+            "fn": "(anonymous)",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 556.2322490587825
+          },
+          {
+            "fn": "(anonymous)",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 555.5122073124281
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 429.1448808272289
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 425.1846512222797
+          },
+          {
+            "fn": "distancesFrom",
+            "url": "src/game/movement.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 418.5242650685014
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 416.3641398294381
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 408.80370149271687
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 406.64357625365363
+          },
+          {
+            "fn": "distancesFrom",
+            "url": "src/game/movement.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 406.28355538047646
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 381.44211513124924
+          },
+          {
+            "fn": "distancesFrom",
+            "url": "src/game/movement.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 377.1218646531227
+          },
+          {
+            "fn": "distancesFrom",
+            "url": "src/game/movement.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 376.58183334335695
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 369.92144718957866
+          },
+          {
+            "fn": "distancesFrom",
+            "url": "src/game/movement.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 368.48136369686983
+          },
+          {
+            "fn": "distancesFrom",
+            "url": "src/game/movement.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 366.5012488943952
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 365.06116540168637
+          },
+          {
+            "fn": "(anonymous)",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 365.06116540168637
+          },
+          {
+            "fn": "(anonymous)",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 364.16111321874337
+          },
+          {
+            "fn": "(anonymous)",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 356.78068531861067
+          },
+          {
+            "fn": "(anonymous)",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 356.6006748820221
+          },
+          {
+            "fn": "(anonymous)",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 331.75923463279486
+          },
+          {
+            "fn": "(anonymous)",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 312.13809704463716
+          },
+          {
+            "fn": "(anonymous)",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 266.59545658772066
+          },
+          {
+            "fn": "(anonymous)",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 253.45469471675267
+          },
+          {
+            "fn": "(anonymous)",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 249.4944651118034
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 240.49394328237327
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 233.29352581882918
+          },
+          {
+            "fn": "distancesFrom",
+            "url": "src/game/movement.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 231.49342145294315
+          },
+          {
+            "fn": "(anonymous)",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 228.25323359434827
+          },
+          {
+            "fn": "(anonymous)",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 227.89321272117107
+          },
+          {
+            "fn": "distancesFrom",
+            "url": "src/game/movement.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 227.89321272117107
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 227.5331918479939
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 226.27311879187366
+          },
+          {
+            "fn": "(anonymous)",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 225.73308748210786
+          },
+          {
+            "fn": "(anonymous)",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 224.4730144259876
+          },
+          {
+            "fn": "(anonymous)",
+            "url": "src/game/homeCheckmate.ts",
+            "line": 0,
+            "bucket": "canonicalVerify",
+            "selfMs": 220.51278482103837
+          }
+        ]
+      },
+      "stopReason": "abort",
+      "source": "search",
+      "completedIterations": 0,
+      "rung": 50000,
+      "workSpent": 69,
+      "byClass": {
+        "MACRO": 0,
+        "QUIESCE": 0,
+        "TURN": 5,
+        "GEN": 14,
+        "KILLTABLE": 1,
+        "DFPN": 0,
+        "EVAL1": 0,
+        "EVAL2": 0,
+        "PROVER": 13
+      },
+      "rootCoverage": {
+        "source": "generator-list",
+        "listed": 20,
+        "searched": 0
+      },
+      "ply1": {
+        "nodes": 0,
+        "meanGenerated": 0,
+        "cutShare": 0,
+        "configuredK": 16
+      },
+      "rootTrace": []
+    },
+    {
+      "id": "p8:correct-v1-desktop-black-seatTurn24",
+      "set": "p8",
+      "label": "correct-v1-desktop-black-seatTurn24",
+      "side": "black",
+      "turnNumber": 24,
+      "seatTurnIndex": 23,
+      "work": "wall:3000",
+      "searchMs": 3311.757375000001,
+      "canonicalReplayMs": 0.07379199999559205,
+      "totalMs": 3316.850584,
+      "attribution": {
+        "profiledMs": 3368.458,
+        "byBucket": {
+          "replySearch": 0.17489397715472482,
+          "tables": 27.983036344755934,
+          "generation": 4.897031360332296,
+          "prover": 3321.061732191068,
+          "canonicalVerify": 0.8744698857736242,
+          "evaluation": 2.9731976116303214,
+          "instrument": 0.17489397715472482,
+          "other": 10.318744652128764
+        },
+        "byFunction": [
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 791.3952466251299
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 767.6096657320873
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 703.7733640706127
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 261.9911777777778
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 256.5694644859813
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 255.86988857736242
+          },
+          {
+            "fn": "act",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 53.69245098650052
+          },
+          {
+            "fn": "act",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 49.66988951194185
+          },
+          {
+            "fn": "act",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 46.521797923156804
+          },
+          {
+            "fn": "stableSort",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 18.713655555555558
+          },
+          {
+            "fn": "computeKey",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 16.090245898234684
+          },
+          {
+            "fn": "computeKey",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 15.915351921079958
+          },
+          {
+            "fn": "stableSort",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 15.740457943925232
+          },
+          {
+            "fn": "stableSort",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 15.56556396677051
+          },
+          {
+            "fn": "computeKey",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 15.56556396677051
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 9.79406272066459
+          },
+          {
+            "fn": "(program)",
+            "url": "",
+            "line": -1,
+            "bucket": "other",
+            "selfMs": 5.9463952232606445
+          },
+          {
+            "fn": "act",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 4.37234942886812
+          },
+          {
+            "fn": "paMake",
+            "url": "src/ai/hard/core/action.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 3.148091588785047
+          },
+          {
+            "fn": "paMake",
+            "url": "src/ai/hard/core/action.ts",
+            "line": 0,
+            "bucket": "other",
+            "selfMs": 2.9731976116303223
+          },
+          {
+            "fn": "paMake",
+            "url": "src/ai/hard/core/action.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 2.4485156801661474
+          },
+          {
+            "fn": "paMake",
+            "url": "src/ai/hard/core/action.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 1.923833748701973
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 1.2242578400830737
+          },
+          {
+            "fn": "(garbage collector)",
+            "url": "",
+            "line": -1,
+            "bucket": "other",
+            "selfMs": 1.2242578400830737
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 1.049363862928349
+          },
+          {
+            "fn": "canAttack",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 1.049363862928349
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 0.8744698857736241
+          },
+          {
+            "fn": "genActions",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 0.8744698857736241
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 0.8744698857736241
+          },
+          {
+            "fn": "act",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 0.8744698857736241
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 0.8744698857736241
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 0.6995759086188993
+          },
+          {
+            "fn": "actionPriority",
+            "url": "src/ai/hard/gen/actionsearch.ts",
+            "line": 0,
+            "bucket": "generation",
+            "selfMs": 0.6995759086188993
+          },
+          {
+            "fn": "runKillDp",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 0.6995759086188993
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 0.6995759086188993
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 0.5246819314641745
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 0.5246819314641745
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 0.5246819314641745
+          },
+          {
+            "fn": "nearestThreat",
+            "url": "src/ai/hard/tables/home.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 0.5246819314641745
+          },
+          {
+            "fn": "genActions",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 0.5246819314641745
+          },
+          {
+            "fn": "buildCandidates",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 0.5246819314641745
+          },
+          {
+            "fn": "bfsMulti",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 0.5246819314641745
+          },
+          {
+            "fn": "prepare",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 0.5246819314641745
+          },
+          {
+            "fn": "has",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 0.5246819314641745
+          },
+          {
+            "fn": "canAttack",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 0.5246819314641745
+          },
+          {
+            "fn": "paMake",
+            "url": "src/ai/hard/core/action.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 0.5246819314641745
+          },
+          {
+            "fn": "tierClimb",
+            "url": "src/ai/hard/eval/features.ts",
+            "line": 0,
+            "bucket": "evaluation",
+            "selfMs": 0.34978795430944964
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 0.34978795430944964
+          },
+          {
+            "fn": "orderTop",
+            "url": "src/ai/hard/gen/actionsearch.ts",
+            "line": 0,
+            "bucket": "generation",
+            "selfMs": 0.34978795430944964
+          },
+          {
+            "fn": "actionPriority",
+            "url": "src/ai/hard/gen/actionsearch.ts",
+            "line": 0,
+            "bucket": "generation",
+            "selfMs": 0.34978795430944964
+          }
+        ]
+      },
+      "stopReason": "abort",
+      "source": "search",
+      "completedIterations": 0,
+      "rung": 50000,
+      "workSpent": 1890,
+      "byClass": {
+        "MACRO": 8,
+        "QUIESCE": 11,
+        "TURN": 1092,
+        "GEN": 54,
+        "KILLTABLE": 44,
+        "DFPN": 0,
+        "EVAL1": 11,
+        "EVAL2": 11,
+        "PROVER": 0
+      },
+      "rootCoverage": {
+        "source": "partial-iteration",
+        "listed": 31,
+        "searched": 4
+      },
+      "ply1": {
+        "nodes": 4,
+        "meanGenerated": 22.5,
+        "cutShare": 0,
+        "configuredK": 16
+      },
+      "rootTrace": [
+        {
+          "depth": 1,
+          "n": 31,
+          "searched": 4,
+          "completed": false,
+          "cutoffAt": -1,
+          "truncated": true,
+          "work": 1418
+        }
+      ]
+    },
+    {
+      "id": "p8:correct-v1-arm-white-seatTurn24",
+      "set": "p8",
+      "label": "correct-v1-arm-white-seatTurn24",
+      "side": "white",
+      "turnNumber": 24,
+      "seatTurnIndex": 23,
+      "work": "wall:3000",
+      "searchMs": 3649.1533330000093,
+      "canonicalReplayMs": 0.12820900000224356,
+      "totalMs": 3657.0694159999985,
+      "attribution": {
+        "profiledMs": 3730.166,
+        "byBucket": {
+          "replySearch": 1.8183513697962363,
+          "tables": 109.28291732475446,
+          "prover": 3594.69882295018,
+          "evaluation": 6.909735205225698,
+          "canonicalVerify": 1.6365162328166127,
+          "generation": 7.818910890123816,
+          "other": 8.000746027103443
+        },
+        "byFunction": [
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 422.0393529297066
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 420.9483421078288
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 414.94778258750125
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 406.2196960124793
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 385.49049039680216
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 379.12626060251534
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 143.83159335088234
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 140.74039602222874
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 140.74039602222874
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 140.5585608852491
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 133.83066081700304
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 129.8302878034513
+          },
+          {
+            "fn": "act",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 32.00298410841377
+          },
+          {
+            "fn": "act",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 31.821148971434145
+          },
+          {
+            "fn": "act",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 30.91197328653603
+          },
+          {
+            "fn": "act",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 29.09362191673979
+          },
+          {
+            "fn": "act",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 27.6389408209028
+          },
+          {
+            "fn": "act",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 23.820402944330702
+          },
+          {
+            "fn": "computeKey",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 12.910294725553282
+          },
+          {
+            "fn": "stableSort",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 10.182767670858926
+          },
+          {
+            "fn": "computeKey",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 9.819097396899679
+          },
+          {
+            "fn": "computeKey",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 9.637262259920055
+          },
+          {
+            "fn": "stableSort",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 9.091756848981184
+          },
+          {
+            "fn": "computeKey",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 8.90992171200156
+          },
+          {
+            "fn": "stableSort",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 8.728086575021937
+          },
+          {
+            "fn": "stableSort",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 8.546251438042313
+          },
+          {
+            "fn": "stableSort",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 8.36441630106269
+          },
+          {
+            "fn": "stableSort",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 7.818910890123819
+          },
+          {
+            "fn": "computeKey",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 7.455240616164572
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 6.9097352052257
+          },
+          {
+            "fn": "computeKey",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 6.364229794286829
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 4.545878424490592
+          },
+          {
+            "fn": "(program)",
+            "url": "",
+            "line": -1,
+            "bucket": "other",
+            "selfMs": 4.3640432875109685
+          },
+          {
+            "fn": "act",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 2.9093621916739787
+          },
+          {
+            "fn": "act",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 2.727527054694355
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.5456919177147315
+          },
+          {
+            "fn": "runKillDp",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.363856780735108
+          },
+          {
+            "fn": "paMake",
+            "url": "src/ai/hard/core/action.ts",
+            "line": 0,
+            "bucket": "other",
+            "selfMs": 2.363856780735108
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.0001865067758606
+          },
+          {
+            "fn": "approachTable",
+            "url": "src/ai/hard/tables/approach.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 1.6365162328166132
+          },
+          {
+            "fn": "paMake",
+            "url": "src/ai/hard/core/action.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 1.6365162328166132
+          },
+          {
+            "fn": "paMake",
+            "url": "src/ai/hard/core/action.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 1.6365162328166132
+          },
+          {
+            "fn": "runKillDp",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 1.6365162328166132
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 1.6365162328166132
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 1.4546810958369893
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 1.4546810958369893
+          },
+          {
+            "fn": "nearestThreat",
+            "url": "src/ai/hard/tables/home.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 1.4546810958369893
+          },
+          {
+            "fn": "paMake",
+            "url": "src/ai/hard/core/action.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 1.4546810958369893
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 1.2728459588573657
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 1.2728459588573657
+          }
+        ]
+      },
+      "stopReason": "abort",
+      "source": "search",
+      "completedIterations": 1,
+      "rung": 50000,
+      "workSpent": 6126,
+      "byClass": {
+        "MACRO": 49,
+        "QUIESCE": 111,
+        "TURN": 2260,
+        "GEN": 124,
+        "KILLTABLE": 147,
+        "DFPN": 0,
+        "EVAL1": 111,
+        "EVAL2": 111,
+        "PROVER": 0
+      },
+      "rootCoverage": {
+        "source": "completed-depth",
+        "listed": 43,
+        "searched": 43
+      },
+      "ply1": {
+        "nodes": 9,
+        "meanGenerated": 12.666666666666666,
+        "cutShare": 0,
+        "configuredK": 16
+      },
+      "rootTrace": [
+        {
+          "depth": 1,
+          "n": 43,
+          "searched": 43,
+          "completed": true,
+          "cutoffAt": -1,
+          "truncated": false,
+          "work": 4014
+        },
+        {
+          "depth": 2,
+          "n": 43,
+          "searched": 1,
+          "completed": false,
+          "cutoffAt": -1,
+          "truncated": true,
+          "work": 1574
+        }
+      ]
+    },
+    {
+      "id": "p8:correct-v1-desktop-black-seatTurn23",
+      "set": "p8",
+      "label": "correct-v1-desktop-black-seatTurn23",
+      "side": "black",
+      "turnNumber": 23,
+      "seatTurnIndex": 22,
+      "work": "wall:3000",
+      "searchMs": 6303.550999999992,
+      "canonicalReplayMs": 0.2599999999947613,
+      "totalMs": 6312.940917,
+      "attribution": {
+        "profiledMs": 6417.833,
+        "byBucket": {
+          "replySearch": 1.5683374774719736,
+          "tables": 212.31368601276876,
+          "canonicalVerify": 4.508970247731925,
+          "evaluation": 10.390235788251818,
+          "generation": 19.408176283715655,
+          "prover": 6158.077105293712,
+          "other": 11.17440452698781,
+          "quiescence": 0.1960421846839967,
+          "instrument": 0.1960421846839967
+        },
+        "byFunction": [
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 1482.2749583956988
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 1454.0448838012035
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 522.8445065522192
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 469.32499013348803
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 455.0139106515563
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 425.0194563949048
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 415.413389345389
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 146.24746977426153
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 136.0532761706937
+          },
+          {
+            "fn": "reachableFrom",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 132.13243247701377
+          },
+          {
+            "fn": "act",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 70.7712286709228
+          },
+          {
+            "fn": "act",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 65.2820474997709
+          },
+          {
+            "fn": "stableSort",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 34.111340135015425
+          },
+          {
+            "fn": "computeKey",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 29.798412071967498
+          },
+          {
+            "fn": "computeKey",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 29.406327702599505
+          },
+          {
+            "fn": "stableSort",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 28.426116779179516
+          },
+          {
+            "fn": "act",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 23.5250621620796
+          },
+          {
+            "fn": "act",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 23.13297779271161
+          },
+          {
+            "fn": "act",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 21.95672468460763
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 18.035880990927698
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 16.271501328771727
+          },
+          {
+            "fn": "computeKey",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 12.154615450407794
+          },
+          {
+            "fn": "stableSort",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 11.566488896355805
+          },
+          {
+            "fn": "stableSort",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 11.17440452698781
+          },
+          {
+            "fn": "computeKey",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 10.58627797293582
+          },
+          {
+            "fn": "computeKey",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 10.58627797293582
+          },
+          {
+            "fn": "stableSort",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 9.99815141888383
+          },
+          {
+            "fn": "act",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 8.625856126095854
+          },
+          {
+            "fn": "act",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 7.449603017991874
+          },
+          {
+            "fn": "(program)",
+            "url": "",
+            "line": -1,
+            "bucket": "other",
+            "selfMs": 7.057518648623881
+          },
+          {
+            "fn": "runKillDp",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.8614764639398835
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 6.469392094571891
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 5.29313898646791
+          },
+          {
+            "fn": "act",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 3.920843693679934
+          },
+          {
+            "fn": "runKillDp",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.724801508995937
+          },
+          {
+            "fn": "damageBoundCore",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 3.724801508995937
+          },
+          {
+            "fn": "classifyFrom",
+            "url": "src/ai/hard/tables/approach.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.5287593243119404
+          },
+          {
+            "fn": "runEconomy",
+            "url": "src/ai/hard/tables/economy.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.5287593243119404
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.332717139627944
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.332717139627944
+          },
+          {
+            "fn": "runKillDp",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.94063277025995
+          },
+          {
+            "fn": "buildCandidates",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.94063277025995
+          },
+          {
+            "fn": "act",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 2.94063277025995
+          },
+          {
+            "fn": "runKillDp",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.7445905855759536
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.7445905855759536
+          },
+          {
+            "fn": "act",
+            "url": "src/ai/hard/tactics/prover.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 2.7445905855759536
+          },
+          {
+            "fn": "approachTable",
+            "url": "src/ai/hard/tables/approach.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.548548400891957
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.548548400891957
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.35250621620796
+          },
+          {
+            "fn": "runKillDp",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.35250621620796
+          }
+        ]
+      },
+      "stopReason": "abort",
+      "source": "search",
+      "completedIterations": 1,
+      "rung": 50000,
+      "workSpent": 9493,
+      "byClass": {
+        "MACRO": 37,
+        "QUIESCE": 268,
+        "TURN": 2609,
+        "GEN": 160,
+        "KILLTABLE": 149,
+        "DFPN": 0,
+        "EVAL1": 268,
+        "EVAL2": 268,
+        "PROVER": 8
+      },
+      "rootCoverage": {
+        "source": "completed-depth",
+        "listed": 31,
+        "searched": 31
+      },
+      "ply1": {
+        "nodes": 3,
+        "meanGenerated": 24,
+        "cutShare": 0,
+        "configuredK": 16
+      },
+      "rootTrace": [
+        {
+          "depth": 1,
+          "n": 31,
+          "searched": 31,
+          "completed": true,
+          "cutoffAt": -1,
+          "truncated": false,
+          "work": 7723
+        },
+        {
+          "depth": 2,
+          "n": 31,
+          "searched": 1,
+          "completed": false,
+          "cutoffAt": -1,
+          "truncated": true,
+          "work": 1253
+        }
+      ]
+    }
+  ],
+  "skipped": [],
+  "summary": {
+    "n": 11,
+    "abortShare": 0.8181818181818182,
+    "meanCompletedIterations": 0.8181818181818182,
+    "dominantBucket": "prover",
+    "meanBucketShare": {
+      "other": 0.008195943957738289,
+      "replySearch": 0.002396476572746035,
+      "prover": 0.6977214430797521,
+      "tables": 0.13697891821704694,
+      "instrument": 0.0002341839543640132,
+      "generation": 0.02035215970516822,
+      "evaluation": 0.011232758555254924,
+      "canonicalVerify": 0.12277416344935001,
+      "quiescence": 0.00011395250857972266
+    },
+    "top3Functions": [
+      {
+        "fn": "damageBoundCore",
+        "url": "src/ai/hard/tactics/prover.ts",
+        "line": 0,
+        "bucket": "prover",
+        "selfMs": 28743.37776161169
+      },
+      {
+        "fn": "enoughPossibleDamage",
+        "url": "src/game/homeCheckmate.ts",
+        "line": 0,
+        "bucket": "canonicalVerify",
+        "selfMs": 14443.705374840682
+      },
+      {
+        "fn": "(anonymous)",
+        "url": "src/game/homeCheckmate.ts",
+        "line": 0,
+        "bucket": "canonicalVerify",
+        "selfMs": 12182.18364364521
+      }
+    ]
+  },
+  "device": "Apple M2 Max x12 (darwin/arm64)",
+  "cpus": 12,
+  "node": "v24.11.1",
+  "git": "437ee40fd29f594f017e90f850762c6092864772",
+  "gitDirty": true,
+  "sampleIntervalUs": 100,
+  "at": "2026-09-18T00:17:34.552Z",
+  "note": "E4.1 cost-and-completion profile. One searchTurn per position, phase-attributed from an in-process CPU profile (self time by source file) plus the expose/ply1Trace instrument; see docs/hard-ai/e4/E4.1-PROFILE.md."
+}

@@ -1,0 +1,66 @@
+{
+  "gate": "M10",
+  "pass": true,
+  "command": "npx vitest run tests/ai/hard/prover.test.ts && npm run hard:fuzz -- --surfaces prover --cases 20000 --seed 5 --out lab/results/hard-ai-verify/M10-prover.json && npm run hard:fuzz -- --surfaces gate-preservation --actions 100000 --seed 6 --out lab/results/hard-ai-verify/M10-gate.json",
+  "criterion": "Home-prover replica (homeVerdict/homeWitness) and the checkmate gating proof",
+  "metrics": {
+    "vitestFailures": 0,
+    "prover": {
+      "seed": 5,
+      "cases": 20000,
+      "fixtureCases": 28,
+      "fixtureMismatch": 0,
+      "fuzzCases": 20000,
+      "fuzzVerdictMismatch": 0,
+      "nodeMismatch": 0,
+      "witnessChecked": 12858,
+      "witnessIllegal": 0,
+      "witnessNotRemoved": 0,
+      "verdicts": {
+        "rescue": 12844,
+        "mate": 6001,
+        "unknown": 1155
+      },
+      "cappedCases": 6708,
+      "cutoffCases": 1155,
+      "boundCases": 5528,
+      "clockFixtureOk": true,
+      "elapsedMs": 39513,
+      "git": "cc106765c6bcae26c3787532b974c401e15c25cf",
+      "node": "v24.11.1",
+      "at": "2026-09-15T12:54:50.854Z"
+    },
+    "gatePreservation": {
+      "seed": 6,
+      "actions": 100000,
+      "games": 1721,
+      "mismatches": 0,
+      "proofsCompared": 1703,
+      "proofsSuppressed": 9946,
+      "homeCheckmates": 365,
+      "terminals": {
+        "upkeep-elimination:white": 122,
+        "home-occupation:black": 329,
+        "home-checkmate:white": 184,
+        "upkeep-elimination:black": 108,
+        "home-occupation:white": 305,
+        "inactivity:draw": 436,
+        "home-checkmate:black": 181,
+        "elimination:white": 39,
+        "elimination:black": 15,
+        "unfinished": 2
+      },
+      "elapsedMs": 1120
+    },
+    "git": "cc106765c6bcae26c3787532b974c401e15c25cf",
+    "node": "v24.11.1",
+    "at": "2026-09-15T12:54:52.209Z",
+    "artifactAt": "2026-09-15T12:54:52.210Z"
+  },
+  "git": "cc106765c6bcae26c3787532b974c401e15c25cf",
+  "wasmSha256": "da9b1cdf25e4bcd6a4674fd697095e35c2606c29817e3d18043faf4799d828bf",
+  "node": "v24.11.1",
+  "device": "Apple M2 Max x12 (darwin/arm64)",
+  "elapsedMs": 43460,
+  "at": "2026-09-15T12:54:52.245Z"
+}

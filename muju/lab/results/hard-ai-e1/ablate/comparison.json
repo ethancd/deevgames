@@ -1,0 +1,310 @@
+{
+  "schema": "muju-hard-ablate-v1",
+  "at": "2026-09-16T16:28:34.027Z",
+  "reference": "reference: SELECTIVE (generateReference K=2000 under a 120,000-node cap, widths [40,16,8,4], 200 place plans) — not exhaustive; shared blind spots are invisible (EPIC-PLAN §2)",
+  "corpus": {
+    "path": "/Users/ashkie/src/deevgames-e1-run/muju/lab/results/hard-ai-e1/ablate/corpus/ablate-corpus.jsonl",
+    "sources": [
+      {
+        "source": "positions/authored.jsonl",
+        "positions": 11,
+        "stratum": "root"
+      },
+      {
+        "source": "positions/tactics.jsonl",
+        "positions": 79,
+        "stratum": "root"
+      },
+      {
+        "source": "positions/economy.jsonl",
+        "positions": 30,
+        "stratum": "root"
+      },
+      {
+        "source": "lab/results/hard-ai-e1/e1.1-diag/analysis",
+        "positions": 7,
+        "stratum": "root",
+        "note": "first consequential decision of each E1.1 analysis, reconstructed from its replay"
+      },
+      {
+        "source": "positions/fuzz-1000.jsonl",
+        "positions": 60,
+        "stratum": "reply-tail",
+        "note": "reachable mid-game states; the authored/tactics/economy puzzles leave no playable reply node"
+      }
+    ],
+    "headCount": 127,
+    "tailCount": 60,
+    "sha256": "9c28f9d47cd178aaac8d710cfdb7cad209d12f2445366b3543407d5884043f7d",
+    "notes": []
+  },
+  "budget": {
+    "positions": 127,
+    "replyPositions": 60,
+    "deep": 2000,
+    "shards": 1,
+    "replyNodeGen": "interior"
+  },
+  "arms": [
+    {
+      "arm": "base",
+      "factor": "none",
+      "change": "DESKTOP unchanged",
+      "engine": "hard@ablate:base",
+      "configHash": "4e7afdf76b32fadfab2d11577cb610c8f9f1a491b5153e70b87b0774403600cd",
+      "wallMs": 51977,
+      "artifact": "lab/results/hard-ai-e1/ablate/base/recall.json"
+    },
+    {
+      "arm": "k48",
+      "factor": "K",
+      "change": "K 24 → 48 (kInterior held at 16)",
+      "engine": "hard@ablate:k48",
+      "configHash": "5865c1a5ab1446f5694e83a3a2631f5e85db3680c5be0a61d71d249b7bee4a55",
+      "wallMs": 52730,
+      "artifact": "lab/results/hard-ai-e1/ablate/k48/recall.json"
+    },
+    {
+      "arm": "k96",
+      "factor": "K",
+      "change": "K 24 → 96 (kInterior held at 16)",
+      "engine": "hard@ablate:k96",
+      "configHash": "533b227d1530889c94662622f1d3ad71b2700869f7f8036ae138bd1d49bf1ad9",
+      "wallMs": 54349,
+      "artifact": "lab/results/hard-ai-e1/ablate/k96/recall.json"
+    },
+    {
+      "arm": "action-width-wide",
+      "factor": "widths",
+      "change": "action widths [6,4,3,2] → [8,6,4,3]",
+      "engine": "hard@ablate:action-width-wide",
+      "configHash": "d31a7afd045ecf69820236bfd6fc00a5e864820b2c8b0e1ef5619009a46b438f",
+      "wallMs": 51523,
+      "artifact": "lab/results/hard-ai-e1/ablate/action-width-wide/recall.json"
+    },
+    {
+      "arm": "action-width-narrow",
+      "factor": "widths",
+      "change": "action widths [6,4,3,2] → [4,3,2,1]",
+      "engine": "hard@ablate:action-width-narrow",
+      "configHash": "c7954c26c37d694a2b77e298e578ff9aa52848c3e8b97c50e7eb2ea4c4866283",
+      "wallMs": 49946,
+      "artifact": "lab/results/hard-ai-e1/ablate/action-width-narrow/recall.json"
+    },
+    {
+      "arm": "place-wide",
+      "factor": "placePlans",
+      "change": "place plans 16/8 → 32/16",
+      "engine": "hard@ablate:place-wide",
+      "configHash": "4d230053e46139b1bda6ecff41b39612aa9d5735b18aa11cb6ab7c27846aae35",
+      "wallMs": 52979,
+      "artifact": "lab/results/hard-ai-e1/ablate/place-wide/recall.json"
+    },
+    {
+      "arm": "place-narrow",
+      "factor": "placePlans",
+      "change": "place plans 16/8 → 8/4",
+      "engine": "hard@ablate:place-narrow",
+      "configHash": "832a792241e7c603f22efb495286778ed2b4951562e282b9209ac9e5f6ac4c07",
+      "wallMs": 52794,
+      "artifact": "lab/results/hard-ai-e1/ablate/place-narrow/recall.json"
+    },
+    {
+      "arm": "reply-wide",
+      "factor": "kInterior",
+      "change": "kInterior 16 → 32 (the reply/interior node only)",
+      "engine": "hard@ablate:reply-wide",
+      "configHash": "a81deb89c95646adc53368445f696cda607b43423e94dc1bb7e90daef96a9203",
+      "wallMs": 53231,
+      "artifact": "lab/results/hard-ai-e1/ablate/reply-wide/recall.json"
+    }
+  ],
+  "rows": [
+    {
+      "arm": "base",
+      "factor": "none",
+      "change": "DESKTOP unchanged",
+      "top1": 0.4016,
+      "top3": 0.685,
+      "top1Share": 0.4636,
+      "regretP50": 0,
+      "regretP90": 90,
+      "ceilingTop1": 0.8661,
+      "replyTop1": 0.3636,
+      "illegalTurns": 0,
+      "emptyLists": 0,
+      "positions": 127,
+      "replyPositions": 55,
+      "wallMs": 51977,
+      "configHash": "4e7afdf76b32fadfab2d11577cb610c8f9f1a491b5153e70b87b0774403600cd"
+    },
+    {
+      "arm": "k48",
+      "factor": "K",
+      "change": "K 24 → 48 (kInterior held at 16)",
+      "top1": 0.4724,
+      "top3": 0.7402,
+      "top1Share": 0.5,
+      "regretP50": 0,
+      "regretP90": 0,
+      "ceilingTop1": 0.9449,
+      "replyTop1": 0.3636,
+      "illegalTurns": 0,
+      "emptyLists": 0,
+      "positions": 127,
+      "replyPositions": 55,
+      "wallMs": 52730,
+      "configHash": "5865c1a5ab1446f5694e83a3a2631f5e85db3680c5be0a61d71d249b7bee4a55"
+    },
+    {
+      "arm": "k96",
+      "factor": "K",
+      "change": "K 24 → 96 (kInterior held at 16)",
+      "top1": 0.5197,
+      "top3": 0.7953,
+      "top1Share": 0.5197,
+      "regretP50": 0,
+      "regretP90": 0,
+      "ceilingTop1": 1,
+      "replyTop1": 0.3636,
+      "illegalTurns": 0,
+      "emptyLists": 0,
+      "positions": 127,
+      "replyPositions": 55,
+      "wallMs": 54349,
+      "configHash": "533b227d1530889c94662622f1d3ad71b2700869f7f8036ae138bd1d49bf1ad9"
+    },
+    {
+      "arm": "action-width-wide",
+      "factor": "widths",
+      "change": "action widths [6,4,3,2] → [8,6,4,3]",
+      "top1": 0.4331,
+      "top3": 0.7165,
+      "top1Share": 0.4955,
+      "regretP50": 0,
+      "regretP90": 82,
+      "ceilingTop1": 0.874,
+      "replyTop1": 0.4364,
+      "illegalTurns": 0,
+      "emptyLists": 0,
+      "positions": 127,
+      "replyPositions": 55,
+      "wallMs": 51523,
+      "configHash": "d31a7afd045ecf69820236bfd6fc00a5e864820b2c8b0e1ef5619009a46b438f"
+    },
+    {
+      "arm": "action-width-narrow",
+      "factor": "widths",
+      "change": "action widths [6,4,3,2] → [4,3,2,1]",
+      "top1": 0.3701,
+      "top3": 0.685,
+      "top1Share": 0.4273,
+      "regretP50": 0,
+      "regretP90": 0,
+      "ceilingTop1": 0.8661,
+      "replyTop1": 0.3455,
+      "illegalTurns": 0,
+      "emptyLists": 0,
+      "positions": 127,
+      "replyPositions": 55,
+      "wallMs": 49946,
+      "configHash": "c7954c26c37d694a2b77e298e578ff9aa52848c3e8b97c50e7eb2ea4c4866283"
+    },
+    {
+      "arm": "place-wide",
+      "factor": "placePlans",
+      "change": "place plans 16/8 → 32/16",
+      "top1": 0.4094,
+      "top3": 0.6929,
+      "top1Share": 0.4727,
+      "regretP50": 0,
+      "regretP90": 0,
+      "ceilingTop1": 0.8661,
+      "replyTop1": 0.3636,
+      "illegalTurns": 0,
+      "emptyLists": 0,
+      "positions": 127,
+      "replyPositions": 55,
+      "wallMs": 52979,
+      "configHash": "4d230053e46139b1bda6ecff41b39612aa9d5735b18aa11cb6ab7c27846aae35"
+    },
+    {
+      "arm": "place-narrow",
+      "factor": "placePlans",
+      "change": "place plans 16/8 → 8/4",
+      "top1": 0.4016,
+      "top3": 0.6772,
+      "top1Share": 0.4636,
+      "regretP50": 0,
+      "regretP90": 228,
+      "ceilingTop1": 0.8661,
+      "replyTop1": 0.3636,
+      "illegalTurns": 0,
+      "emptyLists": 0,
+      "positions": 127,
+      "replyPositions": 55,
+      "wallMs": 52794,
+      "configHash": "832a792241e7c603f22efb495286778ed2b4951562e282b9209ac9e5f6ac4c07"
+    },
+    {
+      "arm": "reply-wide",
+      "factor": "kInterior",
+      "change": "kInterior 16 → 32 (the reply/interior node only)",
+      "top1": 0.4016,
+      "top3": 0.685,
+      "top1Share": 0.4636,
+      "regretP50": 0,
+      "regretP90": 90,
+      "ceilingTop1": 0.8661,
+      "replyTop1": 0.3636,
+      "illegalTurns": 0,
+      "emptyLists": 0,
+      "positions": 127,
+      "replyPositions": 55,
+      "wallMs": 53231,
+      "configHash": "a81deb89c95646adc53368445f696cda607b43423e94dc1bb7e90daef96a9203"
+    }
+  ],
+  "ladderPlan": [
+    {
+      "arm": "base",
+      "seed": 1366200,
+      "command": "node --import tsx lab/hard-ai/ladder/run.ts \\\n  --a hard@ablate:base --b hard@desktop \\\n  --work wall:3000 --handicaps 0,3 --pairs 32 \\\n  --seed 1366200 --shards 2 --legality strict \\\n  --openings lab/hard-ai/ladder/openings/e1-val.jsonl \\\n  --out lab/results/hard-ai-e1/ablate/base/ladder"
+    },
+    {
+      "arm": "k48",
+      "seed": 1392902,
+      "command": "node --import tsx lab/hard-ai/ladder/run.ts \\\n  --a hard@ablate:k48 --b hard@desktop \\\n  --work wall:3000 --handicaps 0,3 --pairs 32 \\\n  --seed 1392902 --shards 2 --legality strict \\\n  --openings lab/hard-ai/ladder/openings/e1-val.jsonl \\\n  --out lab/results/hard-ai-e1/ablate/k48/ladder"
+    },
+    {
+      "arm": "k96",
+      "seed": 1367885,
+      "command": "node --import tsx lab/hard-ai/ladder/run.ts \\\n  --a hard@ablate:k96 --b hard@desktop \\\n  --work wall:3000 --handicaps 0,3 --pairs 32 \\\n  --seed 1367885 --shards 2 --legality strict \\\n  --openings lab/hard-ai/ladder/openings/e1-val.jsonl \\\n  --out lab/results/hard-ai-e1/ablate/k96/ladder"
+    },
+    {
+      "arm": "action-width-wide",
+      "seed": 1350514,
+      "command": "node --import tsx lab/hard-ai/ladder/run.ts \\\n  --a hard@ablate:action-width-wide --b hard@desktop \\\n  --work wall:3000 --handicaps 0,3 --pairs 32 \\\n  --seed 1350514 --shards 2 --legality strict \\\n  --openings lab/hard-ai/ladder/openings/e1-val.jsonl \\\n  --out lab/results/hard-ai-e1/ablate/action-width-wide/ladder"
+    },
+    {
+      "arm": "action-width-narrow",
+      "seed": 1393970,
+      "command": "node --import tsx lab/hard-ai/ladder/run.ts \\\n  --a hard@ablate:action-width-narrow --b hard@desktop \\\n  --work wall:3000 --handicaps 0,3 --pairs 32 \\\n  --seed 1393970 --shards 2 --legality strict \\\n  --openings lab/hard-ai/ladder/openings/e1-val.jsonl \\\n  --out lab/results/hard-ai-e1/ablate/action-width-narrow/ladder"
+    },
+    {
+      "arm": "place-wide",
+      "seed": 1356860,
+      "command": "node --import tsx lab/hard-ai/ladder/run.ts \\\n  --a hard@ablate:place-wide --b hard@desktop \\\n  --work wall:3000 --handicaps 0,3 --pairs 32 \\\n  --seed 1356860 --shards 2 --legality strict \\\n  --openings lab/hard-ai/ladder/openings/e1-val.jsonl \\\n  --out lab/results/hard-ai-e1/ablate/place-wide/ladder"
+    },
+    {
+      "arm": "place-narrow",
+      "seed": 1310100,
+      "command": "node --import tsx lab/hard-ai/ladder/run.ts \\\n  --a hard@ablate:place-narrow --b hard@desktop \\\n  --work wall:3000 --handicaps 0,3 --pairs 32 \\\n  --seed 1310100 --shards 2 --legality strict \\\n  --openings lab/hard-ai/ladder/openings/e1-val.jsonl \\\n  --out lab/results/hard-ai-e1/ablate/place-narrow/ladder"
+    },
+    {
+      "arm": "reply-wide",
+      "seed": 1339257,
+      "command": "node --import tsx lab/hard-ai/ladder/run.ts \\\n  --a hard@ablate:reply-wide --b hard@desktop \\\n  --work wall:3000 --handicaps 0,3 --pairs 32 \\\n  --seed 1339257 --shards 2 --legality strict \\\n  --openings lab/hard-ai/ladder/openings/e1-val.jsonl \\\n  --out lab/results/hard-ai-e1/ablate/reply-wide/ladder"
+    }
+  ]
+}

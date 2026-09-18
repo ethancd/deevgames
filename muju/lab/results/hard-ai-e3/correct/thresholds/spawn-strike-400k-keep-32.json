@@ -1,0 +1,65 @@
+{
+  "engine": "hard@ablate:eval-no-safety-keep-32",
+  "weightsLabel": "default-v1-no-safety-keep-32",
+  "evalFix": "absent",
+  "work": 400000,
+  "shards": 1,
+  "cases": 20,
+  "illegalTurns": 0,
+  "replicaDivergences": 0,
+  "failures": [
+    {
+      "suite": "spawn-strike",
+      "id": "spawn-strike-purchase-1",
+      "endKey": "fe094a57a9c23f6d",
+      "source": "search",
+      "reason": "not-in-best"
+    },
+    {
+      "suite": "spawn-strike",
+      "id": "spawn-strike-retreat-1",
+      "endKey": "abec4b6c8ffb54ce",
+      "source": "search",
+      "reason": "not-in-best"
+    },
+    {
+      "suite": "spawn-strike",
+      "id": "spawn-strike-retreat-2",
+      "endKey": "6d7589c1904d579d",
+      "source": "search",
+      "reason": "not-in-best"
+    },
+    {
+      "suite": "spawn-strike",
+      "id": "spawn-strike-retreat-3",
+      "endKey": "4e308f9fc551e132",
+      "source": "search",
+      "reason": "not-in-best"
+    },
+    {
+      "suite": "spawn-strike",
+      "id": "spawn-strike-f16-punisher",
+      "endKey": "c07cd2a07154878f",
+      "source": "search",
+      "reason": "not-in-best"
+    }
+  ],
+  "wonOutright": [
+    "spawn-strike#spawn-strike-d9-pivot-1",
+    "spawn-strike#spawn-strike-d9-pivot-2",
+    "spawn-strike#spawn-strike-d9-pivot-3",
+    "spawn-strike#spawn-strike-d9-pivot-4"
+  ],
+  "deadPositions": [],
+  "deadBudgetExceeded": [],
+  "suites": {
+    "spawn-strike": {
+      "cases": 20,
+      "passed": 15,
+      "points": 20,
+      "pointsWon": 15
+    }
+  },
+  "spawnStrike": 0.75,
+  "passedCases": 15
+}

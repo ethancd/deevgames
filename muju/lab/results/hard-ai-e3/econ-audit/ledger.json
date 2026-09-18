@@ -1,0 +1,1408 @@
+{
+  "tool": "lab/hard-ai/audit/econ-ledger.ts",
+  "generatedBy": "Hard AI E3 lane 3 (E3.1 economy audit)",
+  "weights": {
+    "label": "default-v1",
+    "version": 1
+  },
+  "constants": {
+    "ECON_HORIZON": 6,
+    "PST_HORIZON": 12,
+    "RENT_PV": 422,
+    "wPstMine": 60,
+    "wEconDelta": 80,
+    "wRent": -422,
+    "pstCoeffCc": [
+      89.9993896484375,
+      80.999755859375,
+      72.900390625,
+      65.6097412109375,
+      59.0484619140625,
+      53.14483642578125,
+      47.8302001953125,
+      43.04656982421875,
+      38.7420654296875,
+      34.86785888671875,
+      31.3812255859375,
+      28.24249267578125
+    ],
+    "streamCoeffCc": [
+      80.999755859375,
+      72.900390625,
+      65.6097412109375,
+      59.0484619140625,
+      53.14483642578125,
+      47.8302001953125
+    ],
+    "rentPvCheckCc": 421.70257568359375
+  },
+  "sidePlayers": [
+    "white",
+    "black"
+  ],
+  "entries": [
+    {
+      "id": "promote-plant_1-16-0",
+      "file": "lab/hard-ai/positions/economy.jsonl",
+      "sideToMove": "white",
+      "root": 0,
+      "turnNumber": null,
+      "phase": "place",
+      "base": {
+        "score": 3490,
+        "features": [
+          5,
+          0,
+          7,
+          0,
+          0,
+          11,
+          7,
+          15,
+          0,
+          0,
+          6,
+          0,
+          0,
+          0,
+          -2,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          -1,
+          2,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          -2,
+          -2,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "rows": [
+          {
+            "index": 0,
+            "name": "Material",
+            "stage": 0,
+            "f": 5,
+            "w": 100,
+            "cc": 500
+          },
+          {
+            "index": 2,
+            "name": "BankLiquid",
+            "stage": 0,
+            "f": 7,
+            "w": 90,
+            "cc": 630
+          },
+          {
+            "index": 5,
+            "name": "PstMine",
+            "stage": 1,
+            "f": 11,
+            "w": 60,
+            "cc": 660
+          },
+          {
+            "index": 6,
+            "name": "BankConvertible",
+            "stage": 1,
+            "f": 7,
+            "w": 20,
+            "cc": 140
+          },
+          {
+            "index": 7,
+            "name": "SpawnArea",
+            "stage": 1,
+            "f": 15,
+            "w": 30,
+            "cc": 450
+          },
+          {
+            "index": 10,
+            "name": "AnchorDepth",
+            "stage": 1,
+            "f": 6,
+            "w": 25,
+            "cc": 150
+          },
+          {
+            "index": 14,
+            "name": "HomeCountdown",
+            "stage": 1,
+            "f": -2,
+            "w": -180,
+            "cc": 360
+          },
+          {
+            "index": 23,
+            "name": "EconDelta",
+            "stage": 2,
+            "f": -1,
+            "w": 80,
+            "cc": -80
+          },
+          {
+            "index": 24,
+            "name": "DepletionWaste",
+            "stage": 2,
+            "f": 2,
+            "w": -30,
+            "cc": -60
+          },
+          {
+            "index": 35,
+            "name": "AnchorFragility",
+            "stage": 2,
+            "f": -2,
+            "w": -120,
+            "cc": 240
+          },
+          {
+            "index": 36,
+            "name": "BlockingDeficit",
+            "stage": 2,
+            "f": -2,
+            "w": -150,
+            "cc": 300
+          },
+          {
+            "index": 51,
+            "name": "Inv14LiquidityFloor",
+            "stage": 2,
+            "f": -1,
+            "w": -200,
+            "cc": 200
+          }
+        ],
+        "econ": {
+          "me": {
+            "bank": 7,
+            "projectedIncome": 3,
+            "upkeepDue": 0,
+            "pstSumCc": 1159,
+            "materialCc": 500,
+            "stream": 1039,
+            "income": [
+              3,
+              3,
+              3,
+              3,
+              3,
+              1
+            ],
+            "upkeep": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "turnsToInsolvency": 7,
+            "relocationDebt": 0,
+            "waste": 2
+          },
+          "them": {
+            "bank": 0,
+            "projectedIncome": 0,
+            "upkeepDue": 0,
+            "pstSumCc": 0,
+            "materialCc": 0,
+            "stream": 0,
+            "income": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "upkeep": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "turnsToInsolvency": 7,
+            "relocationDebt": 0,
+            "waste": 0
+          }
+        }
+      },
+      "perturbations": [
+        {
+          "id": "bank+1",
+          "what": "white bank +1 crystal",
+          "delta": 1,
+          "scoreDelta": 110,
+          "ccPerUnit": 110,
+          "featureDeltas": [
+            {
+              "name": "BankLiquid",
+              "df": 1,
+              "w": 90,
+              "ccDelta": 90
+            },
+            {
+              "name": "BankConvertible",
+              "df": 1,
+              "w": 20,
+              "ccDelta": 20
+            }
+          ],
+          "econAfter": {
+            "me": {
+              "bank": 8,
+              "projectedIncome": 3,
+              "upkeepDue": 0,
+              "pstSumCc": 1159,
+              "materialCc": 500,
+              "stream": 1039,
+              "income": [
+                3,
+                3,
+                3,
+                3,
+                3,
+                1
+              ],
+              "upkeep": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "turnsToInsolvency": 7,
+              "relocationDebt": 0,
+              "waste": 2
+            },
+            "them": {
+              "bank": 0,
+              "projectedIncome": 0,
+              "upkeepDue": 0,
+              "pstSumCc": 0,
+              "materialCc": 0,
+              "stream": 0,
+              "income": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "upkeep": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "turnsToInsolvency": 7,
+              "relocationDebt": 0,
+              "waste": 0
+            }
+          }
+        },
+        {
+          "id": "reserve-1",
+          "what": "one resource layer removed under plant_1 at (3,3); reserve 16 → 15, mine 3/turn, PST_MINE 1159 → 1106 cc",
+          "delta": -1,
+          "scoreDelta": -30,
+          "ccPerUnit": 30,
+          "featureDeltas": [
+            {
+              "name": "DepletionWaste",
+              "df": 1,
+              "w": -30,
+              "ccDelta": -30
+            }
+          ],
+          "econAfter": {
+            "me": {
+              "bank": 7,
+              "projectedIncome": 3,
+              "upkeepDue": 0,
+              "pstSumCc": 1106,
+              "materialCc": 500,
+              "stream": 992,
+              "income": [
+                3,
+                3,
+                3,
+                3,
+                3,
+                0
+              ],
+              "upkeep": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "turnsToInsolvency": 7,
+              "relocationDebt": 0,
+              "waste": 3
+            },
+            "them": {
+              "bank": 0,
+              "projectedIncome": 0,
+              "upkeepDue": 0,
+              "pstSumCc": 0,
+              "materialCc": 0,
+              "stream": 0,
+              "income": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "upkeep": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "turnsToInsolvency": 7,
+              "relocationDebt": 0,
+              "waste": 0
+            }
+          }
+        },
+        {
+          "id": "promote-t1-t2",
+          "what": "SU §1.7's plant line, first step: plant_1 → plant_2 on the same cell, 4 crystals paid from the bank (mine 3 → 5/turn, upkeep 0 → 1/turn)",
+          "delta": 1,
+          "scoreDelta": -1282,
+          "ccPerUnit": -1282,
+          "featureDeltas": [
+            {
+              "name": "Material",
+              "df": 4,
+              "w": 100,
+              "ccDelta": 400
+            },
+            {
+              "name": "Rent",
+              "df": 1,
+              "w": -422,
+              "ccDelta": -422
+            },
+            {
+              "name": "BankLiquid",
+              "df": -4,
+              "w": 90,
+              "ccDelta": -360
+            },
+            {
+              "name": "PstMine",
+              "df": 1,
+              "w": 60,
+              "ccDelta": 60
+            },
+            {
+              "name": "BankConvertible",
+              "df": -4,
+              "w": 20,
+              "ccDelta": -80
+            },
+            {
+              "name": "TierClimb",
+              "df": 1,
+              "w": 0,
+              "ccDelta": 0
+            },
+            {
+              "name": "EconDelta",
+              "df": -4,
+              "w": 80,
+              "ccDelta": -320
+            },
+            {
+              "name": "DepletionWaste",
+              "df": 12,
+              "w": -30,
+              "ccDelta": -360
+            },
+            {
+              "name": "Inv14LiquidityFloor",
+              "df": 1,
+              "w": -200,
+              "ccDelta": -200
+            }
+          ],
+          "econAfter": {
+            "me": {
+              "bank": 3,
+              "projectedIncome": 5,
+              "upkeepDue": 1,
+              "pstSumCc": 1285,
+              "materialCc": 900,
+              "stream": 774,
+              "income": [
+                5,
+                5,
+                5,
+                1,
+                0,
+                0
+              ],
+              "upkeep": [
+                1,
+                1,
+                1,
+                1,
+                1,
+                1
+              ],
+              "turnsToInsolvency": 7,
+              "relocationDebt": 0,
+              "waste": 14
+            },
+            "them": {
+              "bank": 0,
+              "projectedIncome": 0,
+              "upkeepDue": 0,
+              "pstSumCc": 0,
+              "materialCc": 0,
+              "stream": 0,
+              "income": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "upkeep": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "turnsToInsolvency": 7,
+              "relocationDebt": 0,
+              "waste": 0
+            }
+          }
+        },
+        {
+          "id": "unbuy-miner",
+          "what": "the purchase decision, reversed: plant_1 removed from the board and its 5-crystal cost refunded to the bank; the negated delta is what the evaluator pays to own the miner instead of the cash",
+          "delta": -1,
+          "scoreDelta": -4070,
+          "ccPerUnit": 4070,
+          "featureDeltas": [
+            {
+              "name": "Material",
+              "df": -5,
+              "w": 100,
+              "ccDelta": -500
+            },
+            {
+              "name": "BankLiquid",
+              "df": 1,
+              "w": 90,
+              "ccDelta": 90
+            },
+            {
+              "name": "BankExcess",
+              "df": 4,
+              "w": 25,
+              "ccDelta": 100
+            },
+            {
+              "name": "PstMine",
+              "df": -11,
+              "w": 60,
+              "ccDelta": -660
+            },
+            {
+              "name": "BankConvertible",
+              "df": -7,
+              "w": 20,
+              "ccDelta": -140
+            },
+            {
+              "name": "SpawnArea",
+              "df": -15,
+              "w": 30,
+              "ccDelta": -450
+            },
+            {
+              "name": "SpawnZero",
+              "df": 1,
+              "w": -800,
+              "ccDelta": -800
+            },
+            {
+              "name": "AnchorDepth",
+              "df": -6,
+              "w": 25,
+              "ccDelta": -150
+            },
+            {
+              "name": "HomeCountdown",
+              "df": 2,
+              "w": -180,
+              "ccDelta": -360
+            },
+            {
+              "name": "EconDelta",
+              "df": 1,
+              "w": 80,
+              "ccDelta": 80
+            },
+            {
+              "name": "DepletionWaste",
+              "df": -2,
+              "w": -30,
+              "ccDelta": 60
+            },
+            {
+              "name": "AnchorFragility",
+              "df": 2,
+              "w": -120,
+              "ccDelta": -240
+            },
+            {
+              "name": "BlockingDeficit",
+              "df": 2,
+              "w": -150,
+              "ccDelta": -300
+            },
+            {
+              "name": "Inv1SpawnZero",
+              "df": 1,
+              "w": -800,
+              "ccDelta": -800
+            }
+          ],
+          "econAfter": {
+            "me": {
+              "bank": 12,
+              "projectedIncome": 0,
+              "upkeepDue": 0,
+              "pstSumCc": 0,
+              "materialCc": 0,
+              "stream": 0,
+              "income": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "upkeep": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "turnsToInsolvency": 7,
+              "relocationDebt": 0,
+              "waste": 0
+            },
+            "them": {
+              "bank": 0,
+              "projectedIncome": 0,
+              "upkeepDue": 0,
+              "pstSumCc": 0,
+              "materialCc": 0,
+              "stream": 0,
+              "income": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "upkeep": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "turnsToInsolvency": 7,
+              "relocationDebt": 0,
+              "waste": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "loss-g2-s5_0_2-A-white-t4",
+      "file": "lab/hard-ai/exam/cases/dev.jsonl",
+      "sideToMove": "white",
+      "root": 0,
+      "turnNumber": 4,
+      "phase": "place",
+      "base": {
+        "score": 968,
+        "features": [
+          -7,
+          -1,
+          0,
+          -1,
+          0,
+          -1,
+          -1,
+          -4,
+          -4,
+          0,
+          -1,
+          0,
+          -1,
+          0,
+          0,
+          0,
+          0,
+          -1,
+          -1,
+          0,
+          0,
+          -1,
+          0,
+          -2,
+          -23,
+          0,
+          0,
+          -4,
+          -14,
+          3,
+          0,
+          -11,
+          0,
+          2,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "rows": [
+          {
+            "index": 0,
+            "name": "Material",
+            "stage": 0,
+            "f": -7,
+            "w": 100,
+            "cc": -700
+          },
+          {
+            "index": 1,
+            "name": "Rent",
+            "stage": 0,
+            "f": -1,
+            "w": -422,
+            "cc": 422
+          },
+          {
+            "index": 3,
+            "name": "BankExcess",
+            "stage": 0,
+            "f": -1,
+            "w": 25,
+            "cc": -25
+          },
+          {
+            "index": 5,
+            "name": "PstMine",
+            "stage": 1,
+            "f": -1,
+            "w": 60,
+            "cc": -60
+          },
+          {
+            "index": 6,
+            "name": "BankConvertible",
+            "stage": 1,
+            "f": -1,
+            "w": 20,
+            "cc": -20
+          },
+          {
+            "index": 7,
+            "name": "SpawnArea",
+            "stage": 1,
+            "f": -4,
+            "w": 30,
+            "cc": -120
+          },
+          {
+            "index": 8,
+            "name": "SpawnReserve",
+            "stage": 1,
+            "f": -4,
+            "w": 8,
+            "cc": -32
+          },
+          {
+            "index": 10,
+            "name": "AnchorDepth",
+            "stage": 1,
+            "f": -1,
+            "w": 25,
+            "cc": -25
+          },
+          {
+            "index": 12,
+            "name": "CornerSeal",
+            "stage": 1,
+            "f": -1,
+            "w": -60,
+            "cc": 60
+          },
+          {
+            "index": 17,
+            "name": "Exposure",
+            "stage": 1,
+            "f": -1,
+            "w": -20,
+            "cc": 20
+          },
+          {
+            "index": 18,
+            "name": "DrawPressure",
+            "stage": 1,
+            "f": -1,
+            "w": -8,
+            "cc": 8
+          },
+          {
+            "index": 21,
+            "name": "TierClimb",
+            "stage": 1,
+            "f": -1,
+            "w": 0,
+            "cc": 0
+          },
+          {
+            "index": 23,
+            "name": "EconDelta",
+            "stage": 2,
+            "f": -2,
+            "w": 80,
+            "cc": -160
+          },
+          {
+            "index": 24,
+            "name": "DepletionWaste",
+            "stage": 2,
+            "f": -23,
+            "w": -30,
+            "cc": 690
+          },
+          {
+            "index": 27,
+            "name": "RelocationDebt",
+            "stage": 2,
+            "f": -4,
+            "w": -60,
+            "cc": 240
+          },
+          {
+            "index": 28,
+            "name": "Hanging",
+            "stage": 2,
+            "f": -14,
+            "w": -50,
+            "cc": 700
+          },
+          {
+            "index": 29,
+            "name": "HangingBuy",
+            "stage": 2,
+            "f": 3,
+            "w": -30,
+            "cc": -90
+          },
+          {
+            "index": 31,
+            "name": "ApproachStrand",
+            "stage": 2,
+            "f": -11,
+            "w": -10,
+            "cc": 110
+          },
+          {
+            "index": 33,
+            "name": "KillAvailable",
+            "stage": 2,
+            "f": 2,
+            "w": 35,
+            "cc": 70
+          },
+          {
+            "index": 35,
+            "name": "AnchorFragility",
+            "stage": 2,
+            "f": 1,
+            "w": -120,
+            "cc": -120
+          }
+        ],
+        "econ": {
+          "me": {
+            "bank": 13,
+            "projectedIncome": 7,
+            "upkeepDue": 0,
+            "pstSumCc": 954,
+            "materialCc": 1600,
+            "stream": 1655,
+            "income": [
+              7,
+              4,
+              2,
+              7,
+              3,
+              2
+            ],
+            "upkeep": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "turnsToInsolvency": 7,
+            "relocationDebt": 420,
+            "waste": 17
+          },
+          "them": {
+            "bank": 14,
+            "projectedIncome": 10,
+            "upkeepDue": 1,
+            "pstSumCc": 1062,
+            "materialCc": 2300,
+            "stream": 2053,
+            "income": [
+              10,
+              2,
+              9,
+              5,
+              4,
+              8
+            ],
+            "upkeep": [
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "turnsToInsolvency": 7,
+            "relocationDebt": 900,
+            "waste": 40
+          }
+        }
+      },
+      "perturbations": [
+        {
+          "id": "bank+1",
+          "what": "white bank +1 crystal",
+          "delta": 1,
+          "scoreDelta": 45,
+          "ccPerUnit": 45,
+          "featureDeltas": [
+            {
+              "name": "BankExcess",
+              "df": 1,
+              "w": 25,
+              "ccDelta": 25
+            },
+            {
+              "name": "BankConvertible",
+              "df": 1,
+              "w": 20,
+              "ccDelta": 20
+            }
+          ],
+          "econAfter": {
+            "me": {
+              "bank": 14,
+              "projectedIncome": 7,
+              "upkeepDue": 0,
+              "pstSumCc": 954,
+              "materialCc": 1600,
+              "stream": 1655,
+              "income": [
+                7,
+                4,
+                2,
+                7,
+                3,
+                2
+              ],
+              "upkeep": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "turnsToInsolvency": 7,
+              "relocationDebt": 420,
+              "waste": 17
+            },
+            "them": {
+              "bank": 14,
+              "projectedIncome": 10,
+              "upkeepDue": 1,
+              "pstSumCc": 1062,
+              "materialCc": 2300,
+              "stream": 2053,
+              "income": [
+                10,
+                2,
+                9,
+                5,
+                4,
+                8
+              ],
+              "upkeep": [
+                1,
+                1,
+                1,
+                1,
+                1,
+                1
+              ],
+              "turnsToInsolvency": 7,
+              "relocationDebt": 900,
+              "waste": 40
+            }
+          }
+        },
+        {
+          "id": "reserve+1",
+          "what": "one resource layer added under water_1 at (1,1); reserve 2 → 3, mine 2/turn, PST_MINE 180 → 261 cc",
+          "delta": 1,
+          "scoreDelta": -130,
+          "ccPerUnit": -130,
+          "featureDeltas": [
+            {
+              "name": "PstMine",
+              "df": 1,
+              "w": 60,
+              "ccDelta": 60
+            },
+            {
+              "name": "EconDelta",
+              "df": -2,
+              "w": 80,
+              "ccDelta": -160
+            },
+            {
+              "name": "DepletionWaste",
+              "df": 1,
+              "w": -30,
+              "ccDelta": -30
+            }
+          ],
+          "econAfter": {
+            "me": {
+              "bank": 13,
+              "projectedIncome": 7,
+              "upkeepDue": 0,
+              "pstSumCc": 1035,
+              "materialCc": 1600,
+              "stream": 1608,
+              "income": [
+                7,
+                5,
+                0,
+                7,
+                5,
+                0
+              ],
+              "upkeep": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "turnsToInsolvency": 7,
+              "relocationDebt": 420,
+              "waste": 18
+            },
+            "them": {
+              "bank": 14,
+              "projectedIncome": 10,
+              "upkeepDue": 1,
+              "pstSumCc": 1062,
+              "materialCc": 2300,
+              "stream": 2053,
+              "income": [
+                10,
+                2,
+                9,
+                5,
+                4,
+                8
+              ],
+              "upkeep": [
+                1,
+                1,
+                1,
+                1,
+                1,
+                1
+              ],
+              "turnsToInsolvency": 7,
+              "relocationDebt": 900,
+              "waste": 40
+            }
+          }
+        },
+        {
+          "id": "upkeep+1",
+          "what": "water_1 → water_2 (upkeep +1/turn at the same mining rate; Material and the tier features move too and are listed)",
+          "delta": 1,
+          "scoreDelta": -192,
+          "ccPerUnit": -192,
+          "featureDeltas": [
+            {
+              "name": "Material",
+              "df": 4,
+              "w": 100,
+              "ccDelta": 400
+            },
+            {
+              "name": "Rent",
+              "df": 1,
+              "w": -422,
+              "ccDelta": -422
+            },
+            {
+              "name": "TierClimb",
+              "df": 1,
+              "w": 0,
+              "ccDelta": 0
+            },
+            {
+              "name": "ElementCoverage",
+              "df": 1,
+              "w": 150,
+              "ccDelta": 150
+            },
+            {
+              "name": "EconDelta",
+              "df": -4,
+              "w": 80,
+              "ccDelta": -320
+            }
+          ],
+          "econAfter": {
+            "me": {
+              "bank": 13,
+              "projectedIncome": 7,
+              "upkeepDue": 1,
+              "pstSumCc": 954,
+              "materialCc": 2000,
+              "stream": 1275,
+              "income": [
+                7,
+                4,
+                2,
+                7,
+                3,
+                2
+              ],
+              "upkeep": [
+                1,
+                1,
+                1,
+                1,
+                1,
+                1
+              ],
+              "turnsToInsolvency": 7,
+              "relocationDebt": 420,
+              "waste": 17
+            },
+            "them": {
+              "bank": 14,
+              "projectedIncome": 10,
+              "upkeepDue": 1,
+              "pstSumCc": 1062,
+              "materialCc": 2300,
+              "stream": 2053,
+              "income": [
+                10,
+                2,
+                9,
+                5,
+                4,
+                8
+              ],
+              "upkeep": [
+                1,
+                1,
+                1,
+                1,
+                1,
+                1
+              ],
+              "turnsToInsolvency": 7,
+              "relocationDebt": 900,
+              "waste": 40
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "sweeps": [
+    {
+      "id": "bank-sweep",
+      "what": "promote-plant_1-16-0 with White's bank set to 0..14 (one plant_1 on a 16-cell, nothing else on the board)",
+      "points": [
+        {
+          "x": 0,
+          "score": 2340,
+          "stepCc": 0
+        },
+        {
+          "x": 1,
+          "score": 2450,
+          "stepCc": 110
+        },
+        {
+          "x": 2,
+          "score": 2560,
+          "stepCc": 110
+        },
+        {
+          "x": 3,
+          "score": 2850,
+          "stepCc": 290
+        },
+        {
+          "x": 4,
+          "score": 2960,
+          "stepCc": 110
+        },
+        {
+          "x": 5,
+          "score": 3070,
+          "stepCc": 110
+        },
+        {
+          "x": 6,
+          "score": 3380,
+          "stepCc": 310
+        },
+        {
+          "x": 7,
+          "score": 3490,
+          "stepCc": 110
+        },
+        {
+          "x": 8,
+          "score": 3600,
+          "stepCc": 110
+        },
+        {
+          "x": 9,
+          "score": 3645,
+          "stepCc": 45
+        },
+        {
+          "x": 10,
+          "score": 3690,
+          "stepCc": 45
+        },
+        {
+          "x": 11,
+          "score": 3735,
+          "stepCc": 45
+        },
+        {
+          "x": 12,
+          "score": 3780,
+          "stepCc": 45
+        },
+        {
+          "x": 13,
+          "score": 3825,
+          "stepCc": 45
+        },
+        {
+          "x": 14,
+          "score": 3870,
+          "stepCc": 45
+        }
+      ]
+    },
+    {
+      "id": "reserve-sweep-mine1",
+      "what": "promote-plant_1-16-0 with its plant_1 replaced by a fire_1 (mine 1/turn, upkeep 0) and the reserve under it set to 0..16; step r is the cc the evaluator pays for the crystal mined on own-turn r",
+      "points": [
+        {
+          "x": 0,
+          "score": 2590,
+          "stepCc": 0
+        },
+        {
+          "x": 1,
+          "score": 2620,
+          "stepCc": 30
+        },
+        {
+          "x": 2,
+          "score": 2710,
+          "stepCc": 90
+        },
+        {
+          "x": 3,
+          "score": 2800,
+          "stepCc": 90
+        },
+        {
+          "x": 4,
+          "score": 2890,
+          "stepCc": 90
+        },
+        {
+          "x": 5,
+          "score": 2920,
+          "stepCc": 30
+        },
+        {
+          "x": 6,
+          "score": 3010,
+          "stepCc": 90
+        },
+        {
+          "x": 7,
+          "score": 3010,
+          "stepCc": 0
+        },
+        {
+          "x": 8,
+          "score": 2990,
+          "stepCc": -20
+        },
+        {
+          "x": 9,
+          "score": 2990,
+          "stepCc": 0
+        },
+        {
+          "x": 10,
+          "score": 2910,
+          "stepCc": -80
+        },
+        {
+          "x": 11,
+          "score": 2970,
+          "stepCc": 60
+        },
+        {
+          "x": 12,
+          "score": 2970,
+          "stepCc": 0
+        },
+        {
+          "x": 13,
+          "score": 2970,
+          "stepCc": 0
+        },
+        {
+          "x": 14,
+          "score": 2970,
+          "stepCc": 0
+        },
+        {
+          "x": 15,
+          "score": 2970,
+          "stepCc": 0
+        },
+        {
+          "x": 16,
+          "score": 2970,
+          "stepCc": 0
+        }
+      ]
+    }
+  ]
+}

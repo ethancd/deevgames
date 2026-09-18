@@ -1,0 +1,266 @@
+{
+  "schema": "muju-e3-b6-scan-v1",
+  "at": "2026-09-17T10:23:30.489Z",
+  "corpus": "lab/hard-ai/positions/fuzz-1000.jsonl",
+  "positions": 1000,
+  "weights": 1,
+  "rot180": [
+    {
+      "arm": "off",
+      "checked": 1000,
+      "violations": 585,
+      "byFeature": [
+        {
+          "name": "RelocationDebt",
+          "positions": 501
+        },
+        {
+          "name": "EconDelta",
+          "positions": 342
+        },
+        {
+          "name": "DepletionWaste",
+          "positions": 318
+        }
+      ],
+      "inv3Violations": 0,
+      "inv3Ids": [],
+      "inv3Rows": []
+    },
+    {
+      "arm": "b4",
+      "checked": 1000,
+      "violations": 587,
+      "byFeature": [
+        {
+          "name": "RelocationDebt",
+          "positions": 501
+        },
+        {
+          "name": "EconDelta",
+          "positions": 342
+        },
+        {
+          "name": "DepletionWaste",
+          "positions": 318
+        },
+        {
+          "name": "Inv3RetreatSquare",
+          "positions": 5
+        }
+      ],
+      "inv3Violations": 5,
+      "inv3Ids": [
+        "fuzz-5150-4-132",
+        "fuzz-5150-1525-94",
+        "fuzz-5150-1103-127",
+        "fuzz-5150-263-483",
+        "fuzz-5150-263-488"
+      ],
+      "inv3Rows": [
+        {
+          "id": "fuzz-5150-4-132",
+          "inv3": {
+            "name": "Inv3RetreatSquare",
+            "position": 0,
+            "mirror": 1
+          },
+          "scoreDeltaCc": -250
+        },
+        {
+          "id": "fuzz-5150-1525-94",
+          "inv3": {
+            "name": "Inv3RetreatSquare",
+            "position": 0,
+            "mirror": 1
+          },
+          "scoreDeltaCc": -330
+        },
+        {
+          "id": "fuzz-5150-1103-127",
+          "inv3": {
+            "name": "Inv3RetreatSquare",
+            "position": -1,
+            "mirror": 0
+          },
+          "scoreDeltaCc": -250
+        },
+        {
+          "id": "fuzz-5150-263-483",
+          "inv3": {
+            "name": "Inv3RetreatSquare",
+            "position": 1,
+            "mirror": 0
+          },
+          "scoreDeltaCc": 790
+        },
+        {
+          "id": "fuzz-5150-263-488",
+          "inv3": {
+            "name": "Inv3RetreatSquare",
+            "position": 1,
+            "mirror": 0
+          },
+          "scoreDeltaCc": 710
+        }
+      ]
+    },
+    {
+      "arm": "b6",
+      "checked": 1000,
+      "violations": 585,
+      "byFeature": [
+        {
+          "name": "RelocationDebt",
+          "positions": 501
+        },
+        {
+          "name": "EconDelta",
+          "positions": 342
+        },
+        {
+          "name": "DepletionWaste",
+          "positions": 318
+        }
+      ],
+      "inv3Violations": 0,
+      "inv3Ids": [],
+      "inv3Rows": []
+    },
+    {
+      "arm": "b4+b6",
+      "checked": 1000,
+      "violations": 585,
+      "byFeature": [
+        {
+          "name": "RelocationDebt",
+          "positions": 501
+        },
+        {
+          "name": "EconDelta",
+          "positions": 342
+        },
+        {
+          "name": "DepletionWaste",
+          "positions": 318
+        }
+      ],
+      "inv3Violations": 0,
+      "inv3Ids": [],
+      "inv3Rows": []
+    },
+    {
+      "arm": "b1-b5",
+      "checked": 1000,
+      "violations": 5,
+      "byFeature": [
+        {
+          "name": "Inv3RetreatSquare",
+          "positions": 5
+        }
+      ],
+      "inv3Violations": 5,
+      "inv3Ids": [
+        "fuzz-5150-4-132",
+        "fuzz-5150-1525-94",
+        "fuzz-5150-1103-127",
+        "fuzz-5150-263-483",
+        "fuzz-5150-263-488"
+      ],
+      "inv3Rows": [
+        {
+          "id": "fuzz-5150-4-132",
+          "inv3": {
+            "name": "Inv3RetreatSquare",
+            "position": 0,
+            "mirror": 1
+          },
+          "scoreDeltaCc": -250
+        },
+        {
+          "id": "fuzz-5150-1525-94",
+          "inv3": {
+            "name": "Inv3RetreatSquare",
+            "position": 0,
+            "mirror": 1
+          },
+          "scoreDeltaCc": -250
+        },
+        {
+          "id": "fuzz-5150-1103-127",
+          "inv3": {
+            "name": "Inv3RetreatSquare",
+            "position": -1,
+            "mirror": 0
+          },
+          "scoreDeltaCc": -250
+        },
+        {
+          "id": "fuzz-5150-263-483",
+          "inv3": {
+            "name": "Inv3RetreatSquare",
+            "position": 1,
+            "mirror": 0
+          },
+          "scoreDeltaCc": 250
+        },
+        {
+          "id": "fuzz-5150-263-488",
+          "inv3": {
+            "name": "Inv3RetreatSquare",
+            "position": 1,
+            "mirror": 0
+          },
+          "scoreDeltaCc": 250
+        }
+      ]
+    },
+    {
+      "arm": "b1-b6",
+      "checked": 1000,
+      "violations": 0,
+      "byFeature": [],
+      "inv3Violations": 0,
+      "inv3Ids": [],
+      "inv3Rows": []
+    }
+  ],
+  "tieScan": {
+    "positions": 1000,
+    "slotsWithAnApproach": 7137,
+    "retreatSlots": 5390,
+    "tieFreeSlots": 650,
+    "retreatsMoved": 4,
+    "retreatsMovedAtTieFreeSlots": 0,
+    "moved": [
+      {
+        "id": "fuzz-5150-4-132",
+        "slot": 1,
+        "off": 0,
+        "on": 1,
+        "tieFree": false
+      },
+      {
+        "id": "fuzz-5150-1525-94",
+        "slot": 5,
+        "off": 0,
+        "on": 2,
+        "tieFree": false
+      },
+      {
+        "id": "fuzz-5150-263-483",
+        "slot": 9,
+        "off": 2,
+        "on": 0,
+        "tieFree": false
+      },
+      {
+        "id": "fuzz-5150-263-488",
+        "slot": 9,
+        "off": 2,
+        "on": 0,
+        "tieFree": false
+      }
+    ]
+  }
+}

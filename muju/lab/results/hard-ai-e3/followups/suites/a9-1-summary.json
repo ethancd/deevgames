@@ -1,0 +1,61 @@
+{
+  "note": "A9-1 before/after, hard:suite --suites invariants --shards 1, 20 pairs at 50,000 units each, 2026-09-17, E3 lane 13",
+  "wallSecondsPerRun": [
+    19.4,
+    19.3,
+    19.6,
+    19.2,
+    19.1,
+    20.9
+  ],
+  "rows": [
+    {
+      "file": "after-a9-1-ablate-eval-correct-v1.json",
+      "engine": "hard@ablate:eval-correct-v1",
+      "weightsLabel": "default-v1",
+      "evalFix": "b2+b3+b4+b5",
+      "invariantsEval": 0.6,
+      "invariantsSearched": 0.4
+    },
+    {
+      "file": "after-a9-1-ablate-eval-no-safety.json",
+      "engine": "hard@ablate:eval-no-safety",
+      "weightsLabel": "default-v1-no-safety",
+      "evalFix": "absent",
+      "invariantsEval": 0.5,
+      "invariantsSearched": 0.4
+    },
+    {
+      "file": "after-a9-1-desktop.json",
+      "engine": "hard@desktop",
+      "weightsLabel": "default-v1",
+      "evalFix": "absent",
+      "invariantsEval": 0.6,
+      "invariantsSearched": 0.3
+    },
+    {
+      "file": "before-a9-1-ablate-eval-correct-v1.json",
+      "engine": "hard@ablate:eval-correct-v1",
+      "weightsLabel": "(not recorded: pre-A9-1)",
+      "evalFix": "(not recorded: pre-A9-1)",
+      "invariantsEval": 0.6,
+      "invariantsSearched": 0.4
+    },
+    {
+      "file": "before-a9-1-ablate-eval-no-safety.json",
+      "engine": "hard@ablate:eval-no-safety",
+      "weightsLabel": "(not recorded: pre-A9-1)",
+      "evalFix": "(not recorded: pre-A9-1)",
+      "invariantsEval": 0.6,
+      "invariantsSearched": 0.4
+    },
+    {
+      "file": "before-a9-1-desktop.json",
+      "engine": "hard@desktop",
+      "weightsLabel": "(not recorded: pre-A9-1)",
+      "evalFix": "(not recorded: pre-A9-1)",
+      "invariantsEval": 0.6,
+      "invariantsSearched": 0.3
+    }
+  ]
+}

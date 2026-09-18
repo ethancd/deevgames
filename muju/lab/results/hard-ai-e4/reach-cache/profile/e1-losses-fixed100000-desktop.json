@@ -1,0 +1,5236 @@
+{
+  "schema": "muju-hard-ai-e4-profile-v1",
+  "set": "e1-losses",
+  "work": "fixed:100000",
+  "engine": "hard@desktop",
+  "engineConfigHash": "hard:desktop:fixed:100000#387244209047c03daa71ed9b2852fdf13d79fbc16f3d3e80fd7fcf7d5a9f8ffc",
+  "resolvedConfigHash": "387244209047c03daa71ed9b2852fdf13d79fbc16f3d3e80fd7fcf7d5a9f8ffc",
+  "positions": [
+    {
+      "id": "e1-losses:g2-s20_3_15-A-white",
+      "set": "e1-losses",
+      "label": "g2-s20_3_15-A-white",
+      "side": "white",
+      "turnNumber": 3,
+      "seatTurnIndex": 2,
+      "work": "fixed:100000",
+      "searchMs": 1459.685083,
+      "canonicalReplayMs": 0.11745799999994233,
+      "totalMs": 1476.548416,
+      "attribution": {
+        "profiledMs": 1482,
+        "byBucket": {
+          "other": 24.804628577332362,
+          "replySearch": 9.64624444674037,
+          "prover": 186.34094431242974,
+          "tables": 1061.2400041326557,
+          "generation": 108.09918379997968,
+          "evaluation": 43.1784275235046,
+          "canonicalVerify": 47.31253228639339,
+          "quiescence": 0.7655749560905052,
+          "instrument": 0.6124599648724042
+        },
+        "byFunction": [
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 19.29248889348073
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 18.526913937390226
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 16.077074077900612
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 12.555429279884285
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 11.63673933257568
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 11.177394358921376
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 10.871164376485174
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 9.952474429176567
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 9.799359437958467
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 9.493129455522265
+          },
+          {
+            "fn": "blockingSet",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 9.186899473086063
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 8.880669490649861
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 8.115094534559354
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 7.655749560905052
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 7.3495195784688505
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 7.043289596032649
+          },
+          {
+            "fn": "genActions",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 7.043289596032649
+          },
+          {
+            "fn": "bfsMulti",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.890174604814547
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.737059613596446
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.430829631160244
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.277714639942142
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "other",
+            "selfMs": 5.971484657505941
+          },
+          {
+            "fn": "genActions",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 5.81836966628784
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.665254675069739
+          },
+          {
+            "fn": "(program)",
+            "url": "",
+            "line": -1,
+            "bucket": "other",
+            "selfMs": 5.665254675069739
+          },
+          {
+            "fn": "blockingSet",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.512139683851638
+          },
+          {
+            "fn": "nearestThreat",
+            "url": "src/ai/hard/tables/home.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.512139683851638
+          },
+          {
+            "fn": "bbAndNot",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "other",
+            "selfMs": 5.512139683851638
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.359024692633537
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.359024692633537
+          },
+          {
+            "fn": "blockingSet",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.205909701415436
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.052794710197334
+          },
+          {
+            "fn": "blockingSet",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.052794710197334
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.052794710197334
+          },
+          {
+            "fn": "genActions",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 5.052794710197334
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.052794710197334
+          },
+          {
+            "fn": "bfsMulti",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.7465647277611325
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.593449736543032
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.593449736543032
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.440334745324931
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 4.440334745324931
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.440334745324931
+          },
+          {
+            "fn": "blockingSet",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.134104762888728
+          },
+          {
+            "fn": "actionPriority",
+            "url": "src/ai/hard/gen/actionsearch.ts",
+            "line": 0,
+            "bucket": "generation",
+            "selfMs": 4.134104762888728
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.980989771670627
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.980989771670627
+          },
+          {
+            "fn": "bfsMulti",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.980989771670627
+          },
+          {
+            "fn": "genActions",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 3.980989771670627
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.827874780452526
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.827874780452526
+          }
+        ]
+      },
+      "stopReason": "work",
+      "source": "search",
+      "completedIterations": 2,
+      "rung": 100000,
+      "workSpent": 100412,
+      "byClass": {
+        "MACRO": 545,
+        "QUIESCE": 805,
+        "TURN": 55342,
+        "GEN": 1766,
+        "KILLTABLE": 2667,
+        "DFPN": 0,
+        "EVAL1": 805,
+        "EVAL2": 805,
+        "PROVER": 0
+      },
+      "rootCoverage": {
+        "source": "completed-depth",
+        "listed": 28,
+        "searched": 28
+      },
+      "ply1": {
+        "nodes": 28,
+        "meanGenerated": 18.035714285714285,
+        "cutShare": 0,
+        "configuredK": 16
+      },
+      "rootTrace": [
+        {
+          "depth": 1,
+          "n": 28,
+          "searched": 28,
+          "completed": true,
+          "cutoffAt": -1,
+          "truncated": false,
+          "work": 1754
+        },
+        {
+          "depth": 2,
+          "n": 28,
+          "searched": 28,
+          "completed": true,
+          "cutoffAt": -1,
+          "truncated": false,
+          "work": 29863
+        },
+        {
+          "depth": 3,
+          "n": 28,
+          "searched": 7,
+          "completed": false,
+          "cutoffAt": -1,
+          "truncated": true,
+          "work": 67845
+        }
+      ]
+    },
+    {
+      "id": "e1-losses:g2-s20_3_15-B-white",
+      "set": "e1-losses",
+      "label": "g2-s20_3_15-B-white",
+      "side": "black",
+      "turnNumber": 7,
+      "seatTurnIndex": 6,
+      "work": "fixed:100000",
+      "searchMs": 844.8040000000003,
+      "canonicalReplayMs": 0.09233400000039182,
+      "totalMs": 856.213958,
+      "attribution": {
+        "profiledMs": 882.959,
+        "byBucket": {
+          "other": 13.987780526877893,
+          "replySearch": 2.9861553933784255,
+          "tables": 682.4150904236323,
+          "evaluation": 23.4177449270203,
+          "prover": 82.82652064791743,
+          "generation": 56.265454254183034,
+          "canonicalVerify": 20.745921680313288,
+          "instrument": 0.3143321466714133
+        },
+        "byFunction": [
+          {
+            "fn": "runKillDp",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 12.416119793520824
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 10.372960840156638
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 9.115632253470986
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 8.801300106799573
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 8.48696796012816
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 8.172635813456747
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 7.229639373442506
+          },
+          {
+            "fn": "runKillDp",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.758141153435386
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.443809006763973
+          },
+          {
+            "fn": "bestRelocationTarget",
+            "url": "src/ai/hard/tables/economy.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.972310786756853
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.500812566749733
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.343646493414027
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.343646493414027
+          },
+          {
+            "fn": "runKillDp",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.343646493414027
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.186480420078319
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.186480420078319
+          },
+          {
+            "fn": "runKillDp",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.7149822000712
+          },
+          {
+            "fn": "squareScoreCc",
+            "url": "src/ai/hard/gen/purchase.ts",
+            "line": 0,
+            "bucket": "generation",
+            "selfMs": 4.7149822000712
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.557816126735493
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.557816126735493
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.557816126735493
+          },
+          {
+            "fn": "runKillDp",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.0863179067283735
+          },
+          {
+            "fn": "blockingSet",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.9291518333926665
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.9291518333926665
+          },
+          {
+            "fn": "runKillDp",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.9291518333926665
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.77198576005696
+          },
+          {
+            "fn": "genActions",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 3.77198576005696
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.614819686721253
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.614819686721253
+          },
+          {
+            "fn": "buildCandidates",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.4576536133855464
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.4576536133855464
+          },
+          {
+            "fn": "approachTable",
+            "url": "src/ai/hard/tables/approach.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.4576536133855464
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.30048754004984
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.9861553933784264
+          },
+          {
+            "fn": "(program)",
+            "url": "",
+            "line": -1,
+            "bucket": "other",
+            "selfMs": 2.9861553933784264
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.82898932004272
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.82898932004272
+          },
+          {
+            "fn": "runKillDp",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.6718232467070133
+          },
+          {
+            "fn": "blockingSet",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.6718232467070133
+          },
+          {
+            "fn": "genActions",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 2.6718232467070133
+          },
+          {
+            "fn": "squareScoreCc",
+            "url": "src/ai/hard/gen/purchase.ts",
+            "line": 0,
+            "bucket": "generation",
+            "selfMs": 2.6718232467070133
+          },
+          {
+            "fn": "approachTable",
+            "url": "src/ai/hard/tables/approach.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.6718232467070133
+          },
+          {
+            "fn": "bestRelocationTarget",
+            "url": "src/ai/hard/tables/economy.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.6718232467070133
+          },
+          {
+            "fn": "runEconomy",
+            "url": "src/ai/hard/tables/economy.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.6718232467070133
+          },
+          {
+            "fn": "nearestThreat",
+            "url": "src/ai/hard/tables/home.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.5146571733713063
+          },
+          {
+            "fn": "bfsMulti",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.5146571733713063
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.5146571733713063
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.5146571733713063
+          },
+          {
+            "fn": "blockingSet",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.5146571733713063
+          },
+          {
+            "fn": "buildCandidates",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.5146571733713063
+          }
+        ]
+      },
+      "stopReason": "work",
+      "source": "search",
+      "completedIterations": 2,
+      "rung": 100000,
+      "workSpent": 49184,
+      "byClass": {
+        "MACRO": 232,
+        "QUIESCE": 1117,
+        "TURN": 13854,
+        "GEN": 1170,
+        "KILLTABLE": 1202,
+        "DFPN": 0,
+        "EVAL1": 1117,
+        "EVAL2": 1117,
+        "PROVER": 0
+      },
+      "rootCoverage": {
+        "source": "completed-depth",
+        "listed": 30,
+        "searched": 30
+      },
+      "ply1": {
+        "nodes": 30,
+        "meanGenerated": 21.133333333333333,
+        "cutShare": 0,
+        "configuredK": 16
+      },
+      "rootTrace": [
+        {
+          "depth": 1,
+          "n": 30,
+          "searched": 30,
+          "completed": true,
+          "cutoffAt": -1,
+          "truncated": false,
+          "work": 9651
+        },
+        {
+          "depth": 2,
+          "n": 30,
+          "searched": 30,
+          "completed": true,
+          "cutoffAt": -1,
+          "truncated": false,
+          "work": 39203
+        }
+      ]
+    },
+    {
+      "id": "e1-losses:g2-s5_0_2-A-white",
+      "set": "e1-losses",
+      "label": "g2-s5_0_2-A-white",
+      "side": "white",
+      "turnNumber": 4,
+      "seatTurnIndex": 2,
+      "work": "fixed:100000",
+      "searchMs": 1472.2589159999998,
+      "canonicalReplayMs": 0.09166699999968841,
+      "totalMs": 1486.9370829999998,
+      "attribution": {
+        "profiledMs": 1517.5,
+        "byBucket": {
+          "replySearch": 2.8024007386888274,
+          "prover": 175.1500461680511,
+          "tables": 1141.978301015709,
+          "generation": 84.22771109059173,
+          "evaluation": 37.36534318251769,
+          "canonicalVerify": 49.197701856981595,
+          "other": 25.844362367908065,
+          "instrument": 0.6227557197086283,
+          "quiescence": 0.31137785985431415
+        },
+        "byFunction": [
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 39.544988201497894
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 30.20365240586847
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 26.778495947471015
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 24.59885092849082
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 24.44316199856366
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 19.928183030676106
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 19.461116240894633
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 18.215604801477376
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 18.05991587155022
+          },
+          {
+            "fn": "blockingSet",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 15.880270852570023
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 14.012003693444138
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 12.455114394172567
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 12.29942546424541
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 10.742536164973838
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 10.275469375192367
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 9.964091515338053
+          },
+          {
+            "fn": "runKillDp",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 9.964091515338053
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 9.808402585410896
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 9.808402585410896
+          },
+          {
+            "fn": "blockingSet",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 9.185646865702267
+          },
+          {
+            "fn": "genActions",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 8.718580075920796
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 8.562891145993639
+          },
+          {
+            "fn": "nearestThreat",
+            "url": "src/ai/hard/tables/home.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 8.251513286139325
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 7.628757566430696
+          },
+          {
+            "fn": "bfsMulti",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 7.006001846722069
+          },
+          {
+            "fn": "bbAndNot",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 7.006001846722069
+          },
+          {
+            "fn": "genActions",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 6.850312916794911
+          },
+          {
+            "fn": "blockingSet",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.694623986867754
+          },
+          {
+            "fn": "buildCandidates",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.538935056940597
+          },
+          {
+            "fn": "blockingSet",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.38324612701344
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.227557197086283
+          },
+          {
+            "fn": "(program)",
+            "url": "",
+            "line": -1,
+            "bucket": "other",
+            "selfMs": 6.227557197086283
+          },
+          {
+            "fn": "bfsMulti",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.071868267159126
+          },
+          {
+            "fn": "runKillDp",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.916179337231968
+          },
+          {
+            "fn": "nearestThreat",
+            "url": "src/ai/hard/tables/home.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.916179337231968
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "other",
+            "selfMs": 5.916179337231968
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.604801477377655
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.604801477377655
+          },
+          {
+            "fn": "bbAndNot",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "other",
+            "selfMs": 5.137734687596184
+          },
+          {
+            "fn": "nearestThreat",
+            "url": "src/ai/hard/tables/home.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.9820457576690265
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.9820457576690265
+          },
+          {
+            "fn": "bfsMulti",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.826356827741869
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.826356827741869
+          },
+          {
+            "fn": "bbDilate",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.826356827741869
+          },
+          {
+            "fn": "makeEndAction",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 4.826356827741869
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.826356827741869
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 4.670667897814712
+          },
+          {
+            "fn": "bfsMulti",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.514978967887555
+          },
+          {
+            "fn": "orderTop",
+            "url": "src/ai/hard/gen/actionsearch.ts",
+            "line": 0,
+            "bucket": "generation",
+            "selfMs": 4.514978967887555
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.359290037960398
+          }
+        ]
+      },
+      "stopReason": "work",
+      "source": "search",
+      "completedIterations": 2,
+      "rung": 100000,
+      "workSpent": 100394,
+      "byClass": {
+        "MACRO": 664,
+        "QUIESCE": 924,
+        "TURN": 46546,
+        "GEN": 2064,
+        "KILLTABLE": 3288,
+        "DFPN": 0,
+        "EVAL1": 924,
+        "EVAL2": 924,
+        "PROVER": 0
+      },
+      "rootCoverage": {
+        "source": "completed-depth",
+        "listed": 27,
+        "searched": 27
+      },
+      "ply1": {
+        "nodes": 27,
+        "meanGenerated": 18.074074074074073,
+        "cutShare": 0,
+        "configuredK": 16
+      },
+      "rootTrace": [
+        {
+          "depth": 1,
+          "n": 27,
+          "searched": 27,
+          "completed": true,
+          "cutoffAt": -1,
+          "truncated": false,
+          "work": 7352
+        },
+        {
+          "depth": 2,
+          "n": 27,
+          "searched": 27,
+          "completed": true,
+          "cutoffAt": -1,
+          "truncated": false,
+          "work": 29189
+        },
+        {
+          "depth": 3,
+          "n": 27,
+          "searched": 6,
+          "completed": false,
+          "cutoffAt": -1,
+          "truncated": true,
+          "work": 62942
+        }
+      ]
+    },
+    {
+      "id": "e1-losses:g4-s10_0_8-A-white",
+      "set": "e1-losses",
+      "label": "g4-s10_0_8-A-white",
+      "side": "white",
+      "turnNumber": 3,
+      "seatTurnIndex": 2,
+      "work": "fixed:100000",
+      "searchMs": 1410.9548749999994,
+      "canonicalReplayMs": 0.08441700000003038,
+      "totalMs": 1422.9193329999998,
+      "attribution": {
+        "profiledMs": 1471.209,
+        "byBucket": {
+          "other": 25.152979745181312,
+          "replySearch": 5.286932048350213,
+          "tables": 1045.3706550146912,
+          "canonicalVerify": 50.62637961450484,
+          "evaluation": 37.96978471087874,
+          "prover": 203.6269888925195,
+          "generation": 102.53443972557965,
+          "quiescence": 0.32042012414243715,
+          "instrument": 0.32042012414243715
+        },
+        "byFunction": [
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 35.086003593596864
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 31.40117216595884
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 30.920541979745185
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 29.478651421104214
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 29.478651421104214
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 28.357180986605687
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 27.716340738320813
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 27.55613067624959
+          },
+          {
+            "fn": "blockingSet",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 25.152979745181316
+          },
+          {
+            "fn": "blockingSet",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 20.987518131329633
+          },
+          {
+            "fn": "genActions",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 19.064997386475007
+          },
+          {
+            "fn": "bfsMulti",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 14.739325710552107
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 13.45764521398236
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 12.977015027768704
+          },
+          {
+            "fn": "genActions",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 12.816804965697486
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 12.656594903626265
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 12.656594903626265
+          },
+          {
+            "fn": "nearestThreat",
+            "url": "src/ai/hard/tables/home.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 11.695334531198954
+          },
+          {
+            "fn": "nearestThreat",
+            "url": "src/ai/hard/tables/home.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 11.695334531198954
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 11.535124469127735
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 11.535124469127735
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 11.374914407056517
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 11.054494282914082
+          },
+          {
+            "fn": "bfsMulti",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 10.894284220842861
+          },
+          {
+            "fn": "genActions",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 9.933023848415552
+          },
+          {
+            "fn": "makeEndAction",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 9.452393662201896
+          },
+          {
+            "fn": "blockingSet",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 9.452393662201896
+          },
+          {
+            "fn": "actionPriority",
+            "url": "src/ai/hard/gen/actionsearch.ts",
+            "line": 0,
+            "bucket": "generation",
+            "selfMs": 8.651343351845803
+          },
+          {
+            "fn": "makeEndAction",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 8.330923227703366
+          },
+          {
+            "fn": "bfsMulti",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 7.85029304148971
+          },
+          {
+            "fn": "bfsMulti",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 7.690082979418491
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 7.529872917347273
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 7.209452793204835
+          },
+          {
+            "fn": "orderTop",
+            "url": "src/ai/hard/gen/actionsearch.ts",
+            "line": 0,
+            "bucket": "generation",
+            "selfMs": 7.209452793204835
+          },
+          {
+            "fn": "strikeIfBoughtArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.889032669062398
+          },
+          {
+            "fn": "orderTop",
+            "url": "src/ai/hard/gen/actionsearch.ts",
+            "line": 0,
+            "bucket": "generation",
+            "selfMs": 6.889032669062398
+          },
+          {
+            "fn": "(program)",
+            "url": "",
+            "line": -1,
+            "bucket": "other",
+            "selfMs": 6.889032669062398
+          },
+          {
+            "fn": "bbAndNot",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.408402482848743
+          },
+          {
+            "fn": "bbAndNot",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "other",
+            "selfMs": 5.767562234563868
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.286932048350212
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.286932048350212
+          },
+          {
+            "fn": "bbAndNot",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.286932048350212
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 5.286932048350212
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.126721986278994
+          },
+          {
+            "fn": "actionPriority",
+            "url": "src/ai/hard/gen/actionsearch.ts",
+            "line": 0,
+            "bucket": "generation",
+            "selfMs": 5.126721986278994
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 4.966511924207776
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.806301862136557
+          },
+          {
+            "fn": "strikeIfBoughtArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.806301862136557
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 4.806301862136557
+          },
+          {
+            "fn": "runKillDp",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.806301862136557
+          }
+        ]
+      },
+      "stopReason": "work",
+      "source": "search",
+      "completedIterations": 2,
+      "rung": 100000,
+      "workSpent": 100206,
+      "byClass": {
+        "MACRO": 422,
+        "QUIESCE": 507,
+        "TURN": 59720,
+        "GEN": 1602,
+        "KILLTABLE": 2908,
+        "DFPN": 0,
+        "EVAL1": 507,
+        "EVAL2": 507,
+        "PROVER": 0
+      },
+      "rootCoverage": {
+        "source": "completed-depth",
+        "listed": 27,
+        "searched": 27
+      },
+      "ply1": {
+        "nodes": 27,
+        "meanGenerated": 17.296296296296298,
+        "cutShare": 0,
+        "configuredK": 16
+      },
+      "rootTrace": [
+        {
+          "depth": 1,
+          "n": 27,
+          "searched": 27,
+          "completed": true,
+          "cutoffAt": -1,
+          "truncated": false,
+          "work": 1593
+        },
+        {
+          "depth": 2,
+          "n": 27,
+          "searched": 27,
+          "completed": true,
+          "cutoffAt": -1,
+          "truncated": false,
+          "work": 15307
+        },
+        {
+          "depth": 3,
+          "n": 27,
+          "searched": 4,
+          "completed": false,
+          "cutoffAt": -1,
+          "truncated": true,
+          "work": 82639
+        }
+      ]
+    },
+    {
+      "id": "e1-losses:g4-s10_0_8-B-white",
+      "set": "e1-losses",
+      "label": "g4-s10_0_8-B-white",
+      "side": "black",
+      "turnNumber": 7,
+      "seatTurnIndex": 6,
+      "work": "fixed:100000",
+      "searchMs": 1741.0497919999998,
+      "canonicalReplayMs": 0.09979199999997945,
+      "totalMs": 1754.532709,
+      "attribution": {
+        "profiledMs": 1819.25,
+        "byBucket": {
+          "instrument": 0.631355196946035,
+          "tables": 1386.2981736942702,
+          "prover": 216.23915495401798,
+          "evaluation": 50.666254554919206,
+          "canonicalVerify": 43.56350858927634,
+          "generation": 89.49459916710072,
+          "replySearch": 6.313551969460351,
+          "other": 26.043401874023942
+        },
+        "byFunction": [
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 87.12701717855283
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 45.93109057782405
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 43.40566979003991
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 42.14295939614784
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 26.516918271733473
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 22.88662588929377
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 22.72878709005726
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 21.939593093874716
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 20.834721499219157
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 17.83578431372549
+          },
+          {
+            "fn": "runKillDp",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 16.41523512059691
+          },
+          {
+            "fn": "blockingSet",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 16.099557522123895
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 14.04765313204928
+          },
+          {
+            "fn": "nearestThreat",
+            "url": "src/ai/hard/tables/home.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 12.942781537393719
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 12.78494273815721
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 12.627103938920701
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 12.469265139684191
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 11.995748741974666
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 11.837909942738158
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 11.52223234426514
+          },
+          {
+            "fn": "bbDilate",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 11.206554745792122
+          },
+          {
+            "fn": "genActions",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 11.206554745792122
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 10.890877147319104
+          },
+          {
+            "fn": "buildCandidates",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 10.733038348082596
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 10.417360749609578
+          },
+          {
+            "fn": "runKillDp",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 10.10168315113656
+          },
+          {
+            "fn": "makeEndAction",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 9.943844351900053
+          },
+          {
+            "fn": "blockingSet",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 9.470327954190525
+          },
+          {
+            "fn": "bfsMulti",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 9.312489154954017
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 9.312489154954017
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 9.154650355717509
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 9.154650355717509
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 8.996811556481
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 8.681133958007981
+          },
+          {
+            "fn": "blockingSet",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 7.891939961825438
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 7.576262363352421
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 7.418423564115912
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 7.260584764879403
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "other",
+            "selfMs": 7.102745965642894
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.629229567933368
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.629229567933368
+          },
+          {
+            "fn": "appendPurchases",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.313551969460351
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.155713170223842
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.997874370987333
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.840035571750824
+          },
+          {
+            "fn": "bbAndNot",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.840035571750824
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.682196772514315
+          },
+          {
+            "fn": "(program)",
+            "url": "",
+            "line": -1,
+            "bucket": "other",
+            "selfMs": 5.682196772514315
+          },
+          {
+            "fn": "nearestThreat",
+            "url": "src/ai/hard/tables/home.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.366519174041298
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.366519174041298
+          }
+        ]
+      },
+      "stopReason": "work",
+      "source": "search",
+      "completedIterations": 2,
+      "rung": 100000,
+      "workSpent": 100198,
+      "byClass": {
+        "MACRO": 611,
+        "QUIESCE": 1022,
+        "TURN": 40374,
+        "GEN": 2110,
+        "KILLTABLE": 3818,
+        "DFPN": 0,
+        "EVAL1": 1022,
+        "EVAL2": 1022,
+        "PROVER": 0
+      },
+      "rootCoverage": {
+        "source": "completed-depth",
+        "listed": 27,
+        "searched": 27
+      },
+      "ply1": {
+        "nodes": 27,
+        "meanGenerated": 20.62962962962963,
+        "cutShare": 0,
+        "configuredK": 16
+      },
+      "rootTrace": [
+        {
+          "depth": 1,
+          "n": 27,
+          "searched": 27,
+          "completed": true,
+          "cutoffAt": -1,
+          "truncated": false,
+          "work": 1927
+        },
+        {
+          "depth": 2,
+          "n": 27,
+          "searched": 27,
+          "completed": true,
+          "cutoffAt": -1,
+          "truncated": false,
+          "work": 17384
+        },
+        {
+          "depth": 3,
+          "n": 27,
+          "searched": 5,
+          "completed": false,
+          "cutoffAt": -1,
+          "truncated": true,
+          "work": 80460
+        }
+      ]
+    },
+    {
+      "id": "e1-losses:g4-s10_3_9-A-white",
+      "set": "e1-losses",
+      "label": "g4-s10_3_9-A-white",
+      "side": "white",
+      "turnNumber": 2,
+      "seatTurnIndex": 1,
+      "work": "fixed:100000",
+      "searchMs": 1181.441667,
+      "canonicalReplayMs": 0.07670899999902758,
+      "totalMs": 1194.8561250000012,
+      "attribution": {
+        "profiledMs": 1236.792,
+        "byBucket": {
+          "replySearch": 5.367061646458202,
+          "tables": 901.9820661135892,
+          "generation": 67.71968959795775,
+          "canonicalVerify": 45.146459731971824,
+          "prover": 158.48617332482507,
+          "evaluation": 34.254481684747894,
+          "instrument": 0.4735642629227823,
+          "other": 23.04679412890874,
+          "quiescence": 0.3157095086151882
+        },
+        "byFunction": [
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 21.78395609444799
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 21.4682465858328
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 16.1011849393746
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 14.049073133375877
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 13.575508870453096
+          },
+          {
+            "fn": "blockingSet",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 13.101944607530312
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 12.944089853222717
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 10.891978047223995
+          },
+          {
+            "fn": "nearestThreat",
+            "url": "src/ai/hard/tables/home.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 9.786994767070835
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 9.62914001276324
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 9.313430504148053
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 8.839866241225272
+          },
+          {
+            "fn": "blockingSet",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 7.7348829610721115
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 7.7348829610721115
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 7.577028206764518
+          },
+          {
+            "fn": "runKillDp",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 7.577028206764518
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 7.103463943841735
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 7.103463943841735
+          },
+          {
+            "fn": "bfsMulti",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.787754435226548
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.629899680918952
+          },
+          {
+            "fn": "(program)",
+            "url": "",
+            "line": -1,
+            "bucket": "other",
+            "selfMs": 6.472044926611359
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.314190172303765
+          },
+          {
+            "fn": "makeEndAction",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 6.314190172303765
+          },
+          {
+            "fn": "bbAndNot",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "other",
+            "selfMs": 6.1563354179961705
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.998480663688577
+          },
+          {
+            "fn": "genActions",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 5.682771155073388
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.3670616464582
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.3670616464582
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.3670616464582
+          },
+          {
+            "fn": "nearestThreat",
+            "url": "src/ai/hard/tables/home.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.209206892150606
+          },
+          {
+            "fn": "makeEndAction",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 5.209206892150606
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.051352137843011
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.051352137843011
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "other",
+            "selfMs": 5.051352137843011
+          },
+          {
+            "fn": "genActions",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 4.893497383535418
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.735642629227824
+          },
+          {
+            "fn": "makeEndAction",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 4.735642629227824
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.735642629227824
+          },
+          {
+            "fn": "bfsMulti",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.735642629227824
+          },
+          {
+            "fn": "blockingSet",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.577787874920229
+          },
+          {
+            "fn": "bbAndNot",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.262078366305041
+          },
+          {
+            "fn": "buildCandidates",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.262078366305041
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.104223611997447
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.104223611997447
+          },
+          {
+            "fn": "blockingSet",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.946368857689853
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.946368857689853
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.946368857689853
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.788514103382259
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.788514103382259
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.6306593490746644
+          }
+        ]
+      },
+      "stopReason": "work",
+      "source": "search",
+      "completedIterations": 2,
+      "rung": 100000,
+      "workSpent": 100230,
+      "byClass": {
+        "MACRO": 651,
+        "QUIESCE": 749,
+        "TURN": 49732,
+        "GEN": 1791,
+        "KILLTABLE": 3406,
+        "DFPN": 0,
+        "EVAL1": 749,
+        "EVAL2": 749,
+        "PROVER": 0
+      },
+      "rootCoverage": {
+        "source": "completed-depth",
+        "listed": 27,
+        "searched": 27
+      },
+      "ply1": {
+        "nodes": 27,
+        "meanGenerated": 19.444444444444443,
+        "cutShare": 0,
+        "configuredK": 16
+      },
+      "rootTrace": [
+        {
+          "depth": 1,
+          "n": 27,
+          "searched": 27,
+          "completed": true,
+          "cutoffAt": -1,
+          "truncated": false,
+          "work": 3874
+        },
+        {
+          "depth": 2,
+          "n": 27,
+          "searched": 27,
+          "completed": true,
+          "cutoffAt": -1,
+          "truncated": false,
+          "work": 25364
+        },
+        {
+          "depth": 3,
+          "n": 27,
+          "searched": 9,
+          "completed": false,
+          "cutoffAt": -1,
+          "truncated": true,
+          "work": 70489
+        }
+      ]
+    },
+    {
+      "id": "e1-losses:g4-s2_3_1-B-white",
+      "set": "e1-losses",
+      "label": "g4-s2_3_1-B-white",
+      "side": "black",
+      "turnNumber": 2,
+      "seatTurnIndex": 1,
+      "work": "fixed:100000",
+      "searchMs": 1329.943209000001,
+      "canonicalReplayMs": 0.04808400000001711,
+      "totalMs": 1346.4250840000004,
+      "attribution": {
+        "profiledMs": 1422.542,
+        "byBucket": {
+          "instrument": 0.4844620274719037,
+          "tables": 1027.0594982404527,
+          "generation": 103.02892450902489,
+          "canonicalVerify": 49.738101487115635,
+          "prover": 172.46848177999718,
+          "evaluation": 37.626550800317894,
+          "replySearch": 4.683132932228402,
+          "other": 27.452848223407873
+        },
+        "byFunction": [
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 27.775822908389145
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 22.60822794868884
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 20.50889249631059
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 19.216993756385513
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 16.63319627653536
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 14.049398796685207
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 12.757500056760131
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 11.950063344306958
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 11.788576001816324
+          },
+          {
+            "fn": "runKillDp",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 11.788576001816324
+          },
+          {
+            "fn": "blockingSet",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 10.335189919400612
+          },
+          {
+            "fn": "nearestThreat",
+            "url": "src/ai/hard/tables/home.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 10.012215234419344
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 9.52775320694744
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 9.366265864456805
+          },
+          {
+            "fn": "blockingSet",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 8.720316494494266
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 8.074367124531728
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 7.589905097059825
+          },
+          {
+            "fn": "genActions",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 7.42841775456919
+          },
+          {
+            "fn": "(program)",
+            "url": "",
+            "line": -1,
+            "bucket": "other",
+            "selfMs": 6.943955727097286
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.782468384606651
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.782468384606651
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.782468384606651
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "other",
+            "selfMs": 6.782468384606651
+          },
+          {
+            "fn": "bbAndNot",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "other",
+            "selfMs": 6.620981042116018
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.459493699625383
+          },
+          {
+            "fn": "blockingSet",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.298006357134748
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.136519014644113
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.136519014644113
+          },
+          {
+            "fn": "bbAndNot",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.136519014644113
+          },
+          {
+            "fn": "nearestThreat",
+            "url": "src/ai/hard/tables/home.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.813544329662844
+          },
+          {
+            "fn": "bbAndNot",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.813544329662844
+          },
+          {
+            "fn": "nearestThreat",
+            "url": "src/ai/hard/tables/home.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.813544329662844
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.65205698717221
+          },
+          {
+            "fn": "blockingSet",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.32908230219094
+          },
+          {
+            "fn": "makeEndAction",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 5.167594959700306
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.844620274719037
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.844620274719037
+          },
+          {
+            "fn": "blockingSet",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.844620274719037
+          },
+          {
+            "fn": "bbDilate",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.6831329322284025
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.6831329322284025
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.521645589737768
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.360158247247133
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.360158247247133
+          },
+          {
+            "fn": "bfsMulti",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.360158247247133
+          },
+          {
+            "fn": "makeEndAction",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 4.360158247247133
+          },
+          {
+            "fn": "orderTop",
+            "url": "src/ai/hard/gen/actionsearch.ts",
+            "line": 0,
+            "bucket": "generation",
+            "selfMs": 3.87569621977523
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.714208877284595
+          },
+          {
+            "fn": "actionPriority",
+            "url": "src/ai/hard/gen/actionsearch.ts",
+            "line": 0,
+            "bucket": "generation",
+            "selfMs": 3.714208877284595
+          },
+          {
+            "fn": "runKillDp",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.714208877284595
+          },
+          {
+            "fn": "orderTop",
+            "url": "src/ai/hard/gen/actionsearch.ts",
+            "line": 0,
+            "bucket": "generation",
+            "selfMs": 3.714208877284595
+          }
+        ]
+      },
+      "stopReason": "work",
+      "source": "search",
+      "completedIterations": 2,
+      "rung": 100000,
+      "workSpent": 100459,
+      "byClass": {
+        "MACRO": 631,
+        "QUIESCE": 896,
+        "TURN": 47495,
+        "GEN": 1902,
+        "KILLTABLE": 3328,
+        "DFPN": 0,
+        "EVAL1": 896,
+        "EVAL2": 896,
+        "PROVER": 10
+      },
+      "rootCoverage": {
+        "source": "completed-depth",
+        "listed": 28,
+        "searched": 28
+      },
+      "ply1": {
+        "nodes": 28,
+        "meanGenerated": 21.428571428571427,
+        "cutShare": 0,
+        "configuredK": 16
+      },
+      "rootTrace": [
+        {
+          "depth": 1,
+          "n": 28,
+          "searched": 28,
+          "completed": true,
+          "cutoffAt": -1,
+          "truncated": false,
+          "work": 10952
+        },
+        {
+          "depth": 2,
+          "n": 28,
+          "searched": 28,
+          "completed": true,
+          "cutoffAt": -1,
+          "truncated": false,
+          "work": 28703
+        },
+        {
+          "depth": 3,
+          "n": 28,
+          "searched": 7,
+          "completed": false,
+          "cutoffAt": -1,
+          "truncated": true,
+          "work": 60575
+        }
+      ]
+    },
+    {
+      "id": "e1-losses:g4-s6_0_4-A-white",
+      "set": "e1-losses",
+      "label": "g4-s6_0_4-A-white",
+      "side": "white",
+      "turnNumber": 4,
+      "seatTurnIndex": 3,
+      "work": "fixed:100000",
+      "searchMs": 888.5357079999994,
+      "canonicalReplayMs": 0.10829099999864411,
+      "totalMs": 902.7403329999997,
+      "attribution": {
+        "profiledMs": 963.541,
+        "byBucket": {
+          "replySearch": 5.066967090754876,
+          "canonicalVerify": 29.91145089058534,
+          "tables": 713.625107039855,
+          "prover": 108.20426497031342,
+          "generation": 62.76501170483472,
+          "evaluation": 25.66173655640378,
+          "other": 17.48920899067006,
+          "quiescence": 0.49035165394402036,
+          "instrument": 0.3269011026293469
+        },
+        "byFunction": [
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 8.49942866836302
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 8.49942866836302
+          },
+          {
+            "fn": "runKillDp",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 8.335978117048345
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.720769296013572
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.720769296013572
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.393868193384224
+          },
+          {
+            "fn": "blockingSet",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.2304176420695505
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.2304176420695505
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.066967090754877
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.066967090754877
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.576615436810857
+          },
+          {
+            "fn": "squareScoreCc",
+            "url": "src/ai/hard/gen/purchase.ts",
+            "line": 0,
+            "bucket": "generation",
+            "selfMs": 3.922813231552163
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "other",
+            "selfMs": 3.922813231552163
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.595912128922816
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.595912128922816
+          },
+          {
+            "fn": "blockingSet",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.432461577608143
+          },
+          {
+            "fn": "(program)",
+            "url": "",
+            "line": -1,
+            "bucket": "other",
+            "selfMs": 3.432461577608143
+          },
+          {
+            "fn": "nearestThreat",
+            "url": "src/ai/hard/tables/home.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.269011026293469
+          },
+          {
+            "fn": "buildCandidates",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.269011026293469
+          },
+          {
+            "fn": "bbAndNot",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "other",
+            "selfMs": 3.269011026293469
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.105560474978796
+          },
+          {
+            "fn": "runKillDp",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.105560474978796
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.105560474978796
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.9421099236641224
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.9421099236641224
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.9421099236641224
+          },
+          {
+            "fn": "genActions",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 2.9421099236641224
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.9421099236641224
+          },
+          {
+            "fn": "squareScoreCc",
+            "url": "src/ai/hard/gen/purchase.ts",
+            "line": 0,
+            "bucket": "generation",
+            "selfMs": 2.9421099236641224
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.778659372349449
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.778659372349449
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.778659372349449
+          },
+          {
+            "fn": "bfsMulti",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.778659372349449
+          },
+          {
+            "fn": "makeEndAction",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 2.778659372349449
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.778659372349449
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.778659372349449
+          },
+          {
+            "fn": "blockingSet",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.6152088210347753
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.6152088210347753
+          },
+          {
+            "fn": "bfsMulti",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.6152088210347753
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.6152088210347753
+          },
+          {
+            "fn": "runKillDp",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.6152088210347753
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.451758269720102
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 2.451758269720102
+          },
+          {
+            "fn": "nearestThreat",
+            "url": "src/ai/hard/tables/home.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.451758269720102
+          },
+          {
+            "fn": "genActions",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 2.451758269720102
+          },
+          {
+            "fn": "genActions",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 2.451758269720102
+          },
+          {
+            "fn": "orderTop",
+            "url": "src/ai/hard/gen/actionsearch.ts",
+            "line": 0,
+            "bucket": "generation",
+            "selfMs": 2.451758269720102
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.451758269720102
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.451758269720102
+          },
+          {
+            "fn": "genActions",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 2.451758269720102
+          }
+        ]
+      },
+      "stopReason": "work",
+      "source": "search",
+      "completedIterations": 2,
+      "rung": 100000,
+      "workSpent": 60296,
+      "byClass": {
+        "MACRO": 302,
+        "QUIESCE": 910,
+        "TURN": 27456,
+        "GEN": 1187,
+        "KILLTABLE": 1313,
+        "DFPN": 0,
+        "EVAL1": 910,
+        "EVAL2": 910,
+        "PROVER": 0
+      },
+      "rootCoverage": {
+        "source": "completed-depth",
+        "listed": 30,
+        "searched": 30
+      },
+      "ply1": {
+        "nodes": 30,
+        "meanGenerated": 20.766666666666666,
+        "cutShare": 0,
+        "configuredK": 16
+      },
+      "rootTrace": [
+        {
+          "depth": 1,
+          "n": 30,
+          "searched": 30,
+          "completed": true,
+          "cutoffAt": -1,
+          "truncated": false,
+          "work": 10256
+        },
+        {
+          "depth": 2,
+          "n": 30,
+          "searched": 30,
+          "completed": true,
+          "cutoffAt": -1,
+          "truncated": false,
+          "work": 49386
+        }
+      ]
+    },
+    {
+      "id": "e1-losses:g4-s6_3_5-A-white",
+      "set": "e1-losses",
+      "label": "g4-s6_3_5-A-white",
+      "side": "white",
+      "turnNumber": 4,
+      "seatTurnIndex": 3,
+      "work": "fixed:100000",
+      "searchMs": 769.1607919999988,
+      "canonicalReplayMs": 0.14649999999892316,
+      "totalMs": 781.4420419999988,
+      "attribution": {
+        "profiledMs": 811.791,
+        "byBucket": {
+          "other": 13.019139839624488,
+          "tables": 604.5961525523172,
+          "generation": 51.75901936240945,
+          "replySearch": 6.350799921768046,
+          "evaluation": 21.116409739878744,
+          "prover": 92.40413886172517,
+          "canonicalVerify": 21.910259730099728,
+          "instrument": 0.4763099941326032,
+          "quiescence": 0.15876999804420108
+        },
+        "byFunction": [
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 9.049889888519461
+          },
+          {
+            "fn": "runKillDp",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 7.144649911989047
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.604329943281831
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.604329943281831
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.286789947193429
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.9692499511050268
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.8104799530608253
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.6517099550166248
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.4929399569724238
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.3341699589282223
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "other",
+            "selfMs": 3.3341699589282223
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.1753999608840218
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.1753999608840218
+          },
+          {
+            "fn": "runKillDp",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.01662996283982
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.8578599647956193
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.8578599647956193
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.6990899667514183
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.6990899667514183
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.6990899667514183
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.6990899667514183
+          },
+          {
+            "fn": "(program)",
+            "url": "",
+            "line": -1,
+            "bucket": "other",
+            "selfMs": 2.6990899667514183
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.5403199687072173
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.5403199687072173
+          },
+          {
+            "fn": "runKillDp",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.5403199687072173
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.5403199687072173
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.5403199687072173
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.5403199687072173
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.5403199687072173
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 2.5403199687072173
+          },
+          {
+            "fn": "bbAndNot",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "other",
+            "selfMs": 2.5403199687072173
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.381549970663016
+          },
+          {
+            "fn": "squareScoreCc",
+            "url": "src/ai/hard/gen/purchase.ts",
+            "line": 0,
+            "bucket": "generation",
+            "selfMs": 2.381549970663016
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.381549970663016
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.381549970663016
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 2.381549970663016
+          },
+          {
+            "fn": "runKillDp",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.381549970663016
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.222779972618815
+          },
+          {
+            "fn": "blockingSet",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.222779972618815
+          },
+          {
+            "fn": "squareScoreCc",
+            "url": "src/ai/hard/gen/purchase.ts",
+            "line": 0,
+            "bucket": "generation",
+            "selfMs": 2.222779972618815
+          },
+          {
+            "fn": "runKillDp",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.222779972618815
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.064009974574614
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.064009974574614
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.064009974574614
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.064009974574614
+          },
+          {
+            "fn": "squareScoreCc",
+            "url": "src/ai/hard/gen/purchase.ts",
+            "line": 0,
+            "bucket": "generation",
+            "selfMs": 2.064009974574614
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 2.064009974574614
+          },
+          {
+            "fn": "bbDilate",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "other",
+            "selfMs": 2.064009974574614
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 1.9052399765304127
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 1.9052399765304127
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 1.9052399765304127
+          }
+        ]
+      },
+      "stopReason": "work",
+      "source": "search",
+      "completedIterations": 2,
+      "rung": 100000,
+      "workSpent": 50822,
+      "byClass": {
+        "MACRO": 175,
+        "QUIESCE": 915,
+        "TURN": 18784,
+        "GEN": 1235,
+        "KILLTABLE": 1241,
+        "DFPN": 0,
+        "EVAL1": 915,
+        "EVAL2": 915,
+        "PROVER": 0
+      },
+      "rootCoverage": {
+        "source": "completed-depth",
+        "listed": 29,
+        "searched": 29
+      },
+      "ply1": {
+        "nodes": 29,
+        "meanGenerated": 23.17241379310345,
+        "cutShare": 0,
+        "configuredK": 16
+      },
+      "rootTrace": [
+        {
+          "depth": 1,
+          "n": 29,
+          "searched": 29,
+          "completed": true,
+          "cutoffAt": -1,
+          "truncated": false,
+          "work": 15486
+        },
+        {
+          "depth": 2,
+          "n": 29,
+          "searched": 29,
+          "completed": true,
+          "cutoffAt": -1,
+          "truncated": false,
+          "work": 34328
+        }
+      ]
+    },
+    {
+      "id": "e1-losses:g4-s6_3_5-B-white",
+      "set": "e1-losses",
+      "label": "g4-s6_3_5-B-white",
+      "side": "black",
+      "turnNumber": 1,
+      "seatTurnIndex": 0,
+      "work": "fixed:100000",
+      "searchMs": 1337.975708,
+      "canonicalReplayMs": 0.04212499999994179,
+      "totalMs": 1351.517749999999,
+      "attribution": {
+        "profiledMs": 1402.542,
+        "byBucket": {
+          "instrument": 0.47409870422535205,
+          "tables": 1034.641405521116,
+          "prover": 166.0925793802825,
+          "generation": 88.02432608450704,
+          "replySearch": 13.116730816901402,
+          "canonicalVerify": 44.881344000000176,
+          "evaluation": 29.078053859154902,
+          "other": 26.075428732394357,
+          "quiescence": 0.1580329014084507
+        },
+        "byFunction": [
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 25.127231323943658
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 24.33706681690141
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 21.808540394366194
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 20.38624428169014
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 18.64788236619718
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 17.541652056338027
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 14.380994028169013
+          },
+          {
+            "fn": "blockingSet",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 13.59082952112676
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 13.11673081690141
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 12.010500507042252
+          },
+          {
+            "fn": "nearestThreat",
+            "url": "src/ai/hard/tables/home.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 11.378368901408452
+          },
+          {
+            "fn": "blockingSet",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 10.430171492957745
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 10.272138591549295
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 10.114105690140844
+          },
+          {
+            "fn": "runKillDp",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 9.640006985915493
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 9.16590828169014
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 9.007875380281689
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 8.691809577464788
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 8.375743774647887
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 8.217710873239437
+          },
+          {
+            "fn": "nearestThreat",
+            "url": "src/ai/hard/tables/home.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 8.217710873239437
+          },
+          {
+            "fn": "blockingSet",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 8.059677971830986
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 8.059677971830986
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 7.901645070422535
+          },
+          {
+            "fn": "nearestThreat",
+            "url": "src/ai/hard/tables/home.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 7.585579267605633
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 7.585579267605633
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 7.111480563380281
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "other",
+            "selfMs": 7.111480563380281
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.953447661971831
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.637381859154929
+          },
+          {
+            "fn": "genActions",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 6.637381859154929
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.637381859154929
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.637381859154929
+          },
+          {
+            "fn": "blockingSet",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.4793489577464785
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.4793489577464785
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.321316056338028
+          },
+          {
+            "fn": "(program)",
+            "url": "",
+            "line": -1,
+            "bucket": "other",
+            "selfMs": 6.321316056338028
+          },
+          {
+            "fn": "bfsMulti",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.163283154929577
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.163283154929577
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.005250253521126
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.005250253521126
+          },
+          {
+            "fn": "makeEndAction",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 5.847217352112676
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.531151549295774
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.373118647887324
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.215085746478873
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.057052845070422
+          },
+          {
+            "fn": "runKillDp",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.899019943661972
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.740987042253521
+          },
+          {
+            "fn": "makeEndAction",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 4.740987042253521
+          },
+          {
+            "fn": "genActions",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 4.740987042253521
+          }
+        ]
+      },
+      "stopReason": "work",
+      "source": "search",
+      "completedIterations": 2,
+      "rung": 100000,
+      "workSpent": 100487,
+      "byClass": {
+        "MACRO": 599,
+        "QUIESCE": 753,
+        "TURN": 53813,
+        "GEN": 1841,
+        "KILLTABLE": 2920,
+        "DFPN": 0,
+        "EVAL1": 753,
+        "EVAL2": 753,
+        "PROVER": 0
+      },
+      "rootCoverage": {
+        "source": "completed-depth",
+        "listed": 18,
+        "searched": 18
+      },
+      "ply1": {
+        "nodes": 18,
+        "meanGenerated": 20.27777777777778,
+        "cutShare": 0,
+        "configuredK": 16
+      },
+      "rootTrace": [
+        {
+          "depth": 1,
+          "n": 18,
+          "searched": 18,
+          "completed": true,
+          "cutoffAt": -1,
+          "truncated": false,
+          "work": 1568
+        },
+        {
+          "depth": 2,
+          "n": 18,
+          "searched": 18,
+          "completed": true,
+          "cutoffAt": -1,
+          "truncated": false,
+          "work": 14733
+        },
+        {
+          "depth": 3,
+          "n": 18,
+          "searched": 10,
+          "completed": false,
+          "cutoffAt": -1,
+          "truncated": true,
+          "work": 83952
+        }
+      ]
+    },
+    {
+      "id": "e1-losses:g5-s11_0_10-B-white",
+      "set": "e1-losses",
+      "label": "g5-s11_0_10-B-white",
+      "side": "black",
+      "turnNumber": 1,
+      "seatTurnIndex": 0,
+      "work": "fixed:100000",
+      "searchMs": 1196.8512499999997,
+      "canonicalReplayMs": 0.034917000000859844,
+      "totalMs": 1210.3439999999991,
+      "attribution": {
+        "profiledMs": 1244.167,
+        "byBucket": {
+          "other": 21.177978186861676,
+          "prover": 158.91327335771118,
+          "replySearch": 10.667426049678472,
+          "tables": 901.5543751103173,
+          "canonicalVerify": 41.2578389862564,
+          "generation": 80.63319102256959,
+          "evaluation": 29.806043374101584,
+          "instrument": 0.15687391249527172
+        },
+        "byFunction": [
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 14.118652124574453
+          },
+          {
+            "fn": "runKillDp",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 13.648030387088639
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 13.491156474593367
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 12.549912999621736
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 11.608669524650107
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 11.451795612154834
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 11.294921699659564
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 10.824299962173749
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 9.412434749716303
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 8.157443449754128
+          },
+          {
+            "fn": "blockingSet",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 7.5299477997730415
+          },
+          {
+            "fn": "blockingSet",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 7.37307388727777
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 7.0593260622872265
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.902452149791955
+          },
+          {
+            "fn": "nearestThreat",
+            "url": "src/ai/hard/tables/home.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.745578237296684
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.745578237296684
+          },
+          {
+            "fn": "nearestThreat",
+            "url": "src/ai/hard/tables/home.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.274956499810868
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "other",
+            "selfMs": 6.274956499810868
+          },
+          {
+            "fn": "genActions",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 6.118082587315596
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.961208674820325
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.804334762325054
+          },
+          {
+            "fn": "genActions",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 5.647460849829782
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.490586937334509
+          },
+          {
+            "fn": "blockingSet",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.490586937334509
+          },
+          {
+            "fn": "runKillDp",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.490586937334509
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.333713024839238
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.333713024839238
+          },
+          {
+            "fn": "genActions",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 5.333713024839238
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.333713024839238
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.176839112343966
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.019965199848695
+          },
+          {
+            "fn": "blockingSet",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.8630912873534236
+          },
+          {
+            "fn": "buildCandidates",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.8630912873534236
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.706217374858151
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.54934346236288
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.54934346236288
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.392469549867608
+          },
+          {
+            "fn": "genActions",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 4.392469549867608
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.392469549867608
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.392469549867608
+          },
+          {
+            "fn": "bbAndNot",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.392469549867608
+          },
+          {
+            "fn": "bfsMulti",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.392469549867608
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.235595637372336
+          },
+          {
+            "fn": "blockingSet",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.078721724877064
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.078721724877064
+          },
+          {
+            "fn": "orderTop",
+            "url": "src/ai/hard/gen/actionsearch.ts",
+            "line": 0,
+            "bucket": "generation",
+            "selfMs": 4.078721724877064
+          },
+          {
+            "fn": "genActions",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 4.078721724877064
+          },
+          {
+            "fn": "(program)",
+            "url": "",
+            "line": -1,
+            "bucket": "other",
+            "selfMs": 4.078721724877064
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 3.921847812381793
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.7649738998865208
+          }
+        ]
+      },
+      "stopReason": "work",
+      "source": "search",
+      "completedIterations": 2,
+      "rung": 100000,
+      "workSpent": 100206,
+      "byClass": {
+        "MACRO": 681,
+        "QUIESCE": 890,
+        "TURN": 48998,
+        "GEN": 1684,
+        "KILLTABLE": 3216,
+        "DFPN": 0,
+        "EVAL1": 890,
+        "EVAL2": 890,
+        "PROVER": 0
+      },
+      "rootCoverage": {
+        "source": "completed-depth",
+        "listed": 19,
+        "searched": 19
+      },
+      "ply1": {
+        "nodes": 19,
+        "meanGenerated": 20.210526315789473,
+        "cutShare": 0,
+        "configuredK": 16
+      },
+      "rootTrace": [
+        {
+          "depth": 1,
+          "n": 19,
+          "searched": 19,
+          "completed": true,
+          "cutoffAt": -1,
+          "truncated": false,
+          "work": 868
+        },
+        {
+          "depth": 2,
+          "n": 19,
+          "searched": 19,
+          "completed": true,
+          "cutoffAt": -1,
+          "truncated": false,
+          "work": 12174
+        },
+        {
+          "depth": 3,
+          "n": 19,
+          "searched": 4,
+          "completed": false,
+          "cutoffAt": -1,
+          "truncated": true,
+          "work": 87009
+        }
+      ]
+    },
+    {
+      "id": "e1-losses:g5-s11_3_11-B-white",
+      "set": "e1-losses",
+      "label": "g5-s11_3_11-B-white",
+      "side": "black",
+      "turnNumber": 2,
+      "seatTurnIndex": 1,
+      "work": "fixed:100000",
+      "searchMs": 1320.8924159999988,
+      "canonicalReplayMs": 0.03770799999983865,
+      "totalMs": 1337.6084159999991,
+      "attribution": {
+        "profiledMs": 1401.791,
+        "byBucket": {
+          "replySearch": 13.467967974379516,
+          "tables": 1020.8399058675293,
+          "canonicalVerify": 46.336223149948694,
+          "prover": 163.69994406954177,
+          "generation": 97.16176895802379,
+          "evaluation": 31.104592702733687,
+          "other": 28.699598421594423,
+          "quiescence": 0.16033295207594647,
+          "instrument": 0.32066590415189294
+        },
+        "byFunction": [
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 25.813605284227382
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 21.644948530252773
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 20.201951961569257
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 17.155625872126272
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 16.514294063822486
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 16.35396111174654
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 15.552296351366808
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 12.986969118151663
+          },
+          {
+            "fn": "runKillDp",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 10.90264074116436
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 10.261308932860574
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 10.261308932860574
+          },
+          {
+            "fn": "blockingSet",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 9.780310076632734
+          },
+          {
+            "fn": "blockingSet",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 9.459644172480841
+          },
+          {
+            "fn": "nearestThreat",
+            "url": "src/ai/hard/tables/home.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 9.459644172480841
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 9.138978268328948
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 8.818312364177055
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "other",
+            "selfMs": 8.337313507949217
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 7.69598169964543
+          },
+          {
+            "fn": "genActions",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 7.535648747569484
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 7.375315795493537
+          },
+          {
+            "fn": "blockingSet",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 7.054649891341644
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.733983987189751
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.573651035113805
+          },
+          {
+            "fn": "bbAndNot",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "other",
+            "selfMs": 6.413318083037859
+          },
+          {
+            "fn": "(program)",
+            "url": "",
+            "line": -1,
+            "bucket": "other",
+            "selfMs": 6.252985130961912
+          },
+          {
+            "fn": "bbAndNot",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.092652178885965
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 6.092652178885965
+          },
+          {
+            "fn": "nearestThreat",
+            "url": "src/ai/hard/tables/home.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.932319226810019
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.6116533226581256
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.6116533226581256
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.45132037058218
+          },
+          {
+            "fn": "actionPriority",
+            "url": "src/ai/hard/gen/actionsearch.ts",
+            "line": 0,
+            "bucket": "generation",
+            "selfMs": 5.45132037058218
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.130654466430287
+          },
+          {
+            "fn": "bbAndNot",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.130654466430287
+          },
+          {
+            "fn": "blockingSet",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 5.130654466430287
+          },
+          {
+            "fn": "genActions",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 4.970321514354341
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.809988562278393
+          },
+          {
+            "fn": "bfsMulti",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.809988562278393
+          },
+          {
+            "fn": "buildCandidates",
+            "url": "src/ai/hard/tables/kill.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.809988562278393
+          },
+          {
+            "fn": "nearestThreat",
+            "url": "src/ai/hard/tables/home.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.649655610202448
+          },
+          {
+            "fn": "bfsMulti",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.4893226581265
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.168656753974608
+          },
+          {
+            "fn": "spawnGeometry",
+            "url": "src/ai/hard/tables/geometry.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.008323801898661
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 4.008323801898661
+          },
+          {
+            "fn": "makeEndAction",
+            "url": "src/ai/hard/core/state.ts",
+            "line": 0,
+            "bucket": "prover",
+            "selfMs": 4.008323801898661
+          },
+          {
+            "fn": "strikeArea",
+            "url": "src/ai/hard/tables/threat.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.847990849822715
+          },
+          {
+            "fn": "spawnInfo",
+            "url": "src/ai/hard/core/spawn.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.847990849822715
+          },
+          {
+            "fn": "bfsFrom",
+            "url": "src/ai/hard/core/movement.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.847990849822715
+          },
+          {
+            "fn": "bbNext",
+            "url": "src/ai/hard/core/bits.ts",
+            "line": 0,
+            "bucket": "tables",
+            "selfMs": 3.6876578977467687
+          },
+          {
+            "fn": "orderTop",
+            "url": "src/ai/hard/gen/actionsearch.ts",
+            "line": 0,
+            "bucket": "generation",
+            "selfMs": 3.6876578977467687
+          }
+        ]
+      },
+      "stopReason": "work",
+      "source": "search",
+      "completedIterations": 2,
+      "rung": 100000,
+      "workSpent": 100395,
+      "byClass": {
+        "MACRO": 644,
+        "QUIESCE": 927,
+        "TURN": 47537,
+        "GEN": 1895,
+        "KILLTABLE": 3242,
+        "DFPN": 0,
+        "EVAL1": 927,
+        "EVAL2": 927,
+        "PROVER": 10
+      },
+      "rootCoverage": {
+        "source": "completed-depth",
+        "listed": 28,
+        "searched": 28
+      },
+      "ply1": {
+        "nodes": 28,
+        "meanGenerated": 21.357142857142858,
+        "cutShare": 0,
+        "configuredK": 16
+      },
+      "rootTrace": [
+        {
+          "depth": 1,
+          "n": 28,
+          "searched": 28,
+          "completed": true,
+          "cutoffAt": -1,
+          "truncated": false,
+          "work": 11157
+        },
+        {
+          "depth": 2,
+          "n": 28,
+          "searched": 28,
+          "completed": true,
+          "cutoffAt": -1,
+          "truncated": false,
+          "work": 28247
+        },
+        {
+          "depth": 3,
+          "n": 28,
+          "searched": 7,
+          "completed": false,
+          "cutoffAt": -1,
+          "truncated": true,
+          "work": 60762
+        }
+      ]
+    }
+  ],
+  "skipped": [],
+  "summary": {
+    "n": 12,
+    "abortShare": 0,
+    "meanCompletedIterations": 2,
+    "dominantBucket": "tables",
+    "meanBucketShare": {
+      "other": 0.017435878578240607,
+      "replySearch": 0.005587407132820905,
+      "prover": 0.11922237306620846,
+      "tables": 0.7367748425538095,
+      "generation": 0.06366815956653925,
+      "evaluation": 0.025634021283122466,
+      "canonicalVerify": 0.031159551823135016,
+      "quiescence": 0.000177197603189439,
+      "instrument": 0.0003405683929317738
+    },
+    "top3Functions": [
+      {
+        "fn": "bfsFrom",
+        "url": "src/ai/hard/core/movement.ts",
+        "line": 0,
+        "bucket": "tables",
+        "selfMs": 794.9640407712344
+      },
+      {
+        "fn": "strikeArea",
+        "url": "src/ai/hard/tables/threat.ts",
+        "line": 0,
+        "bucket": "tables",
+        "selfMs": 794.2342406023779
+      },
+      {
+        "fn": "bbNext",
+        "url": "src/ai/hard/core/bits.ts",
+        "line": 0,
+        "bucket": "tables",
+        "selfMs": 763.3469632107993
+      }
+    ]
+  },
+  "device": "Apple M2 Max x12 (darwin/arm64)",
+  "cpus": 12,
+  "node": "v24.11.1",
+  "git": "89de58f712eda586bb92693cfed92c639290e061",
+  "gitDirty": true,
+  "sampleIntervalUs": 100,
+  "at": "2026-09-18T01:11:24.469Z",
+  "note": "E4.1 cost-and-completion profile. One searchTurn per position, phase-attributed from an in-process CPU profile (self time by source file) plus the expose/ply1Trace instrument; see docs/hard-ai/e4/E4.1-PROFILE.md."
+}

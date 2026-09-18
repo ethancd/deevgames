@@ -1,0 +1,93 @@
+# Muju MCP tools: trigger-action plans for agent players
+
+Audience: any Claude or Codex session about to play Muju Hono Tanka through the
+MCP at `/mcp` (live: `https://deevgames-muju.onrender.com/mcp`). This is a
+checklist of *when* to call each tool, written after two rapid games lost by an
+agent that had every tool available and used almost none of them for judgment.
+Rules and schemas live in `muju_rules` and `public/skills/muju-hono-tanka/SKILL.md`;
+this file is only about habits.
+
+A TAP is "if <trigger>, then <action>". Follow them mechanically. The engine's
+bounded search is cheaper and more reliable than hand arithmetic, and the two
+decisive blunders in the 2026-09-12 games (a Hi left in reach of a speed-1
+Straumr; a Straumr promoted to "safe" defence 3 the turn before the enemy
+promoted to a 3-attack Aegirinn) were both `proven_possible` kills that
+`muju_analyze` would have reported in one call.
+
+## The per-turn loop (three calls, not seven)
+
+1. **Opponent's turn:** `muju_wait_for_change({afterRevision, briefing:true, player})`.
+   Do not follow it with a separate `muju_observe`; the changed result already
+   carries the room and briefing.
+2. **Turn start:** decide a candidate batch, then `muju_stage` it immediately
+   (timed rooms). Now the clock cannot beat you to a reasonable move.
+3. **Verify:** one `muju_analyze` with the candidate as `hypotheticalActions`
+   (through `END_ACTION_PHASE`), topics `threats,spawn`, targets = your units
+   worth more than a Hi, `deep:true`. Play only if nothing you care about is
+   `proven_possible`. Otherwise fix and re-stage.
+4. **Commit:** `muju_play` the batch with `END_ACTION_PHASE`, or let the stage fire.
+
+Put step 3 behind a script gate so it costs no thinking time: the script runs
+analyze, prints only `proven_possible` lines, and refuses to play if any hit a
+named unit.
+
+## Before joining
+
+| Trigger | Action |
+|---|---|
+| About to join any room | `muju_rules`, then `muju_time_awareness` if the room is timed. White's clock starts the moment Black joins, so decide turn 1 before joining. |
+| Opponent has played you before | `muju_history` on the old room (public, no token). Look for their opening unit path and promotion timing. In both 2026-09-12 games Codex went Sjor → Straumr → Aegirinn by turn 4; the notes only recorded the later Tanka half. |
+| Unsure about a schema or phase rule | Create an untimed scratch room, join it yourself with the invitation, and try the call. `END_PLACE_PHASE` is illegal once nothing is affordable; buy schema is `{type:"BUY_UNIT", definitionId, position}`. Resign the scratch room afterwards. |
+
+## Observation tools
+
+| Tool | Trigger | Action |
+|---|---|---|
+| `muju_observe` | Turn start when you did not arrive via a wait result; after any surprise | Always pass `briefing:true` and `player`. Read `briefing.sections.spawn` for your count, `threats` for headline single-hit lines, `miners` for `leftN` per unit. |
+| `muju_observe` | Own spawn count is 0 or 1 | Fix it this turn. Move a unit outward or leave an interior square empty. Two games were lost partly to a full spawn rectangle. |
+| `muju_observe` | Any miner shows `left` ≤ 3 | Plan its replacement now. Home 10-cells run dry in about four turns; the opponent that moves Mujus onto fresh 10s wins the income race. |
+| `muju_observe` | Briefing threat list is empty | Do **not** read this as safety. It scans existing single hits only; promotions, purchases and combinations are omitted. Run `muju_analyze`. |
+| `muju_wait_for_change` | Opponent's turn | Pass `briefing:true`, `player`, and the last revision. Act only when `room.activePlayer` is your seat. Stop on `phase:"victory"`. |
+| `muju_wait_for_change` | Result shows the opponent bought or promoted | Re-derive threats before touching your stage; a promotion changes attack values (Straumr 2 → Aegirinn 3 was the kill in game 2). |
+| `muju_legal_actions` | Turn start | Read `total` and skim purchase squares. Do not filter output so aggressively that promotions or enemy squares disappear; that cost an extra round trip in game 2. |
+| `muju_legal_actions` | You believe a move is legal but want the cost | Filter by `unitId`; it lists `actionCost` per destination, so path arithmetic is unnecessary. |
+| `muju_clock` | After any long think or before a second analysis | Cheap fresh read. Timestamps in your context do not tick. |
+| `muju_history` | Something on the board surprised you | Refresh the last turn rather than guessing what died to what. |
+
+## Analysis tools
+
+| Trigger | Action |
+|---|---|
+| About to end a turn that leaves any unit costing 5 or more where an enemy could reach | `muju_analyze({topics:["threats"], targets:{unitIds:[...]}, hypotheticalActions:<whole turn>, deep:true})`. Read `kill`: `proven_possible` means move it; `unknown` means read `search.cutoffReason` and `omittedCaseClasses`; only `proven_impossible` with a complete scope is safety. |
+| Choosing a square for a unit ("where can this Hi stand?") | `survival` topic with `targets.squares` for the candidates. This is exactly the turn-3 question in game 2, answered by hand and answered wrong. |
+| Enemy unit sits near your cluster | `exchange` and `reply` topics on it: can you kill it this turn, and what does it cost. Damage stacks within one turn, so the answer is often a combination (Aegirinn 3 + Inyan 2 kills an Aegirinn; you need 5 on a Tanka). |
+| Considering a home attempt or the enemy has a unit adjacent to your home | `checkmate` topic before moving. The server resolves proven home-checkmate immediately, with no reply turn. |
+| Planning a forward anchor | `spawn` topic with the anchor move as the hypothetical. Check `blockingSet`: if one cheap enemy unit can step into the rectangle, the anchor is not worth the trip. Game 2's Aegirinn walked 8 squares to anchor a rich patch and a 3-crystal Hi blocked it next turn. |
+| Any enemy within 5 squares of a valuable unit | Remember speed-1 units still cover 3 squares plus an attack in 4 AP. `reach` topic lists this; do not trust a mental "it's slow". |
+| Result says `truncated` or a cutoff reason | Split targets or topics across two calls instead of accepting the partial answer. |
+| Untimed room or bank comfortably above 5 minutes | Use `muju_preview` on the final batch too: it shows the post-move board and the same exposure lines. |
+
+## Play and staging tools
+
+| Trigger | Action |
+|---|---|
+| Timed room, your turn just began | `muju_staged` for the version, then `muju_stage` your best current candidate with `commitWhenRemainingMs` around 120000. Threshold must not exceed delay + bank (630000 on rapid). Never stage only a pass unless you have no candidate at all. |
+| A better batch emerges after analysis | Re-stage with a new `requestId` and the current version, or commit directly with `muju_play`. A live handoff clears the stage. |
+| Candidate depends on the enemy not having moved | Add up to three `fallbacks`; the server tries them in order and never repairs a batch itself. |
+| Playing after a buy that leaves you unable to afford anything | Omit `END_PLACE_PHASE`; placement auto-advances and the explicit command is rejected, which voids the whole batch. |
+| Uncertain network outcome | Retry the identical body and `requestId`. Never invent a new ID for a retry. |
+| A batch was rejected | Read the error index. The whole batch is atomic; nothing applied. Refresh the room and legal actions before retrying. |
+| You realise a committed sub-step was wrong, same turn | `UNDO` alone via `muju_play` while `canUndo` is true. It does not refund time. |
+| Bank under about 90 seconds | Stop analysing. Play the staged candidate or the simplest legal batch with `END_ACTION_PHASE`. Spending all AP does not end the turn. |
+
+## Habits that cost the 2026-09-12 games
+
+- Treating analyze as a luxury under clock pressure. Each call is under a second
+  of server time; the cost is a thinking cycle, so script it.
+- Trusting the briefing's threat headline as a complete threat model.
+- Hand-computing reach and getting speed-1 units wrong.
+- Buying miners onto half-depleted cells and not watching `left`.
+- A single far anchor with no defender, blocked by a 3-crystal unit.
+- Filtering tool output so hard that the board itself was hidden.
+- Ninety seconds per turn on a 30-second delay. Pre-compute candidates during
+  the opponent's turn; the wait result already includes the briefing.

@@ -33,12 +33,84 @@ export interface ScriptedBot {
  * counts violations (divergences D1/D2) but by default applies them anyway —
  * "as-shipped" measurement (J-002).
  */
+/**
+ * One bot instance's own adapter counters for ONE game (E1.5).
+ *
+ * Structurally identical to `lab/hard-ai/bots/hard.ts#HardBotTiming`, spelled
+ * here so the harness keeps no dependency on `lab/hard-ai`. Every field is a
+ * count or a total over this seat's game alone — `maxTurnMs` included, which
+ * is this seat's worst turn outright rather than the high-water delta
+ * `GameRecord.hardTiming` can offer from a process-wide counter.
+ *
+ * WHY PER SEAT. The process-wide counters cannot be split between two `hard@`
+ * seats, so `ladder/run.ts` reported A10's and A16's columns only for a run
+ * with exactly ONE `hard@` arm — which made `firstSearchAborted`, the
+ * cold-start statistic the E1.4 §5 patch is judged by, unmeasurable in the very
+ * contest that prices it (E1.4 §5, "Two prerequisites"). A bot that owns its
+ * counters and hands them to the runner per seat closes that.
+ */
+/**
+ * One row per SEARCH the hard seat ran, in order (E2 lane 1). `hardTiming`'s
+ * totals say how long a game took; these say what each turn was actually
+ * funded with and why it stopped — which is the pair
+ * `docs/hard-ai/e2/E2-LANE1-WORK-FIT.md` found nothing on disk records. The
+ * harness only carries it; `lab/hard-ai/bots/hard.ts` fills it in.
+ */
+export interface HardSeatTurnRow {
+  /** `GameState.turn.turnNumber` this search was run for. */
+  turn: number;
+  /** The work rung the engine armed the meter with (`stats.rung`). */
+  rung: number;
+  /** Work actually spent (`RootResult.work`). */
+  work: number;
+  /** The engine's own measurement of its search. */
+  elapsedMs: number;
+  /** What the adapter measured around the same call. */
+  searchMs: number;
+  /** Wall ms this search was funded with (wall mode; 0 under fixed work). */
+  fundedMs: number;
+  /** Last COMPLETED depth. */
+  depth: number;
+  /** The engine's verdict: 'complete' | 'work' | 'abort'. */
+  stopReason: string;
+  /** `profile.unitsPerMs` before the rung was chosen and after the search's
+   * measurement was folded in (0/0 under fixed work). */
+  unitsPerMsBefore: number;
+  unitsPerMsAfter: number;
+  /** The A11 watchdog cut this search (`stopReason === 'abort'`). */
+  deadlineCut: boolean;
+}
+
+export interface HardSeatTiming {
+  turns: number;
+  searches: number;
+  reSearches: number;
+  totalSearchMs: number;
+  totalAdapterMs: number;
+  overruns: number;
+  maxTurnMs: number;
+  budgetExhausted: number;
+  emptyPlans: number;
+  abortedSearches: number;
+  firstSearchAborted: number;
+  /** E2 lane 1's per-search rows, always on for a hard seat. Optional so an
+   * older artifact (and `tests/lab/turn-allowance.test.ts`'s stub) still
+   * satisfies the type. */
+  turnRows?: HardSeatTurnRow[];
+}
+
 export interface EngineBot {
   kind: 'engine';
   name: string;
   onGameStart(player: PlayerId, seed: number): void;
   /** Return the next single action for the current state (re-planned per action). */
   nextAction(state: GameState, player: PlayerId): Promise<AIAction | null>;
+  /**
+   * This bot's own counters for the game it just played, or null when it keeps
+   * none. Optional: only the hard adapter implements it, and the runner writes
+   * whatever it returns into `PlayerGameStats.hardTiming` (E1.5).
+   */
+  timing?(): HardSeatTiming | null;
 }
 
 export type Bot = ScriptedBot | EngineBot;
@@ -67,6 +139,15 @@ export interface MatchOptions {
   elementGraph: 'double-thick' | 'dual-triangle' | 'rush-edge-only' | 'none';
   /** Global ATK handicap per player (instrument sensitivity gate). */
   handicap: { white: number; black: number };
+  /**
+   * Starting-crystal handicap applied to Black by `createInitialGameState`
+   * (DESIGN §7.7; distinct from the combat `handicap` above). 0..
+   * `MAX_BLACK_CRYSTAL_HANDICAP` (20, `src/game/rules.ts`). Omitted means 0
+   * (production default).
+   */
+  blackCrystalHandicap?: number;
+  /** Actions-per-turn override threaded into `createInitialGameState`. Omitted means the game default (4). */
+  actionsPerTurn?: GameState['actionsPerTurn'];
 }
 
 export const DEFAULT_MATCH_OPTIONS: MatchOptions = {
@@ -83,9 +164,12 @@ export type WinType =
   | 'inactivity'
   | 'upkeep-elimination'
   | 'home-occupation'
+  | 'home-checkmate' // canonical `homeCheckmate.ts` forced-mate verdict (DESIGN §7.7)
   | 'elimination'
   | 'resignation'
   | 'adjudication' // turn/ply cap hit; material+stockpile decides
+  | 'timeout' // engine failed to move inside its allotted decision time (ladder)
+  | 'abandoned' // online room abandoned (master 03620df8, `VictoryReason`); never produced by the ladder
   | 'draw' // adjudication tie or mutual elimination
   | 'invariant-violation'; // game aborted; no winner
 
@@ -111,6 +195,31 @@ export interface PlayerGameStats {
   unitsKilled: number;
   illegalActions: number; // engine-bot emissions not in the legal set
   plies: number; // actions taken by this player
+  /** v3 (DESIGN §7.7): wall-clock ms this seat's bot spent inside `nextAction`
+   * / `chooseAction` over the whole game. Per-SEAT, unlike `GameRecord.durationMs`,
+   * so a ladder row can report each engine's own latency instead of the game's.
+   * Optional so `muju-lab-game-v2` records still satisfy the type. */
+  decisionMs?: number;
+  /** v3: distinct game turns this seat was on move for — the denominator that
+   * turns `decisionMs` into the per-turn latency §7.7's `meanTurnMs` reports. */
+  turnsTaken?: number;
+  /** v3: wall-clock ms this seat spent on EACH of its turns, in turn order —
+   * one entry per `turnsTaken`, summing to `decisionMs`. A single number
+   * cannot answer the p95 question M19 asks (AMENDMENTS-PENDING A4:
+   * `p95TurnMs` is the 95th percentile over every turn of the seat), so the
+   * per-turn samples are kept rather than only their total. Optional: records
+   * written before this field existed simply have no per-turn detail. */
+  turnMs?: number[];
+  /**
+   * v3 (E1.5): this SEAT's own hard-adapter counters for this game, straight
+   * off the bot instance that played it (`EngineBot.timing`). Absent for a
+   * seat whose bot keeps none — every scripted and `aiv2` bot — and for every
+   * record written before the field existed, so a metric reads it as "unknown"
+   * and never as a zero. `GameRecord.hardTiming` remains the process-wide
+   * delta for the whole game; this is the per-arm truth a Hard-vs-Hard row
+   * needs.
+   */
+  hardTiming?: HardSeatTiming;
 }
 
 export interface MaterialSample {
@@ -125,7 +234,7 @@ export interface MaterialSample {
 
 /** One JSONL row per game. */
 export interface GameRecord {
-  schema: 'muju-lab-game-v2';
+  schema: 'muju-lab-game-v2' | 'muju-lab-game-v3';
   maxInactivityPlies?: number;
   inactivityDraw?: boolean;
   upkeepElimination?: boolean;
@@ -142,6 +251,46 @@ export interface GameRecord {
   plies: number;
   firstBlood: { by: PlayerId; turn: number } | null;
   players: Record<PlayerId, PlayerGameStats>;
+  /** v3 (DESIGN §7.7, ladder): present when either seat ran at a fixed work budget. */
+  fixedWork?: number;
+  /** v3: present when either seat ran at a wall-clock decision budget (ms). */
+  decisionMs?: number;
+  /** v3: hash identifying the exact engine config (difficulty/speed/HardConfig) driving each seat, joined `white|black`. */
+  engineConfigHash?: string;
+  /** v3: hash of the evaluation weights file in play, when applicable (`hard@<label>` engines only). */
+  weightsHash?: string;
+  /** v3: this game's share of the process-wide hard-bot adapter counters
+   * (`lab/hard-ai/bots/hard.ts#hardBotTiming`), folded in per game by
+   * `lab/hard-ai/ladder/worker.ts` with the same snapshot-and-subtract it uses
+   * for divergences. Counters are exact deltas; `maxTurnMs` is a high-water
+   * mark, so it is this game's worst turn only when that turn beat every
+   * earlier one in the process (0 otherwise — the per-turn truth is
+   * `PlayerGameStats.turnMs`). Absent on records written outside the ladder.
+   * Structurally identical to `HardBotTiming`, spelled here so the harness
+   * keeps no dependency on `lab/hard-ai`. */
+  hardTiming?: {
+    turns: number;
+    searches: number;
+    reSearches: number;
+    totalSearchMs: number;
+    totalAdapterMs: number;
+    overruns: number;
+    maxTurnMs: number;
+    budgetExhausted: number;
+    /** A10/A16 additions. Optional because records written before them carry
+     * neither, and a metric must not report a missing count as a zero:
+     * `ladder/run.ts` reports `null` for an arm whose games never carried the
+     * field. */
+    emptyPlans?: number;
+    abortedSearches?: number;
+    firstSearchAborted?: number;
+  };
+  /** v3: true when `winType === 'adjudication'` (turn/ply cap decided the game by score, not play). */
+  adjudicated?: boolean;
+  /** v3: starting black-crystal handicap for this game (`MatchOptions.blackCrystalHandicap`, default 0). */
+  handicap?: number;
+  /** v3: the formula used to break adjudicated games. Always `'material+bank'` today (SU addendum 2). */
+  adjudicationFormula?: 'material+bank';
   incomeCurve: {player:PlayerId;turn:number;income:number;remaining:number;zeroReserveUnits:number;byTier:Record<string,number>;byElement:Record<string,number>;bank:number;tier1Share:number}[];
   round90Exhaustion: number|null;
   purchases: {player:PlayerId;turn:number;definitionId:string}[];

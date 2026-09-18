@@ -1,0 +1,243 @@
+{
+  "engine": "hard@ablate:eval-no-safety",
+  "work": 0,
+  "shards": 1,
+  "cases": 20,
+  "illegalTurns": 0,
+  "replicaDivergences": 0,
+  "failures": [
+    {
+      "suite": "invariants",
+      "id": "inv3-retreat-square",
+      "endKey": "eval correct-violating -3462 cc; searched violating-correct -771 cc",
+      "source": "pair",
+      "reason": "prefers-violating"
+    },
+    {
+      "suite": "invariants",
+      "id": "inv4-strand-unpunished",
+      "endKey": "eval correct-violating -2016 cc; searched violating-correct 1047 cc",
+      "source": "pair",
+      "reason": "prefers-violating"
+    },
+    {
+      "suite": "invariants",
+      "id": "inv6-fragile-anchor",
+      "endKey": "eval correct-violating -2358 cc; searched violating-correct -61 cc",
+      "source": "pair",
+      "reason": "prefers-violating"
+    },
+    {
+      "suite": "invariants",
+      "id": "inv12-cleave-line",
+      "endKey": "eval correct-violating -2464 cc; searched violating-correct -4610 cc",
+      "source": "pair",
+      "reason": "prefers-violating"
+    },
+    {
+      "suite": "invariants",
+      "id": "inv15-unknown-as-safe",
+      "endKey": "eval correct-violating 0 cc; searched violating-correct 0 cc",
+      "source": "pair",
+      "reason": "prefers-violating"
+    },
+    {
+      "suite": "invariants",
+      "id": "inv18-wasted-end-place",
+      "endKey": "eval correct-violating 0 cc; searched violating-correct 0 cc",
+      "source": "pair",
+      "reason": "prefers-violating"
+    },
+    {
+      "suite": "invariants",
+      "id": "inv19-soft-miner-exposed",
+      "endKey": "eval correct-violating -3662 cc; searched violating-correct -1712 cc",
+      "source": "pair",
+      "reason": "prefers-violating"
+    },
+    {
+      "suite": "invariants",
+      "id": "inv20-strand-no-retreat",
+      "endKey": "eval correct-violating -2318 cc; searched violating-correct -995675 cc",
+      "source": "pair",
+      "reason": "prefers-violating"
+    }
+  ],
+  "wonOutright": [],
+  "deadPositions": [],
+  "deadBudgetExceeded": [],
+  "suites": {
+    "invariants": {
+      "cases": 20,
+      "passed": 12,
+      "points": 20,
+      "pointsWon": 12
+    }
+  },
+  "passedCases": 12,
+  "invariantPairs": 20,
+  "invariantsEval": 0.6,
+  "invariantsSearched": 0.4,
+  "invariantDetail": [
+    {
+      "id": "inv1-spawn-zero",
+      "invariant": 1,
+      "evalGapCc": 3446,
+      "evalPass": true,
+      "searchGapCc": 4251,
+      "searchPass": true
+    },
+    {
+      "id": "inv2-corner-seal",
+      "invariant": 2,
+      "evalGapCc": 30,
+      "evalPass": true,
+      "searchGapCc": -320,
+      "searchPass": false
+    },
+    {
+      "id": "inv3-retreat-square",
+      "invariant": 3,
+      "evalGapCc": -3462,
+      "evalPass": false,
+      "searchGapCc": -771,
+      "searchPass": false
+    },
+    {
+      "id": "inv4-strand-unpunished",
+      "invariant": 4,
+      "evalGapCc": -2016,
+      "evalPass": false,
+      "searchGapCc": 1047,
+      "searchPass": true
+    },
+    {
+      "id": "inv5-poor-miner-square",
+      "invariant": 5,
+      "evalGapCc": 2165,
+      "evalPass": true,
+      "searchGapCc": 334,
+      "searchPass": true
+    },
+    {
+      "id": "inv6-fragile-anchor",
+      "invariant": 6,
+      "evalGapCc": -2358,
+      "evalPass": false,
+      "searchGapCc": -61,
+      "searchPass": false
+    },
+    {
+      "id": "inv7-promote-no-runway",
+      "invariant": 7,
+      "evalGapCc": 600,
+      "evalPass": true,
+      "searchGapCc": 0,
+      "searchPass": false
+    },
+    {
+      "id": "inv8-no-pre-adjacency",
+      "invariant": 8,
+      "evalGapCc": 335,
+      "evalPass": true,
+      "searchGapCc": 0,
+      "searchPass": false
+    },
+    {
+      "id": "inv9-chip-across-turn",
+      "invariant": 9,
+      "evalGapCc": 150,
+      "evalPass": true,
+      "searchGapCc": 0,
+      "searchPass": false
+    },
+    {
+      "id": "inv10-home-reachable",
+      "invariant": 10,
+      "evalGapCc": 2557,
+      "evalPass": true,
+      "searchGapCc": -89,
+      "searchPass": false
+    },
+    {
+      "id": "inv11-home-bare",
+      "invariant": 11,
+      "evalGapCc": 884,
+      "evalPass": true,
+      "searchGapCc": 1050,
+      "searchPass": true
+    },
+    {
+      "id": "inv12-cleave-line",
+      "invariant": 12,
+      "evalGapCc": -2464,
+      "evalPass": false,
+      "searchGapCc": -4610,
+      "searchPass": false
+    },
+    {
+      "id": "inv13-turtle",
+      "invariant": 13,
+      "evalGapCc": 301,
+      "evalPass": true,
+      "searchGapCc": 607,
+      "searchPass": true
+    },
+    {
+      "id": "inv14-liquidity-floor",
+      "invariant": 14,
+      "evalGapCc": 750,
+      "evalPass": true,
+      "searchGapCc": 1195,
+      "searchPass": true
+    },
+    {
+      "id": "inv15-unknown-as-safe",
+      "invariant": 15,
+      "evalGapCc": 0,
+      "evalPass": false,
+      "searchGapCc": 0,
+      "searchPass": false
+    },
+    {
+      "id": "inv16-clock-discipline",
+      "invariant": 16,
+      "evalGapCc": 560,
+      "evalPass": true,
+      "searchGapCc": 2984,
+      "searchPass": true
+    },
+    {
+      "id": "inv17-self-block",
+      "invariant": 17,
+      "evalGapCc": 290,
+      "evalPass": true,
+      "searchGapCc": 8,
+      "searchPass": true
+    },
+    {
+      "id": "inv18-wasted-end-place",
+      "invariant": 18,
+      "evalGapCc": 0,
+      "evalPass": false,
+      "searchGapCc": 0,
+      "searchPass": false
+    },
+    {
+      "id": "inv19-soft-miner-exposed",
+      "invariant": 19,
+      "evalGapCc": -3662,
+      "evalPass": false,
+      "searchGapCc": -1712,
+      "searchPass": false
+    },
+    {
+      "id": "inv20-strand-no-retreat",
+      "invariant": 20,
+      "evalGapCc": -2318,
+      "evalPass": false,
+      "searchGapCc": -995675,
+      "searchPass": false
+    }
+  ]
+}

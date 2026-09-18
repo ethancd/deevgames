@@ -1,0 +1,95 @@
+{
+ "schema": "muju-exam-run-v1",
+ "at": "2026-09-17T06:31:00.320Z",
+ "engine": "hard@ablate:eval-no-safety",
+ "work": 200000,
+ "configHash": "hard:ablate:eval-no-safety:fixed:200000#040dd137073d664b5f9a38c16f4ee50e87e472e64a31398c6a95974a37c58bf5",
+ "stratum": "dev",
+ "stratumRule": "development — may be inspected, debugged against and tuned against",
+ "casesDir": "lab/hard-ai/exam/cases",
+ "exact": {
+  "cases": 0,
+  "passed": 0,
+  "failed": 0,
+  "passRate": null,
+  "wonOutrightAdjudications": 0,
+  "incompleteWitnesses": 0
+ },
+ "judgment": {
+  "cases": 3,
+  "matched": 0,
+  "unmatched": 3,
+  "matchRate": 0
+ },
+ "byDemand": {
+  "recurring-upkeep": {
+   "exactCases": 0,
+   "exactPassed": 0,
+   "judgmentCases": 1,
+   "judgmentMatched": 0
+  },
+  "healing": {
+   "exactCases": 0,
+   "exactPassed": 0,
+   "judgmentCases": 2,
+   "judgmentMatched": 0
+  }
+ },
+ "results": [
+  {
+   "id": "loss-g4-s2_3_1-B-white-t2",
+   "kind": "judgment",
+   "demand": "recurring-upkeep",
+   "claim": null,
+   "passed": null,
+   "matched": false,
+   "endKey": "187dc5a8404d0867",
+   "source": "search",
+   "fallback": null,
+   "depth": 3,
+   "work": 142944,
+   "wonOutright": false,
+   "witnessComplete": null,
+   "ms": 1888,
+   "note": "judgment: agreement with a stated preference, never a pass"
+  },
+  {
+   "id": "loss-g4-s6_3_5-B-white-t1",
+   "kind": "judgment",
+   "demand": "healing",
+   "claim": null,
+   "passed": null,
+   "matched": false,
+   "endKey": "4844d47f0e9b8049",
+   "source": "search",
+   "fallback": null,
+   "depth": 2,
+   "work": 200107,
+   "wonOutright": false,
+   "witnessComplete": null,
+   "ms": 2470,
+   "note": "judgment: agreement with a stated preference, never a pass"
+  },
+  {
+   "id": "loss-g5-s7_3_7-B-white-t1",
+   "kind": "judgment",
+   "demand": "healing",
+   "claim": null,
+   "passed": null,
+   "matched": false,
+   "endKey": "4844d47f0e9b8049",
+   "source": "search",
+   "fallback": null,
+   "depth": 2,
+   "work": 200107,
+   "wonOutright": false,
+   "witnessComplete": null,
+   "ms": 2462,
+   "note": "judgment: agreement with a stated preference, never a pass"
+  }
+ ],
+ "errors": [],
+ "wallMs": 6821,
+ "host": "The-Work-Box.local",
+ "node": "v24.11.1"
+}

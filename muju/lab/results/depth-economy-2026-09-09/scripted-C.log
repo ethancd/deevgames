@@ -1,0 +1,25 @@
+{"economy":"C","cell":0,"a":"Plant3","b":"Rush","count":40,"seconds":1}
+{"economy":"C","cell":1,"a":"Plant3","b":"MiningDenial","count":80,"seconds":4}
+{"economy":"C","cell":2,"a":"Plant3","b":"Aware:AntiRush","count":120,"seconds":8}
+{"economy":"C","cell":3,"a":"Plant3","b":"Metal3","count":160,"seconds":11}
+{"economy":"C","cell":4,"a":"Plant3","b":"Plant2","count":200,"seconds":14}
+{"economy":"C","cell":5,"a":"Plant3","b":"Aware:Balanced","count":240,"seconds":17}
+{"economy":"C","cell":6,"a":"Plant3","b":"Invade:LightningRush","count":280,"seconds":18}
+{"economy":"C","cell":7,"a":"Plant3","b":"Guard:Turtle","count":320,"seconds":21}
+{"economy":"C","cell":8,"a":"Plant2","b":"Rush","count":360,"seconds":22}
+{"economy":"C","cell":9,"a":"Plant2","b":"MiningDenial","count":400,"seconds":23}
+{"economy":"C","cell":10,"a":"Plant2","b":"Metal3","count":440,"seconds":26}
+{"economy":"C","cell":11,"a":"Plant2","b":"Aware:Balanced","count":480,"seconds":29}
+{"economy":"C","cell":12,"a":"Plant3","b":"Plant3","count":520,"seconds":32}
+{"economy":"C","cell":13,"a":"Plant2","b":"Plant2","count":560,"seconds":35}
+{"economy":"C","cell":14,"a":"Metal3","b":"Metal3","count":600,"seconds":37}
+{"economy":"C","cell":15,"a":"Metal3","b":"Rush","count":640,"seconds":39}
+{"economy":"C","cell":16,"a":"Metal3","b":"MiningDenial","count":680,"seconds":42}
+{"economy":"C","cell":17,"a":"Plant1","b":"Plant2","count":720,"seconds":45}
+{"economy":"C","cell":18,"a":"Plant1","b":"Plant3","count":760,"seconds":47}
+{"economy":"C","cell":19,"a":"Mono-plant","b":"Mono-metal","count":800,"seconds":48}
+{"economy":"C","cell":20,"a":"InvestT3","b":"HomeT3","count":840,"seconds":50}
+{"economy":"C","cell":21,"a":"Invade:Balanced","b":"Aware:Balanced","count":880,"seconds":52}
+{"economy":"C","cell":22,"a":"Rush","b":"AntiRush","count":920,"seconds":53}
+{"economy":"C","cell":23,"a":"LightningRush","b":"Expand","count":960,"seconds":53}
+DONE C 960

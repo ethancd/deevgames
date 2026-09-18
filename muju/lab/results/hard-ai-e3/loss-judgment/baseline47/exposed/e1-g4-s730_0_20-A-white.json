@@ -1,0 +1,1511 @@
+{
+  "schema": "muju-hard-analyze-v2",
+  "replay": "/Users/ashkie/src/deevgames-e1-run/muju/lab/results/hard-ai-e1/baseline/replays/e1-g4-s730_0_20-A-white.json",
+  "fileId": "e1-g4-s730_0_20-A-white",
+  "side": "white",
+  "seatBot": "hard@desktop",
+  "opponentBot": "aiv2-hard",
+  "opening": "e1-g4-s730",
+  "outcome": {
+    "winner": "black",
+    "winType": "upkeep-elimination",
+    "turns": 38,
+    "plies": 425,
+    "sideResult": "loss"
+  },
+  "config": {
+    "engineLabel": "hard@desktop",
+    "adviserWork": 1600000,
+    "ladderWorkRung": 400000,
+    "productionWork": 400000,
+    "swingCc": 300,
+    "recordedEngineConfigHash": "white=hard:desktop:wall:3000#4e7afdf76b32fadfab2d11577cb610c8f9f1a491b5153e70b87b0774403600cd|black=aiv2:hard:full:wall:3000#dc7e4607ea81aad2967ce361b45e3bf3e8ff2a93e1e74db305b96b6c42a5918c",
+    "analyserConfigHash": "hard:desktop:fixed:1600000#43ea6a26a0a0e679300d0e1c8e9bfae56205e33e61c6c14f7660352fb511d90d",
+    "genK": 24,
+    "genInteriorK": 16
+  },
+  "reconstruction": {
+    "plies": 425,
+    "winner": "black",
+    "turnsAnalysed": 12,
+    "notes": []
+  },
+  "turns": [
+    {
+      "seatTurnIndex": 0,
+      "turnNumber": 1,
+      "side": "white",
+      "played": {
+        "actions": [
+          "END_ACTION"
+        ],
+        "endKey": "13d63e4cc24a022f",
+        "inCheapList": true,
+        "endsGame": false
+      },
+      "cheap": {
+        "count": 1,
+        "containsPlayed": true,
+        "containsAdviserBest": true
+      },
+      "adviser": {
+        "endKey": "13d63e4cc24a022f",
+        "actions": [
+          "END_ACTION"
+        ],
+        "scoreCc": -1417,
+        "depth": 6,
+        "work": 1331732,
+        "source": "search",
+        "fallback": null,
+        "agreesWithPlayed": true
+      },
+      "playedDeepCc": -1417,
+      "adviserBestDeepCc": -1417,
+      "swingCc": 0,
+      "swingRootCc": 0,
+      "engine": {
+        "scoreCc": 828,
+        "endKey": "13d63e4cc24a022f",
+        "reproducedPlayed": true
+      },
+      "reply": {
+        "refutationKey": "37d25a425a813225",
+        "inRootGenList": true,
+        "rootGenCount": 16,
+        "inInteriorGenList": true,
+        "interiorGenCount": 14
+      },
+      "timing": {
+        "turnMs": 3036,
+        "budgetMs": 3000,
+        "overran": true,
+        "emptyPlan": true
+      },
+      "notes": [],
+      "exposure": null
+    },
+    {
+      "seatTurnIndex": 1,
+      "turnNumber": 2,
+      "side": "white",
+      "played": {
+        "actions": [
+          "BUY water_1@0,0",
+          "MOVE 0,2→5,5",
+          "END_ACTION"
+        ],
+        "endKey": "8035182d358f3c9f",
+        "inCheapList": true,
+        "endsGame": false
+      },
+      "cheap": {
+        "count": 28,
+        "containsPlayed": true,
+        "containsAdviserBest": true
+      },
+      "adviser": {
+        "endKey": "8035182d358f3c9f",
+        "actions": [
+          "BUY water_1@0,0",
+          "MOVE 0,2→5,5",
+          "END_ACTION"
+        ],
+        "scoreCc": 329,
+        "depth": 4,
+        "work": 1600230,
+        "source": "search",
+        "fallback": null,
+        "agreesWithPlayed": true
+      },
+      "playedDeepCc": -157,
+      "adviserBestDeepCc": -157,
+      "swingCc": 0,
+      "swingRootCc": 486,
+      "engine": {
+        "scoreCc": 728,
+        "endKey": "8035182d358f3c9f",
+        "reproducedPlayed": true
+      },
+      "reply": {
+        "refutationKey": "1a9a41c96a2cf866",
+        "inRootGenList": true,
+        "rootGenCount": 29,
+        "inInteriorGenList": true,
+        "interiorGenCount": 21
+      },
+      "timing": {
+        "turnMs": 894,
+        "budgetMs": 3000,
+        "overran": false,
+        "emptyPlan": false
+      },
+      "notes": [],
+      "exposure": null
+    },
+    {
+      "seatTurnIndex": 2,
+      "turnNumber": 3,
+      "side": "white",
+      "played": {
+        "actions": [
+          "BUY lightning_1@0,1",
+          "END_PLACE",
+          "MOVE 1,1→2,0",
+          "MOVE 0,1→1,3",
+          "ATK 1,3→1,2",
+          "END_ACTION"
+        ],
+        "endKey": "c2bfee61f86fa87a",
+        "inCheapList": true,
+        "endsGame": false
+      },
+      "cheap": {
+        "count": 27,
+        "containsPlayed": true,
+        "containsAdviserBest": true
+      },
+      "adviser": {
+        "endKey": "c2bfee61f86fa87a",
+        "actions": [
+          "BUY lightning_1@0,1",
+          "END_PLACE",
+          "MOVE 1,1→2,0",
+          "MOVE 0,1→1,3",
+          "ATK 1,3→1,2",
+          "END_ACTION"
+        ],
+        "scoreCc": 513,
+        "depth": 4,
+        "work": 1600219,
+        "source": "search",
+        "fallback": null,
+        "agreesWithPlayed": true
+      },
+      "playedDeepCc": 1252,
+      "adviserBestDeepCc": 1252,
+      "swingCc": 0,
+      "swingRootCc": -739,
+      "engine": {
+        "scoreCc": 688,
+        "endKey": "c2bfee61f86fa87a",
+        "reproducedPlayed": true
+      },
+      "reply": {
+        "refutationKey": "3f630a90c3a72c74",
+        "inRootGenList": true,
+        "rootGenCount": 24,
+        "inInteriorGenList": true,
+        "interiorGenCount": 17
+      },
+      "timing": {
+        "turnMs": 1759,
+        "budgetMs": 3000,
+        "overran": false,
+        "emptyPlan": false
+      },
+      "notes": [],
+      "exposure": null
+    },
+    {
+      "seatTurnIndex": 3,
+      "turnNumber": 4,
+      "side": "white",
+      "played": {
+        "actions": [
+          "BUY fire_1@0,1",
+          "BUY fire_1@0,2",
+          "BUY fire_1@0,3",
+          "BUY fire_1@1,1",
+          "MOVE 1,1→8,2",
+          "END_ACTION"
+        ],
+        "endKey": "961a7104f44cf084",
+        "inCheapList": true,
+        "endsGame": false
+      },
+      "cheap": {
+        "count": 27,
+        "containsPlayed": true,
+        "containsAdviserBest": true
+      },
+      "adviser": {
+        "endKey": "e08eab5d5c08c1a4",
+        "actions": [
+          "BUY fire_1@0,1",
+          "BUY fire_1@0,2",
+          "BUY fire_1@1,1",
+          "END_PLACE",
+          "MOVE 1,1→7,2",
+          "END_ACTION"
+        ],
+        "scoreCc": 983,
+        "depth": 4,
+        "work": 1352841,
+        "source": "search",
+        "fallback": null,
+        "agreesWithPlayed": false
+      },
+      "playedDeepCc": 591,
+      "adviserBestDeepCc": 1753,
+      "swingCc": 1162,
+      "swingRootCc": 392,
+      "engine": {
+        "scoreCc": 1865,
+        "endKey": "961a7104f44cf084",
+        "reproducedPlayed": true
+      },
+      "reply": {
+        "refutationKey": "774d8f05f8ad081d",
+        "inRootGenList": true,
+        "rootGenCount": 28,
+        "inInteriorGenList": false,
+        "interiorGenCount": 20
+      },
+      "timing": {
+        "turnMs": 2608,
+        "budgetMs": 3000,
+        "overran": false,
+        "emptyPlan": false
+      },
+      "notes": [],
+      "exposure": {
+        "source": "completed-depth",
+        "count": 27,
+        "searchedCount": 27,
+        "completedDepth": 3,
+        "lastCutoffAt": -1,
+        "adviserBest": {
+          "index": 22,
+          "endKey": "e08eab5d5c08c1a4",
+          "genRankCc": -477,
+          "flags": 288,
+          "sig": -1980784781,
+          "searched": true,
+          "scoreCc": 1865,
+          "chosen": false
+        },
+        "played": {
+          "index": 0,
+          "endKey": "961a7104f44cf084",
+          "genRankCc": 1999552,
+          "flags": 288,
+          "sig": -747673552,
+          "searched": true,
+          "scoreCc": 1865,
+          "chosen": true
+        },
+        "candidates": [
+          {
+            "index": 0,
+            "endKey": "961a7104f44cf084",
+            "genRankCc": 1999552,
+            "flags": 288,
+            "sig": -747673552,
+            "searched": true,
+            "scoreCc": 1865,
+            "chosen": true
+          },
+          {
+            "index": 1,
+            "endKey": "d2c9d2d42562ca22",
+            "genRankCc": 599424,
+            "flags": 368,
+            "sig": 2050441807,
+            "searched": true,
+            "scoreCc": 1865,
+            "chosen": false
+          },
+          {
+            "index": 2,
+            "endKey": "c2710d595182bdc9",
+            "genRankCc": 299634,
+            "flags": 528,
+            "sig": 919398483,
+            "searched": true,
+            "scoreCc": 1865,
+            "chosen": false
+          },
+          {
+            "index": 3,
+            "endKey": "75953bb49234e64e",
+            "genRankCc": -123,
+            "flags": 640,
+            "sig": -746582115,
+            "searched": true,
+            "scoreCc": 1865,
+            "chosen": false
+          },
+          {
+            "index": 4,
+            "endKey": "a5b2a7c29c73c761",
+            "genRankCc": -156,
+            "flags": 416,
+            "sig": 2112044449,
+            "searched": true,
+            "scoreCc": 1865,
+            "chosen": false
+          },
+          {
+            "index": 5,
+            "endKey": "c1d5597e6e056672",
+            "genRankCc": -156,
+            "flags": 416,
+            "sig": -101736018,
+            "searched": true,
+            "scoreCc": 1865,
+            "chosen": false
+          },
+          {
+            "index": 6,
+            "endKey": "d3484fbb4548d140",
+            "genRankCc": -156,
+            "flags": 416,
+            "sig": 1786782271,
+            "searched": true,
+            "scoreCc": 1865,
+            "chosen": false
+          },
+          {
+            "index": 7,
+            "endKey": "65a90d945dc42448",
+            "genRankCc": -174,
+            "flags": 416,
+            "sig": 2090800089,
+            "searched": true,
+            "scoreCc": 1865,
+            "chosen": false
+          },
+          {
+            "index": 8,
+            "endKey": "dae48f75cd3333a1",
+            "genRankCc": -174,
+            "flags": 416,
+            "sig": -557433318,
+            "searched": true,
+            "scoreCc": 1865,
+            "chosen": false
+          },
+          {
+            "index": 9,
+            "endKey": "be8371c93f4592b2",
+            "genRankCc": -174,
+            "flags": 416,
+            "sig": 796007843,
+            "searched": true,
+            "scoreCc": 1865,
+            "chosen": false
+          },
+          {
+            "index": 10,
+            "endKey": "ac1e670c14082580",
+            "genRankCc": -174,
+            "flags": 416,
+            "sig": -604111376,
+            "searched": true,
+            "scoreCc": 1865,
+            "chosen": false
+          },
+          {
+            "index": 11,
+            "endKey": "2391b195a01c3cb3",
+            "genRankCc": -187,
+            "flags": 480,
+            "sig": 1760366106,
+            "searched": true,
+            "scoreCc": 1865,
+            "chosen": false
+          },
+          {
+            "index": 12,
+            "endKey": "938506efd1738f8a",
+            "genRankCc": -187,
+            "flags": 480,
+            "sig": 46788003,
+            "searched": true,
+            "scoreCc": 1865,
+            "chosen": false
+          },
+          {
+            "index": 13,
+            "endKey": "fd616bd5b184cf41",
+            "genRankCc": -187,
+            "flags": 480,
+            "sig": -950628880,
+            "searched": true,
+            "scoreCc": 1865,
+            "chosen": false
+          },
+          {
+            "index": 14,
+            "endKey": "ce419ced3e5f8f88",
+            "genRankCc": -187,
+            "flags": 480,
+            "sig": 709878745,
+            "searched": true,
+            "scoreCc": 1865,
+            "chosen": false
+          },
+          {
+            "index": 15,
+            "endKey": "0716fb9164694224",
+            "genRankCc": -200,
+            "flags": 416,
+            "sig": 1615659608,
+            "searched": true,
+            "scoreCc": 1865,
+            "chosen": false
+          },
+          {
+            "index": 16,
+            "endKey": "903e61f96df202ee",
+            "genRankCc": -329,
+            "flags": 768,
+            "sig": 1010345933,
+            "searched": true,
+            "scoreCc": 1865,
+            "chosen": false
+          },
+          {
+            "index": 17,
+            "endKey": "cc7e38d5ebcb0044",
+            "genRankCc": -455,
+            "flags": 288,
+            "sig": -402246044,
+            "searched": true,
+            "scoreCc": 1865,
+            "chosen": false
+          },
+          {
+            "index": 18,
+            "endKey": "9fd883ea0d483564",
+            "genRankCc": -459,
+            "flags": 288,
+            "sig": 1330536719,
+            "searched": true,
+            "scoreCc": 1865,
+            "chosen": false
+          },
+          {
+            "index": 19,
+            "endKey": "5610cdeca515a38b",
+            "genRankCc": -460,
+            "flags": 288,
+            "sig": 586442116,
+            "searched": true,
+            "scoreCc": 1865,
+            "chosen": false
+          },
+          {
+            "index": 20,
+            "endKey": "e94c59b3a50c0444",
+            "genRankCc": -466,
+            "flags": 288,
+            "sig": -1980622372,
+            "searched": true,
+            "scoreCc": 1865,
+            "chosen": false
+          },
+          {
+            "index": 21,
+            "endKey": "bd9d4e43be02b624",
+            "genRankCc": -468,
+            "flags": 288,
+            "sig": 2136979950,
+            "searched": true,
+            "scoreCc": 1865,
+            "chosen": false
+          },
+          {
+            "index": 22,
+            "endKey": "e08eab5d5c08c1a4",
+            "genRankCc": -477,
+            "flags": 288,
+            "sig": -1980784781,
+            "searched": true,
+            "scoreCc": 1865,
+            "chosen": false
+          },
+          {
+            "index": 23,
+            "endKey": "2946e55bf455574b",
+            "genRankCc": -478,
+            "flags": 288,
+            "sig": -1430982808,
+            "searched": true,
+            "scoreCc": 1865,
+            "chosen": false
+          },
+          {
+            "index": 24,
+            "endKey": "c2cb66f4ef4242e4",
+            "genRankCc": -486,
+            "flags": 288,
+            "sig": 242250178,
+            "searched": true,
+            "scoreCc": 1865,
+            "chosen": false
+          },
+          {
+            "index": 25,
+            "endKey": "650137c9163ae878",
+            "genRankCc": -884,
+            "flags": 352,
+            "sig": -638817828,
+            "searched": true,
+            "scoreCc": 1865,
+            "chosen": false
+          },
+          {
+            "index": 26,
+            "endKey": "6cc3c527ef3e2d98",
+            "genRankCc": -894,
+            "flags": 352,
+            "sig": -638980237,
+            "searched": true,
+            "scoreCc": 1865,
+            "chosen": false
+          }
+        ],
+        "rootTrace": [
+          {
+            "depth": 1,
+            "n": 27,
+            "searched": 27,
+            "completed": true,
+            "cutoffAt": -1,
+            "truncated": false
+          },
+          {
+            "depth": 2,
+            "n": 27,
+            "searched": 27,
+            "completed": true,
+            "cutoffAt": -1,
+            "truncated": false
+          },
+          {
+            "depth": 3,
+            "n": 27,
+            "searched": 27,
+            "completed": true,
+            "cutoffAt": -1,
+            "truncated": false
+          }
+        ]
+      }
+    },
+    {
+      "seatTurnIndex": 4,
+      "turnNumber": 5,
+      "side": "white",
+      "played": {
+        "actions": [
+          "BUY fire_1@7,1",
+          "BUY fire_1@7,2",
+          "END_PLACE",
+          "MOVE 0,3→2,7",
+          "MOVE 1,0→1,1",
+          "END_ACTION"
+        ],
+        "endKey": "039fd9dfbcc05888",
+        "inCheapList": true,
+        "endsGame": false
+      },
+      "cheap": {
+        "count": 31,
+        "containsPlayed": true,
+        "containsAdviserBest": true
+      },
+      "adviser": {
+        "endKey": "5444cd0c10822bd0",
+        "actions": [
+          "BUY fire_1@6,0",
+          "BUY fire_1@7,1",
+          "BUY fire_1@6,2",
+          "BUY fire_1@7,2",
+          "MOVE 0,3→2,7",
+          "MOVE 6,2→5,3",
+          "END_ACTION"
+        ],
+        "scoreCc": 3946,
+        "depth": 4,
+        "work": 1259229,
+        "source": "search",
+        "fallback": null,
+        "agreesWithPlayed": false
+      },
+      "playedDeepCc": 4309,
+      "adviserBestDeepCc": 4255,
+      "swingCc": -54,
+      "swingRootCc": -363,
+      "engine": {
+        "scoreCc": 3684,
+        "endKey": "039fd9dfbcc05888",
+        "reproducedPlayed": true
+      },
+      "reply": {
+        "refutationKey": "659f3dab51aa7c5d",
+        "inRootGenList": true,
+        "rootGenCount": 31,
+        "inInteriorGenList": false,
+        "interiorGenCount": 23
+      },
+      "timing": {
+        "turnMs": 3002,
+        "budgetMs": 3000,
+        "overran": false,
+        "emptyPlan": false
+      },
+      "notes": [],
+      "exposure": null
+    },
+    {
+      "seatTurnIndex": 5,
+      "turnNumber": 6,
+      "side": "white",
+      "played": {
+        "actions": [
+          "BUY fire_1@8,1",
+          "BUY fire_1@1,2",
+          "BUY fire_1@1,0",
+          "BUY fire_1@7,0",
+          "END_PLACE",
+          "ATK 1,2→1,3",
+          "MOVE 1,1→2,1",
+          "MOVE 1,2→1,3",
+          "MOVE 1,0→1,2",
+          "END_ACTION"
+        ],
+        "endKey": "adf2aa772f25db91",
+        "inCheapList": true,
+        "endsGame": false
+      },
+      "cheap": {
+        "count": 33,
+        "containsPlayed": true,
+        "containsAdviserBest": true
+      },
+      "adviser": {
+        "endKey": "18813a59c7c10ba9",
+        "actions": [
+          "BUY fire_1@8,1",
+          "BUY fire_1@1,2",
+          "BUY fire_1@7,0",
+          "END_PLACE",
+          "ATK 1,2→1,3",
+          "MOVE 1,1→2,1",
+          "MOVE 1,2→3,4",
+          "END_ACTION"
+        ],
+        "scoreCc": 3606,
+        "depth": 4,
+        "work": 1260210,
+        "source": "search",
+        "fallback": null,
+        "agreesWithPlayed": false
+      },
+      "playedDeepCc": 5605,
+      "adviserBestDeepCc": 5523,
+      "swingCc": -82,
+      "swingRootCc": -1999,
+      "engine": {
+        "scoreCc": 5322,
+        "endKey": "35020001f7f8f70f",
+        "reproducedPlayed": false
+      },
+      "reply": {
+        "refutationKey": "4353a10a1149a7cb",
+        "inRootGenList": true,
+        "rootGenCount": 29,
+        "inInteriorGenList": true,
+        "interiorGenCount": 21
+      },
+      "timing": {
+        "turnMs": 3006,
+        "budgetMs": 3000,
+        "overran": false,
+        "emptyPlan": false
+      },
+      "notes": [],
+      "exposure": null
+    },
+    {
+      "seatTurnIndex": 6,
+      "turnNumber": 7,
+      "side": "white",
+      "played": {
+        "actions": [
+          "END_PLACE",
+          "MOVE 8,2→8,5",
+          "ATK 8,5→8,6",
+          "END_ACTION"
+        ],
+        "endKey": "fbdf3f8e36d041c3",
+        "inCheapList": true,
+        "endsGame": false
+      },
+      "cheap": {
+        "count": 31,
+        "containsPlayed": true,
+        "containsAdviserBest": true
+      },
+      "adviser": {
+        "endKey": "f5d3e0ef2b933b19",
+        "actions": [
+          "BUY water_1@7,2",
+          "END_PLACE",
+          "ATK 7,2→7,3",
+          "END_ACTION"
+        ],
+        "scoreCc": 6592,
+        "depth": 4,
+        "work": 942453,
+        "source": "search",
+        "fallback": null,
+        "agreesWithPlayed": false
+      },
+      "playedDeepCc": 4881,
+      "adviserBestDeepCc": 7617,
+      "swingCc": 2736,
+      "swingRootCc": 1711,
+      "engine": {
+        "scoreCc": 8487,
+        "endKey": "f5d3e0ef2b933b19",
+        "reproducedPlayed": false
+      },
+      "reply": {
+        "refutationKey": "fba53d78388c1e0d",
+        "inRootGenList": true,
+        "rootGenCount": 29,
+        "inInteriorGenList": true,
+        "interiorGenCount": 21
+      },
+      "timing": {
+        "turnMs": 3013,
+        "budgetMs": 3000,
+        "overran": false,
+        "emptyPlan": false
+      },
+      "notes": [],
+      "exposure": {
+        "source": "completed-depth",
+        "count": 31,
+        "searchedCount": 31,
+        "completedDepth": 3,
+        "lastCutoffAt": -1,
+        "adviserBest": {
+          "index": 3,
+          "endKey": "f5d3e0ef2b933b19",
+          "genRankCc": 290197,
+          "flags": 4609,
+          "sig": -361993309,
+          "searched": true,
+          "scoreCc": 8487,
+          "chosen": true
+        },
+        "played": {
+          "index": 0,
+          "endKey": "fbdf3f8e36d041c3",
+          "genRankCc": 2049222,
+          "flags": 513,
+          "sig": 972908915,
+          "searched": true,
+          "scoreCc": 5718,
+          "chosen": false
+        },
+        "candidates": [
+          {
+            "index": 0,
+            "endKey": "fbdf3f8e36d041c3",
+            "genRankCc": 2049222,
+            "flags": 513,
+            "sig": 972908915,
+            "searched": true,
+            "scoreCc": 5718,
+            "chosen": false
+          },
+          {
+            "index": 1,
+            "endKey": "b873a06a2b6db80a",
+            "genRankCc": 299187,
+            "flags": 528,
+            "sig": 1858180705,
+            "searched": true,
+            "scoreCc": 5718,
+            "chosen": false
+          },
+          {
+            "index": 2,
+            "endKey": "aa0a80ac3d631cfb",
+            "genRankCc": 299021,
+            "flags": 304,
+            "sig": -1096049644,
+            "searched": true,
+            "scoreCc": 7554,
+            "chosen": false
+          },
+          {
+            "index": 3,
+            "endKey": "f5d3e0ef2b933b19",
+            "genRankCc": 290197,
+            "flags": 4609,
+            "sig": -361993309,
+            "searched": true,
+            "scoreCc": 8487,
+            "chosen": true
+          },
+          {
+            "index": 4,
+            "endKey": "39d5dfaa9d9f3c56",
+            "genRankCc": 49219,
+            "flags": 513,
+            "sig": 1624518801,
+            "searched": true,
+            "scoreCc": 8487,
+            "chosen": false
+          },
+          {
+            "index": 5,
+            "endKey": "048151c0f3c7ded6",
+            "genRankCc": 49208,
+            "flags": 513,
+            "sig": -1539348543,
+            "searched": true,
+            "scoreCc": 8487,
+            "chosen": false
+          },
+          {
+            "index": 6,
+            "endKey": "122ba65005a4c7b7",
+            "genRankCc": 47798,
+            "flags": 513,
+            "sig": 595970116,
+            "searched": true,
+            "scoreCc": 8487,
+            "chosen": false
+          },
+          {
+            "index": 7,
+            "endKey": "6c705669f5b48401",
+            "genRankCc": -2043,
+            "flags": 768,
+            "sig": 1010345933,
+            "searched": true,
+            "scoreCc": 8487,
+            "chosen": false
+          },
+          {
+            "index": 8,
+            "endKey": "eda57afc2b4d9307",
+            "genRankCc": -2538,
+            "flags": 288,
+            "sig": 456090080,
+            "searched": true,
+            "scoreCc": 8487,
+            "chosen": false
+          },
+          {
+            "index": 9,
+            "endKey": "727e22a78166113a",
+            "genRankCc": -2540,
+            "flags": 288,
+            "sig": -56361908,
+            "searched": true,
+            "scoreCc": 8487,
+            "chosen": false
+          },
+          {
+            "index": 10,
+            "endKey": "9d988f678608b04a",
+            "genRankCc": -2541,
+            "flags": 288,
+            "sig": 1261883675,
+            "searched": true,
+            "scoreCc": 8487,
+            "chosen": false
+          },
+          {
+            "index": 11,
+            "endKey": "442329b47245cb26",
+            "genRankCc": -2820,
+            "flags": 288,
+            "sig": 290503356,
+            "searched": true,
+            "scoreCc": 8487,
+            "chosen": false
+          },
+          {
+            "index": 12,
+            "endKey": "941b0d786bb5e9d3",
+            "genRankCc": -2820,
+            "flags": 288,
+            "sig": 1224674454,
+            "searched": true,
+            "scoreCc": 8487,
+            "chosen": false
+          },
+          {
+            "index": 13,
+            "endKey": "67767a9a17a2c8cf",
+            "genRankCc": -2826,
+            "flags": 288,
+            "sig": 1055393208,
+            "searched": true,
+            "scoreCc": 8487,
+            "chosen": false
+          },
+          {
+            "index": 14,
+            "endKey": "b74e5e560e52ea3a",
+            "genRankCc": -2826,
+            "flags": 288,
+            "sig": 940202582,
+            "searched": true,
+            "scoreCc": 8487,
+            "chosen": false
+          },
+          {
+            "index": 15,
+            "endKey": "e426f8e3c6f0ca9e",
+            "genRankCc": -2827,
+            "flags": 288,
+            "sig": -50556371,
+            "searched": true,
+            "scoreCc": 8487,
+            "chosen": false
+          },
+          {
+            "index": 16,
+            "endKey": "c1d28b3dd3a2520c",
+            "genRankCc": -2940,
+            "flags": 288,
+            "sig": -1411751456,
+            "searched": true,
+            "scoreCc": 8487,
+            "chosen": false
+          },
+          {
+            "index": 17,
+            "endKey": "d4dad30045668bf9",
+            "genRankCc": -3226,
+            "flags": 288,
+            "sig": 566344380,
+            "searched": true,
+            "scoreCc": 8487,
+            "chosen": false
+          },
+          {
+            "index": 18,
+            "endKey": "04e2f7cc5c96a90c",
+            "genRankCc": -3226,
+            "flags": 288,
+            "sig": 1487801494,
+            "searched": true,
+            "scoreCc": 8487,
+            "chosen": false
+          },
+          {
+            "index": 19,
+            "endKey": "78e9df4a35e417ad",
+            "genRankCc": -3237,
+            "flags": 352,
+            "sig": 909417622,
+            "searched": true,
+            "scoreCc": 8487,
+            "chosen": false
+          },
+          {
+            "index": 20,
+            "endKey": "20eab9a19f8c64cb",
+            "genRankCc": -3237,
+            "flags": 352,
+            "sig": 1400536214,
+            "searched": true,
+            "scoreCc": 8487,
+            "chosen": false
+          },
+          {
+            "index": 21,
+            "endKey": "3a2c206799c76684",
+            "genRankCc": -3237,
+            "flags": 352,
+            "sig": -931742570,
+            "searched": true,
+            "scoreCc": 8487,
+            "chosen": false
+          },
+          {
+            "index": 22,
+            "endKey": "a3798f1031232b75",
+            "genRankCc": -3237,
+            "flags": 352,
+            "sig": 572529814,
+            "searched": true,
+            "scoreCc": 8487,
+            "chosen": false
+          },
+          {
+            "index": 23,
+            "endKey": "8e2680497b4e08d8",
+            "genRankCc": -3237,
+            "flags": 352,
+            "sig": 2005257366,
+            "searched": true,
+            "scoreCc": 8487,
+            "chosen": false
+          },
+          {
+            "index": 24,
+            "endKey": "e634b8fae95d8d67",
+            "genRankCc": -3237,
+            "flags": 352,
+            "sig": 514600086,
+            "searched": true,
+            "scoreCc": 8487,
+            "chosen": false
+          },
+          {
+            "index": 25,
+            "endKey": "83910ef882960a0a",
+            "genRankCc": -3243,
+            "flags": 352,
+            "sig": 1921960534,
+            "searched": true,
+            "scoreCc": 8487,
+            "chosen": false
+          },
+          {
+            "index": 26,
+            "endKey": "b54801b7e58ea3bd",
+            "genRankCc": -3243,
+            "flags": 352,
+            "sig": -1817662890,
+            "searched": true,
+            "scoreCc": 8487,
+            "chosen": false
+          },
+          {
+            "index": 27,
+            "endKey": "f78dfe9a49add294",
+            "genRankCc": -3243,
+            "flags": 352,
+            "sig": 1027164758,
+            "searched": true,
+            "scoreCc": 8487,
+            "chosen": false
+          },
+          {
+            "index": 28,
+            "endKey": "63ea43cfe101ae2c",
+            "genRankCc": -3243,
+            "flags": 352,
+            "sig": 446130774,
+            "searched": true,
+            "scoreCc": 8487,
+            "chosen": false
+          },
+          {
+            "index": 29,
+            "endKey": "0142a1990707cde1",
+            "genRankCc": -3243,
+            "flags": 352,
+            "sig": -1978328490,
+            "searched": true,
+            "scoreCc": 8487,
+            "chosen": false
+          },
+          {
+            "index": 30,
+            "endKey": "6950992a9514485e",
+            "genRankCc": -3243,
+            "flags": 352,
+            "sig": -454870442,
+            "searched": true,
+            "scoreCc": 8487,
+            "chosen": false
+          }
+        ],
+        "rootTrace": [
+          {
+            "depth": 1,
+            "n": 31,
+            "searched": 31,
+            "completed": true,
+            "cutoffAt": -1,
+            "truncated": false
+          },
+          {
+            "depth": 2,
+            "n": 31,
+            "searched": 31,
+            "completed": true,
+            "cutoffAt": -1,
+            "truncated": false
+          },
+          {
+            "depth": 3,
+            "n": 31,
+            "searched": 31,
+            "completed": true,
+            "cutoffAt": -1,
+            "truncated": false
+          }
+        ]
+      }
+    },
+    {
+      "seatTurnIndex": 7,
+      "turnNumber": 8,
+      "side": "white",
+      "played": {
+        "actions": [
+          "BUY water_1@7,1",
+          "END_PLACE",
+          "ATK 7,1→7,2",
+          "END_ACTION"
+        ],
+        "endKey": "e3f2d16cdc434867",
+        "inCheapList": true,
+        "endsGame": false
+      },
+      "cheap": {
+        "count": 30,
+        "containsPlayed": true,
+        "containsAdviserBest": true
+      },
+      "adviser": {
+        "endKey": "77877f4340079502",
+        "actions": [
+          "BUY fire_1@7,1",
+          "BUY fire_1@1,0",
+          "BUY fire_1@1,1",
+          "BUY fire_1@8,0",
+          "END_PLACE",
+          "MOVE 1,3→1,7",
+          "MOVE 2,1→2,2",
+          "MOVE 8,1→8,2",
+          "END_ACTION"
+        ],
+        "scoreCc": 3799,
+        "depth": 4,
+        "work": 1062777,
+        "source": "search",
+        "fallback": null,
+        "agreesWithPlayed": false
+      },
+      "playedDeepCc": 4742,
+      "adviserBestDeepCc": 3061,
+      "swingCc": -1681,
+      "swingRootCc": -943,
+      "engine": {
+        "scoreCc": 5839,
+        "endKey": "77877f4340079502",
+        "reproducedPlayed": false
+      },
+      "reply": {
+        "refutationKey": "a1d1edf193997b9c",
+        "inRootGenList": true,
+        "rootGenCount": 26,
+        "inInteriorGenList": false,
+        "interiorGenCount": 18
+      },
+      "timing": {
+        "turnMs": 3011,
+        "budgetMs": 3000,
+        "overran": false,
+        "emptyPlan": false
+      },
+      "notes": [],
+      "exposure": null
+    },
+    {
+      "seatTurnIndex": 8,
+      "turnNumber": 9,
+      "side": "white",
+      "played": {
+        "actions": [
+          "BUY fire_1@1,0",
+          "BUY fire_1@1,1",
+          "BUY fire_1@6,0",
+          "BUY fire_1@6,1",
+          "END_PLACE",
+          "MOVE 7,0→9,2",
+          "ATK 9,2→8,2",
+          "MOVE 2,1→2,2",
+          "END_ACTION"
+        ],
+        "endKey": "f75637fcda055090",
+        "inCheapList": true,
+        "endsGame": false
+      },
+      "cheap": {
+        "count": 30,
+        "containsPlayed": true,
+        "containsAdviserBest": true
+      },
+      "adviser": {
+        "endKey": "e9497b98d95d174d",
+        "actions": [
+          "BUY fire_1@1,0",
+          "BUY fire_1@1,1",
+          "BUY fire_1@6,0",
+          "BUY fire_1@0,3",
+          "END_PLACE",
+          "MOVE 7,0→9,2",
+          "ATK 9,2→8,2",
+          "MOVE 2,1→2,2",
+          "END_ACTION"
+        ],
+        "scoreCc": 5325,
+        "depth": 4,
+        "work": 1022024,
+        "source": "search",
+        "fallback": null,
+        "agreesWithPlayed": false
+      },
+      "playedDeepCc": 7133,
+      "adviserBestDeepCc": 7190,
+      "swingCc": 57,
+      "swingRootCc": -1808,
+      "engine": {
+        "scoreCc": 6625,
+        "endKey": "e9497b98d95d174d",
+        "reproducedPlayed": false
+      },
+      "reply": {
+        "refutationKey": "42751daca0843998",
+        "inRootGenList": true,
+        "rootGenCount": 19,
+        "inInteriorGenList": true,
+        "interiorGenCount": 18
+      },
+      "timing": {
+        "turnMs": 2644,
+        "budgetMs": 3000,
+        "overran": false,
+        "emptyPlan": false
+      },
+      "notes": [],
+      "exposure": null
+    },
+    {
+      "seatTurnIndex": 9,
+      "turnNumber": 10,
+      "side": "white",
+      "played": {
+        "actions": [
+          "BUY fire_1@0,3",
+          "BUY fire_1@3,0",
+          "BUY fire_1@3,1",
+          "END_PLACE",
+          "MOVE 1,3→2,8",
+          "MOVE 6,1→7,2",
+          "END_ACTION"
+        ],
+        "endKey": "a2ecaef655fb951c",
+        "inCheapList": true,
+        "endsGame": false
+      },
+      "cheap": {
+        "count": 29,
+        "containsPlayed": true,
+        "containsAdviserBest": true
+      },
+      "adviser": {
+        "endKey": "be453d81156ceb2a",
+        "actions": [
+          "BUY fire_1@0,3",
+          "BUY fire_1@3,0",
+          "BUY fire_1@3,1",
+          "END_PLACE",
+          "MOVE 1,3→2,8",
+          "MOVE 3,1→3,3",
+          "END_ACTION"
+        ],
+        "scoreCc": 6552,
+        "depth": 4,
+        "work": 1089767,
+        "source": "search",
+        "fallback": null,
+        "agreesWithPlayed": false
+      },
+      "playedDeepCc": 7942,
+      "adviserBestDeepCc": 6552,
+      "swingCc": -1390,
+      "swingRootCc": -1390,
+      "engine": {
+        "scoreCc": 7674,
+        "endKey": "be453d81156ceb2a",
+        "reproducedPlayed": false
+      },
+      "reply": {
+        "refutationKey": "b7e7aba863cd1845",
+        "inRootGenList": true,
+        "rootGenCount": 27,
+        "inInteriorGenList": true,
+        "interiorGenCount": 20
+      },
+      "timing": {
+        "turnMs": 2905,
+        "budgetMs": 3000,
+        "overran": false,
+        "emptyPlan": false
+      },
+      "notes": [],
+      "exposure": null
+    },
+    {
+      "seatTurnIndex": 10,
+      "turnNumber": 11,
+      "side": "white",
+      "played": {
+        "actions": [
+          "BUY fire_1@1,7",
+          "BUY fire_1@1,8",
+          "BUY fire_1@2,7",
+          "BUY fire_1@2,1",
+          "PROMOTE 2,8",
+          "END_PLACE",
+          "MOVE 6,0→7,5",
+          "MOVE 2,2→2,3",
+          "END_ACTION"
+        ],
+        "endKey": "9c9c3b7c5f06a356",
+        "inCheapList": true,
+        "endsGame": false
+      },
+      "cheap": {
+        "count": 32,
+        "containsPlayed": true,
+        "containsAdviserBest": true
+      },
+      "adviser": {
+        "endKey": "a9c25decd5aa5e8d",
+        "actions": [
+          "BUY fire_1@2,7",
+          "END_PLACE",
+          "MOVE 2,7→6,7",
+          "ATK 6,7→7,7",
+          "END_ACTION"
+        ],
+        "scoreCc": 7939,
+        "depth": 3,
+        "work": 1600139,
+        "source": "search",
+        "fallback": null,
+        "agreesWithPlayed": false
+      },
+      "playedDeepCc": 6320,
+      "adviserBestDeepCc": 4808,
+      "swingCc": -1512,
+      "swingRootCc": 1619,
+      "engine": {
+        "scoreCc": 8162,
+        "endKey": "a9c25decd5aa5e8d",
+        "reproducedPlayed": false
+      },
+      "reply": {
+        "refutationKey": "f07bc806226fa0e5",
+        "inRootGenList": true,
+        "rootGenCount": 32,
+        "inInteriorGenList": false,
+        "interiorGenCount": 24
+      },
+      "timing": {
+        "turnMs": 1037,
+        "budgetMs": 3000,
+        "overran": false,
+        "emptyPlan": false
+      },
+      "notes": [],
+      "exposure": null
+    },
+    {
+      "seatTurnIndex": 11,
+      "turnNumber": 12,
+      "side": "white",
+      "played": {
+        "actions": [
+          "END_PLACE",
+          "MOVE 3,1→8,2",
+          "MOVE 7,1→7,2",
+          "END_ACTION"
+        ],
+        "endKey": "4dba5e8034c0c0bc",
+        "inCheapList": true,
+        "endsGame": false
+      },
+      "cheap": {
+        "count": 33,
+        "containsPlayed": true,
+        "containsAdviserBest": true
+      },
+      "adviser": {
+        "endKey": "4f97cbe821637419",
+        "actions": [
+          "END_PLACE",
+          "MOVE 2,7→6,7",
+          "ATK 6,7→7,7",
+          "END_ACTION"
+        ],
+        "scoreCc": 6679,
+        "depth": 3,
+        "work": 1600272,
+        "source": "search",
+        "fallback": null,
+        "agreesWithPlayed": false
+      },
+      "playedDeepCc": 5090,
+      "adviserBestDeepCc": 5158,
+      "swingCc": 68,
+      "swingRootCc": 1589,
+      "engine": {
+        "scoreCc": 7768,
+        "endKey": "8ffec4a6e8236504",
+        "reproducedPlayed": false
+      },
+      "reply": {
+        "refutationKey": "e1ee650fa02f2d21",
+        "inRootGenList": true,
+        "rootGenCount": 37,
+        "inInteriorGenList": false,
+        "interiorGenCount": 29
+      },
+      "timing": {
+        "turnMs": 1079,
+        "budgetMs": 3000,
+        "overran": false,
+        "emptyPlan": false
+      },
+      "notes": [],
+      "exposure": null
+    }
+  ],
+  "firstConsequential": {
+    "turn": 4,
+    "seatTurnIndex": 3,
+    "klass": "strong-candidate-misjudged",
+    "rule": "the adviser's best turn IS in the root's candidate list, the root DID search it (`searched: true`), and did not prefer it — its score is at or below the played candidate's. The search saw the turn and chose another: this is an evaluation or a depth fault. Equality is the usual case and is a FAIL-LOW BOUND, not a tie: a candidate that does not beat the incumbent returns the incumbent's score, so the exposure says \"searched, not preferred\" and cannot say by how much. Before E2 lane 1 this class also swallowed \"in the list but never searched\", which is now `strong-candidate-discarded`",
+    "evidence": "the adviser's best end key e08eab5d5c08c1a4 IS among the 27 candidates at this root; the engine played 961a7104f44cf084 instead, worth 591 cc to the adviser against 1753 cc. root exposure: 27 candidate(s) from a `completed-depth` list, 27 searched, completed depth 3, cutoff at -1. The root searched the adviser's best turn (candidate #22) and did not prefer it: its score 1865 cc is the chosen candidate #0's own value, i.e. the fail-low bound every candidate that does not beat the incumbent returns, so the margin is not measurable from the exposure"
+  },
+  "largestSwing": {
+    "turn": 7,
+    "seatTurnIndex": 6,
+    "klass": "fixed-work-divergence",
+    "rule": "the fixed-work re-run did not play what the seat played (`engine.reproducedPlayed` false) AND it scored the adviser's best turn strictly above the played candidate. The engine prefers the better turn when it is given this much work; the seat, under a wall clock at a coarser rung, did not. This is a statement about the WORK the seat had, not about its judgement, and it is not evidence that the seat would have found the turn in its allowance — `E2-LANE2-EXPOSED-LOSSES.md`'s work sweep is what tests that",
+    "evidence": "the adviser's best end key f5d3e0ef2b933b19 IS among the 31 candidates at this root; the engine played fbdf3f8e36d041c3 instead, worth 4881 cc to the adviser against 7617 cc. root exposure: 31 candidate(s) from a `completed-depth` list, 31 searched, completed depth 3, cutoff at -1. The root searched the adviser's best turn (candidate #3) and scored it 8487 cc, ABOVE the played candidate #0 at 5718 cc — so this re-run did not play what the seat played (it chose candidate #3 at 8487 cc). The re-run is fixed work and the seat played under a wall clock, which is the expected cause; the exposure describes the re-run, not the seat's own search"
+  },
+  "classRules": {
+    "clock-fallback": "the seat's own turn wall time exceeded its allowance (max(10ms, 1%) tolerance), or the turn dispatched nothing but phase ends, or the adviser itself returned a fallback (pack-error / engine-error / divergence). Per-turn wall time is real (players[side].turnMs); the run's overruns/budgetExhausted counters are per GAME, so a fallback on a specific turn can be suspected from them but not proved",
+    "candidate-absent": "the adviser's best end key is NOT in the production generator's K list at that root, so no search budget could have reached it",
+    "reply-outside-beam": "the adviser disagreed with the played turn, and its own answer TO the played turn — the refutation — is not in the candidate list the SAME generator configuration that produced it builds at the reply node. The engine had no way to answer this reply because the generator does not offer it there. This is a statement about the generator's cone at one node and NOTHING MORE: it is not a claim that the search examined the reply and mis-scored it, nor that the engine \"missed\" it, because RootResult reports neither",
+    "strong-candidate-discarded": "the adviser's best turn IS in the production generator's K list AND in the root's own candidate list, and the root never searched it (`searched: false` in `RootResult.candidates`, E2 lane 1's `expose`). No search budget reached it, so no evaluation of it was ever wrong: this is an ordering or a beam-width fault, not a scoring one",
+    "strong-candidate-misjudged": "the adviser's best turn IS in the root's candidate list, the root DID search it (`searched: true`), and did not prefer it — its score is at or below the played candidate's. The search saw the turn and chose another: this is an evaluation or a depth fault. Equality is the usual case and is a FAIL-LOW BOUND, not a tie: a candidate that does not beat the incumbent returns the incumbent's score, so the exposure says \"searched, not preferred\" and cannot say by how much. Before E2 lane 1 this class also swallowed \"in the list but never searched\", which is now `strong-candidate-discarded`",
+    "fixed-work-divergence": "the fixed-work re-run did not play what the seat played (`engine.reproducedPlayed` false) AND it scored the adviser's best turn strictly above the played candidate. The engine prefers the better turn when it is given this much work; the seat, under a wall clock at a coarser rung, did not. This is a statement about the WORK the seat had, not about its judgement, and it is not evidence that the seat would have found the turn in its allowance — `E2-LANE2-EXPOSED-LOSSES.md`'s work sweep is what tests that",
+    "exposure-inconsistent": "the root exposure and the rest of the analysis disagree, so no split is asserted. One of: the adviser's best turn is in the generator's list but absent from the root's published candidate list; the root searched it and scored it strictly ABOVE the played candidate while the re-run DID reproduce the played turn, which contradicts itself (when the re-run did not reproduce it, the class is `fixed-work-divergence`); it ties the played candidate while the played candidate is not the one the root chose; the played turn is absent from the candidate list, so there is nothing to compare against; or the root published a `generator-list` (the must-answer scan, the book probe, `pickUnsearched` or a fallback answered), where every candidate is unsearched by construction. The re-run is FIXED work while the seat played under a wall clock, which is the most likely cause of the first three",
+    "unclear": "none of the above separates, or no turn reached the swing threshold"
+  },
+  "wallMs": 654030,
+  "at": "2026-09-17T06:09:27.960Z"
+}

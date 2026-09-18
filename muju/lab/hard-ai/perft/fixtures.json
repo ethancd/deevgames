@@ -1,0 +1,88 @@
+{
+  "schema": "muju-perft-fixtures-v1",
+  "initial": {
+    "maxActions": 4,
+    "actions": 14959,
+    "midStates": 1053,
+    "turns": 797
+  },
+  "fixtures": [
+    {
+      "id": "occupied-corner",
+      "depth": 3,
+      "actions": 1146,
+      "midStates": 285,
+      "endPositions": 226
+    },
+    {
+      "id": "blocked-rectangle",
+      "depth": 2,
+      "actions": 26,
+      "midStates": 27,
+      "endPositions": 26
+    },
+    {
+      "id": "cleave-chain",
+      "depth": 3,
+      "actions": 5298,
+      "midStates": 469,
+      "endPositions": 364
+    },
+    {
+      "id": "clock-9",
+      "depth": 3,
+      "actions": 1137,
+      "midStates": 286,
+      "endPositions": 242
+    },
+    {
+      "id": "upkeep-pending",
+      "depth": 2,
+      "actions": 1,
+      "midStates": 1,
+      "endPositions": 1
+    },
+    {
+      "id": "rich-place",
+      "depth": 1,
+      "actions": 1,
+      "midStates": 177,
+      "endPositions": 1
+    },
+    {
+      "id": "endgame-dry",
+      "depth": 3,
+      "actions": 1137,
+      "midStates": 286,
+      "endPositions": 242
+    },
+    {
+      "id": "handicap-3",
+      "depth": 4,
+      "actions": 14959,
+      "midStates": 1053,
+      "endPositions": 797
+    },
+    {
+      "id": "place-autoskip",
+      "depth": 2,
+      "actions": 9,
+      "midStates": 10,
+      "endPositions": 9
+    },
+    {
+      "id": "home-race",
+      "depth": 2,
+      "actions": 4153,
+      "midStates": 3218,
+      "endPositions": 2122
+    },
+    {
+      "id": "promotion-kill",
+      "depth": 2,
+      "actions": 81,
+      "midStates": 2402,
+      "endPositions": 81
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "schema": "muju-hard-reclassify-v1",
+  "source": "/Users/ashkie/src/deevgames-e0/muju/lab/results/hard-ai-e1/analyze",
+  "out": "/Users/ashkie/src/deevgames-e0/muju/lab/results/hard-ai-e1/analyze-v2",
+  "swingCc": 300,
+  "reclassified": 1,
+  "failed": [],
+  "beforeFirstHistogram": {
+    "reply-missed": 1
+  },
+  "afterFirstHistogram": {
+    "strong-candidate-misjudged": 1
+  },
+  "beforeLargestHistogram": {
+    "reply-missed": 1
+  },
+  "afterLargestHistogram": {
+    "strong-candidate-misjudged": 1
+  },
+  "games": [
+    {
+      "fileId": "g3-s1_0_1-B-white",
+      "side": "black",
+      "result": "win",
+      "before": {
+        "first": "reply-missed",
+        "largest": "reply-missed",
+        "firstTurn": 6,
+        "largestTurn": 6
+      },
+      "after": {
+        "first": "strong-candidate-misjudged",
+        "largest": "strong-candidate-misjudged",
+        "firstTurn": 6,
+        "largestTurn": 6
+      },
+      "replyFieldsChanged": 8
+    }
+  ],
+  "reconstruction": null,
+  "classRules": {
+    "clock-fallback": "the seat's own turn wall time exceeded its allowance (max(10ms, 1%) tolerance), or the turn dispatched nothing but phase ends, or the adviser itself returned a fallback (pack-error / engine-error / divergence). Per-turn wall time is real (players[side].turnMs); the run's overruns/budgetExhausted counters are per GAME, so a fallback on a specific turn can be suspected from them but not proved",
+    "candidate-absent": "the adviser's best end key is NOT in the production generator's K list at that root, so no search budget could have reached it",
+    "reply-outside-beam": "the adviser disagreed with the played turn, and its own answer TO the played turn — the refutation — is not in the candidate list the SAME generator configuration that produced it builds at the reply node. The engine had no way to answer this reply because the generator does not offer it there. This is a statement about the generator's cone at one node and NOTHING MORE: it is not a claim that the search examined the reply and mis-scored it, nor that the engine \"missed\" it, because RootResult reports neither",
+    "strong-candidate-misjudged": "the adviser's best turn IS in the production generator's K list, and the production engine preferred the played turn anyway. NOT separable from \"strong candidate discarded\": RootResult exposes neither per-candidate scores nor which candidates the root searched, so \"in the list but never searched\" and \"searched and mis-scored\" are one class here",
+    "unclear": "none of the above separates, or no turn reached the swing threshold"
+  },
+  "wallMs": 261,
+  "at": "2026-09-16T13:28:19.552Z"
+}

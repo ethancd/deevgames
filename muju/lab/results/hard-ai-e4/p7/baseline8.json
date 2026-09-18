@@ -1,0 +1,395 @@
+{
+  "label": "baseline8",
+  "stamp": "2026-09-18T00:11:52.159Z",
+  "node": "v24.11.1",
+  "results": [
+    {
+      "game": "e1-g2-s100_0_92-A-white.json",
+      "plies": 161,
+      "turns": 27,
+      "winner": "white",
+      "applyTotalMs": 3.497,
+      "verdictCalls": 1,
+      "verdictTotalMs": 0.053,
+      "distinctKeys": 1,
+      "duplicateCalls": 0,
+      "repeatedKeys": 0,
+      "maxRepeat": 0,
+      "perTurn": [
+        {
+          "side": "white",
+          "seatTurnIndex": 13,
+          "gameTurn": 14,
+          "applyMs": 0.045,
+          "verdictCalls": 1,
+          "verdictMs": 0.053,
+          "verdicts": [
+            "mate"
+          ],
+          "nodes": [
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "game": "e1-g2-s100_0_92-B-white.json",
+      "plies": 387,
+      "turns": 66,
+      "winner": "black",
+      "applyTotalMs": 4.901,
+      "verdictCalls": 3,
+      "verdictTotalMs": 1.976,
+      "distinctKeys": 2,
+      "duplicateCalls": 1,
+      "repeatedKeys": 1,
+      "maxRepeat": 2,
+      "perTurn": [
+        {
+          "side": "black",
+          "seatTurnIndex": 30,
+          "gameTurn": 31,
+          "applyMs": 1.789,
+          "verdictCalls": 2,
+          "verdictMs": 1.966,
+          "verdicts": [
+            "rescue",
+            "rescue"
+          ],
+          "nodes": [
+            14,
+            14
+          ]
+        },
+        {
+          "side": "black",
+          "seatTurnIndex": 32,
+          "gameTurn": 33,
+          "applyMs": 0.133,
+          "verdictCalls": 1,
+          "verdictMs": 0.011,
+          "verdicts": [
+            "mate"
+          ],
+          "nodes": [
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "game": "e1-g2-s100_3_93-A-white.json",
+      "plies": 195,
+      "turns": 33,
+      "winner": "white",
+      "applyTotalMs": 3.747,
+      "verdictCalls": 3,
+      "verdictTotalMs": 0.816,
+      "distinctKeys": 2,
+      "duplicateCalls": 1,
+      "repeatedKeys": 1,
+      "maxRepeat": 2,
+      "perTurn": [
+        {
+          "side": "white",
+          "seatTurnIndex": 12,
+          "gameTurn": 13,
+          "applyMs": 0.541,
+          "verdictCalls": 2,
+          "verdictMs": 0.78,
+          "verdicts": [
+            "rescue",
+            "rescue"
+          ],
+          "nodes": [
+            9,
+            9
+          ]
+        },
+        {
+          "side": "white",
+          "seatTurnIndex": 16,
+          "gameTurn": 17,
+          "applyMs": 0.986,
+          "verdictCalls": 1,
+          "verdictMs": 0.036,
+          "verdicts": [
+            "mate"
+          ],
+          "nodes": [
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "game": "e1-g2-s100_3_93-B-white.json",
+      "plies": 391,
+      "turns": 70,
+      "winner": "black",
+      "applyTotalMs": 7.665,
+      "verdictCalls": 10,
+      "verdictTotalMs": 1.418,
+      "distinctKeys": 5,
+      "duplicateCalls": 5,
+      "repeatedKeys": 5,
+      "maxRepeat": 2,
+      "perTurn": [
+        {
+          "side": "black",
+          "seatTurnIndex": 2,
+          "gameTurn": 3,
+          "applyMs": 0.426,
+          "verdictCalls": 2,
+          "verdictMs": 0.41,
+          "verdicts": [
+            "rescue",
+            "rescue"
+          ],
+          "nodes": [
+            10,
+            10
+          ]
+        },
+        {
+          "side": "white",
+          "seatTurnIndex": 5,
+          "gameTurn": 6,
+          "applyMs": 1.97,
+          "verdictCalls": 0,
+          "verdictMs": 0,
+          "verdicts": [],
+          "nodes": []
+        },
+        {
+          "side": "black",
+          "seatTurnIndex": 9,
+          "gameTurn": 10,
+          "applyMs": 0.309,
+          "verdictCalls": 2,
+          "verdictMs": 0.352,
+          "verdicts": [
+            "rescue",
+            "rescue"
+          ],
+          "nodes": [
+            9,
+            9
+          ]
+        },
+        {
+          "side": "black",
+          "seatTurnIndex": 12,
+          "gameTurn": 13,
+          "applyMs": 0.314,
+          "verdictCalls": 2,
+          "verdictMs": 0.294,
+          "verdicts": [
+            "rescue",
+            "rescue"
+          ],
+          "nodes": [
+            11,
+            11
+          ]
+        },
+        {
+          "side": "black",
+          "seatTurnIndex": 14,
+          "gameTurn": 15,
+          "applyMs": 0.707,
+          "verdictCalls": 2,
+          "verdictMs": 0.292,
+          "verdicts": [
+            "rescue",
+            "rescue"
+          ],
+          "nodes": [
+            9,
+            9
+          ]
+        },
+        {
+          "side": "black",
+          "seatTurnIndex": 15,
+          "gameTurn": 16,
+          "applyMs": 0.19,
+          "verdictCalls": 2,
+          "verdictMs": 0.071,
+          "verdicts": [
+            "rescue",
+            "rescue"
+          ],
+          "nodes": [
+            6,
+            6
+          ]
+        }
+      ]
+    },
+    {
+      "game": "e1-g2-s155_0_26-A-white.json",
+      "plies": 171,
+      "turns": 28,
+      "winner": "white",
+      "applyTotalMs": 1.932,
+      "verdictCalls": 1,
+      "verdictTotalMs": 0.03,
+      "distinctKeys": 1,
+      "duplicateCalls": 0,
+      "repeatedKeys": 0,
+      "maxRepeat": 0,
+      "perTurn": [
+        {
+          "side": "white",
+          "seatTurnIndex": 13,
+          "gameTurn": 15,
+          "applyMs": 0.04,
+          "verdictCalls": 1,
+          "verdictMs": 0.03,
+          "verdicts": [
+            "mate"
+          ],
+          "nodes": [
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "game": "e1-g2-s155_0_26-B-white.json",
+      "plies": 90,
+      "turns": 15,
+      "winner": "black",
+      "applyTotalMs": 2.249,
+      "verdictCalls": 1,
+      "verdictTotalMs": 0.014,
+      "distinctKeys": 1,
+      "duplicateCalls": 0,
+      "repeatedKeys": 0,
+      "maxRepeat": 0,
+      "perTurn": [
+        {
+          "side": "black",
+          "seatTurnIndex": 7,
+          "gameTurn": 8,
+          "applyMs": 0.042,
+          "verdictCalls": 1,
+          "verdictMs": 0.014,
+          "verdicts": [
+            "mate"
+          ],
+          "nodes": [
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "game": "e1-g2-s155_3_27-A-white.json",
+      "plies": 209,
+      "turns": 34,
+      "winner": "white",
+      "applyTotalMs": 2.975,
+      "verdictCalls": 5,
+      "verdictTotalMs": 0.31,
+      "distinctKeys": 3,
+      "duplicateCalls": 2,
+      "repeatedKeys": 2,
+      "maxRepeat": 2,
+      "perTurn": [
+        {
+          "side": "white",
+          "seatTurnIndex": 10,
+          "gameTurn": 12,
+          "applyMs": 0.177,
+          "verdictCalls": 2,
+          "verdictMs": 0.086,
+          "verdicts": [
+            "rescue",
+            "rescue"
+          ],
+          "nodes": [
+            6,
+            6
+          ]
+        },
+        {
+          "side": "white",
+          "seatTurnIndex": 14,
+          "gameTurn": 16,
+          "applyMs": 0.271,
+          "verdictCalls": 2,
+          "verdictMs": 0.212,
+          "verdicts": [
+            "rescue",
+            "rescue"
+          ],
+          "nodes": [
+            8,
+            8
+          ]
+        },
+        {
+          "side": "white",
+          "seatTurnIndex": 16,
+          "gameTurn": 18,
+          "applyMs": 0.101,
+          "verdictCalls": 1,
+          "verdictMs": 0.012,
+          "verdicts": [
+            "mate"
+          ],
+          "nodes": [
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "game": "e1-g2-s155_3_27-B-white.json",
+      "plies": 109,
+      "turns": 19,
+      "winner": "black",
+      "applyTotalMs": 0.772,
+      "verdictCalls": 3,
+      "verdictTotalMs": 0.236,
+      "distinctKeys": 2,
+      "duplicateCalls": 1,
+      "repeatedKeys": 1,
+      "maxRepeat": 2,
+      "perTurn": [
+        {
+          "side": "black",
+          "seatTurnIndex": 2,
+          "gameTurn": 3,
+          "applyMs": 0.272,
+          "verdictCalls": 2,
+          "verdictMs": 0.232,
+          "verdicts": [
+            "rescue",
+            "rescue"
+          ],
+          "nodes": [
+            9,
+            9
+          ]
+        },
+        {
+          "side": "black",
+          "seatTurnIndex": 9,
+          "gameTurn": 10,
+          "applyMs": 0.006,
+          "verdictCalls": 1,
+          "verdictMs": 0.003,
+          "verdicts": [
+            "mate"
+          ],
+          "nodes": [
+            0
+          ]
+        }
+      ]
+    }
+  ]
+}

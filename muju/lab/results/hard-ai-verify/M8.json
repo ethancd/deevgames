@@ -1,0 +1,19 @@
+{
+  "positionsRequested": 2000,
+  "positionsSampled": 2000,
+  "corpusSize": 1808,
+  "checkedStream": 4000,
+  "streamMismatch": 0,
+  "checkedRelocation": 4000,
+  "relocationMonotone": true,
+  "relocationViolations": 0,
+  "fixturesChecked": 11,
+  "checkedInsolvency": 22,
+  "insolvencyMismatch": 0,
+  "pstChecked": 21,
+  "pstMaxErr": 0,
+  "mismatches": [],
+  "git": "96e304742965600af7d3c321bddd7945da785468",
+  "node": "v24.11.1",
+  "at": "2026-09-15T12:28:10.635Z"
+}

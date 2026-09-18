@@ -1,0 +1,85 @@
+{
+  "replay": "e1-g2-s40_3_3-A-white.json",
+  "side": "white",
+  "turnIndex": 24,
+  "gameTurn": 25,
+  "engine": "hard@desktop",
+  "mode": "wall:3000",
+  "recordedMs": 2641138,
+  "searchTurnMs": 26610,
+  "statsElapsedMs": 26604,
+  "stopReason": "abort",
+  "source": "search",
+  "depth": 0,
+  "work": 69,
+  "nodes": 0,
+  "qnodes": 0,
+  "turnNodes": 5,
+  "evals": 0,
+  "proverCalls": 13,
+  "replicaDivergences": 0,
+  "workByClass": "0,0,5,14,1,0,0,0,13",
+  "planLength": 6,
+  "plan": [
+    "END_PLACE_PHASE",
+    "ATTACK",
+    "MOVE",
+    "ATTACK",
+    "MOVE",
+    "END_ACTION_PHASE"
+  ],
+  "canonicalApplyOfReturnedPlan": [
+    {
+      "type": "END_PLACE_PHASE",
+      "applyMs": 0
+    },
+    {
+      "type": "ATTACK",
+      "applyMs": 0
+    },
+    {
+      "type": "MOVE",
+      "applyMs": 3008
+    },
+    {
+      "type": "ATTACK",
+      "applyMs": 3974
+    },
+    {
+      "type": "MOVE",
+      "applyMs": 3913
+    },
+    {
+      "type": "END_ACTION_PHASE",
+      "applyMs": 3978
+    }
+  ],
+  "canonicalApplyTotalMs": 14873,
+  "canonicalApplyOfRecordedTurn": [
+    {
+      "type": "BUY_UNIT",
+      "applyMs": 0
+    },
+    {
+      "type": "END_PLACE_PHASE",
+      "applyMs": 0
+    },
+    {
+      "type": "MOVE",
+      "applyMs": 3398
+    },
+    {
+      "type": "MOVE",
+      "applyMs": 3394
+    },
+    {
+      "type": "ATTACK",
+      "applyMs": 3339
+    },
+    {
+      "type": "END_ACTION_PHASE",
+      "applyMs": 3284
+    }
+  ],
+  "canonicalApplyRecordedTotalMs": 13415
+}

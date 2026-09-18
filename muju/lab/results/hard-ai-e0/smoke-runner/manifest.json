@@ -1,0 +1,91 @@
+{
+  "schema": "muju-ladder-manifest-v1",
+  "status": "complete",
+  "a": "Rush",
+  "b": "Rush",
+  "aConfigHash": "scripted:Rush",
+  "bConfigHash": "scripted:Rush",
+  "aResolvedConfig": {
+    "engine": "scripted",
+    "bot": "Rush"
+  },
+  "bResolvedConfig": {
+    "engine": "scripted",
+    "bot": "Rush"
+  },
+  "work": "fixed:1",
+  "seed": 1,
+  "pairs": 1,
+  "shards": 1,
+  "handicaps": [
+    0
+  ],
+  "legality": "as-shipped",
+  "sprt": null,
+  "openings": {
+    "path": null,
+    "sha256": null,
+    "ids": [
+      "initial"
+    ],
+    "count": 1
+  },
+  "replays": true,
+  "resume": false,
+  "schedule": [
+    {
+      "pairId": "initial:0:0",
+      "pairIndex": 0,
+      "openingId": "initial",
+      "handicap": 0,
+      "seed": 2527132011
+    }
+  ],
+  "resumedPairIds": [],
+  "sprtStop": null,
+  "rules": {
+    "elementGraph": "double-thick",
+    "upkeep": "shipped",
+    "inactivityRule": "on"
+  },
+  "argv": [
+    "--a",
+    "Rush",
+    "--b",
+    "Rush",
+    "--work",
+    "fixed:1",
+    "--handicaps",
+    "0",
+    "--pairs",
+    "1",
+    "--seed",
+    "1",
+    "--shards",
+    "1",
+    "--out",
+    "lab/results/hard-ai-e0/smoke-runner"
+  ],
+  "git": "6be598e74f27feb21a96357f26722a25cf5303a7",
+  "gitDirty": true,
+  "wasmSha256": "da9b1cdf25e4bcd6a4674fd697095e35c2606c29817e3d18043faf4799d828bf",
+  "node": "v24.11.1",
+  "device": "Apple M2 Max x12 (darwin/arm64)",
+  "cpuCount": 12,
+  "loadavg": [
+    3.2275390625,
+    3.1435546875,
+    2.65673828125
+  ],
+  "at": "2026-09-16T04:54:37.607Z",
+  "finishedAt": "2026-09-16T04:54:38.128Z",
+  "wallMs": 580,
+  "counts": {
+    "scheduledPairs": 1,
+    "completedPairs": 1,
+    "games": 2,
+    "failures": 0,
+    "resumedPairs": 0
+  },
+  "error": null
+}

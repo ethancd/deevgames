@@ -1,0 +1,92 @@
+# cpu profile, white seat turn 25 (recorded 2,641,138 ms at fixed:100000), re-run at wall:3000, hard@ablate:eval-correct-v1
+
+--- inclusive ms by function ---
+    62138 ms  (root) @
+    60062 ms  (anon) @file:///private/tmp/claude-501/-Users-ashkie-src/cd40736e-60ca-490c-bc97-ac7331c3a88d/scratchpad/lane16/repro.ts
+    50172 ms  (anon) @src/game/homeCheckmate.ts
+    50162 ms  applyAction @src/ai/simulate.ts
+    50149 ms  resolveHomeCheckmate @src/game/homeCheckmate.ts
+    50147 ms  searchHomeDefense @src/game/homeCheckmate.ts
+    50147 ms  analyzeHomeDefense @src/game/homeCheckmate.ts
+    34798 ms  evaluate @
+    34790 ms  run @node:internal/modules/esm/module_job
+    34785 ms  (anon) @node:internal/modules/cjs/loader
+    34785 ms  traceSync @node:diagnostics_channel
+    34785 ms  wrapModuleLoad @node:internal/modules/cjs/loader
+    34779 ms  (anon) @node_modules/tsx/dist/register-OY9cqBEN.cjs
+    34775 ms  loadCJSModuleWithModuleLoad @node:internal/modules/esm/translators
+    34775 ms  (anon) @node:internal/modules/esm/translators
+    34701 ms  main @file:///private/tmp/claude-501/-Users-ashkie-src/cd40736e-60ca-490c-bc97-ac7331c3a88d/scratchpad/lane16/repro.ts
+    34696 ms  withMatchRules @lab/hard-ai/analyze/replay.ts
+    32827 ms  enoughPossibleDamage @src/game/homeCheckmate.ts
+    23375 ms  searchTurn @src/ai/hard/engine.ts
+    23368 ms  searchRoot @src/ai/hard/search/root.ts
+    23367 ms  searchRootInner @src/ai/hard/search/root.ts
+    16008 ms  verifyTurn @src/ai/hard/verify/replay.ts
+    16008 ms  pickUnsearched @src/ai/hard/search/root.ts
+    11327 ms  (anon) @lab/hard-ai/analyze/replay.ts
+    11313 ms  reconstruct @lab/hard-ai/analyze/replay.ts
+    11311 ms  reconstructInner @lab/hard-ai/analyze/replay.ts
+     9786 ms  make @src/ai/hard/core/state.ts
+     9784 ms  act @src/ai/hard/tactics/prover.ts
+     9784 ms  prepare @src/ai/hard/tactics/prover.ts
+     9784 ms  runProver @src/ai/hard/tactics/prover.ts
+     9784 ms  homeVerdict @src/ai/hard/tactics/prover.ts
+     9784 ms  provesHomeCheckmate @src/ai/hard/core/state.ts
+     7358 ms  run @src/ai/hard/gen/generate.ts
+     7358 ms  generate @src/ai/hard/gen/generate.ts
+     7358 ms  generateAt @src/ai/hard/search/pvs.ts
+     6927 ms  damageBoundCore @src/ai/hard/tactics/prover.ts
+     6821 ms  transitionWithoutCheckmate @src/ai/simulate.ts
+     5677 ms  resolveHomeCheckmate @src/ai/hard/core/state.ts
+     4110 ms  makeEndAction @src/ai/hard/core/state.ts
+     4016 ms  distancesFrom @src/game/movement.ts
+     3805 ms  injectLine @src/ai/hard/gen/generate.ts
+     3805 ms  inject @src/ai/hard/gen/generate.ts
+     3660 ms  getValidMoves @src/game/movement.ts
+     3623 ms  reachable @src/game/movement.ts
+     3558 ms  makeMove @src/ai/hard/core/state.ts
+
+total sampled ms 62138
+--- by file ---
+    34590 ms  src/game/homeCheckmate.ts
+     9785 ms  src/ai/hard/tactics/prover.ts
+     4889 ms  src/ai/simulate.ts
+     4128 ms  src/game/movement.ts
+     2977 ms  src/game/combat.ts
+     2161 ms  src/game/units.ts
+     1963 ms  
+     1132 ms  src/game/legality.ts
+      309 ms  src/game/turn.ts
+       35 ms  src/game/board.ts
+       29 ms  node_modules/tsx/dist/index-D1vYaNWZ.cjs
+       11 ms  node:internal/modules/cjs/loader
+       11 ms  node:internal/source_map/source_map_cache
+       10 ms  src/game/spawning.ts
+        9 ms  node:internal/deps/cjs-module-lexer/lexer
+--- by function (self) ---
+    22299 ms  enoughPossibleDamage  src/game/homeCheckmate.ts:2
+    12291 ms  (anon)  src/game/homeCheckmate.ts:2
+     6925 ms  damageBoundCore  src/ai/hard/tactics/prover.ts:2
+     4016 ms  distancesFrom  src/game/movement.ts:2
+     3460 ms  transitionWithoutCheckmate  src/ai/simulate.ts:2
+     2811 ms  calculateAttackPower  src/game/combat.ts:2
+     2493 ms  act  src/ai/hard/tactics/prover.ts:2
+     2158 ms  getUnitDefinition  src/game/units.ts:2
+     1130 ms  isLegalAction  src/game/legality.ts:2
+     1057 ms  (program)  :0
+      894 ms  (garbage collector)  :0
+      654 ms  applyLegalAction  src/ai/simulate.ts:2
+      419 ms  applyMove  src/ai/simulate.ts:2
+      309 ms  useAction  src/game/turn.ts:2
+      196 ms  (anon)  src/ai/simulate.ts:2
+      192 ms  stableSort  src/ai/hard/tactics/prover.ts:2
+      159 ms  applyAttack  src/ai/simulate.ts:2
+      137 ms  computeKey  src/ai/hard/tactics/prover.ts:2
+       83 ms  getValidAttacks  src/game/combat.ts:2
+       72 ms  reachable  src/game/movement.ts:2
+       45 ms  (anon)  src/game/combat.ts:2
+       32 ms  resolveCombat  src/game/combat.ts:2
+       27 ms  reachableFrom  src/ai/hard/tactics/prover.ts:2
+       22 ms  (anon)  src/game/movement.ts:2
+       17 ms  (anon)  src/game/board.ts:2

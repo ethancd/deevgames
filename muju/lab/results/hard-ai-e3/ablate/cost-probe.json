@@ -1,0 +1,554 @@
+{
+  "what": "cost probe: one fresh engine per (engine, position), fixed 100,000 units, handicap 0, first hard turn on the opening end state",
+  "openings": [
+    "e1-g3-s105",
+    "e1-g2-s40",
+    "e1-g4-s250",
+    "e1-g4-s750",
+    "e1-g4-s730",
+    "e1-g3-s745"
+  ],
+  "openingsFile": "lab/hard-ai/ladder/openings/e1-dev.jsonl",
+  "work": 100000,
+  "engines": {
+    "desktop": {
+      "rows": [
+        {
+          "opening": "e1-g3-s105",
+          "nodes": 504,
+          "qnodes": 419,
+          "evals": 838,
+          "depth": 3,
+          "seldepth": 5,
+          "work": 100154,
+          "ms": 1028,
+          "weightsLabel": "default-v1"
+        },
+        {
+          "opening": "e1-g2-s40",
+          "nodes": 567,
+          "qnodes": 473,
+          "evals": 946,
+          "depth": 3,
+          "seldepth": 8,
+          "work": 100147,
+          "ms": 895,
+          "weightsLabel": "default-v1"
+        },
+        {
+          "opening": "e1-g4-s250",
+          "nodes": 393,
+          "qnodes": 332,
+          "evals": 664,
+          "depth": 2,
+          "seldepth": 4,
+          "work": 100166,
+          "ms": 976,
+          "weightsLabel": "default-v1"
+        },
+        {
+          "opening": "e1-g4-s750",
+          "nodes": 684,
+          "qnodes": 685,
+          "evals": 1370,
+          "depth": 4,
+          "seldepth": 8,
+          "work": 94390,
+          "ms": 877,
+          "weightsLabel": "default-v1"
+        },
+        {
+          "opening": "e1-g4-s730",
+          "nodes": 562,
+          "qnodes": 564,
+          "evals": 1128,
+          "depth": 4,
+          "seldepth": 8,
+          "work": 100008,
+          "ms": 899,
+          "weightsLabel": "default-v1"
+        },
+        {
+          "opening": "e1-g3-s745",
+          "nodes": 511,
+          "qnodes": 421,
+          "evals": 842,
+          "depth": 3,
+          "seldepth": 8,
+          "work": 100082,
+          "ms": 900,
+          "weightsLabel": "default-v1"
+        }
+      ],
+      "mean": {
+        "nodes": 536.83,
+        "evals": 964.67,
+        "depth": 3.17,
+        "work": 99157.83,
+        "ms": 929.17
+      }
+    },
+    "ablate:eval-no-economy": {
+      "rows": [
+        {
+          "opening": "e1-g3-s105",
+          "nodes": 546,
+          "qnodes": 476,
+          "evals": 952,
+          "depth": 3,
+          "seldepth": 8,
+          "work": 100102,
+          "ms": 972,
+          "weightsLabel": "default-v1-no-economy"
+        },
+        {
+          "opening": "e1-g2-s40",
+          "nodes": 535,
+          "qnodes": 432,
+          "evals": 864,
+          "depth": 3,
+          "seldepth": 8,
+          "work": 100259,
+          "ms": 898,
+          "weightsLabel": "default-v1-no-economy"
+        },
+        {
+          "opening": "e1-g4-s250",
+          "nodes": 425,
+          "qnodes": 379,
+          "evals": 758,
+          "depth": 2,
+          "seldepth": 7,
+          "work": 100116,
+          "ms": 965,
+          "weightsLabel": "default-v1-no-economy"
+        },
+        {
+          "opening": "e1-g4-s750",
+          "nodes": 573,
+          "qnodes": 571,
+          "evals": 1142,
+          "depth": 4,
+          "seldepth": 8,
+          "work": 100268,
+          "ms": 945,
+          "weightsLabel": "default-v1-no-economy"
+        },
+        {
+          "opening": "e1-g4-s730",
+          "nodes": 576,
+          "qnodes": 571,
+          "evals": 1142,
+          "depth": 4,
+          "seldepth": 8,
+          "work": 100343,
+          "ms": 895,
+          "weightsLabel": "default-v1-no-economy"
+        },
+        {
+          "opening": "e1-g3-s745",
+          "nodes": 508,
+          "qnodes": 431,
+          "evals": 862,
+          "depth": 3,
+          "seldepth": 8,
+          "work": 100166,
+          "ms": 923,
+          "weightsLabel": "default-v1-no-economy"
+        }
+      ],
+      "mean": {
+        "nodes": 527.17,
+        "evals": 953.33,
+        "depth": 3.17,
+        "work": 100209,
+        "ms": 933
+      }
+    },
+    "ablate:eval-no-home": {
+      "rows": [
+        {
+          "opening": "e1-g3-s105",
+          "nodes": 599,
+          "qnodes": 614,
+          "evals": 1228,
+          "depth": 3,
+          "seldepth": 8,
+          "work": 100034,
+          "ms": 988,
+          "weightsLabel": "default-v1-no-home"
+        },
+        {
+          "opening": "e1-g2-s40",
+          "nodes": 632,
+          "qnodes": 541,
+          "evals": 1082,
+          "depth": 3,
+          "seldepth": 8,
+          "work": 100198,
+          "ms": 917,
+          "weightsLabel": "default-v1-no-home"
+        },
+        {
+          "opening": "e1-g4-s250",
+          "nodes": 508,
+          "qnodes": 449,
+          "evals": 898,
+          "depth": 2,
+          "seldepth": 4,
+          "work": 100202,
+          "ms": 995,
+          "weightsLabel": "default-v1-no-home"
+        },
+        {
+          "opening": "e1-g4-s750",
+          "nodes": 598,
+          "qnodes": 757,
+          "evals": 1514,
+          "depth": 4,
+          "seldepth": 7,
+          "work": 100009,
+          "ms": 965,
+          "weightsLabel": "default-v1-no-home"
+        },
+        {
+          "opening": "e1-g4-s730",
+          "nodes": 551,
+          "qnodes": 602,
+          "evals": 1204,
+          "depth": 4,
+          "seldepth": 8,
+          "work": 100388,
+          "ms": 951,
+          "weightsLabel": "default-v1-no-home"
+        },
+        {
+          "opening": "e1-g3-s745",
+          "nodes": 549,
+          "qnodes": 488,
+          "evals": 976,
+          "depth": 3,
+          "seldepth": 8,
+          "work": 100152,
+          "ms": 964,
+          "weightsLabel": "default-v1-no-home"
+        }
+      ],
+      "mean": {
+        "nodes": 572.83,
+        "evals": 1150.33,
+        "depth": 3.17,
+        "work": 100163.83,
+        "ms": 963.33
+      }
+    },
+    "ablate:eval-no-safety": {
+      "rows": [
+        {
+          "opening": "e1-g3-s105",
+          "nodes": 567,
+          "qnodes": 521,
+          "evals": 1042,
+          "depth": 3,
+          "seldepth": 5,
+          "work": 100002,
+          "ms": 939,
+          "weightsLabel": "default-v1-no-safety"
+        },
+        {
+          "opening": "e1-g2-s40",
+          "nodes": 607,
+          "qnodes": 586,
+          "evals": 1172,
+          "depth": 3,
+          "seldepth": 8,
+          "work": 100205,
+          "ms": 894,
+          "weightsLabel": "default-v1-no-safety"
+        },
+        {
+          "opening": "e1-g4-s250",
+          "nodes": 571,
+          "qnodes": 643,
+          "evals": 1286,
+          "depth": 3,
+          "seldepth": 5,
+          "work": 95045,
+          "ms": 906,
+          "weightsLabel": "default-v1-no-safety"
+        },
+        {
+          "opening": "e1-g4-s750",
+          "nodes": 510,
+          "qnodes": 519,
+          "evals": 1038,
+          "depth": 4,
+          "seldepth": 8,
+          "work": 100170,
+          "ms": 951,
+          "weightsLabel": "default-v1-no-safety"
+        },
+        {
+          "opening": "e1-g4-s730",
+          "nodes": 548,
+          "qnodes": 503,
+          "evals": 1006,
+          "depth": 4,
+          "seldepth": 8,
+          "work": 100008,
+          "ms": 897,
+          "weightsLabel": "default-v1-no-safety"
+        },
+        {
+          "opening": "e1-g3-s745",
+          "nodes": 527,
+          "qnodes": 463,
+          "evals": 926,
+          "depth": 3,
+          "seldepth": 8,
+          "work": 100321,
+          "ms": 893,
+          "weightsLabel": "default-v1-no-safety"
+        }
+      ],
+      "mean": {
+        "nodes": 555,
+        "evals": 1078.33,
+        "depth": 3.33,
+        "work": 99291.83,
+        "ms": 913.33
+      }
+    },
+    "ablate:eval-no-space": {
+      "rows": [
+        {
+          "opening": "e1-g3-s105",
+          "nodes": 413,
+          "qnodes": 315,
+          "evals": 630,
+          "depth": 3,
+          "seldepth": 3,
+          "work": 45767,
+          "ms": 349,
+          "weightsLabel": "default-v1-no-space"
+        },
+        {
+          "opening": "e1-g2-s40",
+          "nodes": 718,
+          "qnodes": 581,
+          "evals": 1162,
+          "depth": 3,
+          "seldepth": 4,
+          "work": 78829,
+          "ms": 584,
+          "weightsLabel": "default-v1-no-space"
+        },
+        {
+          "opening": "e1-g4-s250",
+          "nodes": 537,
+          "qnodes": 599,
+          "evals": 1198,
+          "depth": 3,
+          "seldepth": 6,
+          "work": 87678,
+          "ms": 785,
+          "weightsLabel": "default-v1-no-space"
+        },
+        {
+          "opening": "e1-g4-s750",
+          "nodes": 757,
+          "qnodes": 916,
+          "evals": 1832,
+          "depth": 4,
+          "seldepth": 8,
+          "work": 100293,
+          "ms": 901,
+          "weightsLabel": "default-v1-no-space"
+        },
+        {
+          "opening": "e1-g4-s730",
+          "nodes": 733,
+          "qnodes": 772,
+          "evals": 1544,
+          "depth": 4,
+          "seldepth": 8,
+          "work": 91796,
+          "ms": 767,
+          "weightsLabel": "default-v1-no-space"
+        },
+        {
+          "opening": "e1-g3-s745",
+          "nodes": 513,
+          "qnodes": 417,
+          "evals": 834,
+          "depth": 3,
+          "seldepth": 4,
+          "work": 59062,
+          "ms": 437,
+          "weightsLabel": "default-v1-no-space"
+        }
+      ],
+      "mean": {
+        "nodes": 611.83,
+        "evals": 1200,
+        "depth": 3.33,
+        "work": 77237.5,
+        "ms": 637.17
+      }
+    },
+    "ablate:eval-no-invariants": {
+      "rows": [
+        {
+          "opening": "e1-g3-s105",
+          "nodes": 569,
+          "qnodes": 519,
+          "evals": 1038,
+          "depth": 3,
+          "seldepth": 5,
+          "work": 100422,
+          "ms": 949,
+          "weightsLabel": "default-v1-no-invariants"
+        },
+        {
+          "opening": "e1-g2-s40",
+          "nodes": 571,
+          "qnodes": 521,
+          "evals": 1042,
+          "depth": 3,
+          "seldepth": 8,
+          "work": 100246,
+          "ms": 898,
+          "weightsLabel": "default-v1-no-invariants"
+        },
+        {
+          "opening": "e1-g4-s250",
+          "nodes": 387,
+          "qnodes": 344,
+          "evals": 688,
+          "depth": 2,
+          "seldepth": 5,
+          "work": 100163,
+          "ms": 972,
+          "weightsLabel": "default-v1-no-invariants"
+        },
+        {
+          "opening": "e1-g4-s750",
+          "nodes": 785,
+          "qnodes": 828,
+          "evals": 1656,
+          "depth": 4,
+          "seldepth": 8,
+          "work": 100254,
+          "ms": 894,
+          "weightsLabel": "default-v1-no-invariants"
+        },
+        {
+          "opening": "e1-g4-s730",
+          "nodes": 744,
+          "qnodes": 765,
+          "evals": 1530,
+          "depth": 4,
+          "seldepth": 8,
+          "work": 100294,
+          "ms": 872,
+          "weightsLabel": "default-v1-no-invariants"
+        },
+        {
+          "opening": "e1-g3-s745",
+          "nodes": 523,
+          "qnodes": 442,
+          "evals": 884,
+          "depth": 3,
+          "seldepth": 8,
+          "work": 100267,
+          "ms": 894,
+          "weightsLabel": "default-v1-no-invariants"
+        }
+      ],
+      "mean": {
+        "nodes": 596.5,
+        "evals": 1139.67,
+        "depth": 3.17,
+        "work": 100274.33,
+        "ms": 913.17
+      }
+    },
+    "ablate:eval-stage01": {
+      "rows": [
+        {
+          "opening": "e1-g3-s105",
+          "nodes": 542,
+          "qnodes": 491,
+          "evals": 515,
+          "depth": 3,
+          "seldepth": 5,
+          "work": 100170,
+          "ms": 987,
+          "weightsLabel": "default-v1-no-stage2"
+        },
+        {
+          "opening": "e1-g2-s40",
+          "nodes": 603,
+          "qnodes": 514,
+          "evals": 551,
+          "depth": 3,
+          "seldepth": 8,
+          "work": 100224,
+          "ms": 939,
+          "weightsLabel": "default-v1-no-stage2"
+        },
+        {
+          "opening": "e1-g4-s250",
+          "nodes": 420,
+          "qnodes": 395,
+          "evals": 439,
+          "depth": 2,
+          "seldepth": 7,
+          "work": 100090,
+          "ms": 987,
+          "weightsLabel": "default-v1-no-stage2"
+        },
+        {
+          "opening": "e1-g4-s750",
+          "nodes": 452,
+          "qnodes": 404,
+          "evals": 445,
+          "depth": 4,
+          "seldepth": 8,
+          "work": 100005,
+          "ms": 970,
+          "weightsLabel": "default-v1-no-stage2"
+        },
+        {
+          "opening": "e1-g4-s730",
+          "nodes": 807,
+          "qnodes": 871,
+          "evals": 936,
+          "depth": 4,
+          "seldepth": 8,
+          "work": 100010,
+          "ms": 914,
+          "weightsLabel": "default-v1-no-stage2"
+        },
+        {
+          "opening": "e1-g3-s745",
+          "nodes": 576,
+          "qnodes": 496,
+          "evals": 535,
+          "depth": 3,
+          "seldepth": 8,
+          "work": 100229,
+          "ms": 939,
+          "weightsLabel": "default-v1-no-stage2"
+        }
+      ],
+      "mean": {
+        "nodes": 566.67,
+        "evals": 570.17,
+        "depth": 3.17,
+        "work": 100121.33,
+        "ms": 956
+      }
+    }
+  }
+}

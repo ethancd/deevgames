@@ -1,0 +1,561 @@
+{
+  "schema": "muju-ladder-manifest-v1",
+  "status": "complete",
+  "a": "hard@ablate:work-fit",
+  "b": "hard@desktop",
+  "aConfigHash": "hard:ablate:work-fit:wall:3000#8c7369591855da0b4fc5c9766dce24ec2e2f73c6520232991dd0865473d28828",
+  "bConfigHash": "hard:desktop:wall:3000#4e7afdf76b32fadfab2d11577cb610c8f9f1a491b5153e70b87b0774403600cd",
+  "aResolvedConfig": {
+    "engine": "hard",
+    "config": {
+      "maxDepth": 12,
+      "aspirationCc": 200,
+      "lmrRank1": 6,
+      "lmrRank2": 12,
+      "futilityMarginCc": 200,
+      "useLmr": false,
+      "useAspiration": false,
+      "useFutility": false,
+      "useExtensions": false,
+      "quiesce": {
+        "maxPly": 4,
+        "deltaMarginCc": 300,
+        "maxCandidates": 8
+      },
+      "gen": {
+        "K": 24,
+        "maxPlacePlans": 16,
+        "action": {
+          "widths": {
+            "0": 6,
+            "1": 4,
+            "2": 3,
+            "3": 2
+          },
+          "keep": 4,
+          "ttBits": 18
+        },
+        "purchase": {
+          "maxBodies": 4,
+          "maxMultisets": 35,
+          "maxPlans": 12,
+          "squares": 8,
+          "keepPerMultiset": 3,
+          "weights": {
+            "mineCc": 1,
+            "safeCc": 100,
+            "blockCc": 200,
+            "strikeCc": 300,
+            "anchorCc": 20,
+            "zeroSpawnCc": 400,
+            "liquidityCc": 50,
+            "homeRaceCc": 5000
+          }
+        },
+        "maxPromotions": 8,
+        "reference": false
+      },
+      "genInterior": {
+        "K": 16,
+        "maxPlacePlans": 8,
+        "action": {
+          "widths": {
+            "0": 6,
+            "1": 4,
+            "2": 3,
+            "3": 2
+          },
+          "keep": 4,
+          "ttBits": 18
+        },
+        "purchase": {
+          "maxBodies": 4,
+          "maxMultisets": 35,
+          "maxPlans": 12,
+          "squares": 8,
+          "keepPerMultiset": 3,
+          "weights": {
+            "mineCc": 1,
+            "safeCc": 100,
+            "blockCc": 200,
+            "strikeCc": 300,
+            "anchorCc": 20,
+            "zeroSpawnCc": 400,
+            "liquidityCc": 50,
+            "homeRaceCc": 5000
+          }
+        },
+        "maxPromotions": 8,
+        "reference": false
+      },
+      "ttBits": 19,
+      "dfpn": {
+        "maxTurns": 3,
+        "nodeBudget": 4000,
+        "epsilonQ2": 5,
+        "ttBits": 17
+      },
+      "useDfpn": false,
+      "time": {
+        "minMs": 2000,
+        "maxMs": 6000,
+        "baseMs": 3000,
+        "abortFactor": 3,
+        "ladderStep": "sqrt2"
+      },
+      "profile": {
+        "unitsPerMs": 200,
+        "samples": 0
+      },
+      "ttBitsMacro": 19,
+      "ttBitsTurn": 18,
+      "K": 24,
+      "kInterior": 16,
+      "weights": {
+        "w": {
+          "0": 100,
+          "1": -422,
+          "2": 90,
+          "3": 25,
+          "4": -4000,
+          "5": 60,
+          "6": 20,
+          "7": 30,
+          "8": 8,
+          "9": -800,
+          "10": 25,
+          "11": 90,
+          "12": -60,
+          "13": -400,
+          "14": -180,
+          "15": 220,
+          "16": 90,
+          "17": -20,
+          "18": -8,
+          "19": 40,
+          "20": 0,
+          "21": 0,
+          "22": 150,
+          "23": 80,
+          "24": -30,
+          "25": -600,
+          "26": -150,
+          "27": -60,
+          "28": -50,
+          "29": -30,
+          "30": -25,
+          "31": -10,
+          "32": 20,
+          "33": 35,
+          "34": -40,
+          "35": -120,
+          "36": -150,
+          "37": 300,
+          "38": -800,
+          "39": -300,
+          "40": -250,
+          "41": -100,
+          "42": -400,
+          "43": -120,
+          "44": -600,
+          "45": -150,
+          "46": -150,
+          "47": -400,
+          "48": -250,
+          "49": -40,
+          "50": -200,
+          "51": -200,
+          "52": 0,
+          "53": -200,
+          "54": -60,
+          "55": 0,
+          "56": -150,
+          "57": -250
+        },
+        "material": {
+          "0": 300,
+          "1": 700,
+          "2": 1500,
+          "3": 300,
+          "4": 700,
+          "5": 1500,
+          "6": 400,
+          "7": 800,
+          "8": 1600,
+          "9": 400,
+          "10": 800,
+          "11": 1600,
+          "12": 500,
+          "13": 900,
+          "14": 1700,
+          "15": 500,
+          "16": 900,
+          "17": 1700
+        },
+        "version": 1,
+        "label": "default-v1"
+      },
+      "book": {
+        "size": 0,
+        "handicap": 0,
+        "mapHash": 0,
+        "weightsVersion": 0
+      }
+    },
+    "budget": {
+      "mode": "wall",
+      "fixedWork": 0,
+      "turnMs": 3000,
+      "allocation": "whole-turn",
+      "shippedTurnBudgetMs": null,
+      "overridesPresetTimeLimit": false
+    },
+    "lifecycle": {
+      "engine": "one-per-game-seat",
+      "seed": "once-at-construction",
+      "setDifficultyPerDecision": false,
+      "searchesPerTurn": "one"
+    },
+    "resign": false
+  },
+  "bResolvedConfig": {
+    "engine": "hard",
+    "config": {
+      "maxDepth": 12,
+      "aspirationCc": 200,
+      "lmrRank1": 6,
+      "lmrRank2": 12,
+      "futilityMarginCc": 200,
+      "useLmr": false,
+      "useAspiration": false,
+      "useFutility": false,
+      "useExtensions": false,
+      "quiesce": {
+        "maxPly": 4,
+        "deltaMarginCc": 300,
+        "maxCandidates": 8
+      },
+      "gen": {
+        "K": 24,
+        "maxPlacePlans": 16,
+        "action": {
+          "widths": {
+            "0": 6,
+            "1": 4,
+            "2": 3,
+            "3": 2
+          },
+          "keep": 4,
+          "ttBits": 18
+        },
+        "purchase": {
+          "maxBodies": 4,
+          "maxMultisets": 35,
+          "maxPlans": 12,
+          "squares": 8,
+          "keepPerMultiset": 3,
+          "weights": {
+            "mineCc": 1,
+            "safeCc": 100,
+            "blockCc": 200,
+            "strikeCc": 300,
+            "anchorCc": 20,
+            "zeroSpawnCc": 400,
+            "liquidityCc": 50,
+            "homeRaceCc": 5000
+          }
+        },
+        "maxPromotions": 8,
+        "reference": false
+      },
+      "genInterior": {
+        "K": 16,
+        "maxPlacePlans": 8,
+        "action": {
+          "widths": {
+            "0": 6,
+            "1": 4,
+            "2": 3,
+            "3": 2
+          },
+          "keep": 4,
+          "ttBits": 18
+        },
+        "purchase": {
+          "maxBodies": 4,
+          "maxMultisets": 35,
+          "maxPlans": 12,
+          "squares": 8,
+          "keepPerMultiset": 3,
+          "weights": {
+            "mineCc": 1,
+            "safeCc": 100,
+            "blockCc": 200,
+            "strikeCc": 300,
+            "anchorCc": 20,
+            "zeroSpawnCc": 400,
+            "liquidityCc": 50,
+            "homeRaceCc": 5000
+          }
+        },
+        "maxPromotions": 8,
+        "reference": false
+      },
+      "ttBits": 19,
+      "dfpn": {
+        "maxTurns": 3,
+        "nodeBudget": 4000,
+        "epsilonQ2": 5,
+        "ttBits": 17
+      },
+      "useDfpn": false,
+      "time": {
+        "minMs": 2000,
+        "maxMs": 6000,
+        "baseMs": 3000,
+        "abortFactor": 3
+      },
+      "profile": {
+        "unitsPerMs": 200,
+        "samples": 0
+      },
+      "ttBitsMacro": 19,
+      "ttBitsTurn": 18,
+      "K": 24,
+      "kInterior": 16,
+      "weights": {
+        "w": {
+          "0": 100,
+          "1": -422,
+          "2": 90,
+          "3": 25,
+          "4": -4000,
+          "5": 60,
+          "6": 20,
+          "7": 30,
+          "8": 8,
+          "9": -800,
+          "10": 25,
+          "11": 90,
+          "12": -60,
+          "13": -400,
+          "14": -180,
+          "15": 220,
+          "16": 90,
+          "17": -20,
+          "18": -8,
+          "19": 40,
+          "20": 0,
+          "21": 0,
+          "22": 150,
+          "23": 80,
+          "24": -30,
+          "25": -600,
+          "26": -150,
+          "27": -60,
+          "28": -50,
+          "29": -30,
+          "30": -25,
+          "31": -10,
+          "32": 20,
+          "33": 35,
+          "34": -40,
+          "35": -120,
+          "36": -150,
+          "37": 300,
+          "38": -800,
+          "39": -300,
+          "40": -250,
+          "41": -100,
+          "42": -400,
+          "43": -120,
+          "44": -600,
+          "45": -150,
+          "46": -150,
+          "47": -400,
+          "48": -250,
+          "49": -40,
+          "50": -200,
+          "51": -200,
+          "52": 0,
+          "53": -200,
+          "54": -60,
+          "55": 0,
+          "56": -150,
+          "57": -250
+        },
+        "material": {
+          "0": 300,
+          "1": 700,
+          "2": 1500,
+          "3": 300,
+          "4": 700,
+          "5": 1500,
+          "6": 400,
+          "7": 800,
+          "8": 1600,
+          "9": 400,
+          "10": 800,
+          "11": 1600,
+          "12": 500,
+          "13": 900,
+          "14": 1700,
+          "15": 500,
+          "16": 900,
+          "17": 1700
+        },
+        "version": 1,
+        "label": "default-v1"
+      },
+      "book": {
+        "size": 0,
+        "handicap": 0,
+        "mapHash": 0,
+        "weightsVersion": 0
+      }
+    },
+    "budget": {
+      "mode": "wall",
+      "fixedWork": 0,
+      "turnMs": 3000,
+      "allocation": "whole-turn",
+      "shippedTurnBudgetMs": null,
+      "overridesPresetTimeLimit": false
+    },
+    "lifecycle": {
+      "engine": "one-per-game-seat",
+      "seed": "once-at-construction",
+      "setDifficultyPerDecision": false,
+      "searchesPerTurn": "one"
+    },
+    "resign": false
+  },
+  "work": "wall:3000",
+  "seed": 1,
+  "pairs": 4,
+  "shards": 1,
+  "handicaps": [
+    0,
+    3
+  ],
+  "legality": "strict",
+  "sprt": null,
+  "openings": {
+    "path": "lab/hard-ai/ladder/openings/e1-dev.jsonl",
+    "sha256": "bba8ea56b1bc2e0d5cdb58f6527e8bdec4382ef6a42906ba0674578ed02d5b55",
+    "ids": [
+      "e1-g3-s325",
+      "e1-g3-s305",
+      "e1-g5-s695",
+      "e1-g2-s420"
+    ],
+    "count": 4,
+    "skip": 44,
+    "selectedIds": null,
+    "used": [
+      "e1-g3-s325",
+      "e1-g3-s305"
+    ]
+  },
+  "openingsIndependent": true,
+  "independenceWarning": null,
+  "overrunTolerance": {
+    "spec": "max(10ms,1%)",
+    "ms": 10,
+    "pct": 1,
+    "frozen": true
+  },
+  "replays": true,
+  "resume": false,
+  "schedule": [
+    {
+      "pairId": "e1-g3-s325:0:0",
+      "pairIndex": 0,
+      "openingId": "e1-g3-s325",
+      "handicap": 0,
+      "seed": 2527132011
+    },
+    {
+      "pairId": "e1-g3-s325:3:1",
+      "pairIndex": 1,
+      "openingId": "e1-g3-s325",
+      "handicap": 3,
+      "seed": 314344336
+    },
+    {
+      "pairId": "e1-g3-s305:0:2",
+      "pairIndex": 2,
+      "openingId": "e1-g3-s305",
+      "handicap": 0,
+      "seed": 2535364964
+    },
+    {
+      "pairId": "e1-g3-s305:3:3",
+      "pairIndex": 3,
+      "openingId": "e1-g3-s305",
+      "handicap": 3,
+      "seed": 2041432039
+    }
+  ],
+  "resumedPairIds": [],
+  "sprtStop": null,
+  "rules": {
+    "elementGraph": "double-thick",
+    "upkeep": "shipped",
+    "inactivityRule": "on"
+  },
+  "argv": [
+    "--a",
+    "hard@ablate:work-fit",
+    "--b",
+    "hard@desktop",
+    "--work",
+    "wall:3000",
+    "--handicaps",
+    "0,3",
+    "--pairs",
+    "4",
+    "--openings",
+    "lab/hard-ai/ladder/openings/e1-dev.jsonl",
+    "--openings-skip",
+    "44",
+    "--seed",
+    "1",
+    "--legality",
+    "strict",
+    "--shards",
+    "1",
+    "--out",
+    "lab/results/hard-ai-e2/ablate/work-fit/mini-instrumented"
+  ],
+  "git": "1e1689d2835f53526dc189cfbae685e1a1c28779",
+  "gitDirty": false,
+  "baseline": {
+    "ai": "81d011ea20659c61db8194fce3e40f2ac16d44c15f8084684b671dba2d2d4f27",
+    "game": "442226339ec2dd2c81b9efca7070ad9c61c847cf16b20789d896e5d3d0e367c2",
+    "wasm": "da9b1cdf25e4bcd6a4674fd697095e35c2606c29817e3d18043faf4799d828bf",
+    "deps": "b17ce8cae69cdede37f74f14139e1afee7f9eb6e17676c391239a8ff985cbf45"
+  },
+  "wasmSha256": "da9b1cdf25e4bcd6a4674fd697095e35c2606c29817e3d18043faf4799d828bf",
+  "node": "v24.11.1",
+  "device": "Apple M2 Max x12 (darwin/arm64)",
+  "cpuCount": 12,
+  "loadavg": [
+    3.2783203125,
+    3.55859375,
+    3.7548828125
+  ],
+  "at": "2026-09-17T01:15:50.180Z",
+  "finishedAt": "2026-09-17T01:29:21.997Z",
+  "wallMs": 811944,
+  "counts": {
+    "scheduledPairs": 4,
+    "completedPairs": 4,
+    "games": 8,
+    "failures": 0,
+    "resumedPairs": 0
+  },
+  "voided": false,
+  "voidReason": null,
+  "error": null
+}

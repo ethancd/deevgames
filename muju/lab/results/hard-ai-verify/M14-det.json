@@ -1,0 +1,38 @@
+{
+  "engine": "hard@lab",
+  "workUnits": [
+    25000,
+    400000
+  ],
+  "positions": 40,
+  "seeds": [
+    1,
+    7
+  ],
+  "shards": 12,
+  "decisions": 160,
+  "runs": 4,
+  "wasmAbsent": true,
+  "identical": true,
+  "mismatches": [],
+  "at": "2026-09-15T23:27:35.527Z",
+  "determinism": {
+    "engine": "hard@lab",
+    "workUnits": [
+      25000,
+      400000
+    ],
+    "positions": 40,
+    "seeds": [
+      1,
+      7
+    ],
+    "shards": 12,
+    "decisions": 160,
+    "runs": 4,
+    "wasmAbsent": true,
+    "identical": true,
+    "mismatches": [],
+    "at": "2026-09-15T23:27:35.527Z"
+  }
+}

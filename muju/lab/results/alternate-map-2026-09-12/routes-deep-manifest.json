@@ -1,0 +1,38 @@
+{
+  "n": 20,
+  "pairs": [
+    [
+      "Route:CenterDeep",
+      "Aware:Rush"
+    ],
+    [
+      "Route:CenterDeep",
+      "Aware:Balanced"
+    ],
+    [
+      "Route:CenterDeep",
+      "Invade:MiningDenial"
+    ],
+    [
+      "Route:CenterFork",
+      "Aware:Rush"
+    ],
+    [
+      "Route:CenterFork",
+      "Aware:Balanced"
+    ],
+    [
+      "Route:CenterFork",
+      "Invade:MiningDenial"
+    ]
+  ],
+  "maps": [
+    "current",
+    "alternate"
+  ],
+  "seedBase": 9121648,
+  "hash": "fff70dd25f4420cb03f65ebb6400a20a25f754373f86c230251ee92097512af2",
+  "actions": 4,
+  "cap": "unresolved",
+  "started": "2026-09-12T21:13:55.576Z"
+}

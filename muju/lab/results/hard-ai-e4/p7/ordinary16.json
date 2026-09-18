@@ -1,0 +1,1100 @@
+{
+  "label": "ordinary16",
+  "stamp": "2026-09-18T00:03:39.339Z",
+  "node": "v24.11.1",
+  "results": [
+    {
+      "replay": "e1-g4-s430_3_37-A-white.json",
+      "side": "white",
+      "seatTurnIndex": 6,
+      "gameTurn": 7,
+      "phase": "place",
+      "bodies": 22,
+      "whiteBodies": 8,
+      "blackBodies": 14,
+      "bank": {
+        "white": 19,
+        "black": 20
+      },
+      "ruleset": "standard",
+      "recordedTurnMs": 2313,
+      "actions": [
+        "PROMOTE_UNIT",
+        "END_PLACE_PHASE",
+        "MOVE",
+        "MOVE",
+        "END_ACTION_PHASE"
+      ],
+      "applyTotalMs": 0.086,
+      "perAction": [
+        {
+          "i": 0,
+          "type": "PROMOTE_UNIT",
+          "applyMs": 0.025,
+          "verdictCalls": 0
+        },
+        {
+          "i": 1,
+          "type": "END_PLACE_PHASE",
+          "applyMs": 0.007,
+          "verdictCalls": 0
+        },
+        {
+          "i": 2,
+          "type": "MOVE",
+          "applyMs": 0.002,
+          "verdictCalls": 0
+        },
+        {
+          "i": 3,
+          "type": "MOVE",
+          "applyMs": 0.002,
+          "verdictCalls": 0
+        },
+        {
+          "i": 4,
+          "type": "END_ACTION_PHASE",
+          "applyMs": 0.05,
+          "verdictCalls": 0
+        }
+      ],
+      "verdictCalls": 0,
+      "verdictTotalMs": 0,
+      "distinctKeys": 0,
+      "calls": []
+    },
+    {
+      "replay": "e1-g4-s430_3_37-A-white.json",
+      "side": "white",
+      "seatTurnIndex": 10,
+      "gameTurn": 11,
+      "phase": "place",
+      "bodies": 22,
+      "whiteBodies": 7,
+      "blackBodies": 15,
+      "bank": {
+        "white": 32,
+        "black": 8
+      },
+      "ruleset": "standard",
+      "recordedTurnMs": 2834,
+      "actions": [
+        "END_PLACE_PHASE",
+        "MOVE",
+        "ATTACK",
+        "END_ACTION_PHASE"
+      ],
+      "applyTotalMs": 0.033,
+      "perAction": [
+        {
+          "i": 0,
+          "type": "END_PLACE_PHASE",
+          "applyMs": 0.002,
+          "verdictCalls": 0
+        },
+        {
+          "i": 1,
+          "type": "MOVE",
+          "applyMs": 0.002,
+          "verdictCalls": 0
+        },
+        {
+          "i": 2,
+          "type": "ATTACK",
+          "applyMs": 0.008,
+          "verdictCalls": 0
+        },
+        {
+          "i": 3,
+          "type": "END_ACTION_PHASE",
+          "applyMs": 0.022,
+          "verdictCalls": 0
+        }
+      ],
+      "verdictCalls": 0,
+      "verdictTotalMs": 0,
+      "distinctKeys": 0,
+      "calls": []
+    },
+    {
+      "replay": "e1-g4-s430_3_37-A-white.json",
+      "side": "black",
+      "seatTurnIndex": 6,
+      "gameTurn": 7,
+      "phase": "place",
+      "bodies": 22,
+      "whiteBodies": 8,
+      "blackBodies": 14,
+      "bank": {
+        "white": 27,
+        "black": 19
+      },
+      "ruleset": "standard",
+      "recordedTurnMs": 3001,
+      "actions": [
+        "BUY_UNIT",
+        "PROMOTE_UNIT",
+        "PROMOTE_UNIT",
+        "BUY_UNIT",
+        "MOVE",
+        "ATTACK",
+        "MOVE",
+        "ATTACK",
+        "END_ACTION_PHASE"
+      ],
+      "applyTotalMs": 0.097,
+      "perAction": [
+        {
+          "i": 0,
+          "type": "BUY_UNIT",
+          "applyMs": 0.024,
+          "verdictCalls": 0
+        },
+        {
+          "i": 1,
+          "type": "PROMOTE_UNIT",
+          "applyMs": 0.013,
+          "verdictCalls": 0
+        },
+        {
+          "i": 2,
+          "type": "PROMOTE_UNIT",
+          "applyMs": 0.012,
+          "verdictCalls": 0
+        },
+        {
+          "i": 3,
+          "type": "BUY_UNIT",
+          "applyMs": 0.007,
+          "verdictCalls": 0
+        },
+        {
+          "i": 4,
+          "type": "MOVE",
+          "applyMs": 0.002,
+          "verdictCalls": 0
+        },
+        {
+          "i": 5,
+          "type": "ATTACK",
+          "applyMs": 0.011,
+          "verdictCalls": 0
+        },
+        {
+          "i": 6,
+          "type": "MOVE",
+          "applyMs": 0.002,
+          "verdictCalls": 0
+        },
+        {
+          "i": 7,
+          "type": "ATTACK",
+          "applyMs": 0.01,
+          "verdictCalls": 0
+        },
+        {
+          "i": 8,
+          "type": "END_ACTION_PHASE",
+          "applyMs": 0.016,
+          "verdictCalls": 0
+        }
+      ],
+      "verdictCalls": 0,
+      "verdictTotalMs": 0,
+      "distinctKeys": 0,
+      "calls": []
+    },
+    {
+      "replay": "e1-g4-s430_3_37-A-white.json",
+      "side": "black",
+      "seatTurnIndex": 10,
+      "gameTurn": 11,
+      "phase": "place",
+      "bodies": 21,
+      "whiteBodies": 7,
+      "blackBodies": 14,
+      "bank": {
+        "white": 32,
+        "black": 6
+      },
+      "ruleset": "standard",
+      "recordedTurnMs": 3002,
+      "actions": [
+        "BUY_UNIT",
+        "MOVE",
+        "ATTACK",
+        "MOVE",
+        "MOVE",
+        "END_ACTION_PHASE"
+      ],
+      "applyTotalMs": 0.044,
+      "perAction": [
+        {
+          "i": 0,
+          "type": "BUY_UNIT",
+          "applyMs": 0.012,
+          "verdictCalls": 0
+        },
+        {
+          "i": 1,
+          "type": "MOVE",
+          "applyMs": 0.002,
+          "verdictCalls": 0
+        },
+        {
+          "i": 2,
+          "type": "ATTACK",
+          "applyMs": 0.009,
+          "verdictCalls": 0
+        },
+        {
+          "i": 3,
+          "type": "MOVE",
+          "applyMs": 0.001,
+          "verdictCalls": 0
+        },
+        {
+          "i": 4,
+          "type": "MOVE",
+          "applyMs": 0.001,
+          "verdictCalls": 0
+        },
+        {
+          "i": 5,
+          "type": "END_ACTION_PHASE",
+          "applyMs": 0.018,
+          "verdictCalls": 0
+        }
+      ],
+      "verdictCalls": 0,
+      "verdictTotalMs": 0,
+      "distinctKeys": 0,
+      "calls": []
+    },
+    {
+      "replay": "g4-s30_3_3-A-white.json",
+      "side": "white",
+      "seatTurnIndex": 6,
+      "gameTurn": 7,
+      "phase": "place",
+      "bodies": 16,
+      "whiteBodies": 7,
+      "blackBodies": 9,
+      "bank": {
+        "white": 19,
+        "black": 3
+      },
+      "ruleset": "standard",
+      "recordedTurnMs": 3003,
+      "actions": [
+        "BUY_UNIT",
+        "BUY_UNIT",
+        "BUY_UNIT",
+        "BUY_UNIT",
+        "END_PLACE_PHASE",
+        "ATTACK",
+        "MOVE",
+        "MOVE",
+        "END_ACTION_PHASE"
+      ],
+      "applyTotalMs": 0.071,
+      "perAction": [
+        {
+          "i": 0,
+          "type": "BUY_UNIT",
+          "applyMs": 0.01,
+          "verdictCalls": 0
+        },
+        {
+          "i": 1,
+          "type": "BUY_UNIT",
+          "applyMs": 0.008,
+          "verdictCalls": 0
+        },
+        {
+          "i": 2,
+          "type": "BUY_UNIT",
+          "applyMs": 0.008,
+          "verdictCalls": 0
+        },
+        {
+          "i": 3,
+          "type": "BUY_UNIT",
+          "applyMs": 0.008,
+          "verdictCalls": 0
+        },
+        {
+          "i": 4,
+          "type": "END_PLACE_PHASE",
+          "applyMs": 0,
+          "verdictCalls": 0
+        },
+        {
+          "i": 5,
+          "type": "ATTACK",
+          "applyMs": 0.006,
+          "verdictCalls": 0
+        },
+        {
+          "i": 6,
+          "type": "MOVE",
+          "applyMs": 0.001,
+          "verdictCalls": 0
+        },
+        {
+          "i": 7,
+          "type": "MOVE",
+          "applyMs": 0.001,
+          "verdictCalls": 0
+        },
+        {
+          "i": 8,
+          "type": "END_ACTION_PHASE",
+          "applyMs": 0.03,
+          "verdictCalls": 0
+        }
+      ],
+      "verdictCalls": 0,
+      "verdictTotalMs": 0,
+      "distinctKeys": 0,
+      "calls": []
+    },
+    {
+      "replay": "g4-s30_3_3-A-white.json",
+      "side": "white",
+      "seatTurnIndex": 10,
+      "gameTurn": 11,
+      "phase": "place",
+      "bodies": 16,
+      "whiteBodies": 7,
+      "blackBodies": 9,
+      "bank": {
+        "white": 18,
+        "black": 2
+      },
+      "ruleset": "standard",
+      "recordedTurnMs": 1403,
+      "actions": [
+        "BUY_UNIT",
+        "END_PLACE_PHASE",
+        "ATTACK",
+        "MOVE",
+        "END_ACTION_PHASE"
+      ],
+      "applyTotalMs": 0.026,
+      "perAction": [
+        {
+          "i": 0,
+          "type": "BUY_UNIT",
+          "applyMs": 0.009,
+          "verdictCalls": 0
+        },
+        {
+          "i": 1,
+          "type": "END_PLACE_PHASE",
+          "applyMs": 0,
+          "verdictCalls": 0
+        },
+        {
+          "i": 2,
+          "type": "ATTACK",
+          "applyMs": 0.005,
+          "verdictCalls": 0
+        },
+        {
+          "i": 3,
+          "type": "MOVE",
+          "applyMs": 0.002,
+          "verdictCalls": 0
+        },
+        {
+          "i": 4,
+          "type": "END_ACTION_PHASE",
+          "applyMs": 0.01,
+          "verdictCalls": 0
+        }
+      ],
+      "verdictCalls": 0,
+      "verdictTotalMs": 0,
+      "distinctKeys": 0,
+      "calls": []
+    },
+    {
+      "replay": "g4-s30_3_3-A-white.json",
+      "side": "black",
+      "seatTurnIndex": 6,
+      "gameTurn": 7,
+      "phase": "place",
+      "bodies": 19,
+      "whiteBodies": 11,
+      "blackBodies": 8,
+      "bank": {
+        "white": 20,
+        "black": 3
+      },
+      "ruleset": "standard",
+      "recordedTurnMs": 3002,
+      "actions": [
+        "BUY_UNIT",
+        "MOVE",
+        "MOVE",
+        "ATTACK",
+        "MOVE",
+        "END_ACTION_PHASE"
+      ],
+      "applyTotalMs": 0.032,
+      "perAction": [
+        {
+          "i": 0,
+          "type": "BUY_UNIT",
+          "applyMs": 0.009,
+          "verdictCalls": 0
+        },
+        {
+          "i": 1,
+          "type": "MOVE",
+          "applyMs": 0.001,
+          "verdictCalls": 0
+        },
+        {
+          "i": 2,
+          "type": "MOVE",
+          "applyMs": 0.001,
+          "verdictCalls": 0
+        },
+        {
+          "i": 3,
+          "type": "ATTACK",
+          "applyMs": 0.005,
+          "verdictCalls": 0
+        },
+        {
+          "i": 4,
+          "type": "MOVE",
+          "applyMs": 0.001,
+          "verdictCalls": 0
+        },
+        {
+          "i": 5,
+          "type": "END_ACTION_PHASE",
+          "applyMs": 0.014,
+          "verdictCalls": 0
+        }
+      ],
+      "verdictCalls": 0,
+      "verdictTotalMs": 0,
+      "distinctKeys": 0,
+      "calls": []
+    },
+    {
+      "replay": "g4-s30_3_3-A-white.json",
+      "side": "black",
+      "seatTurnIndex": 10,
+      "gameTurn": 11,
+      "phase": "action",
+      "bodies": 16,
+      "whiteBodies": 8,
+      "blackBodies": 8,
+      "bank": {
+        "white": 18,
+        "black": 2
+      },
+      "ruleset": "standard",
+      "recordedTurnMs": 3004,
+      "actions": [
+        "ATTACK",
+        "MOVE",
+        "MOVE",
+        "MOVE",
+        "END_ACTION_PHASE"
+      ],
+      "applyTotalMs": 0.028,
+      "perAction": [
+        {
+          "i": 0,
+          "type": "ATTACK",
+          "applyMs": 0.008,
+          "verdictCalls": 0
+        },
+        {
+          "i": 1,
+          "type": "MOVE",
+          "applyMs": 0.001,
+          "verdictCalls": 0
+        },
+        {
+          "i": 2,
+          "type": "MOVE",
+          "applyMs": 0.001,
+          "verdictCalls": 0
+        },
+        {
+          "i": 3,
+          "type": "MOVE",
+          "applyMs": 0.001,
+          "verdictCalls": 0
+        },
+        {
+          "i": 4,
+          "type": "END_ACTION_PHASE",
+          "applyMs": 0.017,
+          "verdictCalls": 0
+        }
+      ],
+      "verdictCalls": 0,
+      "verdictTotalMs": 0,
+      "distinctKeys": 0,
+      "calls": []
+    },
+    {
+      "replay": "e1-g5-s915_0_96-B-white.json",
+      "side": "white",
+      "seatTurnIndex": 6,
+      "gameTurn": 8,
+      "phase": "place",
+      "bodies": 14,
+      "whiteBodies": 7,
+      "blackBodies": 7,
+      "bank": {
+        "white": 15,
+        "black": 19
+      },
+      "ruleset": "standard",
+      "recordedTurnMs": 3002,
+      "actions": [
+        "BUY_UNIT",
+        "BUY_UNIT",
+        "BUY_UNIT",
+        "MOVE",
+        "MOVE",
+        "ATTACK",
+        "MOVE",
+        "END_ACTION_PHASE"
+      ],
+      "applyTotalMs": 0.068,
+      "perAction": [
+        {
+          "i": 0,
+          "type": "BUY_UNIT",
+          "applyMs": 0.014,
+          "verdictCalls": 0
+        },
+        {
+          "i": 1,
+          "type": "BUY_UNIT",
+          "applyMs": 0.015,
+          "verdictCalls": 0
+        },
+        {
+          "i": 2,
+          "type": "BUY_UNIT",
+          "applyMs": 0.007,
+          "verdictCalls": 0
+        },
+        {
+          "i": 3,
+          "type": "MOVE",
+          "applyMs": 0.002,
+          "verdictCalls": 0
+        },
+        {
+          "i": 4,
+          "type": "MOVE",
+          "applyMs": 0.002,
+          "verdictCalls": 0
+        },
+        {
+          "i": 5,
+          "type": "ATTACK",
+          "applyMs": 0.009,
+          "verdictCalls": 0
+        },
+        {
+          "i": 6,
+          "type": "MOVE",
+          "applyMs": 0.002,
+          "verdictCalls": 0
+        },
+        {
+          "i": 7,
+          "type": "END_ACTION_PHASE",
+          "applyMs": 0.017,
+          "verdictCalls": 0
+        }
+      ],
+      "verdictCalls": 0,
+      "verdictTotalMs": 0,
+      "distinctKeys": 0,
+      "calls": []
+    },
+    {
+      "replay": "e1-g5-s915_0_96-B-white.json",
+      "side": "white",
+      "seatTurnIndex": 10,
+      "gameTurn": 12,
+      "phase": "place",
+      "bodies": 17,
+      "whiteBodies": 9,
+      "blackBodies": 8,
+      "bank": {
+        "white": 3,
+        "black": 16
+      },
+      "ruleset": "standard",
+      "recordedTurnMs": 3001,
+      "actions": [
+        "BUY_UNIT",
+        "MOVE",
+        "MOVE",
+        "ATTACK",
+        "MOVE",
+        "END_ACTION_PHASE"
+      ],
+      "applyTotalMs": 0.025,
+      "perAction": [
+        {
+          "i": 0,
+          "type": "BUY_UNIT",
+          "applyMs": 0.005,
+          "verdictCalls": 0
+        },
+        {
+          "i": 1,
+          "type": "MOVE",
+          "applyMs": 0.001,
+          "verdictCalls": 0
+        },
+        {
+          "i": 2,
+          "type": "MOVE",
+          "applyMs": 0.001,
+          "verdictCalls": 0
+        },
+        {
+          "i": 3,
+          "type": "ATTACK",
+          "applyMs": 0.005,
+          "verdictCalls": 0
+        },
+        {
+          "i": 4,
+          "type": "MOVE",
+          "applyMs": 0.001,
+          "verdictCalls": 0
+        },
+        {
+          "i": 5,
+          "type": "END_ACTION_PHASE",
+          "applyMs": 0.012,
+          "verdictCalls": 0
+        }
+      ],
+      "verdictCalls": 0,
+      "verdictTotalMs": 0,
+      "distinctKeys": 0,
+      "calls": []
+    },
+    {
+      "replay": "e1-g5-s915_0_96-B-white.json",
+      "side": "black",
+      "seatTurnIndex": 6,
+      "gameTurn": 7,
+      "phase": "place",
+      "bodies": 14,
+      "whiteBodies": 8,
+      "blackBodies": 6,
+      "bank": {
+        "white": 16,
+        "black": 19
+      },
+      "ruleset": "standard",
+      "recordedTurnMs": 3023,
+      "actions": [
+        "BUY_UNIT",
+        "END_PLACE_PHASE",
+        "MOVE",
+        "ATTACK",
+        "END_ACTION_PHASE"
+      ],
+      "applyTotalMs": 0.025,
+      "perAction": [
+        {
+          "i": 0,
+          "type": "BUY_UNIT",
+          "applyMs": 0.007,
+          "verdictCalls": 0
+        },
+        {
+          "i": 1,
+          "type": "END_PLACE_PHASE",
+          "applyMs": 0.001,
+          "verdictCalls": 0
+        },
+        {
+          "i": 2,
+          "type": "MOVE",
+          "applyMs": 0.001,
+          "verdictCalls": 0
+        },
+        {
+          "i": 3,
+          "type": "ATTACK",
+          "applyMs": 0.004,
+          "verdictCalls": 0
+        },
+        {
+          "i": 4,
+          "type": "END_ACTION_PHASE",
+          "applyMs": 0.011,
+          "verdictCalls": 0
+        }
+      ],
+      "verdictCalls": 0,
+      "verdictTotalMs": 0,
+      "distinctKeys": 0,
+      "calls": []
+    },
+    {
+      "replay": "e1-g5-s915_0_96-B-white.json",
+      "side": "black",
+      "seatTurnIndex": 10,
+      "gameTurn": 11,
+      "phase": "place",
+      "bodies": 17,
+      "whiteBodies": 10,
+      "blackBodies": 7,
+      "bank": {
+        "white": 5,
+        "black": 18
+      },
+      "ruleset": "standard",
+      "recordedTurnMs": 2650,
+      "actions": [
+        "BUY_UNIT",
+        "END_PLACE_PHASE",
+        "MOVE",
+        "ATTACK",
+        "END_ACTION_PHASE"
+      ],
+      "applyTotalMs": 0.025,
+      "perAction": [
+        {
+          "i": 0,
+          "type": "BUY_UNIT",
+          "applyMs": 0.006,
+          "verdictCalls": 0
+        },
+        {
+          "i": 1,
+          "type": "END_PLACE_PHASE",
+          "applyMs": 0,
+          "verdictCalls": 0
+        },
+        {
+          "i": 2,
+          "type": "MOVE",
+          "applyMs": 0.001,
+          "verdictCalls": 0
+        },
+        {
+          "i": 3,
+          "type": "ATTACK",
+          "applyMs": 0.005,
+          "verdictCalls": 0
+        },
+        {
+          "i": 4,
+          "type": "END_ACTION_PHASE",
+          "applyMs": 0.013,
+          "verdictCalls": 0
+        }
+      ],
+      "verdictCalls": 0,
+      "verdictTotalMs": 0,
+      "distinctKeys": 0,
+      "calls": []
+    },
+    {
+      "replay": "e1-g5-s315_0_86-A-white.json",
+      "side": "white",
+      "seatTurnIndex": 6,
+      "gameTurn": 8,
+      "phase": "place",
+      "bodies": 20,
+      "whiteBodies": 11,
+      "blackBodies": 9,
+      "bank": {
+        "white": 13,
+        "black": 6
+      },
+      "ruleset": "standard",
+      "recordedTurnMs": 3010,
+      "actions": [
+        "BUY_UNIT",
+        "BUY_UNIT",
+        "BUY_UNIT",
+        "END_PLACE_PHASE",
+        "MOVE",
+        "ATTACK",
+        "END_ACTION_PHASE"
+      ],
+      "applyTotalMs": 0.072,
+      "perAction": [
+        {
+          "i": 0,
+          "type": "BUY_UNIT",
+          "applyMs": 0.015,
+          "verdictCalls": 0
+        },
+        {
+          "i": 1,
+          "type": "BUY_UNIT",
+          "applyMs": 0.012,
+          "verdictCalls": 0
+        },
+        {
+          "i": 2,
+          "type": "BUY_UNIT",
+          "applyMs": 0.013,
+          "verdictCalls": 0
+        },
+        {
+          "i": 3,
+          "type": "END_PLACE_PHASE",
+          "applyMs": 0.001,
+          "verdictCalls": 0
+        },
+        {
+          "i": 4,
+          "type": "MOVE",
+          "applyMs": 0.002,
+          "verdictCalls": 0
+        },
+        {
+          "i": 5,
+          "type": "ATTACK",
+          "applyMs": 0.013,
+          "verdictCalls": 0
+        },
+        {
+          "i": 6,
+          "type": "END_ACTION_PHASE",
+          "applyMs": 0.017,
+          "verdictCalls": 0
+        }
+      ],
+      "verdictCalls": 0,
+      "verdictTotalMs": 0,
+      "distinctKeys": 0,
+      "calls": []
+    },
+    {
+      "replay": "e1-g5-s315_0_86-A-white.json",
+      "side": "white",
+      "seatTurnIndex": 10,
+      "gameTurn": 12,
+      "phase": "place",
+      "bodies": 21,
+      "whiteBodies": 13,
+      "blackBodies": 8,
+      "bank": {
+        "white": 30,
+        "black": 6
+      },
+      "ruleset": "standard",
+      "recordedTurnMs": 3004,
+      "actions": [
+        "BUY_UNIT",
+        "PROMOTE_UNIT",
+        "END_PLACE_PHASE",
+        "MOVE",
+        "ATTACK",
+        "END_ACTION_PHASE"
+      ],
+      "applyTotalMs": 0.057,
+      "perAction": [
+        {
+          "i": 0,
+          "type": "BUY_UNIT",
+          "applyMs": 0.018,
+          "verdictCalls": 0
+        },
+        {
+          "i": 1,
+          "type": "PROMOTE_UNIT",
+          "applyMs": 0.009,
+          "verdictCalls": 0
+        },
+        {
+          "i": 2,
+          "type": "END_PLACE_PHASE",
+          "applyMs": 0.001,
+          "verdictCalls": 0
+        },
+        {
+          "i": 3,
+          "type": "MOVE",
+          "applyMs": 0.003,
+          "verdictCalls": 0
+        },
+        {
+          "i": 4,
+          "type": "ATTACK",
+          "applyMs": 0.008,
+          "verdictCalls": 0
+        },
+        {
+          "i": 5,
+          "type": "END_ACTION_PHASE",
+          "applyMs": 0.018,
+          "verdictCalls": 0
+        }
+      ],
+      "verdictCalls": 0,
+      "verdictTotalMs": 0,
+      "distinctKeys": 0,
+      "calls": []
+    },
+    {
+      "replay": "e1-g5-s315_0_86-A-white.json",
+      "side": "black",
+      "seatTurnIndex": 6,
+      "gameTurn": 7,
+      "phase": "place",
+      "bodies": 20,
+      "whiteBodies": 13,
+      "blackBodies": 7,
+      "bank": {
+        "white": 13,
+        "black": 8
+      },
+      "ruleset": "standard",
+      "recordedTurnMs": 3004,
+      "actions": [
+        "BUY_UNIT",
+        "BUY_UNIT",
+        "ATTACK",
+        "MOVE",
+        "MOVE",
+        "ATTACK",
+        "END_ACTION_PHASE"
+      ],
+      "applyTotalMs": 0.045,
+      "perAction": [
+        {
+          "i": 0,
+          "type": "BUY_UNIT",
+          "applyMs": 0.008,
+          "verdictCalls": 0
+        },
+        {
+          "i": 1,
+          "type": "BUY_UNIT",
+          "applyMs": 0.004,
+          "verdictCalls": 0
+        },
+        {
+          "i": 2,
+          "type": "ATTACK",
+          "applyMs": 0.006,
+          "verdictCalls": 0
+        },
+        {
+          "i": 3,
+          "type": "MOVE",
+          "applyMs": 0.002,
+          "verdictCalls": 0
+        },
+        {
+          "i": 4,
+          "type": "MOVE",
+          "applyMs": 0.002,
+          "verdictCalls": 0
+        },
+        {
+          "i": 5,
+          "type": "ATTACK",
+          "applyMs": 0.005,
+          "verdictCalls": 0
+        },
+        {
+          "i": 6,
+          "type": "END_ACTION_PHASE",
+          "applyMs": 0.017,
+          "verdictCalls": 0
+        }
+      ],
+      "verdictCalls": 0,
+      "verdictTotalMs": 0,
+      "distinctKeys": 0,
+      "calls": []
+    },
+    {
+      "replay": "e1-g5-s315_0_86-A-white.json",
+      "side": "black",
+      "seatTurnIndex": 10,
+      "gameTurn": 11,
+      "phase": "place",
+      "bodies": 21,
+      "whiteBodies": 14,
+      "blackBodies": 7,
+      "bank": {
+        "white": 30,
+        "black": 3
+      },
+      "ruleset": "standard",
+      "recordedTurnMs": 3001,
+      "actions": [
+        "BUY_UNIT",
+        "MOVE",
+        "MOVE",
+        "ATTACK",
+        "MOVE",
+        "END_ACTION_PHASE"
+      ],
+      "applyTotalMs": 0.034,
+      "perAction": [
+        {
+          "i": 0,
+          "type": "BUY_UNIT",
+          "applyMs": 0.005,
+          "verdictCalls": 0
+        },
+        {
+          "i": 1,
+          "type": "MOVE",
+          "applyMs": 0.002,
+          "verdictCalls": 0
+        },
+        {
+          "i": 2,
+          "type": "MOVE",
+          "applyMs": 0.002,
+          "verdictCalls": 0
+        },
+        {
+          "i": 3,
+          "type": "ATTACK",
+          "applyMs": 0.006,
+          "verdictCalls": 0
+        },
+        {
+          "i": 4,
+          "type": "MOVE",
+          "applyMs": 0.002,
+          "verdictCalls": 0
+        },
+        {
+          "i": 5,
+          "type": "END_ACTION_PHASE",
+          "applyMs": 0.018,
+          "verdictCalls": 0
+        }
+      ],
+      "verdictCalls": 0,
+      "verdictTotalMs": 0,
+      "distinctKeys": 0,
+      "calls": []
+    }
+  ]
+}

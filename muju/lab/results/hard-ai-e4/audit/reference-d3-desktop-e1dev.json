@@ -1,0 +1,420 @@
+{
+  "stamp": "2026-09-18T00:17:35.184Z",
+  "engine": "hard@desktop",
+  "weightsLabel": "default-v1",
+  "weightsVersion": 1,
+  "evalFix": "absent",
+  "ttBitsMacro": 19,
+  "refDepth": 3,
+  "nodeLimit": 30000,
+  "ladder": [
+    3000,
+    6000,
+    12000,
+    25000,
+    50000,
+    100000,
+    200000,
+    400000
+  ],
+  "positions": 4,
+  "rows": [
+    {
+      "id": "e1dev-e1-g3-s105",
+      "set": "e1dev",
+      "source": "lab/hard-ai/ladder/openings/e1-dev.jsonl#e1-g3-s105 (3 plies)",
+      "side": "white",
+      "turn": 1,
+      "phase": "action",
+      "upkeepPending": false,
+      "clock": 0,
+      "refDepth": 3,
+      "refStaticCc": 2471,
+      "refQuiesceCc": 2471,
+      "refNodes": 3544,
+      "refCandidates": 7,
+      "refOptimal": [
+        "08238563e018ba0a"
+      ],
+      "refOptimalCount": 1,
+      "intractable": false,
+      "prodWork": 25000,
+      "prodDepth": 3,
+      "prodScoreCc": 2471,
+      "prodEndKey": "08238563e018ba0a",
+      "prodSource": "search",
+      "prodStopReason": "work",
+      "prodTtHits": 9,
+      "prodIterations": 3,
+      "prodCompletedIterations": 3,
+      "prodTruncatedIterations": 0,
+      "prodCandidateSource": "completed-depth",
+      "prodDepthScores": [
+        {
+          "depth": 1,
+          "scoreCc": 1325,
+          "work": 260
+        },
+        {
+          "depth": 2,
+          "scoreCc": 337,
+          "work": 2682
+        },
+        {
+          "depth": 3,
+          "scoreCc": 2471,
+          "work": 16001
+        }
+      ],
+      "prodScoreAtRefDepthCc": 2471,
+      "turnAgrees": true,
+      "scoreInBounds": true,
+      "scoreEqualsQuiesce": true,
+      "classification": "agree",
+      "switches": null,
+      "note": ""
+    },
+    {
+      "id": "e1dev-e1-g2-s40",
+      "set": "e1dev",
+      "source": "lab/hard-ai/ladder/openings/e1-dev.jsonl#e1-g2-s40 (2 plies)",
+      "side": "white",
+      "turn": 1,
+      "phase": "action",
+      "upkeepPending": false,
+      "clock": 0,
+      "refDepth": 3,
+      "refStaticCc": 2044,
+      "refQuiesceCc": 2044,
+      "refNodes": 5034,
+      "refCandidates": 10,
+      "refOptimal": [
+        "9aa930c52af9bce4",
+        "846f731dd57794e0"
+      ],
+      "refOptimalCount": 2,
+      "intractable": false,
+      "prodWork": 50000,
+      "prodDepth": 3,
+      "prodScoreCc": 2044,
+      "prodEndKey": "9aa930c52af9bce4",
+      "prodSource": "search",
+      "prodStopReason": "work",
+      "prodTtHits": 28,
+      "prodIterations": 3,
+      "prodCompletedIterations": 3,
+      "prodTruncatedIterations": 0,
+      "prodCandidateSource": "completed-depth",
+      "prodDepthScores": [
+        {
+          "depth": 1,
+          "scoreCc": 1186,
+          "work": 374
+        },
+        {
+          "depth": 2,
+          "scoreCc": 198,
+          "work": 3691
+        },
+        {
+          "depth": 3,
+          "scoreCc": 2044,
+          "work": 40857
+        }
+      ],
+      "prodScoreAtRefDepthCc": 2044,
+      "turnAgrees": true,
+      "scoreInBounds": true,
+      "scoreEqualsQuiesce": true,
+      "classification": "agree",
+      "switches": null,
+      "note": ""
+    },
+    {
+      "id": "e1dev-e1-g4-s250",
+      "set": "e1dev",
+      "source": "lab/hard-ai/ladder/openings/e1-dev.jsonl#e1-g4-s250 (4 plies)",
+      "side": "black",
+      "turn": 1,
+      "phase": "action",
+      "upkeepPending": false,
+      "clock": 1,
+      "refDepth": 3,
+      "refStaticCc": 1047,
+      "refQuiesceCc": 343,
+      "refNodes": 10218,
+      "refCandidates": 16,
+      "refOptimal": [
+        "c7ec098e024d4a0a"
+      ],
+      "refOptimalCount": 1,
+      "intractable": false,
+      "prodWork": 400000,
+      "prodDepth": 3,
+      "prodScoreCc": -697,
+      "prodEndKey": "b5cfac1742ecde57",
+      "prodSource": "search",
+      "prodStopReason": "work",
+      "prodTtHits": 44,
+      "prodIterations": 3,
+      "prodCompletedIterations": 3,
+      "prodTruncatedIterations": 0,
+      "prodCandidateSource": "completed-depth",
+      "prodDepthScores": [
+        {
+          "depth": 1,
+          "scoreCc": -97,
+          "work": 796
+        },
+        {
+          "depth": 2,
+          "scoreCc": -1845,
+          "work": 11377
+        },
+        {
+          "depth": 3,
+          "scoreCc": -697,
+          "work": 244293
+        }
+      ],
+      "prodScoreAtRefDepthCc": -697,
+      "turnAgrees": false,
+      "scoreInBounds": false,
+      "scoreEqualsQuiesce": false,
+      "classification": "tt-identity",
+      "switches": null,
+      "note": ""
+    },
+    {
+      "id": "e1dev-e1-g4-s750",
+      "set": "e1dev",
+      "source": "lab/hard-ai/ladder/openings/e1-dev.jsonl#e1-g4-s750 (4 plies)",
+      "side": "white",
+      "turn": 1,
+      "phase": "action",
+      "upkeepPending": false,
+      "clock": 0,
+      "refDepth": 3,
+      "refStaticCc": 2177,
+      "refQuiesceCc": 1634,
+      "refNodes": 508,
+      "refCandidates": 1,
+      "refOptimal": [
+        "7989ba641f396220"
+      ],
+      "refOptimalCount": 1,
+      "intractable": false,
+      "prodWork": 3000,
+      "prodDepth": 3,
+      "prodScoreCc": 99,
+      "prodEndKey": "7989ba641f396220",
+      "prodSource": "search",
+      "prodStopReason": "work",
+      "prodTtHits": 3,
+      "prodIterations": 3,
+      "prodCompletedIterations": 3,
+      "prodTruncatedIterations": 1,
+      "prodCandidateSource": "completed-depth",
+      "prodDepthScores": [
+        {
+          "depth": 1,
+          "scoreCc": 729,
+          "work": 68
+        },
+        {
+          "depth": 2,
+          "scoreCc": -407,
+          "work": 696
+        },
+        {
+          "depth": 3,
+          "scoreCc": 99,
+          "work": 3293
+        }
+      ],
+      "prodScoreAtRefDepthCc": 99,
+      "turnAgrees": true,
+      "scoreInBounds": false,
+      "scoreEqualsQuiesce": false,
+      "classification": "truncation",
+      "switches": null,
+      "note": ""
+    }
+  ],
+  "counts": {
+    "agree": 2,
+    "tt-identity": 1,
+    "truncation": 1
+  },
+  "summary": {
+    "positions": 4,
+    "searched": 4,
+    "mustAnswer": 0,
+    "mustAnswerAgree": 0,
+    "turnAgree": 3,
+    "turnDisagree": 1,
+    "scoreEqualsQuiesce": 2,
+    "scoreEqualsStatic": 2,
+    "scoreInBounds": 2,
+    "scoreOutOfBounds": 2,
+    "scoreUnavailable": 0,
+    "truncatedIterations": 1,
+    "storesWhileTruncated": 0,
+    "referenceNodes": 19304,
+    "intractable": 0
+  },
+  "ttFindings": [
+    {
+      "kind": "cross-prover-mode",
+      "key": "bead54cbb2328cee",
+      "detail": "e1dev-e1-g2-s40 (white t1): bead54cbb2328cee|d1: full-prover 2044 vs bound-prover 1985"
+    },
+    {
+      "kind": "cross-prover-mode",
+      "key": "917d739a161631eb",
+      "detail": "e1dev-e1-g2-s40 (white t1): 917d739a161631eb|d1: full-prover 2244 vs bound-prover 1985"
+    },
+    {
+      "kind": "cross-prover-mode",
+      "key": "9aa930c52af9bce4",
+      "detail": "e1dev-e1-g2-s40 (white t1): 9aa930c52af9bce4|d2: full-prover -2044 vs bound-prover -1985"
+    },
+    {
+      "kind": "cross-prover-mode",
+      "key": "ae3769f0cb34612d",
+      "detail": "e1dev-e1-g4-s250 (black t1): ae3769f0cb34612d|d1: full-prover -697 vs bound-prover -696"
+    },
+    {
+      "kind": "cross-prover-mode",
+      "key": "9a1f8b46e6c86352",
+      "detail": "e1dev-e1-g4-s250 (black t1): 9a1f8b46e6c86352|d2: full-prover 697 vs bound-prover 696"
+    },
+    {
+      "kind": "cross-prover-mode",
+      "key": "f3c4eb382fb14875",
+      "detail": "e1dev-e1-g4-s250 (black t1): f3c4eb382fb14875|d1: full-prover -697 vs bound-prover -696"
+    },
+    {
+      "kind": "cross-prover-mode",
+      "key": "c7ec098e024d4a0a",
+      "detail": "e1dev-e1-g4-s250 (black t1): c7ec098e024d4a0a|d2: full-prover 697 vs bound-prover 696"
+    },
+    {
+      "kind": "cross-prover-mode",
+      "key": "1569e846bcf10ea6",
+      "detail": "e1dev-e1-g4-s250 (black t1): 1569e846bcf10ea6|d1: full-prover -697 vs bound-prover -696"
+    },
+    {
+      "kind": "cross-prover-mode",
+      "key": "21410af0910d0cd9",
+      "detail": "e1dev-e1-g4-s250 (black t1): 21410af0910d0cd9|d2: full-prover 697 vs bound-prover 696"
+    },
+    {
+      "kind": "cross-prover-mode",
+      "key": "570249d34de2a822",
+      "detail": "e1dev-e1-g4-s250 (black t1): 570249d34de2a822|d1: full-prover -697 vs bound-prover -696"
+    },
+    {
+      "kind": "cross-prover-mode",
+      "key": "632aab65601eaa5d",
+      "detail": "e1dev-e1-g4-s250 (black t1): 632aab65601eaa5d|d2: full-prover 697 vs bound-prover 696"
+    },
+    {
+      "kind": "cross-prover-mode",
+      "key": "7734e5bb372dcc17",
+      "detail": "e1dev-e1-g4-s250 (black t1): 7734e5bb372dcc17|d1: full-prover -697 vs bound-prover -696"
+    },
+    {
+      "kind": "cross-prover-mode",
+      "key": "431c070d1ad1ce68",
+      "detail": "e1dev-e1-g4-s250 (black t1): 431c070d1ad1ce68|d2: full-prover 697 vs bound-prover 696"
+    },
+    {
+      "kind": "cross-prover-mode",
+      "key": "1a8f637f621ad796",
+      "detail": "e1dev-e1-g4-s250 (black t1): 1a8f637f621ad796|d1: full-prover -697 vs bound-prover -696"
+    },
+    {
+      "kind": "cross-prover-mode",
+      "key": "2ea781c94fe6d5e9",
+      "detail": "e1dev-e1-g4-s250 (black t1): 2ea781c94fe6d5e9|d2: full-prover 697 vs bound-prover 696"
+    },
+    {
+      "kind": "cross-prover-mode",
+      "key": "9e5b88bcc283757b",
+      "detail": "e1dev-e1-g4-s250 (black t1): 9e5b88bcc283757b|d1: full-prover -697 vs bound-prover -696"
+    },
+    {
+      "kind": "cross-prover-mode",
+      "key": "aa736a0aef7f7704",
+      "detail": "e1dev-e1-g4-s250 (black t1): aa736a0aef7f7704|d2: full-prover 697 vs bound-prover 696"
+    },
+    {
+      "kind": "cross-prover-mode",
+      "key": "b18bafed66a7c87e",
+      "detail": "e1dev-e1-g4-s250 (black t1): b18bafed66a7c87e|d1: full-prover -697 vs bound-prover -696"
+    },
+    {
+      "kind": "cross-prover-mode",
+      "key": "85a34d5b4b5bca01",
+      "detail": "e1dev-e1-g4-s250 (black t1): 85a34d5b4b5bca01|d2: full-prover 697 vs bound-prover 696"
+    },
+    {
+      "kind": "cross-prover-mode",
+      "key": "afc39b0338fcca38",
+      "detail": "e1dev-e1-g4-s250 (black t1): afc39b0338fcca38|d1: full-prover -697 vs bound-prover -696"
+    },
+    {
+      "kind": "cross-prover-mode",
+      "key": "9beb79b51500c847",
+      "detail": "e1dev-e1-g4-s250 (black t1): 9beb79b51500c847|d2: full-prover 697 vs bound-prover 696"
+    },
+    {
+      "kind": "cross-prover-mode",
+      "key": "bd9152beea1f1301",
+      "detail": "e1dev-e1-g4-s250 (black t1): bd9152beea1f1301|d1: full-prover -697 vs bound-prover -696"
+    },
+    {
+      "kind": "cross-prover-mode",
+      "key": "89b9b008c7e3117e",
+      "detail": "e1dev-e1-g4-s250 (black t1): 89b9b008c7e3117e|d2: full-prover 697 vs bound-prover 696"
+    },
+    {
+      "kind": "cross-prover-mode",
+      "key": "cc65fb8ba3dec3f4",
+      "detail": "e1dev-e1-g4-s250 (black t1): cc65fb8ba3dec3f4|d1: full-prover -697 vs bound-prover -696"
+    },
+    {
+      "kind": "cross-prover-mode",
+      "key": "f84d193d8e22c18b",
+      "detail": "e1dev-e1-g4-s250 (black t1): f84d193d8e22c18b|d2: full-prover 697 vs bound-prover 696"
+    },
+    {
+      "kind": "cross-prover-mode",
+      "key": "fbeb39d0473cfd10",
+      "detail": "e1dev-e1-g4-s250 (black t1): fbeb39d0473cfd10|d1: full-prover -697 vs bound-prover -696"
+    },
+    {
+      "kind": "cross-prover-mode",
+      "key": "cfc3db666ac0ff6f",
+      "detail": "e1dev-e1-g4-s250 (black t1): cfc3db666ac0ff6f|d2: full-prover 697 vs bound-prover 696"
+    },
+    {
+      "kind": "cross-prover-mode",
+      "key": "309e9966d1c3af9c",
+      "detail": "e1dev-e1-g4-s250 (black t1): 309e9966d1c3af9c|d1: full-prover -697 vs bound-prover -696"
+    },
+    {
+      "kind": "cross-prover-mode",
+      "key": "04b67bd0fc3fade3",
+      "detail": "e1dev-e1-g4-s250 (black t1): 04b67bd0fc3fade3|d2: full-prover 697 vs bound-prover 696"
+    }
+  ],
+  "ttFindingCounts": {
+    "cross-prover-mode": 29
+  },
+  "ttStores": 421,
+  "ttProbes": 425,
+  "kpos": [],
+  "collisions": []
+}

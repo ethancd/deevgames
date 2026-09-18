@@ -1,0 +1,4752 @@
+[
+  {
+    "w": 1,
+    "b": 792,
+    "initialIndex": -5.940000057220459,
+    "turns": [
+      {
+        "actor": "white",
+        "actions": [
+          {
+            "type": "PROMOTE_UNIT",
+            "unitId": "white_plant_1_1789393358619_wgkhr"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_plant_1_1789393358619_wgkhr",
+            "to": "A3"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393358619_rs9ps",
+            "to": "B2"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393358619_rs9ps",
+            "to": "C3"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393358619_rs9ps",
+            "to": "D4"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      },
+      {
+        "actor": "black",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "lightning_1",
+            "position": "G7"
+          },
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "lightning_1",
+            "position": "F6"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_fire_1_1789393358619_31d2u",
+            "to": "E4"
+          },
+          {
+            "type": "ATTACK",
+            "unitId": "black_fire_1_1789393358619_31d2u",
+            "targetPosition": "D4"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_fire_1_1789393358619_31d2u",
+            "to": "C4"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_fire_1_1789393358619_31d2u",
+            "to": "C2"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      }
+    ],
+    "result": "playing",
+    "winner": null,
+    "engineStaticAfterB2": -42.21369556878403,
+    "material": -5,
+    "banks": [
+      9,
+      6
+    ],
+    "finalUnits": [
+      {
+        "owner": "white",
+        "type": "water_1",
+        "square": "B1"
+      },
+      {
+        "owner": "white",
+        "type": "plant_2",
+        "square": "A3"
+      },
+      {
+        "owner": "black",
+        "type": "fire_1",
+        "square": "C2"
+      },
+      {
+        "owner": "black",
+        "type": "water_1",
+        "square": "I9"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "J9"
+      },
+      {
+        "owner": "black",
+        "type": "lightning_1",
+        "square": "G7"
+      },
+      {
+        "owner": "black",
+        "type": "lightning_1",
+        "square": "F6"
+      }
+    ]
+  },
+  {
+    "w": 1,
+    "b": 791,
+    "initialIndex": -4.860000133514404,
+    "turns": [
+      {
+        "actor": "white",
+        "actions": [
+          {
+            "type": "PROMOTE_UNIT",
+            "unitId": "white_plant_1_1789393359750_ksa4n"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_plant_1_1789393359750_ksa4n",
+            "to": "A3"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393359750_hgjgf",
+            "to": "B2"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393359750_hgjgf",
+            "to": "C3"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393359750_hgjgf",
+            "to": "D4"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      },
+      {
+        "actor": "black",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "plant_1",
+            "position": "G7"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_fire_1_1789393359750_06d8b",
+            "to": "E5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_fire_1_1789393359750_06d8b",
+            "to": "C5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_fire_1_1789393359750_06d8b",
+            "to": "A5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_fire_1_1789393359750_06d8b",
+            "to": "A4"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      }
+    ],
+    "result": "playing",
+    "winner": null,
+    "engineStaticAfterB2": -26.190930222387024,
+    "material": -1,
+    "banks": [
+      9,
+      10
+    ],
+    "finalUnits": [
+      {
+        "owner": "white",
+        "type": "fire_1",
+        "square": "D4"
+      },
+      {
+        "owner": "white",
+        "type": "water_1",
+        "square": "B1"
+      },
+      {
+        "owner": "white",
+        "type": "plant_2",
+        "square": "A3"
+      },
+      {
+        "owner": "black",
+        "type": "fire_1",
+        "square": "A4"
+      },
+      {
+        "owner": "black",
+        "type": "water_1",
+        "square": "I9"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "J9"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "G7"
+      }
+    ]
+  },
+  {
+    "w": 1,
+    "b": 721,
+    "initialIndex": -2.4600000381469727,
+    "turns": [
+      {
+        "actor": "white",
+        "actions": [
+          {
+            "type": "PROMOTE_UNIT",
+            "unitId": "white_plant_1_1789393360768_1kcm1"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_plant_1_1789393360768_1kcm1",
+            "to": "A3"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393360768_5aj0b",
+            "to": "B2"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393360768_5aj0b",
+            "to": "C3"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393360768_5aj0b",
+            "to": "D4"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      },
+      {
+        "actor": "black",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "plant_1",
+            "position": "H8"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_fire_1_1789393360768_0k9qx",
+            "to": "G6"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_fire_1_1789393360768_0k9qx",
+            "to": "F5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_fire_1_1789393360768_0k9qx",
+            "to": "E4"
+          },
+          {
+            "type": "ATTACK",
+            "unitId": "black_fire_1_1789393360768_0k9qx",
+            "targetPosition": "D4"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      }
+    ],
+    "result": "playing",
+    "winner": null,
+    "engineStaticAfterB2": -22.526891384234585,
+    "material": -4,
+    "banks": [
+      9,
+      10
+    ],
+    "finalUnits": [
+      {
+        "owner": "white",
+        "type": "water_1",
+        "square": "B1"
+      },
+      {
+        "owner": "white",
+        "type": "plant_2",
+        "square": "A3"
+      },
+      {
+        "owner": "black",
+        "type": "fire_1",
+        "square": "E4"
+      },
+      {
+        "owner": "black",
+        "type": "water_1",
+        "square": "I9"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "J8"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "H8"
+      }
+    ]
+  },
+  {
+    "w": 1,
+    "b": 74,
+    "initialIndex": -0.3400000035762787,
+    "turns": [
+      {
+        "actor": "white",
+        "actions": [
+          {
+            "type": "PROMOTE_UNIT",
+            "unitId": "white_plant_1_1789393362106_8ho32"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_plant_1_1789393362106_8ho32",
+            "to": "A3"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393362106_htgsw",
+            "to": "B2"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393362106_htgsw",
+            "to": "C3"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393362106_htgsw",
+            "to": "D4"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      },
+      {
+        "actor": "black",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "plant_1",
+            "position": "J10"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_fire_1_1789393362106_o5h61",
+            "to": "H9"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_fire_1_1789393362106_o5h61",
+            "to": "H7"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_fire_1_1789393362106_o5h61",
+            "to": "G6"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_fire_1_1789393362106_o5h61",
+            "to": "F5"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      }
+    ],
+    "result": "playing",
+    "winner": null,
+    "engineStaticAfterB2": -5.8496640267763675,
+    "material": -1,
+    "banks": [
+      9,
+      10
+    ],
+    "finalUnits": [
+      {
+        "owner": "white",
+        "type": "fire_1",
+        "square": "D4"
+      },
+      {
+        "owner": "white",
+        "type": "water_1",
+        "square": "B1"
+      },
+      {
+        "owner": "white",
+        "type": "plant_2",
+        "square": "A3"
+      },
+      {
+        "owner": "black",
+        "type": "fire_1",
+        "square": "F5"
+      },
+      {
+        "owner": "black",
+        "type": "water_1",
+        "square": "I9"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "J9"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "J10"
+      }
+    ]
+  },
+  {
+    "w": 675,
+    "b": 792,
+    "initialIndex": 2.6500000953674316,
+    "turns": [
+      {
+        "actor": "white",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "lightning_1",
+            "position": "E3"
+          },
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "lightning_1",
+            "position": "G2"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "unit-white-2-1",
+            "to": "G5"
+          },
+          {
+            "type": "ATTACK",
+            "unitId": "unit-white-2-1",
+            "targetPosition": "F5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "unit-white-2-1",
+            "to": "G8"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "unit-white-2-1",
+            "to": "H10"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      },
+      {
+        "actor": "black",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "plant_1",
+            "position": "I10"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393363066_wwxwr",
+            "to": "H9"
+          },
+          {
+            "type": "ATTACK",
+            "unitId": "black_water_1_1789393363066_wwxwr",
+            "targetPosition": "H10"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393363066_wwxwr",
+            "to": "H8"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393363066_wwxwr",
+            "to": "H7"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      }
+    ],
+    "result": "playing",
+    "winner": null,
+    "engineStaticAfterB2": 11.916312388376676,
+    "material": 1,
+    "banks": [
+      6,
+      9
+    ],
+    "finalUnits": [
+      {
+        "owner": "white",
+        "type": "fire_1",
+        "square": "H3"
+      },
+      {
+        "owner": "white",
+        "type": "water_1",
+        "square": "B2"
+      },
+      {
+        "owner": "white",
+        "type": "plant_1",
+        "square": "A2"
+      },
+      {
+        "owner": "black",
+        "type": "water_1",
+        "square": "H7"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "J9"
+      },
+      {
+        "owner": "white",
+        "type": "lightning_1",
+        "square": "E3"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "I10"
+      }
+    ]
+  },
+  {
+    "w": 675,
+    "b": 791,
+    "initialIndex": 2.9200000762939453,
+    "turns": [
+      {
+        "actor": "white",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "lightning_1",
+            "position": "E3"
+          },
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "lightning_1",
+            "position": "G3"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "unit-white-2-1",
+            "to": "H5"
+          },
+          {
+            "type": "ATTACK",
+            "unitId": "unit-white-2-1",
+            "targetPosition": "G5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "unit-white-2-1",
+            "to": "H8"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "unit-white-2-1",
+            "to": "H10"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      },
+      {
+        "actor": "black",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "plant_1",
+            "position": "I10"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393364070_am4el",
+            "to": "H9"
+          },
+          {
+            "type": "ATTACK",
+            "unitId": "black_water_1_1789393364070_am4el",
+            "targetPosition": "H10"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393364070_am4el",
+            "to": "H8"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393364070_am4el",
+            "to": "H7"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      }
+    ],
+    "result": "playing",
+    "winner": null,
+    "engineStaticAfterB2": 11.916312388376676,
+    "material": 1,
+    "banks": [
+      6,
+      9
+    ],
+    "finalUnits": [
+      {
+        "owner": "white",
+        "type": "fire_1",
+        "square": "H3"
+      },
+      {
+        "owner": "white",
+        "type": "water_1",
+        "square": "B2"
+      },
+      {
+        "owner": "white",
+        "type": "plant_1",
+        "square": "A2"
+      },
+      {
+        "owner": "black",
+        "type": "water_1",
+        "square": "H7"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "J9"
+      },
+      {
+        "owner": "white",
+        "type": "lightning_1",
+        "square": "E3"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "I10"
+      }
+    ]
+  },
+  {
+    "w": 675,
+    "b": 721,
+    "initialIndex": 4.619999885559082,
+    "turns": [
+      {
+        "actor": "white",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "lightning_1",
+            "position": "E3"
+          },
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "lightning_1",
+            "position": "G3"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "unit-white-2-1",
+            "to": "G6"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "unit-white-2-1",
+            "to": "G9"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393365069_ctd7a",
+            "to": "I4"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      },
+      {
+        "actor": "black",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "water_1",
+            "position": "H9"
+          },
+          {
+            "type": "ATTACK",
+            "unitId": "unit-black-2-0",
+            "targetPosition": "G9"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_fire_1_1789393365069_g7viw",
+            "to": "G6"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_fire_1_1789393365069_g7viw",
+            "to": "F5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_fire_1_1789393365069_g7viw",
+            "to": "D5"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      }
+    ],
+    "result": "playing",
+    "winner": null,
+    "engineStaticAfterB2": -0.4056313802250069,
+    "material": -1,
+    "banks": [
+      6,
+      10
+    ],
+    "finalUnits": [
+      {
+        "owner": "white",
+        "type": "fire_1",
+        "square": "I4"
+      },
+      {
+        "owner": "white",
+        "type": "water_1",
+        "square": "B2"
+      },
+      {
+        "owner": "white",
+        "type": "plant_1",
+        "square": "A2"
+      },
+      {
+        "owner": "black",
+        "type": "fire_1",
+        "square": "D5"
+      },
+      {
+        "owner": "black",
+        "type": "water_1",
+        "square": "I9"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "J8"
+      },
+      {
+        "owner": "white",
+        "type": "lightning_1",
+        "square": "E3"
+      },
+      {
+        "owner": "black",
+        "type": "water_1",
+        "square": "H9"
+      }
+    ]
+  },
+  {
+    "w": 675,
+    "b": 74,
+    "initialIndex": 8.390000343322754,
+    "turns": [
+      {
+        "actor": "white",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "lightning_1",
+            "position": "E3"
+          },
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "lightning_1",
+            "position": "G3"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "unit-white-2-1",
+            "to": "G6"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "unit-white-2-1",
+            "to": "H8"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "unit-white-2-1",
+            "to": "H10"
+          },
+          {
+            "type": "ATTACK",
+            "unitId": "unit-white-2-1",
+            "targetPosition": "I10"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      },
+      {
+        "actor": "black",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "plant_1",
+            "position": "I10"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393366178_fwona",
+            "to": "H9"
+          },
+          {
+            "type": "ATTACK",
+            "unitId": "black_water_1_1789393366178_fwona",
+            "targetPosition": "H10"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393366178_fwona",
+            "to": "H8"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393366178_fwona",
+            "to": "H7"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      }
+    ],
+    "result": "playing",
+    "winner": null,
+    "engineStaticAfterB2": 11.916312388376676,
+    "material": 1,
+    "banks": [
+      6,
+      9
+    ],
+    "finalUnits": [
+      {
+        "owner": "white",
+        "type": "fire_1",
+        "square": "H3"
+      },
+      {
+        "owner": "white",
+        "type": "water_1",
+        "square": "B2"
+      },
+      {
+        "owner": "white",
+        "type": "plant_1",
+        "square": "A2"
+      },
+      {
+        "owner": "black",
+        "type": "water_1",
+        "square": "H7"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "J9"
+      },
+      {
+        "owner": "white",
+        "type": "lightning_1",
+        "square": "E3"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "I10"
+      }
+    ]
+  },
+  {
+    "w": 779,
+    "b": 8,
+    "initialIndex": 1.2599999904632568,
+    "turns": [
+      {
+        "actor": "white",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "lightning_1",
+            "position": "D4"
+          },
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "lightning_1",
+            "position": "E3"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393367186_xtyje",
+            "to": "F6"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393367186_xtyje",
+            "to": "G7"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393367186_xtyje",
+            "to": "H8"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393367186_xtyje",
+            "to": "I8"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      },
+      {
+        "actor": "black",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "water_1",
+            "position": "J9"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_plant_1_1789393367186_hqft1",
+            "to": "H9"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "unit-black-2-0",
+            "to": "I9"
+          },
+          {
+            "type": "ATTACK",
+            "unitId": "unit-black-2-0",
+            "targetPosition": "I8"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_plant_1_1789393367186_hqft1",
+            "to": "H8"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      }
+    ],
+    "result": "playing",
+    "winner": null,
+    "engineStaticAfterB2": 11.235120556250687,
+    "material": -1,
+    "banks": [
+      6,
+      10
+    ],
+    "finalUnits": [
+      {
+        "owner": "white",
+        "type": "water_1",
+        "square": "B2"
+      },
+      {
+        "owner": "white",
+        "type": "plant_1",
+        "square": "A2"
+      },
+      {
+        "owner": "black",
+        "type": "fire_1",
+        "square": "J10"
+      },
+      {
+        "owner": "black",
+        "type": "water_1",
+        "square": "H10"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "H8"
+      },
+      {
+        "owner": "white",
+        "type": "lightning_1",
+        "square": "D4"
+      },
+      {
+        "owner": "white",
+        "type": "lightning_1",
+        "square": "E3"
+      },
+      {
+        "owner": "black",
+        "type": "water_1",
+        "square": "I9"
+      }
+    ]
+  },
+  {
+    "w": 779,
+    "b": 792,
+    "initialIndex": 2.869999885559082,
+    "turns": [
+      {
+        "actor": "white",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "plant_1",
+            "position": "E4"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393368140_9nq89",
+            "to": "F6"
+          },
+          {
+            "type": "ATTACK",
+            "unitId": "white_fire_1_1789393368140_9nq89",
+            "targetPosition": "F5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393368140_9nq89",
+            "to": "G7"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393368140_9nq89",
+            "to": "H8"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      },
+      {
+        "actor": "black",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "plant_1",
+            "position": "I10"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393368140_oyvys",
+            "to": "I8"
+          },
+          {
+            "type": "ATTACK",
+            "unitId": "black_water_1_1789393368140_oyvys",
+            "targetPosition": "H8"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393368140_oyvys",
+            "to": "H8"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393368140_oyvys",
+            "to": "H7"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      }
+    ],
+    "result": "playing",
+    "winner": null,
+    "engineStaticAfterB2": 2.6170933549056636,
+    "material": 0,
+    "banks": [
+      10,
+      9
+    ],
+    "finalUnits": [
+      {
+        "owner": "white",
+        "type": "water_1",
+        "square": "B2"
+      },
+      {
+        "owner": "white",
+        "type": "plant_1",
+        "square": "A2"
+      },
+      {
+        "owner": "black",
+        "type": "water_1",
+        "square": "H7"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "J9"
+      },
+      {
+        "owner": "white",
+        "type": "plant_1",
+        "square": "E4"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "I10"
+      }
+    ]
+  },
+  {
+    "w": 779,
+    "b": 791,
+    "initialIndex": 3.140000104904175,
+    "turns": [
+      {
+        "actor": "white",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "lightning_1",
+            "position": "D4"
+          },
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "lightning_1",
+            "position": "C5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393369299_m6i37",
+            "to": "E7"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "unit-white-2-0",
+            "to": "G4"
+          },
+          {
+            "type": "ATTACK",
+            "unitId": "unit-white-2-0",
+            "targetPosition": "G5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "unit-white-2-0",
+            "to": "H6"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      },
+      {
+        "actor": "black",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "plant_1",
+            "position": "I10"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393369299_z0ezy",
+            "to": "I8"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393369299_z0ezy",
+            "to": "H8"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393369299_z0ezy",
+            "to": "H7"
+          },
+          {
+            "type": "ATTACK",
+            "unitId": "black_water_1_1789393369299_z0ezy",
+            "targetPosition": "H6"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      }
+    ],
+    "result": "playing",
+    "winner": null,
+    "engineStaticAfterB2": 15.907191403546383,
+    "material": 1,
+    "banks": [
+      6,
+      9
+    ],
+    "finalUnits": [
+      {
+        "owner": "white",
+        "type": "fire_1",
+        "square": "E7"
+      },
+      {
+        "owner": "white",
+        "type": "water_1",
+        "square": "B2"
+      },
+      {
+        "owner": "white",
+        "type": "plant_1",
+        "square": "A2"
+      },
+      {
+        "owner": "black",
+        "type": "water_1",
+        "square": "H7"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "J9"
+      },
+      {
+        "owner": "white",
+        "type": "lightning_1",
+        "square": "C5"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "I10"
+      }
+    ]
+  },
+  {
+    "w": 779,
+    "b": 721,
+    "initialIndex": 3.490000009536743,
+    "turns": [
+      {
+        "actor": "white",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "lightning_1",
+            "position": "D4"
+          },
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "lightning_1",
+            "position": "E3"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393370444_s1tpx",
+            "to": "F6"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393370444_s1tpx",
+            "to": "G7"
+          },
+          {
+            "type": "ATTACK",
+            "unitId": "white_fire_1_1789393370444_s1tpx",
+            "targetPosition": "H7"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393370444_s1tpx",
+            "to": "H8"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      },
+      {
+        "actor": "black",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "plant_1",
+            "position": "J10"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393370444_ie7u4",
+            "to": "H9"
+          },
+          {
+            "type": "ATTACK",
+            "unitId": "black_water_1_1789393370444_ie7u4",
+            "targetPosition": "H8"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_plant_1_1789393370444_h89yp",
+            "to": "I8"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_plant_1_1789393370444_h89yp",
+            "to": "I7"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      }
+    ],
+    "result": "playing",
+    "winner": null,
+    "engineStaticAfterB2": 14.630311104594929,
+    "material": 1,
+    "banks": [
+      6,
+      9
+    ],
+    "finalUnits": [
+      {
+        "owner": "white",
+        "type": "water_1",
+        "square": "B2"
+      },
+      {
+        "owner": "white",
+        "type": "plant_1",
+        "square": "A2"
+      },
+      {
+        "owner": "black",
+        "type": "water_1",
+        "square": "H9"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "I7"
+      },
+      {
+        "owner": "white",
+        "type": "lightning_1",
+        "square": "D4"
+      },
+      {
+        "owner": "white",
+        "type": "lightning_1",
+        "square": "E3"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "J10"
+      }
+    ]
+  },
+  {
+    "w": 779,
+    "b": 74,
+    "initialIndex": 7.070000171661377,
+    "turns": [
+      {
+        "actor": "white",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "lightning_1",
+            "position": "D4"
+          },
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "lightning_1",
+            "position": "E3"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393371363_81vxo",
+            "to": "F6"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393371363_81vxo",
+            "to": "G7"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393371363_81vxo",
+            "to": "H8"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393371363_81vxo",
+            "to": "J8"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      },
+      {
+        "actor": "black",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "plant_1",
+            "position": "J10"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393371363_tzqq0",
+            "to": "I8"
+          },
+          {
+            "type": "ATTACK",
+            "unitId": "black_water_1_1789393371363_tzqq0",
+            "targetPosition": "J8"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_fire_1_1789393371363_kaxd5",
+            "to": "H9"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_fire_1_1789393371363_kaxd5",
+            "to": "H7"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      }
+    ],
+    "result": "playing",
+    "winner": null,
+    "engineStaticAfterB2": 7.492004408592204,
+    "material": -2,
+    "banks": [
+      6,
+      10
+    ],
+    "finalUnits": [
+      {
+        "owner": "white",
+        "type": "water_1",
+        "square": "B2"
+      },
+      {
+        "owner": "white",
+        "type": "plant_1",
+        "square": "A2"
+      },
+      {
+        "owner": "black",
+        "type": "fire_1",
+        "square": "H7"
+      },
+      {
+        "owner": "black",
+        "type": "water_1",
+        "square": "I8"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "J9"
+      },
+      {
+        "owner": "white",
+        "type": "lightning_1",
+        "square": "D4"
+      },
+      {
+        "owner": "white",
+        "type": "lightning_1",
+        "square": "E3"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "J10"
+      }
+    ]
+  },
+  {
+    "w": 792,
+    "b": 792,
+    "initialIndex": 3.6600000858306885,
+    "turns": [
+      {
+        "actor": "white",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "water_1",
+            "position": "E5"
+          },
+          {
+            "type": "ATTACK",
+            "unitId": "unit-white-2-0",
+            "targetPosition": "F5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393372381_0nl5y",
+            "to": "F7"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393372381_0nl5y",
+            "to": "H7"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393372381_0nl5y",
+            "to": "H8"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      },
+      {
+        "actor": "black",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "plant_1",
+            "position": "I10"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393372381_ctrs4",
+            "to": "I8"
+          },
+          {
+            "type": "ATTACK",
+            "unitId": "black_water_1_1789393372381_ctrs4",
+            "targetPosition": "H8"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393372381_ctrs4",
+            "to": "H8"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393372381_ctrs4",
+            "to": "H7"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      }
+    ],
+    "result": "playing",
+    "winner": null,
+    "engineStaticAfterB2": 3.3918997646851916,
+    "material": -1,
+    "banks": [
+      10,
+      9
+    ],
+    "finalUnits": [
+      {
+        "owner": "white",
+        "type": "water_1",
+        "square": "B2"
+      },
+      {
+        "owner": "white",
+        "type": "plant_1",
+        "square": "A2"
+      },
+      {
+        "owner": "black",
+        "type": "water_1",
+        "square": "H7"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "J9"
+      },
+      {
+        "owner": "white",
+        "type": "water_1",
+        "square": "E5"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "I10"
+      }
+    ]
+  },
+  {
+    "w": 792,
+    "b": 791,
+    "initialIndex": 3.930000066757202,
+    "turns": [
+      {
+        "actor": "white",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "lightning_1",
+            "position": "D4"
+          },
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "lightning_1",
+            "position": "E5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "unit-white-2-1",
+            "to": "G6"
+          },
+          {
+            "type": "ATTACK",
+            "unitId": "unit-white-2-1",
+            "targetPosition": "G5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "unit-white-2-1",
+            "to": "H8"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "unit-white-2-1",
+            "to": "H10"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      },
+      {
+        "actor": "black",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "plant_1",
+            "position": "I10"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393373596_9qp4e",
+            "to": "H9"
+          },
+          {
+            "type": "ATTACK",
+            "unitId": "black_water_1_1789393373596_9qp4e",
+            "targetPosition": "H10"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393373596_9qp4e",
+            "to": "H8"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393373596_9qp4e",
+            "to": "H7"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      }
+    ],
+    "result": "playing",
+    "winner": null,
+    "engineStaticAfterB2": 14.667635695973264,
+    "material": 1,
+    "banks": [
+      6,
+      9
+    ],
+    "finalUnits": [
+      {
+        "owner": "white",
+        "type": "fire_1",
+        "square": "E6"
+      },
+      {
+        "owner": "white",
+        "type": "water_1",
+        "square": "B2"
+      },
+      {
+        "owner": "white",
+        "type": "plant_1",
+        "square": "A2"
+      },
+      {
+        "owner": "black",
+        "type": "water_1",
+        "square": "H7"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "J9"
+      },
+      {
+        "owner": "white",
+        "type": "lightning_1",
+        "square": "D4"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "I10"
+      }
+    ]
+  },
+  {
+    "w": 792,
+    "b": 721,
+    "initialIndex": 5.639999866485596,
+    "turns": [
+      {
+        "actor": "white",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "lightning_1",
+            "position": "D4"
+          },
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "lightning_1",
+            "position": "E5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393374787_lp5bd",
+            "to": "G6"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "unit-white-2-1",
+            "to": "E8"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393374787_lp5bd",
+            "to": "I6"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393374787_lp5bd",
+            "to": "J7"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      },
+      {
+        "actor": "black",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "plant_1",
+            "position": "J10"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_plant_1_1789393374787_9kyxo",
+            "to": "I8"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_plant_1_1789393374787_9kyxo",
+            "to": "H8"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_fire_1_1789393374787_3gl69",
+            "to": "G6"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_fire_1_1789393374787_3gl69",
+            "to": "E6"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      }
+    ],
+    "result": "playing",
+    "winner": null,
+    "engineStaticAfterB2": 11.598295600338783,
+    "material": 1,
+    "banks": [
+      6,
+      10
+    ],
+    "finalUnits": [
+      {
+        "owner": "white",
+        "type": "fire_1",
+        "square": "J7"
+      },
+      {
+        "owner": "white",
+        "type": "water_1",
+        "square": "B2"
+      },
+      {
+        "owner": "white",
+        "type": "plant_1",
+        "square": "A2"
+      },
+      {
+        "owner": "black",
+        "type": "fire_1",
+        "square": "E6"
+      },
+      {
+        "owner": "black",
+        "type": "water_1",
+        "square": "I9"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "H8"
+      },
+      {
+        "owner": "white",
+        "type": "lightning_1",
+        "square": "D4"
+      },
+      {
+        "owner": "white",
+        "type": "lightning_1",
+        "square": "E8"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "J10"
+      }
+    ]
+  },
+  {
+    "w": 792,
+    "b": 74,
+    "initialIndex": 9.949999809265137,
+    "turns": [
+      {
+        "actor": "white",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "lightning_1",
+            "position": "D4"
+          },
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "lightning_1",
+            "position": "E5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "unit-white-2-1",
+            "to": "H5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "unit-white-2-1",
+            "to": "H8"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "unit-white-2-1",
+            "to": "H10"
+          },
+          {
+            "type": "ATTACK",
+            "unitId": "unit-white-2-1",
+            "targetPosition": "I10"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      },
+      {
+        "actor": "black",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "plant_1",
+            "position": "I10"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393375842_n4qxn",
+            "to": "H9"
+          },
+          {
+            "type": "ATTACK",
+            "unitId": "black_water_1_1789393375842_n4qxn",
+            "targetPosition": "H10"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393375842_n4qxn",
+            "to": "H8"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393375842_n4qxn",
+            "to": "H7"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      }
+    ],
+    "result": "playing",
+    "winner": null,
+    "engineStaticAfterB2": 14.667635695973264,
+    "material": 1,
+    "banks": [
+      6,
+      9
+    ],
+    "finalUnits": [
+      {
+        "owner": "white",
+        "type": "fire_1",
+        "square": "E6"
+      },
+      {
+        "owner": "white",
+        "type": "water_1",
+        "square": "B2"
+      },
+      {
+        "owner": "white",
+        "type": "plant_1",
+        "square": "A2"
+      },
+      {
+        "owner": "black",
+        "type": "water_1",
+        "square": "H7"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "J9"
+      },
+      {
+        "owner": "white",
+        "type": "lightning_1",
+        "square": "D4"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "I10"
+      }
+    ]
+  },
+  {
+    "w": 1,
+    "b": 157,
+    "initialIndex": -2.5199999809265137,
+    "turns": [
+      {
+        "actor": "white",
+        "actions": [
+          {
+            "type": "PROMOTE_UNIT",
+            "unitId": "white_plant_1_1789393464847_h87pc"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_plant_1_1789393464847_h87pc",
+            "to": "A3"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393464847_h8682",
+            "to": "B2"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393464847_h8682",
+            "to": "C3"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393464847_h8682",
+            "to": "D4"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      },
+      {
+        "actor": "black",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "plant_1",
+            "position": "H7"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393464847_2mqof",
+            "to": "G6"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393464847_2mqof",
+            "to": "F6"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393464847_2mqof",
+            "to": "F5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393464847_2mqof",
+            "to": "E5"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      }
+    ],
+    "result": "playing",
+    "winner": null,
+    "engineStaticAfterB2": -8.089135111989652,
+    "material": -1,
+    "banks": [
+      9,
+      10
+    ],
+    "finalUnits": [
+      {
+        "owner": "white",
+        "type": "fire_1",
+        "square": "D4"
+      },
+      {
+        "owner": "white",
+        "type": "water_1",
+        "square": "B1"
+      },
+      {
+        "owner": "white",
+        "type": "plant_2",
+        "square": "A3"
+      },
+      {
+        "owner": "black",
+        "type": "fire_1",
+        "square": "I10"
+      },
+      {
+        "owner": "black",
+        "type": "water_1",
+        "square": "E5"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "J9"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "H7"
+      }
+    ]
+  },
+  {
+    "w": 1,
+    "b": 151,
+    "initialIndex": -2.380000114440918,
+    "turns": [
+      {
+        "actor": "white",
+        "actions": [
+          {
+            "type": "PROMOTE_UNIT",
+            "unitId": "white_plant_1_1789393466036_fwi6k"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_plant_1_1789393466036_fwi6k",
+            "to": "A3"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393466036_kslyu",
+            "to": "B2"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393466036_kslyu",
+            "to": "C3"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393466036_kslyu",
+            "to": "D4"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      },
+      {
+        "actor": "black",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "plant_1",
+            "position": "H7"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393466036_0rtm8",
+            "to": "G6"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393466036_0rtm8",
+            "to": "F6"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393466036_0rtm8",
+            "to": "F5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393466036_0rtm8",
+            "to": "E5"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      }
+    ],
+    "result": "playing",
+    "winner": null,
+    "engineStaticAfterB2": -8.089135111989652,
+    "material": -1,
+    "banks": [
+      9,
+      10
+    ],
+    "finalUnits": [
+      {
+        "owner": "white",
+        "type": "fire_1",
+        "square": "D4"
+      },
+      {
+        "owner": "white",
+        "type": "water_1",
+        "square": "B1"
+      },
+      {
+        "owner": "white",
+        "type": "plant_2",
+        "square": "A3"
+      },
+      {
+        "owner": "black",
+        "type": "fire_1",
+        "square": "I10"
+      },
+      {
+        "owner": "black",
+        "type": "water_1",
+        "square": "E5"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "J9"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "H7"
+      }
+    ]
+  },
+  {
+    "w": 74,
+    "b": 792,
+    "initialIndex": -7.630000114440918,
+    "turns": [
+      {
+        "actor": "white",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "plant_1",
+            "position": "A1"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393467068_94rez",
+            "to": "C2"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393467068_94rez",
+            "to": "C4"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393467068_94rez",
+            "to": "D5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393467068_94rez",
+            "to": "E6"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      },
+      {
+        "actor": "black",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "water_1",
+            "position": "F6"
+          },
+          {
+            "type": "ATTACK",
+            "unitId": "unit-black-2-0",
+            "targetPosition": "E6"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_fire_1_1789393467068_bkkj2",
+            "to": "E4"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_fire_1_1789393467068_bkkj2",
+            "to": "C4"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_fire_1_1789393467068_bkkj2",
+            "to": "A4"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      }
+    ],
+    "result": "playing",
+    "winner": null,
+    "engineStaticAfterB2": -26.38268755184796,
+    "material": -2,
+    "banks": [
+      10,
+      10
+    ],
+    "finalUnits": [
+      {
+        "owner": "white",
+        "type": "water_1",
+        "square": "B2"
+      },
+      {
+        "owner": "white",
+        "type": "plant_1",
+        "square": "A2"
+      },
+      {
+        "owner": "black",
+        "type": "fire_1",
+        "square": "A4"
+      },
+      {
+        "owner": "black",
+        "type": "water_1",
+        "square": "I9"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "J9"
+      },
+      {
+        "owner": "white",
+        "type": "plant_1",
+        "square": "A1"
+      },
+      {
+        "owner": "black",
+        "type": "water_1",
+        "square": "F6"
+      }
+    ]
+  },
+  {
+    "w": 74,
+    "b": 791,
+    "initialIndex": -5.78000020980835,
+    "turns": [
+      {
+        "actor": "white",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "plant_1",
+            "position": "A1"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393468220_s0b1s",
+            "to": "C2"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393468220_s0b1s",
+            "to": "C4"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393468220_s0b1s",
+            "to": "D5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393468220_s0b1s",
+            "to": "E6"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      },
+      {
+        "actor": "black",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "plant_1",
+            "position": "G6"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_fire_1_1789393468220_6s8ek",
+            "to": "E5"
+          },
+          {
+            "type": "ATTACK",
+            "unitId": "black_fire_1_1789393468220_6s8ek",
+            "targetPosition": "E6"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_fire_1_1789393468220_6s8ek",
+            "to": "D4"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_fire_1_1789393468220_6s8ek",
+            "to": "C3"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      }
+    ],
+    "result": "playing",
+    "winner": null,
+    "engineStaticAfterB2": -27.1494576589324,
+    "material": -3,
+    "banks": [
+      10,
+      10
+    ],
+    "finalUnits": [
+      {
+        "owner": "white",
+        "type": "water_1",
+        "square": "B2"
+      },
+      {
+        "owner": "white",
+        "type": "plant_1",
+        "square": "A2"
+      },
+      {
+        "owner": "black",
+        "type": "fire_1",
+        "square": "C3"
+      },
+      {
+        "owner": "black",
+        "type": "water_1",
+        "square": "I9"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "J9"
+      },
+      {
+        "owner": "white",
+        "type": "plant_1",
+        "square": "A1"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "G6"
+      }
+    ]
+  },
+  {
+    "w": 74,
+    "b": 721,
+    "initialIndex": -2.119999885559082,
+    "turns": [
+      {
+        "actor": "white",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "plant_1",
+            "position": "A1"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393469328_w7ww3",
+            "to": "C2"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393469328_w7ww3",
+            "to": "C4"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393469328_w7ww3",
+            "to": "D5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393469328_w7ww3",
+            "to": "E6"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      },
+      {
+        "actor": "black",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "plant_1",
+            "position": "H8"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_fire_1_1789393469328_ynwsq",
+            "to": "G6"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_fire_1_1789393469328_ynwsq",
+            "to": "F5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_fire_1_1789393469328_ynwsq",
+            "to": "E5"
+          },
+          {
+            "type": "ATTACK",
+            "unitId": "black_fire_1_1789393469328_ynwsq",
+            "targetPosition": "E6"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      }
+    ],
+    "result": "playing",
+    "winner": null,
+    "engineStaticAfterB2": -19.534876479712366,
+    "material": -3,
+    "banks": [
+      10,
+      10
+    ],
+    "finalUnits": [
+      {
+        "owner": "white",
+        "type": "water_1",
+        "square": "B2"
+      },
+      {
+        "owner": "white",
+        "type": "plant_1",
+        "square": "A2"
+      },
+      {
+        "owner": "black",
+        "type": "fire_1",
+        "square": "E5"
+      },
+      {
+        "owner": "black",
+        "type": "water_1",
+        "square": "I9"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "J8"
+      },
+      {
+        "owner": "white",
+        "type": "plant_1",
+        "square": "A1"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "H8"
+      }
+    ]
+  },
+  {
+    "w": 74,
+    "b": 157,
+    "initialIndex": -2.180000066757202,
+    "turns": [
+      {
+        "actor": "white",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "plant_1",
+            "position": "A1"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393470571_hzy7z",
+            "to": "C2"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393470571_hzy7z",
+            "to": "C4"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393470571_hzy7z",
+            "to": "D5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393470571_hzy7z",
+            "to": "E6"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      },
+      {
+        "actor": "black",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "plant_1",
+            "position": "H7"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393470571_o9ryk",
+            "to": "G6"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393470571_o9ryk",
+            "to": "F6"
+          },
+          {
+            "type": "ATTACK",
+            "unitId": "black_water_1_1789393470571_o9ryk",
+            "targetPosition": "E6"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393470571_o9ryk",
+            "to": "F5"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      }
+    ],
+    "result": "playing",
+    "winner": null,
+    "engineStaticAfterB2": -15.798049728975975,
+    "material": -3,
+    "banks": [
+      10,
+      10
+    ],
+    "finalUnits": [
+      {
+        "owner": "white",
+        "type": "water_1",
+        "square": "B2"
+      },
+      {
+        "owner": "white",
+        "type": "plant_1",
+        "square": "A2"
+      },
+      {
+        "owner": "black",
+        "type": "fire_1",
+        "square": "I10"
+      },
+      {
+        "owner": "black",
+        "type": "water_1",
+        "square": "F5"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "J9"
+      },
+      {
+        "owner": "white",
+        "type": "plant_1",
+        "square": "A1"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "H7"
+      }
+    ]
+  },
+  {
+    "w": 74,
+    "b": 151,
+    "initialIndex": -2.0399999618530273,
+    "turns": [
+      {
+        "actor": "white",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "plant_1",
+            "position": "A1"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393471822_n95d8",
+            "to": "C2"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393471822_n95d8",
+            "to": "C4"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393471822_n95d8",
+            "to": "D5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393471822_n95d8",
+            "to": "E6"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      },
+      {
+        "actor": "black",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "plant_1",
+            "position": "H7"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393471822_opmfh",
+            "to": "G6"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393471822_opmfh",
+            "to": "F6"
+          },
+          {
+            "type": "ATTACK",
+            "unitId": "black_water_1_1789393471822_opmfh",
+            "targetPosition": "E6"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393471822_opmfh",
+            "to": "F5"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      }
+    ],
+    "result": "playing",
+    "winner": null,
+    "engineStaticAfterB2": -15.798049728975975,
+    "material": -3,
+    "banks": [
+      10,
+      10
+    ],
+    "finalUnits": [
+      {
+        "owner": "white",
+        "type": "water_1",
+        "square": "B2"
+      },
+      {
+        "owner": "white",
+        "type": "plant_1",
+        "square": "A2"
+      },
+      {
+        "owner": "black",
+        "type": "fire_1",
+        "square": "I10"
+      },
+      {
+        "owner": "black",
+        "type": "water_1",
+        "square": "F5"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "J9"
+      },
+      {
+        "owner": "white",
+        "type": "plant_1",
+        "square": "A1"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "H7"
+      }
+    ]
+  },
+  {
+    "w": 74,
+    "b": 74,
+    "initialIndex": 0,
+    "turns": [
+      {
+        "actor": "white",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "plant_1",
+            "position": "A1"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393473068_msaax",
+            "to": "C2"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393473068_msaax",
+            "to": "C4"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393473068_msaax",
+            "to": "D5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393473068_msaax",
+            "to": "E6"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      },
+      {
+        "actor": "black",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "plant_1",
+            "position": "J10"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_fire_1_1789393473068_2bbb5",
+            "to": "H9"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_fire_1_1789393473068_2bbb5",
+            "to": "H7"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_fire_1_1789393473068_2bbb5",
+            "to": "G6"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_fire_1_1789393473068_2bbb5",
+            "to": "F5"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      }
+    ],
+    "result": "playing",
+    "winner": null,
+    "engineStaticAfterB2": 0,
+    "material": 0,
+    "banks": [
+      10,
+      10
+    ],
+    "finalUnits": [
+      {
+        "owner": "white",
+        "type": "fire_1",
+        "square": "E6"
+      },
+      {
+        "owner": "white",
+        "type": "water_1",
+        "square": "B2"
+      },
+      {
+        "owner": "white",
+        "type": "plant_1",
+        "square": "A2"
+      },
+      {
+        "owner": "black",
+        "type": "fire_1",
+        "square": "F5"
+      },
+      {
+        "owner": "black",
+        "type": "water_1",
+        "square": "I9"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "J9"
+      },
+      {
+        "owner": "white",
+        "type": "plant_1",
+        "square": "A1"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "J10"
+      }
+    ]
+  },
+  {
+    "w": 157,
+    "b": 47,
+    "initialIndex": 0.6600000262260437,
+    "turns": [
+      {
+        "actor": "white",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "plant_1",
+            "position": "C4"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_water_1_1789393474310_466c1",
+            "to": "D5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_water_1_1789393474310_466c1",
+            "to": "E5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_water_1_1789393474310_466c1",
+            "to": "E6"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_water_1_1789393474310_466c1",
+            "to": "F6"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      },
+      {
+        "actor": "black",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "plant_1",
+            "position": "I8"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_fire_1_1789393474310_d1fib",
+            "to": "H10"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393474310_gls6y",
+            "to": "G7"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393474310_gls6y",
+            "to": "G6"
+          },
+          {
+            "type": "ATTACK",
+            "unitId": "black_water_1_1789393474310_gls6y",
+            "targetPosition": "F6"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      }
+    ],
+    "result": "playing",
+    "winner": null,
+    "engineStaticAfterB2": -9.417247307763867,
+    "material": -4,
+    "banks": [
+      10,
+      10
+    ],
+    "finalUnits": [
+      {
+        "owner": "white",
+        "type": "fire_1",
+        "square": "B1"
+      },
+      {
+        "owner": "white",
+        "type": "plant_1",
+        "square": "A2"
+      },
+      {
+        "owner": "black",
+        "type": "fire_1",
+        "square": "H10"
+      },
+      {
+        "owner": "black",
+        "type": "water_1",
+        "square": "G6"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "J9"
+      },
+      {
+        "owner": "white",
+        "type": "plant_1",
+        "square": "C4"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "I8"
+      }
+    ]
+  },
+  {
+    "w": 157,
+    "b": 792,
+    "initialIndex": 0.6600000262260437,
+    "turns": [
+      {
+        "actor": "white",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "plant_1",
+            "position": "C4"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_water_1_1789393475599_ueg8f",
+            "to": "D5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_water_1_1789393475599_ueg8f",
+            "to": "E5"
+          },
+          {
+            "type": "ATTACK",
+            "unitId": "white_water_1_1789393475599_ueg8f",
+            "targetPosition": "F5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_water_1_1789393475599_ueg8f",
+            "to": "E6"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      },
+      {
+        "actor": "black",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "plant_1",
+            "position": "I10"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393475599_fp9pa",
+            "to": "I8"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393475599_fp9pa",
+            "to": "H8"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393475599_fp9pa",
+            "to": "H7"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393475599_fp9pa",
+            "to": "G7"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      }
+    ],
+    "result": "playing",
+    "winner": null,
+    "engineStaticAfterB2": 10.49974752299009,
+    "material": 3,
+    "banks": [
+      10,
+      9
+    ],
+    "finalUnits": [
+      {
+        "owner": "white",
+        "type": "fire_1",
+        "square": "B1"
+      },
+      {
+        "owner": "white",
+        "type": "water_1",
+        "square": "E6"
+      },
+      {
+        "owner": "white",
+        "type": "plant_1",
+        "square": "A2"
+      },
+      {
+        "owner": "black",
+        "type": "water_1",
+        "square": "G7"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "J9"
+      },
+      {
+        "owner": "white",
+        "type": "plant_1",
+        "square": "C4"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "I10"
+      }
+    ]
+  },
+  {
+    "w": 157,
+    "b": 791,
+    "initialIndex": 0.9300000071525574,
+    "turns": [
+      {
+        "actor": "white",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "plant_1",
+            "position": "C4"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_water_1_1789393477027_ul0wp",
+            "to": "D5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_water_1_1789393477027_ul0wp",
+            "to": "E5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_water_1_1789393477027_ul0wp",
+            "to": "F5"
+          },
+          {
+            "type": "ATTACK",
+            "unitId": "white_water_1_1789393477027_ul0wp",
+            "targetPosition": "G5"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      },
+      {
+        "actor": "black",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "plant_1",
+            "position": "I10"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393477027_ybmy5",
+            "to": "I8"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393477027_ybmy5",
+            "to": "H8"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393477027_ybmy5",
+            "to": "H7"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393477027_ybmy5",
+            "to": "G7"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      }
+    ],
+    "result": "playing",
+    "winner": null,
+    "engineStaticAfterB2": 10.49974752299009,
+    "material": 3,
+    "banks": [
+      10,
+      9
+    ],
+    "finalUnits": [
+      {
+        "owner": "white",
+        "type": "fire_1",
+        "square": "B1"
+      },
+      {
+        "owner": "white",
+        "type": "water_1",
+        "square": "F5"
+      },
+      {
+        "owner": "white",
+        "type": "plant_1",
+        "square": "A2"
+      },
+      {
+        "owner": "black",
+        "type": "water_1",
+        "square": "G7"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "J9"
+      },
+      {
+        "owner": "white",
+        "type": "plant_1",
+        "square": "C4"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "I10"
+      }
+    ]
+  },
+  {
+    "w": 157,
+    "b": 721,
+    "initialIndex": 1.2699999809265137,
+    "turns": [
+      {
+        "actor": "white",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "plant_1",
+            "position": "C4"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_water_1_1789393478468_lajky",
+            "to": "D5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_water_1_1789393478468_lajky",
+            "to": "E5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_water_1_1789393478468_lajky",
+            "to": "E6"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_water_1_1789393478468_lajky",
+            "to": "F6"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      },
+      {
+        "actor": "black",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "plant_1",
+            "position": "H8"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_fire_1_1789393478468_rrds6",
+            "to": "H5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_fire_1_1789393478468_rrds6",
+            "to": "G5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_fire_1_1789393478468_rrds6",
+            "to": "E5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_fire_1_1789393478468_rrds6",
+            "to": "D4"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      }
+    ],
+    "result": "playing",
+    "winner": null,
+    "engineStaticAfterB2": -12.453984038261773,
+    "material": 0,
+    "banks": [
+      10,
+      10
+    ],
+    "finalUnits": [
+      {
+        "owner": "white",
+        "type": "fire_1",
+        "square": "B1"
+      },
+      {
+        "owner": "white",
+        "type": "water_1",
+        "square": "F6"
+      },
+      {
+        "owner": "white",
+        "type": "plant_1",
+        "square": "A2"
+      },
+      {
+        "owner": "black",
+        "type": "fire_1",
+        "square": "D4"
+      },
+      {
+        "owner": "black",
+        "type": "water_1",
+        "square": "I9"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "J8"
+      },
+      {
+        "owner": "white",
+        "type": "plant_1",
+        "square": "C4"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "H8"
+      }
+    ]
+  },
+  {
+    "w": 157,
+    "b": 157,
+    "initialIndex": 3.190000057220459,
+    "turns": [
+      {
+        "actor": "white",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "plant_1",
+            "position": "C4"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_water_1_1789393479576_m8aj3",
+            "to": "D5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_water_1_1789393479576_m8aj3",
+            "to": "E5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_water_1_1789393479576_m8aj3",
+            "to": "E6"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_water_1_1789393479576_m8aj3",
+            "to": "F6"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      },
+      {
+        "actor": "black",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "plant_1",
+            "position": "H7"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393479576_t8oxa",
+            "to": "G6"
+          },
+          {
+            "type": "ATTACK",
+            "unitId": "black_water_1_1789393479576_t8oxa",
+            "targetPosition": "F6"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393479576_t8oxa",
+            "to": "F6"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      }
+    ],
+    "result": "playing",
+    "winner": null,
+    "engineStaticAfterB2": -10.65857864376269,
+    "material": -4,
+    "banks": [
+      10,
+      10
+    ],
+    "finalUnits": [
+      {
+        "owner": "white",
+        "type": "fire_1",
+        "square": "B1"
+      },
+      {
+        "owner": "white",
+        "type": "plant_1",
+        "square": "A2"
+      },
+      {
+        "owner": "black",
+        "type": "fire_1",
+        "square": "I10"
+      },
+      {
+        "owner": "black",
+        "type": "water_1",
+        "square": "F6"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "J9"
+      },
+      {
+        "owner": "white",
+        "type": "plant_1",
+        "square": "C4"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "H7"
+      }
+    ]
+  },
+  {
+    "w": 157,
+    "b": 151,
+    "initialIndex": 3.2300000190734863,
+    "turns": [
+      {
+        "actor": "white",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "plant_1",
+            "position": "C4"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_water_1_1789393481005_rz6wn",
+            "to": "D5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_water_1_1789393481005_rz6wn",
+            "to": "E5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_water_1_1789393481005_rz6wn",
+            "to": "E6"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_water_1_1789393481005_rz6wn",
+            "to": "F6"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      },
+      {
+        "actor": "black",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "plant_1",
+            "position": "H7"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393481005_upmzl",
+            "to": "G6"
+          },
+          {
+            "type": "ATTACK",
+            "unitId": "black_water_1_1789393481005_upmzl",
+            "targetPosition": "F6"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393481005_upmzl",
+            "to": "F6"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      }
+    ],
+    "result": "playing",
+    "winner": null,
+    "engineStaticAfterB2": -10.65857864376269,
+    "material": -4,
+    "banks": [
+      10,
+      10
+    ],
+    "finalUnits": [
+      {
+        "owner": "white",
+        "type": "fire_1",
+        "square": "B1"
+      },
+      {
+        "owner": "white",
+        "type": "plant_1",
+        "square": "A2"
+      },
+      {
+        "owner": "black",
+        "type": "fire_1",
+        "square": "I10"
+      },
+      {
+        "owner": "black",
+        "type": "water_1",
+        "square": "F6"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "J9"
+      },
+      {
+        "owner": "white",
+        "type": "plant_1",
+        "square": "C4"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "H7"
+      }
+    ]
+  },
+  {
+    "w": 157,
+    "b": 74,
+    "initialIndex": 2.180000066757202,
+    "turns": [
+      {
+        "actor": "white",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "plant_1",
+            "position": "C4"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_water_1_1789393482371_0fojb",
+            "to": "D5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_water_1_1789393482371_0fojb",
+            "to": "E5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_water_1_1789393482371_0fojb",
+            "to": "E6"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_water_1_1789393482371_0fojb",
+            "to": "F6"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      },
+      {
+        "actor": "black",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "plant_1",
+            "position": "J10"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_fire_1_1789393482371_whcye",
+            "to": "H9"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_fire_1_1789393482371_whcye",
+            "to": "H7"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_fire_1_1789393482371_whcye",
+            "to": "H5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_fire_1_1789393482371_whcye",
+            "to": "G4"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      }
+    ],
+    "result": "playing",
+    "winner": null,
+    "engineStaticAfterB2": 2.822313797687903,
+    "material": 0,
+    "banks": [
+      10,
+      10
+    ],
+    "finalUnits": [
+      {
+        "owner": "white",
+        "type": "fire_1",
+        "square": "B1"
+      },
+      {
+        "owner": "white",
+        "type": "water_1",
+        "square": "F6"
+      },
+      {
+        "owner": "white",
+        "type": "plant_1",
+        "square": "A2"
+      },
+      {
+        "owner": "black",
+        "type": "fire_1",
+        "square": "G4"
+      },
+      {
+        "owner": "black",
+        "type": "water_1",
+        "square": "I9"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "J9"
+      },
+      {
+        "owner": "white",
+        "type": "plant_1",
+        "square": "C4"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "J10"
+      }
+    ]
+  },
+  {
+    "w": 675,
+    "b": 157,
+    "initialIndex": 5.190000057220459,
+    "turns": [
+      {
+        "actor": "white",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "lightning_1",
+            "position": "F3"
+          },
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "lightning_1",
+            "position": "E3"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "unit-white-2-0",
+            "to": "F6"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "unit-white-2-0",
+            "to": "G8"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393483888_o4o5u",
+            "to": "I4"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "unit-white-2-0",
+            "to": "G10"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      },
+      {
+        "actor": "black",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "water_1",
+            "position": "H10"
+          },
+          {
+            "type": "ATTACK",
+            "unitId": "unit-black-2-0",
+            "targetPosition": "G10"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393483888_euym6",
+            "to": "H5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393483888_euym6",
+            "to": "H4"
+          },
+          {
+            "type": "ATTACK",
+            "unitId": "black_water_1_1789393483888_euym6",
+            "targetPosition": "I4"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      }
+    ],
+    "result": "playing",
+    "winner": null,
+    "engineStaticAfterB2": -3.9470178163380765,
+    "material": -4,
+    "banks": [
+      6,
+      10
+    ],
+    "finalUnits": [
+      {
+        "owner": "white",
+        "type": "water_1",
+        "square": "B2"
+      },
+      {
+        "owner": "white",
+        "type": "plant_1",
+        "square": "A2"
+      },
+      {
+        "owner": "black",
+        "type": "fire_1",
+        "square": "I10"
+      },
+      {
+        "owner": "black",
+        "type": "water_1",
+        "square": "H4"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "J9"
+      },
+      {
+        "owner": "white",
+        "type": "lightning_1",
+        "square": "E3"
+      },
+      {
+        "owner": "black",
+        "type": "water_1",
+        "square": "H10"
+      }
+    ]
+  },
+  {
+    "w": 675,
+    "b": 151,
+    "initialIndex": 5.21999979019165,
+    "turns": [
+      {
+        "actor": "white",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "lightning_1",
+            "position": "F3"
+          },
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "lightning_1",
+            "position": "E3"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "unit-white-2-0",
+            "to": "F6"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "unit-white-2-0",
+            "to": "F9"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393485184_z4jgk",
+            "to": "I4"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393485184_z4jgk",
+            "to": "I6"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      },
+      {
+        "actor": "black",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "shadow_1",
+            "position": "G9"
+          },
+          {
+            "type": "ATTACK",
+            "unitId": "unit-black-2-0",
+            "targetPosition": "F9"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393485184_mtbso",
+            "to": "G6"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393485184_mtbso",
+            "to": "H6"
+          },
+          {
+            "type": "ATTACK",
+            "unitId": "black_water_1_1789393485184_mtbso",
+            "targetPosition": "I6"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      }
+    ],
+    "result": "playing",
+    "winner": null,
+    "engineStaticAfterB2": -4.988196757975638,
+    "material": -4,
+    "banks": [
+      6,
+      8
+    ],
+    "finalUnits": [
+      {
+        "owner": "white",
+        "type": "water_1",
+        "square": "B2"
+      },
+      {
+        "owner": "white",
+        "type": "plant_1",
+        "square": "A2"
+      },
+      {
+        "owner": "black",
+        "type": "fire_1",
+        "square": "I10"
+      },
+      {
+        "owner": "black",
+        "type": "water_1",
+        "square": "H6"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "J9"
+      },
+      {
+        "owner": "white",
+        "type": "lightning_1",
+        "square": "E3"
+      },
+      {
+        "owner": "black",
+        "type": "shadow_1",
+        "square": "G9"
+      }
+    ]
+  },
+  {
+    "w": 779,
+    "b": 157,
+    "initialIndex": 5.409999847412109,
+    "turns": [
+      {
+        "actor": "white",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "lightning_1",
+            "position": "D4"
+          },
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "lightning_1",
+            "position": "C5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "unit-white-2-1",
+            "to": "C8"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "unit-white-2-1",
+            "to": "F8"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393486277_pw55n",
+            "to": "G5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393486277_pw55n",
+            "to": "I5"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      },
+      {
+        "actor": "black",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "water_1",
+            "position": "I6"
+          },
+          {
+            "type": "ATTACK",
+            "unitId": "unit-black-2-0",
+            "targetPosition": "I5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393486277_a658l",
+            "to": "G6"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393486277_a658l",
+            "to": "F6"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393486277_a658l",
+            "to": "F7"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      }
+    ],
+    "result": "playing",
+    "winner": null,
+    "engineStaticAfterB2": 1.0393944585701513,
+    "material": -1,
+    "banks": [
+      6,
+      10
+    ],
+    "finalUnits": [
+      {
+        "owner": "white",
+        "type": "water_1",
+        "square": "B2"
+      },
+      {
+        "owner": "white",
+        "type": "plant_1",
+        "square": "A2"
+      },
+      {
+        "owner": "black",
+        "type": "fire_1",
+        "square": "I10"
+      },
+      {
+        "owner": "black",
+        "type": "water_1",
+        "square": "F7"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "J9"
+      },
+      {
+        "owner": "white",
+        "type": "lightning_1",
+        "square": "D4"
+      },
+      {
+        "owner": "white",
+        "type": "lightning_1",
+        "square": "F8"
+      },
+      {
+        "owner": "black",
+        "type": "water_1",
+        "square": "I6"
+      }
+    ]
+  },
+  {
+    "w": 779,
+    "b": 151,
+    "initialIndex": 5.440000057220459,
+    "turns": [
+      {
+        "actor": "white",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "lightning_1",
+            "position": "D4"
+          },
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "lightning_1",
+            "position": "E3"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393487628_pa6ra",
+            "to": "F6"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393487628_pa6ra",
+            "to": "H6"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393487628_pa6ra",
+            "to": "J6"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393487628_pa6ra",
+            "to": "J8"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      },
+      {
+        "actor": "black",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "water_1",
+            "position": "J10"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_plant_1_1789393487628_1121e",
+            "to": "I9"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "unit-black-2-0",
+            "to": "J9"
+          },
+          {
+            "type": "ATTACK",
+            "unitId": "unit-black-2-0",
+            "targetPosition": "J8"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_fire_1_1789393487628_ytykq",
+            "to": "H9"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      }
+    ],
+    "result": "playing",
+    "winner": null,
+    "engineStaticAfterB2": 7.650330575344985,
+    "material": -1,
+    "banks": [
+      6,
+      10
+    ],
+    "finalUnits": [
+      {
+        "owner": "white",
+        "type": "water_1",
+        "square": "B2"
+      },
+      {
+        "owner": "white",
+        "type": "plant_1",
+        "square": "A2"
+      },
+      {
+        "owner": "black",
+        "type": "fire_1",
+        "square": "H9"
+      },
+      {
+        "owner": "black",
+        "type": "water_1",
+        "square": "G7"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "I9"
+      },
+      {
+        "owner": "white",
+        "type": "lightning_1",
+        "square": "D4"
+      },
+      {
+        "owner": "white",
+        "type": "lightning_1",
+        "square": "E3"
+      },
+      {
+        "owner": "black",
+        "type": "water_1",
+        "square": "J9"
+      }
+    ]
+  },
+  {
+    "w": 792,
+    "b": 157,
+    "initialIndex": 6.199999809265137,
+    "turns": [
+      {
+        "actor": "white",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "lightning_1",
+            "position": "D4"
+          },
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "lightning_1",
+            "position": "E5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "unit-white-2-1",
+            "to": "F7"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "unit-white-2-1",
+            "to": "G9"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "unit-white-2-1",
+            "to": "G10"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393488777_to1nl",
+            "to": "E7"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      },
+      {
+        "actor": "black",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "water_1",
+            "position": "H10"
+          },
+          {
+            "type": "ATTACK",
+            "unitId": "unit-black-2-0",
+            "targetPosition": "G10"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_fire_1_1789393488777_3lfd3",
+            "to": "I8"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393488777_iv89r",
+            "to": "G6"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393488777_iv89r",
+            "to": "F6"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      }
+    ],
+    "result": "playing",
+    "winner": null,
+    "engineStaticAfterB2": 5.800775568650339,
+    "material": -1,
+    "banks": [
+      6,
+      10
+    ],
+    "finalUnits": [
+      {
+        "owner": "white",
+        "type": "fire_1",
+        "square": "E7"
+      },
+      {
+        "owner": "white",
+        "type": "water_1",
+        "square": "B2"
+      },
+      {
+        "owner": "white",
+        "type": "plant_1",
+        "square": "A2"
+      },
+      {
+        "owner": "black",
+        "type": "fire_1",
+        "square": "I8"
+      },
+      {
+        "owner": "black",
+        "type": "water_1",
+        "square": "F6"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "J9"
+      },
+      {
+        "owner": "white",
+        "type": "lightning_1",
+        "square": "D4"
+      },
+      {
+        "owner": "black",
+        "type": "water_1",
+        "square": "H10"
+      }
+    ]
+  },
+  {
+    "w": 792,
+    "b": 151,
+    "initialIndex": 6.230000019073486,
+    "turns": [
+      {
+        "actor": "white",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "lightning_1",
+            "position": "D4"
+          },
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "lightning_1",
+            "position": "E5"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393489968_lmoy3",
+            "to": "F6"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393489968_lmoy3",
+            "to": "H6"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393489968_lmoy3",
+            "to": "J6"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "white_fire_1_1789393489968_lmoy3",
+            "to": "J8"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      },
+      {
+        "actor": "black",
+        "actions": [
+          {
+            "type": "BUY_UNIT",
+            "definitionId": "water_1",
+            "position": "J10"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_plant_1_1789393489968_59vem",
+            "to": "I9"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "unit-black-2-0",
+            "to": "J9"
+          },
+          {
+            "type": "ATTACK",
+            "unitId": "unit-black-2-0",
+            "targetPosition": "J8"
+          },
+          {
+            "type": "MOVE",
+            "unitId": "black_water_1_1789393489968_1383l",
+            "to": "G6"
+          },
+          {
+            "type": "END_ACTION_PHASE"
+          }
+        ],
+        "calls": 1,
+        "work": 8000
+      }
+    ],
+    "result": "playing",
+    "winner": null,
+    "engineStaticAfterB2": 9.89071776616674,
+    "material": -1,
+    "banks": [
+      6,
+      10
+    ],
+    "finalUnits": [
+      {
+        "owner": "white",
+        "type": "water_1",
+        "square": "B2"
+      },
+      {
+        "owner": "white",
+        "type": "plant_1",
+        "square": "A2"
+      },
+      {
+        "owner": "black",
+        "type": "fire_1",
+        "square": "I10"
+      },
+      {
+        "owner": "black",
+        "type": "water_1",
+        "square": "G6"
+      },
+      {
+        "owner": "black",
+        "type": "plant_1",
+        "square": "I9"
+      },
+      {
+        "owner": "white",
+        "type": "lightning_1",
+        "square": "D4"
+      },
+      {
+        "owner": "white",
+        "type": "lightning_1",
+        "square": "E5"
+      },
+      {
+        "owner": "black",
+        "type": "water_1",
+        "square": "J9"
+      }
+    ]
+  }
+]

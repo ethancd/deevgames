@@ -1,0 +1,35 @@
+{
+  "A": {
+    "branches": 0,
+    "origins": 0,
+    "invalidBranches": 0,
+    "comparisons": [],
+    "outcomes": {
+      "promote": {},
+      "retain": {},
+      "army": {}
+    }
+  },
+  "B": {
+    "branches": 0,
+    "origins": 0,
+    "invalidBranches": 0,
+    "comparisons": [],
+    "outcomes": {
+      "promote": {},
+      "retain": {},
+      "army": {}
+    }
+  },
+  "C": {
+    "branches": 0,
+    "origins": 0,
+    "invalidBranches": 0,
+    "comparisons": [],
+    "outcomes": {
+      "promote": {},
+      "retain": {},
+      "army": {}
+    }
+  }
+}

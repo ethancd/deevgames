@@ -1,0 +1,168 @@
+{
+  "a": "Rush",
+  "b": "Random",
+  "work": "fixed:1",
+  "handicaps": [
+    0
+  ],
+  "pairs": 2,
+  "pairsCompleted": 2,
+  "games": 4,
+  "gamesScheduled": 4,
+  "missingGames": 0,
+  "unattributedGames": 0,
+  "failures": 0,
+  "seed": 3,
+  "shards": 2,
+  "openings": [
+    "initial"
+  ],
+  "openingsSha256": null,
+  "replays": true,
+  "resumed": false,
+  "adjudicationRate": 0,
+  "illegalActions": 0,
+  "replicaDivergences": 0,
+  "timingAnomalies": 0,
+  "anomalyCounts": {},
+  "wins": 3,
+  "draws": 1,
+  "losses": 0,
+  "strata": [
+    {
+      "handicap": 0,
+      "pairsScheduled": 2,
+      "pairs": 2,
+      "games": 4,
+      "score": 0.875,
+      "wins": 3,
+      "draws": 1,
+      "losses": 0,
+      "elo": {
+        "n": 2,
+        "games": 4,
+        "counts": [
+          0,
+          0,
+          0,
+          1,
+          1
+        ],
+        "degenerate": false,
+        "regularized": false,
+        "mu": 0.875,
+        "muRaw": 0.875,
+        "muLo": 0.7017620219156364,
+        "muHi": 1,
+        "variancePairs": 0.0625,
+        "variance": 0.03125,
+        "sePair": 0.1767766952966369,
+        "se": 0.08838834764831845,
+        "elo": 338.0392160057028,
+        "eloLo": 148.65076596791448,
+        "eloHi": 1199.8261952903777,
+        "elo95": 525.5877146612315,
+        "los": 0.9999889474255511
+      }
+    }
+  ],
+  "bothSeatsPlayed": true,
+  "seatMirrored": true,
+  "voided": false,
+  "meanTurnMs": {
+    "a": 13.210526315789474,
+    "b": 0.21052631578947367
+  },
+  "timing": {
+    "a": {
+      "turns": 38,
+      "p95TurnMs": 51,
+      "maxTurnMs": 54,
+      "overruns": 0,
+      "budgetExhausted": null,
+      "reSearches": null
+    },
+    "b": {
+      "turns": 38,
+      "p95TurnMs": 1,
+      "maxTurnMs": 1,
+      "overruns": 0,
+      "budgetExhausted": null,
+      "reSearches": null
+    }
+  },
+  "elo": 338.0392160057028,
+  "eloLo": 148.65076596791448,
+  "eloHi": 1199.8261952903777,
+  "los": 0.9999889474255511,
+  "eloDetail": {
+    "n": 2,
+    "games": 4,
+    "counts": [
+      0,
+      0,
+      0,
+      1,
+      1
+    ],
+    "degenerate": false,
+    "regularized": false,
+    "mu": 0.875,
+    "muRaw": 0.875,
+    "muLo": 0.7017620219156364,
+    "muHi": 1,
+    "variancePairs": 0.0625,
+    "variance": 0.03125,
+    "sePair": 0.1767766952966369,
+    "se": 0.08838834764831845,
+    "elo": 338.0392160057028,
+    "eloLo": 148.65076596791448,
+    "eloHi": 1199.8261952903777,
+    "elo95": 525.5877146612315,
+    "los": 0.9999889474255511
+  },
+  "sprt": {
+    "elo0": 0,
+    "elo1": 50,
+    "alpha": 0.05,
+    "beta": 0.05,
+    "n": 2,
+    "method": "pentanomial-gsprt",
+    "counts": [
+      0,
+      0,
+      0,
+      1,
+      1
+    ],
+    "t0": 0.5,
+    "t1": 0.5714631174083814,
+    "mu": 0.8740639041437843,
+    "variance": 0.016248187628691756,
+    "llr": 0.2672266788588293,
+    "lowerBound": -2.9444389791664403,
+    "upperBound": 2.9444389791664403,
+    "minPairs": 10,
+    "decision": "continue"
+  },
+  "sprtSequential": {
+    "decision": "continue",
+    "decidedAtPair": null,
+    "finalLlr": 0.2672266788588293,
+    "trace": [
+      {
+        "n": 1,
+        "llr": 0.13383694622391246
+      },
+      {
+        "n": 2,
+        "llr": 0.2672266788588293
+      }
+    ],
+    "minPairs": 10,
+    "lowerBound": -2.9444389791664403,
+    "upperBound": 2.9444389791664403
+  },
+  "decision": "continue",
+  "status": "complete"
+}

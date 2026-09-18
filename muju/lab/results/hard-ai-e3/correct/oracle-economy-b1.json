@@ -1,0 +1,86 @@
+{
+  "evalFix": [
+    "b1"
+  ],
+  "positionsRequested": 2000,
+  "positionsSampled": 2000,
+  "corpusSize": 1808,
+  "checkedStream": 4000,
+  "streamMismatch": 0,
+  "checkedRelocation": 4000,
+  "relocationMonotone": true,
+  "relocationViolations": 0,
+  "checkedReserve": 13183,
+  "reserveMonotone": false,
+  "reserveViolations": 10,
+  "fixturesChecked": 11,
+  "checkedInsolvency": 22,
+  "insolvencyMismatch": 0,
+  "pstChecked": 21,
+  "pstMaxErr": 0,
+  "mismatches": [
+    {
+      "kind": "reserve-monotone",
+      "id": "opening-279",
+      "side": 1,
+      "detail": "+1 crystal at square 98 lowered stream 2178 -> 2130"
+    },
+    {
+      "kind": "reserve-monotone",
+      "id": "opening-281",
+      "side": 1,
+      "detail": "+1 crystal at square 98 lowered stream 2178 -> 2130"
+    },
+    {
+      "kind": "reserve-monotone",
+      "id": "opening-283",
+      "side": 1,
+      "detail": "+1 crystal at square 98 lowered stream 2178 -> 2130"
+    },
+    {
+      "kind": "reserve-monotone",
+      "id": "opening-293",
+      "side": 1,
+      "detail": "+1 crystal at square 98 lowered stream 2178 -> 2130"
+    },
+    {
+      "kind": "reserve-monotone",
+      "id": "opening-302",
+      "side": 1,
+      "detail": "+1 crystal at square 98 lowered stream 2178 -> 2130"
+    },
+    {
+      "kind": "reserve-monotone",
+      "id": "opening-327",
+      "side": 1,
+      "detail": "+1 crystal at square 98 lowered stream 2178 -> 2130"
+    },
+    {
+      "kind": "reserve-monotone",
+      "id": "fuzz-5150-69-443",
+      "side": 0,
+      "detail": "+1 crystal at square 32 lowered stream 3690 -> 3595"
+    },
+    {
+      "kind": "reserve-monotone",
+      "id": "fuzz-5150-48-458",
+      "side": 0,
+      "detail": "+1 crystal at square 50 lowered stream 973 -> 877"
+    },
+    {
+      "kind": "reserve-monotone",
+      "id": "fuzz-5150-69-439",
+      "side": 0,
+      "detail": "+1 crystal at square 32 lowered stream 3895 -> 3875"
+    },
+    {
+      "kind": "reserve-monotone",
+      "id": "fuzz-5150-372-434",
+      "side": 0,
+      "detail": "+1 crystal at square 27 lowered stream 2181 -> 2075"
+    }
+  ],
+  "git": "81e4e30328ba94b3b557945a4a74a2212f12fcc5",
+  "node": "v24.11.1",
+  "at": "2026-09-17T07:10:05.579Z"
+}

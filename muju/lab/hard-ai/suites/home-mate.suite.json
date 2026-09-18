@@ -1,0 +1,2293 @@
+{
+  "schema": "muju-suite-v1",
+  "name": "home-mate",
+  "version": 1,
+  "cases": [
+    {
+      "id": "cheap-invasion-one-attack-rescue",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#cheap-invasion-one-attack-rescue",
+      "best": [
+        "197e9e22f466b3ee",
+        "f5c6821b0c32e23b"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "home",
+        "rescue"
+      ],
+      "rationale": "The occupation is answerable (rescue); the turn must end with white's corner clear.",
+      "authoredFrom": "lab/ai/fixtures.ts: cheap invasion / one attack"
+    },
+    {
+      "id": "cheap-invasion-one-attack-mate",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#cheap-invasion-one-attack-mate",
+      "best": [
+        "05bef1259fdcd149",
+        "05f5f2e7ca383541",
+        "12293d86b57fe1c4",
+        "13973bc647fe4649",
+        "14a4fe060ceeda7f",
+        "156ab6559acce441",
+        "17de65fbea5a0c90",
+        "19e621157b37c5fe",
+        "1d617dd142ee58e4",
+        "219f5734054a0372",
+        "2438c0dd0c56ada8",
+        "26a201bb6da28a4c",
+        "27cd9bf50f480b66",
+        "282b5e967ac880cd",
+        "2bd21a4bb7ea35b6",
+        "2eded372d93ffd53",
+        "31c3e95bf2f4e74b",
+        "31e5ebe625324cec",
+        "37b0552b6d0b9ec0",
+        "3983cdc635b9b148",
+        "3a75016dff59b163",
+        "3c898c63616c8cea",
+        "3c9b7161301818db",
+        "3f17840898e6444a",
+        "3f608fced733d2c0",
+        "40991af0784bbec1",
+        "45cce735f8ce666a",
+        "48f497fb8889ef8a",
+        "496c0a1e6464a32c",
+        "4b384ac095dd41b6",
+        "4d18f1554faca040",
+        "4e6091979c689474",
+        "5e05d332c06516db",
+        "5f9f82c9684a7a1a",
+        "64fda313f271b0e6",
+        "66e92c1fc5ffb8c6",
+        "68fe4ab0a097b265",
+        "6b7feb46b1c974b7",
+        "6e18e9d6ee7f5b0c",
+        "74a304de6630dc93",
+        "79b0c63bf0df7c09",
+        "7c5e97234d1199a9",
+        "8147f96ae247fd6c",
+        "83c5c104ed23b3b6",
+        "871c5718cbc459c3",
+        "88540bf9a10da62e",
+        "89915a202efd95cd",
+        "8a179fe960f64bd4",
+        "8bd7378e7bacd72e",
+        "973b09fd26cee721",
+        "9a3a4a2837463b34",
+        "9c39447dadee7ae8",
+        "a088ac7346b51e2d",
+        "a2f7c8b70e113df3",
+        "a3bc829bd72e8319",
+        "a53f17d04bc4e0b6",
+        "a87188f6979f265b",
+        "aaa15603584e46f5",
+        "aeebfce023f2674f",
+        "b28edf42aed2936a",
+        "b3ea674ff7981da4",
+        "baacc44fd452816f",
+        "bab02f67fe8affcd",
+        "bb047e6167e20e2e",
+        "bc956e9e9497963e",
+        "be2dae3774fcafe1",
+        "beb345061396cc3f",
+        "c30c54122c542951",
+        "c65527815f653d25",
+        "d0ecaf93bb056542",
+        "d3125496cad0725d",
+        "d70cb75cb882944c",
+        "d8074352c3ba292d",
+        "d81ecb264c5b962d",
+        "d8d8f59c999ee612",
+        "db3d6bc03343db28",
+        "e1b025dc2423afa6",
+        "e617ec1c742d16a9",
+        "e7cf84612f5b7dfa",
+        "ea34b7e93049f8cb",
+        "ebea042bae87c845",
+        "f49cb7fd0f4f94c7",
+        "f5427c130139c881",
+        "f911072f49f07297",
+        "fc167b56028fb3b1"
+      ],
+      "avoid": [
+        "d126b10c0bebbbe0",
+        "ee6291a21d7ef452"
+      ],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "home",
+        "mate",
+        "refuted"
+      ],
+      "rationale": "white answers the occupation, so stepping onto the corner throws the unit away for nothing.",
+      "authoredFrom": "lab/ai/fixtures.ts: cheap invasion / one attack"
+    },
+    {
+      "id": "cheap-invasion-one-attack-rotated-black-rescue",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#cheap-invasion-one-attack-rotated-black-rescue",
+      "best": [
+        "10e5116a8a9c5b83",
+        "e1693d3e2c78154f"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "home",
+        "rescue"
+      ],
+      "rationale": "The occupation is answerable (rescue); the turn must end with black's corner clear.",
+      "authoredFrom": "lab/ai/fixtures.ts: cheap invasion / one attack / rotated black"
+    },
+    {
+      "id": "cheap-invasion-one-attack-rotated-black-mate",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#cheap-invasion-one-attack-rotated-black-mate",
+      "best": [
+        "0480a1b5be912f71",
+        "0e2309174bda26b9",
+        "0ecc9d9279060e94",
+        "11d5a3e7c3bea602",
+        "169e6441ab60a2fc",
+        "1810e34a980397d4",
+        "19adf4c4d70358ed",
+        "1a73e120a8516467",
+        "29647a4eab53994b",
+        "2a855e2bd8040d91",
+        "2efa9b35c8e2dbca",
+        "303f62d19dca91dd",
+        "3329be13ba596d74",
+        "337d5974e269327c",
+        "377b5c4eea864ce3",
+        "3afbfbef275decd6",
+        "3d9b16cacbb367ff",
+        "41e2f90ad1fe2e58",
+        "427bfeda43e7239d",
+        "48d68326e8dd9719",
+        "48f73208df2ad31e",
+        "527343287f1d026d",
+        "531072f0245c6a9c",
+        "54740c5030b1a4f9",
+        "5476ad4ebc79bdab",
+        "54de2f9e41ac29f1",
+        "65f3e8f16c94ba21",
+        "66b071354bf8652a",
+        "6891fe0c3ba741c3",
+        "696aa1a1874179a3",
+        "704acf8e24d97fcb",
+        "712ad294f72eb466",
+        "71ee3373f5b18d6a",
+        "7e081b8ab10d05f6",
+        "7e6004b2e5a063dd",
+        "83cd4bbba8c8fbe4",
+        "864a42789cfbe4f1",
+        "8724d0123abce500",
+        "8b3b255f33bf06cc",
+        "8c107effa536fe7f",
+        "8c63475dc33f2335",
+        "95d603b6e993d00c",
+        "95dd8a88a470b89d",
+        "9ad88b1d8236504e",
+        "9bab9ac4af5eecc1",
+        "9c6f57bd6a6d51dd",
+        "a292cea13db519bc",
+        "a6435c7e18d4348b",
+        "a6951839aaef09fc",
+        "a737c46f207def8b",
+        "aaa8d31e39540852",
+        "aad61e69fcca1d62",
+        "ac9df054dab41e34",
+        "af04fa340f2a0554",
+        "b19f99355bf0a45e",
+        "b39733ebe9f1b781",
+        "b444dfe98cfe7159",
+        "b4e443d0f63e9381",
+        "b7c305697f7d8b6b",
+        "b8adc9762c1f41d2",
+        "b96f6d7d9a67a140",
+        "bffa2c310c7be3d4",
+        "c3d6d0ffd0c05450",
+        "c807ec889b9a0f5d",
+        "cb7eea795b7ff3e0",
+        "ccf6f6ed3fcb442a",
+        "cd810c4099f61916",
+        "d12b18ccd416a34a",
+        "d1ac3e644ac72bc1",
+        "d69434f621e39e25",
+        "d8c1ced7bfdbf261",
+        "db24b2e134cd2efe",
+        "df57f05115a2c540",
+        "dfb24e6db17b150f",
+        "dfbe2d39712f4f0b",
+        "e04b2e3b9168bba5",
+        "e12e09d5be77de7f",
+        "e92ebc3e518ac4b5",
+        "e980cd13b035953d",
+        "eccbf9041ebfd1d2",
+        "f16570d65561bff3",
+        "f2ae349292aa64de",
+        "f4e5aa45e4cef295",
+        "f64bae2f1549741c",
+        "ffdf59e5dbfb31cf"
+      ],
+      "avoid": [
+        "3b990b0e181610ac",
+        "e7cda4a9425eafb8"
+      ],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "home",
+        "mate",
+        "refuted"
+      ],
+      "rationale": "black answers the occupation, so stepping onto the corner throws the unit away for nothing.",
+      "authoredFrom": "lab/ai/fixtures.ts: cheap invasion / one attack / rotated black"
+    },
+    {
+      "id": "metal-iii-two-shadow-iii-rescue",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#metal-iii-two-shadow-iii-rescue",
+      "best": [
+        "06824c2026a09a28"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 0,
+      "tags": [
+        "home",
+        "rescue",
+        "no-rescue"
+      ],
+      "rationale": "No turn clears the corner (the prover calls it \"mate\"), so there is no correct defensive turn to score. Kept as a coverage row: the engine must still return a legal turn in a lost position.",
+      "authoredFrom": "lab/ai/fixtures.ts: Metal III / two Shadow III"
+    },
+    {
+      "id": "metal-iii-two-shadow-iii-mate",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#metal-iii-two-shadow-iii-mate",
+      "best": [
+        "26013440517f7a62",
+        "27b6a21dd347442f",
+        "edbeda3c96bfbcae"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "home",
+        "mate",
+        "hold"
+      ],
+      "rationale": "Holding white's corner wins on the spot: no reply removes the occupier.",
+      "authoredFrom": "lab/ai/fixtures.ts: Metal III / two Shadow III"
+    },
+    {
+      "id": "metal-iii-two-shadow-iii-rotated-black-rescue",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#metal-iii-two-shadow-iii-rotated-black-rescue",
+      "best": [
+        "92c29692acac0d6e"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 0,
+      "tags": [
+        "home",
+        "rescue",
+        "no-rescue"
+      ],
+      "rationale": "No turn clears the corner (the prover calls it \"mate\"), so there is no correct defensive turn to score. Kept as a coverage row: the engine must still return a legal turn in a lost position.",
+      "authoredFrom": "lab/ai/fixtures.ts: Metal III / two Shadow III / rotated black"
+    },
+    {
+      "id": "metal-iii-two-shadow-iii-rotated-black-mate",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#metal-iii-two-shadow-iii-rotated-black-mate",
+      "best": [
+        "273dba30566d0bb6",
+        "86939e002fd5b020",
+        "d9e7b2e3e733ae33"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "home",
+        "mate",
+        "hold"
+      ],
+      "rationale": "Holding black's corner wins on the spot: no reply removes the occupier.",
+      "authoredFrom": "lab/ai/fixtures.ts: Metal III / two Shadow III / rotated black"
+    },
+    {
+      "id": "five-action-rotation-exceeds-the-turn-budget-rescue",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#five-action-rotation-exceeds-the-turn-budget-rescue",
+      "best": [
+        "06824c2026a09a28"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 0,
+      "tags": [
+        "home",
+        "rescue",
+        "no-rescue"
+      ],
+      "rationale": "No turn clears the corner (the prover calls it \"mate\"), so there is no correct defensive turn to score. Kept as a coverage row: the engine must still return a legal turn in a lost position.",
+      "authoredFrom": "lab/ai/fixtures.ts: five-action rotation exceeds the turn budget"
+    },
+    {
+      "id": "five-action-rotation-exceeds-the-turn-budget-mate",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#five-action-rotation-exceeds-the-turn-budget-mate",
+      "best": [
+        "3ec0bac305bd63b8",
+        "894e55abe45c03f2",
+        "edef5451fe63da82"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "home",
+        "mate",
+        "hold"
+      ],
+      "rationale": "Holding white's corner wins on the spot: no reply removes the occupier.",
+      "authoredFrom": "lab/ai/fixtures.ts: five-action rotation exceeds the turn budget"
+    },
+    {
+      "id": "five-action-rotation-exceeds-the-turn-budget-rotated-black-rescue",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#five-action-rotation-exceeds-the-turn-budget-rotated-black-rescue",
+      "best": [
+        "92c29692acac0d6e"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 0,
+      "tags": [
+        "home",
+        "rescue",
+        "no-rescue"
+      ],
+      "rationale": "No turn clears the corner (the prover calls it \"mate\"), so there is no correct defensive turn to score. Kept as a coverage row: the engine must still return a legal turn in a lost position.",
+      "authoredFrom": "lab/ai/fixtures.ts: five-action rotation exceeds the turn budget / rotated black"
+    },
+    {
+      "id": "five-action-rotation-exceeds-the-turn-budget-rotated-black-mate",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#five-action-rotation-exceeds-the-turn-budget-rotated-black-mate",
+      "best": [
+        "5366799390155b48",
+        "b7ad3b8fe4dcda59",
+        "d1004d618d82fbfc"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "home",
+        "mate",
+        "hold"
+      ],
+      "rationale": "Holding black's corner wins on the spot: no reply removes the occupier.",
+      "authoredFrom": "lab/ai/fixtures.ts: five-action rotation exceeds the turn budget / rotated black"
+    },
+    {
+      "id": "promotion-dependent-rescue-rescue",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#promotion-dependent-rescue-rescue",
+      "best": [
+        "0004b166af4ef921",
+        "02eb80011ae257a5",
+        "050e2bd41d7db383",
+        "057e6432512c3203",
+        "07f7805445f54952",
+        "0acf2ae2d314b663",
+        "0af76488cebe412d",
+        "0fb319b7c6388ef1",
+        "11fd34e74a52165b",
+        "130f8fa598772f82",
+        "134c70f2a37733a0",
+        "13556c5dd7420350",
+        "135598fcaa238fca",
+        "1b304962dd46aaa9",
+        "1e067afd83f0cd9c",
+        "1f59e2e6dc723134",
+        "200d3e192e1bcf7f",
+        "202c82c5a7d2a125",
+        "21bd0ade8ff955eb",
+        "21c318b600d51aa0",
+        "22a566a3b30bda74",
+        "22d52945ff5a5bf4",
+        "239a5219fa31aa05",
+        "26bc11c5b216b0cd",
+        "27e797eb44c90228",
+        "28681b26241f6686",
+        "2883ad838758eb7d",
+        "2c5d91187ae03abb",
+        "2d14287331335e14",
+        "2d5e28b97aa901b3",
+        "3282988918bb1263",
+        "34afd210bcac857d",
+        "36567990e4247fac",
+        "37a418916c38405f",
+        "37a888321325465a",
+        "399778a62a4d7a4c",
+        "39dd786c61d725eb",
+        "3d9674dc41b1b37f",
+        "400abb4955ee929b",
+        "40bf47bd4092ef42",
+        "40f7e6c3af83b306",
+        "40fa22dfbe4e84c5",
+        "419c59cf2e446377",
+        "4c131b00f18c8f16",
+        "4d1af01d57846ed5",
+        "4d1f96e82859a2be",
+        "4d68a8febf981c63",
+        "4de4b6876c1c1f29",
+        "4eaf1c5e0fa4cdc2",
+        "4feacd8b42cdeaae",
+        "529c76f03c899fe1",
+        "543c17685beccb1a",
+        "5474b616b4fd975e",
+        "54f2be56cbdf7b0a",
+        "56e8ee3c993eb908",
+        "575620a1aa568cf5",
+        "5967e65277623b71",
+        "5a13686d4e12c439",
+        "5b699d5e59b3cef6",
+        "65402483ea62b9d1",
+        "65d344181e40a617",
+        "69741ecfed8325b5",
+        "6a3fb4168e3bf75e",
+        "6ab3aa6f5dbff414",
+        "6b406d2e6095d1ef",
+        "6bc8199113ab6761",
+        "6c1c753f487fea57",
+        "6e6b5693d512f880",
+        "70d3acf622ee74e2",
+        "73afb48756da7f29",
+        "73e715f9b9cb236d",
+        "75895804e8a54125",
+        "7b9bbb6f19150ac3",
+        "7cb29fcfbb942681",
+        "7df74e1af6fd01ed",
+        "7e30faba46c1d04c",
+        "7e42a259aedda2fa",
+        "7f4b494408d54339",
+        "8510f222c8640b0e",
+        "86a07894ef996472",
+        "86d746827858daaf",
+        "87acf57c364c49da",
+        "8924c86ecf85976a",
+        "89b7a8f53ba788ac",
+        "8a23b7b3e984a5bb",
+        "8b45cca3798e4209",
+        "8bb55535922e5457",
+        "8d6ee43cd63c4bc6",
+        "9923988cfb49592d",
+        "99edb4e9cd426f9e",
+        "9ce9cedd6d964a39",
+        "9d34f82020d9acf4",
+        "9d5700405efe7fc4",
+        "9da798bbd4fbb332",
+        "9f4d502a0c1fbdc6",
+        "a0ff8352a7551723",
+        "a1805a6a49fb3192",
+        "a5d4b8ef12d23e4c",
+        "ac6e57a47009bc20",
+        "ac9ece329ba9aa7e",
+        "ae6caa64d98060db",
+        "aeffcaff2da27f1d",
+        "afb19c9994cf8616",
+        "b0245513ded5cc0f",
+        "b70d71b37c54e04d",
+        "b8105afb911ab9e5",
+        "b81d9ee780d78e26",
+        "b858fb857e0be5a1",
+        "b8ed07716b779878",
+        "bb32cc4c8fb1a24e",
+        "bb6c428ae52eb22e",
+        "bc6ad8e63187b302",
+        "be36b6782f6587e9",
+        "c0397df55f071400",
+        "c1488af4097e87e1",
+        "c170c49e14d470af",
+        "c571c8e47f28b99c",
+        "c9546e7ddd229169",
+        "cad8fd2897f19e76",
+        "cb837b06612e2c93",
+        "cbbb5f1a688e3fed",
+        "cc486e2882358f9e",
+        "cda7f45b2532341b",
+        "cdd9e633aa1e7b50",
+        "ceb1c5a8dabd754f",
+        "cf43a4a952a14abc",
+        "cf4f340a2dbc4cb9",
+        "cffebef4dfd684be",
+        "d1f2983164569dc4",
+        "d4ba2d2044793058",
+        "d4e60c9a1bb2f7f8",
+        "d5b9948144300b50",
+        "d8b061d95fb7e94e",
+        "d8ea76806de34906",
+        "d8f39e8e64b7f56c",
+        "db7dee21c4a8a0e6",
+        "dbc0f47c49df6ee4",
+        "dbcc64df36c268e1",
+        "df002bd37a5008cb",
+        "e33c43ff40982db1",
+        "e3d7f55ae3dfa04a",
+        "e6938865eb596f96",
+        "e7be5edee2eb3bd7",
+        "e7e27f64bd20fc77",
+        "e825bc653df16cc9",
+        "e91a88df74cb1cb8",
+        "ebb224c494ba8529",
+        "ebe8339da6ee2561",
+        "ec5879978309c4e4",
+        "ef39c4c4cb6b4766",
+        "f210d8b0f0274bce",
+        "f33d0e0bf9951f8f",
+        "f6299aa0867175b3",
+        "f93d76f5df7bd4af",
+        "fc17664ed4e58096",
+        "fc1bf6edabf88693",
+        "fe81b4775347b77f",
+        "ff3174118fc4a171",
+        "ff6b6348bd900139"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "home",
+        "rescue"
+      ],
+      "rationale": "The occupation is answerable (rescue); the turn must end with white's corner clear.",
+      "authoredFrom": "lab/ai/fixtures.ts: promotion dependent rescue"
+    },
+    {
+      "id": "promotion-dependent-rescue-mate",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#promotion-dependent-rescue-mate",
+      "best": [
+        "09756469933f8481",
+        "1df634bc8841a0d9"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "home",
+        "mate",
+        "hold"
+      ],
+      "rationale": "Holding white's corner wins on the spot: no reply removes the occupier.",
+      "authoredFrom": "lab/ai/fixtures.ts: promotion dependent rescue"
+    },
+    {
+      "id": "promotion-dependent-rescue-rotated-black-rescue",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#promotion-dependent-rescue-rotated-black-rescue",
+      "best": [
+        "0160da5637105d13",
+        "0178b6d075f14b54",
+        "0296a1df143fe941",
+        "037dcda1f4b3756a",
+        "07db5a5fb339e0e6",
+        "0993d83c898bd247",
+        "0a4fd02ba9a4fdb7",
+        "0c4d47685b7d3423",
+        "0fbb9ea93d2d8d55",
+        "11c61382779742ad",
+        "121a1b9557b86d5d",
+        "13b776f602366906",
+        "175fb401d5014c7d",
+        "17f6962402948db3",
+        "1af17579abc2f44e",
+        "1b390c18eb969deb",
+        "1c5299f66d0a5ffc",
+        "1e0d51df5ca4d69b",
+        "1eb1851af74b563f",
+        "209c69273dd71919",
+        "2264a040af528b47",
+        "2597ea89dff3f249",
+        "25c6603b5ba53eaa",
+        "26ead7ff8946b5f6",
+        "2826547f941237d4",
+        "2a1d4e96ddbbeceb",
+        "2ca8dac7fecdffb7",
+        "2cffcf1ac3e71176",
+        "2d36647a72dc55c6",
+        "2e1170c974919597",
+        "31ed6bf3dc09cc06",
+        "3b15aa8ee3e4a603",
+        "3ca7384853881c17",
+        "3d005f5e48f51df8",
+        "3d63145657750aec",
+        "3d7607515b96de66",
+        "3e4fa392859681b0",
+        "3ffa114430bb7cd3",
+        "405251177ddfdaaf",
+        "4139d19033b11764",
+        "41b669734ca4eb2f",
+        "42cb54051a11ac90",
+        "44bdeaddae80007f",
+        "46c75bae0525e9a2",
+        "470ccf14a65264bb",
+        "4b788c9116bd1065",
+        "4c07d78507452eb2",
+        "4cc9df5971165daf",
+        "544b060be0fa8042",
+        "547280025dde3866",
+        "578e142cd97691a8",
+        "581238c2ac06008f",
+        "5a3faada92975435",
+        "5bdb92bea3ec65b5",
+        "60e1323fa89f260d",
+        "6119c549ba2ff043",
+        "61a5118c11c070e7",
+        "6559352ae6a65232",
+        "6594a712f1f55f5c",
+        "689cc2df1222c4d4",
+        "6a90fbb9b4b09c0f",
+        "6b9a1d53ae7a9433",
+        "6dc814f234fcf050",
+        "6ea464fb9e310dde",
+        "7013defa70492b29",
+        "7080fb8ecb662895",
+        "74f985a91233e42a",
+        "75e79078e4c05bcb",
+        "763b986fc4ef743b",
+        "78731a0cfe5d469a",
+        "7a2cd225cff3cffd",
+        "7a9006e0641c4f59",
+        "7afd4bdfbb1a7580",
+        "7b73f10a3ea8c66a",
+        "7f94404004a39f73",
+        "83ca8470d6ea30d1",
+        "842c422f82e8a0a0",
+        "8727b8c7ef7e1974",
+        "8751e0c8fc1ddaea",
+        "8a4d6268d4269da8",
+        "8a74e4616902258c",
+        "8bca8c6a7b82c88a",
+        "8c98404a0b64ee50",
+        "8d06fef787754421",
+        "8d51eb2aba5faae0",
+        "8fbf54f90d292e01",
+        "90434fc3a5b17790",
+        "92cfbb3a45ca4045",
+        "984347d908d98fcb",
+        "98c13fcd31f9f448",
+        "9abb8ebe9a5c1d95",
+        "9cae7b6e314da66e",
+        "9ccd30662ecdb17a",
+        "9cd82361222e65f0",
+        "9d091c782a30a781",
+        "9fa581865cdb1fba",
+        "a0cefe664ea8e685",
+        "a11eeb814c1d9967",
+        "a1922423307f8299",
+        "a33885ef6d8752d7",
+        "a4fb2fbc8fc6686a",
+        "a57595690a74db80",
+        "a6757e6fca815b70",
+        "a83dfc0cf03369d1",
+        "abe1f41bd01c4621",
+        "ad785398728a48f1",
+        "add171bda51f893f",
+        "ade3635822c58fb5",
+        "ae869fedffba357f",
+        "b0a20098aaed1034",
+        "b21952c67b8ed290",
+        "b658b2147b2c3625",
+        "b66aa0f1fcf630af",
+        "b69aa6bc26fed93e",
+        "b6f19031acb9f7eb",
+        "b8b14646b3b4edcd",
+        "ba1be78aee4c3d83",
+        "ba972828922e267d",
+        "bb473dcf909b599f",
+        "bb5f5149d27a4fd8",
+        "c00b35bc6878cb71",
+        "c0b7e179c3974bd5",
+        "c14f160fd1279d9b",
+        "c43a8322884de4ca",
+        "c53f687bdf4a8001",
+        "c80f53132959a1eb",
+        "c932e6ef6b9a7f42",
+        "c959d062e1dd5197",
+        "c9f0f24736489059",
+        "caa71c176ced2c19",
+        "cc6630c24d444bc6",
+        "cf0a40cbe789b648",
+        "d12edfbeb2de9303",
+        "d1bdfaca09f190bf",
+        "d24b230b6fa129c9",
+        "d2bb2546b5a9c058",
+        "d483836239ba0952",
+        "d557a1996b8b5fbc",
+        "dc90c5bc20e3f4ab",
+        "df66be3503cc40f9",
+        "e097f5a04a09acf2",
+        "e1fc752704676139",
+        "e3063b3d7c290012",
+        "e37063326f4ac38c",
+        "e6a2eb24dfeadf2d",
+        "e7697f9e7c9d5234",
+        "ead6a8a16f05abf3",
+        "ed67fb6908aee639",
+        "ee55679bfa553cea",
+        "ee6ce192477184ce",
+        "efeb0f90e8d5d1ec",
+        "f5dca432246683f0",
+        "f5e5223b99423bd4",
+        "f620301ca0ce2a3e",
+        "f6ee38c0d69d5923",
+        "f9bc1cf2d5bebb19",
+        "fb918eeaeb2fefa3",
+        "fc62c4239b8e96ad",
+        "fce0bc37a2aeed2e"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "home",
+        "rescue"
+      ],
+      "rationale": "The occupation is answerable (rescue); the turn must end with black's corner clear.",
+      "authoredFrom": "lab/ai/fixtures.ts: promotion dependent rescue / rotated black"
+    },
+    {
+      "id": "promotion-dependent-rescue-rotated-black-mate",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#promotion-dependent-rescue-rotated-black-mate",
+      "best": [
+        "3c366bb8af0c10bd",
+        "5817e8423c5b09db"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "home",
+        "mate",
+        "hold"
+      ],
+      "rationale": "Holding black's corner wins on the spot: no reply removes the occupier.",
+      "authoredFrom": "lab/ai/fixtures.ts: promotion dependent rescue / rotated black"
+    },
+    {
+      "id": "public-bank-no-promotion-money-rescue",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#public-bank-no-promotion-money-rescue",
+      "best": [
+        "06824c2026a09a28"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 0,
+      "tags": [
+        "home",
+        "rescue",
+        "no-rescue"
+      ],
+      "rationale": "No turn clears the corner (the prover calls it \"mate\"), so there is no correct defensive turn to score. Kept as a coverage row: the engine must still return a legal turn in a lost position.",
+      "authoredFrom": "lab/ai/fixtures.ts: public bank / no promotion money"
+    },
+    {
+      "id": "public-bank-no-promotion-money-mate",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#public-bank-no-promotion-money-mate",
+      "best": [
+        "0037600e2d376314",
+        "14b430db3649474c",
+        "f88a1cb40ff9a6bb"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "home",
+        "mate",
+        "hold"
+      ],
+      "rationale": "Holding white's corner wins on the spot: no reply removes the occupier.",
+      "authoredFrom": "lab/ai/fixtures.ts: public bank / no promotion money"
+    },
+    {
+      "id": "public-bank-no-promotion-money-rotated-black-rescue",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#public-bank-no-promotion-money-rotated-black-rescue",
+      "best": [
+        "92c29692acac0d6e"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 0,
+      "tags": [
+        "home",
+        "rescue",
+        "no-rescue"
+      ],
+      "rationale": "No turn clears the corner (the prover calls it \"mate\"), so there is no correct defensive turn to score. Kept as a coverage row: the engine must still return a legal turn in a lost position.",
+      "authoredFrom": "lab/ai/fixtures.ts: public bank / no promotion money / rotated black"
+    },
+    {
+      "id": "public-bank-no-promotion-money-rotated-black-mate",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#public-bank-no-promotion-money-rotated-black-mate",
+      "best": [
+        "02adc4bda9e66813",
+        "1c6815290ddc0cc3",
+        "668c47473ab17175"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "home",
+        "mate",
+        "hold"
+      ],
+      "rationale": "Holding black's corner wins on the spot: no reply removes the occupier.",
+      "authoredFrom": "lab/ai/fixtures.ts: public bank / no promotion money / rotated black"
+    },
+    {
+      "id": "clear-an-adjacent-lane-rescue",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#clear-an-adjacent-lane-rescue",
+      "best": [
+        "2f4274b5450bfcb3",
+        "3252bd0d33741858",
+        "41e3910279ee0815",
+        "6595804bd1020613",
+        "892d9c72295657c6",
+        "8c2d1832a8974f60",
+        "ad5b8d3b81ba59c0",
+        "cd73b3a9bdc5936e"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "home",
+        "rescue"
+      ],
+      "rationale": "The occupation is answerable (rescue); the turn must end with white's corner clear.",
+      "authoredFrom": "lab/ai/fixtures.ts: clear an adjacent lane"
+    },
+    {
+      "id": "clear-an-adjacent-lane-mate",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#clear-an-adjacent-lane-mate",
+      "best": [
+        "0b93236902eaa6bb",
+        "11a64bebfe861678",
+        "1ee7c48c42bd2f46",
+        "2c546b97d5c73288",
+        "3ccce73c4ca0f7b9",
+        "5ecd6fe8ee977bf3",
+        "611de263e54d25b7",
+        "6600db2631eb8999",
+        "68c99a646a3ead89",
+        "6a562f255b7093b2",
+        "83e331cf906284d5",
+        "8a9d5684309275a8",
+        "a229dfa0d4f3d36a",
+        "e5a4cceb1f40389e",
+        "e75041128ed8ee91",
+        "fa8bca20cfe50813"
+      ],
+      "avoid": [
+        "5298f06107f61276"
+      ],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "home",
+        "mate",
+        "refuted"
+      ],
+      "rationale": "white answers the occupation, so stepping onto the corner throws the unit away for nothing.",
+      "authoredFrom": "lab/ai/fixtures.ts: clear an adjacent lane"
+    },
+    {
+      "id": "clear-an-adjacent-lane-rotated-black-rescue",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#clear-an-adjacent-lane-rotated-black-rescue",
+      "best": [
+        "233ea873d1e506d0",
+        "2f59154000a8ae81",
+        "49f02675f9f103c4",
+        "7f54b872bfccc1da",
+        "9908a2abb633a4ad",
+        "b87c0a215f154d08",
+        "ded53914a64ce04d",
+        "e7fcab0809a22c36"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "home",
+        "rescue"
+      ],
+      "rationale": "The occupation is answerable (rescue); the turn must end with black's corner clear.",
+      "authoredFrom": "lab/ai/fixtures.ts: clear an adjacent lane / rotated black"
+    },
+    {
+      "id": "clear-an-adjacent-lane-rotated-black-mate",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#clear-an-adjacent-lane-rotated-black-mate",
+      "best": [
+        "1674c49a97be6566",
+        "2723a6006606d3ee",
+        "2bce5bc45c44900f",
+        "3b8c43bc2a8373b6",
+        "3f5f4885a27e8ff5",
+        "7d249740a14db673",
+        "842b6c374f2a023a",
+        "8e6e8befa280d603",
+        "940ea94cd88bbd8e",
+        "a7e77c018117b9db",
+        "b0ac8e1e2b7c15b2",
+        "bfb192065becc64d",
+        "c01f0ec3dfd5f51a",
+        "c0a5b8900d00ff4c",
+        "e48917e24b7ad827",
+        "e92da6ffeb8d8ff9"
+      ],
+      "avoid": [
+        "f98e6fe9cb2fff4a"
+      ],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "home",
+        "mate",
+        "refuted"
+      ],
+      "rationale": "black answers the occupation, so stepping onto the corner throws the unit away for nothing.",
+      "authoredFrom": "lab/ai/fixtures.ts: clear an adjacent lane / rotated black"
+    },
+    {
+      "id": "multi-action-approach-rescue",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#multi-action-approach-rescue",
+      "best": [
+        "25f8663d13f8bd4e"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "home",
+        "rescue"
+      ],
+      "rationale": "The occupation is answerable (rescue); the turn must end with white's corner clear.",
+      "authoredFrom": "lab/ai/fixtures.ts: multi-action approach"
+    },
+    {
+      "id": "multi-action-approach-mate",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#multi-action-approach-mate",
+      "best": [
+        "3206e42c5e10d4ef"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "home",
+        "mate",
+        "step-in"
+      ],
+      "rationale": "Holding white's corner wins on the spot: no reply removes the occupier.",
+      "authoredFrom": "lab/ai/fixtures.ts: multi-action approach"
+    },
+    {
+      "id": "multi-action-approach-rotated-black-rescue",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#multi-action-approach-rotated-black-rescue",
+      "best": [
+        "d24756117f6fba9c"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "home",
+        "rescue"
+      ],
+      "rationale": "The occupation is answerable (rescue); the turn must end with black's corner clear.",
+      "authoredFrom": "lab/ai/fixtures.ts: multi-action approach / rotated black"
+    },
+    {
+      "id": "multi-action-approach-rotated-black-mate",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#multi-action-approach-rotated-black-mate",
+      "best": [
+        "6ef9ad682242599a"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "home",
+        "mate",
+        "step-in"
+      ],
+      "rationale": "Holding black's corner wins on the spot: no reply removes the occupier.",
+      "authoredFrom": "lab/ai/fixtures.ts: multi-action approach / rotated black"
+    },
+    {
+      "id": "too-few-actions-for-rotation-rescue",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#too-few-actions-for-rotation-rescue",
+      "best": [
+        "06824c2026a09a28"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 0,
+      "tags": [
+        "home",
+        "rescue",
+        "no-rescue"
+      ],
+      "rationale": "No turn clears the corner (the prover calls it \"mate\"), so there is no correct defensive turn to score. Kept as a coverage row: the engine must still return a legal turn in a lost position.",
+      "authoredFrom": "lab/ai/fixtures.ts: too few actions for rotation"
+    },
+    {
+      "id": "too-few-actions-for-rotation-mate",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#too-few-actions-for-rotation-mate",
+      "best": [
+        "3ec0bac305bd63b8",
+        "894e55abe45c03f2",
+        "edef5451fe63da82"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "home",
+        "mate",
+        "hold"
+      ],
+      "rationale": "Holding white's corner wins on the spot: no reply removes the occupier.",
+      "authoredFrom": "lab/ai/fixtures.ts: too few actions for rotation"
+    },
+    {
+      "id": "too-few-actions-for-rotation-rotated-black-rescue",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#too-few-actions-for-rotation-rotated-black-rescue",
+      "best": [
+        "92c29692acac0d6e"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 0,
+      "tags": [
+        "home",
+        "rescue",
+        "no-rescue"
+      ],
+      "rationale": "No turn clears the corner (the prover calls it \"mate\"), so there is no correct defensive turn to score. Kept as a coverage row: the engine must still return a legal turn in a lost position.",
+      "authoredFrom": "lab/ai/fixtures.ts: too few actions for rotation / rotated black"
+    },
+    {
+      "id": "too-few-actions-for-rotation-rotated-black-mate",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#too-few-actions-for-rotation-rotated-black-mate",
+      "best": [
+        "5366799390155b48",
+        "b7ad3b8fe4dcda59",
+        "d1004d618d82fbfc"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "home",
+        "mate",
+        "hold"
+      ],
+      "rationale": "Holding black's corner wins on the spot: no reply removes the occupier.",
+      "authoredFrom": "lab/ai/fixtures.ts: too few actions for rotation / rotated black"
+    },
+    {
+      "id": "zero-attack-occupier-rescue",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#zero-attack-occupier-rescue",
+      "best": [
+        "197e9e22f466b3ee",
+        "f5c6821b0c32e23b"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "home",
+        "rescue"
+      ],
+      "rationale": "The occupation is answerable (rescue); the turn must end with white's corner clear.",
+      "authoredFrom": "lab/ai/fixtures.ts: zero attack occupier"
+    },
+    {
+      "id": "zero-attack-occupier-mate",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#zero-attack-occupier-mate",
+      "best": [
+        "095b633812095f5e",
+        "0bafeec183918951",
+        "167465f3c2ac6fd3",
+        "1fe6d5970e4c91fe",
+        "4ed67073d9bab4aa",
+        "6662f9573ddb1268",
+        "6f1c9e1c9d2be315",
+        "843635b76777ca49",
+        "86a980f65639f472",
+        "8aff74f53ca2ee59",
+        "8de24db0e8044277",
+        "b232c03be3de1c33",
+        "c0abc444d88e5548",
+        "d03348ef41e99079",
+        "e76c8cba0fa3c17b",
+        "f2186b5f4ff44886",
+        "fd59e438f3cf71b8"
+      ],
+      "avoid": [
+        "be675fb20abf75b6"
+      ],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "home",
+        "mate",
+        "refuted"
+      ],
+      "rationale": "white answers the occupation, so stepping onto the corner throws the unit away for nothing.",
+      "authoredFrom": "lab/ai/fixtures.ts: zero attack occupier"
+    },
+    {
+      "id": "zero-attack-occupier-rotated-black-rescue",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#zero-attack-occupier-rotated-black-rescue",
+      "best": [
+        "10e5116a8a9c5b83",
+        "e1693d3e2c78154f"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "home",
+        "rescue"
+      ],
+      "rationale": "The occupation is answerable (rescue); the turn must end with black's corner clear.",
+      "authoredFrom": "lab/ai/fixtures.ts: zero attack occupier / rotated black"
+    },
+    {
+      "id": "zero-attack-occupier-rotated-black-mate",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#zero-attack-occupier-rotated-black-mate",
+      "best": [
+        "136c62fa1c520abc",
+        "13d6d4a9ce8700ea",
+        "37fa7bdb88fd2781",
+        "3a5ecac6280a705f",
+        "477dc5751b0c4228",
+        "5758000e8cadfd9c",
+        "5d1de7d6610729a5",
+        "63dfe227e8fbea14",
+        "6cc2fe3f986b39eb",
+        "749410384290467d",
+        "ae57fb7962ca49d5",
+        "c507a8a354399ac0",
+        "d583790121d9ecde",
+        "e8ff2f85e9048c10",
+        "ec2c24bc61f97053",
+        "f450ca39a5812c48",
+        "f8bd37fd9fc36fa9"
+      ],
+      "avoid": [
+        "2afd03d008a800ec"
+      ],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "home",
+        "mate",
+        "refuted"
+      ],
+      "rationale": "black answers the occupation, so stepping onto the corner throws the unit away for nothing.",
+      "authoredFrom": "lab/ai/fixtures.ts: zero attack occupier / rotated black"
+    },
+    {
+      "id": "same-target-limit-rescue",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#same-target-limit-rescue",
+      "best": [
+        "06824c2026a09a28"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 0,
+      "tags": [
+        "home",
+        "rescue",
+        "no-rescue"
+      ],
+      "rationale": "No turn clears the corner (the prover calls it \"mate\"), so there is no correct defensive turn to score. Kept as a coverage row: the engine must still return a legal turn in a lost position.",
+      "authoredFrom": "lab/ai/fixtures.ts: same-target limit"
+    },
+    {
+      "id": "same-target-limit-mate",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#same-target-limit-mate",
+      "best": [
+        "23321faf95ae8fd5",
+        "771392086f8b1a98",
+        "b828c1c6eea217ae"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "home",
+        "mate",
+        "hold"
+      ],
+      "rationale": "Holding white's corner wins on the spot: no reply removes the occupier.",
+      "authoredFrom": "lab/ai/fixtures.ts: same-target limit"
+    },
+    {
+      "id": "same-target-limit-rotated-black-rescue",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#same-target-limit-rotated-black-rescue",
+      "best": [
+        "92c29692acac0d6e"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 0,
+      "tags": [
+        "home",
+        "rescue",
+        "no-rescue"
+      ],
+      "rationale": "No turn clears the corner (the prover calls it \"mate\"), so there is no correct defensive turn to score. Kept as a coverage row: the engine must still return a legal turn in a lost position.",
+      "authoredFrom": "lab/ai/fixtures.ts: same-target limit / rotated black"
+    },
+    {
+      "id": "same-target-limit-rotated-black-mate",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#same-target-limit-rotated-black-mate",
+      "best": [
+        "663725b2138fb212",
+        "e3eb6da0c8e9da96",
+        "fd95dec145ed7d21"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "home",
+        "mate",
+        "hold"
+      ],
+      "rationale": "Holding black's corner wins on the spot: no reply removes the occupier.",
+      "authoredFrom": "lab/ai/fixtures.ts: same-target limit / rotated black"
+    },
+    {
+      "id": "damage-remains-during-defender-reply-rescue",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#damage-remains-during-defender-reply-rescue",
+      "best": [
+        "012f08ee9ac98b32"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 0,
+      "tags": [
+        "home",
+        "rescue",
+        "no-rescue"
+      ],
+      "rationale": "No turn clears the corner (the prover calls it \"mate\"), so there is no correct defensive turn to score. Kept as a coverage row: the engine must still return a legal turn in a lost position.",
+      "authoredFrom": "lab/ai/fixtures.ts: damage remains during defender reply"
+    },
+    {
+      "id": "damage-remains-during-defender-reply-mate",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#damage-remains-during-defender-reply-mate",
+      "best": [
+        "771392086f8b1a98"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "home",
+        "mate",
+        "step-in"
+      ],
+      "rationale": "Holding white's corner wins on the spot: no reply removes the occupier.",
+      "authoredFrom": "lab/ai/fixtures.ts: damage remains during defender reply"
+    },
+    {
+      "id": "damage-remains-during-defender-reply-rotated-black-rescue",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#damage-remains-during-defender-reply-rotated-black-rescue",
+      "best": [
+        "aa595905901e7a77"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 0,
+      "tags": [
+        "home",
+        "rescue",
+        "no-rescue"
+      ],
+      "rationale": "No turn clears the corner (the prover calls it \"mate\"), so there is no correct defensive turn to score. Kept as a coverage row: the engine must still return a legal turn in a lost position.",
+      "authoredFrom": "lab/ai/fixtures.ts: damage remains during defender reply / rotated black"
+    },
+    {
+      "id": "damage-remains-during-defender-reply-rotated-black-mate",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#damage-remains-during-defender-reply-rotated-black-mate",
+      "best": [
+        "e3eb6da0c8e9da96"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "home",
+        "mate",
+        "step-in"
+      ],
+      "rationale": "Holding black's corner wins on the spot: no reply removes the occupier.",
+      "authoredFrom": "lab/ai/fixtures.ts: damage remains during defender reply / rotated black"
+    },
+    {
+      "id": "newly-placed-unit-cannot-promote-rescue",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#newly-placed-unit-cannot-promote-rescue",
+      "best": [
+        "0004b166af4ef921",
+        "02eb80011ae257a5",
+        "050e2bd41d7db383",
+        "057e6432512c3203",
+        "07f7805445f54952",
+        "0acf2ae2d314b663",
+        "0af76488cebe412d",
+        "0fb319b7c6388ef1",
+        "11fd34e74a52165b",
+        "130f8fa598772f82",
+        "134c70f2a37733a0",
+        "13556c5dd7420350",
+        "135598fcaa238fca",
+        "1b304962dd46aaa9",
+        "1e067afd83f0cd9c",
+        "1f59e2e6dc723134",
+        "200d3e192e1bcf7f",
+        "202c82c5a7d2a125",
+        "21bd0ade8ff955eb",
+        "21c318b600d51aa0",
+        "22a566a3b30bda74",
+        "22d52945ff5a5bf4",
+        "239a5219fa31aa05",
+        "26bc11c5b216b0cd",
+        "27e797eb44c90228",
+        "28681b26241f6686",
+        "2883ad838758eb7d",
+        "2c5d91187ae03abb",
+        "2d14287331335e14",
+        "2d5e28b97aa901b3",
+        "3282988918bb1263",
+        "34afd210bcac857d",
+        "36567990e4247fac",
+        "37a418916c38405f",
+        "37a888321325465a",
+        "399778a62a4d7a4c",
+        "39dd786c61d725eb",
+        "3d9674dc41b1b37f",
+        "400abb4955ee929b",
+        "40bf47bd4092ef42",
+        "40f7e6c3af83b306",
+        "40fa22dfbe4e84c5",
+        "419c59cf2e446377",
+        "4c131b00f18c8f16",
+        "4d1af01d57846ed5",
+        "4d1f96e82859a2be",
+        "4d68a8febf981c63",
+        "4de4b6876c1c1f29",
+        "4eaf1c5e0fa4cdc2",
+        "4feacd8b42cdeaae",
+        "529c76f03c899fe1",
+        "543c17685beccb1a",
+        "5474b616b4fd975e",
+        "54f2be56cbdf7b0a",
+        "56e8ee3c993eb908",
+        "575620a1aa568cf5",
+        "5967e65277623b71",
+        "5a13686d4e12c439",
+        "5b699d5e59b3cef6",
+        "65402483ea62b9d1",
+        "65d344181e40a617",
+        "69741ecfed8325b5",
+        "6a3fb4168e3bf75e",
+        "6ab3aa6f5dbff414",
+        "6b406d2e6095d1ef",
+        "6bc8199113ab6761",
+        "6c1c753f487fea57",
+        "6e6b5693d512f880",
+        "70d3acf622ee74e2",
+        "73afb48756da7f29",
+        "73e715f9b9cb236d",
+        "75895804e8a54125",
+        "7b9bbb6f19150ac3",
+        "7cb29fcfbb942681",
+        "7df74e1af6fd01ed",
+        "7e30faba46c1d04c",
+        "7e42a259aedda2fa",
+        "7f4b494408d54339",
+        "8510f222c8640b0e",
+        "86a07894ef996472",
+        "86d746827858daaf",
+        "87acf57c364c49da",
+        "8924c86ecf85976a",
+        "89b7a8f53ba788ac",
+        "8a23b7b3e984a5bb",
+        "8b45cca3798e4209",
+        "8bb55535922e5457",
+        "8d6ee43cd63c4bc6",
+        "9923988cfb49592d",
+        "99edb4e9cd426f9e",
+        "9ce9cedd6d964a39",
+        "9d34f82020d9acf4",
+        "9d5700405efe7fc4",
+        "9da798bbd4fbb332",
+        "9f4d502a0c1fbdc6",
+        "a0ff8352a7551723",
+        "a1805a6a49fb3192",
+        "a5d4b8ef12d23e4c",
+        "ac6e57a47009bc20",
+        "ac9ece329ba9aa7e",
+        "ae6caa64d98060db",
+        "aeffcaff2da27f1d",
+        "afb19c9994cf8616",
+        "b0245513ded5cc0f",
+        "b70d71b37c54e04d",
+        "b8105afb911ab9e5",
+        "b81d9ee780d78e26",
+        "b858fb857e0be5a1",
+        "b8ed07716b779878",
+        "bb32cc4c8fb1a24e",
+        "bb6c428ae52eb22e",
+        "bc6ad8e63187b302",
+        "be36b6782f6587e9",
+        "c0397df55f071400",
+        "c1488af4097e87e1",
+        "c170c49e14d470af",
+        "c571c8e47f28b99c",
+        "c9546e7ddd229169",
+        "cad8fd2897f19e76",
+        "cb837b06612e2c93",
+        "cbbb5f1a688e3fed",
+        "cc486e2882358f9e",
+        "cda7f45b2532341b",
+        "cdd9e633aa1e7b50",
+        "ceb1c5a8dabd754f",
+        "cf43a4a952a14abc",
+        "cf4f340a2dbc4cb9",
+        "cffebef4dfd684be",
+        "d1f2983164569dc4",
+        "d4ba2d2044793058",
+        "d4e60c9a1bb2f7f8",
+        "d5b9948144300b50",
+        "d8b061d95fb7e94e",
+        "d8ea76806de34906",
+        "d8f39e8e64b7f56c",
+        "db7dee21c4a8a0e6",
+        "dbc0f47c49df6ee4",
+        "dbcc64df36c268e1",
+        "df002bd37a5008cb",
+        "e33c43ff40982db1",
+        "e3d7f55ae3dfa04a",
+        "e6938865eb596f96",
+        "e7be5edee2eb3bd7",
+        "e7e27f64bd20fc77",
+        "e825bc653df16cc9",
+        "e91a88df74cb1cb8",
+        "ebb224c494ba8529",
+        "ebe8339da6ee2561",
+        "ec5879978309c4e4",
+        "ef39c4c4cb6b4766",
+        "f210d8b0f0274bce",
+        "f33d0e0bf9951f8f",
+        "f6299aa0867175b3",
+        "f93d76f5df7bd4af",
+        "fc17664ed4e58096",
+        "fc1bf6edabf88693",
+        "fe81b4775347b77f",
+        "ff3174118fc4a171",
+        "ff6b6348bd900139"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "home",
+        "rescue"
+      ],
+      "rationale": "The occupation is answerable (rescue); the turn must end with white's corner clear.",
+      "authoredFrom": "lab/ai/fixtures.ts: newly placed unit cannot promote"
+    },
+    {
+      "id": "newly-placed-unit-cannot-promote-mate",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#newly-placed-unit-cannot-promote-mate",
+      "best": [
+        "09756469933f8481",
+        "1df634bc8841a0d9"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "home",
+        "mate",
+        "hold"
+      ],
+      "rationale": "Holding white's corner wins on the spot: no reply removes the occupier.",
+      "authoredFrom": "lab/ai/fixtures.ts: newly placed unit cannot promote"
+    },
+    {
+      "id": "newly-placed-unit-cannot-promote-rotated-black-rescue",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#newly-placed-unit-cannot-promote-rotated-black-rescue",
+      "best": [
+        "0160da5637105d13",
+        "0178b6d075f14b54",
+        "0296a1df143fe941",
+        "037dcda1f4b3756a",
+        "07db5a5fb339e0e6",
+        "0993d83c898bd247",
+        "0a4fd02ba9a4fdb7",
+        "0c4d47685b7d3423",
+        "0fbb9ea93d2d8d55",
+        "11c61382779742ad",
+        "121a1b9557b86d5d",
+        "13b776f602366906",
+        "175fb401d5014c7d",
+        "17f6962402948db3",
+        "1af17579abc2f44e",
+        "1b390c18eb969deb",
+        "1c5299f66d0a5ffc",
+        "1e0d51df5ca4d69b",
+        "1eb1851af74b563f",
+        "209c69273dd71919",
+        "2264a040af528b47",
+        "2597ea89dff3f249",
+        "25c6603b5ba53eaa",
+        "26ead7ff8946b5f6",
+        "2826547f941237d4",
+        "2a1d4e96ddbbeceb",
+        "2ca8dac7fecdffb7",
+        "2cffcf1ac3e71176",
+        "2d36647a72dc55c6",
+        "2e1170c974919597",
+        "31ed6bf3dc09cc06",
+        "3b15aa8ee3e4a603",
+        "3ca7384853881c17",
+        "3d005f5e48f51df8",
+        "3d63145657750aec",
+        "3d7607515b96de66",
+        "3e4fa392859681b0",
+        "3ffa114430bb7cd3",
+        "405251177ddfdaaf",
+        "4139d19033b11764",
+        "41b669734ca4eb2f",
+        "42cb54051a11ac90",
+        "44bdeaddae80007f",
+        "46c75bae0525e9a2",
+        "470ccf14a65264bb",
+        "4b788c9116bd1065",
+        "4c07d78507452eb2",
+        "4cc9df5971165daf",
+        "544b060be0fa8042",
+        "547280025dde3866",
+        "578e142cd97691a8",
+        "581238c2ac06008f",
+        "5a3faada92975435",
+        "5bdb92bea3ec65b5",
+        "60e1323fa89f260d",
+        "6119c549ba2ff043",
+        "61a5118c11c070e7",
+        "6559352ae6a65232",
+        "6594a712f1f55f5c",
+        "689cc2df1222c4d4",
+        "6a90fbb9b4b09c0f",
+        "6b9a1d53ae7a9433",
+        "6dc814f234fcf050",
+        "6ea464fb9e310dde",
+        "7013defa70492b29",
+        "7080fb8ecb662895",
+        "74f985a91233e42a",
+        "75e79078e4c05bcb",
+        "763b986fc4ef743b",
+        "78731a0cfe5d469a",
+        "7a2cd225cff3cffd",
+        "7a9006e0641c4f59",
+        "7afd4bdfbb1a7580",
+        "7b73f10a3ea8c66a",
+        "7f94404004a39f73",
+        "83ca8470d6ea30d1",
+        "842c422f82e8a0a0",
+        "8727b8c7ef7e1974",
+        "8751e0c8fc1ddaea",
+        "8a4d6268d4269da8",
+        "8a74e4616902258c",
+        "8bca8c6a7b82c88a",
+        "8c98404a0b64ee50",
+        "8d06fef787754421",
+        "8d51eb2aba5faae0",
+        "8fbf54f90d292e01",
+        "90434fc3a5b17790",
+        "92cfbb3a45ca4045",
+        "984347d908d98fcb",
+        "98c13fcd31f9f448",
+        "9abb8ebe9a5c1d95",
+        "9cae7b6e314da66e",
+        "9ccd30662ecdb17a",
+        "9cd82361222e65f0",
+        "9d091c782a30a781",
+        "9fa581865cdb1fba",
+        "a0cefe664ea8e685",
+        "a11eeb814c1d9967",
+        "a1922423307f8299",
+        "a33885ef6d8752d7",
+        "a4fb2fbc8fc6686a",
+        "a57595690a74db80",
+        "a6757e6fca815b70",
+        "a83dfc0cf03369d1",
+        "abe1f41bd01c4621",
+        "ad785398728a48f1",
+        "add171bda51f893f",
+        "ade3635822c58fb5",
+        "ae869fedffba357f",
+        "b0a20098aaed1034",
+        "b21952c67b8ed290",
+        "b658b2147b2c3625",
+        "b66aa0f1fcf630af",
+        "b69aa6bc26fed93e",
+        "b6f19031acb9f7eb",
+        "b8b14646b3b4edcd",
+        "ba1be78aee4c3d83",
+        "ba972828922e267d",
+        "bb473dcf909b599f",
+        "bb5f5149d27a4fd8",
+        "c00b35bc6878cb71",
+        "c0b7e179c3974bd5",
+        "c14f160fd1279d9b",
+        "c43a8322884de4ca",
+        "c53f687bdf4a8001",
+        "c80f53132959a1eb",
+        "c932e6ef6b9a7f42",
+        "c959d062e1dd5197",
+        "c9f0f24736489059",
+        "caa71c176ced2c19",
+        "cc6630c24d444bc6",
+        "cf0a40cbe789b648",
+        "d12edfbeb2de9303",
+        "d1bdfaca09f190bf",
+        "d24b230b6fa129c9",
+        "d2bb2546b5a9c058",
+        "d483836239ba0952",
+        "d557a1996b8b5fbc",
+        "dc90c5bc20e3f4ab",
+        "df66be3503cc40f9",
+        "e097f5a04a09acf2",
+        "e1fc752704676139",
+        "e3063b3d7c290012",
+        "e37063326f4ac38c",
+        "e6a2eb24dfeadf2d",
+        "e7697f9e7c9d5234",
+        "ead6a8a16f05abf3",
+        "ed67fb6908aee639",
+        "ee55679bfa553cea",
+        "ee6ce192477184ce",
+        "efeb0f90e8d5d1ec",
+        "f5dca432246683f0",
+        "f5e5223b99423bd4",
+        "f620301ca0ce2a3e",
+        "f6ee38c0d69d5923",
+        "f9bc1cf2d5bebb19",
+        "fb918eeaeb2fefa3",
+        "fc62c4239b8e96ad",
+        "fce0bc37a2aeed2e"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "home",
+        "rescue"
+      ],
+      "rationale": "The occupation is answerable (rescue); the turn must end with black's corner clear.",
+      "authoredFrom": "lab/ai/fixtures.ts: newly placed unit cannot promote / rotated black"
+    },
+    {
+      "id": "newly-placed-unit-cannot-promote-rotated-black-mate",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#newly-placed-unit-cannot-promote-rotated-black-mate",
+      "best": [
+        "3c366bb8af0c10bd",
+        "5817e8423c5b09db"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "home",
+        "mate",
+        "hold"
+      ],
+      "rationale": "Holding black's corner wins on the spot: no reply removes the occupier.",
+      "authoredFrom": "lab/ai/fixtures.ts: newly placed unit cannot promote / rotated black"
+    },
+    {
+      "id": "ineligible-defender-rescue",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#ineligible-defender-rescue",
+      "best": [
+        "ca8169876bdfde85"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 0,
+      "tags": [
+        "home",
+        "rescue",
+        "no-rescue"
+      ],
+      "rationale": "No turn clears the corner (the prover calls it \"mate\"), so there is no correct defensive turn to score. Kept as a coverage row: the engine must still return a legal turn in a lost position.",
+      "authoredFrom": "lab/ai/fixtures.ts: ineligible defender"
+    },
+    {
+      "id": "ineligible-defender-mate",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#ineligible-defender-mate",
+      "best": [
+        "e7efbf2f13936b31"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "home",
+        "mate",
+        "step-in"
+      ],
+      "rationale": "Holding white's corner wins on the spot: no reply removes the occupier.",
+      "authoredFrom": "lab/ai/fixtures.ts: ineligible defender"
+    },
+    {
+      "id": "ineligible-defender-rotated-black-rescue",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#ineligible-defender-rotated-black-rescue",
+      "best": [
+        "fede59fa2ee8bc5d"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 0,
+      "tags": [
+        "home",
+        "rescue",
+        "no-rescue"
+      ],
+      "rationale": "No turn clears the corner (the prover calls it \"mate\"), so there is no correct defensive turn to score. Kept as a coverage row: the engine must still return a legal turn in a lost position.",
+      "authoredFrom": "lab/ai/fixtures.ts: ineligible defender / rotated black"
+    },
+    {
+      "id": "ineligible-defender-rotated-black-mate",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#ineligible-defender-rotated-black-mate",
+      "best": [
+        "4adeeafa41e1e771"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "home",
+        "mate",
+        "step-in"
+      ],
+      "rationale": "Holding black's corner wins on the spot: no reply removes the occupier.",
+      "authoredFrom": "lab/ai/fixtures.ts: ineligible defender / rotated black"
+    },
+    {
+      "id": "at-most-one-promotion-rescue",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#at-most-one-promotion-rescue",
+      "best": [
+        "0004b166af4ef921",
+        "02eb80011ae257a5",
+        "050e2bd41d7db383",
+        "057e6432512c3203",
+        "07f7805445f54952",
+        "0acf2ae2d314b663",
+        "0af76488cebe412d",
+        "0fb319b7c6388ef1",
+        "11fd34e74a52165b",
+        "130f8fa598772f82",
+        "134c70f2a37733a0",
+        "13556c5dd7420350",
+        "135598fcaa238fca",
+        "1b304962dd46aaa9",
+        "1e067afd83f0cd9c",
+        "1f59e2e6dc723134",
+        "200d3e192e1bcf7f",
+        "202c82c5a7d2a125",
+        "21bd0ade8ff955eb",
+        "21c318b600d51aa0",
+        "22a566a3b30bda74",
+        "22d52945ff5a5bf4",
+        "239a5219fa31aa05",
+        "26bc11c5b216b0cd",
+        "27e797eb44c90228",
+        "28681b26241f6686",
+        "2883ad838758eb7d",
+        "2c5d91187ae03abb",
+        "2d14287331335e14",
+        "2d5e28b97aa901b3",
+        "3282988918bb1263",
+        "34afd210bcac857d",
+        "36567990e4247fac",
+        "37a418916c38405f",
+        "37a888321325465a",
+        "399778a62a4d7a4c",
+        "39dd786c61d725eb",
+        "3d9674dc41b1b37f",
+        "400abb4955ee929b",
+        "40bf47bd4092ef42",
+        "40f7e6c3af83b306",
+        "40fa22dfbe4e84c5",
+        "419c59cf2e446377",
+        "4c131b00f18c8f16",
+        "4d1af01d57846ed5",
+        "4d1f96e82859a2be",
+        "4d68a8febf981c63",
+        "4de4b6876c1c1f29",
+        "4eaf1c5e0fa4cdc2",
+        "4feacd8b42cdeaae",
+        "529c76f03c899fe1",
+        "543c17685beccb1a",
+        "5474b616b4fd975e",
+        "54f2be56cbdf7b0a",
+        "56e8ee3c993eb908",
+        "575620a1aa568cf5",
+        "5967e65277623b71",
+        "5a13686d4e12c439",
+        "5b699d5e59b3cef6",
+        "65402483ea62b9d1",
+        "65d344181e40a617",
+        "69741ecfed8325b5",
+        "6a3fb4168e3bf75e",
+        "6ab3aa6f5dbff414",
+        "6b406d2e6095d1ef",
+        "6bc8199113ab6761",
+        "6c1c753f487fea57",
+        "6e6b5693d512f880",
+        "70d3acf622ee74e2",
+        "73afb48756da7f29",
+        "73e715f9b9cb236d",
+        "75895804e8a54125",
+        "7b9bbb6f19150ac3",
+        "7cb29fcfbb942681",
+        "7df74e1af6fd01ed",
+        "7e30faba46c1d04c",
+        "7e42a259aedda2fa",
+        "7f4b494408d54339",
+        "8510f222c8640b0e",
+        "86a07894ef996472",
+        "86d746827858daaf",
+        "87acf57c364c49da",
+        "8924c86ecf85976a",
+        "89b7a8f53ba788ac",
+        "8a23b7b3e984a5bb",
+        "8b45cca3798e4209",
+        "8bb55535922e5457",
+        "8d6ee43cd63c4bc6",
+        "9923988cfb49592d",
+        "99edb4e9cd426f9e",
+        "9ce9cedd6d964a39",
+        "9d34f82020d9acf4",
+        "9d5700405efe7fc4",
+        "9da798bbd4fbb332",
+        "9f4d502a0c1fbdc6",
+        "a0ff8352a7551723",
+        "a1805a6a49fb3192",
+        "a5d4b8ef12d23e4c",
+        "ac6e57a47009bc20",
+        "ac9ece329ba9aa7e",
+        "ae6caa64d98060db",
+        "aeffcaff2da27f1d",
+        "afb19c9994cf8616",
+        "b0245513ded5cc0f",
+        "b70d71b37c54e04d",
+        "b8105afb911ab9e5",
+        "b81d9ee780d78e26",
+        "b858fb857e0be5a1",
+        "b8ed07716b779878",
+        "bb32cc4c8fb1a24e",
+        "bb6c428ae52eb22e",
+        "bc6ad8e63187b302",
+        "be36b6782f6587e9",
+        "c0397df55f071400",
+        "c1488af4097e87e1",
+        "c170c49e14d470af",
+        "c571c8e47f28b99c",
+        "c9546e7ddd229169",
+        "cad8fd2897f19e76",
+        "cb837b06612e2c93",
+        "cbbb5f1a688e3fed",
+        "cc486e2882358f9e",
+        "cda7f45b2532341b",
+        "cdd9e633aa1e7b50",
+        "ceb1c5a8dabd754f",
+        "cf43a4a952a14abc",
+        "cf4f340a2dbc4cb9",
+        "cffebef4dfd684be",
+        "d1f2983164569dc4",
+        "d4ba2d2044793058",
+        "d4e60c9a1bb2f7f8",
+        "d5b9948144300b50",
+        "d8b061d95fb7e94e",
+        "d8ea76806de34906",
+        "d8f39e8e64b7f56c",
+        "db7dee21c4a8a0e6",
+        "dbc0f47c49df6ee4",
+        "dbcc64df36c268e1",
+        "df002bd37a5008cb",
+        "e33c43ff40982db1",
+        "e3d7f55ae3dfa04a",
+        "e6938865eb596f96",
+        "e7be5edee2eb3bd7",
+        "e7e27f64bd20fc77",
+        "e825bc653df16cc9",
+        "e91a88df74cb1cb8",
+        "ebb224c494ba8529",
+        "ebe8339da6ee2561",
+        "ec5879978309c4e4",
+        "ef39c4c4cb6b4766",
+        "f210d8b0f0274bce",
+        "f33d0e0bf9951f8f",
+        "f6299aa0867175b3",
+        "f93d76f5df7bd4af",
+        "fc17664ed4e58096",
+        "fc1bf6edabf88693",
+        "fe81b4775347b77f",
+        "ff3174118fc4a171",
+        "ff6b6348bd900139"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "home",
+        "rescue"
+      ],
+      "rationale": "The occupation is answerable (rescue); the turn must end with white's corner clear.",
+      "authoredFrom": "lab/ai/fixtures.ts: at most one promotion"
+    },
+    {
+      "id": "at-most-one-promotion-mate",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#at-most-one-promotion-mate",
+      "best": [
+        "09756469933f8481",
+        "1df634bc8841a0d9"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "home",
+        "mate",
+        "hold"
+      ],
+      "rationale": "Holding white's corner wins on the spot: no reply removes the occupier.",
+      "authoredFrom": "lab/ai/fixtures.ts: at most one promotion"
+    },
+    {
+      "id": "at-most-one-promotion-rotated-black-rescue",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#at-most-one-promotion-rotated-black-rescue",
+      "best": [
+        "0160da5637105d13",
+        "0178b6d075f14b54",
+        "0296a1df143fe941",
+        "037dcda1f4b3756a",
+        "07db5a5fb339e0e6",
+        "0993d83c898bd247",
+        "0a4fd02ba9a4fdb7",
+        "0c4d47685b7d3423",
+        "0fbb9ea93d2d8d55",
+        "11c61382779742ad",
+        "121a1b9557b86d5d",
+        "13b776f602366906",
+        "175fb401d5014c7d",
+        "17f6962402948db3",
+        "1af17579abc2f44e",
+        "1b390c18eb969deb",
+        "1c5299f66d0a5ffc",
+        "1e0d51df5ca4d69b",
+        "1eb1851af74b563f",
+        "209c69273dd71919",
+        "2264a040af528b47",
+        "2597ea89dff3f249",
+        "25c6603b5ba53eaa",
+        "26ead7ff8946b5f6",
+        "2826547f941237d4",
+        "2a1d4e96ddbbeceb",
+        "2ca8dac7fecdffb7",
+        "2cffcf1ac3e71176",
+        "2d36647a72dc55c6",
+        "2e1170c974919597",
+        "31ed6bf3dc09cc06",
+        "3b15aa8ee3e4a603",
+        "3ca7384853881c17",
+        "3d005f5e48f51df8",
+        "3d63145657750aec",
+        "3d7607515b96de66",
+        "3e4fa392859681b0",
+        "3ffa114430bb7cd3",
+        "405251177ddfdaaf",
+        "4139d19033b11764",
+        "41b669734ca4eb2f",
+        "42cb54051a11ac90",
+        "44bdeaddae80007f",
+        "46c75bae0525e9a2",
+        "470ccf14a65264bb",
+        "4b788c9116bd1065",
+        "4c07d78507452eb2",
+        "4cc9df5971165daf",
+        "544b060be0fa8042",
+        "547280025dde3866",
+        "578e142cd97691a8",
+        "581238c2ac06008f",
+        "5a3faada92975435",
+        "5bdb92bea3ec65b5",
+        "60e1323fa89f260d",
+        "6119c549ba2ff043",
+        "61a5118c11c070e7",
+        "6559352ae6a65232",
+        "6594a712f1f55f5c",
+        "689cc2df1222c4d4",
+        "6a90fbb9b4b09c0f",
+        "6b9a1d53ae7a9433",
+        "6dc814f234fcf050",
+        "6ea464fb9e310dde",
+        "7013defa70492b29",
+        "7080fb8ecb662895",
+        "74f985a91233e42a",
+        "75e79078e4c05bcb",
+        "763b986fc4ef743b",
+        "78731a0cfe5d469a",
+        "7a2cd225cff3cffd",
+        "7a9006e0641c4f59",
+        "7afd4bdfbb1a7580",
+        "7b73f10a3ea8c66a",
+        "7f94404004a39f73",
+        "83ca8470d6ea30d1",
+        "842c422f82e8a0a0",
+        "8727b8c7ef7e1974",
+        "8751e0c8fc1ddaea",
+        "8a4d6268d4269da8",
+        "8a74e4616902258c",
+        "8bca8c6a7b82c88a",
+        "8c98404a0b64ee50",
+        "8d06fef787754421",
+        "8d51eb2aba5faae0",
+        "8fbf54f90d292e01",
+        "90434fc3a5b17790",
+        "92cfbb3a45ca4045",
+        "984347d908d98fcb",
+        "98c13fcd31f9f448",
+        "9abb8ebe9a5c1d95",
+        "9cae7b6e314da66e",
+        "9ccd30662ecdb17a",
+        "9cd82361222e65f0",
+        "9d091c782a30a781",
+        "9fa581865cdb1fba",
+        "a0cefe664ea8e685",
+        "a11eeb814c1d9967",
+        "a1922423307f8299",
+        "a33885ef6d8752d7",
+        "a4fb2fbc8fc6686a",
+        "a57595690a74db80",
+        "a6757e6fca815b70",
+        "a83dfc0cf03369d1",
+        "abe1f41bd01c4621",
+        "ad785398728a48f1",
+        "add171bda51f893f",
+        "ade3635822c58fb5",
+        "ae869fedffba357f",
+        "b0a20098aaed1034",
+        "b21952c67b8ed290",
+        "b658b2147b2c3625",
+        "b66aa0f1fcf630af",
+        "b69aa6bc26fed93e",
+        "b6f19031acb9f7eb",
+        "b8b14646b3b4edcd",
+        "ba1be78aee4c3d83",
+        "ba972828922e267d",
+        "bb473dcf909b599f",
+        "bb5f5149d27a4fd8",
+        "c00b35bc6878cb71",
+        "c0b7e179c3974bd5",
+        "c14f160fd1279d9b",
+        "c43a8322884de4ca",
+        "c53f687bdf4a8001",
+        "c80f53132959a1eb",
+        "c932e6ef6b9a7f42",
+        "c959d062e1dd5197",
+        "c9f0f24736489059",
+        "caa71c176ced2c19",
+        "cc6630c24d444bc6",
+        "cf0a40cbe789b648",
+        "d12edfbeb2de9303",
+        "d1bdfaca09f190bf",
+        "d24b230b6fa129c9",
+        "d2bb2546b5a9c058",
+        "d483836239ba0952",
+        "d557a1996b8b5fbc",
+        "dc90c5bc20e3f4ab",
+        "df66be3503cc40f9",
+        "e097f5a04a09acf2",
+        "e1fc752704676139",
+        "e3063b3d7c290012",
+        "e37063326f4ac38c",
+        "e6a2eb24dfeadf2d",
+        "e7697f9e7c9d5234",
+        "ead6a8a16f05abf3",
+        "ed67fb6908aee639",
+        "ee55679bfa553cea",
+        "ee6ce192477184ce",
+        "efeb0f90e8d5d1ec",
+        "f5dca432246683f0",
+        "f5e5223b99423bd4",
+        "f620301ca0ce2a3e",
+        "f6ee38c0d69d5923",
+        "f9bc1cf2d5bebb19",
+        "fb918eeaeb2fefa3",
+        "fc62c4239b8e96ad",
+        "fce0bc37a2aeed2e"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "home",
+        "rescue"
+      ],
+      "rationale": "The occupation is answerable (rescue); the turn must end with black's corner clear.",
+      "authoredFrom": "lab/ai/fixtures.ts: at most one promotion / rotated black"
+    },
+    {
+      "id": "at-most-one-promotion-rotated-black-mate",
+      "position": "lab/hard-ai/suites/home-mate.positions.jsonl#at-most-one-promotion-rotated-black-mate",
+      "best": [
+        "3c366bb8af0c10bd",
+        "5817e8423c5b09db"
+      ],
+      "avoid": [],
+      "budget": {
+        "work": 400000
+      },
+      "points": 1,
+      "tags": [
+        "home",
+        "mate",
+        "hold"
+      ],
+      "rationale": "Holding black's corner wins on the spot: no reply removes the occupier.",
+      "authoredFrom": "lab/ai/fixtures.ts: at most one promotion / rotated black"
+    }
+  ]
+}

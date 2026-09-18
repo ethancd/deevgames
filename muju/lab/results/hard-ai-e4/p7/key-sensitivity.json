@@ -1,0 +1,3407 @@
+{
+  "stamp": "2026-09-18T00:10:22.636Z",
+  "probes": 17,
+  "unsafe": [],
+  "results": [
+    {
+      "id": "p8-white24-after-move",
+      "invader": "white",
+      "baseVerdict": "unknown",
+      "baseMs": 3508.277,
+      "rows": [
+        {
+          "field": "turn.actionsRemaining",
+          "verdict": "unknown",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 3872.124,
+          "unsafe": false
+        },
+        {
+          "field": "turn.turnNumber",
+          "verdict": "unknown",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 3874.387,
+          "unsafe": false
+        },
+        {
+          "field": "players[invader].resources",
+          "verdict": "unknown",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 3773.502,
+          "unsafe": false
+        },
+        {
+          "field": "players[defender].resources",
+          "verdict": "unknown",
+          "verdictMoved": false,
+          "keyMoved": true,
+          "ms": 3829.031,
+          "unsafe": false
+        },
+        {
+          "field": "players[defender].resources-zero",
+          "verdict": "mate",
+          "verdictMoved": true,
+          "keyMoved": true,
+          "ms": 0.604,
+          "unsafe": false
+        },
+        {
+          "field": "actionsPerTurn",
+          "verdict": "unknown",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 3773.594,
+          "unsafe": false
+        },
+        {
+          "field": "pendingSummons",
+          "verdict": "unknown",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 3812.972,
+          "unsafe": false
+        },
+        {
+          "field": "inactivityPlies",
+          "verdict": "unknown",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 3824.399,
+          "unsafe": false
+        },
+        {
+          "field": "progressThisTurn",
+          "verdict": "unknown",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 4113.927,
+          "unsafe": false
+        },
+        {
+          "field": "blackCrystalHandicap",
+          "verdict": "unknown",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 3763.995,
+          "unsafe": false
+        },
+        {
+          "field": "lastUpkeep",
+          "verdict": "unknown",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 3796.462,
+          "unsafe": false
+        },
+        {
+          "field": "selectedUnit+validMoves",
+          "verdict": "unknown",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 3830.281,
+          "unsafe": false
+        },
+        {
+          "field": "board.cells.resourceLayers",
+          "verdict": "unknown",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 3760.044,
+          "unsafe": false
+        },
+        {
+          "field": "defender.damageTaken",
+          "verdict": "unknown",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 3748.203,
+          "unsafe": false
+        },
+        {
+          "field": "defender.hasMoved+hasAttacked",
+          "verdict": "unknown",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 3777.685,
+          "unsafe": false
+        },
+        {
+          "field": "defender.canActThisTurn=false",
+          "verdict": "unknown",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 3740.885,
+          "unsafe": false
+        },
+        {
+          "field": "defender.attackedThisTurn",
+          "verdict": "unknown",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 3750.442,
+          "unsafe": false
+        },
+        {
+          "field": "defender.placedThisTurn",
+          "verdict": "unknown",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 3791.157,
+          "unsafe": false
+        },
+        {
+          "field": "defender.promotedThisPlacement",
+          "verdict": "unknown",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 3861.839,
+          "unsafe": false
+        },
+        {
+          "field": "invader.damageTaken",
+          "verdict": "unknown",
+          "verdictMoved": false,
+          "keyMoved": true,
+          "ms": 8945.265,
+          "unsafe": false
+        },
+        {
+          "field": "invader.canActThisTurn=false",
+          "verdict": "unknown",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 3759.354,
+          "unsafe": false
+        },
+        {
+          "field": "invader.attackedThisTurn",
+          "verdict": "unknown",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 3863.698,
+          "unsafe": false
+        },
+        {
+          "field": "unit.id renaming",
+          "verdict": "unknown",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 3807.655,
+          "unsafe": false
+        },
+        {
+          "field": "unit order reversed",
+          "verdict": "unknown",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 3845.373,
+          "unsafe": false
+        }
+      ]
+    },
+    {
+      "id": "metal-iii-two-shadow-iii-mate",
+      "invader": "black",
+      "baseVerdict": "mate",
+      "baseMs": 0.006,
+      "rows": [
+        {
+          "field": "turn.actionsRemaining",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.003,
+          "unsafe": false
+        },
+        {
+          "field": "turn.turnNumber",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "players[invader].resources",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "players[defender].resources",
+          "verdict": "rescue",
+          "verdictMoved": true,
+          "keyMoved": true,
+          "ms": 0.165,
+          "unsafe": false
+        },
+        {
+          "field": "players[defender].resources-zero",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.003,
+          "unsafe": false
+        },
+        {
+          "field": "actionsPerTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "pendingSummons",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.007,
+          "unsafe": false
+        },
+        {
+          "field": "inactivityPlies",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "progressThisTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "blackCrystalHandicap",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "lastUpkeep",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.006,
+          "unsafe": false
+        },
+        {
+          "field": "selectedUnit+validMoves",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.003,
+          "unsafe": false
+        },
+        {
+          "field": "board.cells.resourceLayers",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.damageTaken",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.hasMoved+hasAttacked",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.canActThisTurn=false",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.attackedThisTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.004,
+          "unsafe": false
+        },
+        {
+          "field": "defender.placedThisTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.promotedThisPlacement",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "invader.damageTaken",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": true,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "invader.canActThisTurn=false",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "invader.attackedThisTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "unit.id renaming",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "unit order reversed",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        }
+      ]
+    },
+    {
+      "id": "metal-iii-two-shadow-iii-rotated-black-mate",
+      "invader": "white",
+      "baseVerdict": "mate",
+      "baseMs": 0.002,
+      "rows": [
+        {
+          "field": "turn.actionsRemaining",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "turn.turnNumber",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "players[invader].resources",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "players[defender].resources",
+          "verdict": "rescue",
+          "verdictMoved": true,
+          "keyMoved": true,
+          "ms": 0.059,
+          "unsafe": false
+        },
+        {
+          "field": "players[defender].resources-zero",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.003,
+          "unsafe": false
+        },
+        {
+          "field": "actionsPerTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "pendingSummons",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "inactivityPlies",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "progressThisTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "blackCrystalHandicap",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "lastUpkeep",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.003,
+          "unsafe": false
+        },
+        {
+          "field": "selectedUnit+validMoves",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.003,
+          "unsafe": false
+        },
+        {
+          "field": "board.cells.resourceLayers",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.damageTaken",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.hasMoved+hasAttacked",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.canActThisTurn=false",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.attackedThisTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.placedThisTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.promotedThisPlacement",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "invader.damageTaken",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": true,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "invader.canActThisTurn=false",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "invader.attackedThisTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "unit.id renaming",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.003,
+          "unsafe": false
+        },
+        {
+          "field": "unit order reversed",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        }
+      ]
+    },
+    {
+      "id": "five-action-rotation-exceeds-the-turn-budget-mate",
+      "invader": "black",
+      "baseVerdict": "mate",
+      "baseMs": 0.002,
+      "rows": [
+        {
+          "field": "turn.actionsRemaining",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "turn.turnNumber",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "players[invader].resources",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.003,
+          "unsafe": false
+        },
+        {
+          "field": "players[defender].resources",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": true,
+          "ms": 0.015,
+          "unsafe": false
+        },
+        {
+          "field": "players[defender].resources-zero",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.003,
+          "unsafe": false
+        },
+        {
+          "field": "actionsPerTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "pendingSummons",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "inactivityPlies",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "progressThisTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "blackCrystalHandicap",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "lastUpkeep",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "selectedUnit+validMoves",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "board.cells.resourceLayers",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.003,
+          "unsafe": false
+        },
+        {
+          "field": "defender.damageTaken",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.hasMoved+hasAttacked",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.canActThisTurn=false",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.attackedThisTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.003,
+          "unsafe": false
+        },
+        {
+          "field": "defender.placedThisTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.promotedThisPlacement",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "invader.damageTaken",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": true,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "invader.canActThisTurn=false",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "invader.attackedThisTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "unit.id renaming",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "unit order reversed",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.003,
+          "unsafe": false
+        }
+      ]
+    },
+    {
+      "id": "five-action-rotation-exceeds-the-turn-budget-rotated-black-mate",
+      "invader": "white",
+      "baseVerdict": "mate",
+      "baseMs": 0.002,
+      "rows": [
+        {
+          "field": "turn.actionsRemaining",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "turn.turnNumber",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "players[invader].resources",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "players[defender].resources",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": true,
+          "ms": 0.007,
+          "unsafe": false
+        },
+        {
+          "field": "players[defender].resources-zero",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "actionsPerTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "pendingSummons",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.003,
+          "unsafe": false
+        },
+        {
+          "field": "inactivityPlies",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "progressThisTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "blackCrystalHandicap",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "lastUpkeep",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "selectedUnit+validMoves",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "board.cells.resourceLayers",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.damageTaken",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.hasMoved+hasAttacked",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.canActThisTurn=false",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.attackedThisTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.placedThisTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.promotedThisPlacement",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "invader.damageTaken",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": true,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "invader.canActThisTurn=false",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "invader.attackedThisTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "unit.id renaming",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "unit order reversed",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        }
+      ]
+    },
+    {
+      "id": "promotion-dependent-rescue-mate",
+      "invader": "black",
+      "baseVerdict": "rescue",
+      "baseMs": 0.033,
+      "rows": [
+        {
+          "field": "turn.actionsRemaining",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.033,
+          "unsafe": false
+        },
+        {
+          "field": "turn.turnNumber",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.032,
+          "unsafe": false
+        },
+        {
+          "field": "players[invader].resources",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.031,
+          "unsafe": false
+        },
+        {
+          "field": "players[defender].resources",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": true,
+          "ms": 0.037,
+          "unsafe": false
+        },
+        {
+          "field": "players[defender].resources-zero",
+          "verdict": "mate",
+          "verdictMoved": true,
+          "keyMoved": true,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "actionsPerTurn",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.031,
+          "unsafe": false
+        },
+        {
+          "field": "pendingSummons",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.046,
+          "unsafe": false
+        },
+        {
+          "field": "inactivityPlies",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.033,
+          "unsafe": false
+        },
+        {
+          "field": "progressThisTurn",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.033,
+          "unsafe": false
+        },
+        {
+          "field": "blackCrystalHandicap",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.032,
+          "unsafe": false
+        },
+        {
+          "field": "lastUpkeep",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.04,
+          "unsafe": false
+        },
+        {
+          "field": "selectedUnit+validMoves",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.033,
+          "unsafe": false
+        },
+        {
+          "field": "board.cells.resourceLayers",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.033,
+          "unsafe": false
+        },
+        {
+          "field": "defender.damageTaken",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.033,
+          "unsafe": false
+        },
+        {
+          "field": "defender.hasMoved+hasAttacked",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.032,
+          "unsafe": false
+        },
+        {
+          "field": "defender.canActThisTurn=false",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.032,
+          "unsafe": false
+        },
+        {
+          "field": "defender.attackedThisTurn",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.032,
+          "unsafe": false
+        },
+        {
+          "field": "defender.placedThisTurn",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.032,
+          "unsafe": false
+        },
+        {
+          "field": "defender.promotedThisPlacement",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.032,
+          "unsafe": false
+        },
+        {
+          "field": "invader.damageTaken",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": true,
+          "ms": 0.027,
+          "unsafe": false
+        },
+        {
+          "field": "invader.canActThisTurn=false",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.032,
+          "unsafe": false
+        },
+        {
+          "field": "invader.attackedThisTurn",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.049,
+          "unsafe": false
+        },
+        {
+          "field": "unit.id renaming",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.027,
+          "unsafe": false
+        },
+        {
+          "field": "unit order reversed",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.027,
+          "unsafe": false
+        }
+      ]
+    },
+    {
+      "id": "promotion-dependent-rescue-rotated-black-mate",
+      "invader": "white",
+      "baseVerdict": "rescue",
+      "baseMs": 0.026,
+      "rows": [
+        {
+          "field": "turn.actionsRemaining",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "turn.turnNumber",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "players[invader].resources",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "players[defender].resources",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": true,
+          "ms": 0.026,
+          "unsafe": false
+        },
+        {
+          "field": "players[defender].resources-zero",
+          "verdict": "mate",
+          "verdictMoved": true,
+          "keyMoved": true,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "actionsPerTurn",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "pendingSummons",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "inactivityPlies",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "progressThisTurn",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "blackCrystalHandicap",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "lastUpkeep",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "selectedUnit+validMoves",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "board.cells.resourceLayers",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "defender.damageTaken",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "defender.hasMoved+hasAttacked",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "defender.canActThisTurn=false",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "defender.attackedThisTurn",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "defender.placedThisTurn",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "defender.promotedThisPlacement",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "invader.damageTaken",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": true,
+          "ms": 0.021,
+          "unsafe": false
+        },
+        {
+          "field": "invader.canActThisTurn=false",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "invader.attackedThisTurn",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "unit.id renaming",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.026,
+          "unsafe": false
+        },
+        {
+          "field": "unit order reversed",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.026,
+          "unsafe": false
+        }
+      ]
+    },
+    {
+      "id": "public-bank-no-promotion-money-mate",
+      "invader": "black",
+      "baseVerdict": "mate",
+      "baseMs": 0.002,
+      "rows": [
+        {
+          "field": "turn.actionsRemaining",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "turn.turnNumber",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "players[invader].resources",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "players[defender].resources",
+          "verdict": "rescue",
+          "verdictMoved": true,
+          "keyMoved": true,
+          "ms": 0.03,
+          "unsafe": false
+        },
+        {
+          "field": "players[defender].resources-zero",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "actionsPerTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "pendingSummons",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "inactivityPlies",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "progressThisTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "blackCrystalHandicap",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "lastUpkeep",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "selectedUnit+validMoves",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "board.cells.resourceLayers",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.damageTaken",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.hasMoved+hasAttacked",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.canActThisTurn=false",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.attackedThisTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.placedThisTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.promotedThisPlacement",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "invader.damageTaken",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": true,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "invader.canActThisTurn=false",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "invader.attackedThisTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "unit.id renaming",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "unit order reversed",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        }
+      ]
+    },
+    {
+      "id": "public-bank-no-promotion-money-rotated-black-mate",
+      "invader": "white",
+      "baseVerdict": "mate",
+      "baseMs": 0.002,
+      "rows": [
+        {
+          "field": "turn.actionsRemaining",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "turn.turnNumber",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "players[invader].resources",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "players[defender].resources",
+          "verdict": "rescue",
+          "verdictMoved": true,
+          "keyMoved": true,
+          "ms": 0.026,
+          "unsafe": false
+        },
+        {
+          "field": "players[defender].resources-zero",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "actionsPerTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "pendingSummons",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "inactivityPlies",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "progressThisTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "blackCrystalHandicap",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "lastUpkeep",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "selectedUnit+validMoves",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "board.cells.resourceLayers",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.damageTaken",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.hasMoved+hasAttacked",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.canActThisTurn=false",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.attackedThisTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.placedThisTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.promotedThisPlacement",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "invader.damageTaken",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": true,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "invader.canActThisTurn=false",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "invader.attackedThisTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "unit.id renaming",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "unit order reversed",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        }
+      ]
+    },
+    {
+      "id": "too-few-actions-for-rotation-mate",
+      "invader": "black",
+      "baseVerdict": "mate",
+      "baseMs": 0.002,
+      "rows": [
+        {
+          "field": "turn.actionsRemaining",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "turn.turnNumber",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "players[invader].resources",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "players[defender].resources",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": true,
+          "ms": 0.006,
+          "unsafe": false
+        },
+        {
+          "field": "players[defender].resources-zero",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "actionsPerTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "pendingSummons",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "inactivityPlies",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "progressThisTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "blackCrystalHandicap",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "lastUpkeep",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "selectedUnit+validMoves",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "board.cells.resourceLayers",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.008,
+          "unsafe": false
+        },
+        {
+          "field": "defender.damageTaken",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.003,
+          "unsafe": false
+        },
+        {
+          "field": "defender.hasMoved+hasAttacked",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.003,
+          "unsafe": false
+        },
+        {
+          "field": "defender.canActThisTurn=false",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.attackedThisTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.003,
+          "unsafe": false
+        },
+        {
+          "field": "defender.placedThisTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.promotedThisPlacement",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "invader.damageTaken",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": true,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "invader.canActThisTurn=false",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "invader.attackedThisTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "unit.id renaming",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "unit order reversed",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.003,
+          "unsafe": false
+        }
+      ]
+    },
+    {
+      "id": "too-few-actions-for-rotation-rotated-black-mate",
+      "invader": "white",
+      "baseVerdict": "mate",
+      "baseMs": 0.002,
+      "rows": [
+        {
+          "field": "turn.actionsRemaining",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "turn.turnNumber",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "players[invader].resources",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.003,
+          "unsafe": false
+        },
+        {
+          "field": "players[defender].resources",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": true,
+          "ms": 0.007,
+          "unsafe": false
+        },
+        {
+          "field": "players[defender].resources-zero",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.003,
+          "unsafe": false
+        },
+        {
+          "field": "actionsPerTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "pendingSummons",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.003,
+          "unsafe": false
+        },
+        {
+          "field": "inactivityPlies",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "progressThisTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "blackCrystalHandicap",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "lastUpkeep",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "selectedUnit+validMoves",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "board.cells.resourceLayers",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.damageTaken",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.hasMoved+hasAttacked",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.canActThisTurn=false",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.attackedThisTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.placedThisTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.promotedThisPlacement",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "invader.damageTaken",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": true,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "invader.canActThisTurn=false",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.003,
+          "unsafe": false
+        },
+        {
+          "field": "invader.attackedThisTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "unit.id renaming",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "unit order reversed",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        }
+      ]
+    },
+    {
+      "id": "same-target-limit-mate",
+      "invader": "black",
+      "baseVerdict": "mate",
+      "baseMs": 0.002,
+      "rows": [
+        {
+          "field": "turn.actionsRemaining",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "turn.turnNumber",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "players[invader].resources",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "players[defender].resources",
+          "verdict": "rescue",
+          "verdictMoved": true,
+          "keyMoved": true,
+          "ms": 0.038,
+          "unsafe": false
+        },
+        {
+          "field": "players[defender].resources-zero",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "actionsPerTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "pendingSummons",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "inactivityPlies",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "progressThisTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.006,
+          "unsafe": false
+        },
+        {
+          "field": "blackCrystalHandicap",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "lastUpkeep",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "selectedUnit+validMoves",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "board.cells.resourceLayers",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.damageTaken",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.hasMoved+hasAttacked",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.canActThisTurn=false",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.attackedThisTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.placedThisTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.promotedThisPlacement",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "invader.damageTaken",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": true,
+          "ms": 0.01,
+          "unsafe": false
+        },
+        {
+          "field": "invader.canActThisTurn=false",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "invader.attackedThisTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "unit.id renaming",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.003,
+          "unsafe": false
+        },
+        {
+          "field": "unit order reversed",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        }
+      ]
+    },
+    {
+      "id": "same-target-limit-rotated-black-mate",
+      "invader": "white",
+      "baseVerdict": "mate",
+      "baseMs": 0.002,
+      "rows": [
+        {
+          "field": "turn.actionsRemaining",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "turn.turnNumber",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "players[invader].resources",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "players[defender].resources",
+          "verdict": "rescue",
+          "verdictMoved": true,
+          "keyMoved": true,
+          "ms": 0.027,
+          "unsafe": false
+        },
+        {
+          "field": "players[defender].resources-zero",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "actionsPerTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "pendingSummons",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "inactivityPlies",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "progressThisTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "blackCrystalHandicap",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "lastUpkeep",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "selectedUnit+validMoves",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "board.cells.resourceLayers",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.damageTaken",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.hasMoved+hasAttacked",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.canActThisTurn=false",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.attackedThisTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.placedThisTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "defender.promotedThisPlacement",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "invader.damageTaken",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": true,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "invader.canActThisTurn=false",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "invader.attackedThisTurn",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "unit.id renaming",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "unit order reversed",
+          "verdict": "mate",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.002,
+          "unsafe": false
+        }
+      ]
+    },
+    {
+      "id": "newly-placed-unit-cannot-promote-mate",
+      "invader": "black",
+      "baseVerdict": "rescue",
+      "baseMs": 0.026,
+      "rows": [
+        {
+          "field": "turn.actionsRemaining",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.027,
+          "unsafe": false
+        },
+        {
+          "field": "turn.turnNumber",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.026,
+          "unsafe": false
+        },
+        {
+          "field": "players[invader].resources",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "players[defender].resources",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": true,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "players[defender].resources-zero",
+          "verdict": "mate",
+          "verdictMoved": true,
+          "keyMoved": true,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "actionsPerTurn",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "pendingSummons",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.026,
+          "unsafe": false
+        },
+        {
+          "field": "inactivityPlies",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.026,
+          "unsafe": false
+        },
+        {
+          "field": "progressThisTurn",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "blackCrystalHandicap",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "lastUpkeep",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.026,
+          "unsafe": false
+        },
+        {
+          "field": "selectedUnit+validMoves",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "board.cells.resourceLayers",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "defender.damageTaken",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.026,
+          "unsafe": false
+        },
+        {
+          "field": "defender.hasMoved+hasAttacked",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "defender.canActThisTurn=false",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "defender.attackedThisTurn",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "defender.placedThisTurn",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.026,
+          "unsafe": false
+        },
+        {
+          "field": "defender.promotedThisPlacement",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "invader.damageTaken",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": true,
+          "ms": 0.022,
+          "unsafe": false
+        },
+        {
+          "field": "invader.canActThisTurn=false",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "invader.attackedThisTurn",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.026,
+          "unsafe": false
+        },
+        {
+          "field": "unit.id renaming",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.031,
+          "unsafe": false
+        },
+        {
+          "field": "unit order reversed",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.031,
+          "unsafe": false
+        }
+      ]
+    },
+    {
+      "id": "newly-placed-unit-cannot-promote-rotated-black-mate",
+      "invader": "white",
+      "baseVerdict": "rescue",
+      "baseMs": 0.025,
+      "rows": [
+        {
+          "field": "turn.actionsRemaining",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.026,
+          "unsafe": false
+        },
+        {
+          "field": "turn.turnNumber",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "players[invader].resources",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "players[defender].resources",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": true,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "players[defender].resources-zero",
+          "verdict": "mate",
+          "verdictMoved": true,
+          "keyMoved": true,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "actionsPerTurn",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "pendingSummons",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "inactivityPlies",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "progressThisTurn",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "blackCrystalHandicap",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "lastUpkeep",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.03,
+          "unsafe": false
+        },
+        {
+          "field": "selectedUnit+validMoves",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.029,
+          "unsafe": false
+        },
+        {
+          "field": "board.cells.resourceLayers",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.03,
+          "unsafe": false
+        },
+        {
+          "field": "defender.damageTaken",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "defender.hasMoved+hasAttacked",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.03,
+          "unsafe": false
+        },
+        {
+          "field": "defender.canActThisTurn=false",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.026,
+          "unsafe": false
+        },
+        {
+          "field": "defender.attackedThisTurn",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "defender.placedThisTurn",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "defender.promotedThisPlacement",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "invader.damageTaken",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": true,
+          "ms": 0.027,
+          "unsafe": false
+        },
+        {
+          "field": "invader.canActThisTurn=false",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.031,
+          "unsafe": false
+        },
+        {
+          "field": "invader.attackedThisTurn",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.026,
+          "unsafe": false
+        },
+        {
+          "field": "unit.id renaming",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "unit order reversed",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        }
+      ]
+    },
+    {
+      "id": "at-most-one-promotion-mate",
+      "invader": "black",
+      "baseVerdict": "rescue",
+      "baseMs": 0.025,
+      "rows": [
+        {
+          "field": "turn.actionsRemaining",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "turn.turnNumber",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.029,
+          "unsafe": false
+        },
+        {
+          "field": "players[invader].resources",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.026,
+          "unsafe": false
+        },
+        {
+          "field": "players[defender].resources",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": true,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "players[defender].resources-zero",
+          "verdict": "mate",
+          "verdictMoved": true,
+          "keyMoved": true,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "actionsPerTurn",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "pendingSummons",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "inactivityPlies",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.024,
+          "unsafe": false
+        },
+        {
+          "field": "progressThisTurn",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "blackCrystalHandicap",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.024,
+          "unsafe": false
+        },
+        {
+          "field": "lastUpkeep",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "selectedUnit+validMoves",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "board.cells.resourceLayers",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.024,
+          "unsafe": false
+        },
+        {
+          "field": "defender.damageTaken",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "defender.hasMoved+hasAttacked",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.024,
+          "unsafe": false
+        },
+        {
+          "field": "defender.canActThisTurn=false",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "defender.attackedThisTurn",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "defender.placedThisTurn",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "defender.promotedThisPlacement",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.029,
+          "unsafe": false
+        },
+        {
+          "field": "invader.damageTaken",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": true,
+          "ms": 0.022,
+          "unsafe": false
+        },
+        {
+          "field": "invader.canActThisTurn=false",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "invader.attackedThisTurn",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.026,
+          "unsafe": false
+        },
+        {
+          "field": "unit.id renaming",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "unit order reversed",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        }
+      ]
+    },
+    {
+      "id": "at-most-one-promotion-rotated-black-mate",
+      "invader": "white",
+      "baseVerdict": "rescue",
+      "baseMs": 0.024,
+      "rows": [
+        {
+          "field": "turn.actionsRemaining",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "turn.turnNumber",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.032,
+          "unsafe": false
+        },
+        {
+          "field": "players[invader].resources",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.031,
+          "unsafe": false
+        },
+        {
+          "field": "players[defender].resources",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": true,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "players[defender].resources-zero",
+          "verdict": "mate",
+          "verdictMoved": true,
+          "keyMoved": true,
+          "ms": 0.002,
+          "unsafe": false
+        },
+        {
+          "field": "actionsPerTurn",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.024,
+          "unsafe": false
+        },
+        {
+          "field": "pendingSummons",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "inactivityPlies",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.024,
+          "unsafe": false
+        },
+        {
+          "field": "progressThisTurn",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.024,
+          "unsafe": false
+        },
+        {
+          "field": "blackCrystalHandicap",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.024,
+          "unsafe": false
+        },
+        {
+          "field": "lastUpkeep",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.024,
+          "unsafe": false
+        },
+        {
+          "field": "selectedUnit+validMoves",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.024,
+          "unsafe": false
+        },
+        {
+          "field": "board.cells.resourceLayers",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.024,
+          "unsafe": false
+        },
+        {
+          "field": "defender.damageTaken",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.024,
+          "unsafe": false
+        },
+        {
+          "field": "defender.hasMoved+hasAttacked",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.024,
+          "unsafe": false
+        },
+        {
+          "field": "defender.canActThisTurn=false",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.024,
+          "unsafe": false
+        },
+        {
+          "field": "defender.attackedThisTurn",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.024,
+          "unsafe": false
+        },
+        {
+          "field": "defender.placedThisTurn",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "defender.promotedThisPlacement",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.024,
+          "unsafe": false
+        },
+        {
+          "field": "invader.damageTaken",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": true,
+          "ms": 0.021,
+          "unsafe": false
+        },
+        {
+          "field": "invader.canActThisTurn=false",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.024,
+          "unsafe": false
+        },
+        {
+          "field": "invader.attackedThisTurn",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "unit.id renaming",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        },
+        {
+          "field": "unit order reversed",
+          "verdict": "rescue",
+          "verdictMoved": false,
+          "keyMoved": false,
+          "ms": 0.025,
+          "unsafe": false
+        }
+      ]
+    }
+  ]
+}

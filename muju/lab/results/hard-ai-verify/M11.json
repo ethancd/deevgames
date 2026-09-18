@@ -1,0 +1,38 @@
+{
+  "initialNaiveSequences": 22725,
+  "initialEndPositions": 797,
+  "initialMidStates": 1053,
+  "initialMidStatesShippedTt": 1054,
+  "initialDistinctMidStates": 1053,
+  "ttReduction": 21.58,
+  "endSetMismatch": 0,
+  "ttEndSetMismatch": 0,
+  "positionsChecked": 215,
+  "fixturesChecked": 14,
+  "corpusChecked": 200,
+  "positionsSkipped": 1,
+  "skipped": [
+    "authored#upkeep-pending: the place phase ended the game"
+  ],
+  "naiveSequences": 29842857,
+  "endPositions": 2285137,
+  "budgetHistogram": {
+    "1": 1,
+    "2": 11,
+    "3": 153,
+    "4": 50
+  },
+  "mismatches": [],
+  "fixtureSets": [
+    "authored",
+    "canonical"
+  ],
+  "corpus": "fuzz-1000.jsonl",
+  "corpusPositionsRequested": 200,
+  "maxOwnUnits": 10,
+  "nodeBudget": 500000,
+  "shards": 12,
+  "git": "cc106765c6bcae26c3787532b974c401e15c25cf",
+  "node": "v24.11.1",
+  "at": "2026-09-15T12:47:13.288Z"
+}

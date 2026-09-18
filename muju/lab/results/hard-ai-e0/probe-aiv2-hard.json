@@ -1,0 +1,109 @@
+{
+  "schema": "muju-hard-ai-probe-v1",
+  "engine": "aiv2-hard",
+  "engineConfigHash": "aiv2:hard:full:wall:1000#8e1158939215eef15b63aa7eb3137c14478c121b617415a1fb548ddc5b2b0d84",
+  "resolvedConfigHash": "8e1158939215eef15b63aa7eb3137c14478c121b617415a1fb548ddc5b2b0d84",
+  "resolvedConfig": {
+    "engine": "aiv2",
+    "difficulty": "hard",
+    "fast": false,
+    "search": {
+      "mctsIterations": 1200,
+      "mctsTimeLimit": 3000,
+      "beamWidth": 50,
+      "outputPlans": 20,
+      "progressiveWideningAlpha": 0.5,
+      "tacticalDepth": 2,
+      "tacticalNodes": 600000,
+      "fixedWork": 0
+    },
+    "budget": {
+      "mode": "wall",
+      "fixedWork": 0,
+      "turnMs": 1000,
+      "allocation": "split-across-remaining-decisions",
+      "shippedTurnBudgetMs": 8000,
+      "overridesPresetTimeLimit": true
+    },
+    "lifecycle": {
+      "engine": "one-per-game-seat",
+      "seed": "once-at-construction",
+      "setDifficultyPerDecision": true,
+      "searchesPerTurn": "one-per-action"
+    },
+    "resign": false,
+    "tacticalSolver": "wasm-tactics-or-reference-fallback"
+  },
+  "opponent": "Rush",
+  "work": "wall:1000",
+  "budgetMs": 1000,
+  "seed": 1,
+  "requestedTurns": 3,
+  "measuredTurns": 3,
+  "coldTurnMs": 1003.958083,
+  "warmMeanTurnMs": 1001.5363319999999,
+  "warmMaxTurnMs": 1001.8778739999998,
+  "coldOverWarm": 1.002418036093772,
+  "botCreateMs": 0.08225000000000193,
+  "turns": [
+    {
+      "turn": 1,
+      "elapsedMs": 1003.958083,
+      "decisions": 5,
+      "budgetRatio": 1.003958083
+    },
+    {
+      "turn": 2,
+      "elapsedMs": 1001.8778739999998,
+      "decisions": 7,
+      "budgetRatio": 1.0018778739999998
+    },
+    {
+      "turn": 3,
+      "elapsedMs": 1001.19479,
+      "decisions": 7,
+      "budgetRatio": 1.00119479
+    }
+  ],
+  "overrunTurns": 3,
+  "worstBudgetRatio": 1.003958083,
+  "memory": {
+    "before": {
+      "rssBytes": 95027200,
+      "heapUsedBytes": 19901720
+    },
+    "after": {
+      "rssBytes": 492126208,
+      "heapUsedBytes": 247424080
+    },
+    "peak": {
+      "rssBytes": 492126208,
+      "heapUsedBytes": 263846624
+    },
+    "samples": 29,
+    "sampleIntervalMs": 250
+  },
+  "load": {
+    "before": [
+      2.67626953125,
+      2.0234375,
+      2.75390625
+    ],
+    "after": [
+      2.6220703125,
+      2.02294921875,
+      2.7490234375
+    ]
+  },
+  "device": "Apple M2 Max x12 (darwin/arm64)",
+  "cpus": 12,
+  "totalMemBytes": 103079215104,
+  "node": "v24.11.1",
+  "git": "77b68d52cf85ac8eafeeb09c9ccab661436a928c",
+  "gitDirty": true,
+  "gameWallMs": 3018.161333,
+  "gameTurns": 4,
+  "gameWinType": "adjudication",
+  "at": "2026-09-16T06:30:35.366Z",
+  "note": "First engineering probe (E0.5). One game, one seed, shared laptop under other load: use it to size budgets, not to calibrate work costs or claim strength."
+}
