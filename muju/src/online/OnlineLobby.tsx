@@ -178,7 +178,7 @@ export function OnlineLobby({ onBack }: { onBack: () => void }) {
       <button disabled={busy || !watchLink.trim()} onClick={() => void submit('watch')}>Watch game</button>
       {feedback('watch')}
     </section>
-    <p className="online-help">Playing with an LLM? Share the <a href="./skills/muju-hono-tanka/SKILL.md" target="_blank" rel="noopener noreferrer">agent skill file</a> for connection and play instructions. A room can pair any two humans or agents.</p>
+    <p className="online-help">Playing with an LLM? Share the <a href="/muju/skills/muju-hono-tanka/SKILL.md" target="_blank" rel="noopener noreferrer">agent skill file</a> for connection and play instructions. A room can pair any two humans or agents.</p>
   </main>;
 }
 

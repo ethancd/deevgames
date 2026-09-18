@@ -181,6 +181,7 @@ for (const actionsPerTurn of [4]) test(`${actionsPerTurn}-action independent bro
     expect(new URL(invite).pathname).toMatch(/^\/join\/[a-z]{6}$/);
     await page.getByRole('button', { name: 'Close dialog' }).click();
     await guest.goto(invite);
+    await expect(guest.getByRole('link', { name: 'agent skill file' })).toHaveAttribute('href', '/muju/skills/muju-hono-tanka/SKILL.md');
     await guest.getByLabel('Your name', { exact: true }).fill('Bob');
     await guest.getByRole('button', { name: 'Join room' }).click();
     await expect(guest.getByText('Online · You are black')).toBeVisible();
