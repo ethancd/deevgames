@@ -1,5 +1,7 @@
 name: E2E layout diagnostics (throwaway)
 on:
+  push:
+    branches: [claude/e2e-linux-diag]
   workflow_dispatch:
 permissions:
   contents: read
