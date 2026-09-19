@@ -49,12 +49,34 @@ import {
   type OpeningAction,
   type OpeningSpec,
 } from '../../lab/hard-ai/ladder/openings';
+import {
+  LADDER_RULES_VERSION,
+  P1_OPENING_ID_RE,
+  applyLadderOpening,
+  assertOpeningsRuleset,
+  initialStateForRules,
+  openingRuleset,
+  rulesetForRevision,
+  validateLadderOpenings,
+} from '../../lab/hard-ai/ladder/ruleset';
+import {
+  FALLBACK_KINDS,
+  describeFallbacks,
+  emptyFallbackCounts,
+  fallbackCountsDelta,
+  fallbackTotal,
+  ladderFallbackCounts,
+  noteLadderFallback,
+  resetLadderFallbackCounts,
+  type FallbackCounts,
+} from '../../lab/hard-ai/ladder/fallbacks';
+import { gate0VoidReasons } from '../../lab/hard-ai/ladder/run';
 import { getElementGraph, setElementGraph } from '../../src/game/elements';
 import { legalActions } from '../../lab/harness/legal';
 import { replayFileName, writeShardStatus, type FailureRow, type GameRow, type PairRow, type ShardStatus } from '../../lab/hard-ai/ladder/worker';
 import type { GameRecord, MatchOptions, PlayerGameStats } from '../../lab/harness/types';
 import { DEFAULT_MATCH_OPTIONS } from '../../lab/harness/types';
-import type { PlayerId } from '../../src/game/types';
+import type { GameState, PlayerId } from '../../src/game/types';
 import { applyAction } from '../../src/ai/simulate';
 
 // ---------------------------------------------------------------- fixtures
@@ -90,6 +112,12 @@ function gameRow(o: {
   /** E1.5: per-SEAT adapter counters, as `lab/harness/runner.ts` records them. */
   whiteSeatTiming?: PlayerGameStats['hardTiming'];
   blackSeatTiming?: PlayerGameStats['hardTiming'];
+  /** Per-seat illegal-action counts (Gate 0 item 6 vetoes any). */
+  whiteIllegalActions?: number;
+  /** Gate 0 item 6's six fallback counts. Omitted = a CLEAN row, which is what
+   * `worker.ts` writes for a run with no fallback; pass `null` for a row
+   * recorded before the field existed. */
+  fallbacks?: FallbackCounts | null;
 }): GameRow {
   const options: MatchOptions = { ...DEFAULT_MATCH_OPTIONS, blackCrystalHandicap: o.handicap };
   const record: GameRecord = {
@@ -98,8 +126,9 @@ function gameRow(o: {
     startedAt: '1970-01-01T00:00:00.000Z', durationMs: 10, options,
     winner: o.winner, winType: o.winner === null ? 'draw' : 'elimination',
     turns: 1, plies: 2, firstBlood: null,
+    rulesVersion: LADDER_RULES_VERSION,
     players: {
-      white: stats('w', o.whiteMs, o.whiteTurnMs, o.whiteSeatTiming),
+      white: { ...stats('w', o.whiteMs, o.whiteTurnMs, o.whiteSeatTiming), illegalActions: o.whiteIllegalActions ?? 0 },
       black: stats('b', o.blackMs, o.blackTurnMs, o.blackSeatTiming),
     },
     incomeCurve: [], round90Exhaustion: null, purchases: [], promotionEvents: [],
@@ -107,7 +136,13 @@ function gameRow(o: {
     anomalies: o.anomalies ?? [], handicap: o.handicap,
     ...(o.hardTiming ? { hardTiming: o.hardTiming } : {}),
   };
-  return { ...record, pairId: o.pairId, orientation: o.orientation, opening: 'initial' };
+  return {
+    ...record,
+    pairId: o.pairId,
+    orientation: o.orientation,
+    opening: 'initial',
+    ...(o.fallbacks === null ? {} : { fallbacks: o.fallbacks ?? emptyFallbackCounts() }),
+  };
 }
 
 function pairRow(pairId: string, pairIndex: number, handicap: number, scoreA: number): PairRow {
@@ -139,7 +174,22 @@ function tmpDir(tag: string): string {
  * square-referencing form.
  */
 function legalOpeningActions(n: number, handicap = 0): OpeningAction[] {
-  let state = initialStateFor({ blackCrystalHandicap: handicap });
+  return legalActionsFrom(initialStateFor({ blackCrystalHandicap: handicap }), n);
+}
+
+/**
+ * The same, from the canonical PHASING initial state — what a current ladder
+ * run's openings have to be, because `lab/harness/runner.ts` refuses a
+ * non-Phasing `initialState` and `ladder/ruleset.ts` refuses a non-P1 id. The
+ * Standard version above stays, because the historical books it describes are
+ * still replayed by `ladder/openings.ts`.
+ */
+function legalPhasingOpeningActions(n: number, handicap = 0): OpeningAction[] {
+  return legalActionsFrom(initialStateForRules('phasing', { blackCrystalHandicap: handicap }), n);
+}
+
+function legalActionsFrom(start: GameState, n: number): OpeningAction[] {
+  let state = start;
   const out: OpeningAction[] = [];
   for (let i = 0; i < n; i++) {
     const legal = legalActions(state, state.turn.currentPlayer);
@@ -158,6 +208,24 @@ function legalOpeningActions(n: number, handicap = 0): OpeningAction[] {
     state = applyAction(state, pick);
   }
   return out;
+}
+
+/**
+ * A 16-row P1 (PHASING) book on disk, taken from the frozen `p1-dev.jsonl`.
+ *
+ * These tests used `openings/e0-openings.jsonl` as their stand-in for "a book",
+ * and a Phasing run refuses it: an E0 Standard id may never be relabelled as
+ * Phasing (`ladder/ruleset.ts#assertOpeningsRuleset`). Every count the
+ * expectations are written around — 16 openings, capacity 32 at two handicaps,
+ * 14 after `--openings-skip 2` — is the E0 book's SIZE, not anything about its
+ * contents, so a 16-row subset of the P1 dev book keeps them all and changes
+ * only the ids.
+ */
+function writeP1Book(dir: string, rows = 16): { path: string; ids: string[] } {
+  const source = fs.readFileSync('lab/hard-ai/ladder/openings/p1-dev.jsonl', 'utf8').trim().split('\n').slice(0, rows);
+  const file = path.join(dir, 'p1-book.jsonl');
+  fs.writeFileSync(file, source.join('\n') + '\n');
+  return { path: file, ids: source.map(l => (JSON.parse(l) as OpeningSpec).id) };
 }
 
 // ---------------------------------------------------------------- pairId
@@ -262,14 +330,63 @@ describe('lab/hard-ai/ladder/openings', () => {
     fs.rmSync(dir, { recursive: true, force: true });
   });
 
+  // The message moved from `ladder/openings.ts`'s "openings: at handicap 0: ..."
+  // to `openings/phasing.ts`'s own, because a current run is validated under
+  // PHASING (`validateLadderOpenings`). Rewritten from the canonical Phasing
+  // engine: the P1 replayer names the opening, the action index and the refusal.
   it('parseArgs rejects an openings file whose opening is not legal-by-replay, before any game is played', () => {
     const dir = tmpDir('bad-openings');
     const file = path.join(dir, 'bad.jsonl');
-    fs.writeFileSync(file, '{"id":"bad","actions":[{"type":"MOVE","from":{"x":0,"y":0},"to":{"x":9,"y":9}}]}\n');
+    // White's fire_1 starts on (1,0); (9,9) is the far corner, so the square
+    // resolves and the RULES refuse the move — a legality failure, not a
+    // missing-unit one.
+    fs.writeFileSync(file, '{"id":"p1-bad","actions":[{"type":"MOVE","from":{"x":1,"y":0},"to":{"x":9,"y":9}}]}\n');
     expect(() =>
       parseArgs(['--a', 'Rush', '--b', 'Rush', '--work', 'fixed:1', '--handicaps', '0', '--pairs', '1', '--seed', '1', '--out', dir, '--openings', file]),
-    ).toThrow(/openings: at handicap 0:/);
+    ).toThrow(/P1 opening p1-bad action 0: illegal action/);
     fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  /**
+   * THE RULESET GUARD. Standard and Phasing share every action type, so the
+   * first plies of a Standard opening often replay without complaint into a
+   * Phasing state — and the position that comes out is one no game of either
+   * rule set ever reached, measured as though it were evidence. A relabelled
+   * id is therefore refused STRUCTURALLY, before any game is played, and the
+   * refusal names the ids so the mistake is obvious.
+   */
+  it('REFUSES a historical Standard opening id in a Phasing run, rather than replaying it under the wrong rules', () => {
+    const e0 = loadOpenings('lab/hard-ai/ladder/openings/e0-openings.jsonl').openings;
+    expect(openingRuleset(e0[0])).toBe('standard');
+    expect(() => validateLadderOpenings(e0, [0])).toThrow(/are not phasing openings/);
+    expect(() => validateLadderOpenings(e0, [0])).toThrow(/may not be relabelled as Phasing/);
+    expect(() => validateLadderOpenings(e0, [0])).toThrow(new RegExp(`rules revision ${LADDER_RULES_VERSION}`));
+    // WHY THE ID IS THE ONLY GUARD THERE CAN BE. Renaming a Standard row to a P1
+    // id does not make the replay fail: the two rule sets share every action
+    // type, and a short opening of plain MOVEs reaches the very same board under
+    // both. What it DOES produce is a position whose `ruleset` is Phasing — so
+    // every turn after the opening resolves under different rules than the book
+    // was generated against — and nothing in the replay itself can notice.
+    const relabelled = applyLadderOpening({ ...e0[0], id: `p1-${e0[0].id}` });
+    expect(relabelled.ruleset).toBe('phasing');
+    expect(applyOpening(e0[0]).ruleset).toBe('standard');
+    expect(() => assertOpeningsRuleset([e0[0]], 'phasing')).toThrow(/are not phasing openings/);
+    // ...and a P1 row is accepted.
+    const p1 = loadOpenings('lab/hard-ai/ladder/openings/p1-dev.jsonl').openings.slice(0, 2);
+    for (const o of p1) expect(o.id).toMatch(P1_OPENING_ID_RE);
+    expect(openingRuleset(p1[0])).toBe('phasing');
+    expect(() => validateLadderOpenings(p1, [0, 3])).not.toThrow();
+    expect(applyLadderOpening(p1[0]).ruleset).toBe('phasing');
+    // A zero-action row is rules-neutral: it names no action to reinterpret.
+    expect(openingRuleset(INITIAL_OPENING)).toBe('either');
+    expect(() => assertOpeningsRuleset([INITIAL_OPENING], 'phasing')).not.toThrow();
+    expect(() => validateLadderOpenings([INITIAL_OPENING], [0, 3])).not.toThrow();
+    // And the revision mapping a replay is reconstructed through: absent means
+    // Standard (every archived row), the P1 string means Phasing, anything else
+    // is refused rather than guessed.
+    expect(rulesetForRevision(undefined, 'x')).toBe('standard');
+    expect(rulesetForRevision(LADDER_RULES_VERSION, 'x')).toBe('phasing');
+    expect(() => rulesetForRevision('muju-online-9', 'x')).toThrow(/unknown rulesVersion/);
   });
 });
 
@@ -974,8 +1091,10 @@ describe('lab/hard-ai/ladder/run end to end', () => {
     const out = tmpDir('e2e-openings');
     try {
       const file = path.join(out, 'openings.jsonl');
-      const actions = legalOpeningActions(2);
-      fs.writeFileSync(file, JSON.stringify({ id: 'o1', actions }) + '\n');
+      // A PHASING opening with a P1 id: the harness refuses a Standard start
+      // position and `ladder/ruleset.ts` refuses a non-P1 id.
+      const actions = legalPhasingOpeningActions(2);
+      fs.writeFileSync(file, JSON.stringify({ id: 'p1-o1', actions }) + '\n');
       const loaded = loadOpenings(file);
       const args = baseArgs({
         a: 'Rush', b: 'Rush', pairs: 1, handicaps: [0], seed: 3, shards: 1, out,
@@ -985,22 +1104,35 @@ describe('lab/hard-ai/ladder/run end to end', () => {
       expect(result.status).toBe('complete');
 
       const games = fs.readFileSync(path.join(out, 'games.jsonl'), 'utf8').trim().split('\n').map(l => JSON.parse(l) as GameRow);
-      expect(games.map(g => g.pairId)).toEqual(['o1:0:0', 'o1:0:0']);
+      expect(games.map(g => g.pairId)).toEqual(['p1-o1:0:0', 'p1-o1:0:0']);
       expect(games.map(g => g.orientation)).toEqual(['A-white', 'B-white']);
-      expect(games.every(g => g.opening === 'o1')).toBe(true);
+      expect(games.every(g => g.opening === 'p1-o1')).toBe(true);
+      // Every current row carries the rule set it was played under and a clean
+      // fallback vector (Gate 0 item 6), and the run is therefore not void.
+      expect(games.every(g => g.rulesVersion === LADDER_RULES_VERSION)).toBe(true);
+      for (const g of games) {
+        expect(g.fallbacks).toEqual(emptyFallbackCounts());
+      }
+      expect(result.metrics.fallbacksRecorded).toBe(true);
+      expect(result.metrics.fallbackTotal).toBe(0);
+      expect(result.metrics.voided).toBe(false);
 
       const replays = games.map(g => JSON.parse(fs.readFileSync(path.join(out, g.replayPath!), 'utf8')) as {
         opening: OpeningSpec;
         steps: Array<{ units: Array<{ o: string; d: string; x: number; y: number }> }>;
       });
-      expect(replays[0].opening).toEqual({ id: 'o1', actions });
+      expect(replays[0].opening).toEqual({ id: 'p1-o1', actions });
       expect(replays[1].opening).toEqual(replays[0].opening);
       // Both orientations really did start from the same position.
       expect(replays[0].steps[0].units).toEqual(replays[1].steps[0].units);
 
-      const manifest = JSON.parse(fs.readFileSync(path.join(out, 'manifest.json'), 'utf8')) as { openings: { sha256: string; ids: string[] } };
+      const manifest = JSON.parse(fs.readFileSync(path.join(out, 'manifest.json'), 'utf8')) as {
+        openings: { sha256: string; ids: string[] };
+        rules: { rulesVersion: string };
+      };
       expect(manifest.openings.sha256).toBe(loaded.sha256);
-      expect(manifest.openings.ids).toEqual(['o1']);
+      expect(manifest.openings.ids).toEqual(['p1-o1']);
+      expect(manifest.rules.rulesVersion).toBe(LADDER_RULES_VERSION);
     } finally {
       fs.rmSync(out, { recursive: true, force: true });
     }
@@ -1018,8 +1150,8 @@ describe('lab/hard-ai/ladder/run end to end', () => {
       fs.writeFileSync(
         file,
         [
-          JSON.stringify({ id: 'o0', actions: legalOpeningActions(2) }),
-          JSON.stringify({ id: 'o1', actions: legalOpeningActions(4) }),
+          JSON.stringify({ id: 'p1-o0', actions: legalPhasingOpeningActions(2) }),
+          JSON.stringify({ id: 'p1-o1', actions: legalPhasingOpeningActions(4) }),
         ].join('\n') + '\n',
       );
       const loaded = loadOpenings(file);
@@ -1029,24 +1161,24 @@ describe('lab/hard-ai/ladder/run end to end', () => {
       });
       const result = await runLadder(args);
       expect(result.status).toBe('complete');
-      expect(result.metrics.openingsUsed).toEqual(['o0']);
-      expect(result.metrics.openings).toEqual(['o0', 'o1']);
+      expect(result.metrics.openingsUsed).toEqual(['p1-o0']);
+      expect(result.metrics.openings).toEqual(['p1-o0', 'p1-o1']);
 
       const summary = fs.readFileSync(path.join(out, 'summary.md'), 'utf8');
       const line = summary.split('\n').find(l => l.startsWith('- openings:'))!;
       expect(line).toBeDefined();
-      expect(line).toContain('used 1 of 2 — o0 (sha256 ' + loaded.sha256.slice(0, 12) + ')');
-      expect(line).not.toContain('o1');
+      expect(line).toContain('used 1 of 2 — p1-o0 (sha256 ' + loaded.sha256.slice(0, 12) + ')');
+      expect(line).not.toContain('p1-o1');
       // The unplayed pool id is still on disk where resume and the manifest
       // need it, so nothing was lost by not printing it.
       const metrics = JSON.parse(fs.readFileSync(path.join(out, 'metrics.json'), 'utf8')) as RunMetrics;
-      expect(metrics.openings).toEqual(['o0', 'o1']);
-      expect(metrics.openingsUsed).toEqual(['o0']);
+      expect(metrics.openings).toEqual(['p1-o0', 'p1-o1']);
+      expect(metrics.openingsUsed).toEqual(['p1-o0']);
       const manifest = JSON.parse(fs.readFileSync(path.join(out, 'manifest.json'), 'utf8')) as {
         openings: { ids: string[]; used: string[] };
       };
-      expect(manifest.openings.ids).toEqual(['o0', 'o1']);
-      expect(manifest.openings.used).toEqual(['o0']);
+      expect(manifest.openings.ids).toEqual(['p1-o0', 'p1-o1']);
+      expect(manifest.openings.used).toEqual(['p1-o0']);
     } finally {
       fs.rmSync(out, { recursive: true, force: true });
     }
@@ -1735,7 +1867,11 @@ describe('lab/hard-ai/ladder/run overrun-rate void (A14)', () => {
  * seed (P1).
  */
 describe('lab/hard-ai/ladder/run opening capacity guard (A15)', () => {
-  const BOOK = 'lab/hard-ai/ladder/openings/e0-openings.jsonl'; // 16 openings
+  // 16 rows of the frozen P1 dev book (see `writeP1Book`): the same size as the
+  // E0 Standard book these counts were written around, which a Phasing run
+  // refuses.
+  const dir = tmpDir('capacity-book');
+  const BOOK = writeP1Book(dir).path;
   const cli = (pairs: number, ...extra: string[]): string[] => [
     '--a', 'hard@lab', '--b', 'aiv2-hard', '--work', 'wall:3000',
     '--handicaps', '0,3', '--pairs', String(pairs), '--seed', '1',
@@ -1817,22 +1953,26 @@ describe('lab/hard-ai/ladder/run opening capacity guard (A15)', () => {
 // ------------------------------------------------- openings selection (A15)
 
 describe('lab/hard-ai/ladder/run openings selection', () => {
-  const BOOK = 'lab/hard-ai/ladder/openings/e0-openings.jsonl';
-  const FILE_IDS = ['g2-s0', 'g3-s1', 'g4-s2', 'g2-s5', 'g4-s6', 'g5-s7', 'g4-s10', 'g5-s11', 'g5-s15', 'g2-s20', 'g3-s25', 'g4-s30', 'g5-s31', 'g2-s40', 'g4-s42', 'g3-s45'];
+  const dir = tmpDir('selection-book');
+  const written = writeP1Book(dir);
+  const BOOK = written.path;
+  const FILE_IDS = written.ids;
+  const [FIRST_ID, SECOND_ID] = FILE_IDS;
+  const SIXTH_ID = FILE_IDS[5];
   const spec = (id: string): OpeningSpec => ({ id, actions: [] });
   const book = FILE_IDS.map(spec);
 
   it('drops the first n openings in FILE order, and keeps --openings-ids in the order named', () => {
     expect(selectOpenings(book, { skip: 2, ids: null }).map(o => o.id)).toEqual(FILE_IDS.slice(2));
     expect(selectOpenings(book, { skip: 0, ids: null }).map(o => o.id)).toEqual(FILE_IDS);
-    expect(selectOpenings(book, { skip: null, ids: ['g5-s7', 'g2-s0'] }).map(o => o.id)).toEqual(['g5-s7', 'g2-s0']);
+    expect(selectOpenings(book, { skip: null, ids: [SIXTH_ID, FIRST_ID] }).map(o => o.id)).toEqual([SIXTH_ID, FIRST_ID]);
     expect(selectOpenings(book, { skip: null, ids: null }).map(o => o.id)).toEqual(FILE_IDS);
   });
 
   it('refuses an unknown id, a repeated id, both flags at once, and a skip that empties the file', () => {
     expect(() => selectOpenings(book, { skip: null, ids: ['nope'] })).toThrow(/names "nope", which the openings file does not hold/);
-    expect(() => selectOpenings(book, { skip: null, ids: ['g2-s0', 'g2-s0'] })).toThrow(/twice/);
-    expect(() => selectOpenings(book, { skip: 1, ids: ['g2-s0'] })).toThrow(/mutually exclusive/);
+    expect(() => selectOpenings(book, { skip: null, ids: [FIRST_ID, FIRST_ID] })).toThrow(/twice/);
+    expect(() => selectOpenings(book, { skip: 1, ids: [FIRST_ID] })).toThrow(/mutually exclusive/);
     expect(() => selectOpenings(book, { skip: 16, ids: null })).toThrow(/drops every opening/);
   });
 
@@ -1855,19 +1995,19 @@ describe('lab/hard-ai/ladder/run openings selection', () => {
   });
 
   it('parses --openings-ids in the order given', () => {
-    const args = parseArgs(['--a', 'Rush', '--b', 'Rush', '--work', 'fixed:1', '--handicaps', '0', '--pairs', '2', '--seed', '1', '--out', 'lab/results/unused', '--openings', BOOK, '--openings-ids', 'g5-s7, g2-s0']);
-    expect(args.openingsSelectedIds).toEqual(['g5-s7', 'g2-s0']);
-    expect(args.openings.map(o => o.id)).toEqual(['g5-s7', 'g2-s0']);
-    expect(buildManifest(args, [], []).openings.selectedIds).toEqual(['g5-s7', 'g2-s0']);
-    expect(computeMetrics(args, [], []).openingsSelectedIds).toEqual(['g5-s7', 'g2-s0']);
-    expect(summaryMarkdown(computeMetrics(args, [], []))).toContain('--openings-ids g5-s7,g2-s0');
+    const args = parseArgs(['--a', 'Rush', '--b', 'Rush', '--work', 'fixed:1', '--handicaps', '0', '--pairs', '2', '--seed', '1', '--out', 'lab/results/unused', '--openings', BOOK, '--openings-ids', `${SIXTH_ID}, ${FIRST_ID}`]);
+    expect(args.openingsSelectedIds).toEqual([SIXTH_ID, FIRST_ID]);
+    expect(args.openings.map(o => o.id)).toEqual([SIXTH_ID, FIRST_ID]);
+    expect(buildManifest(args, [], []).openings.selectedIds).toEqual([SIXTH_ID, FIRST_ID]);
+    expect(computeMetrics(args, [], []).openingsSelectedIds).toEqual([SIXTH_ID, FIRST_ID]);
+    expect(summaryMarkdown(computeMetrics(args, [], []))).toContain(`--openings-ids ${SIXTH_ID},${FIRST_ID}`);
   });
 
   it('refuses either flag without --openings, and both together', () => {
     const noBook = ['--a', 'Rush', '--b', 'Rush', '--work', 'fixed:1', '--handicaps', '0', '--pairs', '2', '--seed', '1', '--out', 'lab/results/unused'];
     expect(() => parseArgs([...noBook, '--openings-skip', '1'])).toThrow(/--openings-skip selects from an openings file/);
-    expect(() => parseArgs([...noBook, '--openings-ids', 'g2-s0'])).toThrow(/--openings-ids selects from an openings file/);
-    expect(() => parseArgs([...noBook, '--openings', BOOK, '--openings-skip', '1', '--openings-ids', 'g2-s0'])).toThrow(/mutually exclusive/);
+    expect(() => parseArgs([...noBook, '--openings-ids', FIRST_ID])).toThrow(/--openings-ids selects from an openings file/);
+    expect(() => parseArgs([...noBook, '--openings', BOOK, '--openings-skip', '1', '--openings-ids', FIRST_ID])).toThrow(/mutually exclusive/);
     expect(() => parseArgs([...noBook, '--openings', BOOK, '--openings-skip', '-1'])).toThrow(/expected a non-negative integer/);
   });
 
@@ -1876,14 +2016,14 @@ describe('lab/hard-ai/ladder/run openings selection', () => {
     try {
       const file = path.join(dir, 'book.jsonl');
       const rows = [
-        { id: 'bad-row', actions: [{ type: 'MOVE', from: { x: 4, y: 4 }, to: { x: 4, y: 5 } }] },
-        ...fs.readFileSync(path.join('lab/hard-ai/ladder/openings/e0-openings.jsonl'), 'utf8').trim().split('\n').slice(0, 2).map(l => JSON.parse(l) as unknown),
+        { id: 'p1-bad-row', actions: [{ type: 'MOVE', from: { x: 4, y: 4 }, to: { x: 4, y: 5 } }] },
+        ...fs.readFileSync(BOOK, 'utf8').trim().split('\n').slice(0, 2).map(l => JSON.parse(l) as unknown),
       ];
       fs.writeFileSync(file, rows.map(r => JSON.stringify(r)).join('\n') + '\n');
       const cli = ['--a', 'Rush', '--b', 'Rush', '--work', 'fixed:1', '--handicaps', '0', '--pairs', '2', '--seed', '1', '--out', dir, '--openings', file];
       expect(() => parseArgs(cli)).toThrow(/no unit stands on \(4, 4\)/);
-      expect(parseArgs([...cli, '--openings-skip', '1']).openings.map(o => o.id)).toEqual(['g2-s0', 'g3-s1']);
-      expect(parseArgs([...cli, '--openings-ids', 'g3-s1']).openings.map(o => o.id)).toEqual(['g3-s1']);
+      expect(parseArgs([...cli, '--openings-skip', '1']).openings.map(o => o.id)).toEqual([FIRST_ID, SECOND_ID]);
+      expect(parseArgs([...cli, '--openings-ids', SECOND_ID]).openings.map(o => o.id)).toEqual([SECOND_ID]);
     } finally {
       fs.rmSync(dir, { recursive: true, force: true });
     }
@@ -1907,7 +2047,7 @@ describe('lab/hard-ai/ladder/run openings selection', () => {
     expect(mismatches).toHaveLength(1);
     expect(mismatches[0]).toMatch(/^openings\.ids: /);
     // A different --openings-ids selection is refused by the same comparison.
-    expect(resumeIdentityMismatches(parseArgs([...base, '--openings-ids', 'g2-s0,g3-s1']), prior)).toHaveLength(1);
+    expect(resumeIdentityMismatches(parseArgs([...base, '--openings-ids', `${FIRST_ID},${SECOND_ID}`]), prior)).toHaveLength(1);
   });
 });
 
@@ -1964,5 +2104,140 @@ describe('lab/hard-ai/ladder/run openingsUsed', () => {
     const swept = summaryMarkdown(computeMetrics({ ...args, pairs: 28 }, [], [])).split('\n').find(l => l.startsWith('- openings:'))!;
     expect(swept).toContain('- openings: used 14 of 14 — o0, ');
     expect(swept).toContain('o13 (sha256');
+  });
+});
+
+// -------------------------------------- Gate 0 item 6: engine fallbacks VOID
+
+/**
+ * `docs/hard-ai/PHASING-PREREGISTRATION-2026-09-18.md` Gate 0 item 6:
+ *
+ *   In every ladder game: 0 illegal actions, 0 replica divergences, 0 engine
+ *   fallbacks (packError, engineError, divergence, invalidSuffix, emptyPlan,
+ *   workerError). A fallback means the game was partly V2 vs V2.
+ *
+ * A correctness VETO, not a rate: one fallback is one turn of the row played by
+ * an engine other than the one the row's name claims, so the bar is zero.
+ *
+ * The Hard engine cannot play Phasing yet (its rules replica is being ported),
+ * so the counters cannot be exercised end to end through `hard@*` here. They
+ * are exercised the two ways that ARE available: a unit test that injects the
+ * counts a game recorded (below), and the scripted/`aiv2` end-to-end runs above,
+ * which record a clean vector on every row.
+ */
+describe('lab/hard-ai/ladder/run engine fallbacks (Gate 0 item 6)', () => {
+  type RowOver = Partial<Parameters<typeof gameRow>[0]>;
+  function metricsWith(rows: RowOver[]): RunMetrics {
+    const args = baseArgs({ a: 'A', b: 'B', pairs: 1, handicaps: [0] });
+    const [pair] = buildSchedule(args);
+    const games = rows.map(r =>
+      gameRow({ pairId: pair.pairId, orientation: 'A-white' as const, handicap: 0, winner: 'white' as const, whiteMs: 1, blackMs: 1, ...r }),
+    );
+    return computeMetrics(args, games, [pairRow(pair.pairId, pair.pairIndex, 0, 1)]);
+  }
+
+  it('sums the six kinds per run and reports a clean row as measured zero, not as unknown', () => {
+    const m = metricsWith([{}, {}]);
+    expect(m.fallbacks).toEqual(emptyFallbackCounts());
+    expect(m.fallbackTotal).toBe(0);
+    expect(m.fallbacksRecorded).toBe(true);
+    expect(m.voided).toBe(false);
+    expect(m.voidReason).toBeNull();
+    const summary = summaryMarkdown(m);
+    expect(summary).toContain('- engine fallbacks (Gate 0 item 6, must be 0): 0 total');
+    for (const kind of FALLBACK_KINDS) expect(summary).toContain(`${kind} 0`);
+  });
+
+  it('VOIDS the row on ANY fallback, names the kind, and sums across games', () => {
+    const m = metricsWith([
+      { fallbacks: { ...emptyFallbackCounts(), packError: 1, emptyPlan: 2 } },
+      { fallbacks: { ...emptyFallbackCounts(), emptyPlan: 3, workerError: 1 } },
+    ]);
+    expect(m.fallbacks.packError).toBe(1);
+    expect(m.fallbacks.emptyPlan).toBe(5);
+    expect(m.fallbacks.workerError).toBe(1);
+    expect(m.fallbackTotal).toBe(7);
+    expect(m.voided).toBe(true);
+    expect(m.voidReason).toMatch(/engine fallbacks 7 \(packError=1, emptyPlan=5, workerError=1\)/);
+    expect(m.voidReason).toMatch(/Gate 0 item 6/);
+    expect(m.voidReason).toMatch(/partly V2 vs V2/);
+    expect(m.decision).toBe('void');
+    const summary = summaryMarkdown(m);
+    expect(summary).toContain('- **VOID** ');
+    expect(summary).toContain('7 total — packError=1, emptyPlan=5, workerError=1');
+    expect(summary).toContain('packError 1, engineError 0, divergence 0, invalidSuffix 0, emptyPlan 5, workerError 1');
+  });
+
+  it('VOIDS on one fallback of every single kind, so no kind is silently exempt', () => {
+    for (const kind of FALLBACK_KINDS) {
+      const m = metricsWith([{ fallbacks: { ...emptyFallbackCounts(), [kind]: 1 } }]);
+      expect(m.fallbackTotal, kind).toBe(1);
+      expect(m.voided, kind).toBe(true);
+      expect(m.voidReason, kind).toContain(`${kind}=1`);
+    }
+  });
+
+  it('VOIDS on an illegal action and on a replica divergence, which the same clause vetoes', () => {
+    const illegal = metricsWith([{ whiteIllegalActions: 1 }]);
+    expect(illegal.illegalActions).toBe(1);
+    expect(illegal.voided).toBe(true);
+    expect(illegal.voidReason).toMatch(/illegalActions 1 exceeds the 0 the preregistration requires/);
+
+    const diverged = metricsWith([{ anomalies: ['hard-replica-divergence'] }]);
+    expect(diverged.replicaDivergences).toBe(1);
+    expect(diverged.voided).toBe(true);
+    expect(diverged.voidReason).toMatch(/replicaDivergences 1 exceeds the 0/);
+    expect(diverged.voidReason).toMatch(/fell back to the V2 path/);
+  });
+
+  /**
+   * The registry the ladder-side adapters report through, and the
+   * snapshot-and-subtract `worker.ts` does around every game. The counters are
+   * process-wide and monotonic (like `hardBotDivergences()` and the browser's
+   * `__mujuHardDiag`), because games run sequentially inside a shard.
+   */
+  it('deltas the process-wide registry per game, and sums rather than merges the sources', () => {
+    resetLadderFallbackCounts();
+    try {
+      expect(ladderFallbackCounts()).toEqual(emptyFallbackCounts());
+      const before = ladderFallbackCounts();
+      noteLadderFallback('emptyPlan');
+      noteLadderFallback('emptyPlan');
+      noteLadderFallback('workerError');
+      const afterFirstGame = ladderFallbackCounts();
+      const first = fallbackCountsDelta(afterFirstGame, before);
+      expect(first.emptyPlan).toBe(2);
+      expect(first.workerError).toBe(1);
+      expect(first.packError).toBe(0);
+      // The next game's delta starts from where the last one ended, so nothing
+      // is double-counted and nothing is lost.
+      noteLadderFallback('packError');
+      const second = fallbackCountsDelta(ladderFallbackCounts(), afterFirstGame);
+      expect(second).toEqual({ ...emptyFallbackCounts(), packError: 1 });
+      // `worker.ts` adds the hard adapter's own divergence and empty-plan counts
+      // to the registry delta rather than replacing them: an empty plan on a v2
+      // seat and one on a hard seat are two different turns that fell back.
+      const combined = { ...second };
+      combined.divergence += 3;
+      combined.emptyPlan += 1;
+      expect(fallbackTotal(combined)).toBe(5);
+      expect(describeFallbacks(combined)).toBe('packError=1, divergence=3, emptyPlan=1');
+      expect(describeFallbacks(emptyFallbackCounts())).toBe('');
+      expect(fallbackTotal(undefined)).toBe(0);
+    } finally {
+      resetLadderFallbackCounts();
+    }
+  });
+
+  it('VOIDS a run whose rows never recorded the counters, rather than passing the gate on six absent zeros', () => {
+    const m = metricsWith([{ fallbacks: null }]);
+    expect(m.fallbacksRecorded).toBe(false);
+    expect(m.fallbackTotal).toBe(0);
+    expect(m.voided).toBe(true);
+    expect(m.voidReason).toMatch(/engine fallbacks were NOT recorded by any game in this run/);
+    expect(summaryMarkdown(m)).toContain('NOT RECORDED');
+    // An EMPTY run is not void for this reason: there is no game to have
+    // recorded anything, and `status`/`pairsCompleted` already say so.
+    expect(gate0VoidReasons({ illegalActions: 0, replicaDivergences: 0, fallbacks: emptyFallbackCounts(), recorded: false, games: 0 })).toEqual([]);
   });
 });

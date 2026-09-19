@@ -54,7 +54,9 @@ import { DEFAULT_MATCH_OPTIONS } from '../../harness/types';
 import { buildPairs, expandPair, shardRange, gameScoreFor, pairScore, type GameSpec, type Orientation } from './pairing';
 import { resolveEngine, parseWorkSpec, workKey, type WorkSpec } from './engines';
 import { HARD_DIVERGENCE_ANOMALY, hardBotDivergences, hardBotTiming, type HardBotTiming } from '../bots/hard';
-import { INITIAL_OPENING, applyOpening, type OpeningSpec } from './openings';
+import { INITIAL_OPENING, type OpeningSpec } from './openings';
+import { applyLadderOpening } from './ruleset';
+import { fallbackCountsDelta, ladderFallbackCounts, type FallbackCounts } from './fallbacks';
 
 /** Name of the sidecar `run.ts` drops in the shards directory (see the module doc). */
 export const SHARD_CONFIG_FILE = 'shard-config.json';
@@ -163,6 +165,18 @@ export interface GameRow extends GameRecord {
    */
   loadAvgStart?: number;
   loadAvgEnd?: number;
+  /**
+   * The six ENGINE FALLBACK counts for this game (Gate 0 item 6 of
+   * `docs/hard-ai/PHASING-PREREGISTRATION-2026-09-18.md`; see
+   * `ladder/fallbacks.ts` for where each one comes from). A fallback means the
+   * game was partly V2 vs V2, so any non-zero field voids the row —
+   * `computeMetrics` sums them and `summary.md` prints them.
+   *
+   * OPTIONAL and additive, like `loadAvgStart`: a row written before this
+   * landed carries none, and the run then reports `fallbacksRecorded: false`
+   * rather than six zeros it cannot vouch for.
+   */
+  fallbacks?: FallbackCounts;
 }
 
 export interface PairRow {
@@ -321,7 +335,15 @@ async function playOneGame(
   // finally-block left installed in the module globals: an opening containing
   // an ATTACK or an upkeep payment must resolve under the rules the game that
   // follows it will be played under (`openings.ts#withOpeningRules`).
-  const initialState = opening.actions.length === 0 ? undefined : applyOpening(opening, {
+  //
+  // RULES-BOUND. `applyLadderOpening` replays a P1 row through
+  // `openings/phasing.ts` — a `ruleset: 'phasing'` initial state, the `p1-` id
+  // check, and the harness invariants — and REFUSES a historical Standard id,
+  // so a run pointed at `e1-dev.jsonl` cannot relabel an E0/E1 opening as
+  // Phasing. A zero-action row (`initial`) names no position to replay, so the
+  // harness builds its own Phasing initial state and `initialState` stays
+  // undefined, exactly as before.
+  const initialState = opening.actions.length === 0 ? undefined : applyLadderOpening(opening, {
     blackCrystalHandicap: matchOptions.blackCrystalHandicap,
     actionsPerTurn: matchOptions.actionsPerTurn,
     resourceLayout: matchOptions.resourceLayout,
@@ -329,6 +351,7 @@ async function playOneGame(
     upkeep: matchOptions.upkeep,
     handicap: matchOptions.handicap,
   });
+  const fallbacksBefore = ladderFallbackCounts();
   const divergencesBefore = hardBotDivergences();
   const timingBefore = hardBotTiming();
   const loadAvgStart = os.loadavg()[0];
@@ -358,6 +381,21 @@ async function playOneGame(
   for (let i = 0; i < divergences; i++) record.anomalies.push(HARD_DIVERGENCE_ANOMALY);
   record.hardTiming = hardTimingDelta(timingBefore, hardBotTiming());
 
+  // Gate 0 item 6: the six engine-fallback counts for THIS game. Three sources,
+  // all process-wide and monotonic, so each is snapshot-and-subtracted around
+  // the game (games run sequentially inside a shard):
+  //   - the adapter's replica divergences, the same delta the anomalies above
+  //     record, under the browser's `divergence` name;
+  //   - the adapter's empty plans, which `hardTimingDelta` has just computed
+  //     per game for this record;
+  //   - `ladder/fallbacks.ts`'s registry, which the `aiv2` adapters and any
+  //     future worker-backed engine report into.
+  // Summed rather than merged: an `emptyPlan` noted by a v2 seat and one
+  // counted by a hard seat are two different turns that fell back.
+  const fallbacks = fallbackCountsDelta(ladderFallbackCounts(), fallbacksBefore);
+  fallbacks.divergence += divergences;
+  fallbacks.emptyPlan += record.hardTiming.emptyPlans ?? 0;
+
   const row: GameRow = {
     ...record,
     pairId: spec.pairId,
@@ -365,6 +403,7 @@ async function playOneGame(
     opening: spec.openingId,
     loadAvgStart,
     loadAvgEnd: os.loadavg()[0],
+    fallbacks,
   };
   if (replay) {
     fs.mkdirSync(config.replaysDir, { recursive: true });

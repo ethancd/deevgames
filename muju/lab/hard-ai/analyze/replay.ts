@@ -11,6 +11,19 @@
  * against the recorded snapshot, and refuses the file on the first
  * disagreement.
  *
+ * WHICH RULES. A replay is reconstructed under ITS OWN rule set, never under
+ * today's. `GameRecord.rulesVersion` is the authority: `'muju-phasing-1'` for a
+ * Phasing game, ABSENT for every game recorded before Phasing existed, which is
+ * every archived Standard row under `lab/results/**`
+ * (`ladder/ruleset.ts#rulesetForRevision`). The rule set decides both halves of
+ * the start position — the `ruleset` field of the initial state, and which
+ * module replays the opening (`ladder/openings/phasing.ts` for a P1 row,
+ * `ladder/openings.ts` for a historical one) — and it decides what a phase end
+ * MEANS: under Standard `END_ACTION_PHASE` hands the turn over, under Phasing it
+ * collects mining and settles upkeep and `END_PLACE_PHASE` is the hand-off. A
+ * Standard replay rebuilt as Phasing therefore diverges at its first phase end,
+ * which is exactly what an analysis must never paper over.
+ *
  * THE ID PROBLEM. `src/game/board.ts createUnit` stamps the six starting units
  * with `${owner}_${definitionId}_${Date.now()}_${random}`, so their ids differ
  * between the recorded game and this one; units BOUGHT during play get
@@ -23,6 +36,18 @@
  * the STARTING one on both sides of the map, which is exactly what makes the
  * pairing stable.
  *
+ * ARRIVALS KEEP THE COMMITMENT'S ID. Under Phasing a `BUY_UNIT` does not place
+ * a unit: it creates a public pending summon with `nextUnitId`'s deterministic
+ * id, and `src/game/summoning.ts resolveSummons` builds the real piece with
+ * THAT SAME id at the owner's next turn start. So an arrived unit's id is
+ * process-independent for the same reason a bought unit's was, and needs no
+ * remapping — but only as long as the commitments themselves are rebuilt
+ * identically, which is why `compareSnapshot` now checks the recorded pending
+ * set ply by ply instead of trusting it. `buildIdMap` is therefore built from
+ * the opening position's BOARD and its PENDING SUMMONS both: a P1 opening can
+ * leave commitments behind it, and a stamped id could in principle reach the
+ * arrival path through one.
+ *
  * THE LOOP. `lab/harness/runner.ts playGame` is the authority on what actually
  * happened between two snapshots, and two of its behaviours are invisible in
  * the step list: an action the simulator refuses is a NO-OP that still consumes
@@ -32,22 +57,37 @@
  * apply, then the no-op guard and its injection, and only then the snapshot.
  * The recorded snapshot is therefore the position after any injection, so a
  * reconstruction that compares before it fails every replay containing one.
+ * The injected action is `src/game/legality.ts phaseEndAction`, the RUNNER'S OWN
+ * function, not a local `place ? END_PLACE : END_ACTION` guess: that guess is
+ * wrong whenever upkeep is pending (`phaseEndAction` substitutes the default
+ * upkeep payment), which under Phasing is a state the mover reaches inside its
+ * own turn rather than at the start of the next one.
+ *
+ * WHERE A TURN ENDS. A `ReconstructedTurn` is one seat's whole turn, and the
+ * boundary is the HAND-OFF — the applied action after which the other seat is on
+ * move. Under Phasing that is `END_PLACE_PHASE`: `END_ACTION_PHASE` collects
+ * mining and settles upkeep and leaves the SAME seat in Prepare
+ * (`src/game/turn.ts endTurn`), so a segmentation that closed the turn there
+ * would split every Phasing turn in two and mis-index `players[side].turnMs`.
+ * Under Standard the hand-off is `END_ACTION_PHASE`. Neither is hard-coded: the
+ * turn closes when the mover actually changes, which is the same event in both
+ * rule sets and needs no table.
  *
  * Nothing in this module reads or writes the run it is analysing.
  */
 import fs from 'node:fs';
 import path from 'node:path';
 import { applyAction } from '../../../src/ai/simulate';
-import { isLegalAction } from '../../../src/game/legality';
+import { isLegalAction, phaseEndAction } from '../../../src/game/legality';
 import { checkVictory } from '../../../src/game/victory';
 import { setElementGraph } from '../../../src/game/elements';
 import { setUpkeepVariant } from '../../../src/game/upkeep';
 import { setCombatHandicap, resetCombatHandicap } from '../../../src/game/combat';
-import { createInitialGameState } from '../../../src/game/board';
-import type { GameState, PlayerId } from '../../../src/game/types';
+import type { GameState, PlayerId, Ruleset } from '../../../src/game/types';
 import type { AIAction } from '../../../src/ai/types';
 import { DEFAULT_MATCH_OPTIONS, type GameRecord, type MatchOptions, type ReplayStep, type WinType } from '../../harness/types';
-import { applyOpening, type OpeningSpec } from '../ladder/openings';
+import type { OpeningSpec } from '../ladder/openings';
+import { applyOpeningForRules, rulesetForRevision } from '../ladder/ruleset';
 
 export const REPLAY_SCHEMA = 'muju-lab-replay-v2';
 
@@ -69,6 +109,9 @@ export interface LoadedReplay {
   meta: GameRecord;
   options: MatchOptions;
   opening: OpeningSpec;
+  /** The rule set this game was played under, from `meta.rulesVersion` (absent
+   * = Standard, i.e. every archived pre-Phasing replay). */
+  ruleset: Ruleset;
 }
 
 /** One whole turn of one seat, as the hard bot adapter sees it: the state it
@@ -181,6 +224,7 @@ export function loadReplay(file: string): LoadedReplay {
     meta: stored.meta,
     options,
     opening,
+    ruleset: rulesetForRevision(stored.meta.rulesVersion, file),
   };
 }
 
@@ -226,6 +270,27 @@ function projectCells(state: GameState): number[] {
   return state.board.cells.flat().map(cell => cell.resourceLayers);
 }
 
+/**
+ * `runner.ts snapshotStep`'s pending-summon projection, in a comparable form:
+ * owner, definition, square and paid cost, sorted, WITHOUT ids (a commitment's
+ * id is minted per process, exactly like a unit's).
+ *
+ * Public commitments are position, not decoration: they are paid for, they are
+ * refunded if disrupted, they are what the opponent plays against, and
+ * `adjudicationScore` counts their cost. A reconstruction that compared only
+ * the board would accept a rebuild that committed to different squares and
+ * still call the replay verified.
+ */
+function sortPending(pending: readonly { o: PlayerId; d: string; x: number; y: number; cost: number }[]): string[] {
+  return pending.map(s => `${s.o}|${s.d}|${s.x},${s.y}|${s.cost}`).sort();
+}
+
+function projectPending(state: GameState): string[] {
+  return sortPending((state.pendingSummons ?? []).map(s => ({
+    o: s.owner, d: s.definitionId, x: s.position.x, y: s.position.y, cost: s.cost,
+  })));
+}
+
 function compareSnapshot(state: GameState, step: ReplayStep, where: string): void {
   const live = sortUnits(projectUnits(state));
   const recorded = sortUnits(step.units as readonly UnitLine[]);
@@ -235,6 +300,21 @@ function compareSnapshot(state: GameState, step: ReplayStep, where: string): voi
   const cells = projectCells(state);
   if (cells.length !== step.cells.length || cells.some((c, i) => c !== step.cells[i])) {
     fail(where, 'board reserves diverged from the recorded snapshot');
+  }
+  // `pendingSummons` is absent on every step recorded before the field existed
+  // (the archived Standard replays), and a Standard game has none to record; a
+  // rebuilt Standard position has none either, so "absent" and "empty" agree and
+  // there is nothing to check. A Phasing step always carries the array.
+  if (step.pendingSummons !== undefined) {
+    const livePending = projectPending(state);
+    const recordedPending = sortPending(step.pendingSummons);
+    if (livePending.length !== recordedPending.length || livePending.some((s, i) => s !== recordedPending[i])) {
+      fail(
+        where,
+        'pending summons diverged\n' +
+          `  rebuilt : ${livePending.join(' ') || '(none)'}\n  recorded: ${recordedPending.join(' ') || '(none)'}`,
+      );
+    }
   }
   for (const p of ['white', 'black'] as PlayerId[]) {
     const ps = state.players[p];
@@ -255,14 +335,23 @@ function compareSnapshot(state: GameState, step: ReplayStep, where: string): voi
 /** `${owner}_${definitionId}_${Date.now()}_${Math.random().toString(36).slice(2,7)}`. */
 const STAMPED_ID = /^(white|black)_(.+)_\d{8,}_[a-z0-9]+$/;
 
+/**
+ * The remap from a recorded stamped id to this process's. Built over the board
+ * AND the pending summons of the opening position: a commitment becomes a real
+ * unit with its own id (`resolveSummons`), so a stamped id reaching the arrival
+ * path must map like any other. Deterministic `unit-<side>-<turn>-<n>` ids —
+ * which is what every bought unit and every arrival actually carries — are
+ * skipped, because they already agree between the two processes.
+ */
 export function buildIdMap(state: GameState, where: string): Map<string, string> {
   const map = new Map<string, string>();
-  for (const unit of state.board.units) {
-    const m = STAMPED_ID.exec(unit.id);
+  const ids = [...state.board.units.map(u => u.id), ...(state.pendingSummons ?? []).map(s => s.id)];
+  for (const id of ids) {
+    const m = STAMPED_ID.exec(id);
     if (m === null) continue; // deterministic `unit-<side>-<turn>-<n>`: no remap needed
     const key = `${m[1]}|${m[2]}`;
     if (map.has(key)) fail(where, `two starting units share the id key ${key}; the replay cannot be remapped unambiguously`);
-    map.set(key, unit.id);
+    map.set(key, id);
   }
   return map;
 }
@@ -315,22 +404,21 @@ export function reconstruct(replay: LoadedReplay): Reconstruction {
 }
 
 function reconstructInner(replay: LoadedReplay): Reconstruction {
-  const { options, meta, opening } = replay;
+  const { options, meta, opening, ruleset } = replay;
   const notes: string[] = [];
 
   // `playGame` builds its start position exactly this way: the opening replayed
-  // from the canonical initial state, or that state itself.
-  let state =
-    opening.actions.length === 0
-      ? createInitialGameState(options.resourceLayout, options.actionsPerTurn, options.blackCrystalHandicap)
-      : applyOpening(opening, {
-          blackCrystalHandicap: options.blackCrystalHandicap,
-          actionsPerTurn: options.actionsPerTurn,
-          resourceLayout: options.resourceLayout,
-          elementGraph: options.elementGraph,
-          upkeep: options.upkeep,
-          handicap: options.handicap,
-        });
+  // from the canonical initial state, or that state itself — under THIS GAME'S
+  // rule set, which is what makes the rebuilt `ruleset` field, and therefore
+  // every phase transition below, the one the recording used.
+  let state = applyOpeningForRules(ruleset, opening, {
+    blackCrystalHandicap: options.blackCrystalHandicap,
+    actionsPerTurn: options.actionsPerTurn,
+    resourceLayout: options.resourceLayout,
+    elementGraph: options.elementGraph,
+    upkeep: options.upkeep,
+    handicap: options.handicap,
+  });
   state.victoryRule = options.victoryRule;
   state.inactivityRule = options.inactivityRule;
 
@@ -410,7 +498,12 @@ function reconstructInner(replay: LoadedReplay): Reconstruction {
     if (!applied) {
       consecutiveNoops++;
       if (consecutiveNoops >= 3) {
-        state = applyAction(state, state.turn.phase === 'place' ? { type: 'END_PLACE_PHASE' } : { type: 'END_ACTION_PHASE' });
+        // `phaseEndAction` — the runner's own choice, which also substitutes the
+        // default upkeep payment when upkeep is pending. A local
+        // `place ? END_PLACE : END_ACTION` is wrong in that state, and under
+        // Phasing the mover reaches it inside its own turn (END_ACTION_PHASE
+        // settles upkeep), not at the start of the next one.
+        state = applyAction(state, phaseEndAction(state));
         consecutiveNoops = 0;
         notes.push(`${where}: three consecutive no-ops; the runner's unrecorded phase end was reproduced`);
       }
@@ -419,6 +512,14 @@ function reconstructInner(replay: LoadedReplay): Reconstruction {
     }
 
     compareSnapshot(state, step, where);
+
+    // The HAND-OFF closes the turn: `END_PLACE_PHASE` under Phasing,
+    // `END_ACTION_PHASE` under Standard, and in either case simply "the other
+    // seat is now on move". Reading it off the position rather than off the
+    // action type keeps one segmentation for both rule sets and keeps
+    // `bySide[side].length` equal to `players[side].turnsTaken`, which is what
+    // `turnMs` is indexed by (`lab/harness/runner.ts`).
+    if (state.phase !== 'victory' && state.turn.currentPlayer !== player) closeTurn(state, ply);
   }
   closeTurn(state, ply);
 

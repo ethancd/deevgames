@@ -36,6 +36,7 @@ import { analyzeReplay, DEFAULT_SWING_CC, type AnalysisResult } from '../../lab/
 import { analyzeRun, parseArgs } from '../../lab/hard-ai/analyze/run';
 import { reclassifyDirectory } from '../../lab/hard-ai/analyze/reclassify';
 import { playGame } from '../../lab/harness/runner';
+import { createBot as createScriptedBot } from '../../lab/harness/bots/index';
 import type { AIAction as Action } from '../../src/ai/types';
 import type { EngineBot } from '../../lab/harness/types';
 
@@ -402,6 +403,117 @@ function passBot(name: string): EngineBot {
     },
   };
 }
+
+/**
+ * RULES-BOUND RECONSTRUCTION (Phasing).
+ *
+ * `analyze/replay.ts` reads a replay's rule set off its own
+ * `GameRecord.rulesVersion` — absent means Standard, which is every archived row
+ * under `lab/results/**`, and `muju-phasing-1` means Phasing. Three things the
+ * rule set decides, all of which a Standard-only reconstruction got wrong for a
+ * Phasing replay:
+ *
+ *  1 the start position's `ruleset` field, which is what makes every later phase
+ *    transition the recording's own;
+ *  2 where a TURN ends — `END_PLACE_PHASE` hands off under Phasing while
+ *    `END_ACTION_PHASE` mines and settles upkeep and keeps the same seat on
+ *    move, so a segmentation keyed on the action type splits every turn in two
+ *    and mis-indexes `players[side].turnMs`;
+ *  3 the PENDING SUMMONS, which are public paid position and which the runner
+ *    records per ply.
+ */
+describe('analyze: rules-bound reconstruction of a Phasing replay', () => {
+  it('rebuilds a real Phasing game, matches its meta, and segments one turn per seat turn', async () => {
+    const { record, replay: file } = await playGame({
+      bots: { white: passBot('pass-w'), black: passBot('pass-b') },
+      seed: 909,
+      engineHash: 'test',
+      runId: 'phasing-reconstruct',
+      options: { recordReplay: true, maxTurns: 6 },
+    });
+    expect(file).not.toBeNull();
+    expect(record.rulesVersion).toBe('muju-phasing-1');
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'muju-phasing-recon-'));
+    try {
+      const out = path.join(dir, 'g.json');
+      fs.writeFileSync(out, `${JSON.stringify(file)}\n`);
+      const loaded = loadReplay(out);
+      expect(loaded.ruleset).toBe('phasing');
+      const recon = reconstruct(loaded);
+      expect(recon.openingState.ruleset).toBe('phasing');
+      expect(recon.plies).toBe(record.plies);
+      expect(recon.winner).toBe(record.winner);
+      // (2): one reconstructed turn per seat turn the runner counted.
+      for (const side of ['white', 'black'] as const) {
+        expect(recon.bySide[side].length, `${side} turns`).toBe(record.players[side].turnsTaken);
+      }
+      // Every turn ends where the mover changes, and `END_ACTION_PHASE` — which
+      // does NOT hand off under Phasing — never closes one.
+      for (const turn of recon.turns) {
+        expect(turn.startState.turn.currentPlayer).toBe(turn.side);
+        if (!turn.terminal && turn !== recon.turns[recon.turns.length - 1]) {
+          expect(turn.endState.turn.currentPlayer).not.toBe(turn.side);
+        }
+      }
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  }, 60_000);
+
+  it('REFUSES a Phasing replay whose recorded pending summons the rebuild does not reproduce', async () => {
+    // A Rush-vs-Rush game buys, so its steps carry commitments to tamper with.
+    const { replay: file } = await playGame({
+      bots: { white: createScriptedBot('Rush'), black: createScriptedBot('Rush') },
+      seed: 4711,
+      engineHash: 'test',
+      runId: 'phasing-pending',
+      options: { recordReplay: true, maxTurns: 6 },
+    });
+    expect(file).not.toBeNull();
+    const withPending = file!.steps.findIndex(s => (s.pendingSummons ?? []).length > 0);
+    expect(withPending, 'a Rush-vs-Rush Phasing game commits to at least one summon').toBeGreaterThan(0);
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'muju-pending-'));
+    try {
+      const out = path.join(dir, 'g.json');
+      fs.writeFileSync(out, `${JSON.stringify(file)}\n`);
+      const loaded = loadReplay(out);
+      expect(() => reconstruct(loaded)).not.toThrow();
+      // Move one commitment one square: the board, the banks and the reserves
+      // are all untouched, so ONLY the pending check can catch it.
+      const tampered: LoadedReplay = {
+        ...loaded,
+        stored: {
+          ...loaded.stored,
+          steps: loaded.stored.steps.map((step, i) =>
+            i === withPending
+              ? { ...step, pendingSummons: step.pendingSummons!.map((s, k) => (k === 0 ? { ...s, x: (s.x + 1) % 10 } : s)) }
+              : step,
+          ),
+        },
+      };
+      expect(() => reconstruct(tampered)).toThrow(/pending summons diverged/);
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  }, 60_000);
+
+  it('reads the rule set off the record and refuses a revision it has not been taught', () => {
+    const replay = loadReplay(SHORT);
+    expect(replay.meta.rulesVersion).toBeUndefined(); // archived E0 row
+    expect(replay.ruleset).toBe('standard');
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'muju-revision-'));
+    try {
+      const out = path.join(dir, 'g.json');
+      fs.writeFileSync(out, JSON.stringify({
+        ...replay.stored,
+        meta: { ...replay.meta, rulesVersion: 'muju-someday-9' },
+      }));
+      expect(() => loadReplay(out)).toThrow(/unknown rulesVersion/);
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+});
 
 describe('analyze: the runner\'s unrecorded no-op phase-end injection', () => {
   let dir: string;
