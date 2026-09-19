@@ -1,0 +1,3304 @@
+{
+  "schema": "muju-phasing-suite-manifest-v1",
+  "scope": "release",
+  "caseCount": 225,
+  "memberCount": 245,
+  "release": "v2",
+  "files": [
+    {
+      "family": "economy",
+      "path": "economy.suite.json",
+      "sha256": "a496f2d7627a681d67076f6412d440f81175e93dfaa1093891e5e959c3494cc6"
+    },
+    {
+      "family": "home-fortify",
+      "path": "home-fortify.suite.json",
+      "sha256": "6200faf9fa1a488ce405635a640b641ba0f0b409411faad888cf1cbec1216a68"
+    },
+    {
+      "family": "home-mate",
+      "path": "home-mate.suite.json",
+      "sha256": "a3e4a3b5fb55138d2ec89079365ff199d31e9022a9206db7728dc7492e181c21"
+    },
+    {
+      "family": "invariants",
+      "path": "invariants.suite.json",
+      "sha256": "fa1563d794f5efed9f66f1b6188a249462d67c831b11b6baa4d7b257daa30061"
+    },
+    {
+      "family": "summon-disruption",
+      "path": "summon-disruption.suite.json",
+      "sha256": "85839ea546bee63a4304afed8fe087ef5c03b8e0ac7d02a17bf9aaf7ccd4c6fe"
+    },
+    {
+      "family": "tactics",
+      "path": "tactics.suite.json",
+      "sha256": "b202deb5e718d2f9423d4ae71a4532655cab8e03736e7bbd18814cd3f258d5f3"
+    }
+  ],
+  "cases": [
+    {
+      "id": "inv1-spawn-zero",
+      "family": "invariants",
+      "kind": "invariant-pair",
+      "classification": "preference",
+      "sha256": "603507fc050ba13660bc5d5dde8f446cfc4ef3cbbda17300dcb6f3663aca96f6",
+      "members": [
+        {
+          "id": "inv1-spawn-zero-violating",
+          "sha256": "6abab7fc4501b6ab9c80a771dcfa58f67ad0145a6f680bbd200cc3a9631fc7c0"
+        },
+        {
+          "id": "inv1-spawn-zero-correct",
+          "sha256": "984a081f19de8f2247819e0fc5407efe0b0ff0dfccf0a1c1914d7bfdbd4a264d"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "inv10-home-reachable",
+      "family": "invariants",
+      "kind": "invariant-pair",
+      "classification": "preference",
+      "sha256": "9190070733bdf431a81310b60d40af121cf9974d2e40d746e2c87fb58976b8b4",
+      "members": [
+        {
+          "id": "inv10-home-reachable-violating",
+          "sha256": "75a17a192b6713a92e75a23651f7c247880aa0b797a5a4a9d5623d1534925a8b"
+        },
+        {
+          "id": "inv10-home-reachable-correct",
+          "sha256": "dca19662bd9c348c5630874d1001751d5491fbe2385e27efcc0b7a450456a44a"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "inv11-home-bare",
+      "family": "invariants",
+      "kind": "invariant-pair",
+      "classification": "diagnostic",
+      "sha256": "b60125bd79eac9c808c84799e7b935c87e3c62f7adbe3116c9f69622bec88be4",
+      "members": [
+        {
+          "id": "inv11-home-bare-violating",
+          "sha256": "6040e71dd67bf4001d41ef4be7b81e18290cd3f1571578c1b8e341390be5d6e8"
+        },
+        {
+          "id": "inv11-home-bare-correct",
+          "sha256": "02225dd38eabf3d0edbe42465449c2aaf0591c369f0d73b1df748e26d983e7e2"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "inv12-cleave-line",
+      "family": "invariants",
+      "kind": "invariant-pair",
+      "classification": "preference",
+      "sha256": "66f9d8b01685fa298c4a167a12d401eb548e8f219d76bd6baaf71dda05d5668a",
+      "members": [
+        {
+          "id": "inv12-cleave-line-violating",
+          "sha256": "78ea68a49550c170498324ac3287f319a7fb327375d0f3462ce11cdb452233a1"
+        },
+        {
+          "id": "inv12-cleave-line-correct",
+          "sha256": "e195551c6dd41a5189a7fc756718cc6cbefffaf390360dfb1517b4c0ff4b4f87"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "inv13-turtle",
+      "family": "invariants",
+      "kind": "invariant-pair",
+      "classification": "diagnostic",
+      "sha256": "a2774adf80dd9e5ebc4ee66598d0830a2151ff30ee0405cbe335f9e4bc7ad26d",
+      "members": [
+        {
+          "id": "inv13-turtle-violating",
+          "sha256": "f3bc13a4b19066e4dec3b4c3e3e85d1a8101d8d92caea63ad08b9a34b6b1f94e"
+        },
+        {
+          "id": "inv13-turtle-correct",
+          "sha256": "29e6a19012354c369834233d393c631c081d9e1b9cd293cb89f7045b08df6a31"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "inv14-liquidity-floor",
+      "family": "invariants",
+      "kind": "invariant-pair",
+      "classification": "preference",
+      "sha256": "8595a10ac930105c679341b8cd5f1dbb220bb32340062c33696c6c4791cd507f",
+      "members": [
+        {
+          "id": "inv14-liquidity-floor-violating",
+          "sha256": "69a732f359f6170ac320d80156b257c4719d0c01f48774d32e94bf91269dc53c"
+        },
+        {
+          "id": "inv14-liquidity-floor-correct",
+          "sha256": "c22638743ddc6d9a6d2e89ed1e4b34badebe695148e90feaefa6278f9d54a223"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "inv15-unknown-as-safe",
+      "family": "invariants",
+      "kind": "invariant-pair",
+      "classification": "structural",
+      "sha256": "26a5fa88a8fe3af1654d4b97ea5a3db43628006457beba324a730e5abf0567be",
+      "members": [
+        {
+          "id": "inv15-unknown-as-safe-violating",
+          "sha256": "031652c9e7dcc53580e13e4a59abd917a5d0cc40f117220aac8150a21bfff6b5"
+        },
+        {
+          "id": "inv15-unknown-as-safe-correct",
+          "sha256": "256df1144aeb46bc9f8d3eec018543beb51f22e7b1a6c2d477c635ff56d4cae3"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "inv16-clock-discipline",
+      "family": "invariants",
+      "kind": "invariant-pair",
+      "classification": "preference",
+      "sha256": "389944e3ba1b37f0d369b512cb492f327bc4eaaf455be1b221be53e7cfd327a4",
+      "members": [
+        {
+          "id": "inv16-clock-discipline-violating",
+          "sha256": "aff22fac5892f2abc7369db87f617bbd76152a2669d5650fa79e54437a74e8d8"
+        },
+        {
+          "id": "inv16-clock-discipline-correct",
+          "sha256": "428fb5da498c59ed88d02dbab4e292a6eee677a5303c7f7c96ffeda4c201b543"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "inv17-self-block",
+      "family": "invariants",
+      "kind": "invariant-pair",
+      "classification": "preference",
+      "sha256": "cb183e0484b088a9d51e49ccad7ff15bf1a46bfb4078ebdc42fbc09dc79bd7fb",
+      "members": [
+        {
+          "id": "inv17-self-block-violating",
+          "sha256": "d99dd513c4c47e3adc3888aad02c2b970e867075cb3cc8cc40937233f202360d"
+        },
+        {
+          "id": "inv17-self-block-correct",
+          "sha256": "9eae05e19059ec0bfb95412d5759de8e2c5f0bc50ddc6b62c2e16b6893884f4b"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "inv18-wasted-end-place",
+      "family": "invariants",
+      "kind": "invariant-pair",
+      "classification": "structural",
+      "sha256": "f92f61d93f4aaf1fea35dde903a71db9499255e7843e61ddf134b61da5bbbdff",
+      "members": [
+        {
+          "id": "inv18-wasted-end-place-violating",
+          "sha256": "21597e40b52c3da375b4d1b486fd8905880d7229e71a8e914c290723924538c8"
+        },
+        {
+          "id": "inv18-wasted-end-place-correct",
+          "sha256": "ade5332d5153a85c87724d6d30350a9abce60b92faa8e6c97174819a475a1457"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "inv19-soft-miner-exposed",
+      "family": "invariants",
+      "kind": "invariant-pair",
+      "classification": "preference",
+      "sha256": "8db7253e3ac05e50582626377fe4d626b1ce4bda5e6e1ef2d35b5b9d58f68009",
+      "members": [
+        {
+          "id": "inv19-soft-miner-exposed-violating",
+          "sha256": "144a552b21f5f6d8fdb1022e6e036511db3d8c785b6a7e36fb8a0b4da392ab72"
+        },
+        {
+          "id": "inv19-soft-miner-exposed-correct",
+          "sha256": "eb1eec5c5a753694a0c1fac8a8817b4cbe1067dc835b096dbb437d53f44dec2a"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "inv2-corner-seal",
+      "family": "invariants",
+      "kind": "invariant-pair",
+      "classification": "preference",
+      "sha256": "a539c069065b400a7712e3476e3ccd52a4c004bd65d32eeaf1e61b7d85e6816d",
+      "members": [
+        {
+          "id": "inv2-corner-seal-violating",
+          "sha256": "b7ae39a980b239ca4d7b59c92bdbbdd8940392b15f85a57686fa113bbda60d9c"
+        },
+        {
+          "id": "inv2-corner-seal-correct",
+          "sha256": "81c6def1ca9dd46489043593aa1e143d01d0e4c1e94ccb95e0353a7301763f4c"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "inv20-strand-no-retreat",
+      "family": "invariants",
+      "kind": "invariant-pair",
+      "classification": "preference",
+      "sha256": "2b63b04490f6b79d61475a6e0862d2ae429973c05fdd4b3b4833c73f1b1ce8df",
+      "members": [
+        {
+          "id": "inv20-strand-no-retreat-violating",
+          "sha256": "a92e1ba9b526831814066ee995802511511cf3b92e28964b102f4525c57b78d3"
+        },
+        {
+          "id": "inv20-strand-no-retreat-correct",
+          "sha256": "fc532fe42839c818ad8f5ba03b900613792f04c72e0c18a63d4af4aab09046cc"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "inv3-retreat-square",
+      "family": "invariants",
+      "kind": "invariant-pair",
+      "classification": "preference",
+      "sha256": "c92bef2fcc96066250828c4fbd319aecaace94aa3e3a639677ca7f94585385f7",
+      "members": [
+        {
+          "id": "inv3-retreat-square-violating",
+          "sha256": "82234065ad61838db3a648dfbce0c22adf40f5eed3def0c5db32fc948ede4d1a"
+        },
+        {
+          "id": "inv3-retreat-square-correct",
+          "sha256": "c302172a6b472ea0afa9782ac8055d4365de24d99371d944fda67c68dc223f1e"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "inv4-strand-unpunished",
+      "family": "invariants",
+      "kind": "invariant-pair",
+      "classification": "preference",
+      "sha256": "b7a28491ca6a5dcf189acf6023bbdf6c7cd5db61b89a0cb8c9873c52f129b75f",
+      "members": [
+        {
+          "id": "inv4-strand-unpunished-violating",
+          "sha256": "70da90911c7d9c53de7adf1ef495d55404b906eb37027fcc78fe469adae14461"
+        },
+        {
+          "id": "inv4-strand-unpunished-correct",
+          "sha256": "93b85517db1de74746c2cdf153607ebd05fb93d47a05b0342ea7d4c65a7a097f"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "inv5-poor-miner-square",
+      "family": "invariants",
+      "kind": "invariant-pair",
+      "classification": "preference",
+      "sha256": "e1c55488a00780c4aed59aa6e48fa87242a3b64b8acd68aa8985899be6f8099f",
+      "members": [
+        {
+          "id": "inv5-poor-miner-square-violating",
+          "sha256": "e5fd5799670a0c8f098f1428ecb526dea2bf9d7d969024f7a7c3592e67392c87"
+        },
+        {
+          "id": "inv5-poor-miner-square-correct",
+          "sha256": "77d4853ad2d3f1b2751c1d9f280db201637d36c9be6b19f32244c35f388930f6"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "inv6-fragile-anchor",
+      "family": "invariants",
+      "kind": "invariant-pair",
+      "classification": "preference",
+      "sha256": "4ae80023fd39671a10b5742763fbdce4cecd0c9cbfbe1760b285e21cd415b010",
+      "members": [
+        {
+          "id": "inv6-fragile-anchor-violating",
+          "sha256": "8a949333eea939600255e6803f221b61cb5a982cb659bed6318cdc7410eccb82"
+        },
+        {
+          "id": "inv6-fragile-anchor-correct",
+          "sha256": "abc789d17dd751992cc211a72c59631a4dd6cd7c3fee0cc2651e3486860f2297"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "inv7-promote-no-runway",
+      "family": "invariants",
+      "kind": "invariant-pair",
+      "classification": "preference",
+      "sha256": "112a56c605d51a45506cb3e4294d7f05256c1aaf5a14d5bb0560cbe125b8d4ae",
+      "members": [
+        {
+          "id": "inv7-promote-no-runway-violating",
+          "sha256": "ce7bd8f420a2322b7166f1b3c26e62073722870cc9f3f7eda4ad7b8ba418f2a2"
+        },
+        {
+          "id": "inv7-promote-no-runway-correct",
+          "sha256": "2b6833661da0d6db5b203205f2587afd0d4af1d414c71b954f287f632cacc023"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "inv8-no-pre-adjacency",
+      "family": "invariants",
+      "kind": "invariant-pair",
+      "classification": "preference",
+      "sha256": "5f8da4fbdea9427816d5b9952245c921c6d66807be77c702911ae64a0e84716b",
+      "members": [
+        {
+          "id": "inv8-no-pre-adjacency-violating",
+          "sha256": "f846bca1c5842ee42af6c7a53ce3a1021d3d6414cb5f415ebe55873cef8662ed"
+        },
+        {
+          "id": "inv8-no-pre-adjacency-correct",
+          "sha256": "7dc5881d3f2bddf360e14015b0b542b3f3804762e785f7fd4e4f6ff9236404f3"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "inv9-chip-across-turn",
+      "family": "invariants",
+      "kind": "invariant-pair",
+      "classification": "diagnostic",
+      "sha256": "844fcb52547c420e3d8d443108f93fe4e9f8d658e0f25bcef32d48240f3b6200",
+      "members": [
+        {
+          "id": "inv9-chip-across-turn-violating",
+          "sha256": "e0db4836e92bdb29447e8b5994a61f5bab5b26011a369b81109736f701e88875"
+        },
+        {
+          "id": "inv9-chip-across-turn-correct",
+          "sha256": "41448b81b49bf8d0da92bb54e595dd39e0f87963fd70f2510147d6c42fc17a3f"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "M5-HF-01-water-defense-two-to-three",
+      "family": "home-fortify",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "478b7c999ec1b5ac75eca18d7c044b70c20ebdfba85f73db88c0391a6f102412",
+      "members": [
+        {
+          "id": "M5-HF-01-water-defense-two-to-three-root",
+          "sha256": "3e6f28ff31a64e3159d8034dd2fdc795617aadb15c66fcf2a83a4c67a907a4ba"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "M5-HF-02-metal-defense-four-to-five",
+      "family": "home-fortify",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "62b1123dbbc591d70153755ac7955377de8bae7f9af5542e7f7de789f2de0e15",
+      "members": [
+        {
+          "id": "M5-HF-02-metal-defense-four-to-five-root",
+          "sha256": "b5bb82276dfcc2a6478a742c6c4eb440f6360f636a1bc403dcecf68368a7b258"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "M5-HF-03-fire-tier-two-to-three",
+      "family": "home-fortify",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "02e6cd0878c58290277dbb44d15c38c26f8879da83cc0e715f4b22b97f9e27af",
+      "members": [
+        {
+          "id": "M5-HF-03-fire-tier-two-to-three-root",
+          "sha256": "4c0623aa76e4bf8770be96a0074859efdd96af6ecf171c4e3918906a56290590"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "M5-HF-04-water-tier-two-to-three",
+      "family": "home-fortify",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "723d5bf66970e56abafb78976a2284e0757ca2a69eddf8cc03d754dc7111ce9e",
+      "members": [
+        {
+          "id": "M5-HF-04-water-tier-two-to-three-root",
+          "sha256": "755bcad9ed8426d308193678e0a742f5b9f9e0e14f32d4bbef14fbdc9bba8ea0"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "M5-HF-05-shadow-attack-only-upgrade",
+      "family": "home-fortify",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "2677f5b4e1895580ba0f3899e7fc9f8117f7d5fe70c4d96dda062af0e0e2acb3",
+      "members": [
+        {
+          "id": "M5-HF-05-shadow-attack-only-upgrade-root",
+          "sha256": "e565f7684e337daf86f97e76c0b032143b497c79768b3eebaf2e803017e3c3fa"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "M5-HF-06-fire-attack-only-upgrade",
+      "family": "home-fortify",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "9bdcffa8540f25b21afcf38a2a03eea831db421e69818b6ad0f0fe06cbb3f6f1",
+      "members": [
+        {
+          "id": "M5-HF-06-fire-attack-only-upgrade-root",
+          "sha256": "c997109e9bf489c750787523f13cec1ee8f38933431b40983bccdade46abb219"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "M5-HF-07-plant-mining-only-defense",
+      "family": "home-fortify",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "bbb7f661e7b38343ad6fa5a688cb470dc1cc05356f9e4937965fbeae76f5c54b",
+      "members": [
+        {
+          "id": "M5-HF-07-plant-mining-only-defense-root",
+          "sha256": "f08046933f18671cf53527fa15ac6f64dfc012d19bf3f7a6748542c63ee7b0a8"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "M5-HF-08-plant-tier-two-to-three",
+      "family": "home-fortify",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "fe342d3850b702000790a12a142c49b4e08bf1f8bbff056ac0ce63b41eb2b9a3",
+      "members": [
+        {
+          "id": "M5-HF-08-plant-tier-two-to-three-root",
+          "sha256": "fc613220b193bea3c7682212970148dcba46c8f2d83f3f9ba4f6c4b388881efc"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "M5-HF-09-income-finances-fortification",
+      "family": "home-fortify",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "7691c16e1c0189b9549b6804eb32bf1143b1f389a5c0fb191a3e490597af4341",
+      "members": [
+        {
+          "id": "M5-HF-09-income-finances-fortification-root",
+          "sha256": "d22572ffa31971ba6039dddbf38a1260309673b3057baac0013b559630861e23"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "M5-HF-10-upkeep-before-home-fortification",
+      "family": "home-fortify",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "16e621ef80bc0908aff7eece3a14dd6ba8c41ada91cf116da78163fd01f67ba9",
+      "members": [
+        {
+          "id": "M5-HF-10-upkeep-before-home-fortification-root",
+          "sha256": "cf9e19826358a12c01c2c61bcd8e5da4b2d1d94b9a089ea7d7f5d0eedbd9eb02"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "M5-SD-01-occupied-low-cost",
+      "family": "summon-disruption",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "8e33b7b645d62f9c2268b5b0e5cf2b344b8d99f115417af2cde4938e35714f92",
+      "members": [
+        {
+          "id": "M5-SD-01-occupied-low-cost-root",
+          "sha256": "9857d0814d825d7aeccdd0044857038d48212d68c3edf48cb531bc7ea5611de2"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "M5-SD-02-occupied-miner",
+      "family": "summon-disruption",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "d4bfb87c5b228f826879d3f11adbb7618c8c036fe0a23c9bfbf21860406bc046",
+      "members": [
+        {
+          "id": "M5-SD-02-occupied-miner-root",
+          "sha256": "66efc4541888dd2a2c9889ffdad34e484eb6d3f66793681e07c883003082da03"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "M5-SD-03-interior-block",
+      "family": "summon-disruption",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "b7d289df8a19de5c74122ccf47ab9b936645fb26b563b81e97c9f99273c20259",
+      "members": [
+        {
+          "id": "M5-SD-03-interior-block-root",
+          "sha256": "40326c1df15f8b0f35dd27e184aa063f390c4cb6d05b8bc283cc725b1c2e2f13"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "M5-SD-04-inclusive-edge",
+      "family": "summon-disruption",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "138aae178c3ef2ed4b60c940445cf9ab1ef2f13d8abe1bd938040ccd023dcf90",
+      "members": [
+        {
+          "id": "M5-SD-04-inclusive-edge-root",
+          "sha256": "fe25629fd27f4c44089286150939795ff03617368954c6a0fc4df9a24ef44a35"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "M5-SD-05-remote-landing-reachable-blocker",
+      "family": "summon-disruption",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "c11ea0d5303be59bfde252d311a98f4c21a10f6e58e07a1490ba34a6d9a64453",
+      "members": [
+        {
+          "id": "M5-SD-05-remote-landing-reachable-blocker-root",
+          "sha256": "bc308eccc2d3a9c8fb1f9f6421b56f603644c95c5b10ae85d8265a19e7f2eb2e"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "M5-SD-06-temporary-intrusion",
+      "family": "summon-disruption",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "41e868dc6e3e32c35a2ce1fd902c0517fc3dd27872a2b647c3e092eda555cd0e",
+      "members": [
+        {
+          "id": "M5-SD-06-temporary-intrusion-root",
+          "sha256": "d1022c7358e6285b6963c18fb4b071484fb6872326e5eed2cbc6c99cab1fdfa5"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "M5-SD-07-split-rectangles",
+      "family": "summon-disruption",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "3f0ca6ef58346ea70a9abbea6789cf19ba8ea4ef469a1aad6b5aa61fcfbd1af0",
+      "members": [
+        {
+          "id": "M5-SD-07-split-rectangles-root",
+          "sha256": "c25748df55fa8738821489d7082724cc7a073468b86cc2f224c5cf566ce115a3"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "M5-SD-08-alternative-anchor",
+      "family": "summon-disruption",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "aedc2d9d0d76ad098cf9dfe66b630f624c66bfb7bc2a7b552fdd8a06b9a27073",
+      "members": [
+        {
+          "id": "M5-SD-08-alternative-anchor-root",
+          "sha256": "e06df45099f5110b157aced2c96b5188f83ca076b4758b9169a20ee45d592e1a"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "M5-SD-09-shared-intersection",
+      "family": "summon-disruption",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "9df4d12702c91232434af877771f9374774ef86eca73388c60b3bd4b58476f7d",
+      "members": [
+        {
+          "id": "M5-SD-09-shared-intersection-root",
+          "sha256": "a507eeed469efe3b0e01991ae804630abd452562f104992889b6e340488f3356"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "M5-SD-10-capture-only-reaching-anchor",
+      "family": "summon-disruption",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "48ffb58dbdb1e001e4686decee24bf459647914af3931f6cd6f908b6d427f1de",
+      "members": [
+        {
+          "id": "M5-SD-10-capture-only-reaching-anchor-root",
+          "sha256": "1a2a23fe294dacb3eec2e8417b922422b7f546a7d20b07bee666e7d9c2ccb9e7"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "M5-SD-11-capture-redundant-anchor",
+      "family": "summon-disruption",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "9a8ccd30bd915ac0610d333c69a88e382c369dfd042b50cc86f5e44fa1a5c127",
+      "members": [
+        {
+          "id": "M5-SD-11-capture-redundant-anchor-root",
+          "sha256": "0f13fe742481b58727786c3f2c1677f7fa2de387d230ef9f0001d1cb2d621651"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "M5-SD-12-damage-is-not-control-loss",
+      "family": "summon-disruption",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "63148dd5425fa82f316ee373893e1db66c2db351797bc3691cb3972ed76faeb6",
+      "members": [
+        {
+          "id": "M5-SD-12-damage-is-not-control-loss-root",
+          "sha256": "8e7c1c55f2df2b8d06553850692e6d77bbedd6e0f0ac14351c37cd669cc0db89"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "M5-SD-13-cleave-two-anchors",
+      "family": "summon-disruption",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "5138991b4aeb183fb98fcc826bb4d87e74c43ebd4e617858644df22cc7638b76",
+      "members": [
+        {
+          "id": "M5-SD-13-cleave-two-anchors-root",
+          "sha256": "89ec1bc20a9540e1160f334858bf8297c8fa23d0e85f74580d1e02dc37f6c3fb"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "M5-SD-14-pending-does-not-save-elimination",
+      "family": "summon-disruption",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "78213985a59b83fc2185400f05c54ab34058a31f1b5d5df356d622f5204fcc65",
+      "members": [
+        {
+          "id": "M5-SD-14-pending-does-not-save-elimination-root",
+          "sha256": "366b37582379fa0a642a527bc4d4e023872f2e9259e81419b44569378a5ec2fd"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "M5-SD-15-pending-square-is-traversable",
+      "family": "summon-disruption",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "7733033708dfa44849db646992aead44afbec5e6abfa236ad6452053668a0e6a",
+      "members": [
+        {
+          "id": "M5-SD-15-pending-square-is-traversable-root",
+          "sha256": "674a9d7cbbbf5e26b3792e9e2f3ea4d95a04b8339cf4dfe5577262d4c6563c9d"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "M5-SD-16-pending-cannot-promote",
+      "family": "summon-disruption",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "b2856c217397393383759096805da42ad3a4624f3d620fc4a44f0bd3e58b574d",
+      "members": [
+        {
+          "id": "M5-SD-16-pending-cannot-promote-root",
+          "sha256": "7fbf0a4f577490e3d2b427eaa620ea1c01a42481c90bd3a57c7d5d010c097d5f"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "M5-SD-17-commitment-does-not-mine",
+      "family": "summon-disruption",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "95091f58f66cc7bd8115f3f8bc4eb109f05864ccdf7b1da3e66b8ab652aabb0d",
+      "members": [
+        {
+          "id": "M5-SD-17-commitment-does-not-mine-root",
+          "sha256": "e79d075134880ddf35c99903cc755dfbb47335051207e47c48445710e256471d"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "M5-SD-18-arrival-immediate-attack",
+      "family": "summon-disruption",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "820ad269234db6eff0e24946c57ddb6fa8c71c56eb105b77ab2a19e14042cf8d",
+      "members": [
+        {
+          "id": "M5-SD-18-arrival-immediate-attack-root",
+          "sha256": "9488c8f4c80b5f8ec4d327ddea76526f1b6dcc81bc2f2aca4bfb5bbdf00a63c9"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "M5-SD-19-arrival-immediate-mobility",
+      "family": "summon-disruption",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "54cdb374510f53c7a136df92cc0a85c2833926f4472d905be2320a737a4169f9",
+      "members": [
+        {
+          "id": "M5-SD-19-arrival-immediate-mobility-root",
+          "sha256": "60b8f591b1f2d5c837598ab03963eb8ead4b65d775b1abe071dc3844bb7268a4"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "M5-SD-20-stationary-arrival-mining",
+      "family": "summon-disruption",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "b58fb3d7abdf156365f3ff50427796ad5fe0f3db5b42b91adc7224b87e3adfa9",
+      "members": [
+        {
+          "id": "M5-SD-20-stationary-arrival-mining-root",
+          "sha256": "36c3cb3096251a7ff7288e424038f52d5249cbf16c2b209b9bd07649b9d51a06"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "M5-SD-21-arrival-turn-promotion",
+      "family": "summon-disruption",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "ef4f7189df2f27ca44132c86f2970f813b04d5d23e8a3cac518cded5e9c65ea2",
+      "members": [
+        {
+          "id": "M5-SD-21-arrival-turn-promotion-root",
+          "sha256": "3e30ea4dfce2c3364fc0bb5d27bd63dec1c5eed56f3d98e50c712d9f0a93c191"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "M5-SD-22-batch-all-six-elements",
+      "family": "summon-disruption",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "d965758a901ef593ae3879b948b922e8af6c56d846bc39bfd8d85b3a20aa7815",
+      "members": [
+        {
+          "id": "M5-SD-22-batch-all-six-elements-root",
+          "sha256": "d80ca394ddab8338aa323345b5718f8cf82c208d0598e07f6ce1a24a82adc476"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "M5-SD-23-mixed-arrival-no-bootstrap",
+      "family": "summon-disruption",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "6dc53f4003d96575af202a1e53b3a33bf3b655ef2391fd0a286d65fef9690a5b",
+      "members": [
+        {
+          "id": "M5-SD-23-mixed-arrival-no-bootstrap-root",
+          "sha256": "104d53c09fda0df8883f05fe974f165259ccdd32a89fdbaf23916258ca45ca16"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "M5-SD-24-refund-funds-new-commitment",
+      "family": "summon-disruption",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "da71c03d628990da0273b8ff1287be0961a53e4975c24c20805e54e4acf1161e",
+      "members": [
+        {
+          "id": "M5-SD-24-refund-funds-new-commitment-root",
+          "sha256": "6232eb8262d98647049caecd4d8711fa13600f8288dd9066654bd8034b2fd97d"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "M5-SD-25-refund-once",
+      "family": "summon-disruption",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "0d8b0ae79d02bbcbb5975feba166fc9f3bd507cb0c48fa8424c9d7fcfc191911",
+      "members": [
+        {
+          "id": "M5-SD-25-refund-once-root",
+          "sha256": "de52f4155fa5f04c411c66a18acc4e1a0e106394006edaf31fe9fe8539329271"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "M5-SD-26-both-sides-pending",
+      "family": "summon-disruption",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "5930f4c6ce2a1e7ead499dad40b9e910a913fafcc369fdd2b382fc9f4a6a16fc",
+      "members": [
+        {
+          "id": "M5-SD-26-both-sides-pending-root",
+          "sha256": "3bf42642e92caaa2fbfe1ce9e5ff6c6073215141927a329ce001fb5a1a6a7304"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "M5-SD-27-upkeep-releases-blocker",
+      "family": "summon-disruption",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "cc90cc911273384d535ec2e478c6cba448a0fd907e47a063dea26629d1119ff2",
+      "members": [
+        {
+          "id": "M5-SD-27-upkeep-releases-blocker-root",
+          "sha256": "ba7b86641ff0ba33a92a182581589d7d913b564a7d5d5ade98f5e957542dfeb1"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "M5-SD-28-single-anchor-interior-block",
+      "family": "summon-disruption",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "504421a3c5f58d4c190506d8114e1cff3ffccaad0d14038e9d7359d3749e8bbf",
+      "members": [
+        {
+          "id": "M5-SD-28-single-anchor-interior-block-root",
+          "sha256": "1f71c809aacb7d840e25f86ab4e3e523ecdd3133532744e4eedd0c078f4d1b1d"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "M5-SD-29-prepare-upgrade-keeps-blocker",
+      "family": "summon-disruption",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "ff8d3aebfe016e5b8d2686b959b18d05570d2c1af95899ac0ddf037d440adbd8",
+      "members": [
+        {
+          "id": "M5-SD-29-prepare-upgrade-keeps-blocker-root",
+          "sha256": "cbe20364e3123f80478df20e66e3ef92f59e112b022541de9c72fbc2857329b8"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "M5-SD-30-home-win-before-arrivals",
+      "family": "summon-disruption",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "f1010c1555322d3b3ea09720beec08abb3427ab2361a75b24623fb359f988662",
+      "members": [
+        {
+          "id": "M5-SD-30-home-win-before-arrivals-root",
+          "sha256": "029b119012674e2c7713da83a833190bf9ac0c0e962e6a7222a3e6873a940dfc"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "metal-1-delayed-harvest",
+      "family": "economy",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "f232894f887816c6a378cbc38586d3a3a839d7d9b46a1273b7419cbaad84c3a2",
+      "members": [
+        {
+          "id": "metal-1-delayed-harvest",
+          "sha256": "7a5d8dc5ddc89ec7bd3c4d084481bd31be62962f9cfb677dc65841aa51d0c736"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "metal-1-promote-mobile-next-act",
+      "family": "economy",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "b7d8be9154e17040d438d05e71c8eed86f16fe78fd3ac2b6ecb8e217015fe77a",
+      "members": [
+        {
+          "id": "metal-1-promote-mobile-next-act",
+          "sha256": "2f09eddc7b7c7d5f7b803408cb28e4668f31e89399a3d99721faccd76523e06e"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "muju-onto-4-0",
+      "family": "economy",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "acd709bea66d0583f3ce6cbf5c187f851d7ce8090763d6761a5a13c893a9b750",
+      "members": [
+        {
+          "id": "muju-onto-4-0",
+          "sha256": "b43fbc767442e9e47c92be8735ffaee24fe678fc56d1644852d82c8e1e18cbc0"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "muju-onto-4-1",
+      "family": "economy",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "d59831eb558323c0078d4d2a42a2270dbffcc80e4e37e545c202ad43f50d5f99",
+      "members": [
+        {
+          "id": "muju-onto-4-1",
+          "sha256": "911b510c2053e0cb388a37710aff9b17ff68e189ea3b48e9e36b754d94457e05"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "muju-onto-4-2",
+      "family": "economy",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "b7e952b373f389e7072fe2d8ee2e64e76c3355c879ac299ff0a24298a1cfbcae",
+      "members": [
+        {
+          "id": "muju-onto-4-2",
+          "sha256": "def906d6f27ea12d760377676161da74b0dcb936f59b2199373705d32c72e8fb"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "muju-onto-4-3",
+      "family": "economy",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "bcbb68ddee3cbff162721a643ce8d8d62efdb249ab7152ce42779e430c34c83f",
+      "members": [
+        {
+          "id": "muju-onto-4-3",
+          "sha256": "d93dd679c592cd835e4a31131f1ce64e6792f06c4ae3321bb38866538a7666f4"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "muju-onto-4-4",
+      "family": "economy",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "f5bb20996910eaeb8deef47abea5660769a0d4c882d469dec22bcd13dee6116e",
+      "members": [
+        {
+          "id": "muju-onto-4-4",
+          "sha256": "5c87eaa17df8626c0f06192c3da67bb614aeca1539b94eb05b627ba433ae6655"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "muju-onto-4-5",
+      "family": "economy",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "f9cbe7ea2e66e650ccda618cb6bfdd0dcb6f02ca016f3c575a7bfe724c4842eb",
+      "members": [
+        {
+          "id": "muju-onto-4-5",
+          "sha256": "eedfd3eab8aee39f14f4abae15d70710ba144d7b6744f8c72bac08a9dc307282"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "muju-onto-4-6",
+      "family": "economy",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "de8167fda832fa51525252afce7d0abb5e50ab9809728cc0fb7b37a83c4cf81c",
+      "members": [
+        {
+          "id": "muju-onto-4-6",
+          "sha256": "27f5cf03ca964e5de133f5c88b0f83be22fba20f50122a7dc960792a19991203"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "muju-onto-4-7",
+      "family": "economy",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "fc8421023e9b6b5b1a9c374582c0fe2733c484536f993fe45f9676dfbb4df505",
+      "members": [
+        {
+          "id": "muju-onto-4-7",
+          "sha256": "f0ccb34604721925074005768d30e6f901f93a0b59d2cd33f3ddf374e28beacd"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-at-most-one-promotion-mate",
+      "family": "home-mate",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "3f50b3bc8fd212d9c3e03ea7618e8910e0c726ead5e0df26ebce8aa7fbf86b66",
+      "members": [
+        {
+          "id": "phasing-at-most-one-promotion-mate-root",
+          "sha256": "3d1ac070b773fdcb9feb584bbf60b7e86cc098fc7ce55bd40de279f267e2c0c7"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-at-most-one-promotion-rescue",
+      "family": "home-mate",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "3c1646a1ba9f7efad85c21ef8ca31563c634605ebd0f84e7f1588b2a1196f7e8",
+      "members": [
+        {
+          "id": "phasing-at-most-one-promotion-rescue-root",
+          "sha256": "8b1d25974411647d862df97910be1fc1d120291807965b86f1a3606bb4004331"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "phasing-at-most-one-promotion-rotated-black-mate",
+      "family": "home-mate",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "a7276968fc4fb9ccb0aa06117101154946f8e49663be4c6eb3d7114da27e3304",
+      "members": [
+        {
+          "id": "phasing-at-most-one-promotion-rotated-black-mate-root",
+          "sha256": "2644452f7394aa51a32120035d441216b88b019f939ba8aaf1149e3266fb3291"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-at-most-one-promotion-rotated-black-rescue",
+      "family": "home-mate",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "e47abcc9f7a0c839c08ab199b483f9fd4188de0916e1d1f454068487c389753c",
+      "members": [
+        {
+          "id": "phasing-at-most-one-promotion-rotated-black-rescue-root",
+          "sha256": "4380f5b9f4b8b3de135e5baa371419e14cee39772b6e849d2d83dce781404345"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "phasing-cheap-invasion-one-attack-mate",
+      "family": "home-mate",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "863ecd1aafcabc5872ab96da5a788f3c29d3d62b0dfbd58995c5b661cb1d1899",
+      "members": [
+        {
+          "id": "phasing-cheap-invasion-one-attack-mate-root",
+          "sha256": "5ef1fdfc6d8f04a19c3ae2bf14d0fac8fe531c69e71cc622112c3459ef99b57f"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "phasing-cheap-invasion-one-attack-rescue",
+      "family": "home-mate",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "d1341458233b5a2d5b4609796da6a2a9d707848e37e0b5ec1eb5b16540608886",
+      "members": [
+        {
+          "id": "phasing-cheap-invasion-one-attack-rescue-root",
+          "sha256": "c125e98d741e5a62866609766fcd05bfd5d4989ed18a0685f3bb8cb9e5748642"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-cheap-invasion-one-attack-rotated-black-mate",
+      "family": "home-mate",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "ed9deb078ffa68526e93f5e7bdb068c4cedb78a5fcab42b19a6f37f057fded5f",
+      "members": [
+        {
+          "id": "phasing-cheap-invasion-one-attack-rotated-black-mate-root",
+          "sha256": "9c79fce4dac2ab321d750a3a584bb7901d8fc3cdbf58054e30357c9f96afee1a"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "phasing-cheap-invasion-one-attack-rotated-black-rescue",
+      "family": "home-mate",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "2e0e9142285a8d7ebc205e4c4cf7523c1fc749d69c5554298029319be2f81c85",
+      "members": [
+        {
+          "id": "phasing-cheap-invasion-one-attack-rotated-black-rescue-root",
+          "sha256": "1c37eddf627deee69eeff66fa3eaade12a01982371e01cc60da9909e841814c1"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-clear-an-adjacent-lane-mate",
+      "family": "home-mate",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "95b19a7c2652310f11b2c6caa5b4054c787343e29a89e3aa098698b89ba0ea90",
+      "members": [
+        {
+          "id": "phasing-clear-an-adjacent-lane-mate-root",
+          "sha256": "6fc49274634dc589dfb1c4f00663340f95051cb796ab478d3608324b9f48a2d6"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "phasing-clear-an-adjacent-lane-rescue",
+      "family": "home-mate",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "2ebed2a09086c136c8adc30fd6dea225514a2dd6c77a54894f342fd376bed536",
+      "members": [
+        {
+          "id": "phasing-clear-an-adjacent-lane-rescue-root",
+          "sha256": "4488945a99318feba112c30e594230cefb6ae9afb971952d55d3abae1c3c6e65"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-clear-an-adjacent-lane-rotated-black-mate",
+      "family": "home-mate",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "f8e55083c9ad876e42209b2b5f5cd84194a25e566f8d7f846a7a4eef59e5fdd0",
+      "members": [
+        {
+          "id": "phasing-clear-an-adjacent-lane-rotated-black-mate-root",
+          "sha256": "5f6a067521d5079fc9f0bcdb602dfecd8aeecb55f57084ff26a608a3cceb3431"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "phasing-clear-an-adjacent-lane-rotated-black-rescue",
+      "family": "home-mate",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "134e1014d5708893c08ec9315d053de11840e6d55e177d5ac9c8ae784c308845",
+      "members": [
+        {
+          "id": "phasing-clear-an-adjacent-lane-rotated-black-rescue-root",
+          "sha256": "903d7ff92d24fa327adae6816071d06deffdb85a5195682b7d2049aec2090059"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-damage-remains-during-defender-reply-mate",
+      "family": "home-mate",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "ccf487ced97d7ed53748e2ca7f5e54ce1fecb01268f35055fc2a841df13f24b0",
+      "members": [
+        {
+          "id": "phasing-damage-remains-during-defender-reply-mate-root",
+          "sha256": "4894a1e9af5d5c34773b9a3f0d591351ad8a37e440918dd21cda7bbd4549d699"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "phasing-damage-remains-during-defender-reply-rescue",
+      "family": "home-mate",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "f8677fe0f4db4abb3d758ae7fc93e18dae2d6be08592d99204e3fbf0b7d10a25",
+      "members": [
+        {
+          "id": "phasing-damage-remains-during-defender-reply-rescue-root",
+          "sha256": "66fec474803fa95febeb9a70561d0e5eb4abee5633f4f70660dc7d6b5e6fc850"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-damage-remains-during-defender-reply-rotated-black-mate",
+      "family": "home-mate",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "e01ebcb3987a0d674fec5933b36d8d68d62b242042be1d05e7b8ad4c32728004",
+      "members": [
+        {
+          "id": "phasing-damage-remains-during-defender-reply-rotated-black-mate-root",
+          "sha256": "c0c76c77065dfd855518adb4ac7ff36477a3bf6f45c30fcf4da014fd533a9c31"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "phasing-damage-remains-during-defender-reply-rotated-black-rescue",
+      "family": "home-mate",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "e47d34b72c77c98950d262ba0c69eb6dd6697af902927b6dbf2c80590d751c91",
+      "members": [
+        {
+          "id": "phasing-damage-remains-during-defender-reply-rotated-black-rescue-root",
+          "sha256": "80a7be37489cf071cbf3d9399599e61bce87709c6597163511fa959a43543d64"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-five-action-rotation-exceeds-the-turn-budget-mate",
+      "family": "home-mate",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "f03400b5769718fb09740829dc8bbd4d06cbca17032c56076874e55af0a7c732",
+      "members": [
+        {
+          "id": "phasing-five-action-rotation-exceeds-the-turn-budget-mate-root",
+          "sha256": "08c4afb1998fe00ca35c658842f8b1b1e9ee31f9b5b6ea70e21a70ab46b2fc10"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-five-action-rotation-exceeds-the-turn-budget-rescue",
+      "family": "home-mate",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "9dd9214a47467a0915eeb065f695206fd001e82b8cb45786adf703ce45e0fdf8",
+      "members": [
+        {
+          "id": "phasing-five-action-rotation-exceeds-the-turn-budget-rescue-root",
+          "sha256": "aca7dadd7eafbc7c73b24e38538fc3803613b0cc05147fa8add6dd25c2127e8a"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "phasing-five-action-rotation-exceeds-the-turn-budget-rotated-black-mate",
+      "family": "home-mate",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "fdece1ed58658f0f6fda275ab4a5d025fa900be3ef1b5a355ef8684c2fa6ec58",
+      "members": [
+        {
+          "id": "phasing-five-action-rotation-exceeds-the-turn-budget-rotated-black-mate-root",
+          "sha256": "ad1d5ae275fe96e535533179e9bc5903567e6091913bfda747bb02e9ad2d5586"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-five-action-rotation-exceeds-the-turn-budget-rotated-black-rescue",
+      "family": "home-mate",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "1d7d3742154953d26cddd5eb9b53bf97b1f4711481497e72231df0b134395e35",
+      "members": [
+        {
+          "id": "phasing-five-action-rotation-exceeds-the-turn-budget-rotated-black-rescue-root",
+          "sha256": "b1f14c5be6a094a56d411cdafcaba72e7bfcf76499e97a00f82b9078ac250b90"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "phasing-ineligible-defender-mate",
+      "family": "home-mate",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "f3587cd0e61da2a6c2ac1ec5602b242f599d81064bd7a462a4ff9ae3c9901670",
+      "members": [
+        {
+          "id": "phasing-ineligible-defender-mate-root",
+          "sha256": "e7178ee6c727b443c26dfec4e30dbd5e2ecb7169f725c84565e0dacc692fe6f6"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "phasing-ineligible-defender-rescue",
+      "family": "home-mate",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "968d78025d18e6fe4b2bfdba48a6b37e5bbb50d6948d3102e26fd48776f0682b",
+      "members": [
+        {
+          "id": "phasing-ineligible-defender-rescue-root",
+          "sha256": "539edcab34dbd061c860db68e5edbac9b623f92c2f591ecc15e4f891322b5275"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-ineligible-defender-rotated-black-mate",
+      "family": "home-mate",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "62b84e79c46a3c05b8d23cc83cb6b3bbebb7f38557761b90988476058cbb289d",
+      "members": [
+        {
+          "id": "phasing-ineligible-defender-rotated-black-mate-root",
+          "sha256": "65ec695638946a15535728aed99d2bdc9a035a5cb467bdcc6dba17b4a89d3486"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "phasing-ineligible-defender-rotated-black-rescue",
+      "family": "home-mate",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "ca55db2fe85f284792d2cacfbe49565a7a7b969649adb49a1d6698cf6f16d064",
+      "members": [
+        {
+          "id": "phasing-ineligible-defender-rotated-black-rescue-root",
+          "sha256": "40311b374430c85e59077db3e88f0b26f2c11ddedd8521a8e874abc0dd59a62e"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-metal-iii-two-shadow-iii-mate",
+      "family": "home-mate",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "259d488b0613c2dd9dfebea4acb883009050812a656ead38df5b944cb22e4a78",
+      "members": [
+        {
+          "id": "phasing-metal-iii-two-shadow-iii-mate-root",
+          "sha256": "f05de0d7819ba3876898c08868c2ffab1faefa89e85820df85dac0240d5dcc9e"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "phasing-metal-iii-two-shadow-iii-rescue",
+      "family": "home-mate",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "c4416b32d15ba6369383044ca1e57f9c405b832baa67d705444906200f6d31b7",
+      "members": [
+        {
+          "id": "phasing-metal-iii-two-shadow-iii-rescue-root",
+          "sha256": "6f83bb748d88ef0b68e3fe92afef50d267132f9b506dcac92dd62709a24956a2"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-metal-iii-two-shadow-iii-rotated-black-mate",
+      "family": "home-mate",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "3162b18e189b3ab90d3c023998b9b4efeb7c40495465ed75b349003805bd629d",
+      "members": [
+        {
+          "id": "phasing-metal-iii-two-shadow-iii-rotated-black-mate-root",
+          "sha256": "e19702b21e6104fcbab13cda1fb399c17b1d0b8b9e29bea5faa600dab8362eaa"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "phasing-metal-iii-two-shadow-iii-rotated-black-rescue",
+      "family": "home-mate",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "75815daab3c859f07312218ae59b6cea474c4813aa9ad753dd4ca08595072348",
+      "members": [
+        {
+          "id": "phasing-metal-iii-two-shadow-iii-rotated-black-rescue-root",
+          "sha256": "92f721dc27735c6d83260c2aa1b42b330d76180c604276904c7499d9018919e8"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-multi-action-approach-mate",
+      "family": "home-mate",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "a39072e965d7347f548393fd443bbb8f81a90fc239eaeaedf70e93295ee1aec0",
+      "members": [
+        {
+          "id": "phasing-multi-action-approach-mate-root",
+          "sha256": "79b29081756d6da01a30299f4f4ad9f5c0ba7034cf1bd9f65fae5c3e207804fa"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "phasing-multi-action-approach-rescue",
+      "family": "home-mate",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "063c7ee08fe80bb5669b940d584a764c9fe2b01001d9208d9b7d4383b2dd987a",
+      "members": [
+        {
+          "id": "phasing-multi-action-approach-rescue-root",
+          "sha256": "7a547f73e27c52970d8007f5accb4485d01c7f8bd335db2da9c5c2892448a4ec"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-multi-action-approach-rotated-black-mate",
+      "family": "home-mate",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "fe7aaf20ce35070800853db954562eeb40f34320c2a55bf208fa417578ebe34a",
+      "members": [
+        {
+          "id": "phasing-multi-action-approach-rotated-black-mate-root",
+          "sha256": "abfc247461e510017bd9deddf77b6befdbc6ece7aefdf814c2dedc789ea12389"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "phasing-multi-action-approach-rotated-black-rescue",
+      "family": "home-mate",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "3058595e03ea5a0b6b02e8dcb13457ff213f298cd84382230514a87f0ee9d426",
+      "members": [
+        {
+          "id": "phasing-multi-action-approach-rotated-black-rescue-root",
+          "sha256": "7d545bd51fdb83099c09c37f8f1b51560ea18f006f5cbe044b3f6a07ec38199c"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-newly-placed-unit-cannot-promote-mate",
+      "family": "home-mate",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "a2215bf119b2f0449c4a70738ea2cc3531d394e57c6d0574708c343c5762bc93",
+      "members": [
+        {
+          "id": "phasing-newly-placed-unit-cannot-promote-mate-root",
+          "sha256": "1a7117fe2d64cd62a848bb28bb42b59fef97eea264c48314bcbc8cc611e7e14c"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-newly-placed-unit-cannot-promote-rescue",
+      "family": "home-mate",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "8b5b28bfd3b1262e357d311e5221fea3a6ea28e86fd89343b6fc4018f197da82",
+      "members": [
+        {
+          "id": "phasing-newly-placed-unit-cannot-promote-rescue-root",
+          "sha256": "021a6d548b205257473736c60a573c8337d41660e629fafbfdbbc3288cda3f6f"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "phasing-newly-placed-unit-cannot-promote-rotated-black-mate",
+      "family": "home-mate",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "584dff0a2c345b036998ddc671459af79825d06331dad12c90ddc5a2aeeea9f7",
+      "members": [
+        {
+          "id": "phasing-newly-placed-unit-cannot-promote-rotated-black-mate-root",
+          "sha256": "54f49e5556a2529ac735721f9afd5fc5fe819bce0786b33f43944f51a93f1424"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-newly-placed-unit-cannot-promote-rotated-black-rescue",
+      "family": "home-mate",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "b1bb5941f2bab8145b447a8025b4ade1113feb3bd5019f958752e8ee298ccbbd",
+      "members": [
+        {
+          "id": "phasing-newly-placed-unit-cannot-promote-rotated-black-rescue-root",
+          "sha256": "a102d5f5195e86d71a99836de29802c9815f13e691915c73793f0c3bc0892415"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "phasing-promotion-dependent-rescue-mate",
+      "family": "home-mate",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "4b359f07d07e8c61ea6053d6e80bcde38a0769f2aed4cc033d964016df1ac11b",
+      "members": [
+        {
+          "id": "phasing-promotion-dependent-rescue-mate-root",
+          "sha256": "7dbe2e2ffd8a89aee2b62772d0178d8b38e048b331002667d8b9706d94cfa526"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-promotion-dependent-rescue-rescue",
+      "family": "home-mate",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "2f355969df34fdd5e36b18e09f28f3295fa28e0b9e9feee4817a3df38f77c77d",
+      "members": [
+        {
+          "id": "phasing-promotion-dependent-rescue-rescue-root",
+          "sha256": "3c33b13e75ffe11cd3fe3cf3e646271a6e2ee35573b2e948c87a998a6ce44d24"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "phasing-promotion-dependent-rescue-rotated-black-mate",
+      "family": "home-mate",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "9401279a0c7c90fcf332e61588b7f1c69f2884b121cf14f64b05dc61ae3da874",
+      "members": [
+        {
+          "id": "phasing-promotion-dependent-rescue-rotated-black-mate-root",
+          "sha256": "10565957ca6d4a0a9f3ca3dcabb222e7e03743b1a981e6c975907b95f1958956"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-promotion-dependent-rescue-rotated-black-rescue",
+      "family": "home-mate",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "41f6f819d80e3750e612423b89c7ff59b22c2f4362957d730fc92345957f3461",
+      "members": [
+        {
+          "id": "phasing-promotion-dependent-rescue-rotated-black-rescue-root",
+          "sha256": "d12882a21ef3273db71a00a04a2f7cd1eb81245602f55441c0ff7145934d3e10"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "phasing-public-bank-no-promotion-money-mate",
+      "family": "home-mate",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "1c78ac3369137489d119b46d133dc6a417ca1bf73f80aec7e2d6d32bd6a4055d",
+      "members": [
+        {
+          "id": "phasing-public-bank-no-promotion-money-mate-root",
+          "sha256": "2190eff7206a0db72f4ed77e2abf97caacbd874d8b14c2015769702efc0c3243"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-public-bank-no-promotion-money-rescue",
+      "family": "home-mate",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "f415e95170fc448c71a09a8517adca7803931f9d1d857c2e5a33c5b5427e3a63",
+      "members": [
+        {
+          "id": "phasing-public-bank-no-promotion-money-rescue-root",
+          "sha256": "7f380edd58a81d9ad2a81f67a329ca2a35cf845d17c36ead6feb94f81cb38b33"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "phasing-public-bank-no-promotion-money-rotated-black-mate",
+      "family": "home-mate",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "e9ee7620a699f0570291f30a9f73b13aa2e1171a424b5f19ced625437282a01b",
+      "members": [
+        {
+          "id": "phasing-public-bank-no-promotion-money-rotated-black-mate-root",
+          "sha256": "6b3a66fe8099bace48c7ab698ee95b4d4e3401e7cf74f45fd383dc09f4013a04"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-public-bank-no-promotion-money-rotated-black-rescue",
+      "family": "home-mate",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "6ebbb8c6e607c4d692aae1f4cebbb026500cab7705af644308ac85ffc4ab25fe",
+      "members": [
+        {
+          "id": "phasing-public-bank-no-promotion-money-rotated-black-rescue-root",
+          "sha256": "93d0762f3f2008f5f7a1cb93cfe9bbe033938ba8cf9b44c92f055a87214e1af0"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "phasing-same-target-limit-mate",
+      "family": "home-mate",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "d38956caf6108eb7eba9d0ee2cba70ff489e96c964cee8acb39101f39d5d0687",
+      "members": [
+        {
+          "id": "phasing-same-target-limit-mate-root",
+          "sha256": "b425619ecc16659d9244c34d2beec8d03567ffde61d9b488133b216f8fadde7b"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "phasing-same-target-limit-rescue",
+      "family": "home-mate",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "906f504ade5979a9d2e46e737497cae10211568a387758f8e0930a333c5f0b11",
+      "members": [
+        {
+          "id": "phasing-same-target-limit-rescue-root",
+          "sha256": "93bd3d1945cfa8b812f56f5fcfa0c3741348f39f1672e06ef2744c4cdb83d64d"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-same-target-limit-rotated-black-mate",
+      "family": "home-mate",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "d3663f626f092e2a3bb82fc029549c3ac714193dbbc1778ce5e7542a1cbc11c3",
+      "members": [
+        {
+          "id": "phasing-same-target-limit-rotated-black-mate-root",
+          "sha256": "31d0a550bc1464f539c74c28d95dbb58cb618c87e80784b4cfc58fc069bfcaeb"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "phasing-same-target-limit-rotated-black-rescue",
+      "family": "home-mate",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "e825fbffbed2d748850d012ffd3fb079a02ab2008d3751a6cce6ab5584d3c509",
+      "members": [
+        {
+          "id": "phasing-same-target-limit-rotated-black-rescue-root",
+          "sha256": "1817f89755d58b08b9c1320d08bbc79ac972e461780fad1bebdfa5b903b5d10f"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-adjacent-fire_1-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "459d0a516efa7fbcf6103f6f52498ff1716ee9677caac3700012210d08b6edc8",
+      "members": [
+        {
+          "id": "phasing-tactics-adjacent-fire_1-vs-fire_3-root",
+          "sha256": "406a726df175588afb7adbee84d94446b85256c44929e71b2ff381911331fe9f"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-adjacent-fire_2-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "f90e29827778bc8445a41d1b1ca3139e2b4eec348e41b5a869293395e4405ae4",
+      "members": [
+        {
+          "id": "phasing-tactics-adjacent-fire_2-vs-fire_3-root",
+          "sha256": "170209084a1664c0f8bbd816f0c69cfa14e47e2a115e1bb9c34861f9ffc1e918"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-adjacent-fire_3-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "02548d635ecc63a70db90e45985ba3f444b09fc8364daa6072699fed40d26f26",
+      "members": [
+        {
+          "id": "phasing-tactics-adjacent-fire_3-vs-fire_3-root",
+          "sha256": "bd1aaa80b513d19c380d7e1dae4a388e68f1c60427ba86dd05247b39e941c656"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-adjacent-lightning_2-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "0fba72dbc3e592bfc80701e8608003cf81d698e141f20a132bb213ea92701f19",
+      "members": [
+        {
+          "id": "phasing-tactics-adjacent-lightning_2-vs-fire_3-root",
+          "sha256": "989321f602a667937d630eaf428a32352075cae0ecd37c5d6fb804a1ec8bb066"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-adjacent-shadow_1-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "30331dfe9794711d1b9d35a50986a9be116edd4061d35e9eefe73b5c110fc749",
+      "members": [
+        {
+          "id": "phasing-tactics-adjacent-shadow_1-vs-fire_3-root",
+          "sha256": "a8502af8c7463b0e99a4aa1a2db25fd84ae8cc4d0a1bd2fbab0291145195bbc1"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-adjacent-water_1-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "26a2c483a9ed3adb6c4c2342b058e7f20f00ff93825389630e18137143aecbd4",
+      "members": [
+        {
+          "id": "phasing-tactics-adjacent-water_1-vs-fire_3-root",
+          "sha256": "6eacd7e46190df8604306c297a3a0c6a8629574a7278f3dba94af50cc4006e0d"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-adjacent-water_2-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "c734302b7071d4824f2980a3d4870a451522f052cbcd8d33ad6beba5395bd766",
+      "members": [
+        {
+          "id": "phasing-tactics-adjacent-water_2-vs-fire_3-root",
+          "sha256": "4f65a6c8c070f55cfb2173fe4276a274832c649afd74152e1d6f8abb1f1dca7c"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-adjacent-water_3-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "c44d36c37252ba08e2fca66a8081e30be41bc6bf0c8eceba15e2b5f987cba34a",
+      "members": [
+        {
+          "id": "phasing-tactics-adjacent-water_3-vs-fire_3-root",
+          "sha256": "d87031ee0a715654a8e981ce782d691c1f18763116315ab421a002c435dc9844"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-approach-fire_1-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "4907261323c5fc8efab4234264b3ea8d6671867ba30d7f989929b2375bead0d7",
+      "members": [
+        {
+          "id": "phasing-tactics-approach-fire_1-vs-fire_3-root",
+          "sha256": "999cfde11b499facda36d72259ec431a409cea61f53c0f0c48bf17e2aa6a0996"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-approach-fire_2-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "8b74092b0d59f67bb8812d6e142c708ffefafec531671f588ce19f6e19f3b009",
+      "members": [
+        {
+          "id": "phasing-tactics-approach-fire_2-vs-fire_3-root",
+          "sha256": "f5c5b1e59028b4fe071ab7962d7ad75834ca24e576cf7388515227570b2c2fb6"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-approach-fire_3-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "13fe84fe879d7167715c8b3754116ef98a41b3784e3ae49b11f4efb2bda9f4e4",
+      "members": [
+        {
+          "id": "phasing-tactics-approach-fire_3-vs-fire_3-root",
+          "sha256": "efebe4bff990097cc98a34af5cff616b959cd16bf5dd3ba667b5a972ffbcf6d6"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-approach-lightning_2-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "30e85cc6caf4cd8bf446b9dde762a6175c4c670a0eaa2e80a484227fd04332b8",
+      "members": [
+        {
+          "id": "phasing-tactics-approach-lightning_2-vs-fire_3-root",
+          "sha256": "6f2be4f7623a55667b86733415a01678364ee50bdc781968d7cc56d4f9831221"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-approach-shadow_1-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "f2e66f03f0a554d4c2e01cef6a7659fe231de3ca8903b3e8fc75c0494e428c1d",
+      "members": [
+        {
+          "id": "phasing-tactics-approach-shadow_1-vs-fire_3-root",
+          "sha256": "9d18d131c43e2bd39e9f9e03b8e961fc526291c7349de5312422553ac1a0a9e4"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-approach-water_1-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "14e039454b993ed28565a130938a9b72fb457f7f99883f1433f19265f47c19db",
+      "members": [
+        {
+          "id": "phasing-tactics-approach-water_1-vs-fire_3-root",
+          "sha256": "d65da90c858e48451409bcfb488ca78014b706c531b0dc8a779dbefa8704121f"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-approach-water_2-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "e2ff445c16bf1d5ee43d22a15bc86e1a33405821047af4187526014f6cc8d54a",
+      "members": [
+        {
+          "id": "phasing-tactics-approach-water_2-vs-fire_3-root",
+          "sha256": "bd6c52e06cc9ac27ac51a3744c26ee17cbb7e3a8aea81c5ce1245ec668143efc"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-approach-water_3-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "c6f05fdd77c4f1f5bbf48bbfe1c69979811d9309dd752bd70fd4f006edc0dc8f",
+      "members": [
+        {
+          "id": "phasing-tactics-approach-water_3-vs-fire_3-root",
+          "sha256": "7dcc202905628ab9ac97c9523dba4b094a3031c733c14ec135b6449d8753fdb8"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-buy-fire_1-vs-fire_3",
+      "family": "tactics",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "1efdf012247ee8dbae0df1a8baf6e0ef3cb47e917f3f90de0a3360684ba59d3a",
+      "members": [
+        {
+          "id": "phasing-tactics-buy-fire_1-vs-fire_3-root",
+          "sha256": "3798114e4fbf0db3778a769e5173cc05a1ffd343958fae33ae8699934c334951"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "phasing-tactics-buy-fire_1-vs-lightning_3",
+      "family": "tactics",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "c2e18f991e5f6bd3aa7c7a0cc7737901fc6f964130c1851046083226e8a16113",
+      "members": [
+        {
+          "id": "phasing-tactics-buy-fire_1-vs-lightning_3-root",
+          "sha256": "084c9cc2d7e036173457b47c6e40f8f44c54bc7138f1020e75f1628139e19547"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "phasing-tactics-buy-metal_1-vs-shadow_2",
+      "family": "tactics",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "608075d5cb3be54efd699a949d243c45b310d7190da02f89438008dd0f2d7707",
+      "members": [
+        {
+          "id": "phasing-tactics-buy-metal_1-vs-shadow_2-root",
+          "sha256": "9c4a7707321bc6d9fe51e57adbbc13d29443ca2a9d169167de0f4f676dd5af45"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "phasing-tactics-buy-metal_1-vs-shadow_3",
+      "family": "tactics",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "3edfda2f87bdb5d0be3f86e61d1037c11b0b51438693394dff6c129c62498b3b",
+      "members": [
+        {
+          "id": "phasing-tactics-buy-metal_1-vs-shadow_3-root",
+          "sha256": "65ff29bff0a680cb19d870e88ecbcc4b5399466f72ea54aeb0a0c704976d22db"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "phasing-tactics-buy-water_1-vs-fire_3",
+      "family": "tactics",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "6c04f33945be6b05d4a5a58d887d819ba2f527d51e0e9ab80daf730a6397cdd7",
+      "members": [
+        {
+          "id": "phasing-tactics-buy-water_1-vs-fire_3-root",
+          "sha256": "44e97e7b71027fd91166d12f0e65a27a3b53e0d880c1eec7414bdd255efad970"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "phasing-tactics-buy-water_1-vs-lightning_3",
+      "family": "tactics",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "3121ee9dce475e3d7962d8ccb03a1818b570a99aacdcb47d0a574b0ae793d31d",
+      "members": [
+        {
+          "id": "phasing-tactics-buy-water_1-vs-lightning_3-root",
+          "sha256": "1b6617436863150a0a484669ca9b053078457321d0fe788393fb0fe4bd668abe"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "phasing-tactics-buy-water_1-vs-shadow_2",
+      "family": "tactics",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "d90e62f30faee3dd51509d4cb65248dd0679287c9a2a9b13b0f2cbcfe9d1342f",
+      "members": [
+        {
+          "id": "phasing-tactics-buy-water_1-vs-shadow_2-root",
+          "sha256": "56c78211d7dfe420ae8f21694bdb532f9532d2925f48acf8d06b28e2dd98d934"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "phasing-tactics-buy-water_1-vs-shadow_3",
+      "family": "tactics",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "717dca80b82d4ea8e09ee20935cf05f4a84b4818f58c8ede7a10dbc80a9ac0aa",
+      "members": [
+        {
+          "id": "phasing-tactics-buy-water_1-vs-shadow_3-root",
+          "sha256": "0b0f45d3ab0224e8ffd2647dcd3f2c18e813a55be8860cf64a38058871d11763"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "phasing-tactics-chipped-fire_1-vs-water_2",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "43878dfcec76e43a8ef4a2342013a353a3a31062693f39670d99e32c305fae1d",
+      "members": [
+        {
+          "id": "phasing-tactics-chipped-fire_1-vs-water_2-root",
+          "sha256": "291d50415d6b1264d33e8ff95fde47ec0219a9e2c4e8866d9e921db14ca9cee1"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-chipped-fire_2-vs-water_2",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "bda4209437791cd7adf5631c6554a8e0857cf0735528ac2d7feb44b75771385f",
+      "members": [
+        {
+          "id": "phasing-tactics-chipped-fire_2-vs-water_2-root",
+          "sha256": "b283557785c191805a2aa405be0e1d6dbd365b6cc58cd7044d1d78c50bf2bf5f"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-chipped-lightning_1-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "538e2bcec343b72bb38dd4c19fae32299cdbdae55fdfffdd62124527a40042ad",
+      "members": [
+        {
+          "id": "phasing-tactics-chipped-lightning_1-vs-fire_3-root",
+          "sha256": "26953f99c00f982712de02633f9a40eb2d33639b712a42403084fd8cec4df934"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-chipped-lightning_2-vs-water_2",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "909f7b8f27c25af5520ce605a223c8e9ef75a4c56c1c497fc5118c67abe0719f",
+      "members": [
+        {
+          "id": "phasing-tactics-chipped-lightning_2-vs-water_2-root",
+          "sha256": "7c43ed3c855258bcfe7662a0bf5876128e20020d8229f9f8ddcec389fbc412ff"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-chipped-metal_3-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "dbac8313e2330d55e7e30869b1e2abfcc28be456bac6d4f2cb0beb890c321649",
+      "members": [
+        {
+          "id": "phasing-tactics-chipped-metal_3-vs-fire_3-root",
+          "sha256": "13b6ae5b41bed8947fc8956303cdddf64722e011e8e56547f9351cfed65f9ecd"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-chipped-plant_3-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "d1e04762eedd28c2dc0abb2986901c74017c19f5b660af2846729264273099b6",
+      "members": [
+        {
+          "id": "phasing-tactics-chipped-plant_3-vs-fire_3-root",
+          "sha256": "f4ef2e42b6bc0fc70343193717b09cd5fc38339b44916d8cd459c7e17d28ed10"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-chipped-water_1-vs-water_2",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "95a413872287bc8063e84a30e53b947bfdcae9c5addb1a18ae50e63772dbb6d5",
+      "members": [
+        {
+          "id": "phasing-tactics-chipped-water_1-vs-water_2-root",
+          "sha256": "425aab5e473de49533541ab6540f7b9df2c623d7195b8be2497b261a856792d5"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-chipped-water-iii-metal-ii-finish",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "e5a07fef43f010249aa116b8715b554f6acf23116b4f3a2cd717aded2856df9f",
+      "members": [
+        {
+          "id": "phasing-tactics-chipped-water-iii-metal-ii-finish-root",
+          "sha256": "572336bd4d4fbca54bf3df6bffd2a54fd187212a3df5e182b8de4a8b42f723b2"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-corner-fire_2-vs-water_2",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "ad490cd697f10ea956a202935f1c4dd37b367915da957a6ee0d8761c5a64f031",
+      "members": [
+        {
+          "id": "phasing-tactics-corner-fire_2-vs-water_2-root",
+          "sha256": "f0c27603071e3fb68e65e34bfd397c1928e94956713571a870ae1ab857530eff"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-corner-lightning_1-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "2a46fc71be6b434b94557102aec9be83fadec961c48e9fda7e3b3150435dfd74",
+      "members": [
+        {
+          "id": "phasing-tactics-corner-lightning_1-vs-fire_3-root",
+          "sha256": "1930e7b243fdd7ba3f8c1703e375def0ec842e794559d5f696c6116a8e14b020"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-corner-metal_3-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "b9f0e3aac7a348378a5a51f9181639e7d7e359468411c8c1baf8143a34116f26",
+      "members": [
+        {
+          "id": "phasing-tactics-corner-metal_3-vs-fire_3-root",
+          "sha256": "c44b5ec1947e0665905153f46835364b02d408bcea85608d08b7195aaec242e0"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-corner-plant_3-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "433995bc3f38d235cc74269d344319d6cad8be0642e5aa7becfdfd6f0af74f13",
+      "members": [
+        {
+          "id": "phasing-tactics-corner-plant_3-vs-fire_3-root",
+          "sha256": "39fd32cdc3f8fd41266f702ebc5b0a1bc4b61c4c37ac6817b251d01126f49b26"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-corner-shadow_1-vs-water_2",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "89b205d2a3f186a4fe2f938f50aaae2096ca0d3a58e7212dc4b31573e7292aae",
+      "members": [
+        {
+          "id": "phasing-tactics-corner-shadow_1-vs-water_2-root",
+          "sha256": "4513799100fe6c4dbe4a5244ba55b3f2e165f10123135e319114874fde1efd27"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-corner-two-metal-ii-vs-water-iii",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "91ece8d125fba45f0ab5bc2032d589904dd1b12998accacd5e06252521803f4f",
+      "members": [
+        {
+          "id": "phasing-tactics-corner-two-metal-ii-vs-water-iii-root",
+          "sha256": "4d34d008a2c1c0dd68a7dc397b4124a4557eafa022396e9161e0efe175ac41ed"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-corner-water_1-vs-water_2",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "c3e25f05563ba554c6f32a5e936ae76dcfe7beac4d50a908604ceb3070038818",
+      "members": [
+        {
+          "id": "phasing-tactics-corner-water_1-vs-water_2-root",
+          "sha256": "ecbc7d96e24f39cdc8f097fd49f53c5c1a449ceba2d76bf145ec2a3ce0d53f87"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-corner-water_2-vs-water_2",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "f85d407132e4a0ba9e65f83d2407900e394fc24c22cb86f841729c246507ce84",
+      "members": [
+        {
+          "id": "phasing-tactics-corner-water_2-vs-water_2-root",
+          "sha256": "93620828b7badf6a4dca9d664f5ea227b9cfa6db5279a05b8012f536bd0ab6f1"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-plugged-fire_1-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "03511c9e4f0d28002c2cf591355a04cc809c6f03a57bea10ba4925f27c3bb58d",
+      "members": [
+        {
+          "id": "phasing-tactics-plugged-fire_1-vs-fire_3-root",
+          "sha256": "e4215185aeb764be3258432b8dabe45f1d39867015302e60629c84f8c61258e8"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-plugged-fire_2-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "b2eb6cb15bfc79cd29de06bd1fa1e306238019afe5f8c63cbfa3377b0e6d98c2",
+      "members": [
+        {
+          "id": "phasing-tactics-plugged-fire_2-vs-fire_3-root",
+          "sha256": "56f1347d036c3e2db0272425931d22b2212a403bc6168750efed36fbf69c5b54"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-plugged-fire_3-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "c7ebfdb115f23e8f2c761b2a333025e381e0695067d2a6c5582237518707257c",
+      "members": [
+        {
+          "id": "phasing-tactics-plugged-fire_3-vs-fire_3-root",
+          "sha256": "b45f6b8d5320e61651a77083acfbbd2b54123ae8d12a1543edd14f8d39f3c3b1"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-plugged-lightning_2-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "92e392e22bf516496273f265d187786fc33677558bccc5ed5576fbfb4361c45e",
+      "members": [
+        {
+          "id": "phasing-tactics-plugged-lightning_2-vs-fire_3-root",
+          "sha256": "fe4253f8ff51e22ad8e45759951b05a8140f6c9fd68136e76a141aaae010f645"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-plugged-shadow_1-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "ee783a0e76791478b9c9a1c55dbc62bb57a73d4726dbe7834c8bac703e385224",
+      "members": [
+        {
+          "id": "phasing-tactics-plugged-shadow_1-vs-fire_3-root",
+          "sha256": "a7981811229667d8af64aa0209038f3ebdd0f4130c69d8b71330f06e14962eaa"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-plugged-water_1-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "b04a86b6019128fae3f22839664e20920a3f75f01783c2ead6884eee7ed6df07",
+      "members": [
+        {
+          "id": "phasing-tactics-plugged-water_1-vs-fire_3-root",
+          "sha256": "68660a2f7e96c8c3da30c875e298ea47f84eb328f31aee02f09858671adda4bd"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-plugged-water_2-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "a4f9eea0cb9f3f7ed34d29bff246a6b6aed560484e654eea06f0bb80be38ff91",
+      "members": [
+        {
+          "id": "phasing-tactics-plugged-water_2-vs-fire_3-root",
+          "sha256": "61f9a561646e94a39e8beaa9aac3284ab03fa8fdee4bf007518ae88bfe095c1b"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-plugged-water_3-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "d80c19933035092c5cc593f782315013ec4e3f95681f176c5e183ec4a0b4de80",
+      "members": [
+        {
+          "id": "phasing-tactics-plugged-water_3-vs-fire_3-root",
+          "sha256": "0954120e4dd686af35b0bd150b8870b8cb2e9bcd24aef1a1a558019e9ea1359e"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-promote-fire_2-vs-water_2",
+      "family": "tactics",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "0db0dab678be9787ee94891fe864c51cadf5fe6f55d9dd34752bbf0d18c5b9d0",
+      "members": [
+        {
+          "id": "phasing-tactics-promote-fire_2-vs-water_2-root",
+          "sha256": "22f71462f46ed4c691b28233808ab6e3fe75eb5c81d5bef56484e4b542e673cc"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "phasing-tactics-promote-lightning_1-vs-fire_3",
+      "family": "tactics",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "4a5a20f282118c1123084da44e3b3a3d5de8708ebab85d9e24ac414d11157b98",
+      "members": [
+        {
+          "id": "phasing-tactics-promote-lightning_1-vs-fire_3-root",
+          "sha256": "4846f5e71184624c6479196f62061b42dec4410addc7cdd9ffa6c976b1554557"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "phasing-tactics-promote-metal_1-vs-lightning_3",
+      "family": "tactics",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "234537f7f9ff18b9a8659a10dd8d0cee8ba3912a6b963dd9edad36e2dc28452d",
+      "members": [
+        {
+          "id": "phasing-tactics-promote-metal_1-vs-lightning_3-root",
+          "sha256": "7412893cc1cb04f9cfb15d12d53d4c51e12f6362f5ac5c8afc75ebe48d467dd7"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "phasing-tactics-promote-metal_1-vs-water_2",
+      "family": "tactics",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "ac00f32664524d6de114a631d889aab2fe2e47b43f7477aa07084c5fa39c7f8c",
+      "members": [
+        {
+          "id": "phasing-tactics-promote-metal_1-vs-water_2-root",
+          "sha256": "8fdf6dbed8acd9a098977db6929eaa25f70c7c426ea3190737caa67e2db33429"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "phasing-tactics-promote-plant_2-vs-lightning_3",
+      "family": "tactics",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "babcbfa3965b4c022dea55e43d7ff0ef62095c17c20eaa1115cee0cdeac0a163",
+      "members": [
+        {
+          "id": "phasing-tactics-promote-plant_2-vs-lightning_3-root",
+          "sha256": "622bb7c4757fd7184cf410619bf58f5f89a9aaa94d3cd5e65436de719b26c542"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "phasing-tactics-promote-plant_2-vs-water_2",
+      "family": "tactics",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "02ed9ab7c5e51fffc0c8d79e377a3be11e010e290032031e62e503c3f69e9881",
+      "members": [
+        {
+          "id": "phasing-tactics-promote-plant_2-vs-water_2-root",
+          "sha256": "7a8a467f06f1bc7a50632ad1eb0d1123af1733e04ca077768195e2388fad6b26"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "phasing-tactics-promote-shadow_1-vs-water_2",
+      "family": "tactics",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "e29341b6f26a2a09bf2ec91b49d60f66f99ed5838969d4d6cc773fd7276c645b",
+      "members": [
+        {
+          "id": "phasing-tactics-promote-shadow_1-vs-water_2-root",
+          "sha256": "8c922d733efff2f840723cec9dc428123dadd2d9274379a3aee3d3e10aef9cb5"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "phasing-tactics-promote-water_2-vs-water_2",
+      "family": "tactics",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "e62c97f884318a7e36ddfddf782e4344f4a93bc737ce629acdf08b1aa53b592f",
+      "members": [
+        {
+          "id": "phasing-tactics-promote-water_2-vs-water_2-root",
+          "sha256": "d856b42ffb007ad243c2e6875eb401f7617f8449987c9947e3c1c7153be5ef5e"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "phasing-tactics-three-lanes-metal_1-vs-plant_2",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "780230ca0459c2141decb362791ef811d5a1fc6cb732baeb93a11998cbd061a5",
+      "members": [
+        {
+          "id": "phasing-tactics-three-lanes-metal_1-vs-plant_2-root",
+          "sha256": "e154d6b42b4038eb68aac672a9481eda4d3efff71cf3adc1bffa695d246dd271"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-three-lanes-plant_1-vs-water_2",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "638204dcac089d4bab2be71cc33c98455bff0e49f427df590e4d69d9d35270a7",
+      "members": [
+        {
+          "id": "phasing-tactics-three-lanes-plant_1-vs-water_2-root",
+          "sha256": "d26600b8abcb37bf12ca5b713fb38fcc0c0d86bc71d92ced7ac3637acbfaa10a"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-three-lanes-plant_2-vs-plant_2",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "527ce54501266340baf1160460993916581fa0cbffa5c766881bd7454f1d7d5e",
+      "members": [
+        {
+          "id": "phasing-tactics-three-lanes-plant_2-vs-plant_2-root",
+          "sha256": "679d43d9e360b41cf11e5c9d33ebc58f9026e3da765c405c1a1fbc6b7d6cc9ed"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-three-lanes-plant_3-vs-metal_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "7a680eeacabf17349ec8d3e95fca365e9f9ce54fb02ac12ab099834fa0e59ddb",
+      "members": [
+        {
+          "id": "phasing-tactics-three-lanes-plant_3-vs-metal_3-root",
+          "sha256": "2da7ded69de9607f66081a1b74e6fd5c532bcf8de16636cc012242f163127430"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-three-lanes-water_1-vs-plant_2",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "41b2774214a61d2e8171d85424a999099e0a1c0cdbfd6bc37b729fea7a4c6201",
+      "members": [
+        {
+          "id": "phasing-tactics-three-lanes-water_1-vs-plant_2-root",
+          "sha256": "f7feb0c6f22925025a7f610838742756439d43326d9edebb1e011836c0147272"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-three-lanes-water_2-vs-plant_2",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "0478cec2286ecd5ee7fd07fb2a9b7b506cab5104e28b354a66b67468692040be",
+      "members": [
+        {
+          "id": "phasing-tactics-three-lanes-water_2-vs-plant_2-root",
+          "sha256": "cccc28affcc55037a8d41d21e20f04a1b54f824d0d721179cd9ee5374ccb42d2"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-three-metal-ii-lanes-vs-chipped-metal-iii",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "1b0911120c75ae4a8f54252688e70d70e4b293925ad96bdcb1c56c9017640340",
+      "members": [
+        {
+          "id": "phasing-tactics-three-metal-ii-lanes-vs-chipped-metal-iii-root",
+          "sha256": "cc47304cf2462860553b871b05a92c80a103e6b20a142ca2def94d2cc9c0651e"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-two-lane-approach-fire_2-vs-water_2",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "d2793a56961ec91d1712c7d9fbfd0b35321898091b8fa4c2f58dde40df724aa7",
+      "members": [
+        {
+          "id": "phasing-tactics-two-lane-approach-fire_2-vs-water_2-root",
+          "sha256": "6342488781668cf1f310d0d687f4250c959b8a6e6ce2af8a85789037102a7a9e"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-two-lane-approach-metal_3-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "42e407c227400024f897fe48007b8b3d26235aa7ddcc6b94950f77c70f4eadce",
+      "members": [
+        {
+          "id": "phasing-tactics-two-lane-approach-metal_3-vs-fire_3-root",
+          "sha256": "95d5b5b96569414990a7480e3d6ab75249c84b8b527dc6357f5d007fc997c5e4"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-two-lane-approach-metal-ii-vs-water-iii",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "839a2df6dfea23d5f832b27f02feb4d3cac4181f25a49d48adde9f27efa3ea39",
+      "members": [
+        {
+          "id": "phasing-tactics-two-lane-approach-metal-ii-vs-water-iii-root",
+          "sha256": "725f2f812f3d7968d4bd4dee1005ab2212bac708e291aa03fb883ba92c996365"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-two-lane-approach-plant_2-vs-water_2",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "77fc569ca5b715b163933932e042f8955e5e57568734be8f3f3f6e61952e3375",
+      "members": [
+        {
+          "id": "phasing-tactics-two-lane-approach-plant_2-vs-water_2-root",
+          "sha256": "430df59a4018a2c4593dba2a5e75528b8fc79741dd6e4886a80aa9629c76fa8e"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-two-lane-approach-plant_3-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "a6f3475dfe4e41aaa7117cd6793289311bf89ea79abfef306206e04de5b850af",
+      "members": [
+        {
+          "id": "phasing-tactics-two-lane-approach-plant_3-vs-fire_3-root",
+          "sha256": "5cc481c24cc2e4df9c968b9dad652030571e22d2c7127823da65a465aa833a7b"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-two-lane-approach-shadow_1-vs-water_2",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "796196ea5fa85b509178c2538a192a446624eccfb08c9ec6fb628f0c970e5c78",
+      "members": [
+        {
+          "id": "phasing-tactics-two-lane-approach-shadow_1-vs-water_2-root",
+          "sha256": "eff063cf83f0eec7eefc183c34da4647dc9e1959efe5ea0fd3ade73f4c081cd7"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-two-lane-approach-water_1-vs-water_2",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "72f98ca90460d9ca8da84a4a5ec38f47bb472c4743fb92e715c5c2d9946ec24a",
+      "members": [
+        {
+          "id": "phasing-tactics-two-lane-approach-water_1-vs-water_2-root",
+          "sha256": "b6feaf4fc72fa19023ad46e34395a0af038a275a316d9ce44a134271058f6fe8"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-two-lane-approach-water_2-vs-water_2",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "d4033904c64f3c45f41bc50fd0b17bd3ea58a2873692879dff477f08a98fd950",
+      "members": [
+        {
+          "id": "phasing-tactics-two-lane-approach-water_2-vs-water_2-root",
+          "sha256": "d2b415cc193e29638dd9422760c779370c9d7e705c5b67ba66d06b9840976500"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-two-lanes-fire_2-vs-water_2",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "3a2ecdba64e83ed92395df3d414e7a03f2aea8e2b00ac283032a01ac8e087882",
+      "members": [
+        {
+          "id": "phasing-tactics-two-lanes-fire_2-vs-water_2-root",
+          "sha256": "9825311a562f6c40698f6c535b8e014bbced7e76c96ab2bf93199ea8c5184574"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-two-lanes-metal_3-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "8957e6e4c3f7bc864d81efdab5014ddf45486ab0b825f38ad08ecd3db341e049",
+      "members": [
+        {
+          "id": "phasing-tactics-two-lanes-metal_3-vs-fire_3-root",
+          "sha256": "7c2b2860882b95318df6f5a54d38567d45cd12a6244404827e3f0997d1faa152"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-two-lanes-plant_2-vs-water_2",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "d061f3551bdb2280a8807ae76c55b0db86dadbf35f76c4a739a3112c9873890a",
+      "members": [
+        {
+          "id": "phasing-tactics-two-lanes-plant_2-vs-water_2-root",
+          "sha256": "9434bfb38241c451b2c2eadf5341982d018fd27582caa472c1a3c9d6ab0f77ad"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-two-lanes-plant_3-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "7ced6164cf391c1dcc6515e785b989758743f814371ed9a2f16641a5ab37d65a",
+      "members": [
+        {
+          "id": "phasing-tactics-two-lanes-plant_3-vs-fire_3-root",
+          "sha256": "70459652288f5d93fe290b72ba079ea266b3b175b70c4f91d210cc670a45ea7b"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-two-lanes-shadow_1-vs-water_2",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "ab91e9f5e32707617c560731c94fdcdb5a7c67860ae491e59ea10b40a7bf8db7",
+      "members": [
+        {
+          "id": "phasing-tactics-two-lanes-shadow_1-vs-water_2-root",
+          "sha256": "328c0566135216414c787a7ed09fb5734d0e057b022cc2f1450f5bdab910e9d4"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-two-lanes-water_1-vs-water_2",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "8bcbb74bec9c162ce0b84d23eb869ed11f6a1474ae05837f5b4179b77e13a2da",
+      "members": [
+        {
+          "id": "phasing-tactics-two-lanes-water_1-vs-water_2-root",
+          "sha256": "6fc993770d498316b82add07aaff228bd512853748efad6d78c1d1e844bce292"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-two-lanes-water_2-vs-water_2",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "7ebca1509315f3fa420de1cde9c939c4e8f9014bb4e24daac31b3bc3e51fca2b",
+      "members": [
+        {
+          "id": "phasing-tactics-two-lanes-water_2-vs-water_2-root",
+          "sha256": "46655aa33d7a97fe4ac7cf0d14ae811279b4622b478b19602ca419fb0db32bdf"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-tactics-two-metal-ii-lanes-vs-water-iii",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "7c2f47fe3e0281526bf12ffcdb09e1ed4223d585770f3ac50f02b235bf53eab5",
+      "members": [
+        {
+          "id": "phasing-tactics-two-metal-ii-lanes-vs-water-iii-root",
+          "sha256": "923f411cec62ac5c2b5a629d7717897d14faa5eda69902d935863770e467c2ab"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-too-few-actions-for-rotation-mate",
+      "family": "home-mate",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "e615cb192a919b5fe9721bd0a6e2995264c47cd0bf5b608fcc17587fbe402093",
+      "members": [
+        {
+          "id": "phasing-too-few-actions-for-rotation-mate-root",
+          "sha256": "9483f88f72abc58a4b10bf22ef6d7cce1970f759c6909c890b1502fb31e32abb"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-too-few-actions-for-rotation-rescue",
+      "family": "home-mate",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "93b05a9e2f829398358104cdc2f04313f897fe270637272e08223e00949b8acc",
+      "members": [
+        {
+          "id": "phasing-too-few-actions-for-rotation-rescue-root",
+          "sha256": "693e27dc0d5984a177977534f046d5d0d55fc39a3a838a065129f92576f241a7"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "phasing-too-few-actions-for-rotation-rotated-black-mate",
+      "family": "home-mate",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "51dbae770258528f95ced976e4d4fc4f400dcd09d9b759e7da3b5cba5daeddc6",
+      "members": [
+        {
+          "id": "phasing-too-few-actions-for-rotation-rotated-black-mate-root",
+          "sha256": "684887d26664700a53de77d849f75ba0d0a3e6db42d0640337a62b4a528587a2"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-too-few-actions-for-rotation-rotated-black-rescue",
+      "family": "home-mate",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "46f7d685837e6424b6b136e37806650163b544ad59c3831a4d1cbd63dc18b379",
+      "members": [
+        {
+          "id": "phasing-too-few-actions-for-rotation-rotated-black-rescue-root",
+          "sha256": "577c65dfb66116146395e1738f23d006d9926b23a745e3a68dfb4b157f6925ff"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "phasing-zero-attack-occupier-mate",
+      "family": "home-mate",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "9177c9f755a001db3d54dd0474789a82922f6bdec5596553ec33eda498cb5dc5",
+      "members": [
+        {
+          "id": "phasing-zero-attack-occupier-mate-root",
+          "sha256": "4fa5bc5693bf2f80dcec5b02bc2af556dbb2982314d54d4a3150a47a3ecbacea"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "phasing-zero-attack-occupier-rescue",
+      "family": "home-mate",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "2cfafa16b8138d3895d30385d5df6cb471748722d638516ad1f476acb8c8d4ff",
+      "members": [
+        {
+          "id": "phasing-zero-attack-occupier-rescue-root",
+          "sha256": "8f2439c667f86d42aea9b7b444aebe0e93ff26eaa955ad3a43fc8f4fdac10719"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "phasing-zero-attack-occupier-rotated-black-mate",
+      "family": "home-mate",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "e09a3fb210681fd82decc7575cbbfd7a389434846b9f1e03799ad718c455d977",
+      "members": [
+        {
+          "id": "phasing-zero-attack-occupier-rotated-black-mate-root",
+          "sha256": "ca148442709b21a3c4e03d18468c54adc288a9f92b3175e60020434cc4c8579e"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "phasing-zero-attack-occupier-rotated-black-rescue",
+      "family": "home-mate",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "bb1e8b1304745c997a57074676b2f7c5e5856ddc1ca6fc1e5d65320ae3d8ca26",
+      "members": [
+        {
+          "id": "phasing-zero-attack-occupier-rotated-black-rescue-root",
+          "sha256": "dca2506662e0a46bc584c8fec2ecb0df804c9b4c924c8d0de4258f0ec5dd8785"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "promote-metal_1-16-3",
+      "family": "economy",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "0f62996ff3655e01686b7b1f1e15b5a4276dada2d9b52c7bdc826528bece6ce1",
+      "members": [
+        {
+          "id": "promote-metal_1-16-3",
+          "sha256": "81e622addd43c1c9d1df34cec7e65b52333ad3b1802ded6d79890d4abb4975ca"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "promote-metal_2-16-4",
+      "family": "economy",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "e94108c79f6bc13eb56d03412e61ca04780a8d07f3baaae6ba888474e65a7b7b",
+      "members": [
+        {
+          "id": "promote-metal_2-16-4",
+          "sha256": "46e420c142fe77d2b583e6d41fe7da035ca457102d4c93d68d31899015274459"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "promote-plant_1-16-0",
+      "family": "economy",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "3da67786f3e0625fef22e3eb6718eb70fb3246c746d30eb0c0befa7d8b189822",
+      "members": [
+        {
+          "id": "promote-plant_1-16-0",
+          "sha256": "dbba7aa206037f62467aa95c1d71f2a53c643bb5d620ee0c72bd39959bd04a80"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "promote-plant_1-8-1",
+      "family": "economy",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "be0de97cd1f3197334fa9d6429643b900e36bc04c77bd9bac98e51913155f395",
+      "members": [
+        {
+          "id": "promote-plant_1-8-1",
+          "sha256": "7dd22bb6e76264ed43cb9d6a09beddf50c33e675c9b6ff2444ad4f3ea66720b6"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "promote-plant_2-16-2",
+      "family": "economy",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "81644f9b0fc561ed817042b09fcae4bc0d973d5158b7473d6248e0fe9434f0c6",
+      "members": [
+        {
+          "id": "promote-plant_2-16-2",
+          "sha256": "eb489ae4b1d71d324b5899bccd898fd37ea16db06656c3ad43150f2591343483"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "promote-shadow_1-16-5",
+      "family": "economy",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "3dfc684a137680386621fa5954542d2f3c85b3a49ec526bb2c3c622cece595d4",
+      "members": [
+        {
+          "id": "promote-shadow_1-16-5",
+          "sha256": "1c43e38e803ff166497ec41c75dc44b9d2cd504df31d6638c03e9907030344fc"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "promote-shadow_2-16-6",
+      "family": "economy",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "01d74a3adc0f8ee91f7c8c07e17df73a51f3fa020c04921cb82acbce03bcd1d4",
+      "members": [
+        {
+          "id": "promote-shadow_2-16-6",
+          "sha256": "d3e5df835b6eee52737d66e322d0a0c65df8c9d2717eb39510190068db281834"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "promote-water_2-16-7",
+      "family": "economy",
+      "kind": "canonical-coverage",
+      "classification": "coverage",
+      "sha256": "5066c178b986b6cb640f564d39a419f5481d292de8832bf1c2000873a66e0fcd",
+      "members": [
+        {
+          "id": "promote-water_2-16-7",
+          "sha256": "a4a154f0beb2f342586f86cded289d8de2ce065b1aad583e4180d771ab334790"
+        }
+      ],
+      "offered": 0
+    },
+    {
+      "id": "relocate-fire_1-e",
+      "family": "economy",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "e52d56ebf96794ee0dd278c9f4bdc81af323581653d356f5b5223c92c7a663ca",
+      "members": [
+        {
+          "id": "relocate-fire_1-e",
+          "sha256": "af7303fd76c574c1898cdcb070d12400a71f386c8ea58d08df1e3ecbd4a1a6ec"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "relocate-fire_1-s",
+      "family": "economy",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "4a70016494d0b5f5e5d9ed915511464dd08548b8e10e9e48137fc57d9dee0ceb",
+      "members": [
+        {
+          "id": "relocate-fire_1-s",
+          "sha256": "eafc803667c08da712dc57fcd8f6482af49d8d282e50afc456f65bd8c809bb38"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "relocate-metal_2-e",
+      "family": "economy",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "8a1fe909f41bb3aee5baa0a92a0f161ae4ac3923e43bae5c77ffb753140a9932",
+      "members": [
+        {
+          "id": "relocate-metal_2-e",
+          "sha256": "62ed714e998961dc2523293e7f34eee4e4274352c570003fba7ff220dc8cfa9e"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "relocate-metal_2-s",
+      "family": "economy",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "2c9ba402d436066abb54ba1d7076a2da9efd01ab5f40517f9fea227af0ed519a",
+      "members": [
+        {
+          "id": "relocate-metal_2-s",
+          "sha256": "035f59ae7a79e31d7c6858b8cda6dcc7cd08947a791f36997e4116152f11f67e"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "relocate-plant_1-e",
+      "family": "economy",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "634c35791df4394b3cf1c1879e65b1f967055081bb3448c250ab5f1cc94e419c",
+      "members": [
+        {
+          "id": "relocate-plant_1-e",
+          "sha256": "2b7cfdc3c39dd0797c9cc0d1dd3db05e83d81c6e98c484bc3eec51ab767535d0"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "relocate-plant_1-s",
+      "family": "economy",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "d51cdc074ac78098ae435d239456897d32c18d88bb1b8b1a3aa577597d8981b7",
+      "members": [
+        {
+          "id": "relocate-plant_1-s",
+          "sha256": "052b50d456f5cc01496819253777b6a99ce1b0e2dccd0311de9944fb4d551944"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "relocate-plant_2-e",
+      "family": "economy",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "96bd65e41ea4dc3a2baf331dbd1732d93fc2c0d92eb291a127052ca773e55193",
+      "members": [
+        {
+          "id": "relocate-plant_2-e",
+          "sha256": "e4a3dea17bf7d00feabb8b2103d7ae2b5a72992219b3c1e7bbe5d40fbc01da82"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "relocate-plant_2-s",
+      "family": "economy",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "0dc84094c6d3f43d8da36b52e18dc4fd25f081bc6a4bcaba2d4738b46cd94d8a",
+      "members": [
+        {
+          "id": "relocate-plant_2-s",
+          "sha256": "b26b4691a264c5b9993b03bf723c229399302fc09a2bc0c5092f0292e3dd3ea2"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "relocate-plant_3-e",
+      "family": "economy",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "806bc0ff310a1d156d6462e566a413d4e9e1203ac40c0e1dbef113bbba5976db",
+      "members": [
+        {
+          "id": "relocate-plant_3-e",
+          "sha256": "12f01df970260d6b32a0b1552a31ccb28feee495c4bdd013b8cb00fb91e9dbd1"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "relocate-plant_3-s",
+      "family": "economy",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "ce645e5db7a74b285f26b97124aa37be8e27333b99d7b810f73304183ef57e6e",
+      "members": [
+        {
+          "id": "relocate-plant_3-s",
+          "sha256": "17ed277de3285abf9b115d4de33d140b519c1ca61e9617dd99c108559475c39b"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "relocate-water_1-e",
+      "family": "economy",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "8eda232722de2e4c98006e7603df16ebf87f81cf8b120b7c509b9b9c40a8269c",
+      "members": [
+        {
+          "id": "relocate-water_1-e",
+          "sha256": "e89bc7764c7aec3031773b064b4049435b98a28175a2cf5319708f7e7a6a1d12"
+        }
+      ],
+      "offered": 1
+    },
+    {
+      "id": "relocate-water_1-s",
+      "family": "economy",
+      "kind": "macro-decision",
+      "classification": "decision",
+      "sha256": "2821aa26bd791c5354364250ad3011bdb1b05155f0a9150c5c047fe0d9ae97d7",
+      "members": [
+        {
+          "id": "relocate-water_1-s",
+          "sha256": "4f99ec03eeb5adf708c486f19814a3772707c73518197f26be26e54ce83aad0e"
+        }
+      ],
+      "offered": 1
+    }
+  ],
+  "familyCounts": {
+    "tactics": 79,
+    "invariants": 20,
+    "home-mate": 56,
+    "economy": 30,
+    "summon-disruption": 30,
+    "home-fortify": 10
+  },
+  "artifacts": {
+    "lab/hard-ai/suites/phasing/author-inputs/new-candidates-v1.json": "86512dc5573b1283be2c4c28644ea28dadc0f6caaf83f5271cc31091e37b6b72",
+    "lab/hard-ai/suites/phasing/author-inputs/new-candidates-v2.json": "db1e217fb34f44557cfffbd6c597ae3cdf55a873904e528edc26e924ed48de45",
+    "lab/hard-ai/suites/phasing/author-inputs/tactics-home-classification-v1.json": "289bceb9e37e0d13b8cefc34854ce7522137bef50b4e4d291b8cde370819629e",
+    "lab/hard-ai/suites/phasing/author-inputs/tactics-home-corrections-v2.json": "c77766dcd830fff4bc96ea90b23853472a827b12db82d331990922f5f213828e",
+    "lab/hard-ai/suites/phasing/author-inputs/tactics-home-diagrams-v1.json": "81f25281c66ff12528d3c703b690580631d72d14a5ab415d5e55eee70029862e",
+    "lab/hard-ai/suites/phasing/build-economy.ts": "b52ed06d1faaf3fe35b33c55ed3ea0433615f66d9494adc1b9427c4f57b78583",
+    "lab/hard-ai/suites/phasing/build-home-mate.ts": "f12d8cb7a0bd6bfe1eab6686100722a1f4c6067fb27befc84d2d707f3c86ea48",
+    "lab/hard-ai/suites/phasing/build-invariants.ts": "6af548c57367273336d3fffea869d2eb19916fd5769fff7a3106620460b12c90",
+    "lab/hard-ai/suites/phasing/build-new-families.ts": "5b12fe416f2f9683966c47408d862641013ec94a61a230d3f550c254da970674",
+    "lab/hard-ai/suites/phasing/build-tactics.ts": "aa91190ca3a3d2224c4f5f102dc316c6d289423f6a3426a55769ed16234e77e5",
+    "lab/hard-ai/suites/phasing/build-v2.ts": "9052990fae83af1a3b4e445b154233eeed91ebd095a896c75ac31fedeb631bc4",
+    "lab/hard-ai/suites/phasing/canonical.ts": "b77d1a1dd403fe49a2c9dae9c2daf064c36b20201ceb32c52e9304984ec1de5c",
+    "lab/hard-ai/suites/phasing/contract.ts": "c51e6ac9795a8bd18ac0dbc605b733b479d01951dc495879cf1d859d71c5fed6",
+    "lab/hard-ai/suites/phasing/engine-adapter.ts": "48120b037b1dcae6c0d12015d37bc1817e14b23ec56f33ab90797689b42c106a",
+    "lab/hard-ai/suites/phasing/format.ts": "104cacad0da3b2945cf9804988261670251d2a6d1fcb08679dd05fe0cec71ec6",
+    "lab/hard-ai/suites/phasing/manifest.ts": "00276ee037c0e3207244e25b3a8280272e52a3557a856fc63e98b252313beec2",
+    "lab/hard-ai/suites/phasing/measure.ts": "9f29afb11c87897d7e3ac272ffacb10cfc3363a5f06f1aea78a8c15da27cc458",
+    "lab/hard-ai/suites/phasing/predicates.ts": "9f18f9512b2d04c8e352989bf0eb848c7e223a225f264ce21d9245e2f7798e6f",
+    "lab/hard-ai/suites/phasing/run.ts": "c1a57f4a2cb6c1be72c0daceda5f444c716938fa53ed6f356b6b2ed92ba636b6",
+    "lab/hard-ai/suites/phasing/score.ts": "65154de144fc4691aa502f9f444edd785a74e1a7bc8976018a0f9743fd64182e",
+    "lab/hard-ai/suites/phasing/tactics-home-author.ts": "87351e62ee31c67a8388dcbaf0b7dd1a86ea9e2e72fe6ea688f556f540620472",
+    "lab/hard-ai/suites/phasing/veto.ts": "2363a329275eb1490348627c87a181b3e59c68f9e9f644dd0d6db9f0b81309e0",
+    "package.json": "a36f0da6d68dba3e953f5c1b97eb28853e5dc80a5c5f2e7b68a10598babb3300"
+  }
+}

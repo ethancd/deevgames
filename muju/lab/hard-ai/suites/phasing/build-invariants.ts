@@ -18,9 +18,19 @@ const absent = (id: string): StateFact => ({ kind: 'unit', id, present: false })
 const root = (...facts: StateFact[]) => stateFacts('root', ...facts);
 const end = (...facts: StateFact[]) => stateFacts('endpoint', ...facts);
 
+/** How a release scores the eighteen non-structural pairs.
+ *
+ * v1 gates all eighteen on `eval-gap`, which compares the tested engine's own
+ * static evaluation of two positions and therefore cannot gate a SEARCH engine.
+ * v2 moves the gating pairs to `search-gap` at a fixed work per member and
+ * demotes three pairs whose own rationales refuse to claim a strict preference
+ * to non-gating `diagnostic`. Omitting the argument reproduces v1 exactly, which
+ * `fixtures/v1` depends on. */
+export interface InvariantScoringV2 { work: number; diagnostic: readonly number[] }
+
 /** Caller must install binding rules before this builder: some members are
  * actual legal-prefix results. This function never calls a Hard implementation. */
-export function buildInvariants(binding: SourceBinding): SuiteDocument {
+export function buildInvariants(binding: SourceBinding, scoring?: InvariantScoringV2): SuiteDocument {
   const out: SuiteDocument = { schema: 'muju-phasing-suite-v1', family: 'invariants', positions: [], cases: [] };
   const diagram = (id: string, state: GameState, rationale: string, counterfactual = false) => {
     const p = makePosition(id, state, binding, counterfactual ? { kind: 'counterfactual-defense', rationale } : { kind: 'authored-diagram', rationale });
@@ -38,12 +48,17 @@ export function buildInvariants(binding: SourceBinding): SuiteDocument {
     const id = `inv${n}-${slug}`, isPosition = (s: PhasingPosition | GameState): s is PhasingPosition => 'schema' in s;
     const v = isPosition(violating) ? violating : diagram(`${id}-violating`, violating, rationale, n === 15);
     const c = isPosition(correct) ? correct : diagram(`${id}-correct`, correct, rationale, n === 15);
-    const base = authorCommon(id, 'invariants', rationale, [], []);
+    const structural = n === 15 || n === 18;
+    const demoted = !structural && !!scoring?.diagnostic.includes(n);
+    const base = authorCommon(id, 'invariants', demoted
+      ? `${rationale} v2 records this pair as a non-gating diagnostic: it is measured and reported at the same fixed work, its canonical premises remain gates, and it offers no scored unit.`
+      : rationale, [], []);
     const item: InvariantPair = { ...base, family: 'invariants', kind: 'invariant-pair', invariant: n,
       violating: positionRef(v), correct: positionRef(c), perspective: 'white', premise: { violating: vp, correct: cp },
-      probes: { violating: vprobes, correct: cprobes }, classification: n === 15 || n === 18 ? 'structural' : 'preference',
-      primaryMetric: n === 15 || n === 18 ? 'none' : 'eval-gap',
-      ...(n === 15 || n === 18 ? {} : { work: 120_000 }),
+      probes: { violating: vprobes, correct: cprobes },
+      classification: structural ? 'structural' : demoted ? 'diagnostic' : 'preference',
+      primaryMetric: structural ? 'none' : scoring ? 'search-gap' : 'eval-gap',
+      ...(structural ? {} : { work: scoring?.work ?? 120_000 }),
       evidence: { ...base.evidence,
         positive: [{ kind: 'legality@1', member: 'violating', action: EP, expected: false },
           { kind: 'legality@1', member: 'correct', action: EP, expected: false }],

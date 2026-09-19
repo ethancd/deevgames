@@ -9,7 +9,7 @@ import { getHomeOccupier } from '../../../../src/game/victory';
 import { makePosition, positionRef, replayMacro, replayTrace } from './canonical';
 import { validateSuiteDocument, type AIAction, type CanonicalCoverage, type GameState, type MacroDecision, type PlayerId, type PredicateSpec, type SuiteDocument } from './format';
 import { validateAuthorEvidence, validateProvenance } from './predicates';
-import { all, authorCorrections, authorInputs, buildBound, checkFrozen, common, compactAuthorEvidence, complete, diagram, EXPOSURE, facts, ledgerFor, other, probe, WORK, type HomeInput } from './tactics-home-author';
+import { all, authorCorrections, authorInputs, buildBound, checkFrozen, common, compactAuthorEvidence, complete, diagram, EXPOSURE, facts, ledgerFor, other, probe, WORK, type HomeInput, type V2HomeHooks } from './tactics-home-author';
 
 const PROOF_CAP = 20000;
 const END_PREPARE: AIAction = { type: 'END_PLACE_PHASE' };
@@ -47,7 +47,7 @@ function requireDefense(state: GameState, invader: PlayerId, expected: 'rescue' 
   if (expected === 'rescue' && !result.witness?.length) throw new Error(`rescue lacks canonical witness ${id}`);
 }
 
-export function buildHomeMateSuite(): SuiteDocument {
+export function buildHomeMateSuite(hooks: V2HomeHooks = {}): SuiteDocument {
   const inputs = authorInputs().home;
   const corrections = authorCorrections();
   return buildBound(inputs[0].rules, binding => {
@@ -101,10 +101,15 @@ export function buildHomeMateSuite(): SuiteDocument {
         if (!corrections.homeWinningEntry.oldIds.includes(oldInvader)) throw new Error(`unmapped entry timing correction ${oldInvader}`);
         if (entered.phase !== corrections.homeWinningEntry.expectedEntryPhase) throw new Error(`entry prematurely adjudicated ${oldInvader}`);
         row.rationale += ` ${corrections.homeWinningEntry.rationale}`;
-        const accept = facts([{ kind: 'terminal', winner: invader, reason: corrections.homeWinningEntry.expectedTerminalReason }]);
+        const fallback = facts([{ kind: 'terminal', winner: invader, reason: corrections.homeWinningEntry.expectedTerminalReason }]);
+        // Keyed on the SHIPPED case id, which is what the v2 preregistration
+        // names, not on the historical author id.
+        const credited = hooks.invaderDecision?.(row.id, fallback, invader);
+        if (credited) row.rationale += ` ${credited.rationale}`;
+        const accept = credited?.accept ?? fallback;
         const positive = probe(complete(state, [entry]), accept);
         const c: MacroDecision = { ...common(row), kind: 'macro-decision', homeFraming: 'invader', root: positionRef(root), work: WORK,
-          horizon: { kind: 'first-handoff-or-terminal' }, terminalPolicy: 'predicate-only', accept,
+          horizon: { kind: 'first-handoff-or-terminal' }, terminalPolicy: credited?.terminalPolicy ?? 'predicate-only', accept,
           evidence: { positive: [positive], negative: [negative], rationale: `Legal entry remains Act. After the invader mines and survives outgoing rent, settled Prepare wins by canonical home checkmate; quiet handoff does not. ${relocation} moves to the inward diagonal only in this newly authored pre-entry diagram. An independent bounded canonical proof on the unadjudicated occupied board must still conclude mate: the original attack-power or corner-rotation limit is rechecked, never assumed.`, exposure: EXPOSURE } };
         doc.cases.push(c);
       } else {
