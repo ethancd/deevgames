@@ -15,13 +15,19 @@ import { AKind, paMake } from '../../../src/ai/hard/core/action';
 import { activeCatalog } from '../../../src/ai/hard/core/catalog';
 import { allocTables, buildTables, type NodeTables } from '../../../src/ai/hard/tables/context';
 import { RENT_PV } from '../../../src/ai/hard/core/income';
-import { CC, type PackedState } from '../../../src/ai/hard/types';
+import { CC, MAX_SLOTS, Result, Reason, type PackedState } from '../../../src/ai/hard/types';
 import {
   Mission,
   newPromoCandidate,
   planPromotions,
   type PromoCandidate,
 } from '../../../src/ai/hard/gen/promote';
+import { applyAction } from '../../../src/ai/simulate';
+import { isLegalAction } from '../../../src/game/legality';
+import { analyzeHomeDefense, analyzeHomeDefenseEvidence } from '../../../src/game/homeCheckmate';
+import { transitionWithoutCheckmate } from '../../../src/ai/simulate';
+import { resetUnitActions } from '../../../src/game/board';
+import { DEF_INDEX } from '../../../src/ai/hard/core/catalog';
 import type { GameState } from '../../../src/game/types';
 
 // E0.5 timeout budget: slowest test 0.0 s in the 2026-09-15 survey (M2 Max, load ~5, maxWorkers 2); 10 s is this file's explicit ceiling.
@@ -40,7 +46,7 @@ function prepare(state: GameState): { p: PackedState; t: NodeTables } {
 }
 
 function promotionsOf(p: PackedState, t: NodeTables, max = 8): PromoCandidate[] {
-  const out: PromoCandidate[] = Array.from({ length: 8 }, () => newPromoCandidate());
+  const out: PromoCandidate[] = Array.from({ length: MAX_SLOTS }, () => newPromoCandidate());
   const n = planPromotions(p, t, max, out);
   return out.slice(0, n).map(c => ({ ...c }));
 }
@@ -84,9 +90,9 @@ describe('gen/promote.ts planPromotions (DESIGN §5.6)', () => {
     const { p, t } = prepare(
       buildState({
         units: [
-          { def: 'fire_1', owner: 'white', x: 4, y: 4, id: 'w-hi' },
+          { def: 'water_1', owner: 'white', x: 4, y: 4, id: 'w-hi' },
           { def: 'plant_1', owner: 'white', x: 3, y: 4, id: 'w-muju' },
-          { def: 'water_1', owner: 'black', x: 4, y: 5, id: 'b-sjor' },
+          { def: 'shadow_1', owner: 'black', x: 4, y: 5, id: 'b-sjor' },
           { def: 'plant_1', owner: 'black', x: 9, y: 9, id: 'b-corner' },
         ],
         white: 20,
@@ -128,7 +134,7 @@ describe('gen/promote.ts planPromotions (DESIGN §5.6)', () => {
     expect(promotionsOf(p, t)).toHaveLength(0);
   });
 
-  it('KILL: promotes the body whose new POWER crosses a reachable target’s defence', () => {
+  it('does not invent a Prepare KILL mission when promotion crosses adjacent target defence', () => {
     // White Hi (POWER 1 into water) next to a Black Sjor (DEF 2); Hono reaches 2.
     const { p, t } = prepare(
       buildState({
@@ -146,16 +152,16 @@ describe('gen/promote.ts planPromotions (DESIGN §5.6)', () => {
     );
     const promos = promotionsOf(p, t);
     const hi = promos.find(c => p.defId[c.slot] === 0);
-    expect(hi).toBeDefined();
-    expect((hi as PromoCandidate).mission).toBe(Mission.KILL);
+    expect(hi).toBeUndefined();
+    expect(Object.keys(Mission)).not.toContain('KILL');
   });
 
   it('charges the crystals and RENT_PV × Δupkeep (SU addendum 1)', () => {
     const { p, t } = prepare(
       buildState({
         units: [
-          { def: 'fire_1', owner: 'white', x: 4, y: 4, id: 'w-hi' },
-          { def: 'water_1', owner: 'black', x: 4, y: 5, id: 'b-sjor' },
+          { def: 'water_1', owner: 'white', x: 4, y: 4, id: 'w-hi' },
+          { def: 'shadow_1', owner: 'black', x: 4, y: 5, id: 'b-sjor' },
           { def: 'plant_1', owner: 'black', x: 9, y: 9, id: 'b-corner' },
         ],
         white: 20,
@@ -165,12 +171,13 @@ describe('gen/promote.ts planPromotions (DESIGN §5.6)', () => {
         turnNumber: 5,
       }),
     );
-    const hi = promotionsOf(p, t).find(c => p.defId[c.slot] === 0) as PromoCandidate;
+    const hi = promotionsOf(p, t).find(c => p.defId[c.slot] === DEF_INDEX.get('water_1')) as PromoCandidate;
     const def = p.defId[hi.slot];
     const next = nextOf(p, hi.slot);
-    // KILL's benefit is the victim's catalogue prior; the material the
-    // promotion buys exactly repays its crystals, so the residue is the rent.
-    const victimValue = cat.cost[6] * CC; // water_1
+    // SURVIVE protects the existing Sjor: benefit is its own material, not
+    // an impossible immediate capture of Göl.
+    expect(hi.mission).toBe(Mission.SURVIVE);
+    const victimValue = cat.cost[def] * CC;
     const material = (cat.cost[next] - cat.cost[def]) * CC;
     const rent = RENT_PV * (cat.upkeep[next] - cat.upkeep[def]);
     expect(hi.scoreCc).toBe(victimValue + material - hi.cost * CC - rent);
@@ -220,19 +227,19 @@ describe('gen/promote.ts planPromotions (DESIGN §5.6)', () => {
     expect((umeme as PromoCandidate).mission).toBe(Mission.REACH);
   });
 
-  it('returns at most `max` candidates, best score first, ties by ascending slot', () => {
+  it('returns at most `max` candidates, best score first, ties by ascending square', () => {
     const units = [];
-    for (let i = 0; i < 6; i++) units.push({ def: 'fire_1', owner: 'white' as const, x: i, y: 0, id: `w-${i}` });
+    for (let i = 0; i < 6; i++) units.push({ def: 'water_1', owner: 'white' as const, x: i, y: 0, id: `w-${i}` });
     units.push({ def: 'water_1', owner: 'black' as const, x: 0, y: 1, id: 'b-sjor' });
     units.push({ def: 'plant_1', owner: 'black' as const, x: 9, y: 9, id: 'b-corner' });
     const { p, t } = prepare(
       buildState({ units, white: 40, black: 6, current: 'white', phase: 'place', turnNumber: 5 }),
     );
     const promos = promotionsOf(p, t, 3);
-    expect(promos.length).toBeLessThanOrEqual(3);
+    expect(promos).toHaveLength(3);
     for (let i = 1; i < promos.length; i++) {
       expect(promos[i - 1].scoreCc).toBeGreaterThanOrEqual(promos[i].scoreCc);
-      if (promos[i - 1].scoreCc === promos[i].scoreCc) expect(promos[i - 1].slot).toBeLessThan(promos[i].slot);
+      if (promos[i - 1].scoreCc === promos[i].scoreCc) expect(p.sq[promos[i - 1].slot]).toBeLessThan(p.sq[promos[i].slot]);
     }
   });
 
@@ -263,4 +270,80 @@ it('REACH: stationary Yan can promote for movement alone', () => {
       {def:'plant_1',owner:'black',x:8,y:8},
     ]}));
   expect(promotionsOf(p,t).some(c=>c.mission===Mission.REACH)).toBe(true);
+});
+
+
+it('FORTIFY preserves the home occupier and every possible blocker beyond the ordinary beam', () => {
+  const state = buildState({ phase: 'place', white: 40, black: 10, units: [
+    { def: 'metal_2', owner: 'white', x: 9, y: 9, id: 'occupier' },
+    { def: 'plant_1', owner: 'white', x: 8, y: 9, id: 'blocker' },
+    { def: 'fire_1', owner: 'white', x: 0, y: 0, id: 'remote-blocker' },
+    { def: 'fire_1', owner: 'black', x: 7, y: 9, id: 'defender' },
+  ] });
+  const { p, t } = prepare(state);
+  const candidates = promotionsOf(p, t, 0);
+  expect(candidates).toHaveLength(3);
+  expect(candidates.every(c => c.mission === Mission.FORTIFY)).toBe(true);
+  for (const c of candidates) {
+    const unit = state.board.units.find(u => u.position.y * 10 + u.position.x === p.sq[c.slot])!;
+    const action = { type: 'PROMOTE_UNIT' as const, unitId: unit.id };
+    expect(isLegalAction(state, action)).toBe(true);
+    const next = applyAction(state, action);
+    const copy = rep.pack(state, allocState());
+    copy.proverMode = 2;
+    const undo = newUndo();
+    rep.make(copy, paMake(AKind.PROMOTE, c.slot), undo);
+    const canonical = rep.pack(next, allocState());
+    expect([copy.kposLo, copy.kposHi, copy.result]).toEqual([canonical.kposLo, canonical.kposHi, canonical.result]);
+  }
+  // Explicit caller capacity remains respected, even for forced candidates.
+  const one = [newPromoCandidate()];
+  expect(planPromotions(p, t, 0, one)).toBe(1);
+});
+
+it('FORTIFY promotion re-adjudicates a rescuable Prepare occupation as canonical home mate', () => {
+  const state = buildState({ phase: 'place', white: 20, black: 0, units: [
+    { def: 'metal_2', owner: 'white', x: 9, y: 9, id: 'occupier' },
+    { def: 'fire_2', owner: 'black', x: 8, y: 9, id: 'defender' },
+  ] });
+  expect(analyzeHomeDefense(state, 'white', transitionWithoutCheckmate)).toBe('rescue');
+  const { p, t } = prepare(state);
+  const c = promotionsOf(p, t, 1).find(c => p.defId[c.slot] === DEF_INDEX.get('metal_2'))!;
+  expect(c.mission).toBe(Mission.FORTIFY);
+  const next = applyAction(state, { type: 'PROMOTE_UNIT', unitId: 'occupier' });
+  expect(next.victoryReason).toBe('home-checkmate');
+  rep.make(p, paMake(AKind.PROMOTE, c.slot), newUndo());
+  expect(p.result).toBe(Result.WHITE_WIN);
+  expect(p.reason).toBe(Reason.HOME_CHECKMATE);
+});
+
+it('FORTIFY can close the rescue route by reinforcing a blocker rather than the occupier', () => {
+  const state = buildState({ phase: 'place', white: 20, black: 0, units: [
+    { def: 'water_1', owner: 'white', x: 9, y: 9, id: 'occupier' },
+    { def: 'water_1', owner: 'white', x: 8, y: 9, id: 'blocker' },
+    { def: 'water_1', owner: 'white', x: 9, y: 8, id: 'detour-blocker' },
+    { def: 'water_2', owner: 'black', x: 7, y: 9, id: 'defender' },
+  ] });
+  // Tier II permits two attacks: hit I10, step onto I10, hit J10.
+  // After I10's DEF rises to 3,
+  // this one attacker cannot kill it; going round J9 needs five actions.
+  const evidence = analyzeHomeDefenseEvidence(state, 'white', transitionWithoutCheckmate);
+  expect(evidence.result).toBe('rescue');
+  expect(evidence.cutoffReason).toBeNull();
+  expect(evidence.witness).toBeDefined();
+  let reply: GameState = { ...state, board: resetUnitActions(state.board, 'black'),
+    turn: { ...state.turn, currentPlayer: 'black', phase: 'action', actionsRemaining: 4 } };
+  for (const action of evidence.witness!) {
+    expect(isLegalAction(reply, action)).toBe(true);
+    reply = transitionWithoutCheckmate(reply, action);
+  }
+  expect(reply.board.units.some(u => u.id === 'occupier')).toBe(false);
+  const { p, t } = prepare(state);
+  const c = promotionsOf(p, t, 0).find(c => p.sq[c.slot] === 98)!;
+  expect(c.mission).toBe(Mission.FORTIFY);
+  const next = applyAction(state, { type: 'PROMOTE_UNIT', unitId: 'blocker' });
+  expect(next.victoryReason).toBe('home-checkmate');
+  rep.make(p, paMake(AKind.PROMOTE, c.slot), newUndo());
+  expect(p.result).toBe(Result.WHITE_WIN);
+  expect(p.reason).toBe(Reason.HOME_CHECKMATE);
 });

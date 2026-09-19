@@ -1,13 +1,8 @@
 // @vitest-environment node
 /**
- * `src/ai/hard/gen/purchase.ts` (DESIGN §5.5, F16, F17, EG G7).
- *
- * The three stages are pinned separately: the dominance filter's drop rules and
- * its three "never drop" guards, the multiset enumerator's exact output on a
- * known bank, and the square assignment's ordering-legality and no-rejection
- * behaviour. Every position is a REAL `GameState` packed through
- * `Replica.pack`, so the legal spawn masks, reserves and power tables the
- * module reads are the canonical engine's own.
+ * Phasing Prepare purchases. Old dominance scenarios now retain affordable
+ * classes; multisets stay budget-bounded; commitments use a fixed live mask.
+ * Hand-authored timing/risk fixtures use canonical replay and fixed weights.
  */
 import { describe, expect, it, vi } from 'vitest';
 import { buildState, type UnitSpec } from './game-fixture';
@@ -27,6 +22,11 @@ import {
   type PlacePlan,
 } from '../../../src/ai/hard/gen/purchase';
 import { TurnFlag } from '../../../src/ai/hard/gen/turn';
+import { applyAction } from '../../../src/ai/simulate';
+import { isLegalAction } from '../../../src/game/legality';
+import { getPurchasePositions } from '../../../src/game/summoning';
+import { GAMMA_Q16, pstMine } from '../../../src/ai/hard/core/income';
+import type { AIAction } from '../../../src/ai/types';
 import { DESKTOP } from '../../../src/ai/hard/config';
 import type { PackedState, Side } from '../../../src/ai/hard/types';
 import type { GameState } from '../../../src/game/types';
@@ -118,9 +118,9 @@ describe('gen/purchase.ts candidateDefs (DESIGN §5.5 dominance)', () => {
     expect(defsOf(p, t, 0)).toEqual(['fire_1', 'lightning_1']);
   });
 
-  it('drops lightning_1, metal_1 and shadow_1 when every clause of §5.5 holds', () => {
+  it('retains all affordable classes: old same-turn dominance does not apply', () => {
     const { p, t } = prepare(cornerLocked());
-    expect(defsOf(p, t, 0)).toEqual(['fire_1', 'water_1', 'plant_1']);
+    expect(defsOf(p, t, 0)).toEqual(Array.from(cat.tier1, d => DEF_ID[d]));
   });
 
   it('keeps lightning_1 when the enemy corner is inside the home-race radius', () => {
@@ -178,8 +178,8 @@ describe('gen/purchase.ts candidateDefs (DESIGN §5.5 dominance)', () => {
     expect(defsOf(p, t, 0)).toContain('metal_1');
   });
 
-  it('keeps metal_1 when Inyan’s ATK 1 completes a kill Muju’s ATK 0 cannot', () => {
-    // A Black Sjor (DEF 2) one step from B1: Inyan reaches POWER 2, Muju 1.
+  it('retains metal_1 without relying on an immediate lethal-answer exception', () => {
+    // Metal I is immobile; a commitment never supplies this turn's attack.
     const { p, t } = prepare(cornerLocked([{ def: 'water_1', owner: 'black', x: 2, y: 0, id: 'b-sjor' }]));
     expect(defsOf(p, t, 0)).toContain('metal_1');
   });
@@ -278,22 +278,41 @@ describe('gen/purchase.ts planPurchases (DESIGN §5.5, F16)', () => {
     expect(plansOf(p, t)).toHaveLength(1);
   });
 
-  it('every emitted buy is legal in the order it is emitted (DESIGN §5.5 ordering legality)', () => {
-    const { p, t } = prepare(quiet([], 20));
+  it('replays every returned plan canonically with fixed live occupancy and distinct paid commitments', () => {
+    const state = quiet([], 20);
+    const { p, t } = prepare(state);
+    const originalSquares = Array.from(p.sq);
+    const originalOcc = Array.from(p.occ);
     const undo = newUndo();
-    for (const plan of plansOf(p, t)) {
-      let applied = 0;
+    for (const plan of plansOf(p, t, 64)) {
+      let canonical = state;
+      const used = new Set<number>();
       for (let i = 0; i < plan.count; i++) {
-        expect(rep.isLegal(p, plan.actions[i])).toBe(true);
-        rep.make(p, plan.actions[i], undo);
-        applied++;
+        const packed = plan.actions[i];
+        const q = paB(packed);
+        const a: AIAction = { type: 'BUY_UNIT', definitionId: DEF_ID[paA(packed)], position: { x: q % 10, y: Math.floor(q / 10) } };
+        expect(used.has(q)).toBe(false);
+        used.add(q);
+        expect(isLegalAction(canonical, a)).toBe(true);
+        expect(rep.isLegal(p, packed)).toBe(true);
+        canonical = applyAction(canonical, a);
+        rep.make(p, packed, undo);
+        expect(canonical.board.units).toEqual(state.board.units);
+        expect(Array.from(p.sq)).toEqual(originalSquares);
+        expect(Array.from(p.occ)).toEqual(originalOcc);
+        expect(rep.isLegal(p, packed)).toBe(false);
+        expect(isLegalAction(canonical, a)).toBe(false);
       }
-      for (let i = 0; i < applied; i++) rep.unmake(p, undo);
+      expect(plan.spawnAfter).toBe(getPurchasePositions(canonical, 'white').length);
+      expect(state.players.white.resources - canonical.players.white.resources).toBe(plan.spend);
+      const checked = rep.pack(canonical, allocState());
+      expect([p.kposLo, p.kposHi]).toEqual([checked.kposLo, checked.kposHi]);
+      for (let i = 0; i < plan.count; i++) rep.unmake(p, undo);
       undo.top = 0;
     }
   });
 
-  it('reports spend and spawnAfter exactly as the replica computes them', () => {
+  it('reports spend and uncommitted purchase area without changing live spawn geometry', () => {
     const { p, t } = prepare(quiet([], 20));
     const undo = newUndo();
     const probe = allocTables();
@@ -307,7 +326,8 @@ describe('gen/purchase.ts planPurchases (DESIGN §5.5, F16)', () => {
       }
       expect(bankBefore - p.bank[0]).toBe(plan.spend);
       buildTables(p, sc, 1, 1, probe);
-      expect(probe.spawn[0].area).toBe(plan.spawnAfter);
+      expect(probe.spawn[0].area).toBe(t.spawn[0].area);
+      expect(probe.spawn[0].area - p.pendCount[0]).toBe(plan.spawnAfter);
       for (let i = 0; i < applied; i++) rep.unmake(p, undo);
       undo.top = 0;
     }
@@ -358,8 +378,8 @@ describe('gen/purchase.ts planPurchases (DESIGN §5.5, F16)', () => {
     expect(plans.some(plan => plan.count === 1)).toBe(true);
   });
 
-  it('marks a buy that can reach the enemy corner this turn as a home-race plan', () => {
-    // A White Radi bought on H9 is four SPD-3 actions from J10.
+  it('marks delayed home-race intent without emitting a move or attack', () => {
+    // A future Radi arrival may reach J10 on its next own Act; not this Prepare.
     const state = buildState({
       units: [
         { def: 'fire_1', owner: 'white', x: 7, y: 8, id: 'w-anchor' },
@@ -373,5 +393,78 @@ describe('gen/purchase.ts planPurchases (DESIGN §5.5, F16)', () => {
     });
     const { p, t } = prepare(state);
     expect(plansOf(p, t).some(plan => (plan.flags & TurnFlag.HOME_RACE) !== 0)).toBe(true);
+  });
+});
+
+
+describe('Phasing purchase timing and dependency isolation', () => {
+  function scored(state: GameState, patch: Partial<typeof DESKTOP.gen.purchase.weights> = {}): PlacePlan[] {
+    const { p, t } = prepare(state);
+    const out = Array.from({ length: 64 }, newPlacePlan);
+    const cfg = { ...DESKTOP.gen.purchase, maxPlans: 64, maxBodies: 1, squares: 16, keepPerMultiset: 4,
+      weights: { mineCc: 0, safeCc: 0, blockCc: 0, strikeCc: 0, anchorCc: 0, zeroSpawnCc: 0, liquidityCc: 0, homeRaceCc: 0, ...patch } };
+    return out.slice(0, planPurchases(p, t, cfg, sc, 0, out));
+  }
+  const fireAt = (plans: PlacePlan[], q: number): PlacePlan => plans.find(c => c.count === 1 && paA(c.actions[0]) === DEF_INDEX.get('fire_1') && paB(c.actions[0]) === q)!;
+
+  it('excludes existing own commitments and cannot use a remote pending body as an anchor', () => {
+    const state = cornerLocked();
+    state.pendingSummons = [
+      { id: 'paid-b1', owner: 'white', definitionId: 'fire_1', cost: 3, position: { x: 1, y: 0 } },
+      { id: 'remote', owner: 'white', definitionId: 'fire_1', cost: 3, position: { x: 8, y: 8 } },
+    ];
+    const { p, t } = prepare(state);
+    const plans = plansOf(p, t, 64);
+    expect(plans[0].spawnAfter).toBe(1);
+    expect(plans.length).toBeGreaterThan(1);
+    for (const plan of plans.slice(1)) {
+      expect(plan.count).toBe(1);
+      expect(paB(plan.actions[0])).toBe(10);
+      expect(plan.spawnAfter).toBe(0);
+      expect(rep.isLegal(p, plan.actions[0])).toBe(true);
+    }
+  });
+
+  it('does not reserve the other owner’s pending square', () => {
+    const state = cornerLocked();
+    state.pendingSummons = [{ id: 'enemy', owner: 'black', definitionId: 'fire_1', cost: 3, position: { x: 1, y: 0 } }];
+    const { p, t } = prepare(state);
+    expect(plansOf(p, t, 64).some(c => buysOf(c).some(b => b.endsWith('@1')))).toBe(true);
+  });
+
+  it('discounts delayed mining one existing gamma step and recomputes same-mask/same-bank reserves', () => {
+    const low = cornerLocked([], new Array<number>(100).fill(1));
+    const high = cornerLocked([], new Array<number>(100).fill(8));
+    const def = DEF_INDEX.get('fire_1')!;
+    const first = fireAt(scored(low, { mineCc: 1 }), 1);
+    const second = fireAt(scored(high, { mineCc: 1 }), 1);
+    expect(first.scoreCc).toBe(Math.round(pstMine(def, 1) * GAMMA_Q16[1] / 65536));
+    expect(second.scoreCc).toBe(Math.round(pstMine(def, 8) * GAMMA_Q16[1] / 65536));
+    expect(second.scoreCc).toBeGreaterThan(first.scoreCc);
+    expect(fireAt(scored(low, { mineCc: 2 }), 1).scoreCc).toBe(Math.round(2 * pstMine(def, 1) * GAMMA_Q16[1] / 65536));
+  });
+
+  it('prices refundable disruption as tied cash, preserving alternative live anchors', () => {
+    const state = buildState({ phase: 'place', white: 12, black: 6, reserves: new Array<number>(100).fill(4), units: [
+      { def: 'plant_1', owner: 'white', x: 0, y: 4 },
+      { def: 'plant_1', owner: 'white', x: 4, y: 0 },
+      { def: 'water_1', owner: 'black', x: 2, y: 3 },
+    ] });
+    const plans = scored(state, { safeCc: 100 });
+    // The only common invasion square for A1's two supports is A1, five
+    // SPD-1 steps away. B1's only support can be invaded in three steps.
+    expect(fireAt(plans, 0).scoreCc).toBe(0);
+    expect(fireAt(plans, 1).scoreCc).toBe(-Math.round(100 * 3 * (65536 - GAMMA_Q16[1]) / 65536));
+  });
+
+  it('has no immediate strike/block score or tactical summon flag, even beside a victim', () => {
+    const state = cornerLocked([{ def: 'water_1', owner: 'black', x: 2, y: 0 }]);
+    const neutral = scored(state);
+    const oldBonuses = scored(state, { strikeCc: 100_000, blockCc: 100_000 });
+    expect(oldBonuses.map(c => [Array.from(c.actions), c.scoreCc, c.flags])).toEqual(neutral.map(c => [Array.from(c.actions), c.scoreCc, c.flags]));
+    for (const plan of oldBonuses.slice(1)) {
+      expect(plan.flags & ~(TurnFlag.PURCHASE | TurnFlag.HOME_RACE)).toBe(0);
+      expect(paKind(plan.actions[0])).toBe(AKind.BUY);
+    }
   });
 });

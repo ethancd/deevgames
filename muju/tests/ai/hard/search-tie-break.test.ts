@@ -18,6 +18,10 @@
  */
 import { describe, expect, it, vi } from 'vitest';
 import { createInitialGameState } from '../../../src/game/board';
+import { applyAction } from '../../../src/ai/simulate';
+import { isLegalAction } from '../../../src/game/legality';
+import type { GameState } from '../../../src/game/types';
+import type { AIAction } from '../../../src/ai/types';
 import { DESKTOP, type HardConfig } from '../../../src/ai/hard/config';
 import { ORDER_TT, scoreTurns } from '../../../src/ai/hard/search/order';
 import { Bound, newTTEntry, type TTEntry } from '../../../src/ai/hard/search/tt';
@@ -31,9 +35,25 @@ vi.setConfig({ testTimeout: 300_000 });
 const TIE_BREAK: Partial<HardConfig> = { searchFix: { tieBreak: 'end-key' } };
 const EMPTY_BLOCK: Partial<HardConfig> = { searchFix: {} };
 
+function expectCompleteTurn(state: GameState, actions: AIAction[]): void {
+  const mover = state.turn.currentPlayer;
+  expect(actions.length).toBeGreaterThan(0);
+  for (const action of actions) {
+    expect(state.phase).toBe('playing');
+    expect(state.turn.currentPlayer).toBe(mover);
+    expect(isLegalAction(state, action)).toBe(true);
+    state = applyAction(state, action);
+  }
+  if (state.phase !== 'victory') {
+    expect(state.turn.currentPlayer).not.toBe(mover);
+    expect(state.turn.phase).toBe('action');
+    expect(state.turn.actionsRemaining).toBe(4);
+  }
+}
+
 /** Orders `n` candidates at `ply` with `tt` offered as the node's TT entry. */
 function orderWith(cfg: Partial<HardConfig> | undefined, ply: number, tt: TTEntry | null): { keys: string[]; scores: number[] } {
-  const prepared = prepare(createInitialGameState(), 400_000, cfg);
+  const prepared = prepare(createInitialGameState(undefined, 4, 0, 'phasing'), 400_000, cfg);
   const { ctx, p } = prepared;
   const raw = rawCandidates(prepared, ply);
   expect(raw.n).toBeGreaterThan(2);
@@ -73,7 +93,7 @@ describe('searchFix.tieBreak: the key is absent everywhere it ships', () => {
   });
 
   it('an EMPTY searchFix block leaves a whole fixed-work search byte-identical', async () => {
-    const state = createInitialGameState();
+    const state = createInitialGameState(undefined, 4, 0, 'phasing');
     const a = await new HardEngine().searchTurn(state, { work: 100_000 });
     const b = await new HardEngine(EMPTY_BLOCK).searchTurn(state, { work: 100_000 });
     for (const field of ['scoreCc', 'depth', 'work', 'endKey', 'source'] as const) {
@@ -81,6 +101,8 @@ describe('searchFix.tieBreak: the key is absent everywhere it ships', () => {
     }
     expect(b.stats.nodes).toBe(a.stats.nodes);
     expect(JSON.stringify(b.actions)).toBe(JSON.stringify(a.actions));
+    expectCompleteTurn(state, a.actions);
+    expectCompleteTurn(state, b.actions);
   });
 });
 
@@ -95,7 +117,7 @@ describe("searchFix.tieBreak: 'end-key'", () => {
 
   it('keeps the TT move first at ply >= 1, where its cutoffs are earned', () => {
     const tt = exactEntry();
-    const prepared = prepare(createInitialGameState(), 400_000, TIE_BREAK);
+    const prepared = prepare(createInitialGameState(undefined, 4, 0, 'phasing'), 400_000, TIE_BREAK);
     const { ctx, p } = prepared;
     const raw = rawCandidates(prepared, 1);
     expect(raw.n).toBeGreaterThan(2);
@@ -130,13 +152,15 @@ describe("searchFix.tieBreak: 'end-key'", () => {
     expect(outOfEndKeyOrder).toBeGreaterThan(0);
   });
 
-  it('changes what a fixed-work search returns, so the arm is not an A/A run', async () => {
-    const state = createInitialGameState();
+  it('keeps both fixed-work search arms canonically complete', async () => {
+    const state = createInitialGameState(undefined, 4, 0, 'phasing');
     const a = await new HardEngine().searchTurn(state, { work: 100_000 });
     const b = await new HardEngine(TIE_BREAK).searchTurn(state, { work: 100_000 });
     // Same legal-turn contract either way; the answer itself may or may not move
     // on this particular position, so only the hygiene is asserted here.
     expect(b.actions.length).toBeGreaterThan(0);
     expect(b.source).toBe(a.source);
+    expectCompleteTurn(state, a.actions);
+    expectCompleteTurn(state, b.actions);
   });
 });

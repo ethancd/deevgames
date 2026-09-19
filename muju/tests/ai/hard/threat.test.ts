@@ -14,7 +14,7 @@
  */
 import { describe, expect, it, vi } from 'vitest';
 import { getAdjacentPositions, getUnitAt } from '../../../src/game/board';
-import { getAffordablePurchases } from '../../../src/game/building';
+import { resolveSummons } from '../../../src/game/summoning';
 import { canAttack } from '../../../src/game/combat';
 import { getMoveCost, getMovementRange } from '../../../src/game/movement';
 import { getAllSpawnPositions } from '../../../src/game/spawning';
@@ -68,7 +68,7 @@ function squaresOf(mask: BB): number[] {
 function oracleStrike(state: GameState, side: PlayerId, moves: number): number[] {
   const seen = new Set<number>();
   for (const u of state.board.units) {
-    if (u.owner !== side) continue;
+    if (u.owner !== side || !canAttack(u)) continue;
     const speed = getUnitDefinition(u.definitionId).speed;
     const area: Position[] = [u.position];
     if (moves > 0) for (const r of getMovementRange(u.position, speed, moves, state.board)) area.push(r.position);
@@ -80,18 +80,18 @@ function oracleStrike(state: GameState, side: PlayerId, moves: number): number[]
   return [...seen].sort((a, b) => a - b);
 }
 
-/** Brute force over `getAllSpawnPositions × getAffordablePurchases` (DESIGN §5.2). */
+/** Canonical batch resolution determines the real bodies and occupancy. */
 function oracleStrikeIfBought(state: GameState, side: PlayerId): number[] {
+  const before = side === state.turn.currentPlayer ? resolveSummons(state, side === 'white' ? 'black' : 'white') : state;
+  const ids = new Set(before.board.units.map(u => u.id));
+  const resolved = resolveSummons(before, side);
+  const arrivals = resolved.board.units.filter(u => !ids.has(u.id));
   const seen = new Set<number>();
-  const defs = getAffordablePurchases(state.players[side].resources);
-  if (defs.length === 0) return [];
-  for (const q of getAllSpawnPositions(side, state.board)) {
-    for (const def of defs) {
-      const area: Position[] = [q, ...getMovementRange(q, def.speed, 3, state.board).map(r => r.position)];
-      for (const pos of area) {
-        seen.add(key(pos));
-        for (const n of getAdjacentPositions(pos)) seen.add(key(n));
-      }
+  for (const u of arrivals) {
+    const speed = getUnitDefinition(u.definitionId).speed;
+    for (const q of [u.position, ...getMovementRange(u.position, speed, 3, resolved.board).map(r => r.position)]) {
+      seen.add(key(q));
+      for (const n of getAdjacentPositions(q)) seen.add(key(n));
     }
   }
   return [...seen].sort((a, b) => a - b);
@@ -101,6 +101,7 @@ function oracleStrikeIfBought(state: GameState, side: PlayerId): number[] {
 function level1(p: PackedState, t: NodeTables): NodeTables {
   for (let side = 0; side < 2; side++) {
     strikeArea(p, side as Side, t, 3, t.strike[side]);
+    strikeArea(p, side as Side, t, 3, t.strikeNext[side], 'nextAct');
     strikeIfBoughtArea(p, side as Side, t, t.strikeIfBought[side]);
   }
   refreshExposure(t);
@@ -220,132 +221,68 @@ describe('tables/threat.ts strikeArea', () => {
   });
 });
 
-describe('tables/threat.ts strikeIfBoughtArea', () => {
-  it('equals the brute-force spawn × purchase union on 1,000 random positions', () => {
+describe('tables/threat.ts paid pending strike', () => {
+  it('matches canonical simultaneous arrivals over 1,000 randomized side projections', () => {
     const rng = seededRandom(0x53494231);
     const t = allocTables();
     const out = bbNew();
-    let compared = 0;
-    let nonEmpty = 0;
+    let compared = 0, nonEmpty = 0;
     for (let i = 0; i < 500; i++) {
-      const state = randomState(rng, 1 + Math.floor(rng() * 8), {
-        white: Math.floor(rng() * 12),
-        black: Math.floor(rng() * 12),
-      });
+      const state = randomState(rng, 2 + Math.floor(rng() * 8), { white: 0, black: 0 });
+      for (const side of SIDE_OF) {
+        const legal = getAllSpawnPositions(side, state.board);
+        for (let j = 0; j < Math.min(3, legal.length); j++) {
+          const q = legal[(j * 7) % legal.length];
+          if (state.pendingSummons!.some(s => s.owner === side && key(s.position) === key(q))) continue;
+          const definitionId = ['lightning_1', 'water_1', 'fire_1'][j];
+          state.pendingSummons!.push({ id: `p-${side}-${j}`, owner: side, definitionId, position: q, cost: getUnitDefinition(definitionId).cost });
+        }
+      }
       const p = replica.pack(state);
       for (let side = 0; side < 2; side++) {
         strikeIfBoughtArea(p, side as Side, t, out);
         const expected = oracleStrikeIfBought(state, SIDE_OF[side]);
         expect(squaresOf(out)).toEqual(expected);
-        if (expected.length > 0) nonEmpty++;
+        if (expected.length) nonEmpty++;
         compared++;
       }
     }
-    expect(compared).toBe(1_000);
+    expect(compared).toBe(1000);
     expect(nonEmpty).toBeGreaterThan(200);
   });
-
-  it('is empty when the side cannot afford a tier-1 unit', () => {
-    const state = buildState({ units: [{ def: 'plant_1', owner: 'white', x: 0, y: 0 }], white: 0 });
-    const p = replica.pack(state);
-    const t = allocTables();
+  it('cash without a commitment cannot contribute any pending strike', () => {
+    const state = buildState({ units: [{ def: 'plant_1', owner: 'white', x: 5, y: 5 }], white: 100 });
     const out = bbNew();
-    strikeIfBoughtArea(p, 0, t, out);
+    strikeIfBoughtArea(replica.pack(state), 0, allocTables(), out);
     expect(bbCount(out)).toBe(0);
   });
-
-  it('is empty when every anchor is blocked', () => {
-    // Black on white's corner blocks every white rectangle.
-    const state = buildState({
-      units: [
-        { def: 'plant_1', owner: 'white', x: 5, y: 5 },
-        { def: 'plant_1', owner: 'black', x: 0, y: 0 },
-      ],
-      white: 20,
-    });
-    const p = replica.pack(state);
-    expect(getAllSpawnPositions('white', state.board).length).toBe(0);
-    const t = allocTables();
+  it('drops voided arrivals even when the bank could afford replacements', () => {
+    const state = buildState({ units: [
+      { def: 'plant_1', owner: 'white', x: 5, y: 5 },
+      { def: 'plant_1', owner: 'black', x: 0, y: 0 },
+    ], pendingSummons: [{ def: 'lightning_1', owner: 'white', x: 3, y: 3 }], white: 100 });
     const out = bbNew();
-    strikeIfBoughtArea(p, 0, t, out);
-    expect(bbCount(out)).toBe(0);
-  });
-
-  it('reaches BFS radius 3·speed + 1 from the spawn square on an open board (SU §2.5)', () => {
-    // A lone white anchor on A2: the corner–anchor rectangle is {A1, A2} and
-    // the anchor occupies A2, so the spawn mask is exactly {A1 = square 0}.
-    // Radi (speed 3) costs 3, so every bank that can buy at all can buy it and
-    // the pre-dilate ball is radius 9 — an attack area whose deepest square is
-    // at x + y = 10.
-    const state = buildState({ units: [{ def: 'plant_1', owner: 'white', x: 0, y: 1 }], white: 20 });
-    const p = replica.pack(state);
-    expect(positionsOf(getAllSpawnPositions('white', state.board))).toEqual([0]);
-    const t = allocTables();
-    const out = bbNew();
-    strikeIfBoughtArea(p, 0, t, out);
-    const squares = squaresOf(out);
-    expect(Math.max(...squares.map(s => (s % 10) + Math.floor(s / 10)))).toBe(10);
-    expect(squares).toEqual(oracleStrikeIfBought(state, 'white'));
-
-    // Three crystals still buy Radi (cost 3), so the reach is unchanged; two
-    // buy nothing at all and the map is empty.
-    const poor = buildState({ units: [{ def: 'plant_1', owner: 'white', x: 0, y: 1 }], white: 3 });
-    strikeIfBoughtArea(replica.pack(poor), 0, t, out);
-    expect(squaresOf(out)).toEqual(squares);
-    const broke = buildState({ units: [{ def: 'plant_1', owner: 'white', x: 0, y: 1 }], white: 2 });
-    strikeIfBoughtArea(replica.pack(broke), 0, t, out);
-    expect(getAffordablePurchases(2)).toHaveLength(0);
-    expect(bbCount(out)).toBe(0);
-  });
-
-  it('is the ball of the FASTEST affordable tier 1, per SU §2.5’s 10/7/4 radii', () => {
-    // The three speeds, measured from the same single spawn square on an open
-    // board: Radi 3·3 + 1 = 10, Hi/Göl 3·2 + 1 = 7, Sjor/Muju/Inyan 3·1 + 1 = 4.
-    const state = buildState({ units: [{ def: 'plant_1', owner: 'white', x: 0, y: 1 }], white: 20 });
-    const depth = (speed: number): number => {
-      const area = [{ x: 0, y: 0 }, ...getMovementRange({ x: 0, y: 0 }, speed, 3, state.board).map(r => r.position)];
-      const seen = new Set<number>();
-      for (const pos of area) {
-        seen.add(key(pos));
-        for (const n of getAdjacentPositions(pos)) seen.add(key(n));
-      }
-      return Math.max(...[...seen].map(s => (s % 10) + Math.floor(s / 10)));
-    };
-    expect([depth(3), depth(2), depth(1)]).toEqual([10, 7, 4]);
-    // The union over affordable definitions is the speed-3 ball alone, because
-    // the balls are nested in speed over the same source set and occupancy.
-    const p = replica.pack(state);
-    const t = allocTables();
-    const out = bbNew();
-    strikeIfBoughtArea(p, 0, t, out);
-    expect(Math.max(...squaresOf(out).map(s => (s % 10) + Math.floor(s / 10)))).toBe(depth(3));
-  });
-
-  it('includes the spawn square itself, so a bought unit that never moves still strikes', () => {
-    // White's anchor on A2 leaves A1 as its only spawn square, and A1's two
-    // neighbours are both occupied — nothing bought there can take a step. The
-    // spawn square must still be in the map, or B1 (the black unit) would look
-    // safe from a purchase that attacks it without ever moving.
-    const state = buildState({
-      units: [
-        { def: 'plant_1', owner: 'white', x: 0, y: 1 },
-        { def: 'plant_1', owner: 'black', x: 1, y: 0 },
-      ],
-      white: 20,
-    });
-    const p = replica.pack(state);
-    expect(positionsOf(getAllSpawnPositions('white', state.board))).toEqual([0]);
-    expect(getMovementRange({ x: 0, y: 0 }, 3, 3, state.board)).toHaveLength(0);
-    const t = allocTables();
-    const out = bbNew();
-    strikeIfBoughtArea(p, 0, t, out);
+    strikeIfBoughtArea(replica.pack(state), 0, allocTables(), out);
     expect(squaresOf(out)).toEqual(oracleStrikeIfBought(state, 'white'));
-    expect(squaresOf(out)).toEqual([0, 1, 10]);
+    expect(bbCount(out)).toBe(0);
+  });
+  it('uses the purchased definition speed and includes an arrival that cannot move', () => {
+    for (const definitionId of ['lightning_1', 'fire_1', 'water_1']) {
+      const state = buildState({ units: [{ def: 'plant_1', owner: 'white', x: 0, y: 1 }],
+        pendingSummons: [{ def: definitionId, owner: 'white', x: 0, y: 0 }], white: 0 });
+      const out = bbNew();
+      strikeIfBoughtArea(replica.pack(state), 0, allocTables(), out);
+      expect(squaresOf(out)).toEqual(oracleStrikeIfBought(state, 'white'));
+      expect(Math.max(...squaresOf(out).map(s => s % 10 + Math.floor(s / 10)))).toBe(3 * getUnitDefinition(definitionId).speed + 1);
+      state.board.units.push({ ...state.board.units[0], id: 'blocker', owner: 'black', position: { x: 1, y: 0 } });
+      strikeIfBoughtArea(replica.pack(state), 0, allocTables(), out);
+      expect(squaresOf(out)).toEqual([0, 1, 10]);
+    }
   });
 });
 
 describe('tables/threat.ts exposure and value', () => {
-  it('refreshExposure is the other side’s strike ∪ strikeIfBought', () => {
+  it('refreshExposure is the other side’s next-Act live strike ∪ paid pending strike', () => {
     const rng = seededRandom(0x45585031);
     const t = allocTables();
     for (let i = 0; i < 40; i++) {
@@ -355,7 +292,7 @@ describe('tables/threat.ts exposure and value', () => {
       for (let side = 0; side < 2; side++) {
         const other = 1 - side;
         const expected = new Set<number>([
-          ...squaresOf(t.strike[other]),
+          ...squaresOf(t.strikeNext[other]),
           ...squaresOf(t.strikeIfBought[other]),
         ]);
         expect(squaresOf(t.exposure[side])).toEqual([...expected].sort((a, b) => a - b));
@@ -554,7 +491,7 @@ describe('tables/approach.ts classifyApproach', () => {
     expect(classifyApproach(p, t, 4 * 10 + 4, 1, p.pieceAt[4 * 10 + 5], scratch, 0).cls).toBe(Approach.NONE);
   });
 
-  it('the flags gate the side to move only; the other side is assumed to arrive fresh', () => {
+  it('spent flags reset only in the explicit next-Act horizon', () => {
     // Black cannot act this turn, but it is White's move: Black's approach on
     // White's unit is still real, because Black's flags reset at its startTurn.
     const state = buildState({
@@ -568,7 +505,9 @@ describe('tables/approach.ts classifyApproach', () => {
     const p = replica.pack(state);
     const t = level1(p, allocTables());
     const blackOnWhite = classifyApproach(p, t, 4 * 10 + 5, 1, p.pieceAt[4 * 10 + 4], scratch, 0);
-    expect(blackOnWhite.cls).toBe(Approach.RETREAT);
+    expect(blackOnWhite.cls).toBe(Approach.NONE);
+    const blackNext = classifyApproach(p, t, 45, 1, p.pieceAt[44], scratch, 0, -1, 'nextAct');
+    expect(blackNext.cls).toBe(Approach.RETREAT);
     // White has one action left: enough to hit from where it stands, but not
     // to withdraw afterwards.
     const whiteOnBlack = classifyApproach(p, t, 4 * 10 + 4, 1, p.pieceAt[4 * 10 + 5], scratch, 0);
@@ -691,7 +630,7 @@ describe('tables/approach.ts approachTable', () => {
     }
   });
 
-  it('finds an approach that only a purchase can make', () => {
+  it('excludes an uncommitted purchase and finds only its paid next-Act arrival', () => {
     // White's single unit is a speed-1 Muju on B2, five steps from the nearest
     // square adjacent to Black's Muju on E5 — out of reach, and harmless if it
     // got there. Its spawn rectangle is {A1, B1, A2}; a Hi bought on B1 is
@@ -716,7 +655,11 @@ describe('tables/approach.ts approachTable', () => {
     const cls = new Uint8Array(MAX_SLOTS);
     const retreats = new Uint8Array(MAX_SLOTS);
     approachTable(p, t, 1, scratch, 0, cls, retreats);
-    // Hi arrives on its fourth action, so it hits and stands still.
+    expect(cls[slot]).toBe(Approach.NONE);
+    state.pendingSummons = [{ id: 'paid-hi', owner: 'white', definitionId: 'fire_1', position: { x: 1, y: 0 }, cost: 3 }];
+    const pending = replica.pack(state);
+    approachTable(pending, level1(pending, allocTables()), 1, scratch, 0, cls, retreats, 'nextAct');
+    // The paid arrival reaches its attack square on its fourth action.
     expect(cls[slot]).toBe(Approach.STRAND);
 
     const hi = DEF_INDEX.get('fire_1') as number;

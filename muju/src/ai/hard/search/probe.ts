@@ -397,10 +397,13 @@ export class RootProbe {
    * (the live buffer) or predates deepening altogether (the generator list —
    * the must-answer scan, the book probe, `pickUnsearched`, and the empty and
    * pack-error returns).
+   * `preferGenerated` selects the preserved initial list when a stopped first
+   * regeneration has a live buffer but supplied no searched answer.
    */
   publish(
     preferDone: boolean,
     endKey: string,
+    preferGenerated = false,
   ): {
     source: 'completed-depth' | 'partial-iteration' | 'generator-list';
     candidates: RootCandidate[];
@@ -408,7 +411,10 @@ export class RootProbe {
   } {
     let buf: IterationBuffer;
     let source: 'completed-depth' | 'partial-iteration' | 'generator-list';
-    if (preferDone && this.hasDone) {
+    if (preferGenerated && this.hasGen) {
+      buf = this.gen;
+      source = 'generator-list';
+    } else if (preferDone && this.hasDone) {
       buf = this.done;
       source = 'completed-depth';
     } else if (this.hasLive && this.live.n > 0) {

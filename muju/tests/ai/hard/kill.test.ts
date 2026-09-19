@@ -21,6 +21,7 @@ import {
   killTable,
   minActionsToKill,
   newCleavePlan,
+  KILL_PENDING_ATTACKER,
   newKillPlan,
   newKillTable,
   type KillContext,
@@ -273,112 +274,51 @@ describe('minActionsToKill — candidate eligibility', () => {
   });
 });
 
-describe('minActionsToKill — promotions', () => {
-  // lab/ai/fixtures.ts "promotion dependent rescue" / "public bank / no
-  // promotion money" / "newly placed unit cannot promote" / "at most one
-  // promotion", all against the corner invader.
-  const units: StateSpec['units'] = [
-    { def: 'metal_3', owner: 'black', x: 0, y: 0 },
-    { def: 'shadow_2', owner: 'white', x: 1, y: 0 },
-    { def: 'shadow_2', owner: 'white', x: 0, y: 1 },
-  ];
-  const promoCost = cat.promoCost[def('shadow_2')];
-
-  it('buys exactly the promotion the kill needs, and no more', () => {
-    const b = board({ units, phase: 'place', white: 24 });
-    // 2 + 3 = 5 = DEF(metal_3): one promotion is enough, two is waste.
-    expect(power(WHITE, 'shadow_2', 'metal_3') + power(WHITE, 'shadow_3', 'metal_3')).toBe(cat.def[def('metal_3')]);
-    expect(
-      minActionsToKill(b.p, b.t, WHITE, slotAt(b.p, 0, 0), opts({ allowPromotes: true, crystalBudget: 24 }), sc, 0, plan),
-    ).toBe(true);
-    expect(plan.actions).toBe(2);
-    expect(plan.crystals).toBe(promoCost);
-    expect(plan.needsPromo).toBe(1);
-  });
-
-  it('is impossible with promotions switched off or unaffordable', () => {
-    const b = board({ units, phase: 'place', white: 24 });
-    expect(minActionsToKill(b.p, b.t, WHITE, slotAt(b.p, 0, 0), opts({ crystalBudget: 24 }), sc, 0, plan)).toBe(false);
-    expect(
-      minActionsToKill(b.p, b.t, WHITE, slotAt(b.p, 0, 0), opts({ allowPromotes: true, crystalBudget: promoCost - 1 }), sc, 0, plan),
-    ).toBe(false);
-  });
-
-  it('refuses a unit that was placed or already promoted this phase', () => {
-    for (const flag of ['placedThisTurn', 'promotedThisPlacement'] as const) {
-      const b = board({
-        units: units.map((u, i) => (i === 0 ? u : { ...u, [flag]: true })),
-        phase: 'place',
-        white: 24,
-      });
-      expect(
-        minActionsToKill(b.p, b.t, WHITE, slotAt(b.p, 0, 0), opts({ allowPromotes: true, crystalBudget: 24 }), sc, 0, plan),
-      ).toBe(false);
-    }
-  });
-
-  it('uses the promoted definition’s speed for the approach', () => {
-    // shadow_2 speed 2 -> shadow_3 speed 3: four steps is two moves promoted,
-    // two moves unpromoted — but only the promoted form carries enough power.
-    expect(cat.spd[def('shadow_3')]).toBeGreaterThan(cat.spd[def('shadow_2')]);
-    const b = board({
-      units: [
-        { def: 'metal_3', owner: 'black', x: 0, y: 0, damage: cat.def[def('metal_3')] - power(WHITE, 'shadow_3', 'metal_3') },
-        { def: 'shadow_2', owner: 'white', x: 4, y: 0 },
-      ],
-      phase: 'place',
-      white: 24,
-    });
-    expect(
-      minActionsToKill(b.p, b.t, WHITE, slotAt(b.p, 0, 0), opts({ allowPromotes: true, crystalBudget: 24 }), sc, 0, plan),
-    ).toBe(true);
-    // (4,0) -> (1,0) is three steps: one move at speed 3, plus the hit.
-    expect(plan.actions).toBe(2);
-    expect(plan.needsPromo).toBe(1);
-  });
-});
-
-describe('minActionsToKill — purchases', () => {
-  // A lone white Muju at (5,5) anchors the whole (0..5)x(0..5) rectangle; the
-  // target sits one square outside it, so a purchase lands directly on a lane
-  // while the anchor itself (POWER 0 against fire) can never contribute.
+describe('minActionsToKill — Phasing horizons', () => {
   const units: StateSpec['units'] = [
     { def: 'plant_1', owner: 'white', x: 5, y: 5 },
     { def: 'fire_1', owner: 'black', x: 6, y: 4 },
   ];
-  const cheapest = cat.cost[cat.tier1[0]];
-
-  it('places one unit per definition at the cheapest legal spawn square', () => {
-    const b = board({ units, phase: 'place', white: 20 });
-    expect(power(WHITE, 'plant_1', 'fire_1')).toBe(0);
-    expect(bbHas(b.t.spawn[WHITE].legal, 4 * 10 + 5)).toBe(true);
-    expect(
-      minActionsToKill(b.p, b.t, WHITE, slotAt(b.p, 6, 4), opts({ allowBuys: true, crystalBudget: 20 }), sc, 0, plan),
-    ).toBe(true);
+  it('does not invent a bought attacker in the current Act, even with cash and legacy buy enabled', () => {
+    const b = board({ units, white: 20 });
+    expect(minActionsToKill(b.p, b.t, WHITE, slotAt(b.p, 6, 4), opts({ allowBuys: true, crystalBudget: 20 }), sc, 0, plan)).toBe(false);
+  });
+  it('does not promote retroactively for either horizon', () => {
+    const b = board({ units: [
+      { def: 'metal_3', owner: 'black', x: 0, y: 0 },
+      { def: 'shadow_2', owner: 'white', x: 1, y: 0 },
+      { def: 'shadow_2', owner: 'white', x: 0, y: 1 },
+    ], white: 24 });
+    expect(power(WHITE, 'shadow_2', 'metal_3') * 2).toBeLessThan(cat.def[def('metal_3')]);
+    for (const horizon of ['current', 'nextAct'] as const) {
+      expect(minActionsToKill(b.p, b.t, WHITE, slotAt(b.p, 0, 0), opts({ horizon, allowPromotes: true, crystalBudget: 24 }), sc, 0, plan)).toBe(false);
+      expect(plan.needsPromo).toBe(0);
+    }
+  });
+  it('counts an already-paid arrival only at next Act, with zero bank and crystal budget', () => {
+    const b = board({ units, white: 0, pendingSummons: [{ def: 'water_1', owner: 'white', x: 5, y: 4 }] });
+    expect(minActionsToKill(b.p, b.t, WHITE, slotAt(b.p, 6, 4), opts(), sc, 0, plan)).toBe(false);
+    expect(minActionsToKill(b.p, b.t, WHITE, slotAt(b.p, 6, 4), opts({ horizon: 'nextAct' }), sc, 0, plan)).toBe(true);
     expect(plan.actions).toBe(1);
-    expect(plan.crystals).toBe(cheapest);
-    expect(plan.attackers[0]).toBeLessThan(0);
-    expect(plan.spawnAt[0]).toBe(4 * 10 + 5);
+    expect(plan.crystals).toBe(0);
+    expect(plan.attackers[0]).toBe(KILL_PENDING_ATTACKER);
+    expect(plan.spawnAt[0]).toBe(45);
+    expect(plan.needsPromo).toBe(0);
   });
-
-  it('respects the crystal budget', () => {
-    const b = board({ units, phase: 'place', white: 20 });
-    expect(
-      minActionsToKill(b.p, b.t, WHITE, slotAt(b.p, 6, 4), opts({ allowBuys: true, crystalBudget: cheapest - 1 }), sc, 0, plan),
-    ).toBe(false);
+  it('voids a pending attacker when all its live supporting rectangles are blocked', () => {
+    const b = board({ units: [...units, { def: 'metal_1', owner: 'black', x: 2, y: 2 }],
+      pendingSummons: [{ def: 'water_1', owner: 'white', x: 5, y: 4 }] });
+    expect(minActionsToKill(b.p, b.t, WHITE, slotAt(b.p, 6, 4), opts({ horizon: 'nextAct' }), sc, 0, plan)).toBe(false);
   });
-
-  it('buys nothing when the side has no legal spawn square', () => {
-    // A black unit inside the white rectangle blocks the only anchor.
-    const b = board({
-      units: [...units, { def: 'metal_1', owner: 'black', x: 2, y: 2 }],
-      phase: 'place',
-      white: 20,
-    });
-    expect(b.t.spawn[WHITE].area).toBe(0);
-    expect(
-      minActionsToKill(b.p, b.t, WHITE, slotAt(b.p, 6, 4), opts({ allowBuys: true, crystalBudget: 20 }), sc, 0, plan),
-    ).toBe(false);
+  it('resets a spent live attack only in the next-Act horizon', () => {
+    const b = board({ units: [
+      { def: 'fire_1', owner: 'white', x: 4, y: 4, canAct: false, atkCount: 1 },
+      { def: 'plant_1', owner: 'black', x: 5, y: 4 },
+    ] });
+    expect(minActionsToKill(b.p, b.t, WHITE, slotAt(b.p, 5, 4), opts(), sc, 0, plan)).toBe(false);
+    expect(minActionsToKill(b.p, b.t, WHITE, slotAt(b.p, 5, 4), opts({ horizon: 'nextAct' }), sc, 0, plan)).toBe(true);
+    expect(plan.actions).toBe(1);
+    expect(plan.attackers[0]).toBe(slotAt(b.p, 4, 4));
   });
 });
 
@@ -412,20 +352,20 @@ describe('killTable', () => {
     expect(table.bestValuePerAction).toBe(cat.cost[def('plant_1')] * 100);
   });
 
-  it('reports needsBuy and needsPromo per entry', () => {
+  it('does not label already-paid arrivals as a new buy or promotion', () => {
     const b = board({
       units: [
         { def: 'plant_1', owner: 'white', x: 5, y: 5 },
         { def: 'fire_1', owner: 'black', x: 6, y: 4 },
       ],
-      phase: 'place',
-      white: 20,
+      pendingSummons: [{ def: 'water_1', owner: 'white', x: 5, y: 4 }],
+      white: 0,
     });
     const table = newKillTable();
-    killTable(b.p, b.t, WHITE, opts({ allowBuys: true, allowPromotes: true, crystalBudget: 20 }), sc, 0, table);
+    killTable(b.p, b.t, WHITE, opts({ horizon: 'nextAct' }), sc, 0, table);
     const target = slotAt(b.p, 6, 4);
     expect(table.entry[target].minActions).toBe(1);
-    expect(table.entry[target].needsBuy).toBe(1);
+    expect(table.entry[target].needsBuy).toBe(0);
     expect(table.entry[target].needsPromo).toBe(0);
   });
 });

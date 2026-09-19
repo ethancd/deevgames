@@ -14,7 +14,7 @@
  * sets on 50,000 generated positions; the M5 fuzzer re-checks the same
  * equality through every BUY it generates.
  */
-import { DEAD, MAX_SLOTS, NO_SLOT, type PackedState, type Side, type Slot, type Square } from '../types';
+import { DEAD, MAX_SLOTS, NO_SLOT, PEND_STRIDE, type PackedState, type Side, type Slot, type Square } from '../types';
 import {
   bbAndNot,
   bbCopy,
@@ -101,10 +101,11 @@ export function spawnInfo(p: PackedState, side: Side, out: SpawnInfo): SpawnInfo
 }
 
 /** `isLegalSpawn(p, side, s)` ≡ `isValidSpawnPosition({x, y}, side, board)` (spawning.ts:123-153). */
-export function isLegalSpawn(p: PackedState, side: Side, s: Square): boolean {
+export function isLegalSpawn(p: PackedState, side: Side, s: Square, addedEnemy?: BB): boolean {
   if (s < 0 || s >= BOARD) return false;
-  if (p.pieceAt[s] !== NO_SLOT) return false;
+  if (p.pieceAt[s] !== NO_SLOT || (addedEnemy !== undefined && bbHas(addedEnemy, s))) return false;
   const enemy = enemyOcc(p, side, SC_ENEMY);
+  if (addedEnemy !== undefined) bbOr(enemy, enemy, addedEnemy);
   const rect = RECT[side];
   for (let slot = 0; slot < MAX_SLOTS; slot++) {
     const a = p.sq[slot];
@@ -299,4 +300,65 @@ export function blockingSet(p: PackedState, side: Side, candidate: BB | null, ca
 /** `a ⊆ b`. */
 function isSubset(a: BB, b: BB): boolean {
   return (a[0] & ~b[0]) === 0 && (a[1] & ~b[1]) === 0 && (a[2] & ~b[2]) === 0 && (a[3] & ~b[3]) === 0;
+}
+
+/** Paid arrivals that survive on the unchanged original board. A pending
+ * square is never itself an anchor. All callers project this complete mask
+ * only AFTER computing eligibility, preserving simultaneous arrival rules. */
+export function validPendingMask(p: PackedState, side: Side, out: BB): BB {
+  bbZero(out);
+  const base = side * PEND_STRIDE;
+  for (let q = 0; q < BOARD; q++) {
+    if (p.pendDef[base + q] !== 0 && isLegalSpawn(p, side, q)) bbSet(out, q);
+  }
+  return out;
+}
+
+const SC_PRECEDING_ARRIVALS = bbNew();
+
+/** Static-board next-Act forecast. The opponent's imminent Act resolves only
+ * its own batch. The current mover's next Act follows the opponent's arrival
+ * window, so those earlier arrivals also block paths. Each complete batch is
+ * validated before any of its bodies is added; arrivals never anchor siblings.
+ * Outputs must be distinct caller-owned masks. Slot/append order is untouched;
+ * canonical resolution remains authoritative for actual unit creation. */
+export function nextActProjection(
+  p: PackedState, side: Side, ownArrivals: BB, occupancy: BB, precedingEnemy?: BB,
+): void {
+  bbZero(SC_PRECEDING_ARRIVALS);
+  if (side === p.side) validPendingMask(p, (1 - side) as Side, SC_PRECEDING_ARRIVALS);
+  bbZero(ownArrivals);
+  const base = side * PEND_STRIDE;
+  for (let q = 0; q < BOARD; q++) {
+    if (p.pendDef[base + q] !== 0 && isLegalSpawn(p, side, q, SC_PRECEDING_ARRIVALS)) bbSet(ownArrivals, q);
+  }
+  bbOr(occupancy, p.occ, SC_PRECEDING_ARRIVALS);
+  bbOr(occupancy, occupancy, ownArrivals);
+  if (precedingEnemy !== undefined) bbCopy(precedingEnemy, SC_PRECEDING_ARRIVALS);
+}
+
+/** Number of currently valid paid commitments newly voided by an enemy
+ * occupying `intruderSquare`. Every alternative supporting rectangle must
+ * be blocked: losing just one anchor is insufficient. No state is mutated. */
+export function pendingVoidedBy(p: PackedState, victimSide: Side, intruderSquare: Square): number {
+  if (intruderSquare < 0 || intruderSquare >= BOARD) return 0;
+  let count = 0;
+  const base = victimSide * PEND_STRIDE;
+  for (let q = 0; q < BOARD; q++) {
+    if (p.pendDef[base + q] === 0 || !isLegalSpawn(p, victimSide, q)) continue;
+    if (q === intruderSquare) { count++; continue; }
+    // isLegalSpawn leaves SC_ENEMY set to the same original enemy occupancy.
+    let survives = false;
+    for (let slot = 0; slot < MAX_SLOTS; slot++) {
+      const s = p.sq[slot];
+      if (s === DEAD || p.owner[slot] !== victimSide) continue;
+      const box = RECT[victimSide][s];
+      if (bbHas(box, q) && !bbIntersects(box, SC_ENEMY) && !bbHas(box, intruderSquare)) {
+        survives = true;
+        break;
+      }
+    }
+    if (!survives) count++;
+  }
+  return count;
 }

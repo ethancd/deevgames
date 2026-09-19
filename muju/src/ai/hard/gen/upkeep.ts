@@ -16,14 +16,11 @@
  *     `defense`, `attack`, `mining`, descending, ties by square) — the exact
  *     fallback the canonical engine uses.
  *
- * **Ranking** is DESIGN §5.10's, and is the one place this module is RICHER
- * than `Replica.genKeepSets` (`core/state.ts`, M5): `core` cannot see
- * `NodeTables`, so the replica's own ranking stops at "rescuer adjacent to my
- * corner, unblocked anchor, `material − RENT_PV × upkeep`". Here the third
- * clause of §5.10 — "every attacker in `killNow[me]`" — is available and
- * applied. The two enumerate the same SETS; they may order them differently,
- * and neither order is a contract — a `PAY_UPKEEP` carries an index into the
- * table the same call produced (`paA`), never into the other module's.
+ * **Ranking** is table-free at every candidate count: enemy-corner occupier,
+ * own-corner rescuer, unblocked live anchor, then material less rent. Enumeration
+ * uses square order for every tie, so bounded interior prefixes do not depend
+ * on packed slot assignment. The legal subset universe is unchanged below the
+ * 64-set cap; generated turns copy the selected mask into their own record.
  *
  * The ranking is applied UNCONDITIONALLY, not only when the 64-set cap binds:
  * `KeepSetTable` holds at most `KEEP_SET_CAPACITY` (64) entries, which is
@@ -31,13 +28,12 @@
  * (`gen/generate.ts INTERIOR_KEEP_SETS`), so entry 0 must be the best-ranked
  * set at every candidate count.
  */
-import { CC, DEAD, MAX_SLOTS, NO_SLOT, Result, type PackedState, type Side, type Slot } from '../types';
+import { CC, DEAD, MAX_SLOTS, Result, type PackedState, type Side, type Slot } from '../types';
 import { bbHas } from '../core/bits';
 import { ADJ_LIST, CORNER } from '../core/tables';
-import { activeCatalog, powerIndex, type Catalog } from '../core/catalog';
+import { activeCatalog, type Catalog } from '../core/catalog';
 import { KEEP_SET_CAPACITY, keepSetAdd, keepSetReset, type KeepSetTable } from '../core/action';
-import { ACTIONS_PER_TURN } from '../core/state';
-import { moveCost } from '../core/movement';
+import { newSpawnInfo, spawnInfo } from '../core/spawn';
 import { RENT_PV } from '../core/income';
 import type { NodeTables } from '../tables/context';
 
@@ -52,7 +48,8 @@ const KEEP_WORDS = MAX_SLOTS >>> 5;
  * `17 × CC` per body over at most `MAX_SLOTS` bodies. */
 const RANK_RESCUER = 8_000_000;
 const RANK_ANCHOR = 4_000_000;
-const RANK_ATTACKER = 2_000_000;
+const RANK_OCCUPIER = 16_000_000;
+const KEEP_SPAWN = newSpawnInfo();
 
 const KEEP_BUF = new Uint32Array(MAX_KEEP_CANDIDATES * KEEP_WORDS);
 const KEEP_WORK = new Uint32Array(KEEP_WORDS);
@@ -150,54 +147,13 @@ function greedySubsets(p: PackedState, cat: Catalog, rentCount: number, cash: nu
   return written;
 }
 
-/**
- * Is `slot` an attacker in `killNow[side]` — can it reach and strike a body the
- * side can already remove this turn?
- *
- * `KillTable` records WHICH targets fall, not which bodies do the falling
- * (DESIGN §4.11), and `minActionsToKill` — the call that would name the
- * attackers — needs a `Scratch`/`ply` pair DESIGN §4.13's `genKeepSets`
- * signature does not carry. This reads the same fact off the table's
- * `killableNow` mask plus reachability, which is exactly the question §5.10
- * asks. See DEVIATIONS under M13.
- */
-function isKillNowAttacker(p: PackedState, t: NodeTables, cat: Catalog, side: Side, slot: Slot): boolean {
-  const killable = t.killNow[side].killableNow;
-  const from = p.sq[slot];
-  const def = p.defId[slot];
-  for (let victim = 0; victim < MAX_SLOTS; victim++) {
-    const vs = p.sq[victim];
-    if (vs === DEAD || p.owner[victim] === side) continue;
-    if (!bbHas(killable, vs)) continue;
-    if (cat.power[powerIndex(side, def, p.defId[victim])] <= 0) continue;
-    const base = vs * 4;
-    for (let k = 0; k < 4; k++) {
-      const q = ADJ_LIST[base + k];
-      if (q < 0) continue;
-      if (q === from) return true;
-      if (p.pieceAt[q] !== NO_SLOT) continue;
-      const cost = moveCost(t.dist.get(p, from), q, cat.spd[def]);
-      if (cost > 0 && cost <= ACTIONS_PER_TURN - 1) return true;
-    }
-  }
-  return false;
-}
-
 /** DESIGN §5.10's per-body keep priority. */
-function rentPriority(p: PackedState, t: NodeTables, cat: Catalog, side: Side, slot: Slot): number {
-  const s = p.sq[slot];
-  const def = p.defId[slot];
+function rentPriority(p: PackedState, cat: Catalog, side: Side, slot: Slot): number {
+  const sq = p.sq[slot], def = p.defId[slot];
   let priority = cat.cost[def] * CC - RENT_PV * cat.upkeep[def];
-  const corner = CORNER[side];
-  const base = corner * 4;
-  for (let k = 0; k < 4; k++) {
-    if (ADJ_LIST[base + k] === s) {
-      priority += RANK_RESCUER;
-      break;
-    }
-  }
-  if (bbHas(t.spawn[side].anchors, s)) priority += RANK_ANCHOR;
-  if (isKillNowAttacker(p, t, cat, side, slot)) priority += RANK_ATTACKER;
+  if (sq === CORNER[1 - side]) priority += RANK_OCCUPIER;
+  for (let k = 0; k < 4; k++) if (ADJ_LIST[CORNER[side] * 4 + k] === sq) priority += RANK_RESCUER;
+  if (bbHas(KEEP_SPAWN.anchors, sq)) priority += RANK_ANCHOR;
   return priority;
 }
 
@@ -210,7 +166,7 @@ function rentPriority(p: PackedState, t: NodeTables, cat: Catalog, side: Side, s
  * Returns 0 on a position with no pending upkeep: there is no `PAY_UPKEEP` to
  * index, and `Replica.isLegal` answers only `RESIGN` there anyway.
  */
-export function genKeepSets(p: PackedState, t: NodeTables, out: KeepSetTable): number {
+export function genKeepSets(p: PackedState, _t: NodeTables, out: KeepSetTable): number {
   keepSetReset(out);
   if (p.result !== Result.ONGOING || p.upkeepPending !== 1 || p.phase !== 0) return 0;
   const side = p.side as Side;
@@ -231,6 +187,16 @@ export function genKeepSets(p: PackedState, t: NodeTables, out: KeepSetTable): n
     rentCount++;
   }
 
+  // A total square order makes every equal-score prefix representation-independent.
+  for (let i = 1; i < rentCount; i++) {
+    const slot = RENT_SLOT[i], cost = RENT_COST[i];
+    let j = i - 1;
+    while (j >= 0 && p.sq[RENT_SLOT[j]] > p.sq[slot]) {
+      RENT_SLOT[j + 1] = RENT_SLOT[j]; RENT_COST[j + 1] = RENT_COST[j]; j--;
+    }
+    RENT_SLOT[j + 1] = slot; RENT_COST[j + 1] = cost;
+  }
+  spawnInfo(p, side, KEEP_SPAWN);
   const candidates =
     rentCount <= MAX_RENT_UNITS ? enumerateSubsets(rentCount, cash) : greedySubsets(p, cat, rentCount, cash);
   if (candidates === 0) return 0;
@@ -240,7 +206,7 @@ export function genKeepSets(p: PackedState, t: NodeTables, out: KeepSetTable): n
   // best-ranked set whether or not the 64-set cap binds; ranking only above the
   // cap would hand an interior node four DFS-adjacent sets — differing in the
   // last rent-bearing slot alone — instead of §5.10's four best.
-  for (let i = 0; i < rentCount; i++) RENT_PRIORITY[i] = rentPriority(p, t, cat, side, RENT_SLOT[i]);
+  for (let i = 0; i < rentCount; i++) RENT_PRIORITY[i] = rentPriority(p, cat, side, RENT_SLOT[i]);
   for (let c = 0; c < candidates; c++) {
     const base = c * KEEP_WORDS;
     let score = 0;

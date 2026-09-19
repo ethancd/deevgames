@@ -167,7 +167,7 @@ describe('gen/upkeep.ts genKeepSets (DESIGN §5.10)', () => {
   it('falls back to the empty set plus four greedy orderings above 12 rent-bearing bodies', () => {
     const units: UnitSpec[] = [];
     for (let i = 0; i < MAX_RENT_UNITS + 1; i++) {
-      units.push({ def: i % 2 === 0 ? 'fire_2' : 'water_2', owner: 'white', x: i, y: 0, id: `w-${i}` });
+      units.push({ def: i % 2 === 0 ? 'fire_2' : 'water_2', owner: 'white', x: i % 10, y: Math.floor(i / 10), id: `w-${i}` });
     }
     const state = upkeepState(units, 5);
     const { p, t } = prepare(state);
@@ -278,7 +278,7 @@ describe('gen/upkeep.ts genKeepSets (DESIGN §5.10)', () => {
 
   it('never emits more than KEEP_SET_CAPACITY sets', () => {
     const units: UnitSpec[] = [];
-    for (let i = 0; i < MAX_RENT_UNITS; i++) units.push({ def: 'fire_2', owner: 'white', x: i, y: 0, id: `w-${i}` });
+    for (let i = 0; i < MAX_RENT_UNITS; i++) units.push({ def: 'fire_2', owner: 'white', x: i % 10, y: Math.floor(i / 10), id: `w-${i}` });
     const { p, t } = prepare(upkeepState(units, MAX_RENT_UNITS));
     const n = genKeepSets(p, t, out);
     expect(n).toBeLessThanOrEqual(KEEP_SET_CAPACITY);

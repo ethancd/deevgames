@@ -1,19 +1,10 @@
 // @vitest-environment node
-/**
- * `tables/home.ts` (DESIGN §4.12, §5.8, §5.10; SU §4.4, addendum 20b).
- *
- * Focused unit tests pinning `homeSafety`, `minTurnsToCorner` and
- * `homeRaceAvailable`'s semantics against hand-verified crafted positions,
- * plus a light-weight reproduction of the SU addendum 20b archived fixture
- * (`BUY lightning_1@G1 → J10`) from `lab/hard-ai/positions/authored.jsonl` —
- * the same fixture the M9 gate oracle (`lab/hard-ai/oracles/geometry.ts`)
- * checks at the `homeRaceOk` criterion.
- */
-import path from 'node:path';
+/** Phasing home projections and Prepare-only commitment intents, checked
+ * against canonical legal actions and arrival boundaries. No corpus reads. */
 import { describe, expect, it, vi } from 'vitest';
 import { spawnInfo } from '../../../src/ai/hard/core/spawn';
-import { DEF_INDEX, activeCatalog, powerIndex } from '../../../src/ai/hard/core/catalog';
-import { AKind, PA_NONE, paA, paB, paC, paKind } from '../../../src/ai/hard/core/action';
+import { DEF_ID, DEF_INDEX, activeCatalog, powerIndex } from '../../../src/ai/hard/core/catalog';
+import { AKind, PA_NONE, paA, paB, paKind } from '../../../src/ai/hard/core/action';
 import { CORNER, CORNER_NEIGHBOURS } from '../../../src/ai/hard/core/tables';
 import { Replica, newUndo } from '../../../src/ai/hard/core/state';
 import { allocTables, type NodeTables } from '../../../src/ai/hard/tables/context';
@@ -25,8 +16,11 @@ import {
   minTurnsToCorner,
   newHomeSafety,
 } from '../../../src/ai/hard/tables/home';
-import { findPosition, readPositions } from '../../../lab/hard-ai/positions/corpus';
-import { buildState, type StateSpec } from './game-fixture';
+import { getUnitDefinition } from '../../../src/game/units';
+import { isLegalAction } from '../../../src/game/legality';
+import { applyAction } from '../../../src/ai/simulate';
+import { seededRandom } from '../../../src/ai/runtime';
+import { buildState, randomState, type StateSpec } from './game-fixture';
 import type { PackedState, Side } from '../../../src/ai/hard/types';
 
 // E0.5 timeout budget: slowest test 0.3 s in the 2026-09-15 survey (M2 Max, load ~5, maxWorkers 2); 10 s is this file's explicit ceiling.
@@ -74,9 +68,9 @@ describe('tables/home.ts homeSafety', () => {
     expect(out.rescuers).toBe(0);
   });
 
-  it('buyThreat: the purchase branch wins when it is faster than every existing unit', () => {
+  it('buyThreat: a paid arrival wins when it is faster than every existing unit', () => {
     // A black anchor at (1,0) opens the rectangle x in [1,9], y in [0,9], so
-    // (2,0) — two squares from CORNER[white] = (0,0) — is a legal, empty
+    // (1,1) — two squares from CORNER[white] = (0,0) — is a legal, empty
     // spawn square. With bank 3, black can afford lightning_1 (speed 3):
     // moveCost(2, spd 3) = 1 action. The only EXISTING black unit sits all
     // the way across the board (18 actions at speed 1), so the purchase
@@ -86,18 +80,19 @@ describe('tables/home.ts homeSafety', () => {
         { def: 'metal_1', owner: 'black', x: 1, y: 0 },
         { def: 'water_1', owner: 'black', x: 9, y: 9 },
       ],
-      black: 3,
+      pendingSummons: [{ def: 'lightning_1', owner: 'black', x: 1, y: 1 }],
+      black: 0,
     });
     const p = replica.pack(state);
     const t = level1(p);
-    expect(t.spawn[1].legal[0] & (1 << sqOf(2, 0))).not.toBe(0); // (2,0) is legal for black
+    expect(t.spawn[1].legal[0] & (1 << sqOf(1, 1))).not.toBe(0); // (1,1) is legal for black
     const out = newHomeSafety();
     homeSafety(p, t, 0, out);
     expect(out.actionsToCorner).toBe(1);
     expect(out.buyThreat).toBe(1);
   });
 
-  it('buyThreat: an existing unit that is faster than every affordable purchase wins instead', () => {
+  it('buyThreat: available cash alone never counts as an arrival', () => {
     // Same anchor and bank as above, but now an existing black lightning_1
     // (speed 3) sits one square from the corner: moveCost(1, spd 3) = 1,
     // tying the fastest purchase — ties favour the existing-unit branch
@@ -229,7 +224,8 @@ describe('tables/home.ts homeSafety', () => {
     expect(out.actionsToCorner).toBe(HOME_NEVER);
 
     // Control: remove the plug and the same purchase threat is back at 1.
-    const open = buildState({ units: [{ def: 'plant_1', owner: 'white', x: 8, y: 8 }], white: 3 });
+    const open = buildState({ units: [{ def: 'plant_1', owner: 'white', x: 8, y: 8 }],
+      pendingSummons: [{ def: 'lightning_1', owner: 'white', x: 8, y: 7 }], white: 0 });
     const pOpen = replica.pack(open);
     homeSafety(pOpen, level1(pOpen), 1, out);
     expect(out.plug).toBe(0);
@@ -253,7 +249,7 @@ describe('tables/home.ts homeRaceAvailable', () => {
   const lightningDef = DEF_INDEX.get('lightning_1') as number;
 
   /**
-   * Replays one `[BUY, END_PLACE, MOVE]` line through the canonical replica
+   * Replays one `[BUY, PA_NONE, PA_NONE]` line through the canonical replica
    * exactly as the DESIGN §5.10 consumer does (`PA_NONE` words skipped), and
    * restores `p`. Returns the index of the first word `Replica.isLegal`
    * rejected, or -1 when the whole line applied.
@@ -281,7 +277,7 @@ describe('tables/home.ts homeRaceAvailable', () => {
     return [out[base], out[base + 1], out[base + 2]];
   }
 
-  it('BUY, END_PLACE, MOVE line: affordable tier-1 x legal spawn square reaching the enemy corner within budget', () => {
+  it('emits only a legal commitment for an affordable next-Act home route', () => {
     // White anchor at (7,1) opens a rectangle that includes (6,0) = "G1";
     // BFS distance from (6,0) to CORNER[black] = (9,9) is 12, and lightning_1
     // (speed 3) costs ceil(12/3) = 4 actions — exactly the SU addendum 20b
@@ -303,25 +299,25 @@ describe('tables/home.ts homeRaceAvailable', () => {
     for (let i = 0; i < n; i++) {
       const [buy, endPlace, move] = lineAt(out, i);
       expect(paKind(buy)).toBe(AKind.BUY);
-      // Bank 3 buys the cheapest tier-1 outright, so nothing is affordable
-      // afterwards and `finishPlacement` auto-advances the phase — the
-      // explicit END_PLACE would be illegal and is elided to PA_NONE.
       expect(endPlace).toBe(PA_NONE);
-      expect(paKind(move)).toBe(AKind.MOVE);
-      expect(paB(move)).toBe(CORNER[1]);
-      expect(paC(move)).toBeLessThanOrEqual(4);
+      expect(move).toBe(PA_NONE);
       expect(replayLine(p, lineAt(out, i))).toBe(-1);
-      if (paA(buy) === lightningDef && paB(buy) === sqOf(6, 0)) {
-        found = true;
-        expect(paC(move)).toBe(4);
-      }
+      const definitionId = DEF_ID[paA(buy)];
+      const action = { type: 'BUY_UNIT' as const, definitionId, position: { x: paB(buy) % 10, y: Math.floor(paB(buy) / 10) } };
+      expect(isLegalAction(state, action)).toBe(true);
+      const after = applyAction(state, action);
+      expect(after.board.units).toEqual(state.board.units);
+      expect(after.pendingSummons).toHaveLength(1);
+      expect(after.turn.phase).toBe('place');
+      expect(after.players.white.resources).toBe(state.players.white.resources - getUnitDefinition(definitionId).cost);
+      if (paA(buy) === lightningDef && paB(buy) === sqOf(6, 0)) found = true;
     }
     expect(found).toBe(true);
     // Every unused slot beyond the lines actually written is PA_NONE.
     for (let i = n * HOME_RACE_LINE_LEN; i < out.length; i++) expect(out[i]).toBe(PA_NONE);
   });
 
-  it('keeps the explicit END_PLACE when the BUY leaves the Place phase alive', () => {
+  it('leaves Prepare completion to the generator even when money remains', () => {
     // Bank 8: after a 3-crystal lightning_1 there are still 5 crystals and
     // spawn area left, so `canActInPlacePhase` stays true, `finishPlacement`
     // does NOT auto-advance, and the line needs its own END_PLACE to reach
@@ -337,7 +333,8 @@ describe('tables/home.ts homeRaceAvailable', () => {
     const n = homeRaceAvailable(p, t, 0, out);
     expect(n).toBeGreaterThan(0);
     for (let i = 0; i < n; i++) {
-      expect(paKind(out[i * HOME_RACE_LINE_LEN + 1])).toBe(AKind.END_PLACE);
+      expect(out[i * HOME_RACE_LINE_LEN + 1]).toBe(PA_NONE);
+      expect(out[i * HOME_RACE_LINE_LEN + 2]).toBe(PA_NONE);
       expect(replayLine(p, lineAt(out, i))).toBe(-1);
     }
   });
@@ -416,69 +413,62 @@ describe('tables/home.ts homeRaceAvailable', () => {
     expect(n).toBe(capacity); // the anchor's rectangle offers more than 2 usable squares
   });
 
-  it('every line it emits on the position corpus is legal end to end', () => {
-    // The blocker the M9 verifier found: `homeRaceAvailable`'s lines are
-    // injected FORCED and replayed through canonical `applyAction` (DESIGN
-    // §5.10), so an illegal line is a SILENTLY discarded home-race win. Two
-    // archived fixtures cannot see that; the whole corpus can.
-    const files = ['authored.jsonl', 'openings.jsonl', 'fuzz-1000.jsonl'];
-    const dir = path.resolve(import.meta.dirname, '../../../lab/hard-ai/positions');
+  it('every emitted commitment is canonically legal on 300 authored Phasing Prepare boards', () => {
+    const rng = seededRandom(0x4d34484f);
     const out = new Int32Array(16 * HOME_RACE_LINE_LEN);
-    let positions = 0;
     let lines = 0;
-    const illegal: string[] = [];
-    for (const file of files) {
-      for (const stored of readPositions(path.join(dir, file))) {
-        let p: PackedState;
-        try {
-          p = replica.pack(stored.state);
-        } catch {
-          continue;
-        }
-        positions++;
-        const t = level1(p);
-        const n = homeRaceAvailable(p, t, p.side, out);
-        for (let i = 0; i < n; i++) {
-          lines++;
-          const bad = replayLine(p, lineAt(out, i));
-          if (bad >= 0 && illegal.length < 10) illegal.push(`${stored.id} line ${i} word ${bad}`);
-        }
+    for (let i = 0; i < 300; i++) {
+      const state = randomState(rng, 4, { phase: 'place', white: 9, black: 9 });
+      const p = replica.pack(state);
+      const n = homeRaceAvailable(p, level1(p), p.side, out);
+      for (let j = 0; j < n; j++) {
+        const [buy, end, move] = lineAt(out, j);
+        expect([end, move]).toEqual([PA_NONE, PA_NONE]);
+        expect(replayLine(p, lineAt(out, j))).toBe(-1);
+        expect(isLegalAction(state, { type: 'BUY_UNIT', definitionId: DEF_ID[paA(buy)],
+          position: { x: paB(buy) % 10, y: Math.floor(paB(buy) / 10) } })).toBe(true);
+        lines++;
       }
     }
-    expect(positions).toBeGreaterThan(1000);
-    expect(lines).toBeGreaterThan(0);
-    expect(illegal).toEqual([]);
+    expect(lines).toBeGreaterThan(100);
   });
-});
 
-describe('tables/home.ts — SU addendum 20b archived fixture', () => {
-  const positions = readPositions(path.resolve(import.meta.dirname, '../../../lab/hard-ai/positions/authored.jsonl'));
-  const lightningDef = DEF_INDEX.get('lightning_1') as number;
+  it('a commitment occupies no live slot until the canonical next own Act, after an opponent reply', () => {
+    let state = buildState({ units: [
+      { def: 'plant_1', owner: 'white', x: 7, y: 1 },
+      { def: 'plant_1', owner: 'black', x: 9, y: 8 },
+    ], white: 3, phase: 'place', victoryRule: 'elimination' });
+    const p = replica.pack(state);
+    const out = new Int32Array(100 * HOME_RACE_LINE_LEN);
+    const n = homeRaceAvailable(p, level1(p), 0, out);
+    let buy = PA_NONE;
+    for (let i = 0; i < n; i++) if (paA(out[i * 3]) === lightningDef && paB(out[i * 3]) === 6) buy = out[i * 3];
+    expect(buy).not.toBe(PA_NONE);
+    for (const action of [
+      { type: 'BUY_UNIT' as const, definitionId: 'lightning_1', position: { x: 6, y: 0 } },
+      { type: 'END_PLACE_PHASE' as const },
+      { type: 'END_ACTION_PHASE' as const },
+      { type: 'END_PLACE_PHASE' as const },
+    ]) {
+      expect(isLegalAction(state, action)).toBe(true);
+      state = applyAction(state, action);
+      if (state.turn.currentPlayer === 'black') expect(state.board.units).toHaveLength(2);
+    }
+    expect(state.turn.currentPlayer).toBe('white');
+    expect(state.turn.phase).toBe('action');
+    expect(state.pendingSummons).toHaveLength(0);
+    const arrival = state.board.units.find(u => u.definitionId === 'lightning_1')!;
+    expect(arrival.position).toEqual({ x: 6, y: 0 });
+    expect(isLegalAction(state, { type: 'MOVE', unitId: arrival.id, to: { x: 9, y: 9 } })).toBe(true);
+  });
 
-  it('finds BUY lightning_1@G1 -> J10 at the archived "home-race" fixture', () => {
-    const stored = findPosition(positions, 'home-race');
-    const p = replica.pack(stored.state);
-    const t = level1(p);
-    const out = new Int32Array(8 * HOME_RACE_LINE_LEN);
-    const n = homeRaceAvailable(p, t, 0, out);
+  it('never duplicates an existing pending commitment', () => {
+    const state = buildState({ units: [{ def: 'plant_1', owner: 'white', x: 7, y: 1 }], white: 9,
+      phase: 'place', pendingSummons: [{ def: 'lightning_1', owner: 'white', x: 6, y: 0 }] });
+    const p = replica.pack(state);
+    const out = new Int32Array(300 * HOME_RACE_LINE_LEN);
+    const n = homeRaceAvailable(p, level1(p), 0, out);
     expect(n).toBeGreaterThan(0);
-    let found = false;
-    for (let i = 0; i < n; i++) {
-      const base = i * HOME_RACE_LINE_LEN;
-      if (paA(out[base]) === lightningDef && paB(out[base]) === sqOf(6, 0)) {
-        found = true;
-        expect(paB(out[base + 2])).toBe(CORNER[1]);
-        expect(paC(out[base + 2])).toBe(4);
-      }
-    }
-    expect(found).toBe(true);
-  });
-
-  it('finds no home race for White at the archived "promotion-kill" fixture (the window has closed)', () => {
-    const stored = findPosition(positions, 'promotion-kill');
-    const p = replica.pack(stored.state);
-    const t = level1(p);
-    const out = new Int32Array(8 * HOME_RACE_LINE_LEN);
-    expect(homeRaceAvailable(p, t, 0, out)).toBe(0);
+    for (let i = 0; i < n; i++) expect(paB(out[i * 3])).not.toBe(6);
   });
 });

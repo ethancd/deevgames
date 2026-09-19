@@ -7,12 +7,11 @@
  * §5.10's order, and returns the moment one of them is PROVEN by the canonical
  * engine:
  *
- *   1 HOME RACE with purchases (F13) — the line SU addendum 20b found and
- *     SF's must-answer layer could not: buy a tier-1 body and walk it into the
- *     enemy corner this turn. `tables/home.ts homeRaceAvailable` enumerates the
- *     lines and `gen/generate.ts` injects each one FORCED, so they are already
- *     in the candidate list; the root only has to APPLY each and ask whether
- *     the replica's home gate declared a win, then confirm it canonically.
+ *   1 HOME RACE commitments are forced delayed intent. A BUY remains pending
+ *     through the handoff; it is never a fresh live attacker. Existing units
+ *     can enter the corner during Act, and Prepare promotions can fortify an
+ *     existing occupation. Every claimed terminal still requires canonical
+ *     replay before the root returns it as proven.
  *   2 ELIMINATION-IN-1 — a lethal attack on the last enemy body.
  *   3 HOME RESCUE — when the enemy stands on my corner, the prover's own
  *     witness line. `tactics/prover.ts homeWitness` supplies it and DESIGN §2's
@@ -51,6 +50,7 @@ import { phaseEndAction } from '../../../game/legality';
 import type { AIAction } from '../../types';
 import { MATE_PLY_CC, Result, WIN_CC, type Centi, type PackedState, type Side } from '../types';
 import { PackError } from '../core/state';
+import { newKeepSetTable } from '../core/action';
 import { buildTables } from '../tables/context';
 import { PROOF_NODES, homeWitness } from '../tactics/prover';
 import { TurnFlag, type Turn } from '../gen/turn';
@@ -62,6 +62,7 @@ import type { HardConfig } from '../config';
 import { WorkClass } from './time';
 import {
   PROVER_FULL,
+  allocTurn,
   copyTurn,
   generateAt,
   iterativeDeepening,
@@ -228,7 +229,7 @@ function mustAnswer(
   return null;
 }
 
-/** At most this many candidates are canonically replayed by `pickUnsearched`.
+/** At most this many candidates are saved and canonically replayed by `pickUnsearched`.
  * The deadline has already passed when it runs, so the salvage has to be
  * bounded by something; a divergence rate that eats eight of the generator's
  * own best candidates is a replica bug, not a position. */
@@ -237,7 +238,8 @@ const SALVAGE_ATTEMPTS = 8;
 /**
  * P6. The root's answer when the DEADLINE cut the search before
  * `iterativeDeepening` completed — or even started — an iteration, and the
- * candidate list is all there is.
+ * initial candidate list is all there is. Its ranked copies survive the next
+ * generation's scratch storage; replay is deferred until salvage.
  *
  * Before this lane the root returned `phaseEndAction` here: on the two
  * measured positions the seat burned 85-180 s and then ended its turn without
@@ -255,22 +257,19 @@ const SALVAGE_ATTEMPTS = 8;
  * tie goes to the smaller canonical end key instead of to the lower index, so
  * the salvage resolves a tie the same way `search/order.ts scoreTurns` resolves
  * one at the root — by the POSITION rather than by list position. This path is
- * reachable only when the DEADLINE fired before iterative deepening started, so
- * it never runs under fixed `work` and never touches a fixed-work golden.
+ * used only when deepening has no completed or partial answer to return.
  *
- * Returns the chosen candidate's index and its verified replay, or null when
- * the list holds nothing that replays — in which case the caller still owes
- * the game a legal phase end.
+ * Returns independent copies of at most SALVAGE_ATTEMPTS ranked candidates.
+ * No score, work charge or normal-search ordering changes while saving them.
  */
-function pickUnsearched(
+function preserveUnsearched(
   s: SearchContext,
-  p: PackedState,
-  state: GameState,
   n: number,
   tieByEndKey: boolean,
-): { index: number; check: ReplayCheck } | null {
+): Turn[] {
   const turns = s.turns[0];
   const tried = new Uint8Array(n);
+  const saved: Turn[] = [];
   for (let attempt = 0; attempt < SALVAGE_ATTEMPTS; attempt++) {
     let best = -1;
     for (let i = 0; i < n; i++) {
@@ -278,10 +277,27 @@ function pickUnsearched(
       if (best < 0 || turns[i].gainCc > turns[best].gainCc) best = i;
       else if (tieByEndKey && turns[i].gainCc === turns[best].gainCc && endKeyAfter(turns[best], turns[i])) best = i;
     }
-    if (best < 0) return null;
+    if (best < 0) break;
     tried[best] = 1;
-    const check = verifyTurn(s.rep, state, p, turns[best], s.keep[0]);
-    if (check.verified) return { index: best, check };
+    // The first root iteration rewrites both turns[0] and the shared keep
+    // table. Preserve actions AND the owned mask before it can begin.
+    saved.push(copyTurn(allocTurn(), turns[best]));
+  }
+  return saved;
+}
+
+/** Verification is deferred until a search actually needs salvage. Generated
+ * upkeep actions must own their mask; a later shared table cannot supply it. */
+function pickUnsearched(
+  s: SearchContext,
+  p: PackedState,
+  state: GameState,
+  saved: readonly Turn[],
+): { turn: Turn; check: ReplayCheck } | null {
+  const noSharedChoice = newKeepSetTable();
+  for (const turn of saved) {
+    const check = verifyTurn(s.rep, state, p, turn, noSharedChoice);
+    if (check.verified) return { turn, check };
     s.stats.replicaDivergences++;
   }
   return null;
@@ -309,7 +325,7 @@ export function searchRoot(engine: RootEngine, state: GameState, opts: RootOptio
   } finally {
     s.probe = null;
   }
-  const published = probe.publish(s.rootHasBest, result.endKey);
+  const published = probe.publish(s.rootHasBest, result.endKey, result.candidateSource === 'generator-list');
   return {
     ...result,
     candidates: published.candidates,
@@ -425,31 +441,21 @@ function searchRootInner(engine: RootEngine, state: GameState, opts: RootOptions
           progress({ depth: r.depth, scoreCc: r.scoreCc, work: s.meter.used, firstAction });
         };
 
-  // P6. Whether the deadline had ALREADY passed when iterative deepening was
-  // entered, which is the only state in which `s.turns[0][0..n)` is still the
-  // list generated above: `iterativeDeepening` polls `stop()` before its first
-  // `rootIteration`, and `rootIteration`'s own `generateAt(s, p, t, 0)`
-  // OVERWRITES both that array and `s.keep[0]`. Sampled once, before the call,
-  // because `stop()` can flip inside it. Under fixed `work` it is false and
-  // everything below is the code that was always there.
-  const stoppedBeforeDeepening = s.stop();
+  // A watchdog can expire between any two polls, including before the first
+  // iteration or while its generation overwrites the initial list. Retain a
+  // bounded ranked copy regardless of the earlier poll's answer. Normal
+  // completed/partial search answers still win; verification is lazy.
+  const unsearched = preserveUnsearched(s, n, opts.config.searchFix?.tieBreak === 'end-key');
 
   const result = iterativeDeepening(s, p, onDepth);
   stats.work = s.meter.used;
 
   if (result.best === null) {
-    // P6. Nothing was searched. If the DEADLINE is what cut us — generation
-    // and the must-answer scan both abandon their loops on `s.stop()` now, so
-    // this is reachable with a full candidate list and no searched node — play
-    // the best candidate rather than ending the turn on the spot. A deadline
-    // that fired INSIDE iterative deepening is not salvaged here: that search
-    // has already regenerated the list, and its own `rootPartial` is the answer
-    // for it (`search/pvs.ts`).
-    const salvaged = stoppedBeforeDeepening
-      ? pickUnsearched(s, p, state, n, opts.config.searchFix?.tieBreak === 'end-key')
-      : null;
+    // No completed or partial answer exists. The saved candidates remain
+    // valid even if the first regeneration rewrote every scratch buffer.
+    const salvaged = pickUnsearched(s, p, state, unsearched);
     if (salvaged !== null) {
-      const turn = s.turns[0][salvaged.index];
+      const turn = salvaged.turn;
       copyTurn(s.rootBest, turn);
       s.rootHasBest = true;
       return {
@@ -462,6 +468,7 @@ function searchRootInner(engine: RootEngine, state: GameState, opts: RootOptions
         stats,
         source: 'search',
         endKey: keyHex(turn.endHi, turn.endLo),
+        ...(s.probe !== null ? { candidateSource: 'generator-list' as const } : {}),
       };
     }
     return {

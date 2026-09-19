@@ -1,54 +1,10 @@
 /**
- * The turn-generator facade (DESIGN §4.13 `gen/generate.ts`, §5.6, §5.10).
- *
- * One macro turn is: an optional `PAY_UPKEEP` keep-set, a Place-phase prefix
- * (buys and promotions, then `END_PLACE`), an action-phase line, and the turn
- * boundary. `gen/upkeep.ts`, `gen/purchase.ts` and `gen/promote.ts` own the
- * first two; `gen/actionsearch.ts` owns the third. This module drives them in
- * the order DESIGN §5.6 prints and then adds the part no beam can be trusted
- * with — the **forced injections**, eight kinds of line that belong in the
- * candidate list whether or not the beam happened to score them well:
- *
- *   1 every `homeRaceAvailable` line                         (HOME_RACE)
- *   2 every `killNow[me]` entry inside the action budget,
- *     realised by its cheapest witness                       (KILL)
- *   3 every legal home-corner entry by an existing unit      (HOME_ENTRY)
- *   4 the home-rescue witness when an enemy holds my corner  (HOME_RESCUE)
- *   5 the mine-only turn — the null-move substitute          (QUIET)
- *   6 the best pure-defence retreat                          (RETREAT)
- *   7 the best spawn-denial move                             (SPAWN_DENY)
- *   8 the best summon-and-strike                             (SUMMON_STRIKE)
- *
- * A FORCED candidate is never counted against `K`, never displaced by the beam,
- * and (at M14) never reduced or futility-pruned. Injection 5 is also why DESIGN
- * F7's "the generator can never return an empty list" holds: the mine-only turn
- * exists in every non-terminal position the mover can act in, upkeep nodes
- * included (where it is `PAY_UPKEEP` of the best-ranked keep set, then the two
- * phase terminators).
- *
- * **Injections at an upkeep node.** Injections 1-4 and 6-8 are computed from
- * `NodeTables` built for the PRE-payment position, and `PAY_UPKEEP` can release
- * bodies those tables refer to. Rather than rebuild the tables per keep set,
- * only the QUIET line is injected there; the keep-set × place-plan × action
- * beam below covers the rest, and the root's must-answer layer (§5.10, M14)
- * re-asks the tactical questions after the payment. See DEVIATIONS under M13.
- *
- * **Injection 4 and layering.** DESIGN §5.6 sources the rescue witness from
- * `tactics/prover.ts homeWitness`, but §2's layering forbids `gen` from
- * importing `tactics` (and `lab/hard-ai/deps.ts` enforces it). The witness is
- * therefore taken through `setRescueWitness`, which `search/root.ts` (M14)
- * wires to the prover; with no source installed the injection is skipped, and
- * §5.10 already has the root inject a proved rescue FORCED ahead of everything
- * else. See DEVIATIONS under M13.
- *
- * **Root versus interior.** §5.10 caps the keep-set branch at "all ≤ 64 at the
- * root, 4 at interior nodes". `GenConfig` carries no root flag, so `ply === 0`
- * is the root — the same convention the evaluator and the search use for
- * distance from the root.
- *
- * Nothing here allocates during a search: the `PlacePlan`/`PromoCandidate`
- * records, the line buffers and the two `ActionSearch` instances are built in
- * the constructor.
+ * Phasing macro generator: retain Act endpoints, then enumerate each endpoint's
+ * own upkeep and Prepare, and stop at the first END_PLACE handoff or terminal.
+ * A partial Prepare root completes its remainder without playing the opponent.
+ * Each PAY_UPKEEP turn owns a keepMask; node tables are rebuilt after Act/payment.
+ * Forced candidates cannot be displaced by ordinary beam candidates. If the
+ * fixed output is entirely forced, forcedOverflow records the explicit limit.
  */
 import {
   DEAD,
@@ -60,10 +16,10 @@ import {
   type PackedState,
   type Side,
 } from '../types';
-import { bbHas, bbNext, type BB, type Scratch } from '../core/bits';
-import { ADJ_LIST, BOARD, CORNER, RECT } from '../core/tables';
-import { powerIndex, type Catalog } from '../core/catalog';
-import { AKind, paKind, paMake, type KeepSetTable } from '../core/action';
+import { bbHas, bbNext, type Scratch } from '../core/bits';
+import { BOARD, CORNER, RECT } from '../core/tables';
+import { type Catalog } from '../core/catalog';
+import { AKind, paMake, type KeepSetTable } from '../core/action';
 import { ACTIONS_PER_TURN, Replica, newUndo, type Undo } from '../core/state';
 import { moveCost } from '../core/movement';
 import { HOME_RACE_LINE_LEN, homeRaceAvailable } from '../tables/home';
@@ -76,11 +32,12 @@ import {
   type KillOpts,
   type KillPlan,
 } from '../tables/kill';
-import type { NodeTables } from '../tables/context';
-import { TACTICAL_FLAGS, TurnFlag, turnSignature, type Turn, type TurnPool } from './turn';
+import { allocTables, buildTables, type NodeTables } from '../tables/context';
+import { pendingVoidedBy } from '../core/spawn';
+import { TACTICAL_FLAGS, TurnFlag, turnSignature, copyTurnRecord, type Turn, type TurnPool } from './turn';
 import { ActionSearch, type WithinTurnScorer, type WorkSink } from './actionsearch';
 import { PURCHASE_MAX_BODIES, newPlacePlan, planPurchases, type PlacePlan } from './purchase';
-import { newPromoCandidate, planPromotions, type PromoCandidate } from './promote';
+import { Mission, newPromoCandidate, planPromotions, type PromoCandidate } from './promote';
 import { genKeepSets } from './upkeep';
 import { TRACE_UNKNOWN, traceBuysMatch, traceCaptureLine, type GenTrace } from './trace';
 import type { ActionSearchConfig, GenConfig, PurchaseConfig } from '../config';
@@ -89,6 +46,8 @@ export type { GenConfig } from '../config';
 export type { PlacePlan } from './purchase';
 
 export interface GenStats {
+  /** Forced candidates omitted because output is all forced or the fixed pool is exhausted. */
+  forcedOverflow: number;
   placePlans: number;
   rawLines: number;
   dedupedTo: number;
@@ -107,7 +66,7 @@ export interface GenStats {
 }
 
 export function newGenStats(): GenStats {
-  return { placePlans: 0, rawLines: 0, dedupedTo: 0, nodes: 0, injected: 0, rescueCapped: 0 };
+  return { forcedOverflow: 0, placePlans: 0, rawLines: 0, dedupedTo: 0, nodes: 0, injected: 0, rescueCapped: 0 };
 }
 
 /**
@@ -126,6 +85,9 @@ export type RescueWitness = (p: PackedState, invader: Side, out: Int32Array) => 
 /** `WorkClass.PROVER` (DESIGN §4.16), spelled here so `gen` need not import
  * `search` — the convention `gen/actionsearch.ts` uses for `WorkClass.TURN`. */
 const WORK_CLASS_PROVER = 8;
+/** Existing WorkClass.KILLTABLE rate; no search-layer import into gen. */
+const WORK_CLASS_KILLTABLE = 4;
+const WORK_CLASS_GEN = 3;
 
 /**
  * E4.3 candidate A's budget for DESIGN §5.6 injection 4
@@ -189,7 +151,7 @@ export const FORCED_CAPACITY = 128;
  * DESIGN §8 fixes `keep = 4`, which fills `K = 24` only when the place phase
  * offers several plans (§5.6: `maxPlacePlans` is 16 at the root). A node with
  * ONE plan — the whole early game, where the bank cannot afford a body and
- * `finishPlacement` auto-advances straight into the action phase — would then
+ * a narrow Prepare suffix — would then
  * return four candidates against a `K` of 24 and throw away most of the beam's
  * recall. `keep` is therefore raised to `ceil(K / placePlans)`, never below
  * §8's 4 and never above this ceiling. See DEVIATIONS under M13.
@@ -213,7 +175,7 @@ const DEDUPE_SLOTS = 32768;
  * under M13.
  */
 export const REFERENCE_NODE_BUDGET = 120_000;
-/** `homeRaceAvailable` writes `[BUY, END_PLACE?, MOVE]` triples. */
+/** Delayed home-race commitments use `[BUY, PA_NONE, PA_NONE]` triples. */
 const HOME_RACE_LINES = 24;
 /** Working line buffer: the longest injection is buys + terminators + 4 actions. */
 const LINE_CAPACITY = MAX_TURN_ACTIONS;
@@ -250,6 +212,7 @@ interface Ctx {
   out: Turn[];
   stats: GenStats;
   reference: boolean;
+  flags: number;
   /** Number of candidates written so far. */
   count: number;
   /** Candidates `[0, forced)` are FORCED and are never displaced. */
@@ -313,12 +276,16 @@ export class TurnGenerator {
   private readonly killOpts: KillOpts = {
     actionBudget: ACTIONS_PER_TURN,
     crystalBudget: 0,
-    allowBuys: true,
+    allowBuys: false,
     allowPromotes: false,
+    horizon: 'current',
     maxLanes: KILL_MAX_LANES,
   };
   private readonly lineTurns: Turn[] = [];
   private readonly referenceWork = new BoundedWork(REFERENCE_NODE_BUDGET);
+  private readonly prepareTables = allocTables();
+  private readonly candidate = placeholderTurn();
+  private currentKeepMask: Uint32Array | undefined;
   private rescue: RescueWitness | null = null;
   /** E4.3 candidate A's rescue budget; `null` — no cap — on every profile. */
   private rescueCap: RescueCap | null = null;
@@ -337,7 +304,7 @@ export class TurnGenerator {
     this.referencePurchase = referencePurchaseConfig(cfg.purchase);
     const planCount = Math.max(cfg.purchase.maxPlans, REFERENCE_PLACE_PLANS) + 1;
     for (let i = 0; i < planCount; i++) this.plans.push(newPlacePlan());
-    for (let i = 0; i < Math.max(cfg.maxPromotions, 1); i++) this.promos.push(newPromoCandidate());
+    for (let i = 0; i < MAX_SLOTS; i++) this.promos.push(newPromoCandidate());
     const comboCount = Math.max(cfg.maxPlacePlans, REFERENCE_PLACE_PLANS) + planCount;
     for (let i = 0; i < comboCount; i++) this.combos.push(newPlaceCombo());
     for (let i = 0; i < REFERENCE_MAX_KEEP; i++) this.lineTurns.push(placeholderTurn());
@@ -382,8 +349,8 @@ export class TurnGenerator {
   /**
    * DESIGN §4.13's `generate`. Writes the candidate turns into `out` — forced
    * injections first, then the beam's best by within-turn score — and returns
-   * how many. `keep` receives the node's keep-set table when `p.upkeepPending`,
-   * and every `PAY_UPKEEP` in an emitted turn indexes into it.
+   * how many. Each emitted PAY_UPKEEP carries its own choice in Turn.keepMask;
+   * `keep` is scratch used while enumerating post-Act payment choices.
    *
    * The caller owns `out` (`outCapacityFor(cfg)` slots) and the `TurnPool`,
    * which it resets per node.
@@ -432,6 +399,7 @@ export class TurnGenerator {
     stats: GenStats,
     reference: boolean,
   ): number {
+    stats.forcedOverflow = 0;
     stats.placePlans = 0;
     stats.rawLines = 0;
     stats.dedupedTo = 0;
@@ -450,83 +418,100 @@ export class TurnGenerator {
       out,
       stats,
       reference,
+      flags: 0,
       count: 0,
       forced: 0,
       capacity: out.length,
       k: reference ? REFERENCE_K : this.cfg.K,
     };
 
+    if (this.trace) {
+      this.trace.k = ctx.k; this.trace.upkeepPending = p.upkeepPending;
+      this.trace.keepSetsOffered = 1; this.trace.keepSetLimit = 1;
+      this.trace.keepPresent = 1; this.trace.activeKeep = 1;
+    }
     dedupeReset();
-    const sets = p.upkeepPending === 1 ? genKeepSets(p, t, keep) : 0;
-    const tr = this.trace;
-    if (tr !== null) {
-      tr.upkeepPending = p.upkeepPending;
-      tr.keepSetsOffered = sets;
-      tr.keepSetLimit = p.upkeepPending === 1 ? (ply === 0 || reference ? sets : Math.min(sets, INTERIOR_KEEP_SETS)) : 0;
-      tr.keepPresent =
-        p.upkeepPending !== 1 || tr.targetKeepIndex < 0 ? TRACE_UNKNOWN : tr.targetKeepIndex < tr.keepSetLimit ? 1 : 0;
-      tr.activeKeep = 1;
-      tr.k = ctx.k;
-    }
-
-    // Forced injections come first, so the beam can never squeeze them out and a
-    // duplicate end position the beam rediscovers is dropped instead (§5.6).
-    this.inject(ctx, sets);
-    ctx.forced = ctx.count;
-    stats.injected = ctx.count;
-
+    this.currentKeepMask = undefined;
+    this.inject(ctx);
+    stats.injected = ctx.forced;
     this.undo.top = 0;
-    if (p.upkeepPending === 1) {
-      const limit = ply === 0 || reference ? sets : Math.min(sets, INTERIOR_KEEP_SETS);
-      for (let i = 0; i < limit; i++) {
-        if (tr !== null) tr.activeKeep = tr.targetKeepIndex < 0 || tr.targetKeepIndex === i ? 1 : 0;
-        const a = paMake(AKind.PAY_UPKEEP, i, 0, 0);
-        if (!this.rep.isLegal(p, a, keep)) continue;
-        const top = this.undo.top;
-        this.prefix[0] = a;
-        this.rep.make(p, a, this.undo, keep);
-        if (p.result === Result.ONGOING) this.expand(ctx, 1);
-        else this.recordPrefixTerminal(ctx, 1, TurnFlag.QUIET);
-        this.rep.unmake(p, this.undo);
-        this.undo.top = top;
-        if (meter.exhausted()) break;
+    if (!ctx.meter.exhausted()) {
+      if (p.phase === 1) {
+        this.tuneKeep(ctx, 1);
+        this.runSearch(ctx, 0, -1);
+      } else {
+        this.completePrepare(ctx, 0);
       }
-    } else {
-      this.expand(ctx, 0);
     }
 
+    stats.injected = ctx.forced;
     stats.dedupedTo = ctx.count;
     this.finish(ctx);
+    const tr = this.trace;
     if (tr !== null) this.traceFinal(ctx, tr);
     return ctx.count;
   }
 
   /**
-   * Builds the place plans for the state `p` is in right now (upkeep paid,
-   * `prefixLen` prefix actions applied and recorded) and runs the action search
-   * from each of them.
+   * Builds Prepare plans after the retained Act prefix and any upkeep. Each
+   * plan ends at END_PLACE or a terminal action.
    */
-  private expand(ctx: Ctx, prefixLen: number): void {
-    const { p, t } = ctx;
-    if (p.phase !== 0) {
-      // Already in the action phase: an upkeep payment that left nothing buyable
-      // or promotable auto-advances (`core/state.ts finishPlacement`).
-      ctx.stats.placePlans += 1;
-      this.tuneKeep(ctx, 1);
-      this.runSearch(ctx, prefixLen, -1);
+  private expand(ctx: Ctx, prefixLen: number, forcedOnly = false, includeBare = true): void {
+    const { p } = ctx;
+    if (p.result !== Result.ONGOING) {
+      if (!forcedOnly || includeBare) this.recordPrefixTerminal(ctx, prefixLen, 0);
+      return;
+    }
+    if (p.phase !== 0 || p.upkeepPending) throw new Error('Prepare endpoint required');
+    const t = buildTables(p, this.sc, ctx.ply, 2, this.prepareTables);
+    ctx.meter.spend(WORK_CLASS_KILLTABLE, 1);
+    ctx.t = t;
+    if (forcedOnly) {
+      // A forced Act prefix retains its bare completion and every eligible
+      // fortification suffix, not unrelated ordinary purchase combinations.
+      this.plans[0].count = 0; this.plans[0].flags = 0;
+      const n = planPromotions(p, t, 0, this.promos);
+      let plans = includeBare ? 1 : 0;
+      for (let i = 0; i < n; i++) if (this.promos[i].mission === Mission.FORTIFY) plans++;
+      ctx.stats.placePlans += plans; ctx.meter.spend(WORK_CLASS_GEN, plans);
+      if (includeBare) this.runCombo(ctx, prefixLen, { purchase: 0, promo: -1, scoreCc: 0 }, -1);
+      for (let i = 0; i < n; i++) if (this.promos[i].mission === Mission.FORTIFY) {
+        this.runCombo(ctx, prefixLen, { purchase: 0, promo: i, scoreCc: 0 }, -1);
+      }
       return;
     }
     const purchaseCfg = ctx.reference ? this.referencePurchase : this.cfg.purchase;
     const planCount = planPurchases(p, t, purchaseCfg, this.sc, ctx.ply, this.plans);
     const promoCount = planPromotions(p, t, this.cfg.maxPromotions, this.promos);
+    for (let i = 0; i < promoCount; i++) {
+      if (this.promos[i].mission === Mission.FORTIFY) {
+        this.runCombo(ctx, prefixLen, { purchase: 0, promo: i, scoreCc: 0 }, -1);
+      }
+    }
+    const races = homeRaceAvailable(p, t, p.side as Side, this.homeRace);
+    for (let i = 0; i < races; i++) {
+      const a = this.homeRace[i * HOME_RACE_LINE_LEN];
+      if (a < 0 || !this.rep.isLegal(p, a)) continue;
+      const top = this.undo.top;
+      this.prefix[prefixLen] = a;
+      this.rep.make(p, a, this.undo);
+      let applied = 1, len = prefixLen + 1;
+      if (p.result === Result.ONGOING) {
+        const end = paMake(AKind.END_PLACE);
+        this.prefix[len++] = end; this.rep.make(p, end, this.undo); applied++;
+      }
+      this.recordPrefixTerminal(ctx, len, TurnFlag.HOME_RACE | TurnFlag.PURCHASE | TurnFlag.FORCED);
+      while (applied--) this.rep.unmake(p, this.undo);
+      this.undo.top = top;
+    }
     const maxPlans = ctx.reference ? REFERENCE_PLACE_PLANS : this.cfg.maxPlacePlans;
     const comboCount = this.buildCombos(p, planCount, promoCount, maxPlans);
     ctx.stats.placePlans += comboCount;
+    ctx.meter.spend(WORK_CLASS_GEN, comboCount);
     const tr = this.trace;
     if (tr !== null && tr.activeKeep === 1) {
       this.tracePlace(tr, purchaseCfg.maxPlans, planCount, promoCount, comboCount, maxPlans);
     }
-    this.tuneKeep(ctx, comboCount);
     for (let i = 0; i < comboCount; i++) {
       this.runCombo(ctx, prefixLen, this.combos[i], i);
       if (ctx.meter.exhausted()) return;
@@ -595,16 +580,17 @@ export class TurnGenerator {
     return n;
   }
 
-  /** Applies one place plan, runs the action search from it, and unmakes. */
-  private runCombo(ctx: Ctx, prefixLen: number, combo: PlaceCombo, placeIndex: number): void {
+  /** Applies one Prepare plan through handoff, then restores its Act endpoint. */
+  private runCombo(ctx: Ctx, prefixLen: number, combo: PlaceCombo, _placeIndex: number): void {
     const { p } = ctx;
     const plan = this.plans[combo.purchase];
+    if (prefixLen + plan.count + (combo.promo >= 0 ? 1 : 0) + 1 > MAX_TURN_ACTIONS) return;
     const top = this.undo.top;
     let applied = 0;
     let len = prefixLen;
     let ok = true;
 
-    for (let i = 0; i < plan.count && ok; i++) {
+    for (let i = 0; i < plan.count && ok && p.result === Result.ONGOING; i++) {
       const a = plan.actions[i];
       if (!this.rep.isLegal(p, a)) ok = false;
       else {
@@ -613,7 +599,7 @@ export class TurnGenerator {
         applied++;
       }
     }
-    if (ok && combo.promo >= 0) {
+    if (ok && p.result === Result.ONGOING && combo.promo >= 0) {
       const a = paMake(AKind.PROMOTE, this.promos[combo.promo].slot, 0, 0);
       if (!this.rep.isLegal(p, a)) ok = false;
       else {
@@ -633,8 +619,10 @@ export class TurnGenerator {
     }
 
     if (ok) {
-      if (p.result !== Result.ONGOING) this.recordPrefixTerminal(ctx, len, plan.flags);
-      else this.runSearch(ctx, len, placeIndex);
+      const fortify = combo.promo >= 0 && this.promos[combo.promo].mission === Mission.FORTIFY;
+      this.recordPrefixTerminal(ctx, len, plan.flags | (combo.promo >= 0 ? TurnFlag.PROMOTION : 0)
+        | (fortify ? TurnFlag.HOME_FORTIFY | TurnFlag.FORCED : 0));
+      ctx.meter.spend(2, 1);
     }
     for (let i = 0; i < applied; i++) this.rep.unmake(p, this.undo);
     this.undo.top = top;
@@ -658,30 +646,74 @@ export class TurnGenerator {
     const { p, t } = ctx;
     if (p.phase !== 1 || p.result !== Result.ONGOING) return;
     const search = ctx.reference ? this.referenceSearch : this.search;
-    if (this.pool.free < (ctx.reference ? this.referenceCfg.keep : this.actionCfg.keep)) return;
     const n = search.run(p, t, this.prefix, prefixLen, placeIndex, ctx.score, ctx.meter, ctx.ply, this.lineTurns);
-    ctx.stats.rawLines += n;
-    ctx.stats.nodes += search.nodes;
-    for (let i = 0; i < n; i++) this.offer(ctx, this.lineTurns[i]);
+    ctx.stats.rawLines += n; ctx.stats.nodes += search.nodes;
+    for (let i = 0; i < n; i++) {
+      if (ctx.meter.exhausted()) break;
+      const part = this.lineTurns[i], top = this.undo.top;
+      let applied = 0;
+      ctx.flags = part.flags;
+      for (let j = 0; j < part.count; j++) {
+        const a = part.actions[j];
+        if (!this.rep.isLegal(p, a)) break;
+        this.prefix[j] = a; this.rep.make(p, a, this.undo); applied++;
+      }
+      if (applied === part.count) {
+        if (p.result !== Result.ONGOING) this.recordPrefixTerminal(ctx, part.count, 0);
+        else this.completePrepare(ctx, part.count);
+      }
+      while (applied--) this.rep.unmake(p, this.undo);
+      this.undo.top = top; ctx.t = t;
+      if (ctx.meter.exhausted() || this.pool.free === 0) break;
+    }
+    ctx.flags = 0;
+  }
+
+  /** Upkeep is chosen against this Act endpoint, never against the root. */
+  private completePrepare(ctx: Ctx, prefixLen: number, forcedOnly = false): void {
+    const p = ctx.p;
+    if (!p.upkeepPending) { this.expand(ctx, prefixLen, forcedOnly); return; }
+    const sets = genKeepSets(p, ctx.t, ctx.keep);
+    let limit = ctx.ply === 0 || ctx.reference ? sets : Math.min(sets, INTERIOR_KEEP_SETS);
+    // Payment only releases bodies. Without an existing own corner occupier
+    // no alternate payment can create a fortification; retain the bare choice.
+    const occupier = p.pieceAt[CORNER[1 - p.side]];
+    if (forcedOnly && (occupier === NO_SLOT || p.owner[occupier] !== p.side)) limit = Math.min(limit, 1);
+    if (this.trace) { this.trace.keepSetsOffered = sets; this.trace.keepSetLimit = limit; this.trace.upkeepPending = 1; }
+    const words = MAX_SLOTS >>> 5;
+    for (let i = 0; i < limit; i++) {
+      const mask = ctx.keep.masks.slice(i * words, (i + 1) * words);
+      const choice = { masks: mask, count: 1 }, a = paMake(AKind.PAY_UPKEEP, 0);
+      if (!this.rep.isLegal(p, a, choice)) continue;
+      const top = this.undo.top;
+      this.currentKeepMask = mask; this.prefix[prefixLen] = a;
+      this.rep.make(p, a, this.undo, choice);
+      this.expand(ctx, prefixLen + 1, forcedOnly, i === 0);
+      this.rep.unmake(p, this.undo); this.undo.top = top;
+      this.currentKeepMask = undefined;
+      if (ctx.meter.exhausted() || this.pool.free === 0) break;
+    }
   }
 
   /**
-   * Records a turn whose PLACE phase already ended the game — an upkeep payment
-   * that eliminated the side, a buy whose home occupation the gate proved.
-   * There is no action phase to search, but the end position is a candidate.
+   * Records the completed handoff or immediate terminal, carrying any upkeep
+   * mask owned by the currently explored Act/Prepare branch.
    */
   private recordPrefixTerminal(ctx: Ctx, prefixLen: number, flags: number): void {
     const { p } = ctx;
-    if (this.pool.free === 0) return;
-    const turn = this.pool.alloc();
+    if (prefixLen > MAX_TURN_ACTIONS) return;
+    const turn = this.candidate;
     for (let i = 0; i < prefixLen; i++) turn.actions[i] = this.prefix[i];
     turn.count = prefixLen;
+    turn.keepMask = this.currentKeepMask?.slice();
+    flags |= ctx.flags;
     turn.endLo = p.kposLo;
     turn.endHi = p.kposHi;
     turn.gainCc = ctx.score(p, this.sc, ctx.ply);
     turn.place = -1;
-    turn.flags = (flags & TACTICAL_FLAGS) === 0 ? flags | TurnFlag.QUIET : flags;
-    this.offer(ctx, turn);
+    turn.flags = (flags & TACTICAL_FLAGS) === 0 ? flags | TurnFlag.QUIET : flags & ~TurnFlag.QUIET;
+    if ((flags & TurnFlag.FORCED) !== 0) this.offerForced(ctx, turn);
+    else this.offer(ctx, turn);
   }
 
   // --- candidate bookkeeping --------------------------------------------------
@@ -703,12 +735,14 @@ export class TurnGenerator {
     const at = dedupeFind(ctx, turn);
     if (at >= 0) return;
     if (ctx.count - ctx.forced < ctx.k && ctx.count < ctx.capacity) {
+      if (this.pool.free === 0) return;
       dedupeInsert(turn, ctx.count);
-      out[ctx.count++] = turn;
+      out[ctx.count++] = copyTurnRecord(this.pool.alloc(), turn);
       return;
     }
     let worst = -1;
-    for (let i = ctx.forced; i < ctx.count; i++) {
+    for (let i = 0; i < ctx.count; i++) {
+      if ((out[i].flags & TurnFlag.FORCED) !== 0) continue;
       if (worst < 0 || out[i].gainCc < out[worst].gainCc) worst = i;
     }
     if (worst < 0 || turn.gainCc <= out[worst].gainCc) {
@@ -723,7 +757,7 @@ export class TurnGenerator {
     // skipped rather than believed, and removing it would break the linear
     // probe chains of the keys stored after it.
     dedupeInsert(turn, worst);
-    out[worst] = turn;
+    copyTurnRecord(out[worst], turn);
   }
 
   /** A forced candidate is appended unless its end position is already listed. */
@@ -737,18 +771,35 @@ export class TurnGenerator {
     }
     const at = dedupeFind(ctx, turn);
     if (at >= 0) {
+      if ((ctx.out[at].flags & TurnFlag.FORCED) === 0) ctx.forced++;
       ctx.out[at].flags |= turn.flags;
+      if ((ctx.out[at].flags & TACTICAL_FLAGS) !== 0) ctx.out[at].flags &= ~TurnFlag.QUIET;
       return;
     }
-    if (ctx.count >= ctx.capacity) return;
+    if (ctx.count >= ctx.capacity) {
+      let worst = -1;
+      for (let i = 0; i < ctx.count; i++) {
+        if ((ctx.out[i].flags & TurnFlag.FORCED) !== 0) continue;
+        if (worst < 0 || ctx.out[i].gainCc < ctx.out[worst].gainCc) worst = i;
+      }
+      if (worst < 0) { ctx.stats.forcedOverflow++; return; }
+      dedupeInsert(turn, worst); copyTurnRecord(ctx.out[worst], turn); ctx.forced++; return;
+    }
+    if (this.pool.free === 0) { ctx.stats.forcedOverflow++; return; }
     dedupeInsert(turn, ctx.count);
-    ctx.out[ctx.count++] = turn;
+    ctx.out[ctx.count++] = copyTurnRecord(this.pool.alloc(), turn);
+    ctx.forced++;
   }
 
   /** Orders the beam half best-first and signs every candidate. The dedupe map
    * indexes positions, not slots, so it is not maintained across this sort. */
   private finish(ctx: Ctx): void {
     const { p, out } = ctx;
+    let forced = 0;
+    for (let i = 0; i < ctx.count; i++) if ((out[i].flags & TurnFlag.FORCED) !== 0) {
+      const tmp = out[forced]; out[forced++] = out[i]; out[i] = tmp;
+    }
+    ctx.forced = forced;
     for (let i = ctx.forced + 1; i < ctx.count; i++) {
       const turn = out[i];
       let j = i - 1;
@@ -837,61 +888,23 @@ export class TurnGenerator {
 
   // --- forced injections -------------------------------------------------------
 
-  private inject(ctx: Ctx, keepSets: number): void {
-    const { p, t } = ctx;
+  private inject(ctx: Ctx): void {
+    const { p } = ctx;
     const side = p.side as Side;
     const cat = this.rep.cat;
     this.undo.top = 0;
 
-    if (p.upkeepPending === 1) {
-      // See the module header: the tables describe the PRE-payment position, so
-      // only the mine-only line (DESIGN F7's non-empty guarantee) is injected.
-      if (keepSets > 0) {
-        this.line[0] = paMake(AKind.PAY_UPKEEP, 0, 0, 0);
-        this.injectLine(ctx, 1, TurnFlag.QUIET);
-      }
-      // ...with ONE exception. The rescue witness is the only injection that
-      // does not read `t`: the prover runs on `p`, models the defender's upkeep
-      // itself, and hands back a line that OPENS with its own `PAY_UPKEEP`
-      // (DESIGN §4.14, §5.10 item 3). An answerable occupation arrives with the
-      // upkeep review more often than not — the defender is being asked to pay
-      // for the units it needs to clear its own corner — so skipping it here
-      // loses exactly the positions §5.10 built it for. Measured on
-      // `home-mate`: four `*-rescue` cases went from a lost corner to the
-      // witness line. Added by M14; see DEVIATIONS.
-      this.injectRescue(ctx, side);
-      return;
-    }
-
-    // 5 — the mine-only turn, first so the list is never empty even if every
-    // other injection and the beam fail (DESIGN F7).
-    this.injectQuiet(ctx);
-
-    // 1 — home race with purchases (DESIGN F13, §5.10).
-    const races = homeRaceAvailable(p, t, side, this.homeRace);
-    for (let i = 0; i < races; i++) {
-      let len = 0;
-      for (let k = 0; k < HOME_RACE_LINE_LEN; k++) {
-        const a = this.homeRace[i * HOME_RACE_LINE_LEN + k];
-        if (a >= 0) this.line[len++] = a;
-      }
-      this.injectLine(ctx, len, TurnFlag.HOME_RACE);
-    }
-
+    this.line[0] = paMake(p.phase === 1 ? AKind.END_ACTION : AKind.END_PLACE);
+    this.injectLine(ctx, p.upkeepPending ? 0 : 1, TurnFlag.QUIET);
+    if (p.phase !== 1 || p.upkeepPending) return;
     this.injectKills(ctx, side);
     this.injectHomeEntries(ctx, cat, side);
     this.injectRescue(ctx, side);
     this.injectRetreat(ctx, cat, side);
     this.injectDenial(ctx, cat, side);
-    this.injectSummonStrike(ctx, cat, side);
+    this.injectDisrupt(ctx, side);
   }
 
-  private injectQuiet(ctx: Ctx): void {
-    let len = 0;
-    if (ctx.p.phase === 0) this.line[len++] = paMake(AKind.END_PLACE, 0, 0, 0);
-    this.line[len++] = paMake(AKind.END_ACTION, 0, 0, 0);
-    this.injectLine(ctx, len, TurnFlag.QUIET);
-  }
 
   /** Injection 2: every enemy the side can already remove, cheapest witness first. */
   private injectKills(ctx: Ctx, side: Side): void {
@@ -900,63 +913,32 @@ export class TurnGenerator {
     if (budget <= 0) return;
     this.killOpts.actionBudget = budget;
     this.killOpts.crystalBudget = p.bank[side];
-    this.killOpts.allowBuys = p.phase === 0;
+    this.killOpts.allowBuys = false;
+    this.killOpts.allowPromotes = false;
+    this.killOpts.horizon = 'current';
     for (let victim = 0; victim < MAX_SLOTS; victim++) {
       const vs = p.sq[victim];
       if (vs === DEAD || p.owner[victim] === side) continue;
       const entry = t.killNow[side].entry[victim];
       if (entry.minActions === KILL_IMPOSSIBLE || entry.minActions > budget) continue;
       if (!minActionsToKill(p, t, side, victim, this.killOpts, this.sc, ctx.ply, this.killPlan)) continue;
-      // A promote-then-kill plan names no slot to promote; the place plans (and
-      // `gen/promote.ts`'s KILL mission) cover that case.
+      // Current Act witnesses must name live attackers without preparation.
       if (this.killPlan.needsPromo === 1) continue;
       this.injectKillPlan(ctx, victim, this.killPlan);
     }
   }
 
-  /**
-   * Turns one `KillPlan` into a dispatchable line: the plan's purchases, the
-   * phase terminator, then per lane a move onto the lane square and the blow. A
-   * line the replica will not accept end to end is dropped — the beam still
-   * sees the position, and a forced line that cannot be played is worse than
-   * none.
-   */
+  /** Replays a current live-attacker witness; future pending lanes are never BUYs. */
   private injectKillPlan(ctx: Ctx, victim: number, plan: KillPlan): void {
     const { p } = ctx;
     const victimSq = p.sq[victim];
     let len = 0;
-    let buys = 0;
+    if (p.phase !== 1) return;
     for (let i = 0; i < KILL_MAX_LANES; i++) {
-      const attacker = plan.attackers[i];
-      if (attacker === KILL_NO_ATTACKER || attacker >= 0) continue;
-      const at = plan.spawnAt[i];
-      if (at < 0 || len >= LINE_CAPACITY) return;
-      this.line[len++] = paMake(AKind.BUY, -attacker - 1, at, 0);
-      buys++;
-    }
-    if (p.phase === 0) {
-      if (len >= LINE_CAPACITY) return;
-      this.line[len++] = paMake(AKind.END_PLACE, 0, 0, 0);
-    } else if (buys > 0) {
-      return;
-    }
-    // `make`'s BUY handler claims the lowest DEAD slot, in order, so a
-    // purchase's slot is predictable before anything is applied.
-    let nextSlot = 0;
-    for (let i = 0; i < KILL_MAX_LANES; i++) {
-      const attacker = plan.attackers[i];
-      if (attacker === KILL_NO_ATTACKER) continue;
-      let slot: number;
-      let from: number;
-      if (attacker < 0) {
-        while (nextSlot < MAX_SLOTS && p.sq[nextSlot] !== DEAD) nextSlot++;
-        if (nextSlot >= MAX_SLOTS) return;
-        slot = nextSlot++;
-        from = plan.spawnAt[i];
-      } else {
-        slot = attacker;
-        from = p.sq[slot];
-      }
+      const slot = plan.attackers[i];
+      if (slot === KILL_NO_ATTACKER) continue;
+      if (slot < 0 || p.sq[slot] === DEAD) return;
+      const from = p.sq[slot];
       const lane = plan.lanes[i];
       if (lane >= 0 && from !== lane) {
         if (len >= LINE_CAPACITY) return;
@@ -1034,22 +1016,9 @@ export class TurnGenerator {
     }
     const n = source(p, (1 - side) as Side, this.witnessLine);
     if (n <= 0) return;
-    // The witness carries its own place-phase structure — promotions, then
-    // `END_PLACE` when the phase will not auto-advance (DESIGN §4.14) — so
-    // prepending one here would end the place phase BEFORE those promotions and
-    // `injectLine` would drop the line at the first illegal action. Prepend only
-    // when the witness brought no place-phase actions of its own; an `END_PLACE`
-    // the replica refuses is skipped either way. (Added by M14; see DEVIATIONS.)
-    let carriesPlace = false;
-    for (let i = 0; i < n; i++) {
-      const kind = paKind(this.witnessLine[i]);
-      if (kind === AKind.END_PLACE || kind === AKind.PROMOTE || kind === AKind.BUY) {
-        carriesPlace = true;
-        break;
-      }
-    }
+    // Phasing witnesses are Act-only. The central completion path adds the
+    // mover's END_ACTION, upkeep and Prepare boundary.
     let len = 0;
-    if (p.phase === 0 && !carriesPlace) this.line[len++] = paMake(AKind.END_PLACE, 0, 0, 0);
     for (let i = 0; i < n && len < LINE_CAPACITY; i++) this.line[len++] = this.witnessLine[i];
     this.injectLine(ctx, len, TurnFlag.HOME_RESCUE);
   }
@@ -1140,124 +1109,57 @@ export class TurnGenerator {
     this.injectLine(ctx, len, TurnFlag.SPAWN_DENY);
   }
 
-  /**
-   * Injection 8: buy a body that one-shots an adjacent enemy the moment it
-   * lands (SU §2.5). The reference generator emits every such witness (F25),
-   * production the most valuable one.
-   */
-  private injectSummonStrike(ctx: Ctx, cat: Catalog, side: Side): void {
-    const { p, t } = ctx;
-    if (p.phase !== 0) return;
-    const legal: BB = t.spawn[side].legal;
-    const bank = p.bank[side];
-    let bestDef = -1;
-    let bestSq = -1;
-    let bestVictim = -1;
-    let bestValue = -0x7fffffff;
-    for (let ti = 0; ti < cat.tier1.length; ti++) {
-      const def = cat.tier1[ti];
-      if (cat.cost[def] > bank) continue;
-      for (let q = bbNext(legal, -1); q >= 0; q = bbNext(legal, q)) {
-        const base = q * 4;
-        for (let k = 0; k < 4; k++) {
-          const adj = ADJ_LIST[base + k];
-          if (adj < 0) continue;
-          const victim = p.pieceAt[adj];
-          if (victim === NO_SLOT || p.owner[victim] === side) continue;
-          const need = Math.max(0, cat.def[p.defId[victim]] - p.damage[victim]);
-          if (cat.power[powerIndex(side, def, p.defId[victim])] < need) continue;
-          if (ctx.reference) {
-            this.emitSummonStrike(ctx, def, q, adj);
-            continue;
-          }
-          const value = (cat.cost[p.defId[victim]] - cat.cost[def]) * 100;
-          if (value > bestValue) {
-            bestValue = value;
-            bestDef = def;
-            bestSq = q;
-            bestVictim = adj;
-          }
+  private injectDisrupt(ctx: Ctx, side: Side): void {
+    const p = ctx.p, enemy = (1 - side) as Side;
+    let best = -1, bestCount = 0, bestCost = 5, bestFrom = 101, bestTo = 101;
+    for (let slot = 0; slot < MAX_SLOTS; slot++) {
+      if (p.sq[slot] === DEAD || p.owner[slot] !== side) continue;
+      ctx.meter.spend(2);
+      if (ctx.meter.exhausted()) break;
+      const row = ctx.t.dist.get(p, p.sq[slot]);
+      for (let q = 0; q < BOARD; q++) {
+        const cost = moveCost(row, q, this.rep.cat.spd[p.defId[slot]]);
+        if (cost <= 0 || cost > p.actions) continue;
+        const count = pendingVoidedBy(p, enemy, q);
+        if (count === 0) continue;
+        if (count > bestCount || (count === bestCount && (cost < bestCost ||
+          (cost === bestCost && (p.sq[slot] < bestFrom || (p.sq[slot] === bestFrom && q < bestTo)))))) {
+          best = paMake(AKind.MOVE, slot, q, cost); bestCount = count;
+          bestCost = cost; bestFrom = p.sq[slot]; bestTo = q;
         }
       }
     }
-    if (ctx.reference || bestDef < 0) return;
-    this.emitSummonStrike(ctx, bestDef, bestSq, bestVictim);
-  }
-
-  private emitSummonStrike(ctx: Ctx, def: number, at: number, victimSq: number): void {
-    const { p } = ctx;
-    let slot = 0;
-    while (slot < MAX_SLOTS && p.sq[slot] !== DEAD) slot++;
-    if (slot >= MAX_SLOTS) return;
-    this.line[0] = paMake(AKind.BUY, def, at, 0);
-    this.line[1] = paMake(AKind.END_PLACE, 0, 0, 0);
-    this.line[2] = paMake(AKind.ATTACK, slot, victimSq, 0);
-    this.injectLine(ctx, 3, TurnFlag.SUMMON_STRIKE);
+    if (best >= 0) { this.line[0] = best; this.injectLine(ctx, 1, TurnFlag.DISRUPT); }
   }
 
   /**
-   * Replays `line[0..len)` through the replica, appending `END_PLACE` /
-   * `END_ACTION` as needed, and records the result as a FORCED candidate. A
-   * PHASE TERMINATOR the replica rejects (an `END_PLACE` the buy already
-   * auto-advanced past) is skipped rather than fatal, so a line stays usable
-   * when only its padding was wrong; any other rejection, or a line that
-   * reaches no turn boundary, discards the line.
+   * Replay a forced Act prefix, then use the same upkeep/Prepare path as the
+   * beam. Only its first ranked keep choice gets the bare forced completion;
+   * all considered keep choices can contribute eligible HOME_FORTIFY suffixes.
    */
   private injectLine(ctx: Ctx, len: number, flags: number): void {
-    const { p } = ctx;
-    if (len === 0 || this.pool.free === 0) return;
-    const side = p.side;
-    const turnNumber = p.turnNumber;
-    const top = this.undo.top;
-    let applied = 0;
-    let written = 0;
-    const turn = this.pool.alloc();
-    const done = (): boolean => p.result !== Result.ONGOING || p.side !== side || p.turnNumber !== turnNumber;
-
-    let ok = true;
-    for (let i = 0; i < len && !done(); i++) {
-      const a = this.line[i];
-      if (!this.rep.isLegal(p, a, ctx.keep)) {
-        const kind = paKind(a);
-        if (kind === AKind.END_PLACE || kind === AKind.END_ACTION) continue;
-        ok = false;
-        break;
-      }
-      turn.actions[written++] = a;
-      this.rep.make(p, a, this.undo, ctx.keep);
-      applied++;
+    const p = ctx.p;
+    const side = p.side, top = this.undo.top, oldTables = ctx.t, oldFlags = ctx.flags;
+    const oldMask = this.currentKeepMask;
+    this.currentKeepMask = undefined; ctx.flags = flags | TurnFlag.FORCED;
+    let applied = 0, written = 0, ok = true;
+    const done = () => p.result !== Result.ONGOING || p.side !== side;
+    const apply = (a: number) => {
+      if (written >= MAX_TURN_ACTIONS || !this.rep.isLegal(p, a, ctx.keep)) return false;
+      this.prefix[written++] = a;
+      this.rep.make(p, a, this.undo, ctx.keep); applied++; return true;
+    };
+    for (let i = 0; i < len && !done(); i++) if (!apply(this.line[i])) { ok = false; break; }
+    if (ok && !done() && p.phase === 1) ok = apply(paMake(AKind.END_ACTION));
+    if (ok) {
+      if (done()) this.recordPrefixTerminal(ctx, written, 0);
+      else this.completePrepare(ctx, written, true);
     }
-    if (ok && !done() && p.phase === 0) {
-      const a = paMake(AKind.END_PLACE, 0, 0, 0);
-      if (this.rep.isLegal(p, a, ctx.keep)) {
-        turn.actions[written++] = a;
-        this.rep.make(p, a, this.undo, ctx.keep);
-        applied++;
-      }
-    }
-    if (ok && !done() && p.phase === 1) {
-      const a = paMake(AKind.END_ACTION, 0, 0, 0);
-      if (this.rep.isLegal(p, a, ctx.keep)) {
-        turn.actions[written++] = a;
-        this.rep.make(p, a, this.undo, ctx.keep);
-        applied++;
-      } else {
-        ok = false;
-      }
-    }
-    if (ok && done()) {
-      turn.count = written;
-      turn.endLo = p.kposLo;
-      turn.endHi = p.kposHi;
-      turn.gainCc = ctx.score(p, this.sc, ctx.ply);
-      turn.place = -1;
-      turn.hangCc = 0;
-      turn.flags = flags | TurnFlag.FORCED;
-      this.offerForced(ctx, turn);
-    }
-    for (let i = 0; i < applied; i++) this.rep.unmake(p, this.undo);
-    this.undo.top = top;
+    while (applied--) this.rep.unmake(p, this.undo);
+    this.undo.top = top; ctx.t = oldTables; ctx.flags = oldFlags;
+    this.currentKeepMask = oldMask;
   }
+
 }
 
 /** Index of the listed candidate with this end position, or -1. */

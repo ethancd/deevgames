@@ -389,3 +389,25 @@ Paths: `muju/docs/changes/`
 
 Disposition: pending. Evidence: —
 
+
+## Codex continuity addendum — M4 and A2, 2026-09-19
+
+The isolated codex/phasing-m4 branch above M2 integration0ecd0f9d completes the
+scoped macro/search/table/Prepare implementation. Final default active Hard and
+relevant M2 lab regressions:829 passed,0 failed,0 skipped across67files; six final
+type configurations, dependency scan and DAG check passed. Independent final
+canonical acceptance:44 roots,3380 complete candidates,18029 actions/state
+comparisons,3380 full unmakes,44 actual Hard results,4 rejected detector faults,
+zero failures/drift. Explicit forced overflow on five roots remains bounded
+generation, not completeness. A final deadline-race correction preserves owned
+initial macros through stopped regeneration. Evidence, failed diagnostics and
+every affected DAG disposition are in docs/changes/m4-search-2026-09-19/; detailed
+contract/limits in docs/hard-ai/phasing/M4-STATUS.md. M5/M6 and Hard acceptance
+remain pending, so the overall hard-ai and release nodes are not closed.
+
+The separate A2 V2 baseline full row completed1024 games at fixed32f83b88.
+Independent audit passed167863 actions/168887 frames with0 issues, but Gate1
+FAILED: Expand h0 inactivity/strength and medium h3 strength. The result is valid
+and preserved, with no retuning, rerun, pooling or relaxed criteria. All Phasing
+release guards remain closed. No deployment, M8 cutover or production storage
+change is included in this continuation.

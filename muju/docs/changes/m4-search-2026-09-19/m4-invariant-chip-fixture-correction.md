@@ -1,0 +1,11 @@
+# Invariant 8/9 fixture correction
+
+2026-09-19. Parent assigned only `muju/tests/ai/hard/invariants.test.ts` after the broad active regression. Original evidence is preserved at `work/m4-active-regression-1/tests.json`: JSON `success:false`, 822 passed / 4 failed / 6 failed-suite metric / 0 pending. The owned failure was line168, expected invariant8 true after the legacy “kill available” chip fixture.
+
+Cause: the supposed lethal Metal-I actor already had `atkCount:1` and `lastAttackKilled:false`. It is tier I and its nonlethal attack closes its attack chain. Current-horizon kill tables now correctly honor that eligibility; they must not reset it into a hypothetical fresh attack. The old row also fabricated Black Prepare rather than a Phasing handoff. No runtime defect or runtime lease is requested.
+
+Replaced only that test body plus necessary canonical imports. It now authors a White Act with a Water-I chipper adjacent to a durable Black Metal-III target, and an optional distinct unused White Fire-I adjacent to Black Fire-I. A legal nonlethal chip is applied canonically, spent eligibility and target damage are asserted, then END_ACTION/END_PLACE produce the actual Black full-Act handoff and heal Black's surviving damage. White's real nonlethal-attack flags remain.
+
+Positive branch separately replays the unused Fire-I's legal lethal alternative and verifies the named target disappears while another Black body survives. It still requires invariant8 true / invariant9 false. Negative branch has only the spent chipper, proves every own attacker ineligible and repeat chip illegal, and still requires 8 false / 9 true. Quiet control uses the same positive board without a chip and requires both false. No assertion was weakened, no phase was mechanically relabeled, and no historical corpus or engine result was used to choose the fixture.
+
+Ready file SHA256: `f624b7f4cb19ebfad6d698c52e4dcb11876d650b89beccd7ce5c44e77f8a0ab2`. `git diff --check -- muju/tests/ai/hard/invariants.test.ts` passed in the checkout. An initial diff-check command ran from the outer workspace and returned “not a git repository”; it was corrected without file changes. No engine, canonical probe or test execution has been run by this agent; parent owns the coordinated verification. Other invariant semantics and the M6 eval port remain outside this bounded correction.

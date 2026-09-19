@@ -34,7 +34,8 @@ import { HardEngine, MIN_PROFILE_SAMPLE_MS, MIN_PROFILE_SAMPLE_WORK } from '../.
 import { applyAction } from '../../../src/ai/simulate';
 import { isLegalAction } from '../../../src/game/legality';
 import { WORK_LADDER, chooseWork } from '../../../src/ai/hard/search/time';
-import { DESKTOP } from '../../../src/ai/hard/config';
+import * as searchTime from '../../../src/ai/hard/search/time';
+import { DESKTOP, type HardConfig } from '../../../src/ai/hard/config';
 import type { GameState } from '../../../src/game/types';
 import type { AIAction } from '../../../src/ai/types';
 import { buildState } from './game-fixture';
@@ -62,15 +63,20 @@ const MIDGAME: GameState = buildState({
   ],
 });
 
-/** The canonical replay every caller does: each action legal at the moment it
- * is dispatched (`useAI.ts`, `lab/hard-ai/bots/hard.ts`). */
-function replaysLegally(state: GameState, actions: readonly AIAction[]): boolean {
+/** A Phasing macro stops at the first handoff or terminal, after completing
+ * the mover's Act and Prepare. Legality alone would accept END_ACTION without
+ * the required Prepare suffix. */
+function replaysCompleteTurn(state: GameState, actions: readonly AIAction[]): boolean {
   let current = state;
+  const mover = state.turn.currentPlayer;
   for (const action of actions) {
+    if (current.phase !== 'playing' || current.turn.currentPlayer !== mover) return false;
     if (!isLegalAction(current, action)) return false;
     current = applyAction(current, action);
   }
-  return true;
+  return current.phase === 'victory' || (
+    current.turn.currentPlayer !== mover && current.turn.phase === 'action' && current.turn.actionsRemaining === 4
+  );
 }
 
 /** Takes the JIT and the lazy table allocation out of the measured search;
@@ -105,17 +111,64 @@ describe('searchTurn deadlineMs', () => {
     // `phaseEndAction` — so a cut search never hands back nothing.
     expect(result.actions.length).toBeGreaterThan(0);
     expect(result.fallback).toBeUndefined();
-    expect(replaysLegally(MIDGAME, result.actions)).toBe(true);
+    expect(replaysCompleteTurn(MIDGAME, result.actions)).toBe(true);
   });
 
-  it('returns the last completed iteration once one fits inside the deadline', async () => {
-    const engine = new HardEngine();
-    await warm(engine);
-    const result = await engine.searchTurn(MIDGAME, { targetMs: 3000, deadlineMs: 600 });
+  it('returns the last completed Phasing iteration when the deadline cuts the next one', async () => {
+    // The historical test assumed the full MIDGAME tree completed depth1 in
+    // 600 real ms. That is a throughput claim, not the deadline contract.
+    // Keep the real watchdog and its unchanged 600 ms allowance, but advance
+    // its clock deterministically after depth1 and two nodes of depth2.
+    const state = buildState({ reserves: new Array(100).fill(0), units: [
+      { def: 'fire_1', owner: 'white', x: 2, y: 2 },
+      { def: 'plant_1', owner: 'black', x: 7, y: 7 },
+    ] });
+    const gen = { ...DESKTOP.gen, K: 4, maxPlacePlans: 1,
+      action: { ...DESKTOP.gen.action, widths: Int32Array.of(2, 1, 1, 1), keep: 4 } };
+    const config: Partial<HardConfig> = { gen, genInterior: gen,
+      quiesce: { ...DESKTOP.quiesce, maxPly: 0 },
+      useExtensions: false, useAspiration: false, useLmr: false, useFutility: false };
+    const baselineEngine = new HardEngine({ ...config, maxDepth: 1 });
+    const work = chooseWork(baselineEngine.profile, 3000);
+    const baseline = await baselineEngine.searchTurn(state, { work });
+    expect(baseline.depth).toBe(1);
+    expect(baseline.stats.stopReason).toBe('complete');
+    expect(baselineEngine.ctx.truncated).toBe(false);
+    expect(baseline.fallback).toBeUndefined();
+    expect(replaysCompleteTurn(state, baseline.actions)).toBe(true);
 
-    expect(result.depth).toBeGreaterThanOrEqual(1);
-    expect(result.actions.length).toBeGreaterThan(0);
-    expect(replaysLegally(MIDGAME, result.actions)).toBe(true);
+    const engine = new HardEngine({ ...config, maxDepth: 2 });
+    const depths: number[] = [];
+    let firstNodes = -1;
+    let expired = false;
+    const clock = vi.spyOn(searchTime, 'now').mockImplementation(() => {
+      if (firstNodes >= 0 && engine.ctx.stats.nodes >= firstNodes + 2) expired = true;
+      return expired ? 10_600 : 10_000;
+    });
+    try {
+      const result = await engine.searchTurn(state, {
+        targetMs: 3000, deadlineMs: 600,
+        onProgress: progress => {
+          depths.push(progress.depth);
+          if (progress.depth === 1) firstNodes = engine.ctx.stats.nodes;
+        },
+      });
+      expect(expired).toBe(true);
+      expect(depths).toEqual([1]);
+      expect(result.stats.nodes).toBeGreaterThanOrEqual(firstNodes + 2);
+      expect(result.stats.stopReason).toBe('abort');
+      expect(result.stats.elapsedMs).toBe(600);
+      expect(engine.ctx.truncated).toBe(true);
+      expect(engine.ctx.meter.limit).toBe(work);
+      expect(result.depth).toBe(1);
+      expect(result.fallback).toBeUndefined();
+      expect(result.actions).toEqual(baseline.actions);
+      expect(result.scoreCc).toBe(baseline.scoreCc);
+      expect(result.endKey).toBe(baseline.endKey);
+      expect(replaysCompleteTurn(state, result.actions)).toBe(true);
+    } finally {
+      clock.mockRestore();
+    }
   });
 
   it('leaves the TARGET rung alone: the deadline moves the watchdog only', async () => {

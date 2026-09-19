@@ -45,7 +45,8 @@
  * The action budget follows `NodeTables`' convention for `killNow` (DESIGN
  * §4.8): the side to move has the actions it actually has left, the other side
  * is assumed to arrive with a full turn. Likewise the `canAttack` flags only
- * gate the side to move — the other side's flags reset at its `startTurn`.
+ * gate every current-horizon unit. Only explicit nextAct resets them. For
+ * the mover's next Act, the defender has healed at its intervening turn start.
  */
 import {
   ACTIONS_PER_TURN,
@@ -56,6 +57,7 @@ import {
   F_LAST_KILLED,
   MAX_SLOTS,
   NO_SLOT,
+  PEND_STRIDE,
   type DefId,
   type PackedState,
   type Side,
@@ -70,6 +72,7 @@ import {
   bbHas,
   bbIsEmpty,
   bbNext,
+  bbNew,
   bbOr,
   bbSet,
   bbZero,
@@ -77,7 +80,8 @@ import {
   type Scratch,
 } from '../core/bits';
 import { activeCatalog, powerIndex, type Catalog } from '../core/catalog';
-import { newSpawnInfo, spawnInfo } from '../core/spawn';
+import { nextActProjection } from '../core/spawn';
+import { bfsFrom } from '../core/movement';
 import { ADJ, MANHATTAN } from '../core/tables';
 import type { NodeTables } from './context';
 
@@ -106,10 +110,10 @@ const SC_ACC = 3;
 const SC_FRONTIER = 4;
 const SC_VISITED = 5;
 const SC_NEXT = 6;
-/** `sc.i8(ply, BUY_DIST)`: multi-source distances from the attacker's spawn mask. */
-const BUY_DIST = 0;
-
-const SC_SPAWN = newSpawnInfo();
+const PENDING = bbNew();
+const PROJECTED_OCC = bbNew();
+const PRECEDING_ENEMY = bbNew();
+const PROJECTED_DIST = new Int8Array(100);
 const SCRATCH_RESULT = newApproachResult();
 
 export function newApproachResult(): ApproachResult {
@@ -121,7 +125,9 @@ export function newApproachResult(): ApproachResult {
  *
  * `defId` is optional and additive to DESIGN §4.10's signature: lethality
  * decides whether the target's square is vacated before the retreat test, and
- * a purchase has no unit on the board to read a definition from. It defaults
+ * this low-level geometric query may explicitly model an empty origin. That
+ * optional definition is a hypothetical what-if, not a legal purchase or
+ * promotion. approachTable only passes actual or valid paid-arrival bodies. It defaults
  * to the definition of whatever stands on `attackerSq`, and to "assume the
  * target survives" when the square is empty.
  */
@@ -134,8 +140,9 @@ export function classifyApproach(
   sc: Scratch,
   ply: number,
   defId: DefId = -1,
+  horizon: 'current' | 'nextAct' = 'current',
 ): ApproachResult {
-  return classifyApproachInto(p, t, attackerSq, speed, targetSlot, sc, ply, defId, newApproachResult());
+  return classifyApproachInto(p, t, attackerSq, speed, targetSlot, sc, ply, defId, newApproachResult(), horizon);
 }
 
 /** Allocation-free `classifyApproach`: writes into `out` and returns it. */
@@ -149,6 +156,7 @@ export function classifyApproachInto(
   ply: number,
   defId: DefId,
   out: ApproachResult,
+  horizon: 'current' | 'nextAct' = 'current',
 ): ApproachResult {
   out.cls = Approach.NONE;
   out.d = -1;
@@ -165,88 +173,72 @@ export function classifyApproachInto(
 
   const cat = activeCatalog();
   const def = defId >= 0 ? defId : standing !== NO_SLOT ? p.defId[standing] : -1;
-  if (standing !== NO_SLOT && attacker === p.side && !attackerReady(p, standing, def, cat)) return out;
+  if (horizon === 'current' && standing !== NO_SLOT && !attackerReady(p, standing, def, cat)) return out;
 
-  const dist = t.dist.get(p, attackerSq);
-  return classifyFrom(p, t, dist, attackerSq, speed, targetSlot, def, sc, ply, cat, livingCount(p, defender), out);
+  const future = horizon === 'nextAct';
+  if (future) {
+    nextActProjection(p, attacker, PENDING, PROJECTED_OCC, PRECEDING_ENEMY);
+    bfsFrom(PROJECTED_OCC, attackerSq, PROJECTED_DIST);
+  }
+  const dist = future ? PROJECTED_DIST : t.dist.get(p, attackerSq);
+  const budget = future ? ACTIONS_PER_TURN : attacker === p.side ? (p.phase === 0 ? 0 : p.actions) : ACTIONS_PER_TURN;
+  return classifyFrom(p, t, dist, attackerSq, speed, targetSlot, def, sc, ply, cat, livingCount(p, defender) + (future ? bbCount(PRECEDING_ENEMY) : 0), out,
+    future ? PROJECTED_OCC : p.occ, budget, future ? t.exposure[attacker] : t.strike[defender],
+    future && attacker === p.side ? 0 : p.damage[targetSlot]);
 }
 
-/**
- * The cheapest lethal enemy attacker of every slot `defender` owns (DESIGN
- * §4.8's `approach`/`retreats`). Attackers are the enemy's existing units,
- * their affordable promoted forms, and every affordable tier-1 purchase placed
- * on the enemy's cheapest legal spawn square. Slots the defender does not own
- * keep `Approach.NONE` and `0`.
- */
+/** Cheapest lethal approach per defender slot. Current uses only actual
+ * ready bodies; nextAct also resolves already-paid arrivals, with one shared
+ * simultaneous occupancy. Hypothetical purchases/promotions are excluded. */
 export function approachTable(
-  p: PackedState,
-  t: NodeTables,
-  defender: Side,
-  sc: Scratch,
-  ply: number,
-  outClass: Uint8Array,
-  outRetreats: Uint8Array,
+  p: PackedState, t: NodeTables, defender: Side, sc: Scratch, ply: number,
+  outClass: Uint8Array, outRetreats: Uint8Array,
+  horizon: 'current' | 'nextAct' = 'current',
 ): void {
   outClass.fill(Approach.NONE);
   outRetreats.fill(0);
   const cat = activeCatalog();
   const attacker = (1 - defender) as Side;
-  const bank = p.bank[attacker];
-  const budget = attacker === p.side ? p.actions : ACTIONS_PER_TURN;
+  const future = horizon === 'nextAct';
+  const budget = future ? ACTIONS_PER_TURN : attacker === p.side ? (p.phase === 0 ? 0 : p.actions) : ACTIONS_PER_TURN;
   if (budget < 1) return;
   const maxMoves = budget - 1;
-
-  const defenderUnits = livingCount(p, defender);
-
-  spawnInfo(p, attacker, SC_SPAWN);
-  const canBuy = !bbIsEmpty(SC_SPAWN.legal);
-  let buyDist: Int8Array | null = null;
-  if (canBuy) {
-    buyDist = sc.i8(ply, BUY_DIST);
-    t.dist.multi(p, SC_SPAWN.legal, buyDist);
+  if (future) {
+    nextActProjection(p, attacker, PENDING, PROJECTED_OCC, PRECEDING_ENEMY);
   }
-
+  const defenderUnits = livingCount(p, defender) + (future ? bbCount(PRECEDING_ENEMY) : 0);
+  const occ = future ? PROJECTED_OCC : p.occ;
+  const covered = future ? t.exposure[attacker] : t.strike[defender];
   const res = SCRATCH_RESULT;
   for (let v = 0; v < MAX_SLOTS; v++) {
     const targetSq = p.sq[v];
     if (targetSq === DEAD || p.owner[v] !== defender) continue;
     const targetDef = p.defId[v];
-    const effDef = cat.def[targetDef] - p.damage[v];
-
+    const targetDamage = future && attacker === p.side ? 0 : p.damage[v];
+    const effDef = cat.def[targetDef] - targetDamage;
     resetBest();
-
     for (let a = 0; a < MAX_SLOTS; a++) {
       const from = p.sq[a];
       if (from === DEAD || p.owner[a] !== attacker) continue;
-      const existing = p.defId[a];
-      const promoted = cat.nextDef[existing];
-      const promoAffordable = promoted >= 0 && cat.promoCost[existing] > 0 && cat.promoCost[existing] <= bank;
-      let dist: Int8Array | null = null;
-
-      for (let form = 0; form < 2; form++) {
-        const def = form === 0 ? existing : promoted;
-        if (form === 1 && !promoAffordable) continue;
+      const def = p.defId[a];
+      if (cat.power[powerIndex(attacker, def, targetDef)] < effDef) continue;
+      if (!future && !attackerReady(p, a, def, cat)) continue;
+      const speed = cat.spd[def];
+      if (MANHATTAN[from * 100 + targetSq] > speed * maxMoves + 1) continue;
+      if (future) bfsFrom(occ, from, PROJECTED_DIST);
+      const dist = future ? PROJECTED_DIST : t.dist.get(p, from);
+      classifyFrom(p, t, dist, from, speed, v, def, sc, ply, cat, defenderUnits, res, occ, budget, covered, targetDamage);
+      considerCandidate(res, 0, a);
+    }
+    if (future) {
+      for (let q = bbNext(PENDING, -1); q >= 0; q = bbNext(PENDING, q)) {
+        const def = p.pendDef[attacker * PEND_STRIDE + q] - 1;
         if (cat.power[powerIndex(attacker, def, targetDef)] < effDef) continue;
-        if (attacker === p.side && !attackerReady(p, a, def, cat)) continue;
-        const speed = cat.spd[def];
-        if (MANHATTAN[from * 100 + targetSq] > speed * maxMoves + 1) continue;
-        if (dist === null) dist = t.dist.get(p, from);
-        classifyFrom(p, t, dist, from, speed, v, def, sc, ply, cat, defenderUnits, res);
-        considerCandidate(res, 0, a);
+        bfsFrom(occ, q, PROJECTED_DIST);
+        classifyFrom(p, t, PROJECTED_DIST, q, cat.spd[def], v, def, sc, ply, cat, defenderUnits, res, occ, budget, covered, targetDamage);
+        considerCandidate(res, 1, q);
       }
     }
-
-    if (canBuy && buyDist !== null) {
-      for (let i = 0; i < cat.tier1.length; i++) {
-        const def = cat.tier1[i];
-        if (cat.cost[def] > bank) continue;
-        if (cat.power[powerIndex(attacker, def, targetDef)] < effDef) continue;
-        const speed = cat.spd[def];
-        classifyFrom(p, t, buyDist, -1, speed, v, def, sc, ply, cat, defenderUnits, res);
-        considerCandidate(res, 1, i);
-      }
-    }
-
     outClass[v] = BEST.cls;
     outRetreats[v] = BEST.retreats > 255 ? 255 : BEST.retreats;
   }
@@ -307,6 +299,10 @@ function classifyFrom(
    * (attacker, form) and the scan is over all `MAX_SLOTS`. */
   defenderUnits: number,
   out: ApproachResult,
+  occupancy: BB,
+  budget: number,
+  covered: BB,
+  targetDamage: number,
 ): ApproachResult {
   out.cls = Approach.NONE;
   out.d = -1;
@@ -318,15 +314,14 @@ function classifyFrom(
   if (targetSq === DEAD) return out;
   const defender = p.owner[targetSlot] as Side;
   const attacker = (1 - defender) as Side;
-  const budget = attacker === p.side ? p.actions : ACTIONS_PER_TURN;
   if (budget < 1) return out;
 
   const targetDef = p.defId[targetSlot];
-  const lethal = def >= 0 && cat.power[powerIndex(attacker, def, targetDef)] >= cat.def[targetDef] - p.damage[targetSlot];
+  const lethal = def >= 0 && cat.power[powerIndex(attacker, def, targetDef)] >= cat.def[targetDef] - targetDamage;
   const decisive = lethal && defenderUnits === 1;
 
   const candidates = sc.bb(ply, SC_CANDIDATES);
-  bbAndNot(candidates, ADJ[targetSq], p.occ);
+  bbAndNot(candidates, ADJ[targetSq], occupancy);
   if (originSq >= 0 && bbHas(ADJ[targetSq], originSq)) bbSet(candidates, originSq);
 
   // E3.2 B6 (`config.ts EvalFix.approachTieOrder`, OFF by default): the
@@ -369,7 +364,7 @@ function classifyFrom(
     let retreats = 0;
     if (speed > 0 && !decisive && left >= 1) {
       const after = sc.bb(ply, SC_AFTER);
-      bbCopy(after, p.occ);
+      bbCopy(after, occupancy);
       if (originSq >= 0) clearSquare(after, originSq);
       bbSet(after, q);
       if (lethal) clearSquare(after, targetSq);
@@ -377,7 +372,7 @@ function classifyFrom(
       bbAndNot(free, ADJ[q], after);
       if (!bbIsEmpty(free)) {
         cls = Approach.RETREAT;
-        retreats = countRetreats(q, speed, after, t.strike[defender], sc, ply);
+        retreats = countRetreats(q, speed, after, covered, sc, ply);
       }
     }
 

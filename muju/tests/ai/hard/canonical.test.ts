@@ -11,11 +11,10 @@
  * differs".
  */
 import { describe, expect, it, vi } from 'vitest';
-import path from 'node:path';
 import { createInitialGameState } from '../../../src/game/board';
 import type { GameState } from '../../../src/game/types';
 import { MAX_SLOTS, NO_SLOT, Result, type PackedState } from '../../../src/ai/hard/types';
-import { AKind, newKeepSetTable, paMake, paA, paB, paKind, type PA } from '../../../src/ai/hard/core/action';
+import { AKind, paMake, paA, paB, paKind, type PA } from '../../../src/ai/hard/core/action';
 import { Replica, allocState, newUndo } from '../../../src/ai/hard/core/state';
 import { Scratch, bbNew, bbNext } from '../../../src/ai/hard/core/bits';
 import {
@@ -31,14 +30,11 @@ import {
 } from '../../../src/ai/hard/gen/actionsearch';
 import { TurnFlag, TurnPool, type Turn } from '../../../src/ai/hard/gen/turn';
 import { activeCatalog } from '../../../src/ai/hard/core/catalog';
-import { readPositions } from '../../../lab/hard-ai/positions/corpus';
 import { buildState } from './game-fixture';
 
 // E0.5 timeout budget: slowest test 0.7 s in the 2026-09-15 survey (M2 Max, load ~5, maxWorkers 2); 10 s is this file's explicit ceiling.
 vi.setConfig({ testTimeout: 10_000 });
 
-const CORPUS_DIR = path.resolve(import.meta.dirname, '../../../lab/hard-ai/positions');
-const CANONICAL_FIXTURES = path.join(CORPUS_DIR, 'canonical-fixtures.jsonl');
 
 const UNBOUNDED = new Int32Array([1 << 24, 1 << 24, 1 << 24, 1 << 24]);
 
@@ -63,28 +59,14 @@ interface Prepared {
   prefixLen: number;
 }
 
-/** Packs `state` and walks the minimal place-phase prefix so `p` is in the action phase. */
+/** These are Act-prefix tests; full macro completion is covered by the facade. */
 function prepare(state: GameState): Prepared {
   const rep = new Replica();
   const p = rep.pack(state, allocState());
-  const undo = newUndo();
-  const keep = newKeepSetTable();
-  const prefix = new Int32Array(8);
-  let prefixLen = 0;
-  if (p.upkeepPending === 1) {
-    rep.genKeepSets(p, keep);
-    const a = paMake(AKind.PAY_UPKEEP, 0, 0, 0);
-    prefix[prefixLen++] = a;
-    rep.make(p, a, undo, keep);
-  }
-  if (p.phase === 0) {
-    const a = paMake(AKind.END_PLACE, 0, 0, 0);
-    prefix[prefixLen++] = a;
-    rep.make(p, a, undo, keep);
-  }
   expect(p.phase).toBe(1);
+  expect(p.upkeepPending).toBe(0);
   expect(p.result).toBe(Result.ONGOING);
-  return { rep, p, prefix, prefixLen };
+  return { rep, p, prefix: new Int32Array(0), prefixLen: 0 };
 }
 
 function searchFor(prepared: Prepared, ttBits: number, keep = 0): ActionSearch {
@@ -282,36 +264,51 @@ describe('TurnTT (DESIGN §5.3 C2)', () => {
 });
 
 describe('set equality of end positions (the M11 gate, in miniature)', () => {
-  it('reproduces ET §1.4 on the initial position: 22,725 sequences, 797 ends, 1,053 mid-turn states', () => {
-    const prepared = prepare(createInitialGameState());
+  it('preserves the exhaustive Phasing initial Act-end set, with and without the turn TT', () => {
+    // Historical Standard ET pins were 22,725 sequences / 797 ends / 1,053
+    // nodes. They remain history, not asserted as new Phasing measurements.
+    const prepared = prepare(createInitialGameState(undefined, 4, 0, 'phasing'));
     const naive = naiveEndSet(prepared);
-    expect(naive.sequences).toBe(22725);
-    expect(naive.keys.size).toBe(797);
-
+    expect(naive.keys.size).toBeGreaterThan(0);
+    expect(naive.sequences).toBeGreaterThan(naive.keys.size);
     const canon = canonicalEndSet(prepared, 0);
     expect([...canon.keys].sort()).toEqual([...naive.keys].sort());
-
     const withTt = canonicalEndSet(prepared, 20);
     expect([...withTt.keys].sort()).toEqual([...naive.keys].sort());
-    expect(withTt.search.nodes).toBe(1053);
-    // DESIGN §5.3's collapse: 14,959 canonical-engine sequences -> 1,053.
-    expect(naive.sequences / withTt.search.nodes).toBeGreaterThan(10);
+    expect(withTt.search.nodes).toBeLessThan(naive.sequences);
   });
 
-  it('holds on every canonical fixture, with and without the turn TT', () => {
-    const fixtures = readPositions(CANONICAL_FIXTURES);
-    expect(fixtures.map(f => f.id)).toEqual([
-      'f1-step-aside-initial',
-      'f1-muju-e5-hi-f4',
-      'canonical-kill-then-move-through-victim',
-      'canonical-move-then-kill',
-    ]);
-    for (const fixture of fixtures) {
-      const prepared = prepare(fixture.state);
-      const naive = naiveEndSet(prepared);
-      expect(naive.keys.size, `${fixture.id}: naive reached no end position`).toBeGreaterThan(0);
-      expect([...canonicalEndSet(prepared, 0).keys].sort(), `${fixture.id} (TT off)`).toEqual([...naive.keys].sort());
-      expect([...canonicalEndSet(prepared, 18).keys].sort(), `${fixture.id} (TT on)`).toEqual([...naive.keys].sort());
+  it('preserves authored Phasing corridor, capture, terminal and pending/clock Act-end sets', () => {
+    const fixtures = [
+      buildState({ actions: 2, units: [
+        { def: 'fire_1', owner: 'white', x: 5, y: 5 },
+        { def: 'plant_1', owner: 'white', x: 5, y: 4 },
+        { def: 'water_1', owner: 'black', x: 9, y: 9 },
+      ] }),
+      buildState({ actions: 2, units: [
+        { def: 'fire_1', owner: 'white', x: 4, y: 4 },
+        { def: 'plant_1', owner: 'white', x: 3, y: 4 },
+        { def: 'lightning_1', owner: 'black', x: 5, y: 4 },
+        { def: 'water_1', owner: 'black', x: 9, y: 9 },
+      ] }),
+      buildState({ actions: 2, units: [
+        { def: 'fire_1', owner: 'white', x: 4, y: 4 },
+        { def: 'plant_1', owner: 'white', x: 1, y: 1 },
+        { def: 'lightning_1', owner: 'black', x: 5, y: 4 },
+      ] }),
+      buildState({ actions: 2, inactivityPlies: 9, pendingSummons: [
+        { def: 'plant_1', owner: 'black', x: 8, y: 9 },
+      ], units: [
+        { def: 'plant_1', owner: 'white', x: 2, y: 2 },
+        { def: 'plant_1', owner: 'white', x: 3, y: 2 },
+        { def: 'water_1', owner: 'black', x: 9, y: 9 },
+      ] }),
+    ];
+    for (const [i, state] of fixtures.entries()) {
+      const prepared = prepare(state), naive = naiveEndSet(prepared);
+      expect(naive.keys.size, `fixture ${i}`).toBeGreaterThan(0);
+      expect([...canonicalEndSet(prepared, 0).keys].sort(), `fixture ${i}, TT off`).toEqual([...naive.keys].sort());
+      expect([...canonicalEndSet(prepared, 18).keys].sort(), `fixture ${i}, TT on`).toEqual([...naive.keys].sort());
     }
   });
 
@@ -320,9 +317,11 @@ describe('set equality of end positions (the M11 gate, in miniature)', () => {
     // Black unit. C1 prunes that order in favour of "kill, then move" — which
     // cannot exist, because the kill ends the turn. The pruned child must
     // still be applied and recorded.
-    const fixture = readPositions(CANONICAL_FIXTURES).find(f => f.id === 'canonical-move-then-kill');
-    if (!fixture) throw new Error('canonical-move-then-kill missing');
-    const prepared = prepare(fixture.state);
+    const prepared = prepare(buildState({ actions: 2, units: [
+      { def: 'fire_1', owner: 'white', x: 4, y: 4 },
+      { def: 'plant_1', owner: 'white', x: 1, y: 1 },
+      { def: 'lightning_1', owner: 'black', x: 5, y: 4 },
+    ] }));
     const move = findAction(prepared, AKind.MOVE, 1, sq(1, 2)); // Muju B2 -> B3
     const moveFoot = footprint(prepared.p, prepared.rep.dist, move, bbNew());
     const undo = newUndo();
@@ -356,7 +355,9 @@ describe('ActionSearch.run (DESIGN §5.4)', () => {
     const prepared = prepare(fixtureState);
     const pool = new TurnPool(8);
     const search = new ActionSearch(prepared.rep, { widths: UNBOUNDED, keep: 4, ttBits: 18 }, pool, new Scratch(1, 1, 1, 1));
-    const prefix = Int32Array.from([paMake(AKind.END_PLACE, 0, 0, 0)]);
+    const prefix = Int32Array.from([findAction(prepared, AKind.MOVE, 1, sq(6, 5))]);
+    const prefixUndo = newUndo();
+    prepared.rep.make(prepared.p, prefix[0], prefixUndo);
     const out: Turn[] = [];
     // Score by the mover's material so the ordering has something to rank on.
     const n = search.run(
@@ -365,7 +366,7 @@ describe('ActionSearch.run (DESIGN §5.4)', () => {
       prefix,
       1,
       7,
-      p => p.materialCc[1 - p.side] - p.materialCc[p.side],
+      p => p.materialCc[0] - p.materialCc[1],
       UNLIMITED_WORK,
       0,
       out,
@@ -381,6 +382,7 @@ describe('ActionSearch.run (DESIGN §5.4)', () => {
     }
     // The best line takes the free kill, so at least one kept turn is tactical.
     expect(out.slice(0, n).some(t => (t.flags & TurnFlag.KILL) !== 0)).toBe(true);
+    prepared.rep.unmake(prepared.p, prefixUndo);
   });
 
   it('widening bounds the branching without touching the turn boundary', () => {
@@ -410,7 +412,7 @@ describe('ActionSearch.run (DESIGN §5.4)', () => {
   });
 
   it('enumerateAll aborts with -1 once maxCalls is spent', () => {
-    const prepared = prepare(createInitialGameState());
+    const prepared = prepare(createInitialGameState(undefined, 4, 0, 'phasing'));
     let ends = 0;
     const result = prepared.rep && searchFor(prepared, 0).enumerateAll(
       prepared.p,
@@ -422,7 +424,8 @@ describe('ActionSearch.run (DESIGN §5.4)', () => {
       10,
     );
     expect(result).toBe(-1);
-    expect(ends).toBeLessThan(22725);
+    // Compare the bounded prefix to this ruleset's own complete enumeration.
+    expect(ends).toBeLessThan(naiveEndSet(prepared).sequences);
   });
 
   it('rejects a prefix that leaves no room for the action phase', () => {

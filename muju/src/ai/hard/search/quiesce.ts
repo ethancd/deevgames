@@ -3,7 +3,7 @@
  *
  * At depth 0 the position is still allowed to be in the middle of a fight, so
  * the search keeps going — but only through turns that CHANGE the fight:
- * `KILL | HOME_ENTRY | HOME_RESCUE | HOME_RACE | SUMMON_STRIKE` (F24 keeps
+ * `KILL | HOME_ENTRY | HOME_RESCUE | HOME_RACE | HOME_FORTIFY` (F24 keeps
  * "voids or restores an anchor" out; an anchor void is an ordering bonus, not
  * a reason to extend). Stand-pat makes it safe to let income keep accruing
  * inside the search (JS §4.2 shows the alternative — freezing the economy
@@ -49,7 +49,7 @@ export type { QuiesceConfig } from '../config';
 export const QUIESCE_SHARE_NUM = 34;
 export const QUIESCE_SHARE_DEN = 100;
 
-/** DESIGN §4.16: `KILL | HOME_ENTRY | HOME_RESCUE | HOME_RACE | SUMMON_STRIKE`.
+/** DESIGN §4.16: `KILL | HOME_ENTRY | HOME_RESCUE | HOME_RACE | HOME_FORTIFY`.
  * `p` is accepted for the signature DESIGN prints; the classification is a pure
  * function of the flags `gen/actionsearch.ts` already recorded for the turn. */
 export function isTacticalTurn(p: PackedState, t: Turn): boolean {
@@ -71,13 +71,16 @@ export function isTacticalTurn(p: PackedState, t: Turn): boolean {
  *
  * `SearchContext.quiesceWork` therefore accumulates `meter.used` across each
  * TOP-LEVEL quiescence subtree (`qply === 0`, so nested calls are counted once)
- * and the cap is on that. It is strictly stronger than the literal reading,
+ * and the cap is on that. While a subtree is active the checks also include
+ * its in-flight meter delta; recursive children cannot all spend the same
+ * unaccounted allowance. It is strictly stronger than the literal reading,
  * dimensionally correct, and still a pure function of the work counters — so
  * it costs the search nothing in determinism. See DEVIATIONS under M14.
  */
-function quiesceCapped(s: SearchContext): boolean {
+function quiesceCapped(s: SearchContext, rootWorkStart: number): boolean {
   if (!s.quiesceCapOn) return false;
-  return s.quiesceWork * QUIESCE_SHARE_DEN >= s.meter.limit * QUIESCE_SHARE_NUM;
+  const spent = s.quiesceWork + s.meter.used - rootWorkStart;
+  return spent * QUIESCE_SHARE_DEN >= s.meter.limit * QUIESCE_SHARE_NUM;
 }
 
 /**
@@ -94,7 +97,7 @@ function quiesceCapped(s: SearchContext): boolean {
  * candidate set is unchanged — every turn this skips would have been filtered
  * out by `isTacticalTurn` anyway.
  *
- * SUMMON_STRIKE is covered by `killNow`, which is built with `allowBuys: true`.
+ * HOME_FORTIFY is relevant whenever an enemy home is occupied.
  */
 function hasTacticalPotential(p: PackedState, t: NodeTables, mover: Side): boolean {
   const table = t.killNow[mover];
@@ -122,10 +125,18 @@ export function quiesce(
   beta: Centi,
   ply: number,
   qply: number,
+  rootWorkStart = s.meter.used,
 ): Centi {
-  if (qply !== 0) return quiesceNode(s, p, alpha, beta, ply, qply);
+  if (qply !== 0) return quiesceNode(s, p, alpha, beta, ply, qply, rootWorkStart);
+  // Once the allowance is spent, this is an ordinary static leaf: do not
+  // start another quiescence subtree merely to stand pat. Evaluation keeps
+  // all of its normal EVAL meter charges. Work already spent inside an entered
+  // subtree is never clipped or reassigned out of quiesceWork.
+  if (quiesceCapped(s, rootWorkStart)) {
+    return terminalScore(p, p.side as Side, ply) ?? evaluateLeaf(s, p, alpha, beta, ply);
+  }
   const before = s.meter.used;
-  const value = quiesceNode(s, p, alpha, beta, ply, qply);
+  const value = quiesceNode(s, p, alpha, beta, ply, qply, rootWorkStart);
   s.quiesceWork += s.meter.used - before;
   return value;
 }
@@ -137,6 +148,7 @@ function quiesceNode(
   beta: Centi,
   ply: number,
   qply: number,
+  rootWorkStart: number,
 ): Centi {
   s.meter.spend(WorkClass.QUIESCE);
   s.stats.qnodes++;
@@ -148,7 +160,7 @@ function quiesceNode(
   const standPat = evaluateLeaf(s, p, alpha, beta, ply);
   if (qply >= s.cfg.quiesce.maxPly) return standPat;
   if (ply + 1 >= s.maxPly) return standPat;
-  if (quiesceCapped(s)) return standPat;
+  if (quiesceCapped(s, rootWorkStart)) return standPat;
   if (standPat >= beta) return beta;
   if (standPat > alpha) alpha = standPat;
 
@@ -158,10 +170,12 @@ function quiesceNode(
   s.meter.spend(WorkClass.KILLTABLE);
 
   const mover = p.side as Side;
-  if (!hasTacticalPotential(p, t, mover)) return alpha;
+  if (quiesceCapped(s, rootWorkStart) || !hasTacticalPotential(p, t, mover)) return alpha;
 
-  const generated = generateAt(s, p, t, ply, s.genQuiesce);
-  if (generated === 0) return alpha;
+  const generated = generateAt(s, p, t, ply, s.genQuiesce, () => quiesceCapped(s, rootWorkStart));
+  // A policy-capped list is discarded whole: this node stands pat under the
+  // ordinary quiescence allowance, never searches a partial tactical list.
+  if (quiesceCapped(s, rootWorkStart) || generated === 0) return alpha;
 
   // Compact the tactical turns to the front, preserving generator order, and
   // keep at most `maxCandidates` of them.
@@ -184,6 +198,7 @@ function quiesceNode(
   const margin = s.cfg.quiesce.deltaMarginCc;
 
   for (let i = 0; i < count; i++) {
+    if (quiesceCapped(s, rootWorkStart)) break;
     const turn = turns[i];
     if (standPat + gain + margin < alpha) continue;
     p.proverMode = PROVER_BOUND;
@@ -195,7 +210,7 @@ function quiesceNode(
     let score: Centi;
     const childTerminal = terminalScore(p, mover, ply + 1);
     if (childTerminal !== null) score = childTerminal;
-    else score = -quiesce(s, p, -beta, -alpha, ply + 1, qply + 1);
+    else score = -quiesce(s, p, -beta, -alpha, ply + 1, qply + 1, rootWorkStart);
     unmakeTurn(s, p, applied);
     if (score >= beta) return beta;
     if (score > alpha) alpha = score;

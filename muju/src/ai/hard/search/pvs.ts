@@ -1,3 +1,4 @@
+import { keepForTurn, copyTurnRecord } from '../gen/turn';
 /**
  * Iterative-deepening principal-variation search over macro turns
  * (DESIGN §4.16 `pvs.ts`, §5.11.1–§5.11.3, §5.11.6).
@@ -26,7 +27,7 @@
  * `useDfpn`) all default OFF at M14; M16/M17 turn them on behind their own
  * SPRT gates (DESIGN §5.11.5).
  */
-import { MATE_PLY_CC, MAX_TURN_ACTIONS, WIN_CC, type Centi, type PackedState, type Side } from '../types';
+import { MATE_PLY_CC, MAX_TURN_ACTIONS, Result, WIN_CC, type Centi, type PackedState, type Side } from '../types';
 import type { Scratch } from '../core/bits';
 import type { Catalog } from '../core/catalog';
 import type { KeepSetTable } from '../core/action';
@@ -317,16 +318,7 @@ export function allocTurn(): Turn {
 }
 
 export function copyTurn(dst: Turn, src: Turn): Turn {
-  dst.actions.set(src.actions.subarray(0, src.count));
-  dst.count = src.count;
-  dst.endLo = src.endLo;
-  dst.endHi = src.endHi;
-  dst.sig = src.sig;
-  dst.flags = src.flags;
-  dst.gainCc = src.gainCc;
-  dst.place = src.place;
-  dst.hangCc = src.hangCc;
-  return dst;
+  return copyTurnRecord(dst, src);
 }
 
 /**
@@ -345,16 +337,27 @@ export function copyTurn(dst: Turn, src: Turn): Turn {
 export const PROVER_FULL = 2;
 export const PROVER_BOUND = 1;
 
+/** Numeric macro TT values describe full Act boundaries, never partial roots. */
+export function macroTtEligible(p: PackedState): boolean {
+  return p.phase === 1 && p.actions === 4 && p.upkeepPending === 0 && p.progress === 0;
+}
+
 export function makeTurn(s: SearchContext, p: PackedState, t: Turn, keep: KeepSetTable): number {
   const proverBefore = s.rep.fullProverCalls;
+  const mover = p.side;
+  keep = keepForTurn(t, keep);
   let applied = 0;
   for (let i = 0; i < t.count; i++) {
     const a = t.actions[i];
-    if (!s.rep.isLegal(p, a, keep)) break;
+    if (p.result !== Result.ONGOING || p.side !== mover || !s.rep.isLegal(p, a, keep)) break;
     s.rep.make(p, a, s.undo, keep);
     applied++;
   }
   chargeProver(s, proverBefore);
+  if (applied === t.count && p.result === Result.ONGOING && (p.side === mover || p.phase !== 1 || p.actions !== 4)) {
+    unmakeTurn(s, p, applied);
+    return 0;
+  }
   return applied;
 }
 
@@ -440,11 +443,13 @@ export function evaluateLeaf(s: SearchContext, p: PackedState, alpha: Centi, bet
 class StopAwareSink implements WorkSink {
   private base: WorkSink = UNLIMITED_WORK;
   private stopFn: () => boolean = NEVER_STOP;
+  private policyStop: () => boolean = NEVER_STOP;
   private stopped = false;
 
-  arm(base: WorkSink, stopFn: () => boolean): this {
+  arm(base: WorkSink, stopFn: () => boolean, policyStop: () => boolean = NEVER_STOP): this {
     this.base = base;
     this.stopFn = stopFn;
+    this.policyStop = policyStop;
     this.stopped = false;
     return this;
   }
@@ -456,9 +461,8 @@ class StopAwareSink implements WorkSink {
   exhausted(): boolean {
     if (this.base.exhausted()) return true;
     if (this.stopped) return true;
-    if (!this.stopFn()) return false;
-    this.stopped = true;
-    return true;
+    if (this.stopFn()) { this.stopped = true; return true; }
+    return this.policyStop();
   }
 
   /** True when the LAST armed generation was cut by `stop()` rather than by
@@ -489,14 +493,21 @@ export function generateAt(
   t: NodeTables,
   ply: number,
   generator?: TurnGenerator,
+  // A local selective-search allowance; the caller must discard a cut list.
+  policyStop: () => boolean = NEVER_STOP,
 ): number {
   const gen = generator ?? (ply === 0 ? s.gen : s.genInterior);
+  const dst = s.turns[ply];
+  // The generator must see the capacity the consumer can actually retain.
+  // Otherwise a larger root-sized scratch list silently loses forced interior
+  // candidates when copied into the shorter per-ply list.
+  s.genOut.length = dst.length;
   s.pool.reset();
   // `ActionSearch` applies actions through `Replica.make`; the caller's mode
   // must be in force for the whole generation, not only for the first line.
   s.scoreMover = p.side as Side;
   const proverBefore = s.rep.fullProverCalls;
-  const raw = gen.generate(p, t, s.score, GEN_SINK.arm(s.meter, s.stop), ply, s.keep[ply], s.genOut, s.genStats);
+  const raw = gen.generate(p, t, s.score, GEN_SINK.arm(s.meter, s.stop, policyStop), ply, s.keep[ply], s.genOut, s.genStats);
   countProver(s, proverBefore);
   // A generation the DEADLINE cut leaves a PARTIAL candidate list, and a node
   // that searches a partial list must not publish its value to the
@@ -508,10 +519,9 @@ export function generateAt(
   // REFUSED by `searchFix.rescueCap` also leaves a partial candidate list —
   // the forced rescue line is missing from it — so the same rule applies. 0 in
   // every generation with the flag absent (`gen/generate.ts RescueCap`).
-  if (s.genStats.rescueCapped > 0) s.truncated = true;
-  // DESIGN §5.11.6 charges `GEN` per place plan.
-  if (s.genStats.placePlans > 0) s.meter.spend(WorkClass.GEN, s.genStats.placePlans);
-  const dst = s.turns[ply];
+  if (s.genStats.rescueCapped > 0 || s.genStats.forcedOverflow > 0) s.truncated = true;
+  // GEN is charged when Prepare plans are constructed, so the generator can
+  // poll the complete work cost before starting another endpoint.
   const n = raw < dst.length ? raw : dst.length;
   for (let i = 0; i < n; i++) copyTurn(dst[i], s.genOut[i]);
   // E2 lane 1's ply-1 trace: which list the search consults at the OPPONENT'S
@@ -563,7 +573,7 @@ export function pvs(
   let tables: NodeTables | null = null;
 
   let ttEntry: TTEntry | null = null;
-  if (s.useTT && s.tt.probe(p.kposLo, p.kposHi, s.ttScratch)) {
+  if (s.useTT && macroTtEligible(p) && s.tt.probe(p.kposLo, p.kposHi, s.ttScratch)) {
     const e = s.ttScratch;
     e.scoreCc = scoreFromTT(e.scoreCc, ply);
     ttEntry = e;
@@ -594,7 +604,7 @@ export function pvs(
   if (s.cfg.useExtensions && (minTurnsToCorner(p, t, mover) <= 1 || minTurnsToCorner(p, t, other) <= 1)) ext = 1;
 
   if (
-    s.cfg.useDfpn &&
+    s.cfg.useDfpn && macroTtEligible(p) &&
     s.dfpnOut !== null &&
     depth >= 3 &&
     (minTurnsToCorner(p, t, mover) <= 3 || minTurnsToCorner(p, t, other) <= 3) &&
@@ -605,7 +615,7 @@ export function pvs(
     if (verdict.proof === DfpnProof.PROVEN) {
       const mate = WIN_CC - ply * MATE_PLY_CC;
       s.proof.put(p.kposLo, p.kposHi, ProofValue.MATE);
-      if (s.useTT) s.tt.store(p.kposLo, p.kposHi, mate, depth, Bound.EXACT, 0, ply, nodeProverMode === PROVER_BOUND);
+      if (s.useTT && macroTtEligible(p)) s.tt.store(p.kposLo, p.kposHi, mate, depth, Bound.EXACT, 0, ply, nodeProverMode === PROVER_BOUND);
       return mate;
     }
     if (verdict.proof === DfpnProof.DISPROVEN) s.proof.put(p.kposLo, p.kposHi, ProofValue.DISPROVEN);
@@ -685,7 +695,7 @@ export function pvs(
   // `s.truncated` and not just the local flag: a child that stopped part way
   // handed this node a partial value, and `best` is only as sound as the worst
   // of them (DESIGN §5.11.6's watchdog "can only truncate").
-  if (s.useTT && !s.truncated) {
+  if (s.useTT && macroTtEligible(p) && !s.truncated) {
     const bound = best <= originalAlpha ? Bound.UPPER : best >= beta ? Bound.LOWER : Bound.EXACT;
     s.tt.store(p.kposLo, p.kposHi, best, depth, bound, bestEnd, ply, nodeProverMode === PROVER_BOUND);
   }
@@ -731,7 +741,7 @@ function rootIteration(s: SearchContext, p: PackedState, depth: number, alpha: C
   s.meter.spend(WorkClass.KILLTABLE);
 
   let ttEntry: TTEntry | null = null;
-  if (s.useTT && s.tt.probe(p.kposLo, p.kposHi, s.ttScratch)) {
+  if (s.useTT && macroTtEligible(p) && s.tt.probe(p.kposLo, p.kposHi, s.ttScratch)) {
     s.ttScratch.scoreCc = scoreFromTT(s.ttScratch.scoreCc, 0);
     ttEntry = s.ttScratch;
   }
@@ -739,6 +749,17 @@ function rootIteration(s: SearchContext, p: PackedState, depth: number, alpha: C
   const probe = s.probe;
   const iterationStartedAt = probe === null ? 0 : s.meter.used;
   const n = generateAt(s, p, t, 0);
+  // Generation may latch the watchdog after rewriting the initial list.
+  // Do not start ordering or another child after that deadline. The root owns
+  // a separate complete fallback; a completed earlier depth remains preferred.
+  if (s.stop()) {
+    s.truncated = true;
+    if (probe !== null) {
+      probe.beginIteration(depth, s.turns[0], n, iterationStartedAt);
+      probe.endIteration(false, true, -1, s.meter.used);
+    }
+    return { score: 0, bestIndex: -1, completed: false };
+  }
   if (n === 0) {
     if (probe !== null) probe.traceEmpty(depth);
     return { score: evaluateLeaf(s, p, alpha, beta, 0), bestIndex: -1, completed: true };
@@ -820,7 +841,7 @@ function rootIteration(s: SearchContext, p: PackedState, depth: number, alpha: C
     return { score: evaluateLeaf(s, p, alpha, beta, 0), bestIndex: -1, completed: true };
   }
   if (probe !== null) probe.endIteration(completed, s.truncated, bestIndex, s.meter.used);
-  if (s.useTT && completed && !s.truncated) {
+  if (s.useTT && macroTtEligible(p) && completed && !s.truncated) {
     s.tt.store(p.kposLo, p.kposHi, best, depth, Bound.EXACT, bestIndex >= 0 ? turns[bestIndex].endLo : 0, 0);
   }
   if (!pvWatch) return { score: best, bestIndex, completed };
@@ -975,6 +996,7 @@ export function iterativeDeepening(
       }
     }
     if (s.stop()) {
+      s.truncated = true;
       s.stats.stopReason = 'abort';
       break;
     }

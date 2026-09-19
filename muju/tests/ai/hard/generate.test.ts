@@ -19,7 +19,7 @@ import { DEF_INDEX } from '../../../src/ai/hard/core/catalog';
 import { CORNER } from '../../../src/ai/hard/core/tables';
 import { allocTables, buildTables, type NodeTables } from '../../../src/ai/hard/tables/context';
 import { Evaluator, terminalScore } from '../../../src/ai/hard/eval/evaluate';
-import { TurnFlag, TurnPool, type Turn } from '../../../src/ai/hard/gen/turn';
+import { TurnFlag, TurnPool, keepForTurn, type Turn } from '../../../src/ai/hard/gen/turn';
 import { UNLIMITED_WORK } from '../../../src/ai/hard/gen/actionsearch';
 import {
   TurnGenerator,
@@ -83,12 +83,13 @@ function replay(p: PackedState, turn: Turn): { lo: number; hi: number; legal: bo
   const turnNumber = p.turnNumber;
   let applied = 0;
   let legal = true;
+  const choice = keepForTurn(turn, keep);
   for (let i = 0; i < turn.count; i++) {
-    if (!rep.isLegal(p, turn.actions[i], keep)) {
+    if (!rep.isLegal(p, turn.actions[i], choice)) {
       legal = false;
       break;
     }
-    rep.make(p, turn.actions[i], undo, keep);
+    rep.make(p, turn.actions[i], undo, choice);
     applied++;
   }
   const ended = p.result !== Result.ONGOING || p.side !== side || p.turnNumber !== turnNumber;
@@ -118,7 +119,7 @@ function quiet(extra: UnitSpec[] = [], overrides: Record<string, unknown> = {}):
 
 describe('gen/generate.ts TurnGenerator.generate (DESIGN §5.6)', () => {
   it('every candidate replays legally and reaches the end position it claims', () => {
-    for (const state of [createInitialGameState(), quiet(), quiet([], { white: 40 })]) {
+    for (const state of [createInitialGameState(undefined, 4, 0, 'phasing'), quiet(), quiet([], { white: 40 })]) {
       const { p, turns } = generate(state);
       expect(turns.length).toBeGreaterThan(0);
       for (const turn of turns) {
@@ -173,8 +174,8 @@ describe('gen/generate.ts TurnGenerator.generate (DESIGN §5.6)', () => {
     for (let i = 1; i < beam.length; i++) expect(beam[i - 1].gainCc).toBeGreaterThanOrEqual(beam[i].gainCc);
   });
 
-  it('injects every home-race line as FORCED (DESIGN F13)', () => {
-    // A White anchor on H9 with a Radi affordable: BUY + MOVE reaches J10.
+  it('injects delayed home-race commitments as FORCED', () => {
+    // A White anchor on H9 can commit a Radi for a future corner arrival.
     const { turns } = generate(
       buildState({
         units: [
@@ -200,7 +201,7 @@ describe('gen/generate.ts TurnGenerator.generate (DESIGN §5.6)', () => {
           if (paKind(a) === AKind.BUY && paA(a) === radi) buy = true;
           if (paKind(a) === AKind.MOVE && paB(a) === CORNER[1]) enter = true;
         }
-        return buy && enter;
+        return buy && !enter;
       }),
     ).toBe(true);
   });
@@ -215,31 +216,23 @@ describe('gen/generate.ts TurnGenerator.generate (DESIGN §5.6)', () => {
         white: 0,
         black: 6,
         current: 'white',
-        phase: 'place',
+        phase: 'action',
         turnNumber: 5,
       }),
     );
     expect(turns.some(t => (t.flags & TurnFlag.HOME_ENTRY) !== 0 && (t.flags & TurnFlag.FORCED) !== 0)).toBe(true);
   });
 
-  it('injects a summon-and-strike when a fresh body one-shots an adjacent enemy (SU §2.5)', () => {
-    // Black Radi (DEF 1) next to B1, a legal White spawn square: a bought Hi
-    // lands there and kills it the same turn.
-    const { turns } = generate(
-      buildState({
-        units: [
-          { def: 'plant_1', owner: 'white', x: 1, y: 1, id: 'w-anchor' },
-          { def: 'lightning_1', owner: 'black', x: 2, y: 0, id: 'b-radi' },
-          { def: 'plant_1', owner: 'black', x: 9, y: 9, id: 'b-corner' },
-        ],
-        white: 8,
-        black: 6,
-        current: 'white',
-        phase: 'place',
-        turnNumber: 5,
-      }),
-    );
-    expect(turns.some(t => (t.flags & TurnFlag.SUMMON_STRIKE) !== 0 && (t.flags & TurnFlag.FORCED) !== 0)).toBe(true);
+  it('keeps Prepare purchases pending and never attacks with a fresh body', () => {
+    const state = quiet([], { white: 8 });
+    const { p, turns } = generate(state);
+    const buying = turns.filter(t => t.actions.subarray(0, t.count).some(a => paKind(a) === AKind.BUY));
+    expect(buying.length).toBeGreaterThan(0);
+    for (const turn of buying) {
+      expect(turn.actions.subarray(0, turn.count).some(a => paKind(a) === AKind.MOVE || paKind(a) === AKind.ATTACK)).toBe(false);
+      expect(replay(p, turn).legal).toBe(true);
+      expect(paKind(turn.actions[turn.count - 1])).toBe(AKind.END_PLACE);
+    }
   });
 
   it('injects the kill a killNow entry names', () => {
@@ -253,7 +246,7 @@ describe('gen/generate.ts TurnGenerator.generate (DESIGN §5.6)', () => {
         white: 0,
         black: 6,
         current: 'white',
-        phase: 'place',
+        phase: 'action',
         turnNumber: 5,
       }),
     );
@@ -279,28 +272,32 @@ describe('gen/generate.ts TurnGenerator.generate (DESIGN §5.6)', () => {
       }),
     );
     expect(turns.length).toBeGreaterThan(0);
-    const indices = new Set<number>();
+    const choices = new Set<string>();
     for (const turn of turns) {
       expect(turn.count).toBeGreaterThan(0);
       expect(paKind(turn.actions[0])).toBe(AKind.PAY_UPKEEP);
-      indices.add(paA(turn.actions[0]));
+      expect(paA(turn.actions[0])).toBe(0);
+      expect(turn.keepMask?.length).toBe(4);
+      choices.add([...turn.keepMask!].join(","));
       const end = replay(p, turn);
       expect(end.legal).toBe(true);
       expect([end.lo, end.hi]).toEqual([turn.endLo, turn.endHi]);
     }
     // More than one keep set was actually searched at the root.
-    expect(indices.size).toBeGreaterThan(1);
+    expect(choices.size).toBeGreaterThan(1);
   });
 
-  it('carries a place plan into the action line it searched from', () => {
-    const { turns } = generate(quiet([], { white: 40 }));
+  it('places purchases after the retained Act and ends at the first handoff', () => {
+    const { turns } = generate(quiet([], { white: 40, phase: 'action', actions: 1 }));
     const withBuy = turns.filter(t => {
       for (let i = 0; i < t.count; i++) if (paKind(t.actions[i]) === AKind.BUY) return true;
       return false;
     });
     expect(withBuy.length).toBeGreaterThan(0);
     for (const turn of withBuy) {
-      // Buys come first, then at most one promotion, then END_PLACE.
+      // Act ends first; BUY/PROMOTE belong to the mover's ensuing Prepare.
+      expect([...turn.actions.subarray(0, turn.count)].findIndex(a => paKind(a) === AKind.END_ACTION)).toBeLessThan(
+        [...turn.actions.subarray(0, turn.count)].findIndex(a => paKind(a) === AKind.BUY));
       let seenEndPlace = false;
       for (let i = 0; i < turn.count; i++) {
         const kind = paKind(turn.actions[i]);
@@ -311,9 +308,11 @@ describe('gen/generate.ts TurnGenerator.generate (DESIGN §5.6)', () => {
   });
 
   it('records statistics that add up', () => {
-    const { turns, stats } = generate(quiet([], { white: 40 }));
+    const { turns, stats } = generate(quiet([], { white: 40, phase: 'action', actions: 1 }));
     expect(stats.placePlans).toBeGreaterThan(0);
-    expect(stats.rawLines).toBeGreaterThanOrEqual(turns.length - stats.injected);
+    expect(stats.rawLines).toBeGreaterThan(0);
+    expect(stats.dedupedTo).toBe(turns.length);
+    expect(stats.forcedOverflow).toBe(0);
     expect(stats.injected).toBeGreaterThan(0);
     expect(stats.nodes).toBeGreaterThan(0);
   });

@@ -29,7 +29,7 @@
  * driver calls exactly that pair). A fresh `allocTables()` carries the
  * `UNBUILT` sentinel so its zeroed buffers can never be mistaken for a hit.
  */
-import { DEAD, MAX_SLOTS, NO_SLOT, type PackedState, type Side } from '../types';
+import { DEAD, MAX_SLOTS, type PackedState, type Side } from '../types';
 import { bbNew, bbSet, type BB, type Scratch } from '../core/bits';
 import { ACTIONS_PER_TURN } from '../core/state';
 import { activeCatalog } from '../core/catalog';
@@ -43,11 +43,8 @@ import {
   KILL_SCRATCH_I8,
   cleaveChain,
   killTable,
-  minActionsToKill,
-  newKillPlan,
   newKillTable,
   type KillOpts,
-  type KillPlan,
   type KillTable,
 } from './kill';
 import { economyDP, newEconResult, type EconResult } from './economy';
@@ -72,6 +69,8 @@ export const TABLE_SCRATCH_I8 = APPROACH_SCRATCH_I8 > KILL_SCRATCH_I8 ? APPROACH
 export interface NodeTables {
   keyLo: number;
   keyHi: number;
+  /** Exact slot→square identity guard: Kturn itself is square-keyed. */
+  slotSquares: Uint8Array;
   level: 1 | 2;
   /** The mover at this node. */
   side: Side;
@@ -80,9 +79,11 @@ export interface NodeTables {
   dist: DistanceCache;
   /** Squares each side can attack this turn: ∪ `dilate(reach(u, spd, 3) ∪ {u})` (DESIGN §5.1). */
   strike: [BB, BB];
-  /** The same for units not yet bought (DESIGN §5.2). */
+  /** Existing bodies at next Act, with simultaneous arrivals blocking paths. */
+  strikeNext: [BB, BB];
+  /** Legacy name: valid already-paid pending arrivals at next Act. */
   strikeIfBought: [BB, BB];
-  /** `strike[other] | strikeIfBought[other]`. */
+  /** `strikeNext[other] | strikeIfBought[other]`. */
   exposure: [BB, BB];
   spawn: [SpawnInfo, SpawnInfo];
   /** Multi-source BFS from `CORNER[side]`: every square's distance to that corner. */
@@ -139,10 +140,12 @@ export function allocTables(memo: ReachMemo | null = null): NodeTables {
   const t: NodeTables = {
     keyLo: UNBUILT,
     keyHi: UNBUILT,
+    slotSquares: new Uint8Array(MAX_SLOTS).fill(DEAD),
     level: 1,
     side: 0,
     dist: createDistanceCache(undefined, memo),
     strike: [bbNew(), bbNew()],
+    strikeNext: [bbNew(), bbNew()],
     strikeIfBought: [bbNew(), bbNew()],
     exposure: [bbNew(), bbNew()],
     spawn: [newSpawnInfo(), newSpawnInfo()],
@@ -179,39 +182,24 @@ const CORNER_BB: readonly [BB, BB] = (() => {
 const APPROACH_CLASS: readonly [Uint8Array, Uint8Array] = [new Uint8Array(MAX_SLOTS), new Uint8Array(MAX_SLOTS)];
 const APPROACH_RETREATS: readonly [Uint8Array, Uint8Array] = [new Uint8Array(MAX_SLOTS), new Uint8Array(MAX_SLOTS)];
 
-/** The mover's "next turn" kill table, for the mid-turn case where
- * `killNow[mover]` (this turn's short budget) cannot double as `killActions`. */
-const NEXT_TURN_TABLE: KillTable = newKillTable();
-
-/** `refineNeedsBuy`'s throwaway plan. */
-const NO_BUY_PLAN: KillPlan = newKillPlan();
-
-const NO_BUY_OPTS: KillOpts = {
-  actionBudget: ACTIONS_PER_TURN,
-  crystalBudget: 0,
-  allowBuys: false,
-  allowPromotes: true,
-  maxLanes: KILL_MAX_LANES,
-};
-
+const NEXT_TURN_TABLES: [KillTable, KillTable] = [newKillTable(), newKillTable()];
 const KILL_OPTS: KillOpts = {
-  actionBudget: ACTIONS_PER_TURN,
-  crystalBudget: 0,
-  allowBuys: true,
-  allowPromotes: true,
-  maxLanes: KILL_MAX_LANES,
+  actionBudget: ACTIONS_PER_TURN, crystalBudget: 0,
+  allowBuys: false, allowPromotes: false, maxLanes: KILL_MAX_LANES,
 };
-
-function killOptsFor(p: PackedState, attacker: Side, budget: number): KillOpts {
+function killOptsFor(budget: number, horizon: 'current' | 'nextAct'): KillOpts {
   KILL_OPTS.actionBudget = budget;
-  KILL_OPTS.crystalBudget = p.bank[attacker];
+  KILL_OPTS.horizon = horizon;
   return KILL_OPTS;
 }
 
 function buildLevel1(p: PackedState, sc: Scratch, ply: number, t: NodeTables): void {
   // threat.ts — strike, strikeIfBought, exposure.
-  strikeArea(p, 0, t, STRIKE_MOVE_ACTIONS, t.strike[0]);
-  strikeArea(p, 1, t, STRIKE_MOVE_ACTIONS, t.strike[1]);
+  const currentMoves = Math.max(0, Math.min(STRIKE_MOVE_ACTIONS, p.actions - 1));
+  strikeArea(p, 0, t, p.side === 0 ? currentMoves : STRIKE_MOVE_ACTIONS, t.strike[0]);
+  strikeArea(p, 1, t, p.side === 1 ? currentMoves : STRIKE_MOVE_ACTIONS, t.strike[1]);
+  strikeArea(p, 0, t, STRIKE_MOVE_ACTIONS, t.strikeNext[0], 'nextAct');
+  strikeArea(p, 1, t, STRIKE_MOVE_ACTIONS, t.strikeNext[1], 'nextAct');
   strikeIfBoughtArea(p, 0, t, t.strikeIfBought[0]);
   strikeIfBoughtArea(p, 1, t, t.strikeIfBought[1]);
   refreshExposure(t);
@@ -230,26 +218,16 @@ function buildLevel1(p: PackedState, sc: Scratch, ply: number, t: NodeTables): v
   t.retreats.fill(0);
   t.chain.fill(0);
 
-  // home.ts — `homeSafety` fills `cornerDist[side]` itself through
-  // `nearestThreat`, but only when `CORNER[side]` is empty (a body standing
-  // there makes the whole purchase branch moot). `cornerDist` is a level-1
-  // FIELD of the contract, so the plugged case is filled here.
+  // home.ts uses projected arrival occupancy; the public corner distance
+  // field remains the live-board distance and is filled independently.
   homeSafety(p, t, 0, t.home[0]);
   homeSafety(p, t, 1, t.home[1]);
-  if (p.pieceAt[CORNER[0]] !== NO_SLOT) t.dist.multi(p, CORNER_BB[0], t.cornerDist[0]);
-  if (p.pieceAt[CORNER[1]] !== NO_SLOT) t.dist.multi(p, CORNER_BB[1], t.cornerDist[1]);
+  t.dist.multi(p, CORNER_BB[0], t.cornerDist[0]);
+  t.dist.multi(p, CORNER_BB[1], t.cornerDist[1]);
 
   // geometry.ts — spawn geometry (`blocking` reads `exposure`, above).
   spawnGeometry(p, t, 0, sc, ply, t.geom[0]);
   spawnGeometry(p, t, 1, sc, ply, t.geom[1]);
-}
-
-/** Can the owner's enemy still remove `slot` next turn using no purchases? */
-function killableWithoutBuys(p: PackedState, t: NodeTables, slot: number, sc: Scratch, ply: number): boolean {
-  const attacker = (1 - p.owner[slot]) as Side;
-  NO_BUY_OPTS.crystalBudget = p.bank[attacker];
-  if (!minActionsToKill(p, t, attacker, slot, NO_BUY_OPTS, sc, ply, NO_BUY_PLAN)) return false;
-  return NO_BUY_PLAN.actions <= ACTIONS_PER_TURN;
 }
 
 function buildLevel2(p: PackedState, sc: Scratch, ply: number, t: NodeTables): void {
@@ -259,43 +237,26 @@ function buildLevel2(p: PackedState, sc: Scratch, ply: number, t: NodeTables): v
   if (moverBudget < 0) moverBudget = 0;
   else if (moverBudget > ACTIONS_PER_TURN) moverBudget = ACTIONS_PER_TURN;
 
-  // kill.ts — `killNow` (this turn) for both sides...
-  killTable(p, t, mover, killOptsFor(p, mover, moverBudget), sc, ply, t.killNow[mover]);
-  killTable(p, t, other, killOptsFor(p, other, ACTIONS_PER_TURN), sc, ply, t.killNow[other]);
-
-  // ...and `killActions` (NEXT turn, full budget, buys and promotions on) per
-  // slot, taken from the table belonging to the OWNER's enemy. `killNow[other]`
-  // is already a full-budget table, so only the mover's side can need a second
-  // pass, and only while it is mid-turn.
-  const moverNext =
-    moverBudget === ACTIONS_PER_TURN
-      ? t.killNow[mover]
-      : killTable(p, t, mover, killOptsFor(p, mover, ACTIONS_PER_TURN), sc, ply, NEXT_TURN_TABLE);
+  // The mover has no remaining Act during Prepare. Other-side current
+  // queries still describe live bodies only; nextAct explicitly resets flags.
+  if (p.phase === 0) moverBudget = 0;
+  killTable(p, t, mover, killOptsFor(moverBudget, 'current'), sc, ply, t.killNow[mover]);
+  killTable(p, t, other, killOptsFor(ACTIONS_PER_TURN, 'current'), sc, ply, t.killNow[other]);
+  for (let side = 0; side < 2; side++) {
+    killTable(p, t, side as Side, killOptsFor(ACTIONS_PER_TURN, 'nextAct'), sc, ply, NEXT_TURN_TABLES[side]);
+  }
   for (let slot = 0; slot < MAX_SLOTS; slot++) {
     if (p.sq[slot] === DEAD) continue;
-    const table = p.owner[slot] === mover ? t.killNow[other] : moverNext;
-    const e = table.entry[slot];
-    if (e.minActions > ACTIONS_PER_TURN) {
-      t.killActions[slot] = KILL_NEVER;
-      t.killCrystals[slot] = 0;
-      t.killNeedsBuy[slot] = 0;
-      continue;
-    }
-    t.killActions[slot] = e.minActions;
-    t.killCrystals[slot] = e.minCrystals;
-    // `killNeedsBuy` means "there is NO plan without a purchase", which is what
-    // its only consumer asks for (DESIGN §5.12.1 #29 `HangingBuy`: "only via a
-    // purchase"). `KillEntry.needsBuy` is weaker — it reports whether the ONE
-    // lexicographically cheapest plan the DP happened to return uses a buy, and
-    // a purchase at cost 4 ties exactly with a promotion at `promoCost` 4, so
-    // the flag can flip on nothing but candidate order. The tie is resolved
-    // here by asking the same question again with buys switched off.
-    t.killNeedsBuy[slot] = e.needsBuy === 1 && !killableWithoutBuys(p, t, slot, sc, ply) ? 1 : 0;
+    const e = NEXT_TURN_TABLES[1 - p.owner[slot]].entry[slot];
+    t.killActions[slot] = e.minActions <= ACTIONS_PER_TURN ? e.minActions : KILL_NEVER;
+    t.killCrystals[slot] = 0;
+    // Arrivals have already been paid. Do not activate legacy HangingBuy.
+    t.killNeedsBuy[slot] = 0;
   }
 
   // approach.ts — one pass per defender, merged by owner.
-  approachTable(p, t, 0, sc, ply, APPROACH_CLASS[0], APPROACH_RETREATS[0]);
-  approachTable(p, t, 1, sc, ply, APPROACH_CLASS[1], APPROACH_RETREATS[1]);
+  approachTable(p, t, 0, sc, ply, APPROACH_CLASS[0], APPROACH_RETREATS[0], 'nextAct');
+  approachTable(p, t, 1, sc, ply, APPROACH_CLASS[1], APPROACH_RETREATS[1], 'nextAct');
   for (let slot = 0; slot < MAX_SLOTS; slot++) {
     if (p.sq[slot] === DEAD) continue;
     const owner = p.owner[slot];
@@ -343,12 +304,18 @@ export function buildTables(
 ): NodeTables {
   const keyLo = (p.kturnLo ^ p.catalogSignature) >>> 0;
   const keyHi = p.kturnHi >>> 0;
-  const hit = out.keyLo === keyLo && out.keyHi === keyHi;
+  let hit = out.keyLo === keyLo && out.keyHi === keyHi;
+  if (hit) {
+    for (let slot = 0; slot < MAX_SLOTS; slot++) {
+      if (out.slotSquares[slot] !== p.sq[slot]) { hit = false; break; }
+    }
+  }
   if (hit && out.level >= level) return out;
   if (!hit) {
     buildLevel1(p, sc, ply, out);
     out.keyLo = keyLo;
     out.keyHi = keyHi;
+    out.slotSquares.set(p.sq);
     out.side = p.side;
     out.level = 1;
   }

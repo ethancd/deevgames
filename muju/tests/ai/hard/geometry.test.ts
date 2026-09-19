@@ -14,9 +14,12 @@
  */
 import { describe, expect, it, vi } from 'vitest';
 import { getAllSpawnPositions } from '../../../src/game/spawning';
+import { isLegalAction } from '../../../src/game/legality';
 import type { PlayerId } from '../../../src/game/types';
+import { applyAction } from '../../../src/ai/simulate';
+import type { AIAction } from '../../../src/ai/types';
 import { seededRandom } from '../../../src/ai/runtime';
-import { Scratch, bbNew } from '../../../src/ai/hard/core/bits';
+import { Scratch, bbHas, bbNew } from '../../../src/ai/hard/core/bits';
 import { blockingSet, spawnInfo } from '../../../src/ai/hard/core/spawn';
 import { CC, type PackedState, type Side } from '../../../src/ai/hard/types';
 import { CORNER_NEIGHBOURS } from '../../../src/ai/hard/core/tables';
@@ -35,12 +38,15 @@ const SIDE_OF: readonly PlayerId[] = ['white', 'black'];
  * frozen signature); one shared throwaway `Scratch` suffices for every call. */
 const sc = new Scratch(1, 1, 1, 1);
 
-/** Level-1 tables `spawnGeometry` reads: `spawn` (M5) and `exposure` (M6). */
+/** Level-1 tables `spawnGeometry` reads: live spawn geometry and next-Act
+ * exposure. Current strikes alone do not populate the Phasing exposure map. */
 function level1(p: PackedState): NodeTables {
   const t = allocTables();
   for (let side = 0; side < 2; side++) {
     spawnInfo(p, side as Side, t.spawn[side]);
-    strikeArea(p, side as Side, t, STRIKE_MOVE_ACTIONS, t.strike[side]);
+    const currentMoves = side === p.side ? Math.max(0, Math.min(STRIKE_MOVE_ACTIONS, p.actions - 1)) : STRIKE_MOVE_ACTIONS;
+    strikeArea(p, side as Side, t, currentMoves, t.strike[side]);
+    strikeArea(p, side as Side, t, STRIKE_MOVE_ACTIONS, t.strikeNext[side], 'nextAct');
     strikeIfBoughtArea(p, side as Side, t, t.strikeIfBought[side]);
   }
   refreshExposure(t);
@@ -171,6 +177,58 @@ describe('tables/geometry.ts spawnGeometry', () => {
     const scratch = bbNew();
     expect(blockingSet(p2, 0, null, 2, scratch)).toBe(1);
     expect(out.blocking).toBe(1);
+
+    // Independently exhibit a legal occupation of the remaining rectangle.
+    // Black's next Act reaches A1 after White's full handoff, and the
+    // canonical spawn oracle then reports no White recruitment squares.
+    let after = withEnemy;
+    for (const action of [
+      { type: 'END_ACTION_PHASE' }, { type: 'END_PLACE_PHASE' },
+      { type: 'MOVE', unitId: 'u3', to: { x: 2, y: 0 } },
+      { type: 'MOVE', unitId: 'u3', to: { x: 0, y: 0 } },
+    ] satisfies AIAction[]) {
+      expect(isLegalAction(after, action), action.type).toBe(true);
+      after = applyAction(after, action);
+    }
+    expect(getAllSpawnPositions('white', after.board)).toEqual([]);
+  });
+
+  it('paid next-Act arrivals can disrupt an anchor at zero bank; affordable uncommitted units cannot', () => {
+    const root = buildState({ phase: 'place', actions: 0, reserves: new Array(100).fill(0), units: [
+      { def: 'plant_1', owner: 'white', x: 4, y: 4 },
+      { def: 'metal_1', owner: 'black', x: 5, y: 4 },
+    ], pendingSummons: [{ id: 'paid-fire', def: 'fire_1', owner: 'black', x: 5, y: 5 }] });
+    const p = replica.pack(root), t = level1(p), out = newSpawnGeometry();
+    const intruderSquare = 43; // D5, inside White's sole supporting rectangle.
+    expect(bbHas(t.strike[1], intruderSquare)).toBe(false);
+    expect(bbHas(t.strikeNext[1], intruderSquare)).toBe(false); // live Yan is immobile
+    expect(bbHas(t.strikeIfBought[1], intruderSquare)).toBe(true);
+    spawnGeometry(p, t, 0, sc, 0, out);
+    expect(out.blocking).toBe(1);
+    expect(root.players.black.resources).toBe(0);
+
+    const unpaid = buildState({ phase: 'place', actions: 0, black: 100,
+      reserves: new Array(100).fill(0), units: [
+        { def: 'plant_1', owner: 'white', x: 4, y: 4 },
+        { def: 'metal_1', owner: 'black', x: 5, y: 4 },
+      ] });
+    const noArrival = replica.pack(unpaid), noArrivalTables = level1(noArrival);
+    expect(bbHas(noArrivalTables.exposure[0], intruderSquare)).toBe(false);
+    spawnGeometry(noArrival, noArrivalTables, 0, sc, 0, out);
+    expect(out.blocking).toBe(3); // no reachable candidate within the cap
+
+    let after = root;
+    for (const action of [
+      { type: 'END_PLACE_PHASE' },
+      { type: 'MOVE', unitId: 'paid-fire', to: { x: 3, y: 5 } },
+      { type: 'MOVE', unitId: 'paid-fire', to: { x: 3, y: 4 } },
+    ] satisfies AIAction[]) {
+      expect(isLegalAction(after, action), action.type).toBe(true);
+      after = applyAction(after, action);
+    }
+    expect(after.pendingSummons).toEqual([]);
+    expect(after.players.black.resources).toBe(0);
+    expect(getAllSpawnPositions('white', after.board)).toEqual([]);
   });
 
   it('infiltrationAnchors sums, per own unit inside an enemy rectangle, how many enemy anchors it falls inside', () => {
@@ -238,7 +296,7 @@ describe('tables/geometry.ts spawnGeometry', () => {
   });
 
   it('fragility = 2*[blocking <= 1] + [killActions[deepestAnchor] <= 4]', () => {
-    // A lone anchor plus an enemy already sitting inside its rectangle, so
+    // A lone anchor plus an enemy just outside its rectangle, so
     // exposure[white] covers a spot in that rectangle and `blocking` resolves
     // to a real (small) number rather than "cap + 1" for a candidate set that
     // cannot reach the rectangle at all this turn (see the "blocking
@@ -256,7 +314,7 @@ describe('tables/geometry.ts spawnGeometry', () => {
     // Untouched killActions defaults to KILL_NEVER (127) from allocTables, so
     // the "<= 4" term reads false and blocking is a lone anchor's 1.
     spawnGeometry(p, t, 0, sc, 0, out);
-    expect(out.blocking).toBeLessThanOrEqual(1);
+    expect(out.blocking).toBe(1);
     expect(t.killActions.every(v => v === KILL_NEVER)).toBe(true);
     expect(out.fragility).toBe(2); // 2*[blocking<=1] + 0
 

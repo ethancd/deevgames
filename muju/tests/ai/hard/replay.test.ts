@@ -27,7 +27,7 @@ vi.setConfig({ testTimeout: 60_000 });
 
 describe('verifyTurn', () => {
   it('verifies every candidate the generator produced on the initial position', () => {
-    const state = createInitialGameState();
+    const state = createInitialGameState(undefined, 4, 0, 'phasing');
     const prepared = prepare(state, 400_000);
     const { turns, n } = candidates(prepared);
     expect(n).toBeGreaterThan(4);
@@ -41,7 +41,7 @@ describe('verifyTurn', () => {
   }, 60_000); // explicit per-test budget; see the E0.5 timeout note at the top of this file
 
   it('every verified action is one `isLegalAction` accepts at the moment it is dispatched', () => {
-    const state = createInitialGameState();
+    const state = createInitialGameState(undefined, 4, 0, 'phasing');
     const prepared = prepare(state, 400_000);
     const { turns } = candidates(prepared);
     const check = verifyTurn(prepared.ctx.rep, state, prepared.p, turns[0], prepared.ctx.keep[0]);
@@ -53,7 +53,7 @@ describe('verifyTurn', () => {
   }, 60_000); // explicit per-test budget; see the E0.5 timeout note at the top of this file
 
   it('truncates at the first action the canonical engine refuses', () => {
-    const state = createInitialGameState();
+    const state = createInitialGameState(undefined, 4, 0, 'phasing');
     const prepared = prepare(state, 400_000);
     const { turns } = candidates(prepared);
     const tampered = { ...turns[0], actions: Int32Array.from(turns[0].actions), count: turns[0].count };
@@ -71,7 +71,7 @@ describe('verifyTurn', () => {
   }, 60_000); // explicit per-test budget; see the E0.5 timeout note at the top of this file
 
   it('catches a wrong end position even when every action is legal', () => {
-    const state = createInitialGameState();
+    const state = createInitialGameState(undefined, 4, 0, 'phasing');
     const prepared = prepare(state, 400_000);
     const { turns } = candidates(prepared);
     const lying = { ...turns[0], endLo: (turns[0].endLo ^ 0x5a5a5a5a) >>> 0 };

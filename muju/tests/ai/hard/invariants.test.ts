@@ -18,6 +18,11 @@ import type { PackedState, Side } from '../../../src/ai/hard/types';
 import { TABLE_SCRATCH_BB, TABLE_SCRATCH_I8, allocTables, buildTables } from '../../../src/ai/hard/tables/context';
 import { INVARIANT_COUNT, invariantBits, leadCc } from '../../../src/ai/hard/eval/invariants';
 import { buildState, randomState, type StateSpec, type UnitSpec } from './game-fixture';
+import { applyAction } from '../../../src/ai/simulate';
+import type { AIAction } from '../../../src/ai/types';
+import { isLegalAction } from '../../../src/game/legality';
+import { canAttack } from '../../../src/game/combat';
+import type { GameState } from '../../../src/game/types';
 
 // E0.5 timeout budget: slowest test 0.2 s in the 2026-09-15 survey (M2 Max, load ~5, maxWorkers 2); 10 s is this file's explicit ceiling.
 vi.setConfig({ testTimeout: 10_000 });
@@ -159,31 +164,65 @@ describe('invariantBits: the rows DESIGN §5.13 states over the position', () =>
 
 describe('invariantBits: the rows restated over the post-turn position', () => {
   it('8 and 9 split a chip by whether a kill was on the table, and never both fire', () => {
-    // metal_1 next to black's shadow_1 one-shots it, so a kill IS available.
-    const chipWithKill = board([
-      { def: 'metal_1', owner: 'white', x: 8, y: 7, atkCount: 1, lastAttackKilled: false },
-      { def: 'metal_1', owner: 'white', x: 1, y: 3 },
-    ]);
-    const withKill = bits(chipWithKill);
+    const root = (withFreshAttacker: boolean) => buildState({
+      current: 'white', phase: 'action', actions: 4, white: 8, black: 8,
+      reserves: new Array<number>(100).fill(0), units: [
+        { def: 'water_1', owner: 'white', x: 2, y: 2, id: 'chipper' },
+        ...(withFreshAttacker ? [{ def: 'fire_1', owner: 'white' as const, x: 6, y: 6, id: 'fresh' }] : []),
+        { def: 'metal_3', owner: 'black', x: 3, y: 2, id: 'durable-target' },
+        { def: 'fire_1', owner: 'black', x: 7, y: 6, id: 'kill-target' },
+      ],
+    });
+    const play = (state: GameState, actions: AIAction[]): GameState => {
+      for (const action of actions) {
+        expect(state.phase).toBe('playing');
+        expect(state.turn.currentPlayer).toBe('white');
+        expect(isLegalAction(state, action)).toBe(true);
+        const next = applyAction(state, action);
+        expect(next).not.toBe(state);
+        state = next;
+      }
+      return state;
+    };
+    const chip: AIAction = { type: 'ATTACK', unitId: 'chipper', targetPosition: { x: 3, y: 2 } };
+    const finish: AIAction[] = [{ type: 'END_ACTION_PHASE' }, { type: 'END_PLACE_PHASE' }];
+    const handoff = (state: GameState) => {
+      const end = play(state, finish);
+      expect(end.phase).toBe('playing');
+      expect(end.turn).toMatchObject({ currentPlayer: 'black', phase: 'action', actionsRemaining: 4 });
+      expect(end.upkeepPending).toBe(false);
+      // Incoming Black heals; only White's authentic nonlethal-attack flag
+      // remains as evidence of the chip on this post-turn position.
+      expect(end.board.units.filter(u => u.owner === 'black').every(u => u.damageTaken === 0)).toBe(true);
+      return end;
+    };
+
+    const chippedWithKill = play(root(true), [chip]);
+    expect(chippedWithKill.turn.actionsRemaining).toBe(3);
+    expect(chippedWithKill.board.units.find(u => u.id === 'durable-target')!.damageTaken).toBeGreaterThan(0);
+    expect(canAttack(chippedWithKill.board.units.find(u => u.id === 'chipper')!)).toBe(false);
+    expect(canAttack(chippedWithKill.board.units.find(u => u.id === 'fresh')!)).toBe(true);
+    // A DISTINCT unused attacker can take the kill. The old fixture reused a
+    // tier-I attacker after its nonlethal hit, which cannot unlock another hit.
+    const lethal: AIAction = { type: 'ATTACK', unitId: 'fresh', targetPosition: { x: 7, y: 6 } };
+    const alternative = play(chippedWithKill, [lethal]);
+    expect(alternative.board.units.some(u => u.id === 'kill-target')).toBe(false);
+    expect(alternative.board.units.some(u => u.id === 'durable-target')).toBe(true);
+    const withKill = bitsOf(replica.pack(handoff(chippedWithKill)), WHITE);
     expect(has(withKill, 8)).toBe(true);
     expect(has(withKill, 9)).toBe(false);
 
-    // plant_1 has attack 0: nothing white owns can kill anything.
-    const chipNoKill = board([
-      { def: 'plant_1', owner: 'white', x: 2, y: 2, atkCount: 1, lastAttackKilled: false },
-      { def: 'plant_1', owner: 'white', x: 1, y: 3 },
-    ]);
-    const noKill = bits(chipNoKill);
+    // Without the fresh body, the only attacker has closed its chain. Moving
+    // cannot restore an attack, and Prepare cannot grant another current Act.
+    const chippedNoKill = play(root(false), [chip]);
+    expect(chippedNoKill.board.units.filter(u => u.owner === 'white').every(u => !canAttack(u))).toBe(true);
+    expect(isLegalAction(chippedNoKill, chip)).toBe(false);
+    const noKill = bitsOf(replica.pack(handoff(chippedNoKill)), WHITE);
     expect(has(noKill, 8)).toBe(false);
     expect(has(noKill, 9)).toBe(true);
 
-    // No attack at all: neither.
-    const quiet = bits(
-      board([
-        { def: 'metal_1', owner: 'white', x: 8, y: 7 },
-        { def: 'metal_1', owner: 'white', x: 1, y: 3 },
-      ]),
-    );
+    // The same lethal alternative exists, but without a chip neither bit fires.
+    const quiet = bitsOf(replica.pack(handoff(root(true))), WHITE);
     expect(has(quiet, 8)).toBe(false);
     expect(has(quiet, 9)).toBe(false);
   });

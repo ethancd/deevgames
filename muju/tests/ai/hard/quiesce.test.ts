@@ -17,7 +17,8 @@ import {
   isTacticalTurn,
   quiesce,
 } from '../../../src/ai/hard/search/quiesce';
-import { evaluateLeaf } from '../../../src/ai/hard/search/pvs';
+import { evaluateLeaf, pvs } from '../../../src/ai/hard/search/pvs';
+import { WorkClass } from '../../../src/ai/hard/search/time';
 import { HardEngine } from '../../../src/ai/hard/engine';
 import { INF } from '../../../src/ai/hard/search/pvs';
 import { buildState } from './game-fixture';
@@ -33,7 +34,7 @@ function turnWith(flags: number): Turn {
 describe('isTacticalTurn', () => {
   it('is exactly F24\'s five flags', () => {
     const p = {} as never;
-    for (const flag of [TurnFlag.KILL, TurnFlag.HOME_ENTRY, TurnFlag.HOME_RESCUE, TurnFlag.HOME_RACE, TurnFlag.SUMMON_STRIKE]) {
+    for (const flag of [TurnFlag.KILL, TurnFlag.HOME_ENTRY, TurnFlag.HOME_RESCUE, TurnFlag.HOME_RACE, TurnFlag.HOME_FORTIFY]) {
       expect(isTacticalTurn(p, turnWith(flag))).toBe(true);
     }
     // F24 keeps anchor voiding OUT of quiescence: `SPAWN_DENY` is an ordering
@@ -50,7 +51,7 @@ describe('isTacticalTurn', () => {
 describe('quiesce', () => {
   it('stands pat on a position with no tactic available', () => {
     // The initial position: nothing is killable, no corner is one turn away.
-    const prepared = prepare(createInitialGameState(), 400_000);
+    const prepared = prepare(createInitialGameState(undefined, 4, 0, 'phasing'), 400_000);
     const { ctx, p } = prepared;
     const expected = evaluateLeaf(ctx, p, -INF, INF, 0);
     const value = quiesce(ctx, p, -INF, INF, 0, 0);
@@ -60,7 +61,7 @@ describe('quiesce', () => {
   });
 
   it('returns beta when the stand-pat score already beats the window', () => {
-    const prepared = prepare(createInitialGameState(), 400_000);
+    const prepared = prepare(createInitialGameState(undefined, 4, 0, 'phasing'), 400_000);
     const { ctx, p } = prepared;
     const standPat = evaluateLeaf(ctx, p, -INF, INF, 0);
     const beta = standPat - 1_000;
@@ -68,7 +69,7 @@ describe('quiesce', () => {
   });
 
   it('leaves the position byte-identical', () => {
-    const prepared = prepare(createInitialGameState(), 400_000);
+    const prepared = prepare(createInitialGameState(undefined, 4, 0, 'phasing'), 400_000);
     const { ctx, p } = prepared;
     const before = ctx.rep.digest(p);
     quiesce(ctx, p, -INF, INF, 0, 0);
@@ -97,16 +98,46 @@ describe('quiesce', () => {
       ],
     });
     const engine = new HardEngine();
-    const result = await engine.searchTurn(state, { work: 120_000 });
+    const rung = 120_000;
+    const result = await engine.searchTurn(state, { work: rung });
     expect(result.stats.quiesceWork).toBeGreaterThan(0);
-    const share = result.stats.quiesceWork / result.work;
-    expect(share).toBeLessThanOrEqual(QUIESCE_SHARE_NUM / QUIESCE_SHARE_DEN + 0.02);
+    // Existing 2026-09-15 R5 amendment in design/DEVIATIONS.md: the denominator
+    // is meter.LIMIT/rung, not spent work (iteration-start refusal varies that).
+    const share = result.stats.quiesceWork / rung;
+    const accounting = JSON.stringify({ limit: rung, work: result.work,
+      quiesceWork: result.stats.quiesceWork, share, spentShare: result.stats.quiesceWork / result.work,
+      depth: result.depth, stopReason: result.stats.stopReason });
+    console.info('M4 R5 accounting', accounting);
+    expect(share, accounting).toBeLessThanOrEqual(QUIESCE_SHARE_NUM / QUIESCE_SHARE_DEN + 0.02);
     // And the cap is 0.35 in DESIGN's own terms.
-    expect(share).toBeLessThanOrEqual(0.35);
+    expect(share, accounting).toBeLessThanOrEqual(0.35);
   }, 60_000); // explicit per-test budget; see the E0.5 timeout note at the top of this file
 
+  it('routes repeated post-cap leaves to static evaluation without opening another quiescence subtree', () => {
+    const state = buildState({ units: [
+      { def: 'fire_1', owner: 'white', x: 4, y: 4 },
+      { def: 'lightning_1', owner: 'black', x: 5, y: 4 },
+      { def: 'plant_1', owner: 'black', x: 9, y: 9 },
+    ] });
+    const { ctx, p } = prepare(state, 100_000);
+    ctx.quiesceWork = ctx.meter.limit * QUIESCE_SHARE_NUM / QUIESCE_SHARE_DEN;
+    ctx.meter.spend(WorkClass.TURN, ctx.quiesceWork);
+    const generation = vi.spyOn(ctx.genQuiesce, 'generate');
+    const evaluation = vi.spyOn(ctx.eval, 'evaluate');
+    const before = { used: ctx.meter.used, qwork: ctx.quiesceWork, qnodes: ctx.stats.qnodes,
+      qevents: ctx.meter.byClass[WorkClass.QUIESCE],
+      eval: ctx.meter.byClass[WorkClass.EVAL1] + ctx.meter.byClass[WorkClass.EVAL2] };
+    for (let i = 0; i < 3; i++) expect(Number.isFinite(pvs(ctx, p, 0, -INF, INF, 0, 0))).toBe(true);
+    expect(generation).not.toHaveBeenCalled(); expect(evaluation).toHaveBeenCalledTimes(3);
+    expect(ctx.stats.qnodes).toBe(before.qnodes); expect(ctx.quiesceWork).toBe(before.qwork);
+    expect(ctx.meter.byClass[WorkClass.QUIESCE]).toBe(before.qevents);
+    expect(ctx.meter.used).toBeGreaterThan(before.used);
+    expect(ctx.meter.byClass[WorkClass.EVAL1] + ctx.meter.byClass[WorkClass.EVAL2]).toBeGreaterThan(before.eval);
+    generation.mockRestore(); evaluation.mockRestore();
+  });
+
   it('never recurses past cfg.quiesce.maxPly', () => {
-    const prepared = prepare(createInitialGameState(), 400_000, { quiesce: { maxPly: 1, deltaMarginCc: 300, maxCandidates: 8 } });
+    const prepared = prepare(createInitialGameState(undefined, 4, 0, 'phasing'), 400_000, { quiesce: { maxPly: 1, deltaMarginCc: 300, maxCandidates: 8 } });
     const { ctx, p } = prepared;
     quiesce(ctx, p, -INF, INF, 0, 0);
     expect(ctx.stats.seldepth).toBeLessThanOrEqual(1);

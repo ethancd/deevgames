@@ -10,7 +10,7 @@
  */
 import { describe, expect, it, vi } from 'vitest';
 import { createInitialGameState } from '../../../src/game/board';
-import { TurnFlag, type Turn } from '../../../src/ai/hard/gen/turn';
+import { TurnFlag, copyTurnRecord, type Turn } from '../../../src/ai/hard/gen/turn';
 import {
   HISTORY_CEILING,
   ORDER_COUNTER,
@@ -20,6 +20,13 @@ import {
   newOrderTables,
   onCutoff,
 } from '../../../src/ai/hard/search/order';
+import { allocTurn } from '../../../src/ai/hard/search/pvs';
+import { Replica, newUndo } from '../../../src/ai/hard/core/state';
+import { fromAIAction, newKeepSetTable } from '../../../src/ai/hard/core/action';
+import { verifyTurn } from '../../../src/ai/hard/verify/replay';
+import { applyAction } from '../../../src/ai/simulate';
+import { isLegalAction } from '../../../src/game/legality';
+import type { AIAction } from '../../../src/ai/types';
 import { Bound, newTTEntry } from '../../../src/ai/hard/search/tt';
 import { scoreTurns } from '../../../src/ai/hard/search/order';
 import { buildTables } from '../../../src/ai/hard/tables/context';
@@ -97,15 +104,38 @@ describe('onCutoff', () => {
   });
 });
 
+/** Build the exact two full macros used by ordering tests through both engines. */
+function legalTurn(state: ReturnType<typeof buildState>, actions: AIAction[]): Turn {
+  const rep = new Replica(), p = rep.pack(state), keep = newKeepSetTable(), undo = newUndo();
+  const turn = allocTurn();
+  let canonical = state;
+  for (const action of actions) {
+    expect(canonical.phase).toBe('playing');
+    expect(canonical.turn.currentPlayer).toBe(state.turn.currentPlayer);
+    expect(isLegalAction(canonical, action)).toBe(true);
+    const packed = fromAIAction(p, action, keep);
+    expect(rep.isLegal(p, packed, keep)).toBe(true);
+    turn.actions[turn.count++] = packed;
+    rep.make(p, packed, undo, keep);
+    canonical = applyAction(canonical, action);
+  }
+  expect(canonical.turn.currentPlayer).not.toBe(state.turn.currentPlayer);
+  turn.endLo = p.kposLo; turn.endHi = p.kposHi; turn.flags = TurnFlag.QUIET;
+  const initial = new Replica().pack(state);
+  expect(verifyTurn(new Replica(), state, initial, turn, keep).verified).toBe(true);
+  return turn;
+}
+
 describe('scoreTurns', () => {
   it('sorts descending and is deterministic across repeats', () => {
-    const prepared = prepare(createInitialGameState(), 400_000);
+    const prepared = prepare(createInitialGameState(undefined, 4, 0, 'phasing'), 400_000);
     const first = candidates(prepared);
+    expect(first.n).toBeGreaterThan(0);
     const order = [];
     for (let i = 0; i < first.n; i++) order.push(`${first.turns[i].endLo}:${first.turns[i].gainCc}`);
     for (let i = 1; i < first.n; i++) expect(first.turns[i - 1].gainCc).toBeGreaterThanOrEqual(first.turns[i].gainCc);
 
-    const again = prepare(createInitialGameState(), 400_000);
+    const again = prepare(createInitialGameState(undefined, 4, 0, 'phasing'), 400_000);
     const second = candidates(again);
     expect(second.n).toBe(first.n);
     const order2 = [];
@@ -114,7 +144,7 @@ describe('scoreTurns', () => {
   });
 
   it('puts the TT turn first', () => {
-    const prepared = prepare(createInitialGameState(), 400_000);
+    const prepared = prepare(createInitialGameState(undefined, 4, 0, 'phasing'), 400_000);
     const { ctx, p } = prepared;
     const raw = rawCandidates(prepared);
     expect(raw.n).toBeGreaterThan(2);
@@ -122,56 +152,61 @@ describe('scoreTurns', () => {
     // as the TT move.
     const target = raw.turns[raw.n - 1];
     const targetEnd = target.endLo;
+    const targetHi = target.endHi;
     const tt = newTTEntry();
     tt.bound = Bound.EXACT;
     tt.depth = 3;
     tt.bestEndLo = targetEnd;
     const t = buildTables(p, ctx.sc, 0, 2, ctx.tables[0]);
     scoreTurns(p, t, ctx.turns[0], raw.n, tt, ctx.ord, 0, 0, ctx);
-    expect(ctx.turns[0][0].endLo).toBe(targetEnd);
+    expect([ctx.turns[0][0].endLo, ctx.turns[0][0].endHi]).toEqual([targetEnd, targetHi]);
     expect(ctx.turns[0][0].gainCc).toBeGreaterThanOrEqual(ORDER_TT);
   });
 
-  it('writes the SEE analogue into hangCc, and a hanging turn sorts below a safe one', () => {
-    // White water_1 on C1 can step onto B2 (adjacent to a black fire_2 that
-    // kills it) or stay on the back rank. Both are quiet turns; the SEE term is
-    // the only thing separating them.
-    const state = buildState({
-      current: 'white',
-      phase: 'action',
-      actions: 4,
-      units: [
-        { def: 'water_1', owner: 'white', x: 2, y: 0 },
-        { def: 'fire_2', owner: 'black', x: 1, y: 2 },
-        { def: 'metal_1', owner: 'black', x: 9, y: 9 },
-      ],
-    });
-    const prepared = prepare(state, 400_000);
-    const { turns, n } = candidates(prepared);
-    expect(n).toBeGreaterThan(1);
-    let anyHang = false;
-    for (let i = 0; i < n; i++) if (turns[i].hangCc > 0) anyHang = true;
-    expect(anyHang).toBe(true);
-    // The top-ranked turn must not be the one that hangs the most.
-    let worst = 0;
-    for (let i = 1; i < n; i++) if (turns[i].hangCc > turns[worst].hangCc) worst = i;
-    expect(turns[0].hangCc).toBeLessThanOrEqual(turns[worst].hangCc);
+  it('ranks avoiding an arriving opponent attacker above hanging the same unit', () => {
+    const state = buildState({ current: 'white', phase: 'action', actions: 1,
+      reserves: new Array(100).fill(0), units: [
+        { id: 'water', def: 'water_1', owner: 'white', x: 4, y: 2 },
+        { id: 'anchor', def: 'plant_1', owner: 'black', x: 3, y: 3 },
+      ], pendingSummons: [{ id: 'arrival', def: 'metal_1', owner: 'black', x: 4, y: 3 }] });
+    const end: AIAction[] = [{ type: 'END_ACTION_PHASE' }, { type: 'END_PLACE_PHASE' }];
+    const hanging = legalTurn(state, end);
+    const safe = legalTurn(state, [{ type: 'MOVE', unitId: 'water', to: { x: 4, y: 1 } }, ...end]);
+    hanging.sig = 11; safe.sig = 12; // Equal other bonuses; SEE alone separates them.
+    const { ctx, p } = prepare(state);
+    const turns = [hanging, safe];
+    scoreTurns(p, ctx.tables[0], turns, 2, null, ctx.ord, 0, 0, ctx);
+    expect(hanging.hangCc).toBe(400);
+    expect(safe.hangCc).toBe(0);
+    expect(turns[0]).toBe(safe);
+    expect(safe.gainCc - hanging.gainCc).toBe(400);
+    const noArrival = { ...state, pendingSummons: [] };
+    const control = legalTurn(noArrival, end); control.sig = 11;
+    const fresh = prepare(noArrival);
+    scoreTurns(fresh.p, fresh.ctx.tables[0], [control], 1, null, fresh.ctx.ord, 0, 0, fresh.ctx);
+    expect(control.hangCc).toBe(0);
   });
 
-  it('a killer signature outranks an otherwise identical quiet turn', () => {
-    const prepared = prepare(createInitialGameState(), 400_000);
-    const { ctx, p } = prepared;
-    const raw = rawCandidates(prepared);
-    const victimSig = raw.turns[raw.n - 1].sig;
-    const before = raw.turns[raw.n - 1].endLo;
-    ctx.ord.killers[0] = victimSig;
-    const t = buildTables(p, ctx.sc, 0, 2, ctx.tables[0]);
-    scoreTurns(p, t, ctx.turns[0], raw.n, null, ctx.ord, 0, 0, ctx);
-    let promoted = -1;
-    for (let i = 0; i < raw.n; i++) if (ctx.turns[0][i].endLo === before) promoted = i;
-    expect(promoted).toBeGreaterThanOrEqual(0);
-    // It cannot be last any more: the killer bonus is 200,000 cc.
-    expect(ctx.turns[0][promoted].gainCc).toBeGreaterThanOrEqual(ORDER_KILLER / 2);
+  it.each([0x12345678, 0x92345678])('preserves killer and counter bonuses for signature %i', sig => {
+    const state = buildState({ phase: 'place', actions: 0, reserves: new Array(100).fill(0), units: [
+      { def: 'plant_1', owner: 'white', x: 0, y: 0 },
+      { def: 'plant_1', owner: 'black', x: 9, y: 9 },
+    ] });
+    const base = legalTurn(state, [{ type: 'END_PLACE_PHASE' }]);
+    for (const bonus of ['killer', 'counter'] as const) {
+      const { ctx, p } = prepare(state);
+      const target = copyTurnRecord(allocTurn(), base), other = copyTurnRecord(allocTurn(), base);
+      target.sig = sig; other.sig = 0x76543210;
+      if (bonus === 'killer') ctx.ord.killers[0] = sig;
+      else {
+        onCutoff(ctx.ord, target, 0, 42, 1);
+        ctx.ord.killers.fill(0); ctx.ord.histMove.fill(0); ctx.ord.histBuy.fill(0);
+      }
+      const turns = [other, target];
+      scoreTurns(p, ctx.tables[0], turns, 2, null, ctx.ord, 0, 42, ctx);
+      expect(turns[0]).toBe(target);
+      expect(target.gainCc - other.gainCc).toBe(bonus === 'killer' ? ORDER_KILLER : ORDER_COUNTER);
+    }
   });
 
   it('the ordering bonuses are DESIGN §5.11.3\'s numbers', () => {

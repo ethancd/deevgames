@@ -1,23 +1,21 @@
 /**
  * Mission promotions (DESIGN §4.13 `gen/promote.ts`, §5.6, ET §3.4).
  *
- * A promotion is a Place-phase action that turns a tier-`n` body into the
+ * A promotion is a Prepare action that turns a tier-`n` body into the
  * tier-`n+1` body of the same element for `promoCost` crystals
- * (`promotion.ts:9-23`), at most once per unit per Place phase and never on the
+ * (`promotion.ts:9-23`), at most once per unit per Prepare phase and never on the
  * turn the unit was bought (`promotion.ts:44-58`). Both restrictions live in
  * `Replica.canPromote` and are honoured here by construction: this module only
  * ever proposes slots that `genPlace` would also emit.
  *
- * DESIGN §5.6 names five MISSIONS — the reasons a promotion is worth its price
- * this turn — and requires that the price actually be charged:
+ * Phasing replaces DESIGN §5.6's immediate KILL with FORTIFY. The
+ * remaining missions concern the next enemy reply or a later own Act:
  *
- *   KILL     the new `power` crosses a reachable target's effective defence
- *            this turn, which the old one did not (`homeCheckmate.ts`'s
- *            promote-then-kill, SU addendum 1);
+ *   FORTIFY  strengthen the occupier or a potential rescue-path blocker while
+ *            our live unit occupies the enemy home; Replica decides mate;
  *   SURVIVE  the new `defense` leaves an enemy one-shot band (`killsInOne`);
  *   INCOME   a plant standing on a cell with `reserve ≥ 2 × newMine`;
- *   REACH    `lightning_2 → 3` and `metal_2 → 3`, the two promotions that buy
- *            speed rather than combat;
+ *   REACH    any speed upgrade, including stationary Metal I becoming mobile;
  *   ANCHOR   the deepest unblocked spawn anchor that the enemy can kill within
  *            a turn (`killActions ≤ 4`).
  *
@@ -56,10 +54,10 @@ import { ACTION_VALUE_CC } from '../tables/economy';
 import { KILL_NEVER, type NodeTables } from '../tables/context';
 
 /** DESIGN §4.13. */
-export const Mission = { KILL: 0, SURVIVE: 1, INCOME: 2, REACH: 3, ANCHOR: 4 } as const;
+export const Mission = { FORTIFY: 0, SURVIVE: 1, INCOME: 2, REACH: 3, ANCHOR: 4 } as const;
 export type Mission = (typeof Mission)[keyof typeof Mission];
 
-export const MISSION_NAMES: readonly string[] = ['KILL', 'SURVIVE', 'INCOME', 'REACH', 'ANCHOR'];
+export const MISSION_NAMES: readonly string[] = ['FORTIFY', 'SURVIVE', 'INCOME', 'REACH', 'ANCHOR'];
 
 export interface PromoCandidate {
   slot: Slot;
@@ -71,40 +69,13 @@ export interface PromoCandidate {
 }
 
 export function newPromoCandidate(): PromoCandidate {
-  return { slot: 0, mission: Mission.KILL, cost: 0, scoreCc: 0 };
+  return { slot: 0, mission: Mission.FORTIFY, cost: 0, scoreCc: 0 };
 }
 
 /** `killActions ≤ 4` — the enemy can remove this body inside one turn. */
 const ANCHOR_THREAT_ACTIONS = ACTIONS_PER_TURN;
 /** `core/catalog.ts ELEMENT_ORDER` index of `plant`. */
 const ELEMENT_PLANT = 4;
-
-/** `cat.def[def] - damage`, floored at 0. */
-function effectiveDef(p: PackedState, cat: Catalog, slot: number): number {
-  const d = cat.def[p.defId[slot]] - p.damage[slot];
-  return d < 0 ? 0 : d;
-}
-
-/**
- * Can the body in `slot` strike `victim` this turn — already adjacent, or able
- * to reach an empty square adjacent to it and still hold an action back for the
- * blow? `budget` is the action count the mover will have once the Place phase
- * is over (always `ACTIONS_PER_TURN` while `phase === 0`).
- */
-function canStrike(p: PackedState, t: NodeTables, cat: Catalog, slot: Slot, victim: number, budget: number): boolean {
-  if (budget <= 0) return false;
-  const from = p.sq[slot];
-  const base = p.sq[victim] * 4;
-  for (let k = 0; k < 4; k++) {
-    const q = ADJ_LIST[base + k];
-    if (q < 0) continue;
-    if (q === from) return true;
-    if (p.pieceAt[q] !== NO_SLOT) continue;
-    const cost = moveCost(t.dist.get(p, from), q, cat.spd[p.defId[slot]]);
-    if (cost > 0 && cost <= budget - 1) return true;
-  }
-  return false;
-}
 
 /**
  * Can `attacker` (an enemy body) remove the body in `slot` with one hit next
@@ -169,8 +140,9 @@ function exclusiveSpawnArea(p: PackedState, t: NodeTables, slot: Slot): number {
 }
 
 /**
- * The best mission for one slot, or -1 when the promotion answers nothing this
- * turn. `outBenefit[0]` receives the mission's benefit in cc.
+ * The best future/fortification mission for one slot, or -1 when no
+ * supported mission applies. There is no Prepare attack mission.
+ * `outBenefit[0]` receives the mission's benefit in cc.
  */
 function bestMission(
   p: PackedState,
@@ -178,33 +150,18 @@ function bestMission(
   cat: Catalog,
   slot: Slot,
   next: number,
-  budget: number,
   deepestAnchor: Slot,
   outBenefit: Int32Array,
 ): number {
   const side = p.owner[slot] as Side;
   const def = p.defId[slot];
-  let mission = -1;
-  let benefit = 0;
-
-  // KILL — the strongest mission: it converts into material this very turn.
-  for (let victim = 0; victim < MAX_SLOTS; victim++) {
-    const vs = p.sq[victim];
-    if (vs === DEAD || p.owner[victim] === side) continue;
-    const need = effectiveDef(p, cat, victim);
-    const before = cat.power[powerIndex(side, def, p.defId[victim])];
-    const after = cat.power[powerIndex(side, next, p.defId[victim])];
-    if (before >= need || after < need) continue;
-    if (!canStrike(p, t, cat, slot, victim, budget)) continue;
-    const value = cat.cost[p.defId[victim]] * CC;
-    if (value > benefit) {
-      benefit = value;
-      mission = Mission.KILL;
-    }
-  }
-  if (mission === Mission.KILL) {
-    outBenefit[0] = benefit;
-    return mission;
+  // Every own live body can be a rescue-path blocker. Retain all legal
+  // promotions while our side holds enemy home; a geometric shortcut could
+  // omit a distant blocker. This is candidate coverage, not a mate certificate.
+  const occupier = p.pieceAt[side === WHITE ? 99 : 0];
+  if (occupier !== NO_SLOT && p.owner[occupier] === side) {
+    outBenefit[0] = Math.max(0, cat.def[next] - cat.def[def]) * CC;
+    return Mission.FORTIFY;
   }
 
   // SURVIVE — the promotion lifts the body out of an enemy one-shot band.
@@ -213,8 +170,9 @@ function bestMission(
     return Mission.SURVIVE;
   }
 
-  // ANCHOR — the deepest unblocked anchor the enemy can remove inside a turn.
-  if (slot === deepestAnchor) {
+  // ANCHOR — add defence to a threatened deep anchor; an attack-only
+  // promotion cannot protect it before the enemy reply.
+  if (slot === deepestAnchor && cat.def[next] > cat.def[def]) {
     outBenefit[0] = cat.cost[def] * CC + exclusiveSpawnArea(p, t, slot) * ACTION_VALUE_CC;
     return Mission.ANCHOR;
   }
@@ -242,21 +200,19 @@ function bestMission(
 const SC_BENEFIT = new Int32Array(1);
 
 /**
- * DESIGN §4.13's `planPromotions`. Writes at most `max` mission candidates into
- * `out`, best `scoreCc` first, and returns how many. `out` must hold
+ * DESIGN §4.13's `planPromotions`. Writes at most `max` ordinary candidates; FORTIFY bypasses that beam
+ * up to `out.length`. Candidates are ordered by score, then square. `out` must hold
  * pre-allocated records (`newPromoCandidate`).
  *
- * Only slots `Replica.canPromote` would accept are considered — in the Place
- * phase, owned by the mover, neither `F_PLACED` nor `F_PROMOTED`, with a next
+ * Only slots `Replica.canPromote` would accept are considered — in Prepare, owned by the mover, neither `F_PLACED` nor `F_PROMOTED`, with a next
  * tier the bank can pay for — so every emitted candidate dispatches legally.
  */
 export function planPromotions(p: PackedState, t: NodeTables, max: number, out: PromoCandidate[]): number {
-  if (max <= 0 || out.length === 0) return 0;
+  if (out.length === 0) return 0;
   if (p.result !== Result.ONGOING || p.upkeepPending === 1 || p.phase !== 0) return 0;
   const side = p.side as Side;
   const cat = activeCatalog();
   const bank = p.bank[side];
-  const budget = ACTIONS_PER_TURN;
 
   // ANCHOR's single candidate: the deepest unblocked anchor the enemy can
   // remove inside a turn (`killActions ≤ 4`, DESIGN §5.6).
@@ -268,13 +224,19 @@ export function planPromotions(p: PackedState, t: NodeTables, max: number, out: 
     if (t.killActions[slot] === KILL_NEVER || t.killActions[slot] > ANCHOR_THREAT_ACTIONS) continue;
     if (!isUnblockedAnchor(p, t, slot)) continue;
     const d = anchorDepth(side, s);
-    if (d > deepest) {
+    if (d > deepest || (d === deepest && (deepestAnchor < 0 || s < p.sq[deepestAnchor]))) {
       deepest = d;
       deepestAnchor = slot;
     }
   }
 
-  const limit = Math.min(max, out.length);
+  // Forced FORTIFY candidates bypass the ordinary beam. With MAX_SLOTS
+  // output records every legal fortification survives, even when max is zero.
+  // A smaller caller-owned buffer is an explicit hard capacity, never exceeded.
+  const home = p.pieceAt[side === WHITE ? 99 : 0];
+  const fortifying = home !== NO_SLOT && p.owner[home] === side;
+  const limit = fortifying ? out.length : Math.min(Math.max(0, max), out.length);
+  if (limit === 0) return 0;
   let n = 0;
   for (let slot = 0; slot < MAX_SLOTS; slot++) {
     const s = p.sq[slot];
@@ -287,7 +249,7 @@ export function planPromotions(p: PackedState, t: NodeTables, max: number, out: 
     const cost = cat.promoCost[def];
     if (cost > bank) continue;
 
-    const mission = bestMission(p, t, cat, slot, next, budget, deepestAnchor, SC_BENEFIT);
+    const mission = bestMission(p, t, cat, slot, next, deepestAnchor, SC_BENEFIT);
     if (mission < 0) continue;
     const materialGain = (cat.cost[next] - cat.cost[def]) * CC;
     const rent = RENT_PV * (cat.upkeep[next] - cat.upkeep[def]);
@@ -297,8 +259,8 @@ export function planPromotions(p: PackedState, t: NodeTables, max: number, out: 
     if (n < limit) slotIndex = n++;
     else {
       let worst = 0;
-      for (let i = 1; i < n; i++) if (out[i].scoreCc < out[worst].scoreCc) worst = i;
-      if (scoreCc <= out[worst].scoreCc) continue;
+      for (let i = 1; i < n; i++) if (out[i].scoreCc < out[worst].scoreCc || (out[i].scoreCc === out[worst].scoreCc && p.sq[out[i].slot] > p.sq[out[worst].slot])) worst = i;
+      if (scoreCc < out[worst].scoreCc || (scoreCc === out[worst].scoreCc && s >= p.sq[out[worst].slot])) continue;
       slotIndex = worst;
     }
     const c = out[slotIndex];
@@ -308,12 +270,11 @@ export function planPromotions(p: PackedState, t: NodeTables, max: number, out: 
     c.scoreCc = scoreCc;
   }
 
-  // Descending `scoreCc`, ties by ascending slot (C0: promotions are emitted by
-  // slot index, DESIGN §5.3).
+  // Descending `scoreCc`, ties by ascending square (stable under slot permutations).
   for (let i = 1; i < n; i++) {
     const c = out[i];
     let j = i - 1;
-    while (j >= 0 && (out[j].scoreCc < c.scoreCc || (out[j].scoreCc === c.scoreCc && out[j].slot > c.slot))) {
+    while (j >= 0 && (out[j].scoreCc < c.scoreCc || (out[j].scoreCc === c.scoreCc && p.sq[out[j].slot] > p.sq[c.slot]))) {
       out[j + 1] = out[j];
       j--;
     }

@@ -53,9 +53,10 @@ it('reports the cost of a search that threw, measured from the search start', as
   script(1_000, 1_050, 1_300);
   searchRootSpy.mockImplementation(() => { throw new Error('boom inside searchRoot'); });
   const engine = new HardEngine();
-  const result = await engine.searchTurn(createInitialGameState(), { targetMs: 3000 });
+  const result = await engine.searchTurn(createInitialGameState(undefined, 4, 0, 'phasing'), { targetMs: 3000 });
   expect(result.source).toBe('fallback');
   expect(result.fallback).toBe('engine-error');
+  expect(searchRootSpy).toHaveBeenCalledOnce();
   expect(result.stats.elapsedMs).toBe(250);
 });
 
@@ -63,8 +64,9 @@ it('still reads no clock at all in fixed-work mode, failure included', async () 
   script(7_777);
   searchRootSpy.mockImplementation(() => { throw new Error('boom inside searchRoot'); });
   const engine = new HardEngine();
-  const result = await engine.searchTurn(createInitialGameState(), { work: 25_000 });
+  const result = await engine.searchTurn(createInitialGameState(undefined, 4, 0, 'phasing'), { work: 25_000 });
   expect(result.fallback).toBe('engine-error');
+  expect(searchRootSpy).toHaveBeenCalledOnce();
   // The lab, the ladder and CI always pass `work`; their results stay machine
   // independent, so the fallback measures nothing and leaves the field at 0.
   expect(clock.index).toBe(0);

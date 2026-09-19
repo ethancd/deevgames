@@ -15,9 +15,9 @@
  *      crystals" — the answer is lexicographic in `(actions, crystals)`.
  *
  * It stays an OPTIMISTIC bound, exactly like the two canonical functions: two
- * attackers may be charged the same lane, a purchase is charged at the single
- * cheapest legal spawn square, and no attacker is charged for the occupancy
- * another attacker's move changes. It therefore never reports MORE actions
+ * attackers use distinct lanes, and no attacker is charged for the occupancy
+ * another attacker's move changes. Future paid arrivals share one projected
+ * occupancy; current-Act queries never invent purchases or promotions. It therefore never reports MORE actions
  * than a real line needs, which is what makes it safe as a search bound and is
  * what `lab/hard-ai/oracles/kill.ts` measures (`suboptimal === 0`).
  *
@@ -41,13 +41,13 @@
  * workspaces come from the caller's `Scratch`.
  */
 import type { Centi, PackedState, Side, Slot, Square } from '../types';
-import { DEAD, F_CAN_ACT, F_LAST_KILLED, F_PLACED, F_PROMOTED, MAX_SLOTS, NO_SLOT } from '../types';
+import { DEAD, F_CAN_ACT, F_LAST_KILLED, MAX_SLOTS, NO_SLOT, PEND_STRIDE } from '../types';
 import { bbNew, bbNext, bbSet, bbZero, type BB, type Scratch } from '../core/bits';
 import { ADJ_LIST, BOARD } from '../core/tables';
 import { activeCatalog, powerIndex, type Catalog } from '../core/catalog';
 import { ACTIONS_PER_TURN } from '../core/state';
-import type { DistanceCache } from '../core/movement';
-import type { SpawnInfo } from '../core/spawn';
+import { bfsFrom, type DistanceCache } from '../core/movement';
+import { nextActProjection, type SpawnInfo } from '../core/spawn';
 
 /**
  * The subset of `NodeTables` (DESIGN §4.8) this module reads.
@@ -65,9 +65,13 @@ export interface KillContext {
 }
 
 export interface KillOpts {
+  /** Current live bodies, or the next Act after same-board paid arrivals. */
+  horizon?: 'current' | 'nextAct';
   actionBudget: number;
   crystalBudget: number;
+  /** Legacy compatibility only; Phasing never invents unpaid attackers. */
   allowBuys: boolean;
+  /** Legacy compatibility only; Prepare promotions cannot act retroactively. */
   allowPromotes: boolean;
   maxLanes: number;
 }
@@ -75,9 +79,9 @@ export interface KillOpts {
 export interface KillPlan {
   actions: number;
   crystals: number;
-  /** slots, or `-(defId + 1)` for a purchase; `KILL_NO_ATTACKER` pads. */
+  /** Live slots, or KILL_PENDING_ATTACKER with spawnAt identifying the arrival. */
   attackers: Int8Array;
-  /** spawn square of the matching purchase, else -1. */
+  /** Pending arrival square, else -1. This is not a BUY instruction. */
   spawnAt: Int8Array;
   /** lane the matching attacker strikes from, or -1. */
   lanes: Int8Array;
@@ -105,6 +109,8 @@ export interface KillTable {
 export const KILL_IMPOSSIBLE = 255;
 /** `KillPlan.attackers` padding (`-1` is a legal "no spawn square"/"no lane"). */
 export const KILL_NO_ATTACKER = -128;
+/** Distinct from all old -(defId+1) purchase actors and all live slots. */
+export const KILL_PENDING_ATTACKER = -127;
 /** Ceiling on `KillOpts.maxLanes`: no square has more than four neighbours. */
 export const KILL_MAX_LANES = 4;
 /** `Scratch` bitboards this module borrows: none — every BFS row comes from
@@ -149,8 +155,8 @@ const P_DIM = MAX_NEED + 1;
 const DP_CELLS = LMASK_DIM * A_DIM * P_DIM;
 const INF = 0x3fffffff;
 
-const FLAG_BUY = 1;
-const FLAG_PROMO = 2;
+const FLAG_PENDING = 1;
+const FLAG_PROMO = 2; // Retained output contract; no Phasing candidate sets it.
 
 /** Popcount of every lane mask — the number of hits that mask represents. */
 const LMASK_POP = new Uint8Array(LMASK_DIM);
@@ -163,7 +169,7 @@ for (let m = 0; m < LMASK_DIM; m++) {
 /** `DP[lanes][a][pw]` = the fewest crystals that reach saturated damage `pw`
  * striking from exactly the lanes in `lanes` and spending exactly `a` actions. */
 const DP = new Int32Array(DP_CELLS);
-/** `FLAG_BUY | FLAG_PROMO` of the cheapest path into each cell. */
+/** `FLAG_PENDING | FLAG_PROMO` of the cheapest path into each cell. */
 const DP_FLAGS = new Uint8Array(DP_CELLS);
 /** Candidate indices of the cheapest path into each cell, `-1` padded. */
 const DP_PATH = new Int16Array(DP_CELLS * KILL_MAX_LANES);
@@ -180,7 +186,7 @@ const MAX_CANDIDATES = (MAX_SLOTS * 2 + 8) * KILL_MAX_LANES;
 const CAND_COST = new Int32Array(MAX_CANDIDATES);
 const CAND_CRYSTALS = new Int32Array(MAX_CANDIDATES);
 const CAND_POWER = new Int32Array(MAX_CANDIDATES);
-/** slot, or `-(defId + 1)` for a purchase. */
+/** Live slot or KILL_PENDING_ATTACKER; pending square identifies the actor. */
 const CAND_ACTOR = new Int32Array(MAX_CANDIDATES);
 const CAND_SPAWN = new Int32Array(MAX_CANDIDATES);
 const CAND_LANE = new Int32Array(MAX_CANDIDATES);
@@ -193,10 +199,9 @@ const GROUP_START = new Int32Array(MAX_CANDIDATES + 1);
 let groupCount = 0;
 
 const LANES = new Int32Array(KILL_MAX_LANES);
-/** Per empty lane: the legal spawn square closest to it, and that distance.
- * `-1` for a lane a purchase cannot use (occupied, or no spawn square reaches it). */
-const LANE_SPAWN = new Int32Array(KILL_MAX_LANES);
-const LANE_SPAWN_DIST = new Int32Array(KILL_MAX_LANES);
+const PENDING = bbNew();
+const PROJECTED_OCC = bbNew();
+const PROJECTED_DIST = new Int8Array(BOARD);
 
 /** Scratch i8 index: a private copy of a `DistanceCache` row. */
 const SC_DIST_COPY = 0;
@@ -274,145 +279,55 @@ function pushCandidate(
   return n + 1;
 }
 
-/**
- * One entry per affordable tier-1 definition PER LANE, each placed at the legal
- * spawn square closest to that lane — `server/analysis/tactics.ts:52-56`'s
- * "optimistic new purchases start adjacent", tightened from a flat cost of 1 to
- * the real BFS approach from the best square (DESIGN §5.7). All of a
- * definition's lane entries share one group, so a plan buys each definition at
- * most once.
- */
-function appendPurchases(
-  p: PackedState,
-  t: KillContext,
-  cat: Catalog,
-  attacker: Side,
-  targetDef: number,
-  o: KillOpts,
-  budget: number,
-  sc: Scratch,
-  ply: number,
-  laneCount: number,
-  start: number,
-): number {
-  const spawn = t.spawn[attacker];
-  if (spawn.area === 0) return start;
-
-  let usable = 0;
-  for (let li = 0; li < laneCount; li++) {
-    LANE_SPAWN[li] = -1;
-    LANE_SPAWN_DIST[li] = -1;
-    const lane = LANES[li];
-    // Every free lane held by one of our own units already has a body on it:
-    // a purchase has nowhere to stand, and charging it for a lane its own side
-    // would first have to vacate is exactly the overstatement this bound must
-    // not make.
-    if (p.pieceAt[lane] !== NO_SLOT) continue;
-    // Copied out of the cache: the scan below is long, and `DistanceCache.get`
-    // owns (and may recycle) the row it returns.
-    const dist = sc.i8(ply, SC_DIST_COPY);
-    dist.set(t.dist.get(p, lane));
-    let bestD = -1;
-    let bestQ = -1;
-    for (let q = bbNext(spawn.legal, -1); q >= 0; q = bbNext(spawn.legal, q)) {
-      const d = dist[q];
-      if (d < 0) continue;
-      if (bestD < 0 || d < bestD) {
-        bestD = d;
-        bestQ = q;
-      }
-    }
-    if (bestQ < 0) continue;
-    LANE_SPAWN[li] = bestQ;
-    LANE_SPAWN_DIST[li] = bestD;
-    usable++;
-  }
-  if (usable === 0) return start;
-
-  let n = start;
-  for (let i = 0; i < cat.tier1.length; i++) {
-    const def = cat.tier1[i];
-    const crystals = cat.cost[def];
-    if (crystals > o.crystalBudget) continue;
-    const power = cat.power[powerIndex(attacker, def, targetDef)];
-    if (power <= 0) continue;
-    const groupStart = n;
-    for (let li = 0; li < laneCount; li++) {
-      if (LANE_SPAWN[li] < 0) continue;
-      const cost = actionCost(LANE_SPAWN_DIST[li], cat.spd[def]);
-      if (cost > budget) continue;
-      n = pushCandidate(n, cost, crystals, power, -(def + 1), LANE_SPAWN[li], li, FLAG_BUY);
-    }
-    if (n > groupStart) GROUP_START[++groupCount] = n;
-  }
-  return n;
-}
-
-/**
- * Builds the candidate list for "`attacker` kills `target`". Returns the number
- * of candidates; `GROUP_START[0..groupCount]` delimits the mutually exclusive
- * groups (every lane and promotion variant of one unit shares that unit's
- * group, because one attacker contributes at most one hit; every purchase
- * definition is its own group).
- */
+/** Every arrival is its own actor group, including multiple commitments of
+ * the same definition. All BFS calls see the complete simultaneous batch. */
 function buildCandidates(
-  p: PackedState,
-  t: KillContext,
-  cat: Catalog,
-  attacker: Side,
-  target: Slot,
-  o: KillOpts,
-  budget: number,
-  sc: Scratch,
-  ply: number,
-  laneCount: number,
+  p: PackedState, t: KillContext, cat: Catalog, attacker: Side, target: Slot,
+  o: KillOpts, budget: number, _sc: Scratch, _ply: number, laneCount: number,
 ): number {
+  const future = o.horizon === 'nextAct';
   const targetDef = p.defId[target];
   let n = 0;
   groupCount = 0;
   GROUP_START[0] = 0;
-
+  if (future) {
+    nextActProjection(p, attacker, PENDING, PROJECTED_OCC);
+  }
   for (let slot = 0; slot < MAX_SLOTS; slot++) {
     if (p.sq[slot] === DEAD || p.owner[slot] !== attacker) continue;
-    if (!canAttack(p, cat, slot)) continue;
+    if (!future && !canAttack(p, cat, slot)) continue;
     const def = p.defId[slot];
-    const basePower = cat.power[powerIndex(attacker, def, targetDef)];
-    const nextDef = cat.nextDef[def];
-    const promoCost = cat.promoCost[def];
-    const flags = p.uflags[slot];
-    const promotable =
-      o.allowPromotes &&
-      nextDef >= 0 &&
-      promoCost <= o.crystalBudget &&
-      (flags & F_PLACED) === 0 &&
-      (flags & F_PROMOTED) === 0;
-    const promoPower = promotable ? cat.power[powerIndex(attacker, nextDef, targetDef)] : 0;
-    if (basePower <= 0 && promoPower <= 0) continue;
-
-    // One BFS row per attacker, consumed immediately: `DistanceCache.get` owns
-    // the array it returns and may recycle it on the next call.
-    const dist = t.dist.get(p, p.sq[slot]);
+    const power = cat.power[powerIndex(attacker, def, targetDef)];
+    if (power <= 0) continue;
+    if (future) bfsFrom(PROJECTED_OCC, p.sq[slot], PROJECTED_DIST);
+    const dist = future ? PROJECTED_DIST : t.dist.get(p, p.sq[slot]);
     const start = n;
     for (let li = 0; li < laneCount; li++) {
       const d = dist[LANES[li]];
       if (d < 0) continue;
-      if (basePower > 0) {
-        const cost = actionCost(d, cat.spd[def]);
-        if (cost <= budget) n = pushCandidate(n, cost, 0, basePower, slot, -1, li, 0);
-      }
-      if (promoPower > 0) {
-        // `damageUpperBound` (tactics.ts:46-49) re-derives the approach cost from
-        // the PROMOTED definition's speed, which differs across tiers (fire_2
-        // speed 2 -> fire_3 speed 3); §5.7's pseudocode reuses the base cost as
-        // shorthand. The canonical arithmetic wins.
-        const cost = actionCost(d, cat.spd[nextDef]);
-        if (cost <= budget) n = pushCandidate(n, cost, promoCost, promoPower, slot, -1, li, FLAG_PROMO);
-      }
+      const cost = actionCost(d, cat.spd[def]);
+      if (cost <= budget) n = pushCandidate(n, cost, 0, power, slot, -1, li, 0);
     }
     if (n > start) GROUP_START[++groupCount] = n;
   }
-
-  if (o.allowBuys) n = appendPurchases(p, t, cat, attacker, targetDef, o, budget, sc, ply, laneCount, n);
+  if (future) {
+    const base = attacker * PEND_STRIDE;
+    for (let q = bbNext(PENDING, -1); q >= 0; q = bbNext(PENDING, q)) {
+      const def = p.pendDef[base + q] - 1;
+      const power = cat.power[powerIndex(attacker, def, targetDef)];
+      if (power <= 0) continue;
+      bfsFrom(PROJECTED_OCC, q, PROJECTED_DIST);
+      const dist = PROJECTED_DIST;
+      const start = n;
+      for (let li = 0; li < laneCount; li++) {
+        const d = dist[LANES[li]];
+        if (d < 0) continue;
+        const cost = actionCost(d, cat.spd[def]);
+        if (cost <= budget) n = pushCandidate(n, cost, 0, power, KILL_PENDING_ATTACKER, q, li, FLAG_PENDING);
+      }
+      if (n > start) GROUP_START[++groupCount] = n;
+    }
+  }
   return n;
 }
 
@@ -526,7 +441,8 @@ function solveKill(
   }
   if (p.sq[target] === DEAD || p.owner[target] === attacker) return false;
 
-  const budget = o.actionBudget < ACTIONS_PER_TURN ? o.actionBudget : ACTIONS_PER_TURN;
+  const available = o.horizon !== 'nextAct' && attacker === p.side ? (p.phase === 0 ? 0 : p.actions) : ACTIONS_PER_TURN;
+  const budget = Math.min(o.actionBudget, ACTIONS_PER_TURN, available);
   if (budget <= 0) return false;
 
   const laneCount = collectLanes(p, attacker, p.sq[target]);
@@ -538,7 +454,10 @@ function solveKill(
   if (maxHits <= 0) return false;
 
   const defense = cat.def[p.defId[target]];
-  const damage = p.damage[target];
+  // Our next Act follows the defender's intervening turn start and healing.
+  // The opponent's imminent Act precedes our next heal. Other replies are
+  // deliberately not simulated by this static-board horizon.
+  const damage = o.horizon === 'nextAct' && attacker === p.side ? 0 : p.damage[target];
   const need = defense - damage > 0 ? defense - damage : 0;
   if (need === 0) return false;
 
@@ -611,7 +530,7 @@ export function killTable(
     if (!solveKill(p, t, cat, attacker, slot, o, sc, ply, null)) continue;
     e.minActions = dpActions;
     e.minCrystals = dpCrystals;
-    e.needsBuy = (dpFlags & FLAG_BUY) !== 0 ? 1 : 0;
+    e.needsBuy = 0; // Pending bodies were already paid for; there is no new BUY.
     e.needsPromo = (dpFlags & FLAG_PROMO) !== 0 ? 1 : 0;
     bbSet(out.killableNow, p.sq[slot]);
     out.count++;

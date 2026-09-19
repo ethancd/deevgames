@@ -1,3 +1,4 @@
+import { keepForTurn } from '../gen/turn';
 /**
  * Macro-turn ordering (DESIGN §4.16 `order.ts`, §5.11.3).
  *
@@ -9,7 +10,7 @@
  *   2 `HOME_RESCUE` +1,500,000; `HOME_RACE`/`HOME_ENTRY`      +1,200,000
  *   3 proven kills by value per action
  *   4 − `hangCc` (the SEE analogue)
- *   5 `SPAWN_DENY` +300,000 × anchorsVoided; `SUMMON_STRIKE`  +250,000
+ *   5 `SPAWN_DENY` +300,000 × anchorsVoided; `HOME_FORTIFY`  +250,000
  *   6 `CLEAVE_CHAIN`                                          +250,000
  *   7 killers +200,000; counter-move                          +150,000
  *   8 butterfly history
@@ -17,7 +18,7 @@
  *
  * THE SEE ANALOGUE (DESIGN §5.11.3 item 4, the F2/F3/F7/F10 loss class).
  * `hangCc = Σ` material of my units `u` with `killActions[u] ≤ 4` under
- * `killTable(them, {allowBuys: true, allowPromotes: true, actionBudget: 4})`
+ * `killTable(them, {horizon: 'current', actionBudget: 4})`
  * **on the post-turn position**. That is one `killTable` per candidate, so this
  * module applies each turn once, measures, and unmakes — the same pass also
  * yields items 3 and 5's `anchorsVoided`, which are post-turn quantities too.
@@ -93,7 +94,7 @@ export const ORDER_TT = 2_000_000;
 export const ORDER_HOME_RESCUE = 1_500_000;
 export const ORDER_HOME_RACE = 1_200_000;
 export const ORDER_SPAWN_DENY = 300_000;
-export const ORDER_SUMMON_STRIKE = 250_000;
+export const ORDER_HOME_FORTIFY = 250_000;
 export const ORDER_CLEAVE = 250_000;
 export const ORDER_KILLER = 200_000;
 export const ORDER_COUNTER = 150_000;
@@ -114,8 +115,9 @@ export function newOrderTables(maxPly: number): OrderTables {
     seeOpts: {
       actionBudget: ACTIONS_PER_TURN,
       crystalBudget: 0,
-      allowBuys: true,
-      allowPromotes: true,
+      allowBuys: false,
+      allowPromotes: false,
+      horizon: 'current',
       maxLanes: KILL_MAX_LANES,
     },
     keys: new Int32Array(256),
@@ -207,7 +209,7 @@ function bumpHistory(ord: OrderTables, t: Turn, depth: number): void {
  */
 export function onCutoff(ord: OrderTables, t: Turn, ply: number, prevSig: number, depth: number): void {
   const base = ply * 2;
-  if (base + 1 < ord.killers.length && ord.killers[base] !== t.sig) {
+  if (base + 1 < ord.killers.length && (ord.killers[base] >>> 0) !== (t.sig >>> 0)) {
     ord.killers[base + 1] = ord.killers[base];
     ord.killers[base] = t.sig;
   }
@@ -231,7 +233,7 @@ const SEE: SeeResult = { hangCc: 0, killValueCc: 0, killActions: 0, anchorsVoide
  * needs, and unmakes. Leaves `p` byte-identical to how it was found.
  *
  * `hangCc` is the material `them` can remove from `me` next turn with a full
- * four-action budget, buys and promotions allowed — DESIGN §5.11.3's SEE
+ * four-action budget using its now-live army — DESIGN §5.11.3's SEE
  * analogue. `killValueCc`/`killActions` are the turn's own proven kills and
  * the actions it spent attacking. `anchorsVoided` is how many of the enemy's
  * unblocked anchors the turn removed.
@@ -254,7 +256,7 @@ function measure(
   const rep = s.rep;
   const cat = s.cat;
   const undo = s.undo;
-  const keep = s.keep[ply];
+  const keep = keepForTurn(t, s.keep[ply]);
   // The SEE pass borrows the NEXT ply's scratch: this node's own row is still
   // live (it holds `tables`), and the child ply has not been entered yet.
   const seePly = ply + 1 < s.sc.maxPly ? ply + 1 : ply;
@@ -297,8 +299,9 @@ function measure(
       const opts = s.ord.seeOpts;
       opts.actionBudget = ACTIONS_PER_TURN;
       opts.crystalBudget = p.bank[them];
-      opts.allowBuys = true;
-      opts.allowPromotes = true;
+      opts.allowBuys = false;
+      opts.allowPromotes = false;
+      opts.horizon = 'current';
       opts.maxLanes = KILL_MAX_LANES;
       SEE_CTX.dist = tables.dist;
       SEE_CTX.spawn = s.ord.seeSpawn;
@@ -405,10 +408,10 @@ export function scoreTurns(
     if ((turn.flags & TurnFlag.SPAWN_DENY) !== 0) {
       score += ORDER_SPAWN_DENY * (see.anchorsVoided > 0 ? see.anchorsVoided : 1);
     }
-    if ((turn.flags & TurnFlag.SUMMON_STRIKE) !== 0) score += ORDER_SUMMON_STRIKE;
+    if ((turn.flags & TurnFlag.HOME_FORTIFY) !== 0) score += ORDER_HOME_FORTIFY;
     if ((turn.flags & TurnFlag.CLEAVE_CHAIN) !== 0) score += ORDER_CLEAVE;
-    if (turn.sig === killerA || turn.sig === killerB) score += ORDER_KILLER;
-    if (turn.sig === counterSig) score += ORDER_COUNTER;
+    if ((turn.sig >>> 0) === (killerA >>> 0) || (turn.sig >>> 0) === (killerB >>> 0)) score += ORDER_KILLER;
+    if ((turn.sig >>> 0) === (counterSig >>> 0)) score += ORDER_COUNTER;
     score += historyOf(ord, turn);
     // Item 9: a quiet turn is ranked by its own within-turn score. Tactical
     // turns already carry items 2-6, so the within-turn score only breaks

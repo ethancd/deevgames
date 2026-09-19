@@ -32,7 +32,7 @@
  * priority buffers, footprint bitboards and anchor-void counts are built in
  * the constructor, and every `Turn` comes from the caller's `TurnPool`.
  */
-import { CC, DEAD, F_PLACED, MAX_TURN_ACTIONS, NO_SLOT, Result, type Centi, type PackedState, type Side } from '../types';
+import { CC, DEAD, MAX_TURN_ACTIONS, NO_SLOT, Result, type Centi, type PackedState, type Side } from '../types';
 import { bbHas, bbIntersects, bbNew, bbNext, bbZero, type BB, type Scratch } from '../core/bits';
 import { ADJ_LIST, CORNER, RECT } from '../core/tables';
 import { activeCatalog, powerIndex, type Catalog } from '../core/catalog';
@@ -47,9 +47,8 @@ import type { ActionSearchConfig } from '../config';
 export type { ActionSearchConfig } from '../config';
 
 /**
- * Stage-1 evaluation of a post-boundary position, from the point of view of
- * the side that just moved (DESIGN §4.13). The boundary has already flipped
- * `p.side`, so the mover is `1 - p.side` in every non-terminal case.
+ * Stage-1 evaluation from the original mover. Act-prefix endpoints are same-side
+ * Prepare states; the enclosing generator completes upkeep and Prepare before handoff.
  */
 export type WithinTurnScorer = (p: PackedState, sc: Scratch, ply: number) => Centi;
 
@@ -615,7 +614,7 @@ export class ActionSearch {
     if (tt !== null) tt.store(p.kturnLo, p.kturnHi, p.actions);
   }
 
-  /** `make`s `END_ACTION`, records the turn it produces, and `unmake`s it. */
+  /** Records an Act prefix ending at same-side Prepare; the facade completes it. */
   private considerEnd(step: number): void {
     const p = this.p as PackedState;
     const a = paMake(AKind.END_ACTION);
@@ -629,7 +628,7 @@ export class ActionSearch {
 
   /** True once the mover's turn is over — a boundary, or a mid-turn terminal. */
   private isDone(p: PackedState): boolean {
-    return p.result !== Result.ONGOING || p.side !== this.rootSide || p.turnNumber !== this.rootTurnNumber;
+    return p.result !== Result.ONGOING || p.phase !== 1 || p.side !== this.rootSide || p.turnNumber !== this.rootTurnNumber;
   }
 
   /**
@@ -813,7 +812,7 @@ export class ActionSearch {
       if (power < effectiveDef) return flags;
       let next = flags | TurnFlag.KILL;
       if (p.atkCount[slot] > 0) next |= TurnFlag.CLEAVE_CHAIN;
-      if ((p.uflags[slot] & F_PLACED) !== 0) next |= TurnFlag.SUMMON_STRIKE;
+
       return next;
     }
     if (kind === AKind.MOVE) {

@@ -24,7 +24,7 @@ import { applyAction } from '../../simulate';
 import type { AIAction } from '../../types';
 import type { KeepSetTable } from '../core/action';
 import { PackError, Replica, allocState } from '../core/state';
-import { decodeTurn, type Turn } from '../gen/turn';
+import { decodeTurn, TurnDecodeError, type Turn } from '../gen/turn';
 import type { PackedState } from '../types';
 
 export interface ReplayCheck {
@@ -47,10 +47,12 @@ const REPACKED: PackedState = allocState();
  */
 export function verifyTurn(rep: Replica, state: GameState, p: PackedState, t: Turn, keep: KeepSetTable): ReplayCheck {
   let decoded: AIAction[];
+  let decodeFailure: TurnDecodeError | undefined;
   try {
     decoded = decodeTurn(p, t, keep);
   } catch (err) {
-    return {
+    if (err instanceof TurnDecodeError) { decoded = err.actions; decodeFailure = err; }
+    else return {
       actions: [],
       verified: false,
       divergedAt: 0,
@@ -61,9 +63,10 @@ export function verifyTurn(rep: Replica, state: GameState, p: PackedState, t: Tu
 
   const accepted: AIAction[] = [];
   let current = state;
+  const mover = state.turn.currentPlayer;
   for (let i = 0; i < decoded.length; i++) {
     const action = decoded[i];
-    if (!isLegalAction(current, action)) {
+    if (current.phase !== 'playing' || current.turn.currentPlayer !== mover || !isLegalAction(current, action)) {
       return {
         actions: accepted,
         verified: false,
@@ -84,6 +87,15 @@ export function verifyTurn(rep: Replica, state: GameState, p: PackedState, t: Tu
     }
     accepted.push(action);
     current = next;
+  }
+
+  if (decodeFailure) return { actions: accepted, verified: false, divergedAt: decodeFailure.index,
+    reason: `decode failed: ${decodeFailure.message}`, endState: current };
+
+  if (accepted.length === 0 || (current.phase !== 'victory' &&
+    (current.turn.currentPlayer === mover || current.turn.phase !== 'action' || current.turn.actionsRemaining !== 4))) {
+    return { actions: accepted, verified: false, divergedAt: accepted.length,
+      reason: 'Incomplete Phasing macro: expected first handoff or terminal', endState: current };
   }
 
   // Every action landed; does the canonical end position agree with the one

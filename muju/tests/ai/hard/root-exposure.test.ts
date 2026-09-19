@@ -20,32 +20,85 @@
  * `s.genQuiesce`).
  */
 import { describe, expect, it, vi } from 'vitest';
-import path from 'node:path';
 import { createInitialGameState } from '../../../src/game/board';
 import type { GameState } from '../../../src/game/types';
 import { HardEngine } from '../../../src/ai/hard/engine';
 import type { RootResult } from '../../../src/ai/hard/search/root';
 import { PLY1_MAX_KEYS } from '../../../src/ai/hard/search/probe';
-import { readPositions } from '../../../lab/hard-ai/positions/corpus';
+import { buildState } from './game-fixture';
+import { applyAction } from '../../../src/ai/simulate';
+import { isLegalAction } from '../../../src/game/legality';
+import { Replica } from '../../../src/ai/hard/core/state';
+import { DESKTOP } from '../../../src/ai/hard/config';
 
 // E0.5 timeout budget: this file's searches are one 25,000-unit rung each,
 // measured at well under a second apiece; 120 s is its explicit ceiling.
 vi.setConfig({ testTimeout: 120_000 });
 
-const POSITIONS_DIR = path.resolve(__dirname, '../../../lab/hard-ai/positions');
-
-/** Eight real positions: the opening, four authored fixtures and three
- * generated openings. All carry the corpus's default rules block. */
-const CASES: { id: string; state: GameState }[] = (() => {
-  const authored = readPositions(path.join(POSITIONS_DIR, 'authored.jsonl'));
-  const openings = readPositions(path.join(POSITIONS_DIR, 'openings.jsonl'));
-  const out: { id: string; state: GameState }[] = [{ id: 'initial', state: createInitialGameState() }];
-  for (const p of authored.slice(0, 4)) out.push({ id: p.id, state: p.state });
-  for (const p of [openings[0], openings[40], openings[200]]) out.push({ id: p.id, state: p.state });
-  return out;
-})();
+/** Eight explicitly authored Phasing states, no historical corpus conversion. */
+const distant = [
+  { def: 'water_1', owner: 'white' as const, x: 2, y: 2, id: 'white' },
+  { def: 'plant_1', owner: 'black' as const, x: 8, y: 8, id: 'black' },
+];
+const partialBase = buildState({ units: distant, current: 'white', phase: 'action', turnNumber: 5 });
+const partial = applyAction(partialBase, { type: 'MOVE', unitId: 'white', to: { x: 2, y: 3 } });
+if (partial === partialBase || partial.turn.phase !== 'action') throw new Error('Partial-Act fixture must be a legal canonical prefix');
+const CASES: { id: string; state: GameState }[] = [
+  { id: 'initial-phasing-act', state: createInitialGameState(undefined, 4, 0, 'phasing') },
+  { id: 'canonical-partial-act', state: partial },
+  { id: 'quiet-prepare', state: buildState({ units: distant, phase: 'place', actions: 0, turnNumber: 5 }) },
+  { id: 'upkeep-choice-prepare', state: buildState({ units: [
+      { def: 'water_2', owner: 'white', x: 2, y: 2, id: 'rent' },
+      { def: 'fire_1', owner: 'white', x: 1, y: 1, id: 'free' },
+      distant[1],
+    ], phase: 'place', actions: 0, white: 1, upkeepPending: true,
+    reviewUpkeep: { white: true, black: false }, turnNumber: 5 }) },
+  { id: 'opponent-pending-act', state: buildState({ units: distant, phase: 'action', turnNumber: 5,
+    pendingSummons: [{ def: 'fire_1', owner: 'black', x: 9, y: 8, id: 'black-paid' }] }) },
+  { id: 'own-pending-prepare', state: buildState({ units: distant, phase: 'place', actions: 0, turnNumber: 5,
+    pendingSummons: [{ def: 'fire_1', owner: 'white', x: 1, y: 1, id: 'white-paid' }] }) },
+  { id: 'occupied-opponent-commitment', state: buildState({ units: [
+      { def: 'fire_1', owner: 'white', x: 9, y: 8, id: 'intruder' }, distant[0], distant[1],
+    ], phase: 'action', actions: 1, turnNumber: 5,
+    pendingSummons: [{ def: 'fire_1', owner: 'black', x: 9, y: 8, id: 'blocked-paid' }] }) },
+  { id: 'live-home-rescue-act', state: buildState({ units: [
+      { def: 'plant_1', owner: 'black', x: 0, y: 0, id: 'invader' },
+      { def: 'fire_1', owner: 'white', x: 1, y: 0, id: 'rescuer' },
+      { def: 'water_1', owner: 'white', x: 1, y: 1, id: 'support' }, distant[1],
+    ], phase: 'action', turnNumber: 5 }) },
+];
 
 const WORK = 25_000;
+
+/** No fallback/empty result may make on/off equality pass vacuously. */
+function replayResult(state: GameState, result: RootResult): GameState {
+  expect(result.fallback).toBeUndefined();
+  expect(result.actions.length).toBeGreaterThan(0);
+  expect(result.actions.length).toBeLessThanOrEqual(24);
+  let current = state;
+  for (const action of result.actions) {
+    expect(current.phase).toBe('playing');
+    expect(current.turn.currentPlayer).toBe(state.turn.currentPlayer);
+    expect(isLegalAction(current, action)).toBe(true);
+    const next = applyAction(current, action);
+    expect(next).not.toBe(current);
+    current = next;
+  }
+  if (current.phase === 'playing') {
+    expect(current.turn.currentPlayer).not.toBe(state.turn.currentPlayer);
+    expect(current.turn.phase).toBe('action');
+    expect(current.turn.actionsRemaining).toBe(4);
+    expect(current.upkeepPending).toBe(false);
+  } else expect(current.phase).toBe('victory');
+  const end = new Replica().pack(current);
+  const key = (end.kposHi >>> 0).toString(16).padStart(8, '0') + (end.kposLo >>> 0).toString(16).padStart(8, '0');
+  expect(result.endKey).toBe(key);
+  return current;
+}
+
+// Bounded depth keeps these tests about instrumentation, independent of an
+// accidental number of completed iterations at the old Standard work rung.
+const makeEngine = (maxDepth = 2) => new HardEngine({ maxDepth, useExtensions: false, useDfpn: false });
 
 interface Summary {
   actions: string;
@@ -69,14 +122,17 @@ function summarise(r: RootResult): Summary {
 
 describe('the instrument is off by default and changes nothing when on', () => {
   it.each(CASES)('$id: on and off agree, and the engine is unchanged after', async ({ state }) => {
-    const engine = new HardEngine();
+    const engine = makeEngine();
     const before = await engine.searchTurn(state, { work: WORK });
+    replayResult(state, before);
     expect(before.candidates).toBeUndefined();
     expect(before.rootTrace).toBeUndefined();
     expect(before.ply1).toBeUndefined();
 
     const on = await engine.searchTurn(state, { work: WORK, expose: true, ply1Trace: true });
     const after = await engine.searchTurn(state, { work: WORK });
+    replayResult(state, on);
+    replayResult(state, after);
 
     expect(summarise(on)).toEqual(summarise(before));
     expect(summarise(after)).toEqual(summarise(before));
@@ -86,8 +142,10 @@ describe('the instrument is off by default and changes nothing when on', () => {
   });
 
   it('a fresh engine agrees with an instrumented one', async () => {
-    const plain = await new HardEngine().searchTurn(CASES[0].state, { work: WORK });
-    const instrumented = await new HardEngine().searchTurn(CASES[0].state, { work: WORK, expose: true });
+    const plain = await makeEngine().searchTurn(CASES[0].state, { work: WORK });
+    const instrumented = await makeEngine().searchTurn(CASES[0].state, { work: WORK, expose: true });
+    replayResult(CASES[0].state, plain);
+    replayResult(CASES[0].state, instrumented);
     expect(summarise(instrumented)).toEqual(summarise(plain));
     expect(instrumented.ply1).toBeUndefined();
   });
@@ -95,7 +153,8 @@ describe('the instrument is off by default and changes nothing when on', () => {
 
 describe('what the instrument reports', () => {
   it.each(CASES)('$id: searched candidates carry scores, unsearched carry null', async ({ state }) => {
-    const r = await new HardEngine().searchTurn(state, { work: WORK, expose: true, ply1Trace: true });
+    const r = await makeEngine().searchTurn(state, { work: WORK, expose: true, ply1Trace: true });
+    replayResult(state, r);
     const candidates = r.candidates;
     expect(candidates).toBeDefined();
     if (candidates === undefined) return;
@@ -116,7 +175,8 @@ describe('what the instrument reports', () => {
   });
 
   it.each(CASES)('$id: the chosen candidate scores what the search returned', async ({ state }) => {
-    const r = await new HardEngine().searchTurn(state, { work: WORK, expose: true });
+    const r = await makeEngine().searchTurn(state, { work: WORK, expose: true });
+    replayResult(state, r);
     const candidates = r.candidates ?? [];
     const chosen = candidates.find(c => c.chosen);
     expect(chosen).toBeDefined();
@@ -127,7 +187,8 @@ describe('what the instrument reports', () => {
   });
 
   it.each(CASES)('$id: the list is the whole list the generator returned', async ({ state }) => {
-    const r = await new HardEngine().searchTurn(state, { work: WORK, expose: true });
+    const r = await makeEngine().searchTurn(state, { work: WORK, expose: true });
+    replayResult(state, r);
     const candidates = r.candidates ?? [];
     const trace = r.rootTrace ?? [];
     // A root that answered before iterative deepening — the must-answer scan,
@@ -164,8 +225,9 @@ describe('what the instrument reports', () => {
 
 describe('the ply-1 trace', () => {
   it.each(CASES)('$id: the reply node never uses the root generator', async ({ state }) => {
-    const r = await new HardEngine().searchTurn(state, { work: WORK, expose: true, ply1Trace: true });
+    const r = await makeEngine().searchTurn(state, { work: WORK, expose: true, ply1Trace: true });
     const ply1 = r.ply1 ?? [];
+    replayResult(state, r);
     const candidates = r.candidates ?? [];
     // Something was searched, so something generated at ply 1 — unless every
     // root candidate ended the game on the spot.
@@ -182,30 +244,45 @@ describe('the ply-1 trace', () => {
     }
   });
 
-  it('a depth-1 root sees the QUIESCE list at ply 1, a deeper one the interior list', async () => {
-    // A root iteration of depth 1 calls `pvs` at ply 1 with depth 0, which is
-    // `quiesce` — and `quiesce` generates only where the node has tactical
-    // potential, so a quiet position reports no ply-1 node at all. The
-    // `promotion-kill` fixture at 4,000 units is a depth-1 answer whose
-    // children ARE tactical, which is where the quiesce list shows up.
-    const authored = readPositions(path.join(POSITIONS_DIR, 'authored.jsonl'));
-    const tactical = authored.find(p => p.id === 'promotion-kill');
-    expect(tactical).toBeDefined();
-    if (tactical === undefined) return;
-    const shallow = await new HardEngine().searchTurn(tactical.state, {
-      work: 4_000,
-      expose: true,
-      ply1Trace: true,
-    });
-    const deep = await new HardEngine().searchTurn(CASES[0].state, {
-      work: 400_000,
-      expose: true,
-      ply1Trace: true,
-    });
-    const generators = (r: RootResult): Set<string> => new Set((r.ply1 ?? []).map(n => n.generator));
+  it('depth-controlled completed roots exercise quiesce and interior reply generators', async () => {
+    // A paid Metal-I arrives on Black's upcoming Act. Its POWER 2 against
+    // Sjor makes that reply tactical without a new buy or a pre-Act promotion.
+    const state = buildState({ phase: 'place', actions: 0, turnNumber: 5, units: [
+      { def: 'water_1', owner: 'white', x: 4, y: 2, id: 'target' },
+      { def: 'plant_1', owner: 'white', x: 0, y: 0, id: 'survivor' },
+      { def: 'plant_1', owner: 'black', x: 3, y: 3, id: 'anchor' },
+    ], pendingSummons: [{ def: 'metal_1', owner: 'black', x: 4, y: 3, id: 'paid' }] });
+    const handoff = applyAction(state, { type: 'END_PLACE_PHASE' });
+    expect(handoff.turn.currentPlayer).toBe('black');
+    expect(handoff.board.units.some(u => u.id === 'paid')).toBe(true);
+    expect(isLegalAction(handoff, { type: 'ATTACK', unitId: 'paid', targetPosition: { x: 4, y: 2 } })).toBe(true);
+    const captured = applyAction(handoff, { type: 'ATTACK', unitId: 'paid', targetPosition: { x: 4, y: 2 } });
+    expect(captured.board.units.some(u => u.id === 'target')).toBe(false);
+    const engine = (maxDepth: number) => new HardEngine({ maxDepth, useExtensions: false, useDfpn: false,
+      quiesce: { ...DESKTOP.quiesce, maxPly: 1 } });
+    const shallow = await engine(1).searchTurn(state, { work: WORK, expose: true, ply1Trace: true });
+    const deep = await engine(2).searchTurn(state, { work: 400_000, expose: true, ply1Trace: true });
+    replayResult(state, shallow);
+    replayResult(state, deep);
     expect(shallow.depth).toBe(1);
-    expect([...generators(shallow)]).toEqual(['quiesce']);
-    expect(deep.depth).toBeGreaterThan(1);
-    expect([...generators(deep)]).toEqual(['interior']);
+    expect(deep.depth).toBe(2);
+    for (const result of [shallow, deep]) {
+      expect(result.candidateSource).toBe('completed-depth');
+      expect(result.rootTrace?.some(row => row.completed)).toBe(true);
+      expect(result.ply1?.length).toBeGreaterThan(0);
+      expect(result.ply1?.every(node => !node.generators.includes('root'))).toBe(true);
+    }
+    expect(shallow.ply1?.some(node => node.generator === 'quiesce')).toBe(true);
+    expect(shallow.ply1?.every(node => !node.generators.includes('interior'))).toBe(true);
+    expect(deep.ply1?.some(node => node.generator === 'interior')).toBe(true);
+  });
+
+  it('an own paid Prepare commitment remains pending through the opponent handoff', async () => {
+    const state = CASES.find(c => c.id === 'own-pending-prepare')!.state;
+    const result = await makeEngine(1).searchTurn(state, { work: WORK, expose: true });
+    const end = replayResult(state, result);
+    expect(end.board.units.some(u => u.id === 'white-paid')).toBe(false);
+    expect(end.pendingSummons?.some(u => u.id === 'white-paid')).toBe(true);
+    expect(result.candidates?.some(c => c.chosen && c.endKey === result.endKey)).toBe(true);
   });
 });

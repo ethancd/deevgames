@@ -808,16 +808,17 @@ describe('DESIGN §4 declaration tests', () => {
     ];
     expect(declared.every(d => d !== undefined && d !== null)).toBe(true);
     expect(declared).toHaveLength(13);
-    // DESIGN §4.13's flag table, verbatim, and the tactical subset quiescence reads.
+    // Phasing M4 flags and the tactical subset quiescence reads.
     expect([
       TurnFlag.KILL, TurnFlag.CLEAVE_CHAIN, TurnFlag.HOME_ENTRY, TurnFlag.HOME_RESCUE, TurnFlag.SPAWN_DENY,
       TurnFlag.PURCHASE, TurnFlag.PROMOTION, TurnFlag.RETREAT, TurnFlag.QUIET, TurnFlag.FORCED,
-      TurnFlag.BOOK, TurnFlag.HOME_RACE, TurnFlag.SUMMON_STRIKE,
-    ]).toEqual([1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096]);
+      TurnFlag.BOOK, TurnFlag.HOME_RACE, TurnFlag.HOME_FORTIFY, TurnFlag.DISRUPT,
+    ]).toEqual([1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192]);
     expect(TACTICAL_FLAGS).toBe(
       TurnFlag.KILL | TurnFlag.CLEAVE_CHAIN | TurnFlag.HOME_ENTRY | TurnFlag.HOME_RESCUE |
-        TurnFlag.HOME_RACE | TurnFlag.SUMMON_STRIKE,
+        TurnFlag.HOME_RACE | TurnFlag.HOME_FORTIFY,
     );
+    expect(TACTICAL_FLAGS & TurnFlag.DISRUPT).toBe(0); // Refunds are not captures.
   });
 
   it('every §4.13 gen/purchase.ts, gen/promote.ts, gen/upkeep.ts, gen/generate.ts signature is exported with the frozen shape (M13)', () => {
@@ -868,8 +869,8 @@ describe('DESIGN §4 declaration tests', () => {
     ];
     expect(declared.every(d => d !== undefined && d !== null)).toBe(true);
     expect(declared).toHaveLength(15);
-    // DESIGN §4.13's mission table, verbatim.
-    expect([Mission.KILL, Mission.SURVIVE, Mission.INCOME, Mission.REACH, Mission.ANCHOR]).toEqual([0, 1, 2, 3, 4]);
+    // Prepare fortification replaces the old immediate-attack promotion mission.
+    expect([Mission.FORTIFY, Mission.SURVIVE, Mission.INCOME, Mission.REACH, Mission.ANCHOR]).toEqual([0, 1, 2, 3, 4]);
   });
 
   it('every §4.8-§4.10 tables signature is exported with the frozen shape (M6)', () => {

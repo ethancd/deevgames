@@ -3,7 +3,7 @@
  * `src/ai/hard/gen/trace.ts` — E2.2's opt-in stage trace.
  *
  * The trace's whole licence is that it changes nothing. This file is the proof:
- * on a dozen corpus positions the candidate list `TurnGenerator.generate`
+ * on a dozen authored Phasing positions the candidate list `TurnGenerator.generate`
  * returns with a trace installed is compared field by field — count, order,
  * `endHi`/`endLo`, `gainCc`, `flags`, `place`, `sig`, the action words — against
  * the untraced list, and the `GenStats` alongside it. A no-trace/no-trace pair
@@ -14,9 +14,8 @@
  * list is found at its own rank, and a target that is not a legal end position
  * of the node reports `beamReached = 0`.
  */
-import path from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
-import { readPositions } from '../../../lab/hard-ai/positions/corpus';
+import { buildState } from './game-fixture';
 import { Replica, allocState } from '../../../src/ai/hard/core/state';
 import { Scratch } from '../../../src/ai/hard/core/bits';
 import { newKeepSetTable, type KeepSetTable } from '../../../src/ai/hard/core/action';
@@ -32,9 +31,8 @@ import type { GameState } from '../../../src/game/types';
 
 vi.setConfig({ testTimeout: 60_000 });
 
-const CORPUS = path.resolve(import.meta.dirname, '../../../lab/hard-ai/positions/fuzz-1000.jsonl');
-/** Byte-identity is asserted on this many packable corpus positions (brief: ≥ 8). */
-const POSITIONS = 12;
+// Authored Phasing roots only. This tests observational identity and final
+// membership; historical purchase-before-Act stage attribution is not certified.
 
 const rep = new Replica();
 const sc = new Scratch(8, 8, 4, 4);
@@ -60,15 +58,11 @@ interface Snapshot {
   stats: GenStats;
 }
 
-function packOrNull(state: GameState): PackedState | null {
-  try {
-    const p = rep.pack(state, allocState());
-    if (p.result !== Result.ONGOING) return null;
-    p.proverMode = 2;
-    return p;
-  } catch {
-    return null;
-  }
+function pack(state: GameState): PackedState {
+  const p = rep.pack(state, allocState());
+  expect(p.result).toBe(Result.ONGOING);
+  p.proverMode = 2;
+  return p;
 }
 
 /** One generation, reduced to a string per candidate so a diff names the row. */
@@ -81,14 +75,28 @@ function run(p: PackedState, ply: number): Snapshot {
   for (let i = 0; i < n; i++) {
     const t = out[i];
     const actions = Array.from(t.actions.subarray(0, t.count)).join(',');
-    rows.push(`${t.endHi}|${t.endLo}|${t.gainCc}|${t.flags}|${t.place}|${t.sig}|${t.count}|${actions}`);
+    rows.push(`${t.endHi}|${t.endLo}|${t.gainCc}|${t.flags}|${t.place}|${t.sig}|${t.count}|${actions}|${t.keepMask ? [...t.keepMask].join(",") : "none"}`);
   }
   return { count: n, rows, stats: { ...stats } };
 }
 
-const positions = readPositions(CORPUS)
-  .filter(sp => sp.state.phase === 'playing')
-  .slice(0, POSITIONS);
+const positions = Array.from({ length: 12 }, (_, i) => ({
+  id: `authored-phasing-${i}`,
+  state: buildState({
+    current: i % 2 === 0 ? 'white' : 'black',
+    phase: i % 3 === 0 ? 'place' : 'action',
+    actions: i % 3 === 0 ? 0 : 1 + i % 2,
+    upkeepPending: i % 3 === 0,
+    reviewUpkeep: { white: i % 4 === 0, black: i % 4 === 1 },
+    white: 3 + i % 3, black: 3 + i % 3,
+    units: [
+      { def: 'plant_1', owner: 'white', x: 1, y: 1 },
+      { def: 'fire_2', owner: 'white', x: 3, y: 3 },
+      { def: 'plant_1', owner: 'black', x: 8, y: 8 },
+      { def: 'fire_2', owner: 'black', x: 6, y: 6 },
+    ],
+  }),
+}));
 
 describe('gen/trace: byte identity', () => {
   it('has at least eight positions to test', () => {
@@ -97,8 +105,7 @@ describe('gen/trace: byte identity', () => {
 
   for (const sp of positions) {
     it(`${sp.id}: a trace changes neither the candidate list nor GenStats`, () => {
-      const p = packOrNull(sp.state);
-      if (p === null) return;
+      const p = pack(sp.state);
 
       gen.setTrace(null);
       const control = run(p, 0);
@@ -133,8 +140,7 @@ describe('gen/trace: byte identity', () => {
 
 describe('gen/trace: interior nodes', () => {
   it('records the interior keep-set cap and the interior K', () => {
-    const p = packOrNull(positions[0].state);
-    expect(p).not.toBeNull();
+    const p = pack(positions[0].state);
     const interior = new TurnGenerator(rep, DESKTOP.genInterior, pool, sc);
     const interiorOut = new Array<Turn>(outCapacityFor(DESKTOP.genInterior));
     resetGenTrace(trace, 0x7ffffff1, 0x7ffffff2);

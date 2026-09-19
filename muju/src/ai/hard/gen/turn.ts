@@ -2,20 +2,18 @@
  * The macro-turn record, its pool, its abstract signature and its decoder
  * (DESIGN §4.13 `gen/turn.ts`).
  *
- * A `Turn` is one whole macro turn: the place-plan prefix (`PAY_UPKEEP`, the
- * buys and promotions, `END_PLACE`), the action-phase line, and the terminal
- * action — `END_ACTION`, or nothing at all when the last action already ended
+ * A `Turn` completes the mover's Act, then upkeep and Prepare, ending at
+ * END_PLACE (the opponent's Act) or immediately when an action has ended
  * the game (a lethal `ATTACK` that eliminates, or a move the home-checkmate
  * gate resolves). `endLo`/`endHi` are the `Kpos` of the position the boundary
  * produced, which is what the macro TT, the book and the suites key on
  * (DESIGN §3.3).
  *
- * Every `Turn` object belongs to a `TurnPool`: the search allocates a fixed
- * number of them once and then recycles the whole pool per node, so nothing
- * under `gen/` allocates inside a search.
+ * Search-owned `Turn` records belong to a fixed `TurnPool`. An upkeep mask is
+ * copied into its retained record so a later candidate cannot replace it.
  */
 import type { AIAction } from '../../types';
-import { DEAD, MAX_TURN_ACTIONS, type Centi, type PackedState } from '../types';
+import { DEAD, MAX_SLOTS, MAX_TURN_ACTIONS, Result, type Centi, type PackedState } from '../types';
 import { AKind, paA, paB, paKind, toAIAction, type KeepSetTable } from '../core/action';
 import { activeCatalog } from '../core/catalog';
 import { Replica, allocState, copyState, newUndo, type Undo } from '../core/state';
@@ -34,19 +32,22 @@ export const TurnFlag = {
   FORCED: 512,
   BOOK: 1024,
   HOME_RACE: 2048,
-  SUMMON_STRIKE: 4096,
+  HOME_FORTIFY: 4096,
+  DISRUPT: 8192,
 } as const;
 export type TurnFlag = (typeof TurnFlag)[keyof typeof TurnFlag];
 
 /** The tactical flags `search/quiesce.ts isTacticalTurn` (M14) keys on; a turn
  * carrying none of them is `QUIET`. */
 export const TACTICAL_FLAGS =
-  TurnFlag.KILL | TurnFlag.CLEAVE_CHAIN | TurnFlag.HOME_ENTRY | TurnFlag.HOME_RESCUE | TurnFlag.HOME_RACE | TurnFlag.SUMMON_STRIKE;
+  TurnFlag.KILL | TurnFlag.CLEAVE_CHAIN | TurnFlag.HOME_ENTRY | TurnFlag.HOME_RESCUE | TurnFlag.HOME_RACE | TurnFlag.HOME_FORTIFY;
 
 export interface Turn {
   /** Packed `PA`s, capacity `MAX_TURN_ACTIONS`; owned by the pool. */
   actions: Int32Array;
   count: number;
+  /** Owned slot mask for this turn's PAY_UPKEEP (encoded with index zero). */
+  keepMask?: Uint32Array;
   /** `Kpos` after the turn boundary. */
   endLo: number;
   endHi: number;
@@ -78,6 +79,7 @@ function newTurn(): Turn {
 /** Resets every scalar field; `actions` is left as it is (only `count` entries are ever read). */
 function resetTurn(t: Turn): Turn {
   t.count = 0;
+  t.keepMask = undefined;
   t.endLo = 0;
   t.endHi = 0;
   t.sig = 0;
@@ -128,6 +130,15 @@ export class TurnPool {
   }
 }
 
+/** Deep copy the owned upkeep choice as well as the action buffer. */
+export function copyTurnRecord(dst: Turn, src: Turn): Turn {
+  dst.actions.set(src.actions.subarray(0, src.count));
+  dst.count = src.count; dst.keepMask = src.keepMask?.slice();
+  dst.endLo = src.endLo; dst.endHi = src.endHi; dst.sig = src.sig;
+  dst.flags = src.flags; dst.gainCc = src.gainCc; dst.place = src.place; dst.hangCc = src.hangCc;
+  return dst;
+}
+
 function mix(h: number, v: number): number {
   return Math.imul(h ^ v, 0x01000193) | 0;
 }
@@ -162,6 +173,12 @@ export function turnSignature(p: PackedState, t: Turn): number {
         break;
       case AKind.PAY_UPKEEP:
         origin = 400 + paA(a);
+        if (t.keepMask) {
+          for (let sq = 0; sq < 100; sq++) {
+            const slot = p.pieceAt[sq];
+            if (slot >= 0 && (t.keepMask[slot >>> 5] & (1 << (slot & 31))) !== 0) h = mix(h, 700 + sq);
+          }
+        }
         break;
       case AKind.END_PLACE:
       case AKind.END_ACTION:
@@ -174,12 +191,25 @@ export function turnSignature(p: PackedState, t: Turn): number {
   return h >>> 0;
 }
 
+/** Resolve an owned choice; legacy hand-authored turns require an explicit table. */
+export function keepForTurn(t: Turn, fallback?: KeepSetTable): KeepSetTable {
+  const keep = t.keepMask === undefined ? fallback : { masks: t.keepMask, count: 1 };
+  if (t.keepMask !== undefined && t.keepMask.length !== (MAX_SLOTS >>> 5)) throw new Error('Invalid turn keep mask');
+  for (let i = 0; i < t.count; i++) {
+    if (paKind(t.actions[i]) !== AKind.PAY_UPKEEP) continue;
+    const index = paA(t.actions[i]);
+    if (!keep || index >= keep.count || keep.masks.length < (index + 1) * (MAX_SLOTS >>> 5)) {
+      throw new Error('Missing turn upkeep choice');
+    }
+  }
+  return keep ?? { masks: new Uint32Array(0), count: 0 };
+}
+
 // --- decoding ----------------------------------------------------------------
 
 /**
- * Forward-only scratch for `decodeTurn`. A turn's later actions reference
- * units the turn's own earlier actions created (a `BUY` then a `MOVE` of the
- * bought unit), and `toAIAction` derives a unit id from the state it is handed
+ * Forward-only scratch for `decodeTurn`. Later actions use the post-action
+ * board (including upkeep releases), and `toAIAction` derives a unit id from the state it is handed
  * (`core/action.ts unitIdFor`), so the decoder has to walk the turn forward
  * over a copy rather than decode every action against the root. The engine is
  * single-threaded, so one module-level copy suffices; `decodeTurn` is a
@@ -196,6 +226,13 @@ function replicaFor(p: PackedState): Replica {
   return decodeReplica;
 }
 
+/** A decode failure retains the decodable prefix for canonical fault reporting. */
+export class TurnDecodeError extends Error {
+  constructor(readonly actions: AIAction[], readonly index: number) {
+    super(`Invalid macro action ${index}`);
+  }
+}
+
 /**
  * The canonical `AIAction[]` a turn dispatches, in order (DESIGN §4.13).
  * `p` is the pre-turn state and `keep` the keep-set table the turn's
@@ -205,12 +242,16 @@ function replicaFor(p: PackedState): Replica {
  */
 export function decodeTurn(p: PackedState, t: Turn, keep: KeepSetTable): AIAction[] {
   const rep = replicaFor(p);
+  keep = keepForTurn(t, keep);
   copyState(DECODE_STATE, p);
   rep.resetUndoScratch();
   const out: AIAction[] = new Array<AIAction>(t.count);
   for (let i = 0; i < t.count; i++) {
     const a = t.actions[i];
     out[i] = toAIAction(DECODE_STATE, a, keep);
+    if (DECODE_STATE.result !== Result.ONGOING || DECODE_STATE.side !== p.side || !rep.isLegal(DECODE_STATE, a, keep)) {
+      throw new TurnDecodeError(out.slice(0, i + 1), i);
+    }
     // Forward-only: the undo record of the action just applied is never
     // replayed, so both stacks are dropped before the next `make`.
     DECODE_UNDO.top = 0;

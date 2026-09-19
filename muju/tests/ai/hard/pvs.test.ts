@@ -23,40 +23,66 @@ import {
   unmakeTurn,
 } from '../../../src/ai/hard/search/pvs';
 import { HardEngine } from '../../../src/ai/hard/engine';
-import { TurnFlag } from '../../../src/ai/hard/gen/turn';
+import { DESKTOP, type HardConfig } from '../../../src/ai/hard/config';
+import { WorkClass } from '../../../src/ai/hard/search/time';
+import { TurnFlag, type Turn } from '../../../src/ai/hard/gen/turn';
+import { verifyTurn } from '../../../src/ai/hard/verify/replay';
 import { buildState } from './game-fixture';
 import { candidates, prepare } from './search-fixture';
 
 // E0.5 timeout budget: slowest test 36.9 s in the 2026-09-15 survey (M2 Max, load ~5, maxWorkers 2); 180 s is this file's explicit ceiling.
 vi.setConfig({ testTimeout: 180_000 });
 
+const tiny = () => buildState({ reserves: new Array(100).fill(0), units: [
+  { def: 'fire_1', owner: 'white', x: 2, y: 2 },
+  { def: 'plant_1', owner: 'black', x: 7, y: 7 },
+] });
+const tinyGen = { ...DESKTOP.gen, K: 4, maxPlacePlans: 1,
+  action: { ...DESKTOP.gen.action, widths: Int32Array.of(2, 1, 1, 1), keep: 4 } };
+const tinyConfig: Partial<HardConfig> = { maxDepth: 2, gen: tinyGen, genInterior: tinyGen,
+  useExtensions: false, useAspiration: false, useLmr: false, useFutility: false };
+const retained = (t: Turn | null, scoreCc: number) => t === null ? null : ({
+  actions: Array.from(t.actions.subarray(0, t.count)), count: t.count,
+  keepMask: t.keepMask ? Array.from(t.keepMask) : null, end: [t.endHi, t.endLo], scoreCc,
+});
+
 describe('pvs', () => {
   it('matches a hand-rolled one-ply maximisation at depth 1', () => {
-    const prepared = prepare(createInitialGameState(), 800_000);
+    const prepared = prepare(tiny(), 1_000_000, tinyConfig);
     const { ctx, p } = prepared;
     const mover = p.side as Side;
 
     const value = pvs(ctx, p, 1, -INF, INF, 0, 0);
+    expect(ctx.truncated).toBe(false);
+    expect(ctx.meter.exhausted()).toBe(false);
 
     // Re-derive the same quantity from the same candidate list.
-    const fresh = prepare(createInitialGameState(), 800_000);
+    const fresh = prepare(tiny(), 1_000_000, tinyConfig);
     const { turns, n } = candidates(fresh);
     expect(n).toBeGreaterThan(0);
     let best = -INF;
     for (let i = 0; i < n; i++) {
       const applied = makeTurn(fresh.ctx, fresh.p, turns[i], fresh.ctx.keep[0]);
-      if (applied === turns[i].count) {
+      expect(applied).toBe(turns[i].count);
+      {
         const terminal = terminalScore(fresh.p, mover, 1);
+        if (terminal === null) {
+          expect(fresh.p.side).not.toBe(mover);
+          expect(fresh.p.phase).toBe(1);
+          expect(fresh.p.actions).toBe(4);
+        }
         const child = terminal !== null ? terminal : -quiesce(fresh.ctx, fresh.p, -INF, INF, 1, 0);
         if (child > best) best = child;
       }
       unmakeTurn(fresh.ctx, fresh.p, applied);
     }
+    expect(fresh.ctx.truncated).toBe(false);
+    expect(fresh.ctx.meter.exhausted()).toBe(false);
     expect(value).toBe(best);
   }, 60_000); // explicit per-test budget; see the E0.5 timeout note at the top of this file
 
   it('leaves the position byte-identical after a multi-ply search', () => {
-    const prepared = prepare(createInitialGameState(), 200_000);
+    const prepared = prepare(createInitialGameState(undefined, 4, 0, 'phasing'), 200_000);
     const { ctx, p } = prepared;
     const before = ctx.rep.digest(p);
     pvs(ctx, p, 3, -INF, INF, 0, 0);
@@ -64,26 +90,42 @@ describe('pvs', () => {
     ctx.rep.check(p);
   }, 60_000); // explicit per-test budget; see the E0.5 timeout note at the top of this file
 
-  it('a deeper search never reports a lower depth than a shallower one', () => {
-    const prepared = prepare(createInitialGameState(), 200_000);
-    const result = iterativeDeepening(prepared.ctx, prepared.p);
-    expect(result.depth).toBeGreaterThanOrEqual(1);
-    expect(result.best).not.toBeNull();
-    expect(result.pv.length).toBeGreaterThan(0);
-    expect(result.stats.nodes).toBeGreaterThan(0);
-  }, 60_000); // explicit per-test budget; see the E0.5 timeout note at the top of this file
+  it('completes the requested shallow and deeper search depths on an authored tree', () => {
+    for (const depth of [1, 2]) {
+      const { ctx, p } = prepare(tiny(), 1_000_000, { ...tinyConfig, maxDepth: depth });
+      const result = iterativeDeepening(ctx, p);
+      expect(result.depth).toBe(depth);
+      expect(ctx.truncated).toBe(false);
+      expect(result.best).not.toBeNull();
+      expect(result.pv.length).toBeGreaterThan(0);
+      expect(result.stats.nodes).toBeGreaterThan(0);
+    }
+  });
 
-  it('never starts an iteration past DESIGN §5.11.2\'s 0.45 guard', () => {
-    // A tiny rung: depth 1 runs, and the guard stops the search before it can
-    // spend a second iteration it could not finish.
-    const prepared = prepare(createInitialGameState(), 3_000);
-    const result = iterativeDeepening(prepared.ctx, prepared.p);
-    expect(result.depth).toBe(1);
-    expect(['work', 'abort', 'complete']).toContain(result.stats.stopReason);
+  it('applies the 0.45 iteration-start guard to an already completed answer', () => {
+    for (const above of [false, true]) {
+      const { ctx, p } = prepare(tiny(), 1_000_000, tinyConfig);
+      const depths: number[] = [];
+      let first: ReturnType<typeof retained> = null;
+      const result = iterativeDeepening(ctx, p, r => {
+        depths.push(r.depth);
+        if (r.depth !== 1) return;
+        first = retained(r.best, r.scoreCc);
+        const target = Math.floor(ctx.meter.limit * 0.45) + (above ? 1 : 0);
+        expect(ctx.meter.used).toBeLessThan(target);
+        ctx.meter.spend(WorkClass.TURN, target - ctx.meter.used);
+      });
+      expect(result.depth).toBe(above ? 1 : 2);
+      expect(depths).toEqual(above ? [1] : [1, 2]);
+      if (above) {
+        expect(result.stats.stopReason).toBe('work');
+        expect(retained(result.best, result.scoreCc)).toEqual(first);
+      }
+    }
   });
 
   it('respects the work rung', () => {
-    const prepared = prepare(createInitialGameState(), 50_000);
+    const prepared = prepare(createInitialGameState(undefined, 4, 0, 'phasing'), 50_000);
     iterativeDeepening(prepared.ctx, prepared.p);
     // The meter may overshoot by at most one node's charge.
     expect(prepared.ctx.meter.used).toBeLessThan(50_000 + 5_000);
@@ -92,7 +134,7 @@ describe('pvs', () => {
   it('polls `stop` and truncates instead of finishing the iteration', () => {
     const engine = new HardEngine();
     const ctx = engine.ctx;
-    const p = ctx.rep.pack(createInitialGameState(), engine.rootState);
+    const p = ctx.rep.pack(createInitialGameState(undefined, 4, 0, 'phasing'), engine.rootState);
     p.proverMode = 2;
     ctx.meter.reset(2_000_000);
     let calls = 0;
@@ -103,41 +145,28 @@ describe('pvs', () => {
     expect(result.depth).toBeLessThanOrEqual(2);
   }, 60_000); // explicit per-test budget; see the E0.5 timeout note at the top of this file
 
-  it('a truncated iteration can only truncate, never change the move', () => {
-    // DESIGN §5.11.6: the abort watchdog "can only truncate iterative deepening
-    // (returning the last completed depth), never alter a completed depth".
-    //
-    // `stop()` is polled at iteration boundaries, inside the candidate loop and
-    // inside quiescence, and until it first answers true the search is
-    // bit-identical to one whose `stop()` is constant false. So the move a
-    // truncated search reports at depth `d` must be the move the UNTRUNCATED
-    // search chose at that same depth — anything else means a partially
-    // searched deeper iteration overwrote a completed answer in place.
-    const key = (t: { endHi: number; endLo: number }): string =>
-      `${(t.endHi >>> 0).toString(16)}:${(t.endLo >>> 0).toString(16)}`;
-
-    const baseline = prepare(createInitialGameState(), 800_000);
-    const byDepth = new Map<number, string>();
-    iterativeDeepening(baseline.ctx, baseline.p, r => {
-      if (r.best !== null) byDepth.set(r.depth, key(r.best));
+  it('an interrupted deeper iteration preserves all fields of the completed answer', () => {
+    const baseline = prepare(tiny(), 1_000_000, tinyConfig);
+    const byDepth = new Map<number, ReturnType<typeof retained>>();
+    iterativeDeepening(baseline.ctx, baseline.p, r => byDepth.set(r.depth, retained(r.best, r.scoreCc)));
+    expect([...byDepth.keys()]).toEqual([1, 2]);
+    const run = prepare(tiny(), 1_000_000, tinyConfig);
+    let firstNodes = -1;
+    run.ctx.stop = () => firstNodes >= 0 && run.ctx.stats.nodes >= firstNodes + 2;
+    const completed: number[] = [];
+    const result = iterativeDeepening(run.ctx, run.p, r => {
+      completed.push(r.depth);
+      if (r.depth === 1) firstNodes = run.ctx.stats.nodes;
     });
-    expect(byDepth.size).toBeGreaterThan(1);
-
-    // The trip points are not arbitrary: on this position, `stop()` first
-    // answering true anywhere in 36..58 lands inside a deeper iteration that
-    // had already changed its best-so-far, which is exactly the window the
-    // aliasing bug was visible in (measured: it returned the wrong move on
-    // 12 of the first 200 trip points, all but two of them in that band).
-    for (const trip of [2, 36, 48, 58, 96]) {
-      const run = prepare(createInitialGameState(), 800_000);
-      let calls = 0;
-      run.ctx.stop = () => ++calls > trip;
-      const result = iterativeDeepening(run.ctx, run.p);
-      expect(result.best).not.toBeNull();
-      if (result.depth === 0) continue; // nothing completed: the partial answer
-      expect(`d${result.depth}=${key(result.best!)}`).toBe(`d${result.depth}=${byDepth.get(result.depth)}`);
-    }
-  }, 180_000); // measured 36.9 s in the E0.5 survey; 5x headroom, down from an uncommented 300 s
+    expect(completed).toEqual([1]);
+    expect(result.depth).toBe(1);
+    expect(result.stats.nodes).toBeGreaterThan(firstNodes + 1);
+    expect(result.stats.stopReason).toBe('abort');
+    expect(run.ctx.truncated).toBe(true);
+    expect(retained(result.best, result.scoreCc)).toEqual(byDepth.get(1));
+    const replay = verifyTurn(run.ctx.rep, tiny(), run.p, result.best!, run.ctx.keep[0]);
+    expect(replay.verified, replay.reason).toBe(true);
+  });
 
   it('the df-pn hook is wired and answers UNKNOWN at M14', () => {
     // `useDfpn` is off in every shipped profile; forcing it on must not change
@@ -161,45 +190,48 @@ describe('pvs', () => {
     expect(off.ctx.stats.dfpnCalls).toBe(0);
   }, 60_000); // explicit per-test budget; see the E0.5 timeout note at the top of this file
 
-  it('injects the prover rescue witness, upkeep pending or not', () => {
-    // DESIGN §5.6 injection 4 / §5.10 item 3: when an enemy holds my corner the
-    // prover's own witness line is a FORCED candidate. `tactics/prover.ts`
-    // writes that line for the position at the DEFENDER'S UPKEEP, so it opens
-    // with `PAY_UPKEEP` against the prover's private keep-set table — and
-    // `search/root.ts installRescueWitness` is what makes it a line the node can
-    // play (drop the `PAY_UPKEEP` when none is pending, adopt the keep-set and
-    // re-index it when one is). Without that the injection is dead in every
-    // position, and the defender walks into a mate it could have answered.
+  it('injects an Act rescue and completes its post-Act upkeep and Prepare', () => {
+    // The Phasing witness is pure Act. The macro generator must append the
+    // mover's upkeep/Prepare, stopping before the opponent acts. An additional
+    // black survivor prevents the rescue attack from ending by elimination.
     const units = [
       { def: 'plant_1', owner: 'black' as const, x: 0, y: 0, id: 'invader' },
       { def: 'plant_1', owner: 'white' as const, x: 1, y: 0, id: 'defender-1' },
       { def: 'fire_1', owner: 'white' as const, x: 2, y: 0, id: 'defender-2' },
+      { def: 'metal_1', owner: 'black' as const, x: 9, y: 9, id: 'survivor' },
     ];
-    for (const upkeepPending of [true, false]) {
-      const state = buildState({
-        current: 'white',
-        phase: 'place',
-        actions: 4,
-        upkeepPending,
-        units,
-      });
+    for (const review of [true, false]) {
+      const state = buildState({ current: 'white', phase: 'action', actions: 4,
+        reviewUpkeep: { white: review, black: false }, units });
       const prepared = prepare(state, 400_000);
       const { turns, n } = candidates(prepared);
-      let rescues = 0;
-      for (let i = 0; i < n; i++) {
-        if ((turns[i].flags & TurnFlag.HOME_RESCUE) !== 0) rescues++;
+      const rescues = turns.slice(0, n).filter(t => (t.flags & TurnFlag.HOME_RESCUE) !== 0);
+      expect(rescues.length).toBeGreaterThan(0);
+      expect(turns[0].flags & TurnFlag.HOME_RESCUE).not.toBe(0);
+      for (const turn of rescues) {
+        expect(turn.flags & TurnFlag.FORCED).not.toBe(0);
+        const replay = verifyTurn(prepared.ctx.rep, state, prepared.p, turn, prepared.ctx.keep[0]);
+        expect(replay.verified, replay.reason).toBe(true);
+        expect(replay.actions.some(a => a.type === 'ATTACK')).toBe(true);
+        expect(replay.actions.some(a => a.type === 'PAY_UPKEEP')).toBe(review);
+        expect(replay.actions.at(-1)?.type).toBe('END_PLACE_PHASE');
+        expect(replay.endState.turn.currentPlayer).toBe('black');
+        expect(replay.endState.turn.phase).toBe('action');
+        expect(replay.endState.board.units.some(u => u.id === 'invader')).toBe(false);
       }
-      expect(`upkeepPending=${String(upkeepPending)} rescues=${rescues > 0}`).toBe(
-        `upkeepPending=${String(upkeepPending)} rescues=true`,
-      );
-      // The witness is FORCED, so it is in the list before the beam runs, and
-      // the ordering puts `HOME_RESCUE` first (§5.11.3 item 2).
-      expect((turns[0].flags & TurnFlag.HOME_RESCUE) !== 0).toBe(true);
     }
-  }, 60_000); // explicit per-test budget; see the E0.5 timeout note at the top of this file
+    for (const upkeepPending of [false, true]) {
+      const state = buildState({ current: 'white', phase: 'place', actions: 0,
+        upkeepPending, units });
+      const prepared = prepare(state, 400_000);
+      const { turns, n } = candidates(prepared);
+      expect(n).toBeGreaterThan(0);
+      expect(turns.slice(0, n).every(t => (t.flags & TurnFlag.HOME_RESCUE) === 0)).toBe(true);
+    }
+  }, 60_000);
 
   it('a decided position scores as a terminal, not as an evaluation', () => {
-    const prepared = prepare(createInitialGameState(), 100_000);
+    const prepared = prepare(createInitialGameState(undefined, 4, 0, 'phasing'), 100_000);
     const { ctx, p } = prepared;
     p.result = Result.WHITE_WIN;
     expect(pvs(ctx, p, 3, -INF, INF, 0, 0)).toBe(terminalScore(p, p.side as Side, 0));

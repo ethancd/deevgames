@@ -206,9 +206,8 @@ const PROOF_BITS = 15;
 /**
  * DESIGN §5.11.4's quiescence generator: the interior cone narrowed to
  * `quiesce.maxCandidates`. The place phase is narrowed with it — a tactical
- * turn is overwhelmingly an ACTION-phase line, and the one place-phase family
- * quiescence must not lose (summon-and-strike) rides on the purchase plans the
- * kill table already ranks first.
+ * turn is usually an Act line. Prepare home fortification remains tactical;
+ * purchases create delayed commitments and cannot supply a same-turn strike.
  */
 function quiesceGenConfig(cfg: HardConfig): GenConfig {
   const base = cfg.genInterior;

@@ -15,6 +15,9 @@ import { terminalScore } from '../../../src/ai/hard/eval/evaluate';
 import { MATE_BOUND_CC, scoreFromTT, scoreToTT } from '../../../src/ai/hard/search/tt';
 import { HardEngine } from '../../../src/ai/hard/engine';
 import { allocState, Replica } from '../../../src/ai/hard/core/state';
+import { applyAction } from '../../../src/ai/simulate';
+import { isLegalAction } from '../../../src/game/legality';
+import type { AIAction } from '../../../src/ai/types';
 import { buildState } from './game-fixture';
 
 // E0.5 timeout budget: slowest test 0.0 s in the 2026-09-15 survey (M2 Max, load ~5, maxWorkers 2); 10 s is this file's explicit ceiling.
@@ -24,6 +27,20 @@ const rep = new Replica();
 
 function packed(state: ReturnType<typeof buildState>) {
   return rep.pack(state, allocState());
+}
+
+function replay(state: ReturnType<typeof buildState>, actions: AIAction[]) {
+  const actor = state.turn.currentPlayer;
+  let current = state;
+  for (const action of actions) {
+    expect(current.phase).toBe('playing');
+    expect(current.turn.currentPlayer).toBe(actor);
+    expect(isLegalAction(current, action)).toBe(true);
+    current = applyAction(current, action);
+    if (action.type === 'MOVE') expect(current.phase).toBe('playing');
+  }
+  expect(current.phase).toBe('victory');
+  return current;
 }
 
 describe('terminalScore', () => {
@@ -105,6 +122,9 @@ describe('the engine on a mate in one', () => {
     expect(['mate', 'home-race']).toContain(result.source);
     expect(result.scoreCc).toBeGreaterThan(MATE_BOUND_CC);
     expect(result.fallback).toBeUndefined();
+    const end = replay(state, result.actions);
+    expect(end.winner).toBe('white');
+    expect(result.actions.at(-1)?.type).toBe('END_ACTION_PHASE');
   }, 60_000); // explicit per-test budget; see the E0.5 timeout note at the top of this file
 
   it('a lost position is scored as a loss, not clamped', async () => {
@@ -122,6 +142,8 @@ describe('the engine on a mate in one', () => {
     const engine = new HardEngine();
     const result = await engine.searchTurn(state, { work: 200_000 });
     expect(result.actions.length).toBeGreaterThan(0);
-    expect(result.scoreCc).toBeLessThan(0);
+    expect(result.fallback).toBeUndefined();
+    expect(result.scoreCc).toBeLessThan(-MATE_BOUND_CC);
+    expect(replay(state, result.actions).winner).toBe('black');
   }, 60_000); // explicit per-test budget; see the E0.5 timeout note at the top of this file
 });

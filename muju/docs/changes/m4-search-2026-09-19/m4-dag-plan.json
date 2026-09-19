@@ -1,0 +1,475 @@
+{
+  "schema_version": 1,
+  "notice": "Review plan only: no edits, tests, media generation or deployments have run. Unselected prerequisites must be current but need no automatic rebuild. Unmapped paths require manual investigation; this graph is not a semantic proof.",
+  "historical_paths": [],
+  "unmapped_paths": [],
+  "nodes": [
+    {
+      "id": "wasm-tactics",
+      "title": "Compiled tactical solver and canonical witness validation",
+      "depends_on": [
+        "transitions"
+      ],
+      "paths": [
+        "muju/assembly/tactics.ts",
+        "muju/src/ai/wasm/",
+        "muju/asconfig.json"
+      ],
+      "update": [
+        "Review duplicated tactical semantics and ABI assumptions. kernel.ts packs stats and attack powers from canonical definitions; do not invent a second stat table. Rebuild tactics.wasm when affected."
+      ],
+      "verify": [
+        "Replay solver witnesses through canonical legality/transitions. Compare TS and WASM on changed combat/movement/promotion cases, including bounded-search unknown results."
+      ],
+      "commands": [
+        {
+          "cwd": "muju",
+          "run": "npm run ai:wasm",
+          "effect": "Rebuilds generated WASM; also runs automatically before npm test/build."
+        }
+      ],
+      "status": "pending",
+      "missing_paths": [],
+      "source_requirements": [],
+      "reasons": [
+        "change kind: ai"
+      ],
+      "unchanged_prerequisites": [
+        "transitions"
+      ]
+    },
+    {
+      "id": "ai-search",
+      "title": "Deterministic game AI, evaluation, planning and worker",
+      "depends_on": [
+        "transitions",
+        "wasm-tactics"
+      ],
+      "paths": [
+        "muju/src/ai/",
+        "muju/lab/ai/",
+        "muju/lab/docs/",
+        "muju/AI_ENGINE_PLAN.md",
+        "muju/AI_ENGINE_QUESTIONS.md"
+      ],
+      "update": [
+        "Review moves, evaluation, beam plans, MCTS, placement strategies, budgets, tactical sharpening and worker protocol. Rules changes may alter reach, affordability and threat assumptions even when stats import automatically. Historical design plans are context, not implementation authority."
+      ],
+      "verify": [
+        "Check legal complete turns, reproducibility under fixed seeds/work budgets, worker execution and deadlines. Separate rule correctness from strength; run targeted matchups when balance claims are made."
+      ],
+      "commands": [
+        {
+          "cwd": "muju",
+          "run": "npm run ai:tactics",
+          "effect": "Runs tactical cases and writes a fresh lab result directory; inspect results."
+        }
+      ],
+      "status": "pending",
+      "missing_paths": [],
+      "source_requirements": [],
+      "reasons": [
+        "change kind: ai",
+        "upstream changed: wasm-tactics"
+      ],
+      "unchanged_prerequisites": [
+        "transitions"
+      ]
+    },
+    {
+      "id": "hard-ai",
+      "title": "Hard engine: packed rules replica, turn generator, prover, evaluation and search",
+      "depends_on": [
+        "transitions",
+        "ai-search"
+      ],
+      "paths": [
+        "muju/src/ai/hard/",
+        "muju/src/ai/hardOptIn.ts",
+        "muju/docs/hard-ai/"
+      ],
+      "update": [
+        "src/ai/hard is a complete second rules engine: core/state.ts mirrors legality, transitions, turn boundaries, upkeep and terminals; tactics/prover.ts mirrors analyzeHomeDefense; gen/ encodes the macro-turn grammar and forced injections; tables/, core/income.ts and eval/weights.ts encode timing and economy assumptions. Any change to turn order, purchases, upkeep, mining, movement cost or home-checkmate needs a matching replica change, not just a re-import. pack must reject states it cannot represent rather than drop fields. Keep the worker and UI guards closed for unsupported rules until ai-strength passes.",
+        "Hash every state field that changes future boards into Kpos/Kturn. Bump weightsVersion, book magic and the ladder identity hash when rules, features or weights change."
+      ],
+      "verify": [
+        "Every emitted turn replays through canonical isLegalAction/applyAction with matching position keys (verify/replay.ts). Runtime fallback and divergence counters stay at zero in e2e/hard-ai.spec.ts. Easy/medium must still avoid loading the hard chunk."
+      ],
+      "commands": [
+        {
+          "cwd": "muju",
+          "run": "npm run hard:types && npm run hard:test",
+          "effect": "Type-checks the hard lab and runs tests/ai/hard."
+        }
+      ],
+      "status": "pending",
+      "missing_paths": [],
+      "source_requirements": [],
+      "reasons": [
+        "change kind: ai",
+        "upstream changed: ai-search"
+      ],
+      "unchanged_prerequisites": [
+        "transitions"
+      ]
+    },
+    {
+      "id": "ai-strength",
+      "title": "AI correctness veto and preregistered strength evidence",
+      "depends_on": [
+        "hard-ai",
+        "ai-search"
+      ],
+      "paths": [
+        "muju/lab/hard-ai/",
+        "muju/tests/ai/hard/",
+        "muju/tests/lab/",
+        "muju/docs/hard-ai/RELEASE-2026-09-18.md",
+        "muju/docs/hard-ai/EPIC-PLAN-2026-09-16.md"
+      ],
+      "update": [
+        "A rules change invalidates every existing strength claim; the records remain as evidence for their own rules revision. Re-pin replica parity first: perft fixtures, differential fuzz on transition, legality and prover surfaces, fixed-work goldens, determinism and cross-commit. Re-verify or re-author suites whose expected moves depend on the changed rule. Make the harness, scripted bots and ladder identity hash carry the rules revision.",
+        "Strength is claimed only from a preregistered rule written before the run: openings generated by scripted bots (never by an engine under test) with a sha-pinned dev/val/sealed allocation, tuning on dev only, a sealed row consumed once, and an independent baseline that has passed its own sanity gate. Rows with illegal actions, replica divergences or engine fallbacks are void. Append a new dated release record; never edit an old one."
+      ],
+      "verify": [
+        "Correctness is a hard veto: zero illegal actions, zero replica divergences, zero fallbacks, perft equal, suites at or above their pinned floors. Report score, Elo interval, SPRT outcome, seeds, identity hashes and responsiveness percentiles, and list what remains unmeasured. Do not pool rows across identity hashes or rules revisions."
+      ],
+      "commands": [
+        {
+          "cwd": "muju",
+          "run": "npm run hard:perft && npm run hard:fuzz && npm run hard:determinism",
+          "effect": "Replica parity and reproducibility gates; long-running."
+        },
+        {
+          "cwd": "muju",
+          "run": "npm run hard:suite",
+          "effect": "Tactical and positional suites against pinned floors."
+        },
+        {
+          "cwd": "muju",
+          "run": "npm run hard:ladder",
+          "effect": "Paired seat-mirrored ladder rows; configure openings, seeds and budgets per the preregistration. Very long-running."
+        }
+      ],
+      "status": "pending",
+      "missing_paths": [],
+      "source_requirements": [],
+      "reasons": [
+        "upstream changed: hard-ai",
+        "upstream changed: ai-search"
+      ],
+      "unchanged_prerequisites": []
+    },
+    {
+      "id": "mcp-tools",
+      "title": "MCP rules, legal actions, previews and analysis helpers",
+      "depends_on": [
+        "server-runtime",
+        "ai-search"
+      ],
+      "paths": [
+        "muju/server/mcp.ts",
+        "muju/server/stdio.ts",
+        "muju/server/observation.ts",
+        "muju/server/agentSchema.ts",
+        "muju/server/notation.ts",
+        "muju/server/analysis/",
+        "muju/tools/benchmark-analysis.ts"
+      ],
+      "update": [
+        "Review muju_rules text and catalogue, tool descriptions, schemas/defaults, legal actions, preview and play parity. Recheck geometry, economy, units, tactics and exchange helpers for hardcoded budgets/claims and changed search bounds."
+      ],
+      "verify": [
+        "Assert rules/analysis return current stats and legal witnesses, then exercise HTTP MCP and stdio as applicable. Distinguish bounded estimates from proofs; update benchmark evidence when helper behavior changes."
+      ],
+      "status": "pending",
+      "missing_paths": [],
+      "source_requirements": [],
+      "reasons": [
+        "upstream changed: ai-search"
+      ],
+      "unchanged_prerequisites": [
+        "server-runtime"
+      ]
+    },
+    {
+      "id": "agent-guides",
+      "title": "Published agent skills and MCP usage documentation",
+      "depends_on": [
+        "mcp-tools",
+        "rules-docs"
+      ],
+      "paths": [
+        "muju/public/skills/",
+        "muju/server/skills.ts",
+        "muju/docs/MCP_TOOL_TAPS.md",
+        "muju/docs/ANALYSIS_TOOLS.md",
+        "muju/ONLINE.md"
+      ],
+      "update": [
+        "Update public Muju and time-awareness skill files, TAPs, analysis documentation and live tool examples. Vite copies public skills into dist; the production server serves those copies."
+      ],
+      "verify": [
+        "Compare documentation to tool discovery and actual responses. Check both /SKILL.md on the Node host and the static /muju/skills/ copies after release."
+      ],
+      "status": "pending",
+      "missing_paths": [],
+      "source_requirements": [],
+      "reasons": [
+        "upstream changed: mcp-tools"
+      ],
+      "unchanged_prerequisites": [
+        "rules-docs"
+      ]
+    },
+    {
+      "id": "balance-analysis",
+      "title": "Current static balance report and relevant fresh experiments",
+      "depends_on": [
+        "transitions",
+        "ai-search"
+      ],
+      "paths": [
+        "muju/lab/solver/",
+        "muju/lab/results/current-static/current.json",
+        "muju/lab/results/current-static/current.md"
+      ],
+      "update": [
+        "Review solver assumptions and regenerate current-static. Run new experiments only when needed to support changed claims; record source/rules hashes, configuration and seeds. Leave frozen map studies, baselines and dated results intact."
+      ],
+      "verify": [
+        "Check catalogue/model freshness and explain changed dominance or witness results rather than weakening checks merely to pass. Static values are separate from AI weights."
+      ],
+      "commands": [
+        {
+          "cwd": "muju",
+          "run": "npm run balance:static",
+          "effect": "Regenerates current-static outputs."
+        },
+        {
+          "cwd": "muju",
+          "run": "npm run balance:check && npm run balance:types",
+          "effect": "Checks current outputs and solver types."
+        }
+      ],
+      "status": "pending",
+      "missing_paths": [],
+      "source_requirements": [],
+      "reasons": [
+        "upstream changed: ai-search"
+      ],
+      "unchanged_prerequisites": [
+        "transitions"
+      ]
+    },
+    {
+      "id": "game-validation",
+      "title": "Game, AI, server, MCP and browser regression gates",
+      "depends_on": [
+        "rules-docs",
+        "browser-ui",
+        "persistence",
+        "wasm-tactics",
+        "ai-search",
+        "hard-ai",
+        "ai-strength",
+        "server-runtime",
+        "mcp-tools",
+        "agent-guides",
+        "balance-analysis"
+      ],
+      "paths": [
+        "muju/tests/",
+        "muju/e2e/",
+        "muju/vitest.config.ts",
+        "muju/playwright.config.ts",
+        "muju/playwright.online.config.ts",
+        "muju/playwright.hard.config.ts",
+        "muju/server/tsconfig.json",
+        "muju/tsconfig.json"
+      ],
+      "update": [
+        "Adapt meaningful changed-rule regression cases and fixtures. Retain explicit historical compatibility fixtures; do not replace every occurrence of an old number. Investigate failures against intended behavior."
+      ],
+      "verify": [
+        "Run targeted checks during iteration, then release gates. For general local browser tests first serve the built game at MUJU_BASE_URL (default http://127.0.0.1:8927/muju/); the online suite starts its own isolated host."
+      ],
+      "commands": [
+        {
+          "cwd": "muju",
+          "run": "npm run server:types && npm test && npm run build",
+          "effect": "Checks types/tests and rebuilds WASM plus browser artifacts."
+        },
+        {
+          "cwd": "muju",
+          "run": "npm run test:online:e2e",
+          "effect": "Runs Playwright against an isolated in-memory Node host on port 8928."
+        },
+        {
+          "cwd": "muju",
+          "run": "npm run test:e2e -- e2e/ai-worker.spec.ts",
+          "effect": "Requires the built game served at MUJU_BASE_URL and an installed browser."
+        }
+      ],
+      "status": "pending",
+      "missing_paths": [],
+      "source_requirements": [],
+      "reasons": [
+        "upstream changed: wasm-tactics",
+        "upstream changed: ai-search",
+        "upstream changed: hard-ai",
+        "upstream changed: ai-strength",
+        "upstream changed: mcp-tools",
+        "upstream changed: agent-guides",
+        "upstream changed: balance-analysis"
+      ],
+      "unchanged_prerequisites": [
+        "rules-docs",
+        "browser-ui",
+        "persistence",
+        "server-runtime"
+      ]
+    },
+    {
+      "id": "static-package",
+      "title": "Complete deevgames static release artifact",
+      "depends_on": [
+        "game-validation"
+      ],
+      "paths": [
+        "build-all.sh",
+        "tools/verify_site.py",
+        "tools/smoke-site.cjs",
+        "muju/vite.config.ts",
+        "muju/package.json",
+        "muju/package-lock.json",
+        "index.html",
+        "README.md"
+      ],
+      "update": [
+        "Build all three games with locked dependencies and Node 24; stage only the generated _site directory. Confirm current rules, skill assets and compiled AI land in the artifact. Check hub/game navigation and public dossier copy."
+      ],
+      "verify": [
+        "The full build verifies links, required pages and file sizes. Serve _site on an unused port and run tools/smoke-site.cjs against it; inspect actual gameplay."
+      ],
+      "commands": [
+        {
+          "cwd": ".",
+          "run": "bash build-all.sh",
+          "effect": "Builds muju, forge and oracle and replaces generated _site; their dependencies must already be installed."
+        }
+      ],
+      "status": "pending",
+      "missing_paths": [],
+      "source_requirements": [],
+      "reasons": [
+        "upstream changed: game-validation"
+      ],
+      "unchanged_prerequisites": []
+    },
+    {
+      "id": "server-package",
+      "title": "Node host release with persistent room storage",
+      "depends_on": [
+        "game-validation"
+      ],
+      "paths": [
+        "muju/Dockerfile",
+        "muju/compose.yaml",
+        "muju/.dockerignore"
+      ],
+      "update": [
+        "Build the Node host including its own browser dist and copied public skill files. Verify deployed source revision, persistent disk configuration, public URL/CORS and protocol compatibility."
+      ],
+      "verify": [
+        "Test the built image and restart persistence. Preserve /app/data/rooms.sqlite and existing room data. Static Pages publication does not update this service."
+      ],
+      "status": "pending",
+      "missing_paths": [],
+      "source_requirements": [],
+      "reasons": [
+        "upstream changed: game-validation"
+      ],
+      "unchanged_prerequisites": []
+    },
+    {
+      "id": "static-deploy",
+      "title": "Publish Cloudflare Pages deevgames",
+      "depends_on": [
+        "static-package"
+      ],
+      "paths": [
+        ".github/workflows/deploy.yml"
+      ],
+      "update": [
+        "Follow root README deployment flow. Publish validated _site through the workflow or documented Wrangler command; master is production and other branches are previews. Check fetched origin/master freshness and preserve unrelated work."
+      ],
+      "verify": [
+        "Record source revision, artifact identity, actual publish result and deployment URL. A green workflow can mean checks-only when credentials are absent; confirm the deploy step actually ran."
+      ],
+      "external": [
+        "Cloudflare Pages project deevgames; documented public base https://deevgames.pages.dev",
+        "Publishing paused since 2026-09-18 (no deploy credentials): record this node as blocked, not complete. Muju's canonical release is the Render host; the Pages /muju/ copy is frozen."
+      ],
+      "status": "pending",
+      "missing_paths": [],
+      "source_requirements": [],
+      "reasons": [
+        "upstream changed: static-package"
+      ],
+      "unchanged_prerequisites": []
+    },
+    {
+      "id": "server-deploy",
+      "title": "Publish authoritative multiplayer/MCP host",
+      "depends_on": [
+        "server-package"
+      ],
+      "paths": [],
+      "update": [
+        "Inspect the current Render service and deploy the verified matching source/image through its configured release path. The repository has no verified automatic server deployment workflow; discover the live service configuration instead of inventing a deploy command. Follow ONLINE.md persistent disk and health settings."
+      ],
+      "verify": [
+        "Record service/release identity and revision. Verify /api/muju/health, /muju/, /SKILL.md and MCP discovery/rules. Exercise a changed-rule preview and legal action in a fresh disposable room; verify existing storage survived."
+      ],
+      "external": [
+        "Documented Node/MCP host https://deevgames-muju.onrender.com; Render web service with /app/data persistence"
+      ],
+      "status": "pending",
+      "missing_paths": [],
+      "source_requirements": [],
+      "reasons": [
+        "upstream changed: server-package"
+      ],
+      "unchanged_prerequisites": []
+    },
+    {
+      "id": "release-verification",
+      "title": "Cross-surface completion evidence",
+      "depends_on": [
+        "static-deploy",
+        "server-deploy",
+        "academy-deploy"
+      ],
+      "paths": [
+        "muju/docs/changes/"
+      ],
+      "update": [
+        "Write a change-specific completion record with every affected node disposition, exact source/artifact revisions, tests, affected lesson IDs, publish results and live verification evidence. Update current Academy STATUS and append decision context as appropriate."
+      ],
+      "verify": [
+        "Compare the changed piece/rule across browser UI, local AI behavior, online engine, MCP rules and analysis, public agent skills and live Academy lessons/transcripts. Every applicable release must be verified or explicitly blocked. Do not call an end-to-end update complete when a surface is still stale or a publish is unverified."
+      ],
+      "status": "pending",
+      "missing_paths": [],
+      "source_requirements": [],
+      "reasons": [
+        "upstream changed: static-deploy",
+        "upstream changed: server-deploy"
+      ],
+      "unchanged_prerequisites": [
+        "academy-deploy"
+      ]
+    }
+  ]
+}

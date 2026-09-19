@@ -1,0 +1,2 @@
+src/ai/hard/gen/generate.ts(562,68): error TS6133: 'placeIndex' is declared but its value is never read.
+src/ai/hard/gen/generate.ts(627,56): error TS2552: Cannot find name 'placeIndex'. Did you mean '_placeIndex'?

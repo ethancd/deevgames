@@ -1,0 +1,14 @@
+src/ai/hard/gen/actionsearch.ts(35,20): error TS6133: 'F_PLACED' is declared but its value is never read.
+src/ai/hard/gen/generate.ts(19,30): error TS6133: 'BB' is declared but its value is never read.
+src/ai/hard/gen/generate.ts(20,10): error TS6133: 'ADJ_LIST' is declared but its value is never read.
+src/ai/hard/gen/generate.ts(21,10): error TS6133: 'powerIndex' is declared but its value is never read.
+src/ai/hard/gen/generate.ts(22,17): error TS6133: 'paKind' is declared but its value is never read.
+src/ai/hard/gen/generate.ts(559,68): error TS6133: 'placeIndex' is declared but its value is never read.
+src/ai/hard/gen/generate.ts(861,28): error TS6133: 'keepSets' is declared but its value is never read.
+src/ai/hard/gen/generate.ts(862,16): error TS6133: 't' is declared but its value is never read.
+src/ai/hard/gen/upkeep.ts(31,31): error TS6133: 'NO_SLOT' is declared but its value is never read.
+src/ai/hard/search/pvs.ts(352,22): error TS2304: Cannot find name 'Result'.
+src/ai/hard/search/pvs.ts(357,43): error TS2304: Cannot find name 'Result'.
+tests/ai/hard/generate.test.ts(242,48): error TS2339: Property 'SUMMON_STRIKE' does not exist on type '{ readonly KILL: 1; readonly CLEAVE_CHAIN: 2; readonly HOME_ENTRY: 4; readonly HOME_RESCUE: 8; readonly SPAWN_DENY: 16; readonly PURCHASE: 32; readonly PROMOTION: 64; readonly RETREAT: 128; ... 5 more ...; readonly DISRUPT: 8192; }'.
+tests/ai/hard/turnpool.test.ts(231,38): error TS2339: Property 'SUMMON_STRIKE' does not exist on type '{ readonly KILL: 1; readonly CLEAVE_CHAIN: 2; readonly HOME_ENTRY: 4; readonly HOME_RESCUE: 8; readonly SPAWN_DENY: 16; readonly PURCHASE: 32; readonly PROMOTION: 64; readonly RETREAT: 128; ... 5 more ...; readonly DISRUPT: 8192; }'.
+tests/ai/hard/turnpool.test.ts(231,67): error TS2339: Property 'SUMMON_STRIKE' does not exist on type '{ readonly KILL: 1; readonly CLEAVE_CHAIN: 2; readonly HOME_ENTRY: 4; readonly HOME_RESCUE: 8; readonly SPAWN_DENY: 16; readonly PURCHASE: 32; readonly PROMOTION: 64; readonly RETREAT: 128; ... 5 more ...; readonly DISRUPT: 8192; }'.

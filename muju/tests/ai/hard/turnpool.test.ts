@@ -17,7 +17,7 @@ import { applyAction } from '../../../src/ai/simulate';
 import { isLegalAction } from '../../../src/game/legality';
 import type { GameState } from '../../../src/game/types';
 import { DEAD, MAX_TURN_ACTIONS, Result, type PackedState } from '../../../src/ai/hard/types';
-import { AKind, newKeepSetTable, paMake, type KeepSetTable } from '../../../src/ai/hard/core/action';
+import { AKind, newKeepSetTable, paKind, paMake, type KeepSetTable } from '../../../src/ai/hard/core/action';
 import { Replica, allocState, newUndo } from '../../../src/ai/hard/core/state';
 import { Scratch } from '../../../src/ai/hard/core/bits';
 import { ActionSearch, UNLIMITED_WORK, neutralTables } from '../../../src/ai/hard/gen/actionsearch';
@@ -228,7 +228,8 @@ describe('turnSignature', () => {
   it('separates the turn flags the quiescence layer reads', () => {
     expect(TACTICAL_FLAGS & TurnFlag.KILL).toBe(TurnFlag.KILL);
     expect(TACTICAL_FLAGS & TurnFlag.HOME_ENTRY).toBe(TurnFlag.HOME_ENTRY);
-    expect(TACTICAL_FLAGS & TurnFlag.SUMMON_STRIKE).toBe(TurnFlag.SUMMON_STRIKE);
+    expect(TACTICAL_FLAGS & TurnFlag.HOME_FORTIFY).toBe(TurnFlag.HOME_FORTIFY);
+    expect(TACTICAL_FLAGS & TurnFlag.DISRUPT).toBe(0);
     // QUIET, RETREAT, PURCHASE and the rest are NOT tactical.
     expect(TACTICAL_FLAGS & TurnFlag.QUIET).toBe(0);
     expect(TACTICAL_FLAGS & TurnFlag.RETREAT).toBe(0);
@@ -260,7 +261,7 @@ describe('decodeTurn', () => {
   }
 
   it('every kept turn of the initial position replays through applyAction to its own Kpos', () => {
-    const state = createInitialGameState();
+    const state = createInitialGameState(undefined, 4, 0, 'phasing');
     const g = generate(state, 4);
     expect(g.count).toBe(4);
     const packer = new Replica();
@@ -303,46 +304,23 @@ describe('decodeTurn', () => {
     expect(terminal).toBeGreaterThan(0);
   });
 
-  it('walks the turn forward, so an action can reference what an earlier one produced', () => {
-    // A place-phase prefix that buys a unit and then moves it: the decoder has
-    // to derive the bought unit's canonical id from the state mid-turn.
-    const state = buildState({
-      units: [
-        { def: 'fire_1', owner: 'white', x: 1, y: 0 },
-        { def: 'water_1', owner: 'black', x: 9, y: 9 },
-      ],
-      white: 12,
-      phase: 'place',
-      actions: 4,
-    });
-    const rep = new Replica();
-    const root = rep.pack(state, allocState());
-    const place = new Int32Array(64);
+  it('decodes a commitment through handoff without inventing a live arrival', () => {
+    const state = buildState({ units: [
+      { def: 'fire_1', owner: 'white', x: 1, y: 0 },
+      { def: 'water_1', owner: 'black', x: 9, y: 9 },
+    ], white: 12, phase: 'place', actions: 0 });
+    const rep = new Replica(), root = rep.pack(state, allocState());
+    const place = new Int32Array(4096);
     const n = rep.genPlace(root, place);
-    const buy = place.slice(0, n).find(a => a !== paMake(AKind.END_PLACE, 0, 0, 0));
+    const buy = place.slice(0, n).find(a => paKind(a) === AKind.BUY);
     expect(buy).toBeDefined();
-
-    const p = rep.pack(state, allocState());
-    const undo = newUndo();
-    const keep = newKeepSetTable();
-    const prefix = Int32Array.from([buy as number, paMake(AKind.END_PLACE, 0, 0, 0)]);
-    rep.make(p, prefix[0], undo, keep);
-    rep.make(p, prefix[1], undo, keep);
-
-    const pool = new TurnPool(2);
-    const search = new ActionSearch(rep, { widths: UNBOUNDED, keep: 2, ttBits: 18 }, pool, new Scratch(1, 1, 1, 1));
-    const out: Turn[] = [];
-    const count = search.run(p, neutralTables(), prefix, 2, 0, q => q.materialCc[0] - q.materialCc[1], UNLIMITED_WORK, 0, out);
-    expect(count).toBeGreaterThan(0);
-
-    const packer = new Replica();
-    const scratch = allocState();
-    for (let i = 0; i < count; i++) {
-      expect(out[i].flags & TurnFlag.PURCHASE).toBe(TurnFlag.PURCHASE);
-      const end = replay(state, out[i], keep, root);
-      const packed = packer.pack(end, scratch);
-      expect(packed.kposLo).toBe(out[i].endLo);
-      expect(packed.kposHi).toBe(out[i].endHi);
-    }
+    const turn = new TurnPool(1).alloc();
+    turn.actions[0] = buy!; turn.actions[1] = paMake(AKind.END_PLACE); turn.count = 2;
+    const end = replay(state, turn, newKeepSetTable(), root);
+    expect(end.turn.currentPlayer).toBe('black');
+    expect(end.board.units.length).toBe(state.board.units.length);
+    expect(end.pendingSummons?.length).toBe(1);
+    turn.actions[turn.count++] = paMake(AKind.END_ACTION);
+    expect(() => decodeTurn(root, turn, newKeepSetTable())).toThrow('Invalid macro action 2');
   });
 });
