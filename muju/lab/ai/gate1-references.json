@@ -1,7 +1,26 @@
 {
   "status": "adopted",
-  "rulesVersion": "muju-phasing-1",
-  "bandsSha256": "f9c1a7669cbc12031ef4227faa9915104972ac650f8bb47c89cc2b4735a537a2",
+  "rulesVersion": "muju-phasing-2",
+  "rulesVersionNote": "Amendment A4 (2026-09-19) moved the inactivity draw clock from 10 to 20 plies and advanced the revision from muju-phasing-1 to muju-phasing-2. lab/ai/gate1-sources.ts#RULES_VERSION re-exports the ladder's own constant so no file in this lane carries the revision as a literal; this field is what the runner checks that constant against.",
+  "bands": {
+    "path": "lab/harness/results/p2-scripted-2026-09-19/sanity-bands.json",
+    "sha256": "ef628b349bea28706541715ee2e03c69a2ec7ef548688f4dc241906bcca0e2b6",
+    "rulesVersion": "muju-phasing-2",
+    "frozenBy": {
+      "commit": "93018a00e7d9a5d7e2d2883b13b9010c8943d745",
+      "note": "Lab rules revision muju-phasing-2 and a new scripted reference under the 20-ply clock. The band FORMULA is unchanged (A4); only its inputs were re-measured."
+    },
+    "purchaseRatePerSeat": [1.6696428571428572, 188.28571428571428],
+    "inactivityDrawRate": [0, 0.726134837487006],
+    "rule": "A1's behavioural condition is read from THIS file. lab/ai/gate1.ts refuses to run if BANDS_PATH is not this path, if the file's hash is not this sha256, or if the loaded bands name any revision but rulesVersion above."
+  },
+  "supersededBands": {
+    "path": "lab/harness/results/p1-scripted-2026-09-18/sanity-bands.json",
+    "sha256": "f9c1a7669cbc12031ef4227faa9915104972ac650f8bb47c89cc2b4735a537a2",
+    "rulesVersion": "muju-phasing-1",
+    "why": "Frozen from the 840-game reference measured under the 10-ply clock. Its inactivity-draw ceiling is 0.866 against the 20-ply reference's 0.726, and Expand's measured rate fell from 0.70 to 0.55, so a row judged against these bands would be judged against a population the rules no longer produce. Retained for audit; refused as a row's bands, by path as well as by hash."
+  },
+  "bandsSha256": "ef628b349bea28706541715ee2e03c69a2ec7ef548688f4dc241906bcca0e2b6",
   "sourceHashes": {
     "lab/docs/EXPERIMENTS.md": "4399040ab9e1e7b00921cd8362d0830b7d20349b99902de67e47cc5cf9f0adbd",
     "lab/results/e6-rush-vs-ai/summary.csv": "7a1f31bc7d8d44d6f02c5abd8a80dd2a5901ac5586a32ed1bbf5dc2101ac97db",
@@ -55,6 +74,15 @@
     "path": "muju/docs/hard-ai/PHASING-PREREGISTRATION-2026-09-18.md",
     "sha256": "8242433d727638abf41b1006b9fcff645564200b92eadc9bbc887eb2b72f60f4"
   },
+  "rulesAmendment": {
+    "id": "A4",
+    "commit": "11d6cd57d9be6ad89ae5746b3b558bcb50b95926",
+    "path": "muju/docs/hard-ai/PHASING-PREREGISTRATION-2026-09-18.md",
+    "sha256": "9d92cf60bae143a47f82e9e22f08c9deb9e98da8c67f9c4eadae39b9918ec8ac",
+    "rulesVersion": "muju-phasing-2",
+    "rule": "A4 is the OPERATIVE text: it appends to the same document, so this sha256 covers A1-A4 together and is what a row writes into its evidence directory. The A3 sha256 above is the historical text A3 was adopted as and is still verified, so neither amendment can be silently rewritten.",
+    "voids": "Every Gate 1 game measured before it (rows A1, A2 and both pilots), the p1 scripted reference and the bands frozen from it. None had passed."
+  },
   "supersededAmendments": [
     {
       "id": "A2",
@@ -104,7 +132,10 @@
     },
     "seeds": {
       "row": 20260960,
-      "pilot": 20260961
+      "pilot": 20260962,
+      "pilotAsAdopted": 20260961,
+      "pilotSeedChange": "A3 §5 named pilot seed 20260961. That seed was CONSUMED by the pilot run under muju-phasing-1 (lab/ai/results/gate1-a3-pilot-2026-09-19, gate1-a3-pilot-2026-09-19b), and A4 voided every Gate 1 game measured before it, so 20260961 now names a void population. Re-running it would produce a second, different pilot under the same seed and make the two indistinguishable in any later audit. The plumbing pilot under muju-phasing-2 therefore uses 20260962 — the next unused integer, chosen the same way A2 chose 20260958 — and lab/ai/gate1-report.ts records 20260961 in VOID_PILOT_SEEDS with this reason so the change can never be read as a silent re-seed. The row seed 20260960 is UNCHANGED and has produced no eligible game.",
+      "voidPilotSeeds": [20260961]
     },
     "sharding": {
       "rule": "A full row may be played as deterministic shards: gate1 --mode full --shard i/n --out DIR, then gate1 --merge DIR. Shard membership is a pure function of (cell, pair index, n) and a game's seed of (row seed, cell, pair index), so a game's record does not depend on which shard or order ran it. Re-running a shard resumes from its own content-hashed file; the merge refuses a row whose shards disagree about identity, calibration, seed, source tree or layout, or in which any scheduled game is missing or duplicated.",

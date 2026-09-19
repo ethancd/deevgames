@@ -8,9 +8,12 @@ import { SearchBudget } from '../../src/ai/runtime';
 import { aiTurnBudgetMs } from '../../src/ai/turnTime';
 import { instantiateTactics, type TacticalSolver } from '../../src/ai/wasm/kernel';
 import {
-  CALIBRATION_AMENDMENT, CALIBRATION_OPENINGS, CALIBRATION_SCHEMA, DEFAULT_CALIBRATION, GAME_STAGES,
-  MAX_CALIBRATION_AGE_MS, MAX_CALIBRATION_LOAD1, MIN_CALIBRATION_MAX_TURNS, QUICK_ALLOWANCE_MS, WorkMeter,
-  loadCalibration, machineIdentity, median, parseArgs, sampleEngine, stageOf, summarizeSamples, type TurnSample,
+  CALIBRATION_AMENDMENT, CALIBRATION_OPENINGS, CALIBRATION_OVERRIDES, CALIBRATION_OWN_THREAD_LOAD,
+  CALIBRATION_SCHEMA, DEFAULT_CALIBRATION, GAME_STAGES, LoadSampler,
+  MAX_CALIBRATION_AGE_MS, MAX_CALIBRATION_LOAD1, MAX_CALIBRATION_LOAD5, MIN_CALIBRATION_MAX_TURNS,
+  OWN_TURN_BUCKETS, QUICK_ALLOWANCE_MS, WEIGHTING_DISAGREEMENT, WorkMeter,
+  bucketOf, loadCalibration, machineIdentity, median, parseArgs, parseCalibrationOverrides, sampleEngine,
+  stageOf, summarizeSamples, weightingComparison, type CalibrationOverride, type TurnSample,
 } from '../../lab/ai/gate1-calibrate';
 import { HANDICAPS, gate1StartState, loadGate1Book } from '../../lab/ai/gate1-openings';
 
@@ -28,17 +31,32 @@ function engine(medianWork: number, overrides: Record<string, unknown> = {}) {
     allowanceMs: medianWork === 9000 ? 3000 : 10000, pace: 'quick', ownTurns: 900, games: 96,
     coverage: { openings: CALIBRATION_OPENINGS, handicaps: [...HANDICAPS], games: 96,
       maxOwnTurnsInAGame: 30, minOwnTurnsInAGame: 6 },
-    overall: { ownTurns: 900, medianWorkPerTurn: medianWork },
+    // `medianSearchesPerTurn` is required: it is the number the report prints next
+    // to the ROW's own searches per turn, and without it the row cannot show that
+    // its fixed-work adapter paces like the loop the budget was measured on.
+    overall: { ownTurns: 900, medianWorkPerTurn: medianWork, medianSearchesPerTurn: 3 },
     stages: Object.fromEntries(GAME_STAGES.map(s => [s, { ownTurns: 300, medianWorkPerTurn: medianWork }])),
+    ownTurnBuckets: Object.fromEntries(OWN_TURN_BUCKETS.map(b => [b.id, { ownTurns: 300, medianWorkPerTurn: medianWork }])),
+    weighting: { turnWeightedMedian: medianWork, gameWeightedMedian: medianWork, flagged: false },
     ...overrides,
   };
 }
+
+/** Per-game-boundary load evidence, which a v3 manifest may not omit. */
+const boundaryLoad = (maxLoad5 = 0.8) => ({
+  samples: 96,
+  load1: { max: 1.1, mean: 0.7 },
+  load5: { max: maxLoad5, mean: Math.min(maxLoad5, 0.6) },
+  load15: { max: 0.9, mean: 0.5 },
+  heavySlotHoldersSeen: [],
+});
 
 /** A complete, clean A3 calibration: this host, idle, fresh, this source tree. */
 const manifest = (overrides: Record<string, unknown> = {}) => ({
   schema: CALIBRATION_SCHEMA, amendment: CALIBRATION_AMENDMENT,
   machine: { ...HOST },
-  load: { load1AtStart: 0.4, load1AtEnd: 0.6, start: [0.4, 0.5, 0.6], end: [0.6, 0.6, 0.6], cpuCount: HOST.cpuCount },
+  load: { load1AtStart: 0.4, load1AtEnd: 0.6, start: [0.4, 0.5, 0.6], end: [0.6, 0.6, 0.6],
+    cpuCount: HOST.cpuCount, boundaries: boundaryLoad() },
   startedAt: FRESH, finishedAt: FRESH,
   sourceIdentity: { sha256: SOURCES, files: 400 },
   book: { path: 'lab/hard-ai/ladder/openings/p1-dev.jsonl', sha256: 'x' },
@@ -56,6 +74,8 @@ function write(value: unknown): string {
 }
 const load = (value: unknown, options: Parameters<typeof loadCalibration>[1] = {}) =>
   loadCalibration(write(value), { now: NOW, machine: HOST, sourceIdentitySha256: SOURCES, ...options });
+/** Accept every kind at once, for the cases that are about something else. */
+const ALL: CalibrationOverride[] = [...CALIBRATION_OVERRIDES];
 
 describe('work meter', () => {
   it('counts exactly the units a fixed-work search is allowed to spend', async () => {
@@ -165,7 +185,9 @@ describe('calibration manifest', () => {
     const good = load(manifest());
     expect(good.budgets).toEqual({ hard: 53155, medium: 9000 });
     expect(good.sha256).toMatch(/^[0-9a-f]{64}$/);
-    expect(good.acceptance).toEqual({ flagPassed: false, overridden: [] });
+    expect(good.acceptance).toEqual({ accepted: [], overridden: [], reasons: [] });
+    expect(good.provisional).toBeNull();
+    expect(good.searchesPerTurn).toEqual({ hard: 3, medium: 3 });
   });
 
   it('refuses anything that is not a complete A3 calibration, flag or no flag', () => {
@@ -191,13 +213,19 @@ describe('calibration manifest', () => {
       // Provenance the row cannot do without.
       manifest({ machine: undefined }), manifest({ load: undefined }),
       manifest({ sourceIdentity: undefined }), manifest({ finishedAt: undefined }),
+      // A v2 manifest sampled the load twice, at the two moments a twelve-hour
+      // measurement is least likely to be contended. That is not load evidence.
+      manifest({ load: { ...manifest().load, boundaries: undefined } }),
+      // Without searches per turn the row cannot be shown to pace like the loop.
+      manifest({ engines: { medium: engine(9000),
+        hard: engine(53155, { overall: { ownTurns: 900, medianWorkPerTurn: 53155 } }) } }),
     ];
     for (const value of broken) {
       const label = JSON.stringify(value).slice(0, 90);
       expect(() => load(value), label).toThrow();
       // The override flag is for a valid calibration of another SITUATION, never
       // for an incomplete one.
-      expect(() => load(value, { accept: true }), label).toThrow();
+      expect(() => load(value, { accept: ALL, acceptProvisional: true }), label).toThrow();
     }
   });
 
@@ -214,18 +242,28 @@ describe('calibration manifest', () => {
     expect(() => load({ ...lateHeavy, budgets: { hard: 400000, medium: 9000 } })).toThrow(/OVERALL median/);
   });
 
-  it.each([
-    ['a loaded start', { load: { ...manifest().load, load1AtStart: MAX_CALIBRATION_LOAD1 + 0.1 } }, /1-minute load average at start/],
-    ['a loaded finish', { load: { ...manifest().load, load1AtEnd: 9.8 } }, /1-minute load average at end/],
-    ['another machine', { machine: { ...HOST, sha256: 'other', hostname: 'elsewhere' } }, /not on this host/],
-    ['a stale measurement', { finishedAt: new Date(NOW - MAX_CALIBRATION_AGE_MS - 1000).toISOString() }, /freshness window/],
-    ['another source tree', { sourceIdentity: { sha256: 'a'.repeat(64) } }, /source identity/],
-  ])('refuses %s unless the row explicitly accepts it', (_name, override, pattern) => {
+  // The KIND column is typed, not a widened string: a typo in it must fail the
+  // typecheck rather than ask loadCalibration to accept a kind that cannot exist.
+  it.each<[string, Record<string, unknown>, RegExp, CalibrationOverride]>([
+    ['a loaded start', { load: { ...manifest().load, load1AtStart: MAX_CALIBRATION_LOAD1 + 0.1 } }, /1-minute load average at start/, 'load'],
+    ['a loaded finish', { load: { ...manifest().load, load1AtEnd: 9.8 } }, /1-minute load average at end/, 'load'],
+    ['a contended middle', { load: { ...manifest().load, boundaries: boundaryLoad(MAX_CALIBRATION_LOAD5 + 0.1) } }, /highest 5-minute load average at any game boundary/, 'load'],
+    ['another machine', { machine: { ...HOST, sha256: 'other', hostname: 'elsewhere' } }, /not on this host/, 'machine'],
+    ['a stale measurement', { finishedAt: new Date(NOW - MAX_CALIBRATION_AGE_MS - 1000).toISOString() }, /freshness window/, 'age'],
+    ['another source tree', { sourceIdentity: { sha256: 'a'.repeat(64) } }, /source identity/, 'sources'],
+  ])('refuses %s unless the row explicitly accepts that KIND', (_name, override, pattern, kind) => {
     expect(() => load(manifest(override))).toThrow(pattern);
-    const accepted = load(manifest(override), { accept: true });
-    expect(accepted.acceptance.flagPassed).toBe(true);
+    // Accepting a DIFFERENT kind does not wave this one through, which is the whole
+    // reason the single --accept-loaded-calibration switch was split up.
+    for (const other of CALIBRATION_OVERRIDES.filter(k => k !== kind)) {
+      expect(() => load(manifest(override), { accept: [other] }), other).toThrow(pattern);
+    }
+    const accepted = load(manifest(override), { accept: [kind] });
+    expect(accepted.acceptance.accepted).toEqual([kind]);
     expect(accepted.acceptance.overridden).toHaveLength(1);
-    expect(accepted.acceptance.overridden[0]).toMatch(pattern);
+    expect(accepted.acceptance.overridden[0].kind).toBe(kind);
+    expect(accepted.acceptance.overridden[0].reason).toMatch(pattern);
+    expect(accepted.acceptance.reasons[0]).toContain(`[${kind}]`);
     expect(accepted.budgets).toEqual({ hard: 53155, medium: 9000 });
   });
 
@@ -240,10 +278,10 @@ describe('calibration manifest', () => {
       finishedAt: new Date(NOW - MAX_CALIBRATION_AGE_MS - 1).toISOString(),
       sourceIdentity: { sha256: 'a'.repeat(64) },
     });
-    expect(load(several, { accept: true }).acceptance.overridden).toHaveLength(5);
+    expect(load(several, { accept: ALL }).acceptance.overridden).toHaveLength(5);
     // With no source identity to compare against (`--plan`), that one check is
     // skipped rather than silently passed.
-    expect(loadCalibration(write(several), { now: NOW, machine: HOST, accept: true })
+    expect(loadCalibration(write(several), { now: NOW, machine: HOST, accept: ALL })
       .acceptance.overridden).toHaveLength(4);
   });
 
@@ -251,11 +289,69 @@ describe('calibration manifest', () => {
     expect(parseArgs(['--out', 'x']).options).toEqual(DEFAULT_CALIBRATION);
     for (const args of [[], ['--turns', '4'], ['--out', 'x', '--turns', '0'], ['--out', 'x', '--openings', '49'],
       ['--out', 'x', '--out', 'y'], ['--out', 'x', '--what', '1'],
-      ['--out', 'x', '--max-turns', '2'], ['--out', 'x', '--max-turns', '19']]) {
+      ['--out', 'x', '--max-turns', '2'], ['--out', 'x', '--max-turns', '19'],
+      ['--out', 'x', '--provisional']]) {
       expect(() => parseArgs(args), args.join(' ')).toThrow();
     }
     expect(parseArgs(['--out', 'x', '--max-turns', '20']).options.maxTurns).toBe(20);
+    // A deliberately short sample is allowed only when it SAYS it is not a budget.
+    const short = parseArgs(['--out', 'x', '--max-turns', '4', '--openings', '2', '--provisional', 'busy machine']);
+    expect(short.options).toMatchObject({ maxTurns: 4, openings: 2, provisional: 'busy machine' });
   });
+
+  /**
+   * A provisional calibration is an admitted non-measurement, not a broken one: it
+   * may be short, capped and narrow, and it says so. The refusal is therefore about
+   * PERMISSION rather than validity — a row has to ask for it by name, and
+   * `gate1.ts` only lets a pilot ask.
+   */
+  it('refuses a provisional calibration unless the row asks for one by name', () => {
+    const provisional = manifest({
+      provisional: { reason: 'short sample on a busy machine; coordinator runs the real one', eligible: false },
+      options: { openings: 2, handicaps: [...HANDICAPS], maxTurns: 4, turnsPerEngine: 8, seed: 1 },
+      engines: {
+        hard: engine(53155, { coverage: { openings: 2, handicaps: [0, 3] },
+          stages: { opening: { ownTurns: 8 }, middle: { ownTurns: 0 }, late: { ownTurns: 0 } } }),
+        medium: engine(9000, { coverage: { openings: 2, handicaps: [0, 3] },
+          stages: { opening: { ownTurns: 8 }, middle: { ownTurns: 0 }, late: { ownTurns: 0 } } }),
+      },
+    });
+    expect(() => load(provisional)).toThrow(/declares itself PROVISIONAL and ineligible/);
+    const accepted = load(provisional, { acceptProvisional: true });
+    expect(accepted.provisional).toMatch(/busy machine/);
+    expect(accepted.budgets).toEqual({ hard: 53155, medium: 9000 });
+    // What it is excused is exactly the COMPLETENESS checks. A provisional manifest
+    // still may not lie about its own budget, or omit its provenance, or be a v2.
+    expect(() => load({ ...provisional, budgets: { hard: 1, medium: 9000 } }, { acceptProvisional: true }))
+      .toThrow(/OVERALL median/);
+    expect(() => load({ ...provisional, machine: undefined }, { acceptProvisional: true }))
+      .toThrow(/no machine identity/);
+    expect(() => load({ ...provisional, schema: 'muju-gate1-calibration-v2' }, { acceptProvisional: true }))
+      .toThrow(/not a muju-gate1-calibration-v3/);
+  });
+
+  it('names the load ceiling and the allowance it makes for its own thread', () => {
+    expect(CALIBRATION_OWN_THREAD_LOAD).toBe(1.0);
+    expect(MAX_CALIBRATION_LOAD5).toBe(2.0);
+    expect(() => load(manifest({ load: { ...manifest().load, boundaries: boundaryLoad(2.0) } }))).not.toThrow();
+    expect(() => load(manifest({ load: { ...manifest().load, boundaries: boundaryLoad(2.01) } })))
+      .toThrow(/highest 5-minute load average/);
+    // A contended calibration names the other heavy-queue holders it saw, so the
+    // operator learns WHO to wait for rather than only that the number was high.
+    const contended = manifest({ load: { ...manifest().load, boundaries: {
+      ...boundaryLoad(6.4), heavySlotHoldersSeen: [{ holder: 'ladder-shard-3/12 (pid 999)', samples: 40 }] } } });
+    expect(load(contended, { accept: ['load'] }).acceptance.reasons[0]).toContain('ladder-shard-3/12 (pid 999)');
+  });
+
+  it('parses the override kinds and refuses anything that is not one', () => {
+    expect(CALIBRATION_OVERRIDES).toEqual(['load', 'machine', 'age', 'sources']);
+    expect(parseCalibrationOverrides('load')).toEqual(['load']);
+    expect(parseCalibrationOverrides('age, sources')).toEqual(['age', 'sources']);
+    for (const bad of ['', ' ', 'loaded', 'load,load', 'load,nonsense', ',']) {
+      expect(() => parseCalibrationOverrides(bad), bad).toThrow();
+    }
+  });
+
 
   it('identifies the machine by what changes how much searching gets done', () => {
     const identity = machineIdentity();
@@ -268,5 +364,81 @@ describe('calibration manifest', () => {
     const withOtherNode = { ...identity, node: 'v0.0.0-other' };
     expect(loadCalibration(write(manifest()), { now: NOW, machine: withOtherNode, sourceIdentitySha256: SOURCES })
       .acceptance.overridden).toEqual([]);
+  });
+});
+
+/**
+ * WHAT THE MANIFEST SAYS ABOUT ITS OWN WEIGHTING AND ITS OWN LOAD.
+ *
+ * The budget is the turn-weighted overall median, because A3 §3 names that one. Two
+ * things about it were invisible in a v2 manifest and are not any more: a median
+ * over turns depends on how long the sampled games ran, and a measurement that
+ * begins and ends idle can be contended for hours in between.
+ */
+describe('weighting, buckets and per-boundary load', () => {
+  const sample = (work: number, ownTurnIndex: number, ownTurns: number, opening: string): TurnSample => ({
+    difficulty: 'hard', opening, handicap: 0, turn: ownTurnIndex, seat: 'white',
+    work, searchMs: 10, searches: 3, ownTurnIndex, ownTurns, stage: stageOf(ownTurnIndex, ownTurns),
+  });
+
+  it('labels own turns by ABSOLUTE index as well as by tercile', () => {
+    expect(OWN_TURN_BUCKETS.map(b => b.id)).toEqual(['1-5', '6-15', '16+']);
+    expect([0, 4].map(bucketOf)).toEqual(['1-5', '1-5']);
+    expect([5, 14].map(bucketOf)).toEqual(['6-15', '6-15']);
+    expect([15, 99].map(bucketOf)).toEqual(['16+', '16+']);
+    // A tercile is relative to its own game, so "late" in a 9-turn game and "late"
+    // in a 40-turn game are different positions. These buckets are not.
+    const short = sample(100, 8, 9, 'p1-short');
+    const long = sample(9000, 8, 40, 'p1-long');
+    expect([short.stage, long.stage]).toEqual(['late', 'opening']);
+    expect([bucketOf(short.ownTurnIndex), bucketOf(long.ownTurnIndex)]).toEqual(['6-15', '6-15']);
+  });
+
+  it('reports the median of per-game medians and flags a disagreement over 25%', () => {
+    expect(WEIGHTING_DISAGREEMENT).toBe(0.25);
+    // Two short cheap games and one long expensive one. Turn-weighted, the long
+    // game supplies most of the samples and pulls the median up; game-weighted,
+    // it is one game in three.
+    const cheap = [0, 1].flatMap(g => [0, 1].map(i => sample(100, i, 2, `p1-cheap-${g}`)));
+    const dear = Array.from({ length: 20 }, (_, i) => sample(10000, i, 20, 'p1-dear'));
+    const mixed = weightingComparison([...cheap, ...dear]);
+    expect(mixed.games).toBe(3);
+    expect(mixed.turnWeightedMedian).toBe(10000);
+    expect(mixed.gameWeightedMedian).toBe(100);
+    expect(mixed.medianOfPerGameMedians).toBe(100);
+    expect(mixed.flagged).toBe(true);
+    expect(mixed.note).toMatch(/beyond 25%/);
+    // A homogeneous sample is not flagged.
+    const even = [0, 1, 2].flatMap(g => Array.from({ length: 6 }, (_, i) => sample(500, i, 6, `p1-even-${g}`)));
+    expect(weightingComparison(even)).toMatchObject({ flagged: false, turnWeightedMedian: 500, gameWeightedMedian: 500 });
+    // And it all arrives in the engine block, next to the median that IS the budget.
+    const summary = summarizeSamples([...cheap, ...dear]);
+    expect(summary.overall.medianWorkPerTurn).toBe(10000);
+    expect(summary.weighting.flagged).toBe(true);
+    expect(summary.ownTurnBuckets['1-5']).toMatchObject({ ownTurns: 9 });
+    expect(summary.ownTurnBuckets['16+']).toMatchObject({ ownTurns: 5, medianWorkPerTurn: 10000 });
+    expect(summary.overall.medianSearchesPerTurn).toBe(3);
+  });
+
+  it('samples the load at every boundary and records who else held a heavy slot', () => {
+    const readings = [[0.5, 0.4, 0.3], [3.0, 2.5, 1.0], [1.0, 0.8, 0.6]];
+    let i = 0;
+    const sampler = new LoadSampler(() => readings[i++] ?? readings[readings.length - 1],
+      () => [
+        { index: 0, path: 's0', stale: false, record: { pid: process.pid, startedAt: 'x', label: 'gate1-calibrate', host: 'h', cwd: '.' } },
+        { index: 1, path: 's1', stale: false, record: { pid: 424242, startedAt: 'x', label: 'ladder-shard-3/12', host: 'h', cwd: '.' } },
+        { index: 2, path: 's2', stale: true, record: { pid: 1, startedAt: 'x', label: 'dead-benchmark', host: 'h', cwd: '.' } },
+      ]);
+    for (const label of ['before', 'middle', 'after']) sampler.sample(label);
+    const summary = sampler.summary();
+    expect(summary.samples).toBe(3);
+    // The MAXIMUM is what a row checks: a contended middle is invisible in a mean
+    // and entirely invisible in a start/end pair.
+    expect(summary.load5.max).toBe(2.5);
+    expect(summary.load5.mean).toBeCloseTo((0.4 + 2.5 + 0.8) / 3, 3);
+    expect(summary.load1.max).toBe(3.0);
+    // This process's own slot is not competition; a stale holder is not running.
+    expect(summary.heavySlotHoldersSeen).toEqual([{ holder: 'ladder-shard-3/12 (pid 424242)', samples: 3 }]);
+    expect(summary.note).toContain('every game boundary');
   });
 });

@@ -40,11 +40,96 @@
  * depends on — winner, win type, turns, purchases, the game's action hash, the
  * per-decision work ledger — is inside it.
  */
-import { appendFileSync, existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import {
+  appendFileSync, closeSync, existsSync, mkdirSync, openSync, readFileSync, readdirSync, renameSync, unlinkSync,
+  writeSync,
+} from 'node:fs';
 import { createHash } from 'node:crypto';
+import { hostname } from 'node:os';
 import { FULL_PAIRS, cellIndex, type Entry, type Mode, type Task } from './gate1-report';
+import { sourceIdentitySha256 } from './gate1-sources';
 
 const sha = (s: string) => createHash('sha256').update(s).digest('hex');
+
+/**
+ * Write a file by writing a sibling temp file and renaming it over the target.
+ *
+ * `rename(2)` within one directory is atomic, so a reader — the next shard's
+ * layout scan, a merge, an operator — never sees a half-written manifest, and a
+ * process killed mid-write leaves the previous complete version in place. A
+ * manifest is the only record of what a shard attempted, so a torn one is worse
+ * than a missing one: it reads as "not a finished shard manifest" no matter what
+ * the shard actually did.
+ */
+export function writeFileAtomic(path: string, contents: string): void {
+  const temp = `${path}.tmp-${process.pid}-${Date.now().toString(36)}`;
+  const fd = openSync(temp, 'wx');
+  try {
+    writeSync(fd, contents);
+  } finally {
+    closeSync(fd);
+  }
+  try {
+    renameSync(temp, path);
+  } catch (error) {
+    try { unlinkSync(temp); } catch { /* the rename failure is the real error */ }
+    throw error;
+  }
+}
+
+export const writeJsonAtomic = (path: string, value: unknown): void =>
+  writeFileAtomic(path, JSON.stringify(value, null, 2) + '\n');
+
+export const shardLockFile = (shard: ShardSpec): string => `lock-${shardStem(shard)}.json`;
+
+/**
+ * An `O_EXCL` lock file per shard, so two processes cannot play one shard into one
+ * directory at the same time.
+ *
+ * The identity and layout checks below catch a shard run under the WRONG row; they
+ * cannot catch the same shard running TWICE concurrently, which is the easy
+ * mistake to make with eight commands in a terminal and a resumable runner. Both
+ * processes would read the same verified prefix, both would decide the same games
+ * are missing, and both would append them — leaving a games file with duplicate
+ * lines that `readShardGames` then refuses, after hours of play.
+ *
+ * A lock whose holder pid is dead is stale and is reclaimed, the same rule
+ * `lab/hard-ai/ladder/heavy.ts` uses for its slots, so a crashed shard does not
+ * need a human to unwedge it before it can resume.
+ */
+export function acquireShardLock(out: string, shard: ShardSpec): () => void {
+  const path = `${out}/${shardLockFile(shard)}`;
+  const record = () => JSON.stringify({ pid: process.pid, host: hostname(), cwd: process.cwd(),
+    shard, startedAt: new Date().toISOString() }, null, 2) + '\n';
+  const alive = (pid: unknown): boolean => {
+    if (typeof pid !== 'number' || !Number.isInteger(pid) || pid <= 0) return false;
+    try { process.kill(pid, 0); return true; } catch (error) { return (error as NodeJS.ErrnoException).code === 'EPERM'; }
+  };
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const fd = openSync(path, 'wx');
+      try { writeSync(fd, record()); } finally { closeSync(fd); }
+      let released = false;
+      return () => {
+        if (released) return;
+        released = true;
+        try { unlinkSync(path); } catch { /* already gone */ }
+      };
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== 'EEXIST') throw error;
+      let held: { pid?: number } = {};
+      try { held = JSON.parse(readFileSync(path, 'utf8')) as { pid?: number }; } catch { held = {}; }
+      if (alive(held.pid)) {
+        throw new Error(`${shardStem(shard)} is already running in ${out} (pid ${held.pid}). ` +
+          'Two processes must not play one shard into one directory; wait for it, or remove ' +
+          `${shardLockFile(shard)} once you have confirmed that process is gone.`);
+      }
+      // Stale: the holder is dead, so the lock can never be given back by it.
+      try { unlinkSync(path); } catch { /* lost the reclaim race; the retry sees the winner */ }
+    }
+  }
+  throw new Error(`Could not take the ${shardStem(shard)} lock in ${out}`);
+}
 
 export interface ShardSpec {
   /** 1-based, so a command line reads `--shard 3/8`. */
@@ -118,7 +203,7 @@ export function patchShardManifest(out: string, shard: ShardSpec, patch: Record<
   const existing: Record<string, unknown> = existsSync(path)
     ? JSON.parse(readFileSync(path, 'utf8')) as Record<string, unknown> : {};
   const merged = { ...existing, ...patch };
-  writeFileSync(path, JSON.stringify(merged, null, 2) + '\n');
+  writeJsonAtomic(path, merged);
   return merged;
 }
 
@@ -164,6 +249,15 @@ export interface ReadShardResult {
   games: GameLine[];
   /** True when a torn final line (an interrupted append) was dropped. */
   truncated: boolean;
+  /**
+   * True when the file's last line carried no trailing newline although it parsed
+   * and verified. `appendFileSync` writes `line + '\n'`, so this can only happen
+   * if the process died between the two halves of one write, or a tool rewrote the
+   * file. The CONTENT is intact, but the next append would concatenate onto that
+   * line and destroy it, so the file is rewritten from the verified lines before
+   * anything else is written to it.
+   */
+  missingFinalNewline: boolean;
 }
 
 /**
@@ -177,8 +271,10 @@ export interface ReadShardResult {
  */
 export function readShardGames(path: string, expected: ReadonlyMap<string, Task>, identity: RowIdentity,
   shard: ShardSpec): ReadShardResult {
-  if (!existsSync(path)) return { games: [], truncated: false };
-  const lines = readFileSync(path, 'utf8').split('\n').filter(l => l.length > 0);
+  if (!existsSync(path)) return { games: [], truncated: false, missingFinalNewline: false };
+  const raw = readFileSync(path, 'utf8');
+  const missingFinalNewline = raw.length > 0 && !raw.endsWith('\n');
+  const lines = raw.split('\n').filter(l => l.length > 0);
   const games: GameLine[] = [];
   let truncated = false;
   lines.forEach((line, i) => {
@@ -205,7 +301,8 @@ export function readShardGames(path: string, expected: ReadonlyMap<string, Task>
     if (games.some(g => g.task.id === task.id)) throw new Error(`${where}: game ${task.id} appears twice`);
     games.push(parsed);
   });
-  return { games, truncated };
+  // A torn tail was dropped, so the surviving lines all end in a newline again.
+  return { games, truncated, missingFinalNewline: missingFinalNewline && !truncated };
 }
 
 export interface ShardRunOptions {
@@ -233,26 +330,60 @@ export interface ShardRunResult {
 
 /** Plays (or resumes) exactly this shard's share of the row. */
 export async function runShardGames(options: ShardRunOptions): Promise<ShardRunResult> {
-  const { out, shard, identity } = options;
+  const { out, shard } = options;
   const mine = tasksForShard(options.tasks, shard);
   if (!mine.length) throw new Error(`${shardStem(shard)} holds no games; use a smaller --shard count`);
   const expected = new Map(mine.map(t => [t.id, t]));
   const gamesPath = `${out}/${shardGamesFile(shard)}`;
   mkdirSync(out, { recursive: true }); // a shard run is resumable, so the directory may exist
   mkdirSync(`${out}/replays`, { recursive: true });
+  const releaseLock = acquireShardLock(out, shard);
+  try {
+    return await runShardGamesLocked(options, mine, expected, gamesPath);
+  } finally {
+    releaseLock();
+  }
+}
 
+async function runShardGamesLocked(options: ShardRunOptions, mine: Task[],
+  expected: ReadonlyMap<string, Task>, gamesPath: string): Promise<ShardRunResult> {
+  const { out, shard, identity } = options;
   // One directory holds one row at one layout. Both checks run before a game is
   // played: a mixed directory is only detectable at merge time otherwise, hours
   // later, with no way to tell which half to keep. A manifest that carries no
   // `identity` yet is a shard the runner has opened but not started, so only its
   // LAYOUT is checked — there is nothing else in it to disagree with.
+  const unreadableForeignManifests: string[] = [];
   for (const file of readdirSync(out)) {
     const match = /^manifest-shard-\d+-of-(\d+)\.json$/.exec(file);
     if (!match) continue;
-    const previous = JSON.parse(readFileSync(`${out}/${file}`, 'utf8')) as { identity?: RowIdentity };
+    // THE LAYOUT CHECK COMES FIRST, because it reads the FILE NAME rather than the
+    // file, and it is the check that protects the directory.
     if (Number(match[1]) !== shard.count) {
       throw new Error(`${out} already holds ${file}, a ${match[1]}-shard layout, but this process is ` +
         `${shardStem(shard)}. Re-run the row under one layout, or start a new directory.`);
+    }
+    const mineOwnFile = file === shardManifestFile(shard);
+    let previous: { identity?: RowIdentity };
+    try {
+      previous = JSON.parse(readFileSync(`${out}/${file}`, 'utf8')) as { identity?: RowIdentity };
+    } catch (error) {
+      // An unreadable FOREIGN manifest is LAYOUT-ONLY, not fatal. Another shard's
+      // half-written or clobbered manifest says nothing about whether THIS shard
+      // may proceed: its layout has already been checked from the file name, its
+      // games are verified against their own content hashes, and the MERGE — which
+      // is where a row is assembled — still refuses it outright. Refusing here
+      // instead would let one damaged sibling file stop seven healthy shards from
+      // resuming, which is precisely the fifteen-hour loss sharding exists to
+      // prevent. This shard's OWN manifest is a different matter: it is the record
+      // of what this process is doing, and it is written atomically, so an
+      // unreadable one means something is wrong with this run.
+      if (mineOwnFile) {
+        throw new Error(`${file} is this shard's own manifest and cannot be read: ${String(error)}. ` +
+          'It is written atomically, so an unreadable one is not a torn write; investigate before resuming.');
+      }
+      unreadableForeignManifests.push(file);
+      continue;
     }
     if (!previous.identity) continue;
     for (const key of Object.keys(identity) as (keyof RowIdentity)[]) {
@@ -262,18 +393,21 @@ export async function runShardGames(options: ShardRunOptions): Promise<ShardRunR
       }
     }
   }
-  const { games: existing, truncated } = readShardGames(gamesPath, expected, identity, shard);
-  if (truncated) {
-    // Rewrite without the torn line, so the file is well-formed from here on.
-    writeFileSync(gamesPath, existing.map(g => JSON.stringify(g)).join('\n') + (existing.length ? '\n' : ''));
+  const { games: existing, truncated, missingFinalNewline } = readShardGames(gamesPath, expected, identity, shard);
+  if (truncated || missingFinalNewline) {
+    // Rewrite from the VERIFIED lines only: without the torn tail, and with the
+    // final newline restored so the next append cannot land on top of a game.
+    writeFileAtomic(gamesPath, existing.map(g => JSON.stringify(g)).join('\n') + (existing.length ? '\n' : ''));
   }
   const resumed = existing.map(g => g.task.id);
   const games: GameLine[] = [...existing];
   const played: string[] = [];
   const writeManifest = (status: string, extra: Record<string, unknown> = {}) =>
-    patchShardManifest(out, shard, { shardSchema: 'muju-gate1-shard-v1', shard, shardStatus: status, identity,
+    patchShardManifest(out, shard, { shardSchema: 'muju-gate1-shard-v2', shard, shardStatus: status, identity,
       expectedGames: mine.length, completedGames: games.length, resumedGames: resumed.length,
       gamesFile: shardGamesFile(shard), games: mine.map(t => t.id), truncatedTailDropped: truncated,
+      missingFinalNewlineRewritten: missingFinalNewline,
+      ...(unreadableForeignManifests.length ? { unreadableForeignManifests } : {}),
       ...options.manifestExtras, ...extra });
   writeManifest('running', { shardStartedAt: new Date().toISOString() });
 
@@ -306,11 +440,51 @@ export async function runShardGames(options: ShardRunOptions): Promise<ShardRunR
  * mistyped `--mode` reports 768 missing games instead of the truth.
  */
 export function peekRowIdentity(dir: string): RowIdentity {
-  const file = readdirSync(dir).filter(f => /^manifest-shard-\d+-of-\d+\.json$/.test(f)).sort()[0];
-  if (!file) throw new Error(`${dir} holds no shard manifests (manifest-shard-i-of-n.json)`);
-  const parsed = JSON.parse(readFileSync(`${dir}/${file}`, 'utf8')) as { identity?: RowIdentity };
-  if (!parsed.identity) throw new Error(`${file} carries no row identity; that shard never pinned one`);
-  return parsed.identity;
+  const files = readdirSync(dir).filter(f => /^manifest-shard-\d+-of-\d+\.json$/.test(f)).sort();
+  if (!files.length) throw new Error(`${dir} holds no shard manifests (manifest-shard-i-of-n.json)`);
+  // The MODE is all this needs, and any shard of the row can supply it, so one
+  // unreadable or never-started manifest must not stop the merge before it has
+  // even built the schedule it is going to check the shards against.
+  for (const file of files) {
+    let parsed: { identity?: RowIdentity };
+    try {
+      parsed = JSON.parse(readFileSync(`${dir}/${file}`, 'utf8')) as { identity?: RowIdentity };
+    } catch { continue; }
+    if (parsed.identity) return parsed.identity;
+  }
+  throw new Error(`No shard manifest in ${dir} carries a readable row identity (looked at ${files.join(', ')}); ` +
+    'no shard got as far as pinning one.');
+}
+
+/** One line of `failures.jsonl`, as `gate1.ts` appends it. */
+export interface ShardFailure {
+  shard?: ShardSpec;
+  /** ISO timestamp the failure was recorded at. A line without one is unforgivable. */
+  at?: string;
+  task?: { id?: string };
+  error?: string;
+}
+
+/**
+ * Every failure a row has recorded, in file order. A line that is not JSON is kept
+ * as an unattributable failure rather than skipped: `failures.jsonl` is the file a
+ * row writes when something has already gone wrong, and a merge may not decide
+ * that an unreadable failure record is no failure at all.
+ */
+export function readShardFailures(dir: string): { failures: ShardFailure[]; unreadableLines: number } {
+  const path = `${dir}/failures.jsonl`;
+  if (!existsSync(path)) return { failures: [], unreadableLines: 0 };
+  const failures: ShardFailure[] = [];
+  let unreadableLines = 0;
+  for (const line of readFileSync(path, 'utf8').split('\n')) {
+    if (!line.length) continue;
+    try {
+      failures.push(JSON.parse(line) as ShardFailure);
+    } catch {
+      unreadableLines++;
+    }
+  }
+  return { failures, unreadableLines };
 }
 
 export interface MergeResult {
@@ -322,6 +496,16 @@ export interface MergeResult {
   /** The shard manifests themselves, shard order, for provenance the row keeps
    * (the calibration's path and any accepted refusals live in their extras). */
   manifests: Record<string, unknown>[];
+  /** The tree identity re-hashed at MERGE time, for the merged manifest. */
+  sourceIdentityAtMerge: string;
+}
+
+export interface MergeOptions {
+  /**
+   * Re-hash the tree at merge time. Defaults to the real hasher
+   * (`gate1-sources.ts`); tests that merge synthetic identities inject their own.
+   */
+  sourceIdentity?: () => string;
 }
 
 /**
@@ -329,13 +513,55 @@ export interface MergeResult {
  * are pieces of ONE row: one identity, one calibration, one seed, one source
  * tree, one shard count, none missing, and every scheduled game present exactly
  * once. Anything else throws rather than produce a summary that looks whole.
+ *
+ * WHY THIS FUNCTION READS A SHARD'S STATUS AND ITS FAILURES, NOT ONLY ITS GAMES.
+ *
+ * It used to read neither, and the hole that left was the one thing about this
+ * instrument that could turn a VOID row into a clean summary. `gate1.ts` detects
+ * source drift AFTER a shard's games are appended — that is the only time it can
+ * be detected — and marks the manifest `status: 'invalid'` with `sourceDrift`
+ * naming the files, writes the error, appends a line to `failures.jsonl` and
+ * throws. But the drift check runs INSIDE `runShardGames`' caller, so by then
+ * `runShardGames`' own `finally` has already stamped `shardStatus: 'complete'`
+ * (all of that shard's games were in fact played), and `mergeShards` looked at
+ * nothing else. Every scheduled game was present, every hash verified, every
+ * identity field agreed — the shard's games had been played against a tree that
+ * changed underneath them, the runner had said so in three places, and the merge
+ * wrote `gate1: 'passed'`.
+ *
+ * So a shard is only merged when all five of these hold:
+ *
+ *   1. `status === 'complete'` — the RUNNER's verdict on the whole shard,
+ *   2. `shardStatus === 'complete'` — every game of its share is present,
+ *   3. no `sourceDrift`,
+ *   4. no `error`,
+ *   5. no unresolved line in `failures.jsonl` naming it.
+ *
+ * (5) is about time, not presence: a shard that failed and was then re-run to
+ * completion is fine, and its failure line is history. So a failure is forgiven
+ * only when the manifest records a completion STRICTLY LATER than the failure was
+ * recorded. A failure line with no timestamp, or a manifest with no completion
+ * time, cannot be shown to have been resolved and is therefore not forgiven.
+ *
+ * And the tree is re-hashed HERE, against the identity the shards pinned, because
+ * a merge is itself a reading of the sources: the summary is computed by this
+ * process, from this checkout, and if that checkout is not the one the games were
+ * played in then the report is describing engines that are no longer there.
  */
-export function mergeShards(dir: string, tasks: readonly Task[]): MergeResult {
+export function mergeShards(dir: string, tasks: readonly Task[], options: MergeOptions = {}): MergeResult {
   const files = readdirSync(dir).filter(f => /^manifest-shard-\d+-of-\d+\.json$/.test(f)).sort();
   if (!files.length) throw new Error(`${dir} holds no shard manifests (manifest-shard-i-of-n.json)`);
   const manifests = files.map(file => {
-    const parsed = JSON.parse(readFileSync(`${dir}/${file}`, 'utf8')) as
-      Record<string, unknown> & { shard: ShardSpec; identity: RowIdentity; shardStatus?: string };
+    let parsed: Record<string, unknown> & { shard: ShardSpec; identity: RowIdentity };
+    try {
+      parsed = JSON.parse(readFileSync(`${dir}/${file}`, 'utf8')) as typeof parsed;
+    } catch (error) {
+      // Tolerated during a RUN (another shard's business), never here: a shard
+      // whose manifest cannot be read has no verdict, and a row is not merged out
+      // of shards whose outcome is unknown.
+      throw new Error(`${file} cannot be read as a shard manifest (${String(error)}); a row is merged only from ` +
+        'shards whose manifest states their outcome. Re-run that shard (it resumes) before merging.');
+    }
     if (!parsed.shard || !parsed.identity) {
       throw new Error(`${file} is not a finished shard manifest (no shard/identity): that shard never started, ` +
         'or never got as far as pinning the row identity');
@@ -360,6 +586,66 @@ export function mergeShards(dir: string, tasks: readonly Task[]): MergeResult {
   const missing = Array.from({ length: count }, (_, i) => i + 1).filter(i => !seen.has(i));
   if (missing.length) throw new Error(`Missing shard manifests: ${missing.map(i => `${i}/${count}`).join(', ')}`);
   if (seen.size !== manifests.length) throw new Error('Two manifests claim the same shard index');
+
+  // The tree the SUMMARY is being computed in must be the tree the games were
+  // played in. A merge that re-derives nothing cannot notice that it is reading
+  // one row's evidence with another row's rules.
+  const sourceIdentityAtMerge = (options.sourceIdentity ?? sourceIdentitySha256)();
+  if (sourceIdentityAtMerge !== identity.sourceIdentitySha256) {
+    throw new Error(`The source tree at merge time hashes ${sourceIdentityAtMerge.slice(0, 12)}, but these shards ` +
+      `were played against ${String(identity.sourceIdentitySha256).slice(0, 12)}. A row is one identity end to end, ` +
+      'and that includes the checkout its summary is computed in: check out the tree the row ran in and merge there.');
+  }
+
+  // Every way a shard can be VOID although all of its games are present.
+  const { failures, unreadableLines } = readShardFailures(dir);
+  if (unreadableLines) {
+    throw new Error(`${dir}/failures.jsonl holds ${unreadableLines} line(s) that are not JSON. A row does not merge ` +
+      'while its own failure log cannot be read: an unreadable failure is not an absent one.');
+  }
+  for (const m of manifests) {
+    const stem = shardStem(m.shard);
+    const status = (m as { status?: unknown }).status;
+    const shardStatus = (m as { shardStatus?: unknown }).shardStatus;
+    const drift = (m as { sourceDrift?: unknown }).sourceDrift;
+    const error = (m as { error?: unknown }).error;
+    if (status !== 'complete') {
+      throw new Error(`${m.file} records status ${JSON.stringify(status ?? null)}, not "complete": ${stem} did not ` +
+        'finish cleanly, so its games are not row evidence. A shard that was voided stays voided — re-run it into a ' +
+        'directory whose identity it can match, or start the row again.');
+    }
+    if (shardStatus !== 'complete') {
+      throw new Error(`${m.file} records shardStatus ${JSON.stringify(shardStatus ?? null)}, not "complete": ${stem} ` +
+        'has not played its whole share. Re-run that shard (it resumes) before merging.');
+    }
+    if (Array.isArray(drift) ? drift.length : drift) {
+      throw new Error(`${m.file} records sourceDrift ${JSON.stringify(drift)}: the tree changed while ${stem} was ` +
+        'playing, so its games were not all measured at one identity. Those games are VOID and may not be pooled.');
+    }
+    if (error) {
+      throw new Error(`${m.file} records an error, so ${stem} is void: ${String(error).split('\n')[0]}`);
+    }
+    const completedAt = Date.parse(String((m as { shardFinishedAt?: unknown }).shardFinishedAt ??
+      (m as { finishedAt?: unknown }).finishedAt ?? ''));
+    const mineFailures = failures.filter(f => f.shard?.index === m.shard.index && f.shard?.count === m.shard.count);
+    const unresolved = mineFailures.filter(f => {
+      const at = Date.parse(String(f.at ?? ''));
+      // Unforgiven unless the shard demonstrably completed AFTERWARDS.
+      return !Number.isFinite(at) || !Number.isFinite(completedAt) || completedAt <= at;
+    });
+    if (unresolved.length) {
+      throw new Error(`failures.jsonl records ${unresolved.length} failure(s) for ${stem} that it has not been ` +
+        `re-completed after (last completion ${String((m as { shardFinishedAt?: unknown }).shardFinishedAt ?? 'none')}` +
+        `): ${String(unresolved[0].error ?? 'no message').split('\n')[0]}. Re-run that shard to completion, or treat ` +
+        'the row as void.');
+    }
+  }
+  const unattributed = failures.filter(f => !f.shard ||
+    !manifests.some(m => m.shard.index === f.shard?.index && m.shard.count === f.shard?.count));
+  if (unattributed.length) {
+    throw new Error(`failures.jsonl records ${unattributed.length} failure(s) that name no shard of this layout; ` +
+      'the row holds a failure nothing has accounted for and is not merged.');
+  }
 
   const byId = new Map(tasks.map(t => [t.id, t]));
   const entries: GameLine[] = [];
@@ -389,5 +675,5 @@ export function mergeShards(dir: string, tasks: readonly Task[]): MergeResult {
   // whatever layout produced it.
   const order = new Map(tasks.map((t, i) => [t.id, i]));
   entries.sort((a, b) => (order.get(a.task.id) ?? 0) - (order.get(b.task.id) ?? 0));
-  return { shards: manifests.map(m => m.shard), identity, entries, perShard, manifests };
+  return { shards: manifests.map(m => m.shard), identity, entries, perShard, manifests, sourceIdentityAtMerge };
 }

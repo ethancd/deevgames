@@ -1,12 +1,12 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest';
-import { appendFileSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import { appendFileSync, existsSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import {
-  WHOLE_ROW, canonicalJson, gameContentHash, mergeShards, parseShardSpec, runShardGames,
-  shardGamesFile, shardManifestFile, shardOfTask, shardStem, stripVolatile, tasksForShard,
-  type GameLine, type RowIdentity, type ShardSpec,
+  WHOLE_ROW, acquireShardLock, canonicalJson, gameContentHash, mergeShards, parseShardSpec, patchShardManifest,
+  readShardGames, runShardGames, shardGamesFile, shardLockFile, shardManifestFile, shardOfTask, shardStem,
+  stripVolatile, tasksForShard, type GameLine, type RowIdentity, type ShardSpec,
 } from '../../lab/ai/gate1-shard';
 import { DEFAULT_GAME_SECONDS, launchPlan, parseArgs as launchArgs } from '../../lab/ai/gate1-launch';
 import { FULL_PAIRS, schedule, type Task } from '../../lab/ai/gate1-report';
@@ -24,6 +24,17 @@ const IDENTITY: RowIdentity = {
   calibrationSha256: 'calib-1', sourceIdentitySha256: 'sources-1', openingsDigest: 'book-1',
 };
 const dir = () => mkdtempSync(join(tmpdir(), 'gate1-shard-'));
+/**
+ * What `gate1.ts` stamps on a shard manifest once the whole shard finished CLEAN:
+ * `status`. `runShardGames` owns `shardStatus` ("I played my whole share"); the
+ * runner owns `status` ("and nothing went wrong afterwards"), and a merge now
+ * requires both. These tests drive `runShardGames` directly, so they close the
+ * shard the way the runner would.
+ */
+const finish = (out: string, shard: ShardSpec, patch: Record<string, unknown> = {}) =>
+  patchShardManifest(out, shard, { status: 'complete', ...patch });
+/** These fixtures pin a synthetic source identity, so the merge gets the same one. */
+const MERGE = { sourceIdentity: () => IDENTITY.sourceIdentitySha256 };
 
 /**
  * A tiny synthetic schedule: one cell, eight pairs, sixteen games. Eight pairs
@@ -134,10 +145,11 @@ describe('shard layout does not change a game', () => {
           identity: IDENTITY, play: playStub });
         expect(result.played).toHaveLength(tasksForShard(tiny, { index, count }).length);
         expect(result.resumed).toEqual([]);
+        finish(out, { index, count });
         games.push(...result.games);
       }
       expect(games).toHaveLength(tiny.length);
-      const merged = mergeShards(out, tiny);
+      const merged = mergeShards(out, tiny, MERGE);
       expect(merged.entries.map(e => e.task.id)).toEqual(tiny.map(t => t.id)); // schedule order
       byLayout.set(count, new Map(merged.entries.map(e =>
         [e.task.id, canonicalJson(stripVolatile(e))])));
@@ -241,13 +253,14 @@ describe('merge', () => {
     for (let index = 1; index <= count; index++) {
       await runShardGames({ out, shard: { index, count }, tasks: tiny, identity: identityFor(index),
         play: async (task: Task) => fakeEntry(task, identityFor(index).identityHash) });
+      finish(out, { index, count });
     }
   }
 
   it('accepts a complete row and returns it in schedule order', async () => {
     const out = dir();
     await runAll(out, 4);
-    const merged = mergeShards(out, tiny);
+    const merged = mergeShards(out, tiny, MERGE);
     expect(merged.entries.map(e => e.task.id)).toEqual(tiny.map(t => t.id));
     expect(merged.shards).toHaveLength(4);
     expect(merged.perShard.reduce((a, s) => a + s.games, 0)).toBe(tiny.length);
@@ -260,9 +273,10 @@ describe('merge', () => {
     await runAll(missing, 4);
     const dropped = `${missing}/${shardManifestFile({ index: 3, count: 4 })}`;
     writeFileSync(dropped, JSON.stringify({ note: 'not a shard manifest' }));
-    expect(() => mergeShards(missing, tiny)).toThrow(/is not a finished shard manifest/);
-    writeFileSync(dropped, JSON.stringify({ shard: { index: 9, count: 4 }, identity: IDENTITY, shardStatus: 'complete' }));
-    expect(() => mergeShards(missing, tiny)).toThrow(/Missing shard manifests: 3\/4/);
+    expect(() => mergeShards(missing, tiny, MERGE)).toThrow(/is not a finished shard manifest/);
+    writeFileSync(dropped, JSON.stringify({ shard: { index: 9, count: 4 }, identity: IDENTITY,
+      status: 'complete', shardStatus: 'complete' }));
+    expect(() => mergeShards(missing, tiny, MERGE)).toThrow(/Missing shard manifests: 3\/4/);
 
     // The runner refuses to CREATE a mixed directory, so this one is assembled
     // by hand — two shards run apart and their files collected together, which
@@ -270,39 +284,43 @@ describe('merge', () => {
     const mixed = dir();
     await runShardGames({ out: mixed, shard: { index: 1, count: 2 }, tasks: tiny, identity: IDENTITY,
       play: async (t: Task) => fakeEntry(t) });
+    finish(mixed, { index: 1, count: 2 });
     const elsewhere = dir();
     const strange = { ...IDENTITY, identityHash: 'identity-2' };
     await runShardGames({ out: elsewhere, shard: { index: 2, count: 2 }, tasks: tiny, identity: strange,
       play: async (t: Task) => fakeEntry(t, strange.identityHash) });
+    finish(elsewhere, { index: 2, count: 2 });
     for (const file of [shardManifestFile({ index: 2, count: 2 }), shardGamesFile({ index: 2, count: 2 })]) {
       writeFileSync(`${mixed}/${file}`, readFileSync(`${elsewhere}/${file}`, 'utf8'));
     }
-    expect(() => mergeShards(mixed, tiny)).toThrow(/disagrees about identityHash/);
+    expect(() => mergeShards(mixed, tiny, MERGE)).toThrow(/disagrees about identityHash/);
 
     const layouts = dir();
     await runShardGames({ out: layouts, shard: { index: 1, count: 2 }, tasks: tiny, identity: IDENTITY,
       play: async (t: Task) => fakeEntry(t) });
+    finish(layouts, { index: 1, count: 2 });
     writeFileSync(`${layouts}/${shardManifestFile({ index: 1, count: 3 })}`,
-      JSON.stringify({ shard: { index: 1, count: 3 }, identity: IDENTITY, shardStatus: 'complete' }));
-    expect(() => mergeShards(layouts, tiny)).toThrow(/different layouts/);
+      JSON.stringify({ shard: { index: 1, count: 3 }, identity: IDENTITY,
+        status: 'complete', shardStatus: 'complete' }));
+    expect(() => mergeShards(layouts, tiny, MERGE)).toThrow(/different layouts/);
 
     const short = dir();
     await runAll(short, 2);
     const path = `${short}/${shardGamesFile({ index: 1, count: 2 })}`;
     const kept = readFileSync(path, 'utf8').trim().split('\n').slice(0, -1);
     writeFileSync(path, kept.join('\n') + '\n');
-    expect(() => mergeShards(short, tiny)).toThrow(/is missing 1 game/);
+    expect(() => mergeShards(short, tiny, MERGE)).toThrow(/shardStatus|is missing 1 game/);
   });
 
   it('refuses a directory with no shards at all', () => {
     const empty = dir();
-    expect(() => mergeShards(empty, tiny)).toThrow(/no shard manifests/);
+    expect(() => mergeShards(empty, tiny, MERGE)).toThrow(/no shard manifests/);
     expect(readdirSync(empty)).toEqual([]);
   });
 
   it('is what the launcher plans, wall time included', () => {
     const options = { shards: 8, mode: 'full' as const, out: 'DIR', calibration: 'C/calibration.json',
-      gameSeconds: 70, exec: false, acceptLoadedCalibration: false };
+      gameSeconds: 70, exec: false, acceptCalibration: [] };
     const plan = launchPlan(options);
     expect(plan.games).toBe(768);
     expect(plan.split).toHaveLength(8);
@@ -310,7 +328,7 @@ describe('merge', () => {
     for (const s of plan.split) expect(s.games).toBe(96); // 384 pairs / 8, both seats
     expect(plan.split[2].command).toContain('--shard 3/8');
     expect(plan.split[2].command).toContain('--calibration C/calibration.json');
-    expect(plan.split[2].command).not.toContain('--accept-loaded-calibration');
+    expect(plan.split[2].command).not.toContain('--accept-calibration');
     expect(plan.merge).toBe('node --import tsx lab/ai/gate1.ts --merge DIR --mode full');
     // wall ~= ceil(shards/slots) * max(games per shard) * seconds, floored by
     // the total work divided by the slots: more shards buy restarts, not speed.
@@ -320,8 +338,13 @@ describe('merge', () => {
     expect(plan.wallTime.estimatedHours).toBeCloseTo(Math.ceil(8 / slots) * 96 * 70 / 3600, 1);
     expect(plan.wallTime.floorHours).toBeCloseTo(768 * 70 / 3600 / slots, 1);
     expect(plan.wallTime.estimatedHours).toBeGreaterThanOrEqual(plan.wallTime.floorHours - 0.01);
-    expect(launchPlan({ ...options, acceptLoadedCalibration: true }).split[0].command)
-      .toContain('--accept-loaded-calibration');
+    expect(launchPlan({ ...options, acceptCalibration: ['load', 'age'] }).split[0].command)
+      .toContain('--accept-calibration=load,age');
+    // The single switch it replaced is refused outright rather than silently ignored.
+    expect(() => launchArgs(['--shards', '4', '--out', 'x', '--calibration', 'c', '--accept-loaded-calibration']))
+      .toThrow(/one switch over four unrelated concessions/);
+    expect(() => launchArgs(['--shards', '4', '--out', 'x', '--calibration', 'c', '--accept-calibration=nonsense']))
+      .toThrow(/not one of load,machine,age,sources/);
     for (const args of [[], ['--shards', '8'], ['--shards', '0', '--out', 'x', '--calibration', 'c'],
       ['--shards', '8', '--out', 'x'], ['--shards', '8', '--out', 'x', '--calibration', 'c', '--mode', 'wall']]) {
       expect(() => launchArgs(args), args.join(' ')).toThrow();
@@ -335,5 +358,185 @@ describe('merge', () => {
     expect(shardGamesFile({ index: 3, count: 8 })).toBe('games-shard-3-of-8.jsonl');
     expect(shardManifestFile({ index: 3, count: 8 })).toBe('manifest-shard-3-of-8.json');
     expect(shardGamesFile(WHOLE_ROW)).toBe('games-shard-1-of-1.jsonl');
+  });
+});
+
+/**
+ * THE BLOCKER, reproduced.
+ *
+ * The reviewer's scenario, step for step: two shards run, both play every game
+ * they own, and while the second one is playing, a source file changes under it.
+ * `gate1.ts` notices AFTER the games are appended — that is the only moment it
+ * can — marks the manifest `status: 'invalid'` with `sourceDrift`, writes the
+ * error, appends a line to `failures.jsonl` and throws. But `runShardGames`'
+ * `finally` has already stamped `shardStatus: 'complete'`, because the shard did
+ * play its whole share, and `mergeShards` read only the games. Every game was
+ * present, every content hash verified, every identity field agreed — and the
+ * merge produced a clean row out of evidence the runner had declared void in
+ * three separate places.
+ *
+ * Each case below merges cleanly on the old code and is refused now.
+ */
+describe('a merge refuses a shard that is complete but VOID', () => {
+  const shards: ShardSpec[] = [{ index: 1, count: 2 }, { index: 2, count: 2 }];
+  /** Two stub shards, both holding every game they own and both closed clean. */
+  async function twoCleanShards() {
+    const out = dir();
+    for (const shard of shards) {
+      await runShardGames({ out, shard, tasks: tiny, identity: IDENTITY, play: async (t: Task) => fakeEntry(t) });
+      finish(out, shard);
+    }
+    return out;
+  }
+  const manifestOf = (out: string, shard: ShardSpec) =>
+    JSON.parse(readFileSync(`${out}/${shardManifestFile(shard)}`, 'utf8')) as Record<string, unknown>;
+
+  it('merges two clean stub shards, so the refusals below are about the patch and nothing else', async () => {
+    const out = await twoCleanShards();
+    const merged = mergeShards(out, tiny, MERGE);
+    expect(merged.entries).toHaveLength(tiny.length);
+    expect(merged.sourceIdentityAtMerge).toBe(IDENTITY.sourceIdentitySha256);
+    // Both halves of the verdict are on disk, which is what makes the patch below
+    // a realistic edit rather than a hypothetical one.
+    for (const shard of shards) {
+      expect(manifestOf(out, shard)).toMatchObject({ status: 'complete', shardStatus: 'complete' });
+    }
+  });
+
+  it('refuses the drifted shard although shardStatus says complete', async () => {
+    const out = await twoCleanShards();
+    // Exactly what gate1.ts writes when `driftedSources` fires after the games:
+    // the shard's own completeness is untouched, and every other check still passes.
+    patchShardManifest(out, shards[1], {
+      status: 'invalid',
+      sourceDrift: ['src/ai/planner/beam.ts'],
+      error: 'Error: Sources changed during row; row void: src/ai/planner/beam.ts',
+    });
+    expect(manifestOf(out, shards[1]).shardStatus).toBe('complete'); // the hole, still open
+    expect(() => mergeShards(out, tiny, MERGE)).toThrow(/records status "invalid", not "complete"/);
+  });
+
+  it.each([
+    ['sourceDrift under a complete status', { sourceDrift: ['src/game/rules.ts'] }, /records sourceDrift/],
+    ['an error under a complete status', { error: 'Correctness veto in Rush-h0-p3-white; row void' }, /is void/],
+    ['a shard that never finished its share', { shardStatus: 'incomplete' }, /shardStatus "incomplete"/],
+  ])('refuses %s', async (_name, patch, pattern) => {
+    const out = await twoCleanShards();
+    patchShardManifest(out, shards[1], patch);
+    expect(() => mergeShards(out, tiny, MERGE)).toThrow(pattern);
+  });
+
+  it('refuses a failure the shard was not re-completed after, and forgives one it was', async () => {
+    const out = await twoCleanShards();
+    const finishedAt = String(manifestOf(out, shards[1]).shardFinishedAt);
+    const after = new Date(Date.parse(finishedAt) + 60_000).toISOString();
+    const before = new Date(Date.parse(finishedAt) - 60_000).toISOString();
+    // A failure recorded AFTER the last completion still stands.
+    appendFileSync(`${out}/failures.jsonl`,
+      JSON.stringify({ at: after, shard: shards[1], error: 'Sources changed during row; row void' }) + '\n');
+    expect(() => mergeShards(out, tiny, MERGE)).toThrow(/has not been[\s\S]*re-completed after/);
+
+    // A failure recorded BEFORE it is history: the shard was re-run and finished.
+    writeFileSync(`${out}/failures.jsonl`,
+      JSON.stringify({ at: before, shard: shards[1], error: 'simulated crash, later resumed' }) + '\n');
+    expect(mergeShards(out, tiny, MERGE).entries).toHaveLength(tiny.length);
+
+    // A failure with no timestamp cannot be shown to have been resolved, so it is not.
+    writeFileSync(`${out}/failures.jsonl`,
+      JSON.stringify({ shard: shards[1], error: 'a pre-timestamp failure line' }) + '\n');
+    expect(() => mergeShards(out, tiny, MERGE)).toThrow(/has not been[\s\S]*re-completed after/);
+
+    // As is a failure that names no shard of this layout, or one that is not JSON.
+    writeFileSync(`${out}/failures.jsonl`, JSON.stringify({ at: before, error: 'orphan' }) + '\n');
+    expect(() => mergeShards(out, tiny, MERGE)).toThrow(/name no shard of this layout/);
+    writeFileSync(`${out}/failures.jsonl`, 'not json at all\n');
+    expect(() => mergeShards(out, tiny, MERGE)).toThrow(/not JSON/);
+  });
+
+  it('re-hashes the sources at merge time against the identity the shards pinned', async () => {
+    const out = await twoCleanShards();
+    expect(() => mergeShards(out, tiny, { sourceIdentity: () => 'a'.repeat(64) }))
+      .toThrow(/source tree at merge time hashes/);
+    // And the default really is the live hasher, not a constant: merging this
+    // synthetic row without the injection point is refused for the same reason.
+    expect(() => mergeShards(out, tiny)).toThrow(/source tree at merge time hashes/);
+  });
+
+  it('refuses a shard manifest it cannot read, rather than merging around it', async () => {
+    const out = await twoCleanShards();
+    writeFileSync(`${out}/${shardManifestFile(shards[1])}`, '{ "shard": { "index": 2, ');
+    expect(() => mergeShards(out, tiny, MERGE)).toThrow(/cannot be read as a shard manifest/);
+  });
+});
+
+describe('files a fifteen-hour row can survive', () => {
+  const shard: ShardSpec = { index: 1, count: 2 };
+
+  it('rewrites a games file that lost its final newline, from the verified lines', async () => {
+    const out = dir();
+    await runShardGames({ out, shard, tasks: tiny, identity: IDENTITY, play: async (t: Task) => fakeEntry(t) });
+    const path = `${out}/${shardGamesFile(shard)}`;
+    const intact = readFileSync(path, 'utf8');
+    writeFileSync(path, intact.replace(/\n$/, '')); // complete lines, no trailing newline
+    const mine = tasksForShard(tiny, shard);
+    const expected = new Map(mine.map(t => [t.id, t]));
+    const read = readShardGames(path, expected, IDENTITY, shard);
+    expect(read.truncated).toBe(false);          // nothing was torn
+    expect(read.missingFinalNewline).toBe(true); // but the next append would land on a game
+    expect(read.games).toHaveLength(mine.length);
+
+    const replayed: string[] = [];
+    const resumed = await runShardGames({ out, shard, tasks: tiny, identity: IDENTITY,
+      play: async (t: Task) => { replayed.push(t.id); return fakeEntry(t); } });
+    expect(replayed).toEqual([]); // every line verified, so nothing is replayed
+    expect(resumed.games).toHaveLength(mine.length);
+    expect(readFileSync(path, 'utf8')).toBe(intact); // and the file is well formed again
+    expect(JSON.parse(readFileSync(`${out}/${shardManifestFile(shard)}`, 'utf8')).missingFinalNewlineRewritten)
+      .toBe(true);
+  });
+
+  it('takes an exclusive lock per shard and refuses a second live process', async () => {
+    const out = dir();
+    await runShardGames({ out, shard, tasks: tiny, identity: IDENTITY, play: async (t: Task) => fakeEntry(t) });
+    // The lock is given back when the shard finishes, so a resume can take it.
+    expect(existsSync(`${out}/${shardLockFile(shard)}`)).toBe(false);
+    const release = acquireShardLock(out, shard);
+    await expect(runShardGames({ out, shard, tasks: tiny, identity: IDENTITY, play: async (t: Task) => fakeEntry(t) }))
+      .rejects.toThrow(/already running in/);
+    release();
+    // A lock left behind by a DEAD process is stale and is reclaimed, so a crashed
+    // shard does not need a human before it can resume.
+    writeFileSync(`${out}/${shardLockFile(shard)}`, JSON.stringify({ pid: 2147483646, shard }));
+    const after = await runShardGames({ out, shard, tasks: tiny, identity: IDENTITY,
+      play: async (t: Task) => fakeEntry(t) });
+    expect(after.games).toHaveLength(tasksForShard(tiny, shard).length);
+  });
+
+  it('treats an unreadable FOREIGN manifest as layout-only while a shard runs', async () => {
+    const out = dir();
+    const sibling: ShardSpec = { index: 2, count: 2 };
+    await runShardGames({ out, shard: sibling, tasks: tiny, identity: IDENTITY, play: async (t: Task) => fakeEntry(t) });
+    writeFileSync(`${out}/${shardManifestFile(sibling)}`, '{ "shard": { "inde');
+    // One damaged sibling file must not stop a healthy shard from running: its
+    // layout is read from the FILE NAME, which is what protects the directory.
+    const result = await runShardGames({ out, shard, tasks: tiny, identity: IDENTITY,
+      play: async (t: Task) => fakeEntry(t) });
+    expect(result.games).toHaveLength(tasksForShard(tiny, shard).length);
+    expect(JSON.parse(readFileSync(`${out}/${shardManifestFile(shard)}`, 'utf8')).unreadableForeignManifests)
+      .toEqual([shardManifestFile(sibling)]);
+    // The layout check still bites, from the name alone.
+    await expect(runShardGames({ out, shard: { index: 1, count: 3 }, tasks: tiny, identity: IDENTITY,
+      play: async (t: Task) => fakeEntry(t) })).rejects.toThrow(/a 2-shard layout/);
+  });
+
+  it('writes manifests atomically, leaving no partial file behind', async () => {
+    const out = dir();
+    await runShardGames({ out, shard, tasks: tiny, identity: IDENTITY, play: async (t: Task) => fakeEntry(t) });
+    finish(out, shard);
+    expect(readdirSync(out).filter(f => f.includes('.tmp-'))).toEqual([]);
+    // Every manifest on disk parses; an interrupted write would leave one that did not.
+    for (const file of readdirSync(out).filter(f => f.endsWith('.json'))) {
+      expect(() => JSON.parse(readFileSync(`${out}/${file}`, 'utf8')), file).not.toThrow();
+    }
   });
 });

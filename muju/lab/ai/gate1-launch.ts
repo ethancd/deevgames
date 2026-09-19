@@ -38,6 +38,7 @@ import { pathToFileURL } from 'node:url';
 import { formatStatus, heavyDir, slotCount } from '../hard-ai/ladder/heavy';
 import { scheduleOpenings, loadGate1Book } from './gate1-openings';
 import { schedule, type Mode } from './gate1-report';
+import { parseCalibrationOverrides, type CalibrationOverride } from './gate1-calibrate';
 import { parseShardSpec, shardStem, tasksForShard, type ShardSpec } from './gate1-shard';
 
 /** 768 games in about fifteen hours, the sequential figure the review quoted. */
@@ -51,17 +52,19 @@ export interface LaunchOptions {
   calibration: string;
   gameSeconds: number;
   exec: boolean;
-  acceptLoadedCalibration: boolean;
+  /** Kinds of calibration refusal every shard is told to accept, stamped one by one. */
+  acceptCalibration: CalibrationOverride[];
 }
 
 export function parseArgs(args: string[]): LaunchOptions {
   const options: LaunchOptions = { shards: 0, mode: 'full', out: '', calibration: '',
-    gameSeconds: DEFAULT_GAME_SECONDS, exec: false, acceptLoadedCalibration: false };
+    gameSeconds: DEFAULT_GAME_SECONDS, exec: false, acceptCalibration: [] };
   const seen = new Set<string>();
   for (let i = 0; i < args.length; i++) {
     const flag = args[i];
-    if (seen.has(flag)) throw new Error(`Repeated option ${flag}`);
-    seen.add(flag);
+    const name = flag.startsWith('--accept-calibration=') ? '--accept-calibration' : flag;
+    if (seen.has(name)) throw new Error(`Repeated option ${name}`);
+    seen.add(name);
     const value = () => {
       const v = args[++i];
       if (!v || v.startsWith('--')) throw new Error(`${flag} requires a value`);
@@ -79,8 +82,13 @@ export function parseArgs(args: string[]): LaunchOptions {
       if (mode !== 'pilot' && mode !== 'full') throw new Error('--mode must be pilot or full');
       options.mode = mode;
     } else if (flag === '--exec') options.exec = true;
-    else if (flag === '--accept-loaded-calibration') options.acceptLoadedCalibration = true;
-    else throw new Error(`Unknown option ${flag}`);
+    else if (flag.startsWith('--accept-calibration=')) {
+      options.acceptCalibration = parseCalibrationOverrides(flag.slice('--accept-calibration='.length));
+    } else if (flag === '--accept-calibration') options.acceptCalibration = parseCalibrationOverrides(value());
+    else if (flag === '--accept-loaded-calibration') {
+      throw new Error('--accept-loaded-calibration is gone: it was one switch over four unrelated concessions. ' +
+        'Use --accept-calibration=load,machine,age,sources with only the kinds you mean.');
+    } else throw new Error(`Unknown option ${flag}`);
   }
   if (!options.shards) throw new Error('Provide --shards <n>');
   if (!options.out) throw new Error('Provide --out <directory>');
@@ -91,7 +99,7 @@ export function parseArgs(args: string[]): LaunchOptions {
 export function shardCommand(shard: ShardSpec, options: LaunchOptions): string[] {
   return ['--import', 'tsx', RUNNER, '--mode', options.mode, '--shard', `${shard.index}/${shard.count}`,
     '--calibration', options.calibration, '--out', options.out,
-    ...(options.acceptLoadedCalibration ? ['--accept-loaded-calibration'] : [])];
+    ...(options.acceptCalibration.length ? [`--accept-calibration=${options.acceptCalibration.join(',')}`] : [])];
 }
 
 /** The split, the commands and the arithmetic, with nothing hidden in a comment. */

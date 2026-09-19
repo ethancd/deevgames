@@ -1,21 +1,28 @@
 // @vitest-environment node
-import { beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { createHash } from 'node:crypto';
-import { mkdtempSync, readFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { phaseEndAction } from '../../src/game/legality';
 import { applyAction } from '../../src/ai/simulate';
 import { defaultUpkeepAction } from '../../src/game/upkeep';
 import { instantiateTactics, type TacticalSolver } from '../../src/ai/wasm/kernel';
-import { createGateBot, workSlice, type GateBudgets, type Searcher } from '../../lab/ai/gate1-bot';
+import type { GameState } from '../../src/game/types';
+import {
+  PREPARE_RESERVE_DIVISOR, createGateBot, prepareReserve, segmentsAfter, turnWorkRequest,
+  type GateBudgets, type Searcher,
+} from '../../lab/ai/gate1-bot';
 import {
   cellIndex, schedule, seatSeedFor, seedFor, summarize,
-  AMENDMENT, FULL_PAIRS, MIN_DISTINCT_FRACTION, SEEDS, type Entry, type Mode,
+  AMENDMENT, DISTINCTNESS_READING, FULL_PAIRS, MIN_DISTINCT_FRACTION, RULES_VERSION, SEEDS, VOID_PILOT_SEEDS,
+  type Entry, type Mode,
 } from '../../lab/ai/gate1-report';
+import { BANDS_PATH, SUPERSEDED_BANDS_PATH } from '../../lab/ai/gate1-sources';
+import { WorkMeter } from '../../lab/ai/gate1-work';
 import { loadGate1Book, gate1StartState, scheduleOpenings } from '../../lab/ai/gate1-openings';
-import { adoptedProtocol, mergeRow, parseArgs, resolvedConfigs, runTask } from '../../lab/ai/gate1';
-import { runShardGames, type RowIdentity } from '../../lab/ai/gate1-shard';
+import { ROW_START_FILE, adoptedProtocol, loadBands, mergeRow, parseArgs, resolvedConfigs, rowFirstStartedAt, runTask } from '../../lab/ai/gate1';
+import { patchShardManifest, runShardGames, shardStem, type RowIdentity, type ShardSpec } from '../../lab/ai/gate1-shard';
 import { DEFAULT_MATCH_OPTIONS, type GameRecord } from '../../lab/harness/types';
 
 let solver: TacticalSolver;
@@ -24,7 +31,16 @@ const book = loadGate1Book();
 const openings = scheduleOpenings(book);
 const openingIds = book.openings.map(o => o.id);
 const initial = () => gate1StartState(book.openings[0], 0);
-const bands = JSON.parse(readFileSync('lab/harness/results/p1-scripted-2026-09-18/sanity-bands.json', 'utf8'));
+/** The bands A4 re-froze under the 20-ply clock; the p1 ones are refused by path. */
+const bands = JSON.parse(readFileSync(BANDS_PATH, 'utf8'));
+/** One meter for the whole suite, exactly as a row installs one for the whole row. */
+const meter = new WorkMeter();
+beforeAll(() => { meter.install(); });
+afterAll(() => { meter.uninstall(); });
+/** What gate1.ts stamps once a shard has finished clean; a merge requires it. */
+const finishShard = (out: string, shard: ShardSpec) => patchShardManifest(out, shard, { status: 'complete' });
+/** These fixtures pin a synthetic source identity, so the merge re-hash agrees. */
+const MERGE = { sourceIdentity: () => 'sources' };
 /** Small enough to keep the suite quick; the row's budgets come from a calibration. */
 const TEST_BUDGETS: GateBudgets = { hard: 400, medium: 200 };
 
@@ -34,7 +50,7 @@ function synthetic(mode: Mode): Entry[] {
     task, identityHash: 'identity',
     gameSha256: createHash('sha256').update(task.id).digest('hex'),
     record: {
-      ...({} as GameRecord), rulesVersion: 'muju-phasing-1', seed: task.seed, handicap: task.handicap,
+      ...({} as GameRecord), rulesVersion: RULES_VERSION, seed: task.seed, handicap: task.handicap,
       winner: task.hardSeat, completedTurns: 20, winType: 'home-checkmate',
       options: { ...DEFAULT_MATCH_OPTIONS }, anomalies: [], invariantViolation: null,
       adjudicated: false, inactivityDraw: false,
@@ -48,7 +64,11 @@ function synthetic(mode: Mode): Entry[] {
 describe('allocation and reporting', () => {
   it('fixes 16 pilot and 768 full games, one distinct dev opening per pair', () => {
     expect(AMENDMENT).toBe('A3');
-    expect(SEEDS).toEqual({ full: 20260960, pilot: 20260961 });
+    expect(SEEDS).toEqual({ full: 20260960, pilot: 20260962 });
+    // A3 §5 named 20260961. It was consumed by the pilot under muju-phasing-1 and
+    // A4 voided that population, so it is recorded as void rather than reused.
+    expect(VOID_PILOT_SEEDS).toEqual([20260961]);
+    expect(SEEDS.pilot).not.toBe(VOID_PILOT_SEEDS[0]);
     expect(FULL_PAIRS).toBe(48);
     expect(schedule('pilot', openings)).toHaveLength(16);
     const full = schedule('full', openings);
@@ -101,10 +121,17 @@ describe('allocation and reporting', () => {
     expect(full.rows.every(r => r.strengthMet)).toBe(true);
     expect(full.rows.every(r => r.distinctGames === r.games && r.distinctPairs === r.pairs)).toBe(true);
     expect(summarize(synthetic('pilot'), 'pilot', 'identity', bands, openings).gate1).toBe('pilot-ineligible');
-    expect(adoptedProtocol().amendment).toMatchObject({
+    const protocol = adoptedProtocol();
+    expect(protocol.amendment).toMatchObject({
       id: 'A3', commit: 'a0551c8c274bfdebb32ca309e49fd7a98657de73',
       sha256: '8242433d727638abf41b1006b9fcff645564200b92eadc9bbc887eb2b72f60f4',
     });
+    // A4 is the operative text and is pinned too, so the half of the
+    // preregistration that is actually in force cannot be rewritten unnoticed.
+    expect(protocol.rulesAmendment).toMatchObject({ id: 'A4', rulesVersion: RULES_VERSION });
+    expect(protocol.document).toContain('A4 — 2026-09-19: rules revision `muju-phasing-2`');
+    expect(full.rulesVersion).toBe(RULES_VERSION);
+    expect(full.distinctnessReading).toBe(DISTINCTNESS_READING);
   });
 
   it('reports a Rush loss without gating strength, but gates every other opponent and handicap', () => {
@@ -219,17 +246,60 @@ describe('allocation and reporting', () => {
     const full = ['--mode', 'full', '--out', 'x', '--calibration', 'c.json'];
     expect(parseArgs(full).shard).toEqual({ index: 1, count: 1 });
     expect(parseArgs([...full, '--shard', '3/8']).shard).toEqual({ index: 3, count: 8 });
-    expect(parseArgs(full).acceptLoadedCalibration).toBe(false);
-    expect(parseArgs([...full, '--accept-loaded-calibration']).acceptLoadedCalibration).toBe(true);
+    expect(parseArgs(full).acceptCalibration).toEqual([]);
+    // Each concession is its own kind, accepted and stamped separately: the single
+    // --accept-loaded-calibration switch could not say WHICH was being made.
+    expect(parseArgs([...full, '--accept-calibration=load']).acceptCalibration).toEqual(['load']);
+    expect(parseArgs([...full, '--accept-calibration=age,sources']).acceptCalibration).toEqual(['age', 'sources']);
+    expect(parseArgs([...full, '--accept-calibration', 'machine']).acceptCalibration).toEqual(['machine']);
+    expect(() => parseArgs([...full, '--accept-loaded-calibration']))
+      .toThrow(/one switch over four unrelated concessions/);
+    expect(parseArgs(['--mode', 'pilot', '--out', 'x', '--calibration', 'c.json', '--provisional-calibration'])
+      .provisionalCalibration).toBe(true);
     expect(parseArgs(['--merge', 'dir', '--mode', 'full']).merge).toBe('dir');
     for (const args of [
       [...full, '--shard', '9/8'], [...full, '--shard', '0/8'], [...full, '--shard', '8'],
       [...full, '--shard', '1/0'], [...full, '--shard'],
       ['--mode', 'pilot', '--out', 'x', '--calibration', 'c.json', '--shard', '2/2'], // a pilot is one process
       ['--merge', 'dir', '--out', 'x'], ['--merge', 'dir', '--plan'], ['--merge'],
+      [...full, '--accept-calibration=nonsense'], [...full, '--accept-calibration=load,load'],
+      [...full, '--accept-calibration='], [...full, '--accept-calibration'],
+      [...full, '--accept-calibration=load', '--accept-calibration=age'],
+      // A FULL row may never be measured against an admittedly provisional budget.
+      [...full, '--provisional-calibration'],
+      ['--merge', 'dir', '--accept-calibration=load'], ['--merge', 'dir', '--provisional-calibration'],
     ]) {
       expect(() => parseArgs(args), args.join(' ')).toThrow();
     }
+  });
+
+  /**
+   * A1's behaviour condition reads the frozen purchase/inactivity bands, and A4
+   * changed the inactivity clock underneath them. The p1 bands allow a draw rate up
+   * to 0.866 where the re-frozen p2 bands allow 0.726, so a row read against the old
+   * ones is judged against a population the rules no longer produce — and judged
+   * more leniently, which is the direction that matters.
+   */
+  it('reads the bands re-frozen under the 20-ply clock and refuses the superseded ones', () => {
+    expect(BANDS_PATH).toBe('lab/harness/results/p2-scripted-2026-09-19/sanity-bands.json');
+    expect(SUPERSEDED_BANDS_PATH).toBe('lab/harness/results/p1-scripted-2026-09-18/sanity-bands.json');
+    expect(bands.rulesVersion).toBe(RULES_VERSION);
+    const superseded = JSON.parse(readFileSync(SUPERSEDED_BANDS_PATH, 'utf8'));
+    expect(superseded.rulesVersion).toBe('muju-phasing-1');
+    // The old ceiling really is looser, so this is not a formality.
+    expect(superseded.inactivityDrawRate[1]).toBeGreaterThan(bands.inactivityDrawRate[1]);
+    // A summary computed against them is INVALID, not merely noted.
+    const wrong = summarize(synthetic('full'), 'full', 'identity', superseded, openings);
+    expect(wrong.gate1).toBe('invalid');
+    expect(wrong.errors.some(e => /Wrong rules identity in frozen bands/.test(e))).toBe(true);
+    // And the runner refuses before a game: by path, by hash and by the file's own
+    // revision, because each catches a different way of being wrong.
+    const references = adoptedProtocol().references;
+    const hashes = { [BANDS_PATH]: references.bands.sha256 };
+    expect(loadBands(references, hashes).rulesVersion).toBe(RULES_VERSION);
+    expect(() => loadBands({ ...references, bands: { ...references.bands, path: SUPERSEDED_BANDS_PATH } }, hashes))
+      .toThrow(/pins the bands at/);
+    expect(() => loadBands(references, { [BANDS_PATH]: 'b'.repeat(64) })).toThrow(/Frozen band hash mismatch/);
   });
 });
 
@@ -326,15 +396,87 @@ describe('effective sample size (preregistration A3 §2)', () => {
 
   it('holds a cell valid at exactly the 90% threshold and invalid one game below it', () => {
     expect(MIN_DISTINCT_FRACTION).toBe(0.9);
+    // Duplicated WITHIN one seat, because the key is (hardSeat, gameSha256): the
+    // same sequence from the White seat and from the Black seat is two experiments
+    // (DISTINCTNESS_READING), so replicating across seats is not replication.
     for (const [duplicates, valid] of [[9, true], [10, false]] as const) {
       const entries = synthetic('full');
-      const cell = entries.filter(e => e.task.opponent === 'Expand' && e.task.handicap === 0);
+      const cell = entries.filter(e => e.task.opponent === 'Expand' && e.task.handicap === 0
+        && e.task.hardSeat === 'white');
       for (let i = 1; i <= duplicates; i++) cell[i].gameSha256 = cell[0].gameSha256;
       const row = summarize(entries, 'full', 'identity', bands, openings)
         .rows.find(r => r.opponent === 'Expand' && r.handicap === 0)!;
       expect(row.distinctGames).toBe(96 - duplicates);
       expect(row.cellValid).toBe(valid);
     }
+  });
+
+  /**
+   * THE READING OF A3 §2, pinned on the case that separates the two readings.
+   *
+   * A cell where every pair's two seat-mirrored games produce the SAME action
+   * sequence holds 48 sequences and 96 experiments. Keyed on the action hash alone
+   * it is 48/96 = 50% distinct and INVALID — every cleanly mirrored cell of every
+   * row would be, by construction, and the gate would never measure anything.
+   * Keyed on (hardSeat, sequence) it is 96/96 and VALID, and if those games are
+   * all draws the cell is then a real, measured FAILURE of the strength condition
+   * rather than an absence of information. `strengthMet === false`, not `null`.
+   */
+  it('reads a seat-mirrored cell of identical drawn sequences as VALID and FAILED, not invalid', () => {
+    const entries = synthetic('full');
+    const cell = entries.filter(e => e.task.opponent === 'Balanced' && e.task.handicap === 0);
+    for (const pairId of new Set(cell.map(e => e.task.pairId))) {
+      const pair = cell.filter(e => e.task.pairId === pairId);
+      expect(pair).toHaveLength(2);
+      pair[1].gameSha256 = pair[0].gameSha256; // one sequence, two seats
+      for (const e of pair) e.record.winner = null; // and it is a draw
+    }
+    const report = summarize(entries, 'full', 'identity', bands, openings);
+    const row = report.rows.find(r => r.opponent === 'Balanced' && r.handicap === 0)!;
+    expect(row.games).toBe(96);
+    expect(row.distinctGames).toBe(96);          // 96 experiments, seat-keyed
+    expect(row.distinctGameSequences).toBe(48);  // 48 sequences, reported alongside
+    expect(row.cellValid).toBe(true);
+    expect(row.strengthMet).toBe(false);         // measured and failed, not unmeasured
+    expect(row.strengthMet).not.toBeNull();
+    expect(report.invalidGatingCells).toEqual([]);
+    expect(report.gate1).toBe('failed');
+    expect(report.distinctnessReading).toContain('(hardSeat, gameSha256)');
+    // The pair-level count is untouched, so A2's real failure mode still bites.
+    expect(row.distinctPairs).toBe(48);
+  });
+
+  /**
+   * LATER CONVERGENCE, report-only. Two games of one cell and one seat assignment
+   * that hand off in the same position are playing one line from there on, however
+   * different their openings were — which is most of what A3 §1's 48 openings were
+   * bought for. A3 sets no threshold, so this reports and gates nothing.
+   */
+  it('reports games that converge on a shared hand-off position, with the earliest ply', () => {
+    const entries = synthetic('full');
+    const cell = entries.filter(e => e.task.opponent === 'Expand' && e.task.handicap === 3);
+    const shared = 'c'.repeat(64);
+    const whites = cell.filter(e => e.task.hardSeat === 'white');
+    const blacks = cell.filter(e => e.task.hardSeat === 'black');
+    // Two White-seat games meet at the same position, at plies 19 and 25.
+    whites[0].boundaries = [{ ply: 7, digest: 'a'.repeat(64) }, { ply: 19, digest: shared }];
+    whites[1].boundaries = [{ ply: 25, digest: shared }];
+    // A Black-seat game passes through it too, which is NOT a convergence with the
+    // White ones: the two seats meeting there are two engines, not one repeated.
+    blacks[0].boundaries = [{ ply: 11, digest: shared }];
+    const report = summarize(entries, 'full', 'identity', bands, openings);
+    const row = report.rows.find(r => r.opponent === 'Expand' && r.handicap === 3)!;
+    expect(row.laterConvergence.totalConvergences).toBe(1);
+    expect(row.laterConvergence.convergedGames).toBe(2);
+    expect(row.laterConvergence.gamesWithBoundaries).toBe(3);
+    const only = row.laterConvergence.convergences[0];
+    expect(only).toMatchObject({ hardSeat: 'white', digest: shared, earliestPly: 19 });
+    expect(only.games.map(g => g.id)).toEqual([whites[0].task.id, whites[1].task.id]);
+    // It stays out of every verdict.
+    expect(row.cellValid).toBe(true);
+    expect(report.gate1).toBe('passed');
+    expect(report.laterConvergence.totalConvergences).toBe(1);
+    expect(report.laterConvergence.note).toContain('Report-only');
   });
 
   it('still fails a row whose behaviour is wrong, even where a cell is INVALID', () => {
@@ -350,15 +492,32 @@ describe('effective sample size (preregistration A3 §2)', () => {
   });
 });
 
-describe('fixed-work adapter', () => {
-  function fake() {
+/**
+ * ADAPTER FIDELITY. The calibration measures the SHIPPED whole-turn loop — one
+ * allowance per own turn, one search returning a multi-action plan, that plan
+ * replayed, a fresh search only when it runs out or stops replaying legally
+ * (`src/hooks/useAI.ts`, `src/ai/worker/handler.ts` `mode: 'turn'`) — and records
+ * about two to three searches per turn. The row's adapter used to re-search EVERY
+ * action on `floor(remaining / (actionsRemaining + 3))`, about a seventh of the
+ * turn, and charge the full slice whether the search used it or not: a correctly
+ * calibrated TOTAL spent at 15-35% of shipped depth per DECISION, unequally
+ * between two arms whose plans are not the same length.
+ *
+ * These tests pin the loop it follows now, and the last one pins it against the
+ * real engines rather than against a stub.
+ */
+describe('fixed-work adapter follows the shipped whole-turn loop', () => {
+  /** A stub engine that spends no metered work, so the charge is the floor of 1. */
+  function fake(plan?: (state: GameState) => unknown[]) {
     const requests: number[] = [], deadlines: number[] = [];
     const engine: Searcher = {
       setSeed() {}, setTacticalSolver() {},
       setConfig(c) { requests.push(c.fixedWork!); },
       async findBestAction(state, deadline) {
         deadlines.push(deadline!);
-        return { plan: { actions: [state.upkeepPending ? defaultUpkeepAction(state) : phaseEndAction(state)], score: 0 },
+        const actions = plan ? plan(state)
+          : [state.upkeepPending ? defaultUpkeepAction(state) : phaseEndAction(state)];
+        return { plan: { actions: actions as never, score: 0 },
           nodesSearched: 0, timeMs: 999999, depth: 0,
           debug: { planCount: 1, topPlans: [], config: {
             mctsIterations: 1200, mctsTimeLimit: 3000, beamWidth: 50, outputPlans: 20, tacticalDepth: 2,
@@ -367,34 +526,98 @@ describe('fixed-work adapter', () => {
     };
     return { engine, requests, deadlines };
   }
-  it('shares allowance across phases, reserves Prepare, and never calls wall mode on exhaustion', async () => {
-    const f = fake(), seat = createGateBot('hard', solver, 7, () => f.engine);
+
+  it('funds Act with everything but the Prepare reserve, and Prepare with the whole remainder', async () => {
+    expect(PREPARE_RESERVE_DIVISOR).toBe(8);
+    const budget = 80, floorPerSegment = budget / PREPARE_RESERVE_DIVISOR; // 10
+    const f = fake(), seat = createGateBot('hard', solver, budget, { meter, factory: () => f.engine });
     seat.bot.onGameStart('black', 1);
     let state = initial();
+    expect(state.turn.phase).toBe('action');
+    expect(segmentsAfter(state)).toBe(2);                       // upkeep, then Prepare
+    expect(prepareReserve(state, budget)).toBe(2 * floorPerSegment);
     const first = await seat.bot.nextAction(state, 'black');
+    // THREE QUARTERS of the turn, not a seventh. The hook gives its first search
+    // the whole clock; the reserve is the one stated departure from it.
+    expect(f.requests).toEqual([budget - 2 * floorPerSegment]);
+    expect(f.requests[0] / budget).toBeGreaterThan(0.7);
     state = applyAction(state, first!);
     expect(state.turn.phase).toBe('place');
     await seat.bot.nextAction(state, 'black');
-    expect(f.requests).toEqual([1, 3]); // No phase reset to 7.
-    for (let i = 0; i < 10; i++) await seat.bot.nextAction(state, 'black');
-    expect(f.requests.reduce((a, b) => a + b, 0)).toBe(7);
-    expect(f.requests.every(n => n > 0)).toBe(true);
+    // Prepare is the last segment of the turn, so it asks for everything left —
+    // nothing is stranded — and the charge was what the search SPENT (1 unit here),
+    // never the 60 it was allowed.
+    expect(segmentsAfter(state)).toBe(0);
+    expect(f.requests[1]).toBe(budget - 1);
+    expect(seat.decisions.filter(d => d.kind === 'search').map(d => d.spent)).toEqual([1, 1]);
     expect(f.deadlines.every(n => n === Infinity)).toBe(true);
-    expect(seat.decisions.at(-1)?.stopReason).toBe('allowance-completion');
+    // A new own turn refills the allowance; nothing inside a turn does.
     state.turn.turnNumber++;
     await seat.bot.nextAction(state, 'black');
-    expect(f.requests.at(-1)).toBe(3); // Actual next turn resets the allowance.
+    expect(f.requests.at(-1)).toBe(budget);
   });
-  it('allocates upkeep before interpreting the phase and rejects invalid budgets or states', async () => {
+
+  it('never exceeds the turn allowance in SPENT work, and finishes the segment when it runs out', async () => {
+    // A tiny budget so the allowance is exhausted in a few calls.
+    const f = fake(), seat = createGateBot('hard', solver, 3, { meter, factory: () => f.engine });
+    seat.bot.onGameStart('black', 1);
     const state = initial();
-    state.upkeepPending = true;
-    expect(workSlice(state, 12)).toBe(4);
-    for (const n of [0, -1, 1.5, Infinity]) expect(() => createGateBot('hard', solver, n as number)).toThrow();
-    const seat = createGateBot('hard', solver, TEST_BUDGETS.hard);
+    for (let i = 0; i < 6; i++) await seat.bot.nextAction(state, 'black');
+    expect(seat.decisions.reduce((a, d) => a + d.spent, 0)).toBeLessThanOrEqual(3);
+    // Wall mode (fixedWork = 0) is never requested: the segment is finished with
+    // the canonical default instead.
+    expect(f.requests.every(n => n > 0)).toBe(true);
+    expect(seat.decisions.at(-1)).toMatchObject({ kind: 'allowance-completion', stopReason: 'allowance-completion' });
+  });
+
+  it('replays a plan instead of re-searching, and drops an invalid suffix the way the hook does', async () => {
+    // A plan whose first action is legal and whose second is not: END_ACTION_PHASE
+    // twice. The hook keeps the dispatched prefix and drops the rest.
+    const f = fake(state => [phaseEndAction(state), { type: 'END_ACTION_PHASE' }]);
+    const seat = createGateBot('hard', solver, 800, { meter, factory: () => f.engine });
+    seat.bot.onGameStart('black', 1);
+    let state = initial();
+    const first = await seat.bot.nextAction(state, 'black');
+    expect(f.requests).toHaveLength(1);
+    expect(seat.invalidSuffixes()).toBe(0);
+    state = applyAction(state, first!);
+    // The queued second action no longer replays, so it is dropped and counted, and
+    // a fresh search funds the rest of the turn.
+    await seat.bot.nextAction(state, 'black');
+    expect(seat.invalidSuffixes()).toBe(1);
+    expect(f.requests).toHaveLength(2);
+    expect(seat.decisions.map(d => d.kind)).toEqual(['search', 'search']);
+  });
+
+  it('reserves by hand-off segment, not by remaining action', () => {
+    const act = initial();
+    expect(act.turn.phase).toBe('action');
+    const upkeep = { ...initial(), upkeepPending: true };
+    expect(segmentsAfter(upkeep)).toBe(1);
+    expect(turnWorkRequest(upkeep, 800, 800)).toBe(800 - 100);
+    expect(turnWorkRequest(act, 800, 800)).toBe(800 - 200);
+    // The reserve is a FLOOR per following segment, so it does not shrink with the
+    // number of actions left — which is what made the old seventh-of-a-turn slice.
+    const fewer = { ...act, turn: { ...act.turn, actionsRemaining: 1 } };
+    expect(turnWorkRequest(fewer, 800, 800)).toBe(turnWorkRequest(act, 800, 800));
+    // An exhausted allowance asks for nothing at all, so wall mode is never entered.
+    expect(turnWorkRequest(act, 0, 800)).toBe(0);
+    expect(turnWorkRequest(act, 1, 800)).toBe(1);
+  });
+
+  it('rejects invalid budgets, a missing meter and a non-Phasing seat', async () => {
+    for (const n of [0, -1, 1.5, Infinity]) {
+      expect(() => createGateBot('hard', solver, n as number, { meter })).toThrow();
+    }
+    expect(() => createGateBot('hard', solver, 400, { meter: undefined as never }))
+      .toThrow(/requires the row work meter/);
+    const state = initial();
+    const seat = createGateBot('hard', solver, TEST_BUDGETS.hard, { meter });
     seat.bot.onGameStart('black', 1);
     state.ruleset = 'standard';
     await expect(seat.bot.nextAction(state, 'black')).rejects.toThrow('Phasing');
   });
+
   it.each(['empty', 'illegal', 'throw', 'deadline'] as const)('fails closed on %s engine output', async kind => {
     const f = fake();
     f.engine.findBestAction = async () => {
@@ -405,25 +628,52 @@ describe('fixed-work adapter', () => {
         ...(kind === 'deadline' ? { stats: { iterations: 0, candidates: 0, simulations: 0, evaluations: 0,
           tacticalNodes: 0, turnBoundaries: 0, elapsedMs: 0, stopReason: 'deadline', backend: 'wasm' } as const } : {}) };
     };
-    const seat = createGateBot('hard', solver, 7, () => f.engine);
+    const seat = createGateBot('hard', solver, 7, { meter, factory: () => f.engine });
     seat.bot.onGameStart('black', 1);
     await expect(seat.bot.nextAction(initial(), 'black')).rejects.toThrow();
   });
-  it('repeats a real full game with identical fixed-work actions and obeys turn limits', async () => {
-    const configs = await resolvedConfigs(solver, TEST_BUDGETS, book.openings[0]);
+
+  it('repeats a real full game, spends at most its allowance, and paces like the shipped loop', async () => {
+    const configs = await resolvedConfigs(solver, TEST_BUDGETS, book.openings[0], meter);
     const task = schedule('pilot', openings)[0];
-    const a = await runTask(task, solver, 'test', configs, 'test', TEST_BUDGETS, book);
-    const b = await runTask(task, solver, 'test', configs, 'test', TEST_BUDGETS, book);
+    const a = await runTask(task, solver, 'test', configs, 'test', TEST_BUDGETS, book, meter);
+    const b = await runTask(task, solver, 'test', configs, 'test', TEST_BUDGETS, book, meter);
     expect(a.gameSha256).toBe(b.gameSha256);
     expect(a.record.winner).toBe(b.record.winner);
     expect(a.record.anomalies).toEqual([]);
     expect(a.record.invariantViolation).toBeNull();
     expect(a.record.adjudicated).toBe(false);
-    const turns = new Map<number, number>();
-    for (const row of a.telemetry.hard) turns.set(row.turn, (turns.get(row.turn) ?? 0) + row.requested);
-    expect([...turns.values()].every(n => n <= TEST_BUDGETS.hard)).toBe(true);
-    expect(a.telemetry.hard.some(d => d.phase === 'place' && d.requested > 0)).toBe(true);
+    // THE INVARIANT THAT MATTERS, and the one the old adapter could only reach by
+    // charging for work it had not done: a turn never SPENDS more than its
+    // allowance. Requested may exceed it across a turn, because a search that
+    // finishes early hands the rest back — exactly as the hook hands back clock.
+    const spentPerTurn = new Map<number, number>();
+    const searchesPerTurn = new Map<number, number>();
+    for (const row of a.telemetry.hard) {
+      spentPerTurn.set(row.turn, (spentPerTurn.get(row.turn) ?? 0) + row.spent);
+      if (row.kind === 'search') searchesPerTurn.set(row.turn, (searchesPerTurn.get(row.turn) ?? 0) + 1);
+    }
+    expect([...spentPerTurn.values()].every(n => n <= TEST_BUDGETS.hard)).toBe(true);
+    // PLAN REPLAY, on the real planner: most dispatched actions come out of a plan
+    // that was already paid for, so a turn holds a handful of searches rather than
+    // one per action.
+    const searches = a.telemetry.hard.filter(d => d.kind === 'search');
+    const replays = a.telemetry.hard.filter(d => d.kind === 'replay');
+    expect(searches.length).toBeGreaterThan(0);
+    expect(replays.length).toBeGreaterThan(0);
+    expect(searches.length).toBeLessThan(a.telemetry.hard.length);
+    // The first search of a turn really does get most of the turn, not a seventh.
+    const firstOfTurn = searches.filter((d, i) => i === 0 || searches[i - 1].turn !== d.turn);
+    expect(Math.max(...firstOfTurn.map(d => d.requested)) / TEST_BUDGETS.hard).toBeGreaterThan(0.5);
+    // Prepare is still funded and the seat still buys.
+    expect(a.telemetry.hard.some(d => d.phase === 'place' && d.kind === 'search' && d.requested > 0)).toBe(true);
     expect(a.record.players[task.hardSeat].unitsPlaced).toBeGreaterThan(0);
+    // And the hand-off positions are recorded for the convergence report.
+    expect(a.boundaries.length).toBeGreaterThan(0);
+    for (const boundary of a.boundaries) {
+      expect(boundary.digest).toMatch(/^[0-9a-f]{64}$/);
+      expect(boundary.ply).toBeGreaterThan(0);
+    }
   }, 180000);
 });
 
@@ -443,10 +693,10 @@ describe('fixed-work adapter', () => {
  */
 describe('seed plumbing (preregistration A3 §4)', () => {
   const run = async (opponent: 'Rush' | 'aiv2-medium', patch: Record<string, unknown>) => {
-    const configs = await resolvedConfigs(solver, TEST_BUDGETS, book.openings[0]);
+    const configs = await resolvedConfigs(solver, TEST_BUDGETS, book.openings[0], meter);
     const base = schedule('pilot', openings)
       .find(t => t.opponent === opponent && t.handicap === 0 && t.hardSeat === 'white')!;
-    const result = await runTask({ ...base, ...patch } as typeof base, solver, 'seed', configs, 'seed', TEST_BUDGETS, book);
+    const result = await runTask({ ...base, ...patch } as typeof base, solver, 'seed', configs, 'seed', TEST_BUDGETS, book, meter);
     expect(result.startSha256).toBe((patch.startSha256 as string | undefined) ?? base.startSha256);
     return result.gameSha256;
   };
@@ -506,37 +756,82 @@ describe('a sharded row merges into one summary', () => {
     identityHash: 'identity', mode: 'full', seed: SEEDS.full,
     calibrationSha256: 'calib', sourceIdentitySha256: 'sources', openingsDigest: 'book',
   };
-  const acceptedCalibration = {
-    path: 'C/calibration.json', sha256: 'calib', accepted: true,
-    acceptedReasons: ['1-minute load average at start was 3.2, above the 1.5 an "otherwise idle" machine may carry'],
-  };
+  /** What one shard stamps: its OWN concessions, attributed to itself. */
+  const calibrationFor = (shard: ShardSpec, kinds: string[], reasons: string[]) => ({
+    path: 'C/calibration.json', sha256: 'calib', accepted: kinds.length > 0,
+    acceptedKinds: kinds, acceptedReasons: reasons,
+    acceptedByShard: kinds.length ? [{ shard: shardStem(shard), kinds, reasons }] : [],
+    budgets: { hard: 53155, medium: 9000 },
+    searchesPerTurnInCalibration: { hard: 3, medium: 2 },
+    provisional: false, freshnessMeasuredFrom: '2026-09-19T00:00:00.000Z',
+  });
+  const LOADED = '[load] 1-minute load average at start was 3.2, above the 1.5 an "otherwise idle" machine may carry';
+  const OTHER_MACHINE = '[machine] measured on elsewhere, not on this host';
 
+  /**
+   * Eight shards, and only TWO of them make a concession — shard 3 accepts a loaded
+   * calibration, shard 7 accepts one measured on another machine. That is the shape
+   * of the defect: reading shard 1's manifest and calling it the row's provenance
+   * reported this row as clean.
+   */
   async function runRow(shards: number, out: string) {
     const games = new Map(synthetic('full').map(e => [e.task.id, e]));
     for (let index = 1; index <= shards; index++) {
+      const shard = { index, count: shards };
+      const kinds = index === 3 ? ['load'] : index === 7 ? ['machine'] : [];
+      const reasons = index === 3 ? [LOADED] : index === 7 ? [OTHER_MACHINE] : [];
       await runShardGames({
-        out, shard: { index, count: shards }, tasks: schedule('full', openings), identity,
-        manifestExtras: { mode: 'full', calibration: acceptedCalibration },
+        out, shard, tasks: schedule('full', openings), identity,
+        manifestExtras: { mode: 'full', calibration: calibrationFor(shard, kinds, reasons) },
         play: async task => games.get(task.id) as unknown as Record<string, unknown>,
       });
+      finishShard(out, shard);
     }
   }
+
+  /**
+   * A row's calibration age is ONE number for the whole row. Whichever shard
+   * reaches the directory first writes `row-start.json` with O_EXCL; every later
+   * shard reads that instant instead of its own clock, so eight shards that queue
+   * behind two heavy slots over two days still share one freshness reading and one
+   * set of concessions. A truncated file is fatal rather than silently re-dated.
+   */
+  it('fixes the row freshness instant at the first shard to reach the directory', () => {
+    const out = mkdtempSync(join(tmpdir(), 'gate1-rowstart-'));
+    const first = rowFirstStartedAt(out, () => new Date('2026-09-19T01:00:00.000Z'));
+    expect(first).toBe('2026-09-19T01:00:00.000Z');
+    const aDayLater = rowFirstStartedAt(out, () => new Date('2026-09-20T09:00:00.000Z'));
+    expect(aDayLater).toBe(first);
+    expect(JSON.parse(readFileSync(`${out}/${ROW_START_FILE}`, 'utf8')).firstStartedAt).toBe(first);
+    writeFileSync(`${out}/${ROW_START_FILE}`, '{"schema":"muju-gate1-row-start-v1"}');
+    expect(() => rowFirstStartedAt(out, () => new Date('2026-09-20T09:00:00.000Z')))
+      .toThrow(/no usable firstStartedAt/);
+  });
 
   it('produces the same verdict as one process would, and names the concession', async () => {
     const out = mkdtempSync(join(tmpdir(), 'gate1-row-'));
     await runRow(8, out);
     // The mode comes from the shards' own identity; a --mode that disagrees throws.
-    const merged = mergeRow(out, undefined, book, bands);
+    const merged = mergeRow(out, undefined, book, bands, MERGE);
     expect(merged.mode).toBe('full');
-    expect(() => mergeRow(out, 'pilot', book, bands)).toThrow(/holds a full row, not a pilot one/);
-    const single = summarize(synthetic('full'), 'full', 'identity', bands, openings,
-      { calibration: acceptedCalibration, shards: 8 });
+    expect(() => mergeRow(out, 'pilot', book, bands, MERGE)).toThrow(/holds a full row, not a pilot one/);
     expect(merged.errors).toEqual([]);
     expect(merged.gate1).toBe('passed');
     expect(merged.games).toBe(768);
     expect(merged.shards).toBe(8);
-    expect(merged.calibration).toEqual(acceptedCalibration);
-    expect(merged.calibration?.acceptedReasons?.[0]).toMatch(/otherwise idle/);
+    // THE UNION, ATTRIBUTED. Shard 1 ran clean; the row did not.
+    expect(merged.calibration?.accepted).toBe(true);
+    expect(merged.calibration?.acceptedKinds?.slice().sort()).toEqual(['load', 'machine']);
+    expect(merged.calibration?.acceptedReasons?.slice().sort()).toEqual([LOADED, OTHER_MACHINE].sort());
+    expect(merged.calibration?.acceptedByShard).toEqual([
+      { shard: 'shard-3-of-8', kinds: ['load'], reasons: [LOADED] },
+      { shard: 'shard-7-of-8', kinds: ['machine'], reasons: [OTHER_MACHINE] },
+    ]);
+    // The per-turn budget and both searches-per-turn figures reach the header.
+    expect(merged.pacing.perTurnWorkBudget).toEqual({ hard: 53155, medium: 9000 });
+    expect(merged.pacing.searchesPerTurnInCalibration).toEqual({ hard: 3, medium: 2 });
+    const single = summarize(synthetic('full'), 'full', 'identity', bands, openings,
+      { calibration: merged.calibration ?? undefined, shards: 8 });
     expect(merged.rows).toEqual(single.rows);
     expect(JSON.parse(readFileSync(`${out}/summary.json`, 'utf8')).gate1).toBe('passed');
     const manifest = JSON.parse(readFileSync(`${out}/merged-manifest.json`, 'utf8'));
@@ -551,8 +846,9 @@ describe('a sharded row merges into one summary', () => {
     for (let index = 1; index <= 3; index++) { // 3 of 4
       await runShardGames({ out, shard: { index, count: 4 }, tasks: schedule('full', openings), identity,
         play: async task => games.get(task.id) as unknown as Record<string, unknown> });
+      finishShard(out, { index, count: 4 });
     }
-    expect(() => mergeRow(out, 'full', book, bands)).toThrow(/Missing shard manifests: 4\/4/);
+    expect(() => mergeRow(out, 'full', book, bands, MERGE)).toThrow(/Missing shard manifests: 4\/4/);
     expect(parseArgs(['--merge', 'dir']).modeExplicit).toBe(false);
     expect(parseArgs(['--merge', 'dir', '--mode', 'full']).modeExplicit).toBe(true);
   }, 120000);

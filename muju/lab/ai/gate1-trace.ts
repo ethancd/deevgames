@@ -159,6 +159,30 @@ export function startPositionDigest(state: GameState, handicap: number): string 
   return sha256(JSON.stringify(canonicalStartPosition(state, handicap)));
 }
 
+/**
+ * The same fingerprint with `unitOrder` and `pendingOrder` removed, for the
+ * LATER-CONVERGENCE report.
+ *
+ * WHY A SECOND DIGEST RATHER THAN REUSING THE FIRST. `startPositionDigest` keeps
+ * the birth and commit orders because an engine's tie-breaking can see them, and
+ * erring towards SPLITTING is the safe direction when the number decides a cell's
+ * effective sample size (A3 §2). The convergence report asks the opposite
+ * question — "did two games of this cell walk into the same playable position?" —
+ * and there a false split hides exactly what it was written to find: two games
+ * whose boards, banks, reserves, clocks and side to move are identical differ
+ * only in the order their units happened to be created, which no rule reads. So
+ * this digest drops both permutations and nothing else.
+ *
+ * It gates NOTHING. Convergence is reported, per cell, with the earliest ply at
+ * which it happened, so a reader can see how much of a row's apparent
+ * independence survives the opening — and can see it without any threshold
+ * deciding on their behalf.
+ */
+export function boundaryPositionDigest(state: GameState, handicap: number): string {
+  const { unitOrder: _unitOrder, pendingOrder: _pendingOrder, ...rest } = canonicalStartPosition(state, handicap);
+  return sha256(JSON.stringify({ kind: 'muju-gate1-boundary-v1', ...rest }));
+}
+
 /** One action, written so it names no minted id. */
 export function canonicalAction(before: GameState, action: AIAction): string {
   const where = `gate1 trace (turn ${before.turn.turnNumber}, ${before.turn.currentPlayer})`;

@@ -33,8 +33,11 @@
  */
 import { eloEstimate } from '../hard-ai/ladder/elo';
 import { deriveSeed } from '../harness/rng';
+import { RULES_VERSION } from './gate1-sources';
 import type { GameRecord } from '../harness/types';
 import type { PlayerId } from '../../src/game/types';
+
+export { RULES_VERSION };
 
 export const OPPONENTS = ['Rush', 'Expand', 'Balanced', 'aiv2-medium'] as const;
 export type Opponent = typeof OPPONENTS[number];
@@ -43,11 +46,61 @@ export type Mode = 'pilot' | 'full';
 export const FULL_PAIRS = 48;
 export const PILOT_PAIRS = 1;
 export const PAIRS: Record<Mode, number> = { pilot: PILOT_PAIRS, full: FULL_PAIRS };
-/** A3 §5: new row seed 20260960; the plumbing pilot is 20260961 and is ineligible. */
-export const SEEDS = { full: 20260960, pilot: 20260961 } as const;
+/**
+ * A3 §5: row seed 20260960, unchanged and never yet used for an eligible game.
+ *
+ * THE PILOT SEED IS NOT A3's 20260961, AND THAT IS DELIBERATE. 20260961 was
+ * consumed by the plumbing pilot run under `muju-phasing-1`
+ * (`lab/ai/results/gate1-a3-pilot-2026-09-19`, `…-19b`), and A4 voided every Gate 1
+ * game measured before it. Re-running the pilot under the same seed would put two
+ * different populations — one void, one current — behind one number, and no later
+ * audit could tell a 20260961 game of the one from a 20260961 game of the other.
+ * So the pilot advances to the next unused integer, exactly the way A2 chose
+ * 20260958 after voiding 20260957, and the seed it replaces is recorded below
+ * rather than quietly dropped. See `gate1-references.json#a3.seeds`.
+ */
+export const SEEDS = { full: 20260960, pilot: 20260962 } as const;
+/** Pilot seeds that name a void population and may never be reused. */
+export const VOID_PILOT_SEEDS: readonly number[] = [20260961];
+export const PILOT_SEED_CHANGE_REASON =
+  'A3 §5 named pilot seed 20260961; it was consumed by the pilot under muju-phasing-1 and A4 voided every Gate 1 ' +
+  'game measured before it, so 20260961 now names a void population. This pilot uses 20260962, the next unused ' +
+  'integer, so the two populations can never be confused. Row seed 20260960 is unchanged.';
 export const AMENDMENT = 'A3' as const;
 /** A3 §2: below this fraction of distinct games, a cell is INVALID (not measured). */
 export const MIN_DISTINCT_FRACTION = 0.9;
+
+/**
+ * The reading of A3 §2 this report implements, printed in its header.
+ *
+ * A3 §2 says "the report hashes every game's action sequence. A cell whose number
+ * of distinct games is below 90% of its game count is INVALID." It does not say
+ * what makes two games the same game, and the two available readings differ by a
+ * factor of two in every cell of a seat-mirrored design:
+ *
+ *  - key on the ACTION HASH alone, and a pair whose two seat-mirrored games happen
+ *    to produce the same sequence counts as one game, so a cell of 96 games in
+ *    which every pair mirrors cleanly holds 48 distinct games — 50%, INVALID, and
+ *    every cell of every row would be invalid by construction;
+ *  - key on `(hardSeat, action hash)`, and those two games count as two, because
+ *    they ARE two experiments: the same moves played from the White seat and from
+ *    the Black seat against an opponent with the opposite handicap and the opposite
+ *    tempo are two observations of the engine, not one observation recorded twice.
+ *
+ * The second is the reading A3 §1's design implies — the whole point of mirroring a
+ * pair is that the two seats are different evidence — and it is the one taken here.
+ * What A3 §2 is protecting against is A2's failure mode, where ONE PAIR was
+ * replicated across 48 pairs of a cell; that is a statement about pairs, and it is
+ * caught by the PAIR-level count, which keys on the pair's two hashes together and
+ * is unchanged. Both numbers are reported in every cell so the choice is visible
+ * and either can be re-derived.
+ */
+export const DISTINCTNESS_READING =
+  'A3 §2 distinctness is keyed on (hardSeat, gameSha256): two seat-mirrored games with identical action sequences ' +
+  'are two experiments, not one, so a cleanly mirrored cell is not invalid by construction. Pair-level ' +
+  'distinctness — the sampling unit every Elo interval is computed over — is unchanged and keys on the pair\'s two ' +
+  'game hashes together, so a replicated PAIR (A2\'s failure mode) still counts once. Both counts are reported per ' +
+  'cell: distinctGames (seat-keyed, gates cellValid) and distinctGameSequences (hash only, report-only).';
 
 export interface Task {
   id: string; pairId: string; opponent: Opponent; handicap: 0 | 3;
@@ -130,12 +183,22 @@ export function schedule(mode: Mode, openings: readonly ScheduleOpening[]): Task
   return tasks;
 }
 
+/** One hand-off inside a game, for the LATER-CONVERGENCE report (report-only). */
+export interface BoundarySample {
+  /** Ply index of the hand-off, 1-based, as the harness counts plies. */
+  ply: number;
+  /** `boundaryPositionDigest` — the start-position digest minus unit/pending order. */
+  digest: string;
+}
+
 export interface Entry {
   task: Task;
   identityHash: string;
   record: GameRecord;
   /** Id-independent hash of the game's action sequence (`gate1-trace.ts`). */
   gameSha256: string;
+  /** Positions this game handed off at. Absent in historical evidence. */
+  boundaries?: readonly BoundarySample[];
 }
 export interface Bands { rulesVersion: string; purchaseRatePerSeat: number[]; inactivityDrawRate: number[] }
 const mean = (xs: number[]) => xs.reduce((a, b) => a + b, 0) / xs.length;
@@ -146,17 +209,109 @@ const score = (e: Entry) => e.record.winner === null ? 0.5 : Number(e.record.win
  * Provenance a reader must see in the report header, not in a log: whether the
  * row ran against a calibration it would otherwise have refused.
  */
+export interface CalibrationMeta {
+  path?: string;
+  sha256?: string;
+  /** True when ANY shard of this row overrode a calibration refusal. */
+  accepted?: boolean;
+  /** Every refusal any shard overrode, deduplicated. */
+  acceptedReasons?: readonly string[];
+  /** The kinds (`load`, `machine`, `age`, `sources`) overridden, deduplicated. */
+  acceptedKinds?: readonly string[];
+  /**
+   * WHICH SHARD ACCEPTED WHAT. A row is run as up to eight processes, each of which
+   * loads the calibration itself and may be given a different `--accept-calibration`
+   * list. Reading the FIRST shard's manifest and calling it the row's provenance —
+   * which is what this used to do — hides every concession the other seven made:
+   * shard 1 could run clean while shard 7 waved through a calibration measured on
+   * another machine, and the report would say the row was clean. This is the union,
+   * attributed.
+   */
+  acceptedByShard?: readonly { shard: string; kinds: readonly string[]; reasons: readonly string[] }[];
+  /** The per-turn work budgets the row was configured with (A3 §3). */
+  budgets?: Readonly<Record<string, number>>;
+  /** Median searches per own turn the CALIBRATION measured, per engine. */
+  searchesPerTurnInCalibration?: Readonly<Record<string, number>>;
+  /** True for an explicitly provisional/ineligible calibration (pilots only). */
+  provisional?: boolean;
+  provisionalReason?: string;
+  /** When the row's freshness window was measured from (see `gate1.ts`). */
+  freshnessMeasuredFrom?: string;
+}
+
+export interface AdapterMeta {
+  /** Median searches per own turn the ROW's adapter actually made, per engine. */
+  searchesPerTurnInRow?: Readonly<Record<string, number>>;
+  /** Plans abandoned because their suffix stopped replaying legally, per engine. */
+  invalidSuffixes?: Readonly<Record<string, number>>;
+  /** How the adapter reserves allowance for Prepare, stated rather than implied. */
+  allocation?: string;
+}
+
 export interface ReportMeta {
-  calibration?: {
-    path?: string;
-    sha256?: string;
-    /** True only when `--accept-loaded-calibration` was passed (`gate1-calibrate.ts`). */
-    accepted?: boolean;
-    /** Every refusal the flag overrode, verbatim. */
-    acceptedReasons?: readonly string[];
-  };
+  calibration?: CalibrationMeta;
   /** Shard layout this summary was merged from, when it was merged. */
   shards?: number;
+  adapter?: AdapterMeta;
+}
+
+/**
+ * Games of one cell that walked into a position another game of the SAME SEAT
+ * ASSIGNMENT had already been in, and the earliest ply at which it happened.
+ *
+ * Report-only, and it gates nothing. Two games that start from different openings
+ * and converge on move eleven supply far less independent evidence than their two
+ * distinct start positions suggest, and A3 §1's whole argument for 48 openings is
+ * about independence. Nothing in A3 sets a threshold for this, so nothing here
+ * invents one: the row measures it, states it, and leaves the reading to whoever
+ * reads the row.
+ */
+export interface Convergence {
+  hardSeat: PlayerId;
+  digest: string;
+  /** The earliest ply at which any of these games reached the shared position. */
+  earliestPly: number;
+  /** Game ids sharing it, with the ply each one arrived at it. */
+  games: readonly { id: string; ply: number }[];
+}
+
+/** How many convergences a cell lists before it only counts them. */
+export const MAX_REPORTED_CONVERGENCES = 20;
+
+/**
+ * Per cell: which games share a hand-off position with another game of the same
+ * seat assignment, and where. Seat assignment is part of the key for the same
+ * reason it is part of the distinctness key — a White-seat game and a Black-seat
+ * game reaching one position are two engines meeting there, not a replication.
+ */
+export function cellConvergence(group: readonly Entry[]): {
+  convergences: Convergence[]; convergedGames: number; totalConvergences: number; gamesWithBoundaries: number;
+} {
+  const bySeatAndDigest = new Map<string, { hardSeat: PlayerId; digest: string; games: { id: string; ply: number }[] }>();
+  let gamesWithBoundaries = 0;
+  for (const e of group) {
+    if (!e.boundaries?.length) continue;
+    gamesWithBoundaries++;
+    // A game can pass through one position more than once; only its FIRST arrival
+    // is evidence about when the two games met.
+    const first = new Map<string, number>();
+    for (const b of e.boundaries) if (!first.has(b.digest)) first.set(b.digest, b.ply);
+    for (const [digest, ply] of first) {
+      const key = `${e.task.hardSeat}|${digest}`;
+      const bucket = bySeatAndDigest.get(key) ?? { hardSeat: e.task.hardSeat, digest, games: [] };
+      bucket.games.push({ id: e.task.id, ply });
+      bySeatAndDigest.set(key, bucket);
+    }
+  }
+  const shared = [...bySeatAndDigest.values()].filter(b => b.games.length > 1).map(b => ({
+    hardSeat: b.hardSeat, digest: b.digest,
+    earliestPly: Math.min(...b.games.map(g => g.ply)),
+    games: [...b.games].sort((x, y) => x.ply - y.ply || (x.id < y.id ? -1 : 1)),
+  }));
+  shared.sort((a, b) => a.earliestPly - b.earliestPly || (a.digest < b.digest ? -1 : 1));
+  const convergedGames = new Set(shared.flatMap(s => s.games.map(g => g.id))).size;
+  return { convergences: shared.slice(0, MAX_REPORTED_CONVERGENCES), convergedGames,
+    totalConvergences: shared.length, gamesWithBoundaries };
 }
 
 /** Exact schedule/identity validation precedes statistics. Missing cells cannot pass. */
@@ -165,7 +320,11 @@ export function summarize(entries: Entry[], mode: Mode, identityHash: string, ba
   const planned = schedule(mode, openings);
   const byId = new Map(planned.map(t => [t.id, t]));
   const seen = new Set<string>(), errors: string[] = [];
-  if (bands.rulesVersion !== 'muju-phasing-1') errors.push('Wrong rules identity in frozen bands');
+  if (bands.rulesVersion !== RULES_VERSION) {
+    errors.push(`Wrong rules identity in frozen bands: ${JSON.stringify(bands.rulesVersion)}, not ` +
+      `${JSON.stringify(RULES_VERSION)}. A4 changed the inactivity clock, so the bands frozen under the old one ` +
+      'describe a draw rate this revision does not produce.');
+  }
   for (const e of entries) {
     if (seen.has(e.task.id)) errors.push(`Duplicate game ${e.task.id}`);
     seen.add(e.task.id);
@@ -180,7 +339,7 @@ export function summarize(entries: Entry[], mode: Mode, identityHash: string, ba
       errors.push(`Invalid purchase/turn evidence ${e.task.id}`);
     }
     const other = e.task.hardSeat === 'white' ? 'black' : 'white';
-    if (r.rulesVersion !== 'muju-phasing-1' || r.seed !== e.task.seed || r.handicap !== e.task.handicap ||
+    if (r.rulesVersion !== RULES_VERSION || r.seed !== e.task.seed || r.handicap !== e.task.handicap ||
       r.players[e.task.hardSeat].bot !== 'aiv2-hard' || r.players[other].bot !== e.task.opponent ||
       r.options.legality !== 'strict' || !r.options.checkInvariants) errors.push(`Game metadata mismatch ${e.task.id}`);
     if (r.players.white.illegalActions + r.players.black.illegalActions || r.invariantViolation || r.anomalies.length ||
@@ -193,16 +352,21 @@ export function summarize(entries: Entry[], mode: Mode, identityHash: string, ba
     const pairs = new Map<string, Entry[]>();
     for (const e of group) pairs.set(e.task.pairId, [...(pairs.get(e.task.pairId) ?? []), e]);
     const complete = [...pairs.values()].filter(p => p.length === 2 && p[0].task.hardSeat !== p[1].task.hardSeat);
-    // A3 §2: effective sample size. Two games that replay into each other share
-    // a hash; a pair whose two hashes match another pair's is the same evidence
-    // twice and is counted once, whatever seed produced it.
-    const distinctGames = new Set(group.map(e => e.gameSha256)).size;
+    // A3 §2: effective sample size. An EXPERIMENT is a seat assignment playing an
+    // action sequence, so the key is (hardSeat, gameSha256) — see
+    // DISTINCTNESS_READING for why, and for what the bare-hash count below is.
+    const distinctGames = new Set(group.map(e => `${e.task.hardSeat}|${e.gameSha256}`)).size;
+    /** The same count keyed on the action hash ALONE. Report-only: it is the
+     * number a seat-blind reading of A3 §2 would have gated on, kept so a reader
+     * can see both and see how far apart they are. */
+    const distinctGameSequences = new Set(group.map(e => e.gameSha256)).size;
     const pairKey = (p: Entry[]) => [...p].sort((a, b) => a.task.hardSeat.localeCompare(b.task.hardSeat))
       .map(e => e.gameSha256).join('|');
     const distinct = new Map<string, Entry[]>();
     for (const p of complete) if (!distinct.has(pairKey(p))) distinct.set(pairKey(p), p);
     const distinctPairs = [...distinct.values()];
     const cellValid = group.length > 0 && distinctGames >= MIN_DISTINCT_FRACTION * group.length;
+    const convergence = cellConvergence(group);
     // Intervals over DISTINCT pairs only: replication may not narrow one.
     const elo = eloEstimate(distinctPairs.map(p => score(p[0]) + score(p[1])));
     const purchases = mean(group.map(e => e.record.players[e.task.hardSeat].unitsPlaced));
@@ -213,9 +377,13 @@ export function summarize(entries: Entry[], mode: Mode, identityHash: string, ba
     const behavior = opponent === 'aiv2-medium' ? null
       : inBand(purchases, bands.purchaseRatePerSeat) && inBand(inactivity, bands.inactivityDrawRate);
     return { opponent, handicap, games: group.length, pairs: complete.length,
-      distinctGames, distinctPairs: distinctPairs.length,
+      distinctGames, distinctGameSequences, distinctPairs: distinctPairs.length,
       distinctGameFraction: group.length ? distinctGames / group.length : 0,
+      distinctSequenceFraction: group.length ? distinctGameSequences / group.length : 0,
       cellValid, openings: new Set(group.map(e => e.task.openingId)).size,
+      /** Report-only (A3 sets no threshold): games of this cell that reached a
+       * hand-off position another game of the same seat had reached. */
+      laterConvergence: convergence,
       /** A3 §1's independence, counted in POSITIONS rather than in book rows:
        * two ids that transpose into one position supply one starting point. */
       distinctStartPositions: new Set(group.map(e => e.task.startSha256)).size,
@@ -243,11 +411,44 @@ export function summarize(entries: Entry[], mode: Mode, identityHash: string, ba
     r.behavioralBandsMet === false || !r.mustBuyMet || !r.adjudicationMet);
   const criteriaMet = rows.every(r => (!r.strengthGated || r.strengthMet === true) &&
     r.behavioralBandsMet !== false && r.mustBuyMet && r.adjudicationMet);
-  return { rulesVersion: 'muju-phasing-1', amendment: AMENDMENT, mode, identityHash, games: entries.length,
+  const calibration = meta.calibration ?? null;
+  const adapter = meta.adapter ?? null;
+  return { rulesVersion: RULES_VERSION, amendment: AMENDMENT, rulesAmendment: 'A4', mode, identityHash,
+    seed: SEEDS[mode], games: entries.length,
     expectedGames: planned.length, errors,
+    /** The reading of A3 §2 this row was scored under, in the header, once. */
+    distinctnessReading: DISTINCTNESS_READING,
+    ...(mode === 'pilot' ? { pilotSeedChange: PILOT_SEED_CHANGE_REASON, voidPilotSeeds: VOID_PILOT_SEEDS } : {}),
     /** Stated up front so the 47-of-48 is never a surprise further down. */
     bookStartPositions: bookStartPositions(mode, openings),
-    calibration: meta.calibration ?? null,
+    calibration,
+    /**
+     * WHAT THE ROW WAS FUNDED WITH AND HOW IT SPENT IT, side by side, in the
+     * header. The calibration measures the shipped whole-turn loop; the row plays a
+     * fixed-work imitation of it (`gate1-bot.ts`). If the two disagree about how
+     * many searches a turn holds, the total budget is beside the point — the row is
+     * dividing it differently from the loop it was measured on — and that is only
+     * visible if both numbers are printed together.
+     */
+    pacing: {
+      perTurnWorkBudget: calibration?.budgets ?? null,
+      searchesPerTurnInCalibration: calibration?.searchesPerTurnInCalibration ?? null,
+      searchesPerTurnInRow: adapter?.searchesPerTurnInRow ?? null,
+      invalidSuffixes: adapter?.invalidSuffixes ?? null,
+      allocation: adapter?.allocation ?? null,
+      note: 'The budget is work per OWN TURN (A3 §3), spent across Act, the upkeep decision and Prepare under one ' +
+        'mover. searchesPerTurn is the median number of searches a turn held: in the calibration that is the shipped ' +
+        'wall-clock loop, in the row the fixed-work adapter. They should be close; they are printed so a reader can ' +
+        'check rather than assume.',
+    },
+    laterConvergence: {
+      totalConvergences: rows.reduce((a, r) => a + r.laterConvergence.totalConvergences, 0),
+      convergedGames: rows.reduce((a, r) => a + r.laterConvergence.convergedGames, 0),
+      gamesWithBoundaries: rows.reduce((a, r) => a + r.laterConvergence.gamesWithBoundaries, 0),
+      note: 'Report-only. Two games of one cell and one seat assignment that reach the same hand-off position from ' +
+        'here on supply one line of play, however different their openings were. A3 sets no threshold for this and ' +
+        'none is invented: the earliest ply of each convergence is listed per cell.',
+    },
     shards: meta.shards ?? null,
     criteriaMet, invalidCells, invalidGatingCells,
     // 'invalid' = the evidence itself is unusable; 'not-measured' = the evidence

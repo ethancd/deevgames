@@ -29,27 +29,34 @@
  *  - the report gives the median per GAME STAGE (opening / middle / late, by
  *    terciles of each seat's own-turn index) as well as overall, with n, so a
  *    reader can see how far the budget is from the stage it will mostly spend;
- *  - machine identity, core count and the 1/5/15-minute load averages at start
- *    AND end lead the manifest, and `loadCalibration` REFUSES a manifest that
- *    was taken on a loaded machine, on a different machine, against a different
- *    source tree, or more than 24 hours ago, unless the row is run with
- *    `--accept-loaded-calibration` — which is then stamped into the row manifest
- *    and the report header, so the concession travels with the result.
+ *  - machine identity, core count and the load averages at start AND end lead the
+ *    manifest, AND the load is now sampled at EVERY GAME BOUNDARY rather than
+ *    twice (see `LoadSampler`), because a twelve-hour measurement that begins and
+ *    ends on an idle box can spend the middle of itself competing with something
+ *    else and under-count the whole time;
+ *  - `loadCalibration` REFUSES a manifest taken on a loaded machine, on a
+ *    different machine, against a different source tree, or more than 24 hours
+ *    ago, unless the row explicitly accepts THAT KIND of refusal —
+ *    `--accept-calibration=load,machine,age,sources` — which is then stamped,
+ *    kind by kind, into the row manifest and the report header.
  *
  * WHICH NUMBER BECOMES THE BUDGET. A3 §3 says "the median search work each
  * engine consumes per own turn". That is the OVERALL median over every own turn
- * in the sample, per engine — not a stage median, not a mean, not a percentile.
- * The stage medians are reported because they are informative, and are used by
+ * in the sample, per engine — not a stage median, not a mean, not a percentile,
+ * and not the median of per-game medians. That last one matters enough to be
+ * reported next to it: the overall median is TURN-weighted, so a long game
+ * contributes more turns than a short one, and if the two disagree by more than a
+ * quarter the manifest says so out loud (`weighting.flagged`). Stage medians and
+ * absolute-own-turn-bucket medians are reported for context and are used by
  * nothing.
  *
  * What "work" means. `SearchBudget` (`src/ai/runtime.ts`) counts one unit per
  * `spend()`, and `fixedWork` is a cap on exactly that counter — so a work budget
- * and a work measurement are the same quantity by construction. The class does
- * not expose the counter, and `src/ai/**` is not this lane's to edit, so the
- * meter below wraps `SearchBudget.prototype.spend` for the duration of the
- * measurement and restores it afterwards. `tests/lab/gate1-calibration.test.ts`
- * pins the meter against a work-bound search, where the consumed work must equal
- * the requested `fixedWork` exactly.
+ * and a work measurement are the same quantity by construction. The meter lives
+ * in `gate1-work.ts` because the ROW's adapter needs it too, to debit a turn by
+ * what each search actually spent. `tests/lab/gate1-calibration.test.ts` pins the
+ * meter against a work-bound search, where consumed work must equal the requested
+ * `fixedWork` exactly.
  *
  * The seat plays the SHIPPED whole-turn loop (`useAI.ts`, mirrored by
  * `lab/ai/turn-budget-smoke.ts`): one allowance per turn, `scaleToBudget` on,
@@ -60,6 +67,7 @@
  * From muju/:
  *   node --import tsx lab/ai/gate1-calibrate.ts --out <NEW directory>
  *     [--openings 48] [--max-turns 60] [--turns <cap>]
+ *     [--provisional "<why this is not a row budget>"]
  */
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
@@ -67,7 +75,6 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { arch, cpus, hostname, loadavg, platform, totalmem } from 'node:os';
 import { pathToFileURL } from 'node:url';
 import { AIEngineV2 } from '../../src/ai/engine-v2';
-import { SearchBudget } from '../../src/ai/runtime';
 import { aiTurnBudgetMs } from '../../src/ai/turnTime';
 import { isLegalAction } from '../../src/game/legality';
 import type { AIAction } from '../../src/ai/types';
@@ -75,14 +82,22 @@ import type { GameState, PlayerId } from '../../src/game/types';
 import { instantiateTactics, type TacticalSolver } from '../../src/ai/wasm/kernel';
 import { playGame } from '../harness/runner';
 import { DEFAULT_MATCH_OPTIONS, type EngineBot } from '../harness/types';
-import { withHeavySlot, heavyBypassed, heavyDir, slotCount } from '../hard-ai/ladder/heavy';
+import { withHeavySlot, heavyBypassed, heavyDir, readSlots, slotCount } from '../hard-ai/ladder/heavy';
 import { DEV_BOOK_PATH, DEV_BOOK_ROWS, HANDICAPS, gate1StartState, loadGate1Book } from './gate1-openings';
 import { sourceFileHashes, sourceIdentitySha256 } from './gate1-sources';
+import { WorkMeter } from './gate1-work';
 import type { GateDifficulty } from './gate1-bot';
 
-/** v2: full-length staged sampling, machine identity and load provenance. A v1
- * manifest is an opening-only sample and is refused outright, not warned about. */
-export const CALIBRATION_SCHEMA = 'muju-gate1-calibration-v2' as const;
+export { WorkMeter };
+
+/**
+ * v3: per-game-boundary load sampling, absolute-own-turn buckets, the
+ * turn/game weighting flag, and the kinded acceptance a row now needs. A v1
+ * manifest is an opening-only sample and a v2 manifest carries only two load
+ * readings; both are refused outright, not warned about. (A4 voided every
+ * calibration taken before it in any case.)
+ */
+export const CALIBRATION_SCHEMA = 'muju-gate1-calibration-v3' as const;
 export const CALIBRATION_AMENDMENT = 'A3' as const;
 export const DIFFICULTIES: readonly GateDifficulty[] = ['hard', 'medium'];
 /** A3 names these explicitly; read them from the shipped table so they cannot drift. */
@@ -93,6 +108,25 @@ export const QUICK_ALLOWANCE_MS: Record<GateDifficulty, number> = {
 /** A3 §3 wants an "otherwise idle" machine. One busy core out of many is the
  * most a calibration may carry before the wall-mode sample starts to shrink. */
 export const MAX_CALIBRATION_LOAD1 = 1.5;
+/**
+ * The ceiling on the MAXIMUM 5-minute load average seen at any game boundary.
+ *
+ * The 1-minute readings at start and end were the only load evidence a v2
+ * manifest carried, and they are exactly the two moments a twelve-hour
+ * measurement is least likely to be contended: the operator starts it on a quiet
+ * box and comes back to a quiet box. The 5-minute average is the one that
+ * remembers, and sampling it at every game boundary is what makes it able to
+ * catch an hour of competition in the middle.
+ *
+ * THE ALLOWANCE, STATED. A calibration is itself one busy thread, so it
+ * contributes about 1.0 to the load average all by itself; a machine that is
+ * "otherwise idle" in A3 §3's sense therefore reads about 1.0, not 0. The ceiling
+ * is 1.0 (the calibration's own thread) + 1.0 (everything else it will tolerate) =
+ * 2.0. Above that, something other than this measurement was using a core for
+ * minutes at a time, and in WALL mode that means the sample is low.
+ */
+export const CALIBRATION_OWN_THREAD_LOAD = 1.0;
+export const MAX_CALIBRATION_LOAD5 = 1.0 + CALIBRATION_OWN_THREAD_LOAD;
 /** Beyond a day, the machine's state is no longer the one the row runs on. */
 export const MAX_CALIBRATION_AGE_MS = 24 * 60 * 60 * 1000;
 /** "Full-length": at least twenty full rounds, or termination, per game. */
@@ -101,6 +135,23 @@ export const MIN_CALIBRATION_MAX_TURNS = 20;
 export const CALIBRATION_OPENINGS = DEV_BOOK_ROWS;
 export const GAME_STAGES = ['opening', 'middle', 'late'] as const;
 export type GameStage = typeof GAME_STAGES[number];
+/**
+ * Buckets of ABSOLUTE own-turn index, alongside the relative terciles.
+ *
+ * A tercile is relative to the game it came from, so "late" in a nine-turn game
+ * and "late" in a forty-turn game are different positions with different costs,
+ * and a median over terciles cannot tell them apart. These buckets are absolute:
+ * a seat's first five own turns, its sixth to fifteenth, and everything after.
+ * Reported, used by nothing.
+ */
+export const OWN_TURN_BUCKETS = [
+  { id: '1-5', from: 1, to: 5 },
+  { id: '6-15', from: 6, to: 15 },
+  { id: '16+', from: 16, to: Infinity },
+] as const;
+export type OwnTurnBucket = typeof OWN_TURN_BUCKETS[number]['id'];
+/** The manifest says so when the turn- and game-weighted medians disagree by more. */
+export const WEIGHTING_DISAGREEMENT = 0.25;
 
 const sha = (s: string | Buffer) => createHash('sha256').update(s).digest('hex');
 const json = (s: unknown) => JSON.stringify(s, null, 2) + '\n';
@@ -126,38 +177,67 @@ export function machineIdentity(): MachineIdentity {
   return { ...identity, sha256: sha(JSON.stringify(identity)), node: process.version };
 }
 
+export interface LoadSample {
+  at: string;
+  label: string;
+  load1: number;
+  load5: number;
+  load15: number;
+  /**
+   * The heavy-queue slots held at this moment, by label and pid, EXCLUDING this
+   * process. `lab/hard-ai/ladder/heavy.ts` exposes them (`readSlots`), so when a
+   * calibration is contended the manifest can say by WHOM rather than only that
+   * the number was high — which is the difference between "re-measure later" and
+   * "re-measure after that ladder run finishes".
+   */
+  heavySlotHolders: { slot: number; label: string; pid: number }[];
+}
+
 /**
- * Counts the work a search consumes, by wrapping `SearchBudget#spend` while the
- * measurement runs. Single-threaded: one search is in flight at a time, so a
- * process-wide counter is exact. `install()` throws if a meter is already
- * installed, so a leaked patch can never silently double-count.
+ * Samples the load average at every game boundary of a calibration, so the
+ * manifest can carry the max and the mean rather than the two least
+ * representative readings of the run.
  */
-export class WorkMeter {
-  private original: SearchBudget['spend'] | null = null;
-  private total = 0;
-  install(): void {
-    if (this.original) throw new Error('Work meter already installed');
-    this.original = SearchBudget.prototype.spend;
-    const original = this.original;
-    const meter = this;
-    SearchBudget.prototype.spend = function (this: SearchBudget, amount = 1): boolean {
-      const accepted = original.call(this, amount);
-      if (accepted) meter.total += amount;
-      return accepted;
+export class LoadSampler {
+  readonly samples: LoadSample[] = [];
+  constructor(private readonly clock: () => number[] = loadavg,
+    private readonly slots: () => ReturnType<typeof readSlots> = readSlots) {}
+  sample(label: string): LoadSample {
+    const [load1, load5, load15] = this.clock();
+    let heavySlotHolders: LoadSample['heavySlotHolders'] = [];
+    try {
+      heavySlotHolders = this.slots()
+        .filter(s => s.record !== null && !s.stale && s.record.pid !== process.pid)
+        .map(s => ({ slot: s.index, label: s.record!.label, pid: s.record!.pid }));
+    } catch {
+      heavySlotHolders = []; // the queue directory is advisory; never fail a sample on it
+    }
+    const sample: LoadSample = { at: new Date().toISOString(), label, load1, load5, load15, heavySlotHolders };
+    this.samples.push(sample);
+    return sample;
+  }
+  summary() {
+    const stat = (pick: (s: LoadSample) => number) => {
+      if (!this.samples.length) return { max: null, mean: null };
+      const xs = this.samples.map(pick);
+      return { max: Math.max(...xs), mean: Number((xs.reduce((a, b) => a + b, 0) / xs.length).toFixed(3)) };
     };
-  }
-  uninstall(): void {
-    if (!this.original) return;
-    SearchBudget.prototype.spend = this.original;
-    this.original = null;
-  }
-  reset(): void { this.total = 0; }
-  read(): number { return this.total; }
-  /** Installs the meter for `fn` and always restores the prototype. */
-  static async around<T>(fn: (meter: WorkMeter) => Promise<T>): Promise<T> {
-    const meter = new WorkMeter();
-    meter.install();
-    try { return await fn(meter); } finally { meter.uninstall(); }
+    const holders = new Map<string, number>();
+    for (const s of this.samples) for (const h of s.heavySlotHolders) {
+      holders.set(`${h.label} (pid ${h.pid})`, (holders.get(`${h.label} (pid ${h.pid})`) ?? 0) + 1);
+    }
+    return {
+      samples: this.samples.length,
+      load1: stat(s => s.load1),
+      load5: stat(s => s.load5),
+      load15: stat(s => s.load15),
+      /** Every other heavy-queue holder seen, with how many samples saw it. */
+      heavySlotHoldersSeen: [...holders].map(([holder, samples]) => ({ holder, samples }))
+        .sort((a, b) => b.samples - a.samples),
+      note: 'Sampled at every game boundary, not only at start and end. maxLoad5 is what a row checks against ' +
+        `${MAX_CALIBRATION_LOAD5} = 1.0 (this calibration's own thread) + ${CALIBRATION_OWN_THREAD_LOAD} ` +
+        '(everything else an "otherwise idle" machine may carry, A3 §3).',
+    };
   }
 }
 
@@ -188,6 +268,14 @@ export function stageOf(ownTurnIndex: number, ownTurns: number): GameStage {
   if (ownTurnIndex * 3 < ownTurns) return 'opening';
   if (ownTurnIndex * 3 < ownTurns * 2) return 'middle';
   return 'late';
+}
+
+/** The absolute bucket an own turn falls in, counting that seat's turns from 1. */
+export function bucketOf(ownTurnIndex: number): OwnTurnBucket {
+  const nth = ownTurnIndex + 1;
+  const bucket = OWN_TURN_BUCKETS.find(b => nth >= b.from && nth <= b.to);
+  if (!bucket) throw new Error(`No own-turn bucket for turn ${nth}`);
+  return bucket.id;
 }
 
 /** What one seat can know about its own turn; the game and stage are added by
@@ -258,6 +346,13 @@ export interface CalibrationOptions {
    * `loadCalibration` refuses a capped manifest as incomplete coverage. */
   turnsPerEngine: number;
   seed: number;
+  /**
+   * Why this manifest is NOT a row budget, when it is not one. Set by
+   * `--provisional "<reason>"`. A provisional manifest may be short, capped and
+   * narrow; it is stamped ineligible, `loadCalibration` refuses it unless the row
+   * asks for it by name, and `gate1.ts` refuses it for anything but a pilot.
+   */
+  provisional?: string;
 }
 export const DEFAULT_CALIBRATION: CalibrationOptions = {
   openings: CALIBRATION_OPENINGS, handicaps: HANDICAPS, maxTurns: 60, turnsPerEngine: 0, seed: 20260960,
@@ -270,9 +365,9 @@ export const DEFAULT_CALIBRATION: CalibrationOptions = {
  */
 export async function sampleEngine(
   difficulty: GateDifficulty, solver: TacticalSolver, options: CalibrationOptions,
-  book: ReturnType<typeof loadGate1Book>,
+  book: ReturnType<typeof loadGate1Book>, sampler?: LoadSampler,
 ): Promise<TurnSample[]> {
-  if (options.maxTurns < MIN_CALIBRATION_MAX_TURNS) {
+  if (!options.provisional && options.maxTurns < MIN_CALIBRATION_MAX_TURNS) {
     throw new Error(`A3 §3 needs full-length games: --max-turns ${options.maxTurns} is below ${MIN_CALIBRATION_MAX_TURNS}`);
   }
   const samples: TurnSample[] = [];
@@ -282,6 +377,9 @@ export async function sampleEngine(
       for (const [h, handicap] of options.handicaps.entries()) {
         if (capped()) break;
         const opening = book.openings[i];
+        // EVERY GAME BOUNDARY, both sides of it: a contended hour in the middle of
+        // a long calibration is invisible to a start/end pair of readings.
+        sampler?.sample(`${difficulty}:${opening.id}@h${handicap}:before`);
         // Per seat, in the order that seat took its turns: the tercile index.
         const collected = new Map<PlayerId, RawTurnSample[]>();
         const sink = (s: RawTurnSample) => collected.set(s.seat, [...(collected.get(s.seat) ?? []), s]);
@@ -298,6 +396,7 @@ export async function sampleEngine(
             maxTurns: options.maxTurns, upkeep: 'shipped', inactivityRule: 'on' },
         });
         white.flush(); black.flush();
+        sampler?.sample(`${difficulty}:${opening.id}@h${handicap}:after`);
         for (const seatSamples of collected.values()) {
           const ownTurns = seatSamples.length;
           seatSamples.forEach((c, ownTurnIndex) => samples.push({
@@ -326,9 +425,50 @@ function workStats(samples: readonly TurnSample[]) {
 }
 
 /**
+ * The median of each GAME's own median work per turn, and how far it is from the
+ * turn-weighted overall median that becomes the budget.
+ *
+ * The overall median counts turns, so a game that lasted forty own turns puts
+ * forty samples in and a game that drew in nine puts nine: the budget is
+ * turn-weighted, and a population of a few very long games can move it a long way.
+ * The median of per-game medians weights every GAME equally instead. Neither is
+ * wrong, and A3 §3 names the turn-weighted one, so that stays the budget — but if
+ * they disagree by more than a quarter the sample is telling us the budget depends
+ * on which games happened to run long, and the manifest should not make a reader
+ * work that out for themselves.
+ */
+export function weightingComparison(samples: readonly TurnSample[]) {
+  const byGame = new Map<string, number[]>();
+  for (const s of samples) {
+    const key = `${s.opening}@${s.handicap}`;
+    byGame.set(key, [...(byGame.get(key) ?? []), s.work]);
+  }
+  const perGameMedians = [...byGame.values()].map(median);
+  const turnWeighted = median(samples.map(s => s.work));
+  const gameWeighted = median(perGameMedians);
+  const ratio = turnWeighted > 0 ? gameWeighted / turnWeighted : NaN;
+  const flagged = Number.isFinite(ratio) && Math.abs(ratio - 1) > WEIGHTING_DISAGREEMENT;
+  return {
+    turnWeightedMedian: turnWeighted,
+    gameWeightedMedian: gameWeighted,
+    medianOfPerGameMedians: gameWeighted,
+    games: perGameMedians.length,
+    ratio: Number.isFinite(ratio) ? Number(ratio.toFixed(4)) : null,
+    threshold: WEIGHTING_DISAGREEMENT,
+    flagged,
+    note: flagged
+      ? `The game-weighted median is ${(Math.abs(ratio - 1) * 100).toFixed(1)}% from the turn-weighted one, beyond ` +
+        `${WEIGHTING_DISAGREEMENT * 100}%. The budget stays the turn-weighted OVERALL median (A3 §3), but it depends ` +
+        'materially on how long the sampled games ran; read the bucket medians before trusting it.'
+      : 'Turn-weighted and game-weighted medians agree within ' + `${WEIGHTING_DISAGREEMENT * 100}%.`,
+  };
+}
+
+/**
  * The engine's block of the manifest: the OVERALL median that becomes its budget
- * (A3 §3), the same statistics per game stage so a reader can see which part of
- * a game that median describes, and the coverage the sample was drawn over.
+ * (A3 §3), the same statistics per game stage and per absolute own-turn bucket so
+ * a reader can see which part of a game that median describes, the turn/game
+ * weighting comparison, and the coverage the sample was drawn over.
  */
 export function summarizeSamples(samples: readonly TurnSample[]) {
   const games = new Set(samples.map(s => `${s.opening}@${s.handicap}`));
@@ -347,28 +487,66 @@ export function summarizeSamples(samples: readonly TurnSample[]) {
       const of = samples.filter(s => s.stage === stage);
       return [stage, of.length ? workStats(of) : { ownTurns: 0 }];
     })) as Record<GameStage, ReturnType<typeof workStats> | { ownTurns: number }>,
+    /** Absolute own-turn buckets, as opposed to the per-game terciles above. */
+    ownTurnBuckets: Object.fromEntries(OWN_TURN_BUCKETS.map(bucket => {
+      const of = samples.filter(s => bucketOf(s.ownTurnIndex) === bucket.id);
+      return [bucket.id, of.length ? workStats(of) : { ownTurns: 0 }];
+    })) as Record<OwnTurnBucket, ReturnType<typeof workStats> | { ownTurns: number }>,
+    weighting: weightingComparison(samples),
     samples,
   };
 }
+
+/** The kinds of situational refusal a row may accept, one flag value each. */
+export const CALIBRATION_OVERRIDES = ['load', 'machine', 'age', 'sources'] as const;
+export type CalibrationOverride = typeof CALIBRATION_OVERRIDES[number];
+export interface CalibrationRefusal { kind: CalibrationOverride; reason: string }
 
 export interface Calibration {
   path: string;
   sha256: string;
   budgets: Record<GateDifficulty, number>;
   manifest: Record<string, unknown>;
-  /** What `--accept-loaded-calibration` waved through, for the row manifest and
-   * the report header. `overridden` is empty on a clean calibration. */
-  acceptance: { flagPassed: boolean; overridden: string[] };
+  /**
+   * What the row accepted, kind by kind, for the row manifest and the report
+   * header. `overridden` is empty on a clean calibration.
+   *
+   * WHY KINDS AND NOT ONE BOOLEAN. `--accept-loaded-calibration` was a single
+   * switch over four unrelated concessions: a busy box (the sample is low), another
+   * machine (the sample describes other hardware), a stale measurement (the box has
+   * moved on) and another source tree (the sample describes other engines). An
+   * operator who knowingly accepts a 26-hour-old calibration had no way to accept
+   * only that, and the evidence could not distinguish them afterwards. Each is now
+   * its own named concession, accepted and stamped separately.
+   */
+  acceptance: {
+    accepted: CalibrationOverride[];
+    overridden: CalibrationRefusal[];
+    /** The reasons alone, for a header that wants them verbatim. */
+    reasons: string[];
+  };
+  /** Set when the manifest declares itself provisional; a pilot may run on it. */
+  provisional: string | null;
+  /** Median searches per own turn the shipped loop made, per engine. */
+  searchesPerTurn: Record<GateDifficulty, number>;
 }
 
 export interface LoadCalibrationOptions {
-  /** `--accept-loaded-calibration`: run anyway, and say so in the evidence. */
-  accept?: boolean;
+  /** Which kinds of situational refusal to accept (`--accept-calibration=…`). */
+  accept?: readonly CalibrationOverride[];
+  /** Run against an explicitly provisional, ineligible calibration. */
+  acceptProvisional?: boolean;
   /** The tree the ROW is about to run in (`gate1-sources.ts`). */
   sourceIdentitySha256?: string;
   /** The host the row is about to run on. Defaults to this process's. */
   machine?: MachineIdentity;
-  /** Clock injection point for the 24-hour rule. */
+  /**
+   * The instant the freshness window is measured from. `gate1.ts` passes the ROW's
+   * first recorded start, persisted in the output directory, NOT `Date.now()`: a
+   * sharded row is eight processes that may start hours apart, and a calibration
+   * that was fresh for shard 1 must not become stale for shard 8 — the row is one
+   * measurement and its freshness is a property of the row.
+   */
   now?: number;
 }
 
@@ -379,11 +557,14 @@ export interface LoadCalibrationOptions {
  * engines — wrong schema, wrong book, missing engine, a budget that is not the
  * recorded overall median, coverage short of all 48 openings at both handicaps
  * in full-length games — is not a calibration at all, and throws whatever flags
- * are passed. A manifest that IS one but describes a different situation — taken
- * on a loaded machine, on another machine, against another source tree, or more
- * than 24 hours ago — is refused too, but `--accept-loaded-calibration` can
- * override it. That flag never disappears: every reason it overrode is returned
- * here and stamped into the row manifest and the report header.
+ * are passed. (The one exception is a manifest that DECLARES itself provisional:
+ * that is an honest statement of incompleteness rather than a broken calibration,
+ * and it is admitted only when the caller asks for it and only for a pilot.) A
+ * manifest that IS a complete one but describes a different situation — taken on a
+ * loaded machine, on another machine, against another source tree, or more than 24
+ * hours ago — is refused too, and `--accept-calibration=<kinds>` can override each
+ * refusal BY KIND. Nothing disappears: every kind and reason is returned here and
+ * stamped into the row manifest and the report header.
  *
  * The row has no fallback budget, which is the point — A2's were asserted.
  */
@@ -393,16 +574,26 @@ export function loadCalibration(path: string, options: LoadCalibrationOptions = 
   if (manifest.schema !== CALIBRATION_SCHEMA || manifest.amendment !== CALIBRATION_AMENDMENT) {
     throw new Error(`${path} is not a ${CALIBRATION_SCHEMA}/${CALIBRATION_AMENDMENT} calibration manifest ` +
       `(found ${JSON.stringify(manifest.schema)}/${JSON.stringify(manifest.amendment)}; a v1 manifest sampled ` +
-      'only opening turns and is not a row budget)');
+      'only opening turns, and a v2 manifest recorded the load twice instead of at every game boundary)');
   }
   if (manifest.book?.path !== DEV_BOOK_PATH) throw new Error('Calibration was not measured on the dev book');
-  const sampled = manifest.options ?? {};
-  if (!Number.isSafeInteger(sampled.maxTurns) || sampled.maxTurns < MIN_CALIBRATION_MAX_TURNS) {
-    throw new Error(`Calibration games were capped at ${sampled.maxTurns} turns; A3 §3 needs full-length games ` +
-      `(at least ${MIN_CALIBRATION_MAX_TURNS})`);
+  const provisional: string | null = typeof manifest.provisional?.reason === 'string'
+    ? manifest.provisional.reason : null;
+  if (provisional && !options.acceptProvisional) {
+    throw new Error(`${path} declares itself PROVISIONAL and ineligible: ${provisional}\nA row may not be measured ` +
+      'against it. Run a full calibration on an idle machine, or — for a plumbing pilot only — pass ' +
+      '--provisional-calibration, which stamps the manifest, the summary and the README as ineligible.');
   }
-  if (sampled.turnsPerEngine) throw new Error('Calibration stopped early at a per-engine turn cap; coverage is incomplete');
+  const sampled = manifest.options ?? {};
+  if (!provisional) {
+    if (!Number.isSafeInteger(sampled.maxTurns) || sampled.maxTurns < MIN_CALIBRATION_MAX_TURNS) {
+      throw new Error(`Calibration games were capped at ${sampled.maxTurns} turns; A3 §3 needs full-length games ` +
+        `(at least ${MIN_CALIBRATION_MAX_TURNS})`);
+    }
+    if (sampled.turnsPerEngine) throw new Error('Calibration stopped early at a per-engine turn cap; coverage is incomplete');
+  }
   const budgets = {} as Record<GateDifficulty, number>;
+  const searchesPerTurn = {} as Record<GateDifficulty, number>;
   for (const difficulty of DIFFICULTIES) {
     const engine = manifest.engines?.[difficulty];
     const budget = manifest.budgets?.[difficulty];
@@ -410,60 +601,103 @@ export function loadCalibration(path: string, options: LoadCalibrationOptions = 
       throw new Error(`Calibration for ${difficulty} is missing or was not measured at its shipped quick allowance`);
     }
     const coverage = engine.coverage ?? {};
-    if (coverage.openings !== CALIBRATION_OPENINGS ||
-      JSON.stringify(coverage.handicaps) !== JSON.stringify([...HANDICAPS])) {
+    if (!provisional && (coverage.openings !== CALIBRATION_OPENINGS ||
+      JSON.stringify(coverage.handicaps) !== JSON.stringify([...HANDICAPS]))) {
       throw new Error(`Calibration for ${difficulty} covered ${coverage.openings} openings at handicaps ` +
         `${JSON.stringify(coverage.handicaps)}; A3 §3 needs all ${CALIBRATION_OPENINGS} at ${JSON.stringify([...HANDICAPS])}`);
     }
     if (!Number.isSafeInteger(engine.ownTurns) || engine.ownTurns < 4) {
       throw new Error(`Calibration for ${difficulty} sampled too few own turns`);
     }
-    for (const stage of GAME_STAGES) {
-      if (!engine.stages?.[stage]?.ownTurns) throw new Error(`Calibration for ${difficulty} has no ${stage} samples`);
+    if (!provisional) {
+      for (const stage of GAME_STAGES) {
+        if (!engine.stages?.[stage]?.ownTurns) throw new Error(`Calibration for ${difficulty} has no ${stage} samples`);
+      }
     }
     if (!Number.isSafeInteger(budget) || budget < 1 || budget !== engine.overall?.medianWorkPerTurn) {
       throw new Error(`Calibration budget for ${difficulty} is not its recorded OVERALL median work per own turn ` +
         `(budget ${budget}, overall median ${engine.overall?.medianWorkPerTurn})`);
     }
+    const searches = engine.overall?.medianSearchesPerTurn;
+    if (!Number.isFinite(searches) || searches < 1) {
+      throw new Error(`Calibration for ${difficulty} records no median searches per own turn; the row cannot show ` +
+        'that its adapter paces like the loop that was measured');
+    }
     budgets[difficulty] = budget;
+    searchesPerTurn[difficulty] = searches;
   }
   // Situational refusals: real calibrations of a situation that is not this row's.
-  const overridden: string[] = [];
+  const overridden: CalibrationRefusal[] = [];
   const load = manifest.load ?? {};
   for (const [when, value] of [['start', load.load1AtStart], ['end', load.load1AtEnd]] as const) {
     if (typeof value !== 'number') throw new Error(`Calibration manifest records no 1-minute load at ${when}`);
     if (value > MAX_CALIBRATION_LOAD1) {
-      overridden.push(`1-minute load average at ${when} was ${value}, above the ${MAX_CALIBRATION_LOAD1} an ` +
-        '"otherwise idle" machine may carry (A3 §3); WALL-mode work is under-counted on a loaded box');
+      overridden.push({ kind: 'load', reason: `1-minute load average at ${when} was ${value}, above the ` +
+        `${MAX_CALIBRATION_LOAD1} an "otherwise idle" machine may carry (A3 §3); WALL-mode work is under-counted ` +
+        'on a loaded box' });
     }
+  }
+  const maxLoad5 = load.boundaries?.load5?.max;
+  if (typeof maxLoad5 !== 'number') {
+    throw new Error('Calibration manifest records no per-game-boundary load samples (load.boundaries.load5.max); a ' +
+      'v2 manifest sampled the load only at start and end, which are the two moments a long measurement is least ' +
+      'likely to be contended');
+  }
+  if (maxLoad5 > MAX_CALIBRATION_LOAD5) {
+    const holders = (load.boundaries?.heavySlotHoldersSeen ?? []) as { holder?: string }[];
+    overridden.push({ kind: 'load', reason: `the highest 5-minute load average at any game boundary was ` +
+      `${maxLoad5}, above ${MAX_CALIBRATION_LOAD5} = 1.0 for the calibration's own thread + ` +
+      `${CALIBRATION_OWN_THREAD_LOAD} for everything else an "otherwise idle" machine may carry (A3 §3)` +
+      (holders.length ? `; heavy-queue holders seen: ${holders.map(h => h.holder).join(', ')}` : '') });
   }
   const host = options.machine ?? machineIdentity();
   const measuredOn = manifest.machine?.sha256;
   if (typeof measuredOn !== 'string') throw new Error('Calibration manifest records no machine identity');
   if (measuredOn !== host.sha256) {
-    overridden.push(`measured on ${manifest.machine?.hostname} (${manifest.machine?.cpuCount}x ` +
-      `${manifest.machine?.cpuModel}), not on this host ${host.hostname} (${host.cpuCount}x ${host.cpuModel})`);
+    overridden.push({ kind: 'machine', reason: `measured on ${manifest.machine?.hostname} ` +
+      `(${manifest.machine?.cpuCount}x ${manifest.machine?.cpuModel}), not on this host ${host.hostname} ` +
+      `(${host.cpuCount}x ${host.cpuModel})` });
   }
   const finishedAt = Date.parse(String(manifest.finishedAt));
   if (!Number.isFinite(finishedAt)) throw new Error('Calibration manifest records no finish time');
   const ageMs = (options.now ?? Date.now()) - finishedAt;
   if (ageMs > MAX_CALIBRATION_AGE_MS) {
-    overridden.push(`measured ${(ageMs / 3600000).toFixed(1)} hours ago, beyond the ` +
-      `${MAX_CALIBRATION_AGE_MS / 3600000}-hour freshness window`);
+    overridden.push({ kind: 'age', reason: `measured ${(ageMs / 3600000).toFixed(1)} hours before the row started, ` +
+      `beyond the ${MAX_CALIBRATION_AGE_MS / 3600000}-hour freshness window` });
   }
   const measuredSources = manifest.sourceIdentity?.sha256;
   if (typeof measuredSources !== 'string') throw new Error('Calibration manifest records no source identity');
   if (options.sourceIdentitySha256 !== undefined && measuredSources !== options.sourceIdentitySha256) {
-    overridden.push(`measured against source identity ${measuredSources.slice(0, 12)}, not the row's ` +
-      `${options.sourceIdentitySha256.slice(0, 12)}: the engines it timed are not the engines this row runs`);
+    overridden.push({ kind: 'sources', reason: `measured against source identity ${measuredSources.slice(0, 12)}, ` +
+      `not the row's ${options.sourceIdentitySha256.slice(0, 12)}: the engines it timed are not the engines this ` +
+      'row runs' });
   }
-  if (overridden.length && !options.accept) {
+  const accepted = [...new Set(options.accept ?? [])];
+  const unaccepted = overridden.filter(r => !accepted.includes(r.kind));
+  if (unaccepted.length) {
     throw new Error(`${path} is a valid A3 calibration of a DIFFERENT situation:\n` +
-      overridden.map(r => `  - ${r}`).join('\n') +
-      '\nMeasure a fresh calibration, or pass --accept-loaded-calibration to run against this one; the flag and ' +
-      'every reason above are then stamped into the row manifest and the report header.');
+      unaccepted.map(r => `  - [${r.kind}] ${r.reason}`).join('\n') +
+      `\nMeasure a fresh calibration, or pass --accept-calibration=${[...new Set(unaccepted.map(r => r.kind))].join(',')} ` +
+      'to run against this one; each kind accepted and every reason above are then stamped into the row manifest ' +
+      'and the report header.');
   }
-  return { path, sha256: sha(bytes), budgets, manifest, acceptance: { flagPassed: options.accept === true, overridden } };
+  return { path, sha256: sha(bytes), budgets, manifest, provisional, searchesPerTurn,
+    acceptance: { accepted, overridden, reasons: overridden.map(r => `[${r.kind}] ${r.reason}`) } };
+}
+
+/** `--accept-calibration=load,machine` → the kinds, validated. */
+export function parseCalibrationOverrides(raw: string): CalibrationOverride[] {
+  const parts = raw.split(',').map(s => s.trim()).filter(s => s.length > 0);
+  if (!parts.length) throw new Error(`--accept-calibration needs at least one of ${CALIBRATION_OVERRIDES.join(',')}`);
+  const kinds: CalibrationOverride[] = [];
+  for (const part of parts) {
+    if (!(CALIBRATION_OVERRIDES as readonly string[]).includes(part)) {
+      throw new Error(`--accept-calibration: ${JSON.stringify(part)} is not one of ${CALIBRATION_OVERRIDES.join(',')}`);
+    }
+    if (kinds.includes(part as CalibrationOverride)) throw new Error(`--accept-calibration repeats ${part}`);
+    kinds.push(part as CalibrationOverride);
+  }
+  return kinds;
 }
 
 export function parseArgs(args: string[]): { out: string; options: CalibrationOptions } {
@@ -483,14 +717,20 @@ export function parseArgs(args: string[]): { out: string; options: CalibrationOp
     else if (flag === '--turns') options.turnsPerEngine = number('--turns');
     else if (flag === '--openings') options.openings = number('--openings');
     else if (flag === '--max-turns') options.maxTurns = number('--max-turns');
-    else throw new Error(`Unknown option ${flag}`);
+    else if (flag === '--provisional') {
+      const reason = args[++i];
+      if (!reason || reason.startsWith('--')) throw new Error('--provisional requires a reason, in quotes');
+      options.provisional = reason;
+    } else throw new Error(`Unknown option ${flag}`);
   }
   if (!out) throw new Error('Provide --out <new directory>');
   if (options.openings > CALIBRATION_OPENINGS) throw new Error(`The dev book holds ${CALIBRATION_OPENINGS} openings`);
-  // A short or capped run is allowed for a smoke test, but it is not a row
-  // budget and `loadCalibration` will say so rather than let one through.
-  if (options.maxTurns < MIN_CALIBRATION_MAX_TURNS) {
-    throw new Error(`--max-turns must be at least ${MIN_CALIBRATION_MAX_TURNS}: A3 §3 measures full-length games`);
+  // A short or capped run is allowed ONLY when it says so: `--provisional` stamps
+  // the manifest ineligible, and `loadCalibration` then refuses it to any row that
+  // has not asked for a provisional calibration by name.
+  if (!options.provisional && options.maxTurns < MIN_CALIBRATION_MAX_TURNS) {
+    throw new Error(`--max-turns must be at least ${MIN_CALIBRATION_MAX_TURNS}: A3 §3 measures full-length games. ` +
+      'A deliberately short sample needs --provisional "<why this is not a row budget>".');
   }
   return { out, options };
 }
@@ -506,30 +746,43 @@ export async function main(args: string[]) {
     const loadAtStart = loadavg();
     const startedAt = new Date().toISOString();
     const sourceFiles = sourceFileHashes();
+    const sampler = new LoadSampler();
+    sampler.sample('calibration:start');
     if (loadAtStart[0] > MAX_CALIBRATION_LOAD1) {
       // Not fatal — the operator may be deliberately characterising a loaded
       // box — but it is said once, loudly, before twelve hours are spent.
       console.error(`gate1-calibrate: 1-minute load average is ${loadAtStart[0]} on ${machine.cpuCount} cores, above ` +
         `${MAX_CALIBRATION_LOAD1}. A3 §3 asks for an otherwise idle machine and a row will REFUSE this manifest ` +
-        'without --accept-loaded-calibration.');
+        'without --accept-calibration=load.');
     }
     const engines: Record<string, ReturnType<typeof summarizeSamples> & { allowanceMs: number; pace: 'quick' }> = {};
     const loadDuring: Record<string, number[]> = {};
     for (const difficulty of DIFFICULTIES) {
       const t0 = Date.now();
-      const samples = await sampleEngine(difficulty, solver, options, book);
+      const samples = await sampleEngine(difficulty, solver, options, book, sampler);
       loadDuring[difficulty] = loadavg();
       engines[difficulty] = { allowanceMs: QUICK_ALLOWANCE_MS[difficulty], pace: 'quick', ...summarizeSamples(samples) };
       console.log(JSON.stringify({ difficulty, ownTurns: samples.length, games: engines[difficulty].games,
         elapsedS: Math.round((Date.now() - t0) / 1000),
         medianWorkPerTurn: engines[difficulty].overall.medianWorkPerTurn,
+        medianSearchesPerTurn: engines[difficulty].overall.medianSearchesPerTurn,
         stageMedians: Object.fromEntries(GAME_STAGES.map(s => [s, (engines[difficulty].stages[s] as { medianWorkPerTurn?: number }).medianWorkPerTurn])),
+        bucketMedians: Object.fromEntries(OWN_TURN_BUCKETS.map(b =>
+          [b.id, (engines[difficulty].ownTurnBuckets[b.id] as { medianWorkPerTurn?: number }).medianWorkPerTurn])),
+        weightingFlagged: engines[difficulty].weighting.flagged,
         load: loadDuring[difficulty] }));
     }
     const budgets = Object.fromEntries(DIFFICULTIES.map(d => [d, engines[d].overall.medianWorkPerTurn]));
+    sampler.sample('calibration:end');
     const loadAtEnd = loadavg();
+    const boundaries = sampler.summary();
     const manifest = {
       schema: CALIBRATION_SCHEMA, amendment: CALIBRATION_AMENDMENT,
+      ...(options.provisional ? { provisional: {
+        reason: options.provisional, eligible: false,
+        note: 'This manifest is NOT a row budget. A row refuses it unless it is a pilot run with ' +
+          '--provisional-calibration, and the concession is stamped into the pilot manifest, summary and README.',
+      } } : {}),
       // Machine and load lead the file: they are what decides whether this
       // manifest describes the row's situation at all (A3 §3).
       machine,
@@ -537,9 +790,14 @@ export async function main(args: string[]) {
         load1AtStart: loadAtStart[0], load1AtEnd: loadAtEnd[0],
         start: loadAtStart, end: loadAtEnd, during: loadDuring,
         cpuCount: machine.cpuCount, idleThreshold: MAX_CALIBRATION_LOAD1,
+        maxLoad5Threshold: MAX_CALIBRATION_LOAD5, ownThreadAllowance: CALIBRATION_OWN_THREAD_LOAD,
+        /** Sampled at every game boundary; this is what a row actually checks. */
+        boundaries,
+        samples: sampler.samples,
         note: 'A3 §3 asks for an otherwise idle machine. In WALL mode a loaded box UNDER-counts work: the clock ' +
           'runs while the CPU is elsewhere. A row refuses a manifest whose 1-minute load at start or end exceeds ' +
-          `${MAX_CALIBRATION_LOAD1} unless --accept-loaded-calibration is passed.`,
+          `${MAX_CALIBRATION_LOAD1}, or whose highest 5-minute load at any game boundary exceeds ` +
+          `${MAX_CALIBRATION_LOAD5}, unless --accept-calibration=load is passed.`,
       },
       startedAt, finishedAt: new Date().toISOString(),
       sourceIdentity: { sha256: sourceIdentitySha256(sourceFiles), files: Object.keys(sourceFiles).length },
@@ -549,7 +807,9 @@ export async function main(args: string[]) {
       queue: { directory: heavyDir(), slots: slotCount() },
       engines, budgets,
       budgetRule: "A3 §3's \"median search work consumed per own turn\": the OVERALL median over every own turn of " +
-        'every sampled game, per engine. Stage medians are reported for context and are used by nothing.',
+        'every sampled game, per engine — turn-weighted. Stage medians, absolute own-turn-bucket medians and the ' +
+        'median of per-game medians are reported for context and are used by nothing; engines.<d>.weighting.flagged ' +
+        `is true when the turn- and game-weighted medians differ by more than ${WEIGHTING_DISAGREEMENT * 100}%.`,
       workDefinition: 'SearchBudget#spend units (src/ai/runtime.ts); the same counter fixedWork caps.',
       mode: 'WALL, shipped whole-turn loop, scaleToBudget on, quick pace (hard 10,000 ms / medium 3,000 ms), ' +
         `full-length games (maxTurns ${options.maxTurns}) over all ${options.openings} dev openings at handicaps ` +
@@ -559,7 +819,9 @@ export async function main(args: string[]) {
     writeFileSync(path, json(manifest));
     writeFileSync(`${out}/calibration.sha256`, `${sha(readFileSync(path))}  calibration.json\n`);
     console.log(json({ budgets, ratio: budgets.hard / budgets.medium, out: path,
-      machine: machine.sha256.slice(0, 12), load1: { start: loadAtStart[0], end: loadAtEnd[0] } }));
+      provisional: options.provisional ?? null,
+      machine: machine.sha256.slice(0, 12), load1: { start: loadAtStart[0], end: loadAtEnd[0] },
+      maxLoad5: boundaries.load5.max, loadSamples: boundaries.samples }));
   });
 }
 
