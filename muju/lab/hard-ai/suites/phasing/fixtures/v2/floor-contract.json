@@ -1,7 +1,7 @@
 {
   "schema": "muju-phasing-suite-floor-v2",
   "manifestSha256": "454fe137aa5bf97f4703a209985e4743eb995719c09cb6bcf8ea6d130bc39453",
-  "declaredAt": "2026-09-19T21:40:00.000Z",
+  "declaredAt": "2026-09-19T19:43:48.000Z",
   "seed": 1,
   "profile": "desktop",
   "engineSourceSha256": "e46f735eaaea2aa4df2d7eda276e7c6db366e1db587260fcefc8a0d678391dcd",
