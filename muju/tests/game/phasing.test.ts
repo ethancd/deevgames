@@ -7,6 +7,7 @@ import { analyzeHomeDefense, resolveHomeCheckmate } from '../../src/game/homeChe
 import { startTurn } from '../../src/game/turn';
 import { describeTransition } from '../../src/game/moveHistory';
 import type { GameState } from '../../src/game/types';
+import { INACTIVITY_LIMIT } from '../../src/game/inactivity';
 const initial = () => createInitialGameState(undefined, 4, 0, 'phasing');
 const actEnd = (s: GameState) => applyAction(s, { type: 'END_ACTION_PHASE' });
 const handoff = (s: GameState) => applyAction(s, { type: 'END_PLACE_PHASE' });
@@ -128,9 +129,9 @@ describe('Phasing ruleset', () => {
     expect(resolveHomeCheckmate(prepared, transitionWithoutCheckmate).victoryReason).toBe('home-checkmate');
   });
   it('resolves the quiet draw once, after preparation, and before next home/arrival checks', () => {
-    const s = initial(); s.inactivityPlies = 9;
+    const s = initial(); s.inactivityPlies = INACTIVITY_LIMIT - 1;
     const ready = actEnd(s); expect(ready.phase).toBe('playing');
     const after = handoff(buy(ready));
-    expect(after).toMatchObject({ phase: 'victory', victoryReason: 'inactivity', inactivityPlies: 10 });
+    expect(after).toMatchObject({ phase: 'victory', victoryReason: 'inactivity', inactivityPlies: INACTIVITY_LIMIT });
   });
 });

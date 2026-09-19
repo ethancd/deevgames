@@ -10,7 +10,7 @@
     "R08: D7 to D4 and attack fits 4; D7 to D3 and attack requires 5.",
     "R06: all six elements use promotion costs 4 and 8, with no T4.",
     "R03: Hono kills two DEF-3 Muju, then has no third attack.",
-    "R09: positive mining income on the tenth quiet turn still draws."
+    "R09: positive mining income on the 20th quiet turn still draws (R09 narration still says 10)."
   ],
   "passed": true,
   "mapTotal": 504

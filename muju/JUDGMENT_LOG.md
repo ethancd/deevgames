@@ -304,3 +304,58 @@ Do not install a static power score in the playing AI or claim that a stat has o
 ## 2026-09-18 — Metal v2.9
 
 User-requested Metal ATK/DEF/SPD/MINE: 1/3/0/3, 1/4/1/4, 2/5/2/5; rename Inyan to Yan. Preserve stable IDs, costs, other elements and historical evidence. Speed 0 permits adjacent attacks, mining and promotion, but no movement. Existing saves/rooms adopt the current catalogue; replay snapshots and labels remain historical. See docs/changes/2026-09-18-metal-yan.md for verification and release scope.
+
+
+## J-021: The quiet-turn draw clock is twenty plies (v3.0, rules revision `muju-phasing-2`, 2026-09-19)
+
+- **Date:** 2026-09-19. Owner decision (Ethan), recorded as amendment A4 of
+  `docs/hard-ai/PHASING-PREREGISTRATION-2026-09-18.md`. This is a change to the
+  game, not to any gate, threshold or acceptance condition.
+- **Decision:** the inactivity limit goes from **10 quiet plies to 20** — ten
+  hand-offs per player. The in-game warning keeps its three-ply margin, so the
+  public counter turns amber at **17** instead of 7. Supersedes J-016's ten-turn
+  threshold; J-016's *timing* (resolved at the ending turn, before the next
+  home-win check) and J-019's definition of a quiet turn both stand.
+- **Rationale:** amendment A3 recorded that under Phasing the clock is reset only
+  by an attack that removes a unit, so two players who both decline the first
+  trade **drew in five turns each** regardless of material or territory, and the
+  scripted-bot reference drew **49.5%** of its games. Five turns each is not
+  enough game. Phasing's delayed summons in particular need time to arrive and
+  matter before the board is adjudicated dead; at ten plies a committed summon
+  could be paid for, arrive, and never influence a result. Twenty plies gives the
+  variant's own timing room to express itself without making a genuinely dead
+  position drag.
+- **Deliberately NOT changed: what counts as progress.** Only an attack that
+  removes a unit resets the clock. Buying, summoning, promoting, mining new
+  ground, chip damage, income, upkeep releases and contesting a home rectangle
+  still do not reset it. Making mining or summoning count as progress was
+  considered and rejected here: it is a different and larger design question
+  about what the game is about, and mixing it into a pacing fix would have made
+  the A3 evidence uninterpretable. The timing of the check, the reasons a game
+  can end, and the draw's precedence over the home-win check are also unchanged.
+- **Implementation:** one shared constant, `INACTIVITY_LIMIT` in
+  `src/game/inactivity.ts`, serves Standard and Phasing. It was deliberately not
+  forked per ruleset: Standard is being retired, and a second constant would be
+  dead weight the next reader has to reason about. `resolveInactivityDraw` gained
+  an optional `limit` defaulting to the live constant, plus an exported
+  `LEGACY_INACTIVITY_LIMIT = 10`, so a replay of an archived `muju-phasing-1`
+  game can pin the limit its record was made under without editing the archive.
+- **Blast radius:** rules revision `muju-phasing-1` → `muju-phasing-2`. Every
+  identity hash carried by a ladder row, suite measurement or Gate 1 row changes,
+  so evidence cannot be pooled across the two revisions. Void until redone:
+  the 840-game scripted-bot reference and the purchase/inactivity bands frozen
+  from it, every Gate 1 game so far, hard-engine replica parity evidence, and the
+  M5 v1 suite measurement. The opening books are unaffected — by their recorded
+  stop rule no opening carries a clock value the two limits treat differently.
+  Academy lesson R09, "The Ten Quiet Turns", now states the wrong number and
+  needs re-narration in a future release.
+- **Compatibility:** local save schema 7 → **8**. A save written under schema 5–7
+  is adjudicated once under the limit it was recorded with, so a position already
+  at 10 or more quiet plies still loads as the draw `muju-phasing-1` would have
+  given it; a position still playing resumes with its clock restarted at 0, because
+  a stored count no longer means what it meant when it was written. The revision is
+  stamped in so that restart happens at most once, and a finished game is never
+  revived. Completed results stay final.
+- **Reversal cost:** low in code (one constant), high in evidence — reverting
+  would void `muju-phasing-2` measurements the same way this change voids
+  `muju-phasing-1` ones.

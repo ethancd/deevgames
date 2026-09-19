@@ -1,3 +1,38 @@
+# Affected lessons — quiet-turn draw is twenty plies (2026-09-19, `muju-phasing-2`)
+
+Rules change, not an Academy release: the inactivity draw clock went from 10 quiet
+plies to **20**, and the amber warning from 7 to **17**. What resets the clock is
+unchanged — only an attack that removes a piece. See `../JUDGMENT_LOG.md` J-021,
+`../SPEC.md` v3.0 and amendment A4 of
+`../docs/hard-ai/PHASING-PREREGISTRATION-2026-09-18.md`.
+
+**Needs re-narration in a future v9 release:**
+
+- **R09 "The Ten Quiet Turns"** — the title itself states the superseded number,
+  and the script says it repeatedly: "Ten quiet turns in a row, and the game is a
+  draw", "Ten quiet turns is a draw", and the recap line "The tenth quiet turn ends
+  in a draw after mining, before the next turn starts... Ten player turns means five
+  complete rounds. The warning turns amber at seven." Every one of those becomes
+  twenty / twentieth / ten complete rounds / seventeen. The lesson's *teaching* is
+  otherwise correct: a quiet turn is still one with no enemy killed by attack, and
+  collecting crystals still does not reset the clock.
+- **R10 "One Turn at the Practice Table"** — **verified unchanged.** Its capstone
+  refers to the "quiet count" as a public value but never states the number, so no
+  narration line is wrong. It is listed in the site's turn-order notice for the
+  Phasing phase order only.
+
+No lesson media, `episode.json` timeline or render script was touched by this
+change. The rendered v7/v8 media on the live site is now known-stale for R09 only.
+Until a v9 release re-records R09, the prepared course notice in `build-release.py`
+carries the correction, and `verify-live.py` asserts it is present on the live page.
+
+Rules snapshots under `rules-snapshot/` and `production/R*/source-rules/` still
+carry `INACTIVITY_LIMIT = 10`. They are provenance for what each lesson was
+recorded against and are deliberately left alone; they are refreshed by the normal
+`export-rules.ts` step of whichever release re-records R09.
+
+---
+
 ## Published Metal v8 update — 2026-09-18
 
 Published to https://ashkie.com/muju-academy/ at website commit

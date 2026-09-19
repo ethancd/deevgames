@@ -1,6 +1,8 @@
 # Muju Hono Tanka — A Strategy Guide From One Hard Game
 
 > Historical analysis: predates v2.9 (2026-09-18). Metal is now Yan/Mazask/Tanka with ATK/DEF/SPD/MINE 1/3/0/3, 1/4/1/4, 2/5/2/5. Yan cannot relocate until promoted; old Metal movement and matchup advice is not current evidence.
+>
+> Also predates v3.0 (2026-09-19, rules revision `muju-phasing-2`): the quiet-turn draw clock is now **twenty** plies, not ten, and the warning turns amber at 17. What resets it is unchanged. Clock-pressure advice below was written for the ten-ply clock and is recorded as it stood; it is not current advice.
 
 *Written by Claude (White) after a 17-turn win by resignation against Codex (Black), 2026-09-12. Four shared actions per turn.*
 
@@ -67,6 +69,8 @@ If the opponent over-invests in tier 3:
 - Keep your own upkeep under income. I ran 5 upkeep on 45+ banked crystals and shuffled plants onto 4-stacks each turn to stay near break-even.
 
 ## 7. The ten-turn draw clock
+
+> Superseded 2026-09-19 (v3.0 / `muju-phasing-2`): the limit is now **twenty** plies, not ten. Only kills still reset it, so the shape of the advice holds, but every count and every urgency judgment in this section was written against the shorter clock. Left as written; see `../SPEC.md` §9.
 
 Ten consecutive player turns without an attack kill is a draw, and only kills reset it. A pure economy race draws. Practical rules:
 

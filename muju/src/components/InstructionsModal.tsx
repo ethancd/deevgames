@@ -113,7 +113,7 @@ export function InstructionsModal({isOpen,onClose,actionsPerTurn=DEFAULT_ACTIONS
     {title:'Controls & undo',content:<>
       <p>Tap a piece and a reachable square to move. Tap a reachable enemy to preview an attack, then confirm. In Prepare, select a shop piece and its highlighted square to summon, or tap an existing piece to promote.</p>
       <p>Enter completes the current phase; Command/Ctrl+Z undoes within your turn. Mine & prepare is reversible until handoff. Undo never reverses your opponent’s turn.</p>
-      <p>The ten-turn quiet clock and the online time delay advance only at End turn, after preparation. Summoning, refunds and promotions do not reset the quiet clock.</p>
+      <p>The {INACTIVITY_LIMIT}-turn quiet clock and the online time delay advance only at End turn, after preparation. Summoning, refunds and promotions do not reset the quiet clock.</p>
     </>},
     standard[10],
   ] : standard;

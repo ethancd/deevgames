@@ -6,7 +6,8 @@ The AI searches the real public game state with beam planning, MCTS and a
 WebAssembly tactical solver. Every game uses four shared actions per player
 turn. Movement and attack combinations must fit that budget; enemy reach is
 three movement actions plus one attack. Only an enemy kill by attack resets
-the ten-turn draw clock. Income still matters economically, but cannot prevent
+the twenty-ply draw clock (raised from ten on 2026-09-19, rules revision
+`muju-phasing-2`). Income still matters economically, but cannot prevent
 a draw. The canonical transition supplies these rules to human and AI play.
 See [the current rules](SPEC.md) and [implementation status](docs/AI_IMPLEMENTATION_STATUS.md).
 

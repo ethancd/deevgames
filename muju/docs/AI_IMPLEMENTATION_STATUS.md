@@ -19,8 +19,10 @@ Hi purchased beside a target then attacking in the same turn.
 
 All live games use **four actions per turn**. JavaScript and WASM tactics,
 full-turn beam planning, raid proximity and enemy reach use that budget. Only
-an attack kill resets the ten-turn clock; search uses the same canonical draw
-transition as human and online play.
+an attack kill resets the quiet clock, and since 2026-09-19 (rules revision
+`muju-phasing-2`) that clock is twenty plies, not ten; search uses the same
+canonical draw transition as human and online play. Strength evidence measured
+under `muju-phasing-1` is not pooled with evidence measured under this revision.
 
 The rebuilt kernel uses **ABI 6**. Tactical proofs retain current-turn movement,
 attacks/Cleave and home-blocked promotion subsets. **General placement and

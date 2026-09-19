@@ -5,6 +5,7 @@ import { createInitialGameState, createUnit } from '../../src/game/board';
 import { applyAction } from '../../src/ai/simulate';
 import { automaticUpkeepUndo } from '../../src/game/turn';
 import { saveGameState } from '../../src/utils/persistence';
+import { INACTIVITY_LIMIT } from '../../src/game/inactivity';
 
 afterEach(() => { cleanup(); localStorage.clear(); });
 function beforeWhiteTurn(cash = 5) {
@@ -74,7 +75,7 @@ it('creates the checkpoint after an AI move and handoff dispatched in the same r
 it('does not add an automatic payment undo when upkeep is free, unaffordable, or the game ends', () => {
   const free = createInitialGameState();
   const poor = beforeWhiteTurn(1);
-  const drawn = {...beforeWhiteTurn(),inactivityPlies:9};
+  const drawn = {...beforeWhiteTurn(),inactivityPlies:INACTIVITY_LIMIT-1};
   for (const before of [free, poor, drawn]) {
     const after = applyAction(before, {type:'END_ACTION_PHASE'});
     expect(automaticUpkeepUndo(before, after)).toBeNull();

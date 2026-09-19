@@ -19,7 +19,16 @@ document and the code disagree, that is a bug in one of them: see
 of known divergences. The stat tables in §7 are transcriptions of
 `src/game/units.ts`, which is the canonical stat source.
 
-**Spec version:** v2.9 (2026-09-18) — Metal is Yan → Mazask → Tanka, with
+**Spec version:** v3.0 (2026-09-19) — the inactivity draw clock is **20 quiet
+plies** (ten hand-offs per player), not ten, and the public counter turns amber at
+17. What resets the clock is unchanged: only an attack that removes a unit.
+Nothing else in the rules changes. This advances the rules revision from
+`muju-phasing-1` to **`muju-phasing-2`**; strength, ladder and suite evidence
+measured under the old revision is not pooled with evidence measured under this
+one. Standard and Phasing share the single constant in `src/game/inactivity.ts`.
+See §9 and `JUDGMENT_LOG.md` J-021.
+
+**Retained from v2.9** (2026-09-18) — Metal is Yan → Mazask → Tanka, with
 ATK/DEF/SPD/MINE 1/3/0/3, 1/4/1/4, 2/5/2/5. Yan cannot move but may attack
 adjacent enemies, mine, anchor purchases and promote normally. Prices and IDs
 are unchanged. Existing saves and rooms use this catalogue; recorded historical
@@ -28,7 +37,7 @@ boards and move labels are preserved. The v2.8 economy remains: new games use 8-
 in-progress games retain their stored maps and use the updated unit catalogue.
 See `docs/EXPANSION_ECONOMY-2026-09-13.md`.
 Every game uses 4 shared actions per
-turn. Only an enemy kill by attack resets the ten-turn draw clock. Tier-1 purchases cost 3/4/5 by pair;
+turn. Only an enemy kill by attack resets the twenty-ply draw clock. Tier-1 purchases cost 3/4/5 by pair;
 all promotions cost 4 to tier 2 and 8 to tier 3. Muju has DEF 3, Tanka DEF 5,
 C4/C5/H6/H7 hold 4 crystals each, and F3/E8 hold 0. See
 `docs/BALANCE-2026-09-11.md` for rationale and compatibility.
@@ -47,6 +56,12 @@ v2.6 makes four actions the sole ruleset and defines a quiet turn as no attack k
 v2.7 adopts larger home reserves, smaller distant rich patches and a central
 eight-cell reserve cluster for new games, without changing existing boards. v2.8 reduces home reserves to 8, increases
 expansions to 16, and raises Plant tier-2/tier-3 Mining to 5/8.
+v2.9 (2026-09-18) revises the Metal line and renames Inyan to Yan.
+v3.0 (2026-09-19) lengthens the inactivity draw clock from 10 to 20 quiet plies
+and moves the amber warning from 7 to 17, advancing the rules revision to
+`muju-phasing-2`. Nothing else changes; in particular, what counts as progress is
+untouched. Entries at or before v2.9 describe the ten-ply clock as it then stood
+and are history, not current rules.
 
 ---
 
@@ -104,7 +119,7 @@ A turn has two phases:
    obey Cleave (§4.2). The player may end early.
 
 At the end of the Action phase, resolve passive mining for the mover (§5.1),
-then update the inactivity counter and check the ten-quiet-turn draw (§9).
+then update the inactivity counter and check the twenty-quiet-ply draw (§9).
 Income cannot be undone: undo is confined to the current turn. There is no
 queue phase, including when all actions have been spent.
 
@@ -379,18 +394,30 @@ re-determinization rules in `AI_ENGINE_QUESTIONS.md` Q1–Q3 are superseded.
 
 - **Elimination:** a player with **zero units on the board** loses, regardless
   of bank. No units means no spawn anchor. There is no queue exception.
-- **Inactivity draw:** after 10 consecutive complete player turns without an
+- **Inactivity draw:** after 20 consecutive complete player turns without an
   enemy kill by attack, end the game as a draw. A ply means one player's turn,
-  not one action or full round (ten plies are five rounds). An attack kill resets
+  not one action or full round (twenty plies are ten rounds). An attack kill resets
   the counter immediately and that turn ends at 0. Each completed turn without
   a kill adds 1, even when it earns crystals. Chip attacks, movement, buying,
-  placement, promotion and upkeep removal do not reset it. The draw resolves
-  immediately at the end of the tenth quiet turn. The next turn never begins:
+  placement, promotion and upkeep removal do not reset it — what counts as progress
+  is deliberately unchanged by v3.0. The draw resolves
+  immediately at the end of the twentieth quiet turn. The next turn never begins:
   no home-win check, upkeep or healing can override the draw.
   Eliminating the last enemy during a turn still wins immediately. Saved draws
-  preserve reason `inactivity`. Current-schema unfinished saves already at 10 or more
+  preserve reason `inactivity`. Schema-8 unfinished saves already at 20 or more
   quiet turns load as a draw, preserving the board; completed results stay final.
-  The public counter turns amber at 7 quiet turns. Both players at zero units is also a
+  A save written under an earlier schema counted its plies against the ten-ply
+  limit, so its stored clock no longer means the same thing. Such a save is
+  adjudicated once under the limit it was recorded with — a position at 10 or more
+  quiet plies loads as a draw, exactly as it would have under `muju-phasing-1` —
+  and a position that is still playing resumes with its clock restarted at 0
+  rather than carrying a count whose meaning changed. The revision is then stamped
+  in, so the restart happens at most once. This mirrors `migrateLegacyGame`'s
+  choice when the clock's reset rule changed, and never revives a finished game.
+  `LEGACY_INACTIVITY_LIMIT` (10) exists only for that adjudication and for
+  replaying an archived `muju-phasing-1` record; live play always uses
+  `INACTIVITY_LIMIT`.
+  The public counter turns amber at 17 quiet turns. Both players at zero units is also a
   draw, though normal play cannot reach that position.
 - **Resignation:** the current player may resign; opponent wins. The AI plays out current-rule games: material deficits alone do not establish
   defeat when home occupation can win. Historical elimination-only lab games retain

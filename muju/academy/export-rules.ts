@@ -6,6 +6,7 @@ import {createEmptyBoard,createInitialGameState} from '../src/game/board';
 import {getMoveCost} from '../src/game/movement';
 import {getPromotionCost} from '../src/game/promotion';
 import {endTurn} from '../src/game/turn';
+import {INACTIVITY_LIMIT} from '../src/game/inactivity';
 import {UNEQUAL_ROUTES_MAP} from '../src/game/resourceMap';
 import {unitEndOfTurnTake} from '../src/game/mining';
 import type {Unit} from '../src/game/types';
@@ -54,9 +55,11 @@ assert.equal(b.units.length,2);assert.equal(canAttack(b.units.find(u=>u.id==='wh
 b=resolveCombat(b,'white',right.position).board;assert.equal(b.units.length,1);assert.equal(canAttack(b.units[0]),false);
 demonstrations.push('R03: Hono kills two DEF-3 Muju, then has no third attack.');
 const initial=createInitialGameState();assert.equal(initial.turn.actionsRemaining,4);
-const ending=endTurn({...initial,phase:'playing',inactivityPlies:9,progressThisTurn:false});
+const ending=endTurn({...initial,phase:'playing',inactivityPlies:INACTIVITY_LIMIT-1,progressThisTurn:false});
 assert.equal(ending.victoryReason,'inactivity');assert.equal(ending.winner,null);assert.ok(ending.players.white.resources>0);
-demonstrations.push('R09: positive mining income on the tenth quiet turn still draws.');
+// muju-phasing-2 (2026-09-19): the clock is twenty plies. R09's narration still says ten,
+// so the recording is stale until a v9 re-record; see academy/STATUS.md.
+demonstrations.push(`R09: positive mining income on the ${INACTIVITY_LIMIT}th quiet turn still draws (R09 narration still says 10).`);
 fs.writeFileSync(new URL('catalog.json',root),JSON.stringify(units,null,2));
 fs.writeFileSync(new URL('bonk-matrix.json',root),JSON.stringify(bonks,null,2));
 fs.writeFileSync(new URL('map.json',root),JSON.stringify(UNEQUAL_ROUTES_MAP));

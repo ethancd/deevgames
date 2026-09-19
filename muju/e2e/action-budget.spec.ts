@@ -1,18 +1,19 @@
 import { test, expect } from '@playwright/test';
+import { INACTIVITY_LIMIT } from '../src/game/inactivity';
 
-test('normal income-earning turns advance the kill-only clock and draw at ten', async ({page}) => {
+test('normal income-earning turns advance the kill-only clock and draw at twenty', async ({page}) => {
   await page.setViewportSize({width:390,height:844});
   await page.goto('./');await page.getByRole('button',{name:/^Pass & Play/}).click();
   await page.getByRole('button',{name:'Start Game',exact:true}).click();
-  for(let ply=1;ply<=10;ply++) {
+  for(let ply=1;ply<=INACTIVITY_LIMIT;ply++) {
     const startActions=page.getByRole('button',{name:/Start actions/});
     if(await startActions.count()) await startActions.click();
     await page.getByRole('button',{name:/End turn/}).click();
-    await expect(page.locator('.progress-clock')).toContainText(`${ply}/10 turns without a kill`);
-    if(ply<10) await page.getByText('Tap anywhere to continue').click();
+    await expect(page.locator('.progress-clock')).toContainText(`${ply}/${INACTIVITY_LIMIT} turns without a kill`);
+    if(ply<INACTIVITY_LIMIT) await page.getByText('Tap anywhere to continue').click();
   }
   await expect(page.getByRole('heading',{name:'Draw by inactivity'})).toBeVisible();
-  await expect(page.getByText('10 consecutive player turns passed without a kill. Crystal income does not reset the clock.',{exact:true})).toBeVisible();
+  await expect(page.getByText(`${INACTIVITY_LIMIT} consecutive player turns passed without a kill. Crystal income does not reset the clock.`,{exact:true})).toBeVisible();
   const state=await page.evaluate(()=>JSON.parse(localStorage.getItem('elemental-tactics-save')!).state);
   expect(state.players.white.resourcesGained).toBeGreaterThan(0);
   expect(state.players.black.resourcesGained).toBeGreaterThan(0);

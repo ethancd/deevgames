@@ -112,8 +112,9 @@ to spawning and home defense. Units act immediately after purchase or
 promotion, but a newly bought unit cannot promote that turn. Each existing
 unit may climb one tier per own turn, paying the cost difference. The exact
 18-unit catalogue is defined in `muju/src/game/units.ts`. The elemental triangle,
-Cleave, owner-turn healing, and upkeep remain; ten player turns without an attack
-kill draw. Black may receive an optional 1–20 starting-crystal handicap. First-player rush strength under the combined rules remains
+Cleave, owner-turn healing, and upkeep remain; twenty player turns without an attack
+kill draw (raised from ten on 2026-09-19; only an attack that removes a unit resets
+the clock). Black may receive an optional 1–20 starting-crystal handicap. First-player rush strength under the combined rules remains
 an open design question.
 
 Both banks are public. The AI uses public-state MCTS and beam/placement plans;

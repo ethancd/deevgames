@@ -8,6 +8,7 @@ import type { GameMode, GameConfig, PlayerId } from '../game/types';
 import type { AIDifficulty } from '../ai/types';
 import { AI_PACES, AI_PACE_LABEL, AI_TURN_SECONDS, formatTurnSeconds, type AIPace } from '../ai/turnTime';
 import { getActionsPerTurn } from '../game/rules';
+import { INACTIVITY_LIMIT } from '../game/inactivity';
 import { loadAIPace, loadGameState } from '../utils/persistence';
 
 const PREFERRED_SIDE_KEY = 'muju:preferred-player-side';
@@ -266,7 +267,7 @@ export function ModeSelect({ onStartGame, onOnline }: ModeSelectProps) {
         {selectedMode && <BlackCrystalHandicap phasing={selectedMode === 'pass-play' && ruleset === 'phasing'} value={blackCrystalHandicap} onChange={setBlackCrystalHandicap} />}
 
         {/* Start button */}
-        {selectedMode && <p className="text-sm text-gray-400">4 shared actions per turn · Draw after 10 consecutive turns without a kill.</p>}
+        {selectedMode && <p className="text-sm text-gray-400">4 shared actions per turn · Draw after {INACTIVITY_LIMIT} consecutive turns without a kill.</p>}
         <button
           onClick={() => handleStart()}
           disabled={!selectedMode}

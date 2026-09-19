@@ -3,6 +3,7 @@ import { act, cleanup, renderHook } from '@testing-library/react';
 import { useGameState } from '../../src/hooks/useGameState';
 import { createInitialGameState, createUnit } from '../../src/game/board';
 import { loadGameHistory, loadGameState, saveGameState } from '../../src/utils/persistence';
+import { INACTIVITY_LIMIT } from '../../src/game/inactivity';
 
 afterEach(() => { cleanup(); localStorage.clear(); vi.restoreAllMocks(); });
 
@@ -76,7 +77,7 @@ it('rewinds automatic upkeep without erasing the outgoing turn or mining', () =>
 });
 
 it('labels older saves as partial and keeps the final position when score storage is full', () => {
-  const state = createInitialGameState(); state.inactivityPlies = 9;
+  const state = createInitialGameState(); state.inactivityPlies = INACTIVITY_LIMIT - 1;
   saveGameState(state);
   const { result } = renderHook(() => useGameState());
   expect(loadGameHistory()).toMatchObject({ complete: false, frames: [{ label: 'First recorded position' }] });

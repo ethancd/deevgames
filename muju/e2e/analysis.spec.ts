@@ -1,6 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
 import { createInitialGameState } from '../src/game/board';
 import { SCHEMA_VERSION } from '../src/utils/persistence';
+import { INACTIVITY_LIMIT } from '../src/game/inactivity';
 
 async function expectAnalysisFits(page: Page, reviewing: boolean) {
   const viewport = page.viewportSize()!;
@@ -74,7 +75,7 @@ for (const scenario of [
 ]) {
   test(`${scenario.mode} can analyze a completed game and explore without changing its saved score at ${scenario.width}px`, async ({ page }, info) => {
     await page.setViewportSize({ width: scenario.width, height: 844 });
-    const state = createInitialGameState(Array(100).fill(0)); state.inactivityPlies = 9;
+    const state = createInitialGameState(Array(100).fill(0)); state.inactivityPlies = INACTIVITY_LIMIT - 1;
     await page.addInitScript(({ state, schemaVersion }) => {
       if (sessionStorage.getItem('analysis:seeded')) return;
       localStorage.setItem('elemental-tactics-save', JSON.stringify({ state, schemaVersion, timestamp: Date.now() }));

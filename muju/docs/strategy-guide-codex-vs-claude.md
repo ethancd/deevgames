@@ -1,6 +1,8 @@
 Muju rewards good exchanges, but our game showed how easily a player can win exchanges while losing the position that supports them. Claude finished with 57 crystals and eight projected income to my four crystals and two projected income. I resigned on turn 17 because sustaining my army and generating threats had become increasingly difficult.
 
 > Historical analysis: predates v2.9 (2026-09-18). Metal is now Yan/Mazask/Tanka with ATK/DEF/SPD/MINE 1/3/0/3, 1/4/1/4, 2/5/2/5. Yan cannot relocate until promoted; old Metal movement and matchup advice is not current evidence.
+>
+> Also predates v3.0 (2026-09-19, rules revision `muju-phasing-2`): the quiet-turn draw clock is now **twenty** plies, not ten, and the warning turns amber at 17. What resets it is unchanged. Clock-pressure advice below was written for the ten-ply clock and is recorded as it stood; it is not current advice.
 
 That was a judgment about the position, not a demonstrated forced win. One game also cannot establish an optimal strategy. But it offered useful lessons about expansion, upkeep, movement, and the limits of tactical success.
 

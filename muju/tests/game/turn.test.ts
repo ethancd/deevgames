@@ -3,6 +3,7 @@ import {createInitialGameState,createUnit} from '../../src/game/board';
 import {startTurn,endTurn,useAction,startActionPhase,canActInPlacePhase} from '../../src/game/turn';
 import {applyAction} from '../../src/ai/simulate';
 import {getGameResult} from '../../src/game/victory';
+import {INACTIVITY_LIMIT} from '../../src/game/inactivity';
 
 describe('two-phase boundary order',()=>{
  it('starts with four actions, then collects for each mover before the next place phase',()=>{
@@ -24,20 +25,20 @@ describe('two-phase boundary order',()=>{
   s=endTurn(s);expect(s.lastUpkeep).toMatchObject({player:'white',paid:1});expect(s.players.white.resources).toBe(5);
  });
  it('positive passive income still completes a quiet turn',()=>{
-  const s=createInitialGameState();s.inactivityPlies=9;const before=structuredClone(s);const next=endTurn(s);
-  expect(s).toEqual(before);expect(next.inactivityPlies).toBe(10);expect(next.phase).toBe('victory');expect(next.lastIncome?.total).toBe(6);
+  const s=createInitialGameState();s.inactivityPlies=INACTIVITY_LIMIT-1;const before=structuredClone(s);const next=endTurn(s);
+  expect(s).toEqual(before);expect(next.inactivityPlies).toBe(INACTIVITY_LIMIT);expect(next.phase).toBe('victory');expect(next.lastIncome?.total).toBe(6);
  });
- it('draws at exactly ten completed kill-free player turns',()=>{
+ it('draws at exactly twenty completed kill-free player turns',()=>{
   let s=createInitialGameState();
-  for(let i=1;i<=10;i++){s=endTurn(s);expect(s.inactivityPlies).toBe(i);expect(s.phase).toBe(i===10?'victory':'playing');}
+  for(let i=1;i<=INACTIVITY_LIMIT;i++){s=endTurn(s);expect(s.inactivityPlies).toBe(i);expect(s.phase).toBe(i===INACTIVITY_LIMIT?'victory':'playing');}
   expect(getGameResult(s)).toEqual({status:'draw',reason:'inactivity'});expect(endTurn(s)).toBe(s);
  });
  it('collects before the draw, and draws before the next home win or upkeep',()=>{
-  const s=createInitialGameState(Array(100).fill(0));s.turn.currentPlayer='black';s.inactivityPlies=9;
+  const s=createInitialGameState(Array(100).fill(0));s.turn.currentPlayer='black';s.inactivityPlies=INACTIVITY_LIMIT-1;
   s.board.units[0].position={x:9,y:9};s.board.units[0].damageTaken=1;
   const draw=endTurn(s);expect(draw.victoryReason).toBe('inactivity');expect(draw.lastIncome).toMatchObject({player:'black',total:0});expect(draw.lastUpkeep).toBeUndefined();expect(draw.board.units).toEqual(s.board.units);
-  s.inactivityPlies=8;expect(endTurn(s).victoryReason).toBe('home-occupation');
-  s.inactivityPlies=9;s.board.cells[9][8].resourceLayers=1;expect(endTurn(s).victoryReason).toBe('inactivity');
+  s.inactivityPlies=INACTIVITY_LIMIT-2;expect(endTurn(s).victoryReason).toBe('home-occupation');
+  s.inactivityPlies=INACTIVITY_LIMIT-1;s.board.cells[9][8].resourceLayers=1;expect(endTurn(s).victoryReason).toBe('inactivity');
  });
  it('does not settle income after immediate elimination or resignation',()=>{
   const s=createInitialGameState();s.board.units=[createUnit('fire_1','white',{x:1,y:1}),createUnit('plant_1','black',{x:1,y:2})];

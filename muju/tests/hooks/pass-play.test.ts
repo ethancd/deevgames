@@ -3,6 +3,7 @@ import {act,renderHook} from '@testing-library/react';
 import {useGameState} from '../../src/hooks/useGameState';
 import {saveGameState} from '../../src/utils/persistence';
 import {createInitialGameState} from '../../src/game/board';
+import {INACTIVITY_LIMIT} from '../../src/game/inactivity';
 it('undo stays within the turn; passive income is irreversible even on the draw boundary',()=>{
  const {result,unmount}=renderHook(()=>useGameState());
  const hi=result.current.state.board.units[0],before=result.current.state;
@@ -12,7 +13,7 @@ it('undo stays within the turn; passive income is irreversible even on the draw 
  act(()=>result.current.endActionPhase());expect(result.current.state.turn.phase).toBe('place');
  act(()=>result.current.endPlacePhase());expect(result.current.canUndo).toBe(true);
  act(()=>result.current.undo());expect(result.current.state.turn.phase).toBe('place');unmount();
- const draw=createInitialGameState(Array(100).fill(0));draw.inactivityPlies=9;saveGameState(draw);
+ const draw=createInitialGameState(Array(100).fill(0));draw.inactivityPlies=INACTIVITY_LIMIT-1;saveGameState(draw);
  const h=renderHook(()=>useGameState());act(()=>h.result.current.endActionPhase());expect(h.result.current.state.phase).toBe('victory');expect(h.result.current.canUndo).toBe(false);h.unmount();
 });
 it('spending the last three crystals finishes placement, permits haste and is undoable until turn end',()=>{

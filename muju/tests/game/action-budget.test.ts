@@ -4,7 +4,7 @@ import { getActionsPerTurn } from '../../src/game/rules';
 import { applyAction } from '../../src/ai/simulate';
 import { startTurn } from '../../src/game/turn';
 import { gameReducer } from '../../src/hooks/useGameState';
-import { loadGameState, saveGameState } from '../../src/utils/persistence';
+import { loadGameState, saveGameState, SCHEMA_VERSION } from '../../src/utils/persistence';
 
 afterEach(() => localStorage.clear());
 
@@ -49,7 +49,7 @@ it('upgrades old saves once, preserves the board, subtracts already-spent action
     expect(loaded.board).toEqual(state.board);expect(loaded.actionsPerTurn).toBe(4);
     expect(loaded.turn.actionsRemaining).toBe(Math.max(0,4-((oldBudget??6)-remaining)));
     expect(loaded.inactivityPlies).toBe(0);
-    expect(JSON.parse(localStorage.getItem('elemental-tactics-save')!).schemaVersion).toBe(7);
+    expect(JSON.parse(localStorage.getItem('elemental-tactics-save')!).schemaVersion).toBe(SCHEMA_VERSION);
     const next=applyAction(loaded,{type:'END_ACTION_PHASE'});saveGameState(next);
     expect(loadGameState()?.inactivityPlies).toBe(1);
   }

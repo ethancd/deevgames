@@ -28,6 +28,9 @@ source=page.read_text();videos=re.findall(r'<source src="([^"]+\.mp4)"',source)
 assert source.count('id="phasing-notice"')==1,'Missing or duplicated Phasing notice'
 assert 'Lessons R01, R04–R07, R09 and R10 teach the previous Standard turn order.' in source
 assert 'Act → Mine + Upkeep → Prepare' in source
+assert 'The quiet-turn draw is now twenty plies, not ten' in source,'Missing muju-phasing-2 quiet-clock correction'
+assert 'lesson R09 still says ten' in source,'Notice must name R09 as stating the superseded number'
+assert 'only an attack that removes a piece' in source,'Notice must state that what resets the clock is unchanged'
 assert 'These recordings have not yet been updated for Phasing.' in source
 assert 'Current rules v2.9' not in source,'Old recordings must not claim current Phasing rules'
 assert len(videos)==len(set(videos))==16
