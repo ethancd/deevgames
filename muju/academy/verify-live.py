@@ -25,6 +25,11 @@ def exact(path,local):
  return headers,body
 page=ROOT/'muju-academy/index.html';exact('/muju-academy/',page)
 source=page.read_text();videos=re.findall(r'<source src="([^"]+\.mp4)"',source)
+assert source.count('id="phasing-notice"')==1,'Missing or duplicated Phasing notice'
+assert 'Lessons R01, R04–R07, R09 and R10 teach the previous Standard turn order.' in source
+assert 'Act → Mine + Upkeep → Prepare' in source
+assert 'These recordings have not yet been updated for Phasing.' in source
+assert 'Current rules v2.9' not in source,'Old recordings must not claim current Phasing rules'
 assert len(videos)==len(set(videos))==16
 assert source.count('Video version 7 · Rules v2.8')==8
 assert source.count('Video version 8 · Rules v2.9')==8
