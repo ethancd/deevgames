@@ -1,0 +1,1136 @@
+{
+  "difficulty": "easy",
+  "seed": 20260920,
+  "handicap": 0,
+  "rules": "muju-phasing-1",
+  "workPerTurn": 1200,
+  "dispatch": "first",
+  "turns": 27,
+  "actions": 180,
+  "purchases": 19,
+  "promotions": 18,
+  "upkeeps": 3,
+  "arrivals": 16,
+  "refunds": 3,
+  "winner": "white",
+  "reason": "home-checkmate",
+  "illegalActions": 0,
+  "maxTurnMs": 442.21450000000186,
+  "lastTurnWallRemainderMs": 1729.7901269999984,
+  "traceSha256": "d7136a722d1d5a52782bf1fc64acdcdee6ad1b48544315a7365381a9c4421be3",
+  "trace": [
+    {
+      "type": "MOVE",
+      "unitId": "initial-0",
+      "to": {
+        "x": 2,
+        "y": 1
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-0",
+      "to": {
+        "x": 2,
+        "y": 3
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PROMOTE_UNIT",
+      "unitId": "initial-2"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-3",
+      "to": {
+        "x": 7,
+        "y": 8
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-3",
+      "to": {
+        "x": 7,
+        "y": 6
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PROMOTE_UNIT",
+      "unitId": "initial-5"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-0",
+      "to": {
+        "x": 3,
+        "y": 4
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-0",
+      "to": {
+        "x": 4,
+        "y": 5
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-0",
+      "to": {
+        "x": 6,
+        "y": 5
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-0",
+      "to": {
+        "x": 8,
+        "y": 5
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "plant_1",
+      "position": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "water_1",
+      "position": {
+        "x": 1,
+        "y": 0
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-3",
+      "to": {
+        "x": 7,
+        "y": 5
+      }
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "initial-3",
+      "targetPosition": {
+        "x": 8,
+        "y": 5
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-3",
+      "to": {
+        "x": 5,
+        "y": 5
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-3",
+      "to": {
+        "x": 4,
+        "y": 4
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PROMOTE_UNIT",
+      "unitId": "initial-5"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-2",
+      "to": {
+        "x": 0,
+        "y": 2
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PROMOTE_UNIT",
+      "unitId": "initial-2"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "fire_1",
+      "position": {
+        "x": 0,
+        "y": 1
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-5",
+      "to": {
+        "x": 9,
+        "y": 7
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-3",
+      "to": {
+        "x": 3,
+        "y": 3
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-3",
+      "to": {
+        "x": 2,
+        "y": 2
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "fire_1",
+      "position": {
+        "x": 4,
+        "y": 3
+      }
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "fire_1",
+      "position": {
+        "x": 3,
+        "y": 4
+      }
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "fire_1",
+      "position": {
+        "x": 6,
+        "y": 2
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-2",
+      "to": {
+        "x": 1,
+        "y": 2
+      }
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "initial-2",
+      "targetPosition": {
+        "x": 2,
+        "y": 2
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-3-0",
+      "to": {
+        "x": 0,
+        "y": 3
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-3-0",
+      "to": {
+        "x": 2,
+        "y": 3
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "plant_1",
+      "position": {
+        "x": 0,
+        "y": 2
+      }
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "plant_1",
+      "position": {
+        "x": 2,
+        "y": 0
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-5",
+      "to": {
+        "x": 8,
+        "y": 7
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "plant_1",
+      "position": {
+        "x": 8,
+        "y": 9
+      }
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "plant_1",
+      "position": {
+        "x": 9,
+        "y": 9
+      }
+    },
+    {
+      "type": "PROMOTE_UNIT",
+      "unitId": "initial-4"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-2",
+      "to": {
+        "x": 1,
+        "y": 3
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "plant_1",
+      "position": {
+        "x": 0,
+        "y": 3
+      }
+    },
+    {
+      "type": "PROMOTE_UNIT",
+      "unitId": "initial-1"
+    },
+    {
+      "type": "PROMOTE_UNIT",
+      "unitId": "unit-white-3-0"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-5",
+      "to": {
+        "x": 8,
+        "y": 6
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-4",
+      "to": {
+        "x": 7,
+        "y": 8
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PROMOTE_UNIT",
+      "unitId": "initial-4"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-2",
+      "to": {
+        "x": 1,
+        "y": 4
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-3-0",
+      "to": {
+        "x": 4,
+        "y": 3
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-1",
+      "to": {
+        "x": 2,
+        "y": 1
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PROMOTE_UNIT",
+      "unitId": "unit-white-3-0"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "fire_1",
+      "position": {
+        "x": 0,
+        "y": 4
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-5",
+      "to": {
+        "x": 9,
+        "y": 6
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-4",
+      "to": {
+        "x": 7,
+        "y": 6
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-4",
+      "to": {
+        "x": 6,
+        "y": 5
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-4",
+      "to": {
+        "x": 4,
+        "y": 5
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PROMOTE_UNIT",
+      "unitId": "unit-black-4-0"
+    },
+    {
+      "type": "PROMOTE_UNIT",
+      "unitId": "unit-black-4-1"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-3-0",
+      "to": {
+        "x": 4,
+        "y": 4
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-3-0",
+      "to": {
+        "x": 5,
+        "y": 6
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-3-0",
+      "to": {
+        "x": 8,
+        "y": 6
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-2",
+      "to": {
+        "x": 2,
+        "y": 4
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PROMOTE_UNIT",
+      "unitId": "unit-white-2-1"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-4",
+      "to": {
+        "x": 5,
+        "y": 6
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-4",
+      "to": {
+        "x": 7,
+        "y": 6
+      }
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "initial-4",
+      "targetPosition": {
+        "x": 8,
+        "y": 6
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-5",
+      "to": {
+        "x": 9,
+        "y": 5
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "plant_1",
+      "position": {
+        "x": 7,
+        "y": 9
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-2",
+      "to": {
+        "x": 3,
+        "y": 4
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-6-0",
+      "to": {
+        "x": 1,
+        "y": 5
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-5-0",
+      "to": {
+        "x": 0,
+        "y": 4
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-1",
+      "to": {
+        "x": 2,
+        "y": 2
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PROMOTE_UNIT",
+      "unitId": "initial-1"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "fire_1",
+      "position": {
+        "x": 3,
+        "y": 1
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-4",
+      "to": {
+        "x": 6,
+        "y": 5
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-4",
+      "to": {
+        "x": 4,
+        "y": 5
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-4",
+      "to": {
+        "x": 2,
+        "y": 5
+      }
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "initial-4",
+      "targetPosition": {
+        "x": 1,
+        "y": 5
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-1",
+      "to": {
+        "x": 2,
+        "y": 4
+      }
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "initial-1",
+      "targetPosition": {
+        "x": 2,
+        "y": 5
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-2",
+      "to": {
+        "x": 3,
+        "y": 5
+      }
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "initial-2",
+      "targetPosition": {
+        "x": 2,
+        "y": 5
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "unit-white-2-0",
+        "unit-white-4-0",
+        "unit-white-4-1",
+        "unit-white-5-0",
+        "unit-white-8-0",
+        "initial-1",
+        "initial-2"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-5",
+      "to": {
+        "x": 8,
+        "y": 5
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-5",
+      "to": {
+        "x": 7,
+        "y": 5
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-5",
+      "to": {
+        "x": 6,
+        "y": 5
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "plant_1",
+      "position": {
+        "x": 7,
+        "y": 8
+      }
+    },
+    {
+      "type": "PROMOTE_UNIT",
+      "unitId": "unit-black-7-0"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-2",
+      "to": {
+        "x": 4,
+        "y": 5
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-1",
+      "to": {
+        "x": 2,
+        "y": 6
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-2",
+      "to": {
+        "x": 5,
+        "y": 5
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-5-0",
+      "to": {
+        "x": 0,
+        "y": 5
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "plant_1",
+      "position": {
+        "x": 1,
+        "y": 5
+      }
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "plant_1",
+      "position": {
+        "x": 0,
+        "y": 6
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-5",
+      "to": {
+        "x": 6,
+        "y": 4
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-5",
+      "to": {
+        "x": 5,
+        "y": 4
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-9-0",
+      "to": {
+        "x": 7,
+        "y": 7
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-4-0",
+      "to": {
+        "x": 8,
+        "y": 8
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PROMOTE_UNIT",
+      "unitId": "unit-black-4-0"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "initial-2",
+      "targetPosition": {
+        "x": 5,
+        "y": 4
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-1",
+      "to": {
+        "x": 2,
+        "y": 4
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-1",
+      "to": {
+        "x": 4,
+        "y": 4
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-2",
+      "to": {
+        "x": 5,
+        "y": 6
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PROMOTE_UNIT",
+      "unitId": "unit-white-8-0"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "plant_1",
+      "position": {
+        "x": 2,
+        "y": 2
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-5",
+      "to": {
+        "x": 5,
+        "y": 3
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-4-0",
+      "to": {
+        "x": 7,
+        "y": 8
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "plant_1",
+      "position": {
+        "x": 9,
+        "y": 8
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-8-0",
+      "to": {
+        "x": 3,
+        "y": 2
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-8-0",
+      "to": {
+        "x": 4,
+        "y": 3
+      }
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "unit-white-8-0",
+      "targetPosition": {
+        "x": 5,
+        "y": 3
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "initial-2",
+      "to": {
+        "x": 4,
+        "y": 6
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PROMOTE_UNIT",
+      "unitId": "unit-white-8-0"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-9-0",
+      "to": {
+        "x": 7,
+        "y": 6
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-9-0",
+      "to": {
+        "x": 7,
+        "y": 5
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-9-0",
+      "to": {
+        "x": 7,
+        "y": 4
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-9-0",
+      "to": {
+        "x": 6,
+        "y": 4
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "unit-black-9-0",
+        "unit-black-11-0",
+        "unit-black-4-0",
+        "unit-black-7-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-8-0",
+      "to": {
+        "x": 5,
+        "y": 5
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-8-0",
+      "to": {
+        "x": 6,
+        "y": 7
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-8-0",
+      "to": {
+        "x": 8,
+        "y": 8
+      }
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "unit-white-8-0",
+      "targetPosition": {
+        "x": 9,
+        "y": 8
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "unit-white-2-0",
+        "unit-white-4-0",
+        "unit-white-4-1",
+        "unit-white-5-0",
+        "unit-white-10-0",
+        "unit-white-10-1",
+        "unit-white-11-0",
+        "unit-white-8-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-4-0",
+      "to": {
+        "x": 6,
+        "y": 8
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-4-0",
+      "to": {
+        "x": 6,
+        "y": 7
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-4-0",
+      "to": {
+        "x": 6,
+        "y": 6
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-9-0",
+      "to": {
+        "x": 6,
+        "y": 3
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PROMOTE_UNIT",
+      "unitId": "unit-black-9-0"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-8-0",
+      "to": {
+        "x": 7,
+        "y": 6
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-10-1",
+      "to": {
+        "x": 0,
+        "y": 7
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-8-0",
+      "to": {
+        "x": 9,
+        "y": 9
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    }
+  ]
+}

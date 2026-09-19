@@ -1,3 +1,4 @@
+import { disruptionPressure } from './summons';
 import { movementActionCost } from '../../game/movement';
 import { getActionsPerTurn } from '../../game/rules';
 import type { GameState, PlayerId } from '../../game/types';
@@ -12,7 +13,7 @@ import { homeInvader } from '../tactics/home';
 export function strategicValue(state: GameState, player: PlayerId): number {
   if (state.phase === 'victory') return 0;
   const enemy = player === 'white' ? 'black' : 'white';
-  let score = 0;
+  let score = disruptionPressure(state, player) - disruptionPressure(state, enemy);
   const actions = getActionsPerTurn(state);
   for (const owner of [player, enemy]) {
     const sign = owner === player ? 1 : -1, other = owner === player ? enemy : player;

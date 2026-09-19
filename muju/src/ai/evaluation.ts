@@ -1,3 +1,4 @@
+import { pendingMaterial, pendingIncome } from './planner/summons';
 import { upkeepDue } from '../game/upkeep';
 import type { GameState, PlayerId, Unit, Position } from '../game/types';
 import type { EvaluationWeights } from './types';
@@ -138,7 +139,7 @@ function calculateUnitValue(state: GameState, player: PlayerId): number {
   return units.reduce((total, unit) => {
     const def = getUnitDefinition(unit.definitionId);
     return total + def.cost;
-  }, 0);
+  }, pendingMaterial(state, player));
 }
 
 /**
@@ -153,7 +154,7 @@ function calculateTerritoryControl(state: GameState, player: PlayerId): number {
  * Calculate mining potential (units that can mine * available resources)
  */
 function calculateMiningPotential(state: GameState, player: PlayerId): number {
-  return projectedIncome(state, player);
+  return projectedIncome(state, player) + pendingIncome(state, player);
 }
 
 /**

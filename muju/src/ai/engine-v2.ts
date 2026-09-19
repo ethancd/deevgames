@@ -16,7 +16,8 @@ import { SearchBudget, seededRandom, type RNG } from './runtime';
 import { homeInvader, referenceTactics } from './tactics/home';
 import type { TacticalSolver } from './wasm/kernel';
 import type { TurnPlan } from './planner/types';
-import { endTurn } from '../game/turn';
+import { passTurn } from './planner/turn';
+import { isPhasing } from '../game/rules';
 import { getUnitAt, getUnitById } from '../game/board';
 import { canBeEliminated } from '../game/combat';
 import { getUnitDefinition } from '../game/units';
@@ -130,10 +131,10 @@ export class AIEngineV2 {
         const next=applyAction(view,action);
         return {id:`upkeep-${i}`,actions:[action],score:evaluatePosition(next,player,this.weights),tags:[] as TurnPlan['tags']};
       }).sort((a,b)=>b.score-a.score);
-      // Preserve an affordable home rescue before comparing material. All
+      // Standard alone has a rescue after upkeep; Phasing has already acted. All
       // proofs run on the paid, healed board, never the pre-upkeep position.
       const invader=homeInvader(view,player);
-      if(invader && view.victoryRule!=='elimination')for(const plan of plans.slice(0,32)){
+      if(!isPhasing(view) && invader && view.victoryRule!=='elimination')for(const plan of plans.slice(0,32)){
         const paid=applyActions(view,plan.actions);
         if(paid.phase==='victory')continue;
         const rescue=this.solver(paid,invader.id,3000,new SearchBudget(Infinity,3000));
@@ -153,14 +154,14 @@ export class AIEngineV2 {
     const win = attacks.find(a => applyAction(observed, a).winner === player);
     if (win) bestPlan = { id: 'immediate-victory', actions: [win], score: 1000000, tags: ['kill'] };
     const invader = observed.victoryRule !== 'elimination' ? homeInvader(observed, player) : undefined;
-    if (!bestPlan && invader && !budget.exhausted()) {
+    if (!bestPlan && invader && observed.turn.phase === 'action' && !budget.exhausted()) {
       const rescue = this.solver(observed, invader.id, config.tacticalNodes, budget);
       budget.stats.tacticalStatus = rescue.status;
       if (rescue.status === 'proved') bestPlan = { id: 'home-rescue', actions: rescue.actions, score: 100000, tags: ['defensive'] };
     }
     // Combination kills and invasions are protected root candidates. The kernel
     // also serves ordinary combat, not just the emergency override.
-    if (!bestPlan && !budget.exhausted()) {
+    if (!bestPlan && observed.turn.phase === 'action' && !budget.exhausted()) {
       for (const target of observed.board.units.filter(u => u.owner === opponent)) {
         if (budget.exhausted()) break;
         const tactic = this.solver(observed, target.id, Math.min(config.tacticalNodes, 3000), budget);
@@ -176,8 +177,9 @@ export class AIEngineV2 {
         const next = applyActions(observed, raid.actions);
         if (next.winner === player) { bestPlan = { ...raid, score: 1000000 }; break; }
         // Test the defender's actual public bank and current position.
-        const reply = endTurn(next);
-        if (reply.phase === 'victory') continue; // opponent wins a home race first
+        const reply = passTurn(next);
+        if (reply.winner === player) { bestPlan = { ...raid, score: 1000000 }; break; }
+        if (reply.phase === 'victory') continue; // draw or opponent wins a home race first
         const mover = raid.actions[0];
         if (mover.type !== 'MOVE') continue;
         const defense = this.solver(reply, mover.unitId, Math.min(config.tacticalNodes, 20000), budget);
@@ -196,7 +198,7 @@ export class AIEngineV2 {
     if (!bestPlan && !budget.exhausted()) {
       candidates = reserveStrategies([...rootPlans, ...generator(observed, player)], config.outputPlans);
       // Check the final occupation in each root plan against the defender's
-      // entire reply, including affordable promotions. This also catches a raid
+      // entire Act reply (no pre-action promotions under Phasing). This also catches a raid
       // reached by a multi-step beam line, not only a direct home move.
       for (const plan of candidates) {
         if (budget.exhausted()) {
@@ -208,8 +210,11 @@ export class AIEngineV2 {
         const occupier = homeInvader(next, opponent);
         if (!occupier || next.phase === 'victory') continue;
         if (budget.exhausted()) { plan.score -= 100; continue; }
-        const reply = next.turn.currentPlayer === player ? endTurn(next) : next;
-        if (reply.phase === 'victory') { plan.score = -1000000; continue; }
+        const reply = next.turn.currentPlayer === player ? passTurn(next) : next;
+        if (reply.phase === 'victory') {
+          plan.score = reply.winner === player ? 1000000 : reply.winner ? -1000000 : 0;
+          continue;
+        }
         const answer = this.solver(reply, occupier.id, Math.min(config.tacticalNodes, 20000), budget);
         if (answer.status === 'disproved') plan.score += 5000;
         else if (answer.status === 'proved') plan.score -= 150;

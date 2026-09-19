@@ -39,3 +39,15 @@ function rotate(f: TacticalFixture): TacticalFixture {
   s.turn.currentPlayer = 'black';
   return { ...f, name: `${f.name} / rotated black`, state: s, witness: f.witness?.map(a => a.type === 'MOVE' ? {...a,to:{x:9-a.to.x,y:9-a.to.y}} : a.type === 'ATTACK' ? {...a,targetPosition:{x:9-a.targetPosition.x,y:9-a.targetPosition.y}} : a) };
 }
+
+/** Current Phasing proof suite. Keep the Standard fixtures above intact for
+ * historical consumers; cash and Prepare promotions cannot rescue in Act. */
+export function phasingTacticalFixtures(): TacticalFixture[] {
+  return tacticalFixtures().map(f => {
+    const state = structuredClone(f.state);
+    state.ruleset = 'phasing';
+    state.turn.phase = 'action';
+    return { ...f, state, name: `Phasing / ${f.name}`,
+      expected: f.state.turn.phase === 'place' ? 'disproved' : f.expected };
+  });
+}
