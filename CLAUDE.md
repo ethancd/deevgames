@@ -1,5 +1,14 @@
 # Claude Development Notes
 
+## Changing Muju end to end
+
+Follow [the Muju content and release DAG](muju/docs/CONTENT_DAG.md) for changes to
+pieces, rules, AI, MCP, site content or Academy. Start with
+`python3 tools/muju-content-dag.py plan --kind piece-stats` (or another documented
+kind), then review every affected node through verification and applicable
+deployment. Record changed, verified unchanged, or blocked with evidence.
+The browser site, Node/MCP host and Academy have separate release paths.
+
 ## Lessons Learned
 
 ### Context Compaction Pitfalls

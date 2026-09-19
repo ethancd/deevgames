@@ -18,6 +18,11 @@ LLM players. Humans and agents can share rooms across computers. See
 internet hosting, invitation links and agent configuration. The Node host runs
 separately from the static Cloudflare Pages release.
 
+For changes to Muju, follow the [content and release DAG](muju/docs/CONTENT_DAG.md).
+It maps rules and piece stats through the site, AI, MCP helpers, Academy videos,
+checks and all three deployment targets. Generate an affected work list with
+`python3 tools/muju-content-dag.py plan --kind piece-stats`.
+
 ## Build and publish the browser games
 
 Keep this checkout on current `master`, or start a feature branch from current
