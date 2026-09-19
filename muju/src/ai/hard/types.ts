@@ -71,14 +71,24 @@ export const NO_SLOT = 255;
 /** `sq` sentinel for a dead (reusable) slot. */
 export const DEAD = 255;
 /**
- * 1 keep-set + ≤4 buys + ≤8 promos + END_PLACE + ≤4 actions + END_ACTION = 19,
- * with headroom.
+ * The capacity of a generated `Turn`'s action buffer, and the hard ceiling the
+ * generator emits against.
  *
- * M2 note: under Phasing a BUY takes no slot, so the number of purchases in one
- * Prepare is bounded by the bank rather than by the board — a rich side can
- * exceed 24 half-actions in a turn. This constant is only read by `gen/**`,
- * which M2 leaves on Standard semantics (DESIGN M2 item H); raising it belongs
- * with the turn generator's own milestone, where the buffers it sizes live.
+ * WHAT A GENERATED TURN HOLDS (M4, Phasing). Act: ≤4 actions + END_ACTION.
+ * Upkeep: ≤1 PAY_UPKEEP. Prepare: the purchase plan's buys, ≤2 PROMOTEs
+ * (`gen/generate.ts runFortifyPairs` — one ordinary promotion, or a FORTIFY
+ * pair) and END_PLACE. `gen/purchase.ts PURCHASE_MAX_BODIES` caps a plan at
+ * FOUR buys, so the longest turn this generator can emit is
+ * `4 + 1 + 1 + 4 + 2 + 1 = 13` actions and 24 leaves ample headroom.
+ *
+ * THE FOUR-BUY CONTRACT IS THE GENERATOR'S, NOT THE RULES'. Under Phasing a BUY
+ * takes no board slot, so the RULES bound a Prepare's purchases only by the
+ * bank: a rich side may legally buy more bodies in one turn than any plan this
+ * generator writes, and `verify/replay.ts` accepts such a turn from anywhere
+ * else. What is bounded here is what `gen/**` PROPOSES. Raising
+ * `PURCHASE_MAX_BODIES` above 18 — not a number any profile is near — would be
+ * the first change that also has to move this constant. See
+ * `docs/hard-ai/phasing/M4-STATUS.md`.
  */
 export const MAX_TURN_ACTIONS = 24;
 

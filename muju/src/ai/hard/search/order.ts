@@ -7,7 +7,7 @@ import { keepForTurn } from '../gen/turn';
  * best first. The order is DESIGN §5.11.3's list, top to bottom:
  *
  *   1 the TT turn (`endLo === bestEndLo`)                     +2,000,000
- *   2 `HOME_RESCUE` +1,500,000; `HOME_RACE`/`HOME_ENTRY`      +1,200,000
+ *   2 `HOME_RESCUE` +1,500,000; `HOME_ENTRY`                  +1,200,000
  *   3 proven kills by value per action
  *   4 − `hangCc` (the SEE analogue)
  *   5 `SPAWN_DENY` +300,000 × anchorsVoided; `HOME_FORTIFY`  +250,000
@@ -399,7 +399,10 @@ export function scoreTurns(
     let score = 0;
     if (ttEnd >= 0 && (turn.endLo >>> 0) === (ttEnd >>> 0)) score += ORDER_TT;
     if ((turn.flags & TurnFlag.HOME_RESCUE) !== 0) score += ORDER_HOME_RESCUE;
-    if ((turn.flags & (TurnFlag.HOME_RACE | TurnFlag.HOME_ENTRY)) !== 0) score += ORDER_HOME_RACE;
+    // `HOME_ENTRY` only. Under Phasing a `HOME_RACE` turn enters nothing: it
+    // commits a body that arrives next turn and would still need four moves.
+    // It is scored as the ordinary purchase it is (see `gen/turn.ts`).
+    if ((turn.flags & TurnFlag.HOME_ENTRY) !== 0) score += ORDER_HOME_RACE;
     if (see.killValueCc > 0) {
       const perAction = see.killActions > 0 ? see.killActions : 1;
       score += ((see.killValueCc * 100) / perAction) | 0;

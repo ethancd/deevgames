@@ -15,13 +15,13 @@ import { buildState, type UnitSpec } from './game-fixture';
 import { Replica, allocState, newUndo } from '../../../src/ai/hard/core/state';
 import { Scratch } from '../../../src/ai/hard/core/bits';
 import { AKind, newKeepSetTable, paA, paB, paKind, type KeepSetTable } from '../../../src/ai/hard/core/action';
-import { DEF_INDEX } from '../../../src/ai/hard/core/catalog';
 import { CORNER } from '../../../src/ai/hard/core/tables';
 import { allocTables, buildTables, type NodeTables } from '../../../src/ai/hard/tables/context';
 import { Evaluator, terminalScore } from '../../../src/ai/hard/eval/evaluate';
 import { TurnFlag, TurnPool, keepForTurn, type Turn } from '../../../src/ai/hard/gen/turn';
 import { UNLIMITED_WORK } from '../../../src/ai/hard/gen/actionsearch';
 import {
+  HOME_RACE_EMIT,
   TurnGenerator,
   newGenStats,
   outCapacityFor,
@@ -174,36 +174,196 @@ describe('gen/generate.ts TurnGenerator.generate (DESIGN §5.6)', () => {
     for (let i = 1; i < beam.length; i++) expect(beam[i - 1].gainCc).toBeGreaterThanOrEqual(beam[i].gainCc);
   });
 
-  it('injects delayed home-race commitments as FORCED', () => {
-    // A White anchor on H9 can commit a Radi for a future corner arrival.
-    const { turns } = generate(
-      buildState({
-        units: [
-          { def: 'fire_1', owner: 'white', x: 7, y: 8, id: 'w-anchor' },
-          { def: 'plant_1', owner: 'black', x: 0, y: 9, id: 'b-far' },
-        ],
-        white: 12,
-        black: 6,
-        current: 'white',
-        phase: 'place',
-        turnNumber: 5,
-      }),
-    );
-    const race = turns.filter(t => (t.flags & TurnFlag.HOME_RACE) !== 0 && (t.flags & TurnFlag.FORCED) !== 0);
+  /** The fixture the home-race tests share: a White anchor on H9 opens a wide
+   * commitment rectangle, so `homeRaceAvailable` qualifies its whole capacity
+   * (24 lines) — the shape that used to flood the candidate list. */
+  function raceFixture(white = 12): GameState {
+    return buildState({
+      units: [
+        { def: 'fire_1', owner: 'white', x: 7, y: 8, id: 'w-anchor' },
+        { def: 'plant_1', owner: 'black', x: 0, y: 9, id: 'b-far' },
+      ],
+      white,
+      black: 6,
+      current: 'white',
+      phase: 'place',
+      turnNumber: 5,
+    });
+  }
+
+  it('emits a delayed home-race commitment as an ordinary purchase, never FORCED', () => {
+    const { turns } = generate(raceFixture());
+    const race = turns.filter(t => (t.flags & TurnFlag.HOME_RACE) !== 0);
     expect(race.length).toBeGreaterThan(0);
-    const radi = DEF_INDEX.get('lightning_1') as number;
+    // Under Phasing the BUY only creates a PENDING commitment: the body arrives
+    // at White's next turn start and only then needs four move-actions. It
+    // cannot decide anything this turn, so it competes in the beam like any
+    // other purchase instead of being injected ahead of it.
+    expect(race.every(t => (t.flags & TurnFlag.FORCED) === 0)).toBe(true);
+    expect(race.every(t => (t.flags & TurnFlag.PURCHASE) !== 0)).toBe(true);
+    // ... and it is a commitment, not an entry: no corner MOVE rides along.
     expect(
       race.some(t => {
         let buy = false;
         let enter = false;
         for (let i = 0; i < t.count; i++) {
           const a = t.actions[i];
-          if (paKind(a) === AKind.BUY && paA(a) === radi) buy = true;
+          if (paKind(a) === AKind.BUY) buy = true;
           if (paKind(a) === AKind.MOVE && paB(a) === CORNER[1]) enter = true;
         }
         return buy && !enter;
       }),
     ).toBe(true);
+  });
+
+  it('emits at most HOME_RACE_EMIT race commitments, the best squares first', () => {
+    // Purchase planning off (only the empty plan), so every HOME_RACE candidate
+    // in the list came from `expand`'s own race loop and the cap is visible.
+    const base = cfgWithK(DESKTOP.gen.K);
+    const cfg: GenConfig = {
+      ...base,
+      maxPlacePlans: 1,
+      purchase: { ...base.purchase, maxPlans: 1 },
+    };
+    const state = raceFixture();
+    const p = rep.pack(state, allocState());
+    p.proverMode = 2;
+    buildTables(p, sc, 0, 2, tables);
+    scoreMover = p.side as Side;
+    pool.reset();
+    const gen = new TurnGenerator(rep, cfg, pool, sc);
+    const out: Turn[] = new Array<Turn>(outCapacityFor(cfg));
+    const n = gen.generate(p, tables, score, UNLIMITED_WORK, 0, keep, out, newGenStats());
+    const race = out.slice(0, n).filter(t => (t.flags & TurnFlag.HOME_RACE) !== 0);
+    // `homeRaceAvailable` qualifies its full 24-line capacity here; the
+    // generator keeps only the two best squares.
+    expect(race.length).toBeGreaterThan(0);
+    expect(race.length).toBeLessThanOrEqual(HOME_RACE_EMIT);
+    // Best = shortest route into the enemy corner, then cheaper body, then
+    // lower square. H8 (77) and G9 (86) are the only two-move landings.
+    const squares = race.map(t => {
+      for (let i = 0; i < t.count; i++) if (paKind(t.actions[i]) === AKind.BUY) return paB(t.actions[i]);
+      return -1;
+    }).sort((a, b) => a - b);
+    expect(squares).toEqual([77, 86]);
+  });
+
+  /** Counts the Prepare actions a candidate carries. */
+  function prepareActions(t: Turn): { buys: number; promos: number } {
+    let buys = 0;
+    let promos = 0;
+    for (let i = 0; i < t.count; i++) {
+      const kind = paKind(t.actions[i]);
+      if (kind === AKind.BUY) buys++;
+      if (kind === AKind.PROMOTE) promos++;
+    }
+    return { buys, promos };
+  }
+
+  it('completes the disrupting turn through the ordinary Prepare path', () => {
+    // Black's anchor on F6 supports a commitment on H8. White's Radi stands
+    // OUTSIDE that rectangle (so the commitment is currently valid) and can
+    // step into it, voiding the commitment and refunding Black.
+    const state = buildState({
+      units: [
+        { def: 'fire_1', owner: 'white', x: 2, y: 2, id: 'w-anchor' },
+        { def: 'lightning_1', owner: 'white', x: 5, y: 4, id: 'w-runner' },
+        { def: 'plant_1', owner: 'black', x: 5, y: 5, id: 'b-anchor' },
+      ],
+      pendingSummons: [{ def: 'fire_1', owner: 'black', x: 7, y: 7, id: 'b-pend' }],
+      white: 12,
+      black: 4,
+      current: 'white',
+      phase: 'action',
+      turnNumber: 8,
+    });
+    // A generous K so the assertion is about what the generator OFFERS, not
+    // about which offers survive this position's beam cutoff.
+    const { p, turns } = generate(state, 200);
+    const disrupt = turns.filter(t => (t.flags & TurnFlag.DISRUPT) !== 0);
+    expect(disrupt.length).toBeGreaterThan(0);
+    // The bare completion is still injected, so the idea keeps its guaranteed
+    // place in the list ...
+    expect(disrupt.some(t => (t.flags & TurnFlag.FORCED) !== 0)).toBe(true);
+    // ... and the same Act prefix now also reaches real Prepare plans. Before
+    // this, a disrupting turn was `MOVE, END_ACTION, END_PLACE` and bought
+    // nothing: it spent an action to refund the enemy and did not use the
+    // tempo. Those plans are ORDINARY candidates — a forced Prepare plan is
+    // exempt from futility pruning and LMR at every node.
+    const withPrepare = disrupt.filter(t => {
+      const { buys, promos } = prepareActions(t);
+      return buys + promos > 0;
+    });
+    expect(withPrepare.length).toBeGreaterThan(0);
+    expect(withPrepare.some(t => (t.flags & TurnFlag.FORCED) === 0)).toBe(true);
+    expect(withPrepare.some(t => prepareActions(t).buys > 0)).toBe(true);
+    // Every one of them is still a turn the canonical replica accepts.
+    for (const t of disrupt) {
+      const end = replay(p, t);
+      expect(end.legal).toBe(true);
+      expect(end.ended).toBe(true);
+      expect([end.lo, end.hi]).toEqual([t.endLo, t.endHi]);
+    }
+  });
+
+  /** White holds Black's corner on J10 with a blocker on I10; Black's Mizu on
+   * J7 can still walk to J9 and answer, so the occupation is not yet mate and
+   * the Prepare phase is reached with the corner held. */
+  function fortifyFixture(units: UnitSpec[]): GameState {
+    return buildState({
+      units,
+      white: 30,
+      black: 4,
+      current: 'white',
+      phase: 'place',
+      actions: 0,
+      turnNumber: 9,
+    });
+  }
+
+  const FORTIFY_HOLD: UnitSpec[] = [
+    { def: 'fire_1', owner: 'white', x: 9, y: 9, id: 'w-occupier' },
+    { def: 'fire_1', owner: 'white', x: 8, y: 9, id: 'w-blocker' },
+    { def: 'water_1', owner: 'black', x: 9, y: 6, id: 'b-rescuer' },
+    { def: 'plant_1', owner: 'black', x: 2, y: 2, id: 'b-far' },
+  ];
+
+  it('fortifies with TWO promotions when an own unit holds the enemy corner', () => {
+    const { p, turns } = generate(fortifyFixture(FORTIFY_HOLD), 200);
+    const pairs = turns.filter(t => prepareActions(t).promos >= 2);
+    // A fortification mate can need BOTH the corner occupier and a rescue-path
+    // blocker promoted. One promotion index per place combo could not express
+    // that, so the mate was ungenerable however deep the search went.
+    expect(pairs.length).toBeGreaterThan(0);
+    for (const t of pairs) {
+      expect(t.flags & TurnFlag.HOME_FORTIFY).not.toBe(0);
+      expect(t.flags & TurnFlag.PROMOTION).not.toBe(0);
+      // A fortification is forced, exactly as the single-promotion one is.
+      expect(t.flags & TurnFlag.FORCED).not.toBe(0);
+      const end = replay(p, t);
+      expect(end.legal).toBe(true);
+      expect(end.ended).toBe(true);
+      expect([end.lo, end.hi]).toEqual([t.endLo, t.endHi]);
+    }
+    // The pair promotes the occupier together with the blocker, and never the
+    // same body twice.
+    const occupierAndBlocker = pairs.some(t => {
+      const slots = new Set<number>();
+      for (let i = 0; i < t.count; i++) if (paKind(t.actions[i]) === AKind.PROMOTE) slots.add(paA(t.actions[i]));
+      return slots.size === 2 && slots.has(p.pieceAt[CORNER[1]]);
+    });
+    expect(occupierAndBlocker).toBe(true);
+  });
+
+  it('pairs no promotions when no own unit holds the enemy corner', () => {
+    // The same army one square off the corner: nothing to fortify, so Prepare
+    // stays at one promotion per plan and the pairing never runs.
+    const off: UnitSpec[] = FORTIFY_HOLD.map(u =>
+      u.id === 'w-occupier' ? { ...u, x: 9, y: 8 } : u,
+    );
+    const { turns } = generate(fortifyFixture(off), 200);
+    expect(turns.length).toBeGreaterThan(0);
+    for (const t of turns) expect(prepareActions(t).promos).toBeLessThanOrEqual(1);
   });
 
   it('injects the home-corner entry an existing body can make', () => {

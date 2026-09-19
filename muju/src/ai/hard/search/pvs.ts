@@ -54,9 +54,14 @@ export type { SearchConfig, QuiesceConfig } from '../config';
 export const INF = 0x3fffffff;
 
 /** Flags that exempt a candidate from futility pruning and from LMR
- * (DESIGN §5.11.2, §5.11.5). */
+ * (DESIGN §5.11.2, §5.11.5).
+ *
+ * `HOME_RACE` is NOT among them under Phasing (see `gen/turn.ts
+ * TACTICAL_FLAGS`): a delayed commitment is an ordinary speculative purchase,
+ * and exempting every one of them from pruning AND from reduction spent the
+ * node's whole budget on lines that cannot decide anything this turn. */
 export const NO_PRUNE_FLAGS =
-  TurnFlag.KILL | TurnFlag.HOME_ENTRY | TurnFlag.HOME_RESCUE | TurnFlag.HOME_RACE | TurnFlag.FORCED;
+  TurnFlag.KILL | TurnFlag.HOME_ENTRY | TurnFlag.HOME_RESCUE | TurnFlag.FORCED;
 export const NO_REDUCE_FLAGS = NO_PRUNE_FLAGS | TurnFlag.SPAWN_DENY;
 
 export interface HardSearchStats {

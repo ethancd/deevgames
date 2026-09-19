@@ -19,7 +19,7 @@ import {
 import { bbHas, bbNext, type Scratch } from '../core/bits';
 import { BOARD, CORNER, RECT } from '../core/tables';
 import { type Catalog } from '../core/catalog';
-import { AKind, paMake, type KeepSetTable } from '../core/action';
+import { AKind, paA, paB, paMake, type KeepSetTable } from '../core/action';
 import { ACTIONS_PER_TURN, Replica, newUndo, type Undo } from '../core/state';
 import { moveCost } from '../core/movement';
 import { HOME_RACE_LINE_LEN, homeRaceAvailable } from '../tables/home';
@@ -180,6 +180,29 @@ const DEDUPE_SLOTS = 32768;
 export const REFERENCE_NODE_BUDGET = 120_000;
 /** Delayed home-race commitments use `[BUY, PA_NONE, PA_NONE]` triples. */
 const HOME_RACE_LINES = 24;
+/**
+ * How many race commitments `expand` emits as their own candidate.
+ *
+ * Under Standard a home race was a win-now line (BUY, END_PLACE, walk into the
+ * corner with the same turn's actions), so every qualifying (definition,
+ * square) was worth its own forced candidate. Under Phasing the BUY is a
+ * PENDING commitment that arrives at the owner's NEXT turn start and only then
+ * needs four move-actions — a speculation, not a threat. A forward anchor makes
+ * `homeRaceAvailable` qualify dozens of squares, and emitting each one ahead of
+ * DISRUPT, RETREAT and the ordinary beam crowded the candidate list out of the
+ * node's work budget. The two best squares stand for the idea; every other race
+ * commitment is still reachable as an ordinary purchase plan (`planFlags` tags
+ * it `HOME_RACE` and `buildCombos` keeps it, DESIGN F13).
+ */
+export const HOME_RACE_EMIT = 2;
+/**
+ * Fortification candidates `runFortifyPairs` will pair up, and how many pairs
+ * it emits. Pairing is quadratic, so both are bounded; the pairs that include
+ * the corner occupier are emitted first, because a fortification mate is made
+ * of the occupier plus a rescue-path blocker.
+ */
+export const FORTIFY_PAIR_POOL = 24;
+export const MAX_FORTIFY_PAIRS = 24;
 /** Working line buffer: the longest injection is buys + terminators + 4 actions. */
 const LINE_CAPACITY = MAX_TURN_ACTIONS;
 
@@ -198,11 +221,18 @@ interface PlaceCombo {
   purchase: number;
   /** Index into the promotion array, or -1. */
   promo: number;
+  /**
+   * A SECOND promotion index, or -1. Only a FORTIFY pair ever fills it (see
+   * `runFortifyPairs`): a fortification mate can need the corner occupier AND a
+   * rescue-path blocker promoted in the same Prepare, and one index per combo
+   * could not express that. Ordinary purchase/promotion combos leave it -1.
+   */
+  promo2: number;
   scoreCc: Centi;
 }
 
 function newPlaceCombo(): PlaceCombo {
-  return { purchase: 0, promo: -1, scoreCc: 0 };
+  return { purchase: 0, promo: -1, promo2: -1, scoreCc: 0 };
 }
 
 interface Ctx {
@@ -274,6 +304,12 @@ export class TurnGenerator {
   private readonly prefix = new Int32Array(LINE_CAPACITY);
   private readonly line = new Int32Array(LINE_CAPACITY);
   private readonly homeRace = new Int32Array(HOME_RACE_LINES * HOME_RACE_LINE_LEN);
+  /** The `HOME_RACE_EMIT` best race BUYs of the current `expand`, best first. */
+  private readonly racePick = new Int32Array(HOME_RACE_EMIT);
+  /** `racePick`'s sort keys: `[cornerCost, price, square]` per entry. */
+  private readonly raceKey = new Int32Array(HOME_RACE_EMIT * 3);
+  /** Promotion-array indices of the FORTIFY candidates `runFortifyPairs` pairs. */
+  private readonly fortifyIdx = new Int32Array(FORTIFY_PAIR_POOL);
   private readonly witnessLine = new Int32Array(LINE_CAPACITY);
   private readonly killPlan: KillPlan = newKillPlan();
   private readonly killOpts: KillOpts = {
@@ -490,10 +526,11 @@ export class TurnGenerator {
       let plans = includeBare ? 1 : 0;
       for (let i = 0; i < n; i++) if (this.promos[i].mission === Mission.FORTIFY) plans++;
       ctx.stats.placePlans += plans; ctx.meter.spend(WORK_CLASS_GEN, plans);
-      if (includeBare) this.runCombo(ctx, prefixLen, { purchase: 0, promo: -1, scoreCc: 0 }, -1);
+      if (includeBare) this.runCombo(ctx, prefixLen, { purchase: 0, promo: -1, promo2: -1, scoreCc: 0 }, -1);
       for (let i = 0; i < n; i++) if (this.promos[i].mission === Mission.FORTIFY) {
-        this.runCombo(ctx, prefixLen, { purchase: 0, promo: i, scoreCc: 0 }, -1);
+        this.runCombo(ctx, prefixLen, { purchase: 0, promo: i, promo2: -1, scoreCc: 0 }, -1);
       }
+      this.runFortifyPairs(ctx, prefixLen, n);
       return;
     }
     const purchaseCfg = ctx.reference ? this.referencePurchase : this.cfg.purchase;
@@ -501,12 +538,13 @@ export class TurnGenerator {
     const promoCount = planPromotions(p, t, this.cfg.maxPromotions, this.promos);
     for (let i = 0; i < promoCount; i++) {
       if (this.promos[i].mission === Mission.FORTIFY) {
-        this.runCombo(ctx, prefixLen, { purchase: 0, promo: i, scoreCc: 0 }, -1);
+        this.runCombo(ctx, prefixLen, { purchase: 0, promo: i, promo2: -1, scoreCc: 0 }, -1);
       }
     }
-    const races = homeRaceAvailable(p, t, p.side as Side, this.homeRace);
+    this.runFortifyPairs(ctx, prefixLen, promoCount);
+    const races = this.pickHomeRace(p, t, homeRaceAvailable(p, t, p.side as Side, this.homeRace));
     for (let i = 0; i < races; i++) {
-      const a = this.homeRace[i * HOME_RACE_LINE_LEN];
+      const a = this.racePick[i];
       if (a < 0 || !this.rep.isLegal(p, a)) continue;
       const top = this.undo.top;
       this.prefix[prefixLen] = a;
@@ -516,7 +554,9 @@ export class TurnGenerator {
         const end = paMake(AKind.END_PLACE);
         this.prefix[len++] = end; this.rep.make(p, end, this.undo); applied++;
       }
-      this.recordPrefixTerminal(ctx, len, TurnFlag.HOME_RACE | TurnFlag.PURCHASE | TurnFlag.FORCED);
+      // NOT `FORCED`: a Phasing race is an ordinary purchase candidate that
+      // competes on its within-turn score like any other (see `HOME_RACE_EMIT`).
+      this.recordPrefixTerminal(ctx, len, TurnFlag.HOME_RACE | TurnFlag.PURCHASE);
       while (applied--) this.rep.unmake(p, this.undo);
       this.undo.top = top;
     }
@@ -535,6 +575,58 @@ export class TurnGenerator {
   }
 
   /**
+   * Keeps the best `HOME_RACE_EMIT` of the `n` race commitments in
+   * `this.homeRace`, writing their BUY actions into `this.racePick` best first
+   * and returning how many.
+   *
+   * "Best" is the shortest projected route into the enemy corner, then the
+   * cheaper body, then the lower square — a total order on (cost, price,
+   * square), so the pick is a pure function of the position. The route uses
+   * `t.cornerDist`, the same distance row `gen/purchase.ts planFlags` uses to
+   * tag a plan `HOME_RACE`, so the direct emission and the purchase plans agree
+   * on which squares race.
+   */
+  private pickHomeRace(p: PackedState, t: NodeTables, n: number): number {
+    const cat = this.rep.cat;
+    const row = t.cornerDist[(1 - p.side) as Side];
+    let kept = 0;
+    for (let i = 0; i < n; i++) {
+      const a = this.homeRace[i * HOME_RACE_LINE_LEN];
+      if (a < 0) continue;
+      const def = paA(a), q = paB(a);
+      const cost = moveCost(row, q, cat.spd[def]);
+      // `homeRaceAvailable` measured the route over the PROJECTED next-Act
+      // board; a square this row calls unreachable is still a race commitment,
+      // it just sorts last.
+      const key0 = cost > 0 ? cost : ACTIONS_PER_TURN + 1;
+      const key1 = cat.cost[def];
+      let at = kept;
+      while (at > 0 && this.raceBefore(key0, key1, q, at - 1)) at--;
+      if (at >= HOME_RACE_EMIT) continue;
+      for (let j = Math.min(kept, HOME_RACE_EMIT - 1); j > at; j--) {
+        this.racePick[j] = this.racePick[j - 1];
+        this.raceKey[j * 3] = this.raceKey[(j - 1) * 3];
+        this.raceKey[j * 3 + 1] = this.raceKey[(j - 1) * 3 + 1];
+        this.raceKey[j * 3 + 2] = this.raceKey[(j - 1) * 3 + 2];
+      }
+      this.racePick[at] = a;
+      this.raceKey[at * 3] = key0;
+      this.raceKey[at * 3 + 1] = key1;
+      this.raceKey[at * 3 + 2] = q;
+      if (kept < HOME_RACE_EMIT) kept++;
+    }
+    return kept;
+  }
+
+  /** `(cost, price, square)` sorts strictly before the entry held at `at`. */
+  private raceBefore(cost: number, price: number, sq: number, at: number): boolean {
+    const b = at * 3;
+    if (cost !== this.raceKey[b]) return cost < this.raceKey[b];
+    if (price !== this.raceKey[b + 1]) return price < this.raceKey[b + 1];
+    return sq < this.raceKey[b + 2];
+  }
+
+  /**
    * `(purchase plan) × (promotion candidate)` pruned to `maxPlans` by combined
    * score, with the empty plan pinned first and every home-race buy appended
    * afterwards (DESIGN §5.5's last paragraph, F13).
@@ -546,6 +638,7 @@ export class TurnGenerator {
     const first = this.combos[0];
     first.purchase = 0;
     first.promo = -1;
+    first.promo2 = -1;
     first.scoreCc = 0;
     let n = 1;
     for (let i = 0; i < planCount; i++) {
@@ -568,6 +661,10 @@ export class TurnGenerator {
         const combo = this.combos[slot];
         combo.purchase = i;
         combo.promo = j;
+        // These records are pooled and reused; a stale FORTIFY pair index left
+        // behind by an earlier `runFortifyPairs` would promote a second body
+        // here by accident.
+        combo.promo2 = -1;
         combo.scoreCc = scoreCc;
       }
     }
@@ -581,6 +678,7 @@ export class TurnGenerator {
       const combo = this.combos[n++];
       combo.purchase = i;
       combo.promo = -1;
+      combo.promo2 = -1;
       combo.scoreCc = this.plans[i].scoreCc;
     }
     // Descending score over `[1, n)`; index 0 stays the empty plan.
@@ -596,11 +694,59 @@ export class TurnGenerator {
     return n;
   }
 
+  /**
+   * Emits every FORTIFY PAIR among the first `promoCount` promotion candidates
+   * while an own unit holds the enemy corner.
+   *
+   * Prepare may promote as many bodies as the bank pays for, but a `PlaceCombo`
+   * carries one promotion index — so a fortification mate that needs BOTH the
+   * corner occupier and a rescue-path blocker promoted could not be generated
+   * at all. Pairs are emitted only in the position where they can mate (an own
+   * occupier), and they are BOUNDED: the pairs that include the occupier come
+   * first, because those are the ones such a mate is made of, and the total is
+   * capped so a board full of promotable bodies cannot make this quadratic.
+   */
+  private runFortifyPairs(ctx: Ctx, prefixLen: number, promoCount: number): void {
+    const { p } = ctx;
+    const occupier = p.pieceAt[CORNER[1 - p.side]];
+    if (occupier === NO_SLOT || p.owner[occupier] !== p.side) return;
+    let fortifying = 0;
+    for (let i = 0; i < promoCount && fortifying < FORTIFY_PAIR_POOL; i++) {
+      if (this.promos[i].mission === Mission.FORTIFY) this.fortifyIdx[fortifying++] = i;
+    }
+    if (fortifying < 2) return;
+    let emitted = 0;
+    // Pass 1: the occupier with every other fortification.
+    for (let a = 0; a < fortifying && emitted < MAX_FORTIFY_PAIRS; a++) {
+      if (this.promos[this.fortifyIdx[a]].slot !== occupier) continue;
+      for (let b = 0; b < fortifying && emitted < MAX_FORTIFY_PAIRS; b++) {
+        if (b === a) continue;
+        this.runCombo(ctx, prefixLen, { purchase: 0, promo: this.fortifyIdx[a], promo2: this.fortifyIdx[b], scoreCc: 0 }, -1);
+        emitted++;
+        if (ctx.meter.exhausted() || this.pool.free === 0) return;
+      }
+    }
+    // Pass 2: the remaining pairs, in candidate order (which `planPromotions`
+    // already sorted by score, then square).
+    for (let a = 0; a < fortifying && emitted < MAX_FORTIFY_PAIRS; a++) {
+      if (this.promos[this.fortifyIdx[a]].slot === occupier) continue;
+      for (let b = a + 1; b < fortifying && emitted < MAX_FORTIFY_PAIRS; b++) {
+        if (this.promos[this.fortifyIdx[b]].slot === occupier) continue;
+        this.runCombo(ctx, prefixLen, { purchase: 0, promo: this.fortifyIdx[a], promo2: this.fortifyIdx[b], scoreCc: 0 }, -1);
+        emitted++;
+        if (ctx.meter.exhausted() || this.pool.free === 0) return;
+      }
+    }
+    ctx.stats.placePlans += emitted;
+    ctx.meter.spend(WORK_CLASS_GEN, emitted);
+  }
+
   /** Applies one Prepare plan through handoff, then restores its Act endpoint. */
   private runCombo(ctx: Ctx, prefixLen: number, combo: PlaceCombo, _placeIndex: number): void {
     const { p } = ctx;
     const plan = this.plans[combo.purchase];
-    if (prefixLen + plan.count + (combo.promo >= 0 ? 1 : 0) + 1 > MAX_TURN_ACTIONS) return;
+    const promos = (combo.promo >= 0 ? 1 : 0) + (combo.promo2 >= 0 ? 1 : 0);
+    if (prefixLen + plan.count + promos + 1 > MAX_TURN_ACTIONS) return;
     const top = this.undo.top;
     let applied = 0;
     let len = prefixLen;
@@ -615,8 +761,12 @@ export class TurnGenerator {
         applied++;
       }
     }
-    if (ok && p.result === Result.ONGOING && combo.promo >= 0) {
-      const a = paMake(AKind.PROMOTE, this.promos[combo.promo].slot, 0, 0);
+    for (let k = 0; k < 2 && ok && p.result === Result.ONGOING; k++) {
+      const index = k === 0 ? combo.promo : combo.promo2;
+      if (index < 0) continue;
+      const a = paMake(AKind.PROMOTE, this.promos[index].slot, 0, 0);
+      // An unaffordable or already-promoted second body simply fails here; the
+      // pair is dropped rather than emitted short.
       if (!this.rep.isLegal(p, a)) ok = false;
       else {
         this.prefix[len++] = a;
@@ -635,8 +785,9 @@ export class TurnGenerator {
     }
 
     if (ok) {
-      const fortify = combo.promo >= 0 && this.promos[combo.promo].mission === Mission.FORTIFY;
-      this.recordPrefixTerminal(ctx, len, plan.flags | (combo.promo >= 0 ? TurnFlag.PROMOTION : 0)
+      const fortify = (combo.promo >= 0 && this.promos[combo.promo].mission === Mission.FORTIFY)
+        || (combo.promo2 >= 0 && this.promos[combo.promo2].mission === Mission.FORTIFY);
+      this.recordPrefixTerminal(ctx, len, plan.flags | (promos > 0 ? TurnFlag.PROMOTION : 0)
         | (fortify ? TurnFlag.HOME_FORTIFY | TurnFlag.FORCED : 0));
       ctx.meter.spend(2, 1);
     }
@@ -874,8 +1025,10 @@ export class TurnGenerator {
       tr.promoRank = promoRank;
       tr.promoScoreCc = promoRank >= 0 ? this.promos[promoRank].scoreCc : 0;
     }
-    // Two or more promotions are unrepresentable by construction (one `promo`
-    // index per combo); `trace.ts firstRemovingStage` reports that explicitly.
+    // The trace resolves a ONE-promotion target. A two-promotion target is now
+    // generable (`runFortifyPairs`, FORTIFY pairs only) but is not ranked here,
+    // and three or more remain unrepresentable by construction;
+    // `trace.ts firstRemovingStage` reports both cases explicitly.
     const wantPromo = tr.targetPromoCount === 0 ? -1 : promoRank;
     if (planRank < 0 || (tr.targetPromoCount === 1 && promoRank < 0) || tr.targetPromoCount >= 2) return;
     for (let i = 0; i < comboCount; i++) {
@@ -1145,15 +1298,30 @@ export class TurnGenerator {
         }
       }
     }
-    if (best >= 0) { this.line[0] = best; this.injectLine(ctx, 1, TurnFlag.DISRUPT); }
+    // A disruption is only worth playing when the turn it belongs to also does
+    // something with its Prepare: the refund it forces on the enemy is cash,
+    // and a turn that answers it by buying nothing has spent an action for
+    // tempo alone. `fullPrepare` gives this prefix the ORDINARY purchase and
+    // promotion planning instead of the bare completion every other injection
+    // gets; see `injectLine`.
+    if (best >= 0) { this.line[0] = best; this.injectLine(ctx, 1, TurnFlag.DISRUPT, true); }
   }
 
   /**
    * Replay a forced Act prefix, then use the same upkeep/Prepare path as the
    * beam. Only its first ranked keep choice gets the bare forced completion;
    * all considered keep choices can contribute eligible HOME_FORTIFY suffixes.
+   *
+   * `fullPrepare` completes the same prefix a SECOND time through the ORDINARY
+   * Prepare path (`forcedOnly = false`): purchase plans, promotions and race
+   * commitments, exactly as a beam line gets them. Those candidates are NOT
+   * forced — a forced Prepare plan is exempt from futility pruning and from LMR
+   * at every node (`search/pvs.ts NO_PRUNE_FLAGS`), and a dozen unprunable
+   * speculative buys per node is the defect the home-race loop was just cured
+   * of. The bare completion stays forced, so the IDEA keeps its guaranteed
+   * place in the list; what the turn buys alongside it competes on its merits.
    */
-  private injectLine(ctx: Ctx, len: number, flags: number): void {
+  private injectLine(ctx: Ctx, len: number, flags: number, fullPrepare = false): void {
     const p = ctx.p;
     const side = p.side, top = this.undo.top, oldTables = ctx.t, oldFlags = ctx.flags;
     const oldMask = this.currentKeepMask;
@@ -1169,7 +1337,17 @@ export class TurnGenerator {
     if (ok && !done() && p.phase === 1) ok = apply(paMake(AKind.END_ACTION));
     if (ok) {
       if (done()) this.recordPrefixTerminal(ctx, written, 0);
-      else this.completePrepare(ctx, written, true);
+      else {
+        this.completePrepare(ctx, written, true);
+        if (fullPrepare && !ctx.meter.exhausted() && this.pool.free > 0) {
+          // The same Act endpoint, the same upkeep choices, ordinary Prepare.
+          // `ctx.t` is restored to what the first completion was handed, so the
+          // second one sees exactly the state the first did.
+          ctx.t = oldTables;
+          ctx.flags = flags;
+          this.completePrepare(ctx, written, false);
+        }
+      }
     }
     while (applied--) this.rep.unmake(p, this.undo);
     this.undo.top = top; ctx.t = oldTables; ctx.flags = oldFlags;

@@ -2,27 +2,32 @@
  * The root: the must-answer layer, the book probe, and the canonical replay
  * (DESIGN §4.16 `root.ts`, §5.10, §1 step 4).
  *
- * Before a single node of iterative deepening is spent, the root asks the four
+ * Before a single node of iterative deepening is spent, the root asks the
  * questions a search that merely "scores well" can get wrong, in DESIGN
  * §5.10's order, and returns the moment one of them is PROVEN by the canonical
  * engine:
  *
- *   1 HOME RACE commitments are forced delayed intent. A BUY remains pending
- *     through the handoff; it is never a fresh live attacker. Existing units
- *     can enter the corner during Act, and Prepare promotions can fortify an
- *     existing occupation. Every claimed terminal still requires canonical
- *     replay before the root returns it as proven.
- *   2 ELIMINATION-IN-1 — a lethal attack on the last enemy body.
- *   3 HOME RESCUE — when the enemy stands on my corner, the prover's own
+ *   1 ELIMINATION-IN-1 — a lethal attack on the last enemy body.
+ *   2 HOME RESCUE — when the enemy stands on my corner, the prover's own
  *     witness line. `tactics/prover.ts homeWitness` supplies it and DESIGN §2's
  *     layering keeps `gen` from calling `tactics` directly, so the root wires
  *     it in through `TurnGenerator.setRescueWitness` (`installRescueWitness`
  *     below) and the ordering's `HOME_RESCUE +1,500,000` puts it first.
- *   4 HOME MATE-IN-1 — a corner entry by a body that already exists.
+ *   3 HOME MATE-IN-1 — a corner entry by a body that already exists.
  *
- * 1, 2 and 4 all reduce to the same test — "does applying this candidate end
- * the game in the mover's favour, and does the CANONICAL engine agree?" — so
- * they are one scan in flag order rather than four separate enumerations.
+ * 1 and 3 reduce to the same test — "does applying this candidate end the game
+ * in the mover's favour, and does the CANONICAL engine agree?" — so they are
+ * one scan in flag order rather than two separate enumerations. Every claimed
+ * terminal still requires canonical replay before the root returns it as proven.
+ *
+ * DESIGN §5.10's LEADING HOME RACE PASS is not in that list under Phasing. A
+ * race BUY is forced delayed INTENT: the commitment stays pending through the
+ * handoff and is never a fresh live attacker, so no `HOME_RACE` candidate can
+ * decide the game on the turn that carries it, and scanning them first only
+ * paid a `PROVER_FULL` `makeTurn` each for candidates that cannot answer. They
+ * are scanned in the trailing catch-all pass like anything else. Existing units
+ * can still enter the corner during Act, and Prepare promotions can still
+ * fortify an existing occupation.
  *
  * "Does the canonical engine agree" is TWO questions, and the second one is
  * easy to miss: `Kpos` carries the board, the banks, the side, the reserves and
@@ -196,11 +201,19 @@ function mustAnswer(
   const mover = p.side as Side;
   const turns = s.turns[0];
   const keep = s.keep[0];
-  // Flag masks in §5.10's order: home race, then elimination (a kill that ends
-  // the game), then a corner entry by an existing body. A candidate carrying
-  // none of them can still be a terminal — the last enemy body dying to a
-  // Cleave chain, say — so the final pass considers everything.
-  const passes = [TurnFlag.HOME_RACE, TurnFlag.KILL, TurnFlag.HOME_ENTRY, 0];
+  // Flag masks in §5.10's order: elimination (a kill that ends the game), then
+  // a corner entry by an existing body. A candidate carrying none of them can
+  // still be a terminal — the last enemy body dying to a Cleave chain, say — so
+  // the final pass considers everything.
+  //
+  // §5.10's leading HOME_RACE pass is gone under Phasing. It was written for
+  // the Standard race, where BUY, END_PLACE and the same turn's move-actions
+  // could end the game inside one turn; a Phasing race BUY only creates a
+  // pending commitment, so no HOME_RACE candidate can ever decide the game on
+  // the turn that carries it and scanning them first only paid `PROVER_FULL`
+  // `makeTurn`s for candidates that cannot answer. Races are still scanned, in
+  // the trailing catch-all pass, exactly like any other candidate.
+  const passes = [TurnFlag.KILL, TurnFlag.HOME_ENTRY, 0];
   const seen = new Uint8Array(n);
   for (let pass = 0; pass < passes.length; pass++) {
     const mask = passes[pass];

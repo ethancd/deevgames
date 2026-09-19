@@ -37,10 +37,18 @@ export const TurnFlag = {
 } as const;
 export type TurnFlag = (typeof TurnFlag)[keyof typeof TurnFlag];
 
-/** The tactical flags `search/quiesce.ts isTacticalTurn` (M14) keys on; a turn
- * carrying none of them is `QUIET`. */
+/**
+ * The tactical flags `search/quiesce.ts isTacticalTurn` (M14) keys on; a turn
+ * carrying none of them is `QUIET`.
+ *
+ * `HOME_RACE` is NOT among them under Phasing. A race BUY is a pending
+ * commitment that arrives at the owner's next turn start; nothing about the
+ * position changes within the horizon quiescence is asked to settle, so
+ * searching it there only widens the quiescence tree. The flag survives for
+ * ordering and telemetry.
+ */
 export const TACTICAL_FLAGS =
-  TurnFlag.KILL | TurnFlag.CLEAVE_CHAIN | TurnFlag.HOME_ENTRY | TurnFlag.HOME_RESCUE | TurnFlag.HOME_RACE | TurnFlag.HOME_FORTIFY;
+  TurnFlag.KILL | TurnFlag.CLEAVE_CHAIN | TurnFlag.HOME_ENTRY | TurnFlag.HOME_RESCUE | TurnFlag.HOME_FORTIFY;
 
 export interface Turn {
   /** Packed `PA`s, capacity `MAX_TURN_ACTIONS`; owned by the pool. */

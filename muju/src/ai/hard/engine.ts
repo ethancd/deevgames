@@ -183,8 +183,13 @@ export const CALIBRATE_MS = 40;
  * turn's real search (`searchTurn`). `WORK_LADDER[0]` — the smallest rung the
  * ladder has, and the one `chooseWork` clamps every budget up to — so the
  * measurement costs the turn as little as a measurement can while still
- * clearing A16's `MIN_PROFILE_SAMPLE_WORK` floor of half a rung, which a
- * smaller budget could not do by construction.
+ * funding a search long enough to be a sample of this box.
+ *
+ * It does NOT guarantee that the probe SPENDS half a rung: iterative deepening
+ * stops before a depth it cannot fit, so the spend is bounded below only by the
+ * last completed depth. `searchTurn`'s probe guard therefore reads the stop
+ * reason rather than relying on the budget to clear A16's work floor; the note
+ * there has the measurement.
  */
 export const COLD_PROBE_WORK = WORK_LADDER[0];
 
@@ -585,7 +590,28 @@ export class HardEngine {
         // A16's floors, applied to the probe exactly as they are applied to a
         // search: a probe that finished the position before it spent the rung
         // measured the position, not the box, and updates nothing.
-        if (calibratedMs >= MIN_PROFILE_SAMPLE_MS && probe.work >= MIN_PROFILE_SAMPLE_WORK) {
+        //
+        // The work floor is a PROXY for that sentence, and on the probe it is
+        // the wrong one. `COLD_PROBE_WORK` is a whole rung and the floor is
+        // half of it, so the header above claims the probe clears the floor
+        // "by construction" — but iterative deepening stops a probe whose next
+        // depth will not fit what is LEFT of the rung (`shouldDeepen`, and
+        // `iterFitVerdict` under E4.3), so the spend lands anywhere above the
+        // last completed depth's cost. A probe that stopped because its BUDGET
+        // ran out, at whatever fraction of the rung the depth boundary fell,
+        // searched for its whole interval and measured this box; only
+        // `stopReason === 'complete'` means it ran out of POSITION instead.
+        // So the probe asks the stop reason directly and keeps the work floor
+        // as an alternative sufficient condition: this admits samples the
+        // floor alone refused and refuses none it accepted.
+        //
+        // Measured on `tests/ai/hard/calibrate-cold.test.ts`'s MIDGAME root:
+        // the probe completes depth 1 for 12,485 of its 25,000 units and stops
+        // because depth 2 will not fit — 15 units under a floor it can only
+        // clear by luck, after ~600 ms of real search. The millisecond floor
+        // still guards the fixed-cost case the A16 header describes.
+        const measuredTheBox = probe.work >= MIN_PROFILE_SAMPLE_WORK || probe.stats.stopReason === 'work';
+        if (calibratedMs >= MIN_PROFILE_SAMPLE_MS && measuredTheBox) {
           // `samples === 0`, so `updateProfile` REPLACES rather than blends.
           this.config.profile = updateProfile(this.config.profile, probe.work, calibratedMs);
           calibratedUnitsPerMs = this.config.profile.unitsPerMs;

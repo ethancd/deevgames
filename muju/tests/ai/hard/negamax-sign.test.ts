@@ -95,7 +95,7 @@ describe('the turn boundary is the only sign flip', () => {
     expect(black).toBeLessThan(0);
   }, 60_000); // explicit per-test budget; see the E0.5 timeout note at the top of this file
 
-  it('a one-ply search prefers a kill to a quiet move', () => {
+  it('a shallow search prefers a kill to a quiet move, and a deep one finds the win', () => {
     const state = buildState({
       current: 'white',
       phase: 'action',
@@ -107,10 +107,23 @@ describe('the turn boundary is the only sign flip', () => {
       ],
     });
     const prepared = prepare(state, 800_000);
-    const result = iterativeDeepening(prepared.ctx, prepared.p);
+    const byDepth: { depth: number; scoreCc: number; flags: number }[] = [];
+    const result = iterativeDeepening(prepared.ctx, prepared.p, r => {
+      byDepth.push({ depth: r.depth, scoreCc: r.scoreCc, flags: (r.best as { flags: number } | null)?.flags ?? 0 });
+    });
     expect(result.best).not.toBeNull();
-    // The chosen turn takes material: its flags say so, and the score is above
-    // the quiet baseline.
-    expect((result.best as { flags: number }).flags & TurnFlag.KILL).not.toBe(0);
+    // Every iteration that cannot yet see the mate takes material: its flags say
+    // so, and nothing quiet outscores it.
+    const shallow = byDepth.filter(r => r.scoreCc <= MATE_BOUND_CC);
+    expect(shallow.length).toBeGreaterThan(0);
+    for (const r of shallow) expect(r.flags & TurnFlag.KILL).not.toBe(0);
+    // ... and the iteration that CAN see it returns a proven win instead, which
+    // is why the completed search is allowed to leave the material on the board.
+    // Depth 5 is where the win appears; the shipped M4 search reached it only at
+    // 1,600,000 work, twice this budget, because the Standard-era HOME_RACE
+    // privileges (FORCED, tactical, no-prune, top ordering) crowded the
+    // candidate list. See `gen/turn.ts TACTICAL_FLAGS`.
+    expect(result.depth).toBeGreaterThanOrEqual(5);
+    expect(result.scoreCc).toBeGreaterThan(MATE_BOUND_CC);
   }, 60_000); // explicit per-test budget; see the E0.5 timeout note at the top of this file
 });

@@ -32,9 +32,9 @@ function turnWith(flags: number): Turn {
 }
 
 describe('isTacticalTurn', () => {
-  it('is exactly F24\'s five flags', () => {
+  it('is exactly F24\'s list less HOME_RACE, which Phasing delays', () => {
     const p = {} as never;
-    for (const flag of [TurnFlag.KILL, TurnFlag.HOME_ENTRY, TurnFlag.HOME_RESCUE, TurnFlag.HOME_RACE, TurnFlag.HOME_FORTIFY]) {
+    for (const flag of [TurnFlag.KILL, TurnFlag.HOME_ENTRY, TurnFlag.HOME_RESCUE, TurnFlag.HOME_FORTIFY]) {
       expect(isTacticalTurn(p, turnWith(flag))).toBe(true);
     }
     // F24 keeps anchor voiding OUT of quiescence: `SPAWN_DENY` is an ordering
@@ -45,6 +45,11 @@ describe('isTacticalTurn', () => {
     // `CLEAVE_CHAIN` is in `TACTICAL_FLAGS` because a Cleave chain IS a kill.
     expect(isTacticalTurn(p, turnWith(TurnFlag.CLEAVE_CHAIN))).toBe(true);
     expect(TACTICAL_FLAGS & TurnFlag.SPAWN_DENY).toBe(0);
+    // Under Phasing a home race is a BUY whose body arrives NEXT turn and only
+    // then needs four move-actions. It changes nothing inside the horizon
+    // quiescence settles, so it is not a reason to extend either.
+    expect(isTacticalTurn(p, turnWith(TurnFlag.HOME_RACE))).toBe(false);
+    expect(TACTICAL_FLAGS & TurnFlag.HOME_RACE).toBe(0);
   });
 });
 

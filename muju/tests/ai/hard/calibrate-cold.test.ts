@@ -117,6 +117,41 @@ describe('time.calibrateCold, on (hard@ablate:calib)', () => {
     expect(COLD_PROBE_WORK).toBeGreaterThanOrEqual(MIN_PROFILE_SAMPLE_WORK);
   });
 
+  /**
+   * REGRESSION. The budget clearing the floor is not the same thing as the
+   * PROBE clearing it: iterative deepening stops before a depth that will not
+   * fit what is left of the rung, so the spend lands on a depth boundary
+   * somewhere above the last completed depth. On this fixture the probe
+   * completes depth 1 for just under half the rung and stops because depth 2
+   * does not fit — `stopReason: 'work'`, not `'complete'`. That probe searched
+   * for its whole interval and measured this box, and the engine must adopt
+   * it; a work floor it can only clear by luck must not be what decides.
+   *
+   * This is the case a search-efficiency gain walks into: make the engine
+   * cheaper per depth and the same probe lands further under the floor, so the
+   * better engine is the one that measures nothing.
+   */
+  it('adopts a probe the work budget stopped, even below A16s work floor', async () => {
+    const engine = new HardEngine(calibArm());
+    // The probe run on its own, at exactly the budget `searchTurn` gives it.
+    const probe = await new HardEngine(calibArm()).searchTurn(MIDGAME, { work: COLD_PROBE_WORK });
+    // The precondition this test exists for. If a future engine spends the
+    // whole rung here the assertion below is merely redundant, not wrong —
+    // but the stop reason must never be 'complete', or the fixture has stopped
+    // being a position the probe cannot finish.
+    expect(probe.stats.stopReason).not.toBe('complete');
+    expect(probe.work).toBeLessThan(MIN_PROFILE_SAMPLE_WORK);
+
+    const result = await engine.searchTurn(MIDGAME, { targetMs: 3000, deadlineMs: 3000 });
+
+    // `calibratedUnitsPerMs` is written ONLY on the branch that adopts the
+    // probe's sample, so a non-zero value is the adoption itself and not the
+    // main search's own later sample.
+    expect(result.stats.calibratedUnitsPerMs).toBeGreaterThan(0);
+    expect(Number.isFinite(result.stats.calibratedUnitsPerMs)).toBe(true);
+    expect(engine.profile.samples).toBeGreaterThanOrEqual(1);
+  });
+
   it('measures the box with a real search and sizes the rung from that measurement', async () => {
     const engine = new HardEngine(calibArm());
     const calibrate = vi.spyOn(engine, 'calibrate');

@@ -817,9 +817,11 @@ describe('DESIGN §4 declaration tests', () => {
     ]).toEqual([1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192]);
     expect(TACTICAL_FLAGS).toBe(
       TurnFlag.KILL | TurnFlag.CLEAVE_CHAIN | TurnFlag.HOME_ENTRY | TurnFlag.HOME_RESCUE |
-        TurnFlag.HOME_RACE | TurnFlag.HOME_FORTIFY,
+        TurnFlag.HOME_FORTIFY,
     );
     expect(TACTICAL_FLAGS & TurnFlag.DISRUPT).toBe(0); // Refunds are not captures.
+    // A Phasing home race is a delayed commitment, not a tactic (gen/turn.ts).
+    expect(TACTICAL_FLAGS & TurnFlag.HOME_RACE).toBe(0);
   });
 
   it('every §4.13 gen/purchase.ts, gen/promote.ts, gen/upkeep.ts, gen/generate.ts signature is exported with the frozen shape (M13)', () => {

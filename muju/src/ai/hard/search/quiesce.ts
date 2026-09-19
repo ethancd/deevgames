@@ -3,9 +3,10 @@
  *
  * At depth 0 the position is still allowed to be in the middle of a fight, so
  * the search keeps going — but only through turns that CHANGE the fight:
- * `KILL | HOME_ENTRY | HOME_RESCUE | HOME_RACE | HOME_FORTIFY` (F24 keeps
+ * `KILL | CLEAVE_CHAIN | HOME_ENTRY | HOME_RESCUE | HOME_FORTIFY` (F24 keeps
  * "voids or restores an anchor" out; an anchor void is an ordering bonus, not
- * a reason to extend). Stand-pat makes it safe to let income keep accruing
+ * a reason to extend, and Phasing takes `HOME_RACE` out for the same reason —
+ * see `gen/turn.ts TACTICAL_FLAGS`). Stand-pat makes it safe to let income keep accruing
  * inside the search (JS §4.2 shows the alternative — freezing the economy
  * features — is internally inconsistent).
  *
@@ -50,7 +51,8 @@ export type { QuiesceConfig } from '../config';
 export const QUIESCE_SHARE_NUM = 34;
 export const QUIESCE_SHARE_DEN = 100;
 
-/** DESIGN §4.16: `KILL | HOME_ENTRY | HOME_RESCUE | HOME_RACE | HOME_FORTIFY`.
+/** `gen/turn.ts TACTICAL_FLAGS`: DESIGN §4.16's list, less `HOME_RACE` under
+ * Phasing and plus `CLEAVE_CHAIN`.
  * `p` is accepted for the signature DESIGN prints; the classification is a pure
  * function of the flags `gen/actionsearch.ts` already recorded for the turn. */
 export function isTacticalTurn(p: PackedState, t: Turn): boolean {
