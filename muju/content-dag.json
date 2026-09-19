@@ -97,7 +97,7 @@
     },
     {
       "id": "browser-ui", "title": "Browser controls, instructions and visual representations", "depends_on": ["transitions"],
-      "paths": ["muju/src/components/", "muju/src/App.tsx", "muju/src/main.tsx", "muju/src/hooks/useAI.ts", "muju/src/index.css", "muju/src/utils/colors.ts", "muju/src/sound/", "muju/src/music/", "muju/public/music/", "muju/index.html", "muju/public/previews/"],
+      "paths": ["muju/src/components/", "muju/src/App.tsx", "muju/src/main.tsx", "muju/src/hooks/useAI.ts", "muju/src/index.css", "muju/src/utils/colors.ts", "muju/src/utils/positionReport.ts", "muju/src/utils/compactReport.ts", "muju/src/sound/", "muju/src/music/", "muju/public/music/", "muju/index.html", "muju/public/previews/"],
       "update": ["Inspect UnitShop, UnitInfo, InstructionsModal, VisualKey, AnalysisScreen, MapPainter, action/reach previews and unit artwork for copied facts or numeric assumptions. Reuse canonical data where possible. Regenerate affected previews."],
       "verify": ["Inspect desktop and phone play: instructions, stat cards, legal highlights, purchase/promotion, turn endings and analysis. Ensure the AI worker still runs."]
     },

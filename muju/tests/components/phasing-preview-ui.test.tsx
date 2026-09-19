@@ -1,3 +1,4 @@
+import { parseCompactReport } from '../../src/utils/compactReport';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { PHASING_AI_QUERY_PARAM, PHASING_AI_STORAGE_KEY, PHASING_PREVIEW_BADGE } from '../../src/ai/phasingPreview';
@@ -165,10 +166,21 @@ it('copies a replayable report, with the note, in preview mode', async () => {
   render(<GameScreen config={phasingConfig()} onBackToMenu={() => {}} />);
   await waitForAITurnToFinish();
   openMenu();
+  // A plain click copies the compact text report, which parses back to the position.
   fireEvent.click(screen.getByRole('button', { name: 'Report this position' }));
   await waitFor(() => expect(writeText).toHaveBeenCalled());
+  const compact = writeText.mock.calls[0][0] as string, parsed = parseCompactReport(compact);
+  expect(compact).toMatch(/^muju\/2 phasing muju-phasing-2 \| easy quick v2 \| T\d+ black action /);
+  expect(compact).toContain('note the summon looked pointless');
+  expect(compact).toContain('last end; end');
+  expect(parsed.state.turn.currentPlayer).toBe('black');
+  expect(parsed.state.board.units.length).toBeGreaterThan(0);
 
-  const report = JSON.parse(writeText.mock.calls[0][0] as string);
+  // Shift-click keeps the full JSON for anything that needs the exact ids.
+  fireEvent.click(screen.getByRole('button', { name: 'Report this position' }), { shiftKey: true });
+  await waitFor(() => expect(writeText).toHaveBeenCalledTimes(2));
+  expect(compact.length * 20).toBeLessThan((writeText.mock.calls[1][0] as string).length);
+  const report = JSON.parse(writeText.mock.calls[1][0] as string);
   expect(report.kind).toBe('muju-phasing-preview-report');
   expect(report.rulesRevision).toBe('muju-phasing-2');
   expect(report.ruleset).toBe('phasing');

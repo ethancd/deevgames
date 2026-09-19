@@ -23,8 +23,9 @@ import { AIThinkingTimer, AI_TIMER_MIN_BUDGET_MS } from './AIThinkingTimer';
 import { formatTurnSeconds, DEFAULT_AI_PACE } from '../ai/turnTime';
 import { readPhasingAiPreview } from '../ai/phasingPreview';
 import { resolveHardAiRoute } from '../ai/hardOptIn';
-import { copyToClipboard, formatPositionReport } from '../utils/positionReport';
-import { saveAIPace } from '../utils/persistence';
+import { copyToClipboard, formatPositionReport, type PositionReportInput } from '../utils/positionReport';
+import { formatCompactReport } from '../utils/compactReport';
+import { saveAIPace, loadGameHistory } from '../utils/persistence';
 import { PassDeviceOverlay } from './PassDeviceOverlay';
 import { InstructionsModal } from './InstructionsModal';
 import { getUnitAt, getUnitById, getCell, isOccupied, isValidPosition } from '../game/board';
@@ -289,7 +290,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
    * ever rendered (`src/utils/positionReport.ts`).
    */
   const [reportStatus, setReportStatus] = useState<string | null>(null);
-  const handleReportPosition = useCallback(async () => {
+  const handleReportPosition = useCallback(async (fullJson = false) => {
     // The AI seat that just moved: the side the mover is waiting on, or, in a
     // watched AI-vs-AI game where both are engines, the current mover.
     const opponent: PlayerId = state.turn.currentPlayer === 'white' ? 'black' : 'white';
@@ -304,13 +305,16 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
     const note = window.prompt('Report this position — what looked wrong? (one line, optional)');
     if (note === null) return; // cancelled
     const seat = side === 'white' ? whiteAI : side === 'black' ? blackAI : null;
-    const report = formatPositionReport({ state, difficulty, engine,
+    const input: PositionReportInput = { state, difficulty, engine,
       pace: (side && config.aiPace?.[side]) || DEFAULT_AI_PACE,
-      lastTurnActions: seat?.lastTurnActions ?? [], note: note.trim() || null });
+      lastTurnActions: seat?.lastTurnActions ?? [], note: note.trim() || null };
+    // Compact by default: it is pasted into a chat, where the ~35 kB JSON costs
+    // two orders of magnitude more and says nothing extra. Shift-click keeps the JSON.
+    const report = fullJson ? formatPositionReport(input) : formatCompactReport(input, online ? null : loadGameHistory());
     const copied = await copyToClipboard(report);
     if (!copied) console.warn('[phasing-preview] clipboard refused; position report follows\n', report);
     setReportStatus(copied ? 'Position report copied to the clipboard.' : 'Clipboard refused — the report was logged to the console.');
-  }, [state, config.controls, config.aiDifficulty, config.aiPace, whiteAI, blackAI]);
+  }, [state, online, config.controls, config.aiDifficulty, config.aiPace, whiteAI, blackAI]);
 
   // Track which turn number each AI has executed to prevent duplicate execution on reload
   const [playerAiExecutedTurn, setPlayerAiExecutedTurn] = useState<number | null>(null);
@@ -985,7 +989,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
         <p>{phasing ? 'After actions, mining and affordable upkeep settle together. Undo Mine & prepare to revisit the action phase. Enable upkeep review to choose releases.' : 'Affordable upkeep is paid automatically. Undo back through your actions to refund it and choose which units to keep.'}</p>
         {isCurrentPlayerHuman && <label><input type="checkbox" checked={!!state.reviewUpkeep?.[state.turn.currentPlayer]} onChange={e=>setUpkeepReview(state.turn.currentPlayer,e.target.checked)} /> Always ask before paying upkeep (optional)</label>}
         {phasingPreview && <p className="preview-note">Phasing AI preview · unreleased engine, no strength guarantee. Turn it off with <code>?phasingAi=0</code>.</p>}
-        {phasingPreview && <button onClick={handleReportPosition}>Report this position</button>}
+        {phasingPreview && <button title="Copies a compact text report. Shift-click for the full JSON." onClick={e => handleReportPosition(e.shiftKey)}>Report this position</button>}
         {phasingPreview && reportStatus && <p role="status">{reportStatus}</p>}
         <button onClick={() => { setShowMenu(false); handleBackToMenuClick(); }}>Choose game mode</button>
         {analysis && <button onClick={() => { resetGame(); setShowMenu(false); }}>Reset analysis</button>}
