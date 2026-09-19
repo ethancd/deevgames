@@ -12,9 +12,21 @@
  * pointed at a corpus it may not consume: `p1-val.jsonl` is the model-selection
  * split and `p1-sealed.jsonl` is consumed once, under Gate 2, by the row that
  * reads it. Any path but the dev book throws before a game is played.
+ *
+ * DISTINCT IDS ARE NOT DISTINCT POSITIONS. The book holds 48 ids and 47 start
+ * positions at each handicap: `p1-g5-s245` walks a unit out and back before
+ * ending its phases and therefore transposes into `p1-g3-s3` (see
+ * `gate1-trace.ts`). The loader computes the SEMANTIC start-position hash of
+ * every row at every handicap, names the collision it finds, and pins it against
+ * `KNOWN_START_COLLISIONS` so a different book — or a change to what a position
+ * means — cannot slip past unnoticed. The frozen book is never edited and no
+ * opening is dropped: the row still plays all 48 pairs, and the report counts
+ * the colliding pair once.
  */
 import { loadOpenings, sha256, type OpeningSpec } from '../hard-ai/ladder/openings';
 import { applyLadderOpening, validateLadderOpenings } from '../hard-ai/ladder/ruleset';
+import { startPositionDigest } from './gate1-trace';
+import type { ScheduleOpening } from './gate1-report';
 import type { GameState } from '../../src/game/types';
 import { resolve, basename } from 'node:path';
 
@@ -28,10 +40,50 @@ export const HANDICAPS = [0, 3] as const;
 /** Deterministic replacement ids; never collide with `board.ts`'s `owner_def_ts_rand`. */
 const OPENING_ID_PREFIX = 'p1o';
 
+/** One row of the book, replayed at one handicap, hashed semantically. */
+export interface StartPosition {
+  openingId: string;
+  openingIndex: number;
+  handicap: number;
+  sha256: string;
+}
+
+/** Two or more ids that replay into the SAME position at one handicap. */
+export interface StartCollision {
+  handicap: number;
+  sha256: string;
+  /** In file order, so the report always names them the same way round. */
+  openingIds: string[];
+}
+
+/**
+ * The collisions the frozen dev book is KNOWN to contain, pinned so that the
+ * loader asserts what it finds instead of merely reporting it. `p1-g5-s245`
+ * (MOVE 1,0→3,0, MOVE 3,0→1,0, END_ACTION_PHASE, PROMOTE 0,1, END_PLACE_PHASE)
+ * and `p1-g3-s3` (END_ACTION_PHASE, PROMOTE 0,1, END_PLACE_PHASE) differ only in
+ * a round trip, and the only field that survives it — `hasMoved` — is read by no
+ * rule (`src/ai/hard/types.ts` RE §1.5). 48 ids, 47 positions, at both
+ * handicaps.
+ */
+export const KNOWN_START_COLLISIONS: readonly { handicap: number; openingIds: readonly string[] }[] = [
+  { handicap: 0, openingIds: ['p1-g5-s245', 'p1-g3-s3'] },
+  { handicap: 3, openingIds: ['p1-g5-s245', 'p1-g3-s3'] },
+];
+/** 48 rows, 47 distinct start positions per handicap. Stated in every report. */
+export const DEV_BOOK_DISTINCT_START_POSITIONS = 47;
+
 export interface Gate1Book {
   path: string;
   sha256: string;
   openings: OpeningSpec[];
+  /** One entry per (opening, handicap), in file order then handicap order. */
+  starts: StartPosition[];
+  /** Distinct start-position hashes per handicap: `{ 0: 47, 3: 47 }` for the dev book. */
+  distinctStartPositions: Record<number, number>;
+  /** Every group of ids that share a start position. Empty means 48 for 48. */
+  collisions: StartCollision[];
+  /** The semantic start hash of one row at one handicap. Throws on an unknown pair. */
+  startSha256(openingId: string, handicap: number): string;
 }
 
 /**
@@ -70,7 +122,80 @@ export function loadGate1Book(path: string = DEV_BOOK_PATH): Gate1Book {
   // `validateLadderOpenings` rejects a non-Phasing id and replays every row at
   // every handicap through the canonical legality check before a game starts.
   validateLadderOpenings(file.openings, HANDICAPS);
-  return { path, sha256: file.sha256, openings: file.openings };
+  const { starts, collisions, distinctStartPositions } = computeStartPositions(file.openings, HANDICAPS);
+  assertKnownStartCollisions(collisions);
+  for (const handicap of HANDICAPS) {
+    if (distinctStartPositions[handicap] !== DEV_BOOK_DISTINCT_START_POSITIONS) {
+      throw new Error(`Dev book has ${distinctStartPositions[handicap]} distinct start positions at handicap ` +
+        `${handicap}, not the pinned ${DEV_BOOK_DISTINCT_START_POSITIONS}`);
+    }
+  }
+  const byKey = new Map(starts.map(s => [`${s.openingId}@${s.handicap}`, s.sha256]));
+  return {
+    path, sha256: file.sha256, openings: file.openings, starts, collisions, distinctStartPositions,
+    startSha256(openingId: string, handicap: number): string {
+      const found = byKey.get(`${openingId}@${handicap}`);
+      if (!found) throw new Error(`No start position for opening ${openingId} at handicap ${handicap}`);
+      return found;
+    },
+  };
+}
+
+/**
+ * Replays every row at every handicap and hashes the POSITION each one reaches
+ * (`gate1-trace.ts#startPositionDigest`), so the caller can see how many
+ * independent starting points the book actually supplies rather than how many
+ * lines it has.
+ */
+export function computeStartPositions(openings: readonly OpeningSpec[], handicaps: readonly number[]): {
+  starts: StartPosition[];
+  collisions: StartCollision[];
+  distinctStartPositions: Record<number, number>;
+} {
+  const starts: StartPosition[] = [];
+  const collisions: StartCollision[] = [];
+  const distinctStartPositions: Record<number, number> = {};
+  for (const handicap of handicaps) {
+    const byHash = new Map<string, string[]>();
+    openings.forEach((opening, openingIndex) => {
+      const digest = startPositionDigest(gate1StartState(opening, handicap), handicap);
+      starts.push({ openingId: opening.id, openingIndex, handicap, sha256: digest });
+      byHash.set(digest, [...(byHash.get(digest) ?? []), opening.id]); // file order preserved
+    });
+    distinctStartPositions[handicap] = byHash.size;
+    for (const [digest, openingIds] of byHash) {
+      if (openingIds.length > 1) collisions.push({ handicap, sha256: digest, openingIds });
+    }
+  }
+  return { starts, collisions, distinctStartPositions };
+}
+
+/**
+ * Asserts the collisions found are EXACTLY the ones pinned above, and says which
+ * ids collide when they are not. A silent new collision would shrink the row's
+ * effective sample without shrinking any number the report prints; a silently
+ * vanished one would mean the book, or the definition of a position, moved.
+ */
+export function assertKnownStartCollisions(collisions: readonly StartCollision[]): void {
+  const format = (groups: readonly { handicap: number; openingIds: readonly string[] }[]) =>
+    groups.map(g => `h${g.handicap}:{${[...g.openingIds].join(' = ')}}`).sort().join(', ') || '(none)';
+  const found = format(collisions);
+  const expected = format(KNOWN_START_COLLISIONS);
+  if (found !== expected) {
+    throw new Error(`Gate 1 dev-book start-position collisions changed. Found ${found}; pinned ${expected}. ` +
+      'Update KNOWN_START_COLLISIONS deliberately — the row\'s effective sample size depends on it.');
+  }
+}
+
+/**
+ * The book as the schedule consumes it: an id, and the semantic start hash of
+ * the position that id reaches at each handicap the row plays.
+ */
+export function scheduleOpenings(book: Gate1Book, handicaps: readonly number[] = HANDICAPS): ScheduleOpening[] {
+  return book.openings.map(opening => ({
+    id: opening.id,
+    starts: Object.fromEntries(handicaps.map(h => [h, book.startSha256(opening.id, h)])),
+  }));
 }
 
 /**
