@@ -1,73 +1,8 @@
-/**
- * E0 opening-set generator (EPIC-PLAN E0.4; E0-PILOT-REPORT §7 anomaly P1).
- *
- * WHY THIS EXISTS. Both engines under test are deterministic given a position
- * and a budget. Without `--openings` every pair of a run starts from the same
- * canonical initial state, so two pairs carrying different scheduled seeds
- * replay the same game: the pilot's `initial:0:0` and `initial:0:1` agree ply
- * for ply. Distinct starting positions are the only variance source that
- * reaches a deterministic engine, so a ladder run that wants independent pairs
- * needs an openings file.
- *
- * HOW A CANDIDATE IS MADE. From the canonical initial state, SEEDED scripted
- * bots (`lab/harness/bots`, driven exactly as `harness/runner.ts` drives them:
- * `legalActions`, `chooseAction`, `applyAction`, and `defaultUpkeepAction`
- * while upkeep is pending) play `k` plies, k drawn from `PLY_TARGETS`. Each
- * applied action is written down in the square-based `OpeningAction` form
- * (`actionToOpeningAction`), because unit ids are minted per process and
- * cannot be put in a file. A candidate is truncated before any action that
- * would end the game and stops early when the bot passes.
- *
- * WHY AN OPENING STOPS AT WHITE'S FIRST TURN. The set must replay at handicap
- * 0 and at handicap 3, and the two differ in SHAPE, not only in Black's bank:
- * at h0 Black's first turn opens in the ACTION phase (0 crystals, nothing is
- * placeable, the place phase is skipped), at h3 it opens in the PLACE phase
- * (3 crystals buy a tier-1 unit). So Black's first ply is a MOVE under one
- * handicap and a BUY_UNIT or END_PLACE_PHASE under the other, and no single
- * action list is legal under both past that point — every candidate that ran
- * into Black's turn was refused at h3, which is what drove `PLY_TARGETS` down
- * to White's first turn. White's turn is unaffected by Black's bank, so a
- * candidate is cut at the handover: at most White's four actions plus the
- * `END_ACTION_PHASE` that passes the move, five plies. Deeper openings are
- * available only from a per-handicap set, which is an E1 measurement-lead
- * decision, not this generator's (see README.md).
- *
- * WHAT IS REFUSED. A candidate is dropped unless it replays cleanly through
- * `applyOpening` at handicap 0 AND at handicap 3 — an action legal without a
- * black-crystal handicap is not automatically legal with one, and the E0 runs
- * use both. It is also dropped when its h0 `gameplayDigest` repeats one
- * already accepted, or when its action list is a prefix of an accepted one (or
- * one of them is a prefix of it): a prefix reaches a position the longer
- * opening passes through, which is variety on paper only.
- *
- * DETERMINISM. Every random draw comes from `mulberry32`/`deriveSeed` over
- * `--seed`; no clock, no `Math.random`. The same seed and count produce the
- * same file, byte for byte, which `tests/lab/openings-set.test.ts` checks
- * against the committed bytes.
- *
- * WHAT AN OPENING SET IS NOT. Variety of starting position is a diagnostic
- * source of variance. It is not evidence that two engines decide
- * independently, and it does not license treating pairs as independent samples
- * on its own. See README.md in this directory.
- *
- * TWO POOLS, ONE ID SPACE. Ids are `g<plies>-s<attempt>` and the attempt
- * counter restarts at every generation, so a second pool at a different seed
- * would re-mint ids the first file already uses, and a `pairId` embeds the
- * opening id. `--id-prefix` namespaces a pool (`e1-`); `--exclude <file>`
- * (repeatable) holds an earlier file's rows against every candidate under the
- * same digest and prefix rules the generator applies within a file, so the two
- * pools name disjoint positions. Both default to off, which is what keeps the
- * committed E0 bytes reproducible. Neither writes anything into the JSONL —
- * the format takes no comments — so provenance is recorded in ALLOCATION.md.
- *
- * CLI:
- *   node --import tsx lab/hard-ai/ladder/openings/generate.ts \
- *     --count 16 --seed 2026 --out lab/hard-ai/ladder/openings/e0-openings.jsonl
- *
- *   node --import tsx lab/hard-ai/ladder/openings/generate.ts \
- *     --count 112 --seed 2027 --id-prefix e1- \
- *     --exclude lab/hard-ai/ladder/openings/e0-openings.jsonl \
- *     --out lab/hard-ai/ladder/openings/e1-pool.jsonl
+/** P1 scripted Phasing opening generator. Each candidate completes White's
+ * first Act -> mine/upkeep -> Prepare -> handoff, ending at Black's Act root.
+ * h0/h3 share that shape; Black has not spent its different initial bank yet.
+ * Old Standard generation is reproducible at standard-final, not with these bots.
+ * Use split.ts to allocate P1; never write a pooled or sealed file into the repo.
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -80,22 +15,20 @@ import { applyAction } from '../../../../src/ai/simulate';
 import { defaultUpkeepAction } from '../../../../src/game/upkeep';
 import {
   actionToOpeningAction,
-  applyOpening,
-  gameplayDigest,
-  initialStateFor,
+  applyOpening as applyStandardOpening,
+  gameplayDigest as standardDigest,
   loadOpenings,
   withOpeningRules,
   type OpeningAction,
   type OpeningSpec,
 } from '../openings';
+import { applyOpening, gameplayDigest, initialStateFor } from './phasing';
+import { phaseEndAction, isLegalAction } from '../../../../src/game/legality';
 import type { AIAction } from '../../../../src/ai/types';
-import type { GameState, PlayerId } from '../../../../src/game/types';
 
-/**
- * Ply lengths drawn in rotation, so the set mixes shorter and longer openings.
- * Capped at five by the h0/h3 phase difference described in the module doc:
- * White's four actions plus the `END_ACTION_PHASE` that hands over.
- */
+/** Number of Act decisions to permit before ending Act; Prepare always completes. */
+export const ACT_TARGETS: readonly number[] = [1, 2, 3, 4];
+/** Historical E0 lengths, retained only for archive tests. */
 export const PLY_TARGETS: readonly number[] = [2, 3, 4, 5];
 
 /**
@@ -106,7 +39,7 @@ export const PLY_TARGETS: readonly number[] = [2, 3, 4, 5];
  */
 export const DRIVER_BOTS: readonly string[] = ['Random', 'Rush', 'Greedy', 'Expand', 'Balanced'];
 
-/** Handicaps every emitted opening must be legal under (the E0 ladder runs both). */
+/** Handicaps every emitted opening must replay legally under. */
 export const REQUIRED_HANDICAPS: readonly number[] = [0, 3];
 
 /**
@@ -121,8 +54,7 @@ export const MIN_PLIES = 2;
  * replay filename and the first field of every `pairId`
  * (`openings.ts#OPENING_ID_RE`), so a prefix is held to the same alphabet; the
  * length cap leaves room for the `g<plies>-s<attempt>` body inside 64
- * characters. Empty is allowed and is the default, which is what keeps the
- * committed E0 file reproducible from this generator.
+ * characters. P1 prefixes must start with `p1-`; Standard generation belongs to standard-final.
  */
 export const ID_PREFIX_RE = /^[A-Za-z0-9_-]{0,32}$/;
 
@@ -138,8 +70,7 @@ export interface GenerateOptions {
    * attempt counter restarts at every generation, so a second pool generated
    * at a different seed would mint ids the E0 file already uses — and a
    * `pairId` embeds the opening id, so colliding ids across two files collide
-   * in run artifacts. Defaults to `''`, which reproduces the E0 file byte for
-   * byte.
+   * in run artifacts. Defaults to `p1-`; old prefixes are refused.
    */
   idPrefix?: string;
   /**
@@ -147,8 +78,8 @@ export interface GenerateOptions {
    * from. A candidate is refused when its handicap-0 `gameplayDigest` matches
    * one of these, or when its action list stands in a prefix relation with
    * one — the same two rules the generator already applies WITHIN a file,
-   * extended across files so `e0-openings.jsonl` and the E1 pool never name
-   * the same position.
+   * extended across P1 files. Archived Standard exclusions are supported only
+   * for historical structural tests, under their original rules.
    */
   exclude?: readonly ExcludedOpening[];
 }
@@ -177,7 +108,9 @@ export function loadExclusions(paths: readonly string[]): ExcludedOpening[] {
       out.push({
         id: opening.id,
         actions: opening.actions,
-        digest: gameplayDigest(applyOpening(opening, { blackCrystalHandicap: REQUIRED_HANDICAPS[0] })),
+        digest: opening.id.startsWith('p1-')
+          ? gameplayDigest(applyOpening(opening, { blackCrystalHandicap: REQUIRED_HANDICAPS[0] }))
+          : standardDigest(applyStandardOpening(opening, { blackCrystalHandicap: REQUIRED_HANDICAPS[0] })),
         source: filePath,
       });
     }
@@ -189,7 +122,7 @@ export interface GeneratedOpening {
   spec: OpeningSpec;
   /** `gameplayDigest` of the position the opening reaches at handicap 0. */
   digest: string;
-  /** Plies actually recorded (may be under the target if the driver passed). */
+  /** All recorded decisions through the first complete White turn. */
   plies: number;
   /**
    * Name of the bot that produced it. White only: an opening is cut at the
@@ -218,37 +151,35 @@ function rejectionKey(err: unknown): string {
 /**
  * Plays one candidate. Mirrors `harness/runner.ts#playGameInner`'s scripted
  * branch: upkeep is answered by `defaultUpkeepAction` while it is pending,
- * otherwise the bot picks from the authoritative legal set. Stops at `plies`,
- * at a pass, or before an action that would end the game.
+ * otherwise the bot picks from the authoritative legal set. Act stops at its
+ * decision target; Prepare always continues to the handoff.
  */
-function playCandidate(plies: number, whiteBot: string, seed: number): OpeningAction[] {
+function playCandidate(actDecisions: number, whiteBot: string, seed: number): OpeningAction[] {
   const bot = createBot(whiteBot);
+  if (bot.kind !== 'scripted') throw new Error(`generate: driver "${bot.name}" is not scripted`);
   const rng: Rng = mulberry32(deriveSeed(seed, 0));
+  bot.onGameStart?.('white', deriveSeed(seed, 0));
   const recorded: OpeningAction[] = [];
-  let state: GameState = initialStateFor();
-  for (let i = 0; i < plies; i++) {
-    if (state.phase === 'victory') break;
-    // The handover ends the opening: Black's first ply has a different phase
-    // at h0 and h3 (module doc), so it cannot be written into a shared file.
-    if (state.turn.currentPlayer !== 'white') break;
-    const player: PlayerId = 'white';
-    if (bot.kind !== 'scripted') throw new Error(`generate: driver "${bot.name}" is not a scripted bot`);
-    let action: AIAction | null;
-    if (state.upkeepPending === true) {
-      action = defaultUpkeepAction(state, false);
-    } else {
-      const legal = legalActions(state, player);
-      if (legal.length === 0) break; // a pass is required; the opening stops here
-      action = bot.chooseAction({ view: buildView(state, player), legal, rng });
-    }
-    if (!action) break; // the bot passed
+  let state = initialStateFor();
+  let acted = 0;
+  // 100 board squares bound promotions and commitments separately, plus Act
+  // and phase/upkeep controls. Hitting this guard invalidates the candidate.
+  for (let i = 0; i < 207; i++) {
+    if (state.phase !== 'playing') return [];
+    if (state.turn.currentPlayer === 'black') return recorded;
+    const legal = legalActions(state, 'white');
+    let action: AIAction;
+    if (state.upkeepPending) action = defaultUpkeepAction(state, false);
+    else if (state.turn.phase === 'action' && acted >= actDecisions) action = phaseEndAction(state);
+    else action = bot.chooseAction({ view: buildView(state, 'white'), legal, rng }) ?? phaseEndAction(state);
+    if (!isLegalAction(state, action, 'white')) throw new Error(`generate: ${bot.name} emitted an illegal action`);
     const next = applyAction(state, action);
-    if (next === state) break; // the simulator refused it; stop rather than record a no-op
-    if (next.phase === 'victory') break; // truncate: an opening must leave a playable position
+    if (next === state) throw new Error(`generate: ${bot.name} emitted a no-op`);
+    if (state.turn.phase === 'action' && action.type !== 'END_ACTION_PHASE') acted++;
     recorded.push(actionToOpeningAction(state, action, `generate: ply ${i}`));
     state = next;
   }
-  return recorded;
+  throw new Error('generate: first-turn decision guard exceeded');
 }
 
 function isPrefixOf(shorter: readonly OpeningAction[], longer: readonly OpeningAction[]): boolean {
@@ -263,9 +194,9 @@ function isPrefixOf(shorter: readonly OpeningAction[], longer: readonly OpeningA
  */
 export function generateOpenings(options: GenerateOptions): GenerateResult {
   const maxAttempts = options.maxAttempts ?? Math.max(200, options.count * 20);
-  const idPrefix = options.idPrefix ?? '';
-  if (!ID_PREFIX_RE.test(idPrefix)) {
-    throw new Error(`generate: --id-prefix "${idPrefix}" must match ${String(ID_PREFIX_RE)}`);
+  const idPrefix = options.idPrefix ?? 'p1-';
+  if (!ID_PREFIX_RE.test(idPrefix) || !idPrefix.startsWith('p1-')) {
+    throw new Error(`generate: --id-prefix "${idPrefix}" must start with p1- and match ${String(ID_PREFIX_RE)}`);
   }
   const exclude = options.exclude ?? [];
   const excludedDigests = new Set(exclude.map(e => e.digest));
@@ -278,14 +209,13 @@ export function generateOpenings(options: GenerateOptions): GenerateResult {
   while (accepted.length < options.count && attempts < maxAttempts) {
     const s = attempts;
     attempts++;
-    const plies = PLY_TARGETS[s % PLY_TARGETS.length];
+    const plies = ACT_TARGETS[s % ACT_TARGETS.length];
     const whiteBot = DRIVER_BOTS[s % DRIVER_BOTS.length];
     const seed = deriveSeed(options.seed, s);
     const actions = withOpeningRules({}, () => playCandidate(plies, whiteBot, seed));
     if (actions.length < MIN_PLIES) { reject(`shorter than ${MIN_PLIES} plies`); continue; }
 
-    // The id reports the plies actually recorded, not the target: a driver that
-    // passes early makes the opening shorter than `plies` asked for.
+    // IDs report all decisions, including upkeep, Prepare and both phase ends.
     const spec: OpeningSpec = { id: `${idPrefix}g${actions.length}-s${s}`, actions };
     let digest: string;
     try {
@@ -396,11 +326,11 @@ export function renderOpeningsFile(openings: readonly GeneratedOpening[]): strin
 interface Cli { count: number; seed: number; out: string; maxAttempts?: number; idPrefix: string; exclude: string[] }
 
 export function parseArgs(argv: readonly string[]): Cli {
-  let count = 16;
-  let seed = 2026;
-  let out = 'lab/hard-ai/ladder/openings/e0-openings.jsonl';
+  let count = 48;
+  let seed = 20260954;
+  let out = 'lab/hard-ai/ladder/openings/p1-dev-candidate.jsonl';
   let maxAttempts: number | undefined;
-  let idPrefix = '';
+  let idPrefix = 'p1-';
   const exclude: string[] = [];
   for (let i = 0; i < argv.length; i++) {
     const flag = argv[i];
@@ -427,7 +357,7 @@ export function parseArgs(argv: readonly string[]): Cli {
   }
   if (!Number.isInteger(count) || count < 1) throw new Error('generate: --count must be a positive integer');
   if (!Number.isInteger(seed)) throw new Error('generate: --seed must be an integer');
-  if (!ID_PREFIX_RE.test(idPrefix)) throw new Error(`generate: --id-prefix "${idPrefix}" must match ${String(ID_PREFIX_RE)}`);
+  if (!ID_PREFIX_RE.test(idPrefix) || !idPrefix.startsWith('p1-')) throw new Error(`generate: --id-prefix "${idPrefix}" must start with p1- and match ${String(ID_PREFIX_RE)}`);
   return { count, seed, out, maxAttempts, idPrefix, exclude };
 }
 
@@ -444,7 +374,7 @@ function main(argv: readonly string[]): void {
   const text = renderOpeningsFile(result.openings);
   const outPath = path.resolve(cli.out);
   fs.mkdirSync(path.dirname(outPath), { recursive: true });
-  fs.writeFileSync(outPath, text);
+  fs.writeFileSync(outPath, text, { flag: 'wx' });
   const dist = Object.keys(result.plyDistribution)
     .map(Number)
     .sort((a, b) => a - b)

@@ -14,7 +14,6 @@ import {
   PLY_TARGETS,
   REQUIRED_HANDICAPS,
   generateOpenings,
-  renderOpeningsFile,
   serializeAction,
 } from '../../lab/hard-ai/ladder/openings/generate';
 
@@ -35,7 +34,6 @@ vi.setConfig({ testTimeout: 20_000 });
 const DIR = path.resolve(__dirname, '../../lab/hard-ai/ladder/openings');
 const JSONL = path.join(DIR, 'e0-openings.jsonl');
 const README = path.join(DIR, 'README.md');
-const SEED = 2026;
 const COUNT = 16;
 
 const bytes = fs.readFileSync(JSONL);
@@ -100,10 +98,10 @@ describe('E0 opening set: the README describes this file', () => {
   });
 });
 
-describe('E0 opening set: regeneration', () => {
-  it('produces the committed bytes again from the same seed', () => {
-    const regenerated = generateOpenings({ count: COUNT, seed: SEED });
-    expect(renderOpeningsFile(regenerated.openings)).toBe(text);
+// Byte regeneration belongs to standard-final; P1 tests exercise the new bots.
+describe('historical generation namespace', () => {
+  it('refuses to generate new evidence with an old Standard prefix', () => {
+    expect(() => generateOpenings({ count: COUNT, seed: 2026, idPrefix: '' })).toThrow(/p1-/);
   });
 });
 

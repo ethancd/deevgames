@@ -25,8 +25,6 @@ import {
   E0_PILOT_INDICES,
   E1_SEED,
   FILE_NAMES,
-  buildAllocation,
-  renderAllocation,
   seededShuffle,
   splitShuffled,
 } from '../../lab/hard-ai/ladder/openings/split';
@@ -177,15 +175,7 @@ describe('E1 allocation: the baseline set', () => {
 });
 
 describe('E1 allocation: regeneration', () => {
-  it('reproduces all four files byte for byte from seed 2027', () => {
-    const allocation = buildAllocation({ dir: DIR });
-    expect(allocation.pool.length).toBe(112);
-    const rendered = renderAllocation(allocation);
-    for (const name of [FILE_NAMES.dev, FILE_NAMES.val, FILE_NAMES.sealed, FILE_NAMES.baseline]) {
-      expect(rendered[name], `${name} regenerated`).toBe(committed.get(name)!.toString('utf8'));
-    }
-  });
-
+  // Standard regeneration remains pinned at standard-final. Never overwrite archives with P1 bots.
   it('cuts a shuffled pool 3:2:2 with the remainder going to development', () => {
     const fake = (n: number): OpeningSpec[] => Array.from({ length: n }, (_, i) => ({ id: `x${i}`, actions: [] }));
     expect(Object.values(splitShuffled(fake(112))).map(s => s.length)).toEqual([48, 32, 32]);
@@ -207,14 +197,14 @@ describe('E1 allocation: regeneration', () => {
 describe('generate.ts: --id-prefix', () => {
   it('prepends the prefix to every emitted id and changes nothing else', () => {
     const plain = generateOpenings({ count: 4, seed: 4242 });
-    const prefixed = generateOpenings({ count: 4, seed: 4242, idPrefix: 'e1-' });
-    expect(prefixed.openings.map(o => o.spec.id)).toEqual(plain.openings.map(o => `e1-${o.spec.id}`));
+    const prefixed = generateOpenings({ count: 4, seed: 4242, idPrefix: 'p1-extra-' });
+    expect(prefixed.openings.map(o => o.spec.id)).toEqual(plain.openings.map(o => o.spec.id.replace('p1-', 'p1-extra-')));
     expect(prefixed.openings.map(o => o.digest)).toEqual(plain.openings.map(o => o.digest));
   });
 
-  it('defaults to empty, which is what keeps the E0 file reproducible', () => {
-    expect(parseArgs([]).idPrefix).toBe('');
-    expect(parseArgs(['--id-prefix', 'e1-']).idPrefix).toBe('e1-');
+  it('defaults to the rules-bound P1 namespace', () => {
+    expect(parseArgs([]).idPrefix).toBe('p1-');
+    expect(parseArgs(['--id-prefix', 'p1-extra-']).idPrefix).toBe('p1-extra-');
   });
 
   it('refuses a prefix that would break the opening-id alphabet', () => {

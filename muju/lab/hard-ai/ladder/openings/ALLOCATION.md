@@ -326,3 +326,11 @@ node --import tsx lab/hard-ai/ladder/openings/generate.ts \
   16–31, 32–47, 48–63; C1–C4 = rows 64–79, 80–95, 96–111, 112–127. Assignment is in the
   plan and is appended, never rewritten. E4 rows run at
   `seed = 20260940 + <E4 ledger ordinal>`; E3 follow-on rows keep E3's rule.
+
+## Phasing P1 allocation (2026-09-18)
+
+All preceding allocations remain historical Standard evidence. Phasing uses the
+new rules-bound allocation in [ALLOCATION-P1.md](ALLOCATION-P1.md); no old row is
+reinterpreted or regenerated. P1 dev and val are in this directory. The sealed
+64-row file (32 acceptance + 32 spare) is outside the repo; its sha256 is
+`d0b088c31806fe6ab0f09dfc66c1e2b2b5a4e45d0dbee03c39d6ab298a87e058`.
