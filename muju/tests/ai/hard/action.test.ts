@@ -32,7 +32,7 @@ import {
 import { DEF_ID, DEF_INDEX, NDEF } from '../../../src/ai/hard/core/catalog';
 import { MAX_SLOTS, type PackedState } from '../../../src/ai/hard/types';
 import type { AIAction } from '../../../src/ai/types';
-import { allocPacked, putUnit } from './packed-fixture';
+import { allocPacked, putPending, putUnit } from './packed-fixture';
 import { createInitialGameState } from '../../../src/game/board';
 import { getAllSpawnPositions } from '../../../src/game/spawning';
 import { applyAction } from '../../../src/ai/simulate';
@@ -294,6 +294,41 @@ describe('core/action: ids for units bought during the search', () => {
     const ids = [0, 1, 2, 3].map(slot => unitIdFor(p, slot));
     expect(new Set(ids).size).toBe(4);
     for (const slot of [0, 1, 2, 3]) expect(slotForId(p, unitIdFor(p, slot))).toBe(slot);
+  });
+
+  it('commitments live outside the unit-id space entirely', () => {
+    // A pending summon owns no slot, so `unitIdFor` and `slotForId` cannot see
+    // it — and the id it carries in `pendIds` never shadows a unit's.
+    const p = allocPacked();
+    putUnit(p, { slot: 0, side: 0, defId: 0, sq: 0, originId: 'unit-white-5-0' });
+    putUnit(p, { slot: 1, side: 0, defId: 0, sq: 1 });
+    p.turnNumber = 5;
+    const before = [unitIdFor(p, 0), unitIdFor(p, 1)];
+
+    // The commitment deliberately carries the very id the ghost slot 1 derives,
+    // which is the worst case: the codec must still resolve that id to the UNIT.
+    expect(before[1]).toBe('unit-white-5-1');
+    putPending(p, { side: 0, defId: 0, sq: 20, cost: 3, pendId: 'unit-white-5-1' });
+    putPending(p, { side: 1, defId: 2, sq: 99, cost: 5 });
+    expect([unitIdFor(p, 0), unitIdFor(p, 1)]).toEqual(before);
+    expect(slotForId(p, 'unit-white-5-1')).toBe(1);
+  });
+
+  it('a BUY round-trips by definition and square, commitments present or not', () => {
+    const p = allocPacked();
+    putUnit(p, { slot: 0, side: 0, defId: DEF_INDEX.get('plant_1') as number, sq: 11, originId: 'w0' });
+    putPending(p, { side: 0, defId: DEF_INDEX.get('fire_1') as number, sq: 0, cost: 3, pendId: 'committed' });
+    const keep = newKeepSetTable();
+    for (const id of ['fire_1', 'water_1', 'metal_1']) {
+      for (const sq of [0, 5, 99]) {
+        const pa = paMake(AKind.BUY, DEF_INDEX.get(id) as number, sq);
+        const action = toAIAction(p, pa, keep);
+        expect(action).toEqual({ type: 'BUY_UNIT', definitionId: id, position: { x: sq % 10, y: (sq / 10) | 0 } });
+        // The encoding is definition + square only: whether that square already
+        // carries a commitment is `isLegal`'s question, not the codec's.
+        expect(fromAIAction(p, action, keep)).toBe(pa);
+      }
+    }
   });
 
   it('matches successive canonical buys in one turn', () => {

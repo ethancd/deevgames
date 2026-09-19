@@ -1,0 +1,48 @@
+{
+  "ruleset": "phasing",
+  "perftActions_initial_4": null,
+  "perftMidStates_initial": null,
+  "perftTurns_initial": null,
+  "standardTriple": "skipped-phasing-replica",
+  "phasingActions_initial": 14959,
+  "phasingMidStates_initial": 1850,
+  "phasingTurns_initial": 797,
+  "phasingInitialLimits": {
+    "act": 4,
+    "prepare": 0
+  },
+  "fixturesChecked": 7,
+  "fixturesMismatch": 0,
+  "digestMismatches": 0,
+  "replicaAgreed": true,
+  "mismatches": [],
+  "openings": 797,
+  "engine": "replica",
+  "git": "2922375ef8c1f828f4bc5c1a411d1e19cdc2b6fd",
+  "node": "v24.11.1",
+  "at": "2026-09-19T06:00:32.770Z",
+  "perft": {
+    "ruleset": "phasing",
+    "perftActions_initial_4": null,
+    "perftMidStates_initial": null,
+    "perftTurns_initial": null,
+    "standardTriple": "skipped-phasing-replica",
+    "phasingActions_initial": 14959,
+    "phasingMidStates_initial": 1850,
+    "phasingTurns_initial": 797,
+    "phasingInitialLimits": {
+      "act": 4,
+      "prepare": 0
+    },
+    "fixturesChecked": 7,
+    "fixturesMismatch": 0,
+    "digestMismatches": 0,
+    "replicaAgreed": true,
+    "mismatches": [],
+    "openings": 797,
+    "engine": "replica",
+    "git": "2922375ef8c1f828f4bc5c1a411d1e19cdc2b6fd",
+    "node": "v24.11.1",
+    "at": "2026-09-19T06:00:32.770Z"
+  }
+}

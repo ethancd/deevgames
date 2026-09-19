@@ -1,0 +1,2487 @@
+{
+  "kind": "transition",
+  "seed": 159,
+  "game": 754,
+  "ply": 247,
+  "field": "result",
+  "action": {
+    "type": "END_ACTION_PHASE"
+  },
+  "prefix": [
+    {
+      "type": "MOVE",
+      "unitId": "white_water_1_1789795406974_9bugv",
+      "to": {
+        "x": 5,
+        "y": 1
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PROMOTE_UNIT",
+      "unitId": "white_water_1_1789795406974_9bugv"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "fire_1",
+      "position": {
+        "x": 9,
+        "y": 9
+      }
+    },
+    {
+      "type": "PROMOTE_UNIT",
+      "unitId": "black_water_1_1789795406974_e354d"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "lightning_1",
+      "position": {
+        "x": 1,
+        "y": 1
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "black_plant_1_1789795406974_xizts",
+      "to": {
+        "x": 9,
+        "y": 7
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "shadow_1",
+      "position": {
+        "x": 9,
+        "y": 8
+      }
+    },
+    {
+      "type": "PROMOTE_UNIT",
+      "unitId": "black_fire_1_1789795406974_znadp"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-2-0",
+      "to": {
+        "x": 3,
+        "y": 1
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "black_fire_1_1789795406974_znadp",
+      "to": {
+        "x": 5,
+        "y": 7
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "fire_1",
+      "position": {
+        "x": 8,
+        "y": 7
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "white_fire_1_1789795406974_azuc7",
+      "to": {
+        "x": 3,
+        "y": 0
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-2-0",
+      "to": {
+        "x": 4,
+        "y": 1
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-2-0",
+      "to": {
+        "x": 8,
+        "y": 3
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "black_plant_1_1789795406974_xizts",
+      "to": {
+        "x": 7,
+        "y": 6
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "lightning_1",
+      "position": {
+        "x": 7,
+        "y": 7
+      }
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "fire_1",
+      "position": {
+        "x": 7,
+        "y": 9
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "white_water_1_1789795406974_9bugv",
+      "to": {
+        "x": 8,
+        "y": 0
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-2-0",
+      "to": {
+        "x": 1,
+        "y": 0
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "fire_1",
+      "position": {
+        "x": 7,
+        "y": 0
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "fire_1",
+      "position": {
+        "x": 8,
+        "y": 9
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-3-0",
+      "to": {
+        "x": 6,
+        "y": 3
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-3-0",
+      "to": {
+        "x": 7,
+        "y": 4
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "lightning_1",
+      "position": {
+        "x": 6,
+        "y": 7
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "black_fire_1_1789795406974_znadp",
+      "to": {
+        "x": 5,
+        "y": 2
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "black_fire_1_1789795406974_znadp",
+      "to": {
+        "x": 5,
+        "y": 1
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "fire_1",
+      "position": {
+        "x": 8,
+        "y": 1
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-2-0",
+      "to": {
+        "x": 8,
+        "y": 4
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "unit-black-3-0",
+      "targetPosition": {
+        "x": 8,
+        "y": 4
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-4-0",
+      "to": {
+        "x": 3,
+        "y": 7
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "lightning_1",
+      "position": {
+        "x": 3,
+        "y": 8
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "white_water_1_1789795406974_9bugv",
+      "to": {
+        "x": 8,
+        "y": 4
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "unit-black-3-0",
+      "targetPosition": {
+        "x": 8,
+        "y": 4
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-6-0",
+      "to": {
+        "x": 4,
+        "y": 5
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "lightning_1",
+      "position": {
+        "x": 1,
+        "y": 1
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "unit-black-3-0",
+      "targetPosition": {
+        "x": 8,
+        "y": 4
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "white_water_1_1789795406974_9bugv",
+      "targetPosition": {
+        "x": 7,
+        "y": 4
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "white_fire_1_1789795406974_azuc7",
+      "to": {
+        "x": 2,
+        "y": 1
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-4-0",
+      "to": {
+        "x": 7,
+        "y": 7
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-8-0",
+      "to": {
+        "x": 8,
+        "y": 5
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "white_water_1_1789795406974_9bugv",
+      "targetPosition": {
+        "x": 8,
+        "y": 5
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "black_plant_1_1789795406974_xizts",
+        "unit-black-1-0",
+        "unit-black-10-0",
+        "unit-black-2-0",
+        "unit-black-4-0",
+        "unit-black-4-1",
+        "unit-black-6-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "white_water_1_1789795406974_9bugv",
+      "to": {
+        "x": 9,
+        "y": 7
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "plant_1",
+      "position": {
+        "x": 2,
+        "y": 5
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "unit-black-2-0",
+      "targetPosition": {
+        "x": 9,
+        "y": 7
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-4-0",
+      "to": {
+        "x": 3,
+        "y": 3
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "white_water_1_1789795406974_9bugv",
+      "targetPosition": {
+        "x": 9,
+        "y": 8
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "white_fire_1_1789795406974_azuc7",
+      "to": {
+        "x": 7,
+        "y": 0
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PROMOTE_UNIT",
+      "unitId": "white_plant_1_1789795406974_t35rt"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-4-1",
+      "to": {
+        "x": 2,
+        "y": 7
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "white_water_1_1789795406974_9bugv",
+      "to": {
+        "x": 8,
+        "y": 4
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-6-0",
+      "to": {
+        "x": 4,
+        "y": 3
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "white_fire_1_1789795406974_azuc7",
+        "white_plant_1_1789795406974_t35rt",
+        "unit-white-6-0",
+        "unit-white-12-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "unit-black-4-0",
+      "targetPosition": {
+        "x": 4,
+        "y": 3
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-10-0",
+      "to": {
+        "x": 4,
+        "y": 7
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-4-0",
+      "to": {
+        "x": 5,
+        "y": 5
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "lightning_1",
+      "position": {
+        "x": 5,
+        "y": 7
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-12-0",
+      "to": {
+        "x": 6,
+        "y": 8
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "white_fire_1_1789795406974_azuc7",
+        "unit-white-12-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-4-0",
+      "to": {
+        "x": 1,
+        "y": 4
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-4-0",
+      "to": {
+        "x": 2,
+        "y": 2
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-10-0",
+      "to": {
+        "x": 3,
+        "y": 7
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "fire_1",
+      "position": {
+        "x": 7,
+        "y": 8
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-12-0",
+      "to": {
+        "x": 8,
+        "y": 1
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-4-1",
+      "to": {
+        "x": 3,
+        "y": 6
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "fire_1",
+      "position": {
+        "x": 5,
+        "y": 2
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "white_fire_1_1789795406974_azuc7",
+      "to": {
+        "x": 4,
+        "y": 4
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PROMOTE_UNIT",
+      "unitId": "black_plant_1_1789795406974_xizts"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-4-1",
+      "to": {
+        "x": 5,
+        "y": 1
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "black_plant_1_1789795406974_xizts",
+      "to": {
+        "x": 6,
+        "y": 4
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "lightning_1",
+      "position": {
+        "x": 8,
+        "y": 7
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-12-0",
+      "to": {
+        "x": 3,
+        "y": 2
+      }
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "unit-white-12-0",
+      "targetPosition": {
+        "x": 2,
+        "y": 2
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "white_fire_1_1789795406974_azuc7",
+      "to": {
+        "x": 3,
+        "y": 4
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PROMOTE_UNIT",
+      "unitId": "white_fire_1_1789795406974_azuc7"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-19-0",
+      "to": {
+        "x": 4,
+        "y": 7
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "black_plant_1_1789795406974_xizts",
+      "to": {
+        "x": 5,
+        "y": 5
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-10-0",
+      "to": {
+        "x": 3,
+        "y": 6
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-19-0",
+      "to": {
+        "x": 4,
+        "y": 6
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "shadow_1",
+      "position": {
+        "x": 8,
+        "y": 5
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-4-1",
+      "to": {
+        "x": 6,
+        "y": 3
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-6-0",
+      "to": {
+        "x": 6,
+        "y": 8
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "plant_1",
+      "position": {
+        "x": 8,
+        "y": 9
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "white_fire_1_1789795406974_azuc7",
+      "to": {
+        "x": 3,
+        "y": 9
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-4-1",
+      "to": {
+        "x": 3,
+        "y": 7
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-12-0",
+      "to": {
+        "x": 0,
+        "y": 4
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-12-0",
+      "to": {
+        "x": 1,
+        "y": 1
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-25-0",
+      "to": {
+        "x": 7,
+        "y": 7
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-10-0",
+      "to": {
+        "x": 4,
+        "y": 8
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "fire_1",
+      "position": {
+        "x": 5,
+        "y": 6
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "white_fire_1_1789795406974_azuc7",
+      "to": {
+        "x": 1,
+        "y": 6
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-12-0",
+      "to": {
+        "x": 1,
+        "y": 0
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "fire_1",
+      "position": {
+        "x": 7,
+        "y": 5
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "fire_1",
+      "position": {
+        "x": 7,
+        "y": 6
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-25-0",
+      "to": {
+        "x": 6,
+        "y": 9
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "white_fire_1_1789795406974_azuc7",
+      "to": {
+        "x": 2,
+        "y": 0
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-4-1",
+      "to": {
+        "x": 2,
+        "y": 1
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "lightning_1",
+      "position": {
+        "x": 4,
+        "y": 3
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-12-0",
+      "to": {
+        "x": 3,
+        "y": 1
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-12-0",
+      "to": {
+        "x": 3,
+        "y": 3
+      }
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "white_fire_1_1789795406974_azuc7",
+      "targetPosition": {
+        "x": 2,
+        "y": 1
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-28-0",
+      "to": {
+        "x": 1,
+        "y": 6
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-12-0",
+      "to": {
+        "x": 8,
+        "y": 3
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-12-0",
+      "to": {
+        "x": 6,
+        "y": 5
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-10-0",
+      "to": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ],
+  "rules": {
+    "elementGraph": "double-thick",
+    "upkeep": "shipped",
+    "inactivityRule": "off",
+    "victoryRule": "home-or-elimination",
+    "handicap": 3,
+    "combatHandicap": {
+      "white": 0,
+      "black": 0
+    }
+  },
+  "replica": "0.1.3.0.0.1,2.0.1.0.0.1,55.1.13.0.0.1,56.0.3.0.0.1,57.1.0.0.0.1,61.1.0.0.0.1,64.1.0.0.0.1,67.1.0.0.0.1,78.1.3.0.0.1,86.1.0.0.0.1,96.1.9.0.0.1,98.1.12.0.0.1,99.1.0.0.0.1||854000400408000041616484400041616444443834444445580004444420804440420040444161200004004161640000054442000000|2376412118|1047000444|3497867581|1506448906|2729312933|0|1|51|97|1|0|0|36|0|2|0|3|1|0|00|2.4|1000.4200.310.0||P:||C:0.0.0.0||B:0.1",
+  "canonical": "0.1.3.0.0.1,2.0.1.0.0.1,55.1.13.0.0.1,56.0.3.0.0.1,57.1.0.0.0.1,61.1.0.0.0.1,64.1.0.0.0.1,67.1.0.0.0.1,78.1.3.0.0.1,86.1.0.0.0.1,96.1.9.0.0.1,98.1.12.0.0.1,99.1.0.0.0.1||854000400408000041616484400041616444443834444445580004444420804440420040444161200004004161640000054442000000|2376412118|1047000444|3497867581|1506448906|2729312933|0|1|51|97|1|0|0|36|0|2|0|3|1|0|00|0.0|1000.4200.310.0||P:||C:0.0.0.0||B:0.1",
+  "knownGap": "overclaim-broke-defender",
+  "state": {
+    "actionsPerTurn": 4,
+    "ruleset": "phasing",
+    "pendingSummons": [],
+    "blackCrystalHandicap": 3,
+    "phase": "playing",
+    "inactivityPlies": 2,
+    "progressThisTurn": false,
+    "board": {
+      "cells": [
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "resourceLayers": 8
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 0
+            },
+            "resourceLayers": 5
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 0
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 0
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 0
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 0
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 0
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 0
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 0
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 0
+            },
+            "resourceLayers": 4
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 1
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 1
+            },
+            "resourceLayers": 8
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 1
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 1
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 1
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 1
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 1
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 1
+            },
+            "resourceLayers": 16
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 1
+            },
+            "resourceLayers": 16
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 1
+            },
+            "resourceLayers": 4
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 2
+            },
+            "resourceLayers": 8
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 2
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 2
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 2
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 2
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 2
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 2
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 2
+            },
+            "resourceLayers": 16
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 2
+            },
+            "resourceLayers": 16
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 2
+            },
+            "resourceLayers": 4
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 3
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 3
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 3
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 3
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 3
+            },
+            "resourceLayers": 3
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 3
+            },
+            "resourceLayers": 8
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 3
+            },
+            "resourceLayers": 3
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 3
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 3
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 3
+            },
+            "resourceLayers": 4
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 4
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 4
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 4
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 4
+            },
+            "resourceLayers": 5
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 4
+            },
+            "resourceLayers": 5
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 4
+            },
+            "resourceLayers": 8
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 4
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 4
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 4
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 4
+            },
+            "resourceLayers": 4
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 5
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 5
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 5
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 5
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 5
+            },
+            "resourceLayers": 2
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 5
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 5
+            },
+            "resourceLayers": 8
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 5
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 5
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 5
+            },
+            "resourceLayers": 4
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 6
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 6
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 6
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 6
+            },
+            "resourceLayers": 2
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 6
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 6
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 6
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 6
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 6
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 6
+            },
+            "resourceLayers": 4
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 7
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 7
+            },
+            "resourceLayers": 16
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 7
+            },
+            "resourceLayers": 12
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 7
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 7
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 7
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 7
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 7
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 7
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 7
+            },
+            "resourceLayers": 0
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 8
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 8
+            },
+            "resourceLayers": 16
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 8
+            },
+            "resourceLayers": 16
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 8
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 8
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 8
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 8
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 8
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 8
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 8
+            },
+            "resourceLayers": 5
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 9
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 9
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 9
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 9
+            },
+            "resourceLayers": 2
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 9
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 9
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 9
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 9
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 9
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 9
+            },
+            "resourceLayers": 0
+          }
+        ]
+      ],
+      "units": [
+        {
+          "id": "white_fire_1_1789795406974_azuc7",
+          "definitionId": "fire_2",
+          "owner": "white",
+          "position": {
+            "x": 2,
+            "y": 0
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "black_plant_1_1789795406974_xizts",
+          "definitionId": "plant_2",
+          "owner": "black",
+          "position": {
+            "x": 5,
+            "y": 5
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-black-1-0",
+          "definitionId": "fire_1",
+          "owner": "black",
+          "position": {
+            "x": 9,
+            "y": 9
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-black-6-0",
+          "definitionId": "fire_1",
+          "owner": "black",
+          "position": {
+            "x": 6,
+            "y": 8
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-black-10-0",
+          "definitionId": "lightning_1",
+          "owner": "black",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "hasMoved": true,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-12-0",
+          "definitionId": "lightning_1",
+          "owner": "white",
+          "position": {
+            "x": 6,
+            "y": 5
+          },
+          "hasMoved": true,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-black-19-0",
+          "definitionId": "fire_1",
+          "owner": "black",
+          "position": {
+            "x": 4,
+            "y": 6
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-black-23-0",
+          "definitionId": "lightning_1",
+          "owner": "black",
+          "position": {
+            "x": 8,
+            "y": 7
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-black-25-0",
+          "definitionId": "shadow_1",
+          "owner": "black",
+          "position": {
+            "x": 6,
+            "y": 9
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-black-26-0",
+          "definitionId": "plant_1",
+          "owner": "black",
+          "position": {
+            "x": 8,
+            "y": 9
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-black-28-0",
+          "definitionId": "fire_1",
+          "owner": "black",
+          "position": {
+            "x": 1,
+            "y": 6
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-black-30-0",
+          "definitionId": "fire_1",
+          "owner": "black",
+          "position": {
+            "x": 7,
+            "y": 5
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-black-31-0",
+          "definitionId": "fire_1",
+          "owner": "black",
+          "position": {
+            "x": 7,
+            "y": 6
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        }
+      ],
+      "initialResourceLayers": [
+        8,
+        8,
+        8,
+        0,
+        0,
+        0,
+        4,
+        4,
+        4,
+        4,
+        8,
+        8,
+        4,
+        0,
+        0,
+        0,
+        4,
+        16,
+        16,
+        4,
+        8,
+        4,
+        4,
+        0,
+        0,
+        0,
+        4,
+        16,
+        16,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        8,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        8,
+        8,
+        8,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        8,
+        8,
+        8,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        8,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        16,
+        16,
+        4,
+        0,
+        0,
+        0,
+        4,
+        4,
+        8,
+        4,
+        16,
+        16,
+        4,
+        0,
+        0,
+        0,
+        4,
+        8,
+        8,
+        4,
+        4,
+        4,
+        4,
+        0,
+        0,
+        0,
+        8,
+        8,
+        8
+      ]
+    },
+    "players": {
+      "white": {
+        "id": "white",
+        "resources": 0,
+        "startCorner": {
+          "x": 0,
+          "y": 0
+        },
+        "resourcesGained": 51,
+        "resourcesUpkeep": 30
+      },
+      "black": {
+        "id": "black",
+        "resources": 1,
+        "startCorner": {
+          "x": 9,
+          "y": 9
+        },
+        "resourcesGained": 97,
+        "resourcesUpkeep": 38
+      }
+    },
+    "turn": {
+      "currentPlayer": "black",
+      "phase": "place",
+      "actionsRemaining": 0,
+      "turnNumber": 36
+    },
+    "winner": null,
+    "selectedUnit": null,
+    "validMoves": [],
+    "validAttacks": [],
+    "victoryRule": "home-or-elimination",
+    "inactivityRule": "off",
+    "reviewUpkeep": {
+      "white": false,
+      "black": false
+    },
+    "lastIncome": {
+      "player": "black",
+      "turnNumber": 36,
+      "total": 0,
+      "takes": [
+        {
+          "unitId": "black_plant_1_1789795406974_xizts",
+          "definitionId": "plant_2",
+          "position": {
+            "x": 5,
+            "y": 5
+          },
+          "amount": 0
+        },
+        {
+          "unitId": "unit-black-1-0",
+          "definitionId": "fire_1",
+          "position": {
+            "x": 9,
+            "y": 9
+          },
+          "amount": 0
+        },
+        {
+          "unitId": "unit-black-6-0",
+          "definitionId": "fire_1",
+          "position": {
+            "x": 6,
+            "y": 8
+          },
+          "amount": 0
+        },
+        {
+          "unitId": "unit-black-10-0",
+          "definitionId": "lightning_1",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "amount": 0
+        },
+        {
+          "unitId": "unit-black-19-0",
+          "definitionId": "fire_1",
+          "position": {
+            "x": 4,
+            "y": 6
+          },
+          "amount": 0
+        },
+        {
+          "unitId": "unit-black-23-0",
+          "definitionId": "lightning_1",
+          "position": {
+            "x": 8,
+            "y": 7
+          },
+          "amount": 0
+        },
+        {
+          "unitId": "unit-black-25-0",
+          "definitionId": "shadow_1",
+          "position": {
+            "x": 6,
+            "y": 9
+          },
+          "amount": 0
+        },
+        {
+          "unitId": "unit-black-26-0",
+          "definitionId": "plant_1",
+          "position": {
+            "x": 8,
+            "y": 9
+          },
+          "amount": 0
+        },
+        {
+          "unitId": "unit-black-28-0",
+          "definitionId": "fire_1",
+          "position": {
+            "x": 1,
+            "y": 6
+          },
+          "amount": 0
+        },
+        {
+          "unitId": "unit-black-30-0",
+          "definitionId": "fire_1",
+          "position": {
+            "x": 7,
+            "y": 5
+          },
+          "amount": 0
+        },
+        {
+          "unitId": "unit-black-31-0",
+          "definitionId": "fire_1",
+          "position": {
+            "x": 7,
+            "y": 6
+          },
+          "amount": 0
+        }
+      ]
+    },
+    "upkeepPending": false,
+    "lastUpkeep": {
+      "player": "black",
+      "paid": 1,
+      "released": [],
+      "turnNumber": 36
+    },
+    "lastSummoning": {
+      "player": "black",
+      "turnNumber": 36,
+      "summoned": [],
+      "disrupted": []
+    }
+  }
+}

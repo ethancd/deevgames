@@ -1,0 +1,2456 @@
+{
+  "kind": "legality",
+  "field": "action-multiset",
+  "action": null,
+  "replica": "EA M:unit-white-15-0:10 M:unit-white-15-0:11 M:unit-white-15-0:21 M:unit-white-15-0:30 M:unit-white-15-0:31 M:unit-white-15-0:32 M:unit-white-15-0:33 M:unit-white-15-0:41 M:unit-white-15-0:42 M:unit-white-15-0:51 M:unit-white-17-0:10 M:unit-white-17-0:11 M:unit-white-17-0:13 M:unit-white-17-0:21 M:unit-white-17-0:23 M:unit-white-17-0:24 M:unit-white-17-0:30 M:unit-white-17-0:31 M:unit-white-17-0:32 M:unit-white-17-0:33 M:unit-white-17-0:34 M:unit-white-17-0:35 M:unit-white-17-0:41 M:unit-white-17-0:42 M:unit-white-17-0:43 M:unit-white-17-0:44 M:unit-white-17-0:50 M:unit-white-17-0:51 M:unit-white-17-0:52 M:unit-white-17-0:53 M:unit-white-17-0:60 M:unit-white-17-0:61 M:unit-white-17-0:62 M:unit-white-17-0:71 M:unit-white-18-0:10 M:unit-white-18-0:11 M:unit-white-18-0:13 M:unit-white-18-0:14 M:unit-white-18-0:15 M:unit-white-18-0:16 M:unit-white-18-0:17 M:unit-white-18-0:18 M:unit-white-18-0:19 M:unit-white-18-0:21 M:unit-white-18-0:23 M:unit-white-18-0:24 M:unit-white-18-0:25 M:unit-white-18-0:27 M:unit-white-18-0:28 M:unit-white-18-0:29 M:unit-white-18-0:3 M:unit-white-18-0:30 M:unit-white-18-0:31 M:unit-white-18-0:32 M:unit-white-18-0:33 M:unit-white-18-0:34 M:unit-white-18-0:35 M:unit-white-18-0:36 M:unit-white-18-0:37 M:unit-white-18-0:38 M:unit-white-18-0:4 M:unit-white-18-0:41 M:unit-white-18-0:42 M:unit-white-18-0:43 M:unit-white-18-0:44 M:unit-white-18-0:45 M:unit-white-18-0:46 M:unit-white-18-0:47 M:unit-white-18-0:5 M:unit-white-18-0:50 M:unit-white-18-0:51 M:unit-white-18-0:52 M:unit-white-18-0:53 M:unit-white-18-0:55 M:unit-white-18-0:56 M:unit-white-18-0:6 M:unit-white-18-0:61 M:unit-white-18-0:62 M:unit-white-18-0:63 M:unit-white-18-0:64 M:unit-white-18-0:65 M:unit-white-18-0:7 M:unit-white-18-0:72 M:unit-white-18-0:73 M:unit-white-18-0:74 M:unit-white-18-0:8 M:unit-white-18-0:83 M:unit-white-18-0:9 M:unit-white-2-1:0 M:unit-white-2-1:11 M:unit-white-2-1:20 M:unit-white-2-1:21 M:unit-white-2-1:22 M:unit-white-2-1:31 M:unit-white-4-0:15 M:unit-white-4-0:16 M:unit-white-4-0:17 M:unit-white-4-0:18 M:unit-white-4-0:19 M:unit-white-4-0:24 M:unit-white-4-0:25 M:unit-white-4-0:27 M:unit-white-4-0:28 M:unit-white-4-0:29 M:unit-white-4-0:33 M:unit-white-4-0:34 M:unit-white-4-0:35 M:unit-white-4-0:36 M:unit-white-4-0:37 M:unit-white-4-0:38 M:unit-white-4-0:39 M:unit-white-4-0:42 M:unit-white-4-0:43 M:unit-white-4-0:44 M:unit-white-4-0:45 M:unit-white-4-0:46 M:unit-white-4-0:47 M:unit-white-4-0:48 M:unit-white-4-0:51 M:unit-white-4-0:52 M:unit-white-4-0:53 M:unit-white-4-0:55 M:unit-white-4-0:56 M:unit-white-4-0:57 M:unit-white-4-0:58 M:unit-white-4-0:59 M:unit-white-4-0:6 M:unit-white-4-0:60 M:unit-white-4-0:61 M:unit-white-4-0:62 M:unit-white-4-0:63 M:unit-white-4-0:64 M:unit-white-4-0:65 M:unit-white-4-0:66 M:unit-white-4-0:67 M:unit-white-4-0:68 M:unit-white-4-0:7 M:unit-white-4-0:71 M:unit-white-4-0:72 M:unit-white-4-0:73 M:unit-white-4-0:74 M:unit-white-4-0:75 M:unit-white-4-0:76 M:unit-white-4-0:77 M:unit-white-4-0:78 M:unit-white-4-0:79 M:unit-white-4-0:8 M:unit-white-4-0:82 M:unit-white-4-0:83 M:unit-white-4-0:84 M:unit-white-4-0:86 M:unit-white-4-0:87 M:unit-white-4-0:9 M:unit-white-4-0:93 M:unit-white-4-0:94 M:unit-white-4-0:95 M:unit-white-4-0:96 M:unit-white-4-1:25 M:unit-white-4-1:34 M:unit-white-4-1:35 M:unit-white-4-1:36 M:unit-white-4-1:43 M:unit-white-4-1:44 M:unit-white-4-1:45 M:unit-white-4-1:46 M:unit-white-4-1:47 M:unit-white-4-1:52 M:unit-white-4-1:53 M:unit-white-4-1:54 M:unit-white-4-1:55 M:unit-white-4-1:56 M:unit-white-4-1:57 M:unit-white-4-1:58 M:unit-white-4-1:61 M:unit-white-4-1:62 M:unit-white-4-1:63 M:unit-white-4-1:64 M:unit-white-4-1:65 M:unit-white-4-1:66 M:unit-white-4-1:67 M:unit-white-4-1:68 M:unit-white-4-1:69 M:unit-white-4-1:70 M:unit-white-4-1:71 M:unit-white-4-1:72 M:unit-white-4-1:73 M:unit-white-4-1:74 M:unit-white-4-1:75 M:unit-white-4-1:76 M:unit-white-4-1:77 M:unit-white-4-1:78 M:unit-white-4-1:79 M:unit-white-4-1:82 M:unit-white-4-1:83 M:unit-white-4-1:84 M:unit-white-4-1:86 M:unit-white-4-1:87 M:unit-white-4-1:90 M:unit-white-4-1:91 M:unit-white-4-1:92 M:unit-white-4-1:93 M:unit-white-4-1:94 M:unit-white-4-1:95 M:unit-white-4-1:96 M:unit-white-4-1:97 M:unit-white-4-1:98 M:unit-white-4-1:99 M:unit-white-9-0:10 M:unit-white-9-0:11 M:unit-white-9-0:13 M:unit-white-9-0:21 M:unit-white-9-0:23 M:unit-white-9-0:24 M:unit-white-9-0:30 M:unit-white-9-0:31 M:unit-white-9-0:32 M:unit-white-9-0:33 M:unit-white-9-0:34 M:unit-white-9-0:35 M:unit-white-9-0:41 M:unit-white-9-0:42 M:unit-white-9-0:43 M:unit-white-9-0:44 M:unit-white-9-0:45 M:unit-white-9-0:46 M:unit-white-9-0:50 M:unit-white-9-0:51 M:unit-white-9-0:52 M:unit-white-9-0:53 M:unit-white-9-0:55 M:unit-white-9-0:60 M:unit-white-9-0:61 M:unit-white-9-0:62 M:unit-white-9-0:63 M:unit-white-9-0:64 M:unit-white-9-0:70 M:unit-white-9-0:71 M:unit-white-9-0:72 M:unit-white-9-0:73 M:unit-white-9-0:80 M:unit-white-9-0:81 M:unit-white-9-0:82 M:unit-white-9-0:90 M:unit-white-9-0:91 M:white_plant_1_1789796801495_cvrrb:11 M:white_plant_1_1789796801495_cvrrb:13 M:white_plant_1_1789796801495_cvrrb:14 M:white_plant_1_1789796801495_cvrrb:15 M:white_plant_1_1789796801495_cvrrb:20 M:white_plant_1_1789796801495_cvrrb:21 M:white_plant_1_1789796801495_cvrrb:22 M:white_plant_1_1789796801495_cvrrb:23 M:white_plant_1_1789796801495_cvrrb:24 M:white_plant_1_1789796801495_cvrrb:3 M:white_plant_1_1789796801495_cvrrb:31 M:white_plant_1_1789796801495_cvrrb:32 M:white_plant_1_1789796801495_cvrrb:33 M:white_plant_1_1789796801495_cvrrb:4 M:white_plant_1_1789796801495_cvrrb:42",
+  "canonical": "EA M:unit-white-15-0:10 M:unit-white-15-0:11 M:unit-white-15-0:21 M:unit-white-15-0:30 M:unit-white-15-0:31 M:unit-white-15-0:32 M:unit-white-15-0:33 M:unit-white-15-0:41 M:unit-white-15-0:42 M:unit-white-15-0:51 M:unit-white-17-0:10 M:unit-white-17-0:11 M:unit-white-17-0:13 M:unit-white-17-0:21 M:unit-white-17-0:23 M:unit-white-17-0:24 M:unit-white-17-0:30 M:unit-white-17-0:31 M:unit-white-17-0:32 M:unit-white-17-0:33 M:unit-white-17-0:34 M:unit-white-17-0:35 M:unit-white-17-0:41 M:unit-white-17-0:42 M:unit-white-17-0:43 M:unit-white-17-0:44 M:unit-white-17-0:50 M:unit-white-17-0:51 M:unit-white-17-0:52 M:unit-white-17-0:53 M:unit-white-17-0:60 M:unit-white-17-0:61 M:unit-white-17-0:62 M:unit-white-17-0:71 M:unit-white-18-0:10 M:unit-white-18-0:11 M:unit-white-18-0:13 M:unit-white-18-0:14 M:unit-white-18-0:15 M:unit-white-18-0:16 M:unit-white-18-0:17 M:unit-white-18-0:18 M:unit-white-18-0:19 M:unit-white-18-0:21 M:unit-white-18-0:23 M:unit-white-18-0:24 M:unit-white-18-0:25 M:unit-white-18-0:27 M:unit-white-18-0:28 M:unit-white-18-0:29 M:unit-white-18-0:3 M:unit-white-18-0:30 M:unit-white-18-0:31 M:unit-white-18-0:32 M:unit-white-18-0:33 M:unit-white-18-0:34 M:unit-white-18-0:35 M:unit-white-18-0:36 M:unit-white-18-0:37 M:unit-white-18-0:38 M:unit-white-18-0:4 M:unit-white-18-0:41 M:unit-white-18-0:42 M:unit-white-18-0:43 M:unit-white-18-0:44 M:unit-white-18-0:45 M:unit-white-18-0:46 M:unit-white-18-0:47 M:unit-white-18-0:5 M:unit-white-18-0:50 M:unit-white-18-0:51 M:unit-white-18-0:52 M:unit-white-18-0:53 M:unit-white-18-0:55 M:unit-white-18-0:56 M:unit-white-18-0:6 M:unit-white-18-0:61 M:unit-white-18-0:62 M:unit-white-18-0:63 M:unit-white-18-0:64 M:unit-white-18-0:65 M:unit-white-18-0:7 M:unit-white-18-0:72 M:unit-white-18-0:73 M:unit-white-18-0:74 M:unit-white-18-0:8 M:unit-white-18-0:83 M:unit-white-18-0:9 M:unit-white-2-1:10 M:unit-white-2-1:11 M:unit-white-2-1:21 M:unit-white-2-1:31 M:unit-white-4-0:15 M:unit-white-4-0:16 M:unit-white-4-0:17 M:unit-white-4-0:18 M:unit-white-4-0:19 M:unit-white-4-0:24 M:unit-white-4-0:25 M:unit-white-4-0:27 M:unit-white-4-0:28 M:unit-white-4-0:29 M:unit-white-4-0:33 M:unit-white-4-0:34 M:unit-white-4-0:35 M:unit-white-4-0:36 M:unit-white-4-0:37 M:unit-white-4-0:38 M:unit-white-4-0:39 M:unit-white-4-0:42 M:unit-white-4-0:43 M:unit-white-4-0:44 M:unit-white-4-0:45 M:unit-white-4-0:46 M:unit-white-4-0:47 M:unit-white-4-0:48 M:unit-white-4-0:51 M:unit-white-4-0:52 M:unit-white-4-0:53 M:unit-white-4-0:55 M:unit-white-4-0:56 M:unit-white-4-0:57 M:unit-white-4-0:58 M:unit-white-4-0:59 M:unit-white-4-0:6 M:unit-white-4-0:60 M:unit-white-4-0:61 M:unit-white-4-0:62 M:unit-white-4-0:63 M:unit-white-4-0:64 M:unit-white-4-0:65 M:unit-white-4-0:66 M:unit-white-4-0:67 M:unit-white-4-0:68 M:unit-white-4-0:7 M:unit-white-4-0:71 M:unit-white-4-0:72 M:unit-white-4-0:73 M:unit-white-4-0:74 M:unit-white-4-0:75 M:unit-white-4-0:76 M:unit-white-4-0:77 M:unit-white-4-0:78 M:unit-white-4-0:79 M:unit-white-4-0:8 M:unit-white-4-0:82 M:unit-white-4-0:83 M:unit-white-4-0:84 M:unit-white-4-0:86 M:unit-white-4-0:87 M:unit-white-4-0:9 M:unit-white-4-0:93 M:unit-white-4-0:94 M:unit-white-4-0:95 M:unit-white-4-0:96 M:unit-white-4-1:25 M:unit-white-4-1:34 M:unit-white-4-1:35 M:unit-white-4-1:36 M:unit-white-4-1:43 M:unit-white-4-1:44 M:unit-white-4-1:45 M:unit-white-4-1:46 M:unit-white-4-1:47 M:unit-white-4-1:52 M:unit-white-4-1:53 M:unit-white-4-1:55 M:unit-white-4-1:56 M:unit-white-4-1:57 M:unit-white-4-1:58 M:unit-white-4-1:61 M:unit-white-4-1:62 M:unit-white-4-1:63 M:unit-white-4-1:64 M:unit-white-4-1:65 M:unit-white-4-1:66 M:unit-white-4-1:67 M:unit-white-4-1:68 M:unit-white-4-1:70 M:unit-white-4-1:71 M:unit-white-4-1:72 M:unit-white-4-1:73 M:unit-white-4-1:74 M:unit-white-4-1:75 M:unit-white-4-1:76 M:unit-white-4-1:77 M:unit-white-4-1:78 M:unit-white-4-1:79 M:unit-white-4-1:80 M:unit-white-4-1:81 M:unit-white-4-1:82 M:unit-white-4-1:83 M:unit-white-4-1:84 M:unit-white-4-1:86 M:unit-white-4-1:87 M:unit-white-4-1:90 M:unit-white-4-1:91 M:unit-white-4-1:92 M:unit-white-4-1:93 M:unit-white-4-1:94 M:unit-white-4-1:95 M:unit-white-4-1:96 M:unit-white-9-0:10 M:unit-white-9-0:11 M:unit-white-9-0:13 M:unit-white-9-0:21 M:unit-white-9-0:23 M:unit-white-9-0:24 M:unit-white-9-0:30 M:unit-white-9-0:31 M:unit-white-9-0:32 M:unit-white-9-0:33 M:unit-white-9-0:34 M:unit-white-9-0:35 M:unit-white-9-0:41 M:unit-white-9-0:42 M:unit-white-9-0:43 M:unit-white-9-0:44 M:unit-white-9-0:45 M:unit-white-9-0:46 M:unit-white-9-0:50 M:unit-white-9-0:51 M:unit-white-9-0:52 M:unit-white-9-0:53 M:unit-white-9-0:55 M:unit-white-9-0:60 M:unit-white-9-0:61 M:unit-white-9-0:62 M:unit-white-9-0:63 M:unit-white-9-0:64 M:unit-white-9-0:70 M:unit-white-9-0:71 M:unit-white-9-0:72 M:unit-white-9-0:73 M:unit-white-9-0:80 M:unit-white-9-0:81 M:unit-white-9-0:82 M:unit-white-9-0:90 M:unit-white-9-0:91 M:white_plant_1_1789796801495_cvrrb:10 M:white_plant_1_1789796801495_cvrrb:11 M:white_plant_1_1789796801495_cvrrb:13 M:white_plant_1_1789796801495_cvrrb:14 M:white_plant_1_1789796801495_cvrrb:15 M:white_plant_1_1789796801495_cvrrb:21 M:white_plant_1_1789796801495_cvrrb:23 M:white_plant_1_1789796801495_cvrrb:24 M:white_plant_1_1789796801495_cvrrb:3 M:white_plant_1_1789796801495_cvrrb:31 M:white_plant_1_1789796801495_cvrrb:33 M:white_plant_1_1789796801495_cvrrb:4",
+  "seed": 4242,
+  "game": 217,
+  "ply": 184,
+  "prefix": [
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "white_fire_1_1789796801495_h9h70",
+        "white_water_1_1789796801495_6pjan",
+        "white_plant_1_1789796801495_cvrrb"
+      ]
+    },
+    {
+      "type": "PROMOTE_UNIT",
+      "unitId": "white_fire_1_1789796801495_h9h70"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "black_fire_1_1789796801495_arn8v",
+        "black_water_1_1789796801495_udjuf",
+        "black_plant_1_1789796801495_yeiiu"
+      ]
+    },
+    {
+      "type": "PROMOTE_UNIT",
+      "unitId": "black_water_1_1789796801495_udjuf"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "white_water_1_1789796801495_6pjan",
+        "white_plant_1_1789796801495_cvrrb"
+      ]
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "lightning_1",
+      "position": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "plant_1",
+      "position": {
+        "x": 1,
+        "y": 0
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "black_fire_1_1789796801495_arn8v",
+        "black_plant_1_1789796801495_yeiiu"
+      ]
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "metal_1",
+      "position": {
+        "x": 9,
+        "y": 9
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "unit-white-2-0",
+        "white_water_1_1789796801495_6pjan",
+        "white_plant_1_1789796801495_cvrrb",
+        "unit-white-2-1"
+      ]
+    },
+    {
+      "type": "PROMOTE_UNIT",
+      "unitId": "white_water_1_1789796801495_6pjan"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "black_fire_1_1789796801495_arn8v",
+        "black_plant_1_1789796801495_yeiiu",
+        "unit-black-2-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "white_water_1_1789796801495_6pjan",
+      "to": {
+        "x": 3,
+        "y": 0
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "white_plant_1_1789796801495_cvrrb",
+      "to": {
+        "x": 1,
+        "y": 1
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "unit-white-2-0",
+        "white_water_1_1789796801495_6pjan",
+        "white_plant_1_1789796801495_cvrrb",
+        "unit-white-2-1"
+      ]
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "lightning_1",
+      "position": {
+        "x": 0,
+        "y": 1
+      }
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "shadow_1",
+      "position": {
+        "x": 2,
+        "y": 0
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "black_fire_1_1789796801495_arn8v",
+        "black_plant_1_1789796801495_yeiiu",
+        "unit-black-2-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-4-1",
+      "to": {
+        "x": 0,
+        "y": 2
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "white_water_1_1789796801495_6pjan",
+      "to": {
+        "x": 4,
+        "y": 0
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-4-1",
+      "to": {
+        "x": 2,
+        "y": 2
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "unit-white-2-0",
+        "white_plant_1_1789796801495_cvrrb",
+        "unit-white-2-1",
+        "unit-white-4-1",
+        "unit-white-4-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "black_plant_1_1789796801495_yeiiu",
+      "to": {
+        "x": 7,
+        "y": 7
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "black_fire_1_1789796801495_arn8v",
+        "black_plant_1_1789796801495_yeiiu",
+        "unit-black-2-0"
+      ]
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "fire_1",
+      "position": {
+        "x": 9,
+        "y": 8
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-4-1",
+      "to": {
+        "x": 9,
+        "y": 2
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "unit-white-2-0",
+        "white_plant_1_1789796801495_cvrrb",
+        "unit-white-2-1",
+        "unit-white-4-1",
+        "unit-white-4-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "unit-black-5-0",
+        "black_fire_1_1789796801495_arn8v",
+        "black_plant_1_1789796801495_yeiiu",
+        "unit-black-2-0"
+      ]
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "fire_1",
+      "position": {
+        "x": 7,
+        "y": 8
+      }
+    },
+    {
+      "type": "PROMOTE_UNIT",
+      "unitId": "black_fire_1_1789796801495_arn8v"
+    },
+    {
+      "type": "PROMOTE_UNIT",
+      "unitId": "unit-black-5-0"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "shadow_1",
+      "position": {
+        "x": 8,
+        "y": 7
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "unit-white-2-0",
+        "white_plant_1_1789796801495_cvrrb",
+        "unit-white-2-1",
+        "unit-white-4-1",
+        "unit-white-4-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-6-1",
+      "to": {
+        "x": 7,
+        "y": 3
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-6-0",
+      "to": {
+        "x": 6,
+        "y": 7
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "black_plant_1_1789796801495_yeiiu",
+        "unit-black-2-0",
+        "unit-black-6-1",
+        "unit-black-6-0"
+      ]
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "fire_1",
+      "position": {
+        "x": 9,
+        "y": 8
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "unit-white-2-0",
+        "white_plant_1_1789796801495_cvrrb",
+        "unit-white-2-1",
+        "unit-white-4-1",
+        "unit-white-4-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-6-0",
+      "to": {
+        "x": 9,
+        "y": 3
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "unit-black-7-0",
+        "black_plant_1_1789796801495_yeiiu",
+        "unit-black-2-0",
+        "unit-black-6-1",
+        "unit-black-6-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-4-0",
+      "to": {
+        "x": 4,
+        "y": 1
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "white_plant_1_1789796801495_cvrrb",
+      "to": {
+        "x": 2,
+        "y": 1
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-2-0",
+      "to": {
+        "x": 1,
+        "y": 2
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "unit-white-2-0",
+        "white_plant_1_1789796801495_cvrrb",
+        "unit-white-2-1",
+        "unit-white-4-1",
+        "unit-white-4-0"
+      ]
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "fire_1",
+      "position": {
+        "x": 2,
+        "y": 0
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "unit-black-6-0",
+      "targetPosition": {
+        "x": 9,
+        "y": 2
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "unit-black-7-0",
+        "black_plant_1_1789796801495_yeiiu",
+        "unit-black-2-0",
+        "unit-black-6-1",
+        "unit-black-6-0"
+      ]
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "fire_1",
+      "position": {
+        "x": 9,
+        "y": 5
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "unit-white-4-1",
+      "targetPosition": {
+        "x": 9,
+        "y": 3
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-4-1",
+      "to": {
+        "x": 5,
+        "y": 3
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "unit-white-2-0",
+        "white_plant_1_1789796801495_cvrrb",
+        "unit-white-9-0",
+        "unit-white-2-1",
+        "unit-white-4-1",
+        "unit-white-4-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-9-0",
+      "to": {
+        "x": 4,
+        "y": 7
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "unit-black-7-0",
+        "black_plant_1_1789796801495_yeiiu",
+        "unit-black-2-0",
+        "unit-black-6-1",
+        "unit-black-9-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-4-0",
+      "to": {
+        "x": 3,
+        "y": 3
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-4-0",
+      "to": {
+        "x": 0,
+        "y": 3
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-4-1",
+      "to": {
+        "x": 8,
+        "y": 2
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "unit-white-2-0",
+        "white_plant_1_1789796801495_cvrrb",
+        "unit-white-9-0",
+        "unit-white-2-1",
+        "unit-white-4-1",
+        "unit-white-4-0"
+      ]
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "lightning_1",
+      "position": {
+        "x": 4,
+        "y": 1
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-6-1",
+      "to": {
+        "x": 2,
+        "y": 2
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "unit-black-7-0",
+        "black_plant_1_1789796801495_yeiiu",
+        "unit-black-2-0",
+        "unit-black-6-1",
+        "unit-black-9-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-9-0",
+      "to": {
+        "x": 1,
+        "y": 3
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "unit-white-2-0",
+        "white_plant_1_1789796801495_cvrrb",
+        "unit-white-9-0",
+        "unit-white-2-1",
+        "unit-white-4-1",
+        "unit-white-4-0"
+      ]
+    },
+    {
+      "type": "PROMOTE_UNIT",
+      "unitId": "unit-white-2-0"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "black_plant_1_1789796801495_yeiiu",
+      "to": {
+        "x": 7,
+        "y": 4
+      }
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "unit-black-6-1",
+      "targetPosition": {
+        "x": 1,
+        "y": 2
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "unit-black-7-0",
+        "black_plant_1_1789796801495_yeiiu",
+        "unit-black-2-0",
+        "unit-black-6-1",
+        "unit-black-9-0"
+      ]
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "lightning_1",
+      "position": {
+        "x": 8,
+        "y": 9
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-4-1",
+      "to": {
+        "x": 8,
+        "y": 6
+      }
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "white_plant_1_1789796801495_cvrrb",
+      "targetPosition": {
+        "x": 2,
+        "y": 2
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "white_plant_1_1789796801495_cvrrb",
+        "unit-white-9-0",
+        "unit-white-2-1",
+        "unit-white-4-1",
+        "unit-white-4-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "unit-black-12-0",
+        "unit-black-7-0",
+        "black_plant_1_1789796801495_yeiiu",
+        "unit-black-2-0",
+        "unit-black-6-1",
+        "unit-black-9-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-9-0",
+      "to": {
+        "x": 0,
+        "y": 4
+      }
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "white_plant_1_1789796801495_cvrrb",
+      "targetPosition": {
+        "x": 2,
+        "y": 2
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-4-0",
+      "to": {
+        "x": 2,
+        "y": 7
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "white_plant_1_1789796801495_cvrrb",
+        "unit-white-9-0",
+        "unit-white-2-1",
+        "unit-white-4-1",
+        "unit-white-4-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "unit-black-6-1",
+      "targetPosition": {
+        "x": 2,
+        "y": 1
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-9-0",
+      "to": {
+        "x": 5,
+        "y": 6
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "unit-black-12-0",
+        "unit-black-7-0",
+        "black_plant_1_1789796801495_yeiiu",
+        "unit-black-2-0",
+        "unit-black-6-1",
+        "unit-black-9-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "white_plant_1_1789796801495_cvrrb",
+      "targetPosition": {
+        "x": 2,
+        "y": 2
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "white_plant_1_1789796801495_cvrrb",
+        "unit-white-9-0",
+        "unit-white-2-1",
+        "unit-white-4-1",
+        "unit-white-4-0"
+      ]
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "fire_1",
+      "position": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "unit-black-6-1",
+      "targetPosition": {
+        "x": 2,
+        "y": 1
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-7-0",
+      "to": {
+        "x": 7,
+        "y": 7
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "black_plant_1_1789796801495_yeiiu",
+      "to": {
+        "x": 8,
+        "y": 4
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "unit-black-12-0",
+        "unit-black-7-0",
+        "black_plant_1_1789796801495_yeiiu",
+        "unit-black-2-0",
+        "unit-black-6-1",
+        "unit-black-9-0"
+      ]
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "lightning_1",
+      "position": {
+        "x": 9,
+        "y": 7
+      }
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "fire_1",
+      "position": {
+        "x": 9,
+        "y": 8
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "white_plant_1_1789796801495_cvrrb",
+      "targetPosition": {
+        "x": 2,
+        "y": 2
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "white_plant_1_1789796801495_cvrrb",
+        "unit-white-9-0",
+        "unit-white-2-1",
+        "unit-white-4-1",
+        "unit-white-4-0",
+        "unit-white-15-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "unit-black-6-1",
+      "targetPosition": {
+        "x": 2,
+        "y": 1
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-9-0",
+      "to": {
+        "x": 4,
+        "y": 5
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "black_plant_1_1789796801495_yeiiu",
+      "to": {
+        "x": 9,
+        "y": 4
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "unit-black-12-0",
+        "unit-black-7-0",
+        "black_plant_1_1789796801495_yeiiu",
+        "unit-black-2-0",
+        "unit-black-6-1",
+        "unit-black-9-0",
+        "unit-black-15-0",
+        "unit-black-15-1"
+      ]
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "fire_1",
+      "position": {
+        "x": 8,
+        "y": 8
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "white_plant_1_1789796801495_cvrrb",
+      "targetPosition": {
+        "x": 2,
+        "y": 2
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-4-1",
+      "to": {
+        "x": 5,
+        "y": 6
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-4-1",
+      "to": {
+        "x": 5,
+        "y": 8
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "white_plant_1_1789796801495_cvrrb",
+        "unit-white-9-0",
+        "unit-white-2-1",
+        "unit-white-4-1",
+        "unit-white-4-0",
+        "unit-white-15-0"
+      ]
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "fire_1",
+      "position": {
+        "x": 0,
+        "y": 2
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-7-0",
+      "to": {
+        "x": 7,
+        "y": 9
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "unit-black-12-0",
+        "unit-black-7-0",
+        "black_plant_1_1789796801495_yeiiu",
+        "unit-black-2-0",
+        "unit-black-6-1",
+        "unit-black-9-0",
+        "unit-black-15-0",
+        "unit-black-15-1",
+        "unit-black-16-0"
+      ]
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "shadow_1",
+      "position": {
+        "x": 9,
+        "y": 6
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "white_plant_1_1789796801495_cvrrb",
+      "targetPosition": {
+        "x": 2,
+        "y": 2
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-4-0",
+      "to": {
+        "x": 9,
+        "y": 6
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "white_plant_1_1789796801495_cvrrb",
+        "unit-white-9-0",
+        "unit-white-2-1",
+        "unit-white-4-1",
+        "unit-white-4-0",
+        "unit-white-15-0",
+        "unit-white-17-0"
+      ]
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "lightning_1",
+      "position": {
+        "x": 2,
+        "y": 0
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-15-0",
+      "to": {
+        "x": 6,
+        "y": 2
+      }
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "unit-black-6-1",
+      "targetPosition": {
+        "x": 2,
+        "y": 1
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "unit-black-12-0",
+        "unit-black-7-0",
+        "black_plant_1_1789796801495_yeiiu",
+        "unit-black-2-0",
+        "unit-black-6-1",
+        "unit-black-9-0",
+        "unit-black-15-0",
+        "unit-black-15-1",
+        "unit-black-16-0"
+      ]
+    },
+    {
+      "type": "PROMOTE_UNIT",
+      "unitId": "unit-black-6-1"
+    },
+    {
+      "type": "PROMOTE_UNIT",
+      "unitId": "unit-black-15-0"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "white_plant_1_1789796801495_cvrrb",
+      "targetPosition": {
+        "x": 2,
+        "y": 2
+      }
+    }
+  ],
+  "rules": {
+    "elementGraph": "double-thick",
+    "upkeep": "shipped",
+    "inactivityRule": "off",
+    "victoryRule": "home-or-elimination",
+    "handicap": 0,
+    "combatHandicap": {
+      "white": 0,
+      "black": 0
+    }
+  },
+  "state": {
+    "actionsPerTurn": 4,
+    "ruleset": "phasing",
+    "pendingSummons": [],
+    "blackCrystalHandicap": 0,
+    "phase": "playing",
+    "inactivityPlies": 12,
+    "progressThisTurn": false,
+    "board": {
+      "cells": [
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "resourceLayers": 5
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 0
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 0
+            },
+            "resourceLayers": 6
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 0
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 0
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 0
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 0
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 0
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 0
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 0
+            },
+            "resourceLayers": 4
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 1
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 1
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 1
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 1
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 1
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 1
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 1
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 1
+            },
+            "resourceLayers": 16
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 1
+            },
+            "resourceLayers": 16
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 1
+            },
+            "resourceLayers": 4
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 2
+            },
+            "resourceLayers": 7
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 2
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 2
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 2
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 2
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 2
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 2
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 2
+            },
+            "resourceLayers": 16
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 2
+            },
+            "resourceLayers": 16
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 2
+            },
+            "resourceLayers": 4
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 3
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 3
+            },
+            "resourceLayers": 2
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 3
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 3
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 3
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 3
+            },
+            "resourceLayers": 8
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 3
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 3
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 3
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 3
+            },
+            "resourceLayers": 2
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 4
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 4
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 4
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 4
+            },
+            "resourceLayers": 8
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 4
+            },
+            "resourceLayers": 8
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 4
+            },
+            "resourceLayers": 8
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 4
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 4
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 4
+            },
+            "resourceLayers": 1
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 4
+            },
+            "resourceLayers": 0
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 5
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 5
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 5
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 5
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 5
+            },
+            "resourceLayers": 5
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 5
+            },
+            "resourceLayers": 8
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 5
+            },
+            "resourceLayers": 8
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 5
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 5
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 5
+            },
+            "resourceLayers": 4
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 6
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 6
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 6
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 6
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 6
+            },
+            "resourceLayers": 8
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 6
+            },
+            "resourceLayers": 2
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 6
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 6
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 6
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 6
+            },
+            "resourceLayers": 4
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 7
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 7
+            },
+            "resourceLayers": 16
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 7
+            },
+            "resourceLayers": 16
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 7
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 7
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 7
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 7
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 7
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 7
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 7
+            },
+            "resourceLayers": 8
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 8
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 8
+            },
+            "resourceLayers": 16
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 8
+            },
+            "resourceLayers": 16
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 8
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 8
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 8
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 8
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 8
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 8
+            },
+            "resourceLayers": 2
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 8
+            },
+            "resourceLayers": 0
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 9
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 9
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 9
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 9
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 9
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 9
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 9
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 9
+            },
+            "resourceLayers": 6
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 9
+            },
+            "resourceLayers": 1
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 9
+            },
+            "resourceLayers": 0
+          }
+        ]
+      ],
+      "units": [
+        {
+          "id": "white_plant_1_1789796801495_cvrrb",
+          "definitionId": "plant_1",
+          "owner": "white",
+          "position": {
+            "x": 2,
+            "y": 1
+          },
+          "hasMoved": false,
+          "hasAttacked": true,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": [
+            "unit-black-6-1"
+          ]
+        },
+        {
+          "id": "black_plant_1_1789796801495_yeiiu",
+          "definitionId": "plant_1",
+          "owner": "black",
+          "position": {
+            "x": 9,
+            "y": 4
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-2-1",
+          "definitionId": "plant_1",
+          "owner": "white",
+          "position": {
+            "x": 1,
+            "y": 0
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-black-2-0",
+          "definitionId": "metal_1",
+          "owner": "black",
+          "position": {
+            "x": 9,
+            "y": 9
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-4-0",
+          "definitionId": "lightning_1",
+          "owner": "white",
+          "position": {
+            "x": 9,
+            "y": 6
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-4-1",
+          "definitionId": "shadow_1",
+          "owner": "white",
+          "position": {
+            "x": 5,
+            "y": 8
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-black-6-1",
+          "definitionId": "shadow_2",
+          "owner": "black",
+          "position": {
+            "x": 2,
+            "y": 2
+          },
+          "hasMoved": false,
+          "hasAttacked": true,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 1,
+          "promotedThisPlacement": true,
+          "placedThisTurn": false,
+          "attackedThisTurn": [
+            "white_plant_1_1789796801495_cvrrb"
+          ]
+        },
+        {
+          "id": "unit-black-7-0",
+          "definitionId": "fire_1",
+          "owner": "black",
+          "position": {
+            "x": 7,
+            "y": 9
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-9-0",
+          "definitionId": "fire_1",
+          "owner": "white",
+          "position": {
+            "x": 0,
+            "y": 4
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-black-9-0",
+          "definitionId": "fire_1",
+          "owner": "black",
+          "position": {
+            "x": 4,
+            "y": 5
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-black-12-0",
+          "definitionId": "lightning_1",
+          "owner": "black",
+          "position": {
+            "x": 8,
+            "y": 9
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-15-0",
+          "definitionId": "fire_1",
+          "owner": "white",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-black-15-0",
+          "definitionId": "lightning_2",
+          "owner": "black",
+          "position": {
+            "x": 6,
+            "y": 2
+          },
+          "hasMoved": true,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": true,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-black-15-1",
+          "definitionId": "fire_1",
+          "owner": "black",
+          "position": {
+            "x": 9,
+            "y": 8
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-black-16-0",
+          "definitionId": "fire_1",
+          "owner": "black",
+          "position": {
+            "x": 8,
+            "y": 8
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-17-0",
+          "definitionId": "fire_1",
+          "owner": "white",
+          "position": {
+            "x": 0,
+            "y": 2
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-18-0",
+          "definitionId": "lightning_1",
+          "owner": "white",
+          "position": {
+            "x": 2,
+            "y": 0
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        }
+      ],
+      "initialResourceLayers": [
+        8,
+        8,
+        8,
+        0,
+        0,
+        0,
+        4,
+        4,
+        4,
+        4,
+        8,
+        8,
+        4,
+        0,
+        0,
+        0,
+        4,
+        16,
+        16,
+        4,
+        8,
+        4,
+        4,
+        0,
+        0,
+        0,
+        4,
+        16,
+        16,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        8,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        8,
+        8,
+        8,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        8,
+        8,
+        8,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        8,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        16,
+        16,
+        4,
+        0,
+        0,
+        0,
+        4,
+        4,
+        8,
+        4,
+        16,
+        16,
+        4,
+        0,
+        0,
+        0,
+        4,
+        8,
+        8,
+        4,
+        4,
+        4,
+        4,
+        0,
+        0,
+        0,
+        8,
+        8,
+        8
+      ]
+    },
+    "players": {
+      "white": {
+        "id": "white",
+        "resources": 0,
+        "startCorner": {
+          "x": 0,
+          "y": 0
+        },
+        "resourcesGained": 40,
+        "resourcesUpkeep": 1
+      },
+      "black": {
+        "id": "black",
+        "resources": 0,
+        "startCorner": {
+          "x": 9,
+          "y": 9
+        },
+        "resourcesGained": 53,
+        "resourcesUpkeep": 0
+      }
+    },
+    "turn": {
+      "currentPlayer": "white",
+      "phase": "action",
+      "actionsRemaining": 3,
+      "turnNumber": 19
+    },
+    "winner": null,
+    "selectedUnit": null,
+    "validMoves": [],
+    "validAttacks": [],
+    "victoryRule": "home-or-elimination",
+    "inactivityRule": "off",
+    "reviewUpkeep": {
+      "white": true,
+      "black": true
+    },
+    "lastIncome": {
+      "player": "black",
+      "turnNumber": 18,
+      "total": 3,
+      "takes": [
+        {
+          "unitId": "black_plant_1_1789796801495_yeiiu",
+          "definitionId": "plant_1",
+          "position": {
+            "x": 9,
+            "y": 4
+          },
+          "amount": 0
+        },
+        {
+          "unitId": "unit-black-2-0",
+          "definitionId": "metal_1",
+          "position": {
+            "x": 9,
+            "y": 9
+          },
+          "amount": 0
+        },
+        {
+          "unitId": "unit-black-6-1",
+          "definitionId": "shadow_1",
+          "position": {
+            "x": 2,
+            "y": 2
+          },
+          "amount": 0
+        },
+        {
+          "unitId": "unit-black-7-0",
+          "definitionId": "fire_1",
+          "position": {
+            "x": 7,
+            "y": 9
+          },
+          "amount": 1
+        },
+        {
+          "unitId": "unit-black-9-0",
+          "definitionId": "fire_1",
+          "position": {
+            "x": 4,
+            "y": 5
+          },
+          "amount": 1
+        },
+        {
+          "unitId": "unit-black-12-0",
+          "definitionId": "lightning_1",
+          "position": {
+            "x": 8,
+            "y": 9
+          },
+          "amount": 0
+        },
+        {
+          "unitId": "unit-black-15-0",
+          "definitionId": "lightning_1",
+          "position": {
+            "x": 6,
+            "y": 2
+          },
+          "amount": 0
+        },
+        {
+          "unitId": "unit-black-15-1",
+          "definitionId": "fire_1",
+          "position": {
+            "x": 9,
+            "y": 8
+          },
+          "amount": 0
+        },
+        {
+          "unitId": "unit-black-16-0",
+          "definitionId": "fire_1",
+          "position": {
+            "x": 8,
+            "y": 8
+          },
+          "amount": 1
+        }
+      ]
+    },
+    "upkeepPending": false,
+    "lastUpkeep": {
+      "player": "black",
+      "paid": 0,
+      "released": [],
+      "turnNumber": 18
+    },
+    "lastSummoning": {
+      "player": "white",
+      "turnNumber": 19,
+      "summoned": [
+        {
+          "id": "unit-white-18-0",
+          "owner": "white",
+          "definitionId": "lightning_1",
+          "position": {
+            "x": 2,
+            "y": 0
+          },
+          "cost": 3
+        }
+      ],
+      "disrupted": []
+    }
+  }
+}

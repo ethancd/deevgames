@@ -1,0 +1,3569 @@
+{
+  "kind": "transition",
+  "seed": 165,
+  "game": 1732,
+  "ply": 408,
+  "field": "result",
+  "action": {
+    "type": "PAY_UPKEEP",
+    "keepUnitIds": [
+      "black_water_1_1789795490510_bc3qy",
+      "black_plant_1_1789795490510_hva8g",
+      "unit-black-4-0",
+      "unit-black-48-0"
+    ]
+  },
+  "prefix": [
+    {
+      "type": "MOVE",
+      "unitId": "white_water_1_1789795490510_8af90",
+      "to": {
+        "x": 4,
+        "y": 2
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PROMOTE_UNIT",
+      "unitId": "white_plant_1_1789795490510_xj415"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "black_fire_1_1789795490510_lobjh",
+      "to": {
+        "x": 4,
+        "y": 9
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "black_fire_1_1789795490510_lobjh",
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g"
+      ]
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "shadow_1",
+      "position": {
+        "x": 5,
+        "y": 9
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PROMOTE_UNIT",
+      "unitId": "white_water_1_1789795490510_8af90"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "black_fire_1_1789795490510_lobjh",
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-1-0"
+      ]
+    },
+    {
+      "type": "PROMOTE_UNIT",
+      "unitId": "unit-black-1-0"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "white_plant_1_1789795490510_xj415",
+      "to": {
+        "x": 3,
+        "y": 0
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "black_fire_1_1789795490510_lobjh",
+      "to": {
+        "x": 6,
+        "y": 3
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "black_fire_1_1789795490510_lobjh",
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g"
+      ]
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "lightning_1",
+      "position": {
+        "x": 6,
+        "y": 6
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "white_water_1_1789795490510_8af90",
+      "to": {
+        "x": 3,
+        "y": 4
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "white_fire_1_1789795490510_pwkza",
+      "to": {
+        "x": 2,
+        "y": 0
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "black_fire_1_1789795490510_lobjh",
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-3-0"
+      ]
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "shadow_1",
+      "position": {
+        "x": 6,
+        "y": 8
+      }
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "fire_1",
+      "position": {
+        "x": 8,
+        "y": 6
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "white_water_1_1789795490510_8af90",
+      "to": {
+        "x": 4,
+        "y": 5
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "black_fire_1_1789795490510_lobjh",
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-3-0",
+        "unit-black-4-1",
+        "unit-black-4-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "white_plant_1_1789795490510_xj415",
+      "to": {
+        "x": 3,
+        "y": 2
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "white_fire_1_1789795490510_pwkza",
+      "to": {
+        "x": 1,
+        "y": 1
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "white_plant_1_1789795490510_xj415",
+      "to": {
+        "x": 3,
+        "y": 1
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "fire_1",
+      "position": {
+        "x": 2,
+        "y": 3
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-4-1",
+      "to": {
+        "x": 7,
+        "y": 8
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "black_fire_1_1789795490510_lobjh",
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-3-0",
+        "unit-black-4-1",
+        "unit-black-4-0"
+      ]
+    },
+    {
+      "type": "PROMOTE_UNIT",
+      "unitId": "unit-black-4-1"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "black_fire_1_1789795490510_lobjh",
+      "to": {
+        "x": 4,
+        "y": 9
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "black_fire_1_1789795490510_lobjh",
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-3-0",
+        "unit-black-4-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "water_1",
+      "position": {
+        "x": 4,
+        "y": 4
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "black_fire_1_1789795490510_lobjh",
+      "to": {
+        "x": 1,
+        "y": 8
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "black_fire_1_1789795490510_lobjh",
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-3-0",
+        "unit-black-4-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-6-0",
+      "to": {
+        "x": 4,
+        "y": 1
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "black_fire_1_1789795490510_lobjh",
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-3-0",
+        "unit-black-4-0"
+      ]
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "lightning_1",
+      "position": {
+        "x": 9,
+        "y": 9
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-8-0",
+      "to": {
+        "x": 2,
+        "y": 5
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-6-0",
+      "to": {
+        "x": 5,
+        "y": 2
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "black_fire_1_1789795490510_lobjh",
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-3-0",
+        "unit-black-4-0",
+        "unit-black-9-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "white_fire_1_1789795490510_pwkza",
+      "to": {
+        "x": 1,
+        "y": 6
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "white_plant_1_1789795490510_xj415",
+      "to": {
+        "x": 3,
+        "y": 0
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "fire_1",
+      "position": {
+        "x": 5,
+        "y": 1
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-4-0",
+      "to": {
+        "x": 9,
+        "y": 3
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "black_fire_1_1789795490510_lobjh",
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-3-0",
+        "unit-black-4-0",
+        "unit-black-9-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "white_fire_1_1789795490510_pwkza",
+        "white_plant_1_1789795490510_xj415",
+        "unit-white-8-0",
+        "unit-white-6-0",
+        "unit-white-11-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "black_fire_1_1789795490510_lobjh",
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-3-0",
+        "unit-black-4-0",
+        "unit-black-9-0"
+      ]
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "lightning_1",
+      "position": {
+        "x": 7,
+        "y": 8
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "white_fire_1_1789795490510_pwkza",
+      "to": {
+        "x": 7,
+        "y": 7
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "unit-black-12-0",
+      "targetPosition": {
+        "x": 7,
+        "y": 7
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "black_fire_1_1789795490510_lobjh",
+      "to": {
+        "x": 1,
+        "y": 9
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "unit-black-12-0",
+        "black_fire_1_1789795490510_lobjh",
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-3-0",
+        "unit-black-4-0",
+        "unit-black-9-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "white_plant_1_1789795490510_xj415",
+      "to": {
+        "x": 7,
+        "y": 0
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "lightning_1",
+      "position": {
+        "x": 2,
+        "y": 4
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-12-0",
+      "to": {
+        "x": 4,
+        "y": 5
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-12-0",
+      "to": {
+        "x": 5,
+        "y": 3
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "unit-black-12-0",
+        "black_fire_1_1789795490510_lobjh",
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-3-0",
+        "unit-black-4-0",
+        "unit-black-9-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "unit-white-6-0",
+      "targetPosition": {
+        "x": 5,
+        "y": 3
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "unit-white-14-0",
+        "unit-white-8-0",
+        "unit-white-6-0",
+        "unit-white-11-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "black_fire_1_1789795490510_lobjh",
+      "to": {
+        "x": 2,
+        "y": 2
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "black_fire_1_1789795490510_lobjh",
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-3-0",
+        "unit-black-4-0",
+        "unit-black-9-0"
+      ]
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "fire_1",
+      "position": {
+        "x": 7,
+        "y": 6
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-15-0",
+      "to": {
+        "x": 3,
+        "y": 8
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-3-0",
+      "to": {
+        "x": 5,
+        "y": 7
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "unit-black-15-0",
+        "black_fire_1_1789795490510_lobjh",
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-3-0",
+        "unit-black-4-0",
+        "unit-black-9-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-8-0",
+      "to": {
+        "x": 5,
+        "y": 4
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-15-0",
+      "to": {
+        "x": 3,
+        "y": 6
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "unit-black-15-0",
+        "black_fire_1_1789795490510_lobjh",
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-3-0",
+        "unit-black-4-0",
+        "unit-black-9-0"
+      ]
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "water_1",
+      "position": {
+        "x": 8,
+        "y": 7
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-8-0",
+      "to": {
+        "x": 8,
+        "y": 5
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "shadow_1",
+      "position": {
+        "x": 3,
+        "y": 0
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "unit-black-15-0",
+        "unit-black-17-0",
+        "black_fire_1_1789795490510_lobjh",
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-3-0",
+        "unit-black-4-0",
+        "unit-black-9-0"
+      ]
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "fire_1",
+      "position": {
+        "x": 3,
+        "y": 7
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-18-0",
+      "to": {
+        "x": 1,
+        "y": 1
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-18-0",
+      "to": {
+        "x": 4,
+        "y": 1
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-4-0",
+      "to": {
+        "x": 8,
+        "y": 0
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "unit-black-15-0",
+        "unit-black-17-0",
+        "black_fire_1_1789795490510_lobjh",
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-3-0",
+        "unit-black-4-0",
+        "unit-black-9-0",
+        "unit-black-18-0"
+      ]
+    },
+    {
+      "type": "PROMOTE_UNIT",
+      "unitId": "unit-black-18-0"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-18-0",
+      "to": {
+        "x": 9,
+        "y": 5
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "unit-black-15-0",
+        "unit-black-17-0",
+        "black_fire_1_1789795490510_lobjh",
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-3-0",
+        "unit-black-4-0",
+        "unit-black-9-0",
+        "unit-black-18-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-6-0",
+      "to": {
+        "x": 0,
+        "y": 1
+      }
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "unit-white-8-0",
+      "targetPosition": {
+        "x": 9,
+        "y": 5
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-3-0",
+      "to": {
+        "x": 0,
+        "y": 9
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "unit-black-15-0",
+        "unit-black-17-0",
+        "black_fire_1_1789795490510_lobjh",
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-3-0",
+        "unit-black-4-0",
+        "unit-black-9-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-14-0",
+      "to": {
+        "x": 6,
+        "y": 1
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-11-0",
+      "to": {
+        "x": 5,
+        "y": 3
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "lightning_1",
+      "position": {
+        "x": 6,
+        "y": 0
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-9-0",
+      "to": {
+        "x": 1,
+        "y": 5
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "unit-black-15-0",
+        "unit-black-17-0",
+        "black_fire_1_1789795490510_lobjh",
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-3-0",
+        "unit-black-4-0",
+        "unit-black-9-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "unit-black-15-0",
+        "unit-black-17-0",
+        "black_fire_1_1789795490510_lobjh",
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-3-0",
+        "unit-black-4-0",
+        "unit-black-9-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-9-0",
+      "to": {
+        "x": 2,
+        "y": 9
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "unit-black-15-0",
+        "unit-black-17-0",
+        "black_fire_1_1789795490510_lobjh",
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-3-0",
+        "unit-black-4-0",
+        "unit-black-9-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "lightning_1",
+      "position": {
+        "x": 1,
+        "y": 1
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-4-0",
+      "to": {
+        "x": 8,
+        "y": 3
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "unit-black-15-0",
+        "unit-black-17-0",
+        "black_fire_1_1789795490510_lobjh",
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-3-0",
+        "unit-black-4-0",
+        "unit-black-9-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-14-0",
+      "to": {
+        "x": 8,
+        "y": 9
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "unit-black-15-0",
+        "unit-black-17-0",
+        "black_fire_1_1789795490510_lobjh",
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-3-0",
+        "unit-black-4-0",
+        "unit-black-9-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "unit-white-14-0",
+      "targetPosition": {
+        "x": 8,
+        "y": 8
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-14-0",
+      "to": {
+        "x": 7,
+        "y": 4
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-11-0",
+      "to": {
+        "x": 4,
+        "y": 3
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "unit-black-15-0",
+        "unit-black-17-0",
+        "black_fire_1_1789795490510_lobjh",
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-3-0",
+        "unit-black-4-0",
+        "unit-black-9-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "lightning_1",
+      "position": {
+        "x": 2,
+        "y": 0
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-17-0",
+      "to": {
+        "x": 7,
+        "y": 9
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "unit-black-15-0",
+        "unit-black-17-0",
+        "black_fire_1_1789795490510_lobjh",
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-3-0",
+        "unit-black-4-0",
+        "unit-black-9-0"
+      ]
+    },
+    {
+      "type": "PROMOTE_UNIT",
+      "unitId": "unit-black-17-0"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "unit-black-15-0",
+        "black_fire_1_1789795490510_lobjh",
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-3-0",
+        "unit-black-4-0",
+        "unit-black-9-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "unit-black-15-0",
+        "black_fire_1_1789795490510_lobjh",
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-3-0",
+        "unit-black-4-0",
+        "unit-black-9-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-22-0",
+      "to": {
+        "x": 1,
+        "y": 7
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "unit-black-15-0",
+        "black_fire_1_1789795490510_lobjh",
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-3-0",
+        "unit-black-4-0",
+        "unit-black-9-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-25-0",
+      "to": {
+        "x": 3,
+        "y": 2
+      }
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "unit-white-25-0",
+      "targetPosition": {
+        "x": 2,
+        "y": 2
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-9-0",
+      "to": {
+        "x": 5,
+        "y": 7
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-9-0",
+      "to": {
+        "x": 5,
+        "y": 1
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "unit-black-15-0",
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-3-0",
+        "unit-black-4-0",
+        "unit-black-9-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "unit-white-18-0",
+      "targetPosition": {
+        "x": 5,
+        "y": 1
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-25-0",
+      "to": {
+        "x": 4,
+        "y": 2
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-6-0",
+      "to": {
+        "x": 1,
+        "y": 3
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "fire_1",
+      "position": {
+        "x": 0,
+        "y": 7
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "unit-black-15-0",
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-3-0",
+        "unit-black-4-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-11-0",
+      "to": {
+        "x": 6,
+        "y": 5
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-22-0",
+      "to": {
+        "x": 3,
+        "y": 7
+      }
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "unit-white-22-0",
+      "targetPosition": {
+        "x": 3,
+        "y": 6
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "lightning_1",
+      "position": {
+        "x": 2,
+        "y": 2
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-3-0",
+      "to": {
+        "x": 6,
+        "y": 7
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-3-0",
+      "to": {
+        "x": 7,
+        "y": 9
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-3-0",
+        "unit-black-4-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-14-0",
+      "to": {
+        "x": 5,
+        "y": 4
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-18-0",
+      "to": {
+        "x": 0,
+        "y": 2
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "fire_1",
+      "position": {
+        "x": 4,
+        "y": 1
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-4-0",
+      "to": {
+        "x": 5,
+        "y": 2
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-3-0",
+      "to": {
+        "x": 3,
+        "y": 8
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-3-0",
+        "unit-black-4-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "unit-white-25-0",
+      "targetPosition": {
+        "x": 5,
+        "y": 2
+      }
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "unit-white-22-0",
+      "targetPosition": {
+        "x": 3,
+        "y": 8
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "lightning_1",
+      "position": {
+        "x": 2,
+        "y": 3
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "unit-black-4-0",
+      "targetPosition": {
+        "x": 4,
+        "y": 2
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-4-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-4-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-34-0",
+      "to": {
+        "x": 1,
+        "y": 2
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-33-0",
+      "to": {
+        "x": 0,
+        "y": 5
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "lightning_1",
+      "position": {
+        "x": 3,
+        "y": 2
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-4-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-8-0",
+      "to": {
+        "x": 9,
+        "y": 2
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "plant_1",
+      "position": {
+        "x": 4,
+        "y": 0
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-4-0",
+      "to": {
+        "x": 2,
+        "y": 7
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-4-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-4-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "unit-white-22-0",
+      "targetPosition": {
+        "x": 2,
+        "y": 7
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "shadow_1",
+      "position": {
+        "x": 5,
+        "y": 2
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-4-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "unit-white-22-0",
+      "targetPosition": {
+        "x": 2,
+        "y": 7
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-38-0",
+      "to": {
+        "x": 3,
+        "y": 6
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-36-0",
+      "to": {
+        "x": 1,
+        "y": 5
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "unit-black-4-0",
+      "targetPosition": {
+        "x": 3,
+        "y": 7
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-4-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-34-0",
+      "to": {
+        "x": 4,
+        "y": 5
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-4-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-38-0",
+      "to": {
+        "x": 1,
+        "y": 7
+      }
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "unit-white-38-0",
+      "targetPosition": {
+        "x": 2,
+        "y": 7
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-28-0",
+      "to": {
+        "x": 2,
+        "y": 5
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "unit-black-4-0",
+      "targetPosition": {
+        "x": 1,
+        "y": 7
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-4-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-11-0",
+      "to": {
+        "x": 7,
+        "y": 9
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "lightning_1",
+      "position": {
+        "x": 2,
+        "y": 0
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-4-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-36-0",
+      "to": {
+        "x": 8,
+        "y": 3
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-35-0",
+      "to": {
+        "x": 6,
+        "y": 1
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-4-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-36-0",
+      "to": {
+        "x": 7,
+        "y": 1
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PROMOTE_UNIT",
+      "unitId": "unit-white-18-0"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-4-0",
+      "to": {
+        "x": 4,
+        "y": 3
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-4-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-11-0",
+      "to": {
+        "x": 7,
+        "y": 7
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-28-0",
+      "to": {
+        "x": 2,
+        "y": 1
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-34-0",
+      "to": {
+        "x": 2,
+        "y": 4
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "black_water_1_1789795490510_bc3qy",
+      "to": {
+        "x": 7,
+        "y": 9
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-4-0",
+      "to": {
+        "x": 4,
+        "y": 2
+      }
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "unit-black-4-0",
+      "targetPosition": {
+        "x": 5,
+        "y": 2
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-4-0"
+      ]
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "lightning_1",
+      "position": {
+        "x": 9,
+        "y": 9
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-6-0",
+      "to": {
+        "x": 5,
+        "y": 0
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "fire_1",
+      "position": {
+        "x": 6,
+        "y": 0
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "black_water_1_1789795490510_bc3qy",
+      "to": {
+        "x": 5,
+        "y": 8
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-4-0",
+      "to": {
+        "x": 3,
+        "y": 2
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-4-0",
+        "unit-black-48-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "lightning_1",
+      "position": {
+        "x": 0,
+        "y": 3
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-4-0",
+        "unit-black-48-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-49-0",
+      "to": {
+        "x": 9,
+        "y": 3
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-4-0",
+      "to": {
+        "x": 3,
+        "y": 1
+      }
+    },
+    {
+      "type": "ATTACK",
+      "unitId": "unit-black-4-0",
+      "targetPosition": {
+        "x": 2,
+        "y": 1
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-48-0",
+      "to": {
+        "x": 5,
+        "y": 7
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-4-0",
+        "unit-black-48-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-white-11-0",
+      "to": {
+        "x": 4,
+        "y": 2
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "black_water_1_1789795490510_bc3qy",
+      "to": {
+        "x": 4,
+        "y": 9
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-4-0",
+      "to": {
+        "x": 3,
+        "y": 3
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-48-0",
+      "to": {
+        "x": 4,
+        "y": 7
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "PAY_UPKEEP",
+      "keepUnitIds": [
+        "black_water_1_1789795490510_bc3qy",
+        "black_plant_1_1789795490510_hva8g",
+        "unit-black-4-0",
+        "unit-black-48-0"
+      ]
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    },
+    {
+      "type": "BUY_UNIT",
+      "definitionId": "lightning_1",
+      "position": {
+        "x": 7,
+        "y": 2
+      }
+    },
+    {
+      "type": "END_PLACE_PHASE"
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-4-0",
+      "to": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "type": "MOVE",
+      "unitId": "unit-black-48-0",
+      "to": {
+        "x": 1,
+        "y": 7
+      }
+    },
+    {
+      "type": "END_ACTION_PHASE"
+    }
+  ],
+  "rules": {
+    "elementGraph": "double-thick",
+    "upkeep": "shipped",
+    "inactivityRule": "off",
+    "victoryRule": "home-or-elimination",
+    "handicap": 0,
+    "combatHandicap": {
+      "white": 0,
+      "black": 0
+    }
+  },
+  "replica": "0.1.9.0.0.1,2.0.3.0.0.1,4.0.12.0.0.1,5.0.0.0.0.1,16.0.0.0.0.1,17.0.3.0.0.1,20.0.10.0.0.1,24.0.0.0.0.1,29.0.6.0.0.1,30.0.3.0.0.1,39.0.0.0.0.1,42.0.3.0.0.1,45.0.3.0.0.1,50.0.0.0.0.1,71.1.3.0.0.1,89.1.12.0.0.1,94.1.6.0.0.1|0.27.3.3|856000304403400001616424000041616040240304414446664444040408040342408444340161630000084111630002004244000088|1517025625|2068313687|2287636755|3580540764|2880726073|0|0|102|50|1|0|0|53|0|3|0|0|1|0|01|2.4|4700.1600.261.0||P:0.27.lightning_1.3||C:1.0.3.0||B:0.0",
+  "canonical": "0.1.9.0.0.1,2.0.3.0.0.1,4.0.12.0.0.1,5.0.0.0.0.1,16.0.0.0.0.1,17.0.3.0.0.1,20.0.10.0.0.1,24.0.0.0.0.1,29.0.6.0.0.1,30.0.3.0.0.1,39.0.0.0.0.1,42.0.3.0.0.1,45.0.3.0.0.1,50.0.0.0.0.1,71.1.3.0.0.1,89.1.12.0.0.1,94.1.6.0.0.1|0.27.3.3|856000304403400001616424000041616040240304414446664444040408040342408444340161630000084111630002004244000088|1517025625|2068313687|2287636755|3580540764|2880726073|0|0|102|50|1|0|0|53|0|3|0|0|1|0|01|0.0|4700.1600.261.0||P:0.27.lightning_1.3||C:1.0.3.0||B:0.0",
+  "knownGap": "overclaim-broke-defender",
+  "state": {
+    "actionsPerTurn": 4,
+    "ruleset": "phasing",
+    "pendingSummons": [
+      {
+        "id": "unit-white-53-0",
+        "owner": "white",
+        "definitionId": "lightning_1",
+        "position": {
+          "x": 7,
+          "y": 2
+        },
+        "cost": 3
+      }
+    ],
+    "blackCrystalHandicap": 0,
+    "phase": "playing",
+    "inactivityPlies": 3,
+    "progressThisTurn": false,
+    "board": {
+      "cells": [
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "resourceLayers": 8
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 0
+            },
+            "resourceLayers": 5
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 0
+            },
+            "resourceLayers": 6
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 0
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 0
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 0
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 0
+            },
+            "resourceLayers": 3
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 0
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 0
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 0
+            },
+            "resourceLayers": 4
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 1
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 1
+            },
+            "resourceLayers": 3
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 1
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 1
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 1
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 1
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 1
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 1
+            },
+            "resourceLayers": 16
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 1
+            },
+            "resourceLayers": 16
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 1
+            },
+            "resourceLayers": 4
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 2
+            },
+            "resourceLayers": 2
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 2
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 2
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 2
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 2
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 2
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 2
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 2
+            },
+            "resourceLayers": 16
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 2
+            },
+            "resourceLayers": 16
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 2
+            },
+            "resourceLayers": 0
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 3
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 3
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 3
+            },
+            "resourceLayers": 2
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 3
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 3
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 3
+            },
+            "resourceLayers": 3
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 3
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 3
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 3
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 3
+            },
+            "resourceLayers": 1
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 4
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 4
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 4
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 4
+            },
+            "resourceLayers": 6
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 4
+            },
+            "resourceLayers": 6
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 4
+            },
+            "resourceLayers": 6
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 4
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 4
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 4
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 4
+            },
+            "resourceLayers": 4
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 5
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 5
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 5
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 5
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 5
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 5
+            },
+            "resourceLayers": 8
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 5
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 5
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 5
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 5
+            },
+            "resourceLayers": 3
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 6
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 6
+            },
+            "resourceLayers": 2
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 6
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 6
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 6
+            },
+            "resourceLayers": 8
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 6
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 6
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 6
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 6
+            },
+            "resourceLayers": 3
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 6
+            },
+            "resourceLayers": 4
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 7
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 7
+            },
+            "resourceLayers": 16
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 7
+            },
+            "resourceLayers": 16
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 7
+            },
+            "resourceLayers": 3
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 7
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 7
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 7
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 7
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 7
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 7
+            },
+            "resourceLayers": 8
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 8
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 8
+            },
+            "resourceLayers": 11
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 8
+            },
+            "resourceLayers": 16
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 8
+            },
+            "resourceLayers": 3
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 8
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 8
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 8
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 8
+            },
+            "resourceLayers": 2
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 8
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 8
+            },
+            "resourceLayers": 0
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 9
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 9
+            },
+            "resourceLayers": 2
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 9
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 9
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 9
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 9
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 9
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 9
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 9
+            },
+            "resourceLayers": 8
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 9
+            },
+            "resourceLayers": 8
+          }
+        ]
+      ],
+      "units": [
+        {
+          "id": "black_water_1_1789795490510_bc3qy",
+          "definitionId": "water_1",
+          "owner": "black",
+          "position": {
+            "x": 4,
+            "y": 9
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "black_plant_1_1789795490510_hva8g",
+          "definitionId": "plant_1",
+          "owner": "black",
+          "position": {
+            "x": 9,
+            "y": 8
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-black-4-0",
+          "definitionId": "shadow_1",
+          "owner": "black",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "hasMoved": true,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-6-0",
+          "definitionId": "fire_1",
+          "owner": "white",
+          "position": {
+            "x": 5,
+            "y": 0
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-8-0",
+          "definitionId": "water_1",
+          "owner": "white",
+          "position": {
+            "x": 9,
+            "y": 2
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-11-0",
+          "definitionId": "fire_1",
+          "owner": "white",
+          "position": {
+            "x": 4,
+            "y": 2
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-14-0",
+          "definitionId": "lightning_1",
+          "owner": "white",
+          "position": {
+            "x": 5,
+            "y": 4
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-18-0",
+          "definitionId": "shadow_2",
+          "owner": "white",
+          "position": {
+            "x": 0,
+            "y": 2
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-33-0",
+          "definitionId": "fire_1",
+          "owner": "white",
+          "position": {
+            "x": 0,
+            "y": 5
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-34-0",
+          "definitionId": "lightning_1",
+          "owner": "white",
+          "position": {
+            "x": 2,
+            "y": 4
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-35-0",
+          "definitionId": "fire_1",
+          "owner": "white",
+          "position": {
+            "x": 6,
+            "y": 1
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-36-0",
+          "definitionId": "lightning_1",
+          "owner": "white",
+          "position": {
+            "x": 7,
+            "y": 1
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-39-0",
+          "definitionId": "plant_1",
+          "owner": "white",
+          "position": {
+            "x": 4,
+            "y": 0
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-45-0",
+          "definitionId": "lightning_1",
+          "owner": "white",
+          "position": {
+            "x": 2,
+            "y": 0
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-black-48-0",
+          "definitionId": "lightning_1",
+          "owner": "black",
+          "position": {
+            "x": 1,
+            "y": 7
+          },
+          "hasMoved": true,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-49-0",
+          "definitionId": "fire_1",
+          "owner": "white",
+          "position": {
+            "x": 9,
+            "y": 3
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-50-0",
+          "definitionId": "lightning_1",
+          "owner": "white",
+          "position": {
+            "x": 0,
+            "y": 3
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        }
+      ],
+      "initialResourceLayers": [
+        8,
+        8,
+        8,
+        0,
+        0,
+        0,
+        4,
+        4,
+        4,
+        4,
+        8,
+        8,
+        4,
+        0,
+        0,
+        0,
+        4,
+        16,
+        16,
+        4,
+        8,
+        4,
+        4,
+        0,
+        0,
+        0,
+        4,
+        16,
+        16,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        8,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        8,
+        8,
+        8,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        8,
+        8,
+        8,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        8,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        16,
+        16,
+        4,
+        0,
+        0,
+        0,
+        4,
+        4,
+        8,
+        4,
+        16,
+        16,
+        4,
+        0,
+        0,
+        0,
+        4,
+        8,
+        8,
+        4,
+        4,
+        4,
+        4,
+        0,
+        0,
+        0,
+        8,
+        8,
+        8
+      ]
+    },
+    "players": {
+      "white": {
+        "id": "white",
+        "resources": 0,
+        "startCorner": {
+          "x": 0,
+          "y": 0
+        },
+        "resourcesGained": 102,
+        "resourcesUpkeep": 28
+      },
+      "black": {
+        "id": "black",
+        "resources": 0,
+        "startCorner": {
+          "x": 9,
+          "y": 9
+        },
+        "resourcesGained": 50,
+        "resourcesUpkeep": 1
+      }
+    },
+    "turn": {
+      "currentPlayer": "black",
+      "phase": "place",
+      "actionsRemaining": 0,
+      "turnNumber": 53
+    },
+    "winner": null,
+    "selectedUnit": null,
+    "validMoves": [],
+    "validAttacks": [],
+    "victoryRule": "home-or-elimination",
+    "inactivityRule": "off",
+    "reviewUpkeep": {
+      "white": false,
+      "black": true
+    },
+    "lastIncome": {
+      "player": "black",
+      "turnNumber": 53,
+      "total": 0,
+      "takes": [
+        {
+          "unitId": "black_water_1_1789795490510_bc3qy",
+          "definitionId": "water_1",
+          "position": {
+            "x": 4,
+            "y": 9
+          },
+          "amount": 0
+        },
+        {
+          "unitId": "black_plant_1_1789795490510_hva8g",
+          "definitionId": "plant_1",
+          "position": {
+            "x": 9,
+            "y": 8
+          },
+          "amount": 0
+        },
+        {
+          "unitId": "unit-black-4-0",
+          "definitionId": "shadow_1",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "amount": 0
+        },
+        {
+          "unitId": "unit-black-48-0",
+          "definitionId": "lightning_1",
+          "position": {
+            "x": 1,
+            "y": 7
+          },
+          "amount": 0
+        }
+      ]
+    },
+    "upkeepPending": false,
+    "lastUpkeep": {
+      "player": "black",
+      "paid": 0,
+      "released": [],
+      "turnNumber": 53
+    },
+    "lastSummoning": {
+      "player": "black",
+      "turnNumber": 53,
+      "summoned": [],
+      "disrupted": []
+    }
+  }
+}

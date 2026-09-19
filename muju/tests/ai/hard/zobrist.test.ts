@@ -4,6 +4,11 @@
  * across two builds"). The interesting content is the KEYING RULES: which
  * fields land in `Kpos`, which only in `Kturn`, and that everything is keyed
  * by square rather than by slot so buy-order permutations transpose (JF §2.3).
+ *
+ * M2 adds the `pend` plane for Phasing commitments. Two properties are pinned:
+ * it is folded into `Kpos` (so it reaches every TT, book and perft key), and it
+ * is APPEND-ONLY — every earlier plane draws exactly the words it drew before
+ * `pend` existed, so a position with no commitment keeps its pre-M2 key.
  */
 import { describe, expect, it, vi } from 'vitest';
 import {
@@ -13,12 +18,14 @@ import {
   recomputeKpos,
   recomputeKturn,
   recomputeOccHash,
+  zPend,
   zPiece,
   type ZobristTables,
 } from '../../../src/ai/hard/core/zobrist';
+import { seededRandom } from '../../../src/ai/runtime';
 import { NDEF } from '../../../src/ai/hard/core/catalog';
 import { UFLAGS_MASK, type Key, type PackedState } from '../../../src/ai/hard/types';
-import { allocPacked, clonePacked, putUnit } from './packed-fixture';
+import { allocPacked, clonePacked, putPending, putUnit } from './packed-fixture';
 
 // E0.5 timeout budget: slowest test 0.0 s in the 2026-09-15 survey (M2 Max, load ~5, maxWorkers 2); 10 s is this file's explicit ceiling.
 vi.setConfig({ testTimeout: 10_000 });
@@ -38,7 +45,12 @@ const TABLE_KEYS: readonly (readonly [keyof ZobristTables, number])[] = [
   ['upkeep', 1],
   ['rules', 8],
   ['handicap', 21],
+  ['pend', 2 * NDEF * 100],
 ];
+
+/** `TABLE_KEYS` is also the FILL ORDER: `buildZobrist` draws the planes in this
+ * sequence from one `seededRandom` stream, and `pend` is last by construction. */
+const FILL_ORDER = TABLE_KEYS;
 
 function sample(): PackedState {
   const p = allocPacked();
@@ -82,6 +94,37 @@ describe('core/zobrist: table construction', () => {
     expect(ZOBRIST_SEED).toBe(0x4d554a55);
   });
 
+  it('the pend plane is APPENDED: every earlier plane keeps its pre-M2 words', () => {
+    // Redraw the stream in the documented fill order. If `pend` were inserted
+    // anywhere but last, every plane after the insertion point would shift and
+    // every key of every position — including one with no commitment at all —
+    // would change, invalidating the book, the perft fixtures and the suites.
+    const rng = seededRandom(ZOBRIST_SEED);
+    for (const [name, keys] of FILL_ORDER) {
+      const plane = new Uint32Array(keys * 2);
+      for (let i = 0; i < plane.length; i++) plane[i] = (rng() * 0x100000000) >>> 0;
+      expect([...Z[name]], name).toEqual([...plane]);
+    }
+    // ...and `pend` really is the LAST plane: the stream is now exhausted as far
+    // as `buildZobrist` is concerned, which the equality above already proves
+    // for every plane before it.
+    expect(FILL_ORDER[FILL_ORDER.length - 1][0]).toBe('pend');
+  });
+
+  it('a position with no commitment has the very same Kpos it had before the plane existed', () => {
+    // The plane contributes nothing when `pendDef` is empty, so `Kpos` reduces
+    // to the pre-M2 XOR exactly. Stated as the one thing a test can check
+    // without a stored table: adding and then removing a commitment is a no-op.
+    const p = sample();
+    const before = recomputeKpos(p);
+    const withOne = clonePacked(p);
+    putPending(withOne, { side: 0, defId: 3, sq: 42, cost: 4 });
+    expect(keyEquals(recomputeKpos(withOne), before)).toBe(false);
+    withOne.pendDef[42] = 0;
+    withOne.pendCost[42] = 0;
+    expect(keyEquals(recomputeKpos(withOne), before)).toBe(true);
+  });
+
   it('draws no zero words and no duplicate piece keys', () => {
     const seen = new Set<string>();
     for (let i = 0; i < Z.piece.length; i += 2) {
@@ -111,6 +154,7 @@ describe('core/zobrist: Kpos membership', () => {
     ['reviewUpkeep[0]', p => { p.reviewUpkeep[0] = 1; }],
     ['reviewUpkeep[1]', p => { p.reviewUpkeep[1] = 1; }],
     ['the handicap', p => { p.handicap = 6; }],
+    ['a pending summon appearing', p => { putPending(p, { side: 0, defId: 0, sq: 7, cost: 3 }); }],
   ];
 
   for (const [what, mutate] of mutations) {
@@ -152,6 +196,52 @@ describe('core/zobrist: Kpos membership', () => {
     q.bank[1] = 7;
     q.handicap = 1;
     expect(keyEquals(xorKeys(recomputeKturn(q), recomputeKpos(q)), delta)).toBe(true);
+  });
+
+  it('Kpos separates commitments by side, square and DEFINITION — but not by cost', () => {
+    const base = sample();
+    const white7 = putPending(clonePacked(base), { side: 0, defId: 0, sq: 7, cost: 3 });
+    const black7 = putPending(clonePacked(base), { side: 1, defId: 0, sq: 7, cost: 3 });
+    const white8 = putPending(clonePacked(base), { side: 0, defId: 0, sq: 8, cost: 3 });
+    const whiteOther = putPending(clonePacked(base), { side: 0, defId: 4, sq: 7, cost: 5 });
+    const keys = [white7, black7, white8, whiteOther].map(recomputeKpos);
+    for (let i = 0; i < keys.length; i++) {
+      for (let j = i + 1; j < keys.length; j++) expect(keyEquals(keys[i], keys[j]), `${i} vs ${j}`).toBe(false);
+    }
+    // The cost is a function of the definition (`pack` rejects any other
+    // combination), so it is deliberately NOT part of the key.
+    const sameDefOtherCost = putPending(clonePacked(base), { side: 0, defId: 0, sq: 7, cost: 11 });
+    expect(keyEquals(recomputeKpos(sameDefOtherCost), keys[0])).toBe(true);
+
+    // A commitment is not a unit: it keys the `pend` plane, never `piece`.
+    expect(keyEquals(recomputeKpos(white7), recomputeKpos(putUnit(clonePacked(base), { slot: 9, side: 0, defId: 0, sq: 7 })))).toBe(false);
+    expect(recomputeOccHash(white7)).toBe(recomputeOccHash(base));
+  });
+
+  it('a commitment is square-keyed, so two plane entries in either write order agree', () => {
+    const a = clonePacked(sample());
+    putPending(a, { side: 0, defId: 2, sq: 13 });
+    putPending(a, { side: 0, defId: 5, sq: 31 });
+    const b = clonePacked(sample());
+    putPending(b, { side: 0, defId: 5, sq: 31 });
+    putPending(b, { side: 0, defId: 2, sq: 13 });
+    expect(keyEquals(recomputeKpos(a), recomputeKpos(b))).toBe(true);
+    expect(keyEquals(recomputeKturn(a), recomputeKturn(b))).toBe(true);
+  });
+
+  it('the pend plane is a Kpos plane, not a Kturn extra', () => {
+    const p = sample();
+    const delta = xorKeys(recomputeKturn(p), recomputeKpos(p));
+    const q = putPending(clonePacked(p), { side: 1, defId: 7, sq: 64, cost: 3 });
+    expect(keyEquals(xorKeys(recomputeKturn(q), recomputeKpos(q)), delta)).toBe(true);
+  });
+
+  it('zPend indexes (side, definition, square) with two lanes per key', () => {
+    expect(zPend(0, 0, 0)).toBe(0);
+    expect(zPend(0, 0, 1)).toBe(2);
+    expect(zPend(0, 1, 0)).toBe(200);
+    expect(zPend(1, 0, 0)).toBe(2 * NDEF * 100);
+    expect(zPend(1, NDEF - 1, 99)).toBe(Z.pend.length - 2);
   });
 
   it('damage 0 hashes to nothing: clearing damage equals a state that never had it', () => {

@@ -1,88 +1,99 @@
 {
-  "schema": "muju-perft-fixtures-v1",
-  "initial": {
+  "schema": "muju-perft-fixtures-v2",
+  "ruleset": "phasing",
+  "replicaAgreed": true,
+  "standardInitial": {
     "maxActions": 4,
     "actions": 14959,
     "midStates": 1053,
     "turns": 797
   },
+  "initial": {
+    "limits": {
+      "act": 4,
+      "prepare": 0
+    },
+    "actions": 14959,
+    "midStates": 1850,
+    "turns": 797
+  },
   "fixtures": [
     {
-      "id": "occupied-corner",
-      "depth": 3,
-      "actions": 1146,
-      "midStates": 285,
-      "endPositions": 226
-    },
-    {
-      "id": "blocked-rectangle",
-      "depth": 2,
-      "actions": 26,
-      "midStates": 27,
-      "endPositions": 26
-    },
-    {
-      "id": "cleave-chain",
-      "depth": 3,
-      "actions": 5298,
-      "midStates": 469,
-      "endPositions": 364
-    },
-    {
-      "id": "clock-9",
-      "depth": 3,
-      "actions": 1137,
-      "midStates": 286,
-      "endPositions": 242
-    },
-    {
-      "id": "upkeep-pending",
-      "depth": 2,
+      "id": "prepare-broke",
+      "digest": "496852b0",
+      "limits": {
+        "act": 4,
+        "prepare": 2
+      },
       "actions": 1,
       "midStates": 1,
       "endPositions": 1
     },
     {
-      "id": "rich-place",
-      "depth": 1,
-      "actions": 1,
-      "midStates": 177,
-      "endPositions": 1
+      "id": "prepare-rich",
+      "digest": "75de8b33",
+      "limits": {
+        "act": 0,
+        "prepare": 2
+      },
+      "actions": 1268,
+      "midStates": 1268,
+      "endPositions": 1268
     },
     {
-      "id": "endgame-dry",
-      "depth": 3,
-      "actions": 1137,
-      "midStates": 286,
-      "endPositions": 242
+      "id": "full-turn",
+      "digest": "0f998086",
+      "limits": {
+        "act": 2,
+        "prepare": 1
+      },
+      "actions": 15212,
+      "midStates": 7206,
+      "endPositions": 7012
     },
     {
-      "id": "handicap-3",
-      "depth": 4,
-      "actions": 14959,
-      "midStates": 1053,
-      "endPositions": 797
+      "id": "pendings-both-sides",
+      "digest": "e5ae1f41",
+      "limits": {
+        "act": 0,
+        "prepare": 1
+      },
+      "actions": 27,
+      "midStates": 27,
+      "endPositions": 27
     },
     {
-      "id": "place-autoskip",
-      "depth": 2,
-      "actions": 9,
-      "midStates": 10,
-      "endPositions": 9
+      "id": "arrival-and-refund",
+      "digest": "a0ecef98",
+      "limits": {
+        "act": 0,
+        "prepare": 1
+      },
+      "actions": 121,
+      "midStates": 121,
+      "endPositions": 121
     },
     {
-      "id": "home-race",
-      "depth": 2,
-      "actions": 4153,
-      "midStates": 3218,
-      "endPositions": 2122
+      "id": "upkeep-review-pending",
+      "digest": "2fb1fec9",
+      "limits": {
+        "act": 4,
+        "prepare": 1
+      },
+      "actions": 424,
+      "midStates": 425,
+      "endPositions": 424
     },
     {
-      "id": "promotion-kill",
-      "depth": 2,
-      "actions": 81,
-      "midStates": 2402,
-      "endPositions": 81
+      "id": "home-occupation",
+      "digest": "6e8f8cf6",
+      "limits": {
+        "act": 2,
+        "prepare": 1
+      },
+      "actions": 903,
+      "midStates": 517,
+      "endPositions": 381
     }
   ]
 }

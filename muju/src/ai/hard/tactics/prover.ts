@@ -53,6 +53,7 @@ import {
   F_LAST_KILLED,
   MAX_SLOTS,
   NO_SLOT,
+  PEND_STRIDE,
   Reason,
   Result,
   type PackedState,
@@ -873,6 +874,13 @@ function newLeafView(): PackedState {
     occ: new Uint32Array(4),
     occBy: new Uint32Array(8),
     occTier: new Uint32Array(12),
+    // M2: the pending-summon plane exists here for the TYPE's sake only — the
+    // leaf view feeds `spawnInfo`, which never reads it.
+    pendDef: new Uint8Array(2 * PEND_STRIDE),
+    pendCost: new Uint8Array(2 * PEND_STRIDE),
+    pendBB: new Uint32Array(8),
+    pendCount: new Uint8Array(2),
+    pendCostSum: new Int32Array(2),
     reserve: new Uint8Array(BOARD),
     initialReserve: new Uint8Array(BOARD),
     bank: new Int32Array(2),
@@ -900,6 +908,7 @@ function newLeafView(): PackedState {
     pstSumCc: new Int32Array(2),
     proverMode: 0,
     originIds: [],
+    pendIds: [],
   };
 }
 

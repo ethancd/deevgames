@@ -1,6 +1,11 @@
 /**
  * The packed replica of the canonical rules engine (DESIGN §3.1, §3.4, §4.4).
  *
+ * PHASING ONLY as of M2. There is no ruleset bit and no dual mode: `pack`
+ * REFUSES any state that is not `ruleset: 'phasing'` (a missing ruleset means
+ * Standard, `rules.ts:4`), because a Standard position reinterpreted as Phasing
+ * would be a different game with the same bytes.
+ *
  * `Replica` is a byte-for-byte mirror of `src/game` + `src/ai/simulate.ts`
  * over `PackedState`:
  *
@@ -9,14 +14,24 @@
  *   - `genActions`/`genPlace`/`genKeepSets` reproduce `src/ai/moves.ts`
  *     `generateAllActions` (expanded to multi-action MOVEs, DESIGN §4.4);
  *   - `make`/`unmake` reproduce `applyAction` (`simulate.ts:25`) — including
- *     the five rule terminals, the automatic upkeep at the turn boundary and
- *     the `finishPlacement` auto-advance — while maintaining the incremental
- *     `Kpos`/`Kturn`/`occHash` keys and the `materialCc`/`pstSumCc` stage-0
- *     sums, and while allocating nothing per node.
+ *     the five rule terminals and Phasing's split turn boundary — while
+ *     maintaining the incremental `Kpos`/`Kturn`/`occHash` keys and the
+ *     `materialCc`/`pstSumCc` stage-0 sums, and while allocating nothing per
+ *     node.
+ *
+ * The Phasing turn (`docs/PHASING-2026-09-16.md`; `turn.ts`, `summoning.ts`):
+ * the mover starts in ACT; `END_ACTION` collects mining income and settles
+ * upkeep, sets `phase = place` (Prepare) and does NOT hand off; in Prepare a
+ * `BUY` debits the bank and records a public commitment instead of placing a
+ * unit, and never auto-advances the phase; `END_PLACE` is the hand-off, and the
+ * incoming side's own commitments resolve against ONE snapshot of the arrival
+ * board — each one either materialises (and may act AND promote that turn) or
+ * refunds its exact cost.
  *
  * Everything is keyed BY SQUARE (DESIGN F10 §3.3), so a slot is nothing but a
  * handle: buy-order permutations transpose, and `digest` — the fuzzer's
- * comparison surface — is slot-order independent by construction.
+ * comparison surface — is slot-order independent by construction. Pending
+ * summons are square-keyed for the same reason (DESIGN M2 item B).
  *
  * The home-checkmate gate is fully packed as of M10: `make` calls
  * `tactics/prover.ts` — `homeVerdict` at `proverMode = 2`, the admissible
@@ -24,6 +39,12 @@
  * `analyzeHomeDefense` survives only as M10's differential gate, so `make`
  * no longer unpacks anything. See `docs/hard-ai/design/DEVIATIONS.md` under
  * M5 and M10.
+ *
+ * NOTE (M2 scope): `tactics/prover.ts` still implements the STANDARD rescue
+ * (upkeep keep-sets and pre-action promotions), while canonical Phasing gives
+ * the defender its present army and four actions only (`homeCheckmate.ts:152`).
+ * The GATE — Prepare, no upkeep pending — is Phasing here; the VERDICT is a
+ * later milestone's job.
  */
 import {
   CC,
@@ -34,6 +55,7 @@ import {
   F_PROMOTED,
   MAX_SLOTS,
   NO_SLOT,
+  PEND_STRIDE,
   Reason,
   Result,
   UFLAGS_MASK,
@@ -42,12 +64,12 @@ import {
   type Slot,
   type Square,
 } from '../types';
-import type { GameState, PlayerId, Unit, Cell } from '../../../game/types';
+import type { GameState, PendingSummon, PlayerId, Unit, Cell } from '../../../game/types';
 import { INITIAL_RESOURCE_LAYERS } from '../../../game/board';
 import { MAX_RESOURCE_RESERVE } from '../../../game/resourceMap';
 import { getAttackCount } from '../../../game/combat';
 import { HomeVerdict, PROOF_NODES, damageBound, homeVerdict, needsProof } from '../tactics/prover';
-import { Scratch, bbCount, bbNew, bbNext } from './bits';
+import { Scratch, bbCount, bbHas, bbNew, bbNext, bbZero } from './bits';
 import { ADJ_LIST, BOARD, CORNER } from './tables';
 import { DEF_ID, DEF_INDEX, activeCatalog, powerIndex, type Catalog } from './catalog';
 import {
@@ -76,6 +98,7 @@ import {
   zBankLo,
   zClock,
   zDamage,
+  zPend,
   zPiece,
   zReserve,
   zUflags,
@@ -84,7 +107,7 @@ import { createDistanceCache, moveCost, type DistanceCache, type ReachMemo } fro
 import { isLegalSpawn, newSpawnInfo, spawnInfo, type SpawnInfo } from './spawn';
 import { PST_MINE, RENT_PV, RESERVE_VALUES } from './income';
 
-export { DEAD, F_CAN_ACT, F_LAST_KILLED, F_PLACED, F_PROMOTED, MAX_SLOTS, MAX_TURN_ACTIONS, NO_SLOT } from '../types';
+export { DEAD, F_CAN_ACT, F_LAST_KILLED, F_PLACED, F_PROMOTED, MAX_SLOTS, MAX_TURN_ACTIONS, NO_SLOT, PEND_STRIDE } from '../types';
 export type { PackedState } from '../types';
 
 /** `inactivityPlies` is clamped into the Zobrist `clock` plane's domain (DESIGN §3.1). */
@@ -108,7 +131,17 @@ export interface Undo {
   top: number;
 }
 
-/** DESIGN §3.4: one `Int32Array(8192)` per search, with a stack pointer. */
+/**
+ * DESIGN §3.4: one `Int32Array(8192)` per search, with a stack pointer.
+ *
+ * M2 note: `END_PLACE` is now the widest record — nine words per resolved
+ * commitment plus `resetUnitActions`'s four per healed unit. A side can hold at
+ * most 100 commitments and 100 units, so the worst case is ~1,300 words, and a
+ * line that stacked several of those without unwinding would overflow. Every
+ * current driver either unwinds in lock step (the search) or resets `top` per
+ * applied action (the fuzzer, `unpack` tooling); real commitment counts are a
+ * handful. Revisit the bound if a caller ever holds many macro turns at once.
+ */
 export const UNDO_WORDS = 8192;
 
 export function newUndo(): Undo {
@@ -116,11 +149,15 @@ export function newUndo(): Undo {
 }
 
 /**
- * Undo record kinds. The seven action kinds reuse their `AKind` value; `HOME_MATE`
- * is the `END_ACTION` that the home-checkmate gate resolved before the turn
- * boundary ran (`simulate.ts:28-31`), which mutates nothing but `result`/`reason`.
+ * Undo record kinds: the seven action kinds reuse their `AKind` value.
+ *
+ * Standard's `U_HOME_MATE` record — the `END_ACTION` that `simulate.ts:28-31`
+ * adjudicated BEFORE the boundary ran — is gone. Under Phasing that pre-check
+ * is dead code: `resolveHomeCheckmate` returns the state untouched whenever
+ * `turn.phase !== 'place'` (`homeCheckmate.ts:170`), and `END_ACTION` is legal
+ * only in ACT. The mate now falls out of the ordinary `resolveHomeCheckmate`
+ * call at the END of `makeEndAction`, once the phase has become Prepare.
  */
-const U_HOME_MATE = 8;
 
 export function allocState(): PackedState {
   return {
@@ -135,6 +172,11 @@ export function allocState(): PackedState {
     occ: new Uint32Array(4),
     occBy: new Uint32Array(8),
     occTier: new Uint32Array(12),
+    pendDef: new Uint8Array(2 * PEND_STRIDE),
+    pendCost: new Uint8Array(2 * PEND_STRIDE),
+    pendBB: new Uint32Array(8),
+    pendCount: new Uint8Array(2),
+    pendCostSum: new Int32Array(2),
     reserve: new Uint8Array(BOARD),
     initialReserve: new Uint8Array(BOARD),
     bank: new Int32Array(2),
@@ -162,6 +204,7 @@ export function allocState(): PackedState {
     pstSumCc: new Int32Array(2),
     proverMode: 2,
     originIds: [],
+    pendIds: [],
   };
 }
 
@@ -176,6 +219,11 @@ export function copyState(dst: PackedState, src: PackedState): void {
   dst.occ.set(src.occ);
   dst.occBy.set(src.occBy);
   dst.occTier.set(src.occTier);
+  dst.pendDef.set(src.pendDef);
+  dst.pendCost.set(src.pendCost);
+  dst.pendBB.set(src.pendBB);
+  dst.pendCount.set(src.pendCount);
+  dst.pendCostSum.set(src.pendCostSum);
   dst.reserve.set(src.reserve);
   dst.initialReserve.set(src.initialReserve);
   dst.bank.set(src.bank);
@@ -209,6 +257,12 @@ export function copyState(dst: PackedState, src: PackedState): void {
     if (id !== undefined) dst.originIds[i] = id;
   }
   dst.originIds.length = src.originIds.length;
+  dst.pendIds.length = 0;
+  for (let i = 0; i < src.pendIds.length; i++) {
+    const id = src.pendIds[i];
+    if (id !== undefined) dst.pendIds[i] = id;
+  }
+  dst.pendIds.length = src.pendIds.length;
 }
 
 // --- incremental hashing -----------------------------------------------------
@@ -355,6 +409,35 @@ function unlinkSquare(cat: Catalog, p: PackedState, slot: Slot, s: Square): void
   p.pstSumCc[owner] -= PST_MINE[def * RESERVE_VALUES + p.reserve[s]];
 }
 
+/**
+ * Record a commitment on `side`'s square `s` for definition `def` at `cost`,
+ * maintaining the bitboard, the two counters and the `pend` key plane. O(1):
+ * the plane is square-keyed, so there is no slot to allocate and nothing to
+ * link. Never called on a square that already carries one of `side`'s
+ * commitments (`isLegal` and `genPlace` both mask those out).
+ */
+function addPending(p: PackedState, side: Side, s: Square, def: number, cost: number): void {
+  p.pendDef[side * PEND_STRIDE + s] = def + 1;
+  p.pendCost[side * PEND_STRIDE + s] = cost;
+  p.pendBB[side * 4 + (s >>> 5)] |= 1 << (s & 31);
+  p.pendCount[side] += 1;
+  p.pendCostSum[side] += cost;
+  xKpos(p, Z.pend, zPend(side, def, s));
+}
+
+/** Exact inverse of `addPending`. Returns the definition that was committed. */
+function removePending(p: PackedState, side: Side, s: Square): number {
+  const i = side * PEND_STRIDE + s;
+  const def = p.pendDef[i] - 1;
+  xKpos(p, Z.pend, zPend(side, def, s));
+  p.pendCostSum[side] -= p.pendCost[i];
+  p.pendCount[side] -= 1;
+  p.pendBB[side * 4 + (s >>> 5)] &= ~(1 << (s & 31));
+  p.pendDef[i] = 0;
+  p.pendCost[i] = 0;
+  return def;
+}
+
 function addMaterial(cat: Catalog, p: PackedState, slot: Slot): void {
   p.materialCc[p.owner[slot]] += cat.cost[p.defId[slot]] * CC;
 }
@@ -398,6 +481,11 @@ const KEEP_TAKEN = new Uint8Array(MAX_KEEP_CANDIDATES);
 const KEEP_BASE = new Uint32Array(KEEP_WORDS);
 const KEEP_WORK = new Uint32Array(KEEP_WORDS);
 
+/** `genPlace`'s spawn mask minus the mover's own commitments. */
+const PLACE_MASK = bbNew();
+/** One side's `pendBB` lanes, so `bbNext` can walk them without a subarray. */
+const PEND_LANES = bbNew();
+
 // --- the replica -------------------------------------------------------------
 
 export class Replica {
@@ -406,10 +494,14 @@ export class Replica {
   readonly dist: DistanceCache;
   private readonly spawn: SpawnInfo = newSpawnInfo();
   private readonly spawnScratch: SpawnInfo = newSpawnInfo();
+  /** The single arrival-board snapshot `resolveArrivals` judges every commitment against. */
+  private readonly arrivalSpawn: SpawnInfo = newSpawnInfo();
   /**
-   * `originIds` entries displaced by a BUY into a reused dead slot. Strings
-   * cannot live in the `Int32Array` undo stack; `make`/`unmake` are strictly
-   * LIFO-paired on one `Replica`, exactly like the undo stack itself.
+   * The `originIds` entry an arrival displaced from its reused dead slot, and
+   * the `pendIds` entry the resolved commitment vacated — two strings per
+   * commitment, pushed in that order. Strings cannot live in the `Int32Array`
+   * undo stack; `make`/`unmake` are strictly LIFO-paired on one `Replica`,
+   * exactly like the undo stack itself.
    */
   private readonly idStack: string[] = [];
   /**
@@ -442,6 +534,12 @@ export class Replica {
   /** `GameState` -> `PackedState` (DESIGN §3.1). Throws `PackError`. */
   pack(state: GameState, out: PackedState = allocState()): PackedState {
     if (state.phase === 'setup') throw new PackError('pack: phase "setup" has no packed representation');
+    // The replica is PHASING ONLY (DESIGN M2 item A). A missing ruleset means
+    // Standard (rules.ts:4), and a Standard position is NEVER reinterpreted:
+    // its turn shape, its purchases and its home-checkmate gate all differ.
+    if (state.ruleset !== 'phasing') {
+      throw new PackError(`pack: ruleset ${JSON.stringify(state.ruleset ?? 'standard')} is not "phasing" (the replica is Phasing-only)`);
+    }
     if ((state.actionsPerTurn ?? ACTIONS_PER_TURN) !== ACTIONS_PER_TURN) {
       throw new PackError(`pack: actionsPerTurn ${String(state.actionsPerTurn)} !== ${ACTIONS_PER_TURN} (rules.ts:11-13)`);
     }
@@ -455,6 +553,9 @@ export class Replica {
     out.atkCount.fill(0);
     out.uflags.fill(0);
     out.originIds.length = 0;
+    out.pendDef.fill(0);
+    out.pendCost.fill(0);
+    out.pendIds.length = 0;
 
     for (let y = 0; y < 10; y++) {
       for (let x = 0; x < 10; x++) {
@@ -487,6 +588,31 @@ export class Replica {
       out.originIds[i] = u.id;
     }
     out.slotCount = units.length;
+
+    // Pending summons, square-keyed. `rehash` derives `pendBB`/`pendCount`/
+    // `pendCostSum` from these two planes, so only they are written here.
+    for (const summon of state.pendingSummons ?? []) {
+      const def = DEF_INDEX.get(summon.definitionId);
+      if (def === undefined) throw new PackError(`pack: pending summon ${summon.id} has unknown definitionId "${summon.definitionId}"`);
+      const s = summon.position.y * 10 + summon.position.x;
+      if (!Number.isInteger(s) || s < 0 || s >= BOARD) {
+        throw new PackError(`pack: pending summon ${summon.id} out of bounds at ${summon.position.x},${summon.position.y}`);
+      }
+      // The paid cost is not hashed (DESIGN M2 item C); it is only ever the
+      // catalogue cost (`applyBuyUnit`, simulate.ts:135-137), so a state that
+      // says otherwise carries information the packed form cannot represent.
+      if (summon.cost !== this.cat.cost[def]) {
+        throw new PackError(`pack: pending summon ${summon.id} paid ${summon.cost}, catalogue cost of "${summon.definitionId}" is ${this.cat.cost[def]}`);
+      }
+      const side = summon.owner === 'white' ? 0 : 1;
+      const i = side * PEND_STRIDE + s;
+      // `hasPendingSummon` (summoning.ts:5-7) makes this unreachable in play;
+      // the square-keyed plane cannot represent it, so it is refused, not lost.
+      if (out.pendDef[i] !== 0) throw new PackError(`pack: ${summon.owner} has two pending summons on square ${s}`);
+      out.pendDef[i] = def + 1;
+      out.pendCost[i] = summon.cost;
+      out.pendIds[i] = summon.id;
+    }
 
     out.bank[0] = state.players.white.resources;
     out.bank[1] = state.players.black.resources;
@@ -560,8 +686,31 @@ export class Replica {
     const initialResourceLayers: number[] = new Array<number>(BOARD);
     for (let s = 0; s < BOARD; s++) initialResourceLayers[s] = p.initialReserve[s];
 
+    // Commitments come out white-then-black, square ascending. The canonical
+    // array is in buy order, which the square-keyed plane deliberately forgets
+    // (nothing in the rules reads it: `resolveSummons` checks every commitment
+    // against the same board, summoning.ts:17-22).
+    const pendingSummons: PendingSummon[] = [];
+    for (let side = 0; side < 2; side++) {
+      for (let s = 0; s < BOARD; s++) {
+        const i = side * PEND_STRIDE + s;
+        const def = p.pendDef[i];
+        if (def === 0) continue;
+        const stored = p.pendIds[i];
+        pendingSummons.push({
+          id: stored !== undefined && stored !== '' ? stored : `pending-${PLAYER_OF_SIDE[side]}-${s}`,
+          owner: PLAYER_OF_SIDE[side],
+          definitionId: DEF_ID[def - 1],
+          position: { x: s % 10, y: (s / 10) | 0 },
+          cost: p.pendCost[i],
+        });
+      }
+    }
+
     return {
       actionsPerTurn: ACTIONS_PER_TURN,
+      ruleset: 'phasing',
+      pendingSummons,
       blackCrystalHandicap: p.handicap,
       victoryRule: p.victoryHome ? 'home-or-elimination' : 'elimination',
       inactivityRule: p.drawRuleOn ? 'on' : 'off',
@@ -611,7 +760,11 @@ export class Replica {
         if (def >= DEF_ID.length || this.cat.tier[def] !== 1) return false;
         if (p.bank[side] < this.cat.cost[def]) return false;
         const s = paB(a);
-        return s < BOARD && isLegalSpawn(p, side, s);
+        if (s >= BOARD) return false;
+        // `!hasPendingSummon(state, player, position)` (legality.ts:30): one own
+        // commitment per square, whatever the definition.
+        if (p.pendDef[side * PEND_STRIDE + s] !== 0) return false;
+        return isLegalSpawn(p, side, s);
       }
       case AKind.PROMOTE: {
         if (p.phase !== 0) return false;
@@ -729,17 +882,25 @@ export class Replica {
     return n;
   }
 
-  /** Place phase: BUY (defId ascending, square ascending), PROMOTE, `END_PLACE`. */
+  /** Prepare phase: BUY (defId ascending, square ascending), PROMOTE, `END_PLACE`. */
   genPlace(p: PackedState, out: Int32Array): number {
     if (p.result !== Result.ONGOING || p.upkeepPending === 1 || p.phase !== 0) return 0;
     let n = 0;
     const side = p.side;
     const cash = p.bank[side];
-    spawnInfo(p, side, this.spawn);
+    // `getPurchasePositions` = `getAllSpawnPositions` minus the side's OWN
+    // commitments (summoning.ts:9-11). The enemy's commitments mask nothing:
+    // they are not units and they never occupy a square.
+    const legal = spawnInfo(p, side, this.spawn).legal;
+    const lanes = side * 4;
+    PLACE_MASK[0] = legal[0] & ~p.pendBB[lanes];
+    PLACE_MASK[1] = legal[1] & ~p.pendBB[lanes + 1];
+    PLACE_MASK[2] = legal[2] & ~p.pendBB[lanes + 2];
+    PLACE_MASK[3] = legal[3] & ~p.pendBB[lanes + 3];
     // `generatePlaceActions` iterates UNIT_DEFINITIONS order, not cost order.
     for (let def = 0; def < DEF_ID.length; def++) {
       if (this.cat.tier[def] !== 1 || this.cat.cost[def] > cash) continue;
-      for (let s = bbNext(this.spawn.legal, -1); s >= 0; s = bbNext(this.spawn.legal, s)) {
+      for (let s = bbNext(PLACE_MASK, -1); s >= 0; s = bbNext(PLACE_MASK, s)) {
         out[n++] = paMake(AKind.BUY, def, s, 0);
       }
     }
@@ -1002,51 +1163,27 @@ export class Replica {
     this.resolveHomeCheckmate(p);
   }
 
+  /**
+   * `applyBuyUnit`'s Phasing branch (`simulate.ts:134-139`): the bank is debited
+   * and a PUBLIC COMMITMENT is recorded. No unit appears, so there is no slot to
+   * allocate, nothing to link, no material to add and no occupancy to touch —
+   * and no `finishPlacement`, because `finishPlacement` returns the state
+   * untouched under Phasing (`simulate.ts:118-121`): preparation always ends
+   * explicitly, even after the purchase that empties the bank.
+   */
   private makeBuy(p: PackedState, a: PA, u: Undo): void {
     const def = paA(a);
     const s = paB(a);
     const side = p.side;
-    let slot = -1;
-    for (let i = 0; i < MAX_SLOTS; i++) {
-      if (p.sq[i] === DEAD) {
-        slot = i;
-        break;
-      }
-    }
-    if (slot < 0) throw new Error('make BUY: no free slot');
+    const cost = this.cat.cost[def];
 
-    // A reused dead slot still carries the per-unit fields of whatever died or
-    // was released there. `unmake` of that earlier ATTACK/PAY_UPKEEP resurrects
-    // the unit by writing `sq` back and calling `linkSquare`, which reads
-    // `defId`/`owner`/`damage`/`atkCount`/`uflags` straight out of the slot — so
-    // this BUY's undo must put them back exactly. (DESIGN §3.4's BUY row does
-    // not list them; see DEVIATIONS.md under M5.)
     const base = openRecord(u, AKind.BUY, p);
-    u.w[u.top++] = slot;
-    u.w[u.top++] = this.cat.cost[def];
-    u.w[u.top++] = p.phase;
-    u.w[u.top++] = p.actions;
-    u.w[u.top++] = p.slotCount;
-    u.w[u.top++] = p.defId[slot];
-    u.w[u.top++] = p.owner[slot];
-    u.w[u.top++] = p.damage[slot];
-    u.w[u.top++] = p.atkCount[slot];
-    u.w[u.top++] = p.uflags[slot];
+    u.w[u.top++] = s;
+    u.w[u.top++] = cost;
     closeRecord(u, base);
 
-    this.idStack.push(p.originIds[slot] ?? '');
-    p.originIds[slot] = '';
-    p.sq[slot] = s;
-    p.defId[slot] = def;
-    p.owner[slot] = side;
-    p.damage[slot] = 0;
-    p.atkCount[slot] = 0;
-    p.uflags[slot] = F_CAN_ACT | F_PLACED;
-    linkSquare(this.cat, p, slot, s);
-    addMaterial(this.cat, p, slot);
-    if (slot >= p.slotCount) p.slotCount = slot + 1;
-    setBank(p, side, p.bank[side] - this.cat.cost[def]);
-    this.finishPlacement(p);
+    addPending(p, side, s, def, cost);
+    setBank(p, side, p.bank[side] - cost);
     this.resolveHomeCheckmate(p);
   }
 
@@ -1061,8 +1198,6 @@ export class Replica {
     u.w[u.top++] = oldDef;
     u.w[u.top++] = p.uflags[slot];
     u.w[u.top++] = cost;
-    u.w[u.top++] = p.phase;
-    u.w[u.top++] = p.actions;
     closeRecord(u, base);
 
     const s = p.sq[slot];
@@ -1072,17 +1207,168 @@ export class Replica {
     linkSquare(this.cat, p, slot, s);
     p.materialCc[p.owner[slot]] += cost * CC;
     setBank(p, side, p.bank[side] - cost);
-    this.finishPlacement(p);
+    // No `finishPlacement`: Phasing's preparation never auto-advances
+    // (`simulate.ts:118-121`), so phase and actions are untouched.
     this.resolveHomeCheckmate(p);
   }
 
+  /**
+   * The Phasing HAND-OFF: `startActionPhase` -> `handOffTurn` -> `startTurn`
+   * (`turn.ts:75-79, 118-131, 19-40`), in exactly that order:
+   *
+   *   1. the quiet-turn clock advances once, then the inactivity draw resolves;
+   *   2. the turn number bumps when White is next;
+   *   3. `startTurn` awards an established home occupation to the INCOMING side;
+   *   4. then elimination, which leaves the turn state alone;
+   *   5. `resolveSummons` checks every one of the incoming side's commitments
+   *      against ONE snapshot of the arrival board — arrivals cannot anchor each
+   *      other — materialising or refunding each;
+   *   6. heal/reset the incoming side;
+   *   7. ACT, four actions.
+   *
+   * `END_ACTION` already mined, settled upkeep and set Prepare, so none of that
+   * happens here (`endTurn`'s Phasing branch returns before `handOffTurn`).
+   */
   private makeEndPlace(p: PackedState, u: Undo): void {
+    const mover = p.side;
+    const next = (1 - mover) as Side;
     const base = openRecord(u, AKind.END_PLACE, p);
+    u.w[u.top++] = mover;
     u.w[u.top++] = p.actions;
+    u.w[u.top++] = p.clock;
+    u.w[u.top++] = p.progress;
+    u.w[u.top++] = p.turnNumber;
+    u.w[u.top++] = p.slotCount;
+    const pendCountSlot = u.top++;
+    u.w[pendCountSlot] = 0;
+
+    // 1. the quiet-turn clock, then `resolveInactivityDraw` (turn.ts:120-124).
+    const plies = p.progress === 1 ? 0 : p.clock + 1;
+    setClock(p, plies);
+    p.progress = 0;
+    if (p.drawRuleOn === 1 && plies >= INACTIVITY_LIMIT) {
+      u.w[u.top++] = 0;
+      closeRecord(u, base);
+      p.result = Result.DRAW;
+      p.reason = Reason.INACTIVITY;
+      return;
+    }
+
+    // 2. the turn number belongs to the handover, not to `startTurn` (turn.ts:128-130).
+    if (next === 0) p.turnNumber += 1;
+
+    // 3. an occupation that survived to the defender's turn start wins now.
+    if (p.victoryHome === 1 && this.occupiesEnemyCorner(p, next)) {
+      u.w[u.top++] = 0;
+      closeRecord(u, base);
+      setSide(p, next);
+      setPhase(p, 0);
+      setActions(p, ACTIONS_PER_TURN);
+      p.result = next === 0 ? Result.WHITE_WIN : Result.BLACK_WIN;
+      p.reason = Reason.HOME_OCCUPATION;
+      return;
+    }
+    // 4. `checkVictory` looks at BOTH sides, and `startTurn` leaves the turn
+    //    state untouched on an elimination (turn.ts:29) — the side does NOT flip.
+    const whiteAlive = unitCount(p, 0);
+    const blackAlive = unitCount(p, 1);
+    if (whiteAlive === 0 || blackAlive === 0) {
+      u.w[u.top++] = 0;
+      closeRecord(u, base);
+      p.result = whiteAlive === 0 && blackAlive === 0 ? Result.DRAW : whiteAlive === 0 ? Result.BLACK_WIN : Result.WHITE_WIN;
+      p.reason = Reason.ELIMINATION;
+      return;
+    }
+
+    // 5. `resolveSummons` (summoning.ts:17-32). ONE `spawnInfo` over the arrival
+    //    board: every commitment is judged against the same squares, so an
+    //    arrival can never anchor the next one.
+    u.w[pendCountSlot] = this.resolveArrivals(p, next, u);
+
+    // 6. `resetUnitActions(board, next)` — heal, clear the attack history, drop
+    //    the placement/promotion marks. An arrival is already in that shape, so
+    //    it costs no restore word.
+    const restoreCountSlot = u.top++;
+    u.w[restoreCountSlot] = this.resetUnitActions(p, next, u);
     closeRecord(u, base);
+
+    // 7. the new mover acts (turn.ts:33-35). `resolveHomeCheckmate` cannot fire
+    //    from ACT under Phasing (homeCheckmate.ts:170), but it is called where
+    //    `applyAction` calls it so the ordering stays literal.
+    setSide(p, next);
     setPhase(p, 1);
     setActions(p, ACTIONS_PER_TURN);
     this.resolveHomeCheckmate(p);
+  }
+
+  /**
+   * `resolveSummons(state, side)`: materialise or refund each of `side`'s
+   * commitments against a single snapshot, clearing the plane. Squares are
+   * visited ASCENDING; the order is free, because the snapshot is taken before
+   * the first arrival lands. Appends nine words per commitment and returns how
+   * many it wrote. Cost is O(pendCount), not O(board).
+   */
+  private resolveArrivals(p: PackedState, side: Side, u: Undo): number {
+    if (p.pendCount[side] === 0) return 0;
+    const legal = spawnInfo(p, side, this.arrivalSpawn).legal;
+    const lanes = side * 4;
+    PEND_LANES[0] = p.pendBB[lanes];
+    PEND_LANES[1] = p.pendBB[lanes + 1];
+    PEND_LANES[2] = p.pendBB[lanes + 2];
+    PEND_LANES[3] = p.pendBB[lanes + 3];
+    let count = 0;
+    for (let s = bbNext(PEND_LANES, -1); s >= 0; s = bbNext(PEND_LANES, s)) {
+      const i = side * PEND_STRIDE + s;
+      const def = p.pendDef[i] - 1;
+      const cost = p.pendCost[i];
+      // `isValidSpawnPosition(position, side, snapshotBoard)`: empty and inside
+      // at least one unblocked rectangle — exactly `spawnInfo().legal`.
+      const arrives = bbHas(legal, s);
+      let slot = -1;
+      if (arrives) {
+        slot = lowestDeadSlot(p);
+        if (slot < 0) throw new Error('resolveArrivals: no free slot');
+      }
+      u.w[u.top++] = s;
+      u.w[u.top++] = def;
+      u.w[u.top++] = cost;
+      u.w[u.top++] = slot;
+      // A reused dead slot still carries whatever died or was released there;
+      // `unmake` of that earlier ATTACK/PAY_UPKEEP resurrects it by writing `sq`
+      // back and calling `linkSquare`, which reads these five fields out of the
+      // slot — so they must be restored exactly (the same discipline Standard's
+      // `makeBuy` used; DEVIATIONS.md under M5).
+      u.w[u.top++] = slot < 0 ? 0 : p.defId[slot];
+      u.w[u.top++] = slot < 0 ? 0 : p.owner[slot];
+      u.w[u.top++] = slot < 0 ? 0 : p.damage[slot];
+      u.w[u.top++] = slot < 0 ? 0 : p.atkCount[slot];
+      u.w[u.top++] = slot < 0 ? 0 : p.uflags[slot];
+      count++;
+
+      if (slot >= 0) {
+        this.idStack.push(p.originIds[slot] ?? '');
+        p.originIds[slot] = p.pendIds[i] ?? '';
+        p.sq[slot] = s;
+        p.defId[slot] = def;
+        p.owner[slot] = side;
+        p.damage[slot] = 0;
+        p.atkCount[slot] = 0;
+        // `placedThisTurn: false` (summoning.ts:29-30): an arrival may act AND
+        // promote on the very turn it lands, so `F_PLACED` is NOT set.
+        p.uflags[slot] = F_CAN_ACT;
+        linkSquare(this.cat, p, slot, s);
+        addMaterial(this.cat, p, slot);
+        if (slot >= p.slotCount) p.slotCount = slot + 1;
+      } else {
+        // "Invalid summons disappear and refund their exact original cost."
+        this.idStack.push('');
+        setBank(p, side, p.bank[side] + cost);
+      }
+      this.idStack.push(p.pendIds[i] ?? '');
+      p.pendIds[i] = '';
+      removePending(p, side, s);
+    }
+    return count;
   }
 
   private makeResign(p: PackedState, u: Undo): void {
@@ -1092,6 +1378,13 @@ export class Replica {
     p.reason = Reason.RESIGNATION;
   }
 
+  /**
+   * `completeUpkeep(state, keepUnitIds)` under Phasing (`turn.ts:63-68`):
+   * `settleUpkeep` releases the unkept tier-2+, pays the kept rent, then
+   * `checkVictory` may end the game as `upkeep-elimination`. That is ALL: unlike
+   * Standard's `finishTurnStart`, the Phasing branch neither heals, nor resets
+   * actions, nor auto-advances — the mover stays in Prepare and ends it itself.
+   */
   private makePayUpkeep(p: PackedState, a: PA, u: Undo, keep?: KeepSetTable): void {
     if (keep === undefined) throw new Error('make PAY_UPKEEP: no keep-set table');
     const index = paA(a);
@@ -1099,8 +1392,6 @@ export class Replica {
 
     const base = openRecord(u, AKind.PAY_UPKEEP, p);
     const paidSlot = u.top++;
-    u.w[u.top++] = p.phase;
-    u.w[u.top++] = p.actions;
     const releasedCountSlot = u.top++;
 
     let paid = 0;
@@ -1127,59 +1418,46 @@ export class Replica {
     setUpkeepPending(p, 0);
     setBank(p, side, p.bank[side] - paid);
 
-    // `completeUpkeep` runs the full `checkVictory` (turn.ts:53-56), which looks
-    // at BOTH sides — releasing your last unit is not the only way a settled
-    // board can be terminal.
-    const restoreCountSlot = u.top++;
+    closeRecord(u, base);
+
+    // `completeUpkeep` runs the full `checkVictory` (turn.ts:64), which looks at
+    // BOTH sides — releasing your last unit is not the only way a settled board
+    // can be terminal.
     const whiteAlive = unitCount(p, 0);
     const blackAlive = unitCount(p, 1);
     if (whiteAlive === 0 || blackAlive === 0) {
-      u.w[restoreCountSlot] = 0;
-      closeRecord(u, base);
       p.result =
         whiteAlive === 0 && blackAlive === 0 ? Result.DRAW : whiteAlive === 0 ? Result.BLACK_WIN : Result.WHITE_WIN;
       p.reason = Reason.UPKEEP_ELIMINATION;
       return;
     }
-    const restores = this.resetUnitActions(p, side, u);
-    u.w[restoreCountSlot] = restores;
-    closeRecord(u, base);
-
-    setPhase(p, 0);
-    setActions(p, ACTIONS_PER_TURN);
-    if (!this.canActInPlacePhase(p, side)) {
-      setPhase(p, 1);
-      setActions(p, ACTIONS_PER_TURN);
-    }
+    // `turn.phase` is already Prepare (`isLegalKeepSet` demands it) and nothing
+    // resets it, so settling upkeep is the moment the home-checkmate gate opens.
     this.resolveHomeCheckmate(p);
   }
 
+  /**
+   * `endTurn`'s Phasing branch (`turn.ts:103-115`): the mover mines once, then
+   * settles its OWN upkeep, then stands in Prepare. It STOPS at the phase
+   * boundary — no clock, no handover, no healing (all of which belong to
+   * `END_PLACE`). The pre-transition mate check `applyAction` performs at
+   * `simulate.ts:28-31` is dead under Phasing, because `resolveHomeCheckmate`
+   * refuses to adjudicate outside Prepare (`homeCheckmate.ts:170`) and
+   * `END_ACTION` is legal only in ACT; the mate is picked up by the ordinary
+   * `resolveHomeCheckmate` at the END of this method, with the phase now Prepare.
+   */
   private makeEndAction(p: PackedState, u: Undo): void {
-    // `applyAction` adjudicates an existing occupation BEFORE the boundary
-    // runs (simulate.ts:28-31): a proven mate ends the game at the action.
-    if (this.provesHomeCheckmate(p)) {
-      const base = openRecord(u, U_HOME_MATE, p);
-      closeRecord(u, base);
-      p.result = p.side === 0 ? Result.WHITE_WIN : Result.BLACK_WIN;
-      p.reason = Reason.HOME_CHECKMATE;
-      return;
-    }
-
     const mover = p.side;
     const base = openRecord(u, AKind.END_ACTION, p);
     u.w[u.top++] = mover;
-    u.w[u.top++] = p.phase;
     u.w[u.top++] = p.actions;
-    u.w[u.top++] = p.clock;
-    u.w[u.top++] = p.progress;
-    u.w[u.top++] = p.turnNumber;
-    u.w[u.top++] = p.upkeepPending;
     const incomeSlot = u.top++;
     const paidSlot = u.top++;
     u.w[paidSlot] = 0;
     const takeCountSlot = u.top++;
 
-    // 1. income (mining.ts:18-34), simultaneous over the mover's units.
+    // 1. income (mining.ts:18-34), simultaneous over the mover's units. Pending
+    //    summons never mine: they are not units.
     let income = 0;
     let takes = 0;
     for (let slot = 0; slot < MAX_SLOTS; slot++) {
@@ -1201,72 +1479,42 @@ export class Replica {
     setBank(p, mover, p.bank[mover] + income);
     p.gained[mover] += income;
 
-    // 2-3. quiet-turn clock, then the inactivity draw (turn.ts:96-100).
-    const plies = p.progress === 1 ? 0 : p.clock + 1;
-    setClock(p, plies);
-    p.progress = 0;
-    if (p.drawRuleOn === 1 && plies >= INACTIVITY_LIMIT) {
-      u.w[u.top++] = 0;
+    // 2. Prepare, with the action budget spent (`actionsRemaining: 0`, turn.ts:107).
+    setPhase(p, 0);
+    setActions(p, 0);
+
+    // 3. the mover's own upkeep, out of income it has just collected. Pending
+    //    summons incur none.
+    let due = 0;
+    for (let slot = 0; slot < MAX_SLOTS; slot++) {
+      if (p.sq[slot] === DEAD || p.owner[slot] !== mover) continue;
+      due += this.cat.upkeep[p.defId[slot]];
+    }
+    if (due > p.bank[mover] || p.reviewUpkeep[mover] === 1) {
       closeRecord(u, base);
-      p.result = Result.DRAW;
-      p.reason = Reason.INACTIVITY;
+      setUpkeepPending(p, 1);
+      // An `upkeepPending` node cannot be a mate: `resolveHomeCheckmate` bails
+      // on it (homeCheckmate.ts:169) — "an invading piece must survive its own
+      // end-of-action upkeep before Phasing can award immediate checkmate".
       return;
     }
 
-    // 4-5. hand off, then `startTurn` for the incoming side (turn.ts:19-34).
-    const next = (1 - mover) as Side;
-    if (next === 0) p.turnNumber += 1;
-
-    if (p.victoryHome === 1 && this.occupiesEnemyCorner(p, next)) {
-      u.w[u.top++] = 0;
-      closeRecord(u, base);
-      setSide(p, next);
-      setPhase(p, 0);
-      setActions(p, ACTIONS_PER_TURN);
-      p.result = next === 0 ? Result.WHITE_WIN : Result.BLACK_WIN;
-      p.reason = Reason.HOME_OCCUPATION;
-      return;
-    }
+    // Automatic affordable payment keeps every unit, so nothing is released —
+    // but `completeUpkeep` still runs the full `checkVictory` over BOTH sides
+    // (turn.ts:64), and on a position that was already empty for one side (the
+    // fuzzer and the random suites reach those; legal play does not) that is
+    // where the `upkeep-elimination` terminal is recorded.
+    setBank(p, mover, p.bank[mover] - due);
+    u.w[paidSlot] = due;
+    closeRecord(u, base);
     const whiteAlive = unitCount(p, 0);
     const blackAlive = unitCount(p, 1);
     if (whiteAlive === 0 || blackAlive === 0) {
-      u.w[u.top++] = 0;
-      closeRecord(u, base);
-      // `startTurn` leaves the turn state untouched on an elimination.
       p.result = whiteAlive === 0 && blackAlive === 0 ? Result.DRAW : whiteAlive === 0 ? Result.BLACK_WIN : Result.WHITE_WIN;
-      p.reason = Reason.ELIMINATION;
+      p.reason = Reason.UPKEEP_ELIMINATION;
       return;
     }
-
-    setUpkeepPending(p, 1);
-    setSide(p, next);
-    setPhase(p, 0);
-    setActions(p, ACTIONS_PER_TURN);
-
-    let due = 0;
-    for (let slot = 0; slot < MAX_SLOTS; slot++) {
-      if (p.sq[slot] === DEAD || p.owner[slot] !== next) continue;
-      due += this.cat.upkeep[p.defId[slot]];
-    }
-    if (due > p.bank[next] || p.reviewUpkeep[next] === 1) {
-      u.w[paidSlot] = 0;
-      u.w[u.top++] = 0;
-      closeRecord(u, base);
-      return;
-    }
-
-    // Automatic affordable payment keeps every unit, so nothing is released.
-    setUpkeepPending(p, 0);
-    setBank(p, next, p.bank[next] - due);
-    u.w[paidSlot] = due;
-    const restoreCountSlot = u.top++;
-    u.w[restoreCountSlot] = this.resetUnitActions(p, next, u);
-    closeRecord(u, base);
-
-    if (!this.canActInPlacePhase(p, next)) {
-      setPhase(p, 1);
-      setActions(p, ACTIONS_PER_TURN);
-    }
+    this.resolveHomeCheckmate(p);
   }
 
   /**
@@ -1294,34 +1542,10 @@ export class Replica {
     return restores;
   }
 
-  /** `finishPlacement` (simulate.ts:118-120) after a BUY or PROMOTE. */
-  private finishPlacement(p: PackedState): void {
-    if (this.canActInPlacePhase(p, p.side)) return;
-    setPhase(p, 1);
-    setActions(p, ACTIONS_PER_TURN);
-  }
-
-  /** `canActInPlacePhase` (turn.ts:141-145). */
-  private canActInPlacePhase(p: PackedState, side: Side): boolean {
-    if (p.upkeepPending === 1) return true;
-    const cash = p.bank[side];
-    let affordable = false;
-    for (let i = 0; i < this.cat.tier1.length; i++) {
-      if (this.cat.cost[this.cat.tier1[i]] <= cash) {
-        affordable = true;
-        break;
-      }
-    }
-    if (affordable) {
-      spawnInfo(p, side, this.spawn);
-      if (this.spawn.area > 0) return true;
-    }
-    for (let slot = 0; slot < MAX_SLOTS; slot++) {
-      if (p.sq[slot] === DEAD || p.owner[slot] !== side) continue;
-      if (this.canPromote(p, slot, cash)) return true;
-    }
-    return false;
-  }
+  // Standard's `finishPlacement` / `canActInPlacePhase` auto-advance is GONE:
+  // under Phasing `finishPlacement` returns the state untouched
+  // (`simulate.ts:118-121`) and `canActInPlacePhase` is never consulted, because
+  // "preparation always ends explicitly, even when nothing is affordable".
 
   /** `side` holds the enemy corner — `getHomeOccupier(board, side)` (victory.ts:103-106). */
   private occupiesEnemyCorner(p: PackedState, side: Side): boolean {
@@ -1329,9 +1553,9 @@ export class Replica {
     return occupant !== NO_SLOT && p.owner[occupant] === side;
   }
 
-  /** The `resolveHomeCheckmate` short-circuit (homeCheckmate.ts:173-176), DESIGN §3.4. */
+  /** The `resolveHomeCheckmate` short-circuit (homeCheckmate.ts:168-176), DESIGN §3.4. */
   needsProof(p: PackedState): boolean {
-    return needsProof(p);
+    return p.phase === 0 && needsProof(p);
   }
 
   /** `true` when the mover's occupation is an unanswerable checkmate. */
@@ -1342,6 +1566,10 @@ export class Replica {
       }
       return false;
     }
+    // Phasing adjudicates ONLY in Prepare (homeCheckmate.ts:170): "an invading
+    // piece must survive its own end-of-action upkeep before Phasing can award
+    // immediate home-checkmate". `needsProof` already excludes `upkeepPending`.
+    if (p.phase !== 0) return false;
     if (!needsProof(p)) return false;
     // `proverMode = 1` runs only the admissible damage bound
     // (`enoughPossibleDamage`, homeCheckmate.ts:27-49): its FAILURE proves the
@@ -1402,30 +1630,10 @@ export class Replica {
         break;
       }
       case AKind.BUY: {
-        const slot = u.w[r++];
+        const s = u.w[r++];
         const cost = u.w[r++];
-        const phaseBefore = u.w[r++] as 0 | 1;
-        const actionsBefore = u.w[r++];
-        const slotCountBefore = u.w[r++];
-        const defBefore = u.w[r++];
-        const ownerBefore = u.w[r++];
-        const damageBefore = u.w[r++];
-        const atkCountBefore = u.w[r++];
-        const flagsBefore = u.w[r++];
-        setPhase(p, phaseBefore);
-        setActions(p, actionsBefore);
-        const s = p.sq[slot];
-        unlinkSquare(this.cat, p, slot, s);
-        subMaterial(this.cat, p, slot);
-        p.sq[slot] = DEAD;
-        p.defId[slot] = defBefore;
-        p.owner[slot] = ownerBefore;
-        p.damage[slot] = damageBefore;
-        p.atkCount[slot] = atkCountBefore;
-        p.uflags[slot] = flagsBefore;
+        removePending(p, p.side, s);
         setBank(p, p.side, p.bank[p.side] + cost);
-        p.slotCount = slotCountBefore;
-        p.originIds[slot] = this.idStack.pop() ?? '';
         break;
       }
       case AKind.PROMOTE: {
@@ -1433,10 +1641,6 @@ export class Replica {
         const oldDef = u.w[r++];
         const oldFlags = u.w[r++];
         const cost = u.w[r++];
-        const phaseBefore = u.w[r++] as 0 | 1;
-        const actionsBefore = u.w[r++];
-        setPhase(p, phaseBefore);
-        setActions(p, actionsBefore);
         const s = p.sq[slot];
         unlinkSquare(this.cat, p, slot, s);
         p.defId[slot] = oldDef;
@@ -1447,23 +1651,58 @@ export class Replica {
         break;
       }
       case AKind.END_PLACE: {
+        const mover = u.w[r++] as Side;
         const actionsBefore = u.w[r++];
+        const clockBefore = u.w[r++];
+        const progressBefore = u.w[r++] as 0 | 1;
+        const turnNumberBefore = u.w[r++];
+        const slotCountBefore = u.w[r++];
+        const pendN = u.w[r++];
+        const pendBase = r;
+        r += pendN * 9;
+        const restores = u.w[r++];
+        this.undoResetUnitActions(p, u, r, restores);
+        const next = (1 - mover) as Side;
+        // Reverse the arrivals/refunds, and the two id-stack pushes each made.
+        for (let i = pendN - 1; i >= 0; i--) {
+          const at = pendBase + i * 9;
+          const s = u.w[at];
+          const def = u.w[at + 1];
+          const cost = u.w[at + 2];
+          const slot = u.w[at + 3];
+          const idx = next * PEND_STRIDE + s;
+          p.pendIds[idx] = this.idStack.pop() ?? '';
+          const displacedId = this.idStack.pop() ?? '';
+          if (slot >= 0) {
+            unlinkSquare(this.cat, p, slot, s);
+            subMaterial(this.cat, p, slot);
+            p.sq[slot] = DEAD;
+            p.defId[slot] = u.w[at + 4];
+            p.owner[slot] = u.w[at + 5];
+            p.damage[slot] = u.w[at + 6];
+            p.atkCount[slot] = u.w[at + 7];
+            p.uflags[slot] = u.w[at + 8];
+            p.originIds[slot] = displacedId;
+          } else {
+            setBank(p, next, p.bank[next] - cost);
+          }
+          addPending(p, next, s, def, cost);
+        }
+        p.slotCount = slotCountBefore;
+        setSide(p, mover);
         setPhase(p, 0);
         setActions(p, actionsBefore);
+        setClock(p, clockBefore);
+        p.progress = progressBefore;
+        p.turnNumber = turnNumberBefore;
         break;
       }
       case AKind.RESIGN:
-      case U_HOME_MATE:
         break;
       case AKind.PAY_UPKEEP: {
         const paid = u.w[r++];
-        const phaseBefore = u.w[r++] as 0 | 1;
-        const actionsBefore = u.w[r++];
         const released = u.w[r++];
         const releaseBase = r;
-        r += released * 2;
-        const restores = u.w[r++];
-        this.undoResetUnitActions(p, u, r, restores);
         for (let i = released - 1; i >= 0; i--) {
           const slot = u.w[releaseBase + i * 2];
           const s = u.w[releaseBase + i * 2 + 1];
@@ -1473,27 +1712,18 @@ export class Replica {
         }
         setBank(p, p.side, p.bank[p.side] + paid);
         setUpkeepPending(p, 1);
-        setPhase(p, phaseBefore);
-        setActions(p, actionsBefore);
         break;
       }
       case AKind.END_ACTION: {
         const mover = u.w[r++] as Side;
-        const phaseBefore = u.w[r++] as 0 | 1;
         const actionsBefore = u.w[r++];
-        const clockBefore = u.w[r++];
-        const progressBefore = u.w[r++] as 0 | 1;
-        const turnNumberBefore = u.w[r++];
-        const upkeepBefore = u.w[r++] as 0 | 1;
         const income = u.w[r++];
         const paid = u.w[r++];
         const takes = u.w[r++];
         const takeBase = r;
-        r += takes * 2;
-        const restores = u.w[r++];
-        this.undoResetUnitActions(p, u, r, restores);
-        const next = (1 - mover) as Side;
-        if (paid !== 0) setBank(p, next, p.bank[next] + paid);
+        // The mover pays its OWN upkeep under Phasing, so `paid` comes back to
+        // the same side the income went to.
+        if (paid !== 0) setBank(p, mover, p.bank[mover] + paid);
         for (let i = takes - 1; i >= 0; i--) {
           const s = u.w[takeBase + i * 2];
           const amount = u.w[takeBase + i * 2 + 1];
@@ -1501,13 +1731,9 @@ export class Replica {
         }
         setBank(p, mover, p.bank[mover] - income);
         p.gained[mover] -= income;
-        setUpkeepPending(p, upkeepBefore);
-        setSide(p, mover);
-        setPhase(p, phaseBefore);
+        setUpkeepPending(p, 0);
+        setPhase(p, 1);
         setActions(p, actionsBefore);
-        setClock(p, clockBefore);
-        p.progress = progressBefore;
-        p.turnNumber = turnNumberBefore;
         break;
       }
       default:
@@ -1527,12 +1753,27 @@ export class Replica {
 
   // --- maintenance ---------------------------------------------------------
 
-  /** Recompute every derived field from the unit/board arrays (DESIGN §4.4). */
+  /**
+   * Recompute every derived field from the unit/board arrays and the
+   * `pendDef`/`pendCost` planes (DESIGN §4.4). `pendBB`, `pendCount` and
+   * `pendCostSum` are derived, so `pack` writes only the two planes.
+   */
   rehash(p: PackedState): void {
     p.pieceAt.fill(NO_SLOT);
     p.occ.fill(0);
     p.occBy.fill(0);
     p.occTier.fill(0);
+    p.pendBB.fill(0);
+    p.pendCount.fill(0);
+    p.pendCostSum.fill(0);
+    for (let i = 0; i < 2 * PEND_STRIDE; i++) {
+      if (p.pendDef[i] === 0) continue;
+      const side = (i / PEND_STRIDE) | 0;
+      const s = i % PEND_STRIDE;
+      p.pendBB[side * 4 + (s >>> 5)] |= 1 << (s & 31);
+      p.pendCount[side] += 1;
+      p.pendCostSum[side] += p.pendCost[i];
+    }
     p.materialCc[0] = 0;
     p.materialCc[1] = 0;
     p.pstSumCc[0] = 0;
@@ -1561,7 +1802,7 @@ export class Replica {
   }
 
   /**
-   * Drops the BUY id-displacement stack. Call ONLY with an empty matching
+   * Drops the arrival id-displacement stack. Call ONLY with an empty matching
    * `Undo` stack: a forward-only driver (the differential fuzzer, `unpack`
    * tooling) resets both once per applied action, while a search unwinds them
    * in lock step and never calls this.
@@ -1603,9 +1844,46 @@ export class Replica {
     if (p.clock < 0 || p.clock > MAX_CLOCK) throw new Error(`check: clock ${p.clock} out of range`);
     if (p.bank[0] < 0 || p.bank[1] < 0) throw new Error('check: negative bank');
     if (bbCount(occ) !== unitCount(p, 0) + unitCount(p, 1)) throw new Error('check: occupancy count mismatch');
+
+    // Pending summons: the plane, the bitboard and the two counters agree, and
+    // every stored cost is still the catalogue cost `pack` admitted.
+    const pend = bbNew();
+    for (let side = 0; side < 2; side++) {
+      let count = 0;
+      let costSum = 0;
+      bbZero(pend);
+      for (let s = 0; s < BOARD; s++) {
+        const def = p.pendDef[side * PEND_STRIDE + s];
+        if (def === 0) continue;
+        if (def - 1 >= DEF_ID.length || this.cat.tier[def - 1] !== 1) throw new Error(`check: pending ${side}.${s} is not a tier-1 definition`);
+        const cost = p.pendCost[side * PEND_STRIDE + s];
+        if (cost !== this.cat.cost[def - 1]) throw new Error(`check: pending ${side}.${s} cost ${cost} !== catalogue ${this.cat.cost[def - 1]}`);
+        pend[s >>> 5] |= 1 << (s & 31);
+        count++;
+        costSum += cost;
+      }
+      for (let w = 0; w < 4; w++) {
+        if (pend[w] !== p.pendBB[side * 4 + w]) throw new Error(`check: pendBB word ${w} inconsistent for side ${side}`);
+      }
+      if (count !== p.pendCount[side]) throw new Error(`check: pendCount[${side}] ${p.pendCount[side]} !== ${count}`);
+      if (costSum !== p.pendCostSum[side]) throw new Error(`check: pendCostSum[${side}] ${p.pendCostSum[side]} !== ${costSum}`);
+    }
+
+    // The incremental keys against a from-scratch recompute. `Kpos` now carries
+    // the `pend` plane, so a commitment that `make` XORed but `unmake` forgot
+    // (or vice versa) shows up here rather than as a silent TT collision.
+    const kpos = recomputeKpos(p);
+    if (p.kposLo !== kpos.lo || p.kposHi !== kpos.hi) {
+      throw new Error(`check: Kpos ${p.kposLo}.${p.kposHi} !== recomputed ${kpos.lo}.${kpos.hi}`);
+    }
+    const kturn = recomputeKturn(p);
+    if (p.kturnLo !== kturn.lo || p.kturnHi !== kturn.hi) {
+      throw new Error(`check: Kturn ${p.kturnLo}.${p.kturnHi} !== recomputed ${kturn.lo}.${kturn.hi}`);
+    }
+    if (p.occHash !== recomputeOccHash(p)) throw new Error('check: occHash !== recomputed');
   }
 
-  /** The fuzzer's 24-field comparison surface; square-keyed, slot-order independent. */
+  /** The fuzzer's 25-field comparison surface; square-keyed, slot-order independent. */
   digest(p: PackedState): string {
     const board: string[] = [];
     for (let s = 0; s < BOARD; s++) {
@@ -1613,10 +1891,21 @@ export class Replica {
       if (slot === NO_SLOT) continue;
       board.push(`${s}.${p.owner[slot]}.${p.defId[slot]}.${p.damage[slot]}.${p.atkCount[slot]}.${p.uflags[slot] & UFLAGS_MASK}`);
     }
+    // Commitments, side-then-square ascending: `side.sq.def.cost`. Sorted by
+    // construction, which is what makes the surface buy-order independent —
+    // the canonical `pendingSummons` array is in buy order and must not show.
+    const pend: string[] = [];
+    for (let side = 0; side < 2; side++) {
+      for (let s = 0; s < BOARD; s++) {
+        const def = p.pendDef[side * PEND_STRIDE + s];
+        if (def !== 0) pend.push(`${side}.${s}.${def - 1}.${p.pendCost[side * PEND_STRIDE + s]}`);
+      }
+    }
     const reserve: string[] = new Array<string>(BOARD);
     for (let s = 0; s < BOARD; s++) reserve[s] = String(p.reserve[s]);
     return [
       board.join(','),
+      pend.join(','),
       reserve.join(''),
       p.kposLo,
       p.kposHi,
@@ -1669,6 +1958,13 @@ const REASON_NAME: readonly GameState['victoryReason'][] = [
 
 /** `ADJ_LIST` slot indices in ascending-square order: up, left, right, down. */
 const ASCENDING_ADJ = [0, 2, 3, 1] as const;
+
+/** The lowest reusable slot, or -1. A side can hold at most 100 units, so a
+ * 128-slot table never runs out in a legal position. */
+function lowestDeadSlot(p: PackedState): Slot {
+  for (let i = 0; i < MAX_SLOTS; i++) if (p.sq[i] === DEAD) return i;
+  return -1;
+}
 
 function isAdjacentSquare(a: Square, b: Square): boolean {
   const base = a * 4;

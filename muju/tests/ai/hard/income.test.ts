@@ -30,7 +30,8 @@ import {
 } from '../../../src/ai/hard/core/income';
 import { Replica } from '../../../src/ai/hard/core/state';
 import { readPositions } from '../../../lab/hard-ai/positions/corpus';
-import { randomState, buildState } from './game-fixture';
+import { asPhasing, buildSummon, randomState, buildState } from './game-fixture';
+import { getAllSpawnPositions } from '../../../src/game/spawning';
 
 // E0.5 timeout budget: slowest test 0.2 s in the 2026-09-15 survey (M2 Max, load ~5, maxWorkers 2); 10 s is this file's explicit ceiling.
 vi.setConfig({ testTimeout: 10_000 });
@@ -87,6 +88,11 @@ describe('core/income.ts', () => {
     expect(RENT_PV).toBe(422);
   });
 
+  // M2: the corpus predates Phasing and the replica now refuses a Standard
+  // state, so its positions are read through `asPhasing` — a Phasing position
+  // over the same board, never a reinterpretation of a Standard match (see
+  // `asPhasing`'s own note). Income and upkeep are ruleset-independent, and the
+  // canonical engine is asked about the SAME state the replica packed.
   it('projectedIncome and upkeepDue are exact on every authored and fuzz corpus position', () => {
     const positions = [
       ...readPositions(path.join(CORPUS_DIR, 'authored.jsonl')),
@@ -95,16 +101,56 @@ describe('core/income.ts', () => {
     expect(positions.length).toBeGreaterThan(1000);
     let rentSeen = 0;
     for (const stored of positions) {
-      const p = replica.pack(stored.state);
+      const state = asPhasing(stored.state);
+      const p = replica.pack(state);
       for (const [side, player] of [[0, 'white'], [1, 'black']] as const) {
-        expect(projectedIncome(p, side)).toBe(canonicalIncome(stored.state, player));
-        const due = canonicalUpkeep(stored.state, player);
+        expect(projectedIncome(p, side)).toBe(canonicalIncome(state, player));
+        const due = canonicalUpkeep(state, player);
         expect(upkeepDue(p, side)).toBe(due);
         expect(rentCc(p, side)).toBe(due * RENT_PV);
         if (due > 0) rentSeen++;
       }
     }
     expect(rentSeen).toBeGreaterThan(50);
+  });
+
+  // F9's accounting is over units the board actually holds. A commitment is a
+  // debited bank entry and nothing else until it arrives: it mines nothing, so
+  // it cannot change `projectedIncome`, and it owes no rent, so it cannot change
+  // `upkeepDue`/`rentCc`. Canonical agrees for the same reason (`mining.ts` and
+  // `upkeep.ts` both walk `board.units`), which is what this pins — an
+  // implementation that folded the pending plane into either sum would show up
+  // here rather than as a search-score drift ten layers up.
+  it('ignores pending summons in income, upkeep and rent', () => {
+    const positions = [
+      ...readPositions(path.join(CORPUS_DIR, 'authored.jsonl')),
+      ...readPositions(path.join(CORPUS_DIR, 'fuzz-1000.jsonl')),
+    ];
+    expect(positions.length).toBeGreaterThan(1000);
+    let commitmentsSeen = 0;
+    for (const stored of positions) {
+      const bare = asPhasing(stored.state);
+      const player = bare.turn.currentPlayer;
+      const squares = getAllSpawnPositions(player, bare.board).slice(0, 3);
+      if (squares.length === 0) continue;
+      commitmentsSeen += squares.length;
+      const committed = asPhasing(
+        stored.state,
+        squares.map((position, i) => buildSummon({ def: i % 2 === 0 ? 'fire_1' : 'plant_1', owner: player, x: position.x, y: position.y }, i)),
+      );
+      const a = replica.pack(bare);
+      const b = replica.pack(committed);
+      for (const side of [0, 1] as const) {
+        expect(projectedIncome(b, side)).toBe(projectedIncome(a, side));
+        expect(upkeepDue(b, side)).toBe(upkeepDue(a, side));
+        expect(rentCc(b, side)).toBe(rentCc(a, side));
+        // ...and the replica still agrees with canonical on the committed state.
+        const canonicalPlayer = side === 0 ? 'white' : 'black';
+        expect(projectedIncome(b, side)).toBe(canonicalIncome(committed, canonicalPlayer));
+        expect(upkeepDue(b, side)).toBe(canonicalUpkeep(committed, canonicalPlayer));
+      }
+    }
+    expect(commitmentsSeen).toBeGreaterThan(1000);
   });
 
   it('projectedIncome and upkeepDue are exact on random boards', () => {

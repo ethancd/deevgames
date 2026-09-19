@@ -6,8 +6,8 @@
  * Everything is keyed BY SQUARE, never by slot (JF §2.3), so buy-order
  * permutations transpose:
  *
- *   Kpos  = piece ⊕ reserve ⊕ damage ⊕ side ⊕ clock ⊕ bank ⊕ upkeepPending
- *           ⊕ rules ⊕ handicap                      (macro TT, book, suites)
+ *   Kpos  = piece ⊕ pend ⊕ reserve ⊕ damage ⊕ side ⊕ clock ⊕ bank
+ *           ⊕ upkeepPending ⊕ rules ⊕ handicap      (macro TT, book, suites)
  *   Kturn = Kpos ⊕ phase ⊕ actions ⊕ atkCount ⊕ uflags        (within-turn TT)
  *   occHash = XOR over occupied squares of piece[white][def 0][sq], lane 0
  *             (owner/def independent; keys the BFS distance cache)
@@ -21,7 +21,7 @@
  * target for the incremental keys `make`/`unmake` maintain (M5), not hot-path
  * code, so they may allocate the returned `Key`.
  */
-import { DEAD, MAX_SLOTS, UFLAGS_MASK, type Key, type PackedState, type Side, type Square } from '../types';
+import { DEAD, MAX_SLOTS, PEND_STRIDE, UFLAGS_MASK, type Key, type PackedState, type Side, type Square } from '../types';
 import { seededRandom } from '../../runtime';
 import { BOARD } from './tables';
 import { NDEF } from './catalog';
@@ -75,6 +75,16 @@ export interface ZobristTables {
   rules: Uint32Array;
   /** [21 * 2]. */
   handicap: Uint32Array;
+  /**
+   * [2 owners * 18 defs * 100 squares * 2 lanes] — Phasing pending summons,
+   * keyed by (side, DEFINITION, square). The paid cost is NOT hashed: it is a
+   * function of the definition (`pack` rejects any other combination), so
+   * hashing it would only duplicate information.
+   *
+   * Filled LAST so every earlier plane keeps the words it drew before M2: a
+   * position with no commitment has the very same `Kpos` it had under Standard.
+   */
+  pend: Uint32Array;
 }
 
 function fill(rng: () => number, keys: number): Uint32Array {
@@ -105,6 +115,9 @@ export function buildZobrist(seed: number = ZOBRIST_SEED): ZobristTables {
     upkeep: fill(rng, 1),
     rules: fill(rng, RULE_FLAGS * 2),
     handicap: fill(rng, HANDICAP_VALUES),
+    // APPEND-ONLY: every plane above must keep drawing the same words it drew
+    // before the `pend` plane existed, so `pend` goes last (DESIGN M2 item C).
+    pend: fill(rng, 2 * NDEF * BOARD),
   };
 }
 
@@ -146,6 +159,10 @@ export function zRule(flagIndex: number, value: number): number {
 export function zHandicap(value: number): number {
   return value * 2;
 }
+/** `pend[side][def][sq]`; `def` is the DEFINITION, not `pendDef`'s `def + 1`. */
+export function zPend(side: Side, def: number, s: Square): number {
+  return ((side * NDEF + def) * BOARD + s) * 2;
+}
 
 /** Scratch accumulator so `recompute*` never allocates per XOR. */
 let accLo = 0;
@@ -173,6 +190,13 @@ function xorKposParts(p: PackedState): void {
     xorKey(Z.piece, zPiece(p.owner[slot] as Side, p.defId[slot], s));
     const damage = p.damage[slot];
     if (damage !== 0) xorKey(Z.damage, zDamage(s, damage));
+  }
+  // Phasing pending summons. `pendDef` is dense over the 200-entry plane, so a
+  // position without commitments costs 200 loads and XORs nothing at all —
+  // which is exactly why its key is bit-identical to the pre-M2 one.
+  for (let i = 0; i < 2 * PEND_STRIDE; i++) {
+    const def = p.pendDef[i];
+    if (def !== 0) xorKey(Z.pend, zPend(((i / PEND_STRIDE) | 0) as Side, def - 1, i % PEND_STRIDE));
   }
   for (let s = 0; s < BOARD; s++) xorKey(Z.reserve, zReserve(s, p.reserve[s]));
   if (p.side === 1) xorKey(Z.side, 0);

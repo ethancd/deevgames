@@ -9,6 +9,17 @@
  * incremental `Kpos`/`Kturn`/`occHash` keys and the `materialCc`/`pstSumCc`
  * sums. The named tests underneath pin the individual mutation tables of
  * DESIGN §3.4 so a regression says which row broke.
+ *
+ * PHASING ONLY (M2). The corpus stores no ruleset, so its positions are read
+ * through `asPhasing`. The rows that moved are worth stating up front:
+ *
+ *   - BUY records a COMMITMENT and debits the bank; no unit appears, and the
+ *     phase never auto-advances;
+ *   - END_ACTION mines, settles the MOVER's own upkeep and stops in Prepare —
+ *     it does not hand off;
+ *   - END_PLACE is the hand-off: clock, draw, home occupation, elimination, then
+ *     the incoming side's commitments against ONE arrival board, then heal/reset;
+ *   - PAY_UPKEEP no longer heals or resets anything.
  */
 import { describe, expect, it, vi } from 'vitest';
 import path from 'node:path';
@@ -16,13 +27,15 @@ import type { AIAction } from '../../../src/ai/types';
 import { createInitialGameState } from '../../../src/game/board';
 import { applyAction } from '../../../src/ai/simulate';
 import { generateAllActions } from '../../../src/ai/moves';
+import { isLegalAction } from '../../../src/game/legality';
 import { seededRandom } from '../../../src/ai/runtime';
-import { MAX_SLOTS, Reason, Result } from '../../../src/ai/hard/types';
+import { F_CAN_ACT, MAX_SLOTS, PEND_STRIDE, Reason, Result } from '../../../src/ai/hard/types';
 import { AKind, fromAIAction, newKeepSetTable, paMake, toAIAction } from '../../../src/ai/hard/core/action';
 import { DEF_INDEX } from '../../../src/ai/hard/core/catalog';
 import { Replica, allocState, newUndo } from '../../../src/ai/hard/core/state';
 import { readPositions } from '../../../lab/hard-ai/positions/corpus';
-import { buildState, randomState } from './game-fixture';
+import { asPhasing, buildState, randomState } from './game-fixture';
+import { classifyKnownProverGap } from '../../../lab/hard-ai/fuzz/differential';
 
 // E0.5 timeout budget: slowest test 3.1 s in the 2026-09-15 survey (M2 Max, load ~5, maxWorkers 2); 20 s is this file's explicit ceiling.
 vi.setConfig({ testTimeout: 20_000 });
@@ -35,6 +48,63 @@ function defId(id: string): number {
   return DEF_INDEX.get(id) as number;
 }
 
+/**
+ * `digest` equality, with ONE exemption.
+ *
+ * M2 packs Phasing's home-checkmate GATE (Prepare, no upkeep pending) but not
+ * its VERDICT: `tactics/prover.ts` still models Standard's home defence — upkeep
+ * releases and pre-action promotions — while canonical Phasing gives the defender
+ * its present army and four actions only (`homeCheckmate.ts:152,159`). That shows
+ * up as a difference in the `result.reason` field ALONE, with `HOME_CHECKMATE` on
+ * one side of it.
+ *
+ * CORRECTED BY CONVERGER ROUNDS 2-3. This comment used to say the packed prover
+ * "can only ever UNDER-claim a Phasing mate, because Standard's rescue set is
+ * strictly larger". That is true of the rescue SEARCH and FALSE of the admissible
+ * damage BOUND, which is the unsound half: `damageBoundCore` skips any defender
+ * unit whose `rent > cash` (`prover.ts:418`), so a BROKE defender is treated as
+ * having no army and the replica claims a mate the defender refutes. Both
+ * directions occur — 43 over-claims and 5 under-claims in round 3's 30M fuzzed
+ * actions — and both are pinned by
+ * `tests/ai/hard/phasing-prover-{debt,underclaim}.test.ts`.
+ *
+ * So the exemption is no longer "any mate reason anywhere". A `mate-verdict-only`
+ * split must additionally be recognised by `classifyKnownProverGap`, the same
+ * narrow two-class predicate the fuzz gate uses: the two packed states identical
+ * in every field but the verdict, the verdicts differing in that class's
+ * direction, AND the defender actually holding the Standard-only resource that
+ * explains it. A mate over-claim against a SOLVENT defender is a replica bug, and
+ * it now fails here instead of being absorbed by the 1% allowance.
+ *
+ * Anything else — including a home-checkmate difference accompanied by any other
+ * field moving — is a real divergence and fails. The verdict itself is a later
+ * milestone's gate; see DEVIATIONS.md under M2.
+ */
+const DIGEST_RESULT_FIELD = 23;
+const REASON_HOME_CHECKMATE = String(Reason.HOME_CHECKMATE);
+
+function compareDigests(mine: string, theirs: string): 'same' | 'mate-verdict-only' | 'different' {
+  if (mine === theirs) return 'same';
+  const a = mine.split('|');
+  const b = theirs.split('|');
+  if (a.length !== b.length) return 'different';
+  for (let i = 0; i < a.length; i++) {
+    if (i === DIGEST_RESULT_FIELD || a[i] === b[i]) continue;
+    return 'different';
+  }
+  const reasons = [a[DIGEST_RESULT_FIELD].split('.')[1], b[DIGEST_RESULT_FIELD].split('.')[1]];
+  return reasons.includes(REASON_HOME_CHECKMATE) ? 'mate-verdict-only' : 'different';
+}
+
+/** `canPromote` on the canonical board, by unit id. */
+function isLegalActionPhasing(state: ReturnType<typeof buildState>, unitId: string): boolean {
+  return isLegalAction(state, { type: 'PROMOTE_UNIT', unitId });
+}
+
+function paKindOf(pa: number): number {
+  return pa & 0x7;
+}
+
 describe('make / unmake', () => {
   it('every legal action of 1,200 positions matches applyAction and unmakes exactly', () => {
     const rng = seededRandom(0x4d414b45);
@@ -45,23 +115,40 @@ describe('make / unmake', () => {
     let applied = 0;
 
     const positions = [
-      ...readPositions(path.join(CORPUS_DIR, 'authored.jsonl')).map(s => s.state),
-      ...readPositions(path.join(CORPUS_DIR, 'fuzz-1000.jsonl')).map(s => s.state),
-      ...Array.from({ length: 200 }, () =>
-        randomState(rng, 2 + Math.floor(rng() * 8), {
+      ...readPositions(path.join(CORPUS_DIR, 'authored.jsonl')).map(s => asPhasing(s.state)),
+      ...readPositions(path.join(CORPUS_DIR, 'fuzz-1000.jsonl')).map(s => asPhasing(s.state)),
+      ...Array.from({ length: 200 }, () => {
+        // Commitments on random squares: some are on a legal spawn square (and
+        // will materialise at the next END_PLACE), some are not (and refund).
+        const pendingSummons = Array.from({ length: Math.floor(rng() * 4) }, () => ({
+          def: rng() < 0.5 ? 'fire_1' : 'plant_1',
+          owner: (rng() < 0.5 ? 'white' : 'black') as 'white' | 'black',
+          x: Math.floor(rng() * 10),
+          y: Math.floor(rng() * 10),
+        }));
+        return randomState(rng, 2 + Math.floor(rng() * 8), {
           phase: rng() < 0.5 ? 'place' : 'action',
           actions: 1 + Math.floor(rng() * 4),
           white: Math.floor(rng() * 20),
           black: Math.floor(rng() * 20),
           current: rng() < 0.5 ? 'white' : 'black',
           upkeepPending: rng() < 0.25,
-        }),
-      ),
+          pendingSummons: pendingSummons.filter(
+            (a, k) => pendingSummons.findIndex(b => b.owner === a.owner && b.x === a.x && b.y === a.y) === k,
+          ),
+        });
+      }),
     ];
     expect(positions.length).toBe(1211);
+    let arrivals = 0;
+    let refunds = 0;
+    let mateVerdictDivergences = 0;
+    const mateVerdictGaps: Record<string, number> = {};
 
     for (const state of positions) {
       if (state.phase !== 'playing') continue;
+      // A Phasing turn ends in Prepare with no action budget left; a corpus
+      // 'place' position carries the Standard four, which nothing here reads.
       const p = replica.pack(state);
       const digestBefore = replica.digest(p);
       // `authored.jsonl#endgame-dry` is a hand-authored position whose reserves
@@ -84,14 +171,45 @@ describe('make / unmake', () => {
         replica.resetUndoScratch();
         replica.make(p, pa, undo, keep);
         replica.pack(applyAction(state, action), expected);
-        expect(replica.digest(p)).toBe(replica.digest(expected));
+        const verdict = compareDigests(replica.digest(p), replica.digest(expected));
+        if (verdict === 'mate-verdict-only') {
+          // The exemption is the DOCUMENTED M4 prover debt, not "a mate reason
+          // somewhere": the fuzz gate's own classifier has to recognise this
+          // split as one of its two classes, or it is a replica bug and fails.
+          const gap = classifyKnownProverGap(p, expected);
+          if (gap === null) {
+            throw new Error(
+              `unclassified mate-verdict divergence (neither M4 prover class): replica ${replica.digest(p)} vs canonical ${replica.digest(expected)}`,
+            );
+          }
+          mateVerdictGaps[gap] = (mateVerdictGaps[gap] ?? 0) + 1;
+          mateVerdictDivergences++;
+        } else expect(replica.digest(p)).toBe(replica.digest(expected));
         if (conserves) replica.check(p);
+        if (paKindOf(pa) === AKind.END_PLACE) {
+          const resolved = state.pendingSummons?.filter(s => s.owner !== state.turn.currentPlayer).length ?? 0;
+          arrivals += (applyAction(state, action).lastSummoning?.summoned.length ?? 0);
+          refunds += (applyAction(state, action).lastSummoning?.disrupted.length ?? 0);
+          void resolved;
+        }
         replica.unmake(p, undo);
         expect(replica.digest(p)).toBe(digestBefore);
         applied++;
       }
     }
     expect(applied).toBeGreaterThan(20_000);
+    // Both arrival outcomes must actually have been crossed.
+    expect(arrivals).toBeGreaterThan(0);
+    expect(refunds).toBeGreaterThan(0);
+    // M2 scope: the mate VERDICT is still Standard's (see `compareDigests`).
+    // It must stay a rounding error on this suite, not a systematic split.
+    expect(mateVerdictDivergences).toBeLessThan(applied / 100);
+    // Every exempted split was classified above; only the two documented M4
+    // prover classes may appear, and they must account for all of them.
+    expect(Object.keys(mateVerdictGaps).sort()).toEqual(
+      Object.keys(mateVerdictGaps).filter(k => k === 'overclaim-broke-defender' || k === 'underclaim-standard-rescue').sort(),
+    );
+    expect(Object.values(mateVerdictGaps).reduce((a, b) => a + b, 0)).toBe(mateVerdictDivergences);
     // Every action kind must actually have been exercised.
     for (const kind of [AKind.MOVE, AKind.ATTACK, AKind.BUY, AKind.PROMOTE, AKind.END_PLACE, AKind.END_ACTION, AKind.PAY_UPKEEP]) {
       expect(kinds[kind]).toBeGreaterThan(0);
@@ -108,9 +226,15 @@ describe('make / unmake', () => {
     const keep = newKeepSetTable();
     for (let trial = 0; trial < 300; trial++) {
       const state = randomState(rng, 3 + Math.floor(rng() * 6), {
-        phase: 'place',
+        // A Phasing turn starts in ACT; eight plies is enough to cross
+        // END_ACTION, the whole of Prepare and END_PLACE's arrival resolution.
+        phase: 'action',
         white: Math.floor(rng() * 18),
         black: Math.floor(rng() * 18),
+        pendingSummons: [
+          { def: 'fire_1', owner: 'white', x: trial % 10, y: 0 },
+          { def: 'fire_1', owner: 'black', x: 9, y: 9 - (trial % 9) },
+        ],
       });
       const p = replica.pack(state);
       const root = replica.digest(p);
@@ -118,7 +242,7 @@ describe('make / unmake', () => {
       replica.resetUndoScratch();
 
       const stack: string[] = [];
-      for (let depth = 0; depth < 8; depth++) {
+      for (let depth = 0; depth < 10; depth++) {
         let n: number;
         if (p.upkeepPending === 1) {
           n = replica.genKeepSets(p, keep);
@@ -238,41 +362,69 @@ describe('make / unmake', () => {
     expect(p.reason).toBe(Reason.NONE);
   });
 
-  it('BUY: the lowest dead slot is reused, and the placement auto-advances when nothing is left to do', () => {
+  it('BUY: a COMMITMENT is recorded and the bank debited — no unit, no phase change', () => {
     const state = buildState({
       units: [
-        { def: 'fire_1', owner: 'white', x: 0, y: 1 },
-        { def: 'plant_1', owner: 'black', x: 9, y: 9 },
+        { def: 'fire_1', owner: 'white', x: 0, y: 1, id: 'w0' },
+        { def: 'plant_1', owner: 'black', x: 9, y: 9, id: 'b0' },
       ],
       white: 3,
       phase: 'place',
     });
     const p = replica.pack(state);
     const undo = newUndo();
+    const before = replica.digest(p);
     expect(p.slotCount).toBe(2);
-    replica.make(p, paMake(AKind.BUY, defId('fire_1'), 0), undo);
-    expect(p.slotCount).toBe(3);
-    expect(p.sq[2]).toBe(0);
-    expect(p.bank[0]).toBe(0);
-    expect(p.uflags[2]).toBe(1 | 4); // F_CAN_ACT | F_PLACED
-    // 0 crystals left, nothing promotable -> Place auto-advances (simulate.ts:118-120).
-    expect(p.phase).toBe(1);
-    expect(p.actions).toBe(4);
-    replica.unmake(p, undo);
-    expect(p.slotCount).toBe(2);
-    expect(p.sq[2]).toBe(255);
-    expect(p.phase).toBe(0);
-    expect(p.bank[0]).toBe(3);
+    const buy = paMake(AKind.BUY, defId('fire_1'), 0);
 
-    // A dead slot is reused before the high-water mark grows.
-    const withHole = replica.pack(state, allocState());
-    withHole.sq[0] = 255;
-    replica.rehash(withHole);
-    withHole.bank[0] = 3;
-    replica.rehash(withHole);
-    replica.make(withHole, paMake(AKind.BUY, defId('fire_1'), 0), undo);
-    expect(withHole.sq[0]).toBe(0);
-    expect(withHole.slotCount).toBe(2);
+    replica.make(p, buy, undo);
+    // The commitment, square-keyed, at its exact paid cost.
+    expect(p.pendDef[0 * PEND_STRIDE + 0]).toBe(defId('fire_1') + 1);
+    expect(p.pendCost[0 * PEND_STRIDE + 0]).toBe(3);
+    expect([...p.pendCount]).toEqual([1, 0]);
+    expect([...p.pendCostSum]).toEqual([3, 0]);
+    expect(p.bank[0]).toBe(0);
+    // No unit: no slot taken, no occupancy, no material.
+    expect(p.slotCount).toBe(2);
+    expect(p.pieceAt[0]).toBe(255);
+    expect(p.occ[0] & 1).toBe(0);
+    expect(p.materialCc[0]).toBe(replica.cat.cost[defId('fire_1')] * 100);
+    // "Preparation always ends explicitly": 0 crystals left and nothing
+    // promotable, and the phase still does NOT auto-advance.
+    expect(p.phase).toBe(0);
+    expect(p.actions).toBe(state.turn.actionsRemaining);
+    expect(replica.digest(p)).toBe(replica.digest(replica.pack(applyAction(state, toAIAction(p, buy, newKeepSetTable())), allocState())));
+    replica.check(p);
+
+    // A second commitment on the same square is not an action at this node.
+    expect(replica.isLegal(p, paMake(AKind.BUY, defId('fire_1'), 0))).toBe(false);
+
+    replica.unmake(p, undo);
+    expect(replica.digest(p)).toBe(before);
+    expect([...p.pendCount]).toEqual([0, 0]);
+    expect(p.pendDef[0]).toBe(0);
+    expect(p.bank[0]).toBe(3);
+  });
+
+  it('BUY: several commitments in either order reach the same position', () => {
+    const spec = {
+      units: [
+        { def: 'plant_1', owner: 'white' as const, x: 1, y: 1, id: 'w0' },
+        { def: 'plant_1', owner: 'black' as const, x: 8, y: 8, id: 'b0' },
+      ],
+      white: 12,
+      phase: 'place' as const,
+    };
+    const forward = replica.pack(buildState(spec));
+    const undo = newUndo();
+    replica.make(forward, paMake(AKind.BUY, defId('fire_1'), 0), undo);
+    replica.make(forward, paMake(AKind.BUY, defId('water_1'), 1), undo);
+    const reversed = replica.pack(buildState(spec), allocState());
+    const undo2 = newUndo();
+    replica.make(reversed, paMake(AKind.BUY, defId('water_1'), 1), undo2);
+    replica.make(reversed, paMake(AKind.BUY, defId('fire_1'), 0), undo2);
+    expect(replica.digest(reversed)).toBe(replica.digest(forward));
+    expect([reversed.kposLo, reversed.kposHi]).toEqual([forward.kposLo, forward.kposHi]);
   });
 
   it('PROMOTE: definition, material, tier lane and bank all move, and F_PROMOTED blocks a second one', () => {
@@ -300,87 +452,302 @@ describe('make / unmake', () => {
     expect(p.uflags[0] & 8).toBe(0);
   });
 
-  it('END_PLACE and END_ACTION move the phase and the boundary exactly as the canonical engine does', () => {
+  it('END_ACTION mines, settles the MOVER\'s upkeep and stops in Prepare without handing off', () => {
     const state = buildState({
       units: [
-        { def: 'plant_1', owner: 'white', x: 0, y: 1 },
-        { def: 'plant_1', owner: 'black', x: 9, y: 8 },
+        { def: 'plant_1', owner: 'white', x: 0, y: 1, id: 'w0' },
+        { def: 'plant_1', owner: 'black', x: 9, y: 8, id: 'b0' },
       ],
-      phase: 'place',
+      phase: 'action',
       white: 0,
       turnNumber: 4,
+      inactivityPlies: 3,
     });
     const p = replica.pack(state);
     const undo = newUndo();
-    replica.make(p, paMake(AKind.END_PLACE), undo);
+    const reserveBefore = p.reserve[10];
+    replica.make(p, paMake(AKind.END_ACTION), undo);
+    // White's Muju mines 3 from A2 into White's own bank...
+    expect(p.reserve[10]).toBe(reserveBefore - 3);
+    expect(p.bank[0]).toBe(3);
+    expect(p.gained[0]).toBe(3);
+    // ...and then White STANDS STILL in Prepare with no actions left. The clock,
+    // the turn number and the side to move all belong to END_PLACE.
+    expect(p.side).toBe(0);
+    expect(p.phase).toBe(0);
+    expect(p.actions).toBe(0);
+    expect(p.clock).toBe(3);
+    expect(p.turnNumber).toBe(4);
+    expect(p.upkeepPending).toBe(0);
+    const canonical = replica.pack(applyAction(state, { type: 'END_ACTION_PHASE' }), allocState());
+    expect(canonical.side).toBe(0);
+    expect(canonical.phase).toBe(0);
+    expect(replica.digest(p)).toBe(replica.digest(canonical));
+    replica.check(p);
+
+    // The new income is spendable in the SAME Prepare — that is the whole point
+    // of collecting it before the phase change.
+    expect(replica.isLegal(p, paMake(AKind.BUY, defId('fire_1'), 0))).toBe(true);
+
+    replica.unmake(p, undo);
+    expect(p.reserve[10]).toBe(reserveBefore);
     expect(p.phase).toBe(1);
     expect(p.actions).toBe(4);
-    replica.unmake(p, undo);
-    expect(p.phase).toBe(0);
-
-    const acting = replica.pack({ ...state, turn: { ...state.turn, phase: 'action' } }, allocState());
-    const reserveBefore = acting.reserve[10];
-    replica.make(acting, paMake(AKind.END_ACTION), undo);
-    // White's Muju mines 3 from A2, then the turn hands over to Black.
-    expect(acting.reserve[10]).toBe(reserveBefore - 3);
-    expect(acting.bank[0]).toBe(3);
-    expect(acting.gained[0]).toBe(3);
-    expect(acting.side).toBe(1);
-    expect(acting.turnNumber).toBe(4); // bumped only when White comes back
-    expect(acting.clock).toBe(1);
-    const canonical = replica.pack(applyAction({ ...state, turn: { ...state.turn, phase: 'action' } }, { type: 'END_ACTION_PHASE' }), allocState());
-    expect(replica.digest(acting)).toBe(replica.digest(canonical));
-    replica.unmake(acting, undo);
-    expect(acting.reserve[10]).toBe(reserveBefore);
-    expect(acting.side).toBe(0);
-    expect(acting.clock).toBe(0);
-    expect(acting.gained[0]).toBe(0);
+    expect(p.gained[0]).toBe(0);
+    expect(p.bank[0]).toBe(0);
   });
 
-  it('END_ACTION: the incoming side pays affordable upkeep automatically, or the node stays pending', () => {
+  it('END_ACTION: the MOVER pays its own affordable upkeep, or the node goes upkeep-pending', () => {
     const rich = buildState({
       units: [
-        { def: 'plant_1', owner: 'white', x: 0, y: 1 },
-        { def: 'water_2', owner: 'black', x: 9, y: 8 },
+        { def: 'water_2', owner: 'white', x: 0, y: 1, id: 'w0' },
+        { def: 'plant_1', owner: 'black', x: 9, y: 8, id: 'b0' },
       ],
-      black: 4,
+      current: 'white',
+      phase: 'action',
+      white: 4,
       turnNumber: 6,
+      // An exhausted map, so the affordability question is about the BANK alone.
+      // (That income comes first, and can itself pay the rent, is the subject of
+      // the END_ACTION mining test above.)
+      reserves: new Array<number>(100).fill(0),
     });
     const p = replica.pack(rich);
     const undo = newUndo();
     replica.make(p, paMake(AKind.END_ACTION), undo);
+    // White's own rent, out of White's own bank — Standard charged the INCOMING
+    // side here; Phasing charges the mover, before it hands off at all.
     expect(p.upkeepPending).toBe(0);
-    expect(p.bank[1]).toBe(3); // 4 - 1 rent
-    expect(p.side).toBe(1);
+    expect(p.bank[0]).toBe(3); // 4 - 1 rent, no income to be had
+    expect(p.side).toBe(0);
+    expect(p.phase).toBe(0);
+    expect(replica.digest(p)).toBe(replica.digest(replica.pack(applyAction(rich, { type: 'END_ACTION_PHASE' }), allocState())));
     replica.unmake(p, undo);
-    expect(p.bank[1]).toBe(4);
+    expect(p.bank[0]).toBe(4);
     expect(p.upkeepPending).toBe(0);
+    expect(p.phase).toBe(1);
 
-    const broke = replica.pack({ ...rich, players: { ...rich.players, black: { ...rich.players.black, resources: 0 } } }, allocState());
+    // With an empty bank and an exhausted map the rent is unaffordable, so the
+    // node stands in Prepare with the keep-set choice still to be made.
+    const brokeState = { ...rich, players: { ...rich.players, white: { ...rich.players.white, resources: 0 } } };
+    const broke = replica.pack(brokeState, allocState());
     replica.make(broke, paMake(AKind.END_ACTION), undo);
     expect(broke.upkeepPending).toBe(1);
+    expect(broke.side).toBe(0);
     expect(broke.phase).toBe(0);
-    expect(broke.actions).toBe(4);
+    // Prepare starts with the action budget already spent (turn.ts:107).
+    expect(broke.actions).toBe(0);
+    expect(replica.digest(broke)).toBe(replica.digest(replica.pack(applyAction(brokeState, { type: 'END_ACTION_PHASE' }), allocState())));
     replica.unmake(broke, undo);
     expect(broke.upkeepPending).toBe(0);
+    expect(broke.actions).toBe(4);
 
-    const reviewing = replica.pack({ ...rich, reviewUpkeep: { white: false, black: true } }, allocState());
+    const reviewing = replica.pack({ ...rich, reviewUpkeep: { white: true, black: false } }, allocState());
     replica.make(reviewing, paMake(AKind.END_ACTION), undo);
     expect(reviewing.upkeepPending).toBe(1);
-    expect(reviewing.bank[1]).toBe(4);
+    expect(reviewing.bank[0]).toBe(4);
     replica.unmake(reviewing, undo);
     expect(reviewing.upkeepPending).toBe(0);
   });
 
-  it('PAY_UPKEEP: releases the unkept tier-2+, pays the kept rent, heals and resets the keeper', () => {
+  it('END_PLACE hands off, and resolves the incoming side\'s commitments on ONE arrival board', () => {
     const state = buildState({
       units: [
-        { def: 'water_2', owner: 'white', x: 0, y: 1, damage: 2, atkCount: 1, lastAttackKilled: true },
-        { def: 'metal_2', owner: 'white', x: 1, y: 0 },
-        { def: 'plant_1', owner: 'black', x: 9, y: 9 },
+        { def: 'plant_1', owner: 'white', x: 4, y: 4, id: 'w0' },
+        { def: 'plant_1', owner: 'black', x: 8, y: 9, id: 'b0' },
+      ],
+      current: 'white',
+      phase: 'place',
+      actions: 0,
+      white: 0,
+      black: 7,
+      turnNumber: 6,
+      // Black's Muju on (8,9) anchors the box (8,9)..(9,9): (9,9) is empty and
+      // legal, while (0,0) lies outside every Black rectangle and is not.
+      pendingSummons: [
+        { def: 'fire_1', owner: 'black', x: 9, y: 9, id: 'arrives' },
+        { def: 'plant_1', owner: 'black', x: 0, y: 0, id: 'refunded' },
+      ],
+    });
+    const p = replica.pack(state);
+    const undo = newUndo();
+    const before = replica.digest(p);
+    expect([...p.pendCount]).toEqual([0, 2]);
+
+    const canonical = applyAction(state, { type: 'END_PLACE_PHASE' });
+    expect(canonical.turn.currentPlayer).toBe('black');
+    expect(canonical.turn.phase).toBe('action');
+    expect(canonical.lastSummoning?.summoned.map(x => x.id)).toEqual(['arrives']);
+    expect(canonical.lastSummoning?.disrupted.map(x => x.id)).toEqual(['refunded']);
+
+    replica.make(p, paMake(AKind.END_PLACE), undo);
+    expect(p.side).toBe(1);
+    expect(p.phase).toBe(1);
+    expect(p.actions).toBe(4);
+    expect(p.turnNumber).toBe(6); // bumped only when White comes back
+    expect(p.clock).toBe(1);
+    // The valid commitment became a real unit in the lowest dead slot...
+    const arrival = p.pieceAt[99];
+    expect(arrival).not.toBe(255);
+    expect(p.defId[arrival]).toBe(defId('fire_1'));
+    expect(p.owner[arrival]).toBe(1);
+    // ...that may act AND promote this turn: `placedThisTurn` is false, so
+    // `F_PLACED` is clear and `F_CAN_ACT` is set (summoning.ts:29-30).
+    expect(p.uflags[arrival]).toBe(F_CAN_ACT);
+    expect(p.originIds[arrival]).toBe('arrives');
+    // ...and the disrupted one refunded its EXACT original cost (plant_1 = 5).
+    expect(p.bank[1]).toBe(7 + 5);
+    expect([...p.pendCount]).toEqual([0, 0]);
+    expect([...p.pendCostSum]).toEqual([0, 0]);
+    expect(replica.digest(p)).toBe(replica.digest(replica.pack(canonical, allocState())));
+    replica.check(p);
+
+    // The arrival really can act, on the very turn it landed.
+    expect(replica.isLegal(p, paMake(AKind.MOVE, arrival, 89))).toBe(true);
+
+    replica.unmake(p, undo);
+    expect(replica.digest(p)).toBe(before);
+    expect(p.side).toBe(0);
+    expect(p.bank[1]).toBe(7);
+    expect([...p.pendCount]).toEqual([0, 2]);
+  });
+
+  it('END_PLACE: arrivals cannot anchor one another — one snapshot decides all of them', () => {
+    // Black's only unit is on (9,8), whose rectangle is (9,8)..(9,9). A
+    // commitment on (9,9) arrives; one on (8,8) does not, and is NOT rescued by
+    // the (9,9) arrival, because every commitment is judged against the SAME
+    // board (summoning.ts:14-16).
+    const state = buildState({
+      units: [
+        { def: 'plant_1', owner: 'white', x: 4, y: 4, id: 'w0' },
+        { def: 'plant_1', owner: 'black', x: 9, y: 8, id: 'b0' },
+      ],
+      current: 'white',
+      phase: 'place',
+      actions: 0,
+      black: 0,
+      pendingSummons: [
+        { def: 'fire_1', owner: 'black', x: 9, y: 9, id: 'anchor-to-be' },
+        { def: 'fire_1', owner: 'black', x: 8, y: 8, id: 'would-be-anchored' },
+      ],
+    });
+    const canonical = applyAction(state, { type: 'END_PLACE_PHASE' });
+    expect(canonical.lastSummoning?.summoned.map(x => x.id)).toEqual(['anchor-to-be']);
+    expect(canonical.lastSummoning?.disrupted.map(x => x.id)).toEqual(['would-be-anchored']);
+
+    const p = replica.pack(state);
+    const undo = newUndo();
+    const before = replica.digest(p);
+    replica.make(p, paMake(AKind.END_PLACE), undo);
+    expect(p.pieceAt[99]).not.toBe(255);
+    expect(p.pieceAt[88]).toBe(255);
+    expect(p.bank[1]).toBe(3); // the disrupted fire_1 refunded its 3
+    expect(replica.digest(p)).toBe(replica.digest(replica.pack(canonical, allocState())));
+    replica.unmake(p, undo);
+    expect(replica.digest(p)).toBe(before);
+  });
+
+  it('END_PLACE: an arrival may promote on its arrival turn', () => {
+    const state = buildState({
+      units: [
+        { def: 'plant_1', owner: 'white', x: 4, y: 4, id: 'w0' },
+        { def: 'plant_1', owner: 'black', x: 8, y: 9, id: 'b0' },
+      ],
+      current: 'white',
+      phase: 'place',
+      actions: 0,
+      black: 20,
+      pendingSummons: [{ def: 'fire_1', owner: 'black', x: 9, y: 9, id: 'arrives' }],
+    });
+    const p = replica.pack(state);
+    const undo = newUndo();
+    replica.make(p, paMake(AKind.END_PLACE), undo);
+    const arrival = p.pieceAt[99];
+    // ACT first: promotion lives in Prepare, at the far end of the same turn.
+    replica.make(p, paMake(AKind.END_ACTION), undo);
+    expect(p.phase).toBe(0);
+    const promote = paMake(AKind.PROMOTE, arrival);
+    expect(replica.isLegal(p, promote)).toBe(true);
+    // ...and the canonical engine agrees, which is the claim that matters:
+    // Standard forbids this, because `placedThisTurn` would be set.
+    const canonicalArrived = applyAction(applyAction(state, { type: 'END_PLACE_PHASE' }), { type: 'END_ACTION_PHASE' });
+    expect(isLegalActionPhasing(canonicalArrived, 'arrives')).toBe(true);
+    replica.make(p, promote, undo);
+    expect(p.defId[arrival]).toBe(defId('fire_2'));
+    replica.check(p);
+    for (let i = 0; i < 3; i++) replica.unmake(p, undo);
+    expect(p.pieceAt[99]).toBe(255);
+  });
+
+  it('END_PLACE: an arrival that reuses a dead slot unmakes exactly, resurrection and all', () => {
+    // Black kills the White unit in slot 1, then hands off; WHITE is the
+    // incoming side, so it is White's commitment that resolves — into the slot
+    // the corpse left behind. Unmaking the END_PLACE must return that slot to
+    // the corpse's own fields, so that unmaking the ATTACK underneath can still
+    // resurrect it.
+    const state = buildState({
+      units: [
+        { def: 'fire_3', owner: 'black', x: 9, y: 8, id: 'b0' },
+        { def: 'plant_1', owner: 'white', x: 9, y: 7, id: 'w-doomed' },
+        // Anchors the box (0,0)..(1,0), leaving White's own corner free.
+        { def: 'plant_1', owner: 'white', x: 1, y: 0, id: 'w-safe' },
+      ],
+      current: 'black',
+      phase: 'action',
+      actions: 4,
+      // Enough to settle the Hono's own rent at END_ACTION; otherwise the turn
+      // stalls on a keep-set choice and never reaches END_PLACE.
+      black: 5,
+      pendingSummons: [{ def: 'fire_1', owner: 'white', x: 0, y: 0, id: 'arrives' }],
+    });
+    const p = replica.pack(state);
+    const undo = newUndo();
+    const keep = newKeepSetTable();
+    const root = replica.digest(p);
+    replica.resetUndoScratch();
+    expect(p.sq[1]).toBe(79);
+
+    const line = [paMake(AKind.ATTACK, 0, 79), paMake(AKind.END_ACTION), paMake(AKind.END_PLACE)];
+    const stack: string[] = [];
+    let canonical = state;
+    for (const pa of line) {
+      expect(replica.isLegal(p, pa, keep), String(pa)).toBe(true);
+      stack.push(replica.digest(p));
+      canonical = applyAction(canonical, toAIAction(p, pa, keep));
+      replica.make(p, pa, undo, keep);
+      expect(replica.digest(p)).toBe(replica.digest(replica.pack(canonical, allocState())));
+      replica.check(p);
+    }
+    // Slot 1 held the killed Muju and now holds White's arrival on A1.
+    expect(p.sq[1]).toBe(0);
+    expect(p.defId[1]).toBe(defId('fire_1'));
+    expect(p.owner[1]).toBe(0);
+    expect(p.uflags[1]).toBe(F_CAN_ACT);
+    expect(p.originIds[1]).toBe('arrives');
+
+    while (stack.length > 0) {
+      replica.unmake(p, undo);
+      expect(replica.digest(p)).toBe(stack.pop());
+    }
+    expect(replica.digest(p)).toBe(root);
+    expect(undo.top).toBe(0);
+    // The corpse's own fields are back, so the ATTACK's own undo could still
+    // have resurrected it.
+    expect(p.sq[1]).toBe(79);
+    expect(p.defId[1]).toBe(defId('plant_1'));
+    expect(p.originIds[1]).toBe('w-doomed');
+  });
+
+  it('PAY_UPKEEP: releases the unkept tier-2+ and pays the kept rent — and heals NOTHING', () => {
+    const state = buildState({
+      units: [
+        { def: 'water_2', owner: 'white', x: 0, y: 1, damage: 2, atkCount: 1, lastAttackKilled: true, id: 'u0' },
+        { def: 'metal_2', owner: 'white', x: 1, y: 0, id: 'u1' },
+        { def: 'plant_1', owner: 'black', x: 9, y: 9, id: 'u2' },
       ],
       white: 1,
       phase: 'place',
+      actions: 0,
       upkeepPending: true,
     });
     const p = replica.pack(state);
@@ -405,13 +772,22 @@ describe('make / unmake', () => {
     expect(p.upkeepPending).toBe(0);
     expect(p.bank[0]).toBe(0);
     expect(p.sq[1]).toBe(255); // the unkept Kurogane is released
-    expect(p.damage[0]).toBe(0); // healed at the turn start
-    expect(p.atkCount[0]).toBe(0);
-    expect(p.uflags[0]).toBe(1); // F_CAN_ACT only
+    // Under Phasing, settling upkeep is the END of the mover's turn, not the
+    // start of it: the damage and the attack history stay until the NEXT own
+    // turn start, and Prepare keeps its spent action budget.
+    expect(p.damage[0]).toBe(2);
+    expect(p.atkCount[0]).toBe(1);
+    expect(p.uflags[0] & F_CAN_ACT).toBe(F_CAN_ACT);
+    expect(p.phase).toBe(0);
+    expect(p.actions).toBe(0);
+    // ...and Prepare goes on, to be ended explicitly.
+    expect(replica.isLegal(p, paMake(AKind.END_PLACE))).toBe(true);
+    replica.check(p);
     replica.unmake(p, undo);
     expect(replica.digest(p)).toBe(before);
     expect(p.sq[1]).toBe(1);
     expect(p.damage[0]).toBe(2);
+    expect(p.upkeepPending).toBe(1);
   });
 
   it('PAY_UPKEEP: releasing your last unit is UPKEEP_ELIMINATION', () => {
@@ -422,6 +798,7 @@ describe('make / unmake', () => {
       ],
       white: 0,
       phase: 'place',
+      actions: 0,
       upkeepPending: true,
     });
     const p = replica.pack(state);
@@ -439,7 +816,7 @@ describe('make / unmake', () => {
   });
 
   it('RESIGN hands the win to the opponent', () => {
-    const p = replica.pack(createInitialGameState());
+    const p = replica.pack(createInitialGameState(undefined, 4, 0, 'phasing'));
     const undo = newUndo();
     replica.make(p, paMake(AKind.RESIGN), undo);
     expect(p.result).toBe(Result.BLACK_WIN);
@@ -451,10 +828,12 @@ describe('make / unmake', () => {
   it('the undo stack stays bounded across a full turn', () => {
     const undo = newUndo();
     const keep = newKeepSetTable();
-    const p = replica.pack(createInitialGameState());
+    const p = replica.pack(createInitialGameState(undefined, 4, 0, 'phasing'));
     undo.top = 0;
+    // Six plies covers ACT, END_ACTION, Prepare and END_PLACE — including an
+    // END_PLACE whose record carries one undo row per resolved commitment.
     for (let i = 0; i < 6; i++) {
-      const n = p.phase === 0 ? replica.genPlace(p, GEN) : replica.genActions(p, GEN);
+      const n = p.upkeepPending === 1 ? 0 : p.phase === 0 ? replica.genPlace(p, GEN) : replica.genActions(p, GEN);
       if (n === 0) break;
       replica.make(p, GEN[0], undo, keep);
     }
