@@ -1,5 +1,6 @@
 import {expect,it} from 'vitest';
 import {createInitialGameState,createUnit} from '../../src/game/board';
+import {INACTIVITY_LIMIT} from '../../src/game/inactivity';
 import {AIEngineV2} from '../../src/ai/engine-v2';
 import {applyAction} from '../../src/ai/simulate';
 import {referenceTactics} from '../../src/ai/tactics/home';
@@ -8,7 +9,7 @@ import {startTurn} from '../../src/game/turn';
 import {playGame} from '../../lab/harness/runner';
 import type {ScriptedBot} from '../../lab/harness/types';
 it('Medium takes a kill to reset an imminent draw despite passive income',async()=>{
- let s=createInitialGameState();s.inactivityPlies=9;s.players.white.resources=12;s.players.white.resourcesGained=12;
+ let s=createInitialGameState();s.inactivityPlies=INACTIVITY_LIMIT-1;s.players.white.resources=12;s.players.white.resourcesGained=12;
  s.board.units=[createUnit('plant_3','white',{x:4,y:4}),createUnit('metal_3','white',{x:3,y:4}),createUnit('plant_1','black',{x:4,y:5}),createUnit('plant_1','black',{x:8,y:8})];
  const engine=new AIEngineV2('medium');let remaining=4000;
  for(let i=0;i<8&&s.turn.currentPlayer==='white'&&s.phase==='playing';i++){
@@ -22,5 +23,6 @@ it('pending rent has no tactical proof; the paid board can prove the rescue',()=
 });
 it('harness records a real inactivity draw separately from its safety cap',async()=>{
  const pass:ScriptedBot={kind:'scripted',name:'Pass',chooseAction:()=>null};const {record}=await playGame({bots:{white:pass,black:pass},seed:1,engineHash:'test',runId:'clock',options:{maxTurns:120}});
- expect(record.winType).toBe('inactivity');expect(record.inactivityDraw).toBe(true);expect(record.maxInactivityPlies).toBe(10);expect(record.turns).toBe(5);expect(record.invariantViolation).toBeNull();expect(record.anomalies).toEqual([]);expect(record.players.white.upkeepPaid).toBe(0);
+ // Two bots that never act draw on the INACTIVITY_LIMIT-th quiet ply: ten hand-offs each.
+ expect(record.winType).toBe('inactivity');expect(record.inactivityDraw).toBe(true);expect(record.maxInactivityPlies).toBe(INACTIVITY_LIMIT);expect(record.turns).toBe(INACTIVITY_LIMIT/2);expect(record.invariantViolation).toBeNull();expect(record.anomalies).toEqual([]);expect(record.players.white.upkeepPaid).toBe(0);
 });

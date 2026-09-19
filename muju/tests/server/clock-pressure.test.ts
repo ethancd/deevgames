@@ -7,6 +7,7 @@ import { DatabaseSync } from 'node:sqlite';
 import { RoomStore } from '../../server/rooms';
 import { AnalysisService } from '../../server/analysis';
 import { observe, legalActions } from '../../server/observation';
+import { INACTIVITY_LIMIT } from '../../src/game/inactivity';
 import type { RoomAction } from '../../src/online/types';
 
 const epoch = 1800000000000;
@@ -99,11 +100,12 @@ describe('measured clock pressure', () => {
     endTurn(1000);
     if (terminal === 'resign') play([{ type: 'RESIGN' }]);
     else if (terminal === 'timeout') vi.setSystemTime(store.get(id).clock!.deadlineAtMs!);
-    else for (let turn = 2; turn <= 10; turn++) endTurn(1000);
+    // The draw lands on the INACTIVITY_LIMIT-th quiet ply; that terminal turn is excluded.
+    else for (let turn = 2; turn <= INACTIVITY_LIMIT; turn++) endTurn(1000);
     const room = store.get(id), pressure = room.clockPressure!;
     expect(room.state.phase).toBe('victory');
-    expect(pressure.players.white.completedTurns).toBe(terminal === 'draw' ? 5 : 1);
-    expect(pressure.players.black.completedTurns).toBe(terminal === 'draw' ? 4 : 0);
+    expect(pressure.players.white.completedTurns).toBe(terminal === 'draw' ? INACTIVITY_LIMIT / 2 : 1);
+    expect(pressure.players.black.completedTurns).toBe(terminal === 'draw' ? INACTIVITY_LIMIT / 2 - 1 : 0);
     const saved = structuredClone(pressure);
     vi.setSystemTime(Date.now() + 100000);
     expect(store.get(id).clockPressure).toEqual(saved);

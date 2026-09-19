@@ -20,7 +20,26 @@ import type { PendingStage, SeatStaging, StageAcknowledgement, StageReceipt, Sta
 import { assertMatchCapability, allowsMatchCapability } from './matchPolicy';
 import { completeClockTurn, newClockHistory, projectClockPressure, type ClockHistory } from './clockPressure';
 
-const RULES_VERSION = 'muju-online-4';
+/**
+ * Rules revisions this host PLAYS. The twenty-ply inactivity clock (owner
+ * decision 2026-09-19, preregistration amendment A4) changes both rule sets, so
+ * both versions advance: a stored room is never replayed under a limit its
+ * players did not agree to.
+ *
+ * `muju-online-5` is reserved by the unmerged T5 branch `codex/phasing-only-canonical`,
+ * which uses it for its single canonical rule set and migrates `muju-phasing-1`
+ * rooms into it. Standard therefore advances to `muju-online-6` here; when T5
+ * rebases it must map `muju-online-6` and `muju-phasing-2` rather than assume
+ * `muju-online-4`/`muju-phasing-1`.
+ *
+ * Rooms stored under a retired version keep their row untouched and take the
+ * existing changed-rules path in `read()`: RULES_CHANGED, never a silent
+ * reinterpretation and never a delete.
+ */
+export const RULES_VERSION = 'muju-online-6';
+export const PHASING_RULES_VERSION = 'muju-phasing-2';
+/** Pre-four-action rooms that still migrate in place; `migrateLegacyGame` restarts their quiet clock. */
+const MIGRATABLE_RULES_VERSIONS = ['muju-online-2', 'muju-online-3'];
 export const ROOM_IDLE_MS = 24 * 60 * 60 * 1000;
 const digest = (value: string) => createHash('sha256').update(value).digest('hex');
 const secret = () => randomBytes(32).toString('hex');
@@ -214,10 +233,10 @@ export class RoomStore {
     const row = this.db.prepare('SELECT data FROM rooms WHERE id = ?').get(id);
     if (!row) throw new RoomError(404, 'ROOM_NOT_FOUND', 'Room not found. Check the invitation or room ID.');
     const room = JSON.parse(row.data as string) as StoredRoom;
-    const legacy = ['muju-online-2', 'muju-online-3'].includes(room.rulesVersion);
+    const legacy = MIGRATABLE_RULES_VERSIONS.includes(room.rulesVersion);
     const oldState = room.state as LegacyGameState;
     const validBudget = legacy ? oldState.actionsPerTurn === undefined || [4, 6].includes(oldState.actionsPerTurn) : isActionsPerTurn(getActionsPerTurn(room.state));
-    if ((!legacy && room.rulesVersion !== RULES_VERSION && room.rulesVersion !== 'muju-phasing-1') || !validBudget) {
+    if ((!legacy && room.rulesVersion !== RULES_VERSION && room.rulesVersion !== PHASING_RULES_VERSION) || !validBudget) {
       throw new RoomError(409, 'RULES_CHANGED', 'This room uses older rules. Create a new room.');
     }
     if (legacy) {
@@ -280,10 +299,10 @@ export class RoomStore {
       COALESCE(json_extract(data, '$.state.ruleset'), 'standard') AS ruleset,
       json_extract(data, '$.updatedAt') AS updatedAt
       FROM rooms WHERE archived_at IS NULL AND json_extract(data, '$.state.phase') = 'playing'
-      AND ((json_extract(data, '$.rulesVersion') IN (?, 'muju-phasing-1') AND COALESCE(json_extract(data, '$.state.actionsPerTurn'), 4) = 4)
+      AND ((json_extract(data, '$.rulesVersion') IN (?, ?) AND COALESCE(json_extract(data, '$.state.actionsPerTurn'), 4) = 4)
         OR (json_extract(data, '$.rulesVersion') IN ('muju-online-2', 'muju-online-3')
           AND COALESCE(json_extract(data, '$.state.actionsPerTurn'), 4) IN (4, 6)))
-      ORDER BY ready DESC, updatedAt DESC, id`).all(RULES_VERSION);
+      ORDER BY ready DESC, updatedAt DESC, id`).all(RULES_VERSION, PHASING_RULES_VERSION);
     return rows.map(row => ({ id: row.id as string, ready: row.ready === 1,
       seats: JSON.parse(row.seats as string), turnNumber: row.turnNumber as number,
       ruleset: row.ruleset as 'standard' | 'phasing', currentPlayer: row.currentPlayer as PlayerId, updatedAt: row.updatedAt as string }));
@@ -404,7 +423,7 @@ export class RoomStore {
       const room: StoredRoom = { ...(matchPolicy ? { matchPolicy } : {}), id, revision: 0, ready: false, seats: { white: null, black: null },
         state: createInitialGameState(undefined, actionsPerTurn, blackCrystalHandicap, ruleset), canUndo: false, undoHistory: [], updatedAt: new Date(Date.now()).toISOString(), history: [],
         moveHistoryStart: { revision: 0, turnNumber: 1, player: 'white', complete: true },
-        rulesVersion: ruleset === 'phasing' ? 'muju-phasing-1' : RULES_VERSION, inviteHash: digest(inviteCode), tokenHashes: { [side]: digest(token) }, receipts: [] };
+        rulesVersion: ruleset === 'phasing' ? PHASING_RULES_VERSION : RULES_VERSION, inviteHash: digest(inviteCode), tokenHashes: { [side]: digest(token) }, receipts: [] };
       room.createdAt = room.lastMoveAt = room.updatedAt;
       room.invitedPlayer = side === 'white' ? 'black' : 'white';
       room.seats[side] = name;

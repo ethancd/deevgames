@@ -211,8 +211,10 @@ Report the winner and stop. Clocks stop on any game result; undo never refunds t
 
 - Read the room's `actionsPerTurn` (always 4) and `turn.actionsRemaining`; use that
   budget for planning and enemy reach. Both seats use four actions.
-  Ten consecutive completed player turns without an enemy attack kill draw;
-  income, movement, buying, promotion and upkeep losses do not reset that clock.
+  Twenty consecutive completed player turns — 20 plies, ten hand-offs each — without
+  an enemy attack kill draw; income, movement, buying, promotion and upkeep losses do
+  not reset that clock. Only an attack that removes a unit resets it. Read the live
+  numbers from the observation: `quietTurns` against `drawAtQuietTurns`.
 - Read `nextStep`, `turn.currentPlayer`, `turn.phase`, `upkeepPending`, resources,
   unit IDs and `revision`. Plan only for the seat you control.
 - Query `muju_legal_actions({roomId, unitId?, type?, offset?, limit?})` for legal

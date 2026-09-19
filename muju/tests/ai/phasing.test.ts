@@ -2,6 +2,7 @@
 import { beforeAll, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { createInitialGameState, createUnit } from '../../src/game/board';
+import { INACTIVITY_LIMIT } from '../../src/game/inactivity';
 import { getUnitDefinition } from '../../src/game/units';
 import { isLegalAction } from '../../src/game/legality';
 import { applyAction, applyActions } from '../../src/ai/simulate';
@@ -41,7 +42,7 @@ it('passes the full Act/upkeep/Prepare turn, mining once and resolving incoming 
 });
 
 it('does not hand off or resolve summons after an inactivity terminal', () => {
-  const state = initial(); state.inactivityPlies = 9;
+  const state = initial(); state.inactivityPlies = INACTIVITY_LIMIT - 1;
   const result = passTurn(state);
   expect(result).toMatchObject({ phase: 'victory', winner: null, victoryReason: 'inactivity' });
   expect(result.turn.currentPlayer).toBe('white');

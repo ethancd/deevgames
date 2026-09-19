@@ -5,6 +5,7 @@ import { getAdjacentPositions, getStartCorner, getUnitAt } from '../../src/game/
 import { createUnitFromDefinition } from '../../src/game/building';
 import { UNIT_DEFINITIONS } from '../../src/game/units';
 import { getHomeOccupier, getOpponent } from '../../src/game/victory';
+import { INACTIVITY_LIMIT } from '../../src/game/inactivity';
 import { analyzeHomeDefenseEvidence } from '../../src/game/homeCheckmate';
 import { transitionWithoutCheckmate } from '../../src/ai/simulate';
 import { isPhasing } from '../../src/game/rules';
@@ -244,7 +245,8 @@ export class AnalysisService {
     const result: Result = { ...envelope(room, s, player, [], ['stay-in-place economy; Now flags use current turn; NextTurn flags assume engine handoff; existing single-hit witnesses only'], 'current'),
       sections: { economy: economyHeadlines(s, forecast), forecastStop: forecast.stop,
         deployment: Object.fromEntries(sides.map(p => { const geometry = spawnGeometry(s, p); return [p, [geometry.count, geometry.anchors.some(a => a.blockedBy.length > 0)]]; })),
-        draw: [s.inactivityPlies ?? 0, 10], urgent: room.ready ? urgent(s, player, budget) : [] },
+        // [quietPlayerTurns, limit] from the canonical constant, never a literal.
+        draw: [s.inactivityPlies ?? 0, INACTIVITY_LIMIT], urgent: room.ready ? urgent(s, player, budget) : [] },
       search: budget.report(false, ['combinations', 'spending', 'nondefault upkeep', 'unlisted threats']),
       next: [followUp(room, player, ['threats'], { deep: true })] };
     this.put(key, result); return result;

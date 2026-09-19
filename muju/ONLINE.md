@@ -252,8 +252,10 @@ limits, fixtures and benchmarks.
 
 Every room uses four shared actions per player turn. Room observations expose
 `actionsPerTurn: 4`; the current allowance is `turn.actionsRemaining`.
-Ten consecutive completed turns without an enemy attack kill draw, even if
-players collect crystals. Only an attack kill resets the clock.
+Twenty consecutive completed turns — 20 plies, ten hand-offs each — without an
+enemy attack kill draw, even if players collect crystals. Only an attack kill
+resets the clock. Observations carry the live pair as `quietTurns` and
+`drawAtQuietTurns`; the browser board warns from 17.
 
 Suggested agent instructions:
 
@@ -530,12 +532,24 @@ This host is intended for invited games, not an unrestricted high-volume
 matchmaking service. No paid infrastructure is provisioned
 by these files.
 
-Saved rooms have a rules version; bump `RULES_VERSION` in `server/rooms.ts` when
-changing incompatible game rules. Older rooms fail with an explicit error instead
-of silently continuing under different rules. Version 4 upgrades version-2/3
-rooms in place to four actions and resets the new kill-only clock to zero. It
-subtracts actions already spent, preserves the board, seats and final results,
-and clears old undo/replay history. Reconnects receive an updated revision.
+Saved rooms have a rules version; bump `RULES_VERSION` (Standard) and
+`PHASING_RULES_VERSION` in `server/rooms.ts` when changing incompatible game rules.
+Older rooms fail with an explicit error instead of silently continuing under
+different rules. Version 4 upgrades version-2/3 rooms in place to four actions and
+resets the new kill-only clock to zero. It subtracts actions already spent,
+preserves the board, seats and final results, and clears old undo/replay history.
+Reconnects receive an updated revision.
+
+The twenty-ply inactivity draw (rules revision `muju-phasing-2`, 2026-09-19)
+advances both rule sets: new Standard rooms are `muju-online-6` and new Phasing
+rooms `muju-phasing-2`. `muju-online-5` is reserved by the unmerged
+`codex/phasing-only-canonical` branch, which uses it for its single canonical rule
+set, so Standard skips it. Rooms stored as `muju-online-4` or `muju-phasing-1` are
+never replayed under the longer clock: their rows stay in the database untouched,
+the active-games lobby omits them, the archived list still shows their result, and
+any read or command returns `RULES_CHANGED` ("This room uses older rules. Create a
+new room."). Version-2/3 rooms keep their existing in-place upgrade, which restarts
+the quiet clock rather than carrying it across the change.
 
 ## HTTP API and verification
 

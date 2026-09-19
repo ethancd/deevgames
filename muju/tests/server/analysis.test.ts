@@ -9,6 +9,7 @@ import { blockingSet, mobility, spawnGeometry } from '../../server/analysis/geom
 import { analyzeHomeDefenseEvidence } from '../../src/game/homeCheckmate';
 import { applyAction, transitionWithoutCheckmate } from '../../src/ai/simulate';
 import { createInitialGameState } from '../../src/game/board';
+import { INACTIVITY_LIMIT } from '../../src/game/inactivity';
 import { calculateDefense } from '../../src/game/combat';
 import { getUnitDefinition } from '../../src/game/units';
 import { generateAllActions } from '../../src/ai/moves';
@@ -45,8 +46,19 @@ describe('financial checkpoints', () => {
     const s = position([piece('w', 'metal_3', 'white', 1, 1), piece('b', 'plant_1', 'black', 8, 8)]);
     s.upkeepPending = true; s.turn.phase = 'place';
     expect(economyForecast(s).failure?.afterOwnHarvests).toBe(0);
-    const quiet = createInitialGameState(); quiet.inactivityPlies = 9;
+    const quiet = createInitialGameState(); quiet.inactivityPlies = INACTIVITY_LIMIT - 1;
     expect(economyForecast(quiet).stop).toBe('terminal:inactivity');
+    // One own harvest short of the limit the projection must still stop at its
+    // horizon: the boundary is the canonical constant, not a number copied here.
+    const nearly = createInitialGameState(); nearly.inactivityPlies = INACTIVITY_LIMIT - 3;
+    expect(economyForecast(nearly, 1).stop).toBe('horizon');
+  });
+  it('reports the draw headline as [quietPlayerTurns, canonical limit]', () => {
+    expect(INACTIVITY_LIMIT).toBe(20);
+    const s = createInitialGameState(); s.inactivityPlies = INACTIVITY_LIMIT - 3;
+    const room = { ...snapshot(s), ready: true };
+    expect((new AnalysisService().headline(room).sections as { draw: [number, number] }).draw)
+      .toEqual([INACTIVITY_LIMIT - 3, INACTIVITY_LIMIT]);
   });
 });
 

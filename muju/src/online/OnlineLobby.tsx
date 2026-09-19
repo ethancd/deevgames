@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { MusicButton } from '../music/MusicPlayer';
 import type { GameConfig, PlayerId } from '../game/types';
+import { INACTIVITY_LIMIT } from '../game/inactivity';
 import { GameView } from '../components/GameScreen';
 import { OnlineError, analysisUrl, createRoom, invitationUrl, joinRoom, loadConnection, normalizeServer, observerUrl, parseSeatCredentials, readRoom, resolveInvitationLink, resolveObserverConnection, restoreSeat, saveConnection } from './client';
 import type { OnlineConnection, RoomAdmission, RoomSnapshot } from './types';
@@ -148,7 +149,7 @@ export function OnlineLobby({ onBack }: { onBack: () => void }) {
     {!showJoinFirst && nameField}
     <section aria-label="Host a game"><h3>Host a game</h3>
       <label>Your side<select value={side} onChange={e => setSide(e.target.value as PlayerId)}><option value="white">White · first turn</option><option value="black">Black · second turn</option></select></label>
-      <p className="online-help">4 shared actions per turn · Draw after 10 consecutive turns without a kill.</p>
+      <p className="online-help">4 shared actions per turn · Draw after {INACTIVITY_LIMIT} consecutive turns without a kill.</p>
       <RulesetSelect value={ruleset} onChange={setRuleset} />
       <BlackCrystalHandicap phasing={ruleset === 'phasing'} value={blackCrystalHandicap} onChange={setBlackCrystalHandicap} />
       <label>Time control<select value={timeChoice} onChange={e => setTimeChoice(e.target.value as typeof timeChoice)}>

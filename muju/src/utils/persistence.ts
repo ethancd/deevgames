@@ -1,4 +1,4 @@
-import { resolveInactivityDraw } from '../game/inactivity';
+import { LEGACY_INACTIVITY_LIMIT, resolveInactivityDraw } from '../game/inactivity';
 import type { GameState, PlayerId } from '../game/types';
 import { getActionsPerTurn, isActionsPerTurn, isBlackCrystalHandicap, isRuleset } from '../game/rules';
 import { migrateLegacyGame } from '../game/migrate';
@@ -6,7 +6,13 @@ import { startHistory, type LocalGameHistory } from '../game/analysis';
 import { DEFAULT_AI_PACE, isAIPace, type AIPace } from '../ai/turnTime';
 
 // v7: explicit ruleset and public pending summons. v5/v6 saves remain readable as Standard.
-export const SCHEMA_VERSION = 7;
+// v8 (rules revision `muju-phasing-2`, 2026-09-19): the inactivity draw is twenty
+// quiet plies instead of ten. The version exists so a resumed save is never judged
+// under a clock its players did not agree to: see `loadGameState`.
+export const SCHEMA_VERSION = 8;
+
+/** Every save schema this build still reads. Anything else starts a fresh game. */
+const READABLE_SCHEMA_VERSIONS: readonly number[] = [5, 6, 7, SCHEMA_VERSION];
 
 const STORAGE_KEY = 'elemental-tactics-save';
 
@@ -72,7 +78,7 @@ export function loadGameState(): GameState | null {
 
     // Version mismatch - start fresh
     const legacy = persisted.schemaVersion === 5;
-    if (!legacy && persisted.schemaVersion !== 6 && persisted.schemaVersion !== SCHEMA_VERSION) {
+    if (!READABLE_SCHEMA_VERSIONS.includes(persisted.schemaVersion)) {
       console.log('Schema version mismatch, starting fresh game');
       clearGameState();
       return null;
@@ -85,9 +91,20 @@ export function loadGameState(): GameState | null {
       return null;
     }
 
-    const state = legacy ? migrateLegacyGame(persisted.state) :
-      resolveInactivityDraw({ ...persisted.state, actionsPerTurn: getActionsPerTurn(persisted.state) });
-    if (legacy) saveGameState(state);
+    // A save written before v8 counted quiet plies against the ten-ply limit, so its
+    // stored clock means something else now. It is adjudicated once under the limit it
+    // was recorded with — a game that had already drawn keeps that result — and a
+    // position that is still playing restarts its clock instead of carrying a count
+    // whose meaning changed. That is the same choice `migrateLegacyGame` made when the
+    // clock's reset rule changed, and it never revives a finished game.
+    const preTwentyPlyClock = persisted.schemaVersion < SCHEMA_VERSION;
+    const adjudicated = legacy ? migrateLegacyGame(persisted.state) :
+      resolveInactivityDraw({ ...persisted.state, actionsPerTurn: getActionsPerTurn(persisted.state) },
+        preTwentyPlyClock ? LEGACY_INACTIVITY_LIMIT : undefined);
+    const state = preTwentyPlyClock && adjudicated.phase === 'playing' && (adjudicated.inactivityPlies ?? 0) !== 0
+      ? { ...adjudicated, inactivityPlies: 0 } : adjudicated;
+    // Stamp the revision once, keeping the score, so the restart cannot repeat.
+    if (preTwentyPlyClock) saveGameState(state, persisted.history);
     return state;
   } catch (e) {
     console.warn('Failed to load game state:', e);

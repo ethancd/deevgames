@@ -4,8 +4,9 @@ import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
-import { RoomStore } from '../../server/rooms';
+import { PHASING_RULES_VERSION, RULES_VERSION, RoomStore } from '../../server/rooms';
 import { legalActions, observe } from '../../server/observation';
+import { INACTIVITY_LIMIT } from '../../src/game/inactivity';
 import { phaseEndAction } from '../../src/game/legality';
 import { applyAction } from '../../src/ai/simulate';
 import { createUnit } from '../../src/game/board';
@@ -53,14 +54,15 @@ it('previews, commits, notifies and persists immediate checkmate without playing
 });
 
 describe('authoritative shared rooms', () => {
-  it('draws after ten ordinary income-earning turns without kills', () => {
+  it('draws after twenty ordinary income-earning turns without kills', () => {
+    expect(INACTIVITY_LIMIT).toBe(20);
     const {store,id,host,guest}=setup();let room=store.get(id);
-    for(let ply=1;ply<=10;ply++) {
+    for(let ply=1;ply<=INACTIVITY_LIMIT;ply++) {
       const token=room.state.turn.currentPlayer==='white'?host.credentials.token:guest.credentials.token;
       if(room.state.turn.phase==='place') room=store.act(id,token,request(room.revision,[{type:'END_PLACE_PHASE'}],`place-${ply}-clock`));
       room=store.act(id,token,request(room.revision,[{type:'END_ACTION_PHASE'}],`end-${ply}-clock`));
       expect(room.state.inactivityPlies).toBe(ply);
-      expect(room.state.phase).toBe(ply===10?'victory':'playing');
+      expect(room.state.phase).toBe(ply===INACTIVITY_LIMIT?'victory':'playing');
     }
     expect(room.state.victoryReason).toBe('inactivity');
     expect(room.state.players.white.resourcesGained).toBeGreaterThan(0);
@@ -100,6 +102,55 @@ describe('authoritative shared rooms', () => {
     const next=store.act(id,host.credentials.token,request(migrated.revision,[{type:'END_ACTION_PHASE'}]));
     expect(next.state.turn.actionsRemaining).toBe(4);expect(next.state.inactivityPlies).toBe(1);
     expect(store.get(id).state.inactivityPlies).toBe(1);
+  });
+  it('stamps the twenty-ply rules revisions on new rooms', () => {
+    const dir=mkdtempSync(join(tmpdir(),'muju-revision-'));directories.push(dir);
+    const path=join(dir,'rooms.sqlite'),store=new RoomStore(path);stores.push(store);
+    const standard=store.create({name:'Standard',side:'white'});
+    const phasing=store.create({name:'Phasing',side:'white',ruleset:'phasing'});
+    const db=new DatabaseSync(path);
+    const version=(id:string)=>db.prepare("SELECT json_extract(data, '$.rulesVersion') AS v FROM rooms WHERE id = ?").get(id)!.v;
+    expect(version(standard.room.id)).toBe(RULES_VERSION);
+    expect(version(phasing.room.id)).toBe(PHASING_RULES_VERSION);
+    // `muju-online-5` belongs to the unmerged codex/phasing-only-canonical branch.
+    expect(RULES_VERSION).toBe('muju-online-6');
+    expect(PHASING_RULES_VERSION).toBe('muju-phasing-2');
+    db.close();
+  });
+  // A stored room was agreed under the ten-ply clock. It is never replayed under the
+  // twenty-ply one: the row survives untouched and every call takes the existing
+  // changed-rules path, exactly as an unmigratable version always has.
+  it.each([['muju-online-4','standard'],['muju-phasing-1','phasing']] as const)('refuses to play %s rooms under the new clock without losing them', (version,ruleset) => {
+    const dir=mkdtempSync(join(tmpdir(),'muju-retired-'));directories.push(dir);
+    const path=join(dir,'rooms.sqlite'),store=new RoomStore(path);stores.push(store);
+    const host=store.create({name:'Human',side:'white',...(ruleset==='phasing'?{ruleset}:{})});
+    const guest=store.join(host.room.id,{name:'Agent',inviteCode:host.inviteCode});
+    const id=host.room.id,before=store.get(id);
+    const db=new DatabaseSync(path);
+    db.prepare("UPDATE rooms SET data = json_set(data, '$.rulesVersion', ?, '$.state.inactivityPlies', 8) WHERE id = ?").run(version,id);
+    db.close();
+    const reopened=new RoomStore(path);stores.push(reopened);
+    for(const call of [
+      ()=>reopened.get(id),
+      ()=>reopened.get(id,host.credentials.token),
+      ()=>reopened.act(id,host.credentials.token,request(before.revision,[{type:'END_ACTION_PHASE'}],'retired-play')),
+      ()=>reopened.act(id,host.credentials.token,request(before.revision,[{type:'END_ACTION_PHASE'}],'retired-preview'),true),
+      ()=>reopened.moveHistory(id),
+      ()=>reopened.restore(id,guest.credentials.token,'black'),
+    ]) {
+      let code:string|undefined;
+      try { call(); } catch (error) { code=(error as {code?:string}).code; }
+      expect(code).toBe('RULES_CHANGED');
+    }
+    // Nothing was rewritten, migrated or deleted, and the lobby stops offering it.
+    const after=new DatabaseSync(path);
+    const row=after.prepare('SELECT data FROM rooms WHERE id = ?').get(id);
+    const stored=JSON.parse(row!.data as string) as {rulesVersion:string;state:{inactivityPlies:number;board:unknown}};
+    after.close();
+    expect(stored.rulesVersion).toBe(version);
+    expect(stored.state.inactivityPlies).toBe(8);
+    expect(stored.state.board).toEqual(before.state.board);
+    expect(reopened.listActive().map(r=>r.id)).not.toContain(id);
   });
   it('keeps reusable invitations private and never exposes private credentials in snapshots', () => {
     const { store, host, guest, id } = setup();

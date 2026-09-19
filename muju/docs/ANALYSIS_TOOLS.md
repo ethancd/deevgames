@@ -16,7 +16,7 @@ ordinary rooms retain all layers below. See the
 
 | Layer | Entry point | Content |
 | --- | --- | --- |
-| 0 | `analysis` in observe/create/join/play/changed wait | Both economies and depletion trends, deployment counts/blocking, draw clock, a bounded set of urgent existing-unit witnesses |
+| 0 | `analysis` in observe/create/join/play/changed wait | Both economies and depletion trends, deployment counts/blocking, draw clock as `[quietPlayerTurns, limit]` (the limit is twenty plies and comes from the engine constant, never a copy), a bounded set of urgent existing-unit witnesses |
 | 1 | Observe/wait with `briefing:true`, `player`, optional `sinceRevision` | Per-miner ledger, board matchups, spawn zones, threats including affordable spending, captures and mobility warnings |
 | 2 | `muju_analyze` with batched topics/targets | Focused accounting, geometry, approaches, conditional defenders, exchange costs, and executable evidence |
 | 3 | `deep:true`, `reply`, or `checkmate` | Bounded combined-turn search or the authoritative home-defense prover |
@@ -76,8 +76,11 @@ nonlethal line. Best-found action/crystal costs are not called minima.
 The economy's `shortfallIn` counts completed own harvests before failure, not
 round numbers. Null means the simulation stopped without reaching that player's
 failure. Both ledgers stop at the first shortfall, including the other player's;
-the inactivity draw can also end a stay-in-place projection. Historical harvest
-is labeled separately and reports only the engine's recorded last harvest.
+the inactivity draw can also end a stay-in-place projection. A stay-in-place
+projection is by definition quiet, so it now reaches `terminal:inactivity` after
+twenty plies rather than ten: a forecast that used to stop early runs further
+before the draw ends it. Historical harvest is labeled separately and reports only
+the engine's recorded last harvest.
 
 The generic next-turn model keeps automatic upkeep payments. It does not secretly
 refund them to fund purchases/promotions. Pending upkeep choices are enumerated

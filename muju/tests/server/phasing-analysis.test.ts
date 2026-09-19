@@ -8,6 +8,7 @@ import { analysisSchema, topics } from '../../server/analysis/schema';
 import { reach, spawnGeometry } from '../../server/analysis/geometry';
 import { applyAction } from '../../src/ai/simulate';
 import { piece, position, snapshot } from '../fixtures/analysis';
+import { INACTIVITY_LIMIT } from '../../src/game/inactivity';
 import type { GameState } from '../../src/game/types';
 
 const phasing = (...args: Parameters<typeof position>): GameState => ({ ...position(...args), ruleset: 'phasing', pendingSummons: [] });
@@ -57,7 +58,7 @@ describe('Phasing analysis models', () => {
     expect(f.failure).toMatchObject({ player: 'white', afterOwnHarvests: 4, due: 2, treasury: 0 });
     const prepare = applyAction(s, { type: 'END_ACTION_PHASE' });
     expect(economyForecast(prepare).checkpoints[0].player).toBe('black');
-    s.inactivityRule = 'on'; s.inactivityPlies = 9;
+    s.inactivityRule = 'on'; s.inactivityPlies = INACTIVITY_LIMIT - 1;
     expect(economyForecast(s).stop).toBe('terminal:inactivity');
   });
   it('includes future arrivals and refunds in the financial forecast, without new purchases', () => {
