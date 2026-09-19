@@ -1,0 +1,12 @@
+{
+  "provider": "openai",
+  "hash": "615c6a748e904f3e891f6fc77ecc8af2d55342100af11fc0ff719ed13d4444e7",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "Tier one: the Radi. Attack one, defense one, speed three, and Mining zero. Look at the green side first.",
+  "speechText": "Tier one: the RAH-dee. Attack one, defense one, speed three, and Mining zero. Look at the green side first.",
+  "duration": 6.8,
+  "bytes": 326444,
+  "createdAt": "2026-09-13T10:38:42.664Z"
+}

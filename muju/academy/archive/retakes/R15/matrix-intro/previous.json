@@ -1,0 +1,12 @@
+{
+  "provider": "openai",
+  "hash": "888d08d4d001ceecbe46044272cb1b801ad0d46b7c8804a0603b397de42708b8",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "Now the bonk matrix for plant. We check all eighteen enemy unit types, including matching types. Both pieces start at full health and are already next to each other. One attack, not a whole turn.",
+  "speechText": "Now the bonk matrix for plant. We check all eighteen enemy unit types, including matching types. Both pieces start at full health and are already next to each other. One attack, not a whole turn.",
+  "duration": 12.5,
+  "bytes": 600044,
+  "createdAt": "2026-09-13T10:39:18.564Z"
+}

@@ -1,0 +1,27 @@
+{
+  "provider": "openai",
+  "hash": "6b72886c5156c1d27197b549f7c953de7027db206bfbc1e3ecb9b0a1186e9739",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "Then the hit. Four.",
+  "speechText": "Then the hit. Four.",
+  "duration": 2.35,
+  "bytes": 112844,
+  "createdAt": "2026-09-13T10:38:27.377Z",
+  "captions": [
+    {
+      "text": "Then the hit. Four.",
+      "start": 0,
+      "end": 71
+    }
+  ],
+  "wordFrames": [
+    0,
+    19,
+    23,
+    47
+  ],
+  "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions",
+  "captionAudioSha256": "7997d2e0bf187b062634d0e999b153486211b572f4a88221a564139f68094e4f"
+}

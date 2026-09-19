@@ -1,0 +1,1404 @@
+{
+  "id": "R04",
+  "title": "The Crystal Payday",
+  "fps": 30,
+  "voices": {
+    "COACH": "marin",
+    "PIP": "coral",
+    "CLICK": "cedar"
+  },
+  "lines": [
+    {
+      "id": "01",
+      "speaker": "PIP",
+      "cue": "proud announcement",
+      "text": "I watered this square so it would grow more crystals.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed in, low]",
+        "[board: a White Muju stands on a square near home. Pip lowers a watering can over it. Nothing happens. A puddle spreads. Beside the square, an empty bucket and a laminated sign reading PAYDAY.]"
+      ],
+      "displayText": "I watered this square so it would grow more crystals.",
+      "from": 0,
+      "speechFrames": 126,
+      "preRollFrames": 0,
+      "duration": 146,
+      "audio": "audio/01.wav",
+      "captions": [
+        {
+          "text": "I watered this square so it would grow more crystals.",
+          "start": 0,
+          "end": 126
+        }
+      ],
+      "wordFrames": [
+        0,
+        22,
+        35,
+        46,
+        52,
+        67,
+        72,
+        79,
+        86,
+        100
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "02",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "It had four crystals. It has four crystals. Squares run out. They never fill up.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "It had four crystals. It has four crystals. Squares run out. They never fill up.",
+      "from": 146,
+      "speechFrames": 225,
+      "preRollFrames": 0,
+      "duration": 245,
+      "audio": "audio/02.wav",
+      "captions": [
+        {
+          "text": "It had four crystals.",
+          "start": 0,
+          "end": 79
+        },
+        {
+          "text": "It has four crystals.",
+          "start": 79,
+          "end": 167
+        },
+        {
+          "text": "Squares run out. They never fill up.",
+          "start": 167,
+          "end": 225
+        }
+      ],
+      "wordFrames": [
+        0,
+        5,
+        20,
+        41,
+        79,
+        83,
+        98,
+        120,
+        167,
+        167,
+        175,
+        197,
+        201,
+        209,
+        215
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "03",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "Then today we find out what four actually pays.",
+      "beat": "INVITATION",
+      "hold": 3.4,
+      "directions": [],
+      "titleBump": true,
+      "displayText": "Then today we find out what four actually pays.",
+      "from": 391,
+      "speechFrames": 120,
+      "preRollFrames": 0,
+      "duration": 222,
+      "audio": "audio/03.wav",
+      "captions": [
+        {
+          "text": "Then today we find out what four actually pays.",
+          "start": 2,
+          "end": 120
+        }
+      ],
+      "wordFrames": [
+        2,
+        21,
+        36,
+        42,
+        49,
+        59,
+        66,
+        76,
+        96
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "04",
+      "speaker": "CLICK",
+      "cue": "dry aside",
+      "text": "From the drawer. Proposal: add a Mining button. Overruled. There is no Mining button.",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed out]",
+        "[card: PIP'S AMENDMENTS (PENDING). Click slides the drawer open and lifts out one card.]"
+      ],
+      "displayText": "From the drawer. Proposal: add a Mining button. Overruled. There is no Mining button.",
+      "from": 613,
+      "speechFrames": 180,
+      "preRollFrames": 0,
+      "duration": 200,
+      "audio": "audio/04.wav",
+      "captions": [
+        {
+          "text": "From the drawer. Proposal: add a Mining button.",
+          "start": 5,
+          "end": 105
+        },
+        {
+          "text": "Overruled. There is no Mining button.",
+          "start": 105,
+          "end": 180
+        }
+      ],
+      "wordFrames": [
+        5,
+        9,
+        22,
+        42,
+        63,
+        70,
+        81,
+        81,
+        105,
+        138,
+        141,
+        147,
+        157,
+        163
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "05",
+      "speaker": "COACH",
+      "cue": "warm, unhurried",
+      "text": "This is the Muju. Its Mining number is three.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[card: the Muju. Mining three.] [board: the Muju's square labelled RESERVE 4. Every other square dimmed.]"
+      ],
+      "displayText": "This is the Muju. Its Mining number is three.",
+      "from": 813,
+      "speechFrames": 113,
+      "preRollFrames": 0,
+      "duration": 133,
+      "audio": "audio/05.wav",
+      "captions": [
+        {
+          "text": "This is the Muju.",
+          "start": 0,
+          "end": 53
+        },
+        {
+          "text": "Its Mining number is three.",
+          "start": 53,
+          "end": 113
+        }
+      ],
+      "wordFrames": [
+        0,
+        10,
+        22,
+        31,
+        53,
+        60,
+        70,
+        80,
+        90
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "06",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "The square under it holds four crystals. That is the reserve: the crystals still sitting in the square.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "The square under it holds four crystals. That is the reserve: the crystals still sitting in the square.",
+      "from": 946,
+      "speechFrames": 201,
+      "preRollFrames": 0,
+      "duration": 221,
+      "audio": "audio/06.wav",
+      "captions": [
+        {
+          "text": "The square under it holds four crystals.",
+          "start": 7,
+          "end": 100
+        },
+        {
+          "text": "That is the reserve: the crystals still sitting in the square.",
+          "start": 100,
+          "end": 201
+        }
+      ],
+      "wordFrames": [
+        7,
+        7,
+        19,
+        30,
+        45,
+        45,
+        61,
+        100,
+        106,
+        111,
+        118,
+        142,
+        153,
+        164,
+        171,
+        178,
+        183,
+        196
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "07",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Bucket three. Puddle four. Took three.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: crystal clink] [board: your turn ends. Three crystals slide off the square into the bank. The square flips from 4 to 1.]"
+      ],
+      "displayText": "Bucket three. Puddle four. Took three.",
+      "from": 1167,
+      "speechFrames": 102,
+      "preRollFrames": 0,
+      "duration": 122,
+      "audio": "audio/07.wav",
+      "captions": [
+        {
+          "text": "Bucket three. Puddle four.",
+          "start": 5,
+          "end": 73
+        },
+        {
+          "text": "Took three.",
+          "start": 73,
+          "end": 102
+        }
+      ],
+      "wordFrames": [
+        5,
+        13,
+        43,
+        44,
+        73,
+        76
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "08",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "It took the smaller of those two numbers.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "It took the smaller of those two numbers.",
+      "from": 1289,
+      "speechFrames": 89,
+      "preRollFrames": 0,
+      "duration": 109,
+      "audio": "audio/08.wav",
+      "captions": [
+        {
+          "text": "It took the smaller of those two numbers.",
+          "start": 0,
+          "end": 89
+        }
+      ],
+      "wordFrames": [
+        0,
+        8,
+        17,
+        32,
+        42,
+        51,
+        58,
+        68
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "09",
+      "speaker": "PIP",
+      "cue": "proud announcement",
+      "text": "I am standing professionally.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "I am standing professionally.",
+      "from": 1398,
+      "speechFrames": 93,
+      "preRollFrames": 0,
+      "duration": 113,
+      "audio": "audio/09.wav",
+      "captions": [
+        {
+          "text": "I am standing professionally.",
+          "start": 1,
+          "end": 93
+        }
+      ],
+      "wordFrames": [
+        1,
+        10,
+        23,
+        37
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "10",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Moving or attacking does not stop payday. Collect from the square where you end.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Moving or attacking does not stop payday. Collect from the square where you end.",
+      "from": 1511,
+      "speechFrames": 186,
+      "preRollFrames": 0,
+      "duration": 206,
+      "audio": "audio/10.wav",
+      "captions": [
+        {
+          "text": "Moving or attacking does not stop payday.",
+          "start": 6,
+          "end": 109
+        },
+        {
+          "text": "Collect from the square where you end.",
+          "start": 109,
+          "end": 186
+        }
+      ],
+      "wordFrames": [
+        6,
+        17,
+        30,
+        40,
+        57,
+        70,
+        79,
+        109,
+        125,
+        132,
+        151,
+        151,
+        162,
+        173
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "11",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Now it is your next turn end. Nobody has touched this square.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [
+        "[card: EVERY piece of yours collects at your turn end, even one that moved, attacked, was bought, or put on a new hat this turn.]",
+        "[board: same Muju, same square, now labelled RESERVE 1. Card beside it: the Muju, Mining three. Banner: YOUR NEXT TURN END. NOBODY ELSE TOUCHED THIS SQUARE.]"
+      ],
+      "displayText": "Now it is your next turn end. Nobody has touched this square.",
+      "from": 1717,
+      "speechFrames": 150,
+      "preRollFrames": 0,
+      "duration": 170,
+      "audio": "audio/11.wav",
+      "captions": [
+        {
+          "text": "Now it is your next turn end.",
+          "start": 22,
+          "end": 95
+        },
+        {
+          "text": "Nobody has touched this square.",
+          "start": 95,
+          "end": 150
+        }
+      ],
+      "wordFrames": [
+        22,
+        25,
+        30,
+        33,
+        42,
+        52,
+        60,
+        95,
+        95,
+        106,
+        112,
+        130
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "12",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "The Muju still has Mining three. The square has one crystal left.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "The Muju still has Mining three. The square has one crystal left.",
+      "from": 1887,
+      "speechFrames": 152,
+      "preRollFrames": 0,
+      "duration": 172,
+      "audio": "audio/12.wav",
+      "captions": [
+        {
+          "text": "The Muju still has Mining three.",
+          "start": 2,
+          "end": 83
+        },
+        {
+          "text": "The square has one crystal left.",
+          "start": 83,
+          "end": 152
+        }
+      ],
+      "wordFrames": [
+        2,
+        12,
+        14,
+        32,
+        43,
+        52,
+        83,
+        91,
+        99,
+        109,
+        122,
+        129
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "13",
+      "speaker": "COACH",
+      "cue": "question, open",
+      "text": "How many crystals does the Muju collect now?",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "How many crystals does the Muju collect now?",
+      "from": 2059,
+      "speechFrames": 138,
+      "preRollFrames": 0,
+      "duration": 158,
+      "audio": "audio/13.wav",
+      "captions": [
+        {
+          "text": "How many crystals does the Muju collect now?",
+          "start": 6,
+          "end": 138
+        }
+      ],
+      "wordFrames": [
+        6,
+        13,
+        31,
+        46,
+        70,
+        79,
+        90,
+        114
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "14",
+      "speaker": "PIP",
+      "cue": "cheerfully wrong",
+      "text": "Three. Bigger number, bigger bucket.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Three. Bigger number, bigger bucket.",
+      "from": 2217,
+      "speechFrames": 104,
+      "preRollFrames": 0,
+      "duration": 124,
+      "audio": "audio/14.wav",
+      "captions": [
+        {
+          "text": "Three. Bigger number, bigger bucket.",
+          "start": 1,
+          "end": 104
+        }
+      ],
+      "wordFrames": [
+        1,
+        38,
+        43,
+        70,
+        77
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "15",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "No rush on this one. Or just watch the bucket with me.",
+      "beat": "TRY",
+      "hold": 10.2,
+      "directions": [],
+      "thinking": true,
+      "displayText": "No rush on this one. Or just watch the bucket with me.",
+      "from": 2341,
+      "speechFrames": 116,
+      "preRollFrames": 0,
+      "duration": 422,
+      "audio": "audio/15.wav",
+      "captions": [
+        {
+          "text": "No rush on this one.",
+          "start": 0,
+          "end": 51
+        },
+        {
+          "text": "Or just watch the bucket with me.",
+          "start": 51,
+          "end": 116
+        }
+      ],
+      "wordFrames": [
+        0,
+        14,
+        26,
+        33,
+        39,
+        51,
+        68,
+        75,
+        86,
+        96,
+        96,
+        104
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "16",
+      "speaker": "COACH",
+      "cue": "reveal, land it",
+      "text": "One crystal, and room to spare in the bucket.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[board: the Muju tips its bucket over the square. One crystal rattles in. The bucket is still mostly empty. The square flips from 1 to 0 and goes grey.] [sfx: crystal clink]"
+      ],
+      "displayText": "One crystal, and room to spare in the bucket.",
+      "from": 2763,
+      "speechFrames": 98,
+      "preRollFrames": 0,
+      "duration": 118,
+      "audio": "audio/16.wav",
+      "captions": [
+        {
+          "text": "One crystal, and room to spare in the bucket.",
+          "start": 0,
+          "end": 98
+        }
+      ],
+      "wordFrames": [
+        0,
+        9,
+        41,
+        52,
+        53,
+        68,
+        68,
+        75,
+        84
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "17",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Three was the Muju's number. One was the square's number. Next payday here is an Empty Payday.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Three was the Muju's number. One was the square's number. Next payday here is an Empty Payday.",
+      "from": 2881,
+      "speechFrames": 222,
+      "preRollFrames": 0,
+      "duration": 242,
+      "audio": "audio/17.wav",
+      "captions": [
+        {
+          "text": "Three was the Muju's number.",
+          "start": 3,
+          "end": 83
+        },
+        {
+          "text": "One was the square's number.",
+          "start": 83,
+          "end": 151
+        },
+        {
+          "text": "Next payday here is an Empty Payday.",
+          "start": 151,
+          "end": 222
+        }
+      ],
+      "wordFrames": [
+        3,
+        14,
+        27,
+        39,
+        52,
+        83,
+        91,
+        102,
+        111,
+        124,
+        151,
+        158,
+        166,
+        178,
+        187,
+        196,
+        201
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "18",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Bucket or puddle. You carry the smaller one.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Bucket or puddle. You carry the smaller one.",
+      "from": 3123,
+      "speechFrames": 102,
+      "preRollFrames": 0,
+      "duration": 122,
+      "audio": "audio/18.wav",
+      "captions": [
+        {
+          "text": "Bucket or puddle. You carry the smaller one.",
+          "start": 10,
+          "end": 102
+        }
+      ],
+      "wordFrames": [
+        10,
+        17,
+        33,
+        67,
+        73,
+        78,
+        85,
+        92
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "19",
+      "speaker": "COACH",
+      "cue": "stating the rule, level",
+      "text": "In rules words: a piece takes its Mining number, or whatever the square has left. Whichever is smaller.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "In rules words: a piece takes its Mining number, or whatever the square has left. Whichever is smaller.",
+      "from": 3245,
+      "speechFrames": 198,
+      "preRollFrames": 0,
+      "duration": 218,
+      "audio": "audio/19.wav",
+      "captions": [
+        {
+          "text": "In rules words: a piece takes its Mining number, or whatever the",
+          "start": 0,
+          "end": 127
+        },
+        {
+          "text": "square has left. Whichever is smaller.",
+          "start": 127,
+          "end": 198
+        }
+      ],
+      "wordFrames": [
+        0,
+        14,
+        28,
+        37,
+        49,
+        51,
+        66,
+        75,
+        83,
+        93,
+        108,
+        117,
+        127,
+        129,
+        140,
+        149,
+        173,
+        181
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "20",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "I tried telling it an encouraging story. Still empty.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "I tried telling it an encouraging story. Still empty.",
+      "from": 3463,
+      "speechFrames": 174,
+      "preRollFrames": 0,
+      "duration": 194,
+      "audio": "audio/20.wav",
+      "captions": [
+        {
+          "text": "I tried telling it an encouraging story.",
+          "start": 9,
+          "end": 144
+        },
+        {
+          "text": "Still empty.",
+          "start": 144,
+          "end": 174
+        }
+      ],
+      "wordFrames": [
+        9,
+        9,
+        30,
+        49,
+        56,
+        72,
+        81,
+        144,
+        146
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "21",
+      "speaker": "CLICK",
+      "cue": "dry aside",
+      "text": "Reserve: unchanged.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Reserve: unchanged.",
+      "from": 3657,
+      "speechFrames": 68,
+      "preRollFrames": 0,
+      "duration": 88,
+      "audio": "audio/21.wav",
+      "captions": [
+        {
+          "text": "Reserve: unchanged.",
+          "start": 22,
+          "end": 68
+        }
+      ],
+      "wordFrames": [
+        22,
+        22
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "22",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Turn one dial. This Radi has Mining zero.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[card: EVIDENCE. Proves: this square, this piece, this turn end. Not checked: every other square, and what Black does next.]",
+        "[card: the Radi. Mining zero.] [board: a Radi standing on a square labelled RESERVE 10]"
+      ],
+      "displayText": "Turn one dial. This Radi has Mining zero.",
+      "from": 3745,
+      "speechFrames": 144,
+      "preRollFrames": 0,
+      "duration": 164,
+      "audio": "audio/22.wav",
+      "captions": [
+        {
+          "text": "Turn one dial. This Radi has Mining zero.",
+          "start": 15,
+          "end": 144
+        }
+      ],
+      "wordFrames": [
+        15,
+        15,
+        29,
+        60,
+        72,
+        84,
+        104,
+        117
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "23",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "The square under it is holding ten.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "The square under it is holding ten.",
+      "from": 3909,
+      "speechFrames": 75,
+      "preRollFrames": 0,
+      "duration": 95,
+      "audio": "audio/23.wav",
+      "captions": [
+        {
+          "text": "The square under it is holding ten.",
+          "start": 2,
+          "end": 75
+        }
+      ],
+      "wordFrames": [
+        2,
+        8,
+        19,
+        30,
+        37,
+        44,
+        51
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "24",
+      "speaker": "PIP",
+      "cue": "trailing off, inviting",
+      "text": "Bucket or puddle.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Bucket or puddle.",
+      "from": 4004,
+      "speechFrames": 60,
+      "preRollFrames": 0,
+      "duration": 80,
+      "audio": "audio/24.wav",
+      "captions": [
+        {
+          "text": "Bucket or puddle.",
+          "start": 11,
+          "end": 60
+        }
+      ],
+      "wordFrames": [
+        11,
+        16,
+        33
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "25",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Bucket. The bucket is zero. The Radi collects nothing.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Bucket. The bucket is zero. The Radi collects nothing.",
+      "from": 4084,
+      "speechFrames": 144,
+      "preRollFrames": 0,
+      "duration": 164,
+      "audio": "audio/25.wav",
+      "captions": [
+        {
+          "text": "Bucket. The bucket is zero.",
+          "start": 10,
+          "end": 85
+        },
+        {
+          "text": "The Radi collects nothing.",
+          "start": 85,
+          "end": 144
+        }
+      ],
+      "wordFrames": [
+        10,
+        26,
+        45,
+        51,
+        61,
+        85,
+        96,
+        107,
+        121
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "26",
+      "speaker": "PIP",
+      "cue": "dawning concern",
+      "text": "So my business needs crystals where the piece ends. The square it left pays nothing.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "So my business needs crystals where the piece ends. The square it left pays nothing.",
+      "from": 4248,
+      "speechFrames": 207,
+      "preRollFrames": 0,
+      "duration": 227,
+      "audio": "audio/26.wav",
+      "captions": [
+        {
+          "text": "So my business needs crystals where the piece ends.",
+          "start": 0,
+          "end": 133
+        },
+        {
+          "text": "The square it left pays nothing.",
+          "start": 133,
+          "end": 207
+        }
+      ],
+      "wordFrames": [
+        0,
+        15,
+        32,
+        47,
+        59,
+        73,
+        82,
+        94,
+        97,
+        133,
+        134,
+        143,
+        151,
+        161,
+        177
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "27",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Whether it is still standing there next turn, I do not know yet.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Whether it is still standing there next turn, I do not know yet.",
+      "from": 4475,
+      "speechFrames": 120,
+      "preRollFrames": 0,
+      "duration": 140,
+      "audio": "audio/27.wav",
+      "captions": [
+        {
+          "text": "Whether it is still standing there next turn, I do not know",
+          "start": 5,
+          "end": 104
+        },
+        {
+          "text": "yet.",
+          "start": 104,
+          "end": 120
+        }
+      ],
+      "wordFrames": [
+        5,
+        9,
+        17,
+        26,
+        41,
+        42,
+        52,
+        64,
+        78,
+        87,
+        92,
+        98,
+        104
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "28",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "The Standing Business is closing. The new one picks squares. I call it the chief financial bucket.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "The Standing Business is closing. The new one picks squares. I call it the chief financial bucket.",
+      "from": 4615,
+      "speechFrames": 224,
+      "preRollFrames": 0,
+      "duration": 244,
+      "audio": "audio/28.wav",
+      "captions": [
+        {
+          "text": "The Standing Business is closing.",
+          "start": 6,
+          "end": 86
+        },
+        {
+          "text": "The new one picks squares.",
+          "start": 86,
+          "end": 155
+        },
+        {
+          "text": "I call it the chief financial bucket.",
+          "start": 155,
+          "end": 224
+        }
+      ],
+      "wordFrames": [
+        6,
+        10,
+        28,
+        40,
+        54,
+        86,
+        93,
+        101,
+        113,
+        122,
+        155,
+        164,
+        170,
+        174,
+        184,
+        188,
+        204
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "map",
+      "speaker": "COACH",
+      "text": "New games use this Unequal routes map. Squares start with zero, four, eight, or ten crystals. There are four hundred eighty altogether. The bright home reserves and the middle cluster are real reserves, and empty squares are still roads.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "map"
+      },
+      "displayText": "New games use this Unequal routes map. Squares start with zero, four, eight, or ten crystals. There are four hundred eighty altogether. The bright home reserves and the middle cluster are real reserves, and empty squares are still roads.",
+      "from": 4859,
+      "speechFrames": 497,
+      "preRollFrames": 0,
+      "duration": 521,
+      "audio": "audio/map.wav",
+      "captions": [
+        {
+          "text": "New games use this Unequal routes map.",
+          "start": 0,
+          "end": 134
+        },
+        {
+          "text": "Squares start with zero, four, eight, or ten crystals.",
+          "start": 134,
+          "end": 247
+        },
+        {
+          "text": "There are four hundred eighty altogether.",
+          "start": 247,
+          "end": 313
+        },
+        {
+          "text": "The bright home reserves and the middle cluster are real reserves,",
+          "start": 313,
+          "end": 429
+        },
+        {
+          "text": "and empty squares are still roads.",
+          "start": 429,
+          "end": 497
+        }
+      ],
+      "wordFrames": [
+        0,
+        15,
+        40,
+        56,
+        65,
+        80,
+        93,
+        134,
+        139,
+        148,
+        152,
+        172,
+        187,
+        202,
+        204,
+        213,
+        247,
+        251,
+        256,
+        256,
+        256,
+        271,
+        313,
+        319,
+        328,
+        336,
+        347,
+        356,
+        359,
+        365,
+        376,
+        385,
+        394,
+        429,
+        431,
+        441,
+        452,
+        460,
+        469
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "all-miners",
+      "speaker": "COACH",
+      "text": "Every friendly piece collects at your turn end, including pieces bought or promoted that turn. Mining uses no actions. The bank is spendable money; total income remembers everything you collected, even after you spend it.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "card",
+        "title": "Every friendly piece gets payday",
+        "body": "Moved, attacked, bought or promoted: still collects.\nMining costs 0 actions.\nBank = crystals available to spend.\nTotal income = all crystals collected so far."
+      },
+      "displayText": "Every friendly piece collects at your turn end, including pieces bought or promoted that turn. Mining uses no actions. The bank is spendable money; total income remembers everything you collected, even after you spend it.",
+      "from": 5380,
+      "speechFrames": 425,
+      "preRollFrames": 0,
+      "duration": 449,
+      "audio": "audio/all-miners.wav",
+      "captions": [
+        {
+          "text": "Every friendly piece collects at your turn end, including pieces",
+          "start": 0,
+          "end": 116
+        },
+        {
+          "text": "bought or promoted that turn.",
+          "start": 116,
+          "end": 190
+        },
+        {
+          "text": "Mining uses no actions.",
+          "start": 190,
+          "end": 249
+        },
+        {
+          "text": "The bank is spendable money; total income remembers everything you",
+          "start": 249,
+          "end": 355
+        },
+        {
+          "text": "collected, even after you spend it.",
+          "start": 355,
+          "end": 425
+        }
+      ],
+      "wordFrames": [
+        0,
+        11,
+        23,
+        36,
+        47,
+        58,
+        63,
+        72,
+        93,
+        104,
+        116,
+        128,
+        136,
+        147,
+        155,
+        190,
+        192,
+        204,
+        215,
+        249,
+        251,
+        259,
+        265,
+        280,
+        309,
+        311,
+        323,
+        336,
+        349,
+        355,
+        377,
+        384,
+        391,
+        397,
+        403
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "29",
+      "speaker": "COACH",
+      "cue": "warm, unhurried",
+      "text": "Before you end a practice turn, say the payday out loud. Then watch what arrives.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": [
+        "[card: SAY THE PAYDAY. THEN WATCH IT ARRIVE.]"
+      ],
+      "displayText": "Before you end a practice turn, say the payday out loud. Then watch what arrives.",
+      "from": 5829,
+      "speechFrames": 195,
+      "preRollFrames": 0,
+      "duration": 215,
+      "audio": "audio/29.wav",
+      "captions": [
+        {
+          "text": "Before you end a practice turn, say the payday out loud.",
+          "start": 6,
+          "end": 132
+        },
+        {
+          "text": "Then watch what arrives.",
+          "start": 132,
+          "end": 195
+        }
+      ],
+      "wordFrames": [
+        6,
+        10,
+        23,
+        30,
+        37,
+        45,
+        74,
+        78,
+        87,
+        97,
+        110,
+        132,
+        146,
+        167,
+        176
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "30",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Today was plenty if you want it to be. Next time the shop opens. What can our crystals buy?",
+      "beat": "EXIT",
+      "hold": 2,
+      "directions": [],
+      "displayText": "Today was plenty if you want it to be. Next time the shop opens. What can our crystals buy?",
+      "from": 6044,
+      "speechFrames": 188,
+      "preRollFrames": 0,
+      "duration": 248,
+      "audio": "audio/30.wav",
+      "captions": [
+        {
+          "text": "Today was plenty if you want it to be.",
+          "start": 0,
+          "end": 91
+        },
+        {
+          "text": "Next time the shop opens.",
+          "start": 91,
+          "end": 146
+        },
+        {
+          "text": "What can our crystals buy?",
+          "start": 146,
+          "end": 188
+        }
+      ],
+      "wordFrames": [
+        0,
+        12,
+        24,
+        38,
+        45,
+        49,
+        54,
+        57,
+        63,
+        91,
+        95,
+        102,
+        108,
+        112,
+        146,
+        150,
+        154,
+        162,
+        169
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    }
+  ],
+  "question": "How many crystals does the Muju collect now?",
+  "version": 6,
+  "updatedLabel": "Video version 6 · Last updated at 05:38 Sep 13 2026 CDT",
+  "rules": "v2.7",
+  "soundtrack": {
+    "id": "open-room",
+    "title": "Open Room, Lantern On",
+    "source": "muju/music-auditions/full-versions/open-room-full-v1.mp3",
+    "sha256": "dddd8b6ca2bbfe869424f59b7d26673f5f09e72533b68cfcad60fc3042a9fa42"
+  },
+  "speechProvider": "openai",
+  "audioComplete": true,
+  "durationInFrames": 6292
+}

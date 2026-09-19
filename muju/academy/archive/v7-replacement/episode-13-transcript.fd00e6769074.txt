@@ -1,0 +1,87 @@
+Water: Captain Bucket
+Rules v2.7 · Video version 6
+Music: Straumr / Under the Current
+
+BUBBLES: The bucket has applied for the position of warship.
+
+CLICK: Speed one. It has applied for a very slow war.
+
+BUBBLES: The bucket has a sail, a captain, and the best shield in the department. We are ready for anything.
+
+COACH: Last time the Hi on C3 finished an Inyan. What did Fire add?
+
+CLICK: Plus one against Metal. Today the Deep End puts out the Sparks. Water takes one away.
+
+PIP: One job. Two pieces want it. First up is the Sjor.
+
+COACH: The Hi has attack two. Water beats Fire, so take one away.
+
+COACH: Each Hi does one damage. A fresh Sjor has defense two.
+
+BUBBLES: One, then one. Not hired. The shield was one short.
+
+PIP: New piece. New turn. Two fresh Hi again. A fresh Straumr has defense three.
+
+BUBBLES: The same two Hi. Does my Straumr survive the turn?
+
+COACH: Remember the Bonk Lab dare? This is it. Count it, or watch the board with me.
+
+COACH: The Straumr is standing. One defense left.
+
+COACH: Neither Hi finished it. Each of them is done attacking for the turn.
+
+BUBBLES: The shield held. Two attackers were not enough. That is a crewing problem.
+
+BUBBLES: Two buckets is not the whole navy.
+
+COACH: I do not know what Black brings to this square next. We have not counted that.
+
+CLICK: Big shield. Slow boat.
+
+COACH: Defense three, and one square per action.
+
+PIP: Turned down for one job. Hired for another. I am putting that on a sticker.
+
+BUBBLES: This is the Sjor. Shield of two. Takes two crystals. That is the Sjor.
+
+COACH: At your own turn end it takes from the square it is standing on.
+
+CLICK: Mining two. Four crystals here. Took two. Two left.
+
+BUBBLES: This is the Aegirinn. Shield of four. Takes three. That is the Aegirinn.
+
+CLICK: Next turn the Sjor owes nothing. The Straumr owes one. The Aegirinn owes two.
+
+CLICK: Big shield. Slow boat.
+
+BUBBLES: The captain is aware of the boat situation.
+
+COACH: Now the bonk matrix for water. We check all eighteen enemy unit types, including matching types. Both pieces start at full health and are already next to each other. One attack, not a whole turn.
+
+COACH: Tier one: the Sjor. Attack two, defense two, speed one, and Mining two. Look at the green side first.
+
+COACH: With one attack, the Sjor can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Göl, Gölge and Karanlık. Every unlit card survives that single hit.
+
+COACH: Now the red side. A full health Sjor is one shot by Hono, Kagari, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachita, Sachakuna, Inyan, Mazask and Tanka. Every unlit attacker needs help or earlier damage.
+
+COACH: That is the tier one card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.
+
+COACH: Tier two: the Straumr. Attack two, defense three, speed one, and Mining two. Look at the green side first.
+
+COACH: With one attack, the Straumr can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Göl, Gölge and Karanlık. Every unlit card survives that single hit.
+
+COACH: Now the red side. A full health Straumr is one shot by Kagari, Aegirinn, Gölge, Karanlık, Sachakuna, Mazask and Tanka. Every unlit attacker needs help or earlier damage.
+
+COACH: That is the tier two card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.
+
+COACH: Tier three: the Aegirinn. Attack three, defense four, speed two, and Mining three. Look at the green side first.
+
+COACH: With one attack, the Aegirinn can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Göl, Gölge, Karanlık. Every unlit card survives that single hit.
+
+COACH: Now the red side. A full health Aegirinn is one shot by Karanlık. Every unlit attacker needs help or earlier damage.
+
+COACH: That is the tier three card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.
+
+COACH: A dare. Give the bucket one job for one turn. Stopping here is fine.
+
+BUBBLES: Two was not enough. I am recruiting for life.

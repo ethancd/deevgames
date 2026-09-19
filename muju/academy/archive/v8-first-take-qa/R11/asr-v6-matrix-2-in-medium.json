@@ -1,0 +1,225 @@
+{
+  "text": "Now, the red side. A full health Hono is one shot by He-Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachatuna, and Tanka. Every The unlit attacker needs help or earlier damage.",
+  "words": [
+    {
+      "word": "Now,",
+      "start": 0.0,
+      "end": 0.36,
+      "probability": 0.8110686540603638
+    },
+    {
+      "word": "the",
+      "start": 0.7,
+      "end": 0.78,
+      "probability": 0.8639052510261536
+    },
+    {
+      "word": "red",
+      "start": 0.78,
+      "end": 1.08,
+      "probability": 0.482040137052536
+    },
+    {
+      "word": "side.",
+      "start": 1.08,
+      "end": 1.48,
+      "probability": 0.9914867877960205
+    },
+    {
+      "word": "A",
+      "start": 1.96,
+      "end": 2.08,
+      "probability": 0.9644578099250793
+    },
+    {
+      "word": "full",
+      "start": 2.08,
+      "end": 2.4,
+      "probability": 0.9258166551589966
+    },
+    {
+      "word": "health",
+      "start": 2.4,
+      "end": 2.66,
+      "probability": 0.8994191288948059
+    },
+    {
+      "word": "Hono",
+      "start": 2.66,
+      "end": 3.0,
+      "probability": 0.6942155659198761
+    },
+    {
+      "word": "is",
+      "start": 3.0,
+      "end": 3.22,
+      "probability": 0.9960928559303284
+    },
+    {
+      "word": "one",
+      "start": 3.22,
+      "end": 3.44,
+      "probability": 0.8870457410812378
+    },
+    {
+      "word": "shot",
+      "start": 3.44,
+      "end": 3.7,
+      "probability": 0.6812930107116699
+    },
+    {
+      "word": "by",
+      "start": 3.7,
+      "end": 3.96,
+      "probability": 0.9967898726463318
+    },
+    {
+      "word": "He",
+      "start": 3.96,
+      "end": 4.18,
+      "probability": 0.458866149187088
+    },
+    {
+      "word": "-Hono,",
+      "start": 4.18,
+      "end": 4.78,
+      "probability": 0.566792627175649
+    },
+    {
+      "word": "Kagari,",
+      "start": 5.1,
+      "end": 5.52,
+      "probability": 0.9158847630023956
+    },
+    {
+      "word": "Radi,",
+      "start": 5.96,
+      "end": 6.3,
+      "probability": 0.24711973965168
+    },
+    {
+      "word": "Umeme,",
+      "start": 6.62,
+      "end": 7.16,
+      "probability": 0.5399986505508423
+    },
+    {
+      "word": "Kimubunga,",
+      "start": 7.52,
+      "end": 8.42,
+      "probability": 0.5362940318882465
+    },
+    {
+      "word": "Sjor,",
+      "start": 8.8,
+      "end": 8.96,
+      "probability": 0.41780375813444454
+    },
+    {
+      "word": "Straumr,",
+      "start": 9.42,
+      "end": 9.9,
+      "probability": 0.18352595592538515
+    },
+    {
+      "word": "Aegirinn,",
+      "start": 10.32,
+      "end": 10.76,
+      "probability": 0.344705518335104
+    },
+    {
+      "word": "Göl,",
+      "start": 11.2,
+      "end": 11.5,
+      "probability": 0.072788647183188
+    },
+    {
+      "word": "Gölge,",
+      "start": 11.88,
+      "end": 12.34,
+      "probability": 0.6537730495134989
+    },
+    {
+      "word": "Karanlık,",
+      "start": 12.8,
+      "end": 13.44,
+      "probability": 0.508319020550698
+    },
+    {
+      "word": "Sachatuna,",
+      "start": 13.84,
+      "end": 14.5,
+      "probability": 0.5365864435831705
+    },
+    {
+      "word": "and",
+      "start": 14.86,
+      "end": 15.02,
+      "probability": 0.981046736240387
+    },
+    {
+      "word": "Tanka.",
+      "start": 15.02,
+      "end": 15.46,
+      "probability": 0.5128958094865084
+    },
+    {
+      "word": "Every",
+      "start": 16.12,
+      "end": 16.44,
+      "probability": 0.9935761094093323
+    },
+    {
+      "word": "The",
+      "start": 16.44,
+      "end": 16.54,
+      "probability": 0.46560734510421753
+    },
+    {
+      "word": "unlit",
+      "start": 16.54,
+      "end": 16.82,
+      "probability": 0.9257646203041077
+    },
+    {
+      "word": "attacker",
+      "start": 16.82,
+      "end": 17.24,
+      "probability": 0.9931885004043579
+    },
+    {
+      "word": "needs",
+      "start": 17.24,
+      "end": 17.52,
+      "probability": 0.9967408776283264
+    },
+    {
+      "word": "help",
+      "start": 17.52,
+      "end": 17.86,
+      "probability": 0.994865357875824
+    },
+    {
+      "word": "or",
+      "start": 17.86,
+      "end": 18.28,
+      "probability": 0.9485449194908142
+    },
+    {
+      "word": "earlier",
+      "start": 18.28,
+      "end": 18.62,
+      "probability": 0.9957656860351562
+    },
+    {
+      "word": "damage.",
+      "start": 18.62,
+      "end": 18.94,
+      "probability": 0.9988070726394653
+    }
+  ],
+  "audioSha256": "3c95c105ecc2f0d2bcd2f66916e55449a00ed8f808ffc42948180475b8120def",
+  "sourceText": "Now the red side. A full health Hono is one shot by Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachakuna and Tanka. Every unlit attacker needs help or earlier damage.",
+  "model": "faster-whisper medium.en int8, local only",
+  "duration": 19.35
+}

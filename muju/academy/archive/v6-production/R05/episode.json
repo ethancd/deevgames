@@ -1,0 +1,358 @@
+{
+  "id": "R05",
+  "title": "The Shop Delivers Rectangles",
+  "fps": 30,
+  "voices": {
+    "COACH": "marin",
+    "PIP": "coral",
+    "CLICK": "cedar"
+  },
+  "lines": [
+    {
+      "id": "01",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Next customer.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed in, low]",
+        "[board: Click sits behind a very small window with a rubber stamp. One crate waits on the counter. Pip is first in the queue, holding a rolled star map. Board unchanged.]"
+      ]
+    },
+    {
+      "id": "02",
+      "speaker": "PIP",
+      "cue": "proud announcement",
+      "text": "One delivery, please. Star-shaped zone. Very festive.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "03",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "The shop delivers rectangles.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "04",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "Fine. I will fold the points in. The logo stays.",
+      "beat": "INVITATION",
+      "hold": 3.4,
+      "directions": [],
+      "titleBump": true
+    },
+    {
+      "id": "05",
+      "speaker": "COACH",
+      "cue": "recap, brisk",
+      "text": "Last time we stood on one square, and the square paid us.",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed out]"
+      ]
+    },
+    {
+      "id": "06",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Bank: four crystals. Nobody has spent them yet.",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "07",
+      "speaker": "COACH",
+      "cue": "warm, unhurried",
+      "text": "The Place step comes before movement and attacks. Watch the shaded box. A box is a rectangle.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[board: White Place phase. Bank 4. White Muju on D4. Black Hi on H8. The rectangle A1 through D4 shades in softly, edges included. C3 is empty and highlighted.]"
+      ]
+    },
+    {
+      "id": "08",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "It runs from our home at A one to our Muju at D four, edges included.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "09",
+      "speaker": "COACH",
+      "cue": "stating the rule, level",
+      "text": "That Muju is our anchor: the friend the box is drawn to. The box is its rectangle.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "10",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Column C, row three: empty. Column C, row three: inside the box.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "11",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Three crystals buy a Hi there. Only the smallest pieces are for sale.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: shop chime] [board: a White Hi appears on C3. Bank ticks 4 to 2.]",
+        "[card: FOR SALE: the smallest piece of each element]"
+      ]
+    },
+    {
+      "id": "12",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "It arrives right now. Buying costs crystals and no actions.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "13",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "One enemy anywhere inside turns the whole box off. Not only the squares beside it.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: blocked, gentle] [board: DEMO. A second box shades in, from a home corner out to a different friend. One enemy steps into a far corner of it, nowhere near the friend. The whole box goes dark.]"
+      ]
+    },
+    {
+      "id": "14",
+      "speaker": "PIP",
+      "cue": "dawning concern",
+      "text": "The longest point of my star lands on G seven, outside our box.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[board: back to the real board. Pip's star map is laid over it. Its longest point lands on G7, far outside the shaded box, and G7 dims.]"
+      ]
+    },
+    {
+      "id": "15",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "New puzzle. The bank has four crystals again.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [
+        "[board: reset. Bank back to 4, the new Hi gone. A Black Hi now stands on B2, inside the shaded box. C3 is still empty and still highlighted.]",
+        "[card: CARD ONE: DELIVER TO C THREE · CARD TWO: NOT FROM THIS ANCHOR]"
+      ]
+    },
+    {
+      "id": "16",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "C three is still empty. A Black Hi is standing on B two, inside our box.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "17",
+      "speaker": "COACH",
+      "cue": "question, open",
+      "text": "Can that anchor deliver a teammate to C three?",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "18",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Put a finger on a card, or look at both.",
+      "beat": "TRY",
+      "hold": 10.2,
+      "directions": [],
+      "thinking": true
+    },
+    {
+      "id": "19",
+      "speaker": "COACH",
+      "cue": "gently, slower",
+      "text": "The answer is no, and the reason is a good one.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[board: a crate slides out toward C3, reaches the edge of the shaded box, and the whole box goes dark. The crate slides back to the shop. C3 stays empty and stays highlighted.]"
+      ]
+    },
+    {
+      "id": "20",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "The square was fine. The whole box went dark.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "21",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "One enemy inside, and the whole box goes dark.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "22",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "One rectangle is blocked. A different friend might still have a clear one.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "23",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "One complaint and the whole delivery zone closes?",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "24",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "That was not a customer.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "25",
+      "speaker": "CLICK",
+      "cue": "dry aside",
+      "text": "Name for the file: the Blocked Rectangle.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "26",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Now suppose we remove that Black Hi during our actions.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[card: EVIDENCE. Proves: this anchor's rectangle is blocked. Not checked: our other friends, and what Black does next.]",
+        "[board: the turn strip. PLACE lights, then ACTION lights, and a shop shutter rolls down over the little window.]"
+      ]
+    },
+    {
+      "id": "27",
+      "speaker": "COACH",
+      "cue": "stating the rule, level",
+      "text": "Shopping is still finished. Once the turn moves to actions, the shutter comes down.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "28",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "My mat says DELIVERY ENTRANCE. It is now a mat outside a shut shop.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[board: Pip lays a felt mat beside D4 and letters it DELIVERY ENTRANCE. The box behind it stays dark.]"
+      ]
+    },
+    {
+      "id": "29",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Cover the box from home to your friend with your hand, edges and all.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": [
+        "[card: MISSION: ONE PURCHASE. THE PRICE, THEN THE SQUARE.]"
+      ]
+    },
+    {
+      "id": "shop-prices",
+      "speaker": "COACH",
+      "text": "Fire and Lightning cost three each. Water and Shadow cost four. Plant and Metal cost five. You may buy any number you can afford, on legal empty squares. Each new piece can act immediately.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "card",
+        "title": "The tier-one shop",
+        "body": "Hi / Radi: 3 crystals\nSjor / Göl: 4 crystals\nMuju / Inyan: 5 crystals\nBuy any affordable number. New pieces act now."
+      }
+    },
+    {
+      "id": "home-block",
+      "speaker": "COACH",
+      "text": "Black draws rectangles from J ten toward a Black anchor. Either player may choose any clear friendly anchor. An enemy on your home is inside every one of your rectangles, so it blocks all purchases. Existing pieces can still promote and act.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "card",
+        "title": "Both players use their own home",
+        "body": "White: A1 → friendly anchor\nBlack: J10 → friendly anchor\nAn enemy on your home blocks every purchase rectangle.\nExisting pieces can still promote, move and attack."
+      }
+    },
+    {
+      "id": "30",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "If an enemy is under your hand, pick another friend. Stopping here is fine.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "31",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "The star map goes in the drawer. The logo was finished first.",
+      "beat": "EXIT",
+      "hold": 2,
+      "directions": []
+    }
+  ],
+  "question": "Can that anchor deliver a teammate to C three?",
+  "version": 6,
+  "updatedLabel": "Video version 6 · Last updated at 05:38 Sep 13 2026 CDT",
+  "rules": "v2.7",
+  "soundtrack": {
+    "id": "unequal-routes",
+    "title": "Unequal Routes",
+    "source": "muju/music-auditions/full-versions/unequal-routes-full-v1.mp3",
+    "sha256": "2354f06bdb9863f9ebc13bd3620a202ba27c4e07d91e84c900564247f80a96e7"
+  },
+  "speechProvider": "openai"
+}

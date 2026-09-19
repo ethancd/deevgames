@@ -1,0 +1,12 @@
+{
+  "provider": "openai",
+  "hash": "8b64f8ee382d8c5ce7c8b76c405e5ee1942adc773f972cc7302b70c12dabc1ab",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "Tier one: the Hi. Attack two, defense one, speed two, and Mining one. Look at the green side first.",
+  "speechText": "Tier one: the Hee. Attack two, defense one, speed two, and Mining one. Look at the green side first.",
+  "duration": 6.2,
+  "bytes": 297644,
+  "createdAt": "2026-09-13T10:38:45.840Z"
+}

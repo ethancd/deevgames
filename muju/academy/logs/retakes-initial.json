@@ -1,0 +1,122 @@
+[
+  {
+    "episode": "R03",
+    "id": "cleave-demo",
+    "reason": "Local speech checks flagged omitted wording, pronunciation, or an unclear word; regenerate complete sentences."
+  },
+  {
+    "episode": "R03",
+    "id": "cleave-finish",
+    "reason": "Local speech checks flagged omitted wording, pronunciation, or an unclear word; regenerate complete sentences."
+  },
+  {
+    "episode": "R03",
+    "id": "cleave-limits",
+    "reason": "Local speech checks flagged omitted wording, pronunciation, or an unclear word; regenerate complete sentences."
+  },
+  {
+    "episode": "R06",
+    "id": "promotion-prices",
+    "reason": "Local speech checks flagged omitted wording, pronunciation, or an unclear word; regenerate complete sentences."
+  },
+  {
+    "episode": "R08",
+    "id": "12",
+    "reason": "Local speech checks flagged omitted wording, pronunciation, or an unclear word; regenerate complete sentences."
+  },
+  {
+    "episode": "R08",
+    "id": "26",
+    "reason": "Local speech checks flagged omitted wording, pronunciation, or an unclear word; regenerate complete sentences."
+  },
+  {
+    "episode": "R09",
+    "id": "29",
+    "reason": "Local speech checks flagged omitted wording, pronunciation, or an unclear word; regenerate complete sentences."
+  },
+  {
+    "episode": "R11",
+    "id": "matrix-1-stats",
+    "reason": "Local speech checks flagged omitted wording, pronunciation, or an unclear word; regenerate complete sentences."
+  },
+  {
+    "episode": "R12",
+    "id": "matrix-1-stats",
+    "reason": "Local speech checks flagged omitted wording, pronunciation, or an unclear word; regenerate complete sentences."
+  },
+  {
+    "episode": "R13",
+    "id": "matrix-intro",
+    "reason": "Local speech checks flagged omitted wording, pronunciation, or an unclear word; regenerate complete sentences."
+  },
+  {
+    "episode": "R13",
+    "id": "matrix-1-stats",
+    "reason": "Local speech checks flagged omitted wording, pronunciation, or an unclear word; regenerate complete sentences."
+  },
+  {
+    "episode": "R13",
+    "id": "matrix-2-stats",
+    "reason": "Local speech checks flagged omitted wording, pronunciation, or an unclear word; regenerate complete sentences."
+  },
+  {
+    "episode": "R13",
+    "id": "matrix-3-stats",
+    "reason": "Local speech checks flagged omitted wording, pronunciation, or an unclear word; regenerate complete sentences."
+  },
+  {
+    "episode": "R13",
+    "id": "matrix-2-read",
+    "reason": "Local speech checks flagged omitted wording, pronunciation, or an unclear word; regenerate complete sentences."
+  },
+  {
+    "episode": "R14",
+    "id": "matrix-1-in",
+    "reason": "Local speech checks flagged omitted wording, pronunciation, or an unclear word; regenerate complete sentences."
+  },
+  {
+    "episode": "R14",
+    "id": "matrix-2-out",
+    "reason": "Local speech checks flagged omitted wording, pronunciation, or an unclear word; regenerate complete sentences."
+  },
+  {
+    "episode": "R14",
+    "id": "matrix-2-read",
+    "reason": "Local speech checks flagged omitted wording, pronunciation, or an unclear word; regenerate complete sentences."
+  },
+  {
+    "episode": "R15",
+    "id": "matrix-intro",
+    "reason": "Local speech checks flagged omitted wording, pronunciation, or an unclear word; regenerate complete sentences."
+  },
+  {
+    "episode": "R15",
+    "id": "matrix-2-stats",
+    "reason": "Local speech checks flagged omitted wording, pronunciation, or an unclear word; regenerate complete sentences."
+  },
+  {
+    "episode": "R15",
+    "id": "matrix-2-in",
+    "reason": "Local speech checks flagged omitted wording, pronunciation, or an unclear word; regenerate complete sentences."
+  },
+  {
+    "episode": "R16",
+    "id": "matrix-1-out",
+    "reason": "Local speech checks flagged omitted wording, pronunciation, or an unclear word; regenerate complete sentences."
+  },
+  {
+    "episode": "R16",
+    "id": "matrix-2-stats",
+    "reason": "Local speech checks flagged omitted wording, pronunciation, or an unclear word; regenerate complete sentences."
+  },
+  {
+    "episode": "R16",
+    "id": "matrix-2-in",
+    "reason": "Local speech checks flagged omitted wording, pronunciation, or an unclear word; regenerate complete sentences."
+  },
+  {
+    "episode": "R16",
+    "id": "matrix-3-stats",
+    "reason": "Local speech checks flagged omitted wording, pronunciation, or an unclear word; regenerate complete sentences."
+  }
+]

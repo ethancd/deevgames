@@ -1,0 +1,12 @@
+{
+  "provider": "openai",
+  "hash": "36e0fa6ee6169a06a44c8d95ccf0f85b7aba485ead5b948e37c56dc86e2b5cb2",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "New games use this Unequal routes map. Home squares hold eight crystals each. The brighter expansion squares hold sixteen each. Ordinary ground holds four, and the middle cluster holds eight. Empty squares are roads with no crystals. That makes five hundred four crystals altogether. Mining lowers a square's reserve. It never refills.",
+  "speechText": "New games use this Unequal routes map. Home squares hold eight crystals each. The brighter expansion squares hold sixteen each. Ordinary ground holds four, and the middle cluster holds eight. Empty squares are roads with no crystals. That makes five hundred four crystals altogether. Mining lowers a square's reserve. It never refills.",
+  "duration": 23.05,
+  "bytes": 1106444,
+  "createdAt": "2026-09-13T12:27:01.397Z"
+}

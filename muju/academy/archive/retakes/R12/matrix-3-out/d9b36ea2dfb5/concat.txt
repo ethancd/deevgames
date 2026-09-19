@@ -1,0 +1,2 @@
+file '/Users/ashkie/src/deevgames/muju/academy/archive/retakes/R12/matrix-3-out/d9b36ea2dfb5/sentence-1.wav'
+file '/Users/ashkie/src/deevgames/muju/academy/archive/retakes/R12/matrix-3-out/d9b36ea2dfb5/sentence-2.wav'

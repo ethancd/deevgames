@@ -1,0 +1,3 @@
+file '/Users/ashkie/src/deevgames/muju/academy/archive/retakes/R15/matrix-2-in/sentence-1.wav'
+file '/Users/ashkie/src/deevgames/muju/academy/archive/retakes/R15/matrix-2-in/sentence-2.wav'
+file '/Users/ashkie/src/deevgames/muju/academy/archive/retakes/R15/matrix-2-in/sentence-3.wav'

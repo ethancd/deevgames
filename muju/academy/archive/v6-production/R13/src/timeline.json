@@ -1,0 +1,2142 @@
+{
+  "id": "R13",
+  "title": "Water: Captain Bucket",
+  "fps": 30,
+  "voices": {
+    "COACH": "marin",
+    "PIP": "coral",
+    "CLICK": "cedar",
+    "EMBER": "ash",
+    "ZIP": "verse",
+    "BUBBLES": "shimmer",
+    "MURMUR": "sage",
+    "CLANK": "onyx"
+  },
+  "lines": [
+    {
+      "id": "01",
+      "speaker": "BUBBLES",
+      "cue": "proud announcement",
+      "text": "The bucket has applied for the position of warship.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed in, low]",
+        "[board: a bucket with a paper sail, parked on the candidate chair. Two more chairs behind it, lettered HIRED and NOT HIRED, both empty. Sign above: WATER DEPARTMENT. Smaller sign under it: ELEMENTS CHANGE ATTACK. NEVER DEFENSE. Game board unchanged.]"
+      ],
+      "displayText": "The bucket has applied for the position of warship.",
+      "from": 0,
+      "speechFrames": 113,
+      "preRollFrames": 0,
+      "duration": 133,
+      "audio": "audio/01.wav",
+      "captions": [
+        {
+          "text": "The bucket has applied for the position of warship.",
+          "start": 0,
+          "end": 113
+        }
+      ],
+      "wordFrames": [
+        0,
+        10,
+        22,
+        37,
+        50,
+        56,
+        62,
+        75,
+        88
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "02",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "Speed one. It has applied for a very slow war.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Speed one. It has applied for a very slow war.",
+      "from": 133,
+      "speechFrames": 111,
+      "preRollFrames": 0,
+      "duration": 131,
+      "audio": "audio/02.wav",
+      "captions": [
+        {
+          "text": "Speed one. It has applied for a very slow war.",
+          "start": 1,
+          "end": 111
+        }
+      ],
+      "wordFrames": [
+        1,
+        12,
+        43,
+        43,
+        48,
+        55,
+        63,
+        69,
+        81,
+        90
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "03",
+      "speaker": "BUBBLES",
+      "cue": "proud announcement",
+      "text": "The bucket has a sail, a captain, and the best shield in the department. We are ready for anything.",
+      "beat": "INVITATION",
+      "hold": 3.4,
+      "directions": [],
+      "titleBump": true,
+      "displayText": "The bucket has a sail, a captain, and the best shield in the department. We are ready for anything.",
+      "from": 264,
+      "speechFrames": 177,
+      "preRollFrames": 0,
+      "duration": 279,
+      "audio": "audio/03.wav",
+      "captions": [
+        {
+          "text": "The bucket has a sail, a captain, and the best shield in",
+          "start": 2,
+          "end": 100
+        },
+        {
+          "text": "the department. We are ready for anything.",
+          "start": 100,
+          "end": 177
+        }
+      ],
+      "wordFrames": [
+        2,
+        8,
+        17,
+        23,
+        40,
+        48,
+        64,
+        67,
+        73,
+        83,
+        88,
+        94,
+        100,
+        115,
+        124,
+        127,
+        134,
+        137,
+        176
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "04",
+      "speaker": "COACH",
+      "cue": "recap, brisk",
+      "text": "Last time the Hi on C three finished an Inyan. What did Fire add?",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed out]",
+        "[card: THE THREE QUESTIONS. Which stat helps this job? How many actions does it take? What will this piece owe next turn?]",
+        "[card: ROSTER KEY. Hit = base attack before elements. Shield = full defense. Walk = squares per action. Take = maximum crystals at own turn end, limited by reserve. Keep beside every roster recital.]",
+        "[card: C three, and the Hi who lives there]"
+      ],
+      "displayText": "Last time the Hi on C3 finished an Inyan. What did Fire add?",
+      "from": 543,
+      "speechFrames": 177,
+      "preRollFrames": 0,
+      "duration": 197,
+      "audio": "audio/04.wav",
+      "captions": [
+        {
+          "text": "Last time the Hi on C3 finished an Inyan.",
+          "start": 5,
+          "end": 136
+        },
+        {
+          "text": "What did Fire add?",
+          "start": 136,
+          "end": 177
+        }
+      ],
+      "wordFrames": [
+        5,
+        13,
+        28,
+        39,
+        41,
+        51,
+        59,
+        67,
+        92,
+        110,
+        136,
+        143,
+        151,
+        158
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "05",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Plus one against Metal. Today the Deep End puts out the Sparks. Water takes one away.",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Plus one against Metal. Today the Deep End puts out the Sparks. Water takes one away.",
+      "from": 740,
+      "speechFrames": 191,
+      "preRollFrames": 0,
+      "duration": 211,
+      "audio": "audio/05.wav",
+      "captions": [
+        {
+          "text": "Plus one against Metal.",
+          "start": 0,
+          "end": 73
+        },
+        {
+          "text": "Today the Deep End puts out the Sparks.",
+          "start": 73,
+          "end": 144
+        },
+        {
+          "text": "Water takes one away.",
+          "start": 144,
+          "end": 191
+        }
+      ],
+      "wordFrames": [
+        0,
+        11,
+        29,
+        41,
+        73,
+        82,
+        85,
+        94,
+        97,
+        105,
+        110,
+        131,
+        144,
+        152,
+        167,
+        175
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "06",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "One job. Two pieces want it. First up is the Sjor.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[card: THE JOB. Survive two Hi for one whole turn.]"
+      ],
+      "displayText": "One job. Two pieces want it. First up is the Sjor.",
+      "from": 951,
+      "speechFrames": 152,
+      "preRollFrames": 0,
+      "duration": 172,
+      "audio": "audio/06.wav",
+      "captions": [
+        {
+          "text": "One job. Two pieces want it.",
+          "start": 4,
+          "end": 101
+        },
+        {
+          "text": "First up is the Sjor.",
+          "start": 101,
+          "end": 152
+        }
+      ],
+      "wordFrames": [
+        4,
+        11,
+        38,
+        47,
+        59,
+        70,
+        101,
+        108,
+        121,
+        132,
+        145
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "07",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "The Hi has attack two. Water beats Fire, so take one away.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[board: BOARD ONE. Two fresh Hi standing beside a fresh Sjor. Every other card dim.]"
+      ],
+      "displayText": "The Hi has attack two. Water beats Fire, so take one away.",
+      "from": 1123,
+      "speechFrames": 141,
+      "preRollFrames": 0,
+      "duration": 161,
+      "audio": "audio/07.wav",
+      "captions": [
+        {
+          "text": "The Hi has attack two.",
+          "start": 2,
+          "end": 69
+        },
+        {
+          "text": "Water beats Fire, so take one away.",
+          "start": 69,
+          "end": 141
+        }
+      ],
+      "wordFrames": [
+        2,
+        7,
+        12,
+        25,
+        36,
+        69,
+        71,
+        80,
+        97,
+        107,
+        115,
+        123
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "08",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Each Hi does one damage. A fresh Sjor has defense two.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[card: each Hi, one damage] [card: the Sjor, defense two]"
+      ],
+      "displayText": "Each Hi does one damage. A fresh Sjor has defense two.",
+      "from": 1284,
+      "speechFrames": 221,
+      "preRollFrames": 0,
+      "duration": 241,
+      "audio": "audio/08.wav",
+      "captions": [
+        {
+          "text": "Each Hi does one damage.",
+          "start": 17,
+          "end": 104
+        },
+        {
+          "text": "A fresh Sjor has defense two.",
+          "start": 104,
+          "end": 221
+        }
+      ],
+      "wordFrames": [
+        17,
+        25,
+        36,
+        56,
+        72,
+        104,
+        114,
+        122,
+        137,
+        157,
+        170
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "09",
+      "speaker": "BUBBLES",
+      "cue": "gently, slower",
+      "text": "One, then one. Not hired. The shield was one short.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: bonk] [sfx: bonk] [sfx: piece removed] [board: the Sjor tips into the tray. The bucket moves to the NOT HIRED chair.]"
+      ],
+      "displayText": "One, then one. Not hired. The shield was one short.",
+      "from": 1525,
+      "speechFrames": 159,
+      "preRollFrames": 0,
+      "duration": 179,
+      "audio": "audio/09.wav",
+      "captions": [
+        {
+          "text": "One, then one. Not hired.",
+          "start": 0,
+          "end": 108
+        },
+        {
+          "text": "The shield was one short.",
+          "start": 108,
+          "end": 159
+        }
+      ],
+      "wordFrames": [
+        0,
+        29,
+        37,
+        75,
+        82,
+        108,
+        118,
+        121,
+        129,
+        139
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "10",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "New piece. New turn. Two fresh Hi again. A fresh Straumr has defense three.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [
+        "[board: BOARD TWO. A fresh position. Two fresh Hi, neither used yet. A fresh Straumr where the Sjor stood.] [card: the Straumr, defense three]"
+      ],
+      "displayText": "New piece. New turn. Two fresh Hi again. A fresh Straumr has defense three.",
+      "from": 1704,
+      "speechFrames": 212,
+      "preRollFrames": 0,
+      "duration": 232,
+      "audio": "audio/10.wav",
+      "captions": [
+        {
+          "text": "New piece. New turn.",
+          "start": 8,
+          "end": 74
+        },
+        {
+          "text": "Two fresh Hi again.",
+          "start": 74,
+          "end": 125
+        },
+        {
+          "text": "A fresh Straumr has defense three.",
+          "start": 125,
+          "end": 212
+        }
+      ],
+      "wordFrames": [
+        8,
+        13,
+        35,
+        51,
+        74,
+        83,
+        95,
+        97,
+        125,
+        135,
+        146,
+        158,
+        170,
+        187
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "11",
+      "speaker": "BUBBLES",
+      "cue": "question, open",
+      "text": "The same two Hi. Does my Straumr survive the turn?",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "The same two Hi. Does my Straumr survive the turn?",
+      "from": 1936,
+      "speechFrames": 132,
+      "preRollFrames": 0,
+      "duration": 152,
+      "audio": "audio/11.wav",
+      "captions": [
+        {
+          "text": "The same two Hi.",
+          "start": 0,
+          "end": 63
+        },
+        {
+          "text": "Does my Straumr survive the turn?",
+          "start": 63,
+          "end": 132
+        }
+      ],
+      "wordFrames": [
+        0,
+        9,
+        21,
+        32,
+        63,
+        69,
+        82,
+        94,
+        106,
+        123
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "12",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Remember the Bonk Lab dare? This is it. Count it, or watch the board with me.",
+      "beat": "TRY",
+      "hold": 10.2,
+      "directions": [],
+      "thinking": true,
+      "question": "The same two Hi. Does my Straumr survive the turn?",
+      "displayText": "Remember the Bonk Lab dare? This is it. Count it, or watch the board with me.",
+      "from": 2088,
+      "speechFrames": 167,
+      "preRollFrames": 0,
+      "duration": 473,
+      "audio": "audio/12.wav",
+      "captions": [
+        {
+          "text": "Remember the Bonk Lab dare?",
+          "start": 0,
+          "end": 67
+        },
+        {
+          "text": "This is it. Count it, or watch the board with me.",
+          "start": 67,
+          "end": 167
+        }
+      ],
+      "wordFrames": [
+        0,
+        14,
+        27,
+        37,
+        46,
+        67,
+        76,
+        80,
+        100,
+        105,
+        118,
+        124,
+        130,
+        140,
+        143,
+        150
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "13",
+      "speaker": "COACH",
+      "cue": "reveal, land it",
+      "text": "The Straumr is standing. One defense left.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: bonk, dull] [sfx: bonk, dull] [board: the damage marker climbs to two. The Straumr is still standing. Both Hi grey out.]"
+      ],
+      "displayText": "The Straumr is standing. One defense left.",
+      "from": 2561,
+      "speechFrames": 119,
+      "preRollFrames": 0,
+      "duration": 139,
+      "audio": "audio/13.wav",
+      "captions": [
+        {
+          "text": "The Straumr is standing.",
+          "start": 0,
+          "end": 68
+        },
+        {
+          "text": "One defense left.",
+          "start": 68,
+          "end": 119
+        }
+      ],
+      "wordFrames": [
+        0,
+        12,
+        23,
+        33,
+        68,
+        77,
+        89
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "14",
+      "speaker": "COACH",
+      "cue": "gently, slower",
+      "text": "Neither Hi finished it. Each of them is done attacking for the turn.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Neither Hi finished it. Each of them is done attacking for the turn.",
+      "from": 2700,
+      "speechFrames": 131,
+      "preRollFrames": 0,
+      "duration": 151,
+      "audio": "audio/14.wav",
+      "captions": [
+        {
+          "text": "Neither Hi finished it.",
+          "start": 6,
+          "end": 64
+        },
+        {
+          "text": "Each of them is done attacking for the turn.",
+          "start": 64,
+          "end": 131
+        }
+      ],
+      "wordFrames": [
+        6,
+        10,
+        24,
+        39,
+        64,
+        70,
+        76,
+        80,
+        91,
+        96,
+        105,
+        112,
+        122
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "15",
+      "speaker": "BUBBLES",
+      "cue": "proud announcement",
+      "text": "The shield held. Two attackers were not enough. That is a crewing problem.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "The shield held. Two attackers were not enough. That is a crewing problem.",
+      "from": 2851,
+      "speechFrames": 171,
+      "preRollFrames": 0,
+      "duration": 191,
+      "audio": "audio/15.wav",
+      "captions": [
+        {
+          "text": "The shield held. Two attackers were not enough.",
+          "start": 2,
+          "end": 108
+        },
+        {
+          "text": "That is a crewing problem.",
+          "start": 108,
+          "end": 171
+        }
+      ],
+      "wordFrames": [
+        2,
+        7,
+        19,
+        48,
+        52,
+        66,
+        73,
+        79,
+        108,
+        117,
+        129,
+        139,
+        157
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "16",
+      "speaker": "BUBBLES",
+      "cue": "",
+      "text": "Two buckets is not the whole navy.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[card: EVIDENCE. Proves: two Hi against one Straumr. Not checked: a third attacker, and Black's reply.]"
+      ],
+      "displayText": "Two buckets is not the whole navy.",
+      "from": 3042,
+      "speechFrames": 86,
+      "preRollFrames": 0,
+      "duration": 106,
+      "audio": "audio/16.wav",
+      "captions": [
+        {
+          "text": "Two buckets is not the whole navy.",
+          "start": 2,
+          "end": 86
+        }
+      ],
+      "wordFrames": [
+        2,
+        13,
+        28,
+        44,
+        52,
+        64,
+        69
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "17",
+      "speaker": "COACH",
+      "cue": "curious, thinking aloud",
+      "text": "I do not know what Black brings to this square next. We have not counted that.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "I do not know what Black brings to this square next. We have not counted that.",
+      "from": 3148,
+      "speechFrames": 152,
+      "preRollFrames": 0,
+      "duration": 172,
+      "audio": "audio/17.wav",
+      "captions": [
+        {
+          "text": "I do not know what Black brings to this square next.",
+          "start": 0,
+          "end": 114
+        },
+        {
+          "text": "We have not counted that.",
+          "start": 114,
+          "end": 152
+        }
+      ],
+      "wordFrames": [
+        0,
+        6,
+        18,
+        24,
+        33,
+        40,
+        52,
+        64,
+        70,
+        79,
+        85,
+        114,
+        114,
+        120,
+        129,
+        136
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "18",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "Big shield. Slow boat.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[card: THE HELMET'S FILE. Bucket safety sticker: awarded. Defense: unchanged.]"
+      ],
+      "displayText": "Big shield. Slow boat.",
+      "from": 3320,
+      "speechFrames": 66,
+      "preRollFrames": 0,
+      "duration": 86,
+      "audio": "audio/18.wav",
+      "captions": [
+        {
+          "text": "Big shield. Slow boat.",
+          "start": 11,
+          "end": 66
+        }
+      ],
+      "wordFrames": [
+        11,
+        11,
+        36,
+        48
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "19",
+      "speaker": "COACH",
+      "cue": "stating the rule, level",
+      "text": "Defense three, and one square per action.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Defense three, and one square per action.",
+      "from": 3406,
+      "speechFrames": 101,
+      "preRollFrames": 0,
+      "duration": 121,
+      "audio": "audio/19.wav",
+      "captions": [
+        {
+          "text": "Defense three, and one square per action.",
+          "start": 15,
+          "end": 101
+        }
+      ],
+      "wordFrames": [
+        15,
+        15,
+        35,
+        50,
+        58,
+        66,
+        78
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "20",
+      "speaker": "PIP",
+      "cue": "proud announcement",
+      "text": "Turned down for one job. Hired for another. I am putting that on a sticker.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[card: the Sjor · the Straumr · the Aegirinn.]"
+      ],
+      "displayText": "Turned down for one job. Hired for another. I am putting that on a sticker.",
+      "from": 3527,
+      "speechFrames": 191,
+      "preRollFrames": 0,
+      "duration": 211,
+      "audio": "audio/20.wav",
+      "captions": [
+        {
+          "text": "Turned down for one job.",
+          "start": 12,
+          "end": 80
+        },
+        {
+          "text": "Hired for another. I am putting that on a sticker.",
+          "start": 80,
+          "end": 191
+        }
+      ],
+      "wordFrames": [
+        12,
+        12,
+        23,
+        31,
+        42,
+        80,
+        80,
+        90,
+        125,
+        134,
+        140,
+        146,
+        156,
+        161,
+        179
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "21",
+      "speaker": "BUBBLES",
+      "cue": "counting, even beats",
+      "text": "This is the Sjor. Shield of two. Takes two crystals. That is the Sjor.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "This is the Sjor. Shield of two. Takes two crystals. That is the Sjor.",
+      "from": 3738,
+      "speechFrames": 192,
+      "preRollFrames": 0,
+      "duration": 212,
+      "audio": "audio/21.wav",
+      "captions": [
+        {
+          "text": "This is the Sjor.",
+          "start": 3,
+          "end": 54
+        },
+        {
+          "text": "Shield of two. Takes two crystals.",
+          "start": 54,
+          "end": 161
+        },
+        {
+          "text": "That is the Sjor.",
+          "start": 161,
+          "end": 192
+        }
+      ],
+      "wordFrames": [
+        3,
+        13,
+        22,
+        35,
+        54,
+        73,
+        79,
+        112,
+        116,
+        127,
+        161,
+        170,
+        173,
+        178
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "22",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "At your own turn end it takes from the square it is standing on.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[board: a Sjor standing on a square holding four crystals] [card: this square, four crystals] [card: INCOME. At your own turn end. From the square you are standing on. Never the square you left.]"
+      ],
+      "displayText": "At your own turn end it takes from the square it is standing on.",
+      "from": 3950,
+      "speechFrames": 138,
+      "preRollFrames": 0,
+      "duration": 158,
+      "audio": "audio/22.wav",
+      "captions": [
+        {
+          "text": "At your own turn end it takes from the square it is",
+          "start": 0,
+          "end": 112
+        },
+        {
+          "text": "standing on.",
+          "start": 112,
+          "end": 138
+        }
+      ],
+      "wordFrames": [
+        0,
+        8,
+        23,
+        40,
+        46,
+        66,
+        71,
+        78,
+        84,
+        99,
+        99,
+        105,
+        112,
+        119
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "23",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Mining two. Four crystals here. Took two. Two left.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: crystal clink] [sfx: crystal clink] [board: four becomes two]"
+      ],
+      "displayText": "Mining two. Four crystals here. Took two. Two left.",
+      "from": 4108,
+      "speechFrames": 132,
+      "preRollFrames": 0,
+      "duration": 152,
+      "audio": "audio/23.wav",
+      "captions": [
+        {
+          "text": "Mining two. Four crystals here.",
+          "start": 4,
+          "end": 89
+        },
+        {
+          "text": "Took two. Two left.",
+          "start": 89,
+          "end": 132
+        }
+      ],
+      "wordFrames": [
+        4,
+        12,
+        46,
+        49,
+        58,
+        89,
+        91,
+        109,
+        118
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "24",
+      "speaker": "BUBBLES",
+      "cue": "counting, even beats",
+      "text": "This is the Aegirinn. Shield of four. Takes three. That is the Aegirinn.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "This is the Aegirinn. Shield of four. Takes three. That is the Aegirinn.",
+      "from": 4260,
+      "speechFrames": 218,
+      "preRollFrames": 0,
+      "duration": 238,
+      "audio": "audio/24.wav",
+      "captions": [
+        {
+          "text": "This is the Aegirinn.",
+          "start": 3,
+          "end": 77
+        },
+        {
+          "text": "Shield of four. Takes three.",
+          "start": 77,
+          "end": 157
+        },
+        {
+          "text": "That is the Aegirinn.",
+          "start": 157,
+          "end": 218
+        }
+      ],
+      "wordFrames": [
+        3,
+        11,
+        23,
+        50,
+        77,
+        83,
+        91,
+        122,
+        127,
+        157,
+        168,
+        176,
+        197
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "25",
+      "speaker": "CLICK",
+      "cue": "dry aside",
+      "text": "Next turn the Sjor owes nothing. The Straumr owes one. The Aegirinn owes two.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Next turn the Sjor owes nothing. The Straumr owes one. The Aegirinn owes two.",
+      "from": 4498,
+      "speechFrames": 188,
+      "preRollFrames": 0,
+      "duration": 208,
+      "audio": "audio/25.wav",
+      "captions": [
+        {
+          "text": "Next turn the Sjor owes nothing.",
+          "start": 2,
+          "end": 73
+        },
+        {
+          "text": "The Straumr owes one.",
+          "start": 73,
+          "end": 136
+        },
+        {
+          "text": "The Aegirinn owes two.",
+          "start": 136,
+          "end": 188
+        }
+      ],
+      "wordFrames": [
+        2,
+        12,
+        29,
+        39,
+        42,
+        51,
+        73,
+        84,
+        95,
+        111,
+        136,
+        150,
+        164,
+        173
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "26",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Big shield. Slow boat.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": [
+        "[card: WATER WORK CARD. Defense two, three, four · speed one, one, two · Mining two, two, three · toll nothing, one, two. Added to the deck.]"
+      ],
+      "displayText": "Big shield. Slow boat.",
+      "from": 4706,
+      "speechFrames": 89,
+      "preRollFrames": 0,
+      "duration": 109,
+      "audio": "audio/26.wav",
+      "captions": [
+        {
+          "text": "Big shield. Slow boat.",
+          "start": 0,
+          "end": 89
+        }
+      ],
+      "wordFrames": [
+        0,
+        14,
+        57,
+        72
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "27",
+      "speaker": "BUBBLES",
+      "cue": "",
+      "text": "The captain is aware of the boat situation.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": [
+        "[board: the paper sail slumps sideways into the bucket]"
+      ],
+      "displayText": "The captain is aware of the boat situation.",
+      "from": 4815,
+      "speechFrames": 122,
+      "preRollFrames": 0,
+      "duration": 142,
+      "audio": "audio/27.wav",
+      "captions": [
+        {
+          "text": "The captain is aware of the boat situation.",
+          "start": 25,
+          "end": 122
+        }
+      ],
+      "wordFrames": [
+        25,
+        25,
+        36,
+        48,
+        55,
+        62,
+        70,
+        78
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "matrix-intro",
+      "speaker": "COACH",
+      "text": "Now the bonk matrix for water. We check all eighteen enemy unit types, including matching types. Both pieces start at full health and are already next to each other. One attack, not a whole turn.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "card",
+        "title": "Read one tier at a time",
+        "body": "Green: this unit one-shots the enemy.\nRed: that enemy one-shots this unit.\nBoth at full health · adjacent · one legal attack.\nThis is damage, not a movement or safety prediction."
+      },
+      "displayText": "Now the bonk matrix for water. We check all eighteen enemy unit types, including matching types. Both pieces start at full health and are already next to each other. One attack, not a whole turn.",
+      "from": 4957,
+      "speechFrames": 423,
+      "preRollFrames": 0,
+      "duration": 447,
+      "audio": "audio/matrix-intro.wav",
+      "captions": [
+        {
+          "text": "Now the bonk matrix for water.",
+          "start": 0,
+          "end": 86
+        },
+        {
+          "text": "We check all eighteen enemy unit types, including matching types.",
+          "start": 86,
+          "end": 218
+        },
+        {
+          "text": "Both pieces start at full health and are already next to each",
+          "start": 218,
+          "end": 330
+        },
+        {
+          "text": "other. One attack, not a whole turn.",
+          "start": 330,
+          "end": 423
+        }
+      ],
+      "wordFrames": [
+        0,
+        20,
+        24,
+        38,
+        51,
+        67,
+        86,
+        91,
+        99,
+        110,
+        125,
+        134,
+        145,
+        166,
+        179,
+        188,
+        218,
+        224,
+        240,
+        251,
+        257,
+        265,
+        276,
+        293,
+        298,
+        311,
+        320,
+        326,
+        330,
+        351,
+        355,
+        380,
+        388,
+        393,
+        398
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-1-stats",
+      "speaker": "COACH",
+      "text": "Tier one: the Sjor. Attack two, defense two, speed one, and Mining two. Look at the green side first.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "water_1",
+        "focus": "out"
+      },
+      "displayText": "Tier one: the Sjor. Attack two, defense two, speed one, and Mining two. Look at the green side first.",
+      "from": 5404,
+      "speechFrames": 299,
+      "preRollFrames": 0,
+      "duration": 323,
+      "audio": "audio/matrix-1-stats.wav",
+      "captions": [
+        {
+          "text": "Tier one: the Sjor.",
+          "start": 0,
+          "end": 68
+        },
+        {
+          "text": "Attack two, defense two, speed one, and Mining two.",
+          "start": 68,
+          "end": 239
+        },
+        {
+          "text": "Look at the green side first.",
+          "start": 239,
+          "end": 299
+        }
+      ],
+      "wordFrames": [
+        0,
+        9,
+        32,
+        34,
+        68,
+        70,
+        109,
+        112,
+        146,
+        154,
+        185,
+        189,
+        200,
+        239,
+        240,
+        247,
+        251,
+        260,
+        271
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-1-out",
+      "speaker": "COACH",
+      "text": "With one attack, the Sjor can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Göl, Gölge and Karanlık. Every unlit card survives that single hit.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "water_1",
+        "focus": "out"
+      },
+      "displayText": "With one attack, the Sjor can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Göl, Gölge and Karanlık. Every unlit card survives that single hit.",
+      "from": 5727,
+      "speechFrames": 512,
+      "preRollFrames": 0,
+      "duration": 536,
+      "audio": "audio/matrix-1-out.wav",
+      "captions": [
+        {
+          "text": "With one attack, the Sjor can finish Hi, Hono, Kagari, Radi, Umeme,",
+          "start": 0,
+          "end": 248
+        },
+        {
+          "text": "Kimubunga, Sjor, Göl, Gölge and Karanlık.",
+          "start": 248,
+          "end": 420
+        },
+        {
+          "text": "Every unlit card survives that single hit.",
+          "start": 420,
+          "end": 512
+        }
+      ],
+      "wordFrames": [
+        0,
+        6,
+        16,
+        41,
+        44,
+        50,
+        59,
+        73,
+        103,
+        136,
+        181,
+        214,
+        248,
+        294,
+        320,
+        339,
+        367,
+        369,
+        420,
+        433,
+        446,
+        457,
+        473,
+        484,
+        496
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-1-in",
+      "speaker": "COACH",
+      "text": "Now the red side. A full health Sjor is one shot by Hono, Kagari, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachita, Sachakuna, Inyan, Mazask and Tanka. Every unlit attacker needs help or earlier damage.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "water_1",
+        "focus": "in"
+      },
+      "displayText": "Now the red side. A full health Sjor is one shot by Hono, Kagari, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachita, Sachakuna, Inyan, Mazask and Tanka. Every unlit attacker needs help or earlier damage.",
+      "from": 6263,
+      "speechFrames": 732,
+      "preRollFrames": 0,
+      "duration": 756,
+      "audio": "audio/matrix-1-in.wav",
+      "captions": [
+        {
+          "text": "Now the red side.",
+          "start": 0,
+          "end": 50
+        },
+        {
+          "text": "A full health Sjor is one shot by Hono, Kagari, Kimubunga, Sjor,",
+          "start": 50,
+          "end": 273
+        },
+        {
+          "text": "Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachita, Sachakuna, Inyan,",
+          "start": 273,
+          "end": 551
+        },
+        {
+          "text": "Mazask and Tanka. Every unlit attacker needs help or earlier damage.",
+          "start": 551,
+          "end": 732
+        }
+      ],
+      "wordFrames": [
+        0,
+        7,
+        11,
+        16,
+        50,
+        53,
+        62,
+        73,
+        84,
+        100,
+        109,
+        118,
+        126,
+        172,
+        204,
+        251,
+        273,
+        302,
+        336,
+        356,
+        392,
+        434,
+        472,
+        518,
+        551,
+        578,
+        581,
+        619,
+        629,
+        643,
+        658,
+        673,
+        683,
+        698,
+        709
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-1-read",
+      "speaker": "COACH",
+      "text": "That is the tier one card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 2,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "water_1",
+        "focus": "both"
+      },
+      "displayText": "That is the tier one card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.",
+      "from": 7019,
+      "speechFrames": 287,
+      "preRollFrames": 0,
+      "duration": 347,
+      "audio": "audio/matrix-1-read.wav",
+      "captions": [
+        {
+          "text": "That is the tier one card.",
+          "start": 0,
+          "end": 78
+        },
+        {
+          "text": "Pause here to compare any names.",
+          "start": 78,
+          "end": 139
+        },
+        {
+          "text": "The same enemy can appear on both sides: whoever attacks first may",
+          "start": 139,
+          "end": 258
+        },
+        {
+          "text": "finish the other.",
+          "start": 258,
+          "end": 287
+        }
+      ],
+      "wordFrames": [
+        0,
+        9,
+        21,
+        27,
+        31,
+        40,
+        78,
+        81,
+        88,
+        95,
+        104,
+        113,
+        139,
+        142,
+        151,
+        158,
+        166,
+        173,
+        180,
+        186,
+        216,
+        221,
+        233,
+        247,
+        258,
+        266,
+        273
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-2-stats",
+      "speaker": "COACH",
+      "text": "Tier two: the Straumr. Attack two, defense three, speed one, and Mining two. Look at the green side first.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "water_2",
+        "focus": "out"
+      },
+      "displayText": "Tier two: the Straumr. Attack two, defense three, speed one, and Mining two. Look at the green side first.",
+      "from": 7366,
+      "speechFrames": 279,
+      "preRollFrames": 0,
+      "duration": 303,
+      "audio": "audio/matrix-2-stats.wav",
+      "captions": [
+        {
+          "text": "Tier two: the Straumr.",
+          "start": 0,
+          "end": 76
+        },
+        {
+          "text": "Attack two, defense three, speed one, and Mining two.",
+          "start": 76,
+          "end": 220
+        },
+        {
+          "text": "Look at the green side first.",
+          "start": 220,
+          "end": 279
+        }
+      ],
+      "wordFrames": [
+        0,
+        8,
+        35,
+        41,
+        76,
+        77,
+        112,
+        113,
+        145,
+        151,
+        180,
+        183,
+        191,
+        220,
+        221,
+        227,
+        231,
+        237,
+        246
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-2-out",
+      "speaker": "COACH",
+      "text": "With one attack, the Straumr can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Göl, Gölge and Karanlık. Every unlit card survives that single hit.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "water_2",
+        "focus": "out"
+      },
+      "displayText": "With one attack, the Straumr can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Göl, Gölge and Karanlık. Every unlit card survives that single hit.",
+      "from": 7669,
+      "speechFrames": 482,
+      "preRollFrames": 0,
+      "duration": 506,
+      "audio": "audio/matrix-2-out.wav",
+      "captions": [
+        {
+          "text": "With one attack, the Straumr can finish Hi, Hono, Kagari, Radi,",
+          "start": 0,
+          "end": 220
+        },
+        {
+          "text": "Umeme, Kimubunga, Sjor, Göl, Gölge and Karanlık.",
+          "start": 220,
+          "end": 390
+        },
+        {
+          "text": "Every unlit card survives that single hit.",
+          "start": 390,
+          "end": 482
+        }
+      ],
+      "wordFrames": [
+        0,
+        10,
+        22,
+        47,
+        49,
+        70,
+        77,
+        90,
+        115,
+        156,
+        194,
+        220,
+        248,
+        290,
+        306,
+        324,
+        347,
+        355,
+        390,
+        400,
+        413,
+        424,
+        443,
+        453,
+        465
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-2-in",
+      "speaker": "COACH",
+      "text": "Now the red side. A full health Straumr is one shot by Kagari, Aegirinn, Gölge, Karanlık, Sachakuna, Mazask and Tanka. Every unlit attacker needs help or earlier damage.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "water_2",
+        "focus": "in"
+      },
+      "displayText": "Now the red side. A full health Straumr is one shot by Kagari, Aegirinn, Gölge, Karanlık, Sachakuna, Mazask and Tanka. Every unlit attacker needs help or earlier damage.",
+      "from": 8175,
+      "speechFrames": 440,
+      "preRollFrames": 0,
+      "duration": 464,
+      "audio": "audio/matrix-2-in.wav",
+      "captions": [
+        {
+          "text": "Now the red side.",
+          "start": 0,
+          "end": 43
+        },
+        {
+          "text": "A full health Straumr is one shot by Kagari, Aegirinn, Gölge, Karanlık,",
+          "start": 43,
+          "end": 234
+        },
+        {
+          "text": "Sachakuna, Mazask and Tanka.",
+          "start": 234,
+          "end": 334
+        },
+        {
+          "text": "Every unlit attacker needs help or earlier damage.",
+          "start": 334,
+          "end": 440
+        }
+      ],
+      "wordFrames": [
+        0,
+        7,
+        13,
+        19,
+        43,
+        46,
+        52,
+        61,
+        78,
+        85,
+        93,
+        101,
+        111,
+        148,
+        178,
+        205,
+        234,
+        274,
+        286,
+        299,
+        334,
+        345,
+        356,
+        368,
+        376,
+        386,
+        399,
+        410
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-2-read",
+      "speaker": "COACH",
+      "text": "That is the tier two card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 2,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "water_2",
+        "focus": "both"
+      },
+      "displayText": "That is the tier two card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.",
+      "from": 8639,
+      "speechFrames": 324,
+      "preRollFrames": 0,
+      "duration": 384,
+      "audio": "audio/matrix-2-read.wav",
+      "captions": [
+        {
+          "text": "That is the tier two card.",
+          "start": 0,
+          "end": 70
+        },
+        {
+          "text": "Pause here to compare any names.",
+          "start": 70,
+          "end": 163
+        },
+        {
+          "text": "The same enemy can appear on both sides: whoever attacks first may",
+          "start": 163,
+          "end": 293
+        },
+        {
+          "text": "finish the other.",
+          "start": 293,
+          "end": 324
+        }
+      ],
+      "wordFrames": [
+        0,
+        10,
+        20,
+        26,
+        31,
+        40,
+        70,
+        74,
+        86,
+        101,
+        114,
+        127,
+        163,
+        166,
+        177,
+        187,
+        197,
+        206,
+        215,
+        221,
+        251,
+        256,
+        269,
+        281,
+        293,
+        303,
+        311
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-3-stats",
+      "speaker": "COACH",
+      "text": "Tier three: the Aegirinn. Attack three, defense four, speed two, and Mining three. Look at the green side first.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "water_3",
+        "focus": "out"
+      },
+      "displayText": "Tier three: the Aegirinn. Attack three, defense four, speed two, and Mining three. Look at the green side first.",
+      "from": 9023,
+      "speechFrames": 284,
+      "preRollFrames": 0,
+      "duration": 308,
+      "audio": "audio/matrix-3-stats.wav",
+      "captions": [
+        {
+          "text": "Tier three: the Aegirinn.",
+          "start": 0,
+          "end": 79
+        },
+        {
+          "text": "Attack three, defense four, speed two, and Mining three.",
+          "start": 79,
+          "end": 214
+        },
+        {
+          "text": "Look at the green side first.",
+          "start": 214,
+          "end": 284
+        }
+      ],
+      "wordFrames": [
+        0,
+        6,
+        31,
+        34,
+        79,
+        79,
+        107,
+        114,
+        143,
+        149,
+        174,
+        177,
+        184,
+        214,
+        218,
+        226,
+        231,
+        241,
+        254
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-3-out",
+      "speaker": "COACH",
+      "text": "With one attack, the Aegirinn can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Göl, Gölge, Karanlık. Every unlit card survives that single hit.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "water_3",
+        "focus": "out"
+      },
+      "displayText": "With one attack, the Aegirinn can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Göl, Gölge, Karanlık. Every unlit card survives that single hit.",
+      "from": 9331,
+      "speechFrames": 492,
+      "preRollFrames": 0,
+      "duration": 516,
+      "audio": "audio/matrix-3-out.wav",
+      "captions": [
+        {
+          "text": "With one attack, the Aegirinn can finish Hi, Hono, Kagari, Radi,",
+          "start": 0,
+          "end": 187
+        },
+        {
+          "text": "Umeme, Kimubunga, Sjor, Straumr, Göl, Gölge, Karanlık.",
+          "start": 187,
+          "end": 407
+        },
+        {
+          "text": "Every unlit card survives that single hit.",
+          "start": 407,
+          "end": 492
+        }
+      ],
+      "wordFrames": [
+        0,
+        5,
+        14,
+        45,
+        49,
+        64,
+        73,
+        83,
+        107,
+        133,
+        161,
+        187,
+        220,
+        263,
+        286,
+        313,
+        335,
+        366,
+        407,
+        418,
+        431,
+        441,
+        457,
+        464,
+        476
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-3-in",
+      "speaker": "COACH",
+      "text": "Now the red side. A full health Aegirinn is one shot by Karanlık. Every unlit attacker needs help or earlier damage.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "water_3",
+        "focus": "in"
+      },
+      "displayText": "Now the red side. A full health Aegirinn is one shot by Karanlık. Every unlit attacker needs help or earlier damage.",
+      "from": 9847,
+      "speechFrames": 269,
+      "preRollFrames": 0,
+      "duration": 293,
+      "audio": "audio/matrix-3-in.wav",
+      "captions": [
+        {
+          "text": "Now the red side.",
+          "start": 0,
+          "end": 64
+        },
+        {
+          "text": "A full health Aegirinn is one shot by Karanlık.",
+          "start": 64,
+          "end": 179
+        },
+        {
+          "text": "Every unlit attacker needs help or earlier damage.",
+          "start": 179,
+          "end": 269
+        }
+      ],
+      "wordFrames": [
+        0,
+        21,
+        24,
+        34,
+        64,
+        68,
+        77,
+        86,
+        112,
+        122,
+        130,
+        138,
+        145,
+        179,
+        188,
+        199,
+        210,
+        217,
+        227,
+        239,
+        250
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-3-read",
+      "speaker": "COACH",
+      "text": "That is the tier three card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 2,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "water_3",
+        "focus": "both"
+      },
+      "displayText": "That is the tier three card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.",
+      "from": 10140,
+      "speechFrames": 291,
+      "preRollFrames": 0,
+      "duration": 351,
+      "audio": "audio/matrix-3-read.wav",
+      "captions": [
+        {
+          "text": "That is the tier three card.",
+          "start": 0,
+          "end": 69
+        },
+        {
+          "text": "Pause here to compare any names.",
+          "start": 69,
+          "end": 134
+        },
+        {
+          "text": "The same enemy can appear on both sides: whoever attacks first may",
+          "start": 134,
+          "end": 258
+        },
+        {
+          "text": "finish the other.",
+          "start": 258,
+          "end": 291
+        }
+      ],
+      "wordFrames": [
+        0,
+        8,
+        15,
+        21,
+        27,
+        38,
+        69,
+        73,
+        80,
+        87,
+        97,
+        106,
+        134,
+        137,
+        146,
+        154,
+        162,
+        171,
+        179,
+        185,
+        215,
+        221,
+        233,
+        247,
+        258,
+        268,
+        275
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "28",
+      "speaker": "COACH",
+      "cue": "warm, unhurried",
+      "text": "A dare. Give the bucket one job for one turn. Stopping here is fine.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "A dare. Give the bucket one job for one turn. Stopping here is fine.",
+      "from": 10491,
+      "speechFrames": 206,
+      "preRollFrames": 0,
+      "duration": 226,
+      "audio": "audio/28.wav",
+      "captions": [
+        {
+          "text": "A dare. Give the bucket one job for one turn.",
+          "start": 4,
+          "end": 168
+        },
+        {
+          "text": "Stopping here is fine.",
+          "start": 168,
+          "end": 206
+        }
+      ],
+      "wordFrames": [
+        4,
+        8,
+        53,
+        54,
+        64,
+        68,
+        79,
+        90,
+        123,
+        132,
+        168,
+        174,
+        181,
+        190
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "29",
+      "speaker": "BUBBLES",
+      "cue": "",
+      "text": "Two was not enough. I am recruiting for life.",
+      "beat": "EXIT",
+      "hold": 2,
+      "directions": [],
+      "displayText": "Two was not enough. I am recruiting for life.",
+      "from": 10717,
+      "speechFrames": 117,
+      "preRollFrames": 0,
+      "duration": 177,
+      "audio": "audio/29.wav",
+      "captions": [
+        {
+          "text": "Two was not enough.",
+          "start": 14,
+          "end": 58
+        },
+        {
+          "text": "I am recruiting for life.",
+          "start": 58,
+          "end": 117
+        }
+      ],
+      "wordFrames": [
+        14,
+        18,
+        24,
+        33,
+        58,
+        63,
+        69,
+        80,
+        91
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    }
+  ],
+  "version": 6,
+  "rules": "v2.7",
+  "updatedLabel": "Video version 6 · Last updated at 05:38 Sep 13 2026 CDT",
+  "question": "The same two Hi. Does my Straumr survive the turn?",
+  "soundtrack": {
+    "id": "straumr-hardanger",
+    "title": "Straumr / Under the Current",
+    "source": "muju/music-auditions/full-versions/straumr-hardanger-full-v2-blended.mp3",
+    "sha256": "878d93e0b9474694a566ae3110225c1e78a565ca672e8fdeb074d67af24e5f0b"
+  },
+  "speechProvider": "openai",
+  "audioComplete": true,
+  "durationInFrames": 10894
+}

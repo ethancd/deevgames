@@ -1,0 +1,1326 @@
+{
+  "id": "R02",
+  "title": "Four Actions, Zero Octopus Exceptions",
+  "version": 7,
+  "updatedLabel": "Video version 7 · Last updated at 07:25 Sep 13 2026 CDT",
+  "rules": "v2.8",
+  "fps": 30,
+  "voices": {
+    "COACH": "marin",
+    "PIP": "coral",
+    "CLICK": "cedar"
+  },
+  "lines": [
+    {
+      "id": "01",
+      "speaker": "CLICK",
+      "cue": "counting, even beats",
+      "text": "Job ticket. A short trip. Price: one action. Four tickets a turn.",
+      "beat": "INVITATION",
+      "hold": 0.7,
+      "directions": [
+        "[music: bed in, low]",
+        "[board: a dispatch wall of job tickets, each priced in actions. No clock anywhere in this office. An empty change tray sits on the counter. Click is working the wall alone.]"
+      ],
+      "displayText": "Job ticket. A short trip. Price: one action. Four tickets a turn.",
+      "from": 0,
+      "speechFrames": 170,
+      "preRollFrames": 0,
+      "duration": 191,
+      "audio": "audio/01.wav",
+      "captions": [
+        {
+          "text": "Job ticket. A short trip.",
+          "start": 0,
+          "end": 83
+        },
+        {
+          "text": "Price: one action. Four tickets a turn.",
+          "start": 83,
+          "end": 170
+        }
+      ],
+      "wordFrames": [
+        0,
+        18,
+        45,
+        49,
+        55,
+        83,
+        101,
+        106,
+        133,
+        141,
+        149,
+        154
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "02",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "Eight arms. Eight actions.",
+      "beat": "INVITATION",
+      "hold": 0.7,
+      "directions": [
+        "[board: Pip arrives wearing eight cardboard arms.]"
+      ],
+      "displayText": "Eight arms. Eight actions.",
+      "from": 191,
+      "speechFrames": 77,
+      "preRollFrames": 0,
+      "duration": 98,
+      "audio": "audio/02.wav",
+      "captions": [
+        {
+          "text": "Eight arms. Eight actions.",
+          "start": 2,
+          "end": 77
+        }
+      ],
+      "wordFrames": [
+        2,
+        8,
+        44,
+        47
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "03",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "Four a turn, for the team. Not four each.",
+      "beat": "INVITATION",
+      "hold": 0.7,
+      "directions": [],
+      "displayText": "Four a turn, for the team. Not four each.",
+      "from": 289,
+      "speechFrames": 149,
+      "preRollFrames": 0,
+      "duration": 170,
+      "audio": "audio/03.wav",
+      "captions": [
+        {
+          "text": "Four a turn, for the team.",
+          "start": 7,
+          "end": 95
+        },
+        {
+          "text": "Not four each.",
+          "start": 95,
+          "end": 149
+        }
+      ],
+      "wordFrames": [
+        7,
+        14,
+        28,
+        38,
+        59,
+        64,
+        95,
+        106,
+        118
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "04",
+      "speaker": "PIP",
+      "cue": "proud announcement",
+      "text": "A new job, then. I accept. I have done the paperwork.",
+      "beat": "INVITATION",
+      "hold": 0.25,
+      "directions": [],
+      "displayText": "A new job, then. I accept. I have done the paperwork.",
+      "from": 459,
+      "speechFrames": 159,
+      "preRollFrames": 0,
+      "duration": 167,
+      "audio": "audio/04.wav",
+      "captions": [
+        {
+          "text": "A new job, then.",
+          "start": 0,
+          "end": 43
+        },
+        {
+          "text": "I accept. I have done the paperwork.",
+          "start": 43,
+          "end": 159
+        }
+      ],
+      "wordFrames": [
+        0,
+        7,
+        15,
+        27,
+        43,
+        62,
+        97,
+        106,
+        116,
+        124,
+        145
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "05",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "The paperwork is a drawing of an octopus eating paperwork.",
+      "beat": "INVITATION",
+      "hold": 3.5,
+      "directions": [],
+      "titleBump": true,
+      "displayText": "The paperwork is a drawing of an octopus eating paperwork.",
+      "from": 626,
+      "speechFrames": 128,
+      "preRollFrames": 0,
+      "duration": 233,
+      "audio": "audio/05.wav",
+      "captions": [
+        {
+          "text": "The paperwork is a drawing of an octopus eating paperwork.",
+          "start": 0,
+          "end": 128
+        }
+      ],
+      "wordFrames": [
+        0,
+        10,
+        22,
+        42,
+        56,
+        56,
+        62,
+        82,
+        82,
+        103
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "06",
+      "speaker": "CLICK",
+      "cue": "recap, brisk",
+      "text": "Yesterday's ticket is still on the nail. Where was it going?",
+      "beat": "RECALL",
+      "hold": 0.7,
+      "directions": [
+        "[card: PIP'S AMENDMENTS (PENDING). Front: an eighth action. Back: the team shares four.]",
+        "[sting: title bump]",
+        "[music: bed out]",
+        "[board: yesterday's ticket, still on its nail. Destination: J ten.]"
+      ],
+      "displayText": "Yesterday's ticket is still on the nail. Where was it going?",
+      "from": 859,
+      "speechFrames": 117,
+      "preRollFrames": 0,
+      "duration": 138,
+      "audio": "audio/06.wav",
+      "captions": [
+        {
+          "text": "Yesterday's ticket is still on the nail.",
+          "start": 5,
+          "end": 89
+        },
+        {
+          "text": "Where was it going?",
+          "start": 89,
+          "end": 117
+        }
+      ],
+      "wordFrames": [
+        5,
+        23,
+        29,
+        44,
+        53,
+        59,
+        67,
+        89,
+        90,
+        94,
+        108
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "07",
+      "speaker": "COACH",
+      "cue": "warm, unhurried",
+      "text": "J ten. The far front door. Nobody asked how far.",
+      "beat": "RECALL",
+      "hold": 0.7,
+      "directions": [],
+      "displayText": "J10. The far front door. Nobody asked how far.",
+      "from": 997,
+      "speechFrames": 158,
+      "preRollFrames": 0,
+      "duration": 179,
+      "audio": "audio/07.wav",
+      "captions": [
+        {
+          "text": "J10. The far front door.",
+          "start": 15,
+          "end": 113
+        },
+        {
+          "text": "Nobody asked how far.",
+          "start": 113,
+          "end": 158
+        }
+      ],
+      "wordFrames": [
+        15,
+        24,
+        49,
+        54,
+        67,
+        75,
+        113,
+        117,
+        132,
+        144
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "08",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "The Hi has speed two. One action carries it two squares along an open path.",
+      "beat": "SHOW",
+      "hold": 0.7,
+      "directions": [
+        "[board: a White Hi on C three. C four, C five and C six are empty. Four action tokens in the tray.]",
+        "[card: the Hi. Speed two.]"
+      ],
+      "displayText": "The Hi has speed two. One action carries it two squares along an open path.",
+      "from": 1176,
+      "speechFrames": 168,
+      "preRollFrames": 0,
+      "duration": 189,
+      "audio": "audio/08.wav",
+      "captions": [
+        {
+          "text": "The Hi has speed two.",
+          "start": 2,
+          "end": 72
+        },
+        {
+          "text": "One action carries it two squares along an open path.",
+          "start": 72,
+          "end": 168
+        }
+      ],
+      "wordFrames": [
+        2,
+        7,
+        15,
+        28,
+        50,
+        72,
+        77,
+        90,
+        100,
+        108,
+        115,
+        124,
+        136,
+        144,
+        151
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "09",
+      "speaker": "COACH",
+      "cue": "counting, even beats",
+      "text": "Watch. C three. C four. C five.",
+      "beat": "SHOW",
+      "hold": 0.7,
+      "directions": [
+        "[board: the Hi steps to C four, then C five. One token leaves the tray.]",
+        "[sfx: piece step]",
+        "[sfx: token removed]"
+      ],
+      "displayText": "Watch. C3. C4. C5.",
+      "from": 1365,
+      "speechFrames": 126,
+      "preRollFrames": 0,
+      "duration": 147,
+      "audio": "audio/09.wav",
+      "captions": [
+        {
+          "text": "Watch. C3. C4.",
+          "start": 0,
+          "end": 91
+        },
+        {
+          "text": "C5.",
+          "start": 91,
+          "end": 126
+        }
+      ],
+      "wordFrames": [
+        0,
+        29,
+        38,
+        54,
+        69,
+        91,
+        104
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "10",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "That trip was two squares. It cost one ticket.",
+      "beat": "SHOW",
+      "hold": 0.7,
+      "directions": [],
+      "displayText": "That trip was two squares. It cost one ticket.",
+      "from": 1512,
+      "speechFrames": 102,
+      "preRollFrames": 0,
+      "duration": 123,
+      "audio": "audio/10.wav",
+      "captions": [
+        {
+          "text": "That trip was two squares.",
+          "start": 3,
+          "end": 60
+        },
+        {
+          "text": "It cost one ticket.",
+          "start": 60,
+          "end": 102
+        }
+      ],
+      "wordFrames": [
+        3,
+        9,
+        17,
+        25,
+        37,
+        60,
+        67,
+        75,
+        86
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "11",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Up, down, left or right. Never through a piece.",
+      "beat": "SHOW",
+      "hold": 0.7,
+      "directions": [],
+      "displayText": "Up, down, left or right. Never through a piece.",
+      "from": 1635,
+      "speechFrames": 111,
+      "preRollFrames": 0,
+      "duration": 132,
+      "audio": "audio/11.wav",
+      "captions": [
+        {
+          "text": "Up, down, left or right.",
+          "start": 0,
+          "end": 78
+        },
+        {
+          "text": "Never through a piece.",
+          "start": 78,
+          "end": 111
+        }
+      ],
+      "wordFrames": [
+        0,
+        29,
+        42,
+        45,
+        52,
+        78,
+        84,
+        91,
+        105
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "12",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "Friends block the hallway too. Eight arms taught me that in a doorway.",
+      "beat": "SHOW",
+      "hold": 0.9,
+      "directions": [],
+      "displayText": "Friends block the hallway too. Eight arms taught me that in a doorway.",
+      "from": 1767,
+      "speechFrames": 159,
+      "preRollFrames": 0,
+      "duration": 186,
+      "audio": "audio/12.wav",
+      "captions": [
+        {
+          "text": "Friends block the hallway too.",
+          "start": 16,
+          "end": 78
+        },
+        {
+          "text": "Eight arms taught me that in a doorway.",
+          "start": 78,
+          "end": 159
+        }
+      ],
+      "wordFrames": [
+        16,
+        16,
+        28,
+        42,
+        55,
+        78,
+        85,
+        97,
+        106,
+        112,
+        118,
+        122,
+        133
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "13",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "The open path from C three to C six is three squares.",
+      "beat": "TRY",
+      "hold": 0.7,
+      "directions": [
+        "[board: reset. The Hi back on C three, four tokens in the tray. The open path C three to C six is drawn once and frozen.]"
+      ],
+      "displayText": "The open path from C3 to C6 is three squares.",
+      "from": 1953,
+      "speechFrames": 149,
+      "preRollFrames": 0,
+      "duration": 170,
+      "audio": "audio/13.wav",
+      "captions": [
+        {
+          "text": "The open path from C3 to C6 is three squares.",
+          "start": 1,
+          "end": 149
+        }
+      ],
+      "wordFrames": [
+        1,
+        7,
+        19,
+        33,
+        48,
+        56,
+        63,
+        76,
+        87,
+        97,
+        114,
+        127
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "14",
+      "speaker": "COACH",
+      "cue": "question, open",
+      "text": "The Hi makes that trip. How many of the four tickets are left?",
+      "beat": "TRY",
+      "hold": 0.7,
+      "directions": [],
+      "displayText": "The Hi makes that trip. How many of the four tickets are left?",
+      "from": 2123,
+      "speechFrames": 120,
+      "preRollFrames": 0,
+      "duration": 141,
+      "audio": "audio/14.wav",
+      "captions": [
+        {
+          "text": "The Hi makes that trip.",
+          "start": 0,
+          "end": 62
+        },
+        {
+          "text": "How many of the four tickets are left?",
+          "start": 62,
+          "end": 120
+        }
+      ],
+      "wordFrames": [
+        0,
+        5,
+        13,
+        26,
+        35,
+        62,
+        66,
+        71,
+        77,
+        80,
+        87,
+        96,
+        102
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "15",
+      "speaker": "PIP",
+      "cue": "proud announcement",
+      "text": "I say one left.",
+      "beat": "TRY",
+      "hold": 0.7,
+      "directions": [],
+      "displayText": "I say one left.",
+      "from": 2264,
+      "speechFrames": 62,
+      "preRollFrames": 0,
+      "duration": 83,
+      "audio": "audio/15.wav",
+      "captions": [
+        {
+          "text": "I say one left.",
+          "start": 0,
+          "end": 62
+        }
+      ],
+      "wordFrames": [
+        0,
+        5,
+        17,
+        37
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "16",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Take as long as you like. Or sit with it and watch.",
+      "beat": "TRY",
+      "hold": 10.2,
+      "directions": [],
+      "thinking": true,
+      "displayText": "Take as long as you like. Or sit with it and watch.",
+      "from": 2347,
+      "speechFrames": 146,
+      "preRollFrames": 0,
+      "duration": 452,
+      "audio": "audio/16.wav",
+      "captions": [
+        {
+          "text": "Take as long as you like.",
+          "start": 14,
+          "end": 64
+        },
+        {
+          "text": "Or sit with it and watch.",
+          "start": 64,
+          "end": 146
+        }
+      ],
+      "wordFrames": [
+        14,
+        22,
+        34,
+        40,
+        45,
+        51,
+        64,
+        82,
+        86,
+        91,
+        99,
+        114
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "17",
+      "speaker": "COACH",
+      "cue": "reveal, land it",
+      "text": "Two remain.",
+      "beat": "EXPLAIN",
+      "hold": 0.7,
+      "directions": [
+        "[board: the Hi moves C three to C five. One token leaves. Then C five to C six. A second token leaves. Two tokens stay lit.]",
+        "[sfx: token removed]"
+      ],
+      "preRoll": 2.2,
+      "displayText": "Two remain.",
+      "from": 2799,
+      "speechFrames": 38,
+      "preRollFrames": 66,
+      "duration": 125,
+      "audio": "audio/17.wav",
+      "captions": [
+        {
+          "text": "Two remain.",
+          "start": 7,
+          "end": 38
+        }
+      ],
+      "wordFrames": [
+        7,
+        14
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "18",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Speed two carried the first two squares. The third square needed a second action.",
+      "beat": "EXPLAIN",
+      "hold": 0.7,
+      "directions": [],
+      "displayText": "Speed two carried the first two squares. The third square needed a second action.",
+      "from": 2924,
+      "speechFrames": 165,
+      "preRollFrames": 0,
+      "duration": 186,
+      "audio": "audio/18.wav",
+      "captions": [
+        {
+          "text": "Speed two carried the first two squares.",
+          "start": 12,
+          "end": 93
+        },
+        {
+          "text": "The third square needed a second action.",
+          "start": 93,
+          "end": 165
+        }
+      ],
+      "wordFrames": [
+        12,
+        15,
+        26,
+        38,
+        45,
+        53,
+        64,
+        93,
+        99,
+        107,
+        118,
+        131,
+        147,
+        147
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "19",
+      "speaker": "PIP",
+      "cue": "gently, slower",
+      "text": "I said one. One ticket for every square. I am checking my pockets.",
+      "beat": "EXPLAIN",
+      "hold": 0.25,
+      "directions": [],
+      "displayText": "I said one. One ticket for every square. I am checking my pockets.",
+      "from": 3110,
+      "speechFrames": 170,
+      "preRollFrames": 0,
+      "duration": 178,
+      "audio": "audio/19.wav",
+      "captions": [
+        {
+          "text": "I said one. One ticket for every square.",
+          "start": 0,
+          "end": 119
+        },
+        {
+          "text": "I am checking my pockets.",
+          "start": 119,
+          "end": 170
+        }
+      ],
+      "wordFrames": [
+        0,
+        5,
+        17,
+        51,
+        62,
+        71,
+        80,
+        90,
+        119,
+        122,
+        126,
+        135,
+        143
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "20",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "Those pockets contain crumbs and disappointment.",
+      "beat": "EXPLAIN",
+      "hold": 0.9,
+      "directions": [],
+      "displayText": "Those pockets contain crumbs and disappointment.",
+      "from": 3288,
+      "speechFrames": 102,
+      "preRollFrames": 0,
+      "duration": 129,
+      "audio": "audio/20.wav",
+      "captions": [
+        {
+          "text": "Those pockets contain crumbs and disappointment.",
+          "start": 0,
+          "end": 102
+        }
+      ],
+      "wordFrames": [
+        0,
+        12,
+        29,
+        48,
+        61,
+        77
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "21",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "A partly used action is still an action. One ticket at a time.",
+      "beat": "EXPLAIN",
+      "hold": 0.7,
+      "directions": [],
+      "displayText": "A partly used action is still an action. One ticket at a time.",
+      "from": 3417,
+      "speechFrames": 131,
+      "preRollFrames": 0,
+      "duration": 152,
+      "audio": "audio/21.wav",
+      "captions": [
+        {
+          "text": "A partly used action is still an action.",
+          "start": 16,
+          "end": 92
+        },
+        {
+          "text": "One ticket at a time.",
+          "start": 92,
+          "end": 131
+        }
+      ],
+      "wordFrames": [
+        16,
+        20,
+        29,
+        37,
+        46,
+        55,
+        61,
+        68,
+        92,
+        96,
+        103,
+        109,
+        130
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "22",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "Two squares? One square?",
+      "beat": "EXPLAIN",
+      "hold": 0.7,
+      "directions": [],
+      "displayText": "Two squares? One square?",
+      "from": 3569,
+      "speechFrames": 125,
+      "preRollFrames": 0,
+      "duration": 146,
+      "audio": "audio/22.wav",
+      "captions": [
+        {
+          "text": "Two squares? One square?",
+          "start": 10,
+          "end": 125
+        }
+      ],
+      "wordFrames": [
+        10,
+        20,
+        59,
+        68
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "23",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "One ticket. No change.",
+      "beat": "EXPLAIN",
+      "hold": 1.2,
+      "directions": [
+        "[board: Click tips the change tray toward Pip. It is empty.]"
+      ],
+      "displayText": "One ticket. No change.",
+      "from": 3715,
+      "speechFrames": 69,
+      "preRollFrames": 0,
+      "duration": 105,
+      "audio": "audio/23.wav",
+      "captions": [
+        {
+          "text": "One ticket. No change.",
+          "start": 0,
+          "end": 69
+        }
+      ],
+      "wordFrames": [
+        0,
+        15,
+        40,
+        49
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "24",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "One more square, later. That is a third ticket.",
+      "beat": "EXPLAIN",
+      "hold": 0.7,
+      "directions": [
+        "[board: later in the same turn, the Hi steps C six to C seven. A third token leaves.]"
+      ],
+      "displayText": "One more square, later. That is a third ticket.",
+      "from": 3820,
+      "speechFrames": 128,
+      "preRollFrames": 0,
+      "duration": 149,
+      "audio": "audio/24.wav",
+      "captions": [
+        {
+          "text": "One more square, later.",
+          "start": 5,
+          "end": 72
+        },
+        {
+          "text": "That is a third ticket.",
+          "start": 72,
+          "end": 128
+        }
+      ],
+      "wordFrames": [
+        5,
+        13,
+        30,
+        39,
+        72,
+        76,
+        88,
+        99,
+        104
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "25",
+      "speaker": "COACH",
+      "cue": "stating the rule, level",
+      "text": "Distance you did not use does not carry over.",
+      "beat": "EXPLAIN",
+      "hold": 0.7,
+      "directions": [],
+      "displayText": "Distance you did not use does not carry over.",
+      "from": 3969,
+      "speechFrames": 123,
+      "preRollFrames": 0,
+      "duration": 144,
+      "audio": "audio/25.wav",
+      "captions": [
+        {
+          "text": "Distance you did not use does not carry over.",
+          "start": 10,
+          "end": 123
+        }
+      ],
+      "wordFrames": [
+        10,
+        18,
+        25,
+        32,
+        41,
+        53,
+        65,
+        74,
+        84
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "26",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Same board. One change. Somebody is standing on C four. Count the way around.",
+      "beat": "TRANSFER",
+      "hold": 0.7,
+      "directions": [
+        "[card: EVIDENCE. Proves: the straight trip costs two of the four. Not checked: attacks, the reply, what Black does next.]",
+        "[board: a Black Sjor now stands on C four. The straight line is blocked. The open way around is drawn once and frozen: B three, B four, B five, B six, C six. Five squares. The Hi walks it and passes near the Sjor. Nothing happens to either piece.]"
+      ],
+      "preRoll": 0.6,
+      "displayText": "Same board. One change. Somebody is standing on C4. Count the way around.",
+      "from": 4113,
+      "speechFrames": 153,
+      "preRollFrames": 18,
+      "duration": 192,
+      "audio": "audio/26.wav",
+      "captions": [
+        {
+          "text": "Same board. One change.",
+          "start": 0,
+          "end": 67
+        },
+        {
+          "text": "Somebody is standing on C4.",
+          "start": 67,
+          "end": 127
+        },
+        {
+          "text": "Count the way around.",
+          "start": 127,
+          "end": 153
+        }
+      ],
+      "wordFrames": [
+        0,
+        11,
+        34,
+        39,
+        67,
+        73,
+        87,
+        87,
+        97,
+        104,
+        127,
+        127,
+        131,
+        137
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "27",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Five squares around. Three tickets. The blocked line was never a path.",
+      "beat": "TRANSFER",
+      "hold": 0.7,
+      "directions": [],
+      "displayText": "Five squares around. Three tickets. The blocked line was never a path.",
+      "from": 4305,
+      "speechFrames": 152,
+      "preRollFrames": 0,
+      "duration": 173,
+      "audio": "audio/27.wav",
+      "captions": [
+        {
+          "text": "Five squares around. Three tickets.",
+          "start": 2,
+          "end": 85
+        },
+        {
+          "text": "The blocked line was never a path.",
+          "start": 85,
+          "end": 152
+        }
+      ],
+      "wordFrames": [
+        2,
+        8,
+        18,
+        52,
+        59,
+        85,
+        91,
+        96,
+        106,
+        114,
+        121,
+        134
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "28",
+      "speaker": "CLICK",
+      "cue": "dry aside",
+      "text": "Walked past. Did not attack. Walking is not an attack.",
+      "beat": "TRANSFER",
+      "hold": 0.7,
+      "directions": [],
+      "displayText": "Walked past. Did not attack. Walking is not an attack.",
+      "from": 4478,
+      "speechFrames": 126,
+      "preRollFrames": 0,
+      "duration": 147,
+      "audio": "audio/28.wav",
+      "captions": [
+        {
+          "text": "Walked past. Did not attack.",
+          "start": 8,
+          "end": 84
+        },
+        {
+          "text": "Walking is not an attack.",
+          "start": 84,
+          "end": 126
+        }
+      ],
+      "wordFrames": [
+        8,
+        12,
+        37,
+        41,
+        47,
+        84,
+        84,
+        101,
+        107,
+        122
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "29",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Four coins on the table. They come back when your next turn starts.",
+      "beat": "EXIT",
+      "hold": 0.7,
+      "directions": [
+        "[board: four coins on the table.]"
+      ],
+      "displayText": "Four coins on the table. They come back when your next turn starts.",
+      "from": 4625,
+      "speechFrames": 128,
+      "preRollFrames": 0,
+      "duration": 149,
+      "audio": "audio/29.wav",
+      "captions": [
+        {
+          "text": "Four coins on the table.",
+          "start": 0,
+          "end": 58
+        },
+        {
+          "text": "They come back when your next turn starts.",
+          "start": 58,
+          "end": 128
+        }
+      ],
+      "wordFrames": [
+        0,
+        10,
+        22,
+        28,
+        31,
+        58,
+        62,
+        68,
+        76,
+        83,
+        87,
+        94,
+        102
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "30",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Trace two trips and pay with coins. Leave what you did not spend in sight.",
+      "beat": "EXIT",
+      "hold": 0.7,
+      "directions": [],
+      "performanceNote": "Read the final sentence smoothly without restarting: Leave what you did not spend in sight. Do not insert use or do not.",
+      "displayText": "Trace two trips and pay with coins. Leave what you did not spend in sight.",
+      "from": 4774,
+      "speechFrames": 194,
+      "preRollFrames": 0,
+      "duration": 215,
+      "audio": "audio/30.wav",
+      "captions": [
+        {
+          "text": "Trace two trips and pay with coins.",
+          "start": 12,
+          "end": 117
+        },
+        {
+          "text": "Leave what you did not spend in sight.",
+          "start": 117,
+          "end": 194
+        }
+      ],
+      "wordFrames": [
+        12,
+        13,
+        27,
+        38,
+        57,
+        67,
+        77,
+        117,
+        118,
+        124,
+        129,
+        136,
+        145,
+        157,
+        180
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "31",
+      "speaker": "COACH",
+      "cue": "warm, unhurried",
+      "text": "Stopping here is fine.",
+      "beat": "EXIT",
+      "hold": 0.7,
+      "directions": [],
+      "displayText": "Stopping here is fine.",
+      "from": 4989,
+      "speechFrames": 93,
+      "preRollFrames": 0,
+      "duration": 114,
+      "audio": "audio/31.wav",
+      "captions": [
+        {
+          "text": "Stopping here is fine.",
+          "start": 0,
+          "end": 93
+        }
+      ],
+      "wordFrames": [
+        0,
+        19,
+        32,
+        48
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "32",
+      "speaker": "PIP",
+      "cue": "proud announcement",
+      "text": "My four spare arms now hold the reference cards. Finally. An advantage.",
+      "beat": "EXIT",
+      "hold": 0.7,
+      "directions": [
+        "[card: PIP'S AMENDMENTS. A rubber stamp comes down: ACCEPTED. The reference cards stay on the table.]"
+      ],
+      "displayText": "My four spare arms now hold the reference cards. Finally. An advantage.",
+      "from": 5103,
+      "speechFrames": 186,
+      "preRollFrames": 0,
+      "duration": 207,
+      "audio": "audio/32.wav",
+      "captions": [
+        {
+          "text": "My four spare arms now hold the reference cards.",
+          "start": 0,
+          "end": 121
+        },
+        {
+          "text": "Finally. An advantage.",
+          "start": 121,
+          "end": 186
+        }
+      ],
+      "wordFrames": [
+        0,
+        6,
+        19,
+        32,
+        49,
+        60,
+        71,
+        77,
+        86,
+        121,
+        151,
+        158
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "33",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "They hold cards. They do not hold actions.",
+      "beat": "EXIT",
+      "hold": 2.5,
+      "directions": [],
+      "displayText": "They hold cards. They do not hold actions.",
+      "from": 5310,
+      "speechFrames": 99,
+      "preRollFrames": 0,
+      "duration": 174,
+      "audio": "audio/33.wav",
+      "captions": [
+        {
+          "text": "They hold cards. They do not hold actions.",
+          "start": 2,
+          "end": 99
+        }
+      ],
+      "wordFrames": [
+        2,
+        7,
+        17,
+        44,
+        49,
+        54,
+        63,
+        72
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    }
+  ],
+  "question": "How many of the four tickets are left?",
+  "soundtrack": {
+    "id": "unequal-routes",
+    "title": "Unequal Routes",
+    "source": "muju/music-auditions/full-versions/unequal-routes-full-v1.mp3",
+    "sha256": "2354f06bdb9863f9ebc13bd3620a202ba27c4e07d91e84c900564247f80a96e7"
+  },
+  "speechProvider": "openai",
+  "audioComplete": true,
+  "durationInFrames": 5484
+}

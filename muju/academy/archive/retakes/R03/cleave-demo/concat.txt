@@ -1,0 +1,5 @@
+file '/Users/ashkie/src/deevgames/muju/academy/archive/retakes/R03/cleave-demo/sentence-1.wav'
+file '/Users/ashkie/src/deevgames/muju/academy/archive/retakes/R03/cleave-demo/sentence-2.wav'
+file '/Users/ashkie/src/deevgames/muju/academy/archive/retakes/R03/cleave-demo/sentence-3.wav'
+file '/Users/ashkie/src/deevgames/muju/academy/archive/retakes/R03/cleave-demo/sentence-4.wav'
+file '/Users/ashkie/src/deevgames/muju/academy/archive/retakes/R03/cleave-demo/sentence-5.wav'

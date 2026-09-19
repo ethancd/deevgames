@@ -1,0 +1,2274 @@
+{
+  "id": "R11",
+  "title": "Fire: The Toast Department",
+  "fps": 30,
+  "voices": {
+    "COACH": "marin",
+    "PIP": "coral",
+    "CLICK": "cedar",
+    "EMBER": "ash",
+    "ZIP": "verse",
+    "BUBBLES": "shimmer",
+    "MURMUR": "sage",
+    "CLANK": "onyx"
+  },
+  "lines": [
+    {
+      "id": "01",
+      "speaker": "EMBER",
+      "cue": "mock-formal announcement",
+      "text": "Two tickets closed early this morning. Both of them came back.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed in, low]",
+        "[board: TOAST DEPARTMENT sign. A smaller sign under it: an element bonus changes attack, never defense. Ember at the kitchen bench, with a stack of closed tickets and one slice of toast.]"
+      ],
+      "displayText": "Two tickets closed early this morning. Both of them came back.",
+      "from": 0,
+      "speechFrames": 158,
+      "preRollFrames": 0,
+      "duration": 178,
+      "audio": "audio/01.wav",
+      "captions": [
+        {
+          "text": "Two tickets closed early this morning.",
+          "start": 0,
+          "end": 105
+        },
+        {
+          "text": "Both of them came back.",
+          "start": 105,
+          "end": 158
+        }
+      ],
+      "wordFrames": [
+        0,
+        13,
+        25,
+        44,
+        56,
+        68,
+        105,
+        108,
+        122,
+        122,
+        134
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "02",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "The stamp came down twice. Both times before the toast was done.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "The stamp came down twice. Both times before the toast was done.",
+      "from": 178,
+      "speechFrames": 131,
+      "preRollFrames": 0,
+      "duration": 151,
+      "audio": "audio/02.wav",
+      "captions": [
+        {
+          "text": "The stamp came down twice.",
+          "start": 1,
+          "end": 73
+        },
+        {
+          "text": "Both times before the toast was done.",
+          "start": 73,
+          "end": 131
+        }
+      ],
+      "wordFrames": [
+        1,
+        10,
+        21,
+        36,
+        46,
+        73,
+        78,
+        89,
+        97,
+        105,
+        111,
+        124
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "03",
+      "speaker": "EMBER",
+      "cue": "",
+      "text": "We would like one ticket that stays closed.",
+      "beat": "INVITATION",
+      "hold": 3.4,
+      "directions": [],
+      "titleBump": true,
+      "displayText": "We would like one ticket that stays closed.",
+      "from": 329,
+      "speechFrames": 96,
+      "preRollFrames": 0,
+      "duration": 198,
+      "audio": "audio/03.wav",
+      "captions": [
+        {
+          "text": "We would like one ticket that stays closed.",
+          "start": 2,
+          "end": 96
+        }
+      ],
+      "wordFrames": [
+        2,
+        8,
+        15,
+        24,
+        39,
+        44,
+        56,
+        65
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "04",
+      "speaker": "COACH",
+      "cue": "recap, brisk",
+      "text": "This is the Hi from C three. Where did it come from?",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed out]",
+        "[card: THE THREE QUESTIONS. Which stat helps this job? How many actions does it take? What will this piece owe next turn?]",
+        "[card: ROSTER KEY. Hit = base attack before elements. Shield = full defense. Walk = squares per action. Take = maximum crystals at own turn end, limited by reserve. Keep beside every roster recital.]",
+        "[board: a Hi is carried onto the bench, still holding its shop tag from C three]"
+      ],
+      "displayText": "This is the Hi from C3. Where did it come from?",
+      "from": 527,
+      "speechFrames": 110,
+      "preRollFrames": 0,
+      "duration": 130,
+      "audio": "audio/04.wav",
+      "captions": [
+        {
+          "text": "This is the Hi from C3.",
+          "start": 0,
+          "end": 75
+        },
+        {
+          "text": "Where did it come from?",
+          "start": 75,
+          "end": 110
+        }
+      ],
+      "wordFrames": [
+        0,
+        9,
+        17,
+        24,
+        27,
+        37,
+        46,
+        75,
+        80,
+        84,
+        89,
+        95
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "05",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "The shop. Three crystals. Tier one owes no toll.",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "The shop. Three crystals. Tier one owes no toll.",
+      "from": 657,
+      "speechFrames": 176,
+      "preRollFrames": 0,
+      "duration": 196,
+      "audio": "audio/05.wav",
+      "captions": [
+        {
+          "text": "The shop. Three crystals.",
+          "start": 0,
+          "end": 110
+        },
+        {
+          "text": "Tier one owes no toll.",
+          "start": 110,
+          "end": 176
+        }
+      ],
+      "wordFrames": [
+        0,
+        11,
+        52,
+        64,
+        110,
+        110,
+        123,
+        140,
+        152
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "06",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Sparks burn the Garden Wall. Fire beats Metal, so the Hi goes from two to three.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[board: the Hi beside a fresh Yan. Damage marker blank. Every other card dim.]",
+        "[card: the Hi. Attack two. Fire against Metal, add one. Three.]"
+      ],
+      "displayText": "Sparks burn the Garden Wall. Fire beats Metal, so the Hi goes from two to three.",
+      "from": 853,
+      "speechFrames": 180,
+      "preRollFrames": 0,
+      "duration": 200,
+      "audio": "audio/06.wav",
+      "captions": [
+        {
+          "text": "Sparks burn the Garden Wall.",
+          "start": 0,
+          "end": 85
+        },
+        {
+          "text": "Fire beats Metal, so the Hi goes from two to three.",
+          "start": 85,
+          "end": 180
+        }
+      ],
+      "wordFrames": [
+        0,
+        15,
+        30,
+        38,
+        45,
+        85,
+        85,
+        93,
+        114,
+        119,
+        128,
+        128,
+        140,
+        149,
+        158,
+        162
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "07",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "The Yan's defense is three.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[card: the Yan. Defense three.]"
+      ],
+      "displayText": "The Yan's defense is three.",
+      "from": 1053,
+      "speechFrames": 81,
+      "preRollFrames": 0,
+      "duration": 101,
+      "audio": "audio/07.wav",
+      "captions": [
+        {
+          "text": "The Yan's defense is three.",
+          "start": 0,
+          "end": 81
+        }
+      ],
+      "wordFrames": [
+        0,
+        5,
+        25,
+        35,
+        59
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "08",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Three damage. Three defense. Finished.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: bonk] [board: three shield pips go dark; the piece is removed gently]"
+      ],
+      "displayText": "Three damage. Three defense. Finished.",
+      "from": 1154,
+      "speechFrames": 114,
+      "preRollFrames": 0,
+      "duration": 134,
+      "audio": "audio/08.wav",
+      "captions": [
+        {
+          "text": "Three damage. Three defense.",
+          "start": 6,
+          "end": 95
+        },
+        {
+          "text": "Finished.",
+          "start": 95,
+          "end": 114
+        }
+      ],
+      "wordFrames": [
+        6,
+        13,
+        48,
+        59,
+        95
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "09",
+      "speaker": "EMBER",
+      "cue": "",
+      "text": "One stamp. Ticket closed. That is the job I like.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "One stamp. Ticket closed. That is the job I like.",
+      "from": 1288,
+      "speechFrames": 158,
+      "preRollFrames": 0,
+      "duration": 178,
+      "audio": "audio/09.wav",
+      "captions": [
+        {
+          "text": "One stamp. Ticket closed.",
+          "start": 4,
+          "end": 94
+        },
+        {
+          "text": "That is the job I like.",
+          "start": 94,
+          "end": 158
+        }
+      ],
+      "wordFrames": [
+        4,
+        12,
+        54,
+        57,
+        94,
+        100,
+        107,
+        121,
+        122,
+        134
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "10",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "Ember needs a shield. I have knitted a taller chef hat.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[board: Pip arrives at the bench under a knitted chef hat the height of a chimney]"
+      ],
+      "displayText": "Ember needs a shield. I have knitted a taller chef hat.",
+      "from": 1466,
+      "speechFrames": 126,
+      "preRollFrames": 0,
+      "duration": 146,
+      "audio": "audio/10.wav",
+      "captions": [
+        {
+          "text": "Ember needs a shield.",
+          "start": 4,
+          "end": 49
+        },
+        {
+          "text": "I have knitted a taller chef hat.",
+          "start": 49,
+          "end": 126
+        }
+      ],
+      "wordFrames": [
+        4,
+        13,
+        22,
+        37,
+        49,
+        65,
+        79,
+        79,
+        101,
+        102,
+        113
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "11",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "A taller chef hat does not stop an attack.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "A taller chef hat does not stop an attack.",
+      "from": 1612,
+      "speechFrames": 93,
+      "preRollFrames": 0,
+      "duration": 113,
+      "audio": "audio/11.wav",
+      "captions": [
+        {
+          "text": "A taller chef hat does not stop an attack.",
+          "start": 0,
+          "end": 93
+        }
+      ],
+      "wordFrames": [
+        0,
+        5,
+        18,
+        28,
+        35,
+        46,
+        54,
+        63,
+        71
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "12",
+      "speaker": "EMBER",
+      "cue": "",
+      "text": "Then order me a toast shield. Fire beats Metal.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Then order me a toast shield. Fire beats Metal.",
+      "from": 1725,
+      "speechFrames": 170,
+      "preRollFrames": 0,
+      "duration": 190,
+      "audio": "audio/12.wav",
+      "captions": [
+        {
+          "text": "Then order me a toast shield.",
+          "start": 12,
+          "end": 112
+        },
+        {
+          "text": "Fire beats Metal.",
+          "start": 112,
+          "end": 170
+        }
+      ],
+      "wordFrames": [
+        12,
+        12,
+        33,
+        47,
+        56,
+        66,
+        112,
+        112,
+        133
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "13",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Defense: unchanged. That is the entire product.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[board: a fire arrow lights the attack number, travels toward the defense number, and stops dead at the edge of the card. The defense number does not change colour.]"
+      ],
+      "displayText": "Defense: unchanged. That is the entire product.",
+      "from": 1915,
+      "speechFrames": 113,
+      "preRollFrames": 0,
+      "duration": 133,
+      "audio": "audio/13.wav",
+      "captions": [
+        {
+          "text": "Defense: unchanged. That is the entire product.",
+          "start": 13,
+          "end": 113
+        }
+      ],
+      "wordFrames": [
+        13,
+        14,
+        66,
+        69,
+        73,
+        80,
+        91
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "14",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "New trial. The Hono has attack three. Add one for Metal: four.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [
+        "[card: REQUISITION. TOAST SHIELD. A stamp comes down: REJECTED.]",
+        "[board: bench reset. A fresh Tanka beside a Hono. Damage marker blank.]",
+        "[card: the Hono. Attack three. Fire against Metal, add one. Four.]"
+      ],
+      "performanceNote": "Articulate every word and every sentence in the supplied text. Do not drop the final sentence. Hono is pronounced hoh-noh as a normal two-syllable name, never as letters. Keep the small final phrases fully audible.",
+      "displayText": "New trial. The Hono has attack three. Add one for Metal: four.",
+      "from": 2048,
+      "speechFrames": 167,
+      "preRollFrames": 0,
+      "duration": 187,
+      "audio": "audio/14.wav",
+      "captions": [
+        {
+          "text": "New trial. The Hono has attack three.",
+          "start": 0,
+          "end": 113
+        },
+        {
+          "text": "Add one for Metal: four.",
+          "start": 113,
+          "end": 167
+        }
+      ],
+      "wordFrames": [
+        0,
+        14,
+        44,
+        49,
+        61,
+        72,
+        81,
+        113,
+        116,
+        123,
+        128,
+        146
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "15",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "The Tanka's defense is five.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [
+        "[card: the Tanka. Defense five.]"
+      ],
+      "displayText": "The Tanka's defense is five.",
+      "from": 2235,
+      "speechFrames": 83,
+      "preRollFrames": 0,
+      "duration": 103,
+      "audio": "audio/15.wav",
+      "captions": [
+        {
+          "text": "The Tanka's defense is five.",
+          "start": 0,
+          "end": 83
+        }
+      ],
+      "wordFrames": [
+        0,
+        10,
+        35,
+        44,
+        56
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "16",
+      "speaker": "EMBER",
+      "cue": "question, open",
+      "text": "Does one attack from my Hono finish a fresh Tanka?",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [],
+      "performanceNote": "Articulate every word and every sentence in the supplied text. Do not drop the final sentence. Hono is pronounced hoh-noh as a normal two-syllable name, never as letters. Keep the small final phrases fully audible.",
+      "displayText": "Does one attack from my Hono finish a fresh Tanka?",
+      "from": 2338,
+      "speechFrames": 162,
+      "preRollFrames": 0,
+      "duration": 182,
+      "audio": "audio/16.wav",
+      "captions": [
+        {
+          "text": "Does one attack from my Hono finish a fresh Tanka?",
+          "start": 0,
+          "end": 162
+        }
+      ],
+      "wordFrames": [
+        0,
+        11,
+        27,
+        44,
+        52,
+        62,
+        75,
+        96,
+        104,
+        114
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "17",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Five is a big shield. Take your time, or just watch the toaster.",
+      "beat": "TRY",
+      "hold": 10.2,
+      "directions": [],
+      "thinking": true,
+      "question": "Does one attack from my Hono finish a fresh Tanka?",
+      "displayText": "Five is a big shield. Take your time, or just watch the toaster.",
+      "from": 2520,
+      "speechFrames": 149,
+      "preRollFrames": 0,
+      "duration": 455,
+      "audio": "audio/17.wav",
+      "captions": [
+        {
+          "text": "Five is a big shield.",
+          "start": 0,
+          "end": 71
+        },
+        {
+          "text": "Take your time, or just watch the toaster.",
+          "start": 71,
+          "end": 149
+        }
+      ],
+      "wordFrames": [
+        0,
+        13,
+        19,
+        25,
+        33,
+        71,
+        74,
+        79,
+        89,
+        104,
+        111,
+        121,
+        129
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "18",
+      "speaker": "COACH",
+      "cue": "reveal, land it",
+      "text": "Not yet. Four browned. One still pale.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: bonk, dull] [board: four of the Tanka's five shield pips go dark; one stays lit; the Hono's attack marker greys out]",
+        "[board: the toast pops up pale on one corner; Ember's DONE stamp comes down and stops in mid-air]"
+      ],
+      "displayText": "Not yet. Four browned. One still pale.",
+      "from": 2975,
+      "speechFrames": 107,
+      "preRollFrames": 0,
+      "duration": 127,
+      "audio": "audio/18.wav",
+      "captions": [
+        {
+          "text": "Not yet. Four browned.",
+          "start": 0,
+          "end": 70
+        },
+        {
+          "text": "One still pale.",
+          "start": 70,
+          "end": 107
+        }
+      ],
+      "wordFrames": [
+        0,
+        8,
+        31,
+        41,
+        70,
+        77,
+        89
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "19",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "The Tanka is standing, so the Hono is finished attacking. That is the Closed Chain.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "performanceNote": "Articulate every word and every sentence in the supplied text. Do not drop the final sentence. Hono is pronounced hoh-noh as a normal two-syllable name, never as letters. Keep the small final phrases fully audible.",
+      "displayText": "The Tanka is standing, so the Hono is finished attacking. That is the Closed Chain.",
+      "from": 3102,
+      "speechFrames": 198,
+      "preRollFrames": 0,
+      "duration": 218,
+      "audio": "audio/19.wav",
+      "captions": [
+        {
+          "text": "The Tanka is standing, so the Hono is finished attacking.",
+          "start": 0,
+          "end": 153
+        },
+        {
+          "text": "That is the Closed Chain.",
+          "start": 153,
+          "end": 198
+        }
+      ],
+      "wordFrames": [
+        0,
+        8,
+        20,
+        37,
+        70,
+        70,
+        80,
+        88,
+        105,
+        115,
+        153,
+        157,
+        162,
+        168,
+        179
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "20",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "If it survives and pays its bill, it heals at its next turn start.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "If it survives and pays its bill, it heals at its next turn start.",
+      "from": 3320,
+      "speechFrames": 122,
+      "preRollFrames": 0,
+      "duration": 142,
+      "audio": "audio/20.wav",
+      "captions": [
+        {
+          "text": "If it survives and pays its bill, it heals at its next",
+          "start": 3,
+          "end": 94
+        },
+        {
+          "text": "turn start.",
+          "start": 94,
+          "end": 122
+        }
+      ],
+      "wordFrames": [
+        3,
+        9,
+        15,
+        26,
+        38,
+        38,
+        44,
+        63,
+        69,
+        75,
+        80,
+        84,
+        94,
+        104
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "21",
+      "speaker": "EMBER",
+      "cue": "deadpan, flat",
+      "text": "Never declare breakfast early.",
+      "beat": "EXPLAIN",
+      "hold": 1.2,
+      "directions": [],
+      "displayText": "Never declare breakfast early.",
+      "from": 3462,
+      "speechFrames": 93,
+      "preRollFrames": 0,
+      "duration": 129,
+      "audio": "audio/21.wav",
+      "captions": [
+        {
+          "text": "Never declare breakfast early.",
+          "start": 8,
+          "end": 93
+        }
+      ],
+      "wordFrames": [
+        8,
+        15,
+        34,
+        53
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "22",
+      "speaker": "EMBER",
+      "cue": "",
+      "text": "This is the Hi. Hits for two. Shield of one. Walks two. Takes one. That is the Hi.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[card: EVIDENCE. Proves: one Hono attack does not finish a fresh Tanka. Not checked: what a second attacker could do.]"
+      ],
+      "displayText": "This is the Hi. Hits for two. Shield of one. Walks two. Takes one. That is the Hi.",
+      "from": 3591,
+      "speechFrames": 272,
+      "preRollFrames": 0,
+      "duration": 292,
+      "audio": "audio/22.wav",
+      "captions": [
+        {
+          "text": "This is the Hi.",
+          "start": 10,
+          "end": 69
+        },
+        {
+          "text": "Hits for two. Shield of one.",
+          "start": 69,
+          "end": 148
+        },
+        {
+          "text": "Walks two. Takes one.",
+          "start": 148,
+          "end": 229
+        },
+        {
+          "text": "That is the Hi.",
+          "start": 229,
+          "end": 272
+        }
+      ],
+      "wordFrames": [
+        10,
+        12,
+        23,
+        32,
+        69,
+        69,
+        77,
+        109,
+        116,
+        124,
+        148,
+        160,
+        196,
+        196,
+        229,
+        238,
+        250,
+        258
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "23",
+      "speaker": "EMBER",
+      "cue": "",
+      "text": "This is the Hono. Hits for three. Shield of one. Walks two. Takes one. That is the Hono.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "performanceNote": "Articulate every word and every sentence in the supplied text. Do not drop the final sentence. Hono is pronounced hoh-noh as a normal two-syllable name, never as letters. Keep the small final phrases fully audible.",
+      "displayText": "This is the Hono. Hits for three. Shield of one. Walks two. Takes one. That is the Hono.",
+      "from": 3883,
+      "speechFrames": 281,
+      "preRollFrames": 0,
+      "duration": 301,
+      "audio": "audio/23.wav",
+      "captions": [
+        {
+          "text": "This is the Hono.",
+          "start": 0,
+          "end": 64
+        },
+        {
+          "text": "Hits for three. Shield of one.",
+          "start": 64,
+          "end": 155
+        },
+        {
+          "text": "Walks two. Takes one.",
+          "start": 155,
+          "end": 223
+        },
+        {
+          "text": "That is the Hono.",
+          "start": 223,
+          "end": 281
+        }
+      ],
+      "wordFrames": [
+        0,
+        13,
+        23,
+        34,
+        64,
+        67,
+        75,
+        105,
+        112,
+        120,
+        155,
+        160,
+        186,
+        195,
+        223,
+        236,
+        250,
+        266
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "24",
+      "speaker": "EMBER",
+      "cue": "",
+      "text": "This is the Kagari. Hits for four. Shield of two. Walks three. Takes one. That is the Kagari.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "This is the Kagari. Hits for four. Shield of two. Walks three. Takes one. That is the Kagari.",
+      "from": 4184,
+      "speechFrames": 278,
+      "preRollFrames": 0,
+      "duration": 298,
+      "audio": "audio/24.wav",
+      "captions": [
+        {
+          "text": "This is the Kagari.",
+          "start": 8,
+          "end": 67
+        },
+        {
+          "text": "Hits for four. Shield of two.",
+          "start": 67,
+          "end": 156
+        },
+        {
+          "text": "Walks three. Takes one.",
+          "start": 156,
+          "end": 226
+        },
+        {
+          "text": "That is the Kagari.",
+          "start": 226,
+          "end": 278
+        }
+      ],
+      "wordFrames": [
+        8,
+        9,
+        20,
+        30,
+        67,
+        68,
+        77,
+        113,
+        113,
+        121,
+        156,
+        160,
+        195,
+        195,
+        226,
+        235,
+        248,
+        257
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "25",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "The Hono takes the one crystal there. An empty square gives nothing.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[card: FIRE PRICES. BUY: a Hi costs three crystals, and it is the only Fire piece you can buy. CLIMB: Hi to Hono, four more. Hono to Kagari, eight more. TOLLS: nothing, one, two.]",
+        "[board: a Hono ends its turn on a square holding one crystal, with a Black Sjor next door]"
+      ],
+      "performanceNote": "Articulate every word and every sentence in the supplied text. Do not drop the final sentence. Hono is pronounced hoh-noh as a normal two-syllable name, never as letters. Keep the small final phrases fully audible.",
+      "displayText": "The Hono takes the one crystal there. An empty square gives nothing.",
+      "from": 4482,
+      "speechFrames": 176,
+      "preRollFrames": 0,
+      "duration": 196,
+      "audio": "audio/25.wav",
+      "captions": [
+        {
+          "text": "The Hono takes the one crystal there.",
+          "start": 0,
+          "end": 101
+        },
+        {
+          "text": "An empty square gives nothing.",
+          "start": 101,
+          "end": 176
+        }
+      ],
+      "wordFrames": [
+        0,
+        15,
+        20,
+        41,
+        49,
+        60,
+        69,
+        101,
+        108,
+        116,
+        130,
+        151
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "26",
+      "speaker": "EMBER",
+      "cue": "dawning concern",
+      "text": "One crystal, and a Sjor next door. A crystal is not a wall I can hide behind.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "One crystal, and a Sjor next door. A crystal is not a wall I can hide behind.",
+      "from": 4678,
+      "speechFrames": 218,
+      "preRollFrames": 0,
+      "duration": 238,
+      "audio": "audio/26.wav",
+      "captions": [
+        {
+          "text": "One crystal, and a Sjor next door.",
+          "start": 0,
+          "end": 108
+        },
+        {
+          "text": "A crystal is not a wall I can hide behind.",
+          "start": 108,
+          "end": 218
+        }
+      ],
+      "wordFrames": [
+        0,
+        9,
+        22,
+        44,
+        58,
+        62,
+        75,
+        108,
+        111,
+        120,
+        129,
+        133,
+        147,
+        147,
+        153,
+        163,
+        165
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "27",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "One thing is different. A Radi hits that Tanka first, in the same turn. Two damage.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[board: bench reset. A fresh Tanka, five pips lit. A Radi and a Hono are waiting. Neither has swung this turn. The Radi steps up first.]",
+        "[sfx: bonk] [board: two of the Tanka's pips go dark; three stay lit]"
+      ],
+      "displayText": "One thing is different. A Radi hits that Tanka first, in the same turn. Two damage.",
+      "from": 4916,
+      "speechFrames": 237,
+      "preRollFrames": 0,
+      "duration": 257,
+      "audio": "audio/27.wav",
+      "captions": [
+        {
+          "text": "One thing is different.",
+          "start": 9,
+          "end": 69
+        },
+        {
+          "text": "A Radi hits that Tanka first, in the same turn.",
+          "start": 69,
+          "end": 199
+        },
+        {
+          "text": "Two damage.",
+          "start": 199,
+          "end": 237
+        }
+      ],
+      "wordFrames": [
+        9,
+        9,
+        24,
+        40,
+        69,
+        77,
+        86,
+        103,
+        118,
+        122,
+        141,
+        153,
+        159,
+        169,
+        199,
+        210
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "28",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Three are still lit. Now a Hono that has not swung hits for four. Finished.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [],
+      "performanceNote": "Articulate every word and every sentence in the supplied text. Do not drop the final sentence. Hono is pronounced hoh-noh as a normal two-syllable name, never as letters. Keep the small final phrases fully audible.",
+      "displayText": "Three are still lit. Now a Hono that has not swung hits for four. Finished.",
+      "from": 5173,
+      "speechFrames": 197,
+      "preRollFrames": 0,
+      "duration": 217,
+      "audio": "audio/28.wav",
+      "captions": [
+        {
+          "text": "Three are still lit.",
+          "start": 0,
+          "end": 79
+        },
+        {
+          "text": "Now a Hono that has not swung hits for four.",
+          "start": 79,
+          "end": 175
+        },
+        {
+          "text": "Finished.",
+          "start": 175,
+          "end": 197
+        }
+      ],
+      "wordFrames": [
+        0,
+        11,
+        31,
+        40,
+        79,
+        82,
+        86,
+        98,
+        101,
+        107,
+        113,
+        125,
+        140,
+        148,
+        175
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "29",
+      "speaker": "EMBER",
+      "cue": "",
+      "text": "Take the work card. Find one target your Hi finishes, and one it cannot.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: bonk] [board: the last four pips go dark; the piece is removed gently; the DONE stamp lands]",
+        "[card: FIRE. The department work card is added to the deck. Say which number decided it.]"
+      ],
+      "displayText": "Take the work card. Find one target your Hi finishes, and one it cannot.",
+      "from": 5390,
+      "speechFrames": 200,
+      "preRollFrames": 0,
+      "duration": 220,
+      "audio": "audio/29.wav",
+      "captions": [
+        {
+          "text": "Take the work card.",
+          "start": 0,
+          "end": 73
+        },
+        {
+          "text": "Find one target your Hi finishes, and one it cannot.",
+          "start": 73,
+          "end": 200
+        }
+      ],
+      "wordFrames": [
+        0,
+        12,
+        20,
+        31,
+        73,
+        73,
+        85,
+        95,
+        105,
+        113,
+        150,
+        158,
+        168,
+        179
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "matrix-intro",
+      "speaker": "COACH",
+      "text": "Now the bonk matrix for fire. We check all eighteen enemy unit types, including matching types. Both pieces start at full health and are already next to each other. One attack, not a whole turn.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "card",
+        "title": "Read one tier at a time",
+        "body": "Green: this unit one-shots the enemy.\nRed: that enemy one-shots this unit.\nBoth at full health · adjacent · one legal attack.\nThis is damage, not a movement or safety prediction."
+      },
+      "displayText": "Now the bonk matrix for fire. We check all eighteen enemy unit types, including matching types. Both pieces start at full health and are already next to each other. One attack, not a whole turn.",
+      "from": 5610,
+      "speechFrames": 402,
+      "preRollFrames": 0,
+      "duration": 426,
+      "audio": "audio/matrix-intro.wav",
+      "captions": [
+        {
+          "text": "Now the bonk matrix for fire.",
+          "start": 0,
+          "end": 76
+        },
+        {
+          "text": "We check all eighteen enemy unit types, including matching types.",
+          "start": 76,
+          "end": 208
+        },
+        {
+          "text": "Both pieces start at full health and are already next to each",
+          "start": 208,
+          "end": 310
+        },
+        {
+          "text": "other. One attack, not a whole turn.",
+          "start": 310,
+          "end": 402
+        }
+      ],
+      "wordFrames": [
+        0,
+        9,
+        16,
+        27,
+        37,
+        46,
+        76,
+        80,
+        86,
+        100,
+        113,
+        121,
+        131,
+        154,
+        166,
+        177,
+        208,
+        215,
+        227,
+        237,
+        242,
+        249,
+        259,
+        275,
+        278,
+        292,
+        301,
+        306,
+        310,
+        336,
+        343,
+        370,
+        377,
+        382,
+        387
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-1-stats",
+      "speaker": "COACH",
+      "text": "Tier one: the Hi. Attack two, defense one, speed two, and Mining one. Look at the green side first.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "fire_1",
+        "focus": "out"
+      },
+      "displayText": "Tier one: the Hi. Attack two, defense one, speed two, and Mining one. Look at the green side first.",
+      "from": 6036,
+      "speechFrames": 267,
+      "preRollFrames": 0,
+      "duration": 291,
+      "audio": "audio/matrix-1-stats.wav",
+      "captions": [
+        {
+          "text": "Tier one: the Hi.",
+          "start": 0,
+          "end": 76
+        },
+        {
+          "text": "Attack two, defense one, speed two, and Mining one.",
+          "start": 76,
+          "end": 212
+        },
+        {
+          "text": "Look at the green side first.",
+          "start": 212,
+          "end": 267
+        }
+      ],
+      "wordFrames": [
+        0,
+        15,
+        44,
+        50,
+        76,
+        76,
+        100,
+        100,
+        124,
+        130,
+        152,
+        155,
+        164,
+        212,
+        215,
+        223,
+        227,
+        233,
+        243
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-1-out",
+      "speaker": "COACH",
+      "text": "With one attack, the Hi can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Muju, Sachita and Yan. Every unlit card survives that single hit.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "fire_1",
+        "focus": "out"
+      },
+      "displayText": "With one attack, the Hi can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Muju, Sachita and Yan. Every unlit card survives that single hit.",
+      "from": 6327,
+      "speechFrames": 371,
+      "preRollFrames": 0,
+      "duration": 395,
+      "audio": "audio/matrix-1-out.wav",
+      "captions": [
+        {
+          "text": "With one attack, the Hi can finish Hi, Hono, Kagari, Radi, Umeme,",
+          "start": 0,
+          "end": 171
+        },
+        {
+          "text": "Kimubunga, Muju, Sachita and Yan.",
+          "start": 171,
+          "end": 293
+        },
+        {
+          "text": "Every unlit card survives that single hit.",
+          "start": 293,
+          "end": 371
+        }
+      ],
+      "wordFrames": [
+        0,
+        4,
+        12,
+        38,
+        39,
+        45,
+        52,
+        62,
+        82,
+        104,
+        128,
+        149,
+        171,
+        212,
+        239,
+        259,
+        261,
+        293,
+        304,
+        317,
+        325,
+        335,
+        344,
+        355
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-1-in",
+      "speaker": "COACH",
+      "text": "Now the red side. A full health Hi is one shot by Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachakuna and Tanka. Every unlit attacker needs help or earlier damage.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "fire_1",
+        "focus": "in"
+      },
+      "displayText": "Now the red side. A full health Hi is one shot by Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachakuna and Tanka. Every unlit attacker needs help or earlier damage.",
+      "from": 6722,
+      "speechFrames": 660,
+      "preRollFrames": 0,
+      "duration": 684,
+      "audio": "audio/matrix-1-in.wav",
+      "captions": [
+        {
+          "text": "Now the red side.",
+          "start": 0,
+          "end": 59
+        },
+        {
+          "text": "A full health Hi is one shot by Hi, Hono, Kagari, Radi,",
+          "start": 59,
+          "end": 234
+        },
+        {
+          "text": "Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık,",
+          "start": 234,
+          "end": 464
+        },
+        {
+          "text": "Sachakuna and Tanka. Every unlit attacker needs help or earlier",
+          "start": 464,
+          "end": 635
+        },
+        {
+          "text": "damage.",
+          "start": 635,
+          "end": 660
+        }
+      ],
+      "wordFrames": [
+        0,
+        19,
+        22,
+        29,
+        59,
+        62,
+        70,
+        79,
+        88,
+        101,
+        110,
+        118,
+        127,
+        156,
+        178,
+        210,
+        234,
+        265,
+        307,
+        330,
+        354,
+        385,
+        402,
+        432,
+        464,
+        506,
+        508,
+        544,
+        554,
+        568,
+        583,
+        598,
+        608,
+        624,
+        635
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-1-read",
+      "speaker": "COACH",
+      "text": "That is the tier one card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 2,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "fire_1",
+        "focus": "both"
+      },
+      "displayText": "That is the tier one card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.",
+      "from": 7406,
+      "speechFrames": 306,
+      "preRollFrames": 0,
+      "duration": 366,
+      "audio": "audio/matrix-1-read.wav",
+      "captions": [
+        {
+          "text": "That is the tier one card.",
+          "start": 0,
+          "end": 84
+        },
+        {
+          "text": "Pause here to compare any names.",
+          "start": 84,
+          "end": 147
+        },
+        {
+          "text": "The same enemy can appear on both sides: whoever attacks first may",
+          "start": 147,
+          "end": 274
+        },
+        {
+          "text": "finish the other.",
+          "start": 274,
+          "end": 306
+        }
+      ],
+      "wordFrames": [
+        0,
+        10,
+        23,
+        29,
+        35,
+        47,
+        84,
+        88,
+        95,
+        101,
+        109,
+        117,
+        147,
+        151,
+        158,
+        166,
+        175,
+        182,
+        187,
+        193,
+        225,
+        231,
+        244,
+        259,
+        274,
+        282,
+        289
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-2-stats",
+      "speaker": "COACH",
+      "text": "Tier two: the Hono. Attack three, defense one, speed two, and Mining one. Look at the green side first.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "fire_2",
+        "focus": "out"
+      },
+      "displayText": "Tier two: the Hono. Attack three, defense one, speed two, and Mining one. Look at the green side first.",
+      "from": 7772,
+      "speechFrames": 269,
+      "preRollFrames": 0,
+      "duration": 293,
+      "audio": "audio/matrix-2-stats.wav",
+      "captions": [
+        {
+          "text": "Tier two: the Hono.",
+          "start": 0,
+          "end": 84
+        },
+        {
+          "text": "Attack three, defense one, speed two, and Mining one.",
+          "start": 84,
+          "end": 226
+        },
+        {
+          "text": "Look at the green side first.",
+          "start": 226,
+          "end": 269
+        }
+      ],
+      "wordFrames": [
+        0,
+        8,
+        36,
+        43,
+        84,
+        85,
+        112,
+        118,
+        146,
+        152,
+        179,
+        182,
+        191,
+        226,
+        229,
+        233,
+        236,
+        242,
+        250
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-2-out",
+      "speaker": "COACH",
+      "text": "With one attack, the Hono can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Göl, Gölge, Karanlık, Muju, Sachita, Sachakuna, Yan and Mazask. Every unlit card survives that single hit.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "fire_2",
+        "focus": "out"
+      },
+      "displayText": "With one attack, the Hono can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Göl, Gölge, Karanlık, Muju, Sachita, Sachakuna, Yan and Mazask. Every unlit card survives that single hit.",
+      "from": 8065,
+      "speechFrames": 729,
+      "preRollFrames": 0,
+      "duration": 753,
+      "audio": "audio/matrix-2-out.wav",
+      "captions": [
+        {
+          "text": "With one attack, the Hono can finish Hi, Hono, Kagari, Radi, Umeme,",
+          "start": 0,
+          "end": 265
+        },
+        {
+          "text": "Kimubunga, Sjor, Göl, Gölge, Karanlık, Muju, Sachita, Sachakuna,",
+          "start": 265,
+          "end": 527
+        },
+        {
+          "text": "Yan and Mazask. Every unlit card survives that single hit.",
+          "start": 527,
+          "end": 729
+        }
+      ],
+      "wordFrames": [
+        0,
+        4,
+        16,
+        43,
+        44,
+        60,
+        72,
+        86,
+        121,
+        150,
+        185,
+        213,
+        265,
+        309,
+        327,
+        346,
+        379,
+        415,
+        448,
+        481,
+        527,
+        551,
+        556,
+        594,
+        608,
+        629,
+        643,
+        663,
+        683,
+        698
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-2-in",
+      "speaker": "COACH",
+      "text": "Now the red side. A full health Hono is one shot by Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachakuna and Tanka. Every unlit attacker needs help or earlier damage.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "fire_2",
+        "focus": "in"
+      },
+      "displayText": "Now the red side. A full health Hono is one shot by Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachakuna and Tanka. Every unlit attacker needs help or earlier damage.",
+      "from": 8818,
+      "speechFrames": 665,
+      "preRollFrames": 0,
+      "duration": 689,
+      "audio": "audio/matrix-2-in.wav",
+      "captions": [
+        {
+          "text": "Now the red side.",
+          "start": 0,
+          "end": 56
+        },
+        {
+          "text": "A full health Hono is one shot by Hi, Hono, Kagari, Radi,",
+          "start": 56,
+          "end": 250
+        },
+        {
+          "text": "Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık,",
+          "start": 250,
+          "end": 492
+        },
+        {
+          "text": "Sachakuna and Tanka. Every unlit attacker needs help or earlier",
+          "start": 492,
+          "end": 640
+        },
+        {
+          "text": "damage.",
+          "start": 640,
+          "end": 665
+        }
+      ],
+      "wordFrames": [
+        0,
+        10,
+        22,
+        30,
+        56,
+        56,
+        68,
+        88,
+        111,
+        124,
+        133,
+        140,
+        148,
+        167,
+        194,
+        231,
+        250,
+        286,
+        329,
+        353,
+        383,
+        415,
+        431,
+        463,
+        492,
+        523,
+        524,
+        546,
+        557,
+        577,
+        590,
+        601,
+        611,
+        626,
+        640
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-2-read",
+      "speaker": "COACH",
+      "text": "That is the tier two card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 2,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "fire_2",
+        "focus": "both"
+      },
+      "displayText": "That is the tier two card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.",
+      "from": 9507,
+      "speechFrames": 287,
+      "preRollFrames": 0,
+      "duration": 347,
+      "audio": "audio/matrix-2-read.wav",
+      "captions": [
+        {
+          "text": "That is the tier two card.",
+          "start": 0,
+          "end": 67
+        },
+        {
+          "text": "Pause here to compare any names.",
+          "start": 67,
+          "end": 134
+        },
+        {
+          "text": "The same enemy can appear on both sides: whoever attacks first may",
+          "start": 134,
+          "end": 257
+        },
+        {
+          "text": "finish the other.",
+          "start": 257,
+          "end": 287
+        }
+      ],
+      "wordFrames": [
+        0,
+        7,
+        13,
+        19,
+        24,
+        32,
+        67,
+        71,
+        80,
+        86,
+        95,
+        104,
+        134,
+        137,
+        145,
+        154,
+        161,
+        168,
+        174,
+        179,
+        211,
+        216,
+        229,
+        242,
+        257,
+        265,
+        271
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-3-stats",
+      "speaker": "COACH",
+      "text": "Tier three: the Kagari. Attack four, defense two, speed three, and Mining one. Look at the green side first.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "fire_3",
+        "focus": "out"
+      },
+      "displayText": "Tier three: the Kagari. Attack four, defense two, speed three, and Mining one. Look at the green side first.",
+      "from": 9854,
+      "speechFrames": 278,
+      "preRollFrames": 0,
+      "duration": 302,
+      "audio": "audio/matrix-3-stats.wav",
+      "captions": [
+        {
+          "text": "Tier three: the Kagari.",
+          "start": 0,
+          "end": 77
+        },
+        {
+          "text": "Attack four, defense two, speed three, and Mining one.",
+          "start": 77,
+          "end": 226
+        },
+        {
+          "text": "Look at the green side first.",
+          "start": 226,
+          "end": 278
+        }
+      ],
+      "wordFrames": [
+        0,
+        7,
+        38,
+        40,
+        77,
+        85,
+        113,
+        120,
+        149,
+        154,
+        181,
+        184,
+        194,
+        226,
+        229,
+        234,
+        238,
+        245,
+        255
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-3-out",
+      "speaker": "COACH",
+      "text": "With one attack, the Kagari can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Göl, Gölge, Karanlık, Muju, Sachita, Sachakuna, Yan, Mazask and Tanka. Every unlit card survives that single hit.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "fire_3",
+        "focus": "out"
+      },
+      "displayText": "With one attack, the Kagari can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Göl, Gölge, Karanlık, Muju, Sachita, Sachakuna, Yan, Mazask and Tanka. Every unlit card survives that single hit.",
+      "from": 10156,
+      "speechFrames": 645,
+      "preRollFrames": 0,
+      "duration": 669,
+      "audio": "audio/matrix-3-out.wav",
+      "captions": [
+        {
+          "text": "With one attack, the Kagari can finish Hi, Hono, Kagari, Radi, Umeme,",
+          "start": 0,
+          "end": 217
+        },
+        {
+          "text": "Kimubunga, Sjor, Straumr, Göl, Gölge, Karanlık, Muju, Sachita, Sachakuna,",
+          "start": 217,
+          "end": 475
+        },
+        {
+          "text": "Yan, Mazask and Tanka.",
+          "start": 475,
+          "end": 554
+        },
+        {
+          "text": "Every unlit card survives that single hit.",
+          "start": 554,
+          "end": 645
+        }
+      ],
+      "wordFrames": [
+        0,
+        5,
+        14,
+        44,
+        46,
+        62,
+        70,
+        82,
+        109,
+        134,
+        168,
+        190,
+        217,
+        263,
+        284,
+        304,
+        322,
+        355,
+        383,
+        404,
+        434,
+        475,
+        497,
+        518,
+        522,
+        554,
+        564,
+        580,
+        591,
+        609,
+        619,
+        628
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-3-in",
+      "speaker": "COACH",
+      "text": "Now the red side. A full health Kagari is one shot by Hi, Hono, Kagari, Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge and Karanlık. Every unlit attacker needs help or earlier damage.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "fire_3",
+        "focus": "in"
+      },
+      "displayText": "Now the red side. A full health Kagari is one shot by Hi, Hono, Kagari, Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge and Karanlık. Every unlit attacker needs help or earlier damage.",
+      "from": 10825,
+      "speechFrames": 521,
+      "preRollFrames": 0,
+      "duration": 545,
+      "audio": "audio/matrix-3-in.wav",
+      "captions": [
+        {
+          "text": "Now the red side.",
+          "start": 0,
+          "end": 64
+        },
+        {
+          "text": "A full health Kagari is one shot by Hi, Hono, Kagari, Umeme,",
+          "start": 64,
+          "end": 226
+        },
+        {
+          "text": "Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge and Karanlık.",
+          "start": 226,
+          "end": 426
+        },
+        {
+          "text": "Every unlit attacker needs help or earlier damage.",
+          "start": 426,
+          "end": 521
+        }
+      ],
+      "wordFrames": [
+        0,
+        19,
+        23,
+        28,
+        64,
+        64,
+        70,
+        79,
+        92,
+        101,
+        112,
+        121,
+        140,
+        149,
+        166,
+        198,
+        226,
+        261,
+        280,
+        303,
+        334,
+        351,
+        380,
+        385,
+        426,
+        436,
+        447,
+        458,
+        467,
+        476,
+        491,
+        500
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-3-read",
+      "speaker": "COACH",
+      "text": "That is the tier three card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 2,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "fire_3",
+        "focus": "both"
+      },
+      "displayText": "That is the tier three card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.",
+      "from": 11370,
+      "speechFrames": 297,
+      "preRollFrames": 0,
+      "duration": 357,
+      "audio": "audio/matrix-3-read.wav",
+      "captions": [
+        {
+          "text": "That is the tier three card.",
+          "start": 0,
+          "end": 73
+        },
+        {
+          "text": "Pause here to compare any names.",
+          "start": 73,
+          "end": 136
+        },
+        {
+          "text": "The same enemy can appear on both sides: whoever attacks first may",
+          "start": 136,
+          "end": 264
+        },
+        {
+          "text": "finish the other.",
+          "start": 264,
+          "end": 297
+        }
+      ],
+      "wordFrames": [
+        0,
+        9,
+        16,
+        22,
+        28,
+        39,
+        73,
+        76,
+        83,
+        89,
+        99,
+        109,
+        136,
+        139,
+        148,
+        155,
+        164,
+        172,
+        179,
+        185,
+        217,
+        223,
+        236,
+        251,
+        264,
+        273,
+        280
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "30",
+      "speaker": "EMBER",
+      "cue": "stating the rule, level",
+      "text": "Never declare breakfast early.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Never declare breakfast early.",
+      "from": 11727,
+      "speechFrames": 89,
+      "preRollFrames": 0,
+      "duration": 109,
+      "audio": "audio/30.wav",
+      "captions": [
+        {
+          "text": "Never declare breakfast early.",
+          "start": 4,
+          "end": 89
+        }
+      ],
+      "wordFrames": [
+        4,
+        16,
+        37,
+        56
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "31",
+      "speaker": "COACH",
+      "cue": "warm, unhurried",
+      "text": "Stopping here is fine.",
+      "beat": "EXIT",
+      "hold": 2,
+      "directions": [],
+      "displayText": "Stopping here is fine.",
+      "from": 11836,
+      "speechFrames": 69,
+      "preRollFrames": 0,
+      "duration": 129,
+      "audio": "audio/31.wav",
+      "captions": [
+        {
+          "text": "Stopping here is fine.",
+          "start": 0,
+          "end": 69
+        }
+      ],
+      "wordFrames": [
+        0,
+        28,
+        38,
+        48
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    }
+  ],
+  "version": 8,
+  "rules": "v2.9",
+  "updatedLabel": "Video version 8 · Last updated Sep 18 2026 CDT",
+  "question": "Does one attack from my Hono finish a fresh Tanka?",
+  "soundtrack": {
+    "id": "hono-koto",
+    "title": "Hono / Banked Fire",
+    "source": "muju/music-auditions/full-versions/hono-koto-full-v2-blended.mp3",
+    "sha256": "8681f8c0f31e8147e72ec99ed68d245d7e533124bb8ddf44406a70d65c7f7651"
+  },
+  "speechProvider": "openai",
+  "audioComplete": true,
+  "durationInFrames": 11965
+}

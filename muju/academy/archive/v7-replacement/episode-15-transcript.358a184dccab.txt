@@ -1,0 +1,85 @@
+Plant: The Payday Garden
+Rules v2.7 · Video version 6
+Music: Muju / A Field of Small Decisions
+
+PIP: Watering Can and Refill Company. Empty squares refilled while you wait.
+
+CLICK: The logo is finished.
+
+PIP: The logo is always finished. The squares are pending.
+
+CLICK: From the drawer. Proposal: bigger buckets. Overruled by the Empty Payday.
+
+COACH: You take the smaller number. Your Mining, or what the square has left.
+
+PIP: Welcome to the garden. Stop one. My finest patch.
+
+COACH: The Muju's Mining is three. This square has eight crystals still in it.
+
+COACH: At your own turn end it takes three from the square it stands on.
+
+CLICK: Eight. Now five. This one goes the wrong way.
+
+PIP: Stop two. A Sachakuna. Its Mining is five. This patch has two crystals left.
+
+PIP: So what is the payday here?
+
+COACH: Say it, point at it, or watch the patch with me.
+
+COACH: Two. The patch could not pay five.
+
+PIP: Five. My gardener is a five.
+
+CLICK: The patch is a two. The smaller number wins.
+
+COACH: Next payday, standing right here: nothing. It is empty now. It does not refill.
+
+PIP: The company is closing. The can is a warning now.
+
+PIP: And the next patch is a whole action away. Somebody could stand there first.
+
+CLICK: This is the Muju. Shield of three. Takes three crystals. That is the Muju.
+
+CLICK: This is the Sachita. Shield of three. Takes four crystals. That is the Sachita.
+
+CLICK: This is the Sachakuna. Many growing things. Shield of four. Takes five crystals.
+
+COACH: Plant beats Water. Our Muju adds one to attack zero. The Garden Wall drains the Deep End.
+
+CLICK: One damage is not a finish. A fresh Sjor has defense two.
+
+CLICK: Next turn the Muju owes nothing. The Sachita owes one. The Sachakuna owes two.
+
+PIP: Pick where you end. Collect what's there.
+
+COACH: Crystals never come back.
+
+COACH: Now the bonk matrix for plant. We check all eighteen enemy unit types, including matching types. Both pieces start at full health and are already next to each other. One attack, not a whole turn.
+
+COACH: Tier one: the Muju. Attack zero, defense three, speed one, and Mining three. Look at the green side first.
+
+COACH: With one attack, the Muju can finish no full health unit. Every unlit card survives that single hit.
+
+COACH: Now the red side. A full health Muju is one shot by Hi, Hono, Kagari, Umeme, Kimubunga and Karanlık. Every unlit attacker needs help or earlier damage.
+
+COACH: That is the tier one card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.
+
+COACH: Tier two: the Sachita. Attack one, defense three, speed one, and Mining four. Look at the green side first.
+
+COACH: With one attack, the Sachita can finish Sjor, Göl, Gölge and Karanlık. Every unlit card survives that single hit.
+
+COACH: Now the red side. A full health Sachita is one shot by Hi, Hono, Kagari, Umeme, Kimubunga and Karanlık. Every unlit attacker needs help or earlier damage.
+
+COACH: That is the tier two card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.
+
+COACH: Tier three: the Sachakuna. Attack two, defense four, speed one, and Mining five. Look at the green side first.
+
+COACH: With one attack, the Sachakuna can finish Hi, Hono, Radi, Umeme, Kimubunga, Sjor, Straumr, Göl, Gölge and Karanlık. Every unlit card survives that single hit.
+
+COACH: Now the red side. A full health Sachakuna is one shot by Hono, Kagari and Kimubunga. Every unlit attacker needs help or earlier damage.
+
+COACH: That is the tier three card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.
+
+COACH: That completes the garden rules. Keep the three bonk cards beside your practice board.
+
+PIP: Pick where you end. Collect what's there. The can goes in the drawer.

@@ -1,0 +1,5 @@
+file '/Users/ashkie/src/deevgames/muju/academy/archive/retakes/R13/matrix-1-in/f071f4052583/sentence-1.wav'
+file '/Users/ashkie/src/deevgames/muju/academy/archive/retakes/R13/matrix-1-in/f071f4052583/sentence-2.wav'
+file '/Users/ashkie/src/deevgames/muju/academy/archive/retakes/R13/matrix-1-in/f071f4052583/sentence-3.wav'
+file '/Users/ashkie/src/deevgames/muju/academy/archive/retakes/R13/matrix-1-in/f071f4052583/sentence-4.wav'
+file '/Users/ashkie/src/deevgames/muju/academy/archive/retakes/R13/matrix-1-in/f071f4052583/sentence-5.wav'

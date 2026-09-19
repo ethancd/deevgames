@@ -1,0 +1,12 @@
+{
+  "provider": "openai",
+  "hash": "6aa6e3ea2ea60fc8a22fef9153bf29832559be281c592e86ee28c947cf315224",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "Now the red side. A full health Sachita is one shot by Hi, Hono, Kagari, Umeme, Kimubunga and Karanlık. Every unlit attacker needs help or earlier damage.",
+  "speechText": "Now the red side. A full health sah-CHEE-tah is one shot by Hee, hohnoh, kah-GAH-ree, oo-MEH-meh, kee-moo-BOON-gah and kah-rahn-luk. Every unlit attacker needs help or earlier damage.",
+  "duration": 14.7,
+  "bytes": 705644,
+  "createdAt": "2026-09-13T10:39:27.525Z"
+}

@@ -113,22 +113,48 @@ class ContentDagTests(unittest.TestCase):
             dag.normalize_path('../another-repo/muju/SPEC.md')
         self.assertFalse(dag.matches('muju/src/gameplay/file.ts', 'muju/src/game/'))
 
-    def test_local_only_sources_do_not_prevent_planning_but_block_execution(self):
+    # Academy text and source are tracked; only rendered media is local-only.
+    # Path patterns lose a trailing slash when joined to the repository root.
+    ACADEMY_MEDIA_MARKERS = ('/public/audio', '/public/music', '/public/art/*.png', '/output', '/qa')
+
+    def hide(self, predicate):
         real_iglob = dag.glob.iglob
+        return patch.object(dag.glob, 'iglob',
+                            side_effect=lambda pattern: (iter(()) if predicate(pattern)
+                                                         else real_iglob(pattern)))
 
-        def without_academy(pattern):
-            return iter(()) if '/muju/academy/' in pattern else real_iglob(pattern)
+    def test_local_only_media_does_not_prevent_planning_but_blocks_execution(self):
+        def is_academy_media(pattern):
+            return ('/muju/academy/' in pattern
+                    and any(marker in pattern for marker in self.ACADEMY_MEDIA_MARKERS))
 
-        with patch.object(dag.glob, 'iglob', side_effect=without_academy):
-            dag.validate(self.graph)
+        with self.hide(is_academy_media):
+            dag.validate(self.graph)  # Absent media alone must not invalidate the graph.
             result = self.result(kinds=['piece-stats'])
-            academy = next(row for row in result['nodes'] if row['id'] == 'academy-data')
-            self.assertEqual(academy['status'], 'blocked')
-            self.assertTrue(academy['missing_paths'])
-            self.assertTrue(academy['source_requirements'])
+            for node_id in ('academy-audio', 'academy-video'):
+                node = next(row for row in result['nodes'] if row['id'] == node_id)
+                self.assertEqual(node['status'], 'blocked')
+                self.assertTrue(node['missing_paths'])
+                self.assertTrue(node['source_requirements'])
+                for source in node['source_requirements']:
+                    self.assertIn('archived outside git', source['reason'])
+                    self.assertIn('~/Archives/muju-media-2026-09-18/academy', source['source_hint'])
             self.assertIn('BLOCKED', dag.markdown(result))
             with self.assertRaisesRegex(ValueError, 'missing path'):
                 dag.validate(self.graph, require_local=True)
+
+    def test_missing_academy_text_source_is_not_excused_as_local_only(self):
+        tracked = 'muju/academy/production/R??/src/'
+        with self.hide(lambda pattern: pattern.endswith('/' + tracked.rstrip('/'))):
+            with self.assertRaises(ValueError) as caught:
+                dag.validate(self.graph)
+        self.assertIn(f'missing path/pattern {tracked}', str(caught.exception))
+        for text_path in (tracked, 'muju/academy/BIBLE.md', 'muju/academy/production/R??/episode.json'):
+            self.assertIsNone(dag.local_source(self.graph, text_path))
+        for media_path in ('muju/academy/production/R??/output/',
+                           'muju/academy/production/R??/public/audio/',
+                           'muju/academy/production/R??/qa/'):
+            self.assertIsNotNone(dag.local_source(self.graph, media_path))
 
 
 if __name__ == '__main__':

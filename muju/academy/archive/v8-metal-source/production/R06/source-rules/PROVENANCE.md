@@ -1,0 +1,1 @@
+UnitArtwork.tsx and ElementGlyph.tsx copied from /Users/ashkie/src/deevgames/muju/src/components at production time, game HEAD d42cb7b. game/types.ts is a rendering-only Element/PlayerId/Tier subset. Engine verification imports revision-2026-09-09/rules-snapshot at 760e088. No old mining or build-queue implementation is bundled into this renderer.

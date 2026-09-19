@@ -1,0 +1,12 @@
+{
+  "provider": "openai",
+  "hash": "ac87d441e02274ba1967d4fa4583c1a6d54ff57f6662627cb5db80fa8c808077",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "Now the red side. A full health Hono is one shot by Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachakuna and Tanka. Every unlit attacker needs help or earlier damage.",
+  "speechText": "Now the red side. A full health hohnoh is one shot by Hee, hohnoh, kah-GAH-ree, RAH-dee, oo-MEH-meh, kee-moo-BOON-gah, Shore, STROWM-ur, AY-gear-in, Gurl, GURL-geh, kah-rahn-luk, sah-chah-KOO-nah and Tahn-kah. Every unlit attacker needs help or earlier damage.",
+  "duration": 19.35,
+  "bytes": 928844,
+  "createdAt": "2026-09-18T17:14:45.688Z"
+}

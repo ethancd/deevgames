@@ -1,0 +1,90 @@
+# Muju Academy: text and source are tracked; rendered media is not.
+#
+# Media and large derived renders live outside git:
+#   ~/Archives/muju-media-2026-09-18/academy (hashes in ~/Archives/muju-media-2026-09-18/MANIFEST.sha256)
+#   original copy in /Users/ashkie/src/deevgames/muju/academy
+# Copy offsite before deleting either. Keep this file strict: it is the guard
+# that stops a full local production tree from staging gigabytes by accident.
+
+# --- Rendered and captured media, anywhere in the tree ---
+*.wav
+*.mp3
+*.m4a
+*.aac
+*.flac
+*.ogg
+*.opus
+*.mp4
+*.mov
+*.webm
+*.mkv
+*.avi
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.avif
+*.tif
+*.tiff
+*.bmp
+*.psd
+*.ai
+*.pdf
+*.ttf
+*.otf
+*.woff
+*.woff2
+*.eot
+*.zip
+*.gz
+*.tgz
+*.bz2
+*.xz
+*.7z
+*.rar
+*.dmg
+*.bin
+*.safetensors
+*.ckpt
+*.pt
+*.onnx
+*.gguf
+
+# --- Derived pipeline output and QA capture directories ---
+output/
+qa/
+public/audio/
+public/music/
+production/*/output/
+production/*/qa/
+production/*/public/audio/
+production/*/public/music/
+archive/*/output/
+archive/*/qa/
+
+# public/art is generated raster art (the rasters are covered above); the
+# authored image prompts beside them are source and stay tracked.
+!production/*/public/art/PROMPTS.md
+!archive/**/public/art/PROMPTS.md
+
+# --- Caches, dependencies, local environment ---
+node_modules/
+production/*/node_modules
+__pycache__/
+*.pyc
+.venv/
+venv/
+.cache/
+dist/
+.DS_Store
+.env
+.env.*
+
+# --- Large derived text: repo diffs and multi-megabyte audit dumps ---
+# Small pipeline logs under logs/ are tracked; these two regenerate from the
+# tree and the package build, and are megabytes each.
+*.diff
+*.patch
+logs/v7-final-staging-audit.txt
+logs/metal-v8-package-baseline.json

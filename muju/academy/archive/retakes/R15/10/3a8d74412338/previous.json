@@ -1,0 +1,12 @@
+{
+  "provider": "openai",
+  "hash": "1d3f2f4c0874632e163be6cecf4c18c095c0a9d52c6e01e21d9b50b1657cbbf4",
+  "model": "gpt-4o-mini-tts",
+  "voice": "coral",
+  "speaker": "PIP",
+  "originalText": "Stop two. A Sachakuna. Its Mining is eight. This patch has two crystals left.",
+  "speechText": "Stop two. A sah-chah-KOO-nah. Its Mining is eight. This patch has two crystals left.",
+  "duration": 8.25,
+  "bytes": 396044,
+  "createdAt": "2026-09-13T12:27:00.450Z"
+}

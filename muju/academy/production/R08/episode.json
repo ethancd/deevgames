@@ -1,0 +1,318 @@
+{
+  "id": "R08",
+  "title": "Keep Your Pieces Safe",
+  "fps": 30,
+  "voices": {
+    "COACH": "marin",
+    "PIP": "coral",
+    "CLICK": "cedar"
+  },
+  "lines": [
+    {
+      "id": "01",
+      "speaker": "PIP",
+      "cue": "proud announcement",
+      "text": "Helmet fitted. I am ready for the safety round.",
+      "beat": "INVITATION",
+      "hold": 0.9,
+      "directions": [
+        "[music: bed in, low]",
+        "[board: two quiz podiums, lettered D THREE and D TWO. Pip stands at the wrong one, wearing a helmet, one hand on a buzzer.]"
+      ]
+    },
+    {
+      "id": "02",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "The helmet is not defense. This video has no answer timer. Take your time.",
+      "beat": "INVITATION",
+      "hold": 0.9,
+      "directions": [
+        "[board: Click lifts the buzzer off the desk and shuts it in a drawer.]"
+      ]
+    },
+    {
+      "id": "03",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "Then I will answer slowly. Helmet on.",
+      "beat": "INVITATION",
+      "hold": 3.4,
+      "directions": [],
+      "titleBump": true
+    },
+    {
+      "id": "04",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "From the drawer. Proposal: the helmet counts as defense. Overruled. The card says one.",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed out]",
+        "[board: the drawer marked PIP'S AMENDMENTS (PENDING) opens. One card comes out.]"
+      ]
+    },
+    {
+      "id": "05",
+      "speaker": "COACH",
+      "cue": "warm, unhurried",
+      "text": "Hello. Somebody wants our Hi.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[board: White Hi on D four. Black Sjor on D seven. Sign: only this Sjor can reach the Hi. Both banks empty.]"
+      ]
+    },
+    {
+      "id": "06",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "The Sjor's speed is one. One square, one action.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "07",
+      "speaker": "COACH",
+      "cue": "counting, even beats",
+      "text": "The Sjor's attack is two. Water beats Fire, so add one. That makes three.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "08",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Three damage against defense one. A hit removes the Hi.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "09",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "Then the Hi steps back one square, to D three.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "10",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "The Sjor cannot stand on our Hi. It must stop next door, on D four.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[board: a ghost Hi shows D three. The Sjor's path lights up square by square, down to D four.]"
+      ]
+    },
+    {
+      "id": "11",
+      "speaker": "COACH",
+      "cue": "counting, even beats",
+      "text": "That trip is three squares. Three squares is three actions.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "12",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Then the hit. Four.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "13",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Four is their whole turn. It fits.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[card: A DANGER IS A TRIP PLUS A HIT · both come out of the same four]"
+      ]
+    },
+    {
+      "id": "14",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Count their trip. Then count their hit.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "15",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Their whole turn: four actions.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [
+        "[board: the ghost clears. The Hi slides from D four to D two in one trip. The podium cards stay lit: D THREE, four actions. D TWO, a question mark.]"
+      ]
+    },
+    {
+      "id": "16",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Hitting the Hi on D three would take all four.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "17",
+      "speaker": "COACH",
+      "cue": "question, open",
+      "text": "Now the Hi stands on D two. Can this Sjor reach it and hit it?",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "18",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Say it, point at a podium, or take the time and say nothing.",
+      "beat": "TRY",
+      "hold": 10.2,
+      "directions": [],
+      "thinking": true
+    },
+    {
+      "id": "19",
+      "speaker": "COACH",
+      "cue": "reveal, land it",
+      "text": "To hit D two, the Sjor must stand on D three. That trip is four squares.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: piece step] [board: the Sjor walks from D seven down to D three, four squares. The action tray empties. The hit never happens.]"
+      ]
+    },
+    {
+      "id": "20",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "The Sjor arrived beside it, with no action left to attack. So: no.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "21",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "The hit would be a fifth action. There is no fifth action.",
+      "beat": "EXPLAIN",
+      "hold": 0.9,
+      "directions": []
+    },
+    {
+      "id": "22",
+      "speaker": "CLICK",
+      "cue": "dry aside",
+      "text": "Name for the file: the Missing Fifth.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "23",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Our Hi has speed two. D four to D two was one trip, one action.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "24",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "The counting did it. The helmet has filed a complaint.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "25",
+      "speaker": "CLICK",
+      "cue": "dry aside",
+      "text": "The Sjor is standing on D three now. Next turn it is one action away.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "26",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Four squares. Speed two. Two actions, then the hit. Three.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[card: EVIDENCE · safe from: this Sjor, this turn, checked · every other enemy: not checked · Black's crystals: not checked]",
+        "[card: PODIUM THREE · the same squares · a visitor with speed two]"
+      ]
+    },
+    {
+      "id": "27",
+      "speaker": "PIP",
+      "cue": "delighted realization",
+      "text": "So D two was never the safe part. The Sjor's speed was.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "28",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "One to ask whoever plays with you. Which retreat would you pick, and why?",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": [
+        "[card: TABLE TASK · walk their nearest piece toward yours with a finger · count out loud · stop at four]"
+      ]
+    },
+    {
+      "id": "29",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Count their trip. Then count their hit. The buzzer stays in the drawer.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "30",
+      "speaker": "COACH",
+      "cue": "warm, unhurried",
+      "text": "Today was plenty. Next time, a clock that resets only when an attack removes an enemy.",
+      "beat": "EXIT",
+      "hold": 2,
+      "directions": []
+    }
+  ],
+  "question": "Now the Hi stands on D two. Can this Sjor reach it and hit it?",
+  "version": 7,
+  "updatedLabel": "Video version 7 · Last updated at 07:25 Sep 13 2026 CDT",
+  "rules": "v2.8",
+  "soundtrack": {
+    "id": "unequal-routes",
+    "title": "Unequal Routes",
+    "source": "muju/music-auditions/full-versions/unequal-routes-full-v1.mp3",
+    "sha256": "2354f06bdb9863f9ebc13bd3620a202ba27c4e07d91e84c900564247f80a96e7"
+  },
+  "speechProvider": "openai"
+}

@@ -1,0 +1,43 @@
+{
+  "provider": "openai",
+  "hash": "6dd42e7ca95c812a3c3bc181cb6628414f7a9a55ed65d12628efe701e7d9e855",
+  "model": "gpt-4o-mini-tts",
+  "voice": "cedar",
+  "speaker": "CLICK",
+  "originalText": "Four squares. Speed two. Two actions, then the hit. Three.",
+  "speechText": "Four squares. Speed two. Two actions, then the hit. Three.",
+  "duration": 3.65,
+  "bytes": 175244,
+  "createdAt": "2026-09-13T10:38:30.865Z",
+  "captions": [
+    {
+      "text": "Four squares. Speed two.",
+      "start": 0,
+      "end": 64
+    },
+    {
+      "text": "Two actions, then the hit.",
+      "start": 64,
+      "end": 102
+    },
+    {
+      "text": "Three.",
+      "start": 102,
+      "end": 110
+    }
+  ],
+  "wordFrames": [
+    0,
+    6,
+    35,
+    38,
+    64,
+    70,
+    80,
+    90,
+    94,
+    102
+  ],
+  "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions",
+  "captionAudioSha256": "3dc3974a9cce189e052f214ab855eeba9035af7c0484a688eb228a9e1c259aa5"
+}

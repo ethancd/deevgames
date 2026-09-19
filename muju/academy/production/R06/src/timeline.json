@@ -1,0 +1,1307 @@
+{
+  "id": "R06",
+  "title": "The Promotion Staircase",
+  "fps": 30,
+  "voices": {
+    "COACH": "marin",
+    "PIP": "coral",
+    "CLICK": "cedar"
+  },
+  "lines": [
+    {
+      "id": "01",
+      "speaker": "PIP",
+      "cue": "cheerfully wrong",
+      "text": "I bought a Hi and put three hats on it. Same-day expert.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed in, low]",
+        "[board: Pip has opened a hat shop beside the board. A sign reads SAME-DAY EXPERTS. Three hats wobble in a stack on the new Hi at C3. The top one slides off and rolls under the table.]"
+      ],
+      "displayText": "I bought a Hi and put three hats on it. Same-day expert.",
+      "from": 0,
+      "speechFrames": 174,
+      "preRollFrames": 0,
+      "duration": 194,
+      "audio": "audio/01.wav",
+      "captions": [
+        {
+          "text": "I bought a Hi and put three hats on it.",
+          "start": 0,
+          "end": 106
+        },
+        {
+          "text": "Same-day expert.",
+          "start": 106,
+          "end": 174
+        }
+      ],
+      "wordFrames": [
+        0,
+        7,
+        20,
+        34,
+        34,
+        41,
+        49,
+        61,
+        65,
+        73,
+        106,
+        112
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "02",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Those are hats. That is a costume.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Those are hats. That is a costume.",
+      "from": 194,
+      "speechFrames": 111,
+      "preRollFrames": 0,
+      "duration": 131,
+      "audio": "audio/02.wav",
+      "captions": [
+        {
+          "text": "Those are hats. That is a costume.",
+          "start": 8,
+          "end": 111
+        }
+      ],
+      "wordFrames": [
+        8,
+        15,
+        33,
+        61,
+        67,
+        71,
+        88
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "03",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "A real hat is bought in the Place step. One hat. Never on the day you arrive.",
+      "beat": "INVITATION",
+      "hold": 3.4,
+      "directions": [],
+      "titleBump": true,
+      "displayText": "A real hat is bought in the Place step. One hat. Never on the day you arrive.",
+      "from": 325,
+      "speechFrames": 180,
+      "preRollFrames": 0,
+      "duration": 282,
+      "audio": "audio/03.wav",
+      "captions": [
+        {
+          "text": "A real hat is bought in the Place step.",
+          "start": 2,
+          "end": 87
+        },
+        {
+          "text": "One hat. Never on the day you arrive.",
+          "start": 87,
+          "end": 180
+        }
+      ],
+      "wordFrames": [
+        2,
+        4,
+        15,
+        23,
+        34,
+        40,
+        49,
+        54,
+        61,
+        87,
+        93,
+        138,
+        138,
+        146,
+        150,
+        154,
+        178
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "04",
+      "speaker": "COACH",
+      "cue": "recap, brisk",
+      "text": "C three again. Yesterday's Hi moved on. Today a new one arrived there.",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed out]",
+        "[board: C three. Yesterday's Hi has walked on. A new Hi stands there with a paper tag.]"
+      ],
+      "displayText": "C3 again. Yesterday's Hi moved on. Today a new one arrived there.",
+      "from": 607,
+      "speechFrames": 173,
+      "preRollFrames": 0,
+      "duration": 193,
+      "audio": "audio/04.wav",
+      "captions": [
+        {
+          "text": "C3 again. Yesterday's Hi moved on.",
+          "start": 8,
+          "end": 112
+        },
+        {
+          "text": "Today a new one arrived there.",
+          "start": 112,
+          "end": 173
+        }
+      ],
+      "wordFrames": [
+        8,
+        17,
+        26,
+        60,
+        73,
+        79,
+        88,
+        112,
+        123,
+        136,
+        141,
+        151,
+        159
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "05",
+      "speaker": "CLICK",
+      "cue": "dry aside",
+      "text": "Filed. Underneath: the star-shaped delivery zone. Overruled by the box.",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": [
+        "[card: PIP'S AMENDMENTS (PENDING). Click files THREE HATS AT ONCE and lifts out the card underneath.]"
+      ],
+      "displayText": "Filed. Underneath: the star-shaped delivery zone. Overruled by the box.",
+      "from": 800,
+      "speechFrames": 176,
+      "preRollFrames": 0,
+      "duration": 196,
+      "audio": "audio/05.wav",
+      "captions": [
+        {
+          "text": "Filed. Underneath: the star-shaped delivery zone.",
+          "start": 3,
+          "end": 129
+        },
+        {
+          "text": "Overruled by the box.",
+          "start": 129,
+          "end": 176
+        }
+      ],
+      "wordFrames": [
+        3,
+        33,
+        60,
+        75,
+        84,
+        99,
+        129,
+        145,
+        151,
+        156
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "06",
+      "speaker": "COACH",
+      "cue": "warm, unhurried",
+      "text": "Fire climbs a staircase. The Hi, then the Hono, then the Kagari.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[card: FIRE STAIRCASE: the Hi costs 2 · the Hono costs 6 · the Kagari costs 12]"
+      ],
+      "displayText": "Fire climbs a staircase. The Hi, then the Hono, then the Kagari.",
+      "from": 996,
+      "speechFrames": 162,
+      "preRollFrames": 0,
+      "duration": 182,
+      "audio": "audio/06.wav",
+      "captions": [
+        {
+          "text": "Fire climbs a staircase.",
+          "start": 13,
+          "end": 64
+        },
+        {
+          "text": "The Hi, then the Hono, then the Kagari.",
+          "start": 64,
+          "end": 162
+        }
+      ],
+      "wordFrames": [
+        13,
+        13,
+        25,
+        32,
+        64,
+        66,
+        85,
+        94,
+        106,
+        125,
+        130,
+        137
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "07",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "Small fire. Then flame. Then watch-fire.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Small fire. Then flame. Then watch-fire.",
+      "from": 1178,
+      "speechFrames": 140,
+      "preRollFrames": 0,
+      "duration": 160,
+      "audio": "audio/07.wav",
+      "captions": [
+        {
+          "text": "Small fire. Then flame.",
+          "start": 4,
+          "end": 91
+        },
+        {
+          "text": "Then watch-fire.",
+          "start": 91,
+          "end": 140
+        }
+      ],
+      "wordFrames": [
+        4,
+        14,
+        48,
+        58,
+        91,
+        125
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "08",
+      "speaker": "COACH",
+      "cue": "stating the rule, level",
+      "text": "A promotion happens in the Place step. It costs crystals, not actions.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "A promotion happens in the Place step. It costs crystals, not actions.",
+      "from": 1338,
+      "speechFrames": 147,
+      "preRollFrames": 0,
+      "duration": 167,
+      "audio": "audio/08.wav",
+      "captions": [
+        {
+          "text": "A promotion happens in the Place step.",
+          "start": 1,
+          "end": 75
+        },
+        {
+          "text": "It costs crystals, not actions.",
+          "start": 75,
+          "end": 147
+        }
+      ],
+      "wordFrames": [
+        1,
+        5,
+        16,
+        29,
+        35,
+        40,
+        48,
+        75,
+        80,
+        91,
+        121,
+        127
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "09",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "One step up, in your own element, once per piece per turn.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "One step up, in your own element, once per piece per turn.",
+      "from": 1505,
+      "speechFrames": 137,
+      "preRollFrames": 0,
+      "duration": 157,
+      "audio": "audio/09.wav",
+      "captions": [
+        {
+          "text": "One step up, in your own element, once per piece per turn.",
+          "start": 2,
+          "end": 137
+        }
+      ],
+      "wordFrames": [
+        2,
+        14,
+        24,
+        35,
+        48,
+        54,
+        66,
+        75,
+        93,
+        103,
+        116,
+        134
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "10",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Watch one. A Sjor costs four crystals. A Straumr costs eight.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[board: DEMO. Place phase. Bank 4. A White Sjor on a plain square, tagged HERE BEFORE THIS TURN, not yet promoted.] [card: WATER STAIRCASE: the Sjor costs 4 · the Straumr costs 8]"
+      ],
+      "displayText": "Watch one. A Sjor costs four crystals. A Straumr costs eight.",
+      "from": 1662,
+      "speechFrames": 177,
+      "preRollFrames": 0,
+      "duration": 197,
+      "audio": "audio/10.wav",
+      "captions": [
+        {
+          "text": "Watch one. A Sjor costs four crystals.",
+          "start": 2,
+          "end": 100
+        },
+        {
+          "text": "A Straumr costs eight.",
+          "start": 100,
+          "end": 177
+        }
+      ],
+      "wordFrames": [
+        2,
+        10,
+        41,
+        43,
+        49,
+        62,
+        73,
+        100,
+        110,
+        119,
+        134
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "11",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Eight take away four leaves four.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: shop chime] [board: four crystals leave the bank. The Sjor grows into a Straumr. Bank ticks 4 to 0.]"
+      ],
+      "displayText": "Eight take away four leaves four.",
+      "from": 1859,
+      "speechFrames": 96,
+      "preRollFrames": 0,
+      "duration": 116,
+      "audio": "audio/11.wav",
+      "captions": [
+        {
+          "text": "Eight take away four leaves four.",
+          "start": 14,
+          "end": 96
+        }
+      ],
+      "wordFrames": [
+        14,
+        31,
+        38,
+        45,
+        71,
+        77
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "12",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "Pay the gap. One step up.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "performanceNote": "Carefully enunciate Pay THE gap. Say pay, not pave. A small space between pay and the. Do not add words.",
+      "displayText": "Pay the gap. One step up.",
+      "from": 1975,
+      "speechFrames": 69,
+      "preRollFrames": 0,
+      "duration": 89,
+      "audio": "audio/12.wav",
+      "captions": [
+        {
+          "text": "Pay the gap. One step up.",
+          "start": 12,
+          "end": 69
+        }
+      ],
+      "wordFrames": [
+        12,
+        12,
+        20,
+        45,
+        51,
+        59
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "13",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Two hats above a Hi. Never three. No secret fourth-floor elevator.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Two hats above a Hi. Never three. No secret fourth-floor elevator.",
+      "from": 2064,
+      "speechFrames": 152,
+      "preRollFrames": 0,
+      "duration": 172,
+      "audio": "audio/13.wav",
+      "captions": [
+        {
+          "text": "Two hats above a Hi.",
+          "start": 3,
+          "end": 61
+        },
+        {
+          "text": "Never three. No secret fourth-floor elevator.",
+          "start": 61,
+          "end": 152
+        }
+      ],
+      "wordFrames": [
+        3,
+        8,
+        17,
+        28,
+        37,
+        61,
+        69,
+        101,
+        109,
+        126,
+        134
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "14",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "A piece that arrived this turn cannot climb today. It waits until next turn.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "A piece that arrived this turn cannot climb today. It waits until next turn.",
+      "from": 2236,
+      "speechFrames": 156,
+      "preRollFrames": 0,
+      "duration": 176,
+      "audio": "audio/14.wav",
+      "captions": [
+        {
+          "text": "A piece that arrived this turn cannot climb today.",
+          "start": 1,
+          "end": 108
+        },
+        {
+          "text": "It waits until next turn.",
+          "start": 108,
+          "end": 156
+        }
+      ],
+      "wordFrames": [
+        1,
+        6,
+        15,
+        28,
+        37,
+        51,
+        57,
+        76,
+        87,
+        108,
+        116,
+        124,
+        133,
+        144
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "15",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "D four: here before this turn. C three: arrived today.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [
+        "[board: back to the board. Place phase. Bank 4. A White Hi on D4 wearing a paper tag HERE BEFORE THIS TURN. A White Hi on C3 wearing a paper tag ARRIVED TODAY.] [card: THIS PROMOTION COSTS 4]"
+      ],
+      "displayText": "D4: here before this turn. C3: arrived today.",
+      "from": 2412,
+      "speechFrames": 155,
+      "preRollFrames": 0,
+      "duration": 175,
+      "audio": "audio/15.wav",
+      "captions": [
+        {
+          "text": "D4: here before this turn.",
+          "start": 3,
+          "end": 94
+        },
+        {
+          "text": "C3: arrived today.",
+          "start": 94,
+          "end": 155
+        }
+      ],
+      "wordFrames": [
+        3,
+        13,
+        37,
+        47,
+        52,
+        62,
+        94,
+        104,
+        125,
+        135
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "16",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Our bank has four crystals. This promotion costs four.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Our bank has four crystals. This promotion costs four.",
+      "from": 2587,
+      "speechFrames": 132,
+      "preRollFrames": 0,
+      "duration": 152,
+      "audio": "audio/16.wav",
+      "captions": [
+        {
+          "text": "Our bank has four crystals.",
+          "start": 3,
+          "end": 66
+        },
+        {
+          "text": "This promotion costs four.",
+          "start": 66,
+          "end": 132
+        }
+      ],
+      "wordFrames": [
+        3,
+        7,
+        15,
+        27,
+        37,
+        66,
+        75,
+        87,
+        106
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "17",
+      "speaker": "COACH",
+      "cue": "question, open",
+      "text": "Which Hi can climb the staircase right now?",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Which Hi can climb the staircase right now?",
+      "from": 2739,
+      "speechFrames": 107,
+      "preRollFrames": 0,
+      "duration": 127,
+      "audio": "audio/17.wav",
+      "captions": [
+        {
+          "text": "Which Hi can climb the staircase right now?",
+          "start": 2,
+          "end": 107
+        }
+      ],
+      "wordFrames": [
+        2,
+        16,
+        30,
+        46,
+        55,
+        65,
+        73,
+        92
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "18",
+      "speaker": "PIP",
+      "cue": "quietly certain",
+      "text": "One of them is still wearing today's tag. I think that decides it.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "One of them is still wearing today's tag. I think that decides it.",
+      "from": 2866,
+      "speechFrames": 137,
+      "preRollFrames": 0,
+      "duration": 157,
+      "audio": "audio/18.wav",
+      "captions": [
+        {
+          "text": "One of them is still wearing today's tag.",
+          "start": 3,
+          "end": 87
+        },
+        {
+          "text": "I think that decides it.",
+          "start": 87,
+          "end": 137
+        }
+      ],
+      "wordFrames": [
+        3,
+        9,
+        15,
+        18,
+        30,
+        43,
+        51,
+        67,
+        87,
+        100,
+        103,
+        112,
+        120
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "19",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "There is no rush on this one. Watch it with me if you would rather.",
+      "beat": "TRY",
+      "hold": 10.2,
+      "directions": [],
+      "thinking": true,
+      "displayText": "There is no rush on this one. Watch it with me if you would rather.",
+      "from": 3023,
+      "speechFrames": 122,
+      "preRollFrames": 0,
+      "duration": 428,
+      "audio": "audio/19.wav",
+      "captions": [
+        {
+          "text": "There is no rush on this one.",
+          "start": 0,
+          "end": 65
+        },
+        {
+          "text": "Watch it with me if you would rather.",
+          "start": 65,
+          "end": 122
+        }
+      ],
+      "wordFrames": [
+        0,
+        7,
+        13,
+        24,
+        29,
+        36,
+        41,
+        65,
+        71,
+        75,
+        81,
+        86,
+        90,
+        93,
+        102
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "20",
+      "speaker": "COACH",
+      "cue": "reveal, land it",
+      "text": "The hat settled on the one that was already here. Pip named the tag first.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[board: a hat floats over the C3 Hi. Its ARRIVED TODAY tag lights up, and the hat lifts away. It settles on the D4 Hi, which grows into a Hono. Bank ticks 4 to 0.] [sfx: shop chime]"
+      ],
+      "displayText": "The hat settled on the one that was already here. Pip named the tag first.",
+      "from": 3451,
+      "speechFrames": 144,
+      "preRollFrames": 0,
+      "duration": 164,
+      "audio": "audio/20.wav",
+      "captions": [
+        {
+          "text": "The hat settled on the one that was already here.",
+          "start": 0,
+          "end": 100
+        },
+        {
+          "text": "Pip named the tag first.",
+          "start": 100,
+          "end": 144
+        }
+      ],
+      "wordFrames": [
+        0,
+        6,
+        17,
+        30,
+        36,
+        42,
+        48,
+        52,
+        57,
+        69,
+        100,
+        101,
+        109,
+        116,
+        122
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "21",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Arrival: today. Promotion: not today.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Arrival: today. Promotion: not today.",
+      "from": 3615,
+      "speechFrames": 111,
+      "preRollFrames": 0,
+      "duration": 131,
+      "audio": "audio/21.wav",
+      "captions": [
+        {
+          "text": "Arrival: today. Promotion: not today.",
+          "start": 10,
+          "end": 111
+        }
+      ],
+      "wordFrames": [
+        10,
+        31,
+        66,
+        86,
+        95
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "22",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "New today. It may walk, hit and collect. It may not climb.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "New today. It may walk, hit and collect. It may not climb.",
+      "from": 3746,
+      "speechFrames": 147,
+      "preRollFrames": 0,
+      "duration": 167,
+      "audio": "audio/22.wav",
+      "captions": [
+        {
+          "text": "New today. It may walk, hit and collect.",
+          "start": 3,
+          "end": 112
+        },
+        {
+          "text": "It may not climb.",
+          "start": 112,
+          "end": 147
+        }
+      ],
+      "wordFrames": [
+        3,
+        14,
+        33,
+        51,
+        57,
+        81,
+        82,
+        90,
+        112,
+        119,
+        123,
+        131
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "23",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "Then my sign is wrong. New policy. Hats fit the ones who were already here.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Then my sign is wrong. New policy. Hats fit the ones who were already here.",
+      "from": 3913,
+      "speechFrames": 185,
+      "preRollFrames": 0,
+      "duration": 205,
+      "audio": "audio/23.wav",
+      "captions": [
+        {
+          "text": "Then my sign is wrong.",
+          "start": 3,
+          "end": 74
+        },
+        {
+          "text": "New policy. Hats fit the ones who were already here.",
+          "start": 74,
+          "end": 185
+        }
+      ],
+      "wordFrames": [
+        3,
+        10,
+        20,
+        31,
+        46,
+        74,
+        79,
+        118,
+        118,
+        127,
+        135,
+        143,
+        148,
+        154,
+        171
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "24",
+      "speaker": "PIP",
+      "cue": "dawning concern",
+      "text": "Was that the best four crystals I ever spent?",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Was that the best four crystals I ever spent?",
+      "from": 4118,
+      "speechFrames": 111,
+      "preRollFrames": 0,
+      "duration": 131,
+      "audio": "audio/24.wav",
+      "captions": [
+        {
+          "text": "Was that the best four crystals I ever spent?",
+          "start": 0,
+          "end": 111
+        }
+      ],
+      "wordFrames": [
+        0,
+        5,
+        25,
+        35,
+        45,
+        61,
+        69,
+        78,
+        87
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "25",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "That is a different count. Today we only proved it was allowed.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "That is a different count. Today we only proved it was allowed.",
+      "from": 4249,
+      "speechFrames": 146,
+      "preRollFrames": 0,
+      "duration": 166,
+      "audio": "audio/25.wav",
+      "captions": [
+        {
+          "text": "That is a different count.",
+          "start": 11,
+          "end": 77
+        },
+        {
+          "text": "Today we only proved it was allowed.",
+          "start": 77,
+          "end": 146
+        }
+      ],
+      "wordFrames": [
+        11,
+        11,
+        19,
+        27,
+        33,
+        77,
+        81,
+        88,
+        102,
+        113,
+        121,
+        128
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "26",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Metal climbs the same way. The Yan, the Mazask, the Tanka.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[board: Pip crosses out the shop sign and letters NEXT-DAY EXPERTS.]",
+        "[card: EVIDENCE. Proves: who may promote, and the price. Not checked: whether four crystals were better spent elsewhere.]",
+        "[card: METAL LADDER: the Yan costs 5 · the Mazask costs 9 · the Tanka costs 17]"
+      ],
+      "displayText": "Metal climbs the same way. The Yan, the Mazask, the Tanka.",
+      "from": 4415,
+      "speechFrames": 168,
+      "preRollFrames": 0,
+      "duration": 188,
+      "audio": "audio/26.wav",
+      "captions": [
+        {
+          "text": "Metal climbs the same way.",
+          "start": 0,
+          "end": 68
+        },
+        {
+          "text": "The Yan, the Mazask, the Tanka.",
+          "start": 68,
+          "end": 168
+        }
+      ],
+      "wordFrames": [
+        0,
+        11,
+        24,
+        31,
+        39,
+        68,
+        71,
+        100,
+        101,
+        135,
+        139
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "27",
+      "speaker": "CLICK",
+      "cue": "dry aside",
+      "text": "Stone. Wall. Great.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Stone. Wall. Great.",
+      "from": 4603,
+      "speechFrames": 93,
+      "preRollFrames": 0,
+      "duration": 113,
+      "audio": "audio/27.wav",
+      "captions": [
+        {
+          "text": "Stone. Wall. Great.",
+          "start": 21,
+          "end": 93
+        }
+      ],
+      "wordFrames": [
+        21,
+        55,
+        75
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "28",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Slip a paper strip under each piece with the turn it arrived.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": [
+        "[card: WHO ARRIVED WHEN?]"
+      ],
+      "displayText": "Slip a paper strip under each piece with the turn it arrived.",
+      "from": 4716,
+      "speechFrames": 138,
+      "preRollFrames": 0,
+      "duration": 158,
+      "audio": "audio/28.wav",
+      "captions": [
+        {
+          "text": "Slip a paper strip under each piece with the turn it arrived.",
+          "start": 13,
+          "end": 138
+        }
+      ],
+      "wordFrames": [
+        13,
+        14,
+        25,
+        32,
+        40,
+        47,
+        60,
+        70,
+        85,
+        91,
+        100,
+        109
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "promotion-prices",
+      "speaker": "COACH",
+      "text": "For every element, tier one to tier two costs four crystals. Tier two to tier three costs eight. A promoted piece can act immediately. There is no fourth tier.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "card",
+        "title": "The same promotion prices for all six elements",
+        "body": "T1 → T2: pay 4\nT2 → T3: pay 8\nOne step per piece per turn. Never on its purchase turn.\nPromoted pieces act immediately. T3 is the top."
+      },
+      "displayText": "For every element, tier one to tier two costs four crystals. Tier two to tier three costs eight. A promoted piece can act immediately. There is no fourth tier.",
+      "from": 4874,
+      "speechFrames": 428,
+      "preRollFrames": 0,
+      "duration": 452,
+      "audio": "audio/promotion-prices.wav",
+      "captions": [
+        {
+          "text": "For every element, tier one to tier two costs four crystals.",
+          "start": 0,
+          "end": 137
+        },
+        {
+          "text": "Tier two to tier three costs eight.",
+          "start": 137,
+          "end": 244
+        },
+        {
+          "text": "A promoted piece can act immediately.",
+          "start": 244,
+          "end": 352
+        },
+        {
+          "text": "There is no fourth tier.",
+          "start": 352,
+          "end": 428
+        }
+      ],
+      "wordFrames": [
+        0,
+        6,
+        17,
+        43,
+        44,
+        55,
+        61,
+        66,
+        79,
+        91,
+        107,
+        137,
+        137,
+        154,
+        171,
+        179,
+        197,
+        217,
+        244,
+        247,
+        259,
+        272,
+        284,
+        297,
+        352,
+        361,
+        369,
+        379,
+        389
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "29",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "The two spare hats go in a box. For pieces that were already here yesterday.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "The two spare hats go in a box. For pieces that were already here yesterday.",
+      "from": 5326,
+      "speechFrames": 171,
+      "preRollFrames": 0,
+      "duration": 191,
+      "audio": "audio/29.wav",
+      "captions": [
+        {
+          "text": "The two spare hats go in a box.",
+          "start": 0,
+          "end": 99
+        },
+        {
+          "text": "For pieces that were already here yesterday.",
+          "start": 99,
+          "end": 171
+        }
+      ],
+      "wordFrames": [
+        0,
+        6,
+        24,
+        33,
+        44,
+        58,
+        63,
+        67,
+        99,
+        102,
+        114,
+        122,
+        126,
+        140,
+        150
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "30",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Stop here whenever you like. Next time: who sends our army a bill?",
+      "beat": "EXIT",
+      "hold": 2,
+      "directions": [],
+      "displayText": "Stop here whenever you like. Next time: who sends our army a bill?",
+      "from": 5517,
+      "speechFrames": 144,
+      "preRollFrames": 0,
+      "duration": 204,
+      "audio": "audio/30.wav",
+      "captions": [
+        {
+          "text": "Stop here whenever you like.",
+          "start": 17,
+          "end": 73
+        },
+        {
+          "text": "Next time: who sends our army a bill?",
+          "start": 73,
+          "end": 144
+        }
+      ],
+      "wordFrames": [
+        17,
+        25,
+        34,
+        42,
+        48,
+        73,
+        78,
+        99,
+        102,
+        108,
+        115,
+        120,
+        132
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    }
+  ],
+  "question": "Which Hi can climb the staircase right now?",
+  "version": 8,
+  "updatedLabel": "Video version 8 · Last updated Sep 18 2026 CDT",
+  "rules": "v2.9",
+  "soundtrack": {
+    "id": "before-dawn",
+    "title": "Another Game Before Dawn",
+    "source": "muju/music-auditions/full-versions/before-dawn-full-v1.mp3",
+    "sha256": "40803953d9ee66df69974e92f842d2914972938c626acdbf17594b1c4406d709"
+  },
+  "speechProvider": "openai",
+  "audioComplete": true,
+  "durationInFrames": 5721
+}

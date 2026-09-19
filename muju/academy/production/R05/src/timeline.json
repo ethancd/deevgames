@@ -1,0 +1,1437 @@
+{
+  "id": "R05",
+  "title": "The Shop Delivers Rectangles",
+  "fps": 30,
+  "voices": {
+    "COACH": "marin",
+    "PIP": "coral",
+    "CLICK": "cedar"
+  },
+  "lines": [
+    {
+      "id": "01",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Next customer.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed in, low]",
+        "[board: Click sits behind a very small window with a rubber stamp. One crate waits on the counter. Pip is first in the queue, holding a rolled star map. Board unchanged.]"
+      ],
+      "displayText": "Next customer.",
+      "from": 0,
+      "speechFrames": 35,
+      "preRollFrames": 0,
+      "duration": 55,
+      "audio": "audio/01.wav",
+      "captions": [
+        {
+          "text": "Next customer.",
+          "start": 0,
+          "end": 35
+        }
+      ],
+      "wordFrames": [
+        0,
+        10
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "02",
+      "speaker": "PIP",
+      "cue": "proud announcement",
+      "text": "One delivery, please. Star-shaped zone. Very festive.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "One delivery, please. Star-shaped zone. Very festive.",
+      "from": 55,
+      "speechFrames": 152,
+      "preRollFrames": 0,
+      "duration": 172,
+      "audio": "audio/02.wav",
+      "captions": [
+        {
+          "text": "One delivery, please. Star-shaped zone.",
+          "start": 13,
+          "end": 107
+        },
+        {
+          "text": "Very festive.",
+          "start": 107,
+          "end": 152
+        }
+      ],
+      "wordFrames": [
+        13,
+        13,
+        39,
+        69,
+        79,
+        107,
+        118
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "03",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "The shop delivers rectangles.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "The shop delivers rectangles.",
+      "from": 227,
+      "speechFrames": 93,
+      "preRollFrames": 0,
+      "duration": 113,
+      "audio": "audio/03.wav",
+      "captions": [
+        {
+          "text": "The shop delivers rectangles.",
+          "start": 0,
+          "end": 93
+        }
+      ],
+      "wordFrames": [
+        0,
+        6,
+        15,
+        29
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "04",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "Fine. I will fold the points in. The logo stays.",
+      "beat": "INVITATION",
+      "hold": 3.4,
+      "directions": [],
+      "titleBump": true,
+      "displayText": "Fine. I will fold the points in. The logo stays.",
+      "from": 340,
+      "speechFrames": 152,
+      "preRollFrames": 0,
+      "duration": 254,
+      "audio": "audio/04.wav",
+      "captions": [
+        {
+          "text": "Fine. I will fold the points in.",
+          "start": 13,
+          "end": 96
+        },
+        {
+          "text": "The logo stays.",
+          "start": 96,
+          "end": 152
+        }
+      ],
+      "wordFrames": [
+        13,
+        28,
+        40,
+        51,
+        55,
+        72,
+        72,
+        96,
+        103,
+        111
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "05",
+      "speaker": "COACH",
+      "cue": "recap, brisk",
+      "text": "Last time we stood on one square, and the square paid us.",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed out]"
+      ],
+      "displayText": "Last time we stood on one square, and the square paid us.",
+      "from": 594,
+      "speechFrames": 120,
+      "preRollFrames": 0,
+      "duration": 140,
+      "audio": "audio/05.wav",
+      "captions": [
+        {
+          "text": "Last time we stood on one square, and the square paid us.",
+          "start": 17,
+          "end": 120
+        }
+      ],
+      "wordFrames": [
+        17,
+        26,
+        34,
+        43,
+        44,
+        50,
+        61,
+        75,
+        83,
+        95,
+        96,
+        103
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "06",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Bank: four crystals. Nobody has spent them yet.",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Bank: four crystals. Nobody has spent them yet.",
+      "from": 734,
+      "speechFrames": 107,
+      "preRollFrames": 0,
+      "duration": 127,
+      "audio": "audio/06.wav",
+      "captions": [
+        {
+          "text": "Bank: four crystals. Nobody has spent them yet.",
+          "start": 0,
+          "end": 107
+        }
+      ],
+      "wordFrames": [
+        0,
+        27,
+        35,
+        69,
+        72,
+        83,
+        87,
+        92
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "07",
+      "speaker": "COACH",
+      "cue": "warm, unhurried",
+      "text": "The Place step comes before movement and attacks. Watch the shaded box. A box is a rectangle.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[board: White Place phase. Bank 4. White Muju on D4. Black Hi on H8. The rectangle A1 through D4 shades in softly, edges included. C3 is empty and highlighted.]"
+      ],
+      "displayText": "The Place step comes before movement and attacks. Watch the shaded box. A box is a rectangle.",
+      "from": 861,
+      "speechFrames": 216,
+      "preRollFrames": 0,
+      "duration": 236,
+      "audio": "audio/07.wav",
+      "captions": [
+        {
+          "text": "The Place step comes before movement and attacks.",
+          "start": 4,
+          "end": 123
+        },
+        {
+          "text": "Watch the shaded box.",
+          "start": 123,
+          "end": 170
+        },
+        {
+          "text": "A box is a rectangle.",
+          "start": 170,
+          "end": 216
+        }
+      ],
+      "wordFrames": [
+        4,
+        4,
+        19,
+        31,
+        43,
+        55,
+        69,
+        83,
+        123,
+        123,
+        137,
+        137,
+        170,
+        174,
+        183,
+        193,
+        209
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "08",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "It runs from our home at A one to our Muju at D four, edges included.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "It runs from our home at A1 to our Muju at D4, edges included.",
+      "from": 1097,
+      "speechFrames": 186,
+      "preRollFrames": 0,
+      "duration": 206,
+      "audio": "audio/08.wav",
+      "captions": [
+        {
+          "text": "It runs from our home at A1 to our Muju at",
+          "start": 5,
+          "end": 114
+        },
+        {
+          "text": "D4, edges included.",
+          "start": 114,
+          "end": 186
+        }
+      ],
+      "wordFrames": [
+        5,
+        7,
+        21,
+        30,
+        36,
+        45,
+        53,
+        61,
+        68,
+        85,
+        100,
+        100,
+        114,
+        124,
+        150,
+        156
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "09",
+      "speaker": "COACH",
+      "cue": "stating the rule, level",
+      "text": "That Muju is our anchor: the friend the box is drawn to. The box is its rectangle.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "That Muju is our anchor: the friend the box is drawn to. The box is its rectangle.",
+      "from": 1303,
+      "speechFrames": 177,
+      "preRollFrames": 0,
+      "duration": 197,
+      "audio": "audio/09.wav",
+      "captions": [
+        {
+          "text": "That Muju is our anchor: the friend the box is drawn to.",
+          "start": 3,
+          "end": 127
+        },
+        {
+          "text": "The box is its rectangle.",
+          "start": 127,
+          "end": 177
+        }
+      ],
+      "wordFrames": [
+        3,
+        12,
+        27,
+        40,
+        49,
+        67,
+        81,
+        81,
+        93,
+        96,
+        108,
+        108,
+        127,
+        133,
+        142,
+        151,
+        159
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "10",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Column C, row three: empty. Column C, row three: inside the box.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "C3: empty. C3: inside the box.",
+      "from": 1500,
+      "speechFrames": 186,
+      "preRollFrames": 0,
+      "duration": 206,
+      "audio": "audio/10.wav",
+      "captions": [
+        {
+          "text": "C3: empty.",
+          "start": 0,
+          "end": 104
+        },
+        {
+          "text": "C3: inside the box.",
+          "start": 104,
+          "end": 186
+        }
+      ],
+      "wordFrames": [
+        0,
+        10,
+        41,
+        41,
+        68,
+        104,
+        107,
+        130,
+        130,
+        158,
+        163,
+        180
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "11",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Three crystals buy a Hi there. Only the smallest pieces are for sale.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: shop chime] [board: a White Hi appears on C3. Bank ticks 4 to 2.]",
+        "[card: FOR SALE: the smallest piece of each element]"
+      ],
+      "displayText": "Three crystals buy a Hi there. Only the smallest pieces are for sale.",
+      "from": 1706,
+      "speechFrames": 156,
+      "preRollFrames": 0,
+      "duration": 176,
+      "audio": "audio/11.wav",
+      "captions": [
+        {
+          "text": "Three crystals buy a Hi there.",
+          "start": 0,
+          "end": 87
+        },
+        {
+          "text": "Only the smallest pieces are for sale.",
+          "start": 87,
+          "end": 156
+        }
+      ],
+      "wordFrames": [
+        0,
+        12,
+        43,
+        44,
+        49,
+        55,
+        87,
+        93,
+        100,
+        110,
+        124,
+        134,
+        139
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "12",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "It arrives right now. Buying costs crystals and no actions.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "It arrives right now. Buying costs crystals and no actions.",
+      "from": 1882,
+      "speechFrames": 146,
+      "preRollFrames": 0,
+      "duration": 166,
+      "audio": "audio/12.wav",
+      "captions": [
+        {
+          "text": "It arrives right now.",
+          "start": 1,
+          "end": 67
+        },
+        {
+          "text": "Buying costs crystals and no actions.",
+          "start": 67,
+          "end": 146
+        }
+      ],
+      "wordFrames": [
+        1,
+        8,
+        21,
+        34,
+        67,
+        67,
+        82,
+        106,
+        114,
+        122
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "13",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "One enemy anywhere inside turns the whole box off. Not only the squares beside it.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: blocked, gentle] [board: DEMO. A second box shades in, from a home corner out to a different friend. One enemy steps into a far corner of it, nowhere near the friend. The whole box goes dark.]"
+      ],
+      "displayText": "One enemy anywhere inside turns the whole box off. Not only the squares beside it.",
+      "from": 2048,
+      "speechFrames": 176,
+      "preRollFrames": 0,
+      "duration": 196,
+      "audio": "audio/13.wav",
+      "captions": [
+        {
+          "text": "One enemy anywhere inside turns the whole box off.",
+          "start": 3,
+          "end": 120
+        },
+        {
+          "text": "Not only the squares beside it.",
+          "start": 120,
+          "end": 176
+        }
+      ],
+      "wordFrames": [
+        3,
+        11,
+        21,
+        39,
+        57,
+        73,
+        79,
+        92,
+        94,
+        120,
+        127,
+        135,
+        148,
+        148,
+        160
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "14",
+      "speaker": "PIP",
+      "cue": "dawning concern",
+      "text": "The longest point of my star lands on G seven, outside our box.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[board: back to the real board. Pip's star map is laid over it. Its longest point lands on G7, far outside the shaded box, and G7 dims.]"
+      ],
+      "displayText": "The longest point of my star lands on G7, outside our box.",
+      "from": 2244,
+      "speechFrames": 176,
+      "preRollFrames": 0,
+      "duration": 196,
+      "audio": "audio/14.wav",
+      "captions": [
+        {
+          "text": "The longest point of my star lands on G7, outside our",
+          "start": 0,
+          "end": 158
+        },
+        {
+          "text": "box.",
+          "start": 158,
+          "end": 176
+        }
+      ],
+      "wordFrames": [
+        0,
+        9,
+        24,
+        35,
+        41,
+        50,
+        60,
+        84,
+        95,
+        106,
+        148,
+        148,
+        158
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "15",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "New puzzle. The bank has four crystals again.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [
+        "[board: reset. Bank back to 4, the new Hi gone. A Black Hi now stands on B2, inside the shaded box. C3 is still empty and still highlighted.]",
+        "[card: CARD ONE: DELIVER TO C THREE · CARD TWO: NOT FROM THIS ANCHOR]"
+      ],
+      "displayText": "New puzzle. The bank has four crystals again.",
+      "from": 2440,
+      "speechFrames": 116,
+      "preRollFrames": 0,
+      "duration": 136,
+      "audio": "audio/15.wav",
+      "captions": [
+        {
+          "text": "New puzzle. The bank has four crystals again.",
+          "start": 13,
+          "end": 116
+        }
+      ],
+      "wordFrames": [
+        13,
+        13,
+        41,
+        47,
+        55,
+        65,
+        77,
+        89
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "16",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "C three is still empty. A Black Hi is standing on B two, inside our box.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "C3 is still empty. A Black Hi is standing on B2, inside our box.",
+      "from": 2576,
+      "speechFrames": 174,
+      "preRollFrames": 0,
+      "duration": 194,
+      "audio": "audio/16.wav",
+      "captions": [
+        {
+          "text": "C3 is still empty.",
+          "start": 6,
+          "end": 69
+        },
+        {
+          "text": "A Black Hi is standing on B2, inside our box.",
+          "start": 69,
+          "end": 174
+        }
+      ],
+      "wordFrames": [
+        6,
+        13,
+        20,
+        30,
+        43,
+        69,
+        74,
+        83,
+        89,
+        97,
+        106,
+        112,
+        121,
+        143,
+        147,
+        154
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "17",
+      "speaker": "COACH",
+      "cue": "question, open",
+      "text": "Can that anchor deliver a teammate to C three?",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Can that anchor deliver a teammate to C3?",
+      "from": 2770,
+      "speechFrames": 113,
+      "preRollFrames": 0,
+      "duration": 133,
+      "audio": "audio/17.wav",
+      "captions": [
+        {
+          "text": "Can that anchor deliver a teammate to C3?",
+          "start": 4,
+          "end": 113
+        }
+      ],
+      "wordFrames": [
+        4,
+        12,
+        25,
+        35,
+        55,
+        65,
+        74,
+        82,
+        92
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "18",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Put a finger on a card, or look at both.",
+      "beat": "TRY",
+      "hold": 10.2,
+      "directions": [],
+      "thinking": true,
+      "displayText": "Put a finger on a card, or look at both.",
+      "from": 2903,
+      "speechFrames": 105,
+      "preRollFrames": 0,
+      "duration": 411,
+      "audio": "audio/18.wav",
+      "captions": [
+        {
+          "text": "Put a finger on a card, or look at both.",
+          "start": 0,
+          "end": 105
+        }
+      ],
+      "wordFrames": [
+        0,
+        8,
+        28,
+        28,
+        37,
+        51,
+        55,
+        70,
+        76,
+        86
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "19",
+      "speaker": "COACH",
+      "cue": "gently, slower",
+      "text": "The answer is no, and the reason is a good one.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[board: a crate slides out toward C3, reaches the edge of the shaded box, and the whole box goes dark. The crate slides back to the shop. C3 stays empty and stays highlighted.]"
+      ],
+      "displayText": "The answer is no, and the reason is a good one.",
+      "from": 3314,
+      "speechFrames": 81,
+      "preRollFrames": 0,
+      "duration": 101,
+      "audio": "audio/19.wav",
+      "captions": [
+        {
+          "text": "The answer is no, and the reason is a good one.",
+          "start": 0,
+          "end": 81
+        }
+      ],
+      "wordFrames": [
+        0,
+        3,
+        13,
+        22,
+        39,
+        45,
+        52,
+        56,
+        63,
+        68,
+        71
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "20",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "The square was fine. The whole box went dark.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "The square was fine. The whole box went dark.",
+      "from": 3415,
+      "speechFrames": 123,
+      "preRollFrames": 0,
+      "duration": 143,
+      "audio": "audio/20.wav",
+      "captions": [
+        {
+          "text": "The square was fine.",
+          "start": 5,
+          "end": 61
+        },
+        {
+          "text": "The whole box went dark.",
+          "start": 61,
+          "end": 123
+        }
+      ],
+      "wordFrames": [
+        5,
+        7,
+        21,
+        33,
+        61,
+        65,
+        75,
+        88,
+        105
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "21",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "One enemy inside, and the whole box goes dark.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "One enemy inside, and the whole box goes dark.",
+      "from": 3558,
+      "speechFrames": 122,
+      "preRollFrames": 0,
+      "duration": 142,
+      "audio": "audio/21.wav",
+      "captions": [
+        {
+          "text": "One enemy inside, and the whole box goes dark.",
+          "start": 1,
+          "end": 122
+        }
+      ],
+      "wordFrames": [
+        1,
+        9,
+        21,
+        54,
+        61,
+        65,
+        73,
+        83,
+        100
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "22",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "One rectangle is blocked. A different friend might still have a clear one.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "One rectangle is blocked. A different friend might still have a clear one.",
+      "from": 3700,
+      "speechFrames": 134,
+      "preRollFrames": 0,
+      "duration": 154,
+      "audio": "audio/22.wav",
+      "captions": [
+        {
+          "text": "One rectangle is blocked.",
+          "start": 3,
+          "end": 60
+        },
+        {
+          "text": "A different friend might still have a clear one.",
+          "start": 60,
+          "end": 134
+        }
+      ],
+      "wordFrames": [
+        3,
+        11,
+        25,
+        45,
+        60,
+        69,
+        76,
+        84,
+        94,
+        102,
+        106,
+        110,
+        115
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "23",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "One complaint and the whole delivery zone closes?",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "One complaint and the whole delivery zone closes?",
+      "from": 3854,
+      "speechFrames": 113,
+      "preRollFrames": 0,
+      "duration": 133,
+      "audio": "audio/23.wav",
+      "captions": [
+        {
+          "text": "One complaint and the whole delivery zone closes?",
+          "start": 2,
+          "end": 113
+        }
+      ],
+      "wordFrames": [
+        2,
+        12,
+        37,
+        42,
+        48,
+        58,
+        70,
+        79
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "24",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "That was not a customer.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "That was not a customer.",
+      "from": 3987,
+      "speechFrames": 59,
+      "preRollFrames": 0,
+      "duration": 79,
+      "audio": "audio/24.wav",
+      "captions": [
+        {
+          "text": "That was not a customer.",
+          "start": 0,
+          "end": 59
+        }
+      ],
+      "wordFrames": [
+        0,
+        8,
+        23,
+        32,
+        57
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "25",
+      "speaker": "CLICK",
+      "cue": "dry aside",
+      "text": "Name for the file: the Blocked Rectangle.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Name for the file: the Blocked Rectangle.",
+      "from": 4066,
+      "speechFrames": 95,
+      "preRollFrames": 0,
+      "duration": 115,
+      "audio": "audio/25.wav",
+      "captions": [
+        {
+          "text": "Name for the file: the Blocked Rectangle.",
+          "start": 17,
+          "end": 95
+        }
+      ],
+      "wordFrames": [
+        17,
+        17,
+        25,
+        31,
+        47,
+        61,
+        61
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "26",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Now suppose we remove that Black Hi during our actions.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[card: EVIDENCE. Proves: this anchor's rectangle is blocked. Not checked: our other friends, and what Black does next.]",
+        "[board: the turn strip. PLACE lights, then ACTION lights, and a shop shutter rolls down over the little window.]"
+      ],
+      "displayText": "Now suppose we remove that Black Hi during our actions.",
+      "from": 4181,
+      "speechFrames": 113,
+      "preRollFrames": 0,
+      "duration": 133,
+      "audio": "audio/26.wav",
+      "captions": [
+        {
+          "text": "Now suppose we remove that Black Hi during our actions.",
+          "start": 4,
+          "end": 113
+        }
+      ],
+      "wordFrames": [
+        4,
+        9,
+        22,
+        30,
+        39,
+        48,
+        55,
+        63,
+        78,
+        102
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "27",
+      "speaker": "COACH",
+      "cue": "stating the rule, level",
+      "text": "Shopping is still finished. Once the turn moves to actions, the shutter comes down.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Shopping is still finished. Once the turn moves to actions, the shutter comes down.",
+      "from": 4314,
+      "speechFrames": 165,
+      "preRollFrames": 0,
+      "duration": 185,
+      "audio": "audio/27.wav",
+      "captions": [
+        {
+          "text": "Shopping is still finished.",
+          "start": 10,
+          "end": 73
+        },
+        {
+          "text": "Once the turn moves to actions, the shutter comes down.",
+          "start": 73,
+          "end": 165
+        }
+      ],
+      "wordFrames": [
+        10,
+        17,
+        27,
+        42,
+        73,
+        76,
+        81,
+        87,
+        95,
+        116,
+        125,
+        132,
+        137,
+        150
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "28",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "My mat says DELIVERY ENTRANCE. It is now a mat outside a shut shop.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[board: Pip lays a felt mat beside D4 and letters it DELIVERY ENTRANCE. The box behind it stays dark.]"
+      ],
+      "displayText": "My mat says DELIVERY ENTRANCE. It is now a mat outside a shut shop.",
+      "from": 4499,
+      "speechFrames": 197,
+      "preRollFrames": 0,
+      "duration": 217,
+      "audio": "audio/28.wav",
+      "captions": [
+        {
+          "text": "My mat says DELIVERY ENTRANCE.",
+          "start": 12,
+          "end": 94
+        },
+        {
+          "text": "It is now a mat outside a shut shop.",
+          "start": 94,
+          "end": 197
+        }
+      ],
+      "wordFrames": [
+        12,
+        12,
+        22,
+        54,
+        64,
+        94,
+        113,
+        119,
+        127,
+        141,
+        147,
+        165,
+        174,
+        181
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "29",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Cover the box from home to your friend with your hand, edges and all.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": [
+        "[card: MISSION: ONE PURCHASE. THE PRICE, THEN THE SQUARE.]"
+      ],
+      "displayText": "Cover the box from home to your friend with your hand, edges and all.",
+      "from": 4716,
+      "speechFrames": 177,
+      "preRollFrames": 0,
+      "duration": 197,
+      "audio": "audio/29.wav",
+      "captions": [
+        {
+          "text": "Cover the box from home to your friend with your hand, edges",
+          "start": 10,
+          "end": 151
+        },
+        {
+          "text": "and all.",
+          "start": 151,
+          "end": 177
+        }
+      ],
+      "wordFrames": [
+        10,
+        15,
+        29,
+        47,
+        59,
+        69,
+        80,
+        87,
+        106,
+        111,
+        117,
+        129,
+        151,
+        164
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "shop-prices",
+      "speaker": "COACH",
+      "text": "Fire and Lightning cost three each. Water and Shadow cost four. Plant and Metal cost five. You may buy any number you can afford, on legal empty squares. Each new piece can act immediately.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "card",
+        "title": "The tier-one shop",
+        "body": "Hi / Radi: 3 crystals\nSjor / Göl: 4 crystals\nMuju / Yan: 5 crystals\nBuy any affordable number. New pieces act now."
+      },
+      "displayText": "Fire and Lightning cost three each. Water and Shadow cost four. Plant and Metal cost five. You may buy any number you can afford, on legal empty squares. Each new piece can act immediately.",
+      "from": 4913,
+      "speechFrames": 378,
+      "preRollFrames": 0,
+      "duration": 402,
+      "audio": "audio/shop-prices.wav",
+      "captions": [
+        {
+          "text": "Fire and Lightning cost three each.",
+          "start": 0,
+          "end": 77
+        },
+        {
+          "text": "Water and Shadow cost four.",
+          "start": 77,
+          "end": 141
+        },
+        {
+          "text": "Plant and Metal cost five.",
+          "start": 141,
+          "end": 192
+        },
+        {
+          "text": "You may buy any number you can afford, on legal empty squares.",
+          "start": 192,
+          "end": 311
+        },
+        {
+          "text": "Each new piece can act immediately.",
+          "start": 311,
+          "end": 378
+        }
+      ],
+      "wordFrames": [
+        0,
+        11,
+        18,
+        29,
+        38,
+        49,
+        77,
+        80,
+        88,
+        96,
+        107,
+        141,
+        141,
+        147,
+        154,
+        163,
+        192,
+        196,
+        202,
+        208,
+        217,
+        224,
+        230,
+        233,
+        250,
+        257,
+        267,
+        277,
+        311,
+        317,
+        324,
+        333,
+        340,
+        349
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "home-block",
+      "speaker": "COACH",
+      "text": "Black draws rectangles from J ten toward a Black anchor. Either player may choose any clear friendly anchor. An enemy on your home is inside every one of your rectangles, so it blocks all purchases. Existing pieces can still promote and act.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "card",
+        "title": "Both players use their own home",
+        "body": "White: A1 → friendly anchor\nBlack: J10 → friendly anchor\nAn enemy on your home blocks every purchase rectangle.\nExisting pieces can still promote, move and attack."
+      },
+      "displayText": "Black draws rectangles from J10 toward a Black anchor. Either player may choose any clear friendly anchor. An enemy on your home is inside every one of your rectangles, so it blocks all purchases. Existing pieces can still promote and act.",
+      "from": 5315,
+      "speechFrames": 488,
+      "preRollFrames": 0,
+      "duration": 512,
+      "audio": "audio/home-block.wav",
+      "captions": [
+        {
+          "text": "Black draws rectangles from J10 toward a Black anchor.",
+          "start": 0,
+          "end": 141
+        },
+        {
+          "text": "Either player may choose any clear friendly anchor.",
+          "start": 141,
+          "end": 229
+        },
+        {
+          "text": "An enemy on your home is inside every one of your rectangles,",
+          "start": 229,
+          "end": 338
+        },
+        {
+          "text": "so it blocks all purchases.",
+          "start": 338,
+          "end": 404
+        },
+        {
+          "text": "Existing pieces can still promote and act.",
+          "start": 404,
+          "end": 488
+        }
+      ],
+      "wordFrames": [
+        0,
+        11,
+        31,
+        49,
+        56,
+        75,
+        93,
+        98,
+        106,
+        141,
+        146,
+        155,
+        163,
+        170,
+        179,
+        188,
+        200,
+        229,
+        236,
+        243,
+        250,
+        254,
+        264,
+        278,
+        289,
+        301,
+        307,
+        310,
+        313,
+        338,
+        346,
+        350,
+        359,
+        368,
+        404,
+        415,
+        425,
+        437,
+        446,
+        457,
+        464
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "30",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "If an enemy is under your hand, pick another friend. Stopping here is fine.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "If an enemy is under your hand, pick another friend. Stopping here is fine.",
+      "from": 5827,
+      "speechFrames": 180,
+      "preRollFrames": 0,
+      "duration": 200,
+      "audio": "audio/30.wav",
+      "captions": [
+        {
+          "text": "If an enemy is under your hand, pick another friend.",
+          "start": 7,
+          "end": 138
+        },
+        {
+          "text": "Stopping here is fine.",
+          "start": 138,
+          "end": 180
+        }
+      ],
+      "wordFrames": [
+        7,
+        7,
+        21,
+        24,
+        37,
+        46,
+        55,
+        84,
+        84,
+        100,
+        138,
+        143,
+        151,
+        163
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "31",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "The star map goes in the drawer. The logo was finished first.",
+      "beat": "EXIT",
+      "hold": 2,
+      "directions": [],
+      "displayText": "The star map goes in the drawer. The logo was finished first.",
+      "from": 6027,
+      "speechFrames": 137,
+      "preRollFrames": 0,
+      "duration": 197,
+      "audio": "audio/31.wav",
+      "captions": [
+        {
+          "text": "The star map goes in the drawer.",
+          "start": 2,
+          "end": 78
+        },
+        {
+          "text": "The logo was finished first.",
+          "start": 78,
+          "end": 137
+        }
+      ],
+      "wordFrames": [
+        2,
+        9,
+        19,
+        29,
+        42,
+        46,
+        61,
+        78,
+        84,
+        92,
+        110,
+        118
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    }
+  ],
+  "question": "Can that anchor deliver a teammate to C3?",
+  "version": 8,
+  "updatedLabel": "Video version 8 · Last updated Sep 18 2026 CDT",
+  "rules": "v2.9",
+  "soundtrack": {
+    "id": "unequal-routes",
+    "title": "Unequal Routes",
+    "source": "muju/music-auditions/full-versions/unequal-routes-full-v1.mp3",
+    "sha256": "2354f06bdb9863f9ebc13bd3620a202ba27c4e07d91e84c900564247f80a96e7"
+  },
+  "speechProvider": "openai",
+  "audioComplete": true,
+  "durationInFrames": 6224
+}

@@ -1,11 +1,32 @@
 {
   "schema_version": 1,
   "path_base": "repository root",
+  "local_only_paths_meaning": "Only rendered Academy media is local-only; every Academy text and source path a node declares is tracked here and must exist. A prefix is matched against a node's declared path pattern with a plain string prefix test, so each media directory is declared in full.",
   "local_only_paths": [
     {
-      "prefix": "muju/academy/",
-      "reason": "Academy production sources and media are not tracked in this repository. Obtain the current production bundle before executing these nodes; do not skip Academy propagation.",
-      "source_hint": "/Users/ashkie/src/deevgames/muju/academy/ on the original production workstation; verify current provenance before using it."
+      "prefix": "muju/academy/production/R??/public/audio/",
+      "reason": "Academy narration and mastered speech media is archived outside git; the tracked pipeline sources and per-line timelines remain in the repository. Obtain the media bundle before executing these nodes; do not skip Academy propagation.",
+      "source_hint": "~/Archives/muju-media-2026-09-18/academy (hashes in ~/Archives/muju-media-2026-09-18/MANIFEST.sha256); original copy in /Users/ashkie/src/deevgames/muju/academy; copy offsite before deleting either"
+    },
+    {
+      "prefix": "muju/academy/production/R??/public/music/",
+      "reason": "Academy music beds are archived outside git; the tracked cue sheets and pipeline sources remain in the repository. Obtain the media bundle before executing these nodes; do not skip Academy propagation.",
+      "source_hint": "~/Archives/muju-media-2026-09-18/academy (hashes in ~/Archives/muju-media-2026-09-18/MANIFEST.sha256); original copy in /Users/ashkie/src/deevgames/muju/academy; copy offsite before deleting either"
+    },
+    {
+      "prefix": "muju/academy/production/R??/public/art/*.png",
+      "reason": "Academy raster art is archived outside git; the authored image prompts beside it (PROMPTS.md) are tracked. Obtain the media bundle before executing these nodes; do not skip Academy propagation.",
+      "source_hint": "~/Archives/muju-media-2026-09-18/academy (hashes in ~/Archives/muju-media-2026-09-18/MANIFEST.sha256); original copy in /Users/ashkie/src/deevgames/muju/academy; copy offsite before deleting either"
+    },
+    {
+      "prefix": "muju/academy/production/R??/output/",
+      "reason": "Academy rendered episodes, posters and thumbnails are archived outside git; the render scripts and Remotion sources that produce them are tracked. Obtain the media bundle before executing these nodes; do not skip Academy propagation.",
+      "source_hint": "~/Archives/muju-media-2026-09-18/academy (hashes in ~/Archives/muju-media-2026-09-18/MANIFEST.sha256); original copy in /Users/ashkie/src/deevgames/muju/academy; copy offsite before deleting either"
+    },
+    {
+      "prefix": "muju/academy/production/R??/qa/",
+      "reason": "Academy QA capture media (frame grabs, audio exports, ASR evidence) is archived outside git; the QA scripts that regenerate it are tracked. Obtain the media bundle before executing these nodes; do not skip Academy propagation.",
+      "source_hint": "~/Archives/muju-media-2026-09-18/academy (hashes in ~/Archives/muju-media-2026-09-18/MANIFEST.sha256); original copy in /Users/ashkie/src/deevgames/muju/academy; copy offsite before deleting either"
     }
   ],
   "edge_meaning": "depends_on points upstream; an upstream change requires downstream review, not necessarily a file edit. This is an impact and release-order DAG, not an import graph.",
@@ -27,6 +48,15 @@
     "muju/lab/results/",
     "muju/lab/experiments/",
     "muju/lab/maps/",
+    "muju/docs/online-matches/",
+    "muju/docs/migration/",
+    "muju/docs/soundtrack-evidence/",
+    "muju/docs/SOUNDTRACK_*",
+    "muju/tools/*music*",
+    "muju/tools/prepare-music-round-*.py",
+    "muju/tools/branch-umeme-without-woodwinds.py",
+    "muju/tools/revise-tanka-middle.py",
+    "muju/docs/changes/2026-09-18-metal-evidence/",
     "muju/docs/hard-ai/e?/",
     "muju/docs/hard-ai/workflows/",
     "muju/docs/hard-ai/POSTMORTEM-*.md",
@@ -139,19 +169,19 @@
     },
     {
       "id": "academy-lessons", "title": "Academy lesson scripts, examples and renderer sources", "depends_on": ["academy-data", "rules-docs", "browser-ui", "server-runtime"],
-      "paths": ["muju/academy/README.md", "muju/academy/STATUS.md", "muju/academy/BIBLE.md", "muju/academy/ALL-SCRIPTS.md", "muju/academy/CURRICULUM-AND-BATCHES.md", "muju/academy/PIPELINE-NOTES.md", "muju/academy/production/R??/episode.json", "muju/academy/production/R??/src/", "muju/academy/production/R??/scripts/", "muju/academy/supplement.tsx", "muju/academy/update-visuals.py"],
+      "paths": ["muju/academy/README.md", "muju/academy/STATUS.md", "muju/academy/BIBLE.md", "muju/academy/ALL-SCRIPTS.md", "muju/academy/CURRICULUM-AND-BATCHES.md", "muju/academy/PIPELINE-NOTES.md", "muju/academy/production/R??/episode.json", "muju/academy/production/R??/src/", "muju/academy/production/R??/scripts/", "muju/academy/supplement.tsx", "muju/academy/update-visuals.py", "muju/academy/production/R??/public/art/PROMPTS.md", "muju/academy/production/R??/package.json", "muju/academy/production/R??/tsconfig.json", "muju/academy/production/*.tsx", "muju/academy/revise.py", "muju/academy/propagate-economy.py", "muju/academy/.gitignore"],
       "update": ["Audit active R01–R16 episode.json and renderer sources for spoken facts, cards, boards, examples, captions and summaries. Record affected episode IDs and why others are unchanged. Preserve repaired current scripts; revise.py and propagate-economy.py are one-time historical migrations and must not be rerun over current production."],
       "verify": ["Validate each changed example against current engine state, action budget and timing. Cross-element counter matchups matter. Check visible revision/date labels and current source provenance; do not resurrect retired R17–R27."]
     },
     {
       "id": "academy-audio", "title": "Academy narration, local transcription and caption timing", "depends_on": ["academy-lessons"],
-      "paths": ["muju/academy/audio-batch.py", "muju/academy/prepare-audio.py", "muju/academy/retake-openai.mjs", "muju/academy/transcribe-local.py", "muju/academy/align-current.py", "muju/academy/timeline.mjs", "muju/academy/production/R??/public/audio/", "muju/academy/production/R??/speech-directions.json"],
+      "paths": ["muju/academy/audio-batch.py", "muju/academy/prepare-audio.py", "muju/academy/retake-openai.mjs", "muju/academy/elevenlabs-speech.py", "muju/academy/transcribe-new.mjs", "muju/academy/transcribe-local.py", "muju/academy/align-current.py", "muju/academy/timeline.mjs", "muju/academy/production/R??/public/audio/", "muju/academy/production/R??/speech-directions.json"],
       "update": ["Regenerate only changed speech with the established OpenAI cast and pronunciation, preserve unchanged takes, and refresh the changed-clip inventory consumed by transcribe-local.py. Verify locally with faster-whisper, align captions, and regenerate timelines. Inspect hardcoded temporary runtime/model paths before running scripts."],
       "verify": ["No unresolved spoken-fact, missing-word, pronunciation or caption-timing errors. Bind ASR and caption evidence to current audio hashes. Old clip inventories and successful historical logs do not verify new narration."]
     },
     {
       "id": "academy-video", "title": "Final videos, mastering, posters, transcripts and visual QA", "depends_on": ["academy-audio"],
-      "paths": ["muju/academy/render-batch.py", "muju/academy/render.mjs", "muju/academy/master.mjs", "muju/academy/remaster-batch.py", "muju/academy/final-frames.py", "muju/academy/stills-batch.py", "muju/academy/review-final.py", "muju/academy/production/R??/output/", "muju/academy/production/R??/qa/", "muju/academy/production/R??/public/music/", "muju/academy/production/R??/public/art/"],
+      "paths": ["muju/academy/render-batch.py", "muju/academy/render.mjs", "muju/academy/master.mjs", "muju/academy/remaster-batch.py", "muju/academy/final-frames.py", "muju/academy/stills-batch.py", "muju/academy/review-final.py", "muju/academy/production/R??/output/", "muju/academy/production/R??/qa/", "muju/academy/production/R??/public/music/", "muju/academy/production/R??/public/art/*.png"],
       "update": ["Render affected episodes, master with existing soundtracks, and regenerate affected posters/transcripts. Review actual final exports before recording review-final.py --visual-reviewed evidence. Inspect batch script/runtime paths and current episode configuration first."],
       "verify": ["Require full decode, source-audio correlation, complete duration, quiet holds, loudness/peak checks, readable cards/boards and correct matrices. final-review.json must identify exact final video and timeline hashes; never mechanically assert that unseen frames were reviewed."]
     },

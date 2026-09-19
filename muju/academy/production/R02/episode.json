@@ -1,0 +1,358 @@
+{
+  "id": "R02",
+  "title": "Four Actions, Zero Octopus Exceptions",
+  "version": 7,
+  "updatedLabel": "Video version 7 · Last updated at 07:25 Sep 13 2026 CDT",
+  "rules": "v2.8",
+  "fps": 30,
+  "voices": {
+    "COACH": "marin",
+    "PIP": "coral",
+    "CLICK": "cedar"
+  },
+  "lines": [
+    {
+      "id": "01",
+      "speaker": "CLICK",
+      "cue": "counting, even beats",
+      "text": "Job ticket. A short trip. Price: one action. Four tickets a turn.",
+      "beat": "INVITATION",
+      "hold": 0.7,
+      "directions": [
+        "[music: bed in, low]",
+        "[board: a dispatch wall of job tickets, each priced in actions. No clock anywhere in this office. An empty change tray sits on the counter. Click is working the wall alone.]"
+      ]
+    },
+    {
+      "id": "02",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "Eight arms. Eight actions.",
+      "beat": "INVITATION",
+      "hold": 0.7,
+      "directions": [
+        "[board: Pip arrives wearing eight cardboard arms.]"
+      ]
+    },
+    {
+      "id": "03",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "Four a turn, for the team. Not four each.",
+      "beat": "INVITATION",
+      "hold": 0.7,
+      "directions": []
+    },
+    {
+      "id": "04",
+      "speaker": "PIP",
+      "cue": "proud announcement",
+      "text": "A new job, then. I accept. I have done the paperwork.",
+      "beat": "INVITATION",
+      "hold": 0.25,
+      "directions": []
+    },
+    {
+      "id": "05",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "The paperwork is a drawing of an octopus eating paperwork.",
+      "beat": "INVITATION",
+      "hold": 3.5,
+      "directions": [],
+      "titleBump": true
+    },
+    {
+      "id": "06",
+      "speaker": "CLICK",
+      "cue": "recap, brisk",
+      "text": "Yesterday's ticket is still on the nail. Where was it going?",
+      "beat": "RECALL",
+      "hold": 0.7,
+      "directions": [
+        "[card: PIP'S AMENDMENTS (PENDING). Front: an eighth action. Back: the team shares four.]",
+        "[sting: title bump]",
+        "[music: bed out]",
+        "[board: yesterday's ticket, still on its nail. Destination: J ten.]"
+      ]
+    },
+    {
+      "id": "07",
+      "speaker": "COACH",
+      "cue": "warm, unhurried",
+      "text": "J ten. The far front door. Nobody asked how far.",
+      "beat": "RECALL",
+      "hold": 0.7,
+      "directions": []
+    },
+    {
+      "id": "08",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "The Hi has speed two. One action carries it two squares along an open path.",
+      "beat": "SHOW",
+      "hold": 0.7,
+      "directions": [
+        "[board: a White Hi on C three. C four, C five and C six are empty. Four action tokens in the tray.]",
+        "[card: the Hi. Speed two.]"
+      ]
+    },
+    {
+      "id": "09",
+      "speaker": "COACH",
+      "cue": "counting, even beats",
+      "text": "Watch. C three. C four. C five.",
+      "beat": "SHOW",
+      "hold": 0.7,
+      "directions": [
+        "[board: the Hi steps to C four, then C five. One token leaves the tray.]",
+        "[sfx: piece step]",
+        "[sfx: token removed]"
+      ]
+    },
+    {
+      "id": "10",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "That trip was two squares. It cost one ticket.",
+      "beat": "SHOW",
+      "hold": 0.7,
+      "directions": []
+    },
+    {
+      "id": "11",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Up, down, left or right. Never through a piece.",
+      "beat": "SHOW",
+      "hold": 0.7,
+      "directions": []
+    },
+    {
+      "id": "12",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "Friends block the hallway too. Eight arms taught me that in a doorway.",
+      "beat": "SHOW",
+      "hold": 0.9,
+      "directions": []
+    },
+    {
+      "id": "13",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "The open path from C three to C six is three squares.",
+      "beat": "TRY",
+      "hold": 0.7,
+      "directions": [
+        "[board: reset. The Hi back on C three, four tokens in the tray. The open path C three to C six is drawn once and frozen.]"
+      ]
+    },
+    {
+      "id": "14",
+      "speaker": "COACH",
+      "cue": "question, open",
+      "text": "The Hi makes that trip. How many of the four tickets are left?",
+      "beat": "TRY",
+      "hold": 0.7,
+      "directions": []
+    },
+    {
+      "id": "15",
+      "speaker": "PIP",
+      "cue": "proud announcement",
+      "text": "I say one left.",
+      "beat": "TRY",
+      "hold": 0.7,
+      "directions": []
+    },
+    {
+      "id": "16",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Take as long as you like. Or sit with it and watch.",
+      "beat": "TRY",
+      "hold": 10.2,
+      "directions": [],
+      "thinking": true
+    },
+    {
+      "id": "17",
+      "speaker": "COACH",
+      "cue": "reveal, land it",
+      "text": "Two remain.",
+      "beat": "EXPLAIN",
+      "hold": 0.7,
+      "directions": [
+        "[board: the Hi moves C three to C five. One token leaves. Then C five to C six. A second token leaves. Two tokens stay lit.]",
+        "[sfx: token removed]"
+      ],
+      "preRoll": 2.2
+    },
+    {
+      "id": "18",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Speed two carried the first two squares. The third square needed a second action.",
+      "beat": "EXPLAIN",
+      "hold": 0.7,
+      "directions": []
+    },
+    {
+      "id": "19",
+      "speaker": "PIP",
+      "cue": "gently, slower",
+      "text": "I said one. One ticket for every square. I am checking my pockets.",
+      "beat": "EXPLAIN",
+      "hold": 0.25,
+      "directions": []
+    },
+    {
+      "id": "20",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "Those pockets contain crumbs and disappointment.",
+      "beat": "EXPLAIN",
+      "hold": 0.9,
+      "directions": []
+    },
+    {
+      "id": "21",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "A partly used action is still an action. One ticket at a time.",
+      "beat": "EXPLAIN",
+      "hold": 0.7,
+      "directions": []
+    },
+    {
+      "id": "22",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "Two squares? One square?",
+      "beat": "EXPLAIN",
+      "hold": 0.7,
+      "directions": []
+    },
+    {
+      "id": "23",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "One ticket. No change.",
+      "beat": "EXPLAIN",
+      "hold": 1.2,
+      "directions": [
+        "[board: Click tips the change tray toward Pip. It is empty.]"
+      ]
+    },
+    {
+      "id": "24",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "One more square, later. That is a third ticket.",
+      "beat": "EXPLAIN",
+      "hold": 0.7,
+      "directions": [
+        "[board: later in the same turn, the Hi steps C six to C seven. A third token leaves.]"
+      ]
+    },
+    {
+      "id": "25",
+      "speaker": "COACH",
+      "cue": "stating the rule, level",
+      "text": "Distance you did not use does not carry over.",
+      "beat": "EXPLAIN",
+      "hold": 0.7,
+      "directions": []
+    },
+    {
+      "id": "26",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Same board. One change. Somebody is standing on C four. Count the way around.",
+      "beat": "TRANSFER",
+      "hold": 0.7,
+      "directions": [
+        "[card: EVIDENCE. Proves: the straight trip costs two of the four. Not checked: attacks, the reply, what Black does next.]",
+        "[board: a Black Sjor now stands on C four. The straight line is blocked. The open way around is drawn once and frozen: B three, B four, B five, B six, C six. Five squares. The Hi walks it and passes near the Sjor. Nothing happens to either piece.]"
+      ],
+      "preRoll": 0.6
+    },
+    {
+      "id": "27",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Five squares around. Three tickets. The blocked line was never a path.",
+      "beat": "TRANSFER",
+      "hold": 0.7,
+      "directions": []
+    },
+    {
+      "id": "28",
+      "speaker": "CLICK",
+      "cue": "dry aside",
+      "text": "Walked past. Did not attack. Walking is not an attack.",
+      "beat": "TRANSFER",
+      "hold": 0.7,
+      "directions": []
+    },
+    {
+      "id": "29",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Four coins on the table. They come back when your next turn starts.",
+      "beat": "EXIT",
+      "hold": 0.7,
+      "directions": [
+        "[board: four coins on the table.]"
+      ]
+    },
+    {
+      "id": "30",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Trace two trips and pay with coins. Leave what you did not spend in sight.",
+      "beat": "EXIT",
+      "hold": 0.7,
+      "directions": [],
+      "performanceNote": "Read the final sentence smoothly without restarting: Leave what you did not spend in sight. Do not insert use or do not."
+    },
+    {
+      "id": "31",
+      "speaker": "COACH",
+      "cue": "warm, unhurried",
+      "text": "Stopping here is fine.",
+      "beat": "EXIT",
+      "hold": 0.7,
+      "directions": []
+    },
+    {
+      "id": "32",
+      "speaker": "PIP",
+      "cue": "proud announcement",
+      "text": "My four spare arms now hold the reference cards. Finally. An advantage.",
+      "beat": "EXIT",
+      "hold": 0.7,
+      "directions": [
+        "[card: PIP'S AMENDMENTS. A rubber stamp comes down: ACCEPTED. The reference cards stay on the table.]"
+      ]
+    },
+    {
+      "id": "33",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "They hold cards. They do not hold actions.",
+      "beat": "EXIT",
+      "hold": 2.5,
+      "directions": []
+    }
+  ],
+  "question": "How many of the four tickets are left?",
+  "soundtrack": {
+    "id": "unequal-routes",
+    "title": "Unequal Routes",
+    "source": "muju/music-auditions/full-versions/unequal-routes-full-v1.mp3",
+    "sha256": "2354f06bdb9863f9ebc13bd3620a202ba27c4e07d91e84c900564247f80a96e7"
+  },
+  "speechProvider": "openai"
+}

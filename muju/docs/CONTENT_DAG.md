@@ -11,10 +11,16 @@ this workflow discoverable to agents; [`CLAUDE.md`](../../CLAUDE.md) links it to
 
 This maps the working tree inspected on 2026-09-18. Hostnames and previous
 deployment evidence below are repository records, not a fresh live audit.
-Academy production is present locally but was untracked at inventory time. An
-agent in another checkout needs access to those production sources and media,
-as well as this guide and manifest. Do not assume a source commit includes local
-untracked files; record their artifact location and hashes when handing work off.
+Academy text and source are now tracked here: the pipeline scripts, `episode.json`
+timelines, Remotion sources, rules snapshots, image prompts and lesson docs under
+`muju/academy/` are in the repository. Only rendered media is local-only —
+narration and music audio, rendered episodes, posters, thumbnails and QA capture
+frames. That media is archived outside git at
+`~/Archives/muju-media-2026-09-18/academy` (with `MANIFEST.sha256`); the original
+copy is `/Users/ashkie/src/deevgames/muju/academy`. Copy it offsite before
+deleting either. An agent in another checkout gets the sources from the commit and
+needs the media archive only to re-master or re-render; record media hashes when
+handing work off.
 
 ## Ask another agent
 
@@ -62,11 +68,14 @@ the engine and WASM wrapper can have mutual runtime relationships without creati
 a cycle here.
 
 `check` validates acyclicity, dependencies and required repository paths. Academy
-production is explicitly declared local-only in the manifest: unavailable inputs
-are reported, and affected plan nodes are marked **blocked** with the source
-location to obtain. Planning remains usable in a clean checkout; it never drops
-Academy from the graph. Use `check --require-local` to require all production
-inputs too. Missing undeclared repository paths still fail validation. It does not
+text and source paths are required like any other tracked path; only the Academy
+media directories (`production/R??/public/audio/`, `public/music/`, `public/art/`,
+`output/`, `qa/`) are declared local-only in the manifest. Unavailable media is
+reported, and affected plan nodes are marked **blocked** with the archive location
+to obtain (`~/Archives/muju-media-2026-09-18/academy`). Planning remains usable in
+a clean checkout; it never drops Academy from the graph. Use
+`check --require-local` to require the media too. Missing undeclared repository
+paths still fail validation. It does not
 prove gameplay, narration or deployed content is correct. Unmapped file inputs
 are printed and return exit code 2: investigate them and extend the graph rather
 than treating missing coverage as permission to skip work. Known historical
@@ -222,9 +231,9 @@ root redirects to `/muju/`.
 
 | Target | Package / release instructions | Required live evidence |
 |---|---|---|
-| Browser games: `https://deevgames.pages.dev/muju/` | Root `README.md`, `build-all.sh`, `.github/workflows/deploy.yml`; publish `_site` to Pages project `deevgames`. | Actual deployment step and source revision, fresh page/assets, changed piece/rule, AI worker, save/refresh and public skill copies. The workflow can succeed without publishing if credentials are missing. |
+| Browser games: `https://deevgames.pages.dev/muju/` — **publishing paused; frozen copy, record as blocked** | Root `README.md`, `build-all.sh`, `.github/workflows/deploy.yml`; publish `_site` to Pages project `deevgames`. | Actual deployment step and source revision, fresh page/assets, changed piece/rule, AI worker, save/refresh and public skill copies. The workflow can succeed without publishing if credentials are missing. |
 | Online game and MCP: `https://deevgames-muju.onrender.com` | `ONLINE.md`, `Dockerfile`, `compose.yaml`; inspect the current Render service configuration for its release route. | `/api/muju/health`, `/muju/`, `/SKILL.md`, tool discovery and current rules; changed-rule preview/play in a disposable room; persistent rooms survive restart. A Pages deployment does not deploy this host. |
-| Academy: `https://ashkie.com/muju-academy/` | Separate `ethancd/ashkie-pages` checkout and workflow; `academy/build-release.py`; website `./check`. | Current page/release manifest, exact media hashes, HTTP range seeking, historical redirects and retired assets; visual check of the live page. Copy the adapted `academy/verify-live.py` to website `tools/verify_muju_videos.py` and run it there, not in `deevgames`. |
+| Academy: `https://ashkie.com/muju-academy/` | Separate `ethancd/ashkie-pages` checkout and workflow; `academy/build-release.py`; website `./check`. Academy text sources are tracked here; the rendered audio and video the builder publishes are local-only and archived at `~/Archives/muju-media-2026-09-18/academy` (`MANIFEST.sha256`), so restore or re-render that media before packaging. | Current page/release manifest, exact media hashes, HTTP range seeking, historical redirects and retired assets; visual check of the live page. Copy the adapted `academy/verify-live.py` to website `tools/verify_muju_videos.py` and run it there, not in `deevgames`. |
 
 Render deployment route verified on 2026-09-18: service `srv-dahbp4ht0dsc73fdqn10`
 auto-deploys the GitHub `master` branch using Docker and preserves its existing

@@ -1,0 +1,1540 @@
+{
+  "id": "R10",
+  "title": "One Turn at the Practice Table",
+  "fps": 30,
+  "voices": {
+    "COACH": "marin",
+    "PIP": "coral",
+    "CLICK": "cedar"
+  },
+  "lines": [
+    {
+      "id": "01",
+      "speaker": "PIP",
+      "cue": "proud announcement",
+      "text": "My checklist. One box. Do the turn correctly.",
+      "beat": "INVITATION",
+      "hold": 0.9,
+      "directions": [
+        "[music: bed in, low]",
+        "[board: Pip stands behind a clipboard taller than Pip, with one enormous empty checkbox on it. Board unchanged.]"
+      ],
+      "displayText": "My checklist. One box. Do the turn correctly.",
+      "from": 0,
+      "speechFrames": 158,
+      "preRollFrames": 0,
+      "duration": 185,
+      "audio": "audio/01.wav",
+      "captions": [
+        {
+          "text": "My checklist. One box.",
+          "start": 0,
+          "end": 107
+        },
+        {
+          "text": "Do the turn correctly.",
+          "start": 107,
+          "end": 158
+        }
+      ],
+      "wordFrames": [
+        0,
+        13,
+        50,
+        60,
+        107,
+        107,
+        121,
+        128
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "02",
+      "speaker": "CLICK",
+      "cue": "counting, even beats",
+      "text": "Pay. Place. Act. Mine.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Pay. Place. Act. Mine.",
+      "from": 185,
+      "speechFrames": 90,
+      "preRollFrames": 0,
+      "duration": 110,
+      "audio": "audio/02.wav",
+      "captions": [
+        {
+          "text": "Pay. Place. Act. Mine.",
+          "start": 0,
+          "end": 90
+        }
+      ],
+      "wordFrames": [
+        0,
+        36,
+        58,
+        74
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "03",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "Four things. Then I am issuing three more boxes. With names.",
+      "beat": "INVITATION",
+      "hold": 3.4,
+      "directions": [],
+      "titleBump": true,
+      "displayText": "Four things. Then I am issuing three more boxes. With names.",
+      "from": 295,
+      "speechFrames": 138,
+      "preRollFrames": 0,
+      "duration": 240,
+      "audio": "audio/03.wav",
+      "captions": [
+        {
+          "text": "Four things. Then I am issuing three more boxes.",
+          "start": 10,
+          "end": 99
+        },
+        {
+          "text": "With names.",
+          "start": 99,
+          "end": 138
+        }
+      ],
+      "wordFrames": [
+        10,
+        12,
+        36,
+        45,
+        51,
+        61,
+        67,
+        82,
+        92,
+        99,
+        121
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "04",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Filed by Pip. Pay this morning's bill with this evening's payday.",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": [
+        "[board: the enormous box splits into four: PAY, PLACE, ACT, MINE]",
+        "[music: bed out]",
+        "[card: PIP'S AMENDMENTS (PENDING). One card lifts out of the drawer.]"
+      ],
+      "displayText": "Filed by Pip. Pay this morning's bill with this evening's payday.",
+      "from": 535,
+      "speechFrames": 144,
+      "preRollFrames": 0,
+      "duration": 164,
+      "audio": "audio/04.wav",
+      "captions": [
+        {
+          "text": "Filed by Pip. Pay this morning's bill with this evening's payday.",
+          "start": 3,
+          "end": 144
+        }
+      ],
+      "wordFrames": [
+        3,
+        13,
+        27,
+        49,
+        56,
+        64,
+        79,
+        84,
+        100,
+        108,
+        120
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "05",
+      "speaker": "COACH",
+      "cue": "warm, unhurried",
+      "text": "Good to see you, Pip. Overruled. This morning's bill needs crystals already in the bank.",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Good to see you, Pip. Overruled. This morning's bill needs crystals already in the bank.",
+      "from": 699,
+      "speechFrames": 192,
+      "preRollFrames": 0,
+      "duration": 212,
+      "audio": "audio/05.wav",
+      "captions": [
+        {
+          "text": "Good to see you, Pip.",
+          "start": 7,
+          "end": 56
+        },
+        {
+          "text": "Overruled. This morning's bill needs crystals already in the bank.",
+          "start": 56,
+          "end": 192
+        }
+      ],
+      "wordFrames": [
+        7,
+        11,
+        20,
+        24,
+        37,
+        56,
+        89,
+        95,
+        109,
+        113,
+        129,
+        142,
+        160,
+        164,
+        176
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "06",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "My promise was perfectly good. It was just facing backwards.",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "My promise was perfectly good. It was just facing backwards.",
+      "from": 911,
+      "speechFrames": 207,
+      "preRollFrames": 0,
+      "duration": 227,
+      "audio": "audio/06.wav",
+      "captions": [
+        {
+          "text": "My promise was perfectly good.",
+          "start": 0,
+          "end": 97
+        },
+        {
+          "text": "It was just facing backwards.",
+          "start": 97,
+          "end": 207
+        }
+      ],
+      "wordFrames": [
+        0,
+        9,
+        23,
+        40,
+        55,
+        97,
+        99,
+        105,
+        119,
+        129
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "07",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "First box. Pay the bills. A big piece pays a toll when our own turn starts.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[card: CHAPTER ONE. PAY AND PLACE.]",
+        "[board: White turn start. Bank 5. A Hono at D four. The Muju at B two. Black Sjor at I nine. The strip highlights PAY.]"
+      ],
+      "displayText": "First box. Pay the bills. A big piece pays a toll when our own turn starts.",
+      "from": 1138,
+      "speechFrames": 168,
+      "preRollFrames": 0,
+      "duration": 188,
+      "audio": "audio/07.wav",
+      "captions": [
+        {
+          "text": "First box. Pay the bills.",
+          "start": 0,
+          "end": 70
+        },
+        {
+          "text": "A big piece pays a toll when our own turn starts.",
+          "start": 70,
+          "end": 168
+        }
+      ],
+      "wordFrames": [
+        0,
+        10,
+        37,
+        38,
+        55,
+        70,
+        73,
+        79,
+        88,
+        94,
+        105,
+        106,
+        113,
+        119,
+        128,
+        133
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "08",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "The Hono owes one. The Muju owes nothing. Bank five. Now bank four.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: bill thud] [board: bank 5 to 4]"
+      ],
+      "displayText": "The Hono owes one. The Muju owes nothing. Bank five. Now bank four.",
+      "from": 1326,
+      "speechFrames": 242,
+      "preRollFrames": 0,
+      "duration": 262,
+      "audio": "audio/08.wav",
+      "captions": [
+        {
+          "text": "The Hono owes one.",
+          "start": 4,
+          "end": 90
+        },
+        {
+          "text": "The Muju owes nothing.",
+          "start": 90,
+          "end": 167
+        },
+        {
+          "text": "Bank five. Now bank four.",
+          "start": 167,
+          "end": 242
+        }
+      ],
+      "wordFrames": [
+        4,
+        24,
+        45,
+        59,
+        90,
+        102,
+        109,
+        128,
+        167,
+        169,
+        200,
+        210,
+        224
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "09",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Second box. The shop. A Hi at C three costs three crystals and no actions.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[board: after paying, White heals and resets its pieces. The strip highlights PLACE. A Hi appears on C three. Bank 4 to 1. No token leaves the tray of four.]",
+        "[sfx: shop chime]"
+      ],
+      "displayText": "Second box. The shop. A Hi at C3 costs three crystals and no actions.",
+      "from": 1588,
+      "speechFrames": 173,
+      "preRollFrames": 0,
+      "duration": 193,
+      "audio": "audio/09.wav",
+      "captions": [
+        {
+          "text": "Second box. The shop.",
+          "start": 0,
+          "end": 76
+        },
+        {
+          "text": "A Hi at C3 costs three crystals and no actions.",
+          "start": 76,
+          "end": 173
+        }
+      ],
+      "wordFrames": [
+        0,
+        15,
+        45,
+        49,
+        76,
+        79,
+        85,
+        90,
+        104,
+        116,
+        124,
+        136,
+        145,
+        150
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "10",
+      "speaker": "PIP",
+      "cue": "cheerfully wrong",
+      "text": "Then the bank says four.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Then the bank says four.",
+      "from": 1781,
+      "speechFrames": 90,
+      "preRollFrames": 0,
+      "duration": 110,
+      "audio": "audio/10.wav",
+      "captions": [
+        {
+          "text": "Then the bank says four.",
+          "start": 0,
+          "end": 90
+        }
+      ],
+      "wordFrames": [
+        0,
+        11,
+        20,
+        28,
+        80
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "11",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "One.",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "displayText": "One.",
+      "from": 1891,
+      "speechFrames": 27,
+      "preRollFrames": 0,
+      "duration": 51,
+      "audio": "audio/11.wav",
+      "captions": [
+        {
+          "text": "One.",
+          "start": 0,
+          "end": 27
+        }
+      ],
+      "wordFrames": [
+        0
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "12",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "The box was right. My math needed the box.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "The box was right. My math needed the box.",
+      "from": 1942,
+      "speechFrames": 144,
+      "preRollFrames": 0,
+      "duration": 164,
+      "audio": "audio/12.wav",
+      "captions": [
+        {
+          "text": "The box was right.",
+          "start": 6,
+          "end": 68
+        },
+        {
+          "text": "My math needed the box.",
+          "start": 68,
+          "end": 144
+        }
+      ],
+      "wordFrames": [
+        6,
+        9,
+        19,
+        33,
+        68,
+        77,
+        89,
+        111,
+        139
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "13",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Third box. This trip: one action.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[card: CHAPTER TWO. ACT AND MINE.]",
+        "[board: the strip highlights ACT. The Hi steps from C three to C four. One token leaves the tray of four.]",
+        "[sfx: piece step] [sfx: token removed]"
+      ],
+      "displayText": "Third box. This trip: one action.",
+      "from": 2106,
+      "speechFrames": 87,
+      "preRollFrames": 0,
+      "duration": 107,
+      "audio": "audio/13.wav",
+      "captions": [
+        {
+          "text": "Third box. This trip: one action.",
+          "start": 10,
+          "end": 87
+        }
+      ],
+      "wordFrames": [
+        10,
+        10,
+        40,
+        40,
+        62,
+        70
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "14",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "That trip was one square. A Hi may walk two squares for the same action.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "That trip was one square. A Hi may walk two squares for the same action.",
+      "from": 2213,
+      "speechFrames": 149,
+      "preRollFrames": 0,
+      "duration": 169,
+      "audio": "audio/14.wav",
+      "captions": [
+        {
+          "text": "That trip was one square.",
+          "start": 2,
+          "end": 63
+        },
+        {
+          "text": "A Hi may walk two squares for the same action.",
+          "start": 63,
+          "end": 149
+        }
+      ],
+      "wordFrames": [
+        2,
+        9,
+        17,
+        27,
+        38,
+        63,
+        74,
+        75,
+        85,
+        90,
+        100,
+        107,
+        119,
+        125,
+        132
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "15",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Three actions are unused, and that is allowed. The last box is the one we count together.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Three actions are unused, and that is allowed. The last box is the one we count together.",
+      "from": 2382,
+      "speechFrames": 186,
+      "preRollFrames": 0,
+      "duration": 206,
+      "audio": "audio/15.wav",
+      "captions": [
+        {
+          "text": "Three actions are unused, and that is allowed.",
+          "start": 0,
+          "end": 108
+        },
+        {
+          "text": "The last box is the one we count together.",
+          "start": 108,
+          "end": 186
+        }
+      ],
+      "wordFrames": [
+        0,
+        12,
+        29,
+        37,
+        68,
+        73,
+        78,
+        82,
+        108,
+        113,
+        123,
+        134,
+        145,
+        150,
+        155,
+        161,
+        168
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "16",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "The Hono. Mining one. One crystal still sitting in that square.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [
+        "[board: the strip highlights MINE. Three squares light up: one crystal under the Hono, three under the Muju, none under the Hi. Bank card reads two.]"
+      ],
+      "displayText": "The Hono. Mining one. One crystal still sitting in that square.",
+      "from": 2588,
+      "speechFrames": 168,
+      "preRollFrames": 0,
+      "duration": 188,
+      "audio": "audio/16.wav",
+      "captions": [
+        {
+          "text": "The Hono. Mining one.",
+          "start": 0,
+          "end": 114
+        },
+        {
+          "text": "One crystal still sitting in that square.",
+          "start": 114,
+          "end": 168
+        }
+      ],
+      "wordFrames": [
+        0,
+        30,
+        60,
+        69,
+        114,
+        114,
+        114,
+        130,
+        138,
+        147,
+        154
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "17",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "The Muju. Mining three. Three crystals still sitting in that square.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "The Muju. Mining three. Three crystals still sitting in that square.",
+      "from": 2776,
+      "speechFrames": 164,
+      "preRollFrames": 0,
+      "duration": 184,
+      "audio": "audio/17.wav",
+      "captions": [
+        {
+          "text": "The Muju. Mining three.",
+          "start": 2,
+          "end": 102
+        },
+        {
+          "text": "Three crystals still sitting in that square.",
+          "start": 102,
+          "end": 164
+        }
+      ],
+      "wordFrames": [
+        2,
+        15,
+        62,
+        62,
+        102,
+        102,
+        111,
+        127,
+        133,
+        139,
+        155
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "18",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "The new Hi. Mining one. Its square is empty.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "The new Hi. Mining one. Its square is empty.",
+      "from": 2960,
+      "speechFrames": 122,
+      "preRollFrames": 0,
+      "duration": 142,
+      "audio": "audio/18.wav",
+      "captions": [
+        {
+          "text": "The new Hi. Mining one.",
+          "start": 0,
+          "end": 77
+        },
+        {
+          "text": "Its square is empty.",
+          "start": 77,
+          "end": 122
+        }
+      ],
+      "wordFrames": [
+        0,
+        9,
+        19,
+        50,
+        50,
+        77,
+        85,
+        95,
+        108
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "19",
+      "speaker": "COACH",
+      "cue": "question, open",
+      "text": "At our turn end, how much income arrives?",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "At our turn end, how much income arrives?",
+      "from": 3102,
+      "speechFrames": 117,
+      "preRollFrames": 0,
+      "duration": 137,
+      "audio": "audio/19.wav",
+      "captions": [
+        {
+          "text": "At our turn end, how much income arrives?",
+          "start": 0,
+          "end": 117
+        }
+      ],
+      "wordFrames": [
+        0,
+        9,
+        24,
+        37,
+        69,
+        74,
+        82,
+        95
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "20",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Take as long as you like. Or watch it happen with me.",
+      "beat": "TRY",
+      "hold": 10.2,
+      "directions": [],
+      "thinking": true,
+      "displayText": "Take as long as you like. Or watch it happen with me.",
+      "from": 3239,
+      "speechFrames": 125,
+      "preRollFrames": 0,
+      "duration": 431,
+      "audio": "audio/20.wav",
+      "captions": [
+        {
+          "text": "Take as long as you like.",
+          "start": 2,
+          "end": 68
+        },
+        {
+          "text": "Or watch it happen with me.",
+          "start": 68,
+          "end": 125
+        }
+      ],
+      "wordFrames": [
+        2,
+        22,
+        30,
+        34,
+        39,
+        43,
+        68,
+        72,
+        79,
+        85,
+        95,
+        105
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "21",
+      "speaker": "COACH",
+      "cue": "reveal, land it",
+      "text": "Four crystals arrived.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: crystal cascade] [board: one crystal, then three, then none, tumble into the bank. Bank 2 to 6. Both source squares dim to zero.]",
+        "[card: one and three and none. Four crystals. Bank one becomes bank five.]"
+      ],
+      "displayText": "Four crystals arrived.",
+      "from": 3670,
+      "speechFrames": 86,
+      "preRollFrames": 0,
+      "duration": 106,
+      "audio": "audio/21.wav",
+      "captions": [
+        {
+          "text": "Four crystals arrived.",
+          "start": 2,
+          "end": 86
+        }
+      ],
+      "wordFrames": [
+        2,
+        22,
+        39
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "22",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Bank one. Now bank five.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Bank one. Now bank five.",
+      "from": 3776,
+      "speechFrames": 92,
+      "preRollFrames": 0,
+      "duration": 112,
+      "audio": "audio/22.wav",
+      "captions": [
+        {
+          "text": "Bank one. Now bank five.",
+          "start": 0,
+          "end": 92
+        }
+      ],
+      "wordFrames": [
+        0,
+        12,
+        49,
+        52,
+        61
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "23",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Even a new piece that moved can collect. This Hi took nothing because its square was empty.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Even a new piece that moved can collect. This Hi took nothing because its square was empty.",
+      "from": 3888,
+      "speechFrames": 212,
+      "preRollFrames": 0,
+      "duration": 232,
+      "audio": "audio/23.wav",
+      "captions": [
+        {
+          "text": "Even a new piece that moved can collect.",
+          "start": 11,
+          "end": 96
+        },
+        {
+          "text": "This Hi took nothing because its square was empty.",
+          "start": 96,
+          "end": 212
+        }
+      ],
+      "wordFrames": [
+        11,
+        17,
+        25,
+        32,
+        38,
+        56,
+        56,
+        65,
+        96,
+        104,
+        113,
+        124,
+        136,
+        151,
+        162,
+        170,
+        180
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "24",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "I have ticked every box. The board declined to congratulate me.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[card: EVIDENCE. Proves: the four boxes happened in order. Not checked: whether it was a good turn.]"
+      ],
+      "displayText": "I have ticked every box. The board declined to congratulate me.",
+      "from": 4120,
+      "speechFrames": 150,
+      "preRollFrames": 0,
+      "duration": 170,
+      "audio": "audio/24.wav",
+      "captions": [
+        {
+          "text": "I have ticked every box.",
+          "start": 0,
+          "end": 71
+        },
+        {
+          "text": "The board declined to congratulate me.",
+          "start": 71,
+          "end": 150
+        }
+      ],
+      "wordFrames": [
+        0,
+        4,
+        13,
+        29,
+        42,
+        71,
+        76,
+        84,
+        98,
+        108,
+        119
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "25",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Now look at tomorrow morning's bill. The Hono still owes one.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[board: the strip resets to PAY. The four new crystals sit in the bank.]"
+      ],
+      "displayText": "Now look at tomorrow morning's bill. The Hono still owes one.",
+      "from": 4290,
+      "speechFrames": 185,
+      "preRollFrames": 0,
+      "duration": 205,
+      "audio": "audio/25.wav",
+      "captions": [
+        {
+          "text": "Now look at tomorrow morning's bill.",
+          "start": 9,
+          "end": 94
+        },
+        {
+          "text": "The Hono still owes one.",
+          "start": 94,
+          "end": 185
+        }
+      ],
+      "wordFrames": [
+        9,
+        13,
+        29,
+        41,
+        51,
+        74,
+        94,
+        113,
+        132,
+        153,
+        162
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "26",
+      "speaker": "PIP",
+      "cue": "delighted realization",
+      "text": "So tonight's crystals can pay tomorrow's toll.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "So tonight's crystals can pay tomorrow's toll.",
+      "from": 4495,
+      "speechFrames": 141,
+      "preRollFrames": 0,
+      "duration": 161,
+      "audio": "audio/26.wav",
+      "captions": [
+        {
+          "text": "So tonight's crystals can pay tomorrow's toll.",
+          "start": 23,
+          "end": 141
+        }
+      ],
+      "wordFrames": [
+        23,
+        47,
+        71,
+        71,
+        88,
+        98,
+        127
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "27",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "They can. They were never allowed to pay this morning's.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "They can. They were never allowed to pay this morning's.",
+      "from": 4656,
+      "speechFrames": 123,
+      "preRollFrames": 0,
+      "duration": 143,
+      "audio": "audio/27.wav",
+      "captions": [
+        {
+          "text": "They can. They were never allowed to pay this morning's.",
+          "start": 0,
+          "end": 123
+        }
+      ],
+      "wordFrames": [
+        0,
+        6,
+        29,
+        33,
+        39,
+        48,
+        55,
+        67,
+        69,
+        79
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "28",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Take the mission card. Play that turn twice, then meet me at the Toast Department.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": [
+        "[card: MISSION. Play this turn twice. Change only where the new Hi stops. Write down both paydays.]"
+      ],
+      "displayText": "Take the mission card. Play that turn twice, then meet me at the Toast Department.",
+      "from": 4799,
+      "speechFrames": 158,
+      "preRollFrames": 0,
+      "duration": 178,
+      "audio": "audio/28.wav",
+      "captions": [
+        {
+          "text": "Take the mission card.",
+          "start": 0,
+          "end": 58
+        },
+        {
+          "text": "Play that turn twice, then meet me at the Toast Department.",
+          "start": 58,
+          "end": 158
+        }
+      ],
+      "wordFrames": [
+        0,
+        9,
+        16,
+        26,
+        58,
+        58,
+        66,
+        74,
+        90,
+        102,
+        108,
+        115,
+        120,
+        126,
+        135
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "public",
+      "speaker": "COACH",
+      "text": "The board, crystals, purchases, promotions and quiet count are public. There is no hidden build queue. If no legal purchase or promotion is available, the game skips straight to actions.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "card",
+        "title": "Everything you need to count is public",
+        "body": "Board · damage · reserves · banks · income · quiet count\nNo build queue or hidden production.\nPlace is skipped when no legal choice exists."
+      },
+      "displayText": "The board, crystals, purchases, promotions and quiet count are public. There is no hidden build queue. If no legal purchase or promotion is available, the game skips straight to actions.",
+      "from": 4977,
+      "speechFrames": 396,
+      "preRollFrames": 0,
+      "duration": 420,
+      "audio": "audio/public.wav",
+      "captions": [
+        {
+          "text": "The board, crystals, purchases, promotions and quiet count are public.",
+          "start": 0,
+          "end": 173
+        },
+        {
+          "text": "There is no hidden build queue.",
+          "start": 173,
+          "end": 233
+        },
+        {
+          "text": "If no legal purchase or promotion is available, the game skips straight",
+          "start": 233,
+          "end": 358
+        },
+        {
+          "text": "to actions.",
+          "start": 358,
+          "end": 396
+        }
+      ],
+      "wordFrames": [
+        0,
+        5,
+        42,
+        58,
+        82,
+        104,
+        107,
+        117,
+        126,
+        142,
+        173,
+        177,
+        181,
+        188,
+        197,
+        205,
+        233,
+        238,
+        247,
+        256,
+        267,
+        275,
+        284,
+        292,
+        322,
+        328,
+        336,
+        349,
+        358,
+        365
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "controls",
+      "speaker": "COACH",
+      "text": "Tap an empty reachable square to move. Tap an enemy to preview a trip and attack, then confirm to spend the actions. Undo works inside the current turn. End Actions collects income and hands the turn over.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "card",
+        "title": "Playing your turn",
+        "body": "Empty reachable square → move\nEnemy → preview movement + attack → confirm\nUndo stays within this turn.\nEnd Actions → mining → next player"
+      },
+      "displayText": "Tap an empty reachable square to move. Tap an enemy to preview a trip and attack, then confirm to spend the actions. Undo works inside the current turn. End Actions collects income and hands the turn over.",
+      "from": 5397,
+      "speechFrames": 417,
+      "preRollFrames": 0,
+      "duration": 441,
+      "audio": "audio/controls.wav",
+      "captions": [
+        {
+          "text": "Tap an empty reachable square to move.",
+          "start": 0,
+          "end": 83
+        },
+        {
+          "text": "Tap an enemy to preview a trip and attack, then confirm to",
+          "start": 83,
+          "end": 183
+        },
+        {
+          "text": "spend the actions. Undo works inside the current turn.",
+          "start": 183,
+          "end": 310
+        },
+        {
+          "text": "End Actions collects income and hands the turn over.",
+          "start": 310,
+          "end": 417
+        }
+      ],
+      "wordFrames": [
+        0,
+        9,
+        16,
+        27,
+        40,
+        47,
+        55,
+        83,
+        87,
+        93,
+        100,
+        108,
+        118,
+        124,
+        129,
+        133,
+        156,
+        163,
+        176,
+        183,
+        189,
+        194,
+        231,
+        242,
+        251,
+        266,
+        272,
+        278,
+        310,
+        316,
+        328,
+        341,
+        355,
+        368,
+        376,
+        380,
+        386
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "options",
+      "speaker": "COACH",
+      "text": "Before a new game, Black can receive an optional starting gift of one to twenty crystals. White still starts with zero. Three or more lets Black shop on its first turn. Both players still get four actions.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "card",
+        "title": "Optional Black crystal handicap",
+        "body": "Off by default. Black may start with 1–20 crystals.\nAt 1–2: first turn begins with actions.\nAt 3–20: Black can enter Place on turn 1.\nBoth sides always get 4 actions."
+      },
+      "displayText": "Before a new game, Black can receive an optional starting gift of one to twenty crystals. White still starts with zero. Three or more lets Black shop on its first turn. Both players still get four actions.",
+      "from": 5838,
+      "speechFrames": 404,
+      "preRollFrames": 0,
+      "duration": 428,
+      "audio": "audio/options.wav",
+      "captions": [
+        {
+          "text": "Before a new game, Black can receive an optional starting gift of",
+          "start": 0,
+          "end": 109
+        },
+        {
+          "text": "one to twenty crystals.",
+          "start": 109,
+          "end": 166
+        },
+        {
+          "text": "White still starts with zero.",
+          "start": 166,
+          "end": 224
+        },
+        {
+          "text": "Three or more lets Black shop on its first turn.",
+          "start": 224,
+          "end": 323
+        },
+        {
+          "text": "Both players still get four actions.",
+          "start": 323,
+          "end": 404
+        }
+      ],
+      "wordFrames": [
+        0,
+        10,
+        15,
+        19,
+        46,
+        48,
+        55,
+        64,
+        69,
+        83,
+        94,
+        102,
+        109,
+        118,
+        122,
+        132,
+        166,
+        167,
+        176,
+        187,
+        194,
+        224,
+        236,
+        239,
+        247,
+        257,
+        266,
+        276,
+        283,
+        287,
+        293,
+        323,
+        327,
+        337,
+        346,
+        352,
+        360
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "timed",
+      "speaker": "COACH",
+      "text": "Online rooms can use a clock or be untimed. Check the chosen clock settings before starting. Running out of allowed time loses a timed game. Resigning also gives the other player the win. These video questions have no timer.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "card",
+        "title": "Choose the game’s clock before starting",
+        "body": "Online play: timed or untimed\nCheck the room’s chosen time settings.\nTimeout or resignation gives the opponent the win.\nPause these videos whenever you like."
+      },
+      "displayText": "Online rooms can use a clock or be untimed. Check the chosen clock settings before starting. Running out of allowed time loses a timed game. Resigning also gives the other player the win. These video questions have no timer.",
+      "from": 6266,
+      "speechFrames": 417,
+      "preRollFrames": 0,
+      "duration": 441,
+      "audio": "audio/timed.wav",
+      "captions": [
+        {
+          "text": "Online rooms can use a clock or be untimed.",
+          "start": 0,
+          "end": 106
+        },
+        {
+          "text": "Check the chosen clock settings before starting.",
+          "start": 106,
+          "end": 183
+        },
+        {
+          "text": "Running out of allowed time loses a timed game.",
+          "start": 183,
+          "end": 279
+        },
+        {
+          "text": "Resigning also gives the other player the win.",
+          "start": 279,
+          "end": 358
+        },
+        {
+          "text": "These video questions have no timer.",
+          "start": 358,
+          "end": 417
+        }
+      ],
+      "wordFrames": [
+        0,
+        19,
+        29,
+        37,
+        43,
+        49,
+        55,
+        69,
+        75,
+        106,
+        111,
+        118,
+        126,
+        134,
+        143,
+        154,
+        183,
+        189,
+        196,
+        199,
+        207,
+        220,
+        232,
+        241,
+        248,
+        279,
+        289,
+        299,
+        307,
+        313,
+        319,
+        326,
+        332,
+        358,
+        364,
+        373,
+        384,
+        394,
+        400
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "29",
+      "speaker": "CLICK",
+      "cue": "counting, even beats",
+      "text": "Pay. Place. Act. Mine.",
+      "beat": "EXIT",
+      "hold": 1.2,
+      "directions": [],
+      "displayText": "Pay. Place. Act. Mine.",
+      "from": 6707,
+      "speechFrames": 98,
+      "preRollFrames": 0,
+      "duration": 134,
+      "audio": "audio/29.wav",
+      "captions": [
+        {
+          "text": "Pay. Place. Act. Mine.",
+          "start": 0,
+          "end": 98
+        }
+      ],
+      "wordFrames": [
+        0,
+        40,
+        59,
+        81
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "30",
+      "speaker": "COACH",
+      "cue": "warm, unhurried",
+      "text": "Pay the bills first. Mine crystals last. Stopping here is fine.",
+      "beat": "EXIT",
+      "hold": 2,
+      "directions": [],
+      "displayText": "Pay the bills first. Mine crystals last. Stopping here is fine.",
+      "from": 6841,
+      "speechFrames": 195,
+      "preRollFrames": 0,
+      "duration": 255,
+      "audio": "audio/30.wav",
+      "captions": [
+        {
+          "text": "Pay the bills first.",
+          "start": 0,
+          "end": 78
+        },
+        {
+          "text": "Mine crystals last. Stopping here is fine.",
+          "start": 78,
+          "end": 195
+        }
+      ],
+      "wordFrames": [
+        0,
+        18,
+        35,
+        35,
+        78,
+        81,
+        94,
+        138,
+        143,
+        153,
+        169
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    }
+  ],
+  "question": "At our turn end, how much income arrives?",
+  "version": 6,
+  "updatedLabel": "Video version 6 · Last updated at 05:38 Sep 13 2026 CDT",
+  "rules": "v2.7",
+  "soundtrack": {
+    "id": "open-room",
+    "title": "Open Room, Lantern On",
+    "source": "muju/music-auditions/full-versions/open-room-full-v1.mp3",
+    "sha256": "dddd8b6ca2bbfe869424f59b7d26673f5f09e72533b68cfcad60fc3042a9fa42"
+  },
+  "speechProvider": "openai",
+  "audioComplete": true,
+  "durationInFrames": 7096
+}

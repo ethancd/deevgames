@@ -1,0 +1,12 @@
+{
+  "provider": "openai",
+  "hash": "c202f46fe9b8a645f73ee4124ffeff62885c9e9bbb584b4ae15b68c0d2dd6aac",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "With one attack, the Gölge can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Göl, Gölge and Karanlık. Every unlit card survives that single hit.",
+  "speechText": "With one attack, the GURL-geh can finish Hee, HOH-noh, kah-GAH-ree, RAH-dee, oo-MEH-meh, kee-moo-BOON-gah, Shore, STROWM-ur, Gurl, GURL-geh and kah-rahn-luk. Every unlit card survives that single hit.",
+  "duration": 15,
+  "bytes": 720044,
+  "createdAt": "2026-09-13T10:39:13.129Z"
+}

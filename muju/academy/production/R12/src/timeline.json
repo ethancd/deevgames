@@ -1,0 +1,2316 @@
+{
+  "id": "R12",
+  "title": "Lightning: Express Delivery",
+  "fps": 30,
+  "voices": {
+    "COACH": "marin",
+    "PIP": "coral",
+    "CLICK": "cedar",
+    "EMBER": "ash",
+    "ZIP": "verse",
+    "BUBBLES": "shimmer",
+    "MURMUR": "sage",
+    "CLANK": "onyx"
+  },
+  "lines": [
+    {
+      "id": "01",
+      "speaker": "ZIP",
+      "cue": "rapid, breathless",
+      "text": "Delivered. Ahead of schedule.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed in, low]",
+        "[board: DISPATCH DEPARTMENT. Tickets on nails. No clock anywhere. A sign: WE DO NOT PROMISE A TIME. WE PROMISE A PRICE. A smaller sign under it: SPEED CHANGES WHAT A TRIP COSTS. IT NEVER CHANGES WHAT A HIT DOES. Zip holds an envelope on the far side of a wall of pieces.]"
+      ],
+      "displayText": "Delivered. Ahead of schedule.",
+      "from": 0,
+      "speechFrames": 72,
+      "preRollFrames": 0,
+      "duration": 92,
+      "audio": "audio/01.wav",
+      "captions": [
+        {
+          "text": "Delivered. Ahead of schedule.",
+          "start": 0,
+          "end": 72
+        }
+      ],
+      "wordFrames": [
+        0,
+        20,
+        36,
+        71
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "02",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "Delivered to the square beside the recipient.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Delivered to the square beside the recipient.",
+      "from": 92,
+      "speechFrames": 84,
+      "preRollFrames": 0,
+      "duration": 104,
+      "audio": "audio/02.wav",
+      "captions": [
+        {
+          "text": "Delivered to the square beside the recipient.",
+          "start": 0,
+          "end": 84
+        }
+      ],
+      "wordFrames": [
+        0,
+        21,
+        24,
+        42,
+        42,
+        60,
+        80
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "03",
+      "speaker": "ZIP",
+      "cue": "",
+      "text": "Next door is not the same as finished. The hit costs one more action.",
+      "beat": "INVITATION",
+      "hold": 3.4,
+      "directions": [],
+      "titleBump": true,
+      "displayText": "Next door is not the same as finished. The hit costs one more action.",
+      "from": 196,
+      "speechFrames": 191,
+      "preRollFrames": 0,
+      "duration": 293,
+      "audio": "audio/03.wav",
+      "captions": [
+        {
+          "text": "Next door is not the same as finished.",
+          "start": 6,
+          "end": 110
+        },
+        {
+          "text": "The hit costs one more action.",
+          "start": 110,
+          "end": 191
+        }
+      ],
+      "wordFrames": [
+        6,
+        15,
+        25,
+        40,
+        49,
+        57,
+        66,
+        78,
+        110,
+        115,
+        128,
+        144,
+        156,
+        163
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "04",
+      "speaker": "CLICK",
+      "cue": "dry aside",
+      "text": "Memo from the Toast Department. Never declare breakfast early.",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed out]",
+        "[card: THE THREE QUESTIONS. Which stat helps this job? How many actions does it take? What will this piece owe next turn?]",
+        "[card: ROSTER KEY. Hit = base attack before elements. Shield = full defense. Walk = squares per action. Take = maximum crystals at own turn end, limited by reserve. Keep beside every roster recital.]",
+        "[card: MEMO FROM THE TOAST DEPARTMENT]"
+      ],
+      "displayText": "Memo from the Toast Department. Never declare breakfast early.",
+      "from": 489,
+      "speechFrames": 119,
+      "preRollFrames": 0,
+      "duration": 139,
+      "audio": "audio/04.wav",
+      "captions": [
+        {
+          "text": "Memo from the Toast Department.",
+          "start": 9,
+          "end": 68
+        },
+        {
+          "text": "Never declare breakfast early.",
+          "start": 68,
+          "end": 119
+        }
+      ],
+      "wordFrames": [
+        9,
+        10,
+        18,
+        25,
+        32,
+        68,
+        73,
+        85,
+        100
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "05",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Same idea in this office. Arriving is not finishing.",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Same idea in this office. Arriving is not finishing.",
+      "from": 628,
+      "speechFrames": 126,
+      "preRollFrames": 0,
+      "duration": 146,
+      "audio": "audio/05.wav",
+      "captions": [
+        {
+          "text": "Same idea in this office.",
+          "start": 4,
+          "end": 72
+        },
+        {
+          "text": "Arriving is not finishing.",
+          "start": 72,
+          "end": 126
+        }
+      ],
+      "wordFrames": [
+        4,
+        12,
+        26,
+        36,
+        45,
+        72,
+        84,
+        100,
+        109
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "06",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Ticket one. The path is four squares. The Radi has speed three.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[board: ticket one on its nail. An open path of four empty squares is drawn, then frozen. Radi card: speed three. Tray of four tokens.]",
+        "[card: four squares. Speed three.]"
+      ],
+      "displayText": "Ticket one. The path is four squares. The Radi has speed three.",
+      "from": 774,
+      "speechFrames": 186,
+      "preRollFrames": 0,
+      "duration": 206,
+      "audio": "audio/06.wav",
+      "captions": [
+        {
+          "text": "Ticket one. The path is four squares.",
+          "start": 2,
+          "end": 106
+        },
+        {
+          "text": "The Radi has speed three.",
+          "start": 106,
+          "end": 186
+        }
+      ],
+      "wordFrames": [
+        2,
+        13,
+        48,
+        48,
+        58,
+        65,
+        77,
+        106,
+        112,
+        119,
+        140,
+        152
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "07",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Three squares fit in one action. One square is left over.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: piece step] [sfx: token removed] [board: the Radi walks three squares and stops. One token leaves the tray.]"
+      ],
+      "displayText": "Three squares fit in one action. One square is left over.",
+      "from": 980,
+      "speechFrames": 146,
+      "preRollFrames": 0,
+      "duration": 166,
+      "audio": "audio/07.wav",
+      "captions": [
+        {
+          "text": "Three squares fit in one action.",
+          "start": 15,
+          "end": 93
+        },
+        {
+          "text": "One square is left over.",
+          "start": 93,
+          "end": 146
+        }
+      ],
+      "wordFrames": [
+        15,
+        15,
+        26,
+        47,
+        53,
+        61,
+        93,
+        100,
+        108,
+        122,
+        126
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "08",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Each action covers up to three squares. The final part still uses a whole action. Two altogether.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: piece step] [sfx: token removed] [board: the Radi walks the last square. A second token leaves the tray.]"
+      ],
+      "displayText": "Each action covers up to three squares. The final part still uses a whole action. Two altogether.",
+      "from": 1146,
+      "speechFrames": 210,
+      "preRollFrames": 0,
+      "duration": 230,
+      "audio": "audio/08.wav",
+      "captions": [
+        {
+          "text": "Each action covers up to three squares.",
+          "start": 4,
+          "end": 85
+        },
+        {
+          "text": "The final part still uses a whole action.",
+          "start": 85,
+          "end": 177
+        },
+        {
+          "text": "Two altogether.",
+          "start": 177,
+          "end": 210
+        }
+      ],
+      "wordFrames": [
+        4,
+        10,
+        23,
+        33,
+        40,
+        47,
+        56,
+        85,
+        88,
+        96,
+        106,
+        118,
+        125,
+        137,
+        145,
+        177,
+        181
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "09",
+      "speaker": "ZIP",
+      "cue": "",
+      "text": "New ticket. The path is five squares. My Radi has speed three.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [
+        "[board: ticket two on its nail. An open path of five empty squares is drawn, then frozen. The Radi card still reads speed three. The tray is full again.]",
+        "[card: five squares. Speed three.]"
+      ],
+      "displayText": "New ticket. The path is five squares. My Radi has speed three.",
+      "from": 1376,
+      "speechFrames": 170,
+      "preRollFrames": 0,
+      "duration": 190,
+      "audio": "audio/09.wav",
+      "captions": [
+        {
+          "text": "New ticket. The path is five squares.",
+          "start": 15,
+          "end": 113
+        },
+        {
+          "text": "My Radi has speed three.",
+          "start": 113,
+          "end": 170
+        }
+      ],
+      "wordFrames": [
+        15,
+        15,
+        46,
+        52,
+        62,
+        72,
+        84,
+        113,
+        122,
+        129,
+        141,
+        150
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "10",
+      "speaker": "ZIP",
+      "cue": "question, open",
+      "text": "How many actions does that trip cost me?",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "How many actions does that trip cost me?",
+      "from": 1566,
+      "speechFrames": 123,
+      "preRollFrames": 0,
+      "duration": 143,
+      "audio": "audio/10.wav",
+      "captions": [
+        {
+          "text": "How many actions does that trip cost me?",
+          "start": 0,
+          "end": 123
+        }
+      ],
+      "wordFrames": [
+        0,
+        9,
+        21,
+        38,
+        50,
+        61,
+        70,
+        83
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "11",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Take longer if you want. Or watch the tray with me.",
+      "beat": "TRY",
+      "hold": 10.2,
+      "directions": [],
+      "thinking": true,
+      "question": "How many actions does that trip cost me?",
+      "displayText": "Take longer if you want. Or watch the tray with me.",
+      "from": 1709,
+      "speechFrames": 140,
+      "preRollFrames": 0,
+      "duration": 446,
+      "audio": "audio/11.wav",
+      "captions": [
+        {
+          "text": "Take longer if you want.",
+          "start": 6,
+          "end": 72
+        },
+        {
+          "text": "Or watch the tray with me.",
+          "start": 72,
+          "end": 140
+        }
+      ],
+      "wordFrames": [
+        6,
+        10,
+        24,
+        37,
+        45,
+        72,
+        82,
+        102,
+        116,
+        117,
+        130
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "12",
+      "speaker": "COACH",
+      "cue": "reveal, land it",
+      "text": "Two actions.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: token removed] [sfx: token removed] [board: the Radi walks three squares and stops. Then two more. Two tokens leave the tray.]"
+      ],
+      "displayText": "Two actions.",
+      "from": 2155,
+      "speechFrames": 62,
+      "preRollFrames": 0,
+      "duration": 82,
+      "audio": "audio/12.wav",
+      "captions": [
+        {
+          "text": "Two actions.",
+          "start": 0,
+          "end": 62
+        }
+      ],
+      "wordFrames": [
+        0,
+        12
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "13",
+      "speaker": "ZIP",
+      "cue": "",
+      "text": "Three squares, then two left over. I would like fewer leftovers.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Three squares, then two left over. I would like fewer leftovers.",
+      "from": 2237,
+      "speechFrames": 179,
+      "preRollFrames": 0,
+      "duration": 199,
+      "audio": "audio/13.wav",
+      "captions": [
+        {
+          "text": "Three squares, then two left over.",
+          "start": 8,
+          "end": 93
+        },
+        {
+          "text": "I would like fewer leftovers.",
+          "start": 93,
+          "end": 179
+        }
+      ],
+      "wordFrames": [
+        8,
+        17,
+        43,
+        48,
+        57,
+        64,
+        93,
+        101,
+        107,
+        120,
+        136
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "14",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "Speed five, five squares. That has to be one action.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[board: Kimubunga card beside the same five-square path. Speed five.]"
+      ],
+      "displayText": "Speed five, five squares. That has to be one action.",
+      "from": 2436,
+      "speechFrames": 159,
+      "preRollFrames": 0,
+      "duration": 179,
+      "audio": "audio/14.wav",
+      "captions": [
+        {
+          "text": "Speed five, five squares.",
+          "start": 0,
+          "end": 98
+        },
+        {
+          "text": "That has to be one action.",
+          "start": 98,
+          "end": 159
+        }
+      ],
+      "wordFrames": [
+        0,
+        13,
+        58,
+        58,
+        98,
+        101,
+        108,
+        113,
+        121,
+        130
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "15",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "One action. A saving.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "One action. A saving.",
+      "from": 2615,
+      "speechFrames": 83,
+      "preRollFrames": 0,
+      "duration": 103,
+      "audio": "audio/15.wav",
+      "captions": [
+        {
+          "text": "One action. A saving.",
+          "start": 6,
+          "end": 83
+        }
+      ],
+      "wordFrames": [
+        6,
+        14,
+        45,
+        50
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "16",
+      "speaker": "ZIP",
+      "cue": "",
+      "text": "Saved where? Put it on my receipt.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Saved where? Put it on my receipt.",
+      "from": 2718,
+      "speechFrames": 102,
+      "preRollFrames": 0,
+      "duration": 122,
+      "audio": "audio/16.wav",
+      "captions": [
+        {
+          "text": "Saved where? Put it on my receipt.",
+          "start": 12,
+          "end": 102
+        }
+      ],
+      "wordFrames": [
+        12,
+        21,
+        52,
+        58,
+        63,
+        70,
+        83
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "17",
+      "speaker": "COACH",
+      "cue": "curious, thinking aloud",
+      "text": "Click. Was that action spent?",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[board: one unused token lifts out of the tray and sits by itself on the bench]"
+      ],
+      "displayText": "Click. Was that action spent?",
+      "from": 2840,
+      "speechFrames": 84,
+      "preRollFrames": 0,
+      "duration": 104,
+      "audio": "audio/17.wav",
+      "captions": [
+        {
+          "text": "Click. Was that action spent?",
+          "start": 8,
+          "end": 84
+        }
+      ],
+      "wordFrames": [
+        8,
+        36,
+        39,
+        47,
+        57
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "18",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Not spent.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Not spent.",
+      "from": 2944,
+      "speechFrames": 47,
+      "preRollFrames": 0,
+      "duration": 67,
+      "audio": "audio/18.wav",
+      "captions": [
+        {
+          "text": "Not spent.",
+          "start": 0,
+          "end": 47
+        }
+      ],
+      "wordFrames": [
+        0,
+        13
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "19",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "We saved an action. We have not chosen its next job.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "We saved an action. We have not chosen its next job.",
+      "from": 3011,
+      "speechFrames": 111,
+      "preRollFrames": 0,
+      "duration": 131,
+      "audio": "audio/19.wav",
+      "captions": [
+        {
+          "text": "We saved an action.",
+          "start": 2,
+          "end": 45
+        },
+        {
+          "text": "We have not chosen its next job.",
+          "start": 45,
+          "end": 111
+        }
+      ],
+      "wordFrames": [
+        2,
+        9,
+        21,
+        38,
+        45,
+        53,
+        57,
+        66,
+        76,
+        87,
+        96
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "20",
+      "speaker": "ZIP",
+      "cue": "",
+      "text": "This is the Umeme. Hits for two. Shield of one. Walks four. Takes nothing. That is the Umeme.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "This is the Umeme. Hits for two. Shield of one. Walks four. Takes nothing. That is the Umeme.",
+      "from": 3142,
+      "speechFrames": 281,
+      "preRollFrames": 0,
+      "duration": 301,
+      "audio": "audio/20.wav",
+      "captions": [
+        {
+          "text": "This is the Umeme.",
+          "start": 0,
+          "end": 78
+        },
+        {
+          "text": "Hits for two. Shield of one.",
+          "start": 78,
+          "end": 150
+        },
+        {
+          "text": "Walks four. Takes nothing.",
+          "start": 150,
+          "end": 219
+        },
+        {
+          "text": "That is the Umeme.",
+          "start": 219,
+          "end": 281
+        }
+      ],
+      "wordFrames": [
+        0,
+        10,
+        20,
+        49,
+        78,
+        78,
+        85,
+        111,
+        117,
+        123,
+        150,
+        160,
+        189,
+        190,
+        219,
+        229,
+        238,
+        260
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "21",
+      "speaker": "ZIP",
+      "cue": "",
+      "text": "This is the Kimubunga. Hits for three. Shield of one. Walks five. Takes nothing. That is the Kimubunga.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "This is the Kimubunga. Hits for three. Shield of one. Walks five. Takes nothing. That is the Kimubunga.",
+      "from": 3443,
+      "speechFrames": 288,
+      "preRollFrames": 0,
+      "duration": 308,
+      "audio": "audio/21.wav",
+      "captions": [
+        {
+          "text": "This is the Kimubunga.",
+          "start": 2,
+          "end": 79
+        },
+        {
+          "text": "Hits for three. Shield of one.",
+          "start": 79,
+          "end": 156
+        },
+        {
+          "text": "Walks five. Takes nothing.",
+          "start": 156,
+          "end": 225
+        },
+        {
+          "text": "That is the Kimubunga.",
+          "start": 225,
+          "end": 288
+        }
+      ],
+      "wordFrames": [
+        2,
+        12,
+        23,
+        51,
+        79,
+        79,
+        89,
+        121,
+        121,
+        129,
+        156,
+        159,
+        189,
+        189,
+        225,
+        236,
+        244,
+        266
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "22",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "I painted racing stripes on the mining bucket.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[card: LIGHTNING PRICES. BUY: a Radi costs three crystals, and it is the only Lightning piece you can buy. CLIMB: Radi to Umeme, four more. Umeme to Kimubunga, eight more. TOLLS: nothing, one, two.]",
+        "[board: the Radi ends its turn on a square holding sixteen crystals. The income counter stays at zero.]"
+      ],
+      "displayText": "I painted racing stripes on the mining bucket.",
+      "from": 3751,
+      "speechFrames": 111,
+      "preRollFrames": 0,
+      "duration": 131,
+      "audio": "audio/22.wav",
+      "captions": [
+        {
+          "text": "I painted racing stripes on the mining bucket.",
+          "start": 0,
+          "end": 111
+        }
+      ],
+      "wordFrames": [
+        0,
+        11,
+        25,
+        45,
+        52,
+        66,
+        78,
+        80
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "23",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "The stripes do not reach underground. Income: zero.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "The stripes do not reach underground. Income: zero.",
+      "from": 3882,
+      "speechFrames": 125,
+      "preRollFrames": 0,
+      "duration": 145,
+      "audio": "audio/23.wav",
+      "captions": [
+        {
+          "text": "The stripes do not reach underground.",
+          "start": 0,
+          "end": 86
+        },
+        {
+          "text": "Income: zero.",
+          "start": 86,
+          "end": 125
+        }
+      ],
+      "wordFrames": [
+        0,
+        4,
+        17,
+        29,
+        36,
+        43,
+        86,
+        91
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "24",
+      "speaker": "ZIP",
+      "cue": "",
+      "text": "Then I am standing on sixteen crystals decoratively.",
+      "beat": "EXPLAIN",
+      "hold": 0.9,
+      "directions": [],
+      "displayText": "Then I am standing on sixteen crystals decoratively.",
+      "from": 4027,
+      "speechFrames": 129,
+      "preRollFrames": 0,
+      "duration": 156,
+      "audio": "audio/24.wav",
+      "captions": [
+        {
+          "text": "Then I am standing on sixteen crystals decoratively.",
+          "start": 0,
+          "end": 129
+        }
+      ],
+      "wordFrames": [
+        0,
+        10,
+        17,
+        22,
+        35,
+        46,
+        61,
+        90
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "25",
+      "speaker": "CLICK",
+      "cue": "counting, even beats",
+      "text": "Fast feet. Small hit. Empty bucket.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Fast feet. Small hit. Empty bucket.",
+      "from": 4183,
+      "speechFrames": 116,
+      "preRollFrames": 0,
+      "duration": 136,
+      "audio": "audio/25.wav",
+      "captions": [
+        {
+          "text": "Fast feet. Small hit.",
+          "start": 14,
+          "end": 86
+        },
+        {
+          "text": "Empty bucket.",
+          "start": 86,
+          "end": 116
+        }
+      ],
+      "wordFrames": [
+        14,
+        14,
+        44,
+        52,
+        86,
+        89
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "26",
+      "speaker": "ZIP",
+      "cue": "",
+      "text": "New ticket. My Radi spends one action on that Yan.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[board: separate attack trial, with its own action tray. A fresh White Radi stands beside a fresh Black Yan. Neither has acted. A spare Black piece remains elsewhere. Cards: Radi attack one. Yan defense three. This is not the Kimubunga trip.]"
+      ],
+      "displayText": "New ticket. My Radi spends one action on that Yan.",
+      "from": 4319,
+      "speechFrames": 168,
+      "preRollFrames": 0,
+      "duration": 188,
+      "audio": "audio/26.wav",
+      "captions": [
+        {
+          "text": "New ticket. My Radi spends one action on that Yan.",
+          "start": 0,
+          "end": 168
+        }
+      ],
+      "wordFrames": [
+        0,
+        11,
+        44,
+        49,
+        69,
+        82,
+        93,
+        108,
+        121,
+        127
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "27",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "An action bought a hit. Did it buy a finish?",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[board: one token leaves the separate trial's tray for the attack]"
+      ],
+      "displayText": "An action bought a hit. Did it buy a finish?",
+      "from": 4507,
+      "speechFrames": 102,
+      "preRollFrames": 0,
+      "duration": 122,
+      "audio": "audio/27.wav",
+      "captions": [
+        {
+          "text": "An action bought a hit.",
+          "start": 2,
+          "end": 59
+        },
+        {
+          "text": "Did it buy a finish?",
+          "start": 59,
+          "end": 102
+        }
+      ],
+      "wordFrames": [
+        2,
+        6,
+        19,
+        29,
+        41,
+        59,
+        62,
+        69,
+        74,
+        84
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "28",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Sparks burn the Garden Wall. The Radi's one becomes two. The Yan's defense is three.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[card: the Radi. Attack one. Lightning against Metal, add one. Two. The Yan. Defense three.]"
+      ],
+      "displayText": "Sparks burn the Garden Wall. The Radi's one becomes two. The Yan's defense is three.",
+      "from": 4629,
+      "speechFrames": 195,
+      "preRollFrames": 0,
+      "duration": 215,
+      "audio": "audio/28.wav",
+      "captions": [
+        {
+          "text": "Sparks burn the Garden Wall.",
+          "start": 0,
+          "end": 71
+        },
+        {
+          "text": "The Radi's one becomes two.",
+          "start": 71,
+          "end": 136
+        },
+        {
+          "text": "The Yan's defense is three.",
+          "start": 136,
+          "end": 195
+        }
+      ],
+      "wordFrames": [
+        0,
+        14,
+        26,
+        35,
+        42,
+        71,
+        74,
+        88,
+        94,
+        105,
+        136,
+        138,
+        151,
+        158,
+        175
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "29",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "The Yan survived. That Radi is done attacking. A spare action does not buy a second swing.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: bonk, dull] [board: two of the Yan's three shield pips go dark; one stays lit; the Radi's attack marker greys out]"
+      ],
+      "displayText": "The Yan survived. That Radi is done attacking. A spare action does not buy a second swing.",
+      "from": 4844,
+      "speechFrames": 200,
+      "preRollFrames": 0,
+      "duration": 220,
+      "audio": "audio/29.wav",
+      "captions": [
+        {
+          "text": "The Yan survived. That Radi is done attacking.",
+          "start": 0,
+          "end": 121
+        },
+        {
+          "text": "A spare action does not buy a second swing.",
+          "start": 121,
+          "end": 200
+        }
+      ],
+      "wordFrames": [
+        0,
+        5,
+        14,
+        58,
+        61,
+        76,
+        82,
+        88,
+        121,
+        124,
+        131,
+        143,
+        154,
+        161,
+        170,
+        175,
+        182
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "30",
+      "speaker": "ZIP",
+      "cue": "mock-formal announcement",
+      "text": "Delivered a strongly worded inconvenience. Speed buys travel. It has never once bought damage.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[card: EVIDENCE. Proves: the trip costs two actions and the hit does not finish the Yan. Not checked: what a second attacker could do.]"
+      ],
+      "displayText": "Delivered a strongly worded inconvenience. Speed buys travel. It has never once bought damage.",
+      "from": 5064,
+      "speechFrames": 233,
+      "preRollFrames": 0,
+      "duration": 253,
+      "audio": "audio/30.wav",
+      "captions": [
+        {
+          "text": "Delivered a strongly worded inconvenience.",
+          "start": 12,
+          "end": 107
+        },
+        {
+          "text": "Speed buys travel. It has never once bought damage.",
+          "start": 107,
+          "end": 233
+        }
+      ],
+      "wordFrames": [
+        12,
+        22,
+        32,
+        44,
+        63,
+        107,
+        117,
+        135,
+        166,
+        169,
+        177,
+        186,
+        202,
+        214
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "31",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "Receipt: zero captures.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Receipt: zero captures.",
+      "from": 5317,
+      "speechFrames": 71,
+      "preRollFrames": 0,
+      "duration": 91,
+      "audio": "audio/31.wav",
+      "captions": [
+        {
+          "text": "Receipt: zero captures.",
+          "start": 13,
+          "end": 71
+        }
+      ],
+      "wordFrames": [
+        13,
+        31,
+        42
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "32",
+      "speaker": "ZIP",
+      "cue": "",
+      "text": "Take both tickets. Price a nine-square path for my Radi, then for my Kimubunga.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": [
+        "[card: LIGHTNING. Fast feet. Small hit. Empty bucket. The department work card is added to the deck.]"
+      ],
+      "displayText": "Take both tickets. Price a nine-square path for my Radi, then for my Kimubunga.",
+      "from": 5408,
+      "speechFrames": 239,
+      "preRollFrames": 0,
+      "duration": 259,
+      "audio": "audio/32.wav",
+      "captions": [
+        {
+          "text": "Take both tickets. Price a nine-square path for my Radi, then for",
+          "start": 0,
+          "end": 196
+        },
+        {
+          "text": "my Kimubunga.",
+          "start": 196,
+          "end": 239
+        }
+      ],
+      "wordFrames": [
+        0,
+        18,
+        37,
+        83,
+        83,
+        100,
+        108,
+        121,
+        134,
+        144,
+        175,
+        183,
+        196,
+        218
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "matrix-intro",
+      "speaker": "COACH",
+      "text": "Now the bonk matrix for Lightning. We check all eighteen enemy unit types, including matching types. Both pieces start at full health and are already next to each other. One attack, not a whole turn.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "card",
+        "title": "Read one tier at a time",
+        "body": "Green: this unit one-shots the enemy.\nRed: that enemy one-shots this unit.\nBoth at full health · adjacent · one legal attack.\nThis is damage, not a movement or safety prediction."
+      },
+      "displayText": "Now the bonk matrix for Lightning. We check all eighteen enemy unit types, including matching types. Both pieces start at full health and are already next to each other. One attack, not a whole turn.",
+      "from": 5667,
+      "speechFrames": 377,
+      "preRollFrames": 0,
+      "duration": 401,
+      "audio": "audio/matrix-intro.wav",
+      "captions": [
+        {
+          "text": "Now the bonk matrix for Lightning.",
+          "start": 0,
+          "end": 73
+        },
+        {
+          "text": "We check all eighteen enemy unit types, including matching types.",
+          "start": 73,
+          "end": 203
+        },
+        {
+          "text": "Both pieces start at full health and are already next to each",
+          "start": 203,
+          "end": 295
+        },
+        {
+          "text": "other. One attack, not a whole turn.",
+          "start": 295,
+          "end": 377
+        }
+      ],
+      "wordFrames": [
+        0,
+        6,
+        11,
+        25,
+        35,
+        44,
+        73,
+        78,
+        85,
+        96,
+        111,
+        121,
+        132,
+        152,
+        162,
+        173,
+        203,
+        209,
+        219,
+        230,
+        235,
+        241,
+        250,
+        264,
+        268,
+        279,
+        287,
+        292,
+        295,
+        319,
+        324,
+        349,
+        354,
+        358,
+        363
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-1-stats",
+      "speaker": "COACH",
+      "text": "Tier one: the Radi. Attack one, defense one, speed three, and Mining zero. Look at the green side first.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "lightning_1",
+        "focus": "out"
+      },
+      "displayText": "Tier one: the Radi. Attack one, defense one, speed three, and Mining zero. Look at the green side first.",
+      "from": 6068,
+      "speechFrames": 294,
+      "preRollFrames": 0,
+      "duration": 318,
+      "audio": "audio/matrix-1-stats.wav",
+      "captions": [
+        {
+          "text": "Tier one: the Radi.",
+          "start": 0,
+          "end": 87
+        },
+        {
+          "text": "Attack one, defense one, speed three, and Mining zero.",
+          "start": 87,
+          "end": 222
+        },
+        {
+          "text": "Look at the green side first.",
+          "start": 222,
+          "end": 294
+        }
+      ],
+      "wordFrames": [
+        0,
+        11,
+        39,
+        45,
+        87,
+        89,
+        113,
+        119,
+        145,
+        152,
+        178,
+        181,
+        191,
+        222,
+        226,
+        238,
+        243,
+        251,
+        262
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-1-out",
+      "speaker": "COACH",
+      "text": "With one attack, the Radi can finish Hi, Hono, Radi, Umeme and Kimubunga. Every unlit card survives that single hit.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "lightning_1",
+        "focus": "out"
+      },
+      "displayText": "With one attack, the Radi can finish Hi, Hono, Radi, Umeme and Kimubunga. Every unlit card survives that single hit.",
+      "from": 6386,
+      "speechFrames": 365,
+      "preRollFrames": 0,
+      "duration": 389,
+      "audio": "audio/matrix-1-out.wav",
+      "captions": [
+        {
+          "text": "With one attack, the Radi can finish Hi, Hono, Radi, Umeme and",
+          "start": 0,
+          "end": 203
+        },
+        {
+          "text": "Kimubunga. Every unlit card survives that single hit.",
+          "start": 203,
+          "end": 365
+        }
+      ],
+      "wordFrames": [
+        0,
+        7,
+        18,
+        50,
+        51,
+        67,
+        74,
+        85,
+        112,
+        141,
+        166,
+        202,
+        203,
+        277,
+        290,
+        303,
+        314,
+        331,
+        338,
+        349
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-1-in",
+      "speaker": "COACH",
+      "text": "Now the red side. A full health Radi is one shot by Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachakuna and Tanka. Every unlit attacker needs help or earlier damage.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "lightning_1",
+        "focus": "in"
+      },
+      "displayText": "Now the red side. A full health Radi is one shot by Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachakuna and Tanka. Every unlit attacker needs help or earlier damage.",
+      "from": 6775,
+      "speechFrames": 650,
+      "preRollFrames": 0,
+      "duration": 674,
+      "audio": "audio/matrix-1-in.wav",
+      "captions": [
+        {
+          "text": "Now the red side.",
+          "start": 0,
+          "end": 47
+        },
+        {
+          "text": "A full health Radi is one shot by Hi, Hono, Kagari, Radi,",
+          "start": 47,
+          "end": 226
+        },
+        {
+          "text": "Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık,",
+          "start": 226,
+          "end": 476
+        },
+        {
+          "text": "Sachakuna and Tanka. Every unlit attacker needs help or earlier",
+          "start": 476,
+          "end": 632
+        },
+        {
+          "text": "damage.",
+          "start": 632,
+          "end": 650
+        }
+      ],
+      "wordFrames": [
+        0,
+        9,
+        15,
+        21,
+        47,
+        50,
+        59,
+        68,
+        83,
+        92,
+        100,
+        109,
+        118,
+        143,
+        167,
+        201,
+        226,
+        257,
+        301,
+        323,
+        357,
+        386,
+        409,
+        440,
+        476,
+        514,
+        520,
+        556,
+        567,
+        580,
+        593,
+        603,
+        612,
+        622,
+        632
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-1-read",
+      "speaker": "COACH",
+      "text": "That is the tier one card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 2,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "lightning_1",
+        "focus": "both"
+      },
+      "displayText": "That is the tier one card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.",
+      "from": 7449,
+      "speechFrames": 291,
+      "preRollFrames": 0,
+      "duration": 351,
+      "audio": "audio/matrix-1-read.wav",
+      "captions": [
+        {
+          "text": "That is the tier one card.",
+          "start": 0,
+          "end": 79
+        },
+        {
+          "text": "Pause here to compare any names.",
+          "start": 79,
+          "end": 140
+        },
+        {
+          "text": "The same enemy can appear on both sides: whoever attacks first may",
+          "start": 140,
+          "end": 260
+        },
+        {
+          "text": "finish the other.",
+          "start": 260,
+          "end": 291
+        }
+      ],
+      "wordFrames": [
+        0,
+        8,
+        22,
+        28,
+        34,
+        43,
+        79,
+        82,
+        89,
+        95,
+        103,
+        112,
+        140,
+        143,
+        150,
+        158,
+        166,
+        174,
+        182,
+        188,
+        220,
+        226,
+        239,
+        251,
+        260,
+        271,
+        278
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-2-stats",
+      "speaker": "COACH",
+      "text": "Tier two: the Umeme. Attack two, defense one, speed four, and Mining zero. Look at the green side first.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "lightning_2",
+        "focus": "out"
+      },
+      "displayText": "Tier two: the Umeme. Attack two, defense one, speed four, and Mining zero. Look at the green side first.",
+      "from": 7800,
+      "speechFrames": 287,
+      "preRollFrames": 0,
+      "duration": 311,
+      "audio": "audio/matrix-2-stats.wav",
+      "captions": [
+        {
+          "text": "Tier two: the Umeme.",
+          "start": 0,
+          "end": 92
+        },
+        {
+          "text": "Attack two, defense one, speed four, and Mining zero.",
+          "start": 92,
+          "end": 241
+        },
+        {
+          "text": "Look at the green side first.",
+          "start": 241,
+          "end": 287
+        }
+      ],
+      "wordFrames": [
+        0,
+        13,
+        48,
+        49,
+        92,
+        100,
+        126,
+        127,
+        152,
+        157,
+        181,
+        184,
+        193,
+        241,
+        243,
+        247,
+        251,
+        257,
+        265
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-2-out",
+      "speaker": "COACH",
+      "text": "With one attack, the Umeme can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Muju, Sachita and Yan. Every unlit card survives that single hit.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "lightning_2",
+        "focus": "out"
+      },
+      "displayText": "With one attack, the Umeme can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Muju, Sachita and Yan. Every unlit card survives that single hit.",
+      "from": 8111,
+      "speechFrames": 429,
+      "preRollFrames": 0,
+      "duration": 453,
+      "audio": "audio/matrix-2-out.wav",
+      "captions": [
+        {
+          "text": "With one attack, the Umeme can finish Hi, Hono, Kagari, Radi, Umeme,",
+          "start": 0,
+          "end": 208
+        },
+        {
+          "text": "Kimubunga, Muju, Sachita and Yan.",
+          "start": 208,
+          "end": 334
+        },
+        {
+          "text": "Every unlit card survives that single hit.",
+          "start": 334,
+          "end": 429
+        }
+      ],
+      "wordFrames": [
+        0,
+        6,
+        14,
+        43,
+        44,
+        59,
+        68,
+        79,
+        104,
+        131,
+        160,
+        182,
+        208,
+        246,
+        272,
+        298,
+        299,
+        334,
+        344,
+        357,
+        366,
+        380,
+        389,
+        400
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-2-in",
+      "speaker": "COACH",
+      "text": "Now the red side. A full health Umeme is one shot by Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachakuna and Tanka. Every unlit attacker needs help or earlier damage.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "lightning_2",
+        "focus": "in"
+      },
+      "displayText": "Now the red side. A full health Umeme is one shot by Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachakuna and Tanka. Every unlit attacker needs help or earlier damage.",
+      "from": 8564,
+      "speechFrames": 585,
+      "preRollFrames": 0,
+      "duration": 609,
+      "audio": "audio/matrix-2-in.wav",
+      "captions": [
+        {
+          "text": "Now the red side.",
+          "start": 0,
+          "end": 43
+        },
+        {
+          "text": "A full health Umeme is one shot by Hi, Hono, Kagari, Radi,",
+          "start": 43,
+          "end": 200
+        },
+        {
+          "text": "Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık,",
+          "start": 200,
+          "end": 423
+        },
+        {
+          "text": "Sachakuna and Tanka. Every unlit attacker needs help or earlier",
+          "start": 423,
+          "end": 564
+        },
+        {
+          "text": "damage.",
+          "start": 564,
+          "end": 585
+        }
+      ],
+      "wordFrames": [
+        0,
+        8,
+        13,
+        18,
+        43,
+        43,
+        50,
+        60,
+        76,
+        84,
+        92,
+        99,
+        106,
+        130,
+        154,
+        178,
+        200,
+        229,
+        267,
+        284,
+        312,
+        343,
+        359,
+        391,
+        423,
+        464,
+        467,
+        498,
+        506,
+        517,
+        528,
+        536,
+        545,
+        554,
+        564
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-2-read",
+      "speaker": "COACH",
+      "text": "That is the tier two card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 2,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "lightning_2",
+        "focus": "both"
+      },
+      "displayText": "That is the tier two card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.",
+      "from": 9173,
+      "speechFrames": 275,
+      "preRollFrames": 0,
+      "duration": 335,
+      "audio": "audio/matrix-2-read.wav",
+      "captions": [
+        {
+          "text": "That is the tier two card.",
+          "start": 0,
+          "end": 68
+        },
+        {
+          "text": "Pause here to compare any names.",
+          "start": 68,
+          "end": 131
+        },
+        {
+          "text": "The same enemy can appear on both sides: whoever attacks first may",
+          "start": 131,
+          "end": 248
+        },
+        {
+          "text": "finish the other.",
+          "start": 248,
+          "end": 275
+        }
+      ],
+      "wordFrames": [
+        0,
+        8,
+        18,
+        24,
+        30,
+        38,
+        68,
+        71,
+        79,
+        85,
+        92,
+        102,
+        131,
+        134,
+        143,
+        151,
+        158,
+        165,
+        172,
+        176,
+        205,
+        211,
+        223,
+        236,
+        248,
+        257,
+        263
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-3-stats",
+      "speaker": "COACH",
+      "text": "Tier three: the Kimubunga. Attack three, defense one, speed five, and Mining zero. Look at the green side first.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "lightning_3",
+        "focus": "out"
+      },
+      "displayText": "Tier three: the Kimubunga. Attack three, defense one, speed five, and Mining zero. Look at the green side first.",
+      "from": 9508,
+      "speechFrames": 300,
+      "preRollFrames": 0,
+      "duration": 324,
+      "audio": "audio/matrix-3-stats.wav",
+      "captions": [
+        {
+          "text": "Tier three: the Kimubunga.",
+          "start": 0,
+          "end": 120
+        },
+        {
+          "text": "Attack three, defense one, speed five, and Mining zero.",
+          "start": 120,
+          "end": 256
+        },
+        {
+          "text": "Look at the green side first.",
+          "start": 256,
+          "end": 300
+        }
+      ],
+      "wordFrames": [
+        0,
+        7,
+        49,
+        53,
+        120,
+        121,
+        143,
+        149,
+        180,
+        185,
+        212,
+        215,
+        223,
+        256,
+        258,
+        262,
+        266,
+        272,
+        280
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-3-out",
+      "speaker": "COACH",
+      "text": "With one attack, the Kimubunga can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Göl, Gölge, Karanlık, Muju, Sachita, Sachakuna, Yan and Mazask. Every unlit card survives that single hit.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "lightning_3",
+        "focus": "out"
+      },
+      "displayText": "With one attack, the Kimubunga can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Göl, Gölge, Karanlık, Muju, Sachita, Sachakuna, Yan and Mazask. Every unlit card survives that single hit.",
+      "from": 9832,
+      "speechFrames": 753,
+      "preRollFrames": 0,
+      "duration": 777,
+      "audio": "audio/matrix-3-out.wav",
+      "captions": [
+        {
+          "text": "With one attack, the Kimubunga can finish Hi, Hono, Kagari, Radi,",
+          "start": 0,
+          "end": 207
+        },
+        {
+          "text": "Umeme, Kimubunga, Sjor, Göl, Gölge, Karanlık, Muju, Sachita, Sachakuna,",
+          "start": 207,
+          "end": 566
+        },
+        {
+          "text": "Yan and Mazask. Every unlit card survives that single hit.",
+          "start": 566,
+          "end": 753
+        }
+      ],
+      "wordFrames": [
+        0,
+        7,
+        19,
+        47,
+        49,
+        76,
+        83,
+        94,
+        121,
+        151,
+        183,
+        207,
+        230,
+        272,
+        296,
+        318,
+        381,
+        431,
+        472,
+        512,
+        566,
+        595,
+        602,
+        642,
+        656,
+        676,
+        689,
+        706,
+        717,
+        730
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-3-in",
+      "speaker": "COACH",
+      "text": "Now the red side. A full health Kimubunga is one shot by Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachakuna and Tanka. Every unlit attacker needs help or earlier damage.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "lightning_3",
+        "focus": "in"
+      },
+      "displayText": "Now the red side. A full health Kimubunga is one shot by Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachakuna and Tanka. Every unlit attacker needs help or earlier damage.",
+      "from": 10609,
+      "speechFrames": 657,
+      "preRollFrames": 0,
+      "duration": 681,
+      "audio": "audio/matrix-3-in.wav",
+      "captions": [
+        {
+          "text": "Now the red side.",
+          "start": 0,
+          "end": 56
+        },
+        {
+          "text": "A full health Kimubunga is one shot by Hi, Hono, Kagari, Radi,",
+          "start": 56,
+          "end": 241
+        },
+        {
+          "text": "Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık,",
+          "start": 241,
+          "end": 485
+        },
+        {
+          "text": "Sachakuna and Tanka. Every unlit attacker needs help or earlier",
+          "start": 485,
+          "end": 629
+        },
+        {
+          "text": "damage.",
+          "start": 629,
+          "end": 657
+        }
+      ],
+      "wordFrames": [
+        0,
+        9,
+        16,
+        23,
+        56,
+        59,
+        68,
+        79,
+        101,
+        107,
+        114,
+        121,
+        140,
+        166,
+        188,
+        220,
+        241,
+        274,
+        311,
+        335,
+        367,
+        402,
+        422,
+        451,
+        485,
+        517,
+        518,
+        554,
+        562,
+        572,
+        584,
+        594,
+        604,
+        619,
+        629
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-3-read",
+      "speaker": "COACH",
+      "text": "That is the tier three card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 2,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "lightning_3",
+        "focus": "both"
+      },
+      "displayText": "That is the tier three card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.",
+      "from": 11290,
+      "speechFrames": 330,
+      "preRollFrames": 0,
+      "duration": 390,
+      "audio": "audio/matrix-3-read.wav",
+      "captions": [
+        {
+          "text": "That is the tier three card.",
+          "start": 0,
+          "end": 82
+        },
+        {
+          "text": "Pause here to compare any names.",
+          "start": 82,
+          "end": 154
+        },
+        {
+          "text": "The same enemy can appear on both sides: whoever attacks first may",
+          "start": 154,
+          "end": 302
+        },
+        {
+          "text": "finish the other.",
+          "start": 302,
+          "end": 330
+        }
+      ],
+      "wordFrames": [
+        0,
+        7,
+        14,
+        20,
+        27,
+        38,
+        82,
+        84,
+        92,
+        98,
+        107,
+        115,
+        154,
+        157,
+        165,
+        172,
+        180,
+        187,
+        193,
+        198,
+        241,
+        246,
+        259,
+        272,
+        302,
+        312,
+        320
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "33",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Fast feet. Small hit. Empty bucket.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Fast feet. Small hit. Empty bucket.",
+      "from": 11680,
+      "speechFrames": 93,
+      "preRollFrames": 0,
+      "duration": 113,
+      "audio": "audio/33.wav",
+      "captions": [
+        {
+          "text": "Fast feet. Small hit.",
+          "start": 2,
+          "end": 77
+        },
+        {
+          "text": "Empty bucket.",
+          "start": 77,
+          "end": 93
+        }
+      ],
+      "wordFrames": [
+        2,
+        12,
+        38,
+        45,
+        77,
+        77
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "34",
+      "speaker": "COACH",
+      "cue": "warm, unhurried",
+      "text": "Stopping there is fine. Next time: what is a slow piece with a big shield for?",
+      "beat": "EXIT",
+      "hold": 2,
+      "directions": [],
+      "displayText": "Stopping there is fine. Next time: what is a slow piece with a big shield for?",
+      "from": 11793,
+      "speechFrames": 176,
+      "preRollFrames": 0,
+      "duration": 236,
+      "audio": "audio/34.wav",
+      "captions": [
+        {
+          "text": "Stopping there is fine.",
+          "start": 12,
+          "end": 69
+        },
+        {
+          "text": "Next time: what is a slow piece with a big shield for?",
+          "start": 69,
+          "end": 176
+        }
+      ],
+      "wordFrames": [
+        12,
+        19,
+        29,
+        42,
+        69,
+        74,
+        92,
+        94,
+        99,
+        103,
+        110,
+        120,
+        127,
+        133,
+        139,
+        145
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    }
+  ],
+  "version": 8,
+  "rules": "v2.9",
+  "updatedLabel": "Video version 8 · Last updated Sep 18 2026 CDT",
+  "question": "How many actions does that trip cost me?",
+  "soundtrack": {
+    "id": "umeme-held-charge",
+    "title": "Umeme / Held Charge",
+    "source": "muju/music-auditions/full-versions/umeme-held-charge-full-v1.mp3",
+    "sha256": "ce2a37c87e38f5b8af6b40a0666f3a42ad03079838d5939cb39713961050773e"
+  },
+  "speechProvider": "openai",
+  "audioComplete": true,
+  "durationInFrames": 12029
+}

@@ -1,0 +1,351 @@
+{
+  "id": "R01",
+  "title": "The Board Has Two Front Doors",
+  "fps": 30,
+  "voices": {
+    "COACH": "marin",
+    "PIP": "coral",
+    "CLICK": "cedar"
+  },
+  "lines": [
+    {
+      "id": "01",
+      "speaker": "PIP",
+      "cue": "proud announcement",
+      "text": "I have installed a doorbell on Black's home.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed in, low]",
+        "[board: the real starting board. White home A one and Black home J ten carry owner badges as well as colour. A small felt welcome mat lies beside each home corner. Pip is screwing a doorbell onto the far corner.]"
+      ]
+    },
+    {
+      "id": "02",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "On their home. Not near it.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "03",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "Yes. So they know I arrived. And I find out tomorrow whether I stayed.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "04",
+      "speaker": "COACH",
+      "cue": "warm, unhurried",
+      "text": "Hello. Pip has just described the rule we came for.",
+      "beat": "INVITATION",
+      "hold": 3.4,
+      "directions": [],
+      "titleBump": true
+    },
+    {
+      "id": "05",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Ten rows. Ten columns. A Hi, a Sjor and a Muju in White's corner.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed out]",
+        "[board: the ten by ten grid, rows numbered down the side, columns lettered along the bottom. White Hi on B one, White Sjor on B two, White Muju on A two. Black's three in the far corner.]"
+      ]
+    },
+    {
+      "id": "06",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "White's home is A one, this corner. Black's home is J ten, the far corner.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[board: A one lights. Then J ten lights. Both corner squares are empty.]"
+      ]
+    },
+    {
+      "id": "07",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Same starting team. Different front doors. Two ways to win.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "08",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Last piece gone? The game is done.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[board: one side of the board empties, piece by piece. Every removal has an attacker standing next door first. Nothing moves onto a square it emptied.]",
+        "[sfx: piece removed]"
+      ]
+    },
+    {
+      "id": "09",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "The other way is to stand on the other player's home.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "10",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "You have to still be standing there when your next turn starts.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "11",
+      "speaker": "PIP",
+      "cue": "delighted realization",
+      "text": "Arrive. Survive. High five?",
+      "beat": "SHOW",
+      "hold": 0.9,
+      "directions": []
+    },
+    {
+      "id": "12",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "A home threat means standing on the corner that could end the game.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [
+        "[card: two cards face up on the table. One reads A one. One reads J ten.]"
+      ]
+    },
+    {
+      "id": "13",
+      "speaker": "COACH",
+      "cue": "question, open",
+      "text": "Which corner does White have to reach?",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "14",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "One card says A one. The other says J ten.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "15",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Put a finger on one, or just look at both.",
+      "beat": "TRY",
+      "hold": 10.2,
+      "directions": [],
+      "thinking": true
+    },
+    {
+      "id": "16",
+      "speaker": "COACH",
+      "cue": "reveal, land it",
+      "text": "J ten. Black's home.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[board: a practice position. Black's Hi has stepped off I ten. Black's Sjor stands on J nine. A White Hi walks I ten to J ten along a clear path. The J ten card lights. The A one card goes grey.]",
+        "[sfx: doorbell, one chime]"
+      ]
+    },
+    {
+      "id": "17",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "A one is White's own home. Your own home threatens nobody.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "18",
+      "speaker": "COACH",
+      "cue": "curious, thinking aloud",
+      "text": "Now the part that catches people. Does arriving finish the game right there?",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "19",
+      "speaker": "PIP",
+      "cue": "quietly certain",
+      "text": "It does not. My doorbell only says somebody came.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "20",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "It did not step on the mat. It reached across.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[board: the turn marker flips to Black. Same position. Black's Sjor stays on J nine and does not move. One bonk reaches across to J ten. The White visitor is removed. The mat lies there with nothing on it.]",
+        "[sfx: bonk]",
+        "[sfx: piece removed]",
+        "[sfx: door latch]"
+      ]
+    },
+    {
+      "id": "21",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Pip is right. The visitor has to be there when White's next turn starts.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "22",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "And the game has to still be going.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "23",
+      "speaker": "COACH",
+      "cue": "gently, slower",
+      "text": "Home waits a turn. The last piece does not.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "24",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "The doorbell rang. Then it had nothing to announce.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "25",
+      "speaker": "CLICK",
+      "cue": "dry aside",
+      "text": "We know which door. Nobody has counted the walk.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "26",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Now one thing is different. A Black piece is standing on our corner.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[card: EVIDENCE. Proves: J ten is the corner White must reach. Not checked: the path, the reply, the money.]",
+        "[board: one thing changes. A Black Hi is standing on A one, on Pip's mat.]"
+      ]
+    },
+    {
+      "id": "27",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Same rule, other direction. Black's next turn start is the moment that matters.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "28",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "Waiting.",
+      "beat": "TRANSFER",
+      "hold": 0.9,
+      "directions": [
+        "[board: Pip raises a hand and holds it up. One full beat of silence.]"
+      ]
+    },
+    {
+      "id": "29",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "Arrive. Survive. Next turn: high five.",
+      "beat": "TRANSFER",
+      "hold": 1.2,
+      "directions": []
+    },
+    {
+      "id": "30",
+      "speaker": "COACH",
+      "cue": "warm, unhurried",
+      "text": "That is enough for today if you want.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "setup",
+      "speaker": "COACH",
+      "text": "White moves first. Each side starts with a Hi, a Sjor and a Muju. White begins on B one, B two and A two. Black begins on I ten, I nine and J nine.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "setup"
+      }
+    },
+    {
+      "id": "31",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Next time: how far can one piece walk in one go?",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "32",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "I am keeping the mats. They say welcome. They do not say for how long.",
+      "beat": "EXIT",
+      "hold": 2,
+      "directions": []
+    }
+  ],
+  "question": "Which corner does White have to reach?",
+  "version": 7,
+  "updatedLabel": "Video version 7 · Last updated at 07:25 Sep 13 2026 CDT",
+  "rules": "v2.8",
+  "soundtrack": {
+    "id": "open-room",
+    "title": "Open Room, Lantern On",
+    "source": "muju/music-auditions/full-versions/open-room-full-v1.mp3",
+    "sha256": "dddd8b6ca2bbfe869424f59b7d26673f5f09e72533b68cfcad60fc3042a9fa42"
+  },
+  "speechProvider": "openai"
+}

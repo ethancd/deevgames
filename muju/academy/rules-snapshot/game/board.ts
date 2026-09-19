@@ -1,0 +1,324 @@
+import type {
+  BoardState,
+  Cell,
+  Position,
+  Unit,
+  PlayerId,
+  GameState,
+  PlayerState,
+  TurnState,
+  ActionsPerTurn,
+} from './types';
+import { DEFAULT_ACTIONS_PER_TURN, isActionsPerTurn, isBlackCrystalHandicap } from './rules';
+import { MAX_RESOURCE_RESERVE, UNEQUAL_ROUTES_MAP } from './resourceMap';
+import { STARTING_UNITS } from './units';
+
+export const BOARD_SIZE = 10;
+// Uniform-board helper/legacy fallback; new games use their explicit resource map.
+export const INITIAL_RESOURCE_LAYERS = 10;
+export const MAX_ACTIONS_PER_TURN = DEFAULT_ACTIONS_PER_TURN;
+
+/**
+ * Create a fresh cell at a position with full resources
+ */
+export function createCell(x: number, y: number): Cell {
+  return {
+    position: { x, y },
+    resourceLayers: INITIAL_RESOURCE_LAYERS,
+  };
+}
+
+/**
+ * Create an empty 10x10 board with all cells having full resources
+ */
+export function createEmptyBoard(): BoardState {
+  const cells: Cell[][] = [];
+
+  for (let y = 0; y < BOARD_SIZE; y++) {
+    const row: Cell[] = [];
+    for (let x = 0; x < BOARD_SIZE; x++) {
+      row.push(createCell(x, y));
+    }
+    cells.push(row);
+  }
+
+  return { cells, units: [] };
+}
+
+/**
+ * Get a cell at a position
+ */
+export function getCell(board: BoardState, pos: Position): Cell | null {
+  if (!isValidPosition(pos)) return null;
+  return board.cells[pos.y][pos.x];
+}
+
+/**
+ * Check if a position is within the board bounds
+ */
+export function isValidPosition(pos: Position): boolean {
+  return pos.x >= 0 && pos.x < BOARD_SIZE && pos.y >= 0 && pos.y < BOARD_SIZE;
+}
+
+/**
+ * Get a unit at a position, or null if empty
+ */
+export function getUnitAt(board: BoardState, pos: Position): Unit | null {
+  return (
+    board.units.find((u) => u.position.x === pos.x && u.position.y === pos.y) ??
+    null
+  );
+}
+
+/**
+ * Get a unit by ID
+ */
+export function getUnitById(board: BoardState, unitId: string): Unit | null {
+  return board.units.find((u) => u.id === unitId) ?? null;
+}
+
+/**
+ * Check if a position is occupied by any unit
+ */
+export function isOccupied(board: BoardState, pos: Position): boolean {
+  return getUnitAt(board, pos) !== null;
+}
+
+/**
+ * Get all units belonging to a player
+ */
+export function getPlayerUnits(board: BoardState, player: PlayerId): Unit[] {
+  return board.units.filter((u) => u.owner === player);
+}
+
+/**
+ * Create a unit instance
+ */
+export function createUnit(
+  definitionId: string,
+  owner: PlayerId,
+  position: Position,
+  canAct: boolean = true
+): Unit {
+  return {
+    id: `${owner}_${definitionId}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+    definitionId,
+    owner,
+    position,
+    hasMoved: false,
+    hasAttacked: false,
+    lastAttackKilled: false,
+    canActThisTurn: canAct,
+    damageTaken: 0,
+    promotedThisPlacement: false,
+  };
+}
+
+/**
+ * Add a unit to the board (immutably)
+ */
+export function addUnit(board: BoardState, unit: Unit): BoardState {
+  return {
+    ...board,
+    units: [...board.units, unit],
+  };
+}
+
+/**
+ * Alias for addUnit - place a unit on the board
+ */
+export const placeUnit = addUnit;
+
+/**
+ * Remove a unit from the board (immutably)
+ */
+export function removeUnit(board: BoardState, unitId: string): BoardState {
+  return {
+    ...board,
+    units: board.units.filter((u) => u.id !== unitId),
+  };
+}
+
+/**
+ * Update a unit on the board (immutably)
+ */
+export function updateUnit(
+  board: BoardState,
+  unitId: string,
+  updates: Partial<Unit>
+): BoardState {
+  return {
+    ...board,
+    units: board.units.map((u) => (u.id === unitId ? { ...u, ...updates } : u)),
+  };
+}
+
+/**
+ * Update a cell on the board (immutably)
+ */
+export function updateCell(
+  board: BoardState,
+  pos: Position,
+  updates: Partial<Cell>
+): BoardState {
+  const newCells = board.cells.map((row, y) =>
+    y === pos.y
+      ? row.map((cell, x) => (x === pos.x ? { ...cell, ...updates } : cell))
+      : row
+  );
+  return { ...board, cells: newCells };
+}
+
+/**
+ * Get the starting corner for a player
+ */
+export function getStartCorner(player: PlayerId): Position {
+  return player === 'white' ? { x: 0, y: 0 } : { x: 9, y: 9 };
+}
+
+/**
+ * Get starting unit positions relative to a corner
+ * Player at (0,0): Hi at (1,0), Sjor at (1,1), Muju at (0,1)
+ * AI at (9,9): Hi at (8,9), Sjor at (8,8), Muju at (9,8)
+ */
+export function getStartingPositions(player: PlayerId): Position[] {
+  if (player === 'white') {
+    return [
+      { x: 1, y: 0 }, // Hi (Fire)
+      { x: 1, y: 1 }, // Sjor (Water)
+      { x: 0, y: 1 }, // Muju (Plant)
+    ];
+  } else {
+    return [
+      { x: 8, y: 9 }, // Hi (Fire)
+      { x: 8, y: 8 }, // Sjor (Water)
+      { x: 9, y: 8 }, // Muju (Plant)
+    ];
+  }
+}
+
+/**
+ * Create the initial game state
+ */
+export function createInitialGameState(resourceLayout: readonly number[] = UNEQUAL_ROUTES_MAP, actionsPerTurn: ActionsPerTurn = DEFAULT_ACTIONS_PER_TURN, blackCrystalHandicap = 0): GameState {
+  if (!isBlackCrystalHandicap(blackCrystalHandicap)) throw new Error('Black crystal handicap must be a whole number from 0 to 20');
+  if (!isActionsPerTurn(actionsPerTurn)) throw new Error('Actions per turn must be 4');
+  if (resourceLayout.length !== BOARD_SIZE * BOARD_SIZE || resourceLayout.some(n => !Number.isInteger(n) || n < 0 || n > MAX_RESOURCE_RESERVE)) throw new Error('Invalid starting resource layout');
+  let board = createEmptyBoard();
+  board.initialResourceLayers = [...resourceLayout];
+  for (const row of board.cells) for (const cell of row) cell.resourceLayers = resourceLayout[cell.position.y * BOARD_SIZE + cell.position.x];
+
+  // Add starting units for both players
+  const players: PlayerId[] = ['white', 'black'];
+
+  for (const player of players) {
+    const positions = getStartingPositions(player);
+    STARTING_UNITS.forEach((defId, index) => {
+      const unit = createUnit(defId, player, positions[index], true);
+      board = addUnit(board, unit);
+    });
+  }
+
+  const whiteState: PlayerState = {
+    id: 'white',
+    resources: 0,
+    startCorner: getStartCorner('white'),
+    resourcesGained: 0,
+    resourcesUpkeep: 0,
+  };
+
+  const blackState: PlayerState = {
+    id: 'black',
+    resources: blackCrystalHandicap,
+    startCorner: getStartCorner('black'),
+    resourcesGained: 0,
+    resourcesUpkeep: 0,
+  };
+
+  const turnState: TurnState = {
+    currentPlayer: 'white',
+    phase: 'action', // Start in action phase since nothing to do in place phase at game start
+    actionsRemaining: actionsPerTurn,
+    turnNumber: 1,
+  };
+
+  return {
+    actionsPerTurn,
+    blackCrystalHandicap,
+    phase: 'playing',
+    inactivityPlies: 0, progressThisTurn: false,
+    board,
+    players: {
+      white: whiteState,
+      black: blackState,
+    },
+    turn: turnState,
+    winner: null,
+    selectedUnit: null,
+    validMoves: [],
+    validAttacks: [],
+  };
+}
+
+/**
+ * Reset action flags for all units of a player at the start of their turn.
+ * Also resets damageTaken on the player's own units (damage heals at start of own turn).
+ */
+export function resetUnitActions(
+  board: BoardState,
+  player: PlayerId
+): BoardState {
+  return {
+    ...board,
+    units: board.units.map((u) => {
+      if (u.owner === player) {
+        // Reset action flags for current player's units
+        // Also reset placedThisTurn so units placed last turn can now be promoted
+        // Reset damage so units heal at the start of their own turn
+        // Reset attack history and Cleave eligibility for the new owner turn
+        return {
+          ...u,
+          hasMoved: false,
+          hasAttacked: false,
+          lastAttackKilled: false,
+          canActThisTurn: true,
+          placedThisTurn: false,
+          promotedThisPlacement: false,
+          damageTaken: 0,
+          attackedThisTurn: [],
+        };
+      }
+      return u;
+    }),
+  };
+}
+
+/**
+ * Calculate Manhattan distance between two positions
+ */
+export function manhattanDistance(a: Position, b: Position): number {
+  return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+}
+
+/**
+ * Check if two positions are orthogonally adjacent
+ */
+export function isAdjacent(a: Position, b: Position): boolean {
+  return manhattanDistance(a, b) === 1;
+}
+
+/**
+ * Get all orthogonally adjacent positions
+ */
+export function getAdjacentPositions(pos: Position): Position[] {
+  const deltas = [
+    { x: 0, y: -1 }, // up
+    { x: 0, y: 1 }, // down
+    { x: -1, y: 0 }, // left
+    { x: 1, y: 0 }, // right
+  ];
+
+  return deltas
+    .map((d) => ({ x: pos.x + d.x, y: pos.y + d.y }))
+    .filter(isValidPosition);
+}

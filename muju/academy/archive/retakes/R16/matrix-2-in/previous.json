@@ -1,0 +1,12 @@
+{
+  "provider": "openai",
+  "hash": "f9f18cf664c3762767894e796f4cee6dbe9f9fadc22c04542a143a83225557c6",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "Now the red side. A full health Mazask is one shot by Hono, Kagari and Kimubunga. Every unlit attacker needs help or earlier damage.",
+  "speechText": "Now the red side. A full health MAH-zahsk is one shot by hohnoh, kah-GAH-ree and kee-moo-BOON-gah. Every unlit attacker needs help or earlier damage.",
+  "duration": 9.95,
+  "bytes": 477644,
+  "createdAt": "2026-09-13T10:39:34.587Z"
+}

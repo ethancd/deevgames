@@ -1,0 +1,63 @@
+{
+  "provider": "openai",
+  "hash": "41b5369ef37a98425abedc041f498a9e02ad994cbb695170777345cf774b5369",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "Now two team actions remain. This Hono has used both its attacks. It may still move, but it cannot attack a third time this turn.",
+  "speechText": "Now two team actions remain. This HOH-noh has used both its attacks. It may still move, but it cannot attack a third time this turn.",
+  "duration": 8.55,
+  "bytes": 410444,
+  "createdAt": "2026-09-13T10:38:17.037Z",
+  "captions": [
+    {
+      "text": "Now two team actions remain.",
+      "start": 0,
+      "end": 72
+    },
+    {
+      "text": "This Hono has used both its attacks.",
+      "start": 72,
+      "end": 155
+    },
+    {
+      "text": "It may still move, but it cannot attack a third time this",
+      "start": 155,
+      "end": 237
+    },
+    {
+      "text": "turn.",
+      "start": 237,
+      "end": 257
+    }
+  ],
+  "wordFrames": [
+    0,
+    16,
+    22,
+    31,
+    43,
+    72,
+    86,
+    100,
+    107,
+    115,
+    122,
+    128,
+    155,
+    159,
+    164,
+    171,
+    184,
+    188,
+    192,
+    202,
+    212,
+    218,
+    223,
+    231,
+    237
+  ],
+  "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions",
+  "captionAudioSha256": "a616403ac961fe62e5d234b63d702c4bc06a7643744742856360c56050457afe"
+}

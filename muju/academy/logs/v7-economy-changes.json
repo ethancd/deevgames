@@ -1,0 +1,62 @@
+[
+  {
+    "episode": "R04",
+    "id": "23",
+    "text": "The square under it is holding sixteen.",
+    "previousText": "The square under it is holding ten."
+  },
+  {
+    "episode": "R04",
+    "id": "map",
+    "text": "New games use this Unequal routes map. Home squares hold eight crystals each. The brighter expansion squares hold sixteen each. Ordinary ground holds four, and the middle cluster holds eight. Empty squares are roads with no crystals. That makes five hundred four crystals altogether. Mining lowers a square's reserve. It never refills.",
+    "previousText": "New games use this Unequal routes map. Squares start with zero, four, eight, or ten crystals. There are four hundred eighty altogether. The bright home reserves and the middle cluster are real reserves, and empty squares are still roads."
+  },
+  {
+    "episode": "R12",
+    "id": "24",
+    "text": "Then I am standing on sixteen crystals decoratively.",
+    "previousText": "Then I am standing on ten crystals decoratively."
+  },
+  {
+    "episode": "R15",
+    "id": "10",
+    "text": "Stop two. Sachakuna. Its Mining is eight. This patch has two crystals left.",
+    "previousText": "Stop two. A Sachakuna. Its Mining is five. This patch has two crystals left."
+  },
+  {
+    "episode": "R15",
+    "id": "13",
+    "text": "Two. The patch could not pay eight.",
+    "previousText": "Two. The patch could not pay five."
+  },
+  {
+    "episode": "R15",
+    "id": "14",
+    "text": "Eight. My gardener is an eight.",
+    "previousText": "Five. My gardener is a five."
+  },
+  {
+    "episode": "R15",
+    "id": "20",
+    "text": "This is the Sachita. Shield of three. Takes five crystals. That is the Sachita.",
+    "previousText": "This is the Sachita. Shield of three. Takes four crystals. That is the Sachita."
+  },
+  {
+    "episode": "R15",
+    "id": "21",
+    "text": "This is the Sachakuna. Many growing things. Shield of four. Takes eight crystals.",
+    "previousText": "This is the Sachakuna. Many growing things. Shield of four. Takes five crystals."
+  },
+  {
+    "episode": "R15",
+    "id": "matrix-2-stats",
+    "text": "Tier two: the Sachita. Attack one, defense three, speed one, and Mining five. Look at the green side first.",
+    "previousText": "Tier two: the Sachita. Attack one, defense three, speed one, and Mining four. Look at the green side first."
+  },
+  {
+    "episode": "R15",
+    "id": "matrix-3-stats",
+    "text": "Tier three: the Sachakuna. Attack two, defense four, speed one, and Mining eight. Look at the green side first.",
+    "previousText": "Tier three: the Sachakuna. Attack two, defense four, speed one, and Mining five. Look at the green side first."
+  }
+]

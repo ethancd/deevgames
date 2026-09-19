@@ -1,0 +1,12 @@
+{
+  "provider": "openai",
+  "hash": "b5261b931a015b857210586faf8fd7d467a34a8387a1fb54caa25afc691c9433",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "Tier one: the Yan. Attack one, defense three, speed zero, and Mining three. Look at the green side first.",
+  "speechText": "Tier one: the Yahn. Attack one, defense three, speed zero, and Mining three. Look at the green side first.",
+  "duration": 6.65,
+  "bytes": 319244,
+  "createdAt": "2026-09-18T17:14:57.661Z"
+}

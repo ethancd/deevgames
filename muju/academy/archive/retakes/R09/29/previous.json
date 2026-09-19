@@ -1,0 +1,40 @@
+{
+  "provider": "openai",
+  "hash": "b39bdd71fab956c91c3b0585a46a77aeb5541e93fb3f98ad3d889e8ddf892dcb",
+  "model": "gpt-4o-mini-tts",
+  "voice": "cedar",
+  "speaker": "CLICK",
+  "originalText": "An attack kill. Back to zero. A crystal does not do that.",
+  "speechText": "An attack kill. Back to zero. A crystal does not do that.",
+  "duration": 5.05,
+  "bytes": 242444,
+  "createdAt": "2026-09-13T10:38:38.600Z",
+  "captions": [
+    {
+      "text": "An attack kill. Back to zero.",
+      "start": 4,
+      "end": 92
+    },
+    {
+      "text": "A crystal does not do that.",
+      "start": 92,
+      "end": 152
+    }
+  ],
+  "wordFrames": [
+    4,
+    8,
+    22,
+    50,
+    57,
+    65,
+    92,
+    97,
+    103,
+    111,
+    119,
+    131
+  ],
+  "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions",
+  "captionAudioSha256": "c14d03663ad3c33ddc9beb00444f15ddfc54436fff39c207de5d0c85c67478b1"
+}

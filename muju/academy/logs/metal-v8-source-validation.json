@@ -1,0 +1,19 @@
+{
+  "changedSpeechClips": 32,
+  "speechVerified": true,
+  "captionHashesVerified": true,
+  "reviewedExports": [
+    "R05",
+    "R06",
+    "R11",
+    "R12",
+    "R13",
+    "R14",
+    "R15",
+    "R16"
+  ],
+  "remainingExportReview": [],
+  "phasing": "Current Pay / Place / Act / Mine retained; optional phasing variant excluded by user direction",
+  "localOnly": true,
+  "all16PackageChecksPassed": true
+}

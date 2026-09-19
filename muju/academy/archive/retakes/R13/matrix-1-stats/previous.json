@@ -1,0 +1,12 @@
+{
+  "provider": "openai",
+  "hash": "ea711a29d6a77c65b36d2b5d251e1e90d15ec9b8f3efabcedb8bc3df63502c57",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "Tier one: the Sjor. Attack two, defense two, speed one, and Mining two. Look at the green side first.",
+  "speechText": "Tier one: the Shore. Attack two, defense two, speed one, and Mining two. Look at the green side first.",
+  "duration": 6.9,
+  "bytes": 331244,
+  "createdAt": "2026-09-13T10:39:01.098Z"
+}

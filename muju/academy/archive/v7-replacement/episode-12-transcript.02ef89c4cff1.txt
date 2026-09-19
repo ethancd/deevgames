@@ -1,0 +1,97 @@
+Lightning: Express Delivery
+Rules v2.7 · Video version 6
+Music: Umeme / Held Charge
+
+ZIP: Delivered. Ahead of schedule.
+
+CLICK: Delivered to the square beside the recipient.
+
+ZIP: Next door is not the same as finished. The hit costs one more action.
+
+CLICK: Memo from the Toast Department. Never declare breakfast early.
+
+COACH: Same idea in this office. Arriving is not finishing.
+
+COACH: Ticket one. The path is four squares. The Radi has speed three.
+
+COACH: Three squares fit in one action. One square is left over.
+
+COACH: Each action covers up to three squares. The final part still uses a whole action. Two altogether.
+
+ZIP: New ticket. The path is five squares. My Radi has speed three.
+
+ZIP: How many actions does that trip cost me?
+
+COACH: Take longer if you want. Or watch the tray with me.
+
+COACH: Two actions.
+
+ZIP: Three squares, then two left over. I would like fewer leftovers.
+
+PIP: Speed five, five squares. That has to be one action.
+
+COACH: One action. A saving.
+
+ZIP: Saved where? Put it on my receipt.
+
+COACH: Click. Was that action spent?
+
+CLICK: Not spent.
+
+COACH: We saved an action. We have not chosen its next job.
+
+ZIP: This is the Umeme. Hits for two. Shield of one. Walks four. Takes nothing. That is the Umeme.
+
+ZIP: This is the Kimubunga. Hits for three. Shield of one. Walks five. Takes nothing. That is the Kimubunga.
+
+PIP: I painted racing stripes on the mining bucket.
+
+CLICK: The stripes do not reach underground. Income: zero.
+
+ZIP: Then I am standing on ten crystals decoratively.
+
+CLICK: Fast feet. Small hit. Empty bucket.
+
+ZIP: New ticket. My Radi spends one action on that Inyan.
+
+COACH: An action bought a hit. Did it buy a finish?
+
+CLICK: Sparks burn the Garden Wall. The Radi's one becomes two. The Inyan's defense is three.
+
+CLICK: The Inyan survived. That Radi is done attacking. A spare action does not buy a second swing.
+
+ZIP: Delivered a strongly worded inconvenience. Speed buys travel. It has never once bought damage.
+
+CLICK: Receipt: zero captures.
+
+ZIP: Take both tickets. Price a nine-square path for my Radi, then for my Kimubunga.
+
+COACH: Now the bonk matrix for Lightning. We check all eighteen enemy unit types, including matching types. Both pieces start at full health and are already next to each other. One attack, not a whole turn.
+
+COACH: Tier one: the Radi. Attack one, defense one, speed three, and Mining zero. Look at the green side first.
+
+COACH: With one attack, the Radi can finish Hi, Hono, Radi, Umeme and Kimubunga. Every unlit card survives that single hit.
+
+COACH: Now the red side. A full health Radi is one shot by Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachakuna, Mazask and Tanka. Every unlit attacker needs help or earlier damage.
+
+COACH: That is the tier one card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.
+
+COACH: Tier two: the Umeme. Attack two, defense one, speed four, and Mining zero. Look at the green side first.
+
+COACH: With one attack, the Umeme can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Muju, Sachita and Inyan. Every unlit card survives that single hit.
+
+COACH: Now the red side. A full health Umeme is one shot by Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachakuna, Mazask and Tanka. Every unlit attacker needs help or earlier damage.
+
+COACH: That is the tier two card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.
+
+COACH: Tier three: the Kimubunga. Attack three, defense one, speed five, and Mining zero. Look at the green side first.
+
+COACH: With one attack, the Kimubunga can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Göl, Gölge, Karanlık, Muju, Sachita, Sachakuna, Inyan and Mazask. Every unlit card survives that single hit.
+
+COACH: Now the red side. A full health Kimubunga is one shot by Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachakuna, Mazask and Tanka. Every unlit attacker needs help or earlier damage.
+
+COACH: That is the tier three card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.
+
+CLICK: Fast feet. Small hit. Empty bucket.
+
+COACH: Stopping there is fine. Next time: what is a slow piece with a big shield for?

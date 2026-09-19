@@ -1,0 +1,494 @@
+{
+  "id": "R15",
+  "title": "Plant: The Payday Garden",
+  "fps": 30,
+  "voices": {
+    "COACH": "marin",
+    "PIP": "coral",
+    "CLICK": "cedar",
+    "EMBER": "ash",
+    "ZIP": "verse",
+    "BUBBLES": "shimmer",
+    "MURMUR": "sage",
+    "CLANK": "onyx"
+  },
+  "lines": [
+    {
+      "id": "01",
+      "speaker": "PIP",
+      "cue": "proud announcement",
+      "text": "Watering Can and Refill Company. Empty squares refilled while you wait.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed in, low]",
+        "[board: a row of garden patches. Sign above: PLANT DEPARTMENT. Smaller sign under it: INCOME IS THE SMALLER NUMBER. Pip holds a watering can lettered REFILLS, with a small company logo.]"
+      ]
+    },
+    {
+      "id": "02",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "The logo is finished.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "03",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "The logo is always finished. The squares are pending.",
+      "beat": "INVITATION",
+      "hold": 3.4,
+      "directions": [],
+      "titleBump": true
+    },
+    {
+      "id": "04",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "From the drawer. Proposal: bigger buckets. Overruled by the Empty Payday.",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed out]",
+        "[card: THE THREE QUESTIONS. Which stat helps this job? How many actions does it take? What will this piece owe next turn?]",
+        "[card: ROSTER KEY. Hit = base attack before elements. Shield = full defense. Walk = squares per action. Take = maximum crystals at own turn end, limited by reserve. Keep beside every roster recital.]",
+        "[board: Click opens the drawer marked PIP'S AMENDMENTS (PENDING).]"
+      ]
+    },
+    {
+      "id": "05",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "You take the smaller number. Your Mining, or what the square has left.",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "06",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "Welcome to the garden. Stop one. My finest patch.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[board: stop one on the tour. A Muju on a patch holding eight crystals.] [card: the Muju, Mining three] [card: this patch, eight crystals]"
+      ]
+    },
+    {
+      "id": "07",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "The Muju's Mining is three. This square has eight crystals still in it.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "08",
+      "speaker": "COACH",
+      "cue": "stating the rule, level",
+      "text": "At your own turn end it takes three from the square it stands on.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "09",
+      "speaker": "CLICK",
+      "cue": "counting, even beats",
+      "text": "Eight. Now five. This one goes the wrong way.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: crystal clink] [sfx: crystal clink] [sfx: crystal clink] [board: eight becomes five]"
+      ]
+    },
+    {
+      "id": "10",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "Stop two. A Sachakuna. Its Mining is five. This patch has two crystals left.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [
+        "[board: stop two. A Sachakuna on a small patch. Pip's laminated sign reads PATCH FIVE. PAYS FIVE.] [card: the Sachakuna, Mining five] [card: this patch, two crystals]"
+      ]
+    },
+    {
+      "id": "11",
+      "speaker": "PIP",
+      "cue": "question, open",
+      "text": "So what is the payday here?",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "12",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Say it, point at it, or watch the patch with me.",
+      "beat": "TRY",
+      "hold": 10.2,
+      "directions": [],
+      "thinking": true,
+      "question": "So what is the payday here?"
+    },
+    {
+      "id": "13",
+      "speaker": "COACH",
+      "cue": "reveal, land it",
+      "text": "Two. The patch could not pay five.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: crystal clink] [sfx: crystal clink] [board: two crystals leave. The patch drains to a puddle.]"
+      ]
+    },
+    {
+      "id": "14",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "Five. My gardener is a five.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "15",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "The patch is a two. The smaller number wins.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "16",
+      "speaker": "COACH",
+      "cue": "gently, slower",
+      "text": "Next payday, standing right here: nothing. It is empty now. It does not refill.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "17",
+      "speaker": "PIP",
+      "cue": "dawning concern",
+      "text": "The company is closing. The can is a warning now.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[board: Pip tips the REFILLS can over the puddle. Nothing happens. Pip crosses out REFILLS and letters FOR PLANTS, NOT CRYSTALS.]"
+      ],
+      "performanceNote": "Articulate every word and every sentence in the supplied text. Do not drop the final sentence. Hono is pronounced hoh-noh as a normal two-syllable name, never as letters. Keep the small final phrases fully audible."
+    },
+    {
+      "id": "18",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "And the next patch is a whole action away. Somebody could stand there first.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[card: EVIDENCE. Proves: this patch, these two paydays. Not checked: who else can walk here.]"
+      ]
+    },
+    {
+      "id": "19",
+      "speaker": "CLICK",
+      "cue": "counting, even beats",
+      "text": "This is the Muju. Shield of three. Takes three crystals. That is the Muju.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[card: the Muju · the Sachita · the Sachakuna.]"
+      ]
+    },
+    {
+      "id": "20",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "This is the Sachita. Shield of three. Takes four crystals. That is the Sachita.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "21",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "This is the Sachakuna. Many growing things. Shield of four. Takes five crystals.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "22",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Plant beats Water. Our Muju adds one to attack zero. The Garden Wall drains the Deep End.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[board: the Muju beside a fresh Sjor] [card: the Muju against Water, one damage]"
+      ]
+    },
+    {
+      "id": "23",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "One damage is not a finish. A fresh Sjor has defense two.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "24",
+      "speaker": "CLICK",
+      "cue": "dry aside",
+      "text": "Next turn the Muju owes nothing. The Sachita owes one. The Sachakuna owes two.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "25",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "Pick where you end. Collect what's there.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": [
+        "[card: PLANT WORK CARD. Mining three, four, five · speed one · defense two, three, four · toll nothing, one, two. Added to the deck.]",
+        "[card: MISSION. Mark where your Plant piece stands for its next two paydays. Cross off the crystals it takes.]"
+      ]
+    },
+    {
+      "id": "26",
+      "speaker": "COACH",
+      "cue": "stating the rule, level",
+      "text": "Crystals never come back.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "matrix-intro",
+      "speaker": "COACH",
+      "text": "Now the bonk matrix for plant. We check all eighteen enemy unit types, including matching types. Both pieces start at full health and are already next to each other. One attack, not a whole turn.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "card",
+        "title": "Read one tier at a time",
+        "body": "Green: this unit one-shots the enemy.\nRed: that enemy one-shots this unit.\nBoth at full health · adjacent · one legal attack.\nThis is damage, not a movement or safety prediction."
+      }
+    },
+    {
+      "id": "matrix-1-stats",
+      "speaker": "COACH",
+      "text": "Tier one: the Muju. Attack zero, defense three, speed one, and Mining three. Look at the green side first.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "plant_1",
+        "focus": "out"
+      }
+    },
+    {
+      "id": "matrix-1-out",
+      "speaker": "COACH",
+      "text": "With one attack, the Muju can finish no full health unit. Every unlit card survives that single hit.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "plant_1",
+        "focus": "out"
+      }
+    },
+    {
+      "id": "matrix-1-in",
+      "speaker": "COACH",
+      "text": "Now the red side. A full health Muju is one shot by Hi, Hono, Kagari, Umeme, Kimubunga and Karanlık. Every unlit attacker needs help or earlier damage.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "plant_1",
+        "focus": "in"
+      }
+    },
+    {
+      "id": "matrix-1-read",
+      "speaker": "COACH",
+      "text": "That is the tier one card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 2,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "plant_1",
+        "focus": "both"
+      }
+    },
+    {
+      "id": "matrix-2-stats",
+      "speaker": "COACH",
+      "text": "Tier two: the Sachita. Attack one, defense three, speed one, and Mining four. Look at the green side first.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "plant_2",
+        "focus": "out"
+      }
+    },
+    {
+      "id": "matrix-2-out",
+      "speaker": "COACH",
+      "text": "With one attack, the Sachita can finish Sjor, Göl, Gölge and Karanlık. Every unlit card survives that single hit.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "plant_2",
+        "focus": "out"
+      }
+    },
+    {
+      "id": "matrix-2-in",
+      "speaker": "COACH",
+      "text": "Now the red side. A full health Sachita is one shot by Hi, Hono, Kagari, Umeme, Kimubunga and Karanlık. Every unlit attacker needs help or earlier damage.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "plant_2",
+        "focus": "in"
+      }
+    },
+    {
+      "id": "matrix-2-read",
+      "speaker": "COACH",
+      "text": "That is the tier two card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 2,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "plant_2",
+        "focus": "both"
+      }
+    },
+    {
+      "id": "matrix-3-stats",
+      "speaker": "COACH",
+      "text": "Tier three: the Sachakuna. Attack two, defense four, speed one, and Mining five. Look at the green side first.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "plant_3",
+        "focus": "out"
+      }
+    },
+    {
+      "id": "matrix-3-out",
+      "speaker": "COACH",
+      "text": "With one attack, the Sachakuna can finish Hi, Hono, Radi, Umeme, Kimubunga, Sjor, Straumr, Göl, Gölge and Karanlık. Every unlit card survives that single hit.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "plant_3",
+        "focus": "out"
+      }
+    },
+    {
+      "id": "matrix-3-in",
+      "speaker": "COACH",
+      "text": "Now the red side. A full health Sachakuna is one shot by Hono, Kagari and Kimubunga. Every unlit attacker needs help or earlier damage.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "plant_3",
+        "focus": "in"
+      }
+    },
+    {
+      "id": "matrix-3-read",
+      "speaker": "COACH",
+      "text": "That is the tier three card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 2,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "plant_3",
+        "focus": "both"
+      }
+    },
+    {
+      "id": "27",
+      "speaker": "COACH",
+      "cue": "warm, unhurried",
+      "text": "That completes the garden rules. Keep the three bonk cards beside your practice board.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": [],
+      "performanceNote": "Articulate every word and every sentence in the supplied text. Do not drop the final sentence. Hono is pronounced hoh-noh as a normal two-syllable name, never as letters. Keep the small final phrases fully audible."
+    },
+    {
+      "id": "28",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "Pick where you end. Collect what's there. The can goes in the drawer.",
+      "beat": "EXIT",
+      "hold": 2,
+      "directions": []
+    }
+  ],
+  "version": 6,
+  "rules": "v2.7",
+  "updatedLabel": "Video version 6 · Last updated at 05:38 Sep 13 2026 CDT",
+  "question": "So what is the payday here?",
+  "soundtrack": {
+    "id": "muju-charango",
+    "title": "Muju / A Field of Small Decisions",
+    "source": "muju/music-auditions/full-versions/muju-charango-full-v2-blended.mp3",
+    "sha256": "8c25a1b64577b2bc755093f33c92bbf74cbb12a9c17a6a96eb752c80416825e5"
+  },
+  "speechProvider": "openai"
+}

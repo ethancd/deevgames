@@ -1,0 +1,550 @@
+{
+  "release": "v6-four-actions-and-element-matrices",
+  "websiteCommit": "f0b004b7384bb412e78a74516e5a6a4170fa18d0",
+  "voices": "OpenAI",
+  "episodes": 16,
+  "totalSeconds": 4255.71,
+  "totalVideoBytes": 230221678,
+  "exportedSpeechClips": 586,
+  "changedSpeechClips": 143,
+  "musicTracks": 9,
+  "elementTierMatrices": 18,
+  "qa": [
+    {
+      "id": "R01",
+      "seconds": 179.534,
+      "videoBytes": 10087778,
+      "videoSha256": "5f6f52ed4b875a77eea4607f94fb0ededdeaf899c029c78bc4637a07ac765aca",
+      "timelineSha256": "8863b8b064e775cd684f523f899a5fa70ff4a201ff87fcb3ab6ed78934658706",
+      "speechComplete": true,
+      "captionTiming": true,
+      "numericCoordinates": true,
+      "visuals": true,
+      "musicBalance": true,
+      "quietHolds": true,
+      "evidence": {
+        "speechVerification": "Local small.en/medium.en word timestamps; phonetic unit-name and number normalization; no unresolved differences. Unchanged takes retain prior verified timings.",
+        "newSpeechClips": 1,
+        "exportedSpeechClips": 33,
+        "minimumAudioCorrelation": 0.97307,
+        "maximumSpeechOffsetSeconds": 0.048,
+        "finalLUFS": -16.69,
+        "truePeakDB": -1.59,
+        "thinkingHolds": [
+          {
+            "line": null,
+            "middleRmsDB": -61.32
+          }
+        ],
+        "reviewedFrames": {
+          "final-representative.png": "9bc8224a48c15a296eeb12af988f54b7580290aff2b1e6d3389f282225ac19da"
+        }
+      }
+    },
+    {
+      "id": "R02",
+      "seconds": 182.8,
+      "videoBytes": 14176016,
+      "videoSha256": "8148c427f8e963b0d6e2e2b3ffd4efbf38c5eb2d2c7851f3df595d930544f7a6",
+      "timelineSha256": "84bd98ade51503361d5252c5e0202eb866a08374463cef3f2e4ce27b651d5a26",
+      "speechComplete": true,
+      "captionTiming": true,
+      "numericCoordinates": true,
+      "visuals": true,
+      "musicBalance": true,
+      "quietHolds": true,
+      "evidence": {
+        "speechVerification": "Local small.en/medium.en word timestamps; phonetic unit-name and number normalization; no unresolved differences. Unchanged takes retain prior verified timings.",
+        "newSpeechClips": 8,
+        "exportedSpeechClips": 33,
+        "minimumAudioCorrelation": 0.92015,
+        "maximumSpeechOffsetSeconds": 0.048,
+        "finalLUFS": -17.54,
+        "truePeakDB": -2.45,
+        "thinkingHolds": [
+          {
+            "line": null,
+            "middleRmsDB": -60.34
+          }
+        ],
+        "reviewedFrames": {
+          "final-representative.png": "c12d23bdeab9faa26e6361690e81f2bc88b2f738f4da421a61e662f4d1da9373"
+        }
+      }
+    },
+    {
+      "id": "R03",
+      "seconds": 237.067,
+      "videoBytes": 11451167,
+      "videoSha256": "dc2ac0804856fa930a918fd46f574bfe12005941153a2ae6eec8dbd04a43f767",
+      "timelineSha256": "48b40139337b2f99ebe541d47ef0b9de3437e72a25667968cf827a76e2420caa",
+      "speechComplete": true,
+      "captionTiming": true,
+      "numericCoordinates": true,
+      "visuals": true,
+      "musicBalance": true,
+      "quietHolds": true,
+      "evidence": {
+        "speechVerification": "Local small.en/medium.en word timestamps; phonetic unit-name and number normalization; no unresolved differences. Unchanged takes retain prior verified timings.",
+        "newSpeechClips": 4,
+        "exportedSpeechClips": 36,
+        "minimumAudioCorrelation": 0.93549,
+        "maximumSpeechOffsetSeconds": 0.048,
+        "finalLUFS": -16.5,
+        "truePeakDB": -1.65,
+        "thinkingHolds": [
+          {
+            "line": null,
+            "middleRmsDB": -60.48
+          }
+        ],
+        "reviewedFrames": {
+          "final-representative.png": "9f69052f75d50bbbeda9f3465eb4573bccd3cddddbdfaa1243dfa940875569f3"
+        }
+      }
+    },
+    {
+      "id": "R04",
+      "seconds": 209.734,
+      "videoBytes": 11021338,
+      "videoSha256": "992330d0fc8d02fc14b482b90f22b6a8a0aa0d9b602532752b5c68d0159ef474",
+      "timelineSha256": "f5aee0de82b36a73768187b00d4a64362e3373de1aeb402d92a6d2df10a439bd",
+      "speechComplete": true,
+      "captionTiming": true,
+      "numericCoordinates": true,
+      "visuals": true,
+      "musicBalance": true,
+      "quietHolds": true,
+      "evidence": {
+        "speechVerification": "Local small.en/medium.en word timestamps; phonetic unit-name and number normalization; no unresolved differences. Unchanged takes retain prior verified timings.",
+        "newSpeechClips": 2,
+        "exportedSpeechClips": 32,
+        "minimumAudioCorrelation": 0.98421,
+        "maximumSpeechOffsetSeconds": 0.048,
+        "finalLUFS": -16.88,
+        "truePeakDB": -1.74,
+        "thinkingHolds": [
+          {
+            "line": null,
+            "middleRmsDB": -62.46
+          }
+        ],
+        "reviewedFrames": {
+          "final-representative.png": "6cd12697380f0afd5c5236b9657adfedd9f66e3c3e4762ef8eef04ea706d8429"
+        }
+      }
+    },
+    {
+      "id": "R05",
+      "seconds": 207.467,
+      "videoBytes": 11145165,
+      "videoSha256": "611d94b2b740d4fd1ccce4ede8d4d375a83597e611fb932f6bfdcf2d0da6e9b9",
+      "timelineSha256": "0a09a0e1e234aff3c658919f0aea9f9c4f93f3c4bd38fff9d1a9decb29e476b4",
+      "speechComplete": true,
+      "captionTiming": true,
+      "numericCoordinates": true,
+      "visuals": true,
+      "musicBalance": true,
+      "quietHolds": true,
+      "evidence": {
+        "speechVerification": "Local small.en/medium.en word timestamps; phonetic unit-name and number normalization; no unresolved differences. Unchanged takes retain prior verified timings.",
+        "newSpeechClips": 3,
+        "exportedSpeechClips": 33,
+        "minimumAudioCorrelation": 0.97571,
+        "maximumSpeechOffsetSeconds": 0.048,
+        "finalLUFS": -16.51,
+        "truePeakDB": -1.6,
+        "thinkingHolds": [
+          {
+            "line": null,
+            "middleRmsDB": -60.97
+          }
+        ],
+        "reviewedFrames": {
+          "final-representative.png": "02b27925f6d348f9e06a1617cd073def665ef4bc09044133087cb0068bfd07e1"
+        }
+      }
+    },
+    {
+      "id": "R06",
+      "seconds": 190.5,
+      "videoBytes": 10492941,
+      "videoSha256": "970223c563570c02d0f7af5c4e7caf3df332ce38056083cefb272503ce18181d",
+      "timelineSha256": "fe224732117679279af2c13e38efb3cc01685ad8909504cce8bbc5033aa34203",
+      "speechComplete": true,
+      "captionTiming": true,
+      "numericCoordinates": true,
+      "visuals": true,
+      "musicBalance": true,
+      "quietHolds": true,
+      "evidence": {
+        "speechVerification": "Local small.en/medium.en word timestamps; phonetic unit-name and number normalization; no unresolved differences. Unchanged takes retain prior verified timings.",
+        "newSpeechClips": 1,
+        "exportedSpeechClips": 31,
+        "minimumAudioCorrelation": 0.9766,
+        "maximumSpeechOffsetSeconds": 0.048,
+        "finalLUFS": -16.65,
+        "truePeakDB": -1.56,
+        "thinkingHolds": [
+          {
+            "line": null,
+            "middleRmsDB": -61.86
+          }
+        ],
+        "reviewedFrames": {
+          "final-representative.png": "b436e364b9d8995d145f0eab7b5a30abe78b520a84594f962c3bf1f8e4124a8a"
+        }
+      }
+    },
+    {
+      "id": "R07",
+      "seconds": 190.7,
+      "videoBytes": 9805290,
+      "videoSha256": "d7395dabc7d58b07a14a27706063f3ee684cff2988c288519e169dbc64568216",
+      "timelineSha256": "b3b1e966543d63661dcb781d77647f20af6daeb3e8ee6f2404e2794d4f4f87f7",
+      "speechComplete": true,
+      "captionTiming": true,
+      "numericCoordinates": true,
+      "visuals": true,
+      "musicBalance": true,
+      "quietHolds": true,
+      "evidence": {
+        "speechVerification": "Local small.en/medium.en word timestamps; phonetic unit-name and number normalization; no unresolved differences. Unchanged takes retain prior verified timings.",
+        "newSpeechClips": 2,
+        "exportedSpeechClips": 32,
+        "minimumAudioCorrelation": 0.9825,
+        "maximumSpeechOffsetSeconds": 0.048,
+        "finalLUFS": -16.71,
+        "truePeakDB": -1.63,
+        "thinkingHolds": [
+          {
+            "line": null,
+            "middleRmsDB": -61.03
+          }
+        ],
+        "reviewedFrames": {
+          "final-representative.png": "7fa07677ceae7ab849e2585fc50903e67df8896911ec826928fda6d9b9d6c4e8"
+        }
+      }
+    },
+    {
+      "id": "R08",
+      "seconds": 179.034,
+      "videoBytes": 9121847,
+      "videoSha256": "b681e9a1d19e79d27832d37b3ac427c024e817804405d11ecb80f82f90bd30e7",
+      "timelineSha256": "f48c1382a9e0a91def8527c62e8366ed4c2a72cf66b70fecc7c40af9cf946e33",
+      "speechComplete": true,
+      "captionTiming": true,
+      "numericCoordinates": true,
+      "visuals": true,
+      "musicBalance": true,
+      "quietHolds": true,
+      "evidence": {
+        "speechVerification": "Local small.en/medium.en word timestamps; phonetic unit-name and number normalization; no unresolved differences. Unchanged takes retain prior verified timings.",
+        "newSpeechClips": 11,
+        "exportedSpeechClips": 30,
+        "minimumAudioCorrelation": 0.97162,
+        "maximumSpeechOffsetSeconds": 0.048,
+        "finalLUFS": -16.76,
+        "truePeakDB": -1.59,
+        "thinkingHolds": [
+          {
+            "line": null,
+            "middleRmsDB": -63.31
+          }
+        ],
+        "reviewedFrames": {
+          "final-representative.png": "c4ec8657791596974166f0f459fc32cfc9e44c827a3da848a71a2e80bbd3d900"
+        }
+      }
+    },
+    {
+      "id": "R09",
+      "seconds": 197.067,
+      "videoBytes": 9779200,
+      "videoSha256": "c7f05f285043bf97821e60762f98f337faf4cddc39fbe37355c4125b5beedafa",
+      "timelineSha256": "5cc8e5adb48f49e4403ea0b2c3f8eaae4966ea096fb134294b71d04ecea45ba7",
+      "speechComplete": true,
+      "captionTiming": true,
+      "numericCoordinates": true,
+      "visuals": true,
+      "musicBalance": true,
+      "quietHolds": true,
+      "evidence": {
+        "speechVerification": "Local small.en/medium.en word timestamps; phonetic unit-name and number normalization; no unresolved differences. Unchanged takes retain prior verified timings.",
+        "newSpeechClips": 12,
+        "exportedSpeechClips": 32,
+        "minimumAudioCorrelation": 0.98905,
+        "maximumSpeechOffsetSeconds": 0.048,
+        "finalLUFS": -16.71,
+        "truePeakDB": -1.61,
+        "thinkingHolds": [
+          {
+            "line": null,
+            "middleRmsDB": -61.63
+          }
+        ],
+        "reviewedFrames": {
+          "final-representative.png": "1c830c57774f9632a43f558b399b73802da51efa1df6845780770b94feeab5ec"
+        }
+      }
+    },
+    {
+      "id": "R10",
+      "seconds": 236.534,
+      "videoBytes": 11751766,
+      "videoSha256": "2ed70d6d4ceb51f47bac832669cd4e4ac4ed1b25b7b45fb92e16e419f6f61716",
+      "timelineSha256": "be921a6bf787d68f4d46834c03e884c79781ba91f5c6acdf27b8cafdc833d5f7",
+      "speechComplete": true,
+      "captionTiming": true,
+      "numericCoordinates": true,
+      "visuals": true,
+      "musicBalance": true,
+      "quietHolds": true,
+      "evidence": {
+        "speechVerification": "Local small.en/medium.en word timestamps; phonetic unit-name and number normalization; no unresolved differences. Unchanged takes retain prior verified timings.",
+        "newSpeechClips": 8,
+        "exportedSpeechClips": 34,
+        "minimumAudioCorrelation": 0.97302,
+        "maximumSpeechOffsetSeconds": 0.048,
+        "finalLUFS": -16.81,
+        "truePeakDB": -1.87,
+        "thinkingHolds": [
+          {
+            "line": "20",
+            "middleRmsDB": -62.25
+          }
+        ],
+        "reviewedFrames": {
+          "final-representative.png": "c71d8c2390ec9a4f8400b2c51dcc40be9506483edd124f8c4faa9fd5df18aa56"
+        }
+      }
+    },
+    {
+      "id": "R11",
+      "seconds": 396.167,
+      "videoBytes": 20986217,
+      "videoSha256": "5413015ae91ce4dc459d4b39793b061c3f4b2ebb93fbfe5ef441b04b93d33e10",
+      "timelineSha256": "04524a6428e6c7629cada5f66b32ad31e101157f0bca2f4c9033d203cdba6113",
+      "speechComplete": true,
+      "captionTiming": true,
+      "numericCoordinates": true,
+      "visuals": true,
+      "musicBalance": true,
+      "quietHolds": true,
+      "evidence": {
+        "speechVerification": "Local small.en/medium.en word timestamps; phonetic unit-name and number normalization; no unresolved differences. Unchanged takes retain prior verified timings.",
+        "newSpeechClips": 18,
+        "exportedSpeechClips": 44,
+        "minimumAudioCorrelation": 0.99072,
+        "maximumSpeechOffsetSeconds": 0.048,
+        "finalLUFS": -16.44,
+        "truePeakDB": -1.71,
+        "thinkingHolds": [
+          {
+            "line": "17",
+            "middleRmsDB": -61.23
+          }
+        ],
+        "reviewedFrames": {
+          "final-matrix-1.png": "2526726b7289b171f0cc89cf8a860b87ee518641cf2a2e2a37eed9c37a086297",
+          "final-matrix-2.png": "891513c0e846a3bdf32c5f3f49ec90a450c28fcfe6387d226ae8c8218ad9f900",
+          "final-matrix-3.png": "18ba4c8b1cc232f95f50740c28ae80d6703ab63455544a473c5eef2e8dc7dd19"
+        }
+      }
+    },
+    {
+      "id": "R12",
+      "seconds": 402.034,
+      "videoBytes": 22992327,
+      "videoSha256": "546e2b8e007645edaa5d888544f695a57fb7a3313e112070547f8ffd93d72642",
+      "timelineSha256": "00255d2f6d14e7318772b0e4664ed14a923acaa104361ba65aaeddea37325f30",
+      "speechComplete": true,
+      "captionTiming": true,
+      "numericCoordinates": true,
+      "visuals": true,
+      "musicBalance": true,
+      "quietHolds": true,
+      "evidence": {
+        "speechVerification": "Local small.en/medium.en word timestamps; phonetic unit-name and number normalization; no unresolved differences. Unchanged takes retain prior verified timings.",
+        "newSpeechClips": 13,
+        "exportedSpeechClips": 47,
+        "minimumAudioCorrelation": 0.98178,
+        "maximumSpeechOffsetSeconds": 0.048,
+        "finalLUFS": -16.51,
+        "truePeakDB": -1.68,
+        "thinkingHolds": [
+          {
+            "line": "11",
+            "middleRmsDB": -62.63
+          }
+        ],
+        "reviewedFrames": {
+          "final-matrix-1.png": "c8e6ce3ad577d224325a5a35dc2b432e40075b32014df0852be27f70b6eb2733",
+          "final-matrix-2.png": "de65c869cd31cf724d4b5884bfbf8f044055dad5620108e3d52f3224d29fe3d3",
+          "final-matrix-3.png": "b8b7782a7b9b75f16c8a26a964a052e1d869a8438b37fd18299641ff1cc983fb"
+        }
+      }
+    },
+    {
+      "id": "R13",
+      "seconds": 363.134,
+      "videoBytes": 19676725,
+      "videoSha256": "17f8b6d77e73217f08a0a2e211d65936d1b10265cc1e950ef7e66fa318668db8",
+      "timelineSha256": "2c6926961903766ac97f91237965b2c30be619ca9aaa250947aebf3c1b683090",
+      "speechComplete": true,
+      "captionTiming": true,
+      "numericCoordinates": true,
+      "visuals": true,
+      "musicBalance": true,
+      "quietHolds": true,
+      "evidence": {
+        "speechVerification": "Local small.en/medium.en word timestamps; phonetic unit-name and number normalization; no unresolved differences. Unchanged takes retain prior verified timings.",
+        "newSpeechClips": 13,
+        "exportedSpeechClips": 42,
+        "minimumAudioCorrelation": 0.99031,
+        "maximumSpeechOffsetSeconds": 0.048,
+        "finalLUFS": -16.49,
+        "truePeakDB": -1.83,
+        "thinkingHolds": [
+          {
+            "line": "12",
+            "middleRmsDB": -63.0
+          }
+        ],
+        "reviewedFrames": {
+          "final-matrix-1.png": "4f7683a2adaa93c1db2f6d24e06eb16a9112bca332bd41ee6790351c1ca6f0c5",
+          "final-matrix-2.png": "854d5b14a3b331ab9a9c96f2d482628b2a14c24319d9b316e68e13f3019d7625",
+          "final-matrix-3.png": "876169072dfd1e7fca8b4b8ad37cbad4211d932c11278cb985691a2118ca67dd"
+        }
+      }
+    },
+    {
+      "id": "R14",
+      "seconds": 395.367,
+      "videoBytes": 21104480,
+      "videoSha256": "e2235f4a852dcbc832159827e1899ca708007207d190d13bd5194713bcf27aef",
+      "timelineSha256": "292b8659371feb683e46d7482bcf8c728c700afc16cc5a6f7e82845dfe9fd24d",
+      "speechComplete": true,
+      "captionTiming": true,
+      "numericCoordinates": true,
+      "visuals": true,
+      "musicBalance": true,
+      "quietHolds": true,
+      "evidence": {
+        "speechVerification": "Local small.en/medium.en word timestamps; phonetic unit-name and number normalization; no unresolved differences. Unchanged takes retain prior verified timings.",
+        "newSpeechClips": 13,
+        "exportedSpeechClips": 44,
+        "minimumAudioCorrelation": 0.91079,
+        "maximumSpeechOffsetSeconds": 0.048,
+        "finalLUFS": -16.67,
+        "truePeakDB": -1.76,
+        "thinkingHolds": [
+          {
+            "line": "15",
+            "middleRmsDB": -61.25
+          }
+        ],
+        "reviewedFrames": {
+          "final-matrix-1.png": "0a921fe46dce6b8145c1b6e23ad465c22b33debce75aecf7e79a6e43bc757ae1",
+          "final-matrix-2.png": "88351b69dde4c2b3f72b41ff03fd7e63d7e9980d5f4dedcb9549042cbab9eee5",
+          "final-matrix-3.png": "6ec4a86ae931066688c799b2aab4121ef7b20b7721fe96835edd0b65158da6ab"
+        }
+      }
+    },
+    {
+      "id": "R15",
+      "seconds": 337.234,
+      "videoBytes": 16902049,
+      "videoSha256": "7fb2ff8a156b09c7187b0f6daf8f1b1aac58790b65216fe908785a8465bf4b57",
+      "timelineSha256": "cbe4324b73ce54e93f97af5e70089c1bf17a359700952f2a9b6ce8656e6878a6",
+      "speechComplete": true,
+      "captionTiming": true,
+      "numericCoordinates": true,
+      "visuals": true,
+      "musicBalance": true,
+      "quietHolds": true,
+      "evidence": {
+        "speechVerification": "Local small.en/medium.en word timestamps; phonetic unit-name and number normalization; no unresolved differences. Unchanged takes retain prior verified timings.",
+        "newSpeechClips": 15,
+        "exportedSpeechClips": 41,
+        "minimumAudioCorrelation": 0.96185,
+        "maximumSpeechOffsetSeconds": 0.048,
+        "finalLUFS": -16.63,
+        "truePeakDB": -1.61,
+        "thinkingHolds": [
+          {
+            "line": "12",
+            "middleRmsDB": -59.84
+          }
+        ],
+        "reviewedFrames": {
+          "final-matrix-1.png": "a9831c27fdff66b5ae9f486e82002c39b47360444a7f5b6efb3ac12f3e5431ec",
+          "final-matrix-2.png": "7b1d30fa1e21d964f651ebf5c9fe1fae181b6150e5364e14797c9a45afb0fbc1",
+          "final-matrix-3.png": "3a301197e8cf5f6eed0b9d909757ad428863bc7b0a6bda3866a48379f98aa20d"
+        }
+      }
+    },
+    {
+      "id": "R16",
+      "seconds": 351.334,
+      "videoBytes": 19727372,
+      "videoSha256": "13287bed94ebc2a2343325ac4dd94180ce74409a0a4554a891fe87b809b3306c",
+      "timelineSha256": "739468733a1f02d9e4a53f95d8e56271b3980b56e1b00750d5ea9eb39a2f3aff",
+      "speechComplete": true,
+      "captionTiming": true,
+      "numericCoordinates": true,
+      "visuals": true,
+      "musicBalance": true,
+      "quietHolds": true,
+      "evidence": {
+        "speechVerification": "Local small.en/medium.en word timestamps; phonetic unit-name and number normalization; no unresolved differences. Unchanged takes retain prior verified timings.",
+        "newSpeechClips": 19,
+        "exportedSpeechClips": 42,
+        "minimumAudioCorrelation": 0.97715,
+        "maximumSpeechOffsetSeconds": 0.048,
+        "finalLUFS": -16.53,
+        "truePeakDB": -1.72,
+        "thinkingHolds": [
+          {
+            "line": "15",
+            "middleRmsDB": -60.99
+          }
+        ],
+        "reviewedFrames": {
+          "final-matrix-1.png": "2f48091f2b03f47a931950a54056e6b565723d84f6d5772ca911337838ea0af7",
+          "final-matrix-2.png": "2e7dcc4bc7be0b53a4d91a06859f4a93758940371eff19ce417d15bb74c88b60",
+          "final-matrix-3.png": "019a262f6e722a6b3527e0390f53500d16311e4c0ac808e0df009b75aa07c627"
+        }
+      }
+    }
+  ],
+  "liveVerification": {
+    "live": "https://ashkie.com/muju-academy/",
+    "episodesVerified": [
+      "R01",
+      "R02",
+      "R03",
+      "R04",
+      "R05",
+      "R06",
+      "R07",
+      "R08",
+      "R09",
+      "R10",
+      "R11",
+      "R12",
+      "R13",
+      "R14",
+      "R15",
+      "R16"
+    ],
+    "musicTracks": 9,
+    "retiredStrategyAssetsVerified": 33,
+    "oldAssetsRedirected": 48,
+    "allChecksPassed": true
+  },
+  "deploymentRun": "https://github.com/ethancd/ashkie-pages/actions/runs/34754260153",
+  "deploymentConclusion": "success",
+  "completedAtUTC": "2026-09-13T11:24:59.100871+00:00"
+}

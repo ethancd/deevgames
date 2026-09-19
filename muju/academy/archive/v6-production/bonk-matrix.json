@@ -1,0 +1,477 @@
+[
+  {
+    "id": "fire_1",
+    "targets": [
+      "fire_1",
+      "fire_2",
+      "fire_3",
+      "lightning_1",
+      "lightning_2",
+      "lightning_3",
+      "plant_1",
+      "plant_2",
+      "metal_1"
+    ],
+    "threats": [
+      "fire_1",
+      "fire_2",
+      "fire_3",
+      "lightning_1",
+      "lightning_2",
+      "lightning_3",
+      "water_1",
+      "water_2",
+      "water_3",
+      "shadow_1",
+      "shadow_2",
+      "shadow_3",
+      "plant_3",
+      "metal_2",
+      "metal_3"
+    ]
+  },
+  {
+    "id": "fire_2",
+    "targets": [
+      "fire_1",
+      "fire_2",
+      "fire_3",
+      "lightning_1",
+      "lightning_2",
+      "lightning_3",
+      "water_1",
+      "shadow_1",
+      "shadow_2",
+      "shadow_3",
+      "plant_1",
+      "plant_2",
+      "plant_3",
+      "metal_1",
+      "metal_2"
+    ],
+    "threats": [
+      "fire_1",
+      "fire_2",
+      "fire_3",
+      "lightning_1",
+      "lightning_2",
+      "lightning_3",
+      "water_1",
+      "water_2",
+      "water_3",
+      "shadow_1",
+      "shadow_2",
+      "shadow_3",
+      "plant_3",
+      "metal_2",
+      "metal_3"
+    ]
+  },
+  {
+    "id": "fire_3",
+    "targets": [
+      "fire_1",
+      "fire_2",
+      "fire_3",
+      "lightning_1",
+      "lightning_2",
+      "lightning_3",
+      "water_1",
+      "water_2",
+      "shadow_1",
+      "shadow_2",
+      "shadow_3",
+      "plant_1",
+      "plant_2",
+      "plant_3",
+      "metal_1",
+      "metal_2",
+      "metal_3"
+    ],
+    "threats": [
+      "fire_1",
+      "fire_2",
+      "fire_3",
+      "lightning_2",
+      "lightning_3",
+      "water_1",
+      "water_2",
+      "water_3",
+      "shadow_1",
+      "shadow_2",
+      "shadow_3"
+    ]
+  },
+  {
+    "id": "lightning_1",
+    "targets": [
+      "fire_1",
+      "fire_2",
+      "lightning_1",
+      "lightning_2",
+      "lightning_3"
+    ],
+    "threats": [
+      "fire_1",
+      "fire_2",
+      "fire_3",
+      "lightning_1",
+      "lightning_2",
+      "lightning_3",
+      "water_1",
+      "water_2",
+      "water_3",
+      "shadow_1",
+      "shadow_2",
+      "shadow_3",
+      "plant_3",
+      "metal_2",
+      "metal_3"
+    ]
+  },
+  {
+    "id": "lightning_2",
+    "targets": [
+      "fire_1",
+      "fire_2",
+      "fire_3",
+      "lightning_1",
+      "lightning_2",
+      "lightning_3",
+      "plant_1",
+      "plant_2",
+      "metal_1"
+    ],
+    "threats": [
+      "fire_1",
+      "fire_2",
+      "fire_3",
+      "lightning_1",
+      "lightning_2",
+      "lightning_3",
+      "water_1",
+      "water_2",
+      "water_3",
+      "shadow_1",
+      "shadow_2",
+      "shadow_3",
+      "plant_3",
+      "metal_2",
+      "metal_3"
+    ]
+  },
+  {
+    "id": "lightning_3",
+    "targets": [
+      "fire_1",
+      "fire_2",
+      "fire_3",
+      "lightning_1",
+      "lightning_2",
+      "lightning_3",
+      "water_1",
+      "shadow_1",
+      "shadow_2",
+      "shadow_3",
+      "plant_1",
+      "plant_2",
+      "plant_3",
+      "metal_1",
+      "metal_2"
+    ],
+    "threats": [
+      "fire_1",
+      "fire_2",
+      "fire_3",
+      "lightning_1",
+      "lightning_2",
+      "lightning_3",
+      "water_1",
+      "water_2",
+      "water_3",
+      "shadow_1",
+      "shadow_2",
+      "shadow_3",
+      "plant_3",
+      "metal_2",
+      "metal_3"
+    ]
+  },
+  {
+    "id": "water_1",
+    "targets": [
+      "fire_1",
+      "fire_2",
+      "fire_3",
+      "lightning_1",
+      "lightning_2",
+      "lightning_3",
+      "water_1",
+      "shadow_1",
+      "shadow_2",
+      "shadow_3"
+    ],
+    "threats": [
+      "fire_2",
+      "fire_3",
+      "lightning_3",
+      "water_1",
+      "water_2",
+      "water_3",
+      "shadow_1",
+      "shadow_2",
+      "shadow_3",
+      "plant_2",
+      "plant_3",
+      "metal_1",
+      "metal_2",
+      "metal_3"
+    ]
+  },
+  {
+    "id": "water_2",
+    "targets": [
+      "fire_1",
+      "fire_2",
+      "fire_3",
+      "lightning_1",
+      "lightning_2",
+      "lightning_3",
+      "water_1",
+      "shadow_1",
+      "shadow_2",
+      "shadow_3"
+    ],
+    "threats": [
+      "fire_3",
+      "water_3",
+      "shadow_2",
+      "shadow_3",
+      "plant_3",
+      "metal_2",
+      "metal_3"
+    ]
+  },
+  {
+    "id": "water_3",
+    "targets": [
+      "fire_1",
+      "fire_2",
+      "fire_3",
+      "lightning_1",
+      "lightning_2",
+      "lightning_3",
+      "water_1",
+      "water_2",
+      "shadow_1",
+      "shadow_2",
+      "shadow_3"
+    ],
+    "threats": [
+      "shadow_3"
+    ]
+  },
+  {
+    "id": "shadow_1",
+    "targets": [
+      "fire_1",
+      "fire_2",
+      "fire_3",
+      "lightning_1",
+      "lightning_2",
+      "lightning_3",
+      "water_1",
+      "shadow_1",
+      "shadow_2",
+      "shadow_3"
+    ],
+    "threats": [
+      "fire_2",
+      "fire_3",
+      "lightning_3",
+      "water_1",
+      "water_2",
+      "water_3",
+      "shadow_1",
+      "shadow_2",
+      "shadow_3",
+      "plant_2",
+      "plant_3",
+      "metal_1",
+      "metal_2",
+      "metal_3"
+    ]
+  },
+  {
+    "id": "shadow_2",
+    "targets": [
+      "fire_1",
+      "fire_2",
+      "fire_3",
+      "lightning_1",
+      "lightning_2",
+      "lightning_3",
+      "water_1",
+      "water_2",
+      "shadow_1",
+      "shadow_2",
+      "shadow_3"
+    ],
+    "threats": [
+      "fire_2",
+      "fire_3",
+      "lightning_3",
+      "water_1",
+      "water_2",
+      "water_3",
+      "shadow_1",
+      "shadow_2",
+      "shadow_3",
+      "plant_2",
+      "plant_3",
+      "metal_1",
+      "metal_2",
+      "metal_3"
+    ]
+  },
+  {
+    "id": "shadow_3",
+    "targets": [
+      "fire_1",
+      "fire_2",
+      "fire_3",
+      "lightning_1",
+      "lightning_2",
+      "lightning_3",
+      "water_1",
+      "water_2",
+      "water_3",
+      "shadow_1",
+      "shadow_2",
+      "shadow_3",
+      "plant_1",
+      "plant_2",
+      "metal_1"
+    ],
+    "threats": [
+      "fire_2",
+      "fire_3",
+      "lightning_3",
+      "water_1",
+      "water_2",
+      "water_3",
+      "shadow_1",
+      "shadow_2",
+      "shadow_3",
+      "plant_2",
+      "plant_3",
+      "metal_1",
+      "metal_2",
+      "metal_3"
+    ]
+  },
+  {
+    "id": "plant_1",
+    "targets": [],
+    "threats": [
+      "fire_1",
+      "fire_2",
+      "fire_3",
+      "lightning_2",
+      "lightning_3",
+      "shadow_3"
+    ]
+  },
+  {
+    "id": "plant_2",
+    "targets": [
+      "water_1",
+      "shadow_1",
+      "shadow_2",
+      "shadow_3"
+    ],
+    "threats": [
+      "fire_1",
+      "fire_2",
+      "fire_3",
+      "lightning_2",
+      "lightning_3",
+      "shadow_3"
+    ]
+  },
+  {
+    "id": "plant_3",
+    "targets": [
+      "fire_1",
+      "fire_2",
+      "lightning_1",
+      "lightning_2",
+      "lightning_3",
+      "water_1",
+      "water_2",
+      "shadow_1",
+      "shadow_2",
+      "shadow_3"
+    ],
+    "threats": [
+      "fire_2",
+      "fire_3",
+      "lightning_3"
+    ]
+  },
+  {
+    "id": "metal_1",
+    "targets": [
+      "water_1",
+      "shadow_1",
+      "shadow_2",
+      "shadow_3"
+    ],
+    "threats": [
+      "fire_1",
+      "fire_2",
+      "fire_3",
+      "lightning_2",
+      "lightning_3",
+      "shadow_3"
+    ]
+  },
+  {
+    "id": "metal_2",
+    "targets": [
+      "fire_1",
+      "fire_2",
+      "lightning_1",
+      "lightning_2",
+      "lightning_3",
+      "water_1",
+      "water_2",
+      "shadow_1",
+      "shadow_2",
+      "shadow_3"
+    ],
+    "threats": [
+      "fire_2",
+      "fire_3",
+      "lightning_3"
+    ]
+  },
+  {
+    "id": "metal_3",
+    "targets": [
+      "fire_1",
+      "fire_2",
+      "lightning_1",
+      "lightning_2",
+      "lightning_3",
+      "water_1",
+      "water_2",
+      "shadow_1",
+      "shadow_2",
+      "shadow_3"
+    ],
+    "threats": [
+      "fire_3"
+    ]
+  }
+]

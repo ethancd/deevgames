@@ -1,0 +1,522 @@
+{
+  "id": "R14",
+  "title": "Shadow: The Visible Detective",
+  "fps": 30,
+  "voices": {
+    "COACH": "marin",
+    "PIP": "coral",
+    "CLICK": "cedar",
+    "EMBER": "ash",
+    "ZIP": "verse",
+    "BUBBLES": "shimmer",
+    "MURMUR": "sage",
+    "CLANK": "onyx"
+  },
+  "lines": [
+    {
+      "id": "01",
+      "speaker": "MURMUR",
+      "cue": "",
+      "text": "You cannot see me.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed in, low]",
+        "[board: Murmur stands behind a very small leaf, in a long coat and a wide hat, holding a sandwich the size of a pillow. The coat, the hat, the boots and the sandwich all stick out past the leaf. Sign above: SHADOW DEPARTMENT. Game board unchanged.]"
+      ]
+    },
+    {
+      "id": "02",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "I can see your hat, your feet, and your enormous detective sandwich.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "03",
+      "speaker": "MURMUR",
+      "cue": "",
+      "text": "A witness. Most inconvenient.",
+      "beat": "INVITATION",
+      "hold": 0.9,
+      "directions": []
+    },
+    {
+      "id": "04",
+      "speaker": "MURMUR",
+      "cue": "conspiratorial whisper",
+      "text": "The leaf is entered as scenery.",
+      "beat": "INVITATION",
+      "hold": 3.4,
+      "directions": [],
+      "titleBump": true
+    },
+    {
+      "id": "05",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "Memo from Dispatch. Speed buys travel. It has never once bought damage.",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed out]",
+        "[card: THE THREE QUESTIONS. Which stat helps this job? How many actions does it take? What will this piece owe next turn?]",
+        "[card: ROSTER KEY. Hit = base attack before elements. Shield = full defense. Walk = squares per action. Take = maximum crystals at own turn end, limited by reserve. Keep beside every roster recital.]",
+        "[card: MEMO FROM DISPATCH]"
+      ]
+    },
+    {
+      "id": "06",
+      "speaker": "COACH",
+      "cue": "stating the rule, level",
+      "text": "The Göl's speed is two.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[board: White Göl on column C, row three. Black Hi on column C, row seven. C four, C five and C six are empty. Four action tokens in the tray.] [card: THE CASE FILE. Column one, fact. Column two, possible. Column three, guess.]"
+      ]
+    },
+    {
+      "id": "07",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "The walk to column C, row six is three squares.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "08",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "One walk, declared once. Two squares fit in an action. Leftovers cost a whole action.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[board: one arrow, drawn once, from C three to C six. The Göl slides along it as one declared walk.]"
+      ]
+    },
+    {
+      "id": "09",
+      "speaker": "COACH",
+      "cue": "stating the rule, level",
+      "text": "No walking through pieces. No diagonals. Up, down, left or right, and a path may turn.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "10",
+      "speaker": "MURMUR",
+      "cue": "dry aside",
+      "text": "The count goes in the file. Not on the table.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[board: Murmur slides the case file over the action tray.]"
+      ]
+    },
+    {
+      "id": "11",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Every attack costs one action.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "12",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "The Deep End puts out the Sparks. Shadow beats Fire, so the Göl hits for three.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[card: the Hi, defense one]"
+      ]
+    },
+    {
+      "id": "13",
+      "speaker": "MURMUR",
+      "cue": "question, open",
+      "text": "What did that walk and that hit cost us?",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: bonk] [sfx: piece removed]",
+        "[card: two boxes in the file. THE COST. THREE ACTIONS / FOUR ACTIONS]"
+      ]
+    },
+    {
+      "id": "14",
+      "speaker": "MURMUR",
+      "cue": "",
+      "text": "Three actions, or four?",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "15",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Count it, or sit with the file and watch.",
+      "beat": "TRY",
+      "hold": 10.2,
+      "directions": [],
+      "thinking": true,
+      "question": "What did that walk and that hit cost us?"
+    },
+    {
+      "id": "16",
+      "speaker": "COACH",
+      "cue": "reveal, land it",
+      "text": "Three actions. Two for the walk. One for the hit.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[board: Murmur lifts the file off the tray. Three tokens are gone. Three are still sitting there.]"
+      ]
+    },
+    {
+      "id": "17",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "Three squares cost two?",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "18",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Two squares fit in the first action. One was left over. Leftovers cost a whole action.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "19",
+      "speaker": "MURMUR",
+      "cue": "",
+      "text": "The thief was the second square. It travelled free. Hiding in plain sight. Just like me.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "20",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "Leftovers do not go in a pocket. A new walk counts on its own.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "21",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Shadow walks the halls. Same as anyone.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "22",
+      "speaker": "MURMUR",
+      "cue": "counting, even beats",
+      "text": "This is the Gölge. Walks two. Hits for three. Takes one crystal.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[card: EVIDENCE. Proves: this path, with nobody in it. Not checked: a blocker, and Black's reply.]",
+        "[card: the Göl · the Gölge · the Karanlık.]"
+      ]
+    },
+    {
+      "id": "23",
+      "speaker": "MURMUR",
+      "cue": "",
+      "text": "This is the Karanlık. Walks three. Hits for four. Takes two crystals.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "24",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "At your own turn end it takes one crystal from the square it stands on.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[board: a separate practice square. A Gölge standing on three crystals.] [card: INCOME. At your own turn end. From the square you are standing on. Never the square you left.]"
+      ]
+    },
+    {
+      "id": "25",
+      "speaker": "CLICK",
+      "cue": "dry aside",
+      "text": "The Göl takes nothing. The square keeps its crystals.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "26",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Next turn the Göl owes nothing. The Gölge owes one. The Karanlık owes two.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "27",
+      "speaker": "MURMUR",
+      "cue": "",
+      "text": "Somebody standing in that path is a different case. Put one there and count again.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[board: reset the original C three to C seven practice position. The Göl and the enemy Hi are back at their starting squares. Add a friendly Muju on C five before any actions; relight the longer path around it.]"
+      ]
+    },
+    {
+      "id": "28",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "Shadow walks the halls. Same as anyone.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": [
+        "[card: SHADOW WORK CARD. Attack two, three, four · defense two · speed two, two, three · Mining nothing, one, two · toll nothing, one, two. Filed with the case.]"
+      ]
+    },
+    {
+      "id": "29",
+      "speaker": "MURMUR",
+      "cue": "",
+      "text": "Tried walking through a piece. Repeatedly. It had no opinion about me. It was simply there.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "matrix-intro",
+      "speaker": "COACH",
+      "text": "Now the bonk matrix for shadow. We check all eighteen enemy unit types, including matching types. Both pieces start at full health and are already next to each other. One attack, not a whole turn.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "card",
+        "title": "Read one tier at a time",
+        "body": "Green: this unit one-shots the enemy.\nRed: that enemy one-shots this unit.\nBoth at full health · adjacent · one legal attack.\nThis is damage, not a movement or safety prediction."
+      }
+    },
+    {
+      "id": "matrix-1-stats",
+      "speaker": "COACH",
+      "text": "Tier one: the Göl. Attack two, defense two, speed two, and Mining zero. Look at the green side first.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "shadow_1",
+        "focus": "out"
+      }
+    },
+    {
+      "id": "matrix-1-out",
+      "speaker": "COACH",
+      "text": "With one attack, the Göl can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Göl, Gölge and Karanlık. Every unlit card survives that single hit.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "shadow_1",
+        "focus": "out"
+      }
+    },
+    {
+      "id": "matrix-1-in",
+      "speaker": "COACH",
+      "text": "Now the red side. A full health Göl is one shot by Hono, Kagari, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachita, Sachakuna, Yan, Mazask and Tanka. Every unlit attacker needs help or earlier damage.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "shadow_1",
+        "focus": "in"
+      }
+    },
+    {
+      "id": "matrix-1-read",
+      "speaker": "COACH",
+      "text": "That is the tier one card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 2,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "shadow_1",
+        "focus": "both"
+      }
+    },
+    {
+      "id": "matrix-2-stats",
+      "speaker": "COACH",
+      "text": "Tier two: the Gölge. Attack three, defense two, speed two, and Mining one. Look at the green side first.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "shadow_2",
+        "focus": "out"
+      }
+    },
+    {
+      "id": "matrix-2-out",
+      "speaker": "COACH",
+      "text": "With one attack, the Gölge can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Gölge and Karanlık. It also finishes Göl. Every unlit card survives that single hit.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "shadow_2",
+        "focus": "out"
+      }
+    },
+    {
+      "id": "matrix-2-in",
+      "speaker": "COACH",
+      "text": "Now the red side. A full health Gölge is one shot by Hono, Kagari, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachita, Sachakuna, Yan, Mazask and Tanka. Every unlit attacker needs help or earlier damage.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "shadow_2",
+        "focus": "in"
+      }
+    },
+    {
+      "id": "matrix-2-read",
+      "speaker": "COACH",
+      "text": "That is the tier two card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 2,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "shadow_2",
+        "focus": "both"
+      }
+    },
+    {
+      "id": "matrix-3-stats",
+      "speaker": "COACH",
+      "text": "Tier three: the Karanlık. Attack four, defense two, speed three, and Mining two. Look at the green side first.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "shadow_3",
+        "focus": "out"
+      }
+    },
+    {
+      "id": "matrix-3-out",
+      "speaker": "COACH",
+      "text": "With one attack, the Karanlık can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Muju, Sachita and Yan. Every unlit card survives that single hit.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "shadow_3",
+        "focus": "out"
+      }
+    },
+    {
+      "id": "matrix-3-in",
+      "speaker": "COACH",
+      "text": "Now the red side. A full health Karanlık is one shot by Hono, Kagari, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachita, Sachakuna, Yan, Mazask and Tanka. Every unlit attacker needs help or earlier damage.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "shadow_3",
+        "focus": "in"
+      }
+    },
+    {
+      "id": "matrix-3-read",
+      "speaker": "COACH",
+      "text": "That is the tier three card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 2,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "shadow_3",
+        "focus": "both"
+      }
+    },
+    {
+      "id": "30",
+      "speaker": "MURMUR",
+      "cue": "",
+      "text": "Case closed. The card goes in the file. Stopping here is fine.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "31",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "That was my leaf. It would like a copy.",
+      "beat": "EXIT",
+      "hold": 2,
+      "directions": []
+    }
+  ],
+  "version": 8,
+  "rules": "v2.9",
+  "updatedLabel": "Video version 8 · Last updated Sep 18 2026 CDT",
+  "question": "What did that walk and that hit cost us?",
+  "soundtrack": {
+    "id": "golge-baglama",
+    "title": "Gölge / One Square Out of Sight",
+    "source": "muju/music-auditions/full-versions/golge-baglama-full-v2-blended.mp3",
+    "sha256": "2c4e05bc362d1abf7014321d8f86e5f34756ff908c960b24bceb553f9c7c48dc"
+  },
+  "speechProvider": "openai"
+}

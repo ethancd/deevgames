@@ -1,0 +1,39 @@
+PASS exact video, poster, transcript, and three seek ranges R01
+PASS exact video, poster, transcript, and three seek ranges R02
+PASS exact video, poster, transcript, and three seek ranges R03
+PASS exact video, poster, transcript, and three seek ranges R06
+PASS exact video, poster, transcript, and three seek ranges R07
+PASS exact video, poster, transcript, and three seek ranges R05
+PASS exact video, poster, transcript, and three seek ranges R08
+PASS exact video, poster, transcript, and three seek ranges R09
+PASS exact video, poster, transcript, and three seek ranges R10
+PASS exact video, poster, transcript, and three seek ranges R11
+PASS exact video, poster, transcript, and three seek ranges R12
+PASS exact video, poster, transcript, and three seek ranges R13
+PASS exact video, poster, transcript, and three seek ranges R14
+PASS exact video, poster, transcript, and three seek ranges R16
+PASS exact video, poster, transcript, and three seek ranges R15
+PASS exact video, poster, transcript, and three seek ranges R04
+Traceback (most recent call last):
+  File "/private/tmp/muju-academy-v6-release/tools/verify_muju_videos.py", line 79, in <module>
+    with ThreadPoolExecutor(max_workers=4) as pool:redirects=list(pool.map(replaced,release['replacedAssets']))
+                                                             ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/concurrent/futures/_base.py", line 639, in result_iterator
+    yield _result_or_cancel(fs.pop())
+          ~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/concurrent/futures/_base.py", line 311, in _result_or_cancel
+    return fut.result(timeout)
+           ~~~~~~~~~~^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/concurrent/futures/_base.py", line 443, in result
+    return self.__get_result()
+           ~~~~~~~~~~~~~~~~~^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/concurrent/futures/_base.py", line 395, in __get_result
+    raise self._exception
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/concurrent/futures/thread.py", line 86, in run
+    result = ctx.run(self.task)
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/concurrent/futures/thread.py", line 73, in run
+    return fn(*args, **kwargs)
+  File "/private/tmp/muju-academy-v6-release/tools/verify_muju_videos.py", line 76, in replaced
+    assert url==base+row['to'],row
+           ^^^^^^^^^^^^^^^^^^^
+AssertionError: {'from': '/muju-academy/episode-15.a7c269791c8c.jpg', 'to': '/muju-academy/episode-15.8b01651d8c69.jpg'}

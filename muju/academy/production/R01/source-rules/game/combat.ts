@@ -1,0 +1,275 @@
+import type { BoardState, Position, Unit, PlayerId } from './types';
+import { isAdjacent, getAdjacentPositions, getUnitAt, removeUnit } from './board';
+import { getUnitDefinition } from './units';
+import { getAttackModifier } from './elements';
+
+/** Count every attack, including kills whose targets have left the board.
+ * Legacy saves with only hasAttacked still count as having spent an attack. */
+export function getAttackCount(unit: Unit): number {
+  return Math.max(unit.attackedThisTurn?.length ?? 0, unit.hasAttacked ? 1 : 0);
+}
+
+/** One initial attack; kills unlock another, up to the unit's tier. */
+export function canAttack(unit: Unit): boolean {
+  const count = getAttackCount(unit);
+  return unit.canActThisTurn && count < getUnitDefinition(unit.definitionId).tier
+    && (count === 0 || unit.lastAttackKilled === true);
+}
+
+/**
+ * Get all valid attack targets for a unit (adjacent enemy positions)
+ * Only a lethal attack can unlock the next attack, so targets cannot repeat.
+ */
+export function getValidAttacks(unit: Unit, board: BoardState): Position[] {
+  if (!canAttack(unit)) return [];
+
+  const adjacentPositions = getAdjacentPositions(unit.position);
+  const validTargets: Position[] = [];
+  const alreadyAttacked = unit.attackedThisTurn ?? [];
+
+  for (const pos of adjacentPositions) {
+    const targetUnit = getUnitAt(board, pos);
+    if (targetUnit && targetUnit.owner !== unit.owner) {
+      // Only include targets this unit hasn't attacked this turn
+      if (!alreadyAttacked.includes(targetUnit.id)) {
+        validTargets.push(pos);
+      }
+    }
+  }
+
+  return validTargets;
+}
+
+/**
+ * Check if a specific attack is valid
+ */
+export function isValidAttack(
+  unit: Unit,
+  targetPosition: Position,
+  board: BoardState
+): boolean {
+  const validAttacks = getValidAttacks(unit, board);
+  return validAttacks.some(
+    (t) => t.x === targetPosition.x && t.y === targetPosition.y
+  );
+}
+
+/**
+ * Global per-player attack handicap. Always 0 in real games; the balance-lab
+ * harness sets it to measure instrument sensitivity (a +1 global ATK edge
+ * must move win rates, or the lab cannot support fine-grained stat claims).
+ */
+const combatHandicap: Record<PlayerId, number> = { white: 0, black: 0 };
+
+export function setCombatHandicap(player: PlayerId, bonus: number): void {
+  combatHandicap[player] = bonus;
+}
+
+export function resetCombatHandicap(): void {
+  combatHandicap.white = 0;
+  combatHandicap.black = 0;
+}
+
+/**
+ * Calculate the attack power of a unit against a specific defender
+ * Includes elemental modifier:
+ * - Advantage: +1 attack
+ * - Disadvantage: -1 attack
+ * - Neutral: no modifier
+ */
+export function calculateAttackPower(
+  attacker: Unit,
+  defender: Unit
+): number {
+  const attackerDef = getUnitDefinition(attacker.definitionId);
+  const defenderDef = getUnitDefinition(defender.definitionId);
+
+  const modifier = getAttackModifier(attackerDef.element, defenderDef.element);
+
+  // Attack power cannot go below 0
+  return Math.max(0, attackerDef.attack + modifier + combatHandicap[attacker.owner]);
+}
+
+/**
+ * Get the base (max) defense of a unit from its definition
+ */
+export function getBaseDefense(defender: Unit): number {
+  const defenderDef = getUnitDefinition(defender.definitionId);
+  return defenderDef.defense;
+}
+
+/**
+ * Calculate the effective defense of a unit
+ * Accounts for damage taken (reduces effective defense).
+ * Defense cannot go below 0.
+ */
+export function calculateDefense(defender: Unit): number {
+  const baseDef = getBaseDefense(defender);
+  return Math.max(0, baseDef - defender.damageTaken);
+}
+
+/**
+ * Resolve a single attack
+ * - If attack >= effective defense, defender is eliminated
+ * - Otherwise, defender takes damage equal to attack (reduces their defense temporarily)
+ * Returns the updated board state and whether the defender was eliminated
+ */
+export function resolveCombat(
+  board: BoardState,
+  attackerId: string,
+  defenderPosition: Position
+): { board: BoardState; eliminated: boolean } {
+  const attacker = board.units.find((u) => u.id === attackerId);
+  const defender = getUnitAt(board, defenderPosition);
+
+  if (!attacker || !defender || !isValidAttack(attacker, defenderPosition, board)) {
+    return { board, eliminated: false };
+  }
+
+  const attackPower = calculateAttackPower(attacker, defender);
+  const defenseValue = calculateDefense(defender);
+
+  // Mark attacker as having attacked and track this specific target
+  let newBoard: BoardState = {
+    ...board,
+    units: board.units.map((u) =>
+      u.id === attackerId
+        ? {
+            ...u,
+            hasAttacked: true,
+            attackedThisTurn: [...(u.attackedThisTurn ?? []), defender.id],
+            lastAttackKilled: attackPower >= defenseValue
+          }
+        : u
+    ),
+  };
+
+  // If attack >= defense, defender is eliminated
+  if (attackPower >= defenseValue) {
+    newBoard = removeUnit(newBoard, defender.id);
+    return { board: newBoard, eliminated: true };
+  }
+
+  // Non-lethal attack: apply damage to defender (reduces their effective defense)
+  newBoard = {
+    ...newBoard,
+    units: newBoard.units.map((u) =>
+      u.id === defender.id
+        ? { ...u, damageTaken: u.damageTaken + attackPower }
+        : u
+    ),
+  };
+
+  return { board: newBoard, eliminated: false };
+}
+
+/**
+ * Execute an attack action (returns new board state)
+ */
+export function executeAttack(
+  board: BoardState,
+  attackerId: string,
+  targetPosition: Position
+): { board: BoardState; eliminated: boolean } {
+  return resolveCombat(board, attackerId, targetPosition);
+}
+
+/**
+ * Get all enemy units that are threatening a specific unit (can attack it next)
+ */
+export function getThreatsTo(unit: Unit, board: BoardState): Unit[] {
+  const threats: Unit[] = [];
+
+  for (const other of board.units) {
+    if (other.owner === unit.owner) continue;
+
+    if (isAdjacent(other.position, unit.position)) {
+      threats.push(other);
+    }
+  }
+
+  return threats;
+}
+
+/**
+ * Get all friendly units that can attack a specific enemy position
+ */
+export function getAttackersFor(
+  targetPosition: Position,
+  board: BoardState,
+  attackerOwner: PlayerId
+): Unit[] {
+  const attackers: Unit[] = [];
+
+  for (const unit of board.units) {
+    if (unit.owner !== attackerOwner) continue;
+    if (!canAttack(unit)) continue;
+
+    if (isAdjacent(unit.position, targetPosition)) {
+      attackers.push(unit);
+    }
+  }
+
+  return attackers;
+}
+
+/**
+ * Check if a unit can be eliminated by a single attacker
+ */
+export function canBeEliminated(
+  target: Unit,
+  attacker: Unit
+): boolean {
+  const attackPower = calculateAttackPower(attacker, target);
+  const defenseValue = calculateDefense(target);
+  return attackPower >= defenseValue;
+}
+
+/**
+ * Calculate combined attack power from multiple attackers against a defender.
+ * Each attacker's elemental modifier is applied individually before summing.
+ */
+export function calculateCombinedAttackPower(
+  attackers: Unit[],
+  defender: Unit
+): number {
+  return attackers.reduce((total, attacker) => {
+    return total + calculateAttackPower(attacker, defender);
+  }, 0);
+}
+
+/**
+ * Check if a group of attackers can eliminate a target with a combined attack
+ */
+export function canBeEliminatedByCombined(
+  target: Unit,
+  attackers: Unit[]
+): boolean {
+  const totalAttack = calculateCombinedAttackPower(attackers, target);
+  const defenseValue = calculateDefense(target);
+  return totalAttack >= defenseValue;
+}
+
+/**
+ * Resolve a combined attack from multiple attackers against a single defender.
+ * All attackers must be adjacent to the defender.
+ * Returns the updated board state and whether the defender was eliminated.
+ */
+export function resolveCombinedCombat(
+  board: BoardState,
+  attackerIds: string[],
+  defenderPosition: Position
+): { board: BoardState; eliminated: boolean; totalAttack: number } {
+  // Resolve in order: only the actual killing blow unlocks Cleave. Stop on death.
+  let current = board, totalAttack = 0;
+  for (const id of attackerIds) {
+    const attacker = current.units.find(u => u.id === id);
+    const defender = getUnitAt(current, defenderPosition);
+    if (!attacker || !defender || !isValidAttack(attacker, defenderPosition, current)) continue;
+    totalAttack += calculateAttackPower(attacker, defender);
+    const result = resolveCombat(current, id, defenderPosition);
+    current = result.board;
+    if (result.eliminated) return { board: current, eliminated: true, totalAttack };
+  }
+  return { board: current, eliminated: false, totalAttack };
+}

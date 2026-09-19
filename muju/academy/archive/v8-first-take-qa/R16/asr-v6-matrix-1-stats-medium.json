@@ -1,0 +1,87 @@
+{
+  "text": "Tier 1. The Yan. Attack 1, Defense 3, Speed 0, and Mining 3.",
+  "words": [
+    {
+      "word": "Tier",
+      "start": 0.0,
+      "end": 0.26,
+      "probability": 0.8498231768608093
+    },
+    {
+      "word": "1.",
+      "start": 0.26,
+      "end": 0.58,
+      "probability": 0.6469010710716248
+    },
+    {
+      "word": "The",
+      "start": 1.08,
+      "end": 1.16,
+      "probability": 0.9349210262298584
+    },
+    {
+      "word": "Yan.",
+      "start": 1.16,
+      "end": 1.48,
+      "probability": 0.03210794925689697
+    },
+    {
+      "word": "Attack",
+      "start": 2.1,
+      "end": 2.42,
+      "probability": 0.7886964082717896
+    },
+    {
+      "word": "1,",
+      "start": 2.42,
+      "end": 2.76,
+      "probability": 0.9602842330932617
+    },
+    {
+      "word": "Defense",
+      "start": 3.08,
+      "end": 3.32,
+      "probability": 0.868799090385437
+    },
+    {
+      "word": "3,",
+      "start": 3.32,
+      "end": 3.74,
+      "probability": 0.9968053102493286
+    },
+    {
+      "word": "Speed",
+      "start": 4.22,
+      "end": 4.42,
+      "probability": 0.9164702296257019
+    },
+    {
+      "word": "0,",
+      "start": 4.42,
+      "end": 4.82,
+      "probability": 0.9893848299980164
+    },
+    {
+      "word": "and",
+      "start": 5.4,
+      "end": 5.46,
+      "probability": 0.9667197465896606
+    },
+    {
+      "word": "Mining",
+      "start": 5.46,
+      "end": 5.8,
+      "probability": 0.9703471064567566
+    },
+    {
+      "word": "3.",
+      "start": 5.8,
+      "end": 6.16,
+      "probability": 0.996250331401825
+    }
+  ],
+  "audioSha256": "a56acb6ea1c54fa1ce0d4fab4e570a2d930809cbe4dc30e858b91c95906ba68a",
+  "sourceText": "Tier one: the Yan. Attack one, defense three, speed zero, and Mining three. Look at the green side first.",
+  "model": "faster-whisper medium.en int8, local only",
+  "duration": 6.65
+}

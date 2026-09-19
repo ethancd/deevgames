@@ -1,0 +1,44 @@
+[
+  {
+    "episode": "R11",
+    "id": "matrix-2-out",
+    "speechText": "With one attack, the hohnoh can finish Hee, hohnoh, kah-GAH-ree, RAH-dee, oo-MEH-meh, kee-moo-BOON-gah, Shore, Gurl, GURL-geh, kah-rahn-luk, Moo-joo, sah-CHEE-tah, sah-chah-KOO-nah, Yahn, and MAH-zahsk. Every unlit card survives that single hit.",
+    "reason": "Metal v8: unresolved local ASR differences: [{\"kind\": \"delete\", \"expected\": \"and\", \"heard\": \"\"}]"
+  },
+  {
+    "episode": "R11",
+    "id": "matrix-2-in",
+    "speechText": "Now the red side. A full health hohnoh is one shot by Hee, hohnoh, kah-GAH-ree, RAH-dee, oo-MEH-meh, kee-moo-BOON-gah, Shore, STROWM-ur, AY-gear-in, Gurl, GURL-geh, kah-rahn-luk, sah-chah-KOO-nah and Tahn-kah. Every unlit attacker needs help or earlier damage.",
+    "reason": "Metal v8: unresolved local ASR differences: [{\"kind\": \"replace\", \"expected\": \"sachakuna\", \"heard\": \"sachatuna\"}]"
+  },
+  {
+    "episode": "R12",
+    "id": "matrix-3-out",
+    "speechText": "With one attack, the kee-moo-BOON-gah can finish Hee, HOH-noh, kah-GAH-ree, RAH-dee, oo-MEH-meh, kee-moo-BOON-gah, Shore, Gurl, GURL-geh, kah-rahn-luk, Moo-joo, sah-CHEE-tah, sah-chah-KOO-nah, Yahn, and MAH-zahsk. Every unlit card survives that single hit.",
+    "reason": "Metal v8: unresolved local ASR differences: [{\"kind\": \"delete\", \"expected\": \"and\", \"heard\": \"\"}]"
+  },
+  {
+    "episode": "R13",
+    "id": "matrix-1-in",
+    "speechText": "Now the red side. A full health Shore is one shot by HOH-noh, kah-GAH-ree, kee-moo-BOON-gah, Shore, STROWM-ur, AY-gear-in, Gurl, GURL-geh, kah-rahn-luk, sah-CHEE-tah, sah-chah-KOO-nah, Yahn, MAH-zahsk, and Tahn-kah. Every unlit attacker needs help or earlier damage.",
+    "reason": "Metal v8: unresolved local ASR differences: [{\"kind\": \"delete\", \"expected\": \"and\", \"heard\": \"\"}]"
+  },
+  {
+    "episode": "R16",
+    "id": "matrix-1-stats",
+    "speechText": "Tier one: the Yahn. Attack one, defense three, speed zero, and Mining three. Look at the green side first.",
+    "reason": "Metal v8: unresolved local ASR differences: [{\"kind\": \"delete\", \"expected\": \"look at the green side first\", \"heard\": \"\"}]"
+  },
+  {
+    "episode": "R16",
+    "id": "matrix-2-stats",
+    "speechText": "Tier two: the MAH-zahsk. Attack one, defense four, speed one, and Mining four. Look at the green side first.",
+    "reason": "Metal v8: unresolved local ASR differences: [{\"kind\": \"delete\", \"expected\": \"look at the green side first\", \"heard\": \"\"}]"
+  },
+  {
+    "episode": "R16",
+    "id": "matrix-3-stats",
+    "speechText": "Tier three: the Tahn-kah. Attack two, defense five, speed two, and Mining five. Look at the green side first.",
+    "reason": "Metal v8: unresolved local ASR differences: [{\"kind\": \"replace\", \"expected\": \"mining\", \"heard\": \"my name\"}]"
+  }
+]

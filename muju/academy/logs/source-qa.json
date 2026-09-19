@@ -1,0 +1,92 @@
+{
+  "episodes": 16,
+  "uniqueMusicMixes": 9,
+  "musicHashes": "PASS",
+  "unitTierMatrices": 18,
+  "numericCoordinateMentions": 48,
+  "captionConsistency": "PASS",
+  "sourceChecks": [
+    {
+      "episode": "R01",
+      "lines": 33,
+      "draftStills": 33
+    },
+    {
+      "episode": "R02",
+      "lines": 33,
+      "draftStills": 33
+    },
+    {
+      "episode": "R03",
+      "lines": 36,
+      "draftStills": 36
+    },
+    {
+      "episode": "R04",
+      "lines": 32,
+      "draftStills": 32
+    },
+    {
+      "episode": "R05",
+      "lines": 33,
+      "draftStills": 33
+    },
+    {
+      "episode": "R06",
+      "lines": 31,
+      "draftStills": 31
+    },
+    {
+      "episode": "R07",
+      "lines": 32,
+      "draftStills": 32
+    },
+    {
+      "episode": "R08",
+      "lines": 30,
+      "draftStills": 30
+    },
+    {
+      "episode": "R09",
+      "lines": 32,
+      "draftStills": 32
+    },
+    {
+      "episode": "R10",
+      "lines": 34,
+      "draftStills": 34
+    },
+    {
+      "episode": "R11",
+      "lines": 44,
+      "draftStills": 44
+    },
+    {
+      "episode": "R12",
+      "lines": 47,
+      "draftStills": 47
+    },
+    {
+      "episode": "R13",
+      "lines": 42,
+      "draftStills": 42
+    },
+    {
+      "episode": "R14",
+      "lines": 44,
+      "draftStills": 44
+    },
+    {
+      "episode": "R15",
+      "lines": 41,
+      "draftStills": 41
+    },
+    {
+      "episode": "R16",
+      "lines": 42,
+      "draftStills": 42
+    }
+  ],
+  "narrationPending": true,
+  "finalVideosRendered": 0
+}

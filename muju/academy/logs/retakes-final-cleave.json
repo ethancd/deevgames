@@ -1,0 +1,8 @@
+[
+  {
+    "episode": "R03",
+    "id": "cleave-limits",
+    "speechText": "You may move between attacks at the normal cost. If your attack leaves the target on the board, your piece cannot attack again this turn. Even a zero damage hit closes the chain. Another teammate’s later kill cannot reopen it.",
+    "reason": "Use unambiguous wording for surviving an attack and regenerate complete sentences."
+  }
+]

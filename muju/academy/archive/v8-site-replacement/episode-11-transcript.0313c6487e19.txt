@@ -1,0 +1,91 @@
+Fire: The Toast Department
+Rules v2.8 · Video version 7
+Music: Hono / Banked Fire
+
+EMBER: Two tickets closed early this morning. Both of them came back.
+
+CLICK: The stamp came down twice. Both times before the toast was done.
+
+EMBER: We would like one ticket that stays closed.
+
+COACH: This is the Hi from C3. Where did it come from?
+
+PIP: The shop. Three crystals. Tier one owes no toll.
+
+COACH: Sparks burn the Garden Wall. Fire beats Metal, so the Hi goes from two to three.
+
+CLICK: The Inyan's defense is three.
+
+COACH: Three damage. Three defense. Finished.
+
+EMBER: One stamp. Ticket closed. That is the job I like.
+
+PIP: Ember needs a shield. I have knitted a taller chef hat.
+
+CLICK: A taller chef hat does not stop an attack.
+
+EMBER: Then order me a toast shield. Fire beats Metal.
+
+CLICK: Defense: unchanged. That is the entire product.
+
+COACH: New trial. The Hono has attack three. Add one for Metal: four.
+
+CLICK: The Tanka's defense is five.
+
+EMBER: Does one attack from my Hono finish a fresh Tanka?
+
+COACH: Five is a big shield. Take your time, or just watch the toaster.
+
+COACH: Not yet. Four browned. One still pale.
+
+COACH: The Tanka is standing, so the Hono is finished attacking. That is the Closed Chain.
+
+CLICK: If it survives and pays its bill, it heals at its next turn start.
+
+EMBER: Never declare breakfast early.
+
+EMBER: This is the Hi. Hits for two. Shield of one. Walks two. Takes one. That is the Hi.
+
+EMBER: This is the Hono. Hits for three. Shield of one. Walks two. Takes one. That is the Hono.
+
+EMBER: This is the Kagari. Hits for four. Shield of two. Walks three. Takes one. That is the Kagari.
+
+COACH: The Hono takes the one crystal there. An empty square gives nothing.
+
+EMBER: One crystal, and a Sjor next door. A crystal is not a wall I can hide behind.
+
+COACH: One thing is different. A Radi hits that Tanka first, in the same turn. Two damage.
+
+COACH: Three are still lit. Now a Hono that has not swung hits for four. Finished.
+
+EMBER: Take the work card. Find one target your Hi finishes, and one it cannot.
+
+COACH: Now the bonk matrix for fire. We check all eighteen enemy unit types, including matching types. Both pieces start at full health and are already next to each other. One attack, not a whole turn.
+
+COACH: Tier one: the Hi. Attack two, defense one, speed two, and Mining one. Look at the green side first.
+
+COACH: With one attack, the Hi can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Muju, Sachita and Inyan. Every unlit card survives that single hit.
+
+COACH: Now the red side. A full health Hi is one shot by Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachakuna, Mazask and Tanka. Every unlit attacker needs help or earlier damage.
+
+COACH: That is the tier one card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.
+
+COACH: Tier two: the Hono. Attack three, defense one, speed two, and Mining one. Look at the green side first.
+
+COACH: With one attack, the Hono can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Göl, Gölge, Karanlık, Muju, Sachita, Sachakuna, Inyan and Mazask. Every unlit card survives that single hit.
+
+COACH: Now the red side. A full health Hono is one shot by Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachakuna, Mazask and Tanka. Every unlit attacker needs help or earlier damage.
+
+COACH: That is the tier two card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.
+
+COACH: Tier three: the Kagari. Attack four, defense two, speed three, and Mining one. Look at the green side first.
+
+COACH: With one attack, the Kagari can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Göl, Gölge, Karanlık, Muju, Sachita, Sachakuna, Inyan, Mazask and Tanka. Every unlit card survives that single hit.
+
+COACH: Now the red side. A full health Kagari is one shot by Hi, Hono, Kagari, Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge and Karanlık. Every unlit attacker needs help or earlier damage.
+
+COACH: That is the tier three card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.
+
+EMBER: Never declare breakfast early.
+
+COACH: Stopping here is fine.

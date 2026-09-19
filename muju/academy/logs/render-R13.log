@@ -1,0 +1,296 @@
+{ episode: 'R13', seconds: 360.06666666666666, audioComplete: true }
+Dialogue master and soft effects ready.
+R13 9% · 28s elapsed
+R13 19% · 62s elapsed
+R13 30% · 100s elapsed
+R13 40% · 136s elapsed
+R13 50% · 170s elapsed
+R13 60% · 201s elapsed
+R13 70% · 233s elapsed
+R13 80% · 253s elapsed
+R13 90% · 265s elapsed
+R13 100% · 277s elapsed
+R13: mixed, mastered, and checked under 25 MiB.
+{
+  decode: 'PASS',
+  hold: {
+    line: '12',
+    start: 74.26666666666667,
+    end: 83.26666666666667,
+    meanPixelDifference: 0,
+    maxPixelDifference: 0,
+    passed: true
+  },
+  holds: [
+    {
+      line: '12',
+      start: 74.26666666666667,
+      end: 83.26666666666667,
+      meanPixelDifference: 0,
+      maxPixelDifference: 0,
+      passed: true
+    }
+  ],
+  resolution: '1920x1080',
+  sampleFrames: 7
+}
+{
+  "method": "After applying the same 6 kHz low-pass to source and decoded AAC, locate each speech clip\u2019s highest-energy excerpt in the decoded final video audio using normalized cross-correlation. This checks both presence and timing after rendering and mastering.",
+  "clips": [
+    {
+      "line": "01",
+      "speaker": "BUBBLES",
+      "correlation": 0.99748,
+      "offsetSeconds": 0.047667
+    },
+    {
+      "line": "02",
+      "speaker": "CLICK",
+      "correlation": 0.99879,
+      "offsetSeconds": 0.047333
+    },
+    {
+      "line": "03",
+      "speaker": "BUBBLES",
+      "correlation": 0.99871,
+      "offsetSeconds": 0.047667
+    },
+    {
+      "line": "04",
+      "speaker": "COACH",
+      "correlation": 0.9989,
+      "offsetSeconds": 0.047667
+    },
+    {
+      "line": "05",
+      "speaker": "CLICK",
+      "correlation": 0.99937,
+      "offsetSeconds": 0.048
+    },
+    {
+      "line": "06",
+      "speaker": "PIP",
+      "correlation": 0.99639,
+      "offsetSeconds": 0.047667
+    },
+    {
+      "line": "07",
+      "speaker": "COACH",
+      "correlation": 0.99903,
+      "offsetSeconds": 0.047333
+    },
+    {
+      "line": "08",
+      "speaker": "COACH",
+      "correlation": 0.99811,
+      "offsetSeconds": 0.047667
+    },
+    {
+      "line": "09",
+      "speaker": "BUBBLES",
+      "correlation": 0.99819,
+      "offsetSeconds": 0.047333
+    },
+    {
+      "line": "10",
+      "speaker": "PIP",
+      "correlation": 0.99299,
+      "offsetSeconds": 0.047667
+    },
+    {
+      "line": "11",
+      "speaker": "BUBBLES",
+      "correlation": 0.99845,
+      "offsetSeconds": 0.047333
+    },
+    {
+      "line": "12",
+      "speaker": "COACH",
+      "correlation": 0.9984,
+      "offsetSeconds": 0.047667
+    },
+    {
+      "line": "13",
+      "speaker": "COACH",
+      "correlation": 0.99605,
+      "offsetSeconds": 0.047958
+    },
+    {
+      "line": "14",
+      "speaker": "COACH",
+      "correlation": 0.99909,
+      "offsetSeconds": 0.047667
+    },
+    {
+      "line": "15",
+      "speaker": "BUBBLES",
+      "correlation": 0.99871,
+      "offsetSeconds": 0.047333
+    },
+    {
+      "line": "16",
+      "speaker": "BUBBLES",
+      "correlation": 0.99938,
+      "offsetSeconds": 0.047667
+    },
+    {
+      "line": "17",
+      "speaker": "COACH",
+      "correlation": 0.99842,
+      "offsetSeconds": 0.047333
+    },
+    {
+      "line": "18",
+      "speaker": "CLICK",
+      "correlation": 0.99656,
+      "offsetSeconds": 0.048
+    },
+    {
+      "line": "19",
+      "speaker": "COACH",
+      "correlation": 0.99879,
+      "offsetSeconds": 0.047333
+    },
+    {
+      "line": "20",
+      "speaker": "PIP",
+      "correlation": 0.99233,
+      "offsetSeconds": 0.048
+    },
+    {
+      "line": "21",
+      "speaker": "BUBBLES",
+      "correlation": 0.99808,
+      "offsetSeconds": 0.047667
+    },
+    {
+      "line": "22",
+      "speaker": "COACH",
+      "correlation": 0.99906,
+      "offsetSeconds": 0.048
+    },
+    {
+      "line": "23",
+      "speaker": "CLICK",
+      "correlation": 0.99462,
+      "offsetSeconds": 0.047333
+    },
+    {
+      "line": "24",
+      "speaker": "BUBBLES",
+      "correlation": 0.99936,
+      "offsetSeconds": 0.047667
+    },
+    {
+      "line": "25",
+      "speaker": "CLICK",
+      "correlation": 0.99828,
+      "offsetSeconds": 0.047333
+    },
+    {
+      "line": "26",
+      "speaker": "CLICK",
+      "correlation": 0.99902,
+      "offsetSeconds": 0.048
+    },
+    {
+      "line": "27",
+      "speaker": "BUBBLES",
+      "correlation": 0.99806,
+      "offsetSeconds": 0.047667
+    },
+    {
+      "line": "matrix-intro",
+      "speaker": "COACH",
+      "correlation": 0.99966,
+      "offsetSeconds": 0.047333
+    },
+    {
+      "line": "matrix-1-stats",
+      "speaker": "COACH",
+      "correlation": 0.99906,
+      "offsetSeconds": 0.047333
+    },
+    {
+      "line": "matrix-1-out",
+      "speaker": "COACH",
+      "correlation": 0.99982,
+      "offsetSeconds": 0.047667
+    },
+    {
+      "line": "matrix-1-in",
+      "speaker": "COACH",
+      "correlation": 0.99831,
+      "offsetSeconds": 0.048
+    },
+    {
+      "line": "matrix-1-read",
+      "speaker": "COACH",
+      "correlation": 0.99925,
+      "offsetSeconds": 0.048
+    },
+    {
+      "line": "matrix-2-stats",
+      "speaker": "COACH",
+      "correlation": 0.99859,
+      "offsetSeconds": 0.047333
+    },
+    {
+      "line": "matrix-2-out",
+      "speaker": "COACH",
+      "correlation": 0.99956,
+      "offsetSeconds": 0.047333
+    },
+    {
+      "line": "matrix-2-in",
+      "speaker": "COACH",
+      "correlation": 0.99661,
+      "offsetSeconds": 0.047667
+    },
+    {
+      "line": "matrix-2-read",
+      "speaker": "COACH",
+      "correlation": 0.99895,
+      "offsetSeconds": 0.047667
+    },
+    {
+      "line": "matrix-3-stats",
+      "speaker": "COACH",
+      "correlation": 0.99811,
+      "offsetSeconds": 0.047667
+    },
+    {
+      "line": "matrix-3-out",
+      "speaker": "COACH",
+      "correlation": 0.99867,
+      "offsetSeconds": 0.048
+    },
+    {
+      "line": "matrix-3-in",
+      "speaker": "COACH",
+      "correlation": 0.99897,
+      "offsetSeconds": 0.048
+    },
+    {
+      "line": "matrix-3-read",
+      "speaker": "COACH",
+      "correlation": 0.99932,
+      "offsetSeconds": 0.047333
+    },
+    {
+      "line": "28",
+      "speaker": "COACH",
+      "correlation": 0.9996,
+      "offsetSeconds": 0.047333
+    },
+    {
+      "line": "29",
+      "speaker": "BUBBLES",
+      "correlation": 0.99904,
+      "offsetSeconds": 0.048
+    }
+  ],
+  "minimumCorrelation": 0.99233,
+  "maxAbsoluteOffsetSeconds": 0.048,
+  "passed": true
+}

@@ -1,0 +1,308 @@
+{ episode: 'R14', seconds: 394.46666666666664, audioComplete: true }
+Dialogue master and soft effects ready.
+R14 9% · 18s elapsed
+R14 19% · 39s elapsed
+R14 30% · 63s elapsed
+R14 40% · 86s elapsed
+R14 50% · 107s elapsed
+R14 60% · 134s elapsed
+R14 70% · 160s elapsed
+R14 80% · 187s elapsed
+R14 90% · 212s elapsed
+R14 100% · 228s elapsed
+R14: mixed, mastered, and checked under 25 MiB.
+{
+  decode: 'PASS',
+  hold: {
+    line: '15',
+    start: 79.93333333333334,
+    end: 88.93333333333334,
+    meanPixelDifference: 0,
+    maxPixelDifference: 0,
+    passed: true
+  },
+  holds: [
+    {
+      line: '15',
+      start: 79.93333333333334,
+      end: 88.93333333333334,
+      meanPixelDifference: 0,
+      maxPixelDifference: 0,
+      passed: true
+    }
+  ],
+  resolution: '1920x1080',
+  sampleFrames: 7
+}
+{
+  "method": "After applying the same 6 kHz low-pass to source and decoded AAC, locate each speech clip\u2019s highest-energy excerpt in the decoded final video audio using normalized cross-correlation. This checks both presence and timing after rendering and mastering.",
+  "clips": [
+    {
+      "line": "01",
+      "speaker": "MURMUR",
+      "correlation": 0.99757,
+      "offsetSeconds": 0.047667
+    },
+    {
+      "line": "02",
+      "speaker": "COACH",
+      "correlation": 0.99953,
+      "offsetSeconds": 0.047333
+    },
+    {
+      "line": "03",
+      "speaker": "MURMUR",
+      "correlation": 0.98673,
+      "offsetSeconds": 0.048
+    },
+    {
+      "line": "04",
+      "speaker": "MURMUR",
+      "correlation": 0.98513,
+      "offsetSeconds": 0.047333
+    },
+    {
+      "line": "05",
+      "speaker": "CLICK",
+      "correlation": 0.99709,
+      "offsetSeconds": 0.047667
+    },
+    {
+      "line": "06",
+      "speaker": "COACH",
+      "correlation": 0.99843,
+      "offsetSeconds": 0.048
+    },
+    {
+      "line": "07",
+      "speaker": "COACH",
+      "correlation": 0.9956,
+      "offsetSeconds": 0.047667
+    },
+    {
+      "line": "08",
+      "speaker": "COACH",
+      "correlation": 0.99888,
+      "offsetSeconds": 0.048
+    },
+    {
+      "line": "09",
+      "speaker": "COACH",
+      "correlation": 0.99847,
+      "offsetSeconds": 0.047333
+    },
+    {
+      "line": "10",
+      "speaker": "MURMUR",
+      "correlation": 0.99515,
+      "offsetSeconds": 0.047958
+    },
+    {
+      "line": "11",
+      "speaker": "COACH",
+      "correlation": 0.99833,
+      "offsetSeconds": 0.047333
+    },
+    {
+      "line": "12",
+      "speaker": "COACH",
+      "correlation": 0.99492,
+      "offsetSeconds": 0.047958
+    },
+    {
+      "line": "13",
+      "speaker": "MURMUR",
+      "correlation": 0.94096,
+      "offsetSeconds": 0.047333
+    },
+    {
+      "line": "14",
+      "speaker": "MURMUR",
+      "correlation": 0.90994,
+      "offsetSeconds": 0.047667
+    },
+    {
+      "line": "15",
+      "speaker": "COACH",
+      "correlation": 0.99876,
+      "offsetSeconds": 0.047333
+    },
+    {
+      "line": "16",
+      "speaker": "COACH",
+      "correlation": 0.99647,
+      "offsetSeconds": 0.047333
+    },
+    {
+      "line": "17",
+      "speaker": "PIP",
+      "correlation": 0.99046,
+      "offsetSeconds": 0.048
+    },
+    {
+      "line": "18",
+      "speaker": "COACH",
+      "correlation": 0.99919,
+      "offsetSeconds": 0.047667
+    },
+    {
+      "line": "19",
+      "speaker": "MURMUR",
+      "correlation": 0.99124,
+      "offsetSeconds": 0.048
+    },
+    {
+      "line": "20",
+      "speaker": "CLICK",
+      "correlation": 0.9821,
+      "offsetSeconds": 0.047333
+    },
+    {
+      "line": "21",
+      "speaker": "CLICK",
+      "correlation": 0.9976,
+      "offsetSeconds": 0.048
+    },
+    {
+      "line": "22",
+      "speaker": "MURMUR",
+      "correlation": 0.99221,
+      "offsetSeconds": 0.047333
+    },
+    {
+      "line": "23",
+      "speaker": "MURMUR",
+      "correlation": 0.99083,
+      "offsetSeconds": 0.047667
+    },
+    {
+      "line": "24",
+      "speaker": "COACH",
+      "correlation": 0.99908,
+      "offsetSeconds": 0.047333
+    },
+    {
+      "line": "25",
+      "speaker": "CLICK",
+      "correlation": 0.9986,
+      "offsetSeconds": 0.047667
+    },
+    {
+      "line": "26",
+      "speaker": "CLICK",
+      "correlation": 0.99905,
+      "offsetSeconds": 0.048
+    },
+    {
+      "line": "27",
+      "speaker": "MURMUR",
+      "correlation": 0.99452,
+      "offsetSeconds": 0.047333
+    },
+    {
+      "line": "28",
+      "speaker": "CLICK",
+      "correlation": 0.99488,
+      "offsetSeconds": 0.047667
+    },
+    {
+      "line": "29",
+      "speaker": "MURMUR",
+      "correlation": 0.99091,
+      "offsetSeconds": 0.047333
+    },
+    {
+      "line": "matrix-intro",
+      "speaker": "COACH",
+      "correlation": 0.99946,
+      "offsetSeconds": 0.048
+    },
+    {
+      "line": "matrix-1-stats",
+      "speaker": "COACH",
+      "correlation": 0.99974,
+      "offsetSeconds": 0.048
+    },
+    {
+      "line": "matrix-1-out",
+      "speaker": "COACH",
+      "correlation": 0.9999,
+      "offsetSeconds": 0.047333
+    },
+    {
+      "line": "matrix-1-in",
+      "speaker": "COACH",
+      "correlation": 0.99498,
+      "offsetSeconds": 0.047667
+    },
+    {
+      "line": "matrix-1-read",
+      "speaker": "COACH",
+      "correlation": 0.99821,
+      "offsetSeconds": 0.047667
+    },
+    {
+      "line": "matrix-2-stats",
+      "speaker": "COACH",
+      "correlation": 0.99864,
+      "offsetSeconds": 0.048
+    },
+    {
+      "line": "matrix-2-out",
+      "speaker": "COACH",
+      "correlation": 0.99861,
+      "offsetSeconds": 0.047333
+    },
+    {
+      "line": "matrix-2-in",
+      "speaker": "COACH",
+      "correlation": 0.99939,
+      "offsetSeconds": 0.047333
+    },
+    {
+      "line": "matrix-2-read",
+      "speaker": "COACH",
+      "correlation": 0.99655,
+      "offsetSeconds": 0.047625
+    },
+    {
+      "line": "matrix-3-stats",
+      "speaker": "COACH",
+      "correlation": 0.99911,
+      "offsetSeconds": 0.047667
+    },
+    {
+      "line": "matrix-3-out",
+      "speaker": "COACH",
+      "correlation": 0.99933,
+      "offsetSeconds": 0.047625
+    },
+    {
+      "line": "matrix-3-in",
+      "speaker": "COACH",
+      "correlation": 0.99939,
+      "offsetSeconds": 0.048
+    },
+    {
+      "line": "matrix-3-read",
+      "speaker": "COACH",
+      "correlation": 0.99864,
+      "offsetSeconds": 0.047333
+    },
+    {
+      "line": "30",
+      "speaker": "MURMUR",
+      "correlation": 0.99675,
+      "offsetSeconds": 0.047625
+    },
+    {
+      "line": "31",
+      "speaker": "PIP",
+      "correlation": 0.99653,
+      "offsetSeconds": 0.048
+    }
+  ],
+  "minimumCorrelation": 0.90994,
+  "maxAbsoluteOffsetSeconds": 0.048,
+  "passed": true
+}

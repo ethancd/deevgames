@@ -1,0 +1,183 @@
+{
+  "text": "With one attack, the Kimubunga can finish Hi. Hono. Kagari. Radi. Umeme. Kimubunga. Sjor. Göl. Gölge. Karanlık. Muju. Sachita. Sachakuna. Yan. Mazask. Every unlit card survives that single hit.",
+  "words": [
+    {
+      "word": "With",
+      "start": 0.0,
+      "end": 0.22,
+      "probability": 0.8291478157043457
+    },
+    {
+      "word": "one",
+      "start": 0.22,
+      "end": 0.5,
+      "probability": 0.8751314282417297
+    },
+    {
+      "word": "attack,",
+      "start": 0.5,
+      "end": 0.94,
+      "probability": 0.97466641664505
+    },
+    {
+      "word": "the",
+      "start": 1.5,
+      "end": 1.64,
+      "probability": 0.9769361615180969
+    },
+    {
+      "word": "Kimubunga",
+      "start": 1.64,
+      "end": 2.4,
+      "probability": 0.610299289226532
+    },
+    {
+      "word": "can",
+      "start": 2.4,
+      "end": 2.66,
+      "probability": 0.996183454990387
+    },
+    {
+      "word": "finish",
+      "start": 2.66,
+      "end": 3.08,
+      "probability": 0.995359480381012
+    },
+    {
+      "word": "Hi.",
+      "start": 3.08,
+      "end": 3.52,
+      "probability": 0.21247239410877228
+    },
+    {
+      "word": "Hono.",
+      "start": 3.84,
+      "end": 4.26,
+      "probability": 0.9151448011398315
+    },
+    {
+      "word": "Kagari.",
+      "start": 4.46,
+      "end": 4.78,
+      "probability": 0.7834897935390472
+    },
+    {
+      "word": "Radi.",
+      "start": 5.22,
+      "end": 5.66,
+      "probability": 0.501165896654129
+    },
+    {
+      "word": "Umeme.",
+      "start": 6.1,
+      "end": 6.82,
+      "probability": 0.522741500598689
+    },
+    {
+      "word": "Kimubunga.",
+      "start": 7.32,
+      "end": 8.2,
+      "probability": 0.979663148522377
+    },
+    {
+      "word": "Sjor.",
+      "start": 8.64,
+      "end": 8.84,
+      "probability": 0.4014701039219896
+    },
+    {
+      "word": "Göl.",
+      "start": 9.3,
+      "end": 9.68,
+      "probability": 0.2864363166700059
+    },
+    {
+      "word": "Gölge.",
+      "start": 9.9,
+      "end": 10.3,
+      "probability": 0.6792073945204417
+    },
+    {
+      "word": "Karanlık.",
+      "start": 10.86,
+      "end": 11.56,
+      "probability": 0.5491203765384853
+    },
+    {
+      "word": "Muju.",
+      "start": 11.98,
+      "end": 12.4,
+      "probability": 0.9047352373600006
+    },
+    {
+      "word": "Sachita.",
+      "start": 12.92,
+      "end": 13.44,
+      "probability": 0.6784195154905319
+    },
+    {
+      "word": "Sachakuna.",
+      "start": 13.92,
+      "end": 14.56,
+      "probability": 0.7213597695032755
+    },
+    {
+      "word": "Yan.",
+      "start": 15.06,
+      "end": 15.26,
+      "probability": 0.28354260325431824
+    },
+    {
+      "word": "Mazask.",
+      "start": 15.76,
+      "end": 16.5,
+      "probability": 0.5286795496940613
+    },
+    {
+      "word": "Every",
+      "start": 16.72,
+      "end": 17.16,
+      "probability": 0.9884257316589355
+    },
+    {
+      "word": "unlit",
+      "start": 17.16,
+      "end": 17.68,
+      "probability": 0.9762621819972992
+    },
+    {
+      "word": "card",
+      "start": 17.68,
+      "end": 18.12,
+      "probability": 0.9974392652511597
+    },
+    {
+      "word": "survives",
+      "start": 18.12,
+      "end": 18.76,
+      "probability": 0.9972653388977051
+    },
+    {
+      "word": "that",
+      "start": 18.76,
+      "end": 19.06,
+      "probability": 0.9956523776054382
+    },
+    {
+      "word": "single",
+      "start": 19.06,
+      "end": 19.46,
+      "probability": 0.9916574358940125
+    },
+    {
+      "word": "hit.",
+      "start": 19.46,
+      "end": 19.76,
+      "probability": 0.9983648657798767
+    }
+  ],
+  "audioSha256": "a30fd26e9a50a95b646811793b784c1890e2fdf26501b3905868ca2bb6c9f25e",
+  "sourceText": "With one attack, the Kimubunga can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Göl, Gölge, Karanlık, Muju, Sachita, Sachakuna, Yan and Mazask. Every unlit card survives that single hit.",
+  "model": "faster-whisper medium.en int8, local only",
+  "duration": 20.4
+}

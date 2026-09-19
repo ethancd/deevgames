@@ -1,0 +1,537 @@
+{
+  "id": "R11",
+  "title": "Fire: The Toast Department",
+  "fps": 30,
+  "voices": {
+    "COACH": "marin",
+    "PIP": "coral",
+    "CLICK": "cedar",
+    "EMBER": "ash",
+    "ZIP": "verse",
+    "BUBBLES": "shimmer",
+    "MURMUR": "sage",
+    "CLANK": "onyx"
+  },
+  "lines": [
+    {
+      "id": "01",
+      "speaker": "EMBER",
+      "cue": "mock-formal announcement",
+      "text": "Two tickets closed early this morning. Both of them came back.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed in, low]",
+        "[board: TOAST DEPARTMENT sign. A smaller sign under it: an element bonus changes attack, never defense. Ember at the kitchen bench, with a stack of closed tickets and one slice of toast.]"
+      ]
+    },
+    {
+      "id": "02",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "The stamp came down twice. Both times before the toast was done.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "03",
+      "speaker": "EMBER",
+      "cue": "",
+      "text": "We would like one ticket that stays closed.",
+      "beat": "INVITATION",
+      "hold": 3.4,
+      "directions": [],
+      "titleBump": true
+    },
+    {
+      "id": "04",
+      "speaker": "COACH",
+      "cue": "recap, brisk",
+      "text": "This is the Hi from C three. Where did it come from?",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed out]",
+        "[card: THE THREE QUESTIONS. Which stat helps this job? How many actions does it take? What will this piece owe next turn?]",
+        "[card: ROSTER KEY. Hit = base attack before elements. Shield = full defense. Walk = squares per action. Take = maximum crystals at own turn end, limited by reserve. Keep beside every roster recital.]",
+        "[board: a Hi is carried onto the bench, still holding its shop tag from C three]"
+      ]
+    },
+    {
+      "id": "05",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "The shop. Three crystals. Tier one owes no toll.",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "06",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Sparks burn the Garden Wall. Fire beats Metal, so the Hi goes from two to three.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[board: the Hi beside a fresh Inyan. Damage marker blank. Every other card dim.]",
+        "[card: the Hi. Attack two. Fire against Metal, add one. Three.]"
+      ]
+    },
+    {
+      "id": "07",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "The Inyan's defense is three.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[card: the Inyan. Defense three.]"
+      ]
+    },
+    {
+      "id": "08",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Three damage. Three defense. Finished.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: bonk] [board: three shield pips go dark; the piece is removed gently]"
+      ]
+    },
+    {
+      "id": "09",
+      "speaker": "EMBER",
+      "cue": "",
+      "text": "One stamp. Ticket closed. That is the job I like.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "10",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "Ember needs a shield. I have knitted a taller chef hat.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[board: Pip arrives at the bench under a knitted chef hat the height of a chimney]"
+      ]
+    },
+    {
+      "id": "11",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "A taller chef hat does not stop an attack.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "12",
+      "speaker": "EMBER",
+      "cue": "",
+      "text": "Then order me a toast shield. Fire beats Metal.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "13",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Defense: unchanged. That is the entire product.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[board: a fire arrow lights the attack number, travels toward the defense number, and stops dead at the edge of the card. The defense number does not change colour.]"
+      ]
+    },
+    {
+      "id": "14",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "New trial. The Hono has attack three. Add one for Metal: four.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [
+        "[card: REQUISITION. TOAST SHIELD. A stamp comes down: REJECTED.]",
+        "[board: bench reset. A fresh Tanka beside a Hono. Damage marker blank.]",
+        "[card: the Hono. Attack three. Fire against Metal, add one. Four.]"
+      ],
+      "performanceNote": "Articulate every word and every sentence in the supplied text. Do not drop the final sentence. Hono is pronounced hoh-noh as a normal two-syllable name, never as letters. Keep the small final phrases fully audible."
+    },
+    {
+      "id": "15",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "The Tanka's defense is five.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [
+        "[card: the Tanka. Defense five.]"
+      ]
+    },
+    {
+      "id": "16",
+      "speaker": "EMBER",
+      "cue": "question, open",
+      "text": "Does one attack from my Hono finish a fresh Tanka?",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [],
+      "performanceNote": "Articulate every word and every sentence in the supplied text. Do not drop the final sentence. Hono is pronounced hoh-noh as a normal two-syllable name, never as letters. Keep the small final phrases fully audible."
+    },
+    {
+      "id": "17",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Five is a big shield. Take your time, or just watch the toaster.",
+      "beat": "TRY",
+      "hold": 10.2,
+      "directions": [],
+      "thinking": true,
+      "question": "Does one attack from my Hono finish a fresh Tanka?"
+    },
+    {
+      "id": "18",
+      "speaker": "COACH",
+      "cue": "reveal, land it",
+      "text": "Not yet. Four browned. One still pale.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: bonk, dull] [board: four of the Tanka's five shield pips go dark; one stays lit; the Hono's attack marker greys out]",
+        "[board: the toast pops up pale on one corner; Ember's DONE stamp comes down and stops in mid-air]"
+      ]
+    },
+    {
+      "id": "19",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "The Tanka is standing, so the Hono is finished attacking. That is the Closed Chain.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "performanceNote": "Articulate every word and every sentence in the supplied text. Do not drop the final sentence. Hono is pronounced hoh-noh as a normal two-syllable name, never as letters. Keep the small final phrases fully audible."
+    },
+    {
+      "id": "20",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "If it survives and pays its bill, it heals at its next turn start.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "21",
+      "speaker": "EMBER",
+      "cue": "deadpan, flat",
+      "text": "Never declare breakfast early.",
+      "beat": "EXPLAIN",
+      "hold": 1.2,
+      "directions": []
+    },
+    {
+      "id": "22",
+      "speaker": "EMBER",
+      "cue": "",
+      "text": "This is the Hi. Hits for two. Shield of one. Walks two. Takes one. That is the Hi.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[card: EVIDENCE. Proves: one Hono attack does not finish a fresh Tanka. Not checked: what a second attacker could do.]"
+      ]
+    },
+    {
+      "id": "23",
+      "speaker": "EMBER",
+      "cue": "",
+      "text": "This is the Hono. Hits for three. Shield of one. Walks two. Takes one. That is the Hono.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "performanceNote": "Articulate every word and every sentence in the supplied text. Do not drop the final sentence. Hono is pronounced hoh-noh as a normal two-syllable name, never as letters. Keep the small final phrases fully audible."
+    },
+    {
+      "id": "24",
+      "speaker": "EMBER",
+      "cue": "",
+      "text": "This is the Kagari. Hits for four. Shield of two. Walks three. Takes one. That is the Kagari.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "25",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "The Hono takes the one crystal there. An empty square gives nothing.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[card: FIRE PRICES. BUY: a Hi costs three crystals, and it is the only Fire piece you can buy. CLIMB: Hi to Hono, four more. Hono to Kagari, eight more. TOLLS: nothing, one, two.]",
+        "[board: a Hono ends its turn on a square holding one crystal, with a Black Sjor next door]"
+      ],
+      "performanceNote": "Articulate every word and every sentence in the supplied text. Do not drop the final sentence. Hono is pronounced hoh-noh as a normal two-syllable name, never as letters. Keep the small final phrases fully audible."
+    },
+    {
+      "id": "26",
+      "speaker": "EMBER",
+      "cue": "dawning concern",
+      "text": "One crystal, and a Sjor next door. A crystal is not a wall I can hide behind.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "27",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "One thing is different. A Radi hits that Tanka first, in the same turn. Two damage.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[board: bench reset. A fresh Tanka, five pips lit. A Radi and a Hono are waiting. Neither has swung this turn. The Radi steps up first.]",
+        "[sfx: bonk] [board: two of the Tanka's pips go dark; three stay lit]"
+      ]
+    },
+    {
+      "id": "28",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Three are still lit. Now a Hono that has not swung hits for four. Finished.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [],
+      "performanceNote": "Articulate every word and every sentence in the supplied text. Do not drop the final sentence. Hono is pronounced hoh-noh as a normal two-syllable name, never as letters. Keep the small final phrases fully audible."
+    },
+    {
+      "id": "29",
+      "speaker": "EMBER",
+      "cue": "",
+      "text": "Take the work card. Find one target your Hi finishes, and one it cannot.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: bonk] [board: the last four pips go dark; the piece is removed gently; the DONE stamp lands]",
+        "[card: FIRE. The department work card is added to the deck. Say which number decided it.]"
+      ]
+    },
+    {
+      "id": "matrix-intro",
+      "speaker": "COACH",
+      "text": "Now the bonk matrix for fire. We check all eighteen enemy unit types, including matching types. Both pieces start at full health and are already next to each other. One attack, not a whole turn.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "card",
+        "title": "Read one tier at a time",
+        "body": "Green: this unit one-shots the enemy.\nRed: that enemy one-shots this unit.\nBoth at full health · adjacent · one legal attack.\nThis is damage, not a movement or safety prediction."
+      }
+    },
+    {
+      "id": "matrix-1-stats",
+      "speaker": "COACH",
+      "text": "Tier one: the Hi. Attack two, defense one, speed two, and Mining one. Look at the green side first.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "fire_1",
+        "focus": "out"
+      }
+    },
+    {
+      "id": "matrix-1-out",
+      "speaker": "COACH",
+      "text": "With one attack, the Hi can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Muju, Sachita and Inyan. Every unlit card survives that single hit.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "fire_1",
+        "focus": "out"
+      }
+    },
+    {
+      "id": "matrix-1-in",
+      "speaker": "COACH",
+      "text": "Now the red side. A full health Hi is one shot by Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachakuna, Mazask and Tanka. Every unlit attacker needs help or earlier damage.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "fire_1",
+        "focus": "in"
+      }
+    },
+    {
+      "id": "matrix-1-read",
+      "speaker": "COACH",
+      "text": "That is the tier one card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 2,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "fire_1",
+        "focus": "both"
+      }
+    },
+    {
+      "id": "matrix-2-stats",
+      "speaker": "COACH",
+      "text": "Tier two: the Hono. Attack three, defense one, speed two, and Mining one. Look at the green side first.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "fire_2",
+        "focus": "out"
+      }
+    },
+    {
+      "id": "matrix-2-out",
+      "speaker": "COACH",
+      "text": "With one attack, the Hono can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Göl, Gölge, Karanlık, Muju, Sachita, Sachakuna, Inyan and Mazask. Every unlit card survives that single hit.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "fire_2",
+        "focus": "out"
+      }
+    },
+    {
+      "id": "matrix-2-in",
+      "speaker": "COACH",
+      "text": "Now the red side. A full health Hono is one shot by Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachakuna, Mazask and Tanka. Every unlit attacker needs help or earlier damage.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "fire_2",
+        "focus": "in"
+      }
+    },
+    {
+      "id": "matrix-2-read",
+      "speaker": "COACH",
+      "text": "That is the tier two card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 2,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "fire_2",
+        "focus": "both"
+      }
+    },
+    {
+      "id": "matrix-3-stats",
+      "speaker": "COACH",
+      "text": "Tier three: the Kagari. Attack four, defense two, speed three, and Mining one. Look at the green side first.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "fire_3",
+        "focus": "out"
+      }
+    },
+    {
+      "id": "matrix-3-out",
+      "speaker": "COACH",
+      "text": "With one attack, the Kagari can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Göl, Gölge, Karanlık, Muju, Sachita, Sachakuna, Inyan, Mazask and Tanka. Every unlit card survives that single hit.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "fire_3",
+        "focus": "out"
+      }
+    },
+    {
+      "id": "matrix-3-in",
+      "speaker": "COACH",
+      "text": "Now the red side. A full health Kagari is one shot by Hi, Hono, Kagari, Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge and Karanlık. Every unlit attacker needs help or earlier damage.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "fire_3",
+        "focus": "in"
+      }
+    },
+    {
+      "id": "matrix-3-read",
+      "speaker": "COACH",
+      "text": "That is the tier three card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 2,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "fire_3",
+        "focus": "both"
+      }
+    },
+    {
+      "id": "30",
+      "speaker": "EMBER",
+      "cue": "stating the rule, level",
+      "text": "Never declare breakfast early.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "31",
+      "speaker": "COACH",
+      "cue": "warm, unhurried",
+      "text": "Stopping here is fine.",
+      "beat": "EXIT",
+      "hold": 2,
+      "directions": []
+    }
+  ],
+  "version": 7,
+  "rules": "v2.8",
+  "updatedLabel": "Video version 7 · Last updated at 07:25 Sep 13 2026 CDT",
+  "question": "Does one attack from my Hono finish a fresh Tanka?",
+  "soundtrack": {
+    "id": "hono-koto",
+    "title": "Hono / Banked Fire",
+    "source": "muju/music-auditions/full-versions/hono-koto-full-v2-blended.mp3",
+    "sha256": "8681f8c0f31e8147e72ec99ed68d245d7e533124bb8ddf44406a70d65c7f7651"
+  },
+  "speechProvider": "openai"
+}
