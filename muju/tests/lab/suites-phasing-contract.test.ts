@@ -65,7 +65,11 @@ describe('floor contract integrity', () => {
     // throwaway repository; asserting it against this repository's real file only held
     // until the coordinator committed it, which is a state, not a property.)
     const committed = join(MUJU_ROOT, 'lab/hard-ai/suites/phasing/fixtures/v2/floor-contract.json');
-    expect(resolveContractCommit(committed, new Date().toISOString()).commit).toMatch(/^[0-9a-f]{40}$/);
+    // A shallow clone (CI's default checkout) grafts history at HEAD, so the contract's "last commit"
+    // there is a synthetic root that touches every file; the alone-in-its-commit rule cannot be
+    // evaluated honestly without history, so only assert resolution where history exists.
+    const shallow = execFileSync('git', ['rev-parse', '--is-shallow-repository'], { cwd: MUJU_ROOT, encoding: 'utf8' }).trim() === 'true';
+    if (!shallow) expect(resolveContractCommit(committed, new Date().toISOString()).commit).toMatch(/^[0-9a-f]{40}$/);
     expect(() => resolveContractCommit(join(tmpdir(), 'floor-contract.json'), new Date().toISOString())).toThrow(/inside this repository/);
   });
 
