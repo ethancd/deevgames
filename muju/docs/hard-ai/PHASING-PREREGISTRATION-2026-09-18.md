@@ -107,4 +107,40 @@ load 260 — record load average per shard).
 
 ## Amendments
 
-_None._
+### A1 — 2026-09-18, before any Gate 1 row was run: replace the "historical margin" clause
+
+**What changes.** In Gate 1, the clause "reaches at least 60% of its historical Standard Elo
+margin over the same bots" is withdrawn. Gate 1's strength conditions become:
+
+- `aiv2-hard` beats **Expand**, **Balanced** and **`aiv2-medium`**, each with score > 0.5 and
+  an Elo interval excluding 0, h0 and h3 reported as strata;
+- against **Rush** the result is *reported, not gated*, and the same Rush row is also run for
+  `hard@desktop` when Gate 2 is run, so the two engines' Rush results sit side by side;
+- the behavioural conditions are unchanged: purchases and inactivity draws inside the bands
+  frozen in `lab/harness/results/p1-scripted-2026-09-18/sanity-bands.json`, and 0 illegal
+  actions, 0 invariant failures, 0 adapter errors.
+- Additionally (new): `aiv2-hard` must make at least one purchase in every game that lasts
+  more than 10 completed player turns. A baseline that stops buying is crippled regardless
+  of score.
+
+Primary mode is fixed work (hard 6,000 / medium 3,000 search-budget units per own turn), 64
+pairs per cell, seed 20260957, as proposed in `lab/docs/GATE1-AMENDMENT-PROPOSAL-2026-09-19.md`
+on branch `codex/gate1-baseline`; that proposal's runner mechanics are adopted, its reference
+table is superseded by this amendment.
+
+**Why.** The withdrawn clause was written without checking that the reference existed. Codex's
+audit (inbox 2026-09-18T23:24, `lab/ai/gate1-references.json`) found: no recorded
+`aiv2-hard` result against Expand or Balanced in any results directory; against Rush the only
+*legal* historical result is `hard-ai-e0/calib-aiv2-rush`, `aiv2-hard` 1/0/15 (about -470 Elo),
+while the +458 Elo row in `EXPERIMENTS.md` contains 18 illegal emissions and a different
+budget policy. A threshold defined as a fraction of a margin that is absent or negative is
+meaningless, and inventing a number would defeat the point of preregistering. The Standard
+release used `aiv2-hard` as its baseline although that engine lost to Rush, so requiring the
+Phasing port to beat Rush would hold the port to a bar the original never met; reporting both
+engines' Rush rows keeps that weakness visible instead.
+
+**Evidence status at the time of writing.** Only a 16-game pilot exists (one pair per cell,
+ineligible by design): 0 illegal actions; `aiv2-hard` W/D/L Rush 1/0/3, Expand 3/1/0, Balanced
+3/1/0, medium 3/0/1; in its h0 Black loss to Rush `aiv2-hard` bought nothing, which the new
+purchase condition would fail. No Gate 1 row has been run, so this amendment cannot have been
+fitted to a result it gates — but it was written after seeing that pilot, and says so.
