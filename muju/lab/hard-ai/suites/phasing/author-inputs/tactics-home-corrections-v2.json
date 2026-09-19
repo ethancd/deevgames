@@ -1,0 +1,86 @@
+{
+  "schema": "muju-phasing-tactics-home-author-corrections-v2",
+  "revision": "2026-09-19-author-v2-pre-scoring",
+  "baseClassificationSha256": "289bceb9e37e0d13b8cefc34854ce7522137bef50b4e4d291b8cde370819629e",
+  "baseDiagramsSha256": "81f25281c66ff12528d3c703b690580631d72d14a5ab415d5e55eee70029862e",
+  "reason": "Canonical-only diagnostic2 author evidence failed before any Hard scoring; original inputs/classification and failed diagnostics retained. Counts and predicates retain their intended objectives.",
+  "evidence": {
+    "path": "work/m5-second-focused-1/command.log",
+    "sha256": "9c2ba86aea3c12123e588071d06ae823a1655599fdb4bb915c5f016fb1c8190d",
+    "reported": {
+      "passed": 85,
+      "failed": 2,
+      "skipped": 13,
+      "sourceDrift": 0
+    }
+  },
+  "bankChanges": [
+    {
+      "oldId": "tactics-plugged-fire_3-vs-fire_3",
+      "player": "white",
+      "from": 0,
+      "to": 1,
+      "rationale": "Authored funding exception: White starts with1 crystal, since the sole attacking FireIII mines1 at its unchanged witness square but owes rent2. This retains the attacker through the full Phasing macro; the target-removal and surviving-side predicate is unchanged."
+    },
+    {
+      "oldId": "tactics-plugged-lightning_2-vs-fire_3",
+      "player": "white",
+      "from": 0,
+      "to": 1,
+      "rationale": "Authored funding exception found by the same rent audit before rerun: White starts with1 crystal, since the sole attacking LightningII mines0 and owes rent1. Geometry, attack witness and target-removal/surviving-side predicate are unchanged."
+    }
+  ],
+  "homeCounterfactualPass": {
+    "oldIds": [
+      "five-action-rotation-exceeds-the-turn-budget-rescue",
+      "five-action-rotation-exceeds-the-turn-budget-rotated-black-rescue",
+      "promotion-dependent-rescue-rescue",
+      "promotion-dependent-rescue-rotated-black-rescue",
+      "public-bank-no-promotion-money-rescue",
+      "public-bank-no-promotion-money-rotated-black-rescue",
+      "too-few-actions-for-rotation-rescue",
+      "too-few-actions-for-rotation-rotated-black-rescue",
+      "newly-placed-unit-cannot-promote-rescue",
+      "newly-placed-unit-cannot-promote-rotated-black-rescue",
+      "at-most-one-promotion-rescue",
+      "at-most-one-promotion-rotated-black-rescue"
+    ],
+    "expectedTerminalReason": "home-occupation",
+    "rationale": "The separate root oracle proves mate on the explicit counterfactual defender Act. Passing that impossible granted reply does not adjudicate the other player as the current mover: actual handoff reaches the original invader start and wins by home-occupation. Assert that exact precedence rather than home-checkmate."
+  },
+  "homeWinningEntry": {
+    "oldIds": [
+      "five-action-rotation-exceeds-the-turn-budget-mate",
+      "five-action-rotation-exceeds-the-turn-budget-rotated-black-mate",
+      "promotion-dependent-rescue-mate",
+      "promotion-dependent-rescue-rotated-black-mate",
+      "public-bank-no-promotion-money-mate",
+      "public-bank-no-promotion-money-rotated-black-mate",
+      "too-few-actions-for-rotation-mate",
+      "too-few-actions-for-rotation-rotated-black-mate",
+      "newly-placed-unit-cannot-promote-mate",
+      "newly-placed-unit-cannot-promote-rotated-black-mate",
+      "at-most-one-promotion-mate",
+      "at-most-one-promotion-rotated-black-mate"
+    ],
+    "expectedEntryPhase": "playing",
+    "expectedTerminalReason": "home-checkmate",
+    "rationale": "Canonical Phasing entry itself remains Act and does not award mate. The invader must finish Act, mine and survive its outgoing rent; the settled Prepare then adjudicates home-checkmate. Independent mate proof is evaluated on the unadjudicated playing occupation. The existing complete positive witness already takes this boundary; correct the premature-immediate wording and directed expectation."
+  },
+  "countsUnchanged": {
+    "tactics": {
+      "total": 79,
+      "decision": 63,
+      "coverage": 16,
+      "replacement": 5
+    },
+    "home-mate": {
+      "total": 56,
+      "rescue": 28,
+      "invader": 28,
+      "decision": 28,
+      "coverage": 28
+    }
+  },
+  "noHardExposure": true
+}

@@ -1,0 +1,140 @@
+[
+  {
+    "source": "work/m5-first-types-1/command.log",
+    "saved": "m5-first-types-1/command.log.gz",
+    "sha256": "d834faf13b064600799c149163180edd70cb13b894b64427b6d7244b3f72fd46",
+    "bytes": 1272
+  },
+  {
+    "source": "work/m5-first-types-1/verification.json",
+    "saved": "m5-first-types-1/verification.json.gz",
+    "sha256": "88b9b102d43619b84447638ea8515301bee0519d7029579602ce7d7041b86675",
+    "bytes": 70420
+  },
+  {
+    "source": "work/m5-first-focused-1/command.log",
+    "saved": "m5-first-focused-1/command.log.gz",
+    "sha256": "a8234f3cd5839f304b2500d68fb89d2a9493b657cabc6ab050881fcd210de1f5",
+    "bytes": 29409
+  },
+  {
+    "source": "work/m5-first-focused-1/verification.json",
+    "saved": "m5-first-focused-1/verification.json.gz",
+    "sha256": "efb30e674bcb61a0e5ecd9dafb42939cc76454c65221a3bea63dda134f2fff67",
+    "bytes": 70618
+  },
+  {
+    "source": "work/m5-second-types-1/command.log",
+    "saved": "m5-second-types-1/command.log.gz",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  {
+    "source": "work/m5-second-types-1/verification.json",
+    "saved": "m5-second-types-1/verification.json.gz",
+    "sha256": "01f47deea7a26dff563e5a90fbf94145165987c88ee2bc5d8671a73d071e4743",
+    "bytes": 70786
+  },
+  {
+    "source": "work/m5-second-focused-1/command.log",
+    "saved": "m5-second-focused-1/command.log.gz",
+    "sha256": "9c2ba86aea3c12123e588071d06ae823a1655599fdb4bb915c5f016fb1c8190d",
+    "bytes": 565993
+  },
+  {
+    "source": "work/m5-second-focused-1/verification.json",
+    "saved": "m5-second-focused-1/verification.json.gz",
+    "sha256": "d588dd3e0df3b4dcb582bd6e75567bf061c424b07a99750c03742f7588484355",
+    "bytes": 71032
+  },
+  {
+    "source": "work/m5-third-types-1/command.log",
+    "saved": "m5-third-types-1/command.log.gz",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  {
+    "source": "work/m5-third-types-1/verification.json",
+    "saved": "m5-third-types-1/verification.json.gz",
+    "sha256": "395945de0e6c938da52c595129262d76f18d80693cd6c92cf5f78e61febada3a",
+    "bytes": 70934
+  },
+  {
+    "source": "work/m5-third-focused-1/command.log",
+    "saved": "m5-third-focused-1/command.log.gz",
+    "sha256": "8862571faef53fb8453cb1b8e5675ccf5b5d482fa7e23a4e5f56c583d55b349b",
+    "bytes": 1549
+  },
+  {
+    "source": "work/m5-third-focused-1/verification.json",
+    "saved": "m5-third-focused-1/verification.json.gz",
+    "sha256": "63093f1357e05c61a1ce069c7574782e4cc17975bad7f2677962e18d59dd7ffd",
+    "bytes": 71180
+  },
+  {
+    "source": "work/m5-fourth-focused-1/command.log",
+    "saved": "m5-fourth-focused-1/command.log.gz",
+    "sha256": "66a044593fe7acaab4a447cf41c3aad56d7c130828d653caa1ff11176c05945d",
+    "bytes": 269
+  },
+  {
+    "source": "work/m5-fourth-focused-1/verification.json",
+    "saved": "m5-fourth-focused-1/verification.json.gz",
+    "sha256": "131c000fccc8ba34ff1342dd1b6e1227515ff1d469117818b9d1ed2a721512e7",
+    "bytes": 71180
+  },
+  {
+    "source": "work/m5-adapter-types-1/command.log",
+    "saved": "m5-adapter-types-1/command.log.gz",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  {
+    "source": "work/m5-adapter-types-1/verification.json",
+    "saved": "m5-adapter-types-1/verification.json.gz",
+    "sha256": "b153720875186a3fcea9c135c48fd9fce60263c2336835284bdf0655deb00f25",
+    "bytes": 71496
+  },
+  {
+    "source": "work/m5-adapter-focused-1/command.log",
+    "saved": "m5-adapter-focused-1/command.log.gz",
+    "sha256": "3ff31eef2a20b8bbf431e36d0b0a024b20465de94c407efa42d380b1729b6786",
+    "bytes": 269
+  },
+  {
+    "source": "work/m5-adapter-focused-1/verification.json",
+    "saved": "m5-adapter-focused-1/verification.json.gz",
+    "sha256": "033f2f71d37d330fbb9a046d4c2fdc22255305bfdd388248babccf2241222b9c",
+    "bytes": 71788
+  },
+  {
+    "source": "work/m5-final-types-1/command.log",
+    "saved": "m5-final-types-1/command.log.gz",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  {
+    "source": "work/m5-final-types-1/verification.json",
+    "saved": "m5-final-types-1/verification.json.gz",
+    "sha256": "4f9a70d78aada73ed87b66a08e800198b74141c728c5f3af6c6aacfd4cbd0573",
+    "bytes": 71538
+  },
+  {
+    "source": "work/m5-final-focused-1/tests.json",
+    "saved": "m5-final-focused-1/tests.json.gz",
+    "sha256": "0c0b90167255c7528d4ced2f6e553053adcb672ff9be6feba1ad8c48aa5aed4e",
+    "bytes": 47341
+  },
+  {
+    "source": "work/m5-final-focused-1/command.log",
+    "saved": "m5-final-focused-1/command.log.gz",
+    "sha256": "fbb31ef7f76c5aee49d07662da8aabf6297efaeecabbe7d945cb00d93f1ad41d",
+    "bytes": 103
+  },
+  {
+    "source": "work/m5-final-focused-1/verification.json",
+    "saved": "m5-final-focused-1/verification.json.gz",
+    "sha256": "db886906f0fb33581f422f666a117ddb2ccdcad41496d5a22bf668f5e550beab",
+    "bytes": 71975
+  }
+]

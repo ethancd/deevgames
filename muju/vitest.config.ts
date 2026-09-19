@@ -11,7 +11,9 @@ import { defineConfig, defaultExclude } from 'vitest/config'
  * stop/cap/telemetry, complete-turn, determinism and TT-suppression contracts.
  * These historical files are not current Phasing acceptance tests.
  *
- * M5 suites/harnesses and M6 evaluation still need their semantic ports.
+ * Seven suites-phasing test files cover the new M5 implementation by default.
+ * The six retained historical M5 harness files and M6 evaluation ports remain
+ * explicitly listed below; their old evidence is not current acceptance.
  * MUJU_RUN_QUARANTINE=1 is for explicitly named files during those ports;
  * it must not be used to report an unqualified full-suite migration pass.
  */

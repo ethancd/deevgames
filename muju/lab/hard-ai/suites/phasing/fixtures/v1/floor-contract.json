@@ -1,0 +1,20 @@
+{
+  "schema": "muju-phasing-suite-floor-v1",
+  "manifestSha256": "df27339b4c2ad85821a00bc3a3dbb8ab5b6f9d151ee105177c894cf36a31be0f",
+  "declaredAt": "2026-09-19T11:50:36.814Z",
+  "seed": 1,
+  "profile": "desktop",
+  "minimumEarned": {
+    "tactics": 57,
+    "invariants": 17,
+    "home-mate": 28,
+    "economy": 20,
+    "summon-disruption": 13,
+    "home-fortify": 6
+  },
+  "coverage": "all",
+  "fallback": "veto",
+  "illegalOrDivergent": "veto",
+  "unresolvedProof": "veto",
+  "rationale": "Engineering targets fixed in M5-FLOOR-PREREGISTRATION-v1.md before any M5 Hard choices, pair evaluations or search results. At least 90% tactics, invariant preferences and disruption; all immediate home obligations and finite named-miner extraction cases. All coverage and correctness checks required. Normative authored-suite floors, not transferred Standard evidence or release qualification."
+}

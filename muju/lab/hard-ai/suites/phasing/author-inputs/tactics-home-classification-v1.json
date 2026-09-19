@@ -1,0 +1,1221 @@
+{
+  "schema": "muju-phasing-tactics-home-author-classification-v1",
+  "status": "frozen-before-builder-execution; canonical validation pending; fixture failure requires explicit source revision, never dynamic demotion",
+  "revision": "2026-09-19-author-v1",
+  "sourceRevision": "70ba9dc676d42ddd5e8f44db80cb7faed381caa0",
+  "sourceFiles": {
+    "positions/tactics.jsonl": "b972a90331dfe3f61a31a8ff7bdfdf6918620005b335437ee72dd65d8cfae246",
+    "suites/home-mate.positions.jsonl": "24033bca9d21bc95c4fb581993a30abb3630cfe97927a818f25105e03d5a79b4"
+  },
+  "triageSha256": "bbfacb05d2ae18c6318a06b95726e95c15db157b4fceda31d4568090ad7a6578",
+  "scope": "Only authorized finite tactics/home suite inputs. No old answer keys, opening corpora, Hard choices or floors consumed. Synthetic diagram reachability is labelled, never initial-game reachability.",
+  "counts": {
+    "tactics": {
+      "total": 79,
+      "decision": 63,
+      "coverage": 16,
+      "replacement": 5
+    },
+    "home-mate": {
+      "total": 56,
+      "rescue": 28,
+      "invader": 28,
+      "decision": 28,
+      "coverage": 28
+    }
+  },
+  "cases": [
+    {
+      "oldId": "tactics-adjacent-fire_1-vs-fire_3",
+      "id": "phasing-tactics-adjacent-fire_1-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-adjacent-fire_2-vs-fire_3",
+      "id": "phasing-tactics-adjacent-fire_2-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-adjacent-fire_3-vs-fire_3",
+      "id": "phasing-tactics-adjacent-fire_3-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-adjacent-lightning_2-vs-fire_3",
+      "id": "phasing-tactics-adjacent-lightning_2-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-adjacent-water_1-vs-fire_3",
+      "id": "phasing-tactics-adjacent-water_1-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-adjacent-water_2-vs-fire_3",
+      "id": "phasing-tactics-adjacent-water_2-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-adjacent-water_3-vs-fire_3",
+      "id": "phasing-tactics-adjacent-water_3-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-adjacent-shadow_1-vs-fire_3",
+      "id": "phasing-tactics-adjacent-shadow_1-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-approach-fire_1-vs-fire_3",
+      "id": "phasing-tactics-approach-fire_1-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-approach-fire_2-vs-fire_3",
+      "id": "phasing-tactics-approach-fire_2-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-approach-fire_3-vs-fire_3",
+      "id": "phasing-tactics-approach-fire_3-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-approach-lightning_2-vs-fire_3",
+      "id": "phasing-tactics-approach-lightning_2-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-approach-water_1-vs-fire_3",
+      "id": "phasing-tactics-approach-water_1-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-approach-water_2-vs-fire_3",
+      "id": "phasing-tactics-approach-water_2-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-approach-water_3-vs-fire_3",
+      "id": "phasing-tactics-approach-water_3-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-approach-shadow_1-vs-fire_3",
+      "id": "phasing-tactics-approach-shadow_1-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-two-lanes-plant_3-vs-fire_3",
+      "id": "phasing-tactics-two-lanes-plant_3-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-two-lanes-metal_2-vs-fire_3",
+      "id": "phasing-tactics-two-metal-ii-lanes-vs-water-iii",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "replacement",
+      "rationale": "Target becomes Water III: two Metal II favorable hits of2 remove DEF4; geometry retained."
+    },
+    {
+      "oldId": "tactics-two-lanes-metal_3-vs-fire_3",
+      "id": "phasing-tactics-two-lanes-metal_3-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-two-lanes-fire_2-vs-water_2",
+      "id": "phasing-tactics-two-lanes-fire_2-vs-water_2",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-two-lanes-water_1-vs-water_2",
+      "id": "phasing-tactics-two-lanes-water_1-vs-water_2",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-two-lanes-water_2-vs-water_2",
+      "id": "phasing-tactics-two-lanes-water_2-vs-water_2",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-two-lanes-shadow_1-vs-water_2",
+      "id": "phasing-tactics-two-lanes-shadow_1-vs-water_2",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-two-lanes-plant_2-vs-water_2",
+      "id": "phasing-tactics-two-lanes-plant_2-vs-water_2",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-chipped-lightning_1-vs-fire_3",
+      "id": "phasing-tactics-chipped-lightning_1-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-chipped-plant_3-vs-fire_3",
+      "id": "phasing-tactics-chipped-plant_3-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-chipped-metal_2-vs-fire_3",
+      "id": "phasing-tactics-chipped-water-iii-metal-ii-finish",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "replacement",
+      "rationale": "Target becomes Water III with2 authored damage: one favorable Metal II hit removes remaining DEF2."
+    },
+    {
+      "oldId": "tactics-chipped-metal_3-vs-fire_3",
+      "id": "phasing-tactics-chipped-metal_3-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-chipped-fire_1-vs-water_2",
+      "id": "phasing-tactics-chipped-fire_1-vs-water_2",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-chipped-fire_2-vs-water_2",
+      "id": "phasing-tactics-chipped-fire_2-vs-water_2",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-chipped-lightning_2-vs-water_2",
+      "id": "phasing-tactics-chipped-lightning_2-vs-water_2",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-chipped-water_1-vs-water_2",
+      "id": "phasing-tactics-chipped-water_1-vs-water_2",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-plugged-fire_1-vs-fire_3",
+      "id": "phasing-tactics-plugged-fire_1-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-plugged-fire_2-vs-fire_3",
+      "id": "phasing-tactics-plugged-fire_2-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-plugged-fire_3-vs-fire_3",
+      "id": "phasing-tactics-plugged-fire_3-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-plugged-lightning_2-vs-fire_3",
+      "id": "phasing-tactics-plugged-lightning_2-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-plugged-water_1-vs-fire_3",
+      "id": "phasing-tactics-plugged-water_1-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-plugged-water_2-vs-fire_3",
+      "id": "phasing-tactics-plugged-water_2-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-plugged-water_3-vs-fire_3",
+      "id": "phasing-tactics-plugged-water_3-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-plugged-shadow_1-vs-fire_3",
+      "id": "phasing-tactics-plugged-shadow_1-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-corner-lightning_1-vs-fire_3",
+      "id": "phasing-tactics-corner-lightning_1-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-corner-plant_3-vs-fire_3",
+      "id": "phasing-tactics-corner-plant_3-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-corner-metal_2-vs-fire_3",
+      "id": "phasing-tactics-corner-two-metal-ii-vs-water-iii",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "replacement",
+      "rationale": "Corner occupier becomes Water III: two favorable Metal II hits remove DEF4; both corner lanes retained."
+    },
+    {
+      "oldId": "tactics-corner-metal_3-vs-fire_3",
+      "id": "phasing-tactics-corner-metal_3-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-corner-fire_2-vs-water_2",
+      "id": "phasing-tactics-corner-fire_2-vs-water_2",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-corner-water_1-vs-water_2",
+      "id": "phasing-tactics-corner-water_1-vs-water_2",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-corner-water_2-vs-water_2",
+      "id": "phasing-tactics-corner-water_2-vs-water_2",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-corner-shadow_1-vs-water_2",
+      "id": "phasing-tactics-corner-shadow_1-vs-water_2",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-promote-lightning_1-vs-fire_3",
+      "id": "phasing-tactics-promote-lightning_1-vs-fire_3",
+      "family": "tactics",
+      "kind": "canonical-coverage",
+      "disposition": "reauthored",
+      "rationale": "Prepare timing: retain AP0 and prove no current Act or live bought attacker."
+    },
+    {
+      "oldId": "tactics-promote-plant_2-vs-lightning_3",
+      "id": "phasing-tactics-promote-plant_2-vs-lightning_3",
+      "family": "tactics",
+      "kind": "canonical-coverage",
+      "disposition": "reauthored",
+      "rationale": "Prepare timing: retain AP0 and prove no current Act or live bought attacker."
+    },
+    {
+      "oldId": "tactics-promote-metal_1-vs-lightning_3",
+      "id": "phasing-tactics-promote-metal_1-vs-lightning_3",
+      "family": "tactics",
+      "kind": "canonical-coverage",
+      "disposition": "reauthored",
+      "rationale": "Prepare timing: retain AP0 and prove no current Act or live bought attacker."
+    },
+    {
+      "oldId": "tactics-promote-fire_2-vs-water_2",
+      "id": "phasing-tactics-promote-fire_2-vs-water_2",
+      "family": "tactics",
+      "kind": "canonical-coverage",
+      "disposition": "reauthored",
+      "rationale": "Prepare timing: retain AP0 and prove no current Act or live bought attacker."
+    },
+    {
+      "oldId": "tactics-promote-water_2-vs-water_2",
+      "id": "phasing-tactics-promote-water_2-vs-water_2",
+      "family": "tactics",
+      "kind": "canonical-coverage",
+      "disposition": "reauthored",
+      "rationale": "Prepare timing: retain AP0 and prove no current Act or live bought attacker."
+    },
+    {
+      "oldId": "tactics-promote-shadow_1-vs-water_2",
+      "id": "phasing-tactics-promote-shadow_1-vs-water_2",
+      "family": "tactics",
+      "kind": "canonical-coverage",
+      "disposition": "reauthored",
+      "rationale": "Prepare timing: retain AP0 and prove no current Act or live bought attacker."
+    },
+    {
+      "oldId": "tactics-promote-plant_2-vs-water_2",
+      "id": "phasing-tactics-promote-plant_2-vs-water_2",
+      "family": "tactics",
+      "kind": "canonical-coverage",
+      "disposition": "reauthored",
+      "rationale": "Prepare timing: retain AP0 and prove no current Act or live bought attacker."
+    },
+    {
+      "oldId": "tactics-promote-metal_1-vs-water_2",
+      "id": "phasing-tactics-promote-metal_1-vs-water_2",
+      "family": "tactics",
+      "kind": "canonical-coverage",
+      "disposition": "reauthored",
+      "rationale": "Prepare timing: retain AP0 and prove no current Act or live bought attacker."
+    },
+    {
+      "oldId": "tactics-buy-fire_1-vs-fire_3",
+      "id": "phasing-tactics-buy-fire_1-vs-fire_3",
+      "family": "tactics",
+      "kind": "canonical-coverage",
+      "disposition": "reauthored",
+      "rationale": "Prepare timing: retain AP0 and prove no current Act or live bought attacker."
+    },
+    {
+      "oldId": "tactics-buy-water_1-vs-fire_3",
+      "id": "phasing-tactics-buy-water_1-vs-fire_3",
+      "family": "tactics",
+      "kind": "canonical-coverage",
+      "disposition": "reauthored",
+      "rationale": "Prepare timing: retain AP0 and prove no current Act or live bought attacker."
+    },
+    {
+      "oldId": "tactics-buy-fire_1-vs-lightning_3",
+      "id": "phasing-tactics-buy-fire_1-vs-lightning_3",
+      "family": "tactics",
+      "kind": "canonical-coverage",
+      "disposition": "reauthored",
+      "rationale": "Prepare timing: retain AP0 and prove no current Act or live bought attacker."
+    },
+    {
+      "oldId": "tactics-buy-water_1-vs-lightning_3",
+      "id": "phasing-tactics-buy-water_1-vs-lightning_3",
+      "family": "tactics",
+      "kind": "canonical-coverage",
+      "disposition": "reauthored",
+      "rationale": "Prepare timing: retain AP0 and prove no current Act or live bought attacker."
+    },
+    {
+      "oldId": "tactics-buy-water_1-vs-shadow_2",
+      "id": "phasing-tactics-buy-water_1-vs-shadow_2",
+      "family": "tactics",
+      "kind": "canonical-coverage",
+      "disposition": "reauthored",
+      "rationale": "Prepare timing: retain AP0 and prove no current Act or live bought attacker."
+    },
+    {
+      "oldId": "tactics-buy-metal_1-vs-shadow_2",
+      "id": "phasing-tactics-buy-metal_1-vs-shadow_2",
+      "family": "tactics",
+      "kind": "canonical-coverage",
+      "disposition": "reauthored",
+      "rationale": "Prepare timing: retain AP0 and prove no current Act or live bought attacker."
+    },
+    {
+      "oldId": "tactics-buy-water_1-vs-shadow_3",
+      "id": "phasing-tactics-buy-water_1-vs-shadow_3",
+      "family": "tactics",
+      "kind": "canonical-coverage",
+      "disposition": "reauthored",
+      "rationale": "Prepare timing: retain AP0 and prove no current Act or live bought attacker."
+    },
+    {
+      "oldId": "tactics-buy-metal_1-vs-shadow_3",
+      "id": "phasing-tactics-buy-metal_1-vs-shadow_3",
+      "family": "tactics",
+      "kind": "canonical-coverage",
+      "disposition": "reauthored",
+      "rationale": "Prepare timing: retain AP0 and prove no current Act or live bought attacker."
+    },
+    {
+      "oldId": "tactics-two-lane-approach-plant_3-vs-fire_3",
+      "id": "phasing-tactics-two-lane-approach-plant_3-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-two-lane-approach-metal_2-vs-fire_3",
+      "id": "phasing-tactics-two-lane-approach-metal-ii-vs-water-iii",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "replacement",
+      "rationale": "Target becomes Water III: two moves plus two favorable hits consume four AP and remove DEF4."
+    },
+    {
+      "oldId": "tactics-two-lane-approach-metal_3-vs-fire_3",
+      "id": "phasing-tactics-two-lane-approach-metal_3-vs-fire_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-two-lane-approach-fire_2-vs-water_2",
+      "id": "phasing-tactics-two-lane-approach-fire_2-vs-water_2",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-two-lane-approach-water_1-vs-water_2",
+      "id": "phasing-tactics-two-lane-approach-water_1-vs-water_2",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-two-lane-approach-water_2-vs-water_2",
+      "id": "phasing-tactics-two-lane-approach-water_2-vs-water_2",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-two-lane-approach-shadow_1-vs-water_2",
+      "id": "phasing-tactics-two-lane-approach-shadow_1-vs-water_2",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-two-lane-approach-plant_2-vs-water_2",
+      "id": "phasing-tactics-two-lane-approach-plant_2-vs-water_2",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-three-lanes-plant_1-vs-water_2",
+      "id": "phasing-tactics-three-lanes-plant_1-vs-water_2",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-three-lanes-water_1-vs-plant_2",
+      "id": "phasing-tactics-three-lanes-water_1-vs-plant_2",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-three-lanes-water_2-vs-plant_2",
+      "id": "phasing-tactics-three-lanes-water_2-vs-plant_2",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-three-lanes-plant_2-vs-plant_2",
+      "id": "phasing-tactics-three-lanes-plant_2-vs-plant_2",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-three-lanes-metal_1-vs-plant_2",
+      "id": "phasing-tactics-three-lanes-metal_1-vs-plant_2",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-three-lanes-plant_3-vs-metal_3",
+      "id": "phasing-tactics-three-lanes-plant_3-vs-metal_3",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Preserve Act geometry, banks, damage and spent flags; canonically complete the outgoing turn."
+    },
+    {
+      "oldId": "tactics-three-lanes-metal_2-vs-metal_3",
+      "id": "phasing-tactics-three-metal-ii-lanes-vs-chipped-metal-iii",
+      "family": "tactics",
+      "kind": "macro-decision",
+      "disposition": "replacement",
+      "rationale": "Retain Metal III target with2 explicitly authored prior damage: three neutral Metal II hits remove remaining DEF3."
+    },
+    {
+      "oldId": "cheap-invasion-one-attack-rescue",
+      "id": "phasing-cheap-invasion-one-attack-rescue",
+      "family": "home-mate",
+      "homeFraming": "rescue",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Derive fresh defender Act by legal END_PLACE from explicitly authored invader Prepare; preserve damage, canonical reset, and rescue witness.",
+      "expectedDefense": "rescue"
+    },
+    {
+      "oldId": "cheap-invasion-one-attack-mate",
+      "id": "phasing-cheap-invasion-one-attack-mate",
+      "family": "home-mate",
+      "homeFraming": "invader",
+      "kind": "canonical-coverage",
+      "disposition": "reauthored",
+      "rationale": "Reauthor legal entry where available, otherwise explicit partial invader Prepare diagram. Assert actual rescue capacity; no unproved strategic entry preference.",
+      "expectedDefense": "rescue"
+    },
+    {
+      "oldId": "cheap-invasion-one-attack-rotated-black-rescue",
+      "id": "phasing-cheap-invasion-one-attack-rotated-black-rescue",
+      "family": "home-mate",
+      "homeFraming": "rescue",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Derive fresh defender Act by legal END_PLACE from explicitly authored invader Prepare; preserve damage, canonical reset, and rescue witness.",
+      "expectedDefense": "rescue"
+    },
+    {
+      "oldId": "cheap-invasion-one-attack-rotated-black-mate",
+      "id": "phasing-cheap-invasion-one-attack-rotated-black-mate",
+      "family": "home-mate",
+      "homeFraming": "invader",
+      "kind": "canonical-coverage",
+      "disposition": "reauthored",
+      "rationale": "Reauthor legal entry where available, otherwise explicit partial invader Prepare diagram. Assert actual rescue capacity; no unproved strategic entry preference.",
+      "expectedDefense": "rescue"
+    },
+    {
+      "oldId": "metal-iii-two-shadow-iii-rescue",
+      "id": "phasing-metal-iii-two-shadow-iii-rescue",
+      "family": "home-mate",
+      "homeFraming": "rescue",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Derive fresh defender Act by legal END_PLACE from explicitly authored invader Prepare; preserve damage, canonical reset, and rescue witness.",
+      "expectedDefense": "rescue"
+    },
+    {
+      "oldId": "metal-iii-two-shadow-iii-mate",
+      "id": "phasing-metal-iii-two-shadow-iii-mate",
+      "family": "home-mate",
+      "homeFraming": "invader",
+      "kind": "canonical-coverage",
+      "disposition": "reauthored",
+      "rationale": "Reauthor legal entry where available, otherwise explicit partial invader Prepare diagram. Assert actual rescue capacity; no unproved strategic entry preference.",
+      "expectedDefense": "rescue"
+    },
+    {
+      "oldId": "metal-iii-two-shadow-iii-rotated-black-rescue",
+      "id": "phasing-metal-iii-two-shadow-iii-rotated-black-rescue",
+      "family": "home-mate",
+      "homeFraming": "rescue",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Derive fresh defender Act by legal END_PLACE from explicitly authored invader Prepare; preserve damage, canonical reset, and rescue witness.",
+      "expectedDefense": "rescue"
+    },
+    {
+      "oldId": "metal-iii-two-shadow-iii-rotated-black-mate",
+      "id": "phasing-metal-iii-two-shadow-iii-rotated-black-mate",
+      "family": "home-mate",
+      "homeFraming": "invader",
+      "kind": "canonical-coverage",
+      "disposition": "reauthored",
+      "rationale": "Reauthor legal entry where available, otherwise explicit partial invader Prepare diagram. Assert actual rescue capacity; no unproved strategic entry preference.",
+      "expectedDefense": "rescue"
+    },
+    {
+      "oldId": "five-action-rotation-exceeds-the-turn-budget-rescue",
+      "id": "phasing-five-action-rotation-exceeds-the-turn-budget-rescue",
+      "family": "home-mate",
+      "homeFraming": "rescue",
+      "kind": "canonical-coverage",
+      "disposition": "reauthored",
+      "rationale": "Explicit counterfactual fresh defender Act: Phasing cannot rescue this occupied home; test proved mate and illegal pre-Act promotion.",
+      "expectedDefense": "mate"
+    },
+    {
+      "oldId": "five-action-rotation-exceeds-the-turn-budget-mate",
+      "id": "phasing-five-action-rotation-exceeds-the-turn-budget-mate",
+      "family": "home-mate",
+      "homeFraming": "invader",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Reauthor legal pre-entry: move defender blocking the entry square diagonally inward, keep armies/stats/banks/damage, and distinguish home-checkmate entry from nonmate quiet handoff.",
+      "expectedDefense": "mate"
+    },
+    {
+      "oldId": "five-action-rotation-exceeds-the-turn-budget-rotated-black-rescue",
+      "id": "phasing-five-action-rotation-exceeds-the-turn-budget-rotated-black-rescue",
+      "family": "home-mate",
+      "homeFraming": "rescue",
+      "kind": "canonical-coverage",
+      "disposition": "reauthored",
+      "rationale": "Explicit counterfactual fresh defender Act: Phasing cannot rescue this occupied home; test proved mate and illegal pre-Act promotion.",
+      "expectedDefense": "mate"
+    },
+    {
+      "oldId": "five-action-rotation-exceeds-the-turn-budget-rotated-black-mate",
+      "id": "phasing-five-action-rotation-exceeds-the-turn-budget-rotated-black-mate",
+      "family": "home-mate",
+      "homeFraming": "invader",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Reauthor legal pre-entry: move defender blocking the entry square diagonally inward, keep armies/stats/banks/damage, and distinguish home-checkmate entry from nonmate quiet handoff.",
+      "expectedDefense": "mate"
+    },
+    {
+      "oldId": "promotion-dependent-rescue-rescue",
+      "id": "phasing-promotion-dependent-rescue-rescue",
+      "family": "home-mate",
+      "homeFraming": "rescue",
+      "kind": "canonical-coverage",
+      "disposition": "reauthored",
+      "rationale": "Explicit counterfactual fresh defender Act: Phasing cannot rescue this occupied home; test proved mate and illegal pre-Act promotion.",
+      "expectedDefense": "mate"
+    },
+    {
+      "oldId": "promotion-dependent-rescue-mate",
+      "id": "phasing-promotion-dependent-rescue-mate",
+      "family": "home-mate",
+      "homeFraming": "invader",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Reauthor legal pre-entry: move defender blocking the entry square diagonally inward, keep armies/stats/banks/damage, and distinguish home-checkmate entry from nonmate quiet handoff.",
+      "expectedDefense": "mate"
+    },
+    {
+      "oldId": "promotion-dependent-rescue-rotated-black-rescue",
+      "id": "phasing-promotion-dependent-rescue-rotated-black-rescue",
+      "family": "home-mate",
+      "homeFraming": "rescue",
+      "kind": "canonical-coverage",
+      "disposition": "reauthored",
+      "rationale": "Explicit counterfactual fresh defender Act: Phasing cannot rescue this occupied home; test proved mate and illegal pre-Act promotion.",
+      "expectedDefense": "mate"
+    },
+    {
+      "oldId": "promotion-dependent-rescue-rotated-black-mate",
+      "id": "phasing-promotion-dependent-rescue-rotated-black-mate",
+      "family": "home-mate",
+      "homeFraming": "invader",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Reauthor legal pre-entry: move defender blocking the entry square diagonally inward, keep armies/stats/banks/damage, and distinguish home-checkmate entry from nonmate quiet handoff.",
+      "expectedDefense": "mate"
+    },
+    {
+      "oldId": "public-bank-no-promotion-money-rescue",
+      "id": "phasing-public-bank-no-promotion-money-rescue",
+      "family": "home-mate",
+      "homeFraming": "rescue",
+      "kind": "canonical-coverage",
+      "disposition": "reauthored",
+      "rationale": "Explicit counterfactual fresh defender Act: Phasing cannot rescue this occupied home; test proved mate and illegal pre-Act promotion.",
+      "expectedDefense": "mate"
+    },
+    {
+      "oldId": "public-bank-no-promotion-money-mate",
+      "id": "phasing-public-bank-no-promotion-money-mate",
+      "family": "home-mate",
+      "homeFraming": "invader",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Reauthor legal pre-entry: move defender blocking the entry square diagonally inward, keep armies/stats/banks/damage, and distinguish home-checkmate entry from nonmate quiet handoff.",
+      "expectedDefense": "mate"
+    },
+    {
+      "oldId": "public-bank-no-promotion-money-rotated-black-rescue",
+      "id": "phasing-public-bank-no-promotion-money-rotated-black-rescue",
+      "family": "home-mate",
+      "homeFraming": "rescue",
+      "kind": "canonical-coverage",
+      "disposition": "reauthored",
+      "rationale": "Explicit counterfactual fresh defender Act: Phasing cannot rescue this occupied home; test proved mate and illegal pre-Act promotion.",
+      "expectedDefense": "mate"
+    },
+    {
+      "oldId": "public-bank-no-promotion-money-rotated-black-mate",
+      "id": "phasing-public-bank-no-promotion-money-rotated-black-mate",
+      "family": "home-mate",
+      "homeFraming": "invader",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Reauthor legal pre-entry: move defender blocking the entry square diagonally inward, keep armies/stats/banks/damage, and distinguish home-checkmate entry from nonmate quiet handoff.",
+      "expectedDefense": "mate"
+    },
+    {
+      "oldId": "clear-an-adjacent-lane-rescue",
+      "id": "phasing-clear-an-adjacent-lane-rescue",
+      "family": "home-mate",
+      "homeFraming": "rescue",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Derive fresh defender Act by legal END_PLACE from explicitly authored invader Prepare; preserve damage, canonical reset, and rescue witness.",
+      "expectedDefense": "rescue"
+    },
+    {
+      "oldId": "clear-an-adjacent-lane-mate",
+      "id": "phasing-clear-an-adjacent-lane-mate",
+      "family": "home-mate",
+      "homeFraming": "invader",
+      "kind": "canonical-coverage",
+      "disposition": "reauthored",
+      "rationale": "Reauthor legal entry where available, otherwise explicit partial invader Prepare diagram. Assert actual rescue capacity; no unproved strategic entry preference.",
+      "expectedDefense": "rescue"
+    },
+    {
+      "oldId": "clear-an-adjacent-lane-rotated-black-rescue",
+      "id": "phasing-clear-an-adjacent-lane-rotated-black-rescue",
+      "family": "home-mate",
+      "homeFraming": "rescue",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Derive fresh defender Act by legal END_PLACE from explicitly authored invader Prepare; preserve damage, canonical reset, and rescue witness.",
+      "expectedDefense": "rescue"
+    },
+    {
+      "oldId": "clear-an-adjacent-lane-rotated-black-mate",
+      "id": "phasing-clear-an-adjacent-lane-rotated-black-mate",
+      "family": "home-mate",
+      "homeFraming": "invader",
+      "kind": "canonical-coverage",
+      "disposition": "reauthored",
+      "rationale": "Reauthor legal entry where available, otherwise explicit partial invader Prepare diagram. Assert actual rescue capacity; no unproved strategic entry preference.",
+      "expectedDefense": "rescue"
+    },
+    {
+      "oldId": "multi-action-approach-rescue",
+      "id": "phasing-multi-action-approach-rescue",
+      "family": "home-mate",
+      "homeFraming": "rescue",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Derive fresh defender Act by legal END_PLACE from explicitly authored invader Prepare; preserve damage, canonical reset, and rescue witness.",
+      "expectedDefense": "rescue"
+    },
+    {
+      "oldId": "multi-action-approach-mate",
+      "id": "phasing-multi-action-approach-mate",
+      "family": "home-mate",
+      "homeFraming": "invader",
+      "kind": "canonical-coverage",
+      "disposition": "reauthored",
+      "rationale": "Reauthor legal entry where available, otherwise explicit partial invader Prepare diagram. Assert actual rescue capacity; no unproved strategic entry preference.",
+      "expectedDefense": "rescue"
+    },
+    {
+      "oldId": "multi-action-approach-rotated-black-rescue",
+      "id": "phasing-multi-action-approach-rotated-black-rescue",
+      "family": "home-mate",
+      "homeFraming": "rescue",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Derive fresh defender Act by legal END_PLACE from explicitly authored invader Prepare; preserve damage, canonical reset, and rescue witness.",
+      "expectedDefense": "rescue"
+    },
+    {
+      "oldId": "multi-action-approach-rotated-black-mate",
+      "id": "phasing-multi-action-approach-rotated-black-mate",
+      "family": "home-mate",
+      "homeFraming": "invader",
+      "kind": "canonical-coverage",
+      "disposition": "reauthored",
+      "rationale": "Reauthor legal entry where available, otherwise explicit partial invader Prepare diagram. Assert actual rescue capacity; no unproved strategic entry preference.",
+      "expectedDefense": "rescue"
+    },
+    {
+      "oldId": "too-few-actions-for-rotation-rescue",
+      "id": "phasing-too-few-actions-for-rotation-rescue",
+      "family": "home-mate",
+      "homeFraming": "rescue",
+      "kind": "canonical-coverage",
+      "disposition": "reauthored",
+      "rationale": "Explicit counterfactual fresh defender Act: Phasing cannot rescue this occupied home; test proved mate and illegal pre-Act promotion.",
+      "expectedDefense": "mate"
+    },
+    {
+      "oldId": "too-few-actions-for-rotation-mate",
+      "id": "phasing-too-few-actions-for-rotation-mate",
+      "family": "home-mate",
+      "homeFraming": "invader",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Reauthor legal pre-entry: move defender blocking the entry square diagonally inward, keep armies/stats/banks/damage, and distinguish home-checkmate entry from nonmate quiet handoff.",
+      "expectedDefense": "mate"
+    },
+    {
+      "oldId": "too-few-actions-for-rotation-rotated-black-rescue",
+      "id": "phasing-too-few-actions-for-rotation-rotated-black-rescue",
+      "family": "home-mate",
+      "homeFraming": "rescue",
+      "kind": "canonical-coverage",
+      "disposition": "reauthored",
+      "rationale": "Explicit counterfactual fresh defender Act: Phasing cannot rescue this occupied home; test proved mate and illegal pre-Act promotion.",
+      "expectedDefense": "mate"
+    },
+    {
+      "oldId": "too-few-actions-for-rotation-rotated-black-mate",
+      "id": "phasing-too-few-actions-for-rotation-rotated-black-mate",
+      "family": "home-mate",
+      "homeFraming": "invader",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Reauthor legal pre-entry: move defender blocking the entry square diagonally inward, keep armies/stats/banks/damage, and distinguish home-checkmate entry from nonmate quiet handoff.",
+      "expectedDefense": "mate"
+    },
+    {
+      "oldId": "zero-attack-occupier-rescue",
+      "id": "phasing-zero-attack-occupier-rescue",
+      "family": "home-mate",
+      "homeFraming": "rescue",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Derive fresh defender Act by legal END_PLACE from explicitly authored invader Prepare; preserve damage, canonical reset, and rescue witness.",
+      "expectedDefense": "rescue"
+    },
+    {
+      "oldId": "zero-attack-occupier-mate",
+      "id": "phasing-zero-attack-occupier-mate",
+      "family": "home-mate",
+      "homeFraming": "invader",
+      "kind": "canonical-coverage",
+      "disposition": "reauthored",
+      "rationale": "Reauthor legal entry where available, otherwise explicit partial invader Prepare diagram. Assert actual rescue capacity; no unproved strategic entry preference.",
+      "expectedDefense": "rescue"
+    },
+    {
+      "oldId": "zero-attack-occupier-rotated-black-rescue",
+      "id": "phasing-zero-attack-occupier-rotated-black-rescue",
+      "family": "home-mate",
+      "homeFraming": "rescue",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Derive fresh defender Act by legal END_PLACE from explicitly authored invader Prepare; preserve damage, canonical reset, and rescue witness.",
+      "expectedDefense": "rescue"
+    },
+    {
+      "oldId": "zero-attack-occupier-rotated-black-mate",
+      "id": "phasing-zero-attack-occupier-rotated-black-mate",
+      "family": "home-mate",
+      "homeFraming": "invader",
+      "kind": "canonical-coverage",
+      "disposition": "reauthored",
+      "rationale": "Reauthor legal entry where available, otherwise explicit partial invader Prepare diagram. Assert actual rescue capacity; no unproved strategic entry preference.",
+      "expectedDefense": "rescue"
+    },
+    {
+      "oldId": "same-target-limit-rescue",
+      "id": "phasing-same-target-limit-rescue",
+      "family": "home-mate",
+      "homeFraming": "rescue",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Derive fresh defender Act by legal END_PLACE from explicitly authored invader Prepare; preserve damage, canonical reset, and rescue witness.",
+      "expectedDefense": "rescue"
+    },
+    {
+      "oldId": "same-target-limit-mate",
+      "id": "phasing-same-target-limit-mate",
+      "family": "home-mate",
+      "homeFraming": "invader",
+      "kind": "canonical-coverage",
+      "disposition": "reauthored",
+      "rationale": "Reauthor legal entry where available, otherwise explicit partial invader Prepare diagram. Assert actual rescue capacity; no unproved strategic entry preference.",
+      "expectedDefense": "rescue"
+    },
+    {
+      "oldId": "same-target-limit-rotated-black-rescue",
+      "id": "phasing-same-target-limit-rotated-black-rescue",
+      "family": "home-mate",
+      "homeFraming": "rescue",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Derive fresh defender Act by legal END_PLACE from explicitly authored invader Prepare; preserve damage, canonical reset, and rescue witness.",
+      "expectedDefense": "rescue"
+    },
+    {
+      "oldId": "same-target-limit-rotated-black-mate",
+      "id": "phasing-same-target-limit-rotated-black-mate",
+      "family": "home-mate",
+      "homeFraming": "invader",
+      "kind": "canonical-coverage",
+      "disposition": "reauthored",
+      "rationale": "Reauthor legal entry where available, otherwise explicit partial invader Prepare diagram. Assert actual rescue capacity; no unproved strategic entry preference.",
+      "expectedDefense": "rescue"
+    },
+    {
+      "oldId": "damage-remains-during-defender-reply-rescue",
+      "id": "phasing-damage-remains-during-defender-reply-rescue",
+      "family": "home-mate",
+      "homeFraming": "rescue",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Derive fresh defender Act by legal END_PLACE from explicitly authored invader Prepare; preserve damage, canonical reset, and rescue witness.",
+      "expectedDefense": "rescue"
+    },
+    {
+      "oldId": "damage-remains-during-defender-reply-mate",
+      "id": "phasing-damage-remains-during-defender-reply-mate",
+      "family": "home-mate",
+      "homeFraming": "invader",
+      "kind": "canonical-coverage",
+      "disposition": "reauthored",
+      "rationale": "Reauthor legal entry where available, otherwise explicit partial invader Prepare diagram. Assert actual rescue capacity; no unproved strategic entry preference.",
+      "expectedDefense": "rescue"
+    },
+    {
+      "oldId": "damage-remains-during-defender-reply-rotated-black-rescue",
+      "id": "phasing-damage-remains-during-defender-reply-rotated-black-rescue",
+      "family": "home-mate",
+      "homeFraming": "rescue",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Derive fresh defender Act by legal END_PLACE from explicitly authored invader Prepare; preserve damage, canonical reset, and rescue witness.",
+      "expectedDefense": "rescue"
+    },
+    {
+      "oldId": "damage-remains-during-defender-reply-rotated-black-mate",
+      "id": "phasing-damage-remains-during-defender-reply-rotated-black-mate",
+      "family": "home-mate",
+      "homeFraming": "invader",
+      "kind": "canonical-coverage",
+      "disposition": "reauthored",
+      "rationale": "Reauthor legal entry where available, otherwise explicit partial invader Prepare diagram. Assert actual rescue capacity; no unproved strategic entry preference.",
+      "expectedDefense": "rescue"
+    },
+    {
+      "oldId": "newly-placed-unit-cannot-promote-rescue",
+      "id": "phasing-newly-placed-unit-cannot-promote-rescue",
+      "family": "home-mate",
+      "homeFraming": "rescue",
+      "kind": "canonical-coverage",
+      "disposition": "reauthored",
+      "rationale": "Explicit counterfactual fresh defender Act: Phasing cannot rescue this occupied home; test proved mate and illegal pre-Act promotion.",
+      "expectedDefense": "mate"
+    },
+    {
+      "oldId": "newly-placed-unit-cannot-promote-mate",
+      "id": "phasing-newly-placed-unit-cannot-promote-mate",
+      "family": "home-mate",
+      "homeFraming": "invader",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Reauthor legal pre-entry: move defender blocking the entry square diagonally inward, keep armies/stats/banks/damage, and distinguish home-checkmate entry from nonmate quiet handoff.",
+      "expectedDefense": "mate"
+    },
+    {
+      "oldId": "newly-placed-unit-cannot-promote-rotated-black-rescue",
+      "id": "phasing-newly-placed-unit-cannot-promote-rotated-black-rescue",
+      "family": "home-mate",
+      "homeFraming": "rescue",
+      "kind": "canonical-coverage",
+      "disposition": "reauthored",
+      "rationale": "Explicit counterfactual fresh defender Act: Phasing cannot rescue this occupied home; test proved mate and illegal pre-Act promotion.",
+      "expectedDefense": "mate"
+    },
+    {
+      "oldId": "newly-placed-unit-cannot-promote-rotated-black-mate",
+      "id": "phasing-newly-placed-unit-cannot-promote-rotated-black-mate",
+      "family": "home-mate",
+      "homeFraming": "invader",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Reauthor legal pre-entry: move defender blocking the entry square diagonally inward, keep armies/stats/banks/damage, and distinguish home-checkmate entry from nonmate quiet handoff.",
+      "expectedDefense": "mate"
+    },
+    {
+      "oldId": "ineligible-defender-rescue",
+      "id": "phasing-ineligible-defender-rescue",
+      "family": "home-mate",
+      "homeFraming": "rescue",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Derive fresh defender Act by legal END_PLACE from explicitly authored invader Prepare; preserve damage, canonical reset, and rescue witness.",
+      "expectedDefense": "rescue"
+    },
+    {
+      "oldId": "ineligible-defender-mate",
+      "id": "phasing-ineligible-defender-mate",
+      "family": "home-mate",
+      "homeFraming": "invader",
+      "kind": "canonical-coverage",
+      "disposition": "reauthored",
+      "rationale": "Reauthor legal entry where available, otherwise explicit partial invader Prepare diagram. Assert actual rescue capacity; no unproved strategic entry preference.",
+      "expectedDefense": "rescue"
+    },
+    {
+      "oldId": "ineligible-defender-rotated-black-rescue",
+      "id": "phasing-ineligible-defender-rotated-black-rescue",
+      "family": "home-mate",
+      "homeFraming": "rescue",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Derive fresh defender Act by legal END_PLACE from explicitly authored invader Prepare; preserve damage, canonical reset, and rescue witness.",
+      "expectedDefense": "rescue"
+    },
+    {
+      "oldId": "ineligible-defender-rotated-black-mate",
+      "id": "phasing-ineligible-defender-rotated-black-mate",
+      "family": "home-mate",
+      "homeFraming": "invader",
+      "kind": "canonical-coverage",
+      "disposition": "reauthored",
+      "rationale": "Reauthor legal entry where available, otherwise explicit partial invader Prepare diagram. Assert actual rescue capacity; no unproved strategic entry preference.",
+      "expectedDefense": "rescue"
+    },
+    {
+      "oldId": "at-most-one-promotion-rescue",
+      "id": "phasing-at-most-one-promotion-rescue",
+      "family": "home-mate",
+      "homeFraming": "rescue",
+      "kind": "canonical-coverage",
+      "disposition": "reauthored",
+      "rationale": "Explicit counterfactual fresh defender Act: Phasing cannot rescue this occupied home; test proved mate and illegal pre-Act promotion.",
+      "expectedDefense": "mate"
+    },
+    {
+      "oldId": "at-most-one-promotion-mate",
+      "id": "phasing-at-most-one-promotion-mate",
+      "family": "home-mate",
+      "homeFraming": "invader",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Reauthor legal pre-entry: move defender blocking the entry square diagonally inward, keep armies/stats/banks/damage, and distinguish home-checkmate entry from nonmate quiet handoff.",
+      "expectedDefense": "mate"
+    },
+    {
+      "oldId": "at-most-one-promotion-rotated-black-rescue",
+      "id": "phasing-at-most-one-promotion-rotated-black-rescue",
+      "family": "home-mate",
+      "homeFraming": "rescue",
+      "kind": "canonical-coverage",
+      "disposition": "reauthored",
+      "rationale": "Explicit counterfactual fresh defender Act: Phasing cannot rescue this occupied home; test proved mate and illegal pre-Act promotion.",
+      "expectedDefense": "mate"
+    },
+    {
+      "oldId": "at-most-one-promotion-rotated-black-mate",
+      "id": "phasing-at-most-one-promotion-rotated-black-mate",
+      "family": "home-mate",
+      "homeFraming": "invader",
+      "kind": "macro-decision",
+      "disposition": "reauthored",
+      "rationale": "Reauthor legal pre-entry: move defender blocking the entry square diagonally inward, keep armies/stats/banks/damage, and distinguish home-checkmate entry from nonmate quiet handoff.",
+      "expectedDefense": "mate"
+    }
+  ]
+}

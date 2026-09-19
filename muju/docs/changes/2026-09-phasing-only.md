@@ -411,3 +411,8 @@ FAILED: Expand h0 inactivity/strength and medium h3 strength. The result is vali
 and preserved, with no retuning, rerun, pooling or relaxed criteria. All Phasing
 release guards remain closed. No deployment, M8 cutover or production storage
 change is included in this continuation.
+
+
+## 2026-09-19 M5 authored suite implementation
+
+New225case/245member Phasing bundle and exact manifest/floor contract;128tests plus independent author/reopen validation pass. No production Hard suite measurement yet; acceptance not established. Historical exclusions and Gate1 valid failure remain explicit. See docs/hard-ai/phasing/M5-STATUS.md and preserved evidence in m5-suites-2026-09-19.
