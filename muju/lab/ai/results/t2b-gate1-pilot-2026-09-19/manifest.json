@@ -1,0 +1,177 @@
+{
+  "schema": "muju-gate1-v1",
+  "status": "complete",
+  "startedAt": "2026-09-19T04:15:56.487Z",
+  "mode": "pilot",
+  "expectedGames": 16,
+  "schedule": [
+    {
+      "id": "Rush-h0-p0-white",
+      "pairId": "Rush-h0-p0",
+      "opponent": "Rush",
+      "handicap": 0,
+      "pair": 0,
+      "seed": 2113312924,
+      "hardSeat": "white"
+    },
+    {
+      "id": "Rush-h0-p0-black",
+      "pairId": "Rush-h0-p0",
+      "opponent": "Rush",
+      "handicap": 0,
+      "pair": 0,
+      "seed": 2113312924,
+      "hardSeat": "black"
+    },
+    {
+      "id": "Rush-h3-p0-white",
+      "pairId": "Rush-h3-p0",
+      "opponent": "Rush",
+      "handicap": 3,
+      "pair": 0,
+      "seed": 2338690898,
+      "hardSeat": "white"
+    },
+    {
+      "id": "Rush-h3-p0-black",
+      "pairId": "Rush-h3-p0",
+      "opponent": "Rush",
+      "handicap": 3,
+      "pair": 0,
+      "seed": 2338690898,
+      "hardSeat": "black"
+    },
+    {
+      "id": "Expand-h0-p0-white",
+      "pairId": "Expand-h0-p0",
+      "opponent": "Expand",
+      "handicap": 0,
+      "pair": 0,
+      "seed": 1521225995,
+      "hardSeat": "white"
+    },
+    {
+      "id": "Expand-h0-p0-black",
+      "pairId": "Expand-h0-p0",
+      "opponent": "Expand",
+      "handicap": 0,
+      "pair": 0,
+      "seed": 1521225995,
+      "hardSeat": "black"
+    },
+    {
+      "id": "Expand-h3-p0-white",
+      "pairId": "Expand-h3-p0",
+      "opponent": "Expand",
+      "handicap": 3,
+      "pair": 0,
+      "seed": 3055009897,
+      "hardSeat": "white"
+    },
+    {
+      "id": "Expand-h3-p0-black",
+      "pairId": "Expand-h3-p0",
+      "opponent": "Expand",
+      "handicap": 3,
+      "pair": 0,
+      "seed": 3055009897,
+      "hardSeat": "black"
+    },
+    {
+      "id": "Balanced-h0-p0-white",
+      "pairId": "Balanced-h0-p0",
+      "opponent": "Balanced",
+      "handicap": 0,
+      "pair": 0,
+      "seed": 4230238881,
+      "hardSeat": "white"
+    },
+    {
+      "id": "Balanced-h0-p0-black",
+      "pairId": "Balanced-h0-p0",
+      "opponent": "Balanced",
+      "handicap": 0,
+      "pair": 0,
+      "seed": 4230238881,
+      "hardSeat": "black"
+    },
+    {
+      "id": "Balanced-h3-p0-white",
+      "pairId": "Balanced-h3-p0",
+      "opponent": "Balanced",
+      "handicap": 3,
+      "pair": 0,
+      "seed": 1705202679,
+      "hardSeat": "white"
+    },
+    {
+      "id": "Balanced-h3-p0-black",
+      "pairId": "Balanced-h3-p0",
+      "opponent": "Balanced",
+      "handicap": 3,
+      "pair": 0,
+      "seed": 1705202679,
+      "hardSeat": "black"
+    },
+    {
+      "id": "aiv2-medium-h0-p0-white",
+      "pairId": "aiv2-medium-h0-p0",
+      "opponent": "aiv2-medium",
+      "handicap": 0,
+      "pair": 0,
+      "seed": 2466615791,
+      "hardSeat": "white"
+    },
+    {
+      "id": "aiv2-medium-h0-p0-black",
+      "pairId": "aiv2-medium-h0-p0",
+      "opponent": "aiv2-medium",
+      "handicap": 0,
+      "pair": 0,
+      "seed": 2466615791,
+      "hardSeat": "black"
+    },
+    {
+      "id": "aiv2-medium-h3-p0-white",
+      "pairId": "aiv2-medium-h3-p0",
+      "opponent": "aiv2-medium",
+      "handicap": 3,
+      "pair": 0,
+      "seed": 4243411818,
+      "hardSeat": "white"
+    },
+    {
+      "id": "aiv2-medium-h3-p0-black",
+      "pairId": "aiv2-medium-h3-p0",
+      "opponent": "aiv2-medium",
+      "handicap": 3,
+      "pair": 0,
+      "seed": 4243411818,
+      "hardSeat": "black"
+    }
+  ],
+  "git": "a092e2fc8ddccc71abb326dac72f383cc5b540c0",
+  "gitStatus": "?? muju/lab/ai/gate1-bot.ts\n?? muju/lab/ai/gate1-references.json\n?? muju/lab/ai/gate1-report.ts\n?? muju/lab/ai/gate1.ts\n?? muju/lab/docs/GATE1-AMENDMENT-PROPOSAL-2026-09-19.md\n?? muju/tests/lab/gate1.test.ts",
+  "node": "v24.11.1",
+  "device": "Apple M2 Max / darwin/arm64",
+  "cpuCount": 12,
+  "loadBefore": [
+    17.46240234375,
+    30.94921875,
+    23.21728515625
+  ],
+  "queue": {
+    "directory": "/Users/ashkie/.local/state/muju-heavy",
+    "slots": 2
+  },
+  "note": "Pilot/proposal only. No Gate 1 pass, worker unlock, or responsiveness claim.",
+  "identityHash": "d3710cb6e3a8e56f6e0f9d1b7c37d74d45772962512fc4d42d556b8f2dfcd369",
+  "completedGames": 16,
+  "gate1": "pilot-ineligible",
+  "finishedAt": "2026-09-19T04:18:10.385Z",
+  "loadAfter": [
+    4.0693359375,
+    20.6943359375,
+    20.21826171875
+  ]
+}

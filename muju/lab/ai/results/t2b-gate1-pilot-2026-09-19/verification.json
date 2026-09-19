@@ -1,0 +1,78 @@
+{
+  "checkedAt": "2026-09-19T04:20:32.231Z",
+  "checks": [
+    {
+      "command": "npx tsc --noEmit -p .",
+      "status": "passed"
+    },
+    {
+      "command": "npx tsc --noEmit -p lab/ai/tsconfig.json",
+      "status": "passed"
+    },
+    {
+      "command": "npx tsc --noEmit -p lab/tsconfig.json",
+      "status": "passed"
+    },
+    {
+      "command": "npx tsc --noEmit -p lab/hard-ai/tsconfig.json",
+      "status": "passed"
+    },
+    {
+      "command": "npx vitest run tests/lab/gate1.test.ts tests/lab/phasing-harness.test.ts tests/lab/phasing-evidence.test.ts --maxWorkers 1",
+      "status": "passed",
+      "files": 3,
+      "tests": 30,
+      "durationSeconds": 58.14,
+      "queue": "shared heavy queue; no bypass"
+    },
+    {
+      "command": "npx vitest run tests/lab/ladder-stats.test.ts --maxWorkers 1",
+      "status": "passed",
+      "files": 1,
+      "tests": 48,
+      "durationSeconds": 0.467,
+      "queue": "shared heavy queue; no bypass"
+    },
+    {
+      "command": "python3 tools/muju-content-dag.py check",
+      "status": "passed",
+      "nodes": 27,
+      "edges": 49,
+      "unavailableLocalOnlyAcademyGroups": 5
+    },
+    {
+      "command": "python3 tools/test-muju-content-dag.py",
+      "status": "passed",
+      "tests": 14
+    },
+    {
+      "command": "node --import tsx lab/ai/gate1.ts --mode full --plan",
+      "status": "passed",
+      "scheduledGames": 1024,
+      "executedGames": 0
+    },
+    {
+      "command": "node --import tsx lab/ai/results/t2b-gate1-pilot-2026-09-19/audit.mjs",
+      "status": "passed",
+      "details": "replay-audit.json"
+    },
+    {
+      "command": "Existing-output CLI refusal audit",
+      "status": "passed",
+      "exitCode": 1,
+      "error": "EEXIST",
+      "evidenceFilesByteIdentical": 24,
+      "additionalGamesRun": 0
+    },
+    {
+      "command": "git diff --check; new text whitespace audit",
+      "status": "passed"
+    }
+  ],
+  "notes": [
+    "All commands run from muju/ except DAG commands (repository root).",
+    "Full legacy lab suite was not rerun; the five known Claude-owned consumer failures remain T1 integration work.",
+    "Initial plan invocation from repository root could not resolve tsx; reran from documented muju/ cwd successfully.",
+    "Initial audit compared -0 strictly to JSON 0; audit-only JSON normalization fixed the comparison, then every check passed."
+  ]
+}
