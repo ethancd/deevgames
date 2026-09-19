@@ -29,6 +29,9 @@ import type { AdviserEngine, EngineFactory } from '../../lab/hard-ai/analyze/eng
 import { resolveHardConfig } from '../../lab/hard-ai/analyze/engine';
 import { HardEngine } from '../../src/ai/hard/engine';
 import { loadReplay, reconstruct, withMatchRules } from '../../lab/hard-ai/analyze/replay';
+import { BASE_WEIGHTS_LABEL } from '../../lab/hard-ai/ablate/arms';
+import { EVAL_GROUPS } from '../../lab/hard-ai/audit/eval-groups';
+import { assertCurrentWeights } from '../../src/ai/hard/eval/weights';
 
 const ADVISER_KEY = 'aaaaaaaaaaaaaaaa';
 const PLAYED_KEY = 'bbbbbbbbbbbbbbbb';
@@ -328,18 +331,27 @@ describe('work-sweep: --engine swaps the production engine only', () => {
     // placeholder. The sweep must never search with those.
     const champion = resolveEngineLabel('hard@desktop');
     expect(champion.weights.version).not.toBe(0);
-    expect(champion.weights.label).toBe('default-v1');
+    // `default-v1` under Standard; M6 replaced `DEFAULT_WEIGHTS` with the
+    // Phasing accounting bootstrap and the arms derive their prefix from it
+    // (`ablate/arms.ts BASE_WEIGHTS_LABEL`).
+    expect(champion.weights.label).toBe(BASE_WEIGHTS_LABEL);
     const arm = resolveEngineLabel('hard@ablate:eval-no-safety');
     expect(arm.weights.version).not.toBe(0);
-    expect(arm.weights.label).toBe('default-v1-no-safety');
+    expect(arm.weights.label).toBe(`${BASE_WEIGHTS_LABEL}-no-safety`);
     // The safety block is what the arm zeroes, and nothing else moved.
-    for (const i of [17, 28, 29, 30, 31, 32, 33, 34, 35, 36, 40, 41, 43, 45, 46, 49, 54, 56, 57]) {
+    // The 19 Standard safety features plus M6's two Phasing ones (59, 60).
+    for (const i of [17, 28, 29, 30, 31, 32, 33, 34, 35, 36, 40, 41, 43, 45, 46, 49, 54, 56, 57, 59, 60]) {
       expect(arm.weights.w[i]).toBe(0);
     }
+    expect([...EVAL_GROUPS.safety]).toEqual([17, 28, 29, 30, 31, 32, 33, 34, 35, 36, 40, 41, 43, 45, 46, 49, 54, 56, 57, 59, 60]);
     // Feature 0 is `Material`: the arm is a SAFETY arm and must not have moved it.
     expect(arm.weights.w[0]).toBe(champion.weights.w[0]);
     expect(arm.weights.material).toEqual(champion.weights.material);
-    expect(resolveEngineLabel('ablate:eval-no-safety').weights.label).toBe('default-v1-no-safety');
+    expect(resolveEngineLabel('ablate:eval-no-safety').weights.label).toBe(`${BASE_WEIGHTS_LABEL}-no-safety`);
+    // Schema v2: whatever a label resolves to must satisfy the evaluator's own
+    // runtime boundary, not merely be non-placeholder.
+    assertCurrentWeights(champion.weights);
+    assertCurrentWeights(arm.weights);
   });
 
   it('hands the arm’s config to the production factory and the artifact’s to the adviser', async () => {
@@ -359,9 +371,9 @@ describe('work-sweep: --engine swaps the production engine only', () => {
       };
     };
     const out = await sweepAnalysis(saved(), { works: [25_000], engineFactory: factory, engine: 'hard@ablate:eval-no-safety' });
-    expect(out.engineWeightsLabel).toBe('default-v1-no-safety');
-    expect(seen.filter(x => x.role === 'production').every(x => x.label === 'default-v1-no-safety')).toBe(true);
-    expect(seen.filter(x => x.role === 'adviser').every(x => x.label === 'default-v1')).toBe(true);
+    expect(out.engineWeightsLabel).toBe(`${BASE_WEIGHTS_LABEL}-no-safety`);
+    expect(seen.filter(x => x.role === 'production').every(x => x.label === `${BASE_WEIGHTS_LABEL}-no-safety`)).toBe(true);
+    expect(seen.filter(x => x.role === 'adviser').every(x => x.label === BASE_WEIGHTS_LABEL)).toBe(true);
   });
 
   it('leaves the default path alone: no engine, no arm weights, null in the report', async () => {
@@ -382,7 +394,7 @@ describe('work-sweep: --engine swaps the production engine only', () => {
     };
     const out = await sweepAnalysis(saved(), { works: [25_000], engineFactory: factory });
     expect(out.engineWeightsLabel).toBeNull();
-    expect(seen).toEqual(['production:default-v1']);
+    expect(seen).toEqual([`production:${BASE_WEIGHTS_LABEL}`]);
   });
 
   it('refuses an unknown label rather than falling back to the champion', () => {

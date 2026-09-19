@@ -15,6 +15,17 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { DEFAULT_WEIGHTS } from '../../src/ai/hard/eval/weights';
 import { recallEnginePatch, recallProbe } from '../../lab/hard-ai/recall/run';
+import { BASE_WEIGHTS_LABEL } from '../../lab/hard-ai/ablate/arms';
+/**
+ * LABEL MIGRATION (M6). The champion vector these tests name used to be
+ * `default-v1`; M6 replaced `DEFAULT_WEIGHTS` with the Phasing accounting
+ * bootstrap and `ablate/arms.ts` derives every arm label from it, so the label
+ * is read from the vector rather than spelled again here. See
+ * `BASE_WEIGHTS_LABEL`'s note in `arms.ts`. This file remains QUARANTINED for
+ * reasons unrelated to the label; fixing the literals only keeps a stale one
+ * from hiding the real work.
+ */
+
 
 const FIXTURES = path.resolve(import.meta.dirname, '../../lab/hard-ai/recall/fixtures.jsonl');
 
@@ -22,7 +33,7 @@ describe('recall resolves the arm it was asked for (A8 / L5-A1)', () => {
   it('leaves the default path on DEFAULT_WEIGHTS with no evalFix block', () => {
     const patch = recallEnginePatch(null);
     expect(patch.weights).toBe(DEFAULT_WEIGHTS);
-    expect(patch.weights?.label).toBe('default-v1');
+    expect(patch.weights?.label).toBe(BASE_WEIGHTS_LABEL);
     // Absent, not `false`: `ladder/identity.ts canonicalJson` drops undefined
     // keys, which is why the champion's config hash does not move.
     expect(patch.evalFix).toBeUndefined();
@@ -30,7 +41,7 @@ describe('recall resolves the arm it was asked for (A8 / L5-A1)', () => {
 
   it('carries a weights arm\'s own vector', () => {
     const patch = recallEnginePatch('eval-no-safety');
-    expect(patch.weights?.label).toBe('default-v1-no-safety');
+    expect(patch.weights?.label).toBe(`${BASE_WEIGHTS_LABEL}-no-safety`);
     expect(patch.weights?.version).not.toBe(0);
     expect(patch.evalFix).toBeUndefined();
   });
@@ -78,7 +89,7 @@ describe('a weights arm now moves a real recall measurement', () => {
 
   it('names the vector and the block in the artifact', () => {
     const ablation = arm.ablation as Record<string, unknown>;
-    expect(ablation.weights).toBe('default-v1-no-safety');
+    expect(ablation.weights).toBe(`${BASE_WEIGHTS_LABEL}-no-safety`);
     expect(ablation.evalFix).toBe('absent');
     // The default run keeps the M13 gate artifact's shape: no `ablation` key.
     expect(base.ablation).toBeUndefined();

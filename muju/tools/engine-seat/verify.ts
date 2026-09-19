@@ -7,10 +7,33 @@ import { fromAIAction, keepSetAdd, newKeepSetTable, slotForId } from '../../src/
 import { TurnPool } from '../../src/ai/hard/gen/turn';
 import { verifyTurn } from '../../src/ai/hard/verify/replay';
 
+/**
+ * What a non-searched turn actually WAS, as one word for the run log.
+ *
+ * `RootResult` reports two different things in two different places, and the
+ * seat used to flatten both into `'unsearched'`. `result.fallback` names a
+ * STRUCTURAL failure (`pack-error`, `engine-error`, `divergence`); a
+ * `source: 'fallback'` with no `fallback` field is the search returning nothing
+ * usable — and that is usually the CLOCK. `stats.stopReason` separates them:
+ * `abort` is the watchdog firing (time), `work` is the rung running out, and
+ * `complete` with nothing to show is a terminal or empty root. An operator
+ * reading a run's jsonl needs the distinction, because "we ran out of time" is
+ * a budget problem and "the replica diverged" is a correctness problem, and the
+ * two call for opposite responses.
+ */
+export function classifyFallback(result: RootResult): string | null {
+  if (result.fallback) return result.fallback;
+  if (result.source !== 'fallback') return null;
+  if (result.stats.stopReason === 'abort') return 'time';
+  if (result.stats.stopReason === 'work') return 'work-exhausted';
+  return 'unsearched';
+}
+
 /** Rebuild the packed line while preserving the search's claimed end key, then
  * call the canonical verifier. Never derive the claimed key from our replay. */
 export function verifySeatTurn(state: GameState, result: RootResult): GameState {
-  if (result.fallback || result.source === 'fallback') throw new Error(`Engine fallback: ${result.fallback ?? 'unsearched'}`);
+  const fallback = classifyFallback(result);
+  if (fallback !== null) throw new Error(`Engine fallback: ${fallback}`);
   if (!/^[a-f0-9]{16}$/i.test(result.endKey)) throw new Error('Engine returned no verifiable end key.');
   const rep = new Replica(), start = rep.pack(state, allocState()), walk = rep.pack(state, allocState());
   const keep = newKeepSetTable(), turn = new TurnPool(1).alloc(), undo = newUndo();

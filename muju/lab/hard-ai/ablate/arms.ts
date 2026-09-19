@@ -52,7 +52,7 @@
  * omitted here rather than faked; see `docs/hard-ai/e1/E1.3-ABLATIONS.md`.
  */
 import { DESKTOP, type EvalFix, type GenConfig, type HardConfig, type SearchFix, type Weights } from '../../../src/ai/hard/config';
-import { DEFAULT_WEIGHTS, cloneWeights, weightsHash } from '../../../src/ai/hard/eval/weights';
+import { DEFAULT_WEIGHTS, assertCurrentWeights, cloneWeights, weightsHash } from '../../../src/ai/hard/eval/weights';
 import { F, FEATURE_NAMES } from '../../../src/ai/hard/eval/features';
 import { EVAL_GROUPS, INVARIANT_FEATURES, STAGE2_FEATURES } from '../audit/eval-groups';
 import { resolvedConfigHash } from '../ladder/identity';
@@ -253,6 +253,67 @@ function placePlans(root: number, interior: number): Partial<HardConfig> {
 }
 
 /**
+ * The vector every `weights` arm is derived from, by label.
+ *
+ * DERIVED, NOT LITERAL, since the Phasing port. The arms used to hard-code the
+ * prefix `default-v1`, the label of the Standard-era champion vector. M6
+ * replaced `DEFAULT_WEIGHTS` with the accounting bootstrap
+ * (`phasing-accounting-bootstrap-v1`, `docs/hard-ai/phasing/M6-BOOTSTRAP-CONTRACT.md`),
+ * so a literal prefix would have made `default-v1-no-safety` name a vector that
+ * is NOT `default-v1` minus safety — and a Phasing row would have been
+ * indistinguishable by label from the Standard rows under
+ * `lab/results/hard-ai-e3/**` that carry exactly that string. That is the
+ * confusion `ladder/identity.ts` put the rules revision inside every resolved
+ * configuration hash to prevent (its header, clause 3); the label now follows
+ * the same rule. Arm labels therefore read
+ * `phasing-accounting-bootstrap-v1-no-safety` on this tree, and move again with
+ * the base vector rather than silently outliving it.
+ */
+export const BASE_WEIGHTS_LABEL = DEFAULT_WEIGHTS.label;
+
+/** `<base label>-<suffix>`; the only place an arm label is spelled. */
+export function armWeightsLabel(suffix: string): string {
+  return `${BASE_WEIGHTS_LABEL}-${suffix}`;
+}
+
+/**
+ * A weights arm's one-line `change`, COUNTED AND NAMED FROM THE LIVE INDEX SET.
+ *
+ * These lines used to be hand-written ("the 13 economy weights zeroed (Rent,
+ * …)"). M6 added four Phasing features to `EVAL_GROUPS` — `PendingValue` and
+ * `RentShortfall` to economy, `ArrivalThreat` and `DisruptPressure` to safety —
+ * and every such line silently became a false statement about the arm the
+ * runner was about to print it next to. Deriving both the count and the names
+ * from the same array the patch zeroes makes that impossible.
+ */
+function zeroedChange(what: string, indices: readonly number[], tail: string): string {
+  return `the ${indices.length} ${what} zeroed (${indices.map(i => FEATURE_NAMES[i]).join(', ')}); ${tail}`;
+}
+
+/**
+ * Seals an arm's `w[]` into a full schema-v2 `Weights` and checks the runtime
+ * boundary before anything can search with it.
+ *
+ * `material`, `version` and `featureSchema` are carried from the base vector
+ * verbatim: an arm prices a JUDGMENT change, never a catalogue or a schema one.
+ * `assertCurrentWeights` is called here rather than left to `new Evaluator`
+ * because an arm that failed it used to surface as a lab CLI crash deep inside
+ * an engine constructor with no arm name in the message.
+ */
+function finishArmWeights(base: Weights, w: Int32Array, label: string): Weights {
+  if (base.version === 0) throw new Error('ablate arms: DEFAULT_WEIGHTS must not be version 0');
+  const weights: Weights = Object.freeze({
+    w,
+    material: base.material,
+    version: base.version,
+    featureSchema: base.featureSchema,
+    label,
+  });
+  assertCurrentWeights(weights);
+  return weights;
+}
+
+/**
  * E3.1 lane 5's group-ablation patch: `DEFAULT_WEIGHTS` with the `w[]` entries
  * of one feature group set to zero, under a label that names the group.
  *
@@ -289,13 +350,22 @@ function placePlans(root: number, interior: number): Partial<HardConfig> {
  * evaluator exits at stage 1 more often. A weights arm is therefore cheaper per
  * node as well as blinder, and a fixed-work row reads the two together. The doc
  * (`docs/hard-ai/e3/E3.1-GROUP-ABLATION.md`) says so where it reports the rows.
+ *
+ * SCHEMA v2 (Phasing, M6). `Weights` grew a `featureSchema` field and the
+ * runtime boundary `assertCurrentWeights` (`src/ai/hard/eval/weights.ts`)
+ * refuses any vector that does not carry `PHASING_EVAL_SCHEMA` at
+ * `WEIGHTS_VERSION`. Before this port the arms rebuilt the object field by
+ * field and dropped `featureSchema` on the floor, so every weights arm threw
+ * "Phasing weight schema/version mismatch" the moment it reached a live
+ * `Evaluator`. `finishArmWeights` below is now the ONLY way this module mints a
+ * vector, and it asserts the boundary itself so a third field added to the
+ * schema fails here rather than inside an engine constructor.
  */
 function zeroWeights(group: string, indices: readonly number[]): Partial<HardConfig> {
   const base = cloneWeights(DEFAULT_WEIGHTS);
   const w = Int32Array.from(base.w);
   for (const i of indices) w[i] = 0;
-  const weights: Weights = Object.freeze({ w, material: base.material, version: base.version, label: `default-v1-no-${group}` });
-  return { weights };
+  return { weights: finishArmWeights(base, w, armWeightsLabel(`no-${group}`)) };
 }
 
 /**
@@ -318,14 +388,25 @@ function zeroWeights(group: string, indices: readonly number[]): Partial<HardCon
  *
  * The split is by what the feature is about, not by index range:
  *
- * - THE THREAT STACK — the eight cc-scale terms that price a body under threat
- *   (`Exposure` at stage 1, and the seven stage-2 refinements DESIGN row 17
+ * - THE THREAT STACK — the ten cc-scale terms that price a body under threat
+ *   (`Exposure` at stage 1, and the stage-2 refinements DESIGN row 17
  *   calls a refinement of it). This is the block the E3.2 concept is about.
  * - THE ANCHOR PAIR PLUS `Inv6` — `AnchorFragility`, `BlockingDeficit` and the
  *   invariant that penalises the same fragile anchor.
  * - THE EIGHT REMAINING SAFETY INVARIANTS — DESIGN §5.13's flat penalties that
  *   the safety group owns, less `Inv6FragileAnchor`, which travels with the
  *   anchor pair it duplicates.
+ *
+ * PHASING (M6) ADDED TWO. `EVAL_GROUPS.safety` grew from 19 to 21 with
+ * `ArrivalThreat` (59) and `DisruptPressure` (60), the two cc-scale terms the
+ * Phasing pending-summon accounting adds (`eval/features.ts`, the
+ * `pending.arrivalThreatCc` / `pending.disruptPressureCc` block). Both price a
+ * body under threat in cc — one the threat an ARRIVING unit will make, one the
+ * pressure to disrupt a pending arrival — so both join the threat stack rather
+ * than the anchor pair (they say nothing about a spawn anchor) or the invariant
+ * block (they are not DESIGN §5.13 flat penalties). Leaving them out of all
+ * three would have broken the partition, which is exactly what
+ * `tests/lab/ablate.test.ts` caught.
  */
 const SAFETY_THREAT_STACK: readonly number[] = Object.freeze([
   F.Exposure,
@@ -336,6 +417,8 @@ const SAFETY_THREAT_STACK: readonly number[] = Object.freeze([
   F.StrandPunish,
   F.KillAvailable,
   F.CleaveExposure,
+  F.ArrivalThreat,
+  F.DisruptPressure,
 ]);
 
 const SAFETY_ANCHOR: readonly number[] = Object.freeze([F.AnchorFragility, F.BlockingDeficit, F.Inv6FragileAnchor]);
@@ -511,7 +594,7 @@ const SPECS: ArmSpec[] = [
     name: 'eval-no-economy',
     factor: 'weights',
     change:
-      'the 13 economy weights zeroed (Rent, BankLiquid, BankExcess, PstMine, BankConvertible, EconDelta, DepletionWaste, RunwayCliff, Insolvency, RelocationDebt, Inv5PoorMinerSquare, Inv7PromoteNoRunway, Inv14LiquidityFloor); material untouched',
+      zeroedChange('economy weights', EVAL_GROUPS.economy, 'material untouched'),
     patch: zeroWeights('economy', EVAL_GROUPS.economy),
     rootDiagnostic: true,
   },
@@ -519,7 +602,7 @@ const SPECS: ArmSpec[] = [
     name: 'eval-no-home',
     factor: 'weights',
     change:
-      'the 11 home weights zeroed (HomeInvaded, Infiltration, CornerSeal, HomeThreat, HomeCountdown, HomePlug, HomeRescuers, CornerInfiltration, Inv2CornerSeal, Inv10HomeReachable, Inv11HomeBare); material untouched',
+      zeroedChange('home weights', EVAL_GROUPS.home, 'material untouched'),
     patch: zeroWeights('home', EVAL_GROUPS.home),
     rootDiagnostic: true,
   },
@@ -527,7 +610,7 @@ const SPECS: ArmSpec[] = [
     name: 'eval-no-safety',
     factor: 'weights',
     change:
-      'the 19 safety weights zeroed (Exposure, Hanging, HangingBuy, ApproachRetreat, ApproachStrand, StrandPunish, KillAvailable, CleaveExposure, AnchorFragility, BlockingDeficit and the nine safety invariants); material untouched',
+      zeroedChange('safety weights', EVAL_GROUPS.safety, 'material untouched'),
     patch: zeroWeights('safety', EVAL_GROUPS.safety),
     rootDiagnostic: true,
   },
@@ -535,7 +618,7 @@ const SPECS: ArmSpec[] = [
     name: 'eval-no-space',
     factor: 'weights',
     change:
-      'the 14 space-and-tempo weights zeroed (SpawnArea, SpawnReserve, SpawnZero, AnchorDepth, DrawPressure, ActionsLeft, Corridor, TierClimb, ElementCoverage and the five space invariants); material untouched',
+      zeroedChange('space-and-tempo weights', EVAL_GROUPS.space, 'material untouched'),
     patch: zeroWeights('space', EVAL_GROUPS.space),
     rootDiagnostic: true,
   },
@@ -571,7 +654,11 @@ const SPECS: ArmSpec[] = [
     name: 'eval-no-threat-stack',
     factor: 'weights',
     change:
-      'the 8 threat-stack safety weights zeroed (Exposure, Hanging, HangingBuy, ApproachRetreat, ApproachStrand, StrandPunish, KillAvailable, CleaveExposure): the price of a threatened own body. The other 11 safety weights, the anchor pair and material are untouched',
+      zeroedChange(
+        'threat-stack safety weights',
+        SAFETY_THREAT_STACK,
+        `the price of a threatened own body. The other ${EVAL_GROUPS.safety.length - SAFETY_THREAT_STACK.length} safety weights (the anchor pair and the remaining safety invariants) and material are untouched`,
+      ),
     patch: zeroWeights('threat-stack', SAFETY_THREAT_STACK),
     rootDiagnostic: true,
   },
@@ -579,7 +666,11 @@ const SPECS: ArmSpec[] = [
     name: 'eval-no-anchor',
     factor: 'weights',
     change:
-      'the 3 anchor safety weights zeroed (AnchorFragility, BlockingDeficit, Inv6FragileAnchor): the spawn anchor\'s fragility and the blocking deficit that describes the same anchor. The threat stack, the eight remaining safety invariants and material are untouched',
+      zeroedChange(
+        'anchor safety weights',
+        SAFETY_ANCHOR,
+        `the spawn anchor's fragility and the blocking deficit that describes the same anchor. The threat stack, the ${SAFETY_INVARIANTS.length} remaining safety invariants and material are untouched`,
+      ),
     patch: zeroWeights('anchor', SAFETY_ANCHOR),
     rootDiagnostic: true,
   },
@@ -587,7 +678,11 @@ const SPECS: ArmSpec[] = [
     name: 'eval-no-safety-inv',
     factor: 'weights',
     change:
-      'the 8 remaining safety invariants zeroed (Inv3RetreatSquare, Inv4StrandUnpunished, Inv8NoPreAdjacency, Inv9ChipAcrossTurn, Inv12CleaveLine, Inv17SelfBlock, Inv19SoftMinerExposed, Inv20StrandNoRetreat): DESIGN §5.13\'s flat safety penalties, less Inv6FragileAnchor, which travels with the anchor pair. The threat stack and material are untouched',
+      zeroedChange(
+        'remaining safety invariants',
+        SAFETY_INVARIANTS,
+        "DESIGN §5.13's flat safety penalties, less Inv6FragileAnchor, which travels with the anchor pair. The threat stack and material are untouched",
+      ),
     patch: zeroWeights('safety-inv', SAFETY_INVARIANTS),
     rootDiagnostic: true,
   },
@@ -790,7 +885,7 @@ function combinedNoSafetyCorrectV1(): Partial<HardConfig> {
  * version-0 arm vector would silently play as the champion (E0's I2 lesson).
  */
 function keepSafetyWeight(index: number): Partial<HardConfig> {
-  return keepSafetyWeights([index], `default-v1-no-safety-keep-${index}`);
+  return keepSafetyWeights([index], armWeightsLabel(`no-safety-keep-${index}`));
 }
 
 /**
@@ -804,19 +899,17 @@ function keepSafetyWeight(index: number): Partial<HardConfig> {
  */
 function keepSafetyWeights(keepIndices: readonly number[], label: string): Partial<HardConfig> {
   const base = cloneWeights(DEFAULT_WEIGHTS);
-  if (base.version === 0) throw new Error('keepSafetyWeights: DEFAULT_WEIGHTS must not be version 0');
   const keep = new Set(keepIndices);
   const w = Int32Array.from(base.w);
   for (const i of EVAL_GROUPS.safety) if (!keep.has(i)) w[i] = 0;
-  const weights: Weights = Object.freeze({ w, material: base.material, version: base.version, label });
-  return { weights };
+  return { weights: finishArmWeights(base, w, label) };
 }
 
 SPECS.push({
   name: 'combined',
   factor: 'combined',
   change:
-    'weights default-v1-no-safety (eval-no-safety\'s 19 zeroed safety weights) AND evalFix b2+b3+b4+b5+b6 (eval-correct-v1\'s bundle) together. TWO factors by design; the one-factor arms are eval-no-safety and eval-correct-v1 — neither candidate is compared against the other at the E3 close (E3-CLOSE.md), and this arm is the row that says whether the two effects add',
+    `weights ${armWeightsLabel('no-safety')} (eval-no-safety's ${EVAL_GROUPS.safety.length} zeroed safety weights) AND evalFix b2+b3+b4+b5+b6 (eval-correct-v1's bundle) together. TWO factors by design; the one-factor arms are eval-no-safety and eval-correct-v1 — neither candidate is compared against the other at the E3 close (E3-CLOSE.md), and this arm is the row that says whether the two effects add`,
   patch: combinedNoSafetyCorrectV1(),
   rootDiagnostic: true,
 });
@@ -830,7 +923,7 @@ for (const i of EVAL_GROUPS.safety) {
   SPECS.push({
     name: `eval-no-safety-keep-${i}`,
     factor: 'weights',
-    change: `eval-no-safety with F.${FEATURE_NAMES[i]} (index ${i}, default-v1 value ${DEFAULT_WEIGHTS.w[i]}) restored; the other 18 safety weights stay at 0; material untouched`,
+    change: `eval-no-safety with F.${FEATURE_NAMES[i]} (index ${i}, ${BASE_WEIGHTS_LABEL} value ${DEFAULT_WEIGHTS.w[i]}) restored; the other ${EVAL_GROUPS.safety.length - 1} safety weights stay at 0; material untouched`,
     patch: keepSafetyWeight(i),
     rootDiagnostic: true,
   });
@@ -851,8 +944,8 @@ SPECS.push({
   name: 'eval-no-safety-keep-anchor',
   factor: 'weights',
   change:
-    'eval-no-safety with F.AnchorFragility (35), F.BlockingDeficit (36) and F.Inv6FragileAnchor (43) restored together (SAFETY_ANCHOR, the triple eval-no-anchor zeroes as one block); the other 16 safety weights stay at 0; material untouched. Phase 1 of chain-followon.sh found each of the three alone wins spawn-strike-purchase-1 back at M14\'s gate (16/20); this arm restores all three together',
-  patch: keepSafetyWeights(SAFETY_ANCHOR, 'default-v1-no-safety-keep-anchor'),
+    `eval-no-safety with F.AnchorFragility (35), F.BlockingDeficit (36) and F.Inv6FragileAnchor (43) restored together (SAFETY_ANCHOR, the triple eval-no-anchor zeroes as one block); the other ${EVAL_GROUPS.safety.length - SAFETY_ANCHOR.length} safety weights stay at 0; material untouched. Phase 1 of chain-followon.sh found each of the three alone wins spawn-strike-purchase-1 back at M14's gate (16/20); this arm restores all three together`,
+  patch: keepSafetyWeights(SAFETY_ANCHOR, armWeightsLabel('no-safety-keep-anchor')),
   rootDiagnostic: true,
 });
 

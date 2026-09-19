@@ -6,6 +6,7 @@ import path from 'node:path';
 import {
   ARMS,
   ARM_HASH_WORK,
+  BASE_WEIGHTS_LABEL,
   ablationConfigFor,
   armEngineName,
   armHardConfig,
@@ -115,6 +116,11 @@ const WEIGHT_ARM_GROUPS: Record<(typeof ALL_WEIGHT_ARMS)[number], readonly numbe
     F.StrandPunish,
     F.KillAvailable,
     F.CleaveExposure,
+    // M6 (Phasing) added two cc-scale threat terms to `EVAL_GROUPS.safety`.
+    // They are threat-stack terms, not anchor terms and not §5.13 invariants,
+    // so the partition test below is what keeps the registry honest about them.
+    F.ArrivalThreat,
+    F.DisruptPressure,
   ],
   'eval-no-anchor': [F.AnchorFragility, F.BlockingDeficit, F.Inv6FragileAnchor],
   'eval-no-safety-inv': [
@@ -129,9 +135,18 @@ const WEIGHT_ARM_GROUPS: Record<(typeof ALL_WEIGHT_ARMS)[number], readonly numbe
   ],
 };
 
-/** The label `zeroWeights` builds for an arm: `default-v1-no-<group>`. */
+/**
+ * The label `zeroWeights` builds for an arm: `<base vector>-no-<group>`.
+ *
+ * The prefix used to be the literal `default-v1`. M6 replaced `DEFAULT_WEIGHTS`
+ * with the Phasing accounting bootstrap, so the arms derive the prefix from
+ * `DEFAULT_WEIGHTS.label` now (`arms.ts BASE_WEIGHTS_LABEL`) and this helper
+ * does the same — spelling `default-v1` here again would only re-freeze a name
+ * that no longer describes the vector, and would collide by label with the
+ * Standard rows under `lab/results/hard-ai-e3/**`.
+ */
 function weightArmLabel(name: (typeof ALL_WEIGHT_ARMS)[number]): string {
-  return `default-v1-no-${name === 'eval-stage01' ? 'stage2' : name.slice('eval-no-'.length)}`;
+  return `${BASE_WEIGHTS_LABEL}-no-${name === 'eval-stage01' ? 'stage2' : name.slice('eval-no-'.length)}`;
 }
 
 /**
@@ -154,8 +169,26 @@ function weightArmLabel(name: (typeof ALL_WEIGHT_ARMS)[number]): string {
  * and this tree cannot mint their identity any more, which is the separation
  * working rather than a regression: a Phasing tree must not be ABLE to. The
  * value below is the `muju-phasing-1` identity of the same arm.
+ *
+ * IT MOVED A SECOND TIME AT M6, AND FOR THE SAME REASON. `resolvedConfig`
+ * hashes the configuration the ladder adapter APPLIES, and that includes the
+ * evaluation weights `hardEnginePatch` substitutes for DESKTOP's version-0
+ * placeholder (`ladder/identity.ts hardResolvedConfig`). M6 replaced
+ * `DEFAULT_WEIGHTS` — M4's `placeholder-m4` era vector gave way to the Phasing
+ * accounting bootstrap (`phasing-accounting-bootstrap-v1`, commit e701ccc0,
+ * `docs/hard-ai/phasing/M6-BOOTSTRAP-CONTRACT.md`) — so `hard@desktop` at
+ * `wall:3000` now evaluates positions with a different vector and is a
+ * different engine. This is a SCHEMA/EVALUATION MIGRATION, not a pin fitted to
+ * code: the hash is supposed to move when the champion's judgment does, which
+ * is the whole reason it is computed instead of declared. Both superseded
+ * values are kept below so a reader of any recorded manifest can place the row
+ * it quotes.
  */
-const DESKTOP_WALL3000_HASH = '7be9acc41692edfc956f91bd5c4ce59282d4113aa4a18ba495491649e5dd8eab';
+const DESKTOP_WALL3000_HASH = '7bc3711a6c5468a9cc972eb38801c045e816a356428f284d0e60b8e7313eeb0e';
+/** The Phasing identity this arm carried between d403a08e (rules binding) and
+ * e701ccc0 (the M6 accounting bootstrap): same rules, `placeholder-m4`-era
+ * `DEFAULT_WEIGHTS`. M4-era Phasing rows quote it. */
+const DESKTOP_WALL3000_HASH_PHASING_M4 = '7be9acc41692edfc956f91bd5c4ce59282d4113aa4a18ba495491649e5dd8eab';
 /** The same arm's Standard identity, kept so the two can never be confused and
  * so a reader of an E1/E4 manifest can find the hash it quotes. */
 const DESKTOP_WALL3000_HASH_STANDARD = '4e7afdf76b32fadfab2d11577cb610c8f9f1a491b5153e70b87b0774403600cd';
@@ -443,7 +476,10 @@ describe('ablation arm registry (E1.3: one factor per arm, full configurations r
     expect(arm.configHash).not.toBe(DESKTOP_WALL3000_HASH);
     // Standard-era value: a1ea79648ff83c6920fe63be751bf350f0630ffffa5dd3dd017c704ddaea30e7
     // (see DESKTOP_WALL3000_HASH's note: the rules revision is in the hash now).
-    expect(arm.configHash).toBe('6d2e074cf7e446506cf240ecf0788b9b90d2c5994d599ec7f3213a42ca54565a');
+    // M4-era Phasing value: 6d2e074cf7e446506cf240ecf0788b9b90d2c5994d599ec7f3213a42ca54565a
+    // — superseded by M6's DEFAULT_WEIGHTS, which every hard@* configuration
+    // carries (same migration as DESKTOP_WALL3000_HASH's second move).
+    expect(arm.configHash).toBe('17b02fe2e6bc19b091eabece38aba660a8cac368b3ba544128005336c14acb20');
     expect(hardConfigFor('ablate:search-iter-fit').searchFix?.iterFit).toBe(true);
     expect(hardConfigFor('desktop').searchFix).toBeUndefined();
   });
@@ -472,7 +508,9 @@ describe('ablation arm registry (E1.3: one factor per arm, full configurations r
 
     expect(arm.configHash).not.toBe(DESKTOP_WALL3000_HASH);
     // Standard-era value: 5ba2c2fc352d4715f790f9ce0fdb6e1b4926d1c49edce923f8169f88fdad0a51.
-    expect(arm.configHash).toBe('2e54160e9e7cf293af49ec2dcc17e3666974fa86295a0fd1391a15845087493a');
+    // M4-era Phasing value: 2e54160e9e7cf293af49ec2dcc17e3666974fa86295a0fd1391a15845087493a
+    // — superseded by M6's DEFAULT_WEIGHTS, as above.
+    expect(arm.configHash).toBe('9f6014597d880b049418c4ceafd29306b6d54c824abe630d109836a8dafc7f12');
     expect(hardConfigFor('ablate:search-reach-cache').searchFix?.reachCache).toBe(true);
     expect(hardConfigFor('desktop').searchFix).toBeUndefined();
   });
@@ -538,9 +576,13 @@ describe('E4.2 search arms (factor `searchFix`)', () => {
     expect(resolvedConfigHash('hard@desktop', { mode: 'wall', ms: 3000 })).toBe(DESKTOP_WALL3000_HASH);
     expect(requireArm('base').configHash).toBe(DESKTOP_WALL3000_HASH);
     // The Standard identity of the same arm is a DIFFERENT hash, and this tree
-    // can no longer produce it (`ladder/identity.ts`, clause 3).
+    // can no longer produce it (`ladder/identity.ts`, clause 3). Neither is the
+    // M4-era Phasing identity, which this tree cannot mint either now that the
+    // champion evaluates with the M6 accounting bootstrap.
     expect(DESKTOP_WALL3000_HASH).not.toBe(DESKTOP_WALL3000_HASH_STANDARD);
+    expect(DESKTOP_WALL3000_HASH).not.toBe(DESKTOP_WALL3000_HASH_PHASING_M4);
     expect(requireArm('base').configHash).not.toBe(DESKTOP_WALL3000_HASH_STANDARD);
+    expect(requireArm('base').configHash).not.toBe(DESKTOP_WALL3000_HASH_PHASING_M4);
     expect(requireArm('search-tie-break').configHash).not.toBe(DESKTOP_WALL3000_HASH);
   });
 
@@ -627,27 +669,49 @@ describe('E3.1 weight-group arms (factor `weights`)', () => {
 
   /**
    * The two cross-cutting arms overlap the four group arms by construction, and
-   * four weights are ALREADY zero in `default-v1` (Corridor, TierClimb,
-   * Inv15UnknownAsSafe, Inv18WastedEndPlace), all four of them in the `space`
-   * group. The counts a row's report quotes come from here, not from the group
-   * sizes.
+   * the group sizes are not the counts a row's report may quote: what a weights
+   * arm actually REMOVES is the subset of its indices that the base vector sets
+   * to something other than 0.
+   *
+   * THE GROUP SIZES MOVED AT M6 and so did every live count, for two separate
+   * reasons that this test keeps apart:
+   *
+   *  - `EVAL_GROUPS` grew four Phasing features. Economy went 13 -> 15
+   *    (`PendingValue`, `RentShortfall`), safety 19 -> 21 (`ArrivalThreat`,
+   *    `DisruptPressure`), `FEATURE_COUNT` 58 -> 62, so `STAGE2_FEATURES` went
+   *    35 -> 39. The `home` (11) and `space` (14) groups are unchanged.
+   *  - `DEFAULT_WEIGHTS` is no longer a tuned vector. M6 replaced the Standard
+   *    champion with the hand-derived accounting bootstrap
+   *    (`docs/hard-ai/phasing/M6-BOOTSTRAP-CONTRACT.md`), which sets exactly
+   *    FIVE entries: Material(0), BankLiquid(2), BankExcess(3), EconDelta(23)
+   *    and PendingValue(58). Everything else is a deliberate zero.
+   *
+   * THE CONSEQUENCE IS STATED RATHER THAN HIDDEN, in `A_A_WEIGHT_ARMS` below:
+   * against this vector most weight arms zero weights that are already zero and
+   * are therefore byte-identical players to `base` — exactly the "silent A/A
+   * row" `arms.ts` refuses to register an `eval-no-material` arm to avoid (E0's
+   * I2 lesson). They are kept registered because they are the E3 instrument and
+   * become meaningful again the moment a TUNED Phasing vector replaces the
+   * bootstrap; until then no E3 weight row may be read as strength evidence.
    */
   it('counts the LIVE weights each arm removes, overlaps included', () => {
     const live = (name: (typeof ALL_WEIGHT_ARMS)[number]): number =>
       WEIGHT_ARM_GROUPS[name].filter(i => DEFAULT_WEIGHTS.w[i] !== 0).length;
-    expect(WEIGHT_ARM_GROUPS['eval-no-economy'].length).toBe(13);
-    expect(live('eval-no-economy')).toBe(13);
+    // Standard-era sizes/live counts, for a reader of an E3 report:
+    // economy 13/13, home 11/11, safety 19/19, space 14/10, invariants 20/18,
+    // stage2 35/33.
+    expect(WEIGHT_ARM_GROUPS['eval-no-economy'].length).toBe(15);
+    expect(live('eval-no-economy')).toBe(4);
     expect(WEIGHT_ARM_GROUPS['eval-no-home'].length).toBe(11);
-    expect(live('eval-no-home')).toBe(11);
-    expect(WEIGHT_ARM_GROUPS['eval-no-safety'].length).toBe(19);
-    expect(live('eval-no-safety')).toBe(19);
-    // Space owns all four weights that `default-v1` already sets to 0.
+    expect(live('eval-no-home')).toBe(0);
+    expect(WEIGHT_ARM_GROUPS['eval-no-safety'].length).toBe(21);
+    expect(live('eval-no-safety')).toBe(0);
     expect(WEIGHT_ARM_GROUPS['eval-no-space'].length).toBe(14);
-    expect(live('eval-no-space')).toBe(10);
+    expect(live('eval-no-space')).toBe(0);
     expect(WEIGHT_ARM_GROUPS['eval-no-invariants'].length).toBe(20);
-    expect(live('eval-no-invariants')).toBe(18);
-    expect(WEIGHT_ARM_GROUPS['eval-stage01'].length).toBe(35);
-    expect(live('eval-stage01')).toBe(33);
+    expect(live('eval-no-invariants')).toBe(0);
+    expect(WEIGHT_ARM_GROUPS['eval-stage01'].length).toBe(35 + (FEATURE_COUNT - 58));
+    expect(live('eval-stage01')).toBe(2);
     // The two cross-cutting arms are nested, and both cut across the groups.
     const inv = new Set(INVARIANT_FEATURES);
     expect([...inv].every(i => STAGE2_FEATURES.includes(i))).toBe(true);
@@ -655,6 +719,43 @@ describe('E3.1 weight-group arms (factor `weights`)', () => {
     expect(EVAL_GROUPS.home.some(i => inv.has(i))).toBe(true);
     expect(EVAL_GROUPS.safety.some(i => inv.has(i))).toBe(true);
     expect(EVAL_GROUPS.space.some(i => inv.has(i))).toBe(true);
+  });
+
+  /**
+   * The honesty clause for the paragraph above. An arm that removes no LIVE
+   * weight plays exactly as `base` does: same search, same scores, same moves,
+   * a different configuration hash and label only. Recording which arms are in
+   * that state is the difference between a known limitation of the M6 bootstrap
+   * and a silently vacuous experiment.
+   *
+   * This list is expected to SHRINK to nothing when a tuned Phasing vector
+   * lands; an arm leaving it is a pass, an arm joining it is a regression worth
+   * failing over.
+   */
+  it('names the weight arms that are A/A against the M6 bootstrap, rather than hiding them', () => {
+    const live = (name: (typeof ALL_WEIGHT_ARMS)[number]): number =>
+      WEIGHT_ARM_GROUPS[name].filter(i => DEFAULT_WEIGHTS.w[i] !== 0).length;
+    const vacuous = ALL_WEIGHT_ARMS.filter(n => live(n) === 0);
+    expect([...vacuous].sort()).toEqual(
+      [
+        'eval-no-anchor',
+        'eval-no-home',
+        'eval-no-invariants',
+        'eval-no-safety',
+        'eval-no-safety-inv',
+        'eval-no-space',
+        'eval-no-threat-stack',
+      ].sort(),
+    );
+    // Every one of them still differs from `base` by IDENTITY, so a row can
+    // never be mistaken for a champion row even while it plays like one.
+    for (const name of vacuous) {
+      expect(armHardConfig(name).weights.label).not.toBe(BASE_WEIGHTS_LABEL);
+      expect(requireArm(name).configHash).not.toBe(requireArm('base').configHash);
+    }
+    // And the two arms that DO still bite are the two the bootstrap's five live
+    // weights fall in.
+    expect(ALL_WEIGHT_ARMS.filter(n => live(n) > 0).sort()).toEqual(['eval-no-economy', 'eval-stage01']);
   });
 
   it('is a stage-2-only cut for eval-stage01: stage 0 and stage 1 are untouched', () => {
@@ -674,12 +775,17 @@ describe('E3.1 weight-group arms (factor `weights`)', () => {
     const union = parts.flat();
     expect(union.length, 'no feature in two sub-arms').toBe(new Set(union).size);
     expect([...union].sort((a, b) => a - b)).toEqual([...EVAL_GROUPS.safety].sort((a, b) => a - b));
-    expect(parts.map(p => p.length)).toEqual([8, 3, 8]);
+    // Standard-era split was [8, 3, 8]; M6's two Phasing threat terms joined
+    // the threat stack (see `SAFETY_THREAT_STACK`'s note in `arms.ts`).
+    expect(parts.map(p => p.length)).toEqual([10, 3, 8]);
     expect(union.length).toBe(EVAL_GROUPS.safety.length);
-    expect(union.length).toBe(19);
-    // Every one of the 19 is LIVE in `default-v1`, so each sub-arm actually
-    // removes what its size says (lane 5's "live weights removed" column).
-    for (const i of union) expect(DEFAULT_WEIGHTS.w[i], `default-v1 w[${i}]`).not.toBe(0);
+    expect(union.length).toBe(21);
+    // Under Standard every one of the 19 was LIVE in `default-v1`, so each
+    // sub-arm removed what its size said (lane 5's "live weights removed"
+    // column). Under the M6 accounting bootstrap NONE of the 21 is live, so all
+    // three sub-arms are A/A — asserted here in that direction rather than
+    // dropped, so the day a tuned Phasing vector lands this test says so.
+    for (const i of union) expect(DEFAULT_WEIGHTS.w[i], `${BASE_WEIGHTS_LABEL} w[${i}]`).toBe(0);
   });
 
   /**
@@ -723,14 +829,14 @@ describe('E3.1 weight-group arms (factor `weights`)', () => {
  *    index, and at that index equals `default-v1` (not some other number,
  *    and not still zero).
  */
-describe('E4 lane 7: the combined arm and the 19 per-weight safety keep arms', () => {
+describe('E4 lane 7: the combined arm and the per-weight safety keep arms', () => {
   it("combined carries eval-no-safety's weight vector and eval-correct-v1's evalFix bundle, and reports two factors", () => {
     const arm = requireArm('combined');
     expect(arm.factor).toBe('combined');
     const cfg = armHardConfig('combined');
     const safetyVector = armHardConfig('eval-no-safety').weights;
     expect([...cfg.weights.w]).toEqual([...safetyVector.w]);
-    expect(cfg.weights.label).toBe('default-v1-no-safety');
+    expect(cfg.weights.label).toBe(`${BASE_WEIGHTS_LABEL}-no-safety`);
     expect(cfg.weights.version).toBe(WEIGHTS_VERSION);
     expect(cfg.evalFix).toEqual(armHardConfig('eval-correct-v1').evalFix);
     expect(cfg.evalFix).toEqual({
@@ -745,13 +851,15 @@ describe('E4 lane 7: the combined arm and the 19 per-weight safety keep arms', (
     expect(arm.configHash).not.toBe(DESKTOP_WALL3000_HASH);
   });
 
-  it('registers nineteen single-weight keep arms, one per safety weight, in EVAL_GROUPS.safety order', () => {
+  it('registers one single-weight keep arm per safety weight, in EVAL_GROUPS.safety order', () => {
     // `\d+` excludes the follow-up `eval-no-safety-keep-anchor` (three
     // weights, not indexed by a single `F.*` position), pinned separately
     // below.
     const keepArms = armNames().filter(n => /^eval-no-safety-keep-\d+$/.test(n));
     expect(keepArms).toEqual(EVAL_GROUPS.safety.map(i => `eval-no-safety-keep-${i}`));
-    expect(keepArms.length).toBe(19);
+    // 19 under Standard; M6's `ArrivalThreat` and `DisruptPressure` made it 21.
+    expect(keepArms.length).toBe(21);
+    expect(keepArms.length).toBe(EVAL_GROUPS.safety.length);
     for (const name of keepArms) expect(requireArm(name).factor).toBe('weights');
   });
 
@@ -766,7 +874,7 @@ describe('E4 lane 7: the combined arm and the 19 per-weight safety keep arms', (
           expect(w.w[f], `keep-${i} w[${f}]`).toBe(noSafety.w[f]);
         }
       }
-      expect(w.label).toBe(`default-v1-no-safety-keep-${i}`);
+      expect(w.label).toBe(`${BASE_WEIGHTS_LABEL}-no-safety-keep-${i}`);
       expect(w.version).toBe(WEIGHTS_VERSION);
       expect(w.version).not.toBe(0);
       expect([...w.material]).toEqual([...DEFAULT_WEIGHTS.material]);
@@ -790,7 +898,7 @@ describe('E4 lane 7: the combined arm and the 19 per-weight safety keep arms', (
     const sample = EVAL_GROUPS.safety[0];
     const engine = new HardEngine(hardEnginePatch(`ablate:eval-no-safety-keep-${sample}`));
     const live = engine.ctx.eval.currentWeights;
-    expect(live.label).toBe(`default-v1-no-safety-keep-${sample}`);
+    expect(live.label).toBe(`${BASE_WEIGHTS_LABEL}-no-safety-keep-${sample}`);
     expect(live.version).toBe(WEIGHTS_VERSION);
     expect(live.w[sample]).toBe(DEFAULT_WEIGHTS.w[sample]);
     for (const i of EVAL_GROUPS.safety) if (i !== sample) expect(live.w[i]).toBe(0);
@@ -822,7 +930,7 @@ describe('E4 lane 7: the combined arm and the 19 per-weight safety keep arms', (
         expect(w.w[f], `keep-anchor w[${f}]`).toBe(noSafety.w[f]);
       }
     }
-    expect(w.label).toBe('default-v1-no-safety-keep-anchor');
+    expect(w.label).toBe(`${BASE_WEIGHTS_LABEL}-no-safety-keep-anchor`);
     expect(w.version).toBe(WEIGHTS_VERSION);
     expect(w.version).not.toBe(0);
     expect([...w.material]).toEqual([...DEFAULT_WEIGHTS.material]);
@@ -1157,8 +1265,8 @@ describe('hard:ablate keeps every arm in its default list (L5-A1 / A8 resolved)'
   it('is justified because a weights arm is no longer an A/A recall run', () => {
     const base = recallEnginePatch('base');
     const arm = recallEnginePatch('eval-no-safety');
-    expect(base.weights?.label).toBe('default-v1');
-    expect(arm.weights?.label).toBe('default-v1-no-safety');
+    expect(base.weights?.label).toBe(BASE_WEIGHTS_LABEL);
+    expect(arm.weights?.label).toBe(`${BASE_WEIGHTS_LABEL}-no-safety`);
     expect(arm.weights).not.toBe(base.weights);
   });
 

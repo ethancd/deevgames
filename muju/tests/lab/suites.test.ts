@@ -21,11 +21,22 @@ import { hardConfigFor } from '../../lab/hard-ai/bots/hard';
 import fs from 'node:fs';
 import path from 'node:path';
 import { ALL_SUITES, parseArgs, suiteEnginePatch, suitePairEvaluator, suitePairGaps } from '../../lab/hard-ai/suites/run';
+import { BASE_WEIGHTS_LABEL } from '../../lab/hard-ai/ablate/arms';
+/**
+ * LABEL MIGRATION (M6). The champion vector these tests name used to be
+ * `default-v1`; M6 replaced `DEFAULT_WEIGHTS` with the Phasing accounting
+ * bootstrap and `ablate/arms.ts` derives every arm label from it, so the label
+ * is read from the vector rather than spelled again here. See
+ * `BASE_WEIGHTS_LABEL`'s note in `arms.ts`. This file remains QUARANTINED for
+ * reasons unrelated to the label; fixing the literals only keeps a stale one
+ * from hiding the real work.
+ */
+
 
 describe('hard:suite plays with the weights the champion plays with (A7-1)', () => {
   it('resolves hard@desktop to default-v1, not to M4 placeholder weights', () => {
     const patch = suiteEnginePatch('hard@desktop');
-    expect(patch.weights?.label).toBe('default-v1');
+    expect(patch.weights?.label).toBe(BASE_WEIGHTS_LABEL);
     expect(patch.weights?.version).not.toBe(0);
     expect(patch.weights).toBe(DEFAULT_WEIGHTS);
   });
@@ -33,19 +44,19 @@ describe('hard:suite plays with the weights the champion plays with (A7-1)', () 
   it('carries the label into the engine the runner actually constructs', () => {
     // `runShard` does exactly this: `new HardEngine(suiteEnginePatch(args.engine))`.
     const engine = new HardEngine(suiteEnginePatch('hard@desktop'));
-    expect(engine.config.weights.label).toBe('default-v1');
+    expect(engine.config.weights.label).toBe(BASE_WEIGHTS_LABEL);
     expect(engine.config.weights.version).toBe(DEFAULT_WEIGHTS.version);
     // Not every feature weight is zero, which is what "material-only" meant.
     expect(Array.from(engine.config.weights.w).some(x => x !== 0)).toBe(true);
   });
 
   it('accepts the bare profile name as well as the hard@ form', () => {
-    expect(suiteEnginePatch('desktop').weights?.label).toBe('default-v1');
+    expect(suiteEnginePatch('desktop').weights?.label).toBe(BASE_WEIGHTS_LABEL);
   });
 
   it('keeps an ablation arm\'s own vector instead of overwriting it', () => {
     const patch = suiteEnginePatch('hard@ablate:eval-no-safety');
-    expect(patch.weights?.label).toBe('default-v1-no-safety');
+    expect(patch.weights?.label).toBe(`${BASE_WEIGHTS_LABEL}-no-safety`);
     expect(patch.weights?.version).not.toBe(0);
   });
 
@@ -122,8 +133,8 @@ describe('the invariants EVAL column reads the engine under test (A9-1)', () => 
   });
 
   it('carries the arm\'s weight vector and evalFix block into the evaluator', () => {
-    expect(suitePairEvaluator('hard@ablate:eval-no-safety').currentWeights.label).toBe('default-v1-no-safety');
-    expect(suitePairEvaluator('hard@desktop').currentWeights.label).toBe('default-v1');
+    expect(suitePairEvaluator('hard@ablate:eval-no-safety').currentWeights.label).toBe(`${BASE_WEIGHTS_LABEL}-no-safety`);
+    expect(suitePairEvaluator('hard@desktop').currentWeights.label).toBe(BASE_WEIGHTS_LABEL);
   });
 });
 

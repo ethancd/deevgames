@@ -5,36 +5,78 @@ import { defineConfig, defaultExclude } from 'vitest/config'
  * M2-STATUS.md preserves the original quarantine evidence; M4-STATUS.md records
  * the generator/table/search restoration and its independent replay checks.
  *
- * Only the two historical P6/P8 experiments remain from the M4 group. Their
- * Standard snapshots, old catalogue and exact performance/output pins remain
- * unchanged. Active *-phasing.test.ts files separately exercise the current
- * stop/cap/telemetry, complete-turn, determinism and TT-suppression contracts.
- * These historical files are not current Phasing acceptance tests.
+ * MUJU_RUN_QUARANTINE=1 runs the named files during a port. It must never be
+ * used to report an unqualified full-suite migration pass.
  *
- * Seven suites-phasing test files cover the new M5 implementation by default.
- * The six retained historical M5 harness files and M6 evaluation ports remain
- * explicitly listed below; their old evidence is not current acceptance.
- * MUJU_RUN_QUARANTINE=1 is for explicitly named files during those ports;
- * it must not be used to report an unqualified full-suite migration pass.
+ * WHAT THIS LIST IS FOR, AND WHAT IT IS NOT. Every entry is a file whose
+ * expectations were written against Standard and have not yet been ported to
+ * the canonical Phasing engine. It is not a list of tests that may be deleted:
+ * a port moves an expectation onto the current oracle, it never drops one. Each
+ * entry below therefore carries THREE things — why it still fails, the
+ * milestone that owns the port, and its measured failure count, so a reader can
+ * tell a one-line fix from a real piece of work without running anything.
+ *
+ * Counts measured 2026-09-19 with MUJU_RUN_QUARANTINE=1 on this tree. Nothing
+ * here was restorable by the green-suite lane: every remaining failure is an
+ * expectation owned by the generator/search, suites or evaluation milestones,
+ * or (recall) is blocked on a tuned Phasing weight vector that does not exist
+ * yet. The lane did migrate the weight LABELS inside the two files that named
+ * `default-v1`, so no entry carries a stale reason on top of its real one.
  */
 const PHASING_QUARANTINE = [
-  // Historical Standard experiments; current contracts have active Phasing tests.
-  'tests/ai/hard/p6-stoppable-generation.test.ts',
-  'tests/ai/hard/p8-rescue-cap.test.ts',
+  // --- Historical Standard experiments (M4 group) ---------------------------
+  // Frozen Standard snapshots, the old catalogue and exact performance/output
+  // pins. These are HISTORICAL RECORDS, not current acceptance tests: the
+  // active *-phasing.test.ts files carry the current stop/cap/telemetry,
+  // complete-turn, determinism and TT-suppression contracts. A port would have
+  // to re-measure the pins on Phasing positions, which makes them new
+  // experiments rather than restorations. OWNER: none — retain as evidence.
+  'tests/ai/hard/p6-stoppable-generation.test.ts',  // 4/5 fail: Standard position pins
+  'tests/ai/hard/p8-rescue-cap.test.ts',            // 4/5 fail: Standard rung/output pins
 
   // --- M5: the lab suites and the reference/bench harnesses ------------------
-  'tests/lab/suites.test.ts',                   // suites/run over the engine (0 passing: the file failed to collect)
-  'tests/lab/exam.test.ts',                     // exam over search/root + pvs (23 passing)
-  'tests/lab/reference.test.ts',                // engine reference determinism (21 passing)
-  'tests/lab/analyze.test.ts',                  // analyze/replay over search/root (10 passing)
-  'tests/lab/profile.test.ts',                  // bench/profile over the whole stack (7 passing)
-  'tests/lab/turn-allowance.test.ts',           // search/pvs turn allowance (21 passing)
+  // suites/run: the file does not even COLLECT — its fixture imports a Standard
+  // catalogue and the first pack throws `PackError: ruleset "standard" is not
+  // "phasing"`. Needs Phasing suite fixtures. OWNER: M5 (lab/hard-ai/suites).
+  'tests/lab/suites.test.ts',                   // collection error (0 of 0 run)
+  // exam over search/root + pvs: Standard exam positions and per-position pins.
+  // OWNER: M5.
+  'tests/lab/exam.test.ts',                     // 8/31 fail
+  // engine reference determinism: Standard reference artifacts. OWNER: M5.
+  'tests/lab/reference.test.ts',                // 6/26 fail
+  // analyze/replay over search/root: the replica refuses a reconstructed
+  // Standard position, and the played-in-K-list check fails on the Phasing
+  // generator. OWNER: M5 (analyze/replay; NOT the work-sweep path, which is
+  // ported and green in tests/lab/analyze-work-sweep.test.ts).
+  'tests/lab/analyze.test.ts',                  // 2/18 fail (6 skipped)
+  // bench/profile over the whole stack: `completedIterations` is 0 at the
+  // canonical initial position under the Phasing engine. OWNER: M5. Also the
+  // slowest file here at ~51 s, so it is not a cheap restoration to attempt.
+  'tests/lab/profile.test.ts',                  // 1/7 fail
+  // bots/hard's wall allowance across a turn: written for the Standard
+  // single-phase turn, so the place/action boundary and the substitute
+  // phase-end action are now a different shape. Also pins `placeholder-m4`,
+  // which is `placeholder-phasing` on this tree. OWNER: M4/M5 (bots/hard).
+  'tests/lab/turn-allowance.test.ts',           // 4/24 fail
 
   // --- M6: the evaluation (eval/**) and the tables that feed it --------------
-  'tests/ai/hard/eval-correct.test.ts',         // eval/evaluate + features + invariants (15 passing)
-  'tests/ai/hard/approach-tie.test.ts',         // tables/approach tie-break (0 passing)
-  'tests/lab/eval-audit.test.ts',               // audit/eval-audit over eval weights (3 passing)
-  'tests/lab/recall.test.ts',                   // recall over eval weights (5 passing)
+  // eval/evaluate + features + invariants: Standard feature expectations
+  // against the 62-feature Phasing vector. OWNER: M6/M7 (eval).
+  'tests/ai/hard/eval-correct.test.ts',         // 14/27 fail
+  // tables/approach tie-break. OWNER: M6/M7 (tables).
+  'tests/ai/hard/approach-tie.test.ts',         // 5/5 fail
+  // audit/eval-audit over eval weights: antisymmetry over the old 58 features.
+  // OWNER: M6/M7 (eval).
+  'tests/lab/eval-audit.test.ts',               // 7/10 fail
+  // recall over eval weights. The five label/identity tests PASS on this tree;
+  // the two that remain are blocked on something no port can supply: the M6
+  // accounting bootstrap sets only five weights, so `eval-no-safety` zeroes 21
+  // weights that are already zero and is a byte-identical player to `base`.
+  // These two tests measure that an arm MOVES a recall column, and it no longer
+  // can. `tests/lab/ablate.test.ts` records the same fact as `A_A_WEIGHT_ARMS`.
+  // OWNER: whichever milestone lands a TUNED Phasing weight vector; until then
+  // no E3 weights row is strength evidence.
+  'tests/lab/recall.test.ts',                   // 2/7 fail (was 5/7 before the label migration)
 ]
 
 export default defineConfig({

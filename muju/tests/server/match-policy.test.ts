@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { afterEach, expect, it } from 'vitest';
+import { afterEach, expect, it, vi } from 'vitest';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
@@ -106,15 +106,24 @@ it('checks policy before cache hits and persists restrictions across database re
   expect(store.get(host.room.id, host.credentials.token).matchPolicy).toEqual(restricted.matchPolicy);
 });
 
-it('runs a complete verified engine turn over real HTTP with the issued private credential', async () => {
+/**
+ * The Hard replica is Phasing-only, so the seat is too: a Standard room made
+ * the runner fail `Replica.pack` on every turn. The seat is nevertheless
+ * DEFAULT CLOSED (`tools/engine-seat/contract.ts`), so this test — the only
+ * in-tree caller that really plays a turn — has to make the readiness claim
+ * itself, in a test-only journal.
+ */
+it('runs a complete verified Phasing macro turn over real HTTP with the issued private credential', async () => {
   const { store, url } = await setup();
   const { joinRoom } = await import('../../src/online/client');
   const { runSeat } = await import('../../tools/engine-seat/runner');
+  const { PHASING_HARD_READINESS } = await import('../../tools/engine-seat/contract');
   const { HardEngine } = await import('../../src/ai/hard/engine');
   const { hardEnginePatch } = await import('../../lab/hard-ai/bots/hard');
-  const host = store.create({ name: 'Human Black', side: 'black' });
+  const host = store.create({ name: 'Human Black', side: 'black', ruleset: 'phasing' });
   const guest = await joinRoom(url, host.room.id, 'Engine', host.inviteCode!);
-  const journal = { version: 2 as const, admission: 'issued' as const, contract: { mode: 'standard-smoke' as const },
+  const journal = { version: 3 as const, admission: 'issued' as const,
+    contract: { mode: 'phasing-smoke' as const, phasingHardReadiness: PHASING_HARD_READINESS },
     seed: 42, connection: { ...guest.credentials, serverUrl: url } };
   const controller = new AbortController(), logs: Record<string, unknown>[] = [];
   await runSeat({ journal, signal: controller.signal, save: saved => expect(saved.connection.token).toBe(guest.credentials.token),
@@ -123,6 +132,24 @@ it('runs a complete verified engine turn over real HTTP with the issued private 
     log: event => { logs.push(event); if (event.event === 'submitted') controller.abort(); } });
   expect(store.get(host.room.id, guest.credentials.token)).toMatchObject({ revision: 2, state: { turn: { currentPlayer: 'black' } } });
   expect(logs.find(event => event.event === 'search')).toMatchObject({ verified: true, fallback: null });
+  // A whole macro turn went in as one durable batch, ending with the handoff.
+  const submitted = logs.find(event => event.event === 'submitted') as { actions: { type: string }[] };
+  expect(submitted.actions.map(a => a.type)).toContain('END_ACTION_PHASE');
+  expect(submitted.actions.at(-1)?.type).toBe('END_PLACE_PHASE');
   expect(JSON.stringify(logs)).not.toContain(guest.credentials.token);
   expect(store.get(host.room.id, host.credentials.token).seats.black).toBe('Human Black');
+});
+
+it('refuses the same seat when the journal makes no readiness claim', async () => {
+  const { store, url } = await setup();
+  const { joinRoom } = await import('../../src/online/client');
+  const { runSeat } = await import('../../tools/engine-seat/runner');
+  const host = store.create({ name: 'Human Black', side: 'black', ruleset: 'phasing' });
+  const guest = await joinRoom(url, host.room.id, 'Engine', host.inviteCode!);
+  const journal = { version: 3 as const, admission: 'issued' as const, contract: { mode: 'phasing-smoke' as const },
+    seed: 42, connection: { ...guest.credentials, serverUrl: url } };
+  const createEngine = vi.fn();
+  await expect(runSeat({ journal, createEngine, save: vi.fn(), log: vi.fn() })).rejects.toThrow(/phasingHardReadiness/);
+  expect(createEngine).not.toHaveBeenCalled();
+  expect(store.get(host.room.id, guest.credentials.token).revision).toBe(1);
 });

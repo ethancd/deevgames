@@ -61,6 +61,7 @@ import { fileURLToPath } from 'node:url';
 import { applyPlan, deepScore, type AnalysisResult, type TurnRow } from './analyze';
 import { PositionReader, defaultEngineFactory, resolveHardConfig, type AdviserEngine, type EngineFactory } from './engine';
 import { hardProfileOf, loadReplay, reconstruct, withMatchRules } from './replay';
+import { assertCurrentWeights } from '../../../src/ai/hard/eval/weights';
 import type { HardConfig } from '../../../src/ai/hard/config';
 
 /**
@@ -69,12 +70,24 @@ import type { HardConfig } from '../../../src/ai/hard/config';
  * path that substitutes `DEFAULT_WEIGHTS` for `DESKTOP`'s version-0
  * placeholder and the only one that understands `ablate:<arm>` (E0's I2
  * lesson). The version assertion is that lesson written down.
+ *
+ * SCHEMA v2 (Phasing, M6). Version 0 is no longer the only way a sweep can end
+ * up searching with a vector the evaluator will not accept: `Weights` carries a
+ * `featureSchema` and a `FEATURE_COUNT`-sized `w[]`, and a vector that misses
+ * either is refused by `assertCurrentWeights` INSIDE the engine constructor,
+ * several frames below the CLI. The sweep therefore checks the whole runtime
+ * boundary here, where the message can still name the label the user typed.
  */
 export function resolveEngineLabel(engine: string): HardConfig {
   const label = engine.startsWith('hard@') ? engine.slice('hard@'.length) : engine;
   const config = resolveHardConfig(label);
   if (config.weights === undefined || config.weights.version === 0) {
     throw new Error(`work-sweep: ${engine} resolved placeholder weights (version 0); refusing to sweep`);
+  }
+  try {
+    assertCurrentWeights(config.weights);
+  } catch (err) {
+    throw new Error(`work-sweep: ${engine} resolved weights the current evaluator rejects (${(err as Error).message}); refusing to sweep`);
   }
   return config;
 }

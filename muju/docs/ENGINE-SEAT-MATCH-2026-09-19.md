@@ -182,8 +182,8 @@ node --import tsx tools/engine-seat/main.ts /private/path/seat-config.json
 ```
 
 The private JSON contains `serverUrl`, `roomId`, integer `seed`, absolute
-`stateFile`, and an explicit mode. `mode: "standard-smoke"` requires an ordinary
-Standard room without a match policy. It accepts either `name`/`inviteCode` or
+`stateFile`, and an explicit mode. `mode: "phasing-smoke"` requires an ordinary
+Phasing room without a match policy. It accepts either `name`/`inviteCode` or
 already issued `credentials`, never both admission methods. Only this smoke mode
 can call join. It is not a substitute for a pinned match.
 
@@ -191,19 +191,39 @@ can call join. It is not a substitute for a pinned match.
 all three expectations: `expectedMatchPolicy` with exact version/toolTier/
 protocolId, `expectedTimeControl` with exact delaySeconds/bankSeconds, and
 `expectedHandicap`. It authenticates a read and never joins or rotates a token.
-The pinned mode still refuses Phasing until M7; today it can only exercise
-restricted Standard infrastructure. A preregistered Phasing study cannot run yet.
+
+PHASING-ONLY, AND DEFAULT CLOSED. The Hard replica packs Phasing states only
+(`core/state.ts` throws `PackError` on a Standard room), so the seat refuses any
+room whose ruleset is not `phasing` — the reverse of the Standard-only guard it
+carried while the search still represented Standard. Being able to run is not
+permission to run: the seat ALSO refuses every room unless the configuration
+declares `phasingHardReadiness: "M7-passed"` verbatim. The claim is about a
+release gate the Hard engine has not passed (M6 is a bootstrap checkpoint that
+misses two pre-registered floors), nothing in the tree verifies it, and the only
+place it is set today is a test-only configuration. A preregistered Phasing
+study still cannot run: this makes the seat runnable, not released.
 
 The runner compares every received snapshot to its expected room, policy,
 time control and handicap, checks a valid running clock in pinned mode, and
 re-reads before submission/uncertain retry. Wrong/absent expectations stop before
 search or submission; a changed revision stops without a second search. The
-room-contract-verified log records the values read from the server. This does not
+room-contract-verified log records the values read from the server, including
+the ruleset. The search is sized for 55 s (`ENGINE_TARGET_MS`) while the
+watchdog still fires at the fixed 60 s allowance, so a rung over-estimate
+finishes rather than being thrown away; a turn that is not searched is logged as
+`time`, `work-exhausted`, `divergence`, `pack-error`, `engine-error` or
+`unsearched` rather than all of them as `unsearched`. The two read-only legs
+(authenticated read, long-poll wait) retry a transport failure up to three times
+with bounded backoff; a server answer (`OnlineError`) and any contract or
+authentication mismatch are never retried. This does not
 replace the separate health-scope and endpoint-isolation verification above.
 
-Journal v2 persists the mode, exact expected contract, seed, credential and
-admission method. Resume rejects omission or changes rather than silently
-turning a pinned match into smoke. Legacy v1 journals are explicitly rejected;
+Journal v3 persists the mode, exact expected contract (the readiness claim
+included), seed, credential and admission method. Resume rejects omission or
+changes rather than silently turning a pinned match into smoke, or a closed
+seat into an open one. Legacy v1 and v2 journals are explicitly rejected — a v2
+journal is a STANDARD seat's journal and a cross-ruleset resume is exactly the
+confusion the rules revision exists to prevent, so such a run is restarted;
 inspect and retain them rather than rewriting old evidence. Keep config/state
 outside git in a private directory (`chmod 700` directory, `chmod 600` config).
 Existing credentials are reused, never rejoined. Do not point an existing journal

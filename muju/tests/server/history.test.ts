@@ -151,7 +151,7 @@ it('records adjudicated checkmate and omits canceled commands and unearned minin
 });
 
 it('stores exact positions and reconstructs each AP of a multi-action move without mutating the room', () => {
-  const { store, id, path, play } = setup();
+  const { store, host, id, path, play } = setup();
   const initial = store.get(id), hi = initial.state.board.units.find(u => u.owner === 'white' && u.definitionId === 'fire_1')!;
   const moved = play('white', [{ type: 'MOVE', unitId: hi.id, to: { x: 5, y: 4 } }]);
   const event = store.moveHistory(id).entries[0];
@@ -166,7 +166,14 @@ it('stores exact positions and reconstructs each AP of a multi-action move witho
     expect(position.board.cells).toEqual(initial.state.board.cells);
   }
   expect(store.position(id, event.sequence).state).toEqual(moved.state);
-  expect(store.get(id)).toEqual(moved);
+  // `act` answers an AUTHENTICATED caller and `RoomStore.snapshot` stamps
+  // `authenticatedPlayer` on that answer only, so the room it persisted has to
+  // be read back with the same credential; reading it anonymously compared a
+  // private snapshot with a public one and would fail for a field that is
+  // WORKING. The public read is asserted separately, below.
+  expect(store.get(id, host.credentials.token)).toEqual(moved);
+  expect(store.get(id)).toEqual({ ...moved, authenticatedPlayer: undefined });
+  expect(store.get(id).authenticatedPlayer).toBeUndefined();
   const reopened = new RoomStore(path); stores.push(reopened);
   expect(reopened.position(id, event.sequence, 2)).toEqual(store.position(id, event.sequence, 2));
   expect(() => store.position(id, event.sequence, 5)).toThrow('fewer steps');
