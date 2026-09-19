@@ -2,7 +2,8 @@
 import { beforeAll, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { createInitialGameState, createUnit } from '../../src/game/board';
-import { INACTIVITY_LIMIT } from '../../src/game/inactivity';
+import { INACTIVITY_LIMIT, LEGACY_INACTIVITY_LIMIT } from '../../src/game/inactivity';
+import { LADDER_RULES_VERSION, rulesetForRevision } from '../../lab/hard-ai/ladder/ruleset';
 import { getUnitDefinition } from '../../src/game/units';
 import { isLegalAction } from '../../src/game/legality';
 import { applyAction, applyActions } from '../../src/ai/simulate';
@@ -173,4 +174,10 @@ it('fixed-work Phasing self-play is reproducible, purchases and terminates legal
   expect(a.arrivals).toBeGreaterThan(0);
   expect(a.illegalActions).toBe(0);
   expect(a.turns).toBeLessThan(400);
+  // The screening row must label itself with the revision it was actually played
+  // under. This was the literal 'muju-phasing-1' while the clock counted to 20,
+  // so every new screening directory claimed a superseded revision.
+  expect(a.rules).toBe(LADDER_RULES_VERSION);
+  expect(a.rules).toBe(INACTIVITY_LIMIT === LEGACY_INACTIVITY_LIMIT ? 'muju-phasing-1' : 'muju-phasing-2');
+  expect(rulesetForRevision(a.rules, 'phasing self-play smoke')).toBe('phasing');
 }, 30000);

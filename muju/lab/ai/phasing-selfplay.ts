@@ -1,11 +1,18 @@
 /** Direct V2 legality smoke, independent of the T1 harness and worker guard.
  * Usage: node --import tsx lab/ai/phasing-selfplay.ts <new-output-dir> [games-per-difficulty]
  * Fixed-work screening is not Gate 1 strength evidence.
+ *
+ * The revision this stamps is `LADDER_RULES_VERSION`, never a literal. It said
+ * `muju-phasing-1` until 2026-09-19, which under amendment A4 (inactivity clock
+ * 20 plies, revision `muju-phasing-2`) would have labelled every NEW screening
+ * run with a revision this tree no longer plays — the same drift `gate1-sources.ts`
+ * documents, in the one lab/ai file that was outside that lane.
  */
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { readFileSync, mkdirSync, writeFileSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
+import { LADDER_RULES_VERSION } from '../hard-ai/ladder/ruleset';
 import { AIEngineV2, TURN_BUDGET_MS } from '../../src/ai/engine-v2';
 import { instantiateTactics, type TacticalSolver } from '../../src/ai/wasm/kernel';
 import { createInitialGameState } from '../../src/game/board';
@@ -61,7 +68,7 @@ export async function playPhasingSmoke(difficulty: AIDifficulty, seed: number,
     }
   }
   maxTurnMs = Math.max(maxTurnMs, turnMs);
-  return { difficulty, seed, handicap, rules: 'muju-phasing-1', workPerTurn, dispatch,
+  return { difficulty, seed, handicap, rules: LADDER_RULES_VERSION, workPerTurn, dispatch,
     turns, actions: trace.length, purchases, promotions, upkeeps, arrivals, refunds,
     winner: state.winner, reason: state.victoryReason, illegalActions: 0,
     maxTurnMs, lastTurnWallRemainderMs: wallRemaining,
@@ -78,7 +85,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   const bytes = readFileSync('src/ai/wasm/tactics.wasm'), solver = await instantiateTactics(bytes);
   const files = execFileSync('rg', ['--files', 'src/ai', 'src/game', 'assembly', 'lab/ai', '-g', '*.ts'], { encoding: 'utf8' }).trim().split('\n').sort();
   const hashes = Object.fromEntries(files.map(file => [file, sha(readFileSync(file))]));
-  writeFileSync(`${out}/identity.json`, JSON.stringify({ rules: 'muju-phasing-1', abi: 7,
+  writeFileSync(`${out}/identity.json`, JSON.stringify({ rules: LADDER_RULES_VERSION, abi: 7,
     base: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
     dirty: true, files: hashes, packageLockSha256: sha(readFileSync('package-lock.json')),
     wasmSha256: sha(bytes), workPerTurn: WORK_PER_TURN, node: process.version,
