@@ -51,7 +51,6 @@ import type { AIAction } from '../../types';
 import { MATE_PLY_CC, Result, WIN_CC, type Centi, type PackedState, type Side } from '../types';
 import { PackError } from '../core/state';
 import { newKeepSetTable } from '../core/action';
-import { buildTables } from '../tables/context';
 import { PROOF_NODES, homeWitness } from '../tactics/prover';
 import { TurnFlag, type Turn } from '../gen/turn';
 import { endKeyAfter } from './order';
@@ -63,6 +62,7 @@ import { WorkClass } from './time';
 import {
   PROVER_FULL,
   allocTurn,
+  buildSearchTables,
   copyTurn,
   generateAt,
   iterativeDeepening,
@@ -366,7 +366,7 @@ function searchRootInner(engine: RootEngine, state: GameState, opts: RootOptions
   // E2 lane 1: the rung, recorded where it is armed so every return path
   // carries it (the must-answer scan and the book probe included).
   stats.rung = opts.work;
-  const t = buildTables(p, s.sc, 0, 2, s.tables[0]);
+  const t = buildSearchTables(s, p, 0);
   s.meter.spend(WorkClass.KILLTABLE);
 
   const n = generateAt(s, p, t, 0);
@@ -405,7 +405,7 @@ function searchRootInner(engine: RootEngine, state: GameState, opts: RootOptions
 
   const book = opts.config.book;
   if (book !== null && book.size > 0) {
-    const hit = probeBook(book, p, s.turns[0], n);
+    const hit = probeBook(book, p, s.turns[0], n, opts.config.weights);
     if (hit >= 0) {
       const turn = s.turns[0][hit];
       const check = verifyTurn(s.rep, state, p, turn, s.keep[0]);

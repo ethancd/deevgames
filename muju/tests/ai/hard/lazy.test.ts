@@ -1,18 +1,12 @@
 // @vitest-environment node
 /**
- * `boundStage2` and the lazy driver (DESIGN §5.12.4, F15).
+ * Full-evaluation contract for the Phasing accounting bootstrap.
  *
- * The gate (`lab/hard-ai/bench/run.ts --eval`) measures zero window violations
- * over 100,000 positions × 20 windows. This file pins the two properties that
- * sweep is checking for, directly and on a smaller sample, so a regression is
- * attributable:
- *
- *   1. SOUNDNESS. `boundStage2(p, t, w) >= |stage2(p)|` — the bound really does
- *      dominate the sum of the stage-2 terms it is standing in for. This is the
- *      property the two early exits rest on; if it fails, every conclusion the
- *      search draws from a lazy exit is unsound.
- *   2. AGREEMENT. `evaluate` lands on the same side of every window as `full`,
- *      and returns `full`'s exact value whenever it does not take an exit.
+ * A finite bound for pending escrow, delayed service and chronological release
+ * has not been certified. boundStage2 deliberately returns +Infinity, and no
+ * alpha/beta window may omit the real stage2 result or its diagnostic failures.
+ * These seeded in-memory positions retain the earlier broad arithmetic sweep;
+ * they are not historical corpus data or a throughput/strength claim.
  */
 import { describe, expect, it, vi } from 'vitest';
 import { seededRandom } from '../../../src/ai/runtime';
@@ -59,22 +53,28 @@ function sample(count: number): PackedState[] {
   return out;
 }
 
-describe('boundStage2 is a certified bound on the stage-2 terms', () => {
-  it('dominates |stage2| on 300 positions, for the default and for a stretched weight vector', () => {
+describe('boundStage2 explicitly withholds an unproved finite certificate', () => {
+  it('keeps full stage2 finite and linear over 300 positions with default and stretched weights', () => {
     const stretched = cloneWeights(DEFAULT_WEIGHTS);
     for (let i = 0; i < stretched.w.length; i++) stretched.w[i] *= 3;
 
+    const reference: number[] = [];
     for (const weights of [DEFAULT_WEIGHTS, stretched]) {
+      let index = 0;
       const ev = new Evaluator(replica, weights);
       for (const p of sample(300)) {
         ev.stage0(p, WHITE);
         ev.stage1(p, WHITE, SC, 0);
         const bound = boundStage2(p, ev.lastTables, weights);
         const stage2 = ev.stage2(p, WHITE, SC, 0);
-        expect(Number.isInteger(bound)).toBe(true);
-        expect(bound).toBeGreaterThanOrEqual(0);
-        expect(Math.abs(stage2)).toBeLessThanOrEqual(bound);
+        expect(bound).toBe(Number.POSITIVE_INFINITY);
+        expect(Number.isFinite(stage2)).toBe(true);
+        expect(Number.isInteger(stage2)).toBe(true);
+        if (weights === DEFAULT_WEIGHTS) reference.push(stage2);
+        else expect(stage2).toBe(3 * reference[index]);
+        index++;
       }
+      expect(index).toBe(300);
     }
   });
 
@@ -89,18 +89,18 @@ describe('boundStage2 is a certified bound on the stage-2 terms', () => {
     }
   });
 
-  it('collapses to zero when every stage-2 weight is zero', () => {
+  it('computes zero weighted contribution without claiming a finite certificate for the zero vector', () => {
     const zeroed = cloneWeights(DEFAULT_WEIGHTS);
     for (let i = 23; i < zeroed.w.length; i++) zeroed.w[i] = 0;
     const ev = new Evaluator(replica, zeroed);
     const p = replica.pack(buildState(SPEC));
     ev.stage1(p, WHITE, SC, 0);
-    expect(boundStage2(p, ev.lastTables, zeroed)).toBe(0);
+    expect(boundStage2(p, ev.lastTables, zeroed)).toBe(Number.POSITIVE_INFINITY);
     expect(ev.stage2(p, WHITE, SC, 0)).toBe(0);
   });
 });
 
-describe('Evaluator.evaluate: the lazy driver', () => {
+describe('Evaluator.evaluate: unconditional full evaluation', () => {
   it('returns full() exactly when the window straddles the score', () => {
     const ev = new Evaluator(replica);
     for (const p of sample(100)) {
@@ -109,7 +109,7 @@ describe('Evaluator.evaluate: the lazy driver', () => {
     }
   });
 
-  it('never lands on the wrong side of a window (300 positions × 12 windows)', () => {
+  it('equals full and lands on the correct side of every window (300 positions × 12 windows)', () => {
     const ev = new Evaluator(replica);
     const rng = seededRandom(31337);
     const scales = [1_500, 12_000, 120_000];
@@ -122,6 +122,7 @@ describe('Evaluator.evaluate: the lazy driver', () => {
         const alpha = centre - half;
         const beta = centre + half + 1;
         const got = ev.evaluate(p, WHITE, alpha, beta, SC, 0, NULL_METER);
+        expect(got).toBe(truth);
         const sideGot = got <= alpha ? -1 : got >= beta ? 1 : 0;
         const sideTruth = truth <= alpha ? -1 : truth >= beta ? 1 : 0;
         expect(sideGot).toBe(sideTruth);
@@ -129,39 +130,38 @@ describe('Evaluator.evaluate: the lazy driver', () => {
     }
   });
 
-  it('takes the fail-high and fail-low exits when the bound certifies them', () => {
+  it('computes stage2 even when the finite window is entirely above or below the score', () => {
     const ev = new Evaluator(replica);
     const p = replica.pack(buildState(SPEC));
     const truth = ev.full(p, WHITE, SC, 0);
-    ev.stage0(p, WHITE);
-    ev.stage1(p, WHITE, SC, 0);
-    const bound = boundStage2(p, ev.lastTables, DEFAULT_WEIGHTS);
-
-    const high = ev.evaluate(p, WHITE, truth - 10 * bound - 2, truth - 2 * bound - 1, SC, 0, NULL_METER);
-    expect(high).toBeGreaterThanOrEqual(truth - 2 * bound - 1);
-    expect(high).not.toBe(truth);
-
-    const low = ev.evaluate(p, WHITE, truth + 2 * bound + 1, truth + 10 * bound + 2, SC, 0, NULL_METER);
-    expect(low).toBeLessThanOrEqual(truth + 2 * bound + 1);
-    expect(low).not.toBe(truth);
+    const stage2 = vi.spyOn(ev, 'stage2');
+    try {
+      const high = ev.evaluate(p, WHITE, truth - 1_000_000, truth - 1, SC, 0, NULL_METER);
+      expect(high).toBeGreaterThanOrEqual(truth - 1);
+      expect(high).toBe(truth);
+      const low = ev.evaluate(p, WHITE, truth + 1, truth + 1_000_000, SC, 0, NULL_METER);
+      expect(low).toBeLessThanOrEqual(truth + 1);
+      expect(low).toBe(truth);
+      expect(stage2).toHaveBeenCalledTimes(2);
+    } finally { stage2.mockRestore(); }
   });
 
-  it('charges EVAL1 on every call and EVAL2 only when stage 2 runs', () => {
+  it('charges EVAL1 and EVAL2 exactly once per window even with a cached forecast', () => {
     const ev = new Evaluator(replica);
     const p = replica.pack(buildState(SPEC));
-    const spent: number[] = [];
-    const meter = { spend: (cls: number): void => void spent.push(cls) };
-
+    const spent: [number, number][] = [];
+    const meter = { spend: (cls: number, n = 1): void => { spent.push([cls, n]); } };
     const truth = ev.full(p, WHITE, SC, 0);
-    ev.stage1(p, WHITE, SC, 0);
-    const bound = boundStage2(p, ev.lastTables, DEFAULT_WEIGHTS);
-
-    spent.length = 0;
-    ev.evaluate(p, WHITE, truth - 1_000_000, truth + 1_000_000, SC, 0, meter);
-    expect(spent).toEqual([WORK_CLASS_EVAL1, WORK_CLASS_EVAL2]);
-
-    spent.length = 0;
-    ev.evaluate(p, WHITE, truth - 10 * bound - 2, truth - 2 * bound - 1, SC, 0, meter);
-    expect(spent).toEqual([WORK_CLASS_EVAL1]);
+    const forecastCalls = ev.lastTables.economyProverCalls;
+    const stage2 = vi.spyOn(ev, 'stage2');
+    try {
+      for (const [alpha, beta] of [[truth - 1, truth + 1], [truth - 1_000_000, truth - 1], [truth + 1, truth + 1_000_000]]) {
+        spent.length = 0;
+        expect(ev.evaluate(p, WHITE, alpha, beta, SC, 0, meter)).toBe(truth);
+        expect(spent).toEqual([[WORK_CLASS_EVAL1, 1], [WORK_CLASS_EVAL2, 1]]);
+        expect(ev.lastTables.economyProverCalls).toBe(forecastCalls);
+      }
+      expect(stage2).toHaveBeenCalledTimes(3);
+    } finally { stage2.mockRestore(); }
   });
 });

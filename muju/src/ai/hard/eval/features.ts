@@ -1,5 +1,5 @@
 /**
- * The 58 evaluation features (DESIGN §4.15, §5.12.1, §5.13).
+ * The 62 evaluation features (DESIGN §4.15, §5.12.1, §5.13).
  *
  * `extract` writes the SYMMETRIC DIFFERENCE `f(side) − f(other)` of one stage's
  * features into `out`; the score is `Σ_i w[i] · out[i]` in integer
@@ -13,12 +13,18 @@
  *     `ApproachRetreat`, `ApproachStrand`, `StrandPunish`, `KillAvailable`,
  *     `CleaveExposure`). The cc difference is formed FIRST and divided by 100
  *     once, truncating towards zero, so the rounding is exactly antisymmetric
- *     (`trunc(−x) === −trunc(x)`) and the mirror-symmetry gate holds to the cc.
+ *     (`trunc(−x) === −trunc(x)`) for the two views of one fixed position.
+ *     The named upkeep policy does not promise rotation/seat equivariance.
  *   - `f(side) − f(other)` for every feature, INCLUDING the penalties: a
  *     penalty the other side commits is a plus for `side`.
  *
  * `extract` writes ONLY the features of the requested stage and leaves the rest
  * of `out` untouched, so `full()` composes the three calls into one vector.
+ *
+ * PHASING EXCEPTIONS: PendingValue58, ArrivalThreat59 and DisruptPressure60
+ * are integer cc; RentShortfall61 is crystals. EconDelta23 now carries only
+ * the chronological root-live net forecast. Zero bootstrap weights retain
+ * other indicators as diagnostics, without importing their old utility claims.
  *
  * WEIGHT-FREE (DESIGN §4.15 gives `extract` no `Weights`). Feature `Material`
  * is `Σ material[def]`, and `material` is the tunable 18-parameter half of
@@ -50,11 +56,12 @@ import { ACTIONS_PER_TURN } from '../core/state';
 import type { NodeTables } from '../tables/context';
 import { KILL_IMPOSSIBLE } from '../tables/kill';
 import { Approach } from '../tables/approach';
-import { ACTION_VALUE_CC, ECON_HORIZON, RELOCATION_MAX_ACTIONS } from '../tables/economy';
+import { ECON_HORIZON } from '../tables/economy';
 import type { Weights } from '../config';
 import { INVARIANT_COUNT, invariantBits, leadCc } from './invariants';
+import { newPendingDiagnostics, pendingDiagnostics } from './pending';
 
-export const FEATURE_COUNT = 58;
+export const FEATURE_COUNT = 62;
 
 export const F = {
   // stage 0 (incremental, no tables)
@@ -89,6 +96,7 @@ export const F = {
   Insolvency: 26,
   RelocationDebt: 27,
   Hanging: 28,
+  /** Legacy public name retained at29: hanging specifically dependent on paid arrivals. */
   HangingBuy: 29,
   ApproachRetreat: 30,
   ApproachStrand: 31,
@@ -119,6 +127,11 @@ export const F = {
   Inv18WastedEndPlace: 55,
   Inv19SoftMinerExposed: 56,
   Inv20StrandNoRetreat: 57,
+  // Phasing accounting and explicit, zero-weight tactical diagnostics.
+  PendingValue: 58,
+  ArrivalThreat: 59,
+  DisruptPressure: 60,
+  RentShortfall: 61,
 } as const;
 
 /** `F.Inv1SpawnZero`; invariant `i` (1-based) is feature `INV_BASE + i - 1`. */
@@ -148,9 +161,6 @@ export { INVARIANT_SCRATCH_BB as FEATURE_SCRATCH_BB, INVARIANT_SCRATCH_I8 as FEA
 function div100(cc: number): number {
   return (cc / CC) | 0;
 }
-
-/** The dearest catalogue body's cost, in crystals (plant_3/metal_3 at 17). */
-const MAX_COST = 17;
 
 /** The catalogue material prior of a definition, `cost × 100` (DESIGN F9). */
 function priorCc(cat: Catalog, def: number): Centi {
@@ -360,11 +370,12 @@ function extractStage1(p: PackedState, t: NodeTables, me: Side, them: Side, out:
 
 // --- stage 2 ---------------------------------------------------------------
 
-/** Σ catalogue prior of `side`'s units the enemy can kill next turn, split by "needs a purchase". */
-function hangingCc(p: PackedState, side: Side, t: NodeTables, needsBuy: 0 | 1, cat: Catalog): Centi {
+/** Legacy table helper: all paid arrivals have needsBuy=0. The caller partitions arrival dependence explicitly. */
+function hangingCc(p: PackedState, side: Side, t: NodeTables, needsBuy: 0 | 1, cat: Catalog, excluded: Uint8Array): Centi {
   let sum = 0;
   for (let slot = 0, limit = p.slotCount; slot < limit; slot++) {
     if (p.sq[slot] === DEAD || p.owner[slot] !== side) continue;
+    if (excluded[slot]) continue;
     const actions = t.killActions[slot];
     if (actions < 0 || actions > ACTIONS_PER_TURN) continue;
     if (t.killNeedsBuy[slot] !== needsBuy) continue;
@@ -453,6 +464,7 @@ function cornerInfiltration(p: PackedState, side: Side): number {
   return 1;
 }
 
+const PENDING_DIAGNOSTICS = newPendingDiagnostics();
 const SEEN_ME = new Uint8Array(MAX_SLOTS);
 const SEEN_THEM = new Uint8Array(MAX_SLOTS);
 
@@ -471,7 +483,13 @@ function extractStage2(
   const gMe = t.geom[me];
   const gThem = t.geom[them];
 
-  out[F.EconDelta] = div100(eMe.stream - p.pstSumCc[me] - (eThem.stream - p.pstSumCc[them]));
+  // One live-origin net ledger, with pending production attributed separately.
+  out[F.EconDelta] = Math.trunc((eMe.livePVcc - eThem.livePVcc) / CC);
+  const pending = pendingDiagnostics(p, t, sc, ply, PENDING_DIAGNOSTICS);
+  out[F.PendingValue] = Math.trunc(pending.valueCc[me] - pending.valueCc[them]);
+  out[F.ArrivalThreat] = pending.arrivalThreatCc[me] - pending.arrivalThreatCc[them];
+  out[F.DisruptPressure] = Math.trunc(pending.disruptPressureCc[me] - pending.disruptPressureCc[them]);
+  out[F.RentShortfall] = eMe.rentShortfall - eThem.rentShortfall;
   out[F.DepletionWaste] = eMe.waste - eThem.waste;
   out[F.RunwayCliff] =
     (p.bank[me] + eMe.income[0] < eMe.upkeep[0] ? 1 : 0) - (p.bank[them] + eThem.income[0] < eThem.upkeep[0] ? 1 : 0);
@@ -479,8 +497,12 @@ function extractStage2(
     Math.max(0, ECON_HORIZON - eMe.turnsToInsolvency) - Math.max(0, ECON_HORIZON - eThem.turnsToInsolvency);
   out[F.RelocationDebt] = div100(eMe.relocationDebt - eThem.relocationDebt);
 
-  out[F.Hanging] = div100(hangingCc(p, me, t, 0, cat) - hangingCc(p, them, t, 0, cat));
-  out[F.HangingBuy] = div100(hangingCc(p, me, t, 1, cat) - hangingCc(p, them, t, 1, cat));
+  // The legacy static hanging table and actual incoming-Act arrival comparison
+  // have different horizons. Remove named arrival-dependent root victims from
+  // the former, never subtract unmatched totals or double-count a target.
+  const arrivalVictimDifference = pending.arrivalThreatCc[them] - pending.arrivalThreatCc[me];
+  out[F.Hanging] = div100(hangingCc(p, me, t, 0, cat, pending.arrivalDependentVictims) - hangingCc(p, them, t, 0, cat, pending.arrivalDependentVictims));
+  out[F.HangingBuy] = div100(arrivalVictimDifference);
   out[F.ApproachRetreat] = div100(
     approachCc(p, me, t, Approach.RETREAT, cat) - approachCc(p, them, t, Approach.RETREAT, cat),
   );
@@ -541,95 +563,8 @@ export function extract(
 
 // --- the lazy-evaluation bound (DESIGN §5.12.4) -----------------------------
 
-/**
- * A CERTIFIED upper bound on `|Σ stage-2 terms|` for this position, computed
- * from stage-1 quantities (DESIGN §5.12.4, F15). Every stage-2 feature is
- * bounded here by a quantity that provably dominates it for any legal
- * continuation, so `evaluate`'s two early exits can never land on the wrong
- * side of the window.
- *
- * Two departures from DESIGN §5.12.4's sketch, both STRICTLY LOOSER (a looser
- * certified bound is always sound; a tighter uncertified one is not):
- *
- *   1. The hanging/approach/kill/chain block is bounded by the TOTAL
- *      catalogue material on the board rather than by the material inside the
- *      exposure masks. DESIGN argues the containment "a unit outside
- *      `strike ∪ strikeIfBought` cannot be attacked next turn", but the strike
- *      maps are built from the CURRENT speeds of existing units
- *      (`tables/threat.ts`, `STRIKE_MOVE_ACTIONS = 3`) while `killActions`
- *      admits PROMOTED forms, and promotion can raise speed (lightning_1 → _2
- *      is 3 → 4, fire_1 → _2 keeps 2 but fire_2 → _3 is 2 → 3). A kill plan
- *      through a promoted, faster attacker can therefore reach a unit outside
- *      `exposure`, and the containment does not hold in general.
- *   2. `CleaveExposure` is bounded by the same total, since `cleaveChain`
- *      returns a sum of victim priors and a side can lose at most all of its
- *      material.
- *
- * `KillAvailable`'s `valueCc / minActions` is at most `valueCc`, so the total
- * prior bounds it too.
- */
-export function boundStage2(p: PackedState, t: NodeTables, w: Weights): Centi {
-  const cat = activeCatalog();
-  const aw = (i: number): number => Math.abs(w.w[i]);
-
-  let priorCcSum = 0;
-  let mineSum = 0;
-  let rentSum = 0;
-  let units = 0;
-  let tier2 = 0;
-  for (let slot = 0, limit = p.slotCount; slot < limit; slot++) {
-    if (p.sq[slot] === DEAD) continue;
-    const def = p.defId[slot];
-    priorCcSum += priorCc(cat, def);
-    mineSum += cat.mine[def];
-    rentSum += cat.upkeep[def];
-    units++;
-    if (cat.tier[def] >= 2) tier2++;
-  }
-  /** Both sides' catalogue priors in CRYSTALS (+1 for `div100`'s truncation). */
-  const material = div100(priorCcSum) + 1;
-
-  // Economy. `stream = Σ_t (γ_{t+1} · (income_t − upkeep_t) · 100) >> 16` over
-  // `ECON_HORIZON` turns, so `|stream| ≤ (Σ_t γ_t) · max(income, upkeep) · 100`
-  // with `income_t ≤ Σ mine` and `upkeep_t = upkeepDue(side) ≤ Σ upkeep`.
-  // `Σ_{t=2..7} GAMMA_Q16[t] / 65536 = 4.22`, bounded by `GAMMA_SUM` below; the
-  // feature is a difference of two sides, hence the factor 2. `pstSum` is read
-  // off the state exactly rather than bounded.
-  const GAMMA_SUM = 5;
-  const streamBound = 2 * GAMMA_SUM * (mineSum + rentSum);
-  const pstBound = div100(p.pstSumCc[0] + p.pstSumCc[1]) + 1;
-
-  // `waste = Σ (mine − take)` over `ECON_HORIZON` miner-turns per side.
-  const wasteBound = 2 * ECON_HORIZON * mineSum + 1;
-
-  // `relocationDebt = Σ actionCost · ACTION_VALUE_CC` over the relocations the
-  // DP triggers: at most one per miner per turn, each at most
-  // `RELOCATION_MAX_ACTIONS` actions.
-  const debtBound = div100(2 * ECON_HORIZON * RELOCATION_MAX_ACTIONS * ACTION_VALUE_CC * units) + 2;
-
-  // `chain[v]` takes at most `tier[v] ≤ 3` victims, each worth at most the
-  // dearest catalogue body; summed over the tier-2-and-up bodies of both sides.
-  const cleaveBound = 3 * MAX_COST * tier2 + 1;
-
-  let bound = 0;
-  bound += aw(F.EconDelta) * (streamBound + pstBound);
-  bound += aw(F.DepletionWaste) * wasteBound;
-  bound += aw(F.RunwayCliff);
-  bound += aw(F.Insolvency) * ECON_HORIZON;
-  bound += aw(F.RelocationDebt) * debtBound;
-  bound += (aw(F.Hanging) + aw(F.HangingBuy) + aw(F.ApproachRetreat) + aw(F.ApproachStrand)) * material;
-  bound += aw(F.StrandPunish) * material;
-  bound += aw(F.KillAvailable) * material;
-  bound += aw(F.CleaveExposure) * cleaveBound;
-  bound += aw(F.AnchorFragility) * 3;
-  bound += aw(F.BlockingDeficit) * 2;
-  bound += aw(F.CornerInfiltration);
-  for (let i = 0; i < INVARIANT_COUNT; i++) bound += aw(INV_BASE + i);
-
-  // `t` carries no term of its own: the exposure masks DESIGN §5.12.4 uses are
-  // deliberately unread (departure 1 above), and every other quantity comes
-  // straight off `p` and the catalogue.
-  void t;
-  return bound;
+/** No finite lazy certificate is claimed for the Phasing accounting bootstrap.
+ * Callers outside Evaluator also receive an explicitly conservative sentinel. */
+export function boundStage2(_p: PackedState, _t: NodeTables, _w: Weights): Centi {
+  return Number.POSITIVE_INFINITY;
 }
-

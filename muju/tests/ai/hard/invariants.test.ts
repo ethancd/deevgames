@@ -2,9 +2,9 @@
 /**
  * `eval/invariants.ts` (DESIGN §4.15, §5.13).
  *
- * `lab/hard-ai/suites/invariants.suite.json` (scored by
- * `lab/hard-ai/bench/run.ts --eval`) is the gate: twenty authored fixtures,
- * each setting exactly its own bit and nothing else. This file pins the
+ * `lab/hard-ai/suites/invariants.suite.json` remains historical evidence.
+ * The versioned Phasing suites distinguish strategic decisions from canonical
+ * structural coverage. This file pins the
  * SEMANTICS of the individual tests on minimal hand-built boards — in
  * particular the four DESIGN §5.13 rows that had to be restated to be
  * computable on a post-turn macro node, so a later change to a restatement
@@ -139,12 +139,16 @@ describe('invariantBits: the rows DESIGN §5.13 states over the position', () =>
     expect(has(bits(mobile), 2)).toBe(false);
   });
 
-  it('14 — the liquidity floor only bites on a turn that won nothing', () => {
-    expect(has(bits(board(WHITE_QUIET, { white: 3 })), 14)).toBe(true);
-    expect(has(bits(board(WHITE_QUIET, { white: 6 })), 14)).toBe(false);
-    // A kill this turn (`lastAttackKilled`) pays for the empty bank.
-    const won = board([{ ...WHITE_QUIET[0], atkCount: 1, lastAttackKilled: true }, WHITE_QUIET[1]], { white: 3 });
-    expect(has(bits(won), 14)).toBe(false);
+  it('14 — a reached next-bill shortage only marks a turn that won nothing', () => {
+    const units: UnitSpec[] = [{ def: 'fire_2', owner: 'white', x: 2, y: 2 }, WHITE_QUIET[1]];
+    const premise = { current: 'white' as const, phase: 'place' as const, upkeepPending: true,
+      reserves: new Array<number>(100).fill(0), inactivityRule: 'off' as const, victoryRule: 'elimination' as const };
+    // Immediate settled-income bill: fire_2 owes one, while tier-I owes none.
+    expect(has(bits(board(units, { ...premise, white: 0 })), 14)).toBe(true);
+    expect(has(bits(board(units, { ...premise, white: 1 })), 14)).toBe(false);
+    expect(has(bits(board(WHITE_QUIET, { ...premise, white: 0 })), 14)).toBe(false);
+    const won = units.map((u, i) => i === 0 ? { ...u, atkCount: 1, lastAttackKilled: true } : u);
+    expect(has(bits(board(won, { ...premise, white: 0 })), 14)).toBe(false);
   });
 
   it('16 — the clock only counts against the side that is ahead', () => {
@@ -235,57 +239,57 @@ describe('invariantBits: the rows restated over the post-turn position', () => {
     expect(has(bits(damaged), 9)).toBe(true);
   });
 
-  it('5 — a miner bought this turn onto a thin cell with no job', () => {
-    // (3,0) holds no ore at all; plant_1 mines 3, so it needs 6 to be worth it.
-    const poor = board([...WHITE_QUIET, { def: 'plant_1', owner: 'white', x: 3, y: 0, placedThisTurn: true }]);
-    expect(has(bits(poor), 5)).toBe(true);
-    // (3,4) holds 8.
-    const fat = board([...WHITE_QUIET, { def: 'plant_1', owner: 'white', x: 3, y: 4, placedThisTurn: true }]);
-    expect(has(bits(fat), 5)).toBe(false);
-    // The same square, but the body was already there before this turn.
-    const old = board([...WHITE_QUIET, { def: 'plant_1', owner: 'white', x: 3, y: 0 }]);
-    expect(has(bits(old), 5)).toBe(false);
-    // A non-miner on the same thin square is not a poor MINER square.
-    const runner = board([...WHITE_QUIET, { def: 'lightning_1', owner: 'white', x: 3, y: 0, placedThisTurn: true }]);
-    expect(has(bits(runner), 5)).toBe(false);
+  it('5 — legal delayed purchases are not inferred to be immediate poor live miners', () => {
+    const root = buildState(board(WHITE_QUIET, { current: 'white', phase: 'place', white: 5,
+      reserves: new Array<number>(100).fill(0), inactivityRule: 'off' }));
+    const buy: AIAction = { type: 'BUY_UNIT', definitionId: 'plant_1', position: { x: 1, y: 2 } };
+    expect(isLegalAction(root, buy)).toBe(true);
+    let state = applyAction(root, buy);
+    expect(state.board.units).toEqual(root.board.units); expect(state.pendingSummons).toHaveLength(1);
+    expect(has(bitsOf(replica.pack(state), WHITE), 5)).toBe(false);
+    for (const action of [{ type: 'END_PLACE_PHASE' }, { type: 'END_ACTION_PHASE' }, { type: 'END_PLACE_PHASE' }] as AIAction[]) {
+      expect(isLegalAction(state, action)).toBe(true); state = applyAction(state, action);
+    }
+    expect(state.pendingSummons).toHaveLength(0); expect(state.board.units).toHaveLength(root.board.units.length + 1);
+    // Arrival is live now, but flags alone cannot establish its historical job.
+    expect(has(bitsOf(replica.pack(state), WHITE), 5)).toBe(false);
   });
 
-  it('7 — a promotion this turn into an upkeep bill nothing can carry', () => {
+  it('7 — promotion is compared with the next actual bill, not eventual depletion', () => {
     const units: UnitSpec[] = [
       { def: 'lightning_3', owner: 'white', x: 2, y: 2, promotedThisPlacement: true },
       { def: 'lightning_3', owner: 'white', x: 1, y: 3 },
     ];
-    expect(has(bits(board(units, { white: 6 })), 7)).toBe(true);
-    const unpromoted: UnitSpec[] = [
-      { def: 'lightning_3', owner: 'white', x: 2, y: 2 },
-      { def: 'lightning_3', owner: 'white', x: 1, y: 3 },
-    ];
-    expect(has(bits(board(unpromoted, { white: 6 })), 7)).toBe(false);
+    const premise = { current: 'white' as const, phase: 'place' as const, upkeepPending: true,
+      reserves: new Array<number>(100).fill(0), inactivityRule: 'off' as const, victoryRule: 'elimination' as const };
+    // The two tier-III bodies owe four now. Six pays this bill even though
+    // a later no-income cycle may require a release; that is another event.
+    expect(has(bits(board(units, { ...premise, white: 3 })), 7)).toBe(true);
+    expect(has(bits(board(units, { ...premise, white: 4 })), 7)).toBe(false);
+    expect(has(bits(board(units, { ...premise, white: 6 })), 7)).toBe(false);
+    const unpromoted = units.map(u => ({ ...u, promotedThisPlacement: false }));
+    expect(has(bits(board(unpromoted, { ...premise, white: 3 })), 7)).toBe(false);
   });
 
-  it('17 — this turn\'s purchase blocked the only way out of the home pocket', () => {
-    const blocked = board([
+  it('17 — commitment occupancy is delayed and does not prove a historical path-cost violation', () => {
+    const root = buildState(board([
       { def: 'water_1', owner: 'white', x: 0, y: 0 },
       { def: 'shadow_1', owner: 'white', x: 0, y: 1 },
-      { def: 'lightning_1', owner: 'white', x: 1, y: 0, placedThisTurn: true },
       { def: 'water_1', owner: 'white', x: 3, y: 2 },
-    ]);
-    expect(has(bits(blocked), 17)).toBe(true);
-    const clear = board([
-      { def: 'water_1', owner: 'white', x: 0, y: 0 },
-      { def: 'shadow_1', owner: 'white', x: 0, y: 1 },
-      { def: 'lightning_1', owner: 'white', x: 2, y: 0, placedThisTurn: true },
-      { def: 'water_1', owner: 'white', x: 3, y: 2 },
-    ]);
-    expect(has(bits(clear), 17)).toBe(false);
-    // Nothing was bought this turn: the same board cannot self-block.
-    const notPlaced = board([
-      { def: 'water_1', owner: 'white', x: 0, y: 0 },
-      { def: 'shadow_1', owner: 'white', x: 0, y: 1 },
-      { def: 'lightning_1', owner: 'white', x: 1, y: 0 },
-      { def: 'water_1', owner: 'white', x: 3, y: 2 },
-    ]);
-    expect(has(bits(notPlaced), 17)).toBe(false);
+    ], { current: 'white', phase: 'place', white: 3, inactivityRule: 'off' }));
+    const buy: AIAction = { type: 'BUY_UNIT', definitionId: 'lightning_1', position: { x: 1, y: 0 } };
+    expect(isLegalAction(root, buy)).toBe(true);
+    let state = applyAction(root, buy);
+    const occupied = (s: GameState) => s.board.units.some(u => u.position.x === 1 && u.position.y === 0);
+    expect(occupied(state)).toBe(false); expect(state.pendingSummons).toHaveLength(1);
+    expect(has(bitsOf(replica.pack(state), WHITE), 17)).toBe(false);
+    for (const action of [{ type: 'END_PLACE_PHASE' }, { type: 'END_ACTION_PHASE' }, { type: 'END_PLACE_PHASE' }] as AIAction[]) {
+      expect(isLegalAction(state, action)).toBe(true); state = applyAction(state, action);
+    }
+    expect(occupied(state)).toBe(true); expect(state.pendingSummons).toHaveLength(0);
+    // A live blocker can affect routes, but the snapshot carries no causal
+    // record of which preceding move was made more expensive by this arrival.
+    expect(has(bitsOf(replica.pack(state), WHITE), 17)).toBe(false);
   });
 
   it('20 — the body that made the kill has nowhere black does not already cover', () => {

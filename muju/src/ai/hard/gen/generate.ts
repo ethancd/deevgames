@@ -63,10 +63,13 @@ export interface GenStats {
    * rule `GEN_SINK.cut` already enforces for a deadline-cut generation.
    */
   rescueCapped: number;
+  /** Newly executed private forecast proofs in this generation (counted, not priced). */
+  economyProverCalls: number;
+  economyCappedProverCalls: number;
 }
 
 export function newGenStats(): GenStats {
-  return { forcedOverflow: 0, placePlans: 0, rawLines: 0, dedupedTo: 0, nodes: 0, injected: 0, rescueCapped: 0 };
+  return { forcedOverflow: 0, placePlans: 0, rawLines: 0, dedupedTo: 0, nodes: 0, injected: 0, rescueCapped: 0, economyProverCalls: 0, economyCappedProverCalls: 0 };
 }
 
 /**
@@ -406,6 +409,8 @@ export class TurnGenerator {
     stats.nodes = 0;
     stats.injected = 0;
     stats.rescueCapped = 0;
+    stats.economyProverCalls = 0;
+    stats.economyCappedProverCalls = 0;
     if (p.result !== Result.ONGOING) return 0;
 
     const ctx: Ctx = {
@@ -463,7 +468,18 @@ export class TurnGenerator {
       return;
     }
     if (p.phase !== 0 || p.upkeepPending) throw new Error('Prepare endpoint required');
-    const t = buildTables(p, this.sc, ctx.ply, 2, this.prepareTables);
+    const before = this.prepareTables.economyProverCalls;
+    const cappedBefore = this.prepareTables.economyCappedProverCalls;
+    let t: NodeTables;
+    try {
+      t = buildTables(p, this.sc, ctx.ply, 2, this.prepareTables);
+    } finally {
+      // This table uses its own Replica. Publish deltas even on a typed
+      // forecast veto; generateAt counts them under the existing generation
+      // policy without silently pricing formerly unpriced generator proofs.
+      ctx.stats.economyProverCalls += this.prepareTables.economyProverCalls - before;
+      ctx.stats.economyCappedProverCalls += this.prepareTables.economyCappedProverCalls - cappedBefore;
+    }
     ctx.meter.spend(WORK_CLASS_KILLTABLE, 1);
     ctx.t = t;
     if (forcedOnly) {

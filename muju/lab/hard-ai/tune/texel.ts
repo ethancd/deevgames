@@ -1,5 +1,6 @@
 /**
- * `npm run hard:texel -- --corpus <dir> --iterations n [--out <dir>]
+ * `npm run hard:texel -- --corpus <dir> --iterations n --out <fresh-dir>
+ *  --source-allowlist <metadata.allowlist.json> --source-allowlist-sha256 <hash>
  *  [--steps 100,10,1] [--refit-k] [--label <name>]`
  *
  * DESIGN §5.15's Texel fit, as an INSTRUMENT. It fits `k` on the training
@@ -35,7 +36,9 @@
  *     weight-free prior (`src/ai/hard/eval/evaluate.ts:122-127, 163-167`).
  *     Its gradient is identically zero, so DESIGN §5.15's "58 weights and 18
  *     material values" is 57 + 17 = 74 free integers in this tree, not 76.
- *   - Everything else is free and integral at every step.
+ *   - M6 pins w2=100, w3=100 and w58=1 to preserve cash/escrow accounting.
+ *     All remaining parameters are integral. Current schema/version stay fixed;
+ *     any artifact is still a separately labeled, unaccepted candidate vector.
  *
  * COORDINATE DESCENT. One iteration sweeps the step schedule from coarse to
  * fine (default 100, 10, 1 cc). For each step size and each free parameter it
@@ -52,24 +55,38 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { FEATURE_COUNT, FEATURE_NAMES } from '../../../src/ai/hard/eval/features';
 import { DEF_ID, NDEF } from '../../../src/ai/hard/core/catalog';
-import { DEFAULT_WEIGHTS, WEIGHTS_VERSION } from '../../../src/ai/hard/eval/weights';
+import { DEFAULT_WEIGHTS, PHASING_EVAL_SCHEMA, WEIGHTS_VERSION, assertCurrentWeights } from '../../../src/ai/hard/eval/weights';
 import { configHashOf } from '../ladder/identity';
 import {
   WEIGHTS_FILE_SCHEMA,
-  assertNotInSrc,
+  assertFreshOutput,
+  assertCurrentRow,
+  createFreshOutput,
+  loadSourceApproval,
+  type SourceApproval,
   readRows,
   type TexelRow,
   type WeightVector,
 } from './rows';
 
 const REPO_ROOT = path.resolve(import.meta.dirname, '../../..');
-const DEFAULT_OUT = 'lab/results/hard-ai-e3/tune/texel';
+const DEFAULT_OUT = ''; // require an explicit fresh output path
 
 /** `material` index that DESIGN §5.12 pins at 300. */
 export const FIRE_1 = 0;
 export const FIRE_1_PIN = 300;
+/** Catalogue principal/liquidity accounting cannot be rescaled by this fit. */
+export const ACCOUNTING_PINS: Readonly<Record<number, number>> = Object.freeze({ 2: 100, 3: 100, 58: 1 });
+export function assertAccountingPins(weights: WeightVector): void {
+  if (FEATURE_COUNT !== 62 || weights.w.length !== FEATURE_COUNT || weights.material.length !== NDEF ||
+    !weights.w.every(Number.isSafeInteger) || !weights.material.every(Number.isSafeInteger)) throw new Error('texel: current integer 62/18 vector required');
+  if (weights.material[FIRE_1] !== FIRE_1_PIN) throw new Error('texel: material[fire_1] must start at 300');
+  for (const [index, value] of Object.entries(ACCOUNTING_PINS))
+    if (weights.w[Number(index)] !== value) throw new Error(`texel: accounting w[${index}] must stay pinned at ${value}`);
+}
 /** Parameter index of `w[i]` is `i`; of `material[d]` is `FEATURE_COUNT + d`. */
 export const PARAM_COUNT = FEATURE_COUNT + NDEF;
 /** Consecutive accepted steps one parameter may take inside one sweep. */
@@ -77,6 +94,8 @@ export const MAX_RUN_PER_PARAM = 50;
 
 export interface TexelArgs {
   corpus: string;
+  sourceAllowlist?: string;
+  sourceAllowlistSha256?: string;
   iterations: number;
   out: string;
   steps: number[];
@@ -95,6 +114,8 @@ export function parseArgs(argv: readonly string[]): TexelArgs {
     };
     switch (a) {
       case '--corpus': args.corpus = next(); break;
+      case '--source-allowlist': args.sourceAllowlist = next(); break;
+      case '--source-allowlist-sha256': args.sourceAllowlistSha256 = next(); break;
       case '--iterations': args.iterations = positive(next(), a); break;
       case '--out': args.out = next(); break;
       case '--steps': args.steps = next().split(',').map(s => positive(s, a)); break;
@@ -104,6 +125,7 @@ export function parseArgs(argv: readonly string[]): TexelArgs {
     }
   }
   if (args.corpus === '') throw new Error('--corpus <dir> is required');
+  if (!args.out || !args.sourceAllowlist || !args.sourceAllowlistSha256) throw new Error('--out, --source-allowlist and --source-allowlist-sha256 are required');
   if (args.steps.length === 0) throw new Error('--steps: at least one step size is required');
   return args;
 }
@@ -130,6 +152,7 @@ export function buildDesign(rows: readonly TexelRow[], theta: Float64Array): Des
   const y = new Float64Array(n);
   for (let r = 0; r < n; r++) {
     const row = rows[r];
+    assertCurrentRow(row);
     const base = r * PARAM_COUNT;
     // index 0 stays 0: `w[F.Material]` multiplies nothing (module header).
     for (let i = 1; i < FEATURE_COUNT; i++) x[base + i] = row.features[i];
@@ -230,10 +253,10 @@ export interface FitResult {
   freeParams: number[];
 }
 
-/** Free parameter indices: every `w[i]` but index 0, every `material[d]` but `fire_1`. */
+/** Keep index0, cash2/3, pending58 and fire_1 principal fixed. */
 export function freeParams(): number[] {
   const free: number[] = [];
-  for (let i = 1; i < FEATURE_COUNT; i++) free.push(i);
+  for (let i = 1; i < FEATURE_COUNT; i++) if (!(i in ACCOUNTING_PINS)) free.push(i);
   for (let d = 0; d < NDEF; d++) if (d !== FIRE_1) free.push(FEATURE_COUNT + d);
   return free;
 }
@@ -243,10 +266,8 @@ function applyDelta(design: Design, j: number, delta: number): void {
 }
 
 export function fit(trainRows: readonly TexelRow[], heldOutRows: readonly TexelRow[], start: WeightVector, options: FitOptions): FitResult {
+  assertAccountingPins(start);
   const theta = thetaOf(start);
-  if (Math.round(theta[FEATURE_COUNT + FIRE_1]) !== FIRE_1_PIN) {
-    throw new Error(`texel: material[fire_1] must start at ${FIRE_1_PIN}, got ${theta[FEATURE_COUNT + FIRE_1]}`);
-  }
   const train = buildDesign(trainRows, theta);
   const held = buildDesign(heldOutRows, theta);
   let k = fitK(train);
@@ -329,6 +350,10 @@ function allIntegers(v: WeightVector): boolean {
 }
 
 export interface TexelOutput {
+  featureSchema: typeof PHASING_EVAL_SCHEMA;
+  featureCount: number;
+  sourceAllowlistSha256: string;
+  accountingPins: Readonly<Record<number, number>>;
   schema: typeof WEIGHTS_FILE_SCHEMA;
   version: number;
   label: string;
@@ -357,8 +382,12 @@ export interface TexelOutput {
 }
 
 export function runTexel(args: TexelArgs): { output: TexelOutput; moves: Move[]; outDir: string } {
+  const outDir = path.resolve(REPO_ROOT, args.out);
+  assertFreshOutput(outDir, REPO_ROOT);
+  assertCurrentWeights(DEFAULT_WEIGHTS);
+  const approval: SourceApproval = loadSourceApproval(REPO_ROOT, args.sourceAllowlist, args.sourceAllowlistSha256);
   const corpusDir = path.resolve(REPO_ROOT, args.corpus);
-  const rows = readRows(corpusDir);
+  const rows = readRows(corpusDir, approval);
   const trainRows = rows.filter(r => r.split === 'train');
   const heldOutRows = rows.filter(r => r.split === 'heldout');
   if (trainRows.length === 0) throw new Error(`texel: the corpus at ${args.corpus} has no train rows`);
@@ -371,14 +400,17 @@ export function runTexel(args: TexelArgs): { output: TexelOutput; moves: Move[];
   const start: WeightVector = { w: Array.from(DEFAULT_WEIGHTS.w), material: Array.from(DEFAULT_WEIGHTS.material) };
   const result = fit(trainRows, heldOutRows, start, { iterations: args.iterations, steps: args.steps, refitK: args.refitK });
   const tuned = weightsOf(result.theta);
-  const corpusManifest = path.join(corpusDir, 'manifest.json');
-  const corpusHash = fs.existsSync(corpusManifest)
-    ? (JSON.parse(fs.readFileSync(corpusManifest, 'utf8')) as { positionsSha256?: string }).positionsSha256 ?? 'unknown'
-    : 'unknown';
+  assertAccountingPins(tuned);
+  const corpusRel = path.relative(REPO_ROOT, corpusDir).split(path.sep).join('/');
+  const corpusHash = approval.manifest.corpora.find(c => c.path === corpusRel)!.positionsSha256;
 
   const output: TexelOutput = {
     schema: WEIGHTS_FILE_SCHEMA,
-    version: WEIGHTS_VERSION + 1,
+    featureSchema: PHASING_EVAL_SCHEMA,
+    featureCount: FEATURE_COUNT,
+    sourceAllowlistSha256: approval.sha256,
+    accountingPins: ACCOUNTING_PINS,
+    version: WEIGHTS_VERSION,
     label: args.label ?? `texel-instrument-${corpusHash.slice(0, 8)}`,
     w: tuned.w,
     material: tuned.material,
@@ -406,11 +438,9 @@ export function runTexel(args: TexelArgs): { output: TexelOutput; moves: Move[];
     candidate: false,
   };
   const moves = largestMoves(start, tuned, 10);
-  const outDir = path.resolve(REPO_ROOT, args.out);
-  assertNotInSrc(outDir, REPO_ROOT);
-  fs.mkdirSync(outDir, { recursive: true });
-  fs.writeFileSync(path.join(outDir, 'weights.json'), `${JSON.stringify(output, null, 2)}\n`);
-  fs.writeFileSync(path.join(outDir, 'report.md'), renderReport(args, output, moves));
+  createFreshOutput(outDir, REPO_ROOT);
+  fs.writeFileSync(path.join(outDir, 'weights.json'), `${JSON.stringify(output, null, 2)}\n`, { flag: 'wx' });
+  fs.writeFileSync(path.join(outDir, 'report.md'), renderReport(args, output, moves), { flag: 'wx' });
   return { output, moves, outDir };
 }
 
@@ -459,7 +489,7 @@ async function main(): Promise<void> {
   console.log('  NOT A CANDIDATE: no row measured this vector (MILESTONES M20).');
 }
 
-const INVOKED_DIRECTLY = process.argv[1] !== undefined && path.resolve(process.argv[1]) === path.resolve(new URL(import.meta.url).pathname);
+const INVOKED_DIRECTLY = process.argv[1] !== undefined && path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url));
 
 if (INVOKED_DIRECTLY) {
   main().catch((err: unknown) => {

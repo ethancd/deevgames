@@ -67,6 +67,10 @@ export interface KillContext {
 export interface KillOpts {
   /** Current live bodies, or the next Act after same-board paid arrivals. */
   horizon?: 'current' | 'nextAct';
+  /** Diagnostic counterfactual only: disable paid arrival attackers while retaining identical projected occupancy. Defaults true. */
+  includePendingAttackers?: boolean;
+  /** Diagnostic current-board counterfactual: omit marked live attackers, preserving their occupancy. */
+  excludedAttackerSlots?: Uint8Array;
   actionBudget: number;
   crystalBudget: number;
   /** Legacy compatibility only; Phasing never invents unpaid attackers. */
@@ -295,6 +299,7 @@ function buildCandidates(
   }
   for (let slot = 0; slot < MAX_SLOTS; slot++) {
     if (p.sq[slot] === DEAD || p.owner[slot] !== attacker) continue;
+    if (o.excludedAttackerSlots?.[slot]) continue;
     if (!future && !canAttack(p, cat, slot)) continue;
     const def = p.defId[slot];
     const power = cat.power[powerIndex(attacker, def, targetDef)];
@@ -310,7 +315,7 @@ function buildCandidates(
     }
     if (n > start) GROUP_START[++groupCount] = n;
   }
-  if (future) {
+  if (future && o.includePendingAttackers !== false) {
     const base = attacker * PEND_STRIDE;
     for (let q = bbNext(PENDING, -1); q >= 0; q = bbNext(PENDING, q)) {
       const def = p.pendDef[base + q] - 1;

@@ -1,7 +1,7 @@
 /**
  * Feature groups for the E3 evaluation audit (`docs/hard-ai/e3/E3-PLAN.md`).
  *
- * One partition of the 58 features of `src/ai/hard/eval/features.ts` into the
+ * One partition of the 62 features of `src/ai/hard/eval/features.ts` into the
  * five groups EPIC-PLAN §4 E3.1 asks to ablate ("material/economy/home/safety"
  * plus the remaining space-and-tempo terms). Every feature belongs to exactly
  * one group (`tests/lab/eval-groups.test.ts`). Lane 4's `eval-audit` reports
@@ -35,6 +35,8 @@ export const EVAL_GROUPS: Readonly<Record<EvalGroup, readonly number[]>> = Objec
     F.Inv5PoorMinerSquare,
     F.Inv7PromoteNoRunway,
     F.Inv14LiquidityFloor,
+    F.PendingValue,
+    F.RentShortfall,
   ],
   home: [
     F.HomeInvaded,
@@ -69,6 +71,8 @@ export const EVAL_GROUPS: Readonly<Record<EvalGroup, readonly number[]>> = Objec
     F.Inv17SelfBlock,
     F.Inv19SoftMinerExposed,
     F.Inv20StrandNoRetreat,
+    F.ArrivalThreat,
+    F.DisruptPressure,
   ],
   space: [
     F.SpawnArea,
@@ -90,10 +94,10 @@ export const EVAL_GROUPS: Readonly<Record<EvalGroup, readonly number[]>> = Objec
 
 /** The twenty invariant penalty features (DESIGN §5.13), `Inv1..Inv20`. */
 export const INVARIANT_FEATURES: readonly number[] = Object.freeze(
-  Array.from({ length: FEATURE_COUNT - INV_BASE }, (_, i) => INV_BASE + i),
+  Array.from({ length: F.Inv20StrandNoRetreat - INV_BASE + 1 }, (_, i) => INV_BASE + i),
 );
 
-/** Stage-2 features (`F.EconDelta` .. the last invariant). */
+/** Stage-2 features (`F.EconDelta` .. the appended Phasing diagnostics). */
 export const STAGE2_FEATURES: readonly number[] = Object.freeze(
   Array.from({ length: FEATURE_COUNT - F.EconDelta }, (_, i) => F.EconDelta + i),
 );

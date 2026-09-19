@@ -1,4 +1,7 @@
 /**
+ * Historical relocation diagnostic (zero bootstrap weight). The exact Phasing
+ * pass-only production forecast lives in `phasing-economy.ts`.
+ *
  * The economy DP (DESIGN §4.12, §5.8): a horizon-`ECON_HORIZON` projection of
  * a side's mining/rent stream, with an optional relocation rule for miners
  * whose cell has run dry.
@@ -34,6 +37,31 @@ export const ACTION_VALUE_CC = 60;
 export const RELOCATION_MAX_ACTIONS = 8;
 
 export interface EconResult {
+  /** Exact signed root-live cash/principal contribution, in cc × 65536. */
+  livePVQ16: number;
+  /** livePVQ16 / 65536; keep the fraction until forming a signed feature. */
+  livePVcc: number;
+  /** Root commitments keyed by side-relative square. No principal/refunds. */
+  pendingServicePVQ16: Float64Array;
+  pendingServicePVcc: Float64Array;
+  /** 0 absent/unreached; 1 arrived; 2 refunded, under the pass-only policy. */
+  pendingArrival: Uint8Array;
+  /** Actual intervening enemy Act before this side's root commitments resolve.
+   * Current enemy Act preserves remaining AP/flags; future Act includes releases,
+   * preceding batches and reset. Null if no reached movement window. */
+  pendingEnemyAct: PackedState | null;
+  /** Actual first incoming own Act after the root paid batch, after healing.
+   * Null if no root commitments or a terminal boundary prevents arrival. */
+  pendingOwnAct: PackedState | null;
+  /** First unpaid bill reached by the chronological forecast. */
+  firstBillReached: boolean;
+  requiredReserve: number;
+  rentShortfall: number;
+  incomeClosures: number;
+  /** Replica full proof work inside this forecast, identical on both sides. */
+  forecastProverCalls: number;
+  cappedProverCalls: number;
+
   /** Σ discounted (income − upkeep) over the horizon, centi-crystals. */
   stream: Centi;
   /** `[ECON_HORIZON]` raw crystals mined each of the side's own turns 1..H. */
@@ -51,6 +79,13 @@ export interface EconResult {
 /** Allocates a fresh, zeroed `EconResult` (DESIGN §4.12 gives callers `out`, not an allocator — see `docs/hard-ai/design/DEVIATIONS.md` M4's "exports beyond the literal §4 lists" precedent, e.g. `core/spawn.ts`'s `newSpawnInfo`). */
 export function newEconResult(): EconResult {
   return {
+    livePVQ16: 0, livePVcc: 0,
+    pendingServicePVQ16: new Float64Array(100),
+    pendingServicePVcc: new Float64Array(100),
+    pendingArrival: new Uint8Array(100),
+    pendingEnemyAct: null, pendingOwnAct: null,
+    firstBillReached: false, requiredReserve: 0, rentShortfall: 0,
+    incomeClosures: 0, forecastProverCalls: 0, cappedProverCalls: 0,
     stream: 0,
     income: new Int16Array(ECON_HORIZON),
     upkeep: new Int16Array(ECON_HORIZON),

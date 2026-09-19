@@ -156,7 +156,12 @@ export interface TimeConfig {
 }
 
 // --- eval/weights.ts ---
+/** Phasing meaning/units; indices 0–57 are preserved and 58–61 appended. */
+export const PHASING_EVAL_SCHEMA = 'muju-phasing-eval-1';
+export const CONFIG_FEATURE_COUNT = 62;
 export interface Weights {
+  /** Optional only so historical source artifacts remain readable. Runtime evaluation requires the current schema. */
+  featureSchema?: string;
   /** [FEATURE_COUNT] cc. */
   w: Int32Array;
   /** [NDEF] cc material priors — `cost × 100`, no rent term (DESIGN F9). */
@@ -178,6 +183,11 @@ export interface BookEntry {
 }
 
 export interface Book {
+  /** Nonempty Phasing BK03 books carry exact source-compatible identities. */
+  formatVersion?: 3;
+  weightsKey?: string;
+  mapKey?: string;
+  rulesKey?: string;
   lookup(lo: number, hi: number): BookEntry | null;
   size: number;
   handicap: number;
@@ -477,7 +487,7 @@ export interface HardConfig extends SearchConfig {
 
 /** DESIGN §4.15 `FEATURE_COUNT`; `eval/features.ts` (M12) is the authority and
  * `tests/ai/hard/interfaces.test.ts` cross-checks it once that module lands. */
-const FEATURE_COUNT = 58;
+const FEATURE_COUNT = CONFIG_FEATURE_COUNT;
 
 /**
  * `cost × 100` in catalogue order (units.ts:8-222) — the material priors of
@@ -513,7 +523,8 @@ export function placeholderWeights(): Weights {
     w: new Int32Array(FEATURE_COUNT),
     material: Int32Array.from(DEFAULT_MATERIAL_CC),
     version: 0,
-    label: 'placeholder-m4',
+    label: 'placeholder-phasing',
+    featureSchema: PHASING_EVAL_SCHEMA,
   };
 }
 

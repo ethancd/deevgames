@@ -2,7 +2,7 @@
  * The staged evaluator (DESIGN §4.15, §5.12).
  *
  * Every score is an integer centi-crystal count from `root`'s point of view:
- * `Σ_i w[i] · f[i]` over the 58 symmetric-difference features of
+ * `Σ_i w[i] · f[i]` over the 62 symmetric-difference features of
  * `eval/features.ts`, plus the 18-parameter material block (see MATERIAL
  * below). Three stages, run in order and each returning only its OWN
  * contribution, so DESIGN §5.12.4's driver reads exactly as written
@@ -12,7 +12,7 @@
  *   - stage 1: features 5–22. Builds its OWN level-1 `NodeTables` (DESIGN F6 —
  *     the macro node's tables belong to the generator and the ordering; a leaf
  *     position has none), from the caller's per-ply `Scratch`.
- *   - stage 2: features 23–57. Upgrades the same tables to level 2.
+ *   - stage 2: features 23–61. Upgrades the same tables to level 2.
  *
  * MATERIAL. Feature 0's value is `Σ material[def]` and `material` is the
  * tunable 18-parameter half of `Weights`, which `extract` cannot see (DESIGN
@@ -44,13 +44,15 @@ import type { Replica } from '../core/state';
 import type { ReachMemo } from '../core/movement';
 import { allocTables, buildTables, type NodeTables } from '../tables/context';
 import type { EvalFix, Weights } from '../config';
-import { DEFAULT_WEIGHTS } from './weights';
-import { F, FEATURE_COUNT, boundStage2, extract } from './features';
+import { DEFAULT_WEIGHTS, assertCurrentWeights } from './weights';
+import { F, FEATURE_COUNT, extract } from './features';
 
 /** `WorkClass.EVAL1` / `WorkClass.EVAL2` (DESIGN §4.16), restated here so
  * `eval` need not import `search` (DESIGN §2 layering). */
 export const WORK_CLASS_EVAL1 = 6;
 export const WORK_CLASS_EVAL2 = 7;
+/** Existing search/time PROVER class; retain its existing pricing. */
+export const WORK_CLASS_PROVER = 8;
 
 /** The slice of `search/time.ts`'s `WorkMeter` the evaluator uses. */
 export interface EvalMeter {
@@ -85,6 +87,7 @@ export class Evaluator {
    * tables be reused by the evaluator's, and the other way round.
    */
   constructor(rep: Replica, w: Weights = DEFAULT_WEIGHTS, fix: EvalFix | null = null, memo: ReachMemo | null = null) {
+    assertCurrentWeights(w);
     this.rep = rep;
     this.weights = w;
     this.tables = allocTables(memo);
@@ -95,6 +98,7 @@ export class Evaluator {
   /** Stores the reference, not a copy: a tuner mutating its vector in place
    * (Texel, SPSA) sees the change on the next evaluation. */
   setWeights(w: Weights): void {
+    assertCurrentWeights(w);
     this.weights = w;
   }
 
@@ -152,12 +156,9 @@ export class Evaluator {
     return this.sum(F.EconDelta, FEATURE_COUNT - 1);
   }
 
-  /**
-   * DESIGN §5.12.4's lazy driver. Stages 0 and 1 are always computed; the only
-   * lazy exit is stage 1 → 2, decided by the certified per-position bound
-   * `boundStage2`. Both exits return a value on the same side of the window as
-   * `full()` would, which is what the M12 gate measures.
-   */
+  /** Phasing bootstrap deliberately evaluates every stage. The old live-only
+   * lazy bound does not cover pending escrow/service or chronological releases.
+   * Window arguments remain API-compatible; no unproved early exit is used. */
   evaluate(
     p: PackedState,
     root: Side,
@@ -169,11 +170,14 @@ export class Evaluator {
   ): Centi {
     const v1 = this.stage0(p, root) + this.stage1(p, root, sc, ply);
     meter.spend(WORK_CLASS_EVAL1, 1);
-    const b = boundStage2(p, this.tables, this.weights);
-    if (v1 - b >= beta) return v1 - b;
-    if (v1 + b <= alpha) return v1 + b;
+    void alpha; void beta;
     meter.spend(WORK_CLASS_EVAL2, 1);
-    return v1 + this.stage2(p, root, sc, ply);
+    const before = this.tables.economyProverCalls;
+    try { return v1 + this.stage2(p, root, sc, ply); }
+    finally {
+      const calls = this.tables.economyProverCalls - before;
+      if (calls > 0) meter.spend(WORK_CLASS_PROVER, calls);
+    }
   }
 
   /** Every stage, unconditionally — the gates' and Texel's entry point. */

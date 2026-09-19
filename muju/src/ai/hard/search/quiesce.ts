@@ -26,7 +26,7 @@
  * artifact says which of the two each number is. See DEVIATIONS under M14.
  */
 import { DEAD, MAX_SLOTS, type Centi, type PackedState, type Side } from '../types';
-import { buildTables, type NodeTables } from '../tables/context';
+import type { NodeTables } from '../tables/context';
 import { ACTIONS_PER_TURN } from '../core/state';
 import { KILL_IMPOSSIBLE } from '../tables/kill';
 import { HOME_NEVER } from '../tables/home';
@@ -36,6 +36,7 @@ import { WorkClass } from './time';
 import { maxPlausibleGain } from './order';
 import {
   PROVER_BOUND,
+  buildSearchTables,
   evaluateLeaf,
   generateAt,
   makeTurn,
@@ -136,9 +137,12 @@ export function quiesce(
     return terminalScore(p, p.side as Side, ply) ?? evaluateLeaf(s, p, alpha, beta, ply);
   }
   const before = s.meter.used;
-  const value = quiesceNode(s, p, alpha, beta, ply, qply, rootWorkStart);
-  s.quiesceWork += s.meter.used - before;
-  return value;
+  try {
+    return quiesceNode(s, p, alpha, beta, ply, qply, rootWorkStart);
+  } finally {
+    // A typed forecast veto still consumed the work already executed.
+    s.quiesceWork += s.meter.used - before;
+  }
 }
 
 function quiesceNode(
@@ -166,7 +170,7 @@ function quiesceNode(
 
   // DESIGN §5.11.4: the prover runs in `bound` mode inside quiescence.
   p.proverMode = PROVER_BOUND;
-  const t = buildTables(p, s.sc, ply, 2, s.tables[ply]);
+  const t = buildSearchTables(s, p, ply);
   s.meter.spend(WorkClass.KILLTABLE);
 
   const mover = p.side as Side;

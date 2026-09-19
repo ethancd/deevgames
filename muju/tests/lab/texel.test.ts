@@ -1,3 +1,4 @@
+// @vitest-environment node
 /**
  * MILESTONES M18's `tests/lab/texel.test.ts`: the tuning instrument's own
  * tests (DESIGN §5.15).
@@ -5,17 +6,20 @@
  * Nothing here runs a search or reads a replay. The fit is exercised on a
  * SYNTHETIC corpus whose generating parameters are known, so "the fit works"
  * is a statement about recovery rather than about a number nobody can check;
- * the leakage and holdout rules are exercised against the committed opening
- * pools.
+ * the leakage boundary uses only synthetic metadata and proves refusal helpers
+ * do not open any dataset. No actual development, validation or sealed pool is read.
  */
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
 import { mulberry32 } from '../../lab/harness/rng';
 import { FEATURE_COUNT, F } from '../../src/ai/hard/eval/features';
 import { NDEF } from '../../src/ai/hard/core/catalog';
+import { PHASING_EVAL_SCHEMA, WEIGHTS_VERSION } from '../../src/ai/hard/eval/weights';
 import {
   ROW_SCHEMA,
+  DEV_POOL_PATH,
+  readRows,
   assertNotInSrc,
   loadRefusalRules,
   refusalFor,
@@ -24,10 +28,11 @@ import {
   type TexelRow,
   type WeightVector,
 } from '../../lab/hard-ai/tune/rows';
-import { FIRE_1, FIRE_1_PIN, PARAM_COUNT, fit, freeParams, largestMoves, sigmoid, weightsOf } from '../../lab/hard-ai/tune/texel';
+import { ACCOUNTING_PINS, FIRE_1, FIRE_1_PIN, PARAM_COUNT, fit, freeParams, largestMoves, sigmoid, weightsOf } from '../../lab/hard-ai/tune/texel';
 import { quietVerdict } from '../../lab/hard-ai/tune/corpus';
 
 const REPO_ROOT = path.resolve(import.meta.dirname, '../..');
+afterEach(() => vi.restoreAllMocks());
 
 // --- the synthetic corpus --------------------------------------------------
 
@@ -37,7 +42,9 @@ const REPO_ROOT = path.resolve(import.meta.dirname, '../..');
  * identifiable), and one feature carries a known weight.
  */
 const PLANTED_W = 500;
-const PLANTED_FEATURE = F.BankLiquid;
+// PstMine is a free diagnostic with bootstrap weight zero; cash2/3 and
+// PendingValue58 retain their approved accounting pins.
+const PLANTED_FEATURE = F.PstMine;
 const PLANTED_K = 1 / 400;
 
 function plantedRow(id: string, opening: string, split: 'train' | 'heldout', fireDiff: number, featureValue: number, result: 1 | 0.5 | 0): TexelRow {
@@ -47,6 +54,8 @@ function plantedRow(id: string, opening: string, split: 'train' | 'heldout', fir
   material[FIRE_1] = fireDiff;
   return {
     schema: ROW_SCHEMA,
+    featureSchema: PHASING_EVAL_SCHEMA,
+    weightsVersion: WEIGHTS_VERSION,
     id,
     result,
     side: 0,
@@ -81,6 +90,7 @@ function startWeights(): WeightVector {
   const w = new Array<number>(FEATURE_COUNT).fill(0);
   const material = new Array<number>(NDEF).fill(0);
   material[FIRE_1] = FIRE_1_PIN;
+  for (const [index, value] of Object.entries(ACCOUNTING_PINS)) w[Number(index)] = value;
   return { w, material };
 }
 
@@ -136,12 +146,17 @@ describe('texel fit on a planted corpus', () => {
     expect(tuned.material[FIRE_1]).toBe(FIRE_1_PIN);
   });
 
+  it('keeps w2=100, w3=100 and w58=1 through the actual synthetic fit', () => {
+    for (const [index, value] of Object.entries(ACCOUNTING_PINS)) expect(tuned.w[Number(index)]).toBe(value);
+  });
+
   it('never moves a parameter whose column is identically zero', () => {
     // Only `fire_1` (pinned) and the planted feature carry any signal, so the
-    // fit must leave the other 73 free parameters where it found them.
+    // fit must leave every other free parameter where it found it; the three
+    // accounting coefficients also stay at their nonzero starting pins.
     for (let i = 1; i < FEATURE_COUNT; i++) {
       if (i === PLANTED_FEATURE) continue;
-      expect(tuned.w[i]).toBe(0);
+      expect(tuned.w[i]).toBe(start.w[i]);
     }
     for (let d = 1; d < NDEF; d++) expect(tuned.material[d]).toBe(0);
   });
@@ -153,10 +168,11 @@ describe('texel fit on a planted corpus', () => {
     expect(moves[0].index).toBe(PLANTED_FEATURE);
   });
 
-  it('leaves 74 of the 76 parameters free: w[Material] and material[fire_1] are pinned', () => {
+  it('leaves 75 of 80 parameters free: material, cash and escrow scale pins remain fixed', () => {
     const free = freeParams();
     expect(PARAM_COUNT).toBe(FEATURE_COUNT + NDEF);
-    expect(free).toHaveLength(PARAM_COUNT - 2);
+    expect(free).toHaveLength(PARAM_COUNT - 5);
+    for (const index of [2, 3, 58]) expect(free).not.toContain(index);
     expect(free).not.toContain(F.Material);
     expect(free).not.toContain(FEATURE_COUNT + FIRE_1);
   });
@@ -218,48 +234,47 @@ describe('splitOpenings', () => {
 
 // --- leakage ---------------------------------------------------------------
 
-function poolIds(file: string): string[] {
-  const text = fs.readFileSync(path.resolve(REPO_ROOT, 'lab/hard-ai/ladder/openings', file), 'utf8');
-  return text
-    .split('\n')
-    .filter(l => l.trim() !== '')
-    .map(l => (JSON.parse(l) as { id: string }).id);
-}
-
-describe('leakage refusal', () => {
-  const rules = loadRefusalRules(REPO_ROOT);
-
-  it('finds both refused pools on disk', () => {
+describe('metadata-only leakage refusal (synthetic labels, no dataset reads)', () => {
+  it('does not open any pool to enumerate refused IDs', () => {
+    const read = vi.spyOn(fs, 'readFileSync');
+    const rules = loadRefusalRules('/synthetic/not-a-repository');
+    expect(read).not.toHaveBeenCalled();
+    expect(rules.ids.size).toBe(0);
     expect(rules.missing).toEqual([]);
-    expect(rules.pools).toEqual(['e1-sealed.jsonl', 'e2-val.jsonl']);
+    expect(rules.pools).toEqual(['e1-sealed.jsonl', 'e2-val.jsonl', 'p1-val.jsonl', 'p1-sealed.jsonl']);
   });
 
-  it('refuses every e1-sealed.jsonl opening', () => {
-    for (const id of poolIds('e1-sealed.jsonl')) expect(refusalFor(id, null, rules)).toBe('id');
+  it('refuses validation metadata regardless of its synthetic opening ID', () => {
+    const rules = loadRefusalRules('/synthetic');
+    for (const pool of ['e1-val.jsonl', 'e2-val.jsonl', 'p1-val.jsonl'])
+      expect(refusalFor('synthetic-id', `lab/hard-ai/ladder/openings/${pool}`, rules)).toBe('pool');
   });
 
-  it('refuses every e2-val.jsonl opening', () => {
-    for (const id of poolIds('e2-val.jsonl')) expect(refusalFor(id, null, rules)).not.toBeNull();
+  it('refuses sealed metadata without inspecting a dataset', () => {
+    const read = vi.spyOn(fs, 'readFileSync'), rules = loadRefusalRules('/synthetic');
+    for (const pool of ['e1-sealed.jsonl', 'p1-sealed.jsonl'])
+      expect(refusalFor('synthetic-id', `lab/hard-ai/ladder/openings/${pool}`, rules)).toBe('pool');
+    expect(read).not.toHaveBeenCalled();
   });
 
-  it('refuses a run drawn from a refused pool whatever its opening ids say', () => {
-    expect(refusalFor('g3-s25', 'lab/hard-ai/ladder/openings/e1-sealed.jsonl', rules)).toBe('pool');
-    expect(refusalFor('g3-s25', 'lab/hard-ai/ladder/openings/e2-val.jsonl', rules)).toBe('pool');
+  it('fails closed on missing or renamed pool identity', () => {
+    const rules = loadRefusalRules('/synthetic');
+    for (const pool of [null, 'p1-dev.jsonl', 'other/p1-dev.jsonl', 'lab/hard-ai/ladder/openings/e1-dev.jsonl'])
+      expect(refusalFor('synthetic-id', pool, rules)).toBe('pool');
   });
 
-  it('refuses an unknown e2- id by prefix', () => {
-    expect(refusalFor('e2-g9-s999', null, rules)).toBe('prefix');
+  it('admits only p1-dev metadata and retains explicit refused-ID/prefix checks', () => {
+    const rules = loadRefusalRules('/synthetic');
+    expect(refusalFor('p1-synthetic-id', DEV_POOL_PATH, rules)).toBeNull();
+    expect(refusalFor('e2-synthetic-id', DEV_POOL_PATH, rules)).toBe('prefix');
+    rules.ids.add('p1-synthetic-refused');
+    expect(refusalFor('p1-synthetic-refused', DEV_POOL_PATH, rules)).toBe('id');
   });
 
-  it('admits every development and E1/E2 validation opening', () => {
-    // The point of the id SET: `e1-sealed.jsonl` shares the `e1-` prefix with
-    // the development pool, so a prefix rule on `e1-` would refuse the one
-    // stratum tuning may use (`lab/hard-ai/ladder/openings/ALLOCATION.md`).
-    for (const file of ['e0-openings.jsonl', 'e1-dev.jsonl', 'e1-val.jsonl', 'e1-val2.jsonl', 'e1-baseline.jsonl']) {
-      for (const id of poolIds(file)) {
-        expect(refusalFor(id, `lab/hard-ai/ladder/openings/${file}`, rules)).toBeNull();
-      }
-    }
+  it('cannot open a positions file without explicit source approval', () => {
+    const read = vi.spyOn(fs, 'readFileSync');
+    expect(() => readRows('/synthetic/corpus')).toThrow(/approval/);
+    expect(read).not.toHaveBeenCalled();
   });
 });
 

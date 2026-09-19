@@ -70,12 +70,6 @@ export const MULTISET_WORDS = 1 + PURCHASE_MAX_BODIES;
 export const MAX_MULTISETS = 64;
 /** Ceiling on `PurchaseConfig.squares` (DESIGN §8: `S = 8`). */
 export const MAX_TOP_SQUARES = 16;
-/**
- * SU §1.6's liquidity floor (DESIGN §8 gives "6-8"); the low end is used so the
- * ORDERING penalty bites only on plans that leave a side genuinely cashless. It
- * is never a rejection — see the module header and DEVIATIONS under M13.
- */
-export const LIQUIDITY_FLOOR = 6;
 export function newPlacePlan(): PlacePlan {
   return { actions: new Int32Array(PURCHASE_MAX_BODIES), count: 0, spend: 0, scoreCc: 0, flags: 0, spawnAfter: 0 };
 }
@@ -359,7 +353,9 @@ function planFlags(t: NodeTables, cat: Catalog, side: Side, plan: PlacePlan): nu
 /**
  * Plan score: the assignment's square scores, less DESIGN §5.5's zero-spawn
  * penalty (a penalty, never a rejection — F16) and an ordering-only liquidity
- * penalty below `LIQUIDITY_FLOOR`.
+ * penalty below the root's phase-aware next-bill reserve. This fixed baseline
+ * is an ordering heuristic: a new commitment may itself change future income;
+ * no plan is rejected for missing the reserve.
  */
 function planScore(
   p: PackedState,
@@ -368,12 +364,13 @@ function planScore(
   plan: PlacePlan,
   assignmentCc: Centi,
   spawnAfter: number,
+  requiredReserve: number,
   w: PurchaseWeights,
 ): Centi {
   let score = assignmentCc;
   const left = p.bank[side] - plan.spend;
   if (spawnAfter === 0 && left >= cat.cost[cat.tier1[0]]) score -= w.zeroSpawnCc;
-  if (left < LIQUIDITY_FLOOR) score -= w.liquidityCc * (LIQUIDITY_FLOOR - left);
+  if (left < requiredReserve) score -= w.liquidityCc * (requiredReserve - left);
   return score | 0;
 }
 
@@ -458,7 +455,7 @@ export function planPurchases(
       if (after < 0) continue;
       plan.spawnAfter = after;
       plan.flags = planFlags(t, cat, side, plan);
-      plan.scoreCc = planScore(p, cat, side, plan, MS_BEST_SCORE[a], after, cfg.weights);
+      plan.scoreCc = planScore(p, cat, side, plan, MS_BEST_SCORE[a], after, t.econ[side].firstBillReached ? t.econ[side].requiredReserve : 0, cfg.weights);
       written++;
     }
   }

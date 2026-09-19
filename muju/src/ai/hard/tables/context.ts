@@ -24,12 +24,15 @@
  * CACHING. `keyLo`/`keyHi`/`level` are the contract's own memo: `buildTables`
  * keys the filled tables on `Kturn` (the complete state key — DESIGN §3.3:
  * `Kturn = Kpos ⊕ phase ⊕ actions ⊕ atkCount ⊕ uflags`) folded with the
- * catalogue signature, so `stage1` followed by `stage2` on the same position
+ * catalogue signature, plus exact slot and canonical identity guards. The
+ * public keys deliberately omit order/IDs, but chronological economy windows
+ * carry them and pending features compare root-live birth identities. Thus
+ * `stage1` followed by `stage2` on the same position
  * upgrades level 1 to level 2 instead of rebuilding it (DESIGN §5.12.4's lazy
  * driver calls exactly that pair). A fresh `allocTables()` carries the
  * `UNBUILT` sentinel so its zeroed buffers can never be mistaken for a hit.
  */
-import { DEAD, MAX_SLOTS, type PackedState, type Side } from '../types';
+import { DEAD, MAX_SLOTS, PEND_STRIDE, type PackedState, type Side } from '../types';
 import { bbNew, bbSet, type BB, type Scratch } from '../core/bits';
 import { ACTIONS_PER_TURN } from '../core/state';
 import { activeCatalog } from '../core/catalog';
@@ -47,7 +50,8 @@ import {
   type KillOpts,
   type KillTable,
 } from './kill';
-import { economyDP, newEconResult, type EconResult } from './economy';
+import { newEconResult, type EconResult } from './economy';
+import { phasingEconomy } from './phasing-economy';
 import { newSpawnGeometry, spawnGeometry, type SpawnGeometry } from './geometry';
 import { homeSafety, newHomeSafety, type HomeSafety } from './home';
 import type { EvalFix } from '../config';
@@ -107,6 +111,9 @@ export interface NodeTables {
   /** [MAX_SLOTS] Cleave-chain value (cc) exposed by this enemy tier-2+ unit. */
   chain: Int16Array;
   econ: [EconResult, EconResult];
+  /** Monotone actually-executed forecast proof work; cache hits add zero. */
+  economyProverCalls: number;
+  economyCappedProverCalls: number;
 
   // --- not a DESIGN §4.8 table ---
   /**
@@ -127,6 +134,47 @@ export interface NodeTables {
 /** `keyLo`/`keyHi` of a `NodeTables` nothing has been computed into yet. A real
  * `Kturn` matching this pair is a 1-in-2^64 event. */
 const UNBUILT = 0xffffffff;
+
+/** Cache-local metadata, not a change to public Kpos/Kturn semantics. */
+interface IdentityGuard {
+  valid: boolean;
+  ord: Int32Array;
+  originIds: string[];
+  ordNext: number;
+  pendOrd: Int32Array;
+  pendIds: string[];
+  pendOrdNext: number;
+}
+const identities = new WeakMap<NodeTables, IdentityGuard>();
+function identityGuard(out: NodeTables): IdentityGuard {
+  let guard = identities.get(out);
+  if (guard === undefined) {
+    guard = { valid: false, ord: new Int32Array(MAX_SLOTS), originIds: [], ordNext: 0,
+      pendOrd: new Int32Array(2 * PEND_STRIDE), pendIds: [], pendOrdNext: 0 };
+    identities.set(out, guard);
+  }
+  return guard;
+}
+function sameIdentity(p: PackedState, guard: IdentityGuard): boolean {
+  if (!guard.valid || guard.ordNext !== p.ordNext || guard.pendOrdNext !== p.pendOrdNext ||
+    guard.originIds.length !== p.originIds.length || guard.pendIds.length !== p.pendIds.length) return false;
+  for (let i = 0; i < MAX_SLOTS; i++) if (guard.ord[i] !== p.ord[i]) return false;
+  for (let i = 0; i < 2 * PEND_STRIDE; i++) if (guard.pendOrd[i] !== p.pendOrd[i]) return false;
+  for (let i = 0; i < p.originIds.length; i++) if (guard.originIds[i] !== p.originIds[i]) return false;
+  for (let i = 0; i < p.pendIds.length; i++) if (guard.pendIds[i] !== p.pendIds[i]) return false;
+  return true;
+}
+function stampIdentity(p: PackedState, guard: IdentityGuard): void {
+  guard.ord.set(p.ord); guard.pendOrd.set(p.pendOrd);
+  guard.ordNext = p.ordNext; guard.pendOrdNext = p.pendOrdNext;
+  // Preserve sparse ID arrays, including their length, without retaining the
+  // caller's mutable buffers or allocating per rebuilt position.
+  guard.originIds.length = 0; guard.pendIds.length = 0;
+  for (let i = 0; i < p.originIds.length; i++) if (p.originIds[i] !== undefined) guard.originIds[i] = p.originIds[i];
+  for (let i = 0; i < p.pendIds.length; i++) if (p.pendIds[i] !== undefined) guard.pendIds[i] = p.pendIds[i];
+  guard.originIds.length = p.originIds.length; guard.pendIds.length = p.pendIds.length;
+  guard.valid = true;
+}
 
 /**
  * One node's tables, every buffer allocated once. `memo` is E4.3 candidate C's
@@ -160,6 +208,7 @@ export function allocTables(memo: ReachMemo | null = null): NodeTables {
     retreats: new Uint8Array(MAX_SLOTS),
     chain: new Int16Array(MAX_SLOTS),
     econ: [newEconResult(), newEconResult()],
+    economyProverCalls: 0, economyCappedProverCalls: 0,
     evalFix: null,
   };
   t.killActions.fill(KILL_NEVER);
@@ -274,9 +323,14 @@ function buildLevel2(p: PackedState, sc: Scratch, ply: number, t: NodeTables): v
     t.chain[slot] = value > 32767 ? 32767 : value;
   }
 
-  // economy.ts — the six-turn income/upkeep projection with relocation.
-  economyDP(p, t, 0, sc, ply, t.econ[0]);
-  economyDP(p, t, 1, sc, ply, t.econ[1]);
+  // Exact Phasing pass-only lifecycle; the historical relocation DP is diagnostic only.
+  try {
+    phasingEconomy(p, t.econ);
+  } finally {
+    // Preserve executed work even if a capped proof vetoes the forecast.
+    t.economyProverCalls += t.econ[0].forecastProverCalls;
+    t.economyCappedProverCalls += t.econ[0].cappedProverCalls;
+  }
 
   // `fragility` is the one geometry field DESIGN §5.12.1 classifies as
   // "geom + kill" (feature 35, an L2 feature): `geometry.ts` computes it from
@@ -304,7 +358,8 @@ export function buildTables(
 ): NodeTables {
   const keyLo = (p.kturnLo ^ p.catalogSignature) >>> 0;
   const keyHi = p.kturnHi >>> 0;
-  let hit = out.keyLo === keyLo && out.keyHi === keyHi;
+  const identity = identityGuard(out);
+  let hit = out.keyLo === keyLo && out.keyHi === keyHi && sameIdentity(p, identity);
   if (hit) {
     for (let slot = 0; slot < MAX_SLOTS; slot++) {
       if (out.slotSquares[slot] !== p.sq[slot]) { hit = false; break; }
@@ -312,12 +367,16 @@ export function buildTables(
   }
   if (hit && out.level >= level) return out;
   if (!hit) {
+    // A failed rebuild must not leave the previous position's stamp attached
+    // to partially overwritten buffers. A failed L2 upgrade remains L1 only.
+    identity.valid = false;
+    out.level = 1;
     buildLevel1(p, sc, ply, out);
     out.keyLo = keyLo;
     out.keyHi = keyHi;
     out.slotSquares.set(p.sq);
     out.side = p.side;
-    out.level = 1;
+    stampIdentity(p, identity);
   }
   if (level === 2) {
     buildLevel2(p, sc, ply, out);

@@ -3,12 +3,12 @@
  * `eval/features.ts`, `eval/weights.ts` and `eval/evaluate.ts` (DESIGN §4.15,
  * §5.12).
  *
- * `lab/hard-ai/bench/run.ts --eval` is the gate (mirror symmetry over the whole
- * corpus, lazy-window soundness, determinism, throughput, the twenty invariant
- * fixtures). This file pins the ARITHMETIC: every expected score below is
- * derived by hand from DESIGN §5.12.1's weight column and the catalogue, and
- * the table-fed features are cross-checked against the canonical `src/game`
- * functions they stand for rather than against this module's own output.
+ * M6 preserves the original feature indices while replacing the weight ledger
+ * with the approved Phasing accounting bootstrap. These tests pin its hand-
+ * derived arithmetic and keep independent canonical feature checks. Existing
+ * diagnostic terms are not implicitly assigned their historical coefficients.
+ * The named upkeep policy is not rotation-equivariant; no corpus or historical
+ * strength result is asserted by this file.
  */
 import { describe, expect, it, vi } from 'vitest';
 import { getAllSpawnPositions } from '../../../src/game/spawning';
@@ -62,9 +62,9 @@ function features(p: PackedState, root: 0 | 1): Int32Array {
   return out;
 }
 
-describe('eval/features.ts: the 58-slot table', () => {
-  it('names every index exactly once and stages them as DESIGN §4.15 prints', () => {
-    expect(FEATURE_COUNT).toBe(58);
+describe('eval/features.ts: the 62-slot Phasing table', () => {
+  it('preserves the original indices and appends four stage-2 accounting diagnostics', () => {
+    expect(FEATURE_COUNT).toBe(62);
     expect(new Set(FEATURE_NAMES).size).toBe(FEATURE_COUNT);
     expect(FEATURE_NAMES[F.Material]).toBe('Material');
     expect(FEATURE_NAMES[F.Inv20StrandNoRetreat]).toBe('Inv20StrandNoRetreat');
@@ -79,7 +79,8 @@ describe('eval/features.ts: the 58-slot table', () => {
       else if (STAGE_OF[i] === 1) stage1++;
       else stage2++;
     }
-    expect([stage0, stage1, stage2]).toEqual([5, 18, 35]);
+    expect([stage0, stage1, stage2]).toEqual([5, 18, 39]);
+    expect([F.PendingValue, F.ArrivalThreat, F.DisruptPressure, F.RentShortfall]).toEqual([58, 59, 60, 61]);
   });
 
   it('extract writes only the requested stage', () => {
@@ -113,7 +114,7 @@ describe('eval: stage 0 is exact centi-crystals', () => {
     phase: 'place',
   };
 
-  it('reproduces DESIGN §5.12.1 rows 0-4 by hand', () => {
+  it('retains material and cash once, leaving rent to the phase-aware forecast', () => {
     const p = pack(spec);
     const f = features(p, WHITE);
     // Material is the CATALOGUE-PRIOR difference in crystals: (3 + 8) − 5.
@@ -127,8 +128,8 @@ describe('eval: stage 0 is exact centi-crystals', () => {
     // The score uses the 18 `material` params, not `w[Material] · f[Material]`.
     const ev = new Evaluator(replica);
     const material = 300 + 800 - 500;
-    expect(ev.stage0(p, WHITE)).toBe(material + -422 * 1 + 90 * 5 + 25 * 2);
-    expect(ev.stage0(p, BLACK)).toBe(-(material + -422 * 1 + 90 * 5 + 25 * 2));
+    expect(ev.stage0(p, WHITE)).toBe(material + 100 * (5 + 2));
+    expect(ev.stage0(p, BLACK)).toBe(-(material + 100 * (5 + 2)));
   });
 
   it('agrees with the canonical upkeep schedule on Rent', () => {
@@ -138,7 +139,7 @@ describe('eval: stage 0 is exact centi-crystals', () => {
     expect(f[F.Rent]).toBe(canonicalUpkeepDue(state, 'white') - canonicalUpkeepDue(state, 'black'));
   });
 
-  it('scores an enemy body on the home corner as HomeInvaded (the weight carries the sign)', () => {
+  it('records HomeInvaded symmetrically while leaving terminal authority to the rules', () => {
     const p = pack({
       units: [
         { def: 'fire_1', owner: 'white', x: 2, y: 2 },
@@ -147,11 +148,12 @@ describe('eval: stage 0 is exact centi-crystals', () => {
       current: 'white',
       phase: 'place',
     });
-    // The feature COUNTS the invasion for the side it happened to; DESIGN
-    // §5.12.1's weight (−4000) is what makes it a penalty.
+    // Keep the threat diagnostic; the bootstrap does not substitute an old
+    // heuristic penalty for terminal/prover handling.
     expect(features(p, WHITE)[F.HomeInvaded]).toBe(1);
     expect(features(p, BLACK)[F.HomeInvaded]).toBe(-1);
-    expect(DEFAULT_WEIGHTS.w[F.HomeInvaded] * 1).toBe(-4000);
+    expect(DEFAULT_WEIGHTS.w[F.HomeInvaded]).toBe(0);
+    expect(new Evaluator(replica).stage0(p, WHITE)).toBe(300 - 500);
   });
 });
 
@@ -199,12 +201,13 @@ describe('eval: stage 1 against the canonical rules', () => {
     expect(features(mid, BLACK)[F.ActionsLeft]).toBe(-2);
   });
 
-  it('DrawPressure is −648 cc for the leader at clock 9 (DESIGN §5.12.1 #18)', () => {
+  it('retains clock pressure as an unpriced bootstrap diagnostic', () => {
     const leading = pack({ ...spec, inactivityPlies: 9 });
     const f = features(leading, WHITE);
     // White is ahead on material + bank, so the clock counts against white.
     expect(f[F.DrawPressure]).toBe(81);
-    expect(DEFAULT_WEIGHTS.w[F.DrawPressure] * 81).toBe(-648);
+    expect(DEFAULT_WEIGHTS.w[F.DrawPressure]).toBe(0);
+    expect(features(leading, BLACK)[F.DrawPressure]).toBe(-81);
     // The rule is off entirely when the inactivity rule is.
     expect(features(pack({ ...spec, inactivityPlies: 9, inactivityRule: 'off' }), WHITE)[F.DrawPressure]).toBe(0);
   });
@@ -269,26 +272,16 @@ describe('eval: stage 1 against the canonical rules', () => {
 });
 
 describe('eval/weights.ts', () => {
-  it('holds DESIGN §5.12.1 and §5.13 verbatim at the rows that carry a number', () => {
+  it('holds the hand-derived sparse accounting vector with no inherited tactical penalties', () => {
     const w = DEFAULT_WEIGHTS.w;
-    expect(w[F.Material]).toBe(100);
-    expect(w[F.Rent]).toBe(-422);
-    expect(w[F.BankLiquid]).toBe(90);
-    expect(w[F.HomeInvaded]).toBe(-4000);
-    expect(w[F.PstMine]).toBe(60);
-    expect(w[F.SpawnZero]).toBe(-800);
-    expect(w[F.HomeThreat]).toBe(-400);
-    expect(w[F.DrawPressure]).toBe(-8);
-    expect(w[F.EconDelta]).toBe(80);
-    expect(w[F.CornerInfiltration]).toBe(300);
-    expect(w[F.Inv1SpawnZero]).toBe(-800);
-    expect(w[F.Inv7PromoteNoRunway]).toBe(-600);
-    expect(w[F.Inv20StrandNoRetreat]).toBe(-250);
-    // The three rows DESIGN leaves without a weight.
-    expect(w[F.Corridor]).toBe(0);
-    expect(w[F.TierClimb]).toBe(0);
-    expect(w[F.Inv15UnknownAsSafe]).toBe(0);
-    expect(w[F.Inv18WastedEndPlace]).toBe(0);
+    expect([...w].flatMap((value, index) => value ? [[index, value]] : [])).toEqual([
+      [F.Material, 100], [F.BankLiquid, 100], [F.BankExcess, 100],
+      [F.EconDelta, 100], [F.PendingValue, 1],
+    ]);
+    // Released principal and actual rent already belong to the forecast;
+    // diagnostic shortfall, arrival pressure and invariants add no second bill.
+    expect([...w.slice(INV_BASE, INV_BASE + INVARIANT_COUNT)]).toEqual(new Array(20).fill(0));
+    expect([w[F.ArrivalThreat], w[F.DisruptPressure], w[F.RentShortfall]]).toEqual([0, 0, 0]);
   });
 
   it('material priors are cost × 100 for all 18 definitions (DESIGN F9)', () => {
@@ -316,7 +309,9 @@ describe('eval/weights.ts', () => {
 
   it('rejects malformed input', () => {
     expect(() => loadWeights(null)).toThrow();
-    expect(() => loadWeights({ w: [1, 2, 3], material: [] })).toThrow(/58/);
+    expect(() => loadWeights({ w: [1, 2, 3], material: [] })).toThrow(/schema/);
+    const short = JSON.parse(serializeWeights(DEFAULT_WEIGHTS)); short.w = short.w.slice(0, 58);
+    expect(() => loadWeights(short)).toThrow(/62/);
     const bad = JSON.parse(serializeWeights(DEFAULT_WEIGHTS)) as { w: number[] };
     bad.w[0] = 1.5;
     expect(() => loadWeights(bad)).toThrow(/integer/);
@@ -326,7 +321,7 @@ describe('eval/weights.ts', () => {
     expect(Array.from(TUNED_WEIGHTS.w)).toEqual(Array.from(DEFAULT_WEIGHTS.w));
     expect(TUNED_WEIGHTS.w).not.toBe(DEFAULT_WEIGHTS.w);
     TUNED_WEIGHTS.w[F.SpawnArea] += 1;
-    expect(DEFAULT_WEIGHTS.w[F.SpawnArea]).toBe(30);
+    expect(DEFAULT_WEIGHTS.w[F.SpawnArea]).toBe(0);
     TUNED_WEIGHTS.w[F.SpawnArea] -= 1;
   });
 });
@@ -430,9 +425,9 @@ describe('eval/evaluate.ts: terminalScore (DESIGN §5.11.1)', () => {
 /**
  * E3.2 (`config.ts EvalFix`, `docs/hard-ai/e3/E3.2-CORRECTNESS-ARM.md`). The
  * `Evaluator` gained a third constructor argument; this block pins that it
- * defaults to the champion and that the champion's 58-feature vector is
- * bit-for-bit what it was on a random corpus. Every other case in this file is
- * the champion's evaluation and is untouched.
+ * has the same current Phasing vector for omitted, null and empty fix blocks.
+ * These seeded in-memory diagrams test option isolation, not equality with a
+ * historical champion or any saved corpus.
  */
 describe('eval/evaluate.ts: the EvalFix block is off unless it is asked for (E3.2)', () => {
   it('`new Evaluator(rep)` and `new Evaluator(rep, w, null)` agree on 200 random positions', () => {

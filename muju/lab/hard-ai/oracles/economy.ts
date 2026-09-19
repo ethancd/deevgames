@@ -1,4 +1,9 @@
 /**
+ * HISTORICAL STANDARD/HELD-DP DIAGNOSTIC, not M6 Phasing acceptance. The new
+ * authored-only, actual lifecycle oracle is `./phasing-economy.ts`; its tests
+ * never invoke this file or its corpus-loading CLI. Historical checks remain
+ * unchanged for provenance.
+ *
  * `node --import tsx lab/hard-ai/oracles/economy.ts --positions <n> [--out <path>]`
  * (DESIGN §5.8, MILESTONES.md M8).
  *

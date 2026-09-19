@@ -12,7 +12,6 @@ import { AKind, paA, paB, paKind } from '../../../src/ai/hard/core/action';
 import { DEF_ID, DEF_INDEX, activeCatalog } from '../../../src/ai/hard/core/catalog';
 import { allocTables, buildTables, type NodeTables } from '../../../src/ai/hard/tables/context';
 import {
-  LIQUIDITY_FLOOR,
   MULTISET_WORDS,
   PURCHASE_MAX_BODIES,
   candidateDefs,
@@ -363,19 +362,30 @@ describe('gen/purchase.ts planPurchases (DESIGN §5.5, F16)', () => {
     expect(plan.spawnAfter).toBe(0);
     expect(p.bank[0] - plan.spend).toBeGreaterThanOrEqual(cat.cost[cat.tier1[0]]);
     expect(plan.flags & TurnFlag.PURCHASE).toBe(TurnFlag.PURCHASE);
-    // The penalty is applied: the same assignment without it would score higher
-    // than the plan's recorded score by at least `zeroSpawnCc`.
-    expect(plan.scoreCc).toBeLessThan(0);
+    // Compare the identical assignment with only the zero-spawn coefficient
+    // removed. Its absolute sign also includes mining and other ordering terms.
+    const unpenalized = Array.from({ length: 16 }, () => newPlacePlan());
+    const cfg = { ...DESKTOP.gen.purchase, maxPlans: 12,
+      weights: { ...DESKTOP.gen.purchase.weights, zeroSpawnCc: 0 } };
+    const count = planPurchases(p, t, cfg, sc, 0, unpenalized);
+    const counterpart = unpenalized.slice(0, count).find(q => buysOf(q).includes('water_1@2'));
+    expect(counterpart).toBeDefined();
+    expect(counterpart!.scoreCc - plan.scoreCc).toBe(DESKTOP.gen.purchase.weights.zeroSpawnCc);
   });
 
-  it('charges the liquidity floor as an ordering penalty, never as a rejection', () => {
-    // A bank of exactly one body leaves 0 crystals, i.e. `LIQUIDITY_FLOOR`
-    // below the floor; the plan still exists.
-    const { p, t } = prepare(quiet([], 3));
-    const plans = plansOf(p, t);
-    expect(plans.length).toBeGreaterThan(1);
-    expect(LIQUIDITY_FLOOR).toBeGreaterThan(0);
-    expect(plans.some(plan => plan.count === 1)).toBe(true);
+  it('charges the next-bill reserve only as an ordering penalty, never as a rejection', () => {
+    for (const owesRent of [false, true]) {
+      const state = quiet(owesRent ? [{ def: 'fire_2', owner: 'white', x: 2, y: 2 }] : [], 3);
+      state.board.cells.forEach(row => row.forEach(cell => { cell.resourceLayers = 0; }));
+      state.board.initialResourceLayers = new Array<number>(100).fill(0);
+      const { p, t } = prepare(state), out = Array.from({ length: 16 }, () => newPlacePlan());
+      const cfg = { ...DESKTOP.gen.purchase, maxPlans: 16, maxBodies: 1,
+        weights: { mineCc: 0, safeCc: 0, blockCc: 0, strikeCc: 0, anchorCc: 0, zeroSpawnCc: 0, liquidityCc: 17, homeRaceCc: 0 } };
+      expect(t.econ[0].firstBillReached).toBe(true); expect(t.econ[0].requiredReserve).toBe(owesRent ? 1 : 0);
+      const count = planPurchases(p, t, cfg, sc, 0, out), plans = out.slice(0, count).filter(plan => plan.count === 1);
+      expect(plans.length).toBeGreaterThan(0);
+      for (const plan of plans) { expect(plan.spend).toBe(3); expect(plan.scoreCc).toBe(owesRent ? -17 : 0); }
+    }
   });
 
   it('marks delayed home-race intent without emitting a move or attack', () => {

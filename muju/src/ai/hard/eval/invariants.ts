@@ -7,25 +7,13 @@
  * features evaluated on the position AFTER a candidate turn, and the generator
  * still emits the turns that violate them.
  *
- * "AFTER a candidate turn" fixes what is observable, and three of SU's
- * twenty tests are phrased over the turn itself. `src/game/turn.ts`'s
- * `finishTurnStart` calls `resetUnitActions(board, incomingPlayer)`
- * (`board.ts:263-292`), so on the macro node that follows `side`'s turn:
- *
- *   - `side`'s OWN units still carry that turn's `atkCount`, `F_LAST_KILLED`,
- *     `F_PLACED` and `F_PROMOTED` — the incoming player is the OPPONENT, so
- *     `side` is not the one being reset. Invariants 5, 7, 8, 14, 17 and 20 read
- *     those flags directly and are exact.
- *   - the ENEMY's `damageTaken` has just been healed to 0 (it is the incoming
- *     player). Invariant 9 ("the turn left a damaged, unkilled enemy") can
- *     therefore only be seen through its cause — an own unit that attacked
- *     without killing — except at an `upkeepPending` node, where
- *     `resetUnitActions` has not run yet and the damage is still visible.
- *
- * Every restatement is recorded in `docs/hard-ai/design/DEVIATIONS.md` under
- * M12. Invariants 8 and 9 are deliberately DISJOINT (a chip with a kill
- * available is 8, a chip without one is 9) so DESIGN §5.13's gate — "each
- * fixture sets exactly its own bit" — is satisfiable by a single chipping turn.
+ * Phasing keeps the twenty indices, but not Standard's immediate-placement
+ * premises. Bits 5 and 17 are structural zero: a snapshot cannot attribute a
+ * live body's role/path obstruction to a particular delayed commitment.
+ * Bits 7/14 use the first bill actually reached by the conditional pass-only
+ * forecast; bit 19 observes already-paid arrivals, independent of enemy cash.
+ * Other flag-derived diagnostics retain their documented snapshot meaning.
+ * All invariant bootstrap coefficients are zero; no bit is a legal filter.
  *
  * Nothing here allocates after module load.
  */
@@ -33,7 +21,6 @@ import {
   CC,
   DEAD,
   F_LAST_KILLED,
-  F_PLACED,
   F_PROMOTED,
   NO_SLOT,
   type Centi,
@@ -41,7 +28,7 @@ import {
   type Side,
   type Square,
 } from '../types';
-import { bbCopy, bbHas, bbNew, bbNext, bbSet, bbZero, type BB, type Scratch } from '../core/bits';
+import { bbHas, bbNext, type Scratch } from '../core/bits';
 import {
   ADJ_COUNT,
   ADJ_LIST,
@@ -49,15 +36,11 @@ import {
   CORNER,
   CORNER_NEIGHBOURS,
   MANHATTAN,
-  RECT,
   SQ_X,
   SQ_Y,
-  WHITE,
 } from '../core/tables';
 import { activeCatalog, type Catalog } from '../core/catalog';
 import { ACTIONS_PER_TURN } from '../core/state';
-import { bfsMulti } from '../core/movement';
-import { ECON_HORIZON } from '../tables/economy';
 import { KILL_IMPOSSIBLE, cleavePlan, newCleavePlan } from '../tables/kill';
 import { Approach } from '../tables/approach';
 import type { NodeTables } from '../tables/context';
@@ -75,15 +58,6 @@ function bit(i: number): number {
 }
 
 const CLEAVE = newCleavePlan();
-const OCC_SCRATCH: BB = bbNew();
-const CORNER_SRC: BB = bbNew();
-const DIST_BLOCKED = new Int8Array(BOARD);
-const DIST_FREED = new Int8Array(BOARD);
-
-function depthOf(side: Side, s: Square): number {
-  return side === WHITE ? SQ_X[s] + SQ_Y[s] : 18 - SQ_X[s] - SQ_Y[s];
-}
-
 function chebyshev(a: Square, b: Square): number {
   const dx = Math.abs(SQ_X[a] - SQ_X[b]);
   const dy = Math.abs(SQ_Y[a] - SQ_Y[b]);
@@ -125,87 +99,6 @@ function retreatCount(p: PackedState, t: NodeTables, side: Side, from: Square, s
   return n;
 }
 
-/** A purchase made this turn has a job when it anchors the deepest spawn
- * rectangle, plugs the home corner, denies an enemy rectangle, or is racing
- * the enemy corner (DESIGN §5.13 invariant 5's ANCHOR/BLOCK/PLUG/HOME_RACE). */
-function placedMinerHasRole(p: PackedState, t: NodeTables, side: Side, s: Square): boolean {
-  if (s === CORNER[side]) return true; // PLUG
-  const enemy = (1 - side) as Side;
-  if (MANHATTAN[s * BOARD + CORNER[enemy]] <= ACTIONS_PER_TURN) return true; // HOME_RACE
-  const info = t.spawn[side];
-  if (bbHas(info.anchors, s) && depthOf(side, s) >= info.depth) return true; // ANCHOR
-  const enemyRect = RECT[enemy];
-  for (let e = 0, limit = p.slotCount; e < limit; e++) {
-    const a = p.sq[e];
-    if (a === DEAD || p.owner[e] !== enemy) continue;
-    if (bbHas(enemyRect[a], s)) return true; // BLOCK
-  }
-  return false;
-}
-
-/**
- * Invariant 17: "a buy this turn raised a later MOVE's cost in the same turn".
- *
- * Restated on the post-turn position, where the buy is the own unit carrying
- * `F_PLACED`: free every own `F_PLACED` square and re-run the multi-source BFS
- * from the ENEMY corner. If any own unit that did NOT arrive this turn now has
- * a cheaper first step towards that corner, the purchase stood in its way.
- * Distances are read one step out (the unit's own square is occupied by
- * itself, so `bfsMulti` never scores it) — exactly the quantity a later MOVE
- * would have paid.
- */
-function selfBlock(p: PackedState, side: Side, cat: Catalog): boolean {
-  let anyPlaced = false;
-  for (let slot = 0, limit = p.slotCount; slot < limit; slot++) {
-    if (p.sq[slot] === DEAD || p.owner[slot] !== side) continue;
-    if ((p.uflags[slot] & F_PLACED) !== 0) {
-      anyPlaced = true;
-      break;
-    }
-  }
-  if (!anyPlaced) return false;
-
-  const enemy = (1 - side) as Side;
-  bbSet(bbZero(CORNER_SRC), CORNER[enemy]);
-
-  bbCopy(OCC_SCRATCH, p.occ);
-  bfsMulti(OCC_SCRATCH, CORNER_SRC, DIST_BLOCKED);
-
-  for (let slot = 0, limit = p.slotCount; slot < limit; slot++) {
-    const s = p.sq[slot];
-    if (s === DEAD || p.owner[slot] !== side) continue;
-    if ((p.uflags[slot] & F_PLACED) === 0) continue;
-    OCC_SCRATCH[s >>> 5] &= ~(1 << (s & 31));
-  }
-  bfsMulti(OCC_SCRATCH, CORNER_SRC, DIST_FREED);
-
-  for (let slot = 0, limit = p.slotCount; slot < limit; slot++) {
-    const s = p.sq[slot];
-    if (s === DEAD || p.owner[slot] !== side) continue;
-    if ((p.uflags[slot] & F_PLACED) !== 0) continue;
-    if (cat.spd[p.defId[slot]] <= 0) continue;
-    if (firstStep(DIST_FREED, s) < firstStep(DIST_BLOCKED, s)) return true;
-  }
-  return false;
-}
-
-const UNREACHED = 1 << 20;
-
-/** `1 + min over free neighbours of dist[q]`, or `UNREACHED`. */
-function firstStep(dist: Int8Array, from: Square): number {
-  const base = from * 4;
-  const n = ADJ_COUNT[from];
-  let best = UNREACHED;
-  for (let i = 0; i < n; i++) {
-    const q = ADJ_LIST[base + i];
-    const d = dist[q];
-    if (d < 0) continue;
-    const cost = d + 1;
-    if (cost < best) best = cost;
-  }
-  return best;
-}
-
 export function invariantBits(p: PackedState, t: NodeTables, side: Side, sc: Scratch, ply: number): number {
   const cat = activeCatalog();
   const enemy = (1 - side) as Side;
@@ -222,7 +115,6 @@ export function invariantBits(p: PackedState, t: NodeTables, side: Side, sc: Scr
   let chipped = false;
   let killedThisTurn = false;
   let promotedThisTurn = false;
-  let poorMiner = false;
   let softMinerExposed = false;
   let strandNoRetreat = false;
   let retreatSquareLost = false;
@@ -243,23 +135,11 @@ export function invariantBits(p: PackedState, t: NodeTables, side: Side, sc: Scr
     if ((flags & F_LAST_KILLED) !== 0) killedThisTurn = true;
     if ((flags & F_PROMOTED) !== 0) promotedThisTurn = true;
 
-    // 5: a miner bought this turn on a thin cell with no job.
-    if (
-      !poorMiner &&
-      (flags & F_PLACED) !== 0 &&
-      cat.mine[def] > 0 &&
-      p.reserve[s] < 2 * cat.mine[def] &&
-      !placedMinerHasRole(p, t, side, s)
-    ) {
-      poorMiner = true;
-    }
-
-    // 19: a soft miner parked forward inside the enemy's purchase reach.
+    // 19: forward soft miner exposed to an already-paid next-Act arrival.
     if (
       !softMinerExposed &&
       cat.def[def] === 1 &&
       cat.mine[def] > 0 &&
-      p.bank[enemy] >= 3 &&
       MANHATTAN[s * BOARD + ownCorner] >= 5 &&
       bbHas(ifBought, s)
     ) {
@@ -308,13 +188,14 @@ export function invariantBits(p: PackedState, t: NodeTables, side: Side, sc: Scr
 
   if (retreatSquareLost) bits |= bit(3);
   if (strandUnpunished) bits |= bit(4);
-  if (poorMiner) bits |= bit(5);
+  // 5: structural zero. A BUY creates escrow, not a live miner; arrival
+  // resets flags. A snapshot does not prove which commitment lacked a role.
 
   // --- 6: a deep anchor with no cover --------------------------------------
   if (geom.blocking <= 1 && geom.anchorDepth >= 6) bits |= bit(6);
 
   // --- 7: promotion into an upkeep cliff -----------------------------------
-  if (promotedThisTurn && econ.turnsToInsolvency <= ECON_HORIZON) bits |= bit(7);
+  if (promotedThisTurn && econ.firstBillReached && econ.rentShortfall > 0) bits |= bit(7);
 
   // --- 8 / 9: chip damage --------------------------------------------------
   const killAvailable = killNow.count > 0;
@@ -353,8 +234,10 @@ export function invariantBits(p: PackedState, t: NodeTables, side: Side, sc: Scr
     bits |= bit(13);
   }
 
-  // --- 14: below the liquidity floor after a turn that won nothing ---------
-  if (p.bank[side] < 6 && !killedThisTurn) bits |= bit(14);
+  // --- 14: the next reached bill has an actual forecast cash shortage -------
+  // Includes income/refunds before that bill; unpaid Prepare is ordinal zero.
+  // Terminal-before-bill is unreached, not an affordability claim.
+  if (econ.firstBillReached && econ.rentShortfall > 0 && !killedThisTurn) bits |= bit(14);
 
   // --- 15: structural (an UNKNOWN verdict is scored as the bad case) -------
   // Always 0: DESIGN §5.13 gives it no weight and no test of its own; the rule
@@ -364,8 +247,9 @@ export function invariantBits(p: PackedState, t: NodeTables, side: Side, sc: Scr
   // --- 16: sitting on a lead while the draw clock runs --------------------
   if (p.drawRuleOn === 1 && p.clock >= 7 && leadCc(p, side) >= 300 && killNow.count === 0) bits |= bit(16);
 
-  // --- 17: this turn's purchase stood in our own way ----------------------
-  if (selfBlock(p, side, cat)) bits |= bit(17);
+  // --- 17: structural zero ------------------------------------------------
+  // Pending commitments do not block movement. Once arrived, a snapshot alone
+  // does not establish a causal before/after route cost for that commitment.
 
   // --- 18: protocol rule only (DESIGN F7) ---------------------------------
   // Always 0: `END_PLACE_PHASE` is emitted only when legal
@@ -379,7 +263,7 @@ export function invariantBits(p: PackedState, t: NodeTables, side: Side, sc: Scr
 
 /**
  * A weight-free proxy for "who is ahead", in centi-crystals: catalogue
- * material plus the bank. `eval/features.ts` imports it for `DrawPressure`
+ * material plus bank and refundable pending principal. `eval/features.ts` imports it for `DrawPressure`
  * (DESIGN §5.12.1's `sign(v0 + v1 so far)`); invariant 16's "ahead by >= 300
  * cc" uses it here. It lives in this module and not in `features.ts` because
  * `features.ts` already imports this one, and the reverse edge would close a
@@ -387,7 +271,8 @@ export function invariantBits(p: PackedState, t: NodeTables, side: Side, sc: Scr
  */
 export function leadCc(p: PackedState, side: Side): Centi {
   const other = (1 - side) as Side;
-  return p.materialCc[side] - p.materialCc[other] + (p.bank[side] - p.bank[other]) * CC;
+  return p.materialCc[side] - p.materialCc[other]
+    + (p.bank[side] + p.pendCostSum[side] - p.bank[other] - p.pendCostSum[other]) * CC;
 }
 
 /**

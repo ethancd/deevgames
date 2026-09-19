@@ -31,40 +31,42 @@
  * LABEL. `result` is from the ROW SIDE's point of view: 1 when that side won
  * the game, 0.5 on a draw, 0 when it lost.
  *
- * LEAKAGE. `e1-sealed.jsonl` and `e2-val.jsonl` openings are refused three
- * ways — by the run's own opening pool, by the id sets read out of those two
- * files, and by the `e2-` id prefix — and every refusal is counted in the
- * manifest. See `./rows.ts REFUSED_ID_PREFIXES` for why `e1-` is NOT a prefix
- * rule.
+ * INPUT BOUNDARY. Explicit metadata allowlist + caller-supplied SHA-256 bind
+ * p1-dev, completed run manifests, games and every replay. All requested run
+ * manifests are preflighted before any data is opened. Refused pools are never
+ * read for their IDs. A reviewed allowlist is a trust boundary, not independent
+ * proof that the producer labeled its data honestly.
  *
- * WEIGHTS. The evaluator is constructed with the weights
- * `lab/hard-ai/bots/hard.ts hardEnginePatch` resolves for `hard@desktop` (via
- * `analyze/engine.ts resolveHardConfig`), and the run aborts if that vector is
- * the version-0 placeholder — E0's I2 lesson, restated as a rule by
- * `docs/hard-ai/e3/E3-PLAN.md`.
- *
- * COST. Replay-only: no search runs here. 20 baseline games (730 turn
- * boundaries) rebuild and evaluate in 345 ms on this box, so the tool needs no
- * heavy slot.
+ * Current 62-feature Phasing weights v2 only; fresh exclusive outputs. Replay
+ * reconstruction/evaluation is real work and requires the normal shared queue.
  */
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { Replica, allocState, ACTIONS_PER_TURN } from '../../../src/ai/hard/core/state';
 import { Scratch } from '../../../src/ai/hard/core/bits';
 import { Evaluator } from '../../../src/ai/hard/eval/evaluate';
 import { FEATURE_COUNT } from '../../../src/ai/hard/eval/features';
+import { PHASING_EVAL_SCHEMA, WEIGHTS_VERSION, assertCurrentWeights } from '../../../src/ai/hard/eval/weights';
 import { NDEF } from '../../../src/ai/hard/core/catalog';
 import { DEAD, Result, type PackedState } from '../../../src/ai/hard/types';
 import type { PlayerId } from '../../../src/game/types';
 import { configHashOf, resolvedConfigHash } from '../ladder/identity';
 import { keyHex, resolveHardConfig } from '../analyze/engine';
-import { loadReplay, reconstruct, withMatchRules } from '../analyze/replay';
+import { REPLAY_SCHEMA, reconstruct, withMatchRules, type LoadedReplay, type StoredReplay } from '../analyze/replay';
 import {
   CORPUS_MANIFEST_SCHEMA,
   REFUSED_ID_PREFIXES,
   REFUSED_POOLS,
   ROW_SCHEMA,
-  assertNotInSrc,
+  assertFreshOutput,
+  createFreshOutput,
+  DEV_POOL_PATH,
+  loadSourceApproval,
+  preflightRuns,
+  readBoundText,
+  type SourceApproval,
+  type ApprovedRun,
   loadRefusalRules,
   refusalFor,
   sha256File,
@@ -77,10 +79,12 @@ import {
 } from './rows';
 
 const REPO_ROOT = path.resolve(import.meta.dirname, '../../..');
-const DEFAULT_OUT = 'lab/results/hard-ai-e3/tune/corpus';
+const DEFAULT_OUT = ''; // an explicit fresh output path is required
 
 export interface CorpusArgs {
   runs: string[];
+  sourceAllowlist?: string;
+  sourceAllowlistSha256?: string;
   maxTurns: number | null;
   out: string;
   holdoutBy: 'opening' | 'none';
@@ -109,6 +113,8 @@ export function parseArgs(argv: readonly string[]): CorpusArgs {
     };
     switch (a) {
       case '--runs': args.runs.push(next()); break;
+      case '--source-allowlist': args.sourceAllowlist = next(); break;
+      case '--source-allowlist-sha256': args.sourceAllowlistSha256 = next(); break;
       case '--max-turns': args.maxTurns = positive(next(), a); break;
       case '--out': args.out = next(); break;
       case '--holdout-by': {
@@ -130,6 +136,7 @@ export function parseArgs(argv: readonly string[]): CorpusArgs {
     }
   }
   if (args.runs.length === 0) throw new Error('at least one --runs <dir> is required');
+  if (!args.out || !args.sourceAllowlist || !args.sourceAllowlistSha256) throw new Error('--out, --source-allowlist and --source-allowlist-sha256 are required');
   return args;
 }
 
@@ -172,6 +179,7 @@ export function quietVerdict(p: PackedState, tables: { killNow: { entry: { minAc
 // --- run reading -----------------------------------------------------------
 
 interface GameLine {
+  rulesVersion?: string;
   winner: PlayerId | null;
   winType: string;
   opening: string;
@@ -212,14 +220,17 @@ export interface CorpusResult {
   rows: TexelRow[];
   counts: CorpusCounts;
   split: OpeningSplit | null;
+  approval: SourceApproval;
+  sources: ApprovedRun[];
 }
 
 export function buildCorpus(args: CorpusArgs): CorpusResult {
+  assertFreshOutput(path.resolve(REPO_ROOT, args.out), REPO_ROOT);
+  const approval = loadSourceApproval(REPO_ROOT, args.sourceAllowlist, args.sourceAllowlistSha256);
+  const sources = preflightRuns(approval, args.runs);
   const config = resolveHardConfig('desktop');
   const weights = config.weights;
-  if (weights.version === 0) {
-    throw new Error(`corpus: resolved weights are the version-0 placeholder (${weights.label}); refusing to build a corpus against them`);
-  }
+  assertCurrentWeights(weights);
   const rules = loadRefusalRules(REPO_ROOT, [...REFUSED_POOLS, ...args.refusePools]);
 
   const counts: CorpusCounts = {
@@ -242,48 +253,39 @@ export function buildCorpus(args: CorpusArgs): CorpusResult {
   };
   const rows: TexelRow[] = [];
 
-  for (const runArg of args.runs) {
-    const dir = path.resolve(REPO_ROOT, runArg);
-    const relDir = path.relative(REPO_ROOT, dir).split(path.sep).join('/');
-    const gamesFile = path.join(dir, 'games.jsonl');
-    if (!fs.existsSync(gamesFile)) throw new Error(`--runs ${runArg}: no games.jsonl`);
-    let pool: string | null = null;
-    let poolSha: string | null = null;
-    const manifestFile = path.join(dir, 'manifest.json');
-    if (fs.existsSync(manifestFile)) {
-      const manifest = JSON.parse(fs.readFileSync(manifestFile, 'utf8')) as { openings?: { path?: string; sha256?: string } };
-      pool = manifest.openings?.path ?? null;
-      poolSha = manifest.openings?.sha256 ?? null;
-    }
-    const lines = fs.readFileSync(gamesFile, 'utf8').split('\n').filter(l => l.trim() !== '');
+  for (const approved of sources) {
+    const dir = path.resolve(REPO_ROOT, approved.path);
+    const relDir = approved.path;
+    const pool = DEV_POOL_PATH;
+    const poolSha = approval.manifest.pool.sha256;
+    const lines = readBoundText(approval, `${relDir}/games.jsonl`, approved.gamesSha256).split('\n').filter(l => l.trim() !== '');
     const info: RunInfo = { dir, relDir, pool, poolSha256: poolSha, games: lines.length, gamesWithReplay: 0 };
     counts.runs.push(info);
     counts.games += lines.length;
 
-    // A run drawn from a refused pool is refused whole, before any replay is
-    // opened: its games are counted as pool refusals and nothing is read.
-    if (pool !== null && rules.pools.includes(path.basename(pool))) {
-      counts.refusals.pool += lines.length;
-      counts.refusedRuns.push(`${relDir} (pool ${path.basename(pool)})`);
-      continue;
-    }
-
     for (const line of lines) {
       const game = JSON.parse(line) as GameLine;
       const refusal = refusalFor(game.opening, pool, rules);
-      if (refusal !== null) {
-        counts.refusals[refusal]++;
-        continue;
-      }
-      if (game.replayPath === undefined) continue;
-      const replayFile = path.join(dir, game.replayPath);
-      if (!fs.existsSync(replayFile)) continue;
+      if (refusal !== null || !approved.openingIds.includes(game.opening) || game.rulesVersion !== 'muju-phasing-1')
+        throw new Error('corpus: unapproved game opening/rules');
+      if (game.replayPath === undefined) throw new Error('corpus: approved game must have a replay');
+      const permitted = approved.replays.find(r => r.path === game.replayPath && r.opening === game.opening);
+      if (!permitted) throw new Error('corpus: replay is not explicitly allowlisted');
+      // Parse exactly the bytes whose hash was checked; loadReplay(path) would
+      // reopen the path and lose that binding if another writer changed it.
+      const replayFile = path.join(dir, permitted.path);
+      const stored = JSON.parse(readBoundText(approval, `${relDir}/${permitted.path}`, permitted.sha256)) as StoredReplay;
+      if (stored.schema !== REPLAY_SCHEMA || !Array.isArray(stored.steps) || stored.steps.length === 0 ||
+        !stored.meta?.options || stored.meta.rulesVersion !== 'muju-phasing-1' || stored.opening?.id !== game.opening ||
+        stored.meta.winner !== game.winner || stored.meta.winType !== game.winType)
+        throw new Error('corpus: bound replay metadata disagrees with game/rules');
+      const replay: LoadedReplay = { path: replayFile, fileId: path.basename(replayFile).replace(/\.json$/i, ''),
+        stored, meta: stored.meta, options: stored.meta.options, opening: stored.opening, ruleset: 'phasing' };
       info.gamesWithReplay++;
       counts.gamesUsed++;
       if (game.winner === null) counts.drawGames++;
       counts.terminalHistogram[game.winType] = (counts.terminalHistogram[game.winType] ?? 0) + 1;
 
-      const replay = loadReplay(replayFile);
       const rec = reconstruct(replay);
       // `reconstruct` restores the SHIPPED rules on return (see `replay.ts`'s
       // "DO NOT NEST"), so the evaluation opens its own scope after it.
@@ -298,15 +300,15 @@ export function buildCorpus(args: CorpusArgs): CorpusResult {
           let p: PackedState;
           try {
             p = rep.pack(turn.startState, allocState());
-          } catch {
+          } catch (error) {
             counts.packErrors++;
-            continue;
+            throw new Error(`corpus: approved Phasing replay contains an unpackable position: ${String(error)}`);
           }
           if (p.result !== Result.ONGOING) {
             counts.terminalBoundaries++;
             continue;
           }
-          if (p.actions !== ACTIONS_PER_TURN) {
+          if (p.phase !== 1 || p.upkeepPending !== 0 || p.actions !== ACTIONS_PER_TURN) {
             counts.nonMacroBoundaries++;
             continue;
           }
@@ -328,6 +330,8 @@ export function buildCorpus(args: CorpusArgs): CorpusResult {
           counts.quietRows++;
           rows.push({
             schema: ROW_SCHEMA,
+            featureSchema: PHASING_EVAL_SCHEMA,
+            weightsVersion: WEIGHTS_VERSION,
             id: `${replay.fileId}-p${rows.length}`,
             result,
             side,
@@ -354,23 +358,31 @@ export function buildCorpus(args: CorpusArgs): CorpusResult {
     const heldout = new Set(split.heldout);
     for (const row of rows) row.split = heldout.has(row.opening) ? 'heldout' : 'train';
   }
-  return { rows, counts, split };
+  return { rows, counts, split, approval, sources };
 }
 
 export function writeCorpus(args: CorpusArgs, result: CorpusResult): { dir: string; manifest: Record<string, unknown> } {
   const outDir = path.resolve(REPO_ROOT, args.out);
-  assertNotInSrc(outDir, REPO_ROOT);
+  createFreshOutput(outDir, REPO_ROOT);
   const file = writeRows(outDir, result.rows);
   const config = resolveHardConfig('desktop');
   const counts = result.counts;
   const manifest: Record<string, unknown> = {
     schema: CORPUS_MANIFEST_SCHEMA,
+    featureSchema: PHASING_EVAL_SCHEMA,
+    featureCount: FEATURE_COUNT,
+    weightsVersion: WEIGHTS_VERSION,
+    rulesVersion: 'muju-phasing-1',
+    pool: { path: DEV_POOL_PATH, sha256: result.approval.manifest.pool.sha256 },
+    sourceAllowlistSha256: result.approval.sha256,
+    sources: result.sources.map(r => ({ path: r.path, manifestSha256: r.manifestSha256, gamesSha256: r.gamesSha256 })),
     generatedAt: new Date().toISOString(),
     source: 'existing-ladder-replays',
     engineConfigHash: resolvedConfigHash('hard@desktop', { mode: 'wall', ms: 3000 }),
     weights: {
       label: config.weights.label,
       version: config.weights.version,
+      featureSchema: config.weights.featureSchema,
       hash: configHashOf({ w: config.weights.w, material: config.weights.material, version: config.weights.version, label: config.weights.label }),
     },
     args: {
@@ -403,7 +415,7 @@ export function writeCorpus(args: CorpusArgs, result: CorpusResult): { dir: stri
     split: result.split,
     positionsSha256: sha256File(file),
   };
-  fs.writeFileSync(path.join(outDir, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`);
+  fs.writeFileSync(path.join(outDir, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`, { flag: 'wx' });
   return { dir: outDir, manifest };
 }
 
@@ -423,7 +435,7 @@ async function main(): Promise<void> {
   }
 }
 
-const INVOKED_DIRECTLY = process.argv[1] !== undefined && path.resolve(process.argv[1]) === path.resolve(new URL(import.meta.url).pathname);
+const INVOKED_DIRECTLY = process.argv[1] !== undefined && path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url));
 
 if (INVOKED_DIRECTLY) {
   main().catch((err: unknown) => {

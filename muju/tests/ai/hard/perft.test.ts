@@ -413,16 +413,13 @@ describe('corpus.ts mirror180 (DESIGN F10, core/tables.ts rot180)', () => {
     }
   });
 
-  it('does NOT yet mirror pendingSummons: Phasing positions must not be mirrored', () => {
-    // Recorded as a known gap rather than silently producing a wrong position:
-    // `mirror180` predates Phasing and leaves `pendingSummons` untouched, so a
-    // mirrored Phasing position would keep white's commitments on white's
-    // squares while the units moved. Any Phasing symmetry work must extend it.
+  it('mirrors ordered Phasing commitments and is an involution', () => {
     const phasing: GameState = {
       ...phasingInitial(),
       pendingSummons: [{ id: 'x', owner: 'white', definitionId: 'fire_1', position: { x: 1, y: 0 }, cost: 3 }],
     };
     const mirrored = mirror180(phasing);
-    expect(mirrored.pendingSummons).toEqual(phasing.pendingSummons);
+    expect(mirrored.pendingSummons).toEqual([{ id: 'x', owner: 'black', definitionId: 'fire_1', position: { x: 8, y: 9 }, cost: 3 }]);
+    expect(mirror180(mirrored)).toEqual(phasing);
   });
 });

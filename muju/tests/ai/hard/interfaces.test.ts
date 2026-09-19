@@ -463,7 +463,8 @@ const _isTacticalTurn: (p: PackedState, t: Turn) => boolean = isTacticalTurn;
 
 const _searchStats: (s: HardSearchStats) => unknown[] = s => [
   s.nodes, s.qnodes, s.turnNodes, s.evals, s.ttHits, s.ttProbes, s.depth, s.seldepth,
-  s.byClass, s.proverCalls, s.dfpnCalls, s.catalogRebuilds, s.replicaDivergences, s.work,
+  s.byClass, s.proverCalls, s.economyProverCalls, s.economyCappedProverCalls,
+  s.preparationEconomyProverCalls, s.preparationEconomyCappedProverCalls, s.dfpnCalls, s.catalogRebuilds, s.replicaDivergences, s.work,
   s.elapsedMs, s.stopReason,
 ];
 const _searchContext: (s: SearchContext) => unknown[] = s => [
@@ -510,7 +511,7 @@ const _forceHome: (s: SearchContext, p: PackedState, side: Side, cfg: DfpnConfig
 
 const _bookEntryM18: (e: BookEntry) => number[] = e => [e.keyLo, e.keyHi, e.turnLo, e.turnHi, e.flags, e.score, e.count];
 const _parseBook: (bytes: ArrayBuffer) => Book = parseBook;
-const _packBook: (entries: BookEntry[], meta: { handicap: number; mapHash: number; weightsVersion: number }) => Uint8Array =
+const _packBook: (entries: BookEntry[], meta: { handicap: number; mapHash: number; weightsVersion: number; weightsKey: string; mapKey: string; rulesKey: string }) => Uint8Array =
   packBook;
 const _emptyBook: Book = EMPTY_BOOK;
 const _canonicalKey: (p: PackedState) => { lo: number; hi: number; negated: boolean } = canonicalKey;
@@ -966,12 +967,13 @@ describe('DESIGN §4 declaration tests', () => {
     expect(declared.every(d => d !== undefined && d !== null)).toBe(true);
     expect(declared).toHaveLength(20);
 
-    // DESIGN §4.15's feature table, verbatim at both ends and at every stage boundary.
-    expect(FEATURE_COUNT).toBe(58);
-    expect(FEATURE_NAMES).toHaveLength(58);
+    // Original feature boundaries survive; M6 appends its four diagnostics.
+    expect(FEATURE_COUNT).toBe(62);
+    expect(FEATURE_NAMES).toHaveLength(62);
     expect([F.Material, F.HomeInvaded, F.PstMine, F.ElementCoverage, F.EconDelta, F.Inv20StrandNoRetreat]).toEqual([
       0, 4, 5, 22, 23, 57,
     ]);
+    expect([F.PendingValue, F.ArrivalThreat, F.DisruptPressure, F.RentShortfall]).toEqual([58, 59, 60, 61]);
     expect(INV_BASE).toBe(38);
     expect(INVARIANT_COUNT).toBe(20);
     expect([STAGE_OF[F.Material], STAGE_OF[F.PstMine], STAGE_OF[F.EconDelta], STAGE_OF[F.Inv20StrandNoRetreat]])
@@ -1102,7 +1104,7 @@ describe('config.ts: DESIGN §6.3 profile table and §8 constants', () => {
       expect([cfg.quiesce.deltaMarginCc, cfg.quiesce.maxCandidates]).toEqual([300, 8]);
       expect([cfg.dfpn.maxTurns, cfg.dfpn.epsilonQ2, cfg.dfpn.ttBits]).toEqual([3, 5, 17]);
       expect([cfg.gen.action.keep, cfg.gen.purchase.maxBodies, cfg.gen.purchase.squares, cfg.gen.purchase.keepPerMultiset]).toEqual([4, 4, 8, 3]);
-      expect(cfg.weights.w.length).toBe(58);
+      expect(cfg.weights.w.length).toBe(62);
       expect(cfg.weights.material.length).toBe(NDEF);
     }
   });

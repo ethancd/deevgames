@@ -13,7 +13,7 @@
  * line independently `JSON.parse`-able.
  */
 import fs from 'node:fs';
-import type { Cell, GameState, PlayerId, Position } from '../../../src/game/types';
+import type { Cell, GameState, PendingSummon, PlayerId, Position } from '../../../src/game/types';
 import type { ElementGraphName } from '../../../src/game/elements';
 
 export interface RulesBlock {
@@ -103,11 +103,13 @@ function flip(p: Position): Position {
 
 /**
  * 180-degree board symmetry with sides swapped: square s -> 99-s (DESIGN
- * `core/tables.ts rot180`, F10). Used for the evaluation-symmetry gate
- * (`evaluate(p) === -evaluate(mirror180(p))`, §5.12 M12) and for doubling a
- * corpus of positions authored from White's point of view.
+ * `core/tables.ts rot180`, F10). This transforms state, including ordered
+ * Phasing commitments and receipts. It does not imply score symmetry: the
+ * named default-upkeep policy has absolute-square tie breaks, and handicaps
+ * and process-global rules require separate interpretation.
  */
 export function mirror180(state: GameState): GameState {
+  const summon = (p: PendingSummon): PendingSummon => ({ ...p, owner: swapSide(p.owner), position: flip(p.position) });
   const cells: Cell[][] = new Array(10);
   for (let y = 0; y < 10; y++) {
     const row: Cell[] = new Array(10);
@@ -137,7 +139,12 @@ export function mirror180(state: GameState): GameState {
     reviewUpkeep: state.reviewUpkeep
       ? { white: state.reviewUpkeep.black, black: state.reviewUpkeep.white }
       : state.reviewUpkeep,
-    lastIncome: state.lastIncome ? { ...state.lastIncome, player: swapSide(state.lastIncome.player) } : state.lastIncome,
+    pendingSummons: state.pendingSummons?.map(summon),
+    lastSummoning: state.lastSummoning ? { ...state.lastSummoning, player: swapSide(state.lastSummoning.player),
+      summoned: state.lastSummoning.summoned.map(summon), disrupted: state.lastSummoning.disrupted.map(summon) } : state.lastSummoning,
+    validMoves: state.validMoves.map(flip), validAttacks: state.validAttacks.map(flip),
+    lastIncome: state.lastIncome ? { ...state.lastIncome, player: swapSide(state.lastIncome.player),
+      takes: state.lastIncome.takes.map(t => ({ ...t, position: flip(t.position) })) } : state.lastIncome,
     lastUpkeep: state.lastUpkeep ? { ...state.lastUpkeep, player: swapSide(state.lastUpkeep.player) } : state.lastUpkeep,
   };
 }

@@ -135,13 +135,14 @@ import { newKeepSetTable, type KeepSetTable } from './core/action';
 import { PackError, Replica, allocState, newUndo } from './core/state';
 import { createReachMemo } from './core/movement';
 import { allocTables, buildTables, type NodeTables } from './tables/context';
+import { PhasingEconomyProofCutoff } from './tables/phasing-economy';
 import { Evaluator, terminalScore } from './eval/evaluate';
 import { DEFAULT_WEIGHTS } from './eval/weights';
 import { TurnPool, type Turn } from './gen/turn';
 import { RescueCap, TurnGenerator, newGenStats, outCapacityFor } from './gen/generate';
 import { newDfpnResult } from './tactics/dfpn';
 import { EMPTY_BOOK } from './book/format';
-import { canonicalKey } from './book/probe';
+import { findCompatibleBookEntry } from './book/probe';
 import { ProofCache, TranspositionTable, newTTEntry } from './search/tt';
 import { newOrderTables, clearOrderTables } from './search/order';
 import {
@@ -155,7 +156,7 @@ import {
   ttBitsForRung,
   updateProfile,
 } from './search/time';
-import { allocTurn, newSearchStats, type SearchContext } from './search/pvs';
+import { INF, allocTurn, newSearchStats, type SearchContext } from './search/pvs';
 import { installRescueWitness, searchRoot, type RootOptions, type RootResult } from './search/root';
 import { DESKTOP, type Book, type DeviceProfile, type GenConfig, type HardConfig, type Weights } from './config';
 
@@ -525,12 +526,23 @@ export class HardEngine {
         };
       }
       packed.proverMode = 2;
-      const t = buildTables(packed, ctx.sc, 0, 2, ctx.tables[0]);
+      const preparationTables = ctx.tables[0];
+      const preparationBefore = preparationTables.economyProverCalls;
+      const preparationCappedBefore = preparationTables.economyCappedProverCalls;
+      let t: NodeTables;
+      try {
+        t = buildTables(packed, ctx.sc, 0, 2, preparationTables);
+      } finally {
+        // The rung and its meter have not started. Report this preparation
+        // separately, even on a typed forecast veto, rather than hiding a
+        // cache fill or charging it into the later search's fixed budget.
+        ctx.stats.preparationEconomyProverCalls = preparationTables.economyProverCalls - preparationBefore;
+        ctx.stats.preparationEconomyCappedProverCalls = preparationTables.economyCappedProverCalls - preparationCappedBefore;
+      }
       const book = this.config.book;
       let bookHit = false;
       if (book !== null && book.size > 0) {
-        const key = canonicalKey(packed);
-        bookHit = book.lookup(key.lo, key.hi) !== null;
+        bookHit = findCompatibleBookEntry(book, packed, this.config.weights) !== null;
       }
       const tms = opts?.targetMs ?? targetMs(packed, t, this.config.time, bookHit, candidateHint(packed));
       // The watchdog window. A11 anchors it at the start of the SEARCH; E1.5
@@ -560,6 +572,7 @@ export class HardEngine {
         try {
           probe = searchRoot(this, state, { work: COLD_PROBE_WORK, config: this.config, canonical: state });
         } catch (err) {
+          if (err instanceof PhasingEconomyProofCutoff) throw err;
           ctx.stats.elapsedMs = now() - enteredAt;
           ctx.stats.calibratedMs = now() - probeStartedAt;
           return {
@@ -581,7 +594,10 @@ export class HardEngine {
         // rest accumulate inside one `HardSearchStats`, and a turn's stats
         // should describe the turn's search. The two calibration fields below
         // are written onto the fresh one.
+        const { preparationEconomyProverCalls, preparationEconomyCappedProverCalls } = ctx.stats;
         ctx.stats = newSearchStats();
+        ctx.stats.preparationEconomyProverCalls = preparationEconomyProverCalls;
+        ctx.stats.preparationEconomyCappedProverCalls = preparationEconomyCappedProverCalls;
         // Size the rung for what is LEFT of the allowance. `now() - enteredAt`
         // rather than the probe's own time, because the deadline window starts
         // at `enteredAt`: the packing and the level-2 build are already spent
@@ -639,6 +655,7 @@ export class HardEngine {
         ply1Trace: opts?.ply1Trace,
       });
     } catch (err) {
+      if (err instanceof PhasingEconomyProofCutoff) throw err;
       // Same reason as the pack-error return above: report what the failed
       // search spent, so the caller's turn allowance is debited by it.
       // `measured` is false in fixed-work mode, which reads no clock at all.
@@ -765,7 +782,7 @@ export class HardEngine {
    */
   calibrate(): DeviceProfile {
     const ctx = this.ctx;
-    const state = createInitialGameState();
+    const state = createInitialGameState(undefined, 4, 0, 'phasing');
     const p = ctx.rep.pack(state, allocState());
     p.proverMode = 2;
     const meter = new WorkMeter(0x7fffffff);
@@ -775,11 +792,14 @@ export class HardEngine {
         ctx.eval.invalidate();
         ctx.tables[0].keyLo = -1 >>> 0;
         ctx.tables[0].keyHi = -1 >>> 0;
-        buildTables(p, ctx.sc, 0, 2, ctx.tables[0]);
+        const tables = ctx.tables[0], before = tables.economyProverCalls;
+        try { buildTables(p, ctx.sc, 0, 2, tables); }
+        finally {
+          const calls = tables.economyProverCalls - before;
+          if (calls > 0) meter.spend(WorkClass.PROVER, calls);
+        }
         meter.spend(WorkClass.KILLTABLE, 1);
-        ctx.eval.full(p, 0, ctx.sc, 0);
-        meter.spend(WorkClass.EVAL1, 1);
-        meter.spend(WorkClass.EVAL2, 1);
+        ctx.eval.evaluate(p, 0, -INF, INF, ctx.sc, 0, meter);
       }
     }
     const elapsedMs = now() - startedAt;

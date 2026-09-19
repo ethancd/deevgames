@@ -88,6 +88,12 @@ export interface HardSearchStats {
    * capped a proof, which is the assertion that matters.
    */
   cappedProverCalls: number;
+  /** Per-search private forecast proof deltas, separate from Replica's lifetime gauge. */
+  economyProverCalls: number;
+  economyCappedProverCalls: number;
+  /** Wall-mode pre-rung forecast work, reported separately and never priced into the rung. */
+  preparationEconomyProverCalls: number;
+  preparationEconomyCappedProverCalls: number;
   dfpnCalls: number;
   catalogRebuilds: number;
   replicaDivergences: number;
@@ -164,6 +170,10 @@ export function newSearchStats(): HardSearchStats {
     byClass: new Int32Array(9),
     proverCalls: 0,
     cappedProverCalls: 0,
+    economyProverCalls: 0,
+    economyCappedProverCalls: 0,
+    preparationEconomyProverCalls: 0,
+    preparationEconomyCappedProverCalls: 0,
     dfpnCalls: 0,
     catalogRebuilds: 0,
     replicaDivergences: 0,
@@ -404,13 +414,40 @@ export function countProver(s: SearchContext, before: number): void {
   s.meter.count(WorkClass.PROVER, calls);
 }
 
+/** Private forecast replicas do not contribute to s.rep's counters. */
+function recordEconomyProver(s: SearchContext, calls: number, capped: number): void {
+  s.stats.proverCalls += calls;
+  s.stats.economyProverCalls += calls;
+  s.stats.economyCappedProverCalls += capped;
+}
+
+/** L2 search tables charge only work performed on this call, including vetoes. */
+export function buildSearchTables(s: SearchContext, p: PackedState, ply: number): NodeTables {
+  const tables = s.tables[ply];
+  const before = tables.economyProverCalls, cappedBefore = tables.economyCappedProverCalls;
+  try {
+    return buildTables(p, s.sc, ply, 2, tables);
+  } finally {
+    const calls = tables.economyProverCalls - before;
+    recordEconomyProver(s, calls, tables.economyCappedProverCalls - cappedBefore);
+    if (calls > 0) s.meter.spend(WorkClass.PROVER, calls);
+  }
+}
+
 export function unmakeTurn(s: SearchContext, p: PackedState, applied: number): void {
   for (let i = 0; i < applied; i++) s.rep.unmake(p, s.undo);
 }
 
 /** Leaf value, from the side-to-move's point of view. */
 export function evaluateLeaf(s: SearchContext, p: PackedState, alpha: Centi, beta: Centi, ply: number): Centi {
-  return s.eval.evaluate(p, p.side as Side, alpha, beta, s.sc, ply, s.meter);
+  const tables = s.eval.lastTables;
+  const before = tables.economyProverCalls, cappedBefore = tables.economyCappedProverCalls;
+  try {
+    return s.eval.evaluate(p, p.side as Side, alpha, beta, s.sc, ply, s.meter);
+  } finally {
+    // Evaluator already prices the delta; this adds only search diagnostics.
+    recordEconomyProver(s, tables.economyProverCalls - before, tables.economyCappedProverCalls - cappedBefore);
+  }
 }
 
 /**
@@ -507,8 +544,17 @@ export function generateAt(
   // must be in force for the whole generation, not only for the first line.
   s.scoreMover = p.side as Side;
   const proverBefore = s.rep.fullProverCalls;
-  const raw = gen.generate(p, t, s.score, GEN_SINK.arm(s.meter, s.stop, policyStop), ply, s.keep[ply], s.genOut, s.genStats);
-  countProver(s, proverBefore);
+  s.genStats.economyProverCalls = 0;
+  s.genStats.economyCappedProverCalls = 0;
+  let raw: number;
+  try {
+    raw = gen.generate(p, t, s.score, GEN_SINK.arm(s.meter, s.stop, policyStop), ply, s.keep[ply], s.genOut, s.genStats);
+  } finally {
+    countProver(s, proverBefore);
+    const calls = s.genStats.economyProverCalls;
+    recordEconomyProver(s, calls, s.genStats.economyCappedProverCalls);
+    if (calls > 0) s.meter.count(WorkClass.PROVER, calls);
+  }
   // A generation the DEADLINE cut leaves a PARTIAL candidate list, and a node
   // that searches a partial list must not publish its value to the
   // transposition table — the same rule `isTruncating` enforces for a partial
@@ -588,7 +634,7 @@ export function pvs(
       // node was about to do anyway. See DEVIATIONS under M14.
       if (!e.boundProver || nodeProverMode !== PROVER_FULL) return e.scoreCc;
       p.proverMode = nodeProverMode;
-      tables = buildTables(p, s.sc, ply, 2, s.tables[ply]);
+      tables = buildSearchTables(s, p, ply);
       s.meter.spend(WorkClass.KILLTABLE);
       if (minTurnsToCorner(p, tables, mover) > 1 && minTurnsToCorner(p, tables, other) > 1) return e.scoreCc;
     }
@@ -596,7 +642,7 @@ export function pvs(
 
   p.proverMode = nodeProverMode;
   if (tables === null) {
-    tables = buildTables(p, s.sc, ply, 2, s.tables[ply]);
+    tables = buildSearchTables(s, p, ply);
     s.meter.spend(WorkClass.KILLTABLE);
   }
   const t: NodeTables = tables;
@@ -737,7 +783,7 @@ function rootIteration(s: SearchContext, p: PackedState, depth: number, alpha: C
   s.meter.spend(WorkClass.MACRO);
   s.stats.nodes++;
   p.proverMode = PROVER_FULL;
-  const t = buildTables(p, s.sc, 0, 2, s.tables[0]);
+  const t = buildSearchTables(s, p, 0);
   s.meter.spend(WorkClass.KILLTABLE);
 
   let ttEntry: TTEntry | null = null;
