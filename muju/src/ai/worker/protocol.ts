@@ -37,6 +37,21 @@ export interface SearchRequest extends Identity {
   work?: number;
   /** hard only. */
   hard?: Partial<HardConfig>;
+  /**
+   * THE PHASING PREVIEW MARKER, and the only thing that opens the worker's
+   * Phasing guard. Absent (the default, and every request any shipped code path
+   * sends) means a `ruleset: 'phasing'` state is refused with "AI supports
+   * Standard rules only…", exactly as before the preview existed.
+   *
+   * The CALLER resolves the gate, never the worker: `useAI` sets this from
+   * `readPhasingAiPreview()` (`src/ai/phasingPreview.ts`) — the personal
+   * `?phasingAi=1` / `localStorage['muju.phasingAi']='1'` opt-in — and from
+   * nothing else. The worker reads no flag, no storage and no URL of its own,
+   * so a request that arrives without the marker cannot reach a Phasing search
+   * however the page was loaded. The version stays 3: an older reader ignores
+   * an unknown field, and its absence means what it always meant.
+   */
+  phasingPreview?: boolean;
 }
 
 /**

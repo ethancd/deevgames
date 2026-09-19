@@ -6,6 +6,8 @@ import { aiTurnBudgetMs, DEFAULT_AI_PACE, type AIPace } from '../ai/turnTime';
 import { applyAction } from '../ai/simulate';
 import { isLegalAction, phaseEndAction } from '../game/legality';
 import { fallbackKindFor, noteHardBudgetExhausted, noteHardPlanReplayed, noteHardRequest, noteHardTurn, readHardTurnBudgetMs, recordHardFallback, resolveHardAiRoute } from '../ai/hardOptIn';
+import { readPhasingAiPreview } from '../ai/phasingPreview';
+import { fallbackDecisionsRemaining, turnSearchAllowance } from '../ai/turnFunding';
 
 interface UseAIOptions {
   difficulty?: AIDifficulty; thinkingDelay?: number; enabled?: boolean;
@@ -31,6 +33,19 @@ const gameplayDigest = (s: GameState): string => JSON.stringify({
  * empty plan and silently passes the phase). Exported so the tests can name
  * the constant rather than restate its value. */
 export const MIN_TURN_SEARCH_MS = 1;
+
+/**
+ * PREVIEW-ONLY SAFETY STOP on whole-turn searches within a single Phasing turn.
+ * A Phasing turn has three searchable segments (Act, the upkeep decision,
+ * Prepare) and each search either advances the state or is dropped as an
+ * invalid suffix, so an ordinary turn is two or three searches and this is never
+ * approached. It exists because the preview is an UNRELEASED engine route under
+ * rules no gate has passed: a plan that somehow replayed legally without ever
+ * handing the turn off would spin the tab, and finishing the turn with
+ * `phaseEndAction` is strictly better than that. Never consulted under Standard,
+ * whose loop is unchanged.
+ */
+export const MAX_PREVIEW_TURN_SEARCHES = 64;
 
 export function useAI(options: UseAIOptions = {}) {
   const { difficulty: initialDifficulty = 'medium', pace = DEFAULT_AI_PACE, thinkingDelay = 500, enabled = true, getCurrentState } = options;
@@ -73,8 +88,14 @@ export function useAI(options: UseAIOptions = {}) {
    * which is the ordinary case and must not trigger a re-read (and a second
    * log line) every turn. */
   const hardBudgetMs = useRef<number | null | undefined>(undefined);
+  /** Whether this game may ask an engine to play PHASING at all, resolved ONCE
+   * PER GAME START exactly like `hardOptIn` above and cleared by the same
+   * `cancel`. It is the personal `?phasingAi=1` preview opt-in
+   * (`src/ai/phasingPreview.ts`) and nothing else; with it null/false a Phasing
+   * request is never marked, and the worker refuses it as it always did. */
+  const phasingPreview = useRef<boolean | null>(null);
   const currentGetter = useRef(getCurrentState); currentGetter.current = getCurrentState;
-  const cancel = useCallback(() => { pendingCommit.current?.(null); pendingCommit.current = null; generation.current++; busy.current = false; hardOptIn.current = null; hardBudgetMs.current = undefined; client.current?.restart(); setIsThinking(false); setTurnClock(null); }, []);
+  const cancel = useCallback(() => { pendingCommit.current?.(null); pendingCommit.current = null; generation.current++; busy.current = false; hardOptIn.current = null; hardBudgetMs.current = undefined; phasingPreview.current = null; client.current?.restart(); setIsThinking(false); setTurnClock(null); }, []);
   const clearLastTurnActions = useCallback(() => { setLastTurnActions([]); setLastDebug(null); }, []);
   useEffect(() => { cancel(); }, [difficulty, enabled, cancel]);
   useEffect(() => { setDifficulty(initialDifficulty); }, [initialDifficulty]);
@@ -85,6 +106,14 @@ export function useAI(options: UseAIOptions = {}) {
     client.current ??= new AIWorkerClient();
     hardOptIn.current ??= resolveHardAiRoute();
     if (hardBudgetMs.current === undefined) hardBudgetMs.current = readHardTurnBudgetMs();
+    phasingPreview.current ??= readPhasingAiPreview();
+    // THE ONLY THING THAT MARKS A REQUEST AS A PREVIEW. Both conditions are
+    // required: the personal opt-in, and a state that is actually Phasing. A
+    // Standard game therefore sends byte-for-byte the request it always sent
+    // (`phasingPreview` stays `undefined`, not `false`), and a Phasing game
+    // without the opt-in sends an unmarked request the worker refuses.
+    const previewPhasing = phasingPreview.current && state.ruleset === 'phasing';
+    const previewMarker = previewPhasing ? { phasingPreview: true as const } : undefined;
     // THE ONLY GATE ON THE REAL ENGINE. DESIGN §6.4's release flag has landed
     // (`hardEnabled`, true since the E6 release decision of 2026-09-18), so
     // `resolveHardAiRoute()` resolves `optOut ? false : hardEnabled ||
@@ -131,6 +160,8 @@ export function useAI(options: UseAIOptions = {}) {
     // Wall clock of the in-flight whole-turn request, so a REJECTED one can
     // still be charged to the turn (see the `catch` below).
     let requestStartedAt = 0;
+    // Preview only; see `MAX_PREVIEW_TURN_SEARCHES`.
+    let previewSearches = 0;
     const valid = () => {
       if (token !== generation.current) return false;
       const real = currentGetter.current?.();
@@ -212,8 +243,19 @@ export function useAI(options: UseAIOptions = {}) {
             // clock out, so a move landing with the wedge half full is the
             // engines working as designed, not a budget that failed to arrive.
             // Nowhere else in this hook decides what an engine may spend.
-            turn = await client.current.findBestTurn(currentState, difficulty, Math.max(MIN_TURN_SEARCH_MS, remainingCPU), turnActions.length,
-              useHard ? { engine: 'hard' } : undefined);
+            //
+            // A PHASING TURN SPANS ACT, THE UPKEEP DECISION AND PREPARE under
+            // this same mover and this same allowance, so the request is the
+            // remainder LESS a floor reserved for the segments still to be
+            // searched (`ai/turnFunding.ts`). Without it, a cheap Act decision
+            // left `remainingCPU` nearly full and Prepare was re-funded with
+            // the whole pace budget — the turn ran to twice its clock — while a
+            // greedy Act search left Prepare on the `MIN_TURN_SEARCH_MS` floor.
+            // Under STANDARD `turnSearchAllowance` is exactly the old
+            // `Math.max(MIN_TURN_SEARCH_MS, remainingCPU)`.
+            turn = await client.current.findBestTurn(currentState, difficulty,
+              turnSearchAllowance(currentState, remainingCPU, turnBudgetMs, MIN_TURN_SEARCH_MS), turnActions.length,
+              useHard || previewMarker ? { ...(useHard ? { engine: 'hard' as const } : {}), ...previewMarker } : undefined);
           } catch (e) {
             if (e instanceof SearchCancelled) throw e;
             // (c) worker failure or watchdog timeout. A THROW REPORTS NO
@@ -270,12 +312,28 @@ export function useAI(options: UseAIOptions = {}) {
           if (useHard) noteHardPlanReplayed();
           // outcome === 'ok': either the turn is over (outer while exits) or
           // the plan ran out mid-turn (budget/phase boundary) — re-request a
-          // fresh whole-turn search from the now-live state.
+          // fresh whole-turn search from the now-live state. Under Phasing that
+          // boundary is real and expected: Act → upkeep → Prepare, all inside
+          // this one turn, this one allowance and this one dial.
+          if (previewPhasing && ++previewSearches >= MAX_PREVIEW_TURN_SEARCHES) {
+            // Unreleased route, never reached in an ordinary turn; finish the
+            // turn legally rather than spin. See `MAX_PREVIEW_TURN_SEARCHES`.
+            while (currentState.phase === 'playing' && currentState.turn.currentPlayer === playerId && token === generation.current) {
+              if (await dispatchOne(phaseEndAction(currentState)) !== 'ok') break;
+            }
+            break;
+          }
           continue;
         }
 
-        // Legacy per-action loop: unchanged fallback for the remainder of the turn.
-        const decisionsRemaining = currentState.turn.phase === 'action' ? Math.max(1, currentState.turn.actionsRemaining) : 4;
+        // Legacy per-action loop: unchanged fallback for the remainder of the
+        // turn. Under STANDARD `fallbackDecisionsRemaining` is byte for byte
+        // the expression that stood here. Under PHASING it also counts the
+        // upkeep decision and Prepare, because dividing the remainder by the
+        // ACT actions alone hands the whole remainder out before the turn's
+        // later phases are reached and leaves them unfunded
+        // (`ai/turnFunding.ts`, after `lab/ai/phasing-selfplay.ts`).
+        const decisionsRemaining = fallbackDecisionsRemaining(currentState);
         // A spent turn must still ASK for a legal action. An unfloored share
         // of an exhausted remainder is a zero-budget search, which comes back
         // with an empty plan and silently passes the phase; the whole-turn
@@ -287,7 +345,7 @@ export function useAI(options: UseAIOptions = {}) {
         let allowance = share;
         if (useHard && share < MIN_TURN_SEARCH_MS) { allowance = MIN_TURN_SEARCH_MS; noteHardBudgetExhausted(); }
         searchStarted();
-        const result = await client.current.findBestAction(currentState, difficulty, allowance, turnActions.length);
+        const result = await client.current.findBestAction(currentState, difficulty, allowance, turnActions.length, previewMarker);
         remainingCPU = Math.max(0, remainingCPU - result.timeMs);
         searchEnded();
         if (!valid()) break;

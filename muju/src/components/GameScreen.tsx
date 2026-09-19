@@ -20,7 +20,10 @@ import { ReplayLauncher, TurnReplay, useReplayPlayback } from './TurnReplay';
 import { AIRecap } from './AIRecap';
 import { AIConsole } from './AIConsole';
 import { AIThinkingTimer, AI_TIMER_MIN_BUDGET_MS } from './AIThinkingTimer';
-import { formatTurnSeconds } from '../ai/turnTime';
+import { formatTurnSeconds, DEFAULT_AI_PACE } from '../ai/turnTime';
+import { readPhasingAiPreview } from '../ai/phasingPreview';
+import { resolveHardAiRoute } from '../ai/hardOptIn';
+import { copyToClipboard, formatPositionReport } from '../utils/positionReport';
 import { saveAIPace } from '../utils/persistence';
 import { PassDeviceOverlay } from './PassDeviceOverlay';
 import { InstructionsModal } from './InstructionsModal';
@@ -83,6 +86,20 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
   } = game;
   const actionsPerTurn = getActionsPerTurn(state);
   const phasing = isPhasing(state);
+  /**
+   * THE PHASING AI PREVIEW, read once when this screen mounts (a game start).
+   * Two guards in this file hang off it, and both are CLOSED without it:
+   * the `useAI` seats below stay disabled under Phasing, and the turn triggers
+   * never fire. With it on, a Phasing game drives the AI seats through exactly
+   * the same reducer, dispatch animation and fallback path as a Standard one.
+   * See `src/ai/phasingPreview.ts`.
+   */
+  const [previewOptIn] = useState(readPhasingAiPreview);
+  /** Only a Phasing game is a preview game; Standard is untouched by the flag. */
+  const phasingPreview = phasing && previewOptIn;
+  /** AI seats run under Phasing only in preview mode; otherwise, as before, not
+   * at all. Local games only — an online/observer game leaves both hooks off. */
+  const aiSeatsAllowed = !phasing || phasingPreview;
   const { playback: savedPlayback, mode: replayMode, setReplayMode, startReplay, closeReplay, toggleReplay, stepReplay } = useReplayPlayback(`${state.phase}:${state.turn.currentPlayer}:${state.turn.turnNumber}`);
   const playback = online?.playingIncoming ? null : savedPlayback;
   useEffect(() => { if (online?.playingIncoming) closeReplay(); }, [online?.playingIncoming, closeReplay]);
@@ -246,7 +263,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
     difficulty: config.aiDifficulty.white,
     pace: config.aiPace?.white,
     thinkingDelay: 400,
-    enabled: !phasing && config.controls.white === 'ai' && !isPaused && state.phase === 'playing',
+    enabled: aiSeatsAllowed && config.controls.white === 'ai' && !isPaused && state.phase === 'playing',
     getCurrentState, state,
   });
 
@@ -254,12 +271,43 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
     difficulty: config.aiDifficulty.black,
     pace: config.aiPace?.black,
     thinkingDelay: 400,
-    enabled: !phasing && config.controls.black === 'ai' && !isPaused && state.phase === 'playing',
+    enabled: aiSeatsAllowed && config.controls.black === 'ai' && !isPaused && state.phase === 'playing',
     getCurrentState, state,
   });
   const opponentAI = humanPlayer === 'black' ? whiteAI : blackAI;
 
   const [showAIRecap, setShowAIRecap] = useState(false);
+  /**
+   * "REPORT THIS POSITION" — PREVIEW ONLY. The whole point of letting the owner
+   * play an unreleased engine is that he can flag the moments where its play
+   * looks wrong, and a report is only useful if the position replays exactly.
+   * The button exists nowhere else: without the opt-in `phasingPreview` is
+   * false, and neither the button, this handler's result nor the status line is
+   * ever rendered (`src/utils/positionReport.ts`).
+   */
+  const [reportStatus, setReportStatus] = useState<string | null>(null);
+  const handleReportPosition = useCallback(async () => {
+    // The AI seat that just moved: the side the mover is waiting on, or, in a
+    // watched AI-vs-AI game where both are engines, the current mover.
+    const opponent: PlayerId = state.turn.currentPlayer === 'white' ? 'black' : 'white';
+    const side: PlayerId | null = config.controls[opponent] === 'ai' ? opponent
+      : config.controls[state.turn.currentPlayer] === 'ai' ? state.turn.currentPlayer : null;
+    const difficulty = side ? config.aiDifficulty[side] : 'medium';
+    // Resolved the same way `useAI` resolved it for the seat, so the report
+    // names the engine that actually produced the move rather than the
+    // difficulty label. Read here rather than at mount so a Standard game logs
+    // and resolves nothing it did not already.
+    const engine = difficulty === 'hard' && resolveHardAiRoute() ? 'hard' : 'v2';
+    const note = window.prompt('Report this position — what looked wrong? (one line, optional)');
+    if (note === null) return; // cancelled
+    const seat = side === 'white' ? whiteAI : side === 'black' ? blackAI : null;
+    const report = formatPositionReport({ state, difficulty, engine,
+      pace: (side && config.aiPace?.[side]) || DEFAULT_AI_PACE,
+      lastTurnActions: seat?.lastTurnActions ?? [], note: note.trim() || null });
+    const copied = await copyToClipboard(report);
+    if (!copied) console.warn('[phasing-preview] clipboard refused; position report follows\n', report);
+    setReportStatus(copied ? 'Position report copied to the clipboard.' : 'Clipboard refused — the report was logged to the console.');
+  }, [state, config.controls, config.aiDifficulty, config.aiPace, whiteAI, blackAI]);
 
   // Track which turn number each AI has executed to prevent duplicate execution on reload
   const [playerAiExecutedTurn, setPlayerAiExecutedTurn] = useState<number | null>(null);
@@ -290,7 +338,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
   // Trigger AI turn for 'white' side.
   useEffect(() => {
     if (
-      !phasing && state.turn.currentPlayer === 'white' &&
+      aiSeatsAllowed && state.turn.currentPlayer === 'white' &&
       config.controls.white === 'ai' &&
       state.phase === 'playing' &&
       !whiteAI.isThinking &&
@@ -305,7 +353,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
   // Trigger AI turn for 'black' side
   useEffect(() => {
     if (
-      !phasing && state.turn.currentPlayer === 'black' &&
+      aiSeatsAllowed && state.turn.currentPlayer === 'black' &&
       config.controls.black === 'ai' &&
       state.phase === 'playing' &&
       !blackAI.isThinking &&
@@ -874,6 +922,9 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
         <p>{analysis ? 'Analysis runs locally. You control both sides, and can go backward or forward through the timeline.' : observing ? 'You are observing this match. Reopen the watch link to follow it on any device.' : online ? 'This match is saved on the server. Keep this browser’s seat credential to reconnect. You can undo moves until you end your turn.' : `Your match is saved at phase changes on this device. New games use Unequal routes with ${INITIAL_MAP_RESOURCES} crystals.`}</p>
         <p>{phasing ? 'After actions, mining and affordable upkeep settle together. Undo Mine & prepare to revisit the action phase. Enable upkeep review to choose releases.' : 'Affordable upkeep is paid automatically. Undo back through your actions to refund it and choose which units to keep.'}</p>
         {isCurrentPlayerHuman && <label><input type="checkbox" checked={!!state.reviewUpkeep?.[state.turn.currentPlayer]} onChange={e=>setUpkeepReview(state.turn.currentPlayer,e.target.checked)} /> Always ask before paying upkeep (optional)</label>}
+        {phasingPreview && <p className="preview-note">Phasing AI preview · unreleased engine, no strength guarantee. Turn it off with <code>?phasingAi=0</code>.</p>}
+        {phasingPreview && <button onClick={handleReportPosition}>Report this position</button>}
+        {phasingPreview && reportStatus && <p role="status">{reportStatus}</p>}
         <button onClick={() => { setShowMenu(false); handleBackToMenuClick(); }}>Choose game mode</button>
         {analysis && <button onClick={() => { resetGame(); setShowMenu(false); }}>Reset analysis</button>}
         {!online && !analysis && <button onClick={() => { if (window.confirm('Start a new game? This replaces your saved match.')) { handlePlayAgain(); setShowMenu(false); } }}>New game</button>}

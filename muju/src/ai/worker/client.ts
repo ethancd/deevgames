@@ -36,8 +36,15 @@ export interface FindTurnOptions {
   engine?: SearchRequest['engine'];
   work?: SearchRequest['work'];
   hard?: SearchRequest['hard'];
+  /** Opens the worker's Phasing guard; `useAI` sets it from the personal
+   * preview opt-in alone (`src/ai/phasingPreview.ts`). */
+  phasingPreview?: SearchRequest['phasingPreview'];
   onProgress?: (p: SearchProgress) => void;
 }
+
+/** The per-action path's only option, for the same reason: the fallback loop
+ * runs under the same preview opt-in as the whole-turn path it fell out of. */
+export interface FindActionOptions { phasingPreview?: SearchRequest['phasingPreview'] }
 
 function fromAIResult(result: AIResult, engineUsed: EngineUsed = 'v2'): FindTurnResult {
   return {
@@ -74,12 +81,12 @@ export class AIWorkerClient {
     clearTimeout(this.timer); this.rejectPending?.(new SearchCancelled()); this.rejectPending = null;
   }
   restart(): void { this.cancel(); this.gameId = crypto.randomUUID(); }
-  async findBestAction(state: GameState, difficulty: AIDifficulty, decisionMs: number, revision: number): Promise<AIResult> {
+  async findBestAction(state: GameState, difficulty: AIDifficulty, decisionMs: number, revision: number, options: FindActionOptions = {}): Promise<AIResult> {
     if (this.rejectPending) this.cancel();
     this.worker ??= this.factory();
     const request: SearchRequest = { version: AI_PROTOCOL, type: 'search', gameId: this.gameId,
       requestId: ++this.nextRequest, revision, player: state.turn.currentPlayer, state,
-      difficulty, decisionMs, seed: this.seed };
+      difficulty, decisionMs, seed: this.seed, phasingPreview: options.phasingPreview };
     return new Promise((resolve, reject) => {
       this.rejectPending = reject;
       const finish = () => { clearTimeout(this.timer); this.rejectPending = null; };
@@ -109,7 +116,8 @@ export class AIWorkerClient {
     const request: SearchRequest = { version: AI_PROTOCOL, type: 'search', gameId: this.gameId,
       requestId: ++this.nextRequest, revision, player: state.turn.currentPlayer, state,
       difficulty, decisionMs, seed: this.seed, mode: 'turn',
-      engine: options.engine, work: options.work, hard: options.hard };
+      engine: options.engine, work: options.work, hard: options.hard,
+      phasingPreview: options.phasingPreview };
     return new Promise((resolve, reject) => {
       this.rejectPending = reject;
       const finish = () => { clearTimeout(this.timer); this.rejectPending = null; };
