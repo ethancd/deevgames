@@ -129,9 +129,11 @@ describe('searchTurn deadlineMs', () => {
   });
 
   it('keeps abortFactor × target as the default watchdog', async () => {
-    // A profile fat enough that the work rung (the ladder's top, 3.2e6 units)
-    // cannot be spent inside a third of a second: what stops this search is
-    // the watchdog, and nothing else.
+    // A profile fat enough that the work rung (the ladder's top, 51.2e6 units
+    // since the turn-pace extension — 3.2e6 when this test was written, and
+    // either way far more than the box can spend here) cannot be spent inside
+    // a third of a second: what stops this search is the watchdog, and nothing
+    // else.
     const engine = new HardEngine({ profile: { unitsPerMs: 1_000_000, samples: 8 } });
     await warm(engine);
 

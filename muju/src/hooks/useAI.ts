@@ -2,13 +2,15 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import type { GameState } from '../game/types';
 import type { AIAction, AIDifficulty, AIDebugInfo } from '../ai/types';
 import { AIWorkerClient, SearchCancelled } from '../ai/worker/client';
-import { TURN_BUDGET_MS } from '../ai/engine-v2';
+import { aiTurnBudgetMs, DEFAULT_AI_PACE, type AIPace } from '../ai/turnTime';
 import { applyAction } from '../ai/simulate';
 import { isLegalAction, phaseEndAction } from '../game/legality';
 import { fallbackKindFor, noteHardBudgetExhausted, noteHardPlanReplayed, noteHardRequest, noteHardTurn, readHardTurnBudgetMs, recordHardFallback, resolveHardAiRoute } from '../ai/hardOptIn';
 
 interface UseAIOptions {
   difficulty?: AIDifficulty; thinkingDelay?: number; enabled?: boolean;
+  /** This seat's whole-turn allowance within its difficulty; see `ai/turnTime`. */
+  pace?: AIPace;
   /** Authoritative state getter rejects undo/load/restart races after awaits. */
   getCurrentState?: () => GameState;
   state?: GameState;
@@ -31,9 +33,26 @@ const gameplayDigest = (s: GameState): string => JSON.stringify({
 export const MIN_TURN_SEARCH_MS = 1;
 
 export function useAI(options: UseAIOptions = {}) {
-  const { difficulty: initialDifficulty = 'medium', thinkingDelay = 500, enabled = true, getCurrentState } = options;
+  const { difficulty: initialDifficulty = 'medium', pace = DEFAULT_AI_PACE, thinkingDelay = 500, enabled = true, getCurrentState } = options;
   const [difficulty, setDifficulty] = useState<AIDifficulty>(initialDifficulty);
   const [isThinking, setIsThinking] = useState(false);
+  /**
+   * The turn in flight, for the stopwatch — and it counts SEARCH time, because
+   * that is what the allowance buys. `budgetMs` is what this turn was funded
+   * with, `spentMs` what its finished searches have already been debited (read
+   * off the same `remainingCPU` the engines are funded from, never a second
+   * ledger), and `searchingSince` is `performance.now()` at the start of the
+   * request now in flight, or `null` when none is.
+   *
+   * WHY NOT WALL TIME SINCE THE TURN STARTED, which is what this used to be.
+   * The 400 ms per-action `thinkingDelay`, the worker round trips and React's
+   * own commits all happen OUTSIDE the budget (`dispatchOne` below says so, and
+   * `useAI` debits only `turn.timeMs`/`result.timeMs`), so a wall-clock dial on
+   * a 10 s allowance emptied while the seat was still dispatching a perfectly
+   * funded turn. With `searchingSince` null between searches the dial pauses
+   * instead, which is what is actually happening.
+   */
+  const [turnClock, setTurnClock] = useState<{ budgetMs: number; spentMs: number; searchingSince: number | null } | null>(null);
   const [lastTurnActions, setLastTurnActions] = useState<AIAction[]>([]);
   const [lastDebug, setLastDebug] = useState<AIDebugInfo | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -55,7 +74,7 @@ export function useAI(options: UseAIOptions = {}) {
    * log line) every turn. */
   const hardBudgetMs = useRef<number | null | undefined>(undefined);
   const currentGetter = useRef(getCurrentState); currentGetter.current = getCurrentState;
-  const cancel = useCallback(() => { pendingCommit.current?.(null); pendingCommit.current = null; generation.current++; busy.current = false; hardOptIn.current = null; hardBudgetMs.current = undefined; client.current?.restart(); setIsThinking(false); }, []);
+  const cancel = useCallback(() => { pendingCommit.current?.(null); pendingCommit.current = null; generation.current++; busy.current = false; hardOptIn.current = null; hardBudgetMs.current = undefined; client.current?.restart(); setIsThinking(false); setTurnClock(null); }, []);
   const clearLastTurnActions = useCallback(() => { setLastTurnActions([]); setLastDebug(null); }, []);
   useEffect(() => { cancel(); }, [difficulty, enabled, cancel]);
   useEffect(() => { setDifficulty(initialDifficulty); }, [initialDifficulty]);
@@ -76,14 +95,33 @@ export function useAI(options: UseAIOptions = {}) {
     // Easy and medium are untouched either way.
     const useHard = hardOptIn.current && difficulty === 'hard';
     const token = ++generation.current;
-    busy.current = true; setIsThinking(true); setError(null);
-    const turnActions: AIAction[] = [];
-    // `?hardMs` funds the HARD SEAT only; easy and medium keep `TURN_BUDGET_MS`
-    // whatever the URL says. The release contract is the unchanged
-    // `TURN_BUDGET_MS.hard` of 8000 ms (measured at `wall:8000`).
+    // `?hardMs` funds the HARD SEAT only; easy and medium keep the pace's
+    // allowance whatever the URL says. The player's own choice is
+    // `aiTurnBudgetMs(difficulty, pace)` (`ai/turnTime.ts`) — difficulty picks
+    // the engine, pace picks how much of the clock it is given.
     const turnBudgetMs = difficulty === 'hard' && hardBudgetMs.current !== null && hardBudgetMs.current !== undefined
-      ? hardBudgetMs.current : TURN_BUDGET_MS[difficulty];
+      ? hardBudgetMs.current : aiTurnBudgetMs(difficulty, pace);
+    busy.current = true; setIsThinking(true); setError(null);
+    // The stopwatch is funded exactly like the search. Nothing is spent yet and
+    // nothing is searching yet, so it starts full and still.
+    setTurnClock({ budgetMs: turnBudgetMs, spentMs: 0, searchingSince: null });
+    const turnActions: AIAction[] = [];
     let currentState = state, remainingCPU = turnBudgetMs;
+    // The two ends of one search, for the dial only — they read the allowance
+    // ledger, they never write it. `searchStarted` hands the dial the timestamp
+    // it runs from; `searchEnded` freezes it at whatever `remainingCPU` now
+    // says the turn has left. A stale turn (undo, restart, difficulty change)
+    // owns no clock: `cancel` has already cleared it.
+    const searchStarted = () => {
+      if (token !== generation.current) return;
+      const at = performance.now();
+      setTurnClock(clock => clock === null ? clock : { ...clock, searchingSince: at });
+    };
+    const searchEnded = () => {
+      if (token !== generation.current) return;
+      const spentMs = Math.min(turnBudgetMs, Math.max(0, turnBudgetMs - remainingCPU));
+      setTurnClock(clock => clock === null ? clock : { ...clock, spentMs, searchingSince: null });
+    };
     // The whole-turn path (DESIGN §6.2, M3) is the default for every
     // difficulty on AIEngineV2. Any illegal proposal drops to the legacy
     // per-action loop for the rest of this turn (§6.4's fallback layer 3,
@@ -148,7 +186,7 @@ export function useAI(options: UseAIOptions = {}) {
         if (!fellBack) {
           let turn;
           try {
-            // ONE ALLOWANCE PER TURN. `TURN_BUDGET_MS` funds a TURN, not a
+            // ONE ALLOWANCE PER TURN. The pace's budget funds a TURN, not a
             // search: a plan that runs out mid-turn (or an illegal proposal
             // that drops to the per-action loop below) re-requests from
             // `remainingCPU`, what measured search time has left of the turn,
@@ -157,6 +195,23 @@ export function useAI(options: UseAIOptions = {}) {
             // zero-budget search.
             if (useHard) noteHardRequest();
             requestStartedAt = performance.now();
+            searchStarted();
+            // THE SINGLE CALL SITE THAT FUNDS AN ENGINE, and `decisionMs` is
+            // the whole allowance contract for BOTH of them — no per-engine
+            // field, no config patch (`worker/handler.ts`):
+            //   hard: `searchTurn(state, { targetMs: decisionMs, deadlineMs:
+            //     decisionMs })`. An explicit `targetMs` is used verbatim, so
+            //     it sizes the work rung ABOVE the device profile's own
+            //     `time.maxMs` (6000 desktop / 2500 phone) and the ladder now
+            //     reaches far enough for 60 s to buy a longer search rather
+            //     than the same one (`hard/search/time.ts WORK_LADDER`).
+            //   v2: `findBestAction(state, decisionMs)` with the worker's own
+            //     `scaleToBudget` on, which raises the search's work limits to
+            //     fit the allowance (`engine-v2.ts scaleConfigForBudget`).
+            // Both return as soon as they are ready and neither waits the
+            // clock out, so a move landing with the wedge half full is the
+            // engines working as designed, not a budget that failed to arrive.
+            // Nowhere else in this hook decides what an engine may spend.
             turn = await client.current.findBestTurn(currentState, difficulty, Math.max(MIN_TURN_SEARCH_MS, remainingCPU), turnActions.length,
               useHard ? { engine: 'hard' } : undefined);
           } catch (e) {
@@ -173,12 +228,15 @@ export function useAI(options: UseAIOptions = {}) {
               remainingCPU = Math.max(0, remainingCPU - (performance.now() - requestStartedAt));
               recordHardFallback('workerError', e instanceof Error ? e.message : String(e));
             }
+            // Whatever the failure cost the turn, the dial stops counting here.
+            searchEnded();
             fellBack = true;
             setWarning(`Whole-turn search failed (${e instanceof Error ? e.message : String(e)}); falling back to step-by-step search.`);
             continue;
           }
           if (!valid()) break;
           remainingCPU = Math.max(0, remainingCPU - turn.timeMs);
+          searchEnded();
           setLastDebug(turn.debug ?? null);
           setWarning(turn.fallback ? `AI engine fell back (${turn.fallback}).` : client.current.warning ?? null);
           if (useHard) {
@@ -228,8 +286,10 @@ export function useAI(options: UseAIOptions = {}) {
         const share = remainingCPU / decisionsRemaining;
         let allowance = share;
         if (useHard && share < MIN_TURN_SEARCH_MS) { allowance = MIN_TURN_SEARCH_MS; noteHardBudgetExhausted(); }
+        searchStarted();
         const result = await client.current.findBestAction(currentState, difficulty, allowance, turnActions.length);
         remainingCPU = Math.max(0, remainingCPU - result.timeMs);
+        searchEnded();
         if (!valid()) break;
         setLastDebug(result.debug ?? null); setWarning(client.current.warning ?? null);
         const proposed = result.plan.actions[0];
@@ -243,9 +303,15 @@ export function useAI(options: UseAIOptions = {}) {
     } catch (e) {
       if (token === generation.current && !(e instanceof SearchCancelled)) setError(e instanceof Error ? e.message : String(e));
     } finally {
-      if (token === generation.current) { busy.current = false; setLastTurnActions(turnActions); setIsThinking(false); }
+      if (token === generation.current) { busy.current = false; setLastTurnActions(turnActions); setIsThinking(false); setTurnClock(null); }
     }
-  }, [difficulty, enabled, thinkingDelay, hasAuthoritativeState]);
+  }, [difficulty, pace, enabled, thinkingDelay, hasAuthoritativeState]);
   return { isThinking, executeAITurn, difficulty, setDifficulty, lastTurnActions, lastDebug, clearLastTurnActions,
-    cancel, error, warning, clearError: () => setError(null) };
+    cancel, error, warning, clearError: () => setError(null),
+    // The turn in flight, for `AIThinkingTimer`: the allowance, the search time
+    // already debited from it, and — only while a search is actually running —
+    // when that search started. The AI moves as soon as it is ready, so all
+    // three go back to null the moment the turn ends.
+    turnBudgetMs: turnClock?.budgetMs ?? null, turnSpentMs: turnClock?.spentMs ?? null,
+    turnSearchingSince: turnClock?.searchingSince ?? null };
 }

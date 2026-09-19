@@ -2,7 +2,11 @@ import { beforeEach, afterEach, it, expect, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { createInitialGameState } from '../../src/game/board';
 import { gameReducer } from '../../src/hooks/useGameState';
-import { TURN_BUDGET_MS } from '../../src/ai/engine-v2';
+import { aiTurnBudgetMs } from '../../src/ai/turnTime';
+/** What the hook funds a turn with now: the seat's PACE, not `engine-v2`'s
+ * pre-pace `TURN_BUDGET_MS`. These tests drive `useAI` without a pace, so
+ * every allowance below is the default `quick` one (`ai/turnTime.ts`). */
+const QUICK_TURN_MS: Record<AIDifficulty, number> = { easy: aiTurnBudgetMs('easy'), medium: aiTurnBudgetMs('medium'), hard: aiTurnBudgetMs('hard') };
 import { MIN_TURN_SEARCH_MS } from '../../src/hooks/useAI';
 import type { GameState } from '../../src/game/types';
 import type { AIAction, AIDifficulty } from '../../src/ai/types';
@@ -16,7 +20,7 @@ import { HARD_AI_MS_QUERY_PARAM, HARD_AI_QUERY_PARAM, HARD_AI_STORAGE_KEY, hardD
  * of the three ways a Hard turn can fail (pack/engine error, invalid suffix or
  * empty plan, worker failure). Every one of them must be COUNTED, must drop the
  * rest of the plan, and must finish the turn legally on the v2 path out of what
- * the turn has LEFT — never a fresh `TURN_BUDGET_MS`.
+ * the turn has LEFT — never a fresh `QUICK_TURN_MS`.
  *
  * The worker client is mocked: this is about the hook's decisions, not about
  * a real search (`tests/ai/worker-turn.test.ts` pins the worker route).
@@ -135,8 +139,8 @@ it('counts a pack error and finishes the turn on the v2 path within the turn rem
   // Exactly one hard attempt, then the per-action loop — funded out of the
   // REMAINDER (5,000 ms over the four actions the turn has left), never a
   // fresh budget.
-  expect(run.turnAllowances).toEqual([TURN_BUDGET_MS.hard]);
-  expect(run.actionAllowances).toEqual([(TURN_BUDGET_MS.hard - 3000) / 4]);
+  expect(run.turnAllowances).toEqual([QUICK_TURN_MS.hard]);
+  expect(run.actionAllowances).toEqual([(QUICK_TURN_MS.hard - 3000) / 4]);
   expect(run.seen).toEqual([END_ACTION]);
   expect(run.state().turn.currentPlayer).toBe('black');
   expect(run.hook.current.error).toBeNull();
@@ -144,11 +148,11 @@ it('counts a pack error and finishes the turn on the v2 path within the turn rem
 });
 
 it('counts an engine error the same way and never re-funds the turn', async () => {
-  turnSearch.mockImplementation(() => turn({ actions: [], source: 'fallback', fallback: 'engine-error', timeMs: 8000 }));
+  turnSearch.mockImplementation(() => turn({ actions: [], source: 'fallback', fallback: 'engine-error', timeMs: QUICK_TURN_MS.hard }));
   const run = await runTurn('hard');
   expect(hardDiag()).toMatchObject({ engineError: 1, fallbacks: 1 });
-  // The allowance is GONE — the engine spent all 8 s before failing — so the
-  // per-action share is floored at the hook's minimum rather than left at 0.
+  // The allowance is GONE — the engine spent the whole turn clock before it
+  // failed — so the share is floored at the hook's minimum rather than left at 0.
   // A zero-budget search returns an empty plan, which would silently pass the
   // phase; the floor makes it ask for a legal action, and the floor binding
   // is counted because it means the turn overran its allowance.
@@ -168,14 +172,14 @@ it('charges a failed whole-turn request its measured wall time before falling ba
   expect(hardDiag()).toMatchObject({ workerError: 1, fallbacks: 1, budgetExhausted: 0 });
   // 8000 − 1500 measured, split over the turn's four remaining decisions —
   // NOT 8000 / 4.
-  expect(run.actionAllowances).toEqual([(TURN_BUDGET_MS.hard - 1500) / 4]);
-  expect(run.actionAllowances[0]).toBeLessThan(TURN_BUDGET_MS.hard / 4);
+  expect(run.actionAllowances).toEqual([(QUICK_TURN_MS.hard - 1500) / 4]);
+  expect(run.actionAllowances[0]).toBeLessThan(QUICK_TURN_MS.hard / 4);
   expect(run.state().turn.currentPlayer).toBe('black');
   run.unmount();
 });
 
 it('floors, and counts, a per-action share left by a request that threw after the whole allowance', async () => {
-  turnSearch.mockImplementation(() => { clockMs += TURN_BUDGET_MS.hard * 2; throw new Error('AI worker timed out. Please retry.'); });
+  turnSearch.mockImplementation(() => { clockMs += QUICK_TURN_MS.hard * 2; throw new Error('AI worker timed out. Please retry.'); });
   const run = await runTurn('hard');
   // Overspent twice over: the remainder clamps at 0 and the floor takes over.
   expect(run.actionAllowances).toEqual([MIN_TURN_SEARCH_MS]);
@@ -190,7 +194,7 @@ it('leaves the opted-out v2 path unfloored and uncounted', async () => {
   localStorage.setItem(HARD_AI_STORAGE_KEY, '0');
   turnSearch.mockImplementation(() => { throw new Error('worker rejected the turn request'); });
   const run = await runTurn('hard');
-  expect(run.actionAllowances).toEqual([TURN_BUDGET_MS.hard / 4]);
+  expect(run.actionAllowances).toEqual([QUICK_TURN_MS.hard / 4]);
   expect(hardDiag()).toMatchObject({ requests: 0, workerError: 0, budgetExhausted: 0 });
   run.unmount();
 });
@@ -215,7 +219,7 @@ it('counts an invalid suffix, keeps the legal prefix, and drops the rest of the 
   expect(hardDiag()).toMatchObject({ invalidSuffix: 1, fallbacks: 1, plansReplayed: 0 });
   // The prefix before the illegal action stands; everything after it is gone.
   expect(run.seen).toEqual([legalFirst, END_ACTION]);
-  expect(run.actionAllowances[0]).toBeLessThan(TURN_BUDGET_MS.hard);
+  expect(run.actionAllowances[0]).toBeLessThan(QUICK_TURN_MS.hard);
   expect(run.state().turn.currentPlayer).toBe('black');
   expect(run.hook.current.error).toBeNull();
   run.unmount();
@@ -252,9 +256,10 @@ it('re-reads the route on the next game rather than caching it for the session',
 });
 
 // `?hardMs` — the page-URL override of the Hard seat's whole-turn budget. The
-// shipped contract is `TURN_BUDGET_MS.hard` (8000, measured at `wall:8000`);
+// shipped contract is the hard seat's paced allowance (`quick` = 10 s; the
+// 8000 ms measured at `wall:8000` was the pre-pace budget);
 // this only lets a demo or a measurement run ask for a different one.
-it('funds the hard turn from ?hardMs instead of TURN_BUDGET_MS.hard', async () => {
+it('funds the hard turn from ?hardMs instead of QUICK_TURN_MS.hard', async () => {
   window.history.replaceState({}, '', `/muju/?${HARD_AI_MS_QUERY_PARAM}=3000`);
   turnSearch.mockImplementation(() => turn({ actions: [END_ACTION] }));
   const run = await runTurn('hard');
@@ -276,7 +281,7 @@ it('ignores ?hardMs on easy and medium', async () => {
   turnSearch.mockImplementation(() => turn({ actions: [END_ACTION], engineUsed: 'v2' }));
   for (const difficulty of ['easy', 'medium'] as const) {
     const run = await runTurn(difficulty);
-    expect(run.turnAllowances).toEqual([TURN_BUDGET_MS[difficulty]]);
+    expect(run.turnAllowances).toEqual([QUICK_TURN_MS[difficulty]]);
     run.unmount();
   }
 });

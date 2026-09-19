@@ -1,8 +1,9 @@
 import { resolveInactivityDraw } from '../game/inactivity';
-import type { GameState } from '../game/types';
+import type { GameState, PlayerId } from '../game/types';
 import { getActionsPerTurn, isActionsPerTurn, isBlackCrystalHandicap, isRuleset } from '../game/rules';
 import { migrateLegacyGame } from '../game/migrate';
 import { startHistory, type LocalGameHistory } from '../game/analysis';
+import { DEFAULT_AI_PACE, isAIPace, type AIPace } from '../ai/turnTime';
 
 // v7: explicit ruleset and public pending summons. v5/v6 saves remain readable as Standard.
 export const SCHEMA_VERSION = 7;
@@ -14,18 +15,23 @@ interface PersistedState {
   timestamp: number;
   state: GameState;
   history?: LocalGameHistory;
+  /** Per-seat thinking time. Absent in every save written before paces
+   * existed, and — being a preference rather than part of the position — never
+   * a reason to reject a save, so it stays out of `validateGameState`. */
+  aiPace?: Record<PlayerId, AIPace>;
 }
 
 /**
  * Save game state to localStorage
  */
-export function saveGameState(state: GameState, history?: LocalGameHistory): void {
+export function saveGameState(state: GameState, history?: LocalGameHistory, aiPace = keptAIPace()): void {
   try {
     const persisted: PersistedState = {
       schemaVersion: SCHEMA_VERSION,
       timestamp: Date.now(),
       state,
       history,
+      aiPace,
     };
     // Keep the latest position resumable even when a long score fills storage.
     for (;;) {
@@ -87,6 +93,49 @@ export function loadGameState(): GameState | null {
     console.warn('Failed to load game state:', e);
     clearGameState();
     return null;
+  }
+}
+
+/** Each seat's stored pace, dropping anything `isAIPace` does not recognise. */
+function readStoredAIPace(): Partial<Record<PlayerId, AIPace>> {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    const stored = raw ? (JSON.parse(raw) as PersistedState).aiPace : undefined;
+    if (!stored || typeof stored !== 'object') return {};
+    return { white: isAIPace(stored.white) ? stored.white : undefined, black: isAIPace(stored.black) ? stored.black : undefined };
+  } catch {
+    // A save we cannot read at all is `loadGameState`'s problem, not the pace's.
+    return {};
+  }
+}
+
+/** What a save that does not mention the pace should keep, or nothing. */
+function keptAIPace(): Record<PlayerId, AIPace> | undefined {
+  const stored = readStoredAIPace();
+  return stored.white && stored.black ? { white: stored.white, black: stored.black } : undefined;
+}
+
+/**
+ * Per-seat thinking time for the saved game. A missing or invalid value falls
+ * back to `DEFAULT_AI_PACE`, which is also what every pre-pace save means.
+ */
+export function loadAIPace(): Record<PlayerId, AIPace> {
+  const stored = readStoredAIPace();
+  return { white: stored.white ?? DEFAULT_AI_PACE, black: stored.black ?? DEFAULT_AI_PACE };
+}
+
+/**
+ * Record the chosen paces on the current save. The position itself is written
+ * by `saveGameState`, which preserves whatever pace is already stored, so a
+ * game only has to patch this field once when it starts.
+ */
+export function saveAIPace(aiPace: Record<PlayerId, AIPace>): void {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...(JSON.parse(raw) as PersistedState), aiPace }));
+  } catch (e) {
+    console.warn('Failed to save AI thinking time:', e);
   }
 }
 

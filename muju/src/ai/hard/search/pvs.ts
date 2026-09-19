@@ -258,6 +258,20 @@ export interface SearchContext {
    * everywhere else, which is the whole of their cost when the flag is off.
    */
   iterFitRemainder?: boolean;
+  /**
+   * THE TURN PACES' ONE EFFECT ON THE SCHEDULE. True when `engine.ts` funded
+   * this search from a wall allowance LONGER than `search/time.ts
+   * QUICK_TURN_ALLOWANCE_MS` — `normal` (30 s) or `deep` (60 s), the two
+   * allowances the release, the goldens and the determinism gates never
+   * measured — and false for every other search, fixed-work ones included.
+   *
+   * It says one thing: run E4.3 lane 5's iteration-cost rule (`iterFit`
+   * below), which is the mechanism designed to let the last iteration fit the
+   * remaining rung instead of DESIGN §5.11.2 refusing it at 45% spent. An
+   * explicit `cfg.searchFix.iterFit` still decides for itself; this only speaks
+   * where the champion left the key absent.
+   */
+  wallFit?: boolean;
 }
 
 export interface SearchResult {
@@ -914,8 +928,11 @@ export function iterativeDeepening(
   let lastIterWork = 0;
   let prevIterWork = 0;
   // E4.3 lane 5. Absent on every shipped shape, so the two branches below are
-  // one `undefined` comparison per iteration when the flag is off.
-  const iterFit = s.cfg.searchFix?.iterFit === true;
+  // one `undefined` comparison per iteration when the flag is off — EXCEPT on a
+  // wall-funded turn above the quick allowance, where `s.wallFit` turns the
+  // rule on (the field's own header says why, and `engine.ts` is where it is
+  // set). An explicit flag, true or false, still wins over the allowance.
+  const iterFit = s.cfg.searchFix?.iterFit ?? s.wallFit === true;
   if (iterFit) s.iterFitRemainder = false;
   let remainderRun = false;
   for (let depth = 1; depth <= s.cfg.maxDepth; depth++) {
