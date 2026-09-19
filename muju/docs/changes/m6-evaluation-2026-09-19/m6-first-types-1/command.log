@@ -1,0 +1,14 @@
+lab/hard-ai/oracles/phasing-economy.ts(81,9): error TS7022: 'event' implicitly has type 'any' because it does not have a type annotation and is referenced directly or indirectly in its own initializer.
+lab/hard-ai/oracles/phasing-economy.ts(137,35): error TS7006: Parameter 'a' implicitly has an 'any' type.
+lab/hard-ai/oracles/phasing-economy.ts(137,38): error TS7006: Parameter 'b' implicitly has an 'any' type.
+src/ai/hard/tables/phasing-economy.ts(137,11): error TS7022: 'event' implicitly has type 'any' because it does not have a type annotation and is referenced directly or indirectly in its own initializer.
+src/ai/hard/tables/phasing-economy.ts(203,82): error TS7006: Parameter 'a' implicitly has an 'any' type.
+src/ai/hard/tables/phasing-economy.ts(203,85): error TS7006: Parameter 'b' implicitly has an 'any' type.
+tests/ai/hard/interfaces.test.ts(513,7): error TS2322: Type '(entries: BookEntry[], meta: BookMeta) => Uint8Array<ArrayBufferLike>' is not assignable to type '(entries: BookEntry[], meta: { handicap: number; mapHash: number; weightsVersion: number; }) => Uint8Array<ArrayBufferLike>'.
+  Types of parameters 'meta' and 'meta' are incompatible.
+    Type '{ handicap: number; mapHash: number; weightsVersion: number; }' is missing the following properties from type 'BookMeta': weightsKey, mapKey, rulesKey
+tests/ai/hard/phasing-invariants.test.ts(33,66): error TS2339: Property 'reverse' does not exist on type 'readonly number[]'.
+tests/ai/hard/purchase.test.ts(15,3): error TS2305: Module '"../../../src/ai/hard/gen/purchase"' has no exported member 'LIQUIDITY_FLOOR'.
+tests/lab/phasing-tune-guards.test.ts(43,9): error TS2322: Type '{ rulesVersion: "muju-phasing-1"; pool: { path: "lab/hard-ai/ladder/openings/p1-dev.jsonl"; sha256: string; openingIds: string[]; }; runs: { path: string; manifestSha256: string; gamesSha256: string; openingIds: string[]; replays: never[]; }[]; ... 4 more ...; schema: "muju-phasing-tune-allowlist-v1"; }' is not assignable to type 'SourceAllowlist'.
+  Types of property 'featureSchema' are incompatible.
+    Type 'string' is not assignable to type '"muju-phasing-eval-1"'.

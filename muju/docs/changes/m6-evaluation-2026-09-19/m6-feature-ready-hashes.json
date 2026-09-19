@@ -1,0 +1,13 @@
+{
+  "muju/src/ai/hard/config.ts": "687bee746b709bd8b66422557f3758a2e29fb76d21602f26642b007ed0754b4c",
+  "muju/src/ai/hard/eval/features.ts": "c8f717c826e2dc8660d1cd175eeb68326a22e70b35378ce1cb9770f4ffb19afc",
+  "muju/src/ai/hard/eval/evaluate.ts": "1adc5ff0bd41de19a4c69be1af62487b7952736a0198af5d3007cedc10a0fb3a",
+  "muju/src/ai/hard/eval/weights.ts": "97d81ada72c320203c65c4012550ce2114816adf04d5fce1c4e665316e1a6d0a",
+  "muju/src/ai/hard/eval/pending.ts": "8cb8b880cb10801fd707235fa91a38e69285007a672f3c4475d88bc7d8035a72",
+  "muju/src/ai/hard/tables/kill.ts": "776853e6f35baffd17d093669b9f376d1f70d23f4330a38a8a8d34a004fb4705",
+  "muju/lab/hard-ai/audit/eval-groups.ts": "b5b18c83b9ca908080f3a76dae5977eaebbe501453972c0f1dd8c55306c4a5e9",
+  "muju/tests/ai/hard/phasing-bootstrap.test.ts": "0ae21ecadc45c750333ba19f530d7ca532f915b38a0ef0b73f4bc8d2afc7b312",
+  "muju/src/ai/hard/gen/generate.ts": "a34d9a6c9e45015b1318ba73edf43f9ad9ae3f83d9cffb485c7abad41ab1d781",
+  "muju/src/ai/hard/search/pvs.ts": "779fd17ecc160d218ebc7bad58bba28336ab6ef25b4a2d39ac16778e97d14e61",
+  "muju/docs/hard-ai/phasing/M6-BOOTSTRAP-CONTRACT.md": "4e7bb9633be44417510155562edd9af52f6ff135eb392e5d4a4c80f627341c86"
+}

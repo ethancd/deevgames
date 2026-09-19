@@ -1,0 +1,1 @@
+tests/lab/phasing-tune-guards.test.ts(113,26): error TS2322: Type '1' is not assignable to type '2'.

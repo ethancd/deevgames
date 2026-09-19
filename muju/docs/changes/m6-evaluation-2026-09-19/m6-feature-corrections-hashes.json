@@ -1,0 +1,18 @@
+{
+  "muju/src/ai/hard/config.ts": "687bee746b709bd8b66422557f3758a2e29fb76d21602f26642b007ed0754b4c",
+  "muju/src/ai/hard/eval/features.ts": "7a42625e051feabdb26e23523ec646379b25b970353fbbc4b519c0f3758bf45a",
+  "muju/src/ai/hard/eval/evaluate.ts": "1adc5ff0bd41de19a4c69be1af62487b7952736a0198af5d3007cedc10a0fb3a",
+  "muju/src/ai/hard/eval/weights.ts": "97d81ada72c320203c65c4012550ce2114816adf04d5fce1c4e665316e1a6d0a",
+  "muju/src/ai/hard/eval/pending.ts": "2e36b009b6395a7cf3d0af6c966fa2ca2a39ae8696c3356e8ed6d0943591d2dd",
+  "muju/src/ai/hard/tables/kill.ts": "7ead8995606575554969e0c6f02b8f9fc28658a65310e0e89ead5a023fcfad98",
+  "muju/lab/hard-ai/audit/eval-groups.ts": "b5b18c83b9ca908080f3a76dae5977eaebbe501453972c0f1dd8c55306c4a5e9",
+  "muju/tests/ai/hard/phasing-bootstrap.test.ts": "f5aed436708583f68f215237119f9ed35a7a2b86e528f8114e4ee3020ef9ef14",
+  "muju/src/ai/hard/gen/generate.ts": "a34d9a6c9e45015b1318ba73edf43f9ad9ae3f83d9cffb485c7abad41ab1d781",
+  "muju/src/ai/hard/search/pvs.ts": "4fa685393b8e5f94865ebbb72625009c581319cdb48e01800f7c581a7e180bec",
+  "muju/docs/hard-ai/phasing/M6-BOOTSTRAP-CONTRACT.md": "db9ed4fa97772d93d68feda85a80dd2b5be36b51034ba97e5f54deaf0310d218",
+  "muju/src/ai/hard/engine.ts": "819b27ed609100fc51f725c072896f3cb5775094c3af03793253402cc977350f",
+  "muju/src/ai/hard/search/root.ts": "3ceb40f1521580de24478205400ed11e41727e8b32109a42c4454ee592e691ce",
+  "muju/src/ai/hard/search/quiesce.ts": "efaa9b7d94be1a7add3a6d350479e76a8453f1c5ca6298f4099d7801c9806a5d",
+  "muju/tests/ai/hard/eval.test.ts": "b8054d33e873f0f864224aaf93cc2c2bde3ea4ab5e38c5f25096ad6088af806d",
+  "muju/tests/ai/hard/interfaces.test.ts": "6d83e4e9e8675e0604c045571a65a7bd3a5f221def48652250c0074bd0968fbd"
+}

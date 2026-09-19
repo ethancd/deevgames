@@ -1,0 +1,24 @@
+
+> elemental-tactics@0.1.0 prebuild
+> npm run ai:wasm
+
+
+> elemental-tactics@0.1.0 ai:wasm
+> asc --config asconfig.json
+
+
+> elemental-tactics@0.1.0 build
+> tsc && vite build
+
+vite v7.3.6 building client environment for production...
+transforming...
+✓ 107 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                      0.56 kB │ gzip:   0.36 kB
+dist/assets/tactics-BqBPWZyo.wasm    7.71 kB │ gzip:   3.53 kB
+dist/assets/entry-DDQL8cJI.js       50.32 kB
+dist/assets/engine-hbfoaM0m.js     168.06 kB
+dist/assets/index-DSzNxpGq.css      74.51 kB │ gzip:  15.90 kB
+dist/assets/index-CHFLEYNP.js      393.09 kB │ gzip: 124.31 kB
+✓ built in 4.04s
