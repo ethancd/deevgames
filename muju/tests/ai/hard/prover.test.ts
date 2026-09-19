@@ -10,6 +10,25 @@
  * therefore compares `analyzeHomeDefenseEvidence`'s NODE COUNT and `method`
  * alongside its verdict, and a third of the random cases run at a deliberately
  * tiny cap so the exhaustion regime is common rather than rare.
+ *
+ * PHASING (M2 round 4). This file left the `vitest.config.ts` quarantine when the
+ * packed prover was ported to Phasing's ACT-ONLY home defence, and its
+ * expectations were rewritten FROM THE CANONICAL PHASING ENGINE rather than
+ * relaxed. What moved, and why:
+ *
+ *   - the damage bound no longer consults the defender's bank at all
+ *     (`enoughPossibleDamage(ready, target, !isPhasing(state))`,
+ *     homeCheckmate.ts:78), so the old "the bound flips at exactly 9 crystals"
+ *     case now measures the opposite property: it flips at NO cash level;
+ *   - the witness is the ACT LINE alone — no `PAY_UPKEEP`, no promotion prefix,
+ *     no `END_PLACE` — so it replays from canonical `ready` (defender to move,
+ *     ACTION phase, four actions, army healed and reset) and not from the
+ *     defender's upkeep;
+ *   - `resolveHomeCheckmate` adjudicates only in Prepare under Phasing
+ *     (homeCheckmate.ts:179), so the `make` gate tests step onto the corner and
+ *     then play `END_ACTION`, which is where the verdict lands;
+ *   - the 28 `lab/ai/fixtures.ts` boards are ruleset-agnostic and `pack` is
+ *     Phasing-only, so they are read through `asPhasing`.
  */
 import { describe, expect, it, vi } from 'vitest';
 import type { AIAction, } from '../../../src/ai/types';
@@ -19,6 +38,7 @@ import { getHomeOccupier } from '../../../src/game/victory';
 import { isLegalAction } from '../../../src/game/legality';
 import { applyAction, transitionWithoutCheckmate } from '../../../src/ai/simulate';
 import { seededRandom } from '../../../src/ai/runtime';
+import { resetUnitActions } from '../../../src/game/board';
 import { MAX_TURN_ACTIONS, Reason, Result, type PackedState, type Side } from '../../../src/ai/hard/types';
 import { Scratch } from '../../../src/ai/hard/core/bits';
 import { CORNER } from '../../../src/ai/hard/core/tables';
@@ -27,7 +47,6 @@ import { Replica, allocState, newUndo } from '../../../src/ai/hard/core/state';
 import {
   HomeVerdict,
   PROOF_NODES,
-  WITNESS_KEEP,
   damageBound,
   homeVerdict,
   homeWitness,
@@ -35,7 +54,7 @@ import {
   proverStats,
 } from '../../../src/ai/hard/tactics/prover';
 import { tacticalFixtures } from '../../../lab/ai/fixtures';
-import { buildState, type StateSpec, type UnitSpec } from './game-fixture';
+import { asPhasing, buildState, type StateSpec, type UnitSpec } from './game-fixture';
 
 // E0.5 timeout budget: slowest test 0.1 s in the 2026-09-15 survey (M2 Max, load ~5, maxWorkers 2); 10 s is this file's explicit ceiling.
 vi.setConfig({ testTimeout: 10_000 });
@@ -43,6 +62,8 @@ vi.setConfig({ testTimeout: 10_000 });
 const replica = new Replica();
 const scratch = new Scratch(1, 0, 0, 1);
 const witnessBuffer = new Int32Array(MAX_TURN_ACTIONS);
+/** The Phasing witness is MOVEs and ATTACKs only, so nothing indexes this. */
+const witnessKeep = newKeepSetTable();
 const VERDICT_NAME: readonly string[] = ['rescue', 'mate', 'unknown'];
 const METHOD_NAME: readonly string[] = ['no_occupier', 'damage_bound', 'search'];
 
@@ -69,15 +90,25 @@ function bothProvers(state: GameState, invader: PlayerId, maxNodes = PROOF_NODES
   };
 }
 
-/** The defender's reply position, which a witness line is replayed from. */
+/**
+ * Canonical `ready` (homeCheckmate.ts:74-75) — the position Phasing's
+ * `act(ready, [])` searches, and therefore the one a witness line replays from:
+ * the defender to move in its ACTION phase with four actions, its army healed and
+ * reset, no upkeep pending. Standard's witness began at the defender's upkeep.
+ */
 function replyStart(state: GameState, invader: PlayerId): GameState {
   const defender: PlayerId = invader === 'white' ? 'black' : 'white';
-  return { ...state, upkeepPending: true, turn: { ...state.turn, currentPlayer: defender, phase: 'place', actionsRemaining: 4 } };
+  return {
+    ...state,
+    board: resetUnitActions(state.board, defender),
+    upkeepPending: false,
+    turn: { ...state.turn, currentPlayer: defender, phase: 'action', actionsRemaining: 4 },
+  };
 }
 
 function decodeWitness(p: PackedState, length: number): AIAction[] {
   const out: AIAction[] = new Array<AIAction>(length);
-  for (let i = 0; i < length; i++) out[i] = toAIAction(p, witnessBuffer[i], WITNESS_KEEP);
+  for (let i = 0; i < length; i++) out[i] = toAIAction(p, witnessBuffer[i], witnessKeep);
   return out;
 }
 
@@ -200,11 +231,14 @@ describe('tactics/prover.ts damageBound', () => {
     expect(proverStats().method).toBe(2);
   });
 
-  it('charges rent at the old tier and the promotion on top (homeCheckmate.ts:34-37)', () => {
-    // A White Ho II beside the corner cannot out-damage a Metal III (DEF 5) in
-    // two hits, but a Ho III can. The promotion costs its rent at the OLD tier
-    // (1) plus the difference in unit cost (15 - 7 = 8), so the bound flips at
-    // exactly 9 crystals — and with it the prover's `method`.
+  it('charges NO rent and admits NO promotion: the bound ignores the bank (homeCheckmate.ts:78)', () => {
+    // This case used to read "the bound flips at exactly 9 crystals", because
+    // Standard's `enoughPossibleDamage(_, _, true)` charged rent at the old tier
+    // (1) plus the promotion's cost difference (15 - 7 = 8) and let the defender
+    // fight as a promoted body. Phasing passes `preparing: false`: a White Ho II
+    // beside the corner cannot out-damage a Metal III (DEF 5) in two hits, and no
+    // bank lets it try as a Ho III, so the bound FAILS at every cash level and the
+    // mate is proved at `method: damage_bound` with zero nodes.
     const spec = (cash: number): GameState =>
       buildState({
         units: [
@@ -214,12 +248,13 @@ describe('tactics/prover.ts damageBound', () => {
         current: 'black',
         white: cash,
       });
-    expect(damageBound(replica.pack(spec(8), allocState()), 1, scratch, 0)).toBe(false);
-    expect(damageBound(replica.pack(spec(9), allocState()), 1, scratch, 0)).toBe(true);
-    // ... which is the canonical prover's own answer, node for node.
-    expect(bothProvers(spec(8), 'black').replica).toBe(bothProvers(spec(8), 'black').canonical);
-    expect(bothProvers(spec(9), 'black').replica).toBe(bothProvers(spec(9), 'black').canonical);
-    expect(bothProvers(spec(8), 'black').canonical).toBe('mate/0/damage_bound');
+    for (const cash of [0, 8, 9, 30]) {
+      expect(damageBound(replica.pack(spec(cash), allocState()), 1, scratch, 0), `cash ${cash}`).toBe(false);
+      // ... which is the canonical prover's own answer, node for node.
+      const both = bothProvers(spec(cash), 'black');
+      expect(both.replica, `cash ${cash}`).toBe(both.canonical);
+      expect(both.canonical, `cash ${cash}`).toBe('mate/0/damage_bound');
+    }
   });
 });
 
@@ -231,7 +266,7 @@ describe('tactics/prover.ts vs analyzeHomeDefense', () => {
     for (const fixture of fixtures) {
       const invader = invaderOf(fixture.state);
       expect(invader, fixture.name).not.toBeNull();
-      const { canonical, replica: mine } = bothProvers(fixture.state, invader as PlayerId);
+      const { canonical, replica: mine } = bothProvers(asPhasing(fixture.state), invader as PlayerId);
       expect(mine, fixture.name).toBe(canonical);
       compared++;
     }
@@ -242,15 +277,27 @@ describe('tactics/prover.ts vs analyzeHomeDefense', () => {
     const rng = seededRandom(0x50524f56);
     let capped = 0;
     let exhausted = 0;
+    let maxNodes = 0;
     const seen = new Set<string>();
     for (let i = 0; i < 1500; i++) {
       const invader: PlayerId = rng() < 0.5 ? 'white' : 'black';
       const state = randomOccupierPosition(rng, invader);
-      const maxNodes = rng() < 0.34 ? 1 + ((rng() * 48) | 0) : PROOF_NODES;
-      if (maxNodes < PROOF_NODES) capped++;
-      const { canonical, replica: mine } = bothProvers(state, invader, maxNodes);
-      expect(mine, `case ${i} (maxNodes ${maxNodes})`).toBe(canonical);
+      // RE-TUNED FOR PHASING, not relaxed. Standard's prover spent a node per
+      // `prepare` entry as well as per `act` node, so a tree could run to
+      // thousands of nodes and a cap drawn from 1..48 bit constantly. Phasing is
+      // act-only: the deepest tree over these 1,500 positions is 22 nodes, so the
+      // same 1..48 cap almost never bites (10 exhaustions instead of the 60+ it
+      // used to produce) and the exhaustion regime — which is the ONLY regime
+      // where search ORDER can change the answer — would go untested. A 1..12 cap
+      // restores it: 38 exhaustions, and the assertion below keeps its old
+      // threshold rather than being lowered to fit.
+      const cap = rng() < 0.34 ? 1 + ((rng() * 12) | 0) : PROOF_NODES;
+      if (cap < PROOF_NODES) capped++;
+      const { canonical, replica: mine } = bothProvers(state, invader, cap);
+      expect(mine, `case ${i} (maxNodes ${cap})`).toBe(canonical);
       seen.add(canonical.split('/')[0]);
+      const nodes = Number(canonical.split('/')[1]);
+      if (nodes > maxNodes) maxNodes = nodes;
       if (canonical.startsWith('unknown')) exhausted++;
     }
     // The run is only meaningful if it covered all three verdicts and actually
@@ -259,15 +306,26 @@ describe('tactics/prover.ts vs analyzeHomeDefense', () => {
     expect([...seen].sort()).toEqual(['mate', 'rescue', 'unknown']);
     expect(capped).toBeGreaterThan(400);
     expect(exhausted).toBeGreaterThan(20);
+    // ...and it compared trees with real interior structure, not only one-node
+    // bounds. This is the node-for-node claim's own coverage check, and it is what
+    // makes the transposition-set comparison below more than a spot check.
+    expect(maxNodes).toBeGreaterThan(15);
   });
 
   it('matches the canonical node count when the transposition set must fire', () => {
     // Regression for a signed/unsigned bug in the prover's `failed` set: keys
     // whose lane had the high bit set were stored as negative and never
     // matched again, so the replica silently re-expanded transpositions and
-    // burned more nodes than the canonical prover. This position needs the
-    // set: the same "Ho II stepped aside, Hi II on B1" node is reached down
-    // two different move orders, and the canonical prover expands it once.
+    // burned more nodes than the canonical prover. This position needs the set:
+    // the same node is reached down two different move orders, and the canonical
+    // prover expands it once.
+    //
+    // RE-PINNED FROM CANONICAL. Under Standard this position was
+    // `rescue/22/search`, and the rescue was one of `prepare`'s promotions — White
+    // holds 24 crystals. Phasing's act-only search on the same board is
+    // `mate/9/search`, at every node budget from 24 upward, because no promotion is
+    // available and the present army cannot clear a damaged Metal III. The node
+    // count is what the test is for, and 9 is the canonical engine's.
     const state = buildState({
       units: [
         { def: 'metal_3', owner: 'black', x: 0, y: 0, damage: 1 },
@@ -280,7 +338,10 @@ describe('tactics/prover.ts vs analyzeHomeDefense', () => {
     });
     const { canonical, replica: mine } = bothProvers(state, 'black', 24);
     expect(mine).toBe(canonical);
-    expect(canonical).toBe('rescue/22/search');
+    expect(canonical).toBe('mate/9/search');
+    // The whole tree fits inside the budget, so the count is the search's own and
+    // not a cutoff: a re-expanded transposition would raise it above 9.
+    expect(bothProvers(state, 'black', PROOF_NODES).canonical).toBe('mate/9/search');
   });
 });
 
@@ -288,9 +349,10 @@ describe('tactics/prover.ts homeWitness', () => {
   it('reproduces the canonical rescuing line on every fixture that has one', () => {
     let witnesses = 0;
     for (const fixture of tacticalFixtures()) {
-      const invader = invaderOf(fixture.state) as PlayerId;
-      const evidence = analyzeHomeDefenseEvidence(fixture.state, invader, transitionWithoutCheckmate, PROOF_NODES);
-      const p = replica.pack(fixture.state, allocState());
+      const state = asPhasing(fixture.state);
+      const invader = invaderOf(state) as PlayerId;
+      const evidence = analyzeHomeDefenseEvidence(state, invader, transitionWithoutCheckmate, PROOF_NODES);
+      const p = replica.pack(state, allocState());
       const length = homeWitness(p, sideOf(invader), PROOF_NODES, witnessBuffer);
       if (!evidence.witness) {
         expect(length, fixture.name).toBe(0);
@@ -359,6 +421,29 @@ describe('core/state.ts make: the packed checkmate gate (DESIGN §3.4)', () => {
     return { packed, canonical: applyAction(state, { type: 'MOVE', unitId: 'u0', to: { x: 0, y: 0 } }) };
   }
 
+  /**
+   * ...and then ends the invader's action phase, which is where PHASING
+   * adjudicates. `resolveHomeCheckmate` returns the state untouched outside
+   * Prepare (`homeCheckmate.ts:179`: "an invading piece must survive its own
+   * end-of-action upkeep before Phasing can award immediate home-checkmate"), and
+   * `Replica.provesHomeCheckmate` mirrors that gate. Standard decided at the MOVE,
+   * which is what these cases used to assert.
+   */
+  function stepThenEndAction(state: GameState): { packed: PackedState; canonical: GameState; atMove: GameState } {
+    const stepped = stepOntoCorner(state);
+    // Neither engine has decided anything yet: that is the gate, not an accident.
+    expect(stepped.packed.result).toBe(Result.ONGOING);
+    expect(stepped.canonical.phase).toBe('playing');
+    undo.top = 0;
+    replica.resetUndoScratch();
+    replica.make(stepped.packed, paMake(AKind.END_ACTION), undo, keep);
+    return {
+      packed: stepped.packed,
+      canonical: applyAction(stepped.canonical, { type: 'END_ACTION_PHASE' }),
+      atMove: stepped.canonical,
+    };
+  }
+
   const invasion = (extra: UnitSpec[], overrides: Partial<StateSpec> = {}): GameState =>
     buildState({
       units: [
@@ -370,8 +455,18 @@ describe('core/state.ts make: the packed checkmate gate (DESIGN §3.4)', () => {
       ...overrides,
     });
 
-  it('adjudicates a proven mate at the action, exactly as applyAction does', () => {
+  it('the MOVE onto the corner adjudicates NOTHING: Phasing decides in Prepare', () => {
+    // The Phasing phase gate, stated on its own. `needsProof` is false in the
+    // action phase however unanswerable the occupation is.
     const { packed, canonical } = stepOntoCorner(invasion([]));
+    expect(packed.result).toBe(Result.ONGOING);
+    expect(packed.reason).toBe(Reason.NONE);
+    expect(replica.needsProof(packed)).toBe(false);
+    expect(canonical.phase).toBe('playing');
+  });
+
+  it('adjudicates a proven mate at END_ACTION, exactly as applyAction does', () => {
+    const { packed, canonical } = stepThenEndAction(invasion([]));
     expect(packed.result).toBe(Result.BLACK_WIN);
     expect(packed.reason).toBe(Reason.HOME_CHECKMATE);
     expect(canonical.phase).toBe('victory');
@@ -380,25 +475,29 @@ describe('core/state.ts make: the packed checkmate gate (DESIGN §3.4)', () => {
   });
 
   it('leaves an answerable occupation running, exactly as applyAction does', () => {
-    const { packed, canonical } = stepOntoCorner(invasion([{ def: 'lightning_1', owner: 'white', x: 0, y: 1, id: 'u2' }]));
+    const { packed, canonical } = stepThenEndAction(invasion([{ def: 'lightning_1', owner: 'white', x: 0, y: 1, id: 'u2' }]));
     expect(packed.result).toBe(Result.ONGOING);
     expect(canonical.phase).toBe('playing');
   });
 
   it('SU §8.1: a proven mate beats the ten-quiet-turn draw, an unproven occupation does not', () => {
-    const mate = stepOntoCorner(invasion([], { inactivityPlies: 9 }));
+    // Under Phasing the mate lands at the invader's own END_ACTION, which is
+    // strictly before the hand-off where the tenth quiet ply would draw — so the
+    // ordering SU §8.1 asserts still holds, one action later than it used to.
+    const mate = stepThenEndAction(invasion([], { inactivityPlies: 9 }));
     expect(mate.packed.reason).toBe(Reason.HOME_CHECKMATE);
     expect(mate.canonical.victoryReason).toBe('home-checkmate');
 
-    const rescued = stepOntoCorner(
+    const rescued = stepThenEndAction(
       invasion([{ def: 'lightning_1', owner: 'white', x: 0, y: 1, id: 'u2' }], { inactivityPlies: 9 }),
     );
     expect(rescued.packed.result).toBe(Result.ONGOING);
 
+    // The hand-off is END_PLACE now that END_ACTION has already been played.
     undo.top = 0;
     replica.resetUndoScratch();
-    replica.make(rescued.packed, paMake(AKind.END_ACTION), undo, keep);
-    const canonicalEnd = applyAction(rescued.canonical, { type: 'END_ACTION_PHASE' });
+    replica.make(rescued.packed, paMake(AKind.END_PLACE), undo, keep);
+    const canonicalEnd = applyAction(rescued.canonical, { type: 'END_PLACE_PHASE' });
     expect(rescued.packed.result).toBe(Result.DRAW);
     expect(rescued.packed.reason).toBe(Reason.INACTIVITY);
     expect(canonicalEnd.victoryReason).toBe('inactivity');
@@ -413,6 +512,9 @@ describe('core/state.ts make: the packed checkmate gate (DESIGN §3.4)', () => {
     undo.top = 0;
     replica.resetUndoScratch();
     replica.make(bound, paMake(AKind.MOVE, slot, 0, 1), undo, keep);
+    undo.top = 0;
+    replica.resetUndoScratch();
+    replica.make(bound, paMake(AKind.END_ACTION), undo, keep);
     expect(bound.reason).toBe(Reason.HOME_CHECKMATE);
 
     // Here the bound says a rescue is conceivable (a Kage II sits two squares
@@ -432,14 +534,17 @@ describe('core/state.ts make: the packed checkmate gate (DESIGN §3.4)', () => {
     const under = replica.pack(buildState(blocked), allocState());
     under.proverMode = 1;
     const s = full.pieceAt[1];
-    undo.top = 0;
-    replica.resetUndoScratch();
-    replica.make(full, paMake(AKind.MOVE, s, 0, 1), undo, keep);
-    undo.top = 0;
-    replica.resetUndoScratch();
-    replica.make(under, paMake(AKind.MOVE, s, 0, 1), undo, keep);
+    for (const p of [full, under]) {
+      for (const pa of [paMake(AKind.MOVE, s, 0, 1), paMake(AKind.END_ACTION)]) {
+        undo.top = 0;
+        replica.resetUndoScratch();
+        replica.make(p, pa, undo, keep);
+      }
+    }
     // Whatever the full prover decides, the bound may never be the stronger
-    // claim: mode 1 mates are a subset of mode 2 mates.
+    // claim: mode 1 mates are a subset of mode 2 mates. Under Phasing the two
+    // modes run the SAME bound (`preparing` is gone), so mode 1 mates are exactly
+    // the `method: damage_bound` mates of mode 2.
     if (under.reason === Reason.HOME_CHECKMATE) expect(full.reason).toBe(Reason.HOME_CHECKMATE);
   });
 

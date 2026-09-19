@@ -321,6 +321,21 @@ function setPhase(p: PackedState, value: 0 | 1): void {
   p.phase = value;
 }
 
+/**
+ * `progressThisTurn`, a `Kturn` extra (`core/zobrist.ts`'s `progress` plane).
+ *
+ * It is hashed because under Phasing nothing else in `Kturn` implies it: the
+ * capture that sets it leaves `atkCount`/`uflags` evidence on the killer, and
+ * that killer can be RELEASED by `PAY_UPKEEP` in the same turn's Prepare, so two
+ * reachable Prepare states can agree on every other key component and still hand
+ * off with different inactivity clocks. Every write goes through here.
+ */
+function setProgress(p: PackedState, value: 0 | 1): void {
+  if (value === p.progress) return;
+  xKturn(p, Z.progress, 0);
+  p.progress = value;
+}
+
 function setSide(p: PackedState, value: Side): void {
   if (value === p.side) return;
   xKpos(p, Z.side, 0);
@@ -1149,7 +1164,7 @@ export class Replica {
       subMaterial(this.cat, p, victim);
       p.sq[victim] = DEAD;
       setClock(p, 0);
-      p.progress = 1;
+      setProgress(p, 1);
       setActions(p, p.actions - 1);
       if (unitCount(p, victimSide) === 0) {
         p.result = victimSide === 0 ? Result.BLACK_WIN : Result.WHITE_WIN;
@@ -1245,7 +1260,7 @@ export class Replica {
     // 1. the quiet-turn clock, then `resolveInactivityDraw` (turn.ts:120-124).
     const plies = p.progress === 1 ? 0 : p.clock + 1;
     setClock(p, plies);
-    p.progress = 0;
+    setProgress(p, 0);
     if (p.drawRuleOn === 1 && plies >= INACTIVITY_LIMIT) {
       u.w[u.top++] = 0;
       closeRecord(u, base);
@@ -1626,7 +1641,7 @@ export class Replica {
         }
         setUnitTurnState(p, slot, oldCount, oldFlags);
         setClock(p, oldClock);
-        p.progress = oldProgress as 0 | 1;
+        setProgress(p, oldProgress as 0 | 1);
         break;
       }
       case AKind.BUY: {
@@ -1693,7 +1708,7 @@ export class Replica {
         setPhase(p, 0);
         setActions(p, actionsBefore);
         setClock(p, clockBefore);
-        p.progress = progressBefore;
+        setProgress(p, progressBefore);
         p.turnNumber = turnNumberBefore;
         break;
       }

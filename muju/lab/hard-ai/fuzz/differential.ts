@@ -75,7 +75,7 @@ import { getAllSpawnPositions } from '../../../src/game/spawning';
 import { generateAllActions } from '../../../src/ai/moves';
 import { applyAction } from '../../../src/ai/simulate';
 import { seededRandom } from '../../../src/ai/runtime';
-import { F_CAN_ACT, F_PLACED, MAX_SLOTS, NO_SLOT, Reason, Result, type PackedState } from '../../../src/ai/hard/types';
+import { F_CAN_ACT, F_PLACED, MAX_SLOTS, NO_SLOT, Result, type PackedState } from '../../../src/ai/hard/types';
 import {
   AKind,
   KEEP_SET_CAPACITY,
@@ -86,7 +86,7 @@ import {
   type KeepSetTable,
   type PA,
 } from '../../../src/ai/hard/core/action';
-import { DEF_INDEX, activeCatalog } from '../../../src/ai/hard/core/catalog';
+import { DEF_INDEX } from '../../../src/ai/hard/core/catalog';
 import { Replica, allocState, newUndo } from '../../../src/ai/hard/core/state';
 import { recomputeKpos, recomputeKturn, recomputeOccHash } from '../../../src/ai/hard/core/zobrist';
 import { pendKeyReplica } from '../../../src/ai/hard/verify/perft';
@@ -108,6 +108,13 @@ export interface FuzzOptions {
   reproDir: string | null;
   /** Macro-node positions to sample for `positions/fuzz-<n>.jsonl`. */
   sample: number;
+  /**
+   * Plies on which RESIGN is OFFERED to the action picker (see the injection in
+   * `runFuzz`). Drawn from a stream of its own, so `0` replays a walk
+   * bit-identically to one taken before RESIGN was injectable at all — which is
+   * how the seeds of earlier converger rounds are re-run as true repros.
+   */
+  resignRate: number;
 }
 
 export interface FuzzMetrics {
@@ -115,28 +122,19 @@ export interface FuzzMetrics {
   ruleset: 'phasing';
   surfaces: Surface[];
   legalityEvery: number;
+  resignRate: number;
   games: number;
   plies: number;
   actions: number;
-  /** EVERY transition divergence, classified or not. Never filtered. */
+  /**
+   * EVERY transition divergence. Never filtered and never classified: round 4
+   * ported `tactics/prover.ts` to Phasing, so the mate-verdict exemption this
+   * counter used to be split by is gone and any non-zero value fails the run.
+   */
   divergences: number;
-  /**
-   * How many of `divergences` matched `classifyKnownProverGap` — the M4 prover
-   * debt of `docs/hard-ai/phasing/M2-STATUS.md` §2. The sum of the two counters
-   * below.
-   */
-  knownProverGapDivergences: number;
-  /** The BOUND half: the replica claims a mate against a broke defender (unsound). */
-  proverOverclaimDivergences: number;
-  /** The SEARCH half: Standard's larger rescue set hides a mate canonical awards. */
-  proverUnderclaimDivergences: number;
-  /**
-   * `divergences - knownProverGapDivergences`. A NEW divergence class. This must
-   * be 0, unconditionally: `--allow-known-prover-gap` tolerates the classified
-   * ones and never this counter.
-   */
-  unclassifiedDivergences: number;
   legalityChecks: number;
+  /** `Replica.check(p)` calls made after an applied action (see `legalityEvery`). */
+  stateChecks: number;
   legalitySetMismatches: number;
   legalityKeepSetTruncations: number;
   /** BUY on a square the mover already holds a commitment on, or a commitment
@@ -163,6 +161,14 @@ export interface FuzzMetrics {
   eliminationRuleGames: number;
   drawRuleOffGames: number;
   handicapGames: number;
+  /**
+   * TERMINAL HISTOGRAM, keyed `<victoryReason>:<winner|draw>@<action>` — the
+   * action being the one that ended the game. The action suffix is what
+   * separates the terminals canonical gives the same `victoryReason`: an
+   * elimination at an ATTACK from one at the hand-off (`END_PLACE_PHASE`), and a
+   * double elimination shows as `elimination:draw`. A coverage claim about a
+   * terminal branch is checkable against this and nothing else.
+   */
   terminals: Record<string, number>;
   sampled: number;
   elapsedMs: number;
@@ -189,11 +195,6 @@ interface Divergence {
   rules: RulesBlock;
   replica?: string;
   canonical?: string;
-  /**
-   * Which known M4 prover class `classifyKnownProverGap` recognised, or null for
-   * a NEW divergence, so the written reproducer says for itself which it is.
-   */
-  knownGap?: KnownProverGap;
   state: GameState;
 }
 
@@ -267,14 +268,10 @@ function fuzzDigest(replica: Replica, p: PackedState): string {
 
 /**
  * Compares two packed states field by field; returns the first difference or
- * null.
- *
- * `ignoreResult` skips the `result`/`reason` pair alone, which is what
- * `classifyKnownProverGap` needs to assert "these two states are the SAME
- * position, and the only thing the two engines disagree about is the verdict".
- * Nothing else is ever skipped.
+ * null. NOTHING is skipped — round 4 removed the `ignoreResult` escape hatch
+ * along with the mate-verdict exemption that was its only caller.
  */
-function firstDifference(a: PackedState, b: PackedState, ignoreResult = false): string | null {
+function firstDifference(a: PackedState, b: PackedState): string | null {
   for (let s = 0; s < 100; s++) {
     const sa = a.pieceAt[s];
     const sb = b.pieceAt[s];
@@ -297,6 +294,16 @@ function firstDifference(a: PackedState, b: PackedState, ignoreResult = false): 
   }
   if (a.pendBB.length !== b.pendBB.length) return 'pendBB-length';
   for (let w = 0; w < a.pendBB.length; w++) if (a.pendBB[w] !== b.pendBB[w]) return `pendBB@${w}`;
+  // The OCCUPANCY LANES. `occ`, `occBy` and `occTier` are derived state that no
+  // other surface here reaches: the loops above walk `pieceAt`, `digest` walks
+  // `pieceAt`, and `occHash` is computed from `sq`. A `make`/`unmake` path that
+  // set `pieceAt` but forgot a lane — or set the wrong tier lane — was invisible
+  // until it surfaced as a wrong move generation ten layers up. `check` proves
+  // `occ`/`occBy` self-consistent; only this comparison proves them EQUAL to
+  // canonical's, and nothing but this proves `occTier` at all.
+  for (let w = 0; w < a.occ.length; w++) if (a.occ[w] !== b.occ[w]) return `occ@${w}`;
+  for (let w = 0; w < a.occBy.length; w++) if (a.occBy[w] !== b.occBy[w]) return `occBy@${w}/side${(w / 4) | 0}`;
+  for (let w = 0; w < a.occTier.length; w++) if (a.occTier[w] !== b.occTier[w]) return `occTier@${w}/tier${((w / 4) | 0) + 1}`;
   for (let side = 0; side < 2; side++) {
     if (a.pendCount[side] !== b.pendCount[side]) return `pendCount${side}`;
     if (a.pendCostSum[side] !== b.pendCostSum[side]) return `pendCostSum${side}`;
@@ -331,145 +338,22 @@ function firstDifference(a: PackedState, b: PackedState, ignoreResult = false): 
     ['pstSumCc1', a.pstSumCc[1], b.pstSumCc[1]],
   ];
   for (const [name, x, y] of scalars) {
-    if (ignoreResult && (name === 'result' || name === 'reason')) continue;
     if (x !== y) return name;
   }
   return null;
 }
 
 /**
- * THE DIVERGENCE CLASSES M2 KNOWINGLY CARRIES, each recognised narrowly.
- *
- * `tactics/prover.ts` is out of M2's scope (design item H) and still models
- * STANDARD's home defence, while the replica is Phasing-only. Canonical Phasing
- * gives the defender its PRESENT army and four actions and nothing else —
- * `rescued = isPhasing(state) ? act(ready, []) : prepare(...)`
- * (homeCheckmate.ts:159), with the admissible bound
- * `enoughPossibleDamage(ready, target, !isPhasing(state))`, third argument FALSE
- * under Phasing (homeCheckmate.ts:79). The packed prover hardcodes Standard on
- * BOTH halves, and the two halves fail in OPPOSITE directions:
- *
- * `overclaim-broke-defender` — the BOUND. `damageBoundCore(dp, preparing)` skips
- * any defender unit with `rent > cash` (prover.ts:418) and both entry points
- * pass `preparing: true` (prover.ts:720, prover.ts:738). Standard's upkeep
- * release SHRINKS a broke defender's army, so a defender that cannot afford its
- * own rent is treated as having no army, the bound reports "not enough possible
- * damage", and `runProver` returns MATE with zero search nodes. The replica
- * believes in a mate the defender can refute — the UNSOUND direction. Pinned in
- * `tests/ai/hard/phasing-prover-debt.test.ts`.
- *
- * `underclaim-standard-rescue` — the SEARCH. Standard's `prepare` rescue may
- * PROMOTE a unit it can afford and may RELEASE a tier-2+ unit outright, which
- * can unblock its own rescuing attacker (homeCheckmate.ts:146-158); Phasing's
- * `act` may do neither. Standard's rescue set is therefore strictly larger, so
- * the packed prover finds defences Phasing forbids and reports no mate where the
- * canonical engine awards one. Pinned in
- * `tests/ai/hard/phasing-prover-underclaim.test.ts`.
- *
- * Both are the same out-of-scope file and the same root cause, and M4 fixes them
- * together. They are counted separately because they are opposite failures and
- * only one of them is in the safe direction.
- *
- * These predicates exist so that a divergence which is NOT that debt can never
- * hide behind it. Each is deliberately conjunctive: the two states must be the
- * same position in every other respect, the verdicts must differ in the specific
- * direction, and the defender must actually hold the Standard-only resource that
- * explains it. Anything failing a clause counts as unclassified and fails the run
- * even under `--allow-known-prover-gap`.
- *
- * Nothing is suppressed here: `metrics.divergences` still counts every
- * divergence, the reproducer is still written, and `fuzz/run.ts` still exits
- * non-zero by default.
+ * One bucket of the terminal histogram: the canonical victory reason, the
+ * winner (or `draw`), and the ACTION that ended the game. Canonical gives the
+ * same `victoryReason` to an elimination at an ATTACK and to one at the
+ * hand-off, so without the action suffix the histogram cannot tell the two
+ * branches apart, and a coverage claim about either is unverifiable.
  */
-export type KnownProverGap = 'overclaim-broke-defender' | 'underclaim-standard-rescue' | null;
-
-/** The defender's total rent, which is what the BOUND's release term keys on. */
-function defenderRent(p: PackedState, defender: number): number {
-  const cat = activeCatalog();
-  let rent = 0;
-  for (let s = 0; s < 100; s++) {
-    const slot = p.pieceAt[s];
-    if (slot === NO_SLOT || p.owner[slot] !== defender) continue;
-    rent += cat.upkeep[p.defId[slot]];
-  }
-  return rent;
-}
-
-/**
- * Whether STANDARD's rescue set is strictly larger than PHASING's for this
- * defender — the exact condition under which the two searches can disagree.
- *
- * Phasing's rescue is one leaf: `act(ready, [])` with the present army
- * (homeCheckmate.ts:159). Standard's `prepare` visits each owned unit and offers
- * three arms (homeCheckmate.ts:146-158):
- *
- *   1. keep it, when `rent <= cash`;
- *   2. keep it PROMOTED, when `rent + promoCost <= cash`;
- *   3. DROP it entirely — available at any cash, but only for tier 2+
- *      ("Tier 1 is mandatory, even when it blocks a rescuing attacker").
- *
- * Arm 3 is the one that is not about money at all: releasing a tier-2+ unit
- * removes a friendly BLOCKER from the path to the occupier, which is how the
- * seed-38 divergence rescues. It also subsumes the forced-partial-keep case,
- * since tier-1 rent is 0, so any unit with `rent > cash` is already tier 2+.
- *
- * So the sets differ iff the defender owns a tier-2+ unit or can afford a
- * promotion. When neither holds, `prepare` has exactly one leaf — keep
- * everything, promote nothing, cash unchanged because tier-1 rents are 0 — which
- * IS Phasing's leaf. A disagreement there cannot be this debt and must be a
- * replica bug, so the classifier refuses it.
- */
-function standardRescueExceedsPhasing(p: PackedState, defender: number): boolean {
-  const cat = activeCatalog();
-  const cash = p.bank[defender];
-  for (let s = 0; s < 100; s++) {
-    const slot = p.pieceAt[s];
-    if (slot === NO_SLOT || p.owner[slot] !== defender) continue;
-    const def = p.defId[slot];
-    if (cat.tier[def] > 1) return true;
-    if (cat.nextDef[def] >= 0 && cat.upkeep[def] + cat.promoCost[def] <= cash) return true;
-  }
-  return false;
-}
-
-export function classifyKnownProverGap(replicaP: PackedState, canonicalP: PackedState): KnownProverGap {
-  // The same position, disagreeing about nothing but the verdict. Any other
-  // difference is a replica bug in a lane M2 owns.
-  if (firstDifference(replicaP, canonicalP, true) !== null) return null;
-
-  // --- the BOUND: the replica claims a mate the canonical engine refutes ---
-  if (
-    replicaP.reason === Reason.HOME_CHECKMATE &&
-    (replicaP.result === Result.WHITE_WIN || replicaP.result === Result.BLACK_WIN) &&
-    canonicalP.result === Result.ONGOING
-  ) {
-    // The defender must be short of its own rent — the precise precondition of
-    // the hardcoded `preparing: true`. Without this clause the predicate would
-    // also swallow a genuine mate-detection bug against a solvent defender.
-    const defender = replicaP.result === Result.WHITE_WIN ? 1 : 0;
-    return defenderRent(canonicalP, defender) > canonicalP.bank[defender] ? 'overclaim-broke-defender' : null;
-  }
-
-  // --- the SEARCH: the canonical engine awards a mate the replica missed ---
-  if (
-    canonicalP.reason === Reason.HOME_CHECKMATE &&
-    (canonicalP.result === Result.WHITE_WIN || canonicalP.result === Result.BLACK_WIN) &&
-    replicaP.result === Result.ONGOING
-  ) {
-    // Only when Standard's rescue set is strictly larger than Phasing's — see
-    // `standardRescueExceedsPhasing` for the derivation from the three `prepare`
-    // arms. When the two sets coincide, a missed mate is a replica bug, not this
-    // debt, and must keep failing the gate.
-    const defender = canonicalP.result === Result.WHITE_WIN ? 1 : 0;
-    return standardRescueExceedsPhasing(canonicalP, defender) ? 'underclaim-standard-rescue' : null;
-  }
-
-  return null;
-}
-
-function terminalName(state: GameState): string {
+function terminalName(state: GameState, endedBy: AIAction | null): string {
   if (state.phase !== 'victory') return 'unfinished';
-  return `${state.victoryReason ?? 'unknown'}:${state.winner ?? 'draw'}`;
+  const by = endedBy === null ? 'none' : endedBy.type;
+  return `${state.victoryReason ?? 'unknown'}:${state.winner ?? 'draw'}@${by}`;
 }
 
 function pendingsOf(state: GameState, player: PlayerId): PendingSummon[] {
@@ -518,22 +402,21 @@ export function runFuzz(options: FuzzOptions): FuzzResult {
   const keep = newKeepSetTable();
   const canonicalPacked = allocState();
   const roundTripPacked = allocState();
-  const genBuffer = new Int32Array(GEN_CAPACITY);
+  // One slot past the generators' own capacity, for the injected RESIGN below.
+  const genBuffer = new Int32Array(GEN_CAPACITY + 1);
 
   const metrics: FuzzMetrics = {
     seed: options.seed,
     ruleset: 'phasing',
     surfaces: [...options.surfaces].sort(),
     legalityEvery: options.legalityEvery,
+    resignRate: options.resignRate,
     games: 0,
     plies: 0,
     actions: 0,
     divergences: 0,
-    knownProverGapDivergences: 0,
-    proverOverclaimDivergences: 0,
-    proverUnderclaimDivergences: 0,
-    unclassifiedDivergences: 0,
     legalityChecks: 0,
+    stateChecks: 0,
     legalitySetMismatches: 0,
     legalityKeepSetTruncations: 0,
     pendingLegalityChecks: 0,
@@ -565,16 +448,7 @@ export function runFuzz(options: FuzzOptions): FuzzResult {
 
   const record = (d: Divergence): void => {
     if (divergences.length < 32) divergences.push(d);
-    if (d.kind === 'transition') {
-      metrics.divergences++;
-      if (d.knownGap === 'overclaim-broke-defender') {
-        metrics.knownProverGapDivergences++;
-        metrics.proverOverclaimDivergences++;
-      } else if (d.knownGap === 'underclaim-standard-rescue') {
-        metrics.knownProverGapDivergences++;
-        metrics.proverUnderclaimDivergences++;
-      } else metrics.unclassifiedDivergences++;
-    }
+    if (d.kind === 'transition') metrics.divergences++;
     else if (d.kind === 'unmake') metrics.unmakeMismatches++;
     else if (d.kind === 'rehash') metrics.rehashMismatches++;
     else if (d.kind === 'roundtrip') metrics.roundTripMismatches++;
@@ -586,6 +460,9 @@ export function runFuzz(options: FuzzOptions): FuzzResult {
   let game = 0;
   while (metrics.actions < options.actions) {
     const rng = seededRandom((options.seed + game * 7919) >>> 0);
+    // A SEPARATE stream, so the injection below cannot shift `rng` and every seed
+    // of an earlier round replays identically at `resignRate: 0`.
+    const resignRng = seededRandom((options.seed + game * 7919 + 0x52534741) >>> 0);
     const { rules, reviewWhite, reviewBlack } = randomRules(rng);
     if (rules.handicap !== 0) metrics.handicapGames++;
     if (rules.victoryRule === 'elimination') metrics.eliminationRuleGames++;
@@ -600,6 +477,8 @@ export function runFuzz(options: FuzzOptions): FuzzResult {
     let clearedThisGame = false;
     let arrivalsThisGame = 0;
     let refundsThisGame = 0;
+    /** The last action applied, i.e. the one the terminal histogram credits. */
+    let endedBy: AIAction | null = null;
     const prefix: AIAction[] = [];
 
     for (let ply = 0; ply < options.plies && metrics.actions < options.actions; ply++) {
@@ -635,6 +514,19 @@ export function runFuzz(options: FuzzOptions): FuzzResult {
         checkPendingSurface(replica, p, state, metrics, report);
       }
 
+      // RESIGN is legal in EVERY phase, including a pending upkeep
+      // (`legality.ts:20,24`), and `make`/`unmake` support it in one line each
+      // (`makeResign`, and the `AKind.RESIGN` case of `unmake`, which restores
+      // the `result`/`reason` every record header carries). No generator emits
+      // it — it is never a candidate a search would consider — so the walker
+      // injects it, rarely: it ENDS the game, and at a high rate it would
+      // truncate games and cost more coverage than it buys. `terminals` reports
+      // how often it actually fired.
+      if (resignRng() < options.resignRate) genBuffer[count++] = paMake(AKind.RESIGN);
+
+      // Injected AFTER the legality comparison above: `generateAllActions` does
+      // not offer RESIGN, so a RESIGN in the buffer would read as a set
+      // mismatch rather than as the extra candidate it is.
       const chosen = pickAction(rng, genBuffer, count);
       const action = toAIAction(p, chosen, keep);
       if (!isLegalAction(state, action)) {
@@ -706,7 +598,6 @@ export function runFuzz(options: FuzzOptions): FuzzResult {
             rules,
             replica: fuzzDigest(replica, p),
             canonical: fuzzDigest(replica, canonicalPacked),
-            knownGap: classifyKnownProverGap(p, canonicalPacked),
             state: next,
           });
           break;
@@ -718,6 +609,29 @@ export function runFuzz(options: FuzzOptions): FuzzResult {
       prefix.push(action);
       if (prefix.length > 600) prefix.shift();
 
+      // `check` is the replica's own invariant suite (ET §8.6). At the default
+      // cadence it runs with the rehash sweep below, once every 64 actions; with
+      // `--legality-every 1` in force the caller has asked for the expensive
+      // comparison on every action, and this is part of it.
+      if (options.legalityEvery === 1 && metrics.actions % 64 !== 0) {
+        metrics.stateChecks++;
+        try {
+          replica.check(p);
+        } catch (err) {
+          record({
+            kind: 'rehash',
+            seed: options.seed,
+            game,
+            ply,
+            field: `check: ${(err as Error).message}`,
+            action,
+            prefix: [...prefix],
+            rules,
+            state: next,
+          });
+        }
+      }
+
       if (metrics.actions % 64 === 0) {
         const kpos = recomputeKpos(p);
         const kturn = recomputeKturn(p);
@@ -725,6 +639,7 @@ export function runFuzz(options: FuzzOptions): FuzzResult {
         if (kpos.lo !== p.kposLo || kpos.hi !== p.kposHi || kturn.lo !== p.kturnLo || kturn.hi !== p.kturnHi || occHash !== p.occHash) {
           record({ kind: 'rehash', seed: options.seed, game, ply, field: 'keys', action, prefix: [...prefix], rules, state: next });
         }
+        metrics.stateChecks++;
         try {
           replica.check(p);
         } catch (err) {
@@ -807,13 +722,14 @@ export function runFuzz(options: FuzzOptions): FuzzResult {
       }
 
       state = next;
+      endedBy = action;
     }
 
     if (clearedThisGame) metrics.canActClearedGames++;
     if (arrivalsThisGame > 0) metrics.gamesWithArrival++;
     if (refundsThisGame > 0) metrics.gamesWithRefund++;
     if (arrivalsThisGame > 0 && refundsThisGame > 0) metrics.gamesWithArrivalAndRefund++;
-    const terminal = terminalName(state);
+    const terminal = terminalName(state, endedBy);
     metrics.terminals[terminal] = (metrics.terminals[terminal] ?? 0) + 1;
     metrics.games++;
     game++;
@@ -876,7 +792,11 @@ KIND_WEIGHT[AKind.BUY] = 40;
 KIND_WEIGHT[AKind.PROMOTE] = 10;
 KIND_WEIGHT[AKind.END_ACTION] = 4;
 KIND_WEIGHT[AKind.PAY_UPKEEP] = 1;
-KIND_WEIGHT[AKind.RESIGN] = 0;
+// Injected by the walk, not generated (see `FuzzOptions.resignRate`). Weight 1
+// against the other kinds available at the node — which at a pending-upkeep node
+// is only PAY_UPKEEP, so the offer itself has to be rare or a quarter of the games
+// end in a resignation and the long-game coverage goes with them.
+KIND_WEIGHT[AKind.RESIGN] = 1;
 
 const KIND_COUNT = new Int32Array(8);
 

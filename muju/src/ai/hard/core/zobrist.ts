@@ -8,7 +8,8 @@
  *
  *   Kpos  = piece ⊕ pend ⊕ reserve ⊕ damage ⊕ side ⊕ clock ⊕ bank
  *           ⊕ upkeepPending ⊕ rules ⊕ handicap      (macro TT, book, suites)
- *   Kturn = Kpos ⊕ phase ⊕ actions ⊕ atkCount ⊕ uflags        (within-turn TT)
+ *   Kturn = Kpos ⊕ phase ⊕ actions ⊕ atkCount ⊕ uflags ⊕ progress
+ *                                                            (within-turn TT)
  *   occHash = XOR over occupied squares of piece[white][def 0][sq], lane 0
  *             (owner/def independent; keys the BFS distance cache)
  *
@@ -85,6 +86,29 @@ export interface ZobristTables {
    * position with no commitment has the very same `Kpos` it had under Standard.
    */
   pend: Uint32Array;
+  /**
+   * [2] one key, xored into `Kturn` when `progressThisTurn` is set.
+   *
+   * WHY IT NEEDS A KEY AT ALL. `progress` is within-turn state, so it belongs to
+   * `Kturn` and not to `Kpos`; the question is whether anything else in `Kturn`
+   * already implies it. Under Standard it effectively did: `progress` is set by a
+   * capture, and a capture leaves `atkCount`/`uflags` evidence on the killer,
+   * which `Kturn` hashes. Under PHASING the evidence can be ERASED inside the
+   * same turn — the killer is a tier-2+ body that `PAY_UPKEEP` releases during
+   * the very Prepare that follows its kill, taking its squares, its `atkCount`
+   * and its `F_LAST_KILLED` off the board with it. Two reachable Prepare states
+   * can then agree on `Kpos` and on every `Kturn` extra and still differ in
+   * `progress`, and their `END_PLACE` successors differ: one hands off with the
+   * inactivity clock reset to 0, the other with it incremented. A within-turn TT
+   * that shared an entry between them would answer with the wrong clock.
+   *
+   * Appended AFTER `pend`, so every plane above — `pend` included — keeps the
+   * words it already drew and every key of a position with `progress === 0` is
+   * bit-identical to the one it had before this plane existed. In particular
+   * every MACRO-boundary key is unchanged: `progress` is 0 at a hand-off by
+   * construction (`turn.ts:120-124` clears it).
+   */
+  progress: Uint32Array;
 }
 
 function fill(rng: () => number, keys: number): Uint32Array {
@@ -116,8 +140,10 @@ export function buildZobrist(seed: number = ZOBRIST_SEED): ZobristTables {
     rules: fill(rng, RULE_FLAGS * 2),
     handicap: fill(rng, HANDICAP_VALUES),
     // APPEND-ONLY: every plane above must keep drawing the same words it drew
-    // before the `pend` plane existed, so `pend` goes last (DESIGN M2 item C).
+    // before the `pend` plane existed, so `pend` goes last (DESIGN M2 item C) —
+    // and `progress`, appended after it for the same reason, goes last of all.
     pend: fill(rng, 2 * NDEF * BOARD),
+    progress: fill(rng, 1),
   };
 }
 
@@ -212,6 +238,7 @@ function xorKposParts(p: PackedState): void {
 
 function xorKturnExtras(p: PackedState): void {
   if (p.phase === 0) xorKey(Z.phase, 0);
+  if (p.progress === 1) xorKey(Z.progress, 0);
   xorKey(Z.actions, zActions(p.actions));
   for (let slot = 0; slot < MAX_SLOTS; slot++) {
     const s = p.sq[slot];

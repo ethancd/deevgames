@@ -18,11 +18,27 @@
  * invisible in the adjudicated result.
  *
  * `prover` positions are synthesised rather than played out: a random
- * occupier position reaches the interesting regime (promotion-dependent
- * rescues, upkeep releases, blockers, a bitten node cap) thousands of times
- * more often than random play does. `gate-preservation` is the opposite — it
- * needs REAL games, so it plays them, biased towards the enemy corner so that
- * occupations, and therefore the gate, actually happen.
+ * occupier position reaches the interesting regime (multi-hit rotations,
+ * blockers, a bitten node cap) thousands of times more often than random play
+ * does. `gate-preservation` is the opposite — it needs REAL games, so it plays
+ * them, biased towards the enemy corner so that occupations, and therefore the
+ * gate, actually happen.
+ *
+ * ## PHASING (M2)
+ *
+ * Both surfaces are PHASING. Every synthesised position carries
+ * `ruleset: 'phasing'` and every played game starts from
+ * `createInitialGameState(..., 'phasing')`, because the replica is Phasing-only
+ * (`pack` throws `PackError` on anything else) and `tactics/prover.ts` now
+ * implements Phasing's ACT-ONLY home defence. The two surfaces therefore run by
+ * DEFAULT again: there is no Standard model left to exempt, and any verdict,
+ * node-count or witness split is a failure.
+ *
+ * The witness is replayed from canonical `ready` — the defender to move, action
+ * phase, four actions, its army healed and reset — because that is the position
+ * Phasing's `act(ready, [])` searches (homeCheckmate.ts:74-75, 160). It used to
+ * be replayed from the defender's UPKEEP, which is where Standard's `prepare`
+ * began.
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -31,6 +47,7 @@ import type { BoardState, Cell, GameState, PlayerId, Unit } from '../../../src/g
 import { createInitialGameState } from '../../../src/game/board';
 import { UNEQUAL_ROUTES_MAP } from '../../../src/game/resourceMap';
 import { UNIT_DEFINITIONS, getUnitDefinition } from '../../../src/game/units';
+import { resetUnitActions } from '../../../src/game/board';
 import { analyzeHomeDefenseEvidence } from '../../../src/game/homeCheckmate';
 import { getHomeOccupier } from '../../../src/game/victory';
 import { isLegalAction } from '../../../src/game/legality';
@@ -44,7 +61,6 @@ import { Replica, allocState, newUndo } from '../../../src/ai/hard/core/state';
 import {
   HomeVerdict,
   PROOF_NODES,
-  WITNESS_KEEP,
   homeVerdict,
   homeWitness,
   needsProof,
@@ -160,15 +176,16 @@ const TOUGH_DEFS: readonly string[] = UNIT_DEFINITIONS.filter(d => d.defense >= 
 const WEAK_DEFS: readonly string[] = UNIT_DEFINITIONS.filter(d => d.tier <= 2).map(d => d.id);
 
 /**
- * A random position in which `invader` holds the defender's corner.
+ * A random Phasing position in which `invader` holds the defender's corner.
  *
- * The distributions are chosen to make the prover WORK: a defender bank large
- * enough to make promotions and upkeep releases real choices, tier-2/3
- * defenders (the only releasable ones), damage on the occupier (which moves
- * the damage bound), and defenders clustered near their own corner (where
- * blockers and lane-clearing matter). No defender is ever placed on the
- * invader's corner, so replaying a witness through `applyAction` can never
- * trip the defender's OWN home-checkmate adjudication mid-line.
+ * The distributions are chosen to make the prover WORK: damage on the occupier
+ * (which moves the damage bound), tough occupiers that need two hits, and
+ * defenders clustered near their own corner (where blockers and lane-clearing
+ * matter). The defender's bank is still varied across a wide range — under
+ * Phasing it must make NO difference to the verdict, which is itself worth
+ * fuzzing. No defender is ever placed on the invader's corner, so replaying a
+ * witness through `applyAction` can never trip the defender's OWN
+ * home-checkmate adjudication mid-line.
  */
 function randomOccupierPosition(rng: () => number, invader: PlayerId): GameState {
   const defender: PlayerId = invader === 'white' ? 'black' : 'white';
@@ -225,6 +242,8 @@ function randomOccupierPosition(rng: () => number, invader: PlayerId): GameState
   const board: BoardState = { cells: buildCells(), units, initialResourceLayers: [...UNEQUAL_ROUTES_MAP] };
   return {
     actionsPerTurn: 4,
+    ruleset: 'phasing',
+    pendingSummons: [],
     blackCrystalHandicap: 0,
     victoryRule: 'home-or-elimination',
     inactivityRule: 'on',
@@ -246,13 +265,24 @@ function randomOccupierPosition(rng: () => number, invader: PlayerId): GameState
   };
 }
 
-/** The defender's reply position a `homeWitness` line is replayed from. */
+/**
+ * Canonical `ready` (homeCheckmate.ts:74-75) — the position Phasing's
+ * `act(ready, [])` searches, and therefore the one a `homeWitness` line replays
+ * from: the defender to move in its ACTION phase with four actions and its army
+ * healed and reset, and no upkeep pending.
+ */
 function replyStart(state: GameState, defender: PlayerId): GameState {
   return {
     ...state,
-    upkeepPending: true,
-    turn: { ...state.turn, currentPlayer: defender, phase: 'place', actionsRemaining: 4 },
+    board: resetUnitActions(state.board, defender),
+    upkeepPending: false,
+    turn: { ...state.turn, currentPlayer: defender, phase: 'action', actionsRemaining: 4 },
   };
+}
+
+/** A Phasing view of a ruleset-agnostic fixture board (never a conversion). */
+function asPhasing(state: GameState): GameState {
+  return { ...state, ruleset: 'phasing', pendingSummons: [] };
 }
 
 /**
@@ -274,10 +304,17 @@ function replayWitness(state: GameState, invader: PlayerId, line: readonly AIAct
 }
 
 /**
- * SU §8.1, verified through the packed gate: at `clock = 9` a PROVEN home
- * checkmate resolves at the instant of the move and beats the ten-quiet-turn
- * draw, while an UNPROVEN occupation (a rescue exists) is still subject to the
- * draw at the turn boundary.
+ * SU §8.1, verified through the packed gate, in its PHASING shape: at
+ * `clock = 9` a PROVEN home checkmate resolves as soon as the invader's own
+ * `END_ACTION` has settled upkeep and entered Prepare — before the hand-off
+ * would tick the tenth quiet ply — and so beats the draw, while an UNPROVEN
+ * occupation (a rescue exists) survives Prepare and is still drawn at the
+ * hand-off.
+ *
+ * Under Phasing the MOVE onto the corner adjudicates NOTHING: `resolveHomeCheckmate`
+ * returns the state untouched outside Prepare (homeCheckmate.ts:179), which is
+ * the gate `Replica.provesHomeCheckmate` mirrors. Standard adjudicated at the
+ * move itself, which is what this fixture used to assert.
  */
 export function clockFixture(): boolean {
   const replica = new Replica();
@@ -294,6 +331,8 @@ export function clockFixture(): boolean {
     if (rescuer !== null) units.push(rescuer);
     return {
       actionsPerTurn: 4,
+      ruleset: 'phasing',
+      pendingSummons: [],
       blackCrystalHandicap: 0,
       victoryRule: 'home-or-elimination',
       inactivityRule: 'on',
@@ -315,19 +354,31 @@ export function clockFixture(): boolean {
     };
   };
 
-  const step = (state: GameState): { replica: PackedState; canonical: GameState } => {
-    const p = replica.pack(state, allocState());
-    const slot = p.pieceAt[1];
-    const move = paMake(AKind.MOVE, slot, 0, 1);
+  const apply = (p: PackedState, state: GameState, pa: PA, action: AIAction): GameState => {
     undo.top = 0;
     replica.resetUndoScratch();
-    replica.make(p, move, undo, keep);
-    return { replica: p, canonical: applyAction(state, { type: 'MOVE', unitId: 'invader', to: { x: 0, y: 0 } }) };
+    replica.make(p, pa, undo, keep);
+    return applyAction(state, action);
   };
 
-  // (a) Proven mate: nobody can answer, so the move itself wins at clock 9.
+  /** MOVE onto A1, then the invader's own END_ACTION, which enters Prepare. */
+  const step = (state: GameState): { replica: PackedState; canonical: GameState; afterMove: GameState } => {
+    const p = replica.pack(state, allocState());
+    const slot = p.pieceAt[1];
+    const afterMove = apply(p, state, paMake(AKind.MOVE, slot, 0, 1), { type: 'MOVE', unitId: 'invader', to: { x: 0, y: 0 } });
+    // Phasing adjudicates in Prepare only, so neither engine has decided yet.
+    if (p.result !== Result.ONGOING || afterMove.phase !== 'playing') {
+      return { replica: p, canonical: afterMove, afterMove };
+    }
+    const canonical = apply(p, afterMove, paMake(AKind.END_ACTION), { type: 'END_ACTION_PHASE' });
+    return { replica: p, canonical, afterMove };
+  };
+
+  // (a) Proven mate: nobody can answer, so END_ACTION wins at clock 9 — before
+  // the hand-off, which is where the tenth quiet ply would have drawn.
   const mate = step(build(null));
   const mateOk =
+    mate.afterMove.phase === 'playing' &&
     mate.replica.result === Result.BLACK_WIN &&
     mate.replica.reason === Reason.HOME_CHECKMATE &&
     mate.canonical.phase === 'victory' &&
@@ -335,17 +386,13 @@ export function clockFixture(): boolean {
     mate.canonical.victoryReason === 'home-checkmate';
 
   // (b) Unproven occupation: a White Radi sits next to A1 and kills the Hi, so
-  // the move is NOT a checkmate and the position survives to the boundary,
-  // where the tenth quiet ply ends it as a draw.
+  // Prepare is NOT a checkmate and the position survives to the hand-off, where
+  // the tenth quiet ply ends it as a draw.
   const rescued = step(build(makeUnit('rescuer', 'lightning_1', 'white', 10, 0)));
   const occupiedOk = rescued.replica.result === Result.ONGOING && rescued.canonical.phase === 'playing';
 
   const p = rescued.replica;
-  const endTurn = paMake(AKind.END_ACTION);
-  undo.top = 0;
-  replica.resetUndoScratch();
-  replica.make(p, endTurn, undo, keep);
-  const canonicalEnd = applyAction(rescued.canonical, { type: 'END_ACTION_PHASE' });
+  const canonicalEnd = apply(p, rescued.canonical, paMake(AKind.END_PLACE), { type: 'END_PLACE_PHASE' });
   const drawOk =
     p.result === Result.DRAW &&
     p.reason === Reason.INACTIVITY &&
@@ -361,6 +408,7 @@ export function runProverSurface(options: ProverSurfaceOptions): ProverSurfaceMe
   const replica = new Replica();
   const sc = new Scratch(1, 0, 0, 1);
   const witnessBuffer = new Int32Array(MAX_TURN_ACTIONS);
+  const witnessKeep = newKeepSetTable();
   const packed = allocState();
   const divergences: ProverDivergence[] = [];
 
@@ -438,7 +486,9 @@ export function runProverSurface(options: ProverSurfaceOptions): ProverSurfaceMe
     const length = homeWitness(p, side, maxNodes, witnessBuffer);
     if (length === 0) return;
     const line: AIAction[] = new Array<AIAction>(length);
-    for (let i = 0; i < length; i++) line[i] = toAIAction(p, witnessBuffer[i], WITNESS_KEEP);
+    // The Phasing witness is MOVEs and ATTACKs only, so `toAIAction` never
+    // indexes the keep-set table; an empty one is all it needs.
+    for (let i = 0; i < length; i++) line[i] = toAIAction(p, witnessBuffer[i], witnessKeep);
     const failure = replayWitness(state, invader, line);
     metrics.witnessChecked++;
     if (failure === null) return;
@@ -457,12 +507,14 @@ export function runProverSurface(options: ProverSurfaceOptions): ProverSurfaceMe
     });
   };
 
-  // (a) the 28 authored fixtures.
+  // (a) the 28 authored fixtures, read as Phasing positions over the same board
+  //     (`asPhasing`): the corpus is ruleset-agnostic and the replica is
+  //     Phasing-only, so `pack` would refuse them as written.
   const fixtures = tacticalFixtures();
   for (let i = 0; i < fixtures.length; i++) {
     const invader = invaderOf(fixtures[i].state.board);
     if (invader === null) continue;
-    compare(fixtures[i].state, invader, i, true, PROOF_NODES);
+    compare(asPhasing(fixtures[i].state), invader, i, true, PROOF_NODES);
   }
 
   // (b) synthesised occupier positions.
@@ -649,7 +701,7 @@ export function runGatePreservation(options: GatePreservationOptions): GatePrese
     const victoryRule = rng() < 0.2 ? 'elimination' : 'home-or-elimination';
     const homeBias = 0.25 + rng() * 0.5;
     let state: GameState = {
-      ...createInitialGameState(undefined, 4, handicap),
+      ...createInitialGameState(undefined, 4, handicap, 'phasing'),
       victoryRule,
       inactivityRule: rng() < 0.25 ? 'off' : 'on',
       reviewUpkeep: { white: rng() < 0.25, black: rng() < 0.25 },
@@ -680,10 +732,16 @@ export function runGatePreservation(options: GatePreservationOptions): GatePrese
       replica.resetUndoScratch();
       replica.make(p, chosen, undo, keep);
 
-      if (action.type === 'BUY_UNIT') {
+      // A Phasing BUY places nothing, so the ids that need adopting appear at an
+      // ARRIVAL (the hand-off), not at the purchase: teach the replica whatever
+      // canonical named this ply, whichever action produced it.
+      if (next.board.units.length > 0) {
         const known = new Set(state.board.units.map(x => x.id));
-        const fresh = next.board.units.find(x => !known.has(x.id));
-        if (fresh) p.originIds[p.pieceAt[fresh.position.y * 10 + fresh.position.x]] = fresh.id;
+        for (const fresh of next.board.units) {
+          if (known.has(fresh.id)) continue;
+          const slot = p.pieceAt[fresh.position.y * 10 + fresh.position.x];
+          if (slot !== NO_SLOT) p.originIds[slot] = fresh.id;
+        }
       }
 
       // The gate fires on the state `make` produced, which is the state

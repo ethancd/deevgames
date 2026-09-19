@@ -1,61 +1,47 @@
 /**
- * `npm run hard:fuzz -- --actions <n> --seed <n> [--surfaces transition,legality,arrival]
- *                      [--legality-every <n>] [--plies <n>] [--arrival-cases <n>]
- *                      [--out <path>] [--sample <n> --sample-out <path>] [--no-repro]
- *                      [--allow-known-prover-gap]`
- * `npm run hard:fuzz -- --surfaces prover --cases <n> --seed <n> --out <path> --allow-standard-surfaces`
- * `npm run hard:fuzz -- --surfaces gate-preservation --actions <n> --seed <n> --out <path> --allow-standard-surfaces`
+ * `npm run hard:fuzz -- --actions <n> --seed <n>`
+ *                      `[--surfaces transition,legality,arrival,prover,gate-preservation]`
+ *                      `[--legality-every <n>] [--plies <n>] [--arrival-cases <n>] [--cases <n>]`
+ *                      `[--out <path>] [--sample <n> --sample-out <path>] [--no-repro]`
  * (DESIGN §7.3, §5.9).
  *
- * ## M2: the Standard-only surfaces are skipped by default
+ * ## Every surface runs, and every divergence fails
  *
- * `prover` compares `homeVerdict` against `analyzeHomeDefense`, and
- * `gate-preservation` compares adjudicated results over played games; both live
- * in `fuzz/prover-surface.ts` and both still model STANDARD, because
- * `tactics/prover.ts` is not ported until M4. Running them against the
- * Phasing-only replica would report a wall of divergences that say nothing about
- * M2. They are therefore SKIPPED by default with a loud log line and a
- * `skipped: true` artifact; `--allow-standard-surfaces` runs them anyway for
- * whoever is doing the M4 port.
+ * `transition`, `legality`, `arrival`, `prover` and `gate-preservation` are ALL
+ * on by default and all measure the Phasing replica.
  *
- * ## The action-driven surfaces
+ *   - `transition` / `legality` walk seeded Phasing games and compare every
+ *     action (`fuzz/differential.ts runFuzz`);
+ *   - `arrival` builds mid-game positions with commitments on both sides,
+ *     disrupts some of them, and compares the hand-off (`runArrivalSurface`);
+ *   - `prover` compares `tactics/prover.ts homeVerdict` against
+ *     `analyzeHomeDefense` — verdict, NODE COUNT and method — and replays every
+ *     `homeWitness` line through canonical `applyAction`;
+ *   - `gate-preservation` plays real games and asserts that `make`'s gate
+ *     (`needsProof`) never changes an adjudicated result.
  *
- * `transition`, `legality` and `arrival` all measure the Phasing replica.
- * `transition` and `legality` walk seeded Phasing games and compare every action
- * (`fuzz/differential.ts runFuzz`); `arrival` builds mid-game positions with
- * commitments on both sides, disrupts some of them, and compares the hand-off
- * (`runArrivalSurface`). They share one artifact: `arrival` nests its metrics
- * under `arrival`.
+ * M2 round 4 ported the packed prover to Phasing's ACT-ONLY home defence, so the
+ * last two surfaces no longer model Standard and are no longer skipped: the
+ * `--allow-standard-surfaces` opt-in and the `--allow-known-prover-gap`
+ * mate-verdict exemption are both GONE. Any divergence of any kind fails the
+ * run. See `docs/hard-ai/phasing/M2-STATUS.md`.
+ *
+ * `prover` and `gate-preservation` keep their own artifact shapes when either is
+ * the ONLY requested surface (top level, and `gatePreservation` respectively),
+ * because the M10 gate chain in `lab/hard-ai/verify/gates.ts` invokes them that
+ * way and relies on the sibling merge. In a combined run they nest under
+ * `prover` / `gatePreservation`.
  *
  * Writes the metrics object `lab/hard-ai/verify/gates.ts` reads for the gate and,
  * on any divergence, self-contained reproducers to
- * `lab/results/hard-ai-fuzz-<YYYY-MM-DD>/{divergence,arrival}-<n>.json` (seed,
- * game, ply, the action prefix, the rules block and both states), then exits
- * non-zero.
+ * `lab/results/hard-ai-fuzz-<YYYY-MM-DD>/{divergence,arrival,prover-divergence,gate-divergence}-<n>.json`
+ * (seed, game, ply, the action prefix, the rules block and both states), then
+ * exits non-zero.
  *
- * ## `--allow-known-prover-gap`
- *
- * M2 knowingly carries TWO divergence classes, both inside `tactics/prover.ts`,
- * which design item H places out of scope and which still models STANDARD home
- * defence. They fail in opposite directions: `overclaim-broke-defender` (the
- * bound, UNSOUND — the replica claims a mate against a defender that cannot
- * afford its rent) and `underclaim-standard-rescue` (the search — Standard's
- * rescue may promote and may keep part of the army, so the prover misses a mate
- * the canonical engine awards). Both are documented in
- * `docs/hard-ai/phasing/M2-STATUS.md` §2 and pinned by
- * `tests/ai/hard/phasing-prover-{debt,underclaim}.test.ts`.
- *
- * `differential.ts`'s `classifyKnownProverGap` recognises each narrowly — same
- * position in every other field, the verdicts differing in that specific
- * direction, and the defender actually holding the Standard-only resource that
- * explains it — and the metrics split `divergences` into
- * `proverOverclaimDivergences`, `proverUnderclaimDivergences` and
- * `unclassifiedDivergences`.
- *
- * By default BOTH fail the run, exactly as before. `--allow-known-prover-gap`
- * tolerates the classified ones (loudly, naming the fix milestone) so that a
- * long M2 sweep can still assert "no NEW divergence class". It never tolerates
- * `unclassifiedDivergences`.
+ * `--resign-rate <r>` is the fraction of plies on which RESIGN is offered to the
+ * walker (default 0.002). It is drawn from a stream of its own, so `--resign-rate 0`
+ * replays a seed bit-identically to a run taken before RESIGN was injectable —
+ * which is how the seeds of earlier converger rounds are re-run as true repros.
  *
  * `--sample N --sample-out <path>` additionally writes N macro-node positions in
  * `muju-position-v1` form, stratified by turn number, each with its `rules`
@@ -80,18 +66,15 @@ interface Args {
   arrivalCases: number;
   surfaces: Set<AnySurface>;
   legalityEvery: number;
+  resignRate: number;
   plies: number;
   out: string;
   sample: number;
   sampleOut: string | null;
   repro: boolean;
-  allowStandardSurfaces: boolean;
-  allowKnownProverGap: boolean;
 }
 
 const KNOWN_SURFACES: readonly string[] = ['transition', 'legality', 'arrival', 'prover', 'gate-preservation'];
-/** Surfaces that have their own driver and cannot be mixed with the others. */
-const STANDALONE_SURFACES: readonly string[] = ['prover', 'gate-preservation'];
 /** Actions below which a run is too short to require a refund (see the gate). */
 const REFUND_EXPECTED_ACTIONS = 4000;
 /** Arrival cases below which a run is too short to require both outcomes. */
@@ -103,15 +86,14 @@ function parseArgs(argv: string[]): Args {
     actions: 100_000,
     cases: 20_000,
     arrivalCases: 400,
-    surfaces: new Set<AnySurface>(['transition', 'legality', 'arrival']),
+    surfaces: new Set<AnySurface>(['transition', 'legality', 'arrival', 'prover', 'gate-preservation']),
     legalityEvery: 8,
+    resignRate: 0.002,
     plies: 500,
     out: DEFAULT_OUT,
     sample: 0,
     sampleOut: null,
     repro: true,
-    allowStandardSurfaces: false,
-    allowKnownProverGap: false,
   };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
@@ -121,22 +103,17 @@ function parseArgs(argv: string[]): Args {
     else if (a === '--arrival-cases') args.arrivalCases = Number(argv[++i]);
     else if (a === '--plies') args.plies = Number(argv[++i]);
     else if (a === '--legality-every') args.legalityEvery = Number(argv[++i]);
+    else if (a === '--resign-rate') args.resignRate = Number(argv[++i]);
     else if (a === '--out') args.out = path.resolve(REPO_ROOT, argv[++i]);
     else if (a === '--sample') args.sample = Number(argv[++i]);
     else if (a === '--sample-out') args.sampleOut = path.resolve(REPO_ROOT, argv[++i]);
     else if (a === '--no-repro') args.repro = false;
-    else if (a === '--allow-standard-surfaces') args.allowStandardSurfaces = true;
-    else if (a === '--allow-known-prover-gap') args.allowKnownProverGap = true;
     else if (a === '--surfaces') {
       const list = argv[++i].split(',').map(s => s.trim()).filter(Boolean);
       for (const s of list) {
         if (!KNOWN_SURFACES.includes(s)) {
           throw new Error(`hard:fuzz: surface "${s}" is not implemented yet (have: ${KNOWN_SURFACES.join(', ')})`);
         }
-      }
-      const standalone = list.filter(s => STANDALONE_SURFACES.includes(s));
-      if (standalone.length > 0 && list.length > 1) {
-        throw new Error(`hard:fuzz: surface "${standalone[0]}" has its own driver and cannot be combined with ${list.filter(s => s !== standalone[0]).join(', ')}`);
       }
       args.surfaces = new Set(list as AnySurface[]);
     } else throw new Error(`hard:fuzz: unrecognised argument "${a}"`);
@@ -145,6 +122,7 @@ function parseArgs(argv: string[]): Args {
   if (!Number.isInteger(args.cases) || args.cases <= 0) throw new Error('hard:fuzz: --cases must be a positive integer');
   if (!Number.isInteger(args.arrivalCases) || args.arrivalCases <= 0) throw new Error('hard:fuzz: --arrival-cases must be a positive integer');
   if (!Number.isInteger(args.legalityEvery) || args.legalityEvery <= 0) throw new Error('hard:fuzz: --legality-every must be a positive integer');
+  if (!(args.resignRate >= 0 && args.resignRate <= 1)) throw new Error('hard:fuzz: --resign-rate must be between 0 and 1');
   if (args.sample > 0 && args.sampleOut === null) throw new Error('hard:fuzz: --sample requires --sample-out');
   return args;
 }
@@ -204,65 +182,62 @@ function write(outPath: string, metrics: Record<string, unknown>): void {
   console.log(`hard:fuzz: wrote ${outPath}`);
 }
 
-/** The M2 skip for a surface that still models Standard. */
-function skipStandardSurface(name: string, out: string): void {
-  console.log('');
-  console.log('*'.repeat(78));
-  console.log(`hard:fuzz: SKIPPING the "${name}" surface.`);
-  console.log('  It compares the replica against a STANDARD model (tactics/prover.ts mirrors');
-  console.log('  analyzeHomeDefense and is not ported to Phasing until M4), while the replica');
-  console.log('  is now PHASING-ONLY. Running it here would report divergences that say');
-  console.log('  nothing about M2.');
-  console.log('  Re-enable with: npm run hard:fuzz -- --surfaces ' + name + ' --allow-standard-surfaces');
-  console.log('*'.repeat(78));
-  console.log('');
-  write(out, { surface: name, skipped: true, skipReason: 'standard-only-surface-pending-M4', ruleset: 'phasing' });
-}
-
 /** DESIGN §7.3's third surface: `homeVerdict` vs `analyzeHomeDefense`. */
-function runProverMain(args: Args, reproDir: string | null): void {
-  if (!args.allowStandardSurfaces) {
-    skipStandardSurface('prover', args.out);
-    return;
-  }
+function proverSurface(args: Args, reproDir: string | null): { metrics: Record<string, unknown>; failed: boolean } {
   const metrics = runProverSurface({ seed: args.seed, cases: args.cases, reproDir });
-  write(args.out, metrics as unknown as Record<string, unknown>);
   console.log(JSON.stringify(metrics));
-  if (
+  const failed =
     metrics.fixtureCases !== 28 ||
     metrics.fixtureMismatch > 0 ||
     metrics.fuzzVerdictMismatch > 0 ||
     metrics.nodeMismatch > 0 ||
     metrics.witnessIllegal > 0 ||
     metrics.witnessNotRemoved > 0 ||
-    !metrics.clockFixtureOk
-  ) {
-    process.exitCode = 1;
+    !metrics.clockFixtureOk;
+  if (failed) {
+    console.error(
+      `hard:fuzz: prover surface FAILED (fixtureMismatch ${metrics.fixtureMismatch}, ` +
+        `fuzzVerdictMismatch ${metrics.fuzzVerdictMismatch}, nodeMismatch ${metrics.nodeMismatch}, ` +
+        `witnessIllegal ${metrics.witnessIllegal}, witnessNotRemoved ${metrics.witnessNotRemoved}, ` +
+        `clockFixtureOk ${metrics.clockFixtureOk})`,
+    );
   }
+  return { metrics: metrics as unknown as Record<string, unknown>, failed };
 }
 
 /** DESIGN §5.9 (c): the gated replica's verdict equals the ungated canonical's. */
-function runGateMain(args: Args, reproDir: string | null): void {
-  if (!args.allowStandardSurfaces) {
-    skipStandardSurface('gate-preservation', args.out);
-    return;
-  }
+function gateSurface(args: Args, reproDir: string | null): { metrics: Record<string, unknown>; failed: boolean } {
   const metrics = runGatePreservation({ seed: args.seed, actions: args.actions, plies: args.plies, reproDir });
-  write(args.out, { gatePreservation: metrics });
   console.log(JSON.stringify(metrics));
-  if (metrics.mismatches > 0 || metrics.actions < args.actions || metrics.proofsCompared === 0) process.exitCode = 1;
+  const failed = metrics.mismatches > 0 || metrics.actions < args.actions || metrics.proofsCompared === 0;
+  if (failed) {
+    console.error(
+      `hard:fuzz: gate-preservation FAILED (mismatches ${metrics.mismatches}, ` +
+        `actions ${metrics.actions}/${args.actions}, proofsCompared ${metrics.proofsCompared})`,
+    );
+  }
+  return { metrics: metrics as unknown as Record<string, unknown>, failed };
 }
 
 function main(): void {
   const args = parseArgs(process.argv.slice(2));
   const reproDir = args.repro ? path.resolve(REPO_ROOT, `lab/results/hard-ai-fuzz-${today()}`) : null;
 
-  if (args.surfaces.has('prover')) {
-    runProverMain(args, reproDir);
+  // The M10 gate chain (`lab/hard-ai/verify/gates.ts`) asks for each standalone
+  // surface on its own and reads the artifact at the shape that produced: the
+  // prover surface at TOP LEVEL, the gate surface under `gatePreservation`, with
+  // the sibling merge folding the first into the second. Preserve exactly that
+  // when one of them is the only surface requested.
+  if (args.surfaces.size === 1 && args.surfaces.has('prover')) {
+    const { metrics, failed } = proverSurface(args, reproDir);
+    write(args.out, metrics);
+    if (failed) process.exitCode = 1;
     return;
   }
-  if (args.surfaces.has('gate-preservation')) {
-    runGateMain(args, reproDir);
+  if (args.surfaces.size === 1 && args.surfaces.has('gate-preservation')) {
+    const { metrics, failed } = gateSurface(args, reproDir);
+    write(args.out, { gatePreservation: metrics });
+    if (failed) process.exitCode = 1;
     return;
   }
 
@@ -276,6 +251,7 @@ function main(): void {
       actions: args.actions,
       surfaces: walkSurfaces,
       legalityEvery: args.legalityEvery,
+      resignRate: args.resignRate,
       plies: args.plies,
       reproDir,
       sample: args.sample,
@@ -293,10 +269,6 @@ function main(): void {
         actions: walk.actions,
         games: walk.games,
         divergences: walk.divergences,
-        knownProverGapDivergences: walk.knownProverGapDivergences,
-        proverOverclaimDivergences: walk.proverOverclaimDivergences,
-        proverUnderclaimDivergences: walk.proverUnderclaimDivergences,
-        unclassifiedDivergences: walk.unclassifiedDivergences,
         legalitySetMismatches: walk.legalitySetMismatches,
         pendingLegalityMismatches: walk.pendingLegalityMismatches,
         unmakeMismatches: walk.unmakeMismatches,
@@ -307,47 +279,26 @@ function main(): void {
         arrivals: walk.arrivals,
         refunds: walk.refunds,
         arrivalRefundGameFraction: walk.arrivalRefundGameFraction,
+        terminals: walk.terminals,
         elapsedMs: walk.elapsedMs,
       }),
     );
 
-    // A divergence fails the run. The ONE exception is opt-in and narrow:
-    // `--allow-known-prover-gap` tolerates divergences that
-    // `classifyKnownProverGap` recognised as the documented M4 prover debt
-    // (M2-STATUS.md §2), and never tolerates `unclassifiedDivergences`, so a NEW
-    // divergence class still fails even under the flag. Without the flag the
-    // gate is exactly as strict as it was.
-    if (walk.unclassifiedDivergences > 0) {
-      console.error(
-        `hard:fuzz: ${walk.unclassifiedDivergences} UNCLASSIFIED transition divergence(s) — not the known M4 prover debt`,
-      );
+    // ANY divergence fails the run. Round 4 ported `tactics/prover.ts` to
+    // Phasing, so the `--allow-known-prover-gap` exemption and the
+    // `classifyKnownProverGap` classifier it rested on are both gone: there is no
+    // longer a divergence class this milestone knowingly carries, and a mate
+    // verdict split is a failure like any other field.
+    if (walk.divergences > 0) {
+      console.error('');
+      console.error('!'.repeat(78));
+      console.error(`hard:fuzz: ${walk.divergences} transition divergence(s) — the replica disagrees with canonical.`);
+      console.error('  Reproducers (seed, game, ply, prefix, both states) are in the repro directory.');
+      console.error('  The canonical engine is the oracle: docs/PHASING-2026-09-16.md and');
+      console.error('  src/game/{turn,summoning,legality,homeCheckmate}.ts.');
+      console.error('!'.repeat(78));
+      console.error('');
       failed = true;
-    }
-    if (walk.knownProverGapDivergences > 0) {
-      const verdict = args.allowKnownProverGap ? 'TOLERATED by --allow-known-prover-gap' : 'FAILING this run';
-      console.error('');
-      console.error('!'.repeat(78));
-      console.error(
-        `hard:fuzz: ${walk.knownProverGapDivergences} divergence(s) matched the KNOWN M4 prover debt — ${verdict}.`,
-      );
-      console.error('  tactics/prover.ts still models STANDARD home defence, in both directions:');
-      console.error(
-        `  - ${walk.proverOverclaimDivergences} overclaim-broke-defender (UNSOUND): the bound passes`,
-      );
-      console.error('    `preparing: true` (prover.ts:418, 720, 738), so a defender that cannot afford');
-      console.error('    its rent is treated as having no army and the replica claims a mate the');
-      console.error('    canonical engine refutes. Pinned: tests/ai/hard/phasing-prover-debt.test.ts');
-      console.error(
-        `  - ${walk.proverUnderclaimDivergences} underclaim-standard-rescue: Standard's rescue may promote`,
-      );
-      console.error('    and may keep part of the army (homeCheckmate.ts:140-160), which Phasing forbids,');
-      console.error('    so the prover finds defences that do not exist and misses a mate canonical');
-      console.error('    awards. Pinned: tests/ai/hard/phasing-prover-underclaim.test.ts');
-      console.error('  Fix: M4, both halves together.');
-      console.error('  Documented: docs/hard-ai/phasing/M2-STATUS.md §2.');
-      console.error('!'.repeat(78));
-      console.error('');
-      if (!args.allowKnownProverGap) failed = true;
     }
 
     failed =
@@ -400,6 +351,18 @@ function main(): void {
       );
       failed = true;
     }
+  }
+
+  if (args.surfaces.has('prover')) {
+    const prover = proverSurface(args, reproDir);
+    metrics = { ...metrics, prover: prover.metrics };
+    failed = failed || prover.failed;
+  }
+
+  if (args.surfaces.has('gate-preservation')) {
+    const gate = gateSurface(args, reproDir);
+    metrics = { ...metrics, gatePreservation: gate.metrics };
+    failed = failed || gate.failed;
   }
 
   write(args.out, metrics);

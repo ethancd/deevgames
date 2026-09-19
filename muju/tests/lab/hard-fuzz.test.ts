@@ -25,6 +25,7 @@ describe('differential fuzzer: transition + legality surfaces (Phasing)', () => 
     actions: 4000,
     surfaces: SURFACES,
     legalityEvery: 4,
+    resignRate: 0.01,
     plies: 500,
     reproDir: null,
     sample: 0,
@@ -65,12 +66,59 @@ describe('differential fuzzer: transition + legality surfaces (Phasing)', () => 
     expect(Object.keys(metrics.terminals).length).toBeGreaterThan(0);
   });
 
+  it('the terminal histogram names the ACTION that ended each game, and RESIGN fires', () => {
+    // `terminals` is what a coverage claim about a terminal branch is checked
+    // against, so its shape is pinned: `<reason>:<winner|draw>@<action>`. The action
+    // suffix is the only thing that separates an elimination at an ATTACK from one
+    // at the hand-off, which canonical gives the same `victoryReason`.
+    for (const key of Object.keys(metrics.terminals)) {
+      if (key === 'unfinished') continue;
+      expect(key, key).toMatch(/^[a-z-]+:(white|black|draw)@[A-Z_]+$/);
+    }
+    // RESIGN is injected by the walk rather than generated, so a walk with a
+    // non-zero `resignRate` must actually reach the resignation terminal.
+    expect(Object.keys(metrics.terminals).some(k => k.endsWith('@RESIGN'))).toBe(true);
+    expect(metrics.resignRate).toBe(0.01);
+  });
+
+  it('runs check() on every action only when the legality cadence is 1', () => {
+    // The expensive `Replica.check` sweep is cadenced with the rehash sweep (every
+    // 64 actions) unless `--legality-every 1` asks for the comparison on every
+    // action, in which case it is part of it.
+    const dense = runFuzz({
+      seed: 909,
+      actions: 400,
+      surfaces: SURFACES,
+      legalityEvery: 1,
+      resignRate: 0,
+      plies: 500,
+      reproDir: null,
+      sample: 0,
+    }).metrics;
+    expect(dense.stateChecks).toBe(dense.actions);
+    expect(dense.divergences).toBe(0);
+    expect(dense.rehashMismatches).toBe(0);
+
+    const sparse = runFuzz({
+      seed: 909,
+      actions: 400,
+      surfaces: SURFACES,
+      legalityEvery: 8,
+      resignRate: 0,
+      plies: 500,
+      reproDir: null,
+      sample: 0,
+    }).metrics;
+    expect(sparse.stateChecks).toBeLessThan(sparse.actions / 32);
+  });
+
   it('is deterministic for a given seed', () => {
     const again = runFuzz({
       seed: 4242,
       actions: 4000,
       surfaces: SURFACES,
       legalityEvery: 4,
+      resignRate: 0.01,
       plies: 500,
       reproDir: null,
       sample: 0,

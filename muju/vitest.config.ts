@@ -9,20 +9,39 @@ import { defineConfig, defaultExclude } from 'vitest/config'
  * PHASING-ONLY: `pack` now throws `PackError` on any state whose ruleset is not
  * 'phasing', a BUY records a commitment instead of placing a unit, and the macro
  * turn gained a Prepare phase that does not hand off. The layers ABOVE the
- * replica — the turn generator (`gen/**`), the prover (`tactics/prover.ts`),
- * `tables/**`, `eval/**`, `search/**`, `book/**` and the lab harnesses that
- * drive them — were deliberately out of M2's scope and still model Standard.
- * Their tests therefore fail for reasons that are correct: they build Standard
- * fixtures that `pack` now refuses, or they assert Standard's turn shape.
+ * replica — the turn generator (`gen/**`), `tables/**`, `eval/**`, `search/**`,
+ * `book/**` and the lab harnesses that drive them — were deliberately out of M2's
+ * scope and still model Standard. Their tests therefore fail for reasons that are
+ * correct: they build Standard fixtures that `pack` now refuses, or they assert
+ * Standard's turn shape.
+ *
+ * WHAT MOVED IN ROUND 4. `src/ai/hard/tactics/prover.ts` was brought INTO the M2
+ * lane and ported to Phasing's ACT-ONLY home defence, so:
+ *
+ *   - `tests/ai/hard/prover.test.ts` LEFT this list. Its expectations were
+ *     rewritten from the canonical Phasing engine, case by case, and no case was
+ *     deleted: the bound's cash threshold became "the bank is not an input at
+ *     all", the witness replays from canonical `ready` instead of from the
+ *     defender's upkeep, the `make` gate cases adjudicate at `END_ACTION` because
+ *     Phasing decides in Prepare, and the squeezed-cap sweep's cap range was
+ *     re-tuned from 1..48 to 1..12 because an act-only tree is ~22 nodes deep and
+ *     the old range no longer reached the exhaustion regime. It runs 19 cases.
+ *   - `tests/ai/hard/p8-rescue-cap.test.ts` STAYED, and moved to the search
+ *     section below: it fails on `gen/**` and `search/root`, not on the prover —
+ *     its fixture is a Standard engine turn that now takes the `pack-error`
+ *     fallback path.
+ *   - `tests/ai/hard/home.test.ts` STAYED for the reason it always had
+ *     (`tables/home` enumerates Standard's "BUY, END_PLACE, MOVE" lines).
  *
  * Every file below is parked WHOLE, with the layer that owns it and the
  * milestone that restores it. Nothing here was edited, weakened or re-pinned:
  * when its layer is ported, its row is deleted and the file runs again as
  * written. The count after each entry is how many of its cases passed before
- * being parked, which is what the restoring milestone owes back: 246 measured
- * file by file, 245 in a whole-suite run (one root-exposure case passes in
- * isolation and fails under the full run's load). M2-STATUS.md carries the same
- * numbers, and 123 further cases in these files were already failing.
+ * being parked, which is what the restoring milestone owes back: 237 measured
+ * file by file (246 before `prover.test.ts`'s 9 came back), 236 in a whole-suite
+ * run (one root-exposure case passes in isolation and fails under the full run's
+ * load). M2-STATUS.md carries the same numbers, and 123 further cases in these
+ * files were already failing.
  *
  * To run the parked files anyway — which is how M4/M5/M6 will drive their
  * ports — set MUJU_RUN_QUARANTINE=1:
@@ -41,21 +60,6 @@ const M2_QUARANTINE = [
   'tests/ai/hard/purchase.test.ts',             // gen/purchase planPurchases spend/spawnAfter (19 passing)
   'tests/ai/hard/turnpool.test.ts',             // gen/turn pool + decodeTurn replay (10 passing)
 
-  // --- M4: the prover (tactics/prover.ts) and the rescue it models -----------
-  // The packed prover still models STANDARD home defence, and it diverges from
-  // canonical Phasing in BOTH directions. The rescue SEARCH under-claims, because
-  // Standard's `prepare` (upkeep releases + pre-action promotions) is strictly
-  // larger than Phasing's act-only four actions. The admissible damage BOUND
-  // OVER-claims, which is the unsound half: it skips any defender unit whose
-  // `rent > cash` (prover.ts:418), so a broke defender is treated as having no
-  // army and a mate is awarded that the defender refutes. (This comment said
-  // "can only UNDER-claim" until converger round 2 measured the other direction.)
-  // These are live verdict divergences, not just failing assertions; both are
-  // recorded in M2-STATUS.md §2 and pinned by
-  // tests/ai/hard/phasing-prover-{debt,underclaim}.test.ts.
-  'tests/ai/hard/prover.test.ts',               // tactics/prover verdicts (9 passing)
-  'tests/ai/hard/p8-rescue-cap.test.ts',        // P8 rescue-cap pin (1 passing)
-
   // --- M4: tables/home, which enumerates home-race LINES ---------------------
   // Its lines are "BUY, END_PLACE, MOVE the bought unit": under Phasing the buy
   // arrives a turn later, so the line is no longer legal end to end.
@@ -69,6 +73,7 @@ const M2_QUARANTINE = [
   'tests/ai/hard/root-exposure.test.ts',        // search/root + search/probe (25 passing)
   'tests/ai/hard/mate-score.test.ts',           // search mate scoring through the engine (7 passing)
   'tests/ai/hard/p6-stoppable-generation.test.ts', // P6 stoppability pin, search/time (1 passing)
+  'tests/ai/hard/p8-rescue-cap.test.ts',        // P8 rescue-cap pin, gen/generate + search/root (1 passing)
   'tests/ai/hard-engine-fallback-elapsed.test.ts', // engine fallback kind: now 'pack-error' (2 passing)
 
   // --- M4: verify/replay, but only because its fixture needs the generator ---

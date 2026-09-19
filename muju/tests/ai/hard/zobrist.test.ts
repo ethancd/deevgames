@@ -46,10 +46,12 @@ const TABLE_KEYS: readonly (readonly [keyof ZobristTables, number])[] = [
   ['rules', 8],
   ['handicap', 21],
   ['pend', 2 * NDEF * 100],
+  ['progress', 1],
 ];
 
 /** `TABLE_KEYS` is also the FILL ORDER: `buildZobrist` draws the planes in this
- * sequence from one `seededRandom` stream, and `pend` is last by construction. */
+ * sequence from one `seededRandom` stream; `pend` and then `progress` are last
+ * by construction, each appended so no earlier plane's words move. */
 const FILL_ORDER = TABLE_KEYS;
 
 function sample(): PackedState {
@@ -94,7 +96,7 @@ describe('core/zobrist: table construction', () => {
     expect(ZOBRIST_SEED).toBe(0x4d554a55);
   });
 
-  it('the pend plane is APPENDED: every earlier plane keeps its pre-M2 words', () => {
+  it('the pend and progress planes are APPENDED: every earlier plane keeps its pre-M2 words', () => {
     // Redraw the stream in the documented fill order. If `pend` were inserted
     // anywhere but last, every plane after the insertion point would shift and
     // every key of every position — including one with no commitment at all —
@@ -105,10 +107,11 @@ describe('core/zobrist: table construction', () => {
       for (let i = 0; i < plane.length; i++) plane[i] = (rng() * 0x100000000) >>> 0;
       expect([...Z[name]], name).toEqual([...plane]);
     }
-    // ...and `pend` really is the LAST plane: the stream is now exhausted as far
-    // as `buildZobrist` is concerned, which the equality above already proves
-    // for every plane before it.
-    expect(FILL_ORDER[FILL_ORDER.length - 1][0]).toBe('pend');
+    // ...and `progress` really is the LAST plane, `pend` the one before it: the
+    // stream is now exhausted as far as `buildZobrist` is concerned, which the
+    // equality above already proves for every plane before them.
+    expect(FILL_ORDER[FILL_ORDER.length - 2][0]).toBe('pend');
+    expect(FILL_ORDER[FILL_ORDER.length - 1][0]).toBe('progress');
   });
 
   it('a position with no commitment has the very same Kpos it had before the plane existed', () => {
@@ -172,6 +175,12 @@ describe('core/zobrist: Kpos membership', () => {
     ['actions remaining', p => { p.actions = 1; }],
     ['an attack count', p => { p.atkCount[0] = 2; }],
     ['unit flags', p => { p.uflags[0] = UFLAGS_MASK; }],
+    // `progressThisTurn`. Not implied by any other Kturn extra under Phasing: the
+    // capture that sets it leaves `atkCount`/`uflags` evidence on the killer, and
+    // `PAY_UPKEEP` can release that killer in the same turn's Prepare, erasing
+    // the evidence while `progress` stays set. See the `progress` plane's own
+    // note in `core/zobrist.ts` and `tests/ai/hard/progress-key.test.ts`.
+    ['progressThisTurn', p => { p.progress = 1; }],
   ];
 
   for (const [what, mutate] of turnOnly) {
@@ -186,7 +195,7 @@ describe('core/zobrist: Kpos membership', () => {
     });
   }
 
-  it('Kturn is Kpos xor the turn-only planes, so Kturn xor Kpos is phase/actions/atkCount/uflags only', () => {
+  it('Kturn is Kpos xor the turn-only planes, so Kturn xor Kpos is phase/actions/atkCount/uflags/progress only', () => {
     const p = sample();
     const delta = xorKeys(recomputeKturn(p), recomputeKpos(p));
     // With phase = action, actions = 2, atkCount/uflags as in `sample()`, the

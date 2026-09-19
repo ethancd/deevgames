@@ -35,7 +35,6 @@ import { DEF_INDEX } from '../../../src/ai/hard/core/catalog';
 import { Replica, allocState, newUndo } from '../../../src/ai/hard/core/state';
 import { readPositions } from '../../../lab/hard-ai/positions/corpus';
 import { asPhasing, buildState, randomState } from './game-fixture';
-import { classifyKnownProverGap } from '../../../lab/hard-ai/fuzz/differential';
 
 // E0.5 timeout budget: slowest test 3.1 s in the 2026-09-15 survey (M2 Max, load ~5, maxWorkers 2); 20 s is this file's explicit ceiling.
 vi.setConfig({ testTimeout: 20_000 });
@@ -49,52 +48,22 @@ function defId(id: string): number {
 }
 
 /**
- * `digest` equality, with ONE exemption.
+ * `digest` equality, with NO exemption.
  *
- * M2 packs Phasing's home-checkmate GATE (Prepare, no upkeep pending) but not
- * its VERDICT: `tactics/prover.ts` still models Standard's home defence — upkeep
- * releases and pre-action promotions — while canonical Phasing gives the defender
- * its present army and four actions only (`homeCheckmate.ts:152,159`). That shows
- * up as a difference in the `result.reason` field ALONE, with `HOME_CHECKMATE` on
- * one side of it.
+ * Round 4 ported `tactics/prover.ts` to Phasing's ACT-ONLY home defence, so the
+ * mate-verdict exemption this file used to carry is GONE, together with the
+ * `classifyKnownProverGap` predicate that gated it. The history is worth keeping
+ * because of how it failed: the exemption originally justified itself with "the
+ * packed prover can only ever UNDER-claim a Phasing mate, because Standard's
+ * rescue set is strictly larger". That is true of the rescue SEARCH and false of
+ * the admissible damage BOUND — `damageBoundCore` skipped any defender unit whose
+ * `rent > cash`, so a BROKE defender was treated as having no army and the
+ * replica claimed mates the defender refuted, roughly 1 position in 750k. The
+ * bound runs first, so the safety argument was backwards, and a 1%-of-actions
+ * allowance had been absorbing an unsound verdict for two rounds.
  *
- * CORRECTED BY CONVERGER ROUNDS 2-3. This comment used to say the packed prover
- * "can only ever UNDER-claim a Phasing mate, because Standard's rescue set is
- * strictly larger". That is true of the rescue SEARCH and FALSE of the admissible
- * damage BOUND, which is the unsound half: `damageBoundCore` skips any defender
- * unit whose `rent > cash` (`prover.ts:418`), so a BROKE defender is treated as
- * having no army and the replica claims a mate the defender refutes. Both
- * directions occur — 43 over-claims and 5 under-claims in round 3's 30M fuzzed
- * actions — and both are pinned by
- * `tests/ai/hard/phasing-prover-{debt,underclaim}.test.ts`.
- *
- * So the exemption is no longer "any mate reason anywhere". A `mate-verdict-only`
- * split must additionally be recognised by `classifyKnownProverGap`, the same
- * narrow two-class predicate the fuzz gate uses: the two packed states identical
- * in every field but the verdict, the verdicts differing in that class's
- * direction, AND the defender actually holding the Standard-only resource that
- * explains it. A mate over-claim against a SOLVENT defender is a replica bug, and
- * it now fails here instead of being absorbed by the 1% allowance.
- *
- * Anything else — including a home-checkmate difference accompanied by any other
- * field moving — is a real divergence and fails. The verdict itself is a later
- * milestone's gate; see DEVIATIONS.md under M2.
+ * Every field of every digest now has to match, `result.reason` included.
  */
-const DIGEST_RESULT_FIELD = 23;
-const REASON_HOME_CHECKMATE = String(Reason.HOME_CHECKMATE);
-
-function compareDigests(mine: string, theirs: string): 'same' | 'mate-verdict-only' | 'different' {
-  if (mine === theirs) return 'same';
-  const a = mine.split('|');
-  const b = theirs.split('|');
-  if (a.length !== b.length) return 'different';
-  for (let i = 0; i < a.length; i++) {
-    if (i === DIGEST_RESULT_FIELD || a[i] === b[i]) continue;
-    return 'different';
-  }
-  const reasons = [a[DIGEST_RESULT_FIELD].split('.')[1], b[DIGEST_RESULT_FIELD].split('.')[1]];
-  return reasons.includes(REASON_HOME_CHECKMATE) ? 'mate-verdict-only' : 'different';
-}
 
 /** `canPromote` on the canonical board, by unit id. */
 function isLegalActionPhasing(state: ReturnType<typeof buildState>, unitId: string): boolean {
@@ -142,8 +111,6 @@ describe('make / unmake', () => {
     expect(positions.length).toBe(1211);
     let arrivals = 0;
     let refunds = 0;
-    let mateVerdictDivergences = 0;
-    const mateVerdictGaps: Record<string, number> = {};
 
     for (const state of positions) {
       if (state.phase !== 'playing') continue;
@@ -171,20 +138,7 @@ describe('make / unmake', () => {
         replica.resetUndoScratch();
         replica.make(p, pa, undo, keep);
         replica.pack(applyAction(state, action), expected);
-        const verdict = compareDigests(replica.digest(p), replica.digest(expected));
-        if (verdict === 'mate-verdict-only') {
-          // The exemption is the DOCUMENTED M4 prover debt, not "a mate reason
-          // somewhere": the fuzz gate's own classifier has to recognise this
-          // split as one of its two classes, or it is a replica bug and fails.
-          const gap = classifyKnownProverGap(p, expected);
-          if (gap === null) {
-            throw new Error(
-              `unclassified mate-verdict divergence (neither M4 prover class): replica ${replica.digest(p)} vs canonical ${replica.digest(expected)}`,
-            );
-          }
-          mateVerdictGaps[gap] = (mateVerdictGaps[gap] ?? 0) + 1;
-          mateVerdictDivergences++;
-        } else expect(replica.digest(p)).toBe(replica.digest(expected));
+        expect(replica.digest(p)).toBe(replica.digest(expected));
         if (conserves) replica.check(p);
         if (paKindOf(pa) === AKind.END_PLACE) {
           const resolved = state.pendingSummons?.filter(s => s.owner !== state.turn.currentPlayer).length ?? 0;
@@ -201,15 +155,6 @@ describe('make / unmake', () => {
     // Both arrival outcomes must actually have been crossed.
     expect(arrivals).toBeGreaterThan(0);
     expect(refunds).toBeGreaterThan(0);
-    // M2 scope: the mate VERDICT is still Standard's (see `compareDigests`).
-    // It must stay a rounding error on this suite, not a systematic split.
-    expect(mateVerdictDivergences).toBeLessThan(applied / 100);
-    // Every exempted split was classified above; only the two documented M4
-    // prover classes may appear, and they must account for all of them.
-    expect(Object.keys(mateVerdictGaps).sort()).toEqual(
-      Object.keys(mateVerdictGaps).filter(k => k === 'overclaim-broke-defender' || k === 'underclaim-standard-rescue').sort(),
-    );
-    expect(Object.values(mateVerdictGaps).reduce((a, b) => a + b, 0)).toBe(mateVerdictDivergences);
     // Every action kind must actually have been exercised.
     for (const kind of [AKind.MOVE, AKind.ATTACK, AKind.BUY, AKind.PROMOTE, AKind.END_PLACE, AKind.END_ACTION, AKind.PAY_UPKEEP]) {
       expect(kinds[kind]).toBeGreaterThan(0);
