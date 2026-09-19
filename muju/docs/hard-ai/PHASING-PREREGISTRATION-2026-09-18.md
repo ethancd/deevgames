@@ -144,3 +144,54 @@ ineligible by design): 0 illegal actions; `aiv2-hard` W/D/L Rush 1/0/3, Expand 3
 3/1/0, medium 3/0/1; in its h0 Black loss to Rush `aiv2-hard` bought nothing, which the new
 purchase condition would fail. No Gate 1 row has been run, so this amendment cannot have been
 fitted to a result it gates — but it was written after seeing that pilot, and says so.
+
+
+### A2 — 2026-09-19: void the contaminated Gate 1 prefix and restore the complete legality oracle
+
+**Reason and authority.** Claude's independent T6 review reproduced a mixed-safety
+Phasing Prepare position with132 rules-legal purchases but only48 returned by the
+shared generator. T2 had placed V2's `summonDisruptable` pruning in `src/ai/moves.ts`,
+and T2c added its all-threatened fallback there. The harness's scripted opponents
+and other canonical-legality consumers also use this generator. Consequently the
+running baseline row changed the opponents relative to T1's frozen reference bands
+using the tested engine's own heuristic. This is an infrastructure defect, not a
+strength failure or a rules change. Claude requested that the row be stopped,
+preserved as void, the pruning moved into the V2 planner, and the evaluation
+restarted with a new seed after focused regressions and a new pilot.
+
+**Voided evidence.** The run from commit
+`3423fe8501221c7906abd3b7f6c75dfe68402b80`, identity
+`4e1fcd69124b4bd966a88aabf5a8d33a156e1087c0cac42fb54506453813a655`,
+full seed20260957, was interrupted after130 completed games. Its directory is
+`/Users/ashkie/Documents/Codex/2026-09-18/wba/work/gate1-full-2026-09-19-0042`.
+Completed games, replays, identity and adopted preregistration are retained, with
+original manifest, coordinator invalidation record and evidence SHA-256 manifest.
+No game from that prefix may be pooled with or substituted into the replacement.
+
+**Disclosure of partial-result visibility.** Codex saw individual winner/reason
+lines while checking process progress (including the first six games and two
+later lines during interruption). It did not inspect an aggregate cell score,
+paired estimate, Gate1 summary or acceptance result. The decision to void rests
+solely on the independently reproduced shared-generator defect, not outcomes.
+Earlier16-game pilots and their failures remain visible and ineligible.
+
+**Correction and replacement allocation, fixed before corrected runs.**
+`generatePlaceActions`, `generatePlacePhaseActions` and `generateAllActions` must
+expose the complete rules-legal set; V2 disruption pruning and the legal risky-buy
+fallback belong only inside its planner. Test set equality against exhaustive
+canonical `isLegalAction` enumeration, complete harness/MCP lists and pagination,
+and preservation of the purchase-freeze fix. Run a new16-game pilot with
+**seed20260959**, into a new directory, before the replacement full row.
+The replacement full row uses **seed20260958**, chosen as the next unused integer
+after the voided full seed, with the same **64 mirrored pairs per opponent and
+handicap cell (1024 games), fixed work6000/3000, opponents and handicaps**.
+
+**Unchanged acceptance.** All A1 strength, purchase/draw bands, must-buy,
+adjudication and correctness conditions remain exactly as adopted. Rules stay
+`muju-phasing-1`; T1 frozen bands stay unchanged. No weights, search budgets or
+thresholds may be tuned to the voided prefix or corrected pilot's win/loss record.
+The new pilot is ineligible. The full replacement must run at one pinned clean
+source/config identity and retain failure honestly. Gate2/sealed allocation,
+no-rerun rule and all guard-unlock prerequisites are unchanged; no sealed corpus
+was read for this amendment. Runner evidence must identify A2 and hash this
+appended document, while historical A1 evidence remains unchanged.

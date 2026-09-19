@@ -1,0 +1,14 @@
+{
+  "status": "VOID",
+  "voidedAt": "2026-09-19T06:32:00.088582+00:00",
+  "completedGames": 130,
+  "expectedGames": 1024,
+  "processExitCode": 137,
+  "originalCommit": "3423fe8501221c7906abd3b7f6c75dfe68402b80",
+  "identityHash": "4e1fcd69124b4bd966a88aabf5a8d33a156e1087c0cac42fb54506453813a655",
+  "reason": "Infrastructure defect: shared legal generator prunes Phasing purchases using V2 summon-disruption heuristic, changing scripted opponents relative to frozen T1 bands and corrupting canonical legal-oracle independence.",
+  "decisionSource": "Claude inbox URGENT shared-legality finding, received before coordinator heartbeat06:27Z; independent T6 mixed-safety repro confirmed48of132legal purchases served.",
+  "partialResultDisclosure": "Coordinator saw individual winner/reason lines in early process-progress output (including first six games) and two later lines while attempting interruption. No aggregate cell score, paired estimate, Gate1 summary or acceptance result was inspected. Void decision is solely the confirmed infrastructure defect, independent of outcomes.",
+  "preservation": "Completed games/replays/identity/preregistration retained unchanged; partial row and seed20260957 will not be reused or pooled. Original manifest preserved as manifest-at-interruption.json.",
+  "replacement": "A2 will retain A1 acceptance/counts/budgets, relocate pruning into planner only, and use a new full-run seed20260958 after focused checks and a new16gamepilot. No new run started."
+}
