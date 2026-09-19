@@ -59,9 +59,13 @@ describe('floor contract integrity', () => {
     expect(() => resolveContractCommit(committedContract, '2000-01-01T00:00:00.000Z')).toThrow(/precede the measurement start/);
   });
 
-  it('refuses an uncommitted contract, which is what blocks a v2 measurement before the coordinator commits it', () => {
-    const notCommitted = join(MUJU_ROOT, 'lab/hard-ai/suites/phasing/fixtures/v2/floor-contract.json');
-    expect(() => resolveContractCommit(notCommitted, new Date().toISOString())).toThrow(/is not committed/);
+  it('resolves the committed v2 contract to a commit on this history and refuses one outside the repository', () => {
+    // The v2 floor contract was committed alone before its first measurement, so it
+    // must now resolve. (The refusal of an UNCOMMITTED contract is pinned below in a
+    // throwaway repository; asserting it against this repository's real file only held
+    // until the coordinator committed it, which is a state, not a property.)
+    const committed = join(MUJU_ROOT, 'lab/hard-ai/suites/phasing/fixtures/v2/floor-contract.json');
+    expect(resolveContractCommit(committed, new Date().toISOString()).commit).toMatch(/^[0-9a-f]{40}$/);
     expect(() => resolveContractCommit(join(tmpdir(), 'floor-contract.json'), new Date().toISOString())).toThrow(/inside this repository/);
   });
 
