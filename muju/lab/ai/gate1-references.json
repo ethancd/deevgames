@@ -1,0 +1,80 @@
+{
+  "status": "adopted",
+  "rulesVersion": "muju-phasing-1",
+  "bandsSha256": "f9c1a7669cbc12031ef4227faa9915104972ac650f8bb47c89cc2b4735a537a2",
+  "sourceHashes": {
+    "lab/docs/EXPERIMENTS.md": "4399040ab9e1e7b00921cd8362d0830b7d20349b99902de67e47cc5cf9f0adbd",
+    "lab/results/e6-rush-vs-ai/summary.csv": "7a1f31bc7d8d44d6f02c5abd8a80dd2a5901ac5586a32ed1bbf5dc2101ac97db",
+    "lab/results/e6-rush-vs-ai/games.jsonl": "45dd0321568f03d16ee4c1c58301121ec5f9ed11693b73354b12287eb06f8e95",
+    "lab/results/e2-engine-gates/summary.csv": "c6b0d12e162d14fab3203830c6647e52ee0bf7a2deea0684437e237b933dae2a",
+    "lab/results/hard-ai-e0/calib-aiv2-rush/summary.md": "86f9caac6e9b529f2b295083ff58e0dec27bd792fd9c5d4d73dc6694b9a0f08c",
+    "lab/results/hard-ai-e0/calib-aiv2-rush/manifest.json": "0a5510d74b76b8633a3cd498629763d547e07ba786b32863944b9aaf5e28fd62",
+    "lab/results/hard-ai-e0/calib-aiv2-rush/games.jsonl": "d6e3218064bb1790d5540a60e2febbcff964655b43bcb4a8a91053169893fe8f",
+    "lab/results/e8-2026-09-07/engine.json": "c3fe04788ae296842eff69b6c545163d2533b2a8b7640c16747f59591c779041",
+    "lab/results/alternate-map-2026-09-12/ai-manifest.json": "d73cbc859738f820530bd794a77f082465b628db89e1819cd466c249927dd652"
+  },
+  "audit": {
+    "primaryRush": {
+      "W": 28,
+      "D": 0,
+      "L": 2,
+      "score": 0.9333333333333333,
+      "elo": 458.45121427129516,
+      "illegalActions": 18,
+      "arm": "AIv2-hard-fast",
+      "source": "lab/results/e6-rush-vs-ai/games.jsonl",
+      "qualification": "Historical as-shipped result, not a clean or budget-matched calibration"
+    },
+    "laterRush": {
+      "W": 1,
+      "D": 0,
+      "L": 15,
+      "elo": -470.43650362227254,
+      "illegalActions": 0,
+      "work": "wall:500",
+      "source": "lab/results/hard-ai-e0/calib-aiv2-rush/games.jsonl"
+    },
+    "tinyRush": {
+      "W": 2,
+      "D": 0,
+      "L": 0,
+      "illegalActions": 0,
+      "source": "lab/results/e8-2026-09-07/engine.json",
+      "qualification": "Two-game stopped calibration; infinite raw Elo, not a usable finite margin"
+    },
+    "missing": [
+      "Expand",
+      "Balanced"
+    ],
+    "search": "Searched EXPERIMENTS.md, result summary CSV/Markdown/JSON, all 27 lab/**/results/**/games.jsonl files; examined e8 engine and alternate-map ai results. Aware:Balanced is a different policy and the map study uses medium-fast, so it is not the requested reference. No sealed opening corpus read.",
+    "resolution": "A1 withdraws the historical-margin condition. Historical sources and the superseded proposal are retained for audit only, never used as pass thresholds or run prerequisites."
+  },
+  "amendment": {
+    "id": "A1",
+    "commit": "0a6f8db5827356a27f6e62b2ab6a2f82f131d945",
+    "path": "muju/docs/hard-ai/PHASING-PREREGISTRATION-2026-09-18.md",
+    "sha256": "18bc4579c51a009cb6413b3109afc8dd8422ef1d3b0215228fa38d71758bb499"
+  },
+  "supersededProposal": {
+    "proposedElo": {
+      "Rush": 458.45121427129516,
+      "Expand": null,
+      "Balanced": null
+    },
+    "retentionFraction": 0.6,
+    "rushFloor": 275.0707285627771
+  },
+  "policy": {
+    "strengthGated": [
+      "Expand",
+      "Balanced",
+      "aiv2-medium"
+    ],
+    "strengthReportOnly": [
+      "Rush"
+    ],
+    "strength": "score > 0.5 and Elo lower confidence bound > 0 in each h0/h3 cell",
+    "behavioralBands": "unchanged; each scripted opponent/h cell, including Rush",
+    "mustBuy": "at least one aiv2-hard purchase in every game with more than 10 completed player turns"
+  }
+}

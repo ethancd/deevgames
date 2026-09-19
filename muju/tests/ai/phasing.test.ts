@@ -10,7 +10,7 @@ import { placementPlans } from '../../src/ai/planner/placement';
 import { summonDisruptable, pendingMaterial, pendingIncome, disruptionPressure } from '../../src/ai/planner/summons';
 import { evaluatePosition, quickEvaluate } from '../../src/ai/evaluation';
 import { scorePartialPlan } from '../../src/ai/planner/scoring';
-import { generateAllActions } from '../../src/ai/moves';
+import { generateAllActions, generatePlaceActions } from '../../src/ai/moves';
 import { beamSearchPlans } from '../../src/ai/planner/beam';
 import { generateTemplatePlans } from '../../src/ai/planner/templates';
 import { AIEngineV2 } from '../../src/ai/engine-v2';
@@ -84,6 +84,53 @@ it('filters reachable commitment squares using next-turn flags and values disrup
   const invaded = { ...state, board: { ...state.board, units: state.board.units.map(u => u.owner === 'black' ? { ...u, position: sq } : u) } };
   expect(disruptionPressure(invaded, 'black')).toBeCloseTo(1.8);
   expect(pendingIncome(invaded, 'white')).toBe(0);
+});
+
+it.each([79, 96])('keeps and searches risky purchases in the zero-buy Rush replay at ply %i', async ply => {
+  const replay = JSON.parse(readFileSync('lab/ai/results/t2b-gate1-pilot-2026-09-19/replays/Rush-h0-p0-black.json', 'utf8'));
+  let state = initial();
+  state.board.units.forEach((u, i) => { u.id = `initial-${i}`; });
+  for (const step of replay.steps.slice(1)) {
+    if (step.ply === ply) break;
+    expect(isLegalAction(state, step.action)).toBe(true);
+    state = applyAction(state, step.action);
+  }
+  expect(state.turn).toMatchObject({ currentPlayer: 'black', phase: 'place' });
+  expect(state.players.black.resources).toBe(ply === 79 ? 4 : 7);
+  const buys = generatePlaceActions(state, 'black');
+  expect(buys).toHaveLength(ply === 79 ? 96 : 174);
+  for (const buy of buys) {
+    expect(isLegalAction(state, buy)).toBe(true);
+    if (buy.type === 'BUY_UNIT') expect(summonDisruptable(state, 'black', buy.position)).toBe(true);
+  }
+  expect(placementPlans(state, 'black').some(p => p.actions.some(a => a.type === 'BUY_UNIT'))).toBe(true);
+  const engine = new AIEngineV2('hard');
+  engine.setSeed(2113312924); engine.setTacticalSolver(solver);
+  engine.setConfig({ fixedWork: 857 }); // The original replay's Prepare slice.
+  const result = await engine.findBestAction(state, Infinity);
+  expect(result.plan.actions[0].type).toBe('BUY_UNIT');
+  expect(isLegalAction(state, result.plan.actions[0])).toBe(true);
+  expect(applyAction(state, result.plan.actions[0]).board.units).toEqual(state.board.units);
+});
+
+it('uses risky legal squares after the last safe square is reserved by a pending summon', () => {
+  const replay = JSON.parse(readFileSync('lab/ai/results/t2b-gate1-pilot-2026-09-19/replays/Rush-h0-p0-black.json', 'utf8'));
+  let state = initial();
+  state.board.units.forEach((u, i) => { u.id = `initial-${i}`; });
+  for (const step of replay.steps.slice(1)) {
+    if (step.ply === 14) break;
+    state = applyAction(state, step.action);
+  }
+  const safe = generatePlaceActions(state, 'black');
+  expect(safe).toHaveLength(6);
+  for (const a of safe) if (a.type === 'BUY_UNIT') expect(summonDisruptable(state, 'black', a.position)).toBe(false);
+  const next = applyAction(state, safe.find(a => a.type === 'BUY_UNIT' && a.definitionId === 'fire_1')!);
+  const fallback = generatePlaceActions(next, 'black');
+  expect(fallback.length).toBeGreaterThan(0);
+  for (const a of fallback) {
+    expect(isLegalAction(next, a)).toBe(true);
+    if (a.type === 'BUY_UNIT') expect(summonDisruptable(next, 'black', a.position)).toBe(true);
+  }
 });
 
 it('beam crosses Act then upkeep then Prepare without purchasing before Act', () => {

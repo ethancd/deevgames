@@ -1,0 +1,12 @@
+{
+  "checkedAt": "2026-09-19T04:20:32.231Z",
+  "sourceHashesVerified": 128,
+  "games": 16,
+  "legalReplayActions": 2307,
+  "replaySnapshotsMatched": true,
+  "summaryRecomputed": true,
+  "identityHashVerified": true,
+  "workTurnsAudited": 227,
+  "maxHardRequestedWork": 5996,
+  "maxMediumRequestedWork": 2973
+}
