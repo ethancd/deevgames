@@ -65,7 +65,11 @@ const screenshots = process.env.QA_SCREENSHOTS;
       assert.deepEqual(resumed.state, saved.state);
       assert.deepEqual(resumed.history, saved.history);
       assert.equal(await page.locator('.action-budget strong').innerText(), '4 actions');
-      await page.getByRole('link', {name: 'Back to Deev Games', exact: true}).click();
+      // Muju is served from the Render host, whose root redirects to /muju/, so its
+      // hub links are absolute. Assert the target, then return to this build's hub.
+      assert.equal(await page.getByRole('link', {name: 'Back to Deev Games', exact: true}).getAttribute('href'),
+        'https://deevgames.pages.dev/');
+      await page.goto(base + '/');
       await page.getByRole('link', {name: /FORGE/}).click();
       await fits(); await picture('forge');
       // A face-up card opens the actual game action modal with art.

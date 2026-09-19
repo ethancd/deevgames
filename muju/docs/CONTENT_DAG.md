@@ -213,6 +213,13 @@ one-command rebuild.
 
 ## Three independent release targets
 
+**Current state (2026-09-18):** Cloudflare Pages publishing is paused, so the Render
+host is Muju's canonical and only live-updated release. Treat `static-deploy` as
+**blocked (no credentials)** rather than skipped: still build and smoke-test `_site`,
+record the block, and verify changed behavior on Render. The Pages hub stays up and
+links to Render; Muju links back to the hub with an absolute URL because the Render
+root redirects to `/muju/`.
+
 | Target | Package / release instructions | Required live evidence |
 |---|---|---|
 | Browser games: `https://deevgames.pages.dev/muju/` | Root `README.md`, `build-all.sh`, `.github/workflows/deploy.yml`; publish `_site` to Pages project `deevgames`. | Actual deployment step and source revision, fresh page/assets, changed piece/rule, AI worker, save/refresh and public skill copies. The workflow can succeed without publishing if credentials are missing. |

@@ -187,7 +187,7 @@
       "paths": [".github/workflows/deploy.yml"],
       "update": ["Follow root README deployment flow. Publish validated _site through the workflow or documented Wrangler command; master is production and other branches are previews. Check fetched origin/master freshness and preserve unrelated work."],
       "verify": ["Record source revision, artifact identity, actual publish result and deployment URL. A green workflow can mean checks-only when credentials are absent; confirm the deploy step actually ran."],
-      "external": ["Cloudflare Pages project deevgames; documented public base https://deevgames.pages.dev"]
+      "external": ["Cloudflare Pages project deevgames; documented public base https://deevgames.pages.dev", "Publishing paused since 2026-09-18 (no deploy credentials): record this node as blocked, not complete. Muju's canonical release is the Render host; the Pages /muju/ copy is frozen."]
     },
     {
       "id": "server-deploy", "title": "Publish authoritative multiplayer/MCP host", "depends_on": ["server-package"],
