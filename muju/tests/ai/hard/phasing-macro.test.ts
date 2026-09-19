@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest';
 import { buildState, type StateSpec } from './game-fixture';
-import { Replica, allocState, newUndo } from '../../../src/ai/hard/core/state';
+import { INACTIVITY_LIMIT, Replica, allocState, newUndo } from '../../../src/ai/hard/core/state';
 import { Scratch, bbHas, bbNew } from '../../../src/ai/hard/core/bits';
 import { AKind, newKeepSetTable, paKind, paMake } from '../../../src/ai/hard/core/action';
 import { allocTables, buildTables } from '../../../src/ai/hard/tables/context';
@@ -151,7 +151,9 @@ describe('Phasing macro boundary and upkeep ownership', () => {
   });
 
   it('preserves terminal-before-handoff semantics and keeps disruption non-tactical', () => {
-    const state = base({ phase: 'place', actions: 0, inactivityPlies: 9 });
+    // One ply short of the LIMIT, so the END_PLACE under test is the hand-off
+    // that draws. A literal 9 stopped being that the moment A4 moved the limit.
+    const state = base({ phase: 'place', actions: 0, inactivityPlies: INACTIVITY_LIMIT - 1 });
     const { rep, p, keep, turns } = generated(state);
     const quiet = turns.find(t => t.count === 1 && paKind(t.actions[0]) === AKind.END_PLACE)!;
     const check = verifyTurn(rep, state, p, quiet, keep);

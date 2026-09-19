@@ -24,6 +24,7 @@
  */
 import { DEAD, MAX_SLOTS, PEND_STRIDE, UFLAGS_MASK, type Key, type PackedState, type Side, type Square } from '../types';
 import { seededRandom } from '../../runtime';
+import { INACTIVITY_LIMIT } from '../../../game/inactivity';
 import { BOARD } from './tables';
 import { NDEF } from './catalog';
 
@@ -40,8 +41,22 @@ const ATKCOUNT_VALUES = 4;
 const UFLAGS_VALUES = UFLAGS_MASK + 1;
 /** actionsRemaining 0..4. */
 const ACTION_VALUES = 5;
-/** inactivityPlies 0..10 (inactivity.ts:3). */
-const CLOCK_VALUES = 11;
+/**
+ * `inactivityPlies` 0..`INACTIVITY_LIMIT` — 21 values under `muju-phasing-2`
+ * (amendment A4), 11 under `muju-phasing-1`. Split into a FROZEN prefix and an
+ * APPENDED tail so the longer clock cannot disturb the keys the shorter one
+ * drew; see `CLOCK_LEGACY_VALUES` and `buildZobrist`.
+ */
+const CLOCK_VALUES = INACTIVITY_LIMIT + 1;
+/**
+ * The clock plane's frozen prefix: the 11 keys (`clock` 0..10) drawn at the
+ * plane's original position in the RNG stream, back when the limit was 10.
+ * This is a HISTORICAL constant, never derived from `INACTIVITY_LIMIT` — the
+ * whole point is that it does not move when the limit does.
+ */
+const CLOCK_LEGACY_VALUES = 11;
+/** The clock keys the longer limit adds; drawn LAST, after `pend` and `progress`. */
+const CLOCK_EXTRA_VALUES = Math.max(0, CLOCK_VALUES - CLOCK_LEGACY_VALUES);
 /** blackCrystalHandicap 0..20 (rules.ts:3). */
 const HANDICAP_VALUES = 21;
 /** `victoryHome`, `drawRuleOn`, `reviewUpkeep[0]`, `reviewUpkeep[1]` — 4 flags x 2 values. */
@@ -64,7 +79,13 @@ export interface ZobristTables {
   phase: Uint32Array;
   /** [5 * 2]. */
   actions: Uint32Array;
-  /** [11 * 2]. */
+  /**
+   * [(`INACTIVITY_LIMIT` + 1) * 2], indexed by `clock` — so 21 keys under
+   * `muju-phasing-2`. The array is CONCATENATED, not drawn in one run: entries
+   * 0..10 are the words the plane drew at its original position in the stream
+   * and entries 11.. are appended words drawn after `pend` and `progress`. See
+   * `buildZobrist`.
+   */
   clock: Uint32Array;
   /** [2 * 64 * 2] `bank & 63`. */
   bankLo: Uint32Array;
@@ -117,33 +138,74 @@ function fill(rng: () => number, keys: number): Uint32Array {
   return out;
 }
 
+/** `[head, tail]` as one plane. Draw order is the caller's; this only lays out. */
+function concatPlane(head: Uint32Array, tail: Uint32Array): Uint32Array {
+  if (tail.length === 0) return head;
+  const out = new Uint32Array(head.length + tail.length);
+  out.set(head, 0);
+  out.set(tail, head.length);
+  return out;
+}
+
 /**
  * Deterministic for a given seed: `seededRandom` (src/ai/runtime.ts:3-6) is a
  * pure integer PRNG, and the tables are filled in a fixed order, so two builds
  * with the same seed are bit-identical on every machine.
+ *
+ * DRAW ORDER IS APPEND-ONLY and is the contract, not the field order of the
+ * returned object. Every plane below draws from `rng` in the order written
+ * here; anything new goes at the END so no earlier plane's words move. `pend`
+ * (M2) and `progress` (M3) were appended that way, and the CLOCK EXTENSION of
+ * `muju-phasing-2` (amendment A4: limit 10 -> 20) is appended after both.
+ *
+ * The clock plane is therefore drawn in TWO pieces: its frozen 11-key prefix
+ * (`clock` 0..10) stays where it always was, and the ten keys for `clock`
+ * 11..20 are drawn last of all and concatenated onto it. Consequence — the one
+ * this arrangement exists for — every key, and so every `Kpos`/`Kturn`, of a
+ * position whose clock is <= 10 is BIT-IDENTICAL to the one it had under
+ * `muju-phasing-1`. `tests/ai/hard/zobrist.test.ts` redraws the stream and
+ * proves it.
  */
 export function buildZobrist(seed: number = ZOBRIST_SEED): ZobristTables {
   const rng = seededRandom(seed);
+  const piece = fill(rng, 2 * NDEF * BOARD);
+  const reserve = fill(rng, BOARD * RESERVE_VALUES);
+  const damage = fill(rng, BOARD * DAMAGE_VALUES);
+  const atkCount = fill(rng, BOARD * ATKCOUNT_VALUES);
+  const uflags = fill(rng, BOARD * UFLAGS_VALUES);
+  const side = fill(rng, 1);
+  const phase = fill(rng, 1);
+  const actions = fill(rng, ACTION_VALUES);
+  const clockLegacy = fill(rng, Math.min(CLOCK_VALUES, CLOCK_LEGACY_VALUES));
+  const bankLo = fill(rng, 2 * 64);
+  const bankHi = fill(rng, 2 * 16);
+  const upkeep = fill(rng, 1);
+  const rules = fill(rng, RULE_FLAGS * 2);
+  const handicap = fill(rng, HANDICAP_VALUES);
+  // APPEND-ONLY: every plane above must keep drawing the same words it drew
+  // before the `pend` plane existed, so `pend` goes last (DESIGN M2 item C) —
+  // `progress`, appended after it for the same reason, goes later still, and
+  // the clock plane's A4 extension goes last of all.
+  const pend = fill(rng, 2 * NDEF * BOARD);
+  const progress = fill(rng, 1);
+  const clockExtra = fill(rng, CLOCK_EXTRA_VALUES);
   return {
-    piece: fill(rng, 2 * NDEF * BOARD),
-    reserve: fill(rng, BOARD * RESERVE_VALUES),
-    damage: fill(rng, BOARD * DAMAGE_VALUES),
-    atkCount: fill(rng, BOARD * ATKCOUNT_VALUES),
-    uflags: fill(rng, BOARD * UFLAGS_VALUES),
-    side: fill(rng, 1),
-    phase: fill(rng, 1),
-    actions: fill(rng, ACTION_VALUES),
-    clock: fill(rng, CLOCK_VALUES),
-    bankLo: fill(rng, 2 * 64),
-    bankHi: fill(rng, 2 * 16),
-    upkeep: fill(rng, 1),
-    rules: fill(rng, RULE_FLAGS * 2),
-    handicap: fill(rng, HANDICAP_VALUES),
-    // APPEND-ONLY: every plane above must keep drawing the same words it drew
-    // before the `pend` plane existed, so `pend` goes last (DESIGN M2 item C) —
-    // and `progress`, appended after it for the same reason, goes last of all.
-    pend: fill(rng, 2 * NDEF * BOARD),
-    progress: fill(rng, 1),
+    piece,
+    reserve,
+    damage,
+    atkCount,
+    uflags,
+    side,
+    phase,
+    actions,
+    clock: concatPlane(clockLegacy, clockExtra),
+    bankLo,
+    bankHi,
+    upkeep,
+    rules,
+    handicap,
+    pend,
+    progress,
   };
 }
 
@@ -170,6 +232,11 @@ export function zUflags(s: Square, value: number): number {
 export function zActions(value: number): number {
   return value * 2;
 }
+/**
+ * `clock` 0..`INACTIVITY_LIMIT`. One flat index over the concatenated plane:
+ * 0..10 land in the frozen prefix and 11.. in the appended block, which is why
+ * callers need not know the plane was drawn in two pieces.
+ */
 export function zClock(value: number): number {
   return value * 2;
 }

@@ -52,7 +52,7 @@ import {
 import { bbHas, type Scratch } from '../core/bits';
 import { ADJ_COUNT, ADJ_LIST, CORNER, CORNER_NEIGHBOURS, CORRIDOR, RECT } from '../core/tables';
 import { NDEF, activeCatalog, powerIndex, type Catalog } from '../core/catalog';
-import { ACTIONS_PER_TURN } from '../core/state';
+import { ACTIONS_PER_TURN, INACTIVITY_LIMIT } from '../core/state';
 import type { NodeTables } from '../tables/context';
 import { KILL_IMPOSSIBLE } from '../tables/kill';
 import { Approach } from '../tables/approach';
@@ -220,6 +220,20 @@ function corridorUnits(p: PackedState, side: Side, cat: Catalog): number {
 const ELEMENTS = 6;
 const TIER_SCRATCH = new Int8Array(ELEMENTS);
 
+/**
+ * `DrawPressure`'s full scale: the value the feature takes when the inactivity
+ * clock stands ON the draw. It is a fixed 100 because that is what `clock²`
+ * reached at the TEN-ply limit the feature and its weight column were authored
+ * against; `muju-phasing-2` (amendment A4) doubles the limit to 20, and leaving
+ * the raw `clock²` in place would have quadrupled the feature's range against an
+ * unchanged coefficient. NO coefficient changes here — `DEFAULT_WEIGHTS.w[F.DrawPressure]`
+ * is still 0 and every other weight is untouched; only the feature's own scale
+ * is pinned to the limit.
+ */
+const DRAW_PRESSURE_FULL_SCALE = 100;
+/** `INACTIVITY_LIMIT²`, so `clock²·FULL_SCALE/DENOM` is `FULL_SCALE` at the draw. */
+const DRAW_PRESSURE_DENOM = INACTIVITY_LIMIT * INACTIVITY_LIMIT;
+
 /** `Σ over elements (max tier − 1)`, counting only elements the side owns. */
 function tierClimb(p: PackedState, side: Side, cat: Catalog): number {
   TIER_SCRATCH.fill(0);
@@ -360,7 +374,12 @@ function extractStage1(p: PackedState, t: NodeTables, me: Side, them: Side, out:
 
   const clock = p.drawRuleOn === 1 ? p.clock : 0;
   const lead = leadCc(p, me);
-  out[F.DrawPressure] = (lead > 0 ? 1 : lead < 0 ? -1 : 0) * clock * clock;
+  // Quadratic in HOW FAR ALONG the clock is, not in its raw ply count, so the
+  // feature keeps the 0..100 range its (zero) bootstrap weight was authored
+  // against when the limit moved from 10 to 20 (A4). The magnitude is truncated
+  // before the sign is applied, so `f(side) = -f(other)` still holds exactly.
+  const pressure = ((clock * clock * DRAW_PRESSURE_FULL_SCALE) / DRAW_PRESSURE_DENOM) | 0;
+  out[F.DrawPressure] = (lead > 0 ? 1 : lead < 0 ? -1 : 0) * pressure;
 
   out[F.ActionsLeft] = p.phase === 1 ? (p.side === me ? p.actions : -p.actions) : 0;
   out[F.Corridor] = corridorUnits(p, me, cat) - corridorUnits(p, them, cat);

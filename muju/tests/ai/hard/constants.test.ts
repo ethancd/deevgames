@@ -14,6 +14,11 @@ import { DEFAULT_ACTIONS_PER_TURN, isActionsPerTurn, MAX_BLACK_CRYSTAL_HANDICAP 
 import { INITIAL_MAP_RESOURCES, MAX_RESOURCE_RESERVE } from '../../../src/game/resourceMap';
 import { UPKEEP_BY_TIER } from '../../../src/game/upkeep';
 import { INACTIVITY_LIMIT, INACTIVITY_WARNING } from '../../../src/game/inactivity';
+import {
+  INACTIVITY_LIMIT as REPLICA_INACTIVITY_LIMIT,
+  INACTIVITY_WARNING as REPLICA_INACTIVITY_WARNING,
+  MAX_CLOCK,
+} from '../../../src/ai/hard/core/state';
 import { UNIT_DEFINITIONS } from '../../../src/game/units';
 import { ACTIONS as LAB_SOLVER_ACTIONS } from '../../../lab/solver/model';
 
@@ -44,9 +49,26 @@ describe('R13 constants agreement (canonical engine)', () => {
     expect(UPKEEP_BY_TIER[3]).toBe(2);
   });
 
-  it('INACTIVITY_LIMIT === 10, INACTIVITY_WARNING === 7', () => {
-    expect(INACTIVITY_LIMIT).toBe(10);
-    expect(INACTIVITY_WARNING).toBe(7);
+  // `muju-phasing-2`, preregistration amendment A4 (2026-09-19): the inactivity
+  // draw limit moved from 10 plies to 20, and the in-game warning kept its
+  // three-ply margin, 7 -> 17. This is the pin the whole change hangs off.
+  it('INACTIVITY_LIMIT === 20, INACTIVITY_WARNING === 17', () => {
+    expect(INACTIVITY_LIMIT).toBe(20);
+    expect(INACTIVITY_WARNING).toBe(17);
+  });
+
+  it('the warning keeps its three-ply margin below the draw', () => {
+    expect(INACTIVITY_LIMIT - INACTIVITY_WARNING).toBe(3);
+  });
+
+  // The Hard replica carries a PACKED copy of the rules; the one thing it must
+  // never do is carry a second copy of THIS number. `core/state.ts` re-exports
+  // the canonical constants rather than restating them, and these assertions
+  // fail the moment someone forks them apart again.
+  it('the Hard replica re-exports the canonical limit rather than restating it', () => {
+    expect(REPLICA_INACTIVITY_LIMIT).toBe(INACTIVITY_LIMIT);
+    expect(REPLICA_INACTIVITY_WARNING).toBe(INACTIVITY_WARNING);
+    expect(MAX_CLOCK).toBe(INACTIVITY_LIMIT);
   });
 
   it('tier-1 prices are [3,3,4,4,5,5] in catalogue order', () => {

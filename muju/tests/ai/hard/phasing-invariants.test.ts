@@ -6,7 +6,7 @@ import { isLegalAction } from '../../../src/game/legality';
 import { getUnitDefinition } from '../../../src/game/units';
 import type { GameState, PlayerId } from '../../../src/game/types';
 import type { AIAction } from '../../../src/ai/types';
-import { Replica, allocState } from '../../../src/ai/hard/core/state';
+import { INACTIVITY_LIMIT, Replica, allocState } from '../../../src/ai/hard/core/state';
 import { Scratch } from '../../../src/ai/hard/core/bits';
 import { AKind, paA, paB, paKind } from '../../../src/ai/hard/core/action';
 import { DEF_ID } from '../../../src/ai/hard/core/catalog';
@@ -82,7 +82,7 @@ for (const side of [0, 1] as const) {
         { def: 'plant_1', owner: 'white', x: 3, y: 2 },
       ] })), side);
       expect(refund.t.econ[side].requiredReserve).toBe(1); expect(refund.t.econ[side].rentShortfall).toBe(0); expect(refund.has(14)).toBe(false);
-      const terminal = inspect(frame(authored({ current: 'black', phase: 'place', reserves: zero(), inactivityRule: 'on', inactivityPlies: 9 })), side);
+      const terminal = inspect(frame(authored({ current: 'black', phase: 'place', reserves: zero(), inactivityRule: 'on', inactivityPlies: INACTIVITY_LIMIT - 1 })), side);
       expect(terminal.t.econ[side].firstBillReached).toBe(false); expect(terminal.has(7)).toBe(false); expect(terminal.has(14)).toBe(false);
     });
     it('preserves 5/17 as structural zero for pending commitments and old placed flags', () => {

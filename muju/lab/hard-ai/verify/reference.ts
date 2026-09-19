@@ -237,16 +237,36 @@ function e1devPositions(limit: number): AuditPosition[] {
 }
 
 /**
+ * The clock floor for a stored row to join the `draw` set. SEVEN, frozen, and
+ * deliberately NOT `INACTIVITY_LIMIT - 3`.
+ *
+ * `fuzz-1000.jsonl` is an ARCHIVED corpus, sampled while the limit was ten, and
+ * it is never re-sampled to suit a later rules revision. Its `inactivityRule:
+ * "on"` rows therefore top out at clock 9 — a game that reached 10 had already
+ * drawn — so a floor expressed relative to the twenty-ply limit would select
+ * NOTHING and this whole set would silently empty. Seven keeps selecting the
+ * highest-clock reachable positions the corpus actually contains.
+ *
+ * What it does NOT do, and this is the honest reading of the set after A4: under
+ * `muju-phasing-2` none of these rows is imminent any more — clock 9 of 20 is
+ * mid-game. Coverage of clock 11..20 and of the draw itself comes from
+ * `hard:fuzz`, whose quiet-game walk reaches the new limit and whose gate fails
+ * a run that does not (`fuzz/run.ts`, `FuzzOptions.quietGameRate`).
+ */
+const ARCHIVED_DRAW_CLOCK_FLOOR = 7;
+
+/**
  * IMMINENT INACTIVITY DRAWS. `core/zobrist.ts` puts the clock in `Kpos`
- * (`CLOCK_VALUES = 11`, so `inactivityPlies` runs 0..10) and SU §8.1 puts the
- * boundary check in the canonical terminal order, so a position within a ply or
- * two of the draw is what exercises both.
+ * (`CLOCK_VALUES = INACTIVITY_LIMIT + 1`, so `inactivityPlies` runs
+ * 0..`INACTIVITY_LIMIT`) and SU §8.1 puts the boundary check in the canonical
+ * terminal order, so a position near the draw is what exercises both.
  *
  * `lab/hard-ai/positions/authored.jsonl#clock-9` is the only purpose-built one
  * in the repo (the exam's `quiet-clock` demand has no cases). The rest are the
- * `fuzz-1000.jsonl` rows that carry `inactivityRule: "on"` AND a clock of 7 or
- * more — real reachable positions, not authored ones, and no fixture is edited
- * to make them.
+ * `fuzz-1000.jsonl` rows that carry `inactivityRule: "on"` AND a clock at or
+ * above `ARCHIVED_DRAW_CLOCK_FLOOR` — real reachable positions, not authored
+ * ones, and no fixture is edited to make them. See that constant for what the
+ * set does and does not cover once the limit moved to twenty.
  */
 function drawPositions(limit: number): AuditPosition[] {
   const out = storedFrom(
@@ -259,7 +279,7 @@ function drawPositions(limit: number): AuditPosition[] {
   for (const p of readPositions(path.join(POSITIONS_DIR, 'fuzz-1000.jsonl'))) {
     if (out.length >= limit) break;
     if (p.state.inactivityRule === 'off') continue;
-    if ((p.state.inactivityPlies ?? 0) < 7) continue;
+    if ((p.state.inactivityPlies ?? 0) < ARCHIVED_DRAW_CLOCK_FLOOR) continue;
     out.push({
       id: `draw-${p.id}`,
       set: 'draw',

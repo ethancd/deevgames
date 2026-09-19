@@ -18,10 +18,14 @@
  *      player, and invariant 14's `!killedThisTurn` limb is satisfied for that
  *      player by construction.
  *   3. DRAWPRESSURE — DESIGN §5.12.1 row 18 defines the feature as
- *      `sign(v0 + v1 so far) × clock²`; `eval/features.ts:293-294` uses
- *      `sign(leadCc)` instead, where `leadCc` is catalogue material plus bank
- *      only (`eval/invariants.ts:374-377`). The run reports how often the two
- *      signs disagree on these forty positions.
+ *      `sign(v0 + v1 so far) × clock²`; `eval/features.ts` uses `sign(leadCc)`
+ *      instead, where `leadCc` is catalogue material plus bank only
+ *      (`eval/invariants.ts`). The run reports how often the two signs disagree
+ *      on these forty positions. Since A4 the MAGNITUDE is also normalised —
+ *      `clock² × 100 / INACTIVITY_LIMIT²` rather than raw `clock²` — so the
+ *      feature still spans 0..100 now that the limit is twenty. This report
+ *      reads the feature as `extract` writes it, so its `drawPressure` column
+ *      moves with that scale; the weight (still 0) does not.
  *   4. HOME OVERLAP — `HomeInvaded`, `HomeThreat`, `HomeCountdown` and
  *      `Inv10HomeReachable` on every position, with their weighted cc, because
  *      invariant 10's first limb (`home.occupied === 1`) is `HomeInvaded`'s

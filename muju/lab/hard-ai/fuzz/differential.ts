@@ -121,6 +121,26 @@ export interface FuzzOptions {
    */
   resignRate: number;
   /**
+   * Fraction of games played QUIETLY: the action picker's ATTACK weight is
+   * zeroed for the whole game, so nothing resets the inactivity clock and the
+   * walk runs it all the way to `INACTIVITY_LIMIT`.
+   *
+   * WHY IT EXISTS. The default profile weights ATTACK at 22, and a kill is the
+   * ONLY thing that resets the clock (`src/ai/simulate.ts` is the only writer of
+   * `progressThisTurn`), so an ordinary walk almost never sees a high clock: it
+   * would look exactly the same whether the limit were 10 or 20.
+   * `muju-phasing-2` (amendment A4) doubles that limit, and the only fuzz
+   * evidence that says anything about the change is a walk that actually visits
+   * clock 11..20 and draws at 20. `clockHistogram`/`maxClockSeen` report what it
+   * reached, and `fuzz/run.ts` FAILS a run that reached nothing new.
+   *
+   * Drawn from a stream of its own, like `resignRate`, so `0` replays a walk
+   * bit-identically to one taken before quiet games existed. OPTIONAL and 0 by
+   * default for exactly that reason: every caller that does not ask for quiet
+   * games — the fault-injection and determinism suites — keeps the walk it had.
+   */
+  quietGameRate?: number;
+  /**
    * TEST SEAM. The `Replica` the walk drives; a fresh one when omitted. The
    * production replica carries no fault hooks — `tests/lab/fuzz-fault-injection.test.ts`
    * passes a SUBCLASS whose `unmake` (or `rehash`, or `unpack`, or `genActions`)
@@ -136,7 +156,10 @@ export interface FuzzMetrics {
   surfaces: Surface[];
   legalityEvery: number;
   resignRate: number;
+  quietGameRate: number;
   games: number;
+  /** Games whose whole walk ran with the ATTACK weight zeroed (`quietGameRate`). */
+  quietGames: number;
   plies: number;
   actions: number;
   /**
@@ -211,6 +234,19 @@ export interface FuzzMetrics {
    * terminal branch is checkable against this and nothing else.
    */
   terminals: Record<string, number>;
+  /**
+   * INACTIVITY-CLOCK COVERAGE (A4). `clockHistogram[v]` counts the applied
+   * actions after which `PackedState.clock` was `v`, over every game including
+   * the `inactivityRule: 'off'` ones — the clock still advances there, only the
+   * draw does not fire. `maxClockSeen` is the largest value the walk reached.
+   *
+   * These exist because the clock limit is the thing `muju-phasing-2` changed. A
+   * run whose `maxClockSeen` is 10 or below has walked only states the OLD rules
+   * also had, and says nothing at all about the new ones, however many actions it
+   * applied; `fuzz/run.ts` treats that as a failed run rather than a passed one.
+   */
+  clockHistogram: Record<string, number>;
+  maxClockSeen: number;
   sampled: number;
   elapsedMs: number;
 }
@@ -650,6 +686,7 @@ function adoptNewUnitIds(p: PackedState, before: GameState, after: GameState): v
 
 export function runFuzz(options: FuzzOptions): FuzzResult {
   const started = Date.now();
+  const quietGameRate = options.quietGameRate ?? 0;
   const replica = options.replica ?? new Replica();
   const snapshot = new PackedSnapshot();
   const undo = newUndo();
@@ -665,7 +702,9 @@ export function runFuzz(options: FuzzOptions): FuzzResult {
     surfaces: [...options.surfaces].sort(),
     legalityEvery: options.legalityEvery,
     resignRate: options.resignRate,
+    quietGameRate,
     games: 0,
+    quietGames: 0,
     plies: 0,
     actions: 0,
     divergences: 0,
@@ -705,6 +744,8 @@ export function runFuzz(options: FuzzOptions): FuzzResult {
     drawRuleOffGames: 0,
     handicapGames: 0,
     terminals: {},
+    clockHistogram: {},
+    maxClockSeen: 0,
     sampled: 0,
     elapsedMs: 0,
   };
@@ -749,6 +790,12 @@ export function runFuzz(options: FuzzOptions): FuzzResult {
     // A SEPARATE stream, so the injection below cannot shift `rng` and every seed
     // of an earlier round replays identically at `resignRate: 0`.
     const resignRng = seededRandom((options.seed + game * 7919 + 0x52534741) >>> 0);
+    // Likewise a SEPARATE stream (see `FuzzOptions.quietGameRate`), so a run at
+    // `quietGameRate: 0` replays a pre-A4 seed bit-identically.
+    const quietRng = seededRandom((options.seed + game * 7919 + 0x51554945) >>> 0);
+    const quietGame = quietRng() < quietGameRate;
+    const kindWeight = quietGame ? KIND_WEIGHT_QUIET : KIND_WEIGHT;
+    if (quietGame) metrics.quietGames++;
     const { rules, reviewWhite, reviewBlack } = randomRules(rng);
     if (rules.handicap !== 0) metrics.handicapGames++;
     if (rules.victoryRule === 'elimination') metrics.eliminationRuleGames++;
@@ -813,7 +860,7 @@ export function runFuzz(options: FuzzOptions): FuzzResult {
       // Injected AFTER the legality comparison above: `generateAllActions` does
       // not offer RESIGN, so a RESIGN in the buffer would read as a set
       // mismatch rather than as the extra candidate it is.
-      const chosen = pickAction(rng, genBuffer, count);
+      const chosen = pickAction(rng, genBuffer, count, kindWeight);
       const action = toAIAction(p, chosen, keep);
       if (!isLegalAction(state, action)) {
         record({
@@ -922,6 +969,15 @@ export function runFuzz(options: FuzzOptions): FuzzResult {
 
       metrics.actions++;
       metrics.plies++;
+      // A4 clock coverage. Sampled after EVERY applied action, so a draw at the
+      // limit is counted on the hand-off that produced it and the histogram is a
+      // true residence count rather than a per-game maximum.
+      {
+        const c = p.clock;
+        const key = String(c);
+        metrics.clockHistogram[key] = (metrics.clockHistogram[key] ?? 0) + 1;
+        if (c > metrics.maxClockSeen) metrics.maxClockSeen = c;
+      }
       prefix.push(action);
       if (prefix.length > 600) prefix.shift();
 
@@ -1126,19 +1182,35 @@ KIND_WEIGHT[AKind.PAY_UPKEEP] = 1;
 // end in a resignation and the long-game coverage goes with them.
 KIND_WEIGHT[AKind.RESIGN] = 1;
 
+/**
+ * The QUIET profile (`FuzzOptions.quietGameRate`): the default weights with
+ * ATTACK zeroed. An attack that removes a unit is the only thing that resets the
+ * inactivity clock, so a game played on this profile never resets it and the
+ * clock climbs one ply per hand-off until the draw fires at `INACTIVITY_LIMIT`.
+ *
+ * Only ATTACK's weight changes. BUY still dominates, so quiet games still build
+ * commitments, still arrive and still refund; they are ordinary games that
+ * decline every trade, which is precisely the shape amendment A3 observed and A4
+ * changed the limit for. A zero weight excludes the kind from the roll without
+ * removing it from the buffer, so the legality surface still compares the full
+ * generated set on these plies.
+ */
+const KIND_WEIGHT_QUIET = new Int32Array(KIND_WEIGHT);
+KIND_WEIGHT_QUIET[AKind.ATTACK] = 0;
+
 const KIND_COUNT = new Int32Array(8);
 
-function pickAction(rng: () => number, buffer: Int32Array, count: number): PA {
+function pickAction(rng: () => number, buffer: Int32Array, count: number, weights: Int32Array = KIND_WEIGHT): PA {
   KIND_COUNT.fill(0);
   for (let i = 0; i < count; i++) KIND_COUNT[paKind(buffer[i])]++;
   let total = 0;
-  for (let k = 0; k < 8; k++) if (KIND_COUNT[k] > 0) total += KIND_WEIGHT[k];
+  for (let k = 0; k < 8; k++) if (KIND_COUNT[k] > 0) total += weights[k];
   if (total === 0) return buffer[Math.floor(rng() * count)];
   let roll = rng() * total;
   let picked = -1;
   for (let k = 0; k < 8; k++) {
     if (KIND_COUNT[k] === 0) continue;
-    roll -= KIND_WEIGHT[k];
+    roll -= weights[k];
     if (roll < 0) {
       picked = k;
       break;

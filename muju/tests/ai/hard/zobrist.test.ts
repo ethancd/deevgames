@@ -23,6 +23,7 @@ import {
   type ZobristTables,
 } from '../../../src/ai/hard/core/zobrist';
 import { seededRandom } from '../../../src/ai/runtime';
+import { INACTIVITY_LIMIT } from '../../../src/game/inactivity';
 import { NDEF } from '../../../src/ai/hard/core/catalog';
 import { UFLAGS_MASK, type Key, type PackedState } from '../../../src/ai/hard/types';
 import { allocPacked, clonePacked, putPending, putUnit } from './packed-fixture';
@@ -39,7 +40,7 @@ const TABLE_KEYS: readonly (readonly [keyof ZobristTables, number])[] = [
   ['side', 1],
   ['phase', 1],
   ['actions', 5],
-  ['clock', 11],
+  ['clock', INACTIVITY_LIMIT + 1],
   ['bankLo', 2 * 64],
   ['bankHi', 2 * 16],
   ['upkeep', 1],
@@ -49,10 +50,41 @@ const TABLE_KEYS: readonly (readonly [keyof ZobristTables, number])[] = [
   ['progress', 1],
 ];
 
-/** `TABLE_KEYS` is also the FILL ORDER: `buildZobrist` draws the planes in this
- * sequence from one `seededRandom` stream; `pend` and then `progress` are last
- * by construction, each appended so no earlier plane's words move. */
-const FILL_ORDER = TABLE_KEYS;
+/** The clock plane's FROZEN prefix: the eleven keys (`clock` 0..10) drawn at
+ * the plane's original position in the stream, back when the limit was ten. */
+const CLOCK_LEGACY_VALUES = 11;
+const CLOCK_EXTRA_VALUES = Math.max(0, INACTIVITY_LIMIT + 1 - CLOCK_LEGACY_VALUES);
+
+/**
+ * The FILL ORDER: `[plane, keys, offsetWithinPlane]` SEGMENTS, in the order
+ * `buildZobrist` draws them from one `seededRandom` stream.
+ *
+ * Not the same shape as `TABLE_KEYS`, because one plane is no longer one
+ * contiguous draw. `pend` and then `progress` are appended so no earlier plane's
+ * words move (M2/M3), and `muju-phasing-2` appends the CLOCK EXTENSION after
+ * both: `clock` 0..10 keeps the words it drew at its original position, and only
+ * `clock` 11..20 — values that were unreachable under the ten-ply limit — draw
+ * from the end of the stream. That is what makes every pre-A4 key survive.
+ */
+const FILL_ORDER: readonly (readonly [keyof ZobristTables, number, number])[] = [
+  ['piece', 2 * NDEF * 100, 0],
+  ['reserve', 100 * 17, 0],
+  ['damage', 100 * 5, 0],
+  ['atkCount', 100 * 4, 0],
+  ['uflags', 100 * 16, 0],
+  ['side', 1, 0],
+  ['phase', 1, 0],
+  ['actions', 5, 0],
+  ['clock', Math.min(INACTIVITY_LIMIT + 1, CLOCK_LEGACY_VALUES), 0],
+  ['bankLo', 2 * 64, 0],
+  ['bankHi', 2 * 16, 0],
+  ['upkeep', 1, 0],
+  ['rules', 8, 0],
+  ['handicap', 21, 0],
+  ['pend', 2 * NDEF * 100, 0],
+  ['progress', 1, 0],
+  ['clock', CLOCK_EXTRA_VALUES, CLOCK_LEGACY_VALUES],
+];
 
 function sample(): PackedState {
   const p = allocPacked();
@@ -96,22 +128,101 @@ describe('core/zobrist: table construction', () => {
     expect(ZOBRIST_SEED).toBe(0x4d554a55);
   });
 
-  it('the pend and progress planes are APPENDED: every earlier plane keeps its pre-M2 words', () => {
-    // Redraw the stream in the documented fill order. If `pend` were inserted
-    // anywhere but last, every plane after the insertion point would shift and
-    // every key of every position — including one with no commitment at all —
-    // would change, invalidating the book, the perft fixtures and the suites.
+  it('every plane is drawn APPEND-ONLY: redrawing the stream reproduces the tables segment for segment', () => {
+    // Redraw the stream in the documented fill order. If any plane were inserted
+    // anywhere but at the END, every plane after the insertion point would shift
+    // and every key of every position — including one with no commitment and a
+    // clock of zero — would change, invalidating the book, the perft fixtures
+    // and the suites.
     const rng = seededRandom(ZOBRIST_SEED);
-    for (const [name, keys] of FILL_ORDER) {
-      const plane = new Uint32Array(keys * 2);
-      for (let i = 0; i < plane.length; i++) plane[i] = (rng() * 0x100000000) >>> 0;
-      expect([...Z[name]], name).toEqual([...plane]);
+    for (const [name, keys, offset] of FILL_ORDER) {
+      const segment = new Uint32Array(keys * 2);
+      for (let i = 0; i < segment.length; i++) segment[i] = (rng() * 0x100000000) >>> 0;
+      const label = `${name}[${offset}..${offset + keys - 1}]`;
+      expect([...Z[name].subarray(offset * 2, (offset + keys) * 2)], label).toEqual([...segment]);
     }
-    // ...and `progress` really is the LAST plane, `pend` the one before it: the
-    // stream is now exhausted as far as `buildZobrist` is concerned, which the
-    // equality above already proves for every plane before them.
-    expect(FILL_ORDER[FILL_ORDER.length - 2][0]).toBe('pend');
-    expect(FILL_ORDER[FILL_ORDER.length - 1][0]).toBe('progress');
+    // The stream is exhausted here as far as `buildZobrist` is concerned: every
+    // segment above matched, and they sum to every word in every plane.
+    const drawnKeys = FILL_ORDER.reduce((n, [, keys]) => n + keys, 0);
+    const tableKeys = TABLE_KEYS.reduce((n, [, keys]) => n + keys, 0);
+    expect(drawnKeys).toBe(tableKeys);
+    // ...and the A4 clock extension really is LAST, after both M2/M3 appendages.
+    expect(FILL_ORDER[FILL_ORDER.length - 3][0]).toBe('pend');
+    expect(FILL_ORDER[FILL_ORDER.length - 2][0]).toBe('progress');
+    expect(FILL_ORDER[FILL_ORDER.length - 1]).toEqual(['clock', CLOCK_EXTRA_VALUES, CLOCK_LEGACY_VALUES]);
+  });
+
+  /**
+   * THE A4 KEY-STABILITY PROOF. `muju-phasing-2` doubles the inactivity limit,
+   * which widens the clock plane from 11 keys to 21. Redraw the stream EXACTLY
+   * as the pre-A4 `buildZobrist` did — one contiguous 11-key clock plane at its
+   * original position, `pend` and `progress` at the end, and nothing after them
+   * — and assert the resulting eleven clock keys are, word for word, the first
+   * eleven of today's plane. Every `Kpos`/`Kturn` of every position with
+   * `clock <= 10` is therefore bit-identical to the one it had under
+   * `muju-phasing-1`; only the values that rules revision could never reach are
+   * new keys.
+   */
+  it('clock keys 0..10 are bit-identical to the ones the ten-ply build drew', () => {
+    const LEGACY_ORDER: readonly (readonly [keyof ZobristTables, number])[] = [
+      ['piece', 2 * NDEF * 100],
+      ['reserve', 100 * 17],
+      ['damage', 100 * 5],
+      ['atkCount', 100 * 4],
+      ['uflags', 100 * 16],
+      ['side', 1],
+      ['phase', 1],
+      ['actions', 5],
+      ['clock', CLOCK_LEGACY_VALUES],
+      ['bankLo', 2 * 64],
+      ['bankHi', 2 * 16],
+      ['upkeep', 1],
+      ['rules', 8],
+      ['handicap', 21],
+      ['pend', 2 * NDEF * 100],
+      ['progress', 1],
+    ];
+    const rng = seededRandom(ZOBRIST_SEED);
+    const legacy: Partial<Record<keyof ZobristTables, number[]>> = {};
+    for (const [name, keys] of LEGACY_ORDER) {
+      const plane: number[] = [];
+      for (let i = 0; i < keys * 2; i++) plane.push((rng() * 0x100000000) >>> 0);
+      legacy[name] = plane;
+    }
+    // The clock prefix, and — as the control that makes the claim mean anything
+    // — every OTHER plane too, since a plane that moved would break far more.
+    expect([...Z.clock.subarray(0, CLOCK_LEGACY_VALUES * 2)]).toEqual(legacy.clock);
+    for (const [name] of LEGACY_ORDER) {
+      if (name === 'clock') continue;
+      expect([...Z[name]], name).toEqual(legacy[name]);
+    }
+  });
+
+  it('the appended clock keys exist, are distinct and are not zero', () => {
+    expect(CLOCK_EXTRA_VALUES).toBe(10);
+    expect(Z.clock.length).toBe((INACTIVITY_LIMIT + 1) * 2);
+    const seen = new Set<string>();
+    for (let v = 0; v <= INACTIVITY_LIMIT; v++) {
+      const lo = Z.clock[v * 2];
+      const hi = Z.clock[v * 2 + 1];
+      expect(lo | hi, `clock key ${v} is zero`).not.toBe(0);
+      const key = `${lo}:${hi}`;
+      expect(seen.has(key), `clock key ${v} duplicates an earlier one`).toBe(false);
+      seen.add(key);
+    }
+  });
+
+  it('Kpos separates every reachable clock value, including the ten A4 added', () => {
+    const keys = new Set<string>();
+    for (let v = 0; v <= INACTIVITY_LIMIT; v++) {
+      const p = sample();
+      p.clock = v;
+      const k = recomputeKpos(p);
+      const s = `${k.lo}:${k.hi}`;
+      expect(keys.has(s), `clock ${v} aliases an earlier clock value in Kpos`).toBe(false);
+      keys.add(s);
+    }
+    expect(keys.size).toBe(INACTIVITY_LIMIT + 1);
   });
 
   it('a position with no commitment has the very same Kpos it had before the plane existed', () => {

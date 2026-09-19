@@ -40,7 +40,7 @@ import {
   SQ_Y,
 } from '../core/tables';
 import { activeCatalog, type Catalog } from '../core/catalog';
-import { ACTIONS_PER_TURN } from '../core/state';
+import { ACTIONS_PER_TURN, INACTIVITY_WARNING } from '../core/state';
 import { KILL_IMPOSSIBLE, cleavePlan, newCleavePlan } from '../tables/kill';
 import { Approach } from '../tables/approach';
 import type { NodeTables } from '../tables/context';
@@ -245,7 +245,13 @@ export function invariantBits(p: PackedState, t: NodeTables, side: Side, sc: Scr
   // "no proven rescue counts as no rescue" reading above.
 
   // --- 16: sitting on a lead while the draw clock runs --------------------
-  if (p.drawRuleOn === 1 && p.clock >= 7 && leadCc(p, side) >= 300 && killNow.count === 0) bits |= bit(16);
+  // The threshold is the CANONICAL in-game warning, `INACTIVITY_WARNING` — the
+  // last three plies before the draw — not the literal 7 it used to be. Under
+  // `muju-phasing-2` (A4) that is 17; the invariant's meaning ("the draw is
+  // three plies away and you are ahead with no kill on the board") is unchanged
+  // and no longer has to be restated when the limit moves. The 300 cc lead and
+  // the `killNow.count === 0` clause are unrelated to the clock and untouched.
+  if (p.drawRuleOn === 1 && p.clock >= INACTIVITY_WARNING && leadCc(p, side) >= 300 && killNow.count === 0) bits |= bit(16);
 
   // --- 17: structural zero ------------------------------------------------
   // Pending commitments do not block movement. Once arrived, a snapshot alone

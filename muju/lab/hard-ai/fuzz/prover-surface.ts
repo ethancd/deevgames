@@ -57,7 +57,7 @@ import { MAX_SLOTS, MAX_TURN_ACTIONS, NO_SLOT, Reason, Result, type PackedState,
 import { Scratch } from '../../../src/ai/hard/core/bits';
 import { CORNER } from '../../../src/ai/hard/core/tables';
 import { AKind, newKeepSetTable, paKind, paMake, toAIAction, type PA } from '../../../src/ai/hard/core/action';
-import { Replica, allocState, newUndo } from '../../../src/ai/hard/core/state';
+import { INACTIVITY_LIMIT, Replica, allocState, newUndo } from '../../../src/ai/hard/core/state';
 import {
   HomeVerdict,
   PROOF_NODES,
@@ -306,11 +306,12 @@ function replayWitness(state: GameState, invader: PlayerId, line: readonly AIAct
 
 /**
  * SU §8.1, verified through the packed gate, in its PHASING shape: at
- * `clock = 9` a PROVEN home checkmate resolves as soon as the invader's own
- * `END_ACTION` has settled upkeep and entered Prepare — before the hand-off
- * would tick the tenth quiet ply — and so beats the draw, while an UNPROVEN
- * occupation (a rescue exists) survives Prepare and is still drawn at the
- * hand-off.
+ * `clock = INACTIVITY_LIMIT - 1` a PROVEN home checkmate resolves as soon as the
+ * invader's own `END_ACTION` has settled upkeep and entered Prepare — before the
+ * hand-off would tick the LAST quiet ply — and so beats the draw, while an
+ * UNPROVEN occupation (a rescue exists) survives Prepare and is still drawn at
+ * the hand-off. The clock comes from the limit rather than being written out as
+ * 9, so the fixture still straddles the boundary now A4 has moved it to twenty.
  *
  * Under Phasing the MOVE onto the corner adjudicates NOTHING: `resolveHomeCheckmate`
  * returns the state untouched outside Prepare (homeCheckmate.ts:179), which is
@@ -339,7 +340,12 @@ export function clockFixture(): boolean {
       inactivityRule: 'on',
       upkeepPending: false,
       reviewUpkeep: { white: false, black: false },
-      inactivityPlies: 9,
+      // One ply SHORT of the draw, whatever the draw is: the point of the
+      // fixture is that END_ACTION adjudicates a mate BEFORE the hand-off that
+      // would have ended the same position as an inactivity draw, and that only
+      // bites on the last quiet ply. A literal here would have quietly stopped
+      // testing anything the moment A4 moved the limit from 10 to 20.
+      inactivityPlies: INACTIVITY_LIMIT - 1,
       progressThisTurn: false,
       phase: 'playing',
       board: { cells: buildCells(), units, initialResourceLayers: [...UNEQUAL_ROUTES_MAP] },
@@ -375,8 +381,8 @@ export function clockFixture(): boolean {
     return { replica: p, canonical, afterMove };
   };
 
-  // (a) Proven mate: nobody can answer, so END_ACTION wins at clock 9 — before
-  // the hand-off, which is where the tenth quiet ply would have drawn.
+  // (a) Proven mate: nobody can answer, so END_ACTION wins at `INACTIVITY_LIMIT - 1`
+  // — before the hand-off, which is where the last quiet ply would have drawn.
   const mate = step(build(null));
   const mateOk =
     mate.afterMove.phase === 'playing' &&
@@ -388,7 +394,7 @@ export function clockFixture(): boolean {
 
   // (b) Unproven occupation: a White Radi sits next to A1 and kills the Hi, so
   // Prepare is NOT a checkmate and the position survives to the hand-off, where
-  // the tenth quiet ply ends it as a draw.
+  // the LAST quiet ply (`INACTIVITY_LIMIT`) ends it as a draw.
   const rescued = step(build(makeUnit('rescuer', 'lightning_1', 'white', 10, 0)));
   const occupiedOk = rescued.replica.result === Result.ONGOING && rescued.canonical.phase === 'playing';
 

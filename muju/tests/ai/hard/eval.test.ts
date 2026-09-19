@@ -14,7 +14,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { getAllSpawnPositions } from '../../../src/game/spawning';
 import { upkeepDue as canonicalUpkeepDue } from '../../../src/game/upkeep';
 import { seededRandom } from '../../../src/ai/runtime';
-import { Replica } from '../../../src/ai/hard/core/state';
+import { INACTIVITY_LIMIT, Replica } from '../../../src/ai/hard/core/state';
 import { Scratch } from '../../../src/ai/hard/core/bits';
 import { DEF_INDEX, NDEF, activeCatalog } from '../../../src/ai/hard/core/catalog';
 import { pstMine } from '../../../src/ai/hard/core/income';
@@ -202,14 +202,35 @@ describe('eval: stage 1 against the canonical rules', () => {
   });
 
   it('retains clock pressure as an unpriced bootstrap diagnostic', () => {
-    const leading = pack({ ...spec, inactivityPlies: 9 });
+    // A4 re-expressed the feature against the LIMIT: `clock² × 100 / LIMIT²`
+    // rather than raw `clock²`, so doubling the limit did not quadruple the
+    // feature's range behind an unchanged coefficient. The shape — quadratic,
+    // signed by the material+bank lead, antisymmetric between the two views —
+    // and the 0..100 span are the contract, and both are pinned here.
+    const clock = INACTIVITY_LIMIT - 1;
+    const expected = Math.trunc((clock * clock * 100) / (INACTIVITY_LIMIT * INACTIVITY_LIMIT));
+    expect(expected).toBe(90);
+    const leading = pack({ ...spec, inactivityPlies: clock });
     const f = features(leading, WHITE);
     // White is ahead on material + bank, so the clock counts against white.
-    expect(f[F.DrawPressure]).toBe(81);
+    expect(f[F.DrawPressure]).toBe(expected);
     expect(DEFAULT_WEIGHTS.w[F.DrawPressure]).toBe(0);
-    expect(features(leading, BLACK)[F.DrawPressure]).toBe(-81);
+    expect(features(leading, BLACK)[F.DrawPressure]).toBe(-expected);
+
+    // Full scale is 100 AT the draw, and 0 at a fresh clock, at any limit.
+    expect(features(pack({ ...spec, inactivityPlies: INACTIVITY_LIMIT }), WHITE)[F.DrawPressure]).toBe(100);
+    expect(features(pack({ ...spec, inactivityPlies: 0 }), WHITE)[F.DrawPressure]).toBe(0);
+    // Monotone, and never above full scale anywhere in the domain.
+    let previous = -1;
+    for (let c = 0; c <= INACTIVITY_LIMIT; c++) {
+      const v = features(pack({ ...spec, inactivityPlies: c }), WHITE)[F.DrawPressure];
+      expect(v).toBeGreaterThanOrEqual(previous);
+      expect(v).toBeLessThanOrEqual(100);
+      previous = v;
+    }
+
     // The rule is off entirely when the inactivity rule is.
-    expect(features(pack({ ...spec, inactivityPlies: 9, inactivityRule: 'off' }), WHITE)[F.DrawPressure]).toBe(0);
+    expect(features(pack({ ...spec, inactivityPlies: clock, inactivityRule: 'off' }), WHITE)[F.DrawPressure]).toBe(0);
   });
 
   it('Corridor and TierClimb count what DESIGN §5.12.1 says they count', () => {

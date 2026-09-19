@@ -39,11 +39,20 @@ import { getHomeOccupier } from '../../../src/game/victory';
 import { upkeepActions } from '../../../src/game/upkeep';
 import { getUnitDefinition } from '../../../src/game/units';
 import { getOpponent } from '../../../src/game/turn';
+import { INACTIVITY_LIMIT } from '../../../src/game/inactivity';
 import type { PerftLimits } from '../../../src/ai/hard/verify/perft';
 import { DEFAULT_RULES, type RulesBlock } from '../positions/corpus';
 
 /** The cheapest tier-1 unit (`fire_1`/`lightning_1`), units.ts. */
 export const CHEAPEST_TIER1 = 3;
+
+/**
+ * How close to the inactivity draw counts as "nearly expired" for a fixture's
+ * `want` predicate. Three plies — the canonical `INACTIVITY_WARNING` margin,
+ * which A4 kept when it doubled the limit — so a fixture that must survive a
+ * hand-off is rejected only when the draw is actually imminent, at any limit.
+ */
+const DRAW_MARGIN_PLIES = 3;
 
 export interface FixtureSpec {
   id: string;
@@ -353,7 +362,13 @@ export const PHASING_FIXTURES: readonly FixtureSpec[] = Object.freeze([
       // The hand-off runs the inactivity draw test BEFORE it resolves
       // commitments (turn.ts `handOffTurn` → `startTurn`), so a position with a
       // nearly-expired quiet clock would end the game instead of arriving.
-      if ((s.inactivityPlies ?? 0) >= 7) return false;
+      // NEARLY-EXPIRED means "within `DRAW_MARGIN_PLIES` of the limit", not
+      // "at least 7": the literal was 7 because the limit was 10, and left alone
+      // it would have gone on rejecting clock 7..19 positions that are nowhere
+      // near `muju-phasing-2`'s twenty-ply draw. Relaxing it can move this
+      // fixture's frozen digest, which is why `--check` compares the digest
+      // before the counts.
+      if ((s.inactivityPlies ?? 0) >= INACTIVITY_LIMIT - DRAW_MARGIN_PLIES) return false;
       const them = pendingsOf(s, getOpponent(s.turn.currentPlayer));
       if (them.length < 2) return false;
       const valid = them.filter(p => isValidSpawnPosition(p.position, p.owner, s.board)).length;
@@ -370,7 +385,17 @@ export const PHASING_FIXTURES: readonly FixtureSpec[] = Object.freeze([
     want: s => {
       if (s.phase !== 'playing' || !s.upkeepPending) return false;
       const sets = upkeepActions(s).length;
-      return sets >= 2 && sets <= 32;
+      // FOUR keep-sets and four live bodies, not two and none. The looser
+      // predicate was stable only because a ten-ply draw ended the walk's first
+      // game before it could reach a depleted one; at twenty plies that game
+      // survives and matches at ply 281 with a two-unit endgame whose whole
+      // enumeration is 2/3/2 sequences — technically "a pending upkeep choice",
+      // and useless as the fixture this file says it is ("exercises genKeepSets
+      // below its 64-entry cap"). Asking for a real choice over real material
+      // states that purpose, and it selects the SAME position, digest and
+      // counts this fixture was frozen with under `muju-phasing-1`.
+      if (sets < 4 || sets > 32) return false;
+      return s.board.units.filter(u => u.owner === s.turn.currentPlayer).length >= 4;
     },
   },
   {

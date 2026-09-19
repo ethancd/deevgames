@@ -3,6 +3,7 @@
  *                      `[--surfaces transition,legality,arrival,prover,gate-preservation]`
  *                      `[--legality-every <n>] [--plies <n>] [--arrival-cases <n>] [--cases <n>]`
  *                      `[--out <path>] [--sample <n> --sample-out <path>] [--no-repro]`
+ *                      `[--resign-rate <r>] [--quiet-games <r>]`
  * (DESIGN §7.3, §5.9).
  *
  * ## Every surface runs, and every divergence fails
@@ -38,6 +39,16 @@
  * (seed, game, ply, the action prefix, the rules block and both states), then
  * exits non-zero.
  *
+ * `--quiet-games <r>` is the fraction of games played with the ATTACK weight
+ * zeroed (default 0.2). A kill is the only thing that resets the inactivity
+ * clock, so these are the games that run it to `INACTIVITY_LIMIT` and draw
+ * there; without them a walk of any length stays in the low clock values and
+ * proves nothing about `muju-phasing-2`'s twenty-ply limit (amendment A4). The
+ * run REPORTS `maxClockSeen`, `clockHistogram` and the terminal histogram, and
+ * FAILS if a run long enough to expect it reached neither the limit nor a draw.
+ * Like `--resign-rate`, it is drawn from a stream of its own, so `0` replays an
+ * older seed bit-identically.
+ *
  * `--resign-rate <r>` is the fraction of plies on which RESIGN is offered to the
  * walker (default 0.002). It is drawn from a stream of its own, so `--resign-rate 0`
  * replays a seed bit-identically to a run taken before RESIGN was injectable —
@@ -53,6 +64,7 @@ import { execFileSync } from 'node:child_process';
 import { runArrivalSurface, runFuzz, type Surface } from './differential';
 import { runGatePreservation, runProverSurface } from './prover-surface';
 import { PROOF_NODES } from '../../../src/ai/hard/tactics/prover';
+import { INACTIVITY_LIMIT } from '../../../src/game/inactivity';
 import { writePositions } from '../positions/corpus';
 
 /**
@@ -75,6 +87,7 @@ interface Args {
   surfaces: Set<AnySurface>;
   legalityEvery: number;
   resignRate: number;
+  quietGameRate: number;
   plies: number;
   out: string;
   sample: number;
@@ -85,6 +98,13 @@ interface Args {
 const KNOWN_SURFACES: readonly string[] = ['transition', 'legality', 'arrival', 'prover', 'gate-preservation'];
 /** Actions below which a run is too short to require a refund (see the gate). */
 const REFUND_EXPECTED_ACTIONS = 4000;
+/**
+ * Actions below which a run is too short to require A4 clock coverage. A quiet
+ * game takes `INACTIVITY_LIMIT` hand-offs to draw and each hand-off is many
+ * actions, so at the default `--quiet-games 0.2` a few thousand actions already
+ * finish several of them; the threshold only exempts the tiny smoke runs.
+ */
+const CLOCK_COVERAGE_EXPECTED_ACTIONS = 4000;
 /** Arrival cases below which a run is too short to require both outcomes. */
 const BOTH_OUTCOMES_EXPECTED_CASES = 25;
 
@@ -97,6 +117,7 @@ function parseArgs(argv: string[]): Args {
     surfaces: new Set<AnySurface>(['transition', 'legality', 'arrival', 'prover', 'gate-preservation']),
     legalityEvery: 8,
     resignRate: 0.002,
+    quietGameRate: 0.2,
     plies: 500,
     out: DEFAULT_OUT,
     sample: 0,
@@ -112,6 +133,7 @@ function parseArgs(argv: string[]): Args {
     else if (a === '--plies') args.plies = Number(argv[++i]);
     else if (a === '--legality-every') args.legalityEvery = Number(argv[++i]);
     else if (a === '--resign-rate') args.resignRate = Number(argv[++i]);
+    else if (a === '--quiet-games') args.quietGameRate = Number(argv[++i]);
     else if (a === '--out') args.out = path.resolve(REPO_ROOT, argv[++i]);
     else if (a === '--sample') args.sample = Number(argv[++i]);
     else if (a === '--sample-out') args.sampleOut = path.resolve(REPO_ROOT, argv[++i]);
@@ -131,6 +153,7 @@ function parseArgs(argv: string[]): Args {
   if (!Number.isInteger(args.arrivalCases) || args.arrivalCases <= 0) throw new Error('hard:fuzz: --arrival-cases must be a positive integer');
   if (!Number.isInteger(args.legalityEvery) || args.legalityEvery <= 0) throw new Error('hard:fuzz: --legality-every must be a positive integer');
   if (!(args.resignRate >= 0 && args.resignRate <= 1)) throw new Error('hard:fuzz: --resign-rate must be between 0 and 1');
+  if (!(args.quietGameRate >= 0 && args.quietGameRate <= 1)) throw new Error('hard:fuzz: --quiet-games must be between 0 and 1');
   if (args.sample > 0 && args.sampleOut === null) throw new Error('hard:fuzz: --sample requires --sample-out');
   return args;
 }
@@ -313,6 +336,7 @@ function main(): void {
       surfaces: walkSurfaces,
       legalityEvery: args.legalityEvery,
       resignRate: args.resignRate,
+      quietGameRate: args.quietGameRate,
       plies: args.plies,
       reproDir,
       sample: args.sample,
@@ -341,6 +365,9 @@ function main(): void {
         refunds: walk.refunds,
         arrivalRefundGameFraction: walk.arrivalRefundGameFraction,
         terminals: walk.terminals,
+        quietGames: walk.quietGames,
+        maxClockSeen: walk.maxClockSeen,
+        clockHistogram: walk.clockHistogram,
         elapsedMs: walk.elapsedMs,
       }),
     );
@@ -403,6 +430,39 @@ function main(): void {
         `hard:fuzz: ${walk.actions} actions produced no refund; disruption between payment and arrival is untested`,
       );
       failed = true;
+    }
+
+    // A4 CLOCK COVERAGE, and like the commitment coverage above it is a FAILURE
+    // condition, not a note. `muju-phasing-2` moved the inactivity limit from 10
+    // to 20; every state with `clock <= 10` also existed under the old rules, so
+    // a walk that never went past 10 has tested nothing the old walk did not, and
+    // its zeros say nothing whatever about this change. Two things must both
+    // happen: the clock must REACH the limit, and a draw must actually FIRE
+    // there — the second is what would catch an off-by-one in the
+    // `>= INACTIVITY_LIMIT` test, or a clamp left behind at 10.
+    const drewByInactivity = Object.entries(walk.terminals)
+      .filter(([name]) => name.startsWith('inactivity:'))
+      .reduce((n, [, count]) => n + count, 0);
+    console.log(
+      `hard:fuzz: clock coverage — maxClockSeen ${walk.maxClockSeen}/${INACTIVITY_LIMIT}, ` +
+        `quietGames ${walk.quietGames}/${walk.games}, inactivity draws ${drewByInactivity}`,
+    );
+    if (args.actions >= CLOCK_COVERAGE_EXPECTED_ACTIONS) {
+      if (walk.maxClockSeen < INACTIVITY_LIMIT) {
+        console.error(
+          `hard:fuzz: the walk reached clock ${walk.maxClockSeen} but the limit is ${INACTIVITY_LIMIT}; ` +
+            'it never visited a position the ten-ply rules did not also have. Raise --quiet-games ' +
+            `(currently ${args.quietGameRate}) or the action budget.`,
+        );
+        failed = true;
+      }
+      if (drewByInactivity === 0) {
+        console.error(
+          `hard:fuzz: ${walk.actions} actions produced no inactivity draw at all; the terminal this rule ` +
+            `change is about is untested (terminals: ${JSON.stringify(walk.terminals)})`,
+        );
+        failed = true;
+      }
     }
   }
 

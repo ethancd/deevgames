@@ -207,7 +207,11 @@ export interface PackedState {
   actions: number;
   turnNumber: number;
   upkeepPending: 0 | 1;
-  /** `inactivityPlies` 0..10 (inactivity.ts:3). */
+  /**
+   * `inactivityPlies`, 0..`INACTIVITY_LIMIT` (`src/game/inactivity.ts`, mirrored
+   * by `core/state.ts`). 20 under `muju-phasing-2`; a plain `number`, never
+   * bit-packed anywhere, so widening the range costs no layout change.
+   */
   clock: number;
   /** `progressThisTurn`. */
   progress: 0 | 1;

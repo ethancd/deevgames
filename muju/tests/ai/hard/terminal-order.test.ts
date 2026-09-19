@@ -40,19 +40,26 @@ import { Reason, Result } from '../../../src/ai/hard/types';
 import { AKind, newKeepSetTable, paMake } from '../../../src/ai/hard/core/action';
 import { Replica, allocState, newUndo } from '../../../src/ai/hard/core/state';
 import { buildState } from './game-fixture';
+import { INACTIVITY_LIMIT } from '../../../src/game/inactivity';
 
 // E0.5 timeout budget: slowest test 0.0 s in the 2026-09-15 survey (M2 Max, load ~5, maxWorkers 2); 10 s is this file's explicit ceiling.
 vi.setConfig({ testTimeout: 10_000 });
 
 const replica = new Replica();
 
+/** One ply short of the inactivity draw: the last quiet ply a game can stand on
+ * before the next hand-off ends it. Expressed against the LIMIT, not written out
+ * as 9, so these tests keep testing the boundary after amendment A4 moved it from
+ * ten plies to twenty. */
+const LAST_QUIET_PLY = INACTIVITY_LIMIT - 1;
+
 /**
- * Black Hi one step from White's corner, ten-quiet-turn clock at 9. Black's Hi
- * is tier 1, so it owes no rent and its `END_ACTION` always settles; White's
- * defender has an empty bank, so its Phasing rescue set (act only) and its
- * Standard one (upkeep + promotion + act) are the same.
+ * Black Hi one step from White's corner, quiet clock at `LAST_QUIET_PLY`.
+ * Black's Hi is tier 1, so it owes no rent and its `END_ACTION` always settles;
+ * White's defender has an empty bank, so its Phasing rescue set (act only) and
+ * its Standard one (upkeep + promotion + act) are the same.
  */
-function clock9(defenders: 'lone-muju' | 'rescuer') {
+function atLastQuietPly(defenders: 'lone-muju' | 'rescuer') {
   return buildState({
     units: [
       { def: 'fire_1', owner: 'black', x: 1, y: 0, id: 'b0' },
@@ -63,14 +70,14 @@ function clock9(defenders: 'lone-muju' | 'rescuer') {
     current: 'black',
     phase: 'action',
     actions: 4,
-    inactivityPlies: 9,
+    inactivityPlies: LAST_QUIET_PLY,
     turnNumber: 12,
   });
 }
 
 describe('terminal order under Phasing (SU §8.1)', () => {
   it('a home checkmate is NOT adjudicated in ACT, however unanswerable it is', () => {
-    const state = clock9('lone-muju');
+    const state = atLastQuietPly('lone-muju');
     const move = { type: 'MOVE' as const, unitId: 'b0', to: { x: 0, y: 0 } };
 
     // Standard would end the game right here. Phasing does not: the invader has
@@ -89,7 +96,7 @@ describe('terminal order under Phasing (SU §8.1)', () => {
     expect(p.phase).toBe(1);
     expect(replica.needsProof(p)).toBe(false);
     expect(replica.digest(p)).toBe(replica.digest(replica.pack(canonical, allocState())));
-    expect(p.clock).toBe(9);
+    expect(p.clock).toBe(LAST_QUIET_PLY);
 
     replica.unmake(p, undo);
     expect(p.result).toBe(Result.ONGOING);
@@ -97,15 +104,15 @@ describe('terminal order under Phasing (SU §8.1)', () => {
   });
 
   it('...and IS adjudicated at END_ACTION, once the invader has paid its rent', () => {
-    const state = clock9('lone-muju');
+    const state = atLastQuietPly('lone-muju');
     const moved = applyAction(state, { type: 'MOVE', unitId: 'b0', to: { x: 0, y: 0 } });
     const canonical = applyAction(moved, { type: 'END_ACTION_PHASE' });
     expect(canonical.phase).toBe('victory');
     expect(canonical.winner).toBe('black');
     expect(canonical.victoryReason).toBe('home-checkmate');
-    // The mate beat the tenth quiet ply, which END_PLACE would have drawn: the
+    // The mate beat the LAST quiet ply, which END_PLACE would have drawn: the
     // clock never advanced, because END_ACTION does not touch it.
-    expect(canonical.inactivityPlies).toBe(9);
+    expect(canonical.inactivityPlies).toBe(LAST_QUIET_PLY);
 
     const p = replica.pack(moved);
     const undo = newUndo();
@@ -114,7 +121,7 @@ describe('terminal order under Phasing (SU §8.1)', () => {
     expect(p.phase).toBe(0);
     expect(p.result).toBe(Result.BLACK_WIN);
     expect(p.reason).toBe(Reason.HOME_CHECKMATE);
-    expect(p.clock).toBe(9);
+    expect(p.clock).toBe(LAST_QUIET_PLY);
     expect(p.side).toBe(1); // END_ACTION never hands off
     expect(replica.digest(p)).toBe(replica.digest(replica.pack(canonical, allocState())));
 
@@ -161,7 +168,7 @@ describe('terminal order under Phasing (SU §8.1)', () => {
   });
 
   it('END_ACTION does not hand off, so the draw waits for END_PLACE', () => {
-    const state = clock9('rescuer');
+    const state = atLastQuietPly('rescuer');
     const move = { type: 'MOVE' as const, unitId: 'b0', to: { x: 0, y: 0 } };
 
     const canonicalMoved = applyAction(state, move);
@@ -177,37 +184,37 @@ describe('terminal order under Phasing (SU §8.1)', () => {
     // draw does not fire — that alone is the Standard/Phasing split.
     const canonicalPrepared = applyAction(canonicalMoved, { type: 'END_ACTION_PHASE' });
     expect(canonicalPrepared.phase).toBe('playing');
-    expect(canonicalPrepared.inactivityPlies).toBe(9);
+    expect(canonicalPrepared.inactivityPlies).toBe(LAST_QUIET_PLY);
     expect(canonicalPrepared.turn.currentPlayer).toBe('black');
     replica.make(p, paMake(AKind.END_ACTION), undo);
     expect(p.result).toBe(Result.ONGOING);
-    expect(p.clock).toBe(9);
+    expect(p.clock).toBe(LAST_QUIET_PLY);
     expect(p.side).toBe(1);
     expect(replica.digest(p)).toBe(replica.digest(replica.pack(canonicalPrepared, allocState())));
 
-    // END_PLACE advances the tenth quiet ply and draws.
+    // END_PLACE advances onto the limit and draws.
     const canonicalEnded = applyAction(canonicalPrepared, { type: 'END_PLACE_PHASE' });
     expect(canonicalEnded.phase).toBe('victory');
     expect(canonicalEnded.winner).toBeNull();
     expect(canonicalEnded.victoryReason).toBe('inactivity');
-    expect(canonicalEnded.inactivityPlies).toBe(10);
+    expect(canonicalEnded.inactivityPlies).toBe(INACTIVITY_LIMIT);
 
     replica.make(p, paMake(AKind.END_PLACE), undo);
     expect(p.result).toBe(Result.DRAW);
     expect(p.reason).toBe(Reason.INACTIVITY);
-    expect(p.clock).toBe(10);
+    expect(p.clock).toBe(INACTIVITY_LIMIT);
     // The draw resolves BEFORE the handover, so the side to move is unchanged.
     expect(p.side).toBe(1);
     expect(replica.digest(p)).toBe(replica.digest(replica.pack(canonicalEnded, allocState())));
 
     for (let i = 0; i < 3; i++) replica.unmake(p, undo);
     expect(p.result).toBe(Result.ONGOING);
-    expect(p.clock).toBe(9);
+    expect(p.clock).toBe(LAST_QUIET_PLY);
     expect(p.sq[0]).toBe(1);
   });
 
   it('the draw at END_PLACE beats an occupation that would win at the next startTurn', () => {
-    // White already sits on Black's corner; Black ends a quiet tenth ply.
+    // White already sits on Black's corner; Black ends the last quiet ply.
     const state = buildState({
       units: [
         { def: 'plant_1', owner: 'black', x: 5, y: 5, id: 'b0' },
@@ -217,7 +224,7 @@ describe('terminal order under Phasing (SU §8.1)', () => {
       current: 'black',
       phase: 'place',
       actions: 0,
-      inactivityPlies: 9,
+      inactivityPlies: LAST_QUIET_PLY,
       turnNumber: 8,
     });
     const canonical = applyAction(state, { type: 'END_PLACE_PHASE' });
@@ -478,7 +485,7 @@ describe('terminal order under Phasing (SU §8.1)', () => {
   });
 
   it('victoryRule "elimination" suppresses both home terminals', () => {
-    const state = { ...clock9('lone-muju'), victoryRule: 'elimination' as const };
+    const state = { ...atLastQuietPly('lone-muju'), victoryRule: 'elimination' as const };
     const moved = applyAction(state, { type: 'MOVE', unitId: 'b0', to: { x: 0, y: 0 } });
     expect(moved.phase).toBe('playing');
     const canonical = applyAction(moved, { type: 'END_ACTION_PHASE' });
@@ -493,7 +500,7 @@ describe('terminal order under Phasing (SU §8.1)', () => {
   });
 
   it('proverMode gates the checkmate call at END_ACTION: 2 proves, 1 under-claims, 0 asserts', () => {
-    const state = clock9('lone-muju');
+    const state = atLastQuietPly('lone-muju');
     const moved = applyAction(state, { type: 'MOVE', unitId: 'b0', to: { x: 0, y: 0 } });
 
     const full = replica.pack(moved);
@@ -514,7 +521,7 @@ describe('terminal order under Phasing (SU §8.1)', () => {
     // With a rescuer beside the corner the bound is satisfied, so mode 1 claims
     // nothing; the full prover searches and finds the rescue, so mode 2 claims
     // nothing either.
-    const answerableMoved = applyAction(clock9('rescuer'), { type: 'MOVE', unitId: 'b0', to: { x: 0, y: 0 } });
+    const answerableMoved = applyAction(atLastQuietPly('rescuer'), { type: 'MOVE', unitId: 'b0', to: { x: 0, y: 0 } });
     for (const mode of [1, 2] as const) {
       const answerable = replica.pack(answerableMoved, allocState());
       answerable.proverMode = mode;

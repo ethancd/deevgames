@@ -68,6 +68,10 @@ import type { GameState, PendingSummon, PlayerId, Unit, Cell } from '../../../ga
 import { INITIAL_RESOURCE_LAYERS } from '../../../game/board';
 import { MAX_RESOURCE_RESERVE } from '../../../game/resourceMap';
 import { getAttackCount } from '../../../game/combat';
+import {
+  INACTIVITY_LIMIT as CANONICAL_INACTIVITY_LIMIT,
+  INACTIVITY_WARNING as CANONICAL_INACTIVITY_WARNING,
+} from '../../../game/inactivity';
 import { HomeVerdict, PROOF_NODES, damageBound, homeVerdict, needsProof } from '../tactics/prover';
 import { Scratch, bbCount, bbHas, bbNew, bbNext, bbZero } from './bits';
 import { ADJ_LIST, BOARD, CORNER } from './tables';
@@ -110,10 +114,27 @@ import { PST_MINE, RENT_PV, RESERVE_VALUES } from './income';
 export { DEAD, F_CAN_ACT, F_LAST_KILLED, F_PLACED, F_PROMOTED, MAX_SLOTS, MAX_TURN_ACTIONS, NO_SLOT, PEND_STRIDE } from '../types';
 export type { PackedState } from '../types';
 
-/** `inactivityPlies` is clamped into the Zobrist `clock` plane's domain (DESIGN §3.1). */
-export const MAX_CLOCK = 10;
-/** `resolveInactivityDraw` fires at this many quiet plies (inactivity.ts:3). */
-export const INACTIVITY_LIMIT = 10;
+/**
+ * `resolveInactivityDraw` fires at this many quiet plies. NOT a second copy of
+ * the rule: it IS the canonical `src/game/inactivity.ts` export, re-exported
+ * under the replica's name so the packed engine cannot drift from the rules it
+ * replicates. Under `muju-phasing-2` (preregistration amendment A4) it is 20.
+ */
+export const INACTIVITY_LIMIT = CANONICAL_INACTIVITY_LIMIT;
+/**
+ * `inactivityPlies` is clamped into the Zobrist `clock` plane's domain
+ * (DESIGN §3.1). The domain is exactly `0..INACTIVITY_LIMIT`: the draw resolves
+ * the moment the clock REACHES the limit, so no reachable position carries a
+ * higher value and the clamp is unobservable.
+ */
+export const MAX_CLOCK = INACTIVITY_LIMIT;
+/**
+ * The canonical in-game warning threshold (`INACTIVITY_WARNING`), three plies
+ * short of the draw. `eval/invariants.ts` bit 16 — "sitting on a lead while the
+ * draw clock runs" — reads it instead of the literal it used to carry, so the
+ * invariant keeps its three-ply meaning at any limit.
+ */
+export const INACTIVITY_WARNING = CANONICAL_INACTIVITY_WARNING;
 /** `getActionsPerTurn` is frozen at 4 for every current-rule match (rules.ts:11-13). */
 export const ACTIONS_PER_TURN = 4;
 

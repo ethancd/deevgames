@@ -5,7 +5,7 @@ import { applyAction } from '../../../src/ai/simulate';
 import { getUnitDefinition } from '../../../src/game/units';
 import { isValidSpawnPosition } from '../../../src/game/spawning';
 import { canonicalPhasingEconomy } from '../../../lab/hard-ai/oracles/phasing-economy';
-import { Replica, allocState, copyState } from '../../../src/ai/hard/core/state';
+import { INACTIVITY_LIMIT, Replica, allocState, copyState } from '../../../src/ai/hard/core/state';
 import { Scratch } from '../../../src/ai/hard/core/bits';
 import { GAMMA_Q16 } from '../../../src/ai/hard/core/income';
 import { Reason, Result, type PackedState } from '../../../src/ai/hard/types';
@@ -103,7 +103,7 @@ const cases: [string, () => GameState][] = [
   ['equal-cost keep uses square not slot order', () => authored({ phase: 'place', upkeepPending: true, white: 1, reserves: zero(), units: [
     { def: 'water_2', owner: 'white', x: 4, y: 4, id: 'later' },
     { def: 'shadow_2', owner: 'white', x: 3, y: 3, id: 'earlier' }, basic[1]] })],
-  ['inactivity stops before arrivals or income', () => authored({ phase: 'place', inactivityRule: 'on', inactivityPlies: 9,
+  ['inactivity stops before arrivals or income', () => authored({ phase: 'place', inactivityRule: 'on', inactivityPlies: INACTIVITY_LIMIT - 1,
     pendingSummons: [{ def: 'plant_1', owner: 'black', x: 8, y: 7, id: 'too-late' }] })],
   ['settled home mate stops at the first bill', () => authored({ victoryRule: 'home-or-elimination', white: 2, reserves: zero(), units: [
     { def: 'metal_3', owner: 'white', x: 9, y: 9, id: 'invader' },

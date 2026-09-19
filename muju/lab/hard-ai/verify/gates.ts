@@ -7,6 +7,8 @@
  * `docs/hard-ai/MILESTONES.md` (quoted in each stub's `description` for
  * reference) and a real `criterion`.
  */
+import { INACTIVITY_LIMIT } from '../../../src/game/inactivity';
+
 export interface Gate {
   id: string;
   dependsOn: string[];
@@ -182,6 +184,16 @@ export const GATES: Gate[] = [
         (fuzz?.canActClearedGames as number) > 0 &&
         (fuzz?.reviewUpkeepGames as number) > 0 &&
         (fuzz?.eliminationRuleGames as number) > 0 &&
+        // A4 CLOCK COVERAGE. `muju-phasing-2` moved the inactivity limit from
+        // ten plies to twenty; a walk that never left the old range has only
+        // revisited states `muju-phasing-1` already had, so its zeros above
+        // certify nothing about the current rules. `fuzz/run.ts` fails such a
+        // run on its own — this clause is what stops an ARCHIVED artifact from
+        // passing the gate on the strength of a walk taken before the
+        // quiet-game generator existed, and it reads the canonical constant so
+        // it follows the rule rather than restating a number.
+        (fuzz?.maxClockSeen as number) >= INACTIVITY_LIMIT &&
+        (fuzz?.quietGames as number) > 0 &&
         perft?.fixturesMismatch === 0 &&
         perft?.engine === 'replica' &&
         metrics.depsViolations === 0

@@ -70,7 +70,7 @@ import { hardEnginePatch } from '../bots/hard';
 import { createBot as createScriptedBot } from '../../harness/bots/index';
 import { playGame } from '../../harness/runner';
 import { loadOpenings, type OpeningSpec } from '../ladder/openings';
-import { LADDER_RULES_VERSION, applyLadderOpening } from '../ladder/ruleset';
+import { applyLadderOpening, rulesetForRevision } from '../ladder/ruleset';
 import { loadReplay, reconstruct, withMatchRules, type LoadedReplay, type ReconstructedTurn } from '../analyze/replay';
 import { DEFAULT_MATCH_OPTIONS } from '../../harness/types';
 import { resolveEngine, parseWorkSpec, workKey, type WorkSpec } from '../ladder/engines';
@@ -563,8 +563,12 @@ export async function buildP1DevPositions(limit = P1_DEV_COUNT): Promise<{ posit
       opening,
       // The runner stamps `rulesVersion` on the record it just returned; this is
       // that same rule set, spelled out so the reconstruction is rules-bound
-      // rather than defaulted.
-      ruleset: record.rulesVersion === LADDER_RULES_VERSION ? 'phasing' : 'standard',
+      // rather than defaulted. It asks `rulesetForRevision` rather than
+      // comparing against today's revision: `muju-phasing-2` moved
+      // `LADDER_RULES_VERSION`, and an equality test would silently reconstruct
+      // a superseded `muju-phasing-1` record as STANDARD — the exact
+      // reinterpretation `ladder/ruleset.ts` exists to refuse.
+      ruleset: rulesetForRevision(record.rulesVersion, `profile: in-memory record for ${opening.id}`),
     };
     const recon = reconstruct(loaded);
     const turn = recon.bySide.white.find(t => t.turnNumber === P1_DEV_TARGET_TURN);

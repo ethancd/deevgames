@@ -43,7 +43,7 @@ import { MAX_TURN_ACTIONS, Reason, Result, type PackedState, type Side } from '.
 import { Scratch } from '../../../src/ai/hard/core/bits';
 import { CORNER } from '../../../src/ai/hard/core/tables';
 import { AKind, newKeepSetTable, paMake, toAIAction } from '../../../src/ai/hard/core/action';
-import { Replica, allocState, newUndo } from '../../../src/ai/hard/core/state';
+import { INACTIVITY_LIMIT, Replica, allocState, newUndo } from '../../../src/ai/hard/core/state';
 import {
   HomeVerdict,
   PROOF_NODES,
@@ -480,16 +480,18 @@ describe('core/state.ts make: the packed checkmate gate (DESIGN §3.4)', () => {
     expect(canonical.phase).toBe('playing');
   });
 
-  it('SU §8.1: a proven mate beats the ten-quiet-turn draw, an unproven occupation does not', () => {
+  it('SU §8.1: a proven mate beats the inactivity draw, an unproven occupation does not', () => {
     // Under Phasing the mate lands at the invader's own END_ACTION, which is
-    // strictly before the hand-off where the tenth quiet ply would draw — so the
+    // strictly before the hand-off where the LAST quiet ply would draw — so the
     // ordering SU §8.1 asserts still holds, one action later than it used to.
-    const mate = stepThenEndAction(invasion([], { inactivityPlies: 9 }));
+    // The clock is set one ply short of the LIMIT rather than to a literal 9, so
+    // the case still straddles the boundary after A4 moved it to twenty.
+    const mate = stepThenEndAction(invasion([], { inactivityPlies: INACTIVITY_LIMIT - 1 }));
     expect(mate.packed.reason).toBe(Reason.HOME_CHECKMATE);
     expect(mate.canonical.victoryReason).toBe('home-checkmate');
 
     const rescued = stepThenEndAction(
-      invasion([{ def: 'lightning_1', owner: 'white', x: 0, y: 1, id: 'u2' }], { inactivityPlies: 9 }),
+      invasion([{ def: 'lightning_1', owner: 'white', x: 0, y: 1, id: 'u2' }], { inactivityPlies: INACTIVITY_LIMIT - 1 }),
     );
     expect(rescued.packed.result).toBe(Result.ONGOING);
 

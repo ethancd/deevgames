@@ -64,14 +64,14 @@
     },
     {
       "id": "arrival-and-refund",
-      "digest": "a0ecef98",
+      "digest": "dea9d2d6",
       "limits": {
         "act": 0,
         "prepare": 1
       },
-      "actions": 121,
-      "midStates": 121,
-      "endPositions": 121
+      "actions": 141,
+      "midStates": 141,
+      "endPositions": 141
     },
     {
       "id": "upkeep-review-pending",

@@ -12,7 +12,7 @@
  */
 import { describe, expect, it, vi } from 'vitest';
 import { seededRandom } from '../../../src/ai/runtime';
-import { Replica } from '../../../src/ai/hard/core/state';
+import { INACTIVITY_LIMIT, INACTIVITY_WARNING, Replica } from '../../../src/ai/hard/core/state';
 import { Scratch } from '../../../src/ai/hard/core/bits';
 import type { PackedState, Side } from '../../../src/ai/hard/types';
 import { TABLE_SCRATCH_BB, TABLE_SCRATCH_I8, allocTables, buildTables } from '../../../src/ai/hard/tables/context';
@@ -151,18 +151,25 @@ describe('invariantBits: the rows DESIGN §5.13 states over the position', () =>
     expect(has(bits(board(won, { ...premise, white: 0 })), 14)).toBe(false);
   });
 
+  // The threshold is the canonical `INACTIVITY_WARNING` — the last three plies
+  // before the draw — not a literal 7. A4 moved it from 7 to 17 with the limit,
+  // and the invariant's meaning did not change: these three cases are "on the
+  // warning", "one ply below it" and "no draw rule at all", at any limit.
   it('16 — the clock only counts against the side that is ahead', () => {
-    const ahead = board([...WHITE_QUIET, { def: 'plant_1', owner: 'white', x: 1, y: 4 }], { inactivityPlies: 7 });
+    const ahead = board([...WHITE_QUIET, { def: 'plant_1', owner: 'white', x: 1, y: 4 }], { inactivityPlies: INACTIVITY_WARNING });
     expect(has(bits(ahead), 16)).toBe(true);
     expect(has(bits(ahead, 1), 16)).toBe(false);
-    const early = board([...WHITE_QUIET, { def: 'plant_1', owner: 'white', x: 1, y: 4 }], { inactivityPlies: 6 });
+    const early = board([...WHITE_QUIET, { def: 'plant_1', owner: 'white', x: 1, y: 4 }], { inactivityPlies: INACTIVITY_WARNING - 1 });
     expect(has(bits(early), 16)).toBe(false);
     // With the draw rule off there is no clock to discipline.
     const noRule = board([...WHITE_QUIET, { def: 'plant_1', owner: 'white', x: 1, y: 4 }], {
-      inactivityPlies: 7,
+      inactivityPlies: INACTIVITY_WARNING,
       inactivityRule: 'off',
     });
     expect(has(bits(noRule), 16)).toBe(false);
+    // ...and the warning really is three plies short of the draw, so the bit
+    // fires on the last three plies of a quiet game and on no earlier one.
+    expect(INACTIVITY_LIMIT - INACTIVITY_WARNING).toBe(3);
   });
 });
 

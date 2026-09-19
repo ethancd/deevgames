@@ -4,10 +4,10 @@
  */
 import { DEAD, MAX_SLOTS, PEND_STRIDE, Result, type PackedState, type Side } from '../types';
 import { BOARD, rot180 } from '../core/tables';
-import { copyState, Replica } from '../core/state';
+import { copyState, INACTIVITY_LIMIT, Replica } from '../core/state';
 import { activeCatalog } from '../core/catalog';
 import type { Turn } from '../gen/turn';
-import { CONFIG_FEATURE_COUNT, PHASING_EVAL_SCHEMA, type Book, type BookEntry, type Weights } from '../config';
+import { CONFIG_FEATURE_COUNT, PHASING_EVAL_SCHEMA, PHASING_RULES_REVISION, type Book, type BookEntry, type Weights } from '../config';
 
 let mirrorReplica: Replica | null = null;
 
@@ -76,12 +76,21 @@ export function canonicalKey(p: PackedState): { lo: number; hi: number; negated:
   return { lo: p.kturnLo >>> 0, hi: p.kturnHi >>> 0, negated: false };
 }
 
-/** Exact descriptor; changing weights at the same version also invalidates a book. */
+/**
+ * Exact descriptor; changing weights at the same version also invalidates a book.
+ *
+ * `rulesKey` carries the rules REVISION and, since A4, the inactivity limit
+ * itself. The revision label alone would rely on someone remembering to bump a
+ * string; the limit is the thing a stored book's scores actually depend on — a
+ * book entry whose line ends in a draw at ply 10 is simply wrong once the draw
+ * is at 20 — so both are in the key and a `muju-phasing-1` book falls through
+ * to search rather than being read.
+ */
 export function bookCompatibility(p: PackedState, weights: Weights): { weightsKey: string; mapKey: string; rulesKey: string } {
   return {
     weightsKey: JSON.stringify([weights.featureSchema, weights.version, Array.from(weights.w), Array.from(weights.material)]),
     mapKey: JSON.stringify(Array.from(p.initialReserve)),
-    rulesKey: JSON.stringify(['muju-phasing-1', PHASING_EVAL_SCHEMA, p.catalogSignature, p.handicap, p.victoryHome, p.drawRuleOn]),
+    rulesKey: JSON.stringify([PHASING_RULES_REVISION, PHASING_EVAL_SCHEMA, p.catalogSignature, p.handicap, p.victoryHome, p.drawRuleOn, INACTIVITY_LIMIT]),
   };
 }
 export function findCompatibleBookEntry(book: Book, p: PackedState, weights?: Weights): BookEntry | null {

@@ -155,6 +155,15 @@ export interface TimeConfig {
   ladderStep?: 'sqrt2';
 }
 
+/**
+ * The RULES REVISION this build replicates. `muju-phasing-2` is preregistration
+ * amendment A4's revision: the inactivity draw clock is 20 plies, not 10.
+ * "Fixed definitions" makes evidence non-poolable across revisions, so this
+ * string is part of every book's compatibility descriptor (`book/probe.ts`) and
+ * a book built under `muju-phasing-1` can never be read by this build.
+ */
+export const PHASING_RULES_REVISION = 'muju-phasing-2';
+
 // --- eval/weights.ts ---
 /** Phasing meaning/units; indices 0–57 are preserved and 58–61 appended. */
 export const PHASING_EVAL_SCHEMA = 'muju-phasing-eval-1';
