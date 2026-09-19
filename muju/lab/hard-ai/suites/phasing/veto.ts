@@ -63,7 +63,7 @@ import { isLegalAction, phaseEndAction } from '../../../../src/game/legality';
 import { getValidMoves } from '../../../../src/game/movement';
 
 import { defaultUpkeepAction, unitUpkeep, upkeepActions } from '../../../../src/game/upkeep';
-import { checkVictory, getHomeOccupier } from '../../../../src/game/victory';
+import { checkVictory, getHomeOccupier, getOpponent } from '../../../../src/game/victory';
 import { analyzeHomeDefenseEvidence } from '../../../../src/game/homeCheckmate';
 import { continueHorizon, replayMacro, semanticHash } from './canonical';
 import type { CanonicalTrace } from './canonical';
@@ -164,19 +164,43 @@ function couldTerminate(state: GameState, mover: PlayerId): boolean {
 /** Does this state establish a home occupation the defender provably cannot
  * answer? Adjudicated on the settled Prepare snapshot, the only boundary at
  * which Phasing awards home-checkmate; an occupier released by its own upkeep
- * never mates, and the canonical analysis is what says so. */
-function establishesHomeMate(state: GameState, mover: PlayerId): boolean {
-  if (state.phase !== 'playing' || !getHomeOccupier(state.board, mover)) return false;
+ * never mates, and the canonical analysis is what says so.
+ *
+ * TRI-STATE, because the proof has a budget. `analyzeHomeDefenseEvidence`
+ * answers 'mate', 'rescue' or 'unknown', and an exhausted proof is 'unknown'.
+ * Collapsing that to a boolean made the proof cap the one bound in this probe
+ * that failed OPEN: a root whose defence could not be decided inside the budget
+ * was reported as "no uncredited win", which is the opposite of what every
+ * other bound here does. The caller treats 'unknown' as a bound hit.
+ *
+ * The two canonical guards `resolveHomeCheckmate` applies before it awards a
+ * mate are honoured here as well, because a line canonical will not award is
+ * not a win the accept predicate has to credit:
+ *  - `victoryRule === 'elimination'`: home occupation never wins at all;
+ *  - counter-invasion: an opposing occupier of the MOVER's own corner means the
+ *    earlier invasion already owns the win, and canonical refuses to award this
+ *    one.
+ * Omitting them made the veto refuse sound roots, which is a different failure
+ * from the one above but caused by the same shortcut. */
+export type HomeMateProof = 'mate' | 'rescue' | 'unknown';
+export function establishesHomeMate(state: GameState, mover: PlayerId, proofNodes: number = VETO_PROOF_NODES): HomeMateProof {
+  // Home occupation is not a win under elimination-only victory, so there is
+  // nothing for an accept predicate to have missed.
+  if (state.victoryRule === 'elimination') return 'rescue';
+  if (state.phase !== 'playing' || !getHomeOccupier(state.board, mover)) return 'rescue';
   let prepare = state;
   for (let n = 0; n < 4 && prepare.phase === 'playing' && prepare.turn.phase === 'action'; n++) {
     const action = phaseEndAction(prepare);
-    if (!isLegalAction(prepare, action)) return false;
+    if (!isLegalAction(prepare, action)) return 'rescue';
     const next = applyAction(prepare, action);
-    if (semanticHash(next) === semanticHash(prepare)) return false;
+    if (semanticHash(next) === semanticHash(prepare)) return 'rescue';
     prepare = next;
   }
-  if (prepare.phase !== 'playing' || prepare.upkeepPending || !getHomeOccupier(prepare.board, mover)) return false;
-  return analyzeHomeDefenseEvidence(prepare, mover, transitionWithoutCheckmate, VETO_PROOF_NODES).result === 'mate';
+  if (prepare.phase !== 'playing' || prepare.upkeepPending || !getHomeOccupier(prepare.board, mover)) return 'rescue';
+  // Canonical will not award this mate while the opponent occupies the mover's
+  // own corner: that earlier invasion wins first and cannot be stolen.
+  if (getHomeOccupier(prepare.board, getOpponent(mover))) return 'rescue';
+  return analyzeHomeDefenseEvidence(prepare, mover, transitionWithoutCheckmate, proofNodes).result;
 }
 
 /** Is this a mover Prepare snapshot with no pending upkeep, i.e. the snapshot
@@ -187,7 +211,7 @@ const isOpenPrepare = (state: GameState, mover: PlayerId): boolean =>
 /** Enumerate the root mover's own winning lines whose win the case's accept
  * predicate does not credit. An empty array with `exhausted: false` is the
  * only clean result. */
-export function uncreditedMoverWins(c: MacroDecision, root: GameState, budget = VETO_STATE_BUDGET): VetoOutcome {
+export function uncreditedMoverWins(c: MacroDecision, root: GameState, budget = VETO_STATE_BUDGET, proofNodes = VETO_PROOF_NODES): VetoOutcome {
   if (root.phase !== 'playing') throw new Error(`veto probe requires a playing root (${c.id})`);
   const mover = root.turn.currentPlayer, wins: UncreditedWin[] = [];
   // Act and Prepare keep separate visited sets: an Act de-duplication must
@@ -211,7 +235,14 @@ export function uncreditedMoverWins(c: MacroDecision, root: GameState, budget = 
     // the mover's favour; or the line may force a home mate the horizon is too
     // short to show, which is still a win the accept predicate must credit.
     const terminal = trace.endpoint.phase === 'victory' && trace.endpoint.winner === mover;
-    const mate = !terminal && establishesHomeMate(state, mover);
+    const proof: HomeMateProof = terminal ? 'rescue' : establishesHomeMate(state, mover, proofNodes);
+    // The proof budget is the one bound that used to fail OPEN: an undecided
+    // defence was read as "no win here". It is a refusal like every other bound.
+    if (proof === 'unknown') {
+      bound(`home-defence proof budget ${proofNodes} nodes exhausted on the line ${JSON.stringify(path)}; whether that occupation mates is undecided`);
+      return;
+    }
+    const mate = proof === 'mate';
     if (!terminal && !mate) return;
     const credited = evaluateDecision(c, trace);
     if (credited.status === 'pass') return;
@@ -319,12 +350,12 @@ export function uncreditedMoverWins(c: MacroDecision, root: GameState, budget = 
 /** Refuse a decision whose root hands the mover a win its accept cannot score.
  * `allow-root-mover-win` cases credit the win, so they pass this probe by
  * construction rather than by exemption: evaluateDecision returns pass. */
-export function assertNoUncreditedWin(c: MacroDecision, root: GameState, budget = VETO_STATE_BUDGET): void {
-  const outcome = uncreditedMoverWins(c, root, budget);
+export function assertNoUncreditedWin(c: MacroDecision, root: GameState, budget = VETO_STATE_BUDGET, proofNodes = VETO_PROOF_NODES): void {
+  const outcome = uncreditedMoverWins(c, root, budget, proofNodes);
   if (outcome.exhausted || outcome.wins.length) throw new VetoError(c.id, outcome.wins, outcome.exhausted, outcome.exhaustedReason);
 }
 
 /** Apply the veto to every macro-decision in a v2 suite document. */
-export function vetoUncreditedWins(cases: readonly PhasingCase[], resolve: (ref: PositionRef) => PhasingPosition, budget = VETO_STATE_BUDGET): void {
-  for (const c of cases) if (c.kind === 'macro-decision') assertNoUncreditedWin(c, resolve(c.root).state, budget);
+export function vetoUncreditedWins(cases: readonly PhasingCase[], resolve: (ref: PositionRef) => PhasingPosition, budget = VETO_STATE_BUDGET, proofNodes = VETO_PROOF_NODES): void {
+  for (const c of cases) if (c.kind === 'macro-decision') assertNoUncreditedWin(c, resolve(c.root).state, budget, proofNodes);
 }

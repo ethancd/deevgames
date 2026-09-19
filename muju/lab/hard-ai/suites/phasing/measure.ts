@@ -3,7 +3,7 @@
  */
 import { appendFileSync, existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
-import { join, relative, resolve } from 'node:path';
+import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { acquireHeavySlot, heavyBypassed } from '../../ladder/heavy';
 import { DEFAULT_RULES } from '../../positions/corpus';
@@ -39,15 +39,64 @@ const writeJson = (file: string, value: unknown): void => writeFileSync(file, `$
  * "WITNESS: local only" for the weak tier so no reader has to infer it.
  */
 export type WitnessTier = 'remote-tracking' | 'local-only';
+/** One remote-tracking ref that contains the contract commit, with the URL of
+ * the remote it belongs to and whether that URL can corroborate anything off
+ * this machine. `git branch -r --contains` alone does NOT establish tier A: a
+ * clone of a sibling directory, a `file://` URL or a remote pointing at
+ * localhost all produce remote-tracking refs that live entirely in this clone's
+ * filesystem, which is exactly the tier-B situation the tier is meant to name. */
+export interface RemoteWitness { ref: string; remote: string; url: string; localOnly: boolean }
 export interface ContractCommit {
   commit: string; committedAt: string; path: string;
   /** git's own object id for the contract blob at `commit`. */ blobSha1: string;
   ancestorOfHead: true; bytesMatchCommit: true; committedBeforeRun: true;
   /** The contract commit touched no result or measurement-output path. */ touchesResultPaths: false;
   witnessTier: WitnessTier; remoteRefs: string[];
+  /** Every containing remote-tracking ref with its resolved remote URL. Recorded
+   * in started.json and result.json so a reader can see WHICH remote was taken
+   * as the witness rather than trusting the tier word. */
+  remoteWitnesses: RemoteWitness[];
+  /** The non-local remote URLs that granted tier A; empty under tier B. */
+  witnessUrls: string[];
 }
 const git = (args: string[], cwd: string): string =>
   execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+/** Hosts that name this machine. A remote on one of these is a local clone
+ * dressed as a remote and witnesses nothing outside this box. */
+const LOCAL_HOSTS = new Set(['', 'localhost', '127.0.0.1', '0.0.0.0', '::1', '[::1]']);
+/** Is this remote URL confined to this machine? File paths, `file://` URLs and
+ * loopback hosts all are. Anything unparseable is treated as local, because the
+ * tier must fail toward the weaker claim. */
+export function isLocalOnlyRemoteUrl(url: string): boolean {
+  const u = url.trim();
+  if (!u) return true;
+  if (/^file:/i.test(u)) return true;
+  if (/^[A-Za-z][A-Za-z0-9+.-]*:\/\//.test(u)) {
+    try {
+      const host = new URL(u).hostname.toLowerCase();
+      return LOCAL_HOSTS.has(host) || host.endsWith('.localhost') || /^127\./.test(host);
+    } catch { return true; }
+  }
+  // scp-style `[user@]host:path`, which is a network remote unless the host is
+  // loopback. A leading `/`, `./`, `../`, `~` or a bare relative path is a
+  // filesystem clone; a Windows drive letter (`C:\`) is one too.
+  const scp = /^(?:[^/@]+@)?([^/:]+):(?![\\/])/.exec(u);
+  if (scp && !/^[A-Za-z]$/.test(scp[1])) {
+    const host = scp[1].toLowerCase();
+    return LOCAL_HOSTS.has(host) || host.endsWith('.localhost') || /^127\./.test(host);
+  }
+  return true;
+}
+/** Resolve each containing remote-tracking ref to its remote's URL. A ref whose
+ * remote cannot be identified or has no URL is recorded as local-only. */
+export function describeRemoteWitnesses(refs: readonly string[], remotes: readonly string[], urlOf: (remote: string) => string | null): RemoteWitness[] {
+  const byLength = [...remotes].sort((a, b) => b.length - a.length);
+  return refs.map(ref => {
+    const remote = byLength.find(name => ref === name || ref.startsWith(`${name}/`)) ?? '';
+    const url = remote ? urlOf(remote) ?? '' : '';
+    return { ref, remote, url, localOnly: !remote || isLocalOnlyRemoteUrl(url) };
+  });
+}
 /** Files a contract commit may not carry: committing the floor together with
  * the numbers it is supposed to predate is exactly the move the tiers cannot
  * detect by date, so it is refused structurally instead. */
@@ -98,7 +147,11 @@ export function appendMeasurementLedger(entry: Omit<LedgerEntry, 'schema' | 'seq
   return line;
 }
 const SKIP_DIRECTORIES = new Set(['node_modules', '.git', 'dist', 'coverage', '.venv', 'build', '.next', 'test-results']);
-function walkForResults(directory: string, inResults: boolean, depth: number, found: string[]): void {
+/** Collect every `result.json` below `directory`. There is deliberately no
+ * `results/`-directory condition: a measurement written to `--out /tmp/run-3`
+ * is still a measurement, and keying the search on a directory NAME let a
+ * second reading of the same preregistration hide behind a rename. */
+function walkForResults(directory: string, depth: number, found: string[]): void {
   if (depth > 12) return;
   let entries;
   try { entries = readdirSync(directory, { withFileTypes: true }); } catch { return; }
@@ -106,26 +159,88 @@ function walkForResults(directory: string, inResults: boolean, depth: number, fo
     const path = join(directory, entry.name);
     if (entry.isDirectory()) {
       if (SKIP_DIRECTORIES.has(entry.name)) continue;
-      walkForResults(path, inResults || entry.name === 'results', depth + 1, found);
-    } else if (inResults && entry.name === 'result.json') found.push(path);
+      walkForResults(path, depth + 1, found);
+    } else if (entry.name === 'result.json') found.push(path);
   }
 }
-/** Every recorded phasing measurement of this manifest under this contract that
- * already exists somewhere in the repository's results directories. A v2 floor
- * is a FIRST-measurement instrument: a re-run needs a new contract version, so
- * finding one of these refuses the run instead of quietly producing a second
- * reading of the same preregistration. */
-export function findPriorMeasurements(repoTop: string, manifestSha256: string, contractFileSha256: string): string[] {
+/** Every recorded phasing measurement OF THIS MANIFEST that already exists under
+ * one of the given search roots.
+ *
+ * Two things this deliberately does not do. It does not require a `results/`
+ * ancestor, and it does not compare the contract file: keying on the contract
+ * made both first-measurement checks defeatable by amending the contract after
+ * a run, which changes the contract bytes and the contract commit while leaving
+ * the manifest — the thing whose engineering floor is being read — identical.
+ * The manifest hash is the only key. A genuine re-measurement is declared with
+ * `supersedes`, not obtained by editing the preregistration.
+ *
+ * Roots come from the caller (the ledger's own directory, the run's `--out`
+ * parent, and the repository top) rather than from a hard-coded name. */
+export function findPriorMeasurements(roots: string | readonly string[], manifestSha256: string): string[] {
+  const list = (typeof roots === 'string' ? [roots] : [...roots]).map(root => resolve(root));
+  // Drop a root nested inside another so a file is not reported twice.
+  const outermost = list.filter(root => !list.some(other => other !== root && !relative(other, root).startsWith('..') && relative(other, root) !== ''));
   const found: string[] = [];
-  walkForResults(repoTop, false, 0, found);
-  return found.filter(path => {
+  for (const root of new Set(outermost)) walkForResults(root, 0, found);
+  return [...new Set(found)].filter(path => {
     try {
-      const record = JSON.parse(readFileSync(path, 'utf8')) as { schema?: string; input?: { bundle?: { manifestSha256?: string }; contractFileSha256?: string } };
-      return record.schema === 'muju-phasing-measurement-v1'
-        && record.input?.bundle?.manifestSha256 === manifestSha256
-        && record.input?.contractFileSha256 === contractFileSha256;
+      const record = JSON.parse(readFileSync(path, 'utf8')) as { schema?: string; input?: { bundle?: { manifestSha256?: string } } };
+      return record.schema === 'muju-phasing-measurement-v1' && record.input?.bundle?.manifestSha256 === manifestSha256;
     } catch { return false; }
   }).sort();
+}
+/** A measurement of this manifest that already happened, as recorded either in
+ * the ledger or by a `result.json` on disk. */
+export type PriorMeasurement =
+  | { source: 'ledger'; seq: number; chain: string; contractCommit: string; contractFileSha256: string; startedAt: string; resultSha256: string }
+  | { source: 'result-file'; path: string };
+/** A v2 contract may name the ledger line it re-measures. Nothing else unblocks
+ * a manifest that has already been read. */
+export interface Supersedes { ledgerSeq: number; chain: string }
+const describePrior = (prior: PriorMeasurement): string =>
+  prior.source === 'ledger' ? `ledger seq ${prior.seq} (contract commit ${prior.contractCommit})` : `result file ${prior.path}`;
+/** Refuse a second reading of the same manifest unless the contract says, in
+ * committed bytes, exactly which earlier reading it supersedes.
+ *
+ * The check keys on the MANIFEST HASH ALONE. Amending the contract commit after
+ * an off-record run therefore no longer clears the way: it changes the contract
+ * commit and the contract bytes, and neither is consulted here.
+ *
+ * A `supersedes` must name the most recent ledger line for this manifest and
+ * carry that line's chain value, which cannot be produced without the ledger
+ * the run is about to verify. A prior result file with no ledger line behind it
+ * is refused outright: there is nothing to name, and the ledger is incomplete.
+ */
+export function assertFirstMeasurementOfManifest(input: {
+  manifestSha256: string; ledger: readonly LedgerEntry[]; priorResultPaths: readonly string[]; supersedes?: Supersedes;
+}): PriorMeasurement[] {
+  const ledgered = input.ledger.filter(e => e.manifestSha256 === input.manifestSha256);
+  const priors: PriorMeasurement[] = [
+    ...ledgered.map(e => ({ source: 'ledger' as const, seq: e.seq, chain: e.chain, contractCommit: e.contractCommit,
+      contractFileSha256: e.contractFileSha256, startedAt: e.startedAt, resultSha256: e.resultSha256 })),
+    ...input.priorResultPaths.map(path => ({ source: 'result-file' as const, path })),
+  ];
+  if (!priors.length) {
+    if (input.supersedes) throw new Error('Floor contract declares supersedes, but this manifest has no earlier measurement to supersede');
+    return priors;
+  }
+  const latest = ledgered[ledgered.length - 1];
+  const detail = priors.map(describePrior).join(', ');
+  if (!latest) throw new Error(`This manifest has already been measured (${detail}) with no ledger line behind it; the ledger is incomplete and a re-measurement cannot be declared against it`);
+  if (!input.supersedes) throw new Error(`This manifest has already been measured (${detail}); a v2 floor is a first-measurement instrument. A re-measurement requires a contract that declares supersedes: { ledgerSeq: ${latest.seq}, chain: "${latest.chain}" }`);
+  if (input.supersedes.ledgerSeq !== latest.seq) throw new Error(`Floor contract supersedes ledger seq ${input.supersedes.ledgerSeq}, but the most recent measurement of this manifest is seq ${latest.seq}`);
+  if (input.supersedes.chain !== latest.chain) throw new Error(`Floor contract supersedes ledger seq ${latest.seq} with the wrong chain value; the contract does not name the measurement it claims to supersede`);
+  return priors;
+}
+/** Every ledger line must still point at a commit this HEAD descends from.
+ *
+ * This is what closes the amend hole from the other side. Rewriting the commit
+ * a recorded measurement was made against does not erase the record, and the
+ * record no longer resolves: the next run refuses and names the line. */
+export function assertLedgerCommitsReachable(entries: readonly LedgerEntry[], isAncestorOfHead: (commit: string) => boolean): void {
+  for (const entry of entries)
+    if (!isAncestorOfHead(entry.contractCommit))
+      throw new Error(`Measurement ledger line ${entry.seq} records contract commit ${entry.contractCommit}, which is no longer an ancestor of HEAD; that commit was amended, rebased or dropped after it was measured, so this history cannot be measured against the same preregistration`);
 }
 export const describeWitness = (tier: WitnessTier): string =>
   tier === 'remote-tracking' ? 'WITNESS: remote-tracking ref contains the contract commit' : 'WITNESS: local only';
@@ -172,9 +287,28 @@ export function resolveContractCommit(contractPath: string, startedAt: string, r
   let remoteRefs: string[] = [];
   try { remoteRefs = git(['branch', '-r', '--contains', commit], top).split('\n').map(ref => ref.trim().split(' ')[0]).filter(Boolean).sort(); }
   catch { remoteRefs = []; }
+  // A remote-tracking ref is not by itself a witness outside this machine: a
+  // clone of a sibling directory, a `file://` URL or a remote pointing at
+  // localhost all produce one. Resolve each ref's remote URL and grant tier A
+  // only for a remote that is genuinely somewhere else.
+  let remotes: string[] = [];
+  try { remotes = git(['remote'], top).split('\n').map(name => name.trim()).filter(Boolean); }
+  catch { remotes = []; }
+  const urlOf = (remote: string): string | null => {
+    try { return git(['remote', 'get-url', remote], top); } catch { return null; }
+  };
+  const remoteWitnesses = describeRemoteWitnesses(remoteRefs, remotes, urlOf);
+  const witnessUrls = [...new Set(remoteWitnesses.filter(w => !w.localOnly).map(w => w.url))].sort();
   return { commit, committedAt, path, blobSha1, ancestorOfHead: true, bytesMatchCommit: true, committedBeforeRun: true,
-    touchesResultPaths: false, witnessTier: remoteRefs.length ? 'remote-tracking' : 'local-only', remoteRefs };
+    touchesResultPaths: false, witnessTier: witnessUrls.length ? 'remote-tracking' : 'local-only', remoteRefs,
+    remoteWitnesses, witnessUrls };
 }
+/** Does HEAD in this repository descend from `commit`? Injected into the ledger
+ * check so a test can exercise it against a throwaway repository. */
+export const headDescendsFrom = (commit: string, repoTop: string): boolean => {
+  if (!/^[0-9a-f]{7,40}$/.test(commit)) return false;
+  try { git(['merge-base', '--is-ancestor', commit, 'HEAD'], repoTop); return true; } catch { return false; }
+};
 interface Args { manifest: string; contract: string; out: string; weights?: string }
 export function parseMeasurementArgs(args: string[]): Args {
   const options: Record<string, string> = {};
@@ -209,10 +343,17 @@ export async function measureBundle(args: Args, options: MeasurementOptions = {}
     const repoTop = git(['rev-parse', '--show-toplevel'], MUJU_ROOT);
     const manifestSha256 = hashJson(manifest);
     const ledgerBefore = verifyMeasurementLedger(ledgerPath);
-    const alreadyLedgered = ledgerBefore.entries.filter(e => e.manifestSha256 === manifestSha256 && e.contractCommit === contractCommit.commit);
-    if (alreadyLedgered.length) throw new Error(`This manifest has already been measured under contract commit ${contractCommit.commit} (ledger seq ${alreadyLedgered.map(e => e.seq).join(', ')}); a re-run requires a new contract version`);
-    const prior = findPriorMeasurements(repoTop, manifestSha256, contractFileSha256);
-    if (prior.length) throw new Error(`A result already exists for this manifest and contract (${prior.map(path => relative(repoTop, path)).join(', ')}); a v2 floor is a first-measurement instrument`);
+    // Every recorded measurement must still resolve against this history. An
+    // amended-away contract commit is a refusal, not a silently orphaned line.
+    assertLedgerCommitsReachable(ledgerBefore.entries, commit => headDescendsFrom(commit, repoTop));
+    // Both first-measurement checks key on the MANIFEST HASH ALONE, so amending
+    // the contract commit after a run cannot clear either of them. Search roots
+    // are named (the ledger's directory, this run's output parent, the
+    // repository top) rather than inferred from a directory called `results`.
+    const priorRoots = [dirname(ledgerPath), resolve(out, '..'), repoTop];
+    const priorResultPaths = findPriorMeasurements(priorRoots, manifestSha256).filter(path => resolve(path) !== resolve(join(out, 'result.json')));
+    const priorMeasurementsOfThisManifest = assertFirstMeasurementOfManifest({ manifestSha256, ledger: ledgerBefore.entries,
+      priorResultPaths, ...(contract.schema === 'muju-phasing-suite-floor-v2' && contract.supersedes ? { supersedes: contract.supersedes } : {}) });
     const author = validateBundle(args.manifest);
     writeJson(join(out, 'author-validation.json'), author);
     if (!author.valid) throw new Error('Author evidence must all pass before the engine runs');
@@ -228,6 +369,8 @@ export async function measureBundle(args: Args, options: MeasurementOptions = {}
       weightsSha256: adapter.identity.weightsSha256, engineSourceSha256: adapter.identity.sourceSha256 };
     writeJson(join(out, 'started.json'), { schema: 'muju-phasing-measurement-start-v1', startedAt, head, pid: process.pid, args, input, before,
       witnessTier: contractCommit.witnessTier, witness: describeWitness(contractCommit.witnessTier),
+      witnessUrls: contractCommit.witnessUrls, remoteWitnesses: contractCommit.remoteWitnesses,
+      priorMeasurementsOfThisManifest,
       ledgerHeadBefore: ledgerBefore.head, ledgerPath: relative(repoTop, ledgerPath),
       engineIdentity: adapter.engineIdentity, engine: adapter.identity, status: 'started', acceptance: 'not-established' });
     const rowPath = join(out, 'cases.jsonl'); writeFileSync(rowPath, '', { flag: 'wx' });
@@ -266,6 +409,11 @@ export async function measureBundle(args: Args, options: MeasurementOptions = {}
     // witnessTier sits at the top of the record, not inside contractCommit, so
     // a reader cannot miss that a floor was witnessed on this machine only.
     writeJson(resultPath, { schema: 'muju-phasing-measurement-v1', witnessTier: contractCommit.witnessTier, witness: describeWitness(contractCommit.witnessTier),
+      // The URLs that granted the tier, and any earlier reading of this exact
+      // manifest, sit beside witnessTier at the top of the record: a superseding
+      // re-measurement must be as visible as the tier is.
+      witnessUrls: contractCommit.witnessUrls, remoteWitnesses: contractCommit.remoteWitnesses,
+      priorMeasurementsOfThisManifest,
       startedAt, finishedAt: new Date().toISOString(), head,
       contractCommit, weightsSha256: adapter.identity.weightsSha256, engineSourceSha256: adapter.identity.sourceSha256,
       input, before, after, drift, engineDrift, engineIdentity: adapter.engineIdentity, valid,
@@ -279,10 +427,11 @@ export async function measureBundle(args: Args, options: MeasurementOptions = {}
       contractBlobSha1: contractCommit.blobSha1, contractFileSha256,
       engineSourceSha256: adapter.identity.sourceSha256, weightsSha256: adapter.identity.weightsSha256,
       witnessTier: contractCommit.witnessTier, startedAt, resultSha256: sha256(readFileSync(resultPath)) }, ledgerPath);
-    process.stdout.write(`${describeWitness(contractCommit.witnessTier)}\n`);
+    process.stdout.write(`${describeWitness(contractCommit.witnessTier)}${contractCommit.witnessUrls.length ? ` (${contractCommit.witnessUrls.join(', ')})` : ''}\n`);
     process.stdout.write(`${JSON.stringify({ valid, floorPass: valid && floors.pass, earned: summary.earned, offered: summary.offered,
       coverage: summary.coverage, failedCases: summary.failures, families: floors.families,
-      witnessTier: contractCommit.witnessTier, ledgerSeq: ledgered.seq, out })}\n`);
+      witnessTier: contractCommit.witnessTier, witnessUrls: contractCommit.witnessUrls,
+      supersededMeasurements: priorMeasurementsOfThisManifest.length, ledgerSeq: ledgered.seq, out })}\n`);
     return valid && floors.pass;
   } catch (error) {
     writeJson(join(out, 'failure.json'), { startedAt, finishedAt: new Date().toISOString(), head, before, error: error instanceof Error ? error.stack : String(error) });

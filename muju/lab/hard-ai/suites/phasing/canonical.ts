@@ -9,6 +9,7 @@ import { setElementGraph } from '../../../../src/game/elements';
 import { setCombatHandicap } from '../../../../src/game/combat';
 import { defaultUpkeepAction, setUpkeepVariant } from '../../../../src/game/upkeep';
 import { resolveSummons } from '../../../../src/game/summoning';
+import { INACTIVITY_LIMIT, LEGACY_INACTIVITY_LIMIT } from '../../../../src/game/inactivity';
 import type { AIAction, Boundary, GameState, Horizon, PhasingPosition, PlayerId, PositionRef, RulesBlock, SourceBinding } from './format';
 
 /** Sorted object keys; ordered arrays are semantic, including attacks/receipts. */
@@ -44,10 +45,29 @@ export function canonicalSourceHashes(): Record<string, string> {
   const paths = [...walk(join(MUJU, 'src/game')), join(MUJU, 'src/ai/simulate.ts')].sort();
   return Object.fromEntries(paths.map(path => [relative(MUJU, path).replaceAll('\\', '/'), sha256(readFileSync(path))]));
 }
-export function sourceBinding(rules: RulesBlock): SourceBinding {
-  return { ruleset: 'phasing', rulesVersion: 'muju-phasing-1', rules: structuredClone(rules), rulesSourcesSha256: hashJson(canonicalSourceHashes()), catalogueSha256: sha256(readFileSync(join(MUJU, 'src/game/units.ts'))) };
+export const RULES_VERSIONS = ['muju-phasing-1', 'muju-phasing-2'] as const;
+export type RulesVersion = typeof RULES_VERSIONS[number];
+/** The revision THIS worktree implements, read off the shipped inactivity
+ * constant rather than written down a second time.
+ *
+ * `muju-phasing-2` is the 20-ply inactivity clock reset only by a capture;
+ * `muju-phasing-1` was the 10-ply clock, still named by
+ * `LEGACY_INACTIVITY_LIMIT`. Deriving the revision means a binding cannot claim
+ * `muju-phasing-1` while the code it binds counts to twenty — exactly the drift
+ * a source binding exists to catch, and the one thing a hard-coded literal
+ * could not see. An unrecognised limit is a refusal, never a guess. */
+export function currentRulesVersion(limit: number = INACTIVITY_LIMIT): RulesVersion {
+  if (limit === INACTIVITY_LIMIT) return 'muju-phasing-2';
+  if (limit === LEGACY_INACTIVITY_LIMIT) return 'muju-phasing-1';
+  throw new Error(`No Phasing rules revision is defined for an inactivity limit of ${limit}`);
+}
+export const CURRENT_RULES_VERSION: RulesVersion = currentRulesVersion();
+export function sourceBinding(rules: RulesBlock, rulesVersion: RulesVersion = CURRENT_RULES_VERSION): SourceBinding {
+  return { ruleset: 'phasing', rulesVersion, rules: structuredClone(rules), rulesSourcesSha256: hashJson(canonicalSourceHashes()), catalogueSha256: sha256(readFileSync(join(MUJU, 'src/game/units.ts'))) };
 }
 export function verifySourceBinding(binding: SourceBinding): void {
+  // Verification still demands the CURRENT revision: a v1 document parses under
+  // the widened schema and fails here, which is the intended split.
   const actual = sourceBinding(binding.rules);
   if (binding.ruleset !== actual.ruleset || binding.rulesVersion !== actual.rulesVersion || binding.rulesSourcesSha256 !== actual.rulesSourcesSha256 || binding.catalogueSha256 !== actual.catalogueSha256) throw new Error('canonical source binding mismatch');
 }

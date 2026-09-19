@@ -25,7 +25,7 @@ import { assertContractBuild, minimumEarnedFor, offeredBy, V1_ALLOWED_MISS, vali
 import type { FloorContractV1, FloorContractV2 } from '../../lab/hard-ai/suites/phasing/contract';
 import { buildReleaseManifest } from '../../lab/hard-ai/suites/phasing/manifest';
 import type { ReleaseManifest } from '../../lab/hard-ai/suites/phasing/manifest';
-import { appendMeasurementLedger, describeWitness, findPriorMeasurements, isResultPath, resolveContractCommit, verifyMeasurementLedger } from '../../lab/hard-ai/suites/phasing/measure';
+import { appendMeasurementLedger, assertFirstMeasurementOfManifest, assertLedgerCommitsReachable, describeRemoteWitnesses, describeWitness, findPriorMeasurements, headDescendsFrom, isLocalOnlyRemoteUrl, isResultPath, resolveContractCommit, verifyMeasurementLedger } from '../../lab/hard-ai/suites/phasing/measure';
 import { MUJU_ROOT } from '../../lab/hard-ai/suites/phasing/run';
 import { evaluateDecision } from '../../lab/hard-ai/suites/phasing/predicates';
 import { scoreCase } from '../../lab/hard-ai/suites/phasing/score';
@@ -240,14 +240,19 @@ describe('floor contract witness tiers', () => {
     expect(describeWitness(resolved.witnessTier)).toBe('WITNESS: local only');
   });
 
-  it('records tier A when a remote-tracking ref contains the contract commit', () => {
+  it('records tier A when a remote-tracking ref for an off-machine remote contains the contract commit', () => {
     const r = repo();
     const contract = r.write('contracts/floor.json', CONTRACT_BODY);
     r.run('add', 'contracts/floor.json'); r.run('commit', '-qm', 'freeze the floor');
     const head = r.run('rev-parse', 'HEAD');
     r.run('update-ref', 'refs/remotes/origin/main', head);
+    // The ref ALONE is not tier A: it is produced just as readily by a clone of
+    // the directory next door. The tier needs a remote that is somewhere else.
+    expect(resolveContractCommit(contract, future(), r.dir).witnessTier).toBe('local-only');
+    r.run('remote', 'add', 'origin', 'https://git.example.com/org/muju.git');
     const resolved = resolveContractCommit(contract, future(), r.dir);
     expect(resolved.witnessTier).toBe('remote-tracking');
+    expect(resolved.witnessUrls).toEqual(['https://git.example.com/org/muju.git']);
     expect(resolved.remoteRefs).toContain('origin/main');
     expect(describeWitness(resolved.witnessTier)).toMatch(/remote-tracking ref contains/);
     // An amend rewrites the floor into a commit the remote-tracking ref no
@@ -333,26 +338,59 @@ describe('floor contract refusals that do not depend on the clock', () => {
 describe('first-measurement refusal and the append-only ledger', () => {
   const made: string[] = [];
   const tempDir = (): string => { const dir = realpathSync(mkdtempSync(join(tmpdir(), 'muju-ledger-'))); made.push(dir); return dir; };
+  const repo = (): TempRepo => { const r = tempRepo(); made.push(r.dir); return r; };
   afterAll(() => { for (const dir of made) rmSync(dir, { recursive: true, force: true }); });
 
   const MANIFEST = 'a'.repeat(64), CONTRACT_FILE = 'b'.repeat(64);
   const record = (manifestSha256: string, contractFileSha256: string) => JSON.stringify({
     schema: 'muju-phasing-measurement-v1', input: { bundle: { manifestSha256 }, contractFileSha256 } });
 
-  it('finds an existing result for the same manifest and contract, anywhere under a results directory', () => {
+  /* ----------------------------------------------------------------------- *
+   * Both first-measurement checks used to key on the CONTRACT (its commit and
+   * its bytes), which made them defeatable by the one move they exist to stop:
+   * amend the contract after an off-record run and every check passes again
+   * with the manifest — the thing whose floor is being read — untouched. The
+   * key is now the manifest hash alone, and a genuine re-measurement has to be
+   * declared with `supersedes`.
+   *
+   * The search also no longer depends on a directory being called `results`.
+   * On the previous implementation `findPriorMeasurements` took `repoTop` and
+   * only reported a `result.json` with a `results/` ancestor, so a run written
+   * to `--out /tmp/run-3` was invisible to it.
+   * ----------------------------------------------------------------------- */
+  it('finds every earlier result for the same manifest, whatever the directory is called and whatever contract it used', () => {
     const root = tempDir();
     mkdirSync(join(root, 'lab/results/phasing-v2-run'), { recursive: true });
     mkdirSync(join(root, 'other/results/nested/deep'), { recursive: true });
     mkdirSync(join(root, 'not-results'), { recursive: true });
     writeFileSync(join(root, 'lab/results/phasing-v2-run/result.json'), record(MANIFEST, CONTRACT_FILE));
+    // A DIFFERENT contract file, same manifest: this is the amended-contract
+    // re-run, and it must block.
     writeFileSync(join(root, 'other/results/nested/deep/result.json'), record(MANIFEST, 'c'.repeat(64)));
+    // Outside any `results/` directory, which the previous search never saw.
     writeFileSync(join(root, 'not-results/result.json'), record(MANIFEST, CONTRACT_FILE));
-    const found = findPriorMeasurements(root, MANIFEST, CONTRACT_FILE);
-    expect(found).toEqual([join(root, 'lab/results/phasing-v2-run/result.json')]);
-    // A different manifest, or a different contract file, is a different
-    // preregistration and does not block.
-    expect(findPriorMeasurements(root, 'd'.repeat(64), CONTRACT_FILE)).toEqual([]);
-    expect(findPriorMeasurements(root, MANIFEST, 'e'.repeat(64))).toEqual([]);
+    expect(findPriorMeasurements(root, MANIFEST)).toEqual([
+      join(root, 'lab/results/phasing-v2-run/result.json'),
+      join(root, 'not-results/result.json'),
+      join(root, 'other/results/nested/deep/result.json'),
+    ].sort());
+    // A different manifest is a different preregistration and does not block.
+    expect(findPriorMeasurements(root, 'd'.repeat(64))).toEqual([]);
+  });
+
+  it('takes its search roots from the caller and never reports a file twice', () => {
+    const root = tempDir(), out = tempDir();
+    mkdirSync(join(root, 'ledger-dir'), { recursive: true });
+    mkdirSync(join(out, 'run-3'), { recursive: true });
+    writeFileSync(join(root, 'ledger-dir/result.json'), record(MANIFEST, CONTRACT_FILE));
+    writeFileSync(join(out, 'run-3/result.json'), record(MANIFEST, CONTRACT_FILE));
+    // An `--out` outside the repository is still searched, because the root is
+    // passed in rather than derived from a directory name.
+    expect(findPriorMeasurements([join(root, 'ledger-dir'), out], MANIFEST))
+      .toEqual([join(out, 'run-3/result.json'), join(root, 'ledger-dir/result.json')].sort());
+    // A root nested inside another root does not duplicate its files.
+    expect(findPriorMeasurements([root, join(root, 'ledger-dir'), root], MANIFEST))
+      .toEqual([join(root, 'ledger-dir/result.json')]);
   });
 
   const entry = (overrides: Partial<Parameters<typeof appendMeasurementLedger>[0]> = {}) => ({
@@ -394,5 +432,160 @@ describe('first-measurement refusal and the append-only ledger', () => {
     expect(() => verifyMeasurementLedger(write([lines[0], lines[1], 'not json']))).toThrow(/not JSON/);
     // An intact ledger still verifies, so the refusals above are not vacuous.
     expect(verifyMeasurementLedger(write(lines)).entries).toHaveLength(3);
+  });
+
+  /* ----------------------------------------------------------------------- *
+   * First measurement, keyed on the manifest hash alone.
+   * ----------------------------------------------------------------------- */
+  it('refuses a second reading of the same manifest however the contract changed', () => {
+    const path = join(tempDir(), 'measurement-ledger.jsonl');
+    const first = appendMeasurementLedger(entry(), path);
+    const { entries } = verifyMeasurementLedger(path);
+    // Same manifest, a DIFFERENT contract commit and different contract bytes:
+    // this is precisely the amend-the-contract-afterwards move, and the old
+    // check (manifest AND contract commit) let it through.
+    expect(() => assertFirstMeasurementOfManifest({ manifestSha256: MANIFEST, ledger: entries, priorResultPaths: [] }))
+      .toThrow(/already been measured/);
+    // The refusal tells the coordinator exactly what a re-measurement must say.
+    expect(() => assertFirstMeasurementOfManifest({ manifestSha256: MANIFEST, ledger: entries, priorResultPaths: [] }))
+      .toThrow(new RegExp(`supersedes.*ledgerSeq: ${first.seq}`));
+    // A different manifest is untouched by this ledger line.
+    expect(assertFirstMeasurementOfManifest({ manifestSha256: 'f'.repeat(64), ledger: entries, priorResultPaths: [] })).toEqual([]);
+  });
+
+  it('accepts a re-measurement only when the contract names the ledger line and its chain', () => {
+    const path = join(tempDir(), 'measurement-ledger.jsonl');
+    appendMeasurementLedger(entry(), path);
+    const second = appendMeasurementLedger(entry({ contractCommit: '7'.repeat(40) }), path);
+    const { entries } = verifyMeasurementLedger(path);
+    const call = (supersedes?: { ledgerSeq: number; chain: string }) =>
+      assertFirstMeasurementOfManifest({ manifestSha256: MANIFEST, ledger: entries, priorResultPaths: [], ...(supersedes ? { supersedes } : {}) });
+    // Superseding the wrong line, or the right line with the wrong chain value,
+    // is refused: the chain cannot be written without the ledger itself.
+    expect(() => call({ ledgerSeq: 1, chain: entries[0].chain })).toThrow(/most recent measurement of this manifest is seq 2/);
+    expect(() => call({ ledgerSeq: 2, chain: '0'.repeat(64) })).toThrow(/does not name the measurement it claims to supersede/);
+    const priors = call({ ledgerSeq: second.seq, chain: second.chain });
+    // Accepted, and every earlier reading is handed back so result.json can
+    // lead with it beside the witness tier.
+    expect(priors.map(p => p.source)).toEqual(['ledger', 'ledger']);
+    expect(priors).toContainEqual(expect.objectContaining({ source: 'ledger', seq: 2, contractCommit: '7'.repeat(40) }));
+    // A supersedes with nothing to supersede is itself a refusal.
+    expect(() => assertFirstMeasurementOfManifest({ manifestSha256: 'f'.repeat(64), ledger: entries, priorResultPaths: [],
+      supersedes: { ledgerSeq: second.seq, chain: second.chain } })).toThrow(/no earlier measurement to supersede/);
+  });
+
+  it('refuses a result file that no ledger line accounts for', () => {
+    // Nothing to name, so no contract can declare a supersedes against it.
+    expect(() => assertFirstMeasurementOfManifest({ manifestSha256: MANIFEST, ledger: [], priorResultPaths: ['/tmp/run-3/result.json'] }))
+      .toThrow(/the ledger is incomplete/);
+  });
+
+  it('refuses when a recorded contract commit has been amended out of this history', () => {
+    const path = join(tempDir(), 'measurement-ledger.jsonl');
+    appendMeasurementLedger(entry({ contractCommit: 'a'.repeat(40) }), path);
+    appendMeasurementLedger(entry({ contractCommit: 'b'.repeat(40) }), path);
+    const { entries } = verifyMeasurementLedger(path);
+    // Both reachable: no refusal, so the check below is not vacuous.
+    expect(() => assertLedgerCommitsReachable(entries, () => true)).not.toThrow();
+    expect(() => assertLedgerCommitsReachable(entries, commit => commit !== 'b'.repeat(40)))
+      .toThrow(/line 2 records contract commit b{40}, which is no longer an ancestor of HEAD/);
+  });
+
+  it('answers the ancestry question against a real repository', () => {
+    const r = repo();
+    r.write('contracts/floor.json', CONTRACT_BODY);
+    r.run('add', 'contracts/floor.json'); r.run('commit', '-qm', 'freeze the floor');
+    const original = r.run('rev-parse', 'HEAD');
+    expect(headDescendsFrom(original, r.dir)).toBe(true);
+    expect(headDescendsFrom('c'.repeat(40), r.dir)).toBe(false);
+    expect(headDescendsFrom('not-a-commit', r.dir)).toBe(false);
+    // Amending rewrites the commit the ledger recorded; the recorded id no
+    // longer resolves against this history and the next run refuses.
+    r.write('contracts/floor.json', CONTRACT_BODY.replace('bytes only', 'quietly rewritten'));
+    r.run('add', 'contracts/floor.json'); r.run('commit', '-q', '--amend', '--no-edit');
+    expect(r.run('rev-parse', 'HEAD')).not.toBe(original);
+    expect(headDescendsFrom(original, r.dir)).toBe(false);
+    expect(headDescendsFrom(r.run('rev-parse', 'HEAD'), r.dir)).toBe(true);
+  });
+});
+
+/* ------------------------------------------------------------------------- *
+ * The `remote-tracking` witness tier claims a copy of the contract commit
+ * exists somewhere other than this machine. `git branch -r --contains` does
+ * not establish that: a clone of a sibling directory produces exactly the same
+ * remote-tracking ref, and so do `file://` and localhost remotes. The tier now
+ * resolves each containing ref's remote URL and grants tier A only for a
+ * remote that is genuinely elsewhere.
+ * ------------------------------------------------------------------------- */
+describe('the remote-tracking tier requires a remote that is not this machine', () => {
+  const made: string[] = [];
+  const repo = (): TempRepo => { const r = tempRepo(); made.push(r.dir); return r; };
+  afterAll(() => { for (const dir of made) rmSync(dir, { recursive: true, force: true }); });
+
+  it('classifies filesystem, file:// and loopback remotes as local-only', () => {
+    for (const url of ['/srv/git/muju.git', './sibling.git', '../sibling.git', '~/clones/muju.git', 'sibling.git',
+      'file:///srv/git/muju.git', 'FILE:///srv/git/muju.git', 'C:\\repos\\muju.git',
+      'https://localhost/muju.git', 'ssh://git@127.0.0.1/muju.git', 'git@localhost:muju.git',
+      'https://127.0.0.53:8080/muju.git', 'http://[::1]/muju.git', 'not a url at all', ''])
+      expect(isLocalOnlyRemoteUrl(url), url).toBe(true);
+    for (const url of ['https://github.com/org/muju.git', 'git@github.com:org/muju.git', 'ssh://git@git.example.com:22/org/muju.git',
+      'https://git.internal.example/org/muju.git', 'git://git.example.com/muju.git'])
+      expect(isLocalOnlyRemoteUrl(url), url).toBe(false);
+  });
+
+  it('records tier B for a local clone that supplies a remote-tracking ref', () => {
+    // The attack, in full: clone the repo next door, fetch, and the contract
+    // commit is now "contained in a remote-tracking ref" with nothing outside
+    // this filesystem corroborating anything.
+    const origin = repo();
+    origin.write('contracts/floor.json', CONTRACT_BODY);
+    origin.run('add', 'contracts/floor.json'); origin.run('commit', '-qm', 'freeze the floor');
+    const clone = realpathSync(mkdtempSync(join(tmpdir(), 'muju-local-clone-')));
+    made.push(clone);
+    execFileSync('git', ['clone', '-q', origin.dir, join(clone, 'work')], { stdio: ['ignore', 'pipe', 'pipe'] });
+    const cloned = join(clone, 'work'), clonedContract = join(cloned, 'contracts/floor.json');
+    // git does supply the remote-tracking ref, so the weaker tier is NOT the
+    // result of the ref being absent.
+    const refs = execFileSync('git', ['branch', '-r', '--contains', 'HEAD'], { cwd: cloned, encoding: 'utf8' }).trim();
+    expect(refs).toMatch(/origin\//);
+    const resolved = resolveContractCommit(clonedContract, future(), cloned);
+    expect(resolved.remoteRefs.length).toBeGreaterThan(0);
+    expect(resolved.witnessTier).toBe('local-only');
+    expect(resolved.witnessUrls).toEqual([]);
+    expect(resolved.remoteWitnesses.every(w => w.localOnly)).toBe(true);
+    // The URL list is recorded, so a reader can see WHICH remote was rejected.
+    expect(resolved.remoteWitnesses.map(w => w.remote)).toContain('origin');
+    expect(resolved.remoteWitnesses[0].url).toBe(realpathSync(origin.dir));
+    expect(describeWitness(resolved.witnessTier)).toBe('WITNESS: local only');
+  });
+
+  it('grants tier A only when the containing remote points somewhere else', () => {
+    const r = repo();
+    const contract = r.write('contracts/floor.json', CONTRACT_BODY);
+    r.run('add', 'contracts/floor.json'); r.run('commit', '-qm', 'freeze the floor');
+    r.run('update-ref', 'refs/remotes/origin/main', r.run('rev-parse', 'HEAD'));
+    // A ref with no configured remote behind it proves nothing either.
+    const orphan = resolveContractCommit(contract, future(), r.dir);
+    expect(orphan.remoteRefs).toContain('origin/main');
+    expect(orphan.witnessTier).toBe('local-only');
+    expect(orphan.remoteWitnesses).toEqual([{ ref: 'origin/main', remote: '', url: '', localOnly: true }]);
+    // A file:// remote is a local clone with a URL scheme on it.
+    r.run('remote', 'add', 'origin', `file://${r.dir}`);
+    expect(resolveContractCommit(contract, future(), r.dir).witnessTier).toBe('local-only');
+    // Only a remote that is somewhere else earns tier A.
+    r.run('remote', 'set-url', 'origin', 'https://git.example.com/org/muju.git');
+    const witnessed = resolveContractCommit(contract, future(), r.dir);
+    expect(witnessed.witnessTier).toBe('remote-tracking');
+    expect(witnessed.witnessUrls).toEqual(['https://git.example.com/org/muju.git']);
+    expect(witnessed.remoteWitnesses).toEqual([{ ref: 'origin/main', remote: 'origin', url: 'https://git.example.com/org/muju.git', localOnly: false }]);
+  });
+
+  it('matches the longest remote name when remote names share a prefix', () => {
+    expect(describeRemoteWitnesses(['origin/main', 'origin-mirror/main', 'unknown/main'], ['origin', 'origin-mirror'],
+      remote => remote === 'origin' ? 'https://git.example.com/a.git' : '/srv/mirror.git')).toEqual([
+      { ref: 'origin/main', remote: 'origin', url: 'https://git.example.com/a.git', localOnly: false },
+      { ref: 'origin-mirror/main', remote: 'origin-mirror', url: '/srv/mirror.git', localOnly: true },
+      { ref: 'unknown/main', remote: '', url: '', localOnly: true },
+    ]);
   });
 });

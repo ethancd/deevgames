@@ -15,10 +15,11 @@ import { buildInvariants } from './build-invariants';
 import { buildNewFamilies } from './build-new-families';
 import { canonicalSourceHashes, hashJson, positionRef, sha256, sourceBinding, withRules } from './canonical';
 import { caseMembers, FAMILIES, validateSuiteDocument } from './format';
-import type { Family, PositionRef, SuiteDocument } from './format';
+import type { Family, PositionRef, SourceBinding, SuiteDocument } from './format';
 import { buildReleaseManifest, safeRelativePath, validateManifestShape, validateReleaseManifest } from './manifest';
 import type { ReleaseManifest, SuiteFilePin } from './manifest';
 import { validateAuthorEvidence, validateProvenance } from './predicates';
+import { assertNoUncreditedWin } from './veto';
 
 export const MUJU_ROOT = fileURLToPath(new NodeURL('../../../../', import.meta.url));
 const SOURCE_DIRECTORY = 'lab/hard-ai/suites/phasing';
@@ -55,6 +56,28 @@ export function resolver(doc: SuiteDocument) {
   };
 }
 export interface AuthorCaseCheck { id: string; status: 'pass' | 'fail' | 'indeterminate' | 'error'; results?: { status: string; facts: unknown[] }[]; error?: string }
+/** One macro-decision root the free-win veto refuses, with the reason verbatim. */
+export interface VetoFinding { id: string; family: Family; reason: string }
+/** Apply the author-time free-win veto to every macro-decision in a document.
+ *
+ * Collected rather than thrown so one bundle-wide run names EVERY defective
+ * root at once; the v2 author path turns a non-empty list into an invalid
+ * bundle. Running it over a v1 document is how the flagged set is enumerated
+ * without changing a v1 byte.
+ *
+ * The rules block a position was authored under is installed for the probe:
+ * the veto replays canonical actions, and canonical reads its rules from
+ * module globals. */
+export function vetoDocument(document: SuiteDocument, restore: SourceBinding, proofNodes?: number): VetoFinding[] {
+  const lookup = resolver(document), findings: VetoFinding[] = [];
+  for (const c of document.cases) {
+    if (c.kind !== 'macro-decision') continue;
+    const binding = lookup(caseMembers(c)[0]).binding;
+    try { withRules(binding, () => assertNoUncreditedWin(c, lookup(c.root).state, undefined, proofNodes), restore); }
+    catch (error) { findings.push({ id: c.id, family: c.family, reason: error instanceof Error ? error.message : String(error) }); }
+  }
+  return findings;
+}
 export interface BundleIdentity { manifestSha256: string; manifestFileSha256: string; files: SuiteFilePin[] }
 export interface AuthorReport {
   schema: 'muju-phasing-author-report-v1'; acceptance: 'not-established'; engineExecuted: false;
@@ -124,13 +147,17 @@ export function loadBundle(manifestPath: string): { manifest: ReleaseManifest; d
   return { manifest, documents, identity: { manifestSha256: hashJson(manifest), manifestFileSha256: sha256(bytes), files: structuredClone(manifest.files) } };
 }
 export function validateBundle(manifestPath: string): AuthorReport {
-  const { documents, identity } = loadBundle(manifestPath);
+  const { manifest, documents, identity } = loadBundle(manifestPath);
   const checks = documents.flatMap(doc => validateDocumentEvidence(doc).checks);
   // Reject changed inputs after replay too; the report binds the bytes read.
   if (sha256(readFileSync(manifestPath)) !== identity.manifestFileSha256) throw new Error('Bundle manifest input drift');
   for (const file of identity.files) pinnedFile(dirname(manifestPath), file.path, file.sha256);
+  // The expected count is the manifest's own, which validateManifestShape has
+  // already checked against the case list it ships. Pinning 225 here would have
+  // passed a v2 bundle of 225 cases and silently mis-sized any other.
   return { schema: 'muju-phasing-author-report-v1', acceptance: 'not-established', engineExecuted: false,
-    valid: checks.length === 225 && checks.every(c => c.status === 'pass'), caseCount: 225, memberCount: 245, checks, errors: [], bundle: identity };
+    valid: checks.length === manifest.caseCount && checks.every(c => c.status === 'pass'),
+    caseCount: manifest.caseCount, memberCount: manifest.memberCount, checks, errors: [], bundle: identity };
 }
 function parseArgs(args: string[]): { mode: 'author' | 'validate'; out: string; manifest?: string } {
   const [mode, ...rest] = args;

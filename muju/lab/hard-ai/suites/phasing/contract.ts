@@ -38,6 +38,15 @@ export interface FloorContractV2 extends CommonContract {
   engineSourceSha256: string; weightsSha256: string;
   /** Misses this family may absorb. minimumEarned is derived, never asserted. */
   allowedMiss: Record<Family, number>;
+  /** The one way to measure a manifest that has already been measured.
+   *
+   * First measurement is enforced on the MANIFEST HASH ALONE, so editing this
+   * contract no longer clears the way for a second reading. A re-measurement
+   * must instead name the ledger line it supersedes, together with that line's
+   * chain value — which cannot be written without the ledger the run verifies —
+   * and the result record then leads with every earlier reading of the same
+   * manifest beside its witness tier. */
+  supersedes?: { ledgerSeq: number; chain: string };
 }
 export type FloorContract = FloorContractV1 | FloorContractV2;
 
@@ -48,7 +57,8 @@ const common = { manifestSha256: digest, declaredAt: z.string().datetime(), seed
   coverage: z.literal('all'), fallback: z.literal('veto'), illegalOrDivergent: z.literal('veto'), unresolvedProof: z.literal('veto') };
 const shape = z.union([
   z.object({ ...common, schema: z.literal('muju-phasing-suite-floor-v1'), minimumEarned: perFamily }).strict(),
-  z.object({ ...common, schema: z.literal('muju-phasing-suite-floor-v2'), engineSourceSha256: digest, weightsSha256: digest, allowedMiss: perFamily }).strict(),
+  z.object({ ...common, schema: z.literal('muju-phasing-suite-floor-v2'), engineSourceSha256: digest, weightsSha256: digest, allowedMiss: perFamily,
+    supersedes: z.object({ ledgerSeq: natural.min(1), chain: digest }).strict().optional() }).strict(),
 ]);
 
 export const offeredBy = (manifest: ReleaseManifest, family: Family): number =>

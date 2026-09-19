@@ -95,7 +95,11 @@ export interface SuiteResult {
   schema: 'muju-phasing-suite-result-v1'; manifestSha256: string; scope: 'release';
   engineIdentity: string | null;
   complete: boolean; valid: boolean; acceptance: 'not-established';
-  offered: number; earned: number; expectedCases: 225; receivedCases: number;
+  offered: number; earned: number;
+  /** The manifest's own declared case count, not a pinned 225: a v2 manifest
+   * carries a different composition and states it. `complete` compares the
+   * received rows against this same number. */
+  expectedCases: number; receivedCases: number;
   coverage: { expected: number; pass: number; fail: number; indeterminate: number; error: number; missing: number };
   /** Measured, reported, NON-GATING readings from `diagnostic` pairs. They are
    * here so a demoted pair stays visible in the summary without entering any
@@ -129,5 +133,5 @@ export function aggregate(manifestInput: ReleaseManifest, results: CaseResult[])
     if (r.status === 'error' || r.status === 'indeterminate' || (!c.offered && r.status === 'fail') || r.failureCodes.includes('author-evidence-not-established')) failures.push(`${r.id}:${r.status}`);
   }
   for (const c of manifest.cases) if (!seen.has(c.id)) { failures.push(`${c.id}:missing`); if (!c.offered) coverage.missing++; }
-  return { schema: 'muju-phasing-suite-result-v1', manifestSha256: hashJson(manifest), scope: 'release', engineIdentity, complete: seen.size === 225, valid: failures.length === 0, acceptance: 'not-established', offered: manifest.cases.reduce((n, c) => n + c.offered, 0), earned, expectedCases: 225, receivedCases: results.length, coverage, diagnostics: diagnostics.sort((a, b) => a.id.localeCompare(b.id)), failures, results: [...results].sort((a, b) => a.id.localeCompare(b.id)) };
+  return { schema: 'muju-phasing-suite-result-v1', manifestSha256: hashJson(manifest), scope: 'release', engineIdentity, complete: seen.size === manifest.caseCount, valid: failures.length === 0, acceptance: 'not-established', offered: manifest.cases.reduce((n, c) => n + c.offered, 0), earned, expectedCases: manifest.caseCount, receivedCases: results.length, coverage, diagnostics: diagnostics.sort((a, b) => a.id.localeCompare(b.id)), failures, results: [...results].sort((a, b) => a.id.localeCompare(b.id)) };
 }

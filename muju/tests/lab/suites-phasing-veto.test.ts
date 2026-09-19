@@ -16,7 +16,8 @@ import { positionRef, sourceBinding, withRules } from '../../lab/hard-ai/suites/
 import { DEFAULT_RULES } from '../../lab/hard-ai/positions/corpus';
 import { applyAction, transitionWithoutCheckmate } from '../../src/ai/simulate';
 import { analyzeHomeDefense } from '../../src/game/homeCheckmate';
-import { assertNoUncreditedWin, uncreditedMoverWins, VetoError, VETO_BOUNDS, VETO_PROMOTION_UNIT_BOUND, VETO_PROOF_NODES, VETO_STATE_BUDGET, VETO_UPKEEP_UNIT_BOUND } from '../../lab/hard-ai/suites/phasing/veto';
+import { assertNoUncreditedWin, establishesHomeMate, uncreditedMoverWins, VetoError, VETO_BOUNDS, VETO_PROMOTION_UNIT_BOUND, VETO_PROOF_NODES, VETO_STATE_BUDGET, VETO_UPKEEP_UNIT_BOUND } from '../../lab/hard-ai/suites/phasing/veto';
+import { vetoDocument } from '../../lab/hard-ai/suites/phasing/run';
 import type { AIAction, GameState, Horizon, MacroDecision, PlayerId, SuiteDocument } from '../../lab/hard-ai/suites/phasing/format';
 import type { Unit } from '../../src/game/types';
 
@@ -197,10 +198,10 @@ const piece = (id: string, definitionId: string, owner: PlayerId, x: number, y: 
   ({ id, definitionId, owner, position: { x, y }, hasMoved: false, hasAttacked: false, canActThisTurn: true, damageTaken: 0 });
 /** A minimal canonical Phasing state with White to move and no reserves, so
  * end-of-turn income cannot quietly change what White can afford. */
-function constructed(o: { units: Unit[]; white: number; phase: 'action' | 'place'; ap: number; upkeepPending?: boolean }): GameState {
+function constructed(o: { units: Unit[]; white: number; phase: 'action' | 'place'; ap: number; upkeepPending?: boolean; victoryRule?: GameState['victoryRule'] }): GameState {
   return {
     ruleset: 'phasing', actionsPerTurn: 4, blackCrystalHandicap: 0, pendingSummons: [],
-    victoryRule: 'home-or-elimination', inactivityRule: 'on', inactivityPlies: 0,
+    victoryRule: o.victoryRule ?? 'home-or-elimination', inactivityRule: 'on', inactivityPlies: 0,
     upkeepPending: !!o.upkeepPending, phase: 'playing',
     board: { cells: EMPTY_BOARD(), units: o.units },
     players: { white: { id: 'white', resources: o.white, startCorner: { x: 0, y: 0 }, resourcesGained: 0 },
@@ -219,6 +220,12 @@ const uncredited = (id: string): MacroDecision => ({
   terminalPolicy: 'predicate-only',
   accept: { kind: 'state-facts@1', at: 'endpoint', facts: [{ kind: 'game-phase', value: 'playing' }] },
 });
+/** An accept predicate no endpoint of these roots can satisfy, so any win the
+ * probe finds is by construction uncredited. Used where the interesting
+ * question is whether the probe finds a win AT ALL, rather than whether the
+ * case's own accept happens to score it. */
+const neverAccepts = (id: string): MacroDecision => ({ ...uncredited(id),
+  accept: { kind: 'state-facts@1', at: 'endpoint', facts: [{ kind: 'unit', id: 'no-such-unit', present: true }] } });
 const lineOf = (w: { actions: AIAction[] }) => w.actions.map(a => a.type);
 
 describe('free-win veto: wins that need the mover’s Prepare phase', () => {
@@ -345,6 +352,106 @@ describe('free-win veto: every declared bound fails closed', () => {
     expect(() => assertNoUncreditedWin(uncredited('promotion-bound'), root)).toThrow(VetoError);
   }), 60_000);
 
+  /* --------------------------------------------------------------------- *
+   * The home-defence proof cap was the ONE bound in this probe that failed
+   * OPEN. `establishesHomeMate` collapsed the canonical tri-state
+   * ('mate' | 'rescue' | 'unknown') to `result === 'mate'`, so a root whose
+   * defence could not be decided inside the proof budget was reported as "no
+   * uncredited win" — a clean bill of health produced by running out of
+   * search, which is exactly what every other bound here refuses to do.
+   *
+   * The budget is injectable so this is testable at all. On the PREVIOUS
+   * implementation these two tests fail: with a 1-node proof budget the
+   * two-promotion fortify root returned `wins: []`, `exhausted: false`, and
+   * `assertNoUncreditedWin` did not throw. Checked by restoring the boolean
+   * `analyzeHomeDefenseEvidence(...).result === 'mate'` body and re-running:
+   * `exhausted` came back false and the assertion passed.
+   * --------------------------------------------------------------------- */
+  it('treats an undecided home-defence proof as a bound hit, not as a clean root', () => scoped(() => {
+    // The same fortify root the suite above vetoes at the full 20 000-node
+    // budget. At one node the defence is UNKNOWN, and unknown must refuse.
+    const root = constructed({ phase: 'place', ap: 0, white: 8,
+      units: [piece('w-occ', 'water_1', 'white', 9, 9), piece('w-block', 'water_1', 'white', 8, 9),
+        piece('b1', 'water_1', 'black', 9, 8), piece('b2', 'fire_2', 'black', 7, 9)] });
+    const decided = uncreditedMoverWins(uncredited('proof-cap-decided'), root, VETO_STATE_BUDGET, VETO_PROOF_NODES);
+    expect(decided.exhausted, decided.exhaustedReason).toBe(false);
+    expect(decided.wins.length).toBeGreaterThan(0);
+    // One node cannot decide it, and the probe says so instead of clearing it.
+    const starved = uncreditedMoverWins(uncredited('proof-cap-starved'), root, VETO_STATE_BUDGET, 1);
+    expect(starved.exhausted).toBe(true);
+    expect(starved.exhaustedReason).toMatch(/home-defence proof budget 1 nodes exhausted/);
+    expect(starved.wins).toHaveLength(0);
+    expect(() => assertNoUncreditedWin(uncredited('proof-cap-starved'), root, VETO_STATE_BUDGET, 1)).toThrow(/probe bound/);
+  }), 120_000);
+
+  it('never turns a refusal into a clean bill when the proof budget shrinks', () => scoped(() => {
+    // The Prepare-promotion root of the suite above. Its mate is proved by the
+    // canonical damage bound at zero search nodes, so shrinking the budget to
+    // one node must still refuse — by the win, not by exhaustion.
+    const root = constructed({ phase: 'place', ap: 0, white: 4,
+      units: [piece('w-occ', 'water_1', 'white', 9, 9), piece('b-def', 'metal_1', 'black', 8, 9)] });
+    for (const proofNodes of [1, VETO_PROOF_NODES]) {
+      const outcome = uncreditedMoverWins(uncredited('proof-cap-monotone'), root, VETO_STATE_BUDGET, proofNodes);
+      expect(outcome.wins.length, `proofNodes=${proofNodes}`).toBeGreaterThan(0);
+      expect(() => assertNoUncreditedWin(uncredited('proof-cap-monotone'), root, VETO_STATE_BUDGET, proofNodes)).toThrow(VetoError);
+    }
+  }), 120_000);
+
+  /* --------------------------------------------------------------------- *
+   * The other half of the same shortcut: `establishesHomeMate` asked the
+   * defence analysis directly, skipping the two guards `resolveHomeCheckmate`
+   * applies BEFORE it awards a mate. A line canonical will not award is not a
+   * win any accept predicate has to credit, so flagging it refused sound
+   * roots.
+   *
+   * Both roots below are constructed so the promotion that mates under the
+   * shipped rules produces NO canonical award, verified in-line by applying
+   * the promotion and reading `phase`/`winner` off the result.
+   * --------------------------------------------------------------------- */
+  it('does not flag a home occupation under elimination-only victory, which never awards one', () => scoped(() => {
+    const root = constructed({ phase: 'place', ap: 0, white: 4, victoryRule: 'elimination',
+      units: [piece('w-occ', 'water_1', 'white', 9, 9), piece('b-def', 'metal_1', 'black', 8, 9)] });
+    // Canonical does not end the game on the promotion here...
+    const promoted = applyAction(root, { type: 'PROMOTE_UNIT', unitId: 'w-occ' });
+    expect(promoted.phase).toBe('playing');
+    expect(promoted.winner).toBeNull();
+    // ...while the defence analysis, asked on its own, still says 'mate'. That
+    // gap is what the previous implementation reported as a free win.
+    expect(analyzeHomeDefense(promoted, 'white', transitionWithoutCheckmate)).toBe('mate');
+    const outcome = uncreditedMoverWins(neverAccepts('elimination-rule'), root);
+    expect(outcome.exhausted, outcome.exhaustedReason).toBe(false);
+    expect(outcome.wins).toHaveLength(0);
+    expect(() => assertNoUncreditedWin(neverAccepts('elimination-rule'), root)).not.toThrow();
+  }), 120_000);
+
+  it('honours the counter-invasion guard: an occupied own corner blocks the award', () => scoped(() => {
+    const root = constructed({ phase: 'place', ap: 0, white: 4,
+      units: [piece('w-occ', 'water_1', 'white', 9, 9), piece('b-def', 'metal_1', 'black', 8, 9),
+        piece('b-inv', 'water_1', 'black', 0, 0)] });
+    const promoted = applyAction(root, { type: 'PROMOTE_UNIT', unitId: 'w-occ' });
+    expect(promoted.phase).toBe('playing');
+    expect(promoted.winner).toBeNull();
+    expect(analyzeHomeDefense(promoted, 'white', transitionWithoutCheckmate)).toBe('mate');
+    const outcome = uncreditedMoverWins(neverAccepts('counter-invasion'), root);
+    expect(outcome.exhausted, outcome.exhaustedReason).toBe(false);
+    expect(outcome.wins).toHaveLength(0);
+    expect(() => assertNoUncreditedWin(neverAccepts('counter-invasion'), root)).not.toThrow();
+  }), 120_000);
+
+  it('reports the canonical tri-state rather than a boolean', () => scoped(() => {
+    const mating = constructed({ phase: 'place', ap: 0, white: 8,
+      units: [piece('w-occ', 'water_2', 'white', 9, 9), piece('b-def', 'metal_1', 'black', 8, 9)] });
+    expect(establishesHomeMate(mating, 'white')).toBe('mate');
+    expect(establishesHomeMate(mating, 'white', 1)).toBe('mate');
+    const fortify = constructed({ phase: 'place', ap: 0, white: 8,
+      units: [piece('w-occ', 'water_2', 'white', 9, 9), piece('w-block', 'water_2', 'white', 8, 9),
+        piece('b1', 'water_1', 'black', 9, 8), piece('b2', 'fire_2', 'black', 7, 9)] });
+    expect(establishesHomeMate(fortify, 'white', 1)).toBe('unknown');
+    const none = constructed({ phase: 'place', ap: 0, white: 0,
+      units: [piece('w1', 'water_1', 'white', 5, 5), piece('b-def', 'metal_1', 'black', 8, 9)] });
+    expect(establishesHomeMate(none, 'white')).toBe('rescue');
+  }), 120_000);
+
   it('refuses a pending upkeep with more rent-bearing units than the keep-set bound', () => scoped(() => {
     const many = Array.from({ length: VETO_UPKEEP_UNIT_BOUND + 1 }, (_, i) => piece(`w${i}`, 'fire_2', 'white', i, 0));
     const root = constructed({ phase: 'place', ap: 0, white: 2, upkeepPending: true,
@@ -354,4 +461,50 @@ describe('free-win veto: every declared bound fails closed', () => {
     expect(outcome.exhaustedReason).toMatch(/rent-bearing units 13 exceeds/);
     expect(() => assertNoUncreditedWin(uncredited('upkeep-bound'), root)).toThrow(VetoError);
   }), 60_000);
+});
+
+/** The veto wired into the AUTHOR path, where a v2 bundle has to pass it.
+ *
+ * `vetoDocument` collects instead of throwing, so one run names every defective
+ * root in a document rather than stopping at the first. These two families are
+ * the pair that makes the distinction real: `summon-disruption` carries nine
+ * roots that hand the mover an uncredited win, and `home-fortify` carries six
+ * decisions whose accept CREDITS the win (`allow-root-mover-win`), so it must
+ * come back clean — by construction, not by exemption.
+ *
+ * This is also the regression that would catch the veto going blind again: a
+ * probe that silently stopped enumerating would report an empty list here, which
+ * is indistinguishable from a sound bundle at the call site.
+ */
+describe('the author-time veto over built v1 documents', () => {
+  const binding = sourceBinding(DEFAULT_RULES);
+  const documents = (): [SuiteDocument, SuiteDocument] => buildNewFamilies();
+
+  it('names exactly the nine defective disruption roots and clears home-fortify', () => {
+    const [disruption, fortify] = documents();
+    const flagged = vetoDocument(disruption, binding);
+    expect(flagged.map(f => f.id).sort()).toEqual([
+      'M5-SD-01-occupied-low-cost', 'M5-SD-02-occupied-miner', 'M5-SD-03-interior-block',
+      'M5-SD-04-inclusive-edge', 'M5-SD-06-temporary-intrusion', 'M5-SD-07-split-rectangles',
+      'M5-SD-09-shared-intersection', 'M5-SD-18-arrival-immediate-attack',
+      'M5-SD-28-home-blocks-all-rectangles',
+    ]);
+    // Every one is a refused win, not a bound the probe ran out of.
+    for (const finding of flagged) expect(finding.reason).not.toMatch(/budget|exceeds|exhaust/i);
+    for (const finding of flagged) expect(finding.family).toBe('summon-disruption');
+    // `allow-root-mover-win` decisions pass because evaluateDecision scores the
+    // win, which is the claim the preregistration makes about them.
+    expect(vetoDocument(fortify, binding)).toEqual([]);
+  }, 300_000);
+
+  it('turns a starved proof budget into findings rather than a clean list', () => {
+    // The fail-closed proof cap, seen through the author path: with one node the
+    // probe cannot decide any home defence, so it must report MORE findings than
+    // the full budget does, never fewer.
+    const [disruption] = documents();
+    const full = vetoDocument(disruption, binding).length;
+    const starved = vetoDocument(disruption, binding, 1).length;
+    expect(full).toBe(9);
+    expect(starved).toBeGreaterThanOrEqual(full);
+  }, 300_000);
 });

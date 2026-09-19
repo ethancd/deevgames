@@ -4,13 +4,26 @@ import type { GameState, PlayerId, Position } from '../../../../src/game/types';
 import type { RulesBlock } from '../../positions/corpus';
 import { z } from 'zod';
 import { getUnitDefinition } from '../../../../src/game/units';
-import { boundaryOf, hashJson, positionRef, verifySourceBinding } from './canonical';
+import { boundaryOf, hashJson, positionRef, RULES_VERSIONS, verifySourceBinding } from './canonical';
+import type { RulesVersion } from './canonical';
 
 export type { AIAction, GameState, PlayerId, Position, RulesBlock };
 export const FAMILIES = ['tactics', 'invariants', 'home-mate', 'economy', 'summon-disruption', 'home-fortify'] as const;
 export type Family = typeof FAMILIES[number];
+/** Every Phasing rules revision a suite document may be authored under.
+ *
+ * This was the literal `'muju-phasing-1'`, both here and in the zod schema
+ * below, which made a v2 document inexpressible: v2 is authored under
+ * `muju-phasing-2` (the 20-ply inactivity clock, reset only by a capture). The
+ * list is widened so BOTH still PARSE — the frozen v1 documents must keep
+ * loading byte-identically — while `verifySourceBinding` still demands that a
+ * document's recorded revision be the one this worktree implements. A v1
+ * document therefore parses here and fails verification, which is the intended
+ * split and is exactly what the v2 preregistration says to expect. */
+export { RULES_VERSIONS, CURRENT_RULES_VERSION } from './canonical';
+export type { RulesVersion } from './canonical';
 export interface SourceBinding {
-  ruleset: 'phasing'; rulesVersion: 'muju-phasing-1'; rules: RulesBlock;
+  ruleset: 'phasing'; rulesVersion: RulesVersion; rules: RulesBlock;
   rulesSourcesSha256: string; catalogueSha256: string;
 }
 export interface Boundary {
@@ -148,7 +161,7 @@ const definition = text.refine(id => { try { getUnitDefinition(id); return true;
 const ref = z.object({ id: text, sha256: sha }).strict();
 const comparison = z.union([z.object({ eq: z.number().finite() }).strict(), z.object({ min: z.number().finite() }).strict(), z.object({ max: z.number().finite() }).strict()]);
 const rules = z.object({ elementGraph: z.enum(['double-thick', 'dual-triangle', 'rush-edge-only', 'none']), upkeep: z.enum(['shipped', 'steep', 'off']), inactivityRule: z.enum(['on', 'off']), victoryRule: z.enum(['elimination', 'home-or-elimination']), handicap: integer.max(20), combatHandicap: z.object({ white: z.number().int(), black: z.number().int() }).strict() }).strict();
-const binding = z.object({ ruleset: z.literal('phasing'), rulesVersion: z.literal('muju-phasing-1'), rules, rulesSourcesSha256: sha, catalogueSha256: sha }).strict();
+const binding = z.object({ ruleset: z.literal('phasing'), rulesVersion: z.enum(RULES_VERSIONS), rules, rulesSourcesSha256: sha, catalogueSha256: sha }).strict();
 const unit = z.object({ id: text, definitionId: definition, owner: side, position: square, hasMoved: z.boolean(), hasAttacked: z.boolean(), canActThisTurn: z.boolean(), damageTaken: integer, promotedThisPlacement: z.boolean().optional(), placedThisTurn: z.boolean().optional(), attackedThisTurn: z.array(text).optional(), lastAttackKilled: z.boolean().optional() }).strict();
 const pending = z.object({ id: text, definitionId: definition, owner: side, position: square, cost: amount }).strict();
 const player = z.object({ id: side, resources: amount, startCorner: square, resourcesGained: amount, resourcesUpkeep: amount.optional() }).strict();

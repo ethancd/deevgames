@@ -14,11 +14,11 @@ import { setElementGraph } from '../../../../src/game/elements';
 import { setUpkeepVariant } from '../../../../src/game/upkeep';
 import { setCombatHandicap } from '../../../../src/game/combat';
 import { hardEnginePatch } from '../../bots/hard';
-import { canonicalSourceHashes, hashJson, positionRef, replayMacro, semanticHash, sha256, verifySourceBinding } from './canonical';
+import { canonicalSourceHashes, CURRENT_RULES_VERSION, hashJson, positionRef, replayMacro, semanticHash, sha256, verifySourceBinding } from './canonical';
 import type { HardConfig, Weights } from '../../../../src/ai/hard/config';
 import type { RootResult } from '../../../../src/ai/hard/search/root';
 import type { HardSearchStats } from '../../../../src/ai/hard/search/pvs';
-import type { GameState, PhasingCase, PhasingPosition, PlayerId, PositionRef, SourceBinding } from './format';
+import type { GameState, PhasingCase, PhasingPosition, PlayerId, PositionRef, RulesVersion, SourceBinding } from './format';
 import type { CaseExecution, EngineTurn, EngineValue } from './score';
 
 export interface EngineFacade {
@@ -35,7 +35,7 @@ export interface AdapterOptions {
   createEngine?: (config: HardConfig) => EngineFacade;
 }
 export interface EngineIdentity {
-  schema: 'muju-phasing-engine-identity-v1'; engine: 'hard@desktop'; rulesVersion: 'muju-phasing-1';
+  schema: 'muju-phasing-engine-identity-v1'; engine: 'hard@desktop'; rulesVersion: RulesVersion;
   mode: 'fixed-work'; seed: number; book: 'EMPTY_BOOK';
   executionKind: 'production' | 'injected-test';
   sourceSha256: string; sources: Record<string, string>; configSha256: string; weightsSha256: string;
@@ -124,7 +124,7 @@ export function createPhasingEngineAdapter(options: AdapterOptions): PhasingEngi
   const config = copyConfig({ ...patch, book: EMPTY_BOOK } as HardConfig);
   const sources = engineSourceHashes(), abiPaths = ['src/ai/hard/types.ts', 'src/ai/hard/core/state.ts', 'src/ai/hard/core/action.ts', 'src/ai/hard/core/zobrist.ts', 'src/ai/hard/eval/features.ts', 'src/ai/hard/eval/weights.ts'];
   const seed = options.seed;
-  const identity: EngineIdentity = { schema: 'muju-phasing-engine-identity-v1', engine: 'hard@desktop', rulesVersion: 'muju-phasing-1', mode: 'fixed-work', seed, book: 'EMPTY_BOOK', executionKind: options.createEngine ? 'injected-test' : 'production', sourceSha256: hashJson(sources), sources, configSha256: configIdentity(config), weightsSha256: weightIdentity(owned), weightsVersion: owned.version, weightsLabel: owned.label,
+  const identity: EngineIdentity = { schema: 'muju-phasing-engine-identity-v1', engine: 'hard@desktop', rulesVersion: CURRENT_RULES_VERSION, mode: 'fixed-work', seed, book: 'EMPTY_BOOK', executionKind: options.createEngine ? 'injected-test' : 'production', sourceSha256: hashJson(sources), sources, configSha256: configIdentity(config), weightsSha256: weightIdentity(owned), weightsVersion: owned.version, weightsLabel: owned.label,
     abi: { featureCount: FEATURE_COUNT, featureNamesSha256: hashJson(FEATURE_NAMES), weightsVersion: WEIGHTS_VERSION, maxSlots: MAX_SLOTS, maxTurnActions: MAX_TURN_ACTIONS, pendingStride: PEND_STRIDE, zobristSeed: ZOBRIST_SEED, sources: Object.fromEntries(abiPaths.map(path => [path, sources[path]])) } };
   const engineIdentity = hashJson(identity), restore = structuredClone(options.restoreBinding), create = options.createEngine ?? productionEngine;
   const check = (engine: EngineFacade): void => {
@@ -136,7 +136,10 @@ export function createPhasingEngineAdapter(options: AdapterOptions): PhasingEngi
     const frozen = structuredClone(position);
     return enqueue(async () => {
       verifySourceBinding(frozen.binding);
-      if (frozen.state.ruleset !== 'phasing' || frozen.binding.rulesVersion !== 'muju-phasing-1' || frozen.state.victoryRule !== frozen.binding.rules.victoryRule || frozen.state.inactivityRule !== frozen.binding.rules.inactivityRule || frozen.state.blackCrystalHandicap !== frozen.binding.rules.handicap) throw new Error('Adapter position rules mismatch');
+      // `verifySourceBinding` above already demands the revision THIS worktree
+      // implements; naming it here keeps that explicit without re-pinning a
+      // literal that a rules revision silently invalidates.
+      if (frozen.state.ruleset !== 'phasing' || frozen.binding.rulesVersion !== CURRENT_RULES_VERSION || frozen.state.victoryRule !== frozen.binding.rules.victoryRule || frozen.state.inactivityRule !== frozen.binding.rules.inactivityRule || frozen.state.blackCrystalHandicap !== frozen.binding.rules.handicap) throw new Error('Adapter position rules mismatch');
       if (hashJson(engineSourceHashes()) !== identity.sourceSha256) throw new Error('Adapter source drift');
       try {
         install(frozen.binding);

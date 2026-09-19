@@ -176,9 +176,36 @@ exhausted probe is never read as a clean bill of health.
 | Bound | Value | On exhaustion |
 |---|---:|---|
 | canonical states expanded | 200 000 | refuse, naming the budget |
-| home-defence proof nodes | 20 000 | canonical `unknown` ⇒ not a mate |
+| home-defence proof nodes | 20 000 (injectable) | refuse, naming the budget and the line |
 | rent-bearing units for keep-set enumeration | 12 | refuse, naming the bound |
 | promotable units for promotion subsets | 12 | refuse, naming the bound |
+
+**Correction (review finding, 2026-09-19).** The proof-node row above previously
+read "canonical `unknown` ⇒ not a mate", and that is the one bound in this probe
+that failed OPEN: `establishesHomeMate` collapsed the canonical tri-state
+(`'mate' | 'rescue' | 'unknown'`) to `result === 'mate'`, so a root whose defence
+could not be decided inside the budget was reported as *no uncredited win* — a
+clean bill of health produced by running out of search. `establishesHomeMate` now
+returns the tri-state, `unknown` is recorded as a bound hit, and
+`assertNoUncreditedWin` therefore throws. The budget is a parameter of
+`uncreditedMoverWins`/`assertNoUncreditedWin`/`vetoUncreditedWins` so the refusal
+is testable; `tests/lab/suites-phasing-veto.test.ts` starves it to one node on the
+two-promotion fortify root and pins the refusal, and pins that shrinking the
+budget never turns the Prepare-promotion root's refusal into a clean bill.
+
+**The probe also honours the two guards `resolveHomeCheckmate` applies before it
+awards a mate**, because a line canonical will not award is not a win any accept
+predicate had to credit, and flagging it refused sound roots:
+
+- `victoryRule === 'elimination'` — home occupation never wins, so there is
+  nothing uncredited;
+- counter-invasion — an opposing occupier of the **mover's own** corner means the
+  earlier invasion already owns the win and canonical refuses to award this one.
+
+Both are pinned with constructed roots on which the promotion that mates under
+the shipped rules produces no canonical award (`phase` stays `playing`) while
+`analyzeHomeDefense`, asked on its own, still answers `mate` — the exact gap the
+previous implementation reported as a free win.
 
 The two 12-unit bounds match canonical `upkeepActions`, which is exhaustive up
 to twelve rent-bearing units and degrades to four heuristic sets above it; the
@@ -190,6 +217,22 @@ flagged. New probe: **21** — the same 20, plus `M5-SD-28-home-blocks-all-
 rectangles`, whose six flagged lines are all `stage: 'prepare'`,
 `reason: 'home-checkmate'`, each ending in a `PROMOTE_UNIT`. Nothing was
 un-flagged.
+
+**Re-run again after the fail-closed and award-guard corrections above**
+(131 macro-decisions built from the v1 builders in this worktree): **21 flagged,
+0 bound hits**, the same 21 case IDs. The corrections therefore change no v1
+verdict — no v1 root depends on an undecided proof, on elimination-only victory
+or on a counter-invasion — and the flagged set is:
+
+| Family | Cases |
+|---|---|
+| summon-disruption (9) | `M5-SD-01-occupied-low-cost`, `M5-SD-02-occupied-miner`, `M5-SD-03-interior-block`, `M5-SD-04-inclusive-edge`, `M5-SD-06-temporary-intrusion`, `M5-SD-07-split-rectangles`, `M5-SD-09-shared-intersection`, `M5-SD-18-arrival-immediate-attack`, `M5-SD-28-home-blocks-all-rectangles` |
+| tactics (4) | `phasing-tactics-two-lanes-{fire_2,shadow_1}-vs-water_2`, `phasing-tactics-two-lane-approach-{fire_2,shadow_1}-vs-water_2` |
+| home-mate invader (8) | `phasing-{promotion-dependent-rescue,public-bank-no-promotion-money,newly-placed-unit-cannot-promote,at-most-one-promotion}-mate` and their `-rotated-black-mate` twins |
+
+The eight home-mate roots are flagged `stage: 'act'`, `reason: 'elimination'`;
+the thirteen others are `home-checkmate` and each has at least one
+`stage: 'prepare'` line.
 
 Out of scope, stated so it is not mistaken for coverage: `BUY_UNIT` in Prepare
 (a commitment cannot arrive before the mover's next turn, and home blocks every
@@ -335,8 +378,28 @@ tier, and the tier is recorded and printed rather than assumed:
 
 | Tier | Condition | What it proves | What it does **not** prove |
 |---|---|---|---|
-| **A — `remote-tracking`** | `git branch -r --contains <contract commit>` is non-empty | A copy of that exact commit object exists in a fetched remote-tracking ref. An amend or rebase yields a different id that the ref no longer contains, and the mismatch is visible to anyone who fetches. | **When** the remote received it. That no measurement was run before the push. That the remote is trustworthy. |
+| **A — `remote-tracking`** | `git branch -r --contains <contract commit>` is non-empty **and at least one of those refs belongs to a remote whose `git remote get-url` is not this machine** | A copy of that exact commit object exists in a fetched remote-tracking ref for a remote somewhere else. An amend or rebase yields a different id that the ref no longer contains, and the mismatch is visible to anyone who fetches. | **When** the remote received it. That no measurement was run before the push. That the remote is trustworthy. |
 | **B — `local-only`** | otherwise | That the bytes measured are the bytes committed, and that the commit is an ancestor of the measured HEAD. | **Anything about time.** An amend or rebase after an off-record run passes every check in this tier. |
+
+**Correction (review finding, 2026-09-19): tier A was grantable by a local
+clone.** The condition was `git branch -r --contains` alone, and `git clone` of
+the directory next door produces exactly that ref — as do a `file://` URL and a
+remote pointing at `localhost`. None of them corroborates anything off this
+machine, which is the entire claim of the tier. `resolveContractCommit` now
+resolves each containing ref to its remote (longest matching remote name) and
+`git remote get-url`, and classifies a URL as local-only when it is a filesystem
+path, a Windows drive path, a `file:` URL, a loopback host (`localhost`,
+`*.localhost`, `127.0.0.0/8`, `0.0.0.0`, `::1`) or unparseable — failing toward
+the weaker claim. Tier A requires at least one non-local URL.
+
+`ContractCommit` carries `remoteWitnesses` (`{ ref, remote, url, localOnly }` per
+containing ref) and `witnessUrls` (the distinct non-local URLs that granted the
+tier), and both are written into `started.json` and `result.json` and printed
+with the `WITNESS:` line, so a reader sees *which* remote was taken as the
+witness and which were rejected rather than trusting the tier word.
+`tests/lab/suites-phasing-contract.test.ts` clones a temp repository, asserts the
+remote-tracking ref is genuinely present, and pins tier B for it; a ref with no
+configured remote behind it and a `file://` remote are pinned tier B as well.
 
 `result.json` carries `witnessTier` and a `witness` sentence at the **top** of
 the record, not buried inside `contractCommit`, and the runner prints
@@ -352,10 +415,42 @@ the record, not buried inside `contractCommit`, and the runner prints
   `measurement-ledger.jsonl`. A preregistration may not be committed together
   with its own numbers. The same contract committed on its own, with the
   results in a later commit, is accepted.
-- **First measurement only.** If a `result.json` for the same manifest hash and
-  the same contract file already exists anywhere under a `results/` directory,
-  or if the ledger already carries this manifest under this contract commit,
-  the run is refused. A re-run needs a new contract version.
+- **First measurement only, keyed on the MANIFEST HASH ALONE.** If the ledger
+  already carries a line for this manifest hash, or a `result.json` for this
+  manifest hash exists under any of the declared search roots, the run is
+  refused.
+
+  *Correction (review finding, 2026-09-19).* Both halves of this check
+  previously keyed on the contract — one on `(manifest, contract commit)`, the
+  other on `(manifest, contract file hash)` — which made them defeatable by the
+  single move they exist to stop: amend the contract commit after an off-record
+  run, and both keys change while the manifest, the thing whose engineering
+  floor is being read, is untouched. Neither the contract commit nor the
+  contract bytes are consulted now.
+
+  The one way to measure a manifest twice is a contract that declares
+  `supersedes: { ledgerSeq, chain }` naming the **most recent** ledger line for
+  that manifest, with that line's chain value — which cannot be written without
+  the ledger the run is about to verify. When it validates, `result.json` leads
+  with `priorMeasurementsOfThisManifest` beside `witnessTier`, so a superseding
+  re-measurement is as visible as the tier is. A `supersedes` with nothing to
+  supersede is itself a refusal, and a prior `result.json` with no ledger line
+  behind it is refused outright: there is nothing to name and the ledger is
+  incomplete.
+
+  The search no longer depends on a directory being called `results`, which let
+  a second reading hide behind a rename or a `--out` outside the repository.
+  `findPriorMeasurements(roots, manifestSha256)` takes its roots from the
+  caller: the ledger's own directory, the parent of this run's `--out`, and the
+  repository top.
+
+- **Every recorded measurement must still resolve against this history.**
+  Before the run, each ledger line's recorded contract commit is checked for
+  ancestry of `HEAD`. Rewriting the commit a recorded measurement was made
+  against does not erase the record — the record stops resolving, and the next
+  run refuses naming the line. This closes the amend hole from the other side:
+  the amend is no longer merely *detectable by a third party*, it is *fatal to
+  the next local run*.
 - **Build identity.** The engine source hash and weights hash must equal those
   named in the contract (`assertContractBuild`), as above.
 - **Append-only hash-chained ledger.** Every measurement that produces a
@@ -442,22 +537,165 @@ machine-checked in `contract.ts`. The contract file is filled in as:
 
 and must be committed before `hard:suite:phasing:measure` is run against it.
 Writing it with invented hashes, or with `allowedMiss` values other than the
-table above, is refused by `validateFloorContract`.
+table above, is refused by `validateFloorContract`. `supersedes` is omitted on a
+first measurement; the schema accepts it only as
+`{ "ledgerSeq": <int ≥ 1>, "chain": "<64 hex>" }`, and the measurement refuses it
+unless it names the most recent ledger line for this manifest.
 
 It must be committed **alone**, with no `result.json`, `cases.jsonl`,
 `started.json`, `failure.json`, ledger line, or any path under a `results/`
 directory in the same commit; `resolveContractCommit` refuses that commit
-otherwise. Push it before measuring if the coordinator can, so the run records
-witness tier A; otherwise the run records tier B and prints `WITNESS: local
-only`, and the reader should treat the floor's *timing* as unwitnessed.
+otherwise.
 
-The measurement is a **first-measurement instrument**: once one run has
-recorded a `result.json` for this manifest under this contract file, or a
-ledger line for this manifest under this contract commit, a second run against
-the same pair is refused. A re-measurement is a new contract version with its
-own rationale.
+**Order of operations for the coordinator, in full.** (1) Author the v2 bundle
+and record its manifest hash. (2) Read the adapter's `sourceSha256` and
+`weightsSha256` off the engine build that will be measured, and write them into
+`engineSourceSha256` / `weightsSha256`; any other build is refused at run time by
+`assertContractBuild`, so these cannot be filled in speculatively. (3) Write
+`fixtures/v2/floor-contract.json` with those three hashes and the `allowedMiss`
+vector above. (4) Commit that file **alone**. (5) Push it, if a remote that is not
+this machine is available — a `file://` or localhost remote does not earn tier A,
+and neither does a clone of a sibling directory. (6) Only then run
+`hard:suite:phasing:measure`. Steps (3) and (4) cannot be merged with (6): an
+untracked or working-tree-modified contract is refused outright, which is the
+mechanism that makes the floor a preregistration rather than a description.
+
+The measurement is a **first-measurement instrument**: once one run has recorded
+a `result.json` or a ledger line for **this manifest hash**, whatever contract it
+used, a second run is refused. A re-measurement is a new contract version with
+its own rationale that additionally declares `supersedes: { ledgerSeq, chain }`
+naming the reading it replaces.
 
 One more thing is still missing before v2 can be measured, and this document
 does not pretend otherwise: **no root has been re-authored and `fixtures/v2`
 does not exist.** The veto, the scoring contract and the contract integrity
 machinery are code; the cases they will be applied to are not written.
+
+## Authoring status, 2026-09-19 (lane `suites-v2-authoring`)
+
+This section records what is done and what is not, so the next lane does not have
+to re-derive it. **`fixtures/v2` does not exist yet**, and none of the 21 flagged
+roots has been re-authored. What this lane finished is the contract machinery and
+the three code blockers that stood between it and any v2 bundle at all.
+
+### Done: contract machinery (review findings closed)
+
+All four review findings are closed, each with a regression test that fails on
+the previous code: fail-closed proof cap and the two canonical award guards in
+the veto; first measurement keyed on the manifest hash alone with an explicit
+`supersedes`; ledger-commit ancestry; witness tier resolved by remote URL;
+caller-supplied prior-measurement search roots. Pinned by
+`tests/lab/suites-phasing-contract.test.ts` and
+`tests/lab/suites-phasing-veto.test.ts` (49 tests).
+
+### Done: the three code blockers on expressing a v2 bundle
+
+Each was a fact about the **v1 release** written into a **validator** as a
+literal, where a later release cannot restate it. All three are now derived or
+declared, and none of the checks they used to provide was dropped.
+
+1. **The manifest schema was pinned to v1's shape.** `caseCount: 225`,
+   `memberCount: 245`, `cases: length(225)` and the per-family vector were zod
+   literals, so no other composition parsed. The counts are now **carried by the
+   manifest** (`caseCount`, `memberCount`, and an optional `familyCounts`) and
+   cross-checked against the case list the manifest actually ships, in every
+   direction — total, logical members, and per family. A manifest that misstates
+   its own composition is refused with the numbers named; one that honestly
+   states a different composition is now expressible. The frozen v1 manifest
+   carries no `familyCounts` and still parses unchanged. `score.ts` and
+   `run.ts` size `expectedCases` / `complete` / the author report from the
+   manifest instead of from 225.
+
+   One check the literals provided only by accident is now explicit: a family
+   with **no cases** is refused, because each family is pinned to one suite file
+   and an empty family's floor is vacuous. This was caught by the new test
+   against the first cut of the generalisation.
+
+   `RELEASE_COUNTS` survives as `V1_RELEASE_COUNTS` — a named reference to the
+   v1 composition, no longer the validator's law.
+
+2. **`rulesVersion` was the literal `'muju-phasing-1'`** — in the `SourceBinding`
+   type, in the `binding` zod schema, in `sourceBinding()`, and a fourth time in
+   the engine adapter's position gate. `RULES_VERSIONS` now admits both
+   revisions so v1 documents keep **parsing**, and the current revision is
+   **derived from the shipped inactivity constant** rather than written down
+   again: `INACTIVITY_LIMIT === 20` ⇒ `muju-phasing-2`,
+   `LEGACY_INACTIVITY_LIMIT` ⇒ `muju-phasing-1`, any other limit is a refusal.
+   A binding therefore cannot claim `muju-phasing-1` while the code it binds
+   counts to twenty — the exact drift a source binding exists to catch, and the
+   one thing the literal could not see. `verifySourceBinding` still demands the
+   current revision, so a v1 document parses and does not verify, which is the
+   intended split. The adapter's redundant fourth copy was removed in favour of
+   `CURRENT_RULES_VERSION`.
+
+   Pinned by `tests/lab/suites-phasing-v2-schema.test.ts` (10 tests). Every one
+   of them fails on the pre-change code, verified by re-running the file against
+   the `HEAD` copies of `manifest.ts`, `canonical.ts`, `format.ts`, `score.ts`,
+   `engine-adapter.ts` and `run.ts`: 10 failed / 0 passed before, 10 passed
+   after.
+
+3. **The veto is wired into the author path.** `run.ts` exports
+   `vetoDocument(document, restore, proofNodes?)`, which applies the free-win
+   veto to every macro-decision in a document and **collects** findings instead
+   of throwing, so one run names every defective root rather than stopping at
+   the first. This is the hook the v2 builder turns into an invalid bundle on a
+   non-empty list.
+
+   Re-run here over all **131** macro-decisions built from the v1 builders in
+   this worktree: **21 flagged, 0 bound hits**, byte-for-byte the case list in
+   the table above (9 summon-disruption, 4 tactics, 8 home-mate invader). That
+   is an independent reproduction of the count this document already claimed,
+   made through the author-path wiring rather than through the probe directly.
+   `tests/lab/suites-phasing-veto.test.ts` pins the nine disruption IDs, pins
+   that `home-fortify` comes back **clean** (its six `allow-root-mover-win`
+   decisions pass by construction, not by exemption), and pins that starving the
+   proof budget to one node can only ever produce *more* findings, never fewer.
+
+### Still open: the authoring itself
+
+The case design is untouched and is the whole of the remaining work:
+
+- the nine disruption roots re-authored to remove the free win while keeping
+  each disruption motif (`M5-SD-28`'s objective is itself a home entry and needs
+  redesign at a non-corner square, or dropping with a stated reason);
+- the four two-lane tactics roots and the eight home-mate invader roots;
+- the four "plugged" multi-answer tactics cases moved to `any-of@1`;
+- the intruder-survival horizon on every disruption decision;
+- the invariants split (15 gating at `search-gap`, fixed work 120 000;
+  inv9/inv11/inv13 demoted to diagnostics), inv16 authored against the
+  **20-ply** limit via the constant, and the economy forecasts re-derived where
+  the longer clock moves them;
+- `fixtures/v2` generated with its own manifest, and
+  `fixtures/v2/floor-contract.json` written per "Order of operations" above.
+
+**Why `fixtures/v2` was not frozen in this lane**, restated because it still
+holds and is a property of the worktree rather than of the case design. A bundle
+is pinned twice over and both pins move under a shared tree:
+
+- `loadBundle` compares `artifactPins()` — every `.ts` in the suite directory —
+  against `manifest.artifacts`. The v1 manifest pins 20 artifacts and does not
+  list `veto.ts`, which the instrument commit added, so
+  `loadBundle('fixtures/v1/manifest.json')` refuses with *"Builder/predicate/
+  validator artifact set or bytes differ"* in this tree. This was already true
+  at the branch point, before this lane's edits, and this lane adds further
+  `.ts` changes to the same directory.
+- every position embeds `rulesSourcesSha256 = hashJson(canonicalSourceHashes())`
+  over `src/game/**.ts` plus `src/ai/simulate.ts`. v1 records `2940e1e1…`; this
+  tree computes a different hash because the 20-ply inactivity change landed.
+
+So v2 fixtures must be generated **after** the rules and suite sources for the
+measured build have settled, with the generating run's `canonicalSourceHashes()`
+recorded beside them. Freezing them earlier reproduces exactly the staleness
+that v1 is in now.
+
+The v1 fixtures are byte-identical across this lane: all ten files under
+`fixtures/v1/` hash the same before and after (`manifest.json`
+`c7db0acc…`, `tactics.suite.json` `281d0444…`, `summon-disruption.suite.json`
+`6911ba68…`, `home-mate.suite.json` `83451fbb…`, `home-fortify.suite.json`
+`8f0fd575…`, `invariants.suite.json` `0f89191d…`, `economy.suite.json`
+`ed3fc64a…`, `author-report.json` `5491c638…`, `floor-contract.json`
+`8b25ea5c…`, `execution.json` `2b9efd9f…`).
+
+Nothing in this section changes a floor, a classification or the allowed-miss
+vector. The authoring requirements in "v2 authoring contract" above stand
+unchanged.
