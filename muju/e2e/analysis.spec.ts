@@ -250,7 +250,11 @@ for (const viewport of [{ width: 1280, height: 800 }, { width: 390, height: 844 
     await expect(page.getByTestId('cell-3-1')).toHaveAttribute('aria-label', /white Hi/);
     await expect(controls).toContainText('Private variation');
     const unchanged = await (await request.get(`/api/muju/rooms/${id}`)).json();
-    expect(unchanged).toEqual(actual);
+    // The authenticated response names its seat; an anonymous read of the same room must not.
+    const { authenticatedPlayer, ...publicView } = actual;
+    expect(authenticatedPlayer).toBe('white');
+    expect(unchanged).not.toHaveProperty('authenticatedPlayer');
+    expect(unchanged).toEqual(publicView);
     await controls.getByRole('button', { name: 'Return to game score', exact: true }).click();
     await expect(controls).toContainText('Game analysis');
     await expect(page.getByTestId('cell-5-0')).toHaveAttribute('aria-label', /white Hi/);
