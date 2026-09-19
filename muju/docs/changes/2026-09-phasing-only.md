@@ -416,3 +416,13 @@ change is included in this continuation.
 ## 2026-09-19 M5 authored suite implementation
 
 New225case/245member Phasing bundle and exact manifest/floor contract;128tests plus independent author/reopen validation pass. No production Hard suite measurement yet; acceptance not established. Historical exclusions and Gate1 valid failure remain explicit. See docs/hard-ai/phasing/M5-STATUS.md and preserved evidence in m5-suites-2026-09-19.
+
+## 2026-09-19 Codex continuity checkpoint — M6 accounting bootstrap
+
+Prepared above M5 `66473c75` on isolated `codex/phasing-m6`: chronological canonical-policy economy/reference, pending58–61, sparse62-feature version2 bootstrap, full evaluation, capped-proof veto/work telemetry, ordered-identity cache, raw-orientation BK03 compatibility and explicit dev-data/fit guards. Final1,106 tests/80files pass with0 failures/skips; six type configurations, Hard dependency check, DAG and production build pass. Independent44 roots/3,339 macros/16,996 ordered action comparisons and18 canonical accounting goldens pass without drift/caps/fallbacks.
+
+The complete frozen225-case measurement is valid but fails performance acceptance:126/149 earned,76/76 coverage; tactics62/63, home28/28, economy20/20, fortify6/6 pass; invariants5/18 (minimum17), summon disruption5/14 (minimum13) fail. Original diagnostics and independent audits are retained. No coefficients, floors or classifications changed from these outcomes. Full M6 corpus/fit/val remains incomplete, Gate1 A2 remains valid FAILED, M7/M8 and release guards remain blocked. No real corpus/tuning/val/sealed/book run and no push/deployment/database change.
+
+Correction added 2026-09-19 after that lane stopped: the 1,106-test / 80-file row is a **selected** run, and the repository default `npx vitest run` does not pass. It selects 187 files / 2,605 tests and reports 43 failed tests, 16 failed test suites, 0 skipped. Re-measuring the same 80 files inside that full run reproduces 1,106 / 0 failed, so all 43 are in files the M6 lane never ran. Twenty-six are pre-existing at base `66473c75` and one is a load flake, but **16 are new in M6** — `tests/lab/ablate.test.ts` (13) and `tests/lab/analyze-work-sweep.test.ts` (3), two eval consumers that were neither ported nor quarantined. They are left failing rather than pinned green.
+
+Current scoped dispositions, artifacts and limits: [M6-STATUS](../hard-ai/phasing/M6-STATUS.md) and [M6 change record](m6-evaluation-2026-09-19/README.md). These append-only findings do not overwrite other track owners' dispositions or claim the whole migration complete.
