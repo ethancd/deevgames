@@ -1,0 +1,624 @@
+{
+  "rulesVersion": "muju-phasing-2",
+  "amendment": "A3",
+  "rulesAmendment": "A4",
+  "mode": "pilot",
+  "identityHash": "ed6ef7a6236e1e2429450335c44dcbfcb701d4d271d8bc2c79d07de1cbd00b0e",
+  "seed": 20260962,
+  "games": 16,
+  "expectedGames": 16,
+  "errors": [],
+  "distinctnessReading": "A3 §2 distinctness is keyed on (hardSeat, gameSha256): two seat-mirrored games with identical action sequences are two experiments, not one, so a cleanly mirrored cell is not invalid by construction. Pair-level distinctness — the sampling unit every Elo interval is computed over — is unchanged and keys on the pair's two game hashes together, so a replicated PAIR (A2's failure mode) still counts once. Both counts are reported per cell: distinctGames (seat-keyed, gates cellValid) and distinctGameSequences (hash only, report-only).",
+  "pilotSeedChange": "A3 §5 named pilot seed 20260961; it was consumed by the pilot under muju-phasing-1 and A4 voided every Gate 1 game measured before it, so 20260961 now names a void population. This pilot uses 20260962, the next unused integer, so the two populations can never be confused. Row seed 20260960 is unchanged.",
+  "voidPilotSeeds": [
+    20260961
+  ],
+  "bookStartPositions": {
+    "openings": 1,
+    "perHandicap": [
+      {
+        "handicap": 0,
+        "openings": 1,
+        "distinctStartPositions": 1,
+        "collisions": []
+      },
+      {
+        "handicap": 3,
+        "openings": 1,
+        "distinctStartPositions": 1,
+        "collisions": []
+      }
+    ],
+    "note": "Every opening used reaches its own start position."
+  },
+  "calibration": {
+    "path": "lab/ai/results/gate1-provisional-calibration-2026-09-19/calibration.json",
+    "sha256": "daf149ee1df46bd273b4ff90381a3af5b2b67226db825cc6dedbc64800d669a9",
+    "accepted": true,
+    "acceptedKinds": [
+      "load"
+    ],
+    "acceptedReasons": [
+      "[load] 1-minute load average at start was 4.521484375, above the 1.5 an \"otherwise idle\" machine may carry (A3 §3); WALL-mode work is under-counted on a loaded box",
+      "[load] 1-minute load average at end was 4.16552734375, above the 1.5 an \"otherwise idle\" machine may carry (A3 §3); WALL-mode work is under-counted on a loaded box",
+      "[load] the highest 5-minute load average at any game boundary was 4.5380859375, above 2 = 1.0 for the calibration's own thread + 1 for everything else an \"otherwise idle\" machine may carry (A3 §3)"
+    ],
+    "acceptedByShard": [
+      {
+        "shard": "shard-1-of-1",
+        "kinds": [
+          "load"
+        ],
+        "reasons": [
+          "[load] 1-minute load average at start was 4.521484375, above the 1.5 an \"otherwise idle\" machine may carry (A3 §3); WALL-mode work is under-counted on a loaded box",
+          "[load] 1-minute load average at end was 4.16552734375, above the 1.5 an \"otherwise idle\" machine may carry (A3 §3); WALL-mode work is under-counted on a loaded box",
+          "[load] the highest 5-minute load average at any game boundary was 4.5380859375, above 2 = 1.0 for the calibration's own thread + 1 for everything else an \"otherwise idle\" machine may carry (A3 §3)"
+        ]
+      }
+    ],
+    "budgets": {
+      "hard": 51423,
+      "medium": 26159
+    },
+    "searchesPerTurnInCalibration": {
+      "hard": 1,
+      "medium": 1
+    },
+    "provisional": true,
+    "provisionalReason": "SHORT PROVISIONAL / INELIGIBLE: measured on a busy shared machine (1-minute load ~4.3 on 12 cores) over ONE dev opening at one handicap, capped at 6 own turns per engine and 6 full rounds per game, so it samples opening turns only and under-counts WALL-mode work. It exists solely to give the muju-phasing-2 plumbing pilot a number to run on; it is NOT a row budget. The eligible calibration is measured later by the coordinator on an idle machine (A3 3).",
+    "freshnessMeasuredFrom": "2026-09-19T17:33:19.744Z"
+  },
+  "pacing": {
+    "perTurnWorkBudget": {
+      "hard": 51423,
+      "medium": 26159
+    },
+    "searchesPerTurnInCalibration": {
+      "hard": 1,
+      "medium": 1
+    },
+    "searchesPerTurnInRow": {
+      "hard": 2,
+      "medium": 1
+    },
+    "invalidSuffixes": {
+      "hard": 0,
+      "medium": 0
+    },
+    "allocation": "one allowance per own turn, spent across Act, upkeep and Prepare; each search is funded with the remainder less floor(budget / 8) per hand-off segment still to be searched, and is charged what it actually spent (gate1-bot.ts)",
+    "note": "The budget is work per OWN TURN (A3 §3), spent across Act, the upkeep decision and Prepare under one mover. searchesPerTurn is the median number of searches a turn held: in the calibration that is the shipped wall-clock loop, in the row the fixed-work adapter. They should be close; they are printed so a reader can check rather than assume."
+  },
+  "laterConvergence": {
+    "totalConvergences": 0,
+    "convergedGames": 0,
+    "gamesWithBoundaries": 16,
+    "note": "Report-only. Two games of one cell and one seat assignment that reach the same hand-off position from here on supply one line of play, however different their openings were. A3 sets no threshold for this and none is invented: the earliest ply of each convergence is listed per cell."
+  },
+  "shards": null,
+  "criteriaMet": false,
+  "invalidCells": [],
+  "invalidGatingCells": [],
+  "gate1": "pilot-ineligible",
+  "rows": [
+    {
+      "opponent": "Rush",
+      "handicap": 0,
+      "games": 2,
+      "pairs": 1,
+      "distinctGames": 2,
+      "distinctGameSequences": 2,
+      "distinctPairs": 1,
+      "distinctGameFraction": 1,
+      "distinctSequenceFraction": 1,
+      "cellValid": true,
+      "openings": 1,
+      "laterConvergence": {
+        "convergences": [],
+        "convergedGames": 0,
+        "totalConvergences": 0,
+        "gamesWithBoundaries": 2
+      },
+      "distinctStartPositions": 1,
+      "plannedStartPositions": 1,
+      "effectiveN": 1,
+      "wins": 1,
+      "draws": 0,
+      "losses": 1,
+      "elo": {
+        "n": 1,
+        "games": 2,
+        "counts": [
+          0,
+          0,
+          1,
+          0,
+          0
+        ],
+        "degenerate": true,
+        "regularized": true,
+        "mu": 0.5,
+        "muRaw": 0.5,
+        "muLo": 0,
+        "muHi": 1,
+        "variancePairs": 0.35714285714285715,
+        "variance": 0.17857142857142858,
+        "sePair": 0.5976143046671968,
+        "se": 0.2988071523335984,
+        "elo": 0,
+        "eloLo": -1199.826195290393,
+        "eloHi": 1199.8261952903777,
+        "elo95": 1199.8261952903854,
+        "los": 0.5000000005
+      },
+      "winsBySeat": {
+        "white": 0,
+        "black": 1
+      },
+      "meanCompletedTurns": 22,
+      "purchasesPerHardSeat": 2.5,
+      "inactivityDrawRate": 0,
+      "adjudicationRate": 0,
+      "behavioralBandsMet": true,
+      "mustBuyMet": true,
+      "mustBuyFailures": [],
+      "strengthGated": false,
+      "strengthMet": false,
+      "adjudicationMet": true
+    },
+    {
+      "opponent": "Rush",
+      "handicap": 3,
+      "games": 2,
+      "pairs": 1,
+      "distinctGames": 2,
+      "distinctGameSequences": 2,
+      "distinctPairs": 1,
+      "distinctGameFraction": 1,
+      "distinctSequenceFraction": 1,
+      "cellValid": true,
+      "openings": 1,
+      "laterConvergence": {
+        "convergences": [],
+        "convergedGames": 0,
+        "totalConvergences": 0,
+        "gamesWithBoundaries": 2
+      },
+      "distinctStartPositions": 1,
+      "plannedStartPositions": 1,
+      "effectiveN": 1,
+      "wins": 0,
+      "draws": 0,
+      "losses": 2,
+      "elo": {
+        "n": 1,
+        "games": 2,
+        "counts": [
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        "degenerate": true,
+        "regularized": true,
+        "mu": 0.35714285714285715,
+        "muRaw": 0,
+        "muLo": 0,
+        "muHi": 1,
+        "variancePairs": 0.5612244897959184,
+        "variance": 0.2806122448979592,
+        "sePair": 0.749149177264394,
+        "se": 0.374574588632197,
+        "elo": -102.10900204132241,
+        "eloLo": -1199.826195290393,
+        "eloHi": 1199.8261952903777,
+        "elo95": 1199.8261952903854,
+        "los": 0.3514588380067365
+      },
+      "winsBySeat": {
+        "white": 0,
+        "black": 0
+      },
+      "meanCompletedTurns": 22.5,
+      "purchasesPerHardSeat": 5.5,
+      "inactivityDrawRate": 0,
+      "adjudicationRate": 0,
+      "behavioralBandsMet": true,
+      "mustBuyMet": true,
+      "mustBuyFailures": [],
+      "strengthGated": false,
+      "strengthMet": false,
+      "adjudicationMet": true
+    },
+    {
+      "opponent": "Expand",
+      "handicap": 0,
+      "games": 2,
+      "pairs": 1,
+      "distinctGames": 2,
+      "distinctGameSequences": 2,
+      "distinctPairs": 1,
+      "distinctGameFraction": 1,
+      "distinctSequenceFraction": 1,
+      "cellValid": true,
+      "openings": 1,
+      "laterConvergence": {
+        "convergences": [],
+        "convergedGames": 0,
+        "totalConvergences": 0,
+        "gamesWithBoundaries": 2
+      },
+      "distinctStartPositions": 1,
+      "plannedStartPositions": 1,
+      "effectiveN": 1,
+      "wins": 2,
+      "draws": 0,
+      "losses": 0,
+      "elo": {
+        "n": 1,
+        "games": 2,
+        "counts": [
+          0,
+          0,
+          0,
+          0,
+          1
+        ],
+        "degenerate": true,
+        "regularized": true,
+        "mu": 0.6428571428571429,
+        "muRaw": 1,
+        "muLo": 0,
+        "muHi": 1,
+        "variancePairs": 0.5612244897959184,
+        "variance": 0.2806122448979592,
+        "sePair": 0.749149177264394,
+        "se": 0.374574588632197,
+        "elo": 102.1090020413225,
+        "eloLo": -1199.826195290393,
+        "eloHi": 1199.8261952903777,
+        "elo95": 1199.8261952903854,
+        "los": 0.6485411619932635
+      },
+      "winsBySeat": {
+        "white": 1,
+        "black": 1
+      },
+      "meanCompletedTurns": 14.5,
+      "purchasesPerHardSeat": 4.5,
+      "inactivityDrawRate": 0,
+      "adjudicationRate": 0,
+      "behavioralBandsMet": true,
+      "mustBuyMet": true,
+      "mustBuyFailures": [],
+      "strengthGated": true,
+      "strengthMet": false,
+      "adjudicationMet": true
+    },
+    {
+      "opponent": "Expand",
+      "handicap": 3,
+      "games": 2,
+      "pairs": 1,
+      "distinctGames": 2,
+      "distinctGameSequences": 2,
+      "distinctPairs": 1,
+      "distinctGameFraction": 1,
+      "distinctSequenceFraction": 1,
+      "cellValid": true,
+      "openings": 1,
+      "laterConvergence": {
+        "convergences": [],
+        "convergedGames": 0,
+        "totalConvergences": 0,
+        "gamesWithBoundaries": 2
+      },
+      "distinctStartPositions": 1,
+      "plannedStartPositions": 1,
+      "effectiveN": 1,
+      "wins": 2,
+      "draws": 0,
+      "losses": 0,
+      "elo": {
+        "n": 1,
+        "games": 2,
+        "counts": [
+          0,
+          0,
+          0,
+          0,
+          1
+        ],
+        "degenerate": true,
+        "regularized": true,
+        "mu": 0.6428571428571429,
+        "muRaw": 1,
+        "muLo": 0,
+        "muHi": 1,
+        "variancePairs": 0.5612244897959184,
+        "variance": 0.2806122448979592,
+        "sePair": 0.749149177264394,
+        "se": 0.374574588632197,
+        "elo": 102.1090020413225,
+        "eloLo": -1199.826195290393,
+        "eloHi": 1199.8261952903777,
+        "elo95": 1199.8261952903854,
+        "los": 0.6485411619932635
+      },
+      "winsBySeat": {
+        "white": 1,
+        "black": 1
+      },
+      "meanCompletedTurns": 19,
+      "purchasesPerHardSeat": 16.5,
+      "inactivityDrawRate": 0,
+      "adjudicationRate": 0,
+      "behavioralBandsMet": true,
+      "mustBuyMet": true,
+      "mustBuyFailures": [],
+      "strengthGated": true,
+      "strengthMet": false,
+      "adjudicationMet": true
+    },
+    {
+      "opponent": "Balanced",
+      "handicap": 0,
+      "games": 2,
+      "pairs": 1,
+      "distinctGames": 2,
+      "distinctGameSequences": 2,
+      "distinctPairs": 1,
+      "distinctGameFraction": 1,
+      "distinctSequenceFraction": 1,
+      "cellValid": true,
+      "openings": 1,
+      "laterConvergence": {
+        "convergences": [],
+        "convergedGames": 0,
+        "totalConvergences": 0,
+        "gamesWithBoundaries": 2
+      },
+      "distinctStartPositions": 1,
+      "plannedStartPositions": 1,
+      "effectiveN": 1,
+      "wins": 2,
+      "draws": 0,
+      "losses": 0,
+      "elo": {
+        "n": 1,
+        "games": 2,
+        "counts": [
+          0,
+          0,
+          0,
+          0,
+          1
+        ],
+        "degenerate": true,
+        "regularized": true,
+        "mu": 0.6428571428571429,
+        "muRaw": 1,
+        "muLo": 0,
+        "muHi": 1,
+        "variancePairs": 0.5612244897959184,
+        "variance": 0.2806122448979592,
+        "sePair": 0.749149177264394,
+        "se": 0.374574588632197,
+        "elo": 102.1090020413225,
+        "eloLo": -1199.826195290393,
+        "eloHi": 1199.8261952903777,
+        "elo95": 1199.8261952903854,
+        "los": 0.6485411619932635
+      },
+      "winsBySeat": {
+        "white": 1,
+        "black": 1
+      },
+      "meanCompletedTurns": 19.5,
+      "purchasesPerHardSeat": 17,
+      "inactivityDrawRate": 0,
+      "adjudicationRate": 0,
+      "behavioralBandsMet": true,
+      "mustBuyMet": true,
+      "mustBuyFailures": [],
+      "strengthGated": true,
+      "strengthMet": false,
+      "adjudicationMet": true
+    },
+    {
+      "opponent": "Balanced",
+      "handicap": 3,
+      "games": 2,
+      "pairs": 1,
+      "distinctGames": 2,
+      "distinctGameSequences": 2,
+      "distinctPairs": 1,
+      "distinctGameFraction": 1,
+      "distinctSequenceFraction": 1,
+      "cellValid": true,
+      "openings": 1,
+      "laterConvergence": {
+        "convergences": [],
+        "convergedGames": 0,
+        "totalConvergences": 0,
+        "gamesWithBoundaries": 2
+      },
+      "distinctStartPositions": 1,
+      "plannedStartPositions": 1,
+      "effectiveN": 1,
+      "wins": 2,
+      "draws": 0,
+      "losses": 0,
+      "elo": {
+        "n": 1,
+        "games": 2,
+        "counts": [
+          0,
+          0,
+          0,
+          0,
+          1
+        ],
+        "degenerate": true,
+        "regularized": true,
+        "mu": 0.6428571428571429,
+        "muRaw": 1,
+        "muLo": 0,
+        "muHi": 1,
+        "variancePairs": 0.5612244897959184,
+        "variance": 0.2806122448979592,
+        "sePair": 0.749149177264394,
+        "se": 0.374574588632197,
+        "elo": 102.1090020413225,
+        "eloLo": -1199.826195290393,
+        "eloHi": 1199.8261952903777,
+        "elo95": 1199.8261952903854,
+        "los": 0.6485411619932635
+      },
+      "winsBySeat": {
+        "white": 1,
+        "black": 1
+      },
+      "meanCompletedTurns": 15.5,
+      "purchasesPerHardSeat": 6.5,
+      "inactivityDrawRate": 0,
+      "adjudicationRate": 0,
+      "behavioralBandsMet": true,
+      "mustBuyMet": true,
+      "mustBuyFailures": [],
+      "strengthGated": true,
+      "strengthMet": false,
+      "adjudicationMet": true
+    },
+    {
+      "opponent": "aiv2-medium",
+      "handicap": 0,
+      "games": 2,
+      "pairs": 1,
+      "distinctGames": 2,
+      "distinctGameSequences": 2,
+      "distinctPairs": 1,
+      "distinctGameFraction": 1,
+      "distinctSequenceFraction": 1,
+      "cellValid": true,
+      "openings": 1,
+      "laterConvergence": {
+        "convergences": [],
+        "convergedGames": 0,
+        "totalConvergences": 0,
+        "gamesWithBoundaries": 2
+      },
+      "distinctStartPositions": 1,
+      "plannedStartPositions": 1,
+      "effectiveN": 1,
+      "wins": 0,
+      "draws": 0,
+      "losses": 2,
+      "elo": {
+        "n": 1,
+        "games": 2,
+        "counts": [
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        "degenerate": true,
+        "regularized": true,
+        "mu": 0.35714285714285715,
+        "muRaw": 0,
+        "muLo": 0,
+        "muHi": 1,
+        "variancePairs": 0.5612244897959184,
+        "variance": 0.2806122448979592,
+        "sePair": 0.749149177264394,
+        "se": 0.374574588632197,
+        "elo": -102.10900204132241,
+        "eloLo": -1199.826195290393,
+        "eloHi": 1199.8261952903777,
+        "elo95": 1199.8261952903854,
+        "los": 0.3514588380067365
+      },
+      "winsBySeat": {
+        "white": 0,
+        "black": 0
+      },
+      "meanCompletedTurns": 20,
+      "purchasesPerHardSeat": 6.5,
+      "inactivityDrawRate": 0,
+      "adjudicationRate": 0,
+      "behavioralBandsMet": null,
+      "mustBuyMet": true,
+      "mustBuyFailures": [],
+      "strengthGated": true,
+      "strengthMet": false,
+      "adjudicationMet": true
+    },
+    {
+      "opponent": "aiv2-medium",
+      "handicap": 3,
+      "games": 2,
+      "pairs": 1,
+      "distinctGames": 2,
+      "distinctGameSequences": 2,
+      "distinctPairs": 1,
+      "distinctGameFraction": 1,
+      "distinctSequenceFraction": 1,
+      "cellValid": true,
+      "openings": 1,
+      "laterConvergence": {
+        "convergences": [],
+        "convergedGames": 0,
+        "totalConvergences": 0,
+        "gamesWithBoundaries": 2
+      },
+      "distinctStartPositions": 1,
+      "plannedStartPositions": 1,
+      "effectiveN": 1,
+      "wins": 2,
+      "draws": 0,
+      "losses": 0,
+      "elo": {
+        "n": 1,
+        "games": 2,
+        "counts": [
+          0,
+          0,
+          0,
+          0,
+          1
+        ],
+        "degenerate": true,
+        "regularized": true,
+        "mu": 0.6428571428571429,
+        "muRaw": 1,
+        "muLo": 0,
+        "muHi": 1,
+        "variancePairs": 0.5612244897959184,
+        "variance": 0.2806122448979592,
+        "sePair": 0.749149177264394,
+        "se": 0.374574588632197,
+        "elo": 102.1090020413225,
+        "eloLo": -1199.826195290393,
+        "eloHi": 1199.8261952903777,
+        "elo95": 1199.8261952903854,
+        "los": 0.6485411619932635
+      },
+      "winsBySeat": {
+        "white": 1,
+        "black": 1
+      },
+      "meanCompletedTurns": 26.5,
+      "purchasesPerHardSeat": 11,
+      "inactivityDrawRate": 0,
+      "adjudicationRate": 0,
+      "behavioralBandsMet": null,
+      "mustBuyMet": true,
+      "mustBuyFailures": [],
+      "strengthGated": true,
+      "strengthMet": false,
+      "adjudicationMet": true
+    }
+  ]
+}

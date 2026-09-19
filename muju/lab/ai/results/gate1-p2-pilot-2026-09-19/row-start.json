@@ -1,0 +1,5 @@
+{
+  "schema": "muju-gate1-row-start-v1",
+  "firstStartedAt": "2026-09-19T17:33:19.744Z",
+  "note": "The instant this row first started, written once with O_EXCL by whichever shard got here first. The calibration's freshness window is measured from here, not from each shard's own clock, so a row that runs its shards over two days is one measurement with one calibration age."
+}

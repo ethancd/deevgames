@@ -1,0 +1,642 @@
+{
+  "schema": "muju-gate1-calibration-v3",
+  "amendment": "A3",
+  "provisional": {
+    "reason": "SHORT PROVISIONAL / INELIGIBLE: measured on a busy shared machine (1-minute load ~4.3 on 12 cores) over ONE dev opening at one handicap, capped at 6 own turns per engine and 6 full rounds per game, so it samples opening turns only and under-counts WALL-mode work. It exists solely to give the muju-phasing-2 plumbing pilot a number to run on; it is NOT a row budget. The eligible calibration is measured later by the coordinator on an idle machine (A3 3).",
+    "eligible": false,
+    "note": "This manifest is NOT a row budget. A row refuses it unless it is a pilot run with --provisional-calibration, and the concession is stamped into the pilot manifest, summary and README."
+  },
+  "machine": {
+    "hostname": "The-Work-Box.local",
+    "cpuModel": "Apple M2 Max",
+    "cpuCount": 12,
+    "memoryGB": 103,
+    "platform": "darwin",
+    "arch": "arm64",
+    "sha256": "f93fe31b356217346aff0c56b3e84a6beb9c1546384071beacd309cda0fba2c0",
+    "node": "v24.11.1"
+  },
+  "load": {
+    "load1AtStart": 4.521484375,
+    "load1AtEnd": 4.16552734375,
+    "start": [
+      4.521484375,
+      4.5380859375,
+      4.81591796875
+    ],
+    "end": [
+      4.16552734375,
+      4.4306640625,
+      4.75634765625
+    ],
+    "during": {
+      "hard": [
+        4.05224609375,
+        4.42724609375,
+        4.76416015625
+      ],
+      "medium": [
+        4.16552734375,
+        4.4306640625,
+        4.75634765625
+      ]
+    },
+    "cpuCount": 12,
+    "idleThreshold": 1.5,
+    "maxLoad5Threshold": 2,
+    "ownThreadAllowance": 1,
+    "boundaries": {
+      "samples": 6,
+      "load1": {
+        "max": 4.521484375,
+        "mean": 4.246
+      },
+      "load5": {
+        "max": 4.5380859375,
+        "mean": 4.465
+      },
+      "load15": {
+        "max": 4.81591796875,
+        "mean": 4.779
+      },
+      "heavySlotHoldersSeen": [],
+      "note": "Sampled at every game boundary, not only at start and end. maxLoad5 is what a row checks against 2 = 1.0 (this calibration's own thread) + 1 (everything else an \"otherwise idle\" machine may carry, A3 §3)."
+    },
+    "samples": [
+      {
+        "at": "2026-09-19T17:32:14.626Z",
+        "label": "calibration:start",
+        "load1": 4.521484375,
+        "load5": 4.5380859375,
+        "load15": 4.81591796875,
+        "heavySlotHolders": []
+      },
+      {
+        "at": "2026-09-19T17:32:14.627Z",
+        "label": "hard:p1-g6-s2@h0:before",
+        "load1": 4.521484375,
+        "load5": 4.5380859375,
+        "load15": 4.81591796875,
+        "heavySlotHolders": []
+      },
+      {
+        "at": "2026-09-19T17:32:53.645Z",
+        "label": "hard:p1-g6-s2@h0:after",
+        "load1": 4.05224609375,
+        "load5": 4.42724609375,
+        "load15": 4.76416015625,
+        "heavySlotHolders": []
+      },
+      {
+        "at": "2026-09-19T17:32:53.646Z",
+        "label": "medium:p1-g6-s2@h0:before",
+        "load1": 4.05224609375,
+        "load5": 4.42724609375,
+        "load15": 4.76416015625,
+        "heavySlotHolders": []
+      },
+      {
+        "at": "2026-09-19T17:33:11.657Z",
+        "label": "medium:p1-g6-s2@h0:after",
+        "load1": 4.16552734375,
+        "load5": 4.4306640625,
+        "load15": 4.75634765625,
+        "heavySlotHolders": []
+      },
+      {
+        "at": "2026-09-19T17:33:11.658Z",
+        "label": "calibration:end",
+        "load1": 4.16552734375,
+        "load5": 4.4306640625,
+        "load15": 4.75634765625,
+        "heavySlotHolders": []
+      }
+    ],
+    "note": "A3 §3 asks for an otherwise idle machine. In WALL mode a loaded box UNDER-counts work: the clock runs while the CPU is elsewhere. A row refuses a manifest whose 1-minute load at start or end exceeds 1.5, or whose highest 5-minute load at any game boundary exceeds 2, unless --accept-calibration=load is passed."
+  },
+  "startedAt": "2026-09-19T17:32:14.614Z",
+  "finishedAt": "2026-09-19T17:33:11.658Z",
+  "sourceIdentity": {
+    "sha256": "ac758bea0e0d882a3aedf45dbb6a3899a5702179790d67caf24f16f318521b2d",
+    "files": 144
+  },
+  "book": {
+    "path": "lab/hard-ai/ladder/openings/p1-dev.jsonl",
+    "sha256": "a58ca9d8aad304d82824ef38d7b12c776ea1547ba61a10cbfba1e387e78335c7",
+    "openingsUsed": [
+      "p1-g6-s2"
+    ]
+  },
+  "options": {
+    "openings": 1,
+    "handicaps": [
+      0,
+      3
+    ],
+    "maxTurns": 6,
+    "turnsPerEngine": 6,
+    "seed": 20260960,
+    "provisional": "SHORT PROVISIONAL / INELIGIBLE: measured on a busy shared machine (1-minute load ~4.3 on 12 cores) over ONE dev opening at one handicap, capped at 6 own turns per engine and 6 full rounds per game, so it samples opening turns only and under-counts WALL-mode work. It exists solely to give the muju-phasing-2 plumbing pilot a number to run on; it is NOT a row budget. The eligible calibration is measured later by the coordinator on an idle machine (A3 3)."
+  },
+  "git": "dfb551eabca8237db8b6e097d803979a1b1fcd88",
+  "gitStatus": "M muju/docs/hard-ai/phasing/M5-FLOOR-PREREGISTRATION-v2.md\n M muju/lab/ai/gate1-bot.ts\n M muju/lab/ai/gate1-calibrate.ts\n M muju/lab/ai/gate1-launch.ts\n M muju/lab/ai/gate1-references.json\n M muju/lab/ai/gate1-report.ts\n M muju/lab/ai/gate1-shard.ts\n M muju/lab/ai/gate1-sources.ts\n M muju/lab/ai/gate1-trace.ts\n M muju/lab/ai/gate1.ts\n M muju/lab/hard-ai/suites/phasing/contract.ts\n M muju/lab/hard-ai/suites/phasing/measure.ts\n M muju/lab/hard-ai/suites/phasing/veto.ts\n M muju/tests/lab/gate1-calibration.test.ts\n M muju/tests/lab/gate1-shard.test.ts\n M muju/tests/lab/gate1.test.ts\n M muju/tests/lab/suites-phasing-contract.test.ts\n M muju/tests/lab/suites-phasing-veto.test.ts\n?? muju/lab/ai/gate1-work.ts",
+  "queue": {
+    "directory": "/private/tmp/muju-ready-heavy",
+    "slots": 2
+  },
+  "engines": {
+    "hard": {
+      "allowanceMs": 10000,
+      "pace": "quick",
+      "ownTurns": 11,
+      "games": 1,
+      "coverage": {
+        "openings": 1,
+        "handicaps": [
+          0
+        ],
+        "games": 1,
+        "maxOwnTurnsInAGame": 6,
+        "minOwnTurnsInAGame": 5
+      },
+      "overall": {
+        "ownTurns": 11,
+        "medianWorkPerTurn": 51423,
+        "meanWorkPerTurn": 56573,
+        "minWorkPerTurn": 38072,
+        "maxWorkPerTurn": 104008,
+        "p25WorkPerTurn": 48345,
+        "p75WorkPerTurn": 56909,
+        "medianSearchMsPerTurn": 3000.9280419999996,
+        "medianSearchesPerTurn": 1
+      },
+      "stages": {
+        "opening": {
+          "ownTurns": 4,
+          "medianWorkPerTurn": 53777,
+          "meanWorkPerTurn": 65521,
+          "minWorkPerTurn": 50522,
+          "maxWorkPerTurn": 104008,
+          "p25WorkPerTurn": 51423,
+          "p75WorkPerTurn": 56131,
+          "medianSearchMsPerTurn": 3002,
+          "medianSearchesPerTurn": 1
+        },
+        "middle": {
+          "ownTurns": 4,
+          "medianWorkPerTurn": 50292,
+          "meanWorkPerTurn": 50304,
+          "minWorkPerTurn": 43722,
+          "maxWorkPerTurn": 56909,
+          "p25WorkPerTurn": 48345,
+          "p75WorkPerTurn": 52239,
+          "medianSearchMsPerTurn": 3001,
+          "medianSearchesPerTurn": 1
+        },
+        "late": {
+          "ownTurns": 3,
+          "medianWorkPerTurn": 38842,
+          "meanWorkPerTurn": 53001,
+          "minWorkPerTurn": 38072,
+          "maxWorkPerTurn": 82089,
+          "p25WorkPerTurn": 38842,
+          "p75WorkPerTurn": 82089,
+          "medianSearchMsPerTurn": 3000.6175000000003,
+          "medianSearchesPerTurn": 1
+        }
+      },
+      "ownTurnBuckets": {
+        "1-5": {
+          "ownTurns": 10,
+          "medianWorkPerTurn": 51831,
+          "meanWorkPerTurn": 58423,
+          "minWorkPerTurn": 38842,
+          "maxWorkPerTurn": 104008,
+          "p25WorkPerTurn": 48345,
+          "p75WorkPerTurn": 56909,
+          "medianSearchMsPerTurn": 3001,
+          "medianSearchesPerTurn": 1
+        },
+        "6-15": {
+          "ownTurns": 1,
+          "medianWorkPerTurn": 38072,
+          "meanWorkPerTurn": 38072,
+          "minWorkPerTurn": 38072,
+          "maxWorkPerTurn": 38072,
+          "p25WorkPerTurn": 38072,
+          "p75WorkPerTurn": 38072,
+          "medianSearchMsPerTurn": 3000.2748749999955,
+          "medianSearchesPerTurn": 1
+        },
+        "16+": {
+          "ownTurns": 0
+        }
+      },
+      "weighting": {
+        "turnWeightedMedian": 51423,
+        "gameWeightedMedian": 51423,
+        "medianOfPerGameMedians": 51423,
+        "games": 1,
+        "ratio": 1,
+        "threshold": 0.25,
+        "flagged": false,
+        "note": "Turn-weighted and game-weighted medians agree within 25%."
+      },
+      "samples": [
+        {
+          "difficulty": "hard",
+          "opening": "p1-g6-s2",
+          "handicap": 0,
+          "turn": 1,
+          "seat": "black",
+          "work": 50522,
+          "searchMs": 3003.657416,
+          "searches": 1,
+          "ownTurnIndex": 0,
+          "ownTurns": 6,
+          "stage": "opening"
+        },
+        {
+          "difficulty": "hard",
+          "opening": "p1-g6-s2",
+          "handicap": 0,
+          "turn": 2,
+          "seat": "black",
+          "work": 51423,
+          "searchMs": 3000.242250000001,
+          "searches": 1,
+          "ownTurnIndex": 1,
+          "ownTurns": 6,
+          "stage": "opening"
+        },
+        {
+          "difficulty": "hard",
+          "opening": "p1-g6-s2",
+          "handicap": 0,
+          "turn": 3,
+          "seat": "black",
+          "work": 56909,
+          "searchMs": 3001.3269170000003,
+          "searches": 1,
+          "ownTurnIndex": 2,
+          "ownTurns": 6,
+          "stage": "middle"
+        },
+        {
+          "difficulty": "hard",
+          "opening": "p1-g6-s2",
+          "handicap": 0,
+          "turn": 4,
+          "seat": "black",
+          "work": 48345,
+          "searchMs": 3000.134417000001,
+          "searches": 1,
+          "ownTurnIndex": 3,
+          "ownTurns": 6,
+          "stage": "middle"
+        },
+        {
+          "difficulty": "hard",
+          "opening": "p1-g6-s2",
+          "handicap": 0,
+          "turn": 5,
+          "seat": "black",
+          "work": 82089,
+          "searchMs": 6002.414333000001,
+          "searches": 2,
+          "ownTurnIndex": 4,
+          "ownTurns": 6,
+          "stage": "late"
+        },
+        {
+          "difficulty": "hard",
+          "opening": "p1-g6-s2",
+          "handicap": 0,
+          "turn": 6,
+          "seat": "black",
+          "work": 38072,
+          "searchMs": 3000.2748749999955,
+          "searches": 1,
+          "ownTurnIndex": 5,
+          "ownTurns": 6,
+          "stage": "late"
+        },
+        {
+          "difficulty": "hard",
+          "opening": "p1-g6-s2",
+          "handicap": 0,
+          "turn": 2,
+          "seat": "white",
+          "work": 104008,
+          "searchMs": 6000.302458,
+          "searches": 2,
+          "ownTurnIndex": 0,
+          "ownTurns": 5,
+          "stage": "opening"
+        },
+        {
+          "difficulty": "hard",
+          "opening": "p1-g6-s2",
+          "handicap": 0,
+          "turn": 3,
+          "seat": "white",
+          "work": 56131,
+          "searchMs": 3000.9280419999996,
+          "searches": 1,
+          "ownTurnIndex": 1,
+          "ownTurns": 5,
+          "stage": "opening"
+        },
+        {
+          "difficulty": "hard",
+          "opening": "p1-g6-s2",
+          "handicap": 0,
+          "turn": 4,
+          "seat": "white",
+          "work": 52239,
+          "searchMs": 3000.902750000001,
+          "searches": 1,
+          "ownTurnIndex": 2,
+          "ownTurns": 5,
+          "stage": "middle"
+        },
+        {
+          "difficulty": "hard",
+          "opening": "p1-g6-s2",
+          "handicap": 0,
+          "turn": 5,
+          "seat": "white",
+          "work": 43722,
+          "searchMs": 3001.029917,
+          "searches": 1,
+          "ownTurnIndex": 3,
+          "ownTurns": 5,
+          "stage": "middle"
+        },
+        {
+          "difficulty": "hard",
+          "opening": "p1-g6-s2",
+          "handicap": 0,
+          "turn": 6,
+          "seat": "white",
+          "work": 38842,
+          "searchMs": 3000.6175000000003,
+          "searches": 1,
+          "ownTurnIndex": 4,
+          "ownTurns": 5,
+          "stage": "late"
+        }
+      ]
+    },
+    "medium": {
+      "allowanceMs": 3000,
+      "pace": "quick",
+      "ownTurns": 11,
+      "games": 1,
+      "coverage": {
+        "openings": 1,
+        "handicaps": [
+          0
+        ],
+        "games": 1,
+        "maxOwnTurnsInAGame": 6,
+        "minOwnTurnsInAGame": 5
+      },
+      "overall": {
+        "ownTurns": 11,
+        "medianWorkPerTurn": 26159,
+        "meanWorkPerTurn": 28341,
+        "minWorkPerTurn": 21528,
+        "maxWorkPerTurn": 53782,
+        "p25WorkPerTurn": 24928,
+        "p75WorkPerTurn": 29276,
+        "medianSearchMsPerTurn": 1500.1733329999988,
+        "medianSearchesPerTurn": 1
+      },
+      "stages": {
+        "opening": {
+          "ownTurns": 4,
+          "medianWorkPerTurn": 28497,
+          "meanWorkPerTurn": 33926,
+          "minWorkPerTurn": 24928,
+          "maxWorkPerTurn": 53782,
+          "p25WorkPerTurn": 27717,
+          "p75WorkPerTurn": 29276,
+          "medianSearchMsPerTurn": 1501,
+          "medianSearchesPerTurn": 1
+        },
+        "middle": {
+          "ownTurns": 4,
+          "medianWorkPerTurn": 27254,
+          "meanWorkPerTurn": 27454,
+          "minWorkPerTurn": 25949,
+          "maxWorkPerTurn": 29357,
+          "p25WorkPerTurn": 26159,
+          "p75WorkPerTurn": 28349,
+          "medianSearchMsPerTurn": 1500,
+          "medianSearchesPerTurn": 1
+        },
+        "late": {
+          "ownTurns": 3,
+          "medianWorkPerTurn": 22048,
+          "meanWorkPerTurn": 22079,
+          "minWorkPerTurn": 21528,
+          "maxWorkPerTurn": 22661,
+          "p25WorkPerTurn": 22048,
+          "p75WorkPerTurn": 22661,
+          "medianSearchMsPerTurn": 1500.1733329999988,
+          "medianSearchesPerTurn": 1
+        }
+      },
+      "ownTurnBuckets": {
+        "1-5": {
+          "ownTurns": 10,
+          "medianWorkPerTurn": 26938,
+          "meanWorkPerTurn": 29023,
+          "minWorkPerTurn": 22048,
+          "maxWorkPerTurn": 53782,
+          "p25WorkPerTurn": 24928,
+          "p75WorkPerTurn": 29276,
+          "medianSearchMsPerTurn": 1500,
+          "medianSearchesPerTurn": 1
+        },
+        "6-15": {
+          "ownTurns": 1,
+          "medianWorkPerTurn": 21528,
+          "meanWorkPerTurn": 21528,
+          "minWorkPerTurn": 21528,
+          "maxWorkPerTurn": 21528,
+          "p25WorkPerTurn": 21528,
+          "p75WorkPerTurn": 21528,
+          "medianSearchMsPerTurn": 1501.677042000003,
+          "medianSearchesPerTurn": 1
+        },
+        "16+": {
+          "ownTurns": 0
+        }
+      },
+      "weighting": {
+        "turnWeightedMedian": 26159,
+        "gameWeightedMedian": 26159,
+        "medianOfPerGameMedians": 26159,
+        "games": 1,
+        "ratio": 1,
+        "threshold": 0.25,
+        "flagged": false,
+        "note": "Turn-weighted and game-weighted medians agree within 25%."
+      },
+      "samples": [
+        {
+          "difficulty": "medium",
+          "opening": "p1-g6-s2",
+          "handicap": 0,
+          "turn": 1,
+          "seat": "black",
+          "work": 27717,
+          "searchMs": 1502.103750000002,
+          "searches": 1,
+          "ownTurnIndex": 0,
+          "ownTurns": 6,
+          "stage": "opening"
+        },
+        {
+          "difficulty": "medium",
+          "opening": "p1-g6-s2",
+          "handicap": 0,
+          "turn": 2,
+          "seat": "black",
+          "work": 24928,
+          "searchMs": 1500.0989999999947,
+          "searches": 1,
+          "ownTurnIndex": 1,
+          "ownTurns": 6,
+          "stage": "opening"
+        },
+        {
+          "difficulty": "medium",
+          "opening": "p1-g6-s2",
+          "handicap": 0,
+          "turn": 3,
+          "seat": "black",
+          "work": 29357,
+          "searchMs": 1500.1560420000023,
+          "searches": 1,
+          "ownTurnIndex": 2,
+          "ownTurns": 6,
+          "stage": "middle"
+        },
+        {
+          "difficulty": "medium",
+          "opening": "p1-g6-s2",
+          "handicap": 0,
+          "turn": 4,
+          "seat": "black",
+          "work": 26159,
+          "searchMs": 1500.1365000000005,
+          "searches": 1,
+          "ownTurnIndex": 3,
+          "ownTurns": 6,
+          "stage": "middle"
+        },
+        {
+          "difficulty": "medium",
+          "opening": "p1-g6-s2",
+          "handicap": 0,
+          "turn": 5,
+          "seat": "black",
+          "work": 22661,
+          "searchMs": 1500.0902079999942,
+          "searches": 1,
+          "ownTurnIndex": 4,
+          "ownTurns": 6,
+          "stage": "late"
+        },
+        {
+          "difficulty": "medium",
+          "opening": "p1-g6-s2",
+          "handicap": 0,
+          "turn": 6,
+          "seat": "black",
+          "work": 21528,
+          "searchMs": 1501.677042000003,
+          "searches": 1,
+          "ownTurnIndex": 5,
+          "ownTurns": 6,
+          "stage": "late"
+        },
+        {
+          "difficulty": "medium",
+          "opening": "p1-g6-s2",
+          "handicap": 0,
+          "turn": 2,
+          "seat": "white",
+          "work": 53782,
+          "searchMs": 3000.524083000004,
+          "searches": 2,
+          "ownTurnIndex": 0,
+          "ownTurns": 5,
+          "stage": "opening"
+        },
+        {
+          "difficulty": "medium",
+          "opening": "p1-g6-s2",
+          "handicap": 0,
+          "turn": 3,
+          "seat": "white",
+          "work": 29276,
+          "searchMs": 1500.885209,
+          "searches": 1,
+          "ownTurnIndex": 1,
+          "ownTurns": 5,
+          "stage": "opening"
+        },
+        {
+          "difficulty": "medium",
+          "opening": "p1-g6-s2",
+          "handicap": 0,
+          "turn": 4,
+          "seat": "white",
+          "work": 28349,
+          "searchMs": 1501.3889169999966,
+          "searches": 1,
+          "ownTurnIndex": 2,
+          "ownTurns": 5,
+          "stage": "middle"
+        },
+        {
+          "difficulty": "medium",
+          "opening": "p1-g6-s2",
+          "handicap": 0,
+          "turn": 5,
+          "seat": "white",
+          "work": 25949,
+          "searchMs": 1500.1635830000014,
+          "searches": 1,
+          "ownTurnIndex": 3,
+          "ownTurns": 5,
+          "stage": "middle"
+        },
+        {
+          "difficulty": "medium",
+          "opening": "p1-g6-s2",
+          "handicap": 0,
+          "turn": 6,
+          "seat": "white",
+          "work": 22048,
+          "searchMs": 1500.1733329999988,
+          "searches": 1,
+          "ownTurnIndex": 4,
+          "ownTurns": 5,
+          "stage": "late"
+        }
+      ]
+    }
+  },
+  "budgets": {
+    "hard": 51423,
+    "medium": 26159
+  },
+  "budgetRule": "A3 §3's \"median search work consumed per own turn\": the OVERALL median over every own turn of every sampled game, per engine — turn-weighted. Stage medians, absolute own-turn-bucket medians and the median of per-game medians are reported for context and are used by nothing; engines.<d>.weighting.flagged is true when the turn- and game-weighted medians differ by more than 25%.",
+  "workDefinition": "SearchBudget#spend units (src/ai/runtime.ts); the same counter fixedWork caps.",
+  "mode": "WALL, shipped whole-turn loop, scaleToBudget on, quick pace (hard 10,000 ms / medium 3,000 ms), full-length games (maxTurns 6) over all 1 dev openings at handicaps [0,3]."
+}

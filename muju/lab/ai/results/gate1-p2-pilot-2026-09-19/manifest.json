@@ -1,0 +1,371 @@
+{
+  "schema": "muju-gate1-v5",
+  "status": "complete",
+  "rulesVersion": "muju-phasing-2",
+  "amendment": "A3",
+  "rulesAmendment": "A4",
+  "startedAt": "2026-09-19T17:33:19.746Z",
+  "rowFirstStartedAt": "2026-09-19T17:33:19.744Z",
+  "mode": "pilot",
+  "seed": 20260962,
+  "shard": {
+    "index": 1,
+    "count": 1
+  },
+  "expectedGames": 16,
+  "rowGames": 16,
+  "pilotSeedChange": "A3 §5 named pilot seed 20260961; it was consumed by the pilot under muju-phasing-1 and A4 voided every Gate 1 game measured before it, so 20260961 now names a void population. This pilot uses 20260962, the next unused integer, so the two populations can never be confused. Row seed 20260960 is unchanged.",
+  "voidPilotSeeds": [
+    20260961
+  ],
+  "gamesFile": "games-shard-1-of-1.jsonl",
+  "schedule": [
+    {
+      "id": "Rush-h0-p0-white",
+      "pairId": "Rush-h0-p0",
+      "opponent": "Rush",
+      "handicap": 0,
+      "pair": 0,
+      "openingIndex": 0,
+      "openingId": "p1-g6-s2",
+      "startSha256": "fa6f26b0c87e23638e5cb6649ec1e8ed9697f268209ce60c6e3c99e2f7e09c98",
+      "seed": 827085297,
+      "hardSeat": "white"
+    },
+    {
+      "id": "Rush-h0-p0-black",
+      "pairId": "Rush-h0-p0",
+      "opponent": "Rush",
+      "handicap": 0,
+      "pair": 0,
+      "openingIndex": 0,
+      "openingId": "p1-g6-s2",
+      "startSha256": "fa6f26b0c87e23638e5cb6649ec1e8ed9697f268209ce60c6e3c99e2f7e09c98",
+      "seed": 827085297,
+      "hardSeat": "black"
+    },
+    {
+      "id": "Rush-h3-p0-white",
+      "pairId": "Rush-h3-p0",
+      "opponent": "Rush",
+      "handicap": 3,
+      "pair": 0,
+      "openingIndex": 0,
+      "openingId": "p1-g6-s2",
+      "startSha256": "9aefb230c739253cd8cbe70b61fe7ac4b023b1ad43bc0582a5790ea5ca52264e",
+      "seed": 1259105923,
+      "hardSeat": "white"
+    },
+    {
+      "id": "Rush-h3-p0-black",
+      "pairId": "Rush-h3-p0",
+      "opponent": "Rush",
+      "handicap": 3,
+      "pair": 0,
+      "openingIndex": 0,
+      "openingId": "p1-g6-s2",
+      "startSha256": "9aefb230c739253cd8cbe70b61fe7ac4b023b1ad43bc0582a5790ea5ca52264e",
+      "seed": 1259105923,
+      "hardSeat": "black"
+    },
+    {
+      "id": "Expand-h0-p0-white",
+      "pairId": "Expand-h0-p0",
+      "opponent": "Expand",
+      "handicap": 0,
+      "pair": 0,
+      "openingIndex": 0,
+      "openingId": "p1-g6-s2",
+      "startSha256": "fa6f26b0c87e23638e5cb6649ec1e8ed9697f268209ce60c6e3c99e2f7e09c98",
+      "seed": 1310485878,
+      "hardSeat": "white"
+    },
+    {
+      "id": "Expand-h0-p0-black",
+      "pairId": "Expand-h0-p0",
+      "opponent": "Expand",
+      "handicap": 0,
+      "pair": 0,
+      "openingIndex": 0,
+      "openingId": "p1-g6-s2",
+      "startSha256": "fa6f26b0c87e23638e5cb6649ec1e8ed9697f268209ce60c6e3c99e2f7e09c98",
+      "seed": 1310485878,
+      "hardSeat": "black"
+    },
+    {
+      "id": "Expand-h3-p0-white",
+      "pairId": "Expand-h3-p0",
+      "opponent": "Expand",
+      "handicap": 3,
+      "pair": 0,
+      "openingIndex": 0,
+      "openingId": "p1-g6-s2",
+      "startSha256": "9aefb230c739253cd8cbe70b61fe7ac4b023b1ad43bc0582a5790ea5ca52264e",
+      "seed": 1677814357,
+      "hardSeat": "white"
+    },
+    {
+      "id": "Expand-h3-p0-black",
+      "pairId": "Expand-h3-p0",
+      "opponent": "Expand",
+      "handicap": 3,
+      "pair": 0,
+      "openingIndex": 0,
+      "openingId": "p1-g6-s2",
+      "startSha256": "9aefb230c739253cd8cbe70b61fe7ac4b023b1ad43bc0582a5790ea5ca52264e",
+      "seed": 1677814357,
+      "hardSeat": "black"
+    },
+    {
+      "id": "Balanced-h0-p0-white",
+      "pairId": "Balanced-h0-p0",
+      "opponent": "Balanced",
+      "handicap": 0,
+      "pair": 0,
+      "openingIndex": 0,
+      "openingId": "p1-g6-s2",
+      "startSha256": "fa6f26b0c87e23638e5cb6649ec1e8ed9697f268209ce60c6e3c99e2f7e09c98",
+      "seed": 3165824485,
+      "hardSeat": "white"
+    },
+    {
+      "id": "Balanced-h0-p0-black",
+      "pairId": "Balanced-h0-p0",
+      "opponent": "Balanced",
+      "handicap": 0,
+      "pair": 0,
+      "openingIndex": 0,
+      "openingId": "p1-g6-s2",
+      "startSha256": "fa6f26b0c87e23638e5cb6649ec1e8ed9697f268209ce60c6e3c99e2f7e09c98",
+      "seed": 3165824485,
+      "hardSeat": "black"
+    },
+    {
+      "id": "Balanced-h3-p0-white",
+      "pairId": "Balanced-h3-p0",
+      "opponent": "Balanced",
+      "handicap": 3,
+      "pair": 0,
+      "openingIndex": 0,
+      "openingId": "p1-g6-s2",
+      "startSha256": "9aefb230c739253cd8cbe70b61fe7ac4b023b1ad43bc0582a5790ea5ca52264e",
+      "seed": 1805234676,
+      "hardSeat": "white"
+    },
+    {
+      "id": "Balanced-h3-p0-black",
+      "pairId": "Balanced-h3-p0",
+      "opponent": "Balanced",
+      "handicap": 3,
+      "pair": 0,
+      "openingIndex": 0,
+      "openingId": "p1-g6-s2",
+      "startSha256": "9aefb230c739253cd8cbe70b61fe7ac4b023b1ad43bc0582a5790ea5ca52264e",
+      "seed": 1805234676,
+      "hardSeat": "black"
+    },
+    {
+      "id": "aiv2-medium-h0-p0-white",
+      "pairId": "aiv2-medium-h0-p0",
+      "opponent": "aiv2-medium",
+      "handicap": 0,
+      "pair": 0,
+      "openingIndex": 0,
+      "openingId": "p1-g6-s2",
+      "startSha256": "fa6f26b0c87e23638e5cb6649ec1e8ed9697f268209ce60c6e3c99e2f7e09c98",
+      "seed": 1440236413,
+      "hardSeat": "white"
+    },
+    {
+      "id": "aiv2-medium-h0-p0-black",
+      "pairId": "aiv2-medium-h0-p0",
+      "opponent": "aiv2-medium",
+      "handicap": 0,
+      "pair": 0,
+      "openingIndex": 0,
+      "openingId": "p1-g6-s2",
+      "startSha256": "fa6f26b0c87e23638e5cb6649ec1e8ed9697f268209ce60c6e3c99e2f7e09c98",
+      "seed": 1440236413,
+      "hardSeat": "black"
+    },
+    {
+      "id": "aiv2-medium-h3-p0-white",
+      "pairId": "aiv2-medium-h3-p0",
+      "opponent": "aiv2-medium",
+      "handicap": 3,
+      "pair": 0,
+      "openingIndex": 0,
+      "openingId": "p1-g6-s2",
+      "startSha256": "9aefb230c739253cd8cbe70b61fe7ac4b023b1ad43bc0582a5790ea5ca52264e",
+      "seed": 2093458985,
+      "hardSeat": "white"
+    },
+    {
+      "id": "aiv2-medium-h3-p0-black",
+      "pairId": "aiv2-medium-h3-p0",
+      "opponent": "aiv2-medium",
+      "handicap": 3,
+      "pair": 0,
+      "openingIndex": 0,
+      "openingId": "p1-g6-s2",
+      "startSha256": "9aefb230c739253cd8cbe70b61fe7ac4b023b1ad43bc0582a5790ea5ca52264e",
+      "seed": 2093458985,
+      "hardSeat": "black"
+    }
+  ],
+  "bands": {
+    "path": "lab/harness/results/p2-scripted-2026-09-19/sanity-bands.json",
+    "sha256": "ef628b349bea28706541715ee2e03c69a2ec7ef548688f4dc241906bcca0e2b6",
+    "rulesVersion": "muju-phasing-2"
+  },
+  "openings": {
+    "path": "lab/hard-ai/ladder/openings/p1-dev.jsonl",
+    "sha256": "a58ca9d8aad304d82824ef38d7b12c776ea1547ba61a10cbfba1e387e78335c7",
+    "rows": 48,
+    "digest": "313d73abcf2023affe7e824edc7b51a14eac01543d5bd75e32d0fe3283243c8d",
+    "distinctStartPositions": {
+      "0": 47,
+      "3": 47
+    },
+    "collisions": [
+      {
+        "handicap": 0,
+        "sha256": "999ccab3da0e8bc54f7f3a412013fce77461bb199cc021493292b6c2a0a9a489",
+        "openingIds": [
+          "p1-g5-s245",
+          "p1-g3-s3"
+        ]
+      },
+      {
+        "handicap": 3,
+        "sha256": "681b44c34a0505b8ac630d133809981b22ac3ce5b9d9fb7ff4322d806336d4d5",
+        "openingIds": [
+          "p1-g5-s245",
+          "p1-g3-s3"
+        ]
+      }
+    ]
+  },
+  "calibration": {
+    "path": "lab/ai/results/gate1-provisional-calibration-2026-09-19/calibration.json",
+    "sha256": "daf149ee1df46bd273b4ff90381a3af5b2b67226db825cc6dedbc64800d669a9",
+    "accepted": true,
+    "acceptedKinds": [
+      "load"
+    ],
+    "acceptedReasons": [
+      "[load] 1-minute load average at start was 4.521484375, above the 1.5 an \"otherwise idle\" machine may carry (A3 §3); WALL-mode work is under-counted on a loaded box",
+      "[load] 1-minute load average at end was 4.16552734375, above the 1.5 an \"otherwise idle\" machine may carry (A3 §3); WALL-mode work is under-counted on a loaded box",
+      "[load] the highest 5-minute load average at any game boundary was 4.5380859375, above 2 = 1.0 for the calibration's own thread + 1 for everything else an \"otherwise idle\" machine may carry (A3 §3)"
+    ],
+    "acceptedByShard": [
+      {
+        "shard": "shard-1-of-1",
+        "kinds": [
+          "load"
+        ],
+        "reasons": [
+          "[load] 1-minute load average at start was 4.521484375, above the 1.5 an \"otherwise idle\" machine may carry (A3 §3); WALL-mode work is under-counted on a loaded box",
+          "[load] 1-minute load average at end was 4.16552734375, above the 1.5 an \"otherwise idle\" machine may carry (A3 §3); WALL-mode work is under-counted on a loaded box",
+          "[load] the highest 5-minute load average at any game boundary was 4.5380859375, above 2 = 1.0 for the calibration's own thread + 1 for everything else an \"otherwise idle\" machine may carry (A3 §3)"
+        ]
+      }
+    ],
+    "budgets": {
+      "hard": 51423,
+      "medium": 26159
+    },
+    "searchesPerTurnInCalibration": {
+      "hard": 1,
+      "medium": 1
+    },
+    "provisional": true,
+    "provisionalReason": "SHORT PROVISIONAL / INELIGIBLE: measured on a busy shared machine (1-minute load ~4.3 on 12 cores) over ONE dev opening at one handicap, capped at 6 own turns per engine and 6 full rounds per game, so it samples opening turns only and under-counts WALL-mode work. It exists solely to give the muju-phasing-2 plumbing pilot a number to run on; it is NOT a row budget. The eligible calibration is measured later by the coordinator on an idle machine (A3 3).",
+    "freshnessMeasuredFrom": "2026-09-19T17:33:19.744Z"
+  },
+  "host": {
+    "hostname": "The-Work-Box.local",
+    "cpuModel": "Apple M2 Max",
+    "cpuCount": 12,
+    "memoryGB": 103,
+    "platform": "darwin",
+    "arch": "arm64",
+    "sha256": "f93fe31b356217346aff0c56b3e84a6beb9c1546384071beacd309cda0fba2c0",
+    "node": "v24.11.1"
+  },
+  "git": "dfb551eabca8237db8b6e097d803979a1b1fcd88",
+  "gitStatus": "M muju/docs/hard-ai/phasing/M5-FLOOR-PREREGISTRATION-v2.md\n M muju/lab/ai/gate1-bot.ts\n M muju/lab/ai/gate1-calibrate.ts\n M muju/lab/ai/gate1-launch.ts\n M muju/lab/ai/gate1-references.json\n M muju/lab/ai/gate1-report.ts\n M muju/lab/ai/gate1-shard.ts\n M muju/lab/ai/gate1-sources.ts\n M muju/lab/ai/gate1-trace.ts\n M muju/lab/ai/gate1.ts\n M muju/lab/hard-ai/suites/phasing/contract.ts\n M muju/lab/hard-ai/suites/phasing/measure.ts\n M muju/lab/hard-ai/suites/phasing/veto.ts\n M muju/tests/lab/gate1-calibration.test.ts\n M muju/tests/lab/gate1-shard.test.ts\n M muju/tests/lab/gate1.test.ts\n M muju/tests/lab/suites-phasing-contract.test.ts\n M muju/tests/lab/suites-phasing-veto.test.ts\n?? muju/lab/ai/gate1-work.ts\n?? muju/lab/ai/results/gate1-p2-pilot-2026-09-19/\n?? muju/lab/ai/results/gate1-provisional-calibration-2026-09-19/",
+  "sourceIdentity": {
+    "sha256": "ac758bea0e0d882a3aedf45dbb6a3899a5702179790d67caf24f16f318521b2d",
+    "files": 144
+  },
+  "node": "v24.11.1",
+  "device": "Apple M2 Max / darwin/arm64",
+  "cpuCount": 12,
+  "loadBefore": [
+    4.06591796875,
+    4.39990234375,
+    4.7412109375
+  ],
+  "queue": {
+    "directory": "/private/tmp/muju-ready-heavy",
+    "slots": 2
+  },
+  "distinctnessReading": "A3 §2 distinctness is keyed on (hardSeat, gameSha256): two seat-mirrored games with identical action sequences are two experiments, not one, so a cleanly mirrored cell is not invalid by construction. Pair-level distinctness — the sampling unit every Elo interval is computed over — is unchanged and keys on the pair's two game hashes together, so a replicated PAIR (A2's failure mode) still counts once. Both counts are reported per cell: distinctGames (seat-keyed, gates cellValid) and distinctGameSequences (hash only, report-only).",
+  "note": "A3 allocation (distinct dev START POSITIONS, hashed games, calibrated budgets) at rules revision muju-phasing-2 (A4), with unchanged A1 acceptance read against the bands re-frozen under the 20-ply clock; pilots are ineligible. No worker unlock or responsiveness claim.",
+  "identityHash": "ed6ef7a6236e1e2429450335c44dcbfcb701d4d271d8bc2c79d07de1cbd00b0e",
+  "shardSchema": "muju-gate1-shard-v2",
+  "shardStatus": "complete",
+  "identity": {
+    "identityHash": "ed6ef7a6236e1e2429450335c44dcbfcb701d4d271d8bc2c79d07de1cbd00b0e",
+    "mode": "pilot",
+    "seed": 20260962,
+    "calibrationSha256": "daf149ee1df46bd273b4ff90381a3af5b2b67226db825cc6dedbc64800d669a9",
+    "sourceIdentitySha256": "ac758bea0e0d882a3aedf45dbb6a3899a5702179790d67caf24f16f318521b2d",
+    "openingsDigest": "313d73abcf2023affe7e824edc7b51a14eac01543d5bd75e32d0fe3283243c8d"
+  },
+  "completedGames": 16,
+  "resumedGames": 0,
+  "games": [
+    "Rush-h0-p0-white",
+    "Rush-h0-p0-black",
+    "Rush-h3-p0-white",
+    "Rush-h3-p0-black",
+    "Expand-h0-p0-white",
+    "Expand-h0-p0-black",
+    "Expand-h3-p0-white",
+    "Expand-h3-p0-black",
+    "Balanced-h0-p0-white",
+    "Balanced-h0-p0-black",
+    "Balanced-h3-p0-white",
+    "Balanced-h3-p0-black",
+    "aiv2-medium-h0-p0-white",
+    "aiv2-medium-h0-p0-black",
+    "aiv2-medium-h3-p0-white",
+    "aiv2-medium-h3-p0-black"
+  ],
+  "truncatedTailDropped": false,
+  "missingFinalNewlineRewritten": false,
+  "shardStartedAt": "2026-09-19T17:33:23.247Z",
+  "shardFinishedAt": "2026-09-19T17:55:21.665Z",
+  "playedGames": 16,
+  "adapter": {
+    "searchesPerTurnInRow": {
+      "hard": 2,
+      "medium": 1
+    },
+    "invalidSuffixes": {
+      "hard": 0,
+      "medium": 0
+    },
+    "allocation": "one allowance per own turn, spent across Act, upkeep and Prepare; each search is funded with the remainder less floor(budget / 8) per hand-off segment still to be searched, and is charged what it actually spent (gate1-bot.ts)"
+  },
+  "gate1": "pilot-ineligible",
+  "invalidCells": [],
+  "finishedAt": "2026-09-19T17:55:21.684Z",
+  "loadAfter": [
+    2.6669921875,
+    4.15380859375,
+    4.70556640625
+  ]
+}
