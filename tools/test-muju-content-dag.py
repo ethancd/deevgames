@@ -58,6 +58,30 @@ class ContentDagTests(unittest.TestCase):
         self.assertEqual(result['unmapped_paths'], [])
         self.assertIn('balance-analysis', {row['id'] for row in result['nodes']})
 
+    def test_rules_change_requires_hard_engine_parity_and_strength_evidence(self):
+        ids = [row['id'] for row in self.result(kinds=['rules'])['nodes']]
+        for node_id in ['hard-ai', 'ai-strength']:
+            self.assertIn(node_id, ids)
+            self.assertLess(ids.index('transitions'), ids.index(node_id))
+            self.assertLess(ids.index(node_id), ids.index('game-validation'))
+        self.assertLess(ids.index('hard-ai'), ids.index('ai-strength'))
+        self.assertIn('ai-strength', {row['id'] for row in self.result(kinds=['piece-stats'])['nodes']})
+
+    def test_variant_spec_hard_engine_and_strength_lab_are_mapped(self):
+        result = self.result(files=['muju/docs/PHASING-2026-09-16.md',
+                                    'muju/src/ai/hard/core/state.ts',
+                                    'muju/lab/hard-ai/ladder/run.ts',
+                                    'muju/tests/ai/hard/perft.test.ts',
+                                    'muju/docs/hard-ai/RELEASE-2026-09-18.md',
+                                    'muju/docs/hard-ai/e4/P7-HOME-VERDICT-DESIGN.md'])
+        self.assertEqual(result['unmapped_paths'], [])
+        self.assertEqual(result['historical_paths'], ['muju/docs/hard-ai/e4/P7-HOME-VERDICT-DESIGN.md'])
+        reasons = {row['id']: row['reasons'] for row in result['nodes']}
+        self.assertIn('file: muju/docs/PHASING-2026-09-16.md', reasons['rules-docs'])
+        self.assertIn('file: muju/src/ai/hard/core/state.ts', reasons['hard-ai'])
+        self.assertIn('file: muju/lab/hard-ai/ladder/run.ts', reasons['ai-strength'])
+        self.assertIn('file: muju/docs/hard-ai/RELEASE-2026-09-18.md', reasons['ai-strength'])
+
     def test_unmapped_file_is_reported(self):
         result = self.result(files=['muju/new-public-channel/content.json'])
         self.assertEqual(result['unmapped_paths'], ['muju/new-public-channel/content.json'])
