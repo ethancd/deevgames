@@ -1,9 +1,12 @@
-import type { Position, Unit } from '../../../src/game/types';
+import type { GameState, Position, Unit } from '../../../src/game/types';
 import type { AIAction } from '../../../src/ai/types';
 import type { BotView } from '../types';
 import { getUnitDefinition } from '../../../src/game/units';
 import { getUnitAt, manhattanDistance, getCell } from '../../../src/game/board';
 import { calculateAttackPower, calculateDefense } from '../../../src/game/combat';
+import { getMovementRange } from '../../../src/game/movement';
+import { getActionsPerTurn } from '../../../src/game/rules';
+import { getValidAnchors, getSpawnRectangle, isValidSpawnPosition } from '../../../src/game/spawning';
 import { unitEndOfTurnTake } from '../../../src/game/mining';
 
 export function myUnits(view: BotView): Unit[] {
@@ -92,19 +95,69 @@ export function byType<T extends AIAction['type']>(
   return legal.filter((a) => a.type === type) as Extract<AIAction, { type: T }>[];
 }
 
-/** Passive economy is a position choice. Prefer take gained over take abandoned. */
-export function withPassiveEconomy(view: BotView, action: AIAction, score: number): number {
-  if(action.type==='MOVE') {
-    const u=unitById(view,action.unitId);
-    if(!u)return score;
-    const delta=unitEndOfTurnTake(u,view.board.cells[action.to.y][action.to.x])-miningYieldAt(view,u);
-    return score+delta*45;
+/** One-turn delay: no purchase can mine, block, or attack in this turn. */
+export const ARRIVAL_DISCOUNT = 0.9;
+
+// A Prepare position offers hundreds of buys; compute enemy reach once per state/seat.
+const riskCache = new WeakMap<GameState, Map<string, Set<string>>>();
+export function safeCommitSquares(view: BotView): Set<string> {
+  let seats = riskCache.get(view.state);
+  if (!seats) { seats = new Map(); riskCache.set(view.state, seats); }
+  const cached = seats.get(view.player);
+  if (cached) return cached;
+  const threats = new Set<string>();
+  // Public enemy arrivals can also move on the intervening turn. Existing
+  // pieces alone cannot describe risk when the opponent has commitments.
+  const arrivals = view.pendingSummons.filter(s => s.owner === view.opponent &&
+    isValidSpawnPosition(s.position, s.owner, view.board));
+  const movers = [...enemyUnits(view), ...arrivals.map(s => ({
+    id: s.id, owner: s.owner, definitionId: s.definitionId, position: s.position,
+  }))];
+  for (const enemy of movers) {
+    const positions = [enemy.position, ...getMovementRange(enemy.position,
+      getUnitDefinition(enemy.definitionId).speed, getActionsPerTurn(view.state), view.board).map(p => p.position)];
+    for (const p of positions) threats.add(`${p.x},${p.y}`);
   }
-  if(action.type==='BUY_UNIT' && score>0) {
-    const def=getUnitDefinition(action.definitionId);
-    const reserve=view.board.cells[action.position.y][action.position.x].resourceLayers;
-    const target=def.mining>=2?view.me.startCorner:enemyCorner(view);
-    return score+Math.min(def.mining,reserve)*15-manhattanDistance(action.position,target)*3;
+  const safe = new Set<string>();
+  for (const anchor of getValidAnchors(view.player, view.board)) {
+    const rectangle = getSpawnRectangle(view.me.startCorner, anchor.position);
+    if (rectangle.every(p => !threats.has(`${p.x},${p.y}`))) {
+      for (const p of rectangle) safe.add(`${p.x},${p.y}`);
+    }
+  }
+  seats.set(view.player, safe);
+  return safe;
+}
+
+/** Count newly invalid enemy commitments if this unit remains at its destination.
+ * Canonical support checks retain alternative anchors and square occupation. */
+export function disruptedByMove(view: BotView, action: Extract<AIAction, { type: 'MOVE' }>): number {
+  if (!view.pendingSummons.some(s => s.owner === view.opponent)) return 0;
+  const board = { ...view.board, units: view.board.units.map(u => u.id === action.unitId ? { ...u, position: action.to } : u) };
+  return view.pendingSummons.filter(s => s.owner === view.opponent &&
+    isValidSpawnPosition(s.position, s.owner, view.board) && !isValidSpawnPosition(s.position, s.owner, board)).length;
+}
+
+/** Preserve the stance's vetoes; add passive income and cheap summon disruption. */
+export function withPassiveEconomy(view: BotView, action: AIAction, score: number): number {
+  if (action.type === 'MOVE') {
+    const u = unitById(view, action.unitId);
+    if (!u) return score;
+    const delta = unitEndOfTurnTake(u, view.board.cells[action.to.y][action.to.x]) - miningYieldAt(view, u);
+    const cheap = delta >= -1 && !enemyUnits(view).some(e =>
+      manhattanDistance(e.position, action.to) === 1 && calculateAttackPower(e, u) >= calculateDefense(u));
+    const disruption = score >= 0 && cheap ? disruptedByMove(view, action) * 65 : 0;
+    return score + delta * 45 + disruption;
+  }
+  if (action.type === 'BUY_UNIT' && score > 0) {
+    const def = getUnitDefinition(action.definitionId);
+    const reserve = view.board.cells[action.position.y][action.position.x].resourceLayers;
+    const target = def.mining >= 2 ? view.me.startCorner : enemyCorner(view);
+    const safe = safeCommitSquares(view).has(`${action.position.x},${action.position.y}`);
+    // The full buy preference and future mining value are discounted together.
+    // Risk is lost tempo, not lost material: a failed arrival refunds exactly.
+    return ARRIVAL_DISCOUNT * (score + Math.min(def.mining, reserve) * 15) -
+      manhattanDistance(action.position, target) * 3 - (safe ? 0 : 180);
   }
   return score;
 }

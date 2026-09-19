@@ -1,3 +1,4 @@
+import { phaseEndAction } from '../../../src/game/legality';
 import type { Element } from '../../../src/game/types';
 import type { ScriptedBot, BotContext } from '../types';
 import { getUnitDefinition } from '../../../src/game/units';
@@ -31,7 +32,7 @@ export function createMonoElementBot(element: Element): ScriptedBot {
         }
         return true;
       });
-      if (filtered.length === 0) return null;
+      if (filtered.length === 0) return phaseEndAction(ctx.view.state);
       return greedy.chooseAction({ ...ctx, legal: filtered });
     },
   };

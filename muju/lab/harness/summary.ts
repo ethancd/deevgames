@@ -23,6 +23,12 @@ export interface PairingSummary {
   aWinsAsBlack: number;
   gamesAasBlack: number;
   meanTurns: number;
+  aScore: number; // wins + half draws, divided by games
+  inactivityDrawRate: number;
+  purchasesPerGame: number; // both seats; includes refunded commitments
+  aPurchasesPerGame: number;
+  bPurchasesPerGame: number;
+  meanCompletedTurns: number;
   adjudicationRate: number;
   invariantViolations: number;
   illegalActionsTotal: number;
@@ -38,6 +44,8 @@ function variantOf(r: GameRecord): string {
   if (h && (h.white !== 0 || h.black !== 0)) {
     parts.push(`handicap=w${h.white}/b${h.black}`);
   }
+  if (r.rulesVersion) parts.push(r.rulesVersion);
+  if (r.handicap !== undefined) parts.push(`h${r.handicap}`);
   return parts.join(' ');
 }
 
@@ -85,7 +93,7 @@ export function summarize(records: GameRecord[]): PairingSummary[] {
           bWins++;
         }
       }
-      if (r.winType === 'adjudication') adjudications++;
+      if (r.adjudicated || r.winType === 'adjudication') adjudications++;
       illegal += r.players.white.illegalActions + r.players.black.illegalActions;
       turns.push(r.turns);
       durs.push(r.durationMs);
@@ -109,6 +117,12 @@ export function summarize(records: GameRecord[]): PairingSummary[] {
       aWinsAsBlack,
       gamesAasBlack,
       meanTurns: mean(turns),
+      aScore: (aWins + draws / 2) / recs.length,
+      inactivityDrawRate: recs.filter(r => r.inactivityDraw).length / recs.length,
+      purchasesPerGame: mean(recs.map(r => r.purchases.length)),
+      aPurchasesPerGame: mean(recs.map(r => r.purchases.filter(p => r.players[p.player].bot === botA).length)),
+      bPurchasesPerGame: mean(recs.map(r => r.purchases.filter(p => r.players[p.player].bot === botB).length)),
+      meanCompletedTurns: mean(recs.map(r => r.completedTurns ?? 0)),
       adjudicationRate: recs.length ? adjudications / recs.length : NaN,
       invariantViolations,
       illegalActionsTotal: illegal,
@@ -134,7 +148,7 @@ export function summaryToCsv(rows: PairingSummary[]): string {
     'gamesAasWhite',
     'aWinsAsBlack',
     'gamesAasBlack',
-    'meanTurns',
+    'meanTurns', 'aScore', 'inactivityDrawRate', 'purchasesPerGame', 'aPurchasesPerGame', 'bPurchasesPerGame', 'meanCompletedTurns',
     'adjudicationRate',
     'invariantViolations',
     'illegalActionsTotal',
@@ -158,7 +172,7 @@ export function summaryToCsv(rows: PairingSummary[]): string {
         r.gamesAasWhite,
         r.aWinsAsBlack,
         r.gamesAasBlack,
-        r.meanTurns.toFixed(1),
+        r.meanTurns.toFixed(1), r.aScore.toFixed(4), r.inactivityDrawRate.toFixed(4), r.purchasesPerGame.toFixed(3), r.aPurchasesPerGame.toFixed(3), r.bPurchasesPerGame.toFixed(3), r.meanCompletedTurns.toFixed(2),
         r.adjudicationRate.toFixed(3),
         r.invariantViolations,
         r.illegalActionsTotal,

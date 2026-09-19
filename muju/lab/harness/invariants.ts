@@ -1,6 +1,6 @@
 import type { GameState, PlayerId } from '../../src/game/types';
 import { BOARD_SIZE, INITIAL_RESOURCE_LAYERS } from '../../src/game/board';
-import { getActionsPerTurn } from '../../src/game/rules';
+import { getActionsPerTurn, isPhasing } from '../../src/game/rules';
 import { MAX_RESOURCE_RESERVE } from '../../src/game/resourceMap';
 
 
@@ -65,12 +65,29 @@ export function checkInvariants(state: GameState, context: string): void {
       throw new InvariantViolation(`${context}: ${player} negative resources`);
     }
     const grant = player === 'black' ? state.blackCrystalHandicap ?? 0 : 0;
-    if (p.resources > p.resourcesGained + grant) {
-      throw new InvariantViolation(`${context}: ${player} holds more than ever mined or granted`);
+    const escrow = (state.pendingSummons ?? []).filter(s => s.owner === player).reduce((n, s) => n + s.cost, 0);
+    if (p.resources + escrow > p.resourcesGained + grant) {
+      throw new InvariantViolation(`${context}: ${player} bank + pending cost exceeds all mined or granted resources`);
     }
   }
 
-  if (state.turn.actionsRemaining < 0 || state.turn.actionsRemaining > getActionsPerTurn(state)) {
+  const pendingSquares = new Set<string>();
+  const pendingIds = new Set<string>();
+  for (const summon of state.pendingSummons ?? []) {
+    const { x, y } = summon.position;
+    const key = `${summon.owner}:${x},${y}`;
+    if (!Number.isInteger(x) || !Number.isInteger(y) || x < 0 || x >= BOARD_SIZE || y < 0 || y >= BOARD_SIZE ||
+        !Number.isInteger(summon.cost) || summon.cost <= 0 || pendingSquares.has(key) || pendingIds.has(summon.id)) {
+      throw new InvariantViolation(`${context}: invalid or duplicate pending summon ${key}`);
+    }
+    pendingSquares.add(key); pendingIds.add(summon.id);
+  }
+  // Act consumes the budget; mine/upkeep sets it to zero before Prepare.
+  // Terminal home-occupation states can carry the incoming turn's reset budget.
+  if (isPhasing(state) && state.phase === 'playing' && state.turn.phase === 'place' && state.turn.actionsRemaining !== 0) {
+    throw new InvariantViolation(`${context}: Phasing Prepare/upkeep retains Act actions`);
+  }
+  if (!Number.isInteger(state.turn.actionsRemaining) || state.turn.actionsRemaining < 0 || state.turn.actionsRemaining > getActionsPerTurn(state)) {
     throw new InvariantViolation(`${context}: actionsRemaining ${state.turn.actionsRemaining} out of range`);
   }
 }
