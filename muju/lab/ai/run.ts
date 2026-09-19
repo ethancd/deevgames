@@ -6,7 +6,7 @@ import { cpus, platform, arch } from 'node:os';
 import { instantiateTactics } from '../../src/ai/wasm/kernel';
 import { AIEngineV2, TURN_BUDGET_MS } from '../../src/ai/engine-v2';
 import { SearchBudget } from '../../src/ai/runtime';
-import { tacticalFixtures } from './fixtures';
+import { phasingTacticalFixtures } from './fixtures';
 import { applyAction } from '../../src/ai/simulate';
 import { isLegalAction } from '../../src/game/legality';
 import { playGame } from '../harness/runner';
@@ -28,7 +28,7 @@ const metadata={schema:'muju-ai-validation-v1',mode,base:execFileSync('git',['re
 writeFileSync(`${out}/metadata.json`,JSON.stringify(metadata,null,2)+'\n');
 if(mode==='tactics') {
   const rows=[];
-  for(const f of tacticalFixtures()) {
+  for(const f of phasingTacticalFixtures()) {
     const b=new SearchBudget(), result=solver(f.state,f.targetId,600000,b);
     const solverMs=b.finish().elapsedMs;
     if(result.status!==f.expected)throw new Error(`Wrong proof status: ${f.name}`);
@@ -45,7 +45,7 @@ if(mode==='tactics') {
     }
   }
   writeFileSync(`${out}/tactics.json`,JSON.stringify(rows,null,2)+'\n');
-  console.log(JSON.stringify({out,fixtures:tacticalFixtures().length,decisions:rows.length,expectedRescues:rows.filter(r=>r.expected==='proved').length,cleared:rows.filter(r=>r.expected==='proved'&&r.cleared).length}));
+  console.log(JSON.stringify({out,fixtures:phasingTacticalFixtures().length,decisions:rows.length,expectedRescues:rows.filter(r=>r.expected==='proved').length,cleared:rows.filter(r=>r.expected==='proved'&&r.cleared).length}));
 } else if(mode==='league') {
   // Explicit screening override; never label these results as the UI ladder.
   const opponents=(process.env.AI_OPPONENTS??'Rush,Expand,Balanced,Turtle,Tier1Spam,MiningDenial,AntiRush,Random').split(',');
