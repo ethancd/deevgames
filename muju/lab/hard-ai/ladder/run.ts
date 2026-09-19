@@ -149,7 +149,16 @@ import { buildPairs, expandPair, type GameSpec, type Orientation, type PairAssig
 import type { GameRow, PairRow, FailureRow, ShardConfig, SprtStopSignal } from './worker';
 import { SHARD_CONFIG_FILE, SPRT_STOP_FILE, readShardStatus } from './worker';
 import { HARD_DIVERGENCE_ANOMALY } from '../bots/hard';
-import { INITIAL_OPENING, loadOpenings, sha256, validateOpenings, type OpeningSpec } from './openings';
+import { INITIAL_OPENING, loadOpenings, sha256, type OpeningSpec } from './openings';
+import { LADDER_RULES_VERSION, validateLadderOpenings } from './ruleset';
+import {
+  FALLBACK_KINDS,
+  addFallbackCounts,
+  describeFallbacks,
+  emptyFallbackCounts,
+  fallbackTotal,
+  type FallbackCounts,
+} from './fallbacks';
 import { resolveEngine, parseWorkSpec, workKey, engineHasWork, type WorkSpec } from './engines';
 import { runSharded } from './shard';
 import {
@@ -549,8 +558,12 @@ export function parseArgs(argv: string[]): CliArgs {
     // guard in this function both describe the openings the run will use, not
     // the ones the file happens to hold.
     openings = selectOpenings(file.openings, { skip: openingsSkip, ids: openingsSelectedIds });
-    // Legal-by-replay or the run does not start (EPIC-PLAN E1).
-    validateOpenings(openings, handicaps);
+    // Legal-by-replay UNDER THIS RUN'S RULE SET, or the run does not start
+    // (EPIC-PLAN E1). `validateLadderOpenings` refuses a book that is not the
+    // P1 (Phasing) one before it replays anything, so an E0/E1 Standard id can
+    // never be relabelled as Phasing and measured as though it were — the
+    // harness would build a Phasing state and replay Standard actions into it.
+    validateLadderOpenings(openings, handicaps);
   }
 
   const args: CliArgs = {
@@ -974,8 +987,29 @@ export interface EngineTiming {
  * appearance rather than hashed as they stand; no clock is read at all, because
  * a `ReplayStep` carries none. Two pairs that played the same moves therefore
  * digest identically, which is what `distinctGames` counts.
+ *
+ * RULES-BOUND, AND PENDING SUMMONS COUNT. Two things were invisible to the
+ * digest before Phasing existed and both had to be added, or `distinctGames`
+ * would under-count:
+ *
+ *  - the RULES REVISION is hashed first. The same action list means a different
+ *    game under Standard and under Phasing (`END_ACTION_PHASE` hands off in one
+ *    and mines in the other), so two rows that must never be pooled must never
+ *    collide here either. Defaults to the historical Standard spelling when a
+ *    caller passes none, so every digest of an archived replay is unchanged.
+ *  - PENDING SUMMONS are part of the position. They are public, they are paid
+ *    for, and they are the whole mechanism of the rule set: two games that
+ *    differ only in which squares each side committed to are DIFFERENT games,
+ *    and a digest over board units alone would call them one. They are hashed
+ *    in the same shape `lab/harness/runner.ts#snapshotStep` records — owner,
+ *    definition, square, paid cost, no ids (a summon's id is minted per
+ *    process) — sorted so the recording order cannot change the digest, which
+ *    is the rule `openings/phasing.ts#gameplayDigest` follows.
  */
-export function canonicalGameDigest(steps: readonly ReplayStep[]): string {
+export function canonicalGameDigest(
+  steps: readonly ReplayStep[],
+  rulesVersion: string = 'muju-standard',
+): string {
   const alias = new Map<string, string>();
   const idOf = (unitId: string): string => {
     const known = alias.get(unitId);
@@ -994,6 +1028,17 @@ export function canonicalGameDigest(steps: readonly ReplayStep[]): string {
       default: return action;
     }
   };
+  /** The step's commitments, canonicalised: sorted by owner then row-major
+   * square then definition then cost, ids dropped. `null` for a step recorded
+   * before the field existed, which is every archived Standard replay — the
+   * absence is hashed, so an archive digest cannot collide with a Phasing one
+   * that happens to hold no summons. */
+  const canonicalPending = (step: ReplayStep): unknown => {
+    if (step.pendingSummons === undefined) return null;
+    return step.pendingSummons
+      .map(s => [s.o, s.y, s.x, s.d, s.cost] as const)
+      .sort((a, b) => String(a[0]).localeCompare(String(b[0])) || a[1] - b[1] || a[2] - b[2] || String(a[3]).localeCompare(String(b[3])) || a[4] - b[4]);
+  };
   const body = steps.map(step => [
     step.ply,
     step.turn,
@@ -1004,8 +1049,9 @@ export function canonicalGameDigest(steps: readonly ReplayStep[]): string {
     step.units,
     step.cells,
     step.res,
+    canonicalPending(step),
   ]);
-  return sha256(JSON.stringify(body));
+  return sha256(JSON.stringify([rulesVersion, body]));
 }
 
 /**
@@ -1053,7 +1099,7 @@ export function computeDistinctGames(args: CliArgs, games: readonly GameRow[]): 
     if (row.replayPath !== undefined) {
       try {
         const replay = JSON.parse(fs.readFileSync(path.resolve(args.out, row.replayPath), 'utf8')) as ReplayFile;
-        digest = canonicalGameDigest(replay.steps);
+        digest = canonicalGameDigest(replay.steps, replay.meta?.rulesVersion ?? row.rulesVersion ?? 'muju-standard');
         fromReplay++;
       } catch {
         digest = null; // no replay to read: the tuple below is what this run has
@@ -1121,6 +1167,24 @@ export interface RunMetrics {
   /** `hard@*` seats whose plan the canonical engine refused mid-turn
    * (M14; `lab/hard-ai/bots/hard.ts`, recorded per game by `worker.ts`). */
   replicaDivergences: number;
+  /**
+   * The six ENGINE FALLBACK counts summed over every game of the run
+   * (`ladder/fallbacks.ts`; `GameRow.fallbacks` per game). Gate 0 item 6 of
+   * `docs/hard-ai/PHASING-PREREGISTRATION-2026-09-18.md` requires ZERO of each:
+   * a fallback means part of the game was played by the V2 path, so the row is
+   * not the comparison it claims to be. Any non-zero field VOIDS the row, next
+   * to `illegalActions` and `replicaDivergences`, which the same clause vetoes.
+   */
+  fallbacks: FallbackCounts;
+  /** Total over the six — 0 for a clean run, and what the veto tests. */
+  fallbackTotal: number;
+  /**
+   * False when NO game in the run carried a `fallbacks` field, i.e. every row
+   * predates the counters. The totals above are then 0 because nothing was
+   * measured, not because nothing happened, so they may not be read as evidence
+   * for Gate 0 — and `voidReason` says so instead of passing the gate silently.
+   */
+  fallbacksRecorded: boolean;
   /** Anomalies naming a timing problem, plus games decided by `winType: 'timeout'`. */
   timingAnomalies: number;
   /** Every anomaly in every game, counted by kind (`anomalyKind`). */
@@ -1142,9 +1206,11 @@ export interface RunMetrics {
   seatMirrored: boolean;
   /**
    * True when this comparison row may not be reported as a result: an
-   * adjudication rate over 1% (SU addendum 2) or an arm whose `overrunRate`
-   * exceeds `OVERRUN_RATE_VOID_THRESHOLD` (AMENDMENTS-DECIDED A14). A voided
-   * run's `decision` is `'void'`, with or without an SPRT.
+   * adjudication rate over 1% (SU addendum 2), an arm whose `overrunRate`
+   * exceeds `OVERRUN_RATE_VOID_THRESHOLD` (AMENDMENTS-DECIDED A14), or any
+   * illegal action, replica divergence or engine fallback at all (Gate 0 item 6
+   * of `docs/hard-ai/PHASING-PREREGISTRATION-2026-09-18.md`). A voided run's
+   * `decision` is `'void'`, with or without an SPRT.
    */
   voided: boolean;
   /** Why the run is void — every reason that fired, joined with `; `. Null when it is not. */
@@ -1205,6 +1271,63 @@ export function overrunRateVoidReasons(a: string, b: string, timing: { a: Engine
       `timing.${key}.overrunRate ${(t.overrunRate * 100).toFixed(2)}% (${t.overruns}/${t.turns} turns) for arm ` +
         `${key} = ${key === 'a' ? a : b} exceeds the ${(OVERRUN_RATE_VOID_THRESHOLD * 100).toFixed(0)}% ceiling ` +
         '(AMENDMENTS-DECIDED A14): this comparison row is VOID',
+    );
+  }
+  return out;
+}
+
+/**
+ * GATE 0 ITEM 6's veto, as one reason string per violation.
+ *
+ * > In every ladder game: 0 illegal actions, 0 replica divergences, 0 engine
+ * > fallbacks (packError, engineError, divergence, invalidSuffix, emptyPlan,
+ * > workerError). A fallback means the game was partly V2 vs V2.
+ *
+ * This is a CORRECTNESS bar, not a rate: one fallback is one turn of the row
+ * played by a different engine than the row's name says, so the threshold is
+ * zero and there is nothing to average. The three counts are reported
+ * separately because they say different things about where the failure was —
+ * the runner refusing the engine's action (`illegalActions`), the adapter
+ * refusing its own replica's plan (`replicaDivergences`), and the engine
+ * handing back nothing usable at all (`fallbacks`) — and the fallback vector
+ * names which of the six kinds fired.
+ *
+ * `recorded` false means no game carried the counters: the run cannot show it
+ * met the bar, which is itself a reason the row may not be reported under a
+ * preregistration that requires the evidence.
+ */
+export function gate0VoidReasons(counts: {
+  illegalActions: number;
+  replicaDivergences: number;
+  fallbacks: FallbackCounts;
+  recorded: boolean;
+  games: number;
+}): string[] {
+  const out: string[] = [];
+  if (counts.illegalActions > 0) {
+    out.push(
+      `illegalActions ${counts.illegalActions} exceeds the 0 the preregistration requires ` +
+        '(PHASING-PREREGISTRATION-2026-09-18 Gate 0 item 6): this comparison row is VOID',
+    );
+  }
+  if (counts.replicaDivergences > 0) {
+    out.push(
+      `replicaDivergences ${counts.replicaDivergences} exceeds the 0 the preregistration requires ` +
+        '(Gate 0 item 6): the replica proposed actions the canonical rules refused, so those turns fell ' +
+        'back to the V2 path — this comparison row is VOID',
+    );
+  }
+  const total = fallbackTotal(counts.fallbacks);
+  if (total > 0) {
+    out.push(
+      `engine fallbacks ${total} (${describeFallbacks(counts.fallbacks)}) exceed the 0 the preregistration ` +
+        'requires (Gate 0 item 6): a fallback means the game was partly V2 vs V2 — this comparison row is VOID',
+    );
+  }
+  if (!counts.recorded && counts.games > 0) {
+    out.push(
+      'engine fallbacks were NOT recorded by any game in this run (every row predates GameRow.fallbacks), ' +
+        'so Gate 0 item 6 cannot be shown to hold: this comparison row is VOID',
     );
   }
   return out;
@@ -1296,6 +1419,11 @@ export function computeMetrics(args: CliArgs, games: readonly GameRow[], pairs: 
   let adjudicated = 0;
   let illegalActions = 0;
   let replicaDivergences = 0;
+  // Gate 0 item 6: the six fallback kinds, summed over every game that recorded
+  // them. `fallbacksRecorded` stays false for a run of rows written before the
+  // field existed, so six zeros are never mistaken for six measured zeros.
+  const fallbacks = emptyFallbackCounts();
+  let fallbacksRecorded = false;
   let timingAnomalies = 0;
   let unattributedGames = 0;
   let wins = 0, draws = 0, losses = 0;
@@ -1312,6 +1440,10 @@ export function computeMetrics(args: CliArgs, games: readonly GameRow[], pairs: 
     }
     if (rec.winType === 'adjudication') adjudicated++;
     illegalActions += rec.players.white.illegalActions + rec.players.black.illegalActions;
+    if (rec.fallbacks !== undefined) {
+      fallbacksRecorded = true;
+      addFallbackCounts(fallbacks, rec.fallbacks);
+    }
     if (rec.winType === 'timeout') timingAnomalies++;
     for (const anomaly of rec.anomalies) {
       const kind = anomalyKind(anomaly);
@@ -1437,6 +1569,9 @@ export function computeMetrics(args: CliArgs, games: readonly GameRow[], pairs: 
     voidReasons.push(`adjudicationRate ${(adjudicationRate * 100).toFixed(2)}% exceeds 1% (SU addendum 2)`);
   }
   voidReasons.push(...overrunRateVoidReasons(args.a, args.b, timing));
+  voidReasons.push(
+    ...gate0VoidReasons({ illegalActions, replicaDivergences, fallbacks, recorded: fallbacksRecorded, games: games.length }),
+  );
   const voided = voidReasons.length > 0;
   const voidReason = voided ? voidReasons.join('; ') : null;
   const eloDetail = pairScores.length > 0 ? eloEstimate(pairScores) : null;
@@ -1497,6 +1632,9 @@ export function computeMetrics(args: CliArgs, games: readonly GameRow[], pairs: 
     adjudicationRate,
     illegalActions,
     replicaDivergences,
+    fallbacks,
+    fallbackTotal: fallbackTotal(fallbacks),
+    fallbacksRecorded,
     timingAnomalies,
     anomalyCounts,
     wins,
@@ -1597,7 +1735,10 @@ export interface RunManifest {
     signalledAtPair: number | null;
     pairsPlayedBeyondDecision: number;
   } | null;
-  rules: { elementGraph: string; upkeep: string; inactivityRule: string };
+  /** The rule set and the three module-global knobs every game was played
+   * under. `rulesVersion` is `GameRecord.rulesVersion`'s value, recorded here so
+   * a manifest alone says which rule set the row measures. */
+  rules: { rulesVersion: string; elementGraph: string; upkeep: string; inactivityRule: string };
   argv: string[];
   git: string | null;
   gitDirty: boolean | null;
@@ -1672,7 +1813,7 @@ export function buildManifest(args: CliArgs, schedule: readonly PairAssignment[]
     schedule: schedule.map(p => ({ pairId: p.pairId, pairIndex: p.pairIndex, openingId: p.openingId, handicap: p.handicap, seed: p.seed })),
     resumedPairIds: [...resumedPairIds],
     sprtStop: null,
-    rules: { elementGraph: 'double-thick', upkeep: 'shipped', inactivityRule: 'on' },
+    rules: { rulesVersion: LADDER_RULES_VERSION, elementGraph: 'double-thick', upkeep: 'shipped', inactivityRule: 'on' },
     argv: args.argv,
     git: gitRevision(),
     gitDirty: gitDirty(),
@@ -1732,6 +1873,17 @@ export function summaryMarkdown(metrics: RunMetrics): string {
     `- adjudicationRate: ${(metrics.adjudicationRate * 100).toFixed(2)}%${metrics.adjudicationRate > 0.01 ? ' — **VOIDED** (> 1%, SU addendum 2)' : ''}`,
     metrics.voidReason === null ? null : `- **VOID** ${metrics.voidReason}`,
     `- illegalActions: ${metrics.illegalActions}, replicaDivergences: ${metrics.replicaDivergences}, timingAnomalies: ${metrics.timingAnomalies}`,
+    // Gate 0 item 6: the six kinds, always printed, because "0 of each" is the
+    // claim the gate needs stated rather than inferred from an absent line.
+    `- engine fallbacks (Gate 0 item 6, must be 0): ${
+      metrics.fallbacksRecorded
+        ? `${metrics.fallbackTotal} total` +
+          (metrics.fallbackTotal === 0
+            ? ''
+            : ` — ${describeFallbacks(metrics.fallbacks)} — **VOID**: a fallback means the game was partly V2 vs V2`)
+        : 'NOT RECORDED (every row predates GameRow.fallbacks) — **VOID**: the gate cannot be shown to hold'
+    }`,
+    `  - ${FALLBACK_KINDS.map(k => `${k} ${metrics.fallbacks[k]}`).join(', ')}`,
     `- bothSeatsPlayed: ${metrics.bothSeatsPlayed}, seatMirrored: ${metrics.seatMirrored}`,
     metrics.eloDetail
       ? `- Elo (A vs B): ${metrics.elo.toFixed(1)} [${metrics.eloLo.toFixed(1)}, ${metrics.eloHi.toFixed(1)}],` +

@@ -1,3 +1,9 @@
+> **Current Phasing corpus:** [ALLOCATION-P1.md](ALLOCATION-P1.md) freezes P1.
+> The E0/E1/E2/E4 text and files below are historical Standard evidence.
+> Their original generator/tests are reproducible at `standard-final`.
+> Current `generate.ts` and `split.ts` generate Phasing only; do not rerun the
+> historical commands against this checkout. Archive hash/legality tests remain.
+
 # E0 opening set
 
 `e0-openings.jsonl` is the frozen opening set for the E0 ladder (EPIC-PLAN

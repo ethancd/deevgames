@@ -7,9 +7,7 @@ import { applyOpening, gameplayDigest, loadOpenings, validateOpenings } from '..
 import {
   REQUIRED_HANDICAPS,
   assertDiverse,
-  generateOpenings,
   loadExclusions,
-  renderOpeningSpecs,
 } from '../../lab/hard-ai/ladder/openings/generate';
 
 /**
@@ -116,16 +114,5 @@ describe('e2-val.jsonl: no collision with the five earlier pools', () => {
   });
 });
 
-describe('e2-val.jsonl: regeneration', () => {
-  it('reproduces the committed bytes from seed 2029 with the same exclusions', () => {
-    const result = generateOpenings({
-      count: E2_VAL_COUNT,
-      seed: E2_VAL_SEED,
-      idPrefix: E2_VAL_ID_PREFIX,
-      maxAttempts: E2_VAL_MAX_ATTEMPTS,
-      exclude: loadExclusions(EXCLUDED_FILES.map(n => path.join(DIR, n))),
-    });
-    expect(result.openings.length).toBe(E2_VAL_COUNT);
-    expect(renderOpeningSpecs(result.openings.map(o => o.spec))).toBe(committed.toString('utf8'));
-  });
-});
+// Byte regeneration is historical Standard evidence, reproducible at standard-final.
+// The committed hashes, legality, uniqueness and exclusion checks above remain active.

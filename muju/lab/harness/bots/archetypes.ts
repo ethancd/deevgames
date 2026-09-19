@@ -1,3 +1,4 @@
+import { phaseEndAction } from '../../../src/game/legality';
 import { withPassiveEconomy } from './bot-utils';
 import type { ScriptedBot, BotContext } from '../types';
 import type { AIAction } from '../../../src/ai/types';
@@ -41,7 +42,7 @@ function chooseFrom(ctx: BotContext, scorer: (a: AIAction) => number): AIAction 
   const best = pickBest(ctx.rng, ctx.legal, a => withPassiveEconomy(ctx.view, a, scorer(a)));
   if (!best) return null;
   if (withPassiveEconomy(ctx.view, best, scorer(best)) <= 0) {
-    return ctx.legal.find((a) => a.type === 'END_ACTION_PHASE' || a.type === 'END_PLACE_PHASE') ?? null;
+    return phaseEndAction(ctx.view.state);
   }
   return best;
 }
@@ -150,10 +151,11 @@ export function createBalancedBot(): ScriptedBot {
     name: 'Balanced',
     chooseAction(ctx: BotContext) {
       const { view } = ctx;
-      const fighters = view.board.units.filter(
+      const army = [...view.board.units, ...view.pendingSummons];
+      const fighters = army.filter(
         (u) => u.owner === view.player && getUnitDefinition(u.definitionId).attack >= 2
       ).length;
-      const miners = view.board.units.filter(
+      const miners = army.filter(
         (u) => u.owner === view.player && getUnitDefinition(u.definitionId).mining >= 2
       ).length;
       return chooseFrom(ctx, (a) => {

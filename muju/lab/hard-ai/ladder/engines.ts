@@ -66,6 +66,7 @@ import type { Bot, EngineBot } from '../../harness/types';
 import { createBot as createScriptedRegistryBot, botNames } from '../../harness/bots/index';
 import { createHardBot, hardConfigFor, hardConfigHash } from '../bots/hard';
 import { AIV2_RESIGN_DEFAULT, FAST_THROUGHPUT, resolvedConfig as resolveConfigFor, resolvedConfigHash } from './identity';
+import { noteLadderFallback } from './fallbacks';
 
 export type WorkSpec = { mode: 'fixed'; units: number } | { mode: 'wall'; ms: number };
 
@@ -196,7 +197,13 @@ export function createAiv2Bot(difficulty: AIDifficulty, fast: boolean, work: Wor
       const startedAt = Date.now();
       const result = await current.findBestAction(state, budget.mode === 'wall' ? budget.ms : undefined);
       if (work.mode === 'wall') remainingMs = Math.max(0, remainingMs - (Date.now() - startedAt));
-      if (result.plan.actions.length === 0) return null;
+      if (result.plan.actions.length === 0) {
+        // Gate 0 item 6's `emptyPlan`: the search produced nothing and the
+        // runner substitutes `phaseEndAction`. Counted, not changed — the
+        // behaviour is what it always was (`ladder/fallbacks.ts`).
+        noteLadderFallback('emptyPlan');
+        return null;
+      }
       return result.plan.actions[0];
     },
   };
@@ -265,6 +272,9 @@ export function createAiv2TurnBot(difficulty: AIDifficulty, work: WorkSpec, opti
         if (work.mode === 'wall') remainingMs = Math.max(0, remainingMs - (Date.now() - startedAt));
         plan = result.plan.actions;
         planIndex = 0;
+        // Gate 0 item 6's `emptyPlan`, noted only for a SEARCH that came back
+        // with nothing — not for a plan that was handed out to its last action.
+        if (plan.length === 0) noteLadderFallback('emptyPlan');
       }
       if (planIndex >= plan.length) return null;
       const action = plan[planIndex++];

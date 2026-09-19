@@ -1,0 +1,50 @@
+{
+  "typechecks": {
+    "npx tsc -p lab/tsconfig.json --noEmit": "passed",
+    "npx tsc -p lab/hard-ai/tsconfig.json --noEmit": "passed"
+  },
+  "runs": [
+    {
+      "command": "npx vitest run tests/lab/{harness,phasing-harness,phasing-evidence,openings-p1,openings-set,openings-allocation,openings-e2-val}.test.ts",
+      "total": 79,
+      "passed": 79,
+      "failed": 0,
+      "pending": 0,
+      "failures": []
+    },
+    {
+      "command": "MUJU_HEAVY_DIR=/private/tmp/muju-t1-test-heavy-queue npx vitest run tests/lab",
+      "total": 605,
+      "passed": 600,
+      "failed": 5,
+      "pending": 0,
+      "failures": [
+        {
+          "file": "tests/lab/analyze.test.ts",
+          "test": "analyze: the runner's unrecorded no-op phase-end injection reconstructs a replay whose white seat triggered the injection",
+          "message": "Error: white: ply 3 (white MOVE): phase diverged: rebuilt action, recorded place"
+        },
+        {
+          "file": "tests/lab/analyze.test.ts",
+          "test": "analyze: the runner's unrecorded no-op phase-end injection reconstructs a replay whose black seat triggered the injection",
+          "message": "Error: black: ply 1 (white END_ACTION_PHASE): phase diverged: rebuilt action, recorded place"
+        },
+        {
+          "file": "tests/lab/ladder-runner.test.ts",
+          "test": "lab/hard-ai/ladder/run end to end plays both orientations of a pair from the same opening, and the opening travels with each replay",
+          "message": "AssertionError: expected 'incomplete' to be 'complete' // Object.is equality"
+        },
+        {
+          "file": "tests/lab/ladder-runner.test.ts",
+          "test": "lab/hard-ai/ladder/run end to end writes a summary.md whose openings line lists the ids the run PLAYED, not the pool it drew from",
+          "message": "AssertionError: expected 'incomplete' to be 'complete' // Object.is equality"
+        },
+        {
+          "file": "tests/lab/profile.test.ts",
+          "test": "corpus builders builds e1-dev positions at game turn 6 for a small opening set",
+          "message": "Error: Phasing harness refuses a non-Phasing initialState; replay P1 openings with openings/phasing.ts"
+        }
+      ]
+    }
+  ]
+}

@@ -2,7 +2,7 @@
  * `hard:profile` — E4.1's cost-and-completion instrument (`docs/hard-ai/e4/E4-PLAN.md`
  * lane 1, `EPIC-PLAN-2026-09-16.md` §4 E4.1).
  *
- * `node --import tsx lab/hard-ai/bench/profile.ts --set <p8|e1-losses|e1-dev>
+ * `node --import tsx lab/hard-ai/bench/profile.ts --set <p8|e1-losses|p1-dev>
  *   (--work <units> | --wall <ms>) [--engine hard@desktop] [--out <file>]
  *   [--budget-ms <n>] [--sample-interval-us <n>] [--limit <n>]`
  *
@@ -69,7 +69,8 @@ import type { GameState, PlayerId } from '../../../src/game/types';
 import { hardEnginePatch } from '../bots/hard';
 import { createBot as createScriptedBot } from '../../harness/bots/index';
 import { playGame } from '../../harness/runner';
-import { applyOpening, type OpeningSpec } from '../ladder/openings';
+import { loadOpenings, type OpeningSpec } from '../ladder/openings';
+import { LADDER_RULES_VERSION, applyLadderOpening } from '../ladder/ruleset';
 import { loadReplay, reconstruct, withMatchRules, type LoadedReplay, type ReconstructedTurn } from '../analyze/replay';
 import { DEFAULT_MATCH_OPTIONS } from '../../harness/types';
 import { resolveEngine, parseWorkSpec, workKey, type WorkSpec } from '../ladder/engines';
@@ -263,7 +264,7 @@ class InProcessProfiler {
 
 export interface Position {
   id: string;
-  set: 'p8' | 'e1-losses' | 'e1-dev';
+  set: 'p8' | 'e1-losses' | 'p1-dev';
   label: string;
   side: PlayerId;
   turnNumber: number;
@@ -499,50 +500,58 @@ export function buildE1LossPositions(): { positions: Position[]; skipped: Skippe
   return { positions, skipped };
 }
 
-// --- (c) 16 e1-dev openings, at game turn 6 ---------------------------------
-// `lab/hard-ai/ladder/openings/e1-dev.jsonl` carries only the OPENING (a few
+// --- (c) 16 p1-dev openings, at game turn 6 ---------------------------------
+// `lab/hard-ai/ladder/openings/p1-dev.jsonl` carries only the OPENING (a few
 // setup moves), not a game, so there is no replay to reconstruct from; a short
 // Rush-vs-Rush game is played from each opening (fast, deterministic, no
-// engine search involved) up to `E1_DEV_TARGET_TURN + 1` full rounds, recorded
+// engine search involved) up to `P1_DEV_TARGET_TURN + 1` full rounds, recorded
 // in memory, and handed to `analyze/replay.ts`'s own reconstruction so the
 // resulting position is built through the SAME canonical-replay-and-compare
 // path every other set uses, rather than trusted from the game loop directly.
-// White's turn at game turn `E1_DEV_TARGET_TURN` (the position white faces
+// White's turn at game turn `P1_DEV_TARGET_TURN` (the position white faces
 // after black's turn 5) is the position profiled; a game that ended earlier
 // (a Rush-vs-Rush home race, rare but possible) is skipped, not substituted.
-const E1_DEV_TARGET_TURN = 6;
-const E1_DEV_COUNT = 16;
+//
+// PHASING, NOT E1. This set used to read `e1-dev.jsonl`, the E1 Standard book.
+// It cannot any more, and not merely as a matter of taste: `lab/harness/runner.ts`
+// refuses a non-Phasing `initialState`, and a Standard opening replayed into a
+// Phasing state would be a position no game of either rule set reaches. The P1
+// dev book (`p1-dev.jsonl`, allocation frozen in `openings/ALLOCATION-P1.md`) is
+// the dev split of the Phasing corpus, and it is the only openings file a
+// profile of the current engine may draw from — dev only, never `p1-val.jsonl`
+// and never the sealed file, which the preregistration spends once.
+const P1_DEV_TARGET_TURN = 6;
+const P1_DEV_COUNT = 16;
 /** Arbitrary, fixed, and irrelevant to any statistical claim: this set carries
  * descriptive rows only (`E4-PLAN.md` "Openings"), so no `seed = 20260940 + n`
  * ledger rule applies to it. */
-const E1_DEV_SEED_BASE = 20264100;
+const P1_DEV_SEED_BASE = 20264100;
 
-function readE1DevOpenings(limit: number): OpeningSpec[] {
-  const file = path.resolve(REPO_ROOT, 'lab/hard-ai/ladder/openings/e1-dev.jsonl');
-  const lines = fs
-    .readFileSync(file, 'utf8')
-    .split('\n')
-    .map(l => l.trim())
-    .filter(l => l.length > 0);
-  return lines.slice(0, limit).map(l => JSON.parse(l) as OpeningSpec);
+function readP1DevOpenings(limit: number): OpeningSpec[] {
+  // `loadOpenings` parses and validates every row (id shape, action shape, no
+  // `{id, state}` form), which a bare `JSON.parse` per line did not.
+  const file = path.resolve(REPO_ROOT, 'lab/hard-ai/ladder/openings/p1-dev.jsonl');
+  return loadOpenings(file).openings.slice(0, limit);
 }
 
-export async function buildE1DevPositions(limit = E1_DEV_COUNT): Promise<{ positions: Position[]; skipped: SkippedPosition[] }> {
-  const openings = readE1DevOpenings(limit);
+export async function buildP1DevPositions(limit = P1_DEV_COUNT): Promise<{ positions: Position[]; skipped: SkippedPosition[] }> {
+  const openings = readP1DevOpenings(limit);
   const positions: Position[] = [];
   const skipped: SkippedPosition[] = [];
   for (let i = 0; i < openings.length; i++) {
     const opening = openings[i];
-    const id = `e1-dev:${opening.id}:turn${E1_DEV_TARGET_TURN}`;
-    const openingState = applyOpening(opening);
-    const seed = E1_DEV_SEED_BASE + i;
+    const id = `p1-dev:${opening.id}:turn${P1_DEV_TARGET_TURN}`;
+    // Replayed through `openings/phasing.ts`: a Phasing initial state, the
+    // `p1-` id check, and the harness invariants after every action.
+    const openingState = applyLadderOpening(opening);
+    const seed = P1_DEV_SEED_BASE + i;
     const { record, replay } = await playGame({
       bots: { white: createScriptedBot('Rush'), black: createScriptedBot('Rush') },
       seed,
-      engineHash: 'profile:e1-dev-build:rush-v-rush',
-      runId: `profile-e1-dev-${opening.id}`,
+      engineHash: 'profile:p1-dev-build:rush-v-rush',
+      runId: `profile-p1-dev-${opening.id}`,
       initialState: openingState,
-      options: { maxTurns: E1_DEV_TARGET_TURN + 1, recordReplay: true, legality: 'as-shipped', checkInvariants: true },
+      options: { maxTurns: P1_DEV_TARGET_TURN + 1, recordReplay: true, legality: 'as-shipped', checkInvariants: true },
     });
     if (replay === null) throw new Error('profile: recordReplay was requested but playGame returned no replay');
     const loaded: LoadedReplay = {
@@ -552,20 +561,24 @@ export async function buildE1DevPositions(limit = E1_DEV_COUNT): Promise<{ posit
       meta: record,
       options: { ...DEFAULT_MATCH_OPTIONS, ...(record.options ?? {}) },
       opening,
+      // The runner stamps `rulesVersion` on the record it just returned; this is
+      // that same rule set, spelled out so the reconstruction is rules-bound
+      // rather than defaulted.
+      ruleset: record.rulesVersion === LADDER_RULES_VERSION ? 'phasing' : 'standard',
     };
     const recon = reconstruct(loaded);
-    const turn = recon.bySide.white.find(t => t.turnNumber === E1_DEV_TARGET_TURN);
+    const turn = recon.bySide.white.find(t => t.turnNumber === P1_DEV_TARGET_TURN);
     if (turn === undefined) {
       skipped.push({
         id,
-        set: 'e1-dev',
-        reason: `the Rush-vs-Rush game (seed ${seed}) ended (winType ${record.winType}) before white's turn ${E1_DEV_TARGET_TURN}`,
+        set: 'p1-dev',
+        reason: `the Rush-vs-Rush game (seed ${seed}) ended (winType ${record.winType}) before white's turn ${P1_DEV_TARGET_TURN}`,
       });
       continue;
     }
     positions.push({
       id,
-      set: 'e1-dev',
+      set: 'p1-dev',
       label: opening.id,
       side: 'white',
       turnNumber: turn.turnNumber,
@@ -846,7 +859,7 @@ function formatArtifactMarkdown(a: ProfileArtifact): string {
 // --- CLI ---------------------------------------------------------------------
 
 export interface ProfileRunArgs {
-  set: 'p8' | 'e1-losses' | 'e1-dev';
+  set: 'p8' | 'e1-losses' | 'p1-dev';
   work: WorkSpec;
   engine: string;
   budgetMs: number;
@@ -860,8 +873,8 @@ export async function buildPositions(args: ProfileRunArgs): Promise<{ positions:
       ? buildP8Positions(args.work)
       : args.set === 'e1-losses'
         ? buildE1LossPositions()
-        : await buildE1DevPositions(args.limit ?? E1_DEV_COUNT);
-  if (args.set !== 'e1-dev' && args.limit !== null) {
+        : await buildP1DevPositions(args.limit ?? P1_DEV_COUNT);
+  if (args.set !== 'p1-dev' && args.limit !== null) {
     return { positions: built.positions.slice(0, args.limit), skipped: built.skipped };
   }
   return built;
@@ -913,8 +926,8 @@ function parseArgs(argv: string[]): { args: ProfileRunArgs; out: string | null }
   const set = get('--set');
   const workArg = get('--work');
   const wallArg = get('--wall');
-  if (set !== 'p8' && set !== 'e1-losses' && set !== 'e1-dev') {
-    throw new Error('profile: --set must be p8, e1-losses or e1-dev');
+  if (set !== 'p8' && set !== 'e1-losses' && set !== 'p1-dev') {
+    throw new Error('profile: --set must be p8, e1-losses or p1-dev');
   }
   if ((workArg === null) === (wallArg === null)) {
     throw new Error('profile: pass exactly one of --work <units> or --wall <ms>');

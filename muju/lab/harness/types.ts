@@ -1,4 +1,4 @@
-import type { GameState, PlayerId, BoardState, TurnPhase, PlayerState } from '../../src/game/types';
+import type { GameState, PlayerId, BoardState, TurnPhase, PlayerState, PendingSummon } from '../../src/game/types';
 import type { AIAction } from '../../src/ai/types';
 import type { Rng } from './rng';
 
@@ -7,6 +7,8 @@ export interface BotView {
   state: GameState; player: PlayerId; opponent: PlayerId;
   phase: TurnPhase; actionsRemaining: number; turnNumber: number; board: BoardState;
   me: PlayerState; enemy: PlayerState;
+  /** Public commitments for BOTH players, inert until their next own turn. */
+  pendingSummons: readonly PendingSummon[];
 }
 
 export interface BotContext {
@@ -121,9 +123,9 @@ export interface MatchOptions {
   victoryRule?: GameState['victoryRule'];
   upkeep?: 'shipped'|'steep'|'off';
   inactivityRule?: 'on'|'off';
-  /** Cap on full rounds (turnNumber). Past it the game is adjudicated. */
+  /** Absolute full-round ceiling. Adjudicate after Black completes Prepare, at the next White Act root. */
   maxTurns: number;
-  /** Hard safety cap on plies (single actions). */
+  /** Emergency single-decision cap, including both phase ends and manual upkeep. May stop mid-turn. */
   maxPlies: number;
   /**
    * 'as-shipped': engine-bot actions apply even if illegal (mirrors the real
@@ -152,8 +154,8 @@ export interface MatchOptions {
 
 export const DEFAULT_MATCH_OPTIONS: MatchOptions = {
   maxTurns: 120,
-  maxPlies: 8000,
-  legality: 'as-shipped',
+  maxPlies: 50000,
+  legality: 'strict',
   recordReplay: false,
   checkInvariants: true,
   elementGraph: 'double-thick',
@@ -183,8 +185,10 @@ export interface PlayerGameStats {
   finalResources: number;
   resourcesGained: number;
   resourcesSpent: number; // derived telemetry: gained minus bank
+  finalPendingCost?: number; // refundable commitments, separate from actual material
   finalMaterial: number; // sum of on-board unit costs at end
 
+  /** Purchase commitments, including ones later refunded; retained field name for consumers. */
   unitsPlaced: number;
   promotions: number;
   /** Units placed or promoted into each tier (placement counts the placed tier). */
@@ -235,6 +239,10 @@ export interface MaterialSample {
 /** One JSONL row per game. */
 export interface GameRecord {
   schema: 'muju-lab-game-v2' | 'muju-lab-game-v3';
+  /** Missing only in historical Standard artifacts. */
+  rulesVersion?: 'muju-phasing-1';
+  completedTurns?: number; // player turns ended via END_PLACE_PHASE during this run
+  capReason?: 'round-cap' | 'ply-cap';
   maxInactivityPlies?: number;
   inactivityDraw?: boolean;
   upkeepElimination?: boolean;
@@ -290,7 +298,7 @@ export interface GameRecord {
   /** v3: starting black-crystal handicap for this game (`MatchOptions.blackCrystalHandicap`, default 0). */
   handicap?: number;
   /** v3: the formula used to break adjudicated games. Always `'material+bank'` today (SU addendum 2). */
-  adjudicationFormula?: 'material+bank';
+  adjudicationFormula?: 'material+bank' | 'material+bank+pending-cost';
   incomeCurve: {player:PlayerId;turn:number;income:number;remaining:number;zeroReserveUnits:number;byTier:Record<string,number>;byElement:Record<string,number>;bank:number;tier1Share:number}[];
   round90Exhaustion: number|null;
   purchases: {player:PlayerId;turn:number;definitionId:string}[];
@@ -318,6 +326,7 @@ export interface ReplayStep {
     dmg: number;
   }>;
   /** 100 reserves in row-major order; 10 is a single cell value. */
+  pendingSummons?: Array<{ o: PlayerId; d: string; x: number; y: number; cost: number }>;
   cells: number[];
   res: Record<PlayerId, { r: number; g: number; s: number }>; // resources, gained, spent
 }

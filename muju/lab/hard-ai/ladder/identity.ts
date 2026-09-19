@@ -32,6 +32,32 @@
  * and the same hash. That is the point of hashing the configuration instead of
  * the name. The engine NAME still survives in `configHash`'s prefix, so the two
  * rows stay distinguishable in a manifest.
+ *
+ * 3. WHAT RULES IS THIS? `rulesVersion` — `LADDER_RULES_VERSION`, the revision
+ *    `lab/harness/runner.ts` stamps on every `GameRecord` — is the FIRST field
+ *    of every resolved configuration, so it is inside `resolvedConfigHash` and
+ *    therefore inside `engines.ts`'s `LadderEngine.configHash`, every
+ *    `GameRecord.engineHash` and every `manifest.aConfigHash`.
+ *
+ *    WHY IT IS IN THE HASH AND NOT BESIDE IT. `hard@desktop` at `wall:8000` is
+ *    not one engine: under Standard and under Phasing it plays a different game,
+ *    from a different opening book, for a different result. Two such rows share
+ *    their name, their work rung and every field of their `HardConfig`, so
+ *    before this they hashed IDENTICALLY — and anything that pools rows by
+ *    configuration hash (an Elo pool, a `hard:ladder` re-run check, a
+ *    cross-row rung comparison) would have merged them without a word. The
+ *    rules revision makes that structurally impossible instead of a convention
+ *    someone has to remember.
+ *
+ *    CONSEQUENCE, stated rather than hidden: every resolved-configuration hash
+ *    MOVED when Phasing became the ladder's rule set. The Standard-era hashes
+ *    recorded in `lab/results/**` manifests (and pinned in
+ *    `tests/lab/ablate.test.ts`) belong to `muju-standard` rows and cannot be
+ *    reproduced by this tree, which is the separation working, not a
+ *    regression: a Phasing tree must not be able to mint a Standard row's
+ *    identity. `PHASING-PREREGISTRATION-2026-09-18.md` ("Keep ruleset identity
+ *    in future benchmark manifests, packed state/hash formats, opening corpora
+ *    and strength comparisons") is the requirement this satisfies.
  */
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
@@ -44,6 +70,7 @@ import { EMPTY_BOOK } from '../../../src/ai/hard/book/format';
 import { DEFAULT_WEIGHTS } from '../../../src/ai/hard/eval/weights';
 import type { AIDifficulty } from '../../../src/ai/types';
 import { hardEnginePatch } from '../bots/hard';
+import { LADDER_RULES_VERSION } from './ruleset';
 import type { WorkSpec } from './engines';
 
 /** Repository root of the game package (`muju/`). */
@@ -92,6 +119,13 @@ export interface SourceIdentity {
 export interface BaselineIdentity {
   git: GitIdentity;
   sources: SourceIdentity;
+  /**
+   * The rule set this tree's ladder measures under, as `GameRecord.rulesVersion`
+   * spells it. Part of the identity because the same `src/` tree plays two
+   * different games: a row is only comparable with another row of the same rules
+   * revision.
+   */
+  rulesVersion: typeof LADDER_RULES_VERSION;
 }
 
 function sha256(data: Buffer | string): string {
@@ -139,6 +173,7 @@ function gitIdentity(): GitIdentity {
 export function baselineIdentity(): BaselineIdentity {
   return {
     git: gitIdentity(),
+    rulesVersion: LADDER_RULES_VERSION,
     sources: {
       ai: hashTree('src/ai'),
       game: hashTree('src/game'),
@@ -217,7 +252,15 @@ export interface ResolvedLifecycle {
   searchesPerTurn: 'one' | 'one-per-action';
 }
 
-export interface ResolvedAiv2Config {
+/**
+ * The one field every resolved configuration carries, whatever the engine: the
+ * rules revision the row is played under (see the module header, clause 3).
+ */
+export interface ResolvedRules {
+  rulesVersion: typeof LADDER_RULES_VERSION;
+}
+
+export interface ResolvedAiv2Config extends ResolvedRules {
   engine: 'aiv2' | 'aiv2-turn';
   difficulty: AIDifficulty;
   fast: boolean;
@@ -229,7 +272,7 @@ export interface ResolvedAiv2Config {
   tacticalSolver: 'wasm-tactics-or-reference-fallback';
 }
 
-export interface ResolvedHardConfig {
+export interface ResolvedHardConfig extends ResolvedRules {
   engine: 'hard';
   /** The `HardConfig` `HardEngine`'s constructor ends up with (label excluded: see the module header). */
   config: HardConfig;
@@ -238,7 +281,7 @@ export interface ResolvedHardConfig {
   resign: boolean;
 }
 
-export interface ResolvedScriptedConfig {
+export interface ResolvedScriptedConfig extends ResolvedRules {
   engine: 'scripted';
   bot: string;
 }
@@ -311,6 +354,7 @@ export function resolvedConfig(name: string, work: WorkSpec): ResolvedConfig {
   if (turn) {
     const difficulty = turn[1] as AIDifficulty;
     return {
+      rulesVersion: LADDER_RULES_VERSION,
       engine: 'aiv2-turn',
       difficulty,
       fast: false,
@@ -324,6 +368,7 @@ export function resolvedConfig(name: string, work: WorkSpec): ResolvedConfig {
   if (name.startsWith('hard@')) {
     const label = name.slice('hard@'.length);
     return {
+      rulesVersion: LADDER_RULES_VERSION,
       engine: 'hard',
       config: hardResolvedConfig(label),
       budget: {
@@ -343,6 +388,7 @@ export function resolvedConfig(name: string, work: WorkSpec): ResolvedConfig {
     const difficulty = aiv2[1] as AIDifficulty;
     const fast = aiv2[2] === '-fast';
     return {
+      rulesVersion: LADDER_RULES_VERSION,
       engine: 'aiv2',
       difficulty,
       fast,
@@ -353,7 +399,7 @@ export function resolvedConfig(name: string, work: WorkSpec): ResolvedConfig {
       tacticalSolver: 'wasm-tactics-or-reference-fallback',
     };
   }
-  return { engine: 'scripted', bot: name };
+  return { rulesVersion: LADDER_RULES_VERSION, engine: 'scripted', bot: name };
 }
 
 /** sha256 of the canonical serialisation of `resolvedConfig(name, work)`. */

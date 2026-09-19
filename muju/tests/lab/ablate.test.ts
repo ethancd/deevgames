@@ -135,12 +135,30 @@ function weightArmLabel(name: (typeof ALL_WEIGHT_ARMS)[number]): string {
 }
 
 /**
- * `hard@lab`/`hard@desktop` at `wall:3000`, as recorded in
- * `lab/results/hard-ai-e1/analyze/g3-s1_0_1-B-white.json`
- * (`recordedEngineConfigHash`, black seat). `LAB` and `DESKTOP` are the same
+ * `hard@lab`/`hard@desktop` at `wall:3000`. `LAB` and `DESKTOP` are the same
  * shape, so the two labels share it.
+ *
+ * THIS VALUE MOVED WHEN PHASING BECAME THE LADDER'S RULE SET, and the move is
+ * the point. `ladder/identity.ts` now carries the RULES REVISION inside every
+ * resolved configuration (see its module header, clause 3): `hard@desktop` at
+ * `wall:3000` plays a different game under Standard and under Phasing, from a
+ * different opening book, for a different result, with every `HardConfig` field
+ * identical — so before this the two hashed the same and anything pooling rows
+ * by configuration hash would have merged them silently.
+ *
+ * The STANDARD-era value was
+ * `4e7afdf76b32fadfab2d11577cb610c8f9f1a491b5153e70b87b0774403600cd`, and it is
+ * what `lab/results/hard-ai-e1/analyze/g3-s1_0_1-B-white.json`
+ * (`recordedEngineConfigHash`, black seat) and the E4 ablation manifests under
+ * `lab/results/hard-ai-e4/ablate/**` record. Those artifacts are Standard rows
+ * and this tree cannot mint their identity any more, which is the separation
+ * working rather than a regression: a Phasing tree must not be ABLE to. The
+ * value below is the `muju-phasing-1` identity of the same arm.
  */
-const DESKTOP_WALL3000_HASH = '4e7afdf76b32fadfab2d11577cb610c8f9f1a491b5153e70b87b0774403600cd';
+const DESKTOP_WALL3000_HASH = '7be9acc41692edfc956f91bd5c4ce59282d4113aa4a18ba495491649e5dd8eab';
+/** The same arm's Standard identity, kept so the two can never be confused and
+ * so a reader of an E1/E4 manifest can find the hash it quotes. */
+const DESKTOP_WALL3000_HASH_STANDARD = '4e7afdf76b32fadfab2d11577cb610c8f9f1a491b5153e70b87b0774403600cd';
 
 function hardConfigOf(name: string): ResolvedHardConfig['config'] {
   const resolved = resolvedConfig(name, ARM_HASH_WORK);
@@ -423,7 +441,9 @@ describe('ablation arm registry (E1.3: one factor per arm, full configurations r
     expect(searchFixKey({ iterFit: true })).toBe('iterFit');
 
     expect(arm.configHash).not.toBe(DESKTOP_WALL3000_HASH);
-    expect(arm.configHash).toBe('a1ea79648ff83c6920fe63be751bf350f0630ffffa5dd3dd017c704ddaea30e7');
+    // Standard-era value: a1ea79648ff83c6920fe63be751bf350f0630ffffa5dd3dd017c704ddaea30e7
+    // (see DESKTOP_WALL3000_HASH's note: the rules revision is in the hash now).
+    expect(arm.configHash).toBe('6d2e074cf7e446506cf240ecf0788b9b90d2c5994d599ec7f3213a42ca54565a');
     expect(hardConfigFor('ablate:search-iter-fit').searchFix?.iterFit).toBe(true);
     expect(hardConfigFor('desktop').searchFix).toBeUndefined();
   });
@@ -451,7 +471,8 @@ describe('ablation arm registry (E1.3: one factor per arm, full configurations r
     expect(searchFixKey({ iterFit: true, reachCache: true })).toBe('iterFit+reachCache');
 
     expect(arm.configHash).not.toBe(DESKTOP_WALL3000_HASH);
-    expect(arm.configHash).toBe('5ba2c2fc352d4715f790f9ce0fdb6e1b4926d1c49edce923f8169f88fdad0a51');
+    // Standard-era value: 5ba2c2fc352d4715f790f9ce0fdb6e1b4926d1c49edce923f8169f88fdad0a51.
+    expect(arm.configHash).toBe('2e54160e9e7cf293af49ec2dcc17e3666974fa86295a0fd1391a15845087493a');
     expect(hardConfigFor('ablate:search-reach-cache').searchFix?.reachCache).toBe(true);
     expect(hardConfigFor('desktop').searchFix).toBeUndefined();
   });
@@ -516,6 +537,10 @@ describe('E4.2 search arms (factor `searchFix`)', () => {
     expect(canonicalJson(DESKTOP)).not.toContain('searchFix');
     expect(resolvedConfigHash('hard@desktop', { mode: 'wall', ms: 3000 })).toBe(DESKTOP_WALL3000_HASH);
     expect(requireArm('base').configHash).toBe(DESKTOP_WALL3000_HASH);
+    // The Standard identity of the same arm is a DIFFERENT hash, and this tree
+    // can no longer produce it (`ladder/identity.ts`, clause 3).
+    expect(DESKTOP_WALL3000_HASH).not.toBe(DESKTOP_WALL3000_HASH_STANDARD);
+    expect(requireArm('base').configHash).not.toBe(DESKTOP_WALL3000_HASH_STANDARD);
     expect(requireArm('search-tie-break').configHash).not.toBe(DESKTOP_WALL3000_HASH);
   });
 

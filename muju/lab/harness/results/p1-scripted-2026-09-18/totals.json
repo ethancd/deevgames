@@ -1,0 +1,15 @@
+{
+  "games": 840,
+  "illegalActions": 0,
+  "invariantFailures": 0,
+  "inactivityDraws": 416,
+  "adjudications": 0,
+  "meanCompletedTurns": 29.98095238095238,
+  "purchasesPerGame": 38.35952380952381,
+  "endLoad": [
+    85.5380859375,
+    73.00341796875,
+    46.48388671875
+  ],
+  "completedAt": "2026-09-19T02:35:49.036Z"
+}

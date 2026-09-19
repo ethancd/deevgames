@@ -1,6 +1,22 @@
 /**
  * Opening-position input for the ladder (EPIC-PLAN E0.4).
  *
+ * THIS MODULE IS THE STANDARD (HISTORICAL) REPLAY PATH. Everything below —
+ * `initialStateFor`, `applyOpening`, `validateOpenings`, `gameplayDigest` —
+ * builds and digests a `ruleset: 'standard'` position, which is what every
+ * E0/E1/E2/E3/E4 book in `openings/` was generated and measured under. It is
+ * unchanged, deliberately, so those corpora's hashes, digests and legality
+ * tests still describe the same positions.
+ *
+ * A CURRENT (PHASING) RUN DOES NOT COME HERE. `lab/harness/runner.ts` refuses a
+ * non-Phasing `initialState`, and the P1 book is replayed by
+ * `openings/phasing.ts`. The ladder's loader, worker and analyser go through
+ * `ladder/ruleset.ts`, which owns the mapping from an opening to its rule set,
+ * refuses a Standard id relabelled as Phasing, and dispatches to the helpers
+ * that own each side. The PARSER, the id rule, the file loader and the
+ * `OpeningAction` form in this file are shared by both rule sets — only the
+ * replay and the digest are rules-bound.
+ *
  * An openings file is JSONL, one object per line:
  *
  *   {"id": "<stable id>", "actions": [<OpeningAction>, ...]}
@@ -208,9 +224,11 @@ export function withOpeningRules<T>(options: OpeningStateOptions, fn: () => T): 
   }
 }
 
-/** The canonical initial state an opening (and every game) starts from. */
+/** The canonical STANDARD initial state a historical opening starts from. A
+ * current Phasing run uses `openings/phasing.ts#initialStateFor` instead, via
+ * `ladder/ruleset.ts#initialStateForRules`. */
 export function initialStateFor(options: OpeningStateOptions = {}): GameState {
-  return createInitialGameState(options.resourceLayout, options.actionsPerTurn, options.blackCrystalHandicap);
+  return createInitialGameState(options.resourceLayout, options.actionsPerTurn, options.blackCrystalHandicap, 'standard');
 }
 
 function unitIdAt(state: GameState, pos: Position, where: string): string {

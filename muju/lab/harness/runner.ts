@@ -32,13 +32,22 @@ function otherPlayer(p: PlayerId): PlayerId {
 export function buildView(state: GameState, player: PlayerId): BotView {
   const opponent = otherPlayer(player);
   return { state, player, opponent, phase:state.turn.phase, actionsRemaining:state.turn.actionsRemaining,
-    turnNumber:state.turn.turnNumber, board:state.board, me:state.players[player], enemy:state.players[opponent] };
+    turnNumber:state.turn.turnNumber, board:state.board, me:state.players[player], enemy:state.players[opponent], pendingSummons:state.pendingSummons ?? [] };
 }
 
 function onBoardMaterial(state: GameState, player: PlayerId): number {
   return state.board.units
     .filter((u) => u.owner === player)
     .reduce((sum, u) => sum + getUnitDefinition(u.definitionId).cost, 0);
+}
+
+export function pendingCost(state: GameState, player: PlayerId): number {
+  return (state.pendingSummons ?? []).filter(s => s.owner === player).reduce((n, s) => n + s.cost, 0);
+}
+
+/** Commitments are refundable escrow, never immediate board material. */
+export function adjudicationScore(state: GameState, player: PlayerId): number {
+  return onBoardMaterial(state, player) + state.players[player].resources + pendingCost(state, player);
 }
 
 function unitCount(state: GameState, player: PlayerId): number {
@@ -66,6 +75,7 @@ function snapshotStep(state: GameState, ply: number, actor: PlayerId, action: AI
       y: u.position.y,
       dmg: u.damageTaken,
     })),
+    pendingSummons: (state.pendingSummons ?? []).map(s => ({ o: s.owner, d: s.definitionId, x: s.position.x, y: s.position.y, cost: s.cost })),
     cells,
     res,
   };
@@ -120,7 +130,9 @@ async function playGameInner(args: PlayGameArgs, options: MatchOptions): Promise
   const startedAt = new Date().toISOString();
   const t0 = Date.now();
 
-  let state = args.initialState ?? createInitialGameState(options.resourceLayout, options.actionsPerTurn, options.blackCrystalHandicap);
+  let state = args.initialState ?? createInitialGameState(options.resourceLayout, options.actionsPerTurn, options.blackCrystalHandicap, 'phasing');
+  if (state.ruleset !== 'phasing') throw new Error('Phasing harness refuses a non-Phasing initialState; replay P1 openings with openings/phasing.ts');
+  state = { ...state };
   if (args.initialState && options.checkInvariants) checkInvariants(state, 'supplied opening position');
   state.victoryRule = options.victoryRule;
   state.inactivityRule = options.inactivityRule;
@@ -150,6 +162,8 @@ async function playGameInner(args: PlayGameArgs, options: MatchOptions): Promise
   let winner: PlayerId | null = null;
   let winType: WinType | null = null;
   let ply = 0;
+  let completedTurns = 0;
+  let capReason: GameRecord['capReason'];
   let lastSampledTurn = 0;
   let consecutiveNoops = 0;
   let maxInactivityPlies=0;
@@ -157,7 +171,7 @@ async function playGameInner(args: PlayGameArgs, options: MatchOptions): Promise
   stats.white.zeroStockpileTurns=state.players.white.resources===0?1:0;
 
   if (options.recordReplay) {
-    steps.push(snapshotStep(state, 0, 'white', null)); // initial position
+    steps.push(snapshotStep(state, 0, state.turn.currentPlayer, null)); // initial position
   }
 
   gameLoop: while (true) {
@@ -183,8 +197,9 @@ async function playGameInner(args: PlayGameArgs, options: MatchOptions): Promise
     // Caps → adjudication
     if (state.turn.turnNumber > options.maxTurns || ply >= options.maxPlies) {
       if (ply >= options.maxPlies) anomalies.push(`ply-cap ${options.maxPlies} hit`);
-      const scoreW = onBoardMaterial(state, 'white') + state.players.white.resources;
-      const scoreB = onBoardMaterial(state, 'black') + state.players.black.resources;
+      capReason = ply >= options.maxPlies ? 'ply-cap' : 'round-cap';
+      const scoreW = adjudicationScore(state, 'white');
+      const scoreB = adjudicationScore(state, 'black');
       if (scoreW === scoreB) {
         winner = null;
         winType = 'draw';
@@ -269,16 +284,15 @@ async function playGameInner(args: PlayGameArgs, options: MatchOptions): Promise
     ply++;
     stats[player].plies++;
 
+    if (applied && action.type === 'END_PLACE_PHASE') completedTurns++;
+
     // No-op guard: a bot stuck emitting actions the simulator rejects would
     // spin forever (applyAction returns the same reference on invalid input).
     if (!applied) {
       consecutiveNoops++;
       anomalies.push(`noop action by ${player} at ply ${ply}: ${action.type}`);
       if (consecutiveNoops >= 3) {
-        state =
-          state.turn.phase === 'place'
-            ? applyAction(state, { type: 'END_PLACE_PHASE' })
-            : applyAction(state, { type: 'END_ACTION_PHASE' });
+        state = applyAction(state, phaseEndAction(state));
         consecutiveNoops = 0;
       }
     } else {
@@ -327,11 +341,7 @@ async function playGameInner(args: PlayGameArgs, options: MatchOptions): Promise
     }
     if (action.type === 'BUY_UNIT' && applied) {
       stats[player].unitsPlaced++;
-      const placed = state.board.units[state.board.units.length - 1];
-      if (placed && placed.owner === player) {
-        const tier = getUnitDefinition(placed.definitionId).tier;
-        stats[player].tierUsage[tier]++;
-      }
+      stats[player].tierUsage[getUnitDefinition(action.definitionId).tier]++;
     }
     if (action.type === 'PROMOTE_UNIT' && applied) {
       stats[player].promotions++;
@@ -367,7 +377,8 @@ async function playGameInner(args: PlayGameArgs, options: MatchOptions): Promise
   for (const p of ['white', 'black'] as PlayerId[]) {
     stats[p].finalResources = state.players[p].resources;
     stats[p].resourcesGained = state.players[p].resourcesGained;
-    stats[p].resourcesSpent = state.players[p].resourcesGained - state.players[p].resources;
+    stats[p].resourcesSpent = state.players[p].resourcesGained + (p === 'black' ? state.blackCrystalHandicap ?? 0 : 0) - state.players[p].resources - pendingCost(state, p);
+    stats[p].finalPendingCost = pendingCost(state, p);
     stats[p].finalMaterial = onBoardMaterial(state, p);
     // E1.5: a bot that keeps its own adapter counters (the hard engine's) hands
     // them over per seat, so a row with two engines of the same family can
@@ -382,6 +393,7 @@ async function playGameInner(args: PlayGameArgs, options: MatchOptions): Promise
   const record: GameRecord = {
     incomeCurve,round90Exhaustion,purchases,promotionEvents,placedAndAttackedKills,
     schema: 'muju-lab-game-v3',
+    rulesVersion: 'muju-phasing-1', completedTurns, ...(capReason ? { capReason } : {}),
     maxInactivityPlies,inactivityDraw:state.victoryReason==='inactivity',upkeepElimination:state.victoryReason==='upkeep-elimination',
     engineHash: args.engineHash,
     runId: args.runId,
@@ -399,9 +411,9 @@ async function playGameInner(args: PlayGameArgs, options: MatchOptions): Promise
     materialCurve,
     invariantViolation,
     anomalies,
-    adjudicated: finalWinType === 'adjudication',
+    adjudicated: capReason !== undefined,
     handicap: options.blackCrystalHandicap ?? 0,
-    ...(finalWinType === 'adjudication' ? { adjudicationFormula: 'material+bank' as const } : {}),
+    ...(capReason ? { adjudicationFormula: 'material+bank+pending-cost' as const } : {}),
   };
 
   return {

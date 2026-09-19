@@ -1,3 +1,4 @@
+import { phaseEndAction } from '../../../src/game/legality';
 import { withPassiveEconomy } from './bot-utils';
 import type { ScriptedBot, BotContext } from '../types';
 import type { AIAction } from '../../../src/ai/types';
@@ -27,8 +28,7 @@ export function createGreedyBot(): ScriptedBot {
       if (!best) return null;
       // A non-positive best score means "nothing worth doing": end the phase.
       if (withPassiveEconomy(ctx.view, best, scoreAction(ctx, best)) <= 0 && (best.type === 'MOVE')) {
-        const end = legal.find((a) => a.type === 'END_ACTION_PHASE' || a.type === 'END_PLACE_PHASE');
-        return end ?? best;
+        return phaseEndAction(ctx.view.state);
       }
       return best;
     },
