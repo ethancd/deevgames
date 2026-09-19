@@ -50,10 +50,12 @@ import {
   type OpeningSpec,
 } from '../../lab/hard-ai/ladder/openings';
 import {
+  HISTORICAL_PHASING_REVISIONS,
   LADDER_RULES_VERSION,
   P1_OPENING_ID_RE,
   applyLadderOpening,
   assertOpeningsRuleset,
+  assertPoolableRevision,
   initialStateForRules,
   openingRuleset,
   rulesetForRevision,
@@ -387,6 +389,39 @@ describe('lab/hard-ai/ladder/openings', () => {
     expect(rulesetForRevision(undefined, 'x')).toBe('standard');
     expect(rulesetForRevision(LADDER_RULES_VERSION, 'x')).toBe('phasing');
     expect(() => rulesetForRevision('muju-online-9', 'x')).toThrow(/unknown rulesVersion/);
+  });
+
+  /**
+   * The SECOND kind of relabelling, and the one the opening-id guard above
+   * cannot see. `muju-phasing-2` (amendment A4, 2026-09-19) changed exactly one
+   * number — the inactivity draw clock, 10 plies to 20 — and nothing else. The
+   * bots, the engines, the budgets, the action vocabulary and `p1-dev.jsonl`
+   * down to its sha256 are all identical across the two revisions, so every
+   * guard that separated Standard from Phasing by noticing a different opening
+   * book passes straight through a phasing-1/phasing-2 mixture. What differs is
+   * which games end in a draw, which is most of what a scripted row measures.
+   *
+   * So READING a phasing-1 row and POOLING it are two different permissions,
+   * and they are two different functions.
+   */
+  it('reads a superseded Phasing revision but REFUSES to pool it with the current one', () => {
+    expect(HISTORICAL_PHASING_REVISIONS).toContain('muju-phasing-1');
+    expect(HISTORICAL_PHASING_REVISIONS).not.toContain(LADDER_RULES_VERSION);
+    // Readable: a phasing-1 row's opening and actions still replay as Phasing,
+    // which is what the analyst needs to open the A1/A2 evidence at all.
+    for (const revision of HISTORICAL_PHASING_REVISIONS) {
+      expect(rulesetForRevision(revision, 'x')).toBe('phasing');
+    }
+    // Not poolable: neither a superseded revision nor a Standard row may be
+    // merged with rows measured under the revision this tree plays.
+    expect(() => assertPoolableRevision(LADDER_RULES_VERSION, 'x')).not.toThrow();
+    for (const revision of HISTORICAL_PHASING_REVISIONS) {
+      expect(() => assertPoolableRevision(revision, 'x')).toThrow(/may not be pooled/);
+      expect(() => assertPoolableRevision(revision, 'x')).toThrow(new RegExp(revision));
+    }
+    expect(() => assertPoolableRevision(undefined, 'x')).toThrow(/absent \(Standard/);
+    expect(() => assertPoolableRevision(null, 'x')).toThrow(/may not be pooled/);
+    expect(() => assertPoolableRevision('muju-online-9', 'x')).toThrow(/may not be pooled/);
   });
 });
 
@@ -859,6 +894,34 @@ describe('lab/hard-ai/ladder/run resume identity', () => {
       expect(mismatches.join(' | ')).toContain(field);
       expect(mismatches).toHaveLength(1);
     }
+  });
+
+  /**
+   * The rules revision, which is the one field of a prior manifest that can
+   * differ while EVERY other field compared above stays byte-identical.
+   * `muju-phasing-2` moved the inactivity draw clock from 10 plies to 20 and
+   * touched nothing else: same engines, same work, same seed, same schedule,
+   * same `p1-dev.jsonl` and therefore the same `openings.sha256`. A `--resume`
+   * into a phasing-1 directory would have merged two populations into one Elo
+   * and one SPRT in silence, because what actually separated Standard from
+   * Phasing here was the opening book's hash, not the revision.
+   */
+  it('REFUSES to resume across a rules revision, though every other identity field still matches', () => {
+    const args = baseArgs({ pairs: 4, seed: 5, resume: true, openingsSha256: 'abc' });
+    const prior = buildManifest(args, buildSchedule(args), []);
+    expect(prior.rules.rulesVersion).toBe(LADDER_RULES_VERSION);
+    expect(resumeIdentityMismatches(args, prior)).toEqual([]);
+
+    for (const stale of [...HISTORICAL_PHASING_REVISIONS, 'muju-standard']) {
+      const older = { ...prior, rules: { ...prior.rules, rulesVersion: stale } };
+      const mismatches = resumeIdentityMismatches(args, older);
+      expect(mismatches, stale).toHaveLength(1);
+      expect(mismatches[0], stale).toContain('rules.rulesVersion');
+      expect(mismatches[0], stale).toContain(stale);
+    }
+    // A manifest written before the field existed is not silently accepted.
+    const { rules: _dropped, ...withoutRules } = prior;
+    expect(resumeIdentityMismatches(args, withoutRules as typeof prior).join(' | ')).toContain('rules.rulesVersion');
   });
 
   it('runLadder refuses the resume before it touches a single game, and says what differs', { timeout: 60_000 }, async () => {

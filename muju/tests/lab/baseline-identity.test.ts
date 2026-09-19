@@ -10,6 +10,7 @@ import { baselineIdentity, canonicalJson, configHashOf, resolvedConfig, resolved
 import { resolveEngine, parseWorkSpec, type WorkSpec } from '../../lab/hard-ai/ladder/engines';
 import { LADDER_RULES_VERSION } from '../../lab/hard-ai/ladder/ruleset';
 import { RULES_VERSION } from '../../lab/hard-ai/ladder/openings/phasing';
+import { HARNESS_RULES_VERSION } from '../../lab/harness/types';
 import { DEFAULT_WEIGHTS } from '../../src/ai/hard/eval/weights';
 import type { GameState } from '../../src/game/types';
 import type { AIDifficulty, AIAction } from '../../src/ai/types';
@@ -183,9 +184,17 @@ describe('resolvedConfig / resolvedConfigHash (E0.1 clauses 1, 3, 4)', () => {
    * pools rows by configuration hash can merge two rule sets by accident.
    */
   it('carries the rules revision in every resolved configuration, so no hash can be shared across rule sets', () => {
-    expect(LADDER_RULES_VERSION).toBe('muju-phasing-1');
-    // One source of truth: the ladder's constant IS the P1 replayer's.
+    // `muju-phasing-2` since preregistration amendment A4 (2026-09-19): the
+    // inactivity draw clock moved from 10 plies to 20. Every resolved-
+    // configuration hash moved with it, which is how phasing-1 evidence stays
+    // out of a phasing-2 pool — the two revisions share their engines, their
+    // budgets and their opening book down to the byte, so the revision string
+    // is the only thing that separates them.
+    expect(LADDER_RULES_VERSION).toBe('muju-phasing-2');
+    // One source of truth: the ladder's constant IS the P1 replayer's, and both
+    // are the harness constant the runner stamps on every game record.
     expect(LADDER_RULES_VERSION).toBe(RULES_VERSION);
+    expect(LADDER_RULES_VERSION).toBe(HARNESS_RULES_VERSION);
     for (const name of ['aiv2-hard', 'aiv2-hard-turn', 'hard@lab', 'hard@desktop', 'Greedy', 'Rush']) {
       const resolved = resolvedConfig(name, WALL) as { rulesVersion: string };
       expect(resolved.rulesVersion, name).toBe(LADDER_RULES_VERSION);

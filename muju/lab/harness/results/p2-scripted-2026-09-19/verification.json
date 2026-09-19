@@ -1,0 +1,52 @@
+{
+  "rulesVersion": "muju-phasing-2",
+  "typechecks": {
+    "npx tsc -p lab/tsconfig.json --noEmit": "passed",
+    "npx tsc -p lab/hard-ai/tsconfig.json --noEmit": "passed"
+  },
+  "runs": [
+    {
+      "command": "npx vitest run tests/lab/{phasing-evidence,openings-p1,phasing-harness,baseline-identity}.test.ts",
+      "files": 4,
+      "filesFailed": 0,
+      "total": 52,
+      "passed": 52,
+      "failed": 0,
+      "pending": 0,
+      "failures": []
+    },
+    {
+      "command": "MUJU_HEAVY_DIR=/private/tmp/muju-drawclock-heavy npx vitest run tests/lab",
+      "files": 41,
+      "filesFailed": 2,
+      "total": 798,
+      "passed": 796,
+      "failed": 2,
+      "pending": 0,
+      "failedSuites": [
+        "tests/lab/suites-phasing-invariants.test.ts",
+        "tests/lab/suites-phasing-runner.test.ts"
+      ],
+      "failures": [
+        {
+          "file": "tests/lab/suites-phasing-invariants.test.ts",
+          "test": "Phasing authored invariant pairs inv16-clock-discipline: premise and temporal evidence are canonical",
+          "message": "expected {kind: terminal, winner: null, reason: inactivity}, actual {phase: playing, winner: null}",
+          "cause": "lab/hard-ai/suites/invariants.positions.jsonl#inv16-clock-discipline-violating is authored at inactivityPlies 7 and expects the inactivity draw to fire. Under the 20-ply clock the position is still playing. A4 voids any suite case whose expected answer depends on the clock; the case is re-authored under muju-phasing-2 by the suites lane.",
+          "owner": "lab/hard-ai/suites/** (another lane)"
+        },
+        {
+          "file": "tests/lab/suites-phasing-runner.test.ts",
+          "test": "Phasing six-family bundle runner preserves complete membership, rejects changed bytes and refuses overwritten evidence",
+          "message": "authored.checks.filter(c => c.status !== 'pass') returned one entry, id inv16-clock-discipline",
+          "cause": "Same single authored case as above, reaching bundle authoring. 1 of 225 cases.",
+          "owner": "lab/hard-ai/suites/** (another lane)"
+        }
+      ]
+    }
+  ],
+  "notes": [
+    "Two suite failures, one root cause, both in files this lane does not own. No test was skipped, weakened or deleted.",
+    "totals.json changedDuringRun is empty: no source under src/game/** or lab/harness/** moved while the 840 games were played."
+  ]
+}

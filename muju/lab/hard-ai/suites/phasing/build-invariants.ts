@@ -1,5 +1,6 @@
 /** Twenty Phasing pair motifs; canonical premises are independent of Hard bits
  * or weighted scores. #15/#18 are protocol coverage, never strict preferences. */
+import { INACTIVITY_LIMIT } from '../../../../src/game/inactivity';
 import { makePosition, positionRef, replayTrace } from './canonical';
 import { authoredState, authorCommon, stateFacts, all, ledger, passive, probe, type AuthoredUnit } from './build-economy';
 import type { AIAction, GameState, SourceBinding, SuiteDocument, PhasingPosition, PredicateSpec, ProbeSpec, InvariantPair, StateFact, Position } from './format';
@@ -171,8 +172,13 @@ export function buildInvariants(binding: SourceBinding): SuiteDocument {
   }
   {
     const units = [W('a', 'water_1', 2, 2), W('b', 'plant_1', 1, 3), W('c', 'plant_1', 1, 4), QUIET];
-    add(16, 'clock-discipline', 'The same White catalogue-material lead faces a kill-free counter9 versus2. One passive Black handoff reaches inactivity10/draw versus3/playing. This documents timing and the declared draw-avoidance preference while ahead, not a proof of a forced win.',
-      state(units, { clock: 9 }), state(units, { clock: 2 }), root({ kind: 'inactivity-plies', value: { eq: 9 } }), root({ kind: 'inactivity-plies', value: { eq: 2 } }),
+    // muju-phasing-2 (2026-09-19): the case means "one passive handoff from the
+    // draw", so the premise is derived from the limit rather than written out as
+    // the old 9. Only the number moved; the motif, the diagram, the correct
+    // member and every probe are unchanged.
+    const lastQuietPly = INACTIVITY_LIMIT - 1;
+    add(16, 'clock-discipline', `The same White catalogue-material lead faces a kill-free counter${lastQuietPly} versus2. One passive Black handoff reaches inactivity${INACTIVITY_LIMIT}/draw versus3/playing. This documents timing and the declared draw-avoidance preference while ahead, not a proof of a forced win.`,
+      state(units, { clock: lastQuietPly }), state(units, { clock: 2 }), root({ kind: 'inactivity-plies', value: { eq: lastQuietPly } }), root({ kind: 'inactivity-plies', value: { eq: 2 } }),
       [probe(PASS, end({ kind: 'terminal', winner: null, reason: 'inactivity' }))],
       [probe(PASS, end({ kind: 'inactivity-plies', value: { eq: 3 } }, { kind: 'game-phase', value: 'playing' }))]);
   }

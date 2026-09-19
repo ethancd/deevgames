@@ -52,18 +52,67 @@ import {
 export const LADDER_RULES_VERSION = RULES_VERSION;
 
 /**
- * What a record's `rulesVersion` field means. A record written before Phasing
- * existed carries NO `rulesVersion` (the field is optional and every historical
+ * Phasing revisions this tree can READ but no longer PLAYS. `muju-phasing-1` is
+ * every Phasing row measured before 2026-09-19: same rule set, same opening
+ * corpus, same action vocabulary, one different number — the inactivity draw
+ * fired at 10 plies instead of 20 (amendment A4).
+ *
+ * They are listed rather than forgotten because the rows still exist as
+ * evidence and the ANALYST has to be able to open them. Reading is all this
+ * grants: see `assertPoolableRevision` for what it does not.
+ */
+export const HISTORICAL_PHASING_REVISIONS = ['muju-phasing-1'] as const;
+
+/**
+ * What a record's `rulesVersion` field means: which rule set replays its
+ * OPENING and its actions. A record written before Phasing existed carries NO
+ * `rulesVersion` (the field is optional and every historical
  * `muju-lab-game-v3` record in `lab/results/**` omits it), and every one of
- * those games was Standard. Anything else is refused rather than guessed: a
- * future revision must be taught here before its rows can be read.
+ * those games was Standard. A superseded Phasing revision still replays as
+ * Phasing. Anything else is refused rather than guessed: a future revision must
+ * be taught here before its rows can be read.
+ *
+ * WHAT THIS FUNCTION DOES NOT SAY. It does not say two records are comparable.
+ * `muju-phasing-1` and `muju-phasing-2` share this answer and must never share
+ * a pool — the clock length changes which games end in a draw, which is most of
+ * what a scripted row measures. `assertPoolableRevision` is the question about
+ * comparability, and it is asked separately and deliberately.
  */
 export function rulesetForRevision(rulesVersion: string | undefined | null, where: string): Ruleset {
   if (rulesVersion === undefined || rulesVersion === null) return 'standard';
   if (rulesVersion === LADDER_RULES_VERSION) return 'phasing';
+  if ((HISTORICAL_PHASING_REVISIONS as readonly string[]).includes(rulesVersion)) return 'phasing';
   throw new Error(
-    `${where}: unknown rulesVersion ${JSON.stringify(rulesVersion)}; known: absent (Standard, every pre-Phasing record) ` +
-      `and "${LADDER_RULES_VERSION}" (Phasing). Teach ladder/ruleset.ts before reading its rows.`,
+    `${where}: unknown rulesVersion ${JSON.stringify(rulesVersion)}; known: absent (Standard, every pre-Phasing record), ` +
+      `"${LADDER_RULES_VERSION}" (Phasing, current) and ${HISTORICAL_PHASING_REVISIONS.map(v => `"${v}"`).join(', ')} ` +
+      '(Phasing, superseded). Teach ladder/ruleset.ts before reading its rows.',
+  );
+}
+
+/**
+ * Refuses a record, row or prior manifest that was not measured under the
+ * revision this tree plays, so it cannot be POOLED with one that was.
+ *
+ * WHY THIS EXISTS AS ITS OWN CHECK. When Phasing replaced Standard, the two
+ * populations were kept apart by accident as much as by design: their opening
+ * books were different files with different hashes, so every guard that
+ * compares `openings.sha256` happened to catch the mix. `muju-phasing-2`
+ * changed one constant and NOTHING ELSE — same bots, same engines, same
+ * `p1-dev.jsonl` down to the byte — so every one of those incidental guards now
+ * passes on a cross-revision merge while the draw rate underneath it moves by
+ * tens of percent. The revision has to be compared on purpose.
+ *
+ * Standard rows (no `rulesVersion`) are refused by the same call, which is the
+ * behaviour they already had.
+ */
+export function assertPoolableRevision(rulesVersion: string | undefined | null, where: string): void {
+  if (rulesVersion === LADDER_RULES_VERSION) return;
+  const named = rulesVersion === undefined || rulesVersion === null
+    ? 'absent (Standard, pre-Phasing)'
+    : JSON.stringify(rulesVersion);
+  throw new Error(
+    `${where}: rulesVersion ${named} may not be pooled with rows measured under "${LADDER_RULES_VERSION}". ` +
+      'Every rules revision is its own population; evidence does not cross one.',
   );
 }
 

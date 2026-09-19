@@ -2,6 +2,34 @@ import type { GameState, PlayerId, BoardState, TurnPhase, PlayerState, PendingSu
 import type { AIAction } from '../../src/ai/types';
 import type { Rng } from './rng';
 
+/**
+ * Every rules revision the lab can READ. Both are Phasing; they differ in one
+ * number and that number decides results:
+ *
+ *   - `muju-phasing-1` — inactivity draw at 10 plies (five hand-offs each).
+ *     HISTORICAL. Every row measured before 2026-09-19 carries it.
+ *   - `muju-phasing-2` — inactivity draw at 20 plies, warning at 17
+ *     (preregistration amendment A4, owner decision 2026-09-19). What resets
+ *     the clock is unchanged: only an attack that removes a unit. Nothing else
+ *     in the rules moved.
+ *
+ * A record with NO `rulesVersion` is Standard and predates Phasing entirely.
+ */
+export type RulesVersion = 'muju-phasing-1' | 'muju-phasing-2';
+
+/**
+ * The revision this tree PLAYS. It is the single source of the value: the
+ * harness stamps it on every `GameRecord` (`runner.ts`),
+ * `ladder/openings/phasing.ts` re-exports it as `RULES_VERSION` and folds it
+ * into every opening's `gameplayDigest`, and `ladder/ruleset.ts` re-exports it
+ * as `LADDER_RULES_VERSION`, from where `ladder/identity.ts` hashes it into
+ * every resolved-configuration hash.
+ *
+ * Before A4 the same string was written out by hand in four places. It is one
+ * constant now so a future revision cannot land in three of them.
+ */
+export const HARNESS_RULES_VERSION = 'muju-phasing-2' as const satisfies RulesVersion;
+
 /** The full, perfect-information game plus convenience fields for policies. */
 export interface BotView {
   state: GameState; player: PlayerId; opponent: PlayerId;
@@ -239,8 +267,15 @@ export interface MaterialSample {
 /** One JSONL row per game. */
 export interface GameRecord {
   schema: 'muju-lab-game-v2' | 'muju-lab-game-v3';
-  /** Missing only in historical Standard artifacts. */
-  rulesVersion?: 'muju-phasing-1';
+  /**
+   * The revision this game was PLAYED under. Missing only in historical
+   * Standard artifacts. A `muju-phasing-1` row is readable but is never pooled
+   * with a `muju-phasing-2` one: the draw clock moved from 10 plies to 20, so
+   * the two populations answer different questions. `summary.ts` keys its
+   * pairing groups on this field and `ladder/run.ts#resumeIdentityMismatches`
+   * refuses a resume across it.
+   */
+  rulesVersion?: RulesVersion;
   completedTurns?: number; // player turns ended via END_PLACE_PHASE during this run
   capReason?: 'round-cap' | 'ply-cap';
   maxInactivityPlies?: number;

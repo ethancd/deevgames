@@ -18,7 +18,7 @@ import type {
   ReplayStep,
   WinType,
 } from './types';
-import { DEFAULT_MATCH_OPTIONS } from './types';
+import { DEFAULT_MATCH_OPTIONS, HARNESS_RULES_VERSION } from './types';
 import { legalActions, actionsEqual, isLegalNow } from './legal';
 import { checkInvariants, InvariantViolation } from './invariants';
 import { mulberry32, deriveSeed } from './rng';
@@ -393,7 +393,7 @@ async function playGameInner(args: PlayGameArgs, options: MatchOptions): Promise
   const record: GameRecord = {
     incomeCurve,round90Exhaustion,purchases,promotionEvents,placedAndAttackedKills,
     schema: 'muju-lab-game-v3',
-    rulesVersion: 'muju-phasing-1', completedTurns, ...(capReason ? { capReason } : {}),
+    rulesVersion: HARNESS_RULES_VERSION, completedTurns, ...(capReason ? { capReason } : {}),
     maxInactivityPlies,inactivityDraw:state.victoryReason==='inactivity',upkeepElimination:state.victoryReason==='upkeep-elimination',
     engineHash: args.engineHash,
     runId: args.runId,

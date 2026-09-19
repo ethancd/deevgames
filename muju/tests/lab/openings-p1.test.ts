@@ -3,7 +3,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { loadOpenings, sha256 } from '../../lab/hard-ai/ladder/openings';
-import { applyOpening, gameplayDigest } from '../../lab/hard-ai/ladder/openings/phasing';
+import { applyOpening, gameplayDigest, RULES_VERSION } from '../../lab/hard-ai/ladder/openings/phasing';
+import { INACTIVITY_LIMIT, INACTIVITY_WARNING } from '../../src/game/inactivity';
 import { generateOpenings, renderOpeningsFile, assertDiverse, DRIVER_BOTS } from '../../lab/hard-ai/ladder/openings/generate';
 import { seededShuffle } from '../../lab/hard-ai/ladder/openings/split';
 
@@ -35,6 +36,51 @@ describe('P1 unsealed corpus', () => {
       const normalized = { ...h3, players: { ...h3.players, black: { ...h3.players.black, resources: 0 } } };
       expect(gameplayDigest(normalized)).toBe(gameplayDigest(h0));
     }
+  });
+
+  /**
+   * WHY THE BOOK SURVIVED THE RULES REVISION, measured rather than asserted.
+   *
+   * Preregistration amendment A4 (2026-09-19) moved the inactivity draw clock
+   * from 10 plies to 20 and advanced the rules revision to `muju-phasing-2`,
+   * voiding every row measured under `muju-phasing-1`. It did NOT void the
+   * opening books, and this is the check behind that claim: by the stop rule
+   * recorded in `ALLOCATION-P1.md` every opening ends at Black's first Act root
+   * after a single hand-off, so the clock an opening hands to a run is 1 — six
+   * short of even the OLD warning threshold and nineteen short of the new
+   * limit. No opening position is one the two limits treat differently, so the
+   * bytes and hashes pinned above stay valid under either revision and the
+   * books were not regenerated.
+   *
+   * The sealed book is NOT opened to check this, here or anywhere. It shares
+   * the generator and the stop rule, and A4 rests on that rule rather than on
+   * an inspection of sealed rows.
+   */
+  it('hands every run a clock of 1, far below either revision limit, which is why the pinned bytes survive A4', () => {
+    // The superseded limit, written out because the claim is a comparison with
+    // BOTH revisions. `src/game/inactivity.ts` holds the live one.
+    const PHASING_1_LIMIT = 10, PHASING_1_WARNING = 7;
+    expect(RULES_VERSION).toBe('muju-phasing-2');
+    expect(INACTIVITY_LIMIT).toBe(20);
+    expect(INACTIVITY_WARNING).toBe(17);
+
+    const clocks: number[] = [];
+    for (const file of files) for (const opening of file.openings) for (const blackCrystalHandicap of [0, 3]) {
+      const state = applyOpening(opening, { blackCrystalHandicap });
+      const clock = state.inactivityPlies ?? 0;
+      const where = `${path.basename(file.path)} ${opening.id} h${blackCrystalHandicap}`;
+      // One hand-off, and no opening contains an attack that could reset it.
+      expect(clock, where).toBe(1);
+      // The property A4 actually needs: below every threshold of both
+      // revisions, so neither limit can have fired and neither warning shows.
+      expect(clock, where).toBeLessThan(Math.min(PHASING_1_WARNING, INACTIVITY_WARNING));
+      expect(clock, where).toBeLessThan(Math.min(PHASING_1_LIMIT, INACTIVITY_LIMIT));
+      expect(state.progressThisTurn ?? false, where).toBe(false);
+      clocks.push(clock);
+    }
+    // 48 dev + 32 val rows, each replayed at both handicaps.
+    expect(clocks).toHaveLength((48 + 32) * 2);
+    expect(Math.max(...clocks)).toBe(1);
   });
 
   it('has distinct IDs, pending-aware positions, and no prefix relation', () => {

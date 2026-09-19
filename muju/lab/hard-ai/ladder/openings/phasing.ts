@@ -4,13 +4,32 @@ import { createInitialGameState } from '../../../../src/game/board';
 import { isLegalAction } from '../../../../src/game/legality';
 import { applyAction } from '../../../../src/ai/simulate';
 import { checkInvariants } from '../../../harness/invariants';
+import { HARNESS_RULES_VERSION } from '../../../harness/types';
 import type { GameState } from '../../../../src/game/types';
 import {
   resolveOpeningAction, withOpeningRules, gameplayDigest as boardDigest, sha256,
   type OpeningStateOptions, type OpeningSpec,
 } from '../openings';
 
-export const RULES_VERSION = 'muju-phasing-1' as const;
+/**
+ * The rules revision the P1 corpus is replayed and digested under, taken from
+ * the harness so the recorded `GameRecord.rulesVersion` and the digest can
+ * never disagree. `muju-phasing-2` since amendment A4 (2026-09-19).
+ *
+ * The P1 BOOK ITSELF did not move with the revision, and its pinned hashes are
+ * unchanged. A4's reasoning, checked here rather than asserted: by the stop
+ * rule recorded in `ALLOCATION-P1.md` every opening ends at Black's first Act
+ * root after a single hand-off, so the largest inactivity clock any opening
+ * hands to a run is 1 — far below both the old limit of 10 and the new 20, and
+ * below both warning thresholds. No opening position is a position the two
+ * limits treat differently, so the bytes stay valid under either revision.
+ * `tests/lab/openings-p1.test.ts` measures that maximum instead of trusting it.
+ *
+ * What DOES move is the digest: `gameplayDigest` folds this string in, so a
+ * phasing-1 digest and a phasing-2 digest of the same board differ and cannot
+ * be mistaken for one another.
+ */
+export const RULES_VERSION = HARNESS_RULES_VERSION;
 
 export function initialStateFor(options: OpeningStateOptions = {}): GameState {
   return createInitialGameState(options.resourceLayout, options.actionsPerTurn, options.blackCrystalHandicap, 'phasing');

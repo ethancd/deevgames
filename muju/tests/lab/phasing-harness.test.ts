@@ -8,7 +8,8 @@ import { buildView, playGame, adjudicationScore } from '../../lab/harness/runner
 import { legalActions } from '../../lab/harness/legal';
 import { createBot } from '../../lab/harness/bots';
 import { safeCommitSquares, disruptedByMove, withPassiveEconomy } from '../../lab/harness/bots/bot-utils';
-import type { ScriptedBot } from '../../lab/harness/types';
+import { HARNESS_RULES_VERSION, type ScriptedBot } from '../../lab/harness/types';
+import { INACTIVITY_LIMIT, INACTIVITY_WARNING } from '../../src/game/inactivity';
 import type { GameState } from '../../src/game/types';
 
 const initial = () => createInitialGameState(undefined, undefined, 3, 'phasing');
@@ -21,7 +22,26 @@ function committed() {
 }
 
 describe('Phasing measurement substrate', () => {
-  it('counts a complete turn only after Prepare; mines once and draws after ten complete quiet turns', async () => {
+  /**
+   * The draw clock, measured through the harness end to end instead of read
+   * off the constant. Two bots that pass every phase never remove a unit, so
+   * nothing ever resets the clock and the game must end in an inactivity draw
+   * exactly `INACTIVITY_LIMIT` hand-offs in.
+   *
+   * The counts are DERIVED from the limit rather than copied beside it. A
+   * passed turn is two decisions (`END_ACTION_PHASE` then `END_PLACE_PHASE`)
+   * and exactly one hand-off, so a quiet game is `limit` completed turns and
+   * `2 * limit` recorded plies. Amendment A4 (2026-09-19) moved the limit from
+   * 10 to 20 and this test moves with it — while still failing if the harness
+   * stops counting hand-offs, starts counting a phase end as one, or ends the
+   * game anywhere other than the limit.
+   */
+  it('counts a complete turn only after Prepare; mines once and draws after INACTIVITY_LIMIT complete quiet turns', async () => {
+    // The rule this test is the harness half of (A4): twenty plies to the draw,
+    // warned three plies earlier. Pinned so a silent edit to either constant
+    // fails here as well as in the game's own tests.
+    expect(INACTIVITY_LIMIT).toBe(20);
+    expect(INACTIVITY_WARNING).toBe(INACTIVITY_LIMIT - 3);
     const controls: string[] = [];
     const { record, replay } = await playGame({ bots: { white: pass, black: pass }, seed: 1, runId: 'test', engineHash: 'test',
       options: { recordReplay: true }, onAction(before, after, action) {
@@ -34,12 +54,14 @@ describe('Phasing measurement substrate', () => {
           expect(after.lastIncome).toBe(before.lastIncome);
         }
       } });
-    expect(controls).toEqual(Array.from({ length: 10 }, () => ['END_ACTION_PHASE', 'END_PLACE_PHASE']).flat());
-    expect(record.completedTurns).toBe(10);
-    expect(record.plies).toBe(20);
+    expect(controls).toEqual(Array.from({ length: INACTIVITY_LIMIT }, () => ['END_ACTION_PHASE', 'END_PLACE_PHASE']).flat());
+    expect(record.completedTurns).toBe(INACTIVITY_LIMIT);
+    expect(record.plies).toBe(2 * INACTIVITY_LIMIT);
     expect(record.inactivityDraw).toBe(true);
-    expect(record.incomeCurve).toHaveLength(10);
-    expect(record.rulesVersion).toBe('muju-phasing-1');
+    expect(record.maxInactivityPlies).toBe(INACTIVITY_LIMIT);
+    expect(record.incomeCurve).toHaveLength(INACTIVITY_LIMIT);
+    expect(record.rulesVersion).toBe(HARNESS_RULES_VERSION);
+    expect(record.rulesVersion).toBe('muju-phasing-2');
     expect(replay!.steps[0].phase).toBe('action');
   });
 

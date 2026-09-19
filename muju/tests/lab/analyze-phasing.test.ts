@@ -33,7 +33,12 @@ function passBot(name: string): EngineBot {
  *
  * `analyze/replay.ts` reads a replay's rule set off its own
  * `GameRecord.rulesVersion` — absent means Standard, which is every archived row
- * under `lab/results/**`, and `muju-phasing-1` means Phasing. Three things the
+ * under `lab/results/**`, and a `muju-phasing-*` string means Phasing. Both
+ * `muju-phasing-1` (10-ply inactivity clock) and `muju-phasing-2` (20 plies,
+ * the revision this tree plays since amendment A4) reconstruct as Phasing: the
+ * clock decides which rows may be POOLED, not which rule set replays one, and
+ * that is `ladder/ruleset.ts#assertPoolableRevision`'s question rather than
+ * this one's. Three things the
  * rule set decides, all of which a Standard-only reconstruction got wrong for a
  * Phasing replay:
  *
@@ -56,7 +61,8 @@ describe('analyze: rules-bound reconstruction of a Phasing replay', () => {
       options: { recordReplay: true, maxTurns: 6 },
     });
     expect(file).not.toBeNull();
-    expect(record.rulesVersion).toBe('muju-phasing-1');
+    // The revision this tree plays and stamps, `muju-phasing-2` since A4.
+    expect(record.rulesVersion).toBe('muju-phasing-2');
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'muju-phasing-recon-'));
     try {
       const out = path.join(dir, 'g.json');

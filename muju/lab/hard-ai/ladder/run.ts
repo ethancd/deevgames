@@ -858,6 +858,17 @@ export function resumeIdentityMismatches(args: CliArgs, prior: RunManifest): str
   const cmp = (field: string, want: unknown, got: unknown): void => {
     if (JSON.stringify(want) !== JSON.stringify(got)) out.push(`${field}: manifest ${JSON.stringify(want)} != run ${JSON.stringify(got)}`);
   };
+  // The RULES REVISION is compared first and on purpose. It is the one field
+  // that can differ while every other field here stays byte-identical:
+  // `muju-phasing-2` moved the inactivity draw clock from 10 plies to 20 and
+  // touched nothing else, so the engines, the budget, the schedule, the
+  // legality mode and `p1-dev.jsonl`'s sha256 all still match across the two
+  // revisions — while the draw rate underneath them does not. Before this, a
+  // `--resume` into a `muju-phasing-1` directory would have merged two
+  // populations into one Elo and one SPRT without a word, because the guard
+  // that separated Standard from Phasing was really the opening book's hash.
+  // See `ladder/ruleset.ts#assertPoolableRevision`.
+  cmp('rules.rulesVersion', prior.rules?.rulesVersion ?? null, LADDER_RULES_VERSION);
   cmp('a', prior.a, args.a);
   cmp('b', prior.b, args.b);
   cmp('work', prior.work, workKey(args.work));

@@ -183,8 +183,22 @@ function weightArmLabel(name: (typeof ALL_WEIGHT_ARMS)[number]): string {
  * is the whole reason it is computed instead of declared. Both superseded
  * values are kept below so a reader of any recorded manifest can place the row
  * it quotes.
+ *
+ * IT MOVED A THIRD TIME AT `muju-phasing-2`, AND FOR THE FIRST REASON AGAIN.
+ * Preregistration amendment A4 (2026-09-19) took the inactivity draw clock from
+ * 10 plies to 20 and advanced the rules revision, and the revision is the first
+ * field of every resolved configuration. `hard@desktop` at `wall:3000` plays a
+ * different game under the two limits — a position it would have drawn now has
+ * ten more plies to win in — so it is a different engine and says so. Nothing
+ * about the configuration itself changed: forcing `rulesVersion` back to
+ * `muju-phasing-1` on today's resolved configuration reproduces the superseded
+ * value below byte for byte, which is how this move was attributed to A4 rather
+ * than to any concurrent edit under `src/ai/hard/**`.
  */
-const DESKTOP_WALL3000_HASH = '7bc3711a6c5468a9cc972eb38801c045e816a356428f284d0e60b8e7313eeb0e';
+const DESKTOP_WALL3000_HASH = '4464b19120dcda961f119f47e79c8d16640313365bac50975ddd75693ca69318';
+/** The same arm under `muju-phasing-1` (the 10-ply clock), M6 weights and all;
+ * every Phasing row recorded before 2026-09-19 quotes it. */
+const DESKTOP_WALL3000_HASH_PHASING_1 = '7bc3711a6c5468a9cc972eb38801c045e816a356428f284d0e60b8e7313eeb0e';
 /** The Phasing identity this arm carried between d403a08e (rules binding) and
  * e701ccc0 (the M6 accounting bootstrap): same rules, `placeholder-m4`-era
  * `DEFAULT_WEIGHTS`. M4-era Phasing rows quote it. */
@@ -479,7 +493,10 @@ describe('ablation arm registry (E1.3: one factor per arm, full configurations r
     // M4-era Phasing value: 6d2e074cf7e446506cf240ecf0788b9b90d2c5994d599ec7f3213a42ca54565a
     // — superseded by M6's DEFAULT_WEIGHTS, which every hard@* configuration
     // carries (same migration as DESKTOP_WALL3000_HASH's second move).
-    expect(arm.configHash).toBe('17b02fe2e6bc19b091eabece38aba660a8cac368b3ba544128005336c14acb20');
+    // `muju-phasing-1` value: 17b02fe2e6bc19b091eabece38aba660a8cac368b3ba544128005336c14acb20
+    // — superseded by A4's 20-ply draw clock (DESKTOP_WALL3000_HASH's third
+    // move); forcing the revision back on today's configuration reproduces it.
+    expect(arm.configHash).toBe('a18b84f8f89e57281c49139959fd9563865bee5461a0c10211e44897259b8b11');
     expect(hardConfigFor('ablate:search-iter-fit').searchFix?.iterFit).toBe(true);
     expect(hardConfigFor('desktop').searchFix).toBeUndefined();
   });
@@ -510,7 +527,9 @@ describe('ablation arm registry (E1.3: one factor per arm, full configurations r
     // Standard-era value: 5ba2c2fc352d4715f790f9ce0fdb6e1b4926d1c49edce923f8169f88fdad0a51.
     // M4-era Phasing value: 2e54160e9e7cf293af49ec2dcc17e3666974fa86295a0fd1391a15845087493a
     // — superseded by M6's DEFAULT_WEIGHTS, as above.
-    expect(arm.configHash).toBe('9f6014597d880b049418c4ceafd29306b6d54c824abe630d109836a8dafc7f12');
+    // `muju-phasing-1` value: 9f6014597d880b049418c4ceafd29306b6d54c824abe630d109836a8dafc7f12
+    // — superseded by A4's 20-ply draw clock, as above.
+    expect(arm.configHash).toBe('1aef0a8b094f9bf5dd1c8fc8ba9efe5aaa7975078cfa5127152727f45f79c99e');
     expect(hardConfigFor('ablate:search-reach-cache').searchFix?.reachCache).toBe(true);
     expect(hardConfigFor('desktop').searchFix).toBeUndefined();
   });
@@ -578,11 +597,12 @@ describe('E4.2 search arms (factor `searchFix`)', () => {
     // The Standard identity of the same arm is a DIFFERENT hash, and this tree
     // can no longer produce it (`ladder/identity.ts`, clause 3). Neither is the
     // M4-era Phasing identity, which this tree cannot mint either now that the
-    // champion evaluates with the M6 accounting bootstrap.
-    expect(DESKTOP_WALL3000_HASH).not.toBe(DESKTOP_WALL3000_HASH_STANDARD);
-    expect(DESKTOP_WALL3000_HASH).not.toBe(DESKTOP_WALL3000_HASH_PHASING_M4);
-    expect(requireArm('base').configHash).not.toBe(DESKTOP_WALL3000_HASH_STANDARD);
-    expect(requireArm('base').configHash).not.toBe(DESKTOP_WALL3000_HASH_PHASING_M4);
+    // champion evaluates with the M6 accounting bootstrap — nor the
+    // `muju-phasing-1` identity it carried until A4 moved the draw clock.
+    for (const superseded of [DESKTOP_WALL3000_HASH_STANDARD, DESKTOP_WALL3000_HASH_PHASING_M4, DESKTOP_WALL3000_HASH_PHASING_1]) {
+      expect(DESKTOP_WALL3000_HASH).not.toBe(superseded);
+      expect(requireArm('base').configHash).not.toBe(superseded);
+    }
     expect(requireArm('search-tie-break').configHash).not.toBe(DESKTOP_WALL3000_HASH);
   });
 
