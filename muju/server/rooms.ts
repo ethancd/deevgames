@@ -17,6 +17,7 @@ import { projectClock, type ClockSnapshot } from '../src/online/timeControl';
 import { RoomError, actionRequestSchema, createSchema, joinSchema, roomIdSchema, historyQuerySchema,
   stageRequestSchema, cancelStageSchema, stageIdSchema, shortInviteSchema } from './schema';
 import type { PendingStage, SeatStaging, StageAcknowledgement, StageReceipt, StagingResult, StagingStatus } from '../src/online/staging';
+import { assertMatchCapability } from './matchPolicy';
 import { completeClockTurn, newClockHistory, projectClockPressure, type ClockHistory } from './clockPressure';
 
 const RULES_VERSION = 'muju-online-4';
@@ -239,7 +240,7 @@ export class RoomStore {
   }
   private snapshot(room: StoredRoom, player?: PlayerId): RoomSnapshot {
     const clock = room.clockBase ? projectClock(room.clockBase, Date.now()) : null;
-    return structuredClone({ createdAt: room.createdAt, lastMoveAt: room.lastMoveAt, archivedAt: room.archivedAt, invitedPlayer: room.invitedPlayer, id: room.id, watchCode: this.watchCode(room.id), revision: room.revision, ready: room.ready, seats: room.seats,
+    return structuredClone({ ...(room.matchPolicy ? { matchPolicy: room.matchPolicy } : {}), createdAt: room.createdAt, lastMoveAt: room.lastMoveAt, archivedAt: room.archivedAt, invitedPlayer: room.invitedPlayer, id: room.id, watchCode: this.watchCode(room.id), revision: room.revision, ready: room.ready, seats: room.seats,
       timeControl: room.timeControl ?? null, clock,
       clockPressure: clock && room.clockHistory ? projectClockPressure(room.clockHistory, clock) : null,
       ...(player && room.clockBase ? { staging: this.seatStaging(room, player) } : {}),
@@ -387,7 +388,7 @@ export class RoomStore {
       : { changed: true, ...metadata, room };
   }
   create(input: unknown): RoomAdmission {
-    const { name, side, actionsPerTurn, timeControl, blackCrystalHandicap, ruleset } = createSchema.parse(input);
+    const { name, side, actionsPerTurn, timeControl, blackCrystalHandicap, ruleset, matchPolicy } = createSchema.parse(input);
     this.settleDue();
     return this.transaction(() => {
       const count = this.db.prepare('SELECT COUNT(*) AS count FROM rooms WHERE archived_at IS NULL').get()!.count as number;
@@ -399,7 +400,7 @@ export class RoomStore {
       } while (this.db.prepare('SELECT 1 FROM room_invitations WHERE code_hash = ?').get(digest(inviteCode))
         || this.db.prepare('SELECT 1 FROM room_watch_links WHERE code = ?').get(inviteCode));
       this.db.prepare('INSERT INTO room_invitations (code_hash, room_id) VALUES (?, ?)').run(digest(inviteCode), id);
-      const room: StoredRoom = { id, revision: 0, ready: false, seats: { white: null, black: null },
+      const room: StoredRoom = { ...(matchPolicy ? { matchPolicy } : {}), id, revision: 0, ready: false, seats: { white: null, black: null },
         state: createInitialGameState(undefined, actionsPerTurn, blackCrystalHandicap, ruleset), canUndo: false, undoHistory: [], updatedAt: new Date(Date.now()).toISOString(), history: [],
         moveHistoryStart: { revision: 0, turnNumber: 1, player: 'white', complete: true },
         rulesVersion: ruleset === 'phasing' ? 'muju-phasing-1' : RULES_VERSION, inviteHash: digest(inviteCode), tokenHashes: { [side]: digest(token) }, receipts: [] };
@@ -550,6 +551,7 @@ export class RoomStore {
   stage(id: string, token: string, input: unknown): StagingResult {
     const request = stageRequestSchema.parse(input);
     return this.withSeat(id, token, (room, player) => {
+      assertMatchCapability(room, 'rules-oracle');
       const fingerprint = digest(JSON.stringify({ operation: 'stage', ...request }));
       const retry = this.stageRetry(room, player, request.requestId, fingerprint);
       if (retry) return retry;
@@ -673,6 +675,7 @@ export class RoomStore {
   act(id: string, token: string, input: unknown, preview = false): RoomSnapshot {
     const request: ActionRequest = actionRequestSchema.parse(input);
     return this.withSeat(id, token, (settled, player) => {
+      if (preview) assertMatchCapability(settled, 'rules-oracle');
       const receivedAt = Date.now();
       this.expire(settled, receivedAt);
       const room = structuredClone(settled);

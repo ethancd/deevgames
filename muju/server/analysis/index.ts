@@ -8,6 +8,7 @@ import { getHomeOccupier, getOpponent } from '../../src/game/victory';
 import { analyzeHomeDefenseEvidence } from '../../src/game/homeCheckmate';
 import { transitionWithoutCheckmate } from '../../src/ai/simulate';
 import { isPhasing } from '../../src/game/rules';
+import { assertMatchCapability, allowsMatchCapability } from '../matchPolicy';
 import { RoomError } from '../schema';
 import { describeAction, square } from '../notation';
 import { analysisSchema, type AnalysisInput } from './schema';
@@ -234,7 +235,9 @@ export class AnalysisService {
       const key = this.cache.keys().next().value!; this.bytes -= this.cache.get(key)!.bytes; this.cache.delete(key);
     }
   }
-  headline(room: RoomSnapshot, player = room.state.turn.currentPlayer) {
+  headline(room: RoomSnapshot, player = room.state.turn.currentPlayer): Result {
+    if (!allowsMatchCapability(room, 'analysis')) return { roomId: room.id, revision: room.revision,
+      supported: false, stateKind: 'current', reason: 'MATCH_TOOL_RESTRICTED', toolTier: room.matchPolicy!.toolTier, sections: {}, next: [] };
     const key = `headline:${room.id}:${room.revision}:${player}:${hash([room.state, room.ready])}`;
     const cached = this.get(key); if (cached) return cached;
     const budget = new WorkBudget(160, 15), s = room.state, forecast = economyForecast(s);
@@ -247,6 +250,7 @@ export class AnalysisService {
     this.put(key, result); return result;
   }
   analyze(room: RoomSnapshot, raw: unknown, signal?: AbortSignal): Result {
+    assertMatchCapability(room, 'analysis');
     const input = analysisSchema.parse(raw);
     if (input.roomId !== room.id || input.expectedRevision !== room.revision) throw new RoomError(409, 'STALE_REVISION', `Analysis requires revision ${room.revision}. Read the room again.`);
     if (input.sinceRevision !== undefined && input.sinceRevision > room.revision) throw new RoomError(422, 'INVALID_BASELINE', 'sinceRevision cannot be newer than the analyzed revision.');
@@ -310,6 +314,7 @@ export class AnalysisService {
     return this.diff(result, baselineKey, room.revision, input.sinceRevision);
   }
   briefing(room: RoomSnapshot, player: PlayerId, sinceRevision?: number): Result {
+    assertMatchCapability(room, 'analysis');
     const key = `briefing:${room.id}:${room.revision}:${player}:${hash([room.state, room.ready])}`;
     let result = this.get(key);
     if (!result) {

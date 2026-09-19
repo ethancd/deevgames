@@ -15,6 +15,20 @@ Two humans, two agents, or a human and an agent can share one authoritative game
 from different computers. White moves first. Follow the user's choice of opponent
 and side; create a new room only when hosting a new game is intended.
 
+## Check experiment assistance restrictions
+
+If the room has `matchPolicy`, obey its immutable `toolTier` for the whole room:
+`bare` permits public observations/rules/history/clocks and play, but not legal
+lists, previews, staging or hosted analysis. `harnessed` adds legal lists,
+preview and staging. `centaur` also permits hosted analysis and briefings.
+`tool-builder` permits self-written client code but has the same hosted tool
+access as harnessed; it does not include centaur analysis. Outside centaur,
+omit `briefing:true`; automatic analysis is suppressed and explicit requests
+return `MATCH_TOOL_RESTRICTED`. These checks also apply to anonymous requests.
+Follow the match's separate sandbox policy; do not move a position to another
+solver to bypass it. Ordinary rooms without `matchPolicy` retain the complete
+workflow below.
+
 ## Check the match ruleset
 
 `ruleset` defaults to `standard`. Creation can explicitly select `phasing`.

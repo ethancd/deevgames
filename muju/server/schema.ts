@@ -40,6 +40,9 @@ export const stageRequestSchema = z.object({
 }).strict();
 export const cancelStageSchema = stageRequestSchema.pick({ requestId: true, expectedTurnNumber: true, expectedStageVersion: true });
 export const createSchema = z.object({ name: nameSchema, side: z.enum(['white', 'black']).default('white'),
+  matchPolicy: z.object({ version: z.literal(1), toolTier: z.enum(['bare', 'harnessed', 'centaur', 'tool-builder']),
+    protocolId: z.string().min(1).max(100).regex(/^[a-zA-Z0-9._-]+$/) }).strict().optional()
+    .describe('Immutable room-wide experiment tier. Only centaur permits hosted analysis; bare also disables legal actions, preview and staging. Omit for ordinary rooms.'),
   actionsPerTurn: z.literal(4).default(4),
   ruleset: z.enum(['standard', 'phasing']).default('standard').describe('Immutable match rules. Standard is the AI benchmark. Phasing: actions, mining, upkeep, then promotions and public committed summons; summons resolve at next own turn start or refund if disrupted.'),
   blackCrystalHandicap: z.number().int().min(0).max(MAX_BLACK_CRYSTAL_HANDICAP).default(0)

@@ -15,6 +15,7 @@ import { getHomeOccupier } from '../src/game/victory';
 import { INACTIVITY_LIMIT } from '../src/game/inactivity';
 import { TIME_CONTROL_PRESETS } from '../src/online/timeControl';
 import { square, describeAction } from './notation';
+import { assertMatchCapability } from './matchPolicy';
 import { analysisService } from './analysis';
 export { square, describeAction } from './notation';
 
@@ -24,8 +25,9 @@ export function turnContext(s: GameState) {
 }
 
 export function observe(room: RoomSnapshot, perspective = room.state.turn.currentPlayer) {
-  const s = room.state;
+  const s = room.state, bare = room.matchPolicy?.toolTier === 'bare';
   return {
+    ...(room.matchPolicy ? { matchPolicy: room.matchPolicy } : {}),
     roomId: room.id, revision: room.revision, ready: room.ready, seats: room.seats,
     canUndo: !!room.canUndo, archivedAt: room.archivedAt ?? null, lastMoveAt: room.lastMoveAt ?? null,
     timeControl: room.timeControl ?? null, clock: room.clock ?? null, clockPressure: room.clockPressure ?? null,
@@ -34,16 +36,16 @@ export function observe(room: RoomSnapshot, perspective = room.state.turn.curren
     historyTool: 'muju_history',
     activePlayer: room.ready && s.phase === 'playing' ? s.turn.currentPlayer : null,
     ...turnContext(s), pendingSummons: (s.pendingSummons ?? []).map(p => ({ ...p, square: square(p.position),
-      validOnCurrentBoard: isValidSpawnPosition(p.position, p.owner, s.board) })), lastSummoning: s.lastSummoning,
+      ...(bare ? {} : { validOnCurrentBoard: isValidSpawnPosition(p.position, p.owner, s.board) }) })), lastSummoning: s.lastSummoning,
     status: s.phase, actionsPerTurn: getActionsPerTurn(s), blackCrystalHandicap: s.blackCrystalHandicap ?? 0,
     winner: s.winner, victoryReason: s.victoryReason ?? null,
     nextStep: room.archivedAt ? 'Room archived after 24 hours without a game action. Its history and positions remain available for review.' : !room.ready ? 'Invite the opponent, then wait for them to join.' : s.phase === 'victory' ? 'Game finished.'
       : s.upkeepPending ? 'Choose PAY_UPKEEP keepUnitIds; all tier 1 units must stay. Higher tiers omitted are released.'
       : isPhasing(s) ? s.turn.phase === 'action' ? 'Take actions, then END_ACTION_PHASE to mine and pay upkeep. This does not end your turn.' : 'Promote actual units or BUY_UNIT to commit public summons. END_PLACE_PHASE hands over the turn and clock.'
-      : `${s.turn.currentPlayer} may act. Read legal actions, optionally preview, then play using this revision.`,
+      : bare ? `${s.turn.currentPlayer} may submit actions using this revision.` : `${s.turn.currentPlayer} may act. Read legal actions, optionally preview, then play using this revision.`,
     players: Object.fromEntries((['white', 'black'] as const).map(player => [player, {
-      ...s.players[player], home: square(s.players[player].startCorner), projectedIncome: projectedIncome(s, player),
-      upkeepDue: upkeepDue(s, player), reviewUpkeep: !!s.reviewUpkeep?.[player],
+      ...s.players[player], home: square(s.players[player].startCorner),
+      ...(bare ? {} : { projectedIncome: projectedIncome(s, player), upkeepDue: upkeepDue(s, player) }), reviewUpkeep: !!s.reviewUpkeep?.[player],
       occupyingEnemyHome: getHomeOccupier(s.board, player)?.id ?? null,
     }])),
     quietTurns: s.inactivityPlies ?? 0, drawAtQuietTurns: INACTIVITY_LIMIT,
@@ -66,6 +68,7 @@ export function observe(room: RoomSnapshot, perspective = room.state.turn.curren
 }
 
 export function legalActions(room: RoomSnapshot, options: { unitId?: string; type?: string; offset?: number; limit?: number } = {}) {
+  assertMatchCapability(room, 'rules-oracle');
   const s: GameState = room.state, player: PlayerId = s.turn.currentPlayer;
   let actions: RoomAction[] = [];
   if (room.ready && s.phase === 'playing') {

@@ -1,0 +1,51 @@
+{
+  "at": "2026-09-19T06:01:15.189571+00:00",
+  "base": "3423fe8501221c7906abd3b7f6c75dfe68402b80",
+  "branch": "codex/phasing-engine-seat",
+  "status": "prepared-not-deployed",
+  "tests": {
+    "command": "node node_modules/vitest/vitest.mjs run tests/server/match-policy.test.ts tests/lab/engine-seat.test.ts tests/server/mcp.test.ts tests/server/analysis.test.ts tests/server/rooms.test.ts --maxWorkers=1 --reporter=json --outputFile=<evidence>/tests.json",
+    "sharedQueue": "withHeavySlot(t6-focused-tests), default two-slot directory, no bypass",
+    "success": true,
+    "passed": 82,
+    "failed": 0,
+    "failedSuites": 0
+  },
+  "typeChecks": [
+    {
+      "command": "node node_modules/typescript/bin/tsc --noEmit -p tsconfig.json",
+      "exitCode": 0
+    },
+    {
+      "command": "node node_modules/typescript/bin/tsc --noEmit -p server/tsconfig.json",
+      "exitCode": 0
+    },
+    {
+      "command": "node node_modules/typescript/bin/tsc --noEmit -p lab/hard-ai/tsconfig.json",
+      "exitCode": 0
+    },
+    {
+      "command": "node node_modules/typescript/bin/tsc --noEmit -p tools/engine-seat/tsconfig.json",
+      "exitCode": 0
+    }
+  ],
+  "dag": {
+    "valid": true,
+    "nodes": 27,
+    "edges": 49,
+    "preexistingUnavailableMediaGroups": 5
+  },
+  "notRun": [
+    "full tests",
+    "browser/e2e",
+    "60s real engine match",
+    "Phasing Hard match",
+    "LLM match",
+    "production build/deploy",
+    "sealed corpus"
+  ],
+  "reviewCorrections": [
+    "Restricted briefing wait now rejects before waiting, including unchanged revision, tested via HTTP MCP and stdio.",
+    "Engine search telemetry explicitly records overrunMs without changing allowance."
+  ]
+}
