@@ -39,7 +39,8 @@ export function placementPlans(state:GameState,player:PlayerId,budget?:SearchBud
  // Promoting a live anchor is a separate candidate even if purchases dominate counts.
  for(const a of generatePromoteActions(state,player))add([a]);
  for(const enemy of state.board.units.filter(u=>u.owner!==player).slice(0,8)) {
-  // A safe NEXT-turn blocker; enemy reach was filtered before ranking.
+  // A NEXT-turn blocker, preferring safe commitments. If none are safe the
+  // generator retains risky, refundable buys; these never block immediately.
   for(const id of ['water_1','metal_1']) {
    const block=purchases.filter(a=>a.definitionId===id).sort((a,b)=>
     (Math.abs(a.position.x-enemy.position.x)+Math.abs(a.position.y-enemy.position.y))-(Math.abs(b.position.x-enemy.position.x)+Math.abs(b.position.y-enemy.position.y)))[0];
